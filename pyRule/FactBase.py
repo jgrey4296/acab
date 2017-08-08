@@ -61,7 +61,7 @@ class FactBase:
             #pass the clause and intermediate results through
             contexts = self._matchWMEs(clause,contexts)
 
-        #todo: then check negative clauses
+        #then check negative clauses
         negContext = contexts
         for clause in query._negatedClauses:
             #test each negated clause,
@@ -85,12 +85,6 @@ class FactBase:
         if not contexts:
             return contexts
 
-        #TODO: to convert to trie:
-        #alphatests + bindings + beta tests merge into a chain
-        # .a.b.X!y(>20) = [(inclusive a), (inclusive b),
-        #                  (inclusive bind/BetaTest X), (exclusive y > 20)]
-        #replace self._wmes with the root,
-        #bindings are value + reference to node
         (alphaTests, bindOps, betaTests) = clause
         passingContexts = Contexts()
         for wme in self._wmes:
