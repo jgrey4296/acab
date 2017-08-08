@@ -1,3 +1,5 @@
+from .utils import COMP
+
 
 def EQ(a,b):
     return a == b
@@ -16,3 +18,11 @@ def NOP(a,b):
 
 def FAIL(a,b):
     return False
+
+
+COMP_LOOKUP = {
+    COMP.LT : LT,
+    COMP.GT : GT,
+    COMP.NE : NEQ,
+    COMP.EQ : EQ
+}
