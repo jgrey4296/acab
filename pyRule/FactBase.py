@@ -5,6 +5,7 @@ class FactBase:
     """ Main class for knowledge base access  """
     
     def __init__(self ):
+        #todo: swap _wmes for FactTrie
         self._wmes = []
         self._wmeDict = {}
         self._hashes = set()
@@ -55,8 +56,7 @@ class FactBase:
         """ Given a query of clauses comprising:
         alpha, binding, and beta tests, run it and return
         any matching wmes and bindings """
-        contexts = Contexts()
-        contexts._init_alt()
+        contexts = Contexts.initial()
         for clause in query._clauses:
             #pass the clause and intermediate results through
             contexts = self._matchWMEs(clause,contexts)
