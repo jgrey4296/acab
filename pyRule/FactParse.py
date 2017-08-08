@@ -1,7 +1,11 @@
 import pyparsing as pp
 import logging as root_logger
-from .FactNode import FactNode, EXOP
+from .FactNode import FactNode
+from .utils import EXOP
+import IPython
+#https://ipython.readthedocs.io/en/stable/config/options/terminal.html
 
+#in shell: ipython --simple-prompty --matplotlib
 #UTILITIES
 logging = root_logger.getLogger(__name__)
 s = pp.Suppress
@@ -18,6 +22,7 @@ def construct_num(tok):
 DOT = pp.Keyword('.', identChars='!')
 EX = pp.Keyword('!', identChars='.')
 OP = pp.Or([DOT,EX])
+COMMA = pp.Literal(',')
 
 NAME = pp.Word(pp.alphas)
 NUM = pp.Word(pp.nums + '-d')
@@ -29,16 +34,24 @@ CORE = OP + VALUE
 
 #fact string
 fact_string = pp.OneOrMore(CORE)
+fact_strings = fact_string + pp.ZeroOrMore(s(COMMA) + fact_string)
 
 #Actions
 DOT.setParseAction(lambda t: EXOP.DOT)
 EX.setParseAction(lambda t: EXOP.EX)
 NUM.setParseAction(lambda t: int(t[0]))
 CORE.setParseAction(lambda toks: FactNode(toks[1], toks[0]))
+fact_string.setParseAction(lambda toks: [toks[:]])
 
 # MAIN PARSER:
 def parseString(s):
     """ str -> [FactNode] """
-    factList = [FactNode.Root()]
-    return factList + fact_string.parseString(s)[:]
+    parsed = fact_string.parseString(s)[0]
+    return [FactNode.Root()] + parsed
+
+def parseStrings(s):
+    """ str -> [[FactNode]] """
+    parsed = fact_strings.parseString(s)[:]
+    with_roots = [[FactNode.Root()] + x for x in parsed]
+    return with_roots
 
