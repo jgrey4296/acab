@@ -1,6 +1,4 @@
-from enum import Enum
-
-EXOP = Enum('EXOP', 'DOT EX ROOT')
+from .utils import EXOP
 
 class FactNode:
     """ Both the type of a node in the trie,
@@ -36,8 +34,11 @@ class FactNode:
         assert(isinstance(fact,FactNode))
         copied = fact.copy()
         if copied._op is EXOP.EX \
-           and copied._value not in self._children:
+           and len(self._children) > 1:
+            temp = self._children[copied._value]
             self._clear_node()
+            if temp is not None:
+                self._children[copied._value] = temp
             
         if copied._value not in self._children:
             self._children[copied._value] = copied
