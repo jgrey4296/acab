@@ -6,6 +6,12 @@ class Contexts:
             #A list of (data,[matchedWMEs]) tokens
             #len(matchedWMEs) == numberOfClauses
             self._alternatives = []
+
+      @staticmethod
+      def initial():
+            init = Contexts()
+            init._init_alt()
+            return init
             
       def _init_alt(self):
             """ Setup the initial context of no bindings 
