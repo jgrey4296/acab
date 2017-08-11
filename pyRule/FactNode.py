@@ -6,6 +6,7 @@ class FactNode:
 
     def __init__(self, value, operator):
         assert(isinstance(operator,EXOP))
+        #todo: add parent
         self._value = value
         self._op = operator
         self._children = {}
@@ -59,3 +60,5 @@ class FactNode:
 
     def __len__(self):
         return len(self._children)
+
+    #todo: add breadth and depth traversal
