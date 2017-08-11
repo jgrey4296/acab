@@ -2,10 +2,9 @@ from .WME import WME
 from .Contexts import Contexts
 
 class FactBase:
-    """ Main class for knowledge base access  """
+    """ Main class for WME based knowledge base """
     
     def __init__(self ):
-        #todo: swap _wmes for FactTrie
         self._wmes = []
         self._wmeDict = {}
         self._hashes = set()

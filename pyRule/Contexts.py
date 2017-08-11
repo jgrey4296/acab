@@ -1,6 +1,9 @@
-
 class Contexts:
-      """ Container of available contexts for a match  """
+      """ Container of available contexts for a match
+      ie: for Facts: (name, bob), (name, bill)
+      and query: (name, X)
+      gives a context with: [bob, bill]
+      """
 
       def __init__(self):
             #A list of (data,[matchedWMEs]) tokens
