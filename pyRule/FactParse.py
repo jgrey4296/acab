@@ -1,11 +1,13 @@
+"""
+Pyparsing based parser to turn strings into [FactNode],
+both in the single fact form (parseString), and multifact form (parseStrings)
+"""
 import pyparsing as pp
 import logging as root_logger
 from .FactNode import FactNode
 from .utils import EXOP
 import IPython
-#https://ipython.readthedocs.io/en/stable/config/options/terminal.html
 
-#in shell: ipython --simple-prompty --matplotlib
 #UTILITIES
 logging = root_logger.getLogger(__name__)
 s = pp.Suppress
@@ -13,6 +15,7 @@ op = pp.Optional
 opLn = s(op(pp.LineEnd()))
 
 def construct_num(tok):
+    #todo: add in fractions and underscores
     if 'd' in toks:
         return float(tok.replace('d','.'))
     else:
