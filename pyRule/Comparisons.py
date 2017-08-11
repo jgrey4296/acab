@@ -1,5 +1,7 @@
+""" Simple comparison functions to be used in rules """
 from .utils import COMP
-
+import logging as root_logger
+logging = root_logger.getLogger(__name__)
 
 def EQ(a,b):
     return a == b
