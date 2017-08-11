@@ -1,29 +1,37 @@
-from .FactNode import FactNode, EXOP
+from .FactNode import FactNode
 from . import FactParse as FP
 from .QueryParser import parseString as queryParse
 from .TrieContexts import TrieContexts
 from .TrieQuery import TrieQuery
 from .utils import Clause, EXOP
 from .Comparisons import COMP_LOOKUP
+import logging as root_logger
+logging = root_logger.getLogger(__name__)
+
 
 class FactTrie:
-
+    """ A Trie based knowledge base """
+    
     def __init__(self):
         self._root = FactNode.Root()
         self._last_node = self._root
 
     def assertSMulti(self,s):
+        """ Assert multiple facts from a single string """
         parsed = FP.parseStrings(s)
         for x in parsed:
             self.assertFact(x)
         
     def assertS(self,s):
+        """ Assert a fact from a string """
         self.assertFact(FP.parseString(s))
 
     def retractS(self,s):
+        """ Retract a fact from a string """
         self.retractFact(FP.parseString(s))
         
     def assertFact(self, factList):
+        """ Assert a [FactNode] list """
         assert(all([isinstance(x, FactNode) for x in factList]))
         assert(factList[0].is_root())
         self._clear_last_node()
@@ -32,6 +40,7 @@ class FactTrie:
 
 
     def retractFact(self, factList):
+        """ Retract a [FactNode] list """
         assert(all([isinstance(x, FactNode) for x in factList]))
         assert(factList[0].is_root())
         #go down to the child, and remove it
@@ -47,13 +56,18 @@ class FactTrie:
 
 
     def _clear_last_node(self):
+        """ Reset internal memory to point to the root.
+        currently only used for retraction
+        """
         self._last_node = self._root
 
     def queryS(self, s):
+        """ Query a string """
         query = queryParse(s)
         return self.queryFact(query)
         
     def queryFact(self, query):
+        """ Query a TrieQuery instance """
         assert(isinstance(query, TrieQuery))
         self._clear_last_node()
         initial_context = TrieContexts.initial(self._root)
@@ -80,38 +94,34 @@ class FactTrie:
             return contexts
         currentContexts = contexts
         #Go down from the root by query element:
-        #failure means remove the context
+        #Failure at any point means don't add the updated context
+
+        #For each part of the clause, ie: .a in .a.b.c
         for c in clause.components:
             alphas, betas = self.split_alpha_and_beta_tests(c.comps)
-            
             newContexts = TrieContexts()
+            
+            #test each  active alternative
             for (data,lastNode) in currentContexts._alternatives:
+                newData = None
+                newNode = None
                 #check exclusion status
                 if c.op is EXOP.EX and len(lastNode) != 1:
                     continue
 
                 #check value, if its not a bind
                 if c.value != None:
-                    if c.value not in lastNode._children:
-                        continue
-                    else:
-                        #can only run beta tests
-                        if self.test_betas(c.value, betas, data):
-                            newNode = lastNode._children[c.value]
-                            newContexts._alternatives.append((data.copy(),newNode))
-                        continue
+                    if c.value in lastNode._children and self.test_betas(c.value, betas,data):
+                        newNode = lastNode._children[c.value]
+                        newData = data.copy()
                     
                 else: #is bind
                     assert(c.bind != None)
                     if c.bind.value in data: #already bound
-                        if data[c.bind.value] not in lastNode._children:
-                            #already bound but doesnt match
-                            continue
-                        else:
+                        if data[c.bind.value] in lastNode._children:
                             #already bound, does match
                             newNode = lastNode._children[data[c.bind.value]]
-                            newContexts._alternatives.append((data.copy(), newNode))
-                            continue
+                            newData = data.copy()
                     else: #not already bound
                         #get potentials
                         potentials = lastNode._children.keys()
@@ -119,24 +129,32 @@ class FactTrie:
                         passing = [x for x in potentials if self.test_alphas(x, alphas) and self.test_betas(x, betas, data)]
                         #bind and store successes
                         for x in passing:
-                            newNode = lastNode._children[x]
-                            newData = data.copy()
-                            newData[c.bind.value] = x
-                            newContexts._alternatives.append((newData,newNode))
-
+                            newNodeAlt = lastNode._children[x]
+                            newDataAlt = data.copy()
+                            newDataAlt[c.bind.value] = x
+                            newContexts._alternatives.append((newDataAlt,newNodeAlt))
+                        
+                if newData is not None and newNode is not None:
+                    newContexts._alternatives.append((newData, newNode))
+            #all alternatives tested for this clause component, update and progress
             currentContexts = newContexts
 
+        #every alternative tested for each clause component, return the final set of contexts 
         return currentContexts
 
     def split_alpha_and_beta_tests(self, comps):
+        """ Given a list of comparisons, sort them into alpha and betas
+        ie: those against values and those against bindings """
         alphas = [x for x in comps if x.value != None]
         betas = [x for x in comps if x.bind != None]
         return (alphas, betas)
                         
     def test_alphas(self, value, comps):
-         return all([COMP_LOOKUP[x.op](value,x.value) for x in comps])
+        """ Run alpha tests against a retrieved value """
+        return all([COMP_LOOKUP[x.op](value,x.value) for x in comps])
 
     def test_betas(self, value, comps, data):
+        """ Run a beta tests against a retrieved value, with supplied bindings """
         return all([COMP_LOOKUP[x.op](value,data[x.bind.value]) for x in comps])
                     
                         
