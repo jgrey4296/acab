@@ -1,8 +1,4 @@
 from .utils import Clause
-import IPython
-#https://ipython.readthedocs.io/en/stable/config/options/terminal.html
-
-#in shell: ipython --simple-prompty --matplotlib
 
 class TrieQuery:
     """ A Query for the Trie Knowledge base """
