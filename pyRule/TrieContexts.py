@@ -1,4 +1,3 @@
-
 class TrieContexts:
       """ Container of available contexts for a match in the trie  """
 
