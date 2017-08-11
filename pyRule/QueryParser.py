@@ -3,25 +3,8 @@ import pyparsing as pp
 from .FactParse import OP,VALUE
 from .TrieQuery import TrieQuery
 from .utils import Bind, Comparison, QueryComponent, Clause, COMP 
-import IPython
-#https://ipython.readthedocs.io/en/stable/config/options/terminal.html
-
-#in shell: ipython --simple-prompty --matplotlib
 
 logging = root_logger.getLogger(__name__)
-
-# Group, Suppress, ParseResults, Forward
-
-# OnlyOnce, , FollowedBy, NotAny, OneOrMore, ZeroOrMore,
-# Optional, SkipTo, Combine, Dict
-
-# And, Each, MatchFirst, Or, CharsNotIn, Empty, Keyword,
-# CaselessKeyword, Literal, CaselessLiteral,
-# NoMatch, QuotedString, Regex, White, Word
-
-#PARSER.setParseAction(lambda toks: toks))
-#PARSER.setResultsName('')
-#PARSER.parseString('')
 
 def buildComparison(op, value):
     if isinstance(value, Bind):
@@ -54,7 +37,7 @@ DOLLAR = pp.Literal('$')
 LT = pp.Literal('<')
 GT = pp.Literal('>')
 NE = pp.Literal('!=')
-EQ = pp.Literal('=')
+EQ = pp.Literal('==')
 
 COMP_OP = pp.Or([LT, GT, NE, EQ])
 
