@@ -93,12 +93,24 @@ class Trie:
         #Go down the trie, running each test as necessary
         #annotating contexts as necessary
         contexts = ctxs
-        for clause in query._clauses:
+        pos, neg = query.splitClauses()
+
+        logging.debug("Testing clauses: {} {}".format(len(pos), len(neg)))
+        for clause in pos:
             contexts = self._match_clause(clause, contexts)
             contexts = contexts.set_all_alts(self._root)
-            
-            
-        #todo: negative clauses
+            if bool(contexts) is False:
+                logging.debug("A positive clause is false")
+                break
+
+        for negClause in neg:
+            result = self._match_clause(negClause, contexts)
+            logging.debug("neg result: {}".format(str(result)))
+            if bool(result) is True:
+                logging.debug("A Negative clause is true")
+                contexts.fail()
+                break
+
         
         return contexts
     
