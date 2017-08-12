@@ -25,7 +25,8 @@ def construct_num(toks):
 DOT = pp.Keyword('.', identChars='!')
 EX = pp.Keyword('!', identChars='.')
 OP = pp.Or([DOT,EX])
-COMMA = pp.Literal(',')
+COMMA = s(pp.Literal(',') + opLn)
+DOLLAR = pp.Literal('$')
 
 NAME = pp.Word(pp.alphas)
 NUM = pp.Word(pp.nums + '-d').setParseAction(construct_num)
