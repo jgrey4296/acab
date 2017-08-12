@@ -14,7 +14,16 @@ class Contexts:
       def __iter__(self):
             for x in self._alternatives:
                   yield x[0]
-      
+
+      def __str__(self):
+            if bool(self):
+                  return "Context: {}".format(len(self))
+            else:
+                  return "Context: False"
+
+      def __repr__(self):
+            return str(self)
+            
       @staticmethod
       def initial(startNode):
             init = Contexts()
