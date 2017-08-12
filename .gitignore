@@ -2,3 +2,4 @@
 flycheck_*
 *.pyc
 log.*
+.log
