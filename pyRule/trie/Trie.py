@@ -12,10 +12,19 @@ logging = root_logger.getLogger(__name__)
 class Trie:
     """ A Trie based knowledge base """
     
-    def __init__(self):
+    def __init__(self, input=None):
         self._root = Node.Root()
         self._last_node = self._root
+        if input != None:
+            self.assertSMulti(input)
 
+    def __eq__(self, other):
+        assert(isinstance(other, Trie))
+        return self._root == other._root
+            
+    def __str__(self):
+        return self._root.root_str()
+    
     def assertSMulti(self,s):
         """ Assert multiple facts from a single string """
         parsed = FP.parseStrings(s)
