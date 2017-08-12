@@ -37,41 +37,42 @@ s = pp.Suppress
 op = pp.Optional
 opLn = s(op(pp.LineEnd()))
 
-OPAR = pp.Literal('(')
-CPAR = pp.Literal(')')
 OPAR = s(pp.Literal('('))
+CPAR = s(pp.Literal(')'))
+
 LT = pp.Literal('<')
 GT = pp.Literal('>')
 NE = pp.Literal('!=')
 EQ = pp.Literal('==')
+NOT = pp.Literal('~').setResultsName('NOT')
 
 COMP_OP = pp.Or([LT, GT, NE, EQ])
 
 
 COMP_Internal = COMP_OP + VALBIND
 
-comparison = s(OPAR) + COMP_Internal \
-       + op(pp.OneOrMore(s(COMMA) + COMP_Internal))\
-       + s(CPAR)
+comparison = OPAR + COMP_Internal \
+             + op(pp.OneOrMore(COMMA + COMP_Internal))\
+             + CPAR
 
 #Core: OP (VALUE|BIND) (COMP)
 core = OP + VALBIND + op(comparison)
 
 #Core Query Chain
-clause = pp.OneOrMore(core)
+clause = op(NOT)  + pp.OneOrMore(core)
 
-clauses = clause + pp.ZeroOrMore(s(COMMA) + clause)
+clauses = clause + pp.ZeroOrMore(COMMA + clause)
 
 #Actions
-BIND.setParseAction(lambda toks: Bind(toks[1]))
+
 COMP_Internal.setParseAction(lambda toks: buildComparison(toks[0], toks[1]))
 LT.setParseAction(lambda toks: COMP.LT)
 GT.setParseAction(lambda toks: COMP.GT)
 NE.setParseAction(lambda toks: COMP.NE)
 EQ.setParseAction(lambda toks: COMP.EQ)
-core.setParseAction(lambda toks: buildQueryComponent(toks))
+core.setParseAction(buildQueryComponent)
 #Clause, not negated:
-clause.setParseAction(lambda toks: Clause(toks[:], False))
+clause.setParseAction(buildClause)
                                 
                                     
 #Main parser:
