@@ -1,8 +1,8 @@
 all:
 	python -m unittest Rule*.py -v -f
 
-factbase:
-	python -m unittest RuleTests.python
+wme:
+	python -m unittest RuleTests.py
 
 trie:
 	python -m unittest RuleFactTrieTests.py
