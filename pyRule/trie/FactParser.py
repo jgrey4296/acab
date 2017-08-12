@@ -14,12 +14,12 @@ s = pp.Suppress
 op = pp.Optional
 opLn = s(op(pp.LineEnd()))
 
-def construct_num(tok):
+def construct_num(toks):
     #todo: add in fractions and underscores
-    if 'd' in toks:
-        return float(tok.replace('d','.'))
+    if 'd' in toks[0]:
+        return float(toks[0].replace('d','.'))
     else:
-        return int(tok)
+        return int(tok[0])
 
 #Base Defs
 DOT = pp.Keyword('.', identChars='!')
@@ -28,7 +28,7 @@ OP = pp.Or([DOT,EX])
 COMMA = pp.Literal(',')
 
 NAME = pp.Word(pp.alphas)
-NUM = pp.Word(pp.nums + '-d')
+NUM = pp.Word(pp.nums + '-d').setParseAction(construct_num)
 STRING = pp.dblQuotedString
 VALUE = pp.Or([NAME, NUM, STRING])
 
