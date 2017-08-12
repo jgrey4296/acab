@@ -5,7 +5,7 @@ both in the single fact form (parseString), and multifact form (parseStrings)
 import pyparsing as pp
 import logging as root_logger
 from .Node import Node
-from pyRule.utils import EXOP
+from pyRule.utils import EXOP, Bind
 import IPython
 
 #UTILITIES
