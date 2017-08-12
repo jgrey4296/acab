@@ -6,6 +6,13 @@ from pyRule.utils import Bind, Comparison, QueryComponent, Clause, COMP
 
 logging = root_logger.getLogger(__name__)
 
+def buildClause(toks):
+    #detect negation and annotate the clause with it
+    if 'NOT' in toks:
+        return Clause(toks[1:], True)
+    else:
+        return Clause(toks, False)
+
 def buildComparison(op, value):
     if isinstance(value, Bind):
         return Comparison(op,None,value)
