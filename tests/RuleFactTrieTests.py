@@ -157,22 +157,71 @@ class RuleFactTrieTests(unittest.TestCase):
         self.assertTrue(result)
         self.assertEqual(len(result), 2)
 
+    def test_assertion_of_strings(self):
+        """ Check that double quoted strings work as fact components and can be matched against """
+        self.trie.assertS('.a.b."This is a test".blah')
+        result = self.trie.queryS('.a.b."This is a test".blah')
+        self.assertTrue(result)
+        result = self.trie.queryS('.a.b.$x.blah')
+        self.assertTrue(result)
+        self.assertEqual(result[0]['x'], "This is a test")    
+        
     def test_factbase_to_strings(self):
-        self.assertTrue(False)
+        self.trie.assertS('.a.b.c')
+        self.assertEqual(str(self.trie), '.a.b.c')
 
+    def test_factbase_to_multi_strings(self):
+        self.trie.assertSMulti('.a.b.c, .q.e.r, .t.y!u')
+        s = str(self.trie)
+        self.assertTrue('.a.b.c' in s)
+        self.assertTrue('.q.e.r' in s)
+        self.assertTrue('.t.y!u' in s)
+
+    def test_trie_assertion_on_creation(self):
+        newTrie = T.Trie('.a.b.c, .d.e.f, .q.w.e')
+        result = newTrie.queryS('.a.b.c, .d.e.f, .q.w.e')
+        self.assertTrue(result)
+        
     def test_factbase_from_string_recovery(self):
-        self.assertTrue(False)
+        self.trie.assertSMulti('.a.b.c, .q.e.r, .t.y!u')
+        s = str(self.trie)
+        newTrie = T.Trie(s)
+        self.assertEqual(self.trie, newTrie)
 
     def test_query_negation(self):
-        self.assertTrue(False)
+        self.trie.assertS('.a.b.c')
+        result = self.trie.queryS('.a.b.c')
+        
+        self.assertTrue(result)
+        result = self.trie.queryS('~.a.b.c')
+        self.assertFalse(result)
+        
+        result = self.trie.queryS('~.q.w.e')
+        self.assertTrue(result)
+
+    def test_query_multi_clause(self):
+        self.trie.assertSMulti('.a.b.c, .d.e.f')
+        self.assertTrue(self.trie.queryS('.a.b.c'))
+        self.assertTrue(self.trie.queryS('.d.e.f'))
+        self.assertFalse(self.trie.queryS('.a.b.c, ~.d.e.f'))
+        self.assertTrue(self.trie.queryS('.a.b.c, .d.e.f'))
+
+    def test_query_exclusion_negation(self):
+        self.trie.assertS('.a.b!c')
+        self.assertFalse(self.trie.queryS('~.a.b!c'))
+        self.trie.assertS('.a.b.d')
+        self.assertTrue(self.trie.queryS('~.a.b!c'))
 
         
         
 if __name__ == "__main__":
-    LOGLEVEL = logging.DEBUG
+    LOGLEVEL = logging.INFO
     logFileName = "log.RuleFactTrieTests"
     logging.basicConfig(filename=logFileName, level=LOGLEVEL, filemode='w')
     console = logging.StreamHandler()
-    console.setLevel(logging.INFO)
+    console.setLevel(logging.WARN)
     logging.getLogger().addHandler(console)
+    logging.debug("Debug Test")
+    logging.info("Info Test")
+    logging.warning("Warn test")
     unittest.main()
