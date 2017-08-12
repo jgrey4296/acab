@@ -35,6 +35,12 @@ class Trie:
         """ Assert a fact from a string """
         self.assertFact(FP.parseString(s))
 
+    def retractSMulti(self, s):
+        """ Retract multiple facts from a single string """
+        parsed = FP.parseStrings(s)
+        for x in parsed:
+            self.retractFact(x)
+        
     def retractS(self,s):
         """ Retract a fact from a string """
         self.retractFact(FP.parseString(s))
