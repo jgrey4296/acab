@@ -1,4 +1,7 @@
 from pyRule.utils import EXOP
+import logging as root_logger
+logging = root_logger.getLogger(__name__)
+
 
 class Node:
     """ Both the type of a node in the trie,
@@ -11,15 +14,59 @@ class Node:
         self._op = operator
         self._children = {}
 
-    def copy(self):
-        return Node(self._value, self._op)
+    def root_str(self):
+        xs = [str(y) for x,y in sorted(self._children.items())]
+        return ",\n".join(xs)
+
+
+    def __eq__(self, other):
+        """ Main comparison routine: turn to strings, compare """
+        assert(isinstance(other, Node))
+        return str(self) == str(other)
+
+    def _eq__alt(self,other):
+        """ DFS comparison routine """
+        assert(isinstance(other,Node))
+        if self._value != other._value:
+            logging.warning("Values not the same")
+            return False
+        if len(self._children) != len(other._children):
+            logging.warning("children length not the same")
+            return False
+        if not all([x in other._children for x in self._children.keys()]):
+            logging.warning("keys not in other")
+            return False
+        comp = all([self._children[x] == other._children[x] for x in self._children.keys()])
+        return comp
+        
+    
         
     def __str__(self):
+        #operator stringify
         if self._op is EXOP.DOT:
             op = "."
         else:
             op = "!"
-        return op + str(self._value)
+        #value stringify
+        if ' ' in self._value:
+            val = op + '"' + str(self._value) + '"'
+        else:
+            val = op + str(self._value)
+        #todo: if self._value is a number,
+        #format according to the parser
+
+        #children stringify
+        xs = [val + str(y) for x,y in sorted(self._children.items())]
+
+        if len(xs) == 0:
+            return val
+        else:
+            return ",\n".join(xs)
+
+        
+    def copy(self):
+        return Node(self._value, self._op)
+        
             
     @staticmethod
     def Root():
