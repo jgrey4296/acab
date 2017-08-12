@@ -38,14 +38,26 @@ CORE = OP + VALUE
 
 #fact string
 fact_string = pp.OneOrMore(CORE)
-fact_strings = fact_string + pp.ZeroOrMore(s(COMMA) + fact_string)
+fact_strings = fact_string + pp.ZeroOrMore(COMMA + fact_string)
+
+#alt for actions, PARAM_CORE
+BIND = DOLLAR + VALUE
+VALBIND = pp.Or([VALUE, BIND])
+
+PARAM_CORE = OP + VALBIND
+
+param_fact_string = pp.OneOrMore(PARAM_CORE)
+param_fact_strings = param_fact_string + pp.ZeroOrMore(COMMA + fact_string)
 
 #Actions
+BIND.setParseAction(lambda toks: Bind(toks[1]))
+STRING.setParseAction(lambda t: t[0].replace('"',''))
 DOT.setParseAction(lambda t: EXOP.DOT)
 EX.setParseAction(lambda t: EXOP.EX)
 NUM.setParseAction(lambda t: int(t[0]))
 CORE.setParseAction(lambda toks: Node(toks[1], toks[0]))
 fact_string.setParseAction(lambda toks: [toks[:]])
+
 
 # MAIN PARSER:
 def parseString(s):

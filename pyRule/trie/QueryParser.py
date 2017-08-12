@@ -32,8 +32,7 @@ opLn = s(op(pp.LineEnd()))
 
 OPAR = pp.Literal('(')
 CPAR = pp.Literal(')')
-COMMA = pp.Literal(',')
-DOLLAR = pp.Literal('$')
+OPAR = s(pp.Literal('('))
 LT = pp.Literal('<')
 GT = pp.Literal('>')
 NE = pp.Literal('!=')
@@ -41,16 +40,15 @@ EQ = pp.Literal('==')
 
 COMP_OP = pp.Or([LT, GT, NE, EQ])
 
-BIND = DOLLAR + VALUE
 
-COMP_Internal = COMP_OP + pp.Or([VALUE, BIND])
+COMP_Internal = COMP_OP + VALBIND
 
 comparison = s(OPAR) + COMP_Internal \
        + op(pp.OneOrMore(s(COMMA) + COMP_Internal))\
        + s(CPAR)
 
 #Core: OP (VALUE|BIND) (COMP)
-core = OP + pp.Or([VALUE, BIND]) + op(comparison)
+core = OP + VALBIND + op(comparison)
 
 #Core Query Chain
 clause = pp.OneOrMore(core)
