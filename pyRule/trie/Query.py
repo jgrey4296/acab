@@ -1,6 +1,6 @@
-from .utils import Clause
+from pyRule.utils import Clause
 
-class TrieQuery:
+class Query:
     """ A Query for the Trie Knowledge base """
 
     def __init__(self, *args, negated=False):

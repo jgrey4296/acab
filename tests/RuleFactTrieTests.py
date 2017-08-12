@@ -1,15 +1,14 @@
 import unittest
 import logging
 from test_context import pyRule
-from pyRule import FactTrie
-from pyRule.TrieContexts import TrieContexts
+import pyRule.trie as T
 
 class RuleFactTrieTests(unittest.TestCase):
     """ Unit test for basic Trie knowledge base functionality """
 
     
     def setUp(self):
-        self.trie = FactTrie()
+        self.trie = T.Trie()
 
     def tearDown(self):
         self.trie = None
@@ -17,7 +16,7 @@ class RuleFactTrieTests(unittest.TestCase):
     def test_init(self):
         """ Check the trie object exists """
         self.assertIsNotNone(self.trie)
-        self.assertIsInstance(self.trie, FactTrie)
+        self.assertIsInstance(self.trie, T.Trie)
           
     def test_assert(self):
         """ Check assertions work """
@@ -54,7 +53,7 @@ class RuleFactTrieTests(unittest.TestCase):
         """ Check the simplest query works """
         self.trie.assertS('.a.b.c')
         result = self.trie.queryS('.a.b.c')
-        self.assertIsInstance(result, TrieContexts)
+        self.assertIsInstance(result, T.Contexts)
         self.assertTrue(result)
 
     def test_simplest_query_fail(self):

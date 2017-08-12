@@ -1,6 +1,6 @@
-from .utils import EXOP
+from pyRule.utils import EXOP
 
-class FactNode:
+class Node:
     """ Both the type of a node in the trie,
     and the representation of data to add into the trie """ 
 
@@ -12,7 +12,7 @@ class FactNode:
         self._children = {}
 
     def copy(self):
-        return FactNode(self._value, self._op)
+        return Node(self._value, self._op)
         
     def __str__(self):
         if self._op is EXOP.DOT:
@@ -23,7 +23,7 @@ class FactNode:
             
     @staticmethod
     def Root():
-        return FactNode("root", EXOP.ROOT)
+        return Node("root", EXOP.ROOT)
         
     def is_root(self):
         return self._op is EXOP.ROOT
@@ -32,7 +32,7 @@ class FactNode:
         self._children = {}
         
     def insert(self, fact):
-        assert(isinstance(fact,FactNode))
+        assert(isinstance(fact,Node))
         copied = fact.copy()
         if copied._op is EXOP.EX \
            and len(self._children) > 1:
@@ -48,7 +48,7 @@ class FactNode:
             return self._children[copied._value]
 
     def get(self, fact):
-        assert(isinstance(fact,FactNode))
+        assert(isinstance(fact,Node))
         if fact._value in self._children and fact._op is self._children[fact._value]._op:
             return self._children[fact._value]
         else:

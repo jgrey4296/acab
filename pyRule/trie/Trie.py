@@ -1,19 +1,19 @@
-from .FactNode import FactNode
-from . import FactParse as FP
+from .Node import Node
+from . import FactParser as FP
 from .QueryParser import parseString as queryParse
-from .TrieContexts import TrieContexts
-from .TrieQuery import TrieQuery
-from .utils import Clause, EXOP
-from .Comparisons import COMP_LOOKUP
+from .Contexts import Contexts
+from .Query import Query
+from pyRule.utils import Clause, EXOP
+from pyRule.Comparisons import COMP_LOOKUP
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
 
-class FactTrie:
+class Trie:
     """ A Trie based knowledge base """
     
     def __init__(self):
-        self._root = FactNode.Root()
+        self._root = Node.Root()
         self._last_node = self._root
 
     def assertSMulti(self,s):
@@ -32,7 +32,7 @@ class FactTrie:
         
     def assertFact(self, factList):
         """ Assert a [FactNode] list """
-        assert(all([isinstance(x, FactNode) for x in factList]))
+        assert(all([isinstance(x, Node) for x in factList]))
         assert(factList[0].is_root())
         self._clear_last_node()
         for newNode in factList[1:]:
@@ -41,7 +41,7 @@ class FactTrie:
 
     def retractFact(self, factList):
         """ Retract a [FactNode] list """
-        assert(all([isinstance(x, FactNode) for x in factList]))
+        assert(all([isinstance(x, Node) for x in factList]))
         assert(factList[0].is_root())
         #go down to the child, and remove it
         self._clear_last_node()
@@ -68,9 +68,9 @@ class FactTrie:
         
     def queryFact(self, query):
         """ Query a TrieQuery instance """
-        assert(isinstance(query, TrieQuery))
+        assert(isinstance(query, Query))
         self._clear_last_node()
-        initial_context = TrieContexts.initial(self._root)
+        initial_context = Contexts.initial(self._root)
         return self._internal_query(query, initial_context)
 
     
@@ -99,7 +99,7 @@ class FactTrie:
         #For each part of the clause, ie: .a in .a.b.c
         for c in clause.components:
             alphas, betas = self.split_alpha_and_beta_tests(c.comps)
-            newContexts = TrieContexts()
+            newContexts = Contexts()
             
             #test each  active alternative
             for (data,lastNode) in currentContexts._alternatives:

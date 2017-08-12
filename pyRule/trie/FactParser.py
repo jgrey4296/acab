@@ -4,8 +4,8 @@ both in the single fact form (parseString), and multifact form (parseStrings)
 """
 import pyparsing as pp
 import logging as root_logger
-from .FactNode import FactNode
-from .utils import EXOP
+from .Node import Node
+from pyRule.utils import EXOP
 import IPython
 
 #UTILITIES
@@ -43,18 +43,18 @@ fact_strings = fact_string + pp.ZeroOrMore(s(COMMA) + fact_string)
 DOT.setParseAction(lambda t: EXOP.DOT)
 EX.setParseAction(lambda t: EXOP.EX)
 NUM.setParseAction(lambda t: int(t[0]))
-CORE.setParseAction(lambda toks: FactNode(toks[1], toks[0]))
+CORE.setParseAction(lambda toks: Node(toks[1], toks[0]))
 fact_string.setParseAction(lambda toks: [toks[:]])
 
 # MAIN PARSER:
 def parseString(s):
-    """ str -> [FactNode] """
+    """ str -> [Node] """
     parsed = fact_string.parseString(s)[0]
-    return [FactNode.Root()] + parsed
+    return [Node.Root()] + parsed
 
 def parseStrings(s):
-    """ str -> [[FactNode]] """
+    """ str -> [[Node]] """
     parsed = fact_strings.parseString(s)[:]
-    with_roots = [[FactNode.Root()] + x for x in parsed]
+    with_roots = [[Node.Root()] + x for x in parsed]
     return with_roots
 

@@ -1,4 +1,4 @@
-class TrieContexts:
+class Contexts:
       """ Container of available contexts for a match in the trie  """
 
       def __init__(self):
@@ -17,7 +17,7 @@ class TrieContexts:
       
       @staticmethod
       def initial(startNode):
-            init = TrieContexts()
+            init = Contexts()
             init._init_alt(startNode)
             return init
             
@@ -39,7 +39,7 @@ class TrieContexts:
       
 
       def set_all_alts(self, targetNode):
-            newContexts = TrieContexts()
+            newContexts = Contexts()
             for (data, lastNode) in self._alternatives:
                   newContexts._alternatives.append((data, targetNode))
             return newContexts

@@ -1,8 +1,8 @@
 import logging as root_logger
 import pyparsing as pp
-from .FactParse import OP,VALUE
-from .TrieQuery import TrieQuery
-from .utils import Bind, Comparison, QueryComponent, Clause, COMP 
+from .FactParser import OP,VALUE
+from .Query import Query
+from pyRule.utils import Bind, Comparison, QueryComponent, Clause, COMP 
 
 logging = root_logger.getLogger(__name__)
 
@@ -73,4 +73,4 @@ clause.setParseAction(lambda toks: Clause(toks[:], False))
 def parseString(s):
     """ .a.b(>20)!d.$X, ... -> Query """
     data = clauses.parseString(s)[:]
-    return TrieQuery(*data)
+    return Query(*data)
