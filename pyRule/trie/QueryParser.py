@@ -1,38 +1,33 @@
 import logging as root_logger
 import pyparsing as pp
-from .FactParser import OP, COMMA, VALBIND
+from pyRule.utils import Bind,META_OP
+from pyRule.Comparisons import COMP, Comparison
+from .FactParser import OP, COMMA, VALBIND, PARAM_CORE
 from .Query import Query
-from pyRule.utils import Bind, Comparison, QueryComponent, Clause, COMP 
+from .Clause import Clause
 
 logging = root_logger.getLogger(__name__)
 
 def buildClause(toks):
     #detect negation and annotate the clause with it
     if 'NOT' in toks:
-        return Clause(toks[1:], True)
+        return Clause(toks[1:], negated=True)
     else:
-        return Clause(toks, False)
+        return Clause(toks)
 
 def buildComparison(op, value):
     if isinstance(value, Bind):
-        return Comparison(op,None,value)
+        return Comparison(op, bind=value)
     else:
-        return Comparison(op, value, None)
+        return Comparison(op, value=value)
 
 def buildQueryComponent(toks):
-    op = toks[0]
-    if isinstance(toks[1], Bind):
-        value = None
-        bind = toks[1]
-    else:
-        value = toks[1]
-        bind = None
-    if len(toks) >= 3:
-        comps = toks[2:]
-    else:
-        comps = []
-    return QueryComponent(op, value, bind, comps)
-        
+    node = toks[0]
+    comparisons = toks[1:]
+    node.set_meta_eval(META_OP.COMP, comparisons)
+    return node
+
+
 s = pp.Suppress
 op = pp.Optional
 opLn = s(op(pp.LineEnd()))
@@ -55,11 +50,11 @@ comparison = OPAR + COMP_Internal \
              + op(pp.OneOrMore(COMMA + COMP_Internal))\
              + CPAR
 
-#Core: OP (VALUE|BIND) (COMP)
-core = OP + VALBIND + op(comparison)
+#core component of a query, a modified param_fact_string
+QueryCore = PARAM_CORE + op(comparison)
 
 #Core Query Chain
-clause = op(NOT)  + pp.OneOrMore(core)
+clause = op(NOT)  + pp.OneOrMore(QueryCore)
 
 clauses = clause + pp.ZeroOrMore(COMMA + clause)
 
@@ -70,11 +65,11 @@ LT.setParseAction(lambda toks: COMP.LT)
 GT.setParseAction(lambda toks: COMP.GT)
 NE.setParseAction(lambda toks: COMP.NE)
 EQ.setParseAction(lambda toks: COMP.EQ)
-core.setParseAction(buildQueryComponent)
+QueryCore.setParseAction(buildQueryComponent)
 #Clause, not negated:
 clause.setParseAction(buildClause)
-                                
-                                    
+
+
 #Main parser:
 def parseString(s):
     """ .a.b(>20)!d.$X, ... -> Query """
