@@ -80,7 +80,11 @@ class Trie:
         """ Query a string """
         query = queryParse(s)
         return self.queryFact(query)
-        
+
+    def _reconstruct_query_from_trie(self):
+        #TODO
+        return False
+    
     def queryFact(self, query):
         """ Query a TrieQuery instance """
         assert(isinstance(query, Query))
