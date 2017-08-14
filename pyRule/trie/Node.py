@@ -1,19 +1,65 @@
 from pyRule.utils import EXOP
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
-
+from math import floor
+import weakref
+#see https://docs.python.org/3/library/weakref.html#module-weakref
 
 class Node:
     """ Both the type of a node in the trie,
     and the representation of data to add into the trie """ 
 
-    def __init__(self, value, operator):
+    def __init__(self, value, operator, parent=None, meta_leaf=None, meta_eval=None):
         assert(isinstance(operator,EXOP))
-        #todo: add parent
+
+        if parent is not None:
+            self._parent = weakref.ref(parent)
+        else:
+            self._parent = None
+        self._dirty = True
+        self._cached = []
+        
         self._value = value
         self._op = operator
         self._children = {}
+        #meta field holds ordering for leaf pathways
+        #and eval details as a subtrie for other nodes
+        self._is_meta = False
+        self._meta_leaf = {}
+        self._meta_eval = {}
 
+    def _set_dirty_chain(self):
+        self._dirty = True
+        if self._parent is not None:
+            self._parent()._set_dirty_chain()
+        
+    def _unify(self, other):
+        """ Test two tries to see if they can match with substitutions """
+        # { bindNode : [ options ] }
+        return {}
+
+        
+    def _reconstruct(self):
+        """ Internal method for DFS reconstructing min fact/leaf list """
+        if not self._dirty:
+            return self._cached
+        #todo: improve caching
+        queue = [([], self)]
+        leaves = []
+        while len(queue) > 0:
+            path, node = queue.pop()
+            newpath = path.copy()
+            newpath.append(node)
+            if len(node._children) > 0:
+                queue += [(newpath, x) for x in node._children.values()]
+            else:
+                leaves.append(newpath)
+
+        self._dirty = False
+        self._cached = leaves
+        return leaves
+                    
+        
     def root_str(self):
         xs = [str(y) for x,y in sorted(self._children.items())]
         return ",\n".join(xs)
@@ -38,30 +84,39 @@ class Node:
             return False
         comp = all([self._children[x] == other._children[x] for x in self._children.keys()])
         return comp
-        
-    
-        
-    def __str__(self):
+
+    def __repr__(self):
+        """ Return a representation of this particular node """
         #operator stringify
         if self._op is EXOP.DOT:
             op = "."
         else:
             op = "!"
-        #value stringify
-        if ' ' in self._value:
-            val = op + '"' + str(self._value) + '"'
+        #reconverting floats
+        if isinstance(self._value, float):
+            f = str(self._value)
+            val = f.replace(".","d")
+            #value stringify
+        elif ' ' in self._value:
+            val = '"' + str(self._value) + '"'
         else:
-            val = op + str(self._value)
-        #todo: if self._value is a number,
-        #format according to the parser
+            val = str(self._value)
 
-        #children stringify
-        xs = [val + str(y) for x,y in sorted(self._children.items())]
+        final_val = op + val
+        return final_val
 
-        if len(xs) == 0:
-            return val
+    def __str__(self):
+        """ Create a multi line string of the entire sub trie """
+        leaf_list = self._reconstruct()
+
+        if len(leaf_list) == 0:
+            return repr(self)
         else:
-            return ",\n".join(xs)
+            finals = []
+            for l in leaf_list:
+                finals.append("".join([repr(x) for x in l]))
+                
+            return ",\n".join(finals)
 
         
     def copy(self):
@@ -80,6 +135,7 @@ class Node:
         
     def insert(self, fact):
         assert(isinstance(fact,Node))
+        self._set_dirty_chain()
         copied = fact.copy()
         if copied._op is EXOP.EX \
            and len(self._children) > 1:
@@ -104,6 +160,7 @@ class Node:
     def delete_node(self, fact):
         if fact._value in self._children and fact._op is self._children[fact._value]._op:
             del self._children[fact._value]
+            self._set_dirty_chain()
 
     def __len__(self):
         return len(self._children)
