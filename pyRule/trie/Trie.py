@@ -3,9 +3,11 @@ from . import FactParser as FP
 from .QueryParser import parseString as queryParse
 from .Contexts import Contexts
 from .Query import Query
-from pyRule.utils import Clause, EXOP
+from .Clause import Clause
+from pyRule.utils import EXOP, META_OP
 from pyRule.Comparisons import COMP_LOOKUP
 import logging as root_logger
+import IPython
 logging = root_logger.getLogger(__name__)
 
 
@@ -129,7 +131,9 @@ class Trie:
 
         #For each part of the clause, ie: .a in .a.b.c
         for c in clause.components:
-            alphas, betas = self.split_alpha_and_beta_tests(c.comps)
+            logging.debug("Testing node: {}".format(repr(c)))
+            logging.debug("Current Contexts: {}".format(len(currentContexts)))
+            alphas, betas = self.split_alpha_and_beta_tests(c)
             newContexts = Contexts()
             
             #test each  active alternative
@@ -137,32 +141,40 @@ class Trie:
                 newData = None
                 newNode = None
                 #check exclusion status
-                if c.op is EXOP.EX and len(lastNode) != 1:
+                if c._op is EXOP.EX and len(lastNode) != 1:
+                    logging.debug("Mismatch EX num")
                     continue
 
                 #check value, if its not a bind
-                if c.value != None:
-                    if c.value in lastNode._children and self.test_betas(c.value, betas,data):
-                        newNode = lastNode._children[c.value]
+                if not c.get_meta_eval(META_OP.BIND):
+                    logging.debug("Not Bind: {}|{}".format(c._value, lastNode._children.keys()))
+                    if c._value in lastNode._children and self.test_betas(c._value, betas,data):
+                        logging.debug("Suitable value")
+                        newNode = lastNode._children[c._value]
                         newData = data.copy()
                     
                 else: #is bind
-                    assert(c.bind != None)
-                    if c.bind.value in data: #already bound
-                        if data[c.bind.value] in lastNode._children:
+                    logging.debug("Is Bind")
+                    if c._value in data: #already bound
+                        logging.debug("Is Bound already")
+                        if data[c._value] in lastNode._children:
+                            logging.debug("Bound value in children")
                             #already bound, does match
-                            newNode = lastNode._children[data[c.bind.value]]
+                            newNode = lastNode._children[data[c._value]]
                             newData = data.copy()
                     else: #not already bound
+                        logging.debug("Non-pre-bound")
                         #get potentials
                         potentials = lastNode._children.keys()
+                        logging.debug("Potentials: {}".format(potentials))
                         #filter by running alphas and betas
                         passing = [x for x in potentials if self.test_alphas(x, alphas) and self.test_betas(x, betas, data)]
+                        logging.debug("Passing: {}".format(passing))
                         #bind and store successes
                         for x in passing:
                             newNodeAlt = lastNode._children[x]
                             newDataAlt = data.copy()
-                            newDataAlt[c.bind.value] = x
+                            newDataAlt[c._value] = x
                             newContexts._alternatives.append((newDataAlt,newNodeAlt))
                         
                 if newData is not None and newNode is not None:
@@ -173,11 +185,18 @@ class Trie:
         #every alternative tested for each clause component, return the final set of contexts 
         return currentContexts
 
-    def split_alpha_and_beta_tests(self, comps):
+    def split_alpha_and_beta_tests(self, node):
         """ Given a list of comparisons, sort them into alpha and betas
         ie: those against values and those against bindings """
-        alphas = [x for x in comps if x.value != None]
-        betas = [x for x in comps if x.bind != None]
+        assert(isinstance(node, Node))
+        comps = node.get_meta_eval(META_OP.COMP)
+        alphas = []
+        betas = []
+        for x in comps:
+            if x.is_alpha_test():
+                alphas.append(x)
+            else:
+                betas.append(x)
         return (alphas, betas)
                         
     def test_alphas(self, value, comps):
