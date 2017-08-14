@@ -12,7 +12,14 @@ TROP = Enum("Transform_ops", "ADD SUB MUL DIV RAND RANGE REMAIN ROUND")
 ACTS = Enum('Action_ops', 'ASSERT RETRACT PRINT CUSTOM')
 
 #Basic Data Structures
-Bind = namedtuple("Bind","value")
+class Bind: #pylint: disable=too-few-public-methods 
+    """ Simple holder to designate a binding action """
+    def __init__(self, v):
+        self.value = v
+
+    def __str__(self):
+        return "$" + self.value
+
 Comparison = namedtuple("Comparison","op value bind")
 
 #todo: split comps into alpha and beta
