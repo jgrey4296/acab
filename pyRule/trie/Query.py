@@ -1,4 +1,4 @@
-from pyRule.utils import Clause
+from .Clause import Clause
 
 class Query:
     """ A Query for the Trie Knowledge base """
