@@ -3,7 +3,8 @@ import logging
 from test_context import pyRule
 import pyRule.wme as W
 import pyRule.Comparisons as C
-class TestRules(unittest.TestCase):
+
+class WME_FB_Tests(unittest.TestCase):
       
     def setUp(self):
         self.fb = W.FactBase()
