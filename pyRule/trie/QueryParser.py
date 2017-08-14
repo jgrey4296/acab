@@ -1,6 +1,6 @@
 import logging as root_logger
 import pyparsing as pp
-from .FactParser import OP,VALUE, COMMA, VALBIND, DOLLAR
+from .FactParser import OP, COMMA, VALBIND
 from .Query import Query
 from pyRule.utils import Bind, Comparison, QueryComponent, Clause, COMP 
 
