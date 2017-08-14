@@ -2,8 +2,10 @@ import unittest
 import logging
 from test_context import pyRule
 import pyRule.trie as T
+import IPython
 
-class RuleFactTrieTests(unittest.TestCase):
+
+class Trie_FactBase_Tests(unittest.TestCase):
     """ Unit test for basic Trie knowledge base functionality """
 
     
