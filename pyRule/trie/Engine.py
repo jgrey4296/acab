@@ -3,14 +3,20 @@ The combined engine of underlying trie based knowledge store,
 with support for transforms and actions
 """
 import logging as root_logger
-from pyRule.trie.Trie import Trie
+
+from pyRule import Actions as Actions
+from pyRule import Transforms
+import  pyRule.utils as util
+from pyRule.trie import Contexts
+from pyRule.trie import Trie
+
 from . import TransformParser as TP
 from . import ActionParser as AP
 from . import QueryParser as QP
 from . import FactParser as FP
 from . import RuleParser as RP
-from . import Contexts
-import  pyRule.utils as util
+
+import IPython
 
 logging = root_logger.getLogger(__name__)
 
@@ -34,24 +40,27 @@ class Engine:
     #todo: be able to assert retract or query from tries instead of strings
     def add(self, s):
         assert(isinstance(s, str))
-        self._trie.assertSMulti(s)
+        self._trie.assertS(s)
 
     def retract(self, s):
         assert(isinstance(s, str))
-        self._trie.retractSMulti(s)
+        self._trie.retractS(s)
 
     def query(self, s):
         assert(isinstance(s, str))
         return self._trie.queryS(s)
 
     def registerRules(self, s):
-        #rules are strings in the factbase too
+        #todo: rules are strings in the factbase too
         assert(isinstance(s, str))
         rules = RP.parseStrings(s)
         for x in rules:
-            assert(isinstance(x, util.Rule))
-            assert(x.is_coherent())
-            self._rules[x._name] = x
+            try:
+                assert(isinstance(x, util.Rule))
+                assert(x.is_coherent())
+                self._rules[x._name] = x
+            except Exception as e:
+                logging.exception(e)
 
     def _run_rules(self):
         #todo: make it parse the names of rules to run
@@ -75,23 +84,39 @@ class Engine:
     
     def _run_transform(self, ctx, transform):
         assert(isinstance(ctx, Contexts))
+        assert(isinstance(transform, Transforms.Transform))
         #todo: detect min max bounds of transform
+        #todo: Move this code into the transform component class?
         chosen_ctx = ctx.select()
         for x in transform.components:
-            continue
             #lookup op
+            opFunc = Transforms.TROP_LOOKUP[x.op]
             #get source
-            #get second source
+            source = chosen_ctx[x.source.value]
+            #get second param:
+            if x.val is not None:
+                value = x.val
+            else:
+                value = chosen_ctx[x.bind.value]
+                
             #perform
-            #rebind or readd
+            newVal = opFunc(source, value)
+            #rebind or reapply
+            if x.rebind is None:
+                chosen_ctx[x.source.value] = newVal
+            else:
+                chosen_ctx[x.rebind.value] = newVal
+
         return chosen_ctx
 
     def _run_actions(self, data, actions):
-        results = []
+        assert(isinstance(data, dict))
+        assert(isinstance(actions,list))
+        assert(all([isinstance(x, Action) for x in actions]))
         for x in actions:
-            continue
             #lookup op
+            opFunc = Actions.ACTS_LOOKUP[x._op]
             #get values from data
+            values = x.get_values(data)
             #perform action op with data
-            #push results to results
-        return results
+            opFunc(self, values)
