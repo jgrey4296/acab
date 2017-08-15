@@ -24,3 +24,7 @@ class Query:
             else:
                 pos.append(c)
         return (pos, neg)
+
+    def __repr__(self):
+        clauseStrs = [repr(x) for x in self._clauses]
+        return "\n".join(clauseStrs)
