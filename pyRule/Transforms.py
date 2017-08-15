@@ -2,8 +2,10 @@
 from enum import Enum 
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
+from pyRule.utils import Bind
 
 TROP = Enum("Transform_ops", "ADD SUB MUL DIV RAND RANGE REMAIN ROUND")
+#todo: add regex transform
 
 def ADD(a, b):
     return a + b
@@ -16,7 +18,6 @@ def MUL(a, b):
 
 def DIV(a, b):
     return a / b
-
 
 TROP_LOOKUP = {
     TROP.ADD : ADD,
@@ -41,13 +42,21 @@ class TransformComponent:
     def __init__(self, op, source, value=None, bind=None, rebind=None):
         assert(not(value is None and bind is None))
         assert(isinstance(op, TROP))
-        assert(isinstance(source, Bind))
+        if bind is not None:
+            assert(isinstance(source, Bind))
+        if rebind is not None:
+            assert(isinstance(rebind, Bind))
+        
         self.op = op
         self.source = source
         self.val = value
         self.bind = bind
         self.rebind = rebind
 
+    def verify_op(self):
+        if self.op not in TROP_LOOKUP:
+            raise Exception("Unknown Op: {}".format(self.op))
+        
     def __repr__(self):
         if self.val is not None:
             rhs = self.val
@@ -69,6 +78,10 @@ class Transform:
     def __repr__(self):
         return "( {} )".format(",".join([repr(x) for x in self.components]))
 
+    def verify_ops(self):
+        for x in self.components:
+            x.verify_op()
+        
     def get_input_requirements(self):
         #return the set of input bound names
         return set([])
