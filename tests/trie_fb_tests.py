@@ -57,12 +57,29 @@ class Trie_FactBase_Tests(unittest.TestCase):
         result = self.trie.queryS('.a.b.c')
         self.assertIsInstance(result, T.Contexts)
         self.assertTrue(result)
-
+        
     def test_simplest_query_fail(self):
         """ Check that not all queries pass """
         self.trie.assertS('.a.b.c')
         result = self.trie.queryS('.q.w.e')
         self.assertFalse(result)
+
+    def test_retract_verified_by_query(self):
+        self.trie.assertS('.a.b.c, .a.b.d')
+        self.trie.retractS('.a.b')
+        self.assertFalse(self.trie.queryS('.a.b.c'))
+        self.assertFalse(self.trie.queryS('.a.b.d'))
+        self.assertFalse(self.trie.queryS('.a.b'))
+        self.assertTrue(self.trie.queryS('.a'))
+
+    def test_retract_verified_by_query_2(self):
+        self.trie.assertS('.a.b.c, .a.b.d, .a.b.e')
+        self.assertEqual(len(self.trie._root._reconstruct()), 3)
+        self.trie.retractS('.a.b.e, .a.b.d')
+        self.assertFalse(self.trie.queryS('.a.b.e'))
+        self.assertFalse(self.trie.queryS('.a.b.d'))
+        self.assertTrue(self.trie.queryS('.a.b.c'))
+        self.assertEqual(len(self.trie._root._reconstruct()), 1)
         
     def test_bind_query(self):
         """ Check that queries can bind to a value """
