@@ -4,6 +4,7 @@ from .FactParser import COMMA, param_fact_string
 from .QueryParser import VALBIND, NOT, OPAR, CPAR
 from .TransformParser import ADD
 from pyRule import utils as util
+from pyRule import Actions
 
 logging = root_logger.getLogger(__name__)
 s = pp.Suppress
@@ -12,16 +13,16 @@ opLn = s(op(pp.LineEnd()))
 
 #constructors:
 def build_action(toks):
-    return util.Action(toks.operator, toks.ActionValues[:])
+    return Actions.Action(toks.operator, toks.ActionValues[:])
 
 #Action operators:
-ASSERT = ADD.copy().setParseAction(lambda t: util.ACTS.ASSERT)
-RETRACT = NOT.copy().setParseAction(lambda t: util.ACTS.RETRACT)
-PRINT = pp.Literal('@').setParseAction(lambda t: util.ACTS.PRINT)
+ASSERT = ADD.copy().setParseAction(lambda t: Actions.ACTS.ADD)
+RETRACT = NOT.copy().setParseAction(lambda t: Actions.ACTS.RETRACT)
+PRINT = pp.Literal('@').setParseAction(lambda t: Actions.ACTS.PRINT)
 CUSTOM = pp.Word(pp.alphas)
 
 #operators, also with a custom string option
-operator = pp.Or([ASSERT, RETRACT, PRINT])
+operator = pp.Or([ASSERT, RETRACT, PRINT, CUSTOM])
 
 #fact string with the option of binds
 vals = pp.Or([param_fact_string, VALBIND]) \
