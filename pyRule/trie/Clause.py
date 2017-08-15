@@ -1,7 +1,7 @@
 from .Node import Node
 
 #todo: split comps into alpha and beta
-class Clause:
+class Clause: 
     def __init__(self, components, negated=False):
         assert(all([isinstance(x, Node) for x in components]))
         self.negated = negated
