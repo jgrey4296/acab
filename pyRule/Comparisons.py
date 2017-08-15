@@ -4,6 +4,7 @@ from enum import Enum
 logging = root_logger.getLogger(__name__)
 
 #comparison operators:
+#todo: add regex string match comparison
 COMP = Enum('Comp_ops','LT GT NE EQ')
 
 
