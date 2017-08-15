@@ -1,6 +1,6 @@
 from .Node import Node
 from . import FactParser as FP
-from .QueryParser import parseString as queryParse
+from . import QueryParser as QP
 from .Contexts import Contexts
 from .Query import Query
 from .Clause import Clause
@@ -18,7 +18,7 @@ class Trie:
         self._root = Node.Root()
         self._last_node = self._root
         if input != None:
-            self.assertSMulti(input)
+            self.assertS(input)
 
     def __eq__(self, other):
         assert(isinstance(other, Trie))
@@ -27,25 +27,17 @@ class Trie:
     def __str__(self):
         return self._root.root_str()
     
-    def assertSMulti(self,s):
+    def assertS(self,s):
         """ Assert multiple facts from a single string """
         parsed = FP.parseStrings(s)
         for x in parsed:
             self.assertFact(x)
-        
-    def assertS(self,s):
-        """ Assert a fact from a string """
-        self.assertFact(FP.parseString(s))
 
-    def retractSMulti(self, s):
+    def retractS(self, s):
         """ Retract multiple facts from a single string """
         parsed = FP.parseStrings(s)
         for x in parsed:
             self.retractFact(x)
-        
-    def retractS(self,s):
-        """ Retract a fact from a string """
-        self.retractFact(FP.parseString(s))
         
     def assertFact(self, factList):
         """ Assert a [FactNode] list """
@@ -80,7 +72,7 @@ class Trie:
 
     def queryS(self, s):
         """ Query a string """
-        query = queryParse(s)
+        query = QP.parseString(s)
         return self.queryFact(query)
 
     def _reconstruct_query_from_trie(self):

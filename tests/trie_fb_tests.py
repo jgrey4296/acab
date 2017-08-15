@@ -73,12 +73,12 @@ class Trie_FactBase_Tests(unittest.TestCase):
 
     def test_multi_assert_parse(self):
         """ Check multiple facts can be asserted in one call """
-        self.trie.assertSMulti('.a.b.c, .d.e.f, .g.e.q')
+        self.trie.assertS('.a.b.c, .d.e.f, .g.e.q')
         self.assertEqual(len(self.trie._root), 3)
 
     def test_bind_filter(self):
         """ Check that only matching binds pass """
-        self.trie.assertSMulti('.a.b.c, .a.d.e')
+        self.trie.assertS('.a.b.c, .a.d.e')
         result = self.trie.queryS('.$x.d')
         self.assertEqual(len(result),1)
 
@@ -108,7 +108,7 @@ class Trie_FactBase_Tests(unittest.TestCase):
 
     def test_query_multi_clause(self):
         """ Check that queries can have multiple clauses """
-        self.trie.assertSMulti('.a.b.c, .d.e.f')
+        self.trie.assertS('.a.b.c, .d.e.f')
         result = self.trie.queryS('.a.$x, .d.$y')
         self.assertTrue(result)
         self.assertEqual(result._alternatives[0][0]['x'], 'b')
@@ -116,23 +116,23 @@ class Trie_FactBase_Tests(unittest.TestCase):
 
     def test_query_exclusion(self):
         """ Check that queries of exclusion property work """
-        self.trie.assertSMulti('.a.b!c')
+        self.trie.assertS('.a.b!c')
         result = self.trie.queryS('.a.b!c')
         self.assertTrue(result)
 
     def test_query_exclusion_fail(self):
         """ Check that exclusion is detected and can fail """
-        self.trie.assertSMulti('.a.b.c, .a.b.d')
+        self.trie.assertS('.a.b.c, .a.b.d')
         result = self.trie.queryS('.a.b!c')
         self.assertFalse(result)
 
     def test_query_exclusion_update(self):
         """ Check that exclusion property is updated as necessary """
-        self.trie.assertSMulti('.a.b.c')
+        self.trie.assertS('.a.b.c')
         self.assertTrue(self.trie.queryS('.a.b!c'))
-        self.trie.assertSMulti('.a.b.d')
+        self.trie.assertS('.a.b.d')
         self.assertFalse(self.trie.queryS('.a.b!c'))
-        self.trie.assertSMulti('.a.b!c')
+        self.trie.assertS('.a.b!c')
         self.assertTrue(self.trie.queryS('.a.b!c'))
 
     def test_retraction_cascade(self):
@@ -144,7 +144,7 @@ class Trie_FactBase_Tests(unittest.TestCase):
         
     def test_query_multi_bind_comp(self):
         """ Check that bindings hold across clauses """
-        self.trie.assertSMulti('.a.b.20, .a.c.30, .a.d.40')
+        self.trie.assertS('.a.b.20, .a.c.30, .a.d.40')
         result = self.trie.queryS('.a.c.$x, .a.$y(!=c).$v(>$x)')
         self.assertTrue(result)
         self.assertEqual(len(result), 1)
@@ -154,7 +154,7 @@ class Trie_FactBase_Tests(unittest.TestCase):
 
     def test_query_multi_alts(self):
         """ Check that queries with bindings provide enumerated alternatives """
-        self.trie.assertSMulti('.a.b.20, .a.c.30, .a.d.40, .a.e.50')
+        self.trie.assertS('.a.b.20, .a.c.30, .a.d.40, .a.e.50')
         result = self.trie.queryS('.a.c.$x, .a.$y(!=c).$v(>$x)')
         self.assertTrue(result)
         self.assertEqual(len(result), 2)
@@ -173,7 +173,7 @@ class Trie_FactBase_Tests(unittest.TestCase):
         self.assertEqual(str(self.trie), '.a.b.c')
 
     def test_factbase_to_multi_strings(self):
-        self.trie.assertSMulti('.a.b.c, .q.e.r, .t.y!u')
+        self.trie.assertS('.a.b.c, .q.e.r, .t.y!u')
         s = str(self.trie)
         self.assertTrue('.a.b.c' in s)
         self.assertTrue('.q.e.r' in s)
@@ -185,7 +185,7 @@ class Trie_FactBase_Tests(unittest.TestCase):
         self.assertTrue(result)
         
     def test_factbase_from_string_recovery(self):
-        self.trie.assertSMulti('.a.b.c, .q.e.r, .t.y!u')
+        self.trie.assertS('.a.b.c, .q.e.r, .t.y!u')
         s = str(self.trie)
         newTrie = T.Trie(s)
         self.assertEqual(self.trie, newTrie)
@@ -202,7 +202,7 @@ class Trie_FactBase_Tests(unittest.TestCase):
         self.assertTrue(result)
 
     def test_query_multi_clause(self):
-        self.trie.assertSMulti('.a.b.c, .d.e.f')
+        self.trie.assertS('.a.b.c, .d.e.f')
         self.assertTrue(self.trie.queryS('.a.b.c'))
         self.assertTrue(self.trie.queryS('.d.e.f'))
         self.assertFalse(self.trie.queryS('.a.b.c, ~.d.e.f'))

@@ -1,6 +1,6 @@
 """
 Pyparsing based parser to turn strings into [FactNode],
-both in the single fact form (parseString), and multifact form (parseStrings)
+capable of parsing  multiple facts
 """
 import pyparsing as pp
 import logging as root_logger
@@ -54,11 +54,6 @@ PARAM_CORE.setParseAction(lambda toks: Node(toks[1], toks[0]))
 param_fact_string.setParseAction(lambda toks: [toks[:]])
 
 # MAIN PARSER:
-def parseString(s):
-    """ str -> [Node] """
-    parsed = param_fact_string.parseString(s)[0]
-    return [Node.Root()] + parsed
-
 def parseStrings(s):
     """ str -> [[Node]] """
     parsed = param_fact_strings.parseString(s)[:]

@@ -22,7 +22,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertIsNotNone(FP.param_fact_strings)
         
     def test_parseString(self):
-        result = FP.parseString('.a.b.c')
+        result = FP.parseStrings('.a.b.c')
         self.assertIsInstance(result, list)
         self.assertTrue(all([isinstance(x, FP.Node) for x in result]))
         self.assertEqual("".join([str(x) for x in result[1:]]), '.a.b.c')
@@ -34,23 +34,23 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertTrue(all([isinstance(x, list) for x in result]))
  
     def test_param_fact_string(self):
-        result = FP.param_fact_string.parseString('.a.b.$x')
+        result = FP.param_fact_string.parseStrings('.a.b.$x')
         self.assertIsNotNone(result)
 
     def test_exclusion_operator_string_recovery(self):
-        result = FP.parseString('!a!b!c')
+        result = FP.parseStrings('!a!b!c')
         self.assertEqual("".join([str(x) for x in result[1:]]), "!a!b!c")
         
     def test_numbers_parsing(self):
         for i in range(100):
             r = round(random.random() * 1000)
-            result = FP.parseString('.a.' + str(r))
+            result = FP.parseStrings('.a.' + str(r))
             self.assertEqual(result[-1]._value, r)
 
     def test_negative_number_parsing(self):
         for i in range(100):
             r = - round(random.random() * 1000)
-            result = FP.parseString('.a.'+str(r))
+            result = FP.parseStrings('.a.'+str(r))
             self.assertEqual(result[-1]._value, r)
 
     def test_floats(self):
@@ -59,11 +59,11 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
             b = round(random.random() * 100)
             float_form = float(str(a) + "." + str(b))
             d_form = str(a) + "d" + str(b)
-            result = FP.parseString('.a.'+d_form)
+            result = FP.parseStrings('.a.'+d_form)
             self.assertEqual(result[-1]._value, float_form)
 
     def test_strings(self):
-        result = FP.parseString('.a.b."This is a test"!c')
+        result = FP.parseStrings('.a.b."This is a test"!c')
         self.assertEqual(len(result[1:]), 4)
 
 if __name__ == "__main__":
