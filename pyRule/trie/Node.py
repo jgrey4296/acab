@@ -176,7 +176,10 @@ class Node:
         return Node(self._value, self._op,
                     meta_leaf=meta_leaf,
                     meta_eval=meta_evals)
-        
+
+    def set_parent(self, parent):
+        assert(isinstance(parent, Node))
+        self._parent = weakref.ref(parent)
             
     @staticmethod
     def Root():
@@ -192,6 +195,7 @@ class Node:
         assert(isinstance(fact,Node))
         self._set_dirty_chain()
         copied = fact.copy()
+        copied.set_parent(self)
         if copied._op is EXOP.EX \
            and len(self._children) > 1:
             temp = self._children[copied._value]
@@ -208,13 +212,16 @@ class Node:
 
     def get(self, fact):
         assert(isinstance(fact,Node))
-        if fact._value in self._children and fact._op is self._children[fact._value]._op:
+        if fact._value in self._children \
+           and fact._op is self._children[fact._value]._op:
             return self._children[fact._value]
         else:
             return None
 
     def delete_node(self, fact):
-        if fact._value in self._children and fact._op is self._children[fact._value]._op:
+        assert(isinstance(fact, Node))
+        if fact._value in self._children \
+           and fact._op is self._children[fact._value]._op:
             del self._children[fact._value]
             self._set_dirty_chain()
 
