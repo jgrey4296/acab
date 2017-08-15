@@ -57,7 +57,7 @@ transform.setParseAction(lambda toks: Transform(toks[:]))
 transforms.setParseAction(lambda toks: Transform(toks[:]))
 
 def parseString(s):
-    return transform.parseString(s)
+    return transform.parseString(s)[0]
     
 def parseStrings(s):
-    return transforms.parseString(s)
+    return transforms.parseString(s)[0]
