@@ -10,5 +10,8 @@ trie:
 parser:
 	python -m unittest *_parser_tests.py
 
+engine:
+	python -m unittest Engine_Tests.py
+
 clean:
 	-rm *.log
