@@ -4,6 +4,8 @@ import random
 from test_context import pyRule
 import pyRule.trie as T
 import pyRule.trie.FactParser as FP
+import pyRule.utils as util
+import IPython
 
 class Trie_Fact_Parser_Tests(unittest.TestCase):
     
@@ -42,20 +44,23 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         
     def test_numbers_parsing(self):
         for i in range(100):
+            mult = 10 ** round(random.random() * 4)
             r = round(random.random() * 1000)
             result = FP.parseStrings('.a.' + str(r))[0]
             self.assertEqual(result[-1]._value, r)
 
     def test_negative_number_parsing(self):
         for i in range(100):
-            r = - round(random.random() * 1000)
+            mult = 10 ** round(random.random() * 4)
+            r = - round(random.random() * mult)
             result = FP.parseStrings('.a.'+str(r))[0]
             self.assertEqual(result[-1]._value, r)
 
     def test_floats(self):
         for i in range(100):
-            a = round(random.random() * 100)
-            b = round(random.random() * 100)
+            mult = 10 ** round(random.random() * 4)
+            a = round(random.random() * mult)
+            b = round(random.random() * mult)
             float_form = float(str(a) + "." + str(b))
             d_form = str(a) + "d" + str(b)
             result = FP.parseStrings('.a.'+d_form)[0]
@@ -64,7 +69,15 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
     def test_strings(self):
         result = FP.parseStrings('.a.b."This is a test"!c')[0]
         self.assertEqual(len(result[1:]), 4)
+        self.assertEqual(result[3]._value, "This is a test")
 
+    def test_bind_addition_to_node_recognition(self):
+        result = FP.parseStrings('.$a.$b!$c')[0]
+        for x in result[1:]:
+            self.assertTrue(x._meta_eval[util.META_OP.BIND])
+        
+
+        
 if __name__ == "__main__":
     LOGLEVEL = logging.INFO
     logFileName = "log.trie_fact_parser_tests"
