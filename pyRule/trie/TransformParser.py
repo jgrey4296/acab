@@ -2,6 +2,7 @@ import logging as root_logger
 import pyparsing as pp
 from .FactParser import COMMA, BIND, VALBIND
 from .QueryParser import OPAR, CPAR
+from pyRule.Transforms import TROP, TransformComponent, Transform
 import pyRule.utils as util
 
 logging = root_logger.getLogger(__name__)
@@ -28,29 +29,32 @@ def buildTransformComponent(toks):
         reData = toks[REBIND_N][0]
     else:
         reData = None
-    return util.TransformComponent(toks[1], toks[0], val, bind, reData)
+    return TransformComponent(toks[1], toks[0], val, bind, reData)
 
 
 #TROPS:
-ADD = pp.Literal('+').setParseAction(lambda t: util.TROP.ADD)
-SUB = pp.Literal('-').setParseAction(lambda t: util.TROP.SUB)
-MUL = pp.Literal('*').setParseAction(lambda t: util.TROP.MUL)
-DIV = pp.Literal('/').setParseAction(lambda t: util.TROP.DIV)
+ADD = pp.Literal('+').setParseAction(lambda t: TROP.ADD)
+SUB = pp.Literal('-').setParseAction(lambda t: TROP.SUB)
+MUL = pp.Literal('*').setParseAction(lambda t: TROP.MUL)
+DIV = pp.Literal('/').setParseAction(lambda t: TROP.DIV)
 
-TROP = pp.Or([ADD, SUB, MUL, DIV])
+TROPs = pp.Or([ADD, SUB, MUL, DIV])
 
 rebind = (ARROW + BIND).setResultsName(REBIND_N)
 
+#todo: spec the bounds of contexts to select to transform and act upon
+
 #transform: ( bind op val|bind -> bind)
 #todo: separate out single operator trops and multi operator trops
-transform_core = BIND + TROP + VALBIND + op(rebind)
-transform = OPAR + transform_core + CPAR
+transform_core = BIND + TROPs + VALBIND + op(rebind)
 
+transform = OPAR + transform_core + CPAR
 transforms = OPAR + transform_core + pp.ZeroOrMore(COMMA + transform_core) + CPAR
 
 #Actions
 transform_core.setParseAction(buildTransformComponent)
-
+transform.setParseAction(lambda toks: Transform(toks[:]))
+transforms.setParseAction(lambda toks: Transform(toks[:]))
 
 def parseString(s):
     return transform.parseString(s)
