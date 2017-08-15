@@ -1,4 +1,4 @@
-from random import choice
+from random import shuffle
 
 class Contexts:
       """ Container of available contexts for a match in the trie  """
@@ -7,9 +7,10 @@ class Contexts:
             #A list of (data,lastNode) tokens
             self._alternatives = []
 
-      def select(self, min=0, max=-1):
+      def select(self, min=0, max=1):
             #todo: select number based on input
-            return [choice(self._alternatives)[0].copy()]
+            shuffle(self._alternatives)
+            return self._alternatives[0][0]
             
       def __len__(self):
             return len(self._alternatives)
