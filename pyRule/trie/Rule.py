@@ -31,7 +31,10 @@ class Rule:
                                             transformStr,
                                             actionsStr)
     
-    def is_coherent(self):
+    def is_coherent(self): #raises an Exception othewise
         """ Verify that the outputs of the query match the 
         inputs of the transform, match the inputs of the actions """
-        return True
+        self._transform.verify_ops()
+        [x.verify_op() for x in self._actions]
+
+
