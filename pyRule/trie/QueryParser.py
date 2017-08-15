@@ -1,8 +1,8 @@
 import logging as root_logger
 import pyparsing as pp
 from pyRule.utils import Bind,META_OP
-from pyRule.Comparisons import COMP, Comparison
-from .FactParser import OP, COMMA, VALBIND, PARAM_CORE
+from pyRule.Comparisons import COMP, Comparison, COMP_REVERSE_LOOKUP
+from .FactParser import COMMA, VALBIND, PARAM_CORE
 from .Query import Query
 from .Clause import Clause
 
@@ -35,10 +35,10 @@ opLn = s(op(pp.LineEnd()))
 OPAR = s(pp.Literal('('))
 CPAR = s(pp.Literal(')'))
 
-LT = pp.Literal('<')
-GT = pp.Literal('>')
-NE = pp.Literal('!=')
-EQ = pp.Literal('==')
+LT = pp.Literal(COMP_REVERSE_LOOKUP[COMP.LT])
+GT = pp.Literal(COMP_REVERSE_LOOKUP[COMP.GT])
+NE = pp.Literal(COMP_REVERSE_LOOKUP[COMP.NE])
+EQ = pp.Literal(COMP_REVERSE_LOOKUP[COMP.EQ])
 NOT = pp.Literal('~').setResultsName('NOT')
 
 COMP_OP = pp.Or([LT, GT, NE, EQ])
