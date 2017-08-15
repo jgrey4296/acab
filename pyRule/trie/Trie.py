@@ -56,7 +56,7 @@ class Trie:
         self._clear_last_node()
         lastInList = factList.pop()
         
-        for node in factList[1:-1]:
+        for node in factList[1:]:
             self._last_node = self._last_node.get(node)
             if self._last_node is None:
                 return
