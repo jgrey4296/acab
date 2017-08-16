@@ -46,7 +46,12 @@ class Action:
         if isinstance(self._op, str):
             return "{}({})".format(self._op,
                                    ", ".join([repr(x) for x in self._values]))
+        else:
+            return "{}({})".format(ACTS_REVERSE_LOOKUP[self._op],
+                                   ", ".join([repr(x) for x in self._values]))
 
+    def is_custom(self):
+        return isinstance(self._op, str) or not isinstance(self._op, ACTS)
 
     def verify_op(self):
         if self._op not in ACTS_LOOKUP \

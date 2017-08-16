@@ -16,8 +16,8 @@ def build_action(toks):
     return Actions.Action(toks.operator, toks.ActionValues[:])
 
 #Action operators:
-ASSERT = ADD.copy().setParseAction(lambda t: Actions.ACTS.ADD)
-RETRACT = NOT.copy().setParseAction(lambda t: Actions.ACTS.RETRACT)
+ASSERT = pp.Literal('+').setParseAction(lambda t: Actions.ACTS.ADD)
+RETRACT = pp.Literal('-').setParseAction(lambda t: Actions.ACTS.RETRACT)
 PRINT = pp.Literal('@').setParseAction(lambda t: Actions.ACTS.PRINT)
 CUSTOM = pp.Word(pp.alphas)
 
@@ -39,7 +39,4 @@ actions = OPAR + action + pp.ZeroOrMore(COMMA + action) + CPAR
 action.setParseAction(build_action)
 
 def parseString(s):
-    return action.parseString(s)
-
-def parseStrings(s):
-    return actions.parseString(s)
+    return actions.parseString(s)[:]
