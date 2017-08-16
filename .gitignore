@@ -1,0 +1,5 @@
+*/__pycache__
+flycheck_*
+*.pyc
+log.*
+.log

@@ -1,5 +1,5 @@
 class Query:
-      """ A Query of the knowledge base """
+      """ A Query of the WME based knowledge base """
 
       def __init__(self, *args, negated=False):
             #[(alphaTests, bindings, betaTests)]
