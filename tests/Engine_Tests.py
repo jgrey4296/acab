@@ -35,10 +35,26 @@ class Engine_Tests(unittest.TestCase):
         result = self.e.query('.a.b.c')
         self.assertTrue(bool(result))
 
+    def test_query_fail(self):
+        self.assertFalse(self.e.query('.a.b.c'))
+
+    def test_query_fail_with_asserted_facts(self):
+        self.e.add('.a.b.c, .a.b.d')
+        result = self.e.query('.a.b.c, .a.b.e')
+        self.assertFalse(self.e.query('.a.b.c, .a.b.e'))
+
+    def test_query_with_binds(self):
+        self.e.add('.a.b.c, .a.b.d, .a.d.c')
+        self.assertTrue(self.e.query('.a.b.$x, .a.d.$x'))
+
+    def test_query_with_binds_fail(self):
+        self.e.add('.a.b.c, .a.b.d, .a.d.e')
+        self.assertFalse(self.e.query('.a.b.$x, .a.d.$x'))
+        
     def test_multi_assert(self):
         self.e.add('.a.b.c, .a.b.d, .a.b.e')
         self.assertEqual(len(self.e._trie._root._reconstruct()), 3)
-        
+        self.assertTrue(self.e.query('.a.b.c, .a.b.d, .a.b.e'))
 
     def test_multi_retract(self):
         self.e.add('.a.b.c, .a.b.d, .a.b.e')
@@ -62,7 +78,7 @@ class Engine_Tests(unittest.TestCase):
         stub_ctx[0]['a'] = 2
         stub_ctx[0]['b'] = 4
 
-        stub_transform = TP.parseStrings('($a + 20, $b * 2)')
+        stub_transform = TP.parseString('($a + 20, $b * 2)')
         
         result = self.e._run_transform(stub_ctx, stub_transform)
         self.assertIsInstance(result, dict)
@@ -74,7 +90,7 @@ class Engine_Tests(unittest.TestCase):
         stub_ctx[0]['a'] = 2
         stub_ctx[0]['b'] = 8
 
-        stub_transform = TP.parseStrings('($a + 20 -> $q, $b * $a -> $w)')
+        stub_transform = TP.parseString('($a + 20 -> $q, $b * $a -> $w)')
         result = self.e._run_transform(stub_ctx, stub_transform)
         self.assertIsInstance(result, dict)
         self.assertEqual(result['a'], 2)
