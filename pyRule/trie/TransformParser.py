@@ -48,16 +48,11 @@ rebind = (ARROW + BIND).setResultsName(REBIND_N)
 #todo: separate out single operator trops and multi operator trops
 transform_core = BIND + TROPs + VALBIND + op(rebind)
 
-transform = OPAR + transform_core + CPAR
 transforms = OPAR + transform_core + pp.ZeroOrMore(COMMA + transform_core) + CPAR
 
 #Actions
 transform_core.setParseAction(buildTransformComponent)
-transform.setParseAction(lambda toks: Transform(toks[:]))
 transforms.setParseAction(lambda toks: Transform(toks[:]))
 
 def parseString(s):
-    return transform.parseString(s)[0]
-    
-def parseStrings(s):
     return transforms.parseString(s)[0]
