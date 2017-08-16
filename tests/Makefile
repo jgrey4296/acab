@@ -1,5 +1,5 @@
-all:
-	python -m unittest *_tests.py -v -f
+all: wme trie parser engine
+
 
 wme:
 	python -m unittest wme_tests.py -v
