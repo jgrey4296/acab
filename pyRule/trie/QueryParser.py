@@ -70,10 +70,9 @@ EQ.setParseAction(lambda toks: COMP.EQ)
 QueryCore.setParseAction(buildQueryComponent)
 #Clause, not negated:
 clause.setParseAction(buildClause)
-
+clauses.setParseAction(lambda toks: Query(*toks[:]))
 
 #Main parser:
 def parseString(s):
     """ .a.b(>20)!d.$X, ... -> Query """
-    data = clauses.parseString(s)[:]
-    return Query(*data)
+    return clauses.parseString(s)[0]
