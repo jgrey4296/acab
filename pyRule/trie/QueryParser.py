@@ -35,6 +35,7 @@ opLn = s(op(pp.LineEnd()))
 
 OPAR = s(pp.Literal('('))
 CPAR = s(pp.Literal(')'))
+QMARK = pp.Literal('?')
 
 LT = pp.Literal(COMP_REVERSE_LOOKUP[COMP.LT])
 GT = pp.Literal(COMP_REVERSE_LOOKUP[COMP.GT])
@@ -55,7 +56,7 @@ comparison = OPAR + COMP_Internal \
 QueryCore = PARAM_CORE + op(comparison)
 
 #Core Query Chain
-clause = op(NOT)  + pp.OneOrMore(QueryCore)
+clause = op(NOT)  + pp.OneOrMore(QueryCore) + s(QMARK)
 
 clauses = clause + pp.ZeroOrMore(COMMA + clause)
 
