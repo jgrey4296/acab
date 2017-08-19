@@ -46,7 +46,8 @@ class TransformComponent:
             assert(isinstance(source, Bind))
         if rebind is not None:
             assert(isinstance(rebind, Bind))
-        
+        assert(isinstance(op, TROP) or isinstance(op, str))
+            
         self.op = op
         self.source = source
         self.val = value
@@ -63,9 +64,9 @@ class TransformComponent:
         else:
             rhs = self.bind
         if self.rebind is None:
-            return "{} {} {}".format(self.source, TROP_LOOKUP[self.op], rhs)
+            return "{} {} {}".format(self.source, TROP_REVERSE_LOOKUP[self.op], rhs)
         else:
-            return "{} {} {} -> {}".format(self.source, TROP_LOOKUP[self.op],
+            return "{} {} {} -> {}".format(self.source, TROP_REVERSE_LOOKUP[self.op],
                                            rhs, self.rebind)
         
 class Transform:

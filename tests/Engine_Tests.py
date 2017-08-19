@@ -32,29 +32,29 @@ class Engine_Tests(unittest.TestCase):
 
     def test_query(self):
         self.e.add('.a.b.c')
-        result = self.e.query('.a.b.c')
+        result = self.e.query('.a.b.c?')
         self.assertTrue(bool(result))
 
     def test_query_fail(self):
-        self.assertFalse(self.e.query('.a.b.c'))
+        self.assertFalse(self.e.query('.a.b.c?'))
 
     def test_query_fail_with_asserted_facts(self):
         self.e.add('.a.b.c, .a.b.d')
-        result = self.e.query('.a.b.c, .a.b.e')
-        self.assertFalse(self.e.query('.a.b.c, .a.b.e'))
+        result = self.e.query('.a.b.c?, .a.b.e?')
+        self.assertFalse(self.e.query('.a.b.c?, .a.b.e?'))
 
     def test_query_with_binds(self):
         self.e.add('.a.b.c, .a.b.d, .a.d.c')
-        self.assertTrue(self.e.query('.a.b.$x, .a.d.$x'))
+        self.assertTrue(self.e.query('.a.b.$x?, .a.d.$x?'))
 
     def test_query_with_binds_fail(self):
         self.e.add('.a.b.c, .a.b.d, .a.d.e')
-        self.assertFalse(self.e.query('.a.b.$x, .a.d.$x'))
+        self.assertFalse(self.e.query('.a.b.$x?, .a.d.$x?'))
         
     def test_multi_assert(self):
         self.e.add('.a.b.c, .a.b.d, .a.b.e')
         self.assertEqual(len(self.e._trie._root._reconstruct()), 3)
-        self.assertTrue(self.e.query('.a.b.c, .a.b.d, .a.b.e'))
+        self.assertTrue(self.e.query('.a.b.c?, .a.b.d?, .a.b.e?'))
 
     def test_multi_retract(self):
         self.e.add('.a.b.c, .a.b.d, .a.b.e')
@@ -64,13 +64,17 @@ class Engine_Tests(unittest.TestCase):
 
     def test_multi_clause_query(self):
         self.e.add('.a.b.c, .a.b.d, .a.b.e')
-        result = self.e.query('.a.b.c, .a.b.d, .a.b.e')
+        result = self.e.query('.a.b.c?, .a.b.d?, .a.b.e?')
         self.assertTrue(result)
         
     def _test_rule_registration(self):
+        
         self.assertTrue(True)
 
     def _test_register_action(self):
+        self.assertEqual(len(self.e._custom_actions), 0)
+        self.e.register_action("Test_Func", lambda e, p: logging.info("called"))
+        self.assertEqual(len(self.e._custom_actions), 1)
         self.assertTrue(True)
 
     def test_run_transform(self):

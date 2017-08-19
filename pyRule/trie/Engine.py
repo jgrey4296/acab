@@ -35,7 +35,14 @@ class Engine:
         self._prior_states.append(str(self._trie))
 
     def register_action(self, name, func, related_facts):
-        return None
+        """ Register custom actions,
+        of the form def(engine, paramsList) """
+        assert(isinstance(name,str))
+        assert(callable(func))
+        if name in self_custom_actions:
+            raise Exception("Duplicate action: {}".format(name))
+        self._custom_actions[name]
+        
 
     #todo: be able to assert retract or query from tries instead of strings
     def add(self, s):
