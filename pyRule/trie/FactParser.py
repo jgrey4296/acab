@@ -26,9 +26,10 @@ def construct_num(toks):
 DOT = pp.Keyword('.', identChars='!')
 EX = pp.Keyword('!', identChars='.')
 OP = pp.Or([DOT,EX])
-COMMA = s(pp.Literal(',') + opLn)
+COMMA = s(pp.Literal(',') + opLn + op(pp.White('\t')))
 DOLLAR = pp.Literal('$')
 
+#todo: add in underscores
 NAME = pp.Word(pp.alphas)
 NUM = pp.Word(pp.nums + '-d').setParseAction(construct_num)
 STRING = pp.dblQuotedString
