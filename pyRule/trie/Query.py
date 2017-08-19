@@ -27,4 +27,4 @@ class Query:
 
     def __repr__(self):
         clauseStrs = [repr(x) for x in self._clauses]
-        return "\n".join(clauseStrs)
+        return ",\n\t".join(clauseStrs)
