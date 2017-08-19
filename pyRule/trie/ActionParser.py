@@ -7,6 +7,7 @@ from pyRule import utils as util
 from pyRule import Actions
 
 logging = root_logger.getLogger(__name__)
+pp.ParserElement.setDefaultWhitespaceChars(' \t\r')
 s = pp.Suppress
 op = pp.Optional
 opLn = s(op(pp.LineEnd()))

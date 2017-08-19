@@ -6,6 +6,7 @@ from pyRule.Transforms import TROP, TransformComponent, Transform
 import pyRule.utils as util
 
 logging = root_logger.getLogger(__name__)
+pp.ParserElement.setDefaultWhitespaceChars(' \t\r')
 #names:
 REBIND_N = 'rebind'
 

@@ -5,6 +5,8 @@ from . import QueryParser as QP
 from . import TransformParser as TP
 from . import ActionParser as AP
 
+pp.ParserElement.setDefaultWhitespaceChars(' \t\r')
+
 logging = root_logger.getLogger(__name__)
 
 s = pp.Suppress

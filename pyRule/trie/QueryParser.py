@@ -6,6 +6,7 @@ from .FactParser import COMMA, VALBIND, PARAM_CORE
 from .Query import Query
 from .Clause import Clause
 
+pp.ParserElement.setDefaultWhitespaceChars(' \t\r')
 logging = root_logger.getLogger(__name__)
 
 def buildClause(toks):
