@@ -48,14 +48,14 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertEqual(result._op, EXOP.EX)
 
     def test_basic_clause(self):
-        result = QP.clause.parseString('.a.b.c')[0]
+        result = QP.clause.parseString('.a.b.c?')[0]
         self.assertIsInstance(result, Clause)
         self.assertEqual(len(result.components), 3)
         self.assertEqual(result.components[-1]._value, 'c')
         self.assertEqual(result.components[-1]._op, EXOP.DOT)
 
     def test_basic_clause_with_bind(self):
-        result = QP.clause.parseString('.a.b.$c')[0]
+        result = QP.clause.parseString('.a.b.$c?')[0]
         self.assertIsInstance(result, Clause)
         self.assertEqual(len(result.components), 3)
         self.assertEqual(result.components[-1]._value, 'c')
@@ -63,13 +63,13 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertTrue(result.components[-1]._meta_eval[util.META_OP.BIND])
     
     def test_basic_negated_clause(self):
-        result = QP.clause.parseString('~.a.b.c')[0]
+        result = QP.clause.parseString('~.a.b.c?')[0]
         self.assertIsInstance(result, Clause)
         self.assertTrue(result.negated)
 
 
     def test_basic_multi_clause(self):
-        result = QP.clauses.parseString('.a.b.c, .a.b.d, .a.b.e')[:]
+        result = QP.clauses.parseString('.a.b.c?, .a.b.d?, .a.b.e?')[:]
         self.assertIsInstance(result, list)
         self.assertEqual(len(result), 3)
         self.assertTrue(all([isinstance(x, Clause) for x in result]))
@@ -78,7 +78,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertEqual(result[2].components[-1]._value, 'e')
         
     def test_basic_multi_clause_mixed_negation(self):
-        result = QP.clauses.parseString('.a.b.c, ~.a.b.d, .a.b.e, ~.a.b.f')[:]
+        result = QP.clauses.parseString('.a.b.c?, ~.a.b.d?, .a.b.e?, ~.a.b.f?')[:]
         self.assertIsInstance(result, list)
         self.assertTrue(all([isinstance(x, Clause) for x in result]))
         self.assertFalse(result[0].negated)
@@ -88,7 +88,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
                 
 
     def test_basic_query_construction(self):
-        result = QP.parseString('.a.b.c, .a.b.d, .a.b.e')
+        result = QP.parseString('.a.b.c?, .a.b.d?, .a.b.e?')
         self.assertIsInstance(result, Query)
         self.assertEqual(len(result._clauses), 3)
                 
