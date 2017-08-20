@@ -17,7 +17,7 @@ def build_rule(toks):
     if 'conditions' in toks:
         c = toks.conditions[0]
     else:
-        c = []
+        c = None
     if 'transforms' in toks:
         t = toks.transforms[0]
     else:
