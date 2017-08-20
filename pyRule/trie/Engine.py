@@ -7,7 +7,7 @@ import logging as root_logger
 from pyRule import Actions as Actions
 from pyRule import Transforms
 import  pyRule.utils as util
-from pyRule.trie import Contexts, Trie, Rule, Node
+from pyRule.trie import Contexts, Trie, Rule, Node, Query
 from pyRule.Actions import Action
 
 from . import TransformParser as TP
@@ -65,8 +65,10 @@ class Engine:
 
 
     def query(self, s):
-        assert(isinstance(s, str))
-        return self._trie.queryS(s)
+        if isinstance(s, str):
+            return self._trie.queryS(s)
+        else:
+            return self._trie.queryFact(s)
 
     def registerRules(self, s):
         #todo: rules are strings in the factbase too
