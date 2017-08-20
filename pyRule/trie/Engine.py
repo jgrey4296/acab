@@ -7,8 +7,8 @@ import logging as root_logger
 from pyRule import Actions as Actions
 from pyRule import Transforms
 import  pyRule.utils as util
-from pyRule.trie import Contexts
-from pyRule.trie import Trie
+from pyRule.trie import Contexts, Trie, Rule, Node
+from pyRule.Actions import Action
 
 from . import TransformParser as TP
 from . import ActionParser as AP
@@ -46,12 +46,23 @@ class Engine:
 
     #todo: be able to assert retract or query from tries instead of strings
     def add(self, s):
-        assert(isinstance(s, str))
-        self._trie.assertS(s)
+        if isinstance(s, str):
+            self._trie.assertS(s)
+        else:
+            assert(len(s), 1)
+            assert(isinstance(s[0],Node))
+            self._trie.assertFact(s)
 
     def retract(self, s):
-        assert(isinstance(s, str))
-        self._trie.retractS(s)
+        if isinstance(s, str):
+            self._trie.retractS(s)
+        else:
+            assert(len(s), 1)
+            assert(isinstance(s[0], Node))
+            self._trie.retractFact(s)
+        
+        
+
 
     def query(self, s):
         assert(isinstance(s, str))
@@ -60,12 +71,13 @@ class Engine:
     def registerRules(self, s):
         #todo: rules are strings in the factbase too
         assert(isinstance(s, str))
-        rules = RP.parseStrings(s)
+        rules = RP.parseString(s)
         for x in rules:
             try:
-                assert(isinstance(x, util.Rule))
+                assert(isinstance(x, Rule))
                 assert(x.is_coherent())
-                self._rules[x._name] = x
+                ruleName = "".join([str(x) for x in x._name])
+                self._rules[ruleName] = x
             except Exception as e:
                 logging.exception(e)
 
@@ -77,7 +89,7 @@ class Engine:
             results.append(self.run_rule(r))
 
     def run_rule(self, rule):
-        assert(isinstance(rule, util.Rule))
+        assert(isinstance(rule, Rule))
         assert(rule.is_coherent())
         logging.info("Running Rule: {}".format(rule._name))
         result = self.query(rule._query)
