@@ -15,28 +15,28 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
       #----------
       #use testcase snippets
       def test_simple_action_parse(self):
-            result = AP.parseString("(+(20, 30, 40))")
+            result = AP.parseString("+(20, 30, 40)")
             self.assertEqual(len(result), 1)
             self.assertTrue(all([isinstance(x, Actions.Action) for x in result]))
             self.assertEqual(result[0]._op, Actions.ACTS.ADD)
             self.assertEqual(result[0]._values, [20, 30, 40])
             
       def test_custom_action_parse(self):
-            result = AP.parseString("(blah(20, 30, 40))")
+            result = AP.parseString("blah(20, 30, 40)")
             self.assertEqual(len(result), 1)
             self.assertIsInstance(result[0], Actions.Action)
             self.assertEqual(result[0]._op, "blah")
             self.assertEqual(result[0]._values, [20, 30, 40])
 
       def test_string_value(self):
-            result = AP.parseString('(+("blah bloo", "blee", "awef"))')
+            result = AP.parseString('+("blah bloo", "blee", "awef")')
             self.assertEqual(len(result), 1)
             self.assertIsInstance(result[0], Actions.Action)
             self.assertEqual(result[0]._op, Actions.ACTS.ADD)
             self.assertEqual(result[0]._values, ["blah bloo","blee","awef"])
 
       def test_actions_parse(self):
-            result = AP.parseString('(+(2), -(3), @(4), blah(5))')
+            result = AP.parseString('+(2), -(3), @(4), blah(5)')
             self.assertEqual(len(result), 4)
             self.assertTrue(all([isinstance(x, Actions.Action) for x in result]))
             for action, op in zip(result, [Actions.ACTS.ADD,
