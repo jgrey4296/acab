@@ -34,7 +34,7 @@ action = operator.setResultsName('operator') + OPAR \
          + vals.setResultsName('ActionValues') \
          + CPAR 
 
-actions = OPAR + action + pp.ZeroOrMore(COMMA + action) + CPAR
+actions = action + pp.ZeroOrMore(COMMA + action)
 
 #parse actions
 action.setParseAction(build_action)

@@ -49,7 +49,7 @@ rebind = (ARROW + BIND).setResultsName(REBIND_N)
 #todo: separate out single operator trops and multi operator trops
 transform_core = BIND + TROPs + VALBIND + op(rebind)
 
-transforms = OPAR + transform_core + pp.ZeroOrMore(COMMA + transform_core) + CPAR
+transforms = transform_core + pp.ZeroOrMore(COMMA + transform_core)
 
 #Actions
 transform_core.setParseAction(buildTransformComponent)

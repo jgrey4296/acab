@@ -53,12 +53,11 @@ EX.setParseAction(lambda t: EXOP.EX)
 NUM.setParseAction(lambda t: construct_num(t[0]))
 
 PARAM_CORE.setParseAction(lambda toks: Node(toks[1], toks[0]))
-param_fact_string.setParseAction(lambda toks: [toks[:]])
+param_fact_string.setParseAction(lambda toks: [[Node.Root()] + toks[:]])
 
 # MAIN PARSER:
 def parseStrings(s):
     """ str -> [[Node]] """
     parsed = param_fact_strings.parseString(s)[:]
-    with_roots = [[Node.Root()] + x for x in parsed]
-    return with_roots
+    return parsed
 

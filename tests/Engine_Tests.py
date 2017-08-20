@@ -3,6 +3,7 @@ import logging
 from test_context import pyRule
 import pyRule.trie as T
 import pyRule.trie.TransformParser as TP
+import pyRule.trie.ActionParser as AP
 import IPython
 
 class Engine_Tests(unittest.TestCase):
@@ -67,9 +68,20 @@ class Engine_Tests(unittest.TestCase):
         result = self.e.query('.a.b.c?, .a.b.d?, .a.b.e?')
         self.assertTrue(result)
         
-    def _test_rule_registration(self):
-        
-        self.assertTrue(True)
+    def test_rule_registration(self):
+        self.assertEqual(len(self.e._rules), 0)
+        self.e.registerRules(".a.test.rule:\nend")
+        self.assertEqual(len(self.e._rules), 1)
+        self.e.registerRules(".a.second.rule:\nend")
+        self.assertEqual(len(self.e._rules), 2)
+
+    def test_rule_registration_overwrite(self):
+        self.assertEqual(len(self.e._rules), 0)
+        self.e.registerRules(".a.test.rule:\nend")
+        self.assertEqual(len(self.e._rules), 1)
+        self.e.registerRules(".a.test.rule:\nend")
+        self.assertEqual(len(self.e._rules), 1)
+    
 
     def _test_register_action(self):
         self.assertEqual(len(self.e._custom_actions), 0)
@@ -82,7 +94,7 @@ class Engine_Tests(unittest.TestCase):
         stub_ctx[0]['a'] = 2
         stub_ctx[0]['b'] = 4
 
-        stub_transform = TP.parseString('($a + 20, $b * 2)')
+        stub_transform = TP.parseString('$a + 20, $b * 2')
         
         result = self.e._run_transform(stub_ctx, stub_transform)
         self.assertIsInstance(result, dict)
@@ -94,7 +106,7 @@ class Engine_Tests(unittest.TestCase):
         stub_ctx[0]['a'] = 2
         stub_ctx[0]['b'] = 8
 
-        stub_transform = TP.parseString('($a + 20 -> $q, $b * $a -> $w)')
+        stub_transform = TP.parseString('$a + 20 -> $q, $b * $a -> $w')
         result = self.e._run_transform(stub_ctx, stub_transform)
         self.assertIsInstance(result, dict)
         self.assertEqual(result['a'], 2)
@@ -102,10 +114,59 @@ class Engine_Tests(unittest.TestCase):
         self.assertEqual(result['q'], 22)
         self.assertEqual(result['w'], 16)
         
-    def _test_run_actions(self):
-        self.assertTrue(True)
-      
+    def test_run_assert_action(self):
+        actions = AP.parseString("+(.a.b.c)")
+        self.assertFalse(self.e.query(".a.b.c?"))
+        self.e._run_actions({},actions)
+        self.assertTrue(self.e.query(".a.b.c?"))
 
+    def test_run_retract_action(self):
+        actions = AP.parseString("-(.a.b.c)")
+        self.e.add(".a.b.c")
+        self.assertTrue(self.e.query(".a.b.c?"))
+        self.e._run_actions({}, actions)
+        self.assertFalse(self.e.query(".a.b.c?"))
+        self.assertTrue(self.e.query("~.a.b.c?"))
+
+    def test_run_assert_multi_action(self):
+        actions = AP.parseString("+(.a.b.c), +(.a.b.d)")
+        self.assertFalse(self.e.query(".a.b.c?, .a.b.d?"))
+        self.assertTrue(self.e.query("~.a.b.c?, ~.a.b.d?"))
+        self.e._run_actions({}, actions)
+        self.assertTrue(self.e.query(".a.b.c?, .a.b.d?"))
+
+    def test_run_mixed_multi_action(self):
+        actions = AP.parseString("+(.a.b.c), -(.a.b.d)")
+        self.e.add(".a.b.d")
+        self.assertTrue(self.e.query("~.a.b.c?, .a.b.d?"))
+        self.e._run_actions({}, actions)
+        self.assertTrue(self.e.query(".a.b.c?, ~.a.b.d?"))
+
+    def test_run_bound_assert_action(self):
+        data = {"x": "blah"}
+        actions = AP.parseString("+(.a.b.$x)")
+        self.assertTrue(self.e.query("~.a.b.blah?"))
+        self.e._run_actions(data, actions)
+        self.assertTrue(self.e.query(".a.b.blah?"))
+
+    def test_run_bound_retract_action(self):
+        data = {"blah" : "bloo"}
+        actions = AP.parseString("-(.a.$blah.c)")
+        self.e.add(".a.bloo.c")
+        self.assertTrue(self.e.query(".a.bloo.c?"))
+        self.e._run_actions(data, actions)
+        self.assertTrue(self.e.query("~.a.bloo.c?, .a.bloo?"))
+
+    def test_run_mixed_bound_actions(self):
+        data = {"blah": "bloo"}
+        actions = AP.parseString("+(.a.$blah), -(.b.$blah)")
+        self.e.add(".b.bloo")
+        self.assertTrue(self.e.query(".b.bloo?"))
+        self.e._run_actions(data, actions)
+        self.assertTrue(self.e.query(".a.bloo?, ~.b.bloo?"))
+        
+        
+        
 if __name__ == "__main__":
     LOGLEVEL = logging.INFO
     logFileName = "log.engine_tests"

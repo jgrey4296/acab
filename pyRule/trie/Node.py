@@ -4,6 +4,7 @@ logging = root_logger.getLogger(__name__)
 from math import floor
 import pyRule.utils as util
 import weakref
+import IPython
 #see https://docs.python.org/3/library/weakref.html#module-weakref
 
 class Node:
@@ -34,11 +35,12 @@ class Node:
         if meta_leaf is not None:
             for k,v in meta_leaf.items():
                 self.set_meta_leaf(k,v)
-        
+
         if not isinstance(value, util.Bind):
             self._value = value
             self.set_meta_eval(util.META_OP.BIND, False)
         else:
+            #If a bind, extract the value, and annotate the node
             self._value = value.value
             self.set_meta_eval(util.META_OP.BIND, True)
         self._op = operator
@@ -228,4 +230,19 @@ class Node:
     def __len__(self):
         return len(self._children)
 
+
+    def bind(self, data):
+        if self.get_meta_eval(util.META_OP.BIND) is False:
+            return self.copy()
+        else:
+            copied = self.copy()
+            copied._bind_to_value(data)
+            return copied
+
+
+    def _bind_to_value(self, data):
+        assert(self._value in data)
+        self._value = data[self._value]
+            
+    
     #todo: add breadth and depth traversal

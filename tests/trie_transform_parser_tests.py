@@ -43,7 +43,7 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
 
 
       def test_basic_transform(self):
-            result = TP.parseString('($x + 20, $y + 5)')
+            result = TP.parseString('$x + 20, $y + 5')
             self.assertIsInstance(result, Transforms.Transform)
             self.assertEqual(len(result.components), 2)
 
