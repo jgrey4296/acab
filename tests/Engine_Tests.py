@@ -164,6 +164,14 @@ class Engine_Tests(unittest.TestCase):
         self.assertTrue(self.e.query(".b.bloo?"))
         self.e._run_actions(data, actions)
         self.assertTrue(self.e.query(".a.bloo?, ~.b.bloo?"))
+
+    def test_register_and_run_entire_rule(self):
+        self.e.registerRules(".a.test.rule:\n.a.$x?\n\n$x + 20 -> $y\n\n+(.b.$y)\n\nend")
+        self.e.add(".a.20")
+        self.assertTrue(self.e.query(".a.20?, ~.b.40?"))
+        self.e._run_rules()
+        self.assertTrue(self.e.query(".a.20?, .b.40?"))
+        
         
         
         
