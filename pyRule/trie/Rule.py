@@ -11,12 +11,13 @@ class Rule:
 
     
     def __init__(self, query, actions, transform=None, name=None, tags=None):
-        assert(isinstance(query, Query))
+        assert(query is None or isinstance(query, Query))
         assert(isinstance(actions, list))
         assert(all([isinstance(x, A.Action) for x in actions]))
         assert(transform is None or isinstance(transform, T.Transform))
         assert(tags is None or all([isinstance(x, str) for x in tags]))
         if name is None:
+            #todo: make this a node based anon name
             self._name = "anon_{}".format(Rule.__count)
             Rule.__count += 1
         else:
@@ -47,7 +48,11 @@ class Rule:
     def is_coherent(self): #raises an Exception othewise
         """ Verify that the outputs of the query match the 
         inputs of the transform, match the inputs of the actions """
-        self._transform.verify_ops()
-        [x.verify_op() for x in self._actions]
+        if self._transform is not None:
+            self._transform.verify_ops()
 
+        if len(self._actions) > 0:
+            [x.verify_op() for x in self._actions]
+        #if nothing raises an exception:
+        return True
 
