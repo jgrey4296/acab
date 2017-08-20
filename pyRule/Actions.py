@@ -1,6 +1,7 @@
 import logging as root_logger
 from enum import Enum
 from pyRule import utils as util
+from pyRule.trie import Node
 logging = root_logger.getLogger(__name__)
 
 #Action operators:
@@ -9,12 +10,15 @@ ACTS = Enum('Action_ops', 'ADD RETRACT PRINT CUSTOM')
 #Action function template:
 # def [name](engine, *params)
 def E_ADD(engine, params):
-    for x in params:
-        engine.add(x)
+    assert(len(params), 1)
+    assert(all([isinstance(x, Node) for x in params[0]]))
+    engine.add(params[0])
 
 def E_RETRACT(engine, params):
-    for x in params:
-        engine.retract(x)
+    assert(len(params), 1)
+    assert(all([isinstance(x, Node) for x in params[0]]))
+    engine.retract(params[0])
+
 
 def E_PRINT(engine, params):
     for x in params:
@@ -64,6 +68,8 @@ class Action:
         for x in self._values:
             if isinstance(x, util.Bind):
                 output.append(data[x.value])
+            if isinstance(x, list) and all([isinstance(y, Node) for y in x]):
+                output.append([y.bind(data) for y in x])
             else:
                 output.append(x)
         return output
