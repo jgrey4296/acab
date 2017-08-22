@@ -1,0 +1,17 @@
+.a.b.c
+.a.other!ex
+
+.example.two.rule.one:
+    .a.b.c?
+
+    $x + 20 -> $y
+    
+    +(.d.e.f)
+end
+
+.example.two.rule.two:
+    .a.b.c?
+
+    +(.d.e.g)
+end
+

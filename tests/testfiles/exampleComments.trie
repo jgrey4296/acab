@@ -1,0 +1,16 @@
+//.this.should.not.assert
+.a.b.c
+.a.other!ex
+
+// .comment.rule.one:
+//     .a.b.c?
+//
+//     +(.d.e.f)
+// end
+    
+//Another Test Comment
+.comment.rule.two:
+    .a.b.c?
+
+    +(.d.e.g)
+end

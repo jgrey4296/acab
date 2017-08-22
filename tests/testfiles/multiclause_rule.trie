@@ -1,0 +1,13 @@
+// initial assertions
+.a.b.c
+.a.c!d
+// a test
+
+// A Retracting rule
+.multi.clause.rule.test:
+    .a.b.c?,
+    .a.c!d?
+    
+    +(.a.b.e)
+end
+
