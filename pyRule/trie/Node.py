@@ -103,7 +103,6 @@ class Node:
         xs = [str(y) for x,y in sorted(self._children.items())]
         return ",\n".join(xs)
 
-
     def __eq__(self, other):
         """ Main comparison routine: turn to strings, compare """
         assert(isinstance(other, Node))
@@ -148,7 +147,7 @@ class Node:
         if util.META_OP.COMP in self._meta_eval \
            and len(self._meta_eval[util.META_OP.COMP]) > 0:
             meta = "(" \
-                   + ",".join([repr(x) for x in self._meta_eval[util.META_OP.COMP]]) \
+                   + ", ".join([repr(x) for x in self._meta_eval[util.META_OP.COMP]]) \
                    + ")"
         else:
             meta = ""
@@ -158,12 +157,14 @@ class Node:
 
     def __str__(self):
         """ Create a multi line string of the entire sub trie """
+        #A list of each self->leaf path
         leaf_list = self._reconstruct()
 
         if len(leaf_list) == 0:
             return repr(self)
         else:
             finals = []
+            #for each path, convert to a repr of it
             for l in leaf_list:
                 finals.append("".join([repr(x) for x in l]))
                 
