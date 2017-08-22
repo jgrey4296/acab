@@ -45,7 +45,11 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
                                            "blah"]):
                   self.assertEqual(action._op, op)
             
-                                
+      def test_action_str_equal(self):
+            actions = ["+(2)", "-(3)", "@(4)", "blah(5)"]
+            parsed = [AP.parseString(x)[0] for x in actions]
+            zipped = zip(actions, parsed)
+            self.assertTrue(all([x == str(y) for x,y in zipped]))
       
 
 if __name__ == "__main__":

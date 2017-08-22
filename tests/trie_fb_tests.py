@@ -206,6 +206,7 @@ class Trie_FactBase_Tests(unittest.TestCase):
         s = str(self.trie)
         newTrie = T.Trie(s)
         self.assertEqual(self.trie, newTrie)
+        self.assertEqual(s, str(newTrie))
 
     def test_query_negation(self):
         self.trie.assertS('.a.b.c')
