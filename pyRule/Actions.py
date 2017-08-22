@@ -10,12 +10,10 @@ ACTS = Enum('Action_ops', 'ADD RETRACT PRINT CUSTOM')
 #Action function template:
 # def [name](engine, *params)
 def E_ADD(engine, params):
-    assert(len(params), 1)
     assert(all([isinstance(x, Node) for x in params[0]]))
     engine.add(params[0])
 
 def E_RETRACT(engine, params):
-    assert(len(params), 1)
     assert(all([isinstance(x, Node) for x in params[0]]))
     engine.retract(params[0])
 
@@ -48,12 +46,17 @@ class Action:
 
     def __repr__(self):
         if isinstance(self._op, str):
-            return "{}({})".format(self._op,
-                                   ", ".join([repr(x) for x in self._values]))
+            op = self._op
         else:
-            return "{}({})".format(ACTS_REVERSE_LOOKUP[self._op],
-                                   ", ".join([repr(x) for x in self._values]))
-
+            op = ACTS_REVERSE_LOOKUP[self._op]
+        args = []
+        for val in self._values:
+            if isinstance(val, list) and isinstance(val[0], Node):
+                args.append("".join([str(x) for x in val[1:]]))
+            else:
+                args.append(str(val))
+        return "{}({})".format(op, ",".join(args))
+        
     def is_custom(self):
         return isinstance(self._op, str) or not isinstance(self._op, ACTS)
 
