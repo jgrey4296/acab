@@ -48,7 +48,7 @@ tagName = HASH + FP.NAME
 tagList = (tagName + pp.ZeroOrMore(FP.COMMA + tagName) + emptyLine).setResultsName('tags')
 conditions = (QP.clauses + emptyLine).setResultsName('conditions')
 transforms = (TP.transforms + emptyLine).setResultsName('transforms')
-actions = (AP.actions + emptyLine).setResultsName('actions')
+actions = (AP.actions + s(pp.lineEnd)).setResultsName('actions')
 
 rule = ruleName + COLON + sLn \
        + op(tagList) \
