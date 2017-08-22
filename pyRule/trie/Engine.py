@@ -15,6 +15,7 @@ from . import ActionParser as AP
 from . import QueryParser as QP
 from . import FactParser as FP
 from . import RuleParser as RP
+from . import FileParser as FileP
 
 import IPython
 
@@ -30,6 +31,18 @@ class Engine:
         #named recall states of past tries
         self._recall_states = []
         self._custom_actions = {}
+
+    def load_file(self, filename):
+        assert(isinstance(filename, str))
+        with open(filename) as f:
+            s = f.read()
+        if s is not None:
+            rules, assertions = FileP.parseString(s)
+            for x in assertions:
+                self.add(x)
+            self.registerRules(rules)            
+        else:
+            raise Exception("No text found in provided file")
         
     def _save_state(self):
         self._prior_states.append(str(self._trie))
@@ -39,7 +52,7 @@ class Engine:
         of the form def(engine, paramsList) """
         assert(isinstance(name,str))
         assert(callable(func))
-        if name in self_custom_actions:
+        if name in self._custom_actions:
             raise Exception("Duplicate action: {}".format(name))
         self._custom_actions[name]
         
@@ -49,7 +62,6 @@ class Engine:
         if isinstance(s, str):
             self._trie.assertS(s)
         else:
-            assert(len(s), 1)
             assert(isinstance(s[0],Node))
             self._trie.assertFact(s)
 
@@ -57,7 +69,6 @@ class Engine:
         if isinstance(s, str):
             self._trie.retractS(s)
         else:
-            assert(len(s), 1)
             assert(isinstance(s[0], Node))
             self._trie.retractFact(s)
         
@@ -72,8 +83,11 @@ class Engine:
 
     def registerRules(self, s):
         #todo: rules are strings in the factbase too
-        assert(isinstance(s, str))
-        rules = RP.parseString(s)
+        if isinstance(s, str):
+            rules = RP.parseString(s)
+        else:
+            assert(all([isinstance(x, Rule) for x in s]))
+            rules = s
         for x in rules:
             try:
                 assert(isinstance(x, Rule))
@@ -98,6 +112,7 @@ class Engine:
         if not bool(result):
             logging.warning("Rule {} Failed".format(rule._name))
             return False
+        
         transformed = self._run_transform(result, rule._transform)
         output = self._run_actions(transformed, rule._actions)
         return output
@@ -105,10 +120,12 @@ class Engine:
     
     def _run_transform(self, ctx, transform):
         assert(isinstance(ctx, Contexts))
-        assert(isinstance(transform, Transforms.Transform))
+        assert(transform is None or isinstance(transform, Transforms.Transform))
         #todo: detect min max bounds of transform
         #todo: Move this code into the transform component class?
         chosen_ctx = ctx.select()
+        if transform is None:
+            return chosen_ctx
         for x in transform.components:
             #lookup op
             opFunc = Transforms.TROP_LOOKUP[x.op]

@@ -13,7 +13,7 @@ logging = root_logger.getLogger(__name__)
 pp.ParserElement.setDefaultWhitespaceChars(' \t\r')
 s = pp.Suppress
 op = pp.Optional
-opLn = s(op(pp.LineEnd()))
+opLn = s(op(pp.lineEnd))
 
 def construct_num(toks):
     #todo: add in fractions and underscores
@@ -26,7 +26,7 @@ def construct_num(toks):
 DOT = pp.Keyword('.', identChars='!')
 EX = pp.Keyword('!', identChars='.')
 OP = pp.Or([DOT,EX])
-COMMA = s(pp.Literal(',') + opLn + op(pp.White('\t')))
+COMMA = s(pp.Or([pp.Literal(',') + opLn, pp.lineEnd]))
 DOLLAR = pp.Literal('$')
 
 #todo: add in underscores
@@ -56,7 +56,7 @@ PARAM_CORE.setParseAction(lambda toks: Node(toks[1], toks[0]))
 param_fact_string.setParseAction(lambda toks: [[Node.Root()] + toks[:]])
 
 # MAIN PARSER:
-def parseStrings(s):
+def parseString(s):
     """ str -> [[Node]] """
     parsed = param_fact_strings.parseString(s)[:]
     return parsed

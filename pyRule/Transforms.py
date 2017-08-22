@@ -77,7 +77,7 @@ class Transform:
         self.components = components
 
     def __repr__(self):
-        return "( {} )".format(",".join([repr(x) for x in self.components]))
+        return "{}".format(", ".join([repr(x) for x in self.components]))
 
     def verify_ops(self):
         for x in self.components:

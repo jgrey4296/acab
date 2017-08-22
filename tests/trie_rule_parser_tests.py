@@ -1,5 +1,6 @@
 import unittest
 import logging
+import IPython
 from test_context import pyRule
 from pyRule.trie import RuleParser as RP
 from pyRule.trie.Rule import Rule
@@ -84,7 +85,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
 
             
       def test_rule_with_actions(self):
-            result = RP.parseString(".a.rule:\n+(.a.b.c)\n\nend")
+            result = RP.parseString(".a.rule:\n+(.a.b.c)\nend")
             self.assertEqual(len(result), 1)
             self.assertIsInstance(result[0], Rule)
             self.assertIsNone(result[0]._query)
@@ -92,7 +93,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertEqual(len(result[0]._actions), 1)
 
       def test_multi_action_rule(self):
-            result = RP.parseString(".a.rule:\n+(.a.b.c),\n-(.a.b.d)\n\nend")
+            result = RP.parseString(".a.rule:\n+(.a.b.c),\n-(.a.b.d)\nend")
             self.assertEqual(len(result), 1)
             self.assertIsInstance(result[0], Rule)
             self.assertIsNone(result[0]._query)
@@ -100,7 +101,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertEqual(len(result[0]._actions), 2)
 
       def test_multi_action_single_line_rule(self):
-            result = RP.parseString(".a.rule:\n+(.a.b.c), -(.a.b.d)\n\nend")
+            result = RP.parseString(".a.rule:\n+(.a.b.c), -(.a.b.d)\nend")
             self.assertEqual(len(result), 1)
             self.assertIsInstance(result[0], Rule)
             self.assertIsNone(result[0]._query)
@@ -108,12 +109,26 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertEqual(len(result[0]._actions), 2)
 
       def test_rule_with_query_transform_actions(self):
-            result = RP.parseString(".a.rule:\n.a.b.c?\n\n$x + 20\n\n+(.a.b.c)\n\nend")
+            result = RP.parseString(".a.rule:\n.a.b.c?\n\n$x + 20\n\n+(.a.b.c)\nend")
             self.assertEqual(len(result), 1)
             self.assertIsInstance(result[0], Rule)
             self.assertIsNotNone(result[0]._query)
             self.assertIsNotNone(result[0]._transform)
             self.assertEqual(len(result[0]._actions), 1)
+
+      def test_fact_str_equal(self):
+            rules = [ ".a.rule:\nend",
+                      ".a.rule:\n\t.a.b.c?\n\nend",
+                      ".a.rule:\n\t.a.b.c?\n\t.a.b!d?\n\nend",
+                      ".a.different.rule:\n\t.a.b.c?\n\n\t$x + 20\n\nend",
+                      ".a.rule:\n\t.a.b.c?\n\n\t$x + 20 -> $y\n\nend",
+                      ".a.rule:\n\t.a.b.c?\n\n\t$x * 10 -> $AB\n\n+(.a.b.d)\nend"]
+
+            parsed = [RP.parseString(x)[0] for x in rules]
+            zipped = zip(rules, parsed)
+            for r,p in zipped:
+                  self.assertEqual(r,str(p))
+
             
 
 if __name__ == "__main__":

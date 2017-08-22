@@ -29,13 +29,13 @@ class Trie:
     
     def assertS(self,s):
         """ Assert multiple facts from a single string """
-        parsed = FP.parseStrings(s)
+        parsed = FP.parseString(s)
         for x in parsed:
             self.assertFact(x)
 
     def retractS(self, s):
         """ Retract multiple facts from a single string """
-        parsed = FP.parseStrings(s)
+        parsed = FP.parseString(s)
         for x in parsed:
             self.retractFact(x)
         

@@ -47,7 +47,18 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
             self.assertIsInstance(result, Transforms.Transform)
             self.assertEqual(len(result.components), 2)
 
-      
+      def test_fact_str_equal(self):
+            transforms = ["$x + 20", "$x + 20, $y + 5",
+                          "$xc - 10", "$x * 100",
+                          "$x + 20 -> $y",
+                          "$Blah + $bloo -> $BLEE"]
+            parsed = [TP.parseString(x) for x in transforms]
+            zipped = zip(transforms, parsed)
+            for t,p in zipped:
+                  self.assertEqual(t,str(p))
+
+
+            
 
 if __name__ == "__main__":
       LOGLEVEL = logging.INFO

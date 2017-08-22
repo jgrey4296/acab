@@ -1,0 +1,9 @@
+.a.b.c
+
+.example.one.rule:
+	.a.b.c?
+
+        +(.d.e.f)
+end
+
+

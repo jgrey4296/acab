@@ -1,0 +1,12 @@
+// initial assertions
+.a.b.c
+.a.c!d
+// a test
+
+// A Retracting rule
+.retraction.rule:
+    .a.b.c?
+    
+    -(.a.b.c)
+end
+

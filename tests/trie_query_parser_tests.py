@@ -91,7 +91,19 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         result = QP.parseString('.a.b.c?, .a.b.d?, .a.b.e?')
         self.assertIsInstance(result, Query)
         self.assertEqual(len(result._clauses), 3)
-                
+
+    def test_fact_str_equal(self):
+        queries = [".a.b.c?", ".a.b!c?", '.a.b."a string".c?',
+                   '.a.b!"a string"!c?', '.a.b(> 20)?',
+                   '.a.$b?', '.a!$b?', '.a.$b(> $c)?',
+                   '.a.$b(> 20, < 40, != $x, == $y)?',
+                   '~.a.b.c?', '~.a!b.c?']
+        parsed = [QP.parseString(x) for x in queries]
+        zipped = zip(queries, parsed)
+        for a,q in zipped:
+            self.assertEqual(a,str(q))
+
+        
 
 if __name__ == "__main__":
       LOGLEVEL = logging.INFO

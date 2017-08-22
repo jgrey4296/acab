@@ -11,7 +11,7 @@ parser:
 	python -m unittest *_parser_tests.py -v
 
 engine:
-	python -m unittest Engine_Tests.py -v
+	python -m unittest Engine*.py -v
 
 clean:
 	-rm *.log

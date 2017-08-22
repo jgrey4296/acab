@@ -9,6 +9,9 @@ class Clause:
 
     def __repr__(self):
         if self.negated:
-            return "~{}".format("".join([repr(x) for x in self.components]))
+            neg = "~"
         else:
-            return "".join([repr(x) for x in self.components])
+            neg = ""
+            
+        return "{}{}?".format(neg, "".join([repr(x) for x in self.components]))
+
