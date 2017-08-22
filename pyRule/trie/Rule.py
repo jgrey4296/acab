@@ -34,16 +34,25 @@ class Rule:
     def __repr__(self):
         #TODO: make this reparsable
         #todo: turn tags back into #tag
-        nameStr = "".join([repr(x) for x in self._name])
+        nameStr = "".join([repr(x) for x in self._name[1:]])
         tagsStr = ", ".join(["#{}".format(x) for x in self._tags])
-        queryStr = repr(self._query)
-        transformStr = repr(self._transform)
-        actionsStr = ",\n\t".join([repr(x) for x in self._actions])
-        return "{}:\n\t{}\n\n\t{}\n\n\t{}\n\n\t{}\nEND".format(nameStr,
-                                                                    tagsStr,
-                                                                    queryStr,
-                                                                    transformStr,
-                                                                    actionsStr)
+        if self._query is not None:
+            queryStr = "\t" + repr(self._query) + "\n\n"
+        else:
+            queryStr = ""
+        if self._transform is not None:
+            transformStr = "\t" + repr(self._transform) + "\n\n"
+        else:
+            transformStr = ""
+        if len(self._actions):
+            actionsStr = "\n\t".join([repr(x) for x in self._actions]) + "\n"
+        else:
+            actionsStr = ""
+        return "{}:\n{}{}{}{}end".format(nameStr,
+                                         tagsStr,
+                                         queryStr,
+                                         transformStr,
+                                         actionsStr)
     
     def is_coherent(self): #raises an Exception othewise
         """ Verify that the outputs of the query match the 
