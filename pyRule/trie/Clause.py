@@ -1,7 +1,11 @@
 from .Node import Node
 
 #todo: split comps into alpha and beta
-class Clause: 
+class Clause:
+    """ A Single clause of a query. 
+    Holds a single string of information to test,
+    from root to leaf """
+    
     def __init__(self, components, negated=False):
         assert(all([isinstance(x, Node) for x in components]))
         self.negated = negated
