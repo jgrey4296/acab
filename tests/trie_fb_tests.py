@@ -126,7 +126,7 @@ class Trie_FactBase_Tests(unittest.TestCase):
     def test_query_multi_clause(self):
         """ Check that queries can have multiple clauses """
         self.trie.assertS('.a.b.c, .d.e.f')
-        result = self.trie.queryS('.a.$x, .d.$y?')
+        result = self.trie.queryS('.a.$x?, .d.$y?')
         self.assertTrue(result)
         self.assertEqual(result._alternatives[0][0]['x'], 'b')
         self.assertEqual(result._alternatives[0][0]['y'], 'e')
@@ -219,7 +219,7 @@ class Trie_FactBase_Tests(unittest.TestCase):
         result = self.trie.queryS('~.q.w.e?')
         self.assertTrue(result)
 
-    def test_query_multi_clause(self):
+    def test_query_multi_clause_2(self):
         self.trie.assertS('.a.b.c, .d.e.f')
         self.assertTrue(self.trie.queryS('.a.b.c?'))
         self.assertTrue(self.trie.queryS('.d.e.f?'))
@@ -232,6 +232,26 @@ class Trie_FactBase_Tests(unittest.TestCase):
         self.trie.assertS('.a.b.d')
         self.assertTrue(self.trie.queryS('~.a.b!c?'))
 
+    def test_query_regex(self):
+        self.trie.assertS('.a.b.cBlah')
+        self.assertTrue(self.trie.queryS('.a.b.$x(~= /cBlah/)?'))
+        self.assertFalse(self.trie.queryS('.a.b.$x(~= /bBlah/)?'))
+
+    def test_query_regex_bind(self):
+        self.trie.assertS('.a.b.cBlah')
+        result = self.trie.queryS('.a.b.$x(~= /c(?P<y>.+)/)?')
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]['y'], 'Blah')
+
+    def test_query_regex_multi_bind(self):
+        self.trie.assertS('.a.b.cBlah, .a.b.cBloo, .a.b.dAwef')
+        result = self.trie.queryS('.a.b.$x(~= /c(?P<y>.+)/)?')
+        self.assertEqual(len(result), 2)
+        boundSet = set([x['y'] for x in result])
+        self.assertTrue('Blah' in boundSet)
+        self.assertTrue('Bloo' in boundSet)
+        
+        
         
         
 if __name__ == "__main__":
