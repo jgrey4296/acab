@@ -25,14 +25,23 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result, Comparison)
         
     def test_basic_comparison(self):
-        result = QP.comparison.parseString('(>20, <40, !=$x, ==$y)')[:]
-        self.assertEqual(len(result), 4)
+        result = QP.comparison.parseString('(>20, <40, !=$x, ==$y, ~=/blah/)')[:]
+        self.assertEqual(len(result), 5)
         self.assertTrue(all([isinstance(x, Comparison) for x in result]))
         self.assertEqual(result[0].op, COMP.GT)
         self.assertEqual(result[1].op, COMP.LT)
         self.assertEqual(result[2].op, COMP.NE)
         self.assertEqual(result[3].op, COMP.EQ)
+        self.assertEqual(result[4].op, COMP.RE)
 
+    def test_basic_regex_comparison(self):
+        result = QP.COMP_Internal.parseString('~= /blah/')[0]
+        self.assertIsInstance(result, Comparison)
+        self.assertEqual(result.op, COMP.RE)
+        self.assertEqual(result.value, 'blah')
+        self.assertIsNone(result.bind)
+        
+        
     def test_basic_query_core(self):
         result = QP.QueryCore.parseString('.a(>20)')[0]
         self.assertEqual(len(result.get_meta_eval(util.META_OP.COMP)), 1)
@@ -92,12 +101,15 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result, Query)
         self.assertEqual(len(result._clauses), 3)
 
+
+
     def test_fact_str_equal(self):
         queries = [".a.b.c?", ".a.b!c?", '.a.b."a string".c?',
                    '.a.b!"a string"!c?', '.a.b(> 20)?',
                    '.a.$b?', '.a!$b?', '.a.$b(> $c)?',
                    '.a.$b(> 20, < 40, != $x, == $y)?',
-                   '~.a.b.c?', '~.a!b.c?']
+                   '~.a.b.c?', '~.a!b.c?',
+                   '.a.$b(~= /blah/)?']
         parsed = [QP.parseString(x) for x in queries]
         zipped = zip(queries, parsed)
         for a,q in zipped:

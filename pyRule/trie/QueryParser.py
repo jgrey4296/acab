@@ -41,12 +41,13 @@ LT = pp.Literal(COMP_REVERSE_LOOKUP[COMP.LT])
 GT = pp.Literal(COMP_REVERSE_LOOKUP[COMP.GT])
 NE = pp.Literal(COMP_REVERSE_LOOKUP[COMP.NE])
 EQ = pp.Literal(COMP_REVERSE_LOOKUP[COMP.EQ])
+REGMATCH = pp.Literal(COMP_REVERSE_LOOKUP[COMP.RE])
 NOT = pp.Literal('~').setResultsName('NOT')
+SLASH = s(pp.Literal('/'))
+REGEX = pp.Regex(r'/.+/')
+COMP_OP = pp.Or([LT, GT, NE, EQ, REGMATCH])
 
-COMP_OP = pp.Or([LT, GT, NE, EQ])
-
-
-COMP_Internal = COMP_OP + VALBIND
+COMP_Internal = COMP_OP + pp.Or([VALBIND, REGEX])
 
 comparison = OPAR + COMP_Internal \
              + op(pp.OneOrMore(COMMA + COMP_Internal))\
@@ -67,6 +68,8 @@ LT.setParseAction(lambda toks: COMP.LT)
 GT.setParseAction(lambda toks: COMP.GT)
 NE.setParseAction(lambda toks: COMP.NE)
 EQ.setParseAction(lambda toks: COMP.EQ)
+REGMATCH.setParseAction(lambda toks: COMP.RE)
+REGEX.setParseAction(lambda toks: toks[0][1:-1])
 QueryCore.setParseAction(buildQueryComponent)
 #Clause, not negated:
 clause.setParseAction(buildClause)
@@ -76,3 +79,4 @@ clauses.setParseAction(lambda toks: Query(*toks[:]))
 def parseString(s):
     """ .a.b(>20)!d.$X, ... -> Query """
     return clauses.parseString(s)[0]
+

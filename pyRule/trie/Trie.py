@@ -7,6 +7,7 @@ from .Clause import Clause
 from pyRule.utils import EXOP, META_OP
 from pyRule.Comparisons import COMP_LOOKUP
 import logging as root_logger
+import re
 import IPython
 logging = root_logger.getLogger(__name__)
 
@@ -114,6 +115,7 @@ class Trie:
     
     def _match_clause(self, clause, contexts):
         assert(isinstance(clause, Clause))
+        logging.debug("Testing Clause: {}".format(repr(clause)))
         #early exit:
         if not contexts:
             return contexts
@@ -125,7 +127,7 @@ class Trie:
         for c in clause.components:
             logging.debug("Testing node: {}".format(repr(c)))
             logging.debug("Current Contexts: {}".format(len(currentContexts)))
-            alphas, betas = self.split_alpha_and_beta_tests(c)
+            alphas, betas, regexs = c.split_tests()
             newContexts = Contexts()
             
             #test each  active alternative
@@ -133,14 +135,16 @@ class Trie:
                 newData = None
                 newNode = None
                 #check exclusion status
-                if c._op is EXOP.EX and len(lastNode) != 1:
+                if c.is_exclusive() and not lastNode.has_exclusive():
+                    logging.debug("C: {}, Node: {}, {}".format(c.is_exclusive(),
+                                                               lastNode.is_exclusive(), str(lastNode)))
                     logging.debug("Mismatch EX num")
                     continue
 
                 #check value, if its not a bind
                 if not c.get_meta_eval(META_OP.BIND):
                     logging.debug("Not Bind: {}|{}".format(c._value, lastNode._children.keys()))
-                    if c._value in lastNode._children and self.test_betas(c._value, betas,data):
+                    if c in lastNode and self.test_betas(c._value, betas,data):
                         logging.debug("Suitable value")
                         newNode = lastNode._children[c._value]
                         newData = data.copy()
@@ -164,33 +168,23 @@ class Trie:
                         logging.debug("Passing: {}".format(passing))
                         #bind and store successes
                         for x in passing:
-                            newNodeAlt = lastNode._children[x]
-                            newDataAlt = data.copy()
-                            newDataAlt[c._value] = x
-                            newContexts._alternatives.append((newDataAlt,newNodeAlt))
-                        
-                if newData is not None and newNode is not None:
-                    newContexts._alternatives.append((newData, newNode))
+                            newNodeAlt, newDataAlt = lastNode._children[x].test_regexs_for_matching(regexs, data, preupdate=(c._value, x))
+                            newContexts.append((newDataAlt,newNodeAlt))
+
+                #regex
+                if newNode is not None:
+                    newNode, newData = newNode.test_regexs_for_matching(regexs, newData)
+                            
+                newContexts.append((newData, newNode))
+
+                #end of internal loop for an active alternative
+                    
             #all alternatives tested for this clause component, update and progress
             currentContexts = newContexts
 
         #every alternative tested for each clause component, return the final set of contexts 
         return currentContexts
 
-    def split_alpha_and_beta_tests(self, node):
-        """ Given a list of comparisons, sort them into alpha and betas
-        ie: those against values and those against bindings """
-        assert(isinstance(node, Node))
-        comps = node.get_meta_eval(META_OP.COMP)
-        alphas = []
-        betas = []
-        for x in comps:
-            if x.is_alpha_test():
-                alphas.append(x)
-            else:
-                betas.append(x)
-        return (alphas, betas)
-                        
     def test_alphas(self, value, comps):
         """ Run alpha tests against a retrieved value """
         return all([COMP_LOOKUP[x.op](value,x.value) for x in comps])

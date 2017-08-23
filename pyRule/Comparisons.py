@@ -5,7 +5,7 @@ logging = root_logger.getLogger(__name__)
 
 #comparison operators:
 #todo: add regex string match comparison
-COMP = Enum('Comp_ops','LT GT NE EQ')
+COMP = Enum('Comp_ops','LT GT NE EQ RE')
 
 
 def EQ(a,b):
@@ -20,25 +20,25 @@ def LT(a,b):
 def NEQ(a,b):
     return a != b
 
-def NOP(a,b):
-    return True
-
-def FAIL(a,b):
-    return False
+def REGMATCH(a,b):
+    return re.search(b, a)
 
 
 COMP_LOOKUP = {
     COMP.LT : LT,
     COMP.GT : GT,
     COMP.NE : NEQ,
-    COMP.EQ : EQ
+    COMP.EQ : EQ,
+    COMP.RE : REGMATCH
+    
 }
 
 COMP_REVERSE_LOOKUP = {
     COMP.LT : "<",
     COMP.GT : ">",
     COMP.NE : "!=",
-    COMP.EQ : "=="
+    COMP.EQ : "==",
+    COMP.RE : "~="
 }
 
 class Comparison:
@@ -56,11 +56,19 @@ class Comparison:
         
     def is_alpha_test(self):
         return self.value is not None
-        
+
+    def is_regex_test(self):
+        return self.op is COMP.RE
+    
     def __repr__(self):
+        if self.is_regex_test():
+            val = "/{}/".format(self.value)
+        else:
+            val = self.value
+            
         if self.value is not None:
             return "{} {}".format(COMP_REVERSE_LOOKUP[self.op],
-                                    self.value)
+                                    val)
         else:
             return "{} {}".format(COMP_REVERSE_LOOKUP[self.op],
                                     repr(self.bind))

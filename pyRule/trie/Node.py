@@ -5,6 +5,7 @@ from math import floor
 import pyRule.utils as util
 import weakref
 import IPython
+import re
 #see https://docs.python.org/3/library/weakref.html#module-weakref
 
 class Node:
@@ -46,7 +47,18 @@ class Node:
         self._op = operator
         self._children = {}
         
-        
+    def is_exclusive(self):
+        return self._op is util.EXOP.EX
+
+    def has_exclusive(self):
+        return len(self) <= 1
+
+    def __contains__(self, v):
+        if isinstance(v, Node):
+            return v._value in self._children
+        else:
+            return v in self._children
+    
     def set_meta_leaf(self, mType, values):
         #todo
         assert(isinstance(mType, util.META_OP))
@@ -245,5 +257,53 @@ class Node:
         assert(self._value in data)
         self._value = data[self._value]
             
-    
+
+    def split_tests(self):
+        """ Split tests into (alphas, betas, regexs) """
+        comps = self.get_meta_eval(util.META_OP.COMP)
+        assert(isinstance(comps, list))
+        alphas = []
+        betas = []
+        regexs = []
+        for c in comps:
+            if c.is_regex_test():
+                regexs.append(c)
+            elif c.is_alpha_test():
+                alphas.append(c)
+            else:
+                betas.append(c)
+        return (alphas, betas, regexs)
+        
+    def search_regex(self, regex):
+        result = re.search(regex.value, self._value)
+        if result is not None:
+            return result.groupdict()
+        else:
+            return None
+
+    def test_regexs_for_matching(self, regexs, currentData, preupdate=None):
+        newData = currentData.copy()
+        if preupdate is not None:
+            newData[preupdate[0]] = preupdate[1]
+        invalidated = False
+        for regex in regexs:
+            if invalidated:
+                break
+            result = self.search_regex(regex)
+            if result is None:
+                invalidated = True
+            else:
+                for (k,v) in result.items():
+                    if k not in newData:
+                        newData[k] = v
+                    elif newData[k] != v:
+                        invalidated = True
+                        break
+
+        if invalidated:
+            return (None, None)
+        else:
+            return (self, newData)
+
+        
     #todo: add breadth and depth traversal
