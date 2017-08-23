@@ -1,6 +1,8 @@
 from .WME import WME
 from .Contexts import Contexts
 
+#todo: eq, str, 
+
 class FactBase:
     """ Main class for WME based knowledge base """
     
@@ -127,8 +129,7 @@ class FactBase:
         
     
     def _test_alpha(self, wme, alphaTests):
-        """ Run alpha tests (comprising of tests against static
-        variables on a wme"""
+        """ Run alpha tests (intra-wme) """
         #todo: also test intra-wme tests
         for (field, op, val) in alphaTests:
             if not field in wme._data:
