@@ -11,7 +11,12 @@ class Contexts:
             #todo: select number based on input
             shuffle(self._alternatives)
             return self._alternatives[0][0]
-            
+
+      def append(self, data):
+            assert(len(data) == 2)
+            if data[0] is not None and data[1] is not None:
+                  self._alternatives.append(data)
+      
       def __len__(self):
             return len(self._alternatives)
 
