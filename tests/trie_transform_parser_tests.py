@@ -90,24 +90,24 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
             self.assertEqual(result.components[0].rebind.value, 'y')
 
       def test_ternary_operator(self):
-            result = TP.parseString('$x ~= /blah/ $y')
+            result = TP.parseString('$x ~= /blah/ $a')
             self.assertIsInstance(result, Transforms.Transform)
             self.assertEqual(len(result.components), 1)
             self.assertEqual(result.components[0].op, Transforms.TROP.REGEX)
             self.assertEqual(result.components[0].source.value, 'x')
             self.assertEqual(result.components[0].val,'blah')
-            self.assertEqual(result.components[0].bind.value, 'y')
+            self.assertEqual(result.components[0].bind.value, 'a')
             self.assertIsNone(result.components[0].rebind)
 
       def test_ternary_operator_rebind(self):
-            result = TP.parseString('$x ~= /blah/ $y -> $q')
+            result = TP.parseString('$x ~= /blah/ $awef -> $q')
             self.assertIsInstance(result, Transforms.Transform)
             self.assertEqual(len(result.components), 1)
             self.assertEqual(result.components[0].op, Transforms.TROP.REGEX)
             self.assertEqual(result.components[0].source.value, 'x')
             self.assertEqual(result.components[0].val,'blah')
-            self.assertEqual(result.components[0].bind.value, 'y')
             self.assertEqual(result.components[0].rebind.value, 'q')
+            self.assertEqual(result.components[0].bind.value, 'awef')
 
 
       def test_binary_rand_operator(self):
@@ -127,8 +127,8 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
                           "$x + 20 -> $y",
                           "$Blah + $bloo -> $BLEE",
                           "-$x", "_$x", "-$x -> $y",
-                          "_$x -> $y", "$x ~= /blah/ $y",
-                          "$x ~= /aw+/ $yy -> $blah",
+                          "_$x -> $y", "$x ~= /blah/ $a",
+                          "$x ~= /aw+/ $b -> $blah",
                           "$x + 2d5"]
             parsed = [TP.parseString(x) for x in transforms]
             zipped = zip(transforms, parsed)
