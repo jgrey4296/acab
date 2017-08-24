@@ -2,7 +2,7 @@ import logging as root_logger
 import pyparsing as pp
 from .FactParser import COMMA, BIND, VALBIND
 from .QueryParser import OPAR, CPAR, REGEX
-from pyRule.Transforms import TROP, TransformComponent, Transform
+from pyRule.Transforms import TROP, SelectionTransform, OperatorTransform, Transform
 import pyRule.utils as util
 import IPython
 
@@ -26,21 +26,26 @@ def buildBinaryTransformComponent(toks):
     else:
         val = toks[2]
         bind = None
-    return TransformComponent(toks[1], toks[0], val, bind)
+    return OperatorTransform(toks[1], toks[0], val, bind)
 
 def buildUnaryTransformComponent(toks):
     op = toks[0]
     source = toks[1]
-    return TransformComponent(op, source)
+    return OperatorTransform(op, source)
 
 def buildTernaryTransformComponent(toks):
     source = toks[0]
     op = toks[1]
     regex = toks[2]
     bind = toks[3]
-    return TransformComponent(op, source, value=regex, bind=bind)
+    return OperatorTransform(op, source, value=regex, bind=bind)
 
-    
+def buildSelection(toks):
+    bound1 = toks[0]
+    bound2 = toks[1]
+    return SelectionTransform(bound1, bound2, op=TROP.SELECT)
+
+
 def addRebind(toks):
     component = toks[0]
     assert(component is not None)
@@ -73,9 +78,11 @@ unary_trops = pp.Or([ROUND, NEG, FORMAT])
 ternary_trops = pp.Or([REGEXSUB])
 
 rebind = (ARROW + BIND).setResultsName(REBIND_N)
+selAll = pp.Literal('_').setParseAction(lambda toks: TROP.SELECT_ALL)
 
 #todo: spec the bounds of contexts to select to transform and act upon
-select = s(pp.Literal('select')) + VALBIND + s(SUB) + VALBIND
+select = s(pp.Literal('select')) + pp.Or([selAll, VALBIND]) \
+         + s(SUB) + pp.Or([selAll, VALBIND])
 
 
 #transform: ( bind op val|bind -> bind)
@@ -91,14 +98,15 @@ transform_core = pp.Or([unary_transform_core,
                         ternary_transform_core]) \
                         + op(rebind)
 
-transforms = op(select + COMMA) \
-             + transform_core \
+transforms = pp.Or([select, transform_core]) \
              + pp.ZeroOrMore(COMMA + transform_core)
 
 #Actions
 binary_transform_core.setParseAction(buildBinaryTransformComponent)
 unary_transform_core.setParseAction(buildUnaryTransformComponent)
 ternary_transform_core.setParseAction(buildTernaryTransformComponent)
+select.setParseAction(buildSelection)
+
 
 transform_core.setParseAction(addRebind)
 transforms.setParseAction(lambda toks: Transform(toks[:]))

@@ -119,7 +119,24 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
             result = TP.parseString('_$x')
             self.assertEqual(result.components[0].op, Transforms.TROP.ROUND)
 
-            
+
+      def test_selection_transform_all(self):
+            result = TP.select.parseString('select _ - _')[0]
+            self.assertIsInstance(result, Transforms.SelectionTransform)
+            self.assertEqual(result.lBound, Transforms.TROP.SELECT_ALL)
+            self.assertEqual(result.uBound, Transforms.TROP.SELECT_ALL)
+
+      def test_selection_transform_bounded(self):
+            result = TP.select.parseString('select 0 - 2')[0]
+            self.assertIsInstance(result, Transforms.SelectionTransform)
+            self.assertEqual(result.lBound, 0)
+            self.assertEqual(result.uBound, 2)
+
+      def test_selection_transform_variable(self):
+            result = TP.select.parseString('select $x - $y')[0]
+            self.assertIsInstance(result, Transforms.SelectionTransform)
+            self.assertEqual(result.lBound.value, 'x')
+            self.assertEqual(result.uBound.value, 'y')
             
       def test_fact_str_equal(self):
             transforms = ["$x + 20", "$x + 20, $y + 5",
@@ -129,7 +146,11 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
                           "-$x", "_$x", "-$x -> $y",
                           "_$x -> $y", "$x ~= /blah/ $a",
                           "$x ~= /aw+/ $b -> $blah",
-                          "$x + 2d5"]
+                          "$x + 2d5",
+                          "select 0 - 2",
+                          "select _ - _",
+                          "select $x - $y"
+            ]
             parsed = [TP.parseString(x) for x in transforms]
             zipped = zip(transforms, parsed)
             for t,p in zipped:
