@@ -253,7 +253,6 @@ class Trie_FactBase_Tests(unittest.TestCase):
         
         
         
-        
 if __name__ == "__main__":
     LOGLEVEL = logging.INFO
     logFileName = "log.RuleFactTrieTests"
@@ -261,7 +260,4 @@ if __name__ == "__main__":
     console = logging.StreamHandler()
     console.setLevel(logging.WARN)
     logging.getLogger().addHandler(console)
-    logging.debug("Debug Test")
-    logging.info("Info Test")
-    logging.warning("Warn test")
     unittest.main()
