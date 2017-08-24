@@ -1,0 +1,15 @@
+// initial assertions
+.a.b!5
+.a.c!10
+.a.d!20
+
+// A Retracting rule
+.a.test.rule:
+    .a.$x!$y?
+
+    select _ - _
+    $y + 20
+
+    +(.a.$x!$y)
+end
+

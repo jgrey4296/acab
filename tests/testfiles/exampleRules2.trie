@@ -4,8 +4,6 @@
 .example.two.rule.one:
     .a.b.c?
 
-    $x + 20 -> $y
-    
     +(.d.e.f)
 end
 

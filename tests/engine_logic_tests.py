@@ -9,6 +9,9 @@ import IPython
 
 class Engine_Logic_Tests(unittest.TestCase):
 
+    def path(self, filename):
+        return join('.', 'testfiles', filename)
+    
     def setUp(self):
         self.e = T.Engine()
 
@@ -29,60 +32,76 @@ class Engine_Logic_Tests(unittest.TestCase):
         self.assertTrue(self.e.query(".a.b.d?"))
 
     def test_simple_file_load(self):
-        self.e.load_file(join(".", "testfiles", "exampleRule1.trie"))
+        self.e.load_file(self.path("exampleRule1.trie"))
         self.assertTrue(self.e.query(".a.b.c?, ~.d.e.f?"))
         self.assertEqual(len(self.e._rules), 1)
         self.e._run_rules()
         self.assertTrue(self.e.query(".a.b.c?, .d.e.f?"))
           
     def test_multi_rule_load_from_single_file(self):
-        self.e.load_file(join(".", "testfiles", "exampleRules2.trie"))
+        self.e.load_file(self.path("exampleRules2.trie"))
         self.assertEqual(len(self.e._rules), 2)
         self.assertTrue(self.e.query(".a.b.c?, .a.other!ex?, ~.d.e.f?, ~.d.e.g?"))
         self.e._run_rules()
         self.assertTrue(self.e.query(".a.b.c?, .a.other!ex?, .d.e.f?, .d.e.g?"))
 
     def test_file_load_with_comments(self):
-        self.e.load_file(join(".", "testfiles", "exampleComments.trie"))
+        self.e.load_file(self.path( "exampleComments.trie"))
         self.assertEqual(len(self.e._rules), 1)
         self.assertTrue(self.e.query("~.this.should.not.assert?"))
 
     def test_file_load_retraction(self):
-        self.e.load_file(join(".", "testfiles", "retractionTest.trie"))
+        self.e.load_file(self.path( "retractionTest.trie"))
         self.assertEqual(len(self.e._rules), 1)
         self.assertTrue(self.e.query(".a.b.c?"))
         self.e._run_rules()
         self.assertTrue(self.e.query("~.a.b.c?"))
 
     def test_file_load_multi_clauses(self):
-        self.e.load_file(join(".", "testfiles", "multiclause_rule.trie"))
+        self.e.load_file(self.path( "multiclause_rule.trie"))
         self.assertEqual(len(self.e._rules), 1)
         self.assertTrue(self.e.query(".a.b.c?, .a.c!d?"))
         self.e._run_rules()
         self.assertTrue(self.e.query(".a.b.c?, .a.c!d?, .a.b.e?"))
         
     def test_file_load_string_query(self):
-        self.assertTrue(False)
+        self.e.load_file(self.path("string_query_test.trie"))
+        self.assertEqual(len(self.e._rules), 2)
+        self.assertTrue(self.e.query("~.a.b.e?"))
+        self.e._run_rules()
+        self.assertTrue(self.e.query(".a.b.e?, .a.b.f?"))
 
     def test_file_load_string_assert(self):
-        self.assertTrue(False)
-
-    def test_file_load_string_retract(self):
-        self.assertTrue(False)
-
+        self.e.load_file(self.path("string_assert_test.trie"))
+        self.assertTrue(self.e.query('~.a.b."an asserted string"?'))
+        self.e._run_rules()
+        self.assertTrue(self.e.query('.a.b."an asserted string"?'))
+        
+    def _test_file_load_string_retract(self):
+        self.e.load_file(self.path("string_retract_test.trie"))
+        self.assertTrue(self.e.query('.a.b."a test string"?'))
+        self.e._run_rules()
+        self.assertTrue(self.e.query('~.a.b."a test string"?'))
+        
     def test_file_load_transform(self):
+        self.e.load_file(self.path("transform_test.trie"))
+        self.assertEqual(len(self.e._rules), 1)
+        self.assertTrue(self.e.query('.a.b!5?, .a.c!10?, .a.d!20?'))
+        self.e._run_rules()
+        self.assertTrue(self.e.query('.a.b!25?'))
+        self.assertTrue(self.e.query('.a.c!30?'))
+        self.assertTrue(self.e.query('.a.d!40?'))
+
+    def _test_file_load_multi_transform(self):
         self.assertTrue(False)
 
-    def test_file_load_multi_transform(self):
+    def _test_file_exclusion_query(self):
         self.assertTrue(False)
 
-    def test_file_exclusion_query(self):
+    def _test_file_exclusion_update(self):
         self.assertTrue(False)
 
-    def test_file_exclusion_update(self):
-        self.assertTrue(False)
-
-    def test_file_exclusion_override(self):
+    def _test_file_exclusion_override(self):
         self.assertTrue(False)
 
     
