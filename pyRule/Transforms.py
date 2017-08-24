@@ -4,7 +4,8 @@ import logging as root_logger
 from pyRule.utils import Bind
 from random import uniform, sample, randint
 from math import floor
-
+from re import sub
+import IPython
 logging = root_logger.getLogger(__name__)
 
 TROP = Enum("Transform_ops", "ADD SUB MUL DIV RAND REMAIN ROUND NEG REGEX FORMAT SELECT")
@@ -30,17 +31,17 @@ def REMAIN(a, b):
     #divde and get remainder?
     raise Exception("Not implemented yet")
 
-def ROUND(a):
+def ROUND(a, data):
     #round to integer
     return floor(a)
 
-def NEG(a):
+def NEG(a, data):
     #invert the number
     return -a
 
 def REGEX(a, b, data):
     #substitute a pattern with a value from passed in data
-    raise Exception("Not implemented yet")
+    return sub(b, a, data)
 
 def FORMAT(a, data):
     #use str.format variant with a data dictionary
@@ -59,7 +60,8 @@ TROP_LOOKUP = {
     TROP.REMAIN : REMAIN,
     TROP.ROUND : ROUND,
     TROP.NEG : NEG,
-    TROP.REGEX : REGEX
+    TROP.REGEX : REGEX,
+    TROP.FORMAT: FORMAT
 }
 
 TROP_REVERSE_LOOKUP = {
@@ -71,7 +73,8 @@ TROP_REVERSE_LOOKUP = {
     TROP.REMAIN : "%",
     TROP.ROUND: "_",
     TROP.NEG : "-",
-    TROP.REGEX : "~="    
+    TROP.REGEX : "~="  ,
+    TROP.FORMAT : "~{}"
 }
 
 TROP_PARAM_LENGTHS = {
@@ -83,7 +86,9 @@ TROP_PARAM_LENGTHS = {
     TROP.REMAIN : 2,
     TROP.ROUND: 1,
     TROP.NEG : 1,
-    TROP.REGEX : 3
+    TROP.REGEX : 3,
+    TROP.FORMAT: 1
+    
 }
 
 
@@ -138,8 +143,9 @@ class TransformComponent:
         elif param_length == 2:
             return "{} {} {}{}{}".format(source, op, value, bind, rebind)
         elif param_length == 3:
-            return "{} {} /{}/ {}{}".format(source, op, self.val,
-                                          repr(self.bind), rebind)
+            if bind != '':
+                bind = ' ' + bind
+            return "{} {} /{}/{}{}".format(source, op, value, bind, rebind)
 
         
 class Transform:
