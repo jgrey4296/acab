@@ -44,7 +44,7 @@ EQ = pp.Literal(COMP_REVERSE_LOOKUP[COMP.EQ])
 REGMATCH = pp.Literal(COMP_REVERSE_LOOKUP[COMP.RE])
 NOT = pp.Literal('~').setResultsName('NOT')
 SLASH = s(pp.Literal('/'))
-REGEX = pp.Regex(r'/.+/')
+REGEX = pp.Regex(r'/.+?/')
 COMP_OP = pp.Or([LT, GT, NE, EQ, REGMATCH])
 
 COMP_Internal = COMP_OP + pp.Or([VALBIND, REGEX])
@@ -69,6 +69,7 @@ GT.setParseAction(lambda toks: COMP.GT)
 NE.setParseAction(lambda toks: COMP.NE)
 EQ.setParseAction(lambda toks: COMP.EQ)
 REGMATCH.setParseAction(lambda toks: COMP.RE)
+
 REGEX.setParseAction(lambda toks: toks[0][1:-1])
 QueryCore.setParseAction(buildQueryComponent)
 #Clause, not negated:
