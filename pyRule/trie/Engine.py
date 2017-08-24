@@ -129,16 +129,26 @@ class Engine:
         for x in transform.components:
             #lookup op
             opFunc = Transforms.TROP_LOOKUP[x.op]
+            param_length = Transforms.TROP_PARAM_LENGTHS[x.op]
             #get source
             source = chosen_ctx[x.source.value]
-            #get second param:
-            if x.val is not None:
-                value = x.val
-            else:
-                value = chosen_ctx[x.bind.value]
-                
-            #perform
-            newVal = opFunc(source, value)
+
+            if param_length == 1:
+                newVal = opFunc(source, chosen_ctx)
+            elif param_length == 2:
+                #get second param:
+                if x.val is not None:
+                    value = x.val
+                else:
+                    value = chosen_ctx[x.bind.value]
+                newVal = opFunc(source, value)
+            elif param_length == 3:
+                if isinstance(x.bind, util.Bind):
+                    bindVal = chosen_ctx[x.bind.value]
+                else:
+                    bindVal = x.bind
+                newVal = opFunc(source, x.val, bindVal)
+
             #rebind or reapply
             if x.rebind is None:
                 chosen_ctx[x.source.value] = newVal
