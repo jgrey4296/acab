@@ -61,6 +61,7 @@ DIV = pp.Literal('/').setParseAction(lambda t: TROP.DIV)
 REM = pp.Literal('%').setParseAction(lambda t: TROP.REMAIN)
 RAND = pp.Literal('<->').setParseAction(lambda t: TROP.RAND)
 REGEXSUB = pp.Literal('~=').setParseAction(lambda t: TROP.REGEX)
+FORMAT = pp.Literal('~{}').setParseAction(lambda t: TROP.FORMAT)
 
 #Unary:
 ROUND = pp.Literal('_').setParseAction(lambda t: TROP.ROUND)
@@ -68,7 +69,7 @@ NEG = pp.Literal('-').setParseAction(lambda t: TROP.NEG)
 SLASH = pp.Literal('/')
 
 binary_trops = pp.Or([ADD, SUB, MUL, DIV, REM, RAND])
-unary_trops = pp.Or([ROUND, NEG])
+unary_trops = pp.Or([ROUND, NEG, FORMAT])
 ternary_trops = pp.Or([REGEXSUB])
 
 rebind = (ARROW + BIND).setResultsName(REBIND_N)
