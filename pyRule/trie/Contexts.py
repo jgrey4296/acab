@@ -1,4 +1,6 @@
 from random import shuffle
+from pyRule.Transforms import TROP
+import IPython
 
 class Contexts:
       """ Container of available contexts for a match in the trie  """
@@ -7,10 +9,16 @@ class Contexts:
             #A list of (data,lastNode) tokens
             self._alternatives = []
 
-      def select(self, min=0, max=1):
-            #todo: select number based on input
+      def select(self, bounds=(None, None)):
             shuffle(self._alternatives)
-            return self._alternatives[0][0]
+            if bounds[0] is None and bounds[1] is None:
+                  return [self._alternatives[0][0]]
+            if bounds[0] is TROP.SELECT_ALL and bounds[1] is TROP.SELECT_ALL:
+                  return [x[0] for x in self._alternatives]
+            IPython.embed(simple_prompt=True)
+            potentialAmnt = max(1, bounds[1] - bounds[0])
+            return [self._alternatives.pop()[0] for x in range(potentialAmnt)]
+                 
 
       def append(self, data):
             assert(len(data) == 2)
