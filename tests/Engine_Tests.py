@@ -97,7 +97,7 @@ class Engine_Tests(unittest.TestCase):
 
         stub_transform = TP.parseString('$a + 20, $b * 2')
         
-        result = self.e._run_transform(stub_ctx, stub_transform)
+        result = self.e._run_transform(stub_ctx[0], stub_transform)
         self.assertIsInstance(result, dict)
         self.assertEqual(result['a'], 22)
         self.assertEqual(result['b'], 8)
@@ -108,7 +108,7 @@ class Engine_Tests(unittest.TestCase):
         stub_ctx[0]['b'] = 8
 
         stub_transform = TP.parseString('$a + 20 -> $q, $b * $a -> $w')
-        result = self.e._run_transform(stub_ctx, stub_transform)
+        result = self.e._run_transform(stub_ctx[0], stub_transform)
         self.assertIsInstance(result, dict)
         self.assertEqual(result['a'], 2)
         self.assertEqual(result['b'], 8)
@@ -122,7 +122,7 @@ class Engine_Tests(unittest.TestCase):
         stub_ctx[0]['c'] = 2.53
 
         stub_transform = TP.parseString('-$a, -$b, _$c')
-        result = self.e._run_transform(stub_ctx, stub_transform)
+        result = self.e._run_transform(stub_ctx[0], stub_transform)
         self.assertIsInstance(result, dict)
         self.assertEqual(result['a'], -2)
         self.assertEqual(result['b'], 2)
@@ -135,7 +135,7 @@ class Engine_Tests(unittest.TestCase):
         stub_ctx[0]['c'] = 2.53
 
         stub_transform = TP.parseString('-$a -> $x, -$b -> $y, _$c -> $z')
-        result = self.e._run_transform(stub_ctx, stub_transform)
+        result = self.e._run_transform(stub_ctx[0], stub_transform)
         self.assertIsInstance(result, dict)
         self.assertEqual(result['a'], 2)
         self.assertEqual(result['b'], -2)
@@ -151,7 +151,7 @@ class Engine_Tests(unittest.TestCase):
         stub_ctx[0]['c'] = 2.53
 
         stub_transform = TP.parseString('$a + 20, $b - 20, $c + $a')
-        result = self.e._run_transform(stub_ctx, stub_transform)
+        result = self.e._run_transform(stub_ctx[0], stub_transform)
         self.assertIsInstance(result, dict)
         self.assertEqual(result['a'], 22)
         self.assertEqual(result['b'], -22)
@@ -164,7 +164,7 @@ class Engine_Tests(unittest.TestCase):
         stub_ctx[0]['c'] = 2.53
 
         stub_transform = TP.parseString('$a + 20 -> $x, $b - 20 -> $y, $c + $a -> $z')
-        result = self.e._run_transform(stub_ctx, stub_transform)
+        result = self.e._run_transform(stub_ctx[0], stub_transform)
         self.assertIsInstance(result, dict)
         self.assertEqual(result['a'], 2)
         self.assertEqual(result['b'], -2)
@@ -181,7 +181,7 @@ class Engine_Tests(unittest.TestCase):
         stub_ctx[0]['d'] = 'AAAA'
 
         stub_transform = TP.parseString('$a ~= /blah/ bloo, $b ~= /aaa\\w+/ $d, $c ~= /awef(\\w+)awef/ $d')
-        result = self.e._run_transform(stub_ctx, stub_transform)
+        result = self.e._run_transform(stub_ctx[0], stub_transform)
         self.assertIsInstance(result, dict)
         self.assertEqual(result['a'], 'bloo')
         self.assertEqual(result['b'], 'AAAA')
@@ -195,7 +195,7 @@ class Engine_Tests(unittest.TestCase):
         stub_ctx[0]['d'] = 'AAAA'
 
         stub_transform = TP.parseString('$a ~= /blah/ bloo -> $x, $b ~= /aaa\\w+/ $d -> $y, $c ~= /awef(\\w+)awef/ $d -> $z')
-        result = self.e._run_transform(stub_ctx, stub_transform)
+        result = self.e._run_transform(stub_ctx[0], stub_transform)
         self.assertIsInstance(result, dict)
         self.assertEqual(result['a'], 'blah')
         self.assertEqual(result['b'], 'aaablah')
@@ -214,7 +214,7 @@ class Engine_Tests(unittest.TestCase):
         stub_ctx[0]['z'] = "{c} {b} {a}"
 
         stub_transform = TP.parseString('~{} $x, ~{} $y, ~{} $z')
-        result = self.e._run_transform(stub_ctx, stub_transform)
+        result = self.e._run_transform(stub_ctx[0], stub_transform)
         self.assertIsInstance(result, dict)
         self.assertEqual(result['x'], 'AAA')
         self.assertEqual(result['y'], 'AAA blah BBB')
@@ -230,7 +230,7 @@ class Engine_Tests(unittest.TestCase):
         stub_ctx[0]['z'] = "{c} {b} {a}"
 
         stub_transform = TP.parseString('~{} $x -> $xa, ~{} $y -> $ya, ~{} $z -> $za')
-        result = self.e._run_transform(stub_ctx, stub_transform)
+        result = self.e._run_transform(stub_ctx[0], stub_transform)
         self.assertIsInstance(result, dict)
         self.assertEqual(result['xa'], 'AAA')
         self.assertEqual(result['ya'], 'AAA blah BBB')
