@@ -112,18 +112,25 @@ class Engine:
         if not bool(result):
             logging.warning("Rule {} Failed".format(rule._name))
             return False
+
+        if rule._transform is None:
+            selected = result.select()
+        else:
+            selected = result.select(rule._transform.getSelectionBounds())
+
+        transformed = []
+        for data in selected:
+            transformed.append(self._run_transform(data, rule._transform))
+
+        for data in transformed:
+            self._run_actions(data, rule._actions)
         
-        transformed = self._run_transform(result, rule._transform)
-        output = self._run_actions(transformed, rule._actions)
-        return output
     
     
     def _run_transform(self, ctx, transform):
-        assert(isinstance(ctx, Contexts))
+        assert(isinstance(ctx, dict))
         assert(transform is None or isinstance(transform, Transforms.Transform))
-        #todo: detect min max bounds of transform
-        #todo: Move this code into the transform component class?
-        chosen_ctx = ctx.select()
+        chosen_ctx = ctx
         if transform is None:
             return chosen_ctx
         for x in transform.components:
@@ -132,7 +139,6 @@ class Engine:
             param_length = Transforms.TROP_PARAM_LENGTHS[x.op]
             #get source
             source = chosen_ctx[x.source.value]
-
             if param_length == 1:
                 newVal = opFunc(source, chosen_ctx)
             elif param_length == 2:
