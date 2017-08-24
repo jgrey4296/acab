@@ -212,8 +212,11 @@ class Node:
         copied = fact.copy()
         copied.set_parent(self)
         if copied._op is EXOP.EX \
-           and len(self._children) > 1:
-            temp = self._children[copied._value]
+           and len(self._children) > 0:
+            if copied._value in self._children:
+                temp = self._children[copied._value]
+            else:
+                temp = None
             self._clear_node()
             if temp is not None:
                 self._children[copied._value] = temp
