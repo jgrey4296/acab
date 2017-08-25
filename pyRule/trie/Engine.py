@@ -3,6 +3,8 @@ The combined engine of underlying trie based knowledge store,
 with support for transforms and actions
 """
 import logging as root_logger
+from os.path import join, isfile, exists, isdir, splitext, expanduser
+from os import listdir
 
 from pyRule import Actions as Actions
 from pyRule import Transforms
@@ -23,7 +25,7 @@ logging = root_logger.getLogger(__name__)
 
 class Engine:
     
-    def __init__(self, init=None):
+    def __init__(self, init=None, path=None):
         self._trie = Trie(init)
         self._rules = {}
         #to be updated with printed representations of the trie state after each action
@@ -31,14 +33,19 @@ class Engine:
         #named recall states of past tries
         self._recall_states = []
         self._custom_actions = {}
+        if path is not None:
+            self.load_file(path)
 
     def load_file(self, filename):
         assert(isinstance(filename, str))
+        assert(exists(filename))
+        logging.info("Loading: {}".format(filename))
         with open(filename) as f:
             s = f.read()
         if s is not None:
             rules, assertions = FileP.parseString(s)
             for x in assertions:
+                logging.info("File load assertion: {}".format(x))
                 self.add(x)
             self.registerRules(rules)            
         else:
@@ -92,6 +99,7 @@ class Engine:
             try:
                 assert(isinstance(x, Rule))
                 assert(x.is_coherent())
+                logging.info("Registering Rule: {}".format(x._name))
                 ruleName = "".join([str(x) for x in x._name])
                 self._rules[ruleName] = x
             except Exception as e:
