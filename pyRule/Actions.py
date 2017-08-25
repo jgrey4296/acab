@@ -2,6 +2,7 @@ import logging as root_logger
 from enum import Enum
 from pyRule import utils as util
 from pyRule.trie import Node
+import IPython
 logging = root_logger.getLogger(__name__)
 
 #Action operators:
@@ -71,7 +72,7 @@ class Action:
         for x in self._values:
             if isinstance(x, util.Bind):
                 output.append(data[x.value])
-            if isinstance(x, list) and all([isinstance(y, Node) for y in x]):
+            elif isinstance(x, list) and all([isinstance(y, Node) for y in x]):
                 output.append([y.bind(data) for y in x])
             else:
                 output.append(x)
