@@ -55,8 +55,6 @@ def addRebind(toks):
     return component
 
 
-
-
 #Transform Operators, TROPSs
 #Binary:
 ADD = pp.Literal('+').setParseAction(lambda t: TROP.ADD)
@@ -80,13 +78,11 @@ ternary_trops = pp.Or([REGEXSUB])
 rebind = (ARROW + BIND).setResultsName(REBIND_N)
 selAll = pp.Literal('_').setParseAction(lambda toks: TROP.SELECT_ALL)
 
-#todo: spec the bounds of contexts to select to transform and act upon
 select = s(pp.Literal('select')) + pp.Or([selAll, VALBIND]) \
          + s(SUB) + pp.Or([selAll, VALBIND])
 
 
 #transform: ( bind op val|bind -> bind)
-#todo: separate out single operator trops and multi operator trops
 unary_transform_core = unary_trops + BIND
 
 binary_transform_core = VALBIND + binary_trops + VALBIND
@@ -110,9 +106,6 @@ select.setParseAction(buildSelection)
 
 transform_core.setParseAction(addRebind)
 transforms.setParseAction(lambda toks: Transform(toks[:]))
-
-#todo: build binary, unary, and ternary transforms,
-#build selection operator, build format
 
 def parseString(s):
     return transforms.parseString(s)[0]
