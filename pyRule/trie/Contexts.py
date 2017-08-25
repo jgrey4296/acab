@@ -15,7 +15,6 @@ class Contexts:
                   return [self._alternatives[0][0]]
             if bounds[0] is TROP.SELECT_ALL and bounds[1] is TROP.SELECT_ALL:
                   return [x[0] for x in self._alternatives]
-            IPython.embed(simple_prompt=True)
             potentialAmnt = max(1, bounds[1] - bounds[0])
             return [self._alternatives.pop()[0] for x in range(potentialAmnt)]
                  
