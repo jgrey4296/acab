@@ -101,6 +101,8 @@ class TransformComponent:
         self.op = op
     
 class SelectionTransform(TransformComponent):
+    """ The transform type which selects a number of possible bindings """
+    
     def __init__(self, lBound, uBound, op=TROP.SELECT):
         super().__init__(op)
         self.lBound = lBound
@@ -125,6 +127,8 @@ class SelectionTransform(TransformComponent):
 
         
 class OperatorTransform(TransformComponent):
+    """ The main transform type. applies the operator to values """
+    
     def __init__(self, op, source, value=None, bind=None, rebind=None):
         super().__init__(op)
         if bind is not None:
@@ -179,7 +183,8 @@ class OperatorTransform(TransformComponent):
 
         
 class Transform:
-    #todo: add ability to select n contexts, sort contexts by parameters,
+    """ Holds a number of separate transform operators together to apply to a binding set """
+    
     #have min and max bounds
     def __init__(self, components):
         assert(all([isinstance(x, TransformComponent) for x in components]))
