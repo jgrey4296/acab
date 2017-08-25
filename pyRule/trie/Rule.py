@@ -32,7 +32,6 @@ class Rule:
             self._tags = set()
             
     def __repr__(self):
-        #TODO: make this reparsable
         #todo: turn tags back into #tag
         nameStr = "".join([repr(x) for x in self._name[1:]])
         tagsStr = ", ".join(["#{}".format(x) for x in self._tags])
