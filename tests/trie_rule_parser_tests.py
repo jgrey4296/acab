@@ -3,6 +3,7 @@ import logging
 import IPython
 from test_context import pyRule
 from pyRule.trie import RuleParser as RP
+from pyRule.trie import FactParser as FP
 from pyRule.trie.Rule import Rule
 from pyRule.trie.Query import Query
 
@@ -24,7 +25,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertEqual(len(result), 1)
             self.assertIsInstance(result[0], Rule)
             self.assertEqual("".join([str(x) for x in result[0]._name]),
-                             "||root.a.rule")
+                             ".a.rule")
 
       def test_multi_empty_rules(self):
             result = RP.parseString(".a.rule:\nend\n\n.a.second.rule:\nend")
@@ -116,13 +117,23 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertIsNotNone(result[0]._transform)
             self.assertEqual(len(result[0]._actions), 1)
 
+      def test_rule_binding_expansion(self):
+            bindings = { "x" : FP.parseString('.a.b.c')[0],
+                         "y" : FP.parseString('.d.e.f')[0],
+                         "z" : FP.parseString('.x.y.z')[0] }
+            result = RP.parseString(".a.$x:\n$y.b.$z?\n\n$x + 2\n\n+($x)\nend")[0]
+            expanded = result.expandBindings(bindings)
+            self.assertEqual(str(expanded),
+                             ".a.a.b.c:\n\t.d.e.f.b.x.y.z?\n\n\t$x + 2\n\n\t+(.a.b.c)\nend")
+            
+            
       def test_fact_str_equal(self):
             rules = [ ".a.rule:\nend",
                       ".a.rule:\n\t.a.b.c?\n\nend",
                       ".a.rule:\n\t.a.b.c?\n\t.a.b!d?\n\nend",
                       ".a.different.rule:\n\t.a.b.c?\n\n\t$x + 20\n\nend",
                       ".a.rule:\n\t.a.b.c?\n\n\t$x + 20 -> $y\n\nend",
-                      ".a.rule:\n\t.a.b.c?\n\n\t$x * 10 -> $AB\n\n+(.a.b.d)\nend"]
+                      ".a.rule:\n\t.a.b.c?\n\n\t$x * 10 -> $AB\n\n\t+(.a.b.d)\nend"]
 
             parsed = [RP.parseString(x)[0] for x in rules]
             zipped = zip(rules, parsed)

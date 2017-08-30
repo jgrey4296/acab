@@ -2,6 +2,7 @@ import unittest
 import logging
 from test_context import pyRule
 from pyRule.trie import ActionParser as AP
+from pyRule.trie import FactParser as FP 
 from pyRule import Actions
 
 class Trie_Action_Parser_Tests(unittest.TestCase):
@@ -44,13 +45,25 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
                                            Actions.ACTS.PRINT,
                                            "blah"]):
                   self.assertEqual(action._op, op)
+
+      def test_actions_fact_str(self):
+            result = AP.parseString('+(.a.b.c), -(.a!b.d), +($x), +($x.a.b)')
+            self.assertEqual(len(result), 4)
+            self.assertTrue(all([isinstance(x, Actions.Action) for x in result]))
             
       def test_action_str_equal(self):
             actions = ["+(2)", "-(3)", "@(4)", "blah(5)"]
             parsed = [AP.parseString(x)[0] for x in actions]
             zipped = zip(actions, parsed)
             self.assertTrue(all([x == str(y) for x,y in zipped]))
-      
+
+      def test_action_binding_expansion(self):
+            bindings = {"x" : FP.parseString('.a.b.c')[0] }
+            action = AP.parseString("+($x)")[0]
+            newAction = action.expandBindings(bindings)
+            self.assertEqual(str(newAction), "+(.a.b.c)")
+
+            
 
 if __name__ == "__main__":
       LOGLEVEL = logging.INFO
