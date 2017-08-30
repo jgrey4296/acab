@@ -45,6 +45,18 @@ class Action:
         self._op = op
         self._values = values
 
+    def expandBindings(self, bindings):
+        newValues = []
+        for x in self._values:
+            if isinstance(x, util.Bind) and x.value in bindings:
+                newValues.append(bindings[x.value])
+            elif isinstance(x, list):
+                newValues.append(util.expandFact(x, bindings))
+            else:
+                newValues.append(x)
+        return Action(self._op, newValues)
+                
+        
     def __repr__(self):
         if isinstance(self._op, str):
             op = self._op
