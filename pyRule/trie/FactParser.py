@@ -23,10 +23,7 @@ def construct_num(toks):
         return int(toks)
 
 def construct_fact_string(toks):
-    if isinstance(toks[0], Bind):
         return [toks[:]]
-    else:
-        return [[Node.Root()] + toks[:]]
     
 #Base Defs
 DOT = pp.Keyword('.', identChars='!')
