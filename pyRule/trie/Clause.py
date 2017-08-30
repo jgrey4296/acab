@@ -1,4 +1,5 @@
 from .Node import Node
+from pyRule.utils import expandFact
 
 #todo: split comps into alpha and beta
 class Clause:
@@ -7,7 +8,7 @@ class Clause:
     from root to leaf """
     
     def __init__(self, components, negated=False):
-        assert(all([isinstance(x, Node) for x in components]))
+        assert(all([isinstance(x, Node) for x in components[1:]]))
         self.negated = negated
         self.components = components
 
@@ -19,3 +20,6 @@ class Clause:
             
         return "{}{}?".format(neg, "".join([repr(x) for x in self.components]))
 
+    def expandBindings(self, bindings):
+        newComponents = expandFact(self.components, bindings)
+        return Clause(newComponents, negated=self.negated)
