@@ -22,6 +22,12 @@ def construct_num(toks):
     else:
         return int(toks)
 
+def construct_fact_string(toks):
+    if isinstance(toks[0], Bind):
+        return [toks[:]]
+    else:
+        return [[Node.Root()] + toks[:]]
+    
 #Base Defs
 DOT = pp.Keyword('.', identChars='!')
 EX = pp.Keyword('!', identChars='.')
@@ -42,7 +48,7 @@ VALBIND = pp.Or([VALUE, BIND])
 #Core = .a | !b | .$a | !$b
 PARAM_CORE = OP + VALBIND
 
-param_fact_string = pp.OneOrMore(PARAM_CORE)
+param_fact_string = op(BIND) + pp.OneOrMore(PARAM_CORE)
 param_fact_strings = param_fact_string + pp.ZeroOrMore(COMMA + param_fact_string)
 
 #Actions
@@ -53,7 +59,7 @@ EX.setParseAction(lambda t: EXOP.EX)
 NUM.setParseAction(lambda t: construct_num(t[0]))
 
 PARAM_CORE.setParseAction(lambda toks: Node(toks[1], toks[0]))
-param_fact_string.setParseAction(lambda toks: [[Node.Root()] + toks[:]])
+param_fact_string.setParseAction(construct_fact_string)
 
 # MAIN PARSER:
 def parseString(s):
