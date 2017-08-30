@@ -65,7 +65,7 @@ class Action:
         args = []
         for val in self._values:
             if isinstance(val, list) and isinstance(val[0], Node):
-                args.append("".join([str(x) for x in val[1:]]))
+                args.append("".join([str(x) for x in val]))
             else:
                 args.append(str(val))
         return "{}({})".format(op, ",".join(args))
