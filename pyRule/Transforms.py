@@ -9,7 +9,6 @@ import IPython
 logging = root_logger.getLogger(__name__)
 
 TROP = Enum("Transform_ops", "ADD SUB MUL DIV RAND REMAIN ROUND NEG REGEX FORMAT SELECT SELECT_ALL")
-#todo: add regex transform
 
 def ADD(a, b):
     return a + b
