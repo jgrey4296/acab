@@ -43,21 +43,19 @@ class Trie:
     def assertFact(self, factList):
         """ Assert a [FactNode] list """
         assert(all([isinstance(x, Node) for x in factList]))
-        assert(factList[0].is_root())
         self._clear_last_node()
-        for newNode in factList[1:]:
+        for newNode in factList:
             self._last_node = self._last_node.insert(newNode)
 
 
     def retractFact(self, factList):
         """ Retract a [FactNode] list """
         assert(all([isinstance(x, Node) for x in factList]))
-        assert(factList[0].is_root())
         #go down to the child, and remove it
         self._clear_last_node()
         lastInList = factList.pop()
         
-        for node in factList[1:]:
+        for node in factList:
             self._last_node = self._last_node.get(node)
             if self._last_node is None:
                 return
