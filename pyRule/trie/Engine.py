@@ -108,9 +108,8 @@ class Engine:
     def _run_rules(self):
         #todo: make it parse the names of rules to run
         #for now, run all rules in random order
-        results = []
         for r in self._rules.values():
-            results.append(self.run_rule(r))
+            self.run_rule(r)
 
     def run_rule(self, rule):
         assert(isinstance(rule, Rule))
@@ -119,7 +118,7 @@ class Engine:
         result = self.query(rule._query)
         if not bool(result):
             logging.warning("Rule {} Failed".format(rule._name))
-            return False
+            return
 
         if rule._transform is None:
             selected = result.select()
