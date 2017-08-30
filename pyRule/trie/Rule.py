@@ -33,7 +33,7 @@ class Rule:
             self._tags = set()
             
     def __repr__(self):
-        nameStr = "".join([repr(x) for x in self._name[1:]])
+        nameStr = "".join([repr(x) for x in self._name])
         tagsStr = ", ".join(["#{}".format(x) for x in self._tags])
         if self._query is not None:
             queryStr = "\t" + repr(self._query) + "\n\n"
@@ -43,8 +43,8 @@ class Rule:
             transformStr = "\t" + repr(self._transform) + "\n\n"
         else:
             transformStr = ""
-        if len(self._actions):
-            actionsStr = "\n\t".join([repr(x) for x in self._actions]) + "\n"
+        if len(self._actions) > 0:
+            actionsStr = "\t" + "\n\t".join([repr(x) for x in self._actions]) + "\n"
         else:
             actionsStr = ""
         return "{}:\n{}{}{}{}end".format(nameStr,
