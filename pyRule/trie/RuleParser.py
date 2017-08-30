@@ -65,23 +65,6 @@ def parseString(s):
 
 
 """
-todo: a parser to combine { query -> transform -> action }
-
-.rule.test:
-	#tags
-
-	 .a.b.c.d!20
-	 .a.d.e.$t(>30)
-
-         ($t + 20 -> $y)
-
-         +.a.b.c.d
-          +.a.b.e!$t
-          -.a.b.e.f
-          @"Blah"
-          something("else")
-end
-
 meta rules:
 add/remove/replace penumbra conditions
 modify penumbra transforms
