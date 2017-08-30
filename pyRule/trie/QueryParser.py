@@ -2,7 +2,7 @@ import logging as root_logger
 import pyparsing as pp
 from pyRule.utils import Bind,META_OP
 from pyRule.Comparisons import COMP, Comparison, COMP_REVERSE_LOOKUP
-from .FactParser import COMMA, VALBIND, PARAM_CORE
+from .FactParser import COMMA, VALBIND, PARAM_CORE, BIND
 from .Query import Query
 from .Clause import Clause
 
@@ -57,7 +57,7 @@ comparison = OPAR + COMP_Internal \
 QueryCore = PARAM_CORE + op(comparison)
 
 #Core Query Chain
-clause = op(NOT)  + pp.OneOrMore(QueryCore) + s(QMARK)
+clause = op(NOT) + op(BIND) + pp.OneOrMore(QueryCore) + s(QMARK)
 
 clauses = clause + pp.ZeroOrMore(COMMA + clause)
 
@@ -74,7 +74,7 @@ REGEX.setParseAction(lambda toks: toks[0][1:-1])
 QueryCore.setParseAction(buildQueryComponent)
 #Clause, not negated:
 clause.setParseAction(buildClause)
-clauses.setParseAction(lambda toks: Query(*toks[:]))
+clauses.setParseAction(lambda toks: Query(toks[:]))
 
 #Main parser:
 def parseString(s):
