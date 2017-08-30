@@ -1,5 +1,6 @@
 from enum import Enum
 from collections import namedtuple
+import IPython
 
 #Trie exclusion operator:
 EXOP = Enum('EXOP', 'DOT EX ROOT')
@@ -24,20 +25,19 @@ class Bind: #pylint: disable=too-few-public-methods
 
 def expandFact(factString, bindings):
     output = []
-    if isinstance(factString[0], Bind) and factString[0].value in bindings:
-        output += bindings[factString[0].value]
-    else:
-        output.append(factString[0])
 
-    for x in factString[1:]:
-        if x.get_meta_eval(META_OP.BIND) and x._value in bindings:
+    for x in factString:
+        if isinstance(x, Bind) and x.value in bindings:
+            retrieved = bindings[x.value]
+        elif x.get_meta_eval(META_OP.BIND) and x._value in bindings:
             retrieved = bindings[x._value]
-            if retrieved[0].is_root():
-                output += retrieved[1:]
-            else:
-                output += retrieved
         else:
-            output.append(x)
+            retrieved = [x]
+            
+        if retrieved[0].is_root():
+            output += retrieved[1:]
+        else:
+            output += retrieved
     return output
             
         
