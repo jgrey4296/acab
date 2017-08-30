@@ -34,7 +34,10 @@ class Rule:
             
     def __repr__(self):
         nameStr = "".join([repr(x) for x in self._name])
-        tagsStr = ", ".join(["#{}".format(x) for x in self._tags])
+        if len(self._tags) > 0:
+            tagsStr = "\t" + ", ".join(sorted(["#{}".format(x) for x in self._tags])) + "\n\n"
+        else:
+            tagsStr = ""
         if self._query is not None:
             queryStr = "\t" + repr(self._query) + "\n\n"
         else:

@@ -125,6 +125,12 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             expanded = result.expandBindings(bindings)
             self.assertEqual(str(expanded),
                              ".a.a.b.c:\n\t.d.e.f.b.x.y.z?\n\n\t$x + 2\n\n\t+(.a.b.c)\nend")
+
+      def test_rule_tags(self):
+            result = RP.parseString('.a.test.rule:\n#blah, #bloo, #blee\n\n.a.b.c?\n\n+(.a.b.c)\nend')[0]
+            self.assertIsInstance(result, Rule)
+            self.assertEqual("".join([str(x) for x in result._name]), ".a.test.rule")
+            self.assertTrue(all(x in result._tags for x in ["blah","bloo","blee"]))
             
             
       def test_fact_str_equal(self):
@@ -133,7 +139,8 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
                       ".a.rule:\n\t.a.b.c?\n\t.a.b!d?\n\nend",
                       ".a.different.rule:\n\t.a.b.c?\n\n\t$x + 20\n\nend",
                       ".a.rule:\n\t.a.b.c?\n\n\t$x + 20 -> $y\n\nend",
-                      ".a.rule:\n\t.a.b.c?\n\n\t$x * 10 -> $AB\n\n\t+(.a.b.d)\nend"]
+                      ".a.rule:\n\t.a.b.c?\n\n\t$x * 10 -> $AB\n\n\t+(.a.b.d)\nend",
+                      ".a.rule:\n\t#blah, #blee, #bloo\n\nend"]
 
             parsed = [RP.parseString(x)[0] for x in rules]
             zipped = zip(rules, parsed)
