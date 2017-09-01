@@ -113,3 +113,7 @@ class ActionMacroUse:
         assert(isinstance(params, list))
         self._name = name
         self._params = params
+
+    def expandBindings(self, bindings):
+        #todo: does this need to be implemented?
+        return self
