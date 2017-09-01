@@ -14,7 +14,7 @@ class Rule:
     def __init__(self, query, actions, transform=None, name=None, tags=None):
         assert(query is None or isinstance(query, Query))
         assert(isinstance(actions, list))
-        assert(all([isinstance(x, A.Action) for x in actions]))
+        assert(all([isinstance(x, (A.Action, A.ActionMacroUse)) for x in actions]))
         assert(transform is None or isinstance(transform, T.Transform))
         assert(tags is None or all([isinstance(x, str) for x in tags]))
         if name is None:
@@ -88,4 +88,34 @@ class Rule:
                     newActions,
                     transform=self._transform,
                     name=newName,
+                    tags=self._tags)
+
+    def expandActionMacros(self, macros):
+        expandedActions = []
+        for action in self._actions:
+            if isinstance(action, A.Action):
+                expandedActions.append(action)
+            else:
+                assert(isinstance(action, A.ActionMacroUse))
+                assert(action._name in macros)
+                #the macro:
+                aMacro = macros[action._name]
+                #get the call params
+                cPars = action._params
+                #get the formal params
+                fPars = aMacro._params
+                #create the rebind dictionary
+                bindDict = util.build_rebind_dict(fPars, cPars)
+                #expand the macro
+                newActions = aMacro._actions
+                #expand the individual actions
+                exActs = [x.expandBindings(bindDict) for x in newActions]
+                #splice
+                expandedActions += exActs
+
+        #return a copy of with the expanded action list
+        return Rule(self._query,
+                    expandedActions,
+                    transform=self._transform,
+                    name=self._name,
                     tags=self._tags)
