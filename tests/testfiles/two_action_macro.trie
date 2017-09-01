@@ -8,10 +8,16 @@
     -(.a.b.$x)
 end
 
+#second():
+    +(.blah)
+    +(.bloo)
+end
+
 .an.action.macro.rule:
     .a.b.$a?
     .a.c.$b?
 
     #action($a, $b)
+    #second()
 end
 

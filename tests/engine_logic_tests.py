@@ -120,6 +120,29 @@ class Engine_Logic_Tests(unittest.TestCase):
     def test_macro_binding_empty(self):
         self.e.load_file(self.path("macro_empty_binding_test.trie"))
         self.assertTrue(self.e.query('~.a.b.c?'))
+
+    def test_action_macro(self):
+        self.e.load_file(self.path("action_macro.trie"))
+        self.assertTrue(self.e.query('.a.b.first?, .a.c.second?'))
+        self.e._run_rules()
+        self.assertTrue(self.e.query('~.a.b.first?, ~.a.c.second?, .a.b.second?, .a.c.first?'))
+        rule = list(self.e._rules.values())[0]
+        self.assertEqual(len(rule._actions), 4)
+
+    def test_two_action_macros(self):
+        self.e.load_file(self.path("two_action_macro.trie"))
+        self.assertTrue(self.e.query('.a.b.first?, .a.c.second?'))
+        self.e._run_rules()
+        self.assertTrue(self.e.query('~.a.b.first?, ~.a.c.second?, .a.b.second?, .a.c.first?, .blah?, .bloo?'))
+        rule = list(self.e._rules.values())[0]
+        self.assertEqual(len(rule._actions), 6)
+
+    def test_action_macros_with_values(self):
+        self.e.load_file(self.path("valued_action_macro.trie"))
+        self.assertTrue(self.e.query('.a.b.c?'))
+        self.e._run_rules()
+        self.assertTrue(self.e.query('.a.b.c?, .a.b."this is a test"?'))
+        
         
 
 if __name__ == "__main__":
