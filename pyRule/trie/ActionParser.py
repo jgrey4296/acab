@@ -1,10 +1,11 @@
 import logging as root_logger
 import pyparsing as pp
-from .FactParser import COMMA, param_fact_string, end, COLON
+from .FactParser import COMMA, param_fact_string, end, COLON, sLn
 from .QueryParser import VALBIND, NOT, OPAR, CPAR, BIND
 from .TransformParser import ADD
 from pyRule import utils as util
 from pyRule import Actions
+import IPython
 
 logging = root_logger.getLogger(__name__)
 pp.ParserElement.setDefaultWhitespaceChars(' \t\r')
@@ -17,20 +18,32 @@ def build_action(toks):
     return Actions.Action(toks.operator, toks.ActionValues[:])
 
 def build_macro_use(toks):
-    return Actions.ActionMacroUse(toks.name,
-                                  toks.bindings)
+    if 'bindings' in toks:
+        bindings = toks.bindings[:]
+    else:
+        bindings = []
+    return Actions.ActionMacroUse(toks[0],
+                                  bindings)
 
 def build_definition(toks):
-    return Actions.ActionMacro(toks.actDefName,
-                               toks.actDefParams,
-                               toks.actDefActions)
+    parameters = []
+    m_actions = []
+    for x in toks[1:]:
+        if isinstance(x, util.Bind):
+            parameters.append(x)
+        elif isinstance(x, Actions.Action):
+            m_actions.append(x)
+
+    return Actions.ActionMacro(toks[0],
+                               parameters,
+                               m_actions)
 
 #Action operators:
 ASSERT = pp.Literal('+').setParseAction(lambda t: Actions.ACTS.ADD)
 RETRACT = pp.Literal('-').setParseAction(lambda t: Actions.ACTS.RETRACT)
 PRINT = pp.Literal('@').setParseAction(lambda t: Actions.ACTS.PRINT)
 CUSTOM = pp.Word(pp.alphas)
-ACT_MACRO = (s(pp.Literal('#')) + CUSTOM).setParseAction(lambda t: Actions.ACTMACRONAME(toks[0]))
+ACT_MACRO = (s(pp.Literal('#')) + CUSTOM).setParseAction(lambda t: Actions.ACTMACRONAME(t[0]))
 
 #operators, also with a custom string option
 operator = pp.Or([ASSERT, RETRACT, PRINT, CUSTOM])
@@ -45,19 +58,19 @@ action = operator.setResultsName('operator') + OPAR \
          + vals.setResultsName('ActionValues') \
          + CPAR 
 
-actionMacroUse = ACT_MACRO.setResultsName('macroName') + \
-        OPAR + op(bindList).setResultsName('bindings') + CPAR
+actionMacroUse = ACT_MACRO + \
+        OPAR + op(vals).setResultsName('bindings') + CPAR
 
 actionsOrMacros = pp.Or([actionMacroUse, action])
 
+justActions = action + pp.ZeroOrMore(COMMA + action)
 actions = actionsOrMacros + pp.ZeroOrMore(COMMA + actionsOrMacros)
 
-action_definition = ACT_MACRO.setResultsName("actDefName") \
-                    + OPAR \
-                    + op(bindList).setResultsName("actDefParams") \
-                    + CPAR + COLON \
-                    + actions.setResultsName("actDefActions") \
-                    + end
+action_definition = ACT_MACRO + OPAR \
+                    + op(bindList) \
+                    + CPAR + COLON + sLn\
+                    + justActions \
+                    + sLn + end
 
 
 #parse actions
