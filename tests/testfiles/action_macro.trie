@@ -1,0 +1,14 @@
+
+#action($x, $y):
+    +(.a.b.c.$y)
+    -(.a.b.d.$y)
+    @($x)
+end
+
+.a.rule:
+    .a.b.$a?
+    .a.b.c.$b?
+
+    #action($a, $b)
+end
+
