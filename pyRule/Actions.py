@@ -2,11 +2,14 @@ import logging as root_logger
 from enum import Enum
 from pyRule import utils as util
 from pyRule.trie import Node
+from collections import namedtuple
 import IPython
 logging = root_logger.getLogger(__name__)
 
 #Action operators:
-ACTS = Enum('Action_ops', 'ADD RETRACT PRINT CUSTOM')
+ACTS = Enum('Action_ops', 'ADD RETRACT PRINT CUSTOM ACT_MACRO')
+
+ACTMACRONAME = namedtuple('ActMacroId', 'name')
 
 #Action function template:
 # def [name](engine, *params)
@@ -46,6 +49,9 @@ class Action:
         self._values = values
 
     def expandBindings(self, bindings):
+        """ Expand stored bindings at interpret time
+        ie: +(.a.b.$x) + { x : .a.b.c } -> +(.a.b.a.b.c)
+        """
         newValues = []
         for x in self._values:
             if isinstance(x, util.Bind) and x.value in bindings:
@@ -55,8 +61,7 @@ class Action:
             else:
                 newValues.append(x)
         return Action(self._op, newValues)
-                
-        
+
     def __repr__(self):
         if isinstance(self._op, str):
             op = self._op
@@ -89,3 +94,22 @@ class Action:
             else:
                 output.append(x)
         return output
+
+
+class ActionMacro:
+
+    def __init__(self, name, params, actions):
+        assert(isinstance(name, ACTMACRONAME))
+        assert(isinstance(params, list))
+        assert(isinstance(actions, list))
+        self._name = name
+        self._params = params
+        self._actions = actions
+
+class ActionMacroUse:
+
+    def __init__(self, name, params):
+        assert(isinstance(name, ACTMACRONAME))
+        assert(isinstance(params, list))
+        self._name = name
+        self._params = params
