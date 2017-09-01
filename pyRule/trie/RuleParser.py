@@ -35,7 +35,6 @@ def build_rule(toks):
         
 s = pp.Suppress
 op = pp.Optional
-sLn = s(pp.White(ws='\n',exact=1))
 opLn = s(op(pp.LineEnd()))
 HASH = s(pp.Literal('#'))
 emptyLine = s(pp.lineEnd + pp.lineEnd)
@@ -48,7 +47,7 @@ conditions = (QP.clauses + emptyLine).setResultsName('conditions')
 transforms = (TP.transforms + emptyLine).setResultsName('transforms')
 actions = (AP.actions + s(pp.lineEnd)).setResultsName('actions')
 
-rule = ruleName + FP.COLON + sLn \
+rule = ruleName + FP.COLON + FP.sLn \
        + op(tagList) \
        + op(conditions) + op(transforms) + op(actions) \
        + FP.end
