@@ -106,10 +106,8 @@ class Rule:
                 fPars = aMacro._params
                 #create the rebind dictionary
                 bindDict = util.build_rebind_dict(fPars, cPars)
-                #expand the macro
-                newActions = aMacro._actions
                 #expand the individual actions
-                exActs = [x.expandBindings(bindDict) for x in newActions]
+                exActs = [x.expandBindings(bindDict) for x in aMacro._actions]
                 #splice
                 expandedActions += exActs
 
