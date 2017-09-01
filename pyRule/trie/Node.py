@@ -11,7 +11,7 @@ import re
 class Node:
     """ Both the type of a node in the trie,
     and the representation of data to add into the trie """ 
-
+    
     def __init__(self, value, operator,
                  parent=None,
                  meta_leaf=None,
@@ -135,6 +135,9 @@ class Node:
         comp = all([self._children[x] == other._children[x] for x in self._children.keys()])
         return comp
 
+    def __hash__(self):
+        return hash(repr(self))
+    
     def __repr__(self):
         """ Return a representation of this particular node """
         #operator stringify
