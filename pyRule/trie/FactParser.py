@@ -32,6 +32,7 @@ OP = pp.Or([DOT,EX])
 COMMA = s(pp.Or([pp.Literal(',') + opLn, pp.lineEnd]))
 COLON = s(pp.Literal(':'))
 end = s(pp.Literal('end'))
+sLn = s(pp.White(ws='\n',exact=1))
 DOLLAR = pp.Literal('$')
 
 #todo: add in underscores
