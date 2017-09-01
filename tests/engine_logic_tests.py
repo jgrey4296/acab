@@ -112,7 +112,14 @@ class Engine_Logic_Tests(unittest.TestCase):
     def test_file_exclusion_update(self):
         self.e.load_file(self.path("exclusion_update_test.trie"))
         self.assertTrue(self.e.query('.a.b!20?, ~.a.b.!10?, ~.a.b!5?'))
-        
+
+    def test_macro_binding(self):
+        self.e.load_file(self.path("macro_binding_test.trie"))
+        self.assertTrue(self.e.query('.a.b.c.d?, .a.b.c.e?'))
+
+    def test_macro_binding_empty(self):
+        self.e.load_file(self.path("macro_empty_binding_test.trie"))
+        self.assertTrue(self.e.query('~.a.b.c?'))
         
 
 if __name__ == "__main__":

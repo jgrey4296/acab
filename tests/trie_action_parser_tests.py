@@ -63,7 +63,7 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
             newAction = action.expandBindings(bindings)
             self.assertEqual(str(newAction), "+(.a.b.c)")
 
-            
+      
 
 if __name__ == "__main__":
       LOGLEVEL = logging.INFO
