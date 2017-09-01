@@ -30,6 +30,8 @@ DOT = pp.Keyword('.', identChars='!')
 EX = pp.Keyword('!', identChars='.')
 OP = pp.Or([DOT,EX])
 COMMA = s(pp.Or([pp.Literal(',') + opLn, pp.lineEnd]))
+COLON = s(pp.Literal(':'))
+end = s(pp.Literal('end'))
 DOLLAR = pp.Literal('$')
 
 #todo: add in underscores
