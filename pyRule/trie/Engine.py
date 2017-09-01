@@ -79,8 +79,6 @@ class Engine:
             assert(isinstance(s[0], Node))
             self._trie.retractFact(s)
         
-        
-
 
     def query(self, s):
         if isinstance(s, str):
@@ -102,14 +100,18 @@ class Engine:
                 logging.info("Registering Rule: {}".format(x._name))
                 ruleName = "".join([str(x) for x in x._name])
                 self._rules[ruleName] = x
+                #todo: assert the fact here
             except Exception as e:
                 logging.exception(e)
 
-    def _run_rules(self):
+    def _run_rules(self, rule_locations=None):
         #todo: make it parse the names of rules to run
         #for now, run all rules in random order
-        for r in self._rules.values():
-            self.run_rule(r)
+        if rule_locations is None:
+            #run all rules
+            for r in self._rules.values():
+                self.run_rule(r)
+        #otherwise, get by trie location / tag and run those
 
     def run_rule(self, rule):
         assert(isinstance(rule, Rule))
