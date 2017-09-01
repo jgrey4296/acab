@@ -30,13 +30,6 @@ class Node:
         self._meta_leaf = {}
         self._meta_eval = {}
 
-        if meta_eval is not None:
-            for k,v in meta_eval.items():
-                self.set_meta_eval(k, v)
-        if meta_leaf is not None:
-            for k,v in meta_leaf.items():
-                self.set_meta_leaf(k,v)
-
         if not isinstance(value, util.Bind):
             self._value = value
             self.set_meta_eval(util.META_OP.BIND, False)
@@ -44,6 +37,15 @@ class Node:
             #If a bind, extract the value, and annotate the node
             self._value = value.value
             self.set_meta_eval(util.META_OP.BIND, True)
+
+        #after value setting to override based on passed in meta ops
+        if meta_eval is not None:
+            for k,v in meta_eval.items():
+                self.set_meta_eval(k, v)
+        if meta_leaf is not None:
+            for k,v in meta_leaf.items():
+                self.set_meta_leaf(k,v)
+            
         self._op = operator
         self._children = {}
         
