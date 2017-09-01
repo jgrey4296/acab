@@ -32,16 +32,24 @@ def expandFact(factString, bindings):
         elif x.get_meta_eval(META_OP.BIND) and x._value in bindings:
             retrieved = bindings[x._value]
         else:
-            retrieved = [x]
-            
-        if retrieved[0].is_root():
+            #early exit if a plain node
+            output.append(x)
+            continue
+        
+        if isinstance(retrieved, list) and retrieved[0].is_root():
             output += retrieved[1:]
+        elif isinstance(retrieved, list):
+            output += retrieved
         elif isinstance(retrieved, Bind):
             copyNode = x.copy()
             copyNode._value = retrieved.value
-            retrieved = copyNode
+            output.append(copyNode)
         else:
-            output += retrieved
+            copyNode = x.copy()
+            copyNode._value = retrieved
+            copyNode.set_meta_eval(META_OP.BIND, False)
+            output.append(copyNode)
+            
     return output
             
         
@@ -49,6 +57,5 @@ def build_rebind_dict(formal, usage):
     """ Build a dictionary for action macro expansion,
     to swap internal formal params for proided usage params """
     assert(all([isinstance(x, Bind) for x in formal]))
-    assert(all([isinstance(x, Bind) for x in usage]))
     fVals = [x.value for x in formal]
     return dict(zip(fVals, usage))
