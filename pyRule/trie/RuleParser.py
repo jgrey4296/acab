@@ -37,10 +37,8 @@ s = pp.Suppress
 op = pp.Optional
 sLn = s(pp.White(ws='\n',exact=1))
 opLn = s(op(pp.LineEnd()))
-COLON = s(pp.Literal(':'))
 HASH = s(pp.Literal('#'))
 emptyLine = s(pp.lineEnd + pp.lineEnd)
-ruleEnd = s(pp.Literal('end'))
 
 ruleName = FP.param_fact_string.copy().setResultsName('ruleName')
 tagName = HASH + FP.NAME
@@ -50,14 +48,15 @@ conditions = (QP.clauses + emptyLine).setResultsName('conditions')
 transforms = (TP.transforms + emptyLine).setResultsName('transforms')
 actions = (AP.actions + s(pp.lineEnd)).setResultsName('actions')
 
-rule = ruleName + COLON + sLn \
+rule = ruleName + FP.COLON + sLn \
        + op(tagList) \
        + op(conditions) + op(transforms) + op(actions) \
-       + ruleEnd
-
-rule.setParseAction(build_rule)
+       + FP.end
 
 rules = rule + pp.ZeroOrMore(emptyLine + rule)
+
+
+rule.setParseAction(build_rule)
 
 def parseString(s):
     assert(isinstance(s, str))
