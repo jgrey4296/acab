@@ -1,0 +1,39 @@
+
+//A DSL to spec an agent's cognitive architecture
+
+//A Simple BDI agent
+Input (.worldState, .agent)
+EvalRules(.agent.rules.belief_gen) on .worldState -> .agent.beliefs
+EvalRules(.agent.rules.desires) on .agent.beliefs, .agent.desires:
+    -> .agent.active.desires
+end
+RankBy(.agent.hierarchy.desires) on .agent.active.desires
+SelectFrom(best, 0.1, .agent.active.desires) -> .agent.selected.desire
+EvalRules(.agent.rules.action_gen) on .worldState, .agent.selected.desire:
+    -> .agent.applicable.actions
+end
+selectFrom(best, 0.1, .agent.applicable.actions) -> .agent.selected.action
+perform(.agent.selected.action)
+output (Action)
+
+//Simple CiF agent
+Input (.worldState, .agent)
+EvalRules(.agent.rules.volition) on .worldState -> .agent.activations.volition
+Aggregate(.agent.activations.volition) -> .agent.activations.aggregate.volition
+selectFrom(best, 0.1, .agent.activations.aggregate.volition) -> .agent.selected.volition
+EvalRules(.agent.rules.intention) on .worldState, .agent.selected.volition -> .agent.activations.intention
+Aggregate(.agent.activations.intention) -> .agent.activations.aggregate.intention
+selectFrom(best, 0.1, .agent.activations.aggregate.intention) -> .agent.selected.intention
+perform(.agent.selected.intention)
+EvalRules(.agent.rules.trigger) on .worldState, .agent.selected.intention) -> .worldState
+output (Action)
+
+//A simple versu agent
+Input (.worldState, .agent)
+EvalRules(.agent.rules.social_practice_activation) on .worldState -> .agent.activations.social_practices
+EvalRules(.agent.rules.social_practices) on .agent.activations.social_practices:
+    -> .agent.state.social_practices
+end
+
+
+output (Action)
