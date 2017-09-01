@@ -106,6 +106,16 @@ class ActionMacro:
         self._params = params
         self._actions = actions
 
+
+    def expandBindings(self, bindings):
+        newActions = [x.expandBindings(bindings) for x in self._actions]
+        return ActionMacro(self._name,
+                           self._params.copy(),
+                           newActions)
+        
+
+        
+        
 class ActionMacroUse:
 
     def __init__(self, name, params):

@@ -142,7 +142,12 @@ class Engine_Logic_Tests(unittest.TestCase):
         self.assertTrue(self.e.query('.a.b.c?'))
         self.e._run_rules()
         self.assertTrue(self.e.query('.a.b.c?, .a.b."this is a test"?'))
-        
+
+    def test_variable_macro_in_action_macro_test(self):
+        self.e.load_file(self.path("variable_macro_in_action_macro_test.trie"))
+        self.assertTrue(self.e.query('.a.b.c?'))
+        self.e._run_rules()
+        self.assertTrue(self.e.query('.a.b.c?, .a.b.blah?'))
         
 
 if __name__ == "__main__":

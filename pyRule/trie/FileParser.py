@@ -58,8 +58,8 @@ def expansion_pass(toks):
     #if a fact:
     if isinstance(toks[0], list):
         return [expandFact(toks[0], parseBindings)]
-    #or if a rule:
-    elif isinstance(toks[0], Rule):
+    #or if a rule or action macro:
+    elif isinstance(toks[0], (Rule, ActionMacro)):
         return [toks[0].expandBindings(parseBindings)]
     return toks
 
