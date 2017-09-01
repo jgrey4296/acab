@@ -148,6 +148,15 @@ class Engine_Logic_Tests(unittest.TestCase):
         self.assertTrue(self.e.query('.a.b.c?'))
         self.e._run_rules()
         self.assertTrue(self.e.query('.a.b.c?, .a.b.blah?'))
+
+    def test_rule_selection_running(self):
+        self.e.load_file(self.path("selection_of_rules_test.trie"))
+        self.assertTrue(self.e.query('.a.b.c?'))
+        self.e._run_rules(rule_tags=['second'])
+        self.assertTrue(self.e.query('.a.b.c?, ~.blah?, .bloo?'))
+        self.e._run_rules(rule_tags=['first'])
+        self.assertTrue(self.e.query('.a.b.c?, .blah?, .bloo?'))
+        
         
 
 if __name__ == "__main__":

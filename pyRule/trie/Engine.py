@@ -104,15 +104,20 @@ class Engine:
             except Exception as e:
                 logging.exception(e)
 
-    def _run_rules(self, rule_locations=None):
+    def _run_rules(self, rule_locations=None, rule_tags=None):
         #todo: make it parse the names of rules to run
         #for now, run all rules in random order
-        if rule_locations is None:
+        if rule_locations is None and rule_tags is None:
             #run all rules
             for r in self._rules.values():
                 self.run_rule(r)
         #otherwise, get by trie location / tag and run those
-
+        elif rule_tags is not None:
+            assert(isinstance(rule_tags,list))
+            applicable = [x for x in self._rules.values() if len(x._tags.intersection(rule_tags)) > 0]
+            for r in applicable:
+                self.run_rule(r)
+        
     def run_rule(self, rule):
         assert(isinstance(rule, Rule))
         assert(rule.is_coherent())

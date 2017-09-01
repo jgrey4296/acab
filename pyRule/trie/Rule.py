@@ -31,6 +31,9 @@ class Rule:
             self._tags = set(tags)
         else:
             self._tags = set()
+
+    def has_tag(self, t):
+        
             
     def __repr__(self):
         nameStr = "".join([repr(x) for x in self._name])

@@ -1,0 +1,17 @@
+.a.b.c
+
+.rule.first:
+    #first
+
+    .a.b.c?
+
+    +(.blah)
+end
+
+.rule.second:
+    #second
+
+    .a.b.c?
+
+    +(.bloo)
+end
