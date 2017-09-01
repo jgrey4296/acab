@@ -36,8 +36,19 @@ def expandFact(factString, bindings):
             
         if retrieved[0].is_root():
             output += retrieved[1:]
+        elif isinstance(retrieved, Bind):
+            copyNode = x.copy()
+            copyNode._value = retrieved.value
+            retrieved = copyNode
         else:
             output += retrieved
     return output
             
         
+def build_rebind_dict(formal, usage):
+    """ Build a dictionary for action macro expansion,
+    to swap internal formal params for proided usage params """
+    assert(all([isinstance(x, Bind) for x in formal]))
+    assert(all([isinstance(x, Bind) for x in usage]))
+    fVals = [x.value for x in formal]
+    return dict(zip(fVals, usage))
