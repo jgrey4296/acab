@@ -1,0 +1,49 @@
+// A Basic specification of a bdi agent
+
+//Shorthand binding
+//Desire assertion
+$x <- .agent.$name.desires
+$x.a
+$x.b
+$x.c
+
+//Agent structure
+.agent.$name.desires
+.agent.$name.beliefs
+.agent.$name.intentions
+.agent.$name.state
+.agents.actions
+    
+
+
+//Actions
+.actions.rule.x:
+    //Beliefs <-> pre conditions of actions
+    .a.b.c?
+    $x?
+    .a.d.f?
+
+    $x + 2
+    //Desires <-> Post conditions of actions 
+    +(.a.b.$x)
+    @("hello")
+end
+
+clear $x
+//Intentions -> actions added to a stack, to be selected from
+
+//Model Creation
+
+//Rule modification
+.a.mod.rule:
+    .actions.rule.#x
+    .actions.rule.#y
+    
+    -(#x)
+    +(#y)
+    addCondition(#y, .a.b.c?)
+    clearConditions(#y)
+end
+
+
+    
