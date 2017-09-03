@@ -33,7 +33,7 @@ class Rule:
             self._tags = set()
 
     def has_tag(self, t):
-        
+        return t in self._tags
             
     def __repr__(self):
         nameStr = "".join([repr(x) for x in self._name])
