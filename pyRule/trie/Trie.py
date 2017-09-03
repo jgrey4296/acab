@@ -95,20 +95,23 @@ class Trie:
 
         logging.debug("Testing clauses: {} {}".format(len(pos), len(neg)))
         for clause in pos:
-            updated_contexts = self._match_clause(clause, contexts)
+            (updated_contexts, failures) = self._match_clause(clause, contexts)
             updated_contexts = updated_contexts.set_all_alts(self._root)
+            if clause.fallback is not None:
+                #add all failures back in, with the default value
+                for d in failures:
+                    for bindTarget, val in clause.fallback:
+                        d[bindTarget.value] = val
+                updated_contexts._alternatives += [(x, self._root) for x in failures]
+            
             if bool(updated_contexts) is False:
                 logging.debug("A positive clause is false")
-                if clause.fallback is not None:
-                    ##add it to all alts, set contexts = updated_contexts, continue
-                    raise Exception("Unimplemented clause fallback")
-                else:
-                    contexts = updated_contexts
+                contexts = updated_contexts
                 break
             contexts = updated_contexts
 
         for negClause in neg:
-            result = self._match_clause(negClause, contexts)
+            result, failures = self._match_clause(negClause, contexts)
             logging.debug("neg result: {}".format(str(result)))
             if bool(result) is True:
                 logging.debug("A Negative clause is true")
@@ -124,6 +127,7 @@ class Trie:
         if not contexts:
             return contexts
         currentContexts = contexts
+        failures = []
         #Go down from the root by query element:
         #Failure at any point means don't add the updated context
 
@@ -139,16 +143,14 @@ class Trie:
                 newData = None
                 newNode = None
                 newBindings = []
-                tested = False
                 #check exclusion status, should continue the loop if false
-                b_exclusion_matches = Matching.exclusion_matches(c, lastNode)
-                if b_exclusion_matches:
-                    continue
+                tested = Matching.exclusion_matches(c, lastNode)
                 
                 #compare non-bound value, returns (newNode, newData)?
-                tested, newNode, newData = Matching.non_bind_value_match(c, lastNode,
-                                                                 betas,
-                                                                 regexs, data)
+                if not tested:
+                    tested, newNode, newData = Matching.non_bind_value_match(c, lastNode,
+                                                                             betas,
+                                                                             regexs, data)
 
                 if not tested:
                     #compare already bound value, returns (newNode, newData)?
@@ -164,14 +166,17 @@ class Trie:
                 
                 if newData is not None:
                     newContexts.append((newData, newNode))
-                else:
+                elif len(newBindings) > 0:
                     newContexts._alternatives += [x for x in newBindings if x[0] is not None]
-
+                else:
+                    failures.append(data.copy())
+                    
                 #end of internal loop for an active alternative
                     
             #all alternatives tested for this clause component, update and progress
+            
             currentContexts = newContexts
 
         #every alternative tested for each clause component, return the final set of contexts 
-        return currentContexts
+        return (currentContexts, failures)
 
