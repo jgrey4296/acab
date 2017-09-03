@@ -75,17 +75,15 @@ s = pp.Suppress
 op = pp.Optional
 opLn = s(op(pp.LineEnd()))
 orm = pp.OneOrMore
-comment = pp.dblSlashComment
 bindArrow = s(pp.Literal('<-'))
 clear = s(pp.Literal('clear'))
-
 fileBind = FP.BIND + bindArrow + FP.param_fact_string
 clearBind = clear + orm(FP.BIND)
 
 
 
 
-file_component = pp.MatchFirst([s(comment),
+file_component = pp.MatchFirst([FP.comment,
                                 s(fileBind),
                                 s(clearBind),
                                 AP.action_definition,

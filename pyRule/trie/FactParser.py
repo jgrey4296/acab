@@ -14,6 +14,7 @@ pp.ParserElement.setDefaultWhitespaceChars(' \t\r')
 s = pp.Suppress
 op = pp.Optional
 opLn = s(op(pp.lineEnd))
+comment = s(pp.dblSlashComment)
 
 def construct_num(toks):
     #todo: add in fractions and underscores
@@ -35,6 +36,7 @@ end = s(pp.Literal('end'))
 sLn = s(pp.White(ws='\n',exact=1))
 DOLLAR = pp.Literal('$')
 
+
 #todo: add in underscores
 NAME = pp.Word(pp.alphas)
 NUM = pp.Word(pp.nums + '-d').setParseAction(construct_num)
@@ -48,8 +50,8 @@ VALBIND = pp.Or([VALUE, BIND])
 #Core = .a | !b | .$a | !$b
 PARAM_CORE = OP + VALBIND
 
-param_fact_string = op(BIND) + pp.OneOrMore(PARAM_CORE)
-param_fact_strings = param_fact_string + pp.ZeroOrMore(COMMA + param_fact_string)
+param_fact_string = op(BIND) + pp.OneOrMore(PARAM_CORE) 
+param_fact_strings = param_fact_string + pp.ZeroOrMore(COMMA + param_fact_string) 
 
 #Actions
 BIND.setParseAction(lambda toks: Bind(toks[1]))

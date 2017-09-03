@@ -1,6 +1,6 @@
 import logging as root_logger
 import pyparsing as pp
-from .FactParser import COMMA, param_fact_string, end, COLON, sLn
+from .FactParser import COMMA, param_fact_string, end, COLON, sLn, comment
 from .QueryParser import VALBIND, NOT, OPAR, CPAR, BIND
 from .TransformParser import ADD
 from pyRule import utils as util
@@ -56,7 +56,7 @@ bindList = BIND + pp.ZeroOrMore(COMMA + BIND)
 # action: [op](values)
 action = operator.setResultsName('operator') + OPAR \
          + vals.setResultsName('ActionValues') \
-         + CPAR 
+         + CPAR
 
 actionMacroUse = ACT_MACRO + \
         OPAR + op(vals).setResultsName('bindings') + CPAR
@@ -71,6 +71,8 @@ action_definition = ACT_MACRO + OPAR \
                     + CPAR + COLON + sLn\
                     + justActions \
                     + sLn + end
+
+
 
 
 #parse actions

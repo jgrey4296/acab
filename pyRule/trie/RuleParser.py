@@ -37,7 +37,7 @@ s = pp.Suppress
 op = pp.Optional
 opLn = s(op(pp.LineEnd()))
 HASH = s(pp.Literal('#'))
-emptyLine = s(pp.lineEnd + pp.lineEnd)
+emptyLine = s(pp.lineEnd + pp.OneOrMore(pp.lineEnd))
 
 ruleName = FP.param_fact_string.copy().setResultsName('ruleName')
 tagName = HASH + FP.NAME

@@ -83,7 +83,7 @@ select = s(pp.Literal('select')) + pp.Or([selAll, VALBIND]) \
 
 
 #transform: ( bind op val|bind -> bind)
-unary_transform_core = unary_trops + BIND
+unary_transform_core = unary_trops + pp.Or([BIND, pp.dblQuotedString])
 
 binary_transform_core = VALBIND + binary_trops + VALBIND
 
