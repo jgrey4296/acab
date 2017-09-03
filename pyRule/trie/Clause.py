@@ -19,8 +19,12 @@ class Clause:
             neg = "~"
         else:
             neg = ""
-            
-        return "{}{}?".format(neg, "".join([repr(x) for x in self.components]))
+        if self.fallback is not None:
+            formatStr = " || " + ", ".join(["{}:{}".format(x[0],x[1]) for x in self.fallback])
+        else:
+            formatStr = ""
+        return "{}{}?{}".format(neg, "".join([repr(x) for x in self.components]),
+                                formatStr)
 
     def expandBindings(self, bindings):
         newComponents = expandFact(self.components, bindings)
