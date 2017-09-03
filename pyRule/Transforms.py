@@ -46,10 +46,6 @@ def FORMAT(a, data):
     #use str.format variant with a data dictionary
     return a.format(**data)
 
-def SELECT(alts, min, max):
-    return sample(alts, randomint(min, max))
-
-
 TROP_LOOKUP = {
     TROP.ADD : ADD,
     TROP.SUB : SUB,
@@ -61,7 +57,6 @@ TROP_LOOKUP = {
     TROP.NEG : NEG,
     TROP.REGEX : REGEX,
     TROP.FORMAT: FORMAT,
-    TROP.SELECT : SELECT    
 }
 
 TROP_REVERSE_LOOKUP = {
@@ -135,7 +130,7 @@ class OperatorTransform(TransformComponent):
         if rebind is not None:
             assert(isinstance(rebind, Bind))
         assert(isinstance(op, TROP) or isinstance(op, str))
-            
+        
         self.source = source
         self.val = value
         self.bind = bind
@@ -171,7 +166,9 @@ class OperatorTransform(TransformComponent):
             
         assert(self.op in TROP_PARAM_LENGTHS)
         param_length = TROP_PARAM_LENGTHS[self.op]
-        if param_length == 1:
+        if param_length == 1 and self.op is TROP.FORMAT:
+            return "{} {}{}".format(op, source, rebind)
+        elif param_length == 1:
             return "{}{}{}".format(op, source, rebind)
         elif param_length == 2:
             return "{} {} {}{}{}".format(source, op, value, bind, rebind)
@@ -194,7 +191,9 @@ class Transform:
             self.selection = None
         self.components = [x for x in components if not isinstance(x, SelectionTransform)]
 
-
+    def __len__(self):
+        return len(self.components)
+        
     def __repr__(self):
         if self.selection is not None:
             sel = repr(self.selection)
