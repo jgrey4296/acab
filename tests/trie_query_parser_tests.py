@@ -101,7 +101,27 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result, Query)
         self.assertEqual(len(result._clauses), 3)
 
+    def test_clause_fallback(self):
+        result = QP.clause.parseString('.a.b.c? || $x:2')[0]
+        self.assertIsInstance(result, Clause)
+        self.assertIsNotNone(result.fallback)
+        self.assertEqual(len(result.fallback), 1)
+        self.assertEqual(result.fallback[0][0].value, 'x')
+        self.assertEqual(result.fallback[0][1], 2)
 
+    def test_clause_negated_fallback(self):
+        with self.assertRaises(Exception):
+            QP.clause.parseString('~.a.b.c? || $x:2')
+
+    def test_clause_multi_fallback(self):
+        result = QP.clause.parseString('.a.b.c? || $x:2, $y:5')[0]
+        self.assertIsInstance(result, Clause)
+        self.assertIsNotNone(result.fallback)
+        self.assertEqual(len(result.fallback), 2)
+        self.assertEqual(result.fallback[0][0].value, 'x')
+        self.assertEqual(result.fallback[0][1], 2)
+        self.assertEqual(result.fallback[1][0].value, 'y')
+        self.assertEqual(result.fallback[1][1], 5)
 
     def test_fact_str_equal(self):
         queries = [".a.b.c?", ".a.b!c?", '.a.b."a string".c?',
@@ -109,7 +129,9 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
                    '.a.$b?', '.a!$b?', '.a.$b(> $c)?',
                    '.a.$b(> 20, < 40, != $x, == $y)?',
                    '~.a.b.c?', '~.a!b.c?',
-                   '.a.$b(~= /blah/)?']
+                   '.a.$b(~= /blah/)?',
+                   '.a.b.c? || $x:2',
+                   '.a.b.d? || $x:5, $y:blah']
         parsed = [QP.parseString(x) for x in queries]
         zipped = zip(queries, parsed)
         for a,q in zipped:
