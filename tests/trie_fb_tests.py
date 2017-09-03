@@ -210,14 +210,9 @@ class Trie_FactBase_Tests(unittest.TestCase):
 
     def test_query_negation(self):
         self.trie.assertS('.a.b.c')
-        result = self.trie.queryS('.a.b.c?')
-        
-        self.assertTrue(result)
-        result = self.trie.queryS('~.a.b.c?')
-        self.assertFalse(result)
-        
-        result = self.trie.queryS('~.q.w.e?')
-        self.assertTrue(result)
+        self.assertTrue(self.trie.queryS('.a.b.c?'))
+        self.assertFalse(self.trie.queryS('~.a.b.c?'))
+        self.assertTrue(self.trie.queryS('~.q.w.e?'))
 
     def test_query_multi_clause_2(self):
         self.trie.assertS('.a.b.c, .d.e.f')
