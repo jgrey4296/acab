@@ -7,11 +7,13 @@ class Clause:
     Holds a single string of information to test,
     from root to leaf """
     
-    def __init__(self, components, negated=False):
+    def __init__(self, components, negated=False, fallback=None):
+        #fallback: [(Bind, value)], for use if the clause fails
         assert(all([isinstance(x, Node) for x in components[1:]]))
         self.negated = negated
         self.components = components
-
+        self.fallback = fallback
+        
     def __repr__(self):
         if self.negated:
             neg = "~"
