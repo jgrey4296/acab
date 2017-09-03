@@ -1,4 +1,4 @@
-from random import shuffle
+from random import shuffle, sample, randint
 from pyRule.Transforms import TROP
 import IPython
 
@@ -15,8 +15,12 @@ class Contexts:
                   return [self._alternatives[0][0]]
             if bounds[0] is TROP.SELECT_ALL and bounds[1] is TROP.SELECT_ALL:
                   return [x[0] for x in self._alternatives]
-            potentialAmnt = max(1, bounds[1] - bounds[0])
-            return [self._alternatives.pop()[0] for x in range(potentialAmnt)]
+            if bounds[1] is TROP.SELECT_ALL:
+                  upperBound = len(self._alternatives)
+            else:
+                  upperBound = bounds[1]
+            potentialAmnt = max(1, randint(bounds[0], upperBound))
+            return [x[0] for x in sample(self._alternatives, potentialAmnt)]
                  
 
       def append(self, data):
