@@ -4,6 +4,7 @@ from . import QueryParser as QP
 from .Contexts import Contexts
 from .Query import Query
 from .Clause import Clause
+from . import Matching
 from pyRule.utils import EXOP, META_OP
 from pyRule.Comparisons import COMP_LOOKUP
 import logging as root_logger
@@ -98,10 +99,11 @@ class Trie:
             updated_contexts = updated_contexts.set_all_alts(self._root)
             if bool(updated_contexts) is False:
                 logging.debug("A positive clause is false")
-                #if clause has a fallback binding:
-                ##add it to all alts, set contexts = updated_contexts, continue
-                #else
-                contexts = updated_contexts
+                if clause.fallback is not None:
+                    ##add it to all alts, set contexts = updated_contexts, continue
+                    raise Exception("Unimplemented clause fallback")
+                else:
+                    contexts = updated_contexts
                 break
             contexts = updated_contexts
 
@@ -136,48 +138,34 @@ class Trie:
             for (data,lastNode) in currentContexts._alternatives:
                 newData = None
                 newNode = None
-                #check exclusion status
-                if c.is_exclusive() and not lastNode.has_exclusive():
-                    logging.debug("C: {}, Node: {}, {}".format(c.is_exclusive(),
-                                                               lastNode.is_exclusive(), str(lastNode)))
-                    logging.debug("Mismatch EX num")
+                newBindings = []
+                tested = False
+                #check exclusion status, should continue the loop if false
+                b_exclusion_matches = Matching.exclusion_matches(c, lastNode)
+                if b_exclusion_matches:
                     continue
+                
+                #compare non-bound value, returns (newNode, newData)?
+                tested, newNode, newData = Matching.non_bind_value_match(c, lastNode,
+                                                                 betas,
+                                                                 regexs, data)
 
-                #check value, if its not a bind
-                if not c.get_meta_eval(META_OP.BIND):
-                    logging.debug("Not Bind: {}|{}".format(c._value, lastNode._children.keys()))
-                    if c in lastNode and self.test_betas(c._value, betas,data):
-                        logging.debug("Suitable value")
-                        newNode = lastNode._children[c._value]
-                        newData = data.copy()
-                    
-                else: #is bind
-                    logging.debug("Is Bind")
-                    if c._value in data: #already bound
-                        logging.debug("Is Bound already")
-                        if data[c._value] in lastNode._children:
-                            logging.debug("Bound value in children")
-                            #already bound, does match
-                            newNode = lastNode._children[data[c._value]]
-                            newData = data.copy()
-                    else: #not already bound
-                        logging.debug("Non-pre-bound")
-                        #get potentials
-                        potentials = lastNode._children.keys()
-                        logging.debug("Potentials: {}".format(potentials))
-                        #filter by running alphas and betas
-                        passing = [x for x in potentials if self.test_alphas(x, alphas) and self.test_betas(x, betas, data)]
-                        logging.debug("Passing: {}".format(passing))
-                        #bind and store successes
-                        for x in passing:
-                            newNodeAlt, newDataAlt = lastNode._children[x].test_regexs_for_matching(regexs, data, preupdate=(c._value, x))
-                            newContexts.append((newDataAlt,newNodeAlt))
+                if not tested:
+                    #compare already bound value, returns (newNode, newData)?
+                    tested, newNode, newData = Matching.existing_bind_match(c, lastNode,
+                                                                    betas, regexs,
+                                                                    data)
 
-                #regex
-                if newNode is not None:
-                    newNode, newData = newNode.test_regexs_for_matching(regexs, newData)
-                            
-                newContexts.append((newData, newNode))
+                if not tested:
+                    #create new bindings as necessary, returns [(newNode, newData)]
+                    newBindings = Matching.create_new_bindings(c, lastNode,
+                                                               alphas, betas,
+                                                               regexs, data)
+                
+                if newData is not None:
+                    newContexts.append((newData, newNode))
+                else:
+                    newContexts._alternatives += [x for x in newBindings if x[0] is not None]
 
                 #end of internal loop for an active alternative
                     
@@ -187,13 +175,3 @@ class Trie:
         #every alternative tested for each clause component, return the final set of contexts 
         return currentContexts
 
-    def test_alphas(self, value, comps):
-        """ Run alpha tests against a retrieved value """
-        return all([COMP_LOOKUP[x.op](value,x.value) for x in comps])
-
-    def test_betas(self, value, comps, data):
-        """ Run a beta tests against a retrieved value, with supplied bindings """
-        return all([COMP_LOOKUP[x.op](value,data[x.bind.value]) for x in comps])
-                    
-                        
-               
