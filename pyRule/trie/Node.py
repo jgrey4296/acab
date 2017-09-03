@@ -311,7 +311,7 @@ class Node:
         if invalidated:
             return (None, None)
         else:
-            return (self, newData)
+            return (newData, self)
 
         
     #todo: add breadth and depth traversal
