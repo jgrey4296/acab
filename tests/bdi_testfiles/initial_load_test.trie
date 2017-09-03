@@ -1,49 +1,35 @@
-// A Basic specification of a bdi agent
+.count!0
 
-//Shorthand binding
-//Desire assertion
-$x <- .agent.$name.desires
-$x.a
-$x.b
-$x.c
-
-//Agent structure
-.agent.$name.desires
-.agent.$name.beliefs
-.agent.$name.intentions
-.agent.$name.state
-.agents.actions
+.bdi.greet:
+    #propose
     
+    .count!$x(< 10)?
 
-
-//Actions
-.actions.rule.x:
-    //Beliefs <-> pre conditions of actions
-    .a.b.c?
-    $x?
-    .a.d.f?
-
-    $x + 2
-    //Desires <-> Post conditions of actions 
-    +(.a.b.$x)
-    @("hello")
+    $x + 2 -> $y
+    
+    @("Hello")
+    +(.count!$y)
 end
 
-clear $x
-//Intentions -> actions added to a stack, to be selected from
-
-//Model Creation
-
-//Rule modification
-.a.mod.rule:
-    .actions.rule.#x
-    .actions.rule.#y
+.bdi.goodbye:
+    #propose
     
-    -(#x)
-    +(#y)
-    addCondition(#y, .a.b.c?)
-    clearConditions(#y)
+    .count!$x(< 10)?
+
+    $x + 1 -> $y
+
+    @("Goodbye")
+    +(.count!$y)
 end
 
-
+.bdi.finish:
+    #propose
     
+    .agent.$name?
+    .count!$x(> 9)?
+
+    ~{} "{name} has finished" -> $string
+    
+    @($string)
+    +(.agent.$name.state.finished)
+end

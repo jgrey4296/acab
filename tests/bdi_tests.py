@@ -1,31 +1,43 @@
 import unittest
 import logging
 from test_context import pyRule
+import pyRule.utils as util
 from pyRule import bdi_engine as bdi
 from os.path import join, isfile, exists, isdir, splitext, expanduser
 from os import listdir
 import IPython
 
-class (unittest.TestCase):
+class BDI_TESTS(unittest.TestCase):
 
     def path(self, filename):
         return join('.', 'bdi_testfiles', filename)
     
-    def setUp(self):
-        self.e = bdi.Agent()
-
-    def tearDown(self):
-        return 1
+    def setUpAgent(self, files, rulePolicies):
+        self.e = bdi.Agent("testAgent", [self.path(x) for x in files],
+                           rulePolicies)
 
     #----------
     def test_init(self):
+        self.setUpAgent(["initial_load_test.trie"],
+                        [(None, None)])
         self.assertIsNotNone(self.e)
 
     def test_load(self):
-        self.e.load_file(self.path('initial_load_test.trie'))
-        self.assertEqual(self.e.num_rules(), 1)
+        self.setUpAgent(["initial_load_test.trie"],
+                        [("propose", util.default_action_policy)])
+        self.assertEqual(self.e.num_rules(), 3)
+        self.e.run()
+        self.assertTrue(self.e._engine.query(".count!$x(> 9)?"))
+        
 
-    #BDI architecture so test:
+    def test_responsive(self):
+        self.setUpAgent(["responsive_test.trie"],
+                        [("propose", util.default_action_policy)])
+        self.e.run()
+        
+
+        
+    #BDI architecture to test:
     #1) addition / retraction of beliefs
     #2) addition / retraction of rules
     #3) addition / retraction of desires
@@ -39,8 +51,8 @@ class (unittest.TestCase):
 
 if __name__ == "__main__":
       #use python $filename to use this logging setup
-      LOGLEVEL = logging.INFO
-      logFileName = "log."
+      LOGLEVEL = logging.DEBUG
+      logFileName = "log.bdi_tests"
       logging.basicConfig(filename=logFileName, level=LOGLEVEL, filemode='w')
       console = logging.StreamHandler()
       console.setLevel(logging.WARN)

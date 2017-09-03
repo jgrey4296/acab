@@ -1,0 +1,61 @@
+.count!0
+
+.bdi.start:
+    #propose
+    
+    ~.last?
+
+    @("Hello")
+    +(.last!hello)
+end
+
+.bdi.next.one:
+    #propose
+    
+    .last!hello?
+    .count!$x?
+
+    $x + 1
+
+    @("How are you?")
+    +(.last!how)
+    +(.count!$x)
+end
+
+.bdi.next.two:
+    #propose
+    
+    .last!how?
+    .count!$x?
+
+    $x + 1
+
+    @("Fine")
+    -(.last)
+    +(.count!$x)
+end
+
+.bdi.next.two.b:
+    #propose
+
+    .last!how?
+    .count!$x?
+
+    $x + 1
+
+    @("Terrible")
+    -(.last)
+    +(.count!$x)
+end
+
+.bdi.finish:
+    #propose
+    
+    .agent.$name?
+    .count!$x(> 9)?
+
+    ~{} "{name} has finished" -> $string
+    
+    @($string)
+    +(.agent.$name.state.finished)
+end
