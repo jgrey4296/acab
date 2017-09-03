@@ -13,7 +13,6 @@ EXOP_lookup = {
 
 META_OP = Enum("Meta Ops", "ORDER BIND COMP NEGATED")
 
-PROPOSAL_TAG = 'proposal'
 
 #Basic Data Structures
 class Bind: #pylint: disable=too-few-public-methods 

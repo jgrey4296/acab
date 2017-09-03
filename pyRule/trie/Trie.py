@@ -94,11 +94,16 @@ class Trie:
 
         logging.debug("Testing clauses: {} {}".format(len(pos), len(neg)))
         for clause in pos:
-            contexts = self._match_clause(clause, contexts)
-            contexts = contexts.set_all_alts(self._root)
-            if bool(contexts) is False:
+            updated_contexts = self._match_clause(clause, contexts)
+            updated_contexts = updated_contexts.set_all_alts(self._root)
+            if bool(updated_contexts) is False:
                 logging.debug("A positive clause is false")
+                #if clause has a fallback binding:
+                ##add it to all alts, set contexts = updated_contexts, continue
+                #else
+                contexts = updated_contexts
                 break
+            contexts = updated_contexts
 
         for negClause in neg:
             result = self._match_clause(negClause, contexts)
@@ -107,7 +112,6 @@ class Trie:
                 logging.debug("A Negative clause is true")
                 contexts.fail()
                 break
-
         
         return contexts
     
