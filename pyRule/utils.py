@@ -1,5 +1,6 @@
 from enum import Enum
 from collections import namedtuple
+from random import choice
 import IPython
 
 #Trie exclusion operator:
@@ -12,6 +13,7 @@ EXOP_lookup = {
 
 META_OP = Enum("Meta Ops", "ORDER BIND COMP NEGATED")
 
+PROPOSAL_TAG = 'proposal'
 
 #Basic Data Structures
 class Bind: #pylint: disable=too-few-public-methods 
@@ -59,3 +61,9 @@ def build_rebind_dict(formal, usage):
     assert(all([isinstance(x, Bind) for x in formal]))
     fVals = [x.value for x in formal]
     return dict(zip(fVals, usage))
+
+def default_action_policy(pairings):
+    #each pairing is of data, rule
+    return [choice(pairings)]
+
+
