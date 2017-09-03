@@ -157,6 +157,16 @@ class Engine_Logic_Tests(unittest.TestCase):
         self.e._run_rules(rule_tags=['first'])
         self.assertTrue(self.e.query('.a.b.c?, .blah?, .bloo?'))
         
+    def rule_load_with_comments(self):
+        self.e.load_file(self.path("rule_with_comments.trie"))
+        self.assertEqual(len(self.e._rules), 1)
+        rule = self.e._rules['.a.rule']
+        self.assertEqual(len(rule._tags), 2)
+        self.assertEqual(len(rule._query), 2)
+        self.assertEqual(len(rule._transform), 2)
+        self.assertEqual(len(rule._actions), 2)
+        self.e._run_rules()
+        self.assertTrue(self.e.query('.a.d.c?, .a.d.d?, .a.b!30?'))
         
 
 if __name__ == "__main__":
