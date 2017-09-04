@@ -4,11 +4,22 @@ import IPython
 
 class Contexts:
       """ Container of available contexts for a match in the trie  """
-
+      @staticmethod
+      def initial(startNode):
+            init = Contexts()
+            init._init_alt(startNode)
+            return init
+      
       def __init__(self):
             #A list of (data,lastNode) tokens
             self._alternatives = []
 
+      def _init_alt(self, startNode):
+            """ Setup the initial context of no bindings 
+            and no wmes """
+            self._alternatives = [({}, startNode)]
+
+            
       def select(self, bounds=(None, None)):
             shuffle(self._alternatives)
             if bounds[0] is None and bounds[1] is None:
@@ -38,26 +49,12 @@ class Contexts:
             for x in self._alternatives:
                   yield x[0]
 
-      def __str__(self):
+      def __repr__(self):
             if bool(self):
                   return "Context: {}".format(len(self))
             else:
                   return "Context: False"
 
-      def __repr__(self):
-            return str(self)
-            
-      @staticmethod
-      def initial(startNode):
-            init = Contexts()
-            init._init_alt(startNode)
-            return init
-            
-      def _init_alt(self, startNode):
-            """ Setup the initial context of no bindings 
-            and no wmes """
-            self._alternatives = [({}, startNode)]
-            
       def __bool__(self):
             return len(self._alternatives) > 0
 
@@ -68,7 +65,6 @@ class Contexts:
             """ Ensure all alternatives have bound a certain number
             of wmes (ie: for each clause in query there needs to be a wme) """
             self._alternatives = [x for x in self._alternatives if len(x[1]) == targetWMEMatch]
-      
 
       def set_all_alts(self, targetNode):
             newContexts = Contexts()

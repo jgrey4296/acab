@@ -1,6 +1,5 @@
 import logging as root_logger
 from .Query import Query
-from .Node import Node
 import pyRule.utils as util
 import pyRule.Transforms as T
 import pyRule.Actions as A

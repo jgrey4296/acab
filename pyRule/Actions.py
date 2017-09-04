@@ -1,7 +1,6 @@
 import logging as root_logger
 from enum import Enum
 from pyRule import utils as util
-from pyRule.trie import Node
 from collections import namedtuple
 import IPython
 logging = root_logger.getLogger(__name__)
@@ -14,11 +13,11 @@ ACTMACRONAME = namedtuple('ActMacroId', 'name')
 #Action function template:
 # def [name](engine, *params)
 def E_ADD(engine, params):
-    assert(all([isinstance(x, Node) for x in params[0]]))
+    #assert(all([isinstance(x, Node) for x in params[0]]))
     engine.add(params[0])
 
 def E_RETRACT(engine, params):
-    assert(all([isinstance(x, Node) for x in params[0]]))
+    #assert(all([isinstance(x, Node) for x in params[0]]))
     engine.retract(params[0])
 
 
@@ -69,7 +68,7 @@ class Action:
             op = ACTS_REVERSE_LOOKUP[self._op]
         args = []
         for val in self._values:
-            if isinstance(val, list) and isinstance(val[0], Node):
+            if isinstance(val, list): #and isinstance(val[0], Node):
                 args.append("".join([str(x) for x in val]))
             else:
                 args.append(str(val))
@@ -89,7 +88,7 @@ class Action:
         for x in self._values:
             if isinstance(x, util.Bind):
                 output.append(data[x.value])
-            elif isinstance(x, list) and all([isinstance(y, Node) for y in x]):
+            elif isinstance(x, list): #and all([isinstance(y, Node) for y in x]):
                 output.append([y.bind(data) for y in x])
             else:
                 output.append(x)

@@ -1,9 +1,9 @@
 from .Node import Node
 from . import FactParser as FP
 from . import QueryParser as QP
-from .Contexts import Contexts
-from .Query import Query
-from .Clause import Clause
+from pyRule.Contexts import Contexts
+from pyRule.Query import Query
+from pyRule.Clause import Clause
 from . import Matching
 from pyRule.utils import EXOP, META_OP
 from pyRule.Comparisons import COMP_LOOKUP

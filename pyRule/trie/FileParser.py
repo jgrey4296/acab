@@ -4,14 +4,13 @@ A Combined parser to parse rules and facts to assert
 """
 import pyparsing as pp
 from pyparsing import pyparsing_common as ppc
-from pyRule.utils import Bind, expandFact
-from pyRule.trie import Rule
 import IPython
 
+from pyRule.utils import Bind, expandFact
 from . import FactParser as FP
 from . import RuleParser as RP
 from . import ActionParser as AP
-from .Rule import Rule
+from pyRule.Rule import Rule
 from pyRule.Actions import ActionMacro
 
 

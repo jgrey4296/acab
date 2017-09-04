@@ -1,10 +1,12 @@
 import logging as root_logger
 import pyparsing as pp
+
+from .FactParser import COMMA, VALBIND, PARAM_CORE, BIND, COLON, VALUE
+
 from pyRule.utils import Bind,META_OP
 from pyRule.Comparisons import COMP, Comparison, COMP_REVERSE_LOOKUP
-from .FactParser import COMMA, VALBIND, PARAM_CORE, BIND, COLON, VALUE
-from .Query import Query
-from .Clause import Clause
+from pyRule.Query import Query
+from pyRule.Clause import Clause
 
 pp.ParserElement.setDefaultWhitespaceChars(' \t\r')
 

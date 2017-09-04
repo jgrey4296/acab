@@ -1,4 +1,4 @@
-from .Node import Node
+#from .Node import Node
 from pyRule.utils import expandFact
 
 #todo: split comps into alpha and beta
@@ -9,7 +9,8 @@ class Clause:
     
     def __init__(self, components, negated=False, fallback=None):
         #fallback: [(Bind, value)], for use if the clause fails
-        assert(all([isinstance(x, Node) for x in components[1:]]))
+        assert(isinstance(components, list)
+        #assert(all([isinstance(x, Node) for x in components[1:]]))
         self.negated = negated
         self.components = components
         self.fallback = fallback

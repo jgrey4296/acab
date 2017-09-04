@@ -1,13 +1,13 @@
 import logging as root_logger
+import IPython
 import pyparsing as pp
-from .Rule import Rule
 from . import FactParser as FP
 from . import QueryParser as QP
 from . import TransformParser as TP
 from . import ActionParser as AP
+from pyRule.Rule import Rule
 
 
-import IPython
 pp.ParserElement.setDefaultWhitespaceChars(' \t\r')
 
 logging = root_logger.getLogger(__name__)

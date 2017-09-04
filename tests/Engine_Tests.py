@@ -22,15 +22,15 @@ class Engine_Tests(unittest.TestCase):
         self.assertIsNotNone(self.e)
 
     def test_assert(self):
-        self.assertEqual(len(self.e._trie._root), 0)
+        self.assertEqual(len(self.e._knowledge_base._root), 0)
         self.e.add('.a.b.c')
-        self.assertEqual(len(self.e._trie._root), 1)
+        self.assertEqual(len(self.e._knowledge_base._root), 1)
 
     def test_retract(self):
         self.e.add('.a.b.c')
-        self.assertEqual(len(self.e._trie._root), 1)
+        self.assertEqual(len(self.e._knowledge_base._root), 1)
         self.e.retract('.a')
-        self.assertEqual(len(self.e._trie._root), 0)
+        self.assertEqual(len(self.e._knowledge_base._root), 0)
 
     def test_query(self):
         self.e.add('.a.b.c')
@@ -55,14 +55,14 @@ class Engine_Tests(unittest.TestCase):
         
     def test_multi_assert(self):
         self.e.add('.a.b.c, .a.b.d, .a.b.e')
-        self.assertEqual(len(self.e._trie._root._reconstruct()), 3)
+        self.assertEqual(len(self.e._knowledge_base._root._reconstruct()), 3)
         self.assertTrue(self.e.query('.a.b.c?, .a.b.d?, .a.b.e?'))
 
     def test_multi_retract(self):
         self.e.add('.a.b.c, .a.b.d, .a.b.e')
-        self.assertEqual(len(self.e._trie._root._reconstruct()), 3)
+        self.assertEqual(len(self.e._knowledge_base._root._reconstruct()), 3)
         self.e.retract('.a.b.e, .a.b.d')
-        self.assertEqual(len(self.e._trie._root._reconstruct()), 1)
+        self.assertEqual(len(self.e._knowledge_base._root._reconstruct()), 1)
 
     def test_multi_clause_query(self):
         self.e.add('.a.b.c, .a.b.d, .a.b.e')
