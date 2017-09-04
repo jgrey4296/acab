@@ -10,7 +10,7 @@ import IPython
 class Engine_Tests(unittest.TestCase):
     
     def setUp(self):
-        self.e = T.Engine()
+        self.e = T.TrieEngine()
           
         
     def tearDown(self):
@@ -91,7 +91,7 @@ class Engine_Tests(unittest.TestCase):
         self.assertTrue(True)
 
     def test_run_transform(self):
-        stub_ctx = T.Contexts.initial(None)
+        stub_ctx = pyRule.Contexts.initial(None)
         stub_ctx[0]['a'] = 2
         stub_ctx[0]['b'] = 4
 
@@ -103,7 +103,7 @@ class Engine_Tests(unittest.TestCase):
         self.assertEqual(result['b'], 8)
 
     def test_run_transform_rebind(self):
-        stub_ctx = T.Contexts.initial(None)
+        stub_ctx = pyRule.Contexts.initial(None)
         stub_ctx[0]['a'] = 2
         stub_ctx[0]['b'] = 8
 
@@ -116,7 +116,7 @@ class Engine_Tests(unittest.TestCase):
         self.assertEqual(result['w'], 16)
 
     def test_run_unary_transform(self):
-        stub_ctx = T.Contexts.initial(None)
+        stub_ctx = pyRule.Contexts.initial(None)
         stub_ctx[0]['a'] = 2
         stub_ctx[0]['b'] = -2
         stub_ctx[0]['c'] = 2.53
@@ -129,7 +129,7 @@ class Engine_Tests(unittest.TestCase):
         self.assertEqual(result['c'], 2)
         
     def test_run_unary_transform_rebind(self):
-        stub_ctx = T.Contexts.initial(None)
+        stub_ctx = pyRule.Contexts.initial(None)
         stub_ctx[0]['a'] = 2
         stub_ctx[0]['b'] = -2
         stub_ctx[0]['c'] = 2.53
@@ -145,7 +145,7 @@ class Engine_Tests(unittest.TestCase):
         self.assertEqual(result['z'], 2)
 
     def test_run_binary_transform(self):
-        stub_ctx = T.Contexts.initial(None)
+        stub_ctx = pyRule.Contexts.initial(None)
         stub_ctx[0]['a'] = 2
         stub_ctx[0]['b'] = -2
         stub_ctx[0]['c'] = 2.53
@@ -158,7 +158,7 @@ class Engine_Tests(unittest.TestCase):
         self.assertEqual(result['c'], 24.53)
         
     def test_run_binary_transform_rebind(self):
-        stub_ctx = T.Contexts.initial(None)
+        stub_ctx = pyRule.Contexts.initial(None)
         stub_ctx[0]['a'] = 2
         stub_ctx[0]['b'] = -2
         stub_ctx[0]['c'] = 2.53
@@ -174,7 +174,7 @@ class Engine_Tests(unittest.TestCase):
         self.assertTrue(isclose(result['z'], 4.53))
 
     def test_run_ternary_regex_transform(self):
-        stub_ctx = T.Contexts.initial(None)
+        stub_ctx = pyRule.Contexts.initial(None)
         stub_ctx[0]['a'] = "blah"
         stub_ctx[0]['b'] = "aaablah"
         stub_ctx[0]['c'] = "awefblahawef"
@@ -188,7 +188,7 @@ class Engine_Tests(unittest.TestCase):
         self.assertEqual(result['c'], 'AAAA')
         
     def test_run_ternary_regex_rebind(self):
-        stub_ctx = T.Contexts.initial(None)
+        stub_ctx = pyRule.Contexts.initial(None)
         stub_ctx[0]['a'] = "blah"
         stub_ctx[0]['b'] = "aaablah"
         stub_ctx[0]['c'] = "awefblahawef"
@@ -205,7 +205,7 @@ class Engine_Tests(unittest.TestCase):
         self.assertEqual(result['z'], 'AAAA')
         
     def test_run_unary_format(self):
-        stub_ctx = T.Contexts.initial(None)
+        stub_ctx = pyRule.Contexts.initial(None)
         stub_ctx[0]['a'] = "AAA"
         stub_ctx[0]['b'] = "BBB"
         stub_ctx[0]['c'] = "CCC"
@@ -221,7 +221,7 @@ class Engine_Tests(unittest.TestCase):
         self.assertEqual(result['z'], 'CCC BBB AAA')
 
     def test_run_unary_format_rebind(self):
-        stub_ctx = T.Contexts.initial(None)
+        stub_ctx = pyRule.Contexts.initial(None)
         stub_ctx[0]['a'] = "AAA"
         stub_ctx[0]['b'] = "BBB"
         stub_ctx[0]['c'] = "CCC"

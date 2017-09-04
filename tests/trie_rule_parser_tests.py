@@ -4,8 +4,8 @@ import IPython
 from test_context import pyRule
 from pyRule.trie import RuleParser as RP
 from pyRule.trie import FactParser as FP
-from pyRule.trie.Rule import Rule
-from pyRule.trie.Query import Query
+from pyRule import Rule
+from pyRule import Query
 
 class Trie_Rule_Parser_Tests(unittest.TestCase):
       

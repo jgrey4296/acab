@@ -55,7 +55,7 @@ class Trie_FactBase_Tests(unittest.TestCase):
         """ Check the simplest query works """
         self.trie.assertS('.a.b.c')
         result = self.trie.queryS('.a.b.c?')
-        self.assertIsInstance(result, T.Contexts)
+        self.assertIsInstance(result, pyRule.Contexts)
         self.assertTrue(result)
         
     def test_simplest_query_fail(self):

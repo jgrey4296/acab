@@ -1,3 +1,12 @@
+import logging as root_logger
+from . import Rule
+from . import Actions
+from . import Transforms
+from . import utils as util
+logging = root_logger.getLogger(__name__)
+
+
+
 class EngineBase:
     """ The base class that wme and trie versions implement the interface of """
     
@@ -164,7 +173,7 @@ class EngineBase:
                 
     def _perform_actions(self, data, actions):
         """ Actual enaction of a set of actions """
-        assert(all([isinstance(x, Action) for x in actions]))
+        assert(all([isinstance(x, Actions.Action) for x in actions]))
         for x in actions:
             #lookup op
             opFunc = Actions.ACTS_LOOKUP[x._op]

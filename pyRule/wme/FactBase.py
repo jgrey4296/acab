@@ -1,5 +1,7 @@
 from .WME import WME
-from .Contexts import Contexts
+from pyRule.Contexts import Contexts
+from pyRule.Query import Query
+from pyRule.Clause import Clause
 
 #todo: eq, str, 
 

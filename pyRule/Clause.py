@@ -9,7 +9,7 @@ class Clause:
     
     def __init__(self, components, negated=False, fallback=None):
         #fallback: [(Bind, value)], for use if the clause fails
-        assert(isinstance(components, list)
+        assert(isinstance(components, list))
         #assert(all([isinstance(x, Node) for x in components[1:]]))
         self.negated = negated
         self.components = components

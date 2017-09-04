@@ -3,8 +3,8 @@ import logging
 from test_context import pyRule
 import pyRule.trie as T
 import pyRule.trie.QueryParser as QP
-from pyRule.trie import Query 
-from pyRule.trie.Clause import Clause
+from pyRule import Query 
+from pyRule import Clause
 from pyRule.Comparisons import Comparison, COMP
 import pyRule.utils as util
 from pyRule.utils import EXOP

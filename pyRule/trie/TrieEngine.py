@@ -10,7 +10,8 @@ from random import shuffle
 import  pyRule.utils as util
 from pyRule import Actions as Actions
 from pyRule import Transforms
-from pyRule.trie import Contexts, Trie, Rule, Node, Query
+from pyRule import Contexts, Rule, Query
+from pyRule.trie import Trie, Node
 from pyRule.Actions import Action
 from pyRule.EngineBase import EngineBase
 
@@ -25,7 +26,7 @@ import IPython
 
 logging = root_logger.getLogger(__name__)
 
-class Engine(EngineBase):
+class TrieEngine(EngineBase):
     
     def __init__(self, path=None, init=None):
         super().__init__(Trie, path=path, init=init)

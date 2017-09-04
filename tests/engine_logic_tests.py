@@ -13,7 +13,7 @@ class Engine_Logic_Tests(unittest.TestCase):
         return join('.', 'testfiles', filename)
     
     def setUp(self):
-        self.e = T.Engine()
+        self.e = T.TrieEngine()
 
     def tearDown(self):
         return 1
