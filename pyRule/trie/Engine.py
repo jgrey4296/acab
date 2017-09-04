@@ -12,6 +12,7 @@ from pyRule import Transforms
 import  pyRule.utils as util
 from pyRule.trie import Contexts, Trie, Rule, Node, Query
 from pyRule.Actions import Action
+from pyRule.EngineBase import EngineBase
 
 from . import TransformParser as TP
 from . import ActionParser as AP
@@ -24,9 +25,10 @@ import IPython
 
 logging = root_logger.getLogger(__name__)
 
-class Engine:
+class Engine(EngineBase):
     
     def __init__(self, path=None, init=None):
+        super().__init__(Trie, path=path, init=init)
         self._trie = Trie(init)
         self._rules = {}
         self._proposed_actions = []
