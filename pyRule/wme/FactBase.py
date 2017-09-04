@@ -1,8 +1,10 @@
 from .WME import WME
 from pyRule.Contexts import Contexts
 from pyRule.Query import Query
-from pyRule.Clause import Clause
-
+from pyRule.wme.WMEClause import WMEClause
+from pyRule.Comparisons import COMP_LOOKUP
+from pyRule.utils import Bind
+import IPython
 #todo: eq, str, 
 
 class FactBase:
@@ -59,14 +61,15 @@ class FactBase:
         """ Given a query of clauses comprising:
         alpha, binding, and beta tests, run it and return
         any matching wmes and bindings """
-        contexts = Contexts.initial()
-        for clause in query._clauses:
+        contexts = Contexts.initial(None)
+        posClauses, negClauses = query.splitClauses()
+        for clause in posClauses:
             #pass the clause and intermediate results through
             contexts = self._matchWMEs(clause,contexts)
 
         #then check negative clauses
         negContext = contexts
-        for clause in query._negatedClauses:
+        for clause in negClauses:
             #test each negated clause,
             #fail the query if any pass
             negResponse = self._matchWMEs(clause,negContext)
@@ -74,7 +77,7 @@ class FactBase:
                 contexts.fail()
                 break
         
-        contexts.verifyMatches(len(query))
+        #contexts.verifyMatches(len(query))
         return contexts
             
 
@@ -83,18 +86,18 @@ class FactBase:
         Searches all wmes, running alpha tests,
         then bindings, then beta comparisons,
         before adding passing wmes to the context """
-
+        assert(isinstance(clause, WMEClause))
         #Early fail out
         if not contexts:
             return contexts
 
-        (alphaTests, bindOps, betaTests) = clause
+        (alphaTests, bindOps, betaTests, regexs) = clause.split_tests()
         passingContexts = Contexts()
         for wme in self._wmes:
             #Alpha Tests
             if not self._test_alpha(wme, alphaTests):
                 continue
-            
+
             #bind
             newContexts = self._bind_values(wme, bindOps, contexts) 
             if len(newContexts) == 0:
@@ -102,28 +105,28 @@ class FactBase:
             
             #Beta Tests
             passingContexts._alternatives += self._test_beta(wme, newContexts, betaTests)._alternatives
-                             
         return passingContexts
 
     def _bind_values(self, wme, bindOps, contexts):
         """ Add in a new binding to each context, unless it conflicts """
         newContexts = Contexts()
-        for (data,matchedWMEs) in contexts._alternatives:
-            failContext = False
+        failed_contexts = []
+        for (data,matchedWME) in contexts._alternatives:
             newData = data.copy()
-            newMatchedWMEs = matchedWMEs.copy()
+            newMatchedWMEs = matchedWME
             for (field, bindName) in bindOps:
+                assert(isinstance(bindName, Bind))
                 if field not in wme._data:
-                    failContext = True
+                    failed_contexts.append(newData)
                     break
-                if bindName in newData and wme._data[field] != newData[bindName]:
-                    failContext = True
+                if bindName.value in newData and wme._data[field] != newData[bindName.value]:
+                    failed_contexts.append(newData)
                     break
-                newData[bindName] = wme._data[field]
+                newData[bindName.value] = wme._data[field]
 
-            if not failContext:
-                newMatchedWMEs.append(wme)
-                newContexts._alternatives.append((newData,newMatchedWMEs))
+            if len(failed_contexts) == 0:
+                newMatchedWME = wme
+                newContexts._alternatives.append((newData,newMatchedWME))
             else:
                 continue
 
@@ -132,36 +135,40 @@ class FactBase:
     
     def _test_alpha(self, wme, alphaTests):
         """ Run alpha tests (intra-wme) """
-        #todo: also test intra-wme tests
         for (field, op, val) in alphaTests:
+            assert(op in COMP_LOOKUP)
+            opFunc = COMP_LOOKUP[op]
             if not field in wme._data:
                 return False
-            if not op(wme._data[field], val):
+            if not opFunc(wme._data[field], val):
                 return False
         return True
 
     def _test_beta(self, wme, contexts, betaTests):
         """ Run beta (inter-wme) tests on a wme and context """
         newContexts = Contexts()
-        for (data, matchedWMEs) in contexts._alternatives:
+        for (data, matchedWME) in contexts._alternatives:
             failMatch = False
             newData = data.copy()
-            newMatchedWMEs = matchedWMEs.copy()
+            newMatchedWME = matchedWME
             for (field, op, bindName) in betaTests:
+                assert(op in COMP_LOOKUP)
+                assert(isinstance(bindName, Bind))
+                opFunc = COMP_LOOKUP[op]
                 #compare wme to token
-                if "#" not in field and field not in wme._data:
+                if isinstance(field, Bind) and not opFunc(newData[field.value],
+                                                      newData[bindName.value]):
                     failMatch = True
                     break
-                elif "#" not in field and not op(wme._data[field],newData[bindName]):
+                elif (not isinstance(field, Bind)) and field not in wme._data:
                     failMatch = True
                     break
-                #compare token to token
-                elif "#" in field and not op(newData[field], newData[bindName]):
+                elif (not isinstance(field, Bind)) and not opFunc(wme._data[field],newData[bindName.value]):
                     failMatch = True
                     break
                 
             if not failMatch:
-                newContexts._alternatives.append((newData,newMatchedWMEs))
+                newContexts._alternatives.append((newData,newMatchedWME))
                                 
         return newContexts
         
