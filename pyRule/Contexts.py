@@ -64,7 +64,7 @@ class Contexts:
       def verifyMatches(self, targetWMEMatch):
             """ Ensure all alternatives have bound a certain number
             of wmes (ie: for each clause in query there needs to be a wme) """
-            self._alternatives = [x for x in self._alternatives if len(x[1]) == targetWMEMatch]
+            self._alternatives = [x for x in self._alternatives if len(x[0]) == targetWMEMatch]
 
       def set_all_alts(self, targetNode):
             newContexts = Contexts()
