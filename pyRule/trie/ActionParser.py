@@ -1,11 +1,14 @@
+""" A Trie based Parser module for the creation of Actions """
 import logging as root_logger
 import pyparsing as pp
-from .FactParser import COMMA, param_fact_string, end, COLON, sLn, comment
-from .QueryParser import VALBIND, NOT, OPAR, CPAR, BIND
-from .TransformParser import ADD
 from pyRule import utils as util
 from pyRule import Actions
 import IPython
+
+from .FactParser import COMMA, param_fact_string, end, COLON, sLn, comment
+from .QueryParser import VALBIND, NOT, OPAR, CPAR, BIND
+from .TransformParser import ADD
+
 
 logging = root_logger.getLogger(__name__)
 pp.ParserElement.setDefaultWhitespaceChars(' \t\r')
@@ -80,5 +83,5 @@ action.setParseAction(build_action)
 actionMacroUse.setParseAction(build_macro_use)
 action_definition.setParseAction(build_definition)
 
-def parseString(s):
-    return actions.parseString(s)[:]
+def parseString(in_string):
+    return actions.parseString(in_string)[:]

@@ -1,35 +1,38 @@
-from .Node import Node
-from . import FactParser as FP
-from . import QueryParser as QP
-from pyRule.Contexts import Contexts
-from pyRule.Query import Query
-from pyRule.Clause import Clause
-from . import Matching
-from pyRule.utils import EXOP, META_OP
-from pyRule.Comparisons import COMP_LOOKUP
+""" The Core Trie Data Structure base """
 import logging as root_logger
 import re
 import IPython
+
+from pyRule.utils import EXOP, META_OP
+from pyRule.Comparisons import COMP_LOOKUP
+from pyRule.Contexts import Contexts
+from pyRule.Query import Query
+from pyRule.Clause import Clause
+
+from .Node import Node
+from . import FactParser as FP
+from . import QueryParser as QP
+from . import Matching
 logging = root_logger.getLogger(__name__)
 
 
 class Trie:
     """ A Trie based knowledge base """
-    
-    def __init__(self, input=None):
+
+    def __init__(self, init=None):
         self._root = Node.Root()
         self._last_node = self._root
-        if input != None:
-            self.assertS(input)
+        if init != None:
+            self.assertS(init)
 
     def __eq__(self, other):
         assert(isinstance(other, Trie))
         return self._root == other._root
-            
+
     def __str__(self):
         return self._root.root_str()
-    
-    def assertS(self,s):
+
+    def assertS(self, s):
         """ Assert multiple facts from a single string """
         parsed = FP.parseString(s)
         for x in parsed:
@@ -40,7 +43,7 @@ class Trie:
         parsed = FP.parseString(s)
         for x in parsed:
             self.retractFact(x)
-        
+
     def assertFact(self, factList):
         """ Assert a [FactNode] list """
         assert(all([isinstance(x, Node) for x in factList]))
@@ -55,7 +58,7 @@ class Trie:
         #go down to the child, and remove it
         self._clear_last_node()
         lastInList = factList.pop()
-        
+
         for node in factList:
             self._last_node = self._last_node.get(node)
             if self._last_node is None:
@@ -78,7 +81,7 @@ class Trie:
     def _reconstruct_query_from_trie(self):
         #TODO
         return False
-    
+
     def queryFact(self, query):
         """ Query a TrieQuery instance """
         assert(isinstance(query, Query))
@@ -86,7 +89,7 @@ class Trie:
         initial_context = Contexts.initial(self._root)
         return self._internal_query(query, initial_context)
 
-    
+
     def _internal_query(self, query, ctxs):
         #Go down the trie, running each test as necessary
         #annotating contexts as necessary
@@ -103,7 +106,7 @@ class Trie:
                     for bindTarget, val in clause.fallback:
                         d[bindTarget.value] = val
                 updated_contexts._alternatives += [(x, self._root) for x in failures]
-            
+
             if bool(updated_contexts) is False:
                 logging.debug("A positive clause is false")
                 contexts = updated_contexts
@@ -117,9 +120,9 @@ class Trie:
                 logging.debug("A Negative clause is true")
                 contexts.fail()
                 break
-        
+
         return contexts
-    
+
     def _match_clause(self, clause, contexts):
         assert(isinstance(clause, Clause))
         logging.debug("Testing Clause: {}".format(repr(clause)))
@@ -137,15 +140,15 @@ class Trie:
             logging.debug("Current Contexts: {}".format(len(currentContexts)))
             alphas, betas, regexs = c.split_tests()
             newContexts = Contexts()
-            
+
             #test each  active alternative
-            for (data,lastNode) in currentContexts._alternatives:
+            for (data, lastNode) in currentContexts._alternatives:
                 newData = None
                 newNode = None
                 newBindings = []
                 #check exclusion status, should continue the loop if false
                 tested = Matching.exclusion_matches(c, lastNode)
-                
+
                 #compare non-bound value, returns (newNode, newData)?
                 if not tested:
                     tested, newNode, newData = Matching.non_bind_value_match(c, lastNode,
@@ -155,28 +158,28 @@ class Trie:
                 if not tested:
                     #compare already bound value, returns (newNode, newData)?
                     tested, newNode, newData = Matching.existing_bind_match(c, lastNode,
-                                                                    betas, regexs,
-                                                                    data)
+                                                                            betas, regexs,
+                                                                            data)
 
                 if not tested:
                     #create new bindings as necessary, returns [(newNode, newData)]
                     newBindings = Matching.create_new_bindings(c, lastNode,
                                                                alphas, betas,
                                                                regexs, data)
-                
+
                 if newData is not None:
                     newContexts.append((newData, newNode))
-                elif len(newBindings) > 0:
+                elif bool(newBindings):
                     newContexts._alternatives += [x for x in newBindings if x[0] is not None]
                 else:
                     failures.append(data.copy())
-                    
+
                 #end of internal loop for an active alternative
-                    
+
             #all alternatives tested for this clause component, update and progress
-            
+
             currentContexts = newContexts
 
-        #every alternative tested for each clause component, return the final set of contexts 
+        #every alternative tested for each clause component,
+        #return the final set of contexts
         return (currentContexts, failures)
-

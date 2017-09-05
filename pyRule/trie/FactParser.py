@@ -2,11 +2,13 @@
 Pyparsing based parser to turn strings into [FactNode],
 capable of parsing  multiple facts
 """
-import pyparsing as pp
 import logging as root_logger
-from .Node import Node
-from pyRule.utils import EXOP, Bind
+import pyparsing as pp
 import IPython
+from pyRule.utils import EXOP, Bind
+from .Node import Node
+
+
 
 #UTILITIES
 logging = root_logger.getLogger(__name__)
@@ -19,21 +21,21 @@ comment = s(pp.dblSlashComment)
 def construct_num(toks):
     #todo: add in fractions and underscores
     if 'd' in toks:
-        return float(toks.replace('d','.'))
+        return float(toks.replace('d', '.'))
     else:
         return int(toks)
 
 def construct_fact_string(toks):
-        return [toks[:]]
-    
+    return [toks[:]]
+
 #Base Defs
 DOT = pp.Keyword('.', identChars='!')
 EX = pp.Keyword('!', identChars='.')
-OP = pp.Or([DOT,EX])
+OP = pp.Or([DOT, EX])
 COMMA = s(pp.Or([pp.Literal(',') + opLn, pp.lineEnd]))
 COLON = s(pp.Literal(':'))
 end = s(pp.Literal('end'))
-sLn = s(pp.White(ws='\n',exact=1))
+sLn = s(pp.White(ws='\n', exact=1))
 DOLLAR = pp.Literal('$')
 
 
@@ -50,12 +52,12 @@ VALBIND = pp.Or([VALUE, BIND])
 #Core = .a | !b | .$a | !$b
 PARAM_CORE = OP + VALBIND
 
-param_fact_string = op(BIND) + pp.OneOrMore(PARAM_CORE) 
-param_fact_strings = param_fact_string + pp.ZeroOrMore(COMMA + param_fact_string) 
+param_fact_string = op(BIND) + pp.OneOrMore(PARAM_CORE)
+param_fact_strings = param_fact_string + pp.ZeroOrMore(COMMA + param_fact_string)
 
 #Actions
 BIND.setParseAction(lambda toks: Bind(toks[1]))
-STRING.setParseAction(lambda t: t[0].replace('"',''))
+STRING.setParseAction(lambda t: t[0].replace('"', ''))
 DOT.setParseAction(lambda t: EXOP.DOT)
 EX.setParseAction(lambda t: EXOP.EX)
 NUM.setParseAction(lambda t: construct_num(t[0]))
@@ -64,8 +66,7 @@ PARAM_CORE.setParseAction(lambda toks: Node(toks[1], toks[0]))
 param_fact_string.setParseAction(construct_fact_string)
 
 # MAIN PARSER:
-def parseString(s):
+def parseString(in_string):
     """ str -> [[Node]] """
-    parsed = param_fact_strings.parseString(s)[:]
+    parsed = param_fact_strings.parseString(in_string)[:]
     return parsed
-

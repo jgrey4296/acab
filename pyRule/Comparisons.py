@@ -1,25 +1,26 @@
 """ Simple comparison functions to be used in rules """
 import logging as root_logger
-from enum import Enum 
+from enum import Enum
+import re
 logging = root_logger.getLogger(__name__)
 
 #comparison operators:
-COMP = Enum('Comp_ops','LT GT NE EQ RE')
+COMP = Enum('Comp_ops', 'LT GT NE EQ RE')
 
 
-def EQ(a,b):
+def EQ(a, b):
     return a == b
 
-def GT(a,b):
+def GT(a, b):
     return a > b
 
-def LT(a,b):
+def LT(a, b):
     return a < b
 
-def NEQ(a,b):
+def NEQ(a, b):
     return a != b
 
-def REGMATCH(a,b):
+def REGMATCH(a, b):
     return re.search(b, a)
 
 
@@ -29,7 +30,6 @@ COMP_LOOKUP = {
     COMP.NE : NEQ,
     COMP.EQ : EQ,
     COMP.RE : REGMATCH
-    
 }
 
 COMP_REVERSE_LOOKUP = {
@@ -52,22 +52,23 @@ class Comparison:
 
     def copy(self):
         return Comparison(self.op, self.value, self.bind)
-        
+
     def is_alpha_test(self):
         return self.value is not None
 
     def is_regex_test(self):
         return self.op is COMP.RE
-    
+
     def __repr__(self):
         if self.is_regex_test():
             val = "/{}/".format(self.value)
         else:
             val = self.value
-            
+        
         if self.value is not None:
-            return "{} {}".format(COMP_REVERSE_LOOKUP[self.op],
-                                    val)
+            retValue = "{} {}".format(COMP_REVERSE_LOOKUP[self.op],
+                                      val)
         else:
-            return "{} {}".format(COMP_REVERSE_LOOKUP[self.op],
-                                    repr(self.bind))
+            retValue = "{} {}".format(COMP_REVERSE_LOOKUP[self.op],
+                                      repr(self.bind))
+        return retValue

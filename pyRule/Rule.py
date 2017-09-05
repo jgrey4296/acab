@@ -1,15 +1,19 @@
+""" Rule:  Stores the representation of an entire rule for an engine.
+    Holds a query of clauses, bindings are passed to a transform,
+    the results are passed to the action list """
 import logging as root_logger
-from .Query import Query
+import IPython
 import pyRule.utils as util
 import pyRule.Transforms as T
 import pyRule.Actions as A
-import IPython
+from .Query import Query
+
 logging = root_logger.getLogger(__name__)
 
 class Rule:
     __count = 0
 
-    
+
     def __init__(self, query, actions, transform=None, name=None, tags=None):
         assert(query is None or isinstance(query, Query))
         assert(isinstance(actions, list))
@@ -33,10 +37,10 @@ class Rule:
 
     def has_tag(self, t):
         return t in self._tags
-            
+
     def __repr__(self):
         nameStr = "".join([repr(x) for x in self._name])
-        if len(self._tags) > 0:
+        if bool(self._tags):
             tagsStr = "\t" + ", ".join(sorted(["#{}".format(x) for x in self._tags])) + "\n\n"
         else:
             tagsStr = ""
@@ -48,7 +52,7 @@ class Rule:
             transformStr = "\t" + repr(self._transform) + "\n\n"
         else:
             transformStr = ""
-        if len(self._actions) > 0:
+        if bool(self._actions):
             actionsStr = "\t" + "\n\t".join([repr(x) for x in self._actions]) + "\n"
         else:
             actionsStr = ""
@@ -57,15 +61,15 @@ class Rule:
                                          queryStr,
                                          transformStr,
                                          actionsStr)
-    
+
     def is_coherent(self): #raises an Exception othewise
-        """ Verify that the outputs of the query match the 
+        """ Verify that the outputs of the query match the
         inputs of the transform, match the inputs of the actions """
         if self._transform is not None:
             self._transform.verify_ops()
 
-        if len(self._actions) > 0:
-            [x.verify_op() for x in self._actions]
+        if bool(self._actions):
+            verified = [x.verify_op() for x in self._actions]
         #if nothing raises an exception:
         return True
 
@@ -75,8 +79,9 @@ class Rule:
         return []
 
     @staticmethod
-    def from_trie(self, node):
+    def from_trie(node):
         """ given a root node of a trie, create a rule from it """
+        #todo
         return Rule()
 
     def expandBindings(self, bindings):

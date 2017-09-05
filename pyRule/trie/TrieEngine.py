@@ -6,6 +6,7 @@ import logging as root_logger
 from os.path import join, isfile, exists, isdir, splitext, expanduser
 from os import listdir
 from random import shuffle
+import IPython
 
 import  pyRule.utils as util
 from pyRule import Actions as Actions
@@ -22,12 +23,12 @@ from . import FactParser as FP
 from . import RuleParser as RP
 from . import FileParser as FileP
 
-import IPython
+
 
 logging = root_logger.getLogger(__name__)
 
 class TrieEngine(EngineBase):
-    
+
     def __init__(self, path=None, init=None):
         super().__init__(Trie, path=path, init=init)
         self._knowledge_base = Trie(init)
@@ -53,17 +54,16 @@ class TrieEngine(EngineBase):
             for x in assertions:
                 logging.info("File load assertion: {}".format(x))
                 self.add(x)
-            self.registerRules(rules)            
+            self.registerRules(rules)
         else:
             raise Exception("No text found in provided file")
- 
 
     #todo: be able to assert retract or query from tries instead of strings
     def add(self, s):
         if isinstance(s, str):
             self._knowledge_base.assertS(s)
         else:
-            assert(isinstance(s[0],Node))
+            assert(isinstance(s[0], Node))
             self._knowledge_base.assertFact(s)
 
     def retract(self, s):
@@ -72,7 +72,7 @@ class TrieEngine(EngineBase):
         else:
             assert(isinstance(s[0], Node))
             self._knowledge_base.retractFact(s)
-        
+
 
     def query(self, s):
         if isinstance(s, str):
@@ -89,13 +89,9 @@ class TrieEngine(EngineBase):
             assert(all([isinstance(x, Rule) for x in s]))
             rules = s
         for x in rules:
-            try:
-                assert(isinstance(x, Rule))
-                assert(x.is_coherent())
-                logging.info("Registering Rule: {}".format(x._name))
-                ruleName = "".join([str(x) for x in x._name])
-                self._rules[ruleName] = x
-                #todo: assert the fact here
-            except Exception as e:
-                logging.exception(e)
-
+            assert(isinstance(x, Rule))
+            assert(x.is_coherent())
+            logging.info("Registering Rule: {}".format(x._name))
+            ruleName = "".join([str(x) for x in x._name])
+            self._rules[ruleName] = x
+            #todo: assert the fact here

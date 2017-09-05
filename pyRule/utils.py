@@ -1,3 +1,4 @@
+""" Cross-module utilities for the rule engines """
 from enum import Enum
 from collections import namedtuple
 from random import choice
@@ -15,14 +16,15 @@ META_OP = Enum("Meta Ops", "ORDER BIND COMP NEGATED")
 
 
 #Basic Data Structures
-class Bind: #pylint: disable=too-few-public-methods 
+class Bind:
     """ Simple holder to designate a binding action """
+    #pylint: disable=too-few-public-methods
     def __init__(self, v):
         self.value = v
-        
+
     def __repr__(self):
         return "$" + self.value
-    
+
 
 def expandFact(factString, bindings):
     output = []
@@ -36,7 +38,7 @@ def expandFact(factString, bindings):
             #early exit if a plain node
             output.append(x)
             continue
-        
+
         if isinstance(retrieved, list) and retrieved[0].is_root():
             output += retrieved[1:]
         elif isinstance(retrieved, list):
@@ -50,10 +52,8 @@ def expandFact(factString, bindings):
             copyNode._value = retrieved
             copyNode.set_meta_eval(META_OP.BIND, False)
             output.append(copyNode)
-            
     return output
-            
-        
+
 def build_rebind_dict(formal, usage):
     """ Build a dictionary for action macro expansion,
     to swap internal formal params for proided usage params """
@@ -64,5 +64,3 @@ def build_rebind_dict(formal, usage):
 def default_action_policy(pairings):
     #each pairing is of data, rule
     return [choice(pairings)]
-
-

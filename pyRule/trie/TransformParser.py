@@ -1,10 +1,11 @@
+""" Trie-based parser for the transform component of rules """
 import logging as root_logger
 import pyparsing as pp
+import IPython
+import pyRule.utils as util
+from pyRule.Transforms import TROP, SelectionTransform, OperatorTransform, Transform
 from .FactParser import COMMA, BIND, VALBIND
 from .QueryParser import OPAR, CPAR, REGEX
-from pyRule.Transforms import TROP, SelectionTransform, OperatorTransform, Transform
-import pyRule.utils as util
-import IPython
 
 logging = root_logger.getLogger(__name__)
 pp.ParserElement.setDefaultWhitespaceChars(' \t\r')
@@ -29,16 +30,16 @@ def buildBinaryTransformComponent(toks):
     return OperatorTransform(toks[1], toks[0], val, bind)
 
 def buildUnaryTransformComponent(toks):
-    op = toks[0]
+    operator = toks[0]
     source = toks[1]
-    return OperatorTransform(op, source)
+    return OperatorTransform(operator, source)
 
 def buildTernaryTransformComponent(toks):
     source = toks[0]
-    op = toks[1]
+    operator = toks[1]
     regex = toks[2]
     bind = toks[3]
-    return OperatorTransform(op, source, value=regex, bind=bind)
+    return OperatorTransform(operator, source, value=regex, bind=bind)
 
 def buildSelection(toks):
     bound1 = toks[0]
@@ -107,5 +108,5 @@ select.setParseAction(buildSelection)
 transform_core.setParseAction(addRebind)
 transforms.setParseAction(lambda toks: Transform(toks[:]))
 
-def parseString(s):
-    return transforms.parseString(s)[0]
+def parseString(in_string):
+    return transforms.parseString(in_string)[0]

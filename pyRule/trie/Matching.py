@@ -1,21 +1,21 @@
 import logging as root_logger
-from .Node import Node
 from pyRule import utils as util
 from pyRule.Comparisons import COMP_LOOKUP
+from .Node import Node
 logging = root_logger.getLogger(__name__)
 
 
 def test_alphas(value, comps):
     """ Run alpha tests against a retrieved value """
-    return all([COMP_LOOKUP[x.op](value,x.value) for x in comps])
+    return all([COMP_LOOKUP[x.op](value, x.value) for x in comps])
 
 def test_betas(value, comps, data):
     """ Run a beta tests against a retrieved value, with supplied bindings """
-    return all([COMP_LOOKUP[x.op](value,data[x.bind.value]) for x in comps])
+    return all([COMP_LOOKUP[x.op](value, data[x.bind.value]) for x in comps])
 
 
 def exclusion_matches(a, b):
-    """ Compare the EXOP of a node, with whether that exop 
+    """ Compare the EXOP of a node, with whether that exop
     is in the children of the other node/parent """
     logging.info("Running exclusion match test")
     assert(isinstance(a, Node))
@@ -26,7 +26,7 @@ def exclusion_matches(a, b):
                                                    b.is_exclusive(), str(b)))
         logging.debug("Mismatch EX num")
     return result
-    
+
 
 def non_bind_value_match(a, b, betas, regexs, data):
     """ Compare two values without caring about binding """
@@ -66,7 +66,7 @@ def create_new_bindings(a, b, alphas, betas, regexs, data):
     potentials = b._children.keys()
     passing = [x for x in potentials if test_alphas(x, alphas) and test_betas(x, betas, data)]
     for x in passing:
-        output.append(b._children[x].test_regexs_for_matching(regexs, data, preupdate=(a._value, x)))
+        output.append(b._children[x].test_regexs_for_matching(regexs,
+                                                              data,
+                                                              preupdate=(a._value, x)))
     return output
-
-        

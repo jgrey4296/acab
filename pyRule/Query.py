@@ -1,5 +1,6 @@
-from .Clause import Clause
+""" Query: The Datastructure to hold a question to pose to the knowledgebase """
 import IPython
+from .Clause import Clause
 
 class Query:
     """ A Query for the Trie Knowledge base """

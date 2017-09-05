@@ -1,11 +1,12 @@
-""" Simple Transform funtions to be used in rules """
-from enum import Enum 
+""" Simple Transform functions to be used in rules """
 import logging as root_logger
-from pyRule.utils import Bind
+from enum import Enum
 from random import uniform, sample, randint
 from math import floor
 from re import sub
 import IPython
+from pyRule.utils import Bind
+
 logging = root_logger.getLogger(__name__)
 
 TROP = Enum("Transform_ops", "ADD SUB MUL DIV RAND REMAIN ROUND NEG REGEX FORMAT SELECT SELECT_ALL")
@@ -68,7 +69,7 @@ TROP_REVERSE_LOOKUP = {
     TROP.REMAIN : "%",
     TROP.ROUND: "_",
     TROP.NEG : "-",
-    TROP.REGEX : "~="  ,
+    TROP.REGEX : "~=",
     TROP.FORMAT : "~{}",
     TROP.SELECT : "select"
 }
@@ -93,10 +94,10 @@ class TransformComponent:
     def __init__(self, op):
         assert(isinstance(op, TROP))
         self.op = op
-    
+
 class SelectionTransform(TransformComponent):
     """ The transform type which selects a number of possible bindings """
-    
+
     def __init__(self, lBound, uBound, op=TROP.SELECT):
         super().__init__(op)
         self.lBound = lBound
@@ -109,28 +110,28 @@ class SelectionTransform(TransformComponent):
             lbound = repr(self.lBound)
         else:
             lbound = str(self.lBound)
-            
+
         if self.uBound is TROP.SELECT_ALL:
             ubound = "_"
         elif isinstance(self.uBound, Bind):
             ubound = repr(self.uBound)
         else:
             ubound = str(self.uBound)
-            
+
         return "select {} - {}".format(lbound, ubound)
 
-        
+
 class OperatorTransform(TransformComponent):
     """ The main transform type. applies the operator to values """
-    
+
     def __init__(self, op, source, value=None, bind=None, rebind=None):
         super().__init__(op)
         if bind is not None:
             assert(isinstance(source, Bind))
         if rebind is not None:
             assert(isinstance(rebind, Bind))
-        assert(isinstance(op, TROP) or isinstance(op, str))
-        
+        assert(isinstance(op, (TROP, str)))
+
         self.source = source
         self.val = value
         self.bind = bind
@@ -144,7 +145,7 @@ class OperatorTransform(TransformComponent):
         assert(isinstance(bind, Bind))
         assert(self.rebind is None)
         self.rebind = bind
-        
+
     def __repr__(self):
         op = TROP_REVERSE_LOOKUP[self.op]
         source = repr(self.source)
@@ -154,7 +155,7 @@ class OperatorTransform(TransformComponent):
             rebind = ""
         if self.val is not None and isinstance(self.val, float):
             value = str(self.val)
-            value = value.replace(".","d")
+            value = value.replace(".", "d")
         elif self.val is not None:
             value = str(self.val)
         else:
@@ -163,7 +164,7 @@ class OperatorTransform(TransformComponent):
             bind = repr(self.bind)
         else:
             bind = ""
-            
+
         assert(self.op in TROP_PARAM_LENGTHS)
         param_length = TROP_PARAM_LENGTHS[self.op]
         if param_length == 1 and self.op is TROP.FORMAT:
@@ -177,10 +178,10 @@ class OperatorTransform(TransformComponent):
                 bind = ' ' + bind
             return "{} {} /{}/{}{}".format(source, op, value, bind, rebind)
 
-        
+
 class Transform:
     """ Holds a number of separate transform operators together to apply to a binding set """
-    
+
     #have min and max bounds
     def __init__(self, components):
         assert(all([isinstance(x, TransformComponent) for x in components]))
@@ -193,14 +194,14 @@ class Transform:
 
     def __len__(self):
         return len(self.components)
-        
+
     def __repr__(self):
         if self.selection is not None:
             sel = repr(self.selection)
         else:
             sel = ""
-        
-        return "{}{}".format(sel,", ".join([repr(x) for x in self.components]))
+
+        return "{}{}".format(sel, ", ".join([repr(x) for x in self.components]))
 
     def verify_ops(self):
         for x in self.components:
@@ -210,8 +211,8 @@ class Transform:
         if self.selection is None:
             return (None, None)
         else:
-            return (self.selection.lBound, self.selection.uBound)            
-            
+            return (self.selection.lBound, self.selection.uBound)
+
     def get_input_requirements(self):
         #return the set of input bound names
         return set([])

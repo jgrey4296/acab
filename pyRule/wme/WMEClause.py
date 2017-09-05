@@ -1,7 +1,9 @@
+""" The WME Specific representation of a query clause """
+import re
 from pyRule import Clause
 from pyRule.utils import Bind
 from pyRule.Comparisons import COMP
-import re
+
 
 class WMEClause(Clause):
 
@@ -19,7 +21,7 @@ class WMEClause(Clause):
                 binds.append(c)
             elif len(c) == 3 and c[1] is COMP.RE:
                 regexs.append(c)
-            elif len(c) == 3 and isinstance(c[2],Bind): #(c < $x)
+            elif len(c) == 3 and isinstance(c[2], Bind): #(c < $x)
                 betas.append(c)
             else:
                 alphas.append(c)

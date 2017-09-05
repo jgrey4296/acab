@@ -7,20 +7,21 @@ from pyparsing import pyparsing_common as ppc
 import IPython
 
 from pyRule.utils import Bind, expandFact
+from pyRule.Rule import Rule
+from pyRule.Actions import ActionMacro
 from . import FactParser as FP
 from . import RuleParser as RP
 from . import ActionParser as AP
-from pyRule.Rule import Rule
-from pyRule.Actions import ActionMacro
 
 
 parseBindings = {}
 
 def final_pass(toks):
     """ The final action of the file parser.
-    splits out rules and assertions, 
+    splits out rules and assertions,
     and expands action macros in rules into the actual
     action sequences """
+    global parseBindings
     rules = []
     assertions = []
     action_macros = {}
@@ -35,7 +36,7 @@ def final_pass(toks):
     #clear the parse bindings as a guard:
     parseBindings = {}
     #and expand rulemacros into rule sequences:
-    expandedActMacroRules = [x.expandActionMacros(action_macros) for x in rules]    
+    expandedActMacroRules = [x.expandActionMacros(action_macros) for x in rules]
     return (expandedActMacroRules, assertions)
 
 def add_file_binding(toks):
@@ -50,7 +51,7 @@ def add_file_binding(toks):
 
 def expansion_pass(toks):
     """ Expand any bindings that are stored in the parse """
-    if len(toks) == 0:
+    if not bool(toks):
         return toks
     elif len(toks) > 1:
         raise Exception("Unexpected toks size for binding expansion")
@@ -97,10 +98,6 @@ fileBind.setParseAction(add_file_binding)
 clearBind.setParseAction(clearBinding)
 file_component.setParseAction(expansion_pass)
 
-def parseString(s):
-    assert(isinstance(s, str))
-    return file_total.parseString(s)[0]
- 
-
-
-
+def parseString(in_string):
+    assert(isinstance(in_string, str))
+    return file_total.parseString(in_string)[0]

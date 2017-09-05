@@ -1,16 +1,18 @@
-from .WME import WME
+""" FactBase: The WME-based implementation of a knowledge base """
+import IPython
 from pyRule.Contexts import Contexts
 from pyRule.Query import Query
 from pyRule.wme.WMEClause import WMEClause
 from pyRule.Comparisons import COMP_LOOKUP
 from pyRule.utils import Bind
-import IPython
-#todo: eq, str, 
+from .WME import WME
+
+#todo: eq, str
 
 class FactBase:
     """ Main class for WME based knowledge base """
-    
-    def __init__(self ):
+
+    def __init__(self):
         self._wmes = []
         self._wmeDict = {}
         self._hashes = set()
@@ -24,12 +26,12 @@ class FactBase:
 
     def incTime(self):
         self._currentTime += 1
-        
+
     def assertWME(self, *args):
         """ Put a fact into the knowledge base """
         outputData = []
         for possibleData in args:
-            if not isinstance(possibleData,WME):
+            if not isinstance(possibleData, WME):
                 wme = WME(possibleData, self._currentTime)
             else:
                 wme = possibleData
@@ -42,10 +44,10 @@ class FactBase:
             assert(len(self._wmes) == len(self._hashes))
             outputData.append(wme)
         return outputData
-        
+
     def retractWME(self, wme):
         """ Remove a fact from the knowledge base """
-        if not isinstance(wme,WME):
+        if not isinstance(wme, WME):
             raise Exception("Retracting WME Failed: Not passed a WME")
         wmeHash = hash(wme)
         if wmeHash not in self._hashes:
@@ -56,7 +58,7 @@ class FactBase:
         assert(len(self._wmes) == len(self._hashes))
         assert(len(self._wmeDict) == len(self._wmes))
         return 1
-        
+
     def query(self, query):
         """ Given a query of clauses comprising:
         alpha, binding, and beta tests, run it and return
@@ -65,24 +67,24 @@ class FactBase:
         posClauses, negClauses = query.splitClauses()
         for clause in posClauses:
             #pass the clause and intermediate results through
-            contexts = self._matchWMEs(clause,contexts)
+            contexts = self._matchWMEs(clause, contexts)
 
         #then check negative clauses
         negContext = contexts
         for clause in negClauses:
             #test each negated clause,
             #fail the query if any pass
-            negResponse = self._matchWMEs(clause,negContext)
+            negResponse = self._matchWMEs(clause, negContext)
             if negResponse:
                 contexts.fail()
                 break
-        
+
         #contexts.verifyMatches(len(query))
         return contexts
-            
+
 
     def _matchWMEs(self, clause, contexts):
-        """ Internal match procedure. 
+        """ Internal match procedure.
         Searches all wmes, running alpha tests,
         then bindings, then beta comparisons,
         before adding passing wmes to the context """
@@ -99,19 +101,21 @@ class FactBase:
                 continue
 
             #bind
-            newContexts = self._bind_values(wme, bindOps, contexts) 
-            if len(newContexts) == 0:
+            newContexts = self._bind_values(wme, bindOps, contexts)
+            if not bool(newContexts):
                 continue
-            
+
             #Beta Tests
-            passingContexts._alternatives += self._test_beta(wme, newContexts, betaTests)._alternatives
+            passingContexts._alternatives += self._test_beta(wme,
+                                                             newContexts,
+                                                             betaTests)._alternatives
         return passingContexts
 
     def _bind_values(self, wme, bindOps, contexts):
         """ Add in a new binding to each context, unless it conflicts """
         newContexts = Contexts()
         failed_contexts = []
-        for (data,matchedWME) in contexts._alternatives:
+        for (data, matchedWME) in contexts._alternatives:
             newData = data.copy()
             newMatchedWMEs = matchedWME
             for (field, bindName) in bindOps:
@@ -124,15 +128,15 @@ class FactBase:
                     break
                 newData[bindName.value] = wme._data[field]
 
-            if len(failed_contexts) == 0:
+            if not bool(failed_contexts):
                 newMatchedWME = wme
-                newContexts._alternatives.append((newData,newMatchedWME))
+                newContexts._alternatives.append((newData, newMatchedWME))
             else:
                 continue
 
         return newContexts
-        
-    
+
+
     def _test_alpha(self, wme, alphaTests):
         """ Run alpha tests (intra-wme) """
         for (field, op, val) in alphaTests:
@@ -157,23 +161,22 @@ class FactBase:
                 opFunc = COMP_LOOKUP[op]
                 #compare wme to token
                 if isinstance(field, Bind) and not opFunc(newData[field.value],
-                                                      newData[bindName.value]):
+                                                          newData[bindName.value]):
                     failMatch = True
                     break
                 elif (not isinstance(field, Bind)) and field not in wme._data:
                     failMatch = True
                     break
-                elif (not isinstance(field, Bind)) and not opFunc(wme._data[field],newData[bindName.value]):
+                elif (not isinstance(field, Bind)) and \
+                     not opFunc(wme._data[field], newData[bindName.value]):
                     failMatch = True
                     break
-                
+
             if not failMatch:
-                newContexts._alternatives.append((newData,newMatchedWME))
-                                
+                newContexts._alternatives.append((newData, newMatchedWME))
+
         return newContexts
-        
-    
+
     def __len__(self):
         """ The number of wmes in the factbase """
         return len(self._hashes)
-    

@@ -1,3 +1,6 @@
+""" EngineBase: The Core Interface and implementation independent code for the
+    knowledgebase engines
+"""
 import logging as root_logger
 from . import Rule
 from . import Actions
@@ -9,7 +12,7 @@ logging = root_logger.getLogger(__name__)
 
 class EngineBase:
     """ The base class that wme and trie versions implement the interface of """
-    
+
     def __init__(self, kb_constructor, path=None, init=None):
         self._knowledge_base = kb_constructor(init)
         self._rules = {}
@@ -26,37 +29,36 @@ class EngineBase:
 
     def load_file(self, filename):
         """ Load a file spec for the facts / rules for this engine """
+        #pylint: disable=unused-argument,no-self-use
         raise Exception("Base Engine Stub")
-        return
 
     def _save_state(self, data):
-        """ Copy the current string representation of the knowledge base, 
+        """ Copy the current string representation of the knowledge base,
         and any associated data """
         self._prior_states.append((str(self._knowledge_base), data))
-    
 
     def register_action(self, name, func):
         """ Register custom actions,
         of the form def name(engine, paramsList) """
-        assert(isinstance(name,str))
+        assert(isinstance(name, str))
         assert(callable(func))
         if name in self._custom_actions:
             raise Exception("Duplicate action: {}".format(name))
-        self._custom_actions[name]
-
+        self._custom_actions[name] = func
 
     def registerRules(self, s):
         """ Register passed in rule specifications """
+        #pylint: disable=unused-argument,no-self-use
         raise Exception("Base Engine Stub")
 
-        
     def add(self, s):
         """ Assert a new fact into the engine """
+        #pylint: disable=unused-argument,no-self-use
         raise Exception("Base Engine Stub")
-
 
     def retract(self, s):
         """ Remove a fact from the engine """
+        #pylint: disable=unused-argument,no-self-use
         raise Exception("Base Engine Stub")
 
     def clear_proposed_actions(self):
@@ -64,15 +66,13 @@ class EngineBase:
         enacted """
         self._proposed_actions = []
 
-
     def __len__(self):
         """ The number of rules in the engine """
         return len(self._rules)
 
-
     def _run_rules(self, rule_locations=None, rule_tags=None, policy=None):
         """ Run all, or some, rulies of the engine, if provided a policy,
-        propose actions and select from the proposals """ 
+        propose actions and select from the proposals """
         self._save_state((rule_locations, rule_tags, policy, self._proposed_actions))
         rules_to_run = []
         #Get the rules:
@@ -81,8 +81,9 @@ class EngineBase:
             rules_to_run = list(self._rules.values())
         #otherwise, get by trie location / tag and run those
         elif rule_tags is not None:
-            assert(isinstance(rule_tags,list))
-            rules_to_run = [x for x in self._rules.values() if len(x._tags.intersection(rule_tags)) > 0]
+            assert(isinstance(rule_tags, list))
+            rules_to_run = [x for x in self._rules.values() \
+                            if bool(x._tags.intersection(rule_tags))]
         elif rule_locations is not None:
             raise Exception('Rule Location Running is not implemented yet')
 
@@ -90,7 +91,7 @@ class EngineBase:
 
         for rule in rules_to_run:
             self._run_rule(rule, propose=should_propose_rules)
-        
+
         if should_propose_rules:
             self._perform_action_by_policy(policy)
 
@@ -170,7 +171,7 @@ class EngineBase:
                 self._perform_actions(data, ruleOrActions._actions)
             else:
                 self._perform_actions(data, ruleOrActions)
-                
+
     def _perform_actions(self, data, actions):
         """ Actual enaction of a set of actions """
         assert(all([isinstance(x, Actions.Action) for x in actions]))
@@ -196,4 +197,3 @@ class EngineBase:
                 self._perform_actions(d, r._actions)
             else:
                 self._perform_actions(d, r)
-    

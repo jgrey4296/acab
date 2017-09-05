@@ -1,7 +1,12 @@
+"""
+Actions: Describes the basic actions that a knowledgebase can perform,
+along with associated enums, and IR data structures
+"""
+
 import logging as root_logger
 from enum import Enum
-from pyRule import utils as util
 from collections import namedtuple
+from pyRule import utils as util
 import IPython
 logging = root_logger.getLogger(__name__)
 
@@ -19,7 +24,6 @@ def E_ADD(engine, params):
 def E_RETRACT(engine, params):
     #assert(all([isinstance(x, Node) for x in params[0]]))
     engine.retract(params[0])
-
 
 def E_PRINT(engine, params):
     for x in params:
@@ -41,7 +45,7 @@ ACTS_REVERSE_LOOKUP = {
 
 class Action:
     def __init__(self, op, values):
-        assert(isinstance(op, ACTS) or isinstance(op, str))
+        assert(isinstance(op, (ACTS, str)))
         assert(isinstance(values, list))
         #todo: assert that values are a fact string, value, or binding
         self._op = op
@@ -73,7 +77,7 @@ class Action:
             else:
                 args.append(str(val))
         return "{}({})".format(op, ",".join(args))
-        
+
     def is_custom(self):
         return isinstance(self._op, str) or not isinstance(self._op, ACTS)
 
@@ -111,10 +115,9 @@ class ActionMacro:
         return ActionMacro(self._name,
                            self._params.copy(),
                            newActions)
-        
 
-        
-        
+
+
 class ActionMacroUse:
 
     def __init__(self, name, params):

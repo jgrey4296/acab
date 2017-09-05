@@ -1,11 +1,13 @@
+""" Trie-based parser to construct rules """
 import logging as root_logger
 import IPython
 import pyparsing as pp
+from pyRule.Rule import Rule
 from . import FactParser as FP
 from . import QueryParser as QP
 from . import TransformParser as TP
 from . import ActionParser as AP
-from pyRule.Rule import Rule
+
 
 
 pp.ParserElement.setDefaultWhitespaceChars(' \t\r')
@@ -31,8 +33,8 @@ def build_rule(toks):
     else:
         tags = []
     return Rule(c, a, transform=t, name=name, tags=tags)
-        
-        
+
+
 s = pp.Suppress
 op = pp.Optional
 opLn = s(op(pp.LineEnd()))
@@ -57,9 +59,9 @@ rules = rule + pp.ZeroOrMore(emptyLine + rule)
 
 rule.setParseAction(build_rule)
 
-def parseString(s):
-    assert(isinstance(s, str))
-    return rules.parseString(s)[:]
+def parseString(in_string):
+    assert(isinstance(in_string, str))
+    return rules.parseString(in_string)[:]
 
 
 """

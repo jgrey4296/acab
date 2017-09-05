@@ -1,12 +1,11 @@
+""" Trie-based parser for constructing queries """
 import logging as root_logger
 import pyparsing as pp
-
-from .FactParser import COMMA, VALBIND, PARAM_CORE, BIND, COLON, VALUE
-
-from pyRule.utils import Bind,META_OP
+from pyRule.utils import Bind, META_OP
 from pyRule.Comparisons import COMP, Comparison, COMP_REVERSE_LOOKUP
 from pyRule.Query import Query
 from pyRule.Clause import Clause
+from .FactParser import COMMA, VALBIND, PARAM_CORE, BIND, COLON, VALUE
 
 pp.ParserElement.setDefaultWhitespaceChars(' \t\r')
 
@@ -29,11 +28,11 @@ def buildClause(toks):
     else:
         return Clause(toks.main[:], fallback=fallback_toks)
 
-def buildComparison(op, value):
+def buildComparison(operator, value):
     if isinstance(value, Bind):
-        return Comparison(op, bind=value)
+        return Comparison(operator, bind=value)
     else:
-        return Comparison(op, value=value)
+        return Comparison(operator, value=value)
 
 def buildQueryComponent(toks):
     node = toks[0]
@@ -100,6 +99,6 @@ assignment.setParseAction(lambda toks: (toks[0], toks[1]))
 
 
 #Main parser:
-def parseString(s):
+def parseString(in_string):
     """ .a.b(>20)!d.$X, ... -> Query """
-    return clauses.parseString(s)[0]
+    return clauses.parseString(in_string)[0]
