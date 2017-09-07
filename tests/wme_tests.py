@@ -186,7 +186,7 @@ class WME_FB_Tests(unittest.TestCase):
                                   ("name", C.NE, "bill")])])
         response = self.fb.query(query)
         self.assertTrue(response)
-        self.assertEqual(response._alternatives[0][0]["y"], "jill")
+        self.assertEqual(response._matches[0][0]["y"], "jill")
 
     def test_query_realistic2(self):
         """ A final psuedo-realistic data query test """
@@ -198,7 +198,7 @@ class WME_FB_Tests(unittest.TestCase):
                                  ("name",C.NE, "bill")])])
         response = self.fb.query(query)
         self.assertTrue(response)
-        self.assertEqual(response._alternatives[0][0]["y"], "jill")
+        self.assertEqual(response._matches[0][0]["y"], "jill")
 
     def test_forall_negation_simple(self):
         """ Test a query that requires a wme to NOT exist """
@@ -206,7 +206,7 @@ class WME_FB_Tests(unittest.TestCase):
         self.fb.assertWME({"name":"bill"})
         response = self.fb.query(query)
         self.assertTrue(response)
-        self.assertEqual(len(response._alternatives), 1)
+        self.assertEqual(len(response._matches), 1)
 
     def test_forall_negation_test_compound(self):
         """ Test a multi clause negation """
@@ -214,7 +214,7 @@ class WME_FB_Tests(unittest.TestCase):
         self.fb.assertWME({"name" : "bob", "age" : 15})
         response = self.fb.query(query)
         self.assertTrue(response)
-        self.assertEqual(len(response._alternatives), 1)
+        self.assertEqual(len(response._matches), 1)
 
     def test_forall_negation_fail(self):
         """ Test a negation that fails """
