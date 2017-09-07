@@ -47,6 +47,7 @@ def FORMAT(a, data):
     #use str.format variant with a data dictionary
     return a.format(**data)
 
+#Convert a Transform Operator enum to its function
 TROP_LOOKUP = {
     TROP.ADD : ADD,
     TROP.SUB : SUB,
@@ -60,6 +61,7 @@ TROP_LOOKUP = {
     TROP.FORMAT: FORMAT,
 }
 
+#Convert a transform operator enum to its string representation
 TROP_REVERSE_LOOKUP = {
     TROP.ADD : "+",
     TROP.SUB : "-",
@@ -74,6 +76,7 @@ TROP_REVERSE_LOOKUP = {
     TROP.SELECT : "select"
 }
 
+#Get the number of parameters the transform operator takes 
 TROP_PARAM_LENGTHS = {
     TROP.ADD : 2,
     TROP.SUB : 2,
@@ -142,6 +145,7 @@ class OperatorTransform(TransformComponent):
             raise Exception("Unknown Op: {}".format(self.op))
 
     def setRebind(self, bind):
+        """ Set this transform to rebind its result to a different variable """
         assert(isinstance(bind, Bind))
         assert(self.rebind is None)
         self.rebind = bind
