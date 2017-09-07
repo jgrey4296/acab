@@ -106,16 +106,16 @@ class FactBase:
                 continue
 
             #Beta Tests
-            passingContexts._alternatives += self._test_beta(wme,
+            passingContexts._matches += self._test_beta(wme,
                                                              newContexts,
-                                                             betaTests)._alternatives
+                                                             betaTests)._matches
         return passingContexts
 
     def _bind_values(self, wme, bindOps, contexts):
         """ Add in a new binding to each context, unless it conflicts """
         newContexts = Contexts()
         failed_contexts = []
-        for (data, matchedWME) in contexts._alternatives:
+        for (data, matchedWME) in contexts._matches:
             newData = data.copy()
             newMatchedWMEs = matchedWME
             for (field, bindName) in bindOps:
@@ -130,7 +130,7 @@ class FactBase:
 
             if not bool(failed_contexts):
                 newMatchedWME = wme
-                newContexts._alternatives.append((newData, newMatchedWME))
+                newContexts._matches.append((newData, newMatchedWME))
             else:
                 continue
 
@@ -151,7 +151,7 @@ class FactBase:
     def _test_beta(self, wme, contexts, betaTests):
         """ Run beta (inter-wme) tests on a wme and context """
         newContexts = Contexts()
-        for (data, matchedWME) in contexts._alternatives:
+        for (data, matchedWME) in contexts._matches:
             failMatch = False
             newData = data.copy()
             newMatchedWME = matchedWME
@@ -173,7 +173,7 @@ class FactBase:
                     break
 
             if not failMatch:
-                newContexts._alternatives.append((newData, newMatchedWME))
+                newContexts._matches.append((newData, newMatchedWME))
 
         return newContexts
 
