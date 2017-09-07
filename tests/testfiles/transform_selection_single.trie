@@ -4,7 +4,7 @@
 .a.d!20
 
 // A Retracting rule
-.a.test.rule:
+.test.rule:
     .a.$x!$y?
 
     select 1 - 1
