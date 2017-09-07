@@ -12,7 +12,7 @@ EXOP_lookup = {
     EXOP.ROOT : "||"
     }
 
-META_OP = Enum("Meta Ops", "ORDER BIND COMP NEGATED")
+META_OP = Enum("Meta Ops", "ORDER BIND COMP NEGATED RULE")
 
 
 #Basic Data Structures
