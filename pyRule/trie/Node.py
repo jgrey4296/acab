@@ -63,11 +63,12 @@ class Node:
         else:
             return v in self._children
 
-    def set_meta_leaf(self, mType, values):
-        #todo
+    def set_meta_leaf(self, mType, value):
+        logging.info("Setting Meta Leaf: {}, {}, {}".format(repr(self),
+                                                            str(mType),
+                                                            repr(value)))
         assert(isinstance(mType, util.META_OP))
-        assert(isinstance(values, list))
-        self._meta_eval[mType] = [x.copy() for x in values]
+        self._meta_leaf[mType] = value
 
     def set_meta_eval(self, mType, values):
         #todo
