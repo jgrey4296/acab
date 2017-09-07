@@ -18,6 +18,7 @@ class Query:
         return len(self._clauses)
 
     def splitClauses(self):
+        """ Separate out the clauses of the query into positive and negative clauses """
         pos = []
         neg = []
         for c in self._clauses:
@@ -32,6 +33,8 @@ class Query:
         return "\n\t".join(clauseStrs)
 
     def expandBindings(self, bindings):
+        """ Expand the individual clauses to have concrete values """
+        assert(isinstance(bindings, dict))
         newClauses = []
         for x in self._clauses:
             newClauses.append(x.expandBindings(bindings))
