@@ -7,8 +7,9 @@ from pyparsing import pyparsing_common as ppc
 import IPython
 
 from pyRule.utils import Bind, expandFact
-from pyRule.Rule import Rule
 from pyRule.Actions import ActionMacro
+from pyRule.Rule import Rule
+from . import TrieRule as TR
 from . import FactParser as FP
 from . import RuleParser as RP
 from . import ActionParser as AP
@@ -79,8 +80,6 @@ bindArrow = s(pp.Literal('<-'))
 clear = s(pp.Literal('clear'))
 fileBind = FP.BIND + bindArrow + FP.param_fact_string
 clearBind = clear + orm(FP.BIND)
-
-
 
 
 file_component = pp.MatchFirst([FP.comment,
