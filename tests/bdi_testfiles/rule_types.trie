@@ -1,0 +1,165 @@
+//Physical Prop -> Physical Prop
+.physical.property.inference.hammer:
+    #physical
+    
+    .physical.items.$x.hammer?
+
+    +(.physical.items.$x.can.hit)
+end
+
+//Physical Prop -> Action
+.physical.action.proposal.to.hit:
+    #physical
+    
+    .physical.items.$x.can.hit?
+    .agent.$a.items.$x?
+    .agent.$b(!=$a)?
+
+        
+    +(.events.$(genId).$x.hits.$y)    
+end
+
+//Physical Prop -> Social Prop
+.social.property.from.physical.property.inference:
+    #social
+    
+    .physical.items.$x.wearable.on!head?
+
+    +(.physical.items.$x.crown)
+end
+
+//Social prop + physical prop -> Social Role / prop
+.social.role.inference:
+    .physical.items.$x.crown?
+    .agent.$a.wearing.$x?
+
+    +(.agent.$a.role.king)
+end
+
+//Physical Action -> Social Prop
+.social.property.from.physical.action.inference:
+    .events.$z.$x.hits.$y?
+
+    +(.events.$z.assault)
+end
+
+//Social prop -> Social Action
+.social.action.proposal:
+    .agent.$a.roles.king?
+    .agent.$y(!=$a)?
+
+
+    +(.events.$z.$a.orders.execution.of.$y)
+end
+
+//Communicative
+.communication.start:
+    .agent.$a?
+    .agent.$b(!=$a)?
+    ~.temp.conversation.$a.$b!$x?
+
+    +(.temp.conversation.$a.$b!greet)
+end
+
+.communication.response:
+    .agent.$a?
+    .agent.$b(!=$a)?
+    .temp.conversation.$a.$b!greet?
+
+    +(.temp.conversation.$a.$b!response)
+end
+
+//Sequence
+.sequence.start:
+    .sequence.start.$x?
+    .sequence.options.$x.$y?
+    ~.temp.sequence.active!$x?
+
+    +(.temp.sequence.active!$x)
+    +(.temp.sequence.next!$y)
+end
+
+.sequence.choice:
+    .temp.sequence.active!$x?
+    .sequence.options.$x.$y?
+    .sequence.options.$y.$z?
+    
+
+    +(.temp.sequence.current!$y)
+    +(.temp.sequence.next!$z)
+end
+
+.sequence.end:
+    .temp.sequence.active!$x?
+    ~.sequence.options.$x.$y?
+
+    -(.temp.sequence.active)
+end
+
+
+//Norms and Sanctions
+.normative.annotation:
+    .agent.$x.location!$l?
+    .agent.$y(!=$x).friends.$x?
+    .agent.$y.location!$l?
+    
+    +(.agent.$x.should.greet.$y)
+    +(.agent.$y.should.greet.$x)
+end
+
+.normative.action.proposal:
+    .agent.$x.should.$a.$y?
+
+    +(.event.$x.$a.$y)
+end
+
+.normative.sanction.proposal:
+    .agent.$x.should.$a.$y?
+    ~.event.$x.$a.$y?
+
+    +(.agent.$y.should.sanction.$x)
+end
+
+
+
+//Rule Modification
+
+.rule.mod.one:
+    //Add a social constraint / non-essential condition to an item being a crown
+    //This should add a verify step that the item *could*
+    //have the property applied to it
+    .social.property.from.physical.property.inference.$x?
+    $x.#social?
+    .social.item.properties.$z?
+
+    condition_add($x.penumbra, $z?)
+end
+
+.rule.mod.two:
+    //Remove a non-essential condition from the rule
+    .social.property.from.physical.property.inference.$x?
+    $x.penumbra.$y?
+
+    condition_remove($x.penumbra, $y)
+end
+
+//Other rule mods
+//1) add a social role constraint to a social action
+//(Not physical action, all physical actions should only be instanced through
+//social actions)
+
+//2) add a social property/role constraint on a social role
+
+//3) upgrade a physical action to a socially constrained action
+
+//4) add a normative preference to a social action,
+//5) remove a normative preference to a social action
+//6) add a sanction expectation to a social action
+//7) remove a sanction expectation to a social action
+
+//8) insert a pure social action into a sequence (ritual)
+//9) remove a pure social action from a sequence (ritual)
+//10)modify the hierarchy of sanctions
+//11)modify sanction escalation based on social roles (minimum, maximum, steps..)
+
+//12)add a social property to an object, or a role
