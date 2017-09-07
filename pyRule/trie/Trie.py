@@ -51,7 +51,6 @@ class Trie:
         for newNode in factList:
             self._last_node = self._last_node.insert(newNode)
 
-
     def retractFact(self, factList):
         """ Retract a [FactNode] list """
         assert(all([isinstance(x, Node) for x in factList]))
@@ -98,14 +97,15 @@ class Trie:
 
         logging.debug("Testing clauses: {} {}".format(len(pos), len(neg)))
         for clause in pos:
-            (updated_contexts, failures) = self._match_clause(clause, contexts)
-            updated_contexts = updated_contexts.set_all_alts(self._root)
+            reset_start_contexts = contexts.set_all_alts(self._root)
+            (updated_contexts, failures) = self._match_clause(clause,
+                                                              reset_start_contexts)
             if clause.fallback is not None:
                 #add all failures back in, with the default value
                 for d in failures:
                     for bindTarget, val in clause.fallback:
                         d[bindTarget.value] = val
-                updated_contexts._alternatives += [(x, self._root) for x in failures]
+                updated_contexts._matches += [(x, self._root) for x in failures]
 
             if bool(updated_contexts) is False:
                 logging.debug("A positive clause is false")
@@ -114,7 +114,8 @@ class Trie:
             contexts = updated_contexts
 
         for negClause in neg:
-            result, failures = self._match_clause(negClause, contexts)
+            reset_start_contexts = contexts.set_all_alts(self._root)
+            result, failures = self._match_clause(negClause, reset_start_contexts)
             logging.debug("neg result: {}".format(str(result)))
             if bool(result) is True:
                 logging.debug("A Negative clause is true")
@@ -142,7 +143,7 @@ class Trie:
             newContexts = Contexts()
 
             #test each  active alternative
-            for (data, lastNode) in currentContexts._alternatives:
+            for (data, lastNode) in currentContexts._matches:
                 newData = None
                 newNode = None
                 newBindings = []
@@ -170,7 +171,7 @@ class Trie:
                 if newData is not None:
                     newContexts.append((newData, newNode))
                 elif bool(newBindings):
-                    newContexts._alternatives += [x for x in newBindings if x[0] is not None]
+                    newContexts._matches += [x for x in newBindings if x[0] is not None]
                 else:
                     failures.append(data.copy())
 
