@@ -11,11 +11,12 @@ import IPython
 import  pyRule.utils as util
 from pyRule import Actions as Actions
 from pyRule import Transforms
-from pyRule import Contexts, Rule, Query
+from pyRule import Contexts, Query
 from pyRule.trie import Trie, Node
 from pyRule.Actions import Action
 from pyRule.EngineBase import EngineBase
 
+from . import TrieRule as TR
 from . import TransformParser as TP
 from . import ActionParser as AP
 from . import QueryParser as QP
@@ -63,6 +64,7 @@ class TrieEngine(EngineBase):
         if isinstance(s, str):
             self._knowledge_base.assertS(s)
         else:
+            assert(isinstance(s, list))
             assert(isinstance(s[0], Node))
             self._knowledge_base.assertFact(s)
 
@@ -70,6 +72,7 @@ class TrieEngine(EngineBase):
         if isinstance(s, str):
             self._knowledge_base.retractS(s)
         else:
+            assert(isinstance(s, list))
             assert(isinstance(s[0], Node))
             self._knowledge_base.retractFact(s)
 
@@ -82,16 +85,18 @@ class TrieEngine(EngineBase):
             return self._knowledge_base.queryFact(s)
 
     def registerRules(self, s):
-        #todo: rules are strings in the factbase too
         if isinstance(s, str):
             rules = RP.parseString(s)
         else:
-            assert(all([isinstance(x, Rule) for x in s]))
+            assert(all([isinstance(x, TR.TrieRule) for x in s]))
             rules = s
         for x in rules:
-            assert(isinstance(x, Rule))
+            assert(isinstance(x, TR.TrieRule))
             assert(x.is_coherent())
             logging.info("Registering Rule: {}".format(x._name))
             ruleName = "".join([str(x) for x in x._name])
             self._rules[ruleName] = x
-            #todo: assert the fact here
+            #Add the rule position as a fact:
+            self.add(x._name)
+            #then attach the rule as a meta leaf of the last node of that fact
+            self._knowledge_base._last_node.set_meta_leaf(util.META_OP.RULE, x)
