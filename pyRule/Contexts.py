@@ -13,41 +13,41 @@ class Contexts:
 
     def __init__(self):
         #A list of (data,lastNode) tokens
-        self._alternatives = []
+        self._matches = []
 
     def _init_alt(self, startNode):
         """ Setup the initial context of no bindings
             and no wmes """
-        self._alternatives = [({}, startNode)]
+        self._matches = [({}, startNode)]
 
 
     def select(self, bounds=(None, None)):
-        shuffle(self._alternatives)
+        shuffle(self._matches)
         if bounds[0] is None and bounds[1] is None:
-            return [self._alternatives[0][0]]
+            return [self._matches[0][0]]
         if bounds[0] is TROP.SELECT_ALL and bounds[1] is TROP.SELECT_ALL:
-            return [x[0] for x in self._alternatives]
+            return [x[0] for x in self._matches]
         if bounds[1] is TROP.SELECT_ALL:
-            upperBound = len(self._alternatives)
+            upperBound = len(self._matches)
         else:
             upperBound = bounds[1]
             potentialAmnt = max(1, randint(bounds[0], upperBound))
-        return [x[0] for x in sample(self._alternatives, potentialAmnt)]
+        return [x[0] for x in sample(self._matches, potentialAmnt)]
 
 
     def append(self, data):
         assert(len(data) == 2)
         if data[0] is not None and data[1] is not None:
-            self._alternatives.append(data)
+            self._matches.append(data)
 
     def __len__(self):
-        return len(self._alternatives)
+        return len(self._matches)
 
     def __getitem__(self, key):
-        return self._alternatives[key][0]
+        return self._matches[key][0]
 
     def __iter__(self):
-        for x in self._alternatives:
+        for x in self._matches:
             yield x[0]
 
     def __repr__(self):
@@ -57,18 +57,18 @@ class Contexts:
             return "Context: False"
 
     def __bool__(self):
-        return len(self._alternatives) > 0
+        return len(self._matches) > 0
 
     def fail(self):
-        self._alternatives = []
+        self._matches = []
 
     def verifyMatches(self, targetWMEMatch):
         """ Ensure all alternatives have bound a certain number
             of wmes (ie: for each clause in query there needs to be a wme) """
-        self._alternatives = [x for x in self._alternatives if len(x[0]) == targetWMEMatch]
+        self._matches = [x for x in self._matches if len(x[0]) == targetWMEMatch]
 
     def set_all_alts(self, targetNode):
         newContexts = Contexts()
-        for (data, lastNode) in self._alternatives:
-            newContexts._alternatives.append((data, targetNode))
+        for (data, lastNode) in self._matches:
+            newContexts._matches.append((data, targetNode))
         return newContexts
