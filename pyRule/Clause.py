@@ -30,4 +30,4 @@ class Clause:
 
     def expandBindings(self, bindings):
         newComponents = expandFact(self.components, bindings)
-        return Clause(newComponents, negated=self.negated)
+        return self.__class__(newComponents, negated=self.negated)
