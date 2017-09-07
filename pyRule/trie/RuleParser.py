@@ -2,7 +2,7 @@
 import logging as root_logger
 import IPython
 import pyparsing as pp
-from pyRule.Rule import Rule
+from . import TrieRule as TR
 from . import FactParser as FP
 from . import QueryParser as QP
 from . import TransformParser as TP
@@ -32,7 +32,7 @@ def build_rule(toks):
         tags = toks.tags[:]
     else:
         tags = []
-    return Rule(c, a, transform=t, name=name, tags=tags)
+    return TR.TrieRule(c, a, transform=t, name=name, tags=tags)
 
 
 s = pp.Suppress
