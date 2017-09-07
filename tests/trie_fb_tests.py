@@ -128,8 +128,8 @@ class Trie_FactBase_Tests(unittest.TestCase):
         self.trie.assertS('.a.b.c, .d.e.f')
         result = self.trie.queryS('.a.$x?, .d.$y?')
         self.assertTrue(result)
-        self.assertEqual(result._alternatives[0][0]['x'], 'b')
-        self.assertEqual(result._alternatives[0][0]['y'], 'e')
+        self.assertEqual(result._matches[0][0]['x'], 'b')
+        self.assertEqual(result._matches[0][0]['y'], 'e')
 
     def test_query_exclusion(self):
         """ Check that queries of exclusion property work """
