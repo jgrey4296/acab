@@ -123,6 +123,13 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertEqual(result.fallback[1][0].value, 'y')
         self.assertEqual(result.fallback[1][1], 5)
 
+    def test_rulebind_parsing(self):
+        result = QP.clause.parseString('.a.b.c(^$x)?')[0]
+        self.assertIsInstance(result, Clause)
+        self.assertIsInstance(result.components[-1].get_meta_eval(util.META_OP.RULEBIND), util.Bind)
+
+    
+        
     def test_fact_str_equal(self):
         queries = [".a.b.c?", ".a.b!c?", '.a.b."a string".c?',
                    '.a.b!"a string"!c?', '.a.b(> 20)?',
@@ -131,7 +138,8 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
                    '~.a.b.c?', '~.a!b.c?',
                    '.a.$b(~= /blah/)?',
                    '.a.b.c? || $x:2',
-                   '.a.b.d? || $x:5, $y:blah']
+                   '.a.b.d? || $x:5, $y:blah',
+                   '.a.b.c(^$x)?']
         parsed = [QP.parseString(x) for x in queries]
         zipped = zip(queries, parsed)
         for a,q in zipped:
