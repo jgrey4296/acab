@@ -150,7 +150,11 @@ class Trie:
                 #check exclusion status, should continue the loop if false
                 tested = Matching.exclusion_matches(c, lastNode)
 
-                #compare non-bound value, returns (newNode, newData)?
+                #try to retrieve a rule from the node, if applicable
+                if not tested:
+                    tested, newNode, newData = Matching.match_rule(c, lastNode, data)
+
+                #compare non-bound value, returns (newNode, newData)?                
                 if not tested:
                     tested, newNode, newData = Matching.non_bind_value_match(c, lastNode,
                                                                              betas,
@@ -161,13 +165,15 @@ class Trie:
                     tested, newNode, newData = Matching.existing_bind_match(c, lastNode,
                                                                             betas, regexs,
                                                                             data)
-
+                    
                 if not tested:
                     #create new bindings as necessary, returns [(newNode, newData)]
                     newBindings = Matching.create_new_bindings(c, lastNode,
                                                                alphas, betas,
                                                                regexs, data)
 
+
+                    
                 if newData is not None:
                     newContexts.append((newData, newNode))
                 elif bool(newBindings):
