@@ -294,6 +294,19 @@ class Engine_Tests(unittest.TestCase):
         self.assertTrue(self.e.query(".a.20?, ~.b.40?"))
         self.e._run_rules()
         self.assertTrue(self.e.query(".a.20?, .b.40?"))
+
+    def test_register_rule_added_to_trie(self):
+        self.assertTrue(self.e.query('~.test.rule?'))
+        self.e.registerRules('.test.rule:\n.a.b.c?\n\n+(.a.b.d)\nend')
+        self.assertTrue(self.e.query('.test.rule?'))
+
+    def test_rule_query(self):
+        self.e.add('.a.b.c')
+        self.e.registerRules('.test.rule:\n.a.b.c?\n\n+(.d.e.f)\nend')
+        self.assertTrue(self.e.query('.test.rule(^rule)?'))
+        self.assertFalse(self.e.query('.a.b.c(^rule)?'))
+        self.assertTrue(self.e.query('~.a.b.c(^rule)?'))
+        
         
         
         
