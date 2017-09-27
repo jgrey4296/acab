@@ -5,13 +5,13 @@ from .Node import Node
 logging = root_logger.getLogger(__name__)
 
 
-def test_alphas(value, comps):
+def test_alphas(node, comps):
     """ Run alpha tests against a retrieved value """
-    return all([COMP_LOOKUP[x.op](value, x.value) for x in comps])
+    return all([COMP_LOOKUP[x.op](node._value, x.value) for x in comps])
 
-def test_betas(value, comps, data):
+def test_betas(node, comps, data):
     """ Run a beta tests against a retrieved value, with supplied bindings """
-    return all([COMP_LOOKUP[x.op](value, data[x.bind.value]) for x in comps])
+    return all([COMP_LOOKUP[x.op](node._value, data[x.bind.value]) for x in comps])
 
 
 def exclusion_matches(a, b):
@@ -58,15 +58,39 @@ def existing_bind_match(a, b, betas, regexs, data):
     return (tested, newNode, newData)
 
 def create_new_bindings(a, b, alphas, betas, regexs, data):
-    """ Create new bindings for a previously unbound variable """
+    """ Create new bindings for a previously unbound variable.
+    a: the clause component,
+    b: the node
+    """
     logging.info("Creating new bindings: {}{}".format(repr(b), repr(a)))
     assert(isinstance(a, Node))
     assert(isinstance(b, Node))
     output = []
-    potentials = b._children.keys()
+    potentials = b._children.values()
     passing = [x for x in potentials if test_alphas(x, alphas) and test_betas(x, betas, data)]
     for x in passing:
-        output.append(b._children[x].test_regexs_for_matching(regexs,
-                                                              data,
-                                                              preupdate=(a._value, x)))
+        output.append(x.test_regexs_for_matching(regexs,
+                                                 data,
+                                                 preupdate=(a._value, x._value)))
     return output
+
+
+def match_rule(testComponent, node, data):
+    """ Retrieve a meta-leaf rule from a node """
+    ruleBind = testComponent.get_meta_eval(util.META_OP.RULEBIND)
+    if not bool(ruleBind):
+        #Pass with no data if testComponent doesn't have a rulebind
+        return (False, None, None)
+    
+    retrievedRule = node.get_meta_eval(util.META_OP.RULE)
+    if not bool(retrievedRule):
+        #Test, but fail, if theres no rule to retrieve
+        return (True, None, None)
+
+    if ruleBind.value in data:
+        #Test, but fail if the variable name is used already
+        return (True, None, None)
+    dataCopy = data.copy()
+    dataCopy[ruleBind.value] = retrievedRule
+    #return, tested, with data
+    return (True, node, dataCopy)
