@@ -15,6 +15,13 @@ ACTS = Enum('Action_ops', 'ADD RETRACT PRINT CUSTOM ACT_MACRO')
 
 ACTMACRONAME = namedtuple('ActMacroId', 'name')
 
+#TODO: add rule modification actions:
+#add/remove penumbral condition
+#add/remove penumbral action
+#add/remove tag?
+#insert/remove penumbral action from sequence
+#modify hierarcy
+
 #Action function template:
 # def [name](engine, *params)
 def E_ADD(engine, params):
@@ -46,12 +53,20 @@ ACTS_REVERSE_LOOKUP = {
 class Action:
     """ The Core Action Class, holds an operator,  and a list of values """
     
-    def __init__(self, op, values):
+    def __init__(self, op, values, type=None):
         assert(isinstance(op, (ACTS, str)))
         assert(isinstance(values, list))
         #todo: assert that values are a fact string, value, or binding
         self._op = op
         self._values = values
+        if type is None:
+            self._type = util.MUTABLE.CORE
+        else:
+            assert(isinstance(type, util.MUTABLE))
+            self._type = type
+        #the actions that group together logically
+        #ie: expanded action macros
+        self._linkedActions = []
 
     def expandBindings(self, bindings):
         """ Expand stored bindings at interpret time
