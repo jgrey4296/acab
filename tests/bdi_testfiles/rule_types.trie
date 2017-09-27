@@ -128,11 +128,18 @@ end
     //Add a social constraint / non-essential condition to an item being a crown
     //This should add a verify step that the item *could*
     //have the property applied to it
-    .social.property.from.physical.property.inference.$x?
-    $x.#social?
+
+    //Get the meta-leaf rule using ^
+    .social.property.from.physical.property.inference(^$x)?
+    //Test the rule for a tag
+    $x(#social)?
+    //Get a social property/role etc
     .social.item.properties.$z?
 
-    condition_add($x.penumbra, $z?)
+    //add an additional condition
+    //todo: bind the condition to an actor, receiver,
+    //object, role...
+    +($x, $z?)
 end
 
 .rule.mod.two:
@@ -143,17 +150,24 @@ end
     condition_remove($x.penumbra, $y)
 end
 
+//Match a rule
+.a.rule(^$x)?
 //Other rule mods
 //1) add a social role constraint to a social action
-//(Not physical action, all physical actions should only be instanced through
-//social actions)
+//Not physical action
++[$rule.query, $actor.king?]
 
 //2) add a social property/role constraint on a social role
++[$rule.query, $item.crown?]
 
 //3) upgrade a physical action to a socially constrained action
++[$rule.query, $target.minority?]
++[$rule.actions, $action.assault]
 
 //4) add a normative preference to a social action,
++[$rule.actions, $actor.should.act]
 //5) remove a normative preference to a social action
+-[$rule.clauses, $actor.should?] 
 //6) add a sanction expectation to a social action
 //7) remove a sanction expectation to a social action
 
@@ -163,3 +177,24 @@ end
 //11)modify sanction escalation based on social roles (minimum, maximum, steps..)
 
 //12)add a social property to an object, or a role
+
+.a.rule(^$x)?
+$x.tags(#blah)?
+$x.tags(>2)?
+$x.conditions(>2)?
+$x.actions(<4)?
+$x.bindings.y?
+
+$x.query.penumbra.$x
+$x.query.bindings.agent/item/event...
+$x.transform.utility
+$x.actions.penumbra
+
+
+//Rules have:
+    //queries of clauses with bindings
+    //transforms
+    //actions
+
+//Sequences are specified in data as linked lists
+    
