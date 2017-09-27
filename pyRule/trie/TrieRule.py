@@ -7,14 +7,12 @@ from . import FactParser as FP
 class TrieRule(Rule):
 
     def __init__(self, query, actions, transform=None, name=None, tags=None):
-        super().__init__(query, actions, transform, name, tags)
         if name is None:
-            #todo: convert this to a fact string
-            self._name = FP.parseString(".rule.anon_{}".format(Rule.__count))
+            name = FP.parseString(".rule.anon.{}".format(Rule.__count))
             Rule.__count += 1
         else:
             assert(isinstance(name, list))
-            self._name = name
+        super().__init__(query, actions, transform, name, tags)
 
 
         
