@@ -12,8 +12,19 @@ EXOP_lookup = {
     EXOP.ROOT : "||"
     }
 
-META_OP = Enum("Meta Ops", "ORDER BIND COMP NEGATED RULE")
+#Meta Operators.
+#BIND: Designates a node's value as a binding variable
+#COMP: Designates the node to have comparisons to run on query eval
+#RULE: Designates a node to have a meta-leaf of a rule
+#RULEBIND: Designates the node has the eval property of testing for,
+##then binding, a meta-leaf rule
+META_OP = Enum("Meta Ops", "BIND COMP RULE RULEBIND")
 
+
+#Mutability. Core are authored and immutable, required for intelligibility
+#Penumbra are generated, social, and mutable
+#for use in query clauses, and actions
+MUTABLE = Enum('Mutablility', "CORE PENUMBRA")
 
 #Basic Data Structures
 class Bind:
