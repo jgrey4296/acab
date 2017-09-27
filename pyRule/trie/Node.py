@@ -169,6 +169,8 @@ class Node:
             meta = "(" \
                    + ", ".join([repr(x) for x in self._meta_eval[util.META_OP.COMP]]) \
                    + ")"
+        elif util.META_OP.RULEBIND in self._meta_eval:
+            meta = "(^{})".format(self._meta_eval[util.META_OP.RULEBIND])
         else:
             meta = ""
 
