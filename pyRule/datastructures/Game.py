@@ -41,8 +41,36 @@ class Game:
         self.precondition_utility[positionTuple] = query
 
     #todo: register moves for player,
-    #todo: register moves for turn
-    #todo: register all moves in standard sequence 
+    def register_player_actions(self, player, actions):
+        """ Register a players actions. Specify all moves for a turn, then move to the next turn """
+        assert(len(actions) == (self.moves * self.turns))
+        move = 0
+        turn = 0
+        for action in actions:
+            precon = None
+            if isinstance(action, tuple) and len(action) == 2:
+                action, precon = action
+            self.register_action(action, (player, move, turn), query=precon)
+            move += 1
+            move = move % self.moves
+            if move == 0:
+                turn += 1
+    
+    def register_turn_actions(self, turn, actions):
+        """ Register a turns actions. Specify all the moves for a player, then
+        move to the next player. Moves can be tuples of (move, precondition) """
+        assert(len(actions) == (self.players * self.moves))
+        player = 0
+        move = 0
+        for action in actions:
+            precon = None
+            if isinstance(action, tuple) and len(action) == 2:
+                action, precon = action
+            self.register_action(action, (player, move, turn), query=precon)
+            move += 1
+            move = move % self.moves
+            if move == 0:
+                player += 1
     
     def verify(self):
         """ Verify that each move for each player has been defined """
