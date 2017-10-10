@@ -10,12 +10,14 @@ class TimeSpaceTree:
     def verify(self):
         raise Exception("Not implemented yet")
 
+    
 class Node:
     """ A Node in the TSTree. The start is the at least the start of the parent,
     the end is at most the end of the parent """
     
-    def __init__(self, start, end):
+    def __init__(self, start, end, parent):
         self.start = start
+        self.parent = parent
         self.children = []
         self.end = end
         self.data = {}
@@ -28,3 +30,6 @@ class Node:
 
     def verify(self):
         raise Exception("Not implemented yet")
+
+    def __getitem__(self, x):
+        return self.children[x]
