@@ -64,14 +64,51 @@ class DataStructures_Tests(unittest.TestCase):
         g.register_action("b {second}", (0, 1))
         results = g(data={"first": "AWEF", "second": "VBNM"})
         self.assertEqual(len(results), 1)
+        self.assertTrue(g.verify())
         self.assertTrue(any([x in results for x in ["a AWEF", "b VBNM"]]))
 
-    #todo: test multi turn game
+    def test_game_multi_player(self):
+        g = Game(players=2, moves=2, turns=1, preconditions=None)
+        g.register_action("a {first}", (0,0))
+        g.register_action("a {second}", (0, 1))
+        g.register_action("b {first}", (1, 0))
+        g.register_action("b {second}", (1, 1))
+        self.assertTrue(g.verify())
+        results = g(data={"first" : "AWEF", "second": "VBNM"})
+        self.assertEqual(len(results), 2)
+        self.assertTrue(any([x in results[0] for x in ["a AWEF", "a VBNM"]]))
+        self.assertTrue(any([x in results[1] for x in ["b AWEF", "b VBNM"]]))
+    
+    def test_game_register_player_actions(self):
+        g = Game(players=1, moves=3, turns=2)
+        g.register_player_actions(0, ["m0t0", "m1t0", "m2t0", "m0t1", "m1t1", "m2t1"])
+        self.assertEqual(g.actions[(0,0,0)], "m0t0")
+        self.assertEqual(g.actions[(0,1,0)], "m1t0")
+        self.assertEqual(g.actions[(0,2,0)], "m2t0")
+        self.assertEqual(g.actions[(0,0,1)], "m0t1")
+        self.assertEqual(g.actions[(0,1,1)], "m1t1")
+        self.assertEqual(g.actions[(0,2,1)], "m2t1")
+                    
+    def test_game_register_turn_actions(self):
+        g = Game(players=2, moves=2, turns=1)
+        g.register_turn_actions(0, ["p0m0", "p0m1", "p1m0", "p1m1"])
+        self.assertEqual(g.actions[(0,0,0)], "p0m0")
+        self.assertEqual(g.actions[(0,1,0)], "p0m1")
+        self.assertEqual(g.actions[(1,0,0)], "p1m0")
+        self.assertEqual(g.actions[(1,1,0)], "p1m1")
 
-    #todo: test multi player game
-
-    #todo: test various move sizes games
-
+    def test_game_multi_turn(self):
+        g = Game(players=2, moves=2, turns=2)
+        g.register_turn_actions(0, ["p0m0", "p0m1", "p1m0", "p1m1"])
+        g.register_turn_actions(1, ["p0m0t1", "p0m1t1", "p1m0t1", "p1m1t1"])
+        self.assertTrue(g.verify())
+        results = g()
+        self.assertEqual(len(results), 2*2)
+        self.assertTrue(any([x in results[0] for x in ["p0m0", "p0m1"]]))
+        self.assertTrue(any([x in results[1] for x in ["p1m0", "p1m1"]]))
+        self.assertTrue(any([x in results[2] for x in ["p0m0t1", "p0m1t1"]]))
+        self.assertTrue(any([x in results[3] for x in ["p1m0t1", "p1m1t1"]]))
+        
     def test_game_verification(self):
         g = Game(players=2, moves=2, turns=1)
         self.assertFalse(g.verify())

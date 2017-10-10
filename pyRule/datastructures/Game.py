@@ -8,6 +8,7 @@ class Game:
         assert(players >= 1)
         assert(moves >= 2)
         assert(turns >= 1)
+        
         self.name = name
         self.players = players
         self.moves = moves
