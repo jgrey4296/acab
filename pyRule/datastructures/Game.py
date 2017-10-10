@@ -83,11 +83,12 @@ class Game:
 
         return enough_moves_defined and enough_preconditions_defined
         
-        
     
     def __call__(self, knowledgebase=None, data=None):
         """ Run the Game with the provided knowledgebase to query, 
-        and a mapping of players. Return a sequence of moves """
+        and a mapping of players. Return a sequence of moves.
+        Returns: [ MoveString ]
+        """
         if knowledgebase is None:
             return self.play_random(data=data)
         else:
@@ -95,7 +96,10 @@ class Game:
 
 
     def play_random(self, data=None):
-        """ Play a sequenece of the game, randomly/without value judgements """
+        """ Play a sequenece of the game, randomly/without value judgements or queries,
+        but will format output based on the input data dict
+        """
+        assert(data is None or isinstance(data, dict))
         if data is None:
             data = {}
         results = []
@@ -108,9 +112,10 @@ class Game:
         
     def play_with_assessments(self, knowledgebase, data=None):
         """ Play a sequence of the game, using max utility selection,
-        will format any query or action by the data
+        will format any query or action by the data dictionary passed in.
         """
         assert(hasattr(knowledgebase, "query"))
+        assert(data is None or isinstance(data, dict))
         if data is None:
             data = {}
         results = []
@@ -125,4 +130,6 @@ class Game:
         return results
 
     def enter(self, knowledgebase):
+        """ Passed a knowledgebase that is queryable, return whether this game is currently playable """
+        assert(hasattr(knowledgebase, "query"))
         return bool(knowlegebase.query(self.preconditions))
