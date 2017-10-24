@@ -71,7 +71,7 @@ class EngineBase:
         return len(self._rules)
 
     def _run_rules(self, rule_locations=None, rule_tags=None, policy=None):
-        """ Run all, or some, rulies of the engine, if provided a policy,
+        """ Run all, or some, rules of the engine, if provided a policy,
         propose actions and select from the proposals """
         self._save_state((rule_locations, rule_tags, policy, self._proposed_actions))
         rules_to_run = []
