@@ -6,7 +6,6 @@ from pyRule.Comparisons import COMP, Comparison, COMP_REVERSE_LOOKUP
 from pyRule.Query import Query
 from pyRule.Clause import Clause
 from .FactParser import COMMA, VALBIND, PARAM_CORE, BIND, COLON, VALUE
-from . import RuleQueryParser as RQP
 import IPython
 pp.ParserElement.setDefaultWhitespaceChars(' \t\r')
 
