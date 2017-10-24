@@ -21,6 +21,9 @@ class Agent:
         assert(all([x[0] is None or isinstance(x[0], str) for x in rule_seq_pol]))
         assert(all([x[1] is None or callable(x[1]) for x in rule_seq_pol]))
         logging.info("Initialising BDI: {}, {}".format(name, ", ".join(startup_files)))
+        #History of output
+        self._history = []
+        
         #Agent Data
         self._name = name
         self._wait_time = wait_time
@@ -50,10 +53,12 @@ class Agent:
         self._engine.add(".agent.{}.state".format(name))
 
     def add_to_assertion_queue(self, s):
+        """ Adds a fully specified string to the queue, to be asserted next tick """
         assert(isinstance(s, (str, list)))
         self._assertion_queue.append(s)
 
     def _assert_queue(self):
+        """ Asserts each string in the queue """
         queue = self._assertion_queue
         while bool(queue):
             next_val = queue.pop(0)
@@ -61,6 +66,7 @@ class Agent:
         self._assertion_queue = []
 
     def _run_rule_sequence(self):
+        """ Runs the sequence of rule layers, with their individual selection policies, in order """
         logging.debug("Running rule sequence")
         for rule_spec, policy in self._rule_seq_pols:
             logging.debug("Running rule_spec: {} with policy: {}".format(rule_spec,
@@ -68,12 +74,18 @@ class Agent:
             self._engine._run_rules(rule_tags=rule_spec.split(" "), policy=policy)
 
     def _clear_temp_data(self):
+        """ Forces a retraction of temporary data in the knowledgebase,
+        and clears any proposed actions that were not selected for performance """
         self._engine.retract(self._state_temp_data)
         self._engine.clear_proposed_actions()
 
-    def run(self):
+    def run(self, turnlimit=None):
+        """ The main loop of the agent """
         logging.info("Running Agent: {}".format(self._name))
+        turn = 0
         while self._engine.query(self._state_query):
+            if turnlimit is not None and turnlimit < turn:
+                break
             #assert anything in the queue
             self._assert_queue()
             #run rules
@@ -82,6 +94,7 @@ class Agent:
             self._clear_temp_data()
             #Wait
             sleep(self._wait_time)
+            turn += 1
         logging.info("Shutting Down Agent: {}".format(self._name))
 
 
