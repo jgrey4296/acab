@@ -1,31 +1,18 @@
-;; This buffer is for text that is not saved, and for Lisp evaluation.
-;; To create a file, visit it with C-x C-f and enter text in its buffer.
-
-Agent architecture
-
-sense: inputs:
-1) data assertions from the world
-2) data assertions from the last act if a closed model
-
-reason: select next action
-run rules,
-propose actions
-select action
+* Agent architecture
 
 
-act: 
-1) output instructions to world
-2) assert new facts if closed model
-
-
---------------------
-Simplest form:
-assert data
-choose random action (that conditions match)
-assert actions
-
-
---------------------
-Rules -> alpha network
-Construct a condition trie, as a second dimension of the fact trie
-hash exit points, create tokens, then run beta on demand?
+** Sense: inputs:
+ 1) data assertions from the world
+ 2) data assertions from the last act if a closed model
+** Reason: select next action
+   run rules,
+   propose actions
+   score actions
+   select action
+** Act:
+ 1) output instructions to world
+ 2) assert new facts if closed model
+** Thoughts:
+ Rules -> alpha network
+ Construct a condition trie, as a second dimension of the fact trie
+ hash exit points, create tokens, then run beta on demand?
