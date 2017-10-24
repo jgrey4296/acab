@@ -38,6 +38,12 @@ class Bind:
 
 
 def expandFact(factString, bindings):
+    """ Given a list of fact components, and a dictionary of bindings,
+    reify the fact, using those bindings.
+    ie: .a.b.$x with {x: blah} => .a.b.blah 
+    """
+    assert(isinstance(bindings, dict))
+    assert(isinstance(factString, list))
     output = []
 
     for x in factString:
@@ -67,11 +73,12 @@ def expandFact(factString, bindings):
 
 def build_rebind_dict(formal, usage):
     """ Build a dictionary for action macro expansion,
-    to swap internal formal params for proided usage params """
+    to swap internal formal params for provided usage params """
     assert(all([isinstance(x, Bind) for x in formal]))
     fVals = [x.value for x in formal]
     return dict(zip(fVals, usage))
 
 def default_action_policy(pairings):
+    """ A Simple random selection policy """
     #each pairing is of data, rule
     return [choice(pairings)]
