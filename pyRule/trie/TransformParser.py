@@ -70,7 +70,6 @@ FORMAT = pp.Literal('~{}').setParseAction(lambda t: TROP.FORMAT)
 #Unary:
 ROUND = pp.Literal('_').setParseAction(lambda t: TROP.ROUND)
 NEG = pp.Literal('-').setParseAction(lambda t: TROP.NEG)
-SLASH = pp.Literal('/')
 
 binary_trops = pp.Or([ADD, SUB, MUL, DIV, REM, RAND])
 unary_trops = pp.Or([ROUND, NEG, FORMAT])
