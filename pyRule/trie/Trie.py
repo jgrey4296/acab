@@ -79,7 +79,7 @@ class Trie:
 
     def _reconstruct_query_from_trie(self):
         #TODO
-        return False
+        raise Exception("Unimplemented")
 
     def queryFact(self, query):
         """ Query a TrieQuery instance """
