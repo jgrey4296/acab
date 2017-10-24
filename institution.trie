@@ -1,0 +1,70 @@
+//An Institution
+$x <- .institution.nightWatch
+//Name
+$x.name."The Night Watch"
+
+//Physical imports
+
+//Concepts
+$x.concepts.justice.served
+$x.concepts.justice.lacking
+
+$x.concepts.freeStatus.free
+$x.concepts.freeStatus.jailed
+
+$x.concepts.knowStatus.knows
+$x.concepts.knowStatus.doesntKnow
+
+//Roles
+$x.roles.watch
+$x.roles.watch.commander
+$x.roles.watch.captain
+$x.roles.watch.sergeant
+$x.roles.watch.private
+
+$x.roles.criminal
+
+$x.roles.civilians
+
+$x.roles.patrician
+$x.roles.judge
+$x.roles.jury
+
+//Role Groupings
+$x.roleGroups.incumbents.patrician
+$x.roleGroups.incumbents.judge
+$x.roleGroups.challengers
+$x.roleGroups.enforcers.watch
+
+//Rankings
+
+
+
+//Sequences
+$x.activities.theft
+$x.activities.murder
+$x.activities.mugging
+$x.activities.chase
+$x.activities.investigate
+$x.activities.alert
+$x.activities.execution
+$x.activities.incarceration
+
+//Choices
+
+
+//Games
+$x.games.trial
+$x.games.arrest
+
+
+//Sanctions
+$x.sanctions.execution
+$x.sanctions.incarceration
+
+
+//Rules
+////what makes a watchman
+////what makes a criminal
+
+

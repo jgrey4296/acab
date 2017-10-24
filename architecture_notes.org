@@ -1,0 +1,287 @@
+* PyRule Architecture notes
+** Top Level
+*** Actions.py
+    *Defines*: ACTS enum, ACTMACRONAME, Core Engine actions (E_ADD, E_RETRACT, E_PRINT),
+    Action, ActionMacro, ActionMacroUse class.
+
+    Defines the core action templates of E_ADD, E_RETRACT, E_PRINT, which link with the ACTS enum.
+    These functions take two parameters, the engine, and a list of parameters passed in.
+    So +(.a.b.c) => E_ADD(engine, [.a.b.c])
+
+    These core acts link with the symbols +,-, and @.
+
+    The Action class is the AST representation of an action. Holds an operator, and values.
+    ActionMacro defines a sequence of actions, with a set of bindings. 
+    ActionMacroUse defines a AST representation of where to expand out action macros.    
+
+*** Clause.py
+    *Defines*: Clause.
+
+    Clause is an implementation agnostic representation of a query clause. 
+    A clause is negatable, holds a set of components, and can have bindings applied to variables.    
+
+*** Comparisons.py
+    *Defines*: Core Comparison functions (EQ, GT, LT, NEQ, REGMATCH), Comparison class.
+
+    The main comparison functions link with < > != == ~=. 
+    Comparison is the AST representation. It holds the operator, the value(s) or the binding(s). 
+
+*** Contexts.py
+    *Defines*: Contexts.
+
+    Contexts is the engine data structure that holds the tree of possible matches.
+    As the engine progresses through a query, it tracks (bindings, lastNode).
+    Lastnode allows the engine to reset the query point as necessary.
+
+*** EngineBase.py
+    *Defines*: EngineBase.
+
+    EngineBase is the abstract class that defines common functionality between trie and 
+    wme based knowledge engines. Specifies that an engine can load a file, register actions and rules, 
+    add/assert, retract, run rules, transform data.
+    
+    Can perform all available actions, or select by a policy.
+    The policy is a passed in function, that takes the list of all proposed actions and selects by some criteria.
+    Policy operates on (dict, Rule).
+    A value to sort on can come about through 2 means:
+    1) It is static to the rule, thus a #tag, the name, condition size etc.
+    2) It is dynamic based on data, in which case it is a $binding, either pure from data,
+       or transformed.
+
+    These two types should cover most eventualities. Specificity can be measured with a dynamic policy
+    of len(rule._query). Priority can be a tag. Dynamic priority can be a binding. Policies to apply
+    one rule per actor can be achieved with a dictionary to track the selected actions in the policy, etc etc. 
+    
+*** Query.py
+    *Defines*: Query.
+
+    The Query class is implementation agnostic. Holds an ordered list of clauses, which supports
+    expanding bindings and division into positive and negative clauses.
+
+*** Rule.py
+    *Defines*: Rule.
+
+    The rule class is the abstract definition of a rule. It holds a query, transform, and a list of actions. 
+    It has a name, and set of tags.
+
+*** Transforms.py
+    *Defines*: TROP enum and functions (add, sub, mul, div, rand, remain, round, neg, regex, format),
+    TransformComponent, SelectionTransform, OperatorTransform, Transform.
+
+    TROP (Transform operator) functions link to + - * / <-> % _ - ~= ~{} select.
+
+    TransformComponent is the superclass of SelectionTransform and OperatorTransform.
+    They define how to either transform a binding, such as with addition,
+    or how to select a number of possible bindings. 
+    Selection transforms trigger the Context.select method.
+    *This could expand to select by more than numeric count, getting towards something like
+    policies*.
+
+*** utils.py
+    *Defines*: EXOP and META_OP enums, Bind, expandFact, build_rebind_dict, and default_action_policy.
+
+    EXOP (Exclusion Operator) defines the type of node in a trie, either non-exclusive or exclusive.
+    META_OP defines the additional annotation of a trie node, either a binding, a comparison, or a rule.
+    
+    The Bind class is a simple holder for a variable name.
+    
+    expandFact takes a fact and a dictionary of bindings, and converts all bindings that are in the dict.
+    So .a.b.$x!$y + {x:"blah", y:"bloo"} -> .a.b.blah!bloo
+    
+    build_rebind_dict enables internal bindings of an action macro to be rebound to align with 
+    the passed in bindings of its usage. 
+
+    default_action_policy is the simplest policy, it selects a single random (bindings, rule) pairing to enact.
+
+** DataStructures
+
+*** Cycle.py
+    *Defines*: Cycle.
+
+    The Cycle is a simple means of looping through a list. To be integrated with the language.
+
+*** Game.py
+    *Defines*: Game.
+    
+    The Game works as a means to represent a Game Theory / CiF style game. 
+    It describes an J player, K move, L turn game. 
+    The game can have an entry condition (intended to be a simple EL String.
+    Designed to play atomicly, either randomly (play_random),
+    or with assessments/queries from the knowledgebase (play_with_assessments).
+
+    Both forms of play take a *data* parameter, a dictionary of variables to substitute into the outputs.
+    Play_with_assessments also takes a knowledgebase to query. 
+
+*** TimeSpaceTree.py
+    *Defines*: TimeSpaceTree.
+
+    Currently unimplemented. Meant to be an implementation of giddens concept.
+    A Mapping of place to time.
+
+*** WeightBalance.py
+    *Defines*: WeightBalance.
+
+    A usage of a balanced tree to allow loose collections of pairings (a < b) (b < c)
+    to be auto balanced. Avoids the use of having to specify actual weights.
+
+    *TODO*: Add a distribution to apply the ordering to.  
+
+** Trie
+
+*** ActionParser.py
+    Defines the parser combinator for parsing Actions.
+    ie: +(.a.b.c)
+    
+    Enables assertion, retraction, and printing, using + - and @.
+    Also custom registered actions that are anything else. 
+    ie: blah(.a.b.c)
+
+    Multiple values can be passed in:
+    @(.a.b.c, .d.e.f)
+
+    Multiple values can only be passed to print(@), and custom actions.
+
+    Also defines action macros, and their use:
+    ie: #blah($x, "blah", .a.b.d)
+
+    An Action macro is defined similar to a rule:
+    #blah($x, $y, $z):
+    	+(.a.$x.$y.$z)
+        +(.b.$z)
+    end
+    
+    Action macros expand out in actions at parse time.
+
+*** FactParser.py
+    Defines the parser combinator for the core fact definition.
+    ie: .a.b!c
+    .a.b.$x
+    
+    Covers basic names, numbers, bindings, and double quoted strings.
+    String can be combinations of the above, always starting with a .
+    and with exclusion op (!)  where necessary.
+
+
+*** FileParser.py
+    Defines the parser combinator that reads a file of assertions and rules.
+    Allows file level bindings:
+    ie: $x <- .a.b.c
+    .a.b.$x
+    clear
+    
+    will result in .a.b.a.b.c
+
+    *TODO*: When are file bindings expanded again?
+
+*** Matching.py
+    Defines the means of running tests. Modelled on rete net distinction of
+    alpha and beta tests.
+    Defines the means of comparing two nodes exclusion status.
+
+    *Unfinished*: match_rule.
+
+*** Node.py
+    *Defines*: Node.
+
+    Node is the atomic element of a fact. .a.b!$x => (.a) (.b) (! $x)
+    Nodes can hold meta values, such as bindings, comparisons, and rules.
+
+*** QueryParser.py
+    Defines the parser combinator for queries. Combines FactParser with ?
+    
+    Allows factstrings to hold comparisons. 
+    ie: .a.$x(>20)?
+
+
+*** RuleParser.py
+    Defines the parser combinator for rules.
+    Rules have a name, then tags, clauses, transforms, and actions/actionmacros.
+
+*** RuleQueryParser.py
+    *Unfinished*
+
+*** TransformParser.py
+    Defines the parser combinator for transforms. 
+    ie: $x + 2 -> $y
+
+    Makes use of defined bindings, and modifies them.
+    "-> $y" rebinds without modifying the original, but is optional.
+
+    There are unary, binary, and ternary transforms.
+
+    Unary: round (_), negate (-), and format (~{}).
+    Format uses python format syntax, and auto uses anything bound.
+    So .a.b.blah,  .a.b.$x? then ~{} "hello ${x}" -> $y
+    will result in y = "hello blah"
+
+    Binary: + - * / %, along with rand (<->), and regex substitution (~=)
+    Regex substitution uses re.sub, and auto-uses bound variables.
+
+    Transforms can also be the keyword "select" for selection of a limited number of matches
+    (check this):
+    ie: select 2 - 4
+
+*** Trie.py
+    *Defines*: Trie. 
+
+    Trie is the core of the data representation. Supports assertion and retraction, exclusion semantics,
+    querying and matching.
+
+*** TrieEngine.py
+    *Defines*: TrieEngine
+
+    Defines the implementation of the BaseEngine, for a trie backing.
+
+*** TrieRule.py
+    *Defines*: TrieRule
+
+    Defines the trie based implementation of a rule.
+
+** wme
+   The WME module defines a naive implementation of a WME based engine. Implements WMEs,
+   Clauses, and the Engine.
+
+
+
+** Institutions
+   If institutions are a module/file level construct, that would mean
+   that files define:
+   1) Basic concepts
+   2) Roles and Role Groups (Incumbents / Challengers / Enforcers )
+   3) Rules
+      1) Constitutive rules
+      2) Regulative rules
+      3) Distributive rules
+
+   4) Inputs and Outputs
+   5) Value and Sanction Rankings
+   6) Games
+   7) Actions
+   8) Activities
+   9) Sanctions
+   10) IGU definition (imports?)
+   11) Time limits
+   12) Physical limitations
+   13) Physical artifacts
+   14) Institution change rules`
+
+
+   So a file parser should be able to verify features.
+   Only defined roles should exist, same with concepts.
+   Rule conditions should test for inputs, or internal concepts.
+   Values should be able to rank.
+   Values should match defined concepts.
+   Games should verify.
+   Sanctions should rank.
+   
+
+** Norms in the engine
+   The engine needs bayesian weighting of norm obedience, and underlying processes of internalization.
+   Explicit linkings of norm deviance with 
+
+
+
+
+
+
+   
