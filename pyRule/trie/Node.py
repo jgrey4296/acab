@@ -92,7 +92,7 @@ class Node:
     def _unify(self, other):
         """ Test two tries to see if they can match with substitutions """
         # { bindNode : [ options ] }
-        return {}
+        raise Exception("Unimplemented")
 
 
     def _reconstruct(self):
