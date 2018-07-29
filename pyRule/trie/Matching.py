@@ -1,3 +1,6 @@
+"""
+Functions to facilitate matching Trie-Nodes to queries
+"""
 import logging as root_logger
 from pyRule import utils as util
 from pyRule.Comparisons import COMP_LOOKUP

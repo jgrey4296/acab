@@ -5,7 +5,10 @@ from pyRule.Rule import Rule
 from . import FactParser as FP
 
 class TrieRule(Rule):
-
+    """ An implementation of an Abstract Rule class, specifically for
+    Trie based engines and knowledge bases.
+    """
+    
     def __init__(self, query, actions, transform=None, name=None, tags=None):
         if name is None:
             name = FP.parseString(".rule.anon.{}".format(Rule.__count))
@@ -13,12 +16,11 @@ class TrieRule(Rule):
         else:
             assert(isinstance(name, list))
         super().__init__(query, actions, transform, name, tags)
-
-
         
     
     def to_node_lists(self):
         """ Convert a rule to a list of node lists  """
+        #TODO
         baseName = None
         conditions = []
         transforms = []
@@ -30,6 +32,6 @@ class TrieRule(Rule):
     @staticmethod
     def from_trie(node):
         """ given a root node of a trie, create a rule from it """
-        #todo
+        #TODO
         return Rule()
 

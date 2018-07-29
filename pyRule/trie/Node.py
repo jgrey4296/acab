@@ -28,7 +28,7 @@ class Node:
         self._cached = []
         #meta field holds ordering for leaf pathways
         #and eval details as a subtrie for other nodes
-        self._is_meta = False
+        self._is_meta = False #todo: implmement _is_meta
         self._meta_leaf = {}
         self._meta_eval = {}
 
@@ -52,18 +52,24 @@ class Node:
         self._children = {}
 
     def is_exclusive(self):
+        """ Checks for the exclusion operator in this node """
         return self._op is util.EXOP.EX
 
     def has_exclusive(self):
+        """ Checks for implicit exclusivity by having 0 or 1 children """
         return len(self) <= 1
 
     def __contains__(self, v):
+        """ Query whether a value or Node is in this Nodes children """
         if isinstance(v, Node):
             return v._value in self._children
         else:
             return v in self._children
 
     def set_meta_leaf(self, mType, value):
+        """ Annotate this Node with a Meta-Leaf.
+        (A Meta-Leaf is a Meta-Node that sets its container to be a leaf)
+        """
         logging.info("Setting Meta Leaf: {}, {}, {}".format(repr(self),
                                                             str(mType),
                                                             repr(value)))
@@ -71,6 +77,9 @@ class Node:
         self._meta_leaf[mType] = value
 
     def set_meta_eval(self, mType, values):
+        """
+        Set the Node to hold a Meta-Node which can be evaluated.
+        """
         #todo
         assert(isinstance(mType, util.META_OP))
         if isinstance(values, list):
@@ -79,25 +88,28 @@ class Node:
             self._meta_eval[mType] = values
 
     def get_meta_eval(self, mType):
+        """ Get any meta-eval nodes from this Node """
         if mType in self._meta_eval:
             return self._meta_eval[mType]
         else:
             return []
 
     def _set_dirty_chain(self):
+        """ Mark this Node as modified, up to the root """
         self._dirty = True
         if self._parent is not None:
             self._parent()._set_dirty_chain()
 
     def _unify(self, other):
         """ Test two tries to see if they can match with substitutions """
+        #TODO
         # { bindNode : [ options ] }
         raise Exception("Unimplemented")
 
 
     def _reconstruct(self):
         """ Internal method for DFS reconstructing min fact/leaf list """
-        if not self._dirty:
+        if not self._dirty and bool(self._cached):
             return self._cached
         #todo: improve caching
         queue = [([], self)]
@@ -117,6 +129,7 @@ class Node:
 
 
     def root_str(self):
+        """ Return a set of EL strings, treating this Node as the Root """
         xs = [str(y) for x, y in sorted(self._children.items())]
         return ",\n".join(xs)
 
@@ -208,15 +221,20 @@ class Node:
 
     @staticmethod
     def Root():
+        """ Get a Root designated node """
+        #TODO: Make this always get the same root
         return Node("root", EXOP.ROOT)
 
     def is_root(self):
+        """ Query to check if this node is the Root Node """
         return self._op is EXOP.ROOT
 
     def _clear_node(self):
+        """ Clear the Node of all its children """
         self._children = {}
 
     def insert(self, fact):
+        """ Insert A Node as a Child of this Node """
         assert(isinstance(fact, Node))
         self._set_dirty_chain()
         copied = fact.copy()
@@ -239,6 +257,7 @@ class Node:
 
 
     def get(self, fact):
+        """ Retrieve a Node from this Node """
         assert(isinstance(fact, Node))
         if fact._value in self._children \
            and fact._op is self._children[fact._value]._op:
@@ -247,6 +266,7 @@ class Node:
             return None
 
     def delete_node(self, fact):
+        """ Remove a Node from this Node """
         assert(isinstance(fact, Node))
         if fact._value in self._children \
            and fact._op is self._children[fact._value]._op:
@@ -254,10 +274,12 @@ class Node:
             self._set_dirty_chain()
 
     def __len__(self):
+        """ Get the Number of Children of this Node """
         return len(self._children)
 
 
     def bind(self, data):
+        """ Annotate the Node with a Meta-Bind Evaluation """
         if self.get_meta_eval(util.META_OP.BIND) is False:
             return self.copy()
         else:
@@ -267,6 +289,7 @@ class Node:
 
 
     def _bind_to_value(self, data):
+        """ Set the Nodes value to be one retrieved from passed in bindings """
         assert(self._value in data)
         self._value = data[self._value]
 
@@ -288,6 +311,7 @@ class Node:
         return (alphas, betas, regexs)
 
     def search_regex(self, regex):
+        """ Test a regex on the Nodes value """
         result = re.search(regex.value, self._value)
         if result is not None:
             return result.groupdict()
@@ -295,6 +319,7 @@ class Node:
             return None
 
     def test_regexs_for_matching(self, regexs, currentData, preupdate=None):
+        """ Test a number of regexs on this Node """
         newData = currentData.copy()
         if preupdate is not None:
             newData[preupdate[0]] = preupdate[1]

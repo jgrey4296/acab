@@ -1,5 +1,5 @@
 """
-Actions: Describes the basic actions that a knowledgebase can perform,
+Actions: Describes the *ENGINE AGNOSTIC* basic actions that a knowledgebase can perform,
 along with associated enums, and IR data structures
 """
 
@@ -25,14 +25,17 @@ ACTMACRONAME = namedtuple('ActMacroId', 'name')
 #Action function template:
 # def [name](engine, *params)
 def E_ADD(engine, params):
+    """ Assert the params into the engine """ 
     #assert(all([isinstance(x, Node) for x in params[0]]))
     engine.add(params[0])
 
 def E_RETRACT(engine, params):
+    """ Remove the params from the engine """
     #assert(all([isinstance(x, Node) for x in params[0]]))
     engine.retract(params[0])
 
 def E_PRINT(engine, params):
+    """ Trigger a logging statement """ 
     for x in params:
         print(x)
         logging.info("Engine Output: {}".format(x))
@@ -54,6 +57,7 @@ class Action:
     """ The Core Action Class, holds an operator,  and a list of values """
     
     def __init__(self, op, values, type=None):
+        """ Create an action with an operator and values """
         assert(isinstance(op, (ACTS, str)))
         assert(isinstance(values, list))
         #todo: assert that values are a fact string, value, or binding
@@ -101,11 +105,13 @@ class Action:
         return isinstance(self._op, str)
 
     def verify_op(self):
+        """ Check the Action is using a valid operator (ACT enum) """ 
         if self._op not in ACTS_LOOKUP and not self.is_custom():
             raise Exception("Unrecognised Action: {}".format(self._op))
 
 
     def get_values(self, data):
+        """ Output a list of bindings from this action """
         output = []
         for x in self._values:
             if isinstance(x, util.Bind):
@@ -132,6 +138,7 @@ class ActionMacro:
 
 
     def expandBindings(self, bindings):
+        """ Expand the macro  out based on the bindings passed in """
         newActions = [x.expandBindings(bindings) for x in self._actions]
         return ActionMacro(self._name,
                            self._params.copy(),

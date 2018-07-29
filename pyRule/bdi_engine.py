@@ -7,7 +7,7 @@ import pyRule.utils as util
 logging = root_logger.getLogger(__name__)
 
 class Agent:
-    """ A Simple Agent  """
+    """ A Simple BDI Agent  """
 
     def __init__(self, name,
                  startup_files,

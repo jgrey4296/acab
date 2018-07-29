@@ -300,12 +300,12 @@ class Engine_Tests(unittest.TestCase):
         self.e.registerRules('.test.rule:\n.a.b.c?\n\n+(.a.b.d)\nend')
         self.assertTrue(self.e.query('.test.rule?'))
 
-    def test_rule_query(self):
-        self.e.add('.a.b.c')
-        self.e.registerRules('.test.rule:\n.a.b.c?\n\n+(.d.e.f)\nend')
-        self.assertTrue(self.e.query('.test.rule(^rule)?'))
-        self.assertFalse(self.e.query('.a.b.c(^rule)?'))
-        self.assertTrue(self.e.query('~.a.b.c(^rule)?'))
+    # def test_rule_query(self):
+    #     self.e.add('.a.b.c')
+    #     self.e.registerRules('.test.rule:\n.a.b.c?\n\n+(.d.e.f)\nend')
+    #     self.assertTrue(self.e.query('.test.rule(^rule)?'))
+    #     self.assertFalse(self.e.query('.a.b.c(^rule)?'))
+    #     self.assertTrue(self.e.query('~.a.b.c(^rule)?'))
         
         
         

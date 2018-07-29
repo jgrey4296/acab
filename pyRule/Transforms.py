@@ -23,8 +23,9 @@ def MUL(a, b):
 def DIV(a, b):
     return a / b
 
-def RAND(a, b):
-    #Rand between 0 and 1
+#TODO: Add distributions
+def RAND(a=0, b=1):
+    """ Uniform Rand between a=0 and b=1 """
     return uniform(a, b)
 
 def REMAIN(a, b):
@@ -40,11 +41,17 @@ def NEG(a, data):
     return -a
 
 def REGEX(a, b, data):
-    #substitute a pattern with a value from passed in data
+    """ Substitute a pattern with a value from passed in data 
+    a : the replacement
+    b: the pattern
+    c : the base string?
+    """
     return sub(b, a, data)
 
 def FORMAT(a, data):
-    #use str.format variant with a data dictionary
+    """ Use str.format variant with a data dictionary
+    Replaces variables in the string with bound values
+    """
     return a.format(**data)
 
 #Convert a Transform Operator enum to its function
@@ -93,7 +100,7 @@ TROP_PARAM_LENGTHS = {
 
 
 class TransformComponent:
-    """ Superclass of Transforms """
+    """ Superclass of Transforms. Holds an Operator """
     def __init__(self, op):
         assert(isinstance(op, TROP))
         self.op = op
@@ -141,6 +148,7 @@ class OperatorTransform(TransformComponent):
         self.rebind = rebind
 
     def verify_op(self):
+        """ Complains if the operator is not a defined Operator Enum """
         if self.op not in TROP_LOOKUP:
             raise Exception("Unknown Op: {}".format(self.op))
 
@@ -218,9 +226,11 @@ class Transform:
             return (self.selection.lBound, self.selection.uBound)
 
     def get_input_requirements(self):
+        #TODO
         #return the set of input bound names
         return set([])
 
     def get_output_spec(self):
+        #TODO
         #return the set of output bound names
         return set([])

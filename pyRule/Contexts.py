@@ -4,7 +4,9 @@ from pyRule.Transforms import TROP
 import IPython
 
 class Contexts:
-    """ Container of available contexts for a match in the trie  """
+    """ Container of available contexts for a match in the trie
+    Essentially a list of Dictionaries
+    """
     @staticmethod
     def initial(startNode):
         init = Contexts()
@@ -22,6 +24,7 @@ class Contexts:
 
 
     def select(self, bounds=(None, None)):
+        """ Select a certain number of binding groups from available contexts """
         shuffle(self._matches)
         if bounds[0] is None and bounds[1] is None:
             return [self._matches[0][0]]
@@ -36,6 +39,7 @@ class Contexts:
 
 
     def append(self, data):
+        """ Add a number of matching possibilities into this set of contexts """
         assert(len(data) == 2)
         if data[0] is not None and data[1] is not None:
             self._matches.append(data)
@@ -60,6 +64,7 @@ class Contexts:
         return len(self._matches) > 0
 
     def fail(self):
+        """ Remove all contexts, as none are suitable """
         self._matches = []
 
     def verifyMatches(self, targetWMEMatch):
@@ -68,6 +73,7 @@ class Contexts:
         self._matches = [x for x in self._matches if len(x[0]) == targetWMEMatch]
 
     def set_all_alts(self, targetNode):
+        """ Duplicate the Contexts, with a specific node as the current leaf """
         newContexts = Contexts()
         for (data, lastNode) in self._matches:
             newContexts._matches.append((data, targetNode))

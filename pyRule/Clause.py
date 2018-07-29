@@ -34,5 +34,6 @@ class Clause:
                                 formatStr)
 
     def expandBindings(self, bindings):
+        """ Given a set of bindings, place them in place of variables in this clause """
         newComponents = expandFact(self.components, bindings)
         return self.__class__(newComponents, negated=self.negated)

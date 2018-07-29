@@ -24,43 +24,58 @@ from . import FactParser as FP
 from . import RuleParser as RP
 from . import FileParser as FileP
 
-
+#import and register policies
 
 logging = root_logger.getLogger(__name__)
 
 class TrieEngine(EngineBase):
-
+    """ The Engine for an Agent. 
+    Holds a KnowledgeBase, with rules, keeps track of proposed actions
+    and the history of the agent. Performs actions that are registered
+    """
+    
     def __init__(self, path=None, init=None):
         super().__init__(Trie, path=path, init=init)
-        self._knowledge_base = Trie(init)
-        self._rules = {}
-        self._proposed_actions = []
-        #to be updated with printed representations of the trie state after each action
-        self._prior_states = []
-        #named recall states of past tries
-        self._recall_states = []
-        #Registered custom actions
-        self._custom_actions = {}
-        if path is not None:
-            self.load_file(path)
+
 
     def load_file(self, filename):
+        """ Given a filename, read it, and interpret it as an EL DSL string """
         assert(isinstance(filename, str))
         assert(exists(filename))
         logging.info("Loading: {}".format(filename))
         with open(filename) as f:
             s = f.read()
         if s is not None:
+            #TODO: load (layer, policy) tuples
+            #rules, assertions, layers, policies = FileP.parseString(s)
             rules, assertions = FileP.parseString(s)
+            #Assert facts: 
             for x in assertions:
                 logging.info("File load assertion: {}".format(x))
                 self.add(x)
+            #register rules:
             self.registerRules(rules)
+            #register layer sequences
+            #register policies to layers
         else:
             raise Exception("No text found in provided file")
 
+    def tick(self, inputMessages):
+        ouput = []
+        for x in inputMessages:
+            self.add(x)
+
+        #loop through layers, running connected policies
+        for (layerTags, policy) in self._layers:
+            self._run_rules(rule_tags=layer, policy=policy)
+        
+        #retrieve final selected actions
+        output = self._proposed_actions.copy()
+        return output
+        
     #todo: be able to assert retract or query from tries instead of strings
     def add(self, s):
+        """ Assert Data into the knowledge base """
         if isinstance(s, str):
             self._knowledge_base.assertS(s)
         else:
@@ -69,6 +84,7 @@ class TrieEngine(EngineBase):
             self._knowledge_base.assertFact(s)
 
     def retract(self, s):
+        """ Remove information from the knowledge base """
         if isinstance(s, str):
             self._knowledge_base.retractS(s)
         else:
@@ -76,8 +92,8 @@ class TrieEngine(EngineBase):
             assert(isinstance(s[0], Node))
             self._knowledge_base.retractFact(s)
 
-
     def query(self, s):
+        """ As a question of the knowledge base """
         if isinstance(s, str):
             return self._knowledge_base.queryS(s)
         else:
@@ -85,6 +101,7 @@ class TrieEngine(EngineBase):
             return self._knowledge_base.queryFact(s)
 
     def registerRules(self, s):
+        """ Add a Rule to the engine """
         if isinstance(s, str):
             rules = RP.parseString(s)
         else:

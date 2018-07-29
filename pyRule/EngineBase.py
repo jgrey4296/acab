@@ -11,21 +11,28 @@ logging = root_logger.getLogger(__name__)
 
 
 class EngineBase:
-    """ The base class that wme and trie versions implement the interface of """
+    """ The Abstract class that wme and trie versions implement the interface of. """
 
     def __init__(self, kb_constructor, path=None, init=None):
         self._knowledge_base = kb_constructor(init)
+        #rules categorised into tag sets?
         self._rules = {}
+        self._policies = {}
+        self._layers = []
         self._proposed_actions = []
-        #to be updated with printed representations of the trie state after each action
+        #to be updated with printed representations of the kb state after each action
         self._prior_states = []
-        #named recall states of past tries
+        #named recall states of past kb states
         self._recall_states = []
         #Registered custom actions
         self._custom_actions = {}
-        if path is not None:
+        if path is None:
+            logging.info("Not loading any files for the knowledge base")
+        elif isinstance(path, list):
+            for x in path:
+                self.load_file(x)
+        else:
             self.load_file(path)
-
 
     def load_file(self, filename):
         """ Load a file spec for the facts / rules for this engine """
@@ -184,7 +191,7 @@ class EngineBase:
             opFunc(self, values)
 
     def _perform_action_by_policy(self, policy):
-        """ utilize a policy to select from proposed actions,
+        """ Utilize a policy to select from proposed actions,
         then perform those actions """
         logging.debug("Performing action by policy")
         assert(callable(policy))
@@ -197,3 +204,20 @@ class EngineBase:
                 self._perform_actions(d, r._actions)
             else:
                 self._perform_actions(d, r)
+
+
+    def tick(self, inputMessages):
+        """ A Single Tick of the Engine. 
+        Receives a list of updates from the world,
+        calculates, then returns a list of output messages """
+        assert(isinstance(inputMessages, list))
+        #Assert input messages
+        #rule the rule layers
+        #return actions        
+        raise Exception("Abstract Method")
+
+    def _register_layers(self, layers):
+        raise Exception("Abstract Method")
+
+    def _register_layer_policies(self, policies):
+        raise Exception("Abstract Method")

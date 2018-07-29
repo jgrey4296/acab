@@ -90,8 +90,9 @@ class Trie:
 
 
     def _internal_query(self, query, ctxs):
-        #Go down the trie, running each test as necessary
-        #annotating contexts as necessary
+        """ Go down the trie, running each test as necessary
+        annotating contexts as necessary
+        """
         contexts = ctxs
         pos, neg = query.splitClauses()
 
@@ -125,6 +126,7 @@ class Trie:
         return contexts
 
     def _match_clause(self, clause, contexts):
+        """ Test a single clause, annotating contexts upon success and failure """
         assert(isinstance(clause, Clause))
         logging.debug("Testing Clause: {}".format(repr(clause)))
         #early exit:

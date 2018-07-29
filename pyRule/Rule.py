@@ -11,6 +11,10 @@ from .Query import Query
 logging = root_logger.getLogger(__name__)
 
 class Rule:
+    """ A Rule holds a query (of N Clauses), a set of transforms,
+    and a set of actions. It can be tagged with attributes. 
+    """
+    
     __count = 0
 
     def __init__(self, query, actions, transform=None, name=None, tags=None):

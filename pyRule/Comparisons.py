@@ -41,7 +41,8 @@ COMP_REVERSE_LOOKUP = {
 }
 
 class Comparison:
-
+    """ Describe a Comparison of values and maybe a binding """
+    
     def __init__(self, op, value=None, bind=None):
         assert(isinstance(op, COMP))
         assert(value is not None or bind is not None)
