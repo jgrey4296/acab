@@ -207,13 +207,13 @@ class EngineBase:
 
 
     def tick(self, inputMessages):
-        """ A Single Tick of the Engine. 
+        """ A Single Tick of the Engine.
         Receives a list of updates from the world,
         calculates, then returns a list of output messages """
         assert(isinstance(inputMessages, list))
         #Assert input messages
         #rule the rule layers
-        #return actions        
+        #return actions
         raise Exception("Abstract Method")
 
     def _register_layers(self, layers):

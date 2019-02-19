@@ -1,9 +1,9 @@
 """
-A Data Structure that Self-Balances weights 
-Weights can be specified as (a < b), (a < c), (b < c), 
+A Data Structure that Self-Balances weights
+Weights can be specified as (a < b), (a < c), (b < c),
 with a range and a distritbution (linear, exponential etc),
-and a,b,c will be ranked into bins that respect the constraints 
-where bins are (lowerbound, upperbound), 
+and a,b,c will be ranked into bins that respect the constraints
+where bins are (lowerbound, upperbound),
 and where for any (a < b), (a.upperbound < b.lowerbound)
 """
 import numpy as np
@@ -38,7 +38,7 @@ class WeightBalance:
         #Generation function, which specifes the distribution of weights between the range
         #   could be linspace, could be exponential, etc
         self.dist = dist
-        
+
 
     def __call__(self):
         """ Set the balancing algorithm going """
@@ -52,7 +52,7 @@ class WeightBalance:
         #todo: turn these into ranges?
         self.weights = { x : y for (x,y) in zip(xs, ys) }
 
-        
+
     def __getitem__(self, key):
         return self.weights[self.weights[key]]
 
@@ -83,9 +83,9 @@ class WeightBalance:
                 precision[comp.a] += 1
                 precision[comp.b] += 1
         #todo: normalise precision by number of comps per key
-        
+
         return (errors / len(self.data), precision)
-    
+
 
 class CompWB:
     def __init__(self, a, b):
@@ -102,7 +102,7 @@ class CompNode:
         # is_gt_than < key < is_lt_than
         assert(is_lt_than is None or isinstance(is_lt_than, list))
         self.key = k
-        self.lt_set = set(is_lt_than) 
+        self.lt_set = set(is_lt_than)
 
     def __lt__(self, other):
         if isinstance(other, CompNode):
@@ -112,7 +112,7 @@ class CompNode:
 
     def __eq__(self, other):
         return (other.key not in self.lt_set) and (self.key not in other.lt_set)
-        
+
 
     def __repr__(self):
         return "Comp({} < {})".format(self.key, str(self.lt_set))

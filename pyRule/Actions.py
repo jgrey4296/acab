@@ -25,7 +25,7 @@ ACTMACRONAME = namedtuple('ActMacroId', 'name')
 #Action function template:
 # def [name](engine, *params)
 def E_ADD(engine, params):
-    """ Assert the params into the engine """ 
+    """ Assert the params into the engine """
     #assert(all([isinstance(x, Node) for x in params[0]]))
     engine.add(params[0])
 
@@ -35,7 +35,7 @@ def E_RETRACT(engine, params):
     engine.retract(params[0])
 
 def E_PRINT(engine, params):
-    """ Trigger a logging statement """ 
+    """ Trigger a logging statement """
     for x in params:
         print(x)
         logging.info("Engine Output: {}".format(x))
@@ -55,7 +55,7 @@ ACTS_REVERSE_LOOKUP = {
 
 class Action:
     """ The Core Action Class, holds an operator,  and a list of values """
-    
+
     def __init__(self, op, values, type=None):
         """ Create an action with an operator and values """
         assert(isinstance(op, (ACTS, str)))
@@ -100,12 +100,12 @@ class Action:
         return "{}({})".format(op, ",".join(args))
 
     def is_custom(self):
-        """ Indicate whether the operator of the action denotes a custom 
+        """ Indicate whether the operator of the action denotes a custom
         registered action """
         return isinstance(self._op, str)
 
     def verify_op(self):
-        """ Check the Action is using a valid operator (ACT enum) """ 
+        """ Check the Action is using a valid operator (ACT enum) """
         if self._op not in ACTS_LOOKUP and not self.is_custom():
             raise Exception("Unrecognised Action: {}".format(self._op))
 
@@ -125,9 +125,9 @@ class Action:
 
 class ActionMacro:
     """ Storage for a sequence of actions to take, separate from a rule,
-    so it can be expanded into multiple rules. 
+    so it can be expanded into multiple rules.
     """
-    
+
     def __init__(self, name, params, actions):
         assert(isinstance(name, ACTMACRONAME))
         assert(isinstance(params, list))
@@ -148,7 +148,7 @@ class ActionMacro:
 
 class ActionMacroUse:
     """ The counterpart to an ActionMacro, denotes where to expand a macro into """
-    
+
     def __init__(self, name, params):
         assert(isinstance(name, ACTMACRONAME))
         assert(isinstance(params, list))

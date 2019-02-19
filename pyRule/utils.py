@@ -40,7 +40,7 @@ class Bind:
 def expandFact(factString, bindings):
     """ Given a list of fact components, and a dictionary of bindings,
     reify the fact, using those bindings.
-    ie: .a.b.$x with {x: blah} => .a.b.blah 
+    ie: .a.b.$x with {x: blah} => .a.b.blah
     """
     assert(isinstance(bindings, dict))
     assert(isinstance(factString, list))

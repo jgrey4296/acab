@@ -11,7 +11,7 @@ class BDI_TESTS(unittest.TestCase):
 
     def path(self, filename):
         return join('.', 'bdi_testfiles', filename)
-    
+
     def setUpAgent(self, files, rulePolicies):
         self.e = bdi.Agent("testAgent", [self.path(x) for x in files],
                            rulePolicies)
@@ -28,15 +28,15 @@ class BDI_TESTS(unittest.TestCase):
         self.assertEqual(self.e.num_rules(), 3)
         self.e.run()
         self.assertTrue(self.e._engine.query(".count!$x(> 9)?"))
-        
+
 
     def test_responsive(self):
         self.setUpAgent(["responsive_test.trie"],
                         [("propose", util.default_action_policy)])
         self.e.run()
-        
 
-        
+
+
     #BDI architecture to test:
     #1) addition / retraction of beliefs
     #2) addition / retraction of rules
@@ -47,7 +47,7 @@ class BDI_TESTS(unittest.TestCase):
     #7) firing of actions
     #8) updating of beliefs from actions
     #9) Logic Cycle
-        
+
 
 if __name__ == "__main__":
       #use python $filename to use this logging setup

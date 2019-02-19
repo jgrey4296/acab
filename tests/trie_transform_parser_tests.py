@@ -6,7 +6,7 @@ from pyRule import Transforms
 from pyRule.utils import Bind
 
 class Trie_Transform_Parser_Tests(unittest.TestCase):
-      
+
       def setUp(self):
             return 1
 
@@ -57,7 +57,7 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
             self.assertIsNone(result.components[0].val)
             self.assertIsNone(result.components[0].bind)
             self.assertIsNone(result.components[0].rebind)
-            
+
       def test_unary_rebind(self):
             result = TP.parseString('-$x -> $y')
             self.assertIsInstance(result, Transforms.Transform)
@@ -137,7 +137,7 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
             self.assertIsInstance(result, Transforms.SelectionTransform)
             self.assertEqual(result.lBound.value, 'x')
             self.assertEqual(result.uBound.value, 'y')
-            
+
       def test_fact_str_equal(self):
             transforms = ["$x + 20", "$x + 20, $y + 5",
                           "$xc - 10", "$x * 100",
@@ -157,8 +157,8 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
                   self.assertEqual(t,str(p))
 
 
-                  
-            
+
+
 
 if __name__ == "__main__":
       LOGLEVEL = logging.INFO

@@ -8,7 +8,7 @@ import IPython
 class Trie_FactBase_Tests(unittest.TestCase):
     """ Unit test for basic Trie knowledge base functionality """
 
-    
+
     def setUp(self):
         self.trie = T.Trie()
 
@@ -19,7 +19,7 @@ class Trie_FactBase_Tests(unittest.TestCase):
         """ Check the trie object exists """
         self.assertIsNotNone(self.trie)
         self.assertIsInstance(self.trie, T.Trie)
-          
+
     def test_assert(self):
         """ Check assertions work """
         self.assertEqual(len(self.trie._root), 0)
@@ -57,7 +57,7 @@ class Trie_FactBase_Tests(unittest.TestCase):
         result = self.trie.queryS('.a.b.c?')
         self.assertIsInstance(result, pyRule.Contexts)
         self.assertTrue(result)
-        
+
     def test_simplest_query_fail(self):
         """ Check that not all queries pass """
         self.trie.assertS('.a.b.c')
@@ -80,7 +80,7 @@ class Trie_FactBase_Tests(unittest.TestCase):
         self.assertFalse(self.trie.queryS('.a.b.d?'))
         self.assertTrue(self.trie.queryS('.a.b.c?'))
         self.assertEqual(len(self.trie._root._reconstruct()), 1)
-        
+
     def test_bind_query(self):
         """ Check that queries can bind to a value """
         self.trie.assertS('.a.b.c')
@@ -110,7 +110,7 @@ class Trie_FactBase_Tests(unittest.TestCase):
         self.trie.assertS('.a.b.20')
         result = self.trie.queryS('.a.b.$x(==30)?')
         self.assertFalse(result)
-        
+
     def test_query_alpha_comp_GT(self):
         """ Check that other comparisons from equality can be tested for """
         self.trie.assertS('.a.b.20')
@@ -158,7 +158,7 @@ class Trie_FactBase_Tests(unittest.TestCase):
         self.trie.retractS('.a')
         result = self.trie.queryS('.$x.$y?')
         self.assertFalse(result)
-        
+
     def test_query_multi_bind_comp(self):
         """ Check that bindings hold across clauses """
         self.trie.assertS('.a.b.20, .a.c.30, .a.d.40')
@@ -183,8 +183,8 @@ class Trie_FactBase_Tests(unittest.TestCase):
         self.assertTrue(result)
         result = self.trie.queryS('.a.b.$x.blah?')
         self.assertTrue(result)
-        self.assertEqual(result[0]['x'], "This is a test")    
-        
+        self.assertEqual(result[0]['x'], "This is a test")
+
     def test_factbase_to_strings(self):
         self.trie.assertS('.a.b.c')
         self.assertEqual(str(self.trie), '.a.b.c')
@@ -200,7 +200,7 @@ class Trie_FactBase_Tests(unittest.TestCase):
         newTrie = T.Trie('.a.b.c, .d.e.f, .q.w.e')
         result = newTrie.queryS('.a.b.c?, .d.e.f?, .q.w.e?')
         self.assertTrue(result)
-        
+
     def test_factbase_from_string_recovery(self):
         self.trie.assertS('.a.b.c, .q.e.r, .t.y!u')
         s = str(self.trie)
@@ -245,9 +245,9 @@ class Trie_FactBase_Tests(unittest.TestCase):
         boundSet = set([x['y'] for x in result])
         self.assertTrue('Blah' in boundSet)
         self.assertTrue('Bloo' in boundSet)
-        
-        
-        
+
+
+
 if __name__ == "__main__":
     LOGLEVEL = logging.INFO
     logFileName = "log.RuleFactTrieTests"

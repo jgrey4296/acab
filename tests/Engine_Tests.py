@@ -8,14 +8,14 @@ from math import isclose
 import IPython
 
 class Engine_Tests(unittest.TestCase):
-    
+
     def setUp(self):
         self.e = T.TrieEngine()
-          
-        
+
+
     def tearDown(self):
         self.e = None
-          
+
     #----------
     #use testcase snippets
     def test_init(self):
@@ -52,7 +52,7 @@ class Engine_Tests(unittest.TestCase):
     def test_query_with_binds_fail(self):
         self.e.add('.a.b.c, .a.b.d, .a.d.e')
         self.assertFalse(self.e.query('.a.b.$x?, .a.d.$x?'))
-        
+
     def test_multi_assert(self):
         self.e.add('.a.b.c, .a.b.d, .a.b.e')
         self.assertEqual(len(self.e._knowledge_base._root._reconstruct()), 3)
@@ -68,7 +68,7 @@ class Engine_Tests(unittest.TestCase):
         self.e.add('.a.b.c, .a.b.d, .a.b.e')
         result = self.e.query('.a.b.c?, .a.b.d?, .a.b.e?')
         self.assertTrue(result)
-        
+
     def test_rule_registration(self):
         self.assertEqual(len(self.e._rules), 0)
         self.e.registerRules(".a.test.rule:\nend")
@@ -82,7 +82,7 @@ class Engine_Tests(unittest.TestCase):
         self.assertEqual(len(self.e._rules), 1)
         self.e.registerRules(".a.test.rule:\nend")
         self.assertEqual(len(self.e._rules), 1)
-    
+
 
     def _test_register_action(self):
         self.assertEqual(len(self.e._custom_actions), 0)
@@ -96,7 +96,7 @@ class Engine_Tests(unittest.TestCase):
         stub_ctx[0]['b'] = 4
 
         stub_transform = TP.parseString('$a + 20, $b * 2')
-        
+
         result = self.e._run_transform(stub_ctx[0], stub_transform)
         self.assertIsInstance(result, dict)
         self.assertEqual(result['a'], 22)
@@ -127,7 +127,7 @@ class Engine_Tests(unittest.TestCase):
         self.assertEqual(result['a'], -2)
         self.assertEqual(result['b'], 2)
         self.assertEqual(result['c'], 2)
-        
+
     def test_run_unary_transform_rebind(self):
         stub_ctx = pyRule.Contexts.initial(None)
         stub_ctx[0]['a'] = 2
@@ -156,7 +156,7 @@ class Engine_Tests(unittest.TestCase):
         self.assertEqual(result['a'], 22)
         self.assertEqual(result['b'], -22)
         self.assertEqual(result['c'], 24.53)
-        
+
     def test_run_binary_transform_rebind(self):
         stub_ctx = pyRule.Contexts.initial(None)
         stub_ctx[0]['a'] = 2
@@ -186,7 +186,7 @@ class Engine_Tests(unittest.TestCase):
         self.assertEqual(result['a'], 'bloo')
         self.assertEqual(result['b'], 'AAAA')
         self.assertEqual(result['c'], 'AAAA')
-        
+
     def test_run_ternary_regex_rebind(self):
         stub_ctx = pyRule.Contexts.initial(None)
         stub_ctx[0]['a'] = "blah"
@@ -203,7 +203,7 @@ class Engine_Tests(unittest.TestCase):
         self.assertEqual(result['x'], 'bloo')
         self.assertEqual(result['y'], 'AAAA')
         self.assertEqual(result['z'], 'AAAA')
-        
+
     def test_run_unary_format(self):
         stub_ctx = pyRule.Contexts.initial(None)
         stub_ctx[0]['a'] = "AAA"
@@ -236,7 +236,7 @@ class Engine_Tests(unittest.TestCase):
         self.assertEqual(result['ya'], 'AAA blah BBB')
         self.assertEqual(result['za'], 'CCC BBB AAA')
 
-        
+
     def test_run_assert_action(self):
         actions = AP.parseString("+(.a.b.c)")
         self.assertFalse(self.e.query(".a.b.c?"))
@@ -306,11 +306,11 @@ class Engine_Tests(unittest.TestCase):
     #     self.assertTrue(self.e.query('.test.rule(^rule)?'))
     #     self.assertFalse(self.e.query('.a.b.c(^rule)?'))
     #     self.assertTrue(self.e.query('~.a.b.c(^rule)?'))
-        
-        
-        
-        
-        
+
+
+
+
+
 if __name__ == "__main__":
     LOGLEVEL = logging.INFO
     logFileName = "log.engine_tests"

@@ -11,7 +11,7 @@ class Engine_Logic_Tests(unittest.TestCase):
 
     def path(self, filename):
         return join('.', 'testfiles', filename)
-    
+
     def setUp(self):
         self.e = T.TrieEngine()
 
@@ -23,7 +23,7 @@ class Engine_Logic_Tests(unittest.TestCase):
     def test_simple_logic(self):
         self.e.registerRules(""".a.test.rule:
         	.a.b.c?
-        
+
         	+(.a.b.d)
         end""")
         self.e.add(".a.b.c")
@@ -37,7 +37,7 @@ class Engine_Logic_Tests(unittest.TestCase):
         self.assertEqual(len(self.e._rules), 1)
         self.e._run_rules()
         self.assertTrue(self.e.query(".a.b.c?, .d.e.f?"))
-          
+
     def test_multi_rule_load_from_single_file(self):
         self.e.load_file(self.path("exampleRules2.trie"))
         self.assertEqual(len(self.e._rules), 2)
@@ -63,7 +63,7 @@ class Engine_Logic_Tests(unittest.TestCase):
         self.assertTrue(self.e.query(".a.b.c?, .a.c!d?"))
         self.e._run_rules()
         self.assertTrue(self.e.query(".a.b.c?, .a.c!d?, .a.b.e?"))
-        
+
     def test_file_load_string_query(self):
         self.e.load_file(self.path("string_query_test.trie"))
         self.assertEqual(len(self.e._rules), 2)
@@ -76,13 +76,13 @@ class Engine_Logic_Tests(unittest.TestCase):
         self.assertTrue(self.e.query('~.a.b."an asserted string"?'))
         self.e._run_rules()
         self.assertTrue(self.e.query('.a.b."an asserted string"?'))
-        
+
     def test_file_load_string_retract(self):
         self.e.load_file(self.path("string_retract_test.trie"))
         self.assertTrue(self.e.query('.a.b."a test string"?'))
         self.e._run_rules()
         self.assertTrue(self.e.query('~.a.b."a test string"?'))
-        
+
     def test_file_load_transform(self):
         self.e.load_file(self.path("transform_test.trie"))
         self.assertEqual(len(self.e._rules), 1)
@@ -99,7 +99,7 @@ class Engine_Logic_Tests(unittest.TestCase):
         queried = [True for x in [".a.b!25?",".a.c!30?",".a.d!40?"] if bool(self.e.query(x))]
         self.assertEqual(len(queried), 1)
 
-        
+
     def test_file_load_multi_transform(self):
         self.e.load_file(self.path("multi_transform_test.trie"))
         self.assertEqual(len(self.e._rules), 1)
@@ -156,7 +156,7 @@ class Engine_Logic_Tests(unittest.TestCase):
         self.assertTrue(self.e.query('.a.b.c?, ~.blah?, .bloo?'))
         self.e._run_rules(rule_tags=['first'])
         self.assertTrue(self.e.query('.a.b.c?, .blah?, .bloo?'))
-        
+
     def rule_load_with_comments(self):
         self.e.load_file(self.path("rule_with_comments.trie"))
         self.assertEqual(len(self.e._rules), 1)
@@ -167,7 +167,7 @@ class Engine_Logic_Tests(unittest.TestCase):
         self.assertEqual(len(rule._actions), 2)
         self.e._run_rules()
         self.assertTrue(self.e.query('.a.d.c?, .a.d.d?, .a.b!30?'))
-        
+
 
 if __name__ == "__main__":
     #use python $filename to use this logging setup

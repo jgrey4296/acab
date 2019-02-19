@@ -10,11 +10,11 @@ from pyRule.utils import Bind
 import IPython
 
 class WME_FB_Tests(unittest.TestCase):
-      
+
     def setUp(self):
         self.fb = W.FactBase()
-        
-    
+
+
     def tearDown(self):
         self.fb = None
 
@@ -32,7 +32,7 @@ class WME_FB_Tests(unittest.TestCase):
         self.assertEqual(wme._data["a"], 2)
         self.assertEqual(wme._assertTime, 0)
         self.assertIsNotNone(wme._hash)
-        
+
     def test_assert(self):
         """ Ensure wmes can be added to the factbase """
         data = {"a": 2, "b":3}
@@ -46,7 +46,7 @@ class WME_FB_Tests(unittest.TestCase):
         wme = self.fb.assertWME(data)
         with self.assertRaises(Exception):
             self.fb.assertWME(data)
-        
+
     def test_retract(self):
         """ Ensure wmes can be removed from factbase """
         data = {"a": 2, "b":3}
@@ -62,13 +62,13 @@ class WME_FB_Tests(unittest.TestCase):
             self.fb.retractWME(data)
 
     def test_retract_twice_fail(self):
-        """ ensure quiet failure on double retraction """ 
+        """ ensure quiet failure on double retraction """
         data = {"a": 2}
         wme = self.fb.assertWME(data)[0]
         self.fb.retractWME(wme)
         response = self.fb.retractWME(wme)
         self.assertEqual(response, 0)
-            
+
     def test_query(self):
         """ initial query test, one clause, one wme """
         data = {"a": 2, "b":3}
@@ -78,8 +78,8 @@ class WME_FB_Tests(unittest.TestCase):
         response = self.fb.query(query)
         self.assertIsInstance(response, Contexts)
         self.assertTrue(response)
-        
-        
+
+
     def test_query_fail(self):
         """ ensure query fails in the simplest case: no matching wme """
         data = {"a": 2, "b":3}
@@ -107,7 +107,7 @@ class WME_FB_Tests(unittest.TestCase):
         query = Query([WMEClause([("a",C.NE, 5)])])
         response = self.fb.query(query)
         self.assertTrue(response)
-        
+
     def test_query_multi_clause_wme_agnostic(self):
         """ Test a query of multiple clauses that can match on
         a single wme """
@@ -137,13 +137,13 @@ class WME_FB_Tests(unittest.TestCase):
         self.assertTrue(response)
 
     def test_query_wme_lacks_field_of_query(self):
-        """ Test a query on a wme that lacks the appropriate field """ 
+        """ Test a query on a wme that lacks the appropriate field """
         query = Query([WMEClause([("a",C.EQ, 2)])])
         data = {"b": 2}
         self.fb.assertWME(data)
         response = self.fb.query(query)
         self.assertFalse(response)
-        
+
     def test_query_bind(self):
         """ Test a multi clause binding query """
         query = Query([WMEClause([("a",Bind("x")), ("b", C.EQ, 2)]),
@@ -222,15 +222,15 @@ class WME_FB_Tests(unittest.TestCase):
         self.fb.assertWME({"name":"bob"})
         response = self.fb.query(query)
         self.assertFalse(response)
-    
+
     def test_forall_multi_clause_negation_fail(self):
         """ Test a multi clause negation that fails """
         query = Query([WMEClause([("name",C.EQ,"bob"),("age",C.EQ,20)], negated=True)])
         self.fb.assertWME({"name":"bob","age":20})
         response = self.fb.query(query)
         self.assertFalse(response)
-    
-    
+
+
 
 if __name__ == "__main__":
       LOGLEVEL = logging.DEBUG

@@ -29,11 +29,11 @@ from . import FileParser as FileP
 logging = root_logger.getLogger(__name__)
 
 class TrieEngine(EngineBase):
-    """ The Engine for an Agent. 
+    """ The Engine for an Agent.
     Holds a KnowledgeBase, with rules, keeps track of proposed actions
     and the history of the agent. Performs actions that are registered
     """
-    
+
     def __init__(self, path=None, init=None):
         super().__init__(Trie, path=path, init=init)
 
@@ -49,7 +49,7 @@ class TrieEngine(EngineBase):
             #TODO: load (layer, policy) tuples
             #rules, assertions, layers, policies = FileP.parseString(s)
             rules, assertions = FileP.parseString(s)
-            #Assert facts: 
+            #Assert facts:
             for x in assertions:
                 logging.info("File load assertion: {}".format(x))
                 self.add(x)
@@ -68,11 +68,11 @@ class TrieEngine(EngineBase):
         #loop through layers, running connected policies
         for (layerTags, policy) in self._layers:
             self._run_rules(rule_tags=layer, policy=policy)
-        
+
         #retrieve final selected actions
         output = self._proposed_actions.copy()
         return output
-        
+
     #todo: be able to assert retract or query from tries instead of strings
     def add(self, s):
         """ Assert Data into the knowledge base """

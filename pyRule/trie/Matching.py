@@ -84,7 +84,7 @@ def match_rule(testComponent, node, data):
     if not bool(ruleBind):
         #Pass with no data if testComponent doesn't have a rulebind
         return (False, None, None)
-    
+
     retrievedRule = node.get_meta_eval(util.META_OP.RULE)
     if not bool(retrievedRule):
         #Test, but fail, if theres no rule to retrieve

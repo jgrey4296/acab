@@ -78,7 +78,7 @@ class DataStructures_Tests(unittest.TestCase):
         self.assertEqual(len(results), 2)
         self.assertTrue(any([x in results[0] for x in ["a AWEF", "a VBNM"]]))
         self.assertTrue(any([x in results[1] for x in ["b AWEF", "b VBNM"]]))
-    
+
     def test_game_register_player_actions(self):
         g = Game(players=1, moves=3, turns=2)
         g.register_player_actions(0, ["m0t0", "m1t0", "m2t0", "m0t1", "m1t1", "m2t1"])
@@ -88,7 +88,7 @@ class DataStructures_Tests(unittest.TestCase):
         self.assertEqual(g.actions[(0,0,1)], "m0t1")
         self.assertEqual(g.actions[(0,1,1)], "m1t1")
         self.assertEqual(g.actions[(0,2,1)], "m2t1")
-                    
+
     def test_game_register_turn_actions(self):
         g = Game(players=2, moves=2, turns=1)
         g.register_turn_actions(0, ["p0m0", "p0m1", "p1m0", "p1m1"])
@@ -108,7 +108,7 @@ class DataStructures_Tests(unittest.TestCase):
         self.assertTrue(any([x in results[1] for x in ["p1m0", "p1m1"]]))
         self.assertTrue(any([x in results[2] for x in ["p0m0t1", "p0m1t1"]]))
         self.assertTrue(any([x in results[3] for x in ["p1m0t1", "p1m1t1"]]))
-        
+
     def test_game_verification(self):
         g = Game(players=2, moves=2, turns=1)
         self.assertFalse(g.verify())
@@ -119,11 +119,11 @@ class DataStructures_Tests(unittest.TestCase):
         g.register_action("awef", (1, 0))
         g.register_action("aweggg", (1, 1))
         self.assertTrue(g.verify())
-        
-        
+
+
     #todo: test simple TSTree
 
-        
+
 
 if __name__ == "__main__":
       #use python $filename to use this logging setup

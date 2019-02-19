@@ -8,7 +8,7 @@ import pyRule.utils as util
 import IPython
 
 class Trie_Fact_Parser_Tests(unittest.TestCase):
-    
+
     def setUp(self):
         return 1
 
@@ -21,7 +21,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertIsNotNone(FP.parseString)
         self.assertIsNotNone(FP.param_fact_string)
         self.assertIsNotNone(FP.param_fact_strings)
-        
+
     def test_parseString(self):
         result = FP.parseString('.a.b.c')[0]
         self.assertIsInstance(result, list)
@@ -33,7 +33,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result, list)
         self.assertEqual(len(result), 2)
         self.assertTrue(all([isinstance(x, list) for x in result]))
- 
+
     def test_param_fact_string(self):
         result = FP.param_fact_string.parseString('.a.b.$x')
         self.assertIsNotNone(result)
@@ -41,7 +41,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
     def test_exclusion_operator_string_recovery(self):
         result = FP.parseString('!a!b!c')[0]
         self.assertEqual("".join([str(x) for x in result]), "!a!b!c")
-        
+
     def test_numbers_parsing(self):
         for i in range(100):
             mult = 10 ** round(random.random() * 4)
@@ -81,7 +81,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result[0], util.Bind)
         self.assertTrue(all([isinstance(x, T.Node) for x in result[1:]]))
 
-            
+
     def test_fact_str_equal(self):
         actions = [".a.b.c", ".a.b!c", '.a.b."a string".c',
                    '.a.b!"a string"!c',
@@ -108,8 +108,8 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         asString = "".join([str(x) for x in expanded if not x.is_root()])
         self.assertEqual(asString, ".blah.b.bloo!c")
 
-    
-        
+
+
 if __name__ == "__main__":
     LOGLEVEL = logging.INFO
     logFileName = "log.trie_fact_parser_tests"

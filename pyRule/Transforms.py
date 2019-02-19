@@ -41,7 +41,7 @@ def NEG(a, data):
     return -a
 
 def REGEX(a, b, data):
-    """ Substitute a pattern with a value from passed in data 
+    """ Substitute a pattern with a value from passed in data
     a : the replacement
     b: the pattern
     c : the base string?
@@ -83,7 +83,7 @@ TROP_REVERSE_LOOKUP = {
     TROP.SELECT : "select"
 }
 
-#Get the number of parameters the transform operator takes 
+#Get the number of parameters the transform operator takes
 TROP_PARAM_LENGTHS = {
     TROP.ADD : 2,
     TROP.SUB : 2,

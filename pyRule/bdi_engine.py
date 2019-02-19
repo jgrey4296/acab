@@ -23,7 +23,7 @@ class Agent:
         logging.info("Initialising BDI: {}, {}".format(name, ", ".join(startup_files)))
         #History of output
         self._history = []
-        
+
         #Agent Data
         self._name = name
         self._wait_time = wait_time

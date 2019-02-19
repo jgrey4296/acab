@@ -8,7 +8,7 @@ class Game:
         assert(players >= 1)
         assert(moves >= 2)
         assert(turns >= 1)
-        
+
         self.name = name
         self.players = players
         self.moves = moves
@@ -26,7 +26,7 @@ class Game:
         #Key: position tuple
         #value: a knowledgebase query for a single value
         self.precondition_utility = {}
-        
+
 
     def generate_tree(self):
         """ Generate the decision tree from the players, moves, and turns, independent of the actions """
@@ -56,7 +56,7 @@ class Game:
             move = move % self.moves
             if move == 0:
                 turn += 1
-    
+
     def register_turn_actions(self, turn, actions):
         """ Register a turns actions. Specify all the moves for a player, then
         move to the next player. Moves can be tuples of (move, precondition) """
@@ -72,7 +72,7 @@ class Game:
             move = move % self.moves
             if move == 0:
                 player += 1
-    
+
     def verify(self):
         """ Verify that each move for each player has been defined """
         total_moves = self.players * self.moves * self.turns
@@ -83,10 +83,10 @@ class Game:
             enough_preconditions_defined = len(self.precondition_utility) == total_moves
 
         return enough_moves_defined and enough_preconditions_defined
-        
-    
+
+
     def __call__(self, knowledgebase=None, data=None):
-        """ Run the Game with the provided knowledgebase to query, 
+        """ Run the Game with the provided knowledgebase to query,
         and a mapping of players. Return a sequence of moves.
         Returns: [ MoveString ]
         """
@@ -110,7 +110,7 @@ class Game:
                 chosen_action = choice(options)
                 results.append(chosen_action.format(**data))
         return results
-        
+
     def play_with_assessments(self, knowledgebase, data=None):
         """ Play a sequence of the game, using max utility selection,
         will format any query or action by the data dictionary passed in.

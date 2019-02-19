@@ -8,7 +8,7 @@ from pyRule import Rule
 from pyRule import Query
 
 class Trie_Rule_Parser_Tests(unittest.TestCase):
-      
+
       def setUp(self):
             return 1
 
@@ -31,7 +31,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             result = RP.parseString(".a.rule:\nend\n\n.a.second.rule:\nend")
             self.assertEqual(len(result),2)
             self.assertTrue(all([isinstance(x,Rule) for x in result]))
-      
+
       def test_rule_with_query(self):
             result = RP.parseString(".a.rule:\n.a.b.c?\n\nend")
             self.assertEqual(len(result),1)
@@ -54,7 +54,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertIsNotNone(result[0]._query)
             self.assertIsInstance(result[0]._query, Query)
             self.assertEqual(len(result[0]._query), 2)
-            
+
       def test_rule_with_binding_query(self):
             result = RP.parseString(".a.rule:\n.a.b.$x?\n\nend")
             self.assertEqual(len(result),1)
@@ -84,7 +84,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertIsNone(result[0]._query)
             self.assertIsNotNone(result[0]._transform)
 
-            
+
       def test_rule_with_actions(self):
             result = RP.parseString(".a.rule:\n+(.a.b.c)\nend")
             self.assertEqual(len(result), 1)
@@ -131,8 +131,8 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertIsInstance(result, Rule)
             self.assertEqual("".join([str(x) for x in result._name]), ".a.test.rule")
             self.assertTrue(all(x in result._tags for x in ["blah","bloo","blee"]))
-            
-            
+
+
       def test_fact_str_equal(self):
             rules = [ ".a.rule:\nend",
                       ".a.rule:\n\t.a.b.c?\n\nend",
@@ -147,7 +147,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             for r,p in zipped:
                   self.assertEqual(r,str(p))
 
-            
+
 
 if __name__ == "__main__":
       LOGLEVEL = logging.INFO
