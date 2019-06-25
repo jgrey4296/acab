@@ -65,7 +65,6 @@ class Trie:
 
         self._last_node.delete_node(lastInList)
 
-
     def _clear_last_node(self):
         """ Reset internal memory to point to the root.
         currently only used for retraction
@@ -87,7 +86,6 @@ class Trie:
         self._clear_last_node()
         initial_context = Contexts.initial(self._root)
         return self._internal_query(query, initial_context)
-
 
     def _internal_query(self, query, ctxs):
         """ Go down the trie, running each test as necessary

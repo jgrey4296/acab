@@ -46,7 +46,6 @@ def buildSelection(toks):
     bound2 = toks[1]
     return SelectionTransform(bound1, bound2, op=TROP.SELECT)
 
-
 def addRebind(toks):
     component = toks[0]
     assert(component is not None)

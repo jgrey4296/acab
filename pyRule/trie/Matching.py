@@ -16,7 +16,6 @@ def test_betas(node, comps, data):
     """ Run a beta tests against a retrieved value, with supplied bindings """
     return all([COMP_LOOKUP[x.op](node._value, data[x.bind.value]) for x in comps])
 
-
 def exclusion_matches(a, b):
     """ Compare the EXOP of a node, with whether that exop
     is in the children of the other node/parent """
@@ -29,7 +28,6 @@ def exclusion_matches(a, b):
                                                    b.is_exclusive(), str(b)))
         logging.debug("Mismatch EX num")
     return result
-
 
 def non_bind_value_match(a, b, betas, regexs, data):
     """ Compare two values without caring about binding """
@@ -76,7 +74,6 @@ def create_new_bindings(a, b, alphas, betas, regexs, data):
                                                  data,
                                                  preupdate=(a._value, x._value)))
     return output
-
 
 def match_rule(testComponent, node, data):
     """ Retrieve a meta-leaf rule from a node """

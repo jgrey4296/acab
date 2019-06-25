@@ -37,7 +37,6 @@ class TrieEngine(EngineBase):
     def __init__(self, path=None, init=None):
         super().__init__(Trie, path=path, init=init)
 
-
     def load_file(self, filename):
         """ Given a filename, read it, and interpret it as an EL DSL string """
         assert(isinstance(filename, str))

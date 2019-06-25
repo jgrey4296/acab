@@ -8,8 +8,6 @@ import IPython
 from pyRule.utils import EXOP, Bind
 from .Node import Node
 
-
-
 #UTILITIES
 logging = root_logger.getLogger(__name__)
 pp.ParserElement.setDefaultWhitespaceChars(' \t\r')

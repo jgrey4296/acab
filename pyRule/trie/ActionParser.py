@@ -76,8 +76,6 @@ action_definition = ACT_MACRO + OPAR \
                     + sLn + end
 
 
-
-
 #parse actions
 action.setParseAction(build_action)
 actionMacroUse.setParseAction(build_macro_use)

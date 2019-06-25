@@ -132,7 +132,6 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertEqual("".join([str(x) for x in result._name]), ".a.test.rule")
             self.assertTrue(all(x in result._tags for x in ["blah","bloo","blee"]))
 
-
       def test_fact_str_equal(self):
             rules = [ ".a.rule:\nend",
                       ".a.rule:\n\t.a.b.c?\n\nend",

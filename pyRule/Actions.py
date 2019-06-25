@@ -55,7 +55,6 @@ ACTS_REVERSE_LOOKUP = {
 
 class Action:
     """ The Core Action Class, holds an operator,  and a list of values """
-
     def __init__(self, op, values, type=None):
         """ Create an action with an operator and values """
         assert(isinstance(op, (ACTS, str)))
@@ -109,7 +108,6 @@ class Action:
         if self._op not in ACTS_LOOKUP and not self.is_custom():
             raise Exception("Unrecognised Action: {}".format(self._op))
 
-
     def get_values(self, data):
         """ Output a list of bindings from this action """
         output = []
@@ -127,7 +125,6 @@ class ActionMacro:
     """ Storage for a sequence of actions to take, separate from a rule,
     so it can be expanded into multiple rules.
     """
-
     def __init__(self, name, params, actions):
         assert(isinstance(name, ACTMACRONAME))
         assert(isinstance(params, list))
@@ -135,7 +132,6 @@ class ActionMacro:
         self._name = name
         self._params = params
         self._actions = actions
-
 
     def expandBindings(self, bindings):
         """ Expand the macro  out based on the bindings passed in """
@@ -148,7 +144,6 @@ class ActionMacro:
 
 class ActionMacroUse:
     """ The counterpart to an ActionMacro, denotes where to expand a macro into """
-
     def __init__(self, name, params):
         assert(isinstance(name, ACTMACRONAME))
         assert(isinstance(params, list))

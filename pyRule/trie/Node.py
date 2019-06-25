@@ -106,7 +106,6 @@ class Node:
         # { bindNode : [ options ] }
         raise Exception("Unimplemented")
 
-
     def _reconstruct(self):
         """ Internal method for DFS reconstructing min fact/leaf list """
         if not self._dirty and bool(self._cached):
@@ -126,7 +125,6 @@ class Node:
         self._dirty = False
         self._cached = leaves
         return leaves
-
 
     def root_str(self):
         """ Return a set of EL strings, treating this Node as the Root """
@@ -205,7 +203,6 @@ class Node:
 
             return ",\n".join(finals)
 
-
     def copy(self):
         assert(not bool(self._children))
         #todo: deeper copy
@@ -255,7 +252,6 @@ class Node:
         else:
             return self._children[copied._value]
 
-
     def get(self, fact):
         """ Retrieve a Node from this Node """
         assert(isinstance(fact, Node))
@@ -277,7 +273,6 @@ class Node:
         """ Get the Number of Children of this Node """
         return len(self._children)
 
-
     def bind(self, data):
         """ Annotate the Node with a Meta-Bind Evaluation """
         if self.get_meta_eval(util.META_OP.BIND) is False:
@@ -287,12 +282,10 @@ class Node:
             copied._bind_to_value(data)
             return copied
 
-
     def _bind_to_value(self, data):
         """ Set the Nodes value to be one retrieved from passed in bindings """
         assert(self._value in data)
         self._value = data[self._value]
-
 
     def split_tests(self):
         """ Split tests into (alphas, betas, regexs) """
