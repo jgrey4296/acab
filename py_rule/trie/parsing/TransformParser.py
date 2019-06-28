@@ -4,7 +4,7 @@ import pyparsing as pp
 import IPython
 import py_rule.utils as util
 from py_rule.abstract.transforms import TROP, SelectionTransform, OperatorTransform, Transform, TransformOp
-from .FactParser import COMMA, BIND, PARAM_CORE, N, param_fact_string, NG, VALBIND
+from .FactParser import COMMA, PARAM_CORE, N, param_fact_string, NG, VALBIND
 from .QueryParser import OPAR, CPAR, REGEX
 
 logging = root_logger.getLogger(__name__)

@@ -1,7 +1,7 @@
 """ Parser to query rule structure """
 import logging as root_logger
 import pyparsing as pp
-from .FactParser import COMMA, VALBIND, BIND, COLON, VALUE
+from .FactParser import COMMA, VALBIND, COLON, VALUE
 from .RuleParser import tagList
 from .QueryParser import COMP_Internal, QMARK, NOT
 
@@ -27,7 +27,7 @@ ruleTest = pp.Or([ tagList,
 # $x.clause[<4]
 # $x.action
 
-ruleQuery = op(NOT) + BIND + DOT + ident + OBRAK + ruleTest + CBRAK
+ruleQuery = op(NOT) + VALBIND + DOT + ident + OBRAK + ruleTest + CBRAK
 
 
 def parseString(inString):

@@ -68,19 +68,19 @@ REGEX.setParseAction(lambda toks: toks[0][1:-1])
 #TODO: add comparison features for testing rule components
 #ie: has tag, has penumbral conditions,
 #has penumbral actions
-ruleBind = META + BIND
+ruleBind = META + PARAM_CORE(end=True)
 
 comp_or_typedef = pp.Or([N("comp", COMP_Internal), N("typedec", TYPEDEC_CORE), N("rulebind", ruleBind)])
-comparison = comp_or_typedef + op(pp.OneOrMore(COMMA + comp_or_typedef))
-comparison.setParseAction(build_constraint_list)
+constraints = comp_or_typedef + op(pp.OneOrMore(COMMA + comp_or_typedef))
+constraints.setParseAction(build_constraint_list)
 
 assignment = BIND + COLON + param_fact_string
 assignmentList = assignment + pp.ZeroOrMore(COMMA + assignment)
 fallback = DOUBLEBAR + assignmentList
 
 #core component of a query, a modified param_fact_string
-QueryCore = PARAM_CORE(comparison)
-QueryCore_end = PARAM_CORE(comparison, end=True)
+QueryCore = PARAM_CORE(constraints)
+QueryCore_end = PARAM_CORE(constraints, end=True)
 
 #Core Query Chain
 clause = op(NOT) + N("main_clause", pp.ZeroOrMore(QueryCore) + QueryCore_end) \

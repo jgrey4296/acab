@@ -39,7 +39,7 @@ opLn = s(op(pp.LineEnd()))
 HASH = s(pp.Literal('#'))
 emptyLine = s(pp.OneOrMore(pp.lineEnd))
 
-ruleName = FP.N("rulename", FP.param_fact_string.copy())
+ruleName = FP.N("rulename", FP.param_fact_string)
 tagName = HASH + FP.NAME
 
 tagList = FP.N("tags", tagName + pp.ZeroOrMore(FP.COMMA + tagName) + emptyLine)
