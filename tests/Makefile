@@ -1,8 +1,4 @@
-all: wme trie parser engine
-
-
-wme:
-	python -m unittest wme_tests.py -v
+all: trie parser engine
 
 trie:
 	python -m unittest trie_fb_tests.py -v

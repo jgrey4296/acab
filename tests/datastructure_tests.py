@@ -1,7 +1,7 @@
 import unittest
 import logging
 from test_context import pyRule
-from pyRule.datastructures import Cycle, Game, TimeSpaceTree
+from pyRule.datastructures import Game, TimeSpaceTree
 
 
 class DataStructures_Tests(unittest.TestCase):
@@ -13,13 +13,6 @@ class DataStructures_Tests(unittest.TestCase):
         return 1
 
     #----------
-    def test_cycle_init(self):
-        self.assertIsNotNone(Cycle)
-        aCycle = Cycle([])
-        self.assertIsNotNone(aCycle)
-        self.assertIsInstance(aCycle, Cycle)
-        self.assertEqual(len(aCycle), 0)
-
     def test_game_init(self):
         self.assertIsNotNone(Game)
         aGame = Game()
@@ -35,20 +28,6 @@ class DataStructures_Tests(unittest.TestCase):
         self.assertIsNotNone(aTSTree)
         self.assertIsInstance(aTSTree, TimeSpaceTree)
 
-
-    def test_cycle_simple(self):
-        c = Cycle(list("abcd"))
-        self.assertEqual(len(c), 4)
-        self.assertEqual(c.current(), "a")
-        self.assertEqual(c.current(), "a")
-        c.increment()
-        self.assertEqual(c.current(), "b")
-        c.increment()
-        self.assertEqual(c.current(), "c")
-        self.assertEqual(c(), "c")
-        self.assertEqual(c(), "d")
-        self.assertEqual(c(), "a")
-        self.assertEqual(len(c), 4)
 
     def test_simple_game(self):
         g = Game(players=1, moves=2, turns=1, preconditions=None)

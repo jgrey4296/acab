@@ -1,9 +1,9 @@
 import unittest
 import logging
-from test_context import pyRule
-from pyRule.trie import TransformParser as TP
-from pyRule import Transforms
-from pyRule.utils import Bind
+from test_context import py_rule
+from py_rule.trie.parsing import TransformParser as TP
+from py_rule.abstract import transforms
+from py_rule.utils import Bind
 
 class Trie_Transform_Parser_Tests(unittest.TestCase):
 
@@ -17,126 +17,109 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
       #use testcase snippets
       def test_basic_transform_core(self):
             result = TP.transform_core.parseString('$x + 20')[0]
-            self.assertIsInstance(result, Transforms.TransformComponent)
-            self.assertEqual(result.op, Transforms.TROP.ADD)
-            self.assertIsInstance(result.source, Bind)
-            self.assertEqual(result.source.value, 'x')
-            self.assertEqual(result.val, 20)
-            self.assertIsNone(result.bind)
-            self.assertIsNone(result.rebind)
+            self.assertIsInstance(result, transforms.OperatorTransform)
+            self.assertIsInstance(result._op, transforms.TransformOp)
+            self.assertEqual(len(result._params), 2)
 
       def test_basic_transform_core_rebind(self):
             result = TP.transform_core.parseString('$y * 20 -> $z')[0]
-            self.assertIsInstance(result, Transforms.TransformComponent)
-            self.assertEqual(result.op, Transforms.TROP.MUL)
-            self.assertEqual(result.source.value, 'y')
-            self.assertEqual(result.val, 20)
-            self.assertIsNone(result.bind)
-            self.assertIsNotNone(result.rebind)
-            self.assertEqual(result.rebind.value, 'z')
-
-      def test_basic_transform_core_bind(self):
-            result = TP.transform_core.parseString('$y * $z')[0]
-            self.assertIsNotNone(result.bind)
-            self.assertIsNone(result.val)
-            self.assertEqual(result.bind.value, 'z')
-
+            self.assertIsInstance(result, transforms.OperatorTransform)
+            self.assertIsInstance(result._op, transforms.TransformOp)
+            self.assertEqual(result._params[0]._value, "y")
+            self.assertTrue(result._params[0]._data['bind'])
+            self.assertEqual(result._params[1]._value, 20)
+            self.assertIsNotNone(result._rebind)
+            self.assertEqual(result._rebind._value, 'z')
 
       def test_basic_transform(self):
             result = TP.parseString('$x + 20, $y + 5')
-            self.assertIsInstance(result, Transforms.Transform)
-            self.assertEqual(len(result.components), 2)
+            self.assertIsInstance(result, transforms.Transform)
+            self.assertEqual(len(result._components), 2)
 
 
       def test_unary_operator(self):
             result = TP.parseString('-$x')
-            self.assertIsInstance(result, Transforms.Transform)
-            self.assertEqual(len(result.components), 1)
-            self.assertEqual(result.components[0].op, Transforms.TROP.NEG)
-            self.assertEqual(result.components[0].source.value, "x")
-            self.assertIsNone(result.components[0].val)
-            self.assertIsNone(result.components[0].bind)
-            self.assertIsNone(result.components[0].rebind)
+            self.assertIsInstance(result, transforms.Transform)
+            self.assertEqual(len(result._components), 1)
+            self.assertIsInstance(result._components[0]._op, transforms.TransformOp)
+            self.assertEqual(result._components[0]._params[0]._value, "x")
+            self.assertIsNone(result._components[0]._rebind)
 
       def test_unary_rebind(self):
             result = TP.parseString('-$x -> $y')
-            self.assertIsInstance(result, Transforms.Transform)
-            self.assertEqual(len(result.components), 1)
-            self.assertEqual(result.components[0].op, Transforms.TROP.NEG)
-            self.assertEqual(result.components[0].source.value, "x")
-            self.assertIsNone(result.components[0].val)
-            self.assertIsNone(result.components[0].bind)
-            self.assertIsNotNone(result.components[0].rebind)
-            self.assertEqual(result.components[0].rebind.value, 'y')
+            self.assertIsInstance(result, transforms.Transform)
+            self.assertEqual(len(result._components), 1)
+            self.assertIsInstance(result._components[0]._op, transforms.TransformOp)
+            self.assertEqual(result._components[0]._params[0]._value, "x")
+            self.assertIsNotNone(result._components[0]._rebind)
+            self.assertEqual(result._components[0]._rebind._value, 'y')
 
       def test_binary_operator(self):
             result = TP.parseString('$x + 20')
-            self.assertIsInstance(result, Transforms.Transform)
-            self.assertEqual(len(result.components), 1)
-            self.assertEqual(result.components[0].op, Transforms.TROP.ADD)
-            self.assertEqual(result.components[0].source.value, 'x')
-            self.assertEqual(result.components[0].val, 20)
-            self.assertIsNone(result.components[0].bind)
-            self.assertIsNone(result.components[0].rebind)
+            self.assertIsInstance(result, transforms.Transform)
+            self.assertEqual(len(result._components), 1)
+            self.assertIsInstance(result._components[0]._op, transforms.TransformOp)
+            self.assertEqual(result._components[0]._params[0]._value, 'x')
+            self.assertEqual(result._components[0]._params[1]._value, 20)
+            self.assertIsNone(result._components[0]._rebind)
 
       def test_binary_rebind(self):
             result = TP.parseString('$x + 20 -> $y')
-            self.assertIsInstance(result, Transforms.Transform)
-            self.assertEqual(len(result.components), 1)
-            self.assertEqual(result.components[0].op, Transforms.TROP.ADD)
-            self.assertEqual(result.components[0].source.value, 'x')
-            self.assertEqual(result.components[0].val, 20)
-            self.assertIsNone(result.components[0].bind)
-            self.assertEqual(result.components[0].rebind.value, 'y')
+            self.assertIsInstance(result, transforms.Transform)
+            self.assertEqual(len(result._components), 1)
+            self.assertIsInstance(result._components[0]._op, transforms.TransformOp)
+            self.assertEqual(result._components[0]._params[0]._value, 'x')
+            self.assertEqual(result._components[0]._params[1]._value, 20)
+            self.assertEqual(result._components[0]._rebind._value, 'y')
 
       def test_ternary_operator(self):
             result = TP.parseString('$x ~= /blah/ $a')
-            self.assertIsInstance(result, Transforms.Transform)
-            self.assertEqual(len(result.components), 1)
-            self.assertEqual(result.components[0].op, Transforms.TROP.REGEX)
-            self.assertEqual(result.components[0].source.value, 'x')
-            self.assertEqual(result.components[0].val,'blah')
-            self.assertEqual(result.components[0].bind.value, 'a')
-            self.assertIsNone(result.components[0].rebind)
+            self.assertIsInstance(result, transforms.Transform)
+            self.assertEqual(len(result._components), 1)
+            self.assertIsInstance(result._components[0]._op, transforms.TransformOp)
+            self.assertEqual(result._components[0]._params[0]._value, 'x')
+            self.assertEqual(result._components[0]._params[1],'blah')
+            self.assertEqual(result._components[0]._params[2]._value, 'a')
+            self.assertIsNone(result._components[0]._rebind)
 
       def test_ternary_operator_rebind(self):
             result = TP.parseString('$x ~= /blah/ $awef -> $q')
-            self.assertIsInstance(result, Transforms.Transform)
-            self.assertEqual(len(result.components), 1)
-            self.assertEqual(result.components[0].op, Transforms.TROP.REGEX)
-            self.assertEqual(result.components[0].source.value, 'x')
-            self.assertEqual(result.components[0].val,'blah')
-            self.assertEqual(result.components[0].rebind.value, 'q')
-            self.assertEqual(result.components[0].bind.value, 'awef')
+            self.assertIsInstance(result, transforms.Transform)
+            self.assertEqual(len(result._components), 1)
+            self.assertIsInstance(result._components[0]._op, transforms.TransformOp)
+            self.assertEqual(result._components[0]._params[0]._value, 'x')
+            self.assertEqual(result._components[0]._params[1],'blah')
+            self.assertEqual(result._components[0]._params[2]._value, 'awef')
+            self.assertEqual(result._components[0]._rebind._value, 'q')
 
 
       def test_binary_rand_operator(self):
             result = TP.parseString('$x <-> $y')
-            self.assertEqual(len(result.components), 1)
-            self.assertEqual(result.components[0].op, Transforms.TROP.RAND)
+            self.assertEqual(len(result._components), 1)
+            self.assertIsInstance(result._components[0]._op, transforms.RandOp)
 
       def test_unary_round(self):
             result = TP.parseString('_$x')
-            self.assertEqual(result.components[0].op, Transforms.TROP.ROUND)
+            self.assertIsInstance(result._components[0]._op, transforms.RoundOp)
 
 
       def test_selection_transform_all(self):
             result = TP.select.parseString('select _ - _')[0]
-            self.assertIsInstance(result, Transforms.SelectionTransform)
-            self.assertEqual(result.lBound, Transforms.TROP.SELECT_ALL)
-            self.assertEqual(result.uBound, Transforms.TROP.SELECT_ALL)
+            self.assertIsInstance(result, transforms.SelectionTransform)
+            self.assertEqual(result._lBound[0]._value, "_")
+            self.assertEqual(result._uBound[0]._value, "_")
 
       def test_selection_transform_bounded(self):
             result = TP.select.parseString('select 0 - 2')[0]
-            self.assertIsInstance(result, Transforms.SelectionTransform)
-            self.assertEqual(result.lBound, 0)
-            self.assertEqual(result.uBound, 2)
+            self.assertIsInstance(result, transforms.SelectionTransform)
+            self.assertEqual(result._lBound[0]._value, 0)
+            self.assertEqual(result._uBound[0]._value, 2)
 
       def test_selection_transform_variable(self):
             result = TP.select.parseString('select $x - $y')[0]
-            self.assertIsInstance(result, Transforms.SelectionTransform)
-            self.assertEqual(result.lBound.value, 'x')
-            self.assertEqual(result.uBound.value, 'y')
+            self.assertIsInstance(result, transforms.SelectionTransform)
+            self.assertEqual(result._lBound[0]._value, 'x')
+            self.assertEqual(result._uBound[0]._value, 'y')
 
       def test_fact_str_equal(self):
             transforms = ["$x + 20", "$x + 20, $y + 5",
