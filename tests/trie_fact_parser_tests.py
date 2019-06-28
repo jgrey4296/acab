@@ -5,6 +5,7 @@ from test_context import py_rule
 import py_rule.trie as T
 import py_rule.trie.parsing.FactParser as FP
 from py_rule.trie.nodes.trie_node import TrieNode
+from py_rule.abstract.sentence import Sentence
 import py_rule.utils as util
 import IPython
 
@@ -25,16 +26,16 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
 
     def test_parseString(self):
         result = FP.parseString('a.b.c')[0]
-        self.assertIsInstance(result, list)
+        self.assertIsInstance(result, Sentence)
         self.assertTrue(all([isinstance(x, TrieNode) for x in result]))
-        self.assertEqual("".join([str(x) for x in result]), 'abc')
+        self.assertEqual(str(result), "a.b.c")
         self.assertTrue(all([x._data['op'] == util.EXOP.DOT for x in result]))
 
     def test_parseStrings(self):
         result = FP.parseString('a.b.c,\n b.c.d')
         self.assertIsInstance(result, list)
         self.assertEqual(len(result), 2)
-        self.assertTrue(all([isinstance(x, list) for x in result]))
+        self.assertTrue(all([isinstance(x, Sentence) for x in result]))
 
     def test_param_fact_string(self):
         result = FP.param_fact_string.parseString('a.b.$x')[0]
@@ -84,36 +85,33 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertTrue(result[0]._data['bind'])
 
 
-    # def test_fact_str_equal(self):
-    #     actions = ["a.b.c",
-    #                "a.b!c",
-    #                'a.b."a string".c',
-    #                'a.b!"a string"!c',
-    #                'a.b.$x',
-    #                'a!$x!y']
-    #     parsed = [FP.parseString(x)[0] for x in actions]
-    #     zipped = zip(actions, parsed)
-    #     for a,p in zipped:
-    #         pAsStr = "".join([str(x) for x in p])
-    #         self.assertEqual(a,pAsStr)
+    def test_fact_str_equal(self):
+        actions = ["a.b.c",
+                   "a.b!c",
+                   'a.b."a string".c',
+                   'a.b!"a string"!c',
+                   'a.b.$x',
+                   'a!$x!y']
+        parsed = [FP.parseString(x)[0] for x in actions]
+        zipped = zip(actions, parsed)
+        for a,p in zipped:
+            self.assertEqual(a,str(p))
 
-    # def test_leading_bind_str_equal(self):
-    #     actions = ['$x.a.b.c', '$y!b.c', '$x.$y!$z']
-    #     parsed = [FP.parseString(x)[0] for x in actions]
-    #     zipped = zip(actions, parsed)
-    #     for a,p in zipped:
-    #         pAsStr = "".join([str(x) for x in p])
-    #         self.assertEqual(a, pAsStr)
+    def test_leading_bind_str_equal(self):
+        actions = ['$x.a.b.c', '$y!b.c', '$x.$y!$z']
+        parsed = [FP.parseString(x)[0] for x in actions]
+        zipped = zip(actions, parsed)
+        for a,p in zipped:
+            self.assertEqual(a, str(p))
 
 
-    # def test_binding_expansion(self):
-    #     bindings = { "a" : FP.parseString(".blah")[0], "b": FP.parseString(".bloo")[0] }
-    #     result = FP.parseString('$a.b.$b!c')[0]
-    #     expanded = util.expandFact(result, bindings)
-    #     asString = "".join([str(x) for x in expanded if not x.is_root()])
-    #     self.assertEqual(asString, ".blah.b.bloo!c")
-
-
+    def test_binding_expansion(self):
+        bindings = { "a" : FP.parseString("blah")[0],
+                     "b": FP.parseString("bloo")[0] }
+        result = FP.parseString('$a.b.$b!c')[0]
+        expanded = util.expandFact(result, bindings)
+        asString = str(expanded)
+        self.assertEqual(asString, "blah.b.bloo!c")
 
 if __name__ == "__main__":
     LOGLEVEL = logging.INFO

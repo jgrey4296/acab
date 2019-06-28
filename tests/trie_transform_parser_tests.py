@@ -3,7 +3,6 @@ import logging
 from test_context import py_rule
 from py_rule.trie.parsing import TransformParser as TP
 from py_rule.abstract import transforms
-from py_rule.utils import Bind
 
 class Trie_Transform_Parser_Tests(unittest.TestCase):
 
@@ -106,20 +105,20 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
       def test_selection_transform_all(self):
             result = TP.select.parseString('select _ - _')[0]
             self.assertIsInstance(result, transforms.SelectionTransform)
-            self.assertEqual(result._lBound[0]._value, "_")
-            self.assertEqual(result._uBound[0]._value, "_")
+            self.assertEqual(result._lBound._value, "_")
+            self.assertEqual(result._uBound._value, "_")
 
       def test_selection_transform_bounded(self):
             result = TP.select.parseString('select 0 - 2')[0]
             self.assertIsInstance(result, transforms.SelectionTransform)
-            self.assertEqual(result._lBound[0]._value, 0)
-            self.assertEqual(result._uBound[0]._value, 2)
+            self.assertEqual(result._lBound._value, 0)
+            self.assertEqual(result._uBound._value, 2)
 
       def test_selection_transform_variable(self):
             result = TP.select.parseString('select $x - $y')[0]
             self.assertIsInstance(result, transforms.SelectionTransform)
-            self.assertEqual(result._lBound[0]._value, 'x')
-            self.assertEqual(result._uBound[0]._value, 'y')
+            self.assertEqual(result._lBound._value, 'x')
+            self.assertEqual(result._uBound._value, 'y')
 
       def test_fact_str_equal(self):
             transforms = ["$x + 20", "$x + 20, $y + 5",
@@ -127,8 +126,8 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
                           "$x + 20 -> $y",
                           "$Blah + $bloo -> $BLEE",
                           "-$x", "_$x", "-$x -> $y",
-                          "_$x -> $y", "$x ~= /blah/ $a",
-                          "$x ~= /aw+/ $b -> $blah",
+                          "_$x -> $y", "$x ~= /blah/$a",
+                          "$x ~= /aw+/$b -> $blah",
                           "$x + 2d5",
                           "select 0 - 2",
                           "select _ - _",

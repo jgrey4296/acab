@@ -4,8 +4,8 @@ from enum import Enum
 from random import uniform, sample, randint
 from math import floor
 from re import sub
+from py_rule.trie.nodes.trie_node import TrieNode
 import IPython
-from py_rule.utils import Bind
 
 logging = root_logger.getLogger(__name__)
 
@@ -130,6 +130,7 @@ class SelectOp(TransformOp):
     def __call__(self, a, b, data):
         raise Exception("unimplemented")
 
+
 class TransformComponent:
     """ Superclass of Transforms. Holds an Operator """
     def __init__(self, op, num_params=2):
@@ -144,19 +145,8 @@ class SelectionTransform(TransformComponent):
         self._uBound = uBound
 
     def __repr__(self):
-        if self.lBound is TROP.SELECT_ALL:
-            lbound = "_"
-        elif isinstance(self.lBound, Bind):
-            lbound = repr(self.lBound)
-        else:
-            lbound = str(self.lBound)
-
-        if self.uBound is TROP.SELECT_ALL:
-            ubound = "_"
-        elif isinstance(self.uBound, Bind):
-            ubound = repr(self.uBound)
-        else:
-            ubound = str(self.uBound)
+        lbound = self._lBound.opless_print()
+        ubound = self._uBound.opless_print()
 
         return "select {} - {}".format(lbound, ubound)
 
@@ -173,9 +163,9 @@ class OperatorTransform(TransformComponent):
 
     def __str__(self):
         op = str(self._op)
-        source = [repr(x) for x in self._params]
+        source = [x.opless_print() if isinstance(x, TrieNode) else str(x) for x in self._params]
         if self._rebind is not None:
-            rebind = " -> {}".format(str(self._rebind))
+            rebind = " -> {}".format(self._rebind.opless_print())
         else:
             rebind = ""
 
@@ -231,6 +221,15 @@ class Transform:
 
     def __len__(self):
         return len(self._components)
+
+    def __str__(self):
+        if self._selection is not None:
+            sel = str(self._selection)
+        else:
+            sel = ""
+
+        return "{}{}".format(sel, ", ".join([str(x) for x in self._components]))
+
 
     def __repr__(self):
         if self._selection is not None:

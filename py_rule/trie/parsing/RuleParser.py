@@ -13,7 +13,7 @@ pp.ParserElement.setDefaultWhitespaceChars(' \t\r')
 logging = root_logger.getLogger(__name__)
 
 def build_rule(toks):
-    name = toks.rulename[:]
+    name = toks.rulename[0]
     if 'conditions' in toks:
         c = toks.conditions[0]
     else:
@@ -27,7 +27,7 @@ def build_rule(toks):
     else:
         a = []
     if 'tags' in toks:
-        tags = toks.tags[:]
+        tags = [x[1] for x in toks.tags]
     else:
         tags = []
     return TrieRule(c, a, transform=t, name=name, tags=tags)
@@ -39,7 +39,7 @@ opLn = s(op(pp.LineEnd()))
 HASH = s(pp.Literal('#'))
 emptyLine = s(pp.OneOrMore(pp.lineEnd))
 
-ruleName = FP.N("rulename", FP.param_fact_string)
+ruleName = FP.NG("rulename", FP.param_fact_string)
 tagName = HASH + FP.NAME
 
 tagList = FP.N("tags", tagName + pp.ZeroOrMore(FP.COMMA + tagName) + emptyLine)

@@ -1,5 +1,6 @@
 """ Simple comparison functions to be used in rules """
 import logging as root_logger
+import IPython
 from enum import Enum
 import re
 logging = root_logger.getLogger(__name__)
@@ -75,32 +76,32 @@ class Comparison:
     """ Describe a Comparison of values and maybe a binding """
 
     def __init__(self, op, value):
-        self.op = CompOp.op_list[op]
-        self.value = value
+        self._op = CompOp.op_list[op]
+        self._value = value
 
     def copy(self):
-        return Comparison(self.op, self.value)
+        return Comparison(self._op, self._value)
 
     def is_alpha_test(self):
-        return self.value is not None
+        return self._value is not None
 
     def is_regex_test(self):
-        return self.op is COMP.RE
+        return self._op is CompOp.op_list["~="]
 
     def __str__(self):
         if self.is_regex_test():
-            val = "/{}/".format(self.value)
+            val = "/{}/".format(self._value)
         else:
-            val = self.value
+            val = self._value.opless_print()
 
-        retValue = "{} {}".format(str(self.op), str(val))
+        retValue = "{} {}".format(str(self._op), val)
         return retValue
 
     def __repr__(self):
         if self.is_regex_test():
-            val = "/{}/".format(self.value)
+            val = "/{}/".format(self._value)
         else:
-            val = self.value
+            val = self._value
 
-        retValue = "Comparison({} {})".format(repr(self.op), repr(val))
+        retValue = "Comparison({} {})".format(repr(self._op), repr(val))
         return retValue

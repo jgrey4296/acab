@@ -16,8 +16,17 @@ class TrieNode:
     def __str__(self):
         """ Usable output """
         val = str(self._value)
+        if self._data['value_type'] == "string":
+            val = '"{}"'.format(val)
+        elif self._data['value_type'] == 'float':
+            val.replace(".", "d")
+
         if 'bind' in self._data and self._data['bind']:
             val = "$" + val
+
+        if 'constraints' in self._data:
+            constraints = ", ".join(str(x) for x in self._data['constraints'])
+            val += "({})".format(constraints)
 
         if 'op' in self._data:
             val += utils.EXOP_lookup[self._data['op']]
@@ -59,3 +68,22 @@ class TrieNode:
 
     def clear_children(self):
         self._children = {}
+
+    def opless_print(self):
+        val = str(self._value)
+        if self._data['value_type'] == "string":
+            val = '"{}"'.format(val)
+        elif self._data['value_type'] == 'float':
+            val = val.replace(".", "d")
+
+        if 'bind' in self._data and self._data['bind']:
+            val = "$" + val
+        if 'constraints' in self._data:
+            constraints = ", ".join(str(x) for x in self._data['constraints'])
+            val += "({})".format(constraints)
+        return val
+
+    def copy(self):
+        newnode = TrieNode(self._value, self._data)
+        newnode._children.update(self._children)
+        return newnode

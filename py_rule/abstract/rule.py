@@ -6,6 +6,7 @@ import IPython
 import py_rule.utils as util
 import py_rule.abstract.transforms as T
 import py_rule.abstract.actions as A
+from py_rule.abstract.sentence import Sentence
 from .query import Query
 
 logging = root_logger.getLogger(__name__)
@@ -34,7 +35,7 @@ class Rule:
             self._tags = set()
 
     def __str__(self):
-        nameStr = "".join([str(x) for x in self._name])
+        nameStr = str(self._name)
         if bool(self._tags):
             tagsStr = "\t" + ", ".join(sorted(["#{}".format(x) for x in self._tags])) + "\n\n"
         else:
@@ -56,7 +57,6 @@ class Rule:
                                          queryStr,
                                          transformStr,
                                          actionsStr)
-
 
     def __repr__(self):
         """ Create a representation of the rule. Not implementation specific """
@@ -82,6 +82,7 @@ class Rule:
                                          queryStr,
                                          transformStr,
                                          actionsStr)
+
 
     def has_tag(self, t):
         return t in self._tags

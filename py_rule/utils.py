@@ -2,6 +2,7 @@
 from enum import Enum
 from collections import namedtuple
 from random import choice
+from py_rule.abstract.sentence import Sentence
 import IPython
 
 #Trie exclusion operator:
@@ -26,24 +27,13 @@ META_OP = Enum("Meta Ops", "BIND COMP RULE RULEBIND")
 #for use in query clauses, and actions
 MUTABLE = Enum('Mutablility', "CORE PENUMBRA")
 
-#Basic Data Structures
-class Bind:
-    """ Simple holder to designate a binding action """
-    #pylint: disable=too-few-public-methods
-    def __init__(self, v):
-        self.value = v
-
-    def __repr__(self):
-        return "$" + self.value
-
-
 def expandFact(factString, bindings):
     """ Given a list of fact components, and a dictionary of bindings,
     reify the fact, using those bindings.
     ie: .a.b.$x with {x: blah} => .a.b.blah
     """
     assert(isinstance(bindings, dict))
-    assert(isinstance(factString, list))
+    assert(isinstance(factString, Sentence))
     output = []
 
     for x in factString:
@@ -54,18 +44,22 @@ def expandFact(factString, bindings):
             output.append(x)
             continue
 
-        if isinstance(retrieved, list):
-            output += retrieved
-        elif retrieved._data['bind']:
+        if isinstance(retrieved, Sentence) and len(retrieved) > 1:
+            output += retrieved._words
+            continue
+        else:
+            retrieved = retrieved._words[0]
+
+        if retrieved._data['bind']:
             copyNode = x.copy()
-            copyNode._value = retrieved.value
+            copyNode._value = retrieved._value
             output.append(copyNode)
         else:
             copyNode = x.copy()
-            copyNode._value = retrieved
+            copyNode._value = retrieved._value
             copyNode._data['bind'] = False
             output.append(copyNode)
-    return output
+    return Sentence(output)
 
 def build_rebind_dict(formal, usage):
     """ Build a dictionary for action macro expansion,

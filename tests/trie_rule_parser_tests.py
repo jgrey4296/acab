@@ -24,8 +24,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             result = RP.parseString("a.rule:\nend")
             self.assertEqual(len(result), 1)
             self.assertIsInstance(result[0], Rule)
-            self.assertEqual("".join([str(x) for x in result[0]._name]),
-                             "arule")
+            self.assertEqual(str(result[0]._name), "a.rule")
 
     def test_multi_empty_rules(self):
             result = RP.parseString("a.rule:\nend\n\na.second.rule:\nend")
@@ -122,7 +121,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
         result = RP.parseString("a.rule:\n$x?\n\nend")[0]
         expanded = result.expandBindings(bindings)
         self.assertEqual(str(expanded),
-                         "a.rule.:\n\ta.b.c.?\n\nend")
+                         "a.rule:\n\ta.b.c?\n\nend")
 
     def test_rule_binding_expansion(self):
         bindings = { "x" : FP.parseString('a.b.c')[0],
@@ -136,7 +135,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
     def test_rule_tags(self):
             result = RP.parseString('a.test.rule:\n#blah, #bloo, #blee\n\na.b.c?\n\n+(a.b.c)\nend')[0]
             self.assertIsInstance(result, Rule)
-            self.assertEqual("".join([str(x) for x in result._name]), "a.test.rule")
+            self.assertEqual(str(result._name), "a.test.rule")
             self.assertTrue(all(x in result._tags for x in ["blah","bloo","blee"]))
 
     def test_fact_str_equal(self):

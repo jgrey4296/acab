@@ -26,8 +26,8 @@ def buildTernaryTransformComponent(toks):
     return OperatorTransform(toks.op, (toks.source, toks.regex, toks.replace))
 
 def buildSelection(toks):
-    bound1 = toks.source[:]
-    bound2 = toks.sub[:]
+    bound1 = toks.source
+    bound2 = toks.sub
     return SelectionTransform(bound1, bound2)
 
 def addRebind(toks):

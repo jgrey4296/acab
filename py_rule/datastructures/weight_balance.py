@@ -39,7 +39,6 @@ class WeightBalance:
         #   could be linspace, could be exponential, etc
         self.dist = dist
 
-
     def __call__(self):
         """ Set the balancing algorithm going """
         self.aggregate()
@@ -51,7 +50,6 @@ class WeightBalance:
         ys = self.dist(self.range[0], self.range[1], len(xs))
         #todo: turn these into ranges?
         self.weights = { x : y for (x,y) in zip(xs, ys) }
-
 
     def __getitem__(self, key):
         return self.weights[self.weights[key]]
@@ -96,6 +94,7 @@ class CompWB:
     def __repr__(self):
         return "({} < {})".format(self.a, self.b)
 
+
 class CompNode:
     """ A comparison node for a RB-Tree """
     def __init__(self, k, is_lt_than=None):
@@ -112,7 +111,6 @@ class CompNode:
 
     def __eq__(self, other):
         return (other.key not in self.lt_set) and (self.key not in other.lt_set)
-
 
     def __repr__(self):
         return "Comp({} < {})".format(self.key, str(self.lt_set))

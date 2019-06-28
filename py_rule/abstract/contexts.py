@@ -17,6 +17,26 @@ class Contexts:
         #A list of (data,lastNode) tokens
         self._matches = []
 
+    def __len__(self):
+        return len(self._matches)
+
+    def __getitem__(self, key):
+        return self._matches[key][0]
+
+    def __iter__(self):
+        for x in self._matches:
+            yield x[0]
+
+    def __repr__(self):
+        if bool(self):
+            return "Context: {}".format(len(self))
+        else:
+            return "Context: False"
+
+    def __bool__(self):
+        return len(self._matches) > 0
+
+
     def _init_alt(self, startNode):
         """ Setup the initial context of no bindings
             and no wmes """
@@ -43,25 +63,6 @@ class Contexts:
         assert(len(data) == 2)
         if data[0] is not None and data[1] is not None:
             self._matches.append(data)
-
-    def __len__(self):
-        return len(self._matches)
-
-    def __getitem__(self, key):
-        return self._matches[key][0]
-
-    def __iter__(self):
-        for x in self._matches:
-            yield x[0]
-
-    def __repr__(self):
-        if bool(self):
-            return "Context: {}".format(len(self))
-        else:
-            return "Context: False"
-
-    def __bool__(self):
-        return len(self._matches) > 0
 
     def fail(self):
         """ Remove all contexts, as none are suitable """

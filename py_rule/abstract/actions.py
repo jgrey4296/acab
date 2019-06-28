@@ -6,6 +6,7 @@ along with associated enums, and IR data structures
 from collections import namedtuple
 from enum import Enum
 from py_rule import utils as util
+from py_rule.abstract.sentence import Sentence
 import IPython
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
@@ -145,11 +146,12 @@ class Action:
         """
         newValues = []
         for x in self._values:
-            if isinstance(x, list):
+            if isinstance(x, Sentence):
                 newValues.append(util.expandFact(x, bindings))
             else:
                 newValues.append(x)
         return Action(self._op, newValues)
+
 
 class ActionMacro:
     """ Storage for a sequence of actions to take, separate from a rule,

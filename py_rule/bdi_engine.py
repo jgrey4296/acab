@@ -1,8 +1,8 @@
 """ A BDI Based Architecture that utilizes the trie engine """
 from time import sleep
 import logging as root_logger
-import pyRule.trie as T
-import pyRule.utils as util
+import py_rule.trie as T
+import py_rule.utils as util
 
 logging = root_logger.getLogger(__name__)
 
@@ -52,11 +52,6 @@ class Agent:
         #initialisation of agent data
         self._engine.add(".agent.{}.state".format(name))
 
-    def add_to_assertion_queue(self, s):
-        """ Adds a fully specified string to the queue, to be asserted next tick """
-        assert(isinstance(s, (str, list)))
-        self._assertion_queue.append(s)
-
     def _assert_queue(self):
         """ Asserts each string in the queue """
         queue = self._assertion_queue
@@ -97,6 +92,9 @@ class Agent:
             turn += 1
         logging.info("Shutting Down Agent: {}".format(self._name))
 
-
+    def add_to_assertion_queue(self, s):
+        """ Adds a fully specified string to the queue, to be asserted next tick """
+        assert(isinstance(s, (str, list)))
+        self._assertion_queue.append(s)
     def num_rules(self):
         return len(self._engine)

@@ -58,7 +58,7 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
             bindings = {"x" : FP.parseString('a.b.c')[0] }
             action = AP.parseString("+($x)")[0]
             newAction = action.expandBindings(bindings)
-            self.assertEqual(str(newAction), "+(abc)")
+            self.assertEqual(str(newAction), "+(a.b.c)")
 
 
 

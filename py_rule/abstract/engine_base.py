@@ -39,11 +39,6 @@ class EngineBase:
         #pylint: disable=unused-argument,no-self-use
         raise Exception("Base Engine Stub")
 
-    def _save_state(self, data):
-        """ Copy the current string representation of the knowledge base,
-        and any associated data """
-        self._prior_states.append((str(self._knowledge_base), data))
-
     def register_action(self, name, func):
         """ Register custom actions,
         of the form def name(engine, paramsList) """
@@ -73,9 +68,26 @@ class EngineBase:
         enacted """
         self._proposed_actions = []
 
+    def tick(self, inputMessages):
+        """ A Single Tick of the Engine.
+        Receives a list of updates from the world,
+        calculates, then returns a list of output messages """
+        assert(isinstance(inputMessages, list))
+        #Assert input messages
+        #rule the rule layers
+        #return actions
+        raise Exception("Abstract Method")
+
+ 
+    def _save_state(self, data):
+        """ Copy the current string representation of the knowledge base,
+        and any associated data """
+        self._prior_states.append((str(self._knowledge_base), data))
+
     def __len__(self):
         """ The number of rules in the engine """
         return len(self._rules)
+
 
     def _run_rules(self, rule_locations=None, rule_tags=None, policy=None):
         """ Run all, or some, rules of the engine, if provided a policy,
@@ -102,7 +114,6 @@ class EngineBase:
         if should_propose_rules:
             self._perform_action_by_policy(policy)
 
-
     def _run_rule(self, rule, propose=False):
         """ Run an individual rule. if propose, then don't enact the results,
         merely store them for later selection """
@@ -125,7 +136,6 @@ class EngineBase:
 
         for data in transformed:
             self._run_actions(data, rule, propose)
-
 
     def _run_transform(self, ctx, transform):
         """ Run modifications on the bind results of a query """
@@ -205,16 +215,6 @@ class EngineBase:
             else:
                 self._perform_actions(d, r)
 
-
-    def tick(self, inputMessages):
-        """ A Single Tick of the Engine.
-        Receives a list of updates from the world,
-        calculates, then returns a list of output messages """
-        assert(isinstance(inputMessages, list))
-        #Assert input messages
-        #rule the rule layers
-        #return actions
-        raise Exception("Abstract Method")
 
     def _register_layers(self, layers):
         raise Exception("Abstract Method")

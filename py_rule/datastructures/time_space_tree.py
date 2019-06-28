@@ -25,11 +25,12 @@ class Node:
     def __len__(self):
         return self.end - self.start
 
+    def __getitem__(self, x):
+        return self.children[x]
+
     def children(self):
         return len(self.children)
 
     def verify(self):
         raise Exception("Not implemented yet")
 
-    def __getitem__(self, x):
-        return self.children[x]

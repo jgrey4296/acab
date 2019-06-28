@@ -2,6 +2,7 @@
 rule engines
 """
 from py_rule.abstract.rule import Rule
+from py_rule.abstract.sentence import Sentence
 from .parsing import FactParser as FP
 
 class TrieRule(Rule):
@@ -11,10 +12,10 @@ class TrieRule(Rule):
 
     def __init__(self, query, actions, transform=None, name=None, tags=None):
         if name is None:
-            name = FP.parseString(".rule.anon.{}".format(Rule.__count))
+            name = FP.parseString(".rule.anon.{}".format(Rule.__count))[0]
             Rule.__count += 1
         else:
-            assert(isinstance(name, list))
+            assert(isinstance(name, Sentence))
         super().__init__(query, actions, transform, name, tags)
 
 
