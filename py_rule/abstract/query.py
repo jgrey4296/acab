@@ -1,6 +1,6 @@
 """ Query: The Datastructure to hold a question to pose to the knowledgebase """
 import IPython
-from .clause import Clause
+from .sentence import Sentence
 
 class Query:
     """ A Query for the Trie Knowledge base """
@@ -11,7 +11,7 @@ class Query:
         #Each clause is a list of tests and bindings
         self._clauses = []
         for clause in clauses:
-            assert(isinstance(clause, Clause))
+            assert(isinstance(clause, Sentence))
             self._clauses.append(clause)
 
     def __len__(self):
@@ -38,7 +38,7 @@ class Query:
         pos = []
         neg = []
         for c in self._clauses:
-            if c.negated is True:
+            if c._negated is True:
                 neg.append(c)
             else:
                 pos.append(c)
