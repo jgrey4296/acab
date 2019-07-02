@@ -83,7 +83,7 @@ class Comparison:
         return Comparison(self._op, self._value)
 
     def is_alpha_test(self):
-        return self._value is not None
+        return self._value is not None and not self._value._data['bind']
 
     def is_regex_test(self):
         return self._op is CompOp.op_list["~="]
