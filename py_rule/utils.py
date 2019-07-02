@@ -5,12 +5,13 @@ from random import choice
 from py_rule.abstract.sentence import Sentence
 import IPython
 
+ROOT = "__root"
+
 #Trie exclusion operator:
-EXOP = Enum('EXOP', 'DOT EX ROOT')
+EXOP = Enum('EXOP', 'DOT EX')
 EXOP_lookup = {
     EXOP.DOT : ".",
     EXOP.EX : "!",
-    EXOP.ROOT : "||"
     }
 
 #Meta Operators.
