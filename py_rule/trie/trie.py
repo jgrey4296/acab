@@ -23,13 +23,14 @@ class Trie:
         self.node_type = node_type
 
     def __str__(self):
-        return self._root.root_str()
+        return self.print_trie()
 
     def __repr__(self):
         return "Trie: {}".format(len(self.get_nodes()))
 
     def __len__(self):
         return len(self.get_nodes(lambda x: not bool(x)))
+
 
     def query(self, path):
         current = self._root
@@ -78,6 +79,17 @@ class Trie:
         return nodes
 
     def print_trie(self):
-        leaves = self.get_nodes(lambda x: not bool(x._children))
-        leaf_paths = [x.print_path() for x in leaves]
-        return "\n".join(leaf_paths)
+
+        output = []
+        queue = [([], x) for x in self._root]
+        processed = set()
+        while bool(queue):
+            curr_path, current_node = queue.pop(0)
+            total_path = curr_path + [current_node]
+            if not bool(current_node):
+                #if leaf
+                output.append("".join([str(x) for x in curr_path] + [current_node.opless_print()]))
+            else:
+                queue += [(total_path, x) for x in current_node]
+
+        return "\n".join(output)
