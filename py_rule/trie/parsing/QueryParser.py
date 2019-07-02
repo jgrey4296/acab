@@ -3,7 +3,6 @@ import logging as root_logger
 import pyparsing as pp
 import py_rule.abstract.comparisons as C
 from py_rule.abstract.query import Query
-from py_rule.abstract.clause import Clause
 from py_rule.abstract.sentence import Sentence
 from .FactParser import COMMA, PARAM_CORE, BIND, COLON, VALUE, N, TYPEDEC_CORE, param_fact_string
 import IPython
@@ -37,9 +36,9 @@ def build_clause(toks):
     if NOT_IDEN in toks:
         if fallback_toks is not None:
             raise Exception("Fallback bindings in negated clauses don't make sense")
-        return Clause(Sentence(toks.main_clause[:]), negated=True)
+        return Sentence(toks.main_clause[:], negated=True)
     else:
-        return Clause(Sentence(toks.main_clause[:]), fallback=fallback_toks)
+        return Sentence(toks.main_clause[:], fallback=fallback_toks)
 
 
 s = pp.Suppress
