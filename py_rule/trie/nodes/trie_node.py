@@ -1,10 +1,11 @@
 import py_rule.utils as utils
+import IPython
 
 class TrieNode:
 
     @staticmethod
     def Root():
-        raise Exception("Unimplemented")
+        return TrieNode(utils.ROOT)
 
     def __init__(self, value, data=None):
         self._value = value
@@ -15,11 +16,16 @@ class TrieNode:
 
     def __str__(self):
         """ Usable output """
-        val = str(self._value)
-        if self._data['value_type'] == "string":
-            val = '"{}"'.format(val)
+        val = ""
+        if 'value_type' not in self._data:
+            val = str(self._value)
+        elif 'value_type' in self._data and self._data['value_type'] == "string":
+            val = '"{}"'.format(self._value)
         elif self._data['value_type'] == 'float':
+            val = str(self._value)
             val.replace(".", "d")
+        else:
+            val = str(self._value)
 
         if 'bind' in self._data and self._data['bind']:
             val = "$" + val
@@ -35,7 +41,7 @@ class TrieNode:
 
     def __repr__(self):
         """ Unambiguous printing """
-        return "TN: {}".format(repr(self._value))
+        return "TrieNode({})".format(str(self))
 
     def __hash__(self):
         return hash(str(self))
@@ -46,8 +52,11 @@ class TrieNode:
     def __bool__(self):
         return bool(self._children)
 
-    def __contains(self, v):
+    def __contains__(self, v):
         return self.has_child(v)
+
+    def __iter__(self):
+        return iter(self._children.values())
 
     def add_child(self, node):
         self._children[str(node)] = node
@@ -87,3 +96,32 @@ class TrieNode:
         newnode = TrieNode(self._value, self._data)
         newnode._children.update(self._children)
         return newnode
+
+
+    def split_tests(self):
+        """ Split tests into (alphas, betas, regexs) """
+        if 'constraints' not in self._data:
+            return ([], [], [])
+
+        comps = self._data['constraints']
+        assert(isinstance(comps, list))
+        alphas = []
+        betas = []
+        regexs = []
+        for c in comps:
+            if c.is_regex_test():
+                regexs.append(c)
+            elif c.is_alpha_test():
+                alphas.append(c)
+            else:
+                betas.append(c)
+        return (alphas, betas, regexs)
+
+    def is_exclusive(self):
+        """ Checks for the exclusion operator in this node """
+        return self._data['op'] is utils.EXOP.EX
+
+    def looks_exclusive(self):
+        """ Checks for implicit exclusivity by having 0 or 1 children """
+        return len(self) <= 1
+
