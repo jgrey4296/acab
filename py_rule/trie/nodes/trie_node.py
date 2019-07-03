@@ -58,19 +58,20 @@ class TrieNode:
     def __iter__(self):
         return iter(self._children.values())
 
+
     def add_child(self, node):
-        self._children[str(node)] = node
+        self._children[str(node._value)] = node
         return node
 
     def get_child(self, node):
-        return self._children[str(node)]
+        return self._children[str(node._value)]
 
     def has_child(self, node):
-        return str(node) in self._children
+        return str(node._value) in self._children
 
     def remove_child(self, node):
         if node in self:
-            del self._children[str(node)]
+            del self._children[str(node._value)]
             return True
 
         return False
