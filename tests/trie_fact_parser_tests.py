@@ -2,8 +2,7 @@ import unittest
 import logging
 import random
 from test_context import py_rule
-import py_rule.trie as T
-import py_rule.trie.parsing.FactParser as FP
+import py_rule.fact_trie.parsing.FactParser as FP
 from py_rule.trie.nodes.trie_node import TrieNode
 from py_rule.abstract.sentence import Sentence
 import py_rule.utils as util
@@ -109,7 +108,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         bindings = { "a" : FP.parseString("blah")[0],
                      "b": FP.parseString("bloo")[0] }
         result = FP.parseString('$a.b.$b!c')[0]
-        expanded = util.expandFact(result, bindings)
+        expanded = result.expand_bindings(bindings)
         asString = str(expanded)
         self.assertEqual(asString, "blah.b.bloo!c")
 
