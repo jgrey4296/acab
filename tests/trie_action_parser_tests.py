@@ -2,8 +2,8 @@ import unittest
 import IPython
 import logging
 from test_context import py_rule
-from py_rule.trie.parsing import ActionParser as AP
-from py_rule.trie.parsing import FactParser as FP
+from py_rule.fact_trie.parsing import ActionParser as AP
+from py_rule.fact_trie.parsing import FactParser as FP
 from py_rule.abstract import actions
 
 class Trie_Action_Parser_Tests(unittest.TestCase):
@@ -57,7 +57,7 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
       def test_action_binding_expansion(self):
             bindings = {"x" : FP.parseString('a.b.c')[0] }
             action = AP.parseString("+($x)")[0]
-            newAction = action.expandBindings(bindings)
+            newAction = action.expand_bindings(bindings)
             self.assertEqual(str(newAction), "+(a.b.c)")
 
 
