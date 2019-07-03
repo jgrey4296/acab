@@ -8,9 +8,9 @@ class Contexts:
     Essentially a list of Dictionaries
     """
     @staticmethod
-    def initial(startNode):
+    def initial(start_node):
         init = Contexts()
-        init._init_alt(startNode)
+        init._init_alt(start_node)
         return init
 
     def __init__(self):
@@ -37,10 +37,10 @@ class Contexts:
         return len(self._matches) > 0
 
 
-    def _init_alt(self, startNode):
+    def _init_alt(self, start_node):
         """ Setup the initial context of no bindings
             and no wmes """
-        self._matches = [({}, startNode)]
+        self._matches = [({}, start_node)]
 
 
     def select(self, bounds=(None, None)):
@@ -51,11 +51,11 @@ class Contexts:
         if bounds[0] is TROP.SELECT_ALL and bounds[1] is TROP.SELECT_ALL:
             return [x[0] for x in self._matches]
         if bounds[1] is TROP.SELECT_ALL:
-            upperBound = len(self._matches)
+            upper_bound = len(self._matches)
         else:
-            upperBound = bounds[1]
-            potentialAmnt = max(1, randint(bounds[0], upperBound))
-        return [x[0] for x in sample(self._matches, potentialAmnt)]
+            upper_bound = bounds[1]
+            potential_amnt = max(1, randint(bounds[0], upper_bound))
+        return [x[0] for x in sample(self._matches, potential_amnt)]
 
 
     def append(self, data):

@@ -25,12 +25,12 @@ class Query:
         clauseStrs = [str(x) for x in self._clauses]
         return "\n\t".join(clauseStrs)
 
-    def expandBindings(self, bindings):
+    def expand_bindings(self, bindings):
         """ Expand the individual clauses to have concrete values """
         assert(isinstance(bindings, dict))
         newClauses = []
         for x in self._clauses:
-            newClauses.append(x.expandBindings(bindings))
+            newClauses.append(x.expand_bindings(bindings))
         return Query(newClauses)
 
     def splitClauses(self):

@@ -78,7 +78,7 @@ class EngineBase:
         #return actions
         raise Exception("Abstract Method")
 
- 
+
     def _save_state(self, data):
         """ Copy the current string representation of the knowledge base,
         and any associated data """
@@ -140,17 +140,17 @@ class EngineBase:
     def _run_transform(self, ctx, transform):
         """ Run modifications on the bind results of a query """
         assert(isinstance(ctx, dict))
-        assert(transform is None or isinstance(transform, Transforms.Transform))
+        assert(transform is None or isinstance(transform, transforms.Transform))
         chosen_ctx = ctx
         if transform is None:
             return chosen_ctx
         for x in transform.components:
             #lookup op
-            opFunc = Transforms.TROP_LOOKUP[x.op]
-            param_length = Transforms.TROP_PARAM_LENGTHS[x.op]
+            opFunc = x._op
+            param_length = x._num_params
             #get source
-            if isinstance(x.source, util.Bind):
-                source = chosen_ctx[x.source.value]
+            if x.source._data['bind']:
+                source = chosen_ctx[x.source._value]
             else:
                 source = x.source
             if param_length == 1:
@@ -163,11 +163,11 @@ class EngineBase:
                     value = chosen_ctx[x.bind.value]
                 newVal = opFunc(source, value)
             elif param_length == 3:
-                if isinstance(x.bind, util.Bind):
-                    bindVal = chosen_ctx[x.bind.value]
+                if x._data['bind']:
+                    bindVal = chosen_ctx[x._value]
                 else:
-                    bindVal = x.bind
-                newVal = opFunc(source, x.val, bindVal)
+                    bindVal = x._value
+                newVal = opFunc(source, x._value, bindVal)
 
             #rebind or reapply
             if x.rebind is None:

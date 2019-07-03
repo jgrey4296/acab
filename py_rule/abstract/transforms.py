@@ -174,9 +174,9 @@ class OperatorTransform(TransformComponent):
             return "{}{}{}".format(op, source[0], rebind)
         elif param_length == 2:
             return "{} {} {}{}".format(source[0],
-                                         op,
-                                         source[1],
-                                         rebind)
+                                       op,
+                                       source[1],
+                                       rebind)
         elif param_length == 3:
             return "{} {} /{}/{}{}".format(source[0],
                                            op,
@@ -187,7 +187,7 @@ class OperatorTransform(TransformComponent):
     def verify_op(self):
         """ Complains if the operator is not a defined Operator Enum """
         if self._op not in TransformOp.op_list[self._op._op_str]:
-            raise Exception("Unknown Op: {}".format(self.op))
+            raise Exception("Unknown Op: {}".format(self._op))
 
     def set_rebind(self, bind):
         """ Set this transform to rebind its result to a different variable """

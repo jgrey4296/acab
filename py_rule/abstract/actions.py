@@ -87,17 +87,17 @@ ActionCustom()
 
 class Action:
     """ The Core Action Class, holds an operator,  and a list of values """
-    def __init__(self, op, values, type=None):
+    def __init__(self, op, values, type_=None):
         """ Create an action with an operator and values """
         assert(isinstance(values, list))
         #todo: assert that values are a fact string, value, or binding
         self._op = op
         self._values = values
-        if type is None:
+        if type_ is None:
             self._type = util.MUTABLE.CORE
         else:
-            assert(isinstance(type, util.MUTABLE))
-            self._type = type
+            assert(isinstance(type_, util.MUTABLE))
+            self._type = type_
         #the actions that group together logically
         #ie: expanded action macros
         self._linkedActions = []
@@ -132,7 +132,7 @@ class Action:
         """ Output a list of bindings from this action """
         output = []
         for x in self._values:
-            if isinstance(x, util.Bind):
+            if x._data['bind']:
                 output.append(data[x.value])
             elif isinstance(x, list): #and all([isinstance(y, Node) for y in x]):
                 output.append([y.bind(data) for y in x])
@@ -140,17 +140,17 @@ class Action:
                 output.append(x)
         return output
 
-    def expandBindings(self, bindings):
+    def expand_bindings(self, bindings):
         """ Expand stored bindings at interpret time
         ie: +(.a.b.$x) + { x : .a.b.c } -> +(.a.b.a.b.c)
         """
-        newValues = []
+        new_values = []
         for x in self._values:
             if isinstance(x, Sentence):
-                newValues.append(util.expandFact(x, bindings))
+                new_values.append(x.expand_bindings(bindings))
             else:
-                newValues.append(x)
-        return Action(self._op, newValues)
+                new_values.append(x)
+        return Action(self._op, new_values)
 
 
 class ActionMacro:
@@ -165,9 +165,9 @@ class ActionMacro:
         self._params = params
         self._actions = actions
 
-    def expandBindings(self, bindings):
+    def expand_bindings(self, bindings):
         """ Expand the macro  out based on the bindings passed in """
-        newActions = [x.expandBindings(bindings) for x in self._actions]
+        newActions = [x.expand_bindings(bindings) for x in self._actions]
         return ActionMacro(self._name,
                            self._params.copy(),
                            newActions)
@@ -181,6 +181,6 @@ class ActionMacroUse:
         self._name = name
         self._params = params
 
-    def expandBindings(self, bindings):
+    def expand_bindings(self, bindings):
         #todo: does this need to be implemented?
         return self

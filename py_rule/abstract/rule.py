@@ -98,20 +98,20 @@ class Rule:
         #if nothing raises an exception:
         return True
 
-    def expandBindings(self, bindings):
+    def expand_bindings(self, bindings):
         """ Return a new Rule, modified to have bindings replaced with their values """
         assert(isinstance(bindings, dict))
         #expand the name
-        newName = util.expandFact(self._name, bindings)
+        newName = self._name.expand_bindings(bindings)
         #expand the query
-        newQuery = self._query.expandBindings(bindings)
+        newQuery = self._query.expand_bindings(bindings)
         #expand the actions
-        newActions = [x.expandBindings(bindings) for x in self._actions]
+        newActions = [x.expand_bindings(bindings) for x in self._actions]
         return self.__class__(newQuery,
-                    newActions,
-                    transform=self._transform,
-                    name=newName,
-                    tags=self._tags)
+                              newActions,
+                              transform=self._transform,
+                              name=newName,
+                              tags=self._tags)
 
     def expandActionMacros(self, macros):
         """ Return a new Rule, where action macros have been expanded into
@@ -138,10 +138,10 @@ class Rule:
 
         #return a copy of with the expanded action list
         return self.__class__(self._query,
-                    expandedActions,
-                    transform=self._transform,
-                    name=self._name,
-                    tags=self._tags)
+                              expandedActions,
+                              transform=self._transform,
+                              name=self._name,
+                              tags=self._tags)
 
     def invert(self):
         """ Take a simple, non-transformational rule,

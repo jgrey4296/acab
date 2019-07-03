@@ -65,11 +65,18 @@ class RegMatch(CompOp):
         return re.search(b, a)
 
 
+class ELEM(CompOp):
+    def __init__(self):
+        super().__init__("∈")
+    def __call__(self, a, b):
+        return a in b
+
 EQ()
 GT()
 LT()
 NEQ()
 RegMatch()
+ELEM()
 
 
 class Comparison:
