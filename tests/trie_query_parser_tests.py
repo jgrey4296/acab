@@ -1,10 +1,9 @@
 import unittest
 import logging
 from test_context import py_rule
-import py_rule.trie as T
-import py_rule.trie.parsing.QueryParser as QP
+import py_rule.fact_trie.parsing.QueryParser as QP
 from py_rule.abstract.query import Query
-from py_rule.abstract.clause import Clause
+from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.comparisons import Comparison, COMP, CompOp
 import py_rule.utils as util
 from py_rule.utils import EXOP
@@ -59,22 +58,22 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
 
     def test_basic_clause(self):
         result = QP.clause.parseString('a.b.c?')[0]
-        self.assertIsInstance(result, Clause)
-        self.assertEqual(len(result._sentence), 3)
-        self.assertEqual(result._sentence[-1]._value, 'c')
-        self.assertEqual(result._sentence[-1]._data['op'], EXOP.DOT)
+        self.assertIsInstance(result, Sentence)
+        self.assertEqual(len(result), 3)
+        self.assertEqual(result[-1]._value, 'c')
+        self.assertEqual(result[-1]._data['op'], EXOP.DOT)
 
     def test_basic_clause_with_bind(self):
         result = QP.clause.parseString('a.b.$c?')[0]
-        self.assertIsInstance(result, Clause)
-        self.assertEqual(len(result._sentence), 3)
-        self.assertEqual(result._sentence[-1]._value, 'c')
-        self.assertEqual(result._sentence[-1]._data['op'], EXOP.DOT)
-        self.assertTrue(result._sentence[-1]._data['bind'])
+        self.assertIsInstance(result, Sentence)
+        self.assertEqual(len(result), 3)
+        self.assertEqual(result[-1]._value, 'c')
+        self.assertEqual(result[-1]._data['op'], EXOP.DOT)
+        self.assertTrue(result[-1]._data['bind'])
 
     def test_basic_negated_clause(self):
         result = QP.clause.parseString('~a.b.c?')[0]
-        self.assertIsInstance(result, Clause)
+        self.assertIsInstance(result, Sentence)
         self.assertTrue(result._negated)
 
 
@@ -82,15 +81,15 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         result = QP.clauses.parseString('a.b.c?, a.b.d?, a.b.e?')[0]
         self.assertIsInstance(result, Query)
         self.assertEqual(len(result._clauses), 3)
-        self.assertTrue(all([isinstance(x, Clause) for x in result._clauses]))
-        self.assertEqual(result._clauses[0]._sentence[-1]._value, 'c')
-        self.assertEqual(result._clauses[1]._sentence[-1]._value, 'd')
-        self.assertEqual(result._clauses[2]._sentence[-1]._value, 'e')
+        self.assertTrue(all([isinstance(x, Sentence) for x in result._clauses]))
+        self.assertEqual(result._clauses[0][-1]._value, 'c')
+        self.assertEqual(result._clauses[1][-1]._value, 'd')
+        self.assertEqual(result._clauses[2][-1]._value, 'e')
 
     def test_basic_multi_clause_mixed_negation(self):
         result = QP.clauses.parseString('a.b.c?, ~a.b.d?, a.b.e?, ~a.b.f?')[0]
         self.assertIsInstance(result, Query)
-        self.assertTrue(all([isinstance(x, Clause) for x in result._clauses]))
+        self.assertTrue(all([isinstance(x, Sentence) for x in result._clauses]))
         self.assertFalse(result._clauses[0]._negated)
         self.assertTrue(result._clauses[1]._negated)
         self.assertFalse(result._clauses[2]._negated)
@@ -104,7 +103,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
 
     def test_clause_fallback(self):
         result = QP.clause.parseString('a.b.c? || $x:2')[0]
-        self.assertIsInstance(result, Clause)
+        self.assertIsInstance(result, Sentence)
         self.assertIsNotNone(result._fallback)
         self.assertEqual(len(result._fallback), 1)
 
@@ -117,7 +116,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
 
     def test_clause_multi_fallback(self):
         result = QP.clause.parseString('a.b.c? || $x:2, $y:5')[0]
-        self.assertIsInstance(result, Clause)
+        self.assertIsInstance(result, Sentence)
         self.assertIsNotNone(result._fallback)
         self.assertEqual(len(result._fallback), 2)
         self.assertEqual(result._fallback[0][0], 'x')
@@ -127,7 +126,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
 
     def test_clause_fallback_strings(self):
         result = QP.clause.parseString('a.b.c? || $x:a.b!c, $y:b.d.e')[0]
-        self.assertIsInstance(result, Clause)
+        self.assertIsInstance(result, Sentence)
         self.assertIsNotNone(result._fallback)
         self.assertEqual(len(result._fallback), 2)
         self.assertEqual(result._fallback[0][0], 'x')
@@ -138,7 +137,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
 
     # def test_rulebind_parsing(self):
     #     result = QP.clause.parseString('a.b.c(^$x)?')[0]
-    #     self.assertIsInstance(result, Clause)
+    #     self.assertIsInstance(result, Sentence)
     #     IPython.embed(simple_prompt=True)
 
     #     # self.assertIsInstance(result._sentence[-1]
