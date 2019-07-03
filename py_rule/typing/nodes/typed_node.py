@@ -1,4 +1,4 @@
-from .trie_node import TrieNode
+from py_rule.trie.nodes.trie_node import TrieNode
 
 class M_TypedNode(TrieNode):
 

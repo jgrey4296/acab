@@ -1,6 +1,6 @@
-from .trie_node import TrieNode
+from py_rule.trie.nodes.trie_node import TrieNode
 from .type_assignment_node import TypeAssignmentTrieNode
-from py_rule.trie.typing import type_exceptions as te
+from py_rule.typing import type_exceptions as te
 
 class TypeDefTrieNode(TrieNode):
 

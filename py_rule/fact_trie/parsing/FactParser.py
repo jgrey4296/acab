@@ -6,8 +6,8 @@ import logging as root_logger
 import pyparsing as pp
 import IPython
 from py_rule.utils import EXOP
-from py_rule.trie.typing.ex_types import MonoTypeVar
-from py_rule.trie.nodes.fact_node import FactNode
+from py_rule.typing.ex_types import MonoTypeVar
+from py_rule.fact_trie.nodes.fact_node import FactNode
 from py_rule.trie.nodes.trie_node import TrieNode
 from py_rule.abstract.sentence import Sentence
 

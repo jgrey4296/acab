@@ -8,22 +8,22 @@ from os import listdir
 from random import shuffle
 import IPython
 
-from py_rule.EngineBase import EngineBase
+from py_rule.abstract.EngineBase import EngineBase
 from py_rule.abstract import Actions as Actions
 from py_rule.abstract import Contexts, Query
 from py_rule.abstract import Transforms
 from py_rule.abstract import Action
 from py_rule.trie import FactBaseTrie
 from py_rule.trie.nodes import FactNode
-import  pyRule.utils as util
+import pyRule.utils as util
 
-from .parsing import ActionParser as AP
-from .parsing import FactParser as FP
-from .parsing import FileParser as FileP
-from .parsing import QueryParser as QP
-from .parsing import RuleParser as RP
-from .parsing import TransformParser as TP
-from .parsing import TrieRule as TR
+from py_rule.fact_trie.parsing import ActionParser as AP
+from py_rule.fact_trie.parsing import FactParser as FP
+from py_rule.fact_trie.parsing import FileParser as FileP
+from py_rule.fact_trie.parsing import QueryParser as QP
+from py_rule.fact_trie.parsing import RuleParser as RP
+from py_rule.fact_trie.parsing import TransformParser as TP
+from py_rule.fact_trie.parsing import TrieRule as TR
 
 #import and register policies
 

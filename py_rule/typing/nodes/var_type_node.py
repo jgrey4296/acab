@@ -1,4 +1,4 @@
-from .typed_trie_node
+from .typed_node import M_TypedNode
 
 class VarTypeTrieNode(M_TypedNode):
 

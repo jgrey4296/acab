@@ -2,13 +2,13 @@
 import logging as root_logger
 import re
 import IPython
-from .trie import Trie
+from py_rule.trie.trie import Trie
 from py_rule.utils import EXOP, META_OP
 from py_rule.abstract.contexts import Contexts
 from py_rule.abstract.query import Query
 from py_rule.abstract.sentence import Sentence
 
-from .nodes.trie_node import TrieNode
+from py_rule.trie.nodes.trie_node import TrieNode
 from .nodes.fact_node import FactNode
 from .parsing import FactParser as FP
 from .parsing import QueryParser as QP
@@ -50,11 +50,12 @@ class FactBaseTrie(Trie):
 
     def assert_sentence(self, sen):
         """ Assert a sentence of chained facts """
-        #TODO: change this to a sentence
         assert(isinstance(sen, Sentence))
         self._clear_last_node()
         for newNode in sen:
             self._last_node = self._last_node.insert(newNode)
+
+        self._last_node._set_dirty_chain()
 
     def retract_sentence(self, sen):
         """ Retract everything after the end of a sentence """
@@ -84,10 +85,6 @@ class FactBaseTrie(Trie):
         currently only used for retraction
         """
         self._last_node = self._root
-
-    def _reconstruct_query_from_trie(self):
-        #TODO
-        raise Exception("Unimplemented")
 
     def _internal_query(self, query, ctxs):
         """ Go down the trie, running each test as necessary

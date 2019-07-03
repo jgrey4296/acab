@@ -5,7 +5,7 @@ import logging as root_logger
 import IPython
 from py_rule import utils as util
 import py_rule.abstract.comparisons as Comp
-from .nodes.trie_node import TrieNode
+from py_rule.trie.nodes.trie_node import TrieNode
 logging = root_logger.getLogger(__name__)
 
 

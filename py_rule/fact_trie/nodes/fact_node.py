@@ -1,5 +1,5 @@
 """ The Core Trie-Node, stores information, meta data """
-from .trie_node import TrieNode
+from py_rule.trie.nodes.trie_node import TrieNode
 from math import floor
 from py_rule.utils import EXOP, ROOT
 import IPython
@@ -20,10 +20,6 @@ class FactNode(TrieNode):
         """ Get a Root designated node """
         return FactNode(ROOT, EXOP.DOT)
 
-    def is_root(self):
-        """ Query to check if this node is the Root Node """
-        return self._op is EXOP.ROOT
-
 
     @staticmethod
     def copy_fact(node):
@@ -38,6 +34,7 @@ class FactNode(TrieNode):
                                 operator,
                                 data=node._data)
             return new_node
+
 
     def __init__(self,
                  value,
@@ -60,27 +57,16 @@ class FactNode(TrieNode):
         assert(isinstance(other, FactNode))
         return str(self) == str(other)
 
-    def _eq__alt(self, other):
-        """ DFS comparison routine """
-        assert(isinstance(other, FactNode))
-        if self._value != other._value:
-            logging.warning("Values not the same")
-            return False
-        if len(self._children) != len(other._children):
-            logging.warning("children length not the same")
-            return False
-        if not all([x in other._children for x in self._children]):
-            logging.warning("keys not in other")
-            return False
-        comp = all([self._children[x] == other._children[x] for x in self._children])
-        return comp
-
     def __repr__(self):
         return "FactNode: {}".format(str(self))
 
     def __hash__(self):
         return hash(str(self))
 
+    def __contains__(self, other):
+        if self.has_child(other):
+            return self.get_child(other)._data['op'] == other._data['op']
+        return False
 
     def copy(self):
         assert(not bool(self._children))
@@ -91,32 +77,37 @@ class FactNode(TrieNode):
         assert(isinstance(parent, FactNode))
         self._parent = weakref.ref(parent)
 
+    def parentage(self):
+        path = []
+        current = self
+        while current is not None:
+            path.insert(0, current)
+            current = current._parent
+        return path
 
     def insert(self, fact):
         """ Insert A Node as a Child of this Node """
-        self._set_dirty_chain()
+        if fact in self:
+            return self.get_child(fact)
+
         copied = FactNode.copy_fact(fact)
         copied.set_parent(self)
-        if copied._op is EXOP.EX and bool(self._children):
-            if copied in self:
-                temp = self.get_child(copied)
-            else:
-                temp = None
-            self.clear_children()
-            if temp is not None:
-                self.add_child(temp)
 
-        if not copied in self:
-            self.add_child(copied)
-            return copied
-        else:
-            return self.get_child(copied)
+        #deal with exclusion
+        if self._op is EXOP.EX:
+            self.clear_children()
+
+        self.add_child(copied)
+        return copied
+
 
     def get(self, fact):
         """ Retrieve a Node from this Node """
         assert(isinstance(fact, TrieNode))
         if fact in self:
-            return self.get_child(fact)
+            potential = self.get_child(fact)
+            if fact._data['op'] == potential._data['op']:
+                return potential
 
         return None
 
@@ -126,7 +117,6 @@ class FactNode(TrieNode):
         if self.remove_child(fact):
             self._set_dirty_chain()
 
-
     def bind(self, data):
         """ Annotate the Node with a Meta-Bind Evaluation """
         if not self._data['bind']:
@@ -135,7 +125,6 @@ class FactNode(TrieNode):
             copied = self.copy()
             copied._bind_to_value(data)
             return copied
-
 
     def search_regex(self, regex):
         """ Test a regex on the Nodes value """
@@ -187,5 +176,3 @@ class FactNode(TrieNode):
         """ Set the Nodes value to be one retrieved from passed in bindings """
         assert(self._value in data)
         self._value = data[self._value]
-
-

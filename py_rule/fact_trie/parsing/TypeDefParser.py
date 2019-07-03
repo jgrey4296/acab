@@ -1,7 +1,7 @@
 import pyparsing as pp
 import logging as root_logger
 from . import FactParser as FP
-from py_rule.trie.typing.ex_types import TypeDefinition
+from py_rule.typing.ex_types import TypeDefinition
 logging = root_logger.getLogger(__name__)
 
 def make_type_def(tokens):

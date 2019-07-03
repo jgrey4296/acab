@@ -36,9 +36,9 @@ def build_clause(toks):
     if NOT_IDEN in toks:
         if fallback_toks is not None:
             raise Exception("Fallback bindings in negated clauses don't make sense")
-        return Sentence(toks.main_clause[:], negated=True)
+        return Sentence(toks.main_clause[:], negated=True, is_query=True)
     else:
-        return Sentence(toks.main_clause[:], fallback=fallback_toks)
+        return Sentence(toks.main_clause[:], fallback=fallback_toks, is_query=True)
 
 
 s = pp.Suppress
