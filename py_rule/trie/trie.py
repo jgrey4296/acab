@@ -1,20 +1,10 @@
 """
 A Trie for Types
 """
-import py_rule.type_exceptions as te
 from .nodes.trie_node import TrieNode
 import IPython
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
-
-
-log_messages = {}
-log_messages['validate_top'] = "Validating: {} on {} ({})"
-log_messages['curr_def'] = "Current Definition to Validate: {} : {} : {}"
-log_messages['curr_use_set'] = "Current Usage Set: {}"
-log_messages['no_children'] = "Val: No Children, assigning type: {} to {}"
-log_messages['match_type_usage'] = "Matching Type {} onto usage set"
-log_messages['mult_child'] = "Current Def has multiple children, checking for conflicts in structure"
 
 class Trie:
 
@@ -30,7 +20,6 @@ class Trie:
 
     def __len__(self):
         return len(self.get_nodes(lambda x: not bool(x)))
-
 
     def query(self, path):
         current = self._root
