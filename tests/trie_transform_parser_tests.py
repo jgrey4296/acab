@@ -1,7 +1,7 @@
 import unittest
 import logging
 from test_context import py_rule
-from py_rule.trie.parsing import TransformParser as TP
+from py_rule.fact_trie.parsing import TransformParser as TP
 from py_rule.abstract import transforms
 
 class Trie_Transform_Parser_Tests(unittest.TestCase):
