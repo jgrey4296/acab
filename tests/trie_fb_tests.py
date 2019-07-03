@@ -1,7 +1,7 @@
 import unittest
 import logging
 from test_context import py_rule
-from py_rule.trie.fact_base_trie import FactBaseTrie
+from py_rule.fact_trie.fact_base_trie import FactBaseTrie
 from py_rule.abstract.contexts import Contexts
 import IPython
 
@@ -72,15 +72,6 @@ class Trie_FactBase_Tests(unittest.TestCase):
         self.assertFalse(self.trie.queryS('a.b.d?'))
         self.assertFalse(self.trie.queryS('a.b?'))
         self.assertTrue(self.trie.queryS('a?'))
-
-    def test_retract_verified_by_query_2(self):
-        self.trie.assertS('a.b.c, a.b.d, a.b.e')
-        self.assertEqual(len(self.trie._root._reconstruct()), 3)
-        self.trie.retractS('a.b.e, a.b.d')
-        self.assertFalse(self.trie.queryS('a.b.e?'))
-        self.assertFalse(self.trie.queryS('a.b.d?'))
-        self.assertTrue(self.trie.queryS('a.b.c?'))
-        self.assertEqual(len(self.trie._root._reconstruct()), 1)
 
     def test_bind_query(self):
         """ Check that queries can bind to a value """
@@ -210,7 +201,9 @@ class Trie_FactBase_Tests(unittest.TestCase):
         s = str(self.trie)
         newTrie = FactBaseTrie(s)
         self.assertEqual(self.trie, newTrie)
-        self.assertEqual(s, str(newTrie))
+        orig_set = set(s.split("\n"))
+        reconstructed_set = set(str(newTrie).split("\n"))
+        self.assertTrue(orig_set == reconstructed_set)
 
     def test_query_negation(self):
         self.trie.assertS('a.b.c')
