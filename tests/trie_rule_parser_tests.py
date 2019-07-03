@@ -2,8 +2,8 @@ import unittest
 import logging
 import IPython
 from test_context import py_rule
-from py_rule.trie.parsing import RuleParser as RP
-from py_rule.trie.parsing import FactParser as FP
+from py_rule.fact_trie.parsing import RuleParser as RP
+from py_rule.fact_trie.parsing import FactParser as FP
 from py_rule.abstract.rule import Rule
 from py_rule.abstract.query import Query
 
@@ -119,7 +119,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
     def test_rule_simple_binding_expansion(self):
         bindings = { "x" : FP.parseString('a.b.c')[0] }
         result = RP.parseString("a.rule:\n$x?\n\nend")[0]
-        expanded = result.expandBindings(bindings)
+        expanded = result.expand_bindings(bindings)
         self.assertEqual(str(expanded),
                          "a.rule:\n\ta.b.c?\n\nend")
 
@@ -128,7 +128,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
                      "y" : FP.parseString('d.e.f')[0],
                      "z" : FP.parseString('x.y.z')[0] }
         result = RP.parseString("a.$x:\n$y.b.$z?\n\n$x + 2\n\n+($x)\nend")[0]
-        expanded = result.expandBindings(bindings)
+        expanded = result.expand_bindings(bindings)
         self.assertEqual(str(expanded),
                          "a.a.b.c:\n\td.e.f.b.x.y.z?\n\n\t$x + 2\n\n\t+(a.b.c)\nend")
 
