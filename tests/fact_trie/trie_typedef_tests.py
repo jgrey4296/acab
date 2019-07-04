@@ -48,6 +48,10 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         result = TD.parseString('::blah:\n\na.b.c(::bloo)\n\nEND')[0]
         self.assertEqual(result._structure[0][-1]._data['typedec']._name._value, 'bloo')
 
+    def test_typedef_with_bad_vars(self):
+        with self.assertRaises(Exception):
+            result = TD.parseString('::blah(blee):\n\na.b.c\n\nEND')[0]
+
 
 if __name__ == "__main__":
     LOGLEVEL = logging.INFO
