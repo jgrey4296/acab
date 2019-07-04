@@ -33,7 +33,7 @@ def construct_num(toks):
     else:
         return ("int", int(toks[0]))
 
-def construct_fact_string(toks):
+def construct_sentence(toks):
     return Sentence(toks[:])
 
 def make_type_dec(toks):
@@ -129,8 +129,8 @@ param_fact_string = pp.ZeroOrMore(PARAM_BINDING_CORE) + PARAM_BINDING_END
 param_fact_strings = param_fact_string + pp.ZeroOrMore(COMMA + param_fact_string)
 
 #Actions
-param_fact_string.setParseAction(construct_fact_string)
-basic_fact_string.setParseAction(construct_fact_string)
+param_fact_string.setParseAction(construct_sentence)
+basic_fact_string.setParseAction(construct_sentence)
 
 # MAIN PARSER:
 def parseString(in_string):
