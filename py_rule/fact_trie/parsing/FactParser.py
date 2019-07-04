@@ -17,7 +17,6 @@ pp.ParserElement.setDefaultWhitespaceChars(' \t\r')
 s = pp.Suppress
 op = pp.Optional
 opLn = s(op(pp.lineEnd))
-comment = s(pp.dblSlashComment)
 
 def NG(name, grp):
     """ Name and Group """
