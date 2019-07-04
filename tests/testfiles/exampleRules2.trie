@@ -1,15 +1,15 @@
-.a.b.c
-.a.other!ex
+a.b.c
+a.other!ex
 
-.example.two.rule.one:
-    .a.b.c?
+example.two.rule.one:
+  a.b.c?
 
-    +(.d.e.f)
+  +(d.e.f)
 end
 
-.example.two.rule.two:
-    .a.b.c?
+example.two.rule.two:
+  a.b.c?
 
-    +(.d.e.g)
+  +(d.e.g)
 end
 

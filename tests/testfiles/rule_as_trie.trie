@@ -1,22 +1,22 @@
-.a.b.c
+a.b.c
 
-.example.one.rule:
-	.a.b.c?
-    .a.b.$x(>20)?
+example.one.rule:
+	a.b.c?
+  a.b.$x(>20)?
     
-    $x + 20 -> $y
+  $x + 20 -> $y
     
-    +(.d.e.f)
+  +(d.e.f)
 end
 
 
-.example.one.rule
-.example.one.rule.tag.blah
-.example.one.rule.tag.bloo
-.example.one.rule.conditions.#root.a.b.c?[0]
-.example.one.rule.conditions.#root.a.b.$x(>20)?[1]
-.example.one.rule.transforms.$x.+.20.->.$y
-.example.one.rule.actions.assert.#root.d.e.f
+example.one.rule
+example.one.rule.tag.blah
+example.one.rule.tag.bloo
+example.one.rule.conditions.#root.a.b.c?[0]
+example.one.rule.conditions.#root.a.b.$x(>20)?[1]
+example.one.rule.transforms.$x.+.20.->.$y
+example.one.rule.actions.assert.#root.d.e.f
 
 
 
@@ -24,17 +24,17 @@ end
 "On {.days.$x}, {.people.$y} met {.people.$z(!=$y)},
 and said 'Hello {$z}'"
 
-.a.days.$x?
-.people.$y?
-.people.$z(!=$y)?
+a.days.$x?
+people.$y?
+people.$z(!=$y)?
 
 ~{} "On {$x}, {$y} met {$z} and said 'Hello {$z}' "
 
 
-.days.[monday,tuesday,wednesday,thursday]
+days.[monday,tuesday,wednesday,thursday]
 ->
-.days.monday, .days.tuesday, .days.wednesday, .days.thursday
+days.monday, .days.tuesday, .days.wednesday, .days.thursday
 
-.a.rule...x
+a.rule...x
 
 ~{} "On {$x!}, {$y!}....

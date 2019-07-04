@@ -1,23 +1,23 @@
-.a.b.first
-.a.c.second
+a.b.first
+a.c.second
 
 #action($x, $y):
-    +(.a.c.$x)
-    -(.a.c.$y)
-    +(.a.b.$y)
-    -(.a.b.$x)
+  +(a.c.$x)
+  -(a.c.$y)
+  +(a.b.$y)
+  -(a.b.$x)
 end
 
 #second():
-    +(.blah)
-    +(.bloo)
+  +(blah)
+  +(bloo)
 end
 
-.an.action.macro.rule:
-    .a.b.$a?
-    .a.c.$b?
+an.action.macro.rule:
+  a.b.$a?
+  a.c.$b?
 
-    #action($a, $b)
-    #second()
+  #action($a, $b)
+  #second()
 end
 

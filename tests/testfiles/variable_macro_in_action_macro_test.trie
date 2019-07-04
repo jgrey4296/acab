@@ -1,14 +1,14 @@
-.a.b.c
+a.b.c
 
-$x <- .a.b.blah
+$x <- a.b.blah
 #second():
     +($x)
 end
 clear $x
 
-.an.action.macro.rule:
-    .a.b.c?
+an.action.macro.rule:
+  a.b.c?
 
-    #second()
+  #second()
 end
 

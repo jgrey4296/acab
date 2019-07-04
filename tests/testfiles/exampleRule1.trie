@@ -1,9 +1,9 @@
-.a.b.c
+a.b.c
 
-.example.one.rule:
-	.a.b.c?
+example.one.rule:
+	a.b.c?
 
-        +(.d.e.f)
+  +(d.e.f)
 end
 
 

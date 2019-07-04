@@ -1,22 +1,22 @@
 //An initial comment
-.a.b!10 //another comment
-.a.c.20
+a.b!10 //another comment
+a.c.20
 
 //Pre Rule comment
-.a.rule:
+a.rule:
     #tag1, #tag2
     //Preconditions comment
-    .a.b!$x?
+    a.b!$x?
     //Middle precon comment
-    .a.c.$y?
+    a.c.$y?
     //Transform comment
     $x + 20 -> $z
     //Middle transform comment
     $x + 30
     //Action comment
-    +(.a.d.c)
+    +(a.d.c)
     //Middle Action comment
-    +(.a.d.d)
-    +(.a.b!$z)
+    +(a.d.d)
+    +(a.b!$z)
 end
 //End comment

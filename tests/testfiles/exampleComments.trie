@@ -1,6 +1,6 @@
 //.this.should.not.assert
-.a.b.c
-.a.other!ex
+a.b.c
+a.other!ex
 
 // .comment.rule.one:
 //     .a.b.c?
@@ -9,8 +9,8 @@
 // end
     
 //Another Test Comment
-.comment.rule.two:
-    .a.b.c?
+comment.rule.two:
+  a.b.c?
 
-    +(.d.e.g)
+  +(d.e.g)
 end
