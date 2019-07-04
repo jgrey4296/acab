@@ -4,8 +4,8 @@ A PyParsing parser to create patterns
 # from .pattern import Pattern
 # from .event import Event
 # from .arc import Arc
-from .pattern_constructor import CTOR_ACT, construct_pattern
-from .utils import TimeVar
+from py_rule.datastructures.time.pattern_constructor import CTOR_ACT, construct_pattern
+from py_rule.datastructures.time.utils import TimeVar
 from enum import Enum
 from fractions import Fraction
 import pyparsing as pp

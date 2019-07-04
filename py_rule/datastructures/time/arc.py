@@ -48,7 +48,7 @@ class Arc:
         """ Get the length of time the arc describes """
         return self.end - self.start
 
-        def bound(self, other):
+    def bound(self, other):
         assert(isinstance(other, Arc))
         start = min(self.start, other.start)
         end = max(self.end, other.end)
