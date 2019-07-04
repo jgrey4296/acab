@@ -6,14 +6,15 @@ import pyparsing as pp
 from pyparsing import pyparsing_common as ppc
 import IPython
 
-from py_rule.utils import Bind, expandFact
+from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.actions import ActionMacro
 from py_rule.abstract.rule import Rule
-from . import TrieRule as TR
 from . import FactParser as FP
 from . import RuleParser as RP
 from . import ActionParser as AP
 from . import TypeDefParser as TDP
+
+comment = pp.dblSlashComment
 
 parseBindings = {}
 
@@ -57,11 +58,11 @@ def expansion_pass(toks):
     elif len(toks) > 1:
         raise Exception("Unexpected toks size for binding expansion")
     #if a fact:
-    if isinstance(toks[0], list):
-        return [expandFact(toks[0], parseBindings)]
+    if isinstance(toks[0], Sentence):
+        return [toks[0].expand_bindings(parseBindings)]
     #or if a rule or action macro:
     elif isinstance(toks[0], (Rule, ActionMacro)):
-        return [toks[0].expandBindings(parseBindings)]
+        return [toks[0].expand_bindings(parseBindings)]
     return toks
 
 def clearBinding(toks):
@@ -70,6 +71,14 @@ def clearBinding(toks):
     for x in toks:
         del parseBindings[x.value]
     return []
+
+def remove_comments(string):
+    lines = string.split("\n")
+    passing_lines = []
+    for line in lines:
+        passing_lines.append("".join(list(comment.split(line))))
+    return "\n".join(passing_lines)
+
 
 
 pp.ParserElement.setDefaultWhitespaceChars(' \t\r')
@@ -83,12 +92,11 @@ fileBind = FP.BIND + bindArrow + FP.param_fact_string
 clearBind = clear + orm(FP.BIND)
 
 
-file_component = pp.MatchFirst([FP.comment,
-                                s(fileBind),
+file_component = pp.MatchFirst([s(fileBind),
                                 s(clearBind),
                                 AP.action_definition,
                                 RP.rule,
-                                TDF.TYPEDEF,
+                                TDP.TYPEDEF,
                                 FP.param_fact_string])
 
 file_total = file_component + pp.ZeroOrMore(s(orm(pp.lineEnd)) + file_component)
@@ -99,6 +107,10 @@ fileBind.setParseAction(add_file_binding)
 clearBind.setParseAction(clearBinding)
 file_component.setParseAction(expansion_pass)
 
+
+
+
 def parseString(in_string):
     assert(isinstance(in_string, str))
-    return file_total.parseString(in_string)[0]
+    no_comments = remove_comments(in_string)
+    return file_total.parseString(no_comments)[0]
