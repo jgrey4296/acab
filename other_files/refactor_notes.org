@@ -1,0 +1,4 @@
+* Notes on Refactoring py_rule to integrate type checking
+** 1: Parsing
+** 2: Data Structures
+** 3: Type Checking
