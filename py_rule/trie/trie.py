@@ -43,7 +43,7 @@ class Trie:
                 current = current.get_child(x)
                 logging.debug("Trie: Retrieved: {}".format(current))
             else:
-                current = current.add_child(self.node_type(x, current_path))
+                current = current.add_child(self.node_type(x))
                 logging.debug("Trie: Added: {}".format(current))
             if update is not None:
                 update(current, x, current_path, u_data)

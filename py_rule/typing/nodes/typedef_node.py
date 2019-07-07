@@ -121,16 +121,16 @@ class TypeDefTrieNode(TrieNode):
         return type_var_lookup
 
     def _typedef_var_lookup(self, curr_def, type_var_lookup):
-        if curr_def.is_var and curr_def.name in type_var_lookup:
-            return type_var_lookup[curr_def.name]
+        if curr_def._is_var and curr_def._value in type_var_lookup:
+            return type_var_lookup[curr_def._value]
         elif curr_def._type is not None:
             return curr_def._type.build_type_declaration(type_var_lookup)
 
     def _handle_vars(self, curr_def, curr_usage_set):
-        if curr_def.name != "__root":
+        if curr_def.name != utils.ROOT:
             for x in curr_usage_set:
-                if not x.is_var and curr_def.name != x.name:
-                    raise te.TypeStructureMismatch(curr_def.name, [x.name])
+                if not x._is_var and curr_def._value != x._value:
+                    raise te.TypeStructureMismatch(curr_def._value, [x._value])
 
     def _match_on_set(self, usage_set, def_type):
         type_attempts = [x.type_match(def_type) for x in usage_set]
@@ -142,7 +142,7 @@ class TypeDefTrieNode(TrieNode):
         curr_use_str = ", ".join([str(x) for x in curr_usage_set])
         curr_def_path = "".join([repr(x) for x in curr_def.path])
         logging.debug(log_messages['curr_def'].format(curr_def_path,
-                                                      curr_def.name,
+                                                      curr_def._value,
                                                       repr(curr_def_type)))
         logging.debug(log_messages['curr_use_set'].format(curr_use_str))
 

@@ -1,4 +1,5 @@
-from .typed_trie_node import M_TypedNode
+from .typed_node import M_TypedNode
+from py_rule.typing import util
 
 class TypeAssignmentTrieNode(M_TypedNode):
     """ A Node in the Type Assignment Trie.
@@ -19,18 +20,21 @@ class TypeAssignmentTrieNode(M_TypedNode):
         if self._is_var:
             var_str = "$"
         return "Type Assignment: {}{} {}".format(var_str,
-                                                 repr(self.name),
+                                                 repr(self._value),
                                                  type_str)
 
     def update(self, node, lookup):
-        logging.debug("Node: {} updating with {}".format(self.name,
-                                                        node.name))
+        """ Post-addition update method.
+        links self to a lookup-trie node if self is a variable """
+        logging.debug("Node: {} updating with {}".format(self._value,
+                                                         node._value))
+        #apply type if necessary
         self.type_match_wrapper(node)
-        if not self.is_var and node.is_var():
-            raise te.TypeVariableConflictException(self.path)
+        if not self._is_var and util.is_var(node):
+            #complain if var status doesn't match
+            raise te.TypeVariableConflictException(self._path)
 
-        if self.is_var and self.var_node is None:
-            self.var_node = lookup.add([self.path[-1]], [])
-            self.var_node.nodes.add(self)
-            self.var_node.add_var_name(node)
-            self.var_node.type_match_wrapper(node)
+        if self._is_var and self._var_node is None:
+            #if var, connect to var type trie
+            self._var_node = lookup.add([self._path[-1]], [])
+            self._var_node.add_node(self)
