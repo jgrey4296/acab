@@ -113,7 +113,7 @@ class Rule:
                               name=newName,
                               tags=self._tags)
 
-    def expandActionMacros(self, macros):
+    def expand_action_macros(self, macros):
         """ Return a new Rule, where action macros have been expanded into
         the sequence of actions they represent """
         expandedActions = []

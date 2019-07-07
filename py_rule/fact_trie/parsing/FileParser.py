@@ -38,8 +38,8 @@ def final_pass(toks):
     #clear the parse bindings as a guard:
     parseBindings = {}
     #and expand rulemacros into rule sequences:
-    expandedActMacroRules = [x.expandActionMacros(action_macros) for x in rules]
-    return (expandedActMacroRules, assertions)
+    expandedActMacroRules = [x.expand_action_macros(action_macros) for x in rules]
+    return (definitions, expandedActMacroRules, assertions)
 
 def add_file_binding(toks):
     """ Store the string of in the binding """
