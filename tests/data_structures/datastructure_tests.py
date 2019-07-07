@@ -1,7 +1,8 @@
 import unittest
 import logging
-from test_context import pyRule
-from pyRule.datastructures import Game, TimeSpaceTree
+from test_context import py_rule
+from py_rule.data_structures.game import Game
+from py_rule.data_structures.time_space_tree import TimeSpaceTree
 
 
 class DataStructures_Tests(unittest.TestCase):

@@ -1,13 +1,20 @@
-all: trie parser engine
+all: trie facttrie engine datastructures
+
+datastructures:
+	@echo "Testing Data Structures"
+	python -m unittest data_structures/*_tests.py
 
 trie:
-	python -m unittest trie_fb_tests.py -v
+	@echo "Testing Trie"
+	python -m unittest trie/*_tests.py
 
-parser:
-	python -m unittest *_parser_tests.py -v
+facttrie:
+	@echo "Testing Fact Trie"
+	python -m unittest fact_trie/*_tests.py
 
 engine:
-	python -m unittest engine*.py -v
+	@echo "Testing Engine"
+	python -m unittest engine/*_tests.py
 
 clean:
 	-rm *.log
