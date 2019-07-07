@@ -1,4 +1,5 @@
 from py_rule.trie.nodes.trie_node import TrieNode
+from py_rule.utils import TYPE_DEC_S
 
 class M_TypedNode(TrieNode):
 
@@ -7,9 +8,9 @@ class M_TypedNode(TrieNode):
         self._type = None
 
     def type_match_wrapper(self, node):
-        if node._type is None:
+        if TYPE_DEC_S not in node._data:
             return
-        self.type_match(node._type)
+        self.type_match(node._data[TYPE_DEC_S])
 
     def type_match(self, _type):
         if self._type is None:

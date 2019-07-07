@@ -5,7 +5,7 @@ capable of parsing  multiple facts
 import logging as root_logger
 import pyparsing as pp
 import IPython
-from py_rule.utils import EXOP
+from py_rule.utils import EXOP, TYPE_DEC_S
 from py_rule.typing.ex_types import MonoTypeVar
 from py_rule.fact_trie.nodes.fact_node import FactNode
 from py_rule.trie.nodes.trie_node import TrieNode
@@ -44,7 +44,7 @@ def make_type_dec(toks):
     elif "_type" in baseName._data and baseName._data["_type"] is not None:
         args.append(baseName._type)
         del baseName._data["_type"]
-    return ("typedec", MonoTypeVar(baseName, path, args))
+    return (TYPE_DEC_S, MonoTypeVar(baseName, path, args))
 
 def make_node(toks):
     value = None

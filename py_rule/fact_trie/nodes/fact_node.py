@@ -1,7 +1,7 @@
 """ The Core Trie-Node, stores information, meta data """
 from py_rule.trie.nodes.trie_node import TrieNode
 from math import floor
-from py_rule.utils import EXOP, ROOT
+from py_rule.utils import EXOP, ROOT_S
 import IPython
 import logging as root_logger
 import py_rule.utils as util
@@ -18,7 +18,7 @@ class FactNode(TrieNode):
     @staticmethod
     def Root():
         """ Get a Root designated node """
-        return FactNode(ROOT, EXOP.DOT)
+        return FactNode(ROOT_S, EXOP.DOT)
 
 
     @staticmethod

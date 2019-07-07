@@ -2,7 +2,10 @@
 from enum import Enum
 from random import choice
 
-ROOT = "__root"
+ROOT_S = "__root"
+TYPE_DEC_S = "typedec"
+BIND_S = "bind"
+
 
 #Trie exclusion operator:
 EXOP = Enum('EXOP', 'DOT EX')

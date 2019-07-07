@@ -5,7 +5,7 @@ class TrieNode:
 
     @staticmethod
     def Root():
-        return TrieNode(utils.ROOT)
+        return TrieNode(utils.ROOT_S)
 
     def __init__(self, value, data=None):
         self._value = value
