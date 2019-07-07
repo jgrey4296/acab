@@ -5,7 +5,7 @@ from py_rule import utils as util
 from py_rule.abstract import actions as Actions
 import IPython
 
-from .FactParser import COMMA, param_fact_string, end, COLON, sLn, comment, N, PARAM_CORE
+from .FactParser import COMMA, param_fact_string, end, COLON, sLn, N, PARAM_CORE
 from .QueryParser import NOT, OPAR, CPAR, BIND
 
 ACTION_STRS = [x for x in Actions.ActionOp.op_list.keys()]
