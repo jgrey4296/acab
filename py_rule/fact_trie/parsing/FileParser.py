@@ -9,6 +9,7 @@ import IPython
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.actions import ActionMacro
 from py_rule.abstract.rule import Rule
+from py_rule.typing.ex_types import TypeDefinition
 from . import FactParser as FP
 from . import RuleParser as RP
 from . import ActionParser as AP
@@ -24,11 +25,14 @@ def final_pass(toks):
     and expands action macros in rules into the actual
     action sequences """
     global parseBindings
+    definitions = []
     rules = []
     assertions = []
     action_macros = {}
     for x in toks:
-        if isinstance(x, Rule):
+        if isinstane(x, TypeDefinition):
+            definitions.append(x)
+        elif isinstance(x, Rule):
             rules.append(x)
         elif isinstance(x, ActionMacro):
             action_macros[x._name] = x

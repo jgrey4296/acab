@@ -1,18 +1,36 @@
+import py_rule.utils as utils
+from py_rule.trie.trie import Trie
+from py_rule.typing.ex_types import TypeDefinition
 from py_rule.trie.nodes.trie_node import TrieNode
 from .type_assignment_node import TypeAssignmentTrieNode
 from py_rule.typing import type_exceptions as te
 
+log_messages = {}
+log_messages['validate_top'] = "Validating: {} on {} ({})"
+log_messages['curr_def'] = "Current Definition to Validate: {} : {} : {}"
+log_messages['curr_use_set'] = "Current Usage Set: {}"
+log_messages['no_children'] = "Val: No Children, assigning type: {} to {}"
+log_messages['match_type_usage'] = "Matching Type {} onto usage set"
+log_messages['mult_child'] = "Current Def has multiple children, checking for conflicts in structure"
+
+
+
 class TypeDefTrieNode(TrieNode):
 
-    def __init__(self, name):
-        logging.debug("TypeDefTrieNode: init: {} / {}".format(node, path))
-        super().__init__(name)
+    def __init__(self, value):
+        logging.debug("TypeDefTrieNode: init: {}".format(value))
+        super().__init__(value)
         self._typedef_trie = None
 
     def __repr__(self):
         return "TypeDefTrieNode: {}".format("".join([repr(x) for x in self.path]))
 
     def set_data(self, data):
+        """ Overrides TrieNode.set_data.
+        Builds the subtrie of a type definition at the end of being added
+        to the definition trie.
+        """
+        assert(isinstance(data, TypeDefinition))
         logging.debug("TypeDef.set_data: {}".format(data))
         if self.data is None:
             self.data = data
