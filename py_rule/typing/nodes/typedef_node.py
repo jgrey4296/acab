@@ -46,11 +46,15 @@ class TypeDefTrieNode(TrieNode):
             raise te.TypeRedefinitionException(self.data)
 
     def validate(self, usage_trie):
+        """ Given a declaration trie node, type check / infer it
+        against self's description of a type.
+        returning a list of nodes that have been inferred
+        """
+        assert(isinstance(usage_trie, TypeAssignmentTrieNode))
         usage_path = "".join([repr(x) for x in usage_trie.path])
         logging.debug(log_messages['validate_top'].format(repr(self),
                                                           repr(usage_trie),
                                                           usage_path))
-        assert(isinstance(usage_trie, TrieNode))
         if self._typedef_trie is None:
             raise TypeUndefinedException(self.name, usage_trie)
 
@@ -58,6 +62,7 @@ class TypeDefTrieNode(TrieNode):
 
         # Loop over all elements of the defined type
         newly_typed = []
+        #The queue is a tuple of the definition node, and its corresponding declaration nodes
         queue = [(self._typedef_trie._root, [usage_trie])]
         while queue:
             curr_def, curr_usage_set = queue.pop(0)

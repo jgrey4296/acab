@@ -32,6 +32,9 @@ class Trie:
         return current
 
     def add(self, path, data, update=None, u_data=None):
+        """ Add the data to the leaf defined by path,
+        updating each node along the way using update and u_data
+        """
         current = self._root
         current_path = []
         for x in path:
