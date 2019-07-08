@@ -16,5 +16,9 @@ engine:
 	@echo "Testing Engine"
 	python -m unittest engine/*_tests.py
 
+typing:
+	@echo "Testing Typing"
+	python -m unittest typing/*_tests.py
+
 clean:
 	-rm *.log
