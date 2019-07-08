@@ -54,10 +54,10 @@ class Trie:
 
     def remove(self, path):
         query = self.query(path[:-1])
-        if query is not None and path[-1] in query._children:
-            if hasattr(path[1], '_value'):
+        if query is not None:
+            if hasattr(path[-1], '_value') and str(path[-1]._value) in query._children:
                 del query._children[str(path[-1]._value)]
-            else:
+            elif str(path[-1]) in query._children:
                 del query._children[str(path[-1])]
 
     def get_nodes(self, pred=None):
