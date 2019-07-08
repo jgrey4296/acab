@@ -1,3 +1,4 @@
+import IPython
 from py_rule.trie.trie import Trie
 from py_rule.abstract.sentence import Sentence
 from .nodes.typedef_node import TypeDefTrieNode
@@ -21,9 +22,9 @@ class TypeChecker:
         self._context_prefix_stack = []
 
     def __str__(self):
-        return "Defs: {}, Decs: {}, Vars: {}".format(str(self._definitions),
-                                                     str(self._declarations),
-                                                     str(self._variables))
+        return "Defs: {}, Decs: {}, Vars: {}".format(str(self._definitions).replace('\n',' '),
+                                                     str(self._declarations).replace('\n',' '),
+                                                     str(self._variables).replace('\n',' '))
 
     def __repr__(self):
         return "TypeChecker({})".format(str(self))
@@ -69,47 +70,50 @@ class TypeChecker:
     def validate(self):
         """ Infer and check types """
 
-        #merge equivalent variables
-        parents_of_equiv_vars = self._declarations.get_nodes(U.has_equivalent_vars_pred)
-        if bool(parents_of_equiv_vars):
-            logging.debug("Has Equivalent Vars")
-            for p in parents_of_equiv_vars:
-                var_nodes = {x._var_node for x in p._children.values() if x.is_var}
-                head = var_nodes.pop()
-                head.merge(var_nodes)
-                [self._variables.remove(x._path) for x in var_nodes]
-
-        #Get known variable types
-        val_queue = set()
-        for x in self._variables.get_nodes(lambda x: x._type is not None):
-            x.propagate()
-            val_queue.update(x.nodes)
-        #And known types generally
-        val_queue.update({y for y in self._declarations.get_nodes(lambda x: x._type is not None)})
+        self._merge_equivalent_nodes()
+        typed_queue = self._get_known_typed_nodes()
 
         #Use known types to infer unknown types
         dealt_with = set()
-        while bool(val_queue):
-            head = val_queue.pop()
+        while bool(typed_queue):
+            head = typed_queue.pop()
             if head in dealt_with:
                 continue
             dealt_with.add(head)
+
             #check the head
             head_type = self._definitions.query(head._type._path)
             if head_type is None:
                 raise te.TypeUndefinedException(head._type, head)
 
+            #Propagate the type to all connected variables
+            if head._is_var:
+                head._var_node.type_match(head._type)
+                head._var_node.propagate()
+                typed_queue.update(head._var_node._nodes)
+
             #Apply a known type to a node, get back newly inferred types
-            newly_typed = head_type.validate(head)
-            for x in newly_typed:
-                val_queue.add(x)
-                if x._is_var:
-                    #If inferred the type of a variable,
-                    #apply it to the var_type node
-                    x._var_node.type_match(x._type)
-                    val_queue.update(x.var_node._nodes)
+            typed_queue.update(head_type.validate(head))
 
         return True
+
+
+    def _get_known_typed_nodes(self):
+        #propagate known variable types
+        [x.propagate() for x in self._variables.get_nodes(lambda x: x._type is not None)]
+        #get all known declared types
+        val_queue = {y for y in self._declarations.get_nodes(lambda x: x._type is not None)}
+        return val_queue
+
+    def _merge_equivalent_nodes(self):
+        """ merge equivalent variables. ie:
+        a.b.$c and a.b.$d share the same ._variables node """
+        parents_of_equiv_vars = self._declarations.get_nodes(U.has_equivalent_vars_pred)
+        for p in parents_of_equiv_vars:
+            var_nodes = {x._var_node for x in p._children.values() if x._is_var}
+            head = var_nodes.pop()
+            head.merge(var_nodes)
+            [self._variables.remove([x]) for x in var_nodes]
 
 
     def add_definition(self, definition):
