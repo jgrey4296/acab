@@ -125,8 +125,14 @@ class TypeChecker:
     def add_rule(self, value):
         #prefix variables
         current_prefix = self._context_prefix_stack[-1]
-        #add the conditions
+        for c in value._query._clauses:
+            #add the conditions
+            continue
 
-        #add the transforms
+        for t in value._transform._components:
+            #add the transforms
+            continue
 
-        #add the actions
+        for a in value._actions:
+            #add the actions
+            continue
