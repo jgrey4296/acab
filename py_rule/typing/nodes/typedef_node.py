@@ -23,7 +23,7 @@ class TypeDefTrieNode(TrieNode):
         self._typedef_trie = None
 
     def __repr__(self):
-        return "TypeDefTrieNode: {}".format("".join([repr(x) for x in self.path]))
+        return "TypeDefTrieNode({})".format("".join([repr(x) for x in self.path]))
 
     def set_data(self, data):
         """ Overrides TrieNode.set_data.
@@ -114,6 +114,7 @@ class TypeDefTrieNode(TrieNode):
 
 
     def _make_type_var_lookup(self, usage_trie):
+        """ Generate a temporary binding environment for the definition's type parameters """
         type_var_lookup = {}
         if self.data._vars and usage_trie._type and usage_trie._type._args:
             zipped = zip(self.data._vars, usage_trie._type._args)
@@ -121,18 +122,21 @@ class TypeDefTrieNode(TrieNode):
         return type_var_lookup
 
     def _typedef_var_lookup(self, curr_def, type_var_lookup):
+        """ Use the temporary binding environment to lookup the relevant type declaration """
         if curr_def._is_var and curr_def._value in type_var_lookup:
             return type_var_lookup[curr_def._value]
         elif curr_def._type is not None:
             return curr_def._type.build_type_declaration(type_var_lookup)
 
     def _handle_vars(self, curr_def, curr_usage_set):
+        """ Compare Defined Structure to actual structure """
         if curr_def.name != utils.ROOT:
             for x in curr_usage_set:
                 if not x._is_var and curr_def._value != x._value:
                     raise te.TypeStructureMismatch(curr_def._value, [x._value])
 
     def _match_on_set(self, usage_set, def_type):
+        """ Apply type declarations to nodes """
         type_attempts = [x.type_match(def_type) for x in usage_set]
         return [x for x in type_attempts if x is not None]
 
