@@ -91,15 +91,15 @@ class TrieNode:
 
     def opless_print(self):
         val = str(self._value)
-        if self._data['value_type'] == "string":
+        if utils.VALUE_TYPE_S in self._data and self._data[utils.VALUE_TYPE_S] == "string":
             val = '"{}"'.format(val)
-        elif self._data['value_type'] == 'float':
+        elif utils.VALUE_TYPE_S in self._data and self._data[utils.VALUE_TYPE_S] == 'float':
             val = val.replace(".", "d")
 
-        if 'bind' in self._data and self._data['bind']:
+        if utils.BIND_S in self._data and self._data[utils.BIND_S]:
             val = "$" + val
-        if 'constraints' in self._data:
-            constraints = ", ".join(str(x) for x in self._data['constraints'])
+        if utils.CONSTRAINT_S in self._data:
+            constraints = ", ".join(str(x) for x in self._data[utils.CONSTRAINT_S])
             val += "({})".format(constraints)
         return val
 
