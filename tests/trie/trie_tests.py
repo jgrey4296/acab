@@ -2,9 +2,9 @@ import unittest
 import logging
 from test_context import py_rule
 from py_rule.trie.trie import Trie
+from py_rule.trie.nodes.trie_node import TrieNode
 
-
-class (unittest.TestCase):
+class TrieTests(unittest.TestCase):
 
     def setUp(self):
         return 1
@@ -14,20 +14,58 @@ class (unittest.TestCase):
 
     #----------
     def test_initial_test(self):
+        t = Trie()
+        self.assertIsNotNone(t)
+        self.assertIsNotNone(t._root)
 
-    def test_node_spec(self):
+    def test_empty(self):
+        t = Trie()
+        self.assertEqual(0, len(t))
+        self.assertFalse(bool(t))
 
     def test_trie_add(self):
-
-    def test_trie_remove(self):
+        t = Trie()
+        self.assertEqual(0, len(t))
+        t.add(['a'])
+        self.assertEqual(1, len(t))
+        t.add(['b'])
+        self.assertEqual(2, len(t))
 
     def test_trie_query(self):
+        t = Trie()
+        self.assertEqual(0, len(t))
+        t.add(['a','b','c'])
+        self.assertEqual(3, len(t))
+        result = t.query(['a','b','c'])
+        self.assertIsInstance(result, TrieNode)
+        self.assertEqual(result._value, 'c')
+
+    def test_trie_query_fail(self):
+        t = Trie()
+        self.assertEqual(0, len(t))
+        t.add(['a','b','c'])
+        self.assertEqual(3, len(t))
+        result = t.query(['a','b','d'])
+        self.assertIsNone(result)
+
+    def test_trie_remove(self):
+        t = Trie()
+        self.assertEqual(0, len(t))
+        t.add(['a','b','c'])
+        self.assertEqual(3, len(t))
+        t.remove(['a','b','c'])
+        self.assertEqual(2, len(t))
+        result = t.query(['a','b','c'])
+        self.assertIsNone(result)
 
     def test_trie_get_nodes(self):
-
-    def test_trie_print(self):
-
-        
+        t = Trie()
+        self.assertEqual(0, len(t))
+        t.add(['a','b','c'])
+        self.assertEqual(3, len(t))
+        nodes = t.get_nodes()
+        self.assertEqual(3, len(nodes))
+        self.assertEqual({x._value for x in nodes}, {'a','b','c'})
 
 
 if __name__ == "__main__":
