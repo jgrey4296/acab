@@ -1,5 +1,8 @@
 from py_rule.trie.nodes.trie_node import TrieNode
 from py_rule.utils import TYPE_DEC_S
+import logging as root_logger
+logging = root_logger.getLogger(__name__)
+
 
 class M_TypedNode(TrieNode):
 
