@@ -19,7 +19,7 @@ class Trie:
         return "Trie: {}".format(len(self.get_nodes()))
 
     def __len__(self):
-        return len(self.get_nodes(lambda x: not bool(x)))
+        return len(self.get_nodes(lambda x: True))
 
     def query(self, path):
         current = self._root
@@ -31,7 +31,7 @@ class Trie:
                 return None
         return current
 
-    def add(self, path, data, update=None, u_data=None):
+    def add(self, path, data=None, update=None, u_data=None):
         """ Add the data to the leaf defined by path,
         updating each node along the way using update and u_data
         """
@@ -54,12 +54,15 @@ class Trie:
 
     def remove(self, path):
         query = self.query(path[:-1])
-        if query is not None and path[-1].name in query._children:
-            del query._children[path[-1].name]
+        if query is not None and path[-1] in query._children:
+            if hasattr(path[1], '_value'):
+                del query._children[str(path[-1]._value)]
+            else:
+                del query._children[str(path[-1])]
 
     def get_nodes(self, pred=None):
         nodes = []
-        queue = [self._root]
+        queue = list(self._root._children.values())
         visited = set()
         while queue:
             current = queue.pop(0)
