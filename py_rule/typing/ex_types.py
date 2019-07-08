@@ -68,7 +68,7 @@ class MonoTypeVar(Type):
         return "(::{}{})".format(self._name, args)
 
     def __str__(self):
-        return self._name.name
+        return self._name
 
     def __eq__(self, other):
         #todo: match inheritance
@@ -91,6 +91,6 @@ class MonoTypeVar(Type):
                                new_type._args)
 
         new_args = [the_dict[str(x)] if str(x) in the_dict else x for x in self._args]
-        return MonoTypeVar(self.name,
-                           self.path,
+        return MonoTypeVar(self._name,
+                           self._path,
                            new_args)
