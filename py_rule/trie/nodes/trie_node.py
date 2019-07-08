@@ -59,15 +59,25 @@ class TrieNode:
         return iter(self._children.values())
 
 
+    def set_data(self, data):
+        if data is not None:
+            self._data.update(data)
+
     def add_child(self, node):
         self._children[str(node._value)] = node
         return node
 
     def get_child(self, node):
-        return self._children[str(node._value)]
+        if hasattr(node, '_value'):
+            return self._children[str(node._value)]
+        else:
+            return self._children[str(node)]
 
     def has_child(self, node):
-        return str(node._value) in self._children
+        if hasattr(node, '_value'):
+            return str(node._value) in self._children
+        else:
+            return str(node) in self._children
 
     def remove_child(self, node):
         if node in self:
