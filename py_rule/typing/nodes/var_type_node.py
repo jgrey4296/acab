@@ -10,10 +10,11 @@ class VarTypeTrieNode(M_TypedNode):
         self._var_names = set([])
 
     def __repr__(self):
+        type_str = "0"
         if self._type is not None:
-            return "VarType: {} ({})".format(repr(self._type), len(self.nodes))
-        else:
-            return "VT: 0 {}".format(len(self.nodes))
+            type_str = repr(self._type)
+
+        return "VarType( {} ; {})".format(type_str, len(self.nodes))
 
     def add_var_name(self, node):
         self._var_names.add(node._value)
