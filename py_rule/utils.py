@@ -4,8 +4,10 @@ from random import choice
 
 ROOT_S = "__root"
 TYPE_DEC_S = "typedec"
+TYPE_DEF_S = "typedef"
 BIND_S = "bind"
-
+VALUE_TYPE_S = "value_type"
+CONSTRAINT_S = "constraints"
 
 #Trie exclusion operator:
 EXOP = Enum('EXOP', 'DOT EX')
