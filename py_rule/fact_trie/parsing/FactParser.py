@@ -5,7 +5,7 @@ capable of parsing  multiple facts
 import logging as root_logger
 import pyparsing as pp
 import IPython
-from py_rule.utils import EXOP, TYPE_DEC_S
+from py_rule.utils import EXOP, TYPE_DEC_S, BIND_S, OPERATOR_S, VALUE_TYPE_S
 from py_rule.typing.ex_types import MonoTypeVar
 from py_rule.fact_trie.nodes.fact_node import FactNode
 from py_rule.trie.nodes.trie_node import TrieNode
@@ -41,28 +41,28 @@ def make_type_dec(toks):
     args = []
     if 'ARGS' in toks:
         args = toks.ARGS[:]
-    elif "_type" in baseName._data and baseName._data["_type"] is not None:
+    elif TYPE_DEC_S in baseName._data and baseName._data[TYPE_DEC_S] is not None:
         args.append(baseName._type)
-        del baseName._data["_type"]
+        del baseName._data[TYPE_DEC_S]
     return (TYPE_DEC_S, MonoTypeVar(baseName, path, args))
 
 def make_node(toks):
     value = None
-    data = {'bind' : False,
-            'op' : EXOP.DOT}
-    if 'bind' in toks:
+    data = {BIND_S : False,
+            OPERATOR_S : EXOP.DOT}
+    if BIND_S in toks:
         value = toks.bind[0][1]
-        data['value_type'] = 'name'
-        data['bind'] = True
+        data[VALUE_TYPE_S] = 'name'
+        data[BIND_S] = True
     elif 'value' in toks:
         value = toks.value[1]
-        data['value_type'] = toks.value[0]
+        data[VALUE_TYPE_S] = toks.value[0]
     return TrieNode(value, data)
 
 def add_annotations(toks):
     data = {}
     if 'op' in toks:
-        data['op'] = toks.op[0]
+        data[OPERATOR_S] = toks.op[0]
     if 'annotations' in toks:
         data.update({x:y for x,y in toks.annotations})
     toks.node._data.update(data)
