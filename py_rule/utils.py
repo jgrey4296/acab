@@ -8,6 +8,7 @@ TYPE_DEF_S = "typedef"
 BIND_S = "bind"
 VALUE_TYPE_S = "value_type"
 CONSTRAINT_S = "constraints"
+OPERATOR_S = "operator"
 
 #Trie exclusion operator:
 EXOP = Enum('EXOP', 'DOT EX')
