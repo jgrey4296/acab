@@ -44,32 +44,32 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
     def test_basic_query_core(self):
         result = QP.QueryCore.parseString('a(>20).')[0]
         self.assertTrue('constraints' in result._data)
-        self.assertEqual(len(result._data['constraints']), 1)
-        self.assertIsInstance(result._data['constraints'][0], Comparison)
+        self.assertEqual(len(result._data[util.CONSTRAINT_S]), 1)
+        self.assertIsInstance(result._data[util.CONSTRAINT_S][0], Comparison)
 
     def test_basic_query_core_multi_comparison(self):
         result = QP.QueryCore.parseString('a(>20, <30).')[0]
-        self.assertEqual(len(result._data['constraints']), 2)
-        self.assertTrue(all([isinstance(x, Comparison) for x in result._data['constraints']]))
+        self.assertEqual(len(result._data[util.CONSTRAINT_S]), 2)
+        self.assertTrue(all([isinstance(x, Comparison) for x in result._data[util.CONSTRAINT_S]]))
 
     def test_basic_query_core_with_exclusion(self):
         result = QP.QueryCore.parseString('a(>20)!')[0]
-        self.assertEqual(result._data['op'], EXOP.EX)
+        self.assertEqual(result._data[util.OPERATOR_S], EXOP.EX)
 
     def test_basic_clause(self):
         result = QP.clause.parseString('a.b.c?')[0]
         self.assertIsInstance(result, Sentence)
         self.assertEqual(len(result), 3)
         self.assertEqual(result[-1]._value, 'c')
-        self.assertEqual(result[-1]._data['op'], EXOP.DOT)
+        self.assertEqual(result[-1]._data[util.OPERATOR_S], EXOP.DOT)
 
     def test_basic_clause_with_bind(self):
         result = QP.clause.parseString('a.b.$c?')[0]
         self.assertIsInstance(result, Sentence)
         self.assertEqual(len(result), 3)
         self.assertEqual(result[-1]._value, 'c')
-        self.assertEqual(result[-1]._data['op'], EXOP.DOT)
-        self.assertTrue(result[-1]._data['bind'])
+        self.assertEqual(result[-1]._data[util.OPERATOR_S], EXOP.DOT)
+        self.assertTrue(result[-1]._data[util.BIND_S])
 
     def test_basic_negated_clause(self):
         result = QP.clause.parseString('~a.b.c?')[0]
