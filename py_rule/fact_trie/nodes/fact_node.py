@@ -1,7 +1,7 @@
 """ The Core Trie-Node, stores information, meta data """
 from py_rule.trie.nodes.trie_node import TrieNode
 from math import floor
-from py_rule.utils import EXOP, ROOT_S
+from py_rule.utils import EXOP, ROOT_S, OPERATOR_S, BIND_S
 import IPython
 import logging as root_logger
 import py_rule.utils as util
@@ -28,8 +28,8 @@ class FactNode(TrieNode):
         else:
             assert(isinstance(node, TrieNode))
             operator = EXOP.DOT
-            if 'op' in node._data:
-                operator = node._data['op']
+            if OPERATOR_S in node._data:
+                operator = node._data[OPERATOR_S]
             new_node = FactNode(node._value,
                                 operator,
                                 data=node._data)
@@ -65,7 +65,7 @@ class FactNode(TrieNode):
 
     def __contains__(self, other):
         if self.has_child(other):
-            return self.get_child(other)._data['op'] == other._data['op']
+            return self.get_child(other)._data[OPERATOR_S] == other._data[OPERATOR_S]
         return False
 
     def copy(self):
@@ -106,7 +106,7 @@ class FactNode(TrieNode):
         assert(isinstance(fact, TrieNode))
         if fact in self:
             potential = self.get_child(fact)
-            if fact._data['op'] == potential._data['op']:
+            if fact._data[OPERATOR_S] == potential._data[OPERATOR_S]:
                 return potential
 
         return None
@@ -119,7 +119,7 @@ class FactNode(TrieNode):
 
     def bind(self, data):
         """ Annotate the Node with a Meta-Bind Evaluation """
-        if not self._data['bind']:
+        if not self._data[BIND_S]:
             return self.copy()
         else:
             copied = self.copy()
