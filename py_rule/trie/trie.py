@@ -10,7 +10,7 @@ class Trie:
 
     def __init__(self, node_type=TrieNode):
         self._root = node_type.Root()
-        self.node_type = node_type
+        self._node_type = node_type
 
     def __str__(self):
         return self.print_trie()
@@ -35,30 +35,29 @@ class Trie:
         """ Add the data to the leaf defined by path,
         updating each node along the way using update and u_data
         """
+        wrapped_path = [self._node_type(x) for x in path]
+
         current = self._root
         current_path = []
-        for x in path:
+        for x,y  in zip(wrapped_path, path):
             current_path.append(x)
             if current.has_child(x):
                 current = current.get_child(x)
                 logging.debug("Trie: Retrieved: {}".format(current))
             else:
-                current = current.add_child(self.node_type(x))
+                current = current.add_child(x)
                 logging.debug("Trie: Added: {}".format(current))
             if update is not None:
-                update(current, x, current_path, u_data)
+                update(current, y, current_path, u_data)
 
         current.set_data(data)
 
         return current
 
     def remove(self, path):
-        query = self.query(path[:-1])
-        if query is not None:
-            if hasattr(path[-1], '_value') and str(path[-1]._value) in query._children:
-                del query._children[str(path[-1]._value)]
-            elif str(path[-1]) in query._children:
-                del query._children[str(path[-1])]
+        query_result = self.query(path[:-1])
+        if query_result is not None:
+            query_result.remove_child(path[-1])
 
     def get_nodes(self, pred=None):
         nodes = []
