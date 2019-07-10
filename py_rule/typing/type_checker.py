@@ -1,4 +1,5 @@
 import IPython
+import py_rule.utils as utils
 from py_rule.trie.trie import Trie
 from py_rule.abstract.sentence import Sentence
 from .nodes.typedef_node import TypeDefTrieNode
@@ -19,7 +20,6 @@ class TypeChecker:
         self._definitions = Trie(TypeDefTrieNode)
         self._declarations = Trie(TypeAssignmentTrieNode)
         self._variables = Trie(VarTypeTrieNode)
-        self._context_prefix_stack = []
 
     def __str__(self):
         return "Defs: {}, Decs: {}, Vars: {}".format(str(self._definitions).replace('\n',' '),
@@ -46,25 +46,32 @@ class TypeChecker:
             self.pop_typing_context()
 
 
-    def pop_typing_context(self):
-        """ Pop a typechecking context """
-        self._context_prefix_stack.pop()
+    def clear_context(self):
+        """ Clear variables """
+        # Clear self._variables and unregister its nodes from
+        #vars in declarations
 
-    def push_typing_context(self, prefix):
-        """ Push a typechecking context """
-        self._context_prefix_stack.append(prefix)
+        #remove all sentences in declarations that start with a variable
 
-    def query(self, sen):
+    def query(self, queries):
         """ Get the type of a sentence leaf """
-        queries = []
-        for line in query:
+        if isinstance(queries, Sentence):
+            queries = [queries]
+
+        results= []
+        for line in queries:
             queried = self._declarations.query(line)
-            if line[-1]._type is not None and queried._type != line[-1]._type:
-                raise te.TypeConflictException(line[-1]._type,
-                                               queried._type,
+            if queried is None:
+                continue
+            line_is_typed = utils.TYPE_DEC_S in line[-1]._data
+            result_is_typed = utils.TYPE_DEC_S in queried._data
+            types_match = line_is_typed and result_is_typed and line[-1]._data[utils.TYPE_DEC_S] == queried._data[utils.TYPE_DEC_S]
+            if line_is_typed and result_is_typed and not types_match:
+                raise te.TypeConflictException(line[-1]._data[utils.TYPE_DEC_S],
+                                               queried._data[utils.TYPE_DEC_S],
                                                "".join([str(x) for x in line]))
-            queries.append(queried)
-        return queries
+            results.append(queried)
+        return results
 
 
     def validate(self):
