@@ -12,14 +12,14 @@ class TypeRedefinitionException(Exception):
 class TypeConflictException(Exception):
 
     def __init__(self, env_type, new_type, stmt):
-        self.env_type = env_type
-        self.new_type = new_type
-        self.stmt = stmt
+        self._env_type = env_type
+        self._new_type = new_type
+        self._stmt = stmt
 
     def __str__(self):
-        return "Exception: Expected {} but type has {} in {}".format(self.env_type,
-                                                                     self.new_type,
-                                                                     self.stmt)
+        return "Exception: Expected ({}) but got ({}) in {} ".format(self._env_type,
+                                                                self._new_type,
+                                                                self._stmt)
 
 
     __repr__ = __str__
@@ -33,7 +33,6 @@ class TypeUndefinedException(Exception):
     def __str__(self):
         return "Exception: Attempted to declare as missing type {} in {}".format(self.attempted_type,
                                                                                  self.stmt)
-
 
 class TypeVariableConflictException(Exception):
 
@@ -50,5 +49,6 @@ class TypeStructureMismatch(Exception):
         self.conflicts = conflicts
 
     def __str__(self):
-        return "{} Structure Mismatch: {}".format(self.typename,
-                                                  ", ".join(self.conflicts))
+        return "{} Structure Mismatch: {}".format(str(self.typename),
+                                                  ", ".join([str(x) for x in self.conflicts]))
+
