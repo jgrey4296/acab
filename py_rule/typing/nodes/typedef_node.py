@@ -1,4 +1,5 @@
 import py_rule.utils as utils
+import IPython
 import py_rule.typing.util as U
 from py_rule.trie.trie import Trie
 from py_rule.typing.ex_types import TypeDefinition
@@ -61,61 +62,36 @@ class TypeDefTrieNode(TrieNode):
         if self._typedef_trie is None:
             raise TypeUndefinedException(self.name, usage_trie)
 
-        type_var_lookup = self._make_type_var_lookup(usage_trie)
-
+        type_var_lookup = self._generate_polytype_bindings(usage_trie)
         # Loop over all elements of the defined type
         newly_typed = []
         #The queue is a tuple of the definition node, and its corresponding declaration nodes
         queue = [(self._typedef_trie._root, [usage_trie])]
         while queue:
             curr_def, curr_usage_set = queue.pop(0)
-
             self._log_status(curr_def, curr_usage_set)
+            curr_def_type = self._retrieve_type_declaration(curr_def, type_var_lookup)
+            self._check_local_type_structure(curr_def, curr_usage_set)
 
-            #use stored type variables if on a typedef variable node
-            curr_def_type = self._typedef_var_lookup(curr_def, type_var_lookup)
-
-            # if you are at the root, check you aren't
-            #a variable reference to elsewhere
-            self._handle_vars(curr_def, curr_usage_set)
-
-            #if there are no children, assign a type and finish
+            #Handle Children:
             if not bool(curr_def) and curr_def_type is not None:
                 self._log_no_children(curr_def, curr_def_type, curr_usage_set)
-                newly_typed += self._match_on_set(curr_usage_set, curr_def_type)
-
-            #if there is one child, match all usage set against it
+                newly_typed += self._apply_type_to_set(curr_usage_set, curr_def_type)
             elif len(curr_def) == 1:
-                logging.debug("Curr Def has a single child")
-                child = list(curr_def._children.values())[0]
-                if curr_def_type is not None:
-                    self._log_match_type_usage(curr_def_type)
-                    newly_typed += self._match_on_set(curr_usage_set, curr_def_type)
-
-                new_usage_set = [y for x in curr_usage_set for y in x._children.values()]
-                if bool(new_usage_set):
-                    queue.append((child, new_usage_set))
-
+                inferred, queue_vals = self._handle_single_child(curr_def,
+                                                                curr_usage_set,
+                                                                curr_def_type)
+                newly_typed += inferred
+                queue +=  queue_vals
             else: #curr_def._children > 1
-                logging.debug(log_messages['mult_child'])
-                # With multiple children, match keys
-                defset = { x for x in curr_def._children.keys() }
-                usageset = { y for x in curr_usage_set for y,n in x._children.items() if not n._is_var }
-                conflicts = usageset.difference(defset)
-                if bool(conflicts):
-                    raise te.TypeStructureMismatch(curr_def.path,
-                                                   conflicts)
-                logging.debug("No Conflicts found, checking children")
-                for key in usageset:
-                    new_usage_set = [x._children[key] for x in curr_usage_set if key in x._children]
-                    new_child = curr_def._children[key]
-                    if bool(new_usage_set):
-                        queue.append((new_child, new_usage_set))
+                queue += self._handle_multiple_children(curr_def,
+                                                        curr_usage_set,
+                                                        curr_def_type)
             logging.debug("----------")
         return newly_typed
 
 
-    def _make_type_var_lookup(self, usage_trie):
+    def _generate_polytype_bindings(self, usage_trie):
         """ Generate a temporary binding environment for the definition's type parameters """
         type_var_lookup = {}
         if self._data[utils.TYPE_DEF_S]._vars and usage_trie._type and usage_trie._type._args:
@@ -123,24 +99,60 @@ class TypeDefTrieNode(TrieNode):
             type_var_lookup = { x : y for x,y in zipped }
         return type_var_lookup
 
-    def _typedef_var_lookup(self, curr_def, type_var_lookup):
+    def _retrieve_type_declaration(self, curr_def, type_var_lookup):
         """ Use the temporary binding environment to lookup the relevant type declaration """
         if U.is_var(curr_def) and curr_def._value in type_var_lookup:
             return type_var_lookup[curr_def._value]
         elif curr_def._type is not None:
             return curr_def._type.build_type_declaration(type_var_lookup)
 
-    def _handle_vars(self, curr_def, curr_usage_set):
+
+    def _check_local_type_structure(self, curr_def, curr_usage_set):
         """ Compare Defined Structure to actual structure """
         if curr_def._value != utils.ROOT_S:
             for x in curr_usage_set:
-                if not x._is_var and curr_def._value != x._value:
-                    raise te.TypeStructureMismatch(curr_def._value, [x._value])
+                if not x._is_var and curr_def.value_string() != x.value_string():
+                    raise te.TypeStructureMismatch(curr_def.value_string(), [x.value_string()])
 
-    def _match_on_set(self, usage_set, def_type):
+    def _apply_type_to_set(self, usage_set, def_type):
         """ Apply type declarations to nodes """
         type_attempts = [x.type_match(def_type) for x in usage_set]
         return [x for x in type_attempts if x is not None]
+
+
+    def _handle_single_child(self, curr_def, curr_usage_set, curr_def_type):
+        logging.debug("Curr Def has a single child")
+        newly_typed = []
+        queue_vals = []
+        child = list(curr_def._children.values())[0]
+        if curr_def_type is not None:
+            self._log_match_type_usage(curr_def_type)
+            newly_typed += self._apply_type_to_set(curr_usage_set, curr_def_type)
+
+        new_usage_set = [y for x in curr_usage_set for y in x._children.values()]
+        if bool(new_usage_set):
+            queue_vals.append((child, new_usage_set))
+
+        return newly_typed, queue_vals
+
+    def _handle_multiple_children(self, curr_def, curr_usage_set, curr_def_type):
+        logging.debug(log_messages['mult_child'])
+        # With multiple children, match keys
+        queue_vals = []
+        defset = { x for x in curr_def._children.keys() }
+        usageset = { y for x in curr_usage_set for y,n in x._children.items() if not n._is_var }
+        conflicts = usageset.difference(defset)
+        if bool(conflicts):
+            raise te.TypeStructureMismatch(curr_def.path,
+                                           conflicts)
+        logging.debug("No Conflicts found, checking children")
+        for key in usageset:
+            new_usage_set = [x._children[key] for x in curr_usage_set if key in x._children]
+            new_child = curr_def._children[key]
+            if bool(new_usage_set):
+                queue_vals.append((new_child, new_usage_set))
+
+        return queue_vals
 
 
     def _log_status(self, curr_def, curr_usage_set):
