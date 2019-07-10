@@ -17,25 +17,25 @@ class TrieNode:
     def __str__(self):
         """ Usable output """
         val = ""
-        if 'value_type' not in self._data:
+        if utils.VALUE_TYPE_S not in self._data:
             val = str(self._value)
-        elif 'value_type' in self._data and self._data['value_type'] == "string":
+        elif utils.VALUE_TYPE_S in self._data and self._data[utils.VALUE_TYPE_S] == "string":
             val = '"{}"'.format(self._value)
-        elif self._data['value_type'] == 'float':
+        elif self._data[utils.VALUE_TYPE_S] == 'float':
             val = str(self._value)
             val.replace(".", "d")
         else:
             val = str(self._value)
 
-        if 'bind' in self._data and self._data['bind']:
+        if utils.BIND_S in self._data and self._data[utils.BIND_S]:
             val = "$" + val
 
-        if 'constraints' in self._data:
-            constraints = ", ".join(str(x) for x in self._data['constraints'])
+        if utils.CONSTRAINT_S in self._data:
+            constraints = ", ".join(str(x) for x in self._data[utils.CONSTRAINT_S])
             val += "({})".format(constraints)
 
-        if 'op' in self._data:
-            val += utils.EXOP_lookup[self._data['op']]
+        if utils.OPERATOR_S in self._data:
+            val += utils.EXOP_lookup[self._data[utils.OPERATOR_S]]
 
         return val
 
@@ -59,29 +59,38 @@ class TrieNode:
         return iter(self._children.values())
 
 
+    def value_string(self):
+        if isinstance(self._value, TrieNode):
+            return self._value.value_string()
+        else:
+            return str(self._value)
+
     def set_data(self, data):
         if data is not None:
             self._data.update(data)
 
     def add_child(self, node):
-        self._children[str(node._value)] = node
+        self._children[node.value_string()] = node
         return node
 
     def get_child(self, node):
-        if hasattr(node, '_value'):
-            return self._children[str(node._value)]
+        if isinstance(node, str):
+            return self._children[node]
         else:
-            return self._children[str(node)]
+            return self._children[node.value_string()]
 
     def has_child(self, node):
-        if hasattr(node, '_value'):
-            return str(node._value) in self._children
+        if isinstance(node, str):
+            return node in self._children
         else:
-            return str(node) in self._children
+            return node.value_string() in self._children
 
     def remove_child(self, node):
         if node in self:
-            del self._children[str(node._value)]
+            if isinstance(node, str):
+                del self._children[node]
+            else:
+                del self._children[node.value_string()]
             return True
 
         return False
@@ -111,10 +120,10 @@ class TrieNode:
 
     def split_tests(self):
         """ Split tests into (alphas, betas, regexs) """
-        if 'constraints' not in self._data:
+        if utils.CONSTRAINT_S not in self._data:
             return ([], [], [])
 
-        comps = self._data['constraints']
+        comps = self._data[utils.CONSTRAINT_S]
         assert(isinstance(comps, list))
         alphas = []
         betas = []
@@ -130,7 +139,7 @@ class TrieNode:
 
     def is_exclusive(self):
         """ Checks for the exclusion operator in this node """
-        return self._data['op'] is utils.EXOP.EX
+        return self._data[utils.OPERATOR_S] is utils.EXOP.EX
 
     def looks_exclusive(self):
         """ Checks for implicit exclusivity by having 0 or 1 children """
