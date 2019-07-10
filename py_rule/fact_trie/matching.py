@@ -37,7 +37,7 @@ def non_bind_value_match(a, b, betas, regexs, data):
     assert(isinstance(b, TrieNode))
     tested = False
     newNode, newData = (None, None)
-    if not a._data['bind']:
+    if not a._data[util.BIND_S]:
         logging.info("Not Bind: {}|{}".format(str(a) , b._children.keys()))
         tested = True
         if a in b:# and test_betas(a._value, betas,data):
@@ -53,7 +53,7 @@ def existing_bind_match(a, b, betas, regexs, data):
     assert(isinstance(b, TrieNode))
     tested = False
     newNode, newData = (None, None)
-    if a._value in data:
+    if a_value in data:
         tested = True
         if data[a._value] in b._children and test_betas(data[a._value], betas, data):
             newData, newNode = b._children[data[a._value]].test_regexs_for_matching(regexs, data)
