@@ -444,18 +444,59 @@ class TypingTests(unittest.TestCase):
 
         self.assertEqual(tc.query(query_sen1)[0]._type, MonoTypeVar("String", ["String"]))
 
-
-
-
-
-
-    def test_typing_polytype_nested_fail(self):
+    def test_typing_polytype_multi_param(self):
         """ ::String: END, ::Number: END
         ::ptypeOne[$x, $y]: place.$x, age.$y END
-        a(::ptypeOne(::String, ::Number)).place.$x
-        a.age.$x
+        a(::ptypeOne(::String, ::Number)).place.$q
+        a.age.$w
         """
-        return
+        tc = TypeChecker()
+        tc.add_definition(TypeDefinition("String", ["String"], [], []))
+        tc.add_definition(TypeDefinition("Number", ["Number"], [], []))
+
+        #polytype
+        type_1_sen = Sentence([TrieNode(x) for x in ["name", "x"]])
+        type_1_sen[-1]._data[utils.BIND_S] = True
+        param = TrieNode("x")
+        param._data[utils.BIND_S] = True
+        type_2_sen = Sentence([TrieNode(x) for x in ["age", "y"]])
+        type_2_sen[-1]._data[utils.BIND_S] = True
+        param2 = TrieNode("y")
+        param2._data[utils.BIND_S] = True
+        tc.add_definition(TypeDefinition("polyType",
+                                         ["polyType"],
+                                         [type_1_sen, type_2_sen],
+                                         [param, param2]))
+
+        #assertions
+        assertion = Sentence(TrieNode(x) for x in ["a", "name", "q"])
+        assertion[0]._data[utils.TYPE_DEC_S] = MonoTypeVar("polyType",
+                                                           ["polyType"],
+                                                           [MonoTypeVar("String", ["String"]),
+                                                            MonoTypeVar("Number", ["Number"])])
+        assertion[-1]._data[utils.BIND_S] = True
+        tc.add_assertion(assertion)
+
+        assertion2 = Sentence(TrieNode(x) for x in ["a", "age", "w"])
+        assertion2[-1]._data[utils.BIND_S] = True
+        tc.add_assertion(assertion2)
+
+        #queries
+        query_sen1 = Sentence([TrieNode(x) for x in ["a","name","q"]])
+        query_sen1[-1]._data[utils.BIND_S] = True
+
+        query_sen2 = Sentence([TrieNode(x) for x in ["a","age","w"]])
+        query_sen2[-1]._data[utils.BIND_S] = True
+
+        self.assertIsNone(tc.query(query_sen1)[0]._type)
+        self.assertIsNone(tc.query(query_sen2)[0]._type)
+
+        tc.validate()
+
+        self.assertEqual(tc.query(query_sen1)[0]._type, MonoTypeVar("String", ["String"]))
+        self.assertEqual(tc.query(query_sen2)[0]._type, MonoTypeVar("Number", ["Number"]))
+
+
 
     def test_add_rule(self):
 	    return
