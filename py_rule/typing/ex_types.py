@@ -1,5 +1,6 @@
 import logging as root_logger
 import IPython
+from py_rule.utils import BIND_S
 logging = root_logger.getLogger(__name__)
 
 
@@ -25,7 +26,7 @@ class TypeDefinition(Type):
         self._structure = structure
         self._vars = []
         if tvars is not None:
-            assert(all([x._data['bind'] for x in tvars]))
+            assert(all([x._data[BIND_S] for x in tvars]))
             self._vars += tvars
 
     def __str__(self):
@@ -82,7 +83,6 @@ class MonoTypeVar(Type):
     def __lt__(self, other):
         raise Exception("To be implemented")
 
-
     def build_type_declaration(self, the_dict):
         if str(self) in the_dict:
             new_type = the_dict[str(self)]
@@ -90,7 +90,5 @@ class MonoTypeVar(Type):
                                new_type._path,
                                new_type._args)
 
-        new_args = [the_dict[str(x)] if str(x) in the_dict else x for x in self._args]
-        return MonoTypeVar(self._name,
-                           self._path,
-                           new_args)
+        new_args = [the_dict[x.value_string()] if x.value_string() in the_dict else x for x in self._args]
+        return MonoTypeVar(self._name, self._path, new_args)
