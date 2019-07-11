@@ -396,11 +396,60 @@ class TypingTests(unittest.TestCase):
 
     def test_typing_polytype_nested(self):
         """ ::String: END, ::Number: END
-        ::ptypeOne[$x]: place.$x END
+        ::ptypeOne[$x]: name.$x END
         ::ptypeTwo[$y]: nested(::ptypeOne(::$y)) END
-        a(::ptypeTwo(::String)).nested.place.$x
+        a(::ptypeTwo(::String)).nested.name.$x
         """
-        return
+        tc = TypeChecker()
+        tc.add_definition(TypeDefinition("String", ["String"], [], []))
+        tc.add_definition(TypeDefinition("Number", ["Number"], [], []))
+
+        #polytype 1
+        type_1_sen = Sentence([TrieNode(x) for x in ["name", "x"]])
+        type_1_sen[-1]._data[utils.BIND_S] = True
+        param = TrieNode("x")
+        param._data[utils.BIND_S] = True
+        tc.add_definition(TypeDefinition("polyTypeOne", ["polyTypeOne"], [type_1_sen], [param]))
+
+        #polytype 2
+        type_2_sen = Sentence([TrieNode(x) for x in ["nested"]])
+        type_2_sen[-1]._data[utils.BIND_S] = True
+        type_2_param = TrieNode("y")
+        type_2_param._data[utils.BIND_S] = True
+        type_2_sen[-1]._data[utils.TYPE_DEC_S] = MonoTypeVar("polyTypeOne",
+                                                             ["polyTypeOne"],
+                                                             [type_2_param])
+        param2 = TrieNode("y")
+        param2._data[utils.BIND_S] = True
+        tc.add_definition(TypeDefinition("polyTypeTwo",
+                                         ["polyTypeTwo"],
+                                         [type_2_sen],
+                                         [param2]))
+
+        #Assertion
+        assertion = Sentence([TrieNode(x) for x in ["a", "nested", "name", "x"]])
+        assertion[0]._data[utils.BIND_S] = True
+        assertion_param = MonoTypeVar("String", ["String"])
+        assertion[0]._data[utils.TYPE_DEC_S] = MonoTypeVar("polyTypeTwo",
+                                                           ["polyTypeTwo"],
+                                                           [assertion_param])
+        assertion[-1]._data[utils.BIND_S] = True
+        tc.add_assertion(assertion)
+
+        #queries
+        query_sen1 = Sentence([TrieNode(x) for x in ["a","nested", "name","x"]])
+        query_sen1[-1]._data[utils.BIND_S] = True
+
+        self.assertIsNone(tc.query(query_sen1)[0]._type)
+
+        tc.validate()
+
+        self.assertEqual(tc.query(query_sen1)[0]._type, MonoTypeVar("String", ["String"]))
+
+
+
+
+
 
     def test_typing_polytype_nested_fail(self):
         """ ::String: END, ::Number: END
