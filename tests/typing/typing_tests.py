@@ -497,9 +497,53 @@ class TypingTests(unittest.TestCase):
         self.assertEqual(tc.query(query_sen2)[0]._type, MonoTypeVar("Number", ["Number"]))
 
 
+    def test_typing_context_clear(self):
+        tc = TypeChecker()
+
+        sen = Sentence([TrieNode(x) for x in ["a", "test", "var"]])
+        sen[-1]._data[utils.BIND_S] = True
+        tc.add_assertion(sen)
+
+        sen2 = Sentence([TrieNode(x) for x in ["var", "blah"]])
+        sen2[0]._data[utils.BIND_S] = True
+        tc.add_assertion(sen2)
+
+        self.assertEqual(len(tc._variables), 1)
+        self.assertIsNotNone(tc.query(sen)[0]._var_node)
+        self.assertEqual(len(tc.query(sen2)), 1)
+
+        tc.clear_context()
+
+        self.assertEqual(len(tc._variables), 0)
+        self.assertIsNone(tc.query(sen)[0]._var_node)
+        self.assertEqual(len(tc.query(sen2)), 0)
+
+    def test_typing_polytype_fail(self):
+        return
+
+    def test_typing_polytype_nested_fail(self):
+        return
+
+    def test_typing_polytype_multi_param_fail(self):
+        return
+
+    def test_polytype_lacking_param(self):
+        return
+
+    def test_polytype_nested_lacking_param(self):
+        return
 
     def test_add_rule(self):
 	    return
+
+    def test_add_operation(self):
+        return
+
+    def test_infer_from_operation(self):
+        return
+
+    def test_infer_polytype_param_from_use(self):
+        return
 
 
 if __name__ == "__main__":
