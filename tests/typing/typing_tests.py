@@ -368,7 +368,7 @@ class TypingTests(unittest.TestCase):
         tc.add_definition(TypeDefinition("polyType", ["polyType"], [type_1_sen], [param]))
 
         #assertions
-        assertion = Sentence(TrieNode(x) for x in ["a", "name", "q"])
+        assertion = Sentence([TrieNode(x) for x in ["a", "name", "q"]])
         assertion[0]._data[utils.TYPE_DEC_S] = MonoTypeVar("polyType", ["polyType"], [MonoTypeVar("String", ["String"])])
         assertion[2]._data[utils.BIND_S] = True
         assertion[-1]._data[utils.BIND_S] = True
