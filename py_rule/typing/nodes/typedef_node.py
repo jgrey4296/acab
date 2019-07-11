@@ -71,13 +71,14 @@ class TypeDefTrieNode(TrieNode):
             curr_def, curr_usage_set = queue.pop(0)
             self._log_status(curr_def, curr_usage_set)
             curr_def_type = self._retrieve_type_declaration(curr_def, type_var_lookup)
+            logging.debug("Current Def Type: {}".format(str(curr_def_type)))
             self._check_local_type_structure(curr_def, curr_usage_set)
 
             #Handle Children:
-            if not bool(curr_def) and curr_def_type is not None:
+            if len(curr_def._children) == 0:
                 self._log_no_children(curr_def, curr_def_type, curr_usage_set)
                 newly_typed += self._apply_type_to_set(curr_usage_set, curr_def_type)
-            elif len(curr_def) == 1:
+            elif len(curr_def._children) == 1:
                 inferred, queue_vals = self._handle_single_child(curr_def,
                                                                 curr_usage_set,
                                                                 curr_def_type)
@@ -96,15 +97,17 @@ class TypeDefTrieNode(TrieNode):
         type_var_lookup = {}
         if self._data[utils.TYPE_DEF_S]._vars and usage_trie._type and usage_trie._type._args:
             zipped = zip(self._data[utils.TYPE_DEF_S]._vars, usage_trie._type._args)
-            type_var_lookup = { x : y for x,y in zipped }
+            type_var_lookup = { x.value_string() : y for x,y in zipped }
         return type_var_lookup
 
     def _retrieve_type_declaration(self, curr_def, type_var_lookup):
         """ Use the temporary binding environment to lookup the relevant type declaration """
-        if U.is_var(curr_def) and curr_def._value in type_var_lookup:
-            return type_var_lookup[curr_def._value]
+        if curr_def.value_string() != utils.ROOT_S and curr_def._is_var and curr_def.value_string() in type_var_lookup:
+            return type_var_lookup[curr_def.value_string()]
         elif curr_def._type is not None:
             return curr_def._type.build_type_declaration(type_var_lookup)
+        else:
+            return None
 
 
     def _check_local_type_structure(self, curr_def, curr_usage_set):
@@ -137,6 +140,7 @@ class TypeDefTrieNode(TrieNode):
 
     def _handle_multiple_children(self, curr_def, curr_usage_set, curr_def_type):
         logging.debug(log_messages['mult_child'])
+        assert(len(curr_def._children) > 1)
         # With multiple children, match keys
         queue_vals = []
         defset = { x for x in curr_def._children.keys() }
