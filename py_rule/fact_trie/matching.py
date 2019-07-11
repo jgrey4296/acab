@@ -53,10 +53,10 @@ def existing_bind_match(a, b, betas, regexs, data):
     assert(isinstance(b, TrieNode))
     tested = False
     newNode, newData = (None, None)
-    if a_value in data:
+    if a.value_string() in data:
         tested = True
-        if data[a._value] in b._children and test_betas(data[a._value], betas, data):
-            newData, newNode = b._children[data[a._value]].test_regexs_for_matching(regexs, data)
+        if data[a.value_string()] in b._children and test_betas(data[a.value_string()], betas, data):
+            newData, newNode = b._children[data[a.value_string()]].test_regexs_for_matching(regexs, data)
     return (tested, newNode, newData)
 
 def create_new_bindings(a, b, alphas, betas, regexs, data):
