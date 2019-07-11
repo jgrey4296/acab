@@ -123,7 +123,6 @@ class TypingTests(unittest.TestCase):
         self.assertIsNotNone(query_result._type)
         self.assertEqual(query_result._type, sen1[-1]._data[utils.TYPE_DEC_S])
 
-
     def test_type_conflict(self):
         """ ::a END, a.$b(::a), a.$c(::b) """
         tc = TypeChecker()
@@ -175,7 +174,6 @@ class TypingTests(unittest.TestCase):
         with self.assertRaises(te.TypeConflictException):
             tc.add_assertion(sen2)
 
-
     def test_structure_mismatch(self):
         """ ::String: END, ::Number: END
         ::first: name.$x(::.String) END
@@ -197,7 +195,6 @@ class TypingTests(unittest.TestCase):
 
         with self.assertRaises(te.TypeStructureMismatch):
             tc.validate()
-
 
     def test_structure_type_conflict(self):
         """ ::String: END, ::Number: END
@@ -228,7 +225,43 @@ class TypingTests(unittest.TestCase):
         ::a.test.type: name.$x(::String).$y(::Number) END
         .bob(::.a.test.type).name.$z.$q
         """
-        return
+        tc = TypeChecker()
+        tc.add_definition(TypeDefinition("String", ["String"], [], []))
+        tc.add_definition(TypeDefinition("Number", ["Number"], [], []))
+
+        struct_sen = Sentence([TrieNode(x) for x in ["name", "x", "y"]])
+        struct_sen[-2]._data[utils.BIND_S] = True
+        struct_sen[-2]._data[utils.TYPE_DEC_S] = MonoTypeVar("String", ["String"])
+        struct_sen[-1]._data[utils.BIND_S] = True
+        struct_sen[-1]._data[utils.TYPE_DEC_S] = MonoTypeVar("Number", ["Number"])
+        tc.add_definition(TypeDefinition("first", ["first", "type"], [struct_sen], []))
+
+        sen = Sentence([TrieNode(x) for x in ["bob", "name", "z", "q"]])
+        sen[0]._data[utils.TYPE_DEC_S] = MonoTypeVar("first", ["first", "type"])
+        sen[-2]._data[utils.BIND_S] = True
+        sen[-1]._data[utils.BIND_S] = True
+        tc.add_assertion(sen)
+
+        #Query the First Variable, should be untyped
+        query_sen = Sentence([TrieNode(x) for x in ["bob","name","z"]])
+        query_sen[-1]._data[utils.BIND_S] = True
+        self.assertIsNone(tc.query(query_sen)[0]._type)
+        #then the second, should be untyped
+        query_sen = Sentence([TrieNode(x) for x in ["bob","name","z", "q"]])
+        query_sen[-1]._data[utils.BIND_S] = True
+        query_sen[-1]._data[utils.BIND_S] = True
+        self.assertIsNone(tc.query(query_sen)[0]._type)
+
+        tc.validate()
+        #Check the first var is inferred
+        query_sen = Sentence([TrieNode(x) for x in ["bob","name","z"]])
+        query_sen[-1]._data[utils.BIND_S] = True
+        self.assertEqual(tc.query(query_sen)[0]._type, MonoTypeVar("String", ["String"]))
+        #Check the second var is inferred
+        query_sen = Sentence([TrieNode(x) for x in ["bob","name","z", "q"]])
+        query_sen[-2]._data[utils.BIND_S] = True
+        query_sen[-1]._data[utils.BIND_S] = True
+        self.assertEqual(tc.query(query_sen)[0]._type, MonoTypeVar("Number", ["Number"]))
 
     def test_typing_nested_types(self):
         """ ::String: END, ::Number: END
@@ -236,15 +269,86 @@ class TypingTests(unittest.TestCase):
         ::large.type: component.$x(::small.type) END
         a(::large.type).component.$q.name.$w
         """
-        return
+        tc = TypeChecker()
+        tc.add_definition(TypeDefinition("String", ["String"], [], []))
+        tc.add_definition(TypeDefinition("Number", ["Number"], [], []))
+
+        #Small Type
+        type_1_sen = Sentence([TrieNode(x) for x in ["name", "x"]])
+        type_1_sen[-1]._data[utils.BIND_S] = True
+        type_1_sen[-1]._data[utils.TYPE_DEC_S] = MonoTypeVar("String", ["String"])
+        tc.add_definition(TypeDefinition("smallType", ["small", "type"], [type_1_sen], []))
+
+        #Large Type
+        type_2_sen = Sentence([TrieNode(x) for x in ["component", "x"]])
+        type_2_sen[-1]._data[utils.BIND_S] = True
+        type_2_sen[-1]._data[utils.TYPE_DEC_S] = MonoTypeVar("smallType", ["small", "type"])
+        tc.add_definition(TypeDefinition("largeType", ["large", "type"], [type_2_sen], []))
+
+        assertion = Sentence(TrieNode(x) for x in ["a", "component", "q", "name", "w"])
+        assertion[0]._data[utils.TYPE_DEC_S] = MonoTypeVar("largeType", ["large", "type"])
+        assertion[2]._data[utils.BIND_S] = True
+        assertion[-1]._data[utils.BIND_S] = True
+
+        tc.add_assertion(assertion)
+
+        query_sen1 = Sentence([TrieNode(x) for x in ["a","component","q"]])
+        query_sen1[-1]._data[utils.BIND_S] = True
+
+        query_sen2 = Sentence([TrieNode(x) for x in ["a", "component", "q", "name", "w"]])
+        query_sen2[-3]._data[utils.BIND_S] = True
+        query_sen2[-1]._data[utils.BIND_S] = True
+
+        self.assertIsNone(tc.query(query_sen1)[0]._type)
+        self.assertIsNone(tc.query(query_sen2)[0]._type)
+
+        tc.validate()
+
+        self.assertEqual(tc.query(query_sen1)[0]._type, MonoTypeVar("smallType", ["small", "type"]))
+        self.assertEqual(tc.query(query_sen2)[0]._type, MonoTypeVar("String", ["String"]))
 
     def test_typing_nested_types_fail(self):
         """ ::String: END, ::Number: END
         ::small.type: name.$x(::String) END
         ::large.type: component.$x(::small.type) END
-        a(::large.type).component.$q.name.$w
+        a(::large.type).component.$q.name.$w(::Number)
         """
-        return
+        tc = TypeChecker()
+        tc.add_definition(TypeDefinition("String", ["String"], [], []))
+        tc.add_definition(TypeDefinition("Number", ["Number"], [], []))
+
+        #Small Type
+        type_1_sen = Sentence([TrieNode(x) for x in ["name", "x"]])
+        type_1_sen[-1]._data[utils.BIND_S] = True
+        type_1_sen[-1]._data[utils.TYPE_DEC_S] = MonoTypeVar("String", ["String"])
+        tc.add_definition(TypeDefinition("smallType", ["small", "type"], [type_1_sen], []))
+
+        #Large Type
+        type_2_sen = Sentence([TrieNode(x) for x in ["component", "x"]])
+        type_2_sen[-1]._data[utils.BIND_S] = True
+        type_2_sen[-1]._data[utils.TYPE_DEC_S] = MonoTypeVar("smallType", ["small", "type"])
+        tc.add_definition(TypeDefinition("largeType", ["large", "type"], [type_2_sen], []))
+
+        assertion = Sentence(TrieNode(x) for x in ["a", "component", "q", "name", "w"])
+        assertion[0]._data[utils.TYPE_DEC_S] = MonoTypeVar("largeType", ["large", "type"])
+        assertion[2]._data[utils.BIND_S] = True
+        assertion[-1]._data[utils.BIND_S] = True
+        assertion[-1]._data[utils.TYPE_DEC_S] = MonoTypeVar("Number", ["Number"])
+        tc.add_assertion(assertion)
+
+        query_sen1 = Sentence([TrieNode(x) for x in ["a","component","q"]])
+        query_sen1[-1]._data[utils.BIND_S] = True
+
+        query_sen2 = Sentence([TrieNode(x) for x in ["a", "component", "q", "name", "w"]])
+        query_sen2[-3]._data[utils.BIND_S] = True
+        query_sen2[-1]._data[utils.BIND_S] = True
+
+        self.assertIsNone(tc.query(query_sen1)[0]._type)
+        self.assertEqual(tc.query(query_sen2)[0]._type, MonoTypeVar("Number", ["Number"]))
+
+        with self.assertRaises(te.TypeConflictException):
+            tc.validate()
+
 
     def test_typing_polytype(self):
         """ ::String: END, ::Number: END
@@ -252,7 +356,43 @@ class TypingTests(unittest.TestCase):
         a(::polytype(::String)).name.$q
         b(::polytype(::Number)).name.$t
         """
-        return
+        tc = TypeChecker()
+        tc.add_definition(TypeDefinition("String", ["String"], [], []))
+        tc.add_definition(TypeDefinition("Number", ["Number"], [], []))
+
+        #polytype
+        type_1_sen = Sentence([TrieNode(x) for x in ["name", "x"]])
+        type_1_sen[-1]._data[utils.BIND_S] = True
+        param = TrieNode("x")
+        param._data[utils.BIND_S] = True
+        tc.add_definition(TypeDefinition("polyType", ["polyType"], [type_1_sen], [param]))
+
+        #assertions
+        assertion = Sentence(TrieNode(x) for x in ["a", "name", "q"])
+        assertion[0]._data[utils.TYPE_DEC_S] = MonoTypeVar("polyType", ["polyType"], [MonoTypeVar("String", ["String"])])
+        assertion[2]._data[utils.BIND_S] = True
+        assertion[-1]._data[utils.BIND_S] = True
+        tc.add_assertion(assertion)
+
+        assertion2 = Sentence(TrieNode(x) for x in ["b", "name", "t"])
+        assertion2[0]._data[utils.TYPE_DEC_S] = MonoTypeVar("polyType", ["polyType"], [MonoTypeVar("Number", ["Number"])])
+        assertion2[2]._data[utils.BIND_S] = True
+        assertion2[-1]._data[utils.BIND_S] = True
+        tc.add_assertion(assertion2)
+
+        #queries
+        query_sen1 = Sentence([TrieNode(x) for x in ["a","name","q"]])
+        query_sen1[-1]._data[utils.BIND_S] = True
+
+        query_sen2 = Sentence([TrieNode(x) for x in ["b","name","t"]])
+        query_sen2[-1]._data[utils.BIND_S] = True
+
+        self.assertIsNone(tc.query(query_sen1)[0]._type)
+        self.assertIsNone(tc.query(query_sen2)[0]._type)
+
+        tc.validate()
+        self.assertEqual(tc.query(query_sen1)[0]._type, MonoTypeVar("String", ["String"]))
+        self.assertEqual(tc.query(query_sen2)[0]._type, MonoTypeVar("Number", ["Number"]))
 
     def test_typing_polytype_nested(self):
         """ ::String: END, ::Number: END
