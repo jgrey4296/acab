@@ -43,3 +43,7 @@ class TypeAssignmentTrieNode(M_TypedNode):
             #if var, connect to var type trie
             self._var_node = lookup.add([self._value], [])
             self._var_node.add_node(self)
+
+    def clear_var_node(self):
+        self._var_node = None
+        

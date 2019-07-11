@@ -40,3 +40,8 @@ class VarTypeTrieNode(M_TypedNode):
         # update self to point to all assignment nodes
         [self.add_node(y) for x in nodes for y in x._nodes]
 
+    def clear_assignments(self):
+        for node in self._nodes:
+            node.clear_var_node()
+        self._nodes = set([])
+        self._type = None
