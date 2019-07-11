@@ -50,8 +50,14 @@ class TypeChecker:
         """ Clear variables """
         # Clear self._variables and unregister its nodes from
         #vars in declarations
+        var_nodes = self._variables.get_nodes()
+        [x.clear_assignments() for x in var_nodes]
 
         #remove all sentences in declarations that start with a variable
+        [self._declarations.remove([x]) for x in var_nodes]
+
+        #remove the variables
+        [self._variables.remove([x]) for x in var_nodes]
 
     def query(self, queries):
         """ Get the type of a sentence leaf """
@@ -134,8 +140,6 @@ class TypeChecker:
                                u_data=self._variables)
 
     def add_rule(self, value):
-        #prefix variables
-        current_prefix = self._context_prefix_stack[-1]
         for c in value._query._clauses:
             #add the conditions
             continue
@@ -147,3 +151,6 @@ class TypeChecker:
         for a in value._actions:
             #add the actions
             continue
+
+        self.validate()
+        self.clear_context()
