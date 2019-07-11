@@ -1,3 +1,6 @@
+"""
+Exception types raised by type checking
+"""
 
 class TypeRedefinitionException(Exception):
 
