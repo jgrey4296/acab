@@ -1,4 +1,5 @@
 from py_rule.trie.nodes.trie_node import TrieNode
+import IPython
 from py_rule.utils import TYPE_DEC_S
 import py_rule.typing.type_exceptions as te
 import logging as root_logger
@@ -14,7 +15,7 @@ class M_TypedNode(TrieNode):
     def type_match_wrapper(self, node):
         if TYPE_DEC_S not in node._data:
             return
-        self.type_match(node._data[TYPE_DEC_S])
+        return self.type_match(node._data[TYPE_DEC_S])
 
     def type_match(self, _type):
         if self._type is None:
