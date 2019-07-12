@@ -96,7 +96,9 @@ NUM.setParseAction(construct_num)
 STRING = pp.dblQuotedString
 STRING.setParseAction(lambda t: ("string", t[0].replace('"', '')))
 
-VALUE = pp.Or([NAME, NUM, STRING])
+OTHER_VALS = pp.Forward()
+
+VALUE = pp.Or([NAME, NUM, STRING, OTHER_VALS])
 
 #alt for actions, PARAM_CORE
 BIND = DOLLAR + VALUE
