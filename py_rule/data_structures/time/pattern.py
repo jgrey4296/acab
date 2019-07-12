@@ -3,8 +3,8 @@ A Pattern collects events together and cycles them
 """
 
 from .pattern_iterator import PatternIterator
-from .utils import TIME_T
-from fractions import Fraction, gcd
+from .utils import TIME_T, f_gcd, lcm
+from fractions import Fraction
 from functools import reduce
 from math import floor
 import IPython
@@ -18,12 +18,7 @@ class Pattern:
     @staticmethod
     def lcm(a,b):
         """ Get the lowest common multiple for two fractions """
-        x = abs(a)
-        gcd_result = gcd(a,b)
-        x_prime = x / gcd_result
-        y = abs(b)
-        result = x_prime * y
-        return result
+        return lcm(a, b)
 
     def __init__(self, a, vals=None):
         if vals is None:
@@ -129,7 +124,7 @@ class Pattern:
 
     def denominator(self):
         #TODO: use https://stackoverflow.com/questions/49981286/
-        base_count = reduce(gcd, self.base(), 2).denominator
+        base_count = reduce(f_gcd, self.base(), 2).denominator
         return base_count
 
     def iter(self, just_values=True, rand_s=None):
