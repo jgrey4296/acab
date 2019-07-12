@@ -4,8 +4,8 @@ A PyParsing parser to create patterns
 # from .pattern import Pattern
 # from .event import Event
 # from .arc import Arc
-from py_rule.datastructures.time.pattern_constructor import CTOR_ACT, construct_pattern
-from py_rule.datastructures.time.utils import TimeVar
+from py_rule.data_structures.time.pattern_constructor import CTOR_ACT, construct_pattern
+from py_rule.data_structures.time.utils import TimeVar
 from enum import Enum
 from fractions import Fraction
 import pyparsing as pp
@@ -29,12 +29,17 @@ TILDE = s(pp.Literal('~'))
 DOLLAR = s(pp.Literal('$'))
 VBAR = s(pp.Literal('|'))
 
-acts = pp.Or([COMMA, OBRACKET, CBRACKET, COLON, QUESTION, LESS, MORE, TILDE])
+acts = pp.Or([COMMA, COLON, QUESTION, LESS, MORE, TILDE])
 
 NAME = pp.Word(pp.alphas)
 VAR = DOLLAR + NAME
 
 pattern_contents = pp.OneOrMore(pp.Or([VAR, NAME, acts]))
+
+pattern = pp.OneOrMore(acts)
+
+pattern_nested = pp.nestedExpr('[', ']', pattern)
+
 
 # Actions
 OBRACKET.setParseAction(lambda x: CTOR_ACT.PSTART)

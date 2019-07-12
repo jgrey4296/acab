@@ -46,6 +46,7 @@ def construct_pattern(tokens):
                 balance_count += 1
                 logging.debug("Starting a Pattern or Choice")
                 stack.append([])
+
             elif head is CTOR_ACT.PEND:
                 logging.debug("Pattern end")
                 balance_count -= 1
@@ -67,6 +68,7 @@ def construct_pattern(tokens):
                     stack[-1].append(processed)
                 else:
                     stack.append(processed)
+
             elif head is CTOR_ACT.PDUAL:
                 logging.debug("Parallel")
                 #run patterns in parallel
@@ -81,12 +83,14 @@ def construct_pattern(tokens):
                     logging.debug("Using Existing ParallelPH")
                     stack[-1].values.append(curr)
                     stack.append([])
+
             elif head is CTOR_ACT.CEND:
                 logging.debug("Choice End")
                 balance_count -= 1
                 c_vals = stack.pop()
                 placeholder = ChoicePH(c_vals)
                 stack[-1].append(placeholder)
+
             elif head is CTOR_ACT.OP:
                 logging.warning("OP not implemented yet")
 
