@@ -44,6 +44,10 @@ ACTS_REVERSE_LOOKUP = {
 }
 
 class Action:
+    """
+    An Abstract Action. has an operation, and values.
+    Is able to expand bindings.
+    """
     def __init__(self, op, values):
         assert(isinstance(op, (ACTS, str)))
         assert(isinstance(values, list))
@@ -100,7 +104,10 @@ class Action:
 
 
 class ActionMacro:
-
+    """
+    A File Defined Macro for actions to simplify repeated
+    action sequences
+    """    
     def __init__(self, name, params, actions):
         assert(isinstance(name, ACTMACRONAME))
         assert(isinstance(params, list))
@@ -119,7 +126,9 @@ class ActionMacro:
 
 
 class ActionMacroUse:
-
+    """
+    A Usage of an action macro 
+    """
     def __init__(self, name, params):
         assert(isinstance(name, ACTMACRONAME))
         assert(isinstance(params, list))

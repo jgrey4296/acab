@@ -6,8 +6,9 @@
     .count!$x(< 10)?
 
     $x + 2 -> $y
+    ~{} "Hello: {x}" -> $z
     
-    @("Hello")
+    @($z)
     +(.count!$y)
 end
 
@@ -17,8 +18,9 @@ end
     .count!$x(< 10)?
 
     $x + 1 -> $y
+    ~{} "Goodbye: {x}" -> $z
 
-    @("Goodbye")
+    @($z)
     +(.count!$y)
 end
 

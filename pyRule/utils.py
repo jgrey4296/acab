@@ -27,6 +27,10 @@ class Bind:
 
 
 def expandFact(factString, bindings):
+    """ Given a sequence of nodes, expand bindings.
+    expandFact(.a.$b!$c,{b:2,c:"hello"}) = .a.2!"hello"
+    """
+    assert(isinstance(bindings, {}))
     output = []
 
     for x in factString:
@@ -62,5 +66,8 @@ def build_rebind_dict(formal, usage):
     return dict(zip(fVals, usage))
 
 def default_action_policy(pairings):
+    """ The default action selection policy,
+    returns all passed in pairs [(data, rule)]
+    """
     #each pairing is of data, rule
     return [choice(pairings)]

@@ -52,24 +52,29 @@ class Node:
         self._children = {}
 
     def is_exclusive(self):
+        """ Is the Node designated Exclusive? """
         return self._op is util.EXOP.EX
 
     def has_exclusive(self):
+        """ Can the Node Behave as Exclusive? """
         return len(self) <= 1
 
     def __contains__(self, v):
+        """ Does the node contain a node or value in its children """
         if isinstance(v, Node):
             return v._value in self._children
         else:
             return v in self._children
 
     def set_meta_leaf(self, mType, values):
+        """ Set the node to have a meta operation """
         #todo
         assert(isinstance(mType, util.META_OP))
         assert(isinstance(values, list))
         self._meta_eval[mType] = [x.copy() for x in values]
 
     def set_meta_eval(self, mType, values):
+        """ Set the node to have a meta evaluation """
         #todo
         assert(isinstance(mType, util.META_OP))
         if isinstance(values, list):
@@ -78,20 +83,23 @@ class Node:
             self._meta_eval[mType] = values
 
     def get_meta_eval(self, mType):
+        """ Return the meta eval types """
         if mType in self._meta_eval:
             return self._meta_eval[mType]
         else:
             return []
 
     def _set_dirty_chain(self):
+        """ send a dirty annotation up the parent list """
         self._dirty = True
         if self._parent is not None:
             self._parent()._set_dirty_chain()
 
     def _unify(self, other):
-        """ Test two tries to see if they can match with substitutions """
+        """ TODO: Test two tries to see if they can match with substitutions """
         # { bindNode : [ options ] }
-        return {}
+        #return {}
+        raise Exception("Unimplemented")
 
 
     def _reconstruct(self):
@@ -116,6 +124,9 @@ class Node:
 
 
     def root_str(self):
+        """ Get the string representation from the self on down
+        ie: is a multiline string defining the entire subtrie
+        """
         xs = [str(y) for x, y in sorted(self._children.items())]
         return ",\n".join(xs)
 
@@ -191,6 +202,7 @@ class Node:
 
 
     def copy(self):
+        """ duplicate this single node """
         assert(not bool(self._children))
         #todo: deeper copy
         meta_evals = self._meta_eval.copy()
@@ -200,20 +212,26 @@ class Node:
                     meta_eval=meta_evals)
 
     def set_parent(self, parent):
+        """ Assign a parent node for this node """
         assert(isinstance(parent, Node))
         self._parent = weakref.ref(parent)
 
     @staticmethod
     def Root():
+        """ Create a Root Node """
         return Node("root", EXOP.ROOT)
 
     def is_root(self):
+        """ Test whether this node is a root node """
         return self._op is EXOP.ROOT
 
     def _clear_node(self):
+        """ Delete all children of this node """
         self._children = {}
 
     def insert(self, fact):
+        """ Insert a node as a child of this node,
+        respecting Exclusion Semantics """
         assert(isinstance(fact, Node))
         self._set_dirty_chain()
         copied = fact.copy()
@@ -236,6 +254,7 @@ class Node:
 
 
     def get(self, fact):
+        """ Get a child of this node, by exact node or value """
         assert(isinstance(fact, Node))
         if fact._value in self._children \
            and fact._op is self._children[fact._value]._op:
@@ -244,6 +263,7 @@ class Node:
             return None
 
     def delete_node(self, fact):
+        """ Delete a specific node from this nodes children """
         assert(isinstance(fact, Node))
         if fact._value in self._children \
            and fact._op is self._children[fact._value]._op:
@@ -251,10 +271,12 @@ class Node:
             self._set_dirty_chain()
 
     def __len__(self):
+        """ Get the number of children of this node """
         return len(self._children)
 
 
     def bind(self, data):
+        """ Duplicate this node and bind values if necessary """
         if self.get_meta_eval(util.META_OP.BIND) is False:
             return self.copy()
         else:
@@ -264,6 +286,7 @@ class Node:
 
 
     def _bind_to_value(self, data):
+        """ Set this node to be the value of its binding """
         assert(self._value in data)
         self._value = data[self._value]
 

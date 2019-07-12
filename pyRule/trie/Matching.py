@@ -1,3 +1,6 @@
+"""
+Provides support for querying. 
+"""
 import logging as root_logger
 from pyRule import utils as util
 from pyRule.Comparisons import COMP_LOOKUP

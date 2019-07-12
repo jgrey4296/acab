@@ -7,6 +7,7 @@ EvalRules(.agent.rules.belief_gen) on .worldState -> .agent.beliefs
 EvalRules(.agent.rules.desires) on .agent.beliefs, .agent.desires:
     -> .agent.active.desires
 end
+
 RankBy(.agent.hierarchy.desires) on .agent.active.desires
 SelectFrom(best, 0.1, .agent.active.desires) -> .agent.selected.desire
 EvalRules(.agent.rules.action_gen) on .worldState, .agent.selected.desire:
