@@ -1,6 +1,7 @@
 import unittest
 import logging
 import random
+import pyparsing as pp
 from test_context import py_rule
 import py_rule.fact_trie.parsing.FactParser as FP
 from py_rule.trie.nodes.trie_node import TrieNode
@@ -111,6 +112,18 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         expanded = result.expand_bindings(bindings)
         asString = str(expanded)
         self.assertEqual(asString, "blah.b.bloo!c")
+
+    def test_valbind_expansion(self):
+        """ Test added new parsers to the valbind parser """
+        new_parser = pp.Word("@awef")
+        new_parser.setParseAction(lambda t: ("awef", t[0]))
+
+        FP.OTHER_VALS << new_parser
+
+        a = FP.VALUE.parseString("@awef")[0]
+        self.assertEqual(a[0], "awef")
+        self.assertEqual(a[1], "@awef")
+
 
 if __name__ == "__main__":
     LOGLEVEL = logging.INFO
