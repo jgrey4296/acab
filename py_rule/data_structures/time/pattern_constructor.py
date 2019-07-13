@@ -25,123 +25,52 @@ logging = root_logger.getLogger(__name__)
 CTOR_ACT = Enum("Actions for Pattern Constructor",
                 "PSTART PEND PDUAL CSTART CEND OP SIL")
 
-#Placeholders:
-PatternPH = namedtuple("PatternPH", "values")
-ChoicePH = namedtuple("ChoicePH", "values")
-ParallelPH = namedtuple("ParallelPH", "values")
+END_MATCHES = {
+    CTOR_ACT.PSTART : CTOR_ACT.PEND,
+    CTOR_ACT.CSTART : CTOR_ACT.CEND
+    }
 
-def construct_pattern(tokens):
-    """   """
-    #init stack with a top level pattern placeholder
-    stack = []
-    balance_count = 0
-    while bool(tokens):
-        logging.debug("Tokens: {}".format(tokens))
-        head = tokens.pop(0)
-        logging.debug("Head: {}".format(head))
-        logging.debug("Stack: {}".format(stack))
-        if isinstance(head, CTOR_ACT):
-            if any(head is x for x in [CTOR_ACT.PSTART,
-                                       CTOR_ACT.CSTART]):
-                balance_count += 1
-                logging.debug("Starting a Pattern or Choice")
-                stack.append([])
+def construct_pattern_simple(orig_tokens):
+    """ orig_tokens::[(value | pattern, data) | CTOR_ACT]
+    create a new pattern, detecting as necessary parallels
+    and choices
+    """
+    final_pattern_data = { 'opt' : False }
+    patt_type = Pattern
+    #TODO: detect different pattern types?
+    tokens = orig_tokens[0][:]
+    start = tokens.pop(0)
+    if 'OPT' in orig_tokens[0]:
+        final_pattern_data['opt'] = True
+        tokens.pop()
+    end = tokens.pop()
+    assert(end == END_MATCHES[start])
+    #split on commas
+    pattern_phs = []
+    while (CTOR_ACT.PDUAL in tokens):
+        index = tokens.index(CTOR_ACT.PDUAL)
+        pattern_phs.append(tokens[:index])
+        tokens = tokens[index:]
+        tokens.pop(0)
+    if bool(tokens):
+        pattern_phs.append(tokens[:])
+    assert(bool(pattern_phs))
+    #construct patterns
+    patterns = []
+    for ph in pattern_phs:
+        ph_len = len(ph)
+        new_pattern = patt_type(Arc(t(0,1), t(1,1)),
+                                [Event(Arc(t(i, ph_len),
+                                           t(i+1, ph_len)),
+                                       v,
+                                       isinstance(v, Pattern),
+                                       d) for i,(v,d) in enumerate(ph)])
+        patterns.append(new_pattern)
 
-            elif head is CTOR_ACT.PEND:
-                logging.debug("Pattern end")
-                balance_count -= 1
-                p_vals = stack.pop()
-                if bool(stack) and isinstance(stack[-1], ParallelPH):
-                    logging.debug("Part of a Parallel Pattern")
-                    parPH = stack.pop()
-                    parPH.values.append(p_vals)
-                    p_vals = parPH
-
-                if isinstance(p_vals, ParallelPH):
-                    #is parallel, do for each in parallel
-                    sub_vals = [prepare_pvals(x) for x in p_vals.values]
-                    processed = ParallelPH(sub_vals)
-                else:
-                    processed = prepare_pvals(p_vals)
-
-                if bool(stack):
-                    stack[-1].append(processed)
-                else:
-                    stack.append(processed)
-
-            elif head is CTOR_ACT.PDUAL:
-                logging.debug("Parallel")
-                #run patterns in parallel
-                #get the current pattern
-                curr = stack.pop()
-                if not bool(stack) or not isinstance(stack[-1], ParallelPH):
-                    logging.debug("Creating new ParallelPH")
-                    newPH = ParallelPH([curr])
-                    stack.append(newPH)
-                    stack.append([])
-                else:
-                    logging.debug("Using Existing ParallelPH")
-                    stack[-1].values.append(curr)
-                    stack.append([])
-
-            elif head is CTOR_ACT.CEND:
-                logging.debug("Choice End")
-                balance_count -= 1
-                c_vals = stack.pop()
-                placeholder = ChoicePH(c_vals)
-                stack[-1].append(placeholder)
-
-            elif head is CTOR_ACT.OP:
-                logging.warning("OP not implemented yet")
-
-            elif head is CTOR_ACT.SIL:
-                stack[-1].append(head)
-            else:
-                logging.warning("Other: {}".format(head))
-        else:
-            #push to list on the top of the stack
-            stack[-1].append(head)
-        logging.debug("Post Stack: {}".format(stack))
-        logging.debug("------")
-
-    if (balance_count != 0):
-        raise Exception("Brackets in patterns need to be balanced")
-    assert(len(stack) == 1)
-    #create the final pattern
-    farc= Arc(t(0,1),t(1,1))
-    finalPH = stack.pop()
-    if isinstance(finalPH, ParallelPH):
-        finalEvents = [Event(farc, Pattern(farc, x.values), True) for x in finalPH.values]
-    elif isinstance(finalPH, list):
-        finalEvents = [Event(farc, Pattern(farc, x.values), True) for x in finalPH]
-    else:
-        finalEvents = finalPH.values
-
-    result= Pattern(farc, finalEvents)
-    return result
-
-def prepare_pvals(p_vals):
-    """ Prepare pattern values for assembling into a pattern """
-    logging.debug("Preparing: {}".format(p_vals))
-    p_len = len(p_vals)
-    time_vals = []
-    #calc times
-    for i,x in enumerate(p_vals):
-        arc = Arc(t(i,p_len), t(i+1, p_len))
-        val = None
-        if isinstance(x, PatternPH):
-            val = [Event(arc, Pattern(arc, x.values), True)]
-        elif isinstance(x, ParallelPH):
-            pats = [Pattern(arc,y.values) for y in x.values]
-            val = [Event(arc, y, True) for y in pats]
-        elif isinstance(x, ChoicePH):
-            #TODO: Make a Choice Event
-            logging.warning("Choice events aren't implemented yet")
-        else:
-            val = [Event(arc, x)]
-        time_vals += val
-    #create pattern placeholder
-    placeholder = PatternPH(time_vals)
-    #add to new top of stack
-    logging.debug("Resulting Placeholder: {}".format(placeholder))
-    return placeholder
+    #wrap in main pattern
+    final_pattern = patterns[0]
+    if len(patterns) > 1:
+        final_pattern = patt_type(Arc(t(0,1), t(1,1)),
+                                  [Event(Arc(t(0,1), t(1,1)),
+                                         x, True) for x in patterns])
+    return (final_pattern, final_pattern_data)
