@@ -5,7 +5,7 @@ capable of parsing  multiple facts
 import logging as root_logger
 import pyparsing as pp
 import IPython
-from py_rule.utils import EXOP, TYPE_DEC_S, BIND_S, OPERATOR_S, VALUE_TYPE_S
+from py_rule.utils import EXOP, TYPE_DEC_S, BIND_S, OPERATOR_S, VALUE_TYPE_S, VALUE_S, NAME_S, STRING_S
 from py_rule.typing.ex_types import MonoTypeVar
 from py_rule.fact_trie.nodes.fact_node import FactNode
 from py_rule.trie.nodes.trie_node import TrieNode
@@ -52,9 +52,9 @@ def make_node(toks):
             OPERATOR_S : EXOP.DOT}
     if BIND_S in toks:
         value = toks.bind[0][1]
-        data[VALUE_TYPE_S] = 'name'
+        data[VALUE_TYPE_S] = NAME_S
         data[BIND_S] = True
-    elif 'value' in toks:
+    elif VALUE_S in toks:
         value = toks.value[1]
         data[VALUE_TYPE_S] = toks.value[0]
     return TrieNode(value, data)
@@ -89,20 +89,20 @@ basic_fact_string = pp.Forward()
 TYPEDEC_CORE = pp.Forward()
 
 NAME = pp.Word(pp.alphas + "_")
-NAME.setParseAction(lambda t: ("name", t[0]))
+NAME.setParseAction(lambda t: (NAME_S, t[0]))
 NUM = pp.Word(pp.nums + '-d')
 NUM.setParseAction(construct_num)
 
 STRING = pp.dblQuotedString
-STRING.setParseAction(lambda t: ("string", t[0].replace('"', '')))
+STRING.setParseAction(lambda t: (STRING_S, t[0].replace('"', '')))
 
 OTHER_VALS = pp.Forward()
 
-VALUE = pp.Or([NAME, NUM, STRING, OTHER_VALS])
+VALUE = pp.Or([NAME, NUM, STRING])
 
 #alt for actions, PARAM_CORE
 BIND = DOLLAR + VALUE
-VALBIND = pp.Or([N("bind", BIND), N("value", VALUE)])
+VALBIND = pp.Or([N(BIND_S, BIND), N(VALUE_S, pp.Or([VALUE, OTHER_VALS]))])
 VALBIND.setParseAction(make_node)
 
 TYPEDEC_CORE << DBLCOLON + N("SEN", basic_fact_string) \
