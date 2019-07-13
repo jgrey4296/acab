@@ -190,7 +190,7 @@ class TestTime(unittest.TestCase):
 
     #call with patterns in events
     def test_pattern_call_with_patterns_in_events(self):
-        aPattern = Pattern(Arc(t(0,1), t(1,2)),
+        aPattern = Pattern(Arc(t(0,1), t(1,1)),
                                 [ Event(Arc(t(0,1), t(1,2)), "a"),
                                   Event(Arc(t(1,2),t(1,1)),  "b") ])
 
@@ -232,29 +232,29 @@ class TestTime(unittest.TestCase):
 
     #get the base set
     def test_pattern_denominator_simple(self):
-        aPattern = tp.parse_string("[ a b c ]")
+        aPattern = tp.parse_string("[[ a b c ]]")
         denom = aPattern.denominator()
         self.assertEqual(denom, 3)
 
     def test_pattern_denominator_simple_2(self):
-        aPattern = tp.parse_string("[a b c d]")
+        aPattern = tp.parse_string("[[a b c d]]")
         denom = aPattern.denominator()
         self.assertEqual(denom, 4)
 
     def test_pattern_denominator_nested(self):
-        aPattern = tp.parse_string("[a b [c d]]")
+        aPattern = tp.parse_string("[[a b [c d]]]")
         denom = aPattern.denominator()
         self.assertEqual(denom, 6)
 
     def test_pattern_denominator_parallel(self):
-        aPattern = tp.parse_string("[a b, c d]")
+        aPattern = tp.parse_string("[[a b, c d]]")
         denom = aPattern.denominator()
         self.assertEqual(denom, 2)
 
     #pretty print pattern
     def test_pattern_seq__double_cycle(self):
-        p1 = tp.parse_string("[a b c d]")
-        p2 = tp.parse_string("[e f g h]")
+        p1 = tp.parse_string("[[a b c d]]")
+        p2 = tp.parse_string("[[e f g h]]")
         p3 = PatternSeq(Arc(t(0,1),t(2,1)),
                              [ p1,p2 ])
 
@@ -264,7 +264,7 @@ class TestTime(unittest.TestCase):
         self.assertEqual(p3(t(7,4), True)[0], "h")
 
     def test_pattern_iterator(self):
-        aPattern = tp.parse_string("[a b [c d] e]")
+        aPattern = tp.parse_string("[[a b [c d] e]]")
         for i,x in zip([0,1,2,3,4], aPattern.iter()):
             self.assertEqual(x[0], ["a","a",
                                     "b", "b",
@@ -272,18 +272,18 @@ class TestTime(unittest.TestCase):
                                     "e", "e"][i])
 
     def test_pattern_iterator_loop(self):
-        aPattern = tp.parse_string("[ a b ]")
+        aPattern = tp.parse_string("[[ a b ]]")
         for i,x in zip(range(8), aPattern.iter()):
             self.assertEqual(x[0], (["a", "b"] * 4)[i])
 
     def test_pattern_iterator_events(self):
-        aPattern = tp.parse_string("[ a b c ]")
+        aPattern = tp.parse_string("[[ a b c ]]")
         for i,x in zip(range(4), aPattern.iter(False)):
             self.assertIsInstance(x[0], Event)
 
     def test_pattern_add(self):
-        first_pattern = tp.parse_string("[a b]")
-        second_pattern = tp.parse_string("[c d]")
+        first_pattern = tp.parse_string("[[a b]]")
+        second_pattern = tp.parse_string("[[c d]]")
         combined = first_pattern + second_pattern
         for i,x in zip([0, 1, 2, 3, 4, 5],
                        combined.iter()):
@@ -291,8 +291,8 @@ class TestTime(unittest.TestCase):
                             "a b c d a b".split(" ")[i])
 
     def test_pattern_add_twice(self):
-        first_pattern = tp.parse_string("[a b]")
-        second_pattern = tp.parse_string("[c d]")
+        first_pattern = tp.parse_string("[[a b]]")
+        second_pattern = tp.parse_string("[[c d]]")
         combined = first_pattern + second_pattern
         combined_2 = combined + second_pattern
         for i,x in zip([0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
@@ -301,8 +301,8 @@ class TestTime(unittest.TestCase):
                             "a b c d c d a b c d".split(" ")[i])
 
     def test_pattern_stack(self):
-        first_pattern = tp.parse_string("[a b]")
-        second_pattern = tp.parse_string("[c d]")
+        first_pattern = tp.parse_string("[[a b]]")
+        second_pattern = tp.parse_string("[[c d]]")
         combined = first_pattern * second_pattern
         for i,x in zip([0, 1, 2, 3],
                        combined.iter()):
@@ -322,7 +322,7 @@ class TestTime(unittest.TestCase):
     # PARSER TESTS
     #Parse a pattern
     def test_parse_simple(self):
-        aPattern = tp.parse_string("[ a b c ]")
+        aPattern = tp.parse_string("[[ a b c ]]")
         self.assertIsInstance(aPattern, Pattern)
         self.assertEqual(len(aPattern.components), 3)
 
@@ -332,16 +332,16 @@ class TestTime(unittest.TestCase):
 
     def test_parse_balance_failure_nested(self):
         with self.assertRaises(Exception):
-            tp.parse_string("[a b [c d]")
+            tp.parse_string("[[a b [c d]]")
 
     #Parse a nested pattern
     def test_parse_nested_simple(self):
-        aPattern = tp.parse_string("[ a b [c d]]")
+        aPattern = tp.parse_string("[[ a b [c d]]]")
         self.assertEqual(len(aPattern.components), 3)
         self.assertIsInstance(aPattern.components[2].values, Pattern)
 
     def test_parse_parallel_nested(self):
-        aPattern = tp.parse_string("[ a b , [c d] e]")
+        aPattern = tp.parse_string("[[ a b , [c d] e]]")
         self.assertEqual(len(aPattern.components), 2)
         self.assertEqual(len(aPattern.components[1].values.components), 2)
 
