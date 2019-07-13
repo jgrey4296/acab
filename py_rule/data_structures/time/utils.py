@@ -73,8 +73,3 @@ def print_run_pattern(pat, num_cycles=3):
                                                             turn_off_s))
         logging.info("----")
 
-
-class TimeVar:
-
-    def __init__(self, name):
-        self.name = name
