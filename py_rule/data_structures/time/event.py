@@ -26,8 +26,10 @@ class Event:
         """ Get a list of events given a time """
         if count in self.arc:
             if self.value_is_pattern:
-                return self.values(count - self.arc.start,
-                                   just_values)
+                event_range = self.arc.size()
+                offset_count = count - self.arc.start
+                scaled_count = offset_count / event_range
+                return self.values(scaled_count, just_values)
             else:
                 return [self]
         return []
@@ -45,8 +47,9 @@ class Event:
     def base(self):
         """ Get all fractions used in this event """
         time_list = self.arc.pair()
+        size =  self.arc.size()
         if self.value_is_pattern:
-            time_list += [x - self.arc.start for x in self.values.base()]
+            time_list += [(x * size) - self.arc.start  for x in self.values.base()]
         return set(time_list)
 
     def key(self):
