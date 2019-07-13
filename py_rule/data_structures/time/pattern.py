@@ -20,15 +20,15 @@ class Pattern:
         """ Get the lowest common multiple for two fractions """
         return lcm(a, b)
 
-    def __init__(self, a, vals=None):
+    def __init__(self, a, vals=None, rnd_state=None):
         if vals is None:
             vals = []
         self.arc = a.copy()
         # components :: [ Event || Pattern ]
         self.components = sorted(vals, key=lambda x: x.key())
         self.time_type = TIME_T.CLOCK
-
-    # TODO: add a state for random generator
+        self._data = {}
+        self._rnd_state = rnd_state
 
     def __repr__(self):
         base_count = self.denominator()
@@ -123,7 +123,6 @@ class Pattern:
         return counts
 
     def denominator(self):
-        #TODO: use https://stackoverflow.com/questions/49981286/
         base_count = reduce(f_gcd, self.base(), 2).denominator
         return base_count
 
