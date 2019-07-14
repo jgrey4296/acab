@@ -12,6 +12,7 @@ STRING_S = "string"
 VALUE_TYPE_S = "value_type"
 CONSTRAINT_S = "constraints"
 OPERATOR_S = "operator"
+OPT_S = "opt"
 
 #Trie exclusion operator:
 EXOP = Enum('EXOP', 'DOT EX')
