@@ -65,17 +65,21 @@ def construct_pattern_simple(orig_tokens):
     patterns = []
     for ph in pattern_phs:
         ph_len = len(ph)
-        new_pattern = patt_type(Arc(t(0,1), t(1,1)),
-                                [Event(Arc(t(i, ph_len),
-                                           t(i+1, ph_len)),
-                                       v,
-                                       isinstance(v, Pattern),
-                                       d) for i,(v,d) in enumerate(ph)])
+        new_pattern = Pattern(Arc(t(0,1), t(1,1)),
+                              [Event(Arc(t(i, ph_len),
+                                         t(i+1, ph_len)),
+                                     v,
+                                     isinstance(v, Pattern),
+                                     d) for i,(v,d) in enumerate(ph)])
         patterns.append(new_pattern)
 
     #wrap in main pattern
-    final_pattern = patterns[0]
-    if len(patterns) > 1:
+    final_pattern = None
+    if len(patterns) == 1:
+        final_pattern = patt_type(patterns[0]._arc,
+                                  patterns[0]._components)
+
+    elif len(patterns) > 1:
         final_pattern = patt_type(Arc(t(0,1), t(1,1)),
                                   [Event(Arc(t(0,1), t(1,1)),
                                          x, True) for x in patterns])
