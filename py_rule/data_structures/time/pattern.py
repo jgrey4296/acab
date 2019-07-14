@@ -177,7 +177,7 @@ class PatternSeq(Pattern):
 
     def __call__(self, count, just_values=False, rand_s=None):
         """ Query the Pattern for a given time """
-        scaled_position = self.scaled_position(count)
+        scaled_position = self.scale_time(count)
         f_count = floor(count)
         mod_f = f_count % len(self._components)
         return self._components[mod_f](scaled_position, just_values, rand_s)

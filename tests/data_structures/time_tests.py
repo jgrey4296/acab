@@ -82,7 +82,7 @@ class TestTime(unittest.TestCase):
         anEvent = Event(Arc(t(0,1), t(1,1)), aPattern, True)
         callResult = anEvent(t(1,2))
         self.assertEqual(len(callResult), 1)
-        self.assertEqual(callResult[0].values, "b")
+        self.assertEqual(callResult[0]._value, "b")
 
     #get the base set
     def test_event_base(self):
@@ -110,7 +110,7 @@ class TestTime(unittest.TestCase):
                    Event(Arc(t(0,1),t(1,2)), "b"),
                    Event(Arc(t(2,1),t(3,1)), "c")]
         sorted_events = sorted(events, key=lambda x: x.key())
-        values = [x.values for x in sorted_events]
+        values = [x._value for x in sorted_events]
         self.assertEqual(values, ["b","a","c"])
 
     #check contains
@@ -138,7 +138,7 @@ class TestTime(unittest.TestCase):
                                   Event(Arc(t(1,2),t(1,1)), "b")])
         res = aPattern(t(1,2))
         self.assertEqual(len(res), 1)
-        self.assertEqual(res[0].values, "b")
+        self.assertEqual(res[0]._value, "b")
 
     #call with patterns
     def test_pattern_call_with_internal_pattern_start(self):
@@ -324,7 +324,7 @@ class TestTime(unittest.TestCase):
     def test_parse_simple(self):
         aPattern = tp.parse_string("[[ a b c ]]")
         self.assertIsInstance(aPattern, Pattern)
-        self.assertEqual(len(aPattern.components), 3)
+        self.assertEqual(len(aPattern._components), 3)
 
     def test_parse_balance_failure(self):
         with self.assertRaises(Exception):
@@ -337,13 +337,13 @@ class TestTime(unittest.TestCase):
     #Parse a nested pattern
     def test_parse_nested_simple(self):
         aPattern = tp.parse_string("[[ a b [c d]]]")
-        self.assertEqual(len(aPattern.components), 3)
-        self.assertIsInstance(aPattern.components[2].values, Pattern)
+        self.assertEqual(len(aPattern._components), 3)
+        self.assertIsInstance(aPattern._components[2]._value, Pattern)
 
     def test_parse_parallel_nested(self):
         aPattern = tp.parse_string("[[ a b , [c d] e]]")
-        self.assertEqual(len(aPattern.components), 2)
-        self.assertEqual(len(aPattern.components[1].values.components), 2)
+        self.assertEqual(len(aPattern._components), 2)
+        self.assertEqual(len(aPattern._components[1]._value._components), 2)
 
     #parse a pretty printed pattern
 
