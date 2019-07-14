@@ -7,7 +7,7 @@ A PyParsing parser to create patterns
 import IPython
 from py_rule.data_structures.time.pattern_constructor import CTOR_ACT, construct_pattern_simple
 from py_rule.fact_trie.parsing import FactParser as FP
-from py_rule.utils import BIND_S, VALUE_TYPE_S, VALUE_S, NAME_S
+from py_rule.utils import BIND_S, VALUE_TYPE_S, VALUE_S, NAME_S, OPT_S
 from enum import Enum
 from fractions import Fraction
 import pyparsing as pp
@@ -17,7 +17,7 @@ logging = root_logger.getLogger(__name__)
 
 def make_valbind(tokens):
     data = {BIND_S : False,
-            'opt' : False,
+            OPT_S : False,
             VALUE_TYPE_S : NAME_S }
     value = None
     if BIND_S in tokens:
@@ -27,8 +27,8 @@ def make_valbind(tokens):
         value = tokens.value[1]
         data[VALUE_TYPE_S] = tokens.value[0]
 
-    if 'OPT' in tokens:
-        data['opt'] = True
+    if OPT_S in tokens:
+        data[OPT_S] = True
 
     return (value, data)
 
@@ -43,7 +43,7 @@ CBRACKET = s(pp.Literal(']'))
 OPAR = s(pp.Literal('('))
 CPAR = s(pp.Literal(')'))
 COLON = s(pp.Literal(':'))
-QUESTION = s(pp.Literal('?')).setResultsName('OPT')
+QUESTION = s(pp.Literal('?')).setResultsName(OPT_S)
 LESS = s(pp.Literal('<'))
 MORE = s(pp.Literal('>'))
 TILDE = s(pp.Literal('~'))
@@ -77,7 +77,7 @@ COMMA.setParseAction(lambda x: CTOR_ACT.PDUAL)
 QUESTION.setParseAction(lambda x: CTOR_ACT.OP)
 LESS.setParseAction(lambda x: CTOR_ACT.CSTART)
 MORE.setParseAction(lambda x: CTOR_ACT.CEND)
-TILDE.setParseAction(lambda x: CTOR_ACT.SIL)
+TILDE.setParseAction(lambda x: (CTOR_ACT.SIL, {}))
 
 def parse_string(s):
     """ The primary access point """
