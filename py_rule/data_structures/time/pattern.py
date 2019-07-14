@@ -169,29 +169,83 @@ class Pattern:
 
 
 class PatternSeq(Pattern):
+
+    def __init__(self, a, vals=None):
+        super().__init__(a, vals)
+        self._wrap_template = "[{}]"
+        self._join_template = " -> "
+
     def __call__(self, count, just_values=False, rand_s=None):
         """ Query the Pattern for a given time """
+        scaled_position = self.scaled_position(count)
         f_count = floor(count)
-        mod_f = f_count % len(self.components)
-        return self.components[mod_f](count, just_values)
+        mod_f = f_count % len(self._components)
+        return self._components[mod_f](scaled_position, just_values, rand_s)
+
+
+class PatternPar(Pattern):
+    def __init__(self, a, vals=None):
+        assert(all([isinstance(x._value, Pattern) for x in vals]))
+        super().__init__(a, vals)
+        self._wrap_template = "[{}]"
+        self._join_template = ", "
+
+    def __call__(self, count, just_values=False, rnd_s=None):
+        scaled_position = self.scale_time(count)
+        results = []
+        for x in self._components:
+            results += x(scaled_position, just_values, rnd_s)
+
+        assert(all([isinstance(x, Event) for x in results]))
+        if just_values:
+            results = [x._value for x in results]
+
+        return results
+
+    def visualise(self, headless=False, base_count=None):
+        if base_count is None:
+            base_count = self.denominator()
+
+        div_line = "-" * base_count
+        output = "\n|" + div_line + "|\n"
+        if headless:
+            output = ""
+
+        collection = [x._value.visualise(True, base_count) for x in self._components]
+        output += "/{}/\n".format(div_line).join(collection)
+        return output
 
 
 class PatternChoice(Pattern):
+    def __init__(self, a, vals=None):
+        super().__init__(a, vals)
+        self._wrap_template = "<{}>"
+        self._join_template = " "
+
+        components = [x.copy() for x in self._components]
+        self._components = [x.set_arc(Arc(Time(0, 1), Time(1, 1))) for x in components]
+
+
     def __call__(self, count, just_values=False, rnd_s=None):
         """ When called chooses from one of the options,
         using the random_state """
-        return []
+
+        scaled_position = self.scale_time(count)
+        f_count = floor(count)
+        rnd = Random(f_count)
+        the_choice = rnd.choice(self._components)
+        results = the_choice(scaled_position, False, rnd_s)
+
+        assert(all([isinstance(x, Event) for x in results]))
+        if just_values:
+            results = [x._value for x in results]
+
+        return results
 
 
-class PatternOptional(Pattern):
-    def __call__(self, count, just_values=False, rnd_s=None):
-        """ When called, either returns nothing, or
-        calcs the components as normal """
-        #if rand_s:
-        # TODO: make call take a dict,
-        # and return ([], {})?
-        ## return []
-        # else:
-        # return super().__call__ ...
-        return []
+    def pprint(self, wrap=False):
+        needs_wrapping = not self.is_pure()
+        comps = [x.pprint(needs_wrapping) for x in self._components]
 
+        joined = self._join_template.join(comps)
+        return self._wrap_template.format(joined)
