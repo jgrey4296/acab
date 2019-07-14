@@ -1,93 +1,68 @@
 """
 A Pattern collects events together and cycles them
 """
-
+from py_rule.data_structures.time.arc import Arc
+from py_rule.data_structures.time.event import Event
 from .pattern_iterator import PatternIterator
-from .utils import TIME_T, f_gcd, lcm
+from .utils import TIME_T, f_gcd, Time
 from fractions import Fraction
 from functools import reduce
 from math import floor
+from random import Random
 import IPython
 import logging as root_logger
 
 logging = root_logger.getLogger(__name__)
 
+# TODO: binary tree / beachline for finding events?
 class Pattern:
     """ A Collection of Events """
 
-    @staticmethod
-    def lcm(a,b):
-        """ Get the lowest common multiple for two fractions """
-        return lcm(a, b)
-
-    def __init__(self, a, vals=None, rnd_state=None):
+    def __init__(self, a, vals=None):
         if vals is None:
             vals = []
-        self.arc = a.copy()
+        self._arc = a.copy()
         # components :: [ Event || Pattern ]
-        self.components = sorted(vals, key=lambda x: x.key())
-        self.time_type = TIME_T.CLOCK
+        self._components = sorted(vals, key=lambda x: x.key())
+        self._time_type = TIME_T.CLOCK
         self._data = {}
-        self._rnd_state = rnd_state
-
-    def __repr__(self):
-        base_count = self.denominator()
-        collection = []
-        for y in range(base_count):
-            q = self(Fraction(y, base_count), True)
-            collection.append(q)
-
-        most_simultaneous = max([len(x) for x in collection])
-        rows = [[] for x in range(most_simultaneous)]
-        output = "\n|" + ("-" * base_count) + "|\n"
-        for x in collection:
-            len_x = len(x)
-            for j,r in enumerate(rows):
-                if j < len_x:
-                    r.append(x[j])
-                else:
-                    r.append('*')
-
-        for row in rows:
-            output += "|{}|\n".format("".join(row))
-
-        return output
+        self._wrap_template = "[{}]"
+        self._join_template = " "
 
     def __str__(self):
-        """ Print in the same format the parser reads """
-        return repr(self)
+        return "[{}]".format(self.pprint(True))
+
+    def __repr__(self):
+        return "Pattern({})".format(str(self))
 
     def __call__(self, count, just_values=False, rand_s=None):
         """ Query the Pattern for a given time """
-        pattern_range = self.arc.size()
-        f_count = floor(count)
-        position = count - (f_count * (f_count >= pattern_range))
-        scaled_position = position / pattern_range
+        scaled_position = self.scale_time(count)
         results = []
-        # TODO: this could probably be better as a binary tree / beachline
-        for x in self.components:
-            results += x(scaled_position)
+        for x in self._components:
+            results += x(scaled_position, False, rand_s)
 
+        assert(all([isinstance(x, Event) for x in results]))
         if just_values:
-            results = [x.values for x in results]
+            results = [x._value for x in results]
 
         return results
 
     def __contains__(self, other):
         """ Test whether a given object or time is within this patterns bounds """
-        return other in self.arc
+        return other in self._arc
 
     def __add__(self, other):
         """ Concatenates two patterns together """
         l_comps = [self]
         r_comps = [other]
         if isinstance(self, PatternSeq):
-            l_comps = self.components
+            l_comps = self._components
         if isinstance(other, PatternSeq):
-            r_comps = other.components
+            r_comps = other._components
 
         # TODO: is this arc correct?
-        return PatternSeq(self.arc,
+        return PatternSeq(self._arc,
                           l_comps + r_comps)
 
     def __sub__(self, other):
