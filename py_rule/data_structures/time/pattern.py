@@ -76,24 +76,74 @@ class Pattern:
         l_comps = [self]
         r_comps = [other]
         if isinstance(self, PatternSeq):
-            l_comps = self.components
+            l_comps = self._components
         if isinstance(other, PatternSeq):
-            r_comps = other.components
+            r_comps = other._components
 
-        return Pattern(self.arc,
+        return Pattern(self._arc,
                        l_comps + r_comps)
 
 
+    def visualise(self, headless=False, base_count=None):
+        if base_count is None:
+            base_count = self.denominator()
+
+        output = "\n|" + ("-" * base_count) + "|\n"
+        if headless:
+            output = ""
+
+        collection = []
+        for y in range(base_count):
+            q = self(Fraction(y, base_count), True)
+            collection.append(q)
+
+        most_simultaneous = max([len(x) for x in collection])
+        rows = [[] for x in range(most_simultaneous)]
+        for x in collection:
+            len_x = len(x)
+            for j,r in enumerate(rows):
+                if j < len_x:
+                    r.append(x[j])
+                else:
+                    r.append('*')
+
+        for row in rows:
+            output += "|{}|\n".format("".join(row))
+
+        return output
+
+    def pprint(self, wrap=False):
+        needs_wrapping = not self.is_pure()
+        comps = [x.pprint(needs_wrapping) for x in self._components]
+
+        joined = self._join_template.join(comps)
+        if wrap:
+            return self._wrap_template.format(joined)
+        else:
+            return joined
+
+    def is_pure(self):
+        events = {x.is_pure() for x in self._components}
+        return len(events) == 1
+
+
+    def scale_time(self, count):
+        pattern_range = self._arc.size()
+        f_count = floor(count)
+        position = count - (f_count * (f_count >= pattern_range))
+        scaled_position = position / pattern_range
+        return scaled_position
+
     def key(self):
         """ Key the Pattern by its start time, for sorting """
-        return self.arc.start
+        return self._arc.start
 
     def base(self):
         """ Get all used fractions within this arc, scaled appropriately by offset
         and pattern size """
         counts = set()
-        pattern_range = self.arc.size()
-        for x in self.components:
+        pattern_range = self._arc.size()
+        for x in self._components:
             counts.update([a * pattern_range for a in x.base()])
         return counts
 
