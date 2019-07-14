@@ -36,13 +36,18 @@ def construct_pattern_simple(orig_tokens):
     create a new pattern, detecting as necessary parallels
     and choices
     """
-    final_pattern_data = { 'opt' : False }
+    final_pattern_data = { OPT_S : False }
     patt_type = Pattern
     #TODO: detect different pattern types?
     tokens = orig_tokens[0][:]
     start = tokens.pop(0)
-    if 'OPT' in orig_tokens[0]:
-        final_pattern_data['opt'] = True
+    if start is CTOR_ACT.CSTART:
+        patt_type = PatternChoice
+    elif CTOR_ACT.PDUAL in tokens:
+        patt_type = PatternPar
+
+    if OPT_S in orig_tokens[0]:
+        final_pattern_data[OPT_S] = True
         tokens.pop()
     end = tokens.pop()
     assert(end == END_MATCHES[start])
