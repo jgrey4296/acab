@@ -1,6 +1,6 @@
 """
 A Data Structure that Self-Balances weights
-Weights can be specified as (a < b), (a < c), (b < c),
+Weights can be specified as (a < b), (a < c), (b < c), or (a < b < c)
 with a range and a distritbution (linear, exponential etc),
 and a,b,c will be ranked into bins that respect the constraints
 where bins are (lowerbound, upperbound),

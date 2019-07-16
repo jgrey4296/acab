@@ -1,6 +1,8 @@
 from random import choice
 import IPython
 
+#TODO: register moves for player,
+
 class Game:
     """ A Generalised N-Player, M-Move, K-Turn Game """
 
@@ -27,6 +29,16 @@ class Game:
         #value: a knowledgebase query for a single value
         self.precondition_utility = {}
 
+    def __call__(self, knowledgebase=None, data=None):
+        """ Run the Game with the provided knowledgebase to query,
+        and a mapping of players. Return a sequence of moves.
+        Returns: [ MoveString ]
+        """
+        if knowledgebase is None:
+            return self.play_random(data=data)
+        else:
+            return self.play_with_assessments(knowledgebase, data)
+
 
     def generate_tree(self):
         """ Generate the decision tree from the players, moves, and turns, independent of the actions """
@@ -41,7 +53,7 @@ class Game:
         self.actions[positionTuple] = action
         self.precondition_utility[positionTuple] = query
 
-    #todo: register moves for player,
+
     def register_player_actions(self, player, actions):
         """ Register a players actions. Specify all moves for a turn, then move to the next turn """
         assert(len(actions) == (self.moves * self.turns))
@@ -83,17 +95,6 @@ class Game:
             enough_preconditions_defined = len(self.precondition_utility) == total_moves
 
         return enough_moves_defined and enough_preconditions_defined
-
-
-    def __call__(self, knowledgebase=None, data=None):
-        """ Run the Game with the provided knowledgebase to query,
-        and a mapping of players. Return a sequence of moves.
-        Returns: [ MoveString ]
-        """
-        if knowledgebase is None:
-            return self.play_random(data=data)
-        else:
-            return self.play_with_assessments(knowledgebase, data)
 
 
     def play_random(self, data=None):
