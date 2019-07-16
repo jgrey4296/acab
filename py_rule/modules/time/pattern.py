@@ -213,7 +213,8 @@ class PatternSeq(Pattern):
         vals = self._components[mod_f](scaled_position, False, rnd_s)
         return self.handle_call_results(vals, just_values)
 
-
+    def is_pure(self):
+        return True
 
 class PatternPar(Pattern):
     def __init__(self, a, vals=None, data=None, bindings=None):
@@ -230,7 +231,8 @@ class PatternPar(Pattern):
 
         return self.handle_call_results(results, just_values)
 
-
+    def is_pure(self):
+        return True
     def visualise(self, headless=False, base_count=None):
         if base_count is None:
             base_count = self.denominator()
