@@ -37,6 +37,8 @@ class Arc:
         return all([x == y for x,y in zip(self.pair(), other.pair())])
 
 
+    def key(self):
+        return self._start
     def copy(self):
         return Arc(self._start, self._end)
 
