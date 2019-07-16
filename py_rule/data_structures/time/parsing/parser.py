@@ -49,6 +49,7 @@ MORE = s(pp.Literal('>'))
 TILDE = s(pp.Literal('~'))
 DOLLAR = s(pp.Literal('$'))
 VBAR = s(pp.Literal('|'))
+ARROW = s(pp.Literal('->'))
 
 acts = pp.Or([COMMA, COLON, TILDE])
 
