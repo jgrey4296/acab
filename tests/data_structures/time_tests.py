@@ -6,6 +6,7 @@ from py_rule.data_structures.time.event import Event
 from py_rule.data_structures.time.pattern import Pattern, PatternSeq, PatternPar
 from py_rule.data_structures.time.parsing import parser as tp
 from py_rule.data_structures.time.utils import Time as t
+from py_rule.utils import BIND_S
 import IPython
 
 class TestTime(unittest.TestCase):
@@ -69,6 +70,7 @@ class TestTime(unittest.TestCase):
         pair = an_arc.pair()
         self.assertEqual(pair[0], t(1,4))
         self.assertEqual(pair[1], t(2,4))
+
 
     #--------------------
     # EVENT TESTS
@@ -149,6 +151,39 @@ class TestTime(unittest.TestCase):
                              Event(Arc(t(1,6),t(3,8)), "b") ])
         anEvent = Event(Arc(t(0,1),t(1,1)), aPattern, True)
         self.assertFalse(anEvent.is_pure())
+
+    def test_event_binding(self):
+        an_event = Event(Arc(t(1,2), t(3,4)),
+                         "a", False, {BIND_S : True})
+
+        self.assertEqual(an_event._value, "a")
+        bound = an_event.bind({"a" : "b"})
+        self.assertEqual(bound._value, "b")
+
+    def test_event_binding_fail(self):
+        an_event = Event(Arc(t(1,2), t(3,4)),
+                         "a", False, {BIND_S : True})
+
+        self.assertEqual(an_event._value, "a")
+        bound = an_event.bind({"c" : "b"})
+        self.assertEqual(bound._value, "a")
+
+    def test_event_binding_fail_non_var(self):
+        an_event = Event(Arc(t(1,2), t(3,4)),
+                         "a", False, {BIND_S : False})
+
+        self.assertEqual(an_event._value, "a")
+        bound = an_event.bind({"a" : "b"})
+        self.assertEqual(bound._value, "a")
+
+    def test_event_fail_var_pattern(self):
+        with self.assertRaises(AssertionError):
+            an_event = Event(Arc(t(1,2), t(3,4)),
+                             Pattern(Arc(t(0,1),t(1,1)),
+                                     [ Event(Arc(t(0,1),t(1,2)), "a"),
+                                       Event(Arc(t(1,2),t(1,1)), "b"),
+                                     ]),
+                             True, {BIND_S : True})
 
     #--------------------
     # PATTERN TESTS
@@ -295,8 +330,12 @@ class TestTime(unittest.TestCase):
 
     def test_pattern_iterator_loop(self):
         aPattern = tp.parse_string("[[ a b ]]")
-        for i,x in zip(range(8), aPattern.iter()):
+        end = False
+        for i,x in zip(range(8), aPattern.iter(cycles=None)):
+            if i == 7:
+                end = True
             self.assertEqual(x[0], (["a", "b"] * 4)[i])
+        self.assertTrue(end)
 
     def test_pattern_iterator_events(self):
         aPattern = tp.parse_string("[[ a b c ]]")
@@ -334,17 +373,73 @@ class TestTime(unittest.TestCase):
             self.assertEqual(x[1],
                              "c d c d".split(" ")[i])
 
-    def test_pattern_subtract(self):
-        return None
 
-    def test_pattern_format(self):
-        return None
+    def test_pattern_var_set(self):
+        pattern = tp.parse_string("[[a $b c $d]]")
+        self.assertEqual(pattern.var_set(), set(["b", "d"]))
 
+    def test_pattern_var_set_nested(self):
+        pattern = tp.parse_string("[[a $b <$c d>, $e f [g $h]]]")
+        self.assertEqual(pattern.var_set(), set(["b", "c", "e", "h"]))
 
-    #TODO: test pattern choice
+    def test_pattern_empty_var_set(self):
+        pattern = tp.parse_string("[[a b <c d>, e f [g h]]]")
+        self.assertEqual(pattern.var_set(), set())
+
+    def test_pattern_bind(self):
+        pattern = tp.parse_string("[[a $b c $b]]")
+        bound = pattern.bind({"a": "e", "b": "g"})
+
+        for x,y in zip(bound.iter(cycles=2), ["a","g","c","g"]*2):
+            self.assertEqual(x[0],y)
+
+    def test_pattern_iterator_count(self):
+        pattern = tp.parse_string("[[a b c d]]")
+        count = 0
+        for x,y in zip(pattern.iter(count=3), ["a","b","c","d","a"]):
+            count += 1
+            self.assertEqual(x[0], y)
+
+        self.assertEqual(count, 3)
+
+    def test_pattern_iterator_cycle(self):
+        pattern = tp.parse_string("[[a b c d]]")
+        count = 0
+        for x,y in zip(pattern.iter(cycles=2), ["a","b","c","d"]*3):
+            count += 1
+            self.assertEqual(x[0], y)
+
+        self.assertEqual(count, 8)
+
+    def test_pattern_iterator_implicit(self):
+        pattern = tp.parse_string("[[a b c d]]")
+        count = 0
+        for x,y in zip(pattern, ["a","b","c","d"]*3):
+            count += 1
+            self.assertEqual(x[0], y)
+
+        self.assertEqual(count, 4)
+
+    def test_pattern_choice(self):
+        pattern = tp.parse_string("[<a b c d>]")
+        count = 0
+        for x in pattern.iter(cycles=4):
+            count += 1
+            self.assertTrue(x[0] in ["a","b","c","d"])
+        self.assertEqual(count, 4)
+
+    def test_pattern_choice_bind(self):
+        pattern = tp.parse_string("[<$a $a $a c>]")
+        bound = pattern.bind({"a": "q"})
+        count = 0
+        for x in bound.iter(count=20):
+            count += 1
+            self.assertTrue(x[0] in ["q", "c"])
+        self.assertEqual(count, 20)
+
     #TODO: test event optional
     #TODO: test silence
-    
+
     #--------------------
     # PARSER TESTS
     #Parse a pattern
