@@ -14,23 +14,23 @@ class Arc:
     def __init__(self, a, b):
         assert(isinstance(a, Fraction))
         assert(isinstance(b, Fraction))
-        self.start = a
-        self.end = b
-
+        assert(a < b)
+        self._start = a
+        self._end = b
 
     def __contains__(self, other):
         """ Test whether the given time is within bounds """
         test = other
         if not isinstance(other, Fraction):
-            assert(hasattr(other, 'arc'))
-            test = other.arc.start
+            assert(hasattr(other, '_arc'))
+            test = other._arc._start
         assert(isinstance(test, Fraction))
-        return self.start <= test and test < self.end
+        return self._start <= test and test < self._end
 
     def __repr__(self):
         """ A Readable format of an arc """
-        return "({}..{})".format(time_str(self.start),
-                                 time_str(self.end))
+        return "({}..{})".format(time_str(self._start),
+                                 time_str(self._end))
 
     def __eq__(self, other):
         assert(isinstance(other, Arc))
@@ -38,18 +38,18 @@ class Arc:
 
 
     def copy(self):
-        return Arc(self.start, self.end)
+        return Arc(self._start, self._end)
 
     def pair(self):
         """ Treat the arc as a list """
-        return [self.start, self.end]
+        return [self._start, self._end]
 
     def size(self):
         """ Get the length of time the arc describes """
-        return self.end - self.start
+        return self._end - self._start
 
     def bound(self, other):
         assert(isinstance(other, Arc))
-        start = min(self.start, other.start)
-        end = max(self.end, other.end)
+        start = min(self._start, other._start)
+        end = max(self._end, other._end)
         return Arc(start, end)
