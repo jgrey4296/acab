@@ -18,9 +18,9 @@ class Event:
         self._params= { BIND_S : False,
                         OPT_S : False }
         self._value_is_pattern = value_is_pattern
-
         if params is not None:
             self._params.update(params)
+        assert(not (value_is_pattern and self._params[BIND_S]))
 
     def __call__(self, count, just_values=False, rnd_s=None):
         """ Get a list of events given a time """
@@ -47,9 +47,13 @@ class Event:
         """ event[x] """
         return self._params[val]
 
+    def copy(self, deep=False):
+        if deep:
+            val = self._value.copy(True)
+        else:
+            val = self._value
 
-    def copy(self):
-        return Event(self._arc, self._value, self._value_is_pattern, self._params)
+        return Event(self._arc, val, self._value_is_pattern, self._params)
     def set_arc(self, arc):
         assert(isinstance(arc, Arc))
         self._arc = arc.copy()
@@ -65,7 +69,7 @@ class Event:
 
     def key(self):
         """ Get the start of the event, for sorting """
-        return self._arc._start
+        return self._arc.key()
 
     def print_flip(self, start=True):
         """ Get a string describing the event's entry/exit status """
@@ -92,3 +96,18 @@ class Event:
         Currently this is equivalent to being a string
         """
         return isinstance(self._value, str)
+
+    def bind(self, bindings):
+        assert(self.is_pure())
+        copied = self.copy()
+        if self._params[BIND_S] and self._value in bindings:
+            copied._value = bindings[self._value]
+        return copied
+
+    def var_set(self):
+        if self._value_is_pattern:
+            return self._value.var_set()
+        elif self._params[BIND_S]:
+            return set(self._value)
+        else:
+            return []
