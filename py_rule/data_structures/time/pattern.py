@@ -1,24 +1,26 @@
 """
 A Pattern collects events together and cycles them
 """
-from py_rule.data_structures.time.arc import Arc
-from py_rule.data_structures.time.event import Event
-from .pattern_iterator import PatternIterator
-from .utils import TIME_T, f_gcd, Time
+import logging as root_logger
 from fractions import Fraction
 from functools import reduce
 from math import floor
 from random import Random
+
 import IPython
-import logging as root_logger
+
+from py_rule.data_structures.time.arc import Arc
+from py_rule.data_structures.time.event import Event
+
+from .pattern_iterator import PatternIterator
+from .utils import TIME_T, Time, f_gcd
 
 logging = root_logger.getLogger(__name__)
 
 # TODO: binary tree / beachline for finding events?
 class Pattern:
     """ A Collection of Events """
-
-    def __init__(self, a, vals=None):
+    def __init__(self, a, vals=None, data=None, bindings=None):
         if vals is None:
             vals = []
         self._arc = a.copy()
@@ -26,8 +28,17 @@ class Pattern:
         self._components = sorted(vals, key=lambda x: x.key())
         self._time_type = TIME_T.CLOCK
         self._data = {}
+        self._bindings = {}
+        self._var_set = set()
         self._wrap_template = "[{}]"
         self._join_template = " "
+
+        if data is not None:
+            self._data.update(data)
+        if bindings is not None:
+            self._bindings.update(bindings)
+        [self._var_set.update(x.var_set()) for x in self._components]
+
 
     def __str__(self):
         return "[{}]".format(self.pprint(True))
@@ -41,12 +52,7 @@ class Pattern:
         results = []
         for x in self._components:
             results += x(scaled_position, False, rnd_s)
-
-        assert(all([isinstance(x, Event) for x in results]))
-        if just_values:
-            results = [x._value for x in results]
-
-        return results
+        return self.handle_call_results(results, just_values)
 
     def __contains__(self, other):
         """ Test whether a given object or time is within this patterns bounds """
@@ -69,6 +75,27 @@ class Pattern:
         return PatternPar(self._arc,
                           [self, other])
 
+    def __iter__(self):
+        return self.iter()
+    def handle_call_results(self, results, just_values=False):
+        assert(all([isinstance(x, Event) for x in results]))
+        if bool(self._bindings):
+            results = [x.bind(self._bindings) for x in results]
+
+        if just_values:
+            results = [x._value for x in results]
+
+        return results
+    def copy(self, deep=False):
+        """ Copy the pattern for modification """
+        if deep:
+            vals = [x.copy(True) for x in self._components]
+        else:
+            vals = self._components
+        self_class = self.__class__
+        copied = self_class(self._arc, vals, self._data, self._bindings)
+        copied._time_type = self._time_type
+        return copied
     def visualise(self, headless=False, base_count=None):
         if base_count is None:
             base_count = self.denominator()
@@ -113,7 +140,6 @@ class Pattern:
         events = {x.is_pure() for x in self._components}
         return len(events) == 1
 
-
     def scale_time(self, count):
         pattern_range = self._arc.size()
         f_count = floor(count)
@@ -123,7 +149,7 @@ class Pattern:
 
     def key(self):
         """ Key the Pattern by its start time, for sorting """
-        return self._arc._start
+        return self._arc.key()
 
     def base(self):
         """ Get all used fractions within this arc, scaled appropriately by offset
@@ -138,28 +164,30 @@ class Pattern:
         base_count = reduce(f_gcd, self.base(), 2).denominator
         return base_count
 
-    def iter(self, just_values=True, rnd_s=None):
+    def iter(self, just_values=True, rnd_s=None, cycles=1, count=None):
         """ Treat the pattern as an iterator """
         return PatternIterator(self,
                                just_values=just_values,
-                               rnd_s=rnd_s)
+                               rnd_s=rnd_s,
+                               cycles=cycles,
+                               count=count)
 
-    def format(self, a_dict):
+    def bind(self, a_dict):
         """ Apply a substitution dictionary to variables in the pattern """
-        return None
-
-    def copy(self, deep=False):
-        """ Copy the pattern for modification """
-        raise Exception("not implemented yet")
-
+        copied = self.copy()
+        copied._bindings.update(a_dict)
+        return copied
     def apply_to(self, other):
         """ Combine two patterns, using the structure of left one """
         raise Exception("Not implemented yet")
 
+    def var_set(self):
+        return self._var_set
+
 
 class PatternSeq(Pattern):
 
-    def __init__(self, a, vals=None):
+    def __init__(self, a, vals=None, data=None, bindings=None):
         assert(all([isinstance(x, Pattern) for x in vals]))
         flat_vals = []
         for x in vals:
@@ -168,7 +196,7 @@ class PatternSeq(Pattern):
             else:
                 flat_vals.append(x)
 
-        super().__init__(a, flat_vals)
+        super().__init__(a, flat_vals, data, bindings)
         self._wrap_template = "[{}]"
         self._join_template = " -> "
 
@@ -177,13 +205,15 @@ class PatternSeq(Pattern):
         scaled_position = self.scale_time(count)
         f_count = floor(count)
         mod_f = f_count % len(self._components)
-        return self._components[mod_f](scaled_position, just_values, rnd_s)
+        vals = self._components[mod_f](scaled_position, False, rnd_s)
+        return self.handle_call_results(vals, just_values)
+
 
 
 class PatternPar(Pattern):
-    def __init__(self, a, vals=None):
+    def __init__(self, a, vals=None, data=None, bindings=None):
         assert(all([isinstance(x, Pattern) for x in vals]))
-        super().__init__(a, vals)
+        super().__init__(a, vals, data, bindings)
         self._wrap_template = "[{}]"
         self._join_template = ", "
 
@@ -193,11 +223,8 @@ class PatternPar(Pattern):
         for x in self._components:
             results += x(scaled_position, False, rnd_s)
 
-        assert(all([isinstance(x, Event) for x in results]))
-        if just_values:
-            results = [x._value for x in results]
+        return self.handle_call_results(results, just_values)
 
-        return results
 
     def visualise(self, headless=False, base_count=None):
         if base_count is None:
@@ -214,15 +241,16 @@ class PatternPar(Pattern):
 
 
 class PatternChoice(Pattern):
-    def __init__(self, a, vals=None):
-        super().__init__(a, vals)
+    def __init__(self, a, vals=None, data=None, bindings=None):
+        components = [x.copy() for x in vals]
+        base_arc = Arc(Time(0,1), Time(1,1))
+        vals = [Event(base_arc, x, True)
+                            if isinstance(x, Pattern)
+                            else x.set_arc(base_arc)
+                            for x in components]
+        super().__init__(a, vals, data, bindings)
         self._wrap_template = "<{}>"
         self._join_template = " "
-
-        components = [x.copy() for x in self._components]
-        self._components = [Event(Arc(Time(0, 1), Time(1, 1)), x, True)
-                            if isinstance(x, Pattern) else x for x in components]
-
 
     def __call__(self, count, just_values=False, rnd_s=None):
         """ When called chooses from one of the options,
@@ -233,12 +261,7 @@ class PatternChoice(Pattern):
         the_choice = rnd.choice(self._components)
         results = the_choice(scaled_position, False, rnd_s)
 
-        assert(all([isinstance(x, Event) for x in results]))
-        if just_values:
-            results = [x._value for x in results]
-
-        return results
-
+        return self.handle_call_results(results, just_values)
 
     def pprint(self, wrap=False):
         needs_wrapping = not self.is_pure()
