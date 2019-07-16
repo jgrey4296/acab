@@ -137,5 +137,4 @@ basic_fact_string.setParseAction(construct_sentence)
 def parseString(in_string):
     """ str -> [[Node]] """
     # IPython.embed(simple_prompt=True)
-    parsed = param_fact_strings.parseString(in_string)[:]
-    return parsed
+    return param_fact_strings.parseString(in_string)[:]
