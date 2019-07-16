@@ -3,7 +3,7 @@ import logging
 from test_context import py_rule
 from py_rule.data_structures.time.arc import Arc
 from py_rule.data_structures.time.event import Event
-from py_rule.data_structures.time.pattern import Pattern, PatternSeq
+from py_rule.data_structures.time.pattern import Pattern, PatternSeq, PatternPar
 from py_rule.data_structures.time.parsing import parser as tp
 from py_rule.data_structures.time.utils import Time as t
 import IPython
@@ -30,8 +30,8 @@ class TestTime(unittest.TestCase):
     def test_arc_contains_false(self):
         an_arc = Arc(t(0,1), t(1,2))
         self.assertFalse(t(3,4) in an_arc)
+        self.assertFalse(t(-1, 4) in an_arc)
 
-    #get the size from the arc
     def test_arc_size(self):
         an_arc = Arc(t(1,4), t(1,2))
         self.assertEqual(an_arc.size(), t(1,4))
@@ -52,17 +52,36 @@ class TestTime(unittest.TestCase):
         combined = an_arc.bound(another_arc)
         combined_other = another_arc.bound(an_arc)
         self.assertEqual(combined, combined_other)
-        self.assertEqual(combined.start, t(1,4))
-        self.assertEqual(combined.end, t(2,3))
+        self.assertEqual(combined._start, t(1,4))
+        self.assertEqual(combined._end, t(2,3))
 
+    def test_arc_copy(self):
+        an_arc = Arc(t(1,4), t(3,5))
+        copied = an_arc.copy()
+        self.assertEqual(an_arc, copied)
+
+    def test_arc_bound_invariant(self):
+        with self.assertRaises(AssertionError):
+            Arc(t(3,4), t(1,4))
+
+    def test_arc_pair(self):
+        an_arc = Arc(t(1,4), t(2,4))
+        pair = an_arc.pair()
+        self.assertEqual(pair[0], t(1,4))
+        self.assertEqual(pair[1], t(2,4))
 
     #--------------------
     # EVENT TESTS
     def test_event_creation(self):
         anEvent = Event(Arc(t(0,1), t(1,1)), "a")
         self.assertIsNotNone(anEvent)
+        self.assertEqual(anEvent._arc, Arc(t(0,1), t(1,1)))
+        self.assertEqual(anEvent._value, "a")
 
-    #call an event
+    def test_event_creation_with_params(self):
+        anEvent = Event(Arc(t(0,1), t(2,4)), "b", params={"test": 5})
+        self.assertEqual(anEvent["test"], 5)
+
     def test_event_call(self):
         anEvent = Event(Arc(t(0,1), t(1,1)), "a")
         callResult = anEvent(t(1,2))
@@ -73,7 +92,6 @@ class TestTime(unittest.TestCase):
         callResult = anEvent(t(2,1))
         self.assertEqual(len(callResult), 0)
 
-    #call an event that holds a pattern
     def test_event_call_pattern(self):
         aPattern = Pattern(Arc(t(0,1),t(1,1)),
                            [ Event(Arc(t(0,1),t(1,2)), "a"),
@@ -84,7 +102,6 @@ class TestTime(unittest.TestCase):
         self.assertEqual(len(callResult), 1)
         self.assertEqual(callResult[0]._value, "b")
 
-    #get the base set
     def test_event_base(self):
         anEvent = Event(Arc(t(0,1),t(1,1)), "a")
         base = anEvent.base()
@@ -98,13 +115,11 @@ class TestTime(unittest.TestCase):
         base = anEvent.base()
         self.assertEqual(len(base), 6)
 
-    #get the key
     def test_event_get_key(self):
         anEvent = Event(Arc(t(0,1),t(1,1)), "a")
         key = anEvent.key()
         self.assertEqual(key, t(0,1))
 
-    #sort by key
     def test_event_sort_by_key(self):
         events = [ Event(Arc(t(1,2),t(1,1)), "a"),
                    Event(Arc(t(0,1),t(1,2)), "b"),
@@ -113,12 +128,27 @@ class TestTime(unittest.TestCase):
         values = [x._value for x in sorted_events]
         self.assertEqual(values, ["b","a","c"])
 
-    #check contains
     def test_event_contains(self):
         anEvent = Event(Arc(t(0,1),t(1,2)), "a")
         self.assertTrue(t(1,4) in anEvent)
         self.assertFalse(t(3,4) in anEvent)
 
+    def test_event_set_arc(self):
+        an_event = Event(Arc(t(1,2), t(3,4)), "a")
+        self.assertEqual(an_event._arc, Arc(t(1,2), t(3,4)))
+        an_event.set_arc(Arc(t(1,1), t(5,4)))
+        self.assertEqual(an_event._arc, Arc(t(1,1), t(5,4)))
+
+    def test_event_is_pure(self):
+        an_event = Event(Arc(t(1,2), t(3,4)), "a")
+        self.assertTrue(an_event.is_pure())
+
+    def test_event_is_pure_fail(self):
+        aPattern = Pattern(Arc(t(0,1),t(1,1)),
+                           [ Event(Arc(t(1,4),t(1,2)), "a"),
+                             Event(Arc(t(1,6),t(3,8)), "b") ])
+        anEvent = Event(Arc(t(0,1),t(1,1)), aPattern, True)
+        self.assertFalse(anEvent.is_pure())
 
     #--------------------
     # PATTERN TESTS
@@ -126,12 +156,10 @@ class TestTime(unittest.TestCase):
         aPattern = Pattern(Arc(t(0,1), t(1,1)), [])
         self.assertIsNotNone(aPattern)
 
-    #call empty
     def test_pattern_call_empty(self):
         aPattern = Pattern(Arc(t(0,1),t(1,1)), [])
         self.assertEqual(len(aPattern(t(0,1))), 0)
 
-    #call with events
     def test_pattern_call(self):
         aPattern = Pattern(Arc(t(0,1), t(1,1)),
                                 [ Event(Arc(t(0,1),t(1,2)), "a"),
@@ -140,7 +168,6 @@ class TestTime(unittest.TestCase):
         self.assertEqual(len(res), 1)
         self.assertEqual(res[0]._value, "b")
 
-    #call with patterns
     def test_pattern_call_with_internal_pattern_start(self):
         aPattern = Pattern(Arc(t(0,1), t(1,2)),
                                 [ Event(Arc(t(0,1), t(1,2)), "a"),
@@ -188,7 +215,6 @@ class TestTime(unittest.TestCase):
         self.assertFalse("a" in result)
         self.assertFalse("b" in result)
 
-    #call with patterns in events
     def test_pattern_call_with_patterns_in_events(self):
         aPattern = Pattern(Arc(t(0,1), t(1,1)),
                                 [ Event(Arc(t(0,1), t(1,2)), "a"),
@@ -215,14 +241,12 @@ class TestTime(unittest.TestCase):
         self.assertFalse("a" in result4)
         self.assertFalse("b" in result4)
 
-    #get the key
     def test_pattern_get_key(self):
         aPattern = Pattern(Arc(t(3,8),t(6,8)),
                            [ Event(Arc(t(0,1),t(1,1)), "a")])
 
         self.assertEqual(aPattern.key(), t(3,8))
 
-    #check contains
     def test_pattern_contains(self):
         aPattern = Pattern(Arc(t(3,8),t(6,8)),
                                 [ Event(Arc(t(0,1),t(1,1)), "a")])
@@ -230,7 +254,6 @@ class TestTime(unittest.TestCase):
         self.assertTrue(t(4,8) in aPattern)
         self.assertFalse(t(7,8) in aPattern)
 
-    #get the base set
     def test_pattern_denominator_simple(self):
         aPattern = tp.parse_string("[[ a b c ]]")
         denom = aPattern.denominator()
@@ -251,7 +274,6 @@ class TestTime(unittest.TestCase):
         denom = aPattern.denominator()
         self.assertEqual(denom, 2)
 
-    #pretty print pattern
     def test_pattern_seq__double_cycle(self):
         p1 = tp.parse_string("[[a b c d]]")
         p2 = tp.parse_string("[[e f g h]]")
@@ -293,12 +315,13 @@ class TestTime(unittest.TestCase):
     def test_pattern_add_twice(self):
         first_pattern = tp.parse_string("[[a b]]")
         second_pattern = tp.parse_string("[[c d]]")
+        third_pattern = tp.parse_string("[[e f]]")
         combined = first_pattern + second_pattern
-        combined_2 = combined + second_pattern
+        combined_2 = combined + third_pattern
         for i,x in zip([0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
                        combined_2.iter()):
             self.assertEqual(x[0],
-                            "a b c d c d a b c d".split(" ")[i])
+                            "a b c d e f a b c d e f".split(" ")[i])
 
     def test_pattern_stack(self):
         first_pattern = tp.parse_string("[[a b]]")
@@ -318,6 +341,10 @@ class TestTime(unittest.TestCase):
         return None
 
 
+    #TODO: test pattern choice
+    #TODO: test event optional
+    #TODO: test silence
+    
     #--------------------
     # PARSER TESTS
     #Parse a pattern
@@ -334,7 +361,6 @@ class TestTime(unittest.TestCase):
         with self.assertRaises(Exception):
             tp.parse_string("[[a b [c d]]")
 
-    #Parse a nested pattern
     def test_parse_nested_simple(self):
         aPattern = tp.parse_string("[[ a b [c d]]]")
         self.assertEqual(len(aPattern._components), 3)
@@ -342,10 +368,13 @@ class TestTime(unittest.TestCase):
 
     def test_parse_parallel_nested(self):
         aPattern = tp.parse_string("[[ a b , [c d] e]]")
+        self.assertIsInstance(aPattern, PatternPar)
         self.assertEqual(len(aPattern._components), 2)
-        self.assertEqual(len(aPattern._components[1]._value._components), 2)
+        self.assertEqual(len(aPattern._components[1]._components), 2)
 
-    #parse a pretty printed pattern
+
+
+
 
 if __name__ == "__main__":
       #use python $filename to use this logging setup
