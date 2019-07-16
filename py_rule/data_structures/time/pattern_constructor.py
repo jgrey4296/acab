@@ -75,12 +75,12 @@ def construct_pattern_simple(orig_tokens):
 
     #wrap in main pattern
     final_pattern = None
-    if len(patterns) == 1:
+    if patt_type == Pattern:
+        final_pattern = patterns[0]
+    elif len(patterns) == 1:
         final_pattern = patt_type(patterns[0]._arc,
                                   patterns[0]._components)
 
     elif len(patterns) > 1:
-        final_pattern = patt_type(Arc(t(0,1), t(1,1)),
-                                  [Event(Arc(t(0,1), t(1,1)),
-                                         x, True) for x in patterns])
+        final_pattern = patt_type(Arc(t(0,1), t(1,1)), patterns)
     return (final_pattern, final_pattern_data)
