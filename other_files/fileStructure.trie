@@ -3,17 +3,16 @@
 //All Institutions have input senses across the memory levels
 
 //Objective Input senses : [bodyPosition, bodyPose, bodyAdornment, speechAct,
-adjoiningRooms, roomAdornment,
+// adjoiningRooms, roomAdornment,
 
 // facing information, bodyItems, roomItems,
-soundVolume, soundBalance, temperature, bodySize...]
+// soundVolume, soundBalance, temperature, bodySize...]
 
 //Memory Levels: [ now, justNow (now-1), encounter, recently, regularly,
-currently, ever ]
+// currently, ever ]
 
 //And Output actions to modify those physical facts
 //Constraints on unmodifiable physical postulates
-
 
 //Innate Agent [values, variance, restingState, envelope, ordering]
 

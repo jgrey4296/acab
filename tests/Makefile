@@ -1,8 +1,8 @@
-all: trie facttrie engine datastructures
+all: trie facttrie engine modules
 
-datastructures:
-	@echo "Testing Data Structures"
-	python -m unittest data_structures/*_tests.py
+modules:
+	@echo "Testing Modules"
+	python -m unittest modules/*_tests.py
 
 trie:
 	@echo "Testing Trie"

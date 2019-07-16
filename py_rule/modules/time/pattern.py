@@ -9,8 +9,8 @@ from random import Random
 
 import IPython
 
-from py_rule.data_structures.time.arc import Arc
-from py_rule.data_structures.time.event import Event
+from py_rule.modules.time.arc import Arc
+from py_rule.modules.time.event import Event
 
 from .pattern_iterator import PatternIterator
 from .utils import TIME_T, Time, f_gcd

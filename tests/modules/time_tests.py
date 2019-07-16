@@ -1,11 +1,11 @@
 import unittest
 import logging
 from test_context import py_rule
-from py_rule.data_structures.time.arc import Arc
-from py_rule.data_structures.time.event import Event
-from py_rule.data_structures.time.pattern import Pattern, PatternSeq, PatternPar
-from py_rule.data_structures.time.parsing import parser as tp
-from py_rule.data_structures.time.utils import Time as t
+from py_rule.modules.time.arc import Arc
+from py_rule.modules.time.event import Event
+from py_rule.modules.time.pattern import Pattern, PatternSeq, PatternPar
+from py_rule.modules.time.parsing import parser as tp
+from py_rule.modules.time.utils import Time as t
 from py_rule.utils import BIND_S
 import IPython
 
