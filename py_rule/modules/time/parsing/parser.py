@@ -71,7 +71,7 @@ main_pattern = s(OBRACKET) + pattern + s(CBRACKET)
 # Actions
 Time_VALBIND.setParseAction(make_valbind)
 pattern.setParseAction(construct_pattern_simple)
-main_pattern.setParseAction(lambda x: x[0])
+main_pattern.setParseAction(lambda x: ("pattern", x[0][0]))
 OBRACKET.setParseAction(lambda x: CTOR_ACT.PSTART)
 CBRACKET.setParseAction(lambda x: CTOR_ACT.PEND)
 COMMA.setParseAction(lambda x: CTOR_ACT.PDUAL)
@@ -82,4 +82,4 @@ TILDE.setParseAction(lambda x: (CTOR_ACT.SIL, {}))
 
 def parse_string(s):
     """ The primary access point """
-    return main_pattern.parseString(s)[0][0]
+    return main_pattern.parseString(s)[0][1]
