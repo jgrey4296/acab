@@ -35,12 +35,12 @@ class Pattern:
     def __repr__(self):
         return "Pattern({})".format(str(self))
 
-    def __call__(self, count, just_values=False, rand_s=None):
+    def __call__(self, count, just_values=False, rnd_s=None):
         """ Query the Pattern for a given time """
         scaled_position = self.scale_time(count)
         results = []
         for x in self._components:
-            results += x(scaled_position, False, rand_s)
+            results += x(scaled_position, False, rnd_s)
 
         assert(all([isinstance(x, Event) for x in results]))
         if just_values:
@@ -54,16 +54,8 @@ class Pattern:
 
     def __add__(self, other):
         """ Concatenates two patterns together """
-        l_comps = [self]
-        r_comps = [other]
-        if isinstance(self, PatternSeq):
-            l_comps = self._components
-        if isinstance(other, PatternSeq):
-            r_comps = other._components
-
-        # TODO: is this arc correct?
         return PatternSeq(self._arc,
-                          l_comps + r_comps)
+                          [self, other])
 
     def __sub__(self, other):
         """ Remove a pattern from another
@@ -73,16 +65,9 @@ class Pattern:
 
     def __mul__(self, other):
         """ Stacks two patterns together """
-        l_comps = [self]
-        r_comps = [other]
-        if isinstance(self, PatternSeq):
-            l_comps = self._components
-        if isinstance(other, PatternSeq):
-            r_comps = other._components
-
-        return Pattern(self._arc,
-                       l_comps + r_comps)
-
+        assert(isinstance(other, Pattern))
+        return PatternPar(self._arc,
+                          [self, other])
 
     def visualise(self, headless=False, base_count=None):
         if base_count is None:
@@ -123,6 +108,8 @@ class Pattern:
             return joined
 
     def is_pure(self):
+        """ Where purity is defined as having components of the
+        same purity """
         events = {x.is_pure() for x in self._components}
         return len(events) == 1
 
@@ -136,7 +123,7 @@ class Pattern:
 
     def key(self):
         """ Key the Pattern by its start time, for sorting """
-        return self._arc.start
+        return self._arc._start
 
     def base(self):
         """ Get all used fractions within this arc, scaled appropriately by offset
@@ -151,9 +138,11 @@ class Pattern:
         base_count = reduce(f_gcd, self.base(), 2).denominator
         return base_count
 
-    def iter(self, just_values=True, rand_s=None):
+    def iter(self, just_values=True, rnd_s=None):
         """ Treat the pattern as an iterator """
-        return PatternIterator(self, just_values=just_values, rand_s=rand_s)
+        return PatternIterator(self,
+                               just_values=just_values,
+                               rnd_s=rnd_s)
 
     def format(self, a_dict):
         """ Apply a substitution dictionary to variables in the pattern """
@@ -161,31 +150,39 @@ class Pattern:
 
     def copy(self, deep=False):
         """ Copy the pattern for modification """
-        return None
+        raise Exception("not implemented yet")
 
     def apply_to(self, other):
         """ Combine two patterns, using the structure of left one """
-        return None
+        raise Exception("Not implemented yet")
 
 
 class PatternSeq(Pattern):
 
     def __init__(self, a, vals=None):
-        super().__init__(a, vals)
+        assert(all([isinstance(x, Pattern) for x in vals]))
+        flat_vals = []
+        for x in vals:
+            if isinstance(x, PatternSeq):
+                flat_vals += x._components
+            else:
+                flat_vals.append(x)
+
+        super().__init__(a, flat_vals)
         self._wrap_template = "[{}]"
         self._join_template = " -> "
 
-    def __call__(self, count, just_values=False, rand_s=None):
+    def __call__(self, count, just_values=False, rnd_s=None):
         """ Query the Pattern for a given time """
         scaled_position = self.scale_time(count)
         f_count = floor(count)
         mod_f = f_count % len(self._components)
-        return self._components[mod_f](scaled_position, just_values, rand_s)
+        return self._components[mod_f](scaled_position, just_values, rnd_s)
 
 
 class PatternPar(Pattern):
     def __init__(self, a, vals=None):
-        assert(all([isinstance(x._value, Pattern) for x in vals]))
+        assert(all([isinstance(x, Pattern) for x in vals]))
         super().__init__(a, vals)
         self._wrap_template = "[{}]"
         self._join_template = ", "
@@ -194,7 +191,7 @@ class PatternPar(Pattern):
         scaled_position = self.scale_time(count)
         results = []
         for x in self._components:
-            results += x(scaled_position, just_values, rnd_s)
+            results += x(scaled_position, False, rnd_s)
 
         assert(all([isinstance(x, Event) for x in results]))
         if just_values:
@@ -223,13 +220,13 @@ class PatternChoice(Pattern):
         self._join_template = " "
 
         components = [x.copy() for x in self._components]
-        self._components = [x.set_arc(Arc(Time(0, 1), Time(1, 1))) for x in components]
+        self._components = [Event(Arc(Time(0, 1), Time(1, 1)), x, True)
+                            if isinstance(x, Pattern) else x for x in components]
 
 
     def __call__(self, count, just_values=False, rnd_s=None):
         """ When called chooses from one of the options,
         using the random_state """
-
         scaled_position = self.scale_time(count)
         f_count = floor(count)
         rnd = Random(f_count)
