@@ -3,12 +3,17 @@ import logging as root_logger
 import IPython
 from enum import Enum
 import re
+from py_rule.utils import BIND_S
 logging = root_logger.getLogger(__name__)
 
 #comparison operators:
 COMP = Enum('Comp_ops', 'LT GT NE EQ RE')
 
 class CompOp:
+    """ Superclass for Comparisons.
+    Instantiation of subclasses auto-registers
+    the comparison into CompOp.op_list with an operator string
+    """
     op_list = {}
 
     def __init__(self, op_str):
@@ -71,6 +76,7 @@ class ELEM(CompOp):
     def __call__(self, a, b):
         return a in b
 
+
 EQ()
 GT()
 LT()
@@ -85,15 +91,6 @@ class Comparison:
     def __init__(self, op, value):
         self._op = CompOp.op_list[op]
         self._value = value
-
-    def copy(self):
-        return Comparison(self._op, self._value)
-
-    def is_alpha_test(self):
-        return self._value is not None and not self._value._data['bind']
-
-    def is_regex_test(self):
-        return self._op is CompOp.op_list["~="]
 
     def __str__(self):
         if self.is_regex_test():
@@ -112,3 +109,13 @@ class Comparison:
 
         retValue = "Comparison({} {})".format(repr(self._op), repr(val))
         return retValue
+
+    def copy(self):
+        return Comparison(self._op, self._value)
+
+    def is_alpha_test(self):
+        return self._value is not None and not self._value._data[BIND_S]
+
+    def is_regex_test(self):
+        return self._op is CompOp.op_list["~="]
+

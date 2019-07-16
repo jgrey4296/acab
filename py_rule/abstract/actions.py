@@ -25,6 +25,10 @@ ACTMACRONAME = namedtuple('ActMacroId', 'name')
 
 #Action function template:
 class ActionOp:
+    """ Superclass of all Actions.
+    Instantiation of subclasses auto-registers
+    the action into ActionOp.op_list with an operator string
+    """
     op_list = {}
 
     def __init__(self, op_str):
@@ -86,7 +90,8 @@ ActionPrint()
 ActionCustom()
 
 class Action:
-    """ The Core Action Class, holds an operator,  and a list of values """
+    """ The Core Action Class, holds an operator,
+    and a list of values """
     def __init__(self, op, values, type_=None):
         """ Create an action with an operator and values """
         assert(isinstance(values, list))
@@ -132,7 +137,7 @@ class Action:
         """ Output a list of bindings from this action """
         output = []
         for x in self._values:
-            if x._data['bind']:
+            if x._data[util.BIND_S]:
                 output.append(data[x.value])
             elif isinstance(x, list): #and all([isinstance(y, Node) for y in x]):
                 output.append([y.bind(data) for y in x])

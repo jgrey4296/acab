@@ -13,6 +13,7 @@ TROP = Enum("Transform_ops", "ADD SUB MUL DIV RAND REMAIN ROUND NEG REGEX FORMAT
 
 class TransformOp:
     op_list = {}
+
     def __init__(self, op_str, num_params=2):
         self._op_str = op_str
         self._num_params = num_params
@@ -130,6 +131,9 @@ class SelectOp(TransformOp):
     def __call__(self, a, b, data):
         raise Exception("unimplemented")
 
+
+
+#--------------------------------------------------
 
 class TransformComponent:
     """ Superclass of Transforms. Holds an Operator """

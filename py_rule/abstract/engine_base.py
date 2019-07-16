@@ -149,7 +149,7 @@ class EngineBase:
             opFunc = x._op
             param_length = x._num_params
             #get source
-            if x.source._data['bind']:
+            if x.source._data[util.BIND_S]:
                 source = chosen_ctx[x.source._value]
             else:
                 source = x.source
@@ -163,7 +163,7 @@ class EngineBase:
                     value = chosen_ctx[x.bind.value]
                 newVal = opFunc(source, value)
             elif param_length == 3:
-                if x._data['bind']:
+                if x._data[util.BIND_S]:
                     bindVal = chosen_ctx[x._value]
                 else:
                     bindVal = x._value

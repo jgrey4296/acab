@@ -3,6 +3,7 @@ Defines a Sentence of Fact Words, which can be a query, and
 have fallback bindings
 """
 import IPython
+from py_rule.utils import BIND_S
 
 class Sentence:
     """
@@ -54,7 +55,7 @@ class Sentence:
         output = []
 
         for x in self:
-            if x._data['bind'] and x._value in bindings:
+            if x._data[BIND_S] and x._value in bindings:
                 retrieved = bindings[x._value]
             else:
                 #early exit if a plain node
@@ -67,14 +68,14 @@ class Sentence:
             else:
                 retrieved = retrieved._words[0]
 
-            if retrieved._data['bind']:
+            if retrieved._data[BIND_S]:
                 copied_node = x.copy()
                 copied_node._value = retrieved._value
                 output.append(copied_node)
             else:
                 copied_node = x.copy()
                 copied_node._value = retrieved._value
-                copied_node._data['bind'] = False
+                copied_node._data[BIND_S] = False
                 output.append(copied_node)
 
         return Sentence(output,

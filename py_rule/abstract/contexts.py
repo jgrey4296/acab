@@ -39,7 +39,7 @@ class Contexts:
 
     def _init_alt(self, start_node):
         """ Setup the initial context of no bindings
-            and no wmes """
+        """
         self._matches = [({}, start_node)]
 
 
