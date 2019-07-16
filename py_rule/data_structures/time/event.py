@@ -22,15 +22,12 @@ class Event:
         if params is not None:
             self._params.update(params)
 
-    def copy(self):
-        return Event(self._arc, self._value, self._value_is_pattern, self._params)
-
     def __call__(self, count, just_values=False, rnd_s=None):
         """ Get a list of events given a time """
         if count in self._arc:
             if self._value_is_pattern:
                 event_range = self._arc.size()
-                offset_count = count - self._arc.start
+                offset_count = count - self._arc._start
                 scaled_count = offset_count / event_range
                 return self._value(scaled_count, just_values, rnd_s)
             else:
@@ -51,6 +48,8 @@ class Event:
         return self._params[val]
 
 
+    def copy(self):
+        return Event(self._arc, self._value, self._value_is_pattern, self._params)
     def set_arc(self, arc):
         assert(isinstance(arc, Arc))
         self._arc = arc.copy()
@@ -61,12 +60,12 @@ class Event:
         time_list = self._arc.pair()
         size =  self._arc.size()
         if self._value_is_pattern:
-            time_list += [(x * size) - self._arc.start  for x in self._value.base()]
+            time_list += [(x * size) - self._arc._start  for x in self._value.base()]
         return set(time_list)
 
     def key(self):
         """ Get the start of the event, for sorting """
-        return self._arc.start
+        return self._arc._start
 
     def print_flip(self, start=True):
         """ Get a string describing the event's entry/exit status """
@@ -88,4 +87,8 @@ class Event:
             return "{}{}{}".format(head, str(self._value),tail)
 
     def is_pure(self):
-        return not isinstance(self._value, str)
+        """ Where purity is defined as being a simple
+        value, not a Pattern
+        Currently this is equivalent to being a string
+        """
+        return isinstance(self._value, str)
