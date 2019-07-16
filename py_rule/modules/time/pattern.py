@@ -59,13 +59,14 @@ class Pattern:
         return other in self._arc
 
     def __add__(self, other):
-        """ Concatenates two patterns together """
+        """ Concatenates two patterns together, without compression """
         return PatternSeq(self._arc,
                           [self, other])
 
     def __sub__(self, other):
-        """ Remove a pattern from another
-        Equivalent to formatting the pattern with silence
+        """
+        Treat as a Parallel pattern where if an event occurs in both streams,
+        it is silenced
         """
         return None
 
@@ -183,6 +184,10 @@ class Pattern:
 
     def var_set(self):
         return self._var_set
+
+    def compress(self, other):
+        """ Compress two patterns to run in the same arc as self._arc """
+        return Pattern(self._arc, [self, other])
 
 
 class PatternSeq(Pattern):
