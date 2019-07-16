@@ -120,9 +120,9 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
 
         FP.OTHER_VALS << new_parser
 
-        a = FP.VALUE.parseString("@awef")[0]
-        self.assertEqual(a[0], "awef")
-        self.assertEqual(a[1], "@awef")
+        a = FP.VALBIND.parseString("@awef")[0]
+        self.assertEqual(a._value, "@awef")
+        self.assertEqual(a._data[util.VALUE_TYPE_S], "awef")
 
 
 if __name__ == "__main__":
