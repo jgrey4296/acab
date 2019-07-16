@@ -7,11 +7,21 @@ Comes in two parts: The Parser, and the data
 
 class ModuleParser:
 
+    def __init__(self, parser):
+        """ A Parser has to provide a parser combinator to
+        integrate into the Trie Lanuage.
+        The Combinator *must* return a tuple:
+        ("typestr", data) """
+        self._parser = parser
+
     def parse_string(self, string):
         """ Takes a String, parses it into Data format,
         This is used to integrate the module as a value
         in the main language """
         raise Exception("This is an Abstract Method")
+
+    def get_parser(self):
+        return self._parser
 
 class ModuleData:
 
