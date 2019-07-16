@@ -38,8 +38,8 @@ MUTABLE = Enum('Mutablility', "CORE PENUMBRA")
 def build_rebind_dict(formal, usage):
     """ Build a dictionary for action macro expansion,
     to swap internal formal params for provided usage params """
-    assert(all(['bind' in x._data for x in formal]))
-    fvals = [x.value for x in formal]
+    assert(all([BIND_S in x._data for x in formal]))
+    fvals = [x._value for x in formal]
     return dict(zip(fvals, usage))
 
 def default_action_policy(pairings):
@@ -52,5 +52,5 @@ def has_equivalent_vars_pred(node):
     Finds nodes with multiple vars as children that can be merged """
     if node._op == EX_OP.ROOT:
         return False
-    var_children = [x for x in node._children.values() if x.is_var]
+    var_children = [x for x in node._children.values() if x._is_var]
     return len(var_children) > 1
