@@ -242,7 +242,7 @@ class PatternPar(Pattern):
         if headless:
             output = ""
 
-        collection = [x._value.visualise(True, base_count) for x in self._components]
+        collection = [x.visualise(True, base_count) for x in self._components]
         output += "/{}/\n".format(div_line).join(collection)
         return output
 
