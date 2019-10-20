@@ -173,6 +173,7 @@ class FactNode(TrieNode):
         raise Exception("Unimplemented")
 
     def _bind_to_value(self, data):
-        """ Set the Nodes value to be one retrieved from passed in bindings """
+        """ Set the Nodes value to be one retrieved
+        from passed in bindings """
         assert(self._value in data)
         self._value = data[self._value]

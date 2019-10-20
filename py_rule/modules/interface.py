@@ -23,6 +23,7 @@ class ModuleParser:
     def get_parser(self):
         return self._parser
 
+
 class ModuleData:
 
     def __str__(self):

@@ -46,4 +46,3 @@ class TypeAssignmentTrieNode(M_TypedNode):
 
     def clear_var_node(self):
         self._var_node = None
-        
