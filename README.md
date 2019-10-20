@@ -1,6 +1,5 @@
 # Python Based Rule Engine
-With a naive wme implementation module
-and a more comprehensive trie based module
+Based on a trie/Exclusion logic base
     
 # DSL
 The rule engine uses an exclusion logic DSL, allowing querying, binding, assertion, retraction, and printing.
