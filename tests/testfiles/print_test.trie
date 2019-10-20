@@ -1,16 +1,16 @@
 // initial assertions
-.string."test {y}"
-.a.b!5
-.a.c!10
-.a.d!20
+string."test {y}"
+a.b!5
+a.c!10
+a.d!20
 
 // A Retracting rule
-.a.test.rule:
-    .string.$a?
-    .a.$x!$y?
+a.test.rule:
+  string.$a?
+  a.$x!$y?
 
-    select _ - _
-    ~{} $a -> $b
+  select _ - _
+  ~{} $a -> $b
     
-    @($b)
+  @($b)
 end

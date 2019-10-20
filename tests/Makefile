@@ -1,17 +1,24 @@
-all: wme trie parser engine
+all: trie facttrie engine modules
 
-
-wme:
-	python -m unittest wme_tests.py -v
+modules:
+	@echo "Testing Modules"
+	python -m unittest modules/*_tests.py
 
 trie:
-	python -m unittest trie_fb_tests.py -v
+	@echo "Testing Trie"
+	python -m unittest trie/*_tests.py
 
-parser:
-	python -m unittest *_parser_tests.py -v
+facttrie:
+	@echo "Testing Fact Trie"
+	python -m unittest fact_trie/*_tests.py
 
 engine:
-	python -m unittest engine*.py -v
+	@echo "Testing Engine"
+	python -m unittest engine/*_tests.py
+
+typing:
+	@echo "Testing Typing"
+	python -m unittest typing/*_tests.py
 
 clean:
 	-rm *.log

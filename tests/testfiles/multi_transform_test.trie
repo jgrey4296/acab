@@ -1,16 +1,16 @@
 // initial assertions
-.a.b!5
-.a.c!10
-.a.d!20
+a.b!5
+a.c!10
+a.d!20
 
 // A Retracting rule
-.a.test.rule:
-    .a.$x!$y?
+test.rule:
+  a.$x!$y?
 
-    select _ - _
-    $y + 20
-    $y * 2
-    
-    +(.a.$x!$y)
+  select _ - _
+  $y + 20
+  $y * 2
+  
+  +(a.$x!$y)
 end
 

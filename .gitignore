@@ -3,3 +3,4 @@ flycheck_*
 *.pyc
 log.*
 .log
+.DS_Store

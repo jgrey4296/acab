@@ -1,0 +1,89 @@
+* Agent architecture
+** Sense: inputs:
+ 1) data assertions from the world
+ 2) data assertions from the last act if a closed model
+** Reason: select next action
+   run rules,
+   propose actions
+   score actions
+   select action
+** Act:
+ 1) output instructions to world
+ 2) assert new facts if closed model
+** Thoughts:
+ Rules -> alpha network
+ Construct a condition trie, as a second dimension of the fact trie
+ hash exit points, create tokens, then run beta on demand?
+* Norms, expression, and NetLogo
+  Even in a simple simulation, where the only output variable for 
+  an agent is color, Sequences, Context, Call/Response can all be encoded.
+  So create a number of parameterizable instances of each,
+  weight them using:
+  hand weight, 
+  random-weight,
+  bayes-weight,
+  agent-context weight, 
+  location-context weight,
+  
+  would have:
+  agents [ direction, color, position, interacting_with]
+
+  rule-definitions [ 
+  value-definitions, 
+  rule-weights, 
+  value-weight, 
+  rule-comparison, 
+  value-comparison ]
+
+* Exclusion logic for Sets/Tags:
+  .x.y.z     :    x.intersection(y, z)
+  .x!y       :    x.difference(y)
+  .x!y.z     :    x.difference(y).intersection(z)
+  x|y.z      :    x.union(y).intersection(z)
+  .x.y -> $z : selectFrom
+  .y.y ->(2) $z
+
+  flatten($x) -> $z  : Convert the trie in $x to a flat set of tags
+  flatten(.a.b.c) -> $z : Convert the trie location to a flat set of tags
+  tag(.a.b.c, $z)    : tag the location with all variants in $z
+  
+  .a.b.c.d
+  .a.b.c.$x  : Get the value, path, and meta_id from the trie. (Path from ancestor with an id node?)
+  .a.b..$x   : expands to .a.b.c.d
+  .a.b.$x    :  expands to .a.b.d
+  .a.b.[$x]  :  expands to .a.b.ejgi3i2ogjeiw  (or other hashed id value)
+  
+  be able to set a tag to indicate to include the node in its parent's hash calculation
+  separate hash calculations into compileTime/Type hashes, and runtime value hashes
+  Where types can be defined as templates
+  and type locations are paths in the trie themselves.
+
+  statically check for replacement calls to match bindings
+
+  rules have binding meta access:
+  -- :results output/value
+  #+begin_src trie
+    .a.test.rule:
+        #rule, #numeric
+        .a.b!$x(<20)?
+
+        $x + 2 -> $y
+
+        +(.a.b!$y)
+    end
+
+    .a.test.meta.rule:
+        #meta, #rule
+    
+        .a.test.$X?
+        $X^#rule.numeric?
+        ~$X^#meta?
+        $X:["$x"]?
+
+        replace(..$X:["$x"], ".a.b!$x(<40)?" )
+    end
+    
+  #+end_src
+
+  
+

@@ -1,12 +1,12 @@
-.a.b.c
+a.b.c
 
 #second($x):
-    +(.a.b.$x)
+  +(a.b.$x)
 end
 
-.an.action.macro.rule:
-    .a.b.c?
+an.action.macro.rule:
+  a.b.c?
 
-    #second("this is a test")    
+  #second("this is a test")    
 end
 

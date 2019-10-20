@@ -1,17 +1,17 @@
-.a.b.c
+a.b.c
 
-.rule.first:
-    #first
+rule.first:
+  #first
 
-    .a.b.c?
+  a.b.c?
 
-    +(.blah)
+  +(blah)
 end
 
-.rule.second:
-    #second
+rule.second:
+  #second
 
-    .a.b.c?
+  a.b.c?
 
-    +(.bloo)
+  +(bloo)
 end
