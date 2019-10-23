@@ -34,7 +34,7 @@ class TrieEngine(EngineBase):
     """
 
     def __init__(self, path=None, init=None):
-        super().__init__(Trie, path=path, init=init)
+        super().__init__(FactBaseTrie, path=path, init=init)
 
     def load_file(self, filename):
         """ Given a filename, read it, and interpret it as an EL DSL string """
@@ -46,15 +46,16 @@ class TrieEngine(EngineBase):
         if s is not None:
             #TODO: load (layer, policy) tuples
             #rules, assertions, layers, policies = FileP.parseString(s)
-            rules, assertions = FileP.parseString(s)
+            definitions, rules, assertions = FileP.parseString(s)
             #Assert facts:
             for x in assertions:
-                logging.info("File load assertion: {}".format(x))
+                logging.info("File load assertions: {}".format(x))
                 self.add(x)
             #register rules:
             self.registerRules(rules)
             #register layer sequences
             #register policies to layers
+            #TODO: Do something with definitions
         else:
             raise Exception("No text found in provided file")
 
@@ -77,26 +78,24 @@ class TrieEngine(EngineBase):
         if isinstance(s, str):
             self._knowledge_base.assertS(s)
         else:
-            assert(isinstance(s, list))
-            assert(isinstance(s[0], FactNode))
-            self._knowledge_base.assertFact(s)
+            assert(isinstance(s, Sentence))
+            self._knowledge_base.assert_sentence(s)
 
     def retract(self, s):
         """ Remove information from the knowledge base """
         if isinstance(s, str):
             self._knowledge_base.retractS(s)
         else:
-            assert(isinstance(s, list))
-            assert(isinstance(s[0], FactNode))
-            self._knowledge_base.retractFact(s)
+            assert(isinstance(s, Sentence))
+            self._knowledge_base.retract_sentence(s)
 
     def query(self, s):
         """ As a question of the knowledge base """
         if isinstance(s, str):
             return self._knowledge_base.queryS(s)
         else:
-            assert(isinstance(s, Query))
-            return self._knowledge_base.queryFact(s)
+            assert(isinstance(s, query.Query))
+            return self._knowledge_base.query_sentence(s)
 
     def registerRules(self, s):
         """ Add a Rule to the engine """
@@ -114,4 +113,4 @@ class TrieEngine(EngineBase):
             #Add the rule position as a fact:
             self.add(x._name)
             #then attach the rule as a meta leaf of the last node of that fact
-            self._knowledge_base._last_node.set_meta_leaf(util.META_OP.RULE, x)
+            # self._knowledge_base._last_node.set_meta_leaf(util.META_OP.RULE, x)
