@@ -5,8 +5,8 @@ from py_rule import utils as util
 from py_rule.abstract import actions as Actions
 import IPython
 
-from .FactParser import COMMA, param_fact_string, end, COLON, sLn, N, PARAM_CORE
-from .QueryParser import NOT, OPAR, CPAR, BIND
+from .FactParser import COMMA, param_fact_string, end, COLON, sLn, N, NG, PARAM_CORE, VALBIND
+from .QueryParser import NOT, OPAR, CPAR
 
 ACTION_STRS = [x for x in Actions.ActionOp.op_list.keys()]
 
@@ -32,11 +32,11 @@ def build_definition(toks):
     parameters = []
     m_actions = []
     if 'binds' in toks:
-        parameters = toks.binds
+        parameters = toks.binds[:]
     if 'actions' in toks:
-        m_actions = toks.actions
+        m_actions = toks.actions[:]
 
-    return Actions.ActionMacro(toks.name,
+    return Actions.ActionMacro(toks.name[0],
                                parameters,
                                m_actions)
 
@@ -45,13 +45,14 @@ def build_definition(toks):
 CUSTOM = pp.Word(pp.alphas)
 operator = pp.Or([pp.Literal(x) for x in ACTION_STRS] + [CUSTOM])
 
-ACT_MACRO = (s(pp.Literal('#')) + CUSTOM).setParseAction(lambda t: Actions.ACTMACRONAME(t[0]))
+ACT_MACRO = s(pp.Literal('#')) + CUSTOM
+ACT_MACRO.setParseAction(lambda t: t[0])
 
 
 #fact string with the option of binds
 vals = param_fact_string + pp.ZeroOrMore(COMMA + param_fact_string)
 
-bindList = BIND + pp.ZeroOrMore(COMMA + BIND)
+bindList = VALBIND + pp.ZeroOrMore(COMMA + VALBIND)
 # action: [op](values)
 action = N('operator', operator) + OPAR + N("ActionValues", vals) + CPAR
 
@@ -63,10 +64,10 @@ actionsOrMacros = pp.Or([actionMacroUse, action])
 justActions = action + pp.ZeroOrMore(COMMA + action)
 actions = actionsOrMacros + pp.ZeroOrMore(COMMA + actionsOrMacros)
 
-action_definition = N("name", ACT_MACRO) + OPAR \
-                    + N("binds", op(bindList)) \
+action_definition = NG("name", ACT_MACRO) + OPAR \
+                    + NG("binds", op(bindList)) \
                     + CPAR + COLON + sLn\
-                    + N("actions", justActions) \
+                    + NG("actions", justActions) \
                     + sLn + end
 
 
