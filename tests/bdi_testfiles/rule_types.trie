@@ -1,157 +1,157 @@
 //Physical Prop -> Physical Prop
-.physical.property.inference.hammer:
-    #physical
+physical.property.inference.hammer:
+  #physical
     
-    .physical.items.$x.hammer?
+  physical.items.$x.hammer?
 
-    +(.physical.items.$x.can.hit)
+  +(physical.items.$x.can.hit)
 end
 
 //Physical Prop -> Action
-.physical.action.proposal.to.hit:
-    #physical
-    
-    .physical.items.$x.can.hit?
-    .agent.$a.items.$x?
-    .agent.$b(!=$a)?
+physical.action.proposal.to.hit:
+  #physical
+  
+  physical.items.$x.can.hit?
+  agent.$a.items.$x?
+  agent.$b(!=$a)?
 
         
-    +(.events.$(genId).$x.hits.$y)    
+  +(events.$(genId).$x.hits.$y)    
 end
 
 //Physical Prop -> Social Prop
-.social.property.from.physical.property.inference:
-    #social
+social.property.from.physical.property.inference:
+  #social
     
-    .physical.items.$x.wearable.on!head?
+  physical.items.$x.wearable.on!head?
 
-    +(.physical.items.$x.crown)
+  +(physical.items.$x.crown)
 end
 
 //Social prop + physical prop -> Social Role / prop
-.social.role.inference:
-    .physical.items.$x.crown?
-    .agent.$a.wearing.$x?
+social.role.inference:
+  physical.items.$x.crown?
+  agent.$a.wearing.$x?
 
-    +(.agent.$a.role.king)
+  +(agent.$a.role.king)
 end
 
 //Physical Action -> Social Prop
-.social.property.from.physical.action.inference:
-    .events.$z.$x.hits.$y?
+social.property.from.physical.action.inference:
+  events.$z.$x.hits.$y?
 
-    +(.events.$z.assault)
+  +(events.$z.assault)
 end
 
 //Social prop -> Social Action
-.social.action.proposal:
-    .agent.$a.roles.king?
-    .agent.$y(!=$a)?
+social.action.proposal:
+  agent.$a.roles.king?
+  agent.$y(!=$a)?
 
 
-    +(.events.$z.$a.orders.execution.of.$y)
+  +(events.$z.$a.orders.execution.of.$y)
 end
 
 //Communicative
-.communication.start:
-    .agent.$a?
-    .agent.$b(!=$a)?
-    ~.temp.conversation.$a.$b!$x?
+communication.start:
+  agent.$a?
+  agent.$b(!=$a)?
+  ~temp.conversation.$a.$b!$x?
 
-    +(.temp.conversation.$a.$b!greet)
+  +(temp.conversation.$a.$b!greet)
 end
 
-.communication.response:
-    .agent.$a?
-    .agent.$b(!=$a)?
-    .temp.conversation.$a.$b!greet?
+communication.response:
+  agent.$a?
+  agent.$b(!=$a)?
+  temp.conversation.$a.$b!greet?
 
-    +(.temp.conversation.$a.$b!response)
+  +(temp.conversation.$a.$b!response)
 end
 
 //Sequence
-.sequence.start:
-    .sequence.start.$x?
-    .sequence.options.$x.$y?
-    ~.temp.sequence.active!$x?
+sequence.start:
+  sequence.start.$x?
+  sequence.options.$x.$y?
+  ~temp.sequence.active!$x?
 
-    +(.temp.sequence.active!$x)
-    +(.temp.sequence.next!$y)
+  +(temp.sequence.active!$x)
+  +(temp.sequence.next!$y)
 end
 
-.sequence.choice:
-    .temp.sequence.active!$x?
-    .sequence.options.$x.$y?
-    .sequence.options.$y.$z?
+sequence.choice:
+  temp.sequence.active!$x?
+  sequence.options.$x.$y?
+  sequence.options.$y.$z?
     
 
-    +(.temp.sequence.current!$y)
-    +(.temp.sequence.next!$z)
+  +(temp.sequence.current!$y)
+  +(temp.sequence.next!$z)
 end
 
-.sequence.end:
-    .temp.sequence.active!$x?
-    ~.sequence.options.$x.$y?
+sequence.end:
+  temp.sequence.active!$x?
+  ~sequence.options.$x.$y?
 
-    -(.temp.sequence.active)
+  -(temp.sequence.active)
 end
 
 
 //Norms and Sanctions
-.normative.annotation:
-    .agent.$x.location!$l?
-    .agent.$y(!=$x).friends.$x?
-    .agent.$y.location!$l?
+normative.annotation:
+  agent.$x.location!$l?
+  agent.$y(!=$x).friends.$x?
+  agent.$y.location!$l?
     
-    +(.agent.$x.should.greet.$y)
-    +(.agent.$y.should.greet.$x)
+  +(agent.$x.should.greet.$y)
+  +(agent.$y.should.greet.$x)
 end
 
-.normative.action.proposal:
-    .agent.$x.should.$a.$y?
+normative.action.proposal:
+  agent.$x.should.$a.$y?
 
-    +(.event.$x.$a.$y)
+  +(event.$x.$a.$y)
 end
 
-.normative.sanction.proposal:
-    .agent.$x.should.$a.$y?
-    ~.event.$x.$a.$y?
+normative.sanction.proposal:
+  agent.$x.should.$a.$y?
+  ~event.$x.$a.$y?
 
-    +(.agent.$y.should.sanction.$x)
+  +(agent.$y.should.sanction.$x)
 end
 
 
 
 //Rule Modification
 
-.rule.mod.one:
-    //Add a social constraint / non-essential condition to an item being a crown
-    //This should add a verify step that the item *could*
-    //have the property applied to it
+rule.mod.one:
+  //Add a social constraint / non-essential condition to an item being a crown
+  //This should add a verify step that the item *could*
+  //have the property applied to it
 
-    //Get the meta-leaf rule using ^
-    .social.property.from.physical.property.inference(^$x)?
-    //Test the rule for a tag
-    $x(#social)?
-    //Get a social property/role etc
-    .social.item.properties.$z?
+  //Get the meta-leaf rule using ^
+  social.property.from.physical.property.inference(^$x)?
+  //Test the rule for a tag
+  $x(#social)?
+  //Get a social property/role etc
+  social.item.properties.$z?
 
-    //add an additional condition
-    //todo: bind the condition to an actor, receiver,
-    //object, role...
-    +($x, $z?)
+  //add an additional condition
+  //todo: bind the condition to an actor, receiver,
+  //object, role...
+  +($x, $z?)
 end
 
-.rule.mod.two:
-    //Remove a non-essential condition from the rule
-    .social.property.from.physical.property.inference.$x?
-    $x.penumbra.$y?
+rule.mod.two:
+  //Remove a non-essential condition from the rule
+  social.property.from.physical.property.inference.$x?
+  $x.penumbra.$y?
 
-    condition_remove($x.penumbra, $y)
+  condition_remove($x.penumbra, $y)
 end
 
 //Match a rule
-.a.rule(^$x)?
+a.rule(^$x)?
 //Other rule mods
 //1) add a social role constraint to a social action
 //Not physical action
@@ -178,7 +178,7 @@ end
 
 //12)add a social property to an object, or a role
 
-.a.rule(^$x)?
+a.rule(^$x)?
 $x.tags(#blah)?
 $x.tags(>2)?
 $x.conditions(>2)?

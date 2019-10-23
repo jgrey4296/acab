@@ -1,37 +1,42 @@
-.count!0
+count!0
 
-.bdi.greet:
-    #propose
-    
-    .count!$x(< 10)?
+bdi.greet:
+  #propose
 
-    $x + 2 -> $y
-    ~{} "Hello: {x}" -> $z
-    
-    @($z)
-    +(.count!$y)
+  count!$x(< 10)?
+
+  $x + 2 -> $y
+  ~{} "Hello: {x}" -> $z
+
+  @($z)
+  +(count!$y)
+
+
 end
 
-.bdi.goodbye:
-    #propose
-    
-    .count!$x(< 10)?
+bdi.goodbye:
+  #propose
 
-    $x + 1 -> $y
-    ~{} "Goodbye: {x}" -> $z
+  count!$x(< 10)?
 
-    @($z)
-    +(.count!$y)
+
+  $x + 1 -> $y
+  ~{} "Goodbye: {x}" -> $z
+
+  @($z)
+  +(count!$y)
+
 end
 
-.bdi.finish:
-    #propose
-    
-    .agent.$name?
-    .count!$x(> 9)?
+bdi.finish:
+  #propose
 
-    ~{} "{name} has finished" -> $string
-    
-    @($string)
-    +(.agent.$name.state.finished)
+  agent.$name?
+  count!$x(> 9)?
+
+  ~{} "{name} has finished" -> $string
+
+  @($string)
+  +(agent.$name.state.finished)
+
 end

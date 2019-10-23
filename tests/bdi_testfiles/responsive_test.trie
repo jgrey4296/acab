@@ -1,62 +1,62 @@
-.count!0
-.last
+count!0
+last
 
-.bdi.start:
-    #propose
+bdi.start:
+  #propose
     
-    ~.last?
+  ~last?
 
-    @("Hello")
-    +(.last!hello)
+  @("Hello")
+  +(last!hello)
 end
 
-.bdi.next.one:
-    #propose
+bdi.next.one:
+  #propose
     
-    .last!hello?
-    .count!$x?
+  last!hello?
+  count!$x?
 
-    $x + 1
+  $x + 1
 
-    @("How are you?")
-    +(.last!how)
-    +(.count!$x)
+  @("How are you?")
+  +(last!how)
+  +(count!$x)
 end
 
-.bdi.next.two:
-    #propose
-    
-    .last!how?
-    .count!$x?
+bdi.next.two:
+  #propose
+  
+  last!how?
+  count!$x?
 
-    $x + 1
+  $x + 1
 
-    @("Fine")
-    -(.last)
-    +(.count!$x)
+  @("Fine")
+  -(last)
+  +(count!$x)
 end
 
-.bdi.next.two.b:
-    #propose
+bdi.next.two.b:
+  #propose
 
-    .last!how?
-    .count!$x?
+  last!how?
+  count!$x?
 
-    $x + 1
+  $x + 1
 
-    @("Terrible")
-    -(.last)
-    +(.count!$x)
+  @("Terrible")
+  -(last)
+  +(count!$x)
 end
 
-.bdi.finish:
-    #propose
+bdi.finish:
+  #propose
     
-    .agent.$name?
-    .count!$x(> 9)?
+  agent.$name?
+  count!$x(> 9)?
 
-    ~{} "{name} has finished" -> $string
+  ~{} "{name} has finished" -> $string
     
-    @($string)
-    +(.agent.$name.state.finished)
+  @($string)
+  +(agent.$name.state.finished)
 end
