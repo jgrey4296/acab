@@ -137,10 +137,12 @@ class Action:
         """ Output a list of bindings from this action """
         output = []
         for x in self._values:
-            if x._data[util.BIND_S]:
-                output.append(data[x.value])
+            if isinstance(x, Sentence):
+                output.append(x.expand_bindings(data))
             elif isinstance(x, list): #and all([isinstance(y, Node) for y in x]):
                 output.append([y.bind(data) for y in x])
+            elif hasattr(x, '_data') and x._data[util.BIND_S]:
+                output.append(data[x.value])
             else:
                 output.append(x)
         return output
