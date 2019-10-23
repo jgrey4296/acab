@@ -30,7 +30,7 @@ def final_pass(toks):
     assertions = []
     action_macros = {}
     for x in toks:
-        if isinstane(x, TypeDefinition):
+        if isinstance(x, TypeDefinition):
             definitions.append(x)
         elif isinstance(x, Rule):
             rules.append(x)
@@ -81,7 +81,7 @@ def remove_comments(string):
     passing_lines = []
     for line in lines:
         passing_lines.append("".join(list(comment.split(line))))
-    return "\n".join(passing_lines)
+    return "\n".join(passing_lines).strip()
 
 
 
