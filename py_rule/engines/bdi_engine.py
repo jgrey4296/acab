@@ -31,9 +31,9 @@ class Agent:
         self._rule_seq_pols = rule_seq_pol
 
         #Agent Structure
-        self._state_query = "~.agent.{}.state.finished?".format(name)
-        self._state_temp_data = ".agent.{}.state.temp.$x".format(name)
-        self._state_busy_on_action = ".agent.{}.state.busy".format(name)
+        self._state_query = "~agent.{}.state.finished?".format(name)
+        self._state_temp_data = "agent.{}.state.temp.$x".format(name)
+        self._state_busy_on_action = "agent.{}.state.busy".format(name)
         self._engine = T.TrieEngine()
 
         #Runtime data
@@ -50,7 +50,7 @@ class Agent:
             self._engine.load_file(filename)
 
         #initialisation of agent data
-        self._engine.add(".agent.{}.state".format(name))
+        self._engine.add("agent.{}.state".format(name))
 
     def _assert_queue(self):
         """ Asserts each string in the queue """
