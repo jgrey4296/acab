@@ -3,7 +3,7 @@ Defines a Sentence of Fact Words, which can be a query, and
 have fallback bindings
 """
 import IPython
-from py_rule.utils import BIND_S
+from py_rule.utils import BIND_S, OPERATOR_S
 
 class Sentence:
     """
@@ -51,32 +51,32 @@ class Sentence:
         reify the fact, using those bindings.
         ie: .a.b.$x with {x: blah} => .a.b.blah
         """
+        #TODO: respect typing
         assert(isinstance(bindings, dict))
         output = []
 
         for x in self:
-            if x._data[BIND_S] and x._value in bindings:
-                retrieved = bindings[x._value]
-            else:
+            if not (x._data[BIND_S] and x._value in bindings):
                 #early exit if a plain node
                 output.append(x.copy())
                 continue
 
-            if isinstance(retrieved, Sentence) and len(retrieved) > 1:
-                output += [x.copy() for x in retrieved._words]
-                continue
-            else:
-                retrieved = retrieved._words[0]
+            retrieved = bindings[x._value]
 
-            if retrieved._data[BIND_S]:
-                copied_node = x.copy()
-                copied_node._value = retrieved._value
-                output.append(copied_node)
-            else:
-                copied_node = x.copy()
-                copied_node._value = retrieved._value
-                copied_node._data[BIND_S] = False
-                output.append(copied_node)
+            if isinstance(retrieved, Sentence):
+                output += [y.copy() for y in retrieved]
+                output[-1]._data[OPERATOR_S] = x._data[OPERATOR_S]
+                continue
+
+            # if hasattr(retrieved, '_data'):
+                # copied_node = x.copy()
+                # copied_node._value = retrieved._value
+                # output.append(copied_node)
+            # else:
+            copied_node = x.copy()
+            copied_node._value = retrieved
+            copied_node._data[BIND_S] = False
+            output.append(copied_node)
 
         return Sentence(output,
                         negated=self._negated,
