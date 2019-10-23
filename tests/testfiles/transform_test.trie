@@ -7,7 +7,6 @@ a.d!20
 test.rule:
   a.$x!$y?
 
-  select _ - _
   $y + 20
 
   +(a.$x!$y)

@@ -124,35 +124,12 @@ class FormatOp(TransformOp):
         return a.format(**data)
 
 
-class SelectOp(TransformOp):
-    def __init__(self):
-        super().__init__("select", 2)
-
-    def __call__(self, a, b, data):
-        raise Exception("unimplemented")
-
-
-
 #--------------------------------------------------
 
 class TransformComponent:
     """ Superclass of Transforms. Holds an Operator """
     def __init__(self, op, num_params=2):
         self._op = TransformOp.op_list[op][num_params]
-
-
-class SelectionTransform(TransformComponent):
-    """ The transform type which selects a number of possible bindings """
-    def __init__(self, lBound, uBound):
-        super().__init__("select")
-        self._lBound = lBound
-        self._uBound = uBound
-
-    def __repr__(self):
-        lbound = self._lBound.opless_print()
-        ubound = self._uBound.opless_print()
-
-        return "select {} - {}".format(lbound, ubound)
 
 
 class OperatorTransform(TransformComponent):
@@ -208,7 +185,6 @@ RoundOp()
 NegOp()
 RegexOp()
 FormatOp()
-SelectOp()
 
 class Transform:
     """ Holds a number of separate transform operators together to apply to a binding set """
@@ -216,42 +192,21 @@ class Transform:
     #have min and max bounds
     def __init__(self, components):
         assert(all([isinstance(x, TransformComponent) for x in components]))
-        selection = [x for x in components if isinstance(x, SelectionTransform)]
-        if len(selection) == 1:
-            self._selection = selection[0]
-        else:
-            self._selection = None
-        self._components = [x for x in components if not isinstance(x, SelectionTransform)]
+        self._components = components[:]
 
     def __len__(self):
         return len(self._components)
 
     def __str__(self):
-        if self._selection is not None:
-            sel = str(self._selection)
-        else:
-            sel = ""
-
-        return "{}{}".format(sel, ", ".join([str(x) for x in self._components]))
+        return "\n".join([str(x) for x in self._components])
 
 
     def __repr__(self):
-        if self._selection is not None:
-            sel = repr(self._selection)
-        else:
-            sel = ""
-
-        return "{}{}".format(sel, ", ".join([repr(x) for x in self._components]))
+        return "\n".join([repr(x) for x in self._components])
 
     def verify_ops(self):
         for x in self._components:
             x.verify_op()
-
-    def getSelectionBounds(self):
-        if self._selection is None:
-            return (None, None)
-        else:
-            return (self._selection._lBound, self._selection._uBound)
 
     def get_input_requirements(self):
         #TODO

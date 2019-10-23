@@ -126,10 +126,7 @@ class EngineBase:
             logging.info("Rule {} Failed".format(rule._name))
             return
 
-        if rule._transform is None:
-            selected = result.select()
-        else:
-            selected = result.select(rule._transform.getSelectionBounds())
+        selected = result._matches
 
         transformed = []
         for data in selected:
@@ -140,9 +137,9 @@ class EngineBase:
 
     def _run_transform(self, ctx, transform):
         """ Run modifications on the bind results of a query """
-        assert(isinstance(ctx, dict))
+        assert(isinstance(ctx, tuple))
         assert(transform is None or isinstance(transform, Transforms.Transform))
-        chosen_ctx = ctx
+        chosen_ctx = ctx[0]
         if transform is None:
             return chosen_ctx
         for x in transform._components:

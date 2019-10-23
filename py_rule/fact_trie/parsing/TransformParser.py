@@ -3,7 +3,7 @@ import logging as root_logger
 import pyparsing as pp
 import IPython
 import py_rule.utils as util
-from py_rule.abstract.transforms import TROP, SelectionTransform, OperatorTransform, Transform, TransformOp
+from py_rule.abstract.transforms import TROP, OperatorTransform, Transform, TransformOp
 from .FactParser import COMMA, PARAM_CORE, N, param_fact_string, NG, VALBIND, make_node
 from .QueryParser import OPAR, CPAR
 
@@ -25,11 +25,6 @@ def buildUnaryTransformComponent(toks):
 def buildTernaryTransformComponent(toks):
     return OperatorTransform(toks.op, (toks.source, toks.regex, toks.replace))
 
-def buildSelection(toks):
-    bound1 = toks.source
-    bound2 = toks.sub
-    return SelectionTransform(bound1, bound2)
-
 def addRebind(toks):
     if 'target' in toks:
         toks.transform[0].set_rebind(toks.target[0])
@@ -44,11 +39,6 @@ UNARY_TRANS_OP = pp.Or([pp.Literal(k) for k,v in TransformOp.op_list.items() if 
 TERNARY_TRANS_OP = pp.Or([pp.Literal(k) for k,v in TransformOp.op_list.items() if 3 in v])
 
 rebind = ARROW + VALBIND
-selAll = pp.Literal('_')
-
-select = s(pp.Literal('select')) + N("source", param_fact_string)\
-    + SUB + N("sub", param_fact_string)
-
 
 #transform: ( bind op val|bind -> bind)
 unary_transform_core = N("op", UNARY_TRANS_OP) + N("value", VALBIND)
@@ -60,14 +50,12 @@ transform_core = NG("transform", pp.Or([binary_transform_core,
                                         unary_transform_core])) \
                 + op(N("target", rebind))
 
-transforms = pp.Or([select, transform_core]) \
-             + pp.ZeroOrMore(COMMA + transform_core)
+transforms = transform_core + pp.ZeroOrMore(COMMA + transform_core)
 
 #Actions
 binary_transform_core.setParseAction(buildBinaryTransformComponent)
 unary_transform_core.setParseAction(buildUnaryTransformComponent)
 ternary_transform_core.setParseAction(buildTernaryTransformComponent)
-select.setParseAction(buildSelection)
 
 transform_core.setParseAction(addRebind)
 transforms.setParseAction(lambda toks: Transform(toks[:]))
