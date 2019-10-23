@@ -77,7 +77,7 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
             self.assertEqual(len(result._components), 1)
             self.assertIsInstance(result._components[0]._op, transforms.TransformOp)
             self.assertEqual(result._components[0]._params[0]._value, 'x')
-            self.assertEqual(result._components[0]._params[1],'blah')
+            self.assertEqual(result._components[0]._params[1]._value,'blah')
             self.assertEqual(result._components[0]._params[2]._value, 'a')
             self.assertIsNone(result._components[0]._rebind)
 
@@ -87,7 +87,7 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
             self.assertEqual(len(result._components), 1)
             self.assertIsInstance(result._components[0]._op, transforms.TransformOp)
             self.assertEqual(result._components[0]._params[0]._value, 'x')
-            self.assertEqual(result._components[0]._params[1],'blah')
+            self.assertEqual(result._components[0]._params[1]._value,'blah')
             self.assertEqual(result._components[0]._params[2]._value, 'awef')
             self.assertEqual(result._components[0]._rebind._value, 'q')
 
