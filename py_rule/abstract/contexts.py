@@ -5,7 +5,7 @@ import IPython
 
 class Contexts:
     """ Container of available contexts for a match in the trie
-    Essentially a list of Dictionaries
+    A Sequence of tuples: ({}, LastAccessedNode)
     """
     @staticmethod
     def initial(start_node):
