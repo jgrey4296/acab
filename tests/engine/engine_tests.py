@@ -55,15 +55,15 @@ class Engine_Tests(unittest.TestCase):
         self.assertFalse(self.e.query('a.b.$x?, a.d.$x?'))
 
     def test_multi_assert(self):
-        self.e.add('.a.b.c, .a.b.d, .a.b.e')
-        self.assertEqual(len(self.e._knowledge_base._root._reconstruct()), 3)
-        self.assertTrue(self.e.query('.a.b.c?, .a.b.d?, .a.b.e?'))
+        self.e.add('a.b.c, a.b.d, a.b.e')
+        self.assertEqual(len(self.e._knowledge_base.get_nodes(pred=lambda x: not bool(x))), 3)
+        self.assertTrue(self.e.query('a.b.c?, a.b.d?, a.b.e?'))
 
     def test_multi_retract(self):
-        self.e.add('.a.b.c, .a.b.d, .a.b.e')
-        self.assertEqual(len(self.e._knowledge_base._root._reconstruct()), 3)
-        self.e.retract('.a.b.e, .a.b.d')
-        self.assertEqual(len(self.e._knowledge_base._root._reconstruct()), 1)
+        self.e.add('a.b.c, a.b.d, a.b.e')
+        self.assertEqual(len(self.e._knowledge_base.get_nodes(pred=lambda x: not bool(x))), 3)
+        self.e.retract('a.b.e, a.b.d')
+        self.assertEqual(len(self.e._knowledge_base.get_nodes(pred=lambda x: not bool(x))), 1)
 
     def test_multi_clause_query(self):
         self.e.add('a.b.c, a.b.d, a.b.e')
