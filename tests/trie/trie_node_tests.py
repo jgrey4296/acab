@@ -1,4 +1,5 @@
 import unittest
+from os.path import splitext, split
 import logging
 from test_context import py_rule
 from py_rule.trie.nodes.trie_node import TrieNode

@@ -1,7 +1,7 @@
 """ A BDI Based Architecture that utilizes the trie engine """
 from time import sleep
 import logging as root_logger
-import py_rule.trie as T
+import py_rule.engines.trie_engine  as T
 import py_rule.utils as util
 
 logging = root_logger.getLogger(__name__)

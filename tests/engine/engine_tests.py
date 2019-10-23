@@ -1,9 +1,10 @@
 import unittest
 import logging
-from test_context import pyRule
-import pyRule.trie as T
-import pyRule.trie.TransformParser as TP
-import pyRule.trie.ActionParser as AP
+from test_context import py_rule
+from py_rule.abstract.contexts import Contexts
+import py_rule.engines.trie_engine as T
+import py_rule.fact_trie.parsing.TransformParser as TP
+import py_rule.fact_trie.parsing.ActionParser as AP
 from math import isclose
 import IPython
 

@@ -3,9 +3,10 @@
 """
 import logging as root_logger
 from .rule import Rule
-from . import actions
-from . import transforms
+from . import actions as Actions
+from . import transforms as Transforms
 from py_rule import utils as util
+import IPython
 logging = root_logger.getLogger(__name__)
 
 
