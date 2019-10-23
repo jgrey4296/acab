@@ -98,8 +98,10 @@ class Action:
         #todo: assert that values are a fact string, value, or binding
         if isinstance(op, ActionOp):
             self._op = op
-        else:
+        elif op in ActionOp.op_list:
             self._op = ActionOp.op_list[op]
+        else:
+            raise Exception("Action not registered with runtime: {}".format(op))
         self._values = values
         if type_ is None:
             self._type = util.MUTABLE.CORE
