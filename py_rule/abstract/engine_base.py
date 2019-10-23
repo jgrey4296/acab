@@ -141,40 +141,24 @@ class EngineBase:
     def _run_transform(self, ctx, transform):
         """ Run modifications on the bind results of a query """
         assert(isinstance(ctx, dict))
-        assert(transform is None or isinstance(transform, transforms.Transform))
+        assert(transform is None or isinstance(transform, Transforms.Transform))
         chosen_ctx = ctx
         if transform is None:
             return chosen_ctx
-        for x in transform.components:
+        for x in transform._components:
             #lookup op
             opFunc = x._op
-            param_length = x._num_params
-            #get source
-            if x.source._data[util.BIND_S]:
-                source = chosen_ctx[x.source._value]
-            else:
-                source = x.source
-            if param_length == 1:
-                newVal = opFunc(source, chosen_ctx)
-            elif param_length == 2:
-                #get second param:
-                if x.val is not None:
-                    value = x.val
-                else:
-                    value = chosen_ctx[x.bind.value]
-                newVal = opFunc(source, value)
-            elif param_length == 3:
-                if x._data[util.BIND_S]:
-                    bindVal = chosen_ctx[x._value]
-                else:
-                    bindVal = x._value
-                newVal = opFunc(source, x._value, bindVal)
+            param_length = opFunc._num_params
+            #get params:
+            params = [chosen_ctx[y._value] if y._data[util.BIND_S] else y._value for y in x._params]
+
+            result = opFunc(*params, chosen_ctx)
 
             #rebind or reapply
-            if x.rebind is None:
-                chosen_ctx[x.source.value] = newVal
+            if x._rebind is None:
+                chosen_ctx[x._params[0]._value] = result
             else:
-                chosen_ctx[x.rebind.value] = newVal
+                chosen_ctx[x._rebind._value] = result
 
         return chosen_ctx
 
@@ -195,7 +179,7 @@ class EngineBase:
         assert(all([isinstance(x, Actions.Action) for x in actions]))
         for x in actions:
             #lookup op
-            opFunc = Actions.ACTS_LOOKUP[x._op]
+            opFunc = x._op
             #get values from data
             values = x.get_values(data)
             #perform action op with data
