@@ -11,10 +11,10 @@ import IPython
 class Engine_Logic_Tests(unittest.TestCase):
 
     def path(self, filename):
-        return join('.', 'testfiles', filename)
+        return join('..', 'testfiles', filename)
 
     def setUp(self):
-        self.e = T.TrieEngine()
+        self.e = TrieEngine()
 
     def tearDown(self):
         return 1

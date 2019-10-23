@@ -10,7 +10,7 @@ import IPython
 class BDI_TESTS(unittest.TestCase):
 
     def path(self, filename):
-        return join('.', 'bdi_testfiles', filename)
+        return join('..', 'bdi_testfiles', filename)
 
     def setUpAgent(self, files, rulePolicies):
         self.e = bdi.Agent("testAgent", [self.path(x) for x in files],
