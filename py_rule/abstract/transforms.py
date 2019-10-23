@@ -36,7 +36,7 @@ class AddOp(TransformOp):
     def __init__(self):
         super().__init__("+")
 
-    def __call__(self, a, b):
+    def __call__(self, a, b, data):
         return a + b
 
 
@@ -44,7 +44,7 @@ class SubOp(TransformOp):
     def __init__(self):
         super().__init__("-")
 
-    def __call__(self, a, b):
+    def __call__(self, a, b, data):
         return a - b
 
 
@@ -52,7 +52,7 @@ class MulOp(TransformOp):
     def __init__(self):
         super().__init__("*")
 
-    def __call__(self, a, b):
+    def __call__(self, a, b, data):
         return a * b
 
 
@@ -60,7 +60,7 @@ class DivOp(TransformOp):
     def __init__(self):
         super().__init__("/")
 
-    def __call__(self, a, b):
+    def __call__(self, a, b, data):
         return a / b
 
 
@@ -68,7 +68,7 @@ class RandOp(TransformOp):
     def __init__(self):
         super().__init__("<->")
 
-    def __call__(self, a=0, b=1):
+    def __call__(self, a=0, b=1, data=None):
         """ Uniform Rand between a=0 and b=1 """
         return uniform(a, b)
 
@@ -77,7 +77,7 @@ class RemainOp(TransformOp):
     def __init__(self):
         super().__init__("%")
 
-    def __call__(self, a, b):
+    def __call__(self, a, b, data):
         #divde and get remainder?
         raise Exception("Not implemented yet")
 
@@ -95,7 +95,7 @@ class NegOp(TransformOp):
     def __init__(self):
         super().__init__("-", 1)
 
-    def __call(self, a, data):
+    def __call__(self, a, data):
         #invert the number
         return -a
 
@@ -104,13 +104,13 @@ class RegexOp(TransformOp):
     def __init__(self):
         super().__init__("~=", 3)
 
-    def __call__(self, a, b, data):
+    def __call__(self, a, b, replacement, data):
         """ Substitute a pattern with a value from passed in data
         a : the replacement
         b: the pattern
-        c : the base string?
+
         """
-        return sub(b, a, data)
+        return sub(b, replacement, a)
 
 
 class FormatOp(TransformOp):
@@ -182,7 +182,7 @@ class OperatorTransform(TransformComponent):
                                        source[1],
                                        rebind)
         elif param_length == 3:
-            return "{} {} /{}/{}{}".format(source[0],
+            return "{} {} {}{}{}".format(source[0],
                                            op,
                                            source[1],
                                            source[2],
@@ -190,7 +190,7 @@ class OperatorTransform(TransformComponent):
 
     def verify_op(self):
         """ Complains if the operator is not a defined Operator Enum """
-        if self._op not in TransformOp.op_list[self._op._op_str]:
+        if self._op is None:
             raise Exception("Unknown Op: {}".format(self._op))
 
     def set_rebind(self, bind):
@@ -251,7 +251,7 @@ class Transform:
         if self._selection is None:
             return (None, None)
         else:
-            return (self._selection.lBound, self._selection.uBound)
+            return (self._selection._lBound, self._selection._uBound)
 
     def get_input_requirements(self):
         #TODO
