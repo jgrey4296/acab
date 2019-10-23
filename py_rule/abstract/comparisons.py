@@ -93,10 +93,7 @@ class Comparison:
         self._value = value
 
     def __str__(self):
-        if self.is_regex_test():
-            val = "/{}/".format(self._value)
-        else:
-            val = self._value.opless_print()
+        val = self._value.opless_print()
 
         retValue = "{} {}".format(str(self._op), val)
         return retValue
