@@ -96,7 +96,10 @@ class Action:
         """ Create an action with an operator and values """
         assert(isinstance(values, list))
         #todo: assert that values are a fact string, value, or binding
-        self._op = op
+        if isinstance(op, ActionOp):
+            self._op = op
+        else:
+            self._op = ActionOp.op_list[op]
         self._values = values
         if type_ is None:
             self._type = util.MUTABLE.CORE
@@ -108,10 +111,7 @@ class Action:
         self._linkedActions = []
 
     def __str__(self):
-        if isinstance(self._op, str):
-            op = self._op
-        else:
-            op = ACTS_REVERSE_LOOKUP[self._op]
+        op = str(self._op)
         args = []
         for val in self._values:
             if isinstance(val, list): #and isinstance(val[0], Node):
@@ -130,7 +130,7 @@ class Action:
 
     def verify_op(self):
         """ Check the Action is using a valid operator (ACT enum) """
-        if self._op not in ACTS_LOOKUP and not self.is_custom():
+        if self._op._op_str not in ActionOp.op_list.keys() and not self.is_custom():
             raise Exception("Unrecognised Action: {}".format(self._op))
 
     def get_values(self, data):
