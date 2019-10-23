@@ -10,6 +10,7 @@ from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.actions import ActionMacro
 from py_rule.abstract.rule import Rule
 from py_rule.typing.ex_types import TypeDefinition
+import py_rule.utils as utils
 from . import FactParser as FP
 from . import RuleParser as RP
 from . import ActionParser as AP
@@ -49,10 +50,10 @@ def add_file_binding(toks):
     """ Store the string of in the binding """
     binding = toks[0]
     string = toks[1]
-    assert(isinstance(binding, Bind))
-    assert(isinstance(string, list))
-    assert(binding.value not in parseBindings)
-    parseBindings[binding.value] = string
+    assert(binding._data[utils.BIND_S])
+    assert(isinstance(string, Sentence))
+    assert(binding._value not in parseBindings)
+    parseBindings[binding._value] = string
     return []
 
 def expansion_pass(toks):
@@ -70,10 +71,10 @@ def expansion_pass(toks):
     return toks
 
 def clearBinding(toks):
-    assert(all([isinstance(x, Bind) for x in toks]))
-    assert(all([x.value in parseBindings for x in toks]))
+    assert(all([x._data[utils.BIND_S] for x in toks]))
+    assert(all([x._value in parseBindings for x in toks]))
     for x in toks:
-        del parseBindings[x.value]
+        del parseBindings[x._value]
     return []
 
 def remove_comments(string):
@@ -92,8 +93,8 @@ opLn = s(op(pp.LineEnd()))
 orm = pp.OneOrMore
 bindArrow = s(pp.Literal('<-'))
 clear = s(pp.Literal('clear'))
-fileBind = FP.BIND + bindArrow + FP.param_fact_string
-clearBind = clear + orm(FP.BIND)
+fileBind = FP.VALBIND + bindArrow + FP.param_fact_string
+clearBind = clear + orm(FP.VALBIND)
 
 
 file_component = pp.MatchFirst([s(fileBind),
