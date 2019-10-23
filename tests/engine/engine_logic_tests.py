@@ -98,7 +98,7 @@ class Engine_Logic_Tests(unittest.TestCase):
         self.assertTrue('a.b!5?, a.c!10?, a.d!20?')
         self.e._run_rules()
         queried = [True for x in ["a.b!25?","a.c!30?","a.d!40?"] if bool(self.e.query(x))]
-        self.assertEqual(len(queried), 1)
+        self.assertEqual(len(queried), 3)
 
 
     def test_file_load_multi_transform(self):
