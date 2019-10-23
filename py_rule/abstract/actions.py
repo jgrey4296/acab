@@ -172,6 +172,16 @@ class ActionMacro:
         self._params = params
         self._actions = actions
 
+    def __str__(self):
+        return "#{}({}):\n{}\nend".format(self._name,
+                                          ",".join([str(x) for x in self._params]),
+                                          "\n".join([str(x) for x in self._actions]))
+
+    def __repr__(self):
+        return "ActMacroDef: #{}({} | {})".format(self._name,
+                                                  len(self._params),
+                                                  len(self._actions))
+
     def expand_bindings(self, bindings):
         """ Expand the macro  out based on the bindings passed in """
         newActions = [x.expand_bindings(bindings) for x in self._actions]
@@ -191,3 +201,13 @@ class ActionMacroUse:
     def expand_bindings(self, bindings):
         #todo: does this need to be implemented?
         return self
+
+
+    def __str__(self):
+        return "#{}({})".format(self._name,
+                                ",".join([str(x) for x in self._params]),)
+
+    def __repr__(self):
+        return "ActMacroUse: #{}({})".format(self._name,
+                                                  len(self._params))
+
