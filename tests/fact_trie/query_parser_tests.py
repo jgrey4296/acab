@@ -38,7 +38,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         result = QP.COMP_Internal.parseString('~= /blah/')[0]
         self.assertIsInstance(result, Comparison)
         self.assertIsInstance(result._op, type(CompOp.op_list['~=']))
-        self.assertEqual(result._value, 'blah')
+        self.assertEqual(result._value._value, 'blah')
 
 
     def test_basic_query_core(self):
