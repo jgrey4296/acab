@@ -14,8 +14,6 @@ logging = root_logger.getLogger(__name__)
 #Action operators:
 ACTS = Enum('Action_ops', 'ADD RETRACT PRINT CUSTOM ACT_MACRO')
 
-ACTMACRONAME = namedtuple('ActMacroId', 'name')
-
 #TODO: add rule modification actions:
 #add/remove penumbral condition
 #add/remove penumbral action
@@ -167,7 +165,7 @@ class ActionMacro:
     so it can be expanded into multiple rules.
     """
     def __init__(self, name, params, actions):
-        assert(isinstance(name, ACTMACRONAME))
+        assert(isinstance(name, str))
         assert(isinstance(params, list))
         assert(isinstance(actions, list))
         self._name = name
@@ -185,7 +183,7 @@ class ActionMacro:
 class ActionMacroUse:
     """ The counterpart to an ActionMacro, denotes where to expand a macro into """
     def __init__(self, name, params):
-        assert(isinstance(name, ACTMACRONAME))
+        assert(isinstance(name, str))
         assert(isinstance(params, list))
         self._name = name
         self._params = params
