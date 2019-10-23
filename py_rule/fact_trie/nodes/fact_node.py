@@ -128,7 +128,7 @@ class FactNode(TrieNode):
 
     def search_regex(self, regex):
         """ Test a regex on the Nodes value """
-        result = re.search(regex._value, self._value)
+        result = re.search(regex._value._value, self._value)
         if result is not None:
             return result.groupdict()
         else:

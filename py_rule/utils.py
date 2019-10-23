@@ -13,6 +13,7 @@ VALUE_TYPE_S = "value_type"
 CONSTRAINT_S = "constraints"
 OPERATOR_S = "operator"
 OPT_S = "opt"
+REGEX_S = "regex"
 
 #Trie exclusion operator:
 EXOP = Enum('EXOP', 'DOT EX')
@@ -45,6 +46,8 @@ def build_rebind_dict(formal, usage):
 def default_action_policy(pairings):
     """ A Simple random selection policy """
     #each pairing is of data, rule
+    if not bool(pairings):
+        return []
     return [choice(pairings)]
 
 def has_equivalent_vars_pred(node):

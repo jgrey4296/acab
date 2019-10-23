@@ -21,11 +21,7 @@ def build_constraint_list(toks):
     return ("constraints", toks[:])
 
 def build_comparison(toks):
-    #todo: maybe make regex a TrieNode
-    if 'regex' in toks:
-        return C.Comparison(toks.op, value=toks.regex)
-    else:
-        return C.Comparison(toks.op, value=toks.value)
+    return C.Comparison(toks.op, value=toks.value)
 
 def build_clause(toks):
     #detect negation and annotate the clause with it
@@ -53,15 +49,13 @@ COMP_OP = pp.Or([pp.Literal(x) for x in OP_STRS])
 
 NOT = N(NOT_IDEN, pp.Literal('~'))
 SLASH = s(pp.Literal('/'))
-REGEX = N("regex", pp.Regex(r'/.+?/'))
 DOUBLEBAR = s(pp.Literal('||'))
 META = s(pp.Literal('^'))
 
-COMP_Internal = N("op", COMP_OP) + pp.Or([N("value", PARAM_CORE(end=True)), REGEX])
+COMP_Internal = N("op", COMP_OP) + N("value", PARAM_CORE(end=True))
 
 #defined earlier to work with named copies
 COMP_Internal.setParseAction(build_comparison)
-REGEX.setParseAction(lambda toks: toks[0][1:-1])
 
 
 #TODO: add comparison features for testing rule components

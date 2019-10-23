@@ -24,6 +24,8 @@ class TrieNode:
         elif self._data[utils.VALUE_TYPE_S] == 'float':
             val = str(self._value)
             val.replace(".", "d")
+        elif self._data[utils.VALUE_TYPE_S] == utils.REGEX_S:
+            val = "/{}/".format(self._value)
         else:
             val = str(self._value)
 
@@ -104,6 +106,8 @@ class TrieNode:
             val = '"{}"'.format(val)
         elif utils.VALUE_TYPE_S in self._data and self._data[utils.VALUE_TYPE_S] == 'float':
             val = val.replace(".", "d")
+        elif utils.VALUE_TYPE_S in self._data and self._data[utils.VALUE_TYPE_S] == utils.REGEX_S:
+            val = "/{}/".format(val)
 
         if utils.BIND_S in self._data and self._data[utils.BIND_S]:
             val = "$" + val

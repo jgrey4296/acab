@@ -4,8 +4,8 @@ import pyparsing as pp
 import IPython
 import py_rule.utils as util
 from py_rule.abstract.transforms import TROP, SelectionTransform, OperatorTransform, Transform, TransformOp
-from .FactParser import COMMA, PARAM_CORE, N, param_fact_string, NG, VALBIND
-from .QueryParser import OPAR, CPAR, REGEX
+from .FactParser import COMMA, PARAM_CORE, N, param_fact_string, NG, VALBIND, make_node
+from .QueryParser import OPAR, CPAR
 
 logging = root_logger.getLogger(__name__)
 pp.ParserElement.setDefaultWhitespaceChars(' \t\r')
@@ -53,7 +53,7 @@ select = s(pp.Literal('select')) + N("source", param_fact_string)\
 #transform: ( bind op val|bind -> bind)
 unary_transform_core = N("op", UNARY_TRANS_OP) + N("value", VALBIND)
 binary_transform_core = N("left", VALBIND) + N("op", BINARY_TRANS_OP) + N("right", VALBIND)
-ternary_transform_core = N("source", VALBIND) + N("op", TERNARY_TRANS_OP) + N("regex", REGEX) + N("replace", VALBIND)
+ternary_transform_core = N("source", VALBIND) + N("op", TERNARY_TRANS_OP) + N("regex", VALBIND) + N("replace", VALBIND)
 
 transform_core = NG("transform", pp.Or([binary_transform_core,
                                         ternary_transform_core,

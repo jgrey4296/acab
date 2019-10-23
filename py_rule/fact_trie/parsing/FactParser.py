@@ -5,7 +5,7 @@ capable of parsing  multiple facts
 import logging as root_logger
 import pyparsing as pp
 import IPython
-from py_rule.utils import EXOP, TYPE_DEC_S, BIND_S, OPERATOR_S, VALUE_TYPE_S, VALUE_S, NAME_S, STRING_S
+from py_rule.utils import EXOP, TYPE_DEC_S, BIND_S, OPERATOR_S, VALUE_TYPE_S, VALUE_S, NAME_S, STRING_S, REGEX_S
 from py_rule.typing.ex_types import MonoTypeVar
 from py_rule.fact_trie.nodes.fact_node import FactNode
 from py_rule.trie.nodes.trie_node import TrieNode
@@ -96,9 +96,12 @@ NUM.setParseAction(construct_num)
 STRING = pp.dblQuotedString
 STRING.setParseAction(lambda t: (STRING_S, t[0].replace('"', '')))
 
+REGEX = pp.Regex(r'/.+?/')
+REGEX.setParseAction(lambda t: (REGEX_S, t[0][1:-1]))
+
 OTHER_VALS = pp.Forward()
 
-VALUE = pp.Or([NAME, NUM, STRING])
+VALUE = pp.Or([NAME, NUM, STRING, REGEX])
 
 #alt for actions, PARAM_CORE
 BIND = DOLLAR + VALUE
