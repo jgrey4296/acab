@@ -51,10 +51,12 @@ def make_node(toks):
     data = {BIND_S : False,
             OPERATOR_S : EXOP.DOT}
     if BIND_S in toks:
+        assert(isinstance(toks.bind[0], tuple))
         value = toks.bind[0][1]
         data[VALUE_TYPE_S] = NAME_S
         data[BIND_S] = True
     elif VALUE_S in toks:
+        assert(isinstance(toks.value, tuple))
         value = toks.value[1]
         data[VALUE_TYPE_S] = toks.value[0]
     return TrieNode(value, data)
