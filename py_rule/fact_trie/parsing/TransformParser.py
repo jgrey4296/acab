@@ -20,7 +20,7 @@ def buildBinaryTransformComponent(toks):
     return OperatorTransform(toks.op, (toks.left, toks.right))
 
 def buildUnaryTransformComponent(toks):
-    return OperatorTransform(toks.op, tuple([toks.value]))
+    return OperatorTransform(toks.op, tuple([toks.right]))
 
 def buildTernaryTransformComponent(toks):
     return OperatorTransform(toks.op, (toks.source, toks.regex, toks.replace))
@@ -41,7 +41,7 @@ TERNARY_TRANS_OP = pp.Or([pp.Literal(k) for k,v in TransformOp.op_list.items() i
 rebind = ARROW + VALBIND
 
 #transform: ( bind op val|bind -> bind)
-unary_transform_core = N("op", UNARY_TRANS_OP) + N("value", VALBIND)
+unary_transform_core = N("op", UNARY_TRANS_OP) + N("right", VALBIND)
 binary_transform_core = N("left", VALBIND) + N("op", BINARY_TRANS_OP) + N("right", VALBIND)
 ternary_transform_core = N("source", VALBIND) + N("op", TERNARY_TRANS_OP) + N("regex", VALBIND) + N("replace", VALBIND)
 
