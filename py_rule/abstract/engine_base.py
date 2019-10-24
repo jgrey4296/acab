@@ -126,20 +126,18 @@ class EngineBase:
             logging.info("Rule {} Failed".format(rule._name))
             return
 
-        selected = result._matches
-
         transformed = []
-        for data in selected:
+        for data in result:
             transformed.append(self._run_transform(data, rule._transform))
 
         for data in transformed:
             self._run_actions(data, rule, propose)
 
     def _run_transform(self, ctx, transform):
-        """ Run modifications on the bind results of a query """
-        assert(isinstance(ctx, tuple))
+        """ Run modifications on the bound results of a query """
+        assert(isinstance(ctx, dict))
         assert(transform is None or isinstance(transform, Transforms.Transform))
-        chosen_ctx = ctx[0]
+        chosen_ctx = ctx
         if transform is None:
             return chosen_ctx
         for x in transform._components:
