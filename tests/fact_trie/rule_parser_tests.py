@@ -152,6 +152,19 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             for r,p in zipped:
                   self.assertEqual(r,str(p))
 
+    def test_bdi_rule_parse(self):
+        rulestr = """bdi.blah:
+    #propose
+    count!$x(< 10)?
+
+    $x + 2 -> $y
+    ~{} "Hello: {x}" -> $z
+
+    @($z)
+    +(count!$y)
+end"""
+        result = RP.parseString(rulestr)[0]
+        self.assertIsInstance(result, Rule)
 
 
 if __name__ == "__main__":
