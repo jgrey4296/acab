@@ -5,7 +5,7 @@ import IPython
 
 class Contexts:
     """ Container of available contexts for a match in the trie
-    A Sequence of tuples: ({}, LastAccessedNode)
+    A list of tuples: ({}, LastAccessedNode)
     """
     @staticmethod
     def initial(start_node):
@@ -56,7 +56,6 @@ class Contexts:
             upper_bound = bounds[1]
             potential_amnt = max(1, randint(bounds[0], upper_bound))
         return [x[0] for x in sample(self._matches, potential_amnt)]
-
 
     def append(self, data):
         """ Add a number of matching possibilities into this set of contexts """
