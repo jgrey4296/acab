@@ -131,10 +131,10 @@ class TransformComponent:
     def __init__(self, op, num_params=2):
         self._op = TransformOp.op_list[op][num_params]
 
-
 class OperatorTransform(TransformComponent):
     """ The main transform type. applies the operator to values """
     def __init__(self, op, params):
+        assert(isinstance(params, tuple))
         super().__init__(op, len(params))
         self._params = params
         self._rebind = None
