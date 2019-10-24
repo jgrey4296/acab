@@ -1,8 +1,8 @@
 count!0
 
-bdi.greet:
+//The initial Rule:
+bdi.blah:
   #propose
-
   count!$x(< 10)?
 
   $x + 2 -> $y
@@ -10,8 +10,6 @@ bdi.greet:
 
   @($z)
   +(count!$y)
-
-
 end
 
 bdi.goodbye:
@@ -19,13 +17,11 @@ bdi.goodbye:
 
   count!$x(< 10)?
 
-
   $x + 1 -> $y
   ~{} "Goodbye: {x}" -> $z
 
   @($z)
   +(count!$y)
-
 end
 
 bdi.finish:

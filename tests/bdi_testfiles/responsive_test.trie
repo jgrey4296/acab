@@ -4,7 +4,7 @@ last
 bdi.start:
   #propose
     
-  ~last?
+  ~last.$x?
 
   @("Hello")
   +(last!hello)
