@@ -27,7 +27,7 @@ class BDI_TESTS(unittest.TestCase):
                         [("propose", util.default_action_policy)])
         self.assertEqual(self.e.num_rules(), 3)
         self.e.run()
-        self.assertTrue(self.e._engine.query(".count!$x(> 9)?"))
+        self.assertTrue(self.e._engine.query("count!$x(> 9)?"))
 
 
     def test_responsive(self):
