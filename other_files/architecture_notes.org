@@ -94,7 +94,6 @@
     default_action_policy is the simplest policy, it selects a single random (bindings, rule) pairing to enact.
 
 ** DataStructures
-
 *** Cycle.py
     *Defines*: Cycle.
 
@@ -127,7 +126,6 @@
     *TODO*: Add a distribution to apply the ordering to.  
 
 ** Trie
-
 *** ActionParser.py
     Defines the parser combinator for parsing Actions.
     ie: +(.a.b.c)
@@ -161,7 +159,6 @@
     String can be combinations of the above, always starting with a .
     and with exclusion op (!)  where necessary.
 
-
 *** FileParser.py
     Defines the parser combinator that reads a file of assertions and rules.
     Allows file level bindings:
@@ -191,7 +188,6 @@
     
     Allows factstrings to hold comparisons. 
     ie: .a.$x(>20)?
-
 
 *** RuleParser.py
     Defines the parser combinator for rules.
@@ -237,12 +233,6 @@
 
     Defines the trie based implementation of a rule.
 
-** wme
-   The WME module defines a naive implementation of a WME based engine. Implements WMEs,
-   Clauses, and the Engine.
-
-
-
 ** Institutions
    If institutions are a module/file level construct, that would mean
    that files define:
@@ -274,7 +264,6 @@
    Games should verify.
    Sanctions should rank.
    
-
 ** Norms in the engine
    The engine needs bayesian weighting of norm obedience, and underlying processes of internalization.
    Explicit linkings of norm deviance with 
