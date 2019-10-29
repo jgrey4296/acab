@@ -20,6 +20,7 @@ class FactBaseTrie(Trie):
     """ A Trie based knowledge base """
 
     def __init__(self, init=None):
+        """ init is a string of assertions to start the fact base with """
         super().__init__(node_type=FactNode)
         self._last_node = self._root
         if init != None:
