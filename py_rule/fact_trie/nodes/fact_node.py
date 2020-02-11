@@ -2,14 +2,14 @@
 from py_rule.trie.nodes.trie_node import TrieNode
 from math import floor
 from py_rule.utils import EXOP, ROOT_S, OPERATOR_S, BIND_S
-import IPython
 import logging as root_logger
 import py_rule.utils as util
 import re
 import weakref
 
 logging = root_logger.getLogger(__name__)
-#see https://docs.python.org/3/library/weakref.html#module-weakref
+# see https://docs.python.org/3/library/weakref.html#module-weakref
+
 
 class FactNode(TrieNode):
     """ Both the type of a node in the trie,
@@ -19,7 +19,6 @@ class FactNode(TrieNode):
     def Root():
         """ Get a Root designated node """
         return FactNode(ROOT_S, EXOP.DOT)
-
 
     @staticmethod
     def copy_fact(node):
@@ -34,7 +33,6 @@ class FactNode(TrieNode):
                                 operator,
                                 data=node._data)
             return new_node
-
 
     def __init__(self,
                  value,
@@ -70,7 +68,7 @@ class FactNode(TrieNode):
 
     def copy(self):
         assert(not bool(self._children))
-        #todo: deeper copy
+        # todo: deeper copy
         return FactNode(self._value, self._op)
 
     def set_parent(self, parent):
@@ -93,13 +91,12 @@ class FactNode(TrieNode):
         copied = FactNode.copy_fact(fact)
         copied.set_parent(self)
 
-        #deal with exclusion
+        # deal with exclusion
         if self._op is EXOP.EX:
             self.clear_children()
 
         self.add_child(copied)
         return copied
-
 
     def get(self, fact):
         """ Retrieve a Node from this Node """
@@ -159,7 +156,6 @@ class FactNode(TrieNode):
         else:
             return (newData, self)
 
-
     def _set_dirty_chain(self):
         """ Mark this Node as modified, up to the root """
         self._dirty = True
@@ -168,7 +164,7 @@ class FactNode(TrieNode):
 
     def _unify(self, other):
         """ Test two tries to see if they can match with substitutions """
-        #TODO
+        # TODO
         # { bindNode : [ options ] }
         raise Exception("Unimplemented")
 

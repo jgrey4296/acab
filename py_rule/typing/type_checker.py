@@ -1,4 +1,3 @@
-import IPython
 import py_rule.utils as utils
 from py_rule.trie.trie import Trie
 from py_rule.abstract.sentence import Sentence
@@ -22,41 +21,40 @@ class TypeChecker:
         self._variables = Trie(VarTypeTrieNode)
 
     def __str__(self):
-        return "Defs: {}, Decs: {}, Vars: {}".format(str(self._definitions).replace('\n',' '),
-                                                     str(self._declarations).replace('\n',' '),
-                                                     str(self._variables).replace('\n',' '))
+        return "Defs: {}, Decs: {}, Vars: {}".format(str(self._definitions).replace('\n', ' '),
+                                                     str(self._declarations).replace('\n', ' '),
+                                                     str(self._variables).replace('\n', ' '))
 
     def __repr__(self):
         return "TypeChecker({})".format(str(self))
 
     def __call__(self, data):
         definitions, rules, assertions = data
-        #add definitions
+        # add definitions
         for x in definitions:
             self.add_definition(x)
-        #add the assertions
+        # add the assertions
         for x in assertions:
             self.add_assertion(x)
 
-        #for each rule:
+        # for each rule:
         for x in rules:
             self.push_typing_context()
             self.add_rule(x)
             self.validate()
             self.pop_typing_context()
 
-
     def clear_context(self):
         """ Clear variables """
         # Clear self._variables and unregister its nodes from
-        #vars in declarations
+        # vars in declarations
         var_nodes = self._variables.get_nodes()
         [x.clear_assignments() for x in var_nodes]
 
-        #remove all sentences in declarations that start with a variable
+        # remove all sentences in declarations that start with a variable
         [self._declarations.remove([x]) for x in var_nodes]
 
-        #remove the variables
+        # remove the variables
         [self._variables.remove([x]) for x in var_nodes]
 
     def query(self, queries):
@@ -64,7 +62,7 @@ class TypeChecker:
         if isinstance(queries, Sentence):
             queries = [queries]
 
-        results= []
+        results = []
         for line in queries:
             queried = self._declarations.query(line)
             if queried is None:
@@ -79,14 +77,13 @@ class TypeChecker:
             results.append(queried)
         return results
 
-
     def validate(self):
         """ Infer and check types """
 
         self._merge_equivalent_nodes()
         typed_queue = self._get_known_typed_nodes()
 
-        #Use known types to infer unknown types
+        # Use known types to infer unknown types
         dealt_with = set()
         while bool(typed_queue):
             head = typed_queue.pop()
@@ -94,27 +91,26 @@ class TypeChecker:
                 continue
             dealt_with.add(head)
 
-            #check the head
+            # check the head
             head_type = self._definitions.query(head._type._path)
             if head_type is None:
                 raise te.TypeUndefinedException(head._type, head)
 
-            #Propagate the type to all connected variables
+            # Propagate the type to all connected variables
             if head._is_var:
                 head._var_node.type_match(head._type)
                 head._var_node.propagate()
                 typed_queue.update(head._var_node._nodes)
 
-            #Apply a known type to a node, get back newly inferred types
+            # Apply a known type to a node, get back newly inferred types
             typed_queue.update(head_type.validate(head))
 
         return True
 
-
     def _get_known_typed_nodes(self):
-        #propagate known variable types
+        # propagate known variable types
         [x.propagate() for x in self._variables.get_nodes(lambda x: x._type is not None)]
-        #get all known declared types
+        # get all known declared types
         val_queue = {y for y in self._declarations.get_nodes(lambda x: x._type is not None)}
         return val_queue
 
@@ -128,7 +124,6 @@ class TypeChecker:
             head.merge(var_nodes)
             [self._variables.remove([x]) for x in var_nodes]
 
-
     def add_definition(self, definition):
         assert(isinstance(definition, TypeDefinition))
         self._definitions.add(definition._path, definition)
@@ -141,15 +136,15 @@ class TypeChecker:
 
     def add_rule(self, value):
         for c in value._query._clauses:
-            #add the conditions
+            # add the conditions
             continue
 
         for t in value._transform._components:
-            #add the transforms
+            # add the transforms
             continue
 
         for a in value._actions:
-            #add the actions
+            # add the actions
             continue
 
         self.validate()

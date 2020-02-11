@@ -2,7 +2,6 @@
     Holds a query of clauses, bindings are passed to a transform,
     the results are passed to the action list """
 import logging as root_logger
-import IPython
 import py_rule.utils as util
 import py_rule.abstract.transforms as T
 import py_rule.abstract.actions as A
@@ -10,6 +9,7 @@ from py_rule.abstract.sentence import Sentence
 from .query import Query
 
 logging = root_logger.getLogger(__name__)
+
 
 class Rule:
     """ A Rule holds a query (of N Clauses), a set of transforms,
@@ -83,11 +83,10 @@ class Rule:
                                          transformStr,
                                          actionsStr)
 
-
     def has_tag(self, t):
         return t in self._tags
 
-    def is_coherent(self): #raises an Exception othewise
+    def is_coherent(self):  # raises an Exception othewise
         """ Verify that the outputs of the query match the
         inputs of the transform, match the inputs of the actions """
         if self._transform is not None:
@@ -95,17 +94,17 @@ class Rule:
 
         if bool(self._actions):
             verified = [x.verify_op() for x in self._actions]
-        #if nothing raises an exception:
+        # if nothing raises an exception:
         return True
 
     def expand_bindings(self, bindings):
         """ Return a new Rule, modified to have bindings replaced with their values """
         assert(isinstance(bindings, dict))
-        #expand the name
+        # expand the name
         newName = self._name.expand_bindings(bindings)
-        #expand the query
+        # expand the query
         newQuery = self._query.expand_bindings(bindings)
-        #expand the actions
+        # expand the actions
         newActions = [x.expand_bindings(bindings) for x in self._actions]
         return self.__class__(newQuery,
                               newActions,
@@ -123,20 +122,20 @@ class Rule:
             else:
                 assert(isinstance(action, A.ActionMacroUse))
                 assert(action._name in macros)
-                #the macro:
+                # the macro:
                 aMacro = macros[action._name]
-                #get the call params
+                # get the call params
                 cPars = action._params
-                #get the formal params
+                # get the formal params
                 fPars = aMacro._params
-                #create the rebind dictionary
+                # create the rebind dictionary
                 bindDict = util.build_rebind_dict(fPars, cPars)
-                #expand the individual actions
+                # expand the individual actions
                 exActs = [x.expand_bindings(bindDict) for x in aMacro._actions]
-                #splice
+                # splice
                 expandedActions += exActs
 
-        #return a copy of with the expanded action list
+        # return a copy of with the expanded action list
         return self.__class__(self._query,
                               expandedActions,
                               transform=self._transform,
@@ -147,5 +146,5 @@ class Rule:
         """ Take a simple, non-transformational rule,
         and invert it, making the asserted actions the conditions,
         and the conditions the actions """
-        #TODO
+        # TODO
         raise Exception("Unimplemented")

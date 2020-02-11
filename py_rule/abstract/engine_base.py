@@ -6,26 +6,24 @@ from .rule import Rule
 from . import actions as Actions
 from . import transforms as Transforms
 from py_rule import utils as util
-import IPython
 logging = root_logger.getLogger(__name__)
 
 
-
 class EngineBase:
-    """ The Abstract class that wme and trie versions implement the interface of. """
+    """ The Abstract class of a production system engine. """
 
     def __init__(self, kb_constructor, path=None, init=None):
         self._knowledge_base = kb_constructor(init)
-        #rules categorised into tag sets?
+        # rules categorised into tag sets?
         self._rules = {}
         self._policies = {}
         self._layers = []
         self._proposed_actions = []
-        #to be updated with printed representations of the kb state after each action
+        # to be updated with printed representations of the kb state after each action
         self._prior_states = []
-        #named recall states of past kb states
+        # named recall states of past kb states
         self._recall_states = []
-        #Registered custom actions
+        # Registered custom actions
         self._custom_actions = {}
         if path is None:
             logging.info("Not loading any files for the knowledge base")
@@ -37,7 +35,7 @@ class EngineBase:
 
     def load_file(self, filename):
         """ Load a file spec for the facts / rules for this engine """
-        #pylint: disable=unused-argument,no-self-use
+        # pylint: disable=unused-argument,no-self-use
         raise Exception("Base Engine Stub")
 
     def register_action(self, name, func):
@@ -51,17 +49,17 @@ class EngineBase:
 
     def registerRules(self, s):
         """ Register passed in rule specifications """
-        #pylint: disable=unused-argument,no-self-use
+        # pylint: disable=unused-argument,no-self-use
         raise Exception("Base Engine Stub")
 
     def add(self, s):
         """ Assert a new fact into the engine """
-        #pylint: disable=unused-argument,no-self-use
+        # pylint: disable=unused-argument,no-self-use
         raise Exception("Base Engine Stub")
 
     def retract(self, s):
         """ Remove a fact from the engine """
-        #pylint: disable=unused-argument,no-self-use
+        # pylint: disable=unused-argument,no-self-use
         raise Exception("Base Engine Stub")
 
     def clear_proposed_actions(self):
@@ -74,11 +72,10 @@ class EngineBase:
         Receives a list of updates from the world,
         calculates, then returns a list of output messages """
         assert(isinstance(inputMessages, list))
-        #Assert input messages
-        #rule the rule layers
-        #return actions
+        # Assert input messages
+        # rule the rule layers
+        # return actions
         raise Exception("Abstract Method")
-
 
     def _save_state(self, data):
         """ Copy the current string representation of the knowledge base,
@@ -89,20 +86,19 @@ class EngineBase:
         """ The number of rules in the engine """
         return len(self._rules)
 
-
     def _run_rules(self, rule_locations=None, rule_tags=None, policy=None):
         """ Run all, or some, rules of the engine, if provided a policy,
         propose actions and select from the proposals """
         self._save_state((rule_locations, rule_tags, policy, self._proposed_actions))
         rules_to_run = []
-        #Get the rules:
+        # Get the rules:
         if rule_locations is None and rule_tags is None:
-            #run all rules
+            # run all rules
             rules_to_run = list(self._rules.values())
-        #otherwise, get by trie location / tag and run those
+        # otherwise, get by trie location / tag and run those
         elif rule_tags is not None:
             assert(isinstance(rule_tags, list))
-            rules_to_run = [x for x in self._rules.values() \
+            rules_to_run = [x for x in self._rules.values()
                             if bool(x._tags.intersection(rule_tags))]
         elif rule_locations is not None:
             raise Exception('Rule Location Running is not implemented yet')
@@ -141,15 +137,15 @@ class EngineBase:
         if transform is None:
             return chosen_ctx
         for x in transform._components:
-            #lookup op
+            # lookup op
             opFunc = x._op
             param_length = opFunc._num_params
-            #get params:
+            # get params:
             params = [chosen_ctx[y._value] if y._data[util.BIND_S] else y._value for y in x._params]
 
             result = opFunc(*params, chosen_ctx)
 
-            #rebind or reapply
+            # rebind or reapply
             if x._rebind is None:
                 chosen_ctx[x._params[0]._value] = result
             else:
@@ -173,11 +169,11 @@ class EngineBase:
         """ Actual enaction of a set of actions """
         assert(all([isinstance(x, Actions.Action) for x in actions]))
         for x in actions:
-            #lookup op
+            # lookup op
             opFunc = x._op
-            #get values from data
+            # get values from data
             values = x.get_values(data)
-            #perform action op with data
+            # perform action op with data
             opFunc(self, values)
 
     def _perform_action_by_policy(self, policy):
@@ -194,7 +190,6 @@ class EngineBase:
                 self._perform_actions(d, r._actions)
             else:
                 self._perform_actions(d, r)
-
 
     def _register_layers(self, layers):
         raise Exception("Abstract Method")

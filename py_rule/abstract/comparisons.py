@@ -1,13 +1,13 @@
 """ Simple comparison functions to be used in rules """
 import logging as root_logger
-import IPython
 from enum import Enum
 import re
 from py_rule.utils import BIND_S
 logging = root_logger.getLogger(__name__)
 
-#comparison operators:
+# comparison operators:
 COMP = Enum('Comp_ops', 'LT GT NE EQ RE')
+
 
 class CompOp:
     """ Superclass for Comparisons.
@@ -73,10 +73,12 @@ class RegMatch(CompOp):
 class ELEM(CompOp):
     def __init__(self):
         super().__init__("∈")
+
     def __call__(self, a, b):
         return a in b
 
 
+# Actually Create the Operators:
 EQ()
 GT()
 LT()
@@ -115,4 +117,3 @@ class Comparison:
 
     def is_regex_test(self):
         return self._op is CompOp.op_list["~="]
-

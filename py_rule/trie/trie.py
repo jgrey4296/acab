@@ -2,9 +2,9 @@
 A Trie for Types
 """
 from .nodes.trie_node import TrieNode
-import IPython
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
+
 
 class Trie:
 
@@ -39,7 +39,7 @@ class Trie:
 
         current = self._root
         current_path = []
-        for x,y  in zip(wrapped_path, path):
+        for x, y in zip(wrapped_path, path):
             current_path.append(x)
             if current.has_child(x):
                 current = current.get_child(x)
@@ -81,7 +81,7 @@ class Trie:
             curr_path, current_node = queue.pop(0)
             total_path = curr_path + [current_node]
             if not bool(current_node):
-                #if leaf
+                # if leaf
                 output.append("".join([str(x) for x in curr_path] + [current_node.opless_print()]))
             else:
                 queue += [(total_path, x) for x in current_node]

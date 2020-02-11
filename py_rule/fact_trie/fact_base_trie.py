@@ -1,7 +1,6 @@
 """ The Core Trie Data Structure base """
 import logging as root_logger
 import re
-import IPython
 from py_rule.trie.trie import Trie
 from py_rule.utils import EXOP, META_OP
 from py_rule.abstract.contexts import Contexts
@@ -23,13 +22,12 @@ class FactBaseTrie(Trie):
         """ init is a string of assertions to start the fact base with """
         super().__init__(node_type=FactNode)
         self._last_node = self._root
-        if init != None:
+        if init is not None:
             self.assertS(init)
 
     def __eq__(self, other):
         assert(isinstance(other, Trie))
         return self._root == other._root
-
 
     def assertS(self, s):
         """ Assert multiple facts from a single string """
@@ -48,7 +46,6 @@ class FactBaseTrie(Trie):
         query = QP.parseString(s)
         return self.query_sentence(query)
 
-
     def assert_sentence(self, sen):
         """ Assert a sentence of chained facts """
         assert(isinstance(sen, Sentence))
@@ -61,7 +58,7 @@ class FactBaseTrie(Trie):
     def retract_sentence(self, sen):
         """ Retract everything after the end of a sentence """
         assert(isinstance(sen, Sentence))
-        #go down to the child, and remove it
+        # go down to the child, and remove it
         self._clear_last_node()
         factList = sen._words[:]
         lastInList = factList.pop()
@@ -100,7 +97,7 @@ class FactBaseTrie(Trie):
             (updated_contexts, failures) = self._match_clause(clause,
                                                               reset_start_contexts)
             if bool(clause._fallback):
-                #add all failures back in, with the default value
+                # add all failures back in, with the default value
                 for d in failures:
                     for bindTarget, val in clause._fallback:
                         d[bindTarget.value] = val
@@ -127,15 +124,15 @@ class FactBaseTrie(Trie):
         """ Test a single clause, annotating contexts upon success and failure """
         assert(isinstance(clause, Sentence))
         logging.debug("Testing Clause: {}".format(repr(clause)))
-        #early exit:
+        # early exit:
         if not contexts:
             return contexts
         currentContexts = contexts
         failures = []
-        #Go down from the root by query element:
-        #Failure at any point means don't add the updated context
+        # Go down from the root by query element:
+        # Failure at any point means don't add the updated context
 
-        #For each part of the clause, ie: .a in .a.b.c
+        # For each part of the clause, ie: .a in .a.b.c
         for c in clause:
             logging.info("Testing node: {}".format(repr(c)))
             logging.info("Current Contexts: {}".format(len(currentContexts)))
@@ -145,26 +142,26 @@ class FactBaseTrie(Trie):
             alphas, betas, regexs = c.split_tests()
             newContexts = Contexts()
 
-            #test each  active alternative
+            # test each  active alternative
             for (data, lastNode) in currentContexts._matches:
                 tested = False
                 newData = None
                 newNode = None
                 newBindings = []
-                #compare non-bound value, returns (newNode, newData)?
+                # compare non-bound value, returns (newNode, newData)?
                 if not tested:
                     tested, newNode, newData = matching.non_bind_value_match(c, lastNode,
                                                                              betas,
                                                                              regexs, data)
 
                 if not tested:
-                    #compare already bound value, returns (newNode, newData)?
+                    # compare already bound value, returns (newNode, newData)?
                     tested, newNode, newData = matching.existing_bind_match(c, lastNode,
                                                                             betas, regexs,
                                                                             data)
 
                 if not tested:
-                    #create new bindings as necessary, returns [(newNode, newData)]
+                    # create new bindings as necessary, returns [(newNode, newData)]
                     newBindings = matching.create_new_bindings(c, lastNode,
                                                                alphas, betas,
                                                                regexs, data)
@@ -176,12 +173,12 @@ class FactBaseTrie(Trie):
                 else:
                     failures.append(data.copy())
 
-                #end of internal loop for an active alternative
+                # end of internal loop for an active alternative
 
-            #all alternatives tested for this clause component, update and progress
+            # all alternatives tested for this clause component, update and progress
 
             currentContexts = newContexts
 
-        #every alternative tested for each clause component,
-        #return the final set of contexts
+        # every alternative tested for each clause component,
+        # return the final set of contexts
         return (currentContexts, failures)

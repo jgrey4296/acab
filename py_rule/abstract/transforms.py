@@ -5,11 +5,11 @@ from random import uniform, sample, randint
 from math import floor
 from re import sub
 from py_rule.trie.nodes.trie_node import TrieNode
-import IPython
 
 logging = root_logger.getLogger(__name__)
 
 TROP = Enum("Transform_ops", "ADD SUB MUL DIV RAND REMAIN ROUND NEG REGEX FORMAT SELECT SELECT_ALL")
+
 
 class TransformOp:
     op_list = {}
@@ -23,7 +23,6 @@ class TransformOp:
 
     def __call__(self, a, b):
         raise Exception("Abstract method needs to be implemented")
-
 
     def __str__(self):
         return self._op_str
@@ -78,7 +77,7 @@ class RemainOp(TransformOp):
         super().__init__("%")
 
     def __call__(self, a, b, data):
-        #divde and get remainder?
+        # divide and get remainder?
         raise Exception("Not implemented yet")
 
 
@@ -87,7 +86,7 @@ class RoundOp(TransformOp):
         super().__init__('_', 1)
 
     def __call__(self, a, data):
-        #round to integer
+        # round to integer
         return floor(a)
 
 
@@ -96,7 +95,7 @@ class NegOp(TransformOp):
         super().__init__("-", 1)
 
     def __call__(self, a, data):
-        #invert the number
+        # invert the number
         return -a
 
 
@@ -131,6 +130,7 @@ class TransformComponent:
     def __init__(self, op, num_params=2):
         self._op = TransformOp.op_list[op][num_params]
 
+
 class OperatorTransform(TransformComponent):
     """ The main transform type. applies the operator to values """
     def __init__(self, op, params):
@@ -160,10 +160,10 @@ class OperatorTransform(TransformComponent):
                                        rebind)
         elif param_length == 3:
             return "{} {} {}{}{}".format(source[0],
-                                           op,
-                                           source[1],
-                                           source[2],
-                                           rebind)
+                                         op,
+                                         source[1],
+                                         source[2],
+                                         rebind)
 
     def verify_op(self):
         """ Complains if the operator is not a defined Operator Enum """
@@ -175,6 +175,7 @@ class OperatorTransform(TransformComponent):
         self._rebind = bind
 
 
+# Construct the operators:
 AddOp()
 SubOp()
 MulOp()
@@ -186,10 +187,11 @@ NegOp()
 RegexOp()
 FormatOp()
 
+
 class Transform:
     """ Holds a number of separate transform operators together to apply to a binding set """
 
-    #have min and max bounds
+    # have min and max bounds
     def __init__(self, components):
         assert(all([isinstance(x, TransformComponent) for x in components]))
         self._components = components[:]
@@ -200,7 +202,6 @@ class Transform:
     def __str__(self):
         return "\n".join([str(x) for x in self._components])
 
-
     def __repr__(self):
         return "\n".join([repr(x) for x in self._components])
 
@@ -209,11 +210,11 @@ class Transform:
             x.verify_op()
 
     def get_input_requirements(self):
-        #TODO
-        #return the set of input bound names
+        # TODO
+        # return the set of input bound names
         return set([])
 
     def get_output_spec(self):
-        #TODO
-        #return the set of output bound names
+        # TODO
+        # return the set of output bound names
         return set([])

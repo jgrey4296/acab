@@ -1,5 +1,5 @@
 import py_rule.utils as utils
-import IPython
+
 
 class TrieNode:
 
@@ -59,7 +59,6 @@ class TrieNode:
 
     def __iter__(self):
         return iter(self._children.values())
-
 
     def value_string(self):
         if isinstance(self._value, TrieNode):
@@ -121,7 +120,6 @@ class TrieNode:
         newnode._children.update(self._children)
         return newnode
 
-
     def split_tests(self):
         """ Split tests into (alphas, betas, regexs) """
         if utils.CONSTRAINT_S not in self._data:
@@ -148,4 +146,3 @@ class TrieNode:
     def looks_exclusive(self):
         """ Checks for implicit exclusivity by having 0 or 1 children """
         return len(self) <= 1
-

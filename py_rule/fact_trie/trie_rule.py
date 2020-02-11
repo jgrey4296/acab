@@ -5,6 +5,7 @@ from py_rule.abstract.rule import Rule
 from py_rule.abstract.sentence import Sentence
 from .parsing import FactParser as FP
 
+
 class TrieRule(Rule):
     """ An implementation of an Abstract Rule class, specifically for
     Trie based engines and knowledge bases.
@@ -21,17 +22,16 @@ class TrieRule(Rule):
 
     def to_node_lists(self):
         """ Convert a rule to a list of node lists  """
-        #TODO
+        # TODO
         baseName = None
         conditions = []
         transforms = []
         actions = []
-
 
         return []
 
     @staticmethod
     def from_trie(node):
         """ given a root node of a trie, create a rule from it """
-        #TODO
+        # TODO
         return Rule()

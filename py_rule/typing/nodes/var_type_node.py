@@ -3,6 +3,7 @@ from py_rule.typing.util import is_var
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
+
 class VarTypeTrieNode(M_TypedNode):
 
     def __init__(self, value, _type=None):

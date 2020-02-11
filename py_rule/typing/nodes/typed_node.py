@@ -1,5 +1,4 @@
 from py_rule.trie.nodes.trie_node import TrieNode
-import IPython
 from py_rule.utils import TYPE_DEC_S
 import py_rule.typing.type_exceptions as te
 import logging as root_logger
@@ -24,5 +23,3 @@ class M_TypedNode(TrieNode):
         elif self._type != _type:
             raise te.TypeConflictException(self._type, _type, self._value)
         return None
-
-

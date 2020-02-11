@@ -1,14 +1,14 @@
 """ Query: The Datastructure to hold a question to pose to the knowledgebase """
-import IPython
 from .sentence import Sentence
+
 
 class Query:
     """ A Query for the Trie Knowledge base """
 
     def __init__(self, clauses):
-        #ATTENTION: List of clauses, not List of tuples
-        #[Clause]
-        #Each clause is a list of tests and bindings
+        # ATTENTION: List of clauses, not List of tuples
+        # [Clause]
+        # Each clause is a list of tests and bindings
         self._clauses = []
         for clause in clauses:
             assert(isinstance(clause, Sentence))

@@ -1,5 +1,4 @@
 import logging as root_logger
-import IPython
 from py_rule.utils import BIND_S
 logging = root_logger.getLogger(__name__)
 
@@ -20,7 +19,7 @@ class TypeDefinition(Type):
         Only leaves get type anotations. Thus:
         { .a.$x :: String, .b.$c :: Num, .d!$e::Location }
         """
-        #The name is the location. eg: .types.person
+        # The name is the location. eg: .types.person
         self._name = name
         self._path = path
         self._structure = structure
@@ -72,12 +71,12 @@ class MonoTypeVar(Type):
         return self._name
 
     def __eq__(self, other):
-        #todo: match inheritance
+        # todo: match inheritance
         if not other:
             return False
         type_match = type(self) == type(other)
         name_match = self._name == other._name
-        args_match = all([a == b for a,b in zip(self._args, other._args)])
+        args_match = all([a == b for a, b in zip(self._args, other._args)])
         return type_match and name_match and args_match
 
     def __lt__(self, other):
@@ -90,5 +89,6 @@ class MonoTypeVar(Type):
                                new_type._path,
                                new_type._args)
 
-        new_args = [the_dict[x.value_string()] if x.value_string() in the_dict else x for x in self._args]
+        new_args = [the_dict[x.value_string()] if x.value_string() in the_dict
+                    else x for x in self._args]
         return MonoTypeVar(self._name, self._path, new_args)

@@ -1,27 +1,26 @@
 """
-Actions: Describes the *ENGINE AGNOSTIC* basic actions that a knowledgebase can perform,
-along with associated enums, and IR data structures
+Actions: Describes the *ENGINE AGNOSTIC* basic actions that a knowledgebase can
+perform, along with associated enums, and IR data structures
 """
 
-from collections import namedtuple
 from enum import Enum
 from py_rule import utils as util
 from py_rule.abstract.sentence import Sentence
-import IPython
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
-#Action operators:
+# Action operators:
 ACTS = Enum('Action_ops', 'ADD RETRACT PRINT CUSTOM ACT_MACRO')
 
-#TODO: add rule modification actions:
-#add/remove penumbral condition
-#add/remove penumbral action
-#add/remove tag?
-#insert/remove penumbral action from sequence
-#modify hierarcy
+# TODO: add rule modification actions:
+# add/remove penumbral condition
+# add/remove penumbral action
+# add/remove tag?
+# insert/remove penumbral action from sequence
+# modify hierarcy
 
-#Action function template:
+
+# Action function template:
 class ActionOp:
     """ Superclass of all Actions.
     Instantiation of subclasses auto-registers
@@ -49,7 +48,7 @@ class ActionAdd(ActionOp):
 
     def __call__(self, engine, params):
         """ Assert the params into the engine """
-        #assert(all([isinstance(x, Node) for x in params[0]]))
+        # assert(all([isinstance(x, Node) for x in params[0]]))
         engine.add(params[0])
 
 
@@ -59,7 +58,7 @@ class ActionRetract(ActionOp):
 
     def __call__(self, engine, params):
         """ Remove the params from the engine """
-        #assert(all([isinstance(x, Node) for x in params[0]]))
+        # assert(all([isinstance(x, Node) for x in params[0]]))
         engine.retract(params[0])
 
 
@@ -87,13 +86,14 @@ ActionRetract()
 ActionPrint()
 ActionCustom()
 
+
 class Action:
     """ The Core Action Class, holds an operator,
     and a list of values """
     def __init__(self, op, values, type_=None):
         """ Create an action with an operator and values """
         assert(isinstance(values, list))
-        #todo: assert that values are a fact string, value, or binding
+        # todo: assert that values are a fact string, value, or binding
         if isinstance(op, ActionOp):
             self._op = op
         elif op in ActionOp.op_list:
@@ -106,15 +106,15 @@ class Action:
         else:
             assert(isinstance(type_, util.MUTABLE))
             self._type = type_
-        #the actions that group together logically
-        #ie: expanded action macros
+        # the actions that group together logically
+        # ie: expanded action macros
         self._linkedActions = []
 
     def __str__(self):
         op = str(self._op)
         args = []
         for val in self._values:
-            if isinstance(val, list): #and isinstance(val[0], Node):
+            if isinstance(val, list):  # and isinstance(val[0], Node):
                 args.append("".join([str(x) for x in val]))
             else:
                 args.append(str(val))
@@ -139,7 +139,7 @@ class Action:
         for x in self._values:
             if isinstance(x, Sentence):
                 output.append(x.expand_bindings(data))
-            elif isinstance(x, list): #and all([isinstance(y, Node) for y in x]):
+            elif isinstance(x, list):  # and all([isinstance(y, Node) for y in x]):
                 output.append([y.bind(data) for y in x])
             elif hasattr(x, '_data') and x._data[util.BIND_S]:
                 output.append(data[x.value])
@@ -199,9 +199,8 @@ class ActionMacroUse:
         self._params = params
 
     def expand_bindings(self, bindings):
-        #todo: does this need to be implemented?
+        # todo: does this need to be implemented?
         return self
-
 
     def __str__(self):
         return "#{}({})".format(self._name,
@@ -209,5 +208,4 @@ class ActionMacroUse:
 
     def __repr__(self):
         return "ActMacroUse: #{}({})".format(self._name,
-                                                  len(self._params))
-
+                                             len(self._params))

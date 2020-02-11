@@ -2,8 +2,8 @@
 Defines a Sentence of Fact Words, which can be a query, and
 have fallback bindings
 """
-import IPython
 from py_rule.utils import BIND_S, OPERATOR_S
+
 
 class Sentence:
     """
@@ -51,13 +51,13 @@ class Sentence:
         reify the fact, using those bindings.
         ie: .a.b.$x with {x: blah} => .a.b.blah
         """
-        #TODO: respect typing
+        # TODO: respect typing
         assert(isinstance(bindings, dict))
         output = []
 
         for x in self:
             if not (x._data[BIND_S] and x._value in bindings):
-                #early exit if a plain node
+                # early exit if a plain node
                 output.append(x.copy())
                 continue
 

@@ -1,7 +1,7 @@
 """ Contexts: A Container for all partial matches of a query being run """
 from random import shuffle, sample, randint
 from py_rule.abstract.transforms import TROP
-import IPython
+
 
 class Contexts:
     """ Container of available contexts for a match in the trie
@@ -14,7 +14,7 @@ class Contexts:
         return init
 
     def __init__(self):
-        #A list of (data,lastNode) tokens
+        # A list of (data,lastNode) tokens
         self._matches = []
 
     def __len__(self):
@@ -36,12 +36,10 @@ class Contexts:
     def __bool__(self):
         return len(self._matches) > 0
 
-
     def _init_alt(self, start_node):
         """ Setup the initial context of no bindings
         """
         self._matches = [({}, start_node)]
-
 
     def select(self, bounds=(None, None)):
         """ Select a certain number of binding groups from available contexts """
