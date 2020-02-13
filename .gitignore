@@ -4,3 +4,6 @@ flycheck_*
 log.*
 .log
 .DS_Store
+GPATH
+GRTAGS
+GTAGS
