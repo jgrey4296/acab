@@ -1,5 +1,4 @@
 from random import choice
-import IPython
 
 #TODO: register moves for player,
 
