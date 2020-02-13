@@ -8,7 +8,7 @@ from py_rule.typing import type_exceptions as te
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
-
+# Log messages to use, because they are long:
 log_messages = {}
 log_messages['validate_top'] = "Validating: {} on {}"
 log_messages['curr_def'] = "Current Definition to Validate: {} : {}"

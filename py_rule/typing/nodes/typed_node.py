@@ -6,6 +6,7 @@ logging = root_logger.getLogger(__name__)
 
 
 class M_TypedNode(TrieNode):
+    """ Base Node for a Type Trie """
 
     def __init__(self, value):
         super().__init__(value)

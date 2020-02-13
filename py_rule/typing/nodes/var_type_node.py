@@ -5,6 +5,7 @@ logging = root_logger.getLogger(__name__)
 
 
 class VarTypeTrieNode(M_TypedNode):
+    """ Node describing a variable's type """ 
 
     def __init__(self, value, _type=None):
         super().__init__(value)

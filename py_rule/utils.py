@@ -2,6 +2,8 @@
 from enum import Enum
 from random import choice
 
+# Globally constant strings:
+
 ROOT_S = "__root"
 TYPE_DEC_S = "typedec"
 TYPE_DEF_S = "typedef"
@@ -14,6 +16,8 @@ CONSTRAINT_S = "constraints"
 OPERATOR_S = "operator"
 OPT_S = "opt"
 REGEX_S = "regex"
+
+# Global Enums:
 
 #Trie exclusion operator:
 EXOP = Enum('EXOP', 'DOT EX')
@@ -36,6 +40,8 @@ META_OP = Enum("Meta Ops", "BIND COMP RULE RULEBIND")
 #for use in query clauses, and actions
 MUTABLE = Enum('Mutablility', "CORE PENUMBRA")
 
+# Utility Funtions:
+
 def build_rebind_dict(formal, usage):
     """ Build a dictionary for action macro expansion,
     to swap internal formal params for provided usage params """
@@ -46,6 +52,7 @@ def build_rebind_dict(formal, usage):
 def default_action_policy(pairings):
     """ A Simple random selection policy """
     #each pairing is of data, rule
+    # TODO: make this a default Agenda
     if not bool(pairings):
         return []
     return [choice(pairings)]
