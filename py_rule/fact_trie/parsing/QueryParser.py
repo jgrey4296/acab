@@ -5,7 +5,6 @@ import py_rule.abstract.comparisons as C
 from py_rule.abstract.query import Query
 from py_rule.abstract.sentence import Sentence
 from .FactParser import COMMA, PARAM_CORE, BIND, COLON, N, TYPEDEC_CORE, param_fact_string
-import IPython
 
 pp.ParserElement.setDefaultWhitespaceChars(' \t\r')
 

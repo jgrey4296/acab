@@ -1,7 +1,6 @@
 """ Trie-based parser for the transform component of rules """
 import logging as root_logger
 import pyparsing as pp
-import IPython
 import py_rule.utils as util
 from py_rule.abstract.transforms import TROP, OperatorTransform, Transform, TransformOp
 from .FactParser import COMMA, PARAM_CORE, N, param_fact_string, NG, VALBIND, make_node

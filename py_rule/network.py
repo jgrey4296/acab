@@ -6,7 +6,6 @@ import socket
 import json
 from enum import Enum
 from json.decoder import JSONDecodeError
-import IPython
 from hashlib import md5
 
 from pyRule.trie import TrieEngine

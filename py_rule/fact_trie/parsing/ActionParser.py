@@ -3,7 +3,6 @@ import logging as root_logger
 import pyparsing as pp
 from py_rule import utils as util
 from py_rule.abstract import actions as Actions
-import IPython
 
 from .FactParser import COMMA, param_fact_string, end, COLON, sLn, N, NG, PARAM_CORE, VALBIND
 from .QueryParser import NOT, OPAR, CPAR

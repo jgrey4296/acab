@@ -1,7 +1,6 @@
 """
 PatternIterator automates pattern output
 """
-import IPython
 from fractions import Fraction as f
 from .utils import time_str
 import logging as root_logger

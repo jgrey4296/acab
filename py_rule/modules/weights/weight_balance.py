@@ -9,7 +9,6 @@ and where for any (a < b), (a.upperbound < b.lowerbound)
 import numpy as np
 from collections import defaultdict
 from cairo_utils import BeachLine
-import IPython
 
 defaultZeros = lambda : defaultdict(lambda: 0)
 

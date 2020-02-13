@@ -4,7 +4,6 @@ A Combined parser to parse rules and facts to assert
 """
 import pyparsing as pp
 from pyparsing import pyparsing_common as ppc
-import IPython
 
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.actions import ActionMacro

@@ -7,7 +7,6 @@ that values are added to.
 Upon exit, it calculates the appropriate time arcs for events
 
 """
-import IPython
 from .arc import Arc
 from .event import Event
 from .pattern import Pattern, PatternChoice, PatternPar

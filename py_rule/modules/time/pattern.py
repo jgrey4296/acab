@@ -7,8 +7,6 @@ from functools import reduce
 from math import floor
 from random import Random
 
-import IPython
-
 from py_rule.modules.time.arc import Arc
 from py_rule.modules.time.event import Event
 
@@ -78,6 +76,7 @@ class Pattern:
 
     def __iter__(self):
         return self.iter()
+
     def handle_call_results(self, results, just_values=False):
         assert(all([isinstance(x, Event) for x in results]))
         if bool(self._bindings):
@@ -87,6 +86,7 @@ class Pattern:
             results = [x._value for x in results]
 
         return results
+
     def copy(self, deep=False):
         """ Copy the pattern for modification """
         if deep:
@@ -97,6 +97,7 @@ class Pattern:
         copied = self_class(self._arc, vals, self._data, self._bindings)
         copied._time_type = self._time_type
         return copied
+
     def visualise(self, headless=False, base_count=None):
         if base_count is None:
             base_count = self.denominator()
@@ -178,6 +179,7 @@ class Pattern:
         copied = self.copy()
         copied._bindings.update(a_dict)
         return copied
+
     def apply_to(self, other):
         """ Combine two patterns, using the structure of left one """
         raise Exception("Not implemented yet")
@@ -216,6 +218,7 @@ class PatternSeq(Pattern):
     def is_pure(self):
         return True
 
+
 class PatternPar(Pattern):
     def __init__(self, a, vals=None, data=None, bindings=None):
         assert(all([isinstance(x, Pattern) for x in vals]))
@@ -233,6 +236,7 @@ class PatternPar(Pattern):
 
     def is_pure(self):
         return True
+
     def visualise(self, headless=False, base_count=None):
         if base_count is None:
             base_count = self.denominator()

@@ -4,7 +4,6 @@ A PyParsing parser to create patterns
 # from .pattern import Pattern
 # from .event import Event
 # from .arc import Arc
-import IPython
 from py_rule.modules.time.pattern_constructor import CTOR_ACT, construct_pattern_simple
 from py_rule.fact_trie.parsing import FactParser as FP
 from py_rule.utils import BIND_S, VALUE_TYPE_S, VALUE_S, NAME_S, OPT_S

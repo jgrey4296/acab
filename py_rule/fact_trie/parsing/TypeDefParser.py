@@ -1,4 +1,3 @@
-import IPython
 import pyparsing as pp
 import logging as root_logger
 from . import FactParser as FP

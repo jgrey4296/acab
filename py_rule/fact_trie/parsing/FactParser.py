@@ -4,7 +4,6 @@ capable of parsing  multiple facts
 """
 import logging as root_logger
 import pyparsing as pp
-import IPython
 from py_rule.utils import EXOP, TYPE_DEC_S, BIND_S, OPERATOR_S, VALUE_TYPE_S, VALUE_S, NAME_S, STRING_S, REGEX_S
 from py_rule.typing.ex_types import MonoTypeVar
 from py_rule.fact_trie.nodes.fact_node import FactNode
@@ -141,5 +140,4 @@ basic_fact_string.setParseAction(construct_sentence)
 # MAIN PARSER:
 def parseString(in_string):
     """ str -> [[Node]] """
-    # IPython.embed(simple_prompt=True)
     return param_fact_strings.parseString(in_string)[:]
