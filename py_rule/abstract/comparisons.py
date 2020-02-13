@@ -1,12 +1,7 @@
 """ Simple comparison functions to be used in rules """
 import logging as root_logger
-from enum import Enum
-import re
 from py_rule.utils import BIND_S
 logging = root_logger.getLogger(__name__)
-
-# comparison operators:
-COMP = Enum('Comp_ops', 'LT GT NE EQ RE')
 
 
 class CompOp:
@@ -28,63 +23,6 @@ class CompOp:
 
     def __repr__(self):
         return "CompOp({})".format(str(self))
-
-
-class EQ(CompOp):
-    def __init__(self):
-        super().__init__("==")
-
-    def __call__(self, a, b):
-        return a == b
-
-
-class GT(CompOp):
-    def __init__(self):
-        super().__init__(">")
-
-    def __call__(self, a, b):
-        return a > b
-
-
-class LT(CompOp):
-    def __init__(self):
-        super().__init__("<")
-
-    def __call__(self, a, b):
-        return a < b
-
-
-class NEQ(CompOp):
-    def __init__(self):
-        super().__init__("!=")
-
-    def __call__(self, a, b):
-        return a != b
-
-
-class RegMatch(CompOp):
-    def __init__(self):
-        super().__init__("~=")
-
-    def __call__(self, a, b):
-        return re.search(b, a)
-
-
-class ELEM(CompOp):
-    def __init__(self):
-        super().__init__("∈")
-
-    def __call__(self, a, b):
-        return a in b
-
-
-# Actually Create the Operators:
-EQ()
-GT()
-LT()
-NEQ()
-RegMatch()
-ELEM()
 
 
 class Comparison:
