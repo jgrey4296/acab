@@ -265,8 +265,8 @@
    Sanctions should rank.
    
 ** Norms in the engine
-   The engine needs bayesian weighting of norm obedience, and underlying processes of internalization.
-   Explicit linkings of norm deviance with 
+   The engine needs bayesian weighting of norm obedience, and underlying
+   processes of internalization. Explicit linkings of norm deviance with
 
 
 
