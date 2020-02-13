@@ -1,6 +1,5 @@
 import unittest
 import logging
-import IPython
 from test_context import py_rule
 from py_rule.fact_trie.parsing import RuleParser as RP
 from py_rule.fact_trie.parsing import FactParser as FP

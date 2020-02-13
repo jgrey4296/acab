@@ -7,7 +7,6 @@ from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.comparisons import Comparison, COMP, CompOp
 import py_rule.utils as util
 from py_rule.utils import EXOP
-import IPython
 
 class Trie_Query_Parser_Tests(unittest.TestCase):
 
@@ -138,7 +137,6 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
     # def test_rulebind_parsing(self):
     #     result = QP.clause.parseString('a.b.c(^$x)?')[0]
     #     self.assertIsInstance(result, Sentence)
-    #     IPython.embed(simple_prompt=True)
 
     #     # self.assertIsInstance(result._sentence[-1]
 

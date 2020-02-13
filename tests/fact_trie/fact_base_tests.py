@@ -3,7 +3,6 @@ import logging
 from test_context import py_rule
 from py_rule.fact_trie.fact_base_trie import FactBaseTrie
 from py_rule.abstract.contexts import Contexts
-import IPython
 
 
 class Trie_FactBase_Tests(unittest.TestCase):

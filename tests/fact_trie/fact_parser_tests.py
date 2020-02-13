@@ -7,7 +7,6 @@ import py_rule.fact_trie.parsing.FactParser as FP
 from py_rule.trie.nodes.trie_node import TrieNode
 from py_rule.abstract.sentence import Sentence
 import py_rule.utils as util
-import IPython
 
 class Trie_Fact_Parser_Tests(unittest.TestCase):
 

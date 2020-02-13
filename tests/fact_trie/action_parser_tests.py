@@ -1,5 +1,4 @@
 import unittest
-import IPython
 import logging
 from test_context import py_rule
 from py_rule.fact_trie.parsing import ActionParser as AP

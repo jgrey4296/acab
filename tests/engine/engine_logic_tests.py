@@ -6,7 +6,6 @@ from py_rule.engines.trie_engine import TrieEngine
 from os.path import join, isfile, exists, isdir, splitext, expanduser
 from os import listdir
 
-import IPython
 
 class Engine_Logic_Tests(unittest.TestCase):
 

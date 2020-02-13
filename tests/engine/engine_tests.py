@@ -6,7 +6,6 @@ import py_rule.engines.trie_engine as T
 import py_rule.fact_trie.parsing.TransformParser as TP
 import py_rule.fact_trie.parsing.ActionParser as AP
 from math import isclose
-import IPython
 
 class Engine_Tests(unittest.TestCase):
 

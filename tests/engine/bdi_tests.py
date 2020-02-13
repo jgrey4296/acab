@@ -5,7 +5,6 @@ import py_rule.utils as util
 from py_rule.engines import bdi_engine as bdi
 from os.path import join, isfile, exists, isdir, splitext, expanduser
 from os import listdir
-import IPython
 
 class BDI_TESTS(unittest.TestCase):
 

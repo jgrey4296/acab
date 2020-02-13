@@ -1,5 +1,4 @@
 import unittest
-import IPython
 import logging
 from test_context import py_rule
 from py_rule.typing.type_checker import TypeChecker
