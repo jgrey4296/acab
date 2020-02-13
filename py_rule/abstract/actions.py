@@ -3,21 +3,11 @@ Actions: Describes the *ENGINE AGNOSTIC* basic actions that a knowledgebase can
 perform, along with associated enums, and IR data structures
 """
 
-from enum import Enum
 from py_rule import utils as util
 from py_rule.abstract.sentence import Sentence
 import logging as root_logger
+
 logging = root_logger.getLogger(__name__)
-
-# Action operators:
-ACTS = Enum('Action_ops', 'ADD RETRACT PRINT CUSTOM ACT_MACRO')
-
-# TODO: add rule modification actions:
-# add/remove penumbral condition
-# add/remove penumbral action
-# add/remove tag?
-# insert/remove penumbral action from sequence
-# modify hierarcy
 
 
 # Action function template:
@@ -40,51 +30,6 @@ class ActionOp:
 
     def __repr__(self):
         return "ActionOp: {}".format(str(self))
-
-
-class ActionAdd(ActionOp):
-    def __init__(self):
-        super().__init__("+")
-
-    def __call__(self, engine, params):
-        """ Assert the params into the engine """
-        # assert(all([isinstance(x, Node) for x in params[0]]))
-        engine.add(params[0])
-
-
-class ActionRetract(ActionOp):
-    def __init__(self):
-        super().__init__("-")
-
-    def __call__(self, engine, params):
-        """ Remove the params from the engine """
-        # assert(all([isinstance(x, Node) for x in params[0]]))
-        engine.retract(params[0])
-
-
-class ActionPrint(ActionOp):
-    def __init__(self):
-        super().__init__("@")
-
-    def __call__(self, engine, params):
-        """ Trigger a logging statement """
-        for x in params:
-            print(x)
-            logging.info("Engine Output: {}".format(x))
-
-
-class ActionCustom(ActionOp):
-    def __init__(self):
-        super().__init__("#")
-
-    def __call__(self, engine, params):
-        engine.call_registered_function(params)
-
-
-ActionAdd()
-ActionRetract()
-ActionPrint()
-ActionCustom()
 
 
 class Action:
