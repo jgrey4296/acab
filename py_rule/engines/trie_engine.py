@@ -52,7 +52,7 @@ class TrieEngine(Engine):
                 logging.info("File load assertions: {}".format(x))
                 self.add(x)
             # register rules:
-            self.registerRules(rules)
+            self.register_rules(rules)
             # register layer sequences
             # register policies to layers
             # TODO: Do something with definitions
@@ -97,7 +97,7 @@ class TrieEngine(Engine):
             assert(isinstance(s, query.Query))
             return self._knowledge_base.query_sentence(s)
 
-    def registerRules(self, s):
+    def register_rules(self, s):
         """ Add a Rule to the engine """
         if isinstance(s, str):
             rules = RP.parseString(s)

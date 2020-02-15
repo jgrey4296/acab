@@ -88,7 +88,7 @@ class TrieKnowledgeBase(KnowledgeBase):
         annotating contexts as necessary
         """
         contexts = ctxs
-        pos, neg = query.splitClauses()
+        pos, neg = query.split_clauses()
 
         logging.debug("Testing clauses: {} {}".format(len(pos), len(neg)))
         for clause in pos:
