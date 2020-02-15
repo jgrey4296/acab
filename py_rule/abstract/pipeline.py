@@ -6,10 +6,12 @@ class Pipeline:
     """
 
     def __init__(self):
-        return
+        self._layers = []
 
 
     # TODO: define interface
     # call
+    def __call__(self, tick):
+        return
     # input constraints
     # output constraints

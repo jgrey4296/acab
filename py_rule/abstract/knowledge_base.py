@@ -8,4 +8,6 @@ class KnowledgeBase:
     def __init__(self):
         return
 
-
+    # Assert
+    # Retract
+    # Query

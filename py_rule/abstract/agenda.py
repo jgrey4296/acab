@@ -10,6 +10,8 @@ class Agenda:
 
     # TODO: implement base interface
 
-    def __call__(self):
+    def __call__(self, proposals, engine):
+        """ Take the proposals, transform them in some way,
+        then enact them on the engine """
         return
 
