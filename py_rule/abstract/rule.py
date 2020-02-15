@@ -3,9 +3,9 @@
     the results are passed to the action list """
 import logging as root_logger
 import py_rule.utils as util
-import py_rule.abstract.transforms as T
-import py_rule.abstract.actions as A
-from py_rule.abstract.sentence import Sentence
+from .transform import Transform
+from .action import Action, ActionMacroUse
+from .sentence import Sentence
 from .query import Query
 
 logging = root_logger.getLogger(__name__)
@@ -21,8 +21,8 @@ class Rule:
     def __init__(self, query, actions, transform=None, name=None, tags=None):
         assert(query is None or isinstance(query, Query))
         assert(isinstance(actions, list))
-        assert(all([isinstance(x, (A.Action, A.ActionMacroUse)) for x in actions]))
-        assert(transform is None or isinstance(transform, T.Transform))
+        assert(all([isinstance(x, (Action, ActionMacroUse)) for x in actions]))
+        assert(transform is None or isinstance(transform, Transform))
         assert(tags is None or all([isinstance(x, str) for x in tags]))
         if name is not None:
             self._name = name
@@ -117,10 +117,10 @@ class Rule:
         the sequence of actions they represent """
         expandedActions = []
         for action in self._actions:
-            if isinstance(action, A.Action):
+            if isinstance(action, Action):
                 expandedActions.append(action)
             else:
-                assert(isinstance(action, A.ActionMacroUse))
+                assert(isinstance(action, ActionMacroUse))
                 assert(action._name in macros)
                 # the macro:
                 aMacro = macros[action._name]

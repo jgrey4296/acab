@@ -1,6 +1,6 @@
 """ Contexts: A Container for all partial matches of a query being run """
 from random import shuffle, sample, randint
-from .abstract.transforms import TROP
+from .abstract.transform import TROP
 
 
 class Contexts:

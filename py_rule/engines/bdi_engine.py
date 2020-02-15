@@ -1,7 +1,7 @@
 """ A BDI Based Architecture that utilizes the trie engine """
 from time import sleep
 import logging as root_logger
-import py_rule.engines.trie_engine as T
+from .engines.trie_engine import TrieEngine
 import py_rule.utils as util
 
 logging = root_logger.getLogger(__name__)
@@ -35,7 +35,7 @@ class Agent:
         self._state_query = "~agent.{}.state.finished?".format(name)
         self._state_temp_data = "agent.{}.state.temp.$x".format(name)
         self._state_busy_on_action = "agent.{}.state.busy".format(name)
-        self._engine = T.TrieEngine()
+        self._engine = TrieEngine()
 
         # Runtime data
         self._assertion_queue = []

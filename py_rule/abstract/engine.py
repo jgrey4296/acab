@@ -3,8 +3,8 @@
 """
 import logging as root_logger
 from .rule import Rule
-from .actions import Action
-from .transforms import Transform
+from .action import Action
+from .transform import Transform
 from py_rule import utils as util
 logging = root_logger.getLogger(__name__)
 

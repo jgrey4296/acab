@@ -1,6 +1,6 @@
 """ Simple Transform functions to be used in rules """
 import logging as root_logger
-from py_rule.trie.nodes.trie_node import TrieNode
+from .node import Node
 
 logging = root_logger.getLogger(__name__)
 
@@ -44,7 +44,7 @@ class OperatorTransform(TransformComponent):
 
     def __str__(self):
         op = str(self._op)
-        source = [x.opless_print() if isinstance(x, TrieNode) else str(x) for x in self._params]
+        source = [x.opless_print() if isinstance(x, Node) else str(x) for x in self._params]
         if self._rebind is not None:
             rebind = " -> {}".format(self._rebind.opless_print())
         else:
