@@ -9,7 +9,7 @@ from py_rule import utils as util
 logging = root_logger.getLogger(__name__)
 
 
-class EngineBase:
+class Engine:
     """ The Abstract class of a production system engine. """
 
     def __init__(self, kb_constructor, path=None, init=None):

@@ -7,8 +7,8 @@ from os.path import join, isfile, exists, isdir, splitext, expanduser
 from os import listdir
 from random import shuffle
 
-from py_rule.abstract.engine_base import EngineBase
 from py_rule.abstract import actions, contexts, query, transforms
+from py_rule.abstract.engine import Engine
 from py_rule.abstract.sentence import Sentence
 from py_rule.fact_trie.fact_base_trie import FactBaseTrie
 from py_rule.fact_trie.nodes.fact_node import FactNode
@@ -27,7 +27,7 @@ from py_rule.fact_trie import trie_rule as TR
 logging = root_logger.getLogger(__name__)
 
 
-class TrieEngine(EngineBase):
+class TrieEngine(Engine):
     """ The Engine for an Agent.
     Holds a KnowledgeBase, with rules, keeps track of proposed actions
     and the history of the agent. Performs actions that are registered
