@@ -1,9 +1,15 @@
 """
 Exception types raised by type checking
 """
+from pyrule.error.pyrule_base_exception import PyRuleBaseException
+
+class PyRuleTypingException(PyRuleBaseException):
+
+    def __init__(self):
+        return
 
 
-class TypeRedefinitionException(Exception):
+class TypeRedefinitionException(PyRuleTypingException):
 
     def __init__(self, typename):
         self.typename = typename
@@ -14,7 +20,7 @@ class TypeRedefinitionException(Exception):
     __repr__ = __str__
 
 
-class TypeConflictException(Exception):
+class TypeConflictException(PyRuleTypingException):
 
     def __init__(self, env_type, new_type, stmt):
         self._env_type = env_type
@@ -29,7 +35,7 @@ class TypeConflictException(Exception):
     __repr__ = __str__
 
 
-class TypeUndefinedException(Exception):
+class TypeUndefinedException(PyRuleTypingException):
 
     def __init__(self, attempted_type, stmt):
         self.attempted_type = attempted_type
@@ -40,7 +46,7 @@ class TypeUndefinedException(Exception):
                                                                                  self.stmt)
 
 
-class TypeVariableConflictException(Exception):
+class TypeVariableConflictException(PyRuleTypingException):
 
     def __init__(self, node_path):
         self.node_path = node_path
@@ -49,7 +55,7 @@ class TypeVariableConflictException(Exception):
         return "Node specified as both a var and not a var: {}".format("".join(self.node_path))
 
 
-class TypeStructureMismatch(Exception):
+class TypeStructureMismatch(PyRuleTypingException):
 
     def __init__(self, typename, conflicts):
         self.typename = typename
