@@ -1,6 +1,7 @@
 """
 Module for connecting to Unity using network
 """
+
 import logging as root_logger
 import socket
 import json
@@ -10,7 +11,6 @@ from hashlib import md5
 
 from pyRule.trie import TrieEngine
 
-import logging as root_logger
 logging = root_logger.getLogger(__name__)
 ####################
 DEFAULT_PORT = 50000
@@ -200,9 +200,9 @@ class UnityServer:
         obj = md5(s.encode())
         return obj.hexdigest().upper()
 
+
 if __name__ == "__main__":
     # Setup root_logger:
-    import logging as root_logger
     LOGLEVEL = root_logger.DEBUG
     LOG_FILE_NAME = "log.Network"
     root_logger.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
