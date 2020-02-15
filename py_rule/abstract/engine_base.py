@@ -33,6 +33,7 @@ class EngineBase:
         else:
             self.load_file(path)
 
+    #Initialisation:
     def load_file(self, filename):
         """ Load a file spec for the facts / rules for this engine """
         # pylint: disable=unused-argument,no-self-use
@@ -52,6 +53,7 @@ class EngineBase:
         # pylint: disable=unused-argument,no-self-use
         raise Exception("Base Engine Stub")
 
+    #Base Actions
     def add(self, s):
         """ Assert a new fact into the engine """
         # pylint: disable=unused-argument,no-self-use
@@ -77,11 +79,13 @@ class EngineBase:
         # return actions
         raise Exception("Abstract Method")
 
+    #Export
     def _save_state(self, data):
         """ Copy the current string representation of the knowledge base,
         and any associated data """
         self._prior_states.append((str(self._knowledge_base), data))
 
+    #Utility
     def __len__(self):
         """ The number of rules in the engine """
         return len(self._rules)
