@@ -1,7 +1,8 @@
+from pyrule.abstract.node import PyRuleNode
 import py_rule.utils as utils
 
 
-class TrieNode:
+class TrieNode(PyRuleNode):
 
     @staticmethod
     def Root():
