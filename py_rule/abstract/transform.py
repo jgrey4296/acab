@@ -1,12 +1,15 @@
 """ Simple Transform functions to be used in rules """
 import logging as root_logger
+from .operator import Operator
 from .node import Node
 
 logging = root_logger.getLogger(__name__)
 
 
-class TransformOp:
+class TransformOp(Operator):
     op_list = {}
+    # TODO: populate this
+    enum_list = None
 
     def __init__(self, op_str, num_params=2):
         self._op_str = op_str

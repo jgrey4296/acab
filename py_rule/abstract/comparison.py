@@ -1,15 +1,18 @@
 """ Simple comparison functions to be used in rules """
 import logging as root_logger
+from .operator import Operator
 from py_rule.utils import BIND_S
 logging = root_logger.getLogger(__name__)
 
 
-class CompOp:
+class CompOp(Operator):
     """ Superclass for Comparisons.
     Instantiation of subclasses auto-registers
     the comparison into CompOp.op_list with an operator string
     """
     op_list = {}
+    # TODO: populate this
+    enum_list = None
 
     def __init__(self, op_str):
         self._op_str = op_str
