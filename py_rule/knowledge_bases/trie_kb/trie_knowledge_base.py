@@ -1,7 +1,8 @@
 """ The Core Trie Data Structure base """
 import logging as root_logger
 import re
-from py_rule.trie.trie import Trie
+from py_rule.abstract.trie.trie import Trie
+from py_rule.abstract.knowledge_base import KnowledgeBase
 from py_rule.utils import EXOP, META_OP
 from py_rule.abstract.contexts import Contexts
 from py_rule.abstract.query import Query
@@ -15,7 +16,7 @@ from . import matching
 logging = root_logger.getLogger(__name__)
 
 
-class FactBaseTrie(Trie):
+class TrieKnowledgeBase(KnowledgeBase):
     """ A Trie based knowledge base """
 
     def __init__(self, init=None):
