@@ -1,11 +1,14 @@
+"""
+Definitions of initial Comparison operators
+"""
 from enum import Enum
-from pyrule.abstract import comparisons
+from pyrule.abstract.comparison import CompOp
 import re
 
 COMP = Enum('Comp_ops', 'LT GT NE EQ RE')
 
 
-class EQ(comparisons.CompOp):
+class EQ(CompOp):
     def __init__(self):
         super().__init__("==")
 
@@ -13,7 +16,7 @@ class EQ(comparisons.CompOp):
         return a == b
 
 
-class GT(comparisons.CompOp):
+class GT(CompOp):
     def __init__(self):
         super().__init__(">")
 
@@ -21,7 +24,7 @@ class GT(comparisons.CompOp):
         return a > b
 
 
-class LT(comparisons.CompOp):
+class LT(CompOp):
     def __init__(self):
         super().__init__("<")
 
@@ -29,7 +32,7 @@ class LT(comparisons.CompOp):
         return a < b
 
 
-class NEQ(comparisons.CompOp):
+class NEQ(CompOp):
     def __init__(self):
         super().__init__("!=")
 
@@ -37,7 +40,7 @@ class NEQ(comparisons.CompOp):
         return a != b
 
 
-class RegMatch(comparisons.CompOp):
+class RegMatch(CompOp):
     def __init__(self):
         super().__init__("~=")
 
@@ -45,7 +48,7 @@ class RegMatch(comparisons.CompOp):
         return re.search(b, a)
 
 
-class ELEM(comparisons.CompOp):
+class ELEM(CompOp):
     def __init__(self):
         super().__init__("∈")
 

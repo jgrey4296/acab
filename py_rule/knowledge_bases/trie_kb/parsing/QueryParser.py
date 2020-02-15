@@ -1,7 +1,7 @@
 """ Trie-based parser for constructing queries """
 import logging as root_logger
 import pyparsing as pp
-import py_rule.abstract.comparisons as C
+import py_rule.abstract.comparison as C
 from py_rule.abstract.query import Query
 from py_rule.abstract.sentence import Sentence
 from .FactParser import COMMA, PARAM_CORE, BIND, COLON, N, TYPEDEC_CORE, param_fact_string

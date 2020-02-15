@@ -1,18 +1,16 @@
 """ The Core Trie Data Structure base """
 import logging as root_logger
 import re
-from py_rule.abstract.trie.trie import Trie
-from py_rule.abstract.knowledge_base import KnowledgeBase
-from py_rule.utils import EXOP, META_OP
+from .nodes.fact_node import FactNode
 from py_rule.abstract.contexts import Contexts
+from py_rule.abstract.knowledge_base import KnowledgeBase
 from py_rule.abstract.query import Query
 from py_rule.abstract.sentence import Sentence
-
-from py_rule.trie.nodes.trie_node import TrieNode
-from .nodes.fact_node import FactNode
+from py_rule.abstract.trie.trie import Trie
+from py_rule.utils import EXOP, META_OP
+from . import matching
 from .parsing import FactParser as FP
 from .parsing import QueryParser as QP
-from . import matching
 logging = root_logger.getLogger(__name__)
 
 

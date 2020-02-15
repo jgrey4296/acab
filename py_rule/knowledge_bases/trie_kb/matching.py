@@ -1,10 +1,10 @@
 """
 Functions to facilitate matching Trie-Nodes to queries
 """
-import logging as root_logger
 from py_rule import utils as util
-import py_rule.abstract.comparisons as Comp
-from py_rule.trie.nodes.trie_node import TrieNode
+from py_rule.abstract.trie.nodes.trie_node import TrieNode
+import logging as root_logger
+import py_rule.abstract.comparison as Comp
 logging = root_logger.getLogger(__name__)
 
 

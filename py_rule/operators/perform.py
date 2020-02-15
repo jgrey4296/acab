@@ -1,5 +1,8 @@
+"""
+Definitions of the Core Performance Operators
+"""
 import logging as root_logger
-from pyrule.abstract.actions import ActonOp
+from pyrule.abstract.action import ActionOp
 from enum import Enum
 
 logging = root_logger.getLogger(__name__)

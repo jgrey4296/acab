@@ -1,5 +1,5 @@
 import py_rule.utils as utils
-from py_rule.trie.trie import Trie
+from py_rule.abstract.trie.trie import Trie
 from py_rule.abstract.sentence import Sentence
 from .nodes.typedef_node import TypeDefTrieNode
 from .nodes.var_type_node import VarTypeTrieNode

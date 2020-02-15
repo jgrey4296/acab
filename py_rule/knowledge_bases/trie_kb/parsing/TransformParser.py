@@ -2,7 +2,7 @@
 import logging as root_logger
 import pyparsing as pp
 import py_rule.utils as util
-from py_rule.abstract.transforms import TROP, OperatorTransform, Transform, TransformOp
+from py_rule.abstract.transform import OperatorTransform, Transform, TransformOp
 from .FactParser import COMMA, PARAM_CORE, N, param_fact_string, NG, VALBIND, make_node
 from .QueryParser import OPAR, CPAR
 

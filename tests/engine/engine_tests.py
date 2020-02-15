@@ -3,8 +3,8 @@ import logging
 from test_context import py_rule
 from py_rule.abstract.contexts import Contexts
 import py_rule.engines.trie_engine as T
-import py_rule.fact_trie.parsing.TransformParser as TP
-import py_rule.fact_trie.parsing.ActionParser as AP
+import py_rule.knowledge_bases.trie_kb.parsing.TransformParser as TP
+import py_rule.knowledge_bases.trie_kb.parsing.ActionParser as AP
 from math import isclose
 
 class Engine_Tests(unittest.TestCase):

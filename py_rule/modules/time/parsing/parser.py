@@ -5,7 +5,7 @@ A PyParsing parser to create patterns
 # from .event import Event
 # from .arc import Arc
 from py_rule.modules.time.pattern_constructor import CTOR_ACT, construct_pattern_simple
-from py_rule.fact_trie.parsing import FactParser as FP
+from py_rule.knowledge_bases.trie_kb.parsing import FactParser as FP
 from py_rule.utils import BIND_S, VALUE_TYPE_S, VALUE_S, NAME_S, OPT_S
 from enum import Enum
 from fractions import Fraction

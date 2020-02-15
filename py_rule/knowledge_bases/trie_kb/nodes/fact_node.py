@@ -1,6 +1,6 @@
 """ The Core Trie-Node, stores information, meta data """
-from py_rule.trie.nodes.trie_node import TrieNode
 from math import floor
+from py_rule.abstract.trie.nodes.trie_node import TrieNode
 from py_rule.utils import EXOP, ROOT_S, OPERATOR_S, BIND_S
 import logging as root_logger
 import py_rule.utils as util

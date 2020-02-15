@@ -1,4 +1,7 @@
-from pyrule.abstract import transforms
+"""
+Defintions for Core Transform Operators
+"""
+from pyrule.abstract.transform import TransformOp
 from random import uniform, sample, randint
 from math import floor
 from re import sub
@@ -7,7 +10,7 @@ from enum import Enum
 TROP = Enum("Transform_ops", "ADD SUB MUL DIV RAND REMAIN ROUND NEG REGEX FORMAT SELECT SELECT_ALL")
 
 
-class AddOp(transforms.TransformOp):
+class AddOp(TransformOp):
     def __init__(self):
         super().__init__("+")
 
@@ -15,7 +18,7 @@ class AddOp(transforms.TransformOp):
         return a + b
 
 
-class SubOp(transforms.TransformOp):
+class SubOp(TransformOp):
     def __init__(self):
         super().__init__("-")
 
@@ -23,7 +26,7 @@ class SubOp(transforms.TransformOp):
         return a - b
 
 
-class MulOp(transforms.TransformOp):
+class MulOp(TransformOp):
     def __init__(self):
         super().__init__("*")
 
@@ -31,7 +34,7 @@ class MulOp(transforms.TransformOp):
         return a * b
 
 
-class DivOp(transforms.TransformOp):
+class DivOp(TransformOp):
     def __init__(self):
         super().__init__("/")
 
@@ -39,7 +42,7 @@ class DivOp(transforms.TransformOp):
         return a / b
 
 
-class RandOp(transforms.TransformOp):
+class RandOp(TransformOp):
     def __init__(self):
         super().__init__("<->")
 
@@ -48,7 +51,7 @@ class RandOp(transforms.TransformOp):
         return uniform(a, b)
 
 
-class RemainOp(transforms.TransformOp):
+class RemainOp(TransformOp):
     def __init__(self):
         super().__init__("%")
 
@@ -57,7 +60,7 @@ class RemainOp(transforms.TransformOp):
         raise Exception("Not implemented yet")
 
 
-class RoundOp(transforms.TransformOp):
+class RoundOp(TransformOp):
     def __init__(self):
         super().__init__('_', 1)
 
@@ -66,7 +69,7 @@ class RoundOp(transforms.TransformOp):
         return floor(a)
 
 
-class NegOp(transforms.TransformOp):
+class NegOp(TransformOp):
     def __init__(self):
         super().__init__("-", 1)
 
@@ -75,7 +78,7 @@ class NegOp(transforms.TransformOp):
         return -a
 
 
-class RegexOp(transforms.TransformOp):
+class RegexOp(TransformOp):
     def __init__(self):
         super().__init__("~=", 3)
 
@@ -88,7 +91,7 @@ class RegexOp(transforms.TransformOp):
         return sub(b, replacement, a)
 
 
-class FormatOp(transforms.TransformOp):
+class FormatOp(TransformOp):
     def __init__(self):
         super().__init__("~{}", 1)
 

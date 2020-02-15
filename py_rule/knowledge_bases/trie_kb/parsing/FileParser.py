@@ -6,10 +6,11 @@ import pyparsing as pp
 from pyparsing import pyparsing_common as ppc
 
 from py_rule.abstract.sentence import Sentence
-from py_rule.abstract.actions import ActionMacro
+from py_rule.abstract.action import ActionMacro
 from py_rule.abstract.rule import Rule
 from py_rule.typing.ex_types import TypeDefinition
 import py_rule.utils as utils
+
 from . import FactParser as FP
 from . import RuleParser as RP
 from . import ActionParser as AP

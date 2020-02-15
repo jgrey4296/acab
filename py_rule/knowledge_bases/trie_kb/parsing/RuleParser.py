@@ -1,7 +1,8 @@
 """ Trie-based parser to construct rules """
 import logging as root_logger
 import pyparsing as pp
-from py_rule.fact_trie.trie_rule import TrieRule
+from py_rule.knowledge_bases.trie_kb.trie_rule import TrieRule
+
 from . import FactParser as FP
 from . import QueryParser as QP
 from . import TransformParser as TP
