@@ -6,9 +6,10 @@ class Agenda:
     """
 
     def __init__(self):
-        return
+        self._type_signature = None
 
     # TODO: implement base interface
-    # call
-    # inputs constraints,
-    # output constraints
+
+    def __call__(self):
+        return
+
