@@ -1,16 +1,16 @@
 import unittest
 import logging
 from test_context import py_rule
-from py_rule.fact_trie.fact_base_trie import FactBaseTrie
+from py_rule.knowledge_bases.trie_kb.trie_knowledge_base import TrieKnowledgeBase
 from py_rule.abstract.contexts import Contexts
 
 
-class Trie_FactBase_Tests(unittest.TestCase):
+class Trie_Kb_Tests(unittest.TestCase):
     """ Unit test for basic Trie knowledge base functionality """
 
 
     def setUp(self):
-        self.trie = FactBaseTrie()
+        self.trie = TrieKnowledgeBase()
 
     def tearDown(self):
         self.trie = None
@@ -18,7 +18,7 @@ class Trie_FactBase_Tests(unittest.TestCase):
     def test_init(self):
         """ Check the trie object exists """
         self.assertIsNotNone(self.trie)
-        self.assertIsInstance(self.trie, FactBaseTrie)
+        self.assertIsInstance(self.trie, TrieKnowledgeBase)
 
     def test_assert(self):
         """ Check assertions work """

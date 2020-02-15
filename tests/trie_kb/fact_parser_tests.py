@@ -3,8 +3,8 @@ import logging
 import random
 import pyparsing as pp
 from test_context import py_rule
-import py_rule.fact_trie.parsing.FactParser as FP
-from py_rule.trie.nodes.trie_node import TrieNode
+import py_rule.knowledge_bases.trie_kb.parsing.FactParser as FP
+from py_rule.abstract.trie.nodes.trie_node import TrieNode
 from py_rule.abstract.sentence import Sentence
 import py_rule.utils as util
 

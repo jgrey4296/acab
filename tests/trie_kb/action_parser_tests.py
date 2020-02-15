@@ -1,11 +1,11 @@
 import unittest
 import logging
 from test_context import py_rule
-from py_rule.fact_trie.parsing import ActionParser as AP
-from py_rule.fact_trie.parsing import FactParser as FP
-from py_rule.abstract import actions
+from py_rule.knowledge_bases.trie_kb.parsing import ActionParser as AP
+from py_rule.knowledge_bases.trie_kb.parsing import FactParser as FP
+from py_rule.abstract import action
 
-class ActionBlah(actions.ActionOp):
+class ActionBlah(action.ActionOp):
     def __init__(self):
         super().__init__("blah")
 
@@ -26,35 +26,35 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
     #use testcase snippets
     def test_simple_action_parse(self):
         result = AP.parseString("+(20, 30, 40)")[0]
-        self.assertIsInstance(result, actions.Action)
+        self.assertIsInstance(result, action.Action)
         self.assertEqual(result._op._op_str, '+')
         self.assertEqual([x[-1]._value for x in result._values], [20, 30, 40])
 
     def test_custom_action_parse(self):
         result = AP.parseString("blah(20, 30, 40)")
         self.assertEqual(len(result), 1)
-        self.assertIsInstance(result[0], actions.Action)
+        self.assertIsInstance(result[0], action.Action)
         self.assertEqual(result[0]._op._op_str, "blah")
         self.assertEqual([x[-1]._value for x in result[0]._values], [20, 30, 40])
 
     def test_string_value(self):
         result = AP.parseString('+("blah bloo", "blee", "awef")')
         self.assertEqual(len(result), 1)
-        self.assertIsInstance(result[0], actions.Action)
+        self.assertIsInstance(result[0], action.Action)
         self.assertEqual(result[0]._op._op_str, "+")
         self.assertEqual([x[-1]._value for x in result[0]._values], ["blah bloo","blee","awef"])
 
     def test_actions_parse(self):
         result = AP.parseString('+(2), -(3), @(4)')
         self.assertEqual(len(result), 3)
-        self.assertTrue(all([isinstance(x, actions.Action) for x in result]))
+        self.assertTrue(all([isinstance(x, action.Action) for x in result]))
         for action, op in zip(result, ["+", "-", "@"]):
             self.assertEqual(action._op._op_str, op)
 
     def test_actions_fact_str(self):
         result = AP.parseString('+(a.b.c), -(a!b.d), +($x), +($x.a.b)')
         self.assertEqual(len(result), 4)
-        self.assertTrue(all([isinstance(x, actions.Action) for x in result]))
+        self.assertTrue(all([isinstance(x, action.Action) for x in result]))
 
     def test_action_str_equal(self):
         actions = ["+(2)", "-(3)", "@(4)"]

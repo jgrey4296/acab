@@ -1,10 +1,10 @@
 import unittest
 import logging
 from test_context import py_rule
-import py_rule.fact_trie.parsing.QueryParser as QP
+import py_rule.knowledge_bases.trie_kb.parsing.QueryParser as QP
 from py_rule.abstract.query import Query
 from py_rule.abstract.sentence import Sentence
-from py_rule.abstract.comparisons import Comparison, COMP, CompOp
+from py_rule.abstract.comparison import Comparison, CompOp
 import py_rule.utils as util
 from py_rule.utils import EXOP
 
