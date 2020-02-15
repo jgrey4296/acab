@@ -3,8 +3,8 @@
 """
 import logging as root_logger
 from .rule import Rule
-from . import actions as Actions
-from . import transforms as Transforms
+from .actions import Action
+from .transforms import Transform
 from py_rule import utils as util
 logging = root_logger.getLogger(__name__)
 
@@ -136,7 +136,7 @@ class EngineBase:
     def _run_transform(self, ctx, transform):
         """ Run modifications on the bound results of a query """
         assert(isinstance(ctx, dict))
-        assert(transform is None or isinstance(transform, Transforms.Transform))
+        assert(transform is None or isinstance(transform, Transform))
         chosen_ctx = ctx
         if transform is None:
             return chosen_ctx
