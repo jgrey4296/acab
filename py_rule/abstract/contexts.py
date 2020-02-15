@@ -65,7 +65,7 @@ class Contexts:
         """ Remove all contexts, as none are suitable """
         self._matches = []
 
-    def verifyMatches(self, targetWMEMatch):
+    def verify_matches(self, targetWMEMatch):
         """ Ensure all alternatives have bound a certain number
             of wmes (ie: for each clause in query there needs to be a wme) """
         self._matches = [x for x in self._matches if len(x[0]) == targetWMEMatch]

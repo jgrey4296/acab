@@ -33,7 +33,7 @@ class Query:
             newClauses.append(x.expand_bindings(bindings))
         return Query(newClauses)
 
-    def splitClauses(self):
+    def split_clauses(self):
         """ Separate out the clauses of the query into positive and negative clauses """
         pos = []
         neg = []

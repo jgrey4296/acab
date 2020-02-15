@@ -48,7 +48,7 @@ class Engine:
             raise Exception("Duplicate action: {}".format(name))
         self._custom_actions[name] = func
 
-    def registerRules(self, s):
+    def register_rules(self, s):
         """ Register passed in rule specifications """
         # pylint: disable=unused-argument,no-self-use
         raise Exception("Base Engine Stub")
