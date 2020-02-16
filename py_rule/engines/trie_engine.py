@@ -10,8 +10,8 @@ from random import shuffle
 from py_rule.abstract import actions, contexts, query, transforms
 from py_rule.abstract.engine import Engine
 from py_rule.abstract.sentence import Sentence
-from py_rule.fact_trie.fact_base_trie import FactBaseTrie
-from py_rule.fact_trie.nodes.fact_node import FactNode
+from py_rule.knowledge_bases.trie_kb.trie_knowledge_base import TrieKnowledgeBase
+from py_rule.knowledge_bases.trie_kb.nodes.fact_node import FactNode
 import py_rule.utils as util
 
 from py_rule.fact_trie.parsing import ActionParser as AP
@@ -73,30 +73,6 @@ class TrieEngine(Engine):
         return output
 
     # todo: be able to assert retract or query from tries instead of strings
-    def add(self, s):
-        """ Assert Data into the knowledge base """
-        if isinstance(s, str):
-            self._knowledge_base.assertS(s)
-        else:
-            assert(isinstance(s, Sentence))
-            self._knowledge_base.assert_sentence(s)
-
-    def retract(self, s):
-        """ Remove information from the knowledge base """
-        if isinstance(s, str):
-            self._knowledge_base.retractS(s)
-        else:
-            assert(isinstance(s, Sentence))
-            self._knowledge_base.retract_sentence(s)
-
-    def query(self, s):
-        """ As a question of the knowledge base """
-        if isinstance(s, str):
-            return self._knowledge_base.queryS(s)
-        else:
-            assert(isinstance(s, query.Query))
-            return self._knowledge_base.query_sentence(s)
-
     def register_rules(self, s):
         """ Add a Rule to the engine """
         if isinstance(s, str):
