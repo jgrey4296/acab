@@ -3,9 +3,9 @@ Defines a Sentence of Fact Words, which can be a query, and
 have fallback bindings
 """
 from py_rule.utils import BIND_S, OPERATOR_S
+from .value import PyRuleValue
 
-
-class Sentence:
+class Sentence(PyRuleValue):
     """
     The Basic Sentence Class: Essentially a List of Words
     """

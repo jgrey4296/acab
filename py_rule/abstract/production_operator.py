@@ -2,7 +2,9 @@
 The Base Operator Definition
 Used for Comparison, Transform, and Performance Operators
 """
-class ProductionOperator:
+from .value import PyRuleValue
+
+class ProductionOperator(PyRuleValue):
     """ The Base Operator Class """
 
     def __init__(self):

@@ -1,8 +1,10 @@
 """ Rule:  Stores the representation of an entire rule for an engine.
     Holds a query of clauses, bindings are passed to a transform,
-    the results are passed to the action list """
+    the results are passed to the action list
+"""
 import logging as root_logger
 import py_rule.utils as util
+from .value import PyRuleValue
 from .transform import Transform
 from .action import Action, ActionMacroUse
 from .sentence import Sentence
@@ -11,7 +13,7 @@ from .query import Query
 logging = root_logger.getLogger(__name__)
 
 
-class Rule:
+class Rule(PyRuleValue):
     """ A Rule holds a query (of N Clauses), a set of transforms,
     and a set of actions. It can be tagged with attributes.
     """
@@ -86,7 +88,7 @@ class Rule:
     def has_tag(self, t):
         return t in self._tags
 
-    def is_coherent(self):  # raises an Exception othewise
+    def is_coherent(self):  # can raise an Exception from verify_op
         """ Verify that the outputs of the query match the
         inputs of the transform, match the inputs of the actions """
         if self._transform is not None:

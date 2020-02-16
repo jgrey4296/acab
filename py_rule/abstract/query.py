@@ -1,8 +1,8 @@
 """ Query: The Datastructure to hold a question to pose to the knowledgebase """
 from .sentence import Sentence
+from .value import PyRuleValue
 
-
-class Query:
+class Query(PyRuleValue):
     """ A Query for the Trie Knowledge base """
 
     def __init__(self, clauses):

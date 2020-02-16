@@ -1,9 +1,20 @@
 """ The Base Node Class the rest of PyRule extends """
+from .value import PyRuleValue
+from fractions import Fraction
+from re import Pattern
 
 class PyRuleNode
     """ The Abstract Node Class """
 
     def __init__(self, value, data=None):
+        assert(value is None or
+               isinstance(value, (int,
+                                  float,
+                                  bool,
+                                  str,
+                                  Fraction,
+                                  Pattern,
+                                  PyRuleValue)))
         self._value = value
         self._children = {}
         self._data = {}
