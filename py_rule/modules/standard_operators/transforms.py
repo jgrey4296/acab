@@ -102,14 +102,3 @@ class FormatOp(TransformOp):
         return a.format(**data)
 
 
-# Construct the operators:
-AddOp()
-SubOp()
-MulOp()
-DivOp()
-RandOp()
-RemainOp()
-RoundOp()
-NegOp()
-RegexOp()
-FormatOp()

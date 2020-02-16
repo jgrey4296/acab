@@ -55,11 +55,3 @@ class ELEM(CompOp):
     def __call__(self, a, b):
         return a in b
 
-
-# Actually Create the Operators:
-EQ()
-GT()
-LT()
-NEQ()
-RegMatch()
-ELEM()

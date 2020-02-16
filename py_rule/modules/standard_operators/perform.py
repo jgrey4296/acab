@@ -57,8 +57,3 @@ class ActionCustom(ActionOp):
         engine.call_registered_function(params)
 
 
-ActionAdd()
-ActionRetract()
-ActionPrint()
-ActionCustom()
-
