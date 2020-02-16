@@ -33,9 +33,14 @@ def addRebind(toks):
 SUB = s(pp.Literal('-'))
 
 #Transform Operators
-BINARY_TRANS_OP = pp.Or([pp.Literal(k) for k,v in TransformOp.op_list.items() if 2 in v])
-UNARY_TRANS_OP = pp.Or([pp.Literal(k) for k,v in TransformOp.op_list.items() if 1 in v])
-TERNARY_TRANS_OP = pp.Or([pp.Literal(k) for k,v in TransformOp.op_list.items() if 3 in v])
+BINARY_TRANS_OP = pp.Forward()
+UNARY_TRANS_OP = pp.Forward()
+TERNARY_TRANS_OP = pp.Forward()
+
+def build_operators():
+    BINARY_TRANS_OP << pp.Or([pp.Literal(k) for k,v in TransformOp.op_list.items() if 2 in v])
+    UNARY_TRANS_OP << pp.Or([pp.Literal(k) for k,v in TransformOp.op_list.items() if 1 in v])
+    TERNARY_TRANS_OP << pp.Or([pp.Literal(k) for k,v in TransformOp.op_list.items() if 3 in v])
 
 rebind = ARROW + VALBIND
 

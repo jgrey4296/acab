@@ -7,7 +7,6 @@ from py_rule.abstract import action as Actions
 from .FactParser import COMMA, param_fact_string, end, COLON, sLn, N, NG, PARAM_CORE, VALBIND
 from .QueryParser import NOT, OPAR, CPAR
 
-ACTION_STRS = [x for x in Actions.ActionOp.op_list.keys()]
 
 logging = root_logger.getLogger(__name__)
 pp.ParserElement.setDefaultWhitespaceChars(' \t\r')
@@ -42,7 +41,11 @@ def build_definition(toks):
 
 #Action operators:
 CUSTOM = pp.Word(pp.alphas)
-operator = pp.Or([pp.Literal(x) for x in ACTION_STRS] + [CUSTOM])
+operator = pp.Forward()
+
+def build_operators():
+    ACTION_STRS = [x for x in Actions.ActionOp.op_list.keys()]
+    operator << pp.Or([pp.Literal(x) for x in ACTION_STRS] + [CUSTOM])
 
 ACT_MACRO = s(pp.Literal('#')) + CUSTOM
 ACT_MACRO.setParseAction(lambda t: t[0])

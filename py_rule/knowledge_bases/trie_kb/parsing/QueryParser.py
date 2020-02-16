@@ -13,7 +13,6 @@ logging = root_logger.getLogger(__name__)
 NOT_IDEN = 'NOT'
 COMP_IDEN = 'comparison'
 RULEBIND_IDEN = 'rulebind'
-OP_STRS = [x for x in C.CompOp.op_list.keys()]
 
 
 def build_constraint_list(toks):
@@ -44,7 +43,11 @@ OPAR = s(pp.Literal('('))
 CPAR = s(pp.Literal(')'))
 QMARK = s(pp.Literal('?'))
 
-COMP_OP = pp.Or([pp.Literal(x) for x in OP_STRS])
+COMP_OP = pp.Forward()
+
+def build_operators():
+    OP_STRS = [x for x in C.CompOp.op_list.keys()]
+    COMP_OP << pp.Or([pp.Literal(x) for x in OP_STRS])
 
 NOT = N(NOT_IDEN, pp.Literal('~'))
 SLASH = s(pp.Literal('/'))
