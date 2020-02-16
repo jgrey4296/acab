@@ -2,7 +2,7 @@
 Actions: Describes the *ENGINE AGNOSTIC* basic actions that a knowledgebase can
 perform, along with associated enums, and IR data structures
 """
-from .operator import Operator
+from .production_operator import ProductionOperator
 from py_rule import utils as util
 from py_rule.abstract.sentence import Sentence
 import logging as root_logger
@@ -11,7 +11,7 @@ logging = root_logger.getLogger(__name__)
 
 
 # Action function template:
-class ActionOp(Operator):
+class ActionOp(ProductionOperator):
     """ Superclass of all Actions.
     Instantiation of subclasses auto-registers
     the action into ActionOp.op_list with an operator string

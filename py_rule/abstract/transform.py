@@ -1,12 +1,12 @@
 """ Simple Transform functions to be used in rules """
 import logging as root_logger
-from .operator import Operator
+from .production_operator import ProductionOperator
 from .node import Node
 
 logging = root_logger.getLogger(__name__)
 
 
-class TransformOp(Operator):
+class TransformOp(ProductionOperator):
     op_list = {}
     # TODO: populate this
     enum_list = None

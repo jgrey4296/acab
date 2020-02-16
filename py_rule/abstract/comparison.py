@@ -1,11 +1,11 @@
 """ Simple comparison functions to be used in rules """
 import logging as root_logger
-from .operator import Operator
+from .production_operator import ProductionOperator
 from py_rule.utils import BIND_S
 logging = root_logger.getLogger(__name__)
 
 
-class CompOp(Operator):
+class CompOp(ProductionOperator):
     """ Superclass for Comparisons.
     Instantiation of subclasses auto-registers
     the comparison into CompOp.op_list with an operator string
