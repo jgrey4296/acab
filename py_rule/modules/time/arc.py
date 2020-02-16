@@ -1,14 +1,14 @@
 """
 Arcs express segments of rational time
 """
-
+from py_rule.abstract.value import PyRuleValue
 from fractions import Fraction
 from .utils import time_str
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
 
-class Arc:
+class Arc(PyRuleValue):
     """ A segment of rational time """
 
     def __init__(self, a, b):

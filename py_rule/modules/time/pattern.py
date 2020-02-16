@@ -7,6 +7,7 @@ from functools import reduce
 from math import floor
 from random import Random
 
+from py_rule.abstract.value import PyRuleValue
 from py_rule.modules.time.arc import Arc
 from py_rule.modules.time.event import Event
 
@@ -16,7 +17,7 @@ from .utils import TIME_T, Time, f_gcd
 logging = root_logger.getLogger(__name__)
 
 # TODO: binary tree / beachline for finding events?
-class Pattern:
+class Pattern(PyRuleValue):
     """ A Collection of Events """
     def __init__(self, a, vals=None, data=None, bindings=None):
         if vals is None:
