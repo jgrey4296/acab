@@ -1,11 +1,11 @@
-import py_rule.utils as utils
-import py_rule.typing.util as U
-from py_rule.trie.trie import Trie
-from py_rule.typing.ex_types import TypeDefinition
-from py_rule.trie.nodes.trie_node import TrieNode
 from .type_assignment_node import TypeAssignmentTrieNode
+from py_rule.abstract.trie.nodes.trie_node import TrieNode
+from py_rule.abstract.trie.trie import Trie
 from py_rule.typing import type_exceptions as te
+from py_rule.typing.ex_types import TypeDefinition
 import logging as root_logger
+import py_rule.typing.util as U
+import py_rule.utils as utils
 logging = root_logger.getLogger(__name__)
 
 # Log messages to use, because they are long:
@@ -19,6 +19,7 @@ log_messages['mult_child'] = "Current Def has multiple children, checking for co
 
 
 class TypeDefTrieNode(TrieNode):
+    """ A Node describing a type definition """
 
     def __init__(self, value):
         logging.debug("TypeDefTrieNode: init: {}".format(value))
@@ -62,7 +63,7 @@ class TypeDefTrieNode(TrieNode):
         type_var_lookup = self._generate_polytype_bindings(usage_trie)
         # Loop over all elements of the defined type
         newly_typed = []
-        # The queue is a tuple of the definition node, and its corresponding declaration nodes
+        # The queue holds tuples of the definition node, and its corresponding declaration nodes
         queue = [(self._typedef_trie._root, [usage_trie])]
         while queue:
             curr_def, curr_usage_set = queue.pop(0)

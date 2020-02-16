@@ -1,14 +1,59 @@
-import py_rule.utils as utils
-from py_rule.abstract.trie.trie import Trie
-from py_rule.abstract.sentence import Sentence
+"""
+An Entry point for type checking
+
+Type checking is a triple of tries: (type_definitions, type_assignments, type_variables)
+
+Definitions are structured polytypes.
+Assignments start untyped, and are gradually refined.
+Variables connect variables in the assignments to definitions.
+
+The Tries use nodes of TypeDefTrieNode, TypeAssignmentTrieNode, and VarTypeTrieNode.
+
+The values of the trie nodes are pyrule.abstract.values, subclassed as Types.
+They are TypeDefinitions, and TypeInstantiations.
+
+
+When a TypeChecker is called with (Definitions, Rules, Assertions),
+it adds the definitions, add the assertions,
+then adds each rule, treating each rule as a separate context.
+
+Definitions are located by their path (eg: type.test )
+which holds the TypeDefintion (which contains its structure and vars)
+(eg: { type.test.name!$x :: string, type.test.age!$y :: int })
+
+type_assignments is the main 'work' trie, holding all sentences.
+When an assertion/declaration is added, it adds the node then updates
+the node to connect any variables in the sentence with variables
+in the type_variable trie.
+(eg: a.thing.$x,  a.different.thing :: type.test)
+
+Variables connect different locations of the assignment trie together
+(eg: a.thing.$x, another.thing.$x will share the same var node: $x)
+
+
+When validate is called:
+equivalent pathed nodes are merged,
+then known types are applied everywhere they can be
+the linked type definition then DFS's 
+ensure it matches the definition.
+and any newly typed nodes are then ready to be used in the next iteration
+
+
+
+If validate succeeds, it returns True. If it Fails, it raises an Exception
+
+"""
+from .pyrule_type_definition import TypeDefinition
+from .nodes.type_assignment_node import TypeAssignmentTrieNode
 from .nodes.typedef_node import TypeDefTrieNode
 from .nodes.var_type_node import VarTypeTrieNode
-from .nodes.type_assignment_node import TypeAssignmentTrieNode
-from .ex_types import TypeDefinition
+from py_rule.abstract.sentence import Sentence
+from py_rule.abstract.trie.trie import Trie
 import py_rule.typing.type_exceptions as te
 import py_rule.typing.util as U
-
+import py_rule.utils as utils
 import logging as root_logger
+
 logging = root_logger.getLogger(__name__)
 
 
@@ -135,6 +180,7 @@ class TypeChecker:
                                u_data=self._variables)
 
     def add_rule(self, value):
+        # TODO: needs to be finished
         for c in value._query._clauses:
             # add the conditions
             continue

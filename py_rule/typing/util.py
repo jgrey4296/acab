@@ -1,5 +1,4 @@
 import py_rule.utils as utils
-from py_rule.trie.nodes.trie_node import TrieNode
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
