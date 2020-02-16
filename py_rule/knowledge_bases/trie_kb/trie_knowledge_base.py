@@ -11,6 +11,8 @@ from py_rule.utils import EXOP, META_OP
 from . import matching
 from .parsing import FactParser as FP
 from .parsing import QueryParser as QP
+from .parsing import ActionParser as AP
+from .parsing import TransformParser as TP
 logging = root_logger.getLogger(__name__)
 
 
@@ -19,33 +21,65 @@ class TrieKnowledgeBase(KnowledgeBase):
 
     def __init__(self, init=None):
         """ init is a string of assertions to start the fact base with """
-        super().__init__(node_type=FactNode)
-        self._last_node = self._root
+        self._internal_trie = Trie(FactNode)
+        self._last_node = self._internal_trie._root
         if init is not None:
-            self.assertS(init)
+            self.add(init)
 
     def __eq__(self, other):
-        assert(isinstance(other, Trie))
-        return self._root == other._root
+        if isinstance(other, TrieKnowledgeBase):
+            return self._internal_trie._root == other._internal_trie._root
+        elif isinstance(other, Trie):
+            return self._internal_trie._root == other._root
+        else:
+            raise Exception("Incorrect Eq arg: {}".format(type(other)))
 
-    def assertS(self, s):
+    def add(self, s):
         """ Assert multiple facts from a single string """
-        parsed = FP.parseString(s)
-        for x in parsed:
-            self.assert_sentence(x)
+        if isinstance(s, str):
+            parsed = FP.parseString(s)
+            for x in parsed:
+                self._assert_sentence(x)
+        elif isinstance(s, Sentence):
+            self._assert_sentence(s)
+        else:
+            raise Exception("Unrecognised addition target: {}".format(type(s)))
 
-    def retractS(self, s):
+    def retract(self, s):
         """ Retract multiple facts from a single string """
-        parsed = FP.parseString(s)
-        for x in parsed:
-            self.retract_sentence(x)
+        if isinstance(s, str):
+            parsed = FP.parseString(s)
+            for x in parsed:
+                self._retract_sentence(x)
+        elif isinstance(s, Sentence):
+            self._retract_sentence(s)
+        else:
+            raise Exception("Unrecognised retract target: {}".format(type(s)))
 
-    def queryS(self, s):
+    def query(self, s):
         """ Query a string """
-        query = QP.parseString(s)
-        return self.query_sentence(query)
+        if isinstance(s, str):
+            query = QP.parseString(s)
+            return self._query_sentence(query)
+        elif isinstance(s, Sentence):
+            return self._query_sentence(s)
+        else:
+            raise Exception("Unrecognised query target: {}".format(type(s)))
 
-    def assert_sentence(self, sen):
+
+    def _insert_into_values_parser(self, parser):
+        FP.OTHER_VALS << parser
+
+    def _build_operator_parser(self):
+        """ Trigger the building of operators,
+        *after* modules have been loaded
+        """
+        AP.build_operators()
+        QP.build_operators()
+        TP.build_operators()
+
+    # Internal Methods:
+    def _assert_sentence(self, sen):
         """ Assert a sentence of chained facts """
         assert(isinstance(sen, Sentence))
         self._clear_last_node()
@@ -54,7 +88,7 @@ class TrieKnowledgeBase(KnowledgeBase):
 
         self._last_node._set_dirty_chain()
 
-    def retract_sentence(self, sen):
+    def _retract_sentence(self, sen):
         """ Retract everything after the end of a sentence """
         assert(isinstance(sen, Sentence))
         # go down to the child, and remove it
@@ -69,7 +103,7 @@ class TrieKnowledgeBase(KnowledgeBase):
 
         self._last_node.delete_node(lastInList)
 
-    def query_sentence(self, query):
+    def _query_sentence(self, query):
         """ Query a TrieQuery instance """
         assert(isinstance(query, Query))
         self._clear_last_node()
@@ -81,7 +115,7 @@ class TrieKnowledgeBase(KnowledgeBase):
         """ Reset internal memory to point to the root.
         currently only used for retraction
         """
-        self._last_node = self._root
+        self._last_node = self._internal_trie._root
 
     def _internal_query(self, query, ctxs):
         """ Go down the trie, running each test as necessary
@@ -92,7 +126,7 @@ class TrieKnowledgeBase(KnowledgeBase):
 
         logging.debug("Testing clauses: {} {}".format(len(pos), len(neg)))
         for clause in pos:
-            reset_start_contexts = contexts.set_all_alts(self._root)
+            reset_start_contexts = contexts.set_all_alts(self._internal_trie._root)
             (updated_contexts, failures) = self._match_clause(clause,
                                                               reset_start_contexts)
             if bool(clause._fallback):
@@ -100,7 +134,7 @@ class TrieKnowledgeBase(KnowledgeBase):
                 for d in failures:
                     for bindTarget, val in clause._fallback:
                         d[bindTarget.value] = val
-                updated_contexts._matches += [(x, self._root) for x in failures]
+                updated_contexts._matches += [(x, self._internal_trie._root) for x in failures]
 
             if bool(updated_contexts) is False:
                 logging.debug("A positive clause is false")
@@ -109,7 +143,7 @@ class TrieKnowledgeBase(KnowledgeBase):
             contexts = updated_contexts
 
         for negClause in neg:
-            reset_start_contexts = contexts.set_all_alts(self._root)
+            reset_start_contexts = contexts.set_all_alts(self._internal_trie._root)
             result, failures = self._match_clause(negClause, reset_start_contexts)
             logging.debug("neg result: {}".format(str(result)))
             if bool(result) is True:
