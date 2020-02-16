@@ -9,11 +9,7 @@ class TrieNode(PyRuleNode):
         return TrieNode(utils.ROOT_S)
 
     def __init__(self, value, data=None):
-        self._value = value
-        self._children = {}
-        self._data = {}
-        if data:
-            self._data.update(data)
+        super().__init__(value, data)
 
     def __str__(self):
         """ Usable output """
@@ -45,60 +41,6 @@ class TrieNode(PyRuleNode):
     def __repr__(self):
         """ Unambiguous printing """
         return "TrieNode({})".format(str(self))
-
-    def __hash__(self):
-        return hash(str(self))
-
-    def __len__(self):
-        return len(self._children)
-
-    def __bool__(self):
-        return bool(self._children)
-
-    def __contains__(self, v):
-        return self.has_child(v)
-
-    def __iter__(self):
-        return iter(self._children.values())
-
-    def value_string(self):
-        if isinstance(self._value, TrieNode):
-            return self._value.value_string()
-        else:
-            return str(self._value)
-
-    def set_data(self, data):
-        if data is not None:
-            self._data.update(data)
-
-    def add_child(self, node):
-        self._children[node.value_string()] = node
-        return node
-
-    def get_child(self, node):
-        if isinstance(node, str):
-            return self._children[node]
-        else:
-            return self._children[node.value_string()]
-
-    def has_child(self, node):
-        if isinstance(node, str):
-            return node in self._children
-        else:
-            return node.value_string() in self._children
-
-    def remove_child(self, node):
-        if node in self:
-            if isinstance(node, str):
-                del self._children[node]
-            else:
-                del self._children[node.value_string()]
-            return True
-
-        return False
-
-    def clear_children(self):
-        self._children = {}
 
     def opless_print(self):
         val = str(self._value)
