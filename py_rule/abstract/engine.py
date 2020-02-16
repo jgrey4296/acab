@@ -5,6 +5,8 @@ import logging as root_logger
 from .rule import Rule
 from .action import Action
 from .transform import Transform
+from .knowledge_base import KnowledgeBase
+from py_rule.typing.type_checker import TypeChecker
 from py_rule import utils as util
 logging = root_logger.getLogger(__name__)
 
@@ -12,19 +14,26 @@ logging = root_logger.getLogger(__name__)
 class Engine:
     """ The Abstract class of a production system engine. """
 
-    def __init__(self, kb_constructor, path=None, init=None):
+    def __init__(self, kb_constructor, modules=None, path=None, init=None):
+        assert(kb_constructor in KnowledgeBase.__subclasses__())
+        self.__kb_constructor = kb_constructor
+
         self._knowledge_base = kb_constructor(init)
-        # rules categorised into tag sets?
-        self._rules = {}
-        self._policies = {}
-        self._layers = []
+        self._type_checker = TypeChecker()
+
         self._proposed_actions = []
         # to be updated with printed representations of the kb state after each action
         self._prior_states = []
         # named recall states of past kb states
-        self._recall_states = []
+        self._recall_states = {}
         # Registered custom actions
         self._custom_actions = {}
+
+        if modules is not None:
+            self._knowledge_base.add_modules(modules)
+
+        self._knowledge_base.build_operators()
+
         if path is None:
             logging.info("Not loading any files for the knowledge base")
         elif isinstance(path, list):
@@ -32,6 +41,12 @@ class Engine:
                 self.load_file(x)
         else:
             self.load_file(path)
+
+        # TODO : add definitions to type checker
+        # TODO : add type classes to type checker
+        # TODO : add assertions to type checker
+        # TODO : add rules to type checker
+        # TODO : type_checker validate
 
     #Initialisation:
     def load_file(self, filename):
@@ -48,21 +63,20 @@ class Engine:
             raise Exception("Duplicate action: {}".format(name))
         self._custom_actions[name] = func
 
-    def register_rules(self, s):
-        """ Register passed in rule specifications """
-        # pylint: disable=unused-argument,no-self-use
-        raise Exception("Base Engine Stub")
-
     #Base Actions
     def add(self, s):
         """ Assert a new fact into the engine """
         # pylint: disable=unused-argument,no-self-use
-        raise Exception("Base Engine Stub")
+        self._knowledge_base.add(s)
 
     def retract(self, s):
         """ Remove a fact from the engine """
         # pylint: disable=unused-argument,no-self-use
-        raise Exception("Base Engine Stub")
+        self._knowledge_base.retract(s)
+
+    def query(self, s):
+        """ As a question of the knowledge base """
+        return self._knowledge_base.query(s)
 
     def clear_proposed_actions(self):
         """ Clear the list of actions proposed by rules, but which haven't been
@@ -86,10 +100,6 @@ class Engine:
         self._prior_states.append((str(self._knowledge_base), data))
 
     #Utility
-    def __len__(self):
-        """ The number of rules in the engine """
-        return len(self._rules)
-
     def _run_rules(self, rule_locations=None, rule_tags=None, policy=None):
         """ Run all, or some, rules of the engine, if provided a policy,
         propose actions and select from the proposals """
