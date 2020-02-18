@@ -3,6 +3,7 @@ import logging
 from test_context import py_rule
 from py_rule.knowledge_bases.trie_kb.parsing import ActionParser as AP
 from py_rule.knowledge_bases.trie_kb.parsing import FactParser as FP
+from py_rule.modules.standard_operators.operator_module import OperatorSpec
 from py_rule.abstract import action
 
 class ActionBlah(action.ActionOp):
@@ -15,6 +16,12 @@ class ActionBlah(action.ActionOp):
 ActionBlah()
 
 class Trie_Action_Parser_Tests(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        os = OperatorSpec()
+        os._construct_action_ops()
+        AP.build_operators()
 
     def setUp(self):
         return 1

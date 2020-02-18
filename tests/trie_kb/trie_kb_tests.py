@@ -2,15 +2,24 @@ import unittest
 import logging
 from test_context import py_rule
 from py_rule.knowledge_bases.trie_kb.trie_knowledge_base import TrieKnowledgeBase
+from py_rule.modules.standard_operators.operator_module import OperatorSpec
 from py_rule.abstract.contexts import Contexts
 
 
 class Trie_Kb_Tests(unittest.TestCase):
     """ Unit test for basic Trie knowledge base functionality """
 
+    @classmethod
+    def setUpClass(cls):
+        os = OperatorSpec()
+        os._construct_comp_ops()
+        os._construct_action_ops()
+        os._construct_transform_ops()
 
     def setUp(self):
         self.trie = TrieKnowledgeBase()
+        self.trie._build_operator_parser()
+
 
     def tearDown(self):
         self.trie = None
@@ -85,7 +94,7 @@ class Trie_Kb_Tests(unittest.TestCase):
     def test_multi_assert_parse(self):
         """ Check multiple facts can be asserted in one call """
         self.trie.add('a.b.c, d.e.f, g.e.q')
-        self.assertEqual(len(self.trie._root), 3)
+        self.assertEqual(len(self.trie._internal_trie._root), 3)
 
     def test_bind_filter(self):
         """ Check that only matching binds pass """
@@ -181,7 +190,7 @@ class Trie_Kb_Tests(unittest.TestCase):
 
     def test_factbase_to_strings(self):
         self.trie.add('a.b.c')
-        self.assertEqual(self.trie.print_trie(), 'a.b.c')
+        self.assertEqual(str(self.trie), 'a.b.c')
 
     def test_factbase_to_multi_strings(self):
         self.trie.add('a.b.c, q.e.r, t.y!u')

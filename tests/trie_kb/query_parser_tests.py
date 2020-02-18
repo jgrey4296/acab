@@ -5,10 +5,17 @@ import py_rule.knowledge_bases.trie_kb.parsing.QueryParser as QP
 from py_rule.abstract.query import Query
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.comparison import Comparison, CompOp
+from py_rule.modules.standard_operators.operator_module import OperatorSpec
 import py_rule.utils as util
 from py_rule.utils import EXOP
 
 class Trie_Query_Parser_Tests(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        os = OperatorSpec()
+        os._construct_comp_ops()
+        QP.build_operators()
 
     def setUp(self):
         return 1

@@ -3,10 +3,20 @@ import logging
 from test_context import py_rule
 from py_rule.knowledge_bases.trie_kb.parsing import RuleParser as RP
 from py_rule.knowledge_bases.trie_kb.parsing import FactParser as FP
+from py_rule.modules.standard_operators.operator_module import OperatorSpec
 from py_rule.abstract.rule import Rule
 from py_rule.abstract.query import Query
 
 class Trie_Rule_Parser_Tests(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        os = OperatorSpec()
+        os._construct_comp_ops()
+        os._construct_action_ops()
+        os._construct_transform_ops()
+        RP.build_operators()
+
 
     def setUp(self):
             return 1
