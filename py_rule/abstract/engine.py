@@ -32,7 +32,7 @@ class Engine:
         if modules is not None:
             self._knowledge_base.add_modules(modules)
 
-        self._knowledge_base.build_operators()
+        self._knowledge_base.build_operator_parser()
 
         if path is None:
             logging.info("Not loading any files for the knowledge base")
