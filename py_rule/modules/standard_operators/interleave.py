@@ -1,9 +1,9 @@
 """
 The Interleave Operator definition
 """
-from pyrule.abstract.operator import Operator
+from py_rule.abstract.production_operator import ProductionOperator
 
-class InterleaveOperator(Operator):
+class InterleaveOperator(ProductionOperator):
     """  """
 
     def __init__(self):

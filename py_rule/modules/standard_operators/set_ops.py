@@ -1,10 +1,10 @@
 """
 Definitions of Set Operations
 """
-from pyrule.abstract.operator import Operator
+from py_rule.abstract.production_operator import ProductionOperator
 
 
-class SetOperator(Operator):
+class SetOperator(ProductionOperator):
     """  """
 
     def __init__(self):

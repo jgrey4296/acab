@@ -1,4 +1,4 @@
-from pyrule.abstract.node import PyRuleNode
+from py_rule.abstract.node import PyRuleNode
 import py_rule.utils as utils
 
 

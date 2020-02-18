@@ -7,7 +7,7 @@ import pyparsing as pp
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.trie.nodes.trie_node import TrieNode
 from py_rule.knowledge_bases.trie_kb.nodes.fact_node import FactNode
-from py_rule.typing.ex_types import MonoTypeVar
+from py_rule.typing.type_instance import TypeInstance
 from py_rule.utils import EXOP, TYPE_DEC_S, BIND_S, OPERATOR_S, VALUE_TYPE_S, VALUE_S, NAME_S, STRING_S, REGEX_S
 
 #UTILITIES

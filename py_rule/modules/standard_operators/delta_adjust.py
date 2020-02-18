@@ -1,9 +1,9 @@
 """
 Definition for the Weight Update Delta Operator
 """
-from pyrule.abstract.operator import Operator
+from py_rule.abstract.production_operator import ProductionOperator
 
-class DeltaOperator(Operator):
+class DeltaOperator(ProductionOperator):
     """  """
 
     def __init__(self):

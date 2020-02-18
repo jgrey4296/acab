@@ -1,9 +1,9 @@
 """
 Definition for the Causal Do Operator
 """
-from pyrule.abstract.operator import Operator
+from py_rule.abstract.production_operator import ProductionOperator
 
-class DoOperator(Operator):
+class DoOperator(ProductionOperator):
     """  """
 
     def __init__(self):

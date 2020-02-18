@@ -2,7 +2,7 @@
 Definitions of initial Comparison operators
 """
 from enum import Enum
-from pyrule.abstract.comparison import CompOp
+from py_rule.abstract.comparison import CompOp
 import re
 
 COMP = Enum('Comp_ops', 'LT GT NE EQ RE')
