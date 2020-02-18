@@ -21,6 +21,7 @@ class TrieKnowledgeBase(KnowledgeBase):
 
     def __init__(self, init=None):
         """ init is a string of assertions to start the fact base with """
+        super().__init__()
         self._internal_trie = Trie(FactNode)
         self._last_node = self._internal_trie._root
         if init is not None:
