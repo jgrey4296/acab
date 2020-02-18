@@ -2,10 +2,11 @@ import unittest
 import logging
 from test_context import py_rule
 from py_rule.typing.type_checker import TypeChecker
-from py_rule.typing.ex_types import TypeDefinition, MonoTypeVar
+from py_rule.typing.type_definition import TypeDefinition
+from py_rule.typing.type_instance import TypeInstance
 from py_rule.abstract.sentence import Sentence
-from py_rule.trie.nodes.trie_node import TrieNode
-import py_rule.typing.type_exceptions as te
+from py_rule.abstract.trie.nodes.trie_node import TrieNode
+import py_rule.error.type_exceptions as te
 import py_rule.utils as utils
 
 class TypingTests(unittest.TestCase):
@@ -66,7 +67,7 @@ class TypingTests(unittest.TestCase):
         self.assertFalse(tc._get_known_typed_nodes())
         sen = Sentence([TrieNode(x) for x in ['a','b']])
         sen[-1]._data[utils.BIND_S] = True
-        sen[-1]._data[utils.TYPE_DEC_S] = MonoTypeVar("a", ["a"])
+        sen[-1]._data[utils.TYPE_DEC_S] = TypeInstance("a", ["a"])
         tc.add_assertion(sen)
         self.assertEqual(len(tc._get_known_typed_nodes()), 1)
         sen2 = Sentence([TrieNode(x) for x in ['a','c']])
@@ -106,7 +107,7 @@ class TypingTests(unittest.TestCase):
         tc.add_definition(TypeDefinition("a", ["a"], [], []))
         sen1 = Sentence([TrieNode(x) for x in ["a","b"]])
         sen1[-1]._data[utils.BIND_S] = True
-        sen1[-1]._data[utils.TYPE_DEC_S] = MonoTypeVar("a", ["a"])
+        sen1[-1]._data[utils.TYPE_DEC_S] = TypeInstance("a", ["a"])
         tc.add_assertion(sen1)
         sen2 = Sentence([TrieNode(x) for x in ["a","c"]])
         sen2[-1]._data[utils.BIND_S] = True
@@ -128,11 +129,11 @@ class TypingTests(unittest.TestCase):
         tc.add_definition(TypeDefinition("a", ["a"], [], []))
         sen1 = Sentence([TrieNode(x) for x in ["a","b"]])
         sen1[-1]._data[utils.BIND_S] = True
-        sen1[-1]._data[utils.TYPE_DEC_S] = MonoTypeVar("a", ["a"])
+        sen1[-1]._data[utils.TYPE_DEC_S] = TypeInstance("a", ["a"])
         tc.add_assertion(sen1)
         sen2 = Sentence([TrieNode(x) for x in ["a","c"]])
         sen2[-1]._data[utils.BIND_S] = True
-        sen2[-1]._data[utils.TYPE_DEC_S] = MonoTypeVar("b", ["b"])
+        sen2[-1]._data[utils.TYPE_DEC_S] = TypeInstance("b", ["b"])
         tc.add_assertion(sen2)
 
         with self.assertRaises(te.TypeConflictException):
@@ -143,7 +144,7 @@ class TypingTests(unittest.TestCase):
         tc = TypeChecker()
         sen1 = Sentence([TrieNode(x) for x in ["a","b"]])
         sen1[-1]._data[utils.BIND_S] = True
-        sen1[-1]._data[utils.TYPE_DEC_S] = MonoTypeVar("a", ["a"])
+        sen1[-1]._data[utils.TYPE_DEC_S] = TypeInstance("a", ["a"])
         tc.add_assertion(sen1)
 
         with self.assertRaises(te.TypeUndefinedException):
@@ -165,11 +166,11 @@ class TypingTests(unittest.TestCase):
         tc.add_definition(TypeDefinition("Number", ["Number"], [], []))
         sen1 = Sentence([TrieNode(x) for x in ["a","b"]])
         sen1[-1]._data[utils.BIND_S] = True
-        sen1[-1]._data[utils.TYPE_DEC_S] = MonoTypeVar("String", ["String"])
+        sen1[-1]._data[utils.TYPE_DEC_S] = TypeInstance("String", ["String"])
         tc.add_assertion(sen1)
         sen2 = Sentence([TrieNode(x) for x in ["a","b"]])
         sen2[-1]._data[utils.BIND_S] = True
-        sen2[-1]._data[utils.TYPE_DEC_S] = MonoTypeVar("Number", ["Number"])
+        sen2[-1]._data[utils.TYPE_DEC_S] = TypeInstance("Number", ["Number"])
         with self.assertRaises(te.TypeConflictException):
             tc.add_assertion(sen2)
 
@@ -184,11 +185,11 @@ class TypingTests(unittest.TestCase):
 
         struct_sen = Sentence([TrieNode(x) for x in ["name", "x"]])
         struct_sen[-1]._data[utils.BIND_S] = True
-        struct_sen[-1]._data[utils.TYPE_DEC_S] = MonoTypeVar("String", ["String"])
+        struct_sen[-1]._data[utils.TYPE_DEC_S] = TypeInstance("String", ["String"])
         tc.add_definition(TypeDefinition("first", ["first"], [struct_sen], []))
 
         sen = Sentence([TrieNode(x) for x in ["a", "b"]])
-        sen[0]._data[utils.TYPE_DEC_S] = MonoTypeVar("first", ["first"])
+        sen[0]._data[utils.TYPE_DEC_S] = TypeInstance("first", ["first"])
 
         tc.add_assertion(sen)
 
@@ -206,13 +207,13 @@ class TypingTests(unittest.TestCase):
 
         struct_sen = Sentence([TrieNode(x) for x in ["name", "x"]])
         struct_sen[-1]._data[utils.BIND_S] = True
-        struct_sen[-1]._data[utils.TYPE_DEC_S] = MonoTypeVar("String", ["String"])
+        struct_sen[-1]._data[utils.TYPE_DEC_S] = TypeInstance("String", ["String"])
         tc.add_definition(TypeDefinition("first", ["first"], [struct_sen], []))
 
         sen = Sentence([TrieNode(x) for x in ["a", "name", "y"]])
-        sen[0]._data[utils.TYPE_DEC_S] = MonoTypeVar("first", ["first"])
+        sen[0]._data[utils.TYPE_DEC_S] = TypeInstance("first", ["first"])
         sen[-1]._data[utils.BIND_S] = True
-        sen[-1]._data[utils.TYPE_DEC_S] = MonoTypeVar("Number", ["Number"])
+        sen[-1]._data[utils.TYPE_DEC_S] = TypeInstance("Number", ["Number"])
 
         tc.add_assertion(sen)
 
@@ -230,13 +231,13 @@ class TypingTests(unittest.TestCase):
 
         struct_sen = Sentence([TrieNode(x) for x in ["name", "x", "y"]])
         struct_sen[-2]._data[utils.BIND_S] = True
-        struct_sen[-2]._data[utils.TYPE_DEC_S] = MonoTypeVar("String", ["String"])
+        struct_sen[-2]._data[utils.TYPE_DEC_S] = TypeInstance("String", ["String"])
         struct_sen[-1]._data[utils.BIND_S] = True
-        struct_sen[-1]._data[utils.TYPE_DEC_S] = MonoTypeVar("Number", ["Number"])
+        struct_sen[-1]._data[utils.TYPE_DEC_S] = TypeInstance("Number", ["Number"])
         tc.add_definition(TypeDefinition("first", ["first", "type"], [struct_sen], []))
 
         sen = Sentence([TrieNode(x) for x in ["bob", "name", "z", "q"]])
-        sen[0]._data[utils.TYPE_DEC_S] = MonoTypeVar("first", ["first", "type"])
+        sen[0]._data[utils.TYPE_DEC_S] = TypeInstance("first", ["first", "type"])
         sen[-2]._data[utils.BIND_S] = True
         sen[-1]._data[utils.BIND_S] = True
         tc.add_assertion(sen)
@@ -255,12 +256,12 @@ class TypingTests(unittest.TestCase):
         #Check the first var is inferred
         query_sen = Sentence([TrieNode(x) for x in ["bob","name","z"]])
         query_sen[-1]._data[utils.BIND_S] = True
-        self.assertEqual(tc.query(query_sen)[0]._type, MonoTypeVar("String", ["String"]))
+        self.assertEqual(tc.query(query_sen)[0]._type, TypeInstance("String", ["String"]))
         #Check the second var is inferred
         query_sen = Sentence([TrieNode(x) for x in ["bob","name","z", "q"]])
         query_sen[-2]._data[utils.BIND_S] = True
         query_sen[-1]._data[utils.BIND_S] = True
-        self.assertEqual(tc.query(query_sen)[0]._type, MonoTypeVar("Number", ["Number"]))
+        self.assertEqual(tc.query(query_sen)[0]._type, TypeInstance("Number", ["Number"]))
 
     def test_typing_nested_types(self):
         """ ::String: END, ::Number: END
@@ -275,17 +276,17 @@ class TypingTests(unittest.TestCase):
         #Small Type
         type_1_sen = Sentence([TrieNode(x) for x in ["name", "x"]])
         type_1_sen[-1]._data[utils.BIND_S] = True
-        type_1_sen[-1]._data[utils.TYPE_DEC_S] = MonoTypeVar("String", ["String"])
+        type_1_sen[-1]._data[utils.TYPE_DEC_S] = TypeInstance("String", ["String"])
         tc.add_definition(TypeDefinition("smallType", ["small", "type"], [type_1_sen], []))
 
         #Large Type
         type_2_sen = Sentence([TrieNode(x) for x in ["component", "x"]])
         type_2_sen[-1]._data[utils.BIND_S] = True
-        type_2_sen[-1]._data[utils.TYPE_DEC_S] = MonoTypeVar("smallType", ["small", "type"])
+        type_2_sen[-1]._data[utils.TYPE_DEC_S] = TypeInstance("smallType", ["small", "type"])
         tc.add_definition(TypeDefinition("largeType", ["large", "type"], [type_2_sen], []))
 
         assertion = Sentence(TrieNode(x) for x in ["a", "component", "q", "name", "w"])
-        assertion[0]._data[utils.TYPE_DEC_S] = MonoTypeVar("largeType", ["large", "type"])
+        assertion[0]._data[utils.TYPE_DEC_S] = TypeInstance("largeType", ["large", "type"])
         assertion[2]._data[utils.BIND_S] = True
         assertion[-1]._data[utils.BIND_S] = True
 
@@ -303,8 +304,8 @@ class TypingTests(unittest.TestCase):
 
         tc.validate()
 
-        self.assertEqual(tc.query(query_sen1)[0]._type, MonoTypeVar("smallType", ["small", "type"]))
-        self.assertEqual(tc.query(query_sen2)[0]._type, MonoTypeVar("String", ["String"]))
+        self.assertEqual(tc.query(query_sen1)[0]._type, TypeInstance("smallType", ["small", "type"]))
+        self.assertEqual(tc.query(query_sen2)[0]._type, TypeInstance("String", ["String"]))
 
     def test_typing_nested_types_fail(self):
         """ ::String: END, ::Number: END
@@ -319,20 +320,20 @@ class TypingTests(unittest.TestCase):
         #Small Type
         type_1_sen = Sentence([TrieNode(x) for x in ["name", "x"]])
         type_1_sen[-1]._data[utils.BIND_S] = True
-        type_1_sen[-1]._data[utils.TYPE_DEC_S] = MonoTypeVar("String", ["String"])
+        type_1_sen[-1]._data[utils.TYPE_DEC_S] = TypeInstance("String", ["String"])
         tc.add_definition(TypeDefinition("smallType", ["small", "type"], [type_1_sen], []))
 
         #Large Type
         type_2_sen = Sentence([TrieNode(x) for x in ["component", "x"]])
         type_2_sen[-1]._data[utils.BIND_S] = True
-        type_2_sen[-1]._data[utils.TYPE_DEC_S] = MonoTypeVar("smallType", ["small", "type"])
+        type_2_sen[-1]._data[utils.TYPE_DEC_S] = TypeInstance("smallType", ["small", "type"])
         tc.add_definition(TypeDefinition("largeType", ["large", "type"], [type_2_sen], []))
 
         assertion = Sentence(TrieNode(x) for x in ["a", "component", "q", "name", "w"])
-        assertion[0]._data[utils.TYPE_DEC_S] = MonoTypeVar("largeType", ["large", "type"])
+        assertion[0]._data[utils.TYPE_DEC_S] = TypeInstance("largeType", ["large", "type"])
         assertion[2]._data[utils.BIND_S] = True
         assertion[-1]._data[utils.BIND_S] = True
-        assertion[-1]._data[utils.TYPE_DEC_S] = MonoTypeVar("Number", ["Number"])
+        assertion[-1]._data[utils.TYPE_DEC_S] = TypeInstance("Number", ["Number"])
         tc.add_assertion(assertion)
 
         query_sen1 = Sentence([TrieNode(x) for x in ["a","component","q"]])
@@ -343,7 +344,7 @@ class TypingTests(unittest.TestCase):
         query_sen2[-1]._data[utils.BIND_S] = True
 
         self.assertIsNone(tc.query(query_sen1)[0]._type)
-        self.assertEqual(tc.query(query_sen2)[0]._type, MonoTypeVar("Number", ["Number"]))
+        self.assertEqual(tc.query(query_sen2)[0]._type, TypeInstance("Number", ["Number"]))
 
         with self.assertRaises(te.TypeConflictException):
             tc.validate()
@@ -368,12 +369,12 @@ class TypingTests(unittest.TestCase):
 
         #assertions
         assertion = Sentence([TrieNode(x) for x in ["a", "name", "q"]])
-        assertion[0]._data[utils.TYPE_DEC_S] = MonoTypeVar("polyType", ["polyType"], [MonoTypeVar("String", ["String"])])
+        assertion[0]._data[utils.TYPE_DEC_S] = TypeInstance("polyType", ["polyType"], [TypeInstance("String", ["String"])])
         assertion[-1]._data[utils.BIND_S] = True
         tc.add_assertion(assertion)
 
         assertion2 = Sentence(TrieNode(x) for x in ["b", "name", "t"])
-        assertion2[0]._data[utils.TYPE_DEC_S] = MonoTypeVar("polyType", ["polyType"], [MonoTypeVar("Number", ["Number"])])
+        assertion2[0]._data[utils.TYPE_DEC_S] = TypeInstance("polyType", ["polyType"], [TypeInstance("Number", ["Number"])])
         assertion2[-1]._data[utils.BIND_S] = True
         tc.add_assertion(assertion2)
 
@@ -388,8 +389,8 @@ class TypingTests(unittest.TestCase):
         self.assertIsNone(tc.query(query_sen2)[0]._type)
 
         tc.validate()
-        self.assertEqual(tc.query(query_sen1)[0]._type, MonoTypeVar("String", ["String"]))
-        self.assertEqual(tc.query(query_sen2)[0]._type, MonoTypeVar("Number", ["Number"]))
+        self.assertEqual(tc.query(query_sen1)[0]._type, TypeInstance("String", ["String"]))
+        self.assertEqual(tc.query(query_sen2)[0]._type, TypeInstance("Number", ["Number"]))
 
     def test_typing_polytype_nested(self):
         """ ::String: END, ::Number: END
@@ -413,7 +414,7 @@ class TypingTests(unittest.TestCase):
         type_2_sen[-1]._data[utils.BIND_S] = True
         type_2_param = TrieNode("y")
         type_2_param._data[utils.BIND_S] = True
-        type_2_sen[-1]._data[utils.TYPE_DEC_S] = MonoTypeVar("polyTypeOne",
+        type_2_sen[-1]._data[utils.TYPE_DEC_S] = TypeInstance("polyTypeOne",
                                                              ["polyTypeOne"],
                                                              [type_2_param])
         param2 = TrieNode("y")
@@ -426,8 +427,8 @@ class TypingTests(unittest.TestCase):
         #Assertion
         assertion = Sentence([TrieNode(x) for x in ["a", "nested", "name", "x"]])
         assertion[0]._data[utils.BIND_S] = True
-        assertion_param = MonoTypeVar("String", ["String"])
-        assertion[0]._data[utils.TYPE_DEC_S] = MonoTypeVar("polyTypeTwo",
+        assertion_param = TypeInstance("String", ["String"])
+        assertion[0]._data[utils.TYPE_DEC_S] = TypeInstance("polyTypeTwo",
                                                            ["polyTypeTwo"],
                                                            [assertion_param])
         assertion[-1]._data[utils.BIND_S] = True
@@ -441,7 +442,7 @@ class TypingTests(unittest.TestCase):
 
         tc.validate()
 
-        self.assertEqual(tc.query(query_sen1)[0]._type, MonoTypeVar("String", ["String"]))
+        self.assertEqual(tc.query(query_sen1)[0]._type, TypeInstance("String", ["String"]))
 
     def test_typing_polytype_multi_param(self):
         """ ::String: END, ::Number: END
@@ -469,10 +470,10 @@ class TypingTests(unittest.TestCase):
 
         #assertions
         assertion = Sentence(TrieNode(x) for x in ["a", "name", "q"])
-        assertion[0]._data[utils.TYPE_DEC_S] = MonoTypeVar("polyType",
+        assertion[0]._data[utils.TYPE_DEC_S] = TypeInstance("polyType",
                                                            ["polyType"],
-                                                           [MonoTypeVar("String", ["String"]),
-                                                            MonoTypeVar("Number", ["Number"])])
+                                                           [TypeInstance("String", ["String"]),
+                                                            TypeInstance("Number", ["Number"])])
         assertion[-1]._data[utils.BIND_S] = True
         tc.add_assertion(assertion)
 
@@ -492,8 +493,8 @@ class TypingTests(unittest.TestCase):
 
         tc.validate()
 
-        self.assertEqual(tc.query(query_sen1)[0]._type, MonoTypeVar("String", ["String"]))
-        self.assertEqual(tc.query(query_sen2)[0]._type, MonoTypeVar("Number", ["Number"]))
+        self.assertEqual(tc.query(query_sen1)[0]._type, TypeInstance("String", ["String"]))
+        self.assertEqual(tc.query(query_sen2)[0]._type, TypeInstance("Number", ["Number"]))
 
 
     def test_typing_context_clear(self):
