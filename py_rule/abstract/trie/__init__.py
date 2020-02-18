@@ -1,5 +1,5 @@
 """
-The Primary Implementation of PyRule. Uses a Trie for the backend of
-the factbase.
-Has associated parsers for an Exclusion Logic-like DSL.
+This is a core Trie datastructure to customise for other tasks
+(eg: worldstate in a knowledgebase, and for type checking in typing)
+
 """

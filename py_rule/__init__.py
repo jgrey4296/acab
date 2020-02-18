@@ -1,11 +1,10 @@
 """
-PyRule: A Trie based Rule Engine
-Comprised of:
-1) Contexts. Collections of possible bindings
-2) Query. Strings of data and variables to extract information from the fact base.
-3) Clause. Individual strings that combine to form queries.
-4) Actions. Instructions to manipulate the fact base.
-5) Transforms. Instructions to manipulate intermediate bindings.
-6) Rule. The Combination queries, transforms, and actions.
+py_rule is a Production Rule Architecture,
+based around a Meta-DSL (Exclusion Logic),
+combined with modular DSLs it can host to expand its functionality
 
+network.py provides a core network class and simple protocol to
+communicate with unity.
+
+utils provides standard enums, strings and some utility functions
 """
