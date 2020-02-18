@@ -43,14 +43,14 @@ and any newly typed nodes are then ready to be used in the next iteration
 If validate succeeds, it returns True. If it Fails, it raises an Exception
 
 """
-from .pyrule_type_definition import TypeDefinition
+from .type_definition import TypeDefinition
 from .nodes.type_assignment_node import TypeAssignmentTrieNode
 from .nodes.typedef_node import TypeDefTrieNode
 from .nodes.var_type_node import VarTypeTrieNode
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.trie.trie import Trie
-import py_rule.typing.type_exceptions as te
-import py_rule.typing.util as U
+import py_rule.error.type_exceptions as te
+from . import util as U
 import py_rule.utils as utils
 import logging as root_logger
 

@@ -1,6 +1,6 @@
 from py_rule.abstract.trie.nodes.trie_node import TrieNode
 from py_rule.utils import TYPE_DEC_S
-import py_rule.typing.type_exceptions as te
+import py_rule.error.type_exceptions as te
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
 

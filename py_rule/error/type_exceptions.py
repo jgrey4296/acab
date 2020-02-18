@@ -1,7 +1,7 @@
 """
 Exception types raised by type checking
 """
-from pyrule.error.pyrule_base_exception import PyRuleBaseException
+from py_rule.error.pyrule_base_exception import PyRuleBaseException
 
 class PyRuleTypingException(PyRuleBaseException):
 

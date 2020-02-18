@@ -8,7 +8,7 @@ from pyparsing import pyparsing_common as ppc
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.action import ActionMacro
 from py_rule.abstract.rule import Rule
-from py_rule.typing.ex_types import TypeDefinition
+from py_rule.typing.type_definition import TypeDefinition
 import py_rule.utils as utils
 
 from . import FactParser as FP
