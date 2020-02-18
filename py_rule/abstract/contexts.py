@@ -1,7 +1,4 @@
 """ Contexts: A Container for all partial matches of a query being run """
-from random import shuffle, sample, randint
-from .abstract.transform import TROP
-
 
 class Contexts:
     """ Container of available contexts for a match in the trie
@@ -41,20 +38,6 @@ class Contexts:
         """
         self._matches = [({}, start_node)]
 
-    def select(self, bounds=(None, None)):
-        """ Select a certain number of binding groups from available contexts """
-        shuffle(self._matches)
-        if bounds[0] is None and bounds[1] is None:
-            return [self._matches[0][0]]
-        if bounds[0] is TROP.SELECT_ALL and bounds[1] is TROP.SELECT_ALL:
-            return [x[0] for x in self._matches]
-        if bounds[1] is TROP.SELECT_ALL:
-            upper_bound = len(self._matches)
-        else:
-            upper_bound = bounds[1]
-            potential_amnt = max(1, randint(bounds[0], upper_bound))
-        return [x[0] for x in sample(self._matches, potential_amnt)]
-
     def append(self, data):
         """ Add a number of matching possibilities into this set of contexts """
         assert(len(data) == 2)
@@ -76,3 +59,8 @@ class Contexts:
         for (data, lastNode) in self._matches:
             newContexts._matches.append((data, targetNode))
         return newContexts
+
+    def select(self, bounds=(None, None)):
+        """ Select a certain number of binding groups from available contexts """
+        raise Exception("Context.select is deprecated")
+
