@@ -15,12 +15,18 @@ class OperatorSpec(ModuleSpecification):
         super().__init__()
 
     def construct_operators(self):
-        # call operator constructors here
+        self._construct_misc_ops()
+        self._construct_comp_ops()
+        self._construct_action_ops()
+        self._construct_transform_ops()
+
+    def _construct_misc_ops(self):
         DoOperator()
         DeltaOperator()
         InterleaveOperator()
         SetOperator()
 
+    def _construct_comp_ops(self):
         C.EQ()
         C.GT()
         C.LT()
@@ -28,11 +34,13 @@ class OperatorSpec(ModuleSpecification):
         C.RegMatch()
         C.ELEM()
 
+    def _construct_action_ops(self):
         P.ActionAdd()
         P.ActionRetract()
         P.ActionPrint()
         P.ActionCustom()
 
+    def _construct_transform_ops(self):
         T.AddOp()
         T.SubOp()
         T.MulOp()
@@ -40,6 +48,6 @@ class OperatorSpec(ModuleSpecification):
         T.RandOp()
         T.RemainOp()
         T.RoundOp()
-        T.NetOp()
+        T.NegOp()
         T.RegexOp()
         T.FormatOp()
