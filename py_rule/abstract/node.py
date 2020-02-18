@@ -3,7 +3,7 @@ from .value import PyRuleValue
 from fractions import Fraction
 from re import Pattern
 
-class PyRuleNode
+class PyRuleNode:
     """ The Abstract Node Class """
 
     def __init__(self, value, data=None):
@@ -46,7 +46,7 @@ class PyRuleNode
         return iter(self._children.values())
 
     def value_string(self):
-        if isinstance(self._value, Node):
+        if isinstance(self._value, PyRuleNode):
             return self._value.value_string()
         else:
             return str(self._value)
@@ -56,7 +56,7 @@ class PyRuleNode
             self._data.update(data)
 
     def add_child(self, node):
-        assert(isinstance(node, Node))
+        assert(isinstance(node, PyRuleNode))
         self._children[node.value_string()] = node
         return node
 
