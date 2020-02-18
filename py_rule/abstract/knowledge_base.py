@@ -9,11 +9,11 @@ class KnowledgeBase:
 
     def __init__(self):
         self._have_added_types = False
-        self._have_built_operataors = False
+        self._have_built_operators = False
 
     def add_modules(self, mods):
         """ Add types into the parser """
-        if not self._have_added_types:
+        if self._have_added_types:
             raise Exception("Can Only expand knowledge base types once")
         assert(all([isinstance(x, ModuleSpecification) for x in mods]))
         self._added_types = True
@@ -31,7 +31,7 @@ class KnowledgeBase:
         """ This is used to build the parsers of operators,
         once all module's operators have been constructed
         """
-        if not self._have_built_operators:
+        if self._have_built_operators:
             raise Exception("Can only build operators once")
         self._have_built_operators = True
         # if you haven't added types by now, tough:
