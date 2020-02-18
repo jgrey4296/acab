@@ -3,18 +3,21 @@ from .value import PyRuleValue
 from fractions import Fraction
 from re import Pattern
 
-class PyRuleNode:
+class PyRuleNode(PyRuleValue):
     """ The Abstract Node Class """
 
     def __init__(self, value, data=None):
-        assert(value is None or
-               isinstance(value, (int,
-                                  float,
-                                  bool,
-                                  str,
-                                  Fraction,
-                                  Pattern,
-                                  PyRuleValue)))
+
+        value_type_verify = (value is None or
+                             isinstance(value, (int,
+                                                float,
+                                                bool,
+                                                str,
+                                                Fraction,
+                                                Pattern,
+                                                PyRuleValue)))
+        assert value_type_verify, type(value)
+
         self._value = value
         self._children = {}
         self._data = {}
