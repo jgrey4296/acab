@@ -1,7 +1,7 @@
 """ Simple Transform functions to be used in rules """
 import logging as root_logger
 from .production_operator import ProductionOperator
-from .node import Node
+from .node import PyRuleNode
 
 logging = root_logger.getLogger(__name__)
 
@@ -47,7 +47,7 @@ class OperatorTransform(TransformComponent):
 
     def __str__(self):
         op = str(self._op)
-        source = [x.opless_print() if isinstance(x, Node) else str(x) for x in self._params]
+        source = [x.opless_print() if isinstance(x, PyRuleNode) else str(x) for x in self._params]
         if self._rebind is not None:
             rebind = " -> {}".format(self._rebind.opless_print())
         else:
