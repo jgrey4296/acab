@@ -1,24 +1,26 @@
-all: trie facttrie engine modules
+SHELL=/usr/local/bin/bash
+PYS := $(shell find . -name '*.py' -not -name '*context.py' -not -name '__init__.py')
+LOGS := $(shell find . -name '*log.*')
+CACHES := $(shell find . -name '*__pycache__')
 
-modules:
-	@echo "Testing Modules"
-	python -m unittest modules/*_tests.py
+.PHONY: all
+all: verbose
 
-trie:
-	@echo "Testing Trie"
-	python -m unittest trie/*_tests.py
 
-facttrie:
-	@echo "Testing Fact Trie"
-	python -m unittest fact_trie/*_tests.py
+verbose:
+	python -m unittest discover -p "*tests.py" -v
 
-engine:
-	@echo "Testing Engine"
-	python -m unittest engine/*_tests.py
-
-typing:
-	@echo "Testing Typing"
-	python -m unittest typing/*_tests.py
+faily:
+	python -m unittest discover -p "*tests.py" -v -f
 
 clean:
-	-rm *.log
+ifeq (${LOGS}, )
+	@echo "No Logs to delete"
+else
+	-rm ${LOGS}
+endif
+ifeq (${CACHES}, )
+	@echo "No Caches to delete"
+else
+	-rm -r ${CACHES}
+endif
