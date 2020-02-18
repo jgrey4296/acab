@@ -4,12 +4,17 @@ from test_context import py_rule
 import py_rule.utils as util
 from py_rule.engines import bdi_engine as bdi
 from os.path import join, isfile, exists, isdir, splitext, expanduser
+from os.path import abspath, split
 from os import listdir
 
 class BDI_TESTS(unittest.TestCase):
 
     def path(self, filename):
-        return join('..', 'bdi_testfiles', filename)
+        return abspath(join(split(__file__)[0],
+                            '..',
+                            'testfiles',
+                            'bdi',
+                            filename))
 
     def setUpAgent(self, files, rulePolicies):
         self.e = bdi.Agent("testAgent", [self.path(x) for x in files],
@@ -50,11 +55,15 @@ class BDI_TESTS(unittest.TestCase):
 
 if __name__ == "__main__":
       #use python $filename to use this logging setup
-      LOGLEVEL = logging.DEBUG
-      logFileName = "log.bdi_tests"
-      logging.basicConfig(filename=logFileName, level=LOGLEVEL, filemode='w')
-      console = logging.StreamHandler()
-      console.setLevel(logging.WARN)
-      logging.getLogger().addHandler(console)
-      unittest.main()
-      #reminder: user logging.getLogger().setLevel(logging.NOTSET) for log control
+# Setup root_logger:
+    LOGLEVEL = root_logger.DEBUG
+    LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
+    root_logger.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
+
+    console = root_logger.StreamHandler()
+    console.setLevel(root_logger.INFO)
+    root_logger.getLogger('').addHandler(console)
+    logging = root_logger.getLogger(__name__)
+
+    unittest.main()
+    #reminder: user logging.getLogger().setLevel(logging.NOTSET) for log control
