@@ -44,8 +44,9 @@ CUSTOM = pp.Word(pp.alphas)
 operator = pp.Forward()
 
 def build_operators():
-    ACTION_STRS = [x for x in Actions.ActionOp.op_list.keys()]
-    operator << pp.Or([pp.Literal(x) for x in ACTION_STRS] + [CUSTOM])
+    if operator.expr is None:
+        ACTION_STRS = [x for x in Actions.ActionOp.op_list.keys()]
+        operator << pp.Or([pp.Literal(x) for x in ACTION_STRS] + [CUSTOM])
 
 ACT_MACRO = s(pp.Literal('#')) + CUSTOM
 ACT_MACRO.setParseAction(lambda t: t[0])

@@ -46,8 +46,9 @@ QMARK = s(pp.Literal('?'))
 COMP_OP = pp.Forward()
 
 def build_operators():
-    OP_STRS = [x for x in C.CompOp.op_list.keys()]
-    COMP_OP << pp.Or([pp.Literal(x) for x in OP_STRS])
+    if COMP_OP.expr is None:
+        OP_STRS = [x for x in C.CompOp.op_list.keys()]
+        COMP_OP << pp.Or([pp.Literal(x) for x in OP_STRS])
 
 NOT = N(NOT_IDEN, pp.Literal('~'))
 SLASH = s(pp.Literal('/'))

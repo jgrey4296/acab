@@ -12,6 +12,11 @@ pp.ParserElement.setDefaultWhitespaceChars(' \t\r')
 
 logging = root_logger.getLogger(__name__)
 
+def build_operators():
+    QP.build_operators()
+    TP.build_operators()
+    AP.build_operators()
+
 def build_rule(toks):
     name = toks.rulename[0]
     if 'conditions' in toks:

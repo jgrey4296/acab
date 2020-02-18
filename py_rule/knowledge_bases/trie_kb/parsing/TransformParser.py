@@ -38,9 +38,12 @@ UNARY_TRANS_OP = pp.Forward()
 TERNARY_TRANS_OP = pp.Forward()
 
 def build_operators():
-    BINARY_TRANS_OP << pp.Or([pp.Literal(k) for k,v in TransformOp.op_list.items() if 2 in v])
-    UNARY_TRANS_OP << pp.Or([pp.Literal(k) for k,v in TransformOp.op_list.items() if 1 in v])
-    TERNARY_TRANS_OP << pp.Or([pp.Literal(k) for k,v in TransformOp.op_list.items() if 3 in v])
+    if BINARY_TRANS_OP.expr is None:
+        BINARY_TRANS_OP << pp.Or([pp.Literal(k) for k,v in TransformOp.op_list.items() if 2 in v])
+    if UNARY_TRANS_OP.expr is None:
+        UNARY_TRANS_OP << pp.Or([pp.Literal(k) for k,v in TransformOp.op_list.items() if 1 in v])
+    if TERNARY_TRANS_OP.expr is None:
+        TERNARY_TRANS_OP << pp.Or([pp.Literal(k) for k,v in TransformOp.op_list.items() if 3 in v])
 
 rebind = ARROW + VALBIND
 
