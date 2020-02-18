@@ -55,8 +55,8 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
         result = AP.parseString('+(2), -(3), @(4)')
         self.assertEqual(len(result), 3)
         self.assertTrue(all([isinstance(x, action.Action) for x in result]))
-        for action, op in zip(result, ["+", "-", "@"]):
-            self.assertEqual(action._op._op_str, op)
+        for parsed_action, op in zip(result, ["+", "-", "@"]):
+            self.assertEqual(parsed_action._op._op_str, op)
 
     def test_actions_fact_str(self):
         result = AP.parseString('+(a.b.c), -(a!b.d), +($x), +($x.a.b)')
