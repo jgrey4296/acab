@@ -43,7 +43,7 @@ def make_type_dec(toks):
     elif TYPE_DEC_S in baseName._data and baseName._data[TYPE_DEC_S] is not None:
         args.append(baseName._type)
         del baseName._data[TYPE_DEC_S]
-    return (TYPE_DEC_S, MonoTypeVar(baseName, path, args))
+    return (TYPE_DEC_S, TypeInstance(baseName, path, args))
 
 def make_node(toks):
     value = None
