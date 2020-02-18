@@ -4,23 +4,24 @@ with support for transforms and actions
 """
 import logging as root_logger
 from os.path import join, isfile, exists, isdir, splitext, expanduser
+from os.path import abspath
 from os import listdir
 from random import shuffle
 
-from py_rule.abstract import actions, contexts, query, transforms
+from py_rule.abstract import action, contexts, query, transform
 from py_rule.abstract.engine import Engine
 from py_rule.abstract.sentence import Sentence
 from py_rule.knowledge_bases.trie_kb.trie_knowledge_base import TrieKnowledgeBase
 from py_rule.knowledge_bases.trie_kb.nodes.fact_node import FactNode
 import py_rule.utils as util
 
-from py_rule.fact_trie.parsing import ActionParser as AP
-from py_rule.fact_trie.parsing import FactParser as FP
-from py_rule.fact_trie.parsing import FileParser as FileP
-from py_rule.fact_trie.parsing import QueryParser as QP
-from py_rule.fact_trie.parsing import RuleParser as RP
-from py_rule.fact_trie.parsing import TransformParser as TP
-from py_rule.fact_trie import trie_rule as TR
+from py_rule.knowledge_bases.trie_kb.parsing import ActionParser as AP
+from py_rule.knowledge_bases.trie_kb.parsing import FactParser as FP
+from py_rule.knowledge_bases.trie_kb.parsing import FileParser as FileP
+from py_rule.knowledge_bases.trie_kb.parsing import QueryParser as QP
+from py_rule.knowledge_bases.trie_kb.parsing import RuleParser as RP
+from py_rule.knowledge_bases.trie_kb.parsing import TransformParser as TP
+from py_rule.knowledge_bases.trie_kb import trie_rule as TR
 
 # import and register policies
 
@@ -34,13 +35,14 @@ class TrieEngine(Engine):
     """
 
     def __init__(self, path=None, init=None):
-        super().__init__(FactBaseTrie, path=path, init=init)
+        super().__init__(TrieKnowledgeBase, path=path, init=init)
 
     def load_file(self, filename):
         """ Given a filename, read it, and interpret it as an EL DSL string """
         assert(isinstance(filename, str))
-        assert(exists(filename))
+        filename = abspath(expanduser(filename))
         logging.info("Loading: {}".format(filename))
+        assert exists(filename), filename
         with open(filename) as f:
             s = f.read()
         if s is not None:
