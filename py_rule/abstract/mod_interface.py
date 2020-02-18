@@ -14,9 +14,9 @@ class ModuleSpecification:
         ("typestr", data) """
         self._parser = parser
         # The value types the module adds
-        assert(all([x in PyRuleValue.__subclasses__()]))
         self._types = []
         if types is not None:
+            assert(all([x in PyRuleValue.__subclasses__() for x in types]))
             self._types += types
         # The functions on the value types the module adds
         self._functions = []
