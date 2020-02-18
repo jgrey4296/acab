@@ -67,6 +67,9 @@ class TrieKnowledgeBase(KnowledgeBase):
             raise Exception("Unrecognised query target: {}".format(type(s)))
 
 
+    def __str__(self):
+        return str(self._internal_trie)
+
     def _insert_into_values_parser(self, parser):
         FP.OTHER_VALS << parser
 
@@ -107,7 +110,7 @@ class TrieKnowledgeBase(KnowledgeBase):
         """ Query a TrieQuery instance """
         assert(isinstance(query, Query))
         self._clear_last_node()
-        initial_context = Contexts.initial(self._root)
+        initial_context = Contexts.initial(self._internal_trie._root)
         return self._internal_query(query, initial_context)
 
 
