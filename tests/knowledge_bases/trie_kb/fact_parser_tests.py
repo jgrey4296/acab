@@ -6,9 +6,13 @@ from test_context import py_rule
 import py_rule.knowledge_bases.trie_kb.parsing.FactParser as FP
 from py_rule.abstract.trie.nodes.trie_node import TrieNode
 from py_rule.abstract.sentence import Sentence
-import py_rule.util as util
+from py_rule.knowledge_bases.trie_kb import util as KBU
 
 class Trie_Fact_Parser_Tests(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        return
 
     def setUp(self):
         return 1
@@ -28,7 +32,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result, Sentence)
         self.assertTrue(all([isinstance(x, TrieNode) for x in result]))
         self.assertEqual(str(result), "a.b.c")
-        self.assertTrue(all([x._data[util.OPERATOR_S] == util.EXOP.DOT for x in result]))
+        self.assertTrue(all([x._data[KBU.OPERATOR_S] == KBU.EXOP.DOT for x in result]))
 
     def test_parseStrings(self):
         result = FP.parseString('a.b.c,\n b.c.d')
@@ -39,11 +43,11 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
     def test_param_fact_string(self):
         result = FP.param_fact_string.parseString('a.b.$x')[0]
         self.assertIsNotNone(result)
-        self.assertTrue(result[-1]._data[util.BIND_S])
+        self.assertTrue(result[-1]._data[KBU.BIND_S])
 
     def test_exclusion_operator_parsing(self):
         result = FP.parseString('a!b!c')[0]
-        self.assertTrue(all([x._data[util.OPERATOR_S] == util.EXOP.EX for x in result[:-1]]))
+        self.assertTrue(all([x._data[KBU.OPERATOR_S] == KBU.EXOP.EX for x in result[:-1]]))
 
     def test_numbers_parsing(self):
         for i in range(100):
@@ -77,11 +81,11 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
     def test_bind_addition_to_node_recognition(self):
         result = FP.parseString('$a.$b!$c')[0]
         for x in result:
-            self.assertTrue(x._data[util.BIND_S])
+            self.assertTrue(x._data[KBU.BIND_S])
 
     def test_fact_leading_bind(self):
         result = FP.parseString('$x.a.b.c')[0]
-        self.assertTrue(result[0]._data[util.BIND_S])
+        self.assertTrue(result[0]._data[KBU.BIND_S])
 
 
     def test_fact_str_equal(self):
@@ -121,7 +125,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
 
         a = FP.VALBIND.parseString("@awef")[0]
         self.assertEqual(a._value, "@awef")
-        self.assertEqual(a._data[util.VALUE_TYPE_S], "awef")
+        self.assertEqual(a._data[KBU.VALUE_TYPE_S], "awef")
 
 
 if __name__ == "__main__":
