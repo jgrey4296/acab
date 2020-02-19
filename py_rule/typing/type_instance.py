@@ -1,5 +1,6 @@
 from .pyrule_type import Type
 
+
 class TypeInstance(Type):
     """ A Type Instance can be polytyped or monotyped """
     TypeCounter = 0
@@ -48,8 +49,8 @@ class TypeInstance(Type):
         if str(self) in the_dict:
             new_type = the_dict[str(self)]
             return TypeInstance(new_type._name,
-                               new_type._path,
-                               new_type._args)
+                                new_type._path,
+                                new_type._args)
 
         new_args = [the_dict[x.value_string()] if x.value_string() in the_dict
                     else x for x in self._args]

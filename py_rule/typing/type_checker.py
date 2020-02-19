@@ -1,13 +1,15 @@
 """
 An Entry point for type checking
 
-Type checking is a triple of tries: (type_definitions, type_assignments, type_variables)
+Type checking is a triple of tries: (type_definitions,
+ type_assignments, type_variables)
 
 Definitions are structured polytypes.
 Assignments start untyped, and are gradually refined.
 Variables connect variables in the assignments to definitions.
 
-The Tries use nodes of TypeDefTrieNode, TypeAssignmentTrieNode, and VarTypeTrieNode.
+The Tries use nodes of TypeDefTrieNode,
+TypeAssignmentTrieNode, and VarTypeTrieNode.
 
 The values of the trie nodes are pyrule.abstract.values, subclassed as Types.
 They are TypeDefinitions, and TypeInstantiations.
@@ -34,7 +36,7 @@ Variables connect different locations of the assignment trie together
 When validate is called:
 equivalent pathed nodes are merged,
 then known types are applied everywhere they can be
-the linked type definition then DFS's 
+the linked type definition then DFS's
 ensure it matches the definition.
 and any newly typed nodes are then ready to be used in the next iteration
 
@@ -51,7 +53,7 @@ from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.trie.trie import Trie
 import py_rule.error.type_exceptions as te
 from . import util as U
-import py_rule.utils as utils
+import py_rule.util as util
 import logging as root_logger
 
 logging = root_logger.getLogger(__name__)
@@ -112,12 +114,14 @@ class TypeChecker:
             queried = self._declarations.query(line)
             if queried is None:
                 continue
-            line_is_typed = utils.TYPE_DEC_S in line[-1]._data
-            result_is_typed = utils.TYPE_DEC_S in queried._data
-            types_match = line_is_typed and result_is_typed and line[-1]._data[utils.TYPE_DEC_S] == queried._data[utils.TYPE_DEC_S]
+            line_is_typed = util.TYPE_DEC_S in line[-1]._data
+            result_is_typed = util.TYPE_DEC_S in queried._data
+            types_match = (line_is_typed
+                           and result_is_typed
+                           and line[-1]._data[util.TYPE_DEC_S] == queried._data[util.TYPE_DEC_S])
             if line_is_typed and result_is_typed and not types_match:
-                raise te.TypeConflictException(line[-1]._data[utils.TYPE_DEC_S],
-                                               queried._data[utils.TYPE_DEC_S],
+                raise te.TypeConflictException(line[-1]._data[util.TYPE_DEC_S],
+                                               queried._data[util.TYPE_DEC_S],
                                                "".join([str(x) for x in line]))
             results.append(queried)
         return results

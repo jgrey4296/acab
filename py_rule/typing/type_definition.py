@@ -1,6 +1,7 @@
 from .pyrule_type import Type
 from .type_instance import TypeInstance
-from py_rule.utils import BIND_S
+from py_rule.util import BIND_S
+
 
 class TypeDefinition(Type):
     """ Can define Structure of a type """
@@ -36,5 +37,3 @@ class TypeDefinition(Type):
 
     def build_type_declaration(self):
         return TypeInstance(self._name, self._path, self._vars[:])
-
-

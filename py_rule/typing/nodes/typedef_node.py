@@ -4,8 +4,7 @@ from py_rule.abstract.trie.trie import Trie
 from py_rule.error import type_exceptions as te
 from py_rule.typing.type_definition import TypeDefinition
 import logging as root_logger
-import py_rule.typing.util as U
-import py_rule.utils as utils
+import py_rule.typing.util as util
 logging = root_logger.getLogger(__name__)
 
 # Log messages to use, because they are long:
@@ -36,18 +35,18 @@ class TypeDefTrieNode(TrieNode):
         """
         assert(isinstance(data, TypeDefinition))
         logging.debug("TypeDef.set_data: {}".format(data))
-        if utils.TYPE_DEF_S not in self._data:
-            self._data[utils.TYPE_DEF_S] = data
+        if util.TYPE_DEF_S not in self._data:
+            self._data[util.TYPE_DEF_S] = data
             # construct the internal trie
             self._typedef_trie = Trie(node_type=TypeAssignmentTrieNode)
-            self._typedef_trie._root._type = self._data[utils.TYPE_DEF_S].build_type_declaration()
-            for x in self._data[utils.TYPE_DEF_S]._structure:
+            self._typedef_trie._root._type = self._data[util.TYPE_DEF_S].build_type_declaration()
+            for x in self._data[util.TYPE_DEF_S]._structure:
                 self._typedef_trie.add(x, None,
                                        update=lambda c, n, p, d: c.type_match_wrapper(n))
             return
 
-        if self._data[utils.TYPE_DEF_S] != data:
-            raise te.TypeRedefinitionException(self._data[utils.TYPE_DEF_S])
+        if self._data[util.TYPE_DEF_S] != data:
+            raise te.TypeRedefinitionException(self._data[util.TYPE_DEF_S])
 
     def validate(self, usage_trie):
         """ Given a declaration trie node, type check / infer it
@@ -92,14 +91,14 @@ class TypeDefTrieNode(TrieNode):
     def _generate_polytype_bindings(self, usage_trie):
         """ Generate a temporary binding environment for the definition's type parameters """
         type_var_lookup = {}
-        if self._data[utils.TYPE_DEF_S]._vars and usage_trie._type and usage_trie._type._args:
-            zipped = zip(self._data[utils.TYPE_DEF_S]._vars, usage_trie._type._args)
+        if self._data[util.TYPE_DEF_S]._vars and usage_trie._type and usage_trie._type._args:
+            zipped = zip(self._data[util.TYPE_DEF_S]._vars, usage_trie._type._args)
             type_var_lookup = {x.value_string(): y for x, y in zipped}
         return type_var_lookup
 
     def _retrieve_type_declaration(self, curr_def, type_var_lookup):
         """ Use the temporary binding environment to lookup the relevant type declaration """
-        if curr_def.value_string() != utils.ROOT_S and curr_def._is_var and curr_def.value_string() in type_var_lookup:
+        if curr_def.value_string() != util.ROOT_S and curr_def._is_var and curr_def.value_string() in type_var_lookup:
             return type_var_lookup[curr_def.value_string()]
         elif curr_def._type is not None:
             return curr_def._type.build_type_declaration(type_var_lookup)
@@ -108,7 +107,7 @@ class TypeDefTrieNode(TrieNode):
 
     def _check_local_type_structure(self, curr_def, curr_usage_set):
         """ Compare Defined Structure to actual structure """
-        if curr_def._value != utils.ROOT_S:
+        if curr_def._value != util.ROOT_S:
             for x in curr_usage_set:
                 if not x._is_var and curr_def.value_string() != x.value_string():
                     raise te.TypeStructureMismatch(curr_def.value_string(), [x.value_string()])
