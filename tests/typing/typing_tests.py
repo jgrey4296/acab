@@ -7,7 +7,7 @@ from py_rule.typing.type_instance import TypeInstance
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.trie.nodes.trie_node import TrieNode
 import py_rule.error.type_exceptions as te
-import py_rule.utils as utils
+import py_rule.util as util
 
 class TypingTests(unittest.TestCase):
 
@@ -48,12 +48,12 @@ class TypingTests(unittest.TestCase):
         tc = TypeChecker()
         #add a sentence with a typed variable
         sen = Sentence([TrieNode(x) for x in ['a','b']])
-        sen[-1]._data[utils.BIND_S] = True
+        sen[-1]._data[util.BIND_S] = True
         tc.add_assertion(sen)
         self.assertEqual(len(tc._variables), 1)
         #add another sentence with equivalent, but untyped, var
         sen2 = Sentence([TrieNode(x) for x in ['a','c']])
-        sen2[-1]._data[utils.BIND_S] = True
+        sen2[-1]._data[util.BIND_S] = True
         tc.add_assertion(sen2)
         self.assertEqual(len(tc._variables), 2)
         #merge
@@ -66,12 +66,12 @@ class TypingTests(unittest.TestCase):
         tc = TypeChecker()
         self.assertFalse(tc._get_known_typed_nodes())
         sen = Sentence([TrieNode(x) for x in ['a','b']])
-        sen[-1]._data[utils.BIND_S] = True
-        sen[-1]._data[utils.TYPE_DEC_S] = TypeInstance("a", ["a"])
+        sen[-1]._data[util.BIND_S] = True
+        sen[-1]._data[util.TYPE_DEC_S] = TypeInstance("a", ["a"])
         tc.add_assertion(sen)
         self.assertEqual(len(tc._get_known_typed_nodes()), 1)
         sen2 = Sentence([TrieNode(x) for x in ['a','c']])
-        sen2[-1]._data[utils.BIND_S] = True
+        sen2[-1]._data[util.BIND_S] = True
         tc.add_assertion(sen2)
         self.assertEqual(len(tc._get_known_typed_nodes()), 1)
 
@@ -80,11 +80,11 @@ class TypingTests(unittest.TestCase):
         tc = TypeChecker()
         tc.add_definition(TypeDefinition("a", ["a"], [], []))
         sen1 = Sentence([TrieNode(x) for x in ["a","b"]])
-        sen1[-1]._data[utils.BIND_S] = True
+        sen1[-1]._data[util.BIND_S] = True
         tc.add_assertion(sen1)
 
         query_sen = Sentence([TrieNode(x) for x in ["a","b"]])
-        query_sen[-1]._data[utils.BIND_S] = True
+        query_sen[-1]._data[util.BIND_S] = True
         results = tc.query(query_sen)
         self.assertEqual(len(results), 1)
 
@@ -93,11 +93,11 @@ class TypingTests(unittest.TestCase):
         tc = TypeChecker()
         tc.add_definition(TypeDefinition("a", ["a"], [], []))
         sen1 = Sentence([TrieNode(x) for x in ["a","b"]])
-        sen1[-1]._data[utils.BIND_S] = True
+        sen1[-1]._data[util.BIND_S] = True
         tc.add_assertion(sen1)
 
         query_sen = Sentence([TrieNode(x) for x in ["a","c"]])
-        query_sen[-1]._data[utils.BIND_S] = True
+        query_sen[-1]._data[util.BIND_S] = True
         results = tc.query(query_sen)
         self.assertEqual(len(results), 0)
 
@@ -106,34 +106,34 @@ class TypingTests(unittest.TestCase):
         tc = TypeChecker()
         tc.add_definition(TypeDefinition("a", ["a"], [], []))
         sen1 = Sentence([TrieNode(x) for x in ["a","b"]])
-        sen1[-1]._data[utils.BIND_S] = True
-        sen1[-1]._data[utils.TYPE_DEC_S] = TypeInstance("a", ["a"])
+        sen1[-1]._data[util.BIND_S] = True
+        sen1[-1]._data[util.TYPE_DEC_S] = TypeInstance("a", ["a"])
         tc.add_assertion(sen1)
         sen2 = Sentence([TrieNode(x) for x in ["a","c"]])
-        sen2[-1]._data[utils.BIND_S] = True
+        sen2[-1]._data[util.BIND_S] = True
         tc.add_assertion(sen2)
 
         query_sen = Sentence([TrieNode(x) for x in ["a","c"]])
-        query_sen[-1]._data[utils.BIND_S] = True
+        query_sen[-1]._data[util.BIND_S] = True
         query_result = tc.query(query_sen)[0]
         self.assertIsNone(query_result._type)
 
         tc.validate()
         query_result = tc.query(query_sen)[0]
         self.assertIsNotNone(query_result._type)
-        self.assertEqual(query_result._type, sen1[-1]._data[utils.TYPE_DEC_S])
+        self.assertEqual(query_result._type, sen1[-1]._data[util.TYPE_DEC_S])
 
     def test_type_conflict(self):
         """ ::a END, a.$b(::a), a.$c(::b) """
         tc = TypeChecker()
         tc.add_definition(TypeDefinition("a", ["a"], [], []))
         sen1 = Sentence([TrieNode(x) for x in ["a","b"]])
-        sen1[-1]._data[utils.BIND_S] = True
-        sen1[-1]._data[utils.TYPE_DEC_S] = TypeInstance("a", ["a"])
+        sen1[-1]._data[util.BIND_S] = True
+        sen1[-1]._data[util.TYPE_DEC_S] = TypeInstance("a", ["a"])
         tc.add_assertion(sen1)
         sen2 = Sentence([TrieNode(x) for x in ["a","c"]])
-        sen2[-1]._data[utils.BIND_S] = True
-        sen2[-1]._data[utils.TYPE_DEC_S] = TypeInstance("b", ["b"])
+        sen2[-1]._data[util.BIND_S] = True
+        sen2[-1]._data[util.TYPE_DEC_S] = TypeInstance("b", ["b"])
         tc.add_assertion(sen2)
 
         with self.assertRaises(te.TypeConflictException):
@@ -143,8 +143,8 @@ class TypingTests(unittest.TestCase):
         """ a.$b(::a) """
         tc = TypeChecker()
         sen1 = Sentence([TrieNode(x) for x in ["a","b"]])
-        sen1[-1]._data[utils.BIND_S] = True
-        sen1[-1]._data[utils.TYPE_DEC_S] = TypeInstance("a", ["a"])
+        sen1[-1]._data[util.BIND_S] = True
+        sen1[-1]._data[util.TYPE_DEC_S] = TypeInstance("a", ["a"])
         tc.add_assertion(sen1)
 
         with self.assertRaises(te.TypeUndefinedException):
@@ -165,12 +165,12 @@ class TypingTests(unittest.TestCase):
         tc.add_definition(TypeDefinition("String", ["String"], [], []))
         tc.add_definition(TypeDefinition("Number", ["Number"], [], []))
         sen1 = Sentence([TrieNode(x) for x in ["a","b"]])
-        sen1[-1]._data[utils.BIND_S] = True
-        sen1[-1]._data[utils.TYPE_DEC_S] = TypeInstance("String", ["String"])
+        sen1[-1]._data[util.BIND_S] = True
+        sen1[-1]._data[util.TYPE_DEC_S] = TypeInstance("String", ["String"])
         tc.add_assertion(sen1)
         sen2 = Sentence([TrieNode(x) for x in ["a","b"]])
-        sen2[-1]._data[utils.BIND_S] = True
-        sen2[-1]._data[utils.TYPE_DEC_S] = TypeInstance("Number", ["Number"])
+        sen2[-1]._data[util.BIND_S] = True
+        sen2[-1]._data[util.TYPE_DEC_S] = TypeInstance("Number", ["Number"])
         with self.assertRaises(te.TypeConflictException):
             tc.add_assertion(sen2)
 
@@ -184,12 +184,12 @@ class TypingTests(unittest.TestCase):
         tc.add_definition(TypeDefinition("Number", ["Number"], [], []))
 
         struct_sen = Sentence([TrieNode(x) for x in ["name", "x"]])
-        struct_sen[-1]._data[utils.BIND_S] = True
-        struct_sen[-1]._data[utils.TYPE_DEC_S] = TypeInstance("String", ["String"])
+        struct_sen[-1]._data[util.BIND_S] = True
+        struct_sen[-1]._data[util.TYPE_DEC_S] = TypeInstance("String", ["String"])
         tc.add_definition(TypeDefinition("first", ["first"], [struct_sen], []))
 
         sen = Sentence([TrieNode(x) for x in ["a", "b"]])
-        sen[0]._data[utils.TYPE_DEC_S] = TypeInstance("first", ["first"])
+        sen[0]._data[util.TYPE_DEC_S] = TypeInstance("first", ["first"])
 
         tc.add_assertion(sen)
 
@@ -206,14 +206,14 @@ class TypingTests(unittest.TestCase):
         tc.add_definition(TypeDefinition("Number", ["Number"], [], []))
 
         struct_sen = Sentence([TrieNode(x) for x in ["name", "x"]])
-        struct_sen[-1]._data[utils.BIND_S] = True
-        struct_sen[-1]._data[utils.TYPE_DEC_S] = TypeInstance("String", ["String"])
+        struct_sen[-1]._data[util.BIND_S] = True
+        struct_sen[-1]._data[util.TYPE_DEC_S] = TypeInstance("String", ["String"])
         tc.add_definition(TypeDefinition("first", ["first"], [struct_sen], []))
 
         sen = Sentence([TrieNode(x) for x in ["a", "name", "y"]])
-        sen[0]._data[utils.TYPE_DEC_S] = TypeInstance("first", ["first"])
-        sen[-1]._data[utils.BIND_S] = True
-        sen[-1]._data[utils.TYPE_DEC_S] = TypeInstance("Number", ["Number"])
+        sen[0]._data[util.TYPE_DEC_S] = TypeInstance("first", ["first"])
+        sen[-1]._data[util.BIND_S] = True
+        sen[-1]._data[util.TYPE_DEC_S] = TypeInstance("Number", ["Number"])
 
         tc.add_assertion(sen)
 
@@ -230,37 +230,37 @@ class TypingTests(unittest.TestCase):
         tc.add_definition(TypeDefinition("Number", ["Number"], [], []))
 
         struct_sen = Sentence([TrieNode(x) for x in ["name", "x", "y"]])
-        struct_sen[-2]._data[utils.BIND_S] = True
-        struct_sen[-2]._data[utils.TYPE_DEC_S] = TypeInstance("String", ["String"])
-        struct_sen[-1]._data[utils.BIND_S] = True
-        struct_sen[-1]._data[utils.TYPE_DEC_S] = TypeInstance("Number", ["Number"])
+        struct_sen[-2]._data[util.BIND_S] = True
+        struct_sen[-2]._data[util.TYPE_DEC_S] = TypeInstance("String", ["String"])
+        struct_sen[-1]._data[util.BIND_S] = True
+        struct_sen[-1]._data[util.TYPE_DEC_S] = TypeInstance("Number", ["Number"])
         tc.add_definition(TypeDefinition("first", ["first", "type"], [struct_sen], []))
 
         sen = Sentence([TrieNode(x) for x in ["bob", "name", "z", "q"]])
-        sen[0]._data[utils.TYPE_DEC_S] = TypeInstance("first", ["first", "type"])
-        sen[-2]._data[utils.BIND_S] = True
-        sen[-1]._data[utils.BIND_S] = True
+        sen[0]._data[util.TYPE_DEC_S] = TypeInstance("first", ["first", "type"])
+        sen[-2]._data[util.BIND_S] = True
+        sen[-1]._data[util.BIND_S] = True
         tc.add_assertion(sen)
 
         #Query the First Variable, should be untyped
         query_sen = Sentence([TrieNode(x) for x in ["bob","name","z"]])
-        query_sen[-1]._data[utils.BIND_S] = True
+        query_sen[-1]._data[util.BIND_S] = True
         self.assertIsNone(tc.query(query_sen)[0]._type)
         #then the second, should be untyped
         query_sen = Sentence([TrieNode(x) for x in ["bob","name","z", "q"]])
-        query_sen[-1]._data[utils.BIND_S] = True
-        query_sen[-1]._data[utils.BIND_S] = True
+        query_sen[-1]._data[util.BIND_S] = True
+        query_sen[-1]._data[util.BIND_S] = True
         self.assertIsNone(tc.query(query_sen)[0]._type)
 
         tc.validate()
         #Check the first var is inferred
         query_sen = Sentence([TrieNode(x) for x in ["bob","name","z"]])
-        query_sen[-1]._data[utils.BIND_S] = True
+        query_sen[-1]._data[util.BIND_S] = True
         self.assertEqual(tc.query(query_sen)[0]._type, TypeInstance("String", ["String"]))
         #Check the second var is inferred
         query_sen = Sentence([TrieNode(x) for x in ["bob","name","z", "q"]])
-        query_sen[-2]._data[utils.BIND_S] = True
-        query_sen[-1]._data[utils.BIND_S] = True
+        query_sen[-2]._data[util.BIND_S] = True
+        query_sen[-1]._data[util.BIND_S] = True
         self.assertEqual(tc.query(query_sen)[0]._type, TypeInstance("Number", ["Number"]))
 
     def test_typing_nested_types(self):
@@ -275,29 +275,29 @@ class TypingTests(unittest.TestCase):
 
         #Small Type
         type_1_sen = Sentence([TrieNode(x) for x in ["name", "x"]])
-        type_1_sen[-1]._data[utils.BIND_S] = True
-        type_1_sen[-1]._data[utils.TYPE_DEC_S] = TypeInstance("String", ["String"])
+        type_1_sen[-1]._data[util.BIND_S] = True
+        type_1_sen[-1]._data[util.TYPE_DEC_S] = TypeInstance("String", ["String"])
         tc.add_definition(TypeDefinition("smallType", ["small", "type"], [type_1_sen], []))
 
         #Large Type
         type_2_sen = Sentence([TrieNode(x) for x in ["component", "x"]])
-        type_2_sen[-1]._data[utils.BIND_S] = True
-        type_2_sen[-1]._data[utils.TYPE_DEC_S] = TypeInstance("smallType", ["small", "type"])
+        type_2_sen[-1]._data[util.BIND_S] = True
+        type_2_sen[-1]._data[util.TYPE_DEC_S] = TypeInstance("smallType", ["small", "type"])
         tc.add_definition(TypeDefinition("largeType", ["large", "type"], [type_2_sen], []))
 
         assertion = Sentence(TrieNode(x) for x in ["a", "component", "q", "name", "w"])
-        assertion[0]._data[utils.TYPE_DEC_S] = TypeInstance("largeType", ["large", "type"])
-        assertion[2]._data[utils.BIND_S] = True
-        assertion[-1]._data[utils.BIND_S] = True
+        assertion[0]._data[util.TYPE_DEC_S] = TypeInstance("largeType", ["large", "type"])
+        assertion[2]._data[util.BIND_S] = True
+        assertion[-1]._data[util.BIND_S] = True
 
         tc.add_assertion(assertion)
 
         query_sen1 = Sentence([TrieNode(x) for x in ["a","component","q"]])
-        query_sen1[-1]._data[utils.BIND_S] = True
+        query_sen1[-1]._data[util.BIND_S] = True
 
         query_sen2 = Sentence([TrieNode(x) for x in ["a", "component", "q", "name", "w"]])
-        query_sen2[-3]._data[utils.BIND_S] = True
-        query_sen2[-1]._data[utils.BIND_S] = True
+        query_sen2[-3]._data[util.BIND_S] = True
+        query_sen2[-1]._data[util.BIND_S] = True
 
         self.assertIsNone(tc.query(query_sen1)[0]._type)
         self.assertIsNone(tc.query(query_sen2)[0]._type)
@@ -319,29 +319,29 @@ class TypingTests(unittest.TestCase):
 
         #Small Type
         type_1_sen = Sentence([TrieNode(x) for x in ["name", "x"]])
-        type_1_sen[-1]._data[utils.BIND_S] = True
-        type_1_sen[-1]._data[utils.TYPE_DEC_S] = TypeInstance("String", ["String"])
+        type_1_sen[-1]._data[util.BIND_S] = True
+        type_1_sen[-1]._data[util.TYPE_DEC_S] = TypeInstance("String", ["String"])
         tc.add_definition(TypeDefinition("smallType", ["small", "type"], [type_1_sen], []))
 
         #Large Type
         type_2_sen = Sentence([TrieNode(x) for x in ["component", "x"]])
-        type_2_sen[-1]._data[utils.BIND_S] = True
-        type_2_sen[-1]._data[utils.TYPE_DEC_S] = TypeInstance("smallType", ["small", "type"])
+        type_2_sen[-1]._data[util.BIND_S] = True
+        type_2_sen[-1]._data[util.TYPE_DEC_S] = TypeInstance("smallType", ["small", "type"])
         tc.add_definition(TypeDefinition("largeType", ["large", "type"], [type_2_sen], []))
 
         assertion = Sentence(TrieNode(x) for x in ["a", "component", "q", "name", "w"])
-        assertion[0]._data[utils.TYPE_DEC_S] = TypeInstance("largeType", ["large", "type"])
-        assertion[2]._data[utils.BIND_S] = True
-        assertion[-1]._data[utils.BIND_S] = True
-        assertion[-1]._data[utils.TYPE_DEC_S] = TypeInstance("Number", ["Number"])
+        assertion[0]._data[util.TYPE_DEC_S] = TypeInstance("largeType", ["large", "type"])
+        assertion[2]._data[util.BIND_S] = True
+        assertion[-1]._data[util.BIND_S] = True
+        assertion[-1]._data[util.TYPE_DEC_S] = TypeInstance("Number", ["Number"])
         tc.add_assertion(assertion)
 
         query_sen1 = Sentence([TrieNode(x) for x in ["a","component","q"]])
-        query_sen1[-1]._data[utils.BIND_S] = True
+        query_sen1[-1]._data[util.BIND_S] = True
 
         query_sen2 = Sentence([TrieNode(x) for x in ["a", "component", "q", "name", "w"]])
-        query_sen2[-3]._data[utils.BIND_S] = True
-        query_sen2[-1]._data[utils.BIND_S] = True
+        query_sen2[-3]._data[util.BIND_S] = True
+        query_sen2[-1]._data[util.BIND_S] = True
 
         self.assertIsNone(tc.query(query_sen1)[0]._type)
         self.assertEqual(tc.query(query_sen2)[0]._type, TypeInstance("Number", ["Number"]))
@@ -362,28 +362,28 @@ class TypingTests(unittest.TestCase):
 
         #polytype
         type_1_sen = Sentence([TrieNode(x) for x in ["name", "x"]])
-        type_1_sen[-1]._data[utils.BIND_S] = True
+        type_1_sen[-1]._data[util.BIND_S] = True
         param = TrieNode("x")
-        param._data[utils.BIND_S] = True
+        param._data[util.BIND_S] = True
         tc.add_definition(TypeDefinition("polyType", ["polyType"], [type_1_sen], [param]))
 
         #assertions
         assertion = Sentence([TrieNode(x) for x in ["a", "name", "q"]])
-        assertion[0]._data[utils.TYPE_DEC_S] = TypeInstance("polyType", ["polyType"], [TypeInstance("String", ["String"])])
-        assertion[-1]._data[utils.BIND_S] = True
+        assertion[0]._data[util.TYPE_DEC_S] = TypeInstance("polyType", ["polyType"], [TypeInstance("String", ["String"])])
+        assertion[-1]._data[util.BIND_S] = True
         tc.add_assertion(assertion)
 
         assertion2 = Sentence(TrieNode(x) for x in ["b", "name", "t"])
-        assertion2[0]._data[utils.TYPE_DEC_S] = TypeInstance("polyType", ["polyType"], [TypeInstance("Number", ["Number"])])
-        assertion2[-1]._data[utils.BIND_S] = True
+        assertion2[0]._data[util.TYPE_DEC_S] = TypeInstance("polyType", ["polyType"], [TypeInstance("Number", ["Number"])])
+        assertion2[-1]._data[util.BIND_S] = True
         tc.add_assertion(assertion2)
 
         #queries
         query_sen1 = Sentence([TrieNode(x) for x in ["a","name","q"]])
-        query_sen1[-1]._data[utils.BIND_S] = True
+        query_sen1[-1]._data[util.BIND_S] = True
 
         query_sen2 = Sentence([TrieNode(x) for x in ["b","name","t"]])
-        query_sen2[-1]._data[utils.BIND_S] = True
+        query_sen2[-1]._data[util.BIND_S] = True
 
         self.assertIsNone(tc.query(query_sen1)[0]._type)
         self.assertIsNone(tc.query(query_sen2)[0]._type)
@@ -404,21 +404,21 @@ class TypingTests(unittest.TestCase):
 
         #polytype 1
         type_1_sen = Sentence([TrieNode(x) for x in ["name", "x"]])
-        type_1_sen[-1]._data[utils.BIND_S] = True
+        type_1_sen[-1]._data[util.BIND_S] = True
         param = TrieNode("x")
-        param._data[utils.BIND_S] = True
+        param._data[util.BIND_S] = True
         tc.add_definition(TypeDefinition("polyTypeOne", ["polyTypeOne"], [type_1_sen], [param]))
 
         #polytype 2
         type_2_sen = Sentence([TrieNode(x) for x in ["nested"]])
-        type_2_sen[-1]._data[utils.BIND_S] = True
+        type_2_sen[-1]._data[util.BIND_S] = True
         type_2_param = TrieNode("y")
-        type_2_param._data[utils.BIND_S] = True
-        type_2_sen[-1]._data[utils.TYPE_DEC_S] = TypeInstance("polyTypeOne",
+        type_2_param._data[util.BIND_S] = True
+        type_2_sen[-1]._data[util.TYPE_DEC_S] = TypeInstance("polyTypeOne",
                                                              ["polyTypeOne"],
                                                              [type_2_param])
         param2 = TrieNode("y")
-        param2._data[utils.BIND_S] = True
+        param2._data[util.BIND_S] = True
         tc.add_definition(TypeDefinition("polyTypeTwo",
                                          ["polyTypeTwo"],
                                          [type_2_sen],
@@ -426,17 +426,17 @@ class TypingTests(unittest.TestCase):
 
         #Assertion
         assertion = Sentence([TrieNode(x) for x in ["a", "nested", "name", "x"]])
-        assertion[0]._data[utils.BIND_S] = True
+        assertion[0]._data[util.BIND_S] = True
         assertion_param = TypeInstance("String", ["String"])
-        assertion[0]._data[utils.TYPE_DEC_S] = TypeInstance("polyTypeTwo",
+        assertion[0]._data[util.TYPE_DEC_S] = TypeInstance("polyTypeTwo",
                                                            ["polyTypeTwo"],
                                                            [assertion_param])
-        assertion[-1]._data[utils.BIND_S] = True
+        assertion[-1]._data[util.BIND_S] = True
         tc.add_assertion(assertion)
 
         #queries
         query_sen1 = Sentence([TrieNode(x) for x in ["a","nested", "name","x"]])
-        query_sen1[-1]._data[utils.BIND_S] = True
+        query_sen1[-1]._data[util.BIND_S] = True
 
         self.assertIsNone(tc.query(query_sen1)[0]._type)
 
@@ -456,13 +456,13 @@ class TypingTests(unittest.TestCase):
 
         #polytype
         type_1_sen = Sentence([TrieNode(x) for x in ["name", "x"]])
-        type_1_sen[-1]._data[utils.BIND_S] = True
+        type_1_sen[-1]._data[util.BIND_S] = True
         param = TrieNode("x")
-        param._data[utils.BIND_S] = True
+        param._data[util.BIND_S] = True
         type_2_sen = Sentence([TrieNode(x) for x in ["age", "y"]])
-        type_2_sen[-1]._data[utils.BIND_S] = True
+        type_2_sen[-1]._data[util.BIND_S] = True
         param2 = TrieNode("y")
-        param2._data[utils.BIND_S] = True
+        param2._data[util.BIND_S] = True
         tc.add_definition(TypeDefinition("polyType",
                                          ["polyType"],
                                          [type_1_sen, type_2_sen],
@@ -470,23 +470,23 @@ class TypingTests(unittest.TestCase):
 
         #assertions
         assertion = Sentence(TrieNode(x) for x in ["a", "name", "q"])
-        assertion[0]._data[utils.TYPE_DEC_S] = TypeInstance("polyType",
+        assertion[0]._data[util.TYPE_DEC_S] = TypeInstance("polyType",
                                                            ["polyType"],
                                                            [TypeInstance("String", ["String"]),
                                                             TypeInstance("Number", ["Number"])])
-        assertion[-1]._data[utils.BIND_S] = True
+        assertion[-1]._data[util.BIND_S] = True
         tc.add_assertion(assertion)
 
         assertion2 = Sentence(TrieNode(x) for x in ["a", "age", "w"])
-        assertion2[-1]._data[utils.BIND_S] = True
+        assertion2[-1]._data[util.BIND_S] = True
         tc.add_assertion(assertion2)
 
         #queries
         query_sen1 = Sentence([TrieNode(x) for x in ["a","name","q"]])
-        query_sen1[-1]._data[utils.BIND_S] = True
+        query_sen1[-1]._data[util.BIND_S] = True
 
         query_sen2 = Sentence([TrieNode(x) for x in ["a","age","w"]])
-        query_sen2[-1]._data[utils.BIND_S] = True
+        query_sen2[-1]._data[util.BIND_S] = True
 
         self.assertIsNone(tc.query(query_sen1)[0]._type)
         self.assertIsNone(tc.query(query_sen2)[0]._type)
@@ -501,11 +501,11 @@ class TypingTests(unittest.TestCase):
         tc = TypeChecker()
 
         sen = Sentence([TrieNode(x) for x in ["a", "test", "var"]])
-        sen[-1]._data[utils.BIND_S] = True
+        sen[-1]._data[util.BIND_S] = True
         tc.add_assertion(sen)
 
         sen2 = Sentence([TrieNode(x) for x in ["var", "blah"]])
-        sen2[0]._data[utils.BIND_S] = True
+        sen2[0]._data[util.BIND_S] = True
         tc.add_assertion(sen2)
 
         self.assertEqual(len(tc._variables), 1)
