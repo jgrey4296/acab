@@ -16,7 +16,9 @@ class FactNode(TrieNode):
     @staticmethod
     def Root():
         """ Get a Root designated node """
-        return FactNode(ROOT_S, EXOP.DOT)
+        return FactNode(KBU.ROOT_S, {KBU.OPERATOR_S: KBU.EXOP.DOT,
+                                     KBU.BIND_S: False,
+                                     KBU.VALUE_TYPE_S: KBU.NAME_S})
 
     @staticmethod
     def copy_fact(node):
