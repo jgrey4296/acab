@@ -35,6 +35,8 @@ class ActionOp(ProductionOperator):
 class Action:
     """ The Core Action Class, holds an operator,
     and a list of values """
+
+
     def __init__(self, op, values, type_=None):
         """ Create an action with an operator and values """
         assert(isinstance(values, list))
@@ -46,11 +48,7 @@ class Action:
         else:
             raise Exception("Action not registered with runtime: {}".format(op))
         self._values = values
-        if type_ is None:
-            self._type = util.MUTABLE.CORE
-        else:
-            assert(isinstance(type_, util.MUTABLE))
-            self._type = type_
+
         # the actions that group together logically
         # ie: expanded action macros
         self._linkedActions = []
