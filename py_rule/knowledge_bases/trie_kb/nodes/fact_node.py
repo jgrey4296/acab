@@ -1,7 +1,6 @@
 """ The Core Trie-Node, stores information, meta data """
 from py_rule.abstract.trie.nodes.trie_node import TrieNode
-from py_rule.util import ROOT_S, OPERATOR_S, BIND_S
-from py_rule.knowledge_bases.trie_kb.util import EXOP
+from py_rule.knowledge_bases.trie_kb import util as KBU
 import logging as root_logger
 import re
 import weakref
@@ -25,9 +24,9 @@ class FactNode(TrieNode):
             return node.copy()
         else:
             assert(isinstance(node, TrieNode))
-            operator = EXOP.DOT
-            if OPERATOR_S in node._data:
-                operator = node._data[OPERATOR_S]
+            operator = KBU.EXOP.DOT
+            if KBU.OPERATOR_S in node._data:
+                operator = node._data[KBU.OPERATOR_S]
             new_node = FactNode(node._value,
                                 operator,
                                 data=node._data)
@@ -35,19 +34,20 @@ class FactNode(TrieNode):
 
     def __init__(self,
                  value,
-                 operator,
-                 parent=None,
-                 data=None):
-        assert(isinstance(operator, EXOP))
+                 data=None,
+                 parent=None):
+        assert isinstance(data[KBU.OPERATOR_S], KBU.EXOP), data
+        assert KBU.BIND_S in data, data
+        assert KBU.VALUE_TYPE_S in data, data
         if parent is not None:
             parent = weakref.ref(parent)
 
         super().__init__(value, data)
 
+        self._op = data[KBU.OPERATOR_S]
         self._parent = parent
         self._dirty = True
         self._cached = []
-        self._op = operator
 
     def __eq__(self, other):
         """ Main comparison routine: turn to strings, compare """
@@ -71,13 +71,13 @@ class FactNode(TrieNode):
 
     def __contains__(self, other):
         if self.has_child(other):
-            return self.get_child(other)._data[OPERATOR_S] == other._data[OPERATOR_S]
+            return self.get_child(other)._data[KBU.OPERATOR_S] == other._data[KBU.OPERATOR_S]
         return False
 
     def copy(self):
         assert(not bool(self._children))
         # TODO: deeper copy
-        return FactNode(self._value, self._op)
+        return FactNode(self._value, data=self._data.copy())
 
     def set_parent(self, parent):
         assert(isinstance(parent, FactNode))
@@ -100,7 +100,7 @@ class FactNode(TrieNode):
         copied.set_parent(self)
 
         # deal with exclusion
-        if self._op is EXOP.EX:
+        if self._op is KBU.EXOP.EX:
             self.clear_children()
 
         self.add_child(copied)
@@ -111,7 +111,7 @@ class FactNode(TrieNode):
         assert(isinstance(fact, TrieNode))
         if fact in self:
             potential = self.get_child(fact)
-            if fact._data[OPERATOR_S] == potential._data[OPERATOR_S]:
+            if fact._data[KBU.OPERATOR_S] == potential._data[KBU.OPERATOR_S]:
                 return potential
 
         return None
@@ -124,7 +124,7 @@ class FactNode(TrieNode):
 
     def bind(self, data):
         """ Annotate the Node with a Meta-Bind Evaluation """
-        if not self._data[BIND_S]:
+        if not self._data[KBU.BIND_S]:
             return self.copy()
         else:
             copied = self.copy()

@@ -5,14 +5,13 @@ capable of parsing  multiple facts
 import logging as root_logger
 import pyparsing as pp
 from py_rule.knowledge_bases.trie_kb.nodes.fact_node import FactNode
-from py_rule import util as PRU
-from py_rule.knowledge_bases.trie_kb import util as kb_util
-from py_rule.knowledge_bases.trie_kb.parsing import util as kbp_util
+from py_rule.knowledge_bases.trie_kb import util as KBU
+from py_rule.knowledge_bases.trie_kb.parsing import util as KBPU
 from py_rule.abstract.parsing import util as PU
 
 logging = root_logger.getLogger(__name__)
 # Hotload insertion points:
-TYPE_ANNOTATION = pp.Forward
+TYPE_ANNOTATION = pp.Forward()
 OTHER_VALS = pp.Forward()
 
 
@@ -21,32 +20,32 @@ def make_node(toks):
     and any additional data
     """
     value = None
-    data = {kb_util.BIND_S: False,
-            PRU.OPERATOR_S: kb_util.EXOP.DOT}
-    if kb_util.BIND_S in toks:
+    data = {KBU.BIND_S: False,
+            KBU.OPERATOR_S: KBU.EXOP.DOT}
+    if KBU.BIND_S in toks:
         # The node is a variable
-        assert(isinstance(toks[kb_util.BIND_S][0], tuple))
-        value = toks[kb_util.BIND_S][0][1]
-        data[kb_util.VALUE_TYPE_S] = kb_util.NAME_S
-        data[kb_util.BIND_S] = True
-    elif kb_util.VALUE_S in toks:
+        assert(isinstance(toks[KBU.BIND_S][0], tuple))
+        value = toks[KBU.BIND_S][0][1]
+        data[KBU.VALUE_TYPE_S] = KBU.NAME_S
+        data[KBU.BIND_S] = True
+    elif KBU.VALUE_S in toks:
         # The node is a value
-        assert(isinstance(toks[kb_util.VALUE_S], tuple))
-        value = toks[kb_util.VALUE_S][1]
-        data[kb_util.VALUE_TYPE_S] = toks[kb_util.VALUE_S][0]
+        assert(isinstance(toks[KBU.VALUE_S], tuple))
+        value = toks[KBU.VALUE_S][1]
+        data[KBU.VALUE_TYPE_S] = toks[KBU.VALUE_S][0]
     else:
         raise SyntaxError("Unplanned parse type")
-    return FactNode(value, data)
+    return FactNode(value, data=data)
 
 
 def add_annotations(toks):
     """ Add additional data to a node """
     data = {}
-    if kb_util.OPERATOR_S in toks:
-        data[kb_util.OPERATOR_S] = toks[kb_util.OPERATOR_S][0]
-    if kb_util.ANNOTATION_S in toks:
-        data.update({x: y for x, y in toks[kb_util.ANNOTATION_S]})
-    toks[kb_util.NODE_S]._data.update(data)
+    if KBU.OPERATOR_S in toks:
+        data[KBU.OPERATOR_S] = toks[KBU.OPERATOR_S][0]
+    if KBU.ANNOTATION_S in toks:
+        data.update({x: y for x, y in toks[KBU.ANNOTATION_S]})
+    toks[KBU.NODE_S]._data.update(data)
     return toks.node
 
 
@@ -55,18 +54,18 @@ def PARAM_CORE(mid=None, end=None):
     if mid is None:
         mid = pp.Empty()
     if end is None:
-        end = PU.NG(PRU.OPERATOR_S, kbp_util.EL_OPERATOR)
+        end = PU.NG(KBU.OPERATOR_S, KBPU.EL_OPERATOR)
     else:
         end = pp.Empty()
-    parser = PU.N(kb_util.NODE_S, VALBIND) \
-        + PU.op(PU.OPAR + PU.NG(kb_util.ANNOTATION_S, mid) + PU.CPAR) + end
+    parser = PU.N(KBU.NODE_S, VALBIND) \
+        + PU.op(PU.OPAR + PU.NG(KBU.ANNOTATION_S, mid) + PU.CPAR) + end
     parser.setParseAction(add_annotations)
     return parser
 
 
 # alt for actions, PARAM_CORE
-VALBIND = pp.Or([PU.N(PRU.BIND_S, PU.BIND),
-                 PU.N(PRU.VALUE_S, pp.Or([PU.BASIC_VALUE, OTHER_VALS]))])
+VALBIND = pp.Or([PU.N(KBU.BIND_S, PU.BIND),
+                 PU.N(KBU.VALUE_S, pp.Or([PU.BASIC_VALUE, OTHER_VALS]))])
 VALBIND.setParseAction(make_node)
 
 # Core = a. | b! | $a. | $b!

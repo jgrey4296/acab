@@ -9,7 +9,7 @@ from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.action import ActionMacro
 from py_rule.abstract.rule import Rule
 from py_rule.typing.type_definition import TypeDefinition
-import py_rule.utils as utils
+from py_rule.knowledge_bases.trie_kb import util as KBU
 
 from . import FactParser as FP
 from . import RuleParser as RP
@@ -48,7 +48,7 @@ def add_file_binding(toks):
     """ Store the string of in the binding """
     binding = toks[0]
     string = toks[1]
-    assert(binding._data[utils.BIND_S])
+    assert(binding._data[KBU.BIND_S])
     assert(isinstance(string, Sentence))
     assert(binding._value not in parseBindings)
     parseBindings[binding._value] = string
@@ -69,7 +69,7 @@ def expansion_pass(toks):
     return toks
 
 def clearBinding(toks):
-    assert(all([x._data[utils.BIND_S] for x in toks]))
+    assert(all([x._data[KBU.BIND_S] for x in toks]))
     assert(all([x._value in parseBindings for x in toks]))
     for x in toks:
         del parseBindings[x._value]

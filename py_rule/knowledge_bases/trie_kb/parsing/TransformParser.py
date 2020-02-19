@@ -4,7 +4,7 @@ import pyparsing as pp
 from py_rule.abstract.transform import OperatorTransform
 from py_rule.abstract.transform import Transform, TransformOp
 from py_rule.abstract.parsing import util as PU
-from py_rule.knowledge_bases.trie_kb import util as kb_util
+from py_rule.knowledge_bases.trie_kb import util as KBU
 from py_rule.knowledge_bases.trie_kb.parsing.FactParser import VALBIND
 
 logging = root_logger.getLogger(__name__)
@@ -24,27 +24,27 @@ def build_operators():
 
 
 def buildBinaryTransformComponent(toks):
-    return OperatorTransform(toks[kb_util.OPERATOR_S],
-                             (toks[kb_util.LEFT_S],
-                              toks[kb_util.RIGHT_S]))
+    return OperatorTransform(toks[KBU.OPERATOR_S],
+                             (toks[KBU.LEFT_S],
+                              toks[KBU.RIGHT_S]))
 
 
 def buildUnaryTransformComponent(toks):
-    return OperatorTransform(toks[kb_util.OPERATOR_S],
-                             tuple([toks[kb_util.RIGHT_S]]))
+    return OperatorTransform(toks[KBU.OPERATOR_S],
+                             tuple([toks[KBU.RIGHT_S]]))
 
 
 def buildTernaryTransformComponent(toks):
-    return OperatorTransform(toks[kb_util.OPERATOR_S],
-                             (toks[kb_util.SOURCE_S],
-                              toks[kb_util.REGEX_S],
-                              toks[kb_util.REPLACE_S]))
+    return OperatorTransform(toks[KBU.OPERATOR_S],
+                             (toks[KBU.SOURCE_S],
+                              toks[KBU.REGEX_S],
+                              toks[KBU.REPLACE_S]))
 
 
 def addRebind(toks):
-    if kb_util.TARGET_S in toks:
-        toks[kb_util.TRANSFORM][0].set_rebind(toks[kb_util.TARGET_S][0])
-    return toks[kb_util.TRANSFORM][0]
+    if KBU.TARGET_S in toks:
+        toks[KBU.TRANSFORM_S][0].set_rebind(toks[KBU.TARGET_S][0])
+    return toks[KBU.TRANSFORM_S][0]
 
 
 # Hotloaded Transform Operators
@@ -55,23 +55,23 @@ TERNARY_TRANS_OP = pp.Forward()
 rebind = PU.ARROW + VALBIND
 
 # transform: ( bind op val|bind -> bind)
-unary_transform_core = PU.N(kb_util.OPERATOR_S, UNARY_TRANS_OP) \
-    + PU.N(kb_util.RIGHT_S, VALBIND)
+unary_transform_core = PU.N(KBU.OPERATOR_S, UNARY_TRANS_OP) \
+    + PU.N(KBU.RIGHT_S, VALBIND)
 
-binary_transform_core = PU.N(kb_util.LEFT_S, VALBIND) \
-    + PU.N(kb_util.OPERATOR_S, BINARY_TRANS_OP) \
-    + PU.N(kb_util.RIGHT_S, VALBIND)
+binary_transform_core = PU.N(KBU.LEFT_S, VALBIND) \
+    + PU.N(KBU.OPERATOR_S, BINARY_TRANS_OP) \
+    + PU.N(KBU.RIGHT_S, VALBIND)
 
-ternary_transform_core = PU.N(kb_util.SOURCE_S, VALBIND) \
-    + PU.N(kb_util.OPERATOR_S, TERNARY_TRANS_OP) \
-    + PU.N(kb_util.REGEX_S, VALBIND) \
-    + PU.N(kb_util.REPLACE_S, VALBIND)
+ternary_transform_core = PU.N(KBU.SOURCE_S, VALBIND) \
+    + PU.N(KBU.OPERATOR_S, TERNARY_TRANS_OP) \
+    + PU.N(KBU.REGEX_S, VALBIND) \
+    + PU.N(KBU.REPLACE_S, VALBIND)
 
-transform_core = PU.NG(kb_util.TRANSFORM_S,
+transform_core = PU.NG(KBU.TRANSFORM_S,
                        pp.Or([binary_transform_core,
                               ternary_transform_core,
                               unary_transform_core])) \
-                              + PU.op(PU.N(kb_util.TARGET_S, rebind))
+                              + PU.op(PU.N(KBU.TARGET_S, rebind))
 
 transforms = transform_core + pp.ZeroOrMore(PU.COMMA + transform_core)
 
