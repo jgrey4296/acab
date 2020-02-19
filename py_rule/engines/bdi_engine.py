@@ -2,7 +2,7 @@
 from time import sleep
 import logging as root_logger
 from .trie_engine import TrieEngine
-import py_rule.utils as util
+import py_rule.util as util
 
 logging = root_logger.getLogger(__name__)
 

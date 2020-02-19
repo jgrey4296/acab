@@ -10,11 +10,10 @@ Upon exit, it calculates the appropriate time arcs for events
 from .arc import Arc
 from .event import Event
 from .pattern import Pattern, PatternChoice, PatternPar
-from collections import namedtuple
 from enum import Enum
 from fractions import Fraction as t
 import logging as root_logger
-from py_rule.utils import OPT_S
+from py_rule.util import OPT_S
 logging = root_logger.getLogger(__name__)
 
 # PStart/End : SubPattern
@@ -26,18 +25,19 @@ CTOR_ACT = Enum("Actions for Pattern Constructor",
                 "PSTART PEND PDUAL CSTART CEND OP SIL")
 
 END_MATCHES = {
-    CTOR_ACT.PSTART : CTOR_ACT.PEND,
-    CTOR_ACT.CSTART : CTOR_ACT.CEND
+    CTOR_ACT.PSTART: CTOR_ACT.PEND,
+    CTOR_ACT.CSTART: CTOR_ACT.CEND
     }
+
 
 def construct_pattern_simple(orig_tokens):
     """ orig_tokens::[(value | pattern, data) | CTOR_ACT]
     create a new pattern, detecting as necessary parallels
     and choices
     """
-    final_pattern_data = { OPT_S : False }
+    final_pattern_data = {OPT_S: False}
     patt_type = Pattern
-    #TODO: detect different pattern types?
+    # TODO: detect different pattern types?
     tokens = orig_tokens[0][:]
     start = tokens.pop(0)
     if start is CTOR_ACT.CSTART:
@@ -50,7 +50,7 @@ def construct_pattern_simple(orig_tokens):
         tokens.pop()
     end = tokens.pop()
     assert(end == END_MATCHES[start])
-    #split on commas
+    # split on commas
     pattern_phs = []
     while (CTOR_ACT.PDUAL in tokens):
         index = tokens.index(CTOR_ACT.PDUAL)
@@ -60,19 +60,19 @@ def construct_pattern_simple(orig_tokens):
     if bool(tokens):
         pattern_phs.append(tokens[:])
     assert(bool(pattern_phs))
-    #construct patterns
+    # construct patterns
     patterns = []
     for ph in pattern_phs:
         ph_len = len(ph)
-        new_pattern = Pattern(Arc(t(0,1), t(1,1)),
+        new_pattern = Pattern(Arc(t(0, 1), t(1, 1)),
                               [Event(Arc(t(i, ph_len),
                                          t(i+1, ph_len)),
                                      v,
                                      isinstance(v, Pattern),
-                                     d) for i,(v,d) in enumerate(ph)])
+                                     d) for i, (v, d) in enumerate(ph)])
         patterns.append(new_pattern)
 
-    #wrap in main pattern
+    # wrap in main pattern
     final_pattern = None
     if patt_type == Pattern:
         final_pattern = patterns[0]
@@ -81,5 +81,5 @@ def construct_pattern_simple(orig_tokens):
                                   patterns[0]._components)
 
     elif len(patterns) > 1:
-        final_pattern = patt_type(Arc(t(0,1), t(1,1)), patterns)
+        final_pattern = patt_type(Arc(t(0, 1), t(1, 1)), patterns)
     return (final_pattern, final_pattern_data)

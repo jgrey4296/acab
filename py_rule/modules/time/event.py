@@ -5,9 +5,10 @@ from py_rule.abstract.value import PyRuleValue
 from .arc import Arc
 from fractions import Fraction
 import logging as root_logger
-from py_rule.utils import BIND_S, OPT_S
+from py_rule.util import BIND_S, OPT_S
 
 logging = root_logger.getLogger(__name__)
+
 
 class Event(PyRuleValue):
     """ A Value active during a timespan """
@@ -16,8 +17,8 @@ class Event(PyRuleValue):
         assert(isinstance(a, Arc))
         self._arc = a.copy()
         self._value = b
-        self._params= { BIND_S : False,
-                        OPT_S : False }
+        self._params = {BIND_S: False,
+                        OPT_S: False}
         self._value_is_pattern = value_is_pattern
         if params is not None:
             self._params.update(params)
@@ -55,6 +56,7 @@ class Event(PyRuleValue):
             val = self._value
 
         return Event(self._arc, val, self._value_is_pattern, self._params)
+
     def set_arc(self, arc):
         assert(isinstance(arc, Arc))
         self._arc = arc.copy()
@@ -63,9 +65,10 @@ class Event(PyRuleValue):
     def base(self):
         """ Get all fractions used in this event """
         time_list = self._arc.pair()
-        size =  self._arc.size()
+        size = self._arc.size()
         if self._value_is_pattern:
-            time_list += [(x * size) - self._arc._start  for x in self._value.base()]
+            time_list += [(x * size) - self._arc._start
+                          for x in self._value.base()]
         return set(time_list)
 
     def key(self):
@@ -74,7 +77,7 @@ class Event(PyRuleValue):
 
     def print_flip(self, start=True):
         """ Get a string describing the event's entry/exit status """
-        fmt_str ="⤒{} "
+        fmt_str = "⤒{} "
         if not start:
             fmt_str = "{}⤓"
         return fmt_str.format(str(self._value))
@@ -89,7 +92,7 @@ class Event(PyRuleValue):
         if self._value_is_pattern:
             return "{}{}".format(self._value.pprint(wrap), tail)
         else:
-            return "{}{}{}".format(head, str(self._value),tail)
+            return "{}{}{}".format(head, str(self._value), tail)
 
     def is_pure(self):
         """ Where purity is defined as being a simple

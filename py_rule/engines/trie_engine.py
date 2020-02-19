@@ -13,7 +13,7 @@ from py_rule.abstract.engine import Engine
 from py_rule.abstract.sentence import Sentence
 from py_rule.knowledge_bases.trie_kb.trie_knowledge_base import TrieKnowledgeBase
 from py_rule.knowledge_bases.trie_kb.nodes.fact_node import FactNode
-import py_rule.utils as util
+import py_rule.util as util
 
 from py_rule.knowledge_bases.trie_kb.parsing import ActionParser as AP
 from py_rule.knowledge_bases.trie_kb.parsing import FactParser as FP

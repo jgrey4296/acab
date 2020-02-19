@@ -12,9 +12,10 @@ from py_rule.modules.time.arc import Arc
 from py_rule.modules.time.event import Event
 
 from .pattern_iterator import PatternIterator
-from .utils import TIME_T, Time, f_gcd
+from .util import TIME_T, Time, f_gcd
 
 logging = root_logger.getLogger(__name__)
+
 
 # TODO: binary tree / beachline for finding events?
 class Pattern(PyRuleValue):
@@ -38,7 +39,6 @@ class Pattern(PyRuleValue):
             self._bindings.update(bindings)
         [self._var_set.update(x.var_set()) for x in self._components]
 
-
     def __str__(self):
         return "[{}]".format(self.pprint(True))
 
@@ -54,7 +54,9 @@ class Pattern(PyRuleValue):
         return self.handle_call_results(results, just_values)
 
     def __contains__(self, other):
-        """ Test whether a given object or time is within this patterns bounds """
+        """ Test whether a given object
+        or time is within this patterns bounds
+        """
         return other in self._arc
 
     def __add__(self, other):
@@ -116,7 +118,7 @@ class Pattern(PyRuleValue):
         rows = [[] for x in range(most_simultaneous)]
         for x in collection:
             len_x = len(x)
-            for j,r in enumerate(rows):
+            for j, r in enumerate(rows):
                 if j < len_x:
                     r.append(x[j])
                 else:
@@ -255,11 +257,9 @@ class PatternPar(Pattern):
 class PatternChoice(Pattern):
     def __init__(self, a, vals=None, data=None, bindings=None):
         components = [x.copy() for x in vals]
-        base_arc = Arc(Time(0,1), Time(1,1))
-        vals = [Event(base_arc, x, True)
-                            if isinstance(x, Pattern)
-                            else x.set_arc(base_arc)
-                            for x in components]
+        base_arc = Arc(Time(0, 1), Time(1, 1))
+        vals = [Event(base_arc, x, True) if isinstance(x, Pattern)
+                else x.set_arc(base_arc) for x in components]
         super().__init__(a, vals, data, bindings)
         self._wrap_template = "<{}>"
         self._join_template = " "

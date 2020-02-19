@@ -6,5 +6,5 @@ combined with modular DSLs it can host to expand its functionality
 network.py provides a core network class and simple protocol to
 communicate with unity.
 
-utils provides standard enums, strings and some utility functions
+util provides standard enums, strings and some utility functions
 """

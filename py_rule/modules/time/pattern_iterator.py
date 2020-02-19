@@ -2,7 +2,7 @@
 PatternIterator automates pattern output
 """
 from fractions import Fraction as f
-from .utils import time_str
+from .util import time_str
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
 

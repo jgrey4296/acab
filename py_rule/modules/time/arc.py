@@ -3,7 +3,7 @@ Arcs express segments of rational time
 """
 from py_rule.abstract.value import PyRuleValue
 from fractions import Fraction
-from .utils import time_str
+from .util import time_str
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
@@ -34,11 +34,11 @@ class Arc(PyRuleValue):
 
     def __eq__(self, other):
         assert(isinstance(other, Arc))
-        return all([x == y for x,y in zip(self.pair(), other.pair())])
-
+        return all([x == y for x, y in zip(self.pair(), other.pair())])
 
     def key(self):
         return self._start
+
     def copy(self):
         return Arc(self._start, self._end)
 
