@@ -21,6 +21,7 @@ end
 
 """
 
+
 class Layer:
     """ The Abstract Layer Class """
 
@@ -29,5 +30,3 @@ class Layer:
         self._rule_selectors = None
         self._agendas = []
         self._tests = []
-
-

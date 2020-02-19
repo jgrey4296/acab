@@ -1,12 +1,12 @@
 from py_rule.abstract.node import PyRuleNode
-import py_rule.utils as utils
+import py_rule.util as util
 
 
 class TrieNode(PyRuleNode):
 
     @staticmethod
     def Root():
-        return TrieNode(utils.ROOT_S)
+        return TrieNode(util.ROOT_S)
 
     def __init__(self, value, data=None):
         super().__init__(value, data)
@@ -14,27 +14,27 @@ class TrieNode(PyRuleNode):
     def __str__(self):
         """ Usable output """
         val = ""
-        if utils.VALUE_TYPE_S not in self._data:
+        if util.VALUE_TYPE_S not in self._data:
             val = str(self._value)
-        elif utils.VALUE_TYPE_S in self._data and self._data[utils.VALUE_TYPE_S] == "string":
+        elif util.VALUE_TYPE_S in self._data and self._data[util.VALUE_TYPE_S] == "string":
             val = '"{}"'.format(self._value)
-        elif self._data[utils.VALUE_TYPE_S] == 'float':
+        elif self._data[util.VALUE_TYPE_S] == 'float':
             val = str(self._value)
             val.replace(".", "d")
-        elif self._data[utils.VALUE_TYPE_S] == utils.REGEX_S:
+        elif self._data[util.VALUE_TYPE_S] == util.REGEX_S:
             val = "/{}/".format(self._value)
         else:
             val = str(self._value)
 
-        if utils.BIND_S in self._data and self._data[utils.BIND_S]:
+        if util.BIND_S in self._data and self._data[util.BIND_S]:
             val = "$" + val
 
-        if utils.CONSTRAINT_S in self._data:
-            constraints = ", ".join(str(x) for x in self._data[utils.CONSTRAINT_S])
+        if util.CONSTRAINT_S in self._data:
+            constraints = ", ".join(str(x) for x in self._data[util.CONSTRAINT_S])
             val += "({})".format(constraints)
 
-        if utils.OPERATOR_S in self._data:
-            val += utils.EXOP_lookup[self._data[utils.OPERATOR_S]]
+        if util.OPERATOR_S in self._data:
+            val += util.EXOP_lookup[self._data[util.OPERATOR_S]]
 
         return val
 
@@ -44,17 +44,17 @@ class TrieNode(PyRuleNode):
 
     def opless_print(self):
         val = str(self._value)
-        if utils.VALUE_TYPE_S in self._data and self._data[utils.VALUE_TYPE_S] == "string":
+        if util.VALUE_TYPE_S in self._data and self._data[util.VALUE_TYPE_S] == "string":
             val = '"{}"'.format(val)
-        elif utils.VALUE_TYPE_S in self._data and self._data[utils.VALUE_TYPE_S] == 'float':
+        elif util.VALUE_TYPE_S in self._data and self._data[util.VALUE_TYPE_S] == 'float':
             val = val.replace(".", "d")
-        elif utils.VALUE_TYPE_S in self._data and self._data[utils.VALUE_TYPE_S] == utils.REGEX_S:
+        elif util.VALUE_TYPE_S in self._data and self._data[util.VALUE_TYPE_S] == util.REGEX_S:
             val = "/{}/".format(val)
 
-        if utils.BIND_S in self._data and self._data[utils.BIND_S]:
+        if util.BIND_S in self._data and self._data[util.BIND_S]:
             val = "$" + val
-        if utils.CONSTRAINT_S in self._data:
-            constraints = ", ".join(str(x) for x in self._data[utils.CONSTRAINT_S])
+        if util.CONSTRAINT_S in self._data:
+            constraints = ", ".join(str(x) for x in self._data[util.CONSTRAINT_S])
             val += "({})".format(constraints)
         return val
 
@@ -65,10 +65,10 @@ class TrieNode(PyRuleNode):
 
     def split_tests(self):
         """ Split tests into (alphas, betas, regexs) """
-        if utils.CONSTRAINT_S not in self._data:
+        if util.CONSTRAINT_S not in self._data:
             return ([], [], [])
 
-        comps = self._data[utils.CONSTRAINT_S]
+        comps = self._data[util.CONSTRAINT_S]
         assert(isinstance(comps, list))
         alphas = []
         betas = []
@@ -84,7 +84,7 @@ class TrieNode(PyRuleNode):
 
     def is_exclusive(self):
         """ Checks for the exclusion operator in this node """
-        return self._data[utils.OPERATOR_S] is utils.EXOP.EX
+        return self._data[util.OPERATOR_S] is util.EXOP.EX
 
     def looks_exclusive(self):
         """ Checks for implicit exclusivity by having 0 or 1 children """

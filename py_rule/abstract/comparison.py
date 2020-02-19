@@ -1,7 +1,7 @@
 """ Simple comparison functions to be used in rules """
 import logging as root_logger
 from .production_operator import ProductionOperator
-from py_rule.utils import BIND_S
+from py_rule.util import BIND_S
 logging = root_logger.getLogger(__name__)
 
 
@@ -11,15 +11,13 @@ class CompOp(ProductionOperator):
     the comparison into CompOp.op_list with an operator string
     """
     op_list = {}
-    # TODO: populate this
-    enum_list = None
 
     def __init__(self, op_str):
         self._op_str = op_str
         CompOp.op_list[str(self)] = self
 
     def __call__(self, a, b):
-        raise Exception("Abstract CompOp")
+        raise NotImplementedError()
 
     def __str__(self):
         return self._op_str

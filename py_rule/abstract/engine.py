@@ -7,7 +7,7 @@ from .action import Action
 from .transform import Transform
 from .knowledge_base import KnowledgeBase
 from py_rule.typing.type_checker import TypeChecker
-from py_rule import utils as util
+from py_rule import util as util
 logging = root_logger.getLogger(__name__)
 
 
@@ -22,7 +22,8 @@ class Engine:
         self._type_checker = TypeChecker()
 
         self._proposed_actions = []
-        # to be updated with printed representations of the kb state after each action
+        # to be updated with printed representations
+        # of the kb state after each action
         self._prior_states = []
         # named recall states of past kb states
         self._recall_states = {}
@@ -48,11 +49,11 @@ class Engine:
         # TODO : add rules to type checker
         # TODO : type_checker validate
 
-    #Initialisation:
+    # Initialisation:
     def load_file(self, filename):
         """ Load a file spec for the facts / rules for this engine """
         # pylint: disable=unused-argument,no-self-use
-        raise Exception("Base Engine Stub")
+        raise NotImplementedError("Base Engine Stub")
 
     def register_action(self, name, func):
         """ Register custom actions,
@@ -60,10 +61,10 @@ class Engine:
         assert(isinstance(name, str))
         assert(callable(func))
         if name in self._custom_actions:
-            raise Exception("Duplicate action: {}".format(name))
+            raise AttributeError("Duplicate action: {}".format(name))
         self._custom_actions[name] = func
 
-    #Base Actions
+    # Base Actions
     def add(self, s):
         """ Assert a new fact into the engine """
         # pylint: disable=unused-argument,no-self-use
@@ -91,19 +92,22 @@ class Engine:
         # Assert input messages
         # rule the rule layers
         # return actions
-        raise Exception("Abstract Method")
+        raise NotImplementedError()
 
-    #Export
+    # Export
     def _save_state(self, data):
         """ Copy the current string representation of the knowledge base,
         and any associated data """
         self._prior_states.append((str(self._knowledge_base), data))
 
-    #Utility
+    # Utility
     def _run_rules(self, rule_locations=None, rule_tags=None, policy=None):
         """ Run all, or some, rules of the engine, if provided a policy,
         propose actions and select from the proposals """
-        self._save_state((rule_locations, rule_tags, policy, self._proposed_actions))
+        self._save_state((rule_locations,
+                          rule_tags,
+                          policy,
+                          self._proposed_actions))
         rules_to_run = []
         # Get the rules:
         if rule_locations is None and rule_tags is None:
@@ -115,7 +119,7 @@ class Engine:
             rules_to_run = [x for x in self._rules.values()
                             if bool(x._tags.intersection(rule_tags))]
         elif rule_locations is not None:
-            raise Exception('Rule Location Running is not implemented yet')
+            raise NotImplementedError('Rule Location Running is not implemented yet')
 
         should_propose_rules = policy is not None
 
@@ -155,7 +159,8 @@ class Engine:
             opFunc = x._op
             param_length = opFunc._num_params
             # get params:
-            params = [chosen_ctx[y._value] if y._data[util.BIND_S] else y._value for y in x._params]
+            params = [chosen_ctx[y._value] if y._data[util.BIND_S]
+                      else y._value for y in x._params]
 
             result = opFunc(*params, chosen_ctx)
 
@@ -168,7 +173,9 @@ class Engine:
         return chosen_ctx
 
     def _run_actions(self, data, ruleOrActions, propose=False):
-        """ Enact, or propose, the action list or actions in a rule provided """
+        """ Enact, or propose, the action list
+        or actions in a rule provided
+        """
         assert(isinstance(data, dict))
         assert(isinstance(ruleOrActions, (Rule, list)))
         if propose:
@@ -181,7 +188,7 @@ class Engine:
 
     def _perform_actions(self, data, actions):
         """ Actual enaction of a set of actions """
-        assert(all([isinstance(x, Actions.Action) for x in actions]))
+        assert(all([isinstance(x, Action) for x in actions]))
         for x in actions:
             # lookup op
             opFunc = x._op
@@ -206,7 +213,7 @@ class Engine:
                 self._perform_actions(d, r)
 
     def _register_layers(self, layers):
-        raise Exception("Abstract Method")
+        raise NotImplementedError()
 
     def _register_layer_policies(self, policies):
-        raise Exception("Abstract Method")
+        raise NotImplementedError()

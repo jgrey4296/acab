@@ -4,6 +4,7 @@ The abstract form of the knowledge base
 import pyparsing as pp
 from .mod_interface import ModuleSpecification
 
+
 class KnowledgeBase:
     """ The Abstract KnowledgeBase """
 
@@ -14,13 +15,13 @@ class KnowledgeBase:
     def add_modules(self, mods):
         """ Add types into the parser """
         if self._have_added_types:
-            raise Exception("Can Only expand knowledge base types once")
+            raise ImportError("Can Only expand knowledge base types once")
         assert(all([isinstance(x, ModuleSpecification) for x in mods]))
         self._added_types = True
-        #Construct operators:
+        # Construct operators:
         [x.construct_operators() for x in mods]
 
-        #Add values parsers:
+        # Add values parsers:
         parsers = [x.get_parser() for x in mods]
         or_d_types = pp.Or([x for x in parsers if x is not None])
         self._insert_into_values_parser(or_d_types)
@@ -32,7 +33,7 @@ class KnowledgeBase:
         once all module's operators have been constructed
         """
         if self._have_built_operators:
-            raise Exception("Can only build operators once")
+            raise ImportError("Can only build operators once")
         self._have_built_operators = True
         # if you haven't added types by now, tough:
         self._have_added_types = True
@@ -40,26 +41,26 @@ class KnowledgeBase:
 
     # Methods to implement:
     def __eq__(self):
-        raise Exception("Abstract Eq Method")
+        raise NotImplementedError()
 
     def add(self, data):
-        raise Exception("Abstract Add Method")
+        raise NotImplementedError()
 
     def retract(self, data):
-        raise Exception("Abstract Retract Method")
+        raise NotImplementedError()
 
     def query(self, data):
-        raise Exception("Abstract Query Method")
+        raise NotImplementedError()
 
     def _insert_into_values_parser(self, parser):
         """
         Should look like FP.OTHER_VALS << or_d_parser
         """
-        raise Exception("Abstract Method")
+        raise NotImplementedError()
 
     def _build_operator_parser(self):
         """ This Method calls each parser component's
         'build_operators' function, that populates Forward defined
         parser combinators *after* modules are loaded.
         This ensures operators are included in the parsers """
-        raise Exception("Abstract build operators method")
+        raise NotImplementedError()

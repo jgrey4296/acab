@@ -68,21 +68,21 @@ class Trie:
             visited.add(current)
             if (pred is None or pred(current)) and current not in nodes:
                 nodes.append(current)
-            queue += [x for x in list(current._children.values()) if x not in visited]
+            queue += [x for x in list(current._children.values())
+                      if x not in visited]
 
         return nodes
 
     def print_trie(self):
-
         output = []
         queue = [([], x) for x in self._root]
-        processed = set()
         while bool(queue):
             curr_path, current_node = queue.pop(0)
             total_path = curr_path + [current_node]
             if not bool(current_node):
                 # if leaf
-                output.append("".join([str(x) for x in curr_path] + [current_node.opless_print()]))
+                output.append("".join([str(x) for x in curr_path]
+                                      + [current_node.opless_print()]))
             else:
                 queue += [(total_path, x) for x in current_node]
 

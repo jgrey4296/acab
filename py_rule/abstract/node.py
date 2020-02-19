@@ -3,6 +3,7 @@ from .value import PyRuleValue
 from fractions import Fraction
 from re import Pattern
 
+
 class PyRuleNode(PyRuleValue):
     """ The Abstract Node Class """
 
@@ -24,14 +25,13 @@ class PyRuleNode(PyRuleValue):
         if data:
             self._data.update(data)
 
-
     def __str__(self):
         """ String should create a re-parseable output """
-        raise Exception("Abstract str method")
+        raise NotImplementedError()
 
     def __repr__(self):
         """ Repr should create an unambiguous debug string """
-        raise Exception("Abstract repr method")
+        raise NotImplementedError()
 
     def __hash__(self):
         return hash(str(self))

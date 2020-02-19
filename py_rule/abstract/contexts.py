@@ -1,5 +1,6 @@
 """ Contexts: A Container for all partial matches of a query being run """
 
+
 class Contexts:
     """ Container of available contexts for a match in the trie
     A list of tuples: ({}, LastAccessedNode)
@@ -62,5 +63,4 @@ class Contexts:
 
     def select(self, bounds=(None, None)):
         """ Select a certain number of binding groups from available contexts """
-        raise Exception("Context.select is deprecated")
-
+        raise DeprecationWarning()

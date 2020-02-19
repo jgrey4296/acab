@@ -5,6 +5,7 @@ Comes in two parts: The Parser, and the data
 """
 from .value import PyRuleValue
 
+
 class ModuleSpecification:
 
     def __init__(self, parser=None, types=None, funcs=None):
@@ -27,11 +28,11 @@ class ModuleSpecification:
         """ Takes a String, parses it into Data format,
         This is used to integrate the module as a value
         in the main language """
-        raise Exception("This is an Abstract Method")
+        raise NotImplementedError()
 
     def get_parser(self):
         return self._parser
 
     def construct_operators(self):
         """ Use this to call operator constructors """
-        raise Exception("This is an Abstract Method")
+        raise NotImplementedError()

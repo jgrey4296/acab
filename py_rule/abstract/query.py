@@ -1,6 +1,9 @@
-""" Query: The Datastructure to hold a question to pose to the knowledgebase """
+""" Query: The Datastructure to hold a
+question to pose to the knowledge base
+"""
 from .sentence import Sentence
 from .value import PyRuleValue
+
 
 class Query(PyRuleValue):
     """ A Query for the Trie Knowledge base """
@@ -34,7 +37,9 @@ class Query(PyRuleValue):
         return Query(newClauses)
 
     def split_clauses(self):
-        """ Separate out the clauses of the query into positive and negative clauses """
+        """ Separate out the clauses of the query
+        into positive and negative clauses
+        """
         pos = []
         neg = []
         for c in self._clauses:

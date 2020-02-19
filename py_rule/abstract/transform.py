@@ -19,7 +19,7 @@ class TransformOp(ProductionOperator):
         TransformOp.op_list[op_str][num_params] = self
 
     def __call__(self, a, b):
-        raise Exception("Abstract method needs to be implemented")
+        raise NotImplementedError("Abstract method needs to be implemented")
 
     def __str__(self):
         return self._op_str
@@ -47,7 +47,8 @@ class OperatorTransform(TransformComponent):
 
     def __str__(self):
         op = str(self._op)
-        source = [x.opless_print() if isinstance(x, PyRuleNode) else str(x) for x in self._params]
+        source = [x.opless_print() if isinstance(x, PyRuleNode)
+                  else str(x) for x in self._params]
         if self._rebind is not None:
             rebind = " -> {}".format(self._rebind.opless_print())
         else:
@@ -71,7 +72,7 @@ class OperatorTransform(TransformComponent):
     def verify_op(self):
         """ Complains if the operator is not a defined Operator Enum """
         if self._op is None:
-            raise Exception("Unknown Op: {}".format(self._op))
+            raise SyntaxError("Unknown Op: {}".format(self._op))
 
     def set_rebind(self, bind):
         """ Set this transform to rebind its result to a different variable """
@@ -79,7 +80,9 @@ class OperatorTransform(TransformComponent):
 
 
 class Transform:
-    """ Holds a number of separate transform operators together to apply to a binding set """
+    """ Holds a number of separate transform
+    operators together to apply to a binding set
+    """
 
     # have min and max bounds
     def __init__(self, components):
@@ -102,9 +105,9 @@ class Transform:
     def get_input_requirements(self):
         # TODO
         # return the set of input bound names
-        return set([])
+        raise NotImplementedError()
 
     def get_output_spec(self):
         # TODO
         # return the set of output bound names
-        return set([])
+        raise NotImplementedError()

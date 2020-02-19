@@ -3,11 +3,10 @@
     the results are passed to the action list
 """
 import logging as root_logger
-import py_rule.utils as util
+import py_rule.util as util
 from .value import PyRuleValue
 from .transform import Transform
 from .action import Action, ActionMacroUse
-from .sentence import Sentence
 from .query import Query
 
 logging = root_logger.getLogger(__name__)
@@ -39,7 +38,8 @@ class Rule(PyRuleValue):
     def __str__(self):
         nameStr = str(self._name)
         if bool(self._tags):
-            tagsStr = "\t" + ", ".join(sorted(["#{}".format(x) for x in self._tags])) + "\n\n"
+            tagsStr = "\t" + ", ".join(sorted(["#{}".format(x)
+                                               for x in self._tags])) + "\n\n"
         else:
             tagsStr = ""
         if self._query is not None:
@@ -51,7 +51,8 @@ class Rule(PyRuleValue):
         else:
             transformStr = ""
         if bool(self._actions):
-            actionsStr = "\t" + "\n\t".join([str(x) for x in self._actions]) + "\n"
+            actionsStr = "\t" + "\n\t".join([str(x)
+                                             for x in self._actions]) + "\n"
         else:
             actionsStr = ""
         return "{}:\n{}{}{}{}end".format(nameStr,
@@ -61,10 +62,13 @@ class Rule(PyRuleValue):
                                          actionsStr)
 
     def __repr__(self):
-        """ Create a representation of the rule. Not implementation specific """
+        """ Create a representation of the rule.
+        Not implementation specific
+        """
         nameStr = "".join([repr(x) for x in self._name])
         if bool(self._tags):
-            tagsStr = "\t" + ", ".join(sorted(["#{}".format(x) for x in self._tags])) + "\n\n"
+            tagsStr = "\t" + ", ".join(sorted(["#{}".format(x)
+                                               for x in self._tags])) + "\n\n"
         else:
             tagsStr = ""
         if self._query is not None:
@@ -76,7 +80,8 @@ class Rule(PyRuleValue):
         else:
             transformStr = ""
         if bool(self._actions):
-            actionsStr = "\t" + "\n\t".join([repr(x) for x in self._actions]) + "\n"
+            actionsStr = "\t" + "\n\t".join([repr(x)
+                                             for x in self._actions]) + "\n"
         else:
             actionsStr = ""
         return "{}:\n{}{}{}{}end".format(nameStr,
@@ -100,7 +105,9 @@ class Rule(PyRuleValue):
         return True
 
     def expand_bindings(self, bindings):
-        """ Return a new Rule, modified to have bindings replaced with their values """
+        """ Return a new Rule, modified to have
+        bindings replaced with their values
+        """
         assert(isinstance(bindings, dict))
         # expand the name
         newName = self._name.expand_bindings(bindings)
@@ -149,4 +156,4 @@ class Rule(PyRuleValue):
         and invert it, making the asserted actions the conditions,
         and the conditions the actions """
         # TODO
-        raise Exception("Unimplemented")
+        raise NotImplementedError("Unimplemented")

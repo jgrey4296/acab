@@ -3,7 +3,7 @@ Actions: Describes the *ENGINE AGNOSTIC* basic actions that a knowledgebase can
 perform, along with associated enums, and IR data structures
 """
 from .production_operator import ProductionOperator
-from py_rule import utils as util
+from py_rule import util as util
 from py_rule.abstract.sentence import Sentence
 import logging as root_logger
 
@@ -23,7 +23,7 @@ class ActionOp(ProductionOperator):
         ActionOp.op_list[op_str] = self
 
     def __call__(self, engine, params):
-        raise Exception("Abstract Method needs to be implemented")
+        raise NotImplementedError()
 
     def __str__(self):
         return self._op_str
@@ -76,7 +76,7 @@ class Action:
     def verify_op(self):
         """ Check the Action is using a valid operator (ACT enum) """
         if self._op._op_str not in ActionOp.op_list.keys() and not self.is_custom():
-            raise Exception("Unrecognised Action: {}".format(self._op))
+            raise AttributeError("Unrecognised Action: {}".format(self._op))
 
     def get_values(self, data):
         """ Output a list of bindings from this action """

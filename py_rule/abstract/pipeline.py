@@ -35,11 +35,10 @@ class Pipeline:
         Check rule selectors topologically sort
         Check modules are loaded
         """
-        return
-
+        raise NotImplementedError()
 
     def __call__(self, tick):
-        return
+        raise NotImplementedError()
 
     # input constraints
     # output constraints

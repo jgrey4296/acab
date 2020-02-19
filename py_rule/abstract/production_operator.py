@@ -4,6 +4,7 @@ Used for Comparison, Transform, and Performance Operators
 """
 from .value import PyRuleValue
 
+
 class ProductionOperator(PyRuleValue):
     """ The Base Operator Class """
 
@@ -15,7 +16,7 @@ class ProductionOperator(PyRuleValue):
         return
 
     def __str__(self):
-        raise Exception("Abstract str method")
+        raise NotImplementedError()
 
     def __repr__(self):
-        raise Exception("Abstract repr method")
+        raise NotImplementedError()
