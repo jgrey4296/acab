@@ -33,9 +33,6 @@ class TrieNode(PyRuleNode):
             constraints = ", ".join(str(x) for x in self._data[util.CONSTRAINT_S])
             val += "({})".format(constraints)
 
-        if util.OPERATOR_S in self._data:
-            val += util.EXOP_lookup[self._data[util.OPERATOR_S]]
-
         return val
 
     def __repr__(self):

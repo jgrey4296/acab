@@ -54,6 +54,15 @@ class FactNode(TrieNode):
         assert(isinstance(other, FactNode))
         return str(self) == str(other)
 
+
+    def __str__(self):
+        val = super().__str__()
+
+        if KBU.OPERATOR_S in self._data:
+            val += KBU.EXOP_lookup[self._data[KBU.OPERATOR_S]]
+
+        return val
+
     def __repr__(self):
         return "FactNode: {}".format(str(self))
 
