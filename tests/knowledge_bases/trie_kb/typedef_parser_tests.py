@@ -6,7 +6,7 @@ import py_rule.knowledge_bases.trie_kb.parsing.TypeDefParser as TD
 from py_rule.abstract.trie.nodes.trie_node import TrieNode
 from py_rule.abstract.sentence import Sentence
 from py_rule.typing.type_definition import TypeDefinition
-import py_rule.utils as util
+import py_rule.util as util
 
 class Trie_Fact_Parser_Tests(unittest.TestCase):
 

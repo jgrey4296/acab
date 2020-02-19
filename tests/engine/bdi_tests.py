@@ -1,7 +1,7 @@
 import unittest
 import logging
 from test_context import py_rule
-import py_rule.utils as util
+import py_rule.util as util
 from py_rule.engines import bdi_engine as bdi
 from os.path import join, isfile, exists, isdir, splitext, expanduser
 from os.path import abspath, split

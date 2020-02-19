@@ -6,8 +6,8 @@ from py_rule.abstract.query import Query
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.comparison import Comparison, CompOp
 from py_rule.modules.standard_operators.operator_module import OperatorSpec
-import py_rule.utils as util
-from py_rule.utils import EXOP
+import py_rule.util as util
+from py_rule.util import EXOP
 
 class Trie_Query_Parser_Tests(unittest.TestCase):
 

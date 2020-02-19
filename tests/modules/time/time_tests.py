@@ -5,8 +5,8 @@ from py_rule.modules.time.arc import Arc
 from py_rule.modules.time.event import Event
 from py_rule.modules.time.pattern import Pattern, PatternSeq, PatternPar
 from py_rule.modules.time.parsing import parser as tp
-from py_rule.modules.time.utils import Time as t
-from py_rule.utils import BIND_S
+from py_rule.modules.time.util import Time as t
+from py_rule.util import BIND_S
 
 class TestTime(unittest.TestCase):
 
