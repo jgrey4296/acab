@@ -1,9 +1,8 @@
 """ The Core Trie-Node, stores information, meta data """
-from math import floor
 from py_rule.abstract.trie.nodes.trie_node import TrieNode
-from py_rule.utils import EXOP, ROOT_S, OPERATOR_S, BIND_S
+from py_rule.util import ROOT_S, OPERATOR_S, BIND_S
+from py_rule.knowledge_bases.trie_kb.util import EXOP
 import logging as root_logger
-import py_rule.utils as util
 import re
 import weakref
 
@@ -68,7 +67,7 @@ class FactNode(TrieNode):
 
     def copy(self):
         assert(not bool(self._children))
-        # todo: deeper copy
+        # TODO: deeper copy
         return FactNode(self._value, self._op)
 
     def set_parent(self, parent):

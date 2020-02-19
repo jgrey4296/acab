@@ -19,7 +19,6 @@ class TrieRule(Rule):
             assert(isinstance(name, Sentence))
         super().__init__(query, actions, transform, name, tags)
 
-
     def to_node_lists(self):
         """ Convert a rule to a list of node lists  """
         # TODO
@@ -28,10 +27,10 @@ class TrieRule(Rule):
         transforms = []
         actions = []
 
-        return []
+        raise NotImplementedError()
 
     @staticmethod
     def from_trie(node):
         """ given a root node of a trie, create a rule from it """
         # TODO
-        return Rule()
+        raise NotImplementedError()

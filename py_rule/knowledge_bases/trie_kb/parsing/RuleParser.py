@@ -2,73 +2,69 @@
 import logging as root_logger
 import pyparsing as pp
 from py_rule.knowledge_bases.trie_kb.trie_rule import TrieRule
+from py_rule.abstract.parsing import util as PU
+from py_rule.knowledge_bases.trie_kb import util as kb_util
 
 from . import FactParser as FP
 from . import QueryParser as QP
 from . import TransformParser as TP
 from . import ActionParser as AP
 
-pp.ParserElement.setDefaultWhitespaceChars(' \t\r')
-
 logging = root_logger.getLogger(__name__)
 
+
+# Hotloader:
 def build_operators():
     QP.build_operators()
     TP.build_operators()
     AP.build_operators()
 
+
+# Constructor:
 def build_rule(toks):
-    name = toks.rulename[0]
-    if 'conditions' in toks:
-        c = toks.conditions[0]
+    name = toks[kb_util.RULE_NAME_S][0]
+    if kb_util.CONDITION_S in toks:
+        c = toks[kb_util.CONDITION_S][0]
     else:
         c = None
-    if 'transforms' in toks:
-        t = toks.transforms[0]
+    if kb_util.TRANSFORM_S in toks:
+        t = toks[kb_util.TRANSFORM_S][0]
     else:
         t = None
-    if 'actions' in toks:
-        a = toks.actions[:]
+    if kb_util.ACTION_S in toks:
+        a = toks[kb_util.ACTION_S][:]
     else:
         a = []
-    if 'tags' in toks:
-        tags = [x[1] for x in toks.tags]
+    if kb_util.TAG_S in toks:
+        tags = [x[1] for x in toks[kb_util.TAG_S]]
     else:
         tags = []
     return TrieRule(c, a, transform=t, name=name, tags=tags)
 
 
-s = pp.Suppress
-op = pp.Optional
-opLn = s(op(pp.LineEnd()))
-HASH = s(pp.Literal('#'))
-emptyLine = s(pp.OneOrMore(pp.lineEnd))
+ruleName = FP.NG(kb_util.RULE_NAME_S, FP.param_fact_string)
 
-ruleName = FP.NG("rulename", FP.param_fact_string)
-tagName = HASH + FP.NAME
+tagName = PU.HASH + FP.NAME
 
-tagList = FP.N("tags", tagName + pp.ZeroOrMore(FP.COMMA + tagName) + emptyLine)
-conditions = FP.N("conditions", QP.clauses + emptyLine)
-transforms = FP.N("transforms", TP.transforms + emptyLine)
-actions = FP.N("actions", AP.actions + emptyLine)
+tagList = PU.N(kb_util.TAG_S, tagName
+               + pp.ZeroOrMore(PU.COMMA + tagName)
+               + PU.emptyLine)
+conditions = PU.N(kb_util.CONDITION_S, QP.clauses + PU.emptyLine)
+transforms = PU.N(kb_util.TRANSFORM_S, TP.transforms + PU.emptyLine)
+actions = PU.N(kb_util.ACTION_S, AP.actions + PU.emptyLine)
 
-rule = ruleName + FP.COLON + FP.sLn \
-       + op(tagList) \
-       + op(conditions) + op(transforms) + op(actions) \
-       + FP.end
+rule = ruleName + PU.COLON + PU.sLn \
+       + PU.op(tagList) \
+       + PU.op(conditions) + PU.op(transforms) + PU.op(actions) \
+       + PU.end
 
-rules = rule + pp.ZeroOrMore(emptyLine + rule)
+rules = rule + pp.ZeroOrMore(PU.emptyLine + rule)
 
+# Actions:
 rule.setParseAction(build_rule)
 
+
+# Main Parser
 def parseString(in_string):
     assert(isinstance(in_string, str))
     return rules.parseString(in_string)[:]
-
-
-"""
-meta rules:
-add/remove/replace penumbra conditions
-modify penumbra transforms
-add/remove/replace penumbra actions
-"""

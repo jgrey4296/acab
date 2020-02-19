@@ -16,8 +16,6 @@ from . import RuleParser as RP
 from . import ActionParser as AP
 from . import TypeDefParser as TDP
 
-comment = pp.dblSlashComment
-
 parseBindings = {}
 
 def final_pass(toks):
@@ -85,17 +83,10 @@ def remove_comments(string):
     return "\n".join(passing_lines).strip()
 
 
-
-pp.ParserElement.setDefaultWhitespaceChars(' \t\r')
-s = pp.Suppress
-op = pp.Optional
-opLn = s(op(pp.LineEnd()))
-orm = pp.OneOrMore
 bindArrow = s(pp.Literal('<-'))
 clear = s(pp.Literal('clear'))
 fileBind = FP.VALBIND + bindArrow + FP.param_fact_string
 clearBind = clear + orm(FP.VALBIND)
-
 
 file_component = pp.MatchFirst([s(fileBind),
                                 s(clearBind),

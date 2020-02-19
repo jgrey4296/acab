@@ -1,10 +1,9 @@
 """
 Functions to facilitate matching Trie-Nodes to queries
 """
-from py_rule import utils as util
+from . import util
 from py_rule.abstract.trie.nodes.trie_node import TrieNode
 import logging as root_logger
-import py_rule.abstract.comparison as Comp
 logging = root_logger.getLogger(__name__)
 
 
@@ -44,7 +43,8 @@ def non_bind_value_match(a, b, betas, regexs, data):
         tested = True
         if a in b:  # and test_betas(a._value, betas,data):
             logging.info("Suitable value")
-            newData, newNode = b.get_child(a).test_regexs_for_matching(regexs, data)
+            newData, newNode = b.get_child(a).test_regexs_for_matching(regexs,
+                                                                       data)
 
     return (tested, newNode, newData)
 
@@ -58,8 +58,10 @@ def existing_bind_match(a, b, betas, regexs, data):
     newNode, newData = (None, None)
     if a.value_string() in data:
         tested = True
-        if data[a.value_string()] in b._children and test_betas(data[a.value_string()], betas, data):
-            newData, newNode = b._children[data[a.value_string()]].test_regexs_for_matching(regexs, data)
+        if data[a.value_string()] in b._children \
+           and test_betas(data[a.value_string()], betas, data):
+            newData, newNode = b._children[data[a.value_string()]].test_regexs_for_matching(regexs,
+                                                                                            data)
     return (tested, newNode, newData)
 
 
@@ -75,31 +77,11 @@ def create_new_bindings(a, b, alphas, betas, regexs, data):
     assert(isinstance(b, TrieNode))
     output = []
     potentials = b._children.values()
-    passing = [x for x in potentials if test_alphas(x, alphas) and test_betas(x, betas, data)]
+    passing = [x for x in potentials if test_alphas(x, alphas)
+               and test_betas(x, betas, data)]
     logging.info("Passing: {}".format(len(passing)))
     for x in passing:
         output.append(x.test_regexs_for_matching(regexs,
                                                  data,
                                                  preupdate=(a._value, x._value)))
     return output
-
-
-def match_rule(testComponent, node, data):
-    """ Retrieve a meta-leaf rule from a node """
-    ruleBind = testComponent.get_meta_eval(util.META_OP.RULEBIND)
-    if not bool(ruleBind):
-        # Pass with no data if testComponent doesn't have a rulebind
-        return (False, None, None)
-
-    retrievedRule = node.get_meta_eval(util.META_OP.RULE)
-    if not bool(retrievedRule):
-        # Test, but fail, if theres no rule to retrieve
-        return (True, None, None)
-
-    if ruleBind.value in data:
-        # Test, but fail if the variable name is used already
-        return (True, None, None)
-    dataCopy = data.copy()
-    dataCopy[ruleBind.value] = retrievedRule
-    # return, tested, with data
-    return (True, node, dataCopy)
