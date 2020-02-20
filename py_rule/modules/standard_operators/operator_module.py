@@ -1,12 +1,11 @@
-from py_rule.abstract.mod_interface import ModuleSpecification
-from .causal_do import DoOperator
 from . import comparisons as C
+from . import perform as P
+from . import transforms as T
+from .causal_do import DoOperator
 from .delta_adjust import DeltaOperator
 from .interleave import InterleaveOperator
-from . import perform as P
 from .set_ops import SetOperator
-from . import transforms as T
-
+from py_rule.abstract.mod_interface import ModuleSpecification
 
 class OperatorSpec(ModuleSpecification):
     """ The Module Spec for base operators """
