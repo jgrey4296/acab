@@ -16,6 +16,11 @@ faily:
 pattern:
 	python -m unittest discover -p "*tests.py" -v -f -k ${PAT}
 
+# make init py's as necessary
+init:
+	find . -type d -print0 | xargs -0 -I {} touch "{}/__init__.py"
+
+
 clean:
 ifeq (${LOGS}, )
 	@echo "No Logs to delete"
