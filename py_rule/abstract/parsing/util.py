@@ -21,8 +21,8 @@ def N(name, parser):
 
 def construct_num(toks):
     # TODO: add in fractions and underscores
-    if util.DECIMALS_S in toks[0]:
-        return (util.FLOAT_S, float(toks[0].replace(UTIL.DECIMAL_S,
+    if util.DECIMAL_S in toks[0]:
+        return (util.FLOAT_S, float(toks[0].replace(util.DECIMAL_S,
                                                     '.')))
     else:
         return (util.INT_S, int(toks[0]))
@@ -55,7 +55,8 @@ HASH      = s(pp.Literal('#'))
 OPAR      = s(pp.Literal('('))
 QMARK     = s(pp.Literal('?'))
 SLASH     = s(pp.Literal('/'))
-SUB       = s(pp.Literal('-'))
+SUB_S     = '-'
+SUB       = s(pp.Literal(SUB_S))
 TILDE     = pp.Literal('~')
 OBRACKET = s(pp.Literal('['))
 CBRACKET = s(pp.Literal(']'))
@@ -64,13 +65,14 @@ MORE = s(pp.Literal('>'))
 VBAR = s(pp.Literal('|'))
 
 
-NAME        = pp.Word(pp.alphas + "_")
+NAME        = pp.Word(pp.alphas + util.UNDERSCORE_S)
 NAME.setParseAction(lambda t: (util.NAME_S, t[0]))
 
-NUM         = pp.Word(pp.nums + '-d')
+NUM         = pp.Word(pp.nums + SUB_S + util.DECIMAL_S)
 NUM.setParseAction(construct_num)
 
 STRING      = pp.dblQuotedString
+# Remove quotes from around strings:
 STRING.setParseAction(lambda t: (util.STRING_S, t[0].replace('"', '')))
 
 REGEX       = pp.Regex(r'/.+?/')
