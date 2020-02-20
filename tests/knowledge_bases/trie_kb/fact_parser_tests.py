@@ -24,8 +24,8 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
     #use testcase snippets
     def test_trivial(self):
         self.assertIsNotNone(FP.parseString)
-        self.assertIsNotNone(FP.param_fact_string)
-        self.assertIsNotNone(FP.param_fact_strings)
+        self.assertIsNotNone(FP.PARAM_SEN)
+        self.assertIsNotNone(FP.PARAM_SEN_PLURAL)
 
     def test_parseString(self):
         result = FP.parseString('a.b.c')[0]
@@ -41,7 +41,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertTrue(all([isinstance(x, Sentence) for x in result]))
 
     def test_param_fact_string(self):
-        result = FP.param_fact_string.parseString('a.b.$x')[0]
+        result = FP.PARAM_SEN.parseString('a.b.$x')[0]
         self.assertIsNotNone(result)
         self.assertTrue(result[-1]._data[KBU.BIND_S])
 
