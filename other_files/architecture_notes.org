@@ -1,4 +1,4 @@
-* PyRule Architecture notes
+* TODO PyRule Architecture notes
 ** Top Level
 *** Actions.py
     *Defines*: ACTS enum, ACTMACRONAME, Core Engine actions (E_ADD, E_RETRACT, E_PRINT),
@@ -274,3 +274,58 @@
 
 
    
+* Module Notes
+
+** Activity
+   Activity Theory Module.
+   Should be able to describe an activity pyramid,
+   involving actor, tool, object, objective, 
+   community, rules, division of labour
+** Artifact
+   Encode the construction of artifacts,
+   variation of quality, and how it can be used
+** Curves
+   Encode various easing and compression curves
+** Delegation
+   Encode a logic of delegation of actions
+** Failure
+   Describe how actions can fail and be recovered
+** Flow
+   Describe a graph and run a flow analyis on it
+   applicable for system flows
+** FSM
+   Finite State Machine
+** Governance
+   A Module to describe governance structures,
+   organisation, permissions, and IGU behaviour
+   (admin, gatekeeping, certification, education etc)
+** Indeterminacy
+   A Module to provide random number generators of different distrbutions
+** Lattice
+   a module to describe lattices and movement on them
+** Observable
+   a module to encode observability of actions, who can know what etc
+** Probability
+   a module to provide bayesian understanding of events
+** Protocol
+   a module to describe and perform multi party interaction protocols
+** Revocable
+   a module to describe revocation of permissions
+** Ritual
+   a module to describe either purely symbolic actions,
+   or the annotation of activities into activities with symbolic components
+** Social_Game
+   a module for kosters multiplayer games
+** Space
+   a module for holding description of space, and pathfind around it
+** Standard Operators
+   the core operators of pyrule. assertion, retraction, etc
+** Theoretic Game
+   A module to build game theory forms of games
+** Time
+   a module to describe rational time and patterns
+** Voting
+   a module to provide different forms of multi party voting decision procedures
+** Weights
+   a module to weight different values and ensure partial orders
+
