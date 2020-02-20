@@ -30,7 +30,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
 
     def test_basic_comparison(self):
         result = QP.constraints.parseString('>20, <40, !=$x, ==$y, ~=/blah/')[0]
-        self.assertEqual(result[0], "constraints")
+        self.assertEqual(result[0], KBU.CONSTRAINT_S)
         self.assertEqual(len(result[1]), 5)
         self.assertTrue(all([isinstance(x, Comparison) for x in result[1]]))
         self.assertIsInstance(result[1][0]._op, type(CompOp.op_list['>']))
@@ -45,10 +45,9 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result._op, type(CompOp.op_list['~=']))
         self.assertEqual(result._value._value, 'blah')
 
-
     def test_basic_query_core(self):
         result = QP.QueryCore.parseString('a(>20).')[0]
-        self.assertTrue('constraints' in result._data)
+        self.assertTrue(KBU.CONSTRAINT_S in result._data)
         self.assertEqual(len(result._data[KBU.CONSTRAINT_S]), 1)
         self.assertIsInstance(result._data[KBU.CONSTRAINT_S][0], Comparison)
 
@@ -81,7 +80,6 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result, Sentence)
         self.assertTrue(result._negated)
 
-
     def test_basic_multi_clause(self):
         result = QP.clauses.parseString('a.b.c?, a.b.d?, a.b.e?')[0]
         self.assertIsInstance(result, Query)
@@ -99,7 +97,6 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertTrue(result._clauses[1]._negated)
         self.assertFalse(result._clauses[2]._negated)
         self.assertTrue(result._clauses[3]._negated)
-
 
     def test_basic_query_construction(self):
         result = QP.parseString('a.b.c?, a.b.d?, a.b.e?')
@@ -138,14 +135,6 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertEqual(result._fallback[0][1][-1]._value, 'c')
         self.assertEqual(result._fallback[1][0], 'y')
         self.assertEqual(result._fallback[1][1][-1]._value, 'e')
-
-
-    # def test_rulebind_parsing(self):
-    #     result = QP.clause.parseString('a.b.c(^$x)?')[0]
-    #     self.assertIsInstance(result, Sentence)
-
-    #     # self.assertIsInstance(result._sentence[-1]
-
 
     def test_fact_str_equal(self):
         queries = ["a.b.c?", "a.b!c?", 'a.b."a string".c?',

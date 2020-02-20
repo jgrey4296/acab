@@ -5,6 +5,7 @@ from py_rule.knowledge_bases.trie_kb.parsing import TransformParser as TP
 from py_rule.modules.standard_operators.operator_module import OperatorSpec
 from py_rule.modules.standard_operators import transforms
 from py_rule.abstract import transform
+from py_rule.knowledge_bases.trie_kb import util as KBU
 
 class Trie_Transform_Parser_Tests(unittest.TestCase):
 
@@ -15,7 +16,6 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
         os._construct_action_ops()
         os._construct_transform_ops()
         TP.build_operators()
-
 
     def setUp(self):
         return 1
@@ -36,7 +36,7 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result, transform.OperatorTransform)
         self.assertIsInstance(result._op, transform.TransformOp)
         self.assertEqual(result._params[0]._value, "y")
-        self.assertTrue(result._params[0]._data['bind'])
+        self.assertTrue(result._params[0]._data[KBU.BIND_S])
         self.assertEqual(result._params[1]._value, 20)
         self.assertIsNotNone(result._rebind)
         self.assertEqual(result._rebind._value, 'z')
@@ -45,7 +45,6 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
         result = TP.parseString('$x + 20, $y + 5')
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result._components), 2)
-
 
     def test_unary_operator(self):
         result = TP.parseString('-$x')
@@ -129,6 +128,7 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
         zipped = zip(transforms, parsed)
         for t,p in zipped:
             self.assertEqual(t,str(p))
+
 
 if __name__ == "__main__":
       LOGLEVEL = logging.INFO
