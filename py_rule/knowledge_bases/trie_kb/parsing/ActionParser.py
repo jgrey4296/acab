@@ -12,10 +12,10 @@ logging = root_logger.getLogger(__name__)
 
 def build_operators():
     """ For Hotloading Action operators """
-    if operator.expr is None:
-        ACTION_STRS = [x for x in Actions.ActionOp.op_list.keys()]
-        operator << pp.Or([pp.Literal(x) for x in ACTION_STRS] + [CUSTOM])
-
+    if operator.expr is not None:
+        logging.warning("Action Operators Overwrite")
+    ACTION_STRS = [x for x in Actions.ActionOp.op_list.keys()]
+    operator << pp.Or([pp.Literal(x) for x in ACTION_STRS] + [CUSTOM])
 
 # constructors:
 def build_action(toks):

@@ -12,15 +12,20 @@ logging = root_logger.getLogger(__name__)
 
 # Builders:
 def build_operators():
-    if BINARY_TRANS_OP.expr is None:
-        BINARY_TRANS_OP << pp.Or([pp.Literal(k) for k, v
-                                  in TransformOp.op_list.items() if 2 in v])
-    if UNARY_TRANS_OP.expr is None:
-        UNARY_TRANS_OP << pp.Or([pp.Literal(k) for k, v
-                                 in TransformOp.op_list.items() if 1 in v])
-    if TERNARY_TRANS_OP.expr is None:
-        TERNARY_TRANS_OP << pp.Or([pp.Literal(k) for k, v
-                                   in TransformOp.op_list.items() if 3 in v])
+    if BINARY_TRANS_OP.expr is not None:
+        logging.warning("Transform Binary Operator Overwrite")
+    BINARY_TRANS_OP << pp.Or([pp.Literal(k) for k, v
+                              in TransformOp.op_list.items() if 2 in v])
+
+    if UNARY_TRANS_OP.expr is not None:
+        logging.warning("Transform Unary Operator Overwrite")
+    UNARY_TRANS_OP << pp.Or([pp.Literal(k) for k, v
+                             in TransformOp.op_list.items() if 1 in v])
+
+    if TERNARY_TRANS_OP.expr is not None:
+        logging.warning("Transform Ternary Operator Overwrite")
+    TERNARY_TRANS_OP << pp.Or([pp.Literal(k) for k, v
+                               in TransformOp.op_list.items() if 3 in v])
 
 
 def buildBinaryTransformComponent(toks):

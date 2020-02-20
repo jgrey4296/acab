@@ -14,9 +14,10 @@ logging = root_logger.getLogger(__name__)
 # Operator hotloading:
 def build_operators():
     """ Hotload comparison operators after they have been initialised """
-    if COMP_OP.expr is None:
-        OP_STRS = [x for x in C.CompOp.op_list.keys()]
-        COMP_OP << pp.Or([pp.Literal(x) for x in OP_STRS])
+    if COMP_OP.expr is not None:
+        logging.warning("Comparison Operators parser overwrite")
+    OP_STRS = [x for x in C.CompOp.op_list.keys()]
+    COMP_OP << pp.Or([pp.Literal(x) for x in OP_STRS])
 
 
 def build_constraint_list(toks):

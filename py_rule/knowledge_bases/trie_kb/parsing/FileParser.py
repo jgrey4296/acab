@@ -10,13 +10,15 @@ from py_rule.abstract.action import ActionMacro
 from py_rule.abstract.rule import Rule
 from py_rule.typing.type_definition import TypeDefinition
 from py_rule.knowledge_bases.trie_kb import util as KBU
+from py_rule.abstract.parsing import util as PU
 
 from . import FactParser as FP
 from . import RuleParser as RP
 from . import ActionParser as AP
-from . import TypeDefParser as TDP
 
 parseBindings = {}
+
+OTHER_STATEMENTS = pp.Forward()
 
 def final_pass(toks):
     """ The final action of the file parser.
@@ -79,23 +81,24 @@ def remove_comments(string):
     lines = string.split("\n")
     passing_lines = []
     for line in lines:
-        passing_lines.append("".join(list(comment.split(line))))
+        passing_lines.append("".join(list(PU.COMMENT.split(line))))
     return "\n".join(passing_lines).strip()
 
 
-bindArrow = s(pp.Literal('<-'))
-clear = s(pp.Literal('clear'))
+bindArrow = PU.s(pp.Literal('<-'))
+clear = PU.s(pp.Literal('clear'))
 fileBind = FP.VALBIND + bindArrow + FP.PARAM_SEN
-clearBind = clear + orm(FP.VALBIND)
+clearBind = clear + PU.orm(FP.VALBIND)
 
-file_component = pp.MatchFirst([s(fileBind),
-                                s(clearBind),
+file_component = pp.MatchFirst([PU.s(fileBind),
+                                PU.s(clearBind),
                                 AP.action_definition,
                                 RP.rule,
-                                TDP.TYPEDEF,
+                                OTHER_STATEMENTS,
                                 FP.PARAM_SEN])
 
-file_total = file_component + pp.ZeroOrMore(s(orm(pp.lineEnd)) + file_component)
+file_total = file_component \
+    + pp.ZeroOrMore(PU.s(PU.orm(pp.lineEnd)) + file_component)
 
 #Parse Actions
 file_total.setParseAction(final_pass)
