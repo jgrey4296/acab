@@ -6,8 +6,16 @@ from py_rule.modules.time.parsing import parser as tp
 from py_rule.knowledge_bases.trie_kb.parsing import FactParser as fp
 from py_rule.abstract.sentence import Sentence
 from py_rule.modules.time.pattern import Pattern
+from py_rule.modules.time.parsing import parser as tp
+from py_rule.abstract.parsing import util as PU
 
 class TrieIntegrationTimeTests(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        #Hotload value and bind
+        tp.VALUE << PU.BASIC_VALUE
+        tp.BIND << PU.BIND
 
     def setUp(self):
         return 1
