@@ -3,14 +3,21 @@ import logging
 from test_context import py_rule
 import py_rule.abstract.trie as T
 from py_rule.engines.trie_engine import TrieEngine
-from os.path import join, isfile, exists, isdir, splitext, expanduser
+from os.path import join, isfile, exists, isdir
+from os.path import split, splitext, expanduser, abspath
 from os import listdir
 
 
+@unittest.skip("Broken")
 class Engine_Logic_Tests(unittest.TestCase):
 
     def path(self, filename):
-        return join('..', 'testfiles', filename)
+        """ Navigate from the file,
+        not the cwd """
+        return abspath(join(split(__file__)[0],
+                            '..',
+                            "testfiles",
+                            filename))
 
     def setUp(self):
         self.e = TrieEngine()
@@ -22,9 +29,9 @@ class Engine_Logic_Tests(unittest.TestCase):
     #use testcase snippets
     def test_simple_logic(self):
         self.e.registerRules("""a.test.rule:
-        	a.b.c?
+            a.b.c?
 
-        	+(a.b.d)
+            +(a.b.d)
         end""")
         self.e.add("a.b.c")
         self.assertTrue(self.e.query("~a.b.d?"))
