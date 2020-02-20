@@ -2,25 +2,26 @@
 from enum import Enum
 from random import choice
 
+
 # Globally constant strings:
-
-ROOT_S = "__root"
-BIND_S = "bind"
-VALUE_S = "value"
-NAME_S = "name"
-STRING_S = "string"
-FLOAT_S = "float"
-#Use to signify a decimal, eg: 34d423 = 34.423
-DECIMAL_S = "d"
-INT_S = "int"
-VALUE_TYPE_S = "value_type"
+BIND_S       = "bind"
 CONSTRAINT_S = "constraints"
-OPERATOR_S = "operator"
-OPT_S = "opt"
-REGEX_S = "regex"
+#Use to signify a decimal, eg: 34d423 = 34.423
+DECIMAL_S    = "d"
+FLOAT_S      = "float"
+INT_S        = "int"
+NAME_S       = "name"
+OPERATOR_S   = "operator"
+OPT_S        = "opt"
+PATTERN_S    = "pattern"
+REGEX_S      = "regex"
+ROOT_S       = "__root"
+STRING_S     = "string"
+SUB_S        = '-'
 UNDERSCORE_S = "_"
+VALUE_S      = "value"
+VALUE_TYPE_S = "value_type"
 
-PATTERN_S = "pattern"
 
 def build_rebind_dict(formal, usage):
     """ Build a dictionary for action macro expansion,

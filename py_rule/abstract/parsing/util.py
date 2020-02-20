@@ -55,8 +55,7 @@ HASH      = s(pp.Literal('#'))
 OPAR      = s(pp.Literal('('))
 QMARK     = s(pp.Literal('?'))
 SLASH     = s(pp.Literal('/'))
-SUB_S     = '-'
-SUB       = s(pp.Literal(SUB_S))
+SUB       = s(pp.Literal(util.SUB_S))
 TILDE     = pp.Literal('~')
 OBRACKET = s(pp.Literal('['))
 CBRACKET = s(pp.Literal(']'))
@@ -68,7 +67,7 @@ VBAR = s(pp.Literal('|'))
 NAME        = pp.Word(pp.alphas + util.UNDERSCORE_S)
 NAME.setParseAction(lambda t: (util.NAME_S, t[0]))
 
-NUM         = pp.Word(pp.nums + SUB_S + util.DECIMAL_S)
+NUM         = pp.Word(pp.nums + util.SUB_S + util.DECIMAL_S)
 NUM.setParseAction(construct_num)
 
 STRING      = pp.dblQuotedString
