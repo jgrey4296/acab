@@ -217,3 +217,6 @@ class Engine:
 
     def _register_layer_policies(self, policies):
         raise NotImplementedError()
+
+    def __len__(self):
+        raise NotImplementedError()
