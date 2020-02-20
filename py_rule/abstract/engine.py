@@ -8,6 +8,7 @@ from .transform import Transform
 from .knowledge_base import KnowledgeBase
 from py_rule.typing.type_checker import TypeChecker
 from py_rule import util as util
+from .agenda import Agenda
 logging = root_logger.getLogger(__name__)
 
 
@@ -27,8 +28,6 @@ class Engine:
         self._prior_states = []
         # named recall states of past kb states
         self._recall_states = {}
-        # Registered custom actions
-        self._custom_actions = {}
 
         if modules is not None:
             self._knowledge_base.add_modules(modules)
@@ -54,15 +53,6 @@ class Engine:
         """ Load a file spec for the facts / rules for this engine """
         # pylint: disable=unused-argument,no-self-use
         raise NotImplementedError("Base Engine Stub")
-
-    def register_action(self, name, func):
-        """ Register custom actions,
-        of the form def name(engine, paramsList) """
-        assert(isinstance(name, str))
-        assert(callable(func))
-        if name in self._custom_actions:
-            raise AttributeError("Duplicate action: {}".format(name))
-        self._custom_actions[name] = func
 
     # Base Actions
     def add(self, s):
@@ -101,37 +91,25 @@ class Engine:
         self._prior_states.append((str(self._knowledge_base), data))
 
     # Utility
-    def _run_rules(self, rule_locations=None, rule_tags=None, policy=None):
-        """ Run all, or some, rules of the engine, if provided a policy,
-        propose actions and select from the proposals """
-        self._save_state((rule_locations,
-                          rule_tags,
-                          policy,
-                          self._proposed_actions))
-        rules_to_run = []
-        # Get the rules:
-        if rule_locations is None and rule_tags is None:
-            # run all rules
-            rules_to_run = list(self._rules.values())
-        # otherwise, get by trie location / tag and run those
-        elif rule_tags is not None:
-            assert(isinstance(rule_tags, list))
-            rules_to_run = [x for x in self._rules.values()
-                            if bool(x._tags.intersection(rule_tags))]
-        elif rule_locations is not None:
-            raise NotImplementedError('Rule Location Running is not implemented yet')
+    def run_layer(self, layer):
+        # should save_state
+        self._save_state(layer)
+        # query for the rules
+        # TODO: get the rules out of the result contexts
+        active_rules = []
+        for query in layer.queries():
+            active_rules += self.query(query)
 
-        should_propose_rules = policy is not None
+        for rule in active_rules:
+            self._run_rule(rule)
 
-        for rule in rules_to_run:
-            self._run_rule(rule, propose=should_propose_rules)
+        for agenda in layer.agendas():
+            self._select_actions_by_agenda(agenda)
 
-        if should_propose_rules:
-            self._perform_action_by_policy(policy)
+        self._perform_selected_actions()
 
-    def _run_rule(self, rule, propose=False):
-        """ Run an individual rule. if propose, then don't enact the results,
-        merely store them for later selection """
+    def _run_rule(self, rule)
+        """ Run an individual rule """
         assert(isinstance(rule, Rule))
         assert(rule.is_coherent())
         logging.info("Running Rule: {}".format(rule._name))
@@ -141,44 +119,43 @@ class Engine:
             return
 
         transformed = []
-        for data in result:
-            transformed.append(self._run_transform(data, rule._transform))
+        if rule._transform:
+            for data in result:
+                transformed.append(rule._transform(data))
+        else:
+            transformed = result[:]
 
         for data in transformed:
-            self._run_actions(data, rule, propose)
-    def _run_actions(self, data, ruleOrActions, propose=False):
+            self._propose_actions(data, rule)
+
+    def _propose_actions(self, data, ruleOrActions):
         """ Enact, or propose, the action list
         or actions in a rule provided
         """
         assert(isinstance(data, dict))
         assert(isinstance(ruleOrActions, (Rule, list)))
-        if propose:
-            self._proposed_actions.append((data, ruleOrActions))
-        else:
-            if isinstance(ruleOrActions, Rule):
-                self._perform_actions(data, ruleOrActions._actions)
-            else:
-                self._perform_actions(data, ruleOrActions)
+        self._proposed_actions.append((data, ruleOrActions))
 
-    def _perform_action_by_policy(self, policy):
+    def _select_actions_by_agenda(self, agenda):
         """ Utilize a policy to select from proposed actions,
         then perform those actions """
         logging.debug("Performing action by policy")
-        assert(callable(policy))
-        selected = policy(self._proposed_actions)
+        assert(isinstance(agenda, Agenda))
+        selected = agenda(self._proposed_actions, self)
         assert(isinstance(selected, list))
-        assert(all([isinstance(x, tuple) for x in selected]))
+        assert(all([isinstance(x, tuple)
+                    and isinstance(x[0], dict)
+                    and isinstance(x[1], Rule) for x in selected]))
         for d, r in selected:
-            assert(isinstance(d, dict))
-            if isinstance(r, Rule):
-                self._perform_actions(d, r._actions)
-            else:
-                self._perform_actions(d, r)
+            self._perform_actions(d, r._actions)
+
+    def _perform_actions(self, data, actions):
+        """ Actual enaction of a set of actions """
+        assert(all([isinstance(x, Action) for x in actions]))
+        for x in actions:
+            x(self, data)
 
     def _register_layers(self, layers):
-        raise NotImplementedError()
-
-    def _register_layer_policies(self, policies):
         raise NotImplementedError()
 
     def __len__(self):
