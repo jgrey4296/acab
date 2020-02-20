@@ -20,7 +20,6 @@ class Trie_Kb_Tests(unittest.TestCase):
         self.trie = TrieKnowledgeBase()
         self.trie._build_operator_parser()
 
-
     def tearDown(self):
         self.trie = None
 
@@ -146,14 +145,18 @@ class Trie_Kb_Tests(unittest.TestCase):
         result = self.trie.query('a.b!c?')
         self.assertFalse(result)
 
-    # def test_query_exclusion_update(self):
-    #     """ Check that exclusion property is updated as necessary """
-    #     self.trie.add('a.b.c')
-    #     self.assertTrue(self.trie.query('a.b!c?'))
-    #     self.trie.add('a.b.d')
-    #     self.assertFalse(self.trie.query('a.b!c?'))
-    #     self.trie.add('a.b!c')
-    #     self.assertTrue(self.trie.query('a.b!c?'))
+    def test_query_exclusion_update_fail(self):
+        """ Check that exclusion property is updated as necessary """
+        # TODO: make this so you can't switch between . and ! ?
+        self.trie.add('a.b.c')
+        self.assertTrue(self.trie.query('a.b.c?'))
+        self.trie.add('a.b.d')
+        self.assertTrue(self.trie.query('a.b.c?'))
+        self.assertTrue(self.trie.query('a.b.d?'))
+        self.trie.add('a.b!c')
+        self.assertTrue(self.trie.query('a.b!c?'))
+        self.assertFalse(self.trie.query('a.b.c?'))
+        self.assertFalse(self.trie.query('a.b.d?'))
 
     def test_retraction_cascade(self):
         """ Check that retracting a fact retracts any subfacts """
