@@ -1,14 +1,22 @@
 import unittest
 import logging
 from test_context import py_rule
+import pyparsing as pp
 from py_rule.modules.time.arc import Arc
 from py_rule.modules.time.event import Event
 from py_rule.modules.time.pattern import Pattern, PatternSeq, PatternPar
 from py_rule.modules.time.parsing import parser as tp
 from py_rule.modules.time.util import Time as t
+from py_rule.abstract.parsing import util as PU
 from py_rule.util import BIND_S
 
 class TestTime(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        #Hotload value and bind
+        tp.VALUE << PU.BASIC_VALUE
+        tp.BIND << PU.BIND
 
     def setUp(self):
         return 1
@@ -372,9 +380,9 @@ class TestTime(unittest.TestCase):
                              "c d c d".split(" ")[i])
 
 
-    def test_pattern_var_set(self):
-        pattern = tp.parse_string("[[a $b c $d]]")
-        self.assertEqual(pattern.var_set(), set(["b", "d"]))
+    def test_pattern_var_set_basic(self):
+        result = tp.parse_string("[[a $b c $d]]")
+        self.assertEqual(result.var_set(), set(["b", "d"]))
 
     def test_pattern_var_set_nested(self):
         pattern = tp.parse_string("[[a $b <$c d>, $e f [g $h]]]")
@@ -387,7 +395,7 @@ class TestTime(unittest.TestCase):
     def test_pattern_bind(self):
         pattern = tp.parse_string("[[a $b c $b]]")
         bound = pattern.bind({"a": "e", "b": "g"})
-
+        
         for x,y in zip(bound.iter(cycles=2), ["a","g","c","g"]*2):
             self.assertEqual(x[0],y)
 

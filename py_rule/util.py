@@ -9,11 +9,17 @@ BIND_S = "bind"
 VALUE_S = "value"
 NAME_S = "name"
 STRING_S = "string"
+FLOAT_S = "float"
+#Use to signify a decimal, eg: 34d423 = 34.423
+DECIMAL_S = "d"
+INT_S = "int"
 VALUE_TYPE_S = "value_type"
 CONSTRAINT_S = "constraints"
 OPERATOR_S = "operator"
 OPT_S = "opt"
 REGEX_S = "regex"
+
+PATTERN_S = "pattern"
 
 def build_rebind_dict(formal, usage):
     """ Build a dictionary for action macro expansion,

@@ -7,7 +7,7 @@ A PyParsing parser to create patterns
 from py_rule.modules.time.pattern_constructor import CTOR_ACT
 from py_rule.modules.time.pattern_constructor import construct_pattern_simple
 from py_rule.abstract.parsing import util as PU
-from py_rule.util import BIND_S, VALUE_TYPE_S, VALUE_S, NAME_S, OPT_S
+from py_rule.util import BIND_S, VALUE_TYPE_S, VALUE_S, NAME_S, OPT_S, PATTERN_S
 from fractions import Fraction
 import pyparsing as pp
 import logging as root_logger
@@ -21,22 +21,21 @@ def make_valbind(tokens):
             VALUE_TYPE_S: NAME_S}
     value = None
     if BIND_S in tokens:
-        value = tokens.bind[0][1]
+        value = tokens[BIND_S][1]
         data[BIND_S] = True
     elif VALUE_S in tokens:
-        value = tokens.value[1]
-        data[VALUE_TYPE_S] = tokens.value[0]
+        value = tokens[VALUE_S][1]
+        data[VALUE_TYPE_S] = tokens[VALUE_S][0]
 
     if OPT_S in tokens:
         data[OPT_S] = True
-
     return (value, data)
 
 # Base Syntax
 
 
-QUESTION = PU.s(pp.Literal('?')).setResultsName(OPT_S)
-TILDE = PU.s(pp.Literal('~'))
+QUESTION = PU.QMARK.setResultsName(OPT_S)
+TILDE = PU.s(PU.TILDE)
 COMMA = PU.COMMA.copy()
 OBRACKET = PU.OBRACKET.copy()
 CBRACKET = PU.CBRACKET.copy()
@@ -66,7 +65,7 @@ main_pattern = PU.s(OBRACKET) + pattern + PU.s(CBRACKET)
 # Actions
 Time_VALBIND.setParseAction(make_valbind)
 pattern.setParseAction(construct_pattern_simple)
-main_pattern.setParseAction(lambda x: ("pattern", x[0][0]))
+main_pattern.setParseAction(lambda x: (PATTERN_S, x[0][0]))
 OBRACKET.setParseAction(lambda x: CTOR_ACT.PSTART)
 CBRACKET.setParseAction(lambda x: CTOR_ACT.PEND)
 COMMA.setParseAction(lambda x: CTOR_ACT.PDUAL)

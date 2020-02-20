@@ -20,6 +20,8 @@ logging = root_logger.getLogger(__name__)
 # TODO: binary tree / beachline for finding events?
 class Pattern(PyRuleValue):
     """ A Collection of Events """
+
+
     def __init__(self, a, vals=None, data=None, bindings=None):
         if vals is None:
             vals = []
@@ -185,7 +187,7 @@ class Pattern(PyRuleValue):
 
     def apply_to(self, other):
         """ Combine two patterns, using the structure of left one """
-        raise Exception("Not implemented yet")
+        raise NotImplementedError("Not implemented yet")
 
     def var_set(self):
         return self._var_set

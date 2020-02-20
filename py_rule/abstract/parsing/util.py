@@ -21,10 +21,11 @@ def N(name, parser):
 
 def construct_num(toks):
     # TODO: add in fractions and underscores
-    if 'd' in toks[0]:
-        return ("float", float(toks[0].replace('d', '.')))
+    if util.DECIMALS_S in toks[0]:
+        return (util.FLOAT_S, float(toks[0].replace(UTIL.DECIMAL_S,
+                                                    '.')))
     else:
-        return ("int", int(toks[0]))
+        return (util.INT_S, int(toks[0]))
 
 
 def construct_sentence(toks):
