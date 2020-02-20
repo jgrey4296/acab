@@ -6,12 +6,15 @@ CACHES := $(shell find . -name '*__pycache__')
 .PHONY: all
 all: verbose
 
-
 verbose:
 	python -m unittest discover -p "*tests.py" -v
 
 faily:
 	python -m unittest discover -p "*tests.py" -v -f
+
+# use as: make pattern PAT="X"
+pattern:
+	python -m unittest discover -p "*tests.py" -v -f -k ${PAT}
 
 clean:
 ifeq (${LOGS}, )
