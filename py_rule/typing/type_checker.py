@@ -52,8 +52,7 @@ from .nodes.var_type_node import VarTypeTrieNode
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.trie.trie import Trie
 import py_rule.error.type_exceptions as te
-from . import util as U
-import py_rule.util as util
+from . import util as TU
 import logging as root_logger
 
 logging = root_logger.getLogger(__name__)
@@ -114,14 +113,14 @@ class TypeChecker:
             queried = self._declarations.query(line)
             if queried is None:
                 continue
-            line_is_typed = util.TYPE_DEC_S in line[-1]._data
-            result_is_typed = util.TYPE_DEC_S in queried._data
+            line_is_typed = TU.TYPE_DEC_S in line[-1]._data
+            result_is_typed = TU.TYPE_DEC_S in queried._data
             types_match = (line_is_typed
                            and result_is_typed
-                           and line[-1]._data[util.TYPE_DEC_S] == queried._data[util.TYPE_DEC_S])
+                           and line[-1]._data[TU.TYPE_DEC_S] == queried._data[TU.TYPE_DEC_S])
             if line_is_typed and result_is_typed and not types_match:
-                raise te.TypeConflictException(line[-1]._data[util.TYPE_DEC_S],
-                                               queried._data[util.TYPE_DEC_S],
+                raise te.TypeConflictException(line[-1]._data[TU.TYPE_DEC_S],
+                                               queried._data[TU.TYPE_DEC_S],
                                                "".join([str(x) for x in line]))
             results.append(queried)
         return results
@@ -166,7 +165,7 @@ class TypeChecker:
     def _merge_equivalent_nodes(self):
         """ merge equivalent variables. ie:
         a.b.$c and a.b.$d share the same ._variables node """
-        parents_of_equiv_vars = self._declarations.get_nodes(U.has_equivalent_vars_pred)
+        parents_of_equiv_vars = self._declarations.get_nodes(TU.has_equivalent_vars_pred)
         for p in parents_of_equiv_vars:
             var_nodes = {x._var_node for x in p._children.values() if x._is_var}
             head = var_nodes.pop()

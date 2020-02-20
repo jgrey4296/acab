@@ -4,10 +4,9 @@ from py_rule.util import BIND_S
 
 
 class TypeDefinition(Type):
-    """ Can define Structure of a type """
+    """ Defines the Structure of a type """
 
     def __init__(self, name, path, structure, tvars):
-
         """ Structure creates the dict of locations.
         Only leaves get type anotations. Thus:
         { .a.$x :: String, .b.$c :: Num, .d!$e::Location }
