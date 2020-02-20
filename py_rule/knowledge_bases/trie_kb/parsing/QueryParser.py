@@ -6,7 +6,7 @@ from py_rule.abstract.query import Query
 from py_rule.abstract.sentence import Sentence
 from py_rule.knowledge_bases.trie_kb import util as KBU
 from py_rule.abstract.parsing import util as PU
-from .FactParser import PARAM_CORE, TYPE_ANNOTATION, param_fact_string
+from .FactParser import PARAM_CORE, TYPE_ANNOTATION, PARAM_SEN
 
 logging = root_logger.getLogger(__name__)
 
@@ -63,11 +63,11 @@ comp_or_typedef = pp.Or([PU.N(KBU.COMP_S, COMP_Internal),
 
 constraints = comp_or_typedef + PU.op(pp.OneOrMore(PU.COMMA + comp_or_typedef))
 
-assignment = PU.BIND + PU.COLON + param_fact_string
+assignment = PU.BIND + PU.COLON + PARAM_SEN
 assignmentList = assignment + pp.ZeroOrMore(PU.COMMA + assignment)
 fallback = PU.DOUBLEBAR + assignmentList
 
-# core component of a query, a modified param_fact_string
+# core component of a query, a modified PARAM_SEN
 QueryCore = PARAM_CORE(constraints)
 QueryCore_end = PARAM_CORE(constraints, end=True)
 

@@ -73,19 +73,19 @@ PARAM_BINDING_CORE = PARAM_CORE(TYPE_ANNOTATION)
 PARAM_BINDING_END = PARAM_CORE(TYPE_ANNOTATION, end=True)
 
 # Basic Sentences without Annotations:
-basic_fact_string = pp.ZeroOrMore(PARAM_CORE()) + PARAM_CORE(end=True)
+BASIC_SEN = pp.ZeroOrMore(PARAM_CORE()) + PARAM_CORE(end=True)
 
 # Sentences with basic sentences as annotations
-param_fact_string = pp.ZeroOrMore(PARAM_BINDING_CORE) + PARAM_BINDING_END
-param_fact_strings = param_fact_string \
-    + pp.ZeroOrMore(PU.COMMA + param_fact_string)
+PARAM_SEN = pp.ZeroOrMore(PARAM_BINDING_CORE) + PARAM_BINDING_END
+PARAM_SEN_PLURAL = PARAM_SEN \
+    + pp.ZeroOrMore(PU.COMMA + PARAM_SEN)
 
 # Actions
-param_fact_string.setParseAction(PU.construct_sentence)
-basic_fact_string.setParseAction(PU.construct_sentence)
+PARAM_SEN.setParseAction(PU.construct_sentence)
+BASIC_SEN.setParseAction(PU.construct_sentence)
 
 
 # MAIN PARSER:
 def parseString(in_string):
     """ str -> [[Node]] """
-    return param_fact_strings.parseString(in_string)[:]
+    return PARAM_SEN_PLURAL.parseString(in_string)[:]

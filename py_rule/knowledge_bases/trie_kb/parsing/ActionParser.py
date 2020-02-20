@@ -5,7 +5,7 @@ from py_rule.abstract import action as Actions
 from py_rule.abstract.parsing import util as PU
 from py_rule.knowledge_bases.trie_kb import util as KBU
 
-from .FactParser import param_fact_string, VALBIND
+from .FactParser import PARAM_SEN, VALBIND
 
 logging = root_logger.getLogger(__name__)
 
@@ -53,7 +53,7 @@ operator = pp.Forward()
 ACT_MACRO = PU.s(PU.HASH) + CUSTOM
 
 # fact string with the option of binds
-vals = param_fact_string + pp.ZeroOrMore(PU.COMMA + param_fact_string)
+vals = PARAM_SEN + pp.ZeroOrMore(PU.COMMA + PARAM_SEN)
 
 bindList = VALBIND + pp.ZeroOrMore(PU.COMMA + VALBIND)
 # action: [op](values)

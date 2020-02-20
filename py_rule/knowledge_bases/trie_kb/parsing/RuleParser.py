@@ -42,7 +42,7 @@ def build_rule(toks):
     return TrieRule(c, a, transform=t, name=name, tags=tags)
 
 
-ruleName = PU.NG(KBU.RULE_NAME_S, FP.param_fact_string)
+ruleName = PU.NG(KBU.RULE_NAME_S, FP.PARAM_SEN)
 
 tagName = PU.HASH + PU.NAME
 

@@ -85,7 +85,7 @@ def remove_comments(string):
 
 bindArrow = s(pp.Literal('<-'))
 clear = s(pp.Literal('clear'))
-fileBind = FP.VALBIND + bindArrow + FP.param_fact_string
+fileBind = FP.VALBIND + bindArrow + FP.PARAM_SEN
 clearBind = clear + orm(FP.VALBIND)
 
 file_component = pp.MatchFirst([s(fileBind),
@@ -93,7 +93,7 @@ file_component = pp.MatchFirst([s(fileBind),
                                 AP.action_definition,
                                 RP.rule,
                                 TDP.TYPEDEF,
-                                FP.param_fact_string])
+                                FP.PARAM_SEN])
 
 file_total = file_component + pp.ZeroOrMore(s(orm(pp.lineEnd)) + file_component)
 
@@ -102,8 +102,6 @@ file_total.setParseAction(final_pass)
 fileBind.setParseAction(add_file_binding)
 clearBind.setParseAction(clearBinding)
 file_component.setParseAction(expansion_pass)
-
-
 
 
 def parseString(in_string):
