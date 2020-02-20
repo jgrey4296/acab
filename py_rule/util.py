@@ -18,7 +18,7 @@ CONSTRAINT_S = "constraints"
 OPERATOR_S = "operator"
 OPT_S = "opt"
 REGEX_S = "regex"
-
+UNDERSCORE_S = "_"
 
 PATTERN_S = "pattern"
 
