@@ -87,7 +87,6 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         result = FP.parseString('$x.a.b.c')[0]
         self.assertTrue(result[0]._data[KBU.BIND_S])
 
-
     def test_fact_str_equal(self):
         actions = ["a.b.c",
                    "a.b!c",
@@ -106,7 +105,6 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         zipped = zip(actions, parsed)
         for a,p in zipped:
             self.assertEqual(a, str(p))
-
 
     def test_binding_expansion(self):
         bindings = { "a" : FP.parseString("blah")[0],

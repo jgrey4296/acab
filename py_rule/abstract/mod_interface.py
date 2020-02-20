@@ -25,9 +25,7 @@ class ModuleSpecification:
             self._functions += funcs
 
     def parse_string(self, string):
-        """ Takes a String, parses it into Data format,
-        This is used to integrate the module as a value
-        in the main language """
+        """ Takes a String, parses it into Data format """
         raise NotImplementedError()
 
     def get_parser(self):

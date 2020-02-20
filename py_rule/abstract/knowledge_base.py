@@ -26,7 +26,7 @@ class KnowledgeBase:
         or_d_types = pp.Or([x for x in parsers if x is not None])
         self._insert_into_values_parser(or_d_types)
 
-        # TODO: add definitions
+        # TODO: add for definitions for type checking
 
     def build_operator_parser(self):
         """ This is used to build the parsers of operators,

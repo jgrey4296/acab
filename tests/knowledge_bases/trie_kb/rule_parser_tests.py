@@ -17,7 +17,6 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
         os._construct_transform_ops()
         RP.build_operators()
 
-
     def setUp(self):
             return 1
 
@@ -91,7 +90,6 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertIsInstance(result[0], Rule)
             self.assertIsNone(result[0]._query)
             self.assertIsNotNone(result[0]._transform)
-
 
     def test_rule_with_actions(self):
             result = RP.parseString("a.rule:\n+(a.b.c)\nend")
@@ -171,7 +169,8 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
 
     @($z)
     +(count!$y)
-end"""
+end
+        """
         result = RP.parseString(rulestr)[0]
         self.assertIsInstance(result, Rule)
 

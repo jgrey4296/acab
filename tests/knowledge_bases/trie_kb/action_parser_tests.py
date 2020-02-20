@@ -80,6 +80,7 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
         definition = AP.action_definition.parseString(test_str)[0]
         self.assertEqual(definition._name, "test")
 
+
 if __name__ == "__main__":
       LOGLEVEL = logging.INFO
       logFileName = "log.Trie_Action_Parser_Tests"
