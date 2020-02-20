@@ -2,6 +2,7 @@
 import logging as root_logger
 from .production_operator import ProductionOperator
 from .node import PyRuleNode
+from py_rule import util
 
 logging = root_logger.getLogger(__name__)
 
@@ -111,3 +112,23 @@ class Transform:
         # TODO
         # return the set of output bound names
         raise NotImplementedError()
+
+    def __call__(self, ctx):
+        assert(isinstance(ctx, dict))
+        for x in self._components:
+            # lookup op
+            opFunc = x._op
+            param_length = opFunc._num_params
+            # get params:
+            params = [ctx[y._value] if y._data[util.BIND_S]
+                      else y._value for y in x._params]
+
+            result = opFunc(*params, ctx)
+
+            # rebind or reapply
+            if x._rebind is None:
+                ctx[x._params[0]._value] = result
+            else:
+                ctx[x._rebind._value] = result
+
+        return ctx

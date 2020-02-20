@@ -102,6 +102,15 @@ class Action:
                 new_values.append(x)
         return Action(self._op, new_values)
 
+    def __call__(self, engine, data):
+        # lookup op
+        opFunc = self._op
+        # get values from data
+        values = self.get_values(data)
+        # perform action op with data
+        opFunc(self, engine, values)
+
+
 
 class ActionMacro:
     """ Storage for a sequence of actions to take, separate from a rule,

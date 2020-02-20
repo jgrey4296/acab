@@ -146,32 +146,6 @@ class Engine:
 
         for data in transformed:
             self._run_actions(data, rule, propose)
-
-    def _run_transform(self, ctx, transform):
-        """ Run modifications on the bound results of a query """
-        assert(isinstance(ctx, dict))
-        assert(transform is None or isinstance(transform, Transform))
-        chosen_ctx = ctx
-        if transform is None:
-            return chosen_ctx
-        for x in transform._components:
-            # lookup op
-            opFunc = x._op
-            param_length = opFunc._num_params
-            # get params:
-            params = [chosen_ctx[y._value] if y._data[util.BIND_S]
-                      else y._value for y in x._params]
-
-            result = opFunc(*params, chosen_ctx)
-
-            # rebind or reapply
-            if x._rebind is None:
-                chosen_ctx[x._params[0]._value] = result
-            else:
-                chosen_ctx[x._rebind._value] = result
-
-        return chosen_ctx
-
     def _run_actions(self, data, ruleOrActions, propose=False):
         """ Enact, or propose, the action list
         or actions in a rule provided
@@ -185,17 +159,6 @@ class Engine:
                 self._perform_actions(data, ruleOrActions._actions)
             else:
                 self._perform_actions(data, ruleOrActions)
-
-    def _perform_actions(self, data, actions):
-        """ Actual enaction of a set of actions """
-        assert(all([isinstance(x, Action) for x in actions]))
-        for x in actions:
-            # lookup op
-            opFunc = x._op
-            # get values from data
-            values = x.get_values(data)
-            # perform action op with data
-            opFunc(self, values)
 
     def _perform_action_by_policy(self, policy):
         """ Utilize a policy to select from proposed actions,
