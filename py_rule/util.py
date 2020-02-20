@@ -19,6 +19,7 @@ OPERATOR_S = "operator"
 OPT_S = "opt"
 REGEX_S = "regex"
 
+
 PATTERN_S = "pattern"
 
 def build_rebind_dict(formal, usage):

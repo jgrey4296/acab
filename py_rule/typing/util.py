@@ -2,6 +2,9 @@ import py_rule.util as util
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
+ROOT_S = util.ROOT_S
+BIND_S = util.BIND_S
+
 TYPE_DEC_S = "type_dec"
 TYPE_DEF_S = "type_def"
 
