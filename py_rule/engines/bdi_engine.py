@@ -12,10 +12,12 @@ class Agent:
 
     def __init__(self, name,
                  startup_files,
-                 rule_seq_pol,
+                 rule_seq_pol=None,
                  wait_time=0.5,
                  actions=None):
 
+        if not rule_seq_pol:
+            rule_seq_pol = []
         assert(isinstance(startup_files, list))
         assert(isinstance(rule_seq_pol, list))
         assert(all([isinstance(x, tuple) for x in rule_seq_pol]))
