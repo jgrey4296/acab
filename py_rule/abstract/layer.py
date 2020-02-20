@@ -26,7 +26,13 @@ class Layer:
     """ The Abstract Layer Class """
 
     def __init__(self):
-        # rule selector as a list of queries?
-        self._rule_selectors = None
+        # rule selector as a query?
+        self._rule_selectors = []
         self._agendas = []
         self._tests = []
+
+    def queries(self):
+        return self._rule_selectors
+
+    def agendas(self):
+        return self._agendas
