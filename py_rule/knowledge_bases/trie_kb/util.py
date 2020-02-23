@@ -43,6 +43,13 @@ EXOP_lookup = {
     EXOP.EX : "!",
     }
 
+DEFAULT_NODE_DATA = {
+    BIND_S : False,
+    OPERATOR_S : EXOP.DOT,
+    VALUE_TYPE_S : NAME_S
+    }
+
+
 # Utility Funtions:
 def build_rebind_dict(formal, usage):
     """ Build a dictionary for action macro expansion,
