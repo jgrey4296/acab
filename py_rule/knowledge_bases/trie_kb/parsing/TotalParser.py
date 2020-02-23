@@ -1,14 +1,14 @@
 """"
 A Combined parser to parse rules and facts to assert
-
+Handles files, and comments
 """
 import pyparsing as pp
 from pyparsing import pyparsing_common as ppc
 
 from py_rule.abstract.sentence import Sentence
+from py_rule.abstract.value import PyRuleValue
 from py_rule.abstract.action import ActionMacro
 from py_rule.abstract.rule import Rule
-from py_rule.typing.type_definition import TypeDefinition
 from py_rule.knowledge_bases.trie_kb import util as KBU
 from py_rule.abstract.parsing import util as PU
 
@@ -16,6 +16,7 @@ from . import FactParser as FP
 from . import RuleParser as RP
 from . import ActionParser as AP
 
+# Temporary state of a file parse
 parseBindings = {}
 
 OTHER_STATEMENTS = pp.Forward()
@@ -31,20 +32,18 @@ def final_pass(toks):
     assertions = []
     action_macros = {}
     for x in toks:
-        if isinstance(x, TypeDefinition):
-            definitions.append(x)
-        elif isinstance(x, Rule):
+        assertions.append(x)
+        if isinstance(x[-1]._value, Rule):
             rules.append(x)
-        elif isinstance(x, ActionMacro):
+        elif isinstance(x[-1]._value, ActionMacro):
             action_macros[x._name] = x
-        else:
-            assertions.append(x)
+
     #everything has been parsed,
     #clear the parse bindings as a guard:
     parseBindings = {}
-    #and expand rulemacros into rule sequences:
-    expandedActMacroRules = [x.expand_action_macros(action_macros) for x in rules]
-    return (definitions, expandedActMacroRules, assertions)
+    # TODO expand rulemacros into rule sequences:
+    expandedActMacroRules = [x[-1]._value.expand_action_macros(action_macros) for x in rules]
+    return (expandedActMacroRules, assertions)
 
 def add_file_binding(toks):
     """ Store the string of in the binding """
@@ -84,6 +83,25 @@ def remove_comments(string):
         passing_lines.append("".join(list(PU.COMMENT.split(line))))
     return "\n".join(passing_lines).strip()
 
+def trie_wrap_statement_into_sentence(toks):
+    """ Take a parsed statement (eg: rule),
+    and add it as a node to the name sentence
+    that locates it
+    """
+    type_name, value = toks[0]
+    assert(isinstance(value, PyRuleValue))
+    loc = value._name.copy()
+    assert(isinstance(loc, Sentence))
+    node_data = KBU.DEFAULT_NODE_DATA.copy()
+    node_data[KBU.VALUE_TYPE_S : type_name]
+    node_data[KBU.OPERATOR_S : KBU.EXOP.EX]
+
+    loc.add(FactNode(value, node_data))
+
+    return loc
+
+
+statement_converter = pp.Or([RP.rule, OTHER_STATEMENTS])
 
 bindArrow = PU.s(pp.Literal('<-'))
 clear = PU.s(pp.Literal('clear'))
@@ -93,18 +111,18 @@ clearBind = clear + PU.orm(FP.VALBIND)
 file_component = pp.MatchFirst([PU.s(fileBind),
                                 PU.s(clearBind),
                                 AP.action_definition,
-                                RP.rule,
-                                OTHER_STATEMENTS,
+                                statement_converter,
                                 FP.PARAM_SEN])
 
 file_total = file_component \
-    + pp.ZeroOrMore(PU.s(PU.orm(pp.lineEnd)) + file_component)
+    + pp.ZeroOrMore(PU.s(PU.orm(pp.Or([PU.COMMA, pp.lineEnd]))) + file_component)
 
 #Parse Actions
 file_total.setParseAction(final_pass)
 fileBind.setParseAction(add_file_binding)
 clearBind.setParseAction(clearBinding)
 file_component.setParseAction(expansion_pass)
+statement_converter.setParseAction(trie_wrap_statement_into_sentence)
 
 
 def parseString(in_string):
