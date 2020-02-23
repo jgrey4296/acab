@@ -4,6 +4,7 @@ import pyparsing as pp
 from py_rule.knowledge_bases.trie_kb.trie_rule import TrieRule
 from py_rule.abstract.parsing import util as PU
 from py_rule.knowledge_bases.trie_kb import util as KBU
+from py_rule.knowledge_bases.trie_kb.nodes.fact_node import FactNode
 
 from . import FactParser as FP
 from . import QueryParser as QP
@@ -39,8 +40,9 @@ def build_rule(toks):
         tags = [x[1] for x in toks[KBU.TAG_S]]
     else:
         tags = []
-    return TrieRule(c, a, transform=t, name=name, tags=tags)
-
+    # wrap in sentence
+    rule = TrieRule(c, a, transform=t, name=name, tags=tags)
+    return (KBU.RULE_S, rule)
 
 ruleName = PU.NG(KBU.RULE_NAME_S, FP.PARAM_SEN)
 
