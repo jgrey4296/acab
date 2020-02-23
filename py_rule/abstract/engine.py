@@ -6,7 +6,6 @@ from .rule import Rule
 from .action import Action
 from .transform import Transform
 from .knowledge_base import KnowledgeBase
-from py_rule.typing.type_checker import TypeChecker
 from py_rule import util as util
 from .agenda import Agenda
 logging = root_logger.getLogger(__name__)
@@ -20,7 +19,6 @@ class Engine:
         self.__kb_constructor = kb_constructor
 
         self._knowledge_base = kb_constructor(init)
-        self._type_checker = TypeChecker()
 
         self._proposed_actions = []
         # to be updated with printed representations
@@ -108,7 +106,7 @@ class Engine:
 
         self._perform_selected_actions()
 
-    def _run_rule(self, rule)
+    def _run_rule(self, rule):
         """ Run an individual rule """
         assert(isinstance(rule, Rule))
         assert(rule.is_coherent())
