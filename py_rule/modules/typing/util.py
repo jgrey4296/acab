@@ -4,10 +4,14 @@ logging = root_logger.getLogger(__name__)
 
 ROOT_S = util.ROOT_S
 BIND_S = util.BIND_S
+SEN_S = util.SEN_S
 
 TYPE_DEC_S = "type_dec"
 TYPE_DEF_S = "type_def"
-
+STRUCT_S    = "structure"
+TVAR_S     = "type_vars"
+DELIM_S    = ", "
+ARG_S      = "arguments"
 
 def has_equivalent_vars_pred(node):
     """ A Predicate to use with Trie.get_nodes

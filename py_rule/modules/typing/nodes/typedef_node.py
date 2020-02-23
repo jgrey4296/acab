@@ -2,9 +2,9 @@ from .type_assignment_node import TypeAssignmentTrieNode
 from py_rule.abstract.trie.nodes.trie_node import TrieNode
 from py_rule.abstract.trie.trie import Trie
 from py_rule.error import type_exceptions as te
-from py_rule.typing.type_definition import TypeDefinition
+from py_rule.modules.typing.type_definition import TypeDefinition
 import logging as root_logger
-import py_rule.typing.util as util
+import py_rule.modules.typing.util as util
 logging = root_logger.getLogger(__name__)
 
 # Log messages to use, because they are long:

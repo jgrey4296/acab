@@ -1,13 +1,13 @@
 import unittest
 import logging
 from test_context import py_rule
-from py_rule.typing.type_checker import TypeChecker
-from py_rule.typing.type_definition import TypeDefinition
-from py_rule.typing.type_instance import TypeInstance
+from py_rule.modules.typing.type_checker import TypeChecker
+from py_rule.modules.typing.type_definition import TypeDefinition
+from py_rule.modules.typing.type_instance import TypeInstance
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.trie.nodes.trie_node import TrieNode
 import py_rule.error.type_exceptions as te
-from py_rule.typing import util as TU
+from py_rule.modules.typing import util as TU
 
 class TypingTests(unittest.TestCase):
 
@@ -290,7 +290,7 @@ class TypingTests(unittest.TestCase):
         type_2_sen[-1]._data[TU.TYPE_DEC_S] = TypeInstance("smallType", ["small", "type"])
         tc.add_definition(TypeDefinition("largeType", ["large", "type"], [type_2_sen], []))
 
-        assertion = Sentence(TrieNode(x) for x in ["a", "component", "q", "name", "w"])
+        assertion = Sentence([TrieNode(x) for x in ["a", "component", "q", "name", "w"]])
         assertion[0]._data[TU.TYPE_DEC_S] = TypeInstance("largeType", ["large", "type"])
         assertion[2]._data[TU.BIND_S] = True
         assertion[-1]._data[TU.BIND_S] = True
@@ -334,7 +334,7 @@ class TypingTests(unittest.TestCase):
         type_2_sen[-1]._data[TU.TYPE_DEC_S] = TypeInstance("smallType", ["small", "type"])
         tc.add_definition(TypeDefinition("largeType", ["large", "type"], [type_2_sen], []))
 
-        assertion = Sentence(TrieNode(x) for x in ["a", "component", "q", "name", "w"])
+        assertion = Sentence([TrieNode(x) for x in ["a", "component", "q", "name", "w"]])
         assertion[0]._data[TU.TYPE_DEC_S] = TypeInstance("largeType", ["large", "type"])
         assertion[2]._data[TU.BIND_S] = True
         assertion[-1]._data[TU.BIND_S] = True
@@ -378,7 +378,7 @@ class TypingTests(unittest.TestCase):
         assertion[-1]._data[TU.BIND_S] = True
         tc.add_assertion(assertion)
 
-        assertion2 = Sentence(TrieNode(x) for x in ["b", "name", "t"])
+        assertion2 = Sentence([TrieNode(x) for x in ["b", "name", "t"]])
         assertion2[0]._data[TU.TYPE_DEC_S] = TypeInstance("polyType", ["polyType"], [TypeInstance("Number", ["Number"])])
         assertion2[-1]._data[TU.BIND_S] = True
         tc.add_assertion(assertion2)
@@ -474,7 +474,7 @@ class TypingTests(unittest.TestCase):
                                          [param, param2]))
 
         #assertions
-        assertion = Sentence(TrieNode(x) for x in ["a", "name", "q"])
+        assertion = Sentence([TrieNode(x) for x in ["a", "name", "q"]])
         assertion[0]._data[TU.TYPE_DEC_S] = TypeInstance("polyType",
                                                            ["polyType"],
                                                            [TypeInstance("String", ["String"]),
@@ -482,7 +482,7 @@ class TypingTests(unittest.TestCase):
         assertion[-1]._data[TU.BIND_S] = True
         tc.add_assertion(assertion)
 
-        assertion2 = Sentence(TrieNode(x) for x in ["a", "age", "w"])
+        assertion2 = Sentence([TrieNode(x) for x in ["a", "age", "w"]])
         assertion2[-1]._data[TU.BIND_S] = True
         tc.add_assertion(assertion2)
 

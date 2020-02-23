@@ -1,5 +1,5 @@
 from .typed_node import M_TypedNode
-from py_rule.typing import util
+from py_rule.modules.typing import util
 import py_rule.error.type_exceptions as te
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
