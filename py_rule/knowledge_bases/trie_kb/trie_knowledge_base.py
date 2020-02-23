@@ -11,6 +11,7 @@ from .parsing import FactParser as FP
 from .parsing import QueryParser as QP
 from .parsing import ActionParser as AP
 from .parsing import TransformParser as TP
+from .parsing import TotalParser as TotalP
 logging = root_logger.getLogger(__name__)
 
 
@@ -36,8 +37,9 @@ class TrieKnowledgeBase(KnowledgeBase):
     def add(self, s):
         """ Assert multiple facts from a single string """
         if isinstance(s, str):
-            parsed = FP.parseString(s)
-            for x in parsed:
+            rules, assertions = TotalP.parseString(s)
+            # TODO Retract negated sentences
+            for x in assertions:
                 self._assert_sentence(x)
         elif isinstance(s, Sentence):
             self._assert_sentence(s)
@@ -45,7 +47,9 @@ class TrieKnowledgeBase(KnowledgeBase):
             raise Exception("Unrecognised addition target: {}".format(type(s)))
 
     def retract(self, s):
-        """ Retract multiple facts from a single string """
+        """ Retract multiple facts from a single string
+        Just handles simple sentences, not complex statements
+        """
         if isinstance(s, str):
             parsed = FP.parseString(s)
             for x in parsed:
@@ -82,7 +86,7 @@ class TrieKnowledgeBase(KnowledgeBase):
     # Internal Methods:
     def _assert_sentence(self, sen):
         """ Assert a sentence of chained facts """
-        assert(isinstance(sen, Sentence))
+        assert (isinstance(sen, Sentence)), sen
         self._clear_last_node()
         for newNode in sen:
             self._last_node = self._last_node.insert(newNode)
