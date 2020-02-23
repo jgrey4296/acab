@@ -4,7 +4,7 @@ have fallback bindings
 """
 from py_rule.util import BIND_S, OPERATOR_S
 from .value import PyRuleValue
-
+from .node import PyRuleNode
 
 class Sentence(PyRuleValue):
     """
@@ -18,6 +18,7 @@ class Sentence(PyRuleValue):
         self._fallback = []
         self._is_query = is_query
         if words is not None:
+            assert(all([isinstance(x, PyRuleNode) for x in words]))
             self._words += words
         if fallback is not None:
             self._fallback += fallback[:]
@@ -85,3 +86,13 @@ class Sentence(PyRuleValue):
                         negated=self._negated,
                         fallback=self._fallback,
                         is_query=self._is_query)
+
+    def copy(self):
+        words = self._words[:]
+        fallback = self._fallback[:]
+        return Sentence(words, self._negated,
+                        fallback, self._is_query)
+
+    def add(self, other):
+        assert(isinstance(other, PyRuleNode))
+        self._words.append(other)
