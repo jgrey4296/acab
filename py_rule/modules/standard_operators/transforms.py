@@ -57,7 +57,7 @@ class RemainOp(TransformOp):
 
     def __call__(self, a, b, data):
         # divide and get remainder?
-        raise Exception("Not implemented yet")
+        raise NotImplementedError()
 
 
 class RoundOp(TransformOp):

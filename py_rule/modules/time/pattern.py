@@ -187,7 +187,7 @@ class Pattern(PyRuleValue):
 
     def apply_to(self, other):
         """ Combine two patterns, using the structure of left one """
-        raise NotImplementedError("Not implemented yet")
+        raise NotImplementedError()
 
     def var_set(self):
         return self._var_set

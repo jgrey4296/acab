@@ -179,7 +179,7 @@ class FactNode(TrieNode):
         """ Test two tries to see if they can match with substitutions """
         # TODO
         # { bindNode : [ options ] }
-        raise Exception("Unimplemented")
+        raise NotImplementedError()
 
     def _bind_to_value(self, data):
         """ Set the Nodes value to be one retrieved

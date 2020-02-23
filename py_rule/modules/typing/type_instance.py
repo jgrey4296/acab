@@ -40,7 +40,7 @@ class TypeInstance(Type):
 
     def __lt__(self, other):
         """ Operator to form a partial order over all types """
-        raise Exception("To be implemented")
+        raise NotImplementedError()
 
     def build_type_declaration(self, the_dict):
         """ Given a type instance and a dictionary

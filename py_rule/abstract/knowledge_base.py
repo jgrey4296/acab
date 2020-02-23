@@ -69,7 +69,8 @@ class KnowledgeBase:
 
     def _insert_into_statement_parser(self, parser):
         """ Inserts new statements entirely """
-        raise NotImplementedError
+        raise NotImplementedError()
+
     def _build_operator_parser(self):
         """ This Method calls each parser component's
         'build_operators' function, that populates Forward defined

@@ -6,6 +6,7 @@ from py_rule.abstract.knowledge_base import KnowledgeBase
 from py_rule.abstract.query import Query
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.trie.trie import Trie
+from py_rule.error.pyrule_operator_exception import PyRuleOperatorException
 from . import matching
 from .parsing import FactParser as FP
 from .parsing import QueryParser as QP
@@ -32,7 +33,7 @@ class TrieKnowledgeBase(KnowledgeBase):
         elif isinstance(other, Trie):
             return self._internal_trie._root == other._root
         else:
-            raise Exception("Incorrect Eq arg: {}".format(type(other)))
+            raise PyRuleOperatorException("Incorrect Eq arg: {}".format(type(other)))
 
     def add(self, s):
         """ Assert multiple facts from a single string """
@@ -44,7 +45,7 @@ class TrieKnowledgeBase(KnowledgeBase):
         elif isinstance(s, Sentence):
             self._assert_sentence(s)
         else:
-            raise Exception("Unrecognised addition target: {}".format(type(s)))
+            raise PyRuleParseException("Unrecognised addition target: {}".format(type(s)))
 
     def retract(self, s):
         """ Retract multiple facts from a single string
@@ -57,7 +58,7 @@ class TrieKnowledgeBase(KnowledgeBase):
         elif isinstance(s, Sentence):
             self._retract_sentence(s)
         else:
-            raise Exception("Unrecognised retract target: {}".format(type(s)))
+            raise PyRuleParseException("Unrecognised retract target: {}".format(type(s)))
 
     def query(self, s):
         """ Query a string """
@@ -67,7 +68,7 @@ class TrieKnowledgeBase(KnowledgeBase):
         elif isinstance(s, Sentence):
             return self._query_sentence(s)
         else:
-            raise Exception("Unrecognised query target: {}".format(type(s)))
+            raise PyRuleParseException("Unrecognised query target: {}".format(type(s)))
 
     def __str__(self):
         return str(self._internal_trie)

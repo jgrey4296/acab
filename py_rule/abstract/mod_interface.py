@@ -46,4 +46,4 @@ class ModuleSpecification:
         part of the modules initialisation.
         Defining values etc that can now be parsed by
         the hotloaded value and statement parsers """
-        raise NotImplementedError(self)
+        raise NotImplementedError()

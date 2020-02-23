@@ -3,6 +3,7 @@ Actions: Describes the *ENGINE AGNOSTIC* basic actions that a knowledgebase can
 perform, along with associated enums, and IR data structures
 """
 from .production_operator import ProductionOperator
+from py_rule.error.pyrule_operator_exception import PyRuleOperatorException
 from py_rule import util as util
 from py_rule.abstract.sentence import Sentence
 import logging as root_logger
@@ -46,7 +47,7 @@ class Action:
         elif op in ActionOp.op_list:
             self._op = ActionOp.op_list[op]
         else:
-            raise Exception("Action not registered with runtime: {}".format(op))
+            raise PyRuleOperatorException("Action not registered with runtime: {}".format(op))
         self._values = values
 
         # the actions that group together logically

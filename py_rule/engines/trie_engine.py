@@ -7,6 +7,7 @@ from os.path import join, isfile, exists, isdir, splitext, expanduser
 from os.path import abspath
 from os import listdir
 from random import shuffle
+from py_rule.error.pyrule_parse_exception import PyRuleParseException
 
 from py_rule.abstract import action, contexts, query, transform
 from py_rule.abstract.engine import Engine
@@ -57,7 +58,7 @@ class TrieEngine(Engine):
             # register layer sequences
             # register policies to layers
         else:
-            raise Exception("No text found in provided file")
+            raise PyRuleParseException("No text found in provided file")
 
     def tick(self, inputMessages):
         ouput = []

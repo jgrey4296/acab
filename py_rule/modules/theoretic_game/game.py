@@ -41,7 +41,7 @@ class Game:
 
     def generate_tree(self):
         """ Generate the decision tree from the players, moves, and turns, independent of the actions """
-        raise Exception("Not implemented yet")
+        raise NotImplementedError()
 
     def register_action(self, action, positionTuple, query=None):
         """ Register an action with a location of the tuple (player, move, turn) """

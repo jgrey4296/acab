@@ -6,6 +6,7 @@ from py_rule.abstract.query import Query
 from py_rule.abstract.sentence import Sentence
 from py_rule.knowledge_bases.trie_kb import util as KBU
 from py_rule.abstract.parsing import util as PU
+from py_rule.error.pyrule_base_exception import PyRuleParseException
 from .FactParser import PARAM_CORE, TYPE_ANNOTATION, PARAM_SEN
 
 logging = root_logger.getLogger(__name__)
@@ -38,7 +39,7 @@ def build_clause(toks):
         fallback_toks = None
     if KBU.NOT_S in toks:
         if fallback_toks is not None:
-            raise Exception("Negated Fallback clauses in don't make sense")
+            raise PyRuleParseException("Negated Fallback clauses in don't make sense")
         return Sentence(toks[KBU.MAIN_CLAUSE_S][:],
                         negated=True,
                         is_query=True)
