@@ -20,8 +20,7 @@ def make_node(toks):
     and any additional data
     """
     value = None
-    data = {KBU.BIND_S: False,
-            KBU.OPERATOR_S: KBU.EXOP.DOT}
+    data = KBU.DEFAULT_NODE_DATA.copy()
     if KBU.BIND_S in toks:
         # The node is a variable
         assert(isinstance(toks[KBU.BIND_S][0], tuple))

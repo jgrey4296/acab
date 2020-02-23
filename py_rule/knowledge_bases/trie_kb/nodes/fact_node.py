@@ -44,6 +44,9 @@ class FactNode(TrieNode):
         if parent is not None:
             parent = weakref.ref(parent)
 
+        if data is None:
+            data = KBU.DEFAULT_NODE_DATA.copy()
+
         super().__init__(value, data)
 
         self._op = data[KBU.OPERATOR_S]
