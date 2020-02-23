@@ -1,97 +1,28 @@
+"""
+TODO Implement transform tests
+TODO implement transform rebind
+"""
+#https://docs.python.org/3/library/unittest.html
+from os.path import splitext, split
 import unittest
 import logging
 from test_context import py_rule
-from py_rule.abstract.contexts import Contexts
-import py_rule.engines.trie_engine as T
-import py_rule.knowledge_bases.trie_kb.parsing.TransformParser as TP
-import py_rule.knowledge_bases.trie_kb.parsing.ActionParser as AP
-from math import isclose
 
-class Engine_Tests(unittest.TestCase):
+
+class TransformTests(unittest.TestCase):
+
+    @classmethod
+    def setUpClas(cls):
+        return
 
     def setUp(self):
-        self.e = T.TrieEngine()
-
+        return 1
 
     def tearDown(self):
-        self.e = None
+        return 1
 
     #----------
     #use testcase snippets
-    def test_init(self):
-        self.assertIsNotNone(self.e)
-
-    def test_assert(self):
-        self.assertEqual(len(self.e._knowledge_base._internal_trie._root), 0)
-        self.e.add('a.b.c')
-        self.assertEqual(len(self.e._knowledge_base._internal_trie._root), 1)
-
-    def test_retract(self):
-        self.e.add('a.b.c')
-        self.assertEqual(len(self.e._knowledge_base._internal_trie._root), 1)
-        self.e.retract('a')
-        self.assertEqual(len(self.e._knowledge_base._internal_trie._root), 0)
-
-    def test_query(self):
-        self.e.add('a.b.c')
-        result = self.e.query('a.b.c?')
-        self.assertTrue(bool(result))
-
-    def test_query_fail(self):
-        self.assertFalse(self.e.query('a.b.c?'))
-
-    def test_query_fail_with_asserted_facts(self):
-        self.e.add('a.b.c, a.b.d')
-        result = self.e.query('a.b.c?, a.b.e?')
-        self.assertFalse(self.e.query('a.b.c?, a.b.e?'))
-
-    def test_query_with_binds(self):
-        self.e.add('a.b.c, a.b.d, a.d.c')
-        self.assertTrue(self.e.query('a.b.$x?, a.d.$x?'))
-
-    def test_query_with_binds_fail(self):
-        self.e.add('a.b.c, a.b.d, a.d.e')
-        self.assertFalse(self.e.query('a.b.$x?, a.d.$x?'))
-
-    def test_multi_assert(self):
-        self.e.add('a.b.c, a.b.d, a.b.e')
-        self.assertEqual(len(self.e._knowledge_base._internal_trie.get_nodes(pred=lambda x: not bool(x))), 3)
-        self.assertTrue(self.e.query('a.b.c?, a.b.d?, a.b.e?'))
-
-    def test_multi_retract(self):
-        self.e.add('a.b.c, a.b.d, a.b.e')
-        self.assertEqual(len(self.e._knowledge_base._internal_trie.get_nodes(pred=lambda x: not bool(x))), 3)
-        self.e.retract('a.b.e, a.b.d')
-        self.assertEqual(len(self.e._knowledge_base._internal_trie.get_nodes(pred=lambda x: not bool(x))), 1)
-
-    def test_multi_clause_query(self):
-        self.e.add('a.b.c, a.b.d, a.b.e')
-        result = self.e.query('a.b.c?, a.b.d?, a.b.e?')
-        self.assertTrue(result)
-
-    @unittest.skip("Broken")
-    def test_rule_registration(self):
-        self.assertEqual(len(self.e._rules), 0)
-        self.e.registerRules("a.test.rule:\nend")
-        self.assertEqual(len(self.e._rules), 1)
-        self.e.registerRules("a.second.rule:\nend")
-        self.assertEqual(len(self.e._rules), 2)
-
-    @unittest.skip("Broken")
-    def test_rule_registration_overwrite(self):
-        self.assertEqual(len(self.e._rules), 0)
-        self.e.registerRules("a.test.rule:\nend")
-        self.assertEqual(len(self.e._rules), 1)
-        self.e.registerRules("a.test.rule:\nend")
-        self.assertEqual(len(self.e._rules), 1)
-
-
-    def _test_register_action(self):
-        self.assertEqual(len(self.e._custom_actions), 0)
-        self.e.register_action("Test_Func", lambda e, p: logging.info("called"))
-        self.assertEqual(len(self.e._custom_actions), 1)
-        self.assertTrue(True)
-
     @unittest.skip("Broken")
     def test_run_transform(self):
         stub_ctx = Contexts.initial(None)
@@ -249,89 +180,12 @@ class Engine_Tests(unittest.TestCase):
         self.assertEqual(result['za'], 'CCC BBB AAA')
 
 
-    @unittest.skip("Broken")
-    def test_run_assert_action(self):
-        actions = AP.parseString("+(a.b.c)")
-        self.assertFalse(self.e.query("a.b.c?"))
-        self.e._run_actions({},actions)
-        self.assertTrue(self.e.query("a.b.c?"))
-
-    @unittest.skip("Broken")
-    def test_run_retract_action(self):
-        actions = AP.parseString("-(a.b.c)")
-        self.e.add("a.b.c")
-        self.assertTrue(self.e.query("a.b.c?"))
-        self.e._run_actions({}, actions)
-        self.assertFalse(self.e.query("a.b.c?"))
-        self.assertTrue(self.e.query("~a.b.c?"))
-
-    @unittest.skip("Broken")
-    def test_run_assert_multi_action(self):
-        actions = AP.parseString("+(a.b.c), +(a.b.d)")
-        self.assertFalse(self.e.query("a.b.c?, a.b.d?"))
-        self.assertTrue(self.e.query("~a.b.c?, ~a.b.d?"))
-        self.e._run_actions({}, actions)
-        self.assertTrue(self.e.query("a.b.c?, a.b.d?"))
-
-    @unittest.skip("Broken")
-    def test_run_mixed_multi_action(self):
-        actions = AP.parseString("+(a.b.c), -(a.b.d)")
-        self.e.add("a.b.d")
-        self.assertTrue(self.e.query("~a.b.c?, a.b.d?"))
-        self.e._run_actions({}, actions)
-        self.assertTrue(self.e.query("a.b.c?, ~a.b.d?"))
-
-    @unittest.skip("Broken")
-    def test_run_bound_assert_action(self):
-        data = {"x": "blah"}
-        actions = AP.parseString("+(a.b.$x)")
-        self.assertTrue(self.e.query("~a.b.blah?"))
-        self.e._run_actions(data, actions)
-        self.assertTrue(self.e.query("a.b.blah?"))
-
-    @unittest.skip("Broken")
-    def test_run_bound_retract_action(self):
-        data = {"blah" : "bloo"}
-        actions = AP.parseString("-(a.$blah.c)")
-        self.e.add("a.bloo.c")
-        self.assertTrue(self.e.query("a.bloo.c?"))
-        self.e._run_actions(data, actions)
-        self.assertTrue(self.e.query("~a.bloo.c?, a.bloo?"))
-
-    @unittest.skip("Broken")
-    def test_run_mixed_bound_actions(self):
-        data = {"blah": "bloo"}
-        actions = AP.parseString("+(a.$blah), -(b.$blah)")
-        self.e.add("b.bloo")
-        self.assertTrue(self.e.query("b.bloo?"))
-        self.e._run_actions(data, actions)
-        self.assertTrue(self.e.query("a.bloo?, ~b.bloo?"))
-
-    @unittest.skip("Broken")
-    def test_register_and_run_entire_rule(self):
-        self.e.registerRules("test.rule:\na.$x?\n\n$x + 20 -> $y\n\n+(b.$y)\nend")
-        self.e.add("a.20")
-        self.assertTrue(self.e.query("a.20?, ~b.40?"))
-        self.e._run_rules()
-        self.assertTrue(self.e.query("a.20?, b.40?"))
-
-    @unittest.skip("Broken")
-    def test_register_rule_added_to_trie(self):
-        self.assertTrue(self.e.query('~test.rule?'))
-        self.e.registerRules('test.rule:\na.b.c?\n\n+(a.b.d)\nend')
-        self.assertTrue(self.e.query('test.rule?'))
-
-    # def test_rule_query(self):
-    #     self.e.add('.a.b.c')
-    #     self.e.registerRules('.test.rule:\n.a.b.c?\n\n+(.d.e.f)\nend')
-    #     self.assertTrue(self.e.query('.test.rule(^rule)?'))
-    #     self.assertFalse(self.e.query('.a.b.c(^rule)?'))
-    #     self.assertTrue(self.e.query('~.a.b.c(^rule)?'))
-
 
 if __name__ == "__main__":
+    #run python $filename to use this logging setup
+    #using python -m unittest $filename won't
     LOGLEVEL = logging.INFO
-    logFileName = "log.engine_tests"
+    logFileName = "log.{}".format(splitext(split(__file__)[1])[0])
     logging.basicConfig(filename=logFileName, level=LOGLEVEL, filemode='w')
     console = logging.StreamHandler()
     console.setLevel(logging.WARN)
