@@ -1,15 +1,16 @@
-import unittest
-import logging
-import random
-from test_context import py_rule
+from py_rule.abstract.sentence import Sentence
+from py_rule.abstract.trie.nodes.trie_node import TrieNode
 from py_rule.knowledge_bases.trie_kb.parsing import FactParser as FP
+from py_rule.modules.typing import util as TU
+from py_rule.modules.typing.type_definition import TypeDefinition
+from test_context import py_rule
+import logging
 import py_rule.modules.typing.parsing.TypeDefParser as TD
 import py_rule.modules.typing.parsing.TypeParser as TP
-from py_rule.abstract.trie.nodes.trie_node import TrieNode
-from py_rule.abstract.sentence import Sentence
-from py_rule.modules.typing.type_definition import TypeDefinition
 import py_rule.util as util
-from py_rule.modules.typing import util as TU
+import random
+import unittest
+
 
 class Trie_Fact_Parser_Tests(unittest.TestCase):
 
@@ -59,6 +60,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertEqual(result[1]._structure[0][-1]._data[TU.TYPE_DEC_S]._name._value, 'bloo')
 
     def test_typedef_with_bad_vars(self):
+        # TODO: replace exception with a more specific one
         with self.assertRaises(Exception):
             result = TD.parseString('::blah(blee):\n\na.b.c\n\nend')[0]
 

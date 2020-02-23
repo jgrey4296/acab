@@ -524,30 +524,39 @@ class TypingTests(unittest.TestCase):
         self.assertEqual(len(tc.query(sen2)), 0)
 
     def test_typing_polytype_fail(self):
+        # TODO
         return
 
     def test_typing_polytype_nested_fail(self):
+        # TODO
         return
 
     def test_typing_polytype_multi_param_fail(self):
+        # TODO
         return
 
     def test_polytype_lacking_param(self):
+        # TODO
         return
 
     def test_polytype_nested_lacking_param(self):
+        # TODO
         return
 
     def test_add_rule(self):
+        # TODO
 	    return
 
     def test_add_operation(self):
+        # TODO
         return
 
     def test_infer_from_operation(self):
+        # TODO
         return
 
     def test_infer_polytype_param_from_use(self):
+        # TODO
         return
 
 
