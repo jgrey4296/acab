@@ -1,13 +1,12 @@
 """
-A DSL to describe how actions and sequences of actions
-are packaged into rituals
+A means to describe various metrics,
+ how to commensurate different values,
+
 """
 from py_rule.abstract.value import PyRuleValue
 
-class RitualBase(PyRuleValue):
-    """ Base Description of sequences of actions
-    which do not rely on instrumental causality
-    """
+class MetricBase(PyRuleValue):
+    """ A Base Class for a means of assessing and comparing  """
 
     def __init__(self):
         return
@@ -29,7 +28,6 @@ class RitualBase(PyRuleValue):
     def var_set(self):
         """ Data needs to be able to report internal variables """
         raise NotImplementedError()
-
 
 
 
