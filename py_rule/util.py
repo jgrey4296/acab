@@ -21,6 +21,7 @@ SUB_S        = '-'
 UNDERSCORE_S = "_"
 VALUE_S      = "value"
 VALUE_TYPE_S = "value_type"
+SEN_S        = "sentence"
 
 
 def build_rebind_dict(formal, usage):
