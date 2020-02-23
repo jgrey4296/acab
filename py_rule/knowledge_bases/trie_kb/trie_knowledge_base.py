@@ -75,6 +75,9 @@ class TrieKnowledgeBase(KnowledgeBase):
     def _insert_into_values_parser(self, parser):
         FP.OTHER_VALS << parser
 
+    def _insert_into_statement_parser(self, parser):
+        TotalP.OTHER_STATEMENTS << parser
+
     def _build_operator_parser(self):
         """ Trigger the building of operators,
         *after* modules have been loaded
