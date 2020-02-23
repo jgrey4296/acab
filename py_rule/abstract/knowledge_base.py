@@ -18,15 +18,24 @@ class KnowledgeBase:
             raise ImportError("Can Only expand knowledge base types once")
         assert(all([isinstance(x, ModuleSpecification) for x in mods]))
         self._added_types = True
+
         # Construct operators:
         [x.construct_operators() for x in mods]
 
         # Add values parsers:
-        parsers = [x.get_parser() for x in mods]
-        or_d_types = pp.Or([x for x in parsers if x is not None])
+        val_parsers = [y for x in mods for y in x.get_value_parsers()]
+        or_d_types = pp.Or([x for x in val_parsers if x is not None])
         self._insert_into_values_parser(or_d_types)
 
-        # TODO: add for definitions for type checking
+        # add statement parsers:
+        statement_parsers = [y for x in mods for y in x.get_statement_parsers()]
+        or_d_statements = pp.Or([x for x in statement_parsers if x is not None])
+        self._insert_into_statementues_parser(or_d_statements)
+
+        # Init module values
+        strings = "\n\n".join([x.init_strings() for x in mods])
+        self.add(strings)
+
 
     def build_operator_parser(self):
         """ This is used to build the parsers of operators,
@@ -53,11 +62,14 @@ class KnowledgeBase:
         raise NotImplementedError()
 
     def _insert_into_values_parser(self, parser):
-        """
+        """ Inserts new value types that can be parsed in a sentence
         Should look like FP.OTHER_VALS << or_d_parser
         """
         raise NotImplementedError()
 
+    def _insert_into_statement_parser(self, parser):
+        """ Inserts new statements entirely """
+        raise NotImplementedError
     def _build_operator_parser(self):
         """ This Method calls each parser component's
         'build_operators' function, that populates Forward defined
