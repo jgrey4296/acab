@@ -17,7 +17,7 @@ import py_rule.util as util
 
 from py_rule.knowledge_bases.trie_kb.parsing import ActionParser as AP
 from py_rule.knowledge_bases.trie_kb.parsing import FactParser as FP
-from py_rule.knowledge_bases.trie_kb.parsing import FileParser as FileP
+from py_rule.knowledge_bases.trie_kb.parsing import TotalParser as FileP
 from py_rule.knowledge_bases.trie_kb.parsing import QueryParser as QP
 from py_rule.knowledge_bases.trie_kb.parsing import RuleParser as RP
 from py_rule.knowledge_bases.trie_kb.parsing import TransformParser as TP
@@ -48,16 +48,14 @@ class TrieEngine(Engine):
         if s is not None:
             # TODO: load (layer, policy) tuples
             # rules, assertions, layers, policies = FileP.parseString(s)
-            definitions, rules, assertions = FileP.parseString(s)
+            rules, assertions = FileP.parseString(s)
             # Assert facts:
             for x in assertions:
                 logging.info("File load assertions: {}".format(x))
                 self.add(x)
-            # register rules:
-            self.register_rules(rules)
+
             # register layer sequences
             # register policies to layers
-            # TODO: Do something with definitions
         else:
             raise Exception("No text found in provided file")
 
@@ -74,21 +72,3 @@ class TrieEngine(Engine):
         output = self._proposed_actions.copy()
         return output
 
-    # todo: be able to assert retract or query from tries instead of strings
-    def register_rules(self, s):
-        """ Add a Rule to the engine """
-        if isinstance(s, str):
-            rules = RP.parseString(s)
-        else:
-            assert(all([isinstance(x, TR.TrieRule) for x in s]))
-            rules = s
-        for x in rules:
-            assert(isinstance(x, TR.TrieRule))
-            assert(x.is_coherent())
-            logging.info("Registering Rule: {}".format(x._name))
-            ruleName = "".join([str(x) for x in x._name])
-            self._rules[ruleName] = x
-            # Add the rule position as a fact:
-            self.add(x._name)
-            # then attach the rule as a meta leaf of the last node of that fact
-            # self._knowledge_base._last_node.set_meta_leaf(util.META_OP.RULE, x)
