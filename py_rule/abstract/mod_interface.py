@@ -27,15 +27,15 @@ class ModuleSpecification:
         if funcs is not None:
             self._functions += funcs
 
-    def parse_string(self, string):
-        """ Takes a String, parses it into Data format """
-        raise NotImplementedError()
-
     def get_value_parsers(self):
         return self._value_parsers
 
     def get_statement_parsers(self):
         return self._statement_parsers
+
+    def parse_string(self, string):
+        """ Takes a String, parses it into Data format """
+        raise NotImplementedError()
 
     def construct_operators(self):
         """ Use this to call operator constructors """
