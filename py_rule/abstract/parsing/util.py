@@ -19,15 +19,6 @@ def N(name, parser):
     return parser.setResultsName(name)
 
 
-def construct_num(toks):
-    # TODO: add in fractions and underscores
-    if util.DECIMAL_S in toks[0]:
-        return (util.FLOAT_S, float(toks[0].replace(util.DECIMAL_S,
-                                                    '.')))
-    else:
-        return (util.INT_S, int(toks[0]))
-
-
 def construct_sentence(toks):
     return Sentence(toks[:])
 
@@ -67,9 +58,6 @@ VBAR = s(pp.Literal('|'))
 NAME        = pp.Word(pp.alphas + util.UNDERSCORE_S)
 NAME.setParseAction(lambda t: (util.NAME_S, t[0]))
 
-NUM         = pp.Word(pp.nums + util.SUB_S + util.DECIMAL_S)
-NUM.setParseAction(construct_num)
-
 STRING      = pp.dblQuotedString
 # Remove quotes from around strings:
 STRING.setParseAction(lambda t: (util.STRING_S, t[0].replace('"', '')))
@@ -77,5 +65,5 @@ STRING.setParseAction(lambda t: (util.STRING_S, t[0].replace('"', '')))
 REGEX       = pp.Regex(r'/.+?/')
 REGEX.setParseAction(lambda t: (util.REGEX_S, t[0][1:-1]))
 
-BASIC_VALUE = pp.Or([NAME, NUM, STRING, REGEX])
+BASIC_VALUE = pp.Or([NAME, STRING, REGEX])
 BIND        = DOLLAR + NAME
