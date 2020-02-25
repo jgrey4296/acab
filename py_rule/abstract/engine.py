@@ -74,8 +74,7 @@ class Engine:
 
     def tick(self, inputMessages):
         """ A Single Tick of the Engine.
-        Receives a list of updates from the world,
-        calculates, then returns a list of output messages """
+        Receives a list of updates from the world """
         assert(isinstance(inputMessages, list))
         # Assert input messages
         # rule the rule layers

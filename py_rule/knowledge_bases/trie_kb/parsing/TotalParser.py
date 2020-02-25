@@ -11,7 +11,7 @@ from py_rule.abstract.action import ActionMacro
 from py_rule.abstract.rule import Rule
 from py_rule.knowledge_bases.trie_kb import util as KBU
 from py_rule.abstract.parsing import util as PU
-from py_rule.error.pyrule_base_exception import PyRuleParseException
+from py_rule.error.pyrule_parse_exception import PyRuleParseException
 
 from . import FactParser as FP
 from . import RuleParser as RP

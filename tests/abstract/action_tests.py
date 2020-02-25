@@ -5,7 +5,7 @@ import logging
 from test_context import py_rule
 
 
-class (unittest.TestCase):
+class ActionTests(unittest.TestCase):
 
     @classmethod
     def setUpClas(cls):

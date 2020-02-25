@@ -6,7 +6,7 @@ from py_rule.abstract.query import Query
 from py_rule.abstract.sentence import Sentence
 from py_rule.knowledge_bases.trie_kb import util as KBU
 from py_rule.abstract.parsing import util as PU
-from py_rule.error.pyrule_base_exception import PyRuleParseException
+from py_rule.error.pyrule_parse_exception import PyRuleParseException
 from .FactParser import PARAM_CORE, TYPE_ANNOTATION, PARAM_SEN
 
 logging = root_logger.getLogger(__name__)
