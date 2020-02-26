@@ -24,10 +24,13 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
 
     #----------
     #use testcase snippets
+
+    @unittest.skip("numbers have been deprecated")
     def test_basic_comp_internal(self):
         result = QP.COMP_Internal.parseString('>20')[0]
         self.assertIsInstance(result, Comparison)
 
+    @unittest.skip("numbers have been deprecated")
     def test_basic_comparison(self):
         result = QP.constraints.parseString('>20, <40, !=$x, ==$y, ~=/blah/')[0]
         self.assertEqual(result[0], KBU.CONSTRAINT_S)
@@ -45,17 +48,20 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result._op, type(CompOp.op_list['~=']))
         self.assertEqual(result._value._value, 'blah')
 
+    @unittest.skip("numbers have been deprecated")
     def test_basic_query_core(self):
         result = QP.QueryCore.parseString('a(>20).')[0]
         self.assertTrue(KBU.CONSTRAINT_S in result._data)
         self.assertEqual(len(result._data[KBU.CONSTRAINT_S]), 1)
         self.assertIsInstance(result._data[KBU.CONSTRAINT_S][0], Comparison)
 
+    @unittest.skip("numbers have been deprecated")
     def test_basic_query_core_multi_comparison(self):
         result = QP.QueryCore.parseString('a(>20, <30).')[0]
         self.assertEqual(len(result._data[KBU.CONSTRAINT_S]), 2)
         self.assertTrue(all([isinstance(x, Comparison) for x in result._data[KBU.CONSTRAINT_S]]))
 
+    @unittest.skip("numbers have been deprecated")
     def test_basic_query_core_with_exclusion(self):
         result = QP.QueryCore.parseString('a(>20)!')[0]
         self.assertEqual(result._data[KBU.OPERATOR_S], KBU.EXOP.EX)
@@ -103,6 +109,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result, Query)
         self.assertEqual(len(result._clauses), 3)
 
+    @unittest.skip("numbers have been deprecated")
     def test_clause_fallback(self):
         result = QP.clause.parseString('a.b.c? || $x:2')[0]
         self.assertIsInstance(result, Sentence)
@@ -112,10 +119,12 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertEqual(result._fallback[0][0], 'x')
         self.assertEqual(result._fallback[0][1][-1]._value, 2)
 
+    @unittest.skip("numbers have been deprecated")
     def test_clause_negated_fallback(self):
         with self.assertRaises(Exception):
             QP.clause.parseString('~a.b.c? || $x:2')
 
+    @unittest.skip("numbers have been deprecated")
     def test_clause_multi_fallback(self):
         result = QP.clause.parseString('a.b.c? || $x:2, $y:5')[0]
         self.assertIsInstance(result, Sentence)
@@ -136,6 +145,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertEqual(result._fallback[1][0], 'y')
         self.assertEqual(result._fallback[1][1][-1]._value, 'e')
 
+    @unittest.skip("numbers have been deprecated")
     def test_fact_str_equal(self):
         queries = ["a.b.c?", "a.b!c?", 'a.b."a string".c?',
                    'a.b!"a string"!c?', 'a.b(> 20)?',

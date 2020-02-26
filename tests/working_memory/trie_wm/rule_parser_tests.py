@@ -72,6 +72,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertIsInstance(result[0][1]._query, Query)
             self.assertEqual(len(result[0][1]._query), 1)
 
+    @unittest.skip("numbers have been deprecated")
     def test_rule_with_transform(self):
             result = RP.parseString("a.rule:\n$x + 20 -> $y\n\nend")
             self.assertEqual(len(result), 1)
@@ -79,6 +80,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertIsNone(result[0][1]._query)
             self.assertIsNotNone(result[0][1]._transform)
 
+    @unittest.skip("numbers have been deprecated")
     def test_rule_with_multiple_transforms(self):
             result = RP.parseString("a.rule:\n $x + 20 -> $y, $y - 20\n\nend")
             self.assertEqual(len(result), 1)
@@ -86,6 +88,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertIsNone(result[0][1]._query)
             self.assertIsNotNone(result[0][1]._transform)
 
+    @unittest.skip("numbers have been deprecated")
     def test_rule_with_multiple_transforms_on_single_line(self):
             result = RP.parseString("a.rule:\n$x + 20 -> $y,$y - 20\n\nend")
             self.assertEqual(len(result), 1)
@@ -117,6 +120,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertIsNone(result[0][1]._transform)
             self.assertEqual(len(result[0][1]._actions), 2)
 
+    @unittest.skip("numbers have been deprecated")
     def test_rule_with_query_transform_actions(self):
             result = RP.parseString("a.rule:\na.b.c?\n\n$x + 20\n\n+(a.b.c)\nend")
             self.assertEqual(len(result), 1)
@@ -132,6 +136,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
         self.assertEqual(str(expanded),
                          "a.rule:\n\ta.b.c?\n\nend")
 
+    @unittest.skip("numbers have been deprecated")
     def test_rule_binding_expansion(self):
         bindings = { "x" : FP.parseString('a.b.c')[0],
                      "y" : FP.parseString('d.e.f')[0],
@@ -147,6 +152,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertEqual(str(result._name), "a.test.rule")
             self.assertTrue(all(x in result._tags for x in ["blah","bloo","blee"]))
 
+    @unittest.skip("numbers have been deprecated")
     def test_fact_str_equal(self):
             rules = [ "a.rule:\nend",
                       "a.rule:\n\ta.b.c?\n\nend",
@@ -161,6 +167,8 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             for r,p in zipped:
                   self.assertEqual(r,str(p))
 
+
+    @unittest.skip("numbers have been deprecated")
     def test_bdi_rule_parse(self):
         rulestr = """bdi.blah:
     #propose

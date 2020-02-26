@@ -31,12 +31,14 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
 
     #----------
     #use testcase snippets
+    @unittest.skip("numbers have been deprecated")
     def test_simple_action_parse(self):
         result = AP.parseString("+(20, 30, 40)")[0]
         self.assertIsInstance(result, action.Action)
         self.assertEqual(result._op._op_str, '+')
         self.assertEqual([x[-1]._value for x in result._values], [20, 30, 40])
 
+    @unittest.skip("numbers have been deprecated")
     def test_custom_action_parse(self):
         result = AP.parseString("blah(20, 30, 40)")
         self.assertEqual(len(result), 1)
@@ -51,6 +53,7 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
         self.assertEqual(result[0]._op._op_str, "+")
         self.assertEqual([x[-1]._value for x in result[0]._values], ["blah bloo","blee","awef"])
 
+    @unittest.skip("Numbers have been deprecated")
     def test_actions_parse(self):
         result = AP.parseString('+(2), -(3), @(4)')
         self.assertEqual(len(result), 3)
@@ -63,6 +66,7 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
         self.assertEqual(len(result), 4)
         self.assertTrue(all([isinstance(x, action.Action) for x in result]))
 
+    @unittest.skip("Numbers have been deprecated")
     def test_action_str_equal(self):
         actions = ["+(2)", "-(3)", "@(4)"]
         parsed = [AP.parseString(x)[0] for x in actions]

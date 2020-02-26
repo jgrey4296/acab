@@ -101,24 +101,28 @@ class Trie_WM_Tests(unittest.TestCase):
         result = self.trie.query('$x.d?')
         self.assertEqual(len(result),1)
 
+    @unittest.skip("numbers have been deprecated")
     def test_query_alpha_comp(self):
         """ Check that alpha comparisons work """
         self.trie.add('a.b.20')
         result = self.trie.query('a.b.$x(==20)?')
         self.assertTrue(result)
 
+    @unittest.skip("numbers have been deprecated")
     def test_query_alpha_comp_fails(self):
         """ Check that alpha comparisons can fail """
         self.trie.add('a.b.20')
         result = self.trie.query('a.b.$x(==30)?')
         self.assertFalse(result)
 
+    @unittest.skip("numbers have been deprecated")
     def test_query_alpha_comp_GT(self):
         """ Check that other comparisons from equality can be tested for """
         self.trie.add('a.b.20')
         result = self.trie.query('a.b.$x(>10)?')
         self.assertTrue(result)
 
+    @unittest.skip("numbers have been deprecated")
     def test_query_fail(self):
         """ Check that other comparisons can fail """
         self.trie.add('a.b.20')
@@ -165,6 +169,7 @@ class Trie_WM_Tests(unittest.TestCase):
         result = self.trie.query('$x.$y?')
         self.assertFalse(result)
 
+    @unittest.skip("numbers have been deprecated")
     def test_query_multi_bind_comp(self):
         """ Check that bindings hold across clauses """
         self.trie.add('a.b.20, a.c.30, a.d.40')
@@ -175,6 +180,7 @@ class Trie_WM_Tests(unittest.TestCase):
         self.assertEqual(result[0]['y'], 'd')
         self.assertEqual(result[0]['v'], 40)
 
+    @unittest.skip("numbers have been deprecated")
     def test_query_multi_alts(self):
         """ Check that queries with bindings provide enumerated alternatives """
         self.trie.add('a.b.20, a.c.30, a.d.40, a.e.50')

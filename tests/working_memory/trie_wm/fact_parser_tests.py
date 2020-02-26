@@ -49,6 +49,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         result = FP.parseString('a!b!c')[0]
         self.assertTrue(all([x._data[KBU.OPERATOR_S] == KBU.EXOP.EX for x in result[:-1]]))
 
+    @unittest.skip("numbers have been deprecated")
     def test_numbers_parsing(self):
         for i in range(100):
             mult = 10 ** round(random.random() * 4)
@@ -56,6 +57,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
             result = FP.parseString('a.' + str(r))[0]
             self.assertEqual(result[-1]._value, r)
 
+    @unittest.skip("numbers have been deprecated")
     def test_negative_number_parsing(self):
         for i in range(100):
             mult = 10 ** round(random.random() * 4)
@@ -63,6 +65,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
             result = FP.parseString('a.'+str(r))[0]
             self.assertEqual(result[-1]._value, r)
 
+    @unittest.skip("Numbers have been deprecated")
     def test_floats(self):
         for i in range(100):
             mult = 10 ** round(random.random() * 4)
