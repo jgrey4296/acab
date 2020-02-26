@@ -3,7 +3,7 @@ import logging as root_logger
 import pyparsing as pp
 from py_rule.abstract import action as Actions
 from py_rule.abstract.parsing import util as PU
-from py_rule.knowledge_bases.trie_kb import util as KBU
+from py_rule.working_memory.trie_wm import util as WMU
 
 from .FactParser import PARAM_SEN, VALBIND
 
@@ -19,13 +19,13 @@ def build_operators():
 
 # constructors:
 def build_action(toks):
-    return Actions.Action(toks[KBU.OPERATOR_S],
-                          toks[KBU.ACTION_VAL_S][:])
+    return Actions.Action(toks[WMU.OPERATOR_S],
+                          toks[WMU.ACTION_VAL_S][:])
 
 
 def build_macro_use(toks):
-    if KBU.BIND_S in toks:
-        bindings = toks[KBU.BIND_S][:]
+    if WMU.BIND_S in toks:
+        bindings = toks[WMU.BIND_S][:]
     else:
         bindings = []
     return Actions.ActionMacroUse(toks[0],
@@ -35,12 +35,12 @@ def build_macro_use(toks):
 def build_definition(toks):
     parameters = []
     m_actions = []
-    if KBU.BIND_S in toks:
-        parameters = toks[KBU.BIND_S][:]
-    if KBU.ACTION_S in toks:
-        m_actions = toks[KBU.ACTION_S][:]
+    if WMU.BIND_S in toks:
+        parameters = toks[WMU.BIND_S][:]
+    if WMU.ACTION_S in toks:
+        m_actions = toks[WMU.ACTION_S][:]
 
-    return Actions.ActionMacro(toks[KBU.NAME_S][0],
+    return Actions.ActionMacro(toks[WMU.NAME_S][0],
                                parameters,
                                m_actions)
 
@@ -57,21 +57,21 @@ vals = PARAM_SEN + pp.ZeroOrMore(PU.COMMA + PARAM_SEN)
 
 bindList = VALBIND + pp.ZeroOrMore(PU.COMMA + VALBIND)
 # action: [op](values)
-action = PU.N(KBU.OPERATOR_S, operator) \
-    + PU.OPAR + PU.N(KBU.ACTION_VAL_S, vals) + PU.CPAR
+action = PU.N(WMU.OPERATOR_S, operator) \
+    + PU.OPAR + PU.N(WMU.ACTION_VAL_S, vals) + PU.CPAR
 
 actionMacroUse = ACT_MACRO + \
-        PU.OPAR + PU.N(KBU.BIND_S, PU.op(vals)) + PU.CPAR
+        PU.OPAR + PU.N(WMU.BIND_S, PU.op(vals)) + PU.CPAR
 
 actionsOrMacros = pp.Or([actionMacroUse, action])
 
 justActions = action + pp.ZeroOrMore(PU.COMMA + action)
 actions = actionsOrMacros + pp.ZeroOrMore(PU.COMMA + actionsOrMacros)
 
-action_definition = PU.NG(KBU.NAME_S, ACT_MACRO) + PU.OPAR \
-                    + PU.NG(KBU.BIND_S, PU.op(bindList)) \
+action_definition = PU.NG(WMU.NAME_S, ACT_MACRO) + PU.OPAR \
+                    + PU.NG(WMU.BIND_S, PU.op(bindList)) \
                     + PU.CPAR + PU.COLON + PU.sLn\
-                    + PU.NG(KBU.ACTION_S, justActions) \
+                    + PU.NG(WMU.ACTION_S, justActions) \
                     + PU.sLn + PU.end
 
 

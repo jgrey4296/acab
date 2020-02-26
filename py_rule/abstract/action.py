@@ -1,5 +1,5 @@
 """
-Actions: Describes the *ENGINE AGNOSTIC* basic actions that a knowledgebase can
+Actions: Describes the *ENGINE AGNOSTIC* basic actions that a working memory can
 perform, along with associated enums, and IR data structures
 """
 from .production_operator import ProductionOperator

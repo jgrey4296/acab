@@ -1,11 +1,11 @@
 """ EngineBase: The Core Interface and implementation independent code for the
-    knowledgebase engines
+    production systems
 """
 import logging as root_logger
 from .rule import Rule
 from .action import Action
 from .transform import Transform
-from .knowledge_base import KnowledgeBase
+from .working_memory import WorkingMemory
 from py_rule import util as util
 from .agenda import Agenda
 logging = root_logger.getLogger(__name__)
@@ -14,11 +14,11 @@ logging = root_logger.getLogger(__name__)
 class Engine:
     """ The Abstract class of a production system engine. """
 
-    def __init__(self, kb_constructor, modules=None, path=None, init=None):
-        assert(kb_constructor in KnowledgeBase.__subclasses__())
-        self.__kb_constructor = kb_constructor
+    def __init__(self, wm_constructor, modules=None, path=None, init=None):
+        assert(issubclass(wm_constructor, WorkingMemory))
+        self.__kb_constructor = wm_constructor
 
-        self._knowledge_base = kb_constructor(init)
+        self._working_memory = wm_constructor(init)
 
         self._proposed_actions = []
         # to be updated with printed representations
@@ -28,12 +28,12 @@ class Engine:
         self._recall_states = {}
 
         if modules is not None:
-            self._knowledge_base.add_modules(modules)
+            self._working_memory.add_modules(modules)
 
-        self._knowledge_base.build_operator_parser()
+        self._working_memory.build_operator_parser()
 
         if path is None:
-            logging.info("Not loading any files for the knowledge base")
+            logging.info("Not loading any files for the working memory")
         elif isinstance(path, list):
             for x in path:
                 self.load_file(x)
@@ -56,16 +56,16 @@ class Engine:
     def add(self, s):
         """ Assert a new fact into the engine """
         # pylint: disable=unused-argument,no-self-use
-        self._knowledge_base.add(s)
+        self._working_memory.add(s)
 
     def retract(self, s):
         """ Remove a fact from the engine """
         # pylint: disable=unused-argument,no-self-use
-        self._knowledge_base.retract(s)
+        self._working_memory.retract(s)
 
     def query(self, s):
-        """ As a question of the knowledge base """
-        return self._knowledge_base.query(s)
+        """ As a question of the working memory """
+        return self._working_memory.query(s)
 
     def clear_proposed_actions(self):
         """ Clear the list of actions proposed by rules, but which haven't been
@@ -83,9 +83,9 @@ class Engine:
 
     # Export
     def _save_state(self, data):
-        """ Copy the current string representation of the knowledge base,
+        """ Copy the current string representation of the working memory,
         and any associated data """
-        self._prior_states.append((str(self._knowledge_base), data))
+        self._prior_states.append((str(self._working_memory), data))
 
     # Utility
     def run_layer(self, layer):

@@ -9,7 +9,7 @@ from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.value import PyRuleValue
 from py_rule.abstract.action import ActionMacro
 from py_rule.abstract.rule import Rule
-from py_rule.knowledge_bases.trie_kb import util as KBU
+from py_rule.working_memory.trie_wm import util as WMU
 from py_rule.abstract.parsing import util as PU
 from py_rule.error.pyrule_parse_exception import PyRuleParseException
 
@@ -50,7 +50,7 @@ def add_file_binding(toks):
     """ Store the string of in the binding """
     binding = toks[0]
     string = toks[1]
-    assert(binding._data[KBU.BIND_S])
+    assert(binding._data[WMU.BIND_S])
     assert(isinstance(string, Sentence))
     assert(binding._value not in parseBindings)
     parseBindings[binding._value] = string
@@ -71,7 +71,7 @@ def expansion_pass(toks):
     return toks
 
 def clearBinding(toks):
-    assert(all([x._data[KBU.BIND_S] for x in toks]))
+    assert(all([x._data[WMU.BIND_S] for x in toks]))
     assert(all([x._value in parseBindings for x in toks]))
     for x in toks:
         del parseBindings[x._value]
@@ -93,9 +93,9 @@ def trie_wrap_statement_into_sentence(toks):
     assert(isinstance(value, PyRuleValue))
     loc = value._name.copy()
     assert(isinstance(loc, Sentence))
-    node_data = KBU.DEFAULT_NODE_DATA.copy()
-    node_data[KBU.VALUE_TYPE_S : type_name]
-    node_data[KBU.OPERATOR_S : KBU.EXOP.EX]
+    node_data = WMU.DEFAULT_NODE_DATA.copy()
+    node_data[WMU.VALUE_TYPE_S : type_name]
+    node_data[WMU.OPERATOR_S : WMU.EXOP.EX]
 
     loc.add(FactNode(value, node_data))
 

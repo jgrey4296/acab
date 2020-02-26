@@ -2,7 +2,7 @@
 import logging as root_logger
 from .nodes.fact_node import FactNode
 from py_rule.abstract.contexts import Contexts
-from py_rule.abstract.knowledge_base import KnowledgeBase
+from py_rule.abstract.working_memory import WorkingMemory
 from py_rule.abstract.query import Query
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.trie.trie import Trie
@@ -16,8 +16,8 @@ from .parsing import TotalParser as TotalP
 logging = root_logger.getLogger(__name__)
 
 
-class TrieKnowledgeBase(KnowledgeBase):
-    """ A Trie based knowledge base """
+class TrieWM(WorkingMemory):
+    """ A Trie based working memory"""
 
     def __init__(self, init=None):
         """ init is a string of assertions to start the fact base with """
@@ -28,7 +28,7 @@ class TrieKnowledgeBase(KnowledgeBase):
             self.add(init)
 
     def __eq__(self, other):
-        if isinstance(other, TrieKnowledgeBase):
+        if isinstance(other, TrieWM):
             return self._internal_trie._root == other._internal_trie._root
         elif isinstance(other, Trie):
             return self._internal_trie._root == other._root

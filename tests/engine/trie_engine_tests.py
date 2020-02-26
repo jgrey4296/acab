@@ -3,8 +3,8 @@ import logging
 from test_context import py_rule
 from py_rule.abstract.contexts import Contexts
 import py_rule.engines.trie_engine as T
-import py_rule.knowledge_bases.trie_kb.parsing.TransformParser as TP
-import py_rule.knowledge_bases.trie_kb.parsing.ActionParser as AP
+import py_rule.working_memory.trie_wm.parsing.TransformParser as TP
+import py_rule.working_memory.trie_wm.parsing.ActionParser as AP
 from math import isclose
 
 class Engine_Tests(unittest.TestCase):
@@ -22,15 +22,15 @@ class Engine_Tests(unittest.TestCase):
         self.assertIsNotNone(self.e)
 
     def test_assert(self):
-        self.assertEqual(len(self.e._knowledge_base._internal_trie._root), 0)
+        self.assertEqual(len(self.e._working_memory._internal_trie._root), 0)
         self.e.add('a.b.c')
-        self.assertEqual(len(self.e._knowledge_base._internal_trie._root), 1)
+        self.assertEqual(len(self.e._working_memory._internal_trie._root), 1)
 
     def test_retract(self):
         self.e.add('a.b.c')
-        self.assertEqual(len(self.e._knowledge_base._internal_trie._root), 1)
+        self.assertEqual(len(self.e._working_memory._internal_trie._root), 1)
         self.e.retract('a')
-        self.assertEqual(len(self.e._knowledge_base._internal_trie._root), 0)
+        self.assertEqual(len(self.e._working_memory._internal_trie._root), 0)
 
     def test_query(self):
         self.e.add('a.b.c')
@@ -55,14 +55,14 @@ class Engine_Tests(unittest.TestCase):
 
     def test_multi_assert(self):
         self.e.add('a.b.c, a.b.d, a.b.e')
-        self.assertEqual(len(self.e._knowledge_base._internal_trie.get_nodes(pred=lambda x: not bool(x))), 3)
+        self.assertEqual(len(self.e._working_memory._internal_trie.get_nodes(pred=lambda x: not bool(x))), 3)
         self.assertTrue(self.e.query('a.b.c?, a.b.d?, a.b.e?'))
 
     def test_multi_retract(self):
         self.e.add('a.b.c, a.b.d, a.b.e')
-        self.assertEqual(len(self.e._knowledge_base._internal_trie.get_nodes(pred=lambda x: not bool(x))), 3)
+        self.assertEqual(len(self.e._working_memory._internal_trie.get_nodes(pred=lambda x: not bool(x))), 3)
         self.e.retract('a.b.e, a.b.d')
-        self.assertEqual(len(self.e._knowledge_base._internal_trie.get_nodes(pred=lambda x: not bool(x))), 1)
+        self.assertEqual(len(self.e._working_memory._internal_trie.get_nodes(pred=lambda x: not bool(x))), 1)
 
     def test_multi_clause_query(self):
         self.e.add('a.b.c, a.b.d, a.b.e')

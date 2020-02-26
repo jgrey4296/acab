@@ -4,7 +4,7 @@ import pyparsing as pp
 import py_rule.abstract.comparison as C
 from py_rule.abstract.query import Query
 from py_rule.abstract.sentence import Sentence
-from py_rule.knowledge_bases.trie_kb import util as KBU
+from py_rule.working_memory.trie_wm import util as WMU
 from py_rule.abstract.parsing import util as PU
 from py_rule.error.pyrule_parse_exception import PyRuleParseException
 from .FactParser import PARAM_CORE, TYPE_ANNOTATION, PARAM_SEN
@@ -23,28 +23,28 @@ def build_operators():
 
 def build_constraint_list(toks):
     """ Build a constraint list """
-    return (KBU.CONSTRAINT_S, toks[:])
+    return (WMU.CONSTRAINT_S, toks[:])
 
 
 def build_comparison(toks):
     """ Build a comparison """
-    return C.Comparison(toks[KBU.OPERATOR_S], value=toks[KBU.VALUE_S])
+    return C.Comparison(toks[WMU.OPERATOR_S], value=toks[WMU.VALUE_S])
 
 
 def build_clause(toks):
     # detect negation and annotate the clause with it
-    if KBU.FALLBACK_S in toks:
-        fallback_toks = toks[KBU.FALLBACK_S][:]
+    if WMU.FALLBACK_S in toks:
+        fallback_toks = toks[WMU.FALLBACK_S][:]
     else:
         fallback_toks = None
-    if KBU.NOT_S in toks:
+    if WMU.NOT_S in toks:
         if fallback_toks is not None:
             raise PyRuleParseException("Negated Fallback clauses in don't make sense")
-        return Sentence(toks[KBU.MAIN_CLAUSE_S][:],
+        return Sentence(toks[WMU.MAIN_CLAUSE_S][:],
                         negated=True,
                         is_query=True)
     else:
-        return Sentence(toks[KBU.MAIN_CLAUSE_S][:],
+        return Sentence(toks[WMU.MAIN_CLAUSE_S][:],
                         fallback=fallback_toks,
                         is_query=True)
 
@@ -52,16 +52,16 @@ def build_clause(toks):
 # Build After comparison operators have been constructed:
 COMP_OP = pp.Forward()
 
-NOT = PU.N(KBU.NOT_S, PU.TILDE)
+NOT = PU.N(WMU.NOT_S, PU.TILDE)
 
-COMP_Internal = PU.N(KBU.OPERATOR_S, COMP_OP) \
-    + PU.N(KBU.VALUE_S, PARAM_CORE(end=True))
+COMP_Internal = PU.N(WMU.OPERATOR_S, COMP_OP) \
+    + PU.N(WMU.VALUE_S, PARAM_CORE(end=True))
 
 # defined earlier to work with named copies
 COMP_Internal.setParseAction(build_comparison)
 
-comp_or_typedef = pp.Or([PU.N(KBU.COMP_S, COMP_Internal),
-                         PU.N(KBU.TYPE_DEC_S, TYPE_ANNOTATION)])
+comp_or_typedef = pp.Or([PU.N(WMU.COMP_S, COMP_Internal),
+                         PU.N(WMU.TYPE_DEC_S, TYPE_ANNOTATION)])
 
 constraints = comp_or_typedef + PU.op(pp.OneOrMore(PU.COMMA + comp_or_typedef))
 
@@ -74,10 +74,10 @@ QueryCore = PARAM_CORE(constraints)
 QueryCore_end = PARAM_CORE(constraints, end=True)
 
 # Core Query Chain
-clause = PU.op(NOT) + PU.N(KBU.MAIN_CLAUSE_S, pp.ZeroOrMore(QueryCore)
+clause = PU.op(NOT) + PU.N(WMU.MAIN_CLAUSE_S, pp.ZeroOrMore(QueryCore)
                               + QueryCore_end) \
                               + PU.QMARK \
-                              + PU.N(KBU.FALLBACK_S,
+                              + PU.N(WMU.FALLBACK_S,
                                      PU.op(fallback))
 
 clauses = clause + pp.ZeroOrMore(PU.COMMA + clause)

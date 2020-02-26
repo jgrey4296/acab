@@ -25,18 +25,18 @@ class Game:
         #A Mapping for actions to query to get a value,
         #used to decide actions
         #Key: position tuple
-        #value: a knowledgebase query for a single value
+        #value: a working memory query for a single value
         self.precondition_utility = {}
 
-    def __call__(self, knowledgebase=None, data=None):
-        """ Run the Game with the provided knowledgebase to query,
+    def __call__(self, working_memory=None, data=None):
+        """ Run the Game with the provided working_memory to query,
         and a mapping of players. Return a sequence of moves.
         Returns: [ MoveString ]
         """
-        if knowledgebase is None:
+        if working_memory is None:
             return self.play_random(data=data)
         else:
-            return self.play_with_assessments(knowledgebase, data)
+            return self.play_with_assessments(working_memory, data)
 
 
     def generate_tree(self):
@@ -111,11 +111,11 @@ class Game:
                 results.append(chosen_action.format(**data))
         return results
 
-    def play_with_assessments(self, knowledgebase, data=None):
+    def play_with_assessments(self, working_memory, data=None):
         """ Play a sequence of the game, using max utility selection,
         will format any query or action by the data dictionary passed in.
         """
-        assert(hasattr(knowledgebase, "query"))
+        assert(hasattr(working_memory, "query"))
         assert(data is None or isinstance(data, dict))
         if data is None:
             data = {}
@@ -125,12 +125,12 @@ class Game:
                 moves = [self.actions[(player, i, turn)] for i in range(self.moves)]
                 queries = [self.precondition_utility[(player, i, turn)] for i in range(self.moves)]
                 #run the queries here
-                values = [knowledgebase.query(x.format(**data)) for x in queries]
+                values = [working_memory.query(x.format(**data)) for x in queries]
                 combined = zip(values, moves)
                 results.append(max(combined)[1].format(**data))
         return results
 
-    def enter(self, knowledgebase):
-        """ Passed a knowledgebase that is queryable, return whether this game is currently playable """
-        assert(hasattr(knowledgebase, "query"))
-        return bool(knowlegebase.query(self.preconditions))
+    def enter(self, working_memory):
+        """ Passed a working_memory that is queryable, return whether this game is currently playable """
+        assert(hasattr(working_memory, "query"))
+        return bool(working_memory.query(self.preconditions))

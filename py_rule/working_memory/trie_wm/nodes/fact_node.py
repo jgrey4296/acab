@@ -1,6 +1,6 @@
 """ The Core Trie-Node, stores information, meta data """
 from py_rule.abstract.trie.nodes.trie_node import TrieNode
-from py_rule.knowledge_bases.trie_kb import util as KBU
+from py_rule.working_memory.trie_wm import util as WMU
 import logging as root_logger
 import re
 import weakref
@@ -16,9 +16,9 @@ class FactNode(TrieNode):
     @staticmethod
     def Root():
         """ Get a Root designated node """
-        return FactNode(KBU.ROOT_S, {KBU.OPERATOR_S: KBU.EXOP.DOT,
-                                     KBU.BIND_S: False,
-                                     KBU.VALUE_TYPE_S: KBU.NAME_S})
+        return FactNode(WMU.ROOT_S, {WMU.OPERATOR_S: WMU.EXOP.DOT,
+                                     WMU.BIND_S: False,
+                                     WMU.VALUE_TYPE_S: WMU.NAME_S})
 
     @staticmethod
     def copy_fact(node):
@@ -26,9 +26,9 @@ class FactNode(TrieNode):
             return node.copy()
         else:
             assert(isinstance(node, TrieNode))
-            operator = KBU.EXOP.DOT
-            if KBU.OPERATOR_S in node._data:
-                operator = node._data[KBU.OPERATOR_S]
+            operator = WMU.EXOP.DOT
+            if WMU.OPERATOR_S in node._data:
+                operator = node._data[WMU.OPERATOR_S]
             new_node = FactNode(node._value,
                                 operator,
                                 data=node._data)
@@ -38,18 +38,18 @@ class FactNode(TrieNode):
                  value,
                  data=None,
                  parent=None):
-        assert isinstance(data[KBU.OPERATOR_S], KBU.EXOP), data
-        assert KBU.BIND_S in data, data
-        assert KBU.VALUE_TYPE_S in data, data
+        assert isinstance(data[WMU.OPERATOR_S], WMU.EXOP), data
+        assert WMU.BIND_S in data, data
+        assert WMU.VALUE_TYPE_S in data, data
         if parent is not None:
             parent = weakref.ref(parent)
 
         if data is None:
-            data = KBU.DEFAULT_NODE_DATA.copy()
+            data = WMU.DEFAULT_NODE_DATA.copy()
 
         super().__init__(value, data)
 
-        self._op = data[KBU.OPERATOR_S]
+        self._op = data[WMU.OPERATOR_S]
         self._parent = parent
         self._dirty = True
         self._cached = []
@@ -63,8 +63,8 @@ class FactNode(TrieNode):
     def __str__(self):
         val = super().__str__()
 
-        if KBU.OPERATOR_S in self._data:
-            val += KBU.EXOP_lookup[self._data[KBU.OPERATOR_S]]
+        if WMU.OPERATOR_S in self._data:
+            val += WMU.EXOP_lookup[self._data[WMU.OPERATOR_S]]
 
         return val
 
@@ -76,7 +76,7 @@ class FactNode(TrieNode):
 
     def __contains__(self, other):
         if self.has_child(other):
-            return self.get_child(other)._data[KBU.OPERATOR_S] == other._data[KBU.OPERATOR_S]
+            return self.get_child(other)._data[WMU.OPERATOR_S] == other._data[WMU.OPERATOR_S]
         return False
 
     def copy(self):
@@ -105,7 +105,7 @@ class FactNode(TrieNode):
         copied.set_parent(self)
 
         # deal with exclusion
-        if self._op is KBU.EXOP.EX:
+        if self._op is WMU.EXOP.EX:
             self.clear_children()
 
         self.add_child(copied)
@@ -116,7 +116,7 @@ class FactNode(TrieNode):
         assert(isinstance(fact, TrieNode))
         if fact in self:
             potential = self.get_child(fact)
-            if fact._data[KBU.OPERATOR_S] == potential._data[KBU.OPERATOR_S]:
+            if fact._data[WMU.OPERATOR_S] == potential._data[WMU.OPERATOR_S]:
                 return potential
 
         return None
@@ -129,7 +129,7 @@ class FactNode(TrieNode):
 
     def bind(self, data):
         """ Annotate the Node with a Meta-Bind Evaluation """
-        if not self._data[KBU.BIND_S]:
+        if not self._data[WMU.BIND_S]:
             return self.copy()
         else:
             copied = self.copy()

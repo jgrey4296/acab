@@ -1,6 +1,6 @@
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.trie.nodes.trie_node import TrieNode
-from py_rule.knowledge_bases.trie_kb.parsing import FactParser as FP
+from py_rule.working_memory.trie_wm.parsing import FactParser as FP
 from py_rule.modules.typing import util as TU
 from py_rule.modules.typing.type_definition import TypeDefinition
 from test_context import py_rule

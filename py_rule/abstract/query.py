@@ -1,12 +1,12 @@
 """ Query: The Datastructure to hold a
-question to pose to the knowledge base
+question to pose to the working memory
 """
 from .sentence import Sentence
 from .value import PyRuleValue
 
 
 class Query(PyRuleValue):
-    """ A Query for the Trie Knowledge base """
+    """ A Query for the working memory """
 
     def __init__(self, clauses):
         # ATTENTION: List of clauses, not List of tuples

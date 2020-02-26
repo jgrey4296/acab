@@ -1,12 +1,12 @@
 import unittest
 import logging
 from test_context import py_rule
-import py_rule.knowledge_bases.trie_kb.parsing.QueryParser as QP
+import py_rule.working_memory.trie_wm.parsing.QueryParser as QP
 from py_rule.abstract.query import Query
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.comparison import Comparison, CompOp
 from py_rule.modules.standard_operators.operator_module import OperatorSpec
-from py_rule.knowledge_bases.trie_kb import util as KBU
+from py_rule.working_memory.trie_wm import util as KBU
 
 class Trie_Query_Parser_Tests(unittest.TestCase):
 

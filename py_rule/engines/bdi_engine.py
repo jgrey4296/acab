@@ -72,7 +72,7 @@ class Agent:
             self._engine._run_rules(rule_tags=rule_spec.split(" "), policy=policy)
 
     def _clear_temp_data(self):
-        """ Forces a retraction of temporary data in the knowledgebase,
+        """ Forces a retraction of temporary data in the working memory,
         and clears any proposed actions that were not selected for performance """
         self._engine.retract(self._state_temp_data)
         self._engine.clear_proposed_actions()

@@ -1,11 +1,11 @@
 import unittest
 import logging
 from test_context import py_rule
-from py_rule.knowledge_bases.trie_kb.parsing import TransformParser as TP
+from py_rule.working_memory.trie_wm.parsing import TransformParser as TP
 from py_rule.modules.standard_operators.operator_module import OperatorSpec
 from py_rule.modules.standard_operators import transforms
 from py_rule.abstract import transform
-from py_rule.knowledge_bases.trie_kb import util as KBU
+from py_rule.working_memory.trie_wm import util as KBU
 
 class Trie_Transform_Parser_Tests(unittest.TestCase):
 

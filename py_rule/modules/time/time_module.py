@@ -4,7 +4,7 @@ from .parsing import parser as TP
 
 class TimeSpec(ModuleSpecification):
     """ TimeParser Class, providing entry points
-    for an engine and knowledge base to parse Time Strings
+    for an engine and working memory to parse Time Strings
     """
 
     def __init__(self):

@@ -3,10 +3,10 @@ import logging
 import random
 import pyparsing as pp
 from test_context import py_rule
-import py_rule.knowledge_bases.trie_kb.parsing.FactParser as FP
+import py_rule.working_memory.trie_wm.parsing.FactParser as FP
 from py_rule.abstract.trie.nodes.trie_node import TrieNode
 from py_rule.abstract.sentence import Sentence
-from py_rule.knowledge_bases.trie_kb import util as KBU
+from py_rule.working_memory.trie_wm import util as KBU
 
 class Trie_Fact_Parser_Tests(unittest.TestCase):
 

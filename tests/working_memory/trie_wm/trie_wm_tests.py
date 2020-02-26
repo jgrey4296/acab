@@ -1,13 +1,13 @@
 import unittest
 import logging
 from test_context import py_rule
-from py_rule.knowledge_bases.trie_kb.trie_knowledge_base import TrieKnowledgeBase
+from py_rule.working_memory.trie_wm.trie_working_memory import TrieWM
 from py_rule.modules.standard_operators.operator_module import OperatorSpec
 from py_rule.abstract.contexts import Contexts
 
 
-class Trie_Kb_Tests(unittest.TestCase):
-    """ Unit test for basic Trie knowledge base functionality """
+class Trie_WM_Tests(unittest.TestCase):
+    """ Unit test for basic Trie working memory functionality """
 
     @classmethod
     def setUpClass(cls):
@@ -17,7 +17,7 @@ class Trie_Kb_Tests(unittest.TestCase):
         os._construct_transform_ops()
 
     def setUp(self):
-        self.trie = TrieKnowledgeBase()
+        self.trie = TrieWM()
         self.trie._build_operator_parser()
 
     def tearDown(self):
@@ -26,7 +26,7 @@ class Trie_Kb_Tests(unittest.TestCase):
     def test_init(self):
         """ Check the trie object exists """
         self.assertIsNotNone(self.trie)
-        self.assertIsInstance(self.trie, TrieKnowledgeBase)
+        self.assertIsInstance(self.trie, TrieWM)
 
     def test_assert(self):
         """ Check assertions work """
@@ -203,14 +203,14 @@ class Trie_Kb_Tests(unittest.TestCase):
         self.assertTrue('t.y!u' in s)
 
     def test_trie_assertion_on_creation(self):
-        newTrie = TrieKnowledgeBase('a.b.c, d.e.f, q.w.e')
+        newTrie = TrieWM('a.b.c, d.e.f, q.w.e')
         result = newTrie.query('a.b.c?, d.e.f?, q.w.e?')
         self.assertTrue(result)
 
     def test_factbase_from_string_recovery(self):
         self.trie.add('a.b.c, q.e.r, t.y!u')
         s = str(self.trie)
-        newTrie = TrieKnowledgeBase(s)
+        newTrie = TrieWM(s)
         self.assertEqual(self.trie, newTrie)
         orig_set = set(s.split("\n"))
         reconstructed_set = set(str(newTrie).split("\n"))

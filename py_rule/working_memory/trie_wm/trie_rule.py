@@ -8,7 +8,7 @@ from .parsing import FactParser as FP
 
 class TrieRule(Rule):
     """ An implementation of an Abstract Rule class, specifically for
-    Trie based engines and knowledge bases.
+    Trie based engines and working memory
     """
 
     def __init__(self, query, actions, transform=None, name=None, tags=None):

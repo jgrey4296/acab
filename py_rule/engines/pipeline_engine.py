@@ -8,7 +8,7 @@ class PipelineEngine:
     """  """
 
     def __init__(self):
-        # The knowledge base to work with
+        # The working memory to work with
         self._kb = None
         # Pipeline processing layers:
         # Likely of (ruleset, assessment_strategy, result_strategy)

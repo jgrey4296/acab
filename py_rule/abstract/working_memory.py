@@ -1,12 +1,12 @@
 """
-The abstract form of the knowledge base
+The abstract form of a working memory
 """
 import pyparsing as pp
 from .mod_interface import ModuleSpecification
 
 
-class KnowledgeBase:
-    """ The Abstract KnowledgeBase """
+class WorkingMemory:
+    """ The Abstract WorkingMemory """
 
     def __init__(self):
         self._have_added_types = False
@@ -15,7 +15,7 @@ class KnowledgeBase:
     def add_modules(self, mods):
         """ Add types into the parser """
         if self._have_added_types:
-            raise ImportError("Can Only expand knowledge base types once")
+            raise ImportError("Can Only expand working memory types once")
         assert(all([isinstance(x, ModuleSpecification) for x in mods]))
         self._added_types = True
 

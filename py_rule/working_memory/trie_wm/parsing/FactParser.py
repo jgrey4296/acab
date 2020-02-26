@@ -4,9 +4,9 @@ capable of parsing  multiple facts
 """
 import logging as root_logger
 import pyparsing as pp
-from py_rule.knowledge_bases.trie_kb.nodes.fact_node import FactNode
-from py_rule.knowledge_bases.trie_kb import util as KBU
-from py_rule.knowledge_bases.trie_kb.parsing import util as KBPU
+from py_rule.working_memory.trie_wm.nodes.fact_node import FactNode
+from py_rule.working_memory.trie_wm import util as WMU
+from py_rule.working_memory.trie_wm.parsing import util as WMPU
 from py_rule.abstract.parsing import util as PU
 
 logging = root_logger.getLogger(__name__)
@@ -20,18 +20,18 @@ def make_node(toks):
     and any additional data
     """
     value = None
-    data = KBU.DEFAULT_NODE_DATA.copy()
-    if KBU.BIND_S in toks:
+    data = WMU.DEFAULT_NODE_DATA.copy()
+    if WMU.BIND_S in toks:
         # The node is a variable
-        assert(isinstance(toks[KBU.BIND_S][0], tuple))
-        value = toks[KBU.BIND_S][0][1]
-        data[KBU.VALUE_TYPE_S] = KBU.NAME_S
-        data[KBU.BIND_S] = True
-    elif KBU.VALUE_S in toks:
+        assert(isinstance(toks[WMU.BIND_S][0], tuple))
+        value = toks[WMU.BIND_S][0][1]
+        data[WMU.VALUE_TYPE_S] = WMU.NAME_S
+        data[WMU.BIND_S] = True
+    elif WMU.VALUE_S in toks:
         # The node is a value
-        assert(isinstance(toks[KBU.VALUE_S], tuple))
-        value = toks[KBU.VALUE_S][1]
-        data[KBU.VALUE_TYPE_S] = toks[KBU.VALUE_S][0]
+        assert(isinstance(toks[WMU.VALUE_S], tuple))
+        value = toks[WMU.VALUE_S][1]
+        data[WMU.VALUE_TYPE_S] = toks[WMU.VALUE_S][0]
     else:
         raise SyntaxError("Unplanned parse type")
     return FactNode(value, data=data)
@@ -40,11 +40,11 @@ def make_node(toks):
 def add_annotations(toks):
     """ Add additional data to a node """
     data = {}
-    if KBU.OPERATOR_S in toks:
-        data[KBU.OPERATOR_S] = toks[KBU.OPERATOR_S][0]
-    if KBU.ANNOTATION_S in toks:
-        data.update({x: y for x, y in toks[KBU.ANNOTATION_S]})
-    toks[KBU.NODE_S]._data.update(data)
+    if WMU.OPERATOR_S in toks:
+        data[WMU.OPERATOR_S] = toks[WMU.OPERATOR_S][0]
+    if WMU.ANNOTATION_S in toks:
+        data.update({x: y for x, y in toks[WMU.ANNOTATION_S]})
+    toks[WMU.NODE_S]._data.update(data)
     return toks.node
 
 
@@ -53,18 +53,18 @@ def PARAM_CORE(mid=None, end=None):
     if mid is None:
         mid = pp.Empty()
     if end is None:
-        end = PU.NG(KBU.OPERATOR_S, KBPU.EL_OPERATOR)
+        end = PU.NG(WMU.OPERATOR_S, WMPU.EL_OPERATOR)
     else:
         end = pp.Empty()
-    parser = PU.N(KBU.NODE_S, VALBIND) \
-        + PU.op(PU.OPAR + PU.NG(KBU.ANNOTATION_S, mid) + PU.CPAR) + end
+    parser = PU.N(WMU.NODE_S, VALBIND) \
+        + PU.op(PU.OPAR + PU.NG(WMU.ANNOTATION_S, mid) + PU.CPAR) + end
     parser.setParseAction(add_annotations)
     return parser
 
 
 # alt for actions, PARAM_CORE
-VALBIND = pp.Or([PU.N(KBU.BIND_S, PU.BIND),
-                 PU.N(KBU.VALUE_S, pp.Or([PU.BASIC_VALUE, OTHER_VALS]))])
+VALBIND = pp.Or([PU.N(WMU.BIND_S, PU.BIND),
+                 PU.N(WMU.VALUE_S, pp.Or([PU.BASIC_VALUE, OTHER_VALS]))])
 VALBIND.setParseAction(make_node)
 
 # Core = a. | b! | $a. | $b!

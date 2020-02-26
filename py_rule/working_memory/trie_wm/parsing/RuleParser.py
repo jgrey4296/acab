@@ -1,10 +1,10 @@
 """ Trie-based parser to construct rules """
 import logging as root_logger
 import pyparsing as pp
-from py_rule.knowledge_bases.trie_kb.trie_rule import TrieRule
+from py_rule.working_memory.trie_wm.trie_rule import TrieRule
 from py_rule.abstract.parsing import util as PU
-from py_rule.knowledge_bases.trie_kb import util as KBU
-from py_rule.knowledge_bases.trie_kb.nodes.fact_node import FactNode
+from py_rule.working_memory.trie_wm import util as WMU
+from py_rule.working_memory.trie_wm.nodes.fact_node import FactNode
 
 from . import FactParser as FP
 from . import QueryParser as QP
@@ -23,37 +23,37 @@ def build_operators():
 
 # Constructor:
 def build_rule(toks):
-    name = toks[KBU.RULE_NAME_S][0]
-    if KBU.CONDITION_S in toks:
-        c = toks[KBU.CONDITION_S][0]
+    name = toks[WMU.RULE_NAME_S][0]
+    if WMU.CONDITION_S in toks:
+        c = toks[WMU.CONDITION_S][0]
     else:
         c = None
-    if KBU.TRANSFORM_S in toks:
-        t = toks[KBU.TRANSFORM_S][0]
+    if WMU.TRANSFORM_S in toks:
+        t = toks[WMU.TRANSFORM_S][0]
     else:
         t = None
-    if KBU.ACTION_S in toks:
-        a = toks[KBU.ACTION_S][:]
+    if WMU.ACTION_S in toks:
+        a = toks[WMU.ACTION_S][:]
     else:
         a = []
-    if KBU.TAG_S in toks:
-        tags = [x[1] for x in toks[KBU.TAG_S]]
+    if WMU.TAG_S in toks:
+        tags = [x[1] for x in toks[WMU.TAG_S]]
     else:
         tags = []
     # wrap in sentence
     rule = TrieRule(c, a, transform=t, name=name, tags=tags)
-    return (KBU.RULE_S, rule)
+    return (WMU.RULE_S, rule)
 
-ruleName = PU.NG(KBU.RULE_NAME_S, FP.PARAM_SEN)
+ruleName = PU.NG(WMU.RULE_NAME_S, FP.PARAM_SEN)
 
 tagName = PU.HASH + PU.NAME
 
-tagList = PU.N(KBU.TAG_S, tagName
+tagList = PU.N(WMU.TAG_S, tagName
                + pp.ZeroOrMore(PU.COMMA + tagName)
                + PU.emptyLine)
-conditions = PU.N(KBU.CONDITION_S, QP.clauses + PU.emptyLine)
-transforms = PU.N(KBU.TRANSFORM_S, TP.transforms + PU.emptyLine)
-actions = PU.N(KBU.ACTION_S, AP.actions + PU.emptyLine)
+conditions = PU.N(WMU.CONDITION_S, QP.clauses + PU.emptyLine)
+transforms = PU.N(WMU.TRANSFORM_S, TP.transforms + PU.emptyLine)
+actions = PU.N(WMU.ACTION_S, AP.actions + PU.emptyLine)
 
 rule = ruleName + PU.COLON + PU.sLn \
        + PU.op(tagList) \

@@ -23,7 +23,7 @@ def make_type_dec(toks):
     return (TYU.TYPE_DEC_S, TypeInstance(baseName, path, args))
 
 # BASIC SENTENCE NEEDS TO BE POPULATED
-# eg: py_rule.knowledge_base.trie_kb.parsing.FactParser.basic_fact_string
+# eg: py_rule.working_memory.trie_wm.parsing.FactParser.basic_fact_string
 BASIC_SEN= pp.Forward()
 TYPEDEC_CORE = pp.Forward()
 

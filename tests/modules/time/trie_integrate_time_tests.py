@@ -3,7 +3,7 @@ import logging
 from test_context import py_rule
 from py_rule.util import VALUE_TYPE_S
 from py_rule.modules.time.parsing import parser as tp
-from py_rule.knowledge_bases.trie_kb.parsing import FactParser as fp
+from py_rule.working_memory.trie_wm.parsing import FactParser as fp
 from py_rule.abstract.sentence import Sentence
 from py_rule.modules.time.pattern import Pattern
 from py_rule.modules.time.parsing import parser as tp
