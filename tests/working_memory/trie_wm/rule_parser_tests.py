@@ -72,30 +72,6 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertIsInstance(result[0][1]._query, Query)
             self.assertEqual(len(result[0][1]._query), 1)
 
-    @unittest.skip("numbers have been deprecated")
-    def test_rule_with_transform(self):
-            result = RP.parseString("a.rule:\n$x + 20 -> $y\n\nend")
-            self.assertEqual(len(result), 1)
-            self.assertIsInstance(result[0][1], Rule)
-            self.assertIsNone(result[0][1]._query)
-            self.assertIsNotNone(result[0][1]._transform)
-
-    @unittest.skip("numbers have been deprecated")
-    def test_rule_with_multiple_transforms(self):
-            result = RP.parseString("a.rule:\n $x + 20 -> $y, $y - 20\n\nend")
-            self.assertEqual(len(result), 1)
-            self.assertIsInstance(result[0][1], Rule)
-            self.assertIsNone(result[0][1]._query)
-            self.assertIsNotNone(result[0][1]._transform)
-
-    @unittest.skip("numbers have been deprecated")
-    def test_rule_with_multiple_transforms_on_single_line(self):
-            result = RP.parseString("a.rule:\n$x + 20 -> $y,$y - 20\n\nend")
-            self.assertEqual(len(result), 1)
-            self.assertIsInstance(result[0][1], Rule)
-            self.assertIsNone(result[0][1]._query)
-            self.assertIsNotNone(result[0][1]._transform)
-
     def test_rule_with_actions(self):
             result = RP.parseString("a.rule:\n+(a.b.c)\nend")
             self.assertEqual(len(result), 1)
@@ -120,15 +96,6 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertIsNone(result[0][1]._transform)
             self.assertEqual(len(result[0][1]._actions), 2)
 
-    @unittest.skip("numbers have been deprecated")
-    def test_rule_with_query_transform_actions(self):
-            result = RP.parseString("a.rule:\na.b.c?\n\n$x + 20\n\n+(a.b.c)\nend")
-            self.assertEqual(len(result), 1)
-            self.assertIsInstance(result[0][1], Rule)
-            self.assertIsNotNone(result[0][1]._query)
-            self.assertIsNotNone(result[0][1]._transform)
-            self.assertEqual(len(result[0][1]._actions), 1)
-
     def test_rule_simple_binding_expansion(self):
         bindings = { "x" : FP.parseString('a.b.c')[0] }
         result = RP.parseString("a.rule:\n$x?\n\nend")[0][1]
@@ -136,54 +103,12 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
         self.assertEqual(str(expanded),
                          "a.rule:\n\ta.b.c?\n\nend")
 
-    @unittest.skip("numbers have been deprecated")
-    def test_rule_binding_expansion(self):
-        bindings = { "x" : FP.parseString('a.b.c')[0],
-                     "y" : FP.parseString('d.e.f')[0],
-                     "z" : FP.parseString('x.y.z')[0] }
-        result = RP.parseString("a.$x:\n$y.b.$z?\n\n$x + 2\n\n+($x)\nend")[0][1]
-        expanded = result.expand_bindings(bindings)
-        self.assertEqual(str(expanded),
-                         "a.a.b.c:\n\td.e.f.b.x.y.z?\n\n\t$x + 2\n\n\t+(a.b.c)\nend")
-
     def test_rule_tags(self):
             result = RP.parseString('a.test.rule:\n#blah, #bloo, #blee\n\na.b.c?\n\n+(a.b.c)\nend')[0][1]
             self.assertIsInstance(result, Rule)
             self.assertEqual(str(result._name), "a.test.rule")
             self.assertTrue(all(x in result._tags for x in ["blah","bloo","blee"]))
 
-    @unittest.skip("numbers have been deprecated")
-    def test_fact_str_equal(self):
-            rules = [ "a.rule:\nend",
-                      "a.rule:\n\ta.b.c?\n\nend",
-                      "a.rule:\n\ta.b.c?\n\ta.b!d?\n\nend",
-                      "a.different.rule:\n\ta.b.c?\n\n\t$x + 20\n\nend",
-                      "a.rule:\n\ta.b.c?\n\n\t$x + 20 -> $y\n\nend",
-                      "a.rule:\n\ta.b.c?\n\n\t$x * 10 -> $AB\n\n\t+(a.b.d)\nend",
-                      "a.rule:\n\t#blah, #blee, #bloo\n\nend"]
-
-            parsed = [RP.parseString(x)[0][1] for x in rules]
-            zipped = zip(rules, parsed)
-            for r,p in zipped:
-                  self.assertEqual(r,str(p))
-
-
-    @unittest.skip("numbers have been deprecated")
-    def test_bdi_rule_parse(self):
-        rulestr = """bdi.blah:
-    #propose
-    count!$x(< 10)?
-
-    $x + 2 -> $y
-    ~{} "Hello: {x}" -> $z
-
-    @($z)
-    +(count!$y)
-end
-        """
-        result = RP.parseString(rulestr)[0]
-        self.assertEqual(result[0], KBU.RULE_S)
-        self.assertIsInstance(result[1], Rule)
 
 if __name__ == "__main__":
       LOGLEVEL = logging.INFO
