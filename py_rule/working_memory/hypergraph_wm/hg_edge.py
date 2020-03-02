@@ -6,5 +6,4 @@ class HGEdge(HGNode):
 
     def __init__(self):
         super().__init__()
-
-
+        self._node_sets = {}

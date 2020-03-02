@@ -15,12 +15,16 @@ class HyperGraphWM(WorkingMemory):
         raise NotImplementedError()
 
     def add(self, data):
+        # add node?
+        # add hyper edge?
         raise NotImplementedError()
 
     def retract(self, data):
+        # retract node
         raise NotImplementedError()
 
     def query(self, data):
+
         raise NotImplementedError()
 
     def _insert_into_values_parser(self, parser):
