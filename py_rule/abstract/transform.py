@@ -3,14 +3,13 @@ import logging as root_logger
 from .production_operator import ProductionOperator
 from .node import PyRuleNode
 from py_rule import util
+frpm py_rule.error.pyrule_operator_exceoption import PyRuleOperatorException
 
 logging = root_logger.getLogger(__name__)
 
 
 class TransformOp(ProductionOperator):
     op_list = {}
-    # TODO: populate this
-    enum_list = None
 
     def __init__(self, op_str, num_params=2):
         self._op_str = op_str
@@ -29,14 +28,43 @@ class TransformOp(ProductionOperator):
         return "TransformOp({})".format(str(self))
 
 
+
+class TypedTransformOp(TransformOp):
+    """
+    An extension of the TransformOp to enable
+    operators to work on multiple different types
+    """
+    # TODO make this a trie
+    op_list = {}
+
+    def __init__(self, op_str, num_params=2, type_sig=None):
+        self._op_str = op_str
+        self._num_params = num_params
+        # TODO if type_sig is not, generate a generic
+        # TODO replace the following with a trie insert
+        if op_str not in TypedTransformOp.op_list:
+            TypedTransformOp.op_list[op_str] = {}
+        if type_sig in TypedTransformOp.op_list:
+            raise PyRuleOperatorException("Typed Operator Signature already exists: {}".format(type_sig))
+
+    @staticmethod
+    def resolve(op_str, num_params=2, type_sig=None):
+        """ Resolve an operator to its most concrete form """
+        # ie: query the op_list trie
+        raise NotImplementedError()
+
+
 class TransformComponent:
     """ Superclass of OperatorTransform. Holds an Operator """
     def __init__(self, op, num_params=2):
+        # A wave function of potential operators
+        # TODO make this a resolve call
         self._op = TransformOp.op_list[op][num_params]
 
 
 class OperatorTransform(TransformComponent):
-    """ The main transform type. applies the operator to values """
+    """ Describes a single transform.
+    ie: the operator + any values it uses """
     def __init__(self, op, params):
         assert(isinstance(params, tuple))
         super().__init__(op, len(params))
@@ -80,6 +108,9 @@ class OperatorTransform(TransformComponent):
         self._rebind = bind
 
 
+    # TODO add a refine method
+    # TODO make call try operators from the wave function of ops
+
 class Transform:
     """ Holds a number of separate transform
     operators together to apply to a binding set
@@ -115,6 +146,7 @@ class Transform:
 
     def __call__(self, ctx):
         assert(isinstance(ctx, dict))
+        # TODO: transfer logic into operator transforms
         for x in self._components:
             # lookup op
             opFunc = x._op
