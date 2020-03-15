@@ -8,6 +8,7 @@ SEN_S = util.SEN_S
 
 TYPE_DEC_S = "type_dec"
 TYPE_DEF_S = "type_def"
+OP_DEF_S = "op_def"
 STRUCT_S    = "structure"
 TVAR_S     = "type_vars"
 DELIM_S    = ", "
