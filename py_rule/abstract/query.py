@@ -1,6 +1,7 @@
 """ Query: The Datastructure to hold a
 question to pose to the working memory
 """
+from py_rule.util import CONSTRAINT_S
 from .sentence import Sentence
 from .value import PyRuleValue
 
@@ -48,3 +49,17 @@ class Query(PyRuleValue):
             else:
                 pos.append(c)
         return (pos, neg)
+
+    def ops_to_sentences(self):
+        """ Return all comparisons in canonical form """
+        # eg : a.test.$x(>$y)? = > -> $x -> $y -> bool
+        constraint_words = [word for clause in self._clauses
+                            for word in clause if CONSTRAINT_S in word._data]
+        # for each constraint, create a sentence
+        # TODO handle non-comparisons, ie: typings
+        con_sens = [comp.to_sentence(word)
+                    for word in constraint_words
+                    for comp in word._data[CONSTRAINT_S]]
+
+
+        return sents

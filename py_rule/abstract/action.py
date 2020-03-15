@@ -19,9 +19,12 @@ class ActionOp(ProductionOperator):
     """
     op_list = {}
 
-    def __init__(self, op_str):
-        self._op_str = op_str
-        ActionOp.op_list[op_str] = self
+    def __init__(self, num_params=2, infix=False):
+        # Registers self with class name,
+        # DSL later binds to an operator
+        super().__init__(num_params=num_params, infix=False)
+        if self._op_str not in ActionOp.op_list:
+            ActionOp.op_list[self._op_str] = self
 
     def __call__(self, engine, params):
         raise NotImplementedError()
@@ -40,14 +43,9 @@ class Action:
 
     def __init__(self, op, values, type_=None):
         """ Create an action with an operator and values """
-        assert(isinstance(values, list))
-        # todo: assert that values are a fact string, value, or binding
-        if isinstance(op, ActionOp):
-            self._op = op
-        elif op in ActionOp.op_list:
-            self._op = ActionOp.op_list[op]
-        else:
-            raise PyRuleOperatorException("Action not registered with runtime: {}".format(op))
+        assert(isinstance(values, Sentence))
+        self._op = op
+        self._op_func = None
         self._values = values
 
         # the actions that group together logically
@@ -111,6 +109,11 @@ class Action:
         # perform action op with data
         opFunc(self, engine, values)
 
+    def to_sentence(self):
+        """ Return the action in canonical form """
+        # eg : assert a.test  = assert -> a.test -> nil
+        sen = Sentence([self._op] + self._values[:])
+        return sen
 
 
 class ActionMacro:
@@ -152,7 +155,7 @@ class ActionMacroUse:
         self._params = params
 
     def expand_bindings(self, bindings):
-        # todo: does this need to be implemented?
+        # TODO: does this need to be implemented?
         return self
 
     def __str__(self):

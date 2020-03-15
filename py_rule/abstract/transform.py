@@ -1,9 +1,12 @@
 """ Simple Transform functions to be used in rules """
 import logging as root_logger
 from .production_operator import ProductionOperator
+from py_rule.error.pyrule_operator_exception import PyRuleOperatorException
 from .node import PyRuleNode
+from .value import PyRuleValue
+from .sentence import Sentence
 from py_rule import util
-frpm py_rule.error.pyrule_operator_exceoption import PyRuleOperatorException
+from py_rule.error.pyrule_operator_exception import PyRuleOperatorException
 
 logging = root_logger.getLogger(__name__)
 
@@ -11,12 +14,12 @@ logging = root_logger.getLogger(__name__)
 class TransformOp(ProductionOperator):
     op_list = {}
 
-    def __init__(self, op_str, num_params=2):
-        self._op_str = op_str
-        self._num_params = num_params
-        if op_str not in TransformOp.op_list:
-            TransformOp.op_list[op_str] = {}
-        TransformOp.op_list[op_str][num_params] = self
+    def __init__(self, num_params=2, infix=False):
+        # Registers self with class name,
+        # DSL later binds to an operator
+        super().__init__(num_params=num_params, infix=False)
+        if self._op_str not in TransformOp.op_list:
+            TransformOp.op_list[self._op_str] = self
 
     def __call__(self, a, b):
         raise NotImplementedError("Abstract method needs to be implemented")
@@ -29,47 +32,30 @@ class TransformOp(ProductionOperator):
 
 
 
-class TypedTransformOp(TransformOp):
-    """
-    An extension of the TransformOp to enable
-    operators to work on multiple different types
-    """
-    # TODO make this a trie
-    op_list = {}
-
-    def __init__(self, op_str, num_params=2, type_sig=None):
-        self._op_str = op_str
-        self._num_params = num_params
-        # TODO if type_sig is not, generate a generic
-        # TODO replace the following with a trie insert
-        if op_str not in TypedTransformOp.op_list:
-            TypedTransformOp.op_list[op_str] = {}
-        if type_sig in TypedTransformOp.op_list:
-            raise PyRuleOperatorException("Typed Operator Signature already exists: {}".format(type_sig))
-
-    @staticmethod
-    def resolve(op_str, num_params=2, type_sig=None):
-        """ Resolve an operator to its most concrete form """
-        # ie: query the op_list trie
-        raise NotImplementedError()
-
-
 class TransformComponent:
     """ Superclass of OperatorTransform. Holds an Operator """
-    def __init__(self, op, num_params=2):
-        # A wave function of potential operators
-        # TODO make this a resolve call
-        self._op = TransformOp.op_list[op][num_params]
+    def __init__(self, op_str, params):
+        assert(isinstance(params, tuple))
+        self._op_str = op_str
+        self._params = params
+        self._rebind = None
+
+    def __refine_op_func(self, op_str):
+        """ Replace the current op func set with a specific
+        op func, used for type refinement """
+        assert(op_str in TransformOp.op_list)
+        self._op_func = op_str
+
+    def to_sentence(self):
+        head = PyRuleNode(self._op_str, { 'source' : self})
+        return Sentence([head] + [x for x in self.params] + [self._rebind])
 
 
 class OperatorTransform(TransformComponent):
     """ Describes a single transform.
     ie: the operator + any values it uses """
-    def __init__(self, op, params):
-        assert(isinstance(params, tuple))
-        super().__init__(op, len(params))
-        self._params = params
-        self._rebind = None
+    def __init__(self, op_str, params):
+        super().__init__(op_str, params)
 
     def __repr__(self):
         return "Transform({})".format(str(self))
@@ -107,9 +93,13 @@ class OperatorTransform(TransformComponent):
         """ Set this transform to rebind its result to a different variable """
         self._rebind = bind
 
+    def __call__(self, ctx):
+        op_func = TransformOp.op_list[self._op_str]
+        params = [ctx[y._value] if y._data[util.BIND_S]
+                  else y._value for y in x._params]
 
-    # TODO add a refine method
-    # TODO make call try operators from the wave function of ops
+        return opFunc(*params, ctx)
+
 
 class Transform:
     """ Holds a number of separate transform
@@ -135,32 +125,23 @@ class Transform:
             x.verify_op()
 
     def get_input_requirements(self):
-        # TODO
-        # return the set of input bound names
+        # TODO return the set of input bound names
         raise NotImplementedError()
 
     def get_output_spec(self):
-        # TODO
-        # return the set of output bound names
+        # TODO return the set of output bound names
         raise NotImplementedError()
 
     def __call__(self, ctx):
         assert(isinstance(ctx, dict))
-        # TODO: transfer logic into operator transforms
         for x in self._components:
-            # lookup op
-            opFunc = x._op
-            param_length = opFunc._num_params
-            # get params:
-            params = [ctx[y._value] if y._data[util.BIND_S]
-                      else y._value for y in x._params]
-
-            result = opFunc(*params, ctx)
-
             # rebind or reapply
             if x._rebind is None:
-                ctx[x._params[0]._value] = result
+                raise PyRuleOperatorException()
             else:
-                ctx[x._rebind._value] = result
+                ctx[x._rebind._value] = x(ctx)
 
         return ctx
+
+    def to_sentences(self):
+        return [x.to_sentence() for x in self._components]
