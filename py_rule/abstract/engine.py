@@ -17,9 +17,8 @@ class Engine:
     def __init__(self, wm_constructor, modules=None, path=None, init=None):
         assert(issubclass(wm_constructor, WorkingMemory))
         self.__kb_constructor = wm_constructor
-
         self._working_memory = wm_constructor(init)
-
+        self._pipeline = None
         self._proposed_actions = []
         # to be updated with printed representations
         # of the kb state after each action
@@ -40,16 +39,9 @@ class Engine:
         else:
             self.load_file(path)
 
-        # TODO : add definitions to type checker
-        # TODO : add type classes to type checker
-        # TODO : add assertions to type checker
-        # TODO : add rules to type checker
-        # TODO : type_checker validate
-
     # Initialisation:
     def load_file(self, filename):
-        """ Load a file spec for the facts / rules for this engine """
-        # pylint: disable=unused-argument,no-self-use
+        """ Load a file spec for the facts / rules / layers for this engine """
         raise NotImplementedError("Base Engine Stub")
 
     # Base Actions
@@ -92,9 +84,10 @@ class Engine:
         # should save_state
         self._save_state(layer)
         # query for the rules
-        # TODO: get the rules out of the result contexts
+        # TODO: memoize rules
         active_rules = []
         for query in layer.queries():
+            # TODO: get the rules out of the result contexts
             active_rules += self.query(query)
 
         for rule in active_rules:
