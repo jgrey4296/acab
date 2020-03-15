@@ -51,33 +51,27 @@ class Sentence(PyRuleValue):
         return len(self._words)
 
     def expand_bindings(self, bindings):
-        """ Given a list of fact components, and a dictionary of bindings,
-        reify the fact, using those bindings.
+        """ Given a dictionary of bindings, reify the sentence,
+        using those bindings.
         ie: .a.b.$x with {x: blah} => .a.b.blah
         """
-        # TODO: respect typing
         assert(isinstance(bindings, dict))
         output = []
 
-        for x in self:
-            if not (x._data[BIND_S] and x._value in bindings):
-                # early exit if a plain node
-                output.append(x.copy())
+        for word in self:
+            if not (word._data[BIND_S] and word._value in bindings):
+                # early expand if a plain node
+                output.append(word.copy())
                 continue
 
-            retrieved = bindings[x._value]
+            retrieved = bindings[word._value]
 
             if isinstance(retrieved, Sentence):
                 output += [y.copy() for y in retrieved]
-                output[-1]._data[OPERATOR_S] = x._data[OPERATOR_S]
+                output[-1]._data[OPERATOR_S] = word._data[OPERATOR_S]
                 continue
 
-            # if hasattr(retrieved, '_data'):
-                # copied_node = x.copy()
-                # copied_node._value = retrieved._value
-                # output.append(copied_node)
-            # else:
-            copied_node = x.copy()
+            copied_node = word.copy()
             copied_node._value = retrieved
             copied_node._data[BIND_S] = False
             output.append(copied_node)
