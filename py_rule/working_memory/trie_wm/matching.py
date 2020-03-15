@@ -9,13 +9,11 @@ logging = root_logger.getLogger(__name__)
 
 def test_alphas(node, comps):
     """ Run alpha tests against a retrieved value """
-    return all([x._op(node._value, x._value._value) for x in comps])
-
+    return all([x(node) for x in comps])
 
 def test_betas(node, comps, data):
     """ Run a beta tests against a retrieved value, with supplied bindings """
-    return all([x._op(node._value, data[x._value._value]) for x in comps])
-
+    return all([x(node, data) for x in comps])
 
 def exclusion_matches(a, b):
     """ Compare the EXOP of a node, with whether that exop
