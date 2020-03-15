@@ -87,3 +87,29 @@ class Trie:
                 queue += [(total_path, x) for x in current_node]
 
         return "\n".join(output)
+
+    def match_as_pattern(self, possible_matches, match_func):
+        """ Given a trie node of possible matches, return only actual matches,
+        Treating self as the pattern
+        """
+
+        final_matches = []
+        pattern_nodes = [x for x in in possible_matches._children.values()]
+        # (current pattern position, available choices, match state)
+        queue = [(x, pattern_nodes, []) for x in self._root._children.values()]
+
+        while bool(queue):
+            current, available_nodes, match_state = queue.pop(0)
+
+            matching_nodes = match_func(current, available_nodes)
+            for node in matching_nodes:
+                new_match_state = match_state + [(current, node)]
+                next_available = [x for x in node._children.values()]
+
+                if bool(current):
+                    next_patterns = [x for x in current._children.values()]
+                    queue += [(x, next_available, next_match_state) for x in new_patterns]
+                else:
+                    final_matches.append(new_match_state)
+
+        return final_matches
