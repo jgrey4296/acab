@@ -30,16 +30,30 @@ def make_type_def(toks):
                           tvars)
     return (TYU.TYPE_DEF_S, type_def)
 
+def make_op_def(toks):
+    # TODO add syntax binding for operators
+
+    op_def = OperatorDefinition()
+
+    return (TYU.OP_DEF_S, op_def)
+
 
 
 VARLIST = PU.OPAR + pp.delimitedList(VALBIND, TYU.DELIM_S, False) + PU.CPAR
 
+# ::a.test.type: a.value.$x(::num) end
 TYPEDEF = PU.DBLCOLON + PU.NG(TYU.SEN_S, BASIC_SEN) \
     + PU.N(TYU.TVAR_S, PU.op(VARLIST)) + PU.COLON + PU.emptyLine \
     + PU.N(TYU.STRUCT_S, PARAM_SEN_PLURAL) + PU.emptyLine \
     + PU.end
 
+# ::+.$x(::num).$y(::num).$z(::num) :: numeric_add
+OP_DEF = PU.DBLCOLON + PU.NG(TYU.SEN_S, PARAM_SEN) + PU.DBLCOLON + BASIC_SEN
+
 TYPEDEF.setParseAction(make_type_def)
+OP_DEF.setParseAction(make_op_def)
+
+COMBINED_DEFS = pp.Or(TYPEDEF, OP_DEF)
 
 def parseString(in_string):
-    return TYPEDEF.parseString(in_string)
+    return COMBINED_DEFS.parseString(in_string)
