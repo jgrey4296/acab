@@ -57,7 +57,7 @@ class TypeDefTrieNode(TrieNode):
         logging.debug(log_messages['validate_top'].format(repr(self),
                                                           repr(usage_trie)))
         if self._typedef_trie is None:
-            raise te.TypeUndefinedException(self.name, usage_trie)
+            raise te.TypeUndefinedException(self._name, usage_trie)
 
         type_var_lookup = self._generate_polytype_bindings(usage_trie)
         # Loop over all elements of the defined type
@@ -71,34 +71,37 @@ class TypeDefTrieNode(TrieNode):
             logging.debug("Current Def Type: {}".format(str(curr_def_type)))
             self._check_local_type_structure(curr_def, curr_usage_set)
 
+            # Always assign current type to usage set
+            newly_typed += self._apply_type_to_set(curr_usage_set, curr_def_type)
+
             # Handle Children:
-            if len(curr_def._children) == 0:
-                self._log_no_children(curr_def, curr_def_type, curr_usage_set)
-                newly_typed += self._apply_type_to_set(curr_usage_set, curr_def_type)
-            elif len(curr_def._children) == 1:
-                inferred, queue_vals = self._handle_single_child(curr_def,
-                                                                 curr_usage_set,
-                                                                 curr_def_type)
-                newly_typed += inferred
-                queue += queue_vals
-            else:  # curr_def._children > 1
+            if len(curr_def._children) == 1:
+                queue += self._handle_single_child(curr_def,
+                                                   curr_usage_set)
+            elif len(curr_def._children) > 1:
                 queue += self._handle_multiple_children(curr_def,
-                                                        curr_usage_set,
-                                                        curr_def_type)
+                                                        curr_usage_set)
+
             logging.debug("----------")
         return newly_typed
 
     def _generate_polytype_bindings(self, usage_trie):
-        """ Generate a temporary binding environment for the definition's type parameters """
+        """ Generate a temporary binding environment for the definition's
+        type parameters """
         type_var_lookup = {}
-        if self._data[util.TYPE_DEF_S]._vars and usage_trie._type and usage_trie._type._args:
+        if self._data[util.TYPE_DEF_S]._vars \
+           and usage_trie._type \
+           and usage_trie._type._args:
             zipped = zip(self._data[util.TYPE_DEF_S]._vars, usage_trie._type._args)
             type_var_lookup = {x.value_string(): y for x, y in zipped}
         return type_var_lookup
 
     def _retrieve_type_declaration(self, curr_def, type_var_lookup):
-        """ Use the temporary binding environment to lookup the relevant type declaration """
-        if curr_def.value_string() != util.ROOT_S and curr_def._is_var and curr_def.value_string() in type_var_lookup:
+        """ Use the temporary binding environment to lookup the relevant
+        type declaration """
+        if curr_def.value_string() != util.ROOT_S \
+           and curr_def._is_var \
+           and curr_def.value_string() in type_var_lookup:
             return type_var_lookup[curr_def.value_string()]
         elif curr_def._type is not None:
             return curr_def._type.build_type_declaration(type_var_lookup)
@@ -110,29 +113,28 @@ class TypeDefTrieNode(TrieNode):
         if curr_def._value != util.ROOT_S:
             for x in curr_usage_set:
                 if not x._is_var and curr_def.value_string() != x.value_string():
-                    raise te.TypeStructureMismatch(curr_def.value_string(), [x.value_string()])
+                    raise te.TypeStructureMismatch(curr_def.value_string(),
+                                                   [x.value_string()])
 
     def _apply_type_to_set(self, usage_set, def_type):
         """ Apply type declarations to nodes """
         type_attempts = [x.type_match(def_type) for x in usage_set]
         return [x for x in type_attempts if x is not None]
 
-    def _handle_single_child(self, curr_def, curr_usage_set, curr_def_type):
+    def _handle_single_child(self, curr_def, curr_usage_set):
+        # Special case of handle_multiple_children
         logging.debug("Curr Def has a single child")
-        newly_typed = []
         queue_vals = []
         child = list(curr_def._children.values())[0]
-        if curr_def_type is not None:
-            self._log_match_type_usage(curr_def_type)
-            newly_typed += self._apply_type_to_set(curr_usage_set, curr_def_type)
+
 
         new_usage_set = [y for x in curr_usage_set for y in x._children.values()]
         if bool(new_usage_set):
             queue_vals.append((child, new_usage_set))
 
-        return newly_typed, queue_vals
+        return queue_vals
 
-    def _handle_multiple_children(self, curr_def, curr_usage_set, curr_def_type):
+    def _handle_multiple_children(self, curr_def, curr_usage_set):
         logging.debug(log_messages['mult_child'])
         assert(len(curr_def._children) > 1)
         # With multiple children, match keys

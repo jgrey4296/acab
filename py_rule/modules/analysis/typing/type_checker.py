@@ -46,8 +46,10 @@ If validate succeeds, it returns True. If it Fails, it raises an Exception
 
 """
 from .type_definition import TypeDefinition
+from .operator_definition import OperatorDefinition
 from .nodes.type_assignment_node import TypeAssignmentTrieNode
 from .nodes.typedef_node import TypeDefTrieNode
+from .nodes.operator_def_node import OperatorDefTrieNode
 from .nodes.var_type_node import VarTypeTrieNode
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.trie.trie import Trie
@@ -60,31 +62,32 @@ logging = root_logger.getLogger(__name__)
 
 class TypeChecker:
     """ Abstract Class for Type Checking """
+    # parse their locations, and add them as definitions
 
     def __init__(self):
-        self._definitions = Trie(TypeDefTrieNode)
+        self._structural_definitions = Trie(TypeDefTrieNode)
+        self._functional_definitions = Trie(OperatorDefTrieNode)
         self._declarations = Trie(TypeAssignmentTrieNode)
         self._variables = Trie(VarTypeTrieNode)
 
     def __str__(self):
-        return "Defs: {}, Decs: {}, Vars: {}".format(str(self._definitions).replace('\n', ' '),
-                                                     str(self._declarations).replace('\n', ' '),
-                                                     str(self._variables).replace('\n', ' '))
+        return "Structs: {}, Funcs: {}, Decs: {}, Vars: {}".format(str(self._structural_definitions).replace('\n', ' '),
+                                                                   str(self._functional_definitions).replace('\n', ' '),
+                                                                   str(self._declarations).replace('\n', ' '),
+                                                                   str(self._variables).replace('\n', ' '))
 
     def __repr__(self):
         return "TypeChecker({})".format(str(self))
 
     def __call__(self, data):
         """ Pass in data to type check """
-        # TODO: switch to just assertions
-        definitions, rules, assertions = data
-        # add definitions
-        for x in definitions:
-            self.add_definition(x)
-        # TODO add operators
-        # add the assertions
-        for x in assertions:
-            self.add_assertion(x)
+        # Rules: limited context
+        # other assertions/definitions etc: global context
+        rules, assertions = data
+
+        # TODO for all assertions add by assertion/definition type
+
+        # TODO validate global
 
         # for each rule: (in place of functions)
         for x in rules:
@@ -101,6 +104,7 @@ class TypeChecker:
         [x.clear_assignments() for x in var_nodes]
 
         # remove all sentences in declarations that start with a variable
+        # TODO or an operator
         [self._declarations.remove([x]) for x in var_nodes]
 
         # remove the variables
@@ -130,8 +134,6 @@ class TypeChecker:
 
     def validate(self):
         """ Infer and check types """
-
-        self._merge_equivalent_nodes()
         typed_queue = self._get_known_typed_nodes()
 
         # Use known types to infer unknown types
@@ -142,8 +144,9 @@ class TypeChecker:
                 continue
             dealt_with.add(head)
 
+            # TODO branch on structural /functional
             # check the head
-            head_type = self._definitions.query(head._type._path)
+            head_type = self._structural_definitions.query(head._type._path)
             if head_type is None:
                 raise te.TypeUndefinedException(head._type, head)
 
@@ -156,6 +159,9 @@ class TypeChecker:
             # Apply a known type to a node, get back newly inferred types
             typed_queue.update(head_type.validate(head))
 
+            # if head validation returns only operators, and
+            # the queue is only operators, then error
+
         return True
 
     def _get_known_typed_nodes(self):
@@ -165,19 +171,12 @@ class TypeChecker:
         val_queue = {y for y in self._declarations.get_nodes(lambda x: x._type is not None)}
         return val_queue
 
-    def _merge_equivalent_nodes(self):
-        """ merge equivalent variables. ie:
-        a.b.$c and a.b.$d share the same ._variables node """
-        parents_of_equiv_vars = self._declarations.get_nodes(TU.has_equivalent_vars_pred)
-        for p in parents_of_equiv_vars:
-            var_nodes = {x._var_node for x in p._children.values() if x._is_var}
-            head = var_nodes.pop()
-            head.merge(var_nodes)
-            [self._variables.remove([x]) for x in var_nodes]
-
     def add_definition(self, definition):
         assert(isinstance(definition, TypeDefinition))
-        self._definitions.add(definition._path, definition)
+        if isinstance(definition, OperatorDefinition):
+            self._functional_definitions.add(definition._path, definition)
+        else:
+            self._structural_definitions.add(definition._path, definition)
 
     def add_assertion(self, sen):
         assert(isinstance(sen, Sentence))
@@ -186,18 +185,17 @@ class TypeChecker:
                                u_data=self._variables)
 
     def add_rule(self, value):
-        # TODO: needs to be finished
         for c in value._query._clauses:
-            # add the conditions
-            continue
+            self.add_assertion(c)
 
-        for t in value._transform._components:
-            # add the transforms
-            continue
+        for c in value._query.ops_to_sentences():
+            self.add_assertion(c)
+
+        for t in value._transform.to_sentences():
+            self.add_assertion(t)
 
         for a in value._actions:
-            # add the actions
-            continue
+            self.add_assertion(a.to_sentence())
 
         self.validate()
         self.clear_context()
