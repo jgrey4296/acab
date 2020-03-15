@@ -47,3 +47,7 @@ class ModuleSpecification:
         Defining values etc that can now be parsed by
         the hotloaded value and statement parsers """
         raise NotImplementedError()
+
+    def define_layers(self):
+        """ Return any layers the module itself defines """
+        raise NotImplementedError()
