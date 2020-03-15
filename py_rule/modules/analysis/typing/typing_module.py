@@ -12,11 +12,22 @@ class TypingSpec(ModuleSpecification):
         super().__init__(types=[],
                          funcs=[])
         # TODO setup value parsers
-        # todo setup statement parsers
+        # TODO setup statement parsers
         # add functions
 
     def parse_string(self, s):
         return TP.parseString(s)
 
     def construct_operators(self):
+        # TODO 
         return
+
+
+    def define_layers(self):
+        # TODO : add type classes to type checker
+        # TODO : add definitions to type checker
+        # TODO : add assertions to type checker
+        # TODO : add rules to type checker
+        # TODO : type_checker validate
+        return []
+
