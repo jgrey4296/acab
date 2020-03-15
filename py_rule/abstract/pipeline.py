@@ -28,7 +28,7 @@ class Pipeline:
         self._interface_in  = []
         self._interface_out = []
 
-    def verify(self):
+    def verify(self, engine):
         """ Verify the Pipeline:
         Check all Agendas exist,
         Check rule selectors find rules,
@@ -37,8 +37,9 @@ class Pipeline:
         """
         raise NotImplementedError()
 
-    def __call__(self, tick):
+    def __call__(self, engine, tick):
+        """ Run this pipeline on the given engine for a tick """
         raise NotImplementedError()
 
-    # input constraints
-    # output constraints
+    # TODO input constraints
+    # TODO output constraints
