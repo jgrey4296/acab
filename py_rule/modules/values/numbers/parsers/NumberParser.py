@@ -1,4 +1,5 @@
 from py_rule.abstract.parsing import util as PU
+from py_rule import util
 import logging as root_logger
 import pyparsing as pp
 
@@ -18,5 +19,5 @@ def construct_num(toks):
 NUM = pp.Word(pp.nums + util.SUB_S + util.DECIMAL_S)
 NUM.setParseAction(construct_num)
 
-def parse_string(s):
+def parseString(s):
     return NUM.parseString(s)[0][1]
