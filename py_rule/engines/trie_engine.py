@@ -18,7 +18,7 @@ import py_rule.util as util
 
 from py_rule.working_memory.trie_wm.parsing import ActionParser as AP
 from py_rule.working_memory.trie_wm.parsing import FactParser as FP
-from py_rule.working_memory.trie_wm.parsing import TotalParser as FileP
+from py_rule.working_memory.trie_wm.parsing import TotalParser as TotalP
 from py_rule.working_memory.trie_wm.parsing import QueryParser as QP
 from py_rule.working_memory.trie_wm.parsing import RuleParser as RP
 from py_rule.working_memory.trie_wm.parsing import TransformParser as TP
@@ -47,9 +47,8 @@ class TrieEngine(Engine):
         with open(filename) as f:
             s = f.read()
         if s is not None:
-            # TODO: load (layer, policy) tuples
-            # rules, assertions, layers, policies = FileP.parseString(s)
-            rules, assertions = FileP.parseString(s)
+            # TODO : everything should be an assertion, adding
+            rules, assertions = TotalP.parseString(s)
             # Assert facts:
             for x in assertions:
                 logging.info("File load assertions: {}".format(x))
