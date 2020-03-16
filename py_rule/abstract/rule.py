@@ -150,10 +150,3 @@ class Rule(PyRuleValue):
                               transform=self._transform,
                               name=self._name,
                               tags=self._tags)
-
-    def invert(self):
-        """ Take a simple, non-transformational rule,
-        and invert it, making the asserted actions the conditions,
-        and the conditions the actions """
-        # TODO
-        raise NotImplementedError("Unimplemented")

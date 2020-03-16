@@ -133,7 +133,7 @@ class UnityServer(Agenda):
             # TODO change this
             #Start an AI tick here
             # self.toClientMessages = self.linked_engine.tick(self.fromClientMessages)
-            #todo: then send the queued messages
+            #TODO: then send the queued messages
             for m in self._toClientMessages:
                 self.respond(self.NET_ACTION(m))
             #then send AI_COMPLETE header

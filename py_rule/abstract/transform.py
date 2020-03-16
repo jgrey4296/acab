@@ -48,7 +48,7 @@ class TransformComponent:
 
     def to_sentence(self):
         head = PyRuleNode(self._op_str, { 'source' : self})
-        return Sentence([head] + [x for x in self.params] + [self._rebind])
+        return Sentence([head] + [x for x in self._params] + [self._rebind])
 
 
 class OperatorTransform(TransformComponent):
@@ -61,7 +61,7 @@ class OperatorTransform(TransformComponent):
         return "Transform({})".format(str(self))
 
     def __str__(self):
-        op = str(self._op)
+        op = self._op_str
         source = [x.opless_print() if isinstance(x, PyRuleNode)
                   else str(x) for x in self._params]
         if self._rebind is not None:
@@ -69,7 +69,7 @@ class OperatorTransform(TransformComponent):
         else:
             rebind = ""
 
-        param_length = self._op._num_params
+        param_length = len(self._params)
         if param_length == 1:
             return "{}{}{}".format(op, source[0], rebind)
         elif param_length == 2:
@@ -86,8 +86,8 @@ class OperatorTransform(TransformComponent):
 
     def verify_op(self):
         """ Complains if the operator is not a defined Operator Enum """
-        if self._op is None:
-            raise SyntaxError("Unknown Op: {}".format(self._op))
+        if self._op_str not in TransformOp.op_list:
+            raise SyntaxError("Unknown Op: {}".format(self._op_str))
 
     def set_rebind(self, bind):
         """ Set this transform to rebind its result to a different variable """
@@ -95,10 +95,9 @@ class OperatorTransform(TransformComponent):
 
     def __call__(self, ctx):
         op_func = TransformOp.op_list[self._op_str]
-        params = [ctx[y._value] if y._data[util.BIND_S]
-                  else y._value for y in x._params]
+        params = [ctx[y._value] if y._data[util.BIND_S] else y._value for y in self._params]
 
-        return opFunc(*params, ctx)
+        return op_func(*params, ctx)
 
 
 class Transform:
@@ -125,19 +124,19 @@ class Transform:
             x.verify_op()
 
     def get_input_requirements(self):
-        # TODO return the set of input bound names
-        raise NotImplementedError()
+        # return the set of input bound names
+        return [y._value for x in self._components for y in x._params if y._data[util.BIND_S]]
 
     def get_output_spec(self):
-        # TODO return the set of output bound names
-        raise NotImplementedError()
+        # return the set of output bound names
+        return [x._rebind._value for x in self._components]
 
     def __call__(self, ctx):
         assert(isinstance(ctx, dict))
         for x in self._components:
             # rebind or reapply
             if x._rebind is None:
-                raise PyRuleOperatorException()
+                raise PyRuleOperatorException("No rebind specified")
             else:
                 ctx[x._rebind._value] = x(ctx)
 

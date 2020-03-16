@@ -30,7 +30,7 @@ class TypeInstance(Type):
         return self._name
 
     def __eq__(self, other):
-        # todo: match inheritance
+        # TODO: match inheritance
         if not other:
             return False
         type_match = type(self) == type(other)

@@ -4,7 +4,7 @@ question to pose to the working memory
 from py_rule.util import CONSTRAINT_S
 from .sentence import Sentence
 from .value import PyRuleValue
-
+from .comparison import Comparison
 
 class Query(PyRuleValue):
     """ A Query for the working memory """
@@ -56,10 +56,9 @@ class Query(PyRuleValue):
         constraint_words = [word for clause in self._clauses
                             for word in clause if CONSTRAINT_S in word._data]
         # for each constraint, create a sentence
-        # TODO handle non-comparisons, ie: typings
-        con_sens = [comp.to_sentence(word)
-                    for word in constraint_words
-                    for comp in word._data[CONSTRAINT_S]]
+        # only handles comparisons, not typings
+        return [comp.to_sentence(word)
+                for word in constraint_words
+                for comp in word._data[CONSTRAINT_S]
+                if isinstance(comp, Comparison)]
 
-
-        return sents

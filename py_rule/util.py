@@ -23,6 +23,8 @@ VALUE_S      = "value"
 VALUE_TYPE_S = "value_type"
 SEN_S        = "sentence"
 
+LAYER_QUERY_RULE_BIND_S = "rule"
+RULE_S = "rule"
 
 def build_rebind_dict(formal, usage):
     """ Build a dictionary for action macro expansion,

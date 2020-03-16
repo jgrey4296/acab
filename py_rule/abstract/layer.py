@@ -26,8 +26,12 @@ class Layer:
     """ The Abstract Layer Class """
 
     def __init__(self):
-        # rule selector as a query?
+        # rule selectors are queries
+        # must include a $rule binding
+        # (or whatever util.LAYER_QUERY_RULE_BIND_S is)
         self._rule_selectors = []
+        # TODO implement logic for this
+        self._memoized_rules = []
         self._agendas = []
         self._tests = []
 

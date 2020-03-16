@@ -14,6 +14,7 @@ CONSTRAINT_S = util.CONSTRAINT_S
 OPERATOR_S   = util.OPERATOR_S
 OPT_S        = util.OPT_S
 REGEX_S      = util.REGEX_S
+RULE_S       = util.RULE_S
 
 NODE_S        = "node"
 COMP_S        = 'comparison'
@@ -30,7 +31,6 @@ TRANSFORM_S   = "transform"
 TARGET_S      = "target"
 ANNOTATION_S  = "annotations"
 RULE_NAME_S   = "rule_name"
-RULE_S        = "rule"
 CONDITION_S   = "conditions"
 ACTION_S      = "action"
 ACTION_VAL_S  = "action_values"

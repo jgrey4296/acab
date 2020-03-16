@@ -81,6 +81,7 @@ class TrieNode(PyRuleNode):
 
     def is_exclusive(self):
         """ Checks for the exclusion operator in this node """
+        # TODO fix this
         return self._data[util.OPERATOR_S] is util.EXOP.EX
 
     def looks_exclusive(self):

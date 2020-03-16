@@ -2,6 +2,7 @@
 A Trie for Types
 """
 from .nodes.trie_node import TrieNode
+from py_rule.error.pyrule_base_exception import PyRuleBaseException
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
@@ -92,9 +93,14 @@ class Trie:
         """ Given a trie node of possible matches, return only actual matches,
         Treating self as the pattern
         """
+        if isinstance(possible_matches, Trie):
+            possible_matches = possible_matches._root
+
+        if not isinstance(possible_matches, TrieNode):
+            raise PyRuleBaseException()
 
         final_matches = []
-        pattern_nodes = [x for x in in possible_matches._children.values()]
+        pattern_nodes = [x for x in possible_matches._children.values()]
         # (current pattern position, available choices, match state)
         queue = [(x, pattern_nodes, []) for x in self._root._children.values()]
 
@@ -103,13 +109,13 @@ class Trie:
 
             matching_nodes = match_func(current, available_nodes)
             for node in matching_nodes:
-                new_match_state = match_state + [(current, node)]
+                next_match_state = match_state + [(current, node)]
                 next_available = [x for x in node._children.values()]
 
                 if bool(current):
                     next_patterns = [x for x in current._children.values()]
-                    queue += [(x, next_available, next_match_state) for x in new_patterns]
+                    queue += [(x, next_available, next_match_state) for x in next_patterns]
                 else:
-                    final_matches.append(new_match_state)
+                    final_matches.append(next_match_state)
 
         return final_matches

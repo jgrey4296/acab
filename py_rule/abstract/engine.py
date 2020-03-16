@@ -84,19 +84,17 @@ class Engine:
         # should save_state
         self._save_state(layer)
         # query for the rules
-        # TODO: memoize rules
         active_rules = []
         for query in layer.queries():
-            # TODO: get the rules out of the result contexts
-            active_rules += self.query(query)
+            query_results = self.query(query)
+            for ctx in query_results:
+                active_rules.append(ctx[util.LAYER_QUERY_RULE_BIND_S]._data[util.RULE_S])
 
         for rule in active_rules:
             self._run_rule(rule)
 
         for agenda in layer.agendas():
             self._select_actions_by_agenda(agenda)
-
-        self._perform_selected_actions()
 
     def _run_rule(self, rule):
         """ Run an individual rule """

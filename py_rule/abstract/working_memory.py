@@ -30,7 +30,7 @@ class WorkingMemory:
         # add statement parsers:
         statement_parsers = [y for x in mods for y in x.get_statement_parsers()]
         or_d_statements = pp.Or([x for x in statement_parsers if x is not None])
-        self._insert_into_statementues_parser(or_d_statements)
+        self._insert_into_statement_parser(or_d_statements)
 
         # Init module values
         strings = "\n\n".join([x.init_strings() for x in mods])
@@ -49,7 +49,7 @@ class WorkingMemory:
         self._build_operator_parser()
 
     # Methods to implement:
-    def __eq__(self):
+    def __eq__(self, other):
         raise NotImplementedError()
 
     def add(self, data):

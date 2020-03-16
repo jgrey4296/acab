@@ -155,8 +155,7 @@ class ActionMacroUse:
         self._params = params
 
     def expand_bindings(self, bindings):
-        # TODO: does this need to be implemented?
-        return self
+        raise NotImplementedError()
 
     def __str__(self):
         return "#{}({})".format(self._name,

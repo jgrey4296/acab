@@ -31,10 +31,18 @@ class Pipeline:
     def verify(self, engine):
         """ Verify the Pipeline:
         Check all Agendas exist,
-        Check rule selectors find rules,
         Check rule selectors topologically sort
         Check modules are loaded
         """
+        agendas = []
+        for layer in self._layers:
+            agendas += layer.agendas()
+        # TODO verify agendas
+
+        # TODO topologically sort rules
+
+        # TODO check module use
+
         raise NotImplementedError()
 
     def __call__(self, engine, tick):
@@ -42,4 +50,9 @@ class Pipeline:
         raise NotImplementedError()
 
     # TODO input constraints
+    def input_constraints(self):
+        raise NotImplementedError()
+
     # TODO output constraints
+    def output_constraints(self):
+        raise NotImplementedError()

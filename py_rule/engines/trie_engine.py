@@ -60,13 +60,13 @@ class TrieEngine(Engine):
             raise PyRuleParseException("No text found in provided file")
 
     def tick(self, inputMessages):
+        # TODO fix this
         ouput = []
         for x in inputMessages:
             self.add(x)
 
-        # loop through layers, running connected policies
-        for (layerTags, policy) in self._layers:
-            self._run_rules(rule_tags=layerTags, policy=policy)
+        for layer in self._pipeline._layers:
+            self.run_layer(layer)
 
         # retrieve final selected actions
         output = self._proposed_actions.copy()

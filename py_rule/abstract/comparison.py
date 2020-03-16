@@ -63,6 +63,7 @@ class Comparison:
 
     def refine_operator(self, op_str):
         self._op_str = op_str
+
     def __call__(self, node, data=None):
         """ Run a comparison on a node """
         op = CompOp.op_list[self._op_str]
@@ -75,6 +76,4 @@ class Comparison:
     def to_sentence(self, target):
         """ Create a comparison as a canonical sentence """
         # eg: 20(>30) -> > 20 30 -> bool
-        return Sentence([self._op_str,
-                         target,
-                         self._value])
+        return Sentence([self._op_str, target, self._value])

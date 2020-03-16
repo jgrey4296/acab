@@ -15,7 +15,6 @@ class TypeDefinition(Type):
         self._name = name
         self._path = path
         self._structure = structure
-        # TODO: add function signatures?
         self._vars = []
         if tvars is not None:
             assert(all([x._data[BIND_S] for x in tvars]))
