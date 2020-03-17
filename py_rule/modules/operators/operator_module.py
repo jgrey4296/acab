@@ -1,10 +1,10 @@
-from . import comparison_operators as C
-from . import action_operators as A
-from . import transform_operators as T
-from .causal_do import DoOperator
-from .delta_adjust import DeltaOperator
-from .interleave import InterleaveOperator
-from .set_ops import SetOperator
+from .comparison import comparison_operators as C
+from .action import action_operators as A
+from .transform import transform_operators as T
+from .causal.causal_do import DoOperator
+from .delta.delta_adjust import DeltaOperator
+from .interleave.interleave import InterleaveOperator
+from .set.set_ops import SetOperator
 from py_rule.abstract.mod_interface import ModuleSpecification
 
 class OperatorSpec(ModuleSpecification):
@@ -27,8 +27,8 @@ class OperatorSpec(ModuleSpecification):
 
     def _construct_comp_ops(self):
         C.EQ()
-        C.GT()
-        C.LT()
+        # C.GT()
+        # C.LT()
         C.NEQ()
         C.RegMatch()
         C.ELEM()
@@ -37,16 +37,15 @@ class OperatorSpec(ModuleSpecification):
         A.ActionAdd()
         A.ActionRetract()
         A.ActionPrint()
-        A.ActionCustom()
 
     def _construct_transform_ops(self):
-        T.AddOp()
-        T.SubOp()
-        T.MulOp()
-        T.DivOp()
-        T.RandOp()
-        T.RemainOp()
-        T.RoundOp()
-        T.NegOp()
+        # T.AddOp()
+        # T.SubOp()
+        # T.MulOp()
+        # T.DivOp()
+        # T.RandOp()
+        # T.RemainOp()
+        # T.RoundOp()
+        # T.NegOp()
         T.RegexOp()
         T.FormatOp()

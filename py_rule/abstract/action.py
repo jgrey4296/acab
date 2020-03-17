@@ -43,7 +43,7 @@ class Action:
 
     def __init__(self, op, values, type_=None):
         """ Create an action with an operator and values """
-        assert(isinstance(values, Sentence))
+        assert all([isinstance(x, Sentence) for x in values]), values
         self._op = op
         self._op_func = None
         self._values = values

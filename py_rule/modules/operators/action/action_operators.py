@@ -19,7 +19,7 @@ logging = root_logger.getLogger(__name__)
 
 class ActionAdd(ActionOp):
     def __init__(self):
-        super().__init__("+")
+        super().__init__()
 
     def __call__(self, engine, params):
         """ Assert the params into the engine """
@@ -29,7 +29,7 @@ class ActionAdd(ActionOp):
 
 class ActionRetract(ActionOp):
     def __init__(self):
-        super().__init__("-")
+        super().__init__()
 
     def __call__(self, engine, params):
         """ Remove the params from the engine """
@@ -39,7 +39,7 @@ class ActionRetract(ActionOp):
 
 class ActionPrint(ActionOp):
     def __init__(self):
-        super().__init__("@")
+        super().__init__()
 
     def __call__(self, engine, params):
         """ Trigger a logging statement """
