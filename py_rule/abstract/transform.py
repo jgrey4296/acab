@@ -12,14 +12,16 @@ logging = root_logger.getLogger(__name__)
 
 
 class TransformOp(ProductionOperator):
-    op_list = {}
+    op_list = { 1 : {},
+                2 : {},
+                3 : {} }
 
     def __init__(self, num_params=2, infix=False):
         # Registers self with class name,
         # DSL later binds to an operator
         super().__init__(num_params=num_params, infix=False)
-        if self._op_str not in TransformOp.op_list:
-            TransformOp.op_list[self._op_str] = self
+        if self._op_str not in TransformOp.op_list[num_params]:
+            TransformOp.op_list[num_params][self._op_str] = self
 
     def __call__(self, a, b):
         raise NotImplementedError("Abstract method needs to be implemented")
