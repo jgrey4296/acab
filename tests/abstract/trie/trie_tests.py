@@ -68,6 +68,27 @@ class TrieTests(unittest.TestCase):
         self.assertEqual({x._value for x in nodes}, {'a','b','c'})
 
 
+    def test_trie_pattern_match(self):
+        pattern_trie = Trie()
+        pattern_trie.add(['a','b','c'])
+        pattern_trie.add(['a','b','d'])
+
+        query_trie = Trie()
+        query_trie.add(['q','b','c'])
+        query_trie.add(['q','b','d'])
+        query_trie.add(['q','c','d'])
+
+        matches = pattern_trie.match_as_pattern(query_trie, pattern_match_fn)
+
+        self.assertEqual(len(matches), 2)
+
+def pattern_match_fn(head, available):
+    if head._value == "a":
+        return available
+
+    return [x for x in available if x._value == head._value]
+
+
 if __name__ == "__main__":
     #use python $filename to use this logging setup
     LOGLEVEL = logging.INFO
