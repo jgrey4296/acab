@@ -108,6 +108,34 @@ class NumberTests(unittest.TestCase):
         self.assertEqual(result._components[0]._params[1]._value, 20)
         self.assertEqual(result._components[0]._rebind._value, 'y')
 
+    def test_unary_round(self):
+        result = TP.parseString('_$x')
+        self.assertEqual(result._components[0]._op, 'RoundOp')
+
+    def test_binary_rand_operator(self):
+        result = TP.parseString('$x <-> $y')
+        self.assertEqual(len(result._components), 1)
+        self.assertEqual(result._components[0]._op, 'RandOp')
+
+    def test_unary_operator(self):
+        result = TP.parseString('-$x')
+        self.assertIsInstance(result, transform.Transform)
+        self.assertEqual(len(result._components), 1)
+        self.assertIsInstance(result._components[0]._op, transform.TransformOp)
+        self.assertEqual(result._components[0]._params[0]._value, "x")
+        self.assertIsNone(result._components[0]._rebind)
+
+    def test_unary_rebind(self):
+        result = TP.parseString('-$x -> $y')
+        self.assertIsInstance(result, transform.Transform)
+        self.assertEqual(len(result._components), 1)
+        self.assertIsInstance(result._components[0]._op, transform.TransformOp)
+        self.assertEqual(result._components[0]._params[0]._value, "x")
+        self.assertIsNotNone(result._components[0]._rebind)
+        self.assertEqual(result._components[0]._rebind._value, 'y')
+
+
+
 
     def test_fact_str_equal(self):
         transforms = ["$x + 20", "$x + 20\n$y + 5",

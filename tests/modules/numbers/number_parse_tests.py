@@ -3,6 +3,7 @@ from os.path import splitext, split
 import unittest
 import logging
 from test_context import py_rule
+from py_rule.modules.values.numbers.parsers import NumberParser as AP
 
 class NumberTests(unittest.TestCase):
 
