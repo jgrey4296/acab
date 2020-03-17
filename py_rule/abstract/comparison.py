@@ -59,7 +59,7 @@ class Comparison:
         return self._value is not None and not self._value._data[BIND_S]
 
     def is_regex_test(self):
-        return self._op_str is "~="
+        return self._op_str is "RegMatch"
 
     def refine_operator(self, op_str):
         self._op_str = op_str
