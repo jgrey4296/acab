@@ -65,3 +65,11 @@ def has_equivalent_vars_pred(node):
         return False
     var_children = [x for x in node._children.values() if x._is_var]
     return len(var_children) > 1
+
+def node_is_exclusive(node):
+    """ Checks for the exclusion operator in this node """
+    return node._data[util.OPERATOR_S] is util.EXOP.EX
+
+def node_looks_exclusive(node):
+    """ Checks for implicit exclusivity by having 0 or 1 children """
+    return len(node) <= 1

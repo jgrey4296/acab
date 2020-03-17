@@ -79,11 +79,3 @@ class TrieNode(PyRuleNode):
                 betas.append(c)
         return (alphas, betas, regexs)
 
-    def is_exclusive(self):
-        """ Checks for the exclusion operator in this node """
-        # TODO fix this
-        return self._data[util.OPERATOR_S] is util.EXOP.EX
-
-    def looks_exclusive(self):
-        """ Checks for implicit exclusivity by having 0 or 1 children """
-        return len(self) <= 1
