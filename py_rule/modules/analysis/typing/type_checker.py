@@ -85,9 +85,13 @@ class TypeChecker:
         # other assertions/definitions etc: global context
         rules, assertions = data
 
-        # TODO for all assertions add by assertion/definition type
+        for assertion in assertions:
+            if isinstance(assertion, TypeDefinition):
+                self.add_definition(assertion)
+            else:
+                self.add_assertion(assertion)
 
-        # TODO validate global
+        self.validate()
 
         # for each rule: (in place of functions)
         for x in rules:

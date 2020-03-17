@@ -31,9 +31,12 @@ def make_type_def(toks):
     return (TYU.TYPE_DEF_S, type_def)
 
 def make_op_def(toks):
-    # TODO add syntax binding for operators
-
-    op_def = OperatorDefinition()
+    op_def = OperatorDefinition(
+        toks[TYU.SEN_S],
+        toks[TYU.SEN_S],
+        toks[TYU.SEN_S],
+        toks["func_name"]
+    )
 
     return (TYU.OP_DEF_S, op_def)
 
@@ -48,7 +51,8 @@ TYPEDEF = PU.DBLCOLON + PU.NG(TYU.SEN_S, BASIC_SEN) \
     + PU.end
 
 # ::+.$x(::num).$y(::num).$z(::num) :: numeric_add
-OP_DEF = PU.DBLCOLON + PU.NG(TYU.SEN_S, PARAM_SEN) + PU.DBLCOLON + BASIC_SEN
+OP_DEF = PU.DBLCOLON + PU.NG(TYU.SEN_S, PARAM_SEN) \
+    + PU.DBLCOLON + PU.N("func_name", BASIC_SEN)
 
 TYPEDEF.setParseAction(make_type_def)
 OP_DEF.setParseAction(make_op_def)

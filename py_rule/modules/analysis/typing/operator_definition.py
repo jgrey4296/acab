@@ -6,18 +6,17 @@ from py_rule.util import BIND_S
 class OperatorDefinition(TypeDefinition):
     """ Defines the type signature of an operator"""
 
-    def __init__(self, name, path, structure, tvars, func_name, op_str):
+    def __init__(self, name, path, structure, func_name):
         """ The name of an operator and its type signature,
         with the binding to a ProductionOperator that is
         syntax sugared, and its inline place"""
         # eg: operator.+.$x(::num).$y(::num).$z(::num).num_plus
-        # TODO check up on tvars and implement them here
-        super().__init__(name, path, structure, tvars)
+        super().__init__(name, path, structure, None)
         self._func_name = func_name
         self._op_str = op_str
 
-
     def __str__(self):
+        # TODO this needs to be customised for operators
         result = "::"
         result += str(self._name)
         if bool(self._vars):
