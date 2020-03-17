@@ -4,7 +4,7 @@ from test_context import py_rule
 from py_rule.working_memory.trie_wm import util as KBU
 from py_rule.working_memory.trie_wm.parsing import RuleParser as RP
 from py_rule.working_memory.trie_wm.parsing import FactParser as FP
-from py_rule.modules.standard_operators.operator_module import OperatorSpec
+from py_rule.modules.operators.operator_module import OperatorSpec
 from py_rule.abstract.rule import Rule
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.query import Query
@@ -73,7 +73,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertEqual(len(result[0][1]._query), 1)
 
     def test_rule_with_actions(self):
-            result = RP.parseString("a.rule:\n+(a.b.c)\nend")
+            result = RP.parseString("a.rule:\nAddOp(a.b.c)\nend")
             self.assertEqual(len(result), 1)
             self.assertIsInstance(result[0][1], Rule)
             self.assertIsNone(result[0][1]._query)
@@ -81,7 +81,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertEqual(len(result[0][1]._actions), 1)
 
     def test_multi_action_rule(self):
-            result = RP.parseString("a.rule:\n+(a.b.c),\n-(a.b.d)\nend")
+            result = RP.parseString("a.rule:\nAddOp(a.b.c),\nRetractOp(a.b.d)\nend")
             self.assertEqual(len(result), 1)
             self.assertIsInstance(result[0][1], Rule)
             self.assertIsNone(result[0][1]._query)
@@ -89,7 +89,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertEqual(len(result[0][1]._actions), 2)
 
     def test_multi_action_single_line_rule(self):
-            result = RP.parseString("a.rule:\n+(a.b.c), -(a.b.d)\nend")
+            result = RP.parseString("a.rule:\nAddOp(a.b.c), RetractOp(a.b.d)\nend")
             self.assertEqual(len(result), 1)
             self.assertIsInstance(result[0][1], Rule)
             self.assertIsNone(result[0][1]._query)
@@ -104,7 +104,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
                          "a.rule:\n\ta.b.c?\n\nend")
 
     def test_rule_tags(self):
-            result = RP.parseString('a.test.rule:\n#blah, #bloo, #blee\n\na.b.c?\n\n+(a.b.c)\nend')[0][1]
+            result = RP.parseString('a.test.rule:\n#blah, #bloo, #blee\n\na.b.c?\n\nAddOp(a.b.c)\nend')[0][1]
             self.assertIsInstance(result, Rule)
             self.assertEqual(str(result._name), "a.test.rule")
             self.assertTrue(all(x in result._tags for x in ["blah","bloo","blee"]))

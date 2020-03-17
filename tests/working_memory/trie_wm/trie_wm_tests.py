@@ -2,7 +2,7 @@ import unittest
 import logging
 from test_context import py_rule
 from py_rule.working_memory.trie_wm.trie_working_memory import TrieWM
-from py_rule.modules.standard_operators.operator_module import OperatorSpec
+from py_rule.modules.operators.operator_module import OperatorSpec
 from py_rule.abstract.contexts import Contexts
 
 
@@ -196,18 +196,18 @@ class Trie_WM_Tests(unittest.TestCase):
 
     def test_query_regex(self):
         self.trie.add('a.b.cBlah')
-        self.assertTrue(self.trie.query('a.b.$x(~= /cBlah/)?'))
-        self.assertFalse(self.trie.query('a.b.$x(~= /bBlah/)?'))
+        self.assertTrue(self.trie.query('a.b.$x(RegMatch /cBlah/)?'))
+        self.assertFalse(self.trie.query('a.b.$x(RegMatch /bBlah/)?'))
 
     def test_query_regex_bind(self):
         self.trie.add('a.b.cBlah')
-        result = self.trie.query('a.b.$x(~= /c(?P<y>.+)/)?')
+        result = self.trie.query('a.b.$x(RegMatch /c(?P<y>.+)/)?')
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]['y'], 'Blah')
 
     def test_query_regex_multi_bind(self):
         self.trie.add('a.b.cBlah, a.b.cBloo, a.b.dAwef')
-        result = self.trie.query('a.b.$x(~= /c(?P<y>.+)/)?')
+        result = self.trie.query('a.b.$x(RegMatch /c(?P<y>.+)/)?')
         self.assertEqual(len(result), 2)
         boundSet = set([x['y'] for x in result])
         self.assertTrue('Blah' in boundSet)
