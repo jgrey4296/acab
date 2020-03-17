@@ -1,5 +1,5 @@
 from .typed_node import M_TypedNode
-from py_rule.modules.typing.util import is_var
+from py_rule.modules.analysis.typing.util import is_var
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
 

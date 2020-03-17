@@ -1,6 +1,6 @@
 from .typedef_node import TypeDefTrieNode
 from py_rule.error import type_exceptions as te
-import py_rule.modules.typing.util as util
+import py_rule.modules.analysis.typing.util as util
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
 

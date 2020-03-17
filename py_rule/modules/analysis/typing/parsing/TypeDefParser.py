@@ -1,8 +1,8 @@
 import pyparsing as pp
 import logging as root_logger
-from py_rule.modules.typing.type_definition import TypeDefinition
+from py_rule.modules.analysis.typing.type_definition import TypeDefinition
 from py_rule.abstract.parsing import util as PU
-from py_rule.modules.typing import util as TYU
+from py_rule.modules.analysis.typing import util as TYU
 from . import util as TU
 logging = root_logger.getLogger(__name__)
 

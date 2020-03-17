@@ -1,12 +1,12 @@
+from test_context import py_rule
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.trie.nodes.trie_node import TrieNode
 from py_rule.working_memory.trie_wm.parsing import FactParser as FP
-from py_rule.modules.typing import util as TU
-from py_rule.modules.typing.type_definition import TypeDefinition
-from test_context import py_rule
+from py_rule.modules.analysis.typing import util as TU
+from py_rule.modules.analysis.typing.type_definition import TypeDefinition
 import logging
-import py_rule.modules.typing.parsing.TypeDefParser as TD
-import py_rule.modules.typing.parsing.TypeParser as TP
+import py_rule.modules.analysis.typing.parsing.TypeDefParser as TD
+import py_rule.modules.analysis.typing.parsing.TypeParser as TP
 import py_rule.util as util
 import random
 import unittest

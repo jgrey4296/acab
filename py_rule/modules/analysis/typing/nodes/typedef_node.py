@@ -2,9 +2,9 @@ from .type_assignment_node import TypeAssignmentTrieNode
 from py_rule.abstract.trie.nodes.trie_node import TrieNode
 from py_rule.abstract.trie.trie import Trie
 from py_rule.error import type_exceptions as te
-from py_rule.modules.typing.type_definition import TypeDefinition
+from py_rule.modules.analysis.typing.type_definition import TypeDefinition
 import logging as root_logger
-import py_rule.modules.typing.util as util
+import py_rule.modules.analysis.typing.util as util
 logging = root_logger.getLogger(__name__)
 
 # Log messages to use, because they are long:
@@ -118,6 +118,8 @@ class TypeDefTrieNode(TrieNode):
 
     def _apply_type_to_set(self, usage_set, def_type):
         """ Apply type declarations to nodes """
+        if def_type is None:
+            return []
         type_attempts = [x.type_match(def_type) for x in usage_set]
         return [x for x in type_attempts if x is not None]
 
