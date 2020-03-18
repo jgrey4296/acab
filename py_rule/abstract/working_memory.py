@@ -33,8 +33,10 @@ class WorkingMemory:
         self._insert_into_statement_parser(or_d_statements)
 
         # Init module values
-        strings = "\n\n".join([x.init_strings() for x in mods])
-        self.add(strings)
+        mod_init_strings = [y for x in mods for y in x.init_strings() if y is not None]
+        if bool(mod_init_strings):
+            strings = "\n\n".join(mod_init_strings)
+            self.add(strings)
 
 
     def build_operator_parser(self):
