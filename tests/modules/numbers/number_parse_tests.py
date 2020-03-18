@@ -5,6 +5,14 @@ import logging
 from test_context import py_rule
 from py_rule.modules.values.numbers.parsers import NumberParser as AP
 
+class ActionBlah(action.ActionOp):
+    def __init__(self):
+        super().__init__()
+
+    def __call__(self, engine, params):
+        logging.info("Blah")
+
+
 class NumberTests(unittest.TestCase):
 
     @classmethod
