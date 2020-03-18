@@ -34,13 +34,13 @@ class Comparison:
     """ Describe a Comparison of values and maybe a binding """
 
     def __init__(self, op_str, value):
-        self._op_str = op_str
+        self._op = op_str
         self._value = value
 
     def __str__(self):
         val = self._value.opless_print()
 
-        retValue = "{} {}".format(str(self._op_str), val)
+        retValue = "{} {}".format(str(self._op), val)
         return retValue
 
     def __repr__(self):
@@ -49,24 +49,24 @@ class Comparison:
         else:
             val = self._value
 
-        retValue = "Comparison({} {})".format(repr(self._op_str), repr(val))
+        retValue = "Comparison({} {})".format(repr(self._op), repr(val))
         return retValue
 
     def copy(self):
-        return Comparison(self._op_str, self._value)
+        return Comparison(self._op, self._value)
 
     def is_alpha_test(self):
         return self._value is not None and not self._value._data[BIND_S]
 
     def is_regex_test(self):
-        return self._op_str is "RegMatch"
+        return self._op is "RegMatch"
 
     def refine_operator(self, op_str):
-        self._op_str = op_str
+        self._op = op_str
 
     def __call__(self, node, data=None):
         """ Run a comparison on a node """
-        op = CompOp.op_list[self._op_str]
+        op = CompOp.op_list[self._op]
         node_value = node._value
         value = self._value._value
         if data is not None:
@@ -76,4 +76,4 @@ class Comparison:
     def to_sentence(self, target):
         """ Create a comparison as a canonical sentence """
         # eg: 20(>30) -> > 20 30 -> bool
-        return Sentence([self._op_str, target, self._value])
+        return Sentence([self._op, target, self._value])
