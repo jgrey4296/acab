@@ -3,7 +3,17 @@ from os.path import splitext, split
 import unittest
 import logging
 from test_context import py_rule
-from py_rule.modules.values.numbers.parsers import NumberParser as AP
+import random
+from py_rule.modules.values.numbers.parsing import NumberParser as NP
+from py_rule.working_memory.trie_wm.parsing import ActionParser as AP
+from py_rule.working_memory.trie_wm.parsing import TransformParser as TP
+from py_rule.working_memory.trie_wm.parsing import FactParser as FP
+from py_rule.abstract import action
+from py_rule import util
+from py_rule.modules.operators.operator_module import OperatorSpec
+from py_rule.modules.values.numbers.number_module import NumberSpecification
+from py_rule.working_memory.trie_wm.trie_working_memory import TrieWM
+
 
 class ActionBlah(action.ActionOp):
     def __init__(self):
@@ -14,51 +24,67 @@ class ActionBlah(action.ActionOp):
 
 
 class NumberTests(unittest.TestCase):
+    os = None
+    ns = None
 
     @classmethod
-    def setUpClas(cls):
-        return
+    def setUpClass(cls):
+        NumberTests.os = OperatorSpec()
+        NumberTests.ns = NumberSpecification()
+        ActionBlah()
 
     def setUp(self):
-        return 1
+        self.trie = TrieWM()
+        self.trie.add_modules([NumberTests.os, NumberTests.ns])
+        self.trie.build_operator_parser()
 
     def tearDown(self):
         return 1
 
     #----------
     #use testcase snippets
-    def test_number_parsing(self):
-        pass
+    def test_int_number_parsing(self):
+        result = FP.parseString("number.test.20")[0]
+        self.assertIsNotNone(result)
+        self.assertEqual(result[-1]._data[util.VALUE_TYPE_S], util.INT_S)
+        self.assertEqual(result[-1]._value, 20)
+
+    def test_float_number_parsing(self):
+        result = FP.parseString("number.test.20d325")[0]
+        self.assertIsNotNone(result)
+        self.assertEqual(result[-1]._data[util.VALUE_TYPE_S], util.FLOAT_S)
+        self.assertEqual(result[-1]._value, 20.325)
 
 
-    def test_simple_action_parse(self):
-        result = AP.parseString("+(20, 30, 40)")[0]
+    def test_simple_transform_parse(self):
+        result = TP.parseString("20 AddOp 30")[0]
         self.assertIsInstance(result, action.Action)
-        self.assertEqual(result._op._op_str, '+')
+        self.assertEqual(result._op, 'AddOp')
         self.assertEqual([x[-1]._value for x in result._values], [20, 30, 40])
 
 
     def test_custom_action_parse(self):
-        result = AP.parseString("blah(20, 30, 40)")
+        result = AP.parseString("ActionBlah(20, 30, 40)")
         self.assertEqual(len(result), 1)
         self.assertIsInstance(result[0], action.Action)
-        self.assertEqual(result[0]._op._op_str, "blah")
+        self.assertEqual(result[0]._op, "ActionBlah")
         self.assertEqual([x[-1]._value for x in result[0]._values], [20, 30, 40])
 
 
-    def test_actions_parse(self):
-        result = AP.parseString('+(2), -(3), @(4)')
+    def test_transform_parse(self):
+        result = TP.parseString('2 AddOp 3, 3 SubOp 2, 2 MulOp 2')
         self.assertEqual(len(result), 3)
         self.assertTrue(all([isinstance(x, action.Action) for x in result]))
-        for parsed_action, op in zip(result, ["+", "-", "@"]):
-            self.assertEqual(parsed_action._op._op_str, op)
+        for parsed_action, op in zip(result, ['AddOp','SubOp', 'MulOp']):
+            self.assertEqual(parsed_action._op, op)
 
 
-    def test_action_str_equal(self):
-        actions = ["+(2)", "-(3)", "@(4)"]
-        parsed = [AP.parseString(x)[0] for x in actions]
+    def test_transform_str_equal(self):
+        actions = ["2 AddOp 4", "3 SubOp 5", "RoundOp 4"]
+        parsed = [TP.parseString(x) for x in actions]
         zipped = zip(actions, parsed)
-        self.assertTrue(all([x == str(y) for x,y in zipped]))
+        for x,y in zipped:
+            self.assertEqual(x, str(y))
 
 
     def test_numbers_parsing(self):
