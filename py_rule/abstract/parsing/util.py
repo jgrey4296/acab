@@ -14,10 +14,8 @@ def NG(name, grp):
     """ Name and Group """
     return pp.Group(grp).setResultsName(name)
 
-
 def N(name, parser):
     return parser.setResultsName(name)
-
 
 def construct_sentence(toks):
     return Sentence(toks[:])
@@ -35,15 +33,16 @@ sLn       = s(pp.White(ws='\n', exact=1))
 
 
 ARROW     = s(pp.Literal('->'))
+DBLARROW  = s(pp.Literal('=>'))
 COLON     = s(pp.Literal(':'))
 COMMA     = s(pp.Or([pp.Literal(',') + opLn, pp.lineEnd]))
-CPAR      = s(pp.Literal(')'))
 DBLCOLON  = s(pp.Literal("::"))
 DOLLAR    = s(pp.Literal('$'))
 DOUBLEBAR = s(pp.Literal('||'))
 end       = s(pp.Literal('end'))
 HASH      = s(pp.Literal('#'))
 OPAR      = s(pp.Literal('('))
+CPAR      = s(pp.Literal(')'))
 QMARK     = s(pp.Literal('?'))
 SLASH     = s(pp.Literal('/'))
 SUB       = s(pp.Literal(util.SUB_S))
