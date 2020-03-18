@@ -1,7 +1,7 @@
 from .pyrule_type import Type
 from .type_instance import TypeInstance
 from py_rule.util import BIND_S
-
+from py_rule.abstract.sentence import Sentence
 
 class TypeDefinition(Type):
     """ Defines the Structure of a type """
@@ -12,12 +12,21 @@ class TypeDefinition(Type):
         { .a.$x :: String, .b.$c :: Num, .d!$e::Location }
         """
         # The name is the location. eg: .types.person
+        assert isinstance(name, str)
+        assert isinstance(path, Sentence)
+        assert isinstance(structure, list)
+        assert all([isinstance(x, Sentence) for x in structure])
+        assert isinstance(tvars, list)
+
         self._name = name
         self._path = path
+        # TODO unify shared variables across structure sentences to have
+        # the same type
         self._structure = structure
         self._vars = []
         if tvars is not None:
             assert(all([x._data[BIND_S] for x in tvars]))
+            # TODO check all tvars are in structure sentences
             self._vars += tvars
 
     def __str__(self):

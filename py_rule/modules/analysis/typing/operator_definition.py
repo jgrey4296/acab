@@ -6,14 +6,14 @@ from py_rule.util import BIND_S
 class OperatorDefinition(TypeDefinition):
     """ Defines the type signature of an operator"""
 
-    def __init__(self, name, path, structure, func_name):
+    def __init__(self, name, structure, sugar_syntax):
         """ The name of an operator and its type signature,
         with the binding to a ProductionOperator that is
         syntax sugared, and its inline place"""
         # eg: operator.+.$x(::num).$y(::num).$z(::num).num_plus
-        super().__init__(name, path, structure, None)
-        self._func_name = func_name
-        self._op_str = op_str
+        super().__init__(name, path, [structure], None)
+        self._func_name = sugar_syntax
+        self._op_str = name
 
     def __str__(self):
         # TODO this needs to be customised for operators
