@@ -29,7 +29,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
     def test_basic_regex_comparison(self):
         result = QP.COMP_Internal.parseString('RegMatch /blah/')[0]
         self.assertIsInstance(result, Comparison)
-        self.assertEqual(result._op_str, 'RegMatch')
+        self.assertEqual(result._op, 'RegMatch')
         self.assertEqual(result._value._value, 'blah')
 
     def test_basic_clause(self):
@@ -90,21 +90,21 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result[0]._data[CONSTRAINT_S]), 1)
         self.assertIsInstance(result[0]._data[CONSTRAINT_S][0], Comparison)
-        self.assertEqual(result[0]._data[CONSTRAINT_S][0]._op_str, "RegMatch")
+        self.assertEqual(result[0]._data[CONSTRAINT_S][0]._op, "RegMatch")
 
     def test_comparison_parse_2(self):
         result = QP.QueryCore.parseString("testing(RegMatch /test/).")
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result[0]._data[CONSTRAINT_S]), 1)
         self.assertIsInstance(result[0]._data[CONSTRAINT_S][0], Comparison)
-        self.assertEqual(result[0]._data[CONSTRAINT_S][0]._op_str, "RegMatch")
+        self.assertEqual(result[0]._data[CONSTRAINT_S][0]._op, "RegMatch")
 
     def test_comparison_parse_variable(self):
         result = QP.QueryCore.parseString("$x(RegMatch /test/).")
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result[0]._data[CONSTRAINT_S]), 1)
         self.assertIsInstance(result[0]._data[CONSTRAINT_S][0], Comparison)
-        self.assertEqual(result[0]._data[CONSTRAINT_S][0]._op_str, "RegMatch")
+        self.assertEqual(result[0]._data[CONSTRAINT_S][0]._op, "RegMatch")
 
 
     def test_comparison_in_clause(self):
@@ -112,7 +112,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result[0][1]._data[CONSTRAINT_S]), 1)
         self.assertIsInstance(result[0][1]._data[CONSTRAINT_S][0], Comparison)
-        self.assertEqual(result[0][1]._data[CONSTRAINT_S][0]._op_str, "RegMatch")
+        self.assertEqual(result[0][1]._data[CONSTRAINT_S][0]._op, "RegMatch")
 
 
 
