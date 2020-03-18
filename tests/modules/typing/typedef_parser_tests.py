@@ -33,9 +33,10 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
     def test_trivial(self):
         self.assertIsNotNone(TD.parseString)
         self.assertIsNotNone(TD.TYPEDEF)
+        self.assertIsNotNone(TD.OP_DEF)
 
     def test_basic_typedef(self):
-        result = TD.parseString('::blah:\n\na.b.c\n\nend')[0]
+        result = TD.parseString('σ::blah:\n\na.b.c\n\nend')[0]
         self.assertIsInstance(result[1], TypeDefinition)
         self.assertEqual(len(result[1]._vars), 0)
         self.assertEqual(result[1]._name._value, "blah")
@@ -63,6 +64,12 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         # TODO: replace exception with a more specific one
         with self.assertRaises(Exception):
             result = TD.parseString('::blah(blee):\n\na.b.c\n\nend')[0]
+
+
+
+    def test_op_def_parse(self):
+        result = TD.parseString('λ::AddOp: $x(::Num).$x.$x => +')
+
 
 
 if __name__ == "__main__":

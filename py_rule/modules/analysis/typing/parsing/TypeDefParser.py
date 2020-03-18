@@ -32,10 +32,9 @@ def make_type_def(toks):
 
 def make_op_def(toks):
     op_def = OperatorDefinition(
-        toks[TYU.SEN_S],
-        toks[TYU.SEN_S],
-        toks[TYU.SEN_S],
-        toks["func_name"]
+        toks[TYU.SEN_S][0],
+        toks[TYU.STRUCT_S][0],
+        toks[TYU.SYNTAX_BIND_S][0]
     )
 
     return (TYU.OP_DEF_S, op_def)
@@ -44,15 +43,18 @@ def make_op_def(toks):
 
 VARLIST = PU.OPAR + pp.delimitedList(VALBIND, TYU.DELIM_S, False) + PU.CPAR
 
-# ::a.test.type: a.value.$x(::num) end
-TYPEDEF = PU.DBLCOLON + PU.NG(TYU.SEN_S, BASIC_SEN) \
+# σ::a.test.type: a.value.$x(::num) end
+SIGMA = PU.s(pp.Literal('σ'))
+TYPEDEF = SIGMA + PU.DBLCOLON + PU.NG(TYU.SEN_S, BASIC_SEN) \
     + PU.N(TYU.TVAR_S, PU.op(VARLIST)) + PU.COLON + PU.emptyLine \
     + PU.N(TYU.STRUCT_S, PARAM_SEN_PLURAL) + PU.emptyLine \
     + PU.end
 
-# ::+.$x(::num).$y(::num).$z(::num) :: numeric_add
-OP_DEF = PU.DBLCOLON + PU.NG(TYU.SEN_S, PARAM_SEN) \
-    + PU.DBLCOLON + PU.N("func_name", BASIC_SEN)
+# λ::numAdd: $x(::num).$y(::num).$z(::num) => +
+LAMBDA = PU.s(pp.Literal('λ'))
+OP_DEF = LAMBDA + PU.DBLCOLON + PU.NG(TYU.SEN_S, BASIC_SEN) \
+    + PU.COLON + PU.NG(TYU.STRUCT_S, PARAM_SEN) \
+    + PU.op(PU.DBLARROW + PU.N(TYU.SYNTAX_BIND_S, BASIC_SEN)) + pp.lineEnd
 
 TYPEDEF.setParseAction(make_type_def)
 OP_DEF.setParseAction(make_op_def)
