@@ -15,7 +15,7 @@ def build_operators():
     if operator.expr is not None:
         logging.warning("Action Operators Overwrite")
     ACTION_STRS = [x for x in Actions.ActionOp.op_list.keys()]
-    operator << pp.Or([pp.Literal(x) for x in ACTION_STRS] + [CUSTOM])
+    operator << pp.Or([pp.Literal(x) for x in ACTION_STRS])
 
 # constructors:
 def build_action(toks):
