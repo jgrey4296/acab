@@ -49,3 +49,6 @@ class OperatorSpec(ModuleSpecification):
         # T.NegOp()
         T.RegexOp()
         T.FormatOp()
+
+    def init_strings(self):
+        return []
