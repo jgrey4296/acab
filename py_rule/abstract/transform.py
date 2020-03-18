@@ -73,7 +73,7 @@ class OperatorTransform(TransformComponent):
 
         param_length = len(self._params)
         if param_length == 1:
-            return "{}{}{}".format(op, source[0], rebind)
+            return "{} {}{}".format(op, source[0], rebind)
         elif param_length == 2:
             return "{} {} {}{}".format(source[0],
                                        op,
