@@ -1,6 +1,6 @@
 from .pyrule_type import Type
 from .type_instance import TypeInstance
-from py_rule.util import BIND_S
+from py_rule.util import BIND_S, STRUCTURE_S
 from py_rule.abstract.sentence import Sentence
 
 class TypeDefinition(Type):
@@ -30,7 +30,7 @@ class TypeDefinition(Type):
             self._vars += tvars
 
     def __str__(self):
-        result = "::"
+        result = STRUCTURE_S + "::"
         result += str(self._name)
         if bool(self._vars):
             result += "({})".format(", ".join([str(x) for x in self._vars]))

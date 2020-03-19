@@ -44,15 +44,13 @@ def make_op_def(toks):
 VARLIST = PU.OPAR + pp.delimitedList(VALBIND, TYU.DELIM_S, False) + PU.CPAR
 
 # σ::a.test.type: a.value.$x(::num) end
-SIGMA = PU.s(pp.Literal('σ'))
-TYPEDEF = SIGMA + PU.DBLCOLON + PU.NG(TYU.SEN_S, BASIC_SEN) \
+TYPEDEF = PU.STRUCT_HEAD + PU.DBLCOLON + PU.NG(TYU.SEN_S, BASIC_SEN) \
     + PU.N(TYU.TVAR_S, PU.op(VARLIST)) + PU.COLON + PU.emptyLine \
     + PU.N(TYU.STRUCT_S, PARAM_SEN_PLURAL) + PU.emptyLine \
     + PU.end
 
 # λ::numAdd: $x(::num).$y(::num).$z(::num) => +
-LAMBDA = PU.s(pp.Literal('λ'))
-OP_DEF = LAMBDA + PU.DBLCOLON + PU.NG(TYU.SEN_S, BASIC_SEN) \
+OP_DEF = PU.FUNC_S + PU.DBLCOLON + PU.NG(TYU.SEN_S, BASIC_SEN) \
     + PU.COLON + PU.NG(TYU.STRUCT_S, PARAM_SEN) \
     + PU.op(PU.DBLARROW + PU.N(TYU.SYNTAX_BIND_S, BASIC_SEN)) + pp.lineEnd
 

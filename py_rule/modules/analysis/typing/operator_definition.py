@@ -1,12 +1,12 @@
 from .type_definition import TypeDefinition
 from .type_instance import TypeInstance
-from py_rule.util import BIND_S
+from py_rule.util import BIND_S, FUNC_S
 
 
 class OperatorDefinition(TypeDefinition):
     """ Defines the type signature of an operator"""
 
-    def __init__(self, name, structure, sugar_syntax):
+    def __init__(self, name, structure, sugar_syntax=None):
         """ The name of an operator and its type signature,
         with the binding to a ProductionOperator that is
         syntax sugared, and its inline place"""
@@ -16,14 +16,15 @@ class OperatorDefinition(TypeDefinition):
         self._op_str = name
 
     def __str__(self):
-        # TODO this needs to be customised for operators
-        result = "::"
+        result = FUNC_S + "::"
         result += str(self._name)
         if bool(self._vars):
             result += "({})".format(", ".join([str(x) for x in self._vars]))
-        result += ":\n\n"
-        result += "\n".join([str(x) for x in self._structure])
-        result += "\n\nEND"
+        result += ":"
+        result += str(self._structure[0])
+        if self._func_name is not None:
+            result += " => {}".format(self._func_name)
+
         return result
 
     def __repr__(self):
