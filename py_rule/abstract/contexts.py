@@ -1,5 +1,5 @@
 """ Contexts: A Container for all partial matches of a query being run """
-
+from py_rule.util import AT_BIND_S
 
 class Contexts:
     """ Container of available contexts for a match in the trie
@@ -54,11 +54,15 @@ class Contexts:
             of wmes (ie: for each clause in query there needs to be a wme) """
         self._matches = [x for x in self._matches if len(x[0]) == targetWMEMatch]
 
-    def set_all_alts(self, targetNode):
+    def set_all_alts(self, target=None, binding=None):
         """ Duplicate the Contexts, with a specific node as the current leaf """
+        assert(target or binding)
         newContexts = Contexts()
         for (data, lastNode) in self._matches:
-            newContexts._matches.append((data, targetNode))
+            if target is not None:
+                newContexts.append((data, target))
+            else:
+                newContexts.append((data, data[AT_BIND_S + binding]))
         return newContexts
 
     def select(self, bounds=(None, None)):

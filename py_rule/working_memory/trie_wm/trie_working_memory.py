@@ -8,6 +8,7 @@ from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.trie.trie import Trie
 from py_rule.error.pyrule_operator_exception import PyRuleOperatorException
 from . import matching
+from . import util
 from .parsing import FactParser as FP
 from .parsing import QueryParser as QP
 from .parsing import ActionParser as AP
@@ -137,26 +138,41 @@ class TrieWM(WorkingMemory):
 
         logging.debug("Testing clauses: {} {}".format(len(pos), len(neg)))
         for clause in pos:
-            reset_start_contexts = contexts.set_all_alts(self._internal_trie._root)
+
+            # Return to root unless clause has a head @ binding
+            if util.AT_BIND_S in clause[0]._data:
+                reset_start_contexts = contexts.set_all_alts(binding=clause[0]._value)
+            else:
+                reset_start_contexts = contexts.set_all_alts(target=self._internal_trie._root)
+
             (updated_contexts, failures) = self._match_clause(clause,
                                                               reset_start_contexts)
+            # add all failures back in, with the default value
             if bool(clause._fallback):
-                # add all failures back in, with the default value
                 for d in failures:
                     for bindTarget, val in clause._fallback:
                         d[bindTarget.value] = val
                 updated_contexts._matches += [(x, self._internal_trie._root) for x in failures]
 
+            # If No successful clauses, break
             if bool(updated_contexts) is False:
                 logging.debug("A positive clause is false")
                 contexts = updated_contexts
                 break
+
+            # Update contexts with successes
             contexts = updated_contexts
 
         for negClause in neg:
-            reset_start_contexts = contexts.set_all_alts(self._internal_trie._root)
+            # Return to root unless clause has a head @ binding
+            if util.AT_BIND_S in clause[0]._data:
+                reset_start_contexts = contexts.set_all_alts(binding=clause[0]._value)
+            else:
+                reset_start_contexts = contexts.set_all_alts(target=self._internal_trie._root)
+
             result, failures = self._match_clause(negClause, reset_start_contexts)
             logging.debug("neg result: {}".format(str(result)))
+            # If negative clauses are true, break
             if bool(result) is True:
                 logging.debug("A Negative clause is true")
                 contexts.fail()
@@ -176,7 +192,7 @@ class TrieWM(WorkingMemory):
         # Go down from the root by query element:
         # Failure at any point means don't add the updated context
 
-        # For each part of the clause, ie: .a in .a.b.c
+        # For each word of the clause sentence, eg: .a in .a.b.c
         for c in clause:
             logging.info("Testing node: {}".format(repr(c)))
             logging.info("Current Contexts: {}".format(len(currentContexts)))
@@ -192,20 +208,25 @@ class TrieWM(WorkingMemory):
                 newData = None
                 newNode = None
                 newBindings = []
+                if util.AT_BIND_S in c._data:
+                    tested = True
+                    newNode = lastNode
+                    newData = data
+
                 # compare non-bound value, returns (newNode, newData)?
                 if not tested:
                     tested, newNode, newData = matching.non_bind_value_match(c, lastNode,
                                                                              betas,
                                                                              regexs, data)
 
+                # compare already bound value, returns (newNode, newData)?
                 if not tested:
-                    # compare already bound value, returns (newNode, newData)?
                     tested, newNode, newData = matching.existing_bind_match(c, lastNode,
                                                                             betas, regexs,
                                                                             data)
 
+                # create new bindings as necessary, returns [(newNode, newData)]
                 if not tested:
-                    # create new bindings as necessary, returns [(newNode, newData)]
                     newBindings = matching.create_new_bindings(c, lastNode,
                                                                alphas, betas,
                                                                regexs, data)

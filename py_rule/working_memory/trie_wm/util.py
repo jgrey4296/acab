@@ -6,6 +6,7 @@ from enum import Enum
 
 ROOT_S       = util.ROOT_S
 BIND_S       = util.BIND_S
+AT_BIND_S    = util.AT_BIND_S
 VALUE_S      = util.VALUE_S
 NAME_S       = util.NAME_S
 STRING_S     = util.STRING_S

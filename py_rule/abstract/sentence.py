@@ -2,7 +2,7 @@
 Defines a Sentence of Fact Words, which can be a query, and
 have fallback bindings
 """
-from py_rule.util import BIND_S, OPERATOR_S
+from py_rule.util import BIND_S, OPERATOR_S, AT_BIND_S
 from .value import PyRuleValue
 from .node import PyRuleNode
 
@@ -19,6 +19,7 @@ class Sentence(PyRuleValue):
         self._is_query = is_query
         if words is not None:
             assert(all([isinstance(x, PyRuleNode) for x in words]))
+            assert(not any([AT_BIND_S in x._data for x in words[1:]]))
             self._words += words
         if fallback is not None:
             self._fallback += fallback[:]
@@ -55,6 +56,7 @@ class Sentence(PyRuleValue):
         using those bindings.
         ie: .a.b.$x with {x: blah} => .a.b.blah
         """
+        # TODO update this for AT_BIND
         assert(isinstance(bindings, dict))
         output = []
 

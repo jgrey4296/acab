@@ -214,6 +214,30 @@ class Trie_WM_Tests(unittest.TestCase):
         self.assertTrue('Blah' in boundSet)
         self.assertTrue('Bloo' in boundSet)
 
+    def test_sub_binding_query(self):
+        self.trie.add('a.b.c.d')
+        result = self.trie.query('a.$x?, @x.c.$y?')
+        self.assertTrue('x' in result[0])
+        self.assertTrue('y' in result[0])
+        self.assertEqual(result[0]['x'], 'b')
+        self.assertEqual(result[0]['y'], 'd')
+
+    def test_multiple_sub_binding_query(self):
+        self.trie.add('a.b.c.d')
+        result = self.trie.query('a.$x?, @x.$y?, @y.$z?')
+        self.assertTrue(all([x in result[0] for x in ['x','y','z']]))
+        self.assertEqual(result[0]['x'], 'b')
+        self.assertEqual(result[0]['y'], 'c')
+        self.assertEqual(result[0]['z'], 'd')
+
+    def test_multiple_contexts_sub_binding(self):
+        self.trie.add('a.b.c.d')
+        self.trie.add('a.q.c.e')
+        result = self.trie.query('a.$x?, @x.c.$y?')
+        self.assertEqual(len(result), 2)
+        self.assertTrue(all([x in result[0] for x in ['x','y']]))
+        self.assertTrue(all([x in result[1] for x in ['x','y']]))
+
 
 
 if __name__ == "__main__":

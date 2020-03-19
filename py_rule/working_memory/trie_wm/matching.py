@@ -21,7 +21,6 @@ def exclusion_matches(a, b):
     logging.info("Running exclusion match test: {} {}".format(str(a), str(b)))
     assert(isinstance(a, TrieNode))
     assert(isinstance(b, TrieNode))
-    # TODO make this a utility function
     result = util.node_is_exclusive(a) and not util.node_looks_exclusive(b)
     if result:
         logging.info("C: {}, Node: {}, {}".format(util.node_is_exclusive(a),
@@ -30,7 +29,9 @@ def exclusion_matches(a, b):
     return result
 
 def non_bind_value_match(a, b, betas, regexs, data):
-    """ Compare two values without caring about binding """
+    """ Compare two values without caring about bindings
+    a is the test node, b is the existing node
+    """
     logging.info("Running non bind value match: {}{}".format(repr(b), repr(a)))
     assert(isinstance(a, TrieNode))
     assert(isinstance(b, TrieNode))
@@ -47,7 +48,9 @@ def non_bind_value_match(a, b, betas, regexs, data):
     return (tested, newNode, newData)
 
 def existing_bind_match(a, b, betas, regexs, data):
-    """ Compare an existing bound value to the children of b """
+    """ Compare an existing bound value to the children of b
+    a is the test node, b is the existing node
+    """
     logging.info("Running existing bind match: {}{}".format(repr(b), repr(a)))
     assert(isinstance(a, TrieNode))
     assert(isinstance(b, TrieNode))
@@ -79,5 +82,6 @@ def create_new_bindings(a, b, alphas, betas, regexs, data):
     for x in passing:
         output.append(x.test_regexs_for_matching(regexs,
                                                  data,
-                                                 preupdate=(a._value, x._value)))
+                                                 preupdate=[(a._value, x._value),
+                                                            (util.AT_BIND_S + a._value, x)]))
     return output

@@ -27,6 +27,14 @@ def make_node(toks):
         value = toks[WMU.BIND_S][0][1]
         data[WMU.VALUE_TYPE_S] = WMU.NAME_S
         data[WMU.BIND_S] = True
+    elif WMU.AT_BIND_S in toks:
+        # Node is a reference variable
+        # (can only be at head of a sentence)
+        assert(isinstance(toks[WMU.AT_BIND_S][0], tuple))
+        value = toks[WMU.AT_BIND_S][0][1]
+        data[WMU.VALUE_TYPE_S] = WMU.NAME_S
+        data[WMU.BIND_S] = True
+        data[WMU.AT_BIND_S] = True
     elif WMU.VALUE_S in toks:
         # The node is a value
         assert(isinstance(toks[WMU.VALUE_S], tuple))
@@ -64,6 +72,7 @@ def PARAM_CORE(mid=None, end=None):
 
 # alt for actions, PARAM_CORE
 VALBIND = pp.Or([PU.N(WMU.BIND_S, PU.BIND),
+                 PU.N(WMU.AT_BIND_S, PU.AT_BIND),
                  PU.N(WMU.VALUE_S, pp.Or([PU.BASIC_VALUE, HOTLOAD_VALUES]))])
 VALBIND.setParseAction(make_node)
 

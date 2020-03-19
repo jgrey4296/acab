@@ -50,7 +50,7 @@ CUSTOM = pp.Word(pp.alphas)
 
 operator = pp.Forward()
 
-ACT_MACRO = PU.s(PU.HASH) + CUSTOM
+ACT_MACRO = PU.MACRO_HEAD + PU.DBLCOLON + CUSTOM
 
 # fact string with the option of binds
 vals = PARAM_SEN + pp.ZeroOrMore(PU.COMMA + PARAM_SEN)

@@ -78,6 +78,7 @@ class Action:
     def get_values(self, data):
         """ Output a list of bindings from this action """
         output = []
+        # TODO update this for AT_BIND
         for x in self._values:
             if isinstance(x, Sentence):
                 output.append(x.expand_bindings(data))

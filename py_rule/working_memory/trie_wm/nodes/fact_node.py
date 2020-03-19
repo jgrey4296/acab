@@ -138,6 +138,8 @@ class FactNode(TrieNode):
 
     def search_regex(self, regex):
         """ Test a regex on the Nodes value """
+        # TODO possibly constrain this?
+        assert(isinstance(self._value, str))
         result = re.search(regex._value._value, self._value)
         if result is not None:
             return result.groupdict()
@@ -145,17 +147,19 @@ class FactNode(TrieNode):
             return None
 
     def test_regexs_for_matching(self, regexs, currentData, preupdate=None):
-        """ Test a number of regexs on this Node """
+        """ Test a number of regexs on this Node
+        Return a Tuple of Nones if failure, (dict, node) if success
+        """
         newData = currentData.copy()
         if preupdate is not None:
-            newData[preupdate[0]] = preupdate[1]
+            for x,y in preupdate:
+                newData[x] = y
         invalidated = False
         for regex in regexs:
-            if invalidated:
-                break
             result = self.search_regex(regex)
             if result is None:
                 invalidated = True
+                break
             else:
                 for k, v in result.items():
                     if k not in newData:

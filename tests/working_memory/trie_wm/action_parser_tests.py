@@ -41,7 +41,7 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
         self.assertEqual(str(newAction), "ActionAdd(a.b.c)")
 
     def test_action_macro_definition_empty(self):
-        test_str = "#test():\n ActionAdd(a.b.c)\nend"
+        test_str = "μ::test():\n ActionAdd(a.b.c)\nend"
         definition = AP.action_definition.parseString(test_str)[0]
         self.assertEqual(definition._name, "test")
 

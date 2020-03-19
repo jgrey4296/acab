@@ -26,8 +26,12 @@ class TrieNode(PyRuleNode):
         else:
             val = str(self._value)
 
-        if util.BIND_S in self._data and self._data[util.BIND_S]:
+        if util.AT_BIND_S in self._data:
+            val = "@" + val
+        elif util.BIND_S in self._data and self._data[util.BIND_S]:
             val = "$" + val
+
+
 
         if util.CONSTRAINT_S in self._data:
             constraints = ", ".join(str(x) for x in self._data[util.CONSTRAINT_S])

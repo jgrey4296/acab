@@ -39,6 +39,7 @@ class TransformComponent:
     def __init__(self, op_str, params):
         assert(isinstance(params, tuple))
         self._op_str = op_str
+        assert(not any([util.AT_BIND_S in x._data for x in params]))
         self._params = params
         self._rebind = None
 
@@ -93,6 +94,7 @@ class OperatorTransform(TransformComponent):
 
     def set_rebind(self, bind):
         """ Set this transform to rebind its result to a different variable """
+        assert(util.AT_BIND_S not in bind._data)
         self._rebind = bind
 
     def __call__(self, ctx):

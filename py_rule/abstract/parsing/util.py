@@ -29,31 +29,36 @@ op        = pp.Optional
 emptyLine = s(pp.OneOrMore(pp.lineEnd))
 opLn      = s(op(pp.lineEnd))
 orm       = pp.OneOrMore
-sLn       = s(pp.White(ws='\n', exact=1))
+sLn       = s(pp.White(ws  ='\n', exact =1))
 
-
+# Basic Syntax
 ARROW     = s(pp.Literal('->'))
 DBLARROW  = s(pp.Literal('=>'))
 COLON     = s(pp.Literal(':'))
 COMMA     = s(pp.Or([pp.Literal(',') + opLn, pp.lineEnd]))
 DBLCOLON  = s(pp.Literal("::"))
 DOLLAR    = s(pp.Literal('$'))
+AT        = s(pp.Literal('@'))
 DOUBLEBAR = s(pp.Literal('||'))
 end       = s(pp.Literal('end'))
-HASH      = s(pp.Literal('#'))
+HASH      = s(pp.Literal("#"))
 OPAR      = s(pp.Literal('('))
 CPAR      = s(pp.Literal(')'))
 QMARK     = s(pp.Literal('?'))
 SLASH     = s(pp.Literal('/'))
 SUB       = s(pp.Literal(util.SUB_S))
 TILDE     = pp.Literal('~')
-OBRACKET = s(pp.Literal('['))
-CBRACKET = s(pp.Literal(']'))
-LESS = s(pp.Literal('<'))
-MORE = s(pp.Literal('>'))
-VBAR = s(pp.Literal('|'))
+OBRACKET  = s(pp.Literal('['))
+CBRACKET  = s(pp.Literal(']'))
+LESS      = s(pp.Literal('<'))
+MORE      = s(pp.Literal('>'))
+VBAR      = s(pp.Literal('|'))
 
+MACRO_HEAD     = s(pp.Literal(util.MACRO_S))
+STRUCT_HEAD  = s(pp.Literal(util.STRUCTURE_S))
+FUNC_HEAD    = s(pp.Literal(util.FUNC_S))
 
+# Basic Parsers
 NAME        = pp.Word(pp.alphas + util.UNDERSCORE_S)
 NAME.setParseAction(lambda t: (util.NAME_S, t[0]))
 
@@ -66,3 +71,4 @@ REGEX.setParseAction(lambda t: (util.REGEX_S, t[0][1:-1]))
 
 BASIC_VALUE = pp.Or([NAME, STRING, REGEX])
 BIND        = DOLLAR + NAME
+AT_BIND     = AT + NAME

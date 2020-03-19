@@ -7,7 +7,7 @@ from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.comparison import Comparison, CompOp
 from py_rule.modules.operators.operator_module import OperatorSpec
 from py_rule.working_memory.trie_wm import util as KBU
-from py_rule.util import CONSTRAINT_S
+from py_rule.util import CONSTRAINT_S, VALUE_TYPE_S, REGEX_S
 
 class Trie_Query_Parser_Tests(unittest.TestCase):
 
@@ -31,6 +31,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result, Comparison)
         self.assertEqual(result._op, 'RegMatch')
         self.assertEqual(result._value._value, 'blah')
+        self.assertEqual(result._value._data[VALUE_TYPE_S], REGEX_S)
 
     def test_basic_clause(self):
         result = QP.clause.parseString('a.b.c?')[0]
