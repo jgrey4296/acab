@@ -23,6 +23,7 @@ class Trie_WM_Tests(unittest.TestCase):
     def tearDown(self):
         self.trie = None
 
+    #--------------------
     def test_init(self):
         """ Check the trie object exists """
         self.assertIsNotNone(self.trie)

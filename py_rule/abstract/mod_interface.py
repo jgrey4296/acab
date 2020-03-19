@@ -17,6 +17,8 @@ class ModuleSpecification:
         self._value_parsers = []
         # Statement parsers return sentences with values in them
         self._statement_parsers = []
+        # Annotation parsers return constraints for a value
+        self._annotation_parsers = []
         # The value types the module adds
         self._types = []
         if types is not None:
@@ -32,6 +34,9 @@ class ModuleSpecification:
 
     def get_statement_parsers(self):
         return self._statement_parsers
+
+    def get_annotation_parsers(self):
+        return self._annotation_parsers
 
     def parse_string(self, string):
         """ Takes a String, parses it into Data format """

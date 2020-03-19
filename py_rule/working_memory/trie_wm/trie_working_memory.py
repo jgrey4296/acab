@@ -74,10 +74,13 @@ class TrieWM(WorkingMemory):
         return str(self._internal_trie)
 
     def _insert_into_values_parser(self, parser):
-        FP.OTHER_VALS << parser
+        FP.HOTLOAD_VALUES << parser
 
     def _insert_into_statement_parser(self, parser):
-        TotalP.OTHER_STATEMENTS << parser
+        TotalP.HOTLOAD_STATEMENTS << parser
+
+    def _insert_into_annotations_parser(self, parser):
+        FP.HOTLOAD_ANNOTATIONS << parser
 
     def _build_operator_parser(self):
         """ Trigger the building of operators,

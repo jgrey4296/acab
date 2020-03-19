@@ -21,7 +21,6 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         return 1
 
     #----------
-    #use testcase snippets
     def test_trivial(self):
         self.assertIsNotNone(FP.parseString)
         self.assertIsNotNone(FP.PARAM_SEN)
@@ -95,7 +94,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         new_parser = pp.Word("@awef")
         new_parser.setParseAction(lambda t: ("awef", t[0]))
 
-        FP.OTHER_VALS << new_parser
+        FP.HOTLOAD_VALUES << new_parser
 
         a = FP.VALBIND.parseString("@awef")[0]
         self.assertEqual(a._value, "@awef")

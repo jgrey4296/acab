@@ -32,12 +32,16 @@ class WorkingMemory:
         or_d_statements = pp.Or([x for x in statement_parsers if x is not None])
         self._insert_into_statement_parser(or_d_statements)
 
+        # Add annotation parsers:
+        annotation_parsers = [y for x in mods for y in x.get_annotation_parsers()]
+        or_d_statements = pp.Or([x for x in annotation_parsers if x is not None])
+        self._insert_into_annotations_parser(or_d_statements)
+
         # Init module values
         mod_init_strings = [y for x in mods for y in x.init_strings() if y is not None]
         if bool(mod_init_strings):
             strings = "\n\n".join(mod_init_strings)
             self.add(strings)
-
 
     def build_operator_parser(self):
         """ This is used to build the parsers of operators,
@@ -65,12 +69,18 @@ class WorkingMemory:
 
     def _insert_into_values_parser(self, parser):
         """ Inserts new value types that can be parsed in a sentence
-        Should look like FP.OTHER_VALS << or_d_parser
+        Should look like FP.HOTLOAD_VALUES << or_d_parser
         """
         raise NotImplementedError()
 
     def _insert_into_statement_parser(self, parser):
         """ Inserts new statements entirely """
+        raise NotImplementedError()
+
+    def _insert_into_annotations_parser(self, parser):
+        """ Inserts new annotations for values.
+        Should look like FP.HOTLOAD_ANNOTATIONS << or_d_parser
+        """
         raise NotImplementedError()
 
     def _build_operator_parser(self):

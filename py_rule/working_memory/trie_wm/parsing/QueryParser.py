@@ -7,7 +7,7 @@ from py_rule.abstract.sentence import Sentence
 from py_rule.working_memory.trie_wm import util as WMU
 from py_rule.abstract.parsing import util as PU
 from py_rule.error.pyrule_parse_exception import PyRuleParseException
-from .FactParser import PARAM_CORE, TYPE_ANNOTATION, PARAM_SEN
+from .FactParser import PARAM_CORE, HOTLOAD_ANNOTATIONS, PARAM_SEN
 
 logging = root_logger.getLogger(__name__)
 
@@ -61,7 +61,7 @@ COMP_Internal = PU.N(WMU.OPERATOR_S, COMP_OP) \
 COMP_Internal.setParseAction(build_comparison)
 
 comp_or_typedef = pp.Or([PU.N(WMU.COMP_S, COMP_Internal),
-                         PU.N(WMU.TYPE_DEC_S, TYPE_ANNOTATION)])
+                         PU.N(WMU.TYPE_DEC_S, HOTLOAD_ANNOTATIONS)])
 
 constraints = comp_or_typedef + PU.op(pp.OneOrMore(PU.COMMA + comp_or_typedef))
 

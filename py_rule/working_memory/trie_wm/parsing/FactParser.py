@@ -11,8 +11,8 @@ from py_rule.abstract.parsing import util as PU
 
 logging = root_logger.getLogger(__name__)
 # Hotload insertion points:
-TYPE_ANNOTATION = pp.Forward()
-OTHER_VALS = pp.Forward()
+HOTLOAD_ANNOTATIONS= pp.Forward()
+HOTLOAD_VALUES = pp.Forward()
 
 
 def make_node(toks):
@@ -64,12 +64,12 @@ def PARAM_CORE(mid=None, end=None):
 
 # alt for actions, PARAM_CORE
 VALBIND = pp.Or([PU.N(WMU.BIND_S, PU.BIND),
-                 PU.N(WMU.VALUE_S, pp.Or([PU.BASIC_VALUE, OTHER_VALS]))])
+                 PU.N(WMU.VALUE_S, pp.Or([PU.BASIC_VALUE, HOTLOAD_VALUES]))])
 VALBIND.setParseAction(make_node)
 
 # Core = a. | b! | $a. | $b!
-PARAM_BINDING_CORE = PARAM_CORE(TYPE_ANNOTATION)
-PARAM_BINDING_END = PARAM_CORE(TYPE_ANNOTATION, end=True)
+PARAM_BINDING_CORE = PARAM_CORE(HOTLOAD_ANNOTATIONS)
+PARAM_BINDING_END = PARAM_CORE(HOTLOAD_ANNOTATIONS, end=True)
 
 # Basic Sentences without Annotations:
 BASIC_SEN = pp.ZeroOrMore(PARAM_CORE()) + PARAM_CORE(end=True)

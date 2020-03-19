@@ -20,7 +20,7 @@ from . import ActionParser as AP
 # Temporary state of a file parse
 parseBindings = {}
 
-OTHER_STATEMENTS = pp.Forward()
+HOTLOAD_STATEMENTS = pp.Forward()
 
 def final_pass(toks):
     """ The final action of the file parser.
@@ -47,7 +47,7 @@ def final_pass(toks):
     return (expandedActMacroRules, assertions)
 
 def add_file_binding(toks):
-    """ Store the string of in the binding """
+    """ Store the string in the binding """
     binding = toks[0]
     string = toks[1]
     assert(binding._data[WMU.BIND_S])
@@ -102,7 +102,7 @@ def trie_wrap_statement_into_sentence(toks):
     return loc
 
 
-statement_converter = pp.Or([RP.rule, OTHER_STATEMENTS])
+statement_converter = pp.Or([RP.rule, HOTLOAD_STATEMENTS])
 
 bindArrow = PU.s(pp.Literal('<-'))
 clear = PU.s(pp.Literal('clear'))
