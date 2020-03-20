@@ -15,7 +15,7 @@ def build_operators():
     if HOTLOAD_OPERATORS.expr is not None:
         logging.warning("Action Operators Overwrite")
     ACTION_STRS = [x for x in Actions.ActionOp.op_list.keys()]
-    HOTLOAD_OPERATORS << pp.Or([pp.Literal(x) for x in ACTION_STRS])
+    HOTLOAD_OPERATORS << pp.Or([pp.Literal(x) for x in ACTION_STRS] + [PU.OPERATOR_SUGAR])
 
 # constructors:
 def build_action(toks):

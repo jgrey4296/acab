@@ -18,7 +18,7 @@ def build_operators():
     if COMP_OP.expr is not None:
         logging.warning("Comparison Operators parser overwrite")
     OP_STRS = [x for x in C.CompOp.op_list.keys()]
-    COMP_OP << pp.Or([pp.Literal(x) for x in OP_STRS])
+    COMP_OP << pp.Or([pp.Literal(x) for x in OP_STRS] + [PU.OPERATOR_SUGAR])
 
 
 def build_constraint_list(toks):
