@@ -1,24 +1,24 @@
 SHELL=/usr/local/bin/bash
-PYS := $(shell find . -name '*.py' -not -name '*context.py' -not -name '__init__.py')
-LOGS := $(shell find . -name '*log.*')
-CACHES := $(shell find . -name '*__pycache__')
+PYS := $(shell find ./py_rule -name '*.py' -not -name '*context.py' -not -name '__init__.py')
+LOGS := $(shell find ./py_rule -name '*log.*')
+CACHES := $(shell find ./py_rule -name '*__pycache__')
 
 .PHONY: all
 all: verbose
 
 verbose:
-	python -m unittest discover -p "*tests.py" -v
+	python -m unittest discover -p "*_tests.py" -v
 
 faily:
-	python -m unittest discover -p "*tests.py" -v -f
+	python -m unittest discover -p "*_tests.py" -v -f
 
 # use as: make pattern PAT="X"
 pattern:
-	python -m unittest discover -p "*tests.py" -v -f -k ${PAT}
+	python -m unittest discover -p "*_tests.py" -v -f -k ${PAT}
 
 # make init py's as necessary
 init:
-	find . -type d -print0 | xargs -0 -I {} touch "{}/__init__.py"
+	find ./py_rule -type d -print0 | xargs -0 -I {} touch "{}/__init__.py"
 
 
 clean:
