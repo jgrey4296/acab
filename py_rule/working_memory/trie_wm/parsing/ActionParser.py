@@ -12,10 +12,10 @@ logging = root_logger.getLogger(__name__)
 
 def build_operators():
     """ For Hotloading Action operators """
-    if operator.expr is not None:
+    if HOTLOAD_OPERATORS.expr is not None:
         logging.warning("Action Operators Overwrite")
     ACTION_STRS = [x for x in Actions.ActionOp.op_list.keys()]
-    operator << pp.Or([pp.Literal(x) for x in ACTION_STRS])
+    HOTLOAD_OPERATORS << pp.Or([pp.Literal(x) for x in ACTION_STRS])
 
 # constructors:
 def build_action(toks):
@@ -48,7 +48,7 @@ def build_definition(toks):
 # Action operators:
 CUSTOM = pp.Word(pp.alphas)
 
-operator = pp.Forward()
+HOTLOAD_OPERATORS = pp.Forward()
 
 ACT_MACRO = PU.MACRO_HEAD + PU.DBLCOLON + CUSTOM
 
@@ -57,7 +57,7 @@ vals = PARAM_SEN + pp.ZeroOrMore(PU.COMMA + PARAM_SEN)
 
 bindList = VALBIND + pp.ZeroOrMore(PU.COMMA + VALBIND)
 # action: [op](values)
-action = PU.N(WMU.OPERATOR_S, operator) \
+action = PU.N(WMU.OPERATOR_S, HOTLOAD_OPERATORS) \
     + PU.OPAR + PU.N(WMU.ACTION_VAL_S, vals) + PU.CPAR
 
 actionMacroUse = ACT_MACRO + \

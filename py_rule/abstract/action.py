@@ -104,11 +104,12 @@ class Action:
 
     def __call__(self, engine, data):
         # lookup op
-        opFunc = self._op
+        assert(self._op in ActionOp.op_list)
+        opFunc = ActionOp.op_list[self._op]
         # get values from data
         values = self.get_values(data)
         # perform action op with data
-        opFunc(self, engine, values)
+        opFunc(engine, values)
 
     def to_sentence(self):
         """ Return the action in canonical form """
