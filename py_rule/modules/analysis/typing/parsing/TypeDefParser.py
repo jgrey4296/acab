@@ -31,13 +31,11 @@ def make_type_def(toks):
     return (TYU.TYPE_DEF_S, type_def)
 
 def make_op_def(toks):
-    breakpoint()
-
     syntax_bind = None
     if TYU.SYNTAX_BIND_S in toks:
         syntax_bind = toks[TYU.SYNTAX_BIND_S][0]
 
-    op_def = OperatorDefinition(toks[TYU.SEN_S],
+    op_def = OperatorDefinition(toks[TYU.SEN_S][0],
                                 toks[TYU.STRUCT_S][0],
                                 syntax_bind)
 
@@ -56,7 +54,7 @@ TYPEDEF = PU.STRUCT_HEAD + PU.DBLCOLON + PU.NG(TYU.SEN_S, HOTLOAD_BASIC_SEN) \
 # λ::numAdd: $x(::num).$y(::num).$z(::num) => +
 OP_DEF = PU.FUNC_HEAD + PU.DBLCOLON + PU.NG(TYU.SEN_S, HOTLOAD_BASIC_SEN) \
     + PU.COLON + PU.NG(TYU.STRUCT_S, HOTLOAD_PARAM_SEN) \
-    + PU.op(PU.DBLARROW + PU.N(TYU.SYNTAX_BIND_S, HOTLOAD_BASIC_SEN)) + pp.lineEnd
+    + PU.op(PU.DBLARROW + PU.N(TYU.SYNTAX_BIND_S, PU.OPERATOR_SUGAR)) + pp.lineEnd
 
 TYPEDEF.setParseAction(make_type_def)
 OP_DEF.setParseAction(make_op_def)

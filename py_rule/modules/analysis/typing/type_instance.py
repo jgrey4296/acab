@@ -22,7 +22,7 @@ class TypeInstance(Type):
         return "(::{}{})".format(self._name, args)
 
     def __str__(self):
-        return self._name
+        return str(self._name)
 
     def __eq__(self, other):
         # TODO: match inheritance

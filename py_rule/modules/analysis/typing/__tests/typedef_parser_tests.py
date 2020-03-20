@@ -42,13 +42,13 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertEqual(len(result[1]._structure), 1)
 
     def test_typedef_with_variable(self):
-        result = TD.parseString('::blah($x):\n\na.b.c\n\nend')[0]
+        result = TD.parseString('σ::blah($x):\n\na.b.c\n\nend')[0]
         self.assertIsInstance(result[1], TypeDefinition)
         self.assertEqual(len(result[1]._vars), 1)
         self.assertEqual(result[1]._vars[0]._value, "x")
 
     def test_typedef_with_multi_variables(self):
-        result = TD.parseString('::blah($x, $y):\n\na.b.c\n\nend')[0]
+        result = TD.parseString('σ::blah($x, $y):\n\na.b.c\n\nend')[0]
         self.assertIsInstance(result[1], TypeDefinition)
         self.assertEqual(len(result[1]._vars), 2)
         var_set = set([x._value for x in result[1]._vars])
@@ -56,13 +56,13 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertEqual(var_set, match_set)
 
     def test_typedef_with_structure_types(self):
-        result = TD.parseString('::blah:\n\na.b.c(::bloo)\n\nend')[0]
+        result = TD.parseString('σ::blah:\n\na.b.c(::bloo)\n\nend')[0]
         self.assertEqual(result[1]._structure[0][-1]._data[TU.TYPE_DEC_S]._name._value, 'bloo')
 
     def test_typedef_with_bad_vars(self):
         # TODO: replace exception with a more specific one
         with self.assertRaises(Exception):
-            result = TD.parseString('::blah(blee):\n\na.b.c\n\nend')[0]
+            result = TD.parseString('σ::blah(blee):\n\na.b.c\n\nend')[0]
 
 
 
