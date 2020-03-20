@@ -91,13 +91,13 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
 
     def test_valbind_expansion(self):
         """ Test added new parsers to the valbind parser """
-        new_parser = pp.Word("@awef")
+        new_parser = pp.Word("¿awef")
         new_parser.setParseAction(lambda t: ("awef", t[0]))
 
         FP.HOTLOAD_VALUES << new_parser
 
-        a = FP.VALBIND.parseString("@awef")[0]
-        self.assertEqual(a._value, "@awef")
+        a = FP.VALBIND.parseString("¿awef")[0]
+        self.assertEqual(a._value, "¿awef")
         self.assertEqual(a._data[KBU.VALUE_TYPE_S], "awef")
 
 

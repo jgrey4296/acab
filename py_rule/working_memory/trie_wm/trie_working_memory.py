@@ -165,7 +165,7 @@ class TrieWM(WorkingMemory):
 
         for negClause in neg:
             # Return to root unless clause has a head @ binding
-            if util.AT_BIND_S in clause[0]._data:
+            if util.AT_BIND_S in negClause[0]._data:
                 reset_start_contexts = contexts.set_all_alts(binding=clause[0]._value)
             else:
                 reset_start_contexts = contexts.set_all_alts(target=self._internal_trie._root)

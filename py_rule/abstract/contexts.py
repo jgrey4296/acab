@@ -56,7 +56,7 @@ class Contexts:
 
     def set_all_alts(self, target=None, binding=None):
         """ Duplicate the Contexts, with a specific node as the current leaf """
-        assert(target or binding)
+        assert (target is not None or binding)
         newContexts = Contexts()
         for (data, lastNode) in self._matches:
             if target is not None:
