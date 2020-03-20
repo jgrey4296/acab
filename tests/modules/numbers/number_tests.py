@@ -7,7 +7,7 @@ from test_context import py_rule
 class NumberTests(unittest.TestCase):
 
     @classmethod
-    def setUpClas(cls):
+    def setUpClass(cls):
         return
 
     def setUp(self):

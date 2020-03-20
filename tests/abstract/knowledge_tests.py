@@ -8,7 +8,7 @@ from py_rule.abstract.node import PyRuleNode
 class KnowledgeBase_Tests(unittest.TestCase):
 
     @classmethod
-    def setUpClas(cls):
+    def setUpClass(cls):
         return
 
     def setUp(self):
