@@ -7,14 +7,14 @@ CACHES := $(shell find ./py_rule -name '*__pycache__')
 all: verbose
 
 verbose:
-	python -m unittest discover -p "*_tests.py" -v
+	python -m unittest discover -s ./py_rule -p "*_tests.py" -v
 
 faily:
-	python -m unittest discover -p "*_tests.py" -v -f
+	python -m unittest discover -s ./py_rule -p "*_tests.py" -v -f
 
 # use as: make pattern PAT="X"
 pattern:
-	python -m unittest discover -p "*_tests.py" -v -f -k ${PAT}
+	python -m unittest discover -s ./py_rule -p "*_tests.py" -v -f -k ${PAT}
 
 # make init py's as necessary
 init:
