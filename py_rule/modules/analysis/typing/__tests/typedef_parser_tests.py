@@ -15,11 +15,11 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        FP.TYPE_ANNOTATION << TP.TYPEDEC_CORE
-        TP.BASIC_SEN << FP.BASIC_SEN
-        TD.VALBIND << FP.VALBIND
-        TD.BASIC_SEN << FP.BASIC_SEN
-        TD.PARAM_SEN << FP.PARAM_SEN
+        FP.HOTLOAD_ANNOTATIONS << TP.TYPEDEC_CORE
+        TP.HOTLOAD_BASIC_SEN << FP.BASIC_SEN
+        TD.HOTLOAD_VALBIND << FP.VALBIND
+        TD.HOTLOAD_BASIC_SEN << FP.BASIC_SEN
+        TD.HOTLOAD_PARAM_SEN << FP.PARAM_SEN
 
     def setUp(self):
         return 1
@@ -38,7 +38,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         result = TD.parseString('σ::blah:\n\na.b.c\n\nend')[0]
         self.assertIsInstance(result[1], TypeDefinition)
         self.assertEqual(len(result[1]._vars), 0)
-        self.assertEqual(result[1]._name._value, "blah")
+        self.assertEqual(result[1]._name[0]._value, "blah")
         self.assertEqual(len(result[1]._structure), 1)
 
     def test_typedef_with_variable(self):
@@ -67,7 +67,9 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
 
 
     def test_op_def_parse(self):
-        result = TD.parseString('λ::AddOp: $x(::Num).$x.$x => +')
+        the_string = 'λ::AddOp: $x(::Num).$x.$x => +'
+
+        result = TD.OP_DEF.parseString(the_string)
 
 
 

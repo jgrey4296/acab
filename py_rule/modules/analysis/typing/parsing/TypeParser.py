@@ -20,14 +20,14 @@ def make_type_dec(toks):
           and baseName._data[TYU.TYPE_DEC_S] is not None):
         args.append(baseName._type)
         del baseName._data[TYU.TYPE_DEC_S]
-    return (TYU.TYPE_DEC_S, TypeInstance(baseName, path, args))
+    return (TYU.TYPE_DEC_S, TypeInstance(baseName, args))
 
 # BASIC SENTENCE NEEDS TO BE POPULATED
 # eg: py_rule.working_memory.trie_wm.parsing.FactParser.basic_fact_string
-BASIC_SEN= pp.Forward()
+HOTLOAD_BASIC_SEN= pp.Forward()
 TYPEDEC_CORE = pp.Forward()
 
-TYPEDEC_CORE <<= PU.DBLCOLON + PU.N(TYU.SEN_S, BASIC_SEN) \
+TYPEDEC_CORE <<= PU.DBLCOLON + PU.N(TYU.SEN_S, HOTLOAD_BASIC_SEN) \
     + PU.N(TYU.ARG_S, PU.op(PU.OPAR
                       + pp.delimitedList(TYPEDEC_CORE,
                                          TYU.DELIM_S,
