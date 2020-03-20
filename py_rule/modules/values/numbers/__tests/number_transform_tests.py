@@ -17,6 +17,7 @@ from py_rule.modules.values.numbers.number_module import NumberSpecification
 from py_rule.working_memory.trie_wm.trie_working_memory import TrieWM
 from py_rule.working_memory.trie_wm import util as KBU
 
+
 class NumberTests(unittest.TestCase):
     os = None
     ns = None

@@ -8,6 +8,7 @@ from py_rule.abstract.trie.nodes.trie_node import TrieNode
 import py_rule.error.type_exceptions as te
 from py_rule.modules.analysis.typing import util as TU
 
+
 def S(*in_string):
     return Sentence([TrieNode(x) for x in in_string])
 

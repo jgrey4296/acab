@@ -8,6 +8,7 @@ from py_rule.abstract.rule import Rule
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.query import Query
 
+
 class Trie_Rule_Parser_Tests(unittest.TestCase):
 
     @classmethod

@@ -6,6 +6,7 @@ import py_rule.working_memory.trie_wm.parsing.TransformParser as TP
 import py_rule.working_memory.trie_wm.parsing.ActionParser as AP
 from math import isclose
 
+
 class Engine_Tests(unittest.TestCase):
 
     def setUp(self):

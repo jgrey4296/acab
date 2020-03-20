@@ -7,6 +7,7 @@ from py_rule.working_memory.trie_wm.parsing import ActionParser as AP
 from py_rule.modules.operators.action import action_operators as act_ops
 from py_rule.abstract import action
 
+
 class ActionTests(unittest.TestCase):
 
     @classmethod

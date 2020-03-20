@@ -9,6 +9,7 @@ from py_rule.modules.structures.time.util import Time as t
 from py_rule.abstract.parsing import util as PU
 from py_rule.util import BIND_S
 
+
 class TestTime(unittest.TestCase):
 
     @classmethod

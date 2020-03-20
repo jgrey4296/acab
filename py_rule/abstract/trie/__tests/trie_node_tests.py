@@ -3,6 +3,7 @@ from os.path import splitext, split
 import logging
 from py_rule.abstract.trie.nodes.trie_node import TrieNode
 
+
 class TrieNodeTests(unittest.TestCase):
 
     def setUp(self):

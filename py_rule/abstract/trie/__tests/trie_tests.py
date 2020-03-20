@@ -3,6 +3,7 @@ import logging
 from py_rule.abstract.trie.trie import Trie
 from py_rule.abstract.trie.nodes.trie_node import TrieNode
 
+
 class TrieTests(unittest.TestCase):
 
     def setUp(self):

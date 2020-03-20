@@ -7,6 +7,7 @@ from py_rule.abstract.trie.nodes.trie_node import TrieNode
 from py_rule.abstract.sentence import Sentence
 from py_rule.working_memory.trie_wm import util as KBU
 
+
 class Trie_Fact_Parser_Tests(unittest.TestCase):
 
     @classmethod
