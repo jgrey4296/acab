@@ -6,20 +6,18 @@ from py_rule.abstract.sentence import Sentence
 class TypeDefinition(Type):
     """ Defines the Structure of a type """
 
-    def __init__(self, name, path, structure, tvars):
+    def __init__(self, name, structure, tvars):
         """ Structure creates the dict of locations.
         Only leaves get type anotations. Thus:
         { .a.$x :: String, .b.$c :: Num, .d!$e::Location }
         """
         # The name is the location. eg: .types.person
-        assert isinstance(name, str)
-        assert isinstance(path, Sentence)
+        assert isinstance(name, Sentence)
         assert isinstance(structure, list)
         assert all([isinstance(x, Sentence) for x in structure])
         assert isinstance(tvars, list)
 
         self._name = name
-        self._path = path
         # TODO unify shared variables across structure sentences to have
         # the same type
         self._structure = structure
@@ -43,4 +41,4 @@ class TypeDefinition(Type):
         return "Type Def({})".format(str(self))
 
     def build_type_declaration(self):
-        return TypeInstance(self._name, self._path, self._vars[:])
+        return TypeInstance(self._name, args=self._vars[:])

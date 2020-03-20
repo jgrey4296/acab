@@ -5,20 +5,15 @@ class TypeInstance(Type):
     """ A Type Instance can be polytyped or monotyped """
     TypeCounter = 0
 
-    def __init__(self, name=None, path=None, args=None):
-        """ Construct a Type Instance with a name,
-        and its path in the type trie,
-        """
-        if path is None:
-            path = name
+    def __init__(self, name=None, args=None):
+        """ Construct a Type Instance with a name in the type trie """
         if args is None:
             args = []
         self._name = name
-        self._path = path
         self._args = args
 
     def __hash__(self):
-        return hash("".join([str(x) for x in self._path]))
+        return hash(str(self._name))
 
     def __repr__(self):
         args = ""
@@ -49,9 +44,8 @@ class TypeInstance(Type):
         if str(self) in the_dict:
             new_type = the_dict[str(self)]
             return TypeInstance(new_type._name,
-                                new_type._path,
                                 new_type._args)
 
         new_args = [the_dict[x.value_string()] if x.value_string() in the_dict
                     else x for x in self._args]
-        return TypeInstance(self._name, self._path, new_args)
+        return TypeInstance(self._name, new_args)
