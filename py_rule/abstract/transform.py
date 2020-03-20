@@ -38,7 +38,7 @@ class TransformComponent:
     """ Superclass of OperatorTransform. Holds an Operator """
     def __init__(self, op_str, params):
         assert(isinstance(params, tuple))
-        self._op_str = op_str
+        self._op  = op_str
         assert(not any([util.AT_BIND_S in x._data for x in params]))
         self._params = params
         self._rebind = None
@@ -47,7 +47,7 @@ class TransformComponent:
         """ Replace the current op func set with a specific
         op func, used for type refinement """
         assert(op_str in TransformOp.op_list)
-        self._op_func = op_str
+        self._op = op_str
 
     def to_sentence(self):
         head = PyRuleNode(self._op_str, { 'source' : self})
@@ -64,7 +64,7 @@ class OperatorTransform(TransformComponent):
         return "Transform({})".format(str(self))
 
     def __str__(self):
-        op = self._op_str
+        op = self._op
         source = [x.opless_print() if isinstance(x, PyRuleNode)
                   else str(x) for x in self._params]
         if self._rebind is not None:
@@ -89,8 +89,8 @@ class OperatorTransform(TransformComponent):
 
     def verify_op(self):
         """ Complains if the operator is not a defined Operator Enum """
-        if self._op_str not in TransformOp.op_list:
-            raise SyntaxError("Unknown Op: {}".format(self._op_str))
+        if self._op not in TransformOp.op_list:
+            raise SyntaxError("Unknown Op: {}".format(self._op))
 
     def set_rebind(self, bind):
         """ Set this transform to rebind its result to a different variable """
@@ -98,7 +98,7 @@ class OperatorTransform(TransformComponent):
         self._rebind = bind
 
     def __call__(self, ctx):
-        op_func = TransformOp.op_list[self._op_str]
+        op_func = TransformOp.op_list[self._op]
         params = [ctx[y._value] if y._data[util.BIND_S] else y._value for y in self._params]
 
         return op_func(*params, ctx)
