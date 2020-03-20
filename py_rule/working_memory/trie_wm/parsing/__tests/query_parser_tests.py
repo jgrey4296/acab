@@ -1,6 +1,5 @@
 import unittest
 import logging
-from test_context import py_rule
 import py_rule.working_memory.trie_wm.parsing.QueryParser as QP
 from py_rule.abstract.query import Query
 from py_rule.abstract.sentence import Sentence

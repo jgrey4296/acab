@@ -2,7 +2,6 @@
 from os.path import splitext, split
 import unittest
 import logging
-from test_context import py_rule
 
 
 class SandboxAgendaTests(unittest.TestCase):

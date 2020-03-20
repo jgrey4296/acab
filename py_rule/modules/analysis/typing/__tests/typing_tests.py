@@ -1,6 +1,5 @@
 import unittest
 import logging
-from test_context import py_rule
 from py_rule.modules.analysis.typing.type_checker import TypeChecker
 from py_rule.modules.analysis.typing.type_definition import TypeDefinition
 from py_rule.modules.analysis.typing.type_instance import TypeInstance

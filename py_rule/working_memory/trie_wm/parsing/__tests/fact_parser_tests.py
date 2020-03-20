@@ -2,7 +2,6 @@ import unittest
 import logging
 import random
 import pyparsing as pp
-from test_context import py_rule
 import py_rule.working_memory.trie_wm.parsing.FactParser as FP
 from py_rule.abstract.trie.nodes.trie_node import TrieNode
 from py_rule.abstract.sentence import Sentence

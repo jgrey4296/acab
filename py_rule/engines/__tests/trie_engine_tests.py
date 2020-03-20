@@ -1,6 +1,5 @@
 import unittest
 import logging
-from test_context import py_rule
 from py_rule.abstract.contexts import Contexts
 import py_rule.engines.trie_engine as T
 import py_rule.working_memory.trie_wm.parsing.TransformParser as TP

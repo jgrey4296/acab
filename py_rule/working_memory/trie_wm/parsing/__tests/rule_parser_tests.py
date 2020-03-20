@@ -1,6 +1,5 @@
 import unittest
 import logging
-from test_context import py_rule
 from py_rule.working_memory.trie_wm import util as KBU
 from py_rule.working_memory.trie_wm.parsing import RuleParser as RP
 from py_rule.working_memory.trie_wm.parsing import FactParser as FP

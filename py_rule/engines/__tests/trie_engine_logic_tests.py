@@ -1,6 +1,5 @@
 import unittest
 import logging
-from test_context import py_rule
 import py_rule.abstract.trie as T
 from py_rule.engines.trie_engine import TrieEngine
 from os.path import join, isfile, exists, isdir

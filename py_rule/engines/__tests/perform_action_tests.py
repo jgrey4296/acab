@@ -2,7 +2,6 @@
 from os.path import splitext, split
 import unittest
 import logging
-from test_context import py_rule
 from py_rule.engines.trie_engine import TrieEngine
 from py_rule.working_memory.trie_wm.parsing import ActionParser as AP
 from py_rule.modules.operators.action import action_operators as act_ops

@@ -1,6 +1,5 @@
 import unittest
 import logging
-from test_context import py_rule
 from py_rule.working_memory.trie_wm.parsing import ActionParser as AP
 from py_rule.working_memory.trie_wm.parsing import FactParser as FP
 from py_rule.modules.operators.operator_module import OperatorSpec

@@ -1,6 +1,5 @@
 import unittest
 import logging
-from test_context import py_rule
 from py_rule.abstract.trie.trie import Trie
 from py_rule.abstract.trie.nodes.trie_node import TrieNode
 

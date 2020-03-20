@@ -1,6 +1,5 @@
 import unittest
 import logging
-from test_context import py_rule
 import pyparsing as pp
 from py_rule.modules.time.arc import Arc
 from py_rule.modules.time.event import Event

@@ -2,11 +2,6 @@
 from os.path import splitext, split
 import unittest
 import logging
-from test_context import py_rule
-from os.path import splitext, split
-import unittest
-import logging
-from test_context import py_rule
 from py_rule.modules.values.numbers.parsing import NumberParser as NP
 from py_rule.working_memory.trie_wm.parsing import ActionParser as AP
 from py_rule.working_memory.trie_wm.parsing import TransformParser as TP

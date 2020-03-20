@@ -1,4 +1,3 @@
-from test_context import py_rule
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.trie.nodes.trie_node import TrieNode
 from py_rule.working_memory.trie_wm.parsing import FactParser as FP

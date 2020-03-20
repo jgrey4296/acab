@@ -1,6 +1,5 @@
 import unittest
 import logging
-from test_context import py_rule
 from py_rule.working_memory.trie_wm.trie_working_memory import TrieWM
 from py_rule.modules.operators.operator_module import OperatorSpec
 from py_rule.abstract.contexts import Contexts
