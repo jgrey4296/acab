@@ -11,7 +11,7 @@ class OperatorDefinition(TypeDefinition):
         with the binding to a ProductionOperator that is
         syntax sugared, and its inline place"""
         # eg: operator.+.$x(::num).$y(::num).$z(::num).num_plus
-        super().__init__(name, [structure], None)
+        super().__init__(name, [structure], [])
         self._func_name = sugar_syntax
         self._op_str = name
 
