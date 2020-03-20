@@ -29,9 +29,9 @@ PATTERN_S    = "pattern"
 # Trie Root Node Name
 ROOT_S       = "__root"
 
-# Operator Constants
-SUB_S        = '-'
-UNDERSCORE_S = "_"
+# Parser Constants
+WORD_COMPONENT_S  = pp.alphas + "_"
+OPERATOR_SYNTAX_S = "%^&*_-+={}[]|<>?~§';⊂⊃∨∧⧼⧽¿£ΔΣΩ∩∪√∀∈∃¬∄⟙⟘⊢∴◇□⚬"
 
 # Rule Constants
 LAYER_QUERY_RULE_BIND_S = "rule"

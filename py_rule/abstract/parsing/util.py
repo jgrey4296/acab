@@ -46,7 +46,8 @@ OPAR      = s(pp.Literal('('))
 CPAR      = s(pp.Literal(')'))
 QMARK     = s(pp.Literal('?'))
 SLASH     = s(pp.Literal('/'))
-SUB       = s(pp.Literal(util.SUB_S))
+DASH      = s(pp.Literal('-'))
+# Careful: This isn't suppressed
 TILDE     = pp.Literal('~')
 OBRACKET  = s(pp.Literal('['))
 CBRACKET  = s(pp.Literal(']'))
@@ -59,7 +60,7 @@ STRUCT_HEAD  = s(pp.Literal(util.STRUCTURE_S))
 FUNC_HEAD    = s(pp.Literal(util.FUNC_S))
 
 # Basic Parsers
-NAME        = pp.Word(pp.alphas + util.UNDERSCORE_S)
+NAME        = pp.Word(util.WORD_COMPONENT_S)
 NAME.setParseAction(lambda t: (util.NAME_S, t[0]))
 
 STRING      = pp.dblQuotedString
@@ -72,3 +73,5 @@ REGEX.setParseAction(lambda t: (util.REGEX_S, t[0][1:-1]))
 BASIC_VALUE = pp.Or([NAME, STRING, REGEX])
 BIND        = DOLLAR + NAME
 AT_BIND     = AT + NAME
+
+OPERATOR_SUGAR = pp.Word(util.OPERATOR_SYNTAX_S)
