@@ -47,7 +47,7 @@ class WeightBalance:
         #give each value in chain a range based on bins from the distribution function
         xs = [x.value.key for x in chain]
         ys = self.dist(self.range[0], self.range[1], len(xs))
-        #todo: turn these into ranges?
+        #TODO: turn these into ranges?
         self.weights = { x : y for (x,y) in zip(xs, ys) }
 
     def __getitem__(self, key):
@@ -79,7 +79,7 @@ class WeightBalance:
                 errors += 1
                 precision[comp.a] += 1
                 precision[comp.b] += 1
-        #todo: normalise precision by number of comps per key
+        #TODO: normalise precision by number of comps per key
 
         return (errors / len(self.data), precision)
 

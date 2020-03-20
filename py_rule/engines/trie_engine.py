@@ -35,8 +35,8 @@ class TrieEngine(Engine):
     and the history of the agent. Performs actions that are registered
     """
 
-    def __init__(self, path=None, init=None):
-        super().__init__(TrieWM, path=path, init=init)
+    def __init__(self, modules=None, path=None, init=None):
+        super().__init__(TrieWM, modules=modules, path=path, init=init)
 
     def load_file(self, filename):
         """ Given a filename, read it, and interpret it as an EL DSL string """

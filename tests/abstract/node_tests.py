@@ -5,6 +5,7 @@ import logging
 from test_context import py_rule
 from py_rule.abstract.node import PyRuleNode
 
+
 class PyRuleNodeTests(unittest.TestCase):
 
     @classmethod

@@ -5,7 +5,8 @@ import logging
 from test_context import py_rule
 from py_rule.abstract.node import PyRuleNode
 
-class KnowledgeBase_Tests(unittest.TestCase):
+
+class WorkingMemoryTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):

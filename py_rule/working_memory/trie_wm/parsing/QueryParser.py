@@ -73,6 +73,8 @@ fallback = PU.DOUBLEBAR + assignmentList
 QueryCore = PARAM_CORE(constraints)
 QueryCore_end = PARAM_CORE(constraints, end=True)
 
+# TODO add syntax for binding a sentence
+# TODO add syntax for binding all leaves
 # Core Query Chain
 clause = PU.op(NOT) + PU.N(WMU.MAIN_CLAUSE_S, pp.ZeroOrMore(QueryCore)
                               + QueryCore_end) \

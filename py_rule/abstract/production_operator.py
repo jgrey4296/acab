@@ -13,6 +13,7 @@ class ProductionOperator(PyRuleValue):
     def __init__(self, num_params=2, infix=False):
         self._op_str = self.__class__.__name__
         self._num_params = num_params
+        # TODO use infix
         self._infix = infix
 
     def __call__(self):

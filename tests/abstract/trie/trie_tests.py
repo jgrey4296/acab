@@ -82,6 +82,7 @@ class TrieTests(unittest.TestCase):
 
         self.assertEqual(len(matches), 2)
 
+
 def pattern_match_fn(head, available):
     if head._value == "a":
         return available

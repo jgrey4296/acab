@@ -19,7 +19,7 @@ class TypingSpec(ModuleSpecification):
         return TP.parseString(s)
 
     def construct_operators(self):
-        # TODO 
+        # TODO
         return
 
 
@@ -30,4 +30,3 @@ class TypingSpec(ModuleSpecification):
         # TODO : add rules to type checker
         # TODO : type_checker validate
         return []
-
