@@ -43,14 +43,14 @@ class NumberTests(unittest.TestCase):
     def test_basic_transform_core(self):
         result = TP.transform_core.parseString('$x AddOp 20')[0]
         self.assertIsInstance(result, transform.OperatorTransform)
-        self.assertEqual(result._op_str, "AddOp")
+        self.assertEqual(result._op, "AddOp")
         self.assertEqual(len(result._params), 2)
 
 
     def test_basic_transform_core_rebind(self):
         result = TP.transform_core.parseString('$y MulOp 20 -> $z')[0]
         self.assertIsInstance(result, transform.OperatorTransform)
-        self.assertEqual(result._op_str, "MulOp")
+        self.assertEqual(result._op, "MulOp")
         self.assertEqual(result._params[0]._value, "y")
         self.assertTrue(result._params[0]._data[KBU.BIND_S])
         self.assertEqual(result._params[1]._value, 20)
@@ -68,7 +68,7 @@ class NumberTests(unittest.TestCase):
         result = TP.parseString('$x AddOp 20')
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result._components), 1)
-        self.assertEqual(result._components[0]._op_str, "AddOp")
+        self.assertEqual(result._components[0]._op, "AddOp")
         self.assertEqual(result._components[0]._params[0]._value, 'x')
         self.assertEqual(result._components[0]._params[1]._value, 20)
         self.assertIsNone(result._components[0]._rebind)
@@ -78,25 +78,25 @@ class NumberTests(unittest.TestCase):
         result = TP.parseString('$x AddOp 20 -> $y')
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result._components), 1)
-        self.assertEqual(result._components[0]._op_str, "AddOp")
+        self.assertEqual(result._components[0]._op, "AddOp")
         self.assertEqual(result._components[0]._params[0]._value, 'x')
         self.assertEqual(result._components[0]._params[1]._value, 20)
         self.assertEqual(result._components[0]._rebind._value, 'y')
 
     def test_unary_round(self):
         result = TP.parseString('RoundOp $x')
-        self.assertEqual(result._components[0]._op_str, 'RoundOp')
+        self.assertEqual(result._components[0]._op, 'RoundOp')
 
     def test_binary_rand_operator(self):
         result = TP.parseString('$x RandOp $y')
         self.assertEqual(len(result._components), 1)
-        self.assertEqual(result._components[0]._op_str, 'RandOp')
+        self.assertEqual(result._components[0]._op, 'RandOp')
 
     def test_unary_operator(self):
         result = TP.parseString('NegOp $x')
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result._components), 1)
-        self.assertEqual(result._components[0]._op_str, "NegOp")
+        self.assertEqual(result._components[0]._op, "NegOp")
         self.assertEqual(result._components[0]._params[0]._value, "x")
         self.assertIsNone(result._components[0]._rebind)
 
@@ -104,7 +104,7 @@ class NumberTests(unittest.TestCase):
         result = TP.parseString('NegOp $x -> $y')
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result._components), 1)
-        self.assertEqual(result._components[0]._op_str, "NegOp")
+        self.assertEqual(result._components[0]._op, "NegOp")
         self.assertEqual(result._components[0]._params[0]._value, "x")
         self.assertIsNotNone(result._components[0]._rebind)
         self.assertEqual(result._components[0]._rebind._value, 'y')

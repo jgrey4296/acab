@@ -16,7 +16,7 @@ def construct_num(toks):
 
 
 
-NUM = pp.Word(pp.nums + util.SUB_S + util.DECIMAL_S)
+NUM = pp.Word(pp.nums + '-' + util.DECIMAL_S)
 NUM.setParseAction(construct_num)
 
 def parseString(s):

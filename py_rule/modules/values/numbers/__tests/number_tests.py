@@ -2,6 +2,7 @@
 from os.path import splitext, split
 import unittest
 import logging
+from py_rule.working_memory.trie_wm.parsing import RuleParser as RP
 
 class NumberTests(unittest.TestCase):
 
@@ -16,6 +17,7 @@ class NumberTests(unittest.TestCase):
         return 1
 
     #----------
+    @unittest.skip("Example")
     def test_bdi_rule_parse(self):
         rulestr = """
 bdi.blah:
@@ -25,8 +27,8 @@ bdi.blah:
     $x + 2 -> $y
     ~{} "Hello: {x}" -> $z
 
-    @($z)
-    +(count!$y)
+    @ ($z)
+    + (count!$y)
 end
         """.strip()
         result = RP.parseString(rulestr)[0]
