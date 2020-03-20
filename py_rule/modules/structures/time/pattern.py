@@ -8,8 +8,8 @@ from math import floor
 from random import Random
 
 from py_rule.abstract.value import PyRuleValue
-from py_rule.modules.time.arc import Arc
-from py_rule.modules.time.event import Event
+from py_rule.modules.structures.time.arc import Arc
+from py_rule.modules.structures.time.event import Event
 
 from .pattern_iterator import PatternIterator
 from .util import TIME_T, Time, f_gcd

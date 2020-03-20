@@ -1,11 +1,11 @@
 import unittest
 import logging
 from py_rule.util import VALUE_TYPE_S
-from py_rule.modules.time.parsing import parser as tp
+from py_rule.modules.structures.time.parsing import parser as tp
 from py_rule.working_memory.trie_wm.parsing import FactParser as fp
 from py_rule.abstract.sentence import Sentence
-from py_rule.modules.time.pattern import Pattern
-from py_rule.modules.time.parsing import parser as tp
+from py_rule.modules.structures.time.pattern import Pattern
+from py_rule.modules.structures.time.parsing import parser as tp
 from py_rule.abstract.parsing import util as PU
 
 class TrieIntegrationTimeTests(unittest.TestCase):
@@ -25,7 +25,7 @@ class TrieIntegrationTimeTests(unittest.TestCase):
     #----------
     #use testcase snippets
     def test_basic_parser_extension(self):
-        fp.OTHER_VALS << tp.main_pattern
+        fp.HOTLOAD_VALUES << tp.main_pattern
 
         a = fp.parseString("a.test.sentence.[[a b c $d]]")[0]
         self.assertIsInstance(a, Sentence)

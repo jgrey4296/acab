@@ -1,11 +1,11 @@
 import unittest
 import logging
 import pyparsing as pp
-from py_rule.modules.time.arc import Arc
-from py_rule.modules.time.event import Event
-from py_rule.modules.time.pattern import Pattern, PatternSeq, PatternPar
-from py_rule.modules.time.parsing import parser as tp
-from py_rule.modules.time.util import Time as t
+from py_rule.modules.structures.time.arc import Arc
+from py_rule.modules.structures.time.event import Event
+from py_rule.modules.structures.time.pattern import Pattern, PatternSeq, PatternPar
+from py_rule.modules.structures.time.parsing import parser as tp
+from py_rule.modules.structures.time.util import Time as t
 from py_rule.abstract.parsing import util as PU
 from py_rule.util import BIND_S
 

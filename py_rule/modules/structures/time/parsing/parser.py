@@ -4,8 +4,8 @@ A PyParsing parser to create patterns
 # from .pattern import Pattern
 # from .event import Event
 # from .arc import Arc
-from py_rule.modules.time.pattern_constructor import CTOR_ACT
-from py_rule.modules.time.pattern_constructor import construct_pattern_simple
+from py_rule.modules.structures.time.pattern_constructor import CTOR_ACT
+from py_rule.modules.structures.time.pattern_constructor import construct_pattern_simple
 from py_rule.abstract.parsing import util as PU
 from py_rule.util import BIND_S, VALUE_TYPE_S, VALUE_S, NAME_S, OPT_S, PATTERN_S
 from fractions import Fraction
