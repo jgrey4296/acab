@@ -39,6 +39,9 @@ class Sentence(PyRuleValue):
 
         return "{}{}{}".format(negated_str, result, fallback_str)
 
+    def __eq__(self, other):
+        return str(self) == str(other)
+
     def __repr__(self):
         return "Sentence({})".format(str(self))
 
