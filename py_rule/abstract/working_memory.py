@@ -6,7 +6,7 @@ from .mod_interface import ModuleSpecification
 
 
 class WorkingMemory:
-    """ The Abstract WorkingMemory """
+    """ The Abstract Working Memory """
 
     def __init__(self):
         self._have_added_types = False
