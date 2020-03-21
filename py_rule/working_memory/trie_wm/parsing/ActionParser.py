@@ -53,9 +53,9 @@ HOTLOAD_OPERATORS = pp.Forward()
 ACT_MACRO = PU.MACRO_HEAD + PU.DBLCOLON + CUSTOM
 
 # fact string with the option of binds
-vals = PARAM_SEN + pp.ZeroOrMore(PU.COMMA + PARAM_SEN)
+vals = pp.delimitedList(PARAM_SEN, delim=PU.COMMA)
 
-bindList = VALBIND + pp.ZeroOrMore(PU.COMMA + VALBIND)
+bindList = pp.delimitedList(VALBIND, delim=PU.COMMA)
 # action: [op](values)
 action = PU.N(WMU.OPERATOR_S, HOTLOAD_OPERATORS) \
     + PU.OPAR + PU.N(WMU.ACTION_VAL_S, vals) + PU.CPAR
@@ -66,7 +66,7 @@ actionMacroUse = ACT_MACRO + \
 actionsOrMacros = pp.Or([actionMacroUse, action])
 
 justActions = action + pp.ZeroOrMore(PU.COMMA + action)
-actions = actionsOrMacros + pp.ZeroOrMore(PU.COMMA + actionsOrMacros)
+actions = pp.delimitedList(actionsOrMacros, delim=PU.COMMA)
 
 action_definition = PU.NG(WMU.NAME_S, ACT_MACRO) + PU.OPAR \
                     + PU.NG(WMU.BIND_S, PU.op(bindList)) \

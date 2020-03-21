@@ -80,7 +80,7 @@ transform_core = PU.NG(WMU.TRANSFORM_S,
                               unary_transform_core])) \
                               + PU.op(PU.N(WMU.TARGET_S, rebind))
 
-transforms = transform_core + pp.ZeroOrMore(PU.COMMA + transform_core)
+transforms = pp.delimitedList(transform_core, delim=PU.COMMA)
 
 # Actions
 binary_transform_core.setParseAction(buildBinaryTransformComponent)

@@ -63,10 +63,10 @@ COMP_Internal.setParseAction(build_comparison)
 comp_or_typedef = pp.Or([PU.N(WMU.COMP_S, COMP_Internal),
                          PU.N(WMU.TYPE_DEC_S, HOTLOAD_ANNOTATIONS)])
 
-constraints = comp_or_typedef + PU.op(pp.OneOrMore(PU.COMMA + comp_or_typedef))
+constraints = pp.delimitedList(comp_or_typedef, delim=PU.COMMA)
 
 assignment = PU.BIND + PU.COLON + PARAM_SEN
-assignmentList = assignment + pp.ZeroOrMore(PU.COMMA + assignment)
+assignmentList = pp.delimitedList(assignment, delim=PU.COMMA)
 fallback = PU.DOUBLEBAR + assignmentList
 
 # core component of a query, a modified PARAM_SEN
@@ -82,7 +82,7 @@ clause = PU.op(NOT) + PU.N(WMU.MAIN_CLAUSE_S, pp.ZeroOrMore(QueryCore)
                               + PU.N(WMU.FALLBACK_S,
                                      PU.op(fallback))
 
-clauses = clause + pp.ZeroOrMore(PU.COMMA + clause)
+clauses = pp.delimitedList(clause, delim=PU.COMMA)
 
 # Actions
 constraints.setParseAction(build_constraint_list)

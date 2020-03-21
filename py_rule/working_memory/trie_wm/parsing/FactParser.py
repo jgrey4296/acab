@@ -85,8 +85,7 @@ BASIC_SEN = pp.ZeroOrMore(PARAM_CORE()) + PARAM_CORE(end=True)
 
 # Sentences with basic sentences as annotations
 PARAM_SEN = pp.ZeroOrMore(PARAM_BINDING_CORE) + PARAM_BINDING_END
-PARAM_SEN_PLURAL = PARAM_SEN \
-    + pp.ZeroOrMore(PU.COMMA + PARAM_SEN)
+PARAM_SEN_PLURAL = pp.delimitedList(PARAM_SEN, delim=PU.COMMA)
 
 # Actions
 PARAM_SEN.setParseAction(PU.construct_sentence)

@@ -60,7 +60,7 @@ rule = ruleName + PU.COLON + PU.sLn \
        + PU.op(conditions) + PU.op(transforms) + PU.op(actions) \
        + PU.end
 
-rules = rule + pp.ZeroOrMore(PU.emptyLine + rule)
+rules = pp.delimitedList(rule, delim=PU.emptyLine)
 
 # Actions:
 rule.setParseAction(build_rule)
