@@ -3,7 +3,7 @@
 """
 import logging as root_logger
 from .rule import Rule
-from .action import Action
+from . import action
 from .transform import Transform
 from .working_memory import WorkingMemory
 from py_rule import util as util
@@ -116,13 +116,13 @@ class Engine:
         for data in transformed:
             self._propose_actions(data, rule)
 
-    def _propose_actions(self, data, ruleOrActions):
+    def _propose_actions(self, data, rule):
         """ Enact, or propose, the action list
         or actions in a rule provided
         """
         assert(isinstance(data, dict))
-        assert(isinstance(ruleOrActions, (Rule, list)))
-        self._proposed_actions.append((data, ruleOrActions))
+        assert(isinstance(rules, Rule))
+        self._proposed_actions.append((data, rule))
 
     def _select_actions_by_agenda(self, agenda):
         """ Utilize a policy to select from proposed actions,
@@ -135,13 +135,13 @@ class Engine:
                     and isinstance(x[0], dict)
                     and isinstance(x[1], Rule) for x in selected]))
         for d, r in selected:
-            self._perform_actions(d, r._actions)
+            self._perform_actions(d, r._action)
 
-    def _perform_actions(self, data, actions):
+    def _perform_actions(self, data, act_set):
         """ Actual enaction of a set of actions """
-        assert(all([isinstance(x, Action) for x in actions]))
-        for x in actions:
-            x(self, data)
+        assert(isinstance(act_set, action.Action))
+        for x in act_set:
+                x(self, data)
 
     def _register_layers(self, layers):
         raise NotImplementedError()

@@ -1,6 +1,6 @@
 """ Simple comparison functions to be used in rules """
 import logging as root_logger
-from .production_operator import ProductionOperator
+from .production_operator import ProductionOperator, ProductionComponent
 from py_rule.util import BIND_S
 from .sentence import Sentence
 logging = root_logger.getLogger(__name__)
@@ -30,15 +30,14 @@ class CompOp(ProductionOperator):
         return "CompOp({})".format(str(self))
 
 
-class Comparison:
+class Comparison(ProductionComponent):
     """ Describe a Comparison of values and maybe a binding """
 
-    def __init__(self, op_str, value):
-        self._op = op_str
-        self._value = value
+    def __init__(self, op_str, param):
+        super(Comparison, self).__init__(op_str, [param])
 
     def __str__(self):
-        val = self._value.opless_print()
+        val = self._params[0].opless_print()
 
         retValue = "{} {}".format(str(self._op), val)
         return retValue
@@ -52,26 +51,26 @@ class Comparison:
         retValue = "Comparison({} {})".format(repr(self._op), repr(val))
         return retValue
 
+    def __call__(self, node, data=None):
+        """ Run a comparison on a node """
+        op = CompOp.op_list[self._op]
+        node_value = node._value
+        value = self._params[0]._value
+        if data is not None:
+            value = data[value]
+        return op(node_value, value)
+
     def copy(self):
         return Comparison(self._op, self._value)
 
     def is_alpha_test(self):
-        return self._value is not None and not self._value._data[BIND_S]
+        return bool(self._params) and not self._params[0]._data[BIND_S]
 
     def is_regex_test(self):
         return self._op is "RegMatch"
 
     def refine_operator(self, op_str):
         self._op = op_str
-
-    def __call__(self, node, data=None):
-        """ Run a comparison on a node """
-        op = CompOp.op_list[self._op]
-        node_value = node._value
-        value = self._value._value
-        if data is not None:
-            value = data[value]
-        return op(node_value, value)
 
     def to_sentence(self, target):
         """ Create a comparison as a canonical sentence """

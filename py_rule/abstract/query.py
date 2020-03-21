@@ -3,23 +3,18 @@ question to pose to the working memory
 """
 from py_rule.util import CONSTRAINT_S
 from .sentence import Sentence
-from .value import PyRuleValue
+from . import production_operator as PO
 from .comparison import Comparison
 
-class Query(PyRuleValue):
+class Query(PO.ProductionContainer):
     """ A Query for the working memory """
 
     def __init__(self, clauses):
         # ATTENTION: List of clauses, not List of tuples
         # [Clause]
         # Each clause is a list of tests and bindings
-        self._clauses = []
-        for clause in clauses:
-            assert(isinstance(clause, Sentence))
-            self._clauses.append(clause)
-
-    def __len__(self):
-        return len(self._clauses)
+        assert(all([isinstance(x, Sentence) for x in clauses]))
+        super(Query, self).__init__(clauses)
 
     def __repr__(self):
         clauseStrs = [repr(x) for x in self._clauses]
@@ -50,9 +45,10 @@ class Query(PyRuleValue):
                 pos.append(c)
         return (pos, neg)
 
-    def ops_to_sentences(self):
+    def to_sentences(self):
         """ Return all comparisons in canonical form """
         # eg : a.test.$x(>$y)? = > -> $x -> $y -> bool
+        # TODO should this actually be all *clauses*?
         constraint_words = [word for clause in self._clauses
                             for word in clause if CONSTRAINT_S in word._data]
         # for each constraint, create a sentence

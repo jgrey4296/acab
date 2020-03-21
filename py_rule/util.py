@@ -26,6 +26,10 @@ REGEX_S      = "regex"
 STRING_S     = "string"
 PATTERN_S    = "pattern"
 
+ACTION_S     = "action"
+QUERY_S      = "query"
+TRANSFORM_S  = "transform"
+
 # Trie Root Node Name
 ROOT_S       = "__root"
 

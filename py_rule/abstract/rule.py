@@ -18,41 +18,48 @@ class Rule(PyRuleValue):
     """
 
     __count = 0
-
-    def __init__(self, query, actions, transform=None, name=None, tags=None):
+    # TODO handle None's better
+    def __init__(self, query, action=None, transform=None, name=None, tags=None):
         assert(query is None or isinstance(query, Query))
-        assert(isinstance(actions, list))
-        assert(all([isinstance(x, (Action, ActionMacroUse)) for x in actions]))
+        assert(action is None or isinstance(action, Action))
         assert(transform is None or isinstance(transform, Transform))
         assert(tags is None or all([isinstance(x, str) for x in tags]))
         if name is not None:
-            self._name = name
-        self._query = query
+            self._name  = name
+        self._query     = query
         self._transform = transform
-        self._actions = actions
+        self._action    = action
         if tags is not None:
             self._tags = set(tags)
         else:
             self._tags = set()
+        Rule.__count += 1
 
     def __str__(self):
         nameStr = str(self._name)
+        # Construct Tags str
         if bool(self._tags):
             tagsStr = "\t" + ", ".join(sorted(["#{}".format(x)
                                                for x in self._tags])) + "\n\n"
         else:
             tagsStr = ""
+
+        # Construct Query Str
         if self._query is not None:
             queryStr = "\t" + str(self._query) + "\n\n"
         else:
             queryStr = ""
+
+        # Construct Transform Str
         if self._transform is not None:
             transformStr = "\t" + str(self._transform) + "\n\n"
         else:
             transformStr = ""
-        if bool(self._actions):
+
+        # Construct Action Str
+        if bool(self._action):
             actionsStr = "\t" + "\n\t".join([str(x)
-                                             for x in self._actions]) + "\n"
+                                             for x in self._action]) + "\n"
         else:
             actionsStr = ""
         return "{}:\n{}{}{}{}end".format(nameStr,
@@ -66,22 +73,30 @@ class Rule(PyRuleValue):
         Not implementation specific
         """
         nameStr = "".join([repr(x) for x in self._name])
+
+        # Construct Tag Str
         if bool(self._tags):
             tagsStr = "\t" + ", ".join(sorted(["#{}".format(x)
                                                for x in self._tags])) + "\n\n"
         else:
             tagsStr = ""
+
+        # Construct Query Str
         if self._query is not None:
             queryStr = "\t" + repr(self._query) + "\n\n"
         else:
             queryStr = ""
+
+        # Construct Transform Str
         if self._transform is not None:
             transformStr = "\t" + repr(self._transform) + "\n\n"
         else:
             transformStr = ""
-        if bool(self._actions):
+
+        # Construct Action Str
+        if bool(self._action):
             actionsStr = "\t" + "\n\t".join([repr(x)
-                                             for x in self._actions]) + "\n"
+                                             for x in self._action]) + "\n"
         else:
             actionsStr = ""
         return "{}:\n{}{}{}{}end".format(nameStr,
@@ -90,8 +105,8 @@ class Rule(PyRuleValue):
                                          transformStr,
                                          actionsStr)
 
-    def has_tag(self, t):
-        return t in self._tags
+    def has_tag(self, *tags):
+        return all([t in self._tags for t in tags])
 
     def is_coherent(self):  # can raise an Exception from verify_op
         """ Verify that the outputs of the query match the
@@ -99,8 +114,8 @@ class Rule(PyRuleValue):
         if self._transform is not None:
             self._transform.verify_ops()
 
-        if bool(self._actions):
-            verified = [x.verify_op() for x in self._actions]
+        if bool(self._action):
+            verified = [x.verify_op() for x in self._action]
         # if nothing raises an exception:
         return True
 
@@ -109,23 +124,36 @@ class Rule(PyRuleValue):
         bindings replaced with their values
         """
         assert(isinstance(bindings, dict))
+        new_query = None
+        new_action = None
+        # Transforms don't need to expand bindings
+        transform_copy = None
+
+        if self._transform is not None:
+            transform_copy = self._transform.copy()
+
         # expand the name
-        newName = self._name.expand_bindings(bindings)
+        new_name = self._name.expand_bindings(bindings)
         # expand the query
-        newQuery = self._query.expand_bindings(bindings)
+        if self._query is not None:
+            new_query = self._query.expand_bindings(bindings)
+
         # expand the actions
-        newActions = [x.expand_bindings(bindings) for x in self._actions]
-        return self.__class__(newQuery,
-                              newActions,
-                              transform=self._transform,
-                              name=newName,
+        if self._action is not None:
+            new_action = self._action.expand_bindings(bindings)
+
+
+        return self.__class__(new_query,
+                              new_action,
+                              transform=transform_copy,
+                              name=new_name,
                               tags=self._tags)
 
     def expand_action_macros(self, macros):
         """ Return a new Rule, where action macros have been expanded into
         the sequence of actions they represent """
         expandedActions = []
-        for action in self._actions:
+        for action in self._action:
             if isinstance(action, Action):
                 expandedActions.append(action)
             else:
@@ -140,7 +168,7 @@ class Rule(PyRuleValue):
                 # create the rebind dictionary
                 bindDict = util.build_rebind_dict(fPars, cPars)
                 # expand the individual actions
-                exActs = [x.expand_bindings(bindDict) for x in aMacro._actions]
+                exActs = [x.expand_bindings(bindDict) for x in aMacro._action]
                 # splice
                 expandedActions += exActs
 
