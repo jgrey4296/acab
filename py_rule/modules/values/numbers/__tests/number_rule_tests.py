@@ -73,7 +73,7 @@ class NumberTests(unittest.TestCase):
         self.assertIsInstance(result[0][1], Rule)
         self.assertIsNotNone(result[0][1]._query)
         self.assertIsNotNone(result[0][1]._transform)
-        self.assertEqual(len(result[0][1]._actions), 1)
+        self.assertEqual(len(result[0][1]._action), 1)
 
 
 

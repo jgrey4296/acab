@@ -59,23 +59,23 @@ class NumberTests(unittest.TestCase):
     def test_simple_transform_parse(self):
         result = TP.parseString("20 AddOp 30")
         self.assertIsInstance(result, transform.Transform)
-        self.assertEqual(result._components[0]._op, 'AddOp')
-        self.assertEqual([x._value for x in result._components[0]._params], [20, 30])
+        self.assertEqual(result._clauses[0]._op, 'AddOp')
+        self.assertEqual([x._value for x in result._clauses[0]._params], [20, 30])
 
 
     def test_custom_action_parse(self):
         result = AP.parseString("ActionBlah(20, 30, 40)")
         self.assertEqual(len(result), 1)
-        self.assertIsInstance(result[0], action.Action)
-        self.assertEqual(result[0]._op, "ActionBlah")
-        self.assertEqual([x[0]._value for x in result[0]._values], [20, 30, 40])
+        self.assertIsInstance(result, action.Action)
+        self.assertEqual(result._clauses[0]._op, "ActionBlah")
+        self.assertEqual([x[0]._value for x in result._clauses[0]._params], [20, 30, 40])
 
 
     def test_transform_parse(self):
         result = TP.parseString('2 AddOp 3, 3 SubOp 2, 2 MulOp 2')
         self.assertEqual(len(result), 3)
-        self.assertTrue(all([isinstance(x, transform.TransformComponent) for x in result._components]))
-        for parsed_action, op in zip(result._components, ['AddOp','SubOp', 'MulOp']):
+        self.assertTrue(all([isinstance(x, transform.TransformComponent) for x in result._clauses]))
+        for parsed_action, op in zip(result, ['AddOp','SubOp', 'MulOp']):
             self.assertEqual(parsed_action._op, op)
 
 

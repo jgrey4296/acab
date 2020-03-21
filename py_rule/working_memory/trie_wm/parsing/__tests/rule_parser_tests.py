@@ -78,7 +78,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertIsInstance(result[0][1], Rule)
             self.assertIsNone(result[0][1]._query)
             self.assertIsNone(result[0][1]._transform)
-            self.assertEqual(len(result[0][1]._actions), 1)
+            self.assertEqual(len(result[0][1]._action), 1)
 
     def test_multi_action_rule(self):
             result = RP.parseString("a.rule:\nActionAdd(a.b.c),\nActionRetract(a.b.d)\nend")
@@ -86,7 +86,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertIsInstance(result[0][1], Rule)
             self.assertIsNone(result[0][1]._query)
             self.assertIsNone(result[0][1]._transform)
-            self.assertEqual(len(result[0][1]._actions), 2)
+            self.assertEqual(len(result[0][1]._action), 2)
 
     def test_multi_action_single_line_rule(self):
             result = RP.parseString("a.rule:\nActionAdd(a.b.c), ActionRetract(a.b.d)\nend")
@@ -94,7 +94,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertIsInstance(result[0][1], Rule)
             self.assertIsNone(result[0][1]._query)
             self.assertIsNone(result[0][1]._transform)
-            self.assertEqual(len(result[0][1]._actions), 2)
+            self.assertEqual(len(result[0][1]._action), 2)
 
     def test_rule_simple_binding_expansion(self):
         bindings = { "x" : FP.parseString('a.b.c')[0] }

@@ -25,25 +25,28 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
     def test_string_value(self):
         result = AP.parseString('ActionAdd("blah bloo", "blee", "awef")')
         self.assertEqual(len(result), 1)
-        self.assertIsInstance(result[0], action.Action)
-        self.assertEqual(result[0]._op, "ActionAdd")
-        self.assertEqual([x[-1]._value for x in result[0]._values], ["blah bloo","blee","awef"])
+        self.assertIsInstance(result, action.Action)
+        self.assertEqual(result._clauses[0]._op, "ActionAdd")
+        self.assertEqual([x[-1]._value for x in result._clauses[0]._params], ["blah bloo","blee","awef"])
 
     def test_actions_fact_str(self):
         result = AP.parseString('ActionAdd(a.b.c), ActionRetract(a!b.d), ActionAdd($x), ActionAdd($x.a.b)')
         self.assertEqual(len(result), 4)
-        self.assertTrue(all([isinstance(x, action.Action) for x in result]))
+        self.assertIsInstance(result, action.Action)
+        self.assertTrue(all([isinstance(x, action.ActionComponent) for x in result]))
 
     def test_action_binding_expansion(self):
         bindings = {"x" : FP.parseString('a.b.c')[0] }
-        action = AP.parseString("ActionAdd($x)")[0]
-        newAction = action.expand_bindings(bindings)
-        self.assertEqual(str(newAction), "ActionAdd(a.b.c)")
+        parsed_action = AP.parseString("ActionAdd($x)")
+        bound_action= parsed_action.expand_bindings(bindings)
+        self.assertIsInstance(bound_action, action.Action)
+        self.assertEqual(str(bound_action), "ActionAdd(a.b.c)")
 
     def test_action_macro_definition_empty(self):
-        test_str = "μ::test():\n ActionAdd(a.b.c)\nend"
+        # TODO fix the double ()'s
+        test_str = "μ::test()():\n ActionAdd(a.b.c)\nend"
         definition = AP.action_definition.parseString(test_str)[0]
-        self.assertEqual(definition._name, "test")
+        self.assertEqual(str(definition), "test")
 
 
 if __name__ == "__main__":
