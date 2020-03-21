@@ -140,7 +140,7 @@ class FactNode(TrieNode):
         """ Test a regex on the Nodes value """
         # TODO possibly constrain this?
         assert(isinstance(self._value, str))
-        result = re.search(regex._value._value, self._value)
+        result = re.search(regex._params[0]._value, self._value)
         if result is not None:
             return result.groupdict()
         else:

@@ -24,25 +24,35 @@ def build_operators():
 # Constructor:
 def build_rule(toks):
     name = toks[WMU.RULE_NAME_S][0]
+    # Get Conditions
     if WMU.CONDITION_S in toks:
         c = toks[WMU.CONDITION_S][0]
     else:
         c = None
+
+    # Get Transform
     if WMU.TRANSFORM_S in toks:
         t = toks[WMU.TRANSFORM_S][0]
     else:
         t = None
+
+    # Get Action
     if WMU.ACTION_S in toks:
-        a = toks[WMU.ACTION_S][:]
+        a = toks[WMU.ACTION_S][0]
     else:
-        a = []
+        a = None
+
+    # Get Tags
     if WMU.TAG_S in toks:
         tags = [x[1] for x in toks[WMU.TAG_S]]
     else:
         tags = []
-    # wrap in sentence
-    rule = TrieRule(c, a, transform=t, name=name, tags=tags)
+
+
+    # TODO wrap in sentence
+    rule = TrieRule(c, action=a, transform=t, name=name, tags=tags)
     return (WMU.RULE_S, rule)
+
 
 ruleName = PU.NG(WMU.RULE_NAME_S, FP.PARAM_SEN)
 

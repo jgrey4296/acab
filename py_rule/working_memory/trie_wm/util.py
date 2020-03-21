@@ -17,6 +17,8 @@ OPT_S        = util.OPT_S
 REGEX_S      = util.REGEX_S
 RULE_S       = util.RULE_S
 
+
+
 NODE_S        = "node"
 COMP_S        = 'comparison'
 NOT_S         = 'NOT'
@@ -28,12 +30,12 @@ LEFT_S        = "left"
 RIGHT_S       = "right"
 SOURCE_S      = "source"
 REPLACE_S     = "replace"
-TRANSFORM_S   = "transform"
+TRANSFORM_S   = util.TRANSFORM_S
 TARGET_S      = "target"
 ANNOTATION_S  = "annotations"
 RULE_NAME_S   = "rule_name"
 CONDITION_S   = "conditions"
-ACTION_S      = "action"
+ACTION_S      = util.ACTION_S
 ACTION_VAL_S  = "action_values"
 TAG_S         = "tag"
 

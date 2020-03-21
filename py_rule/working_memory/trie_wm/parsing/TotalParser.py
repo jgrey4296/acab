@@ -7,7 +7,6 @@ from pyparsing import pyparsing_common as ppc
 
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.value import PyRuleValue
-from py_rule.abstract.action import ActionMacro
 from py_rule.abstract.rule import Rule
 from py_rule.working_memory.trie_wm import util as WMU
 from py_rule.abstract.parsing import util as PU
@@ -36,8 +35,9 @@ def final_pass(toks):
         assertions.append(x)
         if isinstance(x[-1]._value, Rule):
             rules.append(x)
-        elif isinstance(x[-1]._value, ActionMacro):
-            action_macros[x._name] = x
+        # TODO reimplement this
+        # elif isinstance(x[-1]._value, ActionMacro):
+        #     action_macros[x._name] = x
 
     #everything has been parsed,
     #clear the parse bindings as a guard:

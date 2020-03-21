@@ -1,7 +1,7 @@
 """ Trie-based parser for the transform component of rules """
 import logging as root_logger
 import pyparsing as pp
-from py_rule.abstract.transform import OperatorTransform
+from py_rule.abstract.transform import TransformComponent
 from py_rule.abstract.transform import Transform, TransformOp
 from py_rule.abstract.parsing import util as PU
 from py_rule.working_memory.trie_wm import util as WMU
@@ -31,21 +31,21 @@ def build_operators():
 
 
 def buildBinaryTransformComponent(toks):
-    return OperatorTransform(toks[WMU.OPERATOR_S],
-                             (toks[WMU.LEFT_S],
-                              toks[WMU.RIGHT_S]))
+    return TransformComponent(toks[WMU.OPERATOR_S],
+                             [toks[WMU.LEFT_S],
+                              toks[WMU.RIGHT_S]])
 
 
 def buildUnaryTransformComponent(toks):
-    return OperatorTransform(toks[WMU.OPERATOR_S],
-                             tuple([toks[WMU.RIGHT_S]]))
+    return TransformComponent(toks[WMU.OPERATOR_S],
+                             [toks[WMU.RIGHT_S]])
 
 
 def buildTernaryTransformComponent(toks):
-    return OperatorTransform(toks[WMU.OPERATOR_S],
-                             (toks[WMU.SOURCE_S],
+    return TransformComponent(toks[WMU.OPERATOR_S],
+                             [toks[WMU.SOURCE_S],
                               toks[WMU.REGEX_S],
-                              toks[WMU.REPLACE_S]))
+                              toks[WMU.REPLACE_S]])
 
 
 def addRebind(toks):

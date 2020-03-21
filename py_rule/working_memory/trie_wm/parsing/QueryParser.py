@@ -28,7 +28,7 @@ def build_constraint_list(toks):
 
 def build_comparison(toks):
     """ Build a comparison """
-    return C.Comparison(toks[WMU.OPERATOR_S], value=toks[WMU.VALUE_S])
+    return C.Comparison(toks[WMU.OPERATOR_S], param=toks[WMU.VALUE_S])
 
 
 def build_clause(toks):
