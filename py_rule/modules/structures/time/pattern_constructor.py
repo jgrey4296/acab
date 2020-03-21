@@ -39,12 +39,15 @@ def construct_pattern_simple(orig_tokens):
     patt_type = Pattern
     # TODO: detect different pattern types?
     tokens = orig_tokens[0][:]
+
+    # Detect Initial Pattern Type
     start = tokens.pop(0)
     if start is CTOR_ACT.CSTART:
         patt_type = PatternChoice
     elif CTOR_ACT.PDUAL in tokens:
         patt_type = PatternPar
 
+    # Detect Option Notation
     if OPT_S in orig_tokens[0]:
         final_pattern_data[OPT_S] = True
         tokens.pop()
@@ -57,6 +60,8 @@ def construct_pattern_simple(orig_tokens):
         pattern_phs.append(tokens[:index])
         tokens = tokens[index:]
         tokens.pop(0)
+
+    # Append everything following the last comma
     if bool(tokens):
         pattern_phs.append(tokens[:])
     assert(bool(pattern_phs))

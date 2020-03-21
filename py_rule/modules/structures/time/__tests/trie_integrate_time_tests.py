@@ -13,8 +13,8 @@ class TrieIntegrationTimeTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         #Hotload value and bind
-        tp.VALUE << PU.BASIC_VALUE
-        tp.BIND << PU.BIND
+        tp.HOTLOAD_VALUE << PU.BASIC_VALUE
+        tp.HOTLOAD_BIND << PU.BIND
 
     def setUp(self):
         return 1

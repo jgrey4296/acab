@@ -1,9 +1,6 @@
 """"
 A PyParsing parser to create patterns
 """
-# from .pattern import Pattern
-# from .event import Event
-# from .arc import Arc
 from py_rule.modules.structures.time.pattern_constructor import CTOR_ACT
 from py_rule.modules.structures.time.pattern_constructor import construct_pattern_simple
 from py_rule.abstract.parsing import util as PU
@@ -31,9 +28,8 @@ def make_valbind(tokens):
         data[OPT_S] = True
     return (value, data)
 
+
 # Base Syntax
-
-
 QUESTION = PU.QMARK.setResultsName(OPT_S)
 TILDE = PU.s(PU.TILDE)
 COMMA = PU.COMMA.copy()
@@ -45,11 +41,11 @@ MORE = PU.MORE.copy()
 acts = pp.Or([COMMA, PU.COLON, TILDE])
 
 # TO BE HOT LOADED:
-VALUE = pp.Forward()
-BIND = pp.Forward()
+HOTLOAD_VALUE = pp.Forward()
+HOTLOAD_BIND = pp.Forward()
 
-Time_VALBIND = pp.Or([PU.N(VALUE_S, VALUE),
-                      PU.N(BIND_S, BIND)]) + PU.op(QUESTION)
+Time_VALBIND = pp.Or([PU.N(VALUE_S, HOTLOAD_VALUE),
+                      PU.N(BIND_S, HOTLOAD_BIND)]) + PU.op(QUESTION)
 
 pattern_contents = pp.OneOrMore(pp.Or([Time_VALBIND, acts]))
 
