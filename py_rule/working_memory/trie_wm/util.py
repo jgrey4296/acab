@@ -13,29 +13,26 @@ STRING_S     = util.STRING_S
 VALUE_TYPE_S = util.VALUE_TYPE_S
 CONSTRAINT_S = util.CONSTRAINT_S
 OPERATOR_S   = util.OPERATOR_S
-OPT_S        = util.OPT_S
 REGEX_S      = util.REGEX_S
 RULE_S       = util.RULE_S
-
+NEGATION_S   = util.NEGATION_S
+FALLBACK_S   = util.FALLBACK_S
+QUERY_S      = util.QUERY_S
+TRANSFORM_S  = util.TRANSFORM_S
+ACTION_S     = util.ACTION_S
 
 
 NODE_S        = "node"
 COMP_S        = 'comparison'
-NOT_S         = 'NOT'
-TYPE_DEC_S    = "type_dec"
-TYPE_DEF_S    = "type_def"
-FALLBACK_S    = "fallback_bindings"
 MAIN_CLAUSE_S = "main_clause"
 LEFT_S        = "left"
 RIGHT_S       = "right"
 SOURCE_S      = "source"
 REPLACE_S     = "replace"
-TRANSFORM_S   = util.TRANSFORM_S
 TARGET_S      = "target"
 ANNOTATION_S  = "annotations"
 RULE_NAME_S   = "rule_name"
 CONDITION_S   = "conditions"
-ACTION_S      = util.ACTION_S
 ACTION_VAL_S  = "action_values"
 TAG_S         = "tag"
 

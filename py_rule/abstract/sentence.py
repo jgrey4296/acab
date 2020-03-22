@@ -2,7 +2,7 @@
 Defines a Sentence of Fact Words, which can be a query, and
 have fallback bindings
 """
-from py_rule.util import BIND_S, OPERATOR_S, AT_BIND_S
+from py_rule.util import BIND_S, OPERATOR_S, AT_BIND_S, NEGATION_S, FALLBACK_S, QUERY_S
 from .value import PyRuleValue
 from .node import PyRuleNode
 
@@ -11,39 +11,38 @@ class Sentence(PyRuleValue):
     The Basic Sentence Class: Essentially a List of Words
     """
 
-    def __init__(self, words=None, negated=False,
-                 fallback=None, is_query=False):
+    def __init__(self, words=None, data=None):
         self._words = []
-        self._negated = negated
-        self._fallback = []
-        self._is_query = is_query
+        self._data = {}
+        if data is not None:
+            self._data.update(data)
+
         if words is not None:
             assert(all([isinstance(x, PyRuleNode) for x in words]))
             assert(not any([AT_BIND_S in x._data for x in words[1:]]))
             self._words += words
-        if fallback is not None:
-            self._fallback += fallback[:]
 
+    # TODO update this
     def __str__(self):
         result = "".join([str(x) for x in self._words[:-1]])
         result += self._words[-1].opless_print()
-        if self._is_query:
+        if QUERY_S in self._data:
             result += "?"
         negated_str = ""
         fallback_str = ""
-        if bool(self._fallback):
+        if FALLBACK_S in self._data and self._data[FALLBACK_S] is not None:
             fallback_str = " || " + ", ".join(["${}:{}".format(x[0], x[1])
-                                               for x in self._fallback])
-        if self._negated:
+                                               for x in self._data[FALLBACK_S]])
+        if NEGATION_S in self._data and self._data[NEGATION_S]:
             negated_str = "~"
 
         return "{}{}{}".format(negated_str, result, fallback_str)
 
-    def __eq__(self, other):
-        return str(self) == str(other)
-
     def __repr__(self):
         return "Sentence({})".format(str(self))
+
+    def __eq__(self, other):
+        return str(self) == str(other)
 
     def __iter__(self):
         return iter(self._words)
@@ -81,17 +80,13 @@ class Sentence(PyRuleValue):
             copied_node._data[BIND_S] = False
             output.append(copied_node)
 
-        return Sentence(output,
-                        negated=self._negated,
-                        fallback=self._fallback,
-                        is_query=self._is_query)
+        return Sentence(output, data=self._data)
 
     def copy(self):
         words = self._words[:]
-        fallback = self._fallback[:]
-        return Sentence(words, self._negated,
-                        fallback, self._is_query)
+        return Sentence(words, data=self._data)
 
-    def add(self, other):
-        assert(isinstance(other, PyRuleNode))
-        self._words.append(other)
+    def add(self, *other):
+        for word in other:
+            assert(isinstance(word, PyRuleNode))
+            self._words.append(other)

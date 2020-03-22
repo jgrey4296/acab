@@ -11,10 +11,11 @@ BIND_S       = "bind"
 AT_BIND_S    = "at_bind_"
 CONSTRAINT_S = "constraints"
 OPERATOR_S   = "operator"
-OPT_S        = "opt"
 VALUE_S      = "value"
 VALUE_TYPE_S = "value_type"
 SEN_S        = "sentence"
+NEGATION_S = "negated"
+FALLBACK_S = "fallback"
 
 # Core Value Types
 FLOAT_S      = "float"
@@ -24,7 +25,6 @@ DECIMAL_S    = "d"
 
 REGEX_S      = "regex"
 STRING_S     = "string"
-PATTERN_S    = "pattern"
 
 ACTION_S     = "action"
 QUERY_S      = "query"

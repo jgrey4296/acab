@@ -33,26 +33,23 @@ def build_comparison(toks):
 
 def build_clause(toks):
     # detect negation and annotate the clause with it
+    data = { WMU.QUERY_S : True,
+             WMU.NEGATION_S : False,
+             WMU.FALLBACK_S : None }
     if WMU.FALLBACK_S in toks:
-        fallback_toks = toks[WMU.FALLBACK_S][:]
-    else:
-        fallback_toks = None
-    if WMU.NOT_S in toks:
-        if fallback_toks is not None:
+        if WMU.NEGATION_S in toks:
             raise PyRuleParseException("Negated Fallback clauses in don't make sense")
-        return Sentence(toks[WMU.MAIN_CLAUSE_S][:],
-                        negated=True,
-                        is_query=True)
-    else:
-        return Sentence(toks[WMU.MAIN_CLAUSE_S][:],
-                        fallback=fallback_toks,
-                        is_query=True)
+        data[WMU.FALLBACK_S] = toks[WMU.FALLBACK_S][:]
+    if WMU.NEGATION_S in toks:
+        data[WMU.NEGATION_S] = True
+
+    return Sentence(toks[WMU.MAIN_CLAUSE_S][:], data=data)
 
 
 # Build After comparison operators have been constructed:
 COMP_OP = pp.Forward()
 
-NOT = PU.N(WMU.NOT_S, PU.TILDE)
+NOT = PU.N(WMU.NEGATION_S, PU.TILDE)
 
 COMP_Internal = PU.N(WMU.OPERATOR_S, COMP_OP) \
     + PU.N(WMU.VALUE_S, PARAM_CORE(end=True))
@@ -60,8 +57,7 @@ COMP_Internal = PU.N(WMU.OPERATOR_S, COMP_OP) \
 # defined earlier to work with named copies
 COMP_Internal.setParseAction(build_comparison)
 
-comp_or_typedef = pp.Or([PU.N(WMU.COMP_S, COMP_Internal),
-                         PU.N(WMU.TYPE_DEC_S, HOTLOAD_ANNOTATIONS)])
+comp_or_typedef = pp.Or([COMP_Internal, HOTLOAD_ANNOTATIONS])
 
 constraints = pp.delimitedList(comp_or_typedef, delim=PU.COMMA)
 

@@ -148,9 +148,9 @@ class TrieWM(WorkingMemory):
             (updated_contexts, failures) = self._match_clause(clause,
                                                               reset_start_contexts)
             # add all failures back in, with the default value
-            if bool(clause._fallback):
+            if util.FALLBACK_S in clause._data and bool(clause._data[util.FALLBACK_S]):
                 for d in failures:
-                    for bindTarget, val in clause._fallback:
+                    for bindTarget, val in clause._data[util.FALLBACK_S]:
                         d[bindTarget.value] = val
                 updated_contexts._matches += [(x, self._internal_trie._root) for x in failures]
 
