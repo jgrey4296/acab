@@ -5,7 +5,7 @@ from py_rule.abstract.value import PyRuleValue
 from .arc import Arc
 from fractions import Fraction
 import logging as root_logger
-from py_rule.util import BIND_S, OPT_S
+from . import util
 
 logging = root_logger.getLogger(__name__)
 
@@ -17,12 +17,12 @@ class Event(PyRuleValue):
         assert(isinstance(a, Arc))
         self._arc = a.copy()
         self._value = b
-        self._params = {BIND_S: False,
-                        OPT_S: False}
+        self._params = {util.BIND_S: False,
+                        util.OPT_S: False}
         self._value_is_pattern = value_is_pattern
         if params is not None:
             self._params.update(params)
-        assert(not (value_is_pattern and self._params[BIND_S]))
+        assert(not (value_is_pattern and self._params[util.BIND_S]))
 
     def __call__(self, count, just_values=False, rnd_s=None):
         """ Get a list of events given a time """
@@ -85,9 +85,9 @@ class Event(PyRuleValue):
     def pprint(self, wrap=False):
         head = ""
         tail = ""
-        if self._params[BIND_S]:
+        if self._params[util.BIND_S]:
             head = "$"
-        if self._params[OPT_S]:
+        if self._params[util.OPT_S]:
             tail = "?"
         if self._value_is_pattern:
             return "{}{}".format(self._value.pprint(wrap), tail)
@@ -104,14 +104,14 @@ class Event(PyRuleValue):
     def bind(self, bindings):
         assert(self.is_pure())
         copied = self.copy()
-        if self._params[BIND_S] and self._value in bindings:
+        if self._params[util.BIND_S] and self._value in bindings:
             copied._value = bindings[self._value]
         return copied
 
     def var_set(self):
         if self._value_is_pattern:
             return self._value.var_set()
-        elif self._params[BIND_S]:
+        elif self._params[util.BIND_S]:
             return set(self._value)
         else:
             return []

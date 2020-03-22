@@ -13,7 +13,7 @@ from .pattern import Pattern, PatternChoice, PatternPar
 from enum import Enum
 from fractions import Fraction as t
 import logging as root_logger
-from py_rule.util import OPT_S
+from py_rule.modules.structures.time.util import OPT_S
 logging = root_logger.getLogger(__name__)
 
 # PStart/End : SubPattern

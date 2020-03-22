@@ -1,6 +1,7 @@
 """
 Utils related to rational time
 """
+from py_rule import util
 from enum import Enum
 from fractions import Fraction
 from math import gcd
@@ -9,11 +10,16 @@ import logging as root_logger
 
 logging = root_logger.getLogger(__name__)
 
-PATTERN_T = Enum("Pattern Type", "DISCRETE ANALOG")
-TIME_T = Enum("Time Type", "CLOCK EVENT SET SYMBOLIC")
 
-Time = Fraction
-
+BIND_S       = util.BIND_S
+NAME_S       = util.NAME_S
+OPT_S        = "opt"
+PATTERN_S    = "pattern"
+PATTERN_T    = Enum("Pattern Type", "DISCRETE ANALOG")
+TIME_T       = Enum("Time Type", "CLOCK EVENT SET SYMBOLIC")
+Time         = Fraction
+VALUE_S      = util.VALUE_S
+VALUE_TYPE_S = util.VALUE_TYPE_S
 
 def lcm(a, b):
     """Return lowest common multiple.
