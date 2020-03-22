@@ -78,11 +78,12 @@ class NumberTests(unittest.TestCase):
     def test_clause_fallback(self):
         result = QP.clause.parseString('a.b.c? || $x:2')[0]
         self.assertIsInstance(result, Sentence)
-        self.assertIsNotNone(result._fallback)
-        self.assertEqual(len(result._fallback), 1)
+        self.assertTrue(util.FALLBACK_S in result._data)
+        self.assertIsNotNone(result._data[util.FALLBACK_S])
+        self.assertEqual(len(result._data[util.FALLBACK_S]), 1)
 
-        self.assertEqual(result._fallback[0][0], 'x')
-        self.assertEqual(result._fallback[0][1][-1]._value, 2)
+        self.assertEqual(result._data[util.FALLBACK_S][0][0], 'x')
+        self.assertEqual(result._data[util.FALLBACK_S][0][1][-1]._value, 2)
 
 
     def test_clause_negated_fallback(self):
@@ -93,12 +94,12 @@ class NumberTests(unittest.TestCase):
     def test_clause_multi_fallback(self):
         result = QP.clause.parseString('a.b.c? || $x:2, $y:5')[0]
         self.assertIsInstance(result, Sentence)
-        self.assertIsNotNone(result._fallback)
-        self.assertEqual(len(result._fallback), 2)
-        self.assertEqual(result._fallback[0][0], 'x')
-        self.assertEqual(result._fallback[0][1][-1]._value, 2)
-        self.assertEqual(result._fallback[1][0], 'y')
-        self.assertEqual(result._fallback[1][1][-1]._value, 5)
+        self.assertIsNotNone(result._data[util.FALLBACK_S])
+        self.assertEqual(len(result._data[util.FALLBACK_S]), 2)
+        self.assertEqual(result._data[util.FALLBACK_S][0][0], 'x')
+        self.assertEqual(result._data[util.FALLBACK_S][0][1][-1]._value, 2)
+        self.assertEqual(result._data[util.FALLBACK_S][1][0], 'y')
+        self.assertEqual(result._data[util.FALLBACK_S][1][1][-1]._value, 5)
 
 
     def test_fact_str_equal(self):

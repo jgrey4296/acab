@@ -18,7 +18,32 @@ class SentenceTests(unittest.TestCase):
 
     #----------
     #use testcase snippets
+    def test_construction(self):
+        return
 
+    def test_length(self):
+        return
+
+    def test_eq(self):
+        return
+
+    def test_iter(self):
+        return
+
+    def test_get_item(self):
+        return
+
+    def test_expand_bindings(self):
+        return
+
+    def test_copy(self):
+        return
+
+    def test_add(self):
+        return
+
+    def test_data(self):
+        return
 
 if __name__ == "__main__":
     #run python $filename to use this logging setup

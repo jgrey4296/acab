@@ -6,8 +6,7 @@ from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.comparison import Comparison, CompOp
 from py_rule.modules.operators.operator_module import OperatorSpec
 from py_rule.working_memory.trie_wm import util as KBU
-from py_rule.util import CONSTRAINT_S, VALUE_TYPE_S, REGEX_S
-
+from py_rule import util
 
 class Trie_Query_Parser_Tests(unittest.TestCase):
 
@@ -31,7 +30,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result, Comparison)
         self.assertEqual(result._op, 'RegMatch')
         self.assertEqual(result._params[0]._value, 'blah')
-        self.assertEqual(result._params[0]._data[VALUE_TYPE_S], REGEX_S)
+        self.assertEqual(result._params[0]._data[util.VALUE_TYPE_S], util.REGEX_S)
 
     def test_basic_clause(self):
         result = QP.clause.parseString('a.b.c?')[0]
@@ -51,7 +50,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
     def test_basic_negated_clause(self):
         result = QP.clause.parseString('~a.b.c?')[0]
         self.assertIsInstance(result, Sentence)
-        self.assertTrue(result._negated)
+        self.assertTrue(result._data[util.NEGATION_S])
 
     def test_basic_multi_clause(self):
         result = QP.clauses.parseString('a.b.c?, a.b.d?, a.b.e?')[0]
@@ -66,10 +65,10 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         result = QP.clauses.parseString('a.b.c?, ~a.b.d?, a.b.e?, ~a.b.f?')[0]
         self.assertIsInstance(result, Query)
         self.assertTrue(all([isinstance(x, Sentence) for x in result._clauses]))
-        self.assertFalse(result._clauses[0]._negated)
-        self.assertTrue(result._clauses[1]._negated)
-        self.assertFalse(result._clauses[2]._negated)
-        self.assertTrue(result._clauses[3]._negated)
+        self.assertFalse(result._clauses[0]._data[util.NEGATION_S])
+        self.assertTrue(result._clauses[1]._data[util.NEGATION_S])
+        self.assertFalse(result._clauses[2]._data[util.NEGATION_S])
+        self.assertTrue(result._clauses[3]._data[util.NEGATION_S])
 
     def test_basic_query_construction(self):
         result = QP.parseString('a.b.c?, a.b.d?, a.b.e?')
@@ -79,41 +78,41 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
     def test_clause_fallback_strings(self):
         result = QP.clause.parseString('a.b.c? || $x:a.b!c, $y:b.d.e')[0]
         self.assertIsInstance(result, Sentence)
-        self.assertIsNotNone(result._fallback)
-        self.assertEqual(len(result._fallback), 2)
-        self.assertEqual(result._fallback[0][0], 'x')
-        self.assertEqual(result._fallback[0][1][-1]._value, 'c')
-        self.assertEqual(result._fallback[1][0], 'y')
-        self.assertEqual(result._fallback[1][1][-1]._value, 'e')
+        self.assertIsNotNone(result._data[util.FALLBACK_S])
+        self.assertEqual(len(result._data[util.FALLBACK_S]), 2)
+        self.assertEqual(result._data[util.FALLBACK_S][0][0], 'x')
+        self.assertEqual(result._data[util.FALLBACK_S][0][1][-1]._value, 'c')
+        self.assertEqual(result._data[util.FALLBACK_S][1][0], 'y')
+        self.assertEqual(result._data[util.FALLBACK_S][1][1][-1]._value, 'e')
 
     def test_comparison_parse(self):
         result = QP.QueryCore_end.parseString("testing(RegMatch /test/)")
         self.assertEqual(len(result), 1)
-        self.assertEqual(len(result[0]._data[CONSTRAINT_S]), 1)
-        self.assertIsInstance(result[0]._data[CONSTRAINT_S][0], Comparison)
-        self.assertEqual(result[0]._data[CONSTRAINT_S][0]._op, "RegMatch")
+        self.assertEqual(len(result[0]._data[util.CONSTRAINT_S]), 1)
+        self.assertIsInstance(result[0]._data[util.CONSTRAINT_S][0], Comparison)
+        self.assertEqual(result[0]._data[util.CONSTRAINT_S][0]._op, "RegMatch")
 
     def test_comparison_parse_2(self):
         result = QP.QueryCore.parseString("testing(RegMatch /test/).")
         self.assertEqual(len(result), 1)
-        self.assertEqual(len(result[0]._data[CONSTRAINT_S]), 1)
-        self.assertIsInstance(result[0]._data[CONSTRAINT_S][0], Comparison)
-        self.assertEqual(result[0]._data[CONSTRAINT_S][0]._op, "RegMatch")
+        self.assertEqual(len(result[0]._data[util.CONSTRAINT_S]), 1)
+        self.assertIsInstance(result[0]._data[util.CONSTRAINT_S][0], Comparison)
+        self.assertEqual(result[0]._data[util.CONSTRAINT_S][0]._op, "RegMatch")
 
     def test_comparison_parse_variable(self):
         result = QP.QueryCore.parseString("$x(RegMatch /test/).")
         self.assertEqual(len(result), 1)
-        self.assertEqual(len(result[0]._data[CONSTRAINT_S]), 1)
-        self.assertIsInstance(result[0]._data[CONSTRAINT_S][0], Comparison)
-        self.assertEqual(result[0]._data[CONSTRAINT_S][0]._op, "RegMatch")
+        self.assertEqual(len(result[0]._data[util.CONSTRAINT_S]), 1)
+        self.assertIsInstance(result[0]._data[util.CONSTRAINT_S][0], Comparison)
+        self.assertEqual(result[0]._data[util.CONSTRAINT_S][0]._op, "RegMatch")
 
 
     def test_comparison_in_clause(self):
         result = QP.clause.parseString("a.testing(RegMatch /test/).clause?")
         self.assertEqual(len(result), 1)
-        self.assertEqual(len(result[0][1]._data[CONSTRAINT_S]), 1)
-        self.assertIsInstance(result[0][1]._data[CONSTRAINT_S][0], Comparison)
-        self.assertEqual(result[0][1]._data[CONSTRAINT_S][0]._op, "RegMatch")
+        self.assertEqual(len(result[0][1]._data[util.CONSTRAINT_S]), 1)
+        self.assertIsInstance(result[0][1]._data[util.CONSTRAINT_S][0], Comparison)
+        self.assertEqual(result[0][1]._data[util.CONSTRAINT_S][0]._op, "RegMatch")
 
 
 

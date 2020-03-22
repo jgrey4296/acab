@@ -18,7 +18,6 @@ class PyRuleNodeTests(unittest.TestCase):
         return 1
 
     #----------
-    #use testcase snippets
     def test_basic_creation(self):
         a_node = PyRuleNode("test")
         self.assertIsNotNone(a_node)
@@ -38,7 +37,6 @@ class PyRuleNodeTests(unittest.TestCase):
         self.assertEqual(bool(a_node), True)
         a_node._children['another child'] = True
         self.assertEqual(bool(a_node), True)
-
 
     def test_contains(self):
         a_node = PyRuleNode("value")
@@ -65,7 +63,6 @@ class PyRuleNodeTests(unittest.TestCase):
         self.assertTrue(bool(a_node))
         self.assertEqual(len(a_node), 1)
         self.assertTrue(a_node.has_child(b_node))
-
 
     def test_get_child(self):
         a_node = PyRuleNode('value')
