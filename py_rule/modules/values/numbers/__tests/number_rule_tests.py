@@ -20,18 +20,18 @@ from py_rule.working_memory.trie_wm.trie_working_memory import TrieWM
 from py_rule.working_memory.trie_wm import util as KBU
 
 
-class NumberTests(unittest.TestCase):
+class NumberRuleTests(unittest.TestCase):
     os = None
     ns = None
 
     @classmethod
     def setUpClass(cls):
-        NumberTests.os = OperatorSpec()
-        NumberTests.ns = NumberSpecification()
+        NumberRuleTests.os = OperatorSpec()
+        NumberRuleTests.ns = NumberSpecification()
 
     def setUp(self):
         self.trie = TrieWM()
-        self.trie.add_modules([NumberTests.os, NumberTests.ns])
+        self.trie.add_modules([NumberRuleTests.os, NumberRuleTests.ns])
         self.trie.build_operator_parser()
 
     def tearDown(self):
@@ -44,36 +44,36 @@ class NumberTests(unittest.TestCase):
 
 
     def test_rule_with_transform(self):
-        result = RP.parseString("a.rule:\n$x AddOp 20 -> $y\n\nend")
+        result = RP.parseString("ρ::a.rule:\n$x AddOp 20 -> $y\n\nend")
         self.assertEqual(len(result), 1)
-        self.assertIsInstance(result[0][1], Rule)
-        self.assertIsNone(result[0][1]._query)
-        self.assertIsNotNone(result[0][1]._transform)
+        self.assertIsInstance(result[0][-1]._value, Rule)
+        self.assertIsNone(result[0][-1]._value._query)
+        self.assertIsNotNone(result[0][-1]._value._transform)
 
 
     def test_rule_with_multiple_transforms(self):
-        result = RP.parseString("a.rule:\n $x AddOp 20 -> $y, $y SubOp 20\n\nend")
+        result = RP.parseString("ρ::a.rule:\n $x AddOp 20 -> $y, $y SubOp 20\n\nend")
         self.assertEqual(len(result), 1)
-        self.assertIsInstance(result[0][1], Rule)
-        self.assertIsNone(result[0][1]._query)
-        self.assertIsNotNone(result[0][1]._transform)
+        self.assertIsInstance(result[0][-1]._value, Rule)
+        self.assertIsNone(result[0][-1]._value._query)
+        self.assertIsNotNone(result[0][-1]._value._transform)
 
 
     def test_rule_with_multiple_transforms_on_single_line(self):
-        result = RP.parseString("a.rule:\n$x AddOp 20 -> $y,$y SubOp 20\n\nend")
+        result = RP.parseString("ρ::a.rule:\n$x AddOp 20 -> $y,$y SubOp 20\n\nend")
         self.assertEqual(len(result), 1)
-        self.assertIsInstance(result[0][1], Rule)
-        self.assertIsNone(result[0][1]._query)
-        self.assertIsNotNone(result[0][1]._transform)
+        self.assertIsInstance(result[0][-1]._value, Rule)
+        self.assertIsNone(result[0][-1]._value._query)
+        self.assertIsNotNone(result[0][-1]._value._transform)
 
 
     def test_rule_with_query_transform_actions(self):
-        result = RP.parseString("a.rule:\na.b.c?\n\n$x AddOp 20\n\nActionAdd(a.b.c)\nend")
+        result = RP.parseString("ρ::a.rule:\na.b.c?\n\n$x AddOp 20\n\nActionAdd(a.b.c)\nend")
         self.assertEqual(len(result), 1)
-        self.assertIsInstance(result[0][1], Rule)
-        self.assertIsNotNone(result[0][1]._query)
-        self.assertIsNotNone(result[0][1]._transform)
-        self.assertEqual(len(result[0][1]._action), 1)
+        self.assertIsInstance(result[0][-1]._value, Rule)
+        self.assertIsNotNone(result[0][-1]._value._query)
+        self.assertIsNotNone(result[0][-1]._value._transform)
+        self.assertEqual(len(result[0][-1]._value._action), 1)
 
 
 

@@ -18,18 +18,18 @@ from py_rule.working_memory.trie_wm.trie_working_memory import TrieWM
 from py_rule.working_memory.trie_wm import util as KBU
 
 
-class NumberTests(unittest.TestCase):
+class NumberTransformTests(unittest.TestCase):
     os = None
     ns = None
 
     @classmethod
     def setUpClass(cls):
-        NumberTests.os = OperatorSpec()
-        NumberTests.ns = NumberSpecification()
+        NumberTransformTests.os = OperatorSpec()
+        NumberTransformTests.ns = NumberSpecification()
 
     def setUp(self):
         self.trie = TrieWM()
-        self.trie.add_modules([NumberTests.os, NumberTests.ns])
+        self.trie.add_modules([NumberTransformTests.os, NumberTransformTests.ns])
         self.trie.build_operator_parser()
 
     def tearDown(self):
@@ -124,8 +124,8 @@ class NumberTests(unittest.TestCase):
         ]
         parsed = [TP.parseString(x) for x in transforms]
         zipped = zip(transforms, parsed)
-        for t,p in zipped:
-            self.assertEqual(t,str(p))
+        for rt,pt in zipped:
+            self.assertEqual(rt,str(pt))
 
 
 

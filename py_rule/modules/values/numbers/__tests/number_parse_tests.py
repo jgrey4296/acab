@@ -23,19 +23,19 @@ class ActionBlah(action.ActionOp):
         logging.info("Blah")
 
 
-class NumberTests(unittest.TestCase):
+class NumberParseTests(unittest.TestCase):
     os = None
     ns = None
 
     @classmethod
     def setUpClass(cls):
-        NumberTests.os = OperatorSpec()
-        NumberTests.ns = NumberSpecification()
+        NumberParseTests.os = OperatorSpec()
+        NumberParseTests.ns = NumberSpecification()
         ActionBlah()
 
     def setUp(self):
         self.trie = TrieWM()
-        self.trie.add_modules([NumberTests.os, NumberTests.ns])
+        self.trie.add_modules([NumberParseTests.os, NumberParseTests.ns])
         self.trie.build_operator_parser()
 
     def tearDown(self):

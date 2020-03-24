@@ -17,18 +17,18 @@ from py_rule.working_memory.trie_wm.trie_working_memory import TrieWM
 from py_rule.working_memory.trie_wm import util as KBU
 
 
-class NumberTests(unittest.TestCase):
+class NumberQueryTests(unittest.TestCase):
     os = None
     ns = None
 
     @classmethod
     def setUpClass(cls):
-        NumberTests.os = OperatorSpec()
-        NumberTests.ns = NumberSpecification()
+        NumberQueryTests.os = OperatorSpec()
+        NumberQueryTests.ns = NumberSpecification()
 
     def setUp(self):
         self.trie = TrieWM()
-        self.trie.add_modules([NumberTests.os, NumberTests.ns])
+        self.trie.add_modules([NumberQueryTests.os, NumberQueryTests.ns])
         self.trie.build_operator_parser()
 
     def tearDown(self):
