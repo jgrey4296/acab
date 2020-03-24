@@ -57,7 +57,7 @@ class TypeDefTrieNode(TrieNode):
         logging.debug(log_messages['validate_top'].format(repr(self),
                                                           repr(usage_trie)))
         if self._typedef_trie is None:
-            raise te.TypeUndefinedException(self._name, usage_trie)
+            raise te.TypeUndefinedException(self._value.value_string(), usage_trie)
 
         type_var_lookup = self._generate_polytype_bindings(usage_trie)
         # Loop over all elements of the defined type

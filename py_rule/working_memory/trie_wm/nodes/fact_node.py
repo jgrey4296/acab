@@ -22,6 +22,7 @@ class FactNode(TrieNode):
 
     @staticmethod
     def copy_fact(node):
+        """ Lift Trie-nodes to FactNodes as necessary """
         if isinstance(node, FactNode):
             return node.copy()
         else:
@@ -58,7 +59,6 @@ class FactNode(TrieNode):
         """ Main comparison routine: turn to strings, compare """
         assert(isinstance(other, FactNode))
         return str(self) == str(other)
-
 
     def __str__(self):
         val = super().__str__()
@@ -138,9 +138,7 @@ class FactNode(TrieNode):
 
     def search_regex(self, regex):
         """ Test a regex on the Nodes value """
-        # TODO possibly constrain this?
-        assert(isinstance(self._value, str))
-        result = re.search(regex._params[0]._value, self._value)
+        result = re.search(regex._params[0]._value, self.value_string())
         if result is not None:
             return result.groupdict()
         else:
@@ -150,6 +148,7 @@ class FactNode(TrieNode):
         """ Test a number of regexs on this Node
         Return a Tuple of Nones if failure, (dict, node) if success
         """
+        # TODO: move this to matching utilities
         newData = currentData.copy()
         if preupdate is not None:
             for x,y in preupdate:

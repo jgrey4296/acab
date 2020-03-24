@@ -5,6 +5,7 @@ from py_rule.working_memory.trie_wm.trie_rule import TrieRule
 from py_rule.abstract.parsing import util as PU
 from py_rule.working_memory.trie_wm import util as WMU
 from py_rule.working_memory.trie_wm.nodes.fact_node import FactNode
+from py_rule.abstract.production_operator import ProductionContainer
 
 from . import FactParser as FP
 from . import QueryParser as QP
@@ -23,22 +24,25 @@ def build_operators():
 
 # Constructor:
 def build_rule(toks):
-    name = toks[WMU.RULE_NAME_S][0]
+
     # Get Conditions
     if WMU.CONDITION_S in toks:
         c = toks[WMU.CONDITION_S][0]
+        assert(isinstance(c, ProductionContainer))
     else:
         c = None
 
     # Get Transform
     if WMU.TRANSFORM_S in toks:
         t = toks[WMU.TRANSFORM_S][0]
+        assert(isinstance(t, ProductionContainer))
     else:
         t = None
 
     # Get Action
     if WMU.ACTION_S in toks:
-        a = toks[WMU.ACTION_S][0]
+        a = toks[WMU.ACTION_S]
+        assert(isinstance(a, ProductionContainer))
     else:
         a = None
 
@@ -49,32 +53,25 @@ def build_rule(toks):
         tags = []
 
 
-    # TODO wrap in sentence
-    rule = TrieRule(c, action=a, transform=t, name=name, tags=tags)
-    return (WMU.RULE_S, rule)
+    rule = TrieRule(c, action=a, transform=t, tags=tags)
+    return (rule._type, rule)
 
-
-ruleName = PU.NG(WMU.RULE_NAME_S, FP.PARAM_SEN)
 
 tagName = PU.HASH + PU.NAME
 
-tagList = PU.N(WMU.TAG_S, tagName
-               + pp.ZeroOrMore(PU.COMMA + tagName)
-               + PU.emptyLine)
+tagList    = PU.N(WMU.TAG_S, pp.delimitedList(tagName, delim=PU.COMMA) + PU.emptyLine)
 conditions = PU.N(WMU.CONDITION_S, QP.clauses + PU.emptyLine)
 transforms = PU.N(WMU.TRANSFORM_S, TP.transforms + PU.emptyLine)
-actions = PU.N(WMU.ACTION_S, AP.actions + PU.emptyLine)
+actions    = PU.N(WMU.ACTION_S, AP.actions)
 
-rule = ruleName + PU.COLON + PU.sLn \
-       + PU.op(tagList) \
-       + PU.op(conditions) + PU.op(transforms) + PU.op(actions) \
-       + PU.end
+rule_body = PU.op(tagList) + PU.op(conditions) + PU.op(transforms) + PU.op(actions)
+
+rule = PU.STATEMENT_CONSTRUCTOR(PU.RULE_HEAD, FP.BASIC_SEN, rule_body, args=False)
 
 rules = pp.delimitedList(rule, delim=PU.emptyLine)
 
 # Actions:
-rule.setParseAction(build_rule)
-
+rule_body.setParseAction(build_rule)
 
 # Main Parser
 def parseString(in_string):

@@ -14,8 +14,11 @@ OPERATOR_S   = "operator"
 VALUE_S      = "value"
 VALUE_TYPE_S = "value_type"
 SEN_S        = "sentence"
-NEGATION_S = "negated"
-FALLBACK_S = "fallback"
+NEGATION_S   = "negated"
+FALLBACK_S   = "fallback"
+ARG_S        = "args"
+STATEMENT_S  = "statement"
+END_S        = "end"
 
 # Core Value Types
 FLOAT_S      = "float"
@@ -45,6 +48,7 @@ RULE_S = "rule"
 MACRO_S     = "μ"
 STRUCTURE_S = "σ"
 FUNC_S      = "λ"
+RULE_HEAD_S = "ρ"
 
 def build_rebind_dict(formal, usage):
     """ Build a dictionary for action macro expansion,

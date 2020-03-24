@@ -19,45 +19,36 @@ PARAM_SEN_PLURAL = HOTLOAD_PARAM_SEN \
     + pp.ZeroOrMore(PU.COMMA + HOTLOAD_PARAM_SEN)
 
 def make_type_def(toks):
-    assert TYU.SEN_S in toks
-    assert TYU.STRUCT_S in toks
-    tvars = []
-    if TYU.TVAR_S in toks:
-        tvars = toks[TYU.TVAR_S][:]
-
-    type_def = TypeDefinition(toks[TYU.SEN_S][0],
-                              toks[TYU.STRUCT_S][:],
-                              tvars)
-    return (TYU.TYPE_DEF_S, type_def)
+    type_def = TypeDefinition(toks[:])
+    return (type_def._type, type_def)
 
 def make_op_def(toks):
     syntax_bind = None
     if TYU.SYNTAX_BIND_S in toks:
         syntax_bind = toks[TYU.SYNTAX_BIND_S][0]
 
-    op_def = OperatorDefinition(toks[TYU.SEN_S][0],
-                                toks[TYU.STRUCT_S][0],
+    op_def = OperatorDefinition(toks[TYU.STRUCT_S][0],
                                 syntax_bind)
 
-    return (TYU.OP_DEF_S, op_def)
+    return (op_def._type, op_def)
 
 
 
 VARLIST = PU.OPAR + pp.delimitedList(HOTLOAD_VALBIND, TYU.DELIM_S, False) + PU.CPAR
 
 # σ::a.test.type: a.value.$x(::num) end
-TYPEDEF = PU.STRUCT_HEAD + PU.DBLCOLON + PU.NG(TYU.SEN_S, HOTLOAD_BASIC_SEN) \
-    + PU.N(TYU.TVAR_S, PU.op(VARLIST)) + PU.COLON + PU.emptyLine \
-    + PU.N(TYU.STRUCT_S, PARAM_SEN_PLURAL) + PU.emptyLine \
-    + PU.end
+TYPEDEF_BODY = PARAM_SEN_PLURAL
+TYPEDEF_BODY.setParseAction(make_type_def)
+
+TYPEDEF = PU.STATEMENT_CONSTRUCTOR(PU.STRUCT_HEAD, HOTLOAD_BASIC_SEN, TYPEDEF_BODY)
 
 # λ::numAdd: $x(::num).$y(::num).$z(::num) => +
-OP_DEF = PU.FUNC_HEAD + PU.DBLCOLON + PU.NG(TYU.SEN_S, HOTLOAD_BASIC_SEN) \
-    + PU.COLON + PU.NG(TYU.STRUCT_S, HOTLOAD_PARAM_SEN) \
-    + PU.op(PU.DBLARROW + PU.N(TYU.SYNTAX_BIND_S, PU.OPERATOR_SUGAR)) + pp.lineEnd
+OP_DEF_BODY = PU.NG(TYU.STRUCT_S, HOTLOAD_PARAM_SEN) \
+    + PU.op(PU.DBLARROW + PU.N(TYU.SYNTAX_BIND_S, PU.OPERATOR_SUGAR))
+OP_DEF_BODY.setParseAction(make_op_def)
 
-TYPEDEF.setParseAction(make_type_def)
-OP_DEF.setParseAction(make_op_def)
+OP_DEF = PU.STATEMENT_CONSTRUCTOR(PU.OP_HEAD, HOTLOAD_BASIC_SEN, OP_DEF_BODY, end=pp.lineEnd, single_line=True)
+
 
 COMBINED_DEFS = pp.Or(TYPEDEF, OP_DEF)
 

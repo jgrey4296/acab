@@ -12,7 +12,7 @@ from py_rule.modules.structures.time.arc import Arc
 from py_rule.modules.structures.time.event import Event
 
 from .pattern_iterator import PatternIterator
-from .util import TIME_T, Time, f_gcd
+from .util import TIME_T, Time, f_gcd, PATTERN_S
 
 logging = root_logger.getLogger(__name__)
 
@@ -23,6 +23,7 @@ class Pattern(PyRuleValue):
 
 
     def __init__(self, a, vals=None, data=None, bindings=None):
+        super().__init__(type_str=PATTERN_S)
         if vals is None:
             vals = []
         self._arc = a.copy()
@@ -82,6 +83,8 @@ class Pattern(PyRuleValue):
     def __iter__(self):
         return self.iter()
 
+    def value_string(self):
+        return self._name
     def handle_call_results(self, results, just_values=False):
         assert(all([isinstance(x, Event) for x in results]))
         if bool(self._bindings):

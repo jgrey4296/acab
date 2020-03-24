@@ -49,7 +49,7 @@ class PyRuleNode(PyRuleValue):
         return iter(self._children.values())
 
     def value_string(self):
-        if isinstance(self._value, PyRuleNode):
+        if isinstance(self._value, PyRuleValue):
             return self._value.value_string()
         else:
             return str(self._value)

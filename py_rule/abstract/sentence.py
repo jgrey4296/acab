@@ -2,7 +2,7 @@
 Defines a Sentence of Fact Words, which can be a query, and
 have fallback bindings
 """
-from py_rule.util import BIND_S, OPERATOR_S, AT_BIND_S, NEGATION_S, FALLBACK_S, QUERY_S
+from py_rule.util import BIND_S, OPERATOR_S, AT_BIND_S, NEGATION_S, FALLBACK_S, QUERY_S, SEN_S
 from .value import PyRuleValue
 from .node import PyRuleNode
 
@@ -12,6 +12,7 @@ class Sentence(PyRuleValue):
     """
 
     def __init__(self, words=None, data=None):
+        super().__init__(type_str=SEN_S)
         self._words = []
         self._data = {}
         if data is not None:
@@ -48,6 +49,8 @@ class Sentence(PyRuleValue):
         return iter(self._words)
 
     def __getitem__(self, i):
+        if isinstance(i, slice):
+            return Sentence(self._words.__getitem__(i))
         return self._words.__getitem__(i)
 
     def __len__(self):

@@ -178,9 +178,9 @@ class TypeChecker:
     def add_definition(self, definition):
         assert(isinstance(definition, TypeDefinition))
         if isinstance(definition, OperatorDefinition):
-            self._functional_definitions.add(definition._name, definition)
+            self._functional_definitions.add(definition._path, definition)
         else:
-            self._structural_definitions.add(definition._name, definition)
+            self._structural_definitions.add(definition._path, definition)
 
     def add_assertion(self, sen):
         assert(isinstance(sen, Sentence))

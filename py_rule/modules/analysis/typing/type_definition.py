@@ -1,40 +1,34 @@
 from .pyrule_type import Type
 from .type_instance import TypeInstance
-from py_rule.util import BIND_S, STRUCTURE_S
+from .util import TYPE_DEF_S
+from py_rule.util import BIND_S, STRUCTURE_S, VALUE_TYPE_S
 from py_rule.abstract.sentence import Sentence
 
 class TypeDefinition(Type):
     """ Defines the Structure of a type """
 
-    def __init__(self, name, structure, tvars):
+    def __init__(self, structure, type_str=TYPE_DEF_S):
         """ Structure creates the dict of locations.
         Only leaves get type anotations. Thus:
         { .a.$x :: String, .b.$c :: Num, .d!$e::Location }
         """
         # The name is the location. eg: .types.person
-        assert isinstance(name, Sentence)
         assert isinstance(structure, list)
         assert all([isinstance(x, Sentence) for x in structure])
-        assert isinstance(tvars, list)
-
-        self._name = name
+        super().__init__(type_str=type_str)
         # TODO unify shared variables across structure sentences to have
         # the same type
         self._structure = structure
         self._vars = []
-        if tvars is not None:
-            assert(all([x._data[BIND_S] for x in tvars]))
-            # TODO check all tvars are in structure sentences
-            self._vars += tvars
 
     def __str__(self):
-        result = STRUCTURE_S + "::"
-        result += str(self._name)
+        result = self._name
+        result += "(::{}):\n".format(STRUCTURE_S)
         if bool(self._vars):
-            result += "({})".format(", ".join([str(x) for x in self._vars]))
-        result += ":\n\n"
-        result += "\n".join([str(x) for x in self._structure])
-        result += "\n\nEND"
+            result += "\t | {} | \n".format(", ".join([str(x) for x in self._vars]))
+        result += "\t"
+        result += "\n\t".join([str(x) for x in self._structure])
+        result += "\nEND"
         return result
 
     def __repr__(self):
@@ -42,3 +36,6 @@ class TypeDefinition(Type):
 
     def build_type_declaration(self):
         return TypeInstance(self._name, args=self._vars[:])
+
+    def value_string(self):
+        return self._name

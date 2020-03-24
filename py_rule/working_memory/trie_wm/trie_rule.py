@@ -11,15 +11,10 @@ class TrieRule(Rule):
     Trie based engines and working memory
     """
 
-    def __init__(self, query, action=None, transform=None, name=None, tags=None):
-        if name is None:
-            name = FP.parseString(".rule.anon.{}".format(Rule.__count))[0]
-        else:
-            assert(isinstance(name, Sentence))
+    def __init__(self, query, action=None, transform=None, tags=None):
         super().__init__(query,
                          action=action,
                          transform=transform,
-                         name=name,
                          tags=tags)
 
     def to_node_lists(self):

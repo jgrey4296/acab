@@ -19,91 +19,94 @@ class Rule(PyRuleValue):
 
     __count = 0
     # TODO handle None's better
-    def __init__(self, query, action=None, transform=None, name=None, tags=None):
+    def __init__(self, query, action=None, transform=None, tags=None):
         assert(query is None or isinstance(query, Query))
         assert(action is None or isinstance(action, Action))
         assert(transform is None or isinstance(transform, Transform))
         assert(tags is None or all([isinstance(x, str) for x in tags]))
-        if name is not None:
-            self._name  = name
+        super().__init__(type_str=util.RULE_S)
         self._query     = query
         self._transform = transform
         self._action    = action
-        if tags is not None:
-            self._tags = set(tags)
-        else:
-            self._tags = set()
+        self._tags  = set()
+        # Self report default type:
+        self._tags.update(tags)
         Rule.__count += 1
 
     def __str__(self):
-        nameStr = str(self._name)
+        nameStr      = self._name
+        tagsStr      = ""
+        queryStr     = ""
+        transformStr = ""
+        actionsStr   = ""
+
+        # if self._name is not None:
+        #     nameStr = str(self._name[:-1])
+
         # Construct Tags str
         if bool(self._tags):
             tagsStr = "\t" + ", ".join(sorted(["#{}".format(x)
                                                for x in self._tags])) + "\n\n"
-        else:
-            tagsStr = ""
 
         # Construct Query Str
         if self._query is not None:
             queryStr = "\t" + str(self._query) + "\n\n"
-        else:
-            queryStr = ""
 
         # Construct Transform Str
         if self._transform is not None:
             transformStr = "\t" + str(self._transform) + "\n\n"
-        else:
-            transformStr = ""
 
         # Construct Action Str
         if bool(self._action):
             actionsStr = "\t" + "\n\t".join([str(x)
                                              for x in self._action]) + "\n"
-        else:
-            actionsStr = ""
-        return "{}:\n{}{}{}{}end".format(nameStr,
-                                         tagsStr,
-                                         queryStr,
-                                         transformStr,
-                                         actionsStr)
+
+        return "{}(::{}):\n{}{}{}{}{}".format(nameStr,
+                                              util.RULE_HEAD_S,
+                                              tagsStr,
+                                              queryStr,
+                                              transformStr,
+                                              actionsStr,
+                                              util.END_S)
 
     def __repr__(self):
         """ Create a representation of the rule.
         Not implementation specific
         """
-        nameStr = "".join([repr(x) for x in self._name])
+        nameStr      = self._name
+        tagsStr      = ""
+        queryStr     = ""
+        transformStr = ""
+        actionsStr   = ""
+
+        # if self._name is not None:
+        #     nameStr = "".join([repr(x) for x in self._name[:-1]])
 
         # Construct Tag Str
         if bool(self._tags):
             tagsStr = "\t" + ", ".join(sorted(["#{}".format(x)
                                                for x in self._tags])) + "\n\n"
-        else:
-            tagsStr = ""
 
         # Construct Query Str
         if self._query is not None:
             queryStr = "\t" + repr(self._query) + "\n\n"
-        else:
-            queryStr = ""
 
         # Construct Transform Str
         if self._transform is not None:
             transformStr = "\t" + repr(self._transform) + "\n\n"
-        else:
-            transformStr = ""
 
         # Construct Action Str
         if bool(self._action):
             actionsStr = "\t" + "\n\t".join([repr(x)
                                              for x in self._action]) + "\n"
-        else:
-            actionsStr = ""
-        return "{}:\n{}{}{}{}end".format(nameStr,
-                                         tagsStr,
-                                         queryStr,
-                                         transformStr,
-                                         actionsStr)
+
+        return "{}(::{}):\n{}{}{}{}{}".format(nameStr,
+                                              util.RULE_HEAD_S,
+                                              tagsStr,
+                                              queryStr,
+                                              transformStr,
+                                              actionsStr,
+                                              util.END_S)
 
     def has_tag(self, *tags):
         return all([t in self._tags for t in tags])
@@ -132,8 +135,6 @@ class Rule(PyRuleValue):
         if self._transform is not None:
             transform_copy = self._transform.copy()
 
-        # expand the name
-        new_name = self._name.expand_bindings(bindings)
         # expand the query
         if self._query is not None:
             new_query = self._query.expand_bindings(bindings)
@@ -143,15 +144,16 @@ class Rule(PyRuleValue):
             new_action = self._action.expand_bindings(bindings)
 
 
-        return self.__class__(new_query,
-                              new_action,
-                              transform=transform_copy,
-                              name=new_name,
-                              tags=self._tags)
+        new_rule = self.__class__(new_query,
+                                  new_action,
+                                  transform=transform_copy,
+                                  tags=self._tags)
+        return new_rule
 
     def expand_action_macros(self, macros):
         """ Return a new Rule, where action macros have been expanded into
         the sequence of actions they represent """
+        raise NotImplementedError()
         expandedActions = []
         for action in self._action:
             if isinstance(action, Action):
@@ -178,3 +180,6 @@ class Rule(PyRuleValue):
                               transform=self._transform,
                               name=self._name,
                               tags=self._tags)
+
+    def value_string(self):
+        return self._name
