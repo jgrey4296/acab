@@ -44,9 +44,9 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
 
     def test_action_macro_definition_empty(self):
         # TODO fix the double ()'s
-        test_str = "μ::test()():\n ActionAdd(a.b.c)\nend"
-        definition = AP.action_definition.parseString(test_str)[0]
-        self.assertEqual(str(definition), "test")
+        test_str = "α::test:\n ActionAdd(a.b.c)\nend"
+        definition = AP.action_definition.parseString(test_str)
+        self.assertEqual(definition[0][-1]._value.value_string(), "test")
 
 
 if __name__ == "__main__":
