@@ -53,13 +53,14 @@ class Contexts:
         self._matches = []
 
     def set_all_alts(self, target=None, binding=None):
-        """ Duplicate the Contexts, with a specific node as the current leaf """
+        """ Duplicate the Contexts, with a specific node as the current leaf,
+        if binding != None, fail those that don't have the binding """
         assert (target is not None or binding)
         newContexts = Contexts()
         for (data, lastNode) in self._matches:
             if target is not None:
                 newContexts.append((data, target))
-            else:
+            elif AT_BIND_S + binding in data:
                 newContexts.append((data, data[AT_BIND_S + binding]))
         return newContexts
 
