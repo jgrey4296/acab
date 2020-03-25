@@ -16,6 +16,8 @@ class Agenda:
     and applys a transform, filter, or other function on them
     """
 
+    agenda_list = {}
+
     def __init__(self):
         # A function type signature
         self._type_signature = None
