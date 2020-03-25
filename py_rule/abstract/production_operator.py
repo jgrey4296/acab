@@ -4,13 +4,16 @@ Used for Comparison, Transform, and Performance Operators
 """
 from .value import PyRuleValue
 from .sentence import Sentence
+from py_rule.util import OPERATOR_S, STATEMENT_S
 
 class ProductionOperator(PyRuleValue):
     """ The Base Operator Class """
     # operator calls are late resolving,
     # and allow type checking to resolve earlier
 
-    def __init__(self, num_params=2, infix=False):
+    def __init__(self, num_params=2, infix=False, type_str=OPERATOR_S):
+        # TODO this can be done using subclass DFS
+        super().__init__(type_str=type_str)
         self._op_str = self.__class__.__name__
         self._num_params = num_params
         # TODO use infix
@@ -26,11 +29,11 @@ class ProductionOperator(PyRuleValue):
         raise NotImplementedError()
 
 
-
 class ProductionComponent(PyRuleValue):
     """ Pairs a an operator with some bindings """
 
-    def __init__(self, op_str, params):
+    def __init__(self, op_str, params, type_str=None):
+        super().__init__(type_str=type_str)
         # The lookup string of the operator:
         self._op = op_str
         # A List of parameters for the Component
@@ -64,7 +67,8 @@ class ProductionComponent(PyRuleValue):
 
 class ProductionContainer(PyRuleValue):
 
-    def __init__(self, clauses):
+    def __init__(self, clauses, type_str=STATEMENT_S):
+        super().__init__(type_str=type_str)
         self._clauses = clauses[:]
 
     def __str__(self):

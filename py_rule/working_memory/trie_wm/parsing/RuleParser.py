@@ -27,21 +27,21 @@ def build_rule(toks):
 
     # Get Conditions
     if WMU.CONDITION_S in toks:
-        c = toks[WMU.CONDITION_S][0]
+        c = toks[WMU.CONDITION_S][0][1]
         assert(isinstance(c, ProductionContainer))
     else:
         c = None
 
     # Get Transform
     if WMU.TRANSFORM_S in toks:
-        t = toks[WMU.TRANSFORM_S][0]
+        t = toks[WMU.TRANSFORM_S][0][1]
         assert(isinstance(t, ProductionContainer))
     else:
         t = None
 
     # Get Action
     if WMU.ACTION_S in toks:
-        a = toks[WMU.ACTION_S]
+        a = toks[WMU.ACTION_S][0][1]
         assert(isinstance(a, ProductionContainer))
     else:
         a = None
@@ -62,7 +62,7 @@ tagName = PU.HASH + PU.NAME
 tagList    = PU.N(WMU.TAG_S, pp.delimitedList(tagName, delim=PU.COMMA) + PU.emptyLine)
 conditions = PU.N(WMU.CONDITION_S, QP.clauses + PU.emptyLine)
 transforms = PU.N(WMU.TRANSFORM_S, TP.transforms + PU.emptyLine)
-actions    = PU.N(WMU.ACTION_S, AP.actions)
+actions    = PU.NG(WMU.ACTION_S, AP.actions)
 
 rule_body = PU.op(tagList) + PU.op(conditions) + PU.op(transforms) + PU.op(actions)
 

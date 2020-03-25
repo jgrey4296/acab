@@ -2,7 +2,7 @@
 Defines a Sentence of Fact Words, which can be a query, and
 have fallback bindings
 """
-from py_rule.util import BIND_S, OPERATOR_S, AT_BIND_S, NEGATION_S, FALLBACK_S, QUERY_S, SEN_S
+from py_rule.util import BIND_S, OPERATOR_S, AT_BIND_S, NEGATION_S, FALLBACK_S, QUERY_S, SEN_S, AT_BIND_S
 from .value import PyRuleValue
 from .node import PyRuleNode
 
@@ -23,8 +23,8 @@ class Sentence(PyRuleValue):
             assert(not any([AT_BIND_S in x._data for x in words[1:]]))
             self._words += words
 
-    # TODO update this
     def __str__(self):
+        # TODO update this
         result = "".join([str(x) for x in self._words[:-1]])
         result += self._words[-1].opless_print()
         if QUERY_S in self._data:
@@ -61,7 +61,6 @@ class Sentence(PyRuleValue):
         using those bindings.
         ie: .a.b.$x with {x: blah} => .a.b.blah
         """
-        # TODO update this for AT_BIND
         assert(isinstance(bindings, dict))
         output = []
 
@@ -71,7 +70,10 @@ class Sentence(PyRuleValue):
                 output.append(word.copy())
                 continue
 
-            retrieved = bindings[word._value]
+            if AT_BIND_S in word._data:
+                retrieved = bindings[AT_BIND_S + word._value]
+            else:
+                retrieved = bindings[word._value]
 
             if isinstance(retrieved, Sentence):
                 output += [y.copy() for y in retrieved]
@@ -81,6 +83,8 @@ class Sentence(PyRuleValue):
             copied_node = word.copy()
             copied_node._value = retrieved
             copied_node._data[BIND_S] = False
+            if AT_BIND_S in copied_node._data:
+                del copied_node._data[AT_BIND_S]
             output.append(copied_node)
 
         return Sentence(output, data=self._data)

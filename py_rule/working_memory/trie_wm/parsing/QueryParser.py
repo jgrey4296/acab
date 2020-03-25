@@ -7,7 +7,7 @@ from py_rule.abstract.sentence import Sentence
 from py_rule.working_memory.trie_wm import util as WMU
 from py_rule.abstract.parsing import util as PU
 from py_rule.error.pyrule_parse_exception import PyRuleParseException
-from .FactParser import PARAM_CORE, HOTLOAD_ANNOTATIONS, PARAM_SEN
+from .FactParser import PARAM_CORE, HOTLOAD_ANNOTATIONS, PARAM_SEN, BASIC_SEN
 
 logging = root_logger.getLogger(__name__)
 
@@ -46,6 +46,11 @@ def build_clause(toks):
     return Sentence(toks[WMU.MAIN_CLAUSE_S][:], data=data)
 
 
+def build_query(toks):
+    query = Query(toks[:])
+    return (query._type, query)
+
+
 # Build After comparison operators have been constructed:
 COMP_OP = pp.Forward()
 
@@ -80,14 +85,16 @@ clause = PU.op(NOT) + PU.N(WMU.MAIN_CLAUSE_S, pp.ZeroOrMore(QueryCore)
 
 clauses = pp.delimitedList(clause, delim=PU.COMMA)
 
+query_statement = PU.STATEMENT_CONSTRUCTOR(PU.QUERY_HEAD, BASIC_SEN, clauses)
+
 # Actions
 constraints.setParseAction(build_constraint_list)
 clause.setParseAction(build_clause)
-clauses.setParseAction(lambda toks: Query(toks[:]))
+clauses.setParseAction(build_query)
 assignment.setParseAction(lambda toks: (toks[0][1], toks[1]))
 
 
 # Main parser:
 def parseString(in_string):
     """ .a.b(>20)!d.$X, ... -> Query """
-    return clauses.parseString(in_string)[0]
+    return clauses.parseString(in_string)[0][1]

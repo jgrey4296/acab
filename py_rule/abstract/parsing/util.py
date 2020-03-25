@@ -51,12 +51,16 @@ CBRACKET  = s(pp.Literal(']'))
 LESS      = s(pp.Literal('<'))
 MORE      = s(pp.Literal('>'))
 VBAR      = s(pp.Literal('|'))
+DELIM     = pp.Or([COMMA, op(pp.lineEnd)])
 
-MACRO_HEAD     = s(pp.Literal(util.MACRO_S))
-STRUCT_HEAD  = s(pp.Literal(util.STRUCTURE_S))
-OP_HEAD    = s(pp.Literal(util.FUNC_S))
-FUNC_HEAD  = s(pp.Literal(util.FUNC_S))
-RULE_HEAD    = s(pp.Literal(util.RULE_HEAD_S))
+
+RULE_HEAD      = s(pp.Literal(util.RULE_HEAD_S))
+QUERY_HEAD     = s(pp.Literal(util.QUERY_HEAD_S))
+TRANSFORM_HEAD = s(pp.Literal(util.TRANSFORM_HEAD_S))
+ACTION_HEAD    = s(pp.Literal(util.ACTION_HEAD_S))
+
+STRUCT_HEAD    = s(pp.Literal(util.STRUCTURE_S))
+FUNC_HEAD      = s(pp.Literal(util.FUNC_S))
 
 # Basic Parsers
 NAME        = pp.Word(util.WORD_COMPONENT_S)

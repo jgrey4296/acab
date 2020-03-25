@@ -67,6 +67,7 @@ class TrieWM(WorkingMemory):
             query = QP.parseString(s)
             return self._query_sentence(query)
         elif isinstance(s, Sentence):
+            raise Exception("TODO")
             return self._query_sentence(s)
         else:
             raise PyRuleParseException("Unrecognised query target: {}".format(type(s)))
@@ -74,6 +75,8 @@ class TrieWM(WorkingMemory):
     def __str__(self):
         return str(self._internal_trie)
 
+
+    # Internal Methods:
     def _insert_into_values_parser(self, parser):
         FP.HOTLOAD_VALUES << parser
 
@@ -91,7 +94,6 @@ class TrieWM(WorkingMemory):
         QP.build_operators()
         TP.build_operators()
 
-    # Internal Methods:
     def _assert_sentence(self, sen):
         """ Assert a sentence of chained facts """
         assert (isinstance(sen, Sentence)), sen
@@ -147,7 +149,7 @@ class TrieWM(WorkingMemory):
 
             (updated_contexts, failures) = self._match_clause(clause,
                                                               reset_start_contexts)
-            # add all failures back in, with the default value
+            # add all failures back in, if theres a default value
             if util.FALLBACK_S in clause._data and bool(clause._data[util.FALLBACK_S]):
                 for d in failures:
                     for bindTarget, val in clause._data[util.FALLBACK_S]:

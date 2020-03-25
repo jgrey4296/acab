@@ -76,14 +76,16 @@ class ActionComponent(PO.ProductionComponent):
     def get_values(self, data):
         """ Output a list of bindings from this action """
         output = []
-        # TODO update this for AT_BIND
         for x in self._params:
             if isinstance(x, Sentence):
                 output.append(x.expand_bindings(data))
             elif isinstance(x, list):  # and all([isinstance(y, Node) for y in x]):
                 output.append([y.bind(data) for y in x])
             elif hasattr(x, '_data') and x._data[util.BIND_S]:
-                output.append(data[x._value])
+                if util.AT_BIND_S in x._data:
+                    output.append(data[util.AT_BIND_S + x._value])
+                else:
+                    output.append(data[x._value])
             else:
                 output.append(x)
         return output
@@ -107,28 +109,10 @@ class ActionComponent(PO.ProductionComponent):
         return sen
 
 
-class ActionMacroUse(PO.ProductionComponent):
-    """ The counterpart to an ActionMacro, denotes where to expand a macro into """
-    # TODO integrate this new form
-    def __init__(self, name, params):
-        super(ActionMacroUse, self).__init__(name, params)
-
-    def __str__(self):
-        return "#{}({})".format(self._name,
-                                ",".join([str(x) for x in self._params]),)
-
-    def __repr__(self):
-        return "ActMacroUse: #{}({})".format(self._name,
-                                             len(self._params))
-
-    def expand_bindings(self, bindings):
-        raise NotImplementedError()
-
-
 class Action(PO.ProductionContainer):
 
-    def __init__(self, clauses, params=None):
-        super(Action, self).__init__(clauses)
+    def __init__(self, clauses, params=None, type_str=util.ACTION_S):
+        super(Action, self).__init__(clauses, type_str=type_str)
         self._params = []
         if params is not None:
             self._params += params
@@ -146,3 +130,6 @@ class Action(PO.ProductionContainer):
             exp_clauses.append(clause.expand_bindings(bindings))
 
         return Action(exp_clauses, params=self._params)
+
+    def value_string(self):
+        return self._name

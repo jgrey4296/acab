@@ -35,16 +35,11 @@ def final_pass(toks):
         assertions.append(x)
         if isinstance(x[-1]._value, Rule):
             rules.append(x)
-        # TODO reimplement this
-        # elif isinstance(x[-1]._value, ActionMacro):
-        #     action_macros[x._name] = x
 
     #everything has been parsed,
     #clear the parse bindings as a guard:
     parseBindings = {}
-    # TODO expand rulemacros into rule sequences:
-    expandedActMacroRules = [x[-1]._value.expand_action_macros(action_macros) for x in rules]
-    return (expandedActMacroRules, assertions)
+    return (rules, assertions)
 
 def add_file_binding(toks):
     """ Store the string in the binding """

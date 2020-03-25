@@ -100,9 +100,9 @@ class Transform(PO.ProductionContainer):
     """
 
     # have min and max bounds
-    def __init__(self, clauses):
+    def __init__(self, clauses, type_str=util.TRANSFORM_S):
         assert(all([isinstance(x, TransformComponent) for x in clauses]))
-        super(Transform, self).__init__(clauses)
+        super(Transform, self).__init__(clauses, type_str=type_str)
 
     def __str__(self):
         return "\n".join([str(x) for x in self._clauses])
@@ -118,3 +118,5 @@ class Transform(PO.ProductionContainer):
         # return the set of output bound names
         return [x._rebind._value for x in self._components]
 
+    def value_string(self):
+        return self._name

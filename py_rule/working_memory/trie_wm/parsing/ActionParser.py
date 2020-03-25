@@ -25,31 +25,9 @@ def build_component(toks):
                                    toks[WMU.ACTION_VAL_S][:])
 
 
-def build_macro_use(toks):
-    if WMU.BIND_S in toks:
-        bindings = toks[WMU.BIND_S][:]
-    else:
-        bindings = []
-    return action.ActionMacroUse(toks[0],
-                                  bindings)
-
-
-def build_definition(toks):
-    parameters = []
-    m_actions = []
-    if WMU.BIND_S in toks:
-        parameters = toks[WMU.BIND_S][:]
-    if WMU.ACTION_S in toks:
-        m_actions = toks[WMU.ACTION_S][:]
-
-    sen = toks[WMU.NAME_S][0]
-    sen[-1]._data[WMU.VALUE_S] = action.Action(m_actions, params=parameters)
-    sen[-1]._data[WMU.VALUE_TYPE_S] = WMU.ACTION_S
-
-    return sen
-
-
-ACT_MACRO = PU.MACRO_HEAD + PU.DBLCOLON + BASIC_SEN
+def build_action(toks):
+    act = action.Action(toks[:])
+    return (act._type, act)
 
 # fact string with the option of binds
 vals = pp.delimitedList(PARAM_SEN, delim=PU.COMMA)
@@ -59,28 +37,14 @@ bindList = pp.delimitedList(VALBIND, delim=PU.COMMA)
 action_component = PU.N(WMU.OPERATOR_S, HOTLOAD_OPERATORS) \
     + PU.OPAR + PU.N(WMU.ACTION_VAL_S, vals) + PU.CPAR
 
-actionMacroUse = ACT_MACRO + \
-        PU.OPAR + PU.N(WMU.BIND_S, PU.op(vals)) + PU.CPAR
+actions = pp.delimitedList(action_component, delim=PU.DELIM)
 
-actionsOrMacros = pp.Or([actionMacroUse, action_component])
-
-justActions = pp.delimitedList(action_component, delim=PU.COMMA)
-actions = pp.delimitedList(actionsOrMacros, delim=PU.COMMA)
-
-action_definition = PU.NG(WMU.NAME_S, ACT_MACRO) + PU.OPAR \
-                    + PU.NG(WMU.BIND_S, PU.op(bindList)) \
-                    + PU.CPAR + PU.COLON + PU.sLn\
-                    + PU.NG(WMU.ACTION_S, justActions) \
-                    + PU.sLn + PU.END
-
+action_definition = PU.STATEMENT_CONSTRUCTOR(PU.ACTION_HEAD, BASIC_SEN, actions)
 
 # parse action
 action_component.setParseAction(build_component)
-actions.setParseAction(lambda toks: action.Action(toks[:]))
-actionMacroUse.setParseAction(build_macro_use)
-action_definition.setParseAction(build_definition)
-ACT_MACRO.setParseAction(lambda t: t[0])
+actions.setParseAction(build_action)
 
 
 def parseString(in_string):
-    return actions.parseString(in_string)[0]
+    return actions.parseString(in_string)[0][1]

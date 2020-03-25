@@ -9,12 +9,12 @@ from py_rule import util
 class Query(PO.ProductionContainer):
     """ A Query for the working memory """
 
-    def __init__(self, clauses):
+    def __init__(self, clauses, type_str=util.QUERY_S):
         # ATTENTION: List of clauses, not List of tuples
         # [Clause]
         # Each clause is a list of tests and bindings
         assert(all([isinstance(x, Sentence) for x in clauses]))
-        super(Query, self).__init__(clauses)
+        super(Query, self).__init__(clauses, type_str=type_str)
 
     def __repr__(self):
         clauseStrs = [repr(x) for x in self._clauses]
@@ -58,3 +58,5 @@ class Query(PO.ProductionContainer):
                 for comp in word._data[util.CONSTRAINT_S]
                 if isinstance(comp, Comparison)]
 
+    def value_string(self):
+        return self._name

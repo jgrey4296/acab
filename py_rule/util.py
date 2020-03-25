@@ -45,10 +45,13 @@ LAYER_QUERY_RULE_BIND_S = "rule"
 RULE_S = "rule"
 
 # Higher Level Structure Heads
-MACRO_S     = "μ"
-STRUCTURE_S = "σ"
-FUNC_S      = "λ"
-RULE_HEAD_S = "ρ"
+RULE_HEAD_S      = "ρ"
+QUERY_HEAD_S     = "ι"
+TRANSFORM_HEAD_S = "τ"
+ACTION_HEAD_S    = "α"
+
+STRUCTURE_S      = "σ"
+FUNC_S           = "λ"
 
 def build_rebind_dict(formal, usage):
     """ Build a dictionary for action macro expansion,

@@ -5,7 +5,7 @@ from py_rule.abstract.transform import TransformComponent
 from py_rule.abstract.transform import Transform, TransformOp
 from py_rule.abstract.parsing import util as PU
 from py_rule.working_memory.trie_wm import util as WMU
-from py_rule.working_memory.trie_wm.parsing.FactParser import VALBIND
+from py_rule.working_memory.trie_wm.parsing.FactParser import VALBIND, BASIC_SEN
 
 logging = root_logger.getLogger(__name__)
 
@@ -54,6 +54,10 @@ def addRebind(toks):
     return toks[WMU.TRANSFORM_S][0]
 
 
+def build_transform(toks):
+    trans = Transform(toks[:])
+    return (trans._type, trans)
+
 # Hotloaded Transform Operators
 BINARY_TRANS_OP = pp.Forward()
 UNARY_TRANS_OP = pp.Forward()
@@ -80,7 +84,11 @@ transform_core = PU.NG(WMU.TRANSFORM_S,
                               unary_transform_core])) \
                               + PU.op(PU.N(WMU.TARGET_S, rebind))
 
-transforms = pp.delimitedList(transform_core, delim=pp.Or([PU.COMMA, PU.op(pp.lineEnd)]))
+transforms = pp.delimitedList(transform_core, delim=PU.DELIM)
+
+transform_statement = PU.STATEMENT_CONSTRUCTOR(PU.TRANSFORM_HEAD,
+                                               BASIC_SEN,
+                                               transforms)
 
 # Actions
 binary_transform_core.setParseAction(buildBinaryTransformComponent)
@@ -88,9 +96,9 @@ unary_transform_core.setParseAction(buildUnaryTransformComponent)
 ternary_transform_core.setParseAction(buildTernaryTransformComponent)
 
 transform_core.setParseAction(addRebind)
-transforms.setParseAction(lambda toks: Transform(toks[:]))
+transforms.setParseAction(build_transform)
 
 
 # Main Parser:
 def parseString(in_string):
-    return transforms.parseString(in_string)[0]
+    return transforms.parseString(in_string)[0][1]

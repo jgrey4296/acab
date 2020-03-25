@@ -6,7 +6,7 @@ import logging as root_logger
 import py_rule.util as util
 from .value import PyRuleValue
 from .transform import Transform
-from .action import Action, ActionMacroUse
+from .action import Action
 from .query import Query
 
 logging = root_logger.getLogger(__name__)
@@ -149,37 +149,6 @@ class Rule(PyRuleValue):
                                   transform=transform_copy,
                                   tags=self._tags)
         return new_rule
-
-    def expand_action_macros(self, macros):
-        """ Return a new Rule, where action macros have been expanded into
-        the sequence of actions they represent """
-        raise NotImplementedError()
-        expandedActions = []
-        for action in self._action:
-            if isinstance(action, Action):
-                expandedActions.append(action)
-            else:
-                assert(isinstance(action, ActionMacroUse))
-                assert(action._name in macros)
-                # the macro:
-                aMacro = macros[action._name]
-                # get the call params
-                cPars = action._params
-                # get the formal params
-                fPars = aMacro._params
-                # create the rebind dictionary
-                bindDict = util.build_rebind_dict(fPars, cPars)
-                # expand the individual actions
-                exActs = [x.expand_bindings(bindDict) for x in aMacro._action]
-                # splice
-                expandedActions += exActs
-
-        # return a copy of with the expanded action list
-        return self.__class__(self._query,
-                              expandedActions,
-                              transform=self._transform,
-                              name=self._name,
-                              tags=self._tags)
 
     def value_string(self):
         return self._name
