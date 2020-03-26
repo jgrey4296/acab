@@ -4,8 +4,8 @@ from .parsing import TypeParser as TP
 
 
 class TypingSpec(ModuleSpecification):
-    """ TimeParser Class, providing entry points
-    for an engine and working memory to parse Time Strings
+    """ Typing Spec Class, providing entry points
+    for an engine and working memory to handle type inference
     """
 
     def __init__(self):

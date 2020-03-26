@@ -45,6 +45,7 @@ class SentenceTests(unittest.TestCase):
     def test_data(self):
         return
 
+
 if __name__ == "__main__":
     #run python $filename to use this logging setup
     #using python -m unittest $filename won't

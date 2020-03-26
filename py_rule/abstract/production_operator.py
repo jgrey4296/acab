@@ -12,8 +12,8 @@ class ProductionOperator(PyRuleValue):
     # and allow type checking to resolve earlier
 
     def __init__(self, num_params=2, infix=False, type_str=OPERATOR_S):
-        # TODO this can be done using subclass DFS
         super().__init__(type_str=type_str)
+        # TODO this can be done using subclass DFS
         self._op_str = self.__class__.__name__
         self._num_params = num_params
         # TODO use infix
