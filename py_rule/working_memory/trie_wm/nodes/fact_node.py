@@ -16,9 +16,7 @@ class FactNode(TrieNode):
     @staticmethod
     def Root():
         """ Get a Root designated node """
-        return FactNode(WMU.ROOT_S, {WMU.OPERATOR_S: WMU.EXOP.DOT,
-                                     WMU.BIND_S: False,
-                                     WMU.VALUE_TYPE_S: WMU.NAME_S})
+        return FactNode(WMU.ROOT_S, WMU.DEFAULT_NODE_DATA)
 
     @staticmethod
     def copy_fact(node):
@@ -35,10 +33,7 @@ class FactNode(TrieNode):
                                 data=node._data)
             return new_node
 
-    def __init__(self,
-                 value,
-                 data=None,
-                 parent=None):
+    def __init__(self, value, data=None, parent=None):
         assert isinstance(data[WMU.OPERATOR_S], WMU.EXOP), data
         assert WMU.BIND_S in data, data
         assert WMU.VALUE_TYPE_S in data, data
