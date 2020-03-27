@@ -35,7 +35,6 @@ class OperatorSpec(ModuleSpecification):
 
     def _construct_action_ops(self):
         A.ActionAdd()
-        A.ActionRetract()
         A.ActionPrint()
 
     def _construct_transform_ops(self):

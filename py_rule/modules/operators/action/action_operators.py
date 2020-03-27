@@ -29,6 +29,7 @@ class ActionAdd(ActionOp):
 
 class ActionRetract(ActionOp):
     def __init__(self):
+        raise DeprecationWarning()
         super().__init__()
 
     def __call__(self, engine, params):
