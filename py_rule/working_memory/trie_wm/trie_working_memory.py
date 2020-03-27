@@ -40,26 +40,18 @@ class TrieWM(WorkingMemory):
         """ Assert multiple facts from a single string """
         if isinstance(s, str):
             rules, assertions = TotalP.parseString(s)
-            # TODO Retract negated sentences
             for x in assertions:
-                self._assert_sentence(x)
+                if util.NEGATION_S in x._data:
+                    self._retract_sentence(x)
+                else:
+                    self._assert_sentence(x)
         elif isinstance(s, Sentence):
-            self._assert_sentence(s)
+            if util.NEGATION_S in x._data:
+                self._retract_sentence(x)
+            else:
+                self._assert_sentence(s)
         else:
             raise PyRuleParseException("Unrecognised addition target: {}".format(type(s)))
-
-    def retract(self, s):
-        """ Retract multiple facts from a single string
-        Just handles simple sentences, not complex statements
-        """
-        if isinstance(s, str):
-            parsed = FP.parseString(s)
-            for x in parsed:
-                self._retract_sentence(x)
-        elif isinstance(s, Sentence):
-            self._retract_sentence(s)
-        else:
-            raise PyRuleParseException("Unrecognised retract target: {}".format(type(s)))
 
     def query(self, s):
         """ Query a string """
@@ -67,8 +59,7 @@ class TrieWM(WorkingMemory):
             query = QP.parseString(s)
             return self._query_sentence(query)
         elif isinstance(s, Sentence):
-            raise Exception("TODO")
-            return self._query_sentence(s)
+            return self._query_sentence(Query([s]))
         else:
             raise PyRuleParseException("Unrecognised query target: {}".format(type(s)))
 
@@ -120,7 +111,7 @@ class TrieWM(WorkingMemory):
 
     def _query_sentence(self, query):
         """ Query a TrieQuery instance """
-        assert(isinstance(query, Query))
+        assert(isinstance(query, (Query, Sentence)))
         self._clear_last_node()
         initial_context = Contexts.initial(self._internal_trie._root)
         return self._internal_query(query, initial_context)

@@ -62,7 +62,7 @@ class WorkingMemory:
         raise NotImplementedError()
 
     def retract(self, data):
-        raise NotImplementedError()
+        raise DeprecationWarning()
 
     def query(self, data):
         raise NotImplementedError()
