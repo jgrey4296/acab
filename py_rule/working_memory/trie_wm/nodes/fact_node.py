@@ -136,42 +136,6 @@ class FactNode(TrieNode):
             copied._bind_to_value(data)
             return copied
 
-    def search_regex(self, regex):
-        """ Test a regex on the Nodes value """
-        result = re.search(regex._params[0]._value, self.value_string())
-        if result is not None:
-            return result.groupdict()
-        else:
-            return None
-
-    def test_regexs_for_matching(self, regexs, currentData, preupdate=None):
-        """ Test a number of regexs on this Node
-        Return a Tuple of Nones if failure, (dict, node) if success
-        """
-        # TODO: move this to matching utilities
-        newData = currentData.copy()
-        if preupdate is not None:
-            for x,y in preupdate:
-                newData[x] = y
-        invalidated = False
-        for regex in regexs:
-            result = self.search_regex(regex)
-            if result is None:
-                invalidated = True
-                break
-            else:
-                for k, v in result.items():
-                    if k not in newData:
-                        newData[k] = v
-                    elif newData[k] != v:
-                        invalidated = True
-                        break
-
-        if invalidated:
-            return (None, None)
-        else:
-            return (newData, self)
-
     def _set_dirty_chain(self):
         """ Mark this Node as modified, up to the root """
         self._dirty = True
