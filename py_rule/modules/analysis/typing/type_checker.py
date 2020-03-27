@@ -100,6 +100,22 @@ class TypeChecker:
             self.validate()
             self.pop_typing_context()
 
+    def _get_known_typed_nodes(self):
+        # propagate known variable types
+        [x.propagate() for x in self._variables.get_nodes(lambda x: x._type is not None)]
+        # get all known declared types
+        val_queue = {y for y in self._declarations.get_nodes(lambda x: x._type is not None)}
+        return val_queue
+
+    def _merge_equivalent_nodes(self):
+        """ merge equivalent variables. ie:
+        a.b.$c and a.b.$d share the same ._variables node """
+        parents_of_equiv_vars = self._declarations.get_nodes(TU.has_equivalent_vars_pred)
+        for p in parents_of_equiv_vars:
+            var_nodes = {x._var_node for x in p._children.values() if x._is_var}
+            head = var_nodes.pop()
+            head.merge(var_nodes)
+            [self._variables.remove([x]) for x in var_nodes]
     def clear_context(self):
         """ Clear variables """
         # Clear self._variables and unregister its nodes from
@@ -138,6 +154,7 @@ class TypeChecker:
 
     def validate(self):
         """ Infer and check types """
+        self._merge_equivalent_nodes()
         typed_queue = self._get_known_typed_nodes()
 
         # Use known types to infer unknown types
@@ -168,13 +185,6 @@ class TypeChecker:
 
         return True
 
-    def _get_known_typed_nodes(self):
-        # propagate known variable types
-        [x.propagate() for x in self._variables.get_nodes(lambda x: x._type is not None)]
-        # get all known declared types
-        val_queue = {y for y in self._declarations.get_nodes(lambda x: x._type is not None)}
-        return val_queue
-
     def add_definition(self, definition):
         assert(isinstance(definition, TypeDefinition))
         if isinstance(definition, OperatorDefinition):
@@ -203,3 +213,4 @@ class TypeChecker:
 
         self.validate()
         self.clear_context()
+
