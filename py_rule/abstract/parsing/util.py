@@ -62,6 +62,9 @@ ACTION_HEAD    = s(pp.Literal(util.ACTION_HEAD_S))
 STRUCT_HEAD    = s(pp.Literal(util.STRUCTURE_S))
 FUNC_HEAD      = s(pp.Literal(util.FUNC_S))
 
+VAR_SYMBOL     = s(pp.Literal(util.VAR_SYMBOL_S))
+AT_BIND_SYMBOL = s(pp.Literal(util.AT_VAR_SYMBOL_S))
+
 # Basic Parsers
 NAME        = pp.Word(util.WORD_COMPONENT_S)
 NAME.setParseAction(lambda t: (util.NAME_S, t[0]))
@@ -74,8 +77,8 @@ REGEX       = pp.Regex(r'/.+?/')
 REGEX.setParseAction(lambda t: (util.REGEX_S, t[0][1:-1]))
 
 BASIC_VALUE = pp.Or([NAME, STRING, REGEX])
-BIND        = DOLLAR + NAME
-AT_BIND     = AT + NAME
+BIND        = VAR_SYMBOL + NAME
+AT_BIND     = AT_BIND_SYMBOL + NAME
 
 # TODO set parse action
 arglist = VBAR + pp.delimitedList(BIND, delim=COMMA) + VBAR

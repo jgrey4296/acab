@@ -53,3 +53,5 @@ ACTION_HEAD_S    = "α"
 STRUCTURE_S      = "σ"
 FUNC_S           = "λ"
 
+VAR_SYMBOL_S     = "$"
+AT_VAR_SYMBOL_S  = "@"
