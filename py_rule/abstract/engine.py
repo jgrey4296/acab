@@ -53,7 +53,7 @@ class Engine:
     def retract(self, s):
         """ Remove a fact from the engine """
         # pylint: disable=unused-argument,no-self-use
-        self._working_memory.retract(s)
+        raise DeprecationWarning('Use a negated add')
 
     def query(self, s):
         """ As a question of the working memory """
