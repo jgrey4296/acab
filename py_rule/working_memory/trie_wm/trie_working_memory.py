@@ -46,7 +46,7 @@ class TrieWM(WorkingMemory):
                 else:
                     self._assert_sentence(x)
         elif isinstance(s, Sentence):
-            if util.NEGATION_S in x._data:
+            if util.NEGATION_S in s._data:
                 self._retract_sentence(x)
             else:
                 self._assert_sentence(s)
