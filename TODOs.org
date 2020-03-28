@@ -6,148 +6,165 @@
    def query(self, s):
 
 ** Functionality
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/nodes/fact_node.py::84][Check fact node's copy semantics]]
-    <2020-03-26 Thu>
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/parsing/ActionParser.py::38][Allow default assertion of sentences in actions]]                        :parsing:
+    <2020-03-27 Fri>
 
-    TODO: deeper copy
+    action_component = PU.N(WMU.OPERATOR_S, HOTLOAD_OPERATORS) \
 
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/type_definition.py::19][TypeDefinition unify shared variables]]
-    <2020-03-26 Thu>
-
-    TODO unify shared variables across structure sentences to have
-
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/agendas/parsing/::4][Write Parser for Agendas]]
-    <2020-03-26 Thu>
-
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/parsing/util.py::81][Build Arglist properly]]
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/parsing/util.py::81][Build Arglist properly]]                                                 :parsing:
     <2020-03-26 Thu>
 
     arglist = VBAR + pp.delimitedList(BIND, delim=COMMA) + VBAR
 
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/agendas/expander_agenda.py::3][Implement Expander Agenda]]
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/nodes/fact_node.py::84][Check fact node's copy semantics]]                                       :semantics:
+    <2020-03-26 Thu>
+
+    TODO: deeper copy
+
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/agendas/expander_agenda.py::3][Implement Expander Agenda]]                                              :agenda:
     <2020-03-26 Thu>
 
     class ExpanderAgenda(Agenda):
 
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/layer.py::34][Implement logic for memoized rule selectors]]
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/layer.py::34][Implement logic for memoized rule selectors]]                            :performance:
     <2020-03-26 Thu>
 
     self._memoized_rules = []
 
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/production_operator.py::20][Implement operator infix logic]]
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/production_operator.py::20][Implement operator infix logic]]                                         :parsing:
     <2020-03-26 Thu>
 
     self._infix = infix
 
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/nodes/operator_def_node.py::63][Implement operator refinement]]
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/nodes/operator_def_node.py::63][Implement operator refinement]]
+    CLOSED: [2020-03-28 Sat 00:01]
     <2020-03-26 Thu>
 
     TODO refine the type of the operator at head
 
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/type_checker.py::139][Implement operator type checking]]
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/type_checker.py::139][Implement operator type checking]]                                       :typing:
     <2020-03-26 Thu>
 
     def validate(self):
 
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/pipeline.py::53][Implement Pipeline Interface]]
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/pipeline.py::53][Implement Pipeline Interface]]                                           :api:
     <2020-03-26 Thu>
 
     def input_constraints(self):
 
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/pipeline.py::31][Implement Pipeline verification]]
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/pipeline.py::31][Implement Pipeline verification]]                                        :api:
     <2020-03-26 Thu>
 
     def verify(self, engine):
 
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/agendas/sandbox_agenda.py::4][Implement SandboxAgenda]]
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/agendas/sandbox_agenda.py::4][Implement SandboxAgenda]]                                                :agenda:
     <2020-03-26 Thu>
 
     class SandboxAgenda(Agenda):
 
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/nodes/fact_node.py::181][Implement trie unification?]]
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/nodes/fact_node.py::181][Implement trie unification?]]                                            :semantics:
     <2020-03-26 Thu>
 
     def _unify(self, other):
 
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/trie_rule.py::9][Implement TrieRule features]]
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/trie_rule.py::9][Implement TrieRule features]]                                            :semantics:
     <2020-03-26 Thu>
 
     class TrieRule(Rule):
 
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/typing_module.py::6][Implement typing module spec]]
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/typing_module.py::6][Implement typing module spec]]                                           :api:
     <2020-03-26 Thu>
 
     class TypingSpec(ModuleSpecification):
 
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/type_definition.py::19][TypeDefinition unify shared variables]]                                  :typing:
+    <2020-03-26 Thu>
+
+    TODO unify shared variables across structure sentences to have
+
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/agendas/parsing/::4][Write Parser for Agendas]]                                               :parsing:
+    <2020-03-26 Thu>
+
 ** Improvements
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/parsing/QueryParser.py::77][Expand binding syntax and semantics]]
-    <2020-03-26 Thu>
-
-    TODO add syntax for binding a sentence
-
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/type_instance.py::4][Enable Type inheritance]]
-    <2020-03-26 Thu>
-
-    class TypeInstance(Type):
-
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/values/weights/weight_balance.py::15][Decide what to do with weight balancing]]
-    <2020-03-26 Thu>
-
-    class WeightBalance:
-
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/value.py::13][Make PyRuleValue._name a GUID]]
-    <2020-03-26 Thu>
-
-    self._name = "AnonValue"
-
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/agendas/::6][Parameterize Agendas]]
-    <2020-03-26 Thu>
-
-    -rw-r--r--  1 johngrey staff  470 Mar 25 22:11 cycle_agenda.py
-
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/production_operator.py::17][Possibly use subclass DFS for operator name registration]]
-    <2020-03-26 Thu>
-
-    self._op_str = self.__class__.__name__
-
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/trie_working_memory.py::43][Possibly adapt working memory add to retract negated sentences]]
-    <2020-03-26 Thu>
-
-    TODO Retract negated sentences
-
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/sentence.py::26][Update Sentence.__str__ ]]
-    <2020-03-26 Thu>
-
-    def __str__(self):
-
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/structures/theoretic_game/game.py::13][Improve GameTheory Module]]
-    <2020-03-26 Thu>
-
-    class Game:
-
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/query.py::48][Improve semantics of Query.to_sentences]]
-    <2020-03-26 Thu>
-
-    def to_sentences(self):
-
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/structures/time/pattern.py::21][Improve Time Pattern sorting]]
-     <2020-03-26 Thu>
-
-    class Pattern(PyRuleValue):
-
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/operators/action/action_operators.py::12][Add additional action operators]]
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/operators/action/action_operators.py::12][Add additional action operators]]                                        :api:
     <2020-03-26 Thu>
 
     TODO: add rule modification actions:
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/values/numbers/parsing/NumberParser.py::9][Add fraction parsing]]
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/values/numbers/parsing/NumberParser.py::9][Add fraction parsing]]                                                   :parsing:
     <2020-03-26 Thu>
 
     def construct_num(toks):
 
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/trie/trie.py::12][Add WeakValueDict to Trie to provide direct access to nodes]]            :semantics:
+    <2020-03-26 Thu>
+
+    def __init__(self, node_type=TrieNode):
+
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/values/weights/weight_balance.py::15][Decide what to do with weight balancing]]                                :modules:
+    <2020-03-26 Thu>
+
+    class WeightBalance:
+
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/type_instance.py::4][Enable Type inheritance]]                                                :typing:
+    <2020-03-26 Thu>
+
+    class TypeInstance(Type):
+
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/parsing/QueryParser.py::77][Expand binding syntax and semantics]]                                    :parsing:
+    <2020-03-26 Thu>
+
+    TODO add syntax for binding a sentence
+
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/structures/theoretic_game/game.py::13][Improve GameTheory Module]]                                              :modules:
+    <2020-03-26 Thu>
+
+    class Game:
+
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/query.py::48][Improve semantics of Query.to_sentences]]                                :semantics:
+    <2020-03-26 Thu>
+
+    def to_sentences(self):
+
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/structures/time/pattern.py::21][Improve Time Pattern sorting]]                                           :performance:
+    <2020-03-26 Thu>
+
+    class Pattern(PyRuleValue):
+
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/value.py::13][Make PyRuleValue._name a GUID]]                                          :performance:
+    <2020-03-26 Thu>
+
+    self._name = "AnonValue"
+
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/agendas/::6][Parameterize Agendas]]                                                   :parsing:
+    <2020-03-26 Thu>
+
+    -rw-r--r--  1 johngrey staff  470 Mar 25 22:11 cycle_agenda.py
+
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/trie_working_memory.py::43][Possibly adapt working memory add to retract negated sentences]]
+    CLOSED: [2020-03-28 Sat 00:08]
+    <2020-03-26 Thu>
+
+    TODO Retract negated sentences
+
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/production_operator.py::17][Possibly use subclass DFS for operator name registration]]               :performance:
+    <2020-03-26 Thu>
+
+    self._op_str = self.__class__.__name__
+
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/action.py::105][Refine ActionComponent.to_sentence]]                                     :semantics:
+    <2020-03-27 Fri>
+
+    def to_sentence(self):
+
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/sentence.py::26][Update Sentence.__str__ ]]                                               :parsing:
+    <2020-03-26 Thu>
+
+    def __str__(self):
+
 ** Testing
 *** TODO [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/__tests/trie_wm_tests.py::126][Decide on semantics of switching exclusion operators]]
     <2020-03-26 Thu>
-   
+
     TODO: make this so you can't switch between . and ! ?
 
 *** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/__tests/typing_tests.py::523][Expand polytype testing]]
@@ -230,9 +247,3 @@
     def test_typedef_with_bad_vars(self):
 
 **** Test
-
-* TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/trie/trie.py::12][Add WeakValueDict to Trie to provide direct access to nodes]]
- <2020-03-26 Thu>
-  
-   def __init__(self, node_type=TrieNode):
-
