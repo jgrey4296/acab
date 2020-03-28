@@ -74,7 +74,7 @@ class TransformComponent(PO.ProductionComponent):
                                          rebind)
 
     def __call__(self, ctx):
-        op_func = TransformOp.op_list[self._op]
+        op_func = TransformOp.op_list[len(self._params)][self._op]
         params = [ctx[y._value] if y._data[util.BIND_S] else y._value for y in self._params]
 
         return op_func(*params, ctx)
