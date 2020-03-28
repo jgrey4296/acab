@@ -26,7 +26,6 @@ class Engine_Tests(unittest.TestCase):
         self.e.add('a.b.c')
         self.assertEqual(len(self.e._working_memory._internal_trie._root), 1)
 
-    @unittest.skip("Waiting on implementation of not in sentences")
     def test_retract(self):
         self.e.add('a.b.c')
         self.assertEqual(len(self.e._working_memory._internal_trie._root), 1)
@@ -59,7 +58,6 @@ class Engine_Tests(unittest.TestCase):
         self.assertEqual(len(self.e._working_memory._internal_trie.get_nodes(pred=lambda x: not bool(x))), 3)
         self.assertTrue(self.e.query('a.b.c?, a.b.d?, a.b.e?'))
 
-    @unittest.skip("Waiting on implementation of not in sentences")
     def test_multi_retract(self):
         self.e.add('a.b.c, a.b.d, a.b.e')
         self.assertEqual(len(self.e._working_memory._internal_trie.get_nodes(pred=lambda x: not bool(x))), 3)

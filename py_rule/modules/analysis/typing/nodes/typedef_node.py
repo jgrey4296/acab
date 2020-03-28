@@ -93,7 +93,7 @@ class TypeDefTrieNode(TrieNode):
            and usage_trie._type \
            and usage_trie._type._args:
             zipped = zip(self._data[util.TYPE_DEF_S]._vars, usage_trie._type._args)
-            type_var_lookup = {x.value_string(): y for x, y in zipped}
+            type_var_lookup = {x: y for x, y in zipped}
         return type_var_lookup
 
     def _retrieve_type_declaration(self, curr_def, type_var_lookup):

@@ -15,7 +15,7 @@ HOTLOAD_OPERATORS = pp.Forward()
 def build_operators():
     """ For Hotloading Action operators """
     if HOTLOAD_OPERATORS.expr is not None:
-        logging.warning("Action Operators Overwrite")
+        logging.debug("Action Operators Overwrite")
     ACTION_STRS = [x for x in action.ActionOp.op_list.keys()]
     HOTLOAD_OPERATORS << pp.Or([pp.Literal(x) for x in ACTION_STRS] + [PU.OPERATOR_SUGAR])
 

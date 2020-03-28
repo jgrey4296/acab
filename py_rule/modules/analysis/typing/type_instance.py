@@ -46,6 +46,6 @@ class TypeInstance(Type):
             return TypeInstance(new_type._name,
                                 new_type._args)
 
-        new_args = [the_dict[x.value_string()] if x.value_string() in the_dict
+        new_args = [the_dict[x] if x in the_dict
                     else x for x in self._args]
         return TypeInstance(self._name, new_args)

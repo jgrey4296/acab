@@ -6,7 +6,8 @@
    def query(self, s):
 
 ** Functionality
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/parsing/ActionParser.py::38][Allow default assertion of sentences in actions]]                        :parsing:
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/parsing/ActionParser.py::38][Allow default assertion of sentences in actions]]                        :parsing:
+    CLOSED: [2020-03-28 Sat 03:19]
     <2020-03-27 Fri>
 
     action_component = PU.N(WMU.OPERATOR_S, HOTLOAD_OPERATORS) \

@@ -4,6 +4,7 @@ import unittest
 import logging
 from py_rule.modules.values.numbers.parsing import NumberParser as NP
 from py_rule.working_memory.trie_wm.parsing import ActionParser as AP
+from py_rule.working_memory.trie_wm.parsing import RuleParser as RP
 from py_rule.working_memory.trie_wm.parsing import TransformParser as TP
 from py_rule.working_memory.trie_wm.parsing import FactParser as FP
 from py_rule.working_memory.trie_wm.parsing import QueryParser as QP
@@ -118,15 +119,14 @@ class NumberQueryTests(unittest.TestCase):
             self.assertEqual(a,str(q))
 
 
-    @unittest.skip("TODO")
     def test_rule_binding_expansion(self):
         bindings = { "x" : FP.parseString('a.b.c')[0],
                      "y" : FP.parseString('d.e.f')[0],
                      "z" : FP.parseString('x.y.z')[0] }
-        result = RP.parseString("a.$x:\n$y.b.$z?\n\n$x + 2\n\n+($x)\nend")[0][1]
-        expanded = result.expand_bindings(bindings)
+        result = RP.parseString("ρ::a.rule:\n$y.b.$z?\n\n$x + 2 -> $y\n\n+($y)\n\nend")[0][-1]
+        expanded = result._value.expand_bindings(bindings)
         self.assertEqual(str(expanded),
-                         "a.a.b.c:\n\td.e.f.b.x.y.z?\n\n\t$x + 2\n\n\t+(a.b.c)\nend")
+                         "a.rule:\n\td.e.f.b.x.y.z?\n\n\t$x + 2\n\n\t+(a.b.c)\nend")
 
 
     def test_query_alpha_comp(self):

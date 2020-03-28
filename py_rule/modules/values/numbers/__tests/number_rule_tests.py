@@ -52,7 +52,7 @@ class NumberRuleTests(unittest.TestCase):
 
 
     def test_rule_with_multiple_transforms(self):
-        result = RP.parseString("ρ::a.rule:\n$x AddOp 20 -> $y\n$y SubOp 20 -> $z\n\nend")
+        result = RP.parseString("ρ::a.rule:\n$x AddOp 30 -> $y\n$y SubOp 20 -> $z\n\nend\n")
         self.assertEqual(len(result), 1)
         self.assertIsInstance(result[0][-1]._value, Rule)
         self.assertIsNone(result[0][-1]._value._query)
@@ -68,7 +68,7 @@ class NumberRuleTests(unittest.TestCase):
 
 
     def test_rule_with_query_transform_actions(self):
-        result = RP.parseString("ρ::a.rule:\na.b.c?\n\n$x AddOp 20 -> $y\n\nActionAdd(a.b.c)\nend")
+        result = RP.parseString("ρ::a.rule:\na.b.c?\n\n$x AddOp 20 -> $y\n\nActionAdd(a.b.c)\n\nend")
         self.assertEqual(len(result), 1)
         self.assertIsInstance(result[0][-1]._value, Rule)
         self.assertIsNotNone(result[0][-1]._value._query)

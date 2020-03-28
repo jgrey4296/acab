@@ -15,17 +15,17 @@ def build_operators():
     OP_SUGAR = [PU.OPERATOR_SUGAR]
 
     if BINARY_TRANS_OP.expr is not None:
-        logging.warning("Transform Binary Operator Overwrite")
+        logging.debug("Transform Binary Operator Overwrite")
     BINARY_TRANS_OP << pp.Or([pp.Literal(k) for k, v
                               in TransformOp.op_list[2].items()] + OP_SUGAR)
 
     if UNARY_TRANS_OP.expr is not None:
-        logging.warning("Transform Unary Operator Overwrite")
+        logging.debug("Transform Unary Operator Overwrite")
     UNARY_TRANS_OP << pp.Or([pp.Literal(k) for k, v
                              in TransformOp.op_list[1].items()] + OP_SUGAR)
 
     if TERNARY_TRANS_OP.expr is not None:
-        logging.warning("Transform Ternary Operator Overwrite")
+        logging.debug("Transform Ternary Operator Overwrite")
     TERNARY_TRANS_OP << pp.Or([pp.Literal(k) for k, v
                                in TransformOp.op_list[3].items()] + OP_SUGAR)
 

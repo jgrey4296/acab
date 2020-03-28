@@ -64,7 +64,7 @@ class ContextTests(unittest.TestCase):
         for x,y in zip(ctx, ['a','b','c']):
             self.assertTrue(y in x.keys())
 
-    @unittest.skip("TODO")
+    @unittest.skip("TODO: check set all alts works on both targets and bindings")
     def test_set_all_alts(self):
         return
 

@@ -7,16 +7,12 @@ from os.path import split, splitext, expanduser, abspath
 from os import listdir
 
 
-@unittest.skip("Broken")
 class Engine_Logic_Tests(unittest.TestCase):
 
     def path(self, filename):
         """ Navigate from the file,
         not the cwd """
-        return abspath(join(split(__file__)[0],
-                            '..',
-                            "testfiles",
-                            filename))
+        return abspath(join("testfiles", filename))
 
     def setUp(self):
         self.e = TrieEngine()
@@ -31,6 +27,7 @@ class Engine_Logic_Tests(unittest.TestCase):
             a.b.c?
 
             +(a.b.d)
+
         end""")
         self.e.add("a.b.c")
         self.assertTrue(self.e.query("~a.b.d?"))

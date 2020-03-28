@@ -34,7 +34,6 @@ class Trie_WM_Tests(unittest.TestCase):
         self.trie.add('a.b.c')
         self.assertEqual(len(self.trie._internal_trie._root), 1)
 
-    @unittest.skip("Waiting on implementation of not in sentences")
     def test_retract(self):
         """ Check retractions work """
         self.trie.add('a.b.c')
@@ -49,7 +48,6 @@ class Trie_WM_Tests(unittest.TestCase):
         self.trie.add('q.r.t')
         self.assertEqual(len(self.trie._internal_trie._root), 2)
 
-    @unittest.skip("Waiting on implementation of not in sentences")
     def test_multi_retract(self):
         """ Check multiple retractions work """
         self.assertEqual(len(self.trie._internal_trie._root), 0)
@@ -74,7 +72,6 @@ class Trie_WM_Tests(unittest.TestCase):
         result = self.trie.query('q.w.e?')
         self.assertFalse(result)
 
-    @unittest.skip("Waiting on implementation of not in sentences")
     def test_retract_verified_by_query(self):
         self.trie.add('a.b.c, a.b.d')
         self.trie.add('~a.b')
@@ -137,7 +134,6 @@ class Trie_WM_Tests(unittest.TestCase):
         self.assertFalse(self.trie.query('a.b.c?'))
         self.assertFalse(self.trie.query('a.b.d?'))
 
-    @unittest.skip("Waiting on implementation of not in sentences")
     def test_retraction_cascade(self):
         """ Check that retracting a fact retracts any subfacts """
         self.trie.add('a.b.c')

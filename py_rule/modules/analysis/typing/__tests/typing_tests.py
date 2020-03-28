@@ -374,9 +374,7 @@ class TypingTests(unittest.TestCase):
         #polytype
         type_1_sen = S("name","x")
         type_1_sen[-1]._data[TU.BIND_S] = True
-        param = TrieNode("x")
-        param._data[TU.BIND_S] = True
-        tc.add_definition(TypeDefinition([type_1_sen]).set_name_and_vars(S("poly.type"), [param]))
+        tc.add_definition(TypeDefinition([type_1_sen]).set_name_and_vars(S("poly.type"), ["x"]))
 
         #assertions
         assertion = S("a","name","q")
@@ -416,19 +414,13 @@ class TypingTests(unittest.TestCase):
         #polytype 1
         type_1_sen = S("name","x")
         type_1_sen[-1]._data[TU.BIND_S] = True
-        param = TrieNode("x")
-        param._data[TU.BIND_S] = True
-        tc.add_definition(TypeDefinition([type_1_sen]).set_name_and_vars(S("poly.type.one"), [param]))
+        tc.add_definition(TypeDefinition([type_1_sen]).set_name_and_vars(S("poly.type.one"), ["x"]))
 
         #polytype 2
         type_2_sen = S("nested")
         type_2_sen[-1]._data[TU.BIND_S] = True
-        type_2_param = TrieNode("y")
-        type_2_param._data[TU.BIND_S] = True
-        type_2_sen[-1]._data[TU.TYPE_DEC_S] = TypeInstance(S("poly.type.one"), [type_2_param])
-        param2 = TrieNode("y")
-        param2._data[TU.BIND_S] = True
-        tc.add_definition(TypeDefinition([type_2_sen]).set_name_and_vars(S("poly.type.two"), [param2]))
+        type_2_sen[-1]._data[TU.TYPE_DEC_S] = TypeInstance(S("poly.type.one"), ["y"])
+        tc.add_definition(TypeDefinition([type_2_sen]).set_name_and_vars(S("poly.type.two"), ["y"]))
 
         #Assertion
         assertion = S("a","nested","name","x")
@@ -462,13 +454,9 @@ class TypingTests(unittest.TestCase):
         #polytype
         type_1_sen = S("name","x")
         type_1_sen[-1]._data[TU.BIND_S] = True
-        param = TrieNode("x")
-        param._data[TU.BIND_S] = True
         type_2_sen = S("age","y")
         type_2_sen[-1]._data[TU.BIND_S] = True
-        param2 = TrieNode("y")
-        param2._data[TU.BIND_S] = True
-        tc.add_definition(TypeDefinition([type_1_sen, type_2_sen]).set_name_and_vars(S("poly.type"),[param, param2]))
+        tc.add_definition(TypeDefinition([type_1_sen, type_2_sen]).set_name_and_vars(S("poly.type"),["x", "y"]))
 
         #assertions
         assertion = S("a","name","q")

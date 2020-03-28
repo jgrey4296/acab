@@ -16,7 +16,7 @@ logging = root_logger.getLogger(__name__)
 def build_operators():
     """ Hotload comparison operators after they have been initialised """
     if COMP_OP.expr is not None:
-        logging.warning("Comparison Operators parser overwrite")
+        logging.debug("Comparison Operators parser overwrite")
     OP_STRS = [x for x in C.CompOp.op_list.keys()]
     COMP_OP << pp.Or([pp.Literal(x) for x in OP_STRS] + [PU.OPERATOR_SUGAR])
 

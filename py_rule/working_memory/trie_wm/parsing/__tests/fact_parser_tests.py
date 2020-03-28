@@ -6,7 +6,7 @@ import py_rule.working_memory.trie_wm.parsing.FactParser as FP
 from py_rule.abstract.trie.nodes.trie_node import TrieNode
 from py_rule.abstract.sentence import Sentence
 from py_rule.working_memory.trie_wm import util as KBU
-
+from py_rule import util
 
 class Trie_Fact_Parser_Tests(unittest.TestCase):
 
@@ -34,7 +34,13 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertTrue(all([x._data[KBU.OPERATOR_S] == KBU.EXOP.DOT for x in result]))
 
     def test_parseStrings(self):
-        result = FP.parseString('a.b.c,\n b.c.d')
+        result = FP.parseString('a.b.c, b.c.d')
+        self.assertIsInstance(result, list)
+        self.assertEqual(len(result), 2)
+        self.assertTrue(all([isinstance(x, Sentence) for x in result]))
+
+    def test_parse_strings_multiline(self):
+        result = FP.parseString('a.b.c\n b.c.d')
         self.assertIsInstance(result, list)
         self.assertEqual(len(result), 2)
         self.assertTrue(all([isinstance(x, Sentence) for x in result]))
@@ -99,6 +105,16 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         a = FP.VALBIND.parseString("¿awef")[0]
         self.assertEqual(a._value, "¿awef")
         self.assertEqual(a._data[KBU.VALUE_TYPE_S], "awef")
+
+    def test_negated_basic_sentence(self):
+        result = FP.BASIC_SEN.parseString('~a.test!string')[0]
+        self.assertIsInstance(result, Sentence)
+        self.assertTrue(result._data[util.NEGATION_S])
+
+    def test_positive_basic_sentence(self):
+        result = FP.BASIC_SEN.parseString('a.test!string')[0]
+        self.assertIsInstance(result, Sentence)
+        self.assertFalse(result._data[util.NEGATION_S])
 
 
 if __name__ == "__main__":
