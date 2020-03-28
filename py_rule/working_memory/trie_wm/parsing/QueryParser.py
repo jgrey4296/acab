@@ -38,7 +38,7 @@ def build_clause(toks):
              WMU.FALLBACK_S : None }
     if WMU.FALLBACK_S in toks:
         if WMU.NEGATION_S in toks:
-            raise PyRuleParseException("Negated Fallback clauses in don't make sense")
+            raise PyRuleParseException("Negated Fallback clauses don't make sense")
         data[WMU.FALLBACK_S] = toks[WMU.FALLBACK_S][:]
     if WMU.NEGATION_S in toks:
         data[WMU.NEGATION_S] = True
@@ -83,7 +83,7 @@ clause = PU.op(NOT) + PU.N(WMU.MAIN_CLAUSE_S, pp.ZeroOrMore(QueryCore)
                               + PU.N(WMU.FALLBACK_S,
                                      PU.op(fallback))
 
-clauses = pp.delimitedList(clause, delim=PU.COMMA)
+clauses = pp.delimitedList(clause, delim=PU.DELIM)
 
 query_statement = PU.STATEMENT_CONSTRUCTOR(PU.QUERY_HEAD, BASIC_SEN, clauses)
 

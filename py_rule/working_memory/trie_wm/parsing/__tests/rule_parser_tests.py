@@ -31,25 +31,25 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertIsNotNone(RP)
 
     def test_name_empty_rule_parse(self):
-            result = RP.parseString("ρ::a.rule.x:\nend")
+            result = RP.parseString("ρ::a.rule.x: end")
             self.assertEqual(len(result), 1)
             self.assertIsInstance(result[0][-1]._value, Rule)
             self.assertEqual(str(result[0][-1]._value), "x(::ρ):\nend")
 
     def test_multi_empty_rules(self):
-            result = RP.parseString("ρ::a.rule.$x:\n\nend\n\nρ::a.second.rule:\n\nend")
+            result = RP.parseString("ρ::a.rule.x: end\n\nρ::a.second.rule: end")
             self.assertEqual(len(result),2)
             self.assertTrue(all([isinstance(x[-1]._value,Rule) for x in result]))
 
     def test_rule_with_query(self):
-            result = RP.parseString("ρ::a.rule.$x:\na.b.c?\n\nend")
+            result = RP.parseString("ρ::a.rule.x:\na.b.c?\n\nend")
             self.assertEqual(len(result),1)
             self.assertIsInstance(result[0][-1]._value, Rule)
             self.assertIsNotNone(result[0][-1]._value._query)
             self.assertIsInstance(result[0][-1]._value._query, Query)
 
     def test_rule_with_multi_clause_query(self):
-            result = RP.parseString("ρ::a.rule.$x:\na.b.c?,\na.b.d?\n\nend")
+            result = RP.parseString("ρ::a.rule.x:\na.b.c?\na.b.d?\n\nend")
             self.assertEqual(len(result),1)
             self.assertIsInstance(result[0][-1]._value, Rule)
             self.assertIsNotNone(result[0][-1]._value._query)
@@ -57,7 +57,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertEqual(len(result[0][-1]._value._query), 2)
 
     def test_rule_with_multi_clauses_in_one_line(self):
-            result = RP.parseString("ρ::a.rule.$x:\na.b.c?, a.b.d?\n\nend")
+            result = RP.parseString("ρ::a.rule.x:\na.b.c?, a.b.d?\n\nend")
             self.assertEqual(len(result),1)
             self.assertIsInstance(result[0][-1]._value, Rule)
             self.assertIsNotNone(result[0][-1]._value._query)
@@ -65,7 +65,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertEqual(len(result[0][-1]._value._query), 2)
 
     def test_rule_with_binding_query(self):
-            result = RP.parseString("ρ::a.rule.$x:\na.b.$x?\n\nend")
+            result = RP.parseString("ρ::a.rule.x:\na.b.$x?\n\nend")
             self.assertEqual(len(result),1)
             self.assertIsInstance(result[0][-1]._value, Rule)
             self.assertIsNotNone(result[0][-1]._value._query)
@@ -73,16 +73,15 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertEqual(len(result[0][-1]._value._query), 1)
 
     def test_rule_with_actions(self):
-            result = RP.parseString("ρ::a.rule.$x:\n\nActionAdd(a.b.c)\nend")
+            result = RP.parseString("ρ::a.rule.x:\nActionAdd(a.b.c)\n\nend")
             self.assertEqual(len(result), 1)
             self.assertIsInstance(result[0][-1]._value, Rule)
             self.assertIsNone(result[0][-1]._value._query)
             self.assertIsNone(result[0][-1]._value._transform)
             self.assertEqual(len(result[0][-1]._value._action), 1)
 
-    @unittest.skip("Waiting on implementation of not in sentences")
     def test_multi_action_rule(self):
-            result = RP.parseString("ρ::a.rule.$x:\n\nActionAdd(a.b.c),\nActionAdd(~a.b.d)\n\nend")
+            result = RP.parseString("ρ::a.rule.x:\nActionAdd(a.b.c)\nActionAdd(~a.b.d)\n\nend")
             self.assertEqual(len(result[0]), 3)
             self.assertIsInstance(result[0], Sentence)
             self.assertIsInstance(result[0][-1]._value, Rule)
@@ -90,9 +89,8 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertIsNone(result[0][-1]._value._transform)
             self.assertEqual(len(result[0][-1]._value._action), 2)
 
-    @unittest.skip("Waiting on implementation of not in sentences")
     def test_multi_action_single_line_rule(self):
-            result = RP.parseString("ρ::a.rule.$x:\n\nActionAdd(a.b.c), ActionAdd(~a.b.d)\n\nend")
+            result = RP.parseString("ρ::a.rule.x:\n\nActionAdd(a.b.c), ActionAdd(~a.b.d)\n\nend")
             self.assertEqual(len(result), 1)
             self.assertIsInstance(result[0][-1]._value, Rule)
             self.assertIsNone(result[0][-1]._value._query)

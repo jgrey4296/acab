@@ -5,7 +5,7 @@ from py_rule.abstract import action as action
 from py_rule.abstract.parsing import util as PU
 from py_rule.working_memory.trie_wm import util as WMU
 
-from .FactParser import PARAM_SEN, VALBIND, BASIC_SEN
+from .FactParser import PARAM_SEN, VALBIND, BASIC_SEN, PARAM_SEN
 
 logging = root_logger.getLogger(__name__)
 
@@ -26,7 +26,9 @@ def build_component(toks):
 
 
 def build_action(toks):
-    act = action.Action(toks[:])
+    clauses = [x if isinstance(x, action.ActionComponent) else action.ActionComponent('ActionAdd', [x]) for x in toks]
+    act = action.Action(clauses)
+
     return (act._type, act)
 
 
@@ -35,13 +37,14 @@ vals = pp.delimitedList(PARAM_SEN, delim=PU.COMMA)
 
 bindList = pp.delimitedList(VALBIND, delim=PU.COMMA)
 # action: [op](values)
-# TODO allow assertion of sentences by default
 action_component = PU.N(WMU.OPERATOR_S, HOTLOAD_OPERATORS) \
     + PU.OPAR + PU.N(WMU.ACTION_VAL_S, vals) + PU.CPAR
 
-actions = pp.delimitedList(action_component, delim=PU.DELIM)
+# Sentences are asserted by default
+# TODO: block param_sen from beginning with "end"
+actions = pp.delimitedList(pp.Or([action_component, PARAM_SEN]), delim=PU.DELIM)
 
-action_definition = PU.STATEMENT_CONSTRUCTOR(PU.ACTION_HEAD, BASIC_SEN, actions)
+action_definition = PU.STATEMENT_CONSTRUCTOR(PU.ACTION_HEAD, BASIC_SEN, actions + PU.emptyLine)
 
 # parse action
 action_component.setParseAction(build_component)

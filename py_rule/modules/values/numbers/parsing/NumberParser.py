@@ -8,15 +8,16 @@ logging = root_logger.getLogger(__name__)
 
 def construct_num(toks):
     # TODO: add in fractions and underscores
+    as_str = "".join(toks)
     if util.DECIMAL_S in toks[0]:
-        return (util.FLOAT_S, float(toks[0].replace(util.DECIMAL_S,
-                                                    '.')))
+        return (util.FLOAT_S, float(as_str.replace(util.DECIMAL_S, '.')))
     else:
-        return (util.INT_S, int(toks[0]))
+        return (util.INT_S, int(as_str))
 
+# This avoids trying to parse rebind arrows as numbers
+NEG = pp.Keyword("-", identChars=">")
 
-
-NUM = pp.Word(pp.nums + '-' + util.DECIMAL_S)
+NUM = PU.op(NEG) + pp.Word(pp.nums + util.DECIMAL_S)
 NUM.setParseAction(construct_num)
 
 def parseString(s):

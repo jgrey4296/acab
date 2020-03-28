@@ -59,10 +59,10 @@ def build_rule(toks):
 
 tagName = PU.HASH + PU.NAME
 
-tagList    = PU.N(WMU.TAG_S, pp.delimitedList(tagName, delim=PU.COMMA) + PU.emptyLine)
+tagList    = PU.N(WMU.TAG_S, pp.delimitedList(tagName, delim=PU.DELIM) + PU.emptyLine)
 conditions = PU.N(WMU.CONDITION_S, QP.clauses + PU.emptyLine)
 transforms = PU.N(WMU.TRANSFORM_S, TP.transforms + PU.emptyLine)
-actions    = PU.NG(WMU.ACTION_S, AP.actions)
+actions    = PU.NG(WMU.ACTION_S, AP.actions + PU.emptyLine)
 
 rule_body = PU.op(tagList) + PU.op(conditions) + PU.op(transforms) + PU.op(actions)
 

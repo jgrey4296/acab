@@ -27,8 +27,6 @@ class OperatorSpec(ModuleSpecification):
 
     def _construct_comp_ops(self):
         C.EQ()
-        # C.GT()
-        # C.LT()
         C.NEQ()
         C.RegMatch()
         C.ELEM()
@@ -38,14 +36,6 @@ class OperatorSpec(ModuleSpecification):
         A.ActionPrint()
 
     def _construct_transform_ops(self):
-        # T.AddOp()
-        # T.SubOp()
-        # T.MulOp()
-        # T.DivOp()
-        # T.RandOp()
-        # T.RemainOp()
-        # T.RoundOp()
-        # T.NegOp()
         T.RegexOp()
         T.FormatOp()
 
