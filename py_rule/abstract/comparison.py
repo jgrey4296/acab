@@ -1,8 +1,9 @@
 """ Simple comparison functions to be used in rules """
 import logging as root_logger
 from .production_operator import ProductionOperator, ProductionComponent
-from py_rule.util import BIND_S
+from py_rule.util import BIND_S, OPERATOR_S
 from .sentence import Sentence
+from .node import PyRuleNode
 logging = root_logger.getLogger(__name__)
 
 
@@ -60,6 +61,12 @@ class Comparison(ProductionComponent):
             value = data[value]
         return op(node_value, value)
 
+    def __refine_op_func(self, op_str):
+        """ Replace the current op func set with a specific
+        op func, used for type refinement """
+        assert(op_str in CompOp.op_list)
+        self._op = op_str
+
     def copy(self):
         return Comparison(self._op, self._value)
 
@@ -69,10 +76,9 @@ class Comparison(ProductionComponent):
     def is_regex_test(self):
         return self._op is "RegMatch"
 
-    def refine_operator(self, op_str):
-        self._op = op_str
-
     def to_sentence(self, target):
         """ Create a comparison as a canonical sentence """
         # eg: 20(>30) -> > 20 30 -> bool
-        return Sentence([self._op, target, self._value])
+        assert(isinstance(target, PyRulenode))
+        head = PyRule(self._op_str, { OPERATOR_S : self})
+        return Sentence([head, target, self._value])

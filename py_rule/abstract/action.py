@@ -6,6 +6,7 @@ from . import production_operator as PO
 from py_rule.error.pyrule_operator_exception import PyRuleOperatorException
 from py_rule import util as util
 from py_rule.abstract.sentence import Sentence
+from py_rule.abstract.node import PyRuleNode
 import logging as root_logger
 
 logging = root_logger.getLogger(__name__)
@@ -68,6 +69,12 @@ class ActionComponent(PO.ProductionComponent):
         # perform action op with data
         opFunc(engine, values)
 
+    def __refine_op_func(self, op_str):
+        """ Replace the current op func set with a specific
+        op func, used for type refinement """
+        assert(op_str in ActionOp.op_list)
+        self._op = op_str
+
     def verify_op(self):
         """ Check the Action is using a valid operator (ACT enum) """
         if self._op not in ActionOp.op_list.keys():
@@ -105,7 +112,9 @@ class ActionComponent(PO.ProductionComponent):
     def to_sentence(self):
         """ Return the action in canonical form """
         # eg : assert a.test  = assert -> a.test -> nil
-        sen = Sentence([self._op] + self._params[:])
+        # TODO : params are sentences themselves
+        head = PyRulenode(self._op_str, { util.OPERATOR_S : self})
+        sen = Sentence([head] + self._params[:])
         return sen
 
 

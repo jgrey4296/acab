@@ -90,7 +90,7 @@ class TransformComponent(PO.ProductionComponent):
         self._rebind = bind
 
     def to_sentence(self):
-        head = PyRuleNode(self._op_str, { 'source' : self})
+        head = PyRuleNode(self._op_str, { util.OPERATOR_S : self})
         return Sentence([head] + [x for x in self._params] + [self._rebind])
 
 
