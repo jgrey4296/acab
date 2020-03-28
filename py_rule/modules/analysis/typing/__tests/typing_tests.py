@@ -102,11 +102,10 @@ class TypingTests(unittest.TestCase):
         results = tc.query(query_sen)
         self.assertEqual(len(results), 0)
 
-    @unittest.skip("Broken until Merge reworked")
     def test_basic_inference(self):
         """ ::a END, a.$b(::a), a.$c """
         tc = TypeChecker()
-        tc.add_definition(TypeDefinition(S("a"), [], []))
+        tc.add_definition(TypeDefinition([]).set_name_and_vars(S("a")))
         sen1 = S("a","b")
         sen1[-1]._data[TU.BIND_S] = True
         sen1[-1]._data[TU.TYPE_DEC_S] = TypeInstance(S("a"))
