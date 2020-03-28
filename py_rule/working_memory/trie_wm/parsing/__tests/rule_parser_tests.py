@@ -80,8 +80,9 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertIsNone(result[0][-1]._value._transform)
             self.assertEqual(len(result[0][-1]._value._action), 1)
 
+    @unittest.skip("Waiting on implementation of not in sentences")
     def test_multi_action_rule(self):
-            result = RP.parseString("ρ::a.rule.$x:\n\nActionAdd(a.b.c),\nActionRetract(a.b.d)\n\nend")
+            result = RP.parseString("ρ::a.rule.$x:\n\nActionAdd(a.b.c),\nActionAdd(~a.b.d)\n\nend")
             self.assertEqual(len(result[0]), 3)
             self.assertIsInstance(result[0], Sentence)
             self.assertIsInstance(result[0][-1]._value, Rule)
@@ -89,8 +90,9 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertIsNone(result[0][-1]._value._transform)
             self.assertEqual(len(result[0][-1]._value._action), 2)
 
+    @unittest.skip("Waiting on implementation of not in sentences")
     def test_multi_action_single_line_rule(self):
-            result = RP.parseString("ρ::a.rule.$x:\n\nActionAdd(a.b.c), ActionRetract(a.b.d)\n\nend")
+            result = RP.parseString("ρ::a.rule.$x:\n\nActionAdd(a.b.c), ActionAdd(~a.b.d)\n\nend")
             self.assertEqual(len(result), 1)
             self.assertIsInstance(result[0][-1]._value, Rule)
             self.assertIsNone(result[0][-1]._value._query)

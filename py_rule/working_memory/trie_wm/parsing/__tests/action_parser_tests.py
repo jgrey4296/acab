@@ -29,10 +29,11 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
         self.assertEqual(result._clauses[0]._op, "ActionAdd")
         self.assertEqual([x[-1]._value for x in result._clauses[0]._params], ["blah bloo","blee","awef"])
 
+    @unittest.skip("Waiting on implementation of not in sentences")
     def test_actions_fact_str(self):
-        result = AP.parseString('ActionAdd(a.b.c), ActionRetract(a!b.d), ActionAdd($x), ActionAdd($x.a.b)')
-        self.assertEqual(len(result), 4)
+        result = AP.parseString('ActionAdd(a.b.c), ActionAdd(~a!b.d), ActionAdd($x), ActionAdd($x.a.b)')
         self.assertIsInstance(result, action.Action)
+        self.assertEqual(len(result), 4)
         self.assertTrue(all([isinstance(x, action.ActionComponent) for x in result]))
 
     def test_action_binding_expansion(self):

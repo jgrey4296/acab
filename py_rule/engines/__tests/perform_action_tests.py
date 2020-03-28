@@ -13,7 +13,6 @@ class ActionTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         act_ops.ActionAdd()
-        act_ops.ActionRetract()
         act_ops.ActionPrint()
 
 
@@ -30,8 +29,9 @@ class ActionTests(unittest.TestCase):
         self.e._perform_actions({},actions)
         self.assertTrue(self.e.query("a.b.c?"))
 
+    @unittest.skip("Waiting on implementation of not in sentences")
     def test_run_retract_action(self):
-        actions = AP.parseString("ActionRetract(a.b.c)")
+        actions = AP.parseString("ActionAdd(~a.b.c)")
         self.e.add("a.b.c")
         self.assertTrue(self.e.query("a.b.c?"))
         self.e._perform_actions({}, actions)
@@ -45,8 +45,9 @@ class ActionTests(unittest.TestCase):
         self.e._perform_actions({}, actions)
         self.assertTrue(self.e.query("a.b.c?, a.b.d?"))
 
+    @unittest.skip("Waiting on implementation of not in sentences")
     def test_run_mixed_multi_action(self):
-        actions = AP.parseString("ActionAdd(a.b.c), ActionRetract(a.b.d)")
+        actions = AP.parseString("ActionAdd(a.b.c), ActionAdd(~a.b.d)")
         self.e.add("a.b.d")
         self.assertTrue(self.e.query("~a.b.c?, a.b.d?"))
         self.e._perform_actions({}, actions)
@@ -59,17 +60,19 @@ class ActionTests(unittest.TestCase):
         self.e._perform_actions(data, actions)
         self.assertTrue(self.e.query("a.b.blah?"))
 
+    @unittest.skip("Waiting on implementation of not in sentences")
     def test_run_bound_retract_action(self):
         data = {"blah" : "bloo"}
-        actions = AP.parseString("ActionRetract(a.$blah.c)")
+        actions = AP.parseString("ActionAdd(~a.$blah.c)")
         self.e.add("a.bloo.c")
         self.assertTrue(self.e.query("a.bloo.c?"))
         self.e._perform_actions(data, actions)
         self.assertTrue(self.e.query("~a.bloo.c?, a.bloo?"))
 
+    @unittest.skip("Waiting on implementation of not in sentences")
     def test_run_mixed_bound_actions(self):
         data = {"blah": "bloo"}
-        actions = AP.parseString("ActionAdd(a.$blah), ActionRetract(b.$blah)")
+        actions = AP.parseString("ActionAdd(a.$blah), ActionAdd(~b.$blah)")
         self.e.add("b.bloo")
         self.assertTrue(self.e.query("b.bloo?"))
         self.e._perform_actions(data, actions)
