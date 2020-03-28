@@ -41,13 +41,13 @@ class TrieWM(WorkingMemory):
         if isinstance(s, str):
             rules, assertions = TotalP.parseString(s)
             for x in assertions:
-                if util.NEGATION_S in x._data:
+                if util.NEGATION_S in x._data and x._data[util.NEGATION_S]:
                     self._retract_sentence(x)
                 else:
                     self._assert_sentence(x)
         elif isinstance(s, Sentence):
             if util.NEGATION_S in s._data:
-                self._retract_sentence(x)
+                self._retract_sentence(s)
             else:
                 self._assert_sentence(s)
         else:

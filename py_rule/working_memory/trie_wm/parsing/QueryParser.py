@@ -54,8 +54,6 @@ def build_query(toks):
 # Build After comparison operators have been constructed:
 COMP_OP = pp.Forward()
 
-NOT = PU.N(WMU.NEGATION_S, PU.TILDE)
-
 COMP_Internal = PU.N(WMU.OPERATOR_S, COMP_OP) \
     + PU.N(WMU.VALUE_S, PARAM_CORE(end=True))
 
@@ -77,11 +75,11 @@ QueryCore_end = PARAM_CORE(constraints, end=True)
 # TODO add syntax for binding a sentence
 # TODO add syntax for binding all leaves
 # Core Query Chain
-clause = PU.op(NOT) + PU.N(WMU.MAIN_CLAUSE_S, pp.ZeroOrMore(QueryCore)
-                              + QueryCore_end) \
-                              + PU.QMARK \
-                              + PU.N(WMU.FALLBACK_S,
-                                     PU.op(fallback))
+clause = PU.op(PU.NEGATION_SYMBOL) + PU.N(WMU.MAIN_CLAUSE_S, pp.ZeroOrMore(QueryCore)
+                                          + QueryCore_end) \
+                                          + PU.QMARK \
+                                          + PU.N(WMU.FALLBACK_S,
+                                                 PU.op(fallback))
 
 clauses = pp.delimitedList(clause, delim=PU.DELIM)
 

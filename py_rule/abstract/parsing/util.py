@@ -63,7 +63,8 @@ FUNC_HEAD      = s(pp.Literal(util.FUNC_S))
 VAR_SYMBOL     = s(pp.Literal(util.VAR_SYMBOL_S))
 AT_BIND_SYMBOL = s(pp.Literal(util.AT_VAR_SYMBOL_S))
 
-NEGATION_SYMBOL = s(pp.Literal(util.NEGATION_SYMBOL_S))
+NEGATION_SYMBOL = N(util.NEGATION_S, pp.Literal(util.NEGATION_SYMBOL_S))
+
 END       = s(pp.Literal(util.END_S))
 
 # Basic Parsers
@@ -87,7 +88,10 @@ arglist = VBAR + pp.delimitedList(BIND, delim=COMMA) + VBAR
 OPERATOR_SUGAR = pp.Word(util.OPERATOR_SYNTAX_S)
 
 def construct_sentence(toks):
-    return Sentence(toks[:])
+    data = { util.NEGATION_S : False }
+    if util.NEGATION_S in toks:
+        data[util.NEGATION_S] = True
+    return Sentence(toks[util.SEN_S][:], data=data)
 
 def construct_statement(toks):
     # Take the statement, and add it to the location

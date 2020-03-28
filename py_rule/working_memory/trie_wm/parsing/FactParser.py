@@ -82,10 +82,12 @@ PARAM_BINDING_CORE = PARAM_CORE(HOTLOAD_ANNOTATIONS)
 PARAM_BINDING_END = PARAM_CORE(HOTLOAD_ANNOTATIONS, end=True)
 
 # Basic Sentences without Annotations:
-BASIC_SEN = pp.NotAny(PU.END) + pp.ZeroOrMore(PARAM_CORE()) + PARAM_CORE(end=True)
+BASIC_SEN = PU.op(PU.NEGATION_SYMBOL) + pp.NotAny(PU.END) \
+    + PU.NG(util.SEN_S,  pp.ZeroOrMore(PARAM_CORE()) + PARAM_CORE(end=True))
 
 # Sentences with basic sentences as annotations
-PARAM_SEN = pp.NotAny(PU.END) + pp.ZeroOrMore(PARAM_BINDING_CORE) + PARAM_BINDING_END
+PARAM_SEN = PU.op(PU.NEGATION_SYMBOL) + pp.NotAny(PU.END) \
+    + PU.NG(util.SEN_S, pp.ZeroOrMore(PARAM_BINDING_CORE) + PARAM_BINDING_END)
 PARAM_SEN_PLURAL = pp.delimitedList(PARAM_SEN, delim=PU.DELIM)
 
 # Actions
