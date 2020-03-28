@@ -86,6 +86,11 @@
     <2020-03-26 Thu>
 
 ** Improvements
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/engines/__tests/perform_transform_tests.py::42][Make transforms that rebind to themselves fail]]
+   <2020-03-28 Sat>
+  
+         stub_transform = TP.parseString('$a AddOp 20 -> $y, $b MulOp 2 -> $z')
+
 *** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/operators/action/action_operators.py::12][Add additional action operators]]                                        :api:
     <2020-03-26 Thu>
 
@@ -186,17 +191,20 @@
 
     class Engine_Logic_Tests(unittest.TestCase):
 
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/engines/__tests/perform_transform_tests.py::25][Implement Transform performance tests]]
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/engines/__tests/perform_transform_tests.py::25][Implement Transform performance tests]]
+    CLOSED: [2020-03-28 Sat 01:10]
     <2020-03-26 Thu>
 
     @unittest.skip("Broken")
 
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/engines/__tests/perform_transform_tests.py::3][Implement Transform rebind tests]]
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/engines/__tests/perform_transform_tests.py::3][Implement Transform rebind tests]]
+    CLOSED: [2020-03-28 Sat 01:11]
     <2020-03-26 Thu>
 
     TODO implement transform rebind
 
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/engines/__tests/perform_transform_tests.py::2][Implement Transform tests]]
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/engines/__tests/perform_transform_tests.py::2][Implement Transform tests]]
+    CLOSED: [2020-03-28 Sat 01:11]
     <2020-03-26 Thu>
 
     TODO Implement transform tests
@@ -247,9 +255,4 @@
     def test_typedef_with_bad_vars(self):
 
 **** Test
-
-* TODO [[/Volumes/documents/github/py_rule/py_rule/engines/__tests/perform_transform_tests.py::42][Make transforms that rebind to themselves fail]]
- <2020-03-28 Sat>
-  
-       stub_transform = TP.parseString('$a AddOp 20 -> $y, $b MulOp 2 -> $z')
 

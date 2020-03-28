@@ -1,6 +1,4 @@
 """
-TODO Implement transform tests
-TODO implement transform rebind
 """
 #https://docs.python.org/3/library/unittest.html
 from os.path import splitext, split
