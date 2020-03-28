@@ -247,3 +247,9 @@
     def test_typedef_with_bad_vars(self):
 
 **** Test
+
+* TODO [[/Volumes/documents/github/py_rule/py_rule/engines/__tests/perform_transform_tests.py::42][Make transforms that rebind to themselves fail]]
+ <2020-03-28 Sat>
+  
+       stub_transform = TP.parseString('$a AddOp 20 -> $y, $b MulOp 2 -> $z')
+
