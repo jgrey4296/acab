@@ -6,6 +6,9 @@ CACHES := $(shell find ./py_rule -name '*__pycache__')
 .PHONY: all
 all: verbose
 
+test:
+	python -m unittest discover -s ./py_rule -p "*_tests.py"
+
 verbose:
 	python -m unittest discover -s ./py_rule -p "*_tests.py" -v
 
