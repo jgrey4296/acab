@@ -2,7 +2,7 @@
 Defines a Sentence of Fact Words, which can be a query, and
 have fallback bindings
 """
-from py_rule.util import BIND_S, OPERATOR_S, AT_BIND_S, NEGATION_S, FALLBACK_S, QUERY_S, SEN_S, AT_BIND_S
+from py_rule.util import BIND_S, OPERATOR_S, AT_BIND_S, NEGATION_S, FALLBACK_S, QUERY_S, SEN_S, AT_BIND_S, NEGATION_SYMBOL_S
 from .value import PyRuleValue
 from .node import PyRuleNode
 
@@ -35,7 +35,7 @@ class Sentence(PyRuleValue):
             fallback_str = " || " + ", ".join(["${}:{}".format(x[0], x[1])
                                                for x in self._data[FALLBACK_S]])
         if NEGATION_S in self._data and self._data[NEGATION_S]:
-            negated_str = "~"
+            negated_str = NEGATION_SYMBOL_S
 
         return "{}{}{}".format(negated_str, result, fallback_str)
 

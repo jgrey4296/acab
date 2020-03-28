@@ -55,3 +55,5 @@ FUNC_S           = "λ"
 
 VAR_SYMBOL_S     = "$"
 AT_VAR_SYMBOL_S  = "@"
+
+NEGATION_SYMBOL_S = "~"

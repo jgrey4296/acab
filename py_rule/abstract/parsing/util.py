@@ -53,7 +53,6 @@ MORE      = s(pp.Literal('>'))
 VBAR      = s(pp.Literal('|'))
 DELIM     = pp.Or([COMMA, op(pp.lineEnd)])
 
-
 RULE_HEAD      = s(pp.Literal(util.RULE_HEAD_S))
 QUERY_HEAD     = s(pp.Literal(util.QUERY_HEAD_S))
 TRANSFORM_HEAD = s(pp.Literal(util.TRANSFORM_HEAD_S))
@@ -64,6 +63,8 @@ FUNC_HEAD      = s(pp.Literal(util.FUNC_S))
 
 VAR_SYMBOL     = s(pp.Literal(util.VAR_SYMBOL_S))
 AT_BIND_SYMBOL = s(pp.Literal(util.AT_VAR_SYMBOL_S))
+
+NEGATION_SYMBOL = s(pp.Literal(util.NEGATION_SYMBOL_S))
 
 # Basic Parsers
 NAME        = pp.Word(util.WORD_COMPONENT_S)
