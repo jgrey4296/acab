@@ -1,6 +1,7 @@
 from .typedef_node import TypeDefTrieNode
 from py_rule.error import type_exceptions as te
 import py_rule.modules.analysis.typing.util as util
+from py_rule.util import OPERATOR_S
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
@@ -60,9 +61,9 @@ class OperatorDefTrieNode(TypeDefTrieNode):
                 # apply types
                 for the_def, the_use in match_group:
                     the_use.type_match_wrapper(the_def)
-                # TODO refine the type of the operator at head
+                # refine the type of the operator at head
                 func_name = match_group[-1][0]._data[util.OP_DEF_S]._func_name
-                match_group[0][1]._data['source'].__refine_op_func(func_name)
+                match_group[0][1]._data[OPERATOR_S].__refine_op_func(func_name)
                 continue
 
         return newly_typed
