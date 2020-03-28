@@ -25,14 +25,14 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
     #----------
     #use testcase snippets
     def test_ternary_operator(self):
-        result = TP.parseString('$x RegexOp /blah/ $a')
+        result = TP.parseString('$x RegexOp /blah/ $a -> $y')
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result._clauses), 1)
         self.assertEqual(result._clauses[0]._op, 'RegexOp')
         self.assertEqual(result._clauses[0]._params[0]._value, 'x')
         self.assertEqual(result._clauses[0]._params[1]._value,'blah')
         self.assertEqual(result._clauses[0]._params[2]._value, 'a')
-        self.assertIsNone(result._clauses[0]._rebind)
+        self.assertIsNotNone(result._clauses[0]._rebind)
 
     def test_ternary_operator_rebind(self):
         result = TP.parseString('$x RegexOp /blah/ $awef -> $q')
@@ -45,7 +45,7 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
         self.assertEqual(result._clauses[0]._rebind._value, 'q')
 
     def test_unary_format(self):
-        result = TP.parseString('FormatOp blah')
+        result = TP.parseString('FormatOp blah -> $y')
         self.assertEqual(result._clauses[0]._op, 'FormatOp')
 
 
