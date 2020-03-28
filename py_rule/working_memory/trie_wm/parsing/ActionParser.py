@@ -29,11 +29,13 @@ def build_action(toks):
     act = action.Action(toks[:])
     return (act._type, act)
 
+
 # fact string with the option of binds
 vals = pp.delimitedList(PARAM_SEN, delim=PU.COMMA)
 
 bindList = pp.delimitedList(VALBIND, delim=PU.COMMA)
 # action: [op](values)
+# TODO allow assertion of sentences by default
 action_component = PU.N(WMU.OPERATOR_S, HOTLOAD_OPERATORS) \
     + PU.OPAR + PU.N(WMU.ACTION_VAL_S, vals) + PU.CPAR
 

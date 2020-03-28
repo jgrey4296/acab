@@ -82,7 +82,7 @@ transform_core = PU.NG(WMU.TRANSFORM_S,
                        pp.Or([binary_transform_core,
                               ternary_transform_core,
                               unary_transform_core])) \
-                              + PU.op(PU.N(WMU.TARGET_S, rebind))
+                              + PU.N(WMU.TARGET_S, rebind)
 
 transforms = pp.delimitedList(transform_core, delim=PU.DELIM)
 
