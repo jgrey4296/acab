@@ -35,7 +35,7 @@ class TransformOp(PO.ProductionOperator):
 
 class TransformComponent(PO.ProductionComponent):
     """ Superclass of OperatorTransform. Holds an Operator """
-    def __init__(self, op_str, params):
+    def __init__(self, op_str, params, type_str=None):
         assert(not any([util.AT_BIND_S in x._data for x in params]))
         super(TransformComponent, self).__init__(op_str, params)
         self._rebind = None
@@ -47,7 +47,7 @@ class TransformComponent(PO.ProductionComponent):
         self._op = op_str
 
     def __repr__(self):
-        return "Transform({})".format(str(self))
+        return "TransformComp({})".format(str(self))
 
     def __str__(self):
         op = self._op
@@ -88,6 +88,10 @@ class TransformComponent(PO.ProductionComponent):
         """ Set this transform to rebind its result to a different variable """
         assert(util.AT_BIND_S not in bind._data)
         self._rebind = bind
+        return self
+
+    def copy(self):
+        return super(TransformComponent, self).copy().set_rebind(self._rebind)
 
     def to_sentence(self):
         head = PyRuleNode(self._op_str, { util.OPERATOR_S : self})

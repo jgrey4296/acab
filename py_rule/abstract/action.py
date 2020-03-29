@@ -124,6 +124,8 @@ class Action(PO.ProductionContainer):
         super(Action, self).__init__(clauses, type_str=type_str)
         self._params = []
         if params is not None:
+            if bool(params):
+                raise Warning("Inspect this and check typing")
             self._params += params
 
     def __str__(self):
@@ -142,3 +144,8 @@ class Action(PO.ProductionContainer):
 
     def value_string(self):
         return self._name
+
+    def copy(self):
+        copied = super(Action, self).copy()
+        copied._params += self._params[:]
+        return copied

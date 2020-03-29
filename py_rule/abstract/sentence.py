@@ -90,7 +90,7 @@ class Sentence(PyRuleValue):
         return Sentence(output, data=self._data)
 
     def copy(self):
-        words = self._words[:]
+        words = [x.copy() for x in self._words]
         return Sentence(words, data=self._data)
 
     def add(self, *other):

@@ -55,7 +55,7 @@ class ProductionComponent(PyRuleValue):
         raise NotImplementedError()
 
     def copy(self):
-        raise NotImplementedError()
+        return self.__class__(self._op, self._params, type_str=self._type)
 
     def to_sentence(self):
         raise NotImplementedError()
@@ -99,3 +99,6 @@ class ProductionContainer(PyRuleValue):
 
     def expand_bindings(self, bindings):
         raise NotImplementedError()
+
+    def copy(self):
+        return self.__class__([x.copy() for x in self._clauses], type_str=self._type)

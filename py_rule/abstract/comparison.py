@@ -34,8 +34,10 @@ class CompOp(ProductionOperator):
 class Comparison(ProductionComponent):
     """ Describe a Comparison of values and maybe a binding """
 
-    def __init__(self, op_str, param):
-        super(Comparison, self).__init__(op_str, [param])
+    def __init__(self, op_str, param, type_str=None):
+        if not isinstance(param, list):
+            param = [param]
+        super(Comparison, self).__init__(op_str, param, type_str=type_str)
 
     def __str__(self):
         val = self._params[0].opless_print()
@@ -66,9 +68,6 @@ class Comparison(ProductionComponent):
         op func, used for type refinement """
         assert(op_str in CompOp.op_list)
         self._op = op_str
-
-    def copy(self):
-        return Comparison(self._op, self._value)
 
     def is_alpha_test(self):
         return bool(self._params) and not self._params[0]._data[BIND_S]
