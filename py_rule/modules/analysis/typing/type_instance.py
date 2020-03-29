@@ -9,6 +9,7 @@ class TypeInstance(Type):
         """ Construct a Type Instance with a name in the type trie """
         if args is None:
             args = []
+        assert(all([isinstance(x, str) for x in args]))
         self._name = name
         self._args = args
 

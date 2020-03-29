@@ -96,10 +96,10 @@ def construct_sentence(toks):
 def construct_statement(toks):
     # Take the statement, and add it to the location
     path = toks[util.NAME_S][0]
-    # assert(path._data[util.BIND_S] is True), breakpoint()
     targs = []
     if util.ARG_S in toks:
-        targs = toks[util.ARG_S][:]
+        # BIND's NAME returns a tuple of ('name', VARNAME)
+        targs = [y for x,y in toks[util.ARG_S][:]]
     obj_tuple  = toks[util.STATEMENT_S][0]
     obj_tuple[1].set_name_and_vars(path, targs)
 

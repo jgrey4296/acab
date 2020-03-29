@@ -19,7 +19,6 @@ class TypeDefinition(Type):
         # TODO unify shared variables across structure sentences to have
         # the same type
         self._structure = structure
-        self._vars = []
 
     def __str__(self):
         result = self._name

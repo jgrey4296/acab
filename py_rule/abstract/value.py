@@ -12,6 +12,10 @@ class PyRuleValue:
         # TODO: make this a GUID
         self._name = "AnonValue"
         self._path = None
+        # Vars are *not* nodes, they are just strings
+        # This is because they serve only one purpose,
+        # and constructing nodes in abstract.parsing.utils
+        # would be complicated
         self._vars = []
 
     def __str__(self):
@@ -46,6 +50,7 @@ class PyRuleValue:
         node._data[util.BIND_S] = False
 
         if tvars is not None:
+            assert(all([isinstance(x, str) for x in tvars]))
             self._vars += tvars
 
         return self

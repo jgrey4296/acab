@@ -45,10 +45,13 @@ class OperatorDefTrieNode(TypeDefTrieNode):
 
         newly_typed = []
 
+        # Match actual statements against the operator definition
+        # getting back the matches, and how much they match
         matches = self._typedef_trie.match_as_pattern(usage_trie,
                                                       pattern_match_type_signature)
 
         # Construct result dictionary
+        # Combine all matches together by their usage
         result_dict = {}
         for match in matches:
             path = "".join([str(y) for x,y in match])
@@ -56,6 +59,7 @@ class OperatorDefTrieNode(TypeDefTrieNode):
                 result_dict[path] = []
             result_dict[path].append(match)
 
+        # Only apply types that have been reduced to one possibility
         for match_group in result_dict:
             if len(match_group) == 1:
                 # apply types
