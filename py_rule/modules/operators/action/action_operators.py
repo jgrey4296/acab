@@ -26,18 +26,6 @@ class ActionAdd(ActionOp):
         # assert(all([isinstance(x, Node) for x in params[0]]))
         engine.add(params[0])
 
-
-class ActionRetract(ActionOp):
-    def __init__(self):
-        raise DeprecationWarning()
-        super().__init__()
-
-    def __call__(self, engine, params):
-        """ Remove the params from the engine """
-        # assert(all([isinstance(x, Node) for x in params[0]]))
-        engine.retract(params[0])
-
-
 class ActionPrint(ActionOp):
     def __init__(self):
         super().__init__()
