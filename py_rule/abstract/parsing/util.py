@@ -23,10 +23,10 @@ COMMENT   = pp.dblSlashComment
 
 s         = pp.Suppress
 op        = pp.Optional
-emptyLine = s(pp.lineEnd + pp.lineEnd)
-opLn      = s(op(pp.lineEnd))
 orm       = pp.OneOrMore
 sLn       = s(pp.White(ws  ='\n', exact =1))
+emptyLine = s(pp.lineEnd + pp.lineEnd)
+opLn      = s(op(pp.lineEnd))
 
 # Basic Syntax
 ARROW     = s(pp.Literal('->'))

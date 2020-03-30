@@ -45,10 +45,10 @@ class TrieEngine(Engine):
         logging.info("Loading: {}".format(filename))
         assert exists(filename), filename
         with open(filename) as f:
-            s = f.read()
-        if s is not None:
+            the_string = f.read()
+        if the_string is not None:
             # everything should be an assertion
-            assertions = TotalP.parseString(s)
+            assertions = TotalP.parseString(the_string)
             # Assert facts:
             for x in assertions:
                 logging.info("File load assertions: {}".format(x))

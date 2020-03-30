@@ -134,7 +134,6 @@ class TrieWM(WorkingMemory):
 
         logging.debug("Testing clauses: {} {}".format(len(pos), len(neg)))
         for clause in pos:
-
             # Return to root unless clause has a head @ binding
             if util.AT_BIND_S in clause[0]._data:
                 reset_start_contexts = contexts.set_all_alts(binding=clause[0]._value)
@@ -166,9 +165,11 @@ class TrieWM(WorkingMemory):
             else:
                 reset_start_contexts = contexts.set_all_alts(target=self._internal_trie._root)
 
-            result, failures = self._match_clause(negClause, reset_start_contexts)
+            (result, failures) = self._match_clause(negClause,
+                                                    reset_start_contexts)
             logging.debug("neg result: {}".format(str(result)))
             # If negative clauses are true, break
+
             if bool(result) is True:
                 logging.debug("A Negative clause is true")
                 contexts.fail()
@@ -182,7 +183,7 @@ class TrieWM(WorkingMemory):
         logging.debug("Testing Clause: {}".format(repr(clause)))
         # early exit:
         if not contexts:
-            return contexts
+            return (contexts, [])
         currentContexts = contexts
         failures = []
         # Go down from the root by query element:

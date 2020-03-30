@@ -81,7 +81,9 @@ file_component = pp.MatchFirst([PU.s(fileBind),
                                 statements,
                                 FP.PARAM_SEN])
 
-file_total = pp.delimitedList(file_component, delim=PU.emptyLine)
+file_delim = pp.ZeroOrMore(pp.lineEnd)
+
+file_total = file_delim + pp.delimitedList(file_component, delim=file_delim)
 
 #Parse Actions
 file_total.setParseAction(final_pass)
