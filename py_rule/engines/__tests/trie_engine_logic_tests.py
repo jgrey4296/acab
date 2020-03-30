@@ -46,47 +46,52 @@ class Engine_Logic_Tests(unittest.TestCase):
     def test_simple_file_load(self):
         self.e.load_file(self.path("exampleRule1.trie"))
         self.assertTrue(self.e.query("a.b.c?, ~d.e.f?"))
-        self.assertEqual(len(self.e._rules), 1)
-        # query rule
-        # _run_rule
-        # _perform_actions
+        rule = self.e.query('example.one.$rule?')[0]['rule']
+        self.e._run_rule(rule)
+        data_rule = self.e._proposed_actions[0]
+        self.e._perform_actions(data_rule[0], data_rule[1]._action)
         self.assertTrue(self.e.query("a.b.c?, d.e.f?"))
 
     def test_multi_rule_load_from_single_file(self):
         self.e.load_file(self.path("exampleRules2.trie"))
-        self.assertEqual(len(self.e._rules), 2)
         self.assertTrue(self.e.query("a.b.c?, a.other!ex?, ~d.e.f?, ~d.e.g?"))
         # query rule
+        rules = self.e.query('example.rule.$x?')
         # _run_rule
+        for d in rules:
+            self.e._run_rule(d['x'])
+        self.assertEqual(len(self.e._proposed_actions), 2)
         # _perform_actions
+        for dr in self.e._proposed_actions:
+            self.e._perform_actions(dr[0], dr[1]._action)
         self.assertTrue(self.e.query("a.b.c?, a.other!ex?, d.e.f?, d.e.g?"))
 
     def test_file_load_with_comments(self):
         self.e.load_file(self.path( "exampleComments.trie"))
-        self.assertEqual(len(self.e._rules), 1)
         self.assertTrue(self.e.query("~this.should.not.assert?"))
+        self.assertFalse(self.e.query("comment.rule.one?"))
+        self.assertTrue(self.e.query("comment.rule.two?"))
 
     def test_file_load_retraction(self):
         self.e.load_file(self.path( "retractionTest.trie"))
-        self.assertEqual(len(self.e._rules), 1)
         self.assertTrue(self.e.query("a.b.c?"))
-        # query rule
-        # _run_rule
-        # _perform_actions
+        rule = self.e.query('retraction.$rule?')[0]['rule']
+        self.e._run_rule(rule)
+        dr = self.e._proposed_actions[0]
+        self.e._perform_actions(dr[0], dr[1]._action)
         self.assertTrue(self.e.query("~a.b.c?"))
 
     def test_file_load_multi_clauses(self):
         self.e.load_file(self.path( "multiclause_rule.trie"))
-        self.assertEqual(len(self.e._rules), 1)
         self.assertTrue(self.e.query("a.b.c?, a.c!d?"))
-        # query rule
-        # _run_rule
-        # _perform_actions
+        rule = self.e.query('multi.clause.rule.$test?')[0]['test']
+        self.e._run_rule(rule)
+        dr = self.e._proposed_actions[0]
+        self.e._perform_actions(dr[0], dr[1]._action)
         self.assertTrue(self.e.query("a.b.c?, a.c!d?, a.b.e?"))
 
     def test_file_load_string_query(self):
         self.e.load_file(self.path("string_query_test.trie"))
-        self.assertEqual(len(self.e._rules), 2)
         self.assertTrue(self.e.query("~a.b.e?"))
         # query rule
         # _run_rule
@@ -111,7 +116,6 @@ class Engine_Logic_Tests(unittest.TestCase):
 
     def test_file_load_transform(self):
         self.e.load_file(self.path("transform_test.trie"))
-        self.assertEqual(len(self.e._rules), 1)
         self.assertTrue(self.e.query('a.b!5?, a.c!10?, a.d!20?'))
         # query rule
         # _run_rule
@@ -132,7 +136,6 @@ class Engine_Logic_Tests(unittest.TestCase):
 
     def test_file_load_multi_transform(self):
         self.e.load_file(self.path("multi_transform_test.trie"))
-        self.assertEqual(len(self.e._rules), 1)
         self.assertTrue(self.e.query('a.b!5?, a.c!10?, a.d!20?'))
         # query rule
         # _run_rule
@@ -143,7 +146,7 @@ class Engine_Logic_Tests(unittest.TestCase):
 
     def test_file_exclusion_update(self):
         self.e.load_file(self.path("exclusion_update_test.trie"))
-        self.assertTrue(self.e.query('a.b!20?, ~a.b.!10?, ~a.b!5?'))
+        self.assertTrue(self.e.query('a.b!c?, ~a.b.!b?, ~a.b!a?'))
 
     def test_macro_binding(self):
         self.e.load_file(self.path("macro_binding_test.trie"))
@@ -203,7 +206,6 @@ class Engine_Logic_Tests(unittest.TestCase):
 
     def rule_load_with_comments(self):
         self.e.load_file(self.path("rule_with_comments.trie"))
-        self.assertEqual(len(self.e._rules), 1)
         rule = self.e._rules['a.rule']
         self.assertEqual(len(rule._tags), 2)
         self.assertEqual(len(rule._query), 2)
