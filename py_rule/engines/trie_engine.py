@@ -47,15 +47,15 @@ class TrieEngine(Engine):
         with open(filename) as f:
             s = f.read()
         if s is not None:
-            # TODO : everything should be an assertion, adding
-            rules, assertions = TotalP.parseString(s)
+            # everything should be an assertion
+            assertions = TotalP.parseString(s)
             # Assert facts:
             for x in assertions:
                 logging.info("File load assertions: {}".format(x))
                 self.add(x)
 
-            # register layer sequences
-            # register policies to layers
+            # TODO register layer sequences
+            # TODO register policies to layers
         else:
             raise PyRuleParseException("No text found in provided file")
 

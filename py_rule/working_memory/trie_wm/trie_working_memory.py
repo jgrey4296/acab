@@ -7,6 +7,7 @@ from py_rule.abstract.query import Query
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.trie.trie import Trie
 from py_rule.error.pyrule_operator_exception import PyRuleOperatorException
+from py_rule.error.pyrule_parse_exception import PyRuleParseException
 from . import matching
 from . import util
 from .parsing import FactParser as FP
@@ -39,7 +40,7 @@ class TrieWM(WorkingMemory):
     def add(self, s):
         """ Assert multiple facts from a single string """
         if isinstance(s, str):
-            rules, assertions = TotalP.parseString(s)
+            assertions = TotalP.parseString(s)
             for x in assertions:
                 if util.NEGATION_S in x._data and x._data[util.NEGATION_S]:
                     self._retract_sentence(x)
@@ -55,7 +56,9 @@ class TrieWM(WorkingMemory):
 
     def query(self, s):
         """ Query a string """
-        if isinstance(s, str):
+        if isinstance(s, Query):
+            return self._query_sentence(s)
+        elif isinstance(s, str):
             query = QP.parseString(s)
             return self._query_sentence(query)
         elif isinstance(s, Sentence):

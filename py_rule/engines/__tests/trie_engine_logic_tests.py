@@ -2,12 +2,20 @@ import unittest
 import logging
 import py_rule.abstract.trie as T
 from py_rule.engines.trie_engine import TrieEngine
+from py_rule.modules.operators.operator_module import OperatorSpec
+from py_rule.abstract.rule import Rule
 from os.path import join, isfile, exists, isdir
 from os.path import split, splitext, expanduser, abspath
 from os import listdir
 
 
 class Engine_Logic_Tests(unittest.TestCase):
+    os = None
+
+    @classmethod
+    def setUpClass(cls):
+        Engine_Logic_Tests.os = OperatorSpec()
+        Engine_Logic_Tests.os.construct_operators()
 
     def path(self, filename):
         """ Navigate from the file,
@@ -15,7 +23,7 @@ class Engine_Logic_Tests(unittest.TestCase):
         return abspath(join("testfiles", filename))
 
     def setUp(self):
-        self.e = TrieEngine()
+        self.e = TrieEngine(modules=[Engine_Logic_Tests.os])
 
     def tearDown(self):
         return 1
@@ -23,29 +31,34 @@ class Engine_Logic_Tests(unittest.TestCase):
     #----------
     #use testcase snippets
     def test_simple_logic(self):
-        self.e.registerRules("""a.test.rule:
-            a.b.c?
-
-            +(a.b.d)
-
-        end""")
+        self.e.add("""ρ::a.test.rule:\na.b.c?\n\nActionAdd(a.b.d)\n\nend""")
+        rule = self.e.query('a.test.$x?')[0]['x']
+        self.assertIsInstance(rule, Rule)
         self.e.add("a.b.c")
         self.assertTrue(self.e.query("~a.b.d?"))
-        self.e._run_rules()
+        self.assertFalse(self.e._proposed_actions)
+        self.e._run_rule(rule)
+        self.assertTrue(self.e._proposed_actions)
+        data_rule = self.e._proposed_actions[0]
+        self.e._perform_actions(data_rule[0], data_rule[1]._action)
         self.assertTrue(self.e.query("a.b.d?"))
 
     def test_simple_file_load(self):
         self.e.load_file(self.path("exampleRule1.trie"))
         self.assertTrue(self.e.query("a.b.c?, ~d.e.f?"))
         self.assertEqual(len(self.e._rules), 1)
-        self.e._run_rules()
+        # query rule
+        # _run_rule
+        # _perform_actions
         self.assertTrue(self.e.query("a.b.c?, d.e.f?"))
 
     def test_multi_rule_load_from_single_file(self):
         self.e.load_file(self.path("exampleRules2.trie"))
         self.assertEqual(len(self.e._rules), 2)
         self.assertTrue(self.e.query("a.b.c?, a.other!ex?, ~d.e.f?, ~d.e.g?"))
-        self.e._run_rules()
+        # query rule
+        # _run_rule
+        # _perform_actions
         self.assertTrue(self.e.query("a.b.c?, a.other!ex?, d.e.f?, d.e.g?"))
 
     def test_file_load_with_comments(self):
@@ -57,40 +70,52 @@ class Engine_Logic_Tests(unittest.TestCase):
         self.e.load_file(self.path( "retractionTest.trie"))
         self.assertEqual(len(self.e._rules), 1)
         self.assertTrue(self.e.query("a.b.c?"))
-        self.e._run_rules()
+        # query rule
+        # _run_rule
+        # _perform_actions
         self.assertTrue(self.e.query("~a.b.c?"))
 
     def test_file_load_multi_clauses(self):
         self.e.load_file(self.path( "multiclause_rule.trie"))
         self.assertEqual(len(self.e._rules), 1)
         self.assertTrue(self.e.query("a.b.c?, a.c!d?"))
-        self.e._run_rules()
+        # query rule
+        # _run_rule
+        # _perform_actions
         self.assertTrue(self.e.query("a.b.c?, a.c!d?, a.b.e?"))
 
     def test_file_load_string_query(self):
         self.e.load_file(self.path("string_query_test.trie"))
         self.assertEqual(len(self.e._rules), 2)
         self.assertTrue(self.e.query("~a.b.e?"))
-        self.e._run_rules()
+        # query rule
+        # _run_rule
+        # _perform_actions
         self.assertTrue(self.e.query("a.b.e?, a.b.f?"))
 
     def test_file_load_string_assert(self):
         self.e.load_file(self.path("string_assert_test.trie"))
         self.assertTrue(self.e.query('~a.b."an asserted string"?'))
-        self.e._run_rules()
+        # query rule
+        # _run_rule
+        # _perform_actions
         self.assertTrue(self.e.query('a.b."an asserted string"?'))
 
     def test_file_load_string_retract(self):
         self.e.load_file(self.path("string_retract_test.trie"))
         self.assertTrue(self.e.query('a.b."a test string"?'))
-        self.e._run_rules()
+        # query rule
+        # _run_rule
+        # _perform_actions
         self.assertTrue(self.e.query('~a.b."a test string"?'))
 
     def test_file_load_transform(self):
         self.e.load_file(self.path("transform_test.trie"))
         self.assertEqual(len(self.e._rules), 1)
         self.assertTrue(self.e.query('a.b!5?, a.c!10?, a.d!20?'))
-        self.e._run_rules()
+        # query rule
+        # _run_rule
+        # _perform_actions
         self.assertTrue(self.e.query('a.b!25?'))
         self.assertTrue(self.e.query('a.c!30?'))
         self.assertTrue(self.e.query('a.d!40?'))
@@ -98,7 +123,9 @@ class Engine_Logic_Tests(unittest.TestCase):
     def test_transform_selection_single(self):
         self.e.load_file(self.path("transform_selection_single.trie"))
         self.assertTrue('a.b!5?, a.c!10?, a.d!20?')
-        self.e._run_rules()
+        # query rule
+        # _run_rule
+        # _perform_actions
         queried = [True for x in ["a.b!25?","a.c!30?","a.d!40?"] if bool(self.e.query(x))]
         self.assertEqual(len(queried), 3)
 
@@ -107,7 +134,9 @@ class Engine_Logic_Tests(unittest.TestCase):
         self.e.load_file(self.path("multi_transform_test.trie"))
         self.assertEqual(len(self.e._rules), 1)
         self.assertTrue(self.e.query('a.b!5?, a.c!10?, a.d!20?'))
-        self.e._run_rules()
+        # query rule
+        # _run_rule
+        # _perform_actions
         self.assertTrue(self.e.query('a.b!50?'))
         self.assertTrue(self.e.query('a.c!60?'))
         self.assertTrue(self.e.query('a.d!80?'))
@@ -127,7 +156,9 @@ class Engine_Logic_Tests(unittest.TestCase):
     def test_action_macro(self):
         self.e.load_file(self.path("action_macro.trie"))
         self.assertTrue(self.e.query('a.b.first?, a.c.second?'))
-        self.e._run_rules()
+        # query rule
+        # _run_rule
+        # _perform_actions
         self.assertTrue(self.e.query('~a.b.first?, ~a.c.second?, a.b.second?, a.c.first?'))
         rule = list(self.e._rules.values())[0]
         self.assertEqual(len(rule._actions), 4)
@@ -135,7 +166,9 @@ class Engine_Logic_Tests(unittest.TestCase):
     def test_two_action_macros(self):
         self.e.load_file(self.path("two_action_macro.trie"))
         self.assertTrue(self.e.query('a.b.first?, a.c.second?'))
-        self.e._run_rules()
+        # query rule
+        # _run_rule
+        # _perform_actions
         self.assertTrue(self.e.query('~a.b.first?, ~a.c.second?, a.b.second?, a.c.first?, .blah?, .bloo?'))
         rule = list(self.e._rules.values())[0]
         self.assertEqual(len(rule._actions), 6)
@@ -143,21 +176,29 @@ class Engine_Logic_Tests(unittest.TestCase):
     def test_action_macros_with_values(self):
         self.e.load_file(self.path("valued_action_macro.trie"))
         self.assertTrue(self.e.query('a.b.c?'))
-        self.e._run_rules()
+        # query rule
+        # _run_rule
+        # _perform_actions
         self.assertTrue(self.e.query('a.b.c?, a.b."this is a test"?'))
 
     def test_variable_macro_in_action_macro_test(self):
         self.e.load_file(self.path("variable_macro_in_action_macro_test.trie"))
         self.assertTrue(self.e.query('a.b.c?'))
-        self.e._run_rules()
+        # query rule
+        # _run_rule
+        # _perform_actions
         self.assertTrue(self.e.query('a.b.c?, a.b.blah?'))
 
     def test_rule_selection_running(self):
         self.e.load_file(self.path("selection_of_rules_test.trie"))
         self.assertTrue(self.e.query('a.b.c?'))
-        self.e._run_rules(rule_tags=['second'])
+        # query rule
+        # _run_rule
+        # _perform_actions
         self.assertTrue(self.e.query('a.b.c?, ~blah?, bloo?'))
-        self.e._run_rules(rule_tags=['first'])
+        # query rule
+        # _run_rule
+        # _perform_actions
         self.assertTrue(self.e.query('a.b.c?, blah?, bloo?'))
 
     def rule_load_with_comments(self):
@@ -168,7 +209,9 @@ class Engine_Logic_Tests(unittest.TestCase):
         self.assertEqual(len(rule._query), 2)
         self.assertEqual(len(rule._transform), 2)
         self.assertEqual(len(rule._actions), 2)
-        self.e._run_rules()
+        # query rule
+        # _run_rule
+        # _perform_actions
         self.assertTrue(self.e.query('a.d.c?, a.d.d?, a.b!30?'))
 
 

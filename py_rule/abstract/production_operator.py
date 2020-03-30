@@ -90,6 +90,7 @@ class ProductionContainer(PyRuleValue):
     def __iter__(self):
         for x in self._clauses:
             yield x
+
     def to_sentences(self):
         return [x.to_sentence() for x in self._clauses]
 
@@ -102,3 +103,9 @@ class ProductionContainer(PyRuleValue):
 
     def copy(self):
         return self.__class__([x.copy() for x in self._clauses], type_str=self._type)
+
+    def get_bindings(self):
+        """ Return a set of all bindings this container utilizes """
+        # ie: Query(a.b.$x? a.q.$w?).get_bindings() -> {'in': [], 'out': [x,w]}
+        # Action(+(a.b.$x), -(a.b.$w)).get_bindings() -> {'in': [x,w], 'out': []}
+        return {}

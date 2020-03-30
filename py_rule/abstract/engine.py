@@ -106,12 +106,13 @@ class Engine:
             logging.info("Rule {} Failed".format(rule._name))
             return
 
+
         transformed = []
         if rule._transform:
             for data in result:
                 transformed.append(rule._transform(data))
         else:
-            transformed = result[:]
+            transformed = [x for x in result]
 
         for data in transformed:
             self._propose_actions(data, rule)
@@ -121,7 +122,7 @@ class Engine:
         or actions in a rule provided
         """
         assert(isinstance(data, dict))
-        assert(isinstance(rules, Rule))
+        assert(isinstance(rule, Rule))
         self._proposed_actions.append((data, rule))
 
     def _select_actions_by_agenda(self, agenda):

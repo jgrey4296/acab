@@ -27,19 +27,11 @@ def final_pass(toks):
     and expands action macros in rules into the actual
     action sequences """
     global parseBindings
-    definitions = []
-    rules = []
-    assertions = []
-    action_macros = {}
-    for x in toks:
-        assertions.append(x)
-        if isinstance(x[-1]._value, Rule):
-            rules.append(x)
 
     #everything has been parsed,
     #clear the parse bindings as a guard:
     parseBindings = {}
-    return (rules, assertions)
+    return toks[:]
 
 def add_file_binding(toks):
     """ Store the string in the binding """
@@ -60,9 +52,6 @@ def expansion_pass(toks):
     #if a fact:
     if isinstance(toks[0], Sentence):
         return [toks[0].expand_bindings(parseBindings)]
-    #or if a rule or action macro:
-    elif isinstance(toks[0], (Rule, ActionMacro)):
-        return [toks[0].expand_bindings(parseBindings)]
     return toks
 
 def clearBinding(toks):
@@ -79,25 +68,8 @@ def remove_comments(string):
         passing_lines.append("".join(list(PU.COMMENT.split(line))))
     return "\n".join(passing_lines).strip()
 
-def trie_wrap_statement_into_sentence(toks):
-    """ Take a parsed statement (eg: rule),
-    and add it as a node to the name sentence
-    that locates it
-    """
-    type_name, value = toks[0]
-    assert(isinstance(value, PyRuleValue))
-    loc = value._name.copy()
-    assert(isinstance(loc, Sentence))
-    node_data = WMU.DEFAULT_NODE_DATA.copy()
-    node_data[WMU.VALUE_TYPE_S : type_name]
-    node_data[WMU.OPERATOR_S : WMU.EXOP.EX]
 
-    loc.add(FactNode(value, node_data))
-
-    return loc
-
-
-statement_converter = pp.Or([RP.rule, HOTLOAD_STATEMENTS])
+statements = pp.Or([RP.rule, AP.action_definition, HOTLOAD_STATEMENTS])
 
 bindArrow = PU.s(pp.Literal('<-'))
 clear = PU.s(pp.Literal('clear'))
@@ -106,22 +78,19 @@ clearBind = clear + PU.orm(FP.VALBIND)
 
 file_component = pp.MatchFirst([PU.s(fileBind),
                                 PU.s(clearBind),
-                                AP.action_definition,
-                                statement_converter,
+                                statements,
                                 FP.PARAM_SEN])
 
-file_total = file_component \
-    + pp.ZeroOrMore(PU.s(PU.orm(pp.Or([PU.COMMA, pp.lineEnd]))) + file_component)
+file_total = pp.delimitedList(file_component, delim=PU.emptyLine)
 
 #Parse Actions
 file_total.setParseAction(final_pass)
 fileBind.setParseAction(add_file_binding)
 clearBind.setParseAction(clearBinding)
 file_component.setParseAction(expansion_pass)
-statement_converter.setParseAction(trie_wrap_statement_into_sentence)
 
 
 def parseString(in_string):
     assert(isinstance(in_string, str))
     no_comments = remove_comments(in_string)
-    return file_total.parseString(no_comments)[0]
+    return file_total.parseString(no_comments)[:]
