@@ -1,12 +1,12 @@
 a.b.c
 
-example.one.rule:
+ρ::example.one.rule:
 	a.b.c?
   a.b.$x(>20)?
     
   $x + 20 -> $y
     
-  +(d.e.f)
+  ActionAdd(d.e.f)
 end
 
 

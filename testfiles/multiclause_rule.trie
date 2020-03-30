@@ -4,10 +4,11 @@ a.c!d
 // a test
 
 // A Retracting rule
-multi.clause.rule.test:
-  a.b.c?,
+ρ::multi.clause.rule.test:
+  a.b.c?
   a.c!d?
     
-  +(a.b.e)
+  ActionAdd(a.b.e)
+
 end
 

@@ -1,9 +1,10 @@
 a.b.c
 
-example.one.rule:
+ρ::example.one.rule:
 	a.b.c?
 
-  +(d.e.f)
+  ActionAdd(d.e.f)
+
 end
 
 

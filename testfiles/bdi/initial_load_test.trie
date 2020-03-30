@@ -1,18 +1,19 @@
 count!0
 
 //The initial Rule:
-bdi.blah:
+ρ::bdi.blah:
   #propose
   count!$x(< 10)?
 
   $x + 2 -> $y
   ~{} "Hello: {x}" -> $z
 
-  @($z)
-  +(count!$y)
+  ActionPrint($z)
+  ActionAdd(count!$y)
+
 end
 
-bdi.goodbye:
+ρ::bdi.goodbye:
   #propose
 
   count!$x(< 10)?
@@ -20,11 +21,12 @@ bdi.goodbye:
   $x + 1 -> $y
   ~{} "Goodbye: {x}" -> $z
 
-  @($z)
-  +(count!$y)
+  ActionPrint($z)
+  ActionAdd(count!$y)
+
 end
 
-bdi.finish:
+ρ::bdi.finish:
   #propose
 
   agent.$name?
@@ -32,7 +34,7 @@ bdi.finish:
 
   ~{} "{name} has finished" -> $string
 
-  @($string)
-  +(agent.$name.state.finished)
+  ActionPrint($string)
+  ActionAdd(agent.$name.state.finished)
 
 end

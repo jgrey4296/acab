@@ -1,23 +1,28 @@
 a.b.first
 a.c.second
 
-#action($x, $y):
-  +(a.c.$x)
-  -(a.c.$y)
-  +(a.b.$y)
-  -(a.b.$x)
+α::first.action:
+  | $x, $y | 
+
+  ActionAdd(a.c.$x)
+  ActionAdd(a.b.$y)
+  ActionAdd(~a.c.$y)
+  ActionAdd(~a.b.$x)
+
 end
 
-#second():
-  +(blah)
-  +(bloo)
+α::second.action:
+  ActionAdd(blah)
+  ActionAdd(bloo)
+
 end
 
-an.action.macro.rule:
+ρ::an.action.macro.rule:
   a.b.$a?
   a.c.$b?
 
-  #action($a, $b)
-  #second()
+  first.action($a, $b)
+  second.action()
+
 end
 

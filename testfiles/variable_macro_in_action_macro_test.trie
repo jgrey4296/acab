@@ -1,14 +1,16 @@
 a.b.c
 
 $x <- a.b.blah
-#second():
-    +($x)
+α::first.action:
+  ActionAdd($x)
+
 end
+
 clear $x
 
-an.action.macro.rule:
+ρ::an.action.macro.rule:
   a.b.c?
 
-  #second()
+  first.action
 end
 

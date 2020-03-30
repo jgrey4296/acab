@@ -1,15 +1,18 @@
 a.b.c
+
 a.other!ex
 
-example.two.rule.one:
+ρ::example.rule.one:
   a.b.c?
 
-  +(d.e.f)
+  ActionAdd(d.e.f)
+
 end
 
-example.two.rule.two:
+ρ::example.rule.two:
   a.b.c?
 
-  +(d.e.g)
+  ActionAdd(d.e.g)
+
 end
 

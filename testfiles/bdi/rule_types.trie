@@ -4,7 +4,8 @@ physical.property.inference.hammer:
     
   physical.items.$x.hammer?
 
-  +(physical.items.$x.can.hit)
+  ActionAdd(physical.items.$x.can.hit)
+
 end
 
 //Physical Prop -> Action
@@ -16,7 +17,8 @@ physical.action.proposal.to.hit:
   agent.$b(!=$a)?
 
         
-  +(events.$(genId).$x.hits.$y)    
+  ActionAdd(events.$(genId).$x.hits.$y)    
+
 end
 
 //Physical Prop -> Social Prop
@@ -25,22 +27,25 @@ social.property.from.physical.property.inference:
     
   physical.items.$x.wearable.on!head?
 
-  +(physical.items.$x.crown)
+  ActionAdd(physical.items.$x.crown)
+
 end
 
-//Social prop + physical prop -> Social Role / prop
+//Social prop ActionAdd physical prop -> Social Role / prop
 social.role.inference:
   physical.items.$x.crown?
   agent.$a.wearing.$x?
 
-  +(agent.$a.role.king)
+  ActionAdd(agent.$a.role.king)
+
 end
 
 //Physical Action -> Social Prop
 social.property.from.physical.action.inference:
   events.$z.$x.hits.$y?
 
-  +(events.$z.assault)
+  ActionAdd(events.$z.assault)
+
 end
 
 //Social prop -> Social Action
@@ -49,7 +54,8 @@ social.action.proposal:
   agent.$y(!=$a)?
 
 
-  +(events.$z.$a.orders.execution.of.$y)
+  ActionAdd(events.$z.$a.orders.execution.of.$y)
+
 end
 
 //Communicative
@@ -58,7 +64,8 @@ communication.start:
   agent.$b(!=$a)?
   ~temp.conversation.$a.$b!$x?
 
-  +(temp.conversation.$a.$b!greet)
+  ActionAdd(temp.conversation.$a.$b!greet)
+
 end
 
 communication.response:
@@ -66,7 +73,8 @@ communication.response:
   agent.$b(!=$a)?
   temp.conversation.$a.$b!greet?
 
-  +(temp.conversation.$a.$b!response)
+  ActionAdd(temp.conversation.$a.$b!response)
+
 end
 
 //Sequence
@@ -75,8 +83,9 @@ sequence.start:
   sequence.options.$x.$y?
   ~temp.sequence.active!$x?
 
-  +(temp.sequence.active!$x)
-  +(temp.sequence.next!$y)
+  ActionAdd(temp.sequence.active!$x)
+  ActionAdd(temp.sequence.next!$y)
+
 end
 
 sequence.choice:
@@ -85,15 +94,17 @@ sequence.choice:
   sequence.options.$y.$z?
     
 
-  +(temp.sequence.current!$y)
-  +(temp.sequence.next!$z)
+  ActionAdd(temp.sequence.current!$y)
+  ActionAdd(temp.sequence.next!$z)
+
 end
 
 sequence.end:
   temp.sequence.active!$x?
   ~sequence.options.$x.$y?
 
-  -(temp.sequence.active)
+  ActionAdd(~temp.sequence.active)
+
 end
 
 
@@ -103,21 +114,24 @@ normative.annotation:
   agent.$y(!=$x).friends.$x?
   agent.$y.location!$l?
     
-  +(agent.$x.should.greet.$y)
-  +(agent.$y.should.greet.$x)
+  ActionAdd(agent.$x.should.greet.$y)
+  ActionAdd(agent.$y.should.greet.$x)
+
 end
 
 normative.action.proposal:
   agent.$x.should.$a.$y?
 
-  +(event.$x.$a.$y)
+  ActionAdd(event.$x.$a.$y)
+
 end
 
 normative.sanction.proposal:
   agent.$x.should.$a.$y?
   ~event.$x.$a.$y?
 
-  +(agent.$y.should.sanction.$x)
+  ActionAdd(agent.$y.should.sanction.$x)
+
 end
 
 
@@ -139,7 +153,8 @@ rule.mod.one:
   //add an additional condition
   //todo: bind the condition to an actor, receiver,
   //object, role...
-  +($x, $z?)
+  ActionAdd($x, $z?)
+
 end
 
 rule.mod.two:
@@ -148,6 +163,7 @@ rule.mod.two:
   $x.penumbra.$y?
 
   condition_remove($x.penumbra, $y)
+
 end
 
 //Match a rule
@@ -155,17 +171,17 @@ a.rule(^$x)?
 //Other rule mods
 //1) add a social role constraint to a social action
 //Not physical action
-+[$rule.query, $actor.king?]
+ActionAdd[$rule.query, $actor.king?]
 
 //2) add a social property/role constraint on a social role
-+[$rule.query, $item.crown?]
+ActionAdd[$rule.query, $item.crown?]
 
 //3) upgrade a physical action to a socially constrained action
-+[$rule.query, $target.minority?]
-+[$rule.actions, $action.assault]
+ActionAdd[$rule.query, $target.minority?]
+ActionAdd[$rule.actions, $action.assault]
 
 //4) add a normative preference to a social action,
-+[$rule.actions, $actor.should.act]
+ActionAdd[$rule.actions, $actor.should.act]
 //5) remove a normative preference to a social action
 -[$rule.clauses, $actor.should?] 
 //6) add a sanction expectation to a social action

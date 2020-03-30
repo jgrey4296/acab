@@ -4,9 +4,10 @@ a.c!d
 // a test
 
 // A Retracting rule
-retraction.rule:
+ρ::retraction.rule:
   a.b.c?
     
-  -(a.b.c)
+  ActionAdd(~a.b.c)
+
 end
 

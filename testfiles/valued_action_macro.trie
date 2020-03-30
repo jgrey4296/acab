@@ -1,12 +1,16 @@
 a.b.c
 
-#second($x):
-  +(a.b.$x)
+α::first.action:
+  | $x | 
+
+  ActionAdd(a.b.$x)
+  
 end
 
-an.action.macro.rule:
+ρ::a.rule:
   a.b.c?
 
-  #second("this is a test")    
+  first.action("this is a test")    
+
 end
 

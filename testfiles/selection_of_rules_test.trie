@@ -1,17 +1,19 @@
 a.b.c
 
-rule.first:
+ρ::rule.first:
   #first
 
   a.b.c?
 
-  +(blah)
+  ActionAdd(blah)
+
 end
 
-rule.second:
+ρ::rule.second:
   #second
 
   a.b.c?
 
-  +(bloo)
+  ActionAdd(bloo)
+
 end

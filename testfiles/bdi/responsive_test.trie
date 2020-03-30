@@ -1,16 +1,17 @@
 count!0
 last
 
-bdi.start:
+ρ::bdi.start:
   #propose
     
   ~last.$x?
 
-  @("Hello")
-  +(last!hello)
+  ActionPrint("Hello")
+  ActionAdd(last!hello)
+  
 end
 
-bdi.next.one:
+ρ::bdi.next.one:
   #propose
     
   last!hello?
@@ -18,12 +19,13 @@ bdi.next.one:
 
   $x + 1
 
-  @("How are you?")
-  +(last!how)
-  +(count!$x)
+  ActionPrint("How are you?")
+  ActionAdd(last!how)
+  ActionAdd(count!$x)
+
 end
 
-bdi.next.two:
+ρ::bdi.next.two:
   #propose
   
   last!how?
@@ -31,12 +33,13 @@ bdi.next.two:
 
   $x + 1
 
-  @("Fine")
-  -(last)
-  +(count!$x)
+  ActionPrint("Fine")
+  ActionAdd(~last)
+  ActionAdd(count!$x)
+
 end
 
-bdi.next.two.b:
+ρ::bdi.next.two.b:
   #propose
 
   last!how?
@@ -44,12 +47,13 @@ bdi.next.two.b:
 
   $x + 1
 
-  @("Terrible")
-  -(last)
-  +(count!$x)
+  ActionPrint("Terrible")
+  ActionAdd(~last)
+  ActionAdd(count!$x)
+
 end
 
-bdi.finish:
+ρ::bdi.finish:
   #propose
     
   agent.$name?
@@ -57,6 +61,7 @@ bdi.finish:
 
   ~{} "{name} has finished" -> $string
     
-  @($string)
-  +(agent.$name.state.finished)
+  ActionPrint($string)
+  ActionAdd(agent.$name.state.finished)
+
 end

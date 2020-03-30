@@ -1,14 +1,15 @@
 // initial assertions
-a.b!5
-a.c!10
-a.d!20
+a.b!a
+a.c!b
+a.d!c
 
 // A Retracting rule
-test.rule:
+ρ::test.rule:
   a.$x!$y?
 
-  $y + 20
+  //todo add transforms  
 
-  +(a.$x!$y)
+  ActionAdd(a.$x!$y)
+
 end
 

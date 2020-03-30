@@ -1,9 +1,9 @@
 //An initial comment
-a.b!10 //another comment
-a.c.20
+a.b!a //another comment
+a.c.b
 
 //Pre Rule comment
-a.rule:
+ρ::a.rule:
     #tag1, #tag2
     //Preconditions comment
     a.b!$x?
@@ -14,9 +14,10 @@ a.rule:
     //Middle transform comment
     $x + 30
     //Action comment
-    +(a.d.c)
+    ActionAdd(a.d.c)
     //Middle Action comment
-    +(a.d.d)
-    +(a.b!$z)
+    ActionAdd(a.d.d)
+    ActionAdd(a.b!$z)
+
 end
 //End comment

@@ -1,15 +1,16 @@
 // initial assertions
 string."test {y}"
-a.b!5
-a.c!10
-a.d!20
+a.b!a
+a.c!b
+a.d!c
 
 // A Retracting rule
-a.test.rule:
+ρ::a.test.rule:
   string.$a?
   a.$x!$y?
 
-  ~{} $a -> $b
+  FormatOp $a -> $b
     
-  @($b)
+  ActionPrint($b)
+
 end

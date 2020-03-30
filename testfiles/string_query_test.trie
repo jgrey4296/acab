@@ -3,14 +3,16 @@ a.b."a test string"
 a.b."a test string".c
 
 // A Retracting rule
-a.string.rule:
+ρ::a.string.rule:
   a.b."a test string"?
     
-  +(a.b.e)
+  ActionAdd(a.b.e)
+
 end
 
-a.second.string.rule:
+ρ::a.second.string.rule:
   a.b."a test string".c?
 
-  +(a.b.f)
+  ActionAdd(a.b.f)
+  
 end
