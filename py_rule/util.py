@@ -6,19 +6,20 @@ import pyparsing as pp
 # Globally constant strings:
 
 # Basic constants
-NAME_S       = "name"
-BIND_S       = "bind"
+ARG_S        = "args"
 AT_BIND_S    = "at_bind_"
+BIND_S       = "bind"
 CONSTRAINT_S = "constraints"
+END_S        = "end"
+FALLBACK_S   = "fallback"
+NAME_S       = "name"
+NEGATION_S   = "negated"
 OPERATOR_S   = "operator"
+SEN_S        = "sentence"
+STATEMENT_S  = "statement"
+TAG_S        = "tag"
 VALUE_S      = "value"
 VALUE_TYPE_S = "value_type"
-SEN_S        = "sentence"
-NEGATION_S   = "negated"
-FALLBACK_S   = "fallback"
-ARG_S        = "args"
-STATEMENT_S  = "statement"
-END_S        = "end"
 
 # Core Value Types
 FLOAT_S      = "float"
@@ -55,5 +56,5 @@ FUNC_S           = "λ"
 
 VAR_SYMBOL_S     = "$"
 AT_VAR_SYMBOL_S  = "@"
-
+TAG_SYMBOL_S     = "#"
 NEGATION_SYMBOL_S = "~"

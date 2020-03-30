@@ -44,7 +44,7 @@ QMARK     = s(pp.Literal('?'))
 SLASH     = s(pp.Literal('/'))
 DASH      = s(pp.Literal('-'))
 # Careful: This isn't suppressed
-TILDE     = pp.Literal('~')
+TILDE     = s(pp.Literal('~'))
 OBRACKET  = s(pp.Literal('['))
 CBRACKET  = s(pp.Literal(']'))
 LESS      = s(pp.Literal('<'))
@@ -64,7 +64,7 @@ VAR_SYMBOL     = s(pp.Literal(util.VAR_SYMBOL_S))
 AT_BIND_SYMBOL = s(pp.Literal(util.AT_VAR_SYMBOL_S))
 
 NEGATION_SYMBOL = N(util.NEGATION_S, pp.Literal(util.NEGATION_SYMBOL_S))
-
+TAG_SYMBOL = s(pp.Literal(util.TAG_SYMBOL_S))
 END       = s(pp.Literal(util.END_S))
 
 # Basic Parsers
@@ -82,8 +82,11 @@ BASIC_VALUE = pp.Or([NAME, STRING, REGEX])
 BIND        = VAR_SYMBOL + NAME
 AT_BIND     = AT_BIND_SYMBOL + NAME
 
-# TODO set parse action
 arglist = VBAR + pp.delimitedList(BIND, delim=COMMA) + VBAR
+
+tagName = TAG_SYMBOL + NAME
+tagList    = N(util.TAG_S, pp.delimitedList(tagName, delim=DELIM) + emptyLine)
+
 
 OPERATOR_SUGAR = pp.Word(util.OPERATOR_SYNTAX_S)
 
@@ -97,11 +100,16 @@ def construct_statement(toks):
     # Take the statement, and add it to the location
     path = toks[util.NAME_S][0]
     targs = []
+    tags = []
     if util.ARG_S in toks:
         # BIND's NAME returns a tuple of ('name', VARNAME)
         targs = [y for x,y in toks[util.ARG_S][:]]
+    # Get Tags
+    if util.TAG_S in toks:
+        tags = [x[1] for x in toks[util.TAG_S]]
+
     obj_tuple  = toks[util.STATEMENT_S][0]
-    obj_tuple[1].set_name_and_vars(path, targs)
+    obj_tuple[1].apply_onto(path, targs, tags=tags)
 
     return path
 
@@ -123,7 +131,7 @@ def STATEMENT_CONSTRUCTOR(head_p, name_p, body_p, end=None, args=True, single_li
         arg_p = op(NG(util.ARG_S, arglist + line_p))
 
     parser = head_p + DBLCOLON + NG(util.NAME_S, name_p) + COLON + op(pp.lineEnd) \
-        + arg_p + NG(util.STATEMENT_S, body_p) + end_p
+        + arg_p + tagList + NG(util.STATEMENT_S, body_p) + end_p
 
     parser.setParseAction(construct_statement)
     return parser

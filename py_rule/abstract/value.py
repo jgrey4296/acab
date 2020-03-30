@@ -17,6 +17,7 @@ class PyRuleValue:
         # and constructing nodes in abstract.parsing.utils
         # would be complicated
         self._vars = []
+        self._tags = set()
 
     def __str__(self):
         """ Data needs to implement a str method that produces
@@ -36,9 +37,9 @@ class PyRuleValue:
         """ Data needs to be able to report internal variables """
         raise NotImplementedError()
 
-    def set_name_and_vars(self, path, tvars=None):
-        """ For creating more involved statements
-        (like rules, typedefs etc), use abstract.parsing.util.STATEMENT_CONSTRUCTOR
+    def apply_onto(self, path, tvars=None, tags=None):
+        """ Apply a value onto the leaf of a path.
+        (eg: rules, typedefs etc), use abstract.parsing.util.STATEMENT_CONSTRUCTOR
         which will call this to apply the location name, and type variables """
         assert(isinstance(path, PyRuleValue) and path._type == util.SEN_S)
         node = path[-1]
@@ -53,7 +54,15 @@ class PyRuleValue:
             assert(all([isinstance(x, str) for x in tvars]))
             self._vars += tvars
 
+        if tags is not None:
+            assert(all([isinstance(x, str) for x in tags]))
+            self._tags.update(tags)
+
         return self
 
     def value_string(self):
         return str(self)
+
+    def has_tag(self, *tags):
+        return all([t in self._tags for t in tags])
+

@@ -19,18 +19,14 @@ class Rule(PyRuleValue):
 
     __count = 0
     # TODO handle None's better
-    def __init__(self, query, action=None, transform=None, tags=None):
+    def __init__(self, query, action=None, transform=None):
         assert(query is None or isinstance(query, Query))
         assert(action is None or isinstance(action, Action))
         assert(transform is None or isinstance(transform, Transform))
-        assert(tags is None or all([isinstance(x, str) for x in tags]))
         super().__init__(type_str=util.RULE_S)
         self._query     = query
         self._transform = transform
         self._action    = action
-        self._tags  = set()
-        # Self report default type:
-        self._tags.update(tags)
         Rule.__count += 1
 
     def __str__(self):
@@ -108,9 +104,6 @@ class Rule(PyRuleValue):
                                               actionsStr,
                                               util.END_S)
 
-    def has_tag(self, *tags):
-        return all([t in self._tags for t in tags])
-
     def is_coherent(self):  # can raise an Exception from verify_op
         """ Verify that the outputs of the query match the
         inputs of the transform, match the inputs of the actions """
@@ -146,8 +139,9 @@ class Rule(PyRuleValue):
 
         new_rule = self.__class__(new_query,
                                   new_action,
-                                  transform=transform_copy,
-                                  tags=self._tags)
+                                  transform=transform_copy)
+        new_rule._tags.update(self._tags)
+
         return new_rule
 
     def value_string(self):

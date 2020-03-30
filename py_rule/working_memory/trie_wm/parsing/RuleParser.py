@@ -46,25 +46,16 @@ def build_rule(toks):
     else:
         a = None
 
-    # Get Tags
-    if WMU.TAG_S in toks:
-        tags = [x[1] for x in toks[WMU.TAG_S]]
-    else:
-        tags = []
 
-
-    rule = TrieRule(c, action=a, transform=t, tags=tags)
+    rule = TrieRule(c, action=a, transform=t)
     return (rule._type, rule)
 
 
-tagName = PU.HASH + PU.NAME
-
-tagList    = PU.N(WMU.TAG_S, pp.delimitedList(tagName, delim=PU.DELIM) + PU.emptyLine)
 conditions = PU.N(WMU.CONDITION_S, QP.clauses + PU.emptyLine)
 transforms = PU.N(WMU.TRANSFORM_S, TP.transforms + PU.emptyLine)
 actions    = PU.NG(WMU.ACTION_S, AP.actions + PU.emptyLine)
 
-rule_body = PU.op(tagList) + PU.op(conditions) + PU.op(transforms) + PU.op(actions)
+rule_body = PU.op(conditions) + PU.op(transforms) + PU.op(actions)
 
 rule = PU.STATEMENT_CONSTRUCTOR(PU.RULE_HEAD, FP.BASIC_SEN, rule_body, args=False)
 
