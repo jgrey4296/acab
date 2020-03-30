@@ -363,7 +363,7 @@ class TypingTests(unittest.TestCase):
 
     def test_typing_polytype(self):
         """ ::String: END, ::Number: END
-        ::polytype[$x]: name.$x END
+        ::polytype: | $x | name.$x END
         a(::polytype(::String)).name.$q
         b(::polytype(::Number)).name.$t
         """
@@ -507,38 +507,80 @@ class TypingTests(unittest.TestCase):
         self.assertIsNone(tc.query(sen)[0]._var_node)
         self.assertEqual(len(tc.query(sen2)), 0)
 
+
+    @unittest.skip("TODO")
     def test_typing_polytype_fail(self):
-        # TODO
+        """
+        ::String: END, ::Number: END
+        ::polytype: | $x | name.$x END
+        a(::polytype(::String)).name.$q(::Number)
+        """
         return
 
+
+    @unittest.skip("TODO")
     def test_typing_polytype_nested_fail(self):
-        # TODO
+        """
+        ::String: END, ::Number: END
+        ::polytype.small: | $x | name.$x END
+        ::polytype.large: | $x | sub(::polytype.small(::$x)) END
+        a(::polytype.large(::String)).sub.name.$q(::Number)
+        """
         return
 
+
+    @unittest.skip("TODO")
     def test_typing_polytype_multi_param_fail(self):
-        # TODO
+        """
+        ::String: END, ::Number: END
+        ::polytype.small: | $x, $y |
+    		name.$x
+        	age.$y
+        END
+        ::polytype.large: | $x, $y | sub(::polytype.small(::$x, ::$y)) END
+        a(::polytype.large(::String, ::Number)).sub.name.$q(::String)
+        a.sub.age.$w(::String)
+        """
+
         return
 
+
+    @unittest.skip("TODO")
     def test_polytype_lacking_param(self):
-        # TODO
+        """
+        ::polytype: | $x | name.$x END
+        missing(::polytype).name.$y
+        """
+        # TODO: can I infer upwards?
+        # ie: missing(::polytype).name.$y(::String) -> ::polytype(::String)?
         return
 
+
+    @unittest.skip("TODO")
     def test_polytype_nested_lacking_param(self):
         # TODO
         return
 
+
+    @unittest.skip("TODO")
     def test_add_rule(self):
         # TODO
 	    return
 
+
+    @unittest.skip("TODO")
     def test_add_operation(self):
         # TODO
         return
 
+
+    @unittest.skip("TODO")
     def test_infer_from_operation(self):
         # TODO
         return
 
+
+    @unittest.skip("TODO")
     def test_infer_polytype_param_from_use(self):
         # TODO
         return

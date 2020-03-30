@@ -34,7 +34,7 @@ class TypeDefinition(Type):
         return "Type Def({})".format(str(self))
 
     def build_type_declaration(self):
-        return TypeInstance(self._name, args=self._vars[:])
+        return TypeInstance(self._name)
 
     def value_string(self):
         return self._name
