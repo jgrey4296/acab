@@ -263,3 +263,13 @@
 
 **** Test
 
+* TODO [[/Volumes/documents/github/py_rule/py_rule/modules/values/numbers/__tests/number_query_tests.py::126][should rule binding expansion effect transforms?]]
+ <2020-03-30 Mon>
+  
+       result = RP.parseString("ρ::a.rule:\n$y.b.$z?\n\n$x + 2 -> $y\n\n+($y)\n\nend")[0][-1]
+
+* TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/parsing/util.py::78][use pp.removeQuotes on string and regex parsing]]
+  <2020-03-31 Tue>
+  
+# Remove quotes from around strings:
+
