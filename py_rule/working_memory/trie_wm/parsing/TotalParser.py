@@ -76,14 +76,14 @@ clear = PU.s(pp.Literal('clear'))
 fileBind = FP.VALBIND + bindArrow + FP.PARAM_SEN
 clearBind = clear + PU.orm(FP.VALBIND)
 
-file_component = pp.MatchFirst([PU.s(fileBind),
-                                PU.s(clearBind),
-                                statements,
-                                FP.PARAM_SEN])
+# file_component = pp.MatchFirst([PU.s(fileBind),
+#                                 PU.s(clearBind),
+#                                 statements,
+#                                 FP.PARAM_SEN])
 
-file_delim = pp.ZeroOrMore(pp.lineEnd)
+file_component = pp.MatchFirst([statements, FP.PARAM_SEN])
 
-file_total = file_delim + pp.delimitedList(file_component, delim=file_delim)
+file_total = pp.delimitedList(file_component, delim=PU.component_gap)
 
 #Parse Actions
 file_total.setParseAction(final_pass)

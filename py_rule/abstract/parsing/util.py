@@ -21,18 +21,21 @@ def N(name, parser):
 # UTILITIES
 COMMENT   = pp.dblSlashComment
 
-s         = pp.Suppress
-op        = pp.Optional
-orm       = pp.OneOrMore
-sLn       = s(pp.White(ws  ='\n', exact =1))
-emptyLine = s(pp.lineEnd + pp.lineEnd)
-opLn      = s(op(pp.lineEnd))
+s          = pp.Suppress
+op         = pp.Optional
+orm        = pp.OneOrMore
+
+COMMA     = s(pp.Literal(','))
+emptyLine     = s(pp.lineEnd + pp.lineEnd)
+opLn          = s(op(pp.lineEnd))
+gap           = s(pp.OneOrMore(emptyLine))
+component_gap = s(orm(pp.Or([pp.lineEnd, COMMA])))
+file_cruft    = s(pp.ZeroOrMore(pp.Or([pp.lineEnd])))
 
 # Basic Syntax
 ARROW     = s(pp.Literal('->'))
 DBLARROW  = s(pp.Literal('=>'))
 COLON     = s(pp.Literal(':'))
-COMMA     = s(pp.Literal(','))
 DBLCOLON  = s(pp.Literal("::"))
 DOLLAR    = s(pp.Literal('$'))
 AT        = s(pp.Literal('@'))
@@ -85,7 +88,7 @@ AT_BIND     = AT_BIND_SYMBOL + NAME
 arglist = VBAR + pp.delimitedList(BIND, delim=COMMA) + VBAR
 
 tagName = TAG_SYMBOL + NAME
-tagList    = N(util.TAG_S, pp.delimitedList(tagName, delim=DELIM) + emptyLine)
+tagList    = op(N(util.TAG_S, pp.delimitedList(tagName, delim=DELIM) + emptyLine))
 
 
 OPERATOR_SUGAR = pp.Word(util.OPERATOR_SYNTAX_S)

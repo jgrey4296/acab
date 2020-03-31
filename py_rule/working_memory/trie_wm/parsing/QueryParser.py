@@ -60,9 +60,9 @@ COMP_Internal = PU.N(WMU.OPERATOR_S, COMP_OP) \
 # defined earlier to work with named copies
 COMP_Internal.setParseAction(build_comparison)
 
-comp_or_typedef = pp.Or([COMP_Internal, HOTLOAD_ANNOTATIONS])
+comp_or_annotation = pp.Or([COMP_Internal, HOTLOAD_ANNOTATIONS])
 
-constraints = pp.delimitedList(comp_or_typedef, delim=PU.COMMA)
+constraints = pp.delimitedList(comp_or_annotation, delim=PU.COMMA)
 
 assignment = PU.BIND + PU.COLON + PARAM_SEN
 assignmentList = pp.delimitedList(assignment, delim=PU.COMMA)
