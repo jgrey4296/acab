@@ -81,7 +81,7 @@ class TransformComponent(PO.ProductionComponent):
 
     def verify_op(self):
         """ Complains if the operator is not a defined Operator Enum """
-        if self._op not in TransformOp.op_list:
+        if self._op not in TransformOp.op_list[len(self._params)]:
             raise SyntaxError("Unknown Op: {}".format(self._op))
 
     def set_rebind(self, bind):

@@ -11,11 +11,10 @@ class TrieRule(Rule):
     Trie based engines and working memory
     """
 
-    def __init__(self, query, action=None, transform=None, tags=None):
+    def __init__(self, query, action=None, transform=None):
         super().__init__(query,
                          action=action,
-                         transform=transform,
-                         tags=tags)
+                         transform=transform)
 
     def to_node_lists(self):
         """ Convert a rule to a list of node lists  """
