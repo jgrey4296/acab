@@ -93,36 +93,38 @@ class Engine_Logic_Tests(unittest.TestCase):
     def test_file_load_string_query(self):
         self.e.load_file(self.path("string_query_test.trie"))
         self.assertTrue(self.e.query("~a.b.e?"))
-        # query rule
-        # _run_rule
-        # _perform_actions
-        self.assertTrue(self.e.query("a.b.e?, a.b.f?"))
+        rule = self.e.query("a.string.$rule?")[0]['rule']
+        self.e._run_rule(rule)
+        dr = self.e._proposed_actions[0]
+        self.e._perform_actions(dr[0], dr[1]._action)
+        self.assertTrue(self.e.query("a.b.e?"))
 
     def test_file_load_string_assert(self):
         self.e.load_file(self.path("string_assert_test.trie"))
         self.assertTrue(self.e.query('~a.b."an asserted string"?'))
-        # query rule
-        # _run_rule
-        # _perform_actions
+        rule = self.e.query('a.string.$rule?')[0]['rule']
+        self.e._run_rule(rule)
+        dr = self.e._proposed_actions[0]
+        self.e._perform_actions(dr[0], dr[1]._action)
         self.assertTrue(self.e.query('a.b."an asserted string"?'))
 
     def test_file_load_string_retract(self):
         self.e.load_file(self.path("string_retract_test.trie"))
         self.assertTrue(self.e.query('a.b."a test string"?'))
-        # query rule
-        # _run_rule
-        # _perform_actions
+        rule = self.e.query('a.string.$rule?')[0]['rule']
+        self.e._run_rule(rule)
+        dr = self.e._proposed_actions[0]
+        self.e._perform_actions(dr[0], dr[1]._action)
         self.assertTrue(self.e.query('~a.b."a test string"?'))
 
     def test_file_load_transform(self):
         self.e.load_file(self.path("transform_test.trie"))
-        self.assertTrue(self.e.query('a.b!5?, a.c!10?, a.d!20?'))
-        # query rule
-        # _run_rule
-        # _perform_actions
-        self.assertTrue(self.e.query('a.b!25?'))
-        self.assertTrue(self.e.query('a.c!30?'))
-        self.assertTrue(self.e.query('a.d!40?'))
+        rule = self.e.query('test.$rule?')[0]['rule']
+        self.assertFalse(self.e.query('result.blAH?'))
+        self.e._run_rule(rule)
+        dr = self.e._proposed_actions[0]
+        self.e._perform_actions(dr[0], dr[1]._action)
+        self.assertTrue(self.e.query('result.blAH?'))
 
     def test_transform_selection_single(self):
         self.e.load_file(self.path("transform_selection_single.trie"))

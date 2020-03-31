@@ -1,6 +1,6 @@
 // initial assertions
 a.b."a test string"
-a.b."a test string".c
+a.b."a test string"
 
 // A Retracting rule
 ρ::a.string.rule:
@@ -10,9 +10,3 @@ a.b."a test string".c
 
 end
 
-ρ::a.second.string.rule:
-  a.b."a test string".c?
-
-  ActionAdd(a.b.f)
-  
-end

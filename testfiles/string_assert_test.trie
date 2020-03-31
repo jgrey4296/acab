@@ -1,6 +1,5 @@
 // initial assertions
 a.b."a test string"
-a.b."a test string".c
 
 // A Retracting rule
 ρ::a.string.rule:

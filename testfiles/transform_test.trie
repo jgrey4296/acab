@@ -1,15 +1,15 @@
-// initial assertions
-a.b!a
-a.c!b
-a.d!c
+// blah
 
-// A Retracting rule
+a.blah
+//blah
 ρ::test.rule:
-  a.$x!$y?
+  #awef
 
-  //todo add transforms  
+  a.$x?
+  //blah
+  $x RegexOp /(bl)(ah)/ "\1AH" -> $y
 
-  ActionAdd(a.$x!$y)
-
+  ActionAdd(result.$y)
 end
 
+//blah
