@@ -73,7 +73,7 @@ class Comparison(ProductionComponent):
         return bool(self._params) and not self._params[0]._data[BIND_S]
 
     def is_regex_test(self):
-        return self._op is "RegMatch"
+        return self._op == "RegMatch"
 
     def to_sentence(self, target):
         """ Create a comparison as a canonical sentence """
