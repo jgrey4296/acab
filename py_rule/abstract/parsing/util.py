@@ -135,3 +135,32 @@ def STATEMENT_CONSTRUCTOR(head_p, name_p, body_p, end=None, args=True, single_li
 
     parser.setParseAction(construct_statement)
     return parser
+
+
+
+# NAMING
+file_cruft.setName("FileCruft")
+gap.setName("RuleGap")
+
+RULE_HEAD.setName("RuleHead")
+QUERY_HEAD.setName("QueryHead")
+TRANSFORM_HEAD.setName("TransformHead")
+ACTION_HEAD.setName("ActionHead")
+STRUCT_HEAD.setName("StructHead")
+FUNC_HEAD.setName("FuncHead")
+VAR_SYMBOL.setName("VarSymbol")
+AT_BIND_SYMBOL.setName("AtSymbol")
+NEGATION_SYMBOL.setName("NegationSymbol")
+TAG_SYMBOL.setName("TagSymbol")
+END.setName("End")
+
+NAME.setName("NameWord")
+STRING.setName("StringWord")
+REGEX.setName("RegexWord")
+BASIC_VALUE.setName("BasicValue")
+BIND.setName("Binding")
+AT_BIND.setName("AtBinding")
+arglist.setName("StatementArgumentList")
+tagName.setName("TagName")
+tagList.setName("StatementTagList")
+OPERATOR_SUGAR.setName("SyntaxSugar")

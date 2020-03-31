@@ -16,3 +16,5 @@ DOT.setParseAction(lambda t: WMU.EXOP.DOT)
 EX.setParseAction(lambda t: WMU.EXOP.EX)
 
 EL_OPERATOR = pp.Or([EX, DOT])
+
+EL_OPERATOR.setName("ExclusionOperator")

@@ -64,7 +64,21 @@ rules = pp.delimitedList(rule, delim=PU.emptyLine)
 # Actions:
 rule_body.setParseAction(build_rule)
 
+# NAMING
+conditions.setName("RuleConditions")
+transforms.setName("RuleTransforms")
+actions.setName("RuleActions")
+rule_body.setName("RuleBody")
+rule.setName("RuleDefinition")
+rules.setName("RulePlural")
+
+
+# parse_point = rules.ignore(PU.COMMENT)
+
+# Main Parser
+parse_point = rules
+
 # Main Parser
 def parseString(in_string):
     assert(isinstance(in_string, str))
-    return rules.parseString(in_string)[:]
+    return parse_point.parseString(in_string)[:]

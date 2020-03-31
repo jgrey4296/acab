@@ -70,7 +70,16 @@ LESS.setParseAction(lambda x: CTOR_ACT.CSTART)
 MORE.setParseAction(lambda x: CTOR_ACT.CEND)
 TILDE.setParseAction(lambda x: (CTOR_ACT.SIL, {}))
 
+# NAMING
+acts.setName("TimePatternActs")
+pattern_contents.setName("TimePatternContents")
+pattern.setName("TimePattern")
+openers.setName("TimeOpeners")
+closers.setName("TimeClosers")
+
+# parse_point = main_pattern.ignore(PU.COMMENT)
+parse_point = main_pattern
 
 def parse_string(s):
     """ The primary access point """
-    return main_pattern.parseString(s)[0][1]
+    return parse_point.parseString(s)[0][1]

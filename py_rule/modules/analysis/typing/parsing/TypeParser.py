@@ -35,3 +35,6 @@ TYPEDEC_CORE <<= PU.DBLCOLON + PU.N(TYU.SEN_S, HOTLOAD_BASIC_SEN) \
                       + PU.CPAR))
 
 TYPEDEC_CORE.setParseAction(make_type_dec)
+
+# NAMING
+TYPEDEC_CORE.setName("TypeDeclarationStatement")

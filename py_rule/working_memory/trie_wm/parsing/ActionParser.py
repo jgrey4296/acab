@@ -50,6 +50,14 @@ action_definition = PU.STATEMENT_CONSTRUCTOR(PU.ACTION_HEAD, BASIC_SEN, actions 
 action_component.setParseAction(build_component)
 actions.setParseAction(build_action)
 
+# NAMING
+vals.setName("ActionValueList")
+action_component.setName("ActionComponent")
+actions.setName("ActionsContainer")
+action_definition.setName("ActionDefinition")
+
+# parse_point = actions.ignore(PU.COMMENT)
+parse_point = actions
 
 def parseString(in_string):
-    return actions.parseString(in_string)[0][1]
+    return parse_point.parseString(in_string)[0][1]

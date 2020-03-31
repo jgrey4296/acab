@@ -91,8 +91,13 @@ fileBind.setParseAction(add_file_binding)
 clearBind.setParseAction(clearBinding)
 file_component.setParseAction(expansion_pass)
 
+# NAMING
+statements.setName("StatementCollection")
+file_component.setName("FileComponent")
+
+parse_point = PU.file_cruft +  file_total.ignore(PU.COMMENT) + PU.file_cruft
+# parse_point = PU.file_cruft +  file_total + PU.file_cruft
 
 def parseString(in_string):
     assert(isinstance(in_string, str))
-    no_comments = remove_comments(in_string)
-    return file_total.parseString(no_comments)[:]
+    return parse_point.parseString(in_string)[:]

@@ -91,8 +91,24 @@ clause.setParseAction(build_clause)
 clauses.setParseAction(build_query)
 assignment.setParseAction(lambda toks: (toks[0][1], toks[1]))
 
+# NAMING
+COMP_OP.setName("ComparisonOperators")
+COMP_Internal.setName("ComparisonStatement")
+comp_or_annotation.setName("ComparisonOrAnnotation")
+constraints.setName("ConstraintList")
+assignment.setName("FallbackAssignment")
+assignmentList.setName("FallbackAssignmentList")
+fallback.setName("QueryFallbackStatement")
+QueryCore.setName("QueryCoreStatement")
+QueryCore_end.setName("QueryCoreEndStatement")
+clause.setName("QueryClause")
+clauses.setName("QueryClauseContainer")
+query_statement.setName("QueryDefinition")
+
+# parse_point = clauses.ignore(PU.COMMENT)
+parse_point = clauses
 
 # Main parser:
 def parseString(in_string):
     """ .a.b(>20)!d.$X, ... -> Query """
-    return clauses.parseString(in_string)[0][1]
+    return parse_point.parseString(in_string)[0][1]

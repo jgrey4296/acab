@@ -98,7 +98,21 @@ ternary_transform_core.setParseAction(buildTernaryTransformComponent)
 transform_core.setParseAction(addRebind)
 transforms.setParseAction(build_transform)
 
+# NAMING
+BINARY_TRANS_OP.setName("BinaryTransformOperator")
+UNARY_TRANS_OP.setName("UnaryTransformOperator")
+TERNARY_TRANS_OP.setName("TernaryTransformOperator")
+rebind.setName("RebindStatement")
+unary_transform_core.setName("UnaryTransform_CORE")
+binary_transform_core.setName("BinaryTransform_CORE")
+ternary_transform_core.setName("TernaryTransform_CORE")
+transform_core.setName("Transform_CORE")
+transforms.setName("TransformPlural")
+transform_statement.setName("TransformDefinition")
+
+# parse_point = transforms.ignore(PU.COMMENT)
+parse_point = transforms
 
 # Main Parser:
 def parseString(in_string):
-    return transforms.parseString(in_string)[0][1]
+    return parse_point.parseString(in_string)[0][1]

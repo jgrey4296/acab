@@ -55,5 +55,14 @@ OP_DEF = PU.STATEMENT_CONSTRUCTOR(PU.FUNC_HEAD,
 
 COMBINED_DEFS = pp.Or(TYPEDEF, OP_DEF)
 
+# NAMING
+TYPEDEF_BODY.setName("TypeDefinitionBody")
+TYPEDEF.setName("TypeDefinition")
+OP_DEF_BODY.setName("OperatorDefinitionBody")
+OP_DEF.setName("OperatorDefinition")
+
+# parse_point = COMBINED_DEFS.ignore(PU.COMMENT)
+parse_point = COMBINED_DEFS
+
 def parseString(in_string):
-    return COMBINED_DEFS.parseString(in_string)
+    return parse_point.parseString(in_string)

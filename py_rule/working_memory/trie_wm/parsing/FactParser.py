@@ -94,8 +94,21 @@ PARAM_SEN_PLURAL = pp.delimitedList(PARAM_SEN, delim=PU.DELIM)
 PARAM_SEN.setParseAction(PU.construct_sentence)
 BASIC_SEN.setParseAction(PU.construct_sentence)
 
+# Naming
+VALBIND.setName("ValBind")
+PARAM_BINDING_CORE.setName("ParamBindCore")
+PARAM_BINDING_END.setName("ParamBindEnd")
+BASIC_SEN.setName("BasicSentence")
+PARAM_SEN.setName("ParameterisedSentence")
+PARAM_SEN_PLURAL.setName("ParamSentencePlural")
+
+
+
+
+# parse_point = PARAM_SEN_PLURAL.ignore(PU.COMMENT)
+parse_point = PARAM_SEN_PLURAL
 
 # MAIN PARSER:
 def parseString(in_string):
     """ str -> [[Node]] """
-    return PARAM_SEN_PLURAL.parseString(in_string)[:]
+    return parse_point.parseString(in_string)[:]
