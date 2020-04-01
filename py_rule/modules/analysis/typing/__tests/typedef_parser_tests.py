@@ -3,6 +3,7 @@ from py_rule.abstract.trie.nodes.trie_node import TrieNode
 from py_rule.working_memory.trie_wm.parsing import FactParser as FP
 from py_rule.modules.analysis.typing import util as TU
 from py_rule.modules.analysis.typing.type_definition import TypeDefinition
+from py_rule.error.pyrule_parse_exception import PyRuleParseException
 import logging
 from py_rule.abstract.parsing import util as PU
 import py_rule.modules.analysis.typing.parsing.TypeDefParser as TD
@@ -64,7 +65,7 @@ class TypeDef_ParserTests(unittest.TestCase):
 
     def test_typedef_with_bad_vars(self):
         # TODO: replace exception with a more specific one
-        with self.assertRaises(Exception):
+        with self.assertRaises(PyRuleParseException):
             result = TD.parseString('σ::blah.x:\n| $x |\n\na.b.c\n\nend')[0]
 
     def test_op_def_parse(self):
@@ -72,6 +73,10 @@ class TypeDef_ParserTests(unittest.TestCase):
 
         result = TD.OP_DEF.parseString(the_string)
 
+
+    @unittest.skip("TODO")
+    def test_var_set(self):
+        return
 
 
 if __name__ == "__main__":

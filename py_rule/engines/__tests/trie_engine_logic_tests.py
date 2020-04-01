@@ -128,23 +128,23 @@ class Engine_Logic_Tests(unittest.TestCase):
 
     def test_transform_selection_single(self):
         self.e.load_file(self.path("transform_selection_single.trie"))
-        self.assertTrue('a.b!5?, a.c!10?, a.d!20?')
-        # query rule
-        # _run_rule
-        # _perform_actions
-        queried = [True for x in ["a.b!25?","a.c!30?","a.d!40?"] if bool(self.e.query(x))]
-        self.assertEqual(len(queried), 3)
-
+        self.assertTrue('a.b!a?')
+        rule = self.e.query('test.$rule?')[0]['rule']
+        self.e._run_rule(rule)
+        dr = self.e._proposed_actions[0]
+        self.e._perform_actions(dr[0], dr[1]._action)
+        self.assertTrue(self.e.query('output."b : a"?'))
 
     def test_file_load_multi_transform(self):
         self.e.load_file(self.path("multi_transform_test.trie"))
-        self.assertTrue(self.e.query('a.b!5?, a.c!10?, a.d!20?'))
-        # query rule
-        # _run_rule
-        # _perform_actions
-        self.assertTrue(self.e.query('a.b!50?'))
-        self.assertTrue(self.e.query('a.c!60?'))
-        self.assertTrue(self.e.query('a.d!80?'))
+        self.assertTrue(self.e.query('a.b!a?, a.c!b1, a.d!c?'))
+
+        rule = self.e.query('test.$rule?')[0]['rule']
+        self.e._run_rule(rule)
+        for dr in self.e._proposed_actions:
+            self.e._perform_actions(dr[0], dr[1]._action)
+
+        self.assertTrue(self.e.query('output."b : a test"?, output."c : b test"?, output."d : c test"?'))
 
     def test_file_exclusion_update(self):
         self.e.load_file(self.path("exclusion_update_test.trie"))

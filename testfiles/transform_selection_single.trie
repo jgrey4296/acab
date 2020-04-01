@@ -1,15 +1,15 @@
 // initial assertions
 a.b!a
-a.c!b
-a.d!c
+
+format.string."{x} : {y}"
 
 // A Transform rule
 ρ::test.rule:
+  format.string.$a?
   a.$x!$y?
 
-  //todo a transform
+  FormatOp $a -> $result
   
-  ActionAdd(a.$x!$y)
-
+  ActionAdd(output.$result)
 end
 
