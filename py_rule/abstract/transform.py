@@ -35,10 +35,10 @@ class TransformOp(PO.ProductionOperator):
 
 class TransformComponent(PO.ProductionComponent):
     """ Superclass of OperatorTransform. Holds an Operator """
-    def __init__(self, op_str, params, type_str=None):
+    def __init__(self, op_str, params, rebind=None, type_str=None):
         assert(not any([util.AT_BIND_S in x._data for x in params]))
         super(TransformComponent, self).__init__(op_str, params)
-        self._rebind = None
+        self._rebind = rebind
 
     def __refine_op_func(self, op_str):
         """ Replace the current op func set with a specific
@@ -86,6 +86,7 @@ class TransformComponent(PO.ProductionComponent):
 
     def set_rebind(self, bind):
         """ Set this transform to rebind its result to a different variable """
+        assert(isinstance(bind, PyRuleNode))
         assert(util.AT_BIND_S not in bind._data)
         self._rebind = bind
         return self
@@ -96,6 +97,14 @@ class TransformComponent(PO.ProductionComponent):
     def to_sentence(self):
         head = PyRuleNode(self._op_str, { util.OPERATOR_S : self})
         return Sentence([head] + [x for x in self._params] + [self._rebind])
+
+    def var_set(self):
+        obj = super(TransformComponent, self).var_set()
+        in_set = obj['out']
+        out_set = set()
+        if self._rebind is not None:
+            out_set.update(self._rebind.var_set()['out'])
+        return {'in' : in_set, 'out': out_set }
 
 
 class Transform(PO.ProductionContainer):

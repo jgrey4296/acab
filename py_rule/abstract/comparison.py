@@ -81,3 +81,7 @@ class Comparison(ProductionComponent):
         assert(isinstance(target, PyRulenode))
         head = PyRule(self._op_str, { OPERATOR_S : self})
         return Sentence([head, target, self._value])
+
+    def var_set(self):
+        obj = super(Comparison, self).var_set()
+        return {'in': obj['in'].union(obj['out']), 'out': set()}

@@ -146,3 +146,14 @@ class Rule(PyRuleValue):
 
     def value_string(self):
         return self._name
+
+    def var_set(self):
+        obj = super(Rule, self).var_set()
+        query_set = self._query.var_set()
+        transform_set = self._transform.var_set()
+        action_set = self._action.var_set()
+
+        obj['in'].update(*[x['in'] for x in [query_set, transform_set, action_set]])
+        obj['out'].update(*[x['out'] for x in [query_set, transform_set, action_set]])
+
+        return obj

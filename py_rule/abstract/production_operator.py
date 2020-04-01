@@ -64,6 +64,15 @@ class ProductionComponent(PyRuleValue):
         """ Complains if the operator is not a defined Operator Enum """
         raise NotImplementedError()
 
+    def var_set(self):
+        obj = super(ProductionComponent, self).var_set()
+        for p in self._params:
+            if isinstance(p, PyRuleValue):
+                tempobj = p.var_set()
+                obj['in'].update(tempobj['in'])
+                obj['out'].update(tempobj['out'])
+        return obj
+
 
 class ProductionContainer(PyRuleValue):
 
@@ -104,8 +113,15 @@ class ProductionContainer(PyRuleValue):
     def copy(self):
         return self.__class__([x.copy() for x in self._clauses], type_str=self._type)
 
-    def get_bindings(self):
+    def var_set(self):
         """ Return a set of all bindings this container utilizes """
         # ie: Query(a.b.$x? a.q.$w?).get_bindings() -> {'in': [], 'out': [x,w]}
         # Action(+(a.b.$x), -(a.b.$w)).get_bindings() -> {'in': [x,w], 'out': []}
-        return {}
+        obj = super(ProductionComponent, self).var_set()
+        for p in self._clauses:
+            if isinstance(p, PyRuleValue):
+                tempobj = p.var_set()
+                obj['in'].update(tempobj['in'])
+                obj['out'].update(tempobj['out'])
+        return obj
+

@@ -38,3 +38,11 @@ class TypeDefinition(Type):
 
     def value_string(self):
         return self._name
+
+    def var_set(self):
+        obj = super(TypeDefinition, self).var_set()
+        for s in self._structure:
+            temp = s.var_set()
+            obj['out'].update(temp['out'])
+
+        return obj

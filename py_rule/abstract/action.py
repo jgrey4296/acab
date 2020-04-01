@@ -117,6 +117,10 @@ class ActionComponent(PO.ProductionComponent):
         sen = Sentence([head] + self._params[:])
         return sen
 
+    def var_set(self):
+        obj = super(ActionComponent, self).var_set()
+        return { 'in' : obj['in'].union(obj['out']), 'out': set() }
+
 
 class Action(PO.ProductionContainer):
 

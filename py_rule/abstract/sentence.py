@@ -97,3 +97,12 @@ class Sentence(PyRuleValue):
         for word in other:
             assert(isinstance(word, PyRuleNode))
             self._words.append(other)
+
+    def var_set(self):
+        obj = super(Sentence, self).var_set()
+        for w in self._words:
+            temp = w.var_set()
+            obj['in'].update(temp['in'])
+            obj['out'].update(temp['out'])
+
+        return obj

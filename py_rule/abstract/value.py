@@ -2,6 +2,9 @@
 The Core Value Class
 """
 from py_rule import util
+import logging as root_logger
+logging = root_logger.getLogger(__name__)
+
 
 class PyRuleValue:
 
@@ -34,8 +37,13 @@ class PyRuleValue:
         raise NotImplementedError()
 
     def var_set(self):
-        """ Data needs to be able to report internal variables """
-        raise NotImplementedError()
+        """ Return a dict of sets of all bindings this value utilizes
+        returns { 'in' : set(), 'out' : set() }
+        """
+        # ie: Query(a.b.$x? a.q.$w?).get_bindings() -> {'in': [], 'out': [x,w]}
+        # Action(+(a.b.$x), -(a.b.$w)).get_bindings() -> {'in': [x,w], 'out': []}
+        logging.warning("{} is using default var_set method".format(self.__class__))
+        return {'in': set(self._vars), 'out': set() }
 
     def apply_onto(self, path, tvars=None, tags=None):
         """ Apply a value onto the leaf of a path.

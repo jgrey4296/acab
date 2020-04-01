@@ -2,12 +2,12 @@
 from .value import PyRuleValue
 from fractions import Fraction
 from re import Pattern, search
-
+from util import BIND_S, AT_BIND_S
 
 class PyRuleNode(PyRuleValue):
     """ The Abstract Node Class """
 
-    def __init__(self, value, data=None):
+    def __init__(self, value, data=None, type_str=None):
 
         value_type_verify = (value is None or
                              isinstance(value, (int,
@@ -18,7 +18,7 @@ class PyRuleNode(PyRuleValue):
                                                 Pattern,
                                                 PyRuleValue)))
         assert value_type_verify, type(value)
-
+        super(PyRuleNode, self).__init__(type_str=type_str)
         self._value = value
         self._children = {}
         self._data = {}
@@ -124,3 +124,23 @@ class PyRuleNode(PyRuleValue):
         else:
             return (newData, self)
 
+
+    def var_set(self):
+        obj = super(PyRuleNode, self).var_set()
+        if isinstance(self._value, PyRuleValue):
+            val_set = self._value.var_set()
+            obj['in'].update(val_set['in'])
+            obj['out'].update(val_set['out'])
+
+        #add to 'out' if node is a binding
+        if (BIND_S in self._data and self._data[BIND_S]) or (AT_BIND_S in self._data and self._data[AT_BIND_S]):
+            obj['out'].add(self.value_string())
+
+        #add annotations to 'in'
+        for v in self._data.values():
+            if isinstance(v, PyRuleValue):
+                tempobj = v.var_set()
+                obj['in'].update(tempobj['in'])
+                obj['out'].update(tempobj['out'])
+
+        return obj
