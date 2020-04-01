@@ -150,50 +150,6 @@ class Engine_Logic_Tests(unittest.TestCase):
         self.e.load_file(self.path("exclusion_update_test.trie"))
         self.assertTrue(self.e.query('a.b!c?, ~a.b.!b?, ~a.b!a?'))
 
-    def test_macro_binding(self):
-        self.e.load_file(self.path("macro_binding_test.trie"))
-        self.assertTrue(self.e.query('a.b.c.d?, a.b.c.e?'))
-
-    def test_macro_binding_empty(self):
-        self.e.load_file(self.path("macro_empty_binding_test.trie"))
-        self.assertTrue(self.e.query('~a.b.c?'))
-
-    def test_action_macro(self):
-        self.e.load_file(self.path("action_macro.trie"))
-        self.assertTrue(self.e.query('a.b.first?, a.c.second?'))
-        # query rule
-        # _run_rule
-        # _perform_actions
-        self.assertTrue(self.e.query('~a.b.first?, ~a.c.second?, a.b.second?, a.c.first?'))
-        rule = list(self.e._rules.values())[0]
-        self.assertEqual(len(rule._actions), 4)
-
-    def test_two_action_macros(self):
-        self.e.load_file(self.path("two_action_macro.trie"))
-        self.assertTrue(self.e.query('a.b.first?, a.c.second?'))
-        # query rule
-        # _run_rule
-        # _perform_actions
-        self.assertTrue(self.e.query('~a.b.first?, ~a.c.second?, a.b.second?, a.c.first?, .blah?, .bloo?'))
-        rule = list(self.e._rules.values())[0]
-        self.assertEqual(len(rule._actions), 6)
-
-    def test_action_macros_with_values(self):
-        self.e.load_file(self.path("valued_action_macro.trie"))
-        self.assertTrue(self.e.query('a.b.c?'))
-        # query rule
-        # _run_rule
-        # _perform_actions
-        self.assertTrue(self.e.query('a.b.c?, a.b."this is a test"?'))
-
-    def test_variable_macro_in_action_macro_test(self):
-        self.e.load_file(self.path("variable_macro_in_action_macro_test.trie"))
-        self.assertTrue(self.e.query('a.b.c?'))
-        # query rule
-        # _run_rule
-        # _perform_actions
-        self.assertTrue(self.e.query('a.b.c?, a.b.blah?'))
-
     def test_rule_selection_running(self):
         self.e.load_file(self.path("selection_of_rules_test.trie"))
         self.assertTrue(self.e.query('a.b.c?'))
