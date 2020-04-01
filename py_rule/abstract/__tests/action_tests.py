@@ -2,11 +2,13 @@
 from os.path import splitext, split
 import unittest
 import logging
-from py_rule.abstract.comparison import Comparison
-from py_rule import util
+from py_rule import abstract
 from py_rule.abstract.node import PyRuleNode
+from py_rule.abstract.action import ActionComponent
+from py_rule import util
+from py_rule.abstract.sentence import Sentence
 
-class ComparisonTests(unittest.TestCase):
+class ActionTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -21,14 +23,15 @@ class ComparisonTests(unittest.TestCase):
     #----------
     #use testcase snippets
     def test_construction(self):
-        comp = Comparison("test", [])
-        self.assertIsInstance(comp, Comparison)
+        action = ActionComponent("testOp", [])
+        self.assertIsInstance(action, ActionComponent)
 
     def test_var_set(self):
-        bind = PyRuleNode("an_input", data={util.BIND_S: True})
-        comp = Comparison("Test", [bind])
-        var_set = comp.var_set()
-        self.assertTrue("an_input" in var_set['in'])
+        param = PyRuleNode("test", data={util.BIND_S: True})
+        action = ActionComponent("testOp", [Sentence([param])])
+        var_set = action.var_set()
+        self.assertTrue("test" in var_set['in'])
+
 
 
 if __name__ == "__main__":

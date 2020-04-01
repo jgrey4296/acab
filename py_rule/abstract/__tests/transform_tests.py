@@ -2,11 +2,12 @@
 from os.path import splitext, split
 import unittest
 import logging
-from py_rule.abstract.comparison import Comparison
 from py_rule import util
+from py_rule.abstract.transform import TransformComponent
 from py_rule.abstract.node import PyRuleNode
 
-class ComparisonTests(unittest.TestCase):
+
+class TransformTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -21,14 +22,17 @@ class ComparisonTests(unittest.TestCase):
     #----------
     #use testcase snippets
     def test_construction(self):
-        comp = Comparison("test", [])
-        self.assertIsInstance(comp, Comparison)
+        transform = TransformComponent("TestOp", [])
+        self.assertIsInstance(transform, TransformComponent)
 
     def test_var_set(self):
-        bind = PyRuleNode("an_input", data={util.BIND_S: True})
-        comp = Comparison("Test", [bind])
-        var_set = comp.var_set()
-        self.assertTrue("an_input" in var_set['in'])
+        param = PyRuleNode("input", data={util.BIND_S: True})
+        outbind = PyRuleNode("output", data={util.BIND_S: True})
+        transform = TransformComponent("TestOp", [param], rebind=outbind)
+        var_set = transform.var_set()
+        self.assertTrue("input" in var_set['in'])
+        self.assertTrue("output" in var_set['out'])
+
 
 
 if __name__ == "__main__":

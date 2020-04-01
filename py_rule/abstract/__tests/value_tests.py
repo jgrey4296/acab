@@ -2,11 +2,9 @@
 from os.path import splitext, split
 import unittest
 import logging
-from py_rule.abstract.comparison import Comparison
-from py_rule import util
-from py_rule.abstract.node import PyRuleNode
+from py_rule.abstract.value import PyRuleValue
 
-class ComparisonTests(unittest.TestCase):
+class PyRuleValueTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -21,14 +19,29 @@ class ComparisonTests(unittest.TestCase):
     #----------
     #use testcase snippets
     def test_construction(self):
-        comp = Comparison("test", [])
-        self.assertIsInstance(comp, Comparison)
+        value = PyRuleValue("test")
+        self.assertIsInstance(value, PyRuleValue)
 
     def test_var_set(self):
-        bind = PyRuleNode("an_input", data={util.BIND_S: True})
-        comp = Comparison("Test", [bind])
-        var_set = comp.var_set()
-        self.assertTrue("an_input" in var_set['in'])
+        value = PyRuleValue("test")
+        var_set = value.var_set()
+        self.assertIsInstance(var_set, dict)
+        self.assertTrue("in" in var_set)
+        self.assertTrue("out" in var_set)
+
+    def test_var_set_with_vars(self):
+        value = PyRuleValue("test")
+        value._vars = ["a","b","c"]
+        var_set = value.var_set()
+        self.assertTrue(all([x in var_set['in'] for x in ["a","b","c"]]))
+
+    @unittest.skip("TODO")
+    def test_apply_onto(self):
+        return
+
+    @unittest.skip('TODO')
+    def test_has_tag(self):
+        return
 
 
 if __name__ == "__main__":

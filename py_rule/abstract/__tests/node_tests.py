@@ -3,7 +3,7 @@ from os.path import splitext, split
 import unittest
 import logging
 from py_rule.abstract.node import PyRuleNode
-
+from py_rule import util
 
 class PyRuleNodeTests(unittest.TestCase):
 
@@ -103,6 +103,18 @@ class PyRuleNodeTests(unittest.TestCase):
         a_node.clear_children()
         self.assertEqual(len(a_node),0)
         self.assertFalse(bool(a_node))
+
+
+    def test_var_set(self):
+        node = PyRuleNode("test", data={util.BIND_S: True})
+        var_set = node.var_set()
+        self.assertTrue("test" in var_set['out'])
+
+    def test_nested_var_set(self):
+        node = PyRuleNode("inner", data={util.BIND_S: True})
+        outer = PyRuleNode(node)
+        var_set = outer.var_set()
+        self.assertTrue("inner" in var_set['out'])
 
 
 if __name__ == "__main__":
