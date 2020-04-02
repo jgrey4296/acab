@@ -32,7 +32,6 @@ file_total = pp.delimitedList(file_component, delim=PU.component_gap)
 
 #Parse Actions
 file_total.setParseAction(final_pass)
-file_component.setParseAction(expansion_pass)
 
 # NAMING
 statements.setName("StatementCollection")
