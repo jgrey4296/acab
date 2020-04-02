@@ -7,6 +7,7 @@ class Contexts:
     """
     @staticmethod
     def initial(start_node):
+        """ Create an initial empty context with a given start node """
         init = Contexts()
         init._init_alt(start_node)
         return init
@@ -19,7 +20,7 @@ class Contexts:
 
     #--------------------
     def __init__(self):
-        # A list of (data,lastNode) tokens
+        # A list of (data, last_node) tokens
         self._matches = []
 
     def __len__(self):
@@ -44,9 +45,9 @@ class Contexts:
     def append(self, *data):
         """ Add a number of matching possibilities into this set of contexts """
         assert(all([isinstance(x, tuple) for x in data]))
-        for x,y in data:
+        for x, y in data:
             assert(x is not None and y is not None)
-            self._matches.append((x,y))
+            self._matches.append((x, y))
 
     def fail(self):
         """ Remove all contexts, as none are suitable """
@@ -56,13 +57,13 @@ class Contexts:
         """ Duplicate the Contexts, with a specific node as the current leaf,
         if binding != None, fail those that don't have the binding """
         assert (target is not None or binding)
-        newContexts = Contexts()
-        for (data, lastNode) in self._matches:
+        new_contexts = Contexts()
+        for (data, last_node) in self._matches:
             if target is not None:
-                newContexts.append((data, target))
+                new_contexts.append((data, target))
             elif AT_BIND_S + binding in data:
-                newContexts.append((data, data[AT_BIND_S + binding]))
-        return newContexts
+                new_contexts.append((data, data[AT_BIND_S + binding]))
+        return new_contexts
 
     def select(self, bounds=(None, None)):
         """ Select a certain number of binding groups from available contexts """

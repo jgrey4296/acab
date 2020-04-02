@@ -1,6 +1,7 @@
-from .pyrule_type import Type
 from py_rule.abstract.value import PyRuleValue
+
 from . import util
+from .pyrule_type import Type
 
 class TypeInstance(Type):
     """ A Type Instance can be polytyped or monotyped """

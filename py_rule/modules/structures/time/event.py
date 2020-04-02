@@ -1,10 +1,12 @@
 """
 Events express when a value holds in time
 """
-from py_rule.abstract.value import PyRuleValue
-from .arc import Arc
 from fractions import Fraction
 import logging as root_logger
+
+from py_rule.abstract.value import PyRuleValue
+
+from .arc import Arc
 from . import util
 
 logging = root_logger.getLogger(__name__)
@@ -15,6 +17,7 @@ class Event(PyRuleValue):
 
     def __init__(self, a, b, value_is_pattern=False, params=None):
         assert(isinstance(a, Arc))
+        super(Event, self).__init__()
         self._arc = a.copy()
         self._value = b
         self._params = {util.BIND_S: False,

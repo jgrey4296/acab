@@ -2,8 +2,6 @@
 rule engines
 """
 from py_rule.abstract.rule import Rule
-from py_rule.abstract.sentence import Sentence
-from .parsing import FactParser as FP
 
 
 class TrieRule(Rule):
@@ -19,7 +17,7 @@ class TrieRule(Rule):
     def to_node_lists(self):
         """ Convert a rule to a list of node lists  """
         # TODO
-        baseName = None
+        base_name = None
         conditions = []
         transforms = []
         actions = []

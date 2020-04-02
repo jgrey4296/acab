@@ -2,8 +2,9 @@
 Definitions of the Core Performance Operators
 """
 import logging as root_logger
-from py_rule.abstract.action import ActionOp
 from enum import Enum
+
+from py_rule.abstract.action import ActionOp
 
 logging = root_logger.getLogger(__name__)
 
@@ -35,4 +36,3 @@ class ActionPrint(ActionOp):
         for x in params:
             print(x)
             logging.info("Engine Output: {}".format(x))
-

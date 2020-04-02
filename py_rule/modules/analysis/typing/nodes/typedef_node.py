@@ -1,20 +1,23 @@
-from .type_assignment_node import TypeAssignmentTrieNode
+import logging as root_logger
+
 from py_rule.abstract.trie.nodes.trie_node import TrieNode
 from py_rule.abstract.trie.trie import Trie
 from py_rule.error import type_exceptions as te
 from py_rule.modules.analysis.typing.type_definition import TypeDefinition
-import logging as root_logger
 import py_rule.modules.analysis.typing.util as util
+
+from .type_assignment_node import TypeAssignmentTrieNode
+
 logging = root_logger.getLogger(__name__)
 
 # Log messages to use, because they are long:
-log_messages = {}
-log_messages['validate_top'] = "Validating: {} on {}"
-log_messages['curr_def'] = "Current Definition to Validate: {} : {}"
-log_messages['curr_use_set'] = "Current Usage Set: {}"
-log_messages['no_children'] = "Val: No Children, assigning type: {} to {}"
-log_messages['match_type_usage'] = "Matching Type {} onto usage set"
-log_messages['mult_child'] = "Current Def has multiple children, checking for conflicts in structure"
+LOG_MESSAGES = {}
+LOG_MESSAGES['validate_top'] = "Validating: {} on {}"
+LOG_MESSAGES['curr_def'] = "Current Definition to Validate: {} : {}"
+LOG_MESSAGES['curr_use_set'] = "Current Usage Set: {}"
+LOG_MESSAGES['no_children'] = "Val: No Children, assigning type: {} to {}"
+LOG_MESSAGES['match_type_usage'] = "Matching Type {} onto usage set"
+LOG_MESSAGES['mult_child'] = "Current Def has multiple children, checking for conflicts in structure"
 
 
 class TypeDefTrieNode(TrieNode):
@@ -54,7 +57,7 @@ class TypeDefTrieNode(TrieNode):
         returning a list of nodes that have been inferred
         """
         assert(isinstance(usage_trie, TypeAssignmentTrieNode))
-        logging.debug(log_messages['validate_top'].format(repr(self),
+        logging.debug(LOG_MESSAGES['validate_top'].format(repr(self),
                                                           repr(usage_trie)))
         if self._typedef_trie is None:
             raise te.TypeUndefinedException(self._value.value_string(), usage_trie)
@@ -137,7 +140,7 @@ class TypeDefTrieNode(TrieNode):
         return queue_vals
 
     def _handle_multiple_children(self, curr_def, curr_usage_set):
-        logging.debug(log_messages['mult_child'])
+        logging.debug(LOG_MESSAGES['mult_child'])
         assert(len(curr_def._children) > 1)
         # With multiple children, match keys
         queue_vals = []
@@ -160,15 +163,15 @@ class TypeDefTrieNode(TrieNode):
     def _log_status(self, curr_def, curr_usage_set):
         curr_def_type = curr_def._type
         curr_use_str = ", ".join([str(x) for x in curr_usage_set])
-        logging.debug(log_messages['curr_def'].format(curr_def._value,
+        logging.debug(LOG_MESSAGES['curr_def'].format(curr_def._value,
                                                       repr(curr_def_type)))
-        logging.debug(log_messages['curr_use_set'].format(curr_use_str))
+        logging.debug(LOG_MESSAGES['curr_use_set'].format(curr_use_str))
 
     def _log_no_children(self, curr_def, curr_def_type, curr_usage_set):
         c_u_s_str = ", ".join([str(x) for x in curr_usage_set])
-        logging.debug(log_messages['no_children'].format(curr_def_type,
+        logging.debug(LOG_MESSAGES['no_children'].format(curr_def_type,
                                                          c_u_s_str))
 
     def _log_match_type_usage(self, curr_def_type):
-        log_msg = log_messages['match_type_usage'].format(curr_def_type)
+        log_msg = LOG_MESSAGES['match_type_usage'].format(curr_def_type)
         logging.debug(log_msg)

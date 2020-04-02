@@ -1,11 +1,13 @@
-from .typed_node import M_TypedNode
-from py_rule.modules.analysis.typing import util
-import py_rule.error.type_exceptions as te
 import logging as root_logger
+
+import py_rule.error.type_exceptions as te
+from py_rule.modules.analysis.typing import util
+from .typed_node import MonoTypedNode
+
 logging = root_logger.getLogger(__name__)
 
 
-class TypeAssignmentTrieNode(M_TypedNode):
+class TypeAssignmentTrieNode(MonoTypedNode):
     """ A Node in the Type Assignment Trie.
     Used in type inference.
     Enables linking with variable type trie """

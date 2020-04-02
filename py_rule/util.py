@@ -50,7 +50,7 @@ RULE_HEAD_S      = "ρ"
 QUERY_HEAD_S     = "ι"
 TRANSFORM_HEAD_S = "τ"
 ACTION_HEAD_S    = "α"
-
+FACT_HEAD_S      = "Σ"
 STRUCTURE_S      = "σ"
 FUNC_S           = "λ"
 

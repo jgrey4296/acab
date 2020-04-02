@@ -84,4 +84,3 @@ class TrieNode(PyRuleNode):
             else:
                 betas.append(c)
         return (alphas, betas, regexs)
-

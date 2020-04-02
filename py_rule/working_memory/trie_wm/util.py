@@ -53,7 +53,7 @@ DEFAULT_NODE_DATA = {
 # Utility Funtions:
 def node_is_exclusive(node):
     """ Checks for the exclusion operator in this node """
-    return node._data[util.OPERATOR_S] is util.EXOP.EX
+    return node._data[util.OPERATOR_S] is EXOP.EX
 
 def node_looks_exclusive(node):
     """ Checks for implicit exclusivity by having 0 or 1 children """

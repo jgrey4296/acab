@@ -1,10 +1,11 @@
 """ Query: The Datastructure to hold a
 question to pose to the working memory
 """
+from py_rule import util
+
 from . import production_operator as PO
 from .comparison import Comparison
 from .sentence import Sentence
-from py_rule import util
 
 class Query(PO.ProductionContainer):
     """ A Query for the working memory """
@@ -17,20 +18,20 @@ class Query(PO.ProductionContainer):
         super(Query, self).__init__(clauses, type_str=type_str)
 
     def __repr__(self):
-        clauseStrs = [repr(x) for x in self._clauses]
-        return "\n\t".join(clauseStrs)
+        clause_strs = [repr(x) for x in self._clauses]
+        return "\n\t".join(clause_strs)
 
     def __str__(self):
-        clauseStrs = [str(x) for x in self._clauses]
-        return "\n\t".join(clauseStrs)
+        clause_strs = [str(x) for x in self._clauses]
+        return "\n\t".join(clause_strs)
 
     def expand_bindings(self, bindings):
         """ Expand the individual clauses to have concrete values """
         assert(isinstance(bindings, dict))
-        newClauses = []
+        new_clauses = []
         for x in self._clauses:
-            newClauses.append(x.expand_bindings(bindings))
-        return Query(newClauses)
+            new_clauses.append(x.expand_bindings(bindings))
+        return Query(new_clauses)
 
     def split_clauses(self):
         """ Separate out the clauses of the query
@@ -45,7 +46,7 @@ class Query(PO.ProductionContainer):
                 pos.append(c)
         return (pos, neg)
 
-    def to_sentences(self):
+    def to_sentences(self, target=None):
         """ Return all comparisons in canonical form """
         # eg : a.test.$x(>$y)? = > -> $x -> $y -> bool
         # TODO should this actually be all *clauses*?

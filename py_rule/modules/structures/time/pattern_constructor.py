@@ -7,13 +7,16 @@ that values are added to.
 Upon exit, it calculates the appropriate time arcs for events
 
 """
-from .arc import Arc
-from .event import Event
-from .pattern import Pattern, PatternChoice, PatternPar
 from enum import Enum
 from fractions import Fraction as t
 import logging as root_logger
+
 from py_rule.modules.structures.time.util import OPT_S
+
+from .arc import Arc
+from .event import Event
+from .pattern import Pattern, PatternChoice, PatternPar
+
 logging = root_logger.getLogger(__name__)
 
 # PStart/End : SubPattern

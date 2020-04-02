@@ -1,20 +1,19 @@
 """ Simple Transform functions to be used in rules """
 import logging as root_logger
-from . import production_operator as PO
-from py_rule.error.pyrule_operator_exception import PyRuleOperatorException
-from .node import PyRuleNode
-from .value import PyRuleValue
-from .sentence import Sentence
+
 from py_rule import util
-from py_rule.error.pyrule_operator_exception import PyRuleOperatorException
+
+from . import production_operator as PO
+from .node import PyRuleNode
+from .sentence import Sentence
 
 logging = root_logger.getLogger(__name__)
 
 
 class TransformOp(PO.ProductionOperator):
-    op_list = { 1 : {},
-                2 : {},
-                3 : {} }
+    op_list = {1 : {},
+               2 : {},
+               3 : {}}
 
     def __init__(self, num_params=2, infix=False):
         # Registers self with class name,
@@ -50,38 +49,41 @@ class TransformComponent(PO.ProductionComponent):
         return "TransformComp({})".format(str(self))
 
     def __str__(self):
+        return_str = "DefaultTransformComponentStr"
         op = self._op
         source = [x.opless_print() if isinstance(x, PyRuleNode)
-                  else str(x) for x in self._params]
+                  else str(x) for x in self._vars]
         if self._rebind is not None:
             rebind = " -> {}".format(self._rebind.opless_print())
         else:
             rebind = ""
 
-        param_length = len(self._params)
+        param_length = len(self._vars)
         if param_length == 1:
-            return "{} {}{}".format(op, source[0], rebind)
+            return_str = "{} {}{}".format(op, source[0], rebind)
         elif param_length == 2:
-            return "{} {} {}{}".format(source[0],
-                                       op,
-                                       source[1],
-                                       rebind)
+            return_str = "{} {} {}{}".format(source[0],
+                                             op,
+                                             source[1],
+                                             rebind)
         elif param_length == 3:
-            return "{} {} {}{}{}".format(source[0],
-                                         op,
-                                         source[1],
-                                         source[2],
-                                         rebind)
+            return_str = "{} {} {}{}{}".format(source[0],
+                                               op,
+                                               source[1],
+                                               source[2],
+                                               rebind)
+
+        return return_str
 
     def __call__(self, ctx):
-        op_func = TransformOp.op_list[len(self._params)][self._op]
-        params = [ctx[y._value] if y._data[util.BIND_S] else y._value for y in self._params]
+        op_func = TransformOp.op_list[len(self._vars)][self._op]
+        params = [ctx[y._value] if y._data[util.BIND_S] else y._value for y in self._vars]
 
         return op_func(*params, ctx)
 
-    def verify_op(self):
+    def verify(self):
         """ Complains if the operator is not a defined Operator Enum """
-        if self._op not in TransformOp.op_list[len(self._params)]:
+        if self._op not in TransformOp.op_list[len(self._vars)]:
             raise SyntaxError("Unknown Op: {}".format(self._op))
 
     def set_rebind(self, bind):
@@ -92,11 +94,15 @@ class TransformComponent(PO.ProductionComponent):
         return self
 
     def copy(self):
-        return super(TransformComponent, self).copy().set_rebind(self._rebind)
+        copied = TransformComponent(self._op,
+                                    self._vars,
+                                    rebind=self._rebind,
+                                    type_str=self._type)
+        return copied
 
-    def to_sentence(self):
-        head = PyRuleNode(self._op_str, { util.OPERATOR_S : self})
-        return Sentence([head] + [x for x in self._params] + [self._rebind])
+    def to_sentence(self, target=None):
+        head = PyRuleNode(self._op, {util.OPERATOR_S : self})
+        return Sentence([head] + self._vars[:] + [self._rebind])
 
     def var_set(self):
         obj = super(TransformComponent, self).var_set()
@@ -104,7 +110,7 @@ class TransformComponent(PO.ProductionComponent):
         out_set = set()
         if self._rebind is not None:
             out_set.update(self._rebind.var_set()['out'])
-        return {'in' : in_set, 'out': out_set }
+        return {'in' : in_set, 'out': out_set}
 
 
 class Transform(PO.ProductionContainer):
@@ -125,11 +131,11 @@ class Transform(PO.ProductionContainer):
 
     def get_input_requirements(self):
         # return the set of input bound names
-        return [y._value for x in self._components for y in x._params if y._data[util.BIND_S]]
+        return [y._value for x in self._clauses for y in x._vars if y._data[util.BIND_S]]
 
     def get_output_spec(self):
         # return the set of output bound names
-        return [x._rebind._value for x in self._components]
+        return [x._rebind._value for x in self._clauses]
 
     def value_string(self):
         return self._name

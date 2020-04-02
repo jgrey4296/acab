@@ -1,10 +1,13 @@
 """
 Arcs express segments of rational time
 """
-from py_rule.abstract.value import PyRuleValue
-from fractions import Fraction
-from .util import time_str
 import logging as root_logger
+from fractions import Fraction
+
+from py_rule.abstract.value import PyRuleValue
+
+from .util import time_str
+
 logging = root_logger.getLogger(__name__)
 
 
@@ -12,6 +15,7 @@ class Arc(PyRuleValue):
     """ A segment of rational time """
 
     def __init__(self, a, b):
+        super(Arc, self).__init__()
         assert(isinstance(a, Fraction))
         assert(isinstance(b, Fraction))
         assert(a < b)
@@ -25,7 +29,7 @@ class Arc(PyRuleValue):
             assert(hasattr(other, '_arc'))
             test = other._arc._start
         assert(isinstance(test, Fraction))
-        return self._start <= test and test < self._end
+        return self._start <= test < self._end
 
     def __repr__(self):
         """ A Readable format of an arc """

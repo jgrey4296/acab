@@ -30,78 +30,78 @@ class Rule(PyRuleValue):
         Rule.__count += 1
 
     def __str__(self):
-        nameStr      = self._name
-        tagsStr      = ""
-        queryStr     = ""
-        transformStr = ""
-        actionsStr   = ""
+        name_str      = self._name
+        tags_str      = ""
+        query_str     = ""
+        transform_str = ""
+        actions_str   = ""
 
         # if self._name is not None:
-        #     nameStr = str(self._name[:-1])
+        #     name_str = str(self._name[:-1])
 
         # Construct Tags str
         if bool(self._tags):
-            tagsStr = "\t" + ", ".join(sorted(["#{}".format(x)
-                                               for x in self._tags])) + "\n\n"
+            tags_str = "\t" + ", ".join(sorted(["#{}".format(x)
+                                                for x in self._tags])) + "\n\n"
 
         # Construct Query Str
         if self._query is not None:
-            queryStr = "\t" + str(self._query) + "\n\n"
+            query_str = "\t" + str(self._query) + "\n\n"
 
         # Construct Transform Str
         if self._transform is not None:
-            transformStr = "\t" + str(self._transform) + "\n\n"
+            transform_str = "\t" + str(self._transform) + "\n\n"
 
         # Construct Action Str
         if bool(self._action):
-            actionsStr = "\t" + "\n\t".join([str(x)
-                                             for x in self._action]) + "\n"
+            actions_str = "\t" + "\n\t".join([str(x)
+                                              for x in self._action]) + "\n"
 
-        return "{}(::{}):\n{}{}{}{}{}".format(nameStr,
+        return "{}(::{}):\n{}{}{}{}{}".format(name_str,
                                               util.RULE_HEAD_S,
-                                              tagsStr,
-                                              queryStr,
-                                              transformStr,
-                                              actionsStr,
+                                              tags_str,
+                                              query_str,
+                                              transform_str,
+                                              actions_str,
                                               util.END_S)
 
     def __repr__(self):
         """ Create a representation of the rule.
         Not implementation specific
         """
-        nameStr      = self._name
-        tagsStr      = ""
-        queryStr     = ""
-        transformStr = ""
-        actionsStr   = ""
+        name_str      = self._name
+        tags_str      = ""
+        query_str     = ""
+        transform_str = ""
+        actions_str   = ""
 
         # if self._name is not None:
-        #     nameStr = "".join([repr(x) for x in self._name[:-1]])
+        #     name_str = "".join([repr(x) for x in self._name[:-1]])
 
         # Construct Tag Str
         if bool(self._tags):
-            tagsStr = "\t" + ", ".join(sorted(["#{}".format(x)
-                                               for x in self._tags])) + "\n\n"
+            tags_str = "\t" + ", ".join(sorted(["#{}".format(x)
+                                                for x in self._tags])) + "\n\n"
 
         # Construct Query Str
         if self._query is not None:
-            queryStr = "\t" + repr(self._query) + "\n\n"
+            query_str = "\t" + repr(self._query) + "\n\n"
 
         # Construct Transform Str
         if self._transform is not None:
-            transformStr = "\t" + repr(self._transform) + "\n\n"
+            transform_str = "\t" + repr(self._transform) + "\n\n"
 
         # Construct Action Str
         if bool(self._action):
-            actionsStr = "\t" + "\n\t".join([repr(x)
-                                             for x in self._action]) + "\n"
+            actions_str = "\t" + "\n\t".join([repr(x)
+                                              for x in self._action]) + "\n"
 
-        return "{}(::{}):\n{}{}{}{}{}".format(nameStr,
+        return "{}(::{}):\n{}{}{}{}{}".format(name_str,
                                               util.RULE_HEAD_S,
-                                              tagsStr,
-                                              queryStr,
-                                              transformStr,
-                                              actionsStr,
+                                              tags_str,
+                                              query_str,
+                                              transform_str,
+                                              actions_str,
                                               util.END_S)
 
     def is_coherent(self):  # can raise an Exception from verify_op
@@ -111,7 +111,7 @@ class Rule(PyRuleValue):
             self._transform.verify_ops()
 
         if bool(self._action):
-            verified = [x.verify_op() for x in self._action]
+            dummy = [x.verify() for x in self._action]
         # if nothing raises an exception:
         return True
 

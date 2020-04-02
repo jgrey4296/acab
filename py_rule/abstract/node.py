@@ -1,8 +1,10 @@
 """ The Base Node Class the rest of PyRule extends """
-from .value import PyRuleValue
 from fractions import Fraction
 from re import Pattern, search
-from util import BIND_S, AT_BIND_S
+
+from py_rule.util import BIND_S, AT_BIND_S
+
+from .value import PyRuleValue
 
 class PyRuleNode(PyRuleValue):
     """ The Abstract Node Class """
@@ -97,32 +99,32 @@ class PyRuleNode(PyRuleValue):
         else:
             return None
 
-    def test_regexs_for_matching(self, regexs, currentData, preupdate=None):
+    def test_regexs_for_matching(self, regexs, current_data, preupdate=None):
         """ Test a number of regexs on this Node
         Return a Tuple of Nones if failure, (dict, node) if success
         """
-        newData = currentData.copy()
+        new_data = current_data.copy()
         if preupdate is not None:
-            for x,y in preupdate:
-                newData[x] = y
+            for x, y in preupdate:
+                new_data[x] = y
         invalidated = False
         for regex in regexs:
             result = self.search_regex(regex)
             if result is None:
                 invalidated = True
                 break
-            else:
-                for k, v in result.items():
-                    if k not in newData:
-                        newData[k] = v
-                    elif newData[k] != v:
-                        invalidated = True
-                        break
+
+            for k, v in result.items():
+                if k not in new_data:
+                    new_data[k] = v
+                elif new_data[k] != v:
+                    invalidated = True
+                    break
 
         if invalidated:
             return (None, None)
         else:
-            return (newData, self)
+            return (new_data, self)
 
 
     def var_set(self):
@@ -133,7 +135,8 @@ class PyRuleNode(PyRuleValue):
             obj['out'].update(val_set['out'])
 
         #add to 'out' if node is a binding
-        if (BIND_S in self._data and self._data[BIND_S]) or (AT_BIND_S in self._data and self._data[AT_BIND_S]):
+        if (BIND_S in self._data and self._data[BIND_S]) \
+           or (AT_BIND_S in self._data and self._data[AT_BIND_S]):
             obj['out'].add(self.value_string())
 
         #add annotations to 'in'

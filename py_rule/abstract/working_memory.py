@@ -17,10 +17,10 @@ class WorkingMemory:
         if self._have_added_types:
             raise ImportError("Can Only expand working memory types once")
         assert(all([isinstance(x, ModuleSpecification) for x in mods]))
-        self._added_types = True
+        self._have_added_types = True
 
         # Construct operators:
-        [x.construct_operators() for x in mods]
+        dummy = [x.construct_operators() for x in mods]
 
         # Add values parsers:
         val_parsers = [y for x in mods for y in x.get_value_parsers()]

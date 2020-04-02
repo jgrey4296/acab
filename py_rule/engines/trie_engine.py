@@ -71,4 +71,3 @@ class TrieEngine(Engine):
         # retrieve final selected actions
         output = self._proposed_actions.copy()
         return output
-

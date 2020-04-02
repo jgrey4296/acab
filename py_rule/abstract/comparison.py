@@ -1,9 +1,12 @@
 """ Simple comparison functions to be used in rules """
 import logging as root_logger
-from .production_operator import ProductionOperator, ProductionComponent
+
 from py_rule.util import BIND_S, OPERATOR_S
+
+from .production_operator import ProductionOperator, ProductionComponent
 from .sentence import Sentence
 from .node import PyRuleNode
+
 logging = root_logger.getLogger(__name__)
 
 
@@ -42,17 +45,17 @@ class Comparison(ProductionComponent):
     def __str__(self):
         val = self._params[0].opless_print()
 
-        retValue = "{} {}".format(str(self._op), val)
-        return retValue
+        ret_value = "{} {}".format(str(self._op), val)
+        return ret_value
 
     def __repr__(self):
         if self.is_regex_test():
-            val = "/{}/".format(self._value)
+            val = "/{}/".format(self._params[0])
         else:
-            val = self._value
+            val = " ".join([str(x) for x in self._params])
 
-        retValue = "Comparison({} {})".format(repr(self._op), repr(val))
-        return retValue
+        ret_value = "Comparison({} {})".format(repr(self._op), repr(val))
+        return ret_value
 
     def __call__(self, node, data=None):
         """ Run a comparison on a node """
@@ -70,17 +73,21 @@ class Comparison(ProductionComponent):
         self._op = op_str
 
     def is_alpha_test(self):
+        """ Return boolean of if test does not rely on other bindings """
         return bool(self._params) and not self._params[0]._data[BIND_S]
 
     def is_regex_test(self):
+        """ Return boolean of if test is a regular expression test """
         return self._op == "RegMatch"
 
-    def to_sentence(self, target):
+    def to_sentence(self, target=None):
         """ Create a comparison as a canonical sentence """
         # eg: 20(>30) -> > 20 30 -> bool
-        assert(isinstance(target, PyRulenode))
-        head = PyRule(self._op_str, { OPERATOR_S : self})
-        return Sentence([head, target, self._value])
+        head = PyRuleNode(self._op, {OPERATOR_S : self})
+        if target is None:
+            return Sentence([head] + self._params)
+        assert(isinstance(target, PyRuleNode))
+        return Sentence([head, target] + self._params)
 
     def var_set(self):
         obj = super(Comparison, self).var_set()

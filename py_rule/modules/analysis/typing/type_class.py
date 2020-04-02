@@ -16,6 +16,3 @@ class TypeClassInstance(Type):
 
     def __init__(self):
         super(TypeClassInstance, self).__init__()
-
-
-

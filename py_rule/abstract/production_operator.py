@@ -2,9 +2,9 @@
 The Base Operator Definition
 Used for Comparison, Transform, and Performance Operators
 """
-from .value import PyRuleValue
-from .sentence import Sentence
 from py_rule.util import OPERATOR_S, STATEMENT_S
+
+from .value import PyRuleValue
 
 class ProductionOperator(PyRuleValue):
     """ The Base Operator Class """
@@ -37,8 +37,9 @@ class ProductionComponent(PyRuleValue):
         # The lookup string of the operator:
         self._op = op_str
         # A List of parameters for the Component
-        assert(isinstance(params, list))
-        self._params = params[:]
+        if params is not None:
+            assert(isinstance(params, list))
+            self._vars = params[:]
 
     def __str__(self):
         raise NotImplementedError()
@@ -55,18 +56,18 @@ class ProductionComponent(PyRuleValue):
         raise NotImplementedError()
 
     def copy(self):
-        return self.__class__(self._op, self._params, type_str=self._type)
+        return self.__class__(self._op, self._vars, type_str=self._type)
 
-    def to_sentence(self):
+    def to_sentence(self, target=None):
         raise NotImplementedError()
 
-    def verify_op(self):
+    def verify(self):
         """ Complains if the operator is not a defined Operator Enum """
         raise NotImplementedError()
 
     def var_set(self):
         obj = super(ProductionComponent, self).var_set()
-        for p in self._params:
+        for p in self._vars:
             if isinstance(p, PyRuleValue):
                 tempobj = p.var_set()
                 obj['in'].update(tempobj['in'])
@@ -100,12 +101,12 @@ class ProductionContainer(PyRuleValue):
         for x in self._clauses:
             yield x
 
-    def to_sentences(self):
+    def to_sentences(self, target=None):
         return [x.to_sentence() for x in self._clauses]
 
-    def verify_ops(self):
+    def verify(self):
         for x in self._clauses:
-            x.verify_op()
+            x.verify()
 
     def expand_bindings(self, bindings):
         raise NotImplementedError()
@@ -117,11 +118,10 @@ class ProductionContainer(PyRuleValue):
         """ Return a set of all bindings this container utilizes """
         # ie: Query(a.b.$x? a.q.$w?).get_bindings() -> {'in': [], 'out': [x,w]}
         # Action(+(a.b.$x), -(a.b.$w)).get_bindings() -> {'in': [x,w], 'out': []}
-        obj = super(ProductionComponent, self).var_set()
+        obj = super(ProductionContainer, self).var_set()
         for p in self._clauses:
             if isinstance(p, PyRuleValue):
                 tempobj = p.var_set()
                 obj['in'].update(tempobj['in'])
                 obj['out'].update(tempobj['out'])
         return obj
-

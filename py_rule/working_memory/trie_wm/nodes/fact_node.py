@@ -1,9 +1,9 @@
 """ The Core Trie-Node, stores information, meta data """
+import logging as root_logger
+import weakref
+
 from py_rule.abstract.trie.nodes.trie_node import TrieNode
 from py_rule.working_memory.trie_wm import util as WMU
-import logging as root_logger
-import re
-import weakref
 
 logging = root_logger.getLogger(__name__)
 # see https://docs.python.org/3/library/weakref.html#module-weakref
@@ -28,9 +28,7 @@ class FactNode(TrieNode):
             operator = WMU.EXOP.DOT
             if WMU.OPERATOR_S in node._data:
                 operator = node._data[WMU.OPERATOR_S]
-            new_node = FactNode(node._value,
-                                operator,
-                                data=node._data)
+            new_node = FactNode(node._value, operator, node._data)
             return new_node
 
     def __init__(self, value, data=None, parent=None):
@@ -122,13 +120,13 @@ class FactNode(TrieNode):
         if self.remove_child(fact):
             self._set_dirty_chain()
 
-    def bind(self, data):
+    def bind(self, bindings):
         """ Annotate the Node with a Meta-Bind Evaluation """
         if not self._data[WMU.BIND_S]:
             return self.copy()
         else:
             copied = self.copy()
-            copied._bind_to_value(data)
+            copied._bind_to_value(bindings)
             return copied
 
     def _set_dirty_chain(self):

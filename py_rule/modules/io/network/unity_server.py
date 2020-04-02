@@ -1,11 +1,13 @@
+from enum import Enum
+from hashlib import md5
+from json.decoder import JSONDecodeError
+import json
 import logging as root_logger
 import socket
-import json
-from enum import Enum
-from json.decoder import JSONDecodeError
-from hashlib import md5
-from . import util
+
 from py_rule.abstract.agenda import Agenda
+
+from . import util
 
 class UnityServer(Agenda):
     """ A Server to connect to unity """
@@ -19,8 +21,8 @@ class UnityServer(Agenda):
                  host=util.DEFAULT_HOST,
                  backlog=util.DEFAULT_BACKLOG,
                  blockSize=util.DEFAULT_BLOCKSIZE,
-                 headerSize=util.DEFAULT_HEADERSIZE
-                 )
+                 headerSize=util.DEFAULT_HEADERSIZE)
+
         self._theSocket  = None
         self._host = host
         self._port = port

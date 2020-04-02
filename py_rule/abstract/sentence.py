@@ -2,7 +2,9 @@
 Defines a Sentence of Fact Words, which can be a query, and
 have fallback bindings
 """
-from py_rule.util import BIND_S, OPERATOR_S, AT_BIND_S, NEGATION_S, FALLBACK_S, QUERY_S, SEN_S, AT_BIND_S, NEGATION_SYMBOL_S
+from py_rule.util import BIND_S, OPERATOR_S, NEGATION_S, FALLBACK_S
+from py_rule.util import QUERY_S, SEN_S, AT_BIND_S, NEGATION_SYMBOL_S
+
 from .value import PyRuleValue
 from .node import PyRuleNode
 

@@ -2,12 +2,15 @@
     production systems
 """
 import logging as root_logger
-from .rule import Rule
+
+from py_rule import util
+
 from . import action
-from .transform import Transform
-from .working_memory import WorkingMemory
-from py_rule import util as util
 from .agenda import Agenda
+from .rule import Rule
+from .working_memory import WorkingMemory
+
+
 logging = root_logger.getLogger(__name__)
 
 
@@ -64,10 +67,10 @@ class Engine:
         enacted """
         self._proposed_actions = []
 
-    def tick(self, inputMessages):
+    def tick(self, input_messages):
         """ A Single Tick of the Engine.
         Receives a list of updates from the world """
-        assert(isinstance(inputMessages, list))
+        assert(isinstance(input_messages, list))
         # Assert input messages
         # rule the rule layers
         # return actions
@@ -81,6 +84,7 @@ class Engine:
 
     # Utility
     def run_layer(self, layer):
+        """ Entry point for running a single layer completely """
         # should save_state
         self._save_state(layer)
         # query for the rules
@@ -112,6 +116,8 @@ class Engine:
             for data in result:
                 transformed.append(rule._transform(data))
         else:
+            # This is *not* an unnecessary comprehension
+            # because of how parse results work
             transformed = [x for x in result]
 
         for data in transformed:
@@ -142,7 +148,7 @@ class Engine:
         """ Actual enaction of a set of actions """
         assert(isinstance(act_set, action.Action))
         for x in act_set:
-                x(self, data)
+            x(self, data)
 
     def _register_layers(self, layers):
         raise NotImplementedError()

@@ -45,17 +45,20 @@ and any newly typed nodes are then ready to be used in the next iteration
 If validate succeeds, it returns True. If it Fails, it raises an Exception
 
 """
-from .type_definition import TypeDefinition
-from .operator_definition import OperatorDefinition
-from .nodes.type_assignment_node import TypeAssignmentTrieNode
-from .nodes.typedef_node import TypeDefTrieNode
-from .nodes.operator_def_node import OperatorDefTrieNode
-from .nodes.var_type_node import VarTypeTrieNode
+
+import logging as root_logger
+
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.trie.trie import Trie
 import py_rule.error.type_exceptions as te
+
 from . import util as TU
-import logging as root_logger
+from .nodes.operator_def_node import OperatorDefTrieNode
+from .nodes.type_assignment_node import TypeAssignmentTrieNode
+from .nodes.typedef_node import TypeDefTrieNode
+from .nodes.var_type_node import VarTypeTrieNode
+from .operator_definition import OperatorDefinition
+from .type_definition import TypeDefinition
 
 logging = root_logger.getLogger(__name__)
 
@@ -95,14 +98,14 @@ class TypeChecker:
 
         # for each rule: (in place of functions)
         for x in rules:
-            self.push_typing_context()
+            # self.push_typing_context()
             self.add_rule(x)
             self.validate()
-            self.pop_typing_context()
+            # self.pop_typing_context()
 
     def _get_known_typed_nodes(self):
         # propagate known variable types
-        [x.propagate() for x in self._variables.get_nodes(lambda x: x._type is not None)]
+        dummy = [x.propagate() for x in self._variables.get_nodes(lambda x: x._type is not None)]
         # get all known declared types
         val_queue = {y for y in self._declarations.get_nodes(lambda x: x._type is not None)}
         return val_queue
@@ -115,20 +118,21 @@ class TypeChecker:
             var_nodes = {x._var_node for x in p._children.values() if x._is_var}
             head = var_nodes.pop()
             head.merge(var_nodes)
-            [self._variables.remove([x]) for x in var_nodes]
+            dummy = [self._variables.remove([x]) for x in var_nodes]
+
     def clear_context(self):
         """ Clear variables """
         # Clear self._variables and unregister its nodes from
         # vars in declarations
         var_nodes = self._variables.get_nodes()
-        [x.clear_assignments() for x in var_nodes]
+        dummy = [x.clear_assignments() for x in var_nodes]
 
         # remove all sentences in declarations that start with a variable
         # TODO or an operator
-        [self._declarations.remove([x]) for x in var_nodes]
+        dummy = [self._declarations.remove([x]) for x in var_nodes]
 
         # remove the variables
-        [self._variables.remove([x]) for x in var_nodes]
+        dummy = [self._variables.remove([x]) for x in var_nodes]
 
     def query(self, queries):
         """ Get the type of a sentence leaf """
@@ -213,4 +217,3 @@ class TypeChecker:
 
         self.validate()
         self.clear_context()
-

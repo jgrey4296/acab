@@ -101,9 +101,9 @@ def construct_sentence(toks):
 
 def construct_statement(toks):
     # Take the statement, and add it to the location
-    path = toks[util.NAME_S][0]
+    path  = toks[util.NAME_S][0]
     targs = []
-    tags = []
+    tags  = []
     if util.ARG_S in toks:
         # BIND's NAME returns a tuple of ('name', VARNAME)
         targs = [y for x,y in toks[util.ARG_S][:]]
@@ -113,7 +113,7 @@ def construct_statement(toks):
 
     obj_tuple  = toks[util.STATEMENT_S][0]
     obj_tuple[1].apply_onto(path, targs, tags=tags)
-
+    obj_tuple[1].verify()
     return path
 
 def STATEMENT_CONSTRUCTOR(head_p, name_p, body_p, end=None, args=True, single_line=False):

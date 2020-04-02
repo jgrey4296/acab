@@ -1,9 +1,12 @@
 """
 Functions to facilitate matching Trie-Nodes to queries
 """
-from . import util
-from py_rule.abstract.trie.nodes.trie_node import TrieNode
 import logging as root_logger
+
+from py_rule.abstract.trie.nodes.trie_node import TrieNode
+
+from . import util
+
 logging = root_logger.getLogger(__name__)
 
 
@@ -36,16 +39,16 @@ def non_bind_value_match(a, b, betas, regexs, data):
     assert(isinstance(a, TrieNode))
     assert(isinstance(b, TrieNode))
     tested = False
-    newNode, newData = (None, None)
+    new_node, new_data = (None, None)
     if not a._data[util.BIND_S]:
         logging.info("Not Bind: {}|{}".format(str(a), b._children.keys()))
         tested = True
         if a in b:  # and test_betas(a._value, betas,data):
             logging.info("Suitable value")
-            newData, newNode = b.get_child(a).test_regexs_for_matching(regexs,
-                                                                       data)
+            new_data, new_node = b.get_child(a).test_regexs_for_matching(regexs,
+                                                                         data)
 
-    return (tested, newNode, newData)
+    return (tested, new_node, new_data)
 
 def existing_bind_match(a, b, betas, regexs, data):
     """ Compare an existing bound value to the children of b
@@ -55,14 +58,14 @@ def existing_bind_match(a, b, betas, regexs, data):
     assert(isinstance(a, TrieNode))
     assert(isinstance(b, TrieNode))
     tested = False
-    newNode, newData = (None, None)
+    new_node, new_data = (None, None)
     if a.value_string() in data:
         tested = True
         if data[a.value_string()] in b._children \
            and test_betas(data[a.value_string()], betas, data):
-            newData, newNode = b._children[data[a.value_string()]].test_regexs_for_matching(regexs,
-                                                                                            data)
-    return (tested, newNode, newData)
+            new_data, new_node = b._children[data[a.value_string()]].test_regexs_for_matching(regexs,
+                                                                                              data)
+    return (tested, new_node, new_data)
 
 def create_new_bindings(a, b, alphas, betas, regexs, data):
     """ Create new bindings for a previously unbound variable.

@@ -1,9 +1,24 @@
-from .typedef_node import TypeDefTrieNode
-from py_rule.error import type_exceptions as te
-import py_rule.modules.analysis.typing.util as util
-from py_rule.util import OPERATOR_S
 import logging as root_logger
+
+import py_rule.modules.analysis.typing.util as util
+from py_rule.abstract.trie.trie import Trie
+from py_rule.error import type_exceptions as te
+from py_rule.util import OPERATOR_S
+from py_rule.modules.analysis.typing.operator_definition import OperatorDefinition
+
+from .typedef_node import TypeDefTrieNode
+from .type_assignment_node import TypeAssignmentTrieNode
+
 logging = root_logger.getLogger(__name__)
+
+# Log messages to use, because they are long:
+LOG_MESSAGES = {}
+LOG_MESSAGES['validate_top'] = "Validating: {} on {}"
+LOG_MESSAGES['curr_def'] = "Current Definition to Validate: {} : {}"
+LOG_MESSAGES['curr_use_set'] = "Current Usage Set: {}"
+LOG_MESSAGES['no_children'] = "Val: No Children, assigning type: {} to {}"
+LOG_MESSAGES['match_type_usage'] = "Matching Type {} onto usage set"
+LOG_MESSAGES['mult_child'] = "Current Def has multiple children, checking for conflicts in structure"
 
 
 class OperatorDefTrieNode(TypeDefTrieNode):
@@ -12,7 +27,7 @@ class OperatorDefTrieNode(TypeDefTrieNode):
     It pattern matches on provided usage, and types nodes if
     there is only one matching pattern """
 
-    def __init__(self):
+    def __init__(self, value):
         super().__init__(value)
         self._data[util.TYPE_DEF_S] = set()
 
@@ -32,13 +47,13 @@ class OperatorDefTrieNode(TypeDefTrieNode):
             self._typedef_trie._root._type = data.build_type_declaration()
 
         for x in data._structure:
-            self._typedef_trie.add(x, { util.OP_DEF_S : data},
+            self._typedef_trie.add(x, {util.OP_DEF_S : data},
                                    update=lambda c, n, p, d: c.type_match_wrapper(n))
 
     def validate(self, usage_trie):
 
         assert(isinstance(usage_trie, TypeAssignmentTrieNode))
-        logging.debug(log_messages['validate_top'].format(repr(self),
+        logging.debug(LOG_MESSAGES['validate_top'].format(repr(self),
                                                           repr(usage_trie)))
         if self._typedef_trie is None:
             raise te.TypeUndefinedException(self._name, usage_trie)
@@ -54,10 +69,10 @@ class OperatorDefTrieNode(TypeDefTrieNode):
         # Combine all matches together by their usage
         result_dict = {}
         for match in matches:
-            path = "".join([str(y) for x,y in match])
+            path = "".join([str(y) for x, y in match])
             if path not in result_dict:
                 result_dict[path] = []
-            result_dict[path].append(match)
+                result_dict[path].append(match)
 
         # Only apply types that have been reduced to one possibility
         for match_group in result_dict:
@@ -65,12 +80,13 @@ class OperatorDefTrieNode(TypeDefTrieNode):
                 # apply types
                 for the_def, the_use in match_group:
                     the_use.type_match_wrapper(the_def)
-                # refine the type of the operator at head
+                    # refine the type of the operator at head
                 func_name = match_group[-1][0]._data[util.OP_DEF_S]._func_name
                 match_group[0][1]._data[OPERATOR_S].__refine_op_func(func_name)
                 continue
 
         return newly_typed
+
 
 def pattern_match_type_signature(head, available):
     if head._type is None:

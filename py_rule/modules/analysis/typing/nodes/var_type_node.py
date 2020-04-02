@@ -1,10 +1,13 @@
-from .typed_node import M_TypedNode
-from py_rule.modules.analysis.typing.util import is_var
 import logging as root_logger
+
+from py_rule.modules.analysis.typing.util import is_var
+
+from .typed_node import MonoTypedNode
+
 logging = root_logger.getLogger(__name__)
 
 
-class VarTypeTrieNode(M_TypedNode):
+class VarTypeTrieNode(MonoTypedNode):
     """ Node describing a variable's type """
 
     def __init__(self, value, _type=None):
@@ -38,9 +41,10 @@ class VarTypeTrieNode(M_TypedNode):
 
     def merge(self, nodes):
         assert(all([isinstance(x, VarTypeTrieNode) for x in nodes]))
-        logging.debug("Merging Variables: {} into {}".format(", ".join([str(x) for x in nodes]), self._value))
+        logging.debug("Merging Variables: {} into {}".format(", ".join([str(x) for x in nodes]),
+                                                             self._value))
         # update self to point to all assignment nodes
-        [self.add_node(y) for x in nodes for y in x._nodes]
+        dummy = [self.add_node(y) for x in nodes for y in x._nodes]
 
     def clear_assignments(self):
         for node in self._nodes:

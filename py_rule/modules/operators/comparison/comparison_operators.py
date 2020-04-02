@@ -1,8 +1,9 @@
 """
 Definitions of initial Comparison operators
 """
-from py_rule.abstract.comparison import CompOp
 import re
+
+from py_rule.abstract.comparison import CompOp
 
 
 class EQ(CompOp):
@@ -37,4 +38,3 @@ class ELEM(CompOp):
 
     def __call__(self, a, b):
         return a in b
-

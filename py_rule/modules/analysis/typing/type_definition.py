@@ -1,9 +1,10 @@
+from py_rule.abstract.sentence import Sentence
+from py_rule.error.pyrule_parse_exception import PyRuleParseException
+from py_rule.util import STRUCTURE_S
+
 from .pyrule_type import Type
 from .type_instance import TypeInstance
 from .util import TYPE_DEF_S
-from py_rule.util import BIND_S, STRUCTURE_S, VALUE_TYPE_S
-from py_rule.abstract.sentence import Sentence
-from py_rule.error.pyrule_parse_exception import PyRuleParseException
 
 class TypeDefinition(Type):
     """ Defines the Structure of a type """
@@ -50,11 +51,11 @@ class TypeDefinition(Type):
         return obj
 
     def verify(self):
-        vars = set(self._vars)
+        input_vars = set(self._vars)
         for s in self._structure:
             temp = s.var_set()
-            vars.difference_update(temp['in'])
-            vars.difference_update(temp['out'])
+            input_vars.difference_update(temp['in'])
+            input_vars.difference_update(temp['out'])
 
-        if bool(vars):
+        if bool(input_vars):
             raise PyRuleParseException()

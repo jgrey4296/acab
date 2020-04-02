@@ -1,9 +1,11 @@
 """
 PatternIterator automates pattern output
 """
-from fractions import Fraction as f
-from .util import time_str
 import logging as root_logger
+from fractions import Fraction as f
+
+from .util import time_str
+
 logging = root_logger.getLogger(__name__)
 
 class PatternIterator:

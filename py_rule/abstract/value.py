@@ -1,8 +1,10 @@
 """
 The Core Value Class
 """
-from py_rule import util
 import logging as root_logger
+
+from py_rule import util
+
 logging = root_logger.getLogger(__name__)
 
 
@@ -43,7 +45,7 @@ class PyRuleValue:
         # ie: Query(a.b.$x? a.q.$w?).get_bindings() -> {'in': [], 'out': [x,w]}
         # Action(+(a.b.$x), -(a.b.$w)).get_bindings() -> {'in': [x,w], 'out': []}
         logging.warning("{} is using default var_set method".format(self.__class__))
-        return {'in': set(self._vars), 'out': set() }
+        return {'in': set(self._vars), 'out': set()}
 
     def apply_onto(self, path, tvars=None, tags=None):
         """ Apply a value onto the leaf of a path.
@@ -54,9 +56,9 @@ class PyRuleValue:
         self._name = node._value
         self._path = path
 
-        node._value  = self
+        node._value                   = self
         node._data[util.VALUE_TYPE_S] = self._type
-        node._data[util.BIND_S] = False
+        node._data[util.BIND_S]       = False
 
         if tvars is not None:
             assert(all([isinstance(x, str) for x in tvars]))
@@ -76,4 +78,4 @@ class PyRuleValue:
 
     def verify(self):
         """ Raise An Exception if this necessary """
-        pass
+        return
