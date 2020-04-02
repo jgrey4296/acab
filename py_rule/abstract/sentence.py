@@ -44,6 +44,8 @@ class Sentence(PyRuleValue):
     def __repr__(self):
         return "Sentence({})".format(str(self))
 
+    def __hash__(self):
+        return hash(str(self))
     def __eq__(self, other):
         return str(self) == str(other)
 

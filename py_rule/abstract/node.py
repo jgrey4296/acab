@@ -3,6 +3,7 @@ from fractions import Fraction
 from re import Pattern, search
 
 from py_rule.util import BIND_S, AT_BIND_S
+from py_rule import util
 
 from .value import PyRuleValue
 
@@ -29,7 +30,7 @@ class PyRuleNode(PyRuleValue):
 
     def __str__(self):
         """ String should create a re-parseable output """
-        raise NotImplementedError()
+        return self.opless_print()
 
     def __repr__(self):
         """ Repr should create an unambiguous debug string """
@@ -93,7 +94,7 @@ class PyRuleNode(PyRuleValue):
 
     def search_regex(self, regex):
         """ Test a regex on the Nodes value """
-        result = search(regex._params[0]._value, self.value_string())
+        result = search(regex._vars[0]._value, self.value_string())
         if result is not None:
             return result.groupdict()
         else:
@@ -147,3 +148,22 @@ class PyRuleNode(PyRuleValue):
                 obj['out'].update(tempobj['out'])
 
         return obj
+
+    def opless_print(self):
+        val = str(self._value)
+        if util.VALUE_TYPE_S in self._data and self._data[util.VALUE_TYPE_S] == util.STRING_S:
+            val = '"{}"'.format(val)
+        elif util.VALUE_TYPE_S in self._data and self._data[util.VALUE_TYPE_S] == util.FLOAT_S:
+            val = val.replace(".", "d")
+        elif util.VALUE_TYPE_S in self._data and self._data[util.VALUE_TYPE_S] == util.REGEX_S:
+            val = "/{}/".format(val)
+
+        if util.AT_BIND_S in self._data:
+            val = util.AT_VAR_SYMBOL_S + val
+        elif util.BIND_S in self._data and self._data[util.BIND_S]:
+            val = util.VAR_SYMBOL_S + val
+        if util.CONSTRAINT_S in self._data:
+            constraints = ", ".join(str(x) for x in self._data[util.CONSTRAINT_S])
+            val += "({})".format(constraints)
+        return val
+

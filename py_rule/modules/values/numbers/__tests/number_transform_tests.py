@@ -45,16 +45,16 @@ class NumberTransformTests(unittest.TestCase):
         result = TP.transform_core.parseString('$x AddOp 20 -> $y')[0]
         self.assertIsInstance(result, transform.TransformComponent)
         self.assertEqual(result._op, "AddOp")
-        self.assertEqual(len(result._params), 2)
+        self.assertEqual(len(result._vars), 2)
 
 
     def test_basic_transform_core_rebind(self):
         result = TP.transform_core.parseString('$y MulOp 20 -> $z')[0]
         self.assertIsInstance(result, transform.TransformComponent)
         self.assertEqual(result._op, "MulOp")
-        self.assertEqual(result._params[0]._value, "y")
-        self.assertTrue(result._params[0]._data[KBU.BIND_S])
-        self.assertEqual(result._params[1]._value, 20)
+        self.assertEqual(result._vars[0]._value, "y")
+        self.assertTrue(result._vars[0]._data[KBU.BIND_S])
+        self.assertEqual(result._vars[1]._value, 20)
         self.assertIsNotNone(result._rebind)
         self.assertEqual(result._rebind._value, 'z')
 
@@ -70,8 +70,8 @@ class NumberTransformTests(unittest.TestCase):
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result._clauses), 1)
         self.assertEqual(result._clauses[0]._op, "AddOp")
-        self.assertEqual(result._clauses[0]._params[0]._value, 'x')
-        self.assertEqual(result._clauses[0]._params[1]._value, 20)
+        self.assertEqual(result._clauses[0]._vars[0]._value, 'x')
+        self.assertEqual(result._clauses[0]._vars[1]._value, 20)
         self.assertIsNotNone(result._clauses[0]._rebind)
 
 
@@ -80,8 +80,8 @@ class NumberTransformTests(unittest.TestCase):
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result._clauses), 1)
         self.assertEqual(result._clauses[0]._op, "AddOp")
-        self.assertEqual(result._clauses[0]._params[0]._value, 'x')
-        self.assertEqual(result._clauses[0]._params[1]._value, 20)
+        self.assertEqual(result._clauses[0]._vars[0]._value, 'x')
+        self.assertEqual(result._clauses[0]._vars[1]._value, 20)
         self.assertEqual(result._clauses[0]._rebind._value, 'y')
 
     def test_unary_round(self):
@@ -98,7 +98,7 @@ class NumberTransformTests(unittest.TestCase):
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result._clauses), 1)
         self.assertEqual(result._clauses[0]._op, "NegOp")
-        self.assertEqual(result._clauses[0]._params[0]._value, "x")
+        self.assertEqual(result._clauses[0]._vars[0]._value, "x")
         self.assertIsNotNone(result._clauses[0]._rebind)
 
     def test_unary_rebind(self):
@@ -106,7 +106,7 @@ class NumberTransformTests(unittest.TestCase):
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result._clauses), 1)
         self.assertEqual(result._clauses[0]._op, "NegOp")
-        self.assertEqual(result._clauses[0]._params[0]._value, "x")
+        self.assertEqual(result._clauses[0]._vars[0]._value, "x")
         self.assertIsNotNone(result._clauses[0]._rebind)
         self.assertEqual(result._clauses[0]._rebind._value, 'y')
 

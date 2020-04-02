@@ -27,7 +27,7 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
         self.assertEqual(len(result), 1)
         self.assertIsInstance(result, action.Action)
         self.assertEqual(result._clauses[0]._op, "ActionAdd")
-        self.assertEqual([x[-1]._value for x in result._clauses[0]._params], ["blah bloo","blee","awef"])
+        self.assertEqual([x[-1]._value for x in result._clauses[0]._vars], ["blah bloo","blee","awef"])
 
     def test_actions_fact_str(self):
         result = AP.parseString('ActionAdd(a.b.c), ActionAdd(~a!b.d), ActionAdd($x), ActionAdd($x.a.b)')

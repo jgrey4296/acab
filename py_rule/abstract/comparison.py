@@ -43,16 +43,16 @@ class Comparison(ProductionComponent):
         super(Comparison, self).__init__(op_str, param, type_str=type_str)
 
     def __str__(self):
-        val = self._params[0].opless_print()
+        val = self._vars[0].opless_print()
 
         ret_value = "{} {}".format(str(self._op), val)
         return ret_value
 
     def __repr__(self):
         if self.is_regex_test():
-            val = "/{}/".format(self._params[0])
+            val = "/{}/".format(self._vars[0])
         else:
-            val = " ".join([str(x) for x in self._params])
+            val = " ".join([str(x) for x in self._vars])
 
         ret_value = "Comparison({} {})".format(repr(self._op), repr(val))
         return ret_value
@@ -61,7 +61,7 @@ class Comparison(ProductionComponent):
         """ Run a comparison on a node """
         op = CompOp.op_list[self._op]
         node_value = node._value
-        value = self._params[0]._value
+        value = self._vars[0]._value
         if data is not None:
             value = data[value]
         return op(node_value, value)
@@ -74,7 +74,7 @@ class Comparison(ProductionComponent):
 
     def is_alpha_test(self):
         """ Return boolean of if test does not rely on other bindings """
-        return bool(self._params) and not self._params[0]._data[BIND_S]
+        return bool(self._vars) and not self._vars[0]._data[BIND_S]
 
     def is_regex_test(self):
         """ Return boolean of if test is a regular expression test """
@@ -85,9 +85,9 @@ class Comparison(ProductionComponent):
         # eg: 20(>30) -> > 20 30 -> bool
         head = PyRuleNode(self._op, {OPERATOR_S : self})
         if target is None:
-            return Sentence([head] + self._params)
+            return Sentence([head] + self._vars)
         assert(isinstance(target, PyRuleNode))
-        return Sentence([head, target] + self._params)
+        return Sentence([head, target] + self._vars)
 
     def var_set(self):
         obj = super(Comparison, self).var_set()

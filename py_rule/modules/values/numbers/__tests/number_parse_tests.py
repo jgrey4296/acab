@@ -60,7 +60,7 @@ class NumberParseTests(unittest.TestCase):
         result = TP.parseString("20 AddOp 30 -> $z")
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(result._clauses[0]._op, 'AddOp')
-        self.assertEqual([x._value for x in result._clauses[0]._params], [20, 30])
+        self.assertEqual([x._value for x in result._clauses[0]._vars], [20, 30])
 
 
     def test_custom_action_parse(self):
@@ -68,7 +68,7 @@ class NumberParseTests(unittest.TestCase):
         self.assertEqual(len(result), 1)
         self.assertIsInstance(result, action.Action)
         self.assertEqual(result._clauses[0]._op, "ActionBlah")
-        self.assertEqual([x[0]._value for x in result._clauses[0]._params], [20, 30, 40])
+        self.assertEqual([x[0]._value for x in result._clauses[0]._vars], [20, 30, 40])
 
 
     def test_transform_parse(self):

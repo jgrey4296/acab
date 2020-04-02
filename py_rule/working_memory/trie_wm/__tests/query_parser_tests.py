@@ -29,8 +29,8 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         result = QP.COMP_Internal.parseString('RegMatch /blah/')[0]
         self.assertIsInstance(result, Comparison)
         self.assertEqual(result._op, 'RegMatch')
-        self.assertEqual(result._params[0]._value, 'blah')
-        self.assertEqual(result._params[0]._data[util.VALUE_TYPE_S], util.REGEX_S)
+        self.assertEqual(result._vars[0]._value, 'blah')
+        self.assertEqual(result._vars[0]._data[util.VALUE_TYPE_S], util.REGEX_S)
 
     def test_basic_clause(self):
         result = QP.clause.parseString('a.b.c?')[0]

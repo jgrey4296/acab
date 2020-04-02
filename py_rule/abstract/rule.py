@@ -108,7 +108,7 @@ class Rule(PyRuleValue):
         """ Verify that the outputs of the query match the
         inputs of the transform, match the inputs of the actions """
         if self._transform is not None:
-            self._transform.verify_ops()
+            self._transform.verify()
 
         if bool(self._action):
             dummy = [x.verify() for x in self._action]
