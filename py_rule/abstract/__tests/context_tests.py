@@ -3,6 +3,7 @@ from os.path import splitext, split
 import unittest
 import logging
 from py_rule.abstract.contexts import Contexts
+from py_rule.util import AT_BIND_S
 
 class ContextTests(unittest.TestCase):
 
@@ -64,9 +65,34 @@ class ContextTests(unittest.TestCase):
         for x,y in zip(ctx, ['a','b','c']):
             self.assertTrue(y in x.keys())
 
-    @unittest.skip("TODO: check set all alts works on both targets and bindings")
-    def test_set_all_alts(self):
-        return
+    def test_set_all_alts_target(self):
+        ctx = Contexts()
+        ctx.append(({'a': True}, "test"))
+        ctx.append(({'b': True}, "test2"))
+        ctx.append(({'c': True}, "test3"))
+        new_ctx = ctx.set_all_alts(target="blah")
+        self.assertEqual(len(new_ctx), len(ctx))
+        for x in new_ctx._matches:
+            self.assertEqual(x[1], "blah")
+
+    def test_all_alts_binding(self):
+        ctx = Contexts()
+        ctx.append(({AT_BIND_S + 'a': "blah"}, "test"))
+        ctx.append(({AT_BIND_S + 'a': "bloo"}, "test2"))
+        ctx.append(({AT_BIND_S + 'a': "blee"}, "test3"))
+        new_ctx = ctx.set_all_alts(binding="a")
+        self.assertEqual(len(new_ctx), len(ctx))
+        for x in new_ctx._matches:
+            self.assertEqual(x[1], x[0][AT_BIND_S + 'a'])
+
+    def test_all_alts_invalidate_binding(self):
+        ctx = Contexts()
+        ctx.append(({AT_BIND_S + 'a': "blah"}, "test"))
+        ctx.append(({AT_BIND_S + 'b': "bloo"}, "test2"))
+        ctx.append(({AT_BIND_S + 'a': "blee"}, "test3"))
+        ctx.append(({'a' : "awef"}, "test4"))
+        new_ctx = ctx.set_all_alts(binding="a")
+        self.assertEqual(len(new_ctx), 2)
 
 
 if __name__ == "__main__":
