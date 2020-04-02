@@ -273,3 +273,18 @@
   
 # Remove quotes from around strings:
 
+* TODO [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/parsing/FactParser.py::93][integrate sentence statement]]
+  <2020-04-01 Wed>
+  
+# Statement to specify multiple sub sentences
+
+* TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/comparison.py::81][replace magic string with a constant]]
+ <2020-04-02 Thu>
+  
+       return self._op == "RegMatch"
+
+* TODO [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/type_checker.py::98][possibly add push and pop typing contexts]]
+ <2020-04-02 Thu>
+  
+           # self.push_typing_context()
+
