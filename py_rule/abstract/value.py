@@ -74,3 +74,6 @@ class PyRuleValue:
     def has_tag(self, *tags):
         return all([t in self._tags for t in tags])
 
+    def verify(self):
+        """ Raise An Exception if this necessary """
+        pass

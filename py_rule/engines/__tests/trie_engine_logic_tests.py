@@ -150,17 +150,15 @@ class Engine_Logic_Tests(unittest.TestCase):
         self.e.load_file(self.path("exclusion_update_test.trie"))
         self.assertTrue(self.e.query('a.b!c?, ~a.b.!b?, ~a.b!a?'))
 
-    def test_rule_selection_running(self):
-        self.e.load_file(self.path("selection_of_rules_test.trie"))
+    def test_multi_rule_proposals(self):
+        self.e.load_file(self.path("multi_rule_proposals.trie"))
         self.assertTrue(self.e.query('a.b.c?'))
-        # query rule
-        # _run_rule
-        # _perform_actions
-        self.assertTrue(self.e.query('a.b.c?, ~blah?, bloo?'))
-        # query rule
-        # _run_rule
-        # _perform_actions
-        self.assertTrue(self.e.query('a.b.c?, blah?, bloo?'))
+        ctxs = self.e.query('rule.$x?')
+        for ctx in ctxs:
+            rule = ctx['x']
+            self.e._run_rule(rule)
+
+        self.assertEqual(len(self.e._proposed_actions), len(ctxs))
 
     def rule_load_with_comments(self):
         self.e.load_file(self.path("rule_with_comments.trie"))

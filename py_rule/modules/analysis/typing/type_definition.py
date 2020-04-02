@@ -3,6 +3,7 @@ from .type_instance import TypeInstance
 from .util import TYPE_DEF_S
 from py_rule.util import BIND_S, STRUCTURE_S, VALUE_TYPE_S
 from py_rule.abstract.sentence import Sentence
+from py_rule.error.pyrule_parse_exception import PyRuleParseException
 
 class TypeDefinition(Type):
     """ Defines the Structure of a type """
@@ -43,6 +44,17 @@ class TypeDefinition(Type):
         obj = super(TypeDefinition, self).var_set()
         for s in self._structure:
             temp = s.var_set()
+            obj['in'].update(temp['in'])
             obj['out'].update(temp['out'])
 
         return obj
+
+    def verify(self):
+        vars = set(self._vars)
+        for s in self._structure:
+            temp = s.var_set()
+            vars.difference_update(temp['in'])
+            vars.difference_update(temp['out'])
+
+        if bool(vars):
+            raise PyRuleParseException()

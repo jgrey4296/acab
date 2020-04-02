@@ -91,8 +91,8 @@ class TypeDefTrieNode(TrieNode):
         type_var_lookup = {}
         if self._data[util.TYPE_DEF_S]._vars \
            and usage_trie._type \
-           and usage_trie._type._args:
-            zipped = zip(self._data[util.TYPE_DEF_S]._vars, usage_trie._type._args)
+           and usage_trie._type._vars:
+            zipped = zip(self._data[util.TYPE_DEF_S]._vars, usage_trie._type._vars)
             type_var_lookup = {x: y for x, y in zipped}
         return type_var_lookup
 
