@@ -26,8 +26,8 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
         result = AP.parseString('ActionAdd("blah bloo", "blee", "awef")')
         self.assertEqual(len(result), 1)
         self.assertIsInstance(result, action.Action)
-        self.assertEqual(result._clauses[0]._op, "ActionAdd")
-        self.assertEqual([x[-1]._value for x in result._clauses[0]._vars], ["blah bloo","blee","awef"])
+        self.assertEqual(result.clauses[0].op, "ActionAdd")
+        self.assertEqual([x[-1]._value for x in result.clauses[0]._vars], ["blah bloo","blee","awef"])
 
     def test_actions_fact_str(self):
         result = AP.parseString('ActionAdd(a.b.c), ActionAdd(~a!b.d), ActionAdd($x), ActionAdd($x.a.b)')
@@ -40,12 +40,12 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
         parsed_action = AP.parseString("ActionAdd($x)")
         bound_action= parsed_action.expand_bindings(bindings)
         self.assertIsInstance(bound_action, action.Action)
-        self.assertEqual(str(bound_action), "ActionAdd(a.b.c)")
+        self.assertEqual(bound_action.pprint(), "ActionAdd(a.b.c)")
 
     def test_action_definition(self):
         test_str = "α::test:\nActionAdd(a.b.c)\n\nend"
         definition = AP.action_definition.parseString(test_str)
-        self.assertEqual(definition[0][-1]._value.value_string(), "test")
+        self.assertEqual(definition[0][-1]._value.name, "test")
 
 
 if __name__ == "__main__":

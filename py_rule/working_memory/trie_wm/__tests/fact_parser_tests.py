@@ -30,7 +30,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         result = FP.parseString('a.b.c')[0]
         self.assertIsInstance(result, Sentence)
         self.assertTrue(all([isinstance(x, TrieNode) for x in result]))
-        self.assertEqual(str(result), "a.b.c")
+        self.assertEqual(result.pprint(), "a.b.c")
         self.assertTrue(all([x._data[KBU.OPERATOR_S] == KBU.EXOP.DOT for x in result]))
 
     def test_parseStrings(self):
@@ -78,21 +78,21 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         parsed = [FP.parseString(x)[0] for x in actions]
         zipped = zip(actions, parsed)
         for a,p in zipped:
-            self.assertEqual(a,str(p))
+            self.assertEqual(a,p.pprint())
 
     def test_leading_bind_str_equal(self):
         actions = ['$x.a.b.c', '$y!b.c', '$x.$y!$z']
         parsed = [FP.parseString(x)[0] for x in actions]
         zipped = zip(actions, parsed)
         for a,p in zipped:
-            self.assertEqual(a, str(p))
+            self.assertEqual(a, p.pprint())
 
     def test_binding_expansion(self):
         bindings = { "a" : FP.parseString("blah")[0],
                      "b": FP.parseString("bloo")[0] }
         result = FP.parseString('$a.b.$b!c')[0]
         expanded = result.expand_bindings(bindings)
-        asString = str(expanded)
+        asString = expanded.pprint()
         self.assertEqual(asString, "blah.b.bloo!c")
 
     def test_valbind_expansion(self):

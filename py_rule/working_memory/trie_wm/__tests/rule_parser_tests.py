@@ -1,5 +1,7 @@
 import unittest
 import logging
+from py_rule import util
+from py_rule.abstract.printing import util as PrU
 from py_rule.working_memory.trie_wm import util as KBU
 from py_rule.working_memory.trie_wm.parsing import RuleParser as RP
 from py_rule.working_memory.trie_wm.parsing import FactParser as FP
@@ -19,6 +21,8 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
         os._construct_transform_ops()
         RP.build_operators()
 
+        PrU.setup_statement_lookups({util.RULE_S : util.RULE_HEAD_S}, reset=True)
+
     def setUp(self):
             return 1
 
@@ -34,7 +38,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             result = RP.parseString("ρ::a.rule.x: end")
             self.assertEqual(len(result), 1)
             self.assertIsInstance(result[0][-1]._value, Rule)
-            self.assertEqual(str(result[0][-1]._value), "x(::ρ):\nend")
+            self.assertEqual(result[0][-1]._value.pprint(), "x(::ρ): end")
 
     def test_multi_empty_rules(self):
             result = RP.parseString("ρ::a.rule.x: end\n\nρ::a.second.rule: end")
@@ -73,7 +77,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertEqual(len(result[0][-1]._value._query), 1)
 
     def test_rule_with_actions(self):
-            result = RP.parseString("ρ::a.rule.x:\nActionAdd(a.b.c)\n\nend")
+            result = RP.parseString("ρ::a.rule.x:\nActionAdd(a.b.c)\nend")
             self.assertEqual(len(result), 1)
             self.assertIsInstance(result[0][-1]._value, Rule)
             self.assertIsNone(result[0][-1]._value._query)
@@ -81,7 +85,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertEqual(len(result[0][-1]._value._action), 1)
 
     def test_multi_action_rule(self):
-            result = RP.parseString("ρ::a.rule.x:\nActionAdd(a.b.c)\nActionAdd(~a.b.d)\n\nend")
+            result = RP.parseString("ρ::a.rule.x:\nActionAdd(a.b.c)\nActionAdd(~a.b.d)\nend")
             self.assertEqual(len(result[0]), 3)
             self.assertIsInstance(result[0], Sentence)
             self.assertIsInstance(result[0][-1]._value, Rule)
@@ -90,7 +94,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             self.assertEqual(len(result[0][-1]._value._action), 2)
 
     def test_multi_action_single_line_rule(self):
-            result = RP.parseString("ρ::a.rule.x:\n\nActionAdd(a.b.c), ActionAdd(~a.b.d)\n\nend")
+            result = RP.parseString("ρ::a.rule.x:\n\nActionAdd(a.b.c), ActionAdd(~a.b.d)\nend")
             self.assertEqual(len(result), 1)
             self.assertIsInstance(result[0][-1]._value, Rule)
             self.assertIsNone(result[0][-1]._value._query)
@@ -99,15 +103,15 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
 
     def test_rule_simple_binding_expansion(self):
         bindings = { "x" : FP.parseString('a.b.c')[0] }
-        result = RP.parseString("ρ::a.rule.x:\n$x?\n\nend")[0]
+        result = RP.parseString("ρ::a.rule.x:\n\n$x?\n\nend")[0]
         expanded = result[-1]._value.expand_bindings(bindings)
-        self.assertEqual(str(expanded),
-                         "AnonValue(::ρ):\n\ta.b.c?\n\nend")
+        self.assertEqual(expanded.pprint(),
+                         "AnonRule(::ρ):\n\ta.b.c?\nend")
 
     def test_rule_tags(self):
-            result = RP.parseString('ρ::a.test.rule.x:\n\n#blah, #bloo, #blee\n\na.b.c?\n\nActionAdd(a.b.c)\n\nend')[0]
+            result = RP.parseString('ρ::a.test.rule.x:\n\n#blah, #bloo, #blee\n\na.b.c?\n\nActionAdd(a.b.c)\nend')[0]
             self.assertIsInstance(result[-1]._value, Rule)
-            self.assertEqual(str(result), "a.test.rule.x(::ρ):\n\t#blah, #blee, #bloo\n\n\ta.b.c?\n\n\tActionAdd(a.b.c)\nend")
+            self.assertEqual(result.pprint(), "a.test.rule.x(::ρ):\n\t#blah, #blee, #bloo\n\n\ta.b.c?\n\n\tActionAdd(a.b.c)\nend")
             self.assertTrue(all(x in result[-1]._value._tags for x in ["blah","bloo","blee"]))
 
 

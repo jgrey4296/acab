@@ -28,7 +28,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
     def test_basic_regex_comparison(self):
         result = QP.COMP_Internal.parseString('RegMatch /blah/')[0]
         self.assertIsInstance(result, Comparison)
-        self.assertEqual(result._op, 'RegMatch')
+        self.assertEqual(result.op, 'RegMatch')
         self.assertEqual(result._vars[0]._value, 'blah')
         self.assertEqual(result._vars[0]._data[util.VALUE_TYPE_S], util.REGEX_S)
 
@@ -55,25 +55,25 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
     def test_basic_multi_clause(self):
         result = QP.clauses.parseString('a.b.c?, a.b.d?, a.b.e?')[0][1]
         self.assertIsInstance(result, Query)
-        self.assertEqual(len(result._clauses), 3)
-        self.assertTrue(all([isinstance(x, Sentence) for x in result._clauses]))
-        self.assertEqual(result._clauses[0][-1]._value, 'c')
-        self.assertEqual(result._clauses[1][-1]._value, 'd')
-        self.assertEqual(result._clauses[2][-1]._value, 'e')
+        self.assertEqual(len(result.clauses), 3)
+        self.assertTrue(all([isinstance(x, Sentence) for x in result.clauses]))
+        self.assertEqual(result.clauses[0][-1]._value, 'c')
+        self.assertEqual(result.clauses[1][-1]._value, 'd')
+        self.assertEqual(result.clauses[2][-1]._value, 'e')
 
     def test_basic_multi_clause_mixed_negation(self):
         result = QP.clauses.parseString('a.b.c?, ~a.b.d?, a.b.e?, ~a.b.f?')[0][1]
         self.assertIsInstance(result, Query)
-        self.assertTrue(all([isinstance(x, Sentence) for x in result._clauses]))
-        self.assertFalse(result._clauses[0]._data[util.NEGATION_S])
-        self.assertTrue(result._clauses[1]._data[util.NEGATION_S])
-        self.assertFalse(result._clauses[2]._data[util.NEGATION_S])
-        self.assertTrue(result._clauses[3]._data[util.NEGATION_S])
+        self.assertTrue(all([isinstance(x, Sentence) for x in result.clauses]))
+        self.assertFalse(result.clauses[0]._data[util.NEGATION_S])
+        self.assertTrue(result.clauses[1]._data[util.NEGATION_S])
+        self.assertFalse(result.clauses[2]._data[util.NEGATION_S])
+        self.assertTrue(result.clauses[3]._data[util.NEGATION_S])
 
     def test_basic_query_construction(self):
         result = QP.parseString('a.b.c?, a.b.d?, a.b.e?')
         self.assertIsInstance(result, Query)
-        self.assertEqual(len(result._clauses), 3)
+        self.assertEqual(len(result.clauses), 3)
 
     def test_clause_fallback_strings(self):
         result = QP.clause.parseString('a.b.c? || $x:a.b!c, $y:b.d.e')[0]
@@ -90,21 +90,21 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result[0]._data[util.CONSTRAINT_S]), 1)
         self.assertIsInstance(result[0]._data[util.CONSTRAINT_S][0], Comparison)
-        self.assertEqual(result[0]._data[util.CONSTRAINT_S][0]._op, "RegMatch")
+        self.assertEqual(result[0]._data[util.CONSTRAINT_S][0].op, "RegMatch")
 
     def test_comparison_parse_2(self):
         result = QP.QueryCore.parseString("testing(RegMatch /test/).")
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result[0]._data[util.CONSTRAINT_S]), 1)
         self.assertIsInstance(result[0]._data[util.CONSTRAINT_S][0], Comparison)
-        self.assertEqual(result[0]._data[util.CONSTRAINT_S][0]._op, "RegMatch")
+        self.assertEqual(result[0]._data[util.CONSTRAINT_S][0].op, "RegMatch")
 
     def test_comparison_parse_variable(self):
         result = QP.QueryCore.parseString("$x(RegMatch /test/).")
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result[0]._data[util.CONSTRAINT_S]), 1)
         self.assertIsInstance(result[0]._data[util.CONSTRAINT_S][0], Comparison)
-        self.assertEqual(result[0]._data[util.CONSTRAINT_S][0]._op, "RegMatch")
+        self.assertEqual(result[0]._data[util.CONSTRAINT_S][0].op, "RegMatch")
 
 
     def test_comparison_in_clause(self):
@@ -112,7 +112,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result[0][1]._data[util.CONSTRAINT_S]), 1)
         self.assertIsInstance(result[0][1]._data[util.CONSTRAINT_S][0], Comparison)
-        self.assertEqual(result[0][1]._data[util.CONSTRAINT_S][0]._op, "RegMatch")
+        self.assertEqual(result[0][1]._data[util.CONSTRAINT_S][0].op, "RegMatch")
 
 
 

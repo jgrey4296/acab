@@ -170,7 +170,7 @@ class Trie_WM_Tests(unittest.TestCase):
         self.trie.add('a.b.c, q.e.r, t.y!u')
         the_s = str(self.trie)
         newTrie = TrieWM(the_s)
-        self.assertEqual(self.trie, newTrie)
+        self.assertEqual(str(self.trie), str(newTrie))
         orig_set = set(the_s.split("\n"))
         reconstructed_set = set(str(newTrie).split("\n"))
         self.assertTrue(orig_set == reconstructed_set)
