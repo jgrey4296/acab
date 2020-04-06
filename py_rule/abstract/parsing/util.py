@@ -25,7 +25,7 @@ s          = pp.Suppress
 op         = pp.Optional
 orm        = pp.OneOrMore
 
-COMMA     = s(pp.Literal(','))
+COMMA         = s(pp.Literal(','))
 emptyLine     = s(pp.lineEnd + pp.lineEnd)
 opLn          = s(op(pp.lineEnd))
 gap           = s(pp.OneOrMore(emptyLine))
@@ -59,7 +59,7 @@ RULE_HEAD      = s(pp.Literal(util.RULE_HEAD_S))
 QUERY_HEAD     = s(pp.Literal(util.QUERY_HEAD_S))
 TRANSFORM_HEAD = s(pp.Literal(util.TRANSFORM_HEAD_S))
 ACTION_HEAD    = s(pp.Literal(util.ACTION_HEAD_S))
-
+FACT_HEAD      = s(pp.Literal(util.FACT_HEAD_S))
 STRUCT_HEAD    = s(pp.Literal(util.STRUCTURE_S))
 FUNC_HEAD      = s(pp.Literal(util.FUNC_S))
 
@@ -67,8 +67,9 @@ VAR_SYMBOL     = s(pp.Literal(util.VAR_SYMBOL_S))
 AT_BIND_SYMBOL = s(pp.Literal(util.AT_VAR_SYMBOL_S))
 
 NEGATION_SYMBOL = N(util.NEGATION_S, pp.Literal(util.NEGATION_SYMBOL_S))
-TAG_SYMBOL = s(pp.Literal(util.TAG_SYMBOL_S))
-END       = s(pp.Literal(util.END_S))
+QUERY_SYMBOL    = s(pp.Literal(util.QUERY_SYMBOL_S))
+TAG_SYMBOL      = s(pp.Literal(util.TAG_SYMBOL_S))
+END             = s(pp.Literal(util.END_S))
 
 # Basic Parsers
 NAME        = pp.Word(util.WORD_COMPONENT_S)
@@ -154,6 +155,7 @@ FUNC_HEAD.setName("FuncHead")
 VAR_SYMBOL.setName("VarSymbol")
 AT_BIND_SYMBOL.setName("AtSymbol")
 NEGATION_SYMBOL.setName("NegationSymbol")
+QUERY_SYMBOL.setName("QuerySymbol")
 TAG_SYMBOL.setName("TagSymbol")
 END.setName("End")
 
