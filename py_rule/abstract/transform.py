@@ -2,6 +2,7 @@
 import logging as root_logger
 
 from py_rule import util
+from py_rule.abstract.printing import util as PrU
 
 from . import production_operator as PO
 from .node import PyRuleNode
@@ -19,17 +20,12 @@ class TransformOp(PO.ProductionOperator):
         # Registers self with class name,
         # DSL later binds to an operator
         super().__init__(num_params=num_params, infix=False)
-        if self._op_str not in TransformOp.op_list[num_params]:
-            TransformOp.op_list[num_params][self._op_str] = self
+
+        if self.op_str not in TransformOp.op_list[num_params]:
+            TransformOp.op_list[num_params][self.op_str] = self
 
     def __call__(self, a, b):
         raise NotImplementedError("Abstract method needs to be implemented")
-
-    def __str__(self):
-        return self._op_str
-
-    def __repr__(self):
-        return "TransformOp({})".format(str(self))
 
 
 class TransformComponent(PO.ProductionComponent):
@@ -43,48 +39,17 @@ class TransformComponent(PO.ProductionComponent):
         """ Replace the current op func set with a specific
         op func, used for type refinement """
         assert(op_str in TransformOp.op_list)
-        self._op = op_str
-
-    def __repr__(self):
-        return "TransformComp({})".format(str(self))
-
-    def __str__(self):
-        return_str = "DefaultTransformComponentStr"
-        op = self._op
-        source = [x.opless_print() if isinstance(x, PyRuleNode)
-                  else str(x) for x in self._vars]
-        if self._rebind is not None:
-            rebind = " -> {}".format(self._rebind.opless_print())
-        else:
-            rebind = ""
-
-        param_length = len(self._vars)
-        if param_length == 1:
-            return_str = "{} {}{}".format(op, source[0], rebind)
-        elif param_length == 2:
-            return_str = "{} {} {}{}".format(source[0],
-                                             op,
-                                             source[1],
-                                             rebind)
-        elif param_length == 3:
-            return_str = "{} {} {}{}{}".format(source[0],
-                                               op,
-                                               source[1],
-                                               source[2],
-                                               rebind)
-
-        return return_str
+        self._value = op_str
 
     def __call__(self, ctx):
-        op_func = TransformOp.op_list[len(self._vars)][self._op]
+        op_func = TransformOp.op_list[len(self._vars)][self.op]
         params = [ctx[y._value] if y._data[util.BIND_S] else y._value for y in self._vars]
-
         return op_func(*params, ctx)
 
     def verify(self):
         """ Complains if the operator is not a defined Operator Enum """
-        if self._op not in TransformOp.op_list[len(self._vars)]:
-            raise SyntaxError("Unknown Op: {}".format(self._op))
+        if self.op not in TransformOp.op_list[len(self._vars)]:
+            raise SyntaxError("Unknown Op: {}".format(self.op))
 
     def set_rebind(self, bind):
         """ Set this transform to rebind its result to a different variable """
@@ -94,14 +59,14 @@ class TransformComponent(PO.ProductionComponent):
         return self
 
     def copy(self):
-        copied = TransformComponent(self._op,
+        copied = TransformComponent(self.op,
                                     self._vars,
                                     rebind=self._rebind,
                                     type_str=self._type)
         return copied
 
     def to_sentence(self, target=None):
-        head = PyRuleNode(self._op, {util.OPERATOR_S : self})
+        head = PyRuleNode(self.op, {util.OPERATOR_S : self})
         return Sentence([head] + self._vars[:] + [self._rebind])
 
     def var_set(self):
@@ -123,12 +88,6 @@ class Transform(PO.ProductionContainer):
         assert(all([isinstance(x, TransformComponent) for x in clauses]))
         super(Transform, self).__init__(clauses, type_str=type_str)
 
-    def __str__(self):
-        return "\n".join([str(x) for x in self._clauses])
-
-    def __repr__(self):
-        return "\n".join([repr(x) for x in self._clauses])
-
     def get_input_requirements(self):
         # return the set of input bound names
         return [y._value for x in self._clauses for y in x._vars if y._data[util.BIND_S]]
@@ -137,5 +96,3 @@ class Transform(PO.ProductionContainer):
         # return the set of output bound names
         return [x._rebind._value for x in self._clauses]
 
-    def value_string(self):
-        return self._name

@@ -8,6 +8,7 @@ from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.trie.trie import Trie
 from py_rule.error.pyrule_operator_exception import PyRuleOperatorException
 from py_rule.error.pyrule_parse_exception import PyRuleParseException
+from py_rule.abstract.printing import util as PrU
 
 from . import matching
 from . import util
@@ -105,7 +106,7 @@ class TrieWM(WorkingMemory):
         assert(isinstance(sen, Sentence))
         # go down to the child, and remove it
         self._clear_last_node()
-        fact_list = sen._words[:]
+        fact_list = sen.words[:]
         last_in_list = fact_list.pop()
 
         for node in fact_list:

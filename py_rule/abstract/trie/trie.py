@@ -2,8 +2,10 @@
 A Trie for Types
 """
 import logging as root_logger
+from weakref import WeakValueDictionary, ref, proxy
 
 from py_rule.error.pyrule_base_exception import PyRuleBaseException
+from py_rule.abstract.sentence import Sentence
 
 from .nodes.trie_node import TrieNode
 
@@ -15,6 +17,8 @@ class Trie:
     def __init__(self, node_type=TrieNode):
         self._root = node_type.Root()
         self._node_type = node_type
+        # Stores UUIDs -> Nodes
+        self._all_nodes = WeakValueDictionary()
 
     def __str__(self):
         return self.print_trie()
@@ -23,7 +27,7 @@ class Trie:
         return "Trie: {}".format(len(self.get_nodes()))
 
     def __len__(self):
-        return len(self.get_nodes(lambda x: True))
+        return len(self.get_nodes())
 
     def query(self, path):
         current = self._root
@@ -51,6 +55,7 @@ class Trie:
             else:
                 current = current.add_child(x)
                 logging.debug("Trie: Added: {}".format(current))
+                self._all_nodes[current._uuid] = current
             if update is not None:
                 update(current, y, current_path, u_data)
 
@@ -63,17 +68,27 @@ class Trie:
         if query_result is not None:
             query_result.remove_child(path[-1])
 
-    def get_nodes(self, pred=None):
+    def get_nodes(self, pred=None, explore=None):
+        assert(pred is None or callable(pred))
+        assert(explore is None or callable(explore))
         nodes = []
         queue = list(self._root._children.values())
         visited = set()
         while queue:
             current = queue.pop(0)
+
+            if current in nodes or current in visited:
+                continue
             visited.add(current)
-            if (pred is None or pred(current)) and current not in nodes:
+
+            if pred is None or pred(current):
                 nodes.append(current)
-            queue += [x for x in list(current._children.values())
-                      if x not in visited]
+
+            if explore is None:
+                queue += [x for x in list(current._children.values())
+                          if x not in visited]
+            else:
+                queue += explore(current)
 
         return nodes
 
@@ -85,8 +100,8 @@ class Trie:
             total_path = curr_path + [current_node]
             if not bool(current_node):
                 # if leaf
-                output.append("".join([str(x) for x in curr_path]
-                                      + [current_node.opless_print()]))
+                as_sentence = Sentence([x for x in curr_path] + [current_node])
+                output.append(as_sentence.pprint())
             else:
                 queue += [(total_path, x) for x in current_node]
 

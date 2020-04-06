@@ -3,7 +3,10 @@
     the results are passed to the action list
 """
 import logging as root_logger
+
 import py_rule.util as util
+from py_rule.abstract.printing import util as PrU
+
 from .value import PyRuleValue
 from .transform import Transform
 from .action import Action
@@ -19,90 +22,15 @@ class Rule(PyRuleValue):
 
     __count = 0
     # TODO handle None's better
-    def __init__(self, query, action=None, transform=None):
+    def __init__(self, query=None, action=None, transform=None, name="AnonRule"):
         assert(query is None or isinstance(query, Query))
         assert(action is None or isinstance(action, Action))
         assert(transform is None or isinstance(transform, Transform))
-        super().__init__(type_str=util.RULE_S)
+        super().__init__(None, type_str=util.RULE_S, name=name)
         self._query     = query
         self._transform = transform
         self._action    = action
         Rule.__count += 1
-
-    def __str__(self):
-        name_str      = self._name
-        tags_str      = ""
-        query_str     = ""
-        transform_str = ""
-        actions_str   = ""
-
-        # if self._name is not None:
-        #     name_str = str(self._name[:-1])
-
-        # Construct Tags str
-        if bool(self._tags):
-            tags_str = "\t" + ", ".join(sorted(["#{}".format(x)
-                                                for x in self._tags])) + "\n\n"
-
-        # Construct Query Str
-        if self._query is not None:
-            query_str = "\t" + str(self._query) + "\n\n"
-
-        # Construct Transform Str
-        if self._transform is not None:
-            transform_str = "\t" + str(self._transform) + "\n\n"
-
-        # Construct Action Str
-        if bool(self._action):
-            actions_str = "\t" + "\n\t".join([str(x)
-                                              for x in self._action]) + "\n"
-
-        return "{}(::{}):\n{}{}{}{}{}".format(name_str,
-                                              util.RULE_HEAD_S,
-                                              tags_str,
-                                              query_str,
-                                              transform_str,
-                                              actions_str,
-                                              util.END_S)
-
-    def __repr__(self):
-        """ Create a representation of the rule.
-        Not implementation specific
-        """
-        name_str      = self._name
-        tags_str      = ""
-        query_str     = ""
-        transform_str = ""
-        actions_str   = ""
-
-        # if self._name is not None:
-        #     name_str = "".join([repr(x) for x in self._name[:-1]])
-
-        # Construct Tag Str
-        if bool(self._tags):
-            tags_str = "\t" + ", ".join(sorted(["#{}".format(x)
-                                                for x in self._tags])) + "\n\n"
-
-        # Construct Query Str
-        if self._query is not None:
-            query_str = "\t" + repr(self._query) + "\n\n"
-
-        # Construct Transform Str
-        if self._transform is not None:
-            transform_str = "\t" + repr(self._transform) + "\n\n"
-
-        # Construct Action Str
-        if bool(self._action):
-            actions_str = "\t" + "\n\t".join([repr(x)
-                                              for x in self._action]) + "\n"
-
-        return "{}(::{}):\n{}{}{}{}{}".format(name_str,
-                                              util.RULE_HEAD_S,
-                                              tags_str,
-                                              query_str,
-                                              transform_str,
-                                              actions_str,
-                                              util.END_S)
 
     def is_coherent(self):  # can raise an Exception from verify_op
         """ Verify that the outputs of the query match the
@@ -144,9 +72,6 @@ class Rule(PyRuleValue):
 
         return new_rule
 
-    def value_string(self):
-        return self._name
-
     def var_set(self):
         obj = super(Rule, self).var_set()
         query_set = self._query.var_set()
@@ -157,3 +82,6 @@ class Rule(PyRuleValue):
         obj['out'].update(*[x['out'] for x in [query_set, transform_set, action_set]])
 
         return obj
+
+    def pprint(self, **kwargs):
+        return PrU.print_statement(self, **kwargs)

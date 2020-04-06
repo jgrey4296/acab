@@ -1,5 +1,6 @@
 from py_rule.abstract.node import PyRuleNode
 import py_rule.util as util
+from py_rule.abstract.printing import util as PrU
 
 
 class TrieNode(PyRuleNode):
@@ -8,40 +9,9 @@ class TrieNode(PyRuleNode):
     def Root():
         return TrieNode(util.ROOT_S)
 
+
     def __init__(self, value, data=None):
         super().__init__(value, data)
-
-    def __str__(self):
-        """ Usable output """
-        val = ""
-        if util.VALUE_TYPE_S not in self._data:
-            val = str(self._value)
-        elif util.VALUE_TYPE_S in self._data and self._data[util.VALUE_TYPE_S] == util.STRING_S:
-            val = '"{}"'.format(self._value)
-        elif self._data[util.VALUE_TYPE_S] == util.FLOAT_S:
-            val = str(self._value)
-            val.replace(".", "d")
-        elif self._data[util.VALUE_TYPE_S] == util.REGEX_S:
-            val = "/{}/".format(self._value)
-        else:
-            val = str(self._value)
-
-        if util.AT_BIND_S in self._data:
-            val = util.AT_VAR_SYMBOL_S + val
-        elif util.BIND_S in self._data and self._data[util.BIND_S]:
-            val = util.VAR_SYMBOL_S + val
-
-
-
-        if util.CONSTRAINT_S in self._data:
-            constraints = ", ".join(str(x) for x in self._data[util.CONSTRAINT_S])
-            val += "({})".format(constraints)
-
-        return val
-
-    def __repr__(self):
-        """ Unambiguous printing """
-        return "TrieNode({})".format(str(self))
 
     def copy(self):
         newnode = TrieNode(self._value, self._data)

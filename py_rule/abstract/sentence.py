@@ -2,63 +2,53 @@
 Defines a Sentence of Fact Words, which can be a query, and
 have fallback bindings
 """
-from py_rule.util import BIND_S, OPERATOR_S, NEGATION_S, FALLBACK_S
-from py_rule.util import QUERY_S, SEN_S, AT_BIND_S, NEGATION_SYMBOL_S
+from py_rule.util import BIND_S, OPERATOR_S
+from py_rule.util import SEN_S, AT_BIND_S
+from py_rule.abstract.printing import util as PrU
 
 from .value import PyRuleValue
 from .node import PyRuleNode
+
 
 class Sentence(PyRuleValue):
     """
     The Basic Sentence Class: Essentially a List of Words
     """
 
-    def __init__(self, words=None, data=None):
-        super().__init__(type_str=SEN_S)
-        self._words = []
-        self._data = {}
-        if data is not None:
-            self._data.update(data)
-
+    def __init__(self, words=None,
+                 params=None, tags=None,
+                 data=None):
         if words is not None:
             assert(all([isinstance(x, PyRuleNode) for x in words]))
             assert(not any([AT_BIND_S in x._data for x in words[1:]]))
-            self._words += words
+        else:
+            words = []
 
-    def __str__(self):
-        # TODO update this
-        result = "".join([str(x) for x in self._words[:-1]])
-        result += self._words[-1].opless_print()
-        if QUERY_S in self._data:
-            result += "?"
-        negated_str = ""
-        fallback_str = ""
-        if FALLBACK_S in self._data and self._data[FALLBACK_S] is not None:
-            fallback_str = " || " + ", ".join(["${}:{}".format(x[0], x[1])
-                                               for x in self._data[FALLBACK_S]])
-        if NEGATION_S in self._data and self._data[NEGATION_S]:
-            negated_str = NEGATION_SYMBOL_S
+        super().__init__(words,
+                         data=data,
+                         params=params,
+                         tags=tags,
+                         type_str=SEN_S)
 
-        return "{}{}{}".format(negated_str, result, fallback_str)
-
-    def __repr__(self):
-        return "Sentence({})".format(str(self))
-
+    @property
+    def words(self):
+        return self._value
     def __hash__(self):
-        return hash(str(self))
+        return super(Sentence, self).__hash__()
+
     def __eq__(self, other):
-        return str(self) == str(other)
+        return hash(self) == hash(other)
 
     def __iter__(self):
-        return iter(self._words)
+        return iter(self.words)
 
     def __getitem__(self, i):
         if isinstance(i, slice):
-            return Sentence(self._words.__getitem__(i))
-        return self._words.__getitem__(i)
+            return Sentence(self.words.__getitem__(i))
+        return self.words.__getitem__(i)
 
     def __len__(self):
-        return len(self._words)
+        return len(self.words)
 
     def expand_bindings(self, bindings):
         """ Given a dictionary of bindings, reify the sentence,
@@ -91,22 +81,31 @@ class Sentence(PyRuleValue):
                 del copied_node._data[AT_BIND_S]
             output.append(copied_node)
 
-        return Sentence(output, data=self._data)
+        return Sentence(output,
+                        data=self._data,
+                        params=self._vars,
+                        tags=self._tags)
 
     def copy(self):
-        words = [x.copy() for x in self._words]
-        return Sentence(words, data=self._data)
+        words = [x.copy() for x in self.words]
+        return Sentence(words,
+                        data=self._data,
+                        params=self._vars,
+                        tags=self._tags)
 
     def add(self, *other):
         for word in other:
             assert(isinstance(word, PyRuleNode))
-            self._words.append(other)
+            self._value.append(other)
 
     def var_set(self):
         obj = super(Sentence, self).var_set()
-        for w in self._words:
+        for w in self.words:
             temp = w.var_set()
             obj['in'].update(temp['in'])
             obj['out'].update(temp['out'])
 
         return obj
+
+    def pprint(self, **kwargs):
+        return PrU.print_sequence(self, **kwargs)

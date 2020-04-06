@@ -1,9 +1,10 @@
 """ The Base Node Class the rest of PyRule extends """
-from fractions import Fraction
-from re import Pattern, search
+from re import search
+import weakref
 
 from py_rule.util import BIND_S, AT_BIND_S
 from py_rule import util
+from py_rule.abstract.printing import util as PrU
 
 from .value import PyRuleValue
 
@@ -12,32 +13,11 @@ class PyRuleNode(PyRuleValue):
 
     def __init__(self, value, data=None, type_str=None):
 
-        value_type_verify = (value is None or
-                             isinstance(value, (int,
-                                                float,
-                                                bool,
-                                                str,
-                                                Fraction,
-                                                Pattern,
-                                                PyRuleValue)))
-        assert value_type_verify, type(value)
-        super(PyRuleNode, self).__init__(type_str=type_str)
-        self._value = value
+        super(PyRuleNode, self).__init__(value,
+                                         data=data,
+                                         type_str=type_str)
+        self._parent = None
         self._children = {}
-        self._data = {}
-        if data:
-            self._data.update(data)
-
-    def __str__(self):
-        """ String should create a re-parseable output """
-        return self.opless_print()
-
-    def __repr__(self):
-        """ Repr should create an unambiguous debug string """
-        raise NotImplementedError()
-
-    def __hash__(self):
-        return hash(str(self))
 
     def __len__(self):
         return len(self._children)
@@ -51,39 +31,30 @@ class PyRuleNode(PyRuleValue):
     def __iter__(self):
         return iter(self._children.values())
 
-    def value_string(self):
-        if isinstance(self._value, PyRuleValue):
-            return self._value.value_string()
-        else:
-            return str(self._value)
-
-    def set_data(self, data):
-        if data is not None:
-            self._data.update(data)
 
     def add_child(self, node):
         assert(isinstance(node, PyRuleNode))
-        self._children[node.value_string()] = node
+        self._children[node.name] = node
         return node
 
     def get_child(self, node):
         if isinstance(node, str):
             return self._children[node]
         else:
-            return self._children[node.value_string()]
+            return self._children[node.name]
 
     def has_child(self, node):
         if isinstance(node, str):
             return node in self._children
         else:
-            return node.value_string() in self._children
+            return node.name in self._children
 
     def remove_child(self, node):
         if node in self:
             if isinstance(node, str):
                 del self._children[node]
             else:
-                del self._children[node.value_string()]
+                del self._children[node.name]
             return True
 
         return False
@@ -94,7 +65,7 @@ class PyRuleNode(PyRuleValue):
 
     def search_regex(self, regex):
         """ Test a regex on the Nodes value """
-        result = search(regex._vars[0]._value, self.value_string())
+        result = search(regex._vars[0]._value, self.name)
         if result is not None:
             return result.groupdict()
         else:
@@ -138,7 +109,7 @@ class PyRuleNode(PyRuleValue):
         #add to 'out' if node is a binding
         if (BIND_S in self._data and self._data[BIND_S]) \
            or (AT_BIND_S in self._data and self._data[AT_BIND_S]):
-            obj['out'].add(self.value_string())
+            obj['out'].add(self.name)
 
         #add annotations to 'in'
         for v in self._data.values():
@@ -149,21 +120,14 @@ class PyRuleNode(PyRuleValue):
 
         return obj
 
-    def opless_print(self):
-        val = str(self._value)
-        if util.VALUE_TYPE_S in self._data and self._data[util.VALUE_TYPE_S] == util.STRING_S:
-            val = '"{}"'.format(val)
-        elif util.VALUE_TYPE_S in self._data and self._data[util.VALUE_TYPE_S] == util.FLOAT_S:
-            val = val.replace(".", "d")
-        elif util.VALUE_TYPE_S in self._data and self._data[util.VALUE_TYPE_S] == util.REGEX_S:
-            val = "/{}/".format(val)
+    def set_parent(self, parent):
+        assert(isinstance(parent, PyRuleNode))
+        self._parent = weakref.ref(parent)
 
-        if util.AT_BIND_S in self._data:
-            val = util.AT_VAR_SYMBOL_S + val
-        elif util.BIND_S in self._data and self._data[util.BIND_S]:
-            val = util.VAR_SYMBOL_S + val
-        if util.CONSTRAINT_S in self._data:
-            constraints = ", ".join(str(x) for x in self._data[util.CONSTRAINT_S])
-            val += "({})".format(constraints)
-        return val
-
+    def parentage(self):
+        path = []
+        current = self
+        while current is not None:
+            path.insert(0, current)
+            current = current._parent
+        return path

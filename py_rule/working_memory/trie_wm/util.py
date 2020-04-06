@@ -1,8 +1,10 @@
 """
 Cross-module utilities for the rule engines
 """
-from py_rule import util
 from enum import Enum
+
+from py_rule import util
+from py_rule.abstract.printing import util as PrU
 
 ROOT_S       = util.ROOT_S
 BIND_S       = util.BIND_S
@@ -38,10 +40,9 @@ ACTION_VAL_S  = "action_values"
 
 #Trie exclusion operator:
 EXOP = Enum('EXOP', 'DOT EX')
-EXOP_lookup = {
-    EXOP.DOT : ".",
-    EXOP.EX : "!",
-    }
+
+PrU.setup_modal_lookups({EXOP.DOT : ".", EXOP.EX : "!" })
+
 
 DEFAULT_NODE_DATA = {
     BIND_S : False,

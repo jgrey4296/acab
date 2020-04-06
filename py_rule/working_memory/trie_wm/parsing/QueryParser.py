@@ -77,7 +77,7 @@ QueryCore_end = PARAM_CORE(constraints, end=True)
 # Core Query Chain
 clause = PU.op(PU.NEGATION_SYMBOL) + PU.N(WMU.MAIN_CLAUSE_S, pp.ZeroOrMore(QueryCore)
                                           + QueryCore_end) \
-                                          + PU.QMARK \
+                                          + PU.QUERY_SYMBOL\
                                           + PU.N(WMU.FALLBACK_S,
                                                  PU.op(fallback))
 
