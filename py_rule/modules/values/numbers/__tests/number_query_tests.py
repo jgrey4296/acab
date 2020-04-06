@@ -12,6 +12,7 @@ from py_rule.abstract import action
 from py_rule.abstract.comparison import Comparison, CompOp
 from py_rule.abstract.sentence import Sentence
 from py_rule import util
+from py_rule.abstract.printing import util as PrU
 from py_rule.modules.operators.operator_module import OperatorSpec
 from py_rule.modules.values.numbers.number_module import NumberSpecification
 from py_rule.working_memory.trie_wm.trie_working_memory import TrieWM
@@ -26,6 +27,8 @@ class NumberQueryTests(unittest.TestCase):
     def setUpClass(cls):
         NumberQueryTests.os = OperatorSpec()
         NumberQueryTests.ns = NumberSpecification()
+
+        PrU.setup_statement_lookups({util.RULE_S : util.RULE_HEAD_S})
 
     def setUp(self):
         self.trie = TrieWM()
@@ -51,11 +54,11 @@ class NumberQueryTests(unittest.TestCase):
         self.assertEqual(result[0], util.CONSTRAINT_S)
         self.assertEqual(len(result[1]), 5)
         self.assertTrue(all([isinstance(x, Comparison) for x in result[1]]))
-        self.assertEqual(result[1][0]._op, 'LT')
-        self.assertEqual(result[1][1]._op, 'GT')
-        self.assertEqual(result[1][2]._op, 'NEQ')
-        self.assertEqual(result[1][3]._op, 'EQ')
-        self.assertEqual(result[1][4]._op, 'RegMatch')
+        self.assertEqual(result[1][0].op, 'LT')
+        self.assertEqual(result[1][1].op, 'GT')
+        self.assertEqual(result[1][2].op, 'NEQ')
+        self.assertEqual(result[1][3].op, 'EQ')
+        self.assertEqual(result[1][4].op, 'RegMatch')
 
 
     def test_basic_query_core(self):
@@ -116,7 +119,7 @@ class NumberQueryTests(unittest.TestCase):
         parsed = [QP.parseString(x) for x in queries]
         zipped = zip(queries, parsed)
         for a,q in zipped:
-            self.assertEqual(a,str(q))
+            self.assertEqual(a, q.pprint())
 
 
     def test_rule_binding_expansion(self):
@@ -126,8 +129,8 @@ class NumberQueryTests(unittest.TestCase):
         result = RP.parseString("ρ::a.rule:\n$y.b.$z?\n\n$x + 2 -> $y\n\n+($y)\n\nend")[0][-1]
         expanded = result._value.expand_bindings(bindings)
         # Expanding bindings makes a new rule, so its an AnonValue
-        self.assertEqual(str(expanded),
-                         "AnonValue(::ρ):\n\td.e.f.b.x.y.z?\n\n\t$x + 2 -> $y\n\n\t+(d.e.f)\nend")
+        self.assertEqual(expanded.pprint(),
+                         "AnonRule(::ρ):\n\td.e.f.b.x.y.z?\n\n\t$x + 2 -> $y\n\n\t+(d.e.f)\nend")
 
 
     def test_query_alpha_comp(self):
