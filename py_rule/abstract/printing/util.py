@@ -3,10 +3,6 @@ Utilities for printing out information
 """
 from py_rule import util
 
-# TODO: register / add to these
-MODAL_LOOKUPS = {}
-STATEMENT_LOOKUPS = {}
-
 #Setup
 def setup_modal_lookups(a_dict, reset=False):
     if reset:
@@ -19,6 +15,13 @@ def setup_statement_lookups(a_dict, reset=False):
         STATEMENT_LOOKUPS.clear()
     assert(not any([k in STATEMENT_LOOKUPS for k in a_dict.keys()])), a_dict
     STATEMENT_LOOKUPS.update(a_dict)
+
+def setup_primitive_lookups(a_dict, reset=False):
+    if reset:
+        TYPE_WRAPS.clear()
+    assert(not any([k in TYPE_WRAPS for k in a_dict.keys()])), a_dict
+    assert(all([callable(x) for x in a_dict.values()]))
+    TYPE_WRAPS.update(a_dict)
 
 # TOP LEVEL UTILITIES
 def print_value(value, with_op=False):
@@ -37,12 +40,8 @@ def print_value(value, with_op=False):
         type_str = value._data[util.VALUE_TYPE_S]
 
     # Format core value if it is a primitive
-    if type_str == util.STRING_S:
-        val = _wrap_str(val)
-    elif type_str == util.FLOAT_S:
-        val = _wrap_float(val)
-    elif type_str == util.REGEX_S:
-        val = _wrap_regex(val)
+    if type_str in TYPE_WRAPS:
+        val = TYPE_WRAPS[type_str](val)
 
     # Wrap binding
     if util.AT_BIND_S in value._data and value._data[util.AT_BIND_S]:
@@ -74,8 +73,9 @@ def print_operator(operator, op_fix=0, wrap_vars=False):
         val = "{}({})".format(operator.op, ",".join(the_vars))
     else:
         # Don't wrap comps or transforms
-        tail = "".join(the_vars[op_fix:])
-        val = "{} {}".format(" ".join(the_vars[:op_fix] + [operator.op]), tail)
+        head = " ".join([str(x) for x in the_vars[:op_fix]] + [operator.op])
+        tail = "".join([str(x) for x in the_vars[op_fix:]])
+        val = "{} {}".format(head, tail)
 
     # Wrap a rebind if there is one
     if hasattr(operator, "_rebind"):
@@ -168,9 +168,10 @@ def _wrap_str(value):
     return '"{}"'.format(value)
 
 def _wrap_float(value):
-    assert(isinstance(value, str))
-    return value.replace('.', util.DECIMAL_S)
+    return str(value).replace('.', util.DECIMAL_S)
 
+def _wrap_int(value):
+    return str(value)
 def _wrap_regex(value):
     assert(isinstance(value, str))
     val = "/{}/".format(value)
@@ -245,3 +246,13 @@ def _wrap_var_list(val, the_vars, newline=False):
     if newline:
         head = "\n"
     return "{}{}\t | {} |\n".format(val, head, ", ".join([_wrap_var(x) for x in the_vars]))
+
+
+
+# TODO: register / add to these
+MODAL_LOOKUPS = {}
+STATEMENT_LOOKUPS = {}
+TYPE_WRAPS = {util.STRING_S : _wrap_str,
+              util.FLOAT_S  : _wrap_float,
+              util.INT_S    : _wrap_int,
+              util.REGEX_S  : _wrap_regex}
