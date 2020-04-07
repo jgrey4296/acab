@@ -27,7 +27,7 @@ def print_value(value, with_op=False):
     # swap to print_statement if its registered
     if util.VALUE_TYPE_S in value._data \
        and value._data[util.VALUE_TYPE_S] in STATEMENT_LOOKUPS:
-        return print_statement(value._value)
+        return value._value.pprint()
 
     val = value.name
 
