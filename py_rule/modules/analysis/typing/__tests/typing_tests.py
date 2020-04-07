@@ -8,6 +8,8 @@ from py_rule.abstract.trie.nodes.trie_node import TrieNode
 import py_rule.error.type_exceptions as te
 from py_rule.modules.analysis.typing import util as TU
 from py_rule.working_memory.trie_wm.parsing import FactParser as FP
+from py_rule.abstract.printing import util as PrU
+from py_rule import util
 
 
 def S(*in_string):
@@ -19,6 +21,7 @@ class TypingTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         #hotload values
+        PrU.setup_statement_lookups({TU.TYPE_DEF_S : util.STRUCTURE_S}, reset=True)
         return
 
     def setUp(self):
@@ -103,37 +106,37 @@ class TypingTests(unittest.TestCase):
         self.assertEqual(len(results), 0)
 
     def test_basic_inference(self):
-        """ ::a END, a.$b(::a), a.$c """
+        """ ::a END, test.$b(::a), test.$c """
         tc = TypeChecker()
         tc.add_definition(TypeDefinition([]).apply_onto(S("a")))
-        sen1 = S("a","b")
+        sen1 = S("test","b")
         sen1[-1]._data[TU.BIND_S] = True
         sen1[-1]._data[TU.TYPE_DEC_S] = TypeInstance(S("a"))
         tc.add_assertion(sen1)
-        sen2 = S("a","c")
+        sen2 = S("test","c")
         sen2[-1]._data[TU.BIND_S] = True
         tc.add_assertion(sen2)
 
-        query_sen = S("a","c")
+        query_sen = S("test","c")
         query_sen[-1]._data[TU.BIND_S] = True
         query_result = tc.query(query_sen)[0]
-        self.assertIsNone(query_result._type)
+        self.assertIsNone(query_result._type_instance)
 
         tc.validate()
         query_result = tc.query(query_sen)[0]
-        self.assertIsNotNone(query_result._type)
-        self.assertEqual(query_result._type, sen1[-1]._data[TU.TYPE_DEC_S])
+        self.assertIsNotNone(query_result._type_instance)
+        self.assertEqual(query_result._type_instance, sen1[-1]._data[TU.TYPE_DEC_S])
 
     def test_type_conflict(self):
-        """ ::a END, a.$b(::a), a.$c(::b) """
+        """ σ::a END, σ::b END test.$q(::a), test.$q(::b) """
         tc = TypeChecker()
         tc.add_definition(TypeDefinition([]).apply_onto(S("a")))
         tc.add_definition(TypeDefinition([]).apply_onto(S("b")))
-        sen1 = S("a","b")
+        sen1 = S("test","q")
         sen1[-1]._data[TU.BIND_S] = True
         sen1[-1]._data[TU.TYPE_DEC_S] = TypeInstance(S("a"))
         tc.add_assertion(sen1)
-        sen2 = S("a","b")
+        sen2 = S("test","q")
         sen2[-1]._data[TU.BIND_S] = True
         sen2[-1]._data[TU.TYPE_DEC_S] = TypeInstance(S("b"))
 
@@ -181,23 +184,14 @@ class TypingTests(unittest.TestCase):
         a(::first).b
         """
         tc = TypeChecker()
-        loc = FP.parseString('String')[0]
-        loc2 = FP.parseString('Number')[0]
-        def1 = TypeDefinition([])
-        def1.apply_onto(loc)
-        def2 = TypeDefinition([])
-        def2.apply_onto(loc2)
-        tc.add_definition(def1)
-        tc.add_definition(def2)
+        tc.add_definition(TypeDefinition([]).apply_onto(S("String")))
+        tc.add_definition(TypeDefinition([]).apply_onto(S("Number")))
 
         struct_sen = S("name","x")
         struct_sen[-1]._data[TU.BIND_S] = True
         struct_sen[-1]._data[TU.TYPE_DEC_S] = TypeInstance(S("String"))
 
-        def3 = TypeDefinition([struct_sen])
-        loc3 = FP.parseString("first")[0]
-        def3.apply_onto(loc3)
-        tc.add_definition(def3)
+        tc.add_definition(TypeDefinition([struct_sen]).apply_onto(S("first")))
 
         sen = S("a","b")
         sen[0]._data[TU.TYPE_DEC_S] = TypeInstance(S("first"))
@@ -256,23 +250,23 @@ class TypingTests(unittest.TestCase):
         #Query the First Variable, should be untyped
         query_sen = S("bob","name","z")
         query_sen[-1]._data[TU.BIND_S] = True
-        self.assertIsNone(tc.query(query_sen)[0]._type)
+        self.assertIsNone(tc.query(query_sen)[0]._type_instance)
         #then the second, should be untyped
         query_sen = S("bob","name","z","q")
         query_sen[-1]._data[TU.BIND_S] = True
         query_sen[-1]._data[TU.BIND_S] = True
-        self.assertIsNone(tc.query(query_sen)[0]._type)
+        self.assertIsNone(tc.query(query_sen)[0]._type_instance)
 
         tc.validate()
         #Check the first var is inferred
         query_sen = S("bob","name","z")
         query_sen[-1]._data[TU.BIND_S] = True
-        self.assertEqual(tc.query(query_sen)[0]._type, TypeInstance(S("String")))
+        self.assertEqual(tc.query(query_sen)[0]._type_instance, TypeInstance(S("String")))
         #Check the second var is inferred
         query_sen = S("bob","name","z","q")
         query_sen[-2]._data[TU.BIND_S] = True
         query_sen[-1]._data[TU.BIND_S] = True
-        self.assertEqual(tc.query(query_sen)[0]._type, TypeInstance(S("Number")))
+        self.assertEqual(tc.query(query_sen)[0]._type_instance, TypeInstance(S("Number")))
 
     def test_typing_nested_types(self):
         """ ::String: END, ::Number: END
@@ -310,13 +304,13 @@ class TypingTests(unittest.TestCase):
         query_sen2[-3]._data[TU.BIND_S] = True
         query_sen2[-1]._data[TU.BIND_S] = True
 
-        self.assertIsNone(tc.query(query_sen1)[0]._type)
-        self.assertIsNone(tc.query(query_sen2)[0]._type)
+        self.assertIsNone(tc.query(query_sen1)[0]._type_instance)
+        self.assertIsNone(tc.query(query_sen2)[0]._type_instance)
 
         tc.validate()
 
-        self.assertEqual(tc.query(query_sen1)[0]._type, TypeInstance(S("small.type")))
-        self.assertEqual(tc.query(query_sen2)[0]._type, TypeInstance(S("String")))
+        self.assertEqual(tc.query(query_sen1)[0]._type_instance, TypeInstance(S("small.type")))
+        self.assertEqual(tc.query(query_sen2)[0]._type_instance, TypeInstance(S("String")))
 
     def test_typing_nested_types_fail(self):
         """ ::String: END, ::Number: END
@@ -354,8 +348,8 @@ class TypingTests(unittest.TestCase):
         query_sen2[-3]._data[TU.BIND_S] = True
         query_sen2[-1]._data[TU.BIND_S] = True
 
-        self.assertIsNone(tc.query(query_sen1)[0]._type)
-        self.assertEqual(tc.query(query_sen2)[0]._type, TypeInstance(S("Number")))
+        self.assertIsNone(tc.query(query_sen1)[0]._type_instance)
+        self.assertEqual(tc.query(query_sen2)[0]._type_instance, TypeInstance(S("Number")))
 
         with self.assertRaises(te.TypeConflictException):
             tc.validate()
@@ -394,12 +388,12 @@ class TypingTests(unittest.TestCase):
         query_sen2 = S("b","name","t")
         query_sen2[-1]._data[TU.BIND_S] = True
 
-        self.assertIsNone(tc.query(query_sen1)[0]._type)
-        self.assertIsNone(tc.query(query_sen2)[0]._type)
+        self.assertIsNone(tc.query(query_sen1)[0]._type_instance)
+        self.assertIsNone(tc.query(query_sen2)[0]._type_instance)
 
         tc.validate()
-        self.assertEqual(tc.query(query_sen1)[0]._type, TypeInstance(S("String")))
-        self.assertEqual(tc.query(query_sen2)[0]._type, TypeInstance(S("Number")))
+        self.assertEqual(tc.query(query_sen1)[0]._type_instance, TypeInstance(S("String")))
+        self.assertEqual(tc.query(query_sen2)[0]._type_instance, TypeInstance(S("Number")))
 
     def test_typing_polytype_nested(self):
         """ ::String: END, ::Number: END
@@ -435,11 +429,11 @@ class TypingTests(unittest.TestCase):
         query_sen1 = S("a","nested","name","x")
         query_sen1[-1]._data[TU.BIND_S] = True
 
-        self.assertIsNone(tc.query(query_sen1)[0]._type)
+        self.assertIsNone(tc.query(query_sen1)[0]._type_instance)
 
         tc.validate()
 
-        self.assertEqual(tc.query(query_sen1)[0]._type, TypeInstance(S("String")))
+        self.assertEqual(tc.query(query_sen1)[0]._type_instance, TypeInstance(S("String")))
 
     def test_typing_polytype_multi_param(self):
         """ ::String: END, ::Number: END
@@ -477,13 +471,13 @@ class TypingTests(unittest.TestCase):
         query_sen2 = S("a","age","w")
         query_sen2[-1]._data[TU.BIND_S] = True
 
-        self.assertIsNone(tc.query(query_sen1)[0]._type)
-        self.assertIsNone(tc.query(query_sen2)[0]._type)
+        self.assertIsNone(tc.query(query_sen1)[0]._type_instance)
+        self.assertIsNone(tc.query(query_sen2)[0]._type_instance)
 
         tc.validate()
 
-        self.assertEqual(tc.query(query_sen1)[0]._type, TypeInstance(S("String")))
-        self.assertEqual(tc.query(query_sen2)[0]._type, TypeInstance(S("Number")))
+        self.assertEqual(tc.query(query_sen1)[0]._type_instance, TypeInstance(S("String")))
+        self.assertEqual(tc.query(query_sen2)[0]._type_instance, TypeInstance(S("Number")))
 
 
     def test_typing_context_clear(self):
