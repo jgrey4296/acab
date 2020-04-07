@@ -37,7 +37,7 @@ class Sentence(PyRuleValue):
         return super(Sentence, self).__hash__()
 
     def __eq__(self, other):
-        return hash(self) == hash(other)
+        return hash(self.pprint()) == hash(other.pprint())
 
     def __iter__(self):
         return iter(self.words)
