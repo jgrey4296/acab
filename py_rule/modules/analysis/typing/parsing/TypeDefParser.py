@@ -26,8 +26,7 @@ def make_op_def(toks):
     if TYU.SYNTAX_BIND_S in toks:
         syntax_bind = toks[TYU.SYNTAX_BIND_S][0]
 
-    op_def = OperatorDefinition(toks[TYU.STRUCT_S][0],
-                                syntax_bind)
+    op_def = OperatorDefinition(toks[TYU.STRUCT_S][0], syntax_bind)
 
     return (op_def._type, op_def)
 

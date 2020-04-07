@@ -18,7 +18,7 @@ SYNTAX_BIND_S = "syntax_bind"
 def has_equivalent_vars_pred(node):
     """ A Predicate to use with Trie.get_nodes
     Finds nodes with multiple vars as children that can be merged """
-    if node._value == util.ROOT_S:
+    if node.name == util.ROOT_S:
         return False
     var_children = [x for x in node._children.values() if x._is_var]
     return len(var_children) > 1

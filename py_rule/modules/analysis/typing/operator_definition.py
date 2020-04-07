@@ -1,4 +1,5 @@
 from py_rule.util import FUNC_S
+from py_rule.abstract.printing import util as PrU
 
 from .type_definition import TypeDefinition
 from .type_instance import TypeInstance
@@ -15,20 +16,23 @@ class OperatorDefinition(TypeDefinition):
         super().__init__([structure], type_str=OP_DEF_S)
         self._func_name = sugar_syntax
 
-    def __str__(self):
-        result = FUNC_S + "::"
-        result += str(self._name)
-        if bool(self._vars):
-            result += "({})".format(", ".join([str(x) for x in self._vars]))
-        result += ":"
-        result += str(self._structure[0])
-        if self._func_name is not None:
-            result += " => {}".format(self._func_name)
+    # def __str__(self):
+    #     result = FUNC_S + "::"
+    #     result += str(self._name)
+    #     if bool(self._vars):
+    #         result += "({})".format(", ".join([str(x) for x in self._vars]))
+    #     result += ":"
+    #     result += str(self._structure[0])
+    #     if self._func_name is not None:
+    #         result += " => {}".format(self._func_name)
 
-        return result
+    #     return result
 
-    def __repr__(self):
-        return "Type Def({})".format(str(self))
+    # def __repr__(self):
+    #     return "Type Def({})".format(str(self))
+
+    def pprint(self, **kwargs):
+        return PrU.print_statement(self, is_structured=True, **kwargs)
 
     def build_type_declaration(self):
         return TypeInstance(self._name, self._path, self._vars[:])

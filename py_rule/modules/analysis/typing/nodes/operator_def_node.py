@@ -44,7 +44,7 @@ class OperatorDefTrieNode(TypeDefTrieNode):
         # add to internal search trie
         if self._typedef_trie is None:
             self._typedef_trie = Trie(node_type=TypeAssignmentTrieNode)
-            self._typedef_trie._root._type = data.build_type_declaration()
+            self._typedef_trie._root._type_instance = data.build_type_declaration()
 
         for x in data._structure:
             self._typedef_trie.add(x, {util.OP_DEF_S : data},
@@ -92,4 +92,5 @@ def pattern_match_type_signature(head, available):
     if head._type is None:
         return available
 
-    return [x for x in available if x._type is None or head._type == x._type]
+    return [x for x in available if x._type_instance is None
+            or head._type_instance == x._type_instance]

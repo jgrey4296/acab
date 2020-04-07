@@ -25,11 +25,12 @@ class TypeDefTrieNode(TrieNode):
 
     def __init__(self, value):
         logging.debug("TypeDefTrieNode: init: {}".format(value))
+        assert(isinstance(value, TrieNode))
         super().__init__(value)
         self._typedef_trie = None
 
-    def __repr__(self):
-        return "TypeDefTrieNode({})".format(repr(self._value))
+    # def __repr__(self):
+    #     return "TypeDefTrieNode({})".format(repr(self._value))
 
     def set_data(self, data):
         """ Overrides TrieNode.set_data.
@@ -42,8 +43,8 @@ class TypeDefTrieNode(TrieNode):
             self._data[util.TYPE_DEF_S] = data
             # construct the internal trie
             self._typedef_trie = Trie(node_type=TypeAssignmentTrieNode)
-            self._typedef_trie._root._type = self._data[util.TYPE_DEF_S].build_type_declaration()
-            for x in self._data[util.TYPE_DEF_S]._structure:
+            self._typedef_trie._root._type_instance = self._data[util.TYPE_DEF_S].build_type_declaration()
+            for x in self._data[util.TYPE_DEF_S].structure:
                 self._typedef_trie.add(x, None,
                                        update=lambda c, n, p, d: c.type_match_wrapper(n))
             return
@@ -60,7 +61,7 @@ class TypeDefTrieNode(TrieNode):
         logging.debug(LOG_MESSAGES['validate_top'].format(repr(self),
                                                           repr(usage_trie)))
         if self._typedef_trie is None:
-            raise te.TypeUndefinedException(self._value.value_string(), usage_trie)
+            raise te.TypeUndefinedException(self._value.name, usage_trie)
 
         type_var_lookup = self._generate_polytype_bindings(usage_trie)
         # Loop over all elements of the defined type
@@ -93,21 +94,21 @@ class TypeDefTrieNode(TrieNode):
         type parameters """
         type_var_lookup = {}
         if self._data[util.TYPE_DEF_S]._vars \
-           and usage_trie._type \
-           and usage_trie._type._vars:
-            zipped = zip(self._data[util.TYPE_DEF_S]._vars, usage_trie._type._vars)
+           and usage_trie._type_instance \
+           and usage_trie._type_instance._vars:
+            zipped = zip(self._data[util.TYPE_DEF_S]._vars, usage_trie._type_instance._vars)
             type_var_lookup = {x: y for x, y in zipped}
         return type_var_lookup
 
     def _retrieve_type_declaration(self, curr_def, type_var_lookup):
         """ Use the temporary binding environment to lookup the relevant
         type declaration """
-        if curr_def.value_string() != util.ROOT_S \
+        if curr_def.name != util.ROOT_S \
            and curr_def._is_var \
-           and curr_def.value_string() in type_var_lookup:
-            return type_var_lookup[curr_def.value_string()]
-        elif curr_def._type is not None:
-            return curr_def._type.build_type_declaration(type_var_lookup)
+           and curr_def._value.name in type_var_lookup:
+            return type_var_lookup[curr_def._value.name]
+        elif curr_def._type_instance is not None:
+            return curr_def._type_instance.build_type_declaration(type_var_lookup)
         else:
             return None
 
@@ -115,9 +116,9 @@ class TypeDefTrieNode(TrieNode):
         """ Compare Defined Structure to actual structure """
         if curr_def._value != util.ROOT_S:
             for x in curr_usage_set:
-                if not x._is_var and curr_def.value_string() != x.value_string():
-                    raise te.TypeStructureMismatch(curr_def.value_string(),
-                                                   [x.value_string()])
+                if not x._is_var and curr_def.name != x.name:
+                    raise te.TypeStructureMismatch(curr_def.name,
+                                                   [x.name])
 
     def _apply_type_to_set(self, usage_set, def_type):
         """ Apply type declarations to nodes """
@@ -161,7 +162,7 @@ class TypeDefTrieNode(TrieNode):
         return queue_vals
 
     def _log_status(self, curr_def, curr_usage_set):
-        curr_def_type = curr_def._type
+        curr_def_type = curr_def._type_instance
         curr_use_str = ", ".join([str(x) for x in curr_usage_set])
         logging.debug(LOG_MESSAGES['curr_def'].format(curr_def._value,
                                                       repr(curr_def_type)))
