@@ -85,7 +85,7 @@ class TestTime(unittest.TestCase):
         anEvent = Event(Arc(t(0,1), t(1,1)), "a")
         self.assertIsNotNone(anEvent)
         self.assertEqual(anEvent._arc, Arc(t(0,1), t(1,1)))
-        self.assertEqual(anEvent._value, "a")
+        self.assertEqual(anEvent._event, "a")
 
     def test_event_creation_with_params(self):
         anEvent = Event(Arc(t(0,1), t(2,4)), "b", params={"test": 5})
@@ -109,7 +109,7 @@ class TestTime(unittest.TestCase):
         anEvent = Event(Arc(t(0,1), t(1,1)), aPattern, True)
         callResult = anEvent(t(1,2))
         self.assertEqual(len(callResult), 1)
-        self.assertEqual(callResult[0]._value, "b")
+        self.assertEqual(callResult[0]._event, "b")
 
     def test_event_base(self):
         anEvent = Event(Arc(t(0,1),t(1,1)), "a")
@@ -134,7 +134,7 @@ class TestTime(unittest.TestCase):
                    Event(Arc(t(0,1),t(1,2)), "b"),
                    Event(Arc(t(2,1),t(3,1)), "c")]
         sorted_events = sorted(events, key=lambda x: x.key())
-        values = [x._value for x in sorted_events]
+        values = [x._event for x in sorted_events]
         self.assertEqual(values, ["b","a","c"])
 
     def test_event_contains(self):
@@ -163,25 +163,25 @@ class TestTime(unittest.TestCase):
         an_event = Event(Arc(t(1,2), t(3,4)),
                          "a", False, {BIND_S : True})
 
-        self.assertEqual(an_event._value, "a")
+        self.assertEqual(an_event._event, "a")
         bound = an_event.bind({"a" : "b"})
-        self.assertEqual(bound._value, "b")
+        self.assertEqual(bound._event, "b")
 
     def test_event_binding_fail(self):
         an_event = Event(Arc(t(1,2), t(3,4)),
                          "a", False, {BIND_S : True})
 
-        self.assertEqual(an_event._value, "a")
+        self.assertEqual(an_event._event, "a")
         bound = an_event.bind({"c" : "b"})
-        self.assertEqual(bound._value, "a")
+        self.assertEqual(bound._event, "a")
 
     def test_event_binding_fail_non_var(self):
         an_event = Event(Arc(t(1,2), t(3,4)),
                          "a", False, {BIND_S : False})
 
-        self.assertEqual(an_event._value, "a")
+        self.assertEqual(an_event._event, "a")
         bound = an_event.bind({"a" : "b"})
-        self.assertEqual(bound._value, "a")
+        self.assertEqual(bound._event, "a")
 
     def test_event_fail_var_pattern(self):
         with self.assertRaises(AssertionError):
@@ -208,7 +208,7 @@ class TestTime(unittest.TestCase):
                                   Event(Arc(t(1,2),t(1,1)), "b")])
         res = aPattern(t(1,2))
         self.assertEqual(len(res), 1)
-        self.assertEqual(res[0]._value, "b")
+        self.assertEqual(res[0]._event, "b")
 
     def test_pattern_call_with_internal_pattern_start(self):
         aPattern = Pattern(Arc(t(0,1), t(1,2)),
@@ -395,7 +395,7 @@ class TestTime(unittest.TestCase):
     def test_pattern_bind(self):
         pattern = tp.parse_string("[[a $b c $b]]")
         bound = pattern.bind({"a": "e", "b": "g"})
-        
+
         for x,y in zip(bound.iter(cycles=2), ["a","g","c","g"]*2):
             self.assertEqual(x[0],y)
 
@@ -465,7 +465,7 @@ class TestTime(unittest.TestCase):
     def test_parse_nested_simple(self):
         aPattern = tp.parse_string("[[ a b [c d]]]")
         self.assertEqual(len(aPattern._components), 3)
-        self.assertIsInstance(aPattern._components[2]._value, Pattern)
+        self.assertIsInstance(aPattern._components[2]._event, Pattern)
 
     def test_parse_parallel_nested(self):
         aPattern = tp.parse_string("[[ a b , [c d] e]]")
