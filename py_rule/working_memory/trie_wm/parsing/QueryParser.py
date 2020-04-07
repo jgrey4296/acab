@@ -51,6 +51,9 @@ def build_query(toks):
     return (query._type, query)
 
 
+def build_assignment(toks):
+    return (toks[0][1], toks[1])
+
 # Build After comparison operators have been constructed:
 COMP_OP = pp.Forward()
 
@@ -89,7 +92,7 @@ query_statement = PU.STATEMENT_CONSTRUCTOR(PU.QUERY_HEAD, BASIC_SEN, clauses)
 constraints.setParseAction(build_constraint_list)
 clause.setParseAction(build_clause)
 clauses.setParseAction(build_query)
-assignment.setParseAction(lambda toks: (toks[0][1], toks[1]))
+assignment.setParseAction(build_assignment)
 
 # NAMING
 COMP_OP.setName("ComparisonOperators")
