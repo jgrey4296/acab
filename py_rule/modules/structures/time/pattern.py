@@ -21,32 +21,31 @@ logging = root_logger.getLogger(__name__)
 class Pattern(PyRuleValue):
     """ A Collection of Events """
 
-
     def __init__(self, a, vals=None, data=None, bindings=None):
-        super().__init__(type_str=PATTERN_S)
+        super().__init__(a.copy(), type_str=PATTERN_S, data=data)
         if vals is None:
             vals = []
-        self._arc = a.copy()
         # components :: [ Event || Pattern ]
         self._components = sorted(vals, key=lambda x: x.key())
         self._time_type = TIME_T.CLOCK
-        self._data = {}
         self._bindings = {}
         self._var_set = set()
         self._wrap_template = "[{}]"
         self._join_template = " "
 
-        if data is not None:
-            self._data.update(data)
         if bindings is not None:
             self._bindings.update(bindings)
         [self._var_set.update(x.var_set()) for x in self._components]
 
-    def __str__(self):
-        return "[{}]".format(self.pprint(True))
+    @property
+    def _arc(self):
+        return self._value
 
-    def __repr__(self):
-        return "Pattern({})".format(str(self))
+    # def __str__(self):
+    #     return "[{}]".format(self.pprint(True))
+
+    # def __repr__(self):
+    #     return "Pattern({})".format(str(self))
 
     def __call__(self, count, just_values=False, rnd_s=None):
         """ Query the Pattern for a given time """
@@ -83,15 +82,13 @@ class Pattern(PyRuleValue):
     def __iter__(self):
         return self.iter()
 
-    def value_string(self):
-        return self._name
     def handle_call_results(self, results, just_values=False):
         assert(all([isinstance(x, Event) for x in results]))
         if bool(self._bindings):
             results = [x.bind(self._bindings) for x in results]
 
         if just_values:
-            results = [x._value for x in results]
+            results = [x._event for x in results]
 
         return results
 

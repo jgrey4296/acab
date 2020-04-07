@@ -15,12 +15,18 @@ class Arc(PyRuleValue):
     """ A segment of rational time """
 
     def __init__(self, a, b):
-        super(Arc, self).__init__()
+        assert(a < b)
         assert(isinstance(a, Fraction))
         assert(isinstance(b, Fraction))
-        assert(a < b)
-        self._start = a
-        self._end = b
+        super(Arc, self).__init__((a,b))
+
+    @property
+    def _start(self):
+        return self._value[0]
+
+    @property
+    def _end(self):
+        return self._value[1]
 
     def __contains__(self, other):
         """ Test whether the given time is within bounds """
@@ -31,10 +37,10 @@ class Arc(PyRuleValue):
         assert(isinstance(test, Fraction))
         return self._start <= test < self._end
 
-    def __repr__(self):
-        """ A Readable format of an arc """
-        return "({}..{})".format(time_str(self._start),
-                                 time_str(self._end))
+    # def __repr__(self):
+    #     """ A Readable format of an arc """
+    #     return "({}..{})".format(time_str(self._start),
+    #                              time_str(self._end))
 
     def __eq__(self, other):
         assert(isinstance(other, Arc))

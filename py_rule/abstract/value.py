@@ -27,6 +27,7 @@ class PyRuleValue:
                                                 bool,
                                                 str,
                                                 list,
+                                                tuple,
                                                 Fraction,
                                                 Pattern,
                                                 PyRuleValue)))

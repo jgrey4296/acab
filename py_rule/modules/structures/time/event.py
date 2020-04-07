@@ -16,16 +16,24 @@ class Event(PyRuleValue):
     """ A Value active during a timespan """
 
     def __init__(self, a, b, value_is_pattern=False, params=None):
-        assert(isinstance(a, Arc))
-        super(Event, self).__init__()
-        self._arc = a.copy()
-        self._value = b
-        self._params = {util.BIND_S: False,
-                        util.OPT_S: False}
-        self._value_is_pattern = value_is_pattern
+        data = {util.BIND_S: False,
+                util.OPT_S: False}
         if params is not None:
-            self._params.update(params)
-        assert(not (value_is_pattern and self._params[util.BIND_S]))
+            data.update(params)
+
+        assert(isinstance(a, Arc))
+        assert(not (value_is_pattern and data[util.BIND_S]))
+        super(Event, self).__init__((a.copy(), b), data=data)
+
+        self._value_is_pattern = value_is_pattern
+
+    @property
+    def _arc(self):
+        return self._value[0]
+
+    @property
+    def _event(self):
+        return self._value[1]
 
     def __call__(self, count, just_values=False, rnd_s=None):
         """ Get a list of events given a time """
@@ -34,7 +42,7 @@ class Event(PyRuleValue):
                 event_range = self._arc.size()
                 offset_count = count - self._arc._start
                 scaled_count = offset_count / event_range
-                return self._value(scaled_count, just_values, rnd_s)
+                return self._event(scaled_count, just_values, rnd_s)
             else:
                 return [self]
         return []
@@ -42,27 +50,28 @@ class Event(PyRuleValue):
     def __contains__(self, other):
         return other in self._arc
 
-    def __str__(self):
-        return self.pprint(True)
+    # def __str__(self):
+    #     return self.pprint(True)
 
-    def __repr__(self):
-        return "{} :: {}".format(str(self._value), str(self._arc))
+    # def __repr__(self):
+    #     return "{} :: {}".format(str(self._event), str(self._arc))
 
     def __getitem__(self, val):
         """ event[x] """
-        return self._params[val]
+        return self._data[val]
 
     def copy(self, deep=False):
         if deep:
-            val = self._value.copy(True)
+            val = self._event.copy(True)
         else:
-            val = self._value
+            val = self._event
 
-        return Event(self._arc, val, self._value_is_pattern, self._params)
+        return Event(self._arc, val, self._value_is_pattern, self._data)
 
     def set_arc(self, arc):
         assert(isinstance(arc, Arc))
-        self._arc = arc.copy()
+        new_value = (arc.copy(), self._event)
+        self._value = new_value
         return self
 
     def base(self):
@@ -71,7 +80,7 @@ class Event(PyRuleValue):
         size = self._arc.size()
         if self._value_is_pattern:
             time_list += [(x * size) - self._arc._start
-                          for x in self._value.base()]
+                          for x in self._event.base()]
         return set(time_list)
 
     def key(self):
@@ -83,7 +92,7 @@ class Event(PyRuleValue):
         fmt_str = "⤒{} "
         if not start:
             fmt_str = "{}⤓"
-        return fmt_str.format(str(self._value))
+        return fmt_str.format(str(self._event))
 
     def pprint(self, wrap=False):
         head = ""
@@ -93,28 +102,33 @@ class Event(PyRuleValue):
         if self._params[util.OPT_S]:
             tail = "?"
         if self._value_is_pattern:
-            return "{}{}".format(self._value.pprint(wrap), tail)
+            return "{}{}".format(self._event.pprint(wrap), tail)
         else:
-            return "{}{}{}".format(head, str(self._value), tail)
+            return "{}{}{}".format(head, str(self._event), tail)
 
     def is_pure(self):
         """ Where purity is defined as being a simple
         value, not a Pattern
         Currently this is equivalent to being a string
         """
-        return isinstance(self._value, str)
+        return isinstance(self._event, str)
 
     def bind(self, bindings):
         assert(self.is_pure())
-        copied = self.copy()
-        if self._params[util.BIND_S] and self._value in bindings:
-            copied._value = bindings[self._value]
+        event = self._event
+        if self._data[util.BIND_S] and self._event in bindings:
+            event = bindings[self._event]
+
+        copied = Event(self._arc,
+                       event,
+                       value_is_pattern=self._value_is_pattern,
+                       params=self._data)
         return copied
 
     def var_set(self):
         if self._value_is_pattern:
-            return self._value.var_set()
-        elif self._params[util.BIND_S]:
-            return set(self._value)
+            return self._event.var_set()
+        elif self._data[util.BIND_S]:
+            return set(self._event)
         else:
             return []
