@@ -81,7 +81,7 @@ class PyRuleValue:
         elif self._name is not None:
             return self._name
         else:
-            return str(self._value)
+            return self._value
 
 
     def copy(self):
