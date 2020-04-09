@@ -33,16 +33,11 @@ class PyRuleValue:
                                                 PyRuleValue)))
         assert value_type_verify, type(value)
 
-        self._type = util.NAME_S
         self._uuid = uuid1()
         self._name = None
         self._value = value
         self._path = None
 
-        # Vars are *not* nodes, they are just strings
-        # This is because they serve only one purpose,
-        # and constructing nodes in abstract.parsing.utils
-        # would be complicated
         self._vars = []
         self._tags = set()
         self._data = {}
@@ -74,8 +69,6 @@ class PyRuleValue:
     def __hash__(self):
         return hash(str(self))
 
-    def pprint(self, **kwargs):
-        return PrU.print_value(self, **kwargs)
 
     @property
     def name(self):
@@ -86,10 +79,25 @@ class PyRuleValue:
         else:
             return self._value
 
+    @property
+    def is_var(self):
+        return self._data[util.BIND_S] is not False
+
+    @property
+    def is_at_var(self):
+        return self._data[util.BIND_S] == util.AT_BIND_S
+
+    @property
+    def type(self):
+        return self._data[util.VALUE_TYPE_S]
+
 
     def copy(self):
         """ Data needs to be able to be copied """
-        raise NotImplementedError()
+        return PyRuleValue(self._value, type_str=self.type,
+                           data=self._data, params=self._vars,
+                           tags=self._tags, name=self._name)
+
 
     def bind(self, bindings):
         """ Data needs to be able to bind a dictionary
@@ -109,13 +117,13 @@ class PyRuleValue:
         """ Apply a value onto the leaf of a path.
         (eg: rules, typedefs etc), use abstract.parsing.util.STATEMENT_CONSTRUCTOR
         which will call this to apply the location name, and type variables """
-        assert(isinstance(path, PyRuleValue) and path._type == util.SEN_S)
+        assert(isinstance(path, PyRuleValue) and path.type == util.SEN_S)
         node = path[-1]
         self._name = node.name
         self._path = path
 
         node._value                   = self
-        node._data[util.VALUE_TYPE_S] = self._type
+        node._data[util.VALUE_TYPE_S] = self.type
         node._data[util.BIND_S]       = False
 
         if tvars is not None:
@@ -138,3 +146,6 @@ class PyRuleValue:
     def set_data(self, data):
         if data is not None:
             self._data.update(data)
+
+    def pprint(self, **kwargs):
+        return PrU.print_value(self, **kwargs)
