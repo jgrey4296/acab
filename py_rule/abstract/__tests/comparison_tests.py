@@ -27,7 +27,7 @@ class ComparisonTests(unittest.TestCase):
     def test_var_set(self):
         bind = PyRuleNode("an_input", data={util.BIND_S: True})
         comp = Comparison("Test", [bind])
-        var_set = comp.var_set()
+        var_set = comp.var_set
         self.assertTrue("an_input" in var_set['in'])
 
 

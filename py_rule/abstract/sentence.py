@@ -50,6 +50,16 @@ class Sentence(PyRuleValue):
     def words(self):
         return self._value
 
+    @property
+    def var_set(self):
+        obj = super(Sentence, self).var_set
+        for w in self.words:
+            temp = w.var_set
+            obj['in'].update(temp['in'])
+            obj['out'].update(temp['out'])
+
+        return obj
+
 
     def expand_bindings(self, bindings):
         """ Given a dictionary of bindings, reify the sentence,
@@ -96,15 +106,6 @@ class Sentence(PyRuleValue):
         for word in other:
             assert(isinstance(word, PyRuleNode))
             self._value.append(other)
-
-    def var_set(self):
-        obj = super(Sentence, self).var_set()
-        for w in self.words:
-            temp = w.var_set()
-            obj['in'].update(temp['in'])
-            obj['out'].update(temp['out'])
-
-        return obj
 
     def pprint(self, **kwargs):
         return PrU.print_sequence(self, **kwargs)

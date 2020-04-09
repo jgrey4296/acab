@@ -32,6 +32,17 @@ class TypeInstance(Type):
         """ Operator to form a partial order over all types """
         raise NotImplementedError()
 
+
+    @property
+    def var_set(self):
+        obj = super(TypeInstance, self).var_set
+        if isinstance(self._name, PyRuleValue):
+            name_set = self._name.var_set
+            obj['in'].update(name_set['in'])
+            obj['in'].update(name_set['out'])
+        return obj
+
+
     def build_type_declaration(self, the_dict):
         """ Given a type instance and a dictionary
         of values for variables, build a monotyped instance
@@ -50,14 +61,6 @@ class TypeInstance(Type):
                 assert(isinstance(x, TypeInstance))
                 new_args.append(x)
         return TypeInstance(self._value, new_args)
-
-    def var_set(self):
-        obj = super(TypeInstance, self).var_set()
-        if isinstance(self._name, PyRuleValue):
-            name_set = self._name.var_set()
-            obj['in'].update(name_set['in'])
-            obj['in'].update(name_set['out'])
-        return obj
 
     def copy(self):
         return TypeInstance(self._value, args=self.vars)

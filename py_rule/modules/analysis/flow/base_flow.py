@@ -20,6 +20,13 @@ class FlowBase(PyRuleValue):
         output that can be re-parsed """
         raise NotImplementedError()
 
+
+    @property
+    def var_set(self):
+        """ Data needs to be able to report internal variables """
+        raise NotImplementedError()
+
+
     def copy(self):
         """ Data needs to be able to be copied """
         raise NotImplementedError()
@@ -29,10 +36,6 @@ class FlowBase(PyRuleValue):
         of values to internal variables """
         raise NotImplementedError()
 
-    def var_set(self):
-        """ Data needs to be able to report internal variables """
-        raise NotImplementedError()
-
 
 class FlowSource(FlowBase):
     """ A Source Node in a Flow Graph """
@@ -40,11 +43,13 @@ class FlowSource(FlowBase):
     def __init__(self):
         return
 
+
 class FlowTransport(FlowBase):
     """ An Intermediary Node in a Flow Graph """
 
     def __init__(self):
         return
+
 
 class FlowSink(FlowBase):
     """ A Sink Node in a Flow Graph """

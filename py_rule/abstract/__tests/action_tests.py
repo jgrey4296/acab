@@ -30,7 +30,7 @@ class ActionTests(unittest.TestCase):
     def test_var_set(self):
         param = PyRuleNode("test", data={util.BIND_S: True})
         action = ActionComponent("testOp", [Sentence([param])])
-        var_set = action.var_set()
+        var_set = action.var_set
         self.assertTrue("test" in var_set['in'])
 
     @unittest.skip("TODO")

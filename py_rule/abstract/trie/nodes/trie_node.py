@@ -30,9 +30,9 @@ class TrieNode(PyRuleNode):
         betas = []
         regexs = []
         for c in comps:
-            if c.is_regex_test():
+            if c.is_regex_test:
                 regexs.append(c)
-            elif c.is_alpha_test():
+            elif c.is_alpha_test:
                 alphas.append(c)
             else:
                 betas.append(c)

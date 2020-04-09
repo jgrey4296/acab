@@ -29,7 +29,7 @@ class TransformTests(unittest.TestCase):
         param = PyRuleNode("input", data={util.BIND_S: True})
         outbind = PyRuleNode("output", data={util.BIND_S: True})
         transform = TransformComponent("TestOp", [param], rebind=outbind)
-        var_set = transform.var_set()
+        var_set = transform.var_set
         self.assertTrue("input" in var_set['in'])
         self.assertTrue("output" in var_set['out'])
 

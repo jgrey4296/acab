@@ -33,6 +33,28 @@ class PyRuleNode(PyRuleValue):
         return iter(self._children.values())
 
 
+    @property
+    def var_set(self):
+        obj = super(PyRuleNode, self).var_set
+        if isinstance(self._value, PyRuleValue):
+            val_set = self._value.var_set
+            obj['in'].update(val_set['in'])
+            obj['out'].update(val_set['out'])
+
+        #add to 'out' if node is a binding
+        if self.is_var:
+            obj['out'].add(self.name)
+
+        #add annotations to 'in'
+        for v in self._data.values():
+            if isinstance(v, PyRuleValue):
+                tempobj = v.var_set
+                obj['in'].update(tempobj['in'])
+                obj['out'].update(tempobj['out'])
+
+        return obj
+
+
     def add_child(self, node):
         assert(isinstance(node, PyRuleNode))
         self._children[node.name] = node
@@ -99,26 +121,6 @@ class PyRuleNode(PyRuleValue):
         else:
             return (new_data, self)
 
-
-    def var_set(self):
-        obj = super(PyRuleNode, self).var_set()
-        if isinstance(self._value, PyRuleValue):
-            val_set = self._value.var_set()
-            obj['in'].update(val_set['in'])
-            obj['out'].update(val_set['out'])
-
-        #add to 'out' if node is a binding
-        if self.is_var:
-            obj['out'].add(self.name)
-
-        #add annotations to 'in'
-        for v in self._data.values():
-            if isinstance(v, PyRuleValue):
-                tempobj = v.var_set()
-                obj['in'].update(tempobj['in'])
-                obj['out'].update(tempobj['out'])
-
-        return obj
 
     def set_parent(self, parent):
         assert(isinstance(parent, PyRuleNode))

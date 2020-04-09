@@ -27,6 +27,17 @@ class TypeDefinition(Type):
     def structure(self):
         return self._value
 
+    @property
+    def var_set(self):
+        obj = super(TypeDefinition, self).var_set
+        for s in self.structure:
+            temp = s.var_set
+            obj['in'].update(temp['in'])
+            obj['out'].update(temp['out'])
+
+        return obj
+
+
     def pprint(self, **kwargs):
         return PrU.print_statement(self, is_structured=True, **kwargs)
 
@@ -36,19 +47,10 @@ class TypeDefinition(Type):
             just_path[-1]._data[VALUE_TYPE_S] = NAME_S
         return TypeInstance(just_path, args=self.vars)
 
-    def var_set(self):
-        obj = super(TypeDefinition, self).var_set()
-        for s in self.structure:
-            temp = s.var_set()
-            obj['in'].update(temp['in'])
-            obj['out'].update(temp['out'])
-
-        return obj
-
     def verify(self):
         input_vars = set(self.vars)
         for s in self.structure:
-            temp = s.var_set()
+            temp = s.var_set
             input_vars.difference_update(temp['in'])
             input_vars.difference_update(temp['out'])
 

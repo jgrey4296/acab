@@ -56,15 +56,22 @@ class Comparison(ProductionComponent):
         self._value = op_str
 
 
+    @property
+    def var_set(self):
+        obj = super(Comparison, self).var_set
+        return {'in': obj['in'].union(obj['out']), 'out': set()}
+
+    @property
     def is_alpha_test(self):
         """ Return boolean of if test does not rely on other bindings """
         return bool(self._vars) and not self._vars[0].is_var
 
+    @property
     def is_regex_test(self):
         """ Return boolean of if test is a regular expression test """
         return self.op == "RegMatch"
 
-    
+
     def to_sentence(self, target=None):
         """ Create a comparison as a canonical sentence """
         # eg: 20(>30) -> > 20 30 -> bool
@@ -73,10 +80,6 @@ class Comparison(ProductionComponent):
             return Sentence([head] + self._vars)
         assert(isinstance(target, PyRuleNode))
         return Sentence([head, target] + self._vars)
-
-    def var_set(self):
-        obj = super(Comparison, self).var_set()
-        return {'in': obj['in'].union(obj['out']), 'out': set()}
 
     def copy(self):
         return Comparison(self.op, self._vars, type_str=self.type)

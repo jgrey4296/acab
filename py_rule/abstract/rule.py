@@ -33,6 +33,19 @@ class Rule(PyRuleValue):
         Rule.__count += 1
 
 
+    @property
+    def var_set(self):
+        obj = super(Rule, self).var_set
+        query_set = self._query.var_set
+        transform_set = self._transform.var_set
+        action_set = self._action.var_set
+
+        obj['in'].update(*[x['in'] for x in [query_set, transform_set, action_set]])
+        obj['out'].update(*[x['out'] for x in [query_set, transform_set, action_set]])
+
+        return obj
+
+
     def copy(self):
         query, action, transform = (None, None, None)
         if self._query is not None:
@@ -86,17 +99,6 @@ class Rule(PyRuleValue):
         new_rule._tags.update(self._tags)
 
         return new_rule
-
-    def var_set(self):
-        obj = super(Rule, self).var_set()
-        query_set = self._query.var_set()
-        transform_set = self._transform.var_set()
-        action_set = self._action.var_set()
-
-        obj['in'].update(*[x['in'] for x in [query_set, transform_set, action_set]])
-        obj['out'].update(*[x['out'] for x in [query_set, transform_set, action_set]])
-
-        return obj
 
     def pprint(self, **kwargs):
         return PrU.print_statement(self, **kwargs)

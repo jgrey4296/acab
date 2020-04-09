@@ -26,7 +26,7 @@ class PyRuleValueTests(unittest.TestCase):
 
     def test_var_set(self):
         value = PyRuleValue("test")
-        var_set = value.var_set()
+        var_set = value.var_set
         self.assertIsInstance(var_set, dict)
         self.assertTrue("in" in var_set)
         self.assertTrue("out" in var_set)
@@ -34,7 +34,7 @@ class PyRuleValueTests(unittest.TestCase):
     def test_var_set_with_vars(self):
         value = PyRuleValue("test")
         value._vars = ["a","b","c"]
-        var_set = value.var_set()
+        var_set = value.var_set
         self.assertTrue(all([x in var_set['in'] for x in ["a","b","c"]]))
 
     def test_apply_onto(self):

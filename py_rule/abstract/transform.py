@@ -71,11 +71,11 @@ class TransformComponent(PO.ProductionComponent):
         return Sentence([head] + self._vars[:] + [self._rebind])
 
     def var_set(self):
-        obj = super(TransformComponent, self).var_set()
+        obj = super(TransformComponent, self).var_set
         in_set = obj['out']
         out_set = set()
         if self._rebind is not None:
-            out_set.update(self._rebind.var_set()['out'])
+            out_set.update(self._rebind.var_set['out'])
         return {'in' : in_set, 'out': out_set}
 
 

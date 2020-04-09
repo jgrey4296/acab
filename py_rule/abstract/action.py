@@ -62,6 +62,12 @@ class ActionComponent(PO.ProductionComponent):
         self._value = op_str
 
 
+    @property
+    def var_set(self):
+        obj = super(ActionComponent, self).var_set
+        return {'in' : obj['in'].union(obj['out']), 'out': set()}
+
+
     def copy(self):
         return ActionComponent(self.op, params=self._vars, type_str=self.type)
 
@@ -106,10 +112,6 @@ class ActionComponent(PO.ProductionComponent):
         head = PyRuleNode(self.op, {util.OPERATOR_S : self})
         sen = Sentence([head] + self._vars[:])
         return sen
-
-    def var_set(self):
-        obj = super(ActionComponent, self).var_set()
-        return {'in' : obj['in'].union(obj['out']), 'out': set()}
 
     def pprint(self, **kwargs):
         return PrU.print_operator(self, wrap_vars=True, **kwargs)

@@ -112,20 +112,21 @@ class TimeEvent(BaseTime):
     def event(self):
         return self._event
 
-
-    def copy(self):
-        return self.__class__(self.arc, self.event, self._data, self.type)
-
+    @property
     def var_set(self):
         var_set = {'in' : set(), 'out': set()}
         if self.is_var:
             var_set['in'].add(self.event)
         elif isinstance(self.event, PyRuleValue):
-            update_set = self.event.var_set()
+            update_set = self.event.var_set
             var_set['in'].update(update_set['in'])
             var_set['out'].update(update_set['out'])
 
         return var_set
+
+
+    def copy(self):
+        return self.__class__(self.arc, self.event, self._data, self.type)
 
     def pprint(self, wrap=False):
         if isinstance(self._event, PyRuleValue):
@@ -226,6 +227,16 @@ class TimeContainer(BaseTime):
 
         return set(time_list)
 
+    @property
+    def var_set(self):
+        var_set = {'in': set(), 'out' : set()}
+        for x in self.events:
+            temp_set = x.var_set
+            var_set['in'].update(temp_set['in'])
+            var_set['out'].update(temp_set['out'])
+
+        return var_set
+
 
     def is_pure(self):
         """ Where purity is defined as being a simple
@@ -238,15 +249,6 @@ class TimeContainer(BaseTime):
         rebinds = [x.bind(bindings) for x in self.events]
         copied = self.__class__(self.arc, rebinds, self._data)
         return copied
-
-    def var_set(self):
-        var_set = {'in': set(), 'out' : set()}
-        for x in self.events:
-            temp_set = x.var_set()
-            var_set['in'].update(temp_set['in'])
-            var_set['out'].update(temp_set['out'])
-
-        return var_set
 
     def scale_time(self, count):
         pattern_range = self.size()

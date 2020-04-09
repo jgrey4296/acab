@@ -44,6 +44,16 @@ class ProductionComponent(PyRuleValue):
     def op(self):
         return self._value
 
+    @property
+    def var_set(self):
+        obj = super(ProductionComponent, self).var_set
+        for p in self._vars:
+            if isinstance(p, PyRuleValue):
+                tempobj = p.var_set
+                obj['in'].update(tempobj['in'])
+                obj['out'].update(tempobj['out'])
+        return obj
+
 
     def __refine_op_func(self, op_str):
         """ Replace the current op func set with a specific
@@ -63,16 +73,6 @@ class ProductionComponent(PyRuleValue):
     def verify(self):
         """ Complains if the operator is not a defined Operator Enum """
         raise NotImplementedError()
-
-    def var_set(self):
-        obj = super(ProductionComponent, self).var_set()
-        for p in self._vars:
-            if isinstance(p, PyRuleValue):
-                tempobj = p.var_set()
-                obj['in'].update(tempobj['in'])
-                obj['out'].update(tempobj['out'])
-        return obj
-
 
 
 class ProductionContainer(PyRuleValue):
@@ -99,6 +99,19 @@ class ProductionContainer(PyRuleValue):
     def clauses(self):
         return self._value
 
+    @property
+    def var_set(self):
+        """ Return a set of all bindings this container utilizes """
+        # ie: Query(a.b.$x? a.q.$w?).get_bindings() -> {'in': [], 'out': [x,w]}
+        # Action(+(a.b.$x), -(a.b.$w)).get_bindings() -> {'in': [x,w], 'out': []}
+        obj = super(ProductionContainer, self).var_set
+        for p in self.clauses:
+            if isinstance(p, PyRuleValue):
+                tempobj = p.var_set
+                obj['in'].update(tempobj['in'])
+                obj['out'].update(tempobj['out'])
+        return obj
+
 
     def to_sentences(self, target=None):
         return [x.to_sentence() for x in self.clauses]
@@ -112,18 +125,6 @@ class ProductionContainer(PyRuleValue):
 
     def copy(self):
         raise NotImplementedError()
-
-    def var_set(self):
-        """ Return a set of all bindings this container utilizes """
-        # ie: Query(a.b.$x? a.q.$w?).get_bindings() -> {'in': [], 'out': [x,w]}
-        # Action(+(a.b.$x), -(a.b.$w)).get_bindings() -> {'in': [x,w], 'out': []}
-        obj = super(ProductionContainer, self).var_set()
-        for p in self.clauses:
-            if isinstance(p, PyRuleValue):
-                tempobj = p.var_set()
-                obj['in'].update(tempobj['in'])
-                obj['out'].update(tempobj['out'])
-        return obj
 
     def pprint(self, **kwargs):
         return PrU.print_container(self, join_str="\n", **kwargs)
