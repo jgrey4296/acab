@@ -13,9 +13,8 @@ import logging as root_logger
 
 from py_rule.modules.structures.time.util import OPT_S
 
-from .arc import Arc
-from .event import Event
-from .pattern import Pattern, PatternChoice, PatternPar
+from .time_core import TimeEvent, TimeContainer
+from .pattern import PatternChoice, PatternPar
 
 logging = root_logger.getLogger(__name__)
 
@@ -35,11 +34,12 @@ END_MATCHES = {
 
 def construct_pattern_simple(orig_tokens):
     """ orig_tokens::[(value | pattern, data) | CTOR_ACT]
+    Stack based parser
     create a new pattern, detecting as necessary parallels
     and choices
     """
     final_pattern_data = {OPT_S: False}
-    patt_type = Pattern
+    patt_type = TimeContainer
     # TODO: detect different pattern types?
     tokens = orig_tokens[0][:]
 
@@ -72,22 +72,20 @@ def construct_pattern_simple(orig_tokens):
     patterns = []
     for ph in pattern_phs:
         ph_len = len(ph)
-        new_pattern = Pattern(Arc(t(0, 1), t(1, 1)),
-                              [Event(Arc(t(i, ph_len),
-                                         t(i+1, ph_len)),
-                                     v,
-                                     isinstance(v, Pattern),
-                                     d) for i, (v, d) in enumerate(ph)])
+        new_pattern = TimeContainer(((t(0, 1), t(1, 1))),
+                              [TimeEvent((t(i, ph_len),
+                                          t(i+1, ph_len)),
+                                         v, d) for i, (v, d) in enumerate(ph)])
         patterns.append(new_pattern)
 
     # wrap in main pattern
     final_pattern = None
-    if patt_type == Pattern:
+    if patt_type == TimeContainer:
         final_pattern = patterns[0]
     elif len(patterns) == 1:
-        final_pattern = patt_type(patterns[0]._arc,
-                                  patterns[0]._components)
+        final_pattern = patt_type(patterns[0].arc,
+                                  patterns[0].events)
 
     elif len(patterns) > 1:
-        final_pattern = patt_type(Arc(t(0, 1), t(1, 1)), patterns)
+        final_pattern = patt_type((t(0, 1), t(1, 1)), patterns)
     return (final_pattern, final_pattern_data)

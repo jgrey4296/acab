@@ -13,6 +13,7 @@ logging = root_logger.getLogger(__name__)
 
 
 def make_valbind(tokens):
+    # TODO: replace this with a pyrule value
     data = {BIND_S: False,
             OPT_S: False,
             VALUE_TYPE_S: NAME_S}
@@ -31,12 +32,12 @@ def make_valbind(tokens):
 
 # Base Syntax
 QUESTION = PU.QMARK.setResultsName(OPT_S)
-TILDE = PU.s(PU.TILDE)
-COMMA = PU.COMMA.copy()
-OBRACKET = PU.OBRACKET.copy()
-CBRACKET = PU.CBRACKET.copy()
-LESS = PU.LESS.copy()
-MORE = PU.MORE.copy()
+TILDE = PU.TILDE
+COMMA = PU.COMMA
+OBRACKET = PU.OBRACKET
+CBRACKET = PU.CBRACKET
+LESS = PU.LESS
+MORE = PU.MORE
 
 acts = pp.Or([COMMA, PU.COLON, TILDE])
 
@@ -80,6 +81,6 @@ closers.setName("TimeClosers")
 # parse_point = main_pattern.ignore(PU.COMMENT)
 parse_point = main_pattern
 
-def parse_string(s):
+def parseString(s):
     """ The primary access point """
     return parse_point.parseString(s)[0][1]

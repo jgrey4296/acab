@@ -13,7 +13,7 @@ class PatternIterator:
 
     def __init__(self, pattern, just_values=True, rnd_s=None, cycles=1, count=None):
         self._pattern = pattern
-        self._denominator = self._pattern.denominator()
+        self._denominator = self._pattern.denominator
         self._position = 0
         self._just_values = just_values
         self._rnd_state = rnd_s
