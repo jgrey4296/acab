@@ -288,3 +288,36 @@
   
            # self.push_typing_context()
 
+* TODO [[/Volumes/documents/github/py_rule/py_rule/util.py::56][integrate UUIDs]]
+  <2020-04-02 Thu>
+  
+UUID_HEAD        = "υ"
+
+* TODO [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/nodes/fact_node.py::33][update face_node copying/construction]]
+ <2020-04-03 Fri>
+  
+           # TODO add original tags, vars and possible update type_str
+
+* TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/printing/util.py::61][refactor regex parsing to hold params as well]]
+ <2020-04-04 Sat>
+
+* TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/agenda.py::13][Make Agenda a subclass of production component?]]
+  <2020-04-04 Sat>
+  
+# TODO: make this a subclass of production component?
+
+* TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/layer.py::25][Make Layer a subclass of production container]]
+  <2020-04-04 Sat>
+  
+class Layer:
+
+* TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/pipeline.py::17][Make pipeline a subclass of production container]]
+  <2020-04-04 Sat>
+  
+class Pipeline:
+
+* TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/rule.py::15][Make rule a subclass of production container]]
+  <2020-04-04 Sat>
+  
+class Rule(PyRuleValue):
+

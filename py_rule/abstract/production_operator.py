@@ -69,6 +69,7 @@ class ProductionComponent(PyRuleValue):
         op_fix = [0 if len(self._vars) < 2 else 1][0]
         return PrU.print_operator(self, op_fix=op_fix, **kwargs)
 
+
 class ProductionContainer(PyRuleValue):
 
     def __init__(self, clauses, params=None, type_str=STATEMENT_S):
