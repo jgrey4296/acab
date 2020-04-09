@@ -49,6 +49,16 @@ class TransformComponent(PO.ProductionComponent):
         return op_func(*params, ctx)
 
 
+    @property
+    def var_set(self):
+        obj = super(TransformComponent, self).var_set
+        in_set = obj['out']
+        out_set = set()
+        if self._rebind is not None:
+            out_set.update(self._rebind.var_set['out'])
+        return {'in' : in_set, 'out': out_set}
+
+
     def verify(self):
         """ Complains if the operator is not a defined Operator Enum """
         if self.op not in TransformOp.op_list[len(self._vars)]:
@@ -71,14 +81,6 @@ class TransformComponent(PO.ProductionComponent):
     def to_sentence(self, target=None):
         head = PyRuleNode(self.op, {util.OPERATOR_S : self})
         return Sentence([head] + self._vars[:] + [self._rebind])
-
-    def var_set(self):
-        obj = super(TransformComponent, self).var_set
-        in_set = obj['out']
-        out_set = set()
-        if self._rebind is not None:
-            out_set.update(self._rebind.var_set['out'])
-        return {'in' : in_set, 'out': out_set}
 
 
 class Transform(PO.ProductionContainer):
