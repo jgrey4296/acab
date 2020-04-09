@@ -53,7 +53,7 @@ class NumberTransformTests(unittest.TestCase):
         self.assertIsInstance(result, transform.TransformComponent)
         self.assertEqual(result.op, "MulOp")
         self.assertEqual(result._vars[0]._value, "y")
-        self.assertTrue(result._vars[0]._data[KBU.BIND_S])
+        self.assertTrue(result._vars[0].is_var)
         self.assertEqual(result._vars[1]._value, 20)
         self.assertIsNotNone(result._rebind)
         self.assertEqual(result._rebind._value, 'z')

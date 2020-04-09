@@ -128,4 +128,6 @@ class FactNode(TrieNode):
         """ Set the Nodes value to be one retrieved
         from passed in bindings """
         assert(self._value in data)
+        assert(util.BIND_S in self._data and self._data[util.BIND_S])
         self._value = data[self._value]
+        self._data[util.BIND_S] = False

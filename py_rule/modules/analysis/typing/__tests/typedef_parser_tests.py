@@ -39,7 +39,7 @@ class TypeDef_ParserTests(unittest.TestCase):
     def test_basic_typedef(self):
         result = TD.parseString("σ::blah.x:\na.b.c\n\nend")[0]
         self.assertIsInstance(result[-1]._value, TypeDefinition)
-        self.assertEqual(result[-1]._data[util.BIND_S], False)
+        self.assertEqual(result[-1].is_var, False)
         self.assertEqual(result[-1]._data[util.VALUE_TYPE_S], TU.TYPE_DEF_S)
         self.assertEqual(len(result[-1]._value._vars), 0)
         self.assertEqual(result[-1].name, "x")

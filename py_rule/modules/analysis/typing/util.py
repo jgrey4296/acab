@@ -25,4 +25,4 @@ def has_equivalent_vars_pred(node):
 
 
 def is_var(node):
-    return util.BIND_S in node._data and node._data[util.BIND_S]
+    return node.is_var

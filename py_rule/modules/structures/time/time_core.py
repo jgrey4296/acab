@@ -92,9 +92,7 @@ class TimeEvent(BaseTime):
     def __init__(self, arcTuple, event, data=None, type_str=util.TIME_EVENT_S):
         super(TimeEvent, self).__init__(arcTuple, data=data, type_str=type_str)
         self._event = event
-        assert(not (isinstance(event, TimeContainer)
-                    and util.BIND_S in self._data
-                    and self._data[util.BIND_S]))
+        assert(not (isinstance(event, TimeContainer) and self.is_var))
 
     def __call__(self, count, just_values=False, rnd_s=None):
         """ Get a list of events given a time """
@@ -116,11 +114,11 @@ class TimeEvent(BaseTime):
 
 
     def copy(self):
-        return self.__class__(self.arc, self.event, self._data, self._type)
+        return self.__class__(self.arc, self.event, self._data, self.type)
 
     def var_set(self):
         var_set = {'in' : set(), 'out': set()}
-        if util.BIND_S in self._data and self._data[util.BIND_S]:
+        if self.is_var:
             var_set['in'].add(self.event)
         elif isinstance(self.event, PyRuleValue):
             update_set = self.event.var_set()
@@ -135,7 +133,7 @@ class TimeEvent(BaseTime):
         else:
             value = str(self._event)
 
-        if util.BIND_S in self._data and self._data[util.BIND_S]:
+        if self.is_var:
             value = PrU._wrap_var(value)
         if util.OPT_S in self._data and self._data[util.OPT_S]:
             value = PrU._wrap_question(value)
@@ -145,7 +143,7 @@ class TimeEvent(BaseTime):
     def bind(self, bindings):
         assert(self.is_pure())
         copied = self.copy()
-        if self._data[util.BIND_S] and self.event in bindings:
+        if self.is_var and self.event in bindings:
             copied._event = bindings[self.event]
             copied._data[util.BIND_S] = False
 

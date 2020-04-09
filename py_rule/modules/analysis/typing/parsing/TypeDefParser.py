@@ -19,7 +19,7 @@ PARAM_SEN_PLURAL = pp.delimitedList(HOTLOAD_PARAM_SEN, delim=PU.DELIM)
 
 def make_type_def(toks):
     type_def = TypeDefinition(toks[:])
-    return (type_def._type, type_def)
+    return (type_def.type, type_def)
 
 def make_op_def(toks):
     syntax_bind = None
@@ -28,7 +28,7 @@ def make_op_def(toks):
 
     op_def = OperatorDefinition(toks[TYU.STRUCT_S][0], syntax_bind)
 
-    return (op_def._type, op_def)
+    return (op_def.type, op_def)
 
 
 

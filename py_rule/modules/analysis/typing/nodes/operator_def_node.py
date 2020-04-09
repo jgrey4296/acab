@@ -89,7 +89,7 @@ class OperatorDefTrieNode(TypeDefTrieNode):
 
 
 def pattern_match_type_signature(head, available):
-    if head._type is None:
+    if head.type is None:
         return available
 
     return [x for x in available if x._type_instance is None

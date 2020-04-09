@@ -48,7 +48,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
     def test_param_fact_string(self):
         result = FP.PARAM_SEN.parseString('a.b.$x')[0]
         self.assertIsNotNone(result)
-        self.assertTrue(result[-1]._data[KBU.BIND_S])
+        self.assertTrue(result[-1].is_var)
 
     def test_exclusion_operator_parsing(self):
         result = FP.parseString('a!b!c')[0]
@@ -62,11 +62,11 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
     def test_bind_addition_to_node_recognition(self):
         result = FP.parseString('$a.$b!$c')[0]
         for x in result:
-            self.assertTrue(x._data[KBU.BIND_S])
+            self.assertTrue(x.is_var)
 
     def test_fact_leading_bind(self):
         result = FP.parseString('$x.a.b.c')[0]
-        self.assertTrue(result[0]._data[KBU.BIND_S])
+        self.assertTrue(result[0].is_var)
 
     def test_fact_str_equal(self):
         actions = ["a.b.c",
