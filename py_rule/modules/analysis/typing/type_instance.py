@@ -19,18 +19,6 @@ class TypeInstance(Type):
     def __hash__(self):
         return hash(str(self._name))
 
-    # def __repr__(self):
-    #     args = ""
-    #     if self._vars:
-    #         args = "({})".format(", ".join(repr(x) for x in self._vars))
-    #     return "(::{}{})".format(self._name, args)
-
-    # def __str__(self):
-    #     return str(self._name)
-
-    def copy(self):
-        return TypeInstance(self._value, args=self.vars)
-
     def __eq__(self, other):
         # TODO: match inheritance
         if not other:

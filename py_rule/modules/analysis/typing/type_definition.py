@@ -27,19 +27,6 @@ class TypeDefinition(Type):
     def structure(self):
         return self._value
 
-    # def __str__(self):
-    #     result = self._name
-    #     result += "(::{}):\n".format(STRUCTURE_S)
-    #     if bool(self._vars):
-    #         result += "\t | {} | \n".format(", ".join([str(x) for x in self._vars]))
-    #     result += "\t"
-    #     result += "\n\t".join([str(x) for x in self._structure])
-    #     result += "\nEND"
-    #     return result
-
-    # def __repr__(self):
-    #     return "Type Def({})".format(str(self))
-
     def pprint(self, **kwargs):
         return PrU.print_statement(self, is_structured=True, **kwargs)
 
