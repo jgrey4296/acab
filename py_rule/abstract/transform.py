@@ -84,9 +84,12 @@ class Transform(PO.ProductionContainer):
     """
 
     # have min and max bounds
-    def __init__(self, clauses, type_str=util.TRANSFORM_S):
+    def __init__(self, clauses, type_str=util.TRANSFORM_S, **kwargs):
         assert(all([isinstance(x, TransformComponent) for x in clauses]))
-        super(Transform, self).__init__(clauses, type_str=type_str)
+        super(Transform, self).__init__(clauses, type_str=type_str, **kwargs)
+
+    def copy(self):
+        return Transform([x.copy() for x in self.clauses], type_str=self.type)
 
     def get_input_requirements(self):
         # return the set of input bound names

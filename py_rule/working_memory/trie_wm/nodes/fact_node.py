@@ -1,6 +1,7 @@
 """ The Core Trie-Node, stores information, meta data """
 import logging as root_logger
 
+from py_rule.abstract.value import PyRuleValue
 from py_rule.abstract.trie.nodes.trie_node import TrieNode
 from py_rule.working_memory.trie_wm import util as WMU
 from py_rule.abstract.printing import util as PrU
@@ -34,14 +35,12 @@ class FactNode(TrieNode):
         return new_node
 
 
-    def __init__(self, value, data=None):
+    def __init__(self, value, data=None, type_str=None, tags=None, name=None):
         assert isinstance(data[WMU.OPERATOR_S], WMU.EXOP), data
-        assert WMU.BIND_S in data, data
-        assert WMU.VALUE_TYPE_S in data, data
         if data is None:
             data = WMU.DEFAULT_NODE_DATA.copy()
 
-        super().__init__(value, data)
+        super().__init__(value, data, type_str=type_str, tags=tags, name=name)
 
         self._dirty = True
         self._cached = []
@@ -62,8 +61,16 @@ class FactNode(TrieNode):
 
     def copy(self):
         assert(not bool(self._children))
-        # TODO: deeper copy
-        return FactNode(self._value, data=self._data.copy())
+        val = self._value
+        if isinstance(val, PyRuleValue):
+            val = self._value.copy()
+
+        copied = FactNode(val,
+                          data=self._data,
+                          type_str=self.type,
+                          tags=self._tags,
+                          name=self._name)
+        return copied
 
     def insert(self, fact):
         """ Insert A Node as a Child of this Node """

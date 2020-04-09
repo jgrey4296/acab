@@ -71,5 +71,8 @@ class TypeInstance(Type):
             obj['in'].update(name_set['out'])
         return obj
 
+    def copy(self):
+        return TypeInstance(self._value, args=self.vars)
+
     def pprint(self, **kwargs):
         return PrU.print_value(self, **kwargs)

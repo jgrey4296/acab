@@ -32,14 +32,14 @@ class ProductionOperator(PyRuleValue):
 class ProductionComponent(PyRuleValue):
     """ Pairs a an operator with some bindings """
 
-    def __init__(self, op_str, params, type_str=None):
-        super().__init__(op_str, params=params, type_str=type_str)
+    def __init__(self, op_str, params, type_str=None, **kwargs):
+        super().__init__(op_str, params=params, type_str=type_str, **kwargs)
 
     def __call__(self):
         raise NotImplementedError()
 
     def copy(self):
-        return self.__class__(self._op, self._vars, type_str=self._type)
+        return self.__class__(self.op, self._vars, type_str=self.type)
 
     def to_sentence(self, target=None):
         raise NotImplementedError()
@@ -104,7 +104,9 @@ class ProductionContainer(PyRuleValue):
         raise NotImplementedError()
 
     def copy(self):
-        return self.__class__([x.copy() for x in self.clauses], type_str=self._type)
+        return self.__class__([x.copy() for x in self.clauses],
+                              params=self._vars,
+                              type_str=self.type)
 
     def var_set(self):
         """ Return a set of all bindings this container utilizes """

@@ -53,3 +53,5 @@ class Query(PO.ProductionContainer):
         total_sentences = self.clauses + constraint_sentences
         return total_sentences
 
+    def copy(self):
+        return Query(self.clauses, type_str=self.type)

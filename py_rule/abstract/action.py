@@ -5,6 +5,7 @@ perform, along with associated enums, and IR data structures
 import logging as root_logger
 
 from py_rule import util
+from py_rule.abstract.value import PyRuleValue
 from py_rule.abstract.node import PyRuleNode
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.printing import util as PrU
@@ -40,10 +41,10 @@ class ActionComponent(PO.ProductionComponent):
     and a list of values """
 
 
-    def __init__(self, op_str, params):
+    def __init__(self, op_str, params=None, **kwargs):
         """ Create an action with an operator and values """
         assert all([isinstance(x, Sentence) for x in params]), params
-        super(ActionComponent, self).__init__(op_str, params)
+        super(ActionComponent, self).__init__(op_str, params=params, **kwargs)
 
     def __call__(self, engine, data):
         # lookup op
@@ -59,6 +60,9 @@ class ActionComponent(PO.ProductionComponent):
         op func, used for type refinement """
         assert(op_str in ActionOp.op_list)
         self._value = op_str
+
+    def copy(self):
+        return ActionComponent(self.op, params=self._vars, type_str=self.type)
 
     def verify(self):
         """ Check the Action is using a valid operator (ACT enum) """
@@ -113,10 +117,11 @@ class ActionComponent(PO.ProductionComponent):
 class Action(PO.ProductionContainer):
     """ A Container for Action Specifications """
 
-    def __init__(self, clauses, params=None, type_str=util.ACTION_S):
+    def __init__(self, clauses, params=None, type_str=util.ACTION_S, **kwargs):
         super(Action, self).__init__(clauses,
                                      params=params,
-                                     type_str=type_str)
+                                     type_str=type_str,
+                                     **kwargs)
 
     def __str__(self):
         raise DeprecationWarning()
@@ -131,8 +136,7 @@ class Action(PO.ProductionContainer):
         return Action(exp_clauses, params=self._vars)
 
     def copy(self):
-        copied = super(Action, self).copy()
-        copied._vars += self._vars[:]
+        copied = Action(self.clauses, params=self._vars, type_str=self.type)
         return copied
 
     def to_sentences(self, target=None):

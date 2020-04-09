@@ -75,3 +75,6 @@ class Comparison(ProductionComponent):
     def var_set(self):
         obj = super(Comparison, self).var_set()
         return {'in': obj['in'].union(obj['out']), 'out': set()}
+
+    def copy(self):
+        return Comparison(self.op, self._vars, type_str=self.type)
