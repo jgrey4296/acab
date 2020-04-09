@@ -47,8 +47,10 @@ class PyRuleValue:
         self._tags = set()
         self._data = {}
 
+        self._data.update(util.DEFAULT_VALUE_DATA)
+
         if type_str is not None:
-            self._type = type_str
+            self._data[util.VALUE_TYPE_S] = type_str
         if data is not None:
             self._data.update(data)
         if params is not None:

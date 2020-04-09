@@ -60,3 +60,9 @@ AT_VAR_SYMBOL_S   = "@"
 TAG_SYMBOL_S      = "#"
 NEGATION_SYMBOL_S = "~"
 QUERY_SYMBOL_S    = "?"
+
+# Default Data for any value:
+DEFAULT_VALUE_DATA = {
+    BIND_S       : False,
+    VALUE_TYPE_S : NAME_S
+    }
