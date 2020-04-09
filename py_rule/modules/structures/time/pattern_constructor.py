@@ -73,9 +73,9 @@ def construct_pattern_simple(orig_tokens):
     for ph in pattern_phs:
         ph_len = len(ph)
         new_pattern = TimeContainer(((t(0, 1), t(1, 1))),
-                              [TimeEvent((t(i, ph_len),
-                                          t(i+1, ph_len)),
-                                         v, d) for i, (v, d) in enumerate(ph)])
+                                    [TimeEvent((t(i, ph_len),
+                                                t(i+1, ph_len)),
+                                               v, d) for i, (v, d) in enumerate(ph)])
         patterns.append(new_pattern)
 
     # wrap in main pattern

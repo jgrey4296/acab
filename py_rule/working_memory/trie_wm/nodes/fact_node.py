@@ -29,7 +29,7 @@ class FactNode(TrieNode):
         temp_data = {}
         temp_data.update(node._data)
         if WMU.OPERATOR_S not in node._data:
-            temp_data._data[WMU.OPERATOR_S] = WMU.EXOP.DOT
+            temp_data[WMU.OPERATOR_S] = WMU.EXOP.DOT
         new_node = FactNode(node._value, data=temp_data)
         # TODO add original tags, vars and possible update type_str
         return new_node
@@ -129,6 +129,6 @@ class FactNode(TrieNode):
         """ Set the Nodes value to be one retrieved
         from passed in bindings """
         assert(self._value in data)
-        assert(util.BIND_S in self._data and self._data[util.BIND_S])
+        assert(WMU.BIND_S in self._data and self._data[WMU.BIND_S])
         self._value = data[self._value]
-        self._data[util.BIND_S] = False
+        self._data[WMU.BIND_S] = False

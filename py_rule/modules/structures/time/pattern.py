@@ -2,16 +2,11 @@
 A Pattern collects events together and cycles them
 """
 import logging as root_logger
-from fractions import Fraction
-from functools import reduce
 from math import floor
 from random import Random
 
-from py_rule.abstract.value import PyRuleValue
+from .util import Time
 from py_rule.modules.structures.time.time_core import TimeContainer, TimeEvent
-
-from .pattern_iterator import PatternIterator
-from .util import TIME_T, Time, f_gcd, PATTERN_S
 
 logging = root_logger.getLogger(__name__)
 
@@ -24,7 +19,7 @@ class PatternSeq(TimeContainer):
         flat_vals = []
         for x in vals:
             if isinstance(x, PatternSeq):
-                flat_vals += x._components
+                flat_vals += x.events
             else:
                 flat_vals.append(x)
 
@@ -71,7 +66,7 @@ class PatternPar(TimeContainer):
         if headless:
             output = ""
 
-        collection = [x.visualise(True, base_count) for x in self._components]
+        collection = [x.visualise(True, base_count) for x in self.events]
         output += "/{}/\n".format(div_line).join(collection)
         return output
 

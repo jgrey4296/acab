@@ -80,6 +80,9 @@ class PyRuleValue:
             return self._value
 
     @property
+    def value(self):
+        return self._value
+    @property
     def is_var(self):
         return self._data[util.BIND_S] is not False
 

@@ -16,21 +16,6 @@ class OperatorDefinition(TypeDefinition):
         super().__init__([structure], type_str=OP_DEF_S)
         self._func_name = sugar_syntax
 
-    # def __str__(self):
-    #     result = FUNC_S + "::"
-    #     result += str(self._name)
-    #     if bool(self._vars):
-    #         result += "({})".format(", ".join([str(x) for x in self._vars]))
-    #     result += ":"
-    #     result += str(self._structure[0])
-    #     if self._func_name is not None:
-    #         result += " => {}".format(self._func_name)
-
-    #     return result
-
-    # def __repr__(self):
-    #     return "Type Def({})".format(str(self))
-
     def pprint(self, **kwargs):
         return PrU.print_statement(self, is_structured=True, **kwargs)
 

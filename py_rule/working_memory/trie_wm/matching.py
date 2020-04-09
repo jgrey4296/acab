@@ -64,7 +64,7 @@ def existing_bind_match(a, b, betas, regexs, data):
         if data[a.name] in b._children \
            and test_betas(data[a.name], betas, data):
             new_data, new_node = b._children[data[a.name]].test_regexs_for_matching(regexs,
-                                                                                              data)
+                                                                                    data)
     return (tested, new_node, new_data)
 
 def create_new_bindings(a, b, alphas, betas, regexs, data):

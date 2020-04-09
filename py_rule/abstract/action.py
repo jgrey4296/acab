@@ -77,6 +77,7 @@ class ActionComponent(PO.ProductionComponent):
             raise AttributeError("Unrecognised Action: {}".format(self.op))
 
     def get_values(self, data):
+
         """ Output a list of bindings from this action """
         output = []
         for x in self._vars:
@@ -126,10 +127,6 @@ class Action(PO.ProductionContainer):
                                      type_str=type_str,
                                      **kwargs)
 
-    def __str__(self):
-        raise DeprecationWarning()
-        return ", ".join([str(x) for x in self.clauses])
-
 
     def expand_bindings(self, bindings):
         """ Expand stored bindings """
@@ -147,4 +144,3 @@ class Action(PO.ProductionContainer):
         # needs to return both the action sentences,
         # AND the action operators in canonical form
         raise NotImplementedError()
-

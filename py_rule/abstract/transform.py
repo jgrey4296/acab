@@ -24,6 +24,7 @@ class TransformOp(PO.ProductionOperator):
         if self.op_str not in TransformOp.op_list[num_params]:
             TransformOp.op_list[num_params][self.op_str] = self
 
+
     def __call__(self, a, b):
         raise NotImplementedError("Abstract method needs to be implemented")
 
@@ -34,6 +35,7 @@ class TransformComponent(PO.ProductionComponent):
         assert(not any([util.AT_BIND_S in x._data for x in params]))
         super(TransformComponent, self).__init__(op_str, params)
         self._rebind = rebind
+
 
     def __refine_op_func(self, op_str):
         """ Replace the current op func set with a specific
@@ -95,9 +97,8 @@ class Transform(PO.ProductionContainer):
 
     def get_input_requirements(self):
         # return the set of input bound names
-        return [y._value for x in self._clauses for y in x._vars if y.is_var]
+        return [y._value for x in self.clauses for y in x._vars if y.is_var]
 
     def get_output_spec(self):
         # return the set of output bound names
-        return [x._rebind._value for x in self._clauses]
-
+        return [x._rebind._value for x in self.clauses]
