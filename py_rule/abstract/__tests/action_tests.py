@@ -8,6 +8,7 @@ from py_rule.abstract.action import ActionComponent
 from py_rule import util
 from py_rule.abstract.sentence import Sentence
 
+
 class ActionTests(unittest.TestCase):
 
     @classmethod
@@ -32,7 +33,10 @@ class ActionTests(unittest.TestCase):
         var_set = action.var_set()
         self.assertTrue("test" in var_set['in'])
 
-
+    @unittest.skip("TODO")
+    def test_verify(self):
+        # create an action with numerous action components,
+        return
 
 if __name__ == "__main__":
     #run python $filename to use this logging setup

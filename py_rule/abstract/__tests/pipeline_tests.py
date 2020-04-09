@@ -18,7 +18,21 @@ class PipelineTests(unittest.TestCase):
 
     #----------
     #use testcase snippets
+    @unittest.skip("TODO")
+    def test_construction(self):
+        return
 
+    @unittest.skip("TODO")
+    def test_verify(self):
+        return
+
+    @unittest.skip("TODO")
+    def test_call(self):
+        return
+
+    @unittest.skip("TODO")
+    def test_constraints(self):
+        return
 
 if __name__ == "__main__":
     #run python $filename to use this logging setup
