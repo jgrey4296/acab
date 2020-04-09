@@ -40,7 +40,7 @@ def non_bind_value_match(a, b, betas, regexs, data):
     assert(isinstance(b, TrieNode))
     tested = False
     new_node, new_data = (None, None)
-    if not a._data[util.BIND_S]:
+    if not a.is_var:
         logging.info("Not Bind: {}|{}".format(str(a), b._children.keys()))
         tested = True
         if a in b:  # and test_betas(a._value, betas,data):

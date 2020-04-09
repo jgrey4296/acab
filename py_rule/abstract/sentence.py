@@ -15,12 +15,10 @@ class Sentence(PyRuleValue):
     The Basic Sentence Class: Essentially a List of Words
     """
 
-    def __init__(self, words=None,
-                 params=None, tags=None,
-                 data=None):
+    def __init__(self, words=None, params=None, tags=None, data=None):
         if words is not None:
-            assert(all([isinstance(x, PyRuleNode) for x in words]))
-            assert(not any([AT_BIND_S in x._data for x in words[1:]]))
+            assert(all([isinstance(x, PyRuleNode) for x in words])), words
+            assert(not any([x.is_at_var for x in words[1:]]))
         else:
             words = []
 
@@ -59,12 +57,12 @@ class Sentence(PyRuleValue):
         output = []
 
         for word in self:
-            if not (word._data[BIND_S] and word._value in bindings):
+            if not word.is_var:
                 # early expand if a plain node
                 output.append(word.copy())
                 continue
 
-            if AT_BIND_S in word._data:
+            if word.is_at_var:
                 retrieved = bindings[AT_BIND_S + word._value]
             else:
                 retrieved = bindings[word._value]
@@ -77,8 +75,6 @@ class Sentence(PyRuleValue):
             copied_node = word.copy()
             copied_node._value = retrieved
             copied_node._data[BIND_S] = False
-            if AT_BIND_S in copied_node._data:
-                del copied_node._data[AT_BIND_S]
             output.append(copied_node)
 
         return Sentence(output,

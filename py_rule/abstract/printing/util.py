@@ -44,9 +44,9 @@ def print_value(value, with_op=False):
         val = TYPE_WRAPS[type_str](val)
 
     # Wrap binding
-    if util.AT_BIND_S in value._data and value._data[util.AT_BIND_S]:
+    if value.is_at_var:
         val = _wrap_at_var(val)
-    elif util.BIND_S in value._data and value._data[util.BIND_S]:
+    elif value.is_var:
         val = _wrap_var(val)
 
     # Wrap constraints

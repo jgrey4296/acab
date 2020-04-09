@@ -48,7 +48,7 @@ def build_clause(toks):
 
 def build_query(toks):
     query = Query(toks[:])
-    return (query._type, query)
+    return (query.type, query)
 
 
 def build_assignment(toks):

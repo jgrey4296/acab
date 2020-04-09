@@ -29,7 +29,7 @@ def build_action(toks):
     clauses = [x if isinstance(x, action.ActionComponent) else action.ActionComponent('ActionAdd', [x]) for x in toks]
     act = action.Action(clauses)
 
-    return (act._type, act)
+    return (act.type, act)
 
 
 # fact string with the option of binds

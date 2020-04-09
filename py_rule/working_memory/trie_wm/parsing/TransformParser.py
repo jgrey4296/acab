@@ -56,7 +56,7 @@ def addRebind(toks):
 
 def build_transform(toks):
     trans = Transform(toks[:])
-    return (trans._type, trans)
+    return (trans.type, trans)
 
 # Hotloaded Transform Operators
 BINARY_TRANS_OP = pp.Forward()

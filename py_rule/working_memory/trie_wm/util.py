@@ -43,11 +43,8 @@ EXOP = Enum('EXOP', 'DOT EX')
 
 PrU.setup_modal_lookups({EXOP.DOT : ".", EXOP.EX : "!" })
 
-
 DEFAULT_NODE_DATA = {
-    BIND_S : False,
     OPERATOR_S : EXOP.DOT,
-    VALUE_TYPE_S : NAME_S
     }
 
 

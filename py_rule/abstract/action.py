@@ -73,8 +73,8 @@ class ActionComponent(PO.ProductionComponent):
                 output.append(x.expand_bindings(data))
             elif isinstance(x, list):  # and all([isinstance(y, Node) for y in x]):
                 output.append([y.bind(data) for y in x])
-            elif hasattr(x, '_data') and x._data[util.BIND_S]:
-                if util.AT_BIND_S in x._data:
+            elif isinstance(x, PyRuleValue) and x.is_var:
+                if x.is_at_var:
                     output.append(data[util.AT_BIND_S + x._value])
                 else:
                     output.append(data[x._value])

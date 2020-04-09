@@ -43,7 +43,7 @@ class TransformComponent(PO.ProductionComponent):
 
     def __call__(self, ctx):
         op_func = TransformOp.op_list[len(self._vars)][self.op]
-        params = [ctx[y._value] if y._data[util.BIND_S] else y._value for y in self._vars]
+        params = [ctx[y._value] if y.is_var else y._value for y in self._vars]
         return op_func(*params, ctx)
 
     def verify(self):
@@ -62,7 +62,7 @@ class TransformComponent(PO.ProductionComponent):
         copied = TransformComponent(self.op,
                                     self._vars,
                                     rebind=self._rebind,
-                                    type_str=self._type)
+                                    type_str=self.type)
         return copied
 
     def to_sentence(self, target=None):
@@ -90,7 +90,7 @@ class Transform(PO.ProductionContainer):
 
     def get_input_requirements(self):
         # return the set of input bound names
-        return [y._value for x in self._clauses for y in x._vars if y._data[util.BIND_S]]
+        return [y._value for x in self._clauses for y in x._vars if y.is_var]
 
     def get_output_spec(self):
         # return the set of output bound names

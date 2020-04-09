@@ -48,7 +48,7 @@ def build_rule(toks):
 
 
     rule = TrieRule(c, action=a, transform=t)
-    return (rule._type, rule)
+    return (rule.type, rule)
 
 
 conditions = PU.N(WMU.CONDITION_S, QP.clauses + PU.gap)

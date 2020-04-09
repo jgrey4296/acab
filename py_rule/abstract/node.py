@@ -2,7 +2,6 @@
 from re import search
 import weakref
 
-from py_rule.util import BIND_S, AT_BIND_S
 from py_rule import util
 from py_rule.abstract.printing import util as PrU
 
@@ -11,11 +10,13 @@ from .value import PyRuleValue
 class PyRuleNode(PyRuleValue):
     """ The Abstract Node Class """
 
-    def __init__(self, value, data=None, type_str=None):
+    def __init__(self, value, data=None, type_str=None, tags=None, name=None):
 
         super(PyRuleNode, self).__init__(value,
                                          data=data,
-                                         type_str=type_str)
+                                         type_str=type_str,
+                                         tags=tags,
+                                         name=name)
         self._parent = None
         self._children = {}
 
@@ -107,8 +108,7 @@ class PyRuleNode(PyRuleValue):
             obj['out'].update(val_set['out'])
 
         #add to 'out' if node is a binding
-        if (BIND_S in self._data and self._data[BIND_S]) \
-           or (AT_BIND_S in self._data and self._data[AT_BIND_S]):
+        if self.is_var:
             obj['out'].add(self.name)
 
         #add annotations to 'in'
