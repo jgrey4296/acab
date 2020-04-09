@@ -129,8 +129,8 @@ def print_statement(statement, is_structured=False, has_end=True):
     val = statement._name
     #TODO handle operator definition by controlling head printing
     # ie: λ:: name(vars): x.y.z => blah
-    if statement._type in STATEMENT_LOOKUPS:
-        val = _wrap_statement_type(val, statement._type)
+    if statement.type in STATEMENT_LOOKUPS:
+        val = _wrap_statement_type(val, statement.type)
     val = _wrap_colon(val)
 
     if bool(statement._vars):
