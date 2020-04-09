@@ -32,6 +32,9 @@ class Engine:
         if modules is not None:
             self._working_memory.add_modules(modules)
 
+        # Populate Agenda Keywords
+        Agenda.construct_subclass_tree()
+
         self._working_memory.build_operator_parser()
 
         if path is None:
