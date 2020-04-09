@@ -1,21 +1,9 @@
 * Todos file
 ** Functionality
 *** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/production_operator.py::107][Implement ProductionContainer.get_bindings]]
-   <2020-03-30 Mon>
-  
-     def get_bindings(self):
+    <2020-03-30 Mon>
 
-*** DONE [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/trie_working_memory.py::64][Fix Working memory Query]]
-   CLOSED: [2020-03-26 Thu 23:16]
-   <2020-03-26 Thu>
-
-   def query(self, s):
-
-*** DONE [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/parsing/ActionParser.py::38][Allow default assertion of sentences in actions]]                        :parsing:
-    CLOSED: [2020-03-28 Sat 03:19]
-    <2020-03-27 Fri>
-
-    action_component = PU.N(WMU.OPERATOR_S, HOTLOAD_OPERATORS) \
+    def get_bindings(self):
 
 *** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/parsing/util.py::81][Build Arglist properly]]                                                 :parsing:
     <2020-03-26 Thu>
@@ -41,12 +29,6 @@
     <2020-03-26 Thu>
 
     self._infix = infix
-
-*** DONE [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/nodes/operator_def_node.py::63][Implement operator refinement]]
-    CLOSED: [2020-03-28 Sat 00:01]
-    <2020-03-26 Thu>
-
-    TODO refine the type of the operator at head
 
 *** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/type_checker.py::139][Implement operator type checking]]                                       :typing:
     <2020-03-26 Thu>
@@ -91,11 +73,29 @@
 *** TODO [[/Volumes/documents/github/py_rule/py_rule/agendas/parsing/::4][Write Parser for Agendas]]                                               :parsing:
     <2020-03-26 Thu>
 
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/trie_working_memory.py::64][Fix Working memory Query]]
+    CLOSED: [2020-03-26 Thu 23:16]
+    <2020-03-26 Thu>
+
+    def query(self, s):
+
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/parsing/ActionParser.py::38][Allow default assertion of sentences in actions]]                        :parsing:
+    CLOSED: [2020-03-28 Sat 03:19]
+    <2020-03-27 Fri>
+
+    action_component = PU.N(WMU.OPERATOR_S, HOTLOAD_OPERATORS) \
+
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/nodes/operator_def_node.py::63][Implement operator refinement]]
+    CLOSED: [2020-03-28 Sat 00:01]
+    <2020-03-26 Thu>
+
+    TODO refine the type of the operator at head
+
 ** Improvements
 *** TODO [[/Volumes/documents/github/py_rule/py_rule/engines/__tests/perform_transform_tests.py::42][Make transforms that rebind to themselves fail]]
-   <2020-03-28 Sat>
-  
-         stub_transform = TP.parseString('$a AddOp 20 -> $y, $b MulOp 2 -> $z')
+    <2020-03-28 Sat>
+
+    stub_transform = TP.parseString('$a AddOp 20 -> $y, $b MulOp 2 -> $z')
 
 *** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/operators/action/action_operators.py::12][Add additional action operators]]                                        :api:
     <2020-03-26 Thu>
@@ -151,12 +151,6 @@
 
     -rw-r--r--  1 johngrey staff  470 Mar 25 22:11 cycle_agenda.py
 
-*** DONE [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/trie_working_memory.py::43][Possibly adapt working memory add to retract negated sentences]]
-    CLOSED: [2020-03-28 Sat 00:08]
-    <2020-03-26 Thu>
-
-    TODO Retract negated sentences
-
 *** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/production_operator.py::17][Possibly use subclass DFS for operator name registration]]               :performance:
     <2020-03-26 Thu>
 
@@ -172,9 +166,72 @@
 
     def __str__(self):
 
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/parsing/util.py::78][use pp.removeQuotes on string and regex parsing]]
+    <2020-03-31 Tue>
+
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/values/numbers/__tests/number_query_tests.py::126][should rule binding expansion effect transforms?]]
+    <2020-03-30 Mon>
+
+    result = RP.parseString("ρ::a.rule:\n$y.b.$z?\n\n$x + 2 -> $y\n\n+($y)\n\nend")[0][-1]
+
+    # Remove quotes from around strings:
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/agenda.py::13][Make Agenda a subclass of production component?]]
+    <2020-04-04 Sat>
+
+    # TODO: make this a subclass of production component?
+
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/layer.py::25][Make Layer a subclass of production container]]
+    <2020-04-04 Sat>
+
+    class Layer:
+
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/pipeline.py::17][Make pipeline a subclass of production container]]
+    <2020-04-04 Sat>
+
+    class Pipeline:
+
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/rule.py::15][Make rule a subclass of production container]]
+    <2020-04-04 Sat>
+
+    class Rule(PyRuleValue):
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/parsing/FactParser.py::93][integrate sentence statement]]
+    <2020-04-01 Wed>
+
+    # Statement to specify multiple sub sentences
+
+
+    ** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/comparison.py::81][replace magic string with a constant]]
+    <2020-04-02 Thu>
+
+    return self._op == "RegMatch"
+
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/type_checker.py::98][possibly add push and pop typing contexts]]
+    <2020-04-02 Thu>
+
+    # self.push_typing_context()
+
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/util.py::56][integrate UUIDs]]
+    <2020-04-02 Thu>
+
+    UUID_HEAD        = "υ"
+
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/nodes/fact_node.py::33][update face_node copying/construction]]
+    <2020-04-03 Fri>
+
+    # TODO add original tags, vars and possible update type_str
+
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/printing/util.py::61][refactor regex parsing to hold params as well]]
+    <2020-04-04 Sat>
+
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/trie_working_memory.py::43][Possibly adapt working memory add to retract negated sentences]]
+    CLOSED: [2020-03-28 Sat 00:08]
+    <2020-03-26 Thu>
+
+    TODO Retract negated sentences
+
 ** Testing
 *** TODO [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/__tests/trie_wm_tests.py::126][Decide on semantics of switching exclusion operators]]
-    
+
     TODO: make this so you can't switch between . and ! ?
 
 *** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/__tests/typing_tests.py::523][Expand polytype testing]]
@@ -195,36 +252,6 @@
     <2020-03-26 Thu>
 
     class Engine_Logic_Tests(unittest.TestCase):
-
-*** DONE [[/Volumes/documents/github/py_rule/py_rule/engines/__tests/perform_transform_tests.py::25][Implement Transform performance tests]]
-    CLOSED: [2020-03-28 Sat 01:10]
-    <2020-03-26 Thu>
-
-    @unittest.skip("Broken")
-
-*** DONE [[/Volumes/documents/github/py_rule/py_rule/engines/__tests/perform_transform_tests.py::3][Implement Transform rebind tests]]
-    CLOSED: [2020-03-28 Sat 01:11]
-    <2020-03-26 Thu>
-
-    TODO implement transform rebind
-
-*** DONE [[/Volumes/documents/github/py_rule/py_rule/engines/__tests/perform_transform_tests.py::2][Implement Transform tests]]
-    CLOSED: [2020-03-28 Sat 01:11]
-    <2020-03-26 Thu>
-
-    TODO Implement transform tests
-
-*** DONE [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/nodes/fact_node.py::147][Move regex testing out of fact node]]
-    CLOSED: [2020-03-28 Sat 19:44]
-    <2020-03-26 Thu>
-
-    def test_regexs_for_matching(self, regexs, currentData, preupdate=None):
-
-*** DONE [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/__tests/typing_tests.py::106][Re-add variable merging]]
-    CLOSED: [2020-03-28 Sat 19:44]
-    <2020-03-26 Thu>
-
-    def test_basic_inference(self):
 
 *** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/io/network/unity_server.py::10][Test and Check Unity Server]]
     <2020-03-26 Thu>
@@ -263,61 +290,33 @@
 
 **** Test
 
-* TODO [[/Volumes/documents/github/py_rule/py_rule/modules/values/numbers/__tests/number_query_tests.py::126][should rule binding expansion effect transforms?]]
- <2020-03-30 Mon>
-  
-       result = RP.parseString("ρ::a.rule:\n$y.b.$z?\n\n$x + 2 -> $y\n\n+($y)\n\nend")[0][-1]
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/engines/__tests/perform_transform_tests.py::25][Implement Transform performance tests]]
+    CLOSED: [2020-03-28 Sat 01:10]
+    <2020-03-26 Thu>
 
-* TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/parsing/util.py::78][use pp.removeQuotes on string and regex parsing]]
-  <2020-03-31 Tue>
-  
-# Remove quotes from around strings:
+    @unittest.skip("Broken")
 
-* TODO [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/parsing/FactParser.py::93][integrate sentence statement]]
-  <2020-04-01 Wed>
-  
-# Statement to specify multiple sub sentences
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/engines/__tests/perform_transform_tests.py::3][Implement Transform rebind tests]]
+    CLOSED: [2020-03-28 Sat 01:11]
+    <2020-03-26 Thu>
 
-* TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/comparison.py::81][replace magic string with a constant]]
- <2020-04-02 Thu>
-  
-       return self._op == "RegMatch"
+    TODO implement transform rebind
 
-* TODO [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/type_checker.py::98][possibly add push and pop typing contexts]]
- <2020-04-02 Thu>
-  
-           # self.push_typing_context()
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/engines/__tests/perform_transform_tests.py::2][Implement Transform tests]]
+    CLOSED: [2020-03-28 Sat 01:11]
+    <2020-03-26 Thu>
 
-* TODO [[/Volumes/documents/github/py_rule/py_rule/util.py::56][integrate UUIDs]]
-  <2020-04-02 Thu>
-  
-UUID_HEAD        = "υ"
+    TODO Implement transform tests
 
-* TODO [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/nodes/fact_node.py::33][update face_node copying/construction]]
- <2020-04-03 Fri>
-  
-           # TODO add original tags, vars and possible update type_str
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/nodes/fact_node.py::147][Move regex testing out of fact node]]
+    CLOSED: [2020-03-28 Sat 19:44]
+    <2020-03-26 Thu>
 
-* TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/printing/util.py::61][refactor regex parsing to hold params as well]]
- <2020-04-04 Sat>
+    def test_regexs_for_matching(self, regexs, currentData, preupdate=None):
 
-* TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/agenda.py::13][Make Agenda a subclass of production component?]]
-  <2020-04-04 Sat>
-  
-# TODO: make this a subclass of production component?
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/__tests/typing_tests.py::106][Re-add variable merging]]
+    CLOSED: [2020-03-28 Sat 19:44]
+    <2020-03-26 Thu>
 
-* TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/layer.py::25][Make Layer a subclass of production container]]
-  <2020-04-04 Sat>
-  
-class Layer:
-
-* TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/pipeline.py::17][Make pipeline a subclass of production container]]
-  <2020-04-04 Sat>
-  
-class Pipeline:
-
-* TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/rule.py::15][Make rule a subclass of production container]]
-  <2020-04-04 Sat>
-  
-class Rule(PyRuleValue):
+    def test_basic_inference(self):
 
