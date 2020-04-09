@@ -32,6 +32,7 @@ class Rule(PyRuleValue):
         self._action    = action
         Rule.__count += 1
 
+
     def copy(self):
         query, action, transform = (None, None, None)
         if self._query is not None:
@@ -45,7 +46,6 @@ class Rule(PyRuleValue):
                     action=action,
                     transform=transform,
                     name=self._name)
-
 
     def is_coherent(self):  # can raise an Exception from verify_op
         """ Verify that the outputs of the query match the

@@ -28,6 +28,18 @@ class Pipeline:
         self._interface_in  = []
         self._interface_out = []
 
+    def __call__(self, engine, tick):
+        """ Run this pipeline on the given engine for a tick """
+        raise NotImplementedError()
+
+    # TODO input constraints
+    def input_constraints(self):
+        raise NotImplementedError()
+
+    # TODO output constraints
+    def output_constraints(self):
+        raise NotImplementedError()
+
     def verify(self, engine):
         """ Verify the Pipeline:
         Check all Agendas exist,
@@ -43,16 +55,4 @@ class Pipeline:
 
         # TODO check module use
 
-        raise NotImplementedError()
-
-    def __call__(self, engine, tick):
-        """ Run this pipeline on the given engine for a tick """
-        raise NotImplementedError()
-
-    # TODO input constraints
-    def input_constraints(self):
-        raise NotImplementedError()
-
-    # TODO output constraints
-    def output_constraints(self):
         raise NotImplementedError()

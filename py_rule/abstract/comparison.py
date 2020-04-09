@@ -55,6 +55,7 @@ class Comparison(ProductionComponent):
         assert(op_str in CompOp.op_list)
         self._value = op_str
 
+
     def is_alpha_test(self):
         """ Return boolean of if test does not rely on other bindings """
         return bool(self._vars) and not self._vars[0].is_var
@@ -63,6 +64,7 @@ class Comparison(ProductionComponent):
         """ Return boolean of if test is a regular expression test """
         return self.op == "RegMatch"
 
+    
     def to_sentence(self, target=None):
         """ Create a comparison as a canonical sentence """
         # eg: 20(>30) -> > 20 30 -> bool

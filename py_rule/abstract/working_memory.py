@@ -12,6 +12,10 @@ class WorkingMemory:
         self._have_added_types = False
         self._have_built_operators = False
 
+    def __eq__(self, other):
+        raise NotImplementedError()
+
+
     def add_modules(self, mods):
         """ Add types into the parser """
         if self._have_added_types:
@@ -55,9 +59,6 @@ class WorkingMemory:
         self._build_operator_parser()
 
     # Methods to implement:
-    def __eq__(self, other):
-        raise NotImplementedError()
-
     def add(self, data):
         raise NotImplementedError()
 
@@ -66,6 +67,7 @@ class WorkingMemory:
 
     def query(self, data):
         raise NotImplementedError()
+
 
     def _insert_into_values_parser(self, parser):
         """ Inserts new value types that can be parsed in a sentence

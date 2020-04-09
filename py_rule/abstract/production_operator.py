@@ -24,6 +24,7 @@ class ProductionOperator(PyRuleValue):
     def __call__(self):
         raise NotImplementedError()
 
+
     @property
     def op_str(self):
         return self._value
@@ -38,8 +39,23 @@ class ProductionComponent(PyRuleValue):
     def __call__(self):
         raise NotImplementedError()
 
+
+    @property
+    def op(self):
+        return self._value
+
+
+    def __refine_op_func(self, op_str):
+        """ Replace the current op func set with a specific
+        op func, used for type refinement """
+        raise NotImplementedError()
+
+    def pprint(self, **kwargs):
+        op_fix = [0 if len(self._vars) < 2 else 1][0]
+        return PrU.print_operator(self, op_fix=op_fix, **kwargs)
+
     def copy(self):
-        return self.__class__(self.op, self._vars, type_str=self.type)
+        raise NotImplementedError()
 
     def to_sentence(self, target=None):
         raise NotImplementedError()
@@ -57,27 +73,12 @@ class ProductionComponent(PyRuleValue):
                 obj['out'].update(tempobj['out'])
         return obj
 
-    @property
-    def op(self):
-        return self._value
-    def __refine_op_func(self, op_str):
-        """ Replace the current op func set with a specific
-        op func, used for type refinement """
-        raise NotImplementedError()
-
-    def pprint(self, **kwargs):
-        op_fix = [0 if len(self._vars) < 2 else 1][0]
-        return PrU.print_operator(self, op_fix=op_fix, **kwargs)
 
 
 class ProductionContainer(PyRuleValue):
 
     def __init__(self, clauses, params=None, type_str=STATEMENT_S):
         super().__init__(clauses, params=params, type_str=type_str)
-
-    @property
-    def clauses(self):
-        return self._value
 
     def __len__(self):
         return len(self.clauses)
@@ -93,6 +94,12 @@ class ProductionContainer(PyRuleValue):
         for x in self.clauses:
             yield x
 
+
+    @property
+    def clauses(self):
+        return self._value
+
+
     def to_sentences(self, target=None):
         return [x.to_sentence() for x in self.clauses]
 
@@ -104,9 +111,7 @@ class ProductionContainer(PyRuleValue):
         raise NotImplementedError()
 
     def copy(self):
-        return self.__class__([x.copy() for x in self.clauses],
-                              params=self._vars,
-                              type_str=self.type)
+        raise NotImplementedError()
 
     def var_set(self):
         """ Return a set of all bindings this container utilizes """

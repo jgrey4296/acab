@@ -16,6 +16,7 @@ class Query(PO.ProductionContainer):
         assert(all([isinstance(x, Sentence) for x in clauses]))
         super(Query, self).__init__(clauses, type_str=type_str)
 
+
     def expand_bindings(self, bindings):
         """ Expand the individual clauses to have concrete values """
         assert(isinstance(bindings, dict))

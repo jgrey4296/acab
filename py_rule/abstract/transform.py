@@ -46,6 +46,7 @@ class TransformComponent(PO.ProductionComponent):
         params = [ctx[y._value] if y.is_var else y._value for y in self._vars]
         return op_func(*params, ctx)
 
+
     def verify(self):
         """ Complains if the operator is not a defined Operator Enum """
         if self.op not in TransformOp.op_list[len(self._vars)]:
@@ -87,6 +88,7 @@ class Transform(PO.ProductionContainer):
     def __init__(self, clauses, type_str=util.TRANSFORM_S, **kwargs):
         assert(all([isinstance(x, TransformComponent) for x in clauses]))
         super(Transform, self).__init__(clauses, type_str=type_str, **kwargs)
+
 
     def copy(self):
         return Transform([x.copy() for x in self.clauses], type_str=self.type)

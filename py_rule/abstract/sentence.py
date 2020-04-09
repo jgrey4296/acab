@@ -28,9 +28,6 @@ class Sentence(PyRuleValue):
                          tags=tags,
                          type_str=SEN_S)
 
-    @property
-    def words(self):
-        return self._value
     def __hash__(self):
         return super(Sentence, self).__hash__()
 
@@ -47,6 +44,12 @@ class Sentence(PyRuleValue):
 
     def __len__(self):
         return len(self.words)
+
+
+    @property
+    def words(self):
+        return self._value
+
 
     def expand_bindings(self, bindings):
         """ Given a dictionary of bindings, reify the sentence,

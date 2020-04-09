@@ -61,6 +61,7 @@ class ActionComponent(PO.ProductionComponent):
         assert(op_str in ActionOp.op_list)
         self._value = op_str
 
+
     def copy(self):
         return ActionComponent(self.op, params=self._vars, type_str=self.type)
 
@@ -126,6 +127,7 @@ class Action(PO.ProductionContainer):
     def __str__(self):
         raise DeprecationWarning()
         return ", ".join([str(x) for x in self.clauses])
+
 
     def expand_bindings(self, bindings):
         """ Expand stored bindings """

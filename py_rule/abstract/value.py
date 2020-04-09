@@ -98,7 +98,6 @@ class PyRuleValue:
                            data=self._data, params=self._vars,
                            tags=self._tags, name=self._name)
 
-
     def bind(self, bindings):
         """ Data needs to be able to bind a dictionary
         of values to internal variables """

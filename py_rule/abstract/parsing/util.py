@@ -46,7 +46,6 @@ CPAR      = s(pp.Literal(')'))
 QMARK     = s(pp.Literal('?'))
 SLASH     = s(pp.Literal('/'))
 DASH      = s(pp.Literal('-'))
-# Careful: This isn't suppressed
 TILDE     = s(pp.Literal('~'))
 OBRACKET  = s(pp.Literal('['))
 CBRACKET  = s(pp.Literal(']'))

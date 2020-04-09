@@ -29,6 +29,7 @@ class Trie:
     def __len__(self):
         return len(self.get_nodes())
 
+
     def query(self, path):
         current = self._root
         for x in path:

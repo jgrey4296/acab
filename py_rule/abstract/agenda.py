@@ -3,8 +3,6 @@ Agendas don't need to be parsable,
 they just need to be registered so
 layers and pipelines can be defined
 """
-
-
 from enum import Enum
 
 RELATION_E = Enum('Agenda_Relation', 'ONE2ONE ONE2MANY MANY2ONE MANY2MANY')

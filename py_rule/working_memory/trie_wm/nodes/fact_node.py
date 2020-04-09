@@ -112,6 +112,7 @@ class FactNode(TrieNode):
             copied._bind_to_value(bindings)
             return copied
 
+
     def _set_dirty_chain(self):
         """ Mark this Node as modified, up to the root """
         self._dirty = True

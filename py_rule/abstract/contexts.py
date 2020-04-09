@@ -42,6 +42,7 @@ class Contexts:
     def __bool__(self):
         return len(self._matches) > 0
 
+
     def append(self, *data):
         """ Add a number of matching possibilities into this set of contexts """
         assert(all([isinstance(x, tuple) for x in data]))
