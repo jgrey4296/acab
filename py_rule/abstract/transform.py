@@ -32,7 +32,7 @@ class TransformOp(PO.ProductionOperator):
 class TransformComponent(PO.ProductionComponent):
     """ Superclass of OperatorTransform. Holds an Operator """
     def __init__(self, op_str, params, rebind=None, type_str=None):
-        assert(not any([util.AT_BIND_S in x._data for x in params]))
+        assert(not any([x.is_at_var for x in params]))
         super(TransformComponent, self).__init__(op_str, params)
         self._rebind = rebind
 
