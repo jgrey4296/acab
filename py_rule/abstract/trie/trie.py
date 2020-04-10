@@ -30,6 +30,10 @@ class Trie:
         return len(self.get_nodes())
 
 
+    @property
+    def root(self):
+        return self._root
+
     def query(self, path):
         current = self._root
         for x in path:
@@ -109,11 +113,11 @@ class Trie:
         return "\n".join(output)
 
     def match_as_pattern(self, possible_matches, match_func):
-        """ Given a trie node of possible matches, return only actual matches,
+        """ Given a trie/node of possible matches, return only actual matches,
         Treating self as the pattern
         """
         if isinstance(possible_matches, Trie):
-            possible_matches = possible_matches._root
+            possible_matches = possible_matches.root
 
         if not isinstance(possible_matches, TrieNode):
             raise PyRuleBaseException()
@@ -121,7 +125,7 @@ class Trie:
         final_matches = []
         pattern_nodes = list(possible_matches._children.values())
         # (current pattern position, available choices, match state)
-        queue = [(x, pattern_nodes, []) for x in self._root._children.values()]
+        queue = [(x, pattern_nodes, []) for x in self.root._children.values()]
 
         while bool(queue):
             current, available_nodes, match_state = queue.pop(0)
