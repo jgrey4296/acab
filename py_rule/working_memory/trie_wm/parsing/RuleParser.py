@@ -57,7 +57,10 @@ actions    = PU.NG(WMU.ACTION_S, AP.actions + PU.component_gap)
 
 rule_body = PU.op(conditions) + PU.op(transforms) + PU.op(actions)
 
-rule = PU.STATEMENT_CONSTRUCTOR(PU.RULE_HEAD, FP.BASIC_SEN, rule_body, args=False)
+rule = PU.STATEMENT_CONSTRUCTOR(PU.RULE_HEAD,
+                                FP.BASIC_SEN,
+                                rule_body,
+                                args=False)
 
 rules = pp.delimitedList(rule, delim=PU.emptyLine)
 

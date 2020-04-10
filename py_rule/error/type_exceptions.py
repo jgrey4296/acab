@@ -19,7 +19,6 @@ class TypeRedefinitionException(PyRuleTypingException):
 
     __repr__ = __str__
 
-
 class TypeConflictException(PyRuleTypingException):
 
     def __init__(self, env_type, new_type, stmt):
@@ -33,7 +32,6 @@ class TypeConflictException(PyRuleTypingException):
                                                                      self._stmt)
 
     __repr__ = __str__
-
 
 class TypeUndefinedException(PyRuleTypingException):
 

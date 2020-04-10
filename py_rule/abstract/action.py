@@ -77,13 +77,12 @@ class ActionComponent(PO.ProductionComponent):
             raise AttributeError("Unrecognised Action: {}".format(self.op))
 
     def get_values(self, data):
-
         """ Output a list of bindings from this action """
         output = []
         for x in self._vars:
             if isinstance(x, Sentence):
                 output.append(x.expand_bindings(data))
-            elif isinstance(x, list):  # and all([isinstance(y, Node) for y in x]):
+            elif isinstance(x, list):
                 output.append([y.bind(data) for y in x])
             elif isinstance(x, PyRuleValue) and x.is_var:
                 if x.is_at_var:

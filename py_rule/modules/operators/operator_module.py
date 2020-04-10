@@ -8,6 +8,7 @@ from .delta.delta_adjust import DeltaOperator
 from .interleave.interleave import InterleaveOperator
 from .set.set_ops import SetOperator
 
+
 class OperatorSpec(ModuleSpecification):
     """ The Module Spec for base operators """
 

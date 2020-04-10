@@ -11,7 +11,6 @@ class CycleAgenda(Agenda):
 
     def __call__(self, proposals, engine, **kwargs):
 
-
         self._count += 1
         if self._count > self._cycle_size:
             self._count = 0
