@@ -91,8 +91,10 @@ PARAM_SEN = PU.op(PU.NEGATION_SYMBOL) + pp.NotAny(PU.END) \
 PARAM_SEN_PLURAL = pp.delimitedList(PARAM_SEN, delim=PU.DELIM)
 
 # Statement to specify multiple sub sentences
-SEN_STATEMENT = PU.STATEMENT_CONSTRUCTOR(PU.FACT_HEAD, PARAM_SEN, PARAM_SEN_PLURAL)
-
+SEN_STATEMENT = PU.STATEMENT_CONSTRUCTOR(PU.FACT_HEAD,
+                                         PARAM_SEN,
+                                         PARAM_SEN_PLURAL,
+                                         parse_fn=PU.construct_multi_sentences)
 
 # Actions
 PARAM_SEN.setParseAction(PU.construct_sentence)
