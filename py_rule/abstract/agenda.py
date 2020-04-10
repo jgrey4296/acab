@@ -4,6 +4,7 @@ they just need to be registered so
 layers and pipelines can be defined
 """
 from enum import Enum
+from py_rule.util import NAME_S, STATEMENT_S, TYPE_DEC_S
 
 RELATION_E = Enum('Agenda_Relation', 'ONE2ONE ONE2MANY MANY2ONE MANY2MANY')
 
@@ -46,3 +47,21 @@ class Agenda:
         """ Take the proposals, transform them in some way,
         then enact them on the engine """
         raise NotImplementedError()
+
+
+
+def make_agenda(toks):
+    agenda_name = toks[NAME_S][0]
+    agenda_setup_tuple = toks[STATEMENT_S][0]
+    assert(agenda_setup_tuple == "agenda_dict")
+
+    agenda_type = agenda_name[-1]._data[TYPE_DEC_S]
+    assert(agenda_type in Agenda.agenda_list)
+    # Get the agenda constructor
+    constructor = Agenda.agenda_list[agenda_type]
+
+    # make the agenda
+    the_agenda = constructor(the_dict)
+
+    toks[STATEMENT_S] = (the_agenda.type, the_agenda)
+    return toks
