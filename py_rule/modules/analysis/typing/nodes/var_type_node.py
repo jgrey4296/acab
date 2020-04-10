@@ -15,14 +15,6 @@ class VarTypeTrieNode(MonoTypedNode):
         self._nodes = set([])
         self._var_names = set([])
 
-    # def __repr__(self):
-    #     type_str = "0"
-    #     if self._type is not None:
-    #         type_str = repr(self._type)
-
-    #     return "VarType( {} ; {})".format(type_str, len(self._nodes))
-
-
 
     def add_node(self, node):
         assert(is_var(node._value))

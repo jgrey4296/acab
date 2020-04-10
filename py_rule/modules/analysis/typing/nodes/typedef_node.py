@@ -29,8 +29,6 @@ class TypeDefTrieNode(TrieNode):
         super().__init__(value)
         self._typedef_trie = None
 
-    # def __repr__(self):
-    #     return "TypeDefTrieNode({})".format(repr(self._value))
 
     def set_data(self, data):
         """ Overrides TrieNode.set_data.
@@ -88,6 +86,7 @@ class TypeDefTrieNode(TrieNode):
 
             logging.debug("----------")
         return newly_typed
+
 
     def _generate_polytype_bindings(self, usage_trie):
         """ Generate a temporary binding environment for the definition's
@@ -160,6 +159,7 @@ class TypeDefTrieNode(TrieNode):
                 queue_vals.append((new_child, new_usage_set))
 
         return queue_vals
+
 
     def _log_status(self, curr_def, curr_usage_set):
         curr_def_type = curr_def._type_instance

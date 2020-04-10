@@ -31,8 +31,6 @@ class OperatorDefTrieNode(TypeDefTrieNode):
         super().__init__(value)
         self._data[util.TYPE_DEF_S] = set()
 
-    def __repr__(self):
-        return "OperatorDefTrieNode({})".format(repr(self._value))
 
     def set_data(self, data):
         # Does not error about redefinition, intentionally"
