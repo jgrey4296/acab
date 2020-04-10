@@ -106,7 +106,8 @@
 
     def construct_num(toks):
 
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/trie/trie.py::12][Add WeakValueDict to Trie to provide direct access to nodes]]            :semantics:
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/abstract/trie/trie.py::12][Add WeakValueDict to Trie to provide direct access to nodes]]            :semantics:
+    CLOSED: [2020-04-10 Fri 20:52]
     <2020-03-26 Thu>
 
     def __init__(self, node_type=TrieNode):
@@ -141,7 +142,8 @@
 
     class Pattern(PyRuleValue):
 
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/value.py::13][Make PyRuleValue._name a GUID]]                                          :performance:
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/abstract/value.py::13][Make PyRuleValue._name a GUID]]                                          :performance:
+    CLOSED: [2020-04-10 Fri 20:52]
     <2020-03-26 Thu>
 
     self._name = "AnonValue"
@@ -161,7 +163,8 @@
 
     def to_sentence(self):
 
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/sentence.py::26][Update Sentence.__str__ ]]                                               :parsing:
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/abstract/sentence.py::26][Update Sentence.__str__ ]]                                               :parsing:
+    CLOSED: [2020-04-10 Fri 20:54]
     <2020-03-26 Thu>
 
     def __str__(self):
