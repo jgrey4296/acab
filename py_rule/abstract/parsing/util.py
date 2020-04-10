@@ -116,7 +116,13 @@ def construct_statement(toks):
     obj_tuple[1].verify()
     return path
 
-def STATEMENT_CONSTRUCTOR(head_p, name_p, body_p, end=None, args=True, single_line=False):
+def STATEMENT_CONSTRUCTOR(head_p,
+                          name_p,
+                          body_p,
+                          end=None,
+                          args=True,
+                          single_line=False,
+                          parse_fn=None):
     """ Construct statements of the form:
     λ::a.location: |args| components end
     """
@@ -136,7 +142,9 @@ def STATEMENT_CONSTRUCTOR(head_p, name_p, body_p, end=None, args=True, single_li
     parser = head_p + DBLCOLON + NG(util.NAME_S, name_p) + COLON + op(pp.lineEnd) \
         + arg_p + tagList + NG(util.STATEMENT_S, body_p) + end_p
 
-    parser.setParseAction(construct_statement)
+    if parse_fn is not None:
+        parser.addParseAction(parse_fn)
+    parser.addParseAction(construct_statement)
     return parser
 
 
