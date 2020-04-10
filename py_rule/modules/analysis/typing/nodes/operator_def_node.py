@@ -29,22 +29,25 @@ class OperatorDefTrieNode(TypeDefTrieNode):
 
     def __init__(self, value):
         super().__init__(value)
+        # This is a set to hold multiple possible operators
+        # eg: AddOp: $x(::Num).$x.$x
+        # and AddOp: $x(::String).$x.$x
         self._data[util.TYPE_DEF_S] = set()
 
 
     def set_data(self, data):
-        # Does not error about redefinition, intentionally"
+        # Does not error about redefinition, intentionally
         assert(isinstance(data, OperatorDefinition))
         logging.debug("OperatorDef.set_data: {}".format(data))
-
         self._data[util.TYPE_DEF_S].add(data)
 
         # add to internal search trie
         if self._typedef_trie is None:
             self._typedef_trie = Trie(node_type=TypeAssignmentTrieNode)
-            self._typedef_trie._root._type_instance = data.build_type_declaration()
+            self._typedef_trie.root._type_instance = data.build_type_declaration()
 
-        for x in data._structure:
+        for x in data.structure:
+            # TODO This might need to generate new vars
             self._typedef_trie.add(x, {util.OP_DEF_S : data},
                                    update=lambda c, n, p, d: c.type_match_wrapper(n))
 
@@ -54,7 +57,7 @@ class OperatorDefTrieNode(TypeDefTrieNode):
         logging.debug(LOG_MESSAGES['validate_top'].format(repr(self),
                                                           repr(usage_trie)))
         if self._typedef_trie is None:
-            raise te.TypeUndefinedException(self._name, usage_trie)
+            raise te.TypeUndefinedException(self.name, usage_trie)
 
         newly_typed = []
 
@@ -70,25 +73,25 @@ class OperatorDefTrieNode(TypeDefTrieNode):
             path = "".join([str(y) for x, y in match])
             if path not in result_dict:
                 result_dict[path] = []
-                result_dict[path].append(match)
+            result_dict[path].append(match)
 
         # Only apply types that have been reduced to one possibility
-        for match_group in result_dict:
+        for match_group in result_dict.values():
             if len(match_group) == 1:
                 # apply types
-                for the_def, the_use in match_group:
-                    the_use.type_match_wrapper(the_def)
-                    # refine the type of the operator at head
-                func_name = match_group[-1][0]._data[util.OP_DEF_S]._func_name
+                for the_def, the_use in match_group[0]:
+                    newly_typed.append(the_use.type_match_wrapper(the_def))
+                # refine the type of the operator at head
+                func_name = match_group[0][0]._data[util.OP_DEF_S]._func_name
                 match_group[0][1]._data[OPERATOR_S].__refine_op_func(func_name)
                 continue
 
-        return newly_typed
+        return [x for x in newly_typed if x is not None]
 
 
 def pattern_match_type_signature(head, available):
     if head.type is None:
         return available
 
-    return [x for x in available if x._type_instance is None
-            or head._type_instance == x._type_instance]
+    return [x for x in available if x.type_instance is None
+            or head.type_instance == x.type_instance]

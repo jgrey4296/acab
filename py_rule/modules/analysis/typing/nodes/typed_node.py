@@ -14,6 +14,12 @@ class MonoTypedNode(TrieNode):
         super().__init__(value)
         self._type_instance = _type
 
+
+    @property
+    def type_instance(self):
+        return self._type_instance
+
+
     def type_match_wrapper(self, node):
         if TYPE_DEC_S not in node._data:
             return None

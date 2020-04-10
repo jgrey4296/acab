@@ -10,11 +10,11 @@ class TypeInstance(Type):
     """ A Type Instance can be polytyped or monotyped """
     TypeCounter = 0
 
-    def __init__(self, name, args=None, type_str=util.TYPE_DEC_S):
-        """ Construct a Type Instance with a name in the type trie """
-        assert(isinstance(name, Sentence))
+    def __init__(self, locator, args=None, type_str=util.TYPE_DEC_S):
+        """ Construct a Type Instance with a locator in the type trie """
+        assert(isinstance(locator, Sentence))
         assert(args is None or all([isinstance(x, (str, TypeInstance)) for x in args]))
-        super(TypeInstance, self).__init__(name, type_str=type_str, params=args)
+        super(TypeInstance, self).__init__(locator, type_str=type_str, params=args)
 
     def __hash__(self):
         return hash(str(self._name))
@@ -34,6 +34,9 @@ class TypeInstance(Type):
 
 
     @property
+    def locator(self):
+        return self._value
+    @property
     def var_set(self):
         obj = super(TypeInstance, self).var_set
         if isinstance(self._name, PyRuleValue):
@@ -47,7 +50,7 @@ class TypeInstance(Type):
         """ Given a type instance and a dictionary
         of values for variables, build a monotyped instance
         """
-        index = self._value[-1].name
+        index = self.locator[-1].name
         instance_is_var = util.is_var(self._value[-1])
         if instance_is_var and index in the_dict:
             new_type = the_dict[index]

@@ -25,9 +25,9 @@ class VarTypeTrieNode(MonoTypedNode):
         node._var_node = self
 
     def propagate(self):
-        if self._type_instance is not None:
+        if self.type_instance is not None:
             for n in self._nodes:
-                n.type_match(self._type_instance)
+                n.type_match(self.type_instance)
 
     def merge(self, nodes):
         assert(all([isinstance(x, VarTypeTrieNode) for x in nodes]))

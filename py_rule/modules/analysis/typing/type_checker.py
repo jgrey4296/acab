@@ -98,16 +98,16 @@ class TypeChecker:
 
         # for each rule: (in place of functions)
         for x in rules:
-            # self.push_typing_context()
             self.add_rule(x)
-            self.validate()
-            # self.pop_typing_context()
+
+        self.validate()
+
 
     def _get_known_typed_nodes(self):
         # propagate known variable types
-        dummy = [x.propagate() for x in self._variables.get_nodes(lambda x: x._type_instance is not None)]
+        dummy = [x.propagate() for x in self._variables.get_nodes(lambda x: x.type_instance is not None)]
         # get all known declared types
-        val_queue = {y for y in self._declarations.get_nodes(lambda x: x._type_instance is not None)}
+        val_queue = {y for y in self._declarations.get_nodes(lambda x: x.type_instance is not None)}
         return val_queue
 
     def _merge_equivalent_nodes(self):
@@ -119,6 +119,7 @@ class TypeChecker:
             head = var_nodes.pop()
             head.merge(var_nodes)
             dummy = [self._variables.remove([x]) for x in var_nodes]
+
 
     def clear_context(self):
         """ Clear variables """
@@ -161,6 +162,8 @@ class TypeChecker:
         self._merge_equivalent_nodes()
         typed_queue = self._get_known_typed_nodes()
 
+        # TODO: get known operations
+
         # Use known types to infer unknown types
         dealt_with = set()
         while bool(typed_queue):
@@ -168,15 +171,19 @@ class TypeChecker:
             if head in dealt_with:
                 continue
             dealt_with.add(head)
+
             # TODO branch on structural /functional
+
             # check the head
-            head_type = self._structural_definitions.query(head._type_instance._value)
+            head_type = self._structural_definitions.query(head.type_instance._value)
             if head_type is None:
-                raise te.TypeUndefinedException(head._type_instance, head)
+                raise te.TypeUndefinedException(head.type_instance, head)
 
             # Propagate the type to all connected variables
+            # TODO: if var nodes also link *into* polytype def nodes
+            # that would solve generalisation?
             if head._is_var:
-                head._var_node.type_match(head._type_instance)
+                head._var_node.type_match(head.type_instance)
                 head._var_node.propagate()
                 typed_queue.update(head._var_node._nodes)
 
