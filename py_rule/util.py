@@ -20,6 +20,7 @@ STATEMENT_S  = "statement"
 TAG_S        = "tag"
 VALUE_S      = "value"
 VALUE_TYPE_S = "value_type"
+TYPE_DEC_S    = "type_declaration"
 
 # Core Value Types
 FLOAT_S      = "float"

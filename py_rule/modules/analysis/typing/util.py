@@ -6,7 +6,7 @@ ROOT_S        = util.ROOT_S
 BIND_S        = util.BIND_S
 SEN_S         = util.SEN_S
 
-TYPE_DEC_S    = "type_declaration"
+TYPE_DEC_S    = util.TYPE_DEC_S
 TYPE_DEF_S    = "type_definition"
 OP_DEF_S      = "operator_definition"
 STRUCT_S      = "structure"
