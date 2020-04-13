@@ -93,6 +93,22 @@ tagList    = op(N(util.TAG_S, pp.delimitedList(tagName, delim=DELIM) + emptyLine
 
 OPERATOR_SUGAR = pp.Word(util.OPERATOR_SYNTAX_S)
 
+def construct_multi_sentences(toks):
+    base_sen = toks[util.NAME_S][0]
+    additional_sentences = toks[util.STATEMENT_S]
+
+    new_sentences = []
+    # combine
+    for additional in additional_sentences:
+        full_toks = base_sen.words[:] + additional.words[:]
+        data = {}
+        data.update(base_sen._data)
+        data.update(additional._data)
+        new_sen = Sentence(full_toks, data=data)
+        new_sentences.append(new_sen)
+
+    return new_sentences
+
 def construct_sentence(toks):
     data = { util.NEGATION_S : False }
     if util.NEGATION_S in toks:
@@ -132,8 +148,8 @@ def STATEMENT_CONSTRUCTOR(head_p,
 
     if single_line:
         line_p = pp.empty
-
-    if end is not None:
+        end_p = pp.lineEnd
+    elif end is not None:
         end_p = end
 
     if args:
@@ -144,7 +160,8 @@ def STATEMENT_CONSTRUCTOR(head_p,
 
     if parse_fn is not None:
         parser.addParseAction(parse_fn)
-    parser.addParseAction(construct_statement)
+    else:
+        parser.addParseAction(construct_statement)
     return parser
 
 

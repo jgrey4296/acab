@@ -85,16 +85,19 @@ PARAM_BINDING_END = PARAM_CORE(HOTLOAD_ANNOTATIONS, end=True)
 BASIC_SEN = PU.op(PU.NEGATION_SYMBOL) + pp.NotAny(PU.END) \
     + PU.NG(util.SEN_S,  pp.ZeroOrMore(PARAM_CORE()) + PARAM_CORE(end=True))
 
+SEN_STATEMENT = pp.Forward()
+
 # Sentences with basic sentences as annotations
 PARAM_SEN = PU.op(PU.NEGATION_SYMBOL) + pp.NotAny(PU.END) \
     + PU.NG(util.SEN_S, pp.ZeroOrMore(PARAM_BINDING_CORE) + PARAM_BINDING_END)
 PARAM_SEN_PLURAL = pp.delimitedList(PARAM_SEN, delim=PU.DELIM)
 
+SEN_STATEMENT_BODY = pp.OneOrMore(pp.Or([SEN_STATEMENT, PARAM_SEN_PLURAL]) + PU.opLn)
 # Statement to specify multiple sub sentences
-SEN_STATEMENT = PU.STATEMENT_CONSTRUCTOR(PU.FACT_HEAD,
-                                         PARAM_SEN,
-                                         PARAM_SEN_PLURAL,
-                                         parse_fn=PU.construct_multi_sentences)
+SEN_STATEMENT << PU.STATEMENT_CONSTRUCTOR(PU.FACT_HEAD,
+                                          PARAM_SEN,
+                                          SEN_STATEMENT_BODY,
+                                          parse_fn=PU.construct_multi_sentences)
 
 # Actions
 PARAM_SEN.setParseAction(PU.construct_sentence)
