@@ -17,7 +17,6 @@ class OperatorDefinition(TypeDefinition):
         # eg: operator.+.$x(::num).$y(::num).$z(::num).num_plus
         if not isinstance(structure, list):
             structure = [structure]
-        # TODO: unify vars over structure
         super().__init__(structure, type_str=OP_DEF_S)
         self._func_name = sugar_syntax
 

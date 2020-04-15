@@ -9,11 +9,13 @@ class TypingSpec(ModuleSpecification):
     """
 
     def __init__(self):
+        # TODO: add typedef and opdef types
         super().__init__(types=[],
                          funcs=[])
-        # TODO setup value parsers
         # TODO setup statement parsers
-        # add functions
+        self._statement_parsers = TDP.COMBINED_DEFS
+        # TODO setup annotation parsers
+        self._annotation_parsers = TP.TYPEDEC_CORE
 
     def parse_string(self, s):
         return TP.parseString(s)
@@ -21,7 +23,6 @@ class TypingSpec(ModuleSpecification):
     def construct_operators(self):
         # TODO
         return
-
 
     def define_layers(self):
         # TODO : add type classes to type checker

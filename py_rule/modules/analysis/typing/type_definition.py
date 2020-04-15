@@ -5,7 +5,7 @@ from py_rule.abstract.printing import util as PrU
 
 from .pyrule_type import Type
 from .type_instance import TypeInstance
-from .util import TYPE_DEF_S
+from .util import TYPE_DEF_S, TYPE_DEC_S
 
 
 class TypeDefinition(Type):
@@ -20,8 +20,29 @@ class TypeDefinition(Type):
         assert isinstance(structure, list)
         assert all([isinstance(x, Sentence) for x in structure])
         super().__init__(structure, params=params, type_str=type_str)
-        # TODO unify shared variables across structure sentences to have
-        # the same type
+
+        # unify shared variables across structure sentences to have the same type
+        # go through all sentences
+        variables = {}
+        for sentence in self.structure:
+            # track variables
+            for word in sentence:
+                if word.is_var:
+                    if word._value not in variables:
+                        variables[word._value] = {'types': set(), 'instances': []}
+                    variables[word._value]['instances'].append(word)
+                    # find variables with type annotations
+                    if TYPE_DEC_S in word._data:
+                        variables[word._value]['types'].add(word._data[TYPE_DEC_S])
+
+        # Then unify all the variables to have the same type
+        for the_dict in variables.values():
+            types, instances = the_dict.values()
+            assert(len(types) < 2)
+            if bool(types):
+                type_instance = types.pop()
+                for word in instances:
+                    word._data[TYPE_DEC_S] = type_instance
 
     @property
     def structure(self):

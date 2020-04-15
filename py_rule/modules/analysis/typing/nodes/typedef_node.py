@@ -45,7 +45,6 @@ class TypeDefTrieNode(TrieNode):
             for x in self._data[util.TYPE_DEF_S].structure:
                 self._typedef_trie.add(x, None,
                                        update=lambda c, n, p, d: c.type_match_wrapper(n))
-            return
 
         if self._data[util.TYPE_DEF_S] != data:
             raise te.TypeRedefinitionException(self._data[util.TYPE_DEF_S])
