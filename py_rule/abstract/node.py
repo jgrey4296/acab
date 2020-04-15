@@ -10,8 +10,8 @@ from .value import PyRuleValue
 class PyRuleNode(PyRuleValue):
     """ The Abstract Node Class """
 
-    def __init__(self, value, data=None, type_str=None, tags=None, name=None):
 
+    def __init__(self, value, data=None, type_str=None, tags=None, name=None):
         super(PyRuleNode, self).__init__(value,
                                          data=data,
                                          type_str=type_str,

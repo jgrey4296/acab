@@ -102,8 +102,8 @@ class ProductionContainer(PyRuleValue):
     @property
     def var_set(self):
         """ Return a set of all bindings this container utilizes """
-        # ie: Query(a.b.$x? a.q.$w?).get_bindings() -> {'in': [], 'out': [x,w]}
-        # Action(+(a.b.$x), -(a.b.$w)).get_bindings() -> {'in': [x,w], 'out': []}
+        # ie: Query(a.b.$x? a.q.$w?).var_set -> {'in': [], 'out': [x,w]}
+        # Action(+(a.b.$x), -(a.b.$w)).var_set -> {'in': [x,w], 'out': []}
         obj = super(ProductionContainer, self).var_set
         for p in self.clauses:
             if isinstance(p, PyRuleValue):

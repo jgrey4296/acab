@@ -1,5 +1,9 @@
 """ EngineBase: The Core Interface and implementation independent code for the
     production systems
+
+Engine's are the main programming interface.
+You create one with a working memory, load some modules,
+and can then parse and run an agent DSL pipeline.
 """
 import logging as root_logger
 
@@ -29,6 +33,7 @@ class Engine:
         # named recall states of past kb states
         self._recall_states = {}
 
+        # initialise
         if modules is not None:
             self._working_memory.add_modules(modules)
 
@@ -137,8 +142,10 @@ class Engine:
     def _select_actions_by_agenda(self, agenda):
         """ Utilize a policy to select from proposed actions,
         then perform those actions """
-        logging.debug("Performing action by policy")
+        logging.debug("Selecting Actions by agenda: {}".format(agenda.__class__.__name__))
         assert(isinstance(agenda, Agenda))
+        # TODO run agenda queries and transforms
+        # Set agenda variables from context
         selected = agenda(self._proposed_actions, self)
         assert(isinstance(selected, list))
         assert(all([isinstance(x, tuple)

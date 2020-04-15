@@ -1,5 +1,19 @@
 """
 The abstract form of a working memory
+
+Working Memory is responsible for the core agent capabilities.
+It provides an ontology structure, parsers for that structure,
+and integrates modules into those parsers.
+
+The canonical working memory is the Trie_WM.
+It provides an Exclusion Logic Trie data structure,
+Parsers to define sentences and rules in that data structure,
+and can load modules to extend its capabilities.
+
+The working memory, at core, can Add, Retract, and Query facts.
+
+From a module it loads Value, Statement, and Annotation parsers.
+
 """
 import pyparsing as pp
 from .mod_interface import ModuleSpecification
@@ -27,17 +41,17 @@ class WorkingMemory:
         dummy = [x.construct_operators() for x in mods]
 
         # Add values parsers:
-        val_parsers = [y for x in mods for y in x.get_value_parsers()]
+        val_parsers = [y for x in mods for y in x.value_parsers]
         or_d_types = pp.Or([x for x in val_parsers if x is not None])
         self._insert_into_values_parser(or_d_types)
 
         # add statement parsers:
-        statement_parsers = [y for x in mods for y in x.get_statement_parsers()]
+        statement_parsers = [y for x in mods for y in x.statement_parsers]
         or_d_statements = pp.Or([x for x in statement_parsers if x is not None])
         self._insert_into_statement_parser(or_d_statements)
 
         # Add annotation parsers:
-        annotation_parsers = [y for x in mods for y in x.get_annotation_parsers()]
+        annotation_parsers = [y for x in mods for y in x.annotation_parsers]
         or_d_statements = pp.Or([x for x in annotation_parsers if x is not None])
         self._insert_into_annotations_parser(or_d_statements)
 
@@ -46,6 +60,9 @@ class WorkingMemory:
         if bool(mod_init_strings):
             strings = "\n\n".join(mod_init_strings)
             self.add(strings)
+
+        # TODO Setup printing lookups
+
 
     def build_operator_parser(self):
         """ This is used to build the parsers of operators,

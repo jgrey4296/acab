@@ -13,6 +13,8 @@ logging = root_logger.getLogger(__name__)
 
 
 class PyRuleValue:
+    value_types = set([int, float, bool, str, list,
+                       tuple, Fraction, Pattern])
 
     def __init__(self,
                  value,
@@ -21,17 +23,8 @@ class PyRuleValue:
                  params=None,
                  tags=None,
                  name=None):
-        value_type_verify = (value is None or
-                             isinstance(value, (int,
-                                                float,
-                                                bool,
-                                                str,
-                                                list,
-                                                tuple,
-                                                Fraction,
-                                                Pattern,
-                                                PyRuleValue)))
-        assert value_type_verify, type(value)
+        value_type_tuple = tuple(PyRuleValue.value_types) + tuple([PyRuleValue])
+        assert (value is None or isinstance(value, value_type_tuple)), type(value)
 
         self._uuid = uuid1()
         self._name = None
@@ -101,7 +94,7 @@ class PyRuleValue:
         """
         # ie: Query(a.b.$x? a.q.$w?).get_bindings() -> {'in': [], 'out': [x,w]}
         # Action(+(a.b.$x), -(a.b.$w)).get_bindings() -> {'in': [x,w], 'out': []}
-        logging.debug("{} is using default var_set method".format(self.__class__))
+        # logging.debug("{} is using default var_set method".format(self.__class__))
         return {'in': set(self._vars), 'out': set()}
 
 

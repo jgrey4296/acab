@@ -64,7 +64,7 @@ class Comparison(ProductionComponent):
     @property
     def is_alpha_test(self):
         """ Return boolean of if test does not rely on other bindings """
-        return bool(self._vars) and not self._vars[0].is_var
+        return bool(self._vars) and not any([x.is_var for x in self._vars])
 
     @property
     def is_regex_test(self):

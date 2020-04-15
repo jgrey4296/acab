@@ -40,3 +40,12 @@ class Layer:
 
     def agendas(self):
         return self._agendas
+
+
+
+#Utility function for parser
+def make_layer(toks):
+
+
+
+    return None

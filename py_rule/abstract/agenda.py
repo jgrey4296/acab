@@ -34,7 +34,9 @@ class Agenda:
         for x in found:
             Agenda.agenda_list[x.__name__] = x
 
-    def __init__(self):
+        # TODO: use inspect module to get kwargs of each agenda type
+
+    def __init__(self, queries, transforms, var_setting):
         # A function type signature
         self._type_signature = None
         # Whether the agenda expands or constrains proposals
@@ -43,13 +45,28 @@ class Agenda:
         self._is_indexed = False
         self._index = None
 
+        # Late set queries and transforms
+        self._registered_variables = {}
+        self._queries = []
+        self._transforms = []
+
     def __call__(self, proposals, engine, **kwargs):
         """ Take the proposals, transform them in some way,
         then enact them on the engine """
         raise NotImplementedError()
 
 
+    def set_queries_and_transforms(self, queries, transforms):
+        self._queries += queries
+        self._transforms += transforms
 
+
+    def register_variable(self, sentence, init):
+        # TODO
+        raise NotImplementedError()
+
+
+# Utility construction function for parser
 def make_agenda(toks):
     agenda_name = toks[NAME_S][0]
     agenda_setup_tuple = toks[STATEMENT_S][0]
@@ -63,5 +80,7 @@ def make_agenda(toks):
     # make the agenda
     the_agenda = constructor(the_dict)
 
+
+    # TODO actually, this doesnt chain into the normal make statement
     toks[STATEMENT_S] = (the_agenda.type, the_agenda)
-    return toks
+    return False

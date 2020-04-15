@@ -93,14 +93,16 @@ class Transform(PO.ProductionContainer):
         assert(all([isinstance(x, TransformComponent) for x in clauses]))
         super(Transform, self).__init__(clauses, type_str=type_str, **kwargs)
 
+    @property
+    def var_set(self):
+        var_set = {'in': set(), 'out': set()}
+        for clause in self.clauses:
+            for word in clause._vars:
+                if word.is_var:
+                    var_set['in'].add(word._value)
+            var_set['out'].add(x._rebind._value)
+
+        return var_set
 
     def copy(self):
         return Transform([x.copy() for x in self.clauses], type_str=self.type)
-
-    def get_input_requirements(self):
-        # return the set of input bound names
-        return [y._value for x in self.clauses for y in x._vars if y.is_var]
-
-    def get_output_spec(self):
-        # return the set of output bound names
-        return [x._rebind._value for x in self.clauses]
