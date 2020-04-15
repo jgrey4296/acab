@@ -1,16 +1,19 @@
-from py_rule.abstract.sentence import Sentence
-from py_rule.abstract.trie.nodes.trie_node import TrieNode
-from py_rule.working_memory.trie_wm.parsing import FactParser as FP
-from py_rule.modules.analysis.typing import util as TU
-from py_rule.modules.analysis.typing.type_definition import TypeDefinition
-from py_rule.error.pyrule_parse_exception import PyRuleParseException
 import logging
-from py_rule.abstract.parsing import util as PU
+import random
+import unittest
+
 import py_rule.modules.analysis.typing.parsing.TypeDefParser as TD
 import py_rule.modules.analysis.typing.parsing.TypeParser as TP
 import py_rule.util as util
-import random
-import unittest
+
+from py_rule.abstract.sentence import Sentence
+from py_rule.abstract.trie.nodes.trie_node import TrieNode
+from py_rule.error.pyrule_parse_exception import PyRuleParseException
+from py_rule.modules.analysis.typing import util as TU
+from py_rule.modules.analysis.typing.type_definition import TypeDefinition
+from py_rule.modules.analysis.typing.operator_definition import OperatorDefinition
+from py_rule.working_memory.trie_wm.parsing import FactParser as FP
+from py_rule.abstract.parsing import util as PU
 
 
 class TypeDef_ParserTests(unittest.TestCase):
@@ -69,13 +72,17 @@ class TypeDef_ParserTests(unittest.TestCase):
 
     def test_op_def_parse(self):
         the_string = 'λ::AddOp: $x(::Num).$x.$x => +'
+        result = TD.OP_DEF.parseString(the_string)[0]
+        self.assertIsInstance(result, Sentence)
+        self.assertEqual(len(result), 1)
+        self.assertIsInstance(result[-1]._value, OperatorDefinition)
 
-        result = TD.OP_DEF.parseString(the_string)
-
-
-    @unittest.skip("TODO")
-    def test_var_set(self):
-        return
+    def test_op_def_parse_no_sugar(self):
+        the_string = 'λ::AddOp: $x(::Num).$x.$x'
+        result = TD.OP_DEF.parseString(the_string)[0]
+        self.assertIsInstance(result, Sentence)
+        self.assertEqual(len(result), 1)
+        self.assertIsInstance(result[-1]._value, OperatorDefinition)
 
 
 if __name__ == "__main__":

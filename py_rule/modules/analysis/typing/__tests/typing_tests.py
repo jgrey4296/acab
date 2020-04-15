@@ -1,11 +1,15 @@
 import unittest
 import logging
+
+import py_rule.error.type_exceptions as te
+
+from py_rule.abstract.transform import TransformComponent
 from py_rule.modules.analysis.typing.type_checker import TypeChecker
 from py_rule.modules.analysis.typing.type_definition import TypeDefinition
+from py_rule.modules.analysis.typing.operator_definition import OperatorDefinition
 from py_rule.modules.analysis.typing.type_instance import TypeInstance
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.trie.nodes.trie_node import TrieNode
-import py_rule.error.type_exceptions as te
 from py_rule.modules.analysis.typing import util as TU
 from py_rule.working_memory.trie_wm.parsing import FactParser as FP
 from py_rule.abstract.printing import util as PrU
@@ -22,7 +26,6 @@ class TypingTests(unittest.TestCase):
     def setUpClass(cls):
         #hotload values
         PrU.setup_statement_lookups({TU.TYPE_DEF_S : util.STRUCTURE_S}, reset=True)
-        return
 
     def setUp(self):
 	    return 1
@@ -354,7 +357,6 @@ class TypingTests(unittest.TestCase):
         with self.assertRaises(te.TypeConflictException):
             tc.validate()
 
-
     def test_typing_polytype(self):
         """ ::String: END, ::Number: END
         ::polytype: | $x | name.$x END
@@ -479,7 +481,6 @@ class TypingTests(unittest.TestCase):
         self.assertEqual(tc.query(query_sen1)[0]._type_instance, TypeInstance(S("String")))
         self.assertEqual(tc.query(query_sen2)[0]._type_instance, TypeInstance(S("Number")))
 
-
     def test_typing_context_clear(self):
         tc = TypeChecker()
 
@@ -501,18 +502,32 @@ class TypingTests(unittest.TestCase):
         self.assertIsNone(tc.query(sen)[0]._var_node)
         self.assertEqual(len(tc.query(sen2)), 0)
 
-
-    @unittest.skip("TODO")
     def test_typing_polytype_fail(self):
         """
         ::String: END, ::Number: END
         ::polytype: | $x | name.$x END
         a(::polytype(::String)).name.$q(::Number)
         """
-        return
+        tc = TypeChecker()
+        tc.add_definition(TypeDefinition([]).apply_onto(S("String")))
+        tc.add_definition(TypeDefinition([]).apply_onto(S("Number")))
+
+        # define poly type
+        type_1_sen = S("name","x")
+        type_1_sen[-1]._data[TU.BIND_S] = True
+        tc.add_definition(TypeDefinition([type_1_sen]).apply_onto(S("polytype"), ["x"]))
 
 
-    @unittest.skip("TODO")
+        # assert
+        assertion = S("a","name","q")
+        assertion[0]._data[TU.TYPE_DEC_S] = TypeInstance(S("polytype"), [TypeInstance(S("String"))])
+        assertion[-1]._data[TU.BIND_S] = True
+        assertion[-1]._data[TU.TYPE_DEC_S] = TypeInstance(S("Number"))
+        tc.add_assertion(assertion)
+
+        with self.assertRaises(te.TypeConflictException):
+            tc.validate()
+
     def test_typing_polytype_nested_fail(self):
         """
         ::String: END, ::Number: END
@@ -520,10 +535,33 @@ class TypingTests(unittest.TestCase):
         ::polytype.large: | $x | sub(::polytype.small(::$x)) END
         a(::polytype.large(::String)).sub.name.$q(::Number)
         """
-        return
+        tc = TypeChecker()
+        tc.add_definition(TypeDefinition([]).apply_onto(S("String")))
+        tc.add_definition(TypeDefinition([]).apply_onto(S("Number")))
 
+        #polytype 1
+        type_1_sen = S("name","x")
+        type_1_sen[-1]._data[TU.BIND_S] = True
+        tc.add_definition(TypeDefinition([type_1_sen]).apply_onto(S("poly.type.one"), ["x"]))
 
-    @unittest.skip("TODO")
+        #polytype 2
+        type_2_sen = S("nested")
+        type_2_sen[-1]._data[TU.BIND_S] = True
+        type_2_sen[-1]._data[TU.TYPE_DEC_S] = TypeInstance(S("poly.type.one"), ["y"])
+        tc.add_definition(TypeDefinition([type_2_sen]).apply_onto(S("poly.type.two"), ["y"]))
+
+        #Assertion
+        assertion = S("a","nested","name","x")
+        assertion[0]._data[TU.BIND_S] = True
+        assertion_param = TypeInstance(S("String"))
+        assertion[0]._data[TU.TYPE_DEC_S] = TypeInstance(S("poly.type.two"), [assertion_param])
+        assertion[-1]._data[TU.BIND_S] = True
+        assertion[-1]._data[TU.TYPE_DEC_S] = TypeInstance(S("Number"))
+        tc.add_assertion(assertion)
+
+        with self.assertRaises(te.TypeConflictException):
+            tc.validate()
+
     def test_typing_polytype_multi_param_fail(self):
         """
         ::String: END, ::Number: END
@@ -535,8 +573,34 @@ class TypingTests(unittest.TestCase):
         a(::polytype.large(::String, ::Number)).sub.name.$q(::String)
         a.sub.age.$w(::String)
         """
+        tc = TypeChecker()
+        tc.add_definition(TypeDefinition([]).apply_onto(S("String")))
+        tc.add_definition(TypeDefinition([]).apply_onto(S("Number")))
 
-        return
+        #polytype
+        type_1_sen = S("name","x")
+        type_1_sen[-1]._data[TU.BIND_S] = True
+        type_2_sen = S("age","y")
+        type_2_sen[-1]._data[TU.BIND_S] = True
+        tc.add_definition(TypeDefinition([type_1_sen, type_2_sen]).apply_onto(S("poly.type"),["x", "y"]))
+
+        #assertions
+        assertion = S("a","name","q")
+        assertion[0]._data[TU.TYPE_DEC_S] = TypeInstance(S("poly.type"),
+                                                         [TypeInstance(S("String")),
+                                                          TypeInstance(S("Number"))])
+        assertion[-1]._data[TU.BIND_S] = True
+        assertion[-1]._data[TU.TYPE_DEC_S] = TypeInstance(S("String"))
+        tc.add_assertion(assertion)
+
+        assertion2 = S("a","age","w")
+        assertion2[-1]._data[TU.BIND_S] = True
+        assertion2[-1]._data[TU.TYPE_DEC_S] = TypeInstance(S("String"))
+        tc.add_assertion(assertion2)
+
+        with self.assertRaises(te.TypeConflictException):
+            tc.validate()
+
 
 
     @unittest.skip("TODO")
@@ -562,10 +626,32 @@ class TypingTests(unittest.TestCase):
 	    return
 
 
-    @unittest.skip("TODO")
     def test_add_operation(self):
-        # TODO
-        return
+        """ ::Number end
+        λ::AddOp: $x(::Number).$x.$x
+        """
+        tc = TypeChecker()
+        tc.add_definition(TypeDefinition([]).apply_onto(S("String")))
+        tc.add_definition(TypeDefinition([]).apply_onto(S("Number")))
+
+        op_struct = S("x", "x", "x")
+        op_struct[0]._data[TU.BIND_S] = True
+        op_struct[0]._data[TU.TYPE_DEC_S] = TypeInstance(S("Number"))
+        op_struct[1]._data[TU.BIND_S] = True
+        op_struct[2]._data[TU.BIND_S] = True
+        tc.add_definition(OperatorDefinition(op_struct).apply_onto(S("AddOp")))
+
+        #Add an operation use
+        trans_params = S("x", "y")
+        trans_params[0]._data[TU.BIND_S] = True
+        trans_params[1]._data[TU.BIND_S] = True
+        rebind = S("z")[0]
+        rebind._data[TU.BIND_S] = True
+        transform = TransformComponent("AddOp", trans_params, rebind=rebind)
+
+        tc.add_assertion(transform.to_sentence())
+
+        tc.validate()
 
 
     @unittest.skip("TODO")
