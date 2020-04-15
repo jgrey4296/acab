@@ -9,8 +9,8 @@ eg:
 	a.rule.selector.$x?
 	another.rule.selector.$y?
 
-	$x -> primary.agenda
-	$y -> secondary.agenda -> tertiary.agenda
+	primary.agenda.$x
+	secondary.agenda.$y
 
 end
 
@@ -36,11 +36,17 @@ def construct_layer(toks):
 HOTLOAD_BASIC_SEN = pp.Forward()
 HOTLOAD_QUERY_STMT = pp.Forward()
 
-layer_body = None
+# Layers should be a special case of rule
+conditions  = PU.N(WMU.CONDITION_S, QP.clauses + PU.gap)
+transforms  = PU.N(WMU.TRANSFORM_S, TP.transforms + PU.gap)
+var_setting = PU.NG(WMU.ACTION_S, AP.actions + PU.component_gap)
+
+layer_body = PU.op(conditions) + PU.op(transforms) + PU.op(var_setting)
 
 layer_stmt = PU.STATEMENT_CONSTRUCTOR(PU.LAYER_HEAD,
                                       HOTLOAD_BASIC_SEN,
-                                      layer_body)
+                                      layer_body,
+                                      parse_fn=make_layer)
 
 layer_body.setParseAction(construct_layer)
 
