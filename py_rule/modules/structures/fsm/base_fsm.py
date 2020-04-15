@@ -1,10 +1,20 @@
 """
 A Basic Finite State Machine Module
 
-States:
-Events:
+a.state.machine(::FSM):
+	States:
 
 
+	Events:
+
+
+	Constraints:
+	connected
+end
+
+
+# Query: current state, available actions
+(possibly MCTS)
 
 """
 from py_rule.abstract.value import PyRuleValue

@@ -5,6 +5,8 @@ Distributions
 Range
 Seed
 
+TODO should actually deal with marking indeterminacy in actions
+ie: Malaby's categories: Formal, Social, Performative and Cosmological
 
 """
 from py_rule.abstract.value import PyRuleValue

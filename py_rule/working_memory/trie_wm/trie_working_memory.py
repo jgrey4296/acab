@@ -190,9 +190,9 @@ class TrieWM(WorkingMemory):
             return (contexts, [])
         current_contexts = contexts
         failures = []
+
         # Go down from the root by query element:
         # Failure at any point means don't add the updated context
-
         # For each word of the clause sentence, eg: .a in .a.b.c
         for c in clause:
             logging.info("Testing node: {}".format(repr(c)))
@@ -209,6 +209,10 @@ class TrieWM(WorkingMemory):
                 new_data = None
                 new_node = None
                 new_bindings = []
+
+                # TODO: Handle DFS/BFS/Leaf retrieval
+
+                # continue on from an AT_BIND
                 if util.AT_BIND_S in c._data:
                     tested = True
                     new_node = last_node
@@ -232,6 +236,7 @@ class TrieWM(WorkingMemory):
                                                                 alphas, betas,
                                                                 regexs, data)
 
+                # Add results and new bindings, or fail this subcontext
                 if new_data is not None:
                     new_contexts.append((new_data, new_node))
                 elif bool(new_bindings):

@@ -5,6 +5,7 @@ Top
 Bottom
 Structure
 
+Operators: Add subtract, path to top, path to bottom
 
 """
 from py_rule.abstract.value import PyRuleValue

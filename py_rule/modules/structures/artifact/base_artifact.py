@@ -4,10 +4,10 @@ both instrumentally and symbolically in the world
 and how they are specified, constrained and constructed
 
    raw_materials
-+  construction_tools
-+  construction_actions
-*  construction_time
-*  variance
++  construction_tools   :
++  construction_actions :
+*  construction_time    :
+*  variance             :
 ------------------------
 =  tool
 
@@ -48,4 +48,3 @@ class Artifact(PyRuleValue):
     def var_set(self):
         """ Data needs to be able to report internal variables """
         raise NotImplementedError()
-

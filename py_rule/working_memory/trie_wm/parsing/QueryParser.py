@@ -1,12 +1,16 @@
 """ Trie-based parser for constructing queries """
 import logging as root_logger
 import pyparsing as pp
+
 import py_rule.abstract.comparison as C
 from py_rule.abstract.query import Query
 from py_rule.abstract.sentence import Sentence
+
 from py_rule.working_memory.trie_wm import util as WMU
 from py_rule.abstract.parsing import util as PU
+
 from py_rule.error.pyrule_parse_exception import PyRuleParseException
+
 from .FactParser import PARAM_CORE, HOTLOAD_ANNOTATIONS, PARAM_SEN, BASIC_SEN
 
 logging = root_logger.getLogger(__name__)
@@ -77,6 +81,8 @@ QueryCore_end = PARAM_CORE(constraints, end=True)
 
 # TODO add syntax for binding a sentence
 # TODO add syntax for binding all leaves
+# a.test.query..<$x?
+# a.test.query..<$x(::Rule)?
 # Core Query Chain
 clause = PU.op(PU.NEGATION_SYMBOL) + PU.N(WMU.MAIN_CLAUSE_S, pp.ZeroOrMore(QueryCore)
                                           + QueryCore_end) \

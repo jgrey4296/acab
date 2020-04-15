@@ -1,6 +1,8 @@
 """
 Definition for the Weight Update Delta Operator
 
+(%) 
+
 move a delta amount along a derivative
 
 """
