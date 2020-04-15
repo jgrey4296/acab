@@ -1,7 +1,9 @@
 * Todos file
 ** Functionality
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/production_operator.py::107][Implement ProductionContainer.get_bindings]]
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/abstract/production_operator.py::107][Implement ProductionContainer.get_bindings]]
+    CLOSED: [2020-04-11 Sat 19:43]
     <2020-03-30 Mon>
+    now as method var_set
 
     def get_bindings(self):
 
@@ -65,7 +67,8 @@
 
     class TypingSpec(ModuleSpecification):
 
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/type_definition.py::19][TypeDefinition unify shared variables]]                                  :typing:
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/type_definition.py::19][TypeDefinition unify shared variables]]                                  :typing:
+    CLOSED: [2020-04-11 Sat 20:37]
     <2020-03-26 Thu>
 
     TODO unify shared variables across structure sentences to have
@@ -322,4 +325,22 @@
     <2020-03-26 Thu>
 
     def test_basic_inference(self):
+
+* TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/engine.py::31][Add Numpy Random Generator to engine?]]
+ <2020-04-11 Sat>
+
+* TODO [[/Volumes/documents/github/py_rule/py_rule/modules/structures/agenda/AgendaParser.py::22][remove need for end statements]]
+ <2020-04-12 Sun>
+  
+ selection.amount: $x(::Number)
+
+* TODO [[/Volumes/documents/github/py_rule/py_rule/modules/structures/agenda/AgendaParser.py::22][add query sections to agendas, layers, pipelines etc]]
+ <2020-04-12 Sun>
+  
+ selection.amount: $x(::Number)
+
+* TODO [[/Volumes/documents/github/py_rule/py_rule/modules/structures/agenda/AgendaParser.py::22][add chained transforms]]
+ <2020-04-12 Sun>
+  
+ selection.amount: $x(::Number)
 

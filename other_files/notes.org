@@ -11,9 +11,9 @@
  1) output instructions to world
  2) assert new facts if closed model
 ** Thoughts:
- Rules -> alpha network
- Construct a condition trie, as a second dimension of the fact trie
- hash exit points, create tokens, then run beta on demand?
+   Rules -> alpha network
+   Construct a condition trie, as a second dimension of the fact trie
+   hash exit points, create tokens, then run beta on demand?
 * Norms, expression, and NetLogo
   Even in a simple simulation, where the only output variable for 
   an agent is color, Sequences, Context, Call/Response can all be encoded.
@@ -63,24 +63,24 @@
   rules have binding meta access:
   -- :results output/value
   #+begin_src trie
-    .a.test.rule:
+    a.test.rule:
         #rule, #numeric
-        .a.b!$x(<20)?
+        a.b!$x(<20)?
 
         $x + 2 -> $y
 
         +(.a.b!$y)
     end
 
-    .a.test.meta.rule:
+    a.test.meta.rule:
         #meta, #rule
     
-        .a.test.$X?
+        a.test.$X?
         $X^#rule.numeric?
         ~$X^#meta?
         $X:["$x"]?
 
-        replace(..$X:["$x"], ".a.b!$x(<40)?" )
+        replace(..$X:["$x"], "a.b!$x(<40)?" )
     end
     
   #+end_src
