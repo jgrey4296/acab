@@ -28,3 +28,17 @@ class Curve(PyRuleValue):
         """ Data needs to be able to bind a dictionary
         of values to internal variables """
         raise NotImplementedError()
+
+
+class SValCurve(PyRuleValue):
+    """ A non-parseable Single Value to move along a curve """
+    pass
+
+class MValCurve(PyRuleValue):
+    """ A non-parseable Distribution of values along a curve to sample from """
+    pass
+
+
+# Operators:
+# sample from
+# move along

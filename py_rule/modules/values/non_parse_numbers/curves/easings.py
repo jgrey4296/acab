@@ -6,7 +6,7 @@ and produce ys from 0 - 1
 #pylint: disable=unused-argument
 from enum import Enum
 import numpy as np
-from py_rule.error.pyrule_parse_exception import PyRuleParseException 
+from py_rule.error.pyrule_parse_exception import PyRuleParseException
 from .constants import PI
 
 DOMAIN = Enum("Domain of the curve", "FULL LEFT RIGHT")
