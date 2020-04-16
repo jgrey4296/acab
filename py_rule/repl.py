@@ -37,19 +37,25 @@ if __name__ == "__main__":
     engine = eval('init_module{}'.format(splitext(args.engine)[1]))()
 
     command = None
+    result = None
     current_str = input("PyRuleREPL: ")
-    while command != RP.EXIT:
-        # parse string in REPL parser
-        command = ReP.parseString(current_str)
+    while command != ReC.ReplE.EXIT:
+        try:
+            # parse string in REPL parser
+            command, params = ReP.parseString(current_str)
 
-        # Lookup the command
-        cmd_fn = ReC.get(command[0])
-        # Perform the instruction
-        engine, result = cmd_fn(engine, command[1])
-
-        #print result
-        print(result)
-        # Repeat
-        current_str = input("PyRuleREPL: ")
+            # Lookup the command
+            cmd_fn = ReC.get(command)
+            # Perform the instruction
+            engine, result = cmd_fn(engine, params)
+        except Exception as e:
+            print("Error: {}".format(str(e)))
+            result = None
+        finally:
+            #print result
+            print(result)
+            # Repeat
+            if command != ReC.ReplE.EXIT:
+            current_str = input("PyRuleREPL: ")
 
     logging.info("Shutting down engine: {}".format(args.engine))
