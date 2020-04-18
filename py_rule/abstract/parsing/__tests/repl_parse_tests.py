@@ -4,7 +4,7 @@ import unittest
 import logging
 
 
-class (unittest.TestCase):
+class ReplParseTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
