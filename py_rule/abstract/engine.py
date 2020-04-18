@@ -55,6 +55,10 @@ class Engine:
         """ Load a file spec for the facts / rules / layers for this engine """
         raise NotImplementedError("Base Engine Stub")
 
+    def save_file(self, filename):
+        """ Dump the content of the kb to a file to reload later """
+        raise NotImplementedError("Base Engine Stub")
+
     # Base Actions
     def add(self, s):
         """ Assert a new fact into the engine """
