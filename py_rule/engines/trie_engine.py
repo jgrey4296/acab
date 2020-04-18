@@ -59,6 +59,8 @@ class TrieEngine(Engine):
         else:
             raise PyRuleParseException("No text found in provided file")
 
+        # TODO: return a response about the loading
+
     def tick(self, inputMessages):
         # TODO fix this
         ouput = []

@@ -7,34 +7,41 @@ import pyparsing as pp
 from py_rule.abstract.parsing import util as PU
 from .repl_commands import ReplE as RE
 
+HOTLOAD_COMMANDS = pp.Forward()
+
+
 # Keywords
-act_kw       = pp.Literal('act')
-all_kw       = pp.Literal('all')
-back_kw      = pp.Literal('back')
-bindings_kw  = pp.Literal('bindings')
-check_kw     = pp.Literal('check')
-decompose_kw = pp.Literal('decompose')
-exit_kw      = pp.Literal('exit')
-help_kw      = pp.Literal('help')
-init_kw      = pp.Literal('init')
-kb_kw        = pp.Literal('kb')
-layer_kw     = pp.Literal('layer')
-listen_kw    = pp.Literal('listen')
-listeners    = pp.Literal('listeners')
-load_kw      = pp.Literal('load')
-print_kw     = pp.Literal('print')
-reload_kw    = pp.Literal('reload')
-remove_kw    = pp.Literal('remove')
-rule_kw      = pp.Literal('rule')
-run_kw       = pp.Literal('run')
-save_kw      = pp.Literal('save')
-stats_kw     = pp.Literal('stats')
-step_kw      = pp.Literal('step')
+load_kw      = pp.Keyword('load')
+save_kw      = pp.Keyword('save')
+kb_kw        = pp.Keyword('kb')
+
+for_kw       = PU.s(pp.Keyword('for'))
+act_kw       = PU.s(pp.Keyword('act'))
+all_kw       = PU.s(pp.Keyword('all'))
+back_kw      = PU.s(pp.Keyword('back'))
+bindings_kw  = PU.s(pp.Keyword('bindings'))
+check_kw     = PU.s(pp.Keyword('check'))
+decompose_kw = PU.s(pp.Keyword('decompose'))
+exit_kw      = PU.s(pp.Or([pp.Keyword(x) for x in ["exit", "quit"]]))
+help_kw      = PU.s(pp.Keyword('help'))
+init_kw      = PU.s(pp.Keyword('init'))
+layer_kw     = PU.s(pp.Keyword('layer'))
+listen_kw    = PU.s(pp.Keyword('listen'))
+listener_kw  = PU.s(pp.Keyword('listener'))
+listeners_kw = PU.s(pp.Keyword('listeners'))
+print_kw     = PU.s(pp.Keyword('print'))
+remove_kw    = PU.s(pp.Keyword('remove'))
+rule_kw      = PU.s(pp.Keyword('rule'))
+run_kw       = PU.s(pp.Keyword('run'))
+stats_kw     = PU.s(pp.Keyword('stats'))
+step_kw      = PU.s(pp.Keyword('step'))
+module_kw    = PU.s(pp.Or([pp.Keyword(x) for x in ['module', 'mod']]))
+prompt_kw    = PU.s(pp.Keyword('prompt'))
 
 # Default: Instructions to pass to an Engine
-rest_of_line = pp.regex(".+?$")
+rest_of_line = pp.Regex(".+?$")
 
-multi_line = pp.regex("^λ$")
+multi_line = pp.Regex("^λ$")
 
 
 # assertions / retractions / query
@@ -70,10 +77,7 @@ step = step_kw + pp.Optional(pp.Or([back_kw,
 # Instructions to load a module
 # load module
 # eg: load py_rule.modules.values.numbers
-load_mod = load_kw + rest_of_line
-# ReRun module init strings
-# eg: reload py_rule.modules.values.numbers
-re_init_mod = reload_kw + rest_of_line
+load_mod = module_kw + rest_of_line
 
 # Misc Instructions
 # perform an action manually
@@ -88,7 +92,7 @@ decompose = decompose_kw + rest_of_line
 # eg: listen for a.test.assertion
 listen_for = listen_kw + for_kw  + rest_of_line
 listeners = listeners_kw
-remove_listener = remove_kw + listener_kw + rest_of_line
+listener_remove = remove_kw + listener_kw + rest_of_line
 
 exit_cmd = exit_kw
 
@@ -99,28 +103,32 @@ type_check = check_kw + pp.Optional(rest_of_line)
 # Print stats
 stats = stats_kw
 
+# Set prompt
+prompt_cmd = prompt_kw + pp.Word(pp.alphas) + pp.Optional(pp.Word(pp.alphas))
+
 # Actions
-save_kw.setParseAction(lambda toks: RE.SAVE)
-load_kw.setParseAction(lambda toks: RE.LOAD)
-multi_line.setParseAction(lambda toks: (RE.MULTILINE, None))
+save_kw.setParseAction    (lambda toks: RE.SAVE)
+load_kw.setParseAction    (lambda toks: RE.LOAD)
+multi_line.setParseAction (lambda toks: (RE.MULTILINE, None))
+state_io.setParseAction   (lambda toks: (toks[0], toks[1:]))
 
 base_statement.setParseAction  (lambda toks: (RE.PASS, toks[:]))
 decompose.setParseAction       (lambda toks: (RE.DECOMPOSE, toks[:]))
-exit_cmd.setParseAction        (lambda toks: (RE.EXIT, None))
-help_cmd.setParseAction        (lambda toks: (RE.HELP, None))
 listen_for.setParseAction      (lambda toks: (RE.LISTEN, toks[:]))
+listener_remove.setParseAction (lambda toks: (RE.LISTEN, toks[:]))
 listeners.setParseAction       (lambda toks: (RE.LISTEN, toks[:]))
-load_mod.setParseAction        (lambda toks: (toks[0], toks[1:]))
+load_mod.setParseAction        (lambda toks: (RE.MODULE, toks[:]))
 manual_act.setParseAction      (lambda toks: (RE.ACT, toks[:]))
 print_state.setParseAction     (lambda toks: (RE.PRINT, toks[:]))
-re_init_mod.setParseAction     (lambda toks: (RE.LOAD, toks[1:]))
 reinit.setParseAction          (lambda toks: (RE.INIT, toks[:]))
-remove_listener.setParseAction (lambda toks: (RE.LISTEN, toks[:]))
 run_something.setParseAction   (lambda toks: (RE.RUN, toks[:]))
-state_io.setParseAction        (lambda toks: (toks[0], toks[1:]))
-stats.setParseAction           (lambda toks: (RE.STATS, None))
 step.setParseAction            (lambda toks: (RE.STEP, toks[:]))
 type_check.setParseAction      (lambda toks: (RE.CHECK, toks[:]))
+prompt_cmd.setParseAction      (lambda toks: (RE.PROMPT, toks[:]))
+
+exit_cmd.setParseAction        (lambda toks: (RE.EXIT, None))
+help_cmd.setParseAction        (lambda toks: (RE.HELP, None))
+stats.setParseAction           (lambda toks: (RE.STATS, None))
 
 # Names
 
@@ -131,14 +139,14 @@ parse_point = pp.MatchFirst([multi_line,
                              reinit,
                              step,
                              load_mod,
-                             re_init_mod,
                              manual_act,
                              listen_for,
                              type_check,
                              stats,
                              help_cmd,
                              exit_cmd,
-                             rest_of_line])
+                             HOTLOAD_COMMANDS,
+                             base_statement])
 
 def parseString(in_string):
-    return parse_point.parseString(in_string)[:]
+    return parse_point.parseString(in_string)[0]
