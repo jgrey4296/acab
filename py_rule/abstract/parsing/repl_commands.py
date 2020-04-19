@@ -30,6 +30,8 @@ def get(cmd):
 
 def engine_init(engine, params):
     logging.info("Initialising: {}".format(params))
+    if not bool(params):
+        params = ["py_rule.engines.trie_engine.TrieEngine"]
     init_module = importlib.import_module(splitext(params[0])[0])
     # build engine
     engine = eval('init_module{}'.format(splitext(params[0])[1]))()
@@ -57,7 +59,7 @@ register(ReplE.LOAD, engine_load)
 def engine_save(engine, params):
     logging.info("Saving State to: {}".format(params))
     filename = abspath(expanduser(params[0]))
-    assert(exists(filename))
+    assert(exists(split(filename)[0]))
     engine.save_file(filename)
     return engine, None
 
