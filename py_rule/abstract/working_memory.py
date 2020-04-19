@@ -32,10 +32,7 @@ class WorkingMemory:
 
     def add_modules(self, mods):
         """ Add types into the parser """
-        if self._have_added_types:
-            raise ImportError("Can Only expand working memory types once")
         assert(all([isinstance(x, ModuleSpecification) for x in mods]))
-        self._have_added_types = True
 
         # Construct operators:
         dummy = [x.construct_operators() for x in mods]
@@ -85,6 +82,8 @@ class WorkingMemory:
     def query(self, data):
         raise NotImplementedError()
 
+    def print_as_dsl(self):
+        raise NotImplementedError()
 
     def _insert_into_values_parser(self, parser):
         """ Inserts new value types that can be parsed in a sentence
