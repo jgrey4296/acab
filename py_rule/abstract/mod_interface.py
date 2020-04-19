@@ -7,6 +7,11 @@ from .value import PyRuleValue
 
 
 class ModuleSpecification:
+    """ A Module specification.
+    Should be constructed in a module's __init__,
+    into a MODULE_SPEC variable
+    """
+
 
     def __init__(self, types=None, funcs=None):
 
