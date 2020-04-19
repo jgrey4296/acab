@@ -6,6 +6,7 @@ You create one with a working memory, load some modules,
 and can then parse and run an agent DSL pipeline.
 """
 import logging as root_logger
+from os.path import exists, split
 
 from py_rule import util
 
@@ -32,11 +33,14 @@ class Engine:
         self._prior_states = []
         # named recall states of past kb states
         self._recall_states = {}
+        # modules
+        self._loaded_modules = set()
+        # cached bindings
+        self._cached_bindings = []
 
         # initialise
         if modules is not None:
-            self._working_memory.add_modules(modules)
-
+            self.load_modules(*modules)
         # Populate Agenda Keywords
         Agenda.construct_subclass_tree()
 
@@ -51,13 +55,19 @@ class Engine:
             self.load_file(path)
 
     # Initialisation:
+    def load_modules(self, *modules):
+        self._working_memory.add_modules(modules)
+        self._loaded_modules.update(modules)
+
     def load_file(self, filename):
         """ Load a file spec for the facts / rules / layers for this engine """
         raise NotImplementedError("Base Engine Stub")
 
     def save_file(self, filename):
         """ Dump the content of the kb to a file to reload later """
-        raise NotImplementedError("Base Engine Stub")
+        assert(exists(split(filename)[0]))
+        with open(filename, 'w') as f:
+            f.write(self._working_memory.print_as_dsl())
 
     # Base Actions
     def add(self, s):
@@ -70,9 +80,11 @@ class Engine:
         # pylint: disable=unused-argument,no-self-use
         raise DeprecationWarning('Use a negated add')
 
-    def query(self, s):
+    def query(self, s, cache=True):
         """ As a question of the working memory """
-        return self._working_memory.query(s)
+        result = self._working_memory.query(s)
+        if cache:
+            self._cached_bindings = result
 
     def clear_proposed_actions(self):
         """ Clear the list of actions proposed by rules, but which haven't been
@@ -98,6 +110,7 @@ class Engine:
     def run_layer(self, layer):
         """ Entry point for running a single layer completely """
         # should save_state
+        # TODO add yields
         self._save_state(layer)
         # query for the rules
         active_rules = []
@@ -114,6 +127,7 @@ class Engine:
 
     def _run_rule(self, rule):
         """ Run an individual rule """
+        # TODO add yields
         assert(isinstance(rule, Rule))
         assert(rule.is_coherent())
         logging.info("Running Rule: {}".format(rule._name))
