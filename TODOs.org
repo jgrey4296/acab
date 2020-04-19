@@ -1,11 +1,9 @@
 * Todos file
 ** Functionality
-*** DONE [[/Volumes/documents/github/py_rule/py_rule/abstract/production_operator.py::107][Implement ProductionContainer.get_bindings]]
-    CLOSED: [2020-04-11 Sat 19:43]
-    <2020-03-30 Mon>
-    now as method var_set
-
-    def get_bindings(self):
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/structures/agenda/AgendaParser.py::22][add query sections to agendas, layers, pipelines etc]]
+   <2020-04-12 Sun>
+  
+   selection.amount: $x(::Number)
 
 *** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/parsing/util.py::81][Build Arglist properly]]                                                 :parsing:
     <2020-03-26 Thu>
@@ -67,14 +65,21 @@
 
     class TypingSpec(ModuleSpecification):
 
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/agendas/parsing/::4][Write Parser for Agendas]]                                               :parsing:
+    <2020-03-26 Thu>
+
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/abstract/production_operator.py::107][Implement ProductionContainer.get_bindings]]
+    CLOSED: [2020-04-11 Sat 19:43]
+    <2020-03-30 Mon>
+    now as method var_set
+
+    def get_bindings(self):
+
 *** DONE [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/type_definition.py::19][TypeDefinition unify shared variables]]                                  :typing:
     CLOSED: [2020-04-11 Sat 20:37]
     <2020-03-26 Thu>
 
     TODO unify shared variables across structure sentences to have
-
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/agendas/parsing/::4][Write Parser for Agendas]]                                               :parsing:
-    <2020-03-26 Thu>
 
 *** DONE [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/trie_working_memory.py::64][Fix Working memory Query]]
     CLOSED: [2020-03-26 Thu 23:16]
@@ -95,6 +100,24 @@
     TODO refine the type of the operator at head
 
 ** Improvements
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/parsing/repl_commands.py::112][add asyncio]]
+    <2020-04-19 Sun>
+  
+  register(ReplE.STEP, engine_step)
+
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/structures/agenda/AgendaParser.py::22][add chained transforms]]
+   <2020-04-12 Sun>
+  
+   selection.amount: $x(::Number)
+
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/structures/agenda/AgendaParser.py::22][remove need for end statements]]
+   <2020-04-12 Sun>
+  
+   selection.amount: $x(::Number)
+
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/engine.py::31][Add Numpy Random Generator to engine?]]
+   <2020-04-11 Sat>
+
 *** TODO [[/Volumes/documents/github/py_rule/py_rule/engines/__tests/perform_transform_tests.py::42][Make transforms that rebind to themselves fail]]
     <2020-03-28 Sat>
 
@@ -108,12 +131,6 @@
     <2020-03-26 Thu>
 
     def construct_num(toks):
-
-*** DONE [[/Volumes/documents/github/py_rule/py_rule/abstract/trie/trie.py::12][Add WeakValueDict to Trie to provide direct access to nodes]]            :semantics:
-    CLOSED: [2020-04-10 Fri 20:52]
-    <2020-03-26 Thu>
-
-    def __init__(self, node_type=TrieNode):
 
 *** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/values/weights/weight_balance.py::15][Decide what to do with weight balancing]]                                :modules:
     <2020-03-26 Thu>
@@ -145,12 +162,6 @@
 
     class Pattern(PyRuleValue):
 
-*** DONE [[/Volumes/documents/github/py_rule/py_rule/abstract/value.py::13][Make PyRuleValue._name a GUID]]                                          :performance:
-    CLOSED: [2020-04-10 Fri 20:52]
-    <2020-03-26 Thu>
-
-    self._name = "AnonValue"
-
 *** TODO [[/Volumes/documents/github/py_rule/py_rule/agendas/::6][Parameterize Agendas]]                                                   :parsing:
     <2020-03-26 Thu>
 
@@ -165,12 +176,6 @@
     <2020-03-27 Fri>
 
     def to_sentence(self):
-
-*** DONE [[/Volumes/documents/github/py_rule/py_rule/abstract/sentence.py::26][Update Sentence.__str__ ]]                                               :parsing:
-    CLOSED: [2020-04-10 Fri 20:54]
-    <2020-03-26 Thu>
-
-    def __str__(self):
 
 *** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/parsing/util.py::78][use pp.removeQuotes on string and regex parsing]]
     <2020-03-31 Tue>
@@ -229,6 +234,24 @@
 *** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/printing/util.py::61][refactor regex parsing to hold params as well]]
     <2020-04-04 Sat>
 
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/abstract/trie/trie.py::12][Add WeakValueDict to Trie to provide direct access to nodes]]            :semantics:
+    CLOSED: [2020-04-10 Fri 20:52]
+    <2020-03-26 Thu>
+
+    def __init__(self, node_type=TrieNode):
+
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/abstract/value.py::13][Make PyRuleValue._name a GUID]]                                          :performance:
+    CLOSED: [2020-04-10 Fri 20:52]
+    <2020-03-26 Thu>
+
+    self._name = "AnonValue"
+
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/abstract/sentence.py::26][Update Sentence.__str__ ]]                                               :parsing:
+    CLOSED: [2020-04-10 Fri 20:54]
+    <2020-03-26 Thu>
+
+    def __str__(self):
+
 *** DONE [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/trie_working_memory.py::43][Possibly adapt working memory add to retract negated sentences]]
     CLOSED: [2020-03-28 Sat 00:08]
     <2020-03-26 Thu>
@@ -240,12 +263,14 @@
 
     TODO: make this so you can't switch between . and ! ?
 
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/__tests/typing_tests.py::523][Expand polytype testing]]
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/__tests/typing_tests.py::523][Expand polytype testing]]
+    CLOSED: [2020-04-19 Sun 23:06]
     <2020-03-26 Thu>
 
     def test_typing_polytype_fail(self):
 
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/__tests/context_tests.py::68][Finish Testing Contexts]]
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/abstract/__tests/context_tests.py::68][Finish Testing Contexts]]
+    CLOSED: [2020-04-19 Sun 23:06]
     <2020-03-26 Thu>
 
     def test_set_all_alts(self):
@@ -325,27 +350,4 @@
     <2020-03-26 Thu>
 
     def test_basic_inference(self):
-
-* TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/engine.py::31][Add Numpy Random Generator to engine?]]
- <2020-04-11 Sat>
-
-* TODO [[/Volumes/documents/github/py_rule/py_rule/modules/structures/agenda/AgendaParser.py::22][remove need for end statements]]
- <2020-04-12 Sun>
-  
- selection.amount: $x(::Number)
-
-* TODO [[/Volumes/documents/github/py_rule/py_rule/modules/structures/agenda/AgendaParser.py::22][add query sections to agendas, layers, pipelines etc]]
- <2020-04-12 Sun>
-  
- selection.amount: $x(::Number)
-
-* TODO [[/Volumes/documents/github/py_rule/py_rule/modules/structures/agenda/AgendaParser.py::22][add chained transforms]]
- <2020-04-12 Sun>
-  
- selection.amount: $x(::Number)
-
-* TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/parsing/repl_commands.py::112][add asyncio]]
-  <2020-04-19 Sun>
-  
-register(ReplE.STEP, engine_step)
 
