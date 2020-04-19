@@ -14,6 +14,10 @@ HOTLOAD_COMMANDS = pp.Forward()
 load_kw      = pp.Keyword('load')
 save_kw      = pp.Keyword('save')
 wm_kw        = pp.Keyword("wm")
+pipeline_kw  = pp.Keyword("pipeline")
+action_kw    = pp.Keyword("action")
+agenda_kw    = pp.Keyword("agenda")
+binding_kw   = pp.Keyword("binding")
 
 for_kw       = PU.s(pp.Keyword('for'))
 act_kw       = PU.s(pp.Keyword('act'))
@@ -39,10 +43,15 @@ module_kw    = PU.s(pp.Or([pp.Keyword(x) for x in ['module', 'mod']]))
 prompt_kw    = PU.s(pp.Keyword('prompt'))
 
 # Default: Instructions to pass to an Engine
-rest_of_line = pp.Regex(".+?$")
+rest_of_line = pp.restOfLine
 
 multi_line = pp.Regex("^λ$")
 
+
+# TODO
+slice_p = pp.empty()
+
+param_p = pp.empty()
 
 # assertions / retractions / query
 # eg: a.test.statement
@@ -53,9 +62,10 @@ base_statement = rest_of_line.copy()
 # treat string as query
 run_something = run_kw + pp.Optional(all_kw) + rest_of_line
 # print trie / query results / selected type
-print_state   = print_kw + pp.Or([wm_kw,
-                                  bindings_kw,
-                                  rest_of_line])
+print_alts = pp.Or([wm_kw, layer_kw, module_kw,
+                    pipeline_kw, bindings_kw])
+
+print_state   = print_kw + print_alts + param_p
 
 # Instructions to modify engine
 # eg: load ~/test/file.trie
@@ -102,7 +112,9 @@ help_cmd = help_kw
 type_check = check_kw + pp.Optional(rest_of_line)
 # Print stats
 # TODO: add control over stats
-stats = stats_kw
+stat_words = pp.Or([action_kw, agenda_kw, rule_kw, pipeline_kw,
+                    layer_kw, module_kw, wm_kw, binding_kw])
+stats = stats_kw + pp.ZeroOrMore(stat_words)
 
 # Set prompt
 prompt_cmd = prompt_kw + rest_of_line
@@ -125,10 +137,10 @@ reinit.setParseAction          (lambda toks: (RE.INIT, toks[:]))
 run_something.setParseAction   (lambda toks: (RE.RUN, toks[:]))
 step.setParseAction            (lambda toks: (RE.STEP, toks[:]))
 type_check.setParseAction      (lambda toks: (RE.CHECK, toks[:]))
-prompt_cmd.setParseAction     (lambda toks: (RE.PROMPT, toks[:] + [None]))
-exit_cmd.setParseAction        (lambda toks: (RE.EXIT, None))
-help_cmd.setParseAction        (lambda toks: (RE.HELP, None))
-stats.setParseAction           (lambda toks: (RE.STATS, None))
+prompt_cmd.setParseAction      (lambda toks: (RE.PROMPT, toks[:] + [None]))
+exit_cmd.setParseAction        (lambda toks: (RE.EXIT, []))
+help_cmd.setParseAction        (lambda toks: (RE.HELP, []))
+stats.setParseAction           (lambda toks: (RE.STATS, toks[:]))
 
 # Names
 
@@ -150,4 +162,5 @@ parse_point = pp.MatchFirst([multi_line,
                              base_statement])
 
 def parseString(in_string):
-    return parse_point.parseString(in_string)[0]
+    result = parse_point.parseString(in_string)[0]
+    return (result[0], [x.strip() for x in result[1]])
