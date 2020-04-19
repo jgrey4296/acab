@@ -6,7 +6,7 @@ You create one with a working memory, load some modules,
 and can then parse and run an agent DSL pipeline.
 """
 import logging as root_logger
-from os.path import exists, split
+from os.path import exists, split, expanduser, abspath
 
 from py_rule import util
 
@@ -34,7 +34,7 @@ class Engine:
         # named recall states of past kb states
         self._recall_states = {}
         # modules
-        self._loaded_modules = set()
+        self._loaded_modules = {}
         # cached bindings
         self._cached_bindings = []
 
@@ -56,8 +56,9 @@ class Engine:
 
     # Initialisation:
     def load_modules(self, *modules):
-        self._working_memory.add_modules(modules)
-        self._loaded_modules.update(modules)
+        self._loaded_modules.update({x.__class__.__name__ : x for x in modules})
+        self._working_memory.add_modules(self._loaded_modules.values())
+        self._working_memory.build_operator_parser()
 
     def load_file(self, filename):
         """ Load a file spec for the facts / rules / layers for this engine """
@@ -65,9 +66,9 @@ class Engine:
 
     def save_file(self, filename):
         """ Dump the content of the kb to a file to reload later """
-        assert(exists(split(filename)[0]))
-        with open(filename, 'w') as f:
-            f.write(self._working_memory.print_as_dsl())
+        assert(exists(split(abspath(expanduser(filename)))[0]))
+        with open(abspath(expanduser(filename)), 'w') as f:
+            f.write(str(self._working_memory) + "\n")
 
     # Base Actions
     def add(self, s):
@@ -85,6 +86,7 @@ class Engine:
         result = self._working_memory.query(s)
         if cache:
             self._cached_bindings = result
+        return result
 
     def clear_proposed_actions(self):
         """ Clear the list of actions proposed by rules, but which haven't been
