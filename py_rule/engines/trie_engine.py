@@ -61,9 +61,6 @@ class TrieEngine(Engine):
 
         # TODO: return a response about the loading
 
-    def save_file(self, filename):
-        raise NotImplementedError()
-
     def tick(self, inputMessages):
         # TODO fix this
         ouput = []

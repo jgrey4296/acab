@@ -16,7 +16,11 @@ From a module it loads Value, Statement, and Annotation parsers.
 
 """
 import pyparsing as pp
+import logging as root_logger
+
 from .mod_interface import ModuleSpecification
+
+logging = root_logger.getLogger(__name__)
 
 
 class WorkingMemory:
@@ -25,6 +29,10 @@ class WorkingMemory:
     def __init__(self):
         self._have_added_types = False
         self._have_built_operators = False
+
+    def __str__(self):
+        """ Print the working memory as a reparseable string """
+        raise NotImplementedError()
 
     def __eq__(self, other):
         raise NotImplementedError()
@@ -66,7 +74,7 @@ class WorkingMemory:
         once all module's operators have been constructed
         """
         if self._have_built_operators:
-            raise ImportError("Can only build operators once")
+            logging.warning("Should only build operators once")
         self._have_built_operators = True
         # if you haven't added types by now, tough:
         self._have_added_types = True
@@ -80,9 +88,6 @@ class WorkingMemory:
         raise DeprecationWarning()
 
     def query(self, data):
-        raise NotImplementedError()
-
-    def print_as_dsl(self):
         raise NotImplementedError()
 
     def _insert_into_values_parser(self, parser):

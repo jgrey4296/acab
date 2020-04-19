@@ -29,9 +29,13 @@ class TrieWM(WorkingMemory):
         """ init is a string of assertions to start the fact base with """
         super().__init__()
         self._internal_trie = Trie(FactNode)
+        # TODO: have a parallel listener trie?
         self._last_node = self._internal_trie._root
         if init is not None:
             self.add(init)
+
+    def __str__(self):
+        return str(self._internal_trie)
 
     def __eq__(self, other):
         if isinstance(other, TrieWM):
@@ -69,10 +73,6 @@ class TrieWM(WorkingMemory):
             return self._query_sentence(Query([data]))
         else:
             raise PyRuleParseException("Unrecognised query target: {}".format(type(data)))
-
-    def __str__(self):
-        return str(self._internal_trie)
-
 
     # Internal Methods:
     def _insert_into_values_parser(self, parser):
