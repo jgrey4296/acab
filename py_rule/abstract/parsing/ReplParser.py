@@ -13,7 +13,7 @@ HOTLOAD_COMMANDS = pp.Forward()
 # Keywords
 load_kw      = pp.Keyword('load')
 save_kw      = pp.Keyword('save')
-kb_kw        = pp.Keyword('kb')
+wm_kw        = pp.Keyword("wm")
 
 for_kw       = PU.s(pp.Keyword('for'))
 act_kw       = PU.s(pp.Keyword('act'))
@@ -53,7 +53,7 @@ base_statement = rest_of_line.copy()
 # treat string as query
 run_something = run_kw + pp.Optional(all_kw) + rest_of_line
 # print trie / query results / selected type
-print_state   = print_kw + pp.Or([kb_kw,
+print_state   = print_kw + pp.Or([wm_kw,
                                   bindings_kw,
                                   rest_of_line])
 
@@ -101,10 +101,11 @@ help_cmd = help_kw
 # Type Check all loaded / this string
 type_check = check_kw + pp.Optional(rest_of_line)
 # Print stats
+# TODO: add control over stats
 stats = stats_kw
 
 # Set prompt
-prompt_cmd = prompt_kw + pp.Word(pp.alphas) + pp.Optional(pp.Word(pp.alphas))
+prompt_cmd = prompt_kw + rest_of_line
 
 # Actions
 save_kw.setParseAction    (lambda toks: RE.SAVE)
@@ -124,8 +125,7 @@ reinit.setParseAction          (lambda toks: (RE.INIT, toks[:]))
 run_something.setParseAction   (lambda toks: (RE.RUN, toks[:]))
 step.setParseAction            (lambda toks: (RE.STEP, toks[:]))
 type_check.setParseAction      (lambda toks: (RE.CHECK, toks[:]))
-prompt_cmd.setParseAction      (lambda toks: (RE.PROMPT, toks[:]))
-
+prompt_cmd.setParseAction     (lambda toks: (RE.PROMPT, toks[:] + [None]))
 exit_cmd.setParseAction        (lambda toks: (RE.EXIT, None))
 help_cmd.setParseAction        (lambda toks: (RE.HELP, None))
 stats.setParseAction           (lambda toks: (RE.STATS, None))
@@ -145,6 +145,7 @@ parse_point = pp.MatchFirst([multi_line,
                              stats,
                              help_cmd,
                              exit_cmd,
+                             prompt_cmd,
                              HOTLOAD_COMMANDS,
                              base_statement])
 
