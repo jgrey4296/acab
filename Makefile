@@ -23,6 +23,14 @@ pattern:
 init:
 	find ./py_rule -type d -print0 | xargs -0 -I {} touch "{}/__init__.py"
 
+repl:
+	python py_rule/repl.py
+
+vrepl:
+	python py_rule/repl.py --verbose DEBUG
+
+re: repl
+vr: vrepl
 
 clean:
 ifeq (${LOGS}, )
