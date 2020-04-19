@@ -5,16 +5,8 @@ A PyRule REPL, using default of TrieWM
 from os.path import splitext, split
 import argparse
 import importlib
-
 import logging as root_logger
-LOGLEVEL = root_logger.DEBUG
-LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-root_logger.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
 
-console = root_logger.StreamHandler()
-console.setLevel(root_logger.DEBUG)
-root_logger.getLogger('').addHandler(console)
-logging = root_logger.getLogger(__name__)
 ##############################
 from py_rule.engines.trie_engine import TrieEngine
 from py_rule.abstract.parsing import ReplParser as ReP
@@ -23,12 +15,22 @@ from py_rule.abstract.parsing import repl_commands as ReC
 
 
 if __name__ == "__main__":
+
     #see https://docs.python.org/3/howto/argparse.html
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                      epilog = "\n".join([""]))
     parser.add_argument('--engine', default="py_rule.engines.trie_engine.TrieEngine")
-
+    parser.add_argument('-v', '--verbose', default="WARNING")
     args = parser.parse_args()
+
+    LOGLEVEL = root_logger._nameToLevel[args.verbose]
+    LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
+    root_logger.basicConfig(filename=LOG_FILE_NAME, level=max(0, LOGLEVEL - 10), filemode='w')
+
+    console = root_logger.StreamHandler()
+    console.setLevel(max(0, LOGLEVEL))
+    root_logger.getLogger('').addHandler(console)
+    logging = root_logger.getLogger(__name__)
 
     logging.info("Setting up engine: {}".format(args.engine))
     #import engine or defauilt trie engine from args
@@ -50,16 +52,16 @@ if __name__ == "__main__":
 
             # Change prompt:
             if command == ReC.ReplE.PROMPT:
-                prompt = params.pop(0)
-                if bool(params):
-                    multi_line_prompt = params.pop(0)
+                prompt = params[0]
             else:
                 # Or Lookup Command
                 cmd_fn = ReC.get(command)
                 # Perform the instruction
                 engine, result = cmd_fn(engine, params)
-        except Exception as e:
-            logging.exception("Error: {}".format(str(e)))
+
+        except Exception as exp:
+            logging.exception("Error: {}".format(str(exp)))
+            breakpoint()
             result = None
         finally:
             #print result
