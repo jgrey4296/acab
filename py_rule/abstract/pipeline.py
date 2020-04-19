@@ -21,12 +21,26 @@ class Pipeline:
     """
 
     def __init__(self):
+        # Layers in the main loop
         self._layers = []
+
+        # Free layers to call manually.
+        # Eg: analysis
+        self._free_layers = []
+
         # Terminals:
+        # constructed from flow analysis
         self._terminal_in   = []
         self._terminal_out  = []
         self._interface_in  = []
         self._interface_out = []
+
+        self._layer_dict = None
+
+    def __getitem__(self, i):
+        if self._layer_dict is None:
+            self._layer_dict = {x.__name__ : x for x in self._layers}
+        return self._layer_dict[i]
 
     def __call__(self, engine, tick):
         """ Run this pipeline on the given engine for a tick """
