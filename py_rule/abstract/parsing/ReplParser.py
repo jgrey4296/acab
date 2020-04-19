@@ -49,9 +49,12 @@ multi_line = pp.Regex("^λ$")
 
 
 # TODO
-slice_p = pp.empty()
+number = pp.Word(pp.nums)
+slice_p = PU.s(pp.Literal('[')) + \
+    PU.op(number) + PU.op(pp.Literal(':') + number) + \
+    PU.s(pp.Literal(']'))
 
-param_p = pp.empty()
+param_p = pp.Or([number, slice_p, pp.restOfLine])
 
 # assertions / retractions / query
 # eg: a.test.statement
@@ -163,4 +166,4 @@ parse_point = pp.MatchFirst([multi_line,
 
 def parseString(in_string):
     result = parse_point.parseString(in_string)[0]
-    return (result[0], [x.strip() for x in result[1]])
+    return (result[0], [x.strip() for x in result[1] if x.strip() != ""])
