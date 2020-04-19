@@ -1,6 +1,7 @@
 """
 Utility functions for the REPL
 """
+from datetime import datetime
 from enum import Enum
 from os.path import split, splitext, exists, expanduser, abspath
 import importlib
@@ -65,21 +66,23 @@ register(ReplE.SAVE, engine_save)
 def engine_print(engine, params):
     logging.info("Printing: {}".format(params))
     result = []
-    # TODO
     if "wm" in params:
-        print("WM: {}")
+        result.append("WM:")
+        result.append(str(engine._working_memory))
     elif "module" in params:
-        print("Module: {}")
+        result.append("Module: {}".format(params[1]))
+        result.append(str(engine._loaded_modules[params[1]]))
     elif "layer" in params:
-        print("Layer: {}")
+        result.append("Layer: {}".format(params[1]))
+        result.append(str(engine._pipeline[params[1]]))
     elif "pipeline" in params:
-        print("Pipeline: {}")
-
+        result.append("Pipeline: {}")
+        result.append(str(engine._pipeline))
     elif "bindings" in params:
-        print("Bindings: {}")
-
+        result.append("Bindings: {}")
+        result.append(str(engine._cached_bindings[params[1]]))
     else:
-        print("Querying: {}")
+        result.append("Querying: {}")
 
     return engine, "\n".join(result)
 
@@ -110,34 +113,50 @@ def engine_pass(engine, params):
 
 register(ReplE.PASS, engine_pass)
 
+def engine_decompose(engine, params):
+    # TODO
+    # run query
+    # split result into bindings
+    return engine, None
+
+register(ReplE.DECOMPOSE, engine_decompose)
+
 def engine_step(engine, params):
     logging.info("Stepping {}".format(params))
-    # Step back layer
     # TODO
+    result = []
+    if "back" in params[0]:
+        print("back")
+    elif "rule" in params[0]:
+        print("rule")
+    elif "layer" in params[0]:
+        print("layer")
+    elif "pipeline" in params[0]:
+        print("pipeline")
 
-    # step rule forward
-
-    # step layer foward
-
-    # step pipeline forward
-
-    return engine, None
+    return engine, "\n".join(result)
 
 register(ReplE.STEP, engine_step)
 
 def engine_act(engine, params):
     logging.info("Manually acting: {}".format(params))
     # TODO
-    # Get act
+    result = []
+    # Parse the act / retrieve the act
 
-    # populate act with bindings
+    # combine with a binding
 
     # call act
-    return engine, None
+
+    return engine, "\n".join(result)
 
 register(ReplE.ACT, engine_act)
 
 def engine_listen(engine, params):
+    """ Listeners:
+    Listen for specific assertions / rule firings / queries,
+    and pause on them
+    """
     logging.info("Listener: {}".format(params))
     # TODO
     # if add listener:
@@ -155,6 +174,8 @@ def engine_type_check(engine, params):
     # TODO
     # If single statement, run analysis layer with statement inserted, return types
 
+
+
     # else everything: run analysis layer
 
     return engine, None
@@ -163,50 +184,56 @@ register(ReplE.CHECK, engine_type_check)
 
 def engine_stats(engine, params):
     logging.info("Getting Stats: {}".format(params))
-    # TODO
+    allow_all = not bool(params)
     result = []
     # actions
-    result.append("Action Stats: ")
-    result.append("\t{}".format("\n\t".join([str(x) for x in ActionOp.op_list])))
+    if allow_all or "action" in params:
+        result.append("Action Stats: ")
+        result.append("\t{}".format("\n\t".join([str(x) for x in ActionOp.op_list])))
 
     # agendas
-    result.append("--------------------")
-    result.append("Agenda Stats: ")
-    result.append("\t{}".format("\n\t".join([str(x) for x in Agenda.agenda_list])))
+    if allow_all or "agenda" in params:
+        result.append("--------------------")
+        result.append("Agenda Stats: ")
+        result.append("\t{}".format("\n\t".join([str(x) for x in Agenda.agenda_list])))
 
     # rules
-    result.append("--------------------")
-    result.append("Rule Stats: ")
+    if allow_all or "rule" in params:
+        result.append("--------------------")
+        result.append("Rule Stats: ")
 
 
     # pipeline
-    result.append("--------------------")
-    result.append("Pipeline Stats: ")
-    result.append(str(engine._pipeline))
+    if allow_all or "pipeline" in params:
+        result.append("--------------------")
+        result.append("Pipeline Stats: ")
+        result.append(str(engine._pipeline))
 
     # layers
-    if engine._pipeline is not None:
+    if (allow_all or "layer" in params) and engine._pipeline is not None:
         result.append("--------------------")
         result.append("Layer Stats: ")
         result.append("\t{}".format("\n\t".join([str(x) for x in engine._pipeline._layers])))
 
     # modules
-    result.append("--------------------")
-    result.append("Module Stats: ")
-    result.append("\t{}".format("\n\t".join([x.__name__ for x in engine._loaded_modules])))
+    if allow_all or "module" in params:
+        result.append("--------------------")
+        result.append("Module Stats: ")
+        result.append("\t{}".format("\n\t".join([x for x in engine._loaded_modules])))
 
-    # KB stats
-    result.append("--------------------")
-    result.append("KB Stats: ")
-    result.append(str(engine._working_memory))
+    # WM stats
+    if allow_all or "wm" in params:
+        result.append("--------------------")
+        result.append("WM Stats: ")
+        result.append(str(engine._working_memory))
 
     # Bindings
-    result.append("--------------------")
-    result.append("Binding Stats: ")
-    # TODO possibly filter out at binds
-    bind_groups = engine._cached_bindings[:]
-    result.append("\t{}".format("\n\t".join([str(x) for x in bind_groups])))
-
+    if allow_all or "binding" in params:
+        result.append("--------------------")
+        result.append("Binding Stats: ")
+        # TODO possibly filter out at binds
+        bind_groups = engine._cached_bindings[:]
+        result.append("\t{}".format("\n\t".join([str(x) for x in bind_groups])))
 
     result.append("")
     return engine, "\n".join(result)
@@ -252,8 +279,9 @@ register(ReplE.HELP, engine_help)
 
 def engine_exit(engine, params):
     logging.info("Quit Command")
-    # TODO
-    # auto save
+    filename = "{}_{}.auto".format(engine.__class__.__name__,
+                                   datetime.now().strftime("%Y_%m-%d_%H_%M"))
+    engine.save_file(filename)
     return engine, None
 
 register(ReplE.EXIT, engine_exit)
