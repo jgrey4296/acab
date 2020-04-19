@@ -27,6 +27,8 @@ class Contexts:
         return len(self._matches)
 
     def __getitem__(self, key):
+        if isinstance(key, slice):
+            return [x[0] for x in self._matches.__getitem__(key)]
         return self._matches[key][0]
 
     def __iter__(self):
