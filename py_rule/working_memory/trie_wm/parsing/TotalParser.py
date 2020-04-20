@@ -24,7 +24,10 @@ def final_pass(toks):
     #clear the parse bindings as a guard:
     return toks[:]
 
-statements = pp.Or([RP.rule, AP.action_definition, HOTLOAD_STATEMENTS])
+statements = pp.Or([RP.rule,
+                    AP.action_definition,
+                    FP.SEN_STATEMENT,
+                    HOTLOAD_STATEMENTS])
 
 file_component = pp.MatchFirst([statements, FP.PARAM_SEN])
 
