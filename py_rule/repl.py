@@ -2,19 +2,21 @@
 A PyRule REPL, using default of TrieWM
 """
 # Setup root_logger:
+from pyparsing import ParseException
 from os.path import splitext, split
+import sys
 import argparse
 import importlib
 import logging as root_logger
+import traceback
 
 ##############################
-from py_rule.engines.trie_engine import TrieEngine
 from py_rule.abstract.parsing import ReplParser as ReP
 from py_rule.abstract.parsing import repl_commands as ReC
 
-
-
+# Quiet hook from https://gist.github.com/jhazelwo/86124774833c6ab8f973323cb9c7e251
 if __name__ == "__main__":
+
 
     #see https://docs.python.org/3/howto/argparse.html
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -33,43 +35,51 @@ if __name__ == "__main__":
     logging = root_logger.getLogger(__name__)
 
     logging.info("Setting up engine: {}".format(args.engine))
-    #import engine or defauilt trie engine from args
+
+    #import then build engine or default trie engine from args
     init_module = importlib.import_module(splitext(args.engine)[0])
     # build engine
-    engine = eval('init_module{}'.format(splitext(args.engine)[1]))()
+    engine, dummy = ReC.get(ReC.ReplE.INIT)(None, {'params': [args.engine]})
 
-    prompt = "PyRuleREPL: "
-    multi_line_prompt = "... "
-    command = None
-    result = None
-    current_str = input("PyRuleREPL: ")
-    while command != ReC.ReplE.EXIT:
+    data = { 'prompt' : 'PyRuleREPL: ',
+             'prompt_ml' : '... ',
+             'command': ReC.ReplE.NOP,
+             'params' : [],
+             'result' : None,
+             'current_str' : None,
+             'collect_str' : [],
+             'in_multi_line': False}
+    data['current_str'] = input(data['prompt'])
+    while data['command'] != ReC.ReplE.EXIT:
         try:
             # parse string in REPL parser
-            parse_response = ReP.parseString(current_str)
+            parse_response = ReP.parseString(data['current_str'],
+                                             in_multi_line=data['in_multi_line'])
             logging.debug("Parse Response: {}".format(parse_response))
-            command, params = parse_response
+            data.update(parse_response)
 
-            # Change prompt:
-            if command == ReC.ReplE.PROMPT:
-                prompt = params[0]
-            else:
-                # Or Lookup Command
-                cmd_fn = ReC.get(command)
+            # Change prompt or perform command:
+            if data['command'] is not None:
+                cmd_fn = ReC.get(data['command'])
                 # Perform the instruction
-                engine, result = cmd_fn(engine, params)
+                engine, u_data = cmd_fn(engine, data)
+                if u_data is not None:
+                    data.update(u_data)
 
         except Exception as exp:
-            logging.exception("Error: {}".format(str(exp)))
+            logging.exception(str(exp))
+            print("My Error: {}".format(str(exp)))
+            exc_type, exc_value, exc_tb = sys.exc_info()
+            # traceback.print_tb(exc_tb, limit=4)
             breakpoint()
-            result = None
+            data['result']  = []
         finally:
             #print result
-            if result is not None:
-                print(result)
-                result = None
+            if bool(data['result']):
+                print(data['result'])
+                data['result'] = None
             # Repeat
-            if command != ReC.ReplE.EXIT:
-                current_str = input(prompt)
+            if data['command'] != ReC.ReplE.EXIT:
+                data['current_str'] = input(data['prompt'])
 
     logging.info("Shutting down engine: {}".format(args.engine))

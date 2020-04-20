@@ -3,11 +3,35 @@ The parser for the REPL
 
 """
 import pyparsing as pp
+import logging as root_logger
 
 from py_rule.abstract.parsing import util as PU
 from .repl_commands import ReplE as RE
+from .repl_commands import build_command
 
+logging = root_logger.getLogger(__name__)
 HOTLOAD_COMMANDS = pp.Forward()
+
+def build_slice(toks):
+    result = None
+    first  = 0
+    second = 0
+    if 'first' in toks:
+        first = toks['first']
+        result = first
+
+    if 'second' in toks:
+        second = toks['second'][0]
+        result = slice(first, second)
+
+    return result
+
+def build_multiline(toks):
+    param = True
+    if toks[0][1] == "}":
+        param = False
+
+    return build_command(RE.MULTILINE, params=[param])
 
 
 # Keywords
@@ -18,12 +42,12 @@ pipeline_kw  = pp.Keyword("pipeline")
 action_kw    = pp.Keyword("action")
 agenda_kw    = pp.Keyword("agenda")
 binding_kw   = pp.Keyword("binding")
+module_kw    = pp.Or([pp.Keyword(x) for x in ['module', 'mod']])
 
 for_kw       = PU.s(pp.Keyword('for'))
 act_kw       = PU.s(pp.Keyword('act'))
 all_kw       = PU.s(pp.Keyword('all'))
 back_kw      = PU.s(pp.Keyword('back'))
-bindings_kw  = PU.s(pp.Keyword('bindings'))
 check_kw     = PU.s(pp.Keyword('check'))
 decompose_kw = PU.s(pp.Keyword('decompose'))
 exit_kw      = PU.s(pp.Or([pp.Keyword(x) for x in ["exit", "quit"]]))
@@ -39,36 +63,36 @@ rule_kw      = PU.s(pp.Keyword('rule'))
 run_kw       = PU.s(pp.Keyword('run'))
 stats_kw     = PU.s(pp.Keyword('stats'))
 step_kw      = PU.s(pp.Keyword('step'))
-module_kw    = PU.s(pp.Or([pp.Keyword(x) for x in ['module', 'mod']]))
 prompt_kw    = PU.s(pp.Keyword('prompt'))
 
 # Default: Instructions to pass to an Engine
-rest_of_line = pp.restOfLine
+rest_of_line = PU.op(PU.s(pp.White())) + pp.restOfLine
 
-multi_line = pp.Regex("^λ$")
-
+multi_line = pp.Regex("^:[{}]$")
+multi_line_pop = pp.Literal(':pop')
 
 # TODO
 number = pp.Word(pp.nums)
 slice_p = PU.s(pp.Literal('[')) + \
-    PU.op(number) + PU.op(pp.Literal(':') + number) + \
+    PU.op(number).setResultsName('first') + \
+    PU.op(PU.s(pp.Literal(':')) + number).setResultsName('second') + \
     PU.s(pp.Literal(']'))
 
-param_p = pp.Or([number, slice_p, pp.restOfLine])
+param_p = pp.Or([number, slice_p])
 
 # assertions / retractions / query
 # eg: a.test.statement
 # eg2: a.test.query?
 base_statement = rest_of_line.copy()
+nop_line = rest_of_line.copy()
 
 # run rule/layer/pipeline (select appropriate method by its type)
 # treat string as query
 run_something = run_kw + pp.Optional(all_kw) + rest_of_line
 # print trie / query results / selected type
-print_alts = pp.Or([wm_kw, layer_kw, module_kw,
-                    pipeline_kw, bindings_kw])
+print_alts = pp.Or([wm_kw, layer_kw, module_kw, pipeline_kw, binding_kw])
 
-print_state   = print_kw + print_alts + param_p
+print_state   = print_kw + print_alts + PU.op(param_p)
 
 # Instructions to modify engine
 # eg: load ~/test/file.trie
@@ -90,7 +114,7 @@ step = step_kw + pp.Optional(pp.Or([back_kw,
 # Instructions to load a module
 # load module
 # eg: load py_rule.modules.values.numbers
-load_mod = module_kw + rest_of_line
+load_mod = PU.s(module_kw) + rest_of_line
 
 # Misc Instructions
 # perform an action manually
@@ -123,47 +147,62 @@ stats = stats_kw + pp.ZeroOrMore(stat_words)
 prompt_cmd = prompt_kw + rest_of_line
 
 # Actions
-save_kw.setParseAction    (lambda toks: RE.SAVE)
-load_kw.setParseAction    (lambda toks: RE.LOAD)
-multi_line.setParseAction (lambda toks: (RE.MULTILINE, None))
-state_io.setParseAction   (lambda toks: (toks[0], toks[1:]))
+slice_p.setParseAction      (build_slice)
+number.setParseAction       (lambda toks: int (toks[0]))
+rest_of_line.setParseAction (lambda toks: toks[0])
+save_kw.setParseAction      (lambda toks: RE.SAVE)
+load_kw.setParseAction      (lambda toks: RE.LOAD)
+multi_line.setParseAction   (build_multiline)
+multi_line_pop.setParseAction(lambda toks: (RE.POP))
 
-base_statement.setParseAction  (lambda toks: (RE.PASS, toks[:]))
-decompose.setParseAction       (lambda toks: (RE.DECOMPOSE, toks[:]))
-listen_for.setParseAction      (lambda toks: (RE.LISTEN, toks[:]))
-listener_remove.setParseAction (lambda toks: (RE.LISTEN, toks[:]))
-listeners.setParseAction       (lambda toks: (RE.LISTEN, toks[:]))
-load_mod.setParseAction        (lambda toks: (RE.MODULE, toks[:]))
-manual_act.setParseAction      (lambda toks: (RE.ACT, toks[:]))
-print_state.setParseAction     (lambda toks: (RE.PRINT, toks[:]))
-reinit.setParseAction          (lambda toks: (RE.INIT, toks[:]))
-run_something.setParseAction   (lambda toks: (RE.RUN, toks[:]))
-step.setParseAction            (lambda toks: (RE.STEP, toks[:]))
-type_check.setParseAction      (lambda toks: (RE.CHECK, toks[:]))
-prompt_cmd.setParseAction      (lambda toks: (RE.PROMPT, toks[:] + [None]))
-exit_cmd.setParseAction        (lambda toks: (RE.EXIT, []))
-help_cmd.setParseAction        (lambda toks: (RE.HELP, []))
-stats.setParseAction           (lambda toks: (RE.STATS, toks[:]))
+state_io.setParseAction        (lambda toks: build_command(toks[0], params=toks[1:]))
+base_statement.setParseAction  (lambda toks: build_command(RE.PASS, params=toks[:]))
+nop_line.setParseAction        (lambda toks: build_command(RE.NOP, params=toks[:]))
+decompose.setParseAction       (lambda toks: build_command(RE.DECOMPOSE, params=toks[:]))
+listen_for.setParseAction      (lambda toks: build_command(RE.LISTEN, params=toks[:]))
+listener_remove.setParseAction (lambda toks: build_command(RE.LISTEN, params=toks[:]))
+listeners.setParseAction       (lambda toks: build_command(RE.LISTEN, params=toks[:]))
+load_mod.setParseAction        (lambda toks: build_command(RE.MODULE, params=toks[:]))
+manual_act.setParseAction      (lambda toks: build_command(RE.ACT, params=toks[:]))
+print_state.setParseAction     (lambda toks: build_command(RE.PRINT, params=toks[:]))
+reinit.setParseAction          (lambda toks: build_command(RE.INIT, params=toks[:]))
+run_something.setParseAction   (lambda toks: build_command(RE.RUN, params=toks[:]))
+step.setParseAction            (lambda toks: build_command(RE.STEP, params=toks[:]))
+type_check.setParseAction      (lambda toks: build_command(RE.CHECK, params=toks[:]))
+prompt_cmd.setParseAction      (lambda toks: build_command(RE.PROMPT, params=toks[:]))
+exit_cmd.setParseAction        (lambda toks: build_command(RE.EXIT))
+help_cmd.setParseAction        (lambda toks: build_command(RE.HELP, params=[]))
+stats.setParseAction           (lambda toks: build_command(RE.STATS, params=toks[:]))
 
 # Names
+main_commands = PU.s(pp.Literal(':')) + pp.Or([run_something,
+                                               print_state,
+                                               state_io,
+                                               reinit,
+                                               step,
+                                               load_mod,
+                                               manual_act,
+                                               listen_for,
+                                               type_check,
+                                               stats,
+                                               help_cmd,
+                                               exit_cmd,
+                                               prompt_cmd,
+                                               HOTLOAD_COMMANDS])
+
+
 
 parse_point = pp.MatchFirst([multi_line,
-                             run_something,
-                             print_state,
-                             state_io,
-                             reinit,
-                             step,
-                             load_mod,
-                             manual_act,
-                             listen_for,
-                             type_check,
-                             stats,
-                             help_cmd,
-                             exit_cmd,
-                             prompt_cmd,
-                             HOTLOAD_COMMANDS,
+                             main_commands,
                              base_statement])
 
-def parseString(in_string):
-    result = parse_point.parseString(in_string)[0]
-    return (result[0], [x.strip() for x in result[1] if x.strip() != ""])
+alt_parse_point = pp.MatchFirst([multi_line,
+                                 nop_line])
+
+def parseString(in_string, in_multi_line=False):
+    if not in_multi_line:
+        result = parse_point.parseString(in_string)[0]
+    else:
+        logging.info("In ML: {}".format(in_multi_line))
+        result = alt_parse_point.parseString(in_string)[0]
+    return result
