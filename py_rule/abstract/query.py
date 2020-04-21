@@ -17,12 +17,12 @@ class Query(PO.ProductionContainer):
         super(Query, self).__init__(clauses, type_str=type_str)
 
 
-    def expand_bindings(self, bindings):
+    def bind(self, bindings):
         """ Expand the individual clauses to have concrete values """
         assert(isinstance(bindings, dict))
         new_clauses = []
         for x in self.clauses:
-            new_clauses.append(x.expand_bindings(bindings))
+            new_clauses.append(x.bind(bindings))
         return Query(new_clauses)
 
     def split_clauses(self):

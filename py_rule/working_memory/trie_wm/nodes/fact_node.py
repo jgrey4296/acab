@@ -103,16 +103,6 @@ class FactNode(TrieNode):
         if self.remove_child(fact):
             self._set_dirty_chain()
 
-    def bind(self, bindings):
-        """ Annotate the Node with a Meta-Bind Evaluation """
-        if not self._data[WMU.BIND_S]:
-            return self.copy()
-        else:
-            copied = self.copy()
-            copied._bind_to_value(bindings)
-            return copied
-
-
     def _set_dirty_chain(self):
         """ Mark this Node as modified, up to the root """
         self._dirty = True
@@ -125,10 +115,3 @@ class FactNode(TrieNode):
         # { bindNode : [ options ] }
         raise NotImplementedError()
 
-    def _bind_to_value(self, data):
-        """ Set the Nodes value to be one retrieved
-        from passed in bindings """
-        assert(self._value in data)
-        assert(WMU.BIND_S in self._data and self._data[WMU.BIND_S])
-        self._value = data[self._value]
-        self._data[WMU.BIND_S] = False

@@ -91,7 +91,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         bindings = { "a" : FP.parseString("blah")[0],
                      "b": FP.parseString("bloo")[0] }
         result = FP.parseString('$a.b.$b!c')[0]
-        expanded = result.expand_bindings(bindings)
+        expanded = result.bind(bindings)
         asString = expanded.pprint()
         self.assertEqual(asString, "blah.b.bloo!c")
 

@@ -120,9 +120,6 @@ class ProductionContainer(PyRuleValue):
         for x in self.clauses:
             x.verify()
 
-    def expand_bindings(self, bindings):
-        raise NotImplementedError()
-
     def copy(self):
         raise NotImplementedError()
 

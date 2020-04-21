@@ -104,7 +104,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
     def test_rule_simple_binding_expansion(self):
         bindings = { "x" : FP.parseString('a.b.c')[0] }
         result = RP.parseString("ρ::a.rule.x:\n\n$x?\n\nend")[0]
-        expanded = result[-1]._value.expand_bindings(bindings)
+        expanded = result[-1]._value.bind(bindings)
         self.assertEqual(expanded.pprint(),
                          "AnonRule(::ρ):\n\ta.b.c?\nend")
 

@@ -61,7 +61,7 @@ class Sentence(PyRuleValue):
         return obj
 
 
-    def expand_bindings(self, bindings):
+    def bind(self, bindings):
         """ Given a dictionary of bindings, reify the sentence,
         using those bindings.
         ie: .a.b.$x with {x: blah} => .a.b.blah
@@ -70,16 +70,18 @@ class Sentence(PyRuleValue):
         output = []
 
         for word in self:
+            # early expand if a plain node
             if not word.is_var:
-                # early expand if a plain node
                 output.append(word.copy())
                 continue
 
+            # Sentence invariant: only word[0] can have an at_bind
             if word.is_at_var:
                 retrieved = bindings[AT_BIND_S + word._value]
             else:
                 retrieved = bindings[word._value]
 
+            # Fixup the last modal operator if a sentence has been inserted
             if isinstance(retrieved, Sentence):
                 output += [y.copy() for y in retrieved]
                 output[-1]._data[OPERATOR_S] = word._data[OPERATOR_S]

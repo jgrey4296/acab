@@ -133,3 +133,21 @@ class PyRuleNode(PyRuleValue):
             path.insert(0, current)
             current = current._parent
         return path
+
+
+    def bind(self, bindings):
+        """ Return a copy that has applied given bindings to this node """
+        if not self._data[util.BIND_S]:
+            return self.copy()
+        else:
+            copied = self.copy()
+            copied._bind_to_value(bindings)
+            return copied
+
+    def _bind_to_value(self, data):
+        """ Set the Nodes value to be one retrieved
+        from passed in bindings """
+        assert(self._value in data)
+        assert(util.BIND_S in self._data and self._data[util.BIND_S])
+        self._value = data[self._value]
+        self._data[util.BIND_S] = False

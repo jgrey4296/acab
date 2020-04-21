@@ -81,7 +81,7 @@ class ActionComponent(PO.ProductionComponent):
         output = []
         for x in self._vars:
             if isinstance(x, Sentence):
-                output.append(x.expand_bindings(data))
+                output.append(x.bind(data))
             elif isinstance(x, list):
                 output.append([y.bind(data) for y in x])
             elif isinstance(x, PyRuleValue) and x.is_var:
@@ -93,14 +93,14 @@ class ActionComponent(PO.ProductionComponent):
                 output.append(x)
         return output
 
-    def expand_bindings(self, bindings):
+    def bind(self, bindings):
         """ Expand stored bindings at interpret time
         ie: +(.a.b.$x) + { x : .a.b.c } -> +(.a.b.a.b.c)
         """
         new_values = []
         for x in self._vars:
             if isinstance(x, Sentence):
-                new_values.append(x.expand_bindings(bindings))
+                new_values.append(x.bind(bindings))
             else:
                 new_values.append(x)
         return ActionComponent(self.op, new_values)
@@ -127,11 +127,11 @@ class Action(PO.ProductionContainer):
                                      **kwargs)
 
 
-    def expand_bindings(self, bindings):
+    def bind(self, bindings):
         """ Expand stored bindings """
         exp_clauses = []
         for clause in self.clauses:
-            exp_clauses.append(clause.expand_bindings(bindings))
+            exp_clauses.append(clause.bind(bindings))
 
         return Action(exp_clauses, params=self._vars)
 

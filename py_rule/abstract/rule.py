@@ -71,7 +71,7 @@ class Rule(PyRuleValue):
         # if nothing raises an exception:
         return True
 
-    def expand_bindings(self, bindings):
+    def bind(self, bindings):
         """ Return a new Rule, modified to have
         bindings replaced with their values
         """
@@ -86,11 +86,11 @@ class Rule(PyRuleValue):
 
         # expand the query
         if self._query is not None:
-            new_query = self._query.expand_bindings(bindings)
+            new_query = self._query.bind(bindings)
 
         # expand the actions
         if self._action is not None:
-            new_action = self._action.expand_bindings(bindings)
+            new_action = self._action.bind(bindings)
 
 
         new_rule = self.__class__(new_query,

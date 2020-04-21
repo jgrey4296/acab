@@ -127,7 +127,7 @@ class NumberQueryTests(unittest.TestCase):
                      "y" : FP.parseString('d.e.f')[0],
                      "z" : FP.parseString('x.y.z')[0] }
         result = RP.parseString("ρ::a.rule:\n$y.b.$z?\n\n$x + 2 -> $y\n\n+($y)\n\nend")[0][-1]
-        expanded = result._value.expand_bindings(bindings)
+        expanded = result._value.bind(bindings)
         # Expanding bindings makes a new rule, so its an AnonValue
         self.assertEqual(expanded.pprint(),
                          "AnonRule(::ρ):\n\td.e.f.b.x.y.z?\n\n\t$x + 2 -> $y\n\n\t+(d.e.f)\nend")

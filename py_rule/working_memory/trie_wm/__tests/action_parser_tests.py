@@ -38,7 +38,7 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
     def test_action_binding_expansion(self):
         bindings = {"x" : FP.parseString('a.b.c')[0] }
         parsed_action = AP.parseString("ActionAdd($x)")
-        bound_action= parsed_action.expand_bindings(bindings)
+        bound_action = parsed_action.bind(bindings)
         self.assertIsInstance(bound_action, action.Action)
         self.assertEqual(bound_action.pprint(), "ActionAdd(a.b.c)")
 

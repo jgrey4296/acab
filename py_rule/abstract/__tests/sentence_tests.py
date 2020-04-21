@@ -33,7 +33,7 @@ class SentenceTests(unittest.TestCase):
     def test_get_item(self):
         return
 
-    def test_expand_bindings(self):
+    def test_bind(self):
         return
 
     def test_copy(self):
