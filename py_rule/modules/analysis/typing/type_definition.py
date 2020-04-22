@@ -3,12 +3,12 @@ from py_rule.error.pyrule_parse_exception import PyRuleParseException
 from py_rule.util import STRUCTURE_S, VALUE_TYPE_S, NAME_S
 from py_rule.abstract.printing import util as PrU
 
-from .pyrule_type import Type
+from .pyrule_type import TypeStatement
 from .type_instance import TypeInstance
 from .util import TYPE_DEF_S, TYPE_DEC_S
 
 
-class TypeDefinition(Type):
+class TypeDefinition(TypeStatement):
     """ Defines the Structure of a type """
 
     def __init__(self, structure, params=None, type_str=TYPE_DEF_S):
@@ -59,13 +59,11 @@ class TypeDefinition(Type):
         return obj
 
 
-    def pprint(self, **kwargs):
-        return PrU.print_statement(self, is_structured=True, **kwargs)
-
     def build_type_declaration(self):
         just_path = self.path.copy()
         if just_path[-1]._data[VALUE_TYPE_S] == TYPE_DEF_S:
             just_path[-1]._data[VALUE_TYPE_S] = NAME_S
+            just_path[-1]._value = self.name
         return TypeInstance(just_path, args=self.vars)
 
     def verify(self):
@@ -77,3 +75,8 @@ class TypeDefinition(Type):
 
         if bool(input_vars):
             raise PyRuleParseException()
+
+
+    def pprint(self, is_structured=True, **kwargs):
+        return super(TypeDefinition, self).pprint(is_structured=is_structured,
+                                                  **kwargs)
