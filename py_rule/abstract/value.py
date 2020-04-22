@@ -143,5 +143,21 @@ class PyRuleValue:
         if data is not None:
             self._data.update(data)
 
-    def pprint(self, **kwargs):
-        return PrU.print_value(self, **kwargs)
+    def pprint(self, leaf=False, **kwargs):
+        if leaf and isinstance(self._value, PyRuleStatement):
+            return self._value.pprint(leaf=leaf, **kwargs)
+        else:
+            return PrU.print_value(self, leaf=leaf, **kwargs)
+
+
+class PyRuleStatement(PyRuleValue):
+
+    def __init__(self, value, **kwargs):
+        super(PyRuleStatement, self).__init__(value, **kwargs)
+
+
+    def pprint(self, leaf=True, **kwargs):
+        if leaf:
+            return PrU.print_statement(self, **kwargs)
+        else:
+            return PrU.print_value(self, **kwargs)
