@@ -10,6 +10,8 @@ import logging as root_logger
 from py_rule.abstract.agenda import Agenda
 from py_rule.agendas import *
 from py_rule.abstract.action import ActionOp
+from py_rule.abstract.rule import Rule
+from py_rule.abstract.layer import Layer
 
 logging = root_logger.getLogger(__name__)
 
@@ -112,14 +114,28 @@ register(ReplE.PRINT, engine_print)
 
 def engine_run(engine, data):
     params = data['params']
+    result = None
     logging.info("Running: {}".format(params))
-    # TODO
     # query
+    if not bool(params):
+        result = engine.tick()
+        data['result'] = result
+        return engine, data
 
-    # determine type
+    query_result = engine.query(params[-1])
+    assert(len(query_result) == 1)
 
-    # run type (rule, layer, pipeline)
-    data['result'] = engine.run_layer(params)
+    # Get var
+    value = query_result[0][params[-2][1]]
+
+    if isinstance(value, Rule):
+        result = engine._run_rule(value)
+    elif isinstance(value, Layer):
+        result = engine.run_layer(value)
+    else:
+        logging.warning("Unrecognized run target")
+
+    data['result'] = result
     return engine, data
 
 register(ReplE.RUN, engine_run)

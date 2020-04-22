@@ -64,8 +64,10 @@ run_kw       = PU.s(pp.Keyword('run'))
 stats_kw     = PU.s(pp.Keyword('stats'))
 step_kw      = PU.s(pp.Keyword('step'))
 prompt_kw    = PU.s(pp.Keyword('prompt'))
+from_kw      = PU.s(pp.Keyword('from'))
 
 # Default: Instructions to pass to an Engine
+empty_line = pp.lineStart + pp.lineEnd
 rest_of_line = PU.op(PU.s(pp.White())) + pp.restOfLine
 
 multi_line = pp.Regex("^:[{}]$")
@@ -88,7 +90,7 @@ nop_line = rest_of_line.copy()
 
 # run rule/layer/pipeline (select appropriate method by its type)
 # treat string as query
-run_something = run_kw + pp.Optional(all_kw) + rest_of_line
+run_something = run_kw + PU.op(PU.BIND + from_kw + rest_of_line)
 # print trie / query results / selected type
 print_alts = pp.Or([wm_kw, layer_kw, module_kw, pipeline_kw, binding_kw])
 
@@ -154,6 +156,7 @@ save_kw.setParseAction      (lambda toks: RE.SAVE)
 load_kw.setParseAction      (lambda toks: RE.LOAD)
 multi_line.setParseAction   (build_multiline)
 multi_line_pop.setParseAction(lambda toks: (RE.POP))
+empty_line.setParseAction   (lambda toks: build_command(RE.NOP, params=[]))
 
 state_io.setParseAction        (lambda toks: build_command(toks[0], params=toks[1:]))
 base_statement.setParseAction  (lambda toks: build_command(RE.PASS, params=toks[:]))
@@ -194,6 +197,7 @@ main_commands = PU.s(pp.Literal(':')) + pp.Or([run_something,
 
 parse_point = pp.MatchFirst([multi_line,
                              main_commands,
+                             empty_line,
                              base_statement])
 
 alt_parse_point = pp.MatchFirst([multi_line,
