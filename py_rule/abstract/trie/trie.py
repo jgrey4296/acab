@@ -6,6 +6,7 @@ from weakref import WeakValueDictionary, ref, proxy
 
 from py_rule.error.pyrule_base_exception import PyRuleBaseException
 from py_rule.abstract.sentence import Sentence
+from py_rule.abstract.value import PyRuleStatement
 
 from .nodes.trie_node import TrieNode
 
@@ -103,11 +104,12 @@ class Trie:
         while bool(queue):
             curr_path, current_node = queue.pop(0)
             total_path = curr_path + [current_node]
-            if not bool(current_node):
-                # if leaf
-                as_sentence = Sentence([x for x in curr_path] + [current_node])
+            if not bool(current_node) or isinstance(current_node._value, PyRuleStatement):
+                # if leaf or statement
+                as_sentence = Sentence(total_path)
                 output.append(as_sentence.pprint())
-            else:
+
+            if bool(current_node):
                 queue += [(total_path, x) for x in current_node]
 
         return "\n".join(output)
