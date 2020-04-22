@@ -76,11 +76,6 @@ class Engine:
         # pylint: disable=unused-argument,no-self-use
         self._working_memory.add(s)
 
-    def retract(self, s):
-        """ Remove a fact from the engine """
-        # pylint: disable=unused-argument,no-self-use
-        raise DeprecationWarning('Use a negated add')
-
     def query(self, s, cache=True):
         """ As a question of the working memory """
         result = self._working_memory.query(s)
@@ -150,6 +145,8 @@ class Engine:
 
         for data in transformed:
             self._propose_actions(data, rule)
+
+        return transformed
 
     def _propose_actions(self, data, rule):
         """ Enact, or propose, the action list
