@@ -64,7 +64,7 @@ class TypeDef_ParserTests(unittest.TestCase):
 
     def test_typedef_with_structure_types(self):
         result = TD.parseString('σ::blah.x:\na.b.c(::bloo)\n\nend')[0]
-        self.assertEqual(result[-1]._value.structure[0][-1]._data[TU.TYPE_DEC_S]._value.pprint(), 'bloo')
+        self.assertEqual(result[-1]._value.structure[0][-1]._data[TU.TYPE_DEC_S]._value.pprint(leaf=True), 'bloo')
 
     def test_typedef_with_bad_vars(self):
         with self.assertRaises(PyRuleParseException):

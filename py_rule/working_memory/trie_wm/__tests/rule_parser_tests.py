@@ -38,7 +38,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             result = RP.parseString("ρ::a.rule.x: end")
             self.assertEqual(len(result), 1)
             self.assertIsInstance(result[0][-1]._value, Rule)
-            self.assertEqual(result[0][-1]._value.pprint(), "x(::ρ): end")
+            self.assertEqual(result[0][-1]._value.pprint(leaf=True), "x(::ρ): end")
 
     def test_multi_empty_rules(self):
             result = RP.parseString("ρ::a.rule.x: end\n\nρ::a.second.rule: end")
