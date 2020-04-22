@@ -24,13 +24,13 @@ def setup_primitive_lookups(a_dict, reset=False):
     TYPE_WRAPS.update(a_dict)
 
 # TOP LEVEL UTILITIES
-def print_value(value, with_op=False):
+def print_value(value, leaf=False, **kwargs):
     # TODO: handle printing a primitive value
 
     # swap to print_statement if its registered
-    if util.VALUE_TYPE_S in value._data \
-       and value._data[util.VALUE_TYPE_S] in STATEMENT_LOOKUPS:
-        return value._value.pprint()
+    # if util.VALUE_TYPE_S in value._data \
+    #    and value._data[util.VALUE_TYPE_S] in STATEMENT_LOOKUPS:
+    #     return value._value.pprint()
 
     val = value.name
 
@@ -54,7 +54,7 @@ def print_value(value, with_op=False):
         val = _wrap_constraints(val, value._data[util.CONSTRAINT_S])
 
     # Wrap modal Operator
-    if with_op and util.OPERATOR_S in value._data:
+    if not leaf and util.OPERATOR_S in value._data:
         val = _wrap_modal_operator(val, value._data[util.OPERATOR_S])
 
     return val
@@ -65,7 +65,7 @@ def print_operator(operator, op_fix=0, wrap_vars=False):
         op_fix=2 : 1 2 + 3 ...
     """
     # Format the vars of the operator
-    the_vars = [x.pprint() for x in operator._vars]
+    the_vars = [x.pprint(leaf=True) for x in operator._vars]
 
     if wrap_vars:
         # Wrap variables in parens if an action
@@ -83,15 +83,15 @@ def print_operator(operator, op_fix=0, wrap_vars=False):
 
     return val
 
-def print_sequence(seq, join_str="", **kwargs):
+def print_sequence(seq, join_str="", leaf=True, **kwargs):
     if not bool(seq):
         return ""
 
     words = []
     if len(seq) > 1:
-        words = [x.pprint(with_op=True) for x in seq.words[:-1]]
+        words = [x.pprint(leaf=False) for x in seq.words[:-1]]
 
-    last_word = [seq.words[-1].pprint(with_op=False)]
+    last_word = [seq.words[-1].pprint(leaf=leaf)]
 
     val = join_str.join(words + last_word)
 
@@ -113,11 +113,11 @@ def print_container(container, join_str="\n\t", **kwargs):
     the_clauses = [x.pprint(**kwargs) for x in container.clauses]
     return join_str.join(the_clauses)
 
-def print_statement(statement, is_structured=False, has_end=True):
+def print_statement(statement, is_structured=False, has_end=True, **kwargs):
 
     head_content = any([bool(x) for x in [statement._vars,
                                           statement._tags]])
-    struc_content = is_structured and statement._structure is not None
+    struc_content = is_structured and statement.structure is not None
     rule_content = (not is_structured) and any([x is not None for x in [statement._query,
                                                                         statement._transform,
                                                                         statement._action]])
@@ -140,7 +140,7 @@ def print_statement(statement, is_structured=False, has_end=True):
         val = _wrap_tags(val, statement._tags)
 
     if is_structured:
-        val += "\n".join([x.pprint() for x in statement._structure])
+        val += "\n".join([x.pprint() for x in statement.structure])
     else:
         val, pop = _maybe_wrap(val, statement._query, sep=sep_list[0])
         if pop:
@@ -205,7 +205,7 @@ def _wrap_rebind(value, rebind, is_sugar=False):
 
     return "{} {} {}".format(value,
                              arrow,
-                             print_value(rebind, with_op=False))
+                             print_value(rebind, leaf=True))
 
 def _wrap_question(value):
     return "{}{}".format(value, util.QUERY_SYMBOL_S)
