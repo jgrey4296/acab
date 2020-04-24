@@ -104,76 +104,22 @@ class Engine:
         self._prior_states.append((str(self._working_memory), data))
 
     # Utility
-    def run_layer(self, layer):
-        """ Entry point for running a single layer completely """
-        # should save_state
-        # TODO add yields
-        self._save_state(layer)
-        # query for the rules
-        active_rules = []
-        for query in layer.queries():
-            query_results = self.query(query)
-            for ctx in query_results:
-                active_rules.append(ctx[util.LAYER_QUERY_RULE_BIND_S]._data[util.RULE_S])
-
-        for rule in active_rules:
-            self._run_rule(rule)
-
-        for agenda in layer.agendas():
-            self._select_actions_by_agenda(agenda)
-
-    def _run_rule(self, rule):
-        """ Run an individual rule """
-        # TODO add yields
-        results = rule(self)
-        self._propose_actions(results)
-        return results
-
-
     def run_thing(self, thing):
         """ Where a thing could be an:
         rule/agenda/layer/pipeline,
         action/query/transform
         """
+        # TODO be able to run multi / sequence of things
+        # TODO should save state
         assert(isinstance(thing, ProductionContainer))
         logging.info("Running thing: {}".format(thing))
 
-        result = self.query(thing.query)
+        result = thing(self)
 
         if not bool(result):
             logging.info("Thing Failed")
 
-
-
-    def _propose_actions(self, proposals):
-        """ Enact, or propose, the action list
-        or actions in a rule provided
-        """
-        assert(isinstance(proposals, list))
-        self._proposed_actions += proposals
-
-    def _select_actions_by_agenda(self, agenda):
-        """ Utilize a policy to select from proposed actions,
-        then perform those actions """
-        logging.debug("Selecting Actions by agenda: {}".format(agenda.__class__.__name__))
-        assert(isinstance(agenda, Agenda))
-        # TODO run agenda queries and transforms
-        # Set agenda variables from context
-        selected = agenda(self._proposed_actions, self)
-        assert(isinstance(selected, list))
-        assert(all([isinstance(x, tuple)
-                    and isinstance(x[0], dict)
-                    and isinstance(x[1], Rule) for x in selected]))
-        for d, r in selected:
-            self._perform_actions(d, r._action)
-
-    def _perform_actions(self, data, act_set):
-        """ Actual enaction of a set of actions """
-        assert(isinstance(act_set, action.Action))
-        act_set(data, self)
-
-    def _register_layers(self, layers):
-        raise NotImplementedError()
+        return result
 
     def __len__(self):
         raise NotImplementedError()

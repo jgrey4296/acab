@@ -128,12 +128,7 @@ def engine_run(engine, data):
     # Get var
     value = query_result[0][params[-2][1]]
 
-    if isinstance(value, Rule):
-        result = engine._run_rule(value)
-    elif isinstance(value, Layer):
-        result = engine.run_layer(value)
-    else:
-        logging.warning("Unrecognized run target")
+    result = engine.run_thing(value)
 
     data['result'] = result
     return engine, data

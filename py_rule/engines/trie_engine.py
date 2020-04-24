@@ -63,13 +63,4 @@ class TrieEngine(Engine):
 
     def tick(self, inputMessages):
         # TODO fix this
-        ouput = []
-        for x in inputMessages:
-            self.add(x)
-
-        for layer in self._pipeline._layers:
-            self.run_layer(layer)
-
-        # retrieve final selected actions
-        output = self._proposed_actions.copy()
-        return output
+        raise NotImplementedError()
