@@ -10,7 +10,6 @@ from py_rule.abstract.value import PyRuleStatement
 RELATION_E = Enum('Agenda_Relation', 'ONE2ONE ONE2MANY MANY2ONE MANY2MANY')
 
 
-# TODO: make this a subclass of production component?
 class Agenda(PyRuleStatement):
     """ Abstract Class of Rule Layer Agendas
     Takes a set of potential rule activations

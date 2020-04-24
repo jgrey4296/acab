@@ -1,5 +1,8 @@
 * Todos file
 ** Functionality
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/parsing/TypeDefParser.py::53][add sum types]]
+   <2020-04-23 Thu>
+
 *** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/structures/agenda/AgendaParser.py::22][add query sections to agendas, layers, pipelines etc]]
    <2020-04-12 Sun>
   
@@ -100,6 +103,19 @@
     TODO refine the type of the operator at head
 
 ** Improvements
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/operators/pattern_match/pattern_match_module.py::2][implement pattern match transform operator]]
+    <2020-04-24 Fri>
+  
+  The module spec for pattern matching
+
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/engine.py::174][shift rule running logic into rule and production containers]]
+   <2020-04-24 Fri>
+  
+     def _perform_actions(self, data, act_set):
+
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/parsing/TypeDefParser.py::53][add trie diffs between layers]]
+   <2020-04-23 Thu>
+
 *** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/parsing/repl_commands.py::112][add asyncio]]
     <2020-04-19 Sun>
   
@@ -350,20 +366,4 @@
     <2020-03-26 Thu>
 
     def test_basic_inference(self):
-
-* TODO [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/parsing/TypeDefParser.py::53][add sum types]]
- <2020-04-23 Thu>
-
-* TODO [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/parsing/TypeDefParser.py::53][add trie diffs between layers]]
- <2020-04-23 Thu>
-
-* TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/engine.py::174][shift rule running logic into rule and production containers]]
- <2020-04-24 Fri>
-  
-   def _perform_actions(self, data, act_set):
-
-* TODO [[/Volumes/documents/github/py_rule/py_rule/modules/operators/pattern_match/pattern_match_module.py::2][implement pattern match transform operator]]
-  <2020-04-24 Fri>
-  
-The module spec for pattern matching
 
