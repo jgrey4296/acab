@@ -76,7 +76,8 @@ NAME.setParseAction(lambda t: (util.NAME_S, t[0]))
 
 STRING      = pp.dblQuotedString
 # Remove quotes from around strings:
-STRING.setParseAction(lambda t: (util.STRING_S, t[0].replace('"', '')))
+STRING.setParseAction(pp.removeQuotes)
+STRING.addParseAction(lambda toks: (util.STRING_S, toks[0]))
 
 REGEX       = pp.Regex(r'/.+?/')
 REGEX.setParseAction(lambda t: (util.REGEX_S, t[0][1:-1]))

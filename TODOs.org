@@ -108,7 +108,8 @@
   
   The module spec for pattern matching
 
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/engine.py::174][shift rule running logic into rule and production containers]]
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/abstract/engine.py::174][shift rule running logic into rule and production containers]]
+    CLOSED: [2020-04-24 Fri 22:01]
    <2020-04-24 Fri>
   
      def _perform_actions(self, data, act_set):
@@ -193,7 +194,8 @@
 
     def to_sentence(self):
 
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/parsing/util.py::78][use pp.removeQuotes on string and regex parsing]]
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/abstract/parsing/util.py::78][use pp.removeQuotes on string and regex parsing]]
+    CLOSED: [2020-04-24 Fri 22:08]
     <2020-03-31 Tue>
 
 *** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/values/numbers/__tests/number_query_tests.py::126][should rule binding expansion effect transforms?]]
