@@ -117,7 +117,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertFalse(result._data[util.NEGATION_S])
 
     def test_sentence_statement(self):
-        result = FP.SEN_STATEMENT.parseString("Σ::a.test.sentence:\nextension.sentence\nsecond.extension\n end")
+        result = FP.SEN_STATEMENT.parseString("a.test.sentence: (::Σ)\nextension.sentence\nsecond.extension\n end")
         sen1 = FP.BASIC_SEN.parseString('a.test.sentence.extension.sentence')[0]
         sen2 = FP.BASIC_SEN.parseString('a.test.sentence.second.extension')[0]
 
@@ -126,7 +126,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertEqual(result[1], sen2)
 
     def test_nested_sentence_statement(self):
-        result = FP.SEN_STATEMENT.parseString("Σ::a.test.sentence:\nΣ::internal.nested:\ninternal.one\ninternal.two\nend\nblah.bloo.blee\nend")
+        result = FP.SEN_STATEMENT.parseString("a.test.sentence: (::Σ)\ninternal.nested: (::Σ)\ninternal.one\ninternal.two\nend\nblah.bloo.blee\nend")
         self.assertEqual(len(result), 3)
         self.assertEqual(result[0].pprint(), "a.test.sentence.internal.nested.internal.one")
         self.assertEqual(result[1].pprint(), "a.test.sentence.internal.nested.internal.two")

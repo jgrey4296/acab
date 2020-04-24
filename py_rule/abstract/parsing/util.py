@@ -155,7 +155,9 @@ def STATEMENT_CONSTRUCTOR(head_p,
     if args:
         arg_p = op(NG(util.ARG_S, arglist + line_p))
 
-    parser = head_p + DBLCOLON + NG(util.NAME_S, name_p) + COLON + op(pp.lineEnd) \
+    head_hint = OPAR + DBLCOLON + head_p + CPAR
+
+    parser = NG(util.NAME_S, name_p) + COLON + s(head_hint) + op(pp.lineEnd) \
         + arg_p + tagList + NG(util.STATEMENT_S, body_p) + end_p
 
     if parse_fn is not None:

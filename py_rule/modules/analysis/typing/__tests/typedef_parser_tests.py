@@ -40,7 +40,7 @@ class TypeDef_ParserTests(unittest.TestCase):
         self.assertIsNotNone(TD.OP_DEF)
 
     def test_basic_typedef(self):
-        result = TD.parseString("σ::blah.x:\na.b.c\n\nend")[0]
+        result = TD.parseString("blah.x: (::σ)\na.b.c\n\nend")[0]
         self.assertIsInstance(result[-1]._value, TypeDefinition)
         self.assertEqual(result[-1].is_var, False)
         self.assertEqual(result[-1]._data[util.VALUE_TYPE_S], TU.TYPE_DEF_S)
@@ -49,13 +49,13 @@ class TypeDef_ParserTests(unittest.TestCase):
         self.assertEqual(len(result[-1]._value.structure), 1)
 
     def test_typedef_with_variable(self):
-        result = TD.parseString('σ::blah.structure:\n |$x |\n\na.b.$x\n\nend')[0]
+        result = TD.parseString('blah.structure: (::σ)\n |$x |\n\na.b.$x\n\nend')[0]
         self.assertIsInstance(result[-1]._value, TypeDefinition)
         self.assertEqual(len(result[-1]._value._vars), 1)
         self.assertEqual(result[-1]._value._vars[0], "x")
 
     def test_typedef_with_multi_variables(self):
-        result = TD.parseString('σ::blah.x:\n | $x, $y |\n\na.b.$x, a.b.$y\n\nend')[0]
+        result = TD.parseString('blah.x: (::σ)\n | $x, $y |\n\na.b.$x, a.b.$y\n\nend')[0]
         self.assertIsInstance(result[-1]._value, TypeDefinition)
         self.assertEqual(len(result[-1]._value._vars), 2)
         var_set = set([x for x in result[-1]._value._vars])
@@ -63,22 +63,22 @@ class TypeDef_ParserTests(unittest.TestCase):
         self.assertEqual(var_set, match_set)
 
     def test_typedef_with_structure_types(self):
-        result = TD.parseString('σ::blah.x:\na.b.c(::bloo)\n\nend')[0]
+        result = TD.parseString('blah.x: (::σ)\na.b.c(::bloo)\n\nend')[0]
         self.assertEqual(result[-1]._value.structure[0][-1]._data[TU.TYPE_DEC_S]._value.pprint(leaf=True), 'bloo')
 
     def test_typedef_with_bad_vars(self):
         with self.assertRaises(PyRuleParseException):
-            result = TD.parseString('σ::blah.x:\n| $x |\n\na.b.c\n\nend')[0]
+            result = TD.parseString('blah.x: (::σ)\n| $x |\n\na.b.c\n\nend')[0]
 
     def test_op_def_parse(self):
-        the_string = 'λ::AddOp: $x(::Num).$x.$x => +'
+        the_string = 'AddOp: (::λ) $x(::Num).$x.$x => +'
         result = TD.OP_DEF.parseString(the_string)[0]
         self.assertIsInstance(result, Sentence)
         self.assertEqual(len(result), 1)
         self.assertIsInstance(result[-1]._value, OperatorDefinition)
 
     def test_op_def_parse_no_sugar(self):
-        the_string = 'λ::AddOp: $x(::Num).$x.$x'
+        the_string = 'AddOp: (::λ) $x(::Num).$x.$x'
         result = TD.OP_DEF.parseString(the_string)[0]
         self.assertIsInstance(result, Sentence)
         self.assertEqual(len(result), 1)

@@ -2,14 +2,14 @@ a.b.c
 
 a.other!ex
 
-ρ::example.rule.one:
+example.rule.one: (::ρ)
   a.b.c?
 
   ActionAdd(d.e.f)
 
 end
 
-ρ::example.rule.two:
+example.rule.two: (::ρ)
   a.b.c?
 
   ActionAdd(d.e.g)

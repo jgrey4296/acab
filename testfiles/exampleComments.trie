@@ -9,7 +9,7 @@ a.other!ex
 // end
     
 //Another Test Comment
-ρ::comment.rule.two:
+comment.rule.two: (::ρ)
   a.b.c?
 
   ActionAdd(d.e.g)

@@ -2,7 +2,7 @@
 
 a.blah
 //blah
-ρ::test.rule:
+test.rule: (::ρ)
   #awef
 
   a.$x?

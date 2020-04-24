@@ -7,7 +7,7 @@ format.first."{x} : {y}"
 format.second."{result} test"
 
 // A Shift rule
-ρ::test.rule:
+test.rule: (::ρ)
   format.first.$a?
   format.second.$b?
   a.$x!$y?

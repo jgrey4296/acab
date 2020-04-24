@@ -4,7 +4,7 @@ a.c!d
 // a test
 
 // A Retracting rule
-ρ::retraction.rule:
+retraction.rule: (::ρ)
   a.b.c?
     
   ActionAdd(~a.b.c)

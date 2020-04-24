@@ -43,7 +43,7 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
         self.assertEqual(bound_action.pprint(), "ActionAdd(a.b.c)")
 
     def test_action_definition(self):
-        test_str = "α::test:\nActionAdd(a.b.c)\n\nend"
+        test_str = "test: (::α)\nActionAdd(a.b.c)\n\nend"
         definition = AP.action_definition.parseString(test_str)
         self.assertEqual(definition[0][-1]._value.name, "test")
 

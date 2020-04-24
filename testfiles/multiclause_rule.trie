@@ -4,7 +4,7 @@ a.c!d
 // a test
 
 // A Retracting rule
-ρ::multi.clause.rule.test:
+multi.clause.rule.test: (::ρ)
   a.b.c?
   a.c!d?
     
