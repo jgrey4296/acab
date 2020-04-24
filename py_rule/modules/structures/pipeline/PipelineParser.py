@@ -1,12 +1,17 @@
 """
 Pipeline Parser
 
-Should define a pipline as a set of layers.
+Should define a pipeline as a set of layers.
 These will be verified to provide a flow from base inputs to outputs
 by the rules they select
 
 eg:
 φ::a.pipeline.example:
+    init:
+    typing.layer
+
+
+    loop:
 	an.output.layer
 	an.input.layer
 	a.second.layer
