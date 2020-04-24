@@ -11,8 +11,8 @@ import logging as root_logger
 import traceback
 
 ##############################
-from py_rule.abstract.parsing import ReplParser as ReP
-from py_rule.abstract.parsing import repl_commands as ReC
+from py_rule.repl import ReplParser as ReP
+from py_rule.repl import repl_commands as ReC
 from py_rule.abstract.printing import util as PrU
 from py_rule import util
 
@@ -70,7 +70,7 @@ if __name__ == "__main__":
 
         except Exception as exp:
             logging.exception(str(exp))
-            print("My Error: {}".format(str(exp)))
+            print("Error: {}".format(str(exp)))
             exc_type, exc_value, exc_tb = sys.exc_info()
             # traceback.print_tb(exc_tb, limit=4)
             breakpoint()
