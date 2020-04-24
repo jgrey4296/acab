@@ -5,7 +5,7 @@ Used for Comparison, Transform, and Performance Operators
 from py_rule.util import OPERATOR_S, STATEMENT_S
 from py_rule.abstract.printing import util as PrU
 
-from .value import PyRuleValue
+from .value import PyRuleValue, PyRuleStatement
 
 
 class ProductionOperator(PyRuleValue):
@@ -75,10 +75,12 @@ class ProductionComponent(PyRuleValue):
         raise NotImplementedError()
 
 
-class ProductionContainer(PyRuleValue):
+class ProductionContainer(PyRuleStatement):
+    """ Production Container: An applicable statement """
 
-    def __init__(self, clauses, params=None, type_str=STATEMENT_S):
-        super().__init__(clauses, params=params, type_str=type_str)
+
+    def __init__(self, clauses, params=None, type_str=STATEMENT_S, **kwargs):
+        super().__init__(clauses, params=params, type_str=type_str, **kwargs)
 
     def __len__(self):
         return len(self.clauses)

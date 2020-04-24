@@ -12,9 +12,9 @@ a.pipeline(::Pipeline):
    a.third.layer
 end
 """
+from py_rule.abstract.production_operator import ProductionContainer
 
-
-class Pipeline:
+class Pipeline(ProductionContainer):
     """ Abstract Class to describe a rule engine pipeline
     Collects together sets of rules,
     and a sequence of agendas to run on their output

@@ -20,9 +20,9 @@ a.layer(::Layer):
 end
 
 """
+from py_rule.abstract.production_operator import ProductionContainer
 
-
-class Layer:
+class Layer(ProductionContainer):
     """ The Abstract Layer Class """
 
     def __init__(self):

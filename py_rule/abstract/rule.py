@@ -7,7 +7,7 @@ import logging as root_logger
 import py_rule.util as util
 from py_rule.abstract.printing import util as PrU
 
-from .value import PyRuleStatement
+from .production_operator import ProductionContainer
 from .transform import Transform
 from .action import Action
 from .query import Query
@@ -16,7 +16,7 @@ logging = root_logger.getLogger(__name__)
 
 PrU.setup_statement_lookups({util.RULE_S : util.RULE_HEAD_S})
 
-class Rule(PyRuleStatement):
+class Rule(ProductionContainer):
     """ A Rule holds a query (of N Clauses), a set of transforms,
     and a set of actions. It can be tagged with attributes.
     """

@@ -5,12 +5,13 @@ layers and pipelines can be defined
 """
 from enum import Enum
 from py_rule.util import NAME_S, STATEMENT_S, TYPE_DEC_S
+from py_rule.abstract.value import PyRuleStatement
 
 RELATION_E = Enum('Agenda_Relation', 'ONE2ONE ONE2MANY MANY2ONE MANY2MANY')
 
 
 # TODO: make this a subclass of production component?
-class Agenda:
+class Agenda(PyRuleStatement):
     """ Abstract Class of Rule Layer Agendas
     Takes a set of potential rule activations
     and applys a transform, filter, or other function on them
