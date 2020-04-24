@@ -9,7 +9,7 @@ class AddOp(TransformOp):
     def __init__(self):
         super().__init__()
         # type sig: num -> num -> num
-    def __call__(self, a, b, data):
+    def __call__(self, a, b, data, engine):
         return a + b
 
 
@@ -17,7 +17,7 @@ class SubOp(TransformOp):
     def __init__(self):
         super().__init__()
 
-    def __call__(self, a, b, data):
+    def __call__(self, a, b, data, engine):
         return a - b
 
 
@@ -25,7 +25,7 @@ class MulOp(TransformOp):
     def __init__(self):
         super().__init__()
 
-    def __call__(self, a, b, data):
+    def __call__(self, a, b, data, engine):
         return a * b
 
 
@@ -33,7 +33,7 @@ class DivOp(TransformOp):
     def __init__(self):
         super().__init__()
 
-    def __call__(self, a, b, data):
+    def __call__(self, a, b, data, engine):
         return a / b
 
 
@@ -41,7 +41,7 @@ class RandOp(TransformOp):
     def __init__(self):
         super().__init__()
         # ts: num -> num -> num
-    def __call__(self, a=0, b=1, data=None):
+    def __call__(self, a=0, b=1, data=None, engine=None):
         """ Uniform Rand between a=0 and b=1 """
         return uniform(a, b)
 
@@ -50,7 +50,7 @@ class RemainOp(TransformOp):
     def __init__(self):
         super().__init__()
 
-    def __call__(self, a, b, data):
+    def __call__(self, a, b, data, engine):
         # divide and get remainder?
         raise NotImplementedError()
 
@@ -59,7 +59,7 @@ class RoundOp(TransformOp):
     def __init__(self):
         super().__init__(1)
 
-    def __call__(self, a, data):
+    def __call__(self, a, data, engine):
         # round to integer
         return floor(a)
 
@@ -68,6 +68,6 @@ class NegOp(TransformOp):
     def __init__(self):
         super().__init__(1)
 
-    def __call__(self, a, data):
+    def __call__(self, a, data, engine):
         # invert the number
         return -a

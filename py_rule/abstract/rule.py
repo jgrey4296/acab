@@ -33,6 +33,30 @@ class Rule(PyRuleStatement):
         self._action    = action
         Rule.__count += 1
 
+    def __call__(self, engine):
+        """ Rule Logic, returns action proposals """
+        assert(self.verify())
+        logging.info("Running Rule: {}".format(self._name))
+        result = self._query(engine)
+        if not bool(result):
+            logging.info("Rule {} Failed".format(self._name))
+            return []
+
+        transformed = []
+        if self._transform:
+            for data in result:
+                transformed.append(self._transform(data, engine))
+        else:
+            # This is *not* an unnecessary comprehension
+            # because of how parse results work
+            transformed = [x for x in result]
+
+        results = []
+        for data in transformed:
+            results.append((data, self))
+
+        return results
+
 
     @property
     def var_set(self):
@@ -61,7 +85,7 @@ class Rule(PyRuleStatement):
                     transform=transform,
                     name=self._name)
 
-    def is_coherent(self):  # can raise an Exception from verify_op
+    def verify(self):  # can raise an Exception from verify_op
         """ Verify that the outputs of the query match the
         inputs of the transform, match the inputs of the actions """
         if self._transform is not None:

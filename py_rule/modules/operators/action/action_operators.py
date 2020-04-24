@@ -22,7 +22,7 @@ class ActionAdd(ActionOp):
     def __init__(self):
         super().__init__()
 
-    def __call__(self, engine, params):
+    def __call__(self, params, engine):
         """ Assert the params into the engine """
         # assert(all([isinstance(x, Node) for x in params[0]]))
         engine.add(params[0])
@@ -31,7 +31,7 @@ class ActionPrint(ActionOp):
     def __init__(self):
         super().__init__()
 
-    def __call__(self, engine, params):
+    def __call__(self, params, engine):
         """ Trigger a logging statement """
         for x in params:
             print(x)

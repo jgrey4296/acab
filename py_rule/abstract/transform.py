@@ -25,7 +25,7 @@ class TransformOp(PO.ProductionOperator):
             TransformOp.op_list[num_params][self.op_str] = self
 
 
-    def __call__(self, a, b):
+    def __call__(self, a, b, ctx, engine):
         raise NotImplementedError("Abstract method needs to be implemented")
 
 
@@ -43,11 +43,10 @@ class TransformComponent(PO.ProductionComponent):
         assert(op_str in TransformOp.op_list)
         self._value = op_str
 
-    def __call__(self, ctx):
+    def __call__(self, ctx, engine):
         op_func = TransformOp.op_list[len(self._vars)][self.op]
         params = [ctx[y._value] if y.is_var else y._value for y in self._vars]
-        return op_func(*params, ctx)
-
+        return op_func(*params, ctx, engine)
 
     @property
     def var_set(self):
@@ -107,9 +106,9 @@ class Transform(PO.ProductionContainer):
     def copy(self):
         return Transform([x.copy() for x in self.clauses], type_str=self.type)
 
-    def __call__(self, ctx):
+    def __call__(self, ctx, engine):
         assert(isinstance(ctx, dict))
         for x in self.clauses:
-            ctx[x._rebind._value] = x(ctx)
+            ctx[x._rebind._value] = x(ctx, engine)
 
         return ctx

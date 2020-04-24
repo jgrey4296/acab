@@ -31,7 +31,7 @@ class ActionOp(PO.ProductionOperator):
         if self.op_str not in ActionOp.op_list:
             ActionOp.op_list[self.op_str] = self
 
-    def __call__(self, engine, params):
+    def __call__(self, params, engine):
         raise NotImplementedError()
 
 
@@ -46,14 +46,14 @@ class ActionComponent(PO.ProductionComponent):
         assert all([isinstance(x, Sentence) for x in params]), params
         super(ActionComponent, self).__init__(op_str, params=params, **kwargs)
 
-    def __call__(self, engine, data):
+    def __call__(self, data, engine):
         # lookup op
         assert(self.op in ActionOp.op_list)
         op_func = ActionOp.op_list[self.op]
         # get values from data
         values = self.get_values(data)
         # perform action op with data
-        op_func(engine, values)
+        op_func(values, engine)
 
     def __refine_op_func(self, op_str):
         """ Replace the current op func set with a specific
@@ -126,6 +126,9 @@ class Action(PO.ProductionContainer):
                                      type_str=type_str,
                                      **kwargs)
 
+    def __call__(self, bindings, engine):
+        for x in self.clauses:
+            x(bindings, engine)
 
     def bind(self, bindings):
         """ Expand stored bindings """

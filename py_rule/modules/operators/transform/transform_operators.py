@@ -11,7 +11,7 @@ class RegexOp(TransformOp):
     def __init__(self):
         super().__init__(3)
 
-    def __call__(self, a, b, replacement, data):
+    def __call__(self, a, b, replacement, data, engine):
         """ Substitute a pattern with a value from passed in data
         a : the replacement
         b: the pattern
@@ -25,7 +25,7 @@ class FormatOp(TransformOp):
     def __init__(self):
         super().__init__(1)
 
-    def __call__(self, a, data):
+    def __call__(self, a, data, engine):
         """ Use str.format variant with a data dictionary
         Replaces variables in the string with bound values
         """

@@ -41,6 +41,18 @@ class Layer:
     def agendas(self):
         return self._agendas
 
+    def __call__(self, engine):
+        """ Run a layer, returning actions to perform """
+        # Run rule queries (possibly cache them)
+        query_results = []
+
+        # Run rules
+        proposals = [y for x in query_results(engine) for y in x]
+
+        # Run agendas
+        selected = [agenda(proposals, engine) for agenda in self._agenda]
+
+        return selected
 
 
 #Utility function for parser
