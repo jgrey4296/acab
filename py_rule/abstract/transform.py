@@ -106,3 +106,10 @@ class Transform(PO.ProductionContainer):
 
     def copy(self):
         return Transform([x.copy() for x in self.clauses], type_str=self.type)
+
+    def __call__(self, ctx):
+        assert(isinstance(ctx, dict))
+        for x in self.clauses:
+            ctx[x._rebind._value] = x(ctx)
+
+        return ctx

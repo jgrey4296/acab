@@ -84,11 +84,7 @@ class ProductionContainer(PyRuleValue):
         return len(self.clauses)
 
     def __call__(self, ctx):
-        assert(isinstance(ctx, dict))
-        for x in self.clauses:
-            ctx[x._rebind._value] = x(ctx)
-
-        return ctx
+        raise NotImplementedError()
 
     def __iter__(self):
         for x in self.clauses:
