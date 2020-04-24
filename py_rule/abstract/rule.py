@@ -100,3 +100,31 @@ class Rule(PyRuleStatement):
         new_rule._tags.update(self._tags)
 
         return new_rule
+
+
+    def pprint_body(self, val):
+        sep_list = ["\n\n\t", "\n\n\t", "\n\n\t"]
+        head, body = self.pprint_has_content
+
+        if not head:
+            sep_list.insert(0, "\n\t")
+
+        val, pop = PrU._maybe_wrap(val, self._query, sep=sep_list[0])
+        if pop:
+            sep_list.pop(0)
+        val, pop = PrU._maybe_wrap(val, self._transform, sep=sep_list[0])
+        if pop:
+            sep_list.pop(0)
+        val, pop = PrU._maybe_wrap(val, self._action, sep=sep_list[0])
+
+        return val
+
+    @property
+    def pprint_has_content(self):
+        head = any([bool(x) for x in [self._vars,
+                                      self._tags]])
+        body = any([x is not None for x in [self._query,
+                                            self._transform,
+                                            self._action]])
+
+        return (head, body)

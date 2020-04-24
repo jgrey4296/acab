@@ -34,4 +34,11 @@ class TypeStatement(PyRuleStatement):
         return self._vars
 
 
+    def pprint_body(self, val):
+        return val + "\n".join([x.pprint() for x in self.structure])
 
+    @property
+    def pprint_has_content(self):
+        head_content = any([bool(x) for x in [self._vars,
+                                              self._tags]])
+        struc_content = self.structure is not None

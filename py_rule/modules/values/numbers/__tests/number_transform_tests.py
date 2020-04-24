@@ -125,7 +125,7 @@ class NumberTransformTests(unittest.TestCase):
         parsed = [TP.parseString(x) for x in transforms]
         zipped = zip(transforms, parsed)
         for rt,pt in zipped:
-            self.assertEqual(rt, pt.pprint())
+            self.assertEqual(rt, pt.pprint(as_container=True))
 
 
 

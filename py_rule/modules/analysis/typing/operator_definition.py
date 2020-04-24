@@ -20,9 +20,11 @@ class OperatorDefinition(TypeDefinition):
         super().__init__(structure, type_str=OP_DEF_S)
         self._func_name = sugar_syntax
 
-    def pprint(self, is_structured=True, **kwargs):
-        return super(OperatorDefinition, self).pprint(is_structured=is_structured, **kwargs)
-
     def build_type_declaration(self):
         just_path = self.path.copy()
         return TypeInstance(just_path, args=self.vars)
+
+
+    def pprint_body(self, val):
+        new_val = super(OperatorDefinition, self).pprint_body(val)
+        return PrU._wrap_rebind(new_val, self._func_name, is_sugar=True)

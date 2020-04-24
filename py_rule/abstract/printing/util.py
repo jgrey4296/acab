@@ -27,11 +27,6 @@ def setup_primitive_lookups(a_dict, reset=False):
 def print_value(value, leaf=False, **kwargs):
     # TODO: handle printing a primitive value
 
-    # swap to print_statement if its registered
-    # if util.VALUE_TYPE_S in value._data \
-    #    and value._data[util.VALUE_TYPE_S] in STATEMENT_LOOKUPS:
-    #     return value._value.pprint()
-
     val = value.name
 
     # setup the value type
@@ -110,28 +105,21 @@ def print_sequence(seq, join_str="", leaf=True, **kwargs):
     return val
 
 def print_container(container, join_str="\n\t", **kwargs):
+    # TODO is this necessary now containers are statements?
     the_clauses = [x.pprint(**kwargs) for x in container.clauses]
     return join_str.join(the_clauses)
 
 def print_statement(statement, is_structured=False, has_end=True, **kwargs):
 
-    head_content = any([bool(x) for x in [statement._vars,
-                                          statement._tags]])
-    struc_content = is_structured and statement.structure is not None
-    rule_content = (not is_structured) and any([x is not None for x in [statement._query,
-                                                                        statement._transform,
-                                                                        statement._action]])
-    sep_list = ["\n\n\t", "\n\n\t", "\n\n\t"]
-
-    if not head_content:
-        sep_list.insert(0, "\n\t")
+    head, body = statement.pprint_has_content
 
     val = statement._name
     #TODO handle operator definition by controlling head printing
     # ie: λ:: name(vars): x.y.z => blah
+    val = _wrap_colon(val)
+
     if statement.type in STATEMENT_LOOKUPS:
         val = _wrap_statement_type(val, statement.type)
-    val = _wrap_colon(val)
 
     if bool(statement._vars):
         val = _wrap_var_list(val, statement._vars)
@@ -139,21 +127,11 @@ def print_statement(statement, is_structured=False, has_end=True, **kwargs):
     if bool(statement._tags):
         val = _wrap_tags(val, statement._tags)
 
-    if is_structured:
-        val += "\n".join([x.pprint() for x in statement.structure])
-    else:
-        val, pop = _maybe_wrap(val, statement._query, sep=sep_list[0])
-        if pop:
-            sep_list.pop(0)
-        val, pop = _maybe_wrap(val, statement._transform, sep=sep_list[0])
-        if pop:
-            sep_list.pop(0)
-        val, pop = _maybe_wrap(val, statement._action, sep=sep_list[0])
+    # Add the statement body, which is specific to each statement type
+    val = statement.pprint_body(val)
 
     if has_end:
-        val = _wrap_end(val, newline=head_content or struc_content or rule_content)
-    elif hasattr(statement, "_func_name"):
-        val = _wrap_rebind(value, statement._func_name, is_sugar=True)
+        val = _wrap_end(val, newline=head or body)
 
     return val
 
@@ -223,7 +201,7 @@ def _maybe_wrap(value, maybeNone, sep=None):
     if maybeNone is None:
         return (value, False)
 
-    return (value + sep + maybeNone.pprint(), True)
+    return (value + sep + maybeNone.pprint(as_container=True), True)
 
 def _wrap_colon(value, newline=False):
     tail = ""
@@ -239,7 +217,8 @@ def _wrap_end(value, newline=True):
         return "{} {}".format(value, util.END_S)
 
 def _wrap_statement_type(val, type_str):
-    return "{}(::{})".format(val, STATEMENT_LOOKUPS[type_str])
+    return "{} (::{})".format(val,
+                              STATEMENT_LOOKUPS[type_str])
 
 def _wrap_var_list(val, the_vars, newline=False):
     head = ""

@@ -22,11 +22,6 @@ def S(*in_string):
 
 class TypingTests(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        #hotload values
-        PrU.setup_statement_lookups({TU.TYPE_DEF_S : util.STRUCTURE_S}, reset=True)
-
     def setUp(self):
 	    return 1
 

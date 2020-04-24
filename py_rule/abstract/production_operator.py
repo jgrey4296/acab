@@ -119,5 +119,11 @@ class ProductionContainer(PyRuleValue):
     def copy(self):
         raise NotImplementedError()
 
-    def pprint(self, **kwargs):
-        return PrU.print_container(self, join_str="\n", **kwargs)
+    def pprint(self, as_container=False, **kwargs):
+        if as_container:
+            return PrU.print_container(self, join_str="\n", **kwargs)
+        else:
+            return super(ProductionContainer, self).pprint(**kwargs)
+
+    def pprint_body(self, val, **kwargs):
+        return val + PrU.print_container(self, join_str="\n", **kwargs)

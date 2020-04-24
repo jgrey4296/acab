@@ -161,3 +161,12 @@ class PyRuleStatement(PyRuleValue):
             return PrU.print_statement(self, **kwargs)
         else:
             return PrU.print_value(self, **kwargs)
+
+
+    def pprint_body(self, val):
+        raise NotImplementedError()
+
+
+    @property
+    def pprint_has_content(self):
+        return (True, True)

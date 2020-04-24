@@ -21,8 +21,6 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
         os._construct_transform_ops()
         RP.build_operators()
 
-        PrU.setup_statement_lookups({util.RULE_S : util.RULE_HEAD_S}, reset=True)
-
     def setUp(self):
             return 1
 
@@ -38,7 +36,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
             result = RP.parseString("a.rule.x: (::ρ) end")
             self.assertEqual(len(result), 1)
             self.assertIsInstance(result[0][-1]._value, Rule)
-            self.assertEqual(result[0][-1]._value.pprint(leaf=True), "x(::ρ): end")
+            self.assertEqual(result[0][-1]._value.pprint(leaf=True), "x: (::ρ) end")
 
     def test_multi_empty_rules(self):
             result = RP.parseString("a.rule.x: (::ρ) end\n\na.second.rule: (::ρ) end")
@@ -106,12 +104,12 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
         result = RP.parseString("a.rule.x: (::ρ)\n\n$x?\n\nend")[0]
         expanded = result[-1]._value.bind(bindings)
         self.assertEqual(expanded.pprint(),
-                         "AnonRule(::ρ):\n\ta.b.c?\nend")
+                         "AnonRule: (::ρ)\n\ta.b.c?\nend")
 
     def test_rule_tags(self):
             result = RP.parseString('a.test.rule.x: (::ρ)\n\n#blah, #bloo, #blee\n\na.b.c?\n\nActionAdd(a.b.c)\nend')[0]
             self.assertIsInstance(result[-1]._value, Rule)
-            self.assertEqual(result.pprint(), "a.test.rule.x(::ρ):\n\t#blah, #blee, #bloo\n\n\ta.b.c?\n\n\tActionAdd(a.b.c)\nend")
+            self.assertEqual(result.pprint(), "a.test.rule.x: (::ρ)\n\t#blah, #blee, #bloo\n\n\ta.b.c?\n\n\tActionAdd(a.b.c)\nend")
             self.assertTrue(all(x in result[-1]._value._tags for x in ["blah","bloo","blee"]))
 
 

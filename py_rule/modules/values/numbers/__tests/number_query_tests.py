@@ -28,8 +28,6 @@ class NumberQueryTests(unittest.TestCase):
         NumberQueryTests.os = OperatorSpec()
         NumberQueryTests.ns = NumberSpecification()
 
-        PrU.setup_statement_lookups({util.RULE_S : util.RULE_HEAD_S})
-
     def setUp(self):
         self.trie = TrieWM()
         self.trie.add_modules([NumberQueryTests.os, NumberQueryTests.ns])
@@ -119,18 +117,18 @@ class NumberQueryTests(unittest.TestCase):
         parsed = [QP.parseString(x) for x in queries]
         zipped = zip(queries, parsed)
         for a,q in zipped:
-            self.assertEqual(a, q.pprint())
+            self.assertEqual(a, q.pprint(as_container=True))
 
 
     def test_rule_binding_expansion(self):
         bindings = { "x" : FP.parseString('a.b.c')[0],
                      "y" : FP.parseString('d.e.f')[0],
                      "z" : FP.parseString('x.y.z')[0] }
-        result = RP.parseString("a.rule: (::ρ)\n$y.b.$z?\n\n$x + 2 -> $y\n\n+($y)\n\nend")[0][-1]
+        result = RP.parseString("a.rule: (::ρ)\n$y.b.$z?\n\n$x AddOp 2 -> $y\n\n$y\n\nend")[0][-1]
         expanded = result._value.bind(bindings)
         # Expanding bindings makes a new rule, so its an AnonValue
         self.assertEqual(expanded.pprint(),
-                         "AnonRule(::ρ):\n\td.e.f.b.x.y.z?\n\n\t$x + 2 -> $y\n\n\t+(d.e.f)\nend")
+                         "AnonRule: (::ρ)\n\td.e.f.b.x.y.z?\n\n\t$x AddOp 2 -> $y\n\n\tActionAdd(d.e.f)\nend")
 
 
     def test_query_alpha_comp(self):

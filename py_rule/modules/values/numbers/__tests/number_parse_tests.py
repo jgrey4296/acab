@@ -84,7 +84,7 @@ class NumberParseTests(unittest.TestCase):
         parsed = [TP.parseString(x) for x in actions]
         zipped = zip(actions, parsed)
         for x,y in zipped:
-            self.assertEqual(x, y.pprint())
+            self.assertEqual(x, y.pprint(as_container=True))
 
 
     def test_numbers_parsing(self):

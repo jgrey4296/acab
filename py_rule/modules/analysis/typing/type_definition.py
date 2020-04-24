@@ -7,6 +7,7 @@ from .pyrule_type import TypeStatement
 from .type_instance import TypeInstance
 from .util import TYPE_DEF_S, TYPE_DEC_S
 
+PrU.setup_statement_lookups({TYPE_DEF_S : STRUCTURE_S})
 
 class TypeDefinition(TypeStatement):
     """ Defines the Structure of a type """
@@ -75,8 +76,3 @@ class TypeDefinition(TypeStatement):
 
         if bool(input_vars):
             raise PyRuleParseException()
-
-
-    def pprint(self, is_structured=True, **kwargs):
-        return super(TypeDefinition, self).pprint(is_structured=is_structured,
-                                                  **kwargs)
