@@ -24,10 +24,10 @@ init:
 	find ./py_rule -type d -print0 | xargs -0 -I {} touch "{}/__init__.py"
 
 repl:
-	python py_rule/repl.py
+	python py_rule/repl/repl.py
 
 vrepl:
-	python py_rule/repl.py --verbose DEBUG
+	python py_rule/repl/repl.py --verbose DEBUG
 
 re: repl
 vr: vrepl
