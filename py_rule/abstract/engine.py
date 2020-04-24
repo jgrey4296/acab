@@ -7,13 +7,13 @@ and can then parse and run an agent DSL pipeline.
 """
 import logging as root_logger
 from os.path import exists, split, expanduser, abspath
-
 from py_rule import util
 
 from . import action
 from .agenda import Agenda
 from .rule import Rule
 from .working_memory import WorkingMemory
+from .production_operator import ProductionContainer
 
 
 logging = root_logger.getLogger(__name__)
@@ -125,36 +125,32 @@ class Engine:
     def _run_rule(self, rule):
         """ Run an individual rule """
         # TODO add yields
-        assert(isinstance(rule, Rule))
-        assert(rule.is_coherent())
-        logging.info("Running Rule: {}".format(rule._name))
-        result = self.query(rule._query)
+        results = rule(self)
+        self._propose_actions(results)
+        return results
+
+
+    def run_thing(self, thing):
+        """ Where a thing could be an:
+        rule/agenda/layer/pipeline,
+        action/query/transform
+        """
+        assert(isinstance(thing, ProductionContainer))
+        logging.info("Running thing: {}".format(thing))
+
+        result = self.query(thing.query)
+
         if not bool(result):
-            logging.info("Rule {} Failed".format(rule._name))
-            return
+            logging.info("Thing Failed")
 
 
-        transformed = []
-        if rule._transform:
-            for data in result:
-                transformed.append(rule._transform(data))
-        else:
-            # This is *not* an unnecessary comprehension
-            # because of how parse results work
-            transformed = [x for x in result]
 
-        for data in transformed:
-            self._propose_actions(data, rule)
-
-        return transformed
-
-    def _propose_actions(self, data, rule):
+    def _propose_actions(self, proposals):
         """ Enact, or propose, the action list
         or actions in a rule provided
         """
-        assert(isinstance(data, dict))
-        assert(isinstance(rule, Rule))
-        self._proposed_actions.append((data, rule))
+        assert(isinstance(proposals, list))
+        self._proposed_actions += proposals
 
     def _select_actions_by_agenda(self, agenda):
         """ Utilize a policy to select from proposed actions,
@@ -174,8 +170,7 @@ class Engine:
     def _perform_actions(self, data, act_set):
         """ Actual enaction of a set of actions """
         assert(isinstance(act_set, action.Action))
-        for x in act_set:
-            x(self, data)
+        act_set(data, self)
 
     def _register_layers(self, layers):
         raise NotImplementedError()
