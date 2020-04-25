@@ -371,3 +371,8 @@
 
     def test_basic_inference(self):
 
+* TODO [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/trie_working_memory.py::213][do DFS/BFS/Leaf search as a transform]]
+ <2020-04-24 Fri>
+  
+               # TODO: Handle DFS/BFS/Leaf retrieval
+
