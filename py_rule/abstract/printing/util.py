@@ -105,7 +105,6 @@ def print_sequence(seq, join_str="", leaf=True, **kwargs):
     return val
 
 def print_container(container, join_str="\n\t", **kwargs):
-    # TODO is this necessary now containers are statements?
     the_clauses = [x.pprint(**kwargs) for x in container.clauses]
     return join_str.join(the_clauses)
 
@@ -114,8 +113,6 @@ def print_statement(statement, is_structured=False, has_end=True, **kwargs):
     head, body = statement.pprint_has_content
 
     val = statement._name
-    #TODO handle operator definition by controlling head printing
-    # ie: λ:: name(vars): x.y.z => blah
     val = _wrap_colon(val)
 
     if statement.type in STATEMENT_LOOKUPS:

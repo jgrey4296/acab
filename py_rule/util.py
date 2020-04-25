@@ -43,7 +43,6 @@ WORD_COMPONENT_S  = pp.alphas + "_"
 OPERATOR_SYNTAX_S = "%^&*_-+={}[]|<>?~§';⊂⊃∨∧⧼⧽¿£ΔΣΩ∩∪√∀∈∃¬∄⟙⟘⊢∴◇□⚬"
 
 # Rule Constants
-LAYER_QUERY_RULE_BIND_S = "rule"
 RULE_S = "rule"
 
 # Higher Level Structure Heads

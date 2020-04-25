@@ -12,15 +12,19 @@ a.pipeline(::Pipeline):
    a.third.layer
 end
 """
-from py_rule.abstract.production_operator import ProductionContainer
+from py_rule.abstract.rule import Rule
 
-class Pipeline(ProductionContainer):
+class Pipeline(Rule):
     """ Abstract Class to describe a rule engine pipeline
     Collects together sets of rules,
     and a sequence of agendas to run on their output
     """
 
-    def __init__(self):
+    def __init__(self, query=None, action=None, transform=None, name="AnonPipeline"):
+        super(Pipeline, self).__init__( query=query,
+                                        action=action,
+                                        transform=transform,
+                                        name=name)
         # Layers in the main loop
         self._layers = []
 
@@ -42,9 +46,16 @@ class Pipeline(ProductionContainer):
             self._layer_dict = {x.__name__ : x for x in self._layers}
         return self._layer_dict[i]
 
-    def __call__(self, engine, tick):
+    def __call__(self, engine):
         """ Run this pipeline on the given engine for a tick """
-        raise NotImplementedError()
+        results = super(Pipeline, self).__call__(engine)
+
+        # TODO: make 'layer call' actions
+        # TODO: make 'module load' actions
+        # Run pipeline actions
+        output = []
+
+        return output
 
     # TODO input constraints
     def input_constraints(self):

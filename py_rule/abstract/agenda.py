@@ -5,12 +5,12 @@ layers and pipelines can be defined
 """
 from enum import Enum
 from py_rule.util import NAME_S, STATEMENT_S, TYPE_DEC_S
-from py_rule.abstract.value import PyRuleStatement
+from py_rule.abstract.rule import Rule
 
-RELATION_E = Enum('Agenda_Relation', 'ONE2ONE ONE2MANY MANY2ONE MANY2MANY')
+RELATION_E = Enum('Agenda_Relation', 'ONE MANY')
 
 
-class Agenda(PyRuleStatement):
+class Agenda(Rule):
     """ Abstract Class of Rule Layer Agendas
     Takes a set of potential rule activations
     and applys a transform, filter, or other function on them
@@ -36,30 +36,33 @@ class Agenda(PyRuleStatement):
 
         # TODO: use inspect module to get kwargs of each agenda type
 
-    def __init__(self, queries, transforms, var_setting):
-        # A function type signature
-        self._type_signature = None
+    def __init__(self, query=None, action=None, transform=None, name="AnonAgenda"):
+
+        super(Agenda, self).__init__(query=query,
+                                     action=action,
+                                     transform=transform,
+                                     name=name)
         # Whether the agenda expands or constrains proposals
-        self._relation_type = None
-        # Whether proposals are indexed, and what by
-        self._is_indexed = False
-        self._index = None
+        self._relation_type = (None, None)
 
         # Late set queries and transforms
         self._registered_variables = {}
-        self._queries = []
-        self._transforms = []
+
+        # TODO: verify actions to registered variables
 
     def __call__(self, proposals, engine, **kwargs):
         """ Take the proposals, transform them in some way,
         then enact them on the engine """
+        agenda_settings = super(Agenda, self).__call__(engine)
+
+        # TODO reify agenda settings
+        settings = {}
+
+        return agenda_logic(proposals, settings, engine, **kwargs)
+
+    def agenda_logic(self, proposals, settings, engine, **kwargs):
+        """ Where specific logic of agenda subclasses is implemented """
         raise NotImplementedError()
-
-
-    def set_queries_and_transforms(self, queries, transforms):
-        self._queries += queries
-        self._transforms += transforms
-
 
     def register_variable(self, sentence, init):
         # TODO

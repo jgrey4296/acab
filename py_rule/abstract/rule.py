@@ -37,11 +37,13 @@ class Rule(ProductionContainer):
         """ Rule Logic, returns action proposals """
         assert(self.verify())
         logging.info("Running Rule: {}".format(self._name))
+        # Run the query
         result = self._query(engine)
         if not bool(result):
             logging.info("Rule {} Failed".format(self._name))
             return []
 
+        # Run any transforms
         transformed = []
         if self._transform:
             for data in result:
@@ -51,6 +53,7 @@ class Rule(ProductionContainer):
             # because of how parse results work
             transformed = [x for x in result]
 
+        # return final passing dictionaries
         results = []
         for data in transformed:
             results.append((data, self))

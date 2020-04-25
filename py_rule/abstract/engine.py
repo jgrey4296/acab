@@ -27,7 +27,6 @@ class Engine:
         self.__kb_constructor = wm_constructor
         self._working_memory = wm_constructor(init)
         self._pipeline = None
-        self._proposed_actions = []
         # to be updated with printed representations
         # of the kb state after each action
         self._prior_states = []
@@ -41,10 +40,6 @@ class Engine:
         # initialise
         if modules is not None:
             self.load_modules(*modules)
-        # Populate Agenda Keywords
-        Agenda.construct_subclass_tree()
-
-        self._working_memory.build_operator_parser()
 
         if path is None:
             logging.info("Not loading any files for the working memory")
@@ -58,6 +53,7 @@ class Engine:
     def load_modules(self, *modules):
         self._loaded_modules.update({x.__class__.__name__ : x for x in modules})
         self._working_memory.add_modules(self._loaded_modules.values())
+        Agenda.construct_subclass_tree()
         self._working_memory.build_operator_parser()
 
     def load_file(self, filename):
@@ -83,20 +79,6 @@ class Engine:
             self._cached_bindings = result
         return result
 
-    def clear_proposed_actions(self):
-        """ Clear the list of actions proposed by rules, but which haven't been
-        enacted """
-        self._proposed_actions = []
-
-    def tick(self, input_messages):
-        """ A Single Tick of the Engine.
-        Receives a list of updates from the world """
-        assert(isinstance(input_messages, list))
-        # Assert input messages
-        # rule the rule layers
-        # return actions
-        raise NotImplementedError()
-
     # Export
     def _save_state(self, data):
         """ Copy the current string representation of the working memory,
@@ -109,6 +91,7 @@ class Engine:
         rule/agenda/layer/pipeline,
         action/query/transform
         """
+        # TODO: if thing is string, query it
         # TODO be able to run multi / sequence of things
         # TODO should save state
         assert(isinstance(thing, ProductionContainer))

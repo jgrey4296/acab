@@ -54,13 +54,7 @@ class TrieEngine(Engine):
                 logging.info("File load assertions: {}".format(x))
                 self.add(x)
 
-            # TODO register layer sequences
-            # TODO register policies to layers
         else:
             raise PyRuleParseException("No text found in provided file")
 
         # TODO: return a response about the loading
-
-    def tick(self, inputMessages):
-        # TODO fix this
-        raise NotImplementedError()
