@@ -34,6 +34,10 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result, action.Action)
         self.assertEqual(len(result), 4)
         self.assertTrue(all([isinstance(x, action.ActionComponent) for x in result]))
+        self.assertEqual(result.clauses[0]._vars[0].pprint(), "a.b.c")
+        self.assertEqual(result.clauses[1]._vars[0].pprint(), "~a!b.d")
+        self.assertEqual(result.clauses[2]._vars[0].pprint(), "$x")
+        self.assertEqual(result.clauses[3]._vars[0].pprint(), "$x.a.b")
 
     def test_action_binding_expansion(self):
         bindings = {"x" : FP.parseString('a.b.c')[0] }

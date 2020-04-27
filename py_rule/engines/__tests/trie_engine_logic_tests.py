@@ -36,7 +36,6 @@ class Engine_Logic_Tests(unittest.TestCase):
         self.assertIsInstance(rule, Rule)
         self.e.add("a.b.c")
         self.assertTrue(self.e.query("~a.b.d?"))
-        self.assertFalse(self.e._proposed_actions)
         proposals = self.e.run_thing(rule)
         self.assertTrue(proposals)
         dr = proposals[0]
@@ -156,11 +155,12 @@ class Engine_Logic_Tests(unittest.TestCase):
         self.e.load_file(self.path("multi_rule_proposals.trie"))
         self.assertTrue(self.e.query('a.b.c?'))
         ctxs = self.e.query('rule.$x?')
+        results = []
         for ctx in ctxs:
             rule = ctx['x']
-            self.e.run_thing(rule)
+            results += self.e.run_thing(rule)
 
-        self.assertEqual(len(self.e._proposed_actions), len(ctxs))
+        self.assertEqual(len(results), len(ctxs))
 
     def rule_load_with_comments(self):
         self.e.load_file(self.path("rule_with_comments.trie"))

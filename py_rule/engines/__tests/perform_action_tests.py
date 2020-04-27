@@ -15,6 +15,7 @@ class ActionTests(unittest.TestCase):
         act_ops.ActionAdd()
         act_ops.ActionPrint()
 
+        AP.build_operators()
 
     def setUp(self):
         self.e = TrieEngine()
