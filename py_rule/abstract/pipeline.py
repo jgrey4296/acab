@@ -13,6 +13,19 @@ a.pipeline(::Pipeline):
 end
 """
 from py_rule.abstract.rule import Rule
+from py_rule.abstract.production_operator import ProductionOperator
+
+class PipelineAction(ProductionOperator):
+    """ Subclass this for pipeline actions """
+
+    op_list = {}
+
+class PipelineRunLayer(PipelineAction):
+    pass
+
+class PipelineRunPipeline(PipelineAction):
+    pass
+
 
 class Pipeline(Rule):
     """ Abstract Class to describe a rule engine pipeline

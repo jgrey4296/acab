@@ -31,7 +31,7 @@ class ActionOp(PO.ProductionOperator):
         if self.op_str not in ActionOp.op_list:
             ActionOp.op_list[self.op_str] = self
 
-    def __call__(self, params, engine):
+    def __call__(self, *params, data=None, engine=None):
         raise NotImplementedError()
 
 
@@ -44,23 +44,10 @@ class ActionComponent(PO.ProductionComponent):
     def __init__(self, op_str, params=None, **kwargs):
         """ Create an action with an operator and values """
         assert all([isinstance(x, Sentence) for x in params]), params
-        super(ActionComponent, self).__init__(op_str, params=params, **kwargs)
-
-    def __call__(self, data, engine):
-        # lookup op
-        assert(self.op in ActionOp.op_list)
-        op_func = ActionOp.op_list[self.op]
-        # get values from data
-        values = self.get_values(data)
-        # perform action op with data
-        op_func(values, engine)
-
-    def __refine_op_func(self, op_str):
-        """ Replace the current op func set with a specific
-        op func, used for type refinement """
-        assert(op_str in ActionOp.op_list)
-        self._value = op_str
-
+        super(ActionComponent, self).__init__(op_str,
+                                              params=params,
+                                              op_class=ActionOp,
+                                              **kwargs)
 
     @property
     def var_set(self):
@@ -70,28 +57,6 @@ class ActionComponent(PO.ProductionComponent):
 
     def copy(self):
         return ActionComponent(self.op, params=self._vars, type_str=self.type)
-
-    def verify(self):
-        """ Check the Action is using a valid operator (ACT enum) """
-        if self.op not in ActionOp.op_list.keys():
-            raise AttributeError("Unrecognised Action: {}".format(self.op))
-
-    def get_values(self, data):
-        """ Output a list of bindings from this action """
-        output = []
-        for x in self._vars:
-            if isinstance(x, Sentence):
-                output.append(x.bind(data))
-            elif isinstance(x, list):
-                output.append([y.bind(data) for y in x])
-            elif isinstance(x, PyRuleValue) and x.is_var:
-                if x.is_at_var:
-                    output.append(data[util.AT_BIND_S + x._value])
-                else:
-                    output.append(data[x._value])
-            else:
-                output.append(x)
-        return output
 
     def bind(self, bindings):
         """ Expand stored bindings at interpret time
@@ -125,10 +90,6 @@ class Action(PO.ProductionContainer):
                                      params=params,
                                      type_str=type_str,
                                      **kwargs)
-
-    def __call__(self, bindings, engine):
-        for x in self.clauses:
-            x(bindings, engine)
 
     def bind(self, bindings):
         """ Expand stored bindings """

@@ -6,9 +6,26 @@ layers and pipelines can be defined
 from enum import Enum
 from py_rule.util import NAME_S, STATEMENT_S, TYPE_DEC_S
 from py_rule.abstract.rule import Rule
+from py_rule.abstract.production_operator import ProductionOperator
 
 RELATION_E = Enum('Agenda_Relation', 'ONE MANY')
 
+
+class AgendaAction(ProductionOperator):
+
+    op_list = {}
+
+class AgendaSelect(AgendaAction):
+    pass
+
+class AgendaSort(AgendaAction):
+    pass
+
+class AgendaSet(AgendaAction):
+    pass
+
+class AgendaReturn(AgendaAction):
+    pass
 
 class Agenda(Rule):
     """ Abstract Class of Rule Layer Agendas
@@ -36,10 +53,9 @@ class Agenda(Rule):
 
         # TODO: use inspect module to get kwargs of each agenda type
 
-    def __init__(self, query=None, action=None, transform=None, name="AnonAgenda"):
+    def __init__(self, query=None, transform=None, name="AnonAgenda"):
 
         super(Agenda, self).__init__(query=query,
-                                     action=action,
                                      transform=transform,
                                      name=name)
         # Whether the agenda expands or constrains proposals

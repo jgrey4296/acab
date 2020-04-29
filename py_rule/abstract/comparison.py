@@ -3,6 +3,7 @@ import logging as root_logger
 
 from py_rule.util import BIND_S, OPERATOR_S
 from py_rule.abstract.printing import util as PrU
+from py_rule import util
 
 from .production_operator import ProductionOperator, ProductionComponent
 from .sentence import Sentence
@@ -26,7 +27,7 @@ class CompOp(ProductionOperator):
         if self.op_str not in CompOp.op_list:
             CompOp.op_list[self.op_str] = self
 
-    def __call__(self, a, b):
+    def __call__(self, a, b, data=None):
         raise NotImplementedError()
 
 
@@ -38,22 +39,20 @@ class Comparison(ProductionComponent):
             param = [param]
         super(Comparison, self).__init__(op_str,
                                          param,
+                                         op_class=CompOp,
                                          type_str=type_str)
+        self.verify()
 
     def __call__(self, node, data=None):
         """ Run a comparison on a node """
-        op = CompOp.op_list[self.op]
+        self.verify()
+        op = self._data[util.OP_CLASS_S].op_list[self.op]
+        # TODO: replace this with an auto-variable and get_values
         node_value = node._value
         value = self._vars[0]._value
         if data is not None:
             value = data[value]
         return op(node_value, value)
-
-    def __refine_op_func(self, op_str):
-        """ Replace the current op func set with a specific
-        op func, used for type refinement """
-        assert(op_str in CompOp.op_list)
-        self._value = op_str
 
 
     @property

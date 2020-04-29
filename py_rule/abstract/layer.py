@@ -21,6 +21,28 @@ end
 
 """
 from py_rule.abstract.rule import Rule
+from py_rule.abstract.production_operator import ProductionOperator
+from py_rule import util
+
+
+class LayerAction(ProductionOperator):
+    """ Subclass this to make layer actions """
+
+    op_list = {}
+
+    def __init__(self, num_params=0):
+        super(LayerAction, self).__init__(num_params=num_params)
+
+        if self.op_str not in LayerAction.op_list:
+            LayerAction.op_list[self.op_str] = self
+
+
+class LayerRunRules(LayerAction):
+    pass
+
+class LayerRunAgenda(LayerAction):
+    pass
+
 
 class Layer(Rule):
     """ The Abstract Layer Class """
@@ -30,12 +52,13 @@ class Layer(Rule):
                                     action=action,
                                     transform=transform,
                                     name=name)
+        self._data[util.OP_CLASS_S] = LayerAction
 
     def __call__(self, engine):
         """ Run a layer, returning actions to perform """
+        # TODO finish this
         results = super(Layer, self).__call__(engine)
 
-        # TODO: make 'agenda call' actions
         # run the actions
         selected = []
 

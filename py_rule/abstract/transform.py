@@ -12,41 +12,26 @@ logging = root_logger.getLogger(__name__)
 
 
 class TransformOp(PO.ProductionOperator):
-    op_list = {1 : {},
-               2 : {},
-               3 : {}}
+    op_list = {}
 
     def __init__(self, num_params=2, infix=False):
         # Registers self with class name,
         # DSL later binds to an operator
         super().__init__(num_params=num_params, infix=False)
 
-        if self.op_str not in TransformOp.op_list[num_params]:
-            TransformOp.op_list[num_params][self.op_str] = self
+        if self.op_str not in TransformOp.op_list:
+            TransformOp.op_list[self.op_str] = self
 
 
-    def __call__(self, a, b, ctx, engine):
+    def __call__(self, a, b, data=None, engine=None):
         raise NotImplementedError("Abstract method needs to be implemented")
 
 
 class TransformComponent(PO.ProductionComponent):
     """ Superclass of OperatorTransform. Holds an Operator """
     def __init__(self, op_str, params, rebind=None, type_str=None):
-        assert(not any([x.is_at_var for x in params]))
-        super(TransformComponent, self).__init__(op_str, params)
+        super(TransformComponent, self).__init__(op_str, params, op_class=TransformOp)
         self._rebind = rebind
-
-
-    def __refine_op_func(self, op_str):
-        """ Replace the current op func set with a specific
-        op func, used for type refinement """
-        assert(op_str in TransformOp.op_list)
-        self._value = op_str
-
-    def __call__(self, ctx, engine):
-        op_func = TransformOp.op_list[len(self._vars)][self.op]
-        params = [ctx[y._value] if y.is_var else y._value for y in self._vars]
-        return op_func(*params, ctx, engine)
 
     @property
     def var_set(self):
@@ -57,11 +42,6 @@ class TransformComponent(PO.ProductionComponent):
             out_set.update(self._rebind.var_set['out'])
         return {'in' : in_set, 'out': out_set}
 
-
-    def verify(self):
-        """ Complains if the operator is not a defined Operator Enum """
-        if self.op not in TransformOp.op_list[len(self._vars)]:
-            raise SyntaxError("Unknown Op: {}".format(self.op))
 
     def set_rebind(self, bind):
         """ Set this transform to rebind its result to a different variable """
