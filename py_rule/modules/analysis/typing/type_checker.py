@@ -59,15 +59,18 @@ from .nodes.typedef_node import TypeDefTrieNode
 from .nodes.var_type_node import VarTypeTrieNode
 from .operator_definition import OperatorDefinition
 from .type_definition import TypeDefinition
+from py_rule.abstract.layer import LayerAction
 
 logging = root_logger.getLogger(__name__)
 
 
-class TypeChecker:
+class TypeChecker(LayerAction):
     """ Abstract Class for Type Checking """
     # parse their locations, and add them as definitions
 
     def __init__(self):
+        super(TypeChecker, self).__init__(num_params=0)
+
         self._structural_definitions = Trie(TypeDefTrieNode)
         self._functional_definitions = Trie(OperatorDefTrieNode)
         self._declarations = Trie(TypeAssignmentTrieNode)
@@ -82,11 +85,12 @@ class TypeChecker:
     def __repr__(self):
         return "TypeChecker({})".format(str(self))
 
-    def __call__(self, data):
+    def __call__(self, data, engine):
         """ Pass in data to type check """
         # Rules: limited context
         # other assertions/definitions etc: global context
-        rules, assertions = data
+
+        # TODO: sort statements into assertions/rules to check/ types to ignore
 
         for assertion in assertions:
             if isinstance(assertion, TypeDefinition):

@@ -11,7 +11,7 @@ class EQ(CompOp):
         super().__init__()
         # type sig: a -> a -> bool
 
-    def __call__(self, a, b):
+    def __call__(self, a, b, data=None, engine=None):
         return a == b
 
 
@@ -19,7 +19,7 @@ class NEQ(CompOp):
     def __init__(self):
         super().__init__()
 
-    def __call__(self, a, b):
+    def __call__(self, a, b, data=None, engine=None):
         return a != b
 
 
@@ -28,7 +28,7 @@ class RegMatch(CompOp):
         super().__init__()
         # type sig: a -> a -> bool
 
-    def __call__(self, a, b):
+    def __call__(self, a, b, data=None, engine=None):
         return re.search(b, a)
 
 
@@ -36,5 +36,5 @@ class ELEM(CompOp):
     def __init__(self):
         super().__init__()
 
-    def __call__(self, a, b):
+    def __call__(self, a, b, data=None, engine=None):
         return a in b

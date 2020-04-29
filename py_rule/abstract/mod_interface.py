@@ -9,11 +9,23 @@ from .value import PyRuleValue
 class ModuleSpecification:
     """ A Module specification.
     Should be constructed in a module's __init__,
-    into a MODULE_SPEC variable
+    into a MODULE_SPEC variable.
+
+    Add parsers to:
+    ._[value/statement/annotation]_parsers
+
+    Types to     ._types
+    Functions to ._functions
+
+    Implement:
+    parse_string,
+    construct_operators
+    init_strings
+    define_layers
     """
 
 
-    def __init__(self, types=None, funcs=None):
+    def __init__(self, value_ps=None, statement_ps=None, annotate_ps=None):
 
         # A Parser has to provide a parser combinator to
         # integrate into the Working Memory Lanuage.
@@ -25,20 +37,15 @@ class ModuleSpecification:
         self._statement_parsers = []
         # Annotation parsers return constraints for a value
         self._annotation_parsers = []
-        # TODO The value types the module adds
-        self._types = []
-        # TODO The functions on the value types the module adds
-        self._functions = []
+
+        if value_ps is not None:
+            self._value_parsers += value_ps
+        if statement_ps is not None:
+            self._statement_parsers += statement_ps
+        if annotate_ps is not None:
+            self._annotation_parsers += annotate_ps
 
         # TODO add printing lookup dictionaries
-
-        if types is not None:
-            assert(all([x in PyRuleValue.__subclasses__() for x in types]))
-            self._types += types
-
-        if funcs is not None:
-            self._functions += funcs
-
 
     @property
     def value_parsers(self):
@@ -71,4 +78,10 @@ class ModuleSpecification:
 
     def define_layers(self):
         """ Return any layers the module itself defines """
+        raise NotImplementedError()
+
+    def insert_hotloads(self, a_dict):
+        """ Working memory calls this, providing the basic
+        set of parsers to hotload into the module.
+        eg: basic sentences, queries, etc """
         raise NotImplementedError()

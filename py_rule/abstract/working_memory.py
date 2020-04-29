@@ -29,6 +29,7 @@ class WorkingMemory:
     def __init__(self):
         self._have_added_types = False
         self._have_built_operators = False
+        self._module_hotload_provision = {}
 
     def __str__(self):
         """ Print the working memory as a reparseable string """
@@ -41,6 +42,10 @@ class WorkingMemory:
     def add_modules(self, mods):
         """ Add types into the parser """
         assert(all([isinstance(x, ModuleSpecification) for x in mods]))
+
+
+        # TODO: setup hotloads of the module
+        dummy = [x.insert_hotloads(self._module_hotload_provision) for x in mods]
 
         # Construct operators:
         dummy = [x.construct_operators() for x in mods]

@@ -16,7 +16,7 @@ def test_alphas(node, comps):
 
 def test_betas(node, comps, data):
     """ Run a beta tests against a retrieved value, with supplied bindings """
-    return all([x(node, data) for x in comps])
+    return all([x(node, data=data) for x in comps])
 
 def exclusion_matches(a, b):
     """ Compare the EXOP of a node, with whether that exop

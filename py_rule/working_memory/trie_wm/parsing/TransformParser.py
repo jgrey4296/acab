@@ -17,17 +17,17 @@ def build_operators():
     if BINARY_TRANS_OP.expr is not None:
         logging.debug("Transform Binary Operator Overwrite")
     BINARY_TRANS_OP << pp.Or([pp.Literal(k) for k, v
-                              in TransformOp.op_list[2].items()] + OP_SUGAR)
+                              in TransformOp.op_list.items() if v._num_params == 2] + OP_SUGAR)
 
     if UNARY_TRANS_OP.expr is not None:
         logging.debug("Transform Unary Operator Overwrite")
     UNARY_TRANS_OP << pp.Or([pp.Literal(k) for k, v
-                             in TransformOp.op_list[1].items()] + OP_SUGAR)
+                             in TransformOp.op_list.items() if v._num_params == 1] + OP_SUGAR)
 
     if TERNARY_TRANS_OP.expr is not None:
         logging.debug("Transform Ternary Operator Overwrite")
     TERNARY_TRANS_OP << pp.Or([pp.Literal(k) for k, v
-                               in TransformOp.op_list[3].items()] + OP_SUGAR)
+                               in TransformOp.op_list.items() if v._num_params == 3] + OP_SUGAR)
 
 
 def buildBinaryTransformComponent(toks):
