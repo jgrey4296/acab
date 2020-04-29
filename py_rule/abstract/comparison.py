@@ -47,12 +47,10 @@ class Comparison(ProductionComponent):
         """ Run a comparison on a node """
         self.verify()
         op = self._data[util.OP_CLASS_S].op_list[self.op]
-        # TODO: replace this with an auto-variable and get_values
         node_value = node._value
-        value = self._vars[0]._value
-        if data is not None:
-            value = data[value]
-        return op(node_value, value)
+        params = self.get_values(data)
+
+        return op(node_value, *params, data=data)
 
 
     @property
