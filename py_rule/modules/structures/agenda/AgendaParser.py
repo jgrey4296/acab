@@ -47,13 +47,6 @@ from py_rule.abstract.agenda import Agenda, make_agenda
 
 logging = root_logger.getLogger(__name__)
 
-def construct_agenda(toks):
-    # construct initializer dictionary
-    the_dict = {}
-
-    return ("agenda_dict", the_dict)
-
-
 HOTLOAD_BASIC_SEN = pp.Forward()
 
 # TODO: an agenda is a special form of rule
@@ -65,10 +58,9 @@ agenda_body = PU.op(conditions) + PU.op(transforms) + PU.op(var_setting)
 
 agenda_stmt = PU.STATEMENT_CONSTRUCTOR(PU.AGENDA_HEAD,
                                        HOTLOAD_BASIC_SEN,
-                                       agenda_body,
-                                       parse_fn=make_agenda)
+                                       agenda_body)
 
-agenda_body.setParseAction(construct_agenda)
+agenda_body.setParseAction(make_agenda)
 
 
 parse_point = agenda_stmt
