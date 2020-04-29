@@ -8,8 +8,7 @@ class TimeSpec(ModuleSpecification):
     """
 
     def __init__(self):
-        super().__init__(types=[], funcs=[])
-        self._value_parsers = [TP.main_pattern]
+        super().__init__(value_ps=[TP.main_pattern])
 
     def parse_string(self, s):
         return TP.parseString(s)

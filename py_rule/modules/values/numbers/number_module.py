@@ -7,8 +7,7 @@ class NumberSpecification(ModuleSpecification):
     """ A Module that provides numbers """
 
     def __init__(self):
-        super(NumberSpecification, self).__init__()
-        self._value_parsers = [NP.NUM]
+        super(NumberSpecification, self).__init__(value_ps=[NP.NUM])
 
     def parse_string(self, s):
         """ Takes a String, parses it into Data format """
@@ -33,3 +32,6 @@ class NumberSpecification(ModuleSpecification):
         Defining values etc that can now be parsed by
         the hotloaded value and statement parsers """
         return []
+
+    def insert_hotloads(self, data):
+        pass

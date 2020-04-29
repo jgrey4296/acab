@@ -43,3 +43,6 @@ class OperatorSpec(ModuleSpecification):
 
     def init_strings(self):
         return []
+
+    def insert_hotloads(self, data):
+        pass

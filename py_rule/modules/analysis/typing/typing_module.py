@@ -6,28 +6,33 @@ from .parsing import TypeParser as TP
 class TypingSpec(ModuleSpecification):
     """ Typing Spec Class, providing entry points
     for an engine and working memory to handle type inference
+
+    Add parsers to:
+    ._[value/statement/annotation]_parsers
+
+    Types to     ._types
+    Functions to ._functions
+
+    Implement:
+    parse_string,
+    construct_operators
+    init_strings
+    define_layers
+
     """
 
     def __init__(self):
-        # TODO: add typedef and opdef types
-        super().__init__(types=[],
-                         funcs=[])
-        # TODO setup statement parsers
-        self._statement_parsers = TDP.COMBINED_DEFS
-        # TODO setup annotation parsers
-        self._annotation_parsers = TP.TYPEDEC_CORE
+        super().__init__(statement_ps=[TDP.COMBINED_DEFS],
+                         annotate_ps=[TP.TYPEDEC_CORE])
 
     def parse_string(self, s):
         return TP.parseString(s)
 
     def construct_operators(self):
-        # TODO
         return
 
+    def init_strings(self):
+        return ""
+
     def define_layers(self):
-        # TODO : add type classes to type checker
-        # TODO : add definitions to type checker
-        # TODO : add assertions to type checker
-        # TODO : add rules to type checker
-        # TODO : type_checker validate
         return []
