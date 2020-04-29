@@ -3,7 +3,9 @@ The Base Operator Definition
 Used for Comparison, Transform, and Performance Operators
 """
 from py_rule.util import OPERATOR_S, STATEMENT_S
+from py_rule import util
 from py_rule.abstract.printing import util as PrU
+from py_rule.abstract.sentence import Sentence
 
 from .value import PyRuleValue, PyRuleStatement
 
@@ -21,7 +23,7 @@ class ProductionOperator(PyRuleValue):
         # TODO use infix
         self._infix = infix
 
-    def __call__(self):
+    def __call__(self, *params, data=None, engine=None):
         raise NotImplementedError()
 
 
@@ -33,11 +35,23 @@ class ProductionOperator(PyRuleValue):
 class ProductionComponent(PyRuleValue):
     """ Pairs a an operator with some bindings """
 
-    def __init__(self, op_str, params, type_str=None, **kwargs):
-        super().__init__(op_str, params=params, type_str=type_str, **kwargs)
+    def __init__(self, op_str, params, type_str=None, op_class=None, **kwargs):
+        assert(op_class is not None)
+        if 'data' not in kwargs:
+            kwargs['data'] = {}
 
-    def __call__(self):
-        raise NotImplementedError()
+        kwargs['data'].update({util.OP_CLASS_S : op_class})
+        super().__init__(op_str, params=params, type_str=type_str, **kwargs)
+        self.verify()
+
+    def __call__(self, data, engine):
+        # lookup op
+        self.verify()
+        op_func = self._data[util.OP_CLASS_S].op_list[self.op]
+        # get values from data
+        values = self.get_values(data)
+        # perform action op with data
+        return op_func(*values, data=data, engine=engine)
 
 
     @property
@@ -55,24 +69,55 @@ class ProductionComponent(PyRuleValue):
         return obj
 
 
+    def get_values(self, data):
+        """ Output a list of bindings from this action """
+        output = []
+        for x in self._vars:
+            if isinstance(x, Sentence):
+                output.append(x.bind(data))
+            elif isinstance(x, list):
+                output.append([y.bind(data) for y in x])
+            elif isinstance(x, PyRuleValue) and x.is_var:
+                if x.is_at_var:
+                    output.append(data[util.AT_BIND_S + x._value])
+                else:
+                    output.append(data[x._value])
+            else:
+                output.append(x._value)
+        return output
+
     def __refine_op_func(self, op_str):
         """ Replace the current op func set with a specific
         op func, used for type refinement """
-        raise NotImplementedError()
+        assert(op_str in self._data[util.OP_CLASS_S].op_list)
+        self._value = op_str
 
     def pprint(self, **kwargs):
         op_fix = [0 if len(self._vars) < 2 else 1][0]
         return PrU.print_operator(self, op_fix=op_fix, **kwargs)
 
     def copy(self):
+        # TODO: fix copies of subclasses to insert OP_CLASS_S
         raise NotImplementedError()
 
     def to_sentence(self, target=None):
         raise NotImplementedError()
 
-    def verify(self):
+    def verify(self, op_constraint=None):
         """ Complains if the operator is not a defined Operator Enum """
-        raise NotImplementedError()
+        op_dict = {}
+        if op_constraint is not None:
+            if isinstance(list):
+                [op_dict.update(x.op_list) for x in op_constraint]
+            elif isinstance(op_constraint, dict):
+                op_dict.update(op_constraint)
+            elif isinstance(op_constraint, type):
+                op_dict.update(op_constraint.op_list)
+        else:
+            op_dict.update(self._data[util.OP_CLASS_S].op_list)
+
+        if self.op not in op_dict:
+            raise AttributeError("Unrecognised operator: {}".format(self.op))
 
 
 class ProductionContainer(PyRuleStatement):
@@ -85,8 +130,10 @@ class ProductionContainer(PyRuleStatement):
     def __len__(self):
         return len(self.clauses)
 
-    def __call__(self, ctx):
-        raise NotImplementedError()
+    def __call__(self, ctx, engine):
+        assert(isinstance(ctx, dict))
+        for x in self.clauses:
+            x(ctx, engine)
 
     def __iter__(self):
         for x in self.clauses:
@@ -114,9 +161,11 @@ class ProductionContainer(PyRuleStatement):
     def to_sentences(self, target=None):
         return [x.to_sentence() for x in self.clauses]
 
-    def verify(self):
+    def verify(self, op_constraint=None):
+        if op_constraint is None and util.OP_CLASS_S in self._data:
+            op_constraint = self._data[util.OP_CLASS_S]
         for x in self.clauses:
-            x.verify()
+            x.verify(op_constraint=op_constraint)
 
     def copy(self):
         raise NotImplementedError()
