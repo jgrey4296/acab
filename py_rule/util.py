@@ -21,6 +21,7 @@ TAG_S        = "tag"
 VALUE_S      = "value"
 VALUE_TYPE_S = "value_type"
 TYPE_DEC_S    = "type_declaration"
+OP_CLASS_S   = "operator_class"
 
 # Core Value Types
 FLOAT_S      = "float"
@@ -51,8 +52,10 @@ QUERY_HEAD_S      = "γ"
 TRANSFORM_HEAD_S  = "τ"
 ACTION_HEAD_S     = "α"
 FACT_HEAD_S       = "Σ"
+SUM_HEAD_S        = "Σσ"
 STRUCTURE_S       = "σ"
 FUNC_S            = "λ"
+TYPE_CLASS_S      = "γ"
 UUID_HEAD         = "υ"
 
 VAR_SYMBOL_S      = "$"
