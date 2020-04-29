@@ -272,9 +272,14 @@
 
 *** DONE [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/trie_working_memory.py::43][Possibly adapt working memory add to retract negated sentences]]
     CLOSED: [2020-03-28 Sat 00:08]
-    <2020-03-26 Thu>
+     <2020-03-26 Thu>
 
-    TODO Retract negated sentences
+     TODO Retract negated sentences
+
+*** TODO [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/trie_working_memory.py::213][do DFS/BFS/Leaf search as a transform]]
+  <2020-04-24 Fri>
+  
+  # TODO: Handle DFS/BFS/Leaf retrieval
 
 ** Testing
 *** TODO [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/__tests/trie_wm_tests.py::126][Decide on semantics of switching exclusion operators]]
@@ -370,9 +375,4 @@
     <2020-03-26 Thu>
 
     def test_basic_inference(self):
-
-* TODO [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/trie_working_memory.py::213][do DFS/BFS/Leaf search as a transform]]
- <2020-04-24 Fri>
-  
-               # TODO: Handle DFS/BFS/Leaf retrieval
 
