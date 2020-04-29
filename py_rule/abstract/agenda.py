@@ -99,7 +99,4 @@ def make_agenda(toks):
     # make the agenda
     the_agenda = constructor(the_dict)
 
-
-    # TODO actually, this doesnt chain into the normal make statement
-    toks[STATEMENT_S] = (the_agenda.type, the_agenda)
-    return False
+    return  (the_agenda.type, the_agenda)
