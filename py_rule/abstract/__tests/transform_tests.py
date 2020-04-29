@@ -3,7 +3,7 @@ from os.path import splitext, split
 import unittest
 import logging
 from py_rule import util
-from py_rule.abstract.transform import TransformComponent
+from py_rule.abstract.transform import TransformComponent, TransformOp
 from py_rule.abstract.node import PyRuleNode
 
 
@@ -22,17 +22,20 @@ class TransformTests(unittest.TestCase):
     #----------
     #use testcase snippets
     def test_construction(self):
+        TransformOp.op_list['TestOp'] = True
         transform = TransformComponent("TestOp", [])
         self.assertIsInstance(transform, TransformComponent)
+        del TransformOp.op_list['TestOp']
 
     def test_var_set(self):
+        TransformOp.op_list['TestOp'] = True
         param = PyRuleNode("input", data={util.BIND_S: True})
         outbind = PyRuleNode("output", data={util.BIND_S: True})
         transform = TransformComponent("TestOp", [param], rebind=outbind)
         var_set = transform.var_set
         self.assertTrue("input" in var_set['in'])
         self.assertTrue("output" in var_set['out'])
-
+        del TransformOp.op_list['TestOp']
 
 
 if __name__ == "__main__":

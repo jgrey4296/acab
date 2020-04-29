@@ -2,7 +2,7 @@
 from os.path import splitext, split
 import unittest
 import logging
-from py_rule.abstract.comparison import Comparison
+from py_rule.abstract.comparison import Comparison, CompOp
 from py_rule import util
 from py_rule.abstract.node import PyRuleNode
 
@@ -21,14 +21,18 @@ class ComparisonTests(unittest.TestCase):
     #----------
     #use testcase snippets
     def test_construction(self):
+        CompOp.op_list['test'] = True
         comp = Comparison("test", [])
         self.assertIsInstance(comp, Comparison)
+        del CompOp.op_list['test']
 
     def test_var_set(self):
+        CompOp.op_list['test'] = True
         bind = PyRuleNode("an_input", data={util.BIND_S: True})
-        comp = Comparison("Test", [bind])
+        comp = Comparison("test", [bind])
         var_set = comp.var_set
         self.assertTrue("an_input" in var_set['in'])
+        del CompOp.op_list['test']
 
 
 if __name__ == "__main__":

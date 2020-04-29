@@ -4,6 +4,7 @@ from py_rule.abstract.contexts import Contexts
 import py_rule.engines.trie_engine as T
 import py_rule.working_memory.trie_wm.parsing.TransformParser as TP
 import py_rule.working_memory.trie_wm.parsing.ActionParser as AP
+from py_rule.abstract.rule import Rule
 from math import isclose
 
 
@@ -69,11 +70,15 @@ class Engine_Tests(unittest.TestCase):
         result = self.e.query('a.b.c?, a.b.d?, a.b.e?')
         self.assertTrue(result)
 
-    # TODO: in place of rule registration, check they are asserted
+    def test_rule_assertion(self):
+        self.assertFalse(self.e.query('a.test.rule?'))
+        self.e.add('a.test.rule: (::ρ)\na.b.c?\n\na.b.d\nend')
+        results = self.e.query('a.test.$rule?')
+        self.assertTrue(results)
+        self.assertIsInstance(results[0]['rule'], Rule)
+
 
     # TODO: in place of action registration, check operators are called appropriately
-
-    # TODO: test rule selectors
 
 if __name__ == "__main__":
     LOGLEVEL = logging.INFO

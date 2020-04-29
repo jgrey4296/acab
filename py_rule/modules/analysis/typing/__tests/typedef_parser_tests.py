@@ -22,7 +22,6 @@ class TypeDef_ParserTests(unittest.TestCase):
     def setUpClass(cls):
         FP.HOTLOAD_ANNOTATIONS << TP.TYPEDEC_CORE
         TP.HOTLOAD_BASIC_SEN << FP.BASIC_SEN
-        TD.HOTLOAD_VALBIND << FP.VALBIND
         TD.HOTLOAD_BASIC_SEN << FP.BASIC_SEN
         TD.HOTLOAD_PARAM_SEN << FP.PARAM_SEN
 
@@ -36,7 +35,9 @@ class TypeDef_ParserTests(unittest.TestCase):
     #use testcase snippets
     def test_trivial(self):
         self.assertIsNotNone(TD.parseString)
-        self.assertIsNotNone(TD.TYPEDEF)
+        self.assertIsNotNone(TD.RECORD_TYPE)
+        self.assertIsNotNone(TD.SUM_TYPE)
+        self.assertIsNotNone(TD.TYPE_CLASS_DEF)
         self.assertIsNotNone(TD.OP_DEF)
 
     def test_basic_typedef(self):
