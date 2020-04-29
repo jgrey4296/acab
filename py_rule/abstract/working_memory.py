@@ -44,7 +44,7 @@ class WorkingMemory:
         assert(all([isinstance(x, ModuleSpecification) for x in mods]))
 
 
-        # TODO: setup hotloads of the module
+        # setup hotloads of the module
         dummy = [x.insert_hotloads(self._module_hotload_provision) for x in mods]
 
         # Construct operators:
