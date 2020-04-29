@@ -26,6 +26,9 @@ class PipelineRunLayer(PipelineAction):
 class PipelineRunPipeline(PipelineAction):
     pass
 
+class PipelineLoadModule(PipelineAction):
+    Pass
+
 
 class Pipeline(Rule):
     """ Abstract Class to describe a rule engine pipeline
