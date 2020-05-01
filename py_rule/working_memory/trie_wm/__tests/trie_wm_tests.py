@@ -106,8 +106,8 @@ class Trie_WM_Tests(unittest.TestCase):
         self.trie.add('a.b.c, d.e.f')
         result = self.trie.query('a.$x?, d.$y?')
         self.assertTrue(result)
-        self.assertEqual(result._matches[0][0]['x'], 'b')
-        self.assertEqual(result._matches[0][0]['y'], 'e')
+        self.assertEqual(result[0]['x'], 'b')
+        self.assertEqual(result[0]['y'], 'e')
 
     def test_query_exclusion(self):
         """ Check that queries of exclusion property work """
@@ -216,6 +216,7 @@ class Trie_WM_Tests(unittest.TestCase):
     def test_sub_binding_query(self):
         self.trie.add('a.b.c.d')
         result = self.trie.query('a.$x?, @x.c.$y?')
+
         self.assertTrue('x' in result[0])
         self.assertTrue('y' in result[0])
         self.assertEqual(result[0]['x'], 'b')

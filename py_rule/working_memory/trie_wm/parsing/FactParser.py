@@ -34,8 +34,7 @@ def make_node(toks):
         assert(isinstance(toks[WMU.AT_BIND_S][0], tuple))
         value = toks[WMU.AT_BIND_S][0][1]
         data[WMU.VALUE_TYPE_S] = WMU.NAME_S
-        data[WMU.BIND_S] = True
-        data[WMU.AT_BIND_S] = True
+        data[WMU.BIND_S] = WMU.AT_BIND_S
     elif WMU.VALUE_S in toks:
         # The node is a value
         assert(isinstance(toks[WMU.VALUE_S], tuple))

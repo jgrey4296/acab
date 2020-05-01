@@ -56,3 +56,18 @@ def node_is_exclusive(node):
 def node_looks_exclusive(node):
     """ Checks for implicit exclusivity by having 0 or 1 children """
     return len(node) <= 1
+
+def exclusion_matches(contexts, a, b, data):
+    """ Compare the EXOP of a node, with whether that exop
+        is in the children of the other node/parent """
+    logging.info("Running exclusion match test: {} {}".format(str(a), str(b)))
+    assert(isinstance(a, TrieNode))
+    assert(isinstance(b, TrieNode))
+    result = node_is_exclusive(a) and not node_looks_exclusive(b)
+    if result:
+        logging.info("C: {}, Node: {}, {}".format(node_is_exclusive(a),
+                                                  node_is_exclusive(b), str(b)))
+        logging.info("Mismatch EX num")
+
+    # Don't break out of tests unless this test failed:
+    return False, result

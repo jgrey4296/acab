@@ -92,7 +92,7 @@ class WorkingMemory:
     def retract(self, data):
         raise DeprecationWarning()
 
-    def query(self, data):
+    def query(self, ctxs=None, engine=None):
         raise NotImplementedError()
 
     def _insert_into_values_parser(self, parser):

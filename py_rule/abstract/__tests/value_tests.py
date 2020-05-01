@@ -5,6 +5,7 @@ import logging
 from py_rule.abstract.value import PyRuleValue
 from py_rule.abstract.node import PyRuleNode
 from py_rule.abstract.sentence import Sentence
+from py_rule.util import AT_BIND_S, BIND_S
 
 class PyRuleValueTests(unittest.TestCase):
 
@@ -76,6 +77,12 @@ class PyRuleValueTests(unittest.TestCase):
         value = PyRuleValue("test")
         value._tags.update(["a", "b", "c"])
         self.assertFalse(value.has_tag("a", "b", "c", "q"))
+
+    def test_pprint_at_var(self):
+        value = PyRuleValue("test")
+        value._data.update({BIND_S: AT_BIND_S})
+        self.assertTrue(value.is_at_var)
+        self.assertEqual(value.pprint(), "@test")
 
     @unittest.skip('TODO')
     def test_verify(self):

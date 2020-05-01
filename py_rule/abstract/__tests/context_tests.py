@@ -25,10 +25,10 @@ class ContextTests(unittest.TestCase):
         self.assertEqual(len(ctx), 0)
 
     def test_static_initial(self):
-        ctx = Contexts.initial("test")
+        ctx = Contexts(start_node="test")
         self.assertIsNotNone(ctx)
-        self.assertTrue(bool(ctx))
-        self.assertEqual(len(ctx), 1)
+        self.assertFalse(bool(ctx))
+        self.assertEqual(len(ctx), 0)
 
     def test_append(self):
         ctx = Contexts()
@@ -50,8 +50,9 @@ class ContextTests(unittest.TestCase):
         self.assertTrue(bool(ctx))
         self.assertEqual(len(ctx), 3)
 
-    def test_fail(self):
-        ctx = Contexts.initial("test")
+    def test_invert(self):
+        ctx = Contexts()
+        ctx.force_node_position(target="blah")
         self.assertTrue(bool(ctx))
         ctx.fail()
         self.assertFalse(bool(ctx))
@@ -65,25 +66,25 @@ class ContextTests(unittest.TestCase):
         for x,y in zip(ctx, ['a','b','c']):
             self.assertTrue(y in x.keys())
 
-    def test_set_all_alts_target(self):
+    def test_force_node_position_target(self):
         ctx = Contexts()
         ctx.append(({'a': True}, "test"))
         ctx.append(({'b': True}, "test2"))
         ctx.append(({'c': True}, "test3"))
-        new_ctx = ctx.set_all_alts(target="blah")
-        self.assertEqual(len(new_ctx), len(ctx))
-        for x in new_ctx._matches:
-            self.assertEqual(x[1], "blah")
+        ctx.force_node_position(target="blah")
+        self.assertEqual(3, len(ctx))
+        for x,y in ctx.pairs():
+            self.assertEqual(y, "blah")
 
     def test_all_alts_binding(self):
         ctx = Contexts()
         ctx.append(({AT_BIND_S + 'a': "blah"}, "test"))
         ctx.append(({AT_BIND_S + 'a': "bloo"}, "test2"))
         ctx.append(({AT_BIND_S + 'a': "blee"}, "test3"))
-        new_ctx = ctx.set_all_alts(binding="a")
-        self.assertEqual(len(new_ctx), len(ctx))
-        for x in new_ctx._matches:
-            self.assertEqual(x[1], x[0][AT_BIND_S + 'a'])
+        ctx.force_node_position(binding="a")
+        self.assertEqual(len(ctx), 3)
+        for x,y in zip(ctx, ["blah","bloo","blee"]):
+            self.assertEqual(y, x[AT_BIND_S + 'a'])
 
     def test_all_alts_invalidate_binding(self):
         ctx = Contexts()
@@ -91,8 +92,10 @@ class ContextTests(unittest.TestCase):
         ctx.append(({AT_BIND_S + 'b': "bloo"}, "test2"))
         ctx.append(({AT_BIND_S + 'a': "blee"}, "test3"))
         ctx.append(({'a' : "awef"}, "test4"))
-        new_ctx = ctx.set_all_alts(binding="a")
-        self.assertEqual(len(new_ctx), 2)
+        ctx.force_node_position(binding="a")
+        self.assertEqual(len(ctx), 2)
+        for x,y in zip(ctx.pairs(), ["blah", "blee"]):
+            self.assertEqual(x[1], y)
 
 
 if __name__ == "__main__":

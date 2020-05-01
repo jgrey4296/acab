@@ -94,14 +94,10 @@ class PyRuleNode(PyRuleValue):
         else:
             return None
 
-    def test_regexs_for_matching(self, regexs, current_data, preupdate=None):
+    def test_regexs_for_matching(self, regexs, data):
         """ Test a number of regexs on this Node
         Return a Tuple of Nones if failure, (dict, node) if success
         """
-        new_data = current_data.copy()
-        if preupdate is not None:
-            for x, y in preupdate:
-                new_data[x] = y
         invalidated = False
         for regex in regexs:
             result = self.search_regex(regex)
@@ -110,16 +106,16 @@ class PyRuleNode(PyRuleValue):
                 break
 
             for k, v in result.items():
-                if k not in new_data:
-                    new_data[k] = v
-                elif new_data[k] != v:
+                if k not in data:
+                    data[k] = v
+                elif data[k] != v:
                     invalidated = True
                     break
 
         if invalidated:
             return (None, None)
         else:
-            return (new_data, self)
+            return (data, self)
 
 
     def set_parent(self, parent):
