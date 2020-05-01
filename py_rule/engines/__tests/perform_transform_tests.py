@@ -42,7 +42,7 @@ class TransformTests(unittest.TestCase):
         stub_transform = TP.parseString('$a AddOp 20 -> $y, $b MulOp 2 -> $z')
 
         # result = self.e._run_transform(stub_ctx[0], stub_transform)
-        result = stub_transform(stub_ctx[0], None)
+        result = stub_transform(stub_ctx[0], None)[0]
         self.assertIsInstance(result, dict)
         self.assertEqual(result['a'], 2)
         self.assertEqual(result['b'], 4)
@@ -55,7 +55,7 @@ class TransformTests(unittest.TestCase):
         stub_ctx[0]['b'] = 8
 
         stub_transform = TP.parseString('$a AddOp 20 -> $q, $b MulOp $a -> $w')
-        result = stub_transform(stub_ctx[0], None)
+        result = stub_transform(stub_ctx[0], None)[0]
         self.assertIsInstance(result, dict)
         self.assertEqual(result['a'], 2)
         self.assertEqual(result['b'], 8)
@@ -69,7 +69,7 @@ class TransformTests(unittest.TestCase):
         stub_ctx[0]['c'] = 2.53
 
         stub_transform = TP.parseString('NegOp $a -> $x, NegOp $b -> $y, RoundOp $c -> $z')
-        result = stub_transform(stub_ctx[0], None)
+        result = stub_transform(stub_ctx[0], None)[0]
         self.assertIsInstance(result, dict)
         self.assertEqual(result['a'], 2)
         self.assertEqual(result['b'], -2)
@@ -85,7 +85,7 @@ class TransformTests(unittest.TestCase):
         stub_ctx[0]['c'] = 2.53
 
         stub_transform = TP.parseString('NegOp $a -> $x, NegOp $b -> $y, RoundOp $c -> $z')
-        result = stub_transform(stub_ctx[0], None)
+        result = stub_transform(stub_ctx[0], None)[0]
         self.assertIsInstance(result, dict)
         self.assertEqual(result['a'], 2)
         self.assertEqual(result['b'], -2)
@@ -101,7 +101,7 @@ class TransformTests(unittest.TestCase):
         stub_ctx[0]['c'] = 2.53
 
         stub_transform = TP.parseString('$a AddOp 20 -> $x, $b SubOp 20 -> $y, $c AddOp $x -> $z')
-        result = stub_transform(stub_ctx[0], None)
+        result = stub_transform(stub_ctx[0], None)[0]
         self.assertIsInstance(result, dict)
         self.assertEqual(result['a'], 2)
         self.assertEqual(result['b'], -2)
@@ -117,7 +117,7 @@ class TransformTests(unittest.TestCase):
         stub_ctx[0]['c'] = 2.53
 
         stub_transform = TP.parseString('$a AddOp 20 -> $x, $b SubOp 20 -> $y, $c AddOp $a -> $z')
-        result = stub_transform(stub_ctx[0], None)
+        result = stub_transform(stub_ctx[0], None)[0]
         self.assertIsInstance(result, dict)
         self.assertEqual(result['a'], 2)
         self.assertEqual(result['b'], -2)
@@ -134,7 +134,7 @@ class TransformTests(unittest.TestCase):
         stub_ctx[0]['d'] = 'AAAA'
 
         stub_transform = TP.parseString('$a RegexOp /blah/ bloo -> $x, $b RegexOp /aaa\\w+/ $d -> $y, $c RegexOp /awef(\\w+)awef/ $d -> $z')
-        result = stub_transform(stub_ctx[0], None)
+        result = stub_transform(stub_ctx[0], None)[0]
         self.assertIsInstance(result, dict)
         self.assertEqual(result['a'], 'blah')
         self.assertEqual(result['b'], 'aaablah')
@@ -151,7 +151,7 @@ class TransformTests(unittest.TestCase):
         stub_ctx[0]['d'] = 'AAAA'
 
         stub_transform = TP.parseString('$a RegexOp /blah/ bloo -> $x, $b RegexOp /aaa\\w+/ $d -> $y, $c RegexOp /awef(\\w+)awef/ $d -> $z')
-        result = stub_transform(stub_ctx[0], None)
+        result = stub_transform(stub_ctx[0], None)[0]
         self.assertIsInstance(result, dict)
         self.assertEqual(result['a'], 'blah')
         self.assertEqual(result['b'], 'aaablah')
@@ -170,7 +170,7 @@ class TransformTests(unittest.TestCase):
         stub_ctx[0]['z'] = "{c} {b} {a}"
 
         stub_transform = TP.parseString('FormatOp $x -> $q, FormatOp $y -> $w, FormatOp $z -> $e')
-        result = stub_transform(stub_ctx[0], None)
+        result = stub_transform(stub_ctx[0], None)[0]
         self.assertIsInstance(result, dict)
         self.assertEqual(result['x'], '{a}')
         self.assertEqual(result['y'], '{a} blah {b}')
@@ -189,7 +189,7 @@ class TransformTests(unittest.TestCase):
         stub_ctx[0]['z'] = "{c} {b} {a}"
 
         stub_transform = TP.parseString('FormatOp $x -> $xa, FormatOp $y -> $ya, FormatOp $z -> $za')
-        result = stub_transform(stub_ctx[0], None)
+        result = stub_transform(stub_ctx[0], None)[0]
         self.assertIsInstance(result, dict)
         self.assertEqual(result['xa'], 'AAA')
         self.assertEqual(result['ya'], 'AAA blah BBB')

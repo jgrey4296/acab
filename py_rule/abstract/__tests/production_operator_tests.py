@@ -2,14 +2,10 @@
 from os.path import splitext, split
 import unittest
 import logging
-from py_rule import abstract
-from py_rule.abstract.node import PyRuleNode
-from py_rule.abstract.action import ActionComponent, ActionOp
-from py_rule import util
-from py_rule.abstract.sentence import Sentence
+from py_rule.abstract import production_operator as PO
 
 
-class ActionTests(unittest.TestCase):
+class ProductionOperatorTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -23,19 +19,11 @@ class ActionTests(unittest.TestCase):
 
     #----------
     #use testcase snippets
-    def test_construction(self):
-        ActionOp.op_list['testOp'] = True
-        action = ActionComponent("testOp", [])
-        self.assertIsInstance(action, ActionComponent)
-        del ActionOp.op_list['testOp']
+    @unittest.skip("TODO")
+    def test_verify(self):
+        # create an action with numerous action components,
+        pass
 
-    def test_var_set(self):
-        ActionOp.op_list['testOp'] = True
-        param = PyRuleNode("test", data={util.BIND_S: True})
-        action = ActionComponent("testOp", [Sentence([param])])
-        var_set = action.var_set
-        self.assertTrue("test" in var_set['in'])
-        del ActionOp.op_list['testOp']
 
 
 if __name__ == "__main__":
