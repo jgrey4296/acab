@@ -33,12 +33,23 @@ class Rule(ProductionContainer):
         self._action    = action
         Rule.__count += 1
 
-    def __call__(self, engine):
+    def __call__(self, ctxs=None, engine=None):
         """ Rule Logic, returns action proposals """
+        # TODO Make call signature be the same as production container's
+        if ctxs is None:
+            ctxs = []
         assert(self.verify())
+        assert(isinstance(ctxs, list))
+        assert(all([isinstance(x, dict) for x in ctxs]))
         logging.info("Running Rule: {}".format(self._name))
+        extract_ctxs = []
+        if ctxs is not None:
+            extract_ctxs = self.get_variables(ctxs)
+
         # Run the query
-        result = self._query(engine)
+        # TODO: extract | $variables | from passed in data to create
+        # a local context
+        result = self._query(ctxs=extract_ctxs, engine=engine)
         if not bool(result):
             logging.info("Rule {} Failed".format(self._name))
             return []
@@ -46,12 +57,11 @@ class Rule(ProductionContainer):
         # Run any transforms
         transformed = []
         if self._transform:
-            for data in result:
-                transformed.append(self._transform(data, engine))
+            transformed += self._transform(ctxs=result[:], engine=engine)
         else:
             # This is *not* an unnecessary comprehension
             # because of how parse results work
-            transformed = [x for x in result]
+            transformed = result[:]
 
         # return final passing dictionaries
         results = []

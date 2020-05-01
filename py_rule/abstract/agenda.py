@@ -25,7 +25,9 @@ class AgendaSet(AgendaAction):
     pass
 
 class AgendaReturn(AgendaAction):
-    pass
+
+    def __call__(self, returns, data=None, engine=None):
+        return {Agenda.RETURN_NAME_S : returns}
 
 class Agenda(Rule):
     """ Abstract Class of Rule Layer Agendas
@@ -34,6 +36,8 @@ class Agenda(Rule):
     """
 
     agenda_list = {}
+    RETURN_NAME_S = "__agenda_return_name__"
+
 
     @staticmethod
     def construct_subclass_tree():
@@ -66,15 +70,19 @@ class Agenda(Rule):
 
         # TODO: verify actions to registered variables
 
-    def __call__(self, proposals, engine, **kwargs):
+    def __call__(self, ctxs=None, engine=None, **kwargs):
         """ Take the proposals, transform them in some way,
         then enact them on the engine """
-        agenda_settings = super(Agenda, self).__call__(engine)
 
-        # TODO reify agenda settings
-        settings = {}
+        agenda_settings = super(Agenda, self).__call__(ctxs=ctxs, engine=engine)
 
-        return agenda_logic(proposals, settings, engine, **kwargs)
+        assert(len(agenda_settings), 1)
+        settings = agenda_settings[0][0]
+
+        # Enact agenda
+        resulting_ctxs = self._action(settings, engine, **kwargs)
+        return resulting_ctxs[0][Agenda.RETURN_NAME_S]
+
 
     def agenda_logic(self, proposals, settings, engine, **kwargs):
         """ Where specific logic of agenda subclasses is implemented """
@@ -87,6 +95,7 @@ class Agenda(Rule):
 
 # Utility construction function for parser
 def make_agenda(toks):
+    # TODO complete this
     agenda_name = toks[NAME_S][0]
     agenda_setup_tuple = toks[STATEMENT_S][0]
     assert(agenda_setup_tuple == "agenda_dict")

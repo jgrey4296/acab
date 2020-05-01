@@ -16,8 +16,8 @@ class Query(PO.ProductionContainer):
         assert(all([isinstance(x, Sentence) for x in clauses]))
         super(Query, self).__init__(clauses, type_str=type_str)
 
-    def __call__(self, engine):
-        return engine.query(self)
+    def __call__(self, ctxs=None, engine=None):
+        return engine.query(self, ctxs=ctxs)
 
     def bind(self, bindings):
         """ Expand the individual clauses to have concrete values """

@@ -30,8 +30,9 @@ class TransformOp(PO.ProductionOperator):
 class TransformComponent(PO.ProductionComponent):
     """ Superclass of OperatorTransform. Holds an Operator """
     def __init__(self, op_str, params, rebind=None, type_str=None):
-        super(TransformComponent, self).__init__(op_str, params, op_class=TransformOp)
-        self._rebind = rebind
+        super(TransformComponent, self).__init__(op_str, params=params,
+                                                 rebind=rebind,
+                                                 op_class=TransformOp)
 
     @property
     def var_set(self):
@@ -42,13 +43,6 @@ class TransformComponent(PO.ProductionComponent):
             out_set.update(self._rebind.var_set['out'])
         return {'in' : in_set, 'out': out_set}
 
-
-    def set_rebind(self, bind):
-        """ Set this transform to rebind its result to a different variable """
-        assert(isinstance(bind, PyRuleNode))
-        assert(util.AT_BIND_S not in bind._data)
-        self._rebind = bind
-        return self
 
     def copy(self):
         copied = TransformComponent(self.op,
@@ -85,10 +79,3 @@ class Transform(PO.ProductionContainer):
 
     def copy(self):
         return Transform([x.copy() for x in self.clauses], type_str=self.type)
-
-    def __call__(self, ctx, engine):
-        assert(isinstance(ctx, dict))
-        for x in self.clauses:
-            ctx[x._rebind._value] = x(ctx, engine)
-
-        return ctx

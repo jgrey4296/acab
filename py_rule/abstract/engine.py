@@ -72,9 +72,9 @@ class Engine:
         # pylint: disable=unused-argument,no-self-use
         self._working_memory.add(s)
 
-    def query(self, s, cache=True):
+    def query(self, s, ctxs=None, cache=True):
         """ As a question of the working memory """
-        result = self._working_memory.query(s)
+        result = self._working_memory.query(s, ctxs=ctxs)
         if cache:
             self._cached_bindings = result
         return result
@@ -86,7 +86,7 @@ class Engine:
         self._prior_states.append((str(self._working_memory), data))
 
     # Utility
-    def run_thing(self, thing):
+    def run_thing(self, thing, bindings=None):
         """ Where a thing could be an:
         rule/agenda/layer/pipeline,
         action/query/transform
@@ -97,7 +97,7 @@ class Engine:
         assert(isinstance(thing, ProductionContainer))
         logging.info("Running thing: {}".format(thing))
 
-        result = thing(self)
+        result = thing(ctxs=bindings, engine=self)
 
         if not bool(result):
             logging.info("Thing Failed")

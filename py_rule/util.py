@@ -69,3 +69,16 @@ DEFAULT_VALUE_DATA = {
     BIND_S       : False,
     VALUE_TYPE_S : NAME_S
     }
+
+
+def rebind_across_contexts(names, values, base):
+    assert(isinstance(base, dict))
+    assert(isinstance(names, list))
+    assert(isinstance(values, list))
+    new_base = {}
+    new_base.update(base)
+    for x,y in zip(names, values):
+        new_base[x] = y
+
+    return new_base
+

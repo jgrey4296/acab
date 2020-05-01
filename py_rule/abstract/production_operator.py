@@ -35,23 +35,24 @@ class ProductionOperator(PyRuleValue):
 class ProductionComponent(PyRuleValue):
     """ Pairs a an operator with some bindings """
 
-    def __init__(self, op_str, params, type_str=None, op_class=None, **kwargs):
+    def __init__(self, op_str, params, rebind=None, type_str=None, op_class=None, **kwargs):
         assert(op_class is not None)
         if 'data' not in kwargs:
             kwargs['data'] = {}
 
         kwargs['data'].update({util.OP_CLASS_S : op_class})
         super().__init__(op_str, params=params, type_str=type_str, **kwargs)
+        self._rebind = rebind
         self.verify()
 
-    def __call__(self, data, engine):
+    def __call__(self, ctx, engine):
         # lookup op
         self.verify()
         op_func = self._data[util.OP_CLASS_S].op_list[self.op]
         # get values from data
-        values = self.get_values(data)
+        values = self.get_values(ctx)
         # perform action op with data
-        return op_func(*values, data=data, engine=engine)
+        return op_func(*values, data=ctx, engine=engine)
 
 
     @property
@@ -68,6 +69,13 @@ class ProductionComponent(PyRuleValue):
                 obj['out'].update(tempobj['out'])
         return obj
 
+
+    def set_rebind(self, bind):
+        """ Set this transform to rebind its result to a different variable """
+        assert(isinstance(bind, PyRuleValue))
+        assert(util.AT_BIND_S not in bind._data)
+        self._rebind = bind
+        return self
 
     def get_values(self, data):
         """ Output a list of bindings from this action """
@@ -130,10 +138,21 @@ class ProductionContainer(PyRuleStatement):
     def __len__(self):
         return len(self.clauses)
 
-    def __call__(self, ctx, engine):
-        assert(isinstance(ctx, dict))
-        for x in self.clauses:
-            x(ctx, engine)
+    def __call__(self, ctxs=None, engine=None):
+        if ctxs is None:
+            ctxs = [{}]
+        if not isinstance(ctxs, list):
+            ctxs = [ctxs]
+
+        for ctx in ctxs:
+            for x in self.clauses:
+                result = x(ctx, engine)
+                if x._rebind is None and isinstance(result, dict):
+                    ctx.update(result)
+                if x._rebind is not None:
+                    ctx[x._rebind._value] = result
+
+        return ctxs
 
     def __iter__(self):
         for x in self.clauses:
@@ -157,6 +176,19 @@ class ProductionContainer(PyRuleStatement):
                 obj['out'].update(tempobj['out'])
         return obj
 
+
+    def get_variables(self, data):
+        # create a new context based on the data based in
+        assert(isinstance(data, list))
+        new_ctxs = []
+        current = {}
+        for ctx in data:
+            for x in self._vars:
+                current[x] = ctx[x]
+            new_ctxs.append(current)
+            current = {}
+
+        return new_ctxs
 
     def to_sentences(self, target=None):
         return [x.to_sentence() for x in self.clauses]

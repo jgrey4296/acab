@@ -6,16 +6,21 @@ class Contexts:
     A list of tuples: ({}, LastAccessedNode)
     """
     @staticmethod
-    def initial(start_node):
+    def initial(start_node, bindings=None):
         """ Create an initial empty context with a given start node """
         init = Contexts()
-        init._init_alt(start_node)
+        init._init_alt(start_node, bindings=bindings)
         return init
 
-    def _init_alt(self, start_node):
+    def _init_alt(self, start_node, bindings=None):
         """ Setup the initial context of no bindings
         """
-        self._matches = [({}, start_node)]
+        if bindings is None:
+            bindings = [{}]
+        if not bool(bindings):
+            bindings = [{}]
+        assert(all([isinstance(x, dict) for x in bindings]))
+        self._matches = [(x, start_node) for x in bindings]
 
 
     #--------------------
@@ -27,6 +32,7 @@ class Contexts:
         return len(self._matches)
 
     def __getitem__(self, key):
+        """ Get binding dictionaries """
         if isinstance(key, slice):
             return [x[0] for x in self._matches.__getitem__(key)]
         return self._matches[key][0]
