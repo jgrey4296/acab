@@ -62,17 +62,16 @@ class TrieWM(WorkingMemory):
         else:
             raise PyRuleParseException("Unrecognised addition target: {}".format(type(data)))
 
-    def query(self, data):
+    def query(self, query, ctxs=None):
         """ Query a string """
-        if isinstance(data, Query):
-            return self._query_sentence(data)
-        elif isinstance(data, str):
-            query = QP.parseString(data)
-            return self._query_sentence(query)
-        elif isinstance(data, Sentence):
-            return self._query_sentence(Query([data]))
-        else:
-            raise PyRuleParseException("Unrecognised query target: {}".format(type(data)))
+        if isinstance(query, str):
+            query = QP.parseString(query)
+        elif isinstance(query, Sentence):
+            query = Query([query])
+        if not isinstance(query, Query):
+            raise PyRuleParseException("Unrecognised query target: {}".format(type(query)))
+
+        return self._query_sentence(query, ctxs=ctxs)
 
     # Internal Methods:
     def _insert_into_values_parser(self, parser):
@@ -116,11 +115,13 @@ class TrieWM(WorkingMemory):
 
         self._last_node.delete_node(last_in_list)
 
-    def _query_sentence(self, query):
+    def _query_sentence(self, query, ctxs=None):
         """ Query a TrieQuery instance """
         assert(isinstance(query, (Query, Sentence)))
         self._clear_last_node()
-        initial_context = Contexts.initial(self._internal_trie._root)
+        # TODO: handle a passed in context
+        initial_context = Contexts.initial(self._internal_trie._root,
+                                           bindings=ctxs)
         return self._internal_query(query, initial_context)
 
     def _clear_last_node(self):
