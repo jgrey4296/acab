@@ -30,6 +30,15 @@ class TrieWM(WorkingMemory):
         self._internal_trie = Trie(FactNode)
         # TODO: have a parallel listener trie?
         self._last_node = self._internal_trie._root
+
+        self._module_hotload_provision = {
+            'basic_sen' : FP.BASIC_SEN,
+            'param_sen' : FP.PARAM_SEN,
+            'query'     : QP.parse_point,
+            'transform' : TP.parse_point,
+            'action'    : AP.parse_point
+        }
+
         if init is not None:
             self.add(init)
 
