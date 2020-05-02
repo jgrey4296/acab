@@ -20,16 +20,6 @@ class PipelineAction(ProductionOperator):
 
     op_list = {}
 
-class PipelineRunLayer(PipelineAction):
-    pass
-
-class PipelineRunPipeline(PipelineAction):
-    pass
-
-class PipelineLoadModule(PipelineAction):
-    Pass
-
-
 class Pipeline(Rule):
     """ Abstract Class to describe a rule engine pipeline
     Collects together sets of rules,
@@ -63,11 +53,10 @@ class Pipeline(Rule):
         return self._layer_dict[i]
 
     def __call__(self, engine):
+        # TODO
         """ Run this pipeline on the given engine for a tick """
         results = super(Pipeline, self).__call__(engine)
 
-        # TODO: make 'layer call' actions
-        # TODO: make 'module load' actions
         # Run pipeline actions
         output = []
 

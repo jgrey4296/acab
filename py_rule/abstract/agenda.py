@@ -15,20 +15,6 @@ class AgendaAction(ProductionOperator):
 
     op_list = {}
 
-class AgendaSelect(AgendaAction):
-    pass
-
-class AgendaSort(AgendaAction):
-    pass
-
-class AgendaSet(AgendaAction):
-    pass
-
-class AgendaReturn(AgendaAction):
-
-    def __call__(self, returns, data=None, engine=None):
-        return {Agenda.RETURN_NAME_S : returns}
-
 class Agenda(Rule):
     """ Abstract Class of Rule Layer Agendas
     Takes a set of potential rule activations
