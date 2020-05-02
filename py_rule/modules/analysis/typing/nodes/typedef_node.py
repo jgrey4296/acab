@@ -1,6 +1,6 @@
 import logging as root_logger
 
-from py_rule.abstract.trie.nodes.trie_node import TrieNode
+from py_rule.abstract.node import PyRuleNode
 from py_rule.abstract.trie.trie import Trie
 from py_rule.error import type_exceptions as te
 from py_rule.modules.analysis.typing.type_definition import TypeDefinition
@@ -20,18 +20,18 @@ LOG_MESSAGES['match_type_usage'] = "Matching Type {} onto usage set"
 LOG_MESSAGES['mult_child'] = "Current Def has multiple children, checking for conflicts in structure"
 
 
-class TypeDefTrieNode(TrieNode):
+class TypeDefTrieNode(PyRuleNode):
     """ A Node describing a type definition """
 
     def __init__(self, value):
         logging.debug("TypeDefTrieNode: init: {}".format(value))
-        assert(isinstance(value, TrieNode))
+        assert(isinstance(value,PyRuleNode))
         super().__init__(value)
         self._typedef_trie = None
 
 
     def set_data(self, data):
-        """ Overrides TrieNode.set_data.
+        """ OverridesPyRuleNode.set_data.
         Builds the subtrie of a type definition at the end of being added
         to the definition trie.
         """

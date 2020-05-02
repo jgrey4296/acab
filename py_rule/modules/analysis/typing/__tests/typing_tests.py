@@ -9,7 +9,7 @@ from py_rule.modules.analysis.typing.type_definition import TypeDefinition
 from py_rule.modules.analysis.typing.operator_definition import OperatorDefinition
 from py_rule.modules.analysis.typing.type_instance import TypeInstance
 from py_rule.abstract.sentence import Sentence
-from py_rule.abstract.trie.nodes.trie_node import TrieNode
+from py_rule.abstract.node import PyRuleNode
 from py_rule.modules.analysis.typing import util as TU
 from py_rule.working_memory.trie_wm.parsing import FactParser as FP
 from py_rule.abstract.printing import util as PrU
@@ -17,7 +17,7 @@ from py_rule import util
 
 
 def S(*in_string):
-    return Sentence([TrieNode(x) for x in in_string])
+    return Sentence([PyRuleNode(x) for x in in_string])
 
 
 class TypingTests(unittest.TestCase):

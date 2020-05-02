@@ -1,13 +1,13 @@
 import logging as root_logger
 
-from py_rule.abstract.trie.nodes.trie_node import TrieNode
+from py_rule.abstract.node import PyRuleNode
 from py_rule.modules.analysis.typing.util import TYPE_DEC_S
 import py_rule.error.type_exceptions as te
 
 logging = root_logger.getLogger(__name__)
 
 
-class MonoTypedNode(TrieNode):
+class MonoTypedNode(PyRuleNode):
     """ Base Node for a Type Trie """
 
     def __init__(self, value, _type=None):

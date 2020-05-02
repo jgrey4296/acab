@@ -7,7 +7,7 @@ import py_rule.modules.analysis.typing.parsing.TypeParser as TP
 import py_rule.util as util
 
 from py_rule.abstract.sentence import Sentence
-from py_rule.abstract.trie.nodes.trie_node import TrieNode
+from py_rule.abstract.node import PyRuleNode
 from py_rule.error.pyrule_parse_exception import PyRuleParseException
 from py_rule.modules.analysis.typing import util as TU
 from py_rule.modules.analysis.typing.type_definition import TypeDefinition

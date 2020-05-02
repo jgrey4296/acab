@@ -4,7 +4,7 @@ capable of parsing  multiple facts
 """
 import logging as root_logger
 import pyparsing as pp
-from py_rule.working_memory.trie_wm.nodes.fact_node import FactNode
+from py_rule.working_memory.trie_wm.fact_node import FactNode
 from py_rule.working_memory.trie_wm import util as WMU
 from py_rule.working_memory.trie_wm.parsing import util as WMPU
 from py_rule.abstract.parsing import util as PU

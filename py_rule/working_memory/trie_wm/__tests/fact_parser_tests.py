@@ -3,7 +3,7 @@ import logging
 import random
 import pyparsing as pp
 import py_rule.working_memory.trie_wm.parsing.FactParser as FP
-from py_rule.abstract.trie.nodes.trie_node import TrieNode
+from py_rule.abstract.node import PyRuleNode
 from py_rule.abstract.sentence import Sentence
 from py_rule.working_memory.trie_wm import util as KBU
 from py_rule import util
@@ -29,7 +29,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
     def test_parseString(self):
         result = FP.parseString('a.b.c')[0]
         self.assertIsInstance(result, Sentence)
-        self.assertTrue(all([isinstance(x, TrieNode) for x in result]))
+        self.assertTrue(all([isinstance(x, PyRuleNode) for x in result]))
         self.assertEqual(result.pprint(), "a.b.c")
         self.assertTrue(all([x._data[KBU.OPERATOR_S] == KBU.EXOP.DOT for x in result]))
 

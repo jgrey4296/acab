@@ -8,14 +8,14 @@ from py_rule.error.pyrule_base_exception import PyRuleBaseException
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.value import PyRuleStatement
 
-from .nodes.trie_node import TrieNode
+from py_rule.abstract.node import PyRuleNode
 
 logging = root_logger.getLogger(__name__)
 
 
 class Trie:
 
-    def __init__(self, node_type=TrieNode):
+    def __init__(self, node_type=PyRuleNode):
         self._root = node_type.Root()
         self._node_type = node_type
         # Stores UUIDs -> Nodes
@@ -121,7 +121,7 @@ class Trie:
         if isinstance(possible_matches, Trie):
             possible_matches = possible_matches.root
 
-        if not isinstance(possible_matches, TrieNode):
+        if not isinstance(possible_matches, PyRuleNode):
             raise PyRuleBaseException()
 
         final_matches = []

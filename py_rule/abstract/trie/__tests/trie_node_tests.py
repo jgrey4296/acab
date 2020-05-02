@@ -1,11 +1,11 @@
 import unittest
 from os.path import splitext, split
 import logging
-from py_rule.abstract.trie.nodes.trie_node import TrieNode
+from py_rule.abstract.node import PyRuleNode
 from py_rule import util
 
 
-class TrieNodeTests(unittest.TestCase):
+class PyRuleNodeTests2(unittest.TestCase):
 
     def setUp(self):
         return 1
@@ -15,19 +15,15 @@ class TrieNodeTests(unittest.TestCase):
 
     #----------
     def test_node_creation(self):
-        the_node = TrieNode("test")
+        the_node = PyRuleNode("test")
         self.assertIsNotNone(the_node)
-        self.assertIsInstance(the_node, TrieNode)
+        self.assertIsInstance(the_node, PyRuleNode)
         self.assertEqual(the_node._value, "test")
 
     def test_root(self):
-        root = TrieNode.Root()
-        self.assertIsInstance(root, TrieNode)
+        root = PyRuleNode.Root()
+        self.assertIsInstance(root, PyRuleNode)
         self.assertEqual(root._value, util.ROOT_S)
-
-    def test_split_tests(self):
-        # TODO
-        return
 
 
 if __name__ == "__main__":

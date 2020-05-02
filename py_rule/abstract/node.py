@@ -10,13 +10,17 @@ from .value import PyRuleValue
 class PyRuleNode(PyRuleValue):
     """ The Abstract Node Class """
 
+    @staticmethod
+    def Root():
+        return PyRuleNode(util.ROOT_S)
 
-    def __init__(self, value, data=None, type_str=None, tags=None, name=None):
+    def __init__(self, value, data=None, type_str=None, tags=None, name=None, **kwargs):
         super(PyRuleNode, self).__init__(value,
                                          data=data,
                                          type_str=type_str,
                                          tags=tags,
-                                         name=name)
+                                         name=name,
+                                         **kwargs)
         self._parent = None
         self._children = {}
 
@@ -53,6 +57,16 @@ class PyRuleNode(PyRuleValue):
                 obj['out'].update(tempobj['out'])
 
         return obj
+
+
+    def copy(self):
+        return PyRuleNode(self._value,
+                          data=self._data,
+                          type_str=self.type,
+                          tags=self._tags,
+                          name=self._name,
+                          params=self._vars
+                          )
 
 
     def add_child(self, node):
@@ -147,3 +161,23 @@ class PyRuleNode(PyRuleValue):
         assert(util.BIND_S in self._data and self._data[util.BIND_S])
         self._value = data[self._value]
         self._data[util.BIND_S] = False
+
+
+    def split_tests(self):
+        """ Split tests into (alphas, betas, regexs) """
+        if util.CONSTRAINT_S not in self._data:
+            return ([], [], [])
+
+        comps = self._data[util.CONSTRAINT_S]
+        assert(isinstance(comps, list))
+        alphas = []
+        betas = []
+        regexs = []
+        for c in comps:
+            if c.is_regex_test:
+                regexs.append(c)
+            elif c.is_alpha_test:
+                alphas.append(c)
+            else:
+                betas.append(c)
+        return (alphas, betas, regexs)

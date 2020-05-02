@@ -1,7 +1,7 @@
 import unittest
 import logging
 from py_rule.abstract.trie.trie import Trie
-from py_rule.abstract.trie.nodes.trie_node import TrieNode
+from py_rule.abstract.node import PyRuleNode
 
 
 class TrieTests(unittest.TestCase):
@@ -37,7 +37,7 @@ class TrieTests(unittest.TestCase):
         t.add(['a','b','c'])
         self.assertEqual(3, len(t))
         result = t.query(['a','b','c'])
-        self.assertIsInstance(result, TrieNode)
+        self.assertIsInstance(result, PyRuleNode)
         self.assertEqual(result._value, 'c')
 
     def test_trie_query_fail(self):

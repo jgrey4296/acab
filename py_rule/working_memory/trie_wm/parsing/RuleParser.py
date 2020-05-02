@@ -4,7 +4,7 @@ import pyparsing as pp
 from py_rule.working_memory.trie_wm.trie_rule import TrieRule
 from py_rule.abstract.parsing import util as PU
 from py_rule.working_memory.trie_wm import util as WMU
-from py_rule.working_memory.trie_wm.nodes.fact_node import FactNode
+from py_rule.working_memory.trie_wm.fact_node import FactNode
 from py_rule.abstract.production_operator import ProductionContainer
 
 from . import FactParser as FP

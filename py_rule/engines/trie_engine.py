@@ -13,7 +13,7 @@ from py_rule.abstract import action, contexts, query, transform
 from py_rule.abstract.engine import Engine
 from py_rule.abstract.sentence import Sentence
 from py_rule.working_memory.trie_wm.trie_working_memory import TrieWM
-from py_rule.working_memory.trie_wm.nodes.fact_node import FactNode
+from py_rule.working_memory.trie_wm.fact_node import FactNode
 import py_rule.util as util
 
 from py_rule.working_memory.trie_wm.parsing import ActionParser as AP
@@ -57,4 +57,4 @@ class TrieEngine(Engine):
         else:
             raise PyRuleParseException("No text found in provided file")
 
-        # TODO: return a response about the loading
+        return True

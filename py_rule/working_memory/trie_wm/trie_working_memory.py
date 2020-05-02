@@ -11,7 +11,7 @@ from py_rule.error.pyrule_parse_exception import PyRuleParseException
 from py_rule.abstract.printing import util as PrU
 
 from . import util
-from .nodes.fact_node import FactNode
+from .fact_node import FactNode
 from .parsing import ActionParser as AP
 from .parsing import FactParser as FP
 from .parsing import QueryParser as QP
