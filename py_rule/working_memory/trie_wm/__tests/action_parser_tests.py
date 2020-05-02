@@ -2,7 +2,7 @@ import unittest
 import logging
 from py_rule.working_memory.trie_wm.parsing import ActionParser as AP
 from py_rule.working_memory.trie_wm.parsing import FactParser as FP
-from py_rule.modules.operators.operator_module import OperatorSpec
+from py_rule.modules.operators.standard_operators import StandardOperators
 from py_rule.abstract import action
 
 
@@ -10,7 +10,7 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        os = OperatorSpec()
+        os = StandardOperators()
         os._construct_action_ops()
         AP.build_operators()
 

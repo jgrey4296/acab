@@ -5,7 +5,7 @@ from py_rule.abstract.printing import util as PrU
 from py_rule.working_memory.trie_wm import util as KBU
 from py_rule.working_memory.trie_wm.parsing import RuleParser as RP
 from py_rule.working_memory.trie_wm.parsing import FactParser as FP
-from py_rule.modules.operators.operator_module import OperatorSpec
+from py_rule.modules.operators.standard_operators import StandardOperators
 from py_rule.abstract.rule import Rule
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.query import Query
@@ -15,7 +15,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        os = OperatorSpec()
+        os = StandardOperators()
         os._construct_comp_ops()
         os._construct_action_ops()
         os._construct_transform_ops()

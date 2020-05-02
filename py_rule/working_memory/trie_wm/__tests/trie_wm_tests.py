@@ -1,7 +1,7 @@
 import unittest
 import logging
 from py_rule.working_memory.trie_wm.trie_working_memory import TrieWM
-from py_rule.modules.operators.operator_module import OperatorSpec
+from py_rule.modules.operators.standard_operators import StandardOperators
 from py_rule.abstract.contexts import Contexts
 
 
@@ -10,10 +10,8 @@ class Trie_WM_Tests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        os = OperatorSpec()
-        os._construct_comp_ops()
-        os._construct_action_ops()
-        os._construct_transform_ops()
+        os = StandardOperators()
+        os.construct_operators()
 
     def setUp(self):
         self.trie = TrieWM()

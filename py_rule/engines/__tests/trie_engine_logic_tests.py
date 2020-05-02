@@ -2,7 +2,7 @@ import unittest
 import logging
 import py_rule.abstract.trie as T
 from py_rule.engines.trie_engine import TrieEngine
-from py_rule.modules.operators.operator_module import OperatorSpec
+from py_rule.modules.operators.standard_operators import StandardOperators
 from py_rule.abstract.rule import Rule
 from os.path import join, isfile, exists, isdir
 from os.path import split, splitext, expanduser, abspath
@@ -14,7 +14,7 @@ class Engine_Logic_Tests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        Engine_Logic_Tests.os = OperatorSpec()
+        Engine_Logic_Tests.os = StandardOperators()
         Engine_Logic_Tests.os.construct_operators()
 
     def path(self, filename):

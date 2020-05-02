@@ -4,7 +4,7 @@ import py_rule.working_memory.trie_wm.parsing.QueryParser as QP
 from py_rule.abstract.query import Query
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.comparison import Comparison, CompOp
-from py_rule.modules.operators.operator_module import OperatorSpec
+from py_rule.modules.operators.standard_operators import StandardOperators
 from py_rule.working_memory.trie_wm import util as KBU
 from py_rule import util
 
@@ -12,7 +12,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        os = OperatorSpec()
+        os = StandardOperators()
         os._construct_comp_ops()
         QP.build_operators()
 

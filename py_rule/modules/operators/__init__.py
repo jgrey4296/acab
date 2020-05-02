@@ -1,6 +1,6 @@
 """
 Provide Operators that can be used on other values and structures
 """
-from .operator_module import OperatorSpec
+from .standard_operators import StandardOperators
 
-MODULE_SPEC = OperatorSpec()
+MODULE_SPEC = StandardOperators()

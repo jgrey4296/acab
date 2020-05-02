@@ -1,7 +1,7 @@
 import unittest
 import logging
 from py_rule.working_memory.trie_wm.parsing import TransformParser as TP
-from py_rule.modules.operators.operator_module import OperatorSpec
+from py_rule.modules.operators.standard_operators import StandardOperators
 from py_rule.abstract import transform
 from py_rule.working_memory.trie_wm import util as KBU
 
@@ -10,7 +10,7 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        os = OperatorSpec()
+        os = StandardOperators()
         os._construct_comp_ops()
         os._construct_action_ops()
         os._construct_transform_ops()

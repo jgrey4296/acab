@@ -8,7 +8,6 @@ import importlib
 import logging as root_logger
 
 from py_rule.abstract.agenda import Agenda
-from py_rule.agendas import *
 from py_rule.abstract.action import ActionOp
 from py_rule.abstract.rule import Rule
 from py_rule.abstract.layer import Layer
@@ -240,7 +239,7 @@ def engine_stats(engine, data):
     if allow_all or "agenda" in params:
         result.append("--------------------")
         result.append("Agenda Stats: ")
-        result.append("\t{}".format("\n\t".join([str(x) for x in Agenda.agenda_list])))
+        # TODO: need to query for agendas
 
     # rules
     if allow_all or "rule" in params:

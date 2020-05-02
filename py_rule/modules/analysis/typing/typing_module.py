@@ -1,4 +1,5 @@
 from py_rule.abstract.module_interface import ModuleInterface
+from .type_checker import TypeChecker
 from .parsing import TypeDefParser as TDP
 from .parsing import TypeParser as TP
 
@@ -29,7 +30,7 @@ class TypingSpec(ModuleInterface):
         return TP.parseString(s)
 
     def construct_operators(self):
-        return
+        TypeChecker()
 
     def init_strings(self):
         return ""

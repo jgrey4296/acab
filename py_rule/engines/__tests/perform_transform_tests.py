@@ -12,7 +12,7 @@ from py_rule.engines.trie_engine import TrieEngine
 from py_rule.working_memory.trie_wm.parsing import TransformParser as TP
 from py_rule.working_memory.trie_wm.parsing import FactParser as FP
 from py_rule.modules.values.numbers.number_module import NumberSpecification
-from py_rule.modules.operators.operator_module import OperatorSpec
+from py_rule.modules.operators.standard_operators import StandardOperators
 
 
 class TransformTests(unittest.TestCase):
@@ -23,8 +23,8 @@ class TransformTests(unittest.TestCase):
     def setUpClass(cls):
         TransformTests.ns = NumberSpecification()
         TransformTests.ns.construct_operators()
-        TransformTests.os = OperatorSpec()
-        TransformTests.os._construct_transform_ops()
+        TransformTests.os = StandardOperators()
+        TransformTests.os.construct_operators()
 
     def setUp(self):
         self.e = TrieEngine(modules=[TransformTests.ns, TransformTests.os])
