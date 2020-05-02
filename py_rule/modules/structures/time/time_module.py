@@ -1,8 +1,8 @@
-from py_rule.abstract.mod_interface import ModuleSpecification
+from py_rule.abstract.module_interface import ModuleInterface
 from .parsing import parser as TP
 
 
-class TimeSpec(ModuleSpecification):
+class TimeSpec(ModuleInterface):
     """ TimeParser Class, providing entry points
     for an engine and working memory to parse Time Strings
     """

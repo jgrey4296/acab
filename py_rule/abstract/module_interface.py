@@ -6,7 +6,7 @@ Comes in two parts: The Parser, and the data
 from .value import PyRuleValue
 
 
-class ModuleSpecification:
+class ModuleInterface:
     """ A Module specification.
     Should be constructed in a module's __init__,
     into a MODULE_SPEC variable.

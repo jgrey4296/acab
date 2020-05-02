@@ -1,9 +1,9 @@
-from py_rule.abstract.mod_interface import ModuleSpecification
+from py_rule.abstract.module_interface import ModuleInterface
 from .parsing import TypeDefParser as TDP
 from .parsing import TypeParser as TP
 
 
-class TypingSpec(ModuleSpecification):
+class TypingSpec(ModuleInterface):
     """ Typing Spec Class, providing entry points
     for an engine and working memory to handle type inference
 

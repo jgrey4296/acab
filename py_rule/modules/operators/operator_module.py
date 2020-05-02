@@ -1,4 +1,4 @@
-from py_rule.abstract.mod_interface import ModuleSpecification
+from py_rule.abstract.module_interface import ModuleInterface
 
 from .comparison import comparison_operators as C
 from .action import action_operators as A
@@ -9,7 +9,7 @@ from .interleave.interleave import InterleaveOperator
 from .set.set_ops import SetOperator
 
 
-class OperatorSpec(ModuleSpecification):
+class OperatorSpec(ModuleInterface):
     """ The Module Spec for base operators """
 
     def __init__(self):

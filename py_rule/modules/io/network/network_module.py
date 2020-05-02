@@ -1,6 +1,6 @@
-from py_rule.abstract.mod_interface import ModuleSpecification
+from py_rule.abstract.module_interface import ModuleInterface
 
-class NetworkSpec(ModuleSpecification):
+class NetworkSpec(ModuleInterface):
 
     def __init__(self):
         super().__init__(parser=TP.main_pattern,

@@ -1,9 +1,9 @@
-from py_rule.abstract.mod_interface import ModuleSpecification
+from py_rule.abstract.module_interface import ModuleInterface
 from .parsing import NumberParser as NP
 from . import comparison_operators as CO
 from . import transform_operators as TO
 
-class NumberSpecification(ModuleSpecification):
+class NumberSpecification(ModuleInterface):
     """ A Module that provides numbers """
 
     def __init__(self):
