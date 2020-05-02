@@ -88,7 +88,7 @@ class TypeChecker(LayerAction):
     def __repr__(self):
         return "TypeChecker({})".format(str(self))
 
-    def __call__(self, data, engine):
+    def __call__(self, data=None, engine=None):
         """ Pass in data to type check """
         # Rules: limited context
         # other assertions/definitions etc: global context
