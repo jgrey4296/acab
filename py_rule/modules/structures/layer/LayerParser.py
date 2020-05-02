@@ -17,38 +17,31 @@ end
 """
 import logging as root_logger
 import pyparsing as pp
+from py_rule.util import QUERY_S, TRANSFORM_S, ACTION_S
 from py_rule.abstract.parsing import util as PU
 from py_rule.abstract.production_operator import ProductionContainer
-from py_rule.abstract.layer import Layer
+from py_rule.abstract.layer import Layer, make_layer
 
 logging = root_logger.getLogger(__name__)
 
-def construct_layer(toks):
-    #Get the layer constructor
-
-    #construct
-
-    #add the body
-
-    return ("layer", the_layer)
-
 
 HOTLOAD_BASIC_SEN = pp.Forward()
-HOTLOAD_QUERY_STMT = pp.Forward()
+HOTLOAD_QUERY = pp.Forward()
+HOTLOAD_TRANSFORM = pp.Forward()
+HOTLOAD_ACTION = pp.Forward()
 
 # Layers should be a special case of rule
-conditions  = PU.N(WMU.CONDITION_S, QP.clauses + PU.gap)
-transforms  = PU.N(WMU.TRANSFORM_S, TP.transforms + PU.gap)
-var_setting = PU.NG(WMU.ACTION_S, AP.actions + PU.component_gap)
+conditions  = PU.N(QUERY_S , HOTLOAD_QUERY     + PU.gap)
+transforms  = PU.N(TRANSFORM_S , HOTLOAD_TRANSFORM + PU.gap)
+var_setting = PU.NG(ACTION_S   , HOTLOAD_ACTION    + PU.component_gap)
 
 layer_body = PU.op(conditions) + PU.op(transforms) + PU.op(var_setting)
 
 layer_stmt = PU.STATEMENT_CONSTRUCTOR(PU.LAYER_HEAD,
                                       HOTLOAD_BASIC_SEN,
-                                      layer_body,
-                                      parse_fn=make_layer)
+                                      layer_body)
 
-layer_body.setParseAction(construct_layer)
+layer_body.setParseAction(make_layer)
 
 parse_point = layer_stmt
 

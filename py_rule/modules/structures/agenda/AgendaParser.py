@@ -48,11 +48,15 @@ from py_rule.abstract.agenda import Agenda, make_agenda
 logging = root_logger.getLogger(__name__)
 
 HOTLOAD_BASIC_SEN = pp.Forward()
+HOTLOAD_QUERY = pp.Forward()
+HOTLOAD_TRANSFORM = pp.Forward()
+HOTLOAD_ACTION = pp.Forward()
 
-# TODO: an agenda is a special form of rule
-conditions  = PU.N(WMU.CONDITION_S, QP.clauses + PU.gap)
-transforms  = PU.N(WMU.TRANSFORM_S, TP.transforms + PU.gap)
-var_setting = PU.NG(WMU.ACTION_S, AP.actions + PU.component_gap)
+
+# agenda should be a special case of rule
+conditions  = PU.N(util.QUERY_S , HOTLOAD_QUERY     + PU.gap)
+transforms  = PU.N(util.TRANSFORM_S , HOTLOAD_TRANSFORM + PU.gap)
+var_setting = PU.NG(util.ACTION_S   , HOTLOAD_ACTION    + PU.component_gap)
 
 agenda_body = PU.op(conditions) + PU.op(transforms) + PU.op(var_setting)
 

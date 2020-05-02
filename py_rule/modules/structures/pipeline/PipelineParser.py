@@ -30,29 +30,29 @@ import logging as root_logger
 import pyparsing as pp
 from py_rule.abstract.parsing import util as PU
 from py_rule.abstract.production_operator import ProductionContainer
-from py_rule.abstract.pipeline import Pipeline
+from py_rule.abstract.pipeline import Pipeline, make_pipeline
+from py_rule.util import QUERY_S, TRANSFORM_S, ACTION_S
 
 logging = root_logger.getLogger(__name__)
 
-def construct_pipeline(toks):
-    #Get the pipeline constructor
-
-    #construct
-
-    #add the body
-
-    return ("pipeline", the_pipeline)
-
-
 HOTLOAD_BASIC_SEN = pp.Forward()
+HOTLOAD_QUERY = pp.Forward()
+HOTLOAD_TRANSFORM = pp.Forward()
+HOTLOAD_ACTION = pp.Forward()
 
-pipeline_body = pp.delimitedList(HOTLOAD_BASIC_SEN, delim=PU.delim)
 
-pipeline_stmt = PU.STATEMENT_CONSTRUCTOR(PU.PIPELINE_HEAD,
+# Pipelines should be a special case of rule
+conditions  = PU.N(QUERY_S , HOTLOAD_QUERY     + PU.gap)
+transforms  = PU.N(TRANSFORM_S , HOTLOAD_TRANSFORM + PU.gap)
+var_setting = PU.NG(ACTION_S   , HOTLOAD_ACTION    + PU.component_gap)
+
+pipeline_body = PU.op(conditions) + PU.op(transforms) + PU.op(var_setting)
+
+pipeline_stmt = PU.STATEMENT_CONSTRUCTOR(PU.PIPE_HEAD,
                                          HOTLOAD_BASIC_SEN,
                                          pipeline_body)
 
-pipeline_body.setParseAction(construct_pipeline)
+pipeline_body.setParseAction(make_pipeline)
 
 parse_point = pipeline_stmt
 
