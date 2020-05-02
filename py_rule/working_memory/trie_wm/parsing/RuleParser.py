@@ -26,8 +26,8 @@ def build_operators():
 def build_rule(toks):
 
     # Get Conditions
-    if WMU.CONDITION_S in toks:
-        c = toks[WMU.CONDITION_S][0][1]
+    if WMU.QUERY_S in toks:
+        c = toks[WMU.QUERY_S][0][1]
         assert(isinstance(c, ProductionContainer))
     else:
         c = None
@@ -51,7 +51,7 @@ def build_rule(toks):
     return (rule.type, rule)
 
 
-conditions = PU.N(WMU.CONDITION_S, QP.clauses + PU.gap)
+conditions = PU.N(WMU.QUERY_S, QP.clauses + PU.gap)
 transforms = PU.N(WMU.TRANSFORM_S, TP.transforms + PU.gap)
 actions    = PU.NG(WMU.ACTION_S, AP.actions + PU.component_gap)
 

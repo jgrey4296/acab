@@ -23,6 +23,7 @@ end
 from py_rule.abstract.rule import Rule
 from py_rule.abstract.production_operator import ProductionOperator
 from py_rule import util
+from py_rule.util import NAME_S, STATEMENT_S, TYPE_DEC_S, QUERY_S, TRANSFORM_S, ACTION_S
 
 
 class LayerAction(ProductionOperator):
@@ -63,7 +64,27 @@ class Layer(Rule):
 
 #Utility function for parser
 def make_layer(toks):
+    # Get Conditions
+    if CONDITION_S in toks:
+        c = toks[CONDITION_S][0][1]
+        assert(isinstance(c, ProductionContainer))
+    else:
+        c = None
 
+    # Get Transform
+    if TRANSFORM_S in toks:
+        t = toks[TRANSFORM_S][0][1]
+        assert(isinstance(t, ProductionContainer))
+    else:
+        t = None
 
+    # Get Action
+    if ACTION_S in toks:
+        a = toks[ACTION_S][0][1]
+        assert(isinstance(a, ProductionContainer))
+    else:
+        a = None
 
-    return None
+    the_layer = Layer(query=c, transform=t, action=t)
+
+    return (the_layer.type, the_layer)

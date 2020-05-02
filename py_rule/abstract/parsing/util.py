@@ -63,6 +63,11 @@ SUM_HEAD       = s(pp.Keyword(util.SUM_HEAD_S))
 STRUCT_HEAD    = s(pp.Keyword(util.STRUCTURE_S))
 FUNC_HEAD      = s(pp.Keyword(util.FUNC_S))
 TYPE_CLASS_HEAD = s(pp.Keyword(util.TYPE_CLASS_S))
+AGENDA_HEAD    = s(pp.Keyword(util.AGENDA_HEAD_S))
+LAYER_HEAD     = s(pp.Keyword(util.LAYER_HEAD_S))
+PIPE_HEAD      = s(pp.Keyword(util.PIPE_HEAD_S))
+
+
 
 VAR_SYMBOL     = s(pp.Literal(util.VAR_SYMBOL_S))
 AT_BIND_SYMBOL = s(pp.Literal(util.AT_VAR_SYMBOL_S))

@@ -34,7 +34,6 @@ REPLACE_S     = "replace"
 TARGET_S      = "target"
 ANNOTATION_S  = "annotations"
 RULE_NAME_S   = "rule_name"
-CONDITION_S   = "conditions"
 ACTION_VAL_S  = "action_values"
 
 

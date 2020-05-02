@@ -14,11 +14,14 @@ end
 """
 from py_rule.abstract.rule import Rule
 from py_rule.abstract.production_operator import ProductionOperator
+from py_rule.util import NAME_S, STATEMENT_S, TYPE_DEC_S, QUERY_S, TRANSFORM_S, ACTION_S
+
 
 class PipelineAction(ProductionOperator):
     """ Subclass this for pipeline actions """
 
     op_list = {}
+
 
 class Pipeline(Rule):
     """ Abstract Class to describe a rule engine pipeline
@@ -86,3 +89,31 @@ class Pipeline(Rule):
         # TODO check module use
 
         raise NotImplementedError()
+
+
+
+def make_pipeline(toks):
+    # Get Conditions
+    if QUERY_S in toks:
+        c = toks[QUERY_S][0][1]
+        assert(isinstance(c, ProductionContainer))
+    else:
+        c = None
+
+    # Get Transform
+    if TRANSFORM_S in toks:
+        t = toks[TRANSFORM_S][0][1]
+        assert(isinstance(t, ProductionContainer))
+    else:
+        t = None
+
+    # Get Action
+    if ACTION_S in toks:
+        a = toks[ACTION_S][0][1]
+        assert(isinstance(a, ProductionContainer))
+    else:
+        a = None
+
+    the_pipeline = Pipeline(query=c, transform=t, action=t)
+
+    return (the_pipeline.type, the_layer)

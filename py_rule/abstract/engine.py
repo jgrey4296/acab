@@ -53,7 +53,6 @@ class Engine:
     def load_modules(self, *modules):
         self._loaded_modules.update({x.__class__.__name__ : x for x in modules})
         self._working_memory.add_modules(self._loaded_modules.values())
-        Agenda.construct_subclass_tree()
         self._working_memory.build_operator_parser()
 
     def load_file(self, filename):

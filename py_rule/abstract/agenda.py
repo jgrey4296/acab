@@ -4,12 +4,11 @@ they just need to be registered so
 layers and pipelines can be defined
 """
 from enum import Enum
-from py_rule.util import NAME_S, STATEMENT_S, TYPE_DEC_S
+from py_rule.util import NAME_S, STATEMENT_S, TYPE_DEC_S, QUERY_S, TRANSFORM_S, ACTION_S
 from py_rule.abstract.rule import Rule
-from py_rule.abstract.production_operator import ProductionOperator
+from py_rule.abstract.production_operator import ProductionOperator, ProductionContainer
 
 RELATION_E = Enum('Agenda_Relation', 'ONE MANY')
-
 
 class AgendaAction(ProductionOperator):
 
@@ -21,38 +20,20 @@ class Agenda(Rule):
     and applys a transform, filter, or other function on them
     """
 
-    agenda_list = {}
     RETURN_NAME_S = "__agenda_return_name__"
 
-
-    @staticmethod
-    def construct_subclass_tree():
-        """ Populate a dictionary for auto-generation of parser keywords """
-        found = []
-        queue = [Agenda]
-        while bool(queue):
-            current = queue.pop(0)
-            if current in found:
-                continue
-            found += found
-            queue += current.__subclasses__()
-
-        # At this point, all subclasses have been found
-        for x in found:
-            Agenda.agenda_list[x.__name__] = x
-
-        # TODO: use inspect module to get kwargs of each agenda type
-
-    def __init__(self, query=None, transform=None, name="AnonAgenda"):
+    def __init__(self,
+                 query=None,
+                 transform=None,
+                 action=None,
+                 name="AnonAgenda"):
 
         super(Agenda, self).__init__(query=query,
                                      transform=transform,
+                                     action=action,
                                      name=name)
         # Whether the agenda expands or constrains proposals
         self._relation_type = (None, None)
-
-        # Late set queries and transforms
-        self._registered_variables = {}
 
         # TODO: verify actions to registered variables
 
@@ -70,28 +51,30 @@ class Agenda(Rule):
         return resulting_ctxs[0][Agenda.RETURN_NAME_S]
 
 
-    def agenda_logic(self, proposals, settings, engine, **kwargs):
-        """ Where specific logic of agenda subclasses is implemented """
-        raise NotImplementedError()
-
-    def register_variable(self, sentence, init):
-        # TODO
-        raise NotImplementedError()
-
-
 # Utility construction function for parser
 def make_agenda(toks):
-    # TODO complete this
-    agenda_name = toks[NAME_S][0]
-    agenda_setup_tuple = toks[STATEMENT_S][0]
-    assert(agenda_setup_tuple == "agenda_dict")
+    # Get Conditions
+    if QUERY_S in toks:
+        c = toks[QUERY_S][0][1]
+        assert(isinstance(c, ProductionContainer))
+    else:
+        c = None
 
-    agenda_type = agenda_name[-1]._data[TYPE_DEC_S]
-    assert(agenda_type in Agenda.agenda_list)
-    # Get the agenda constructor
-    constructor = Agenda.agenda_list[agenda_type]
+    # Get Transform
+    if TRANSFORM_S in toks:
+        t = toks[TRANSFORM_S][0][1]
+        assert(isinstance(t, ProductionContainer))
+    else:
+        t = None
+
+    # Get Action
+    if ACTION_S in toks:
+        a = toks[ACTION_S][0][1]
+        assert(isinstance(a, ProductionContainer))
+    else:
+        a = None
 
     # make the agenda
-    the_agenda = constructor(the_dict)
+    the_agenda = Agenda(query=c, transform=t, action=a)
 
     return  (the_agenda.type, the_agenda)

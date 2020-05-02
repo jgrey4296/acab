@@ -57,6 +57,10 @@ STRUCTURE_S       = "σ"
 FUNC_S            = "λ"
 TYPE_CLASS_S      = "γ"
 UUID_HEAD         = "υ"
+AGENDA_HEAD_S     = "Agenda"
+LAYER_HEAD_S      = "Layer"
+PIPE_HEAD_S       = "Pipeline"
+
 
 VAR_SYMBOL_S      = "$"
 AT_VAR_SYMBOL_S   = "@"

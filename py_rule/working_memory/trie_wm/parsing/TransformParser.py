@@ -64,6 +64,9 @@ BINARY_TRANS_OP = pp.Forward()
 UNARY_TRANS_OP = pp.Forward()
 TERNARY_TRANS_OP = pp.Forward()
 
+# TODO need to add to this
+HOTLOAD_TRANS_STATEMENTS = pp.Forward()
+
 rebind = PU.ARROW + VALBIND
 
 # transform: ( bind op val|bind -> bind)
@@ -85,7 +88,9 @@ transform_core = PU.NG(WMU.TRANSFORM_S,
                               unary_transform_core])) \
                               + PU.N(WMU.TARGET_S, rebind)
 
-transforms = pp.delimitedList(transform_core, delim=PU.DELIM)
+transform_combined = pp.Or([transform_core, HOTLOAD_TRANS_STATEMENTS])
+
+transforms = pp.delimitedList(transform_combined, delim=PU.DELIM)
 
 transform_statement = PU.STATEMENT_CONSTRUCTOR(PU.TRANSFORM_HEAD,
                                                BASIC_SEN,
