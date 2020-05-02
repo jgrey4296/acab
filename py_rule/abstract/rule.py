@@ -35,7 +35,6 @@ class Rule(ProductionContainer):
 
     def __call__(self, ctxs=None, engine=None):
         """ Rule Logic, returns action proposals """
-        # TODO Make call signature be the same as production container's
         if ctxs is None:
             ctxs = []
         assert(self.verify())

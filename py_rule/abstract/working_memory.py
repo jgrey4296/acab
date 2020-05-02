@@ -18,7 +18,7 @@ From a module it loads Value, Statement, and Annotation parsers.
 import pyparsing as pp
 import logging as root_logger
 
-from .mod_interface import ModuleSpecification
+from .module_interface import ModuleInterface
 
 logging = root_logger.getLogger(__name__)
 
@@ -41,7 +41,7 @@ class WorkingMemory:
 
     def add_modules(self, mods):
         """ Add types into the parser """
-        assert(all([isinstance(x, ModuleSpecification) for x in mods]))
+        assert(all([isinstance(x, ModuleInterface) for x in mods]))
 
 
         # setup hotloads of the module

@@ -137,7 +137,7 @@ class PyRuleValue:
 
     def verify(self):
         """ Raise An Exception if this necessary """
-        return
+        pass
 
     def set_data(self, data):
         if data is not None:
