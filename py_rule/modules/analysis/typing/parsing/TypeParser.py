@@ -3,7 +3,7 @@ Pyparsing based parser for types
 """
 import logging as root_logger
 import pyparsing as pp
-from py_rule.modules.analysis.typing.type_instance import TypeInstance
+from py_rule.modules.analysis.typing.values.type_instance import TypeInstance
 from py_rule.modules.analysis.typing import util as TYU
 from py_rule.abstract.parsing import util as PU
 

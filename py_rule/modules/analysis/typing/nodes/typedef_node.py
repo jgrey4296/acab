@@ -3,7 +3,8 @@ import logging as root_logger
 from py_rule.abstract.node import PyRuleNode
 from py_rule.abstract.trie.trie import Trie
 from py_rule.error import type_exceptions as te
-from py_rule.modules.analysis.typing.type_definition import TypeDefinition
+from py_rule.modules.analysis.typing.values.type_definition import TypeDefinition
+
 import py_rule.modules.analysis.typing.util as util
 
 from .type_assignment_node import TypeAssignmentTrieNode

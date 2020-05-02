@@ -10,8 +10,8 @@ from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.node import PyRuleNode
 from py_rule.error.pyrule_parse_exception import PyRuleParseException
 from py_rule.modules.analysis.typing import util as TU
-from py_rule.modules.analysis.typing.type_definition import TypeDefinition
-from py_rule.modules.analysis.typing.operator_definition import OperatorDefinition
+from py_rule.modules.analysis.typing.values.type_definition import TypeDefinition
+from py_rule.modules.analysis.typing.values.operator_definition import OperatorDefinition
 from py_rule.working_memory.trie_wm.parsing import FactParser as FP
 from py_rule.abstract.parsing import util as PU
 

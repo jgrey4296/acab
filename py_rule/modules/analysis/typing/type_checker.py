@@ -48,18 +48,21 @@ If validate succeeds, it returns True. If it Fails, it raises an Exception
 
 import logging as root_logger
 
-from py_rule.abstract.sentence import Sentence
-from py_rule.abstract.trie.trie import Trie
 import py_rule.error.type_exceptions as te
 
+from py_rule.abstract.sentence import Sentence
+from py_rule.abstract.trie.trie import Trie
+from py_rule.abstract.layer import LayerAction
 from . import util as TU
+
 from .nodes.operator_def_node import OperatorDefTrieNode
 from .nodes.type_assignment_node import TypeAssignmentTrieNode
 from .nodes.typedef_node import TypeDefTrieNode
 from .nodes.var_type_node import VarTypeTrieNode
-from .operator_definition import OperatorDefinition
-from .type_definition import TypeDefinition
-from py_rule.abstract.layer import LayerAction
+
+from .values.operator_definition import OperatorDefinition
+from .values.type_definition import TypeDefinition
+
 
 logging = root_logger.getLogger(__name__)
 

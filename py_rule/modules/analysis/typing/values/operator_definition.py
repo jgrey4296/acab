@@ -1,10 +1,10 @@
-from py_rule.util import FUNC_S
+from py_rule.util import FUNC_S, VALUE_TYPE_S, NAME_S
 from py_rule.abstract.printing import util as PrU
-from py_rule.util import VALUE_TYPE_S, NAME_S
+
+from py_rule.modules.analysis.typing.util import OP_DEF_S, TYPE_DEF_S
 
 from .type_definition import TypeDefinition
 from .type_instance import TypeInstance
-from .util import OP_DEF_S, TYPE_DEF_S
 
 
 class OperatorDefinition(TypeDefinition):

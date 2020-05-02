@@ -2,7 +2,7 @@ from py_rule.abstract.value import PyRuleValue
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.printing import util as PrU
 
-from . import util
+from py_rule.modules.analysis.typing import util
 from .pyrule_type import Type
 
 

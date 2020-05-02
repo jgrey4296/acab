@@ -5,7 +5,7 @@ from py_rule.abstract.printing import util as PrU
 
 from .pyrule_type import TypeStatement
 from .type_instance import TypeInstance
-from .util import TYPE_DEF_S, TYPE_DEC_S
+from py_rule.modules.analysis.typing.util import TYPE_DEF_S, TYPE_DEC_S
 
 PrU.setup_statement_lookups({TYPE_DEF_S : STRUCTURE_S})
 

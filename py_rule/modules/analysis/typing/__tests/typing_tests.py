@@ -5,9 +5,10 @@ import py_rule.error.type_exceptions as te
 
 from py_rule.abstract.transform import TransformComponent
 from py_rule.modules.analysis.typing.type_checker import TypeChecker
-from py_rule.modules.analysis.typing.type_definition import TypeDefinition
-from py_rule.modules.analysis.typing.operator_definition import OperatorDefinition
-from py_rule.modules.analysis.typing.type_instance import TypeInstance
+from py_rule.modules.analysis.typing.values.type_definition import TypeDefinition
+from py_rule.modules.analysis.typing.values.operator_definition import OperatorDefinition
+from py_rule.modules.analysis.typing.values.type_instance import TypeInstance
+
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.node import PyRuleNode
 from py_rule.modules.analysis.typing import util as TU
