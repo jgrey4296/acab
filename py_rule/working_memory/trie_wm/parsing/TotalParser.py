@@ -19,11 +19,6 @@ from . import ActionParser as AP
 
 HOTLOAD_STATEMENTS = pp.Forward()
 
-def final_pass(toks):
-    #everything has been parsed,
-    #clear the parse bindings as a guard:
-    return toks[:]
-
 statements = pp.Or([RP.rule,
                     AP.action_definition,
                     FP.SEN_STATEMENT,
@@ -32,9 +27,6 @@ statements = pp.Or([RP.rule,
 file_component = pp.MatchFirst([statements, FP.PARAM_SEN])
 
 file_total = pp.delimitedList(file_component, delim=PU.component_gap)
-
-#Parse Actions
-file_total.setParseAction(final_pass)
 
 # NAMING
 statements.setName("StatementCollection")

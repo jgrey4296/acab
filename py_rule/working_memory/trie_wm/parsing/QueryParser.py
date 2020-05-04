@@ -15,16 +15,6 @@ from .FactParser import PARAM_CORE, HOTLOAD_ANNOTATIONS, PARAM_SEN, BASIC_SEN
 
 logging = root_logger.getLogger(__name__)
 
-
-# Operator hotloading:
-def build_operators():
-    """ Hotload comparison operators after they have been initialised """
-    if COMP_OP.expr is not None:
-        logging.debug("Comparison Operators parser overwrite")
-    OP_STRS = [x for x in C.CompOp.op_list.keys()]
-    COMP_OP << pp.Or([pp.Literal(x) for x in OP_STRS] + [PU.OPERATOR_SUGAR])
-
-
 def build_constraint_list(toks):
     """ Build a constraint list """
     return (WMU.CONSTRAINT_S, toks[:])
@@ -58,10 +48,11 @@ def build_query(toks):
 def build_assignment(toks):
     return (toks[0][1], toks[1])
 
-# Build After comparison operators have been constructed:
-COMP_OP = pp.Forward()
 
-COMP_Internal = PU.N(WMU.OPERATOR_S, COMP_OP) \
+# Build After comparison operators have been constructed:
+HOTLOAD_COMP_OP = pp.Forward()
+
+COMP_Internal = PU.N(WMU.OPERATOR_S, HOTLOAD_COMP_OP) \
     + PU.N(WMU.VALUE_S, PARAM_CORE(end=True))
 
 # defined earlier to work with named copies
@@ -101,7 +92,7 @@ clauses.setParseAction(build_query)
 assignment.setParseAction(build_assignment)
 
 # NAMING
-COMP_OP.setName("ComparisonOperators")
+HOTLOAD_COMP_OP.setName("ComparisonOperators")
 COMP_Internal.setName("ComparisonStatement")
 comp_or_annotation.setName("ComparisonOrAnnotation")
 constraints.setName("ConstraintList")

@@ -279,6 +279,8 @@ def engine_stats(engine, data):
         bind_groups = engine._cached_bindings[:]
         result.append("\t{}".format("\n\t".join([str(x) for x in bind_groups])))
 
+    # TODO add parser stats/trie
+
     result.append("")
     data['result'] = "\n".join(result)
     return engine, data
@@ -374,4 +376,5 @@ def engine_nop(engine, data):
     return engine, data
 
 register(ReplE.NOP, engine_nop)
+
 #---------------------

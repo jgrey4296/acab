@@ -111,8 +111,6 @@ PARAM_SEN.setName("ParameterisedSentence")
 PARAM_SEN_PLURAL.setName("ParamSentencePlural")
 
 
-
-
 # parse_point = PARAM_SEN_PLURAL.ignore(PU.COMMENT)
 parse_point = PARAM_SEN_PLURAL
 

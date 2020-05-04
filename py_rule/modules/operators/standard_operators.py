@@ -16,49 +16,35 @@ class StandardOperators(ModuleInterface):
     def __init__(self):
         super().__init__()
 
-    def construct_operators(self):
-        self._construct_comp_ops()
-        self._construct_action_ops()
-        self._construct_transform_ops()
-        self._construct_agenda_actions()
-        self._construct_layer_actions()
-        self._construct_pipeline_actions()
 
-    def _construct_comp_ops(self):
-        C.EQ()
-        C.NEQ()
-        C.RegMatch()
-        C.ELEM()
+    def assert_parsers(self, pt):
+        pt.add("operators.comparisons.eq", C.EQ,
+               "operators.comparisons.neq", C.NEQ,
+               "operators.comparisons.regmatch", C.RegMatch,
+               "operators.comparisons.elem", C.ELEM)
 
-    def _construct_action_ops(self):
-        A.ActionAdd()
-        A.ActionPrint()
+        pt.add("operators.transform.ternary.regex", T.RegexOp,
+               "operators.transform.binary.format", T.FormatOp,
+               "operators.transform.statements.pattern_match", PMP.pattern_match_stmt,
+               # Agenda:
+               "operators.transform.statements.agenda_sort", AA.AgendaSort,
+               "operators.transform.statements.agenda_select", AA.AgendaSelect,
+               # Layer:
+               "operators.transform.binary.run_agenda", LP.LayerRunAgenda,
+               "operators.transform.unary.run_rules", LP.LayerRunRules)
 
-    def _construct_transform_ops(self):
-        T.RegexOp()
-        T.FormatOp()
-        PMO.PatternMatchOp()
+        pt.add("operators.action.add", A.ActionAdd,
+               "operators.action.print", A.ActionPrint,
+               # Agenda:
+               "operators.action.agenda_return", AA.AgendaReturn,
+               # Layer:
+               "operators.action.layer_perform", LP.LayerPerform,
+               # Pipeline
+               "operators.action.load_module", PP.PipelineLoadModule,
+               "operators.action.run_layer", PP.PipelineRunLayer,
+               "operators.action.run_pipeline", PP.PipelineRunPipeline)
 
-    def _construct_agenda_actions(self):
-        AA.AgendaSelect()
-        AA.AgendaSort()
-        AA.AgendaSet()
-        AA.AgendaReturn()
-
-    def _construct_layer_actions(self):
-        LA.LayerRunRules()
-        LA.LayerRunAgenda()
-        LA.LayerPerform()
-
-    def _construct_pipeline_actions(self):
-        PA.PipelineRunLayer()
-        PA.PipelineRunPipeline()
-        PA.PipelineLoadModule()
-
-
+    def query_parsers(self, pt):
+        pass
     def init_strings(self):
         return []
-
-    def insert_hotloads(self, data):
-        # TODO: insert PMP into transform hotload
-        pass

@@ -9,50 +9,27 @@ from py_rule.working_memory.trie_wm.parsing.FactParser import VALBIND, BASIC_SEN
 
 logging = root_logger.getLogger(__name__)
 
-
 # Builders:
-def build_operators():
-    OP_SUGAR = [PU.OPERATOR_SUGAR]
-
-    if BINARY_TRANS_OP.expr is not None:
-        logging.debug("Transform Binary Operator Overwrite")
-    BINARY_TRANS_OP << pp.Or([pp.Literal(k) for k, v
-                              in TransformOp.op_list.items() if v._num_params == 2] + OP_SUGAR)
-
-    if UNARY_TRANS_OP.expr is not None:
-        logging.debug("Transform Unary Operator Overwrite")
-    UNARY_TRANS_OP << pp.Or([pp.Literal(k) for k, v
-                             in TransformOp.op_list.items() if v._num_params == 1] + OP_SUGAR)
-
-    if TERNARY_TRANS_OP.expr is not None:
-        logging.debug("Transform Ternary Operator Overwrite")
-    TERNARY_TRANS_OP << pp.Or([pp.Literal(k) for k, v
-                               in TransformOp.op_list.items() if v._num_params == 3] + OP_SUGAR)
-
-
 def buildBinaryTransformComponent(toks):
     return TransformComponent(toks[WMU.OPERATOR_S],
-                             [toks[WMU.LEFT_S],
-                              toks[WMU.RIGHT_S]])
-
+                              [toks[WMU.LEFT_S],
+                               toks[WMU.RIGHT_S]])
 
 def buildUnaryTransformComponent(toks):
     return TransformComponent(toks[WMU.OPERATOR_S],
-                             [toks[WMU.RIGHT_S]])
-
+                              [toks[WMU.RIGHT_S]])
 
 def buildTernaryTransformComponent(toks):
     return TransformComponent(toks[WMU.OPERATOR_S],
-                             [toks[WMU.SOURCE_S],
-                              toks[WMU.REGEX_S],
-                              toks[WMU.REPLACE_S]])
+                              [toks[WMU.SOURCE_S],
+                               toks[WMU.REGEX_S],
+                               toks[WMU.REPLACE_S]])
 
 
 def addRebind(toks):
     if WMU.TARGET_S in toks:
         toks[WMU.TRANSFORM_S][0].set_rebind(toks[WMU.TARGET_S][0])
     return toks[WMU.TRANSFORM_S][0]
-
 
 def build_transform(toks):
     trans = Transform(toks[:])

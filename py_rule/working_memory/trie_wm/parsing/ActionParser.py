@@ -12,18 +12,10 @@ logging = root_logger.getLogger(__name__)
 
 HOTLOAD_OPERATORS = pp.Forward()
 
-def build_operators():
-    """ For Hotloading Action operators """
-    if HOTLOAD_OPERATORS.expr is not None:
-        logging.debug("Action Operators Overwrite")
-    ACTION_STRS = [x for x in action.ActionOp.op_list.keys()]
-    HOTLOAD_OPERATORS << pp.Or([pp.Literal(x) for x in ACTION_STRS] + [PU.OPERATOR_SUGAR])
-
 
 def build_component(toks):
     return action.ActionComponent(toks[WMU.OPERATOR_S],
                                    toks[WMU.ACTION_VAL_S][:])
-
 
 def build_action(toks):
     clauses = [x if isinstance(x, action.ActionComponent) else action.ActionComponent('ActionAdd', [x]) for x in toks]
@@ -43,7 +35,9 @@ action_component = PU.N(WMU.OPERATOR_S, HOTLOAD_OPERATORS) \
 # TODO: block param_sen from beginning with "end"
 actions = pp.delimitedList(pp.Or([action_component, PARAM_SEN]), delim=PU.DELIM)
 
-action_definition = PU.STATEMENT_CONSTRUCTOR(PU.ACTION_HEAD, BASIC_SEN, actions + PU.emptyLine)
+action_definition = PU.STATEMENT_CONSTRUCTOR(PU.ACTION_HEAD,
+                                             BASIC_SEN,
+                                             actions + PU.emptyLine)
 
 # parse action
 action_component.setParseAction(build_component)

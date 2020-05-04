@@ -86,3 +86,8 @@ def rebind_across_contexts(names, values, base):
 
     return new_base
 
+def get_parsers_from_module(module):
+    elements = [getattr(module, x) for x in module]
+    parsers = [x for x in elements if isinstance(x, pp.ParserElement)]
+
+    return parsers

@@ -14,14 +14,6 @@ from . import ActionParser as AP
 
 logging = root_logger.getLogger(__name__)
 
-
-# Hotloader:
-def build_operators():
-    QP.build_operators()
-    TP.build_operators()
-    AP.build_operators()
-
-
 # Constructor:
 def build_rule(toks):
 

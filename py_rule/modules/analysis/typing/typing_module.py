@@ -16,10 +16,7 @@ class TypingSpec(ModuleInterface):
 
     Implement:
     parse_string,
-    construct_operators
     init_strings
-    define_layers
-
     """
 
     def __init__(self):
@@ -29,11 +26,15 @@ class TypingSpec(ModuleInterface):
     def parse_string(self, s):
         return TP.parseString(s)
 
-    def construct_operators(self):
-        TypeChecker()
-
     def init_strings(self):
         return ""
 
-    def define_layers(self):
-        return []
+    def assert_parsers(self, pt):
+        pt.add("statements.typing", TDP.COMBINED_DEFS)
+        pt.add("annotations.typing", TP.TYPEDEC_CORE)
+
+    def query_parsers(self, pt):
+        TDP.HOTLOAD_BASIC_SEN << pt.query("sentences.basic")
+        TDP.HOTLOAD_PARAM_SEN << pt.query("sentences.param")
+
+        TP.HOTLOAD_BASIC_SEN << pt.query("sentences.basic")

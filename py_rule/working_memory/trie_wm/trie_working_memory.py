@@ -9,6 +9,7 @@ from py_rule.abstract.trie.trie import Trie
 from py_rule.error.pyrule_operator_exception import PyRuleOperatorException
 from py_rule.error.pyrule_parse_exception import PyRuleParseException
 from py_rule.abstract.printing import util as PrU
+from py_rule.abstract.parsing import util as PU
 
 from . import util
 from .fact_node import FactNode
@@ -31,13 +32,8 @@ class TrieWM(WorkingMemory):
         # TODO: have a parallel listener trie?
         self._last_node = self._internal_trie._root
 
-        self._module_hotload_provision = {
-            'basic_sen' : FP.BASIC_SEN,
-            'param_sen' : FP.PARAM_SEN,
-            'query'     : QP.parse_point,
-            'transform' : TP.parse_point,
-            'action'    : AP.parse_point
-        }
+        # TODO: insert parsers
+
 
         if init is not None:
             self.add(init)
@@ -81,24 +77,50 @@ class TrieWM(WorkingMemory):
 
         return self._query_sentence(query, ctxs=ctxs)
 
-    # Internal Methods:
-    def _insert_into_values_parser(self, parser):
-        FP.HOTLOAD_VALUES << parser
 
-    def _insert_into_statement_parser(self, parser):
-        TotalP.HOTLOAD_STATEMENTS << parser
+    def assert_parsers(self, pt):
+        # Core
+        pt.add("valbind", FP.VALBIND,
+               "sentences.basic", FP.BASIC_SEN,
+               "sentences.param", FP.PARAM_SEN,
+               "statements.sentence", FP.SEN_STATEMENT,
+               "operators.sugar", PU.OPERATOR_SUGAR)
+        # Query
+        pt.add("statements.query", QP.query_statement,
+               "query.body", QP.clauses)
 
-    def _insert_into_annotations_parser(self, parser):
-        FP.HOTLOAD_ANNOTATIONS << parser
+        # Transform
+        pt.add("transform.body", TP.transforms,
+               "statements.transform", TP.transform_statement,
+               "transform.rebind", TP.rebind)
 
-    def _build_operator_parser(self):
-        """ Trigger the building of operators,
-        *after* modules have been loaded
-        """
-        AP.build_operators()
-        QP.build_operators()
-        TP.build_operators()
+        # Action
+        pt.add("action.body", AP.actions,
+               "statements.action", TP.action_definition)
 
+        # Rule
+        pt.add("rule.body", RP.rule_body,
+               "statements.rule", RP.rule)
+
+    def query_parsers(self, pt):
+        FP.HOTLOAD_VALUES << pp.Or([x for x in pt.query("values.*")])
+        FP.HOTLOAD_ANNOTATIONS << pp.Or([x for x in pt.query("annotations.*")])
+
+        QP.HOTLOAD_COMP_OP << pp.Or([x for x in pt.query("operators.comparisons.*",
+                                                         "operators.sugar")])
+
+        TP.UNARY_TRANS_OP << pp.Or([x for x in pt.query("operators.transform.unary.*",
+                                                        "operators.sugar")])
+        TP.BINARY_TRANS_OP << pp.Or([x for x in pt.query("operators.transform.binary.*",
+                                                         "operators.sugar")])
+        TP.TERNARY_TRANS_OP << pp.Or([x for x in pt.query("operators.transform.ternary.*",
+                                                          "operators.sugar")])
+        TP.HOTLOAD_TRANS_STATEMENTS << pp.Or([x for x in pt.query("operators.transform.statements.*",
+                                                                  "operators.sugar")])
+
+        AP.HOTLOAD_OPERATORS << pp.Or([x for x in pt.query("operators.action.*")])
+
+        TotalP.HOTLOAD_STATEMENTS << pp.Or([x for x in pt.query("statements.*")])
 
     def _assert_sentence(self, sen):
         """ Assert a sentence of chained facts """
