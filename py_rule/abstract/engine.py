@@ -49,11 +49,17 @@ class Engine:
         else:
             self.load_file(path)
 
+
+    def __len__(self):
+        raise NotImplementedError()
+
     # Initialisation:
     def load_modules(self, *modules):
         self._loaded_modules.update({x.__class__.__name__ : x for x in modules})
         self._working_memory.add_modules(self._loaded_modules.values())
-        self._working_memory.build_operator_parser()
+
+    def reload_all_modules(self):
+        self._working_memory.add_modules(self._loaded_modules.values())
 
     def load_file(self, filename):
         """ Load a file spec for the facts / rules / layers for this engine """
@@ -64,6 +70,12 @@ class Engine:
         assert(exists(split(abspath(expanduser(filename)))[0]))
         with open(abspath(expanduser(filename)), 'w') as f:
             f.write(str(self._working_memory) + "\n")
+
+    def _save_state(self, data):
+        """ Copy the current string representation of the working memory,
+        and any associated data """
+        self._prior_states.append((str(self._working_memory), data))
+
 
     # Base Actions
     def add(self, s):
@@ -78,11 +90,6 @@ class Engine:
             self._cached_bindings = result
         return result
 
-    # Export
-    def _save_state(self, data):
-        """ Copy the current string representation of the working memory,
-        and any associated data """
-        self._prior_states.append((str(self._working_memory), data))
 
     # Utility
     def run_thing(self, thing, bindings=None):
@@ -102,6 +109,3 @@ class Engine:
             logging.info("Thing Failed")
 
         return result
-
-    def __len__(self):
-        raise NotImplementedError()
