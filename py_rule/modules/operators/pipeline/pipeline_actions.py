@@ -1,4 +1,4 @@
-from py_rule.abstract.pipeline import PipelineAaction
+from py_rule.abstract.pipeline import PipelineAction
 
 class PipelineRunLayer(PipelineAction):
     pass

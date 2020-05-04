@@ -12,10 +12,39 @@ from .value import PyRuleValue, PyRuleStatement
 
 class ProductionOperator(PyRuleValue):
     """ The Base Operator Class """
-    # operator calls are late resolving,
-    # and allow type checking to resolve earlier
 
-    def __init__(self, num_params=2, infix=False, type_str=OPERATOR_S):
+    # A class variable to determine when an operator is instanced
+    STATELESS_OP_CLASS = True
+    op_dict = {}
+
+    @staticmethod
+    def construct_subclass_tree():
+        """ Populate a dictionary for auto-generation of parser keywords """
+        logging.info("Constructing Operator Subclass list")
+        found = []
+        queue = [ProductionOperator]
+        while bool(queue):
+            current = queue.pop(0)
+            if current in found:
+                continue
+            found += found
+            queue += current.__subclasses__()
+
+        # At this point, all subclasses have been found
+        for x in found:
+            module_name = x.__module__
+            operator_name = x.__name__
+            full_name = "{}.{}".format(module_name, operator_name)
+            value = x
+            if value.STATELESS_OP_CLASS:
+                value = value()
+            ProductionOperator.op_dict[full_name] = value
+
+
+    def __init__(self, num_params=2,
+                 infix=False,
+                 type_str=OPERATOR_S):
+
         super().__init__(self.__class__.__name__,
                          type_str=type_str)
         # TODO this can be done using subclass DFS
@@ -35,7 +64,7 @@ class ProductionOperator(PyRuleValue):
 class ProductionComponent(PyRuleValue):
     """ Pairs a an operator with some bindings """
 
-    def __init__(self, op_str, params, rebind=None, type_str=None, op_class=None, **kwargs):
+    def __init__(self, op_str, params, rebind=None, type_str=None, op_class=ProductionOperator, **kwargs):
         assert(op_class is not None)
         if 'data' not in kwargs:
             kwargs['data'] = {}
