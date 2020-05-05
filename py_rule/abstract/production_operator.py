@@ -2,12 +2,16 @@
 The Base Operator Definition
 Used for Comparison, Transform, and Performance Operators
 """
+import logging as root_logger
+
 from py_rule.util import OPERATOR_S, STATEMENT_S
 from py_rule import util
 from py_rule.abstract.printing import util as PrU
 from py_rule.abstract.sentence import Sentence
 
 from .value import PyRuleValue, PyRuleStatement
+
+logging = root_logger.getLogger(__name__)
 
 
 class ProductionOperator(PyRuleValue):

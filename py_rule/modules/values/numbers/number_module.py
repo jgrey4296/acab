@@ -7,24 +7,11 @@ class NumberSpecification(ModuleInterface):
     """ A Module that provides numbers """
 
     def __init__(self):
-        super(NumberSpecification, self).__init__(value_ps=[NP.NUM])
+        super(NumberSpecification, self).__init__()
 
     def parse_string(self, s):
         """ Takes a String, parses it into Data format """
         return NP.parse_string(s)
-
-    def construct_operators(self):
-        """ Use this to call operator constructors """
-        CO.GT()
-        CO.LT()
-        TO.AddOp()
-        TO.SubOp()
-        TO.DivOp()
-        TO.MulOp()
-        TO.RandOp()
-        TO.RemainOp()
-        TO.RoundOp()
-        TO.NegOp()
 
     def init_strings(self):
         """ Return any strings to parse as
@@ -33,5 +20,3 @@ class NumberSpecification(ModuleInterface):
         the hotloaded value and statement parsers """
         return []
 
-    def insert_hotloads(self, data):
-        pass

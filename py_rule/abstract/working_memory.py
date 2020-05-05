@@ -47,10 +47,10 @@ class WorkingMemory:
         """ Add types into the parser """
         assert(all([isinstance(x, ModuleInterface) for x in mods]))
         #Populate the trie
-        dummy = [module.assert_parsers(self._parser_trie) for x in mods]
+        dummy = [x.assert_parsers(self._parser_trie) for x in mods]
 
         # Now query and populate the modules
-        dummy = [module.query_parsers(self._parser_trie) for x in mods]
+        dummy = [x.query_parsers(self._parser_trie) for x in mods]
 
 
     # Methods to implement:

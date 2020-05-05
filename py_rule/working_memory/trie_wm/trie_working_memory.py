@@ -18,6 +18,7 @@ from .parsing import FactParser as FP
 from .parsing import QueryParser as QP
 from .parsing import TotalParser as TotalP
 from .parsing import TransformParser as TP
+from .parsing import RuleParser as RP
 
 logging = root_logger.getLogger(__name__)
 
@@ -96,15 +97,17 @@ class TrieWM(WorkingMemory):
 
         # Action
         pt.add("action.body", AP.actions,
-               "statements.action", TP.action_definition)
+               "statements.action", AP.action_definition)
 
         # Rule
         pt.add("rule.body", RP.rule_body,
                "statements.rule", RP.rule)
 
     def query_parsers(self, pt):
-        FP.HOTLOAD_VALUES << pt.query("values.*")
-        FP.HOTLOAD_ANNOTATIONS << pt.query("annotations.*")
+        if pt.query("values.*"):
+            FP.HOTLOAD_VALUES << pt.query("values.*")
+        if pt.query("annotations.*"):
+            FP.HOTLOAD_ANNOTATIONS << pt.query("annotations.*")
 
         QP.HOTLOAD_COMP_OP << pt.query("operators.comparisons.*",
                                        "operators.sugar")

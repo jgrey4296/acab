@@ -9,7 +9,7 @@ class TimeSpec(ModuleInterface):
 
     def __init__(self):
         # TODO make a time statement as well
-        super().__init__(value_ps=[TP.main_pattern])
+        super().__init__()
 
     def parse_string(self, s):
         return TP.parseString(s)

@@ -27,19 +27,3 @@ class HyperGraphWM(WorkingMemory):
 
         raise NotImplementedError()
 
-    def _insert_into_values_parser(self, parser):
-        """ Inserts new value types that can be parsed in a sentence
-        Should look like FP.OTHER_VALS << or_d_parser
-        """
-        raise NotImplementedError()
-
-    def _insert_into_statement_parser(self, parser):
-        """ Inserts new statements entirely """
-        raise NotImplementedError()
-
-    def _build_operator_parser(self):
-        """ This Method calls each parser component's
-        'build_operators' function, that populates Forward defined
-        parser combinators *after* modules are loaded.
-        This ensures operators are included in the parsers """
-        raise NotImplementedError()
