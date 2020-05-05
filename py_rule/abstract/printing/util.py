@@ -78,7 +78,7 @@ def print_operator(operator, op_fix=0, wrap_vars=False):
 
     return val
 
-def print_sequence(seq, join_str="", leaf=True, **kwargs):
+def print_sequence(seq, join_str=None, leaf=True, **kwargs):
     if not bool(seq):
         return ""
 
@@ -88,6 +88,8 @@ def print_sequence(seq, join_str="", leaf=True, **kwargs):
 
     last_word = [seq.words[-1].pprint(leaf=leaf)]
 
+    if join_str is None:
+        join_str = ""
     val = join_str.join(words + last_word)
 
     # Wrap as Query
