@@ -16,3 +16,46 @@ class AgendaReturn(AgendaAction):
 
 
 # Cycle, expand, map, filter, random, ranking, sandbox
+
+
+# Default Agenda: (::Agenda)
+# 	| $proposals |
+#
+# 	AgendaReturn $proposals
+#
+
+# Sort Agenda: (::Agenda)
+#    | $proposals |
+#
+#    sort.agenda.values.selection.$amnt?
+#
+#    Sort $proposals by $proposals.ctx.$x? -> $sorted
+#    Select $amnt from $sorted             -> $selected
+#
+#    Return $selected
+
+# Test Layer: (::Layer)
+#   a.rule.set.$rules?
+#   default.$agenda?
+#
+#   run $rules -> $proposals
+#   run $agenda with $proposals -> $selected
+#
+#   perform $selected
+
+# Test Pipeline: (::Pipeline)
+# 	:module standard_operators
+#   :module standard_structures
+#
+#   analysis.$tc(~= typecheck)?
+#   test.$layer?
+#
+#   init:
+#       load ~/a/file.trie
+#       run layer $tc
+#
+#
+#   loop:
+#       run layer $layer
+#
+#

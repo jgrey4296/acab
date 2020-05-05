@@ -6,16 +6,28 @@ These will be verified to provide a flow from base inputs to outputs
 by the rules they select
 
 eg:
-φ::a.pipeline.example:
+a.pipeline.example: (::φ)
+	// queries:
+
+	// transforms:
+
+	// actions:
+
     init:
-    typing.layer
+		import py_rule.modules.operators
+    	typing.layer
 
-
+	input:
     loop:
-	an.output.layer
-	an.input.layer
-	a.second.layer
-	a.third.layer
+		an.output.layer
+		an.input.layer
+		a.second.layer
+		a.third.layer
+	output:
+
+	interface:
+
+	exit:
 
 end
 

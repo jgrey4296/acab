@@ -3,44 +3,37 @@ Agenda Parser
 
 Should define an Agenda Instance with its parameters,
 to then be used in a layer
-
-σ::DefaultAgenda:
-	select.$x(::Number)
-end
-
-σ::RankingAgenda:
-	rank.by.$x
-end
-
-eg:
-Σ::primary.agenda(::DefaultAgenda): select.20 end
-Σ::secondary.agenda(::RankingAgenda): rank.by:$x? end
-
---------------------
-σ::Number
-σ::DefaultAgenda:
+-------------------
+Number: (::σ)
+DefaultAgenda: (::σ)
   selection.amount: $x(::Number)
 
+primary.agenda: (::DefaultAgenda)
+  | $proposals |
 
-Σ::primary.agenda(::DefaultAgenda):
   # Query part:
+  @proposals.data.
   some.amount!$x(::Number)?
 
   # Assignment
-  rank.by.$x
+  select($proposals, $x) -> $y
+  AgendaLogic($y)
 
 
-Σ::secondary.agenda(::RankingAgenda):
+secondary.agenda(::RankingAgenda):
+  | $proposals |
+
   # Use an already bound var from the rules
-  rank.by.$x
-  # Or:
-  curve.sine($y) -> $z
+  dfs($proposals, (::Number)) -> $x
 
-  rank.by.$z(::ordinal)
+  curve.sine($x) -> $z
 
+  rank($proposals, $z) -> $q
+  return($q)
 """
 import logging as root_logger
 import pyparsing as pp
+from py_rule import util
 from py_rule.abstract.parsing import util as PU
 from py_rule.abstract.production_operator import ProductionContainer
 from py_rule.abstract.agenda import Agenda, make_agenda

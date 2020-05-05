@@ -6,12 +6,20 @@ and a sequence of agendas
 
 eg:
 Γ::a.layer:
+	| $pipeline_var |
+
+	;; *must* only produce a single context?
+	an.agenda.set.$agenda(::Σ)?
 	a.rule.selector.$x?
 	another.rule.selector.$y?
 
-	primary.agenda.$x
-	secondary.agenda.$y
+	dfs(@x, (::ρ, #a_tag)) -> $z(::[ρ])
+	leaves(@y, (::ρ))      -> $q(::[ρ])
+	merge($z, $q)          -> $i
 
+	LayerRunRules($i)      -> $b
+	LayerRunAgenda($agenda, $b) -> $c
+	LayerPerform($c)
 end
 
 """
