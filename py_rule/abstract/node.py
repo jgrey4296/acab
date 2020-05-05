@@ -58,6 +58,9 @@ class PyRuleNode(PyRuleValue):
 
         return obj
 
+    @property
+    def children(self):
+        return self._children.values()
 
     def copy(self):
         return PyRuleNode(self._value,

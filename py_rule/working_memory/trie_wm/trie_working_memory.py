@@ -103,24 +103,24 @@ class TrieWM(WorkingMemory):
                "statements.rule", RP.rule)
 
     def query_parsers(self, pt):
-        FP.HOTLOAD_VALUES << pp.Or([x for x in pt.query("values.*")])
-        FP.HOTLOAD_ANNOTATIONS << pp.Or([x for x in pt.query("annotations.*")])
+        FP.HOTLOAD_VALUES << pt.query("values.*")
+        FP.HOTLOAD_ANNOTATIONS << pt.query("annotations.*")
 
-        QP.HOTLOAD_COMP_OP << pp.Or([x for x in pt.query("operators.comparisons.*",
-                                                         "operators.sugar")])
+        QP.HOTLOAD_COMP_OP << pt.query("operators.comparisons.*",
+                                       "operators.sugar")
 
-        TP.UNARY_TRANS_OP << pp.Or([x for x in pt.query("operators.transform.unary.*",
-                                                        "operators.sugar")])
-        TP.BINARY_TRANS_OP << pp.Or([x for x in pt.query("operators.transform.binary.*",
-                                                         "operators.sugar")])
-        TP.TERNARY_TRANS_OP << pp.Or([x for x in pt.query("operators.transform.ternary.*",
-                                                          "operators.sugar")])
-        TP.HOTLOAD_TRANS_STATEMENTS << pp.Or([x for x in pt.query("operators.transform.statements.*",
-                                                                  "operators.sugar")])
+        TP.UNARY_TRANS_OP << pt.query("operators.transform.unary.*",
+                                      "operators.sugar")
+        TP.BINARY_TRANS_OP << pt.query("operators.transform.binary.*",
+                                       "operators.sugar")
+        TP.TERNARY_TRANS_OP << pt.query("operators.transform.ternary.*",
+                                        "operators.sugar")
+        TP.HOTLOAD_TRANS_STATEMENTS << pt.query("operators.transform.statements.*",
+                                                "operators.sugar")
 
-        AP.HOTLOAD_OPERATORS << pp.Or([x for x in pt.query("operators.action.*")])
+        AP.HOTLOAD_OPERATORS << pt.query("operators.action.*")
 
-        TotalP.HOTLOAD_STATEMENTS << pp.Or([x for x in pt.query("statements.*")])
+        TotalP.HOTLOAD_STATEMENTS << pt.query("statements.*")
 
     def _assert_sentence(self, sen):
         """ Assert a sentence of chained facts """
