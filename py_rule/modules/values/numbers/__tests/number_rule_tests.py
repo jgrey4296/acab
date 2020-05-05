@@ -32,7 +32,6 @@ class NumberRuleTests(unittest.TestCase):
     def setUp(self):
         self.trie = TrieWM()
         self.trie.add_modules([NumberRuleTests.os, NumberRuleTests.ns])
-        self.trie.build_operator_parser()
 
     def tearDown(self):
         return 1

@@ -31,7 +31,6 @@ class NumberQueryTests(unittest.TestCase):
     def setUp(self):
         self.trie = TrieWM()
         self.trie.add_modules([NumberQueryTests.os, NumberQueryTests.ns])
-        self.trie.build_operator_parser()
 
     def tearDown(self):
         return 1

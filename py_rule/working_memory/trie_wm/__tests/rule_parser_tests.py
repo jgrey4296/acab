@@ -16,10 +16,6 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         os = StandardOperators()
-        os._construct_comp_ops()
-        os._construct_action_ops()
-        os._construct_transform_ops()
-        RP.build_operators()
 
     def setUp(self):
             return 1

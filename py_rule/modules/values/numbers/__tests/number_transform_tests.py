@@ -30,7 +30,6 @@ class NumberTransformTests(unittest.TestCase):
     def setUp(self):
         self.trie = TrieWM()
         self.trie.add_modules([NumberTransformTests.os, NumberTransformTests.ns])
-        self.trie.build_operator_parser()
 
     def tearDown(self):
         return 1

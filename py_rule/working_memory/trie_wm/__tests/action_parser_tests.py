@@ -1,18 +1,23 @@
 import unittest
 import logging
+from py_rule.abstract.bootstrap_parser import BootstrapParser
 from py_rule.working_memory.trie_wm.parsing import ActionParser as AP
 from py_rule.working_memory.trie_wm.parsing import FactParser as FP
 from py_rule.modules.operators.standard_operators import StandardOperators
 from py_rule.abstract import action
+from py_rule.abstract.production_operator import ProductionOperator
 
 
 class Trie_Action_Parser_Tests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        bp = BootstrapParser()
         os = StandardOperators()
-        os._construct_action_ops()
-        AP.build_operators()
+        os.assert_parsers(bp)
+        AP.HOTLOAD_OPERATORS << bp.query("operators.action.*")
+        ProductionOperator.construct_subclass_tree()
+
 
     def setUp(self):
         return 1

@@ -22,9 +22,7 @@ class TransformTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         TransformTests.ns = NumberSpecification()
-        TransformTests.ns.construct_operators()
         TransformTests.os = StandardOperators()
-        TransformTests.os.construct_operators()
 
     def setUp(self):
         self.e = TrieEngine(modules=[TransformTests.ns, TransformTests.os])

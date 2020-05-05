@@ -6,19 +6,14 @@ from py_rule.engines.trie_engine import TrieEngine
 from py_rule.working_memory.trie_wm.parsing import ActionParser as AP
 from py_rule.modules.operators.action import action_operators as act_ops
 from py_rule.abstract import action
-
+from py_rule.abstract.bootstrap_parser import BootstrapParser
+from py_rule.abstract.production_operator import ProductionOperator
+from py_rule.modules.operators.standard_operators import StandardOperators
 
 class ActionTests(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        act_ops.ActionAdd()
-        act_ops.ActionPrint()
-
-        AP.build_operators()
-
     def setUp(self):
-        self.e = TrieEngine()
+        self.e = TrieEngine(modules=[StandardOperators()])
 
     def tearDown(self):
         return 1

@@ -15,7 +15,6 @@ class Engine_Logic_Tests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         Engine_Logic_Tests.os = StandardOperators()
-        Engine_Logic_Tests.os.construct_operators()
 
     def path(self, filename):
         """ Navigate from the file,

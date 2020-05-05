@@ -36,7 +36,6 @@ class NumberParseTests(unittest.TestCase):
     def setUp(self):
         self.trie = TrieWM()
         self.trie.add_modules([NumberParseTests.os, NumberParseTests.ns])
-        self.trie.build_operator_parser()
 
     def tearDown(self):
         return 1

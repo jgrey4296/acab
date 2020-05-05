@@ -1,10 +1,12 @@
 import unittest
 import logging
 import py_rule.working_memory.trie_wm.parsing.QueryParser as QP
+from py_rule.abstract.bootstrap_parser import BootstrapParser
 from py_rule.abstract.query import Query
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.comparison import Comparison, CompOp
 from py_rule.modules.operators.standard_operators import StandardOperators
+from py_rule.abstract.production_operator import ProductionOperator
 from py_rule.working_memory.trie_wm import util as KBU
 from py_rule import util
 
@@ -12,9 +14,13 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        bp = BootstrapParser()
         os = StandardOperators()
-        os._construct_comp_ops()
-        QP.build_operators()
+        os.assert_parsers(bp)
+        QP.HOTLOAD_COMP_OP << bp.query("operators.comparisons.*",
+                                       "operators.sugar")
+        ProductionOperator.construct_subclass_tree()
+
 
     def setUp(self):
         return 1

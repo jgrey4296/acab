@@ -3,6 +3,8 @@ import logging
 from py_rule.working_memory.trie_wm.trie_working_memory import TrieWM
 from py_rule.modules.operators.standard_operators import StandardOperators
 from py_rule.abstract.contexts import Contexts
+from py_rule.abstract.bootstrap_parser import BootstrapParser
+from py_rule.abstract.production_operator import ProductionOperator
 
 
 class Trie_WM_Tests(unittest.TestCase):
@@ -10,12 +12,15 @@ class Trie_WM_Tests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        os = StandardOperators()
-        os.construct_operators()
+        pass
 
     def setUp(self):
+        os = StandardOperators()
+        bp = BootstrapParser()
         self.trie = TrieWM()
-        self.trie._build_operator_parser()
+        self.trie.assert_parsers(bp)
+        os.assert_parsers(bp)
+        self.trie.query_parsers(bp)
 
     def tearDown(self):
         self.trie = None

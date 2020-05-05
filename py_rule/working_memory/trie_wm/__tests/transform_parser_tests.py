@@ -4,17 +4,26 @@ from py_rule.working_memory.trie_wm.parsing import TransformParser as TP
 from py_rule.modules.operators.standard_operators import StandardOperators
 from py_rule.abstract import transform
 from py_rule.working_memory.trie_wm import util as KBU
-
+from py_rule.abstract.bootstrap_parser import BootstrapParser
+from py_rule.abstract.production_operator import ProductionOperator
 
 class Trie_Transform_Parser_Tests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        bp = BootstrapParser()
         os = StandardOperators()
-        os._construct_comp_ops()
-        os._construct_action_ops()
-        os._construct_transform_ops()
-        TP.build_operators()
+        os.assert_parsers(bp)
+        TP.UNARY_TRANS_OP << bp.query("operators.transform.unary.*",
+                                      "operators.sugar")
+        TP.BINARY_TRANS_OP << bp.query("operators.transform.binary.*",
+                                       "operators.sugar")
+        TP.TERNARY_TRANS_OP << bp.query("operators.transform.ternary.*",
+                                        "operators.sugar")
+        TP.HOTLOAD_TRANS_STATEMENTS << bp.query("operators.transform.statements.*",
+                                                "operators.sugar")
+
+        ProductionOperator.construct_subclass_tree()
 
     def setUp(self):
         return 1
