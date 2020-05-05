@@ -21,6 +21,8 @@ import pyparsing as pp
 from py_rule.abstract.trie.trie import Trie
 from py_rule.abstract.production_operator import ProductionOperator
 
+from py_rule.abstract.parsing.util import OPERATOR_SUGAR
+
 logging = root_logger.getLogger(__name__)
 
 
@@ -29,22 +31,33 @@ class BootstrapParser(Trie):
     """ Manage parsers and allow queries for hotloading,
     used in working memory and module interfaces """
 
+    def __init__(self, empty=False):
+        super(BootstrapParser, self).__init__()
+        if not empty:
+            self.add("operators.sugar", OPERATOR_SUGAR)
 
     def add(self, *inputs):
         """ Use inputs as a plist,
         alternating between location string, and parser """
         assert(len(inputs) % 2 == 0)
         input_list = [x for x in inputs]
-        loc_string = input_list.pop(0)
-        parser = input_list.pop(0)
+        while bool(input_list):
+            loc_string = input_list.pop(0)
+            parser = input_list.pop(0)
 
-        if isinstance(parser, ProductionOperator):
-            parser = pp.Keyword(parser.op_str)
-        if isinstance(parser, str):
-            parser = pp.Keyword(parser)
+            if parser is None:
+                logging.warning("Loc given None: {}".format(loc_string))
+                continue
+            elif isinstance(parser, type) and issubclass(parser, ProductionOperator):
+                instance = parser()
+                parser = pp.Keyword(instance.op_str)
+            elif isinstance(parser, ProductionOperator):
+                parser = pp.Keyword(parser.op_str)
+            elif isinstance(parser, str):
+                parser = pp.Keyword(parser)
 
-        assert(isinstance(parser, pp.ParserElement))
-        super(BootstrapParser, self).add(loc_string.split("."), data={'parser': parser})
+            assert(isinstance(parser, pp.ParserElement))
+            super(BootstrapParser, self).add(loc_string.split("."), data={'parser': parser})
 
     def query(self, *queries):
         """ Given a bunch of query strings, get them and return them """
@@ -60,6 +73,8 @@ class BootstrapParser(Trie):
         final_parser = pp.Or(results)
         if len(results) == 1:
             final_parser = results[0]
+        if not bool(results):
+            final_parser = None
 
         return final_parser
 
@@ -84,7 +99,7 @@ class BootstrapParser(Trie):
 
         return results
 
-    def print_setup(self):
+    def print_trie(self):
         """ Print the trie of parsers, marking nodes that have been used,
         and the queries that are used """
-        return self._parser_trie.print_trie()
+        return super(BootstrapParser, self).print_trie(join_str=".")
