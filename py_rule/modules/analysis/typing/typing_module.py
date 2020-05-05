@@ -20,8 +20,7 @@ class TypingSpec(ModuleInterface):
     """
 
     def __init__(self):
-        super().__init__(statement_ps=[TDP.COMBINED_DEFS],
-                         annotate_ps=[TP.TYPEDEC_CORE])
+        super().__init__()
 
     def parse_string(self, s):
         return TP.parseString(s)
