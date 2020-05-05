@@ -1,12 +1,9 @@
-from py_rule.abstract.agenda import AgendaAction
+from py_rule.abstract.agenda import AgendaAction, Agenda
 
 class AgendaSelect(AgendaAction):
     pass
 
 class AgendaSort(AgendaAction):
-    pass
-
-class AgendaSet(AgendaAction):
     pass
 
 class AgendaReturn(AgendaAction):

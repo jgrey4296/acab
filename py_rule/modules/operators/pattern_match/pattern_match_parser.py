@@ -13,3 +13,21 @@ end
 
 
 """
+
+import pyparsing as pp
+
+HOTLOAD_VAR = pp.Forward()
+HOTLOAD_SEN = pp.Forward()
+HOTLOAD_QUERY = pp.Forward()
+
+# Parser
+
+# Actions
+
+
+pattern_match_stmt = None
+
+parse_point = None
+
+def parseString(the_string):
+    return parse_point.parseString(the_string)[:]
