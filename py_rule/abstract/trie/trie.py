@@ -98,7 +98,7 @@ class Trie:
 
         return nodes
 
-    def print_trie(self):
+    def print_trie(self, join_str=None):
         output = []
         queue = [([], x) for x in self._root]
         while bool(queue):
@@ -107,7 +107,7 @@ class Trie:
             if not bool(current_node) or isinstance(current_node._value, PyRuleStatement):
                 # if leaf or statement
                 as_sentence = Sentence(total_path)
-                output.append(as_sentence.pprint())
+                output.append(as_sentence.pprint(join_str=join_str))
 
             if bool(current_node):
                 queue += [(total_path, x) for x in current_node]
