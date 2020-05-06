@@ -38,8 +38,10 @@ def build_multiline(toks):
 load_kw      = pp.Keyword('load')
 save_kw      = pp.Keyword('save')
 wm_kw        = pp.Keyword("wm")
+bootstrap_kw = pp.Keyword("bootstrap")
 pipeline_kw  = pp.Keyword("pipeline")
 action_kw    = pp.Keyword("action")
+operator_kw  = pp.Keyword("operator")
 agenda_kw    = pp.Keyword("agenda")
 binding_kw   = pp.Keyword("binding")
 module_kw    = pp.Or([pp.Keyword(x) for x in ['module', 'mod']])
@@ -92,7 +94,7 @@ nop_line = rest_of_line.copy()
 # treat string as query
 run_something = run_kw + PU.op(PU.BIND + from_kw + rest_of_line)
 # print trie / query results / selected type
-print_alts = pp.Or([wm_kw, layer_kw, module_kw, pipeline_kw, binding_kw])
+print_alts = pp.Or([wm_kw, bootstrap_kw, layer_kw, module_kw, pipeline_kw, binding_kw])
 
 print_state   = print_kw + print_alts + PU.op(param_p)
 
@@ -141,7 +143,7 @@ help_cmd = help_kw
 type_check = check_kw + pp.Optional(rest_of_line)
 # Print stats
 # TODO: add control over stats
-stat_words = pp.Or([action_kw, agenda_kw, rule_kw, pipeline_kw,
+stat_words = pp.Or([operator_kw, agenda_kw, rule_kw, pipeline_kw,
                     layer_kw, module_kw, wm_kw, binding_kw])
 stats = stats_kw + pp.ZeroOrMore(stat_words)
 

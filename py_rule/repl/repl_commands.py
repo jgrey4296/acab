@@ -7,6 +7,7 @@ from os.path import split, splitext, exists, expanduser, abspath
 import importlib
 import logging as root_logger
 
+from py_rule.abstract.production_operator import ProductionOperator
 from py_rule.abstract.agenda import Agenda
 from py_rule.abstract.action import ActionOp
 from py_rule.abstract.rule import Rule
@@ -53,6 +54,7 @@ def engine_module(engine, data):
     logging.info("Loading Module: {}".format(params))
     temp_module = importlib.import_module(params[0])
     engine.load_modules(temp_module.MODULE_SPEC)
+    engine.reload_all_modules()
     return engine, None
 
 register(ReplE.MODULE, engine_module)
@@ -84,6 +86,10 @@ def engine_print(engine, data):
     if "wm" in params[0]:
         result.append("WM:")
         result.append(str(engine._working_memory))
+    elif "bootstrap" in params[0]:
+        result.append("Bootstrap Parser:")
+        result.append(engine._working_memory._bootstrap_parser.print_trie())
+
     elif "module" in params[0]:
         result.append("Module: {}".format(params[1]))
         result.append(str(engine._loaded_modules[params[1]]))
@@ -230,10 +236,10 @@ def engine_stats(engine, data):
     logging.info("Getting Stats: {}".format(params))
     allow_all = not bool(params)
     result = []
-    # actions
-    if allow_all or "action" in params:
-        result.append("Action Stats: ")
-        result.append("\t{}".format("\n\t".join([str(x) for x in ActionOp.op_list])))
+    # Operators
+    if allow_all or "operator" in params:
+        result.append("Operator Stats: ")
+        result.append("\t{}".format("\n\t".join([str(x) for x in ProductionOperator.op_dict])))
 
     # agendas
     if allow_all or "agenda" in params:
