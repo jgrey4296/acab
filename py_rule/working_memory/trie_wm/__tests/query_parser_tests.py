@@ -17,8 +17,8 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         bp = BootstrapParser()
         os = StandardOperators()
         os.assert_parsers(bp)
-        QP.HOTLOAD_QUERY_OP << bp.query("operators.query.*",
-                                        "operators.sugar")
+        QP.HOTLOAD_QUERY_OP << bp.query("operator.query.*",
+                                        "operator.sugar")
         ProductionOperator.construct_subclass_tree()
 
 

@@ -1,9 +1,21 @@
-"""
-Agendas control the results of running a set of Rules.
+from py_rule.abstract.module_interface import ModuleInterface
 
-ProposedActions = Eval(RuleSet, State)
-Then:
-SelectedAction = anAgenda(ProposedActions)
+from . import agenda_actions as AA
 
-Agendas then are a filter/rank/transform function on (grouped) actions
-"""
+
+class MODULE(ModuleInterface):
+    """ The Module Spec for base operators """
+
+    def __init__(self):
+        super().__init__()
+
+    def assert_parsers(self, pt):
+        pt.add("operator.transform.statement.agenda_sort", AA.AgendaSort,
+               "operator.transform.statement.agenda_select", AA.AgendaSelect,
+               "operator.action.agenda_return", AA.AgendaReturn)
+
+    def query_parsers(self, pt):
+        pass
+
+    def init_strings(self):
+        return []

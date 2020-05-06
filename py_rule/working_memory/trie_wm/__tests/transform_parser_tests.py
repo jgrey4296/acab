@@ -14,14 +14,14 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
         bp = BootstrapParser()
         os = StandardOperators()
         os.assert_parsers(bp)
-        TP.UNARY_TRANS_OP << bp.query("operators.transform.unary.*",
-                                      "operators.sugar")
-        TP.BINARY_TRANS_OP << bp.query("operators.transform.binary.*",
-                                       "operators.sugar")
-        TP.TERNARY_TRANS_OP << bp.query("operators.transform.ternary.*",
-                                        "operators.sugar")
-        TP.HOTLOAD_TRANS_STATEMENTS << bp.query("operators.transform.statements.*",
-                                                "operators.sugar")
+        TP.UNARY_TRANS_OP << bp.query("operator.transform.unary.*",
+                                      "operator.sugar")
+        TP.BINARY_TRANS_OP << bp.query("operator.transform.binary.*",
+                                       "operator.sugar")
+        TP.TERNARY_TRANS_OP << bp.query("operator.transform.ternary.*",
+                                        "operator.sugar")
+        TP.HOTLOAD_TRANS_STATEMENTS << bp.query("operator.transform.statements.*",
+                                                "operator.sugar")
 
         ProductionOperator.construct_subclass_tree()
 

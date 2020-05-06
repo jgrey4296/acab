@@ -1,0 +1,20 @@
+from py_rule.abstract.module_interface import ModuleInterface
+
+from . import query_operators as QO
+
+class MODULE(ModuleInterface):
+    """ The Module Spec for base operators """
+
+    def __init__(self):
+        super().__init__()
+
+    def assert_parsers(self, pt):
+        pt.add("operator.query.eq", QO.EQ,
+               "operator.query.neq", QO.NEQ,
+               "operator.query.regmatch", QO.RegMatch,
+               "operator.query.elem", QO.ELEM)
+
+    def query_parsers(self, pt):
+        pass
+    def init_strings(self):
+        return []

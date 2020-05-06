@@ -34,7 +34,7 @@ class BootstrapParser(Trie):
     def __init__(self, empty=False):
         super(BootstrapParser, self).__init__()
         if not empty:
-            self.add("operators.sugar", OPERATOR_SUGAR)
+            self.add("operator.sugar", OPERATOR_SUGAR)
 
     def add(self, *inputs):
         """ Use inputs as a plist,
@@ -61,6 +61,7 @@ class BootstrapParser(Trie):
 
     def query(self, *queries):
         """ Given a bunch of query strings, get them and return them """
+        # TODO: cache the queries for debugging
         results = []
         # Run queries
         for query in queries:

@@ -21,16 +21,16 @@ class NumberSpecification(ModuleInterface):
         return []
 
     def assert_parsers(self, pt):
-        pt.add("values.numbers", NP.NUM)
+        pt.add("value.numbers", NP.NUM)
 
-        pt.add("operators.query.gt", CO.GT,
-               "operators.query.lt", CO.LT)
+        pt.add("operator.query.gt", CO.GT,
+               "operator.query.lt", CO.LT)
 
-        pt.add("operators.transform.binary.add", TO.AddOp,
-               "operators.transform.binary.sub", TO.SubOp,
-               "operators.transform.binary.mul", TO.MulOp,
-               "operators.transform.binary.div", TO.DivOp,
-               "operators.transform.binary.rand", TO.RandOp,
-               "operators.transform.binary.remain", TO.RemainOp,
-               "operators.transform.unary.round", TO.RoundOp,
-               "operators.transform.unary.neg", TO.NegOp)
+        pt.add("operator.transform.binary.add", TO.AddOp,
+               "operator.transform.binary.sub", TO.SubOp,
+               "operator.transform.binary.mul", TO.MulOp,
+               "operator.transform.binary.div", TO.DivOp,
+               "operator.transform.binary.rand", TO.RandOp,
+               "operator.transform.binary.remain", TO.RemainOp,
+               "operator.transform.unary.round", TO.RoundOp,
+               "operator.transform.unary.neg", TO.NegOp)

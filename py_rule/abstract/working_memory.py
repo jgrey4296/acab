@@ -72,7 +72,6 @@ class WorkingMemory:
         raise NotImplementedError()
 
 
-
     def assert_parsers(self, parser_trie):
         raise NotImplementedError()
 

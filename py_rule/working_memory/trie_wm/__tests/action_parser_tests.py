@@ -15,7 +15,7 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
         bp = BootstrapParser()
         os = StandardOperators()
         os.assert_parsers(bp)
-        AP.HOTLOAD_OPERATORS << bp.query("operators.action.*")
+        AP.HOTLOAD_OPERATORS << bp.query("operator.action.*")
         ProductionOperator.construct_subclass_tree()
 
 

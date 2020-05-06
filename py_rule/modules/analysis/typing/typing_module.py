@@ -29,11 +29,11 @@ class TypingSpec(ModuleInterface):
         return ""
 
     def assert_parsers(self, pt):
-        pt.add("statements.typing", TDP.COMBINED_DEFS)
-        pt.add("annotations.typing", TP.TYPEDEC_CORE)
+        pt.add("statement.typing", TDP.COMBINED_DEFS)
+        pt.add("annotation.typing", TP.TYPEDEC_CORE)
 
     def query_parsers(self, pt):
-        TDP.HOTLOAD_BASIC_SEN << pt.query("sentences.basic")
-        TDP.HOTLOAD_PARAM_SEN << pt.query("sentences.param")
+        TDP.HOTLOAD_BASIC_SEN << pt.query("sentence.basic")
+        TDP.HOTLOAD_PARAM_SEN << pt.query("sentence.param")
 
-        TP.HOTLOAD_BASIC_SEN << pt.query("sentences.basic")
+        TP.HOTLOAD_BASIC_SEN << pt.query("sentence.basic")

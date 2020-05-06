@@ -79,49 +79,51 @@ class TrieWM(WorkingMemory):
     def assert_parsers(self, pt):
         # Core
         pt.add("valbind", FP.VALBIND,
-               "sentences.basic", FP.BASIC_SEN,
-               "sentences.param", FP.PARAM_SEN,
-               "statements.sentence", FP.SEN_STATEMENT,
-               "operators.sugar", PU.OPERATOR_SUGAR)
+               "sentence.basic", FP.BASIC_SEN,
+               "sentence.param", FP.PARAM_SEN,
+               "statement.sentence", FP.SEN_STATEMENT,
+               "operator.sugar", PU.OPERATOR_SUGAR)
         # Query
-        pt.add("statements.query", QP.query_statement,
-               "query.body", QP.clauses)
+        pt.add("statement.query", QP.query_statement,
+               "query.body", QP.clauses,
+               "query.clause", QP.clause)
 
         # Transform
         pt.add("transform.body", TP.transforms,
-               "statements.transform", TP.transform_statement,
+               "statement.transform", TP.transform_statement,
                "transform.rebind", TP.rebind)
 
         # Action
         pt.add("action.body", AP.actions,
-               "statements.action", AP.action_definition)
+               "statement.action", AP.action_definition)
 
         # Rule
         pt.add("rule.body", RP.rule_body,
-               "statements.rule", RP.rule)
+               "statement.rule", RP.rule)
 
     def query_parsers(self, pt):
-        if pt.query("values.*"):
-            FP.HOTLOAD_VALUES << pt.query("values.*")
-        if pt.query("annotations.*"):
-            FP.HOTLOAD_ANNOTATIONS << pt.query("annotations.*")
+        if pt.query("value.*"):
+            FP.HOTLOAD_VALUES << pt.query("value.*")
+        if pt.query("annotation.*"):
+            FP.HOTLOAD_ANNOTATIONS << pt.query("annotation.*")
 
-        QP.HOTLOAD_QUERY_OP << pt.query("operators.query.*",
-                                        "operators.sugar")
+        QP.HOTLOAD_QUERY_OP << pt.query("operator.query.*",
+                                        "operator.sugar")
 
-        TP.UNARY_TRANS_OP << pt.query("operators.transform.unary.*",
-                                      "operators.sugar")
-        TP.BINARY_TRANS_OP << pt.query("operators.transform.binary.*",
-                                       "operators.sugar")
-        TP.TERNARY_TRANS_OP << pt.query("operators.transform.ternary.*",
-                                        "operators.sugar")
-        TP.HOTLOAD_TRANS_STATEMENTS << pt.query("operators.transform.statements.*",
-                                                "operators.sugar")
+        TP.UNARY_TRANS_OP << pt.query("operator.transform.unary.*",
+                                      "operator.sugar")
+        TP.BINARY_TRANS_OP << pt.query("operator.transform.binary.*",
+                                       "operator.sugar")
+        TP.TERNARY_TRANS_OP << pt.query("operator.transform.ternary.*",
+                                        "operator.sugar")
+        TP.HOTLOAD_TRANS_STATEMENTS << pt.query("operator.transform.statement.*",
+                                                "operator.sugar")
 
-        AP.HOTLOAD_OPERATORS << pt.query("operators.action.*",
-                                         "operators.sugar")
+        AP.HOTLOAD_OPERATORS << pt.query("operator.action.*",
+                                         "operator.sugar")
 
-        TotalP.HOTLOAD_STATEMENTS << pt.query("statements.*")
+        TotalP.HOTLOAD_STATEMENTS << pt.query("statement.*")
+
 
     def _assert_sentence(self, sen):
         """ Assert a sentence of chained facts """

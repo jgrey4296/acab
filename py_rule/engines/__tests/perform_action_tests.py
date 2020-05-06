@@ -22,7 +22,7 @@ class ActionTests(unittest.TestCase):
 
     def setUp(self):
         self.e = TrieEngine(modules=[StandardOperators()])
-        self.e._working_memory._bootstrap_parser.add("operators.action.blah", ActionBlah)
+        self.e._working_memory._bootstrap_parser.add("operator.action.blah", ActionBlah)
         self.e.reload_all_modules()
 
     def tearDown(self):
