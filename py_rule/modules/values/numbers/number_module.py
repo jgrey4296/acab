@@ -20,3 +20,17 @@ class NumberSpecification(ModuleInterface):
         the hotloaded value and statement parsers """
         return []
 
+    def assert_parsers(self, pt):
+        pt.add("values.numbers", NP.NUM)
+
+        pt.add("operators.comparisons.gt", CO.GT,
+               "operators.comparisons.lt", CO.LT)
+
+        pt.add("operators.transform.binary.add", TO.AddOp,
+               "operators.transform.binary.sub", TO.SubOp,
+               "operators.transform.binary.mul", TO.MulOp,
+               "operators.transform.binary.div", TO.DivOp,
+               "operators.transform.binary.rand", TO.RandOp,
+               "operators.transform.binary.remain", TO.RemainOp,
+               "operators.transform.unary.round", TO.RoundOp,
+               "operators.transform.unary.neg", TO.NegOp)

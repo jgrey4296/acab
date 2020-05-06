@@ -14,7 +14,7 @@ from py_rule.modules.operators.standard_operators import StandardOperators
 from py_rule.modules.values.numbers.number_module import NumberSpecification
 from py_rule.working_memory.trie_wm.trie_working_memory import TrieWM
 
-
+# TODO: this shouldn't be in this module
 class ActionBlah(action.ActionOp):
     def __init__(self):
         super().__init__()
@@ -35,7 +35,9 @@ class NumberParseTests(unittest.TestCase):
 
     def setUp(self):
         self.trie = TrieWM()
+        self.trie._parser_trie.add("operators.action.blah", ActionBlah)
         self.trie.add_modules([NumberParseTests.os, NumberParseTests.ns])
+
 
     def tearDown(self):
         return 1

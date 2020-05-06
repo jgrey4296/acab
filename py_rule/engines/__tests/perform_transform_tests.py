@@ -16,16 +16,11 @@ from py_rule.modules.operators.standard_operators import StandardOperators
 
 
 class TransformTests(unittest.TestCase):
-    ns = None
-    os = None
-
-    @classmethod
-    def setUpClass(cls):
-        TransformTests.ns = NumberSpecification()
-        TransformTests.os = StandardOperators()
 
     def setUp(self):
-        self.e = TrieEngine(modules=[TransformTests.ns, TransformTests.os])
+        ns = NumberSpecification()
+        os = StandardOperators()
+        self.e = TrieEngine(modules=[ns, os])
 
     def tearDown(self):
         return 1

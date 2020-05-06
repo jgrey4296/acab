@@ -18,6 +18,7 @@ From a module it loads Value, Statement, and Annotation parsers.
 import pyparsing as pp
 import logging as root_logger
 
+from .production_operator import ProductionOperator
 from .module_interface import ModuleInterface
 from .bootstrap_parser import BootstrapParser
 
@@ -34,6 +35,7 @@ class WorkingMemory:
 
         # Use a Bootstrap DSL for specification
         self._parser_trie = BootstrapParser()
+        self.assert_parsers(self._parser_trie)
 
     def __str__(self):
         """ Print the working memory as a reparseable string """
@@ -49,9 +51,12 @@ class WorkingMemory:
         #Populate the trie
         dummy = [x.assert_parsers(self._parser_trie) for x in mods]
 
+        ProductionOperator.construct_subclass_tree()
+
         # Now query and populate the modules
         dummy = [x.query_parsers(self._parser_trie) for x in mods]
 
+        self.query_parsers(self._parser_trie)
 
     # Methods to implement:
     def add(self, data):

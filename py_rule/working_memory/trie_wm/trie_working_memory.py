@@ -33,9 +33,6 @@ class TrieWM(WorkingMemory):
         # TODO: have a parallel listener trie?
         self._last_node = self._internal_trie._root
 
-        # TODO: insert parsers
-
-
         if init is not None:
             self.add(init)
 
