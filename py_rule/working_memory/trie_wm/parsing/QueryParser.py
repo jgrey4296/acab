@@ -2,8 +2,7 @@
 import logging as root_logger
 import pyparsing as pp
 
-import py_rule.abstract.comparison as C
-from py_rule.abstract.query import Query
+from py_rule.abstract.query import Query, QueryOp, QueryComponent
 from py_rule.abstract.sentence import Sentence
 
 from py_rule.working_memory.trie_wm import util as WMU
@@ -20,9 +19,9 @@ def build_constraint_list(toks):
     return (WMU.CONSTRAINT_S, toks[:])
 
 
-def build_comparison(toks):
+def build_query_clause(toks):
     """ Build a comparison """
-    return C.Comparison(toks[WMU.OPERATOR_S], param=toks[WMU.VALUE_S])
+    return QueryComponent(toks[WMU.OPERATOR_S], param=toks[WMU.VALUE_S])
 
 
 def build_clause(toks):
@@ -50,17 +49,17 @@ def build_assignment(toks):
 
 
 # Build After comparison operators have been constructed:
-HOTLOAD_COMP_OP = pp.Forward()
+HOTLOAD_QUERY_OP = pp.Forward()
 
-COMP_Internal = PU.N(WMU.OPERATOR_S, HOTLOAD_COMP_OP) \
+QUERY_OP_Internal = PU.N(WMU.OPERATOR_S, HOTLOAD_QUERY_OP) \
     + PU.N(WMU.VALUE_S, PARAM_CORE(end=True))
 
 # defined earlier to work with named copies
-COMP_Internal.setParseAction(build_comparison)
+QUERY_OP_Internal.setParseAction(build_query_clause)
 
-comp_or_annotation = pp.Or([COMP_Internal, HOTLOAD_ANNOTATIONS])
+query_or_annotation = pp.Or([QUERY_OP_Internal, HOTLOAD_ANNOTATIONS])
 
-constraints = pp.delimitedList(comp_or_annotation, delim=PU.COMMA)
+constraints = pp.delimitedList(query_or_annotation, delim=PU.COMMA)
 
 assignment = PU.BIND + PU.COLON + PARAM_SEN
 assignmentList = pp.delimitedList(assignment, delim=PU.COMMA)
@@ -92,17 +91,17 @@ clauses.setParseAction(build_query)
 assignment.setParseAction(build_assignment)
 
 # NAMING
-HOTLOAD_COMP_OP.setName("ComparisonOperators")
-COMP_Internal.setName("ComparisonStatement")
-comp_or_annotation.setName("ComparisonOrAnnotation")
+HOTLOAD_QUERY_OP.setName("QueryOperators")
+QUERY_OP_Internal.setName("Query_Statements")
+query_or_annotation.setName("QueryOrAnnotation")
 constraints.setName("ConstraintList")
 assignment.setName("FallbackAssignment")
 assignmentList.setName("FallbackAssignmentList")
 fallback.setName("QueryFallbackStatement")
 QueryCore.setName("QueryCoreStatement")
 QueryCore_end.setName("QueryCoreEndStatement")
-clause.setName("QueryClause")
-clauses.setName("QueryClauseContainer")
+clause.setName("QueryComponent")
+clauses.setName("QueryComponentContainer")
 query_statement.setName("QueryDefinition")
 
 # parse_point = clauses.ignore(PU.COMMENT)

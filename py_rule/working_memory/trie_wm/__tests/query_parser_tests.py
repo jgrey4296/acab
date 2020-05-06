@@ -4,7 +4,7 @@ import py_rule.working_memory.trie_wm.parsing.QueryParser as QP
 from py_rule.abstract.bootstrap_parser import BootstrapParser
 from py_rule.abstract.query import Query
 from py_rule.abstract.sentence import Sentence
-from py_rule.abstract.comparison import Comparison, CompOp
+from py_rule.abstract.query import QueryComponent, QueryOp
 from py_rule.modules.operators.standard_operators import StandardOperators
 from py_rule.abstract.production_operator import ProductionOperator
 from py_rule.working_memory.trie_wm import util as KBU
@@ -17,8 +17,8 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         bp = BootstrapParser()
         os = StandardOperators()
         os.assert_parsers(bp)
-        QP.HOTLOAD_COMP_OP << bp.query("operators.comparisons.*",
-                                       "operators.sugar")
+        QP.HOTLOAD_QUERY_OP << bp.query("operators.query.*",
+                                        "operators.sugar")
         ProductionOperator.construct_subclass_tree()
 
 
@@ -32,8 +32,8 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
     #use testcase snippets
 
     def test_basic_regex_comparison(self):
-        result = QP.COMP_Internal.parseString('RegMatch /blah/')[0]
-        self.assertIsInstance(result, Comparison)
+        result = QP.QUERY_OP_Internal.parseString('RegMatch /blah/')[0]
+        self.assertIsInstance(result, QueryComponent)
         self.assertEqual(result.op, 'RegMatch')
         self.assertEqual(result._vars[0]._value, 'blah')
         self.assertEqual(result._vars[0]._data[util.VALUE_TYPE_S], util.REGEX_S)
@@ -95,21 +95,21 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         result = QP.QueryCore_end.parseString("testing(RegMatch /test/)")
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result[0]._data[util.CONSTRAINT_S]), 1)
-        self.assertIsInstance(result[0]._data[util.CONSTRAINT_S][0], Comparison)
+        self.assertIsInstance(result[0]._data[util.CONSTRAINT_S][0], QueryComponent)
         self.assertEqual(result[0]._data[util.CONSTRAINT_S][0].op, "RegMatch")
 
     def test_comparison_parse_2(self):
         result = QP.QueryCore.parseString("testing(RegMatch /test/).")
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result[0]._data[util.CONSTRAINT_S]), 1)
-        self.assertIsInstance(result[0]._data[util.CONSTRAINT_S][0], Comparison)
+        self.assertIsInstance(result[0]._data[util.CONSTRAINT_S][0], QueryComponent)
         self.assertEqual(result[0]._data[util.CONSTRAINT_S][0].op, "RegMatch")
 
     def test_comparison_parse_variable(self):
         result = QP.QueryCore.parseString("$x(RegMatch /test/).")
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result[0]._data[util.CONSTRAINT_S]), 1)
-        self.assertIsInstance(result[0]._data[util.CONSTRAINT_S][0], Comparison)
+        self.assertIsInstance(result[0]._data[util.CONSTRAINT_S][0], QueryComponent)
         self.assertEqual(result[0]._data[util.CONSTRAINT_S][0].op, "RegMatch")
 
 
@@ -117,7 +117,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         result = QP.clause.parseString("a.testing(RegMatch /test/).clause?")
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result[0][1]._data[util.CONSTRAINT_S]), 1)
-        self.assertIsInstance(result[0][1]._data[util.CONSTRAINT_S][0], Comparison)
+        self.assertIsInstance(result[0][1]._data[util.CONSTRAINT_S][0], QueryComponent)
         self.assertEqual(result[0][1]._data[util.CONSTRAINT_S][0].op, "RegMatch")
 
 

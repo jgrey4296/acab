@@ -106,8 +106,8 @@ class TrieWM(WorkingMemory):
         if pt.query("annotations.*"):
             FP.HOTLOAD_ANNOTATIONS << pt.query("annotations.*")
 
-        QP.HOTLOAD_COMP_OP << pt.query("operators.comparisons.*",
-                                       "operators.sugar")
+        QP.HOTLOAD_QUERY_OP << pt.query("operators.query.*",
+                                        "operators.sugar")
 
         TP.UNARY_TRANS_OP << pt.query("operators.transform.unary.*",
                                       "operators.sugar")
@@ -118,7 +118,8 @@ class TrieWM(WorkingMemory):
         TP.HOTLOAD_TRANS_STATEMENTS << pt.query("operators.transform.statements.*",
                                                 "operators.sugar")
 
-        AP.HOTLOAD_OPERATORS << pt.query("operators.action.*")
+        AP.HOTLOAD_OPERATORS << pt.query("operators.action.*",
+                                         "operators.sugar")
 
         TotalP.HOTLOAD_STATEMENTS << pt.query("statements.*")
 

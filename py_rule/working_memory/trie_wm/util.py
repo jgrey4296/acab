@@ -25,7 +25,6 @@ ACTION_S     = util.ACTION_S
 
 
 NODE_S        = "node"
-COMP_S        = 'comparison'
 MAIN_CLAUSE_S = "main_clause"
 LEFT_S        = "left"
 RIGHT_S       = "right"

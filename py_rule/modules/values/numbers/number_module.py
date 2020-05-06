@@ -1,6 +1,6 @@
 from py_rule.abstract.module_interface import ModuleInterface
 from .parsing import NumberParser as NP
-from . import comparison_operators as CO
+from . import query_operators as CO
 from . import transform_operators as TO
 
 class NumberSpecification(ModuleInterface):
@@ -23,8 +23,8 @@ class NumberSpecification(ModuleInterface):
     def assert_parsers(self, pt):
         pt.add("values.numbers", NP.NUM)
 
-        pt.add("operators.comparisons.gt", CO.GT,
-               "operators.comparisons.lt", CO.LT)
+        pt.add("operators.query.gt", CO.GT,
+               "operators.query.lt", CO.LT)
 
         pt.add("operators.transform.binary.add", TO.AddOp,
                "operators.transform.binary.sub", TO.SubOp,

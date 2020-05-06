@@ -3,10 +3,10 @@ Definitions of initial Comparison operators
 """
 import re
 
-from py_rule.abstract.comparison import CompOp
+from py_rule.abstract.query import QueryOp
 
 
-class EQ(CompOp):
+class EQ(QueryOp):
     def __init__(self):
         super().__init__()
         # type sig: a -> a -> bool
@@ -15,7 +15,7 @@ class EQ(CompOp):
         return a == b
 
 
-class NEQ(CompOp):
+class NEQ(QueryOp):
     def __init__(self):
         super().__init__()
 
@@ -23,7 +23,7 @@ class NEQ(CompOp):
         return a != b
 
 
-class RegMatch(CompOp):
+class RegMatch(QueryOp):
     def __init__(self):
         super().__init__()
         # type sig: a -> a -> bool
@@ -32,7 +32,7 @@ class RegMatch(CompOp):
         return re.search(b, a)
 
 
-class ELEM(CompOp):
+class ELEM(QueryOp):
     def __init__(self):
         super().__init__()
 

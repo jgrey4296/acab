@@ -3,7 +3,7 @@ from py_rule.abstract.module_interface import ModuleInterface
 from .agendas import agenda_actions as AA
 from .layer import layer_actions as LA
 from .pipeline import pipeline_actions as PA
-from .comparison import comparison_operators as C
+from .query import query_operators as QO
 from .action import action_operators as A
 from .transform import transform_operators as T
 from .pattern_match import pattern_match_op as PMO
@@ -17,10 +17,10 @@ class StandardOperators(ModuleInterface):
         super().__init__()
 
     def assert_parsers(self, pt):
-        pt.add("operators.comparisons.eq", C.EQ,
-               "operators.comparisons.neq", C.NEQ,
-               "operators.comparisons.regmatch", C.RegMatch,
-               "operators.comparisons.elem", C.ELEM)
+        pt.add("operators.query.eq", QO.EQ,
+               "operators.query.neq", QO.NEQ,
+               "operators.query.regmatch", QO.RegMatch,
+               "operators.query.elem", QO.ELEM)
 
         pt.add("operators.transform.ternary.regex", T.RegexOp,
                "operators.transform.unary.format", T.FormatOp,
