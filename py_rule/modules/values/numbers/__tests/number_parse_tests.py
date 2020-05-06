@@ -14,15 +14,6 @@ from py_rule.modules.operators.standard_operators import StandardOperators
 from py_rule.modules.values.numbers.number_module import NumberSpecification
 from py_rule.working_memory.trie_wm.trie_working_memory import TrieWM
 
-# TODO: this shouldn't be in this module
-class ActionBlah(action.ActionOp):
-    def __init__(self):
-        super().__init__()
-
-    def __call__(self, engine, params):
-        logging.info("Blah")
-
-
 class NumberParseTests(unittest.TestCase):
     os = None
     ns = None
@@ -31,13 +22,10 @@ class NumberParseTests(unittest.TestCase):
     def setUpClass(cls):
         NumberParseTests.os = StandardOperators()
         NumberParseTests.ns = NumberSpecification()
-        ActionBlah()
 
     def setUp(self):
         self.trie = TrieWM()
-        self.trie._parser_trie.add("operators.action.blah", ActionBlah)
         self.trie.add_modules([NumberParseTests.os, NumberParseTests.ns])
-
 
     def tearDown(self):
         return 1
@@ -62,14 +50,6 @@ class NumberParseTests(unittest.TestCase):
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(result.clauses[0].op, 'AddOp')
         self.assertEqual([x._value for x in result.clauses[0]._vars], [20, 30])
-
-
-    def test_custom_action_parse(self):
-        result = AP.parseString("ActionBlah(20, 30, 40)")
-        self.assertEqual(len(result), 1)
-        self.assertIsInstance(result, action.Action)
-        self.assertEqual(result.clauses[0].op, "ActionBlah")
-        self.assertEqual([x[0]._value for x in result.clauses[0]._vars], [20, 30, 40])
 
 
     def test_transform_parse(self):

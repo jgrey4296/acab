@@ -34,8 +34,8 @@ class WorkingMemory:
         self._module_hotload_provision = {}
 
         # Use a Bootstrap DSL for specification
-        self._parser_trie = BootstrapParser()
-        self.assert_parsers(self._parser_trie)
+        self._bootstrap_parser = BootstrapParser()
+        self.assert_parsers(self._bootstrap_parser)
 
     def __str__(self):
         """ Print the working memory as a reparseable string """
@@ -49,14 +49,17 @@ class WorkingMemory:
         """ Add types into the parser """
         assert(all([isinstance(x, ModuleInterface) for x in mods]))
         #Populate the trie
-        dummy = [x.assert_parsers(self._parser_trie) for x in mods]
+        dummy = [x.assert_parsers(self._bootstrap_parser) for x in mods]
 
         ProductionOperator.construct_subclass_tree()
 
         # Now query and populate the modules
-        dummy = [x.query_parsers(self._parser_trie) for x in mods]
+        dummy = [x.query_parsers(self._bootstrap_parser) for x in mods]
 
-        self.query_parsers(self._parser_trie)
+        self.query_parsers(self._bootstrap_parser)
+
+    def clear_bootstrap(self):
+        self._bootstrap_parser = BootstrapParser()
 
     # Methods to implement:
     def add(self, data):

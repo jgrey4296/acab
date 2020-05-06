@@ -58,7 +58,9 @@ class Engine:
         self._loaded_modules.update({x.__class__.__name__ : x for x in modules})
         self._working_memory.add_modules(self._loaded_modules.values())
 
-    def reload_all_modules(self):
+    def reload_all_modules(self, clear_bootstrap=False):
+        if clear_bootstrap:
+            self._working_memory.clear_bootstrap()
         self._working_memory.add_modules(self._loaded_modules.values())
 
     def load_file(self, filename):

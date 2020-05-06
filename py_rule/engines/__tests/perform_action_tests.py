@@ -10,10 +10,20 @@ from py_rule.abstract.bootstrap_parser import BootstrapParser
 from py_rule.abstract.production_operator import ProductionOperator
 from py_rule.modules.operators.standard_operators import StandardOperators
 
+class ActionBlah(action.ActionOp):
+    def __init__(self):
+        super().__init__()
+
+    def __call__(self, engine, params):
+        logging.info("Blah")
+
+
 class ActionTests(unittest.TestCase):
 
     def setUp(self):
         self.e = TrieEngine(modules=[StandardOperators()])
+        self.e._working_memory._bootstrap_parser.add("operators.action.blah", ActionBlah)
+        self.e.reload_all_modules()
 
     def tearDown(self):
         return 1
@@ -69,6 +79,14 @@ class ActionTests(unittest.TestCase):
         self.assertTrue(self.e.query("b.bloo?"))
         actions(data, self.e)
         self.assertTrue(self.e.query("a.bloo?, ~b.bloo?"))
+
+    def test_custom_action_parse(self):
+        result = AP.parseString("ActionBlah(a, b, c)")
+        self.assertEqual(len(result), 1)
+        self.assertIsInstance(result, action.Action)
+        self.assertEqual(result.clauses[0].op, "ActionBlah")
+        self.assertEqual([x[0]._value for x in result.clauses[0]._vars], ['a', 'b', 'c'])
+
 
 
 
