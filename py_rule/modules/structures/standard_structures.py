@@ -27,7 +27,7 @@ class StandardStructures(ModuleInterface):
                "statments.pipeline", PP.pipeline_stmt)
 
     def query_parsers(self, pt):
-        basic_sen = pt.query("sentence.basic")
+        basic_sen = pt.query("sentences.basic")
         query = pt.query("query.body")
         transform = pt.query("transform.body")
         action = pt.query("action.body")

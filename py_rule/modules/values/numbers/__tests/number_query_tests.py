@@ -9,7 +9,7 @@ from py_rule.working_memory.trie_wm.parsing import TransformParser as TP
 from py_rule.working_memory.trie_wm.parsing import FactParser as FP
 from py_rule.working_memory.trie_wm.parsing import QueryParser as QP
 from py_rule.abstract import action
-from py_rule.abstract.comparison import Comparison, CompOp
+from py_rule.abstract.query import QueryComponent, QueryOp
 from py_rule.abstract.sentence import Sentence
 from py_rule import util
 from py_rule.abstract.printing import util as PrU
@@ -42,15 +42,15 @@ class NumberQueryTests(unittest.TestCase):
 
 
     def test_basic_comp_internal(self):
-        result = QP.COMP_Internal.parseString('LT 20')[0]
-        self.assertIsInstance(result, Comparison)
+        result = QP.QUERY_OP_Internal.parseString('LT 20')[0]
+        self.assertIsInstance(result, QueryComponent)
 
 
     def test_basic_comparison(self):
         result = QP.constraints.parseString('LT 20, GT 40, NEQ $x, EQ $y, RegMatch /blah/')[0]
         self.assertEqual(result[0], util.CONSTRAINT_S)
         self.assertEqual(len(result[1]), 5)
-        self.assertTrue(all([isinstance(x, Comparison) for x in result[1]]))
+        self.assertTrue(all([isinstance(x, QueryComponent) for x in result[1]]))
         self.assertEqual(result[1][0].op, 'LT')
         self.assertEqual(result[1][1].op, 'GT')
         self.assertEqual(result[1][2].op, 'NEQ')
@@ -62,13 +62,13 @@ class NumberQueryTests(unittest.TestCase):
         result = QP.QueryCore.parseString('a(GT 20).')[0]
         self.assertTrue(util.CONSTRAINT_S in result._data)
         self.assertEqual(len(result._data[util.CONSTRAINT_S]), 1)
-        self.assertIsInstance(result._data[util.CONSTRAINT_S][0], Comparison)
+        self.assertIsInstance(result._data[util.CONSTRAINT_S][0], QueryComponent)
 
 
     def test_basic_query_core_multi_comparison(self):
         result = QP.QueryCore.parseString('a(GT 20, LT 30).')[0]
         self.assertEqual(len(result._data[util.CONSTRAINT_S]), 2)
-        self.assertTrue(all([isinstance(x, Comparison) for x in result._data[util.CONSTRAINT_S]]))
+        self.assertTrue(all([isinstance(x, QueryComponent) for x in result._data[util.CONSTRAINT_S]]))
 
 
     def test_basic_query_core_with_exclusion(self):

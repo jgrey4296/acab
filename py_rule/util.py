@@ -20,7 +20,7 @@ STATEMENT_S  = "statement"
 TAG_S        = "tag"
 VALUE_S      = "value"
 VALUE_TYPE_S = "value_type"
-TYPE_DEC_S    = "type_declaration"
+TYPE_DEC_S   = "type_declaration"
 OP_CLASS_S   = "operator_class"
 
 # Core Value Types
@@ -52,10 +52,12 @@ QUERY_HEAD_S      = "γ"
 TRANSFORM_HEAD_S  = "τ"
 ACTION_HEAD_S     = "α"
 FACT_HEAD_S       = "Σ"
+# Typing:
 SUM_HEAD_S        = "Σσ"
 STRUCTURE_S       = "σ"
 FUNC_S            = "λ"
 TYPE_CLASS_S      = "γ"
+# Misc:
 UUID_HEAD         = "υ"
 AGENDA_HEAD_S     = "Agenda"
 LAYER_HEAD_S      = "Layer"

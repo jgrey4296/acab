@@ -9,7 +9,7 @@ from py_rule.working_memory.trie_wm.parsing import FactParser as FP
 from py_rule.working_memory.trie_wm.parsing import QueryParser as QP
 from py_rule.working_memory.trie_wm.parsing import RuleParser as RP
 from py_rule.abstract import action
-from py_rule.abstract.comparison import Comparison, CompOp
+from py_rule.abstract.query import QueryComponent, QueryOp
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract import transform
 from py_rule.abstract.rule import Rule

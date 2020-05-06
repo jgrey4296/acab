@@ -25,13 +25,14 @@ class ProductionOperator(PyRuleValue):
     def construct_subclass_tree():
         """ Populate a dictionary for auto-generation of parser keywords """
         logging.info("Constructing Operator Subclass list")
+        ProductionOperator.op_dict = {}
         found = []
         queue = [ProductionOperator]
         while bool(queue):
             current = queue.pop(0)
             if current in found:
                 continue
-            found += found
+            found.append(current)
             queue += current.__subclasses__()
 
         # At this point, all subclasses have been found
@@ -44,6 +45,7 @@ class ProductionOperator(PyRuleValue):
                 value = value()
             ProductionOperator.op_dict[full_name] = value
 
+        logging.info("Found {} operators".format(len(found)))
 
     def __init__(self, num_params=2,
                  infix=False,

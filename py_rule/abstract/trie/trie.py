@@ -112,7 +112,7 @@ class Trie:
             if bool(current_node):
                 queue += [(total_path, x) for x in current_node]
 
-        return "\n".join(output)
+        return "\n".join(sorted(output))
 
     def match_as_pattern(self, possible_matches, match_func):
         """ Given a trie/node of possible matches, return only actual matches,
