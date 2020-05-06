@@ -11,7 +11,7 @@ from py_rule.abstract import action
 from py_rule.abstract import transform
 from py_rule import util
 from py_rule.modules.operators.standard_operators import StandardOperators
-from py_rule.modules.values.numbers.number_module import NumberSpecification
+from py_rule.modules.values import numbers
 from py_rule.working_memory.trie_wm.trie_working_memory import TrieWM
 
 class NumberParseTests(unittest.TestCase):
@@ -21,7 +21,7 @@ class NumberParseTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         NumberParseTests.os = StandardOperators()
-        NumberParseTests.ns = NumberSpecification()
+        NumberParseTests.ns = numbers.MODULE()
 
     def setUp(self):
         self.trie = TrieWM()

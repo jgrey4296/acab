@@ -11,14 +11,14 @@ from py_rule.abstract.contexts import Contexts
 from py_rule.engines.trie_engine import TrieEngine
 from py_rule.working_memory.trie_wm.parsing import TransformParser as TP
 from py_rule.working_memory.trie_wm.parsing import FactParser as FP
-from py_rule.modules.values.numbers.number_module import NumberSpecification
+from py_rule.modules.values import numbers as NS
 from py_rule.modules.operators.standard_operators import StandardOperators
 
 
 class TransformTests(unittest.TestCase):
 
     def setUp(self):
-        ns = NumberSpecification()
+        ns = NS.MODULE()
         os = StandardOperators()
         self.e = TrieEngine(modules=[ns, os])
 

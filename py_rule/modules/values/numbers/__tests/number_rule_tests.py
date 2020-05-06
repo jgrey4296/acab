@@ -15,7 +15,7 @@ from py_rule.abstract import transform
 from py_rule.abstract.rule import Rule
 from py_rule import util
 from py_rule.modules.operators.standard_operators import StandardOperators
-from py_rule.modules.values.numbers.number_module import NumberSpecification
+from py_rule.modules.values import numbers
 from py_rule.working_memory.trie_wm.trie_working_memory import TrieWM
 from py_rule.working_memory.trie_wm import util as KBU
 
@@ -27,7 +27,7 @@ class NumberRuleTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         NumberRuleTests.os = StandardOperators()
-        NumberRuleTests.ns = NumberSpecification()
+        NumberRuleTests.ns = numbers.MODULE()
 
     def setUp(self):
         self.trie = TrieWM()
