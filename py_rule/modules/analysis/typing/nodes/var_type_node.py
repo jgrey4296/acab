@@ -17,10 +17,10 @@ class VarTypeTrieNode(MonoTypedNode):
 
 
     def add_node(self, node):
-        assert(is_var(node._value))
+        assert(is_var(node))
         self._nodes.add(node)
         self._var_names.add(node.name)
-        self.type_match_wrapper(node._value)
+        self.type_match_wrapper(node)
         node._is_var = True
         node._var_node = self
 

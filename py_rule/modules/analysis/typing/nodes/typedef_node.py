@@ -104,8 +104,8 @@ class TypeDefTrieNode(PyRuleNode):
         type declaration """
         if curr_def.name != util.ROOT_S \
            and curr_def._is_var \
-           and curr_def._value.name in type_var_lookup:
-            return type_var_lookup[curr_def._value.name]
+           and curr_def.name in type_var_lookup:
+            return type_var_lookup[curr_def.name]
         elif curr_def._type_instance is not None:
             return curr_def._type_instance.build_type_declaration(type_var_lookup)
         else:

@@ -52,7 +52,7 @@ import py_rule.error.type_exceptions as te
 
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.trie.trie import Trie
-from py_rule.abstract.layer import LayerAction
+from py_rule.abstract.action import ActionOp
 from . import util as TU
 
 from .nodes.operator_def_node import OperatorDefTrieNode
@@ -67,7 +67,7 @@ from .values.type_definition import TypeDefinition
 logging = root_logger.getLogger(__name__)
 
 
-class TypeChecker(LayerAction):
+class TypeChecker(ActionOp):
     """ Abstract Class for Type Checking """
     # parse their locations, and add them as definitions
 
