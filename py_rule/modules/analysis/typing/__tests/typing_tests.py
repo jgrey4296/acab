@@ -3,16 +3,23 @@ import logging
 
 import py_rule.error.type_exceptions as te
 
+from py_rule.abstract.bootstrap_parser import BootstrapParser
 from py_rule.abstract.transform import TransformComponent
 from py_rule.modules.analysis.typing.type_checker import TypeChecker
 from py_rule.modules.analysis.typing.values.type_definition import TypeDefinition
 from py_rule.modules.analysis.typing.values.operator_definition import OperatorDefinition
 from py_rule.modules.analysis.typing.values.type_instance import TypeInstance
 
+from py_rule.modules.operators.standard_operators import StandardOperators
+from py_rule.abstract import action
+from py_rule.abstract.production_operator import ProductionOperator
+
+
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.node import PyRuleNode
 from py_rule.modules.analysis.typing import util as TU
 from py_rule.working_memory.trie_wm.parsing import FactParser as FP
+from py_rule.working_memory.trie_wm.parsing import ActionParser as AP
 from py_rule.abstract.printing import util as PrU
 from py_rule import util
 
@@ -23,8 +30,13 @@ def S(*in_string):
 
 class TypingTests(unittest.TestCase):
 
-    def setUp(self):
-	    return 1
+    @classmethod
+    def setUpClass(cls):
+        bp = BootstrapParser()
+        os = StandardOperators()
+        os.assert_parsers(bp)
+        AP.HOTLOAD_OPERATORS << bp.query("operator.action.*")
+        ProductionOperator.construct_subclass_tree()
 
     def tearDown(self):
 	    return 1
@@ -48,7 +60,7 @@ class TypingTests(unittest.TestCase):
         self.assertEqual(len(tc._structural_definitions), 0)
         tc.add_definition(type_def)
         self.assertEqual(len(tc._structural_definitions), 4)
-        defs = tc._structural_definitions.get_nodes(lambda x: isinstance(x._value._value, TypeDefinition))
+        defs = tc._structural_definitions.get_nodes(lambda x: isinstance(x.value, TypeDefinition))
         self.assertEqual(1, len(defs))
 
     def test_add_assertion(self):
