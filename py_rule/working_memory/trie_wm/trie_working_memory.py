@@ -73,7 +73,7 @@ class TrieWM(WorkingMemory):
         if not isinstance(query, Query):
             raise PyRuleParseException("Unrecognised query target: {}".format(type(query)))
 
-        return self._query_sentence(query, ctxs=ctxs)
+        return self._query_sentence(query, ctxs=ctxs, engine=engine)
 
 
     def assert_parsers(self, pt):
@@ -149,13 +149,13 @@ class TrieWM(WorkingMemory):
 
         self._last_node.delete_node(last_in_list)
 
-    def _query_sentence(self, query, ctxs=None):
+    def _query_sentence(self, query, ctxs=None, engine=None):
         """ Query a TrieQuery instance """
         assert(isinstance(query, (Query, Sentence)))
         self._clear_last_node()
         # TODO: handle a passed in context
         initial_context = Contexts(start_node=self._internal_trie._root,
-                                   bindings=ctxs)
+                                   bindings=ctxs, engine=engine)
         return self._internal_query(query, initial_context)
 
 

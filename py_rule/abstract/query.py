@@ -28,7 +28,7 @@ class QueryOp(PO.ProductionOperator):
         if self.op_str not in QueryOp.op_list:
             QueryOp.op_list[self.op_str] = self
 
-    def __call__(self, a, b, data=None):
+    def __call__(self, a, b, data=None, engine=None, node=None):
         raise NotImplementedError()
 
 
@@ -39,12 +39,12 @@ class QueryComponent(PO.ProductionComponent):
         if not isinstance(param, list):
             param = [param]
         super(QueryComponent, self).__init__(op_str,
-                                         param,
-                                         op_class=QueryOp,
-                                         type_str=type_str)
+                                             param,
+                                             op_class=QueryOp,
+                                             type_str=type_str)
         self.verify()
 
-    def __call__(self, node, data=None):
+    def __call__(self, node, data=None, engine=None):
         """ Run a comparison on a node """
         self.verify()
         op = self._data[util.OP_CLASS_S].op_list[self.op]

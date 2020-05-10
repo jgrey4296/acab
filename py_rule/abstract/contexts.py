@@ -8,26 +8,27 @@ from py_rule.util import AT_BIND_S, FALLBACK_S, AT_BIND_S, BIND_S
 logging = root_logger.getLogger(__name__)
 
 # Utility functions:
-def test_alphas(node, comps):
+def test_alphas(node, comps, data=None, engine=None):
     """ Run alpha tests against a retrieved value """
-    return all([x(node) for x in comps])
+    return all([x(node, data=data, engine=engine) for x in comps])
 
-def test_betas(node, comps, data):
+def test_betas(node, comps, data=None, engine=None):
     """ Run a beta tests against a retrieved value, with supplied bindings """
-    return all([x(node, data=data) for x in comps])
+    return all([x(node, data=data, engine=engine) for x in comps])
 
 
 class Contexts:
     """ Container of available contexts for a match in the trie
     A list of tuples: ({}, LastAccessedNode)
     """
-    def __init__(self, start_node=None, bindings=None):
+    def __init__(self, start_node=None, bindings=None, engine=None):
         """ Setup the initial context of no bindings
         """
         self._bind_groups = []
         self._nodes = []
         self._failures = []
         self._queued_failures = []
+        self._engine = engine
 
         if bindings is not None:
             if not isinstance(bindings, list):
@@ -121,20 +122,20 @@ class Contexts:
         return zip(self._bind_groups, it.cycle(self._nodes))
 
 
-    def depth_apply(self, words):
+    def depth_apply(self, words, test_sequence=None):
         raise NotImplementedError()
 
     def breadth_apply(self, word, test_sequence=None):
         """ Apply a query word, and sequence form of tests, to
         all available contexts in a BFS manner """
         assert(not word._data[BIND_S] == AT_BIND_S)
-        pairs  = self.pairs()
-        self.clear_bind_groups()
-
         if test_sequence is None:
             test_sequence = [Contexts.non_bind_value_match,
                              Contexts.existing_bind_match,
                              Contexts.create_new_bindings]
+
+        pairs  = self.pairs()
+        self.clear_bind_groups()
 
         for (data, last_node) in pairs:
             current_test_sequence = test_sequence[:]
@@ -143,7 +144,10 @@ class Contexts:
             while (not test_enacted) and bool(test_sequence):
                 test_type = current_test_sequence.pop(0)
 
-                test_enacted, test_failed = test_type(self, word, last_node, data)
+                test_enacted, test_failed = test_type(self,
+                                                      word,
+                                                      last_node,
+                                                      data)
 
 
             if (not test_enacted) or test_failed:
@@ -185,8 +189,8 @@ class Contexts:
             return False, False
 
         if data[a.name] in b._children \
-           and test_alphas(data[a.name], alphas) \
-           and test_betas(data[a.name], betas, data):
+           and test_alphas(data[a.name], alphas, data, self._engine) \
+           and test_betas(data[a.name], betas, data, self._engine):
             new_data, new_node = b._children[data[a.name]].test_regexs_for_matching(regexs,
                                                                                     data)
         if new_data is not None:
@@ -207,8 +211,8 @@ class Contexts:
 
         output = []
         potentials = node._children.values()
-        passing = [x for x in potentials if test_alphas(x, alphas)
-                   and test_betas(x, betas, data)]
+        passing = [x for x in potentials if test_alphas(x, alphas, data, engine=self._engine)
+                   and test_betas(x, betas, data, engine=self._engine)]
         logging.info("Passing: {}".format(len(passing)))
         for x in passing:
             new_data = data.copy()

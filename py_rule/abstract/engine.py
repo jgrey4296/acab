@@ -87,7 +87,7 @@ class Engine:
 
     def query(self, s, ctxs=None, cache=True):
         """ As a question of the working memory """
-        result = self._working_memory.query(s, ctxs=ctxs)
+        result = self._working_memory.query(s, ctxs=ctxs, engine=self)
         if cache:
             self._cached_bindings = result
         return result
