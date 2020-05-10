@@ -26,18 +26,6 @@ from py_rule import util
 from py_rule.util import NAME_S, STATEMENT_S, TYPE_DEC_S, QUERY_S, TRANSFORM_S, ACTION_S
 
 
-class LayerAction(ProductionOperator):
-    """ Subclass this to make layer actions """
-
-    op_list = {}
-
-    def __init__(self, num_params=0):
-        super(LayerAction, self).__init__(num_params=num_params)
-
-        if self.op_str not in LayerAction.op_list:
-            LayerAction.op_list[self.op_str] = self
-
-
 class Layer(Rule):
     """ The Abstract Layer Class """
 
@@ -53,7 +41,7 @@ class Layer(Rule):
         # rule returns [(data,self)]
         results = super(Layer, self).__call__(ctxs=ctxs, engine=engine)
 
-        assert(len(results), 1)
+        assert(len(results) == 1)
 
         # Run layer actions
         action_results = self._action(ctxs=[results[0][0]], engine=engine)

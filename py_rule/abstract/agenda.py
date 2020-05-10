@@ -10,10 +10,6 @@ from py_rule.abstract.production_operator import ProductionOperator, ProductionC
 
 RELATION_E = Enum('Agenda_Relation', 'ONE MANY')
 
-class AgendaAction(ProductionOperator):
-
-    op_list = {}
-
 class Agenda(Rule):
     """ Abstract Class of Rule Layer Agendas
     Takes a set of potential rule activations
@@ -43,7 +39,7 @@ class Agenda(Rule):
 
         agenda_settings = super(Agenda, self).__call__(ctxs=ctxs, engine=engine)
 
-        assert(len(agenda_settings), 1)
+        assert(len(agenda_settings) == 1)
         settings = agenda_settings[0][0]
 
         # Enact agenda

@@ -1,7 +1,9 @@
-from py_rule.abstract.layer import LayerAction
+from py_rule.abstract.action import ActionOp
+from py_rule.abstract.transform import TransformOp
 
 
-class LayerRunRules(LayerAction):
+
+class LayerRunRules(TransformOp):
 
     def __init__(self):
         super(LayerRunRules, self).__init__()
@@ -16,7 +18,7 @@ class LayerRunRules(LayerAction):
         return rule_results
 
 
-class LayerRunAgenda(LayerAction):
+class LayerRunAgenda(TransformOp):
 
     def __call__(self, agenda, *params, data=None, engine=None):
         if data is None:
@@ -29,7 +31,7 @@ class LayerRunAgenda(LayerAction):
         return agenda(ctxs=[rebound], engine=engine)
 
 
-class LayerPerform(LayerAction):
+class LayerPerform(ActionOp):
 
     def __call__(self, proposals, data=None, engine=None):
         for x,y in proposals:

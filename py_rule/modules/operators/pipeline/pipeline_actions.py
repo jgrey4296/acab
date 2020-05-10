@@ -1,10 +1,11 @@
-from py_rule.abstract.pipeline import PipelineAction
+from py_rule.abstract.action import ActionOp
+from py_rule.abstract.transform import TransformOp
 
-class PipelineRunLayer(PipelineAction):
+class PipelineRunLayer(TransformOp):
     pass
 
-class PipelineRunPipeline(PipelineAction):
+class PipelineRunPipeline(TransformOp):
     pass
 
-class PipelineLoadModule(PipelineAction):
+class PipelineLoadModule(ActionOp):
     pass

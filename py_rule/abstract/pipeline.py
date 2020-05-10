@@ -17,12 +17,6 @@ from py_rule.abstract.production_operator import ProductionOperator
 from py_rule.util import NAME_S, STATEMENT_S, TYPE_DEC_S, QUERY_S, TRANSFORM_S, ACTION_S
 
 
-class PipelineAction(ProductionOperator):
-    """ Subclass this for pipeline actions """
-
-    op_list = {}
-
-
 class Pipeline(Rule):
     """ Abstract Class to describe a rule engine pipeline
     Collects together sets of rules,
