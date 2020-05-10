@@ -10,7 +10,7 @@ from py_rule.abstract.parsing import util as PU
 
 from py_rule.error.pyrule_parse_exception import PyRuleParseException
 
-from .FactParser import PARAM_CORE, HOTLOAD_ANNOTATIONS, PARAM_SEN, BASIC_SEN
+from .FactParser import PARAM_CORE, PARAM_SEN, BASIC_SEN
 
 logging = root_logger.getLogger(__name__)
 
@@ -18,11 +18,9 @@ def build_constraint_list(toks):
     """ Build a constraint list """
     return (WMU.CONSTRAINT_S, toks[:])
 
-
-def build_query_clause(toks):
+def build_query_component(toks):
     """ Build a comparison """
     return QueryComponent(toks[WMU.OPERATOR_S], param=toks[WMU.VALUE_S])
-
 
 def build_clause(toks):
     # detect negation and annotate the clause with it
@@ -38,11 +36,9 @@ def build_clause(toks):
 
     return Sentence(toks[WMU.MAIN_CLAUSE_S][:], data=data)
 
-
 def build_query(toks):
     query = Query(toks[:])
     return (query.type, query)
-
 
 def build_assignment(toks):
     return (toks[0][1], toks[1])
@@ -50,14 +46,15 @@ def build_assignment(toks):
 
 # Build After comparison operators have been constructed:
 HOTLOAD_QUERY_OP = pp.Forward()
+HOTLOAD_QUERY_ANNOTATIONS = pp.Forward()
 
 QUERY_OP_Internal = PU.N(WMU.OPERATOR_S, HOTLOAD_QUERY_OP) \
     + PU.N(WMU.VALUE_S, PARAM_CORE(end=True))
 
 # defined earlier to work with named copies
-QUERY_OP_Internal.setParseAction(build_query_clause)
+QUERY_OP_Internal.setParseAction(build_query_component)
 
-query_or_annotation = pp.Or([QUERY_OP_Internal, HOTLOAD_ANNOTATIONS])
+query_or_annotation = pp.Or([QUERY_OP_Internal, HOTLOAD_QUERY_ANNOTATIONS])
 
 constraints = pp.delimitedList(query_or_annotation, delim=PU.COMMA)
 

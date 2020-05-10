@@ -1,6 +1,7 @@
 from py_rule.abstract.module_interface import ModuleInterface
 
 from . import query_operators as QO
+from . import query_op_parsers as QOP
 
 class MODULE(ModuleInterface):
     """ The Module Spec for base operators """
@@ -12,9 +13,13 @@ class MODULE(ModuleInterface):
         pt.add("operator.query.eq", QO.EQ,
                "operator.query.neq", QO.NEQ,
                "operator.query.regmatch", QO.RegMatch,
-               "operator.query.elem", QO.ELEM)
+               "operator.query.elem", QO.ELEM,
+               "operator.query.hastag", QO.HasTag,
+               "query.annotation.hastag", QOP.tagList)
+
 
     def query_parsers(self, pt):
         pass
+
     def init_strings(self):
         return []

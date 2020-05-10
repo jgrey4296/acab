@@ -19,6 +19,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         os.assert_parsers(bp)
         QP.HOTLOAD_QUERY_OP << bp.query("operator.query.*",
                                         "operator.sugar")
+        QP.HOTLOAD_QUERY_ANNOTATIONS << bp.query("query.annotation.*")
         ProductionOperator.construct_subclass_tree()
 
 
@@ -120,6 +121,43 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result[0][1]._data[util.CONSTRAINT_S][0], QueryComponent)
         self.assertEqual(result[0][1]._data[util.CONSTRAINT_S][0].op, "RegMatch")
 
+
+    def test_tag_query(self):
+        result = QP.clause.parseString("a.testing(#testTag)?")
+        self.assertEqual(len(result), 1)
+        self.assertEqual(len(result[0][1]._data[util.CONSTRAINT_S]), 1)
+        self.assertIsInstance(result[0][1]._data[util.CONSTRAINT_S][0], QueryComponent)
+        self.assertEqual(result[0][1]._data[util.CONSTRAINT_S][0].op, "HasTag")
+
+    def test_tag_list_query(self):
+        result = QP.clause.parseString("a.testing(#first, #second, #third)?")
+        self.assertEqual(len(result), 1)
+        self.assertEqual(len(result[0][1]._data[util.CONSTRAINT_S]), 1)
+        self.assertIsInstance(result[0][1]._data[util.CONSTRAINT_S][0], QueryComponent)
+        self.assertEqual(result[0][1]._data[util.CONSTRAINT_S][0].op, "HasTag")
+        self.assertEqual(result[0][1]._data[util.CONSTRAINT_S][0]._vars, ["first", "second", "third"])
+
+    def test_tag_list_interaction(self):
+        result = QP.clause.parseString("a.testing(#first, #second, RegMatch /Test/)?")
+        self.assertEqual(len(result), 1)
+        self.assertEqual(len(result[0][1]._data[util.CONSTRAINT_S]), 2)
+        self.assertEqual(result[0][1]._data[util.CONSTRAINT_S][0].op, "HasTag")
+        self.assertEqual(result[0][1]._data[util.CONSTRAINT_S][1].op, "RegMatch")
+
+    def test_tag_list_interaction_2(self):
+        result = QP.clause.parseString("a.testing(RegMatch /Test/, #test, #second)?")
+        self.assertEqual(len(result), 1)
+        self.assertEqual(len(result[0][1]._data[util.CONSTRAINT_S]), 2)
+        self.assertEqual(result[0][1]._data[util.CONSTRAINT_S][1].op, "HasTag")
+        self.assertEqual(result[0][1]._data[util.CONSTRAINT_S][0].op, "RegMatch")
+
+    def test_tag_list_interaction_3(self):
+        result = QP.clause.parseString("a.testing(#aTag, RegMatch /Test/, #test, #second)?")
+        self.assertEqual(len(result), 1)
+        self.assertEqual(len(result[0][1]._data[util.CONSTRAINT_S]), 3)
+        self.assertEqual(result[0][1]._data[util.CONSTRAINT_S][0].op, "HasTag")
+        self.assertEqual(result[0][1]._data[util.CONSTRAINT_S][1].op, "RegMatch")
+        self.assertEqual(result[0][1]._data[util.CONSTRAINT_S][2].op, "HasTag")
 
 
 
