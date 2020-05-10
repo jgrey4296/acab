@@ -55,9 +55,6 @@ class ActionComponent(PO.ProductionComponent):
         return {'in' : obj['in'].union(obj['out']), 'out': set()}
 
 
-    def copy(self):
-        return ActionComponent(self.op, params=self._vars, type_str=self.type)
-
     def bind(self, bindings):
         """ Expand stored bindings at interpret time
         ie: +(.a.b.$x) + { x : .a.b.c } -> +(.a.b.a.b.c)
@@ -98,10 +95,6 @@ class Action(PO.ProductionContainer):
             exp_clauses.append(clause.bind(bindings))
 
         return Action(exp_clauses, params=self._vars)
-
-    def copy(self):
-        copied = Action(self.clauses, params=self._vars, type_str=self.type)
-        return copied
 
     def to_sentences(self, target=None):
         # needs to return both the action sentences,

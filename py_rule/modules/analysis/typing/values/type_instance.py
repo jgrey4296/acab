@@ -64,7 +64,3 @@ class TypeInstance(Type):
                 assert(isinstance(x, TypeInstance))
                 new_args.append(x)
         return TypeInstance(self._value, new_args)
-
-    def copy(self):
-        return TypeInstance(self._value, args=self.vars)
-

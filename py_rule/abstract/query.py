@@ -79,9 +79,6 @@ class QueryComponent(PO.ProductionComponent):
         assert(isinstance(target, PyRuleNode))
         return Sentence([head, target] + self._vars)
 
-    def copy(self):
-        return QueryComponent(self.op, self._vars, type_str=self.type)
-
 
 class Query(PO.ProductionContainer):
     """ A Query for the working memory """
@@ -129,6 +126,3 @@ class Query(PO.ProductionContainer):
 
         total_sentences = self.clauses + constraint_sentences
         return total_sentences
-
-    def copy(self):
-        return Query(self.clauses, type_str=self.type)

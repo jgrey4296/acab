@@ -97,13 +97,6 @@ class Sentence(PyRuleValue):
                         params=self._vars,
                         tags=self._tags)
 
-    def copy(self):
-        words = [x.copy() for x in self.words]
-        return Sentence(words,
-                        data=self._data,
-                        params=self._vars,
-                        tags=self._tags)
-
     def add(self, *other):
         for word in other:
             assert(isinstance(word, PyRuleNode))

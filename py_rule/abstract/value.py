@@ -5,6 +5,7 @@ import logging as root_logger
 from uuid import uuid1
 from fractions import Fraction
 from re import Pattern
+from copy import deepcopy
 
 from py_rule import util
 from py_rule.abstract.printing import util as PrU
@@ -100,9 +101,7 @@ class PyRuleValue:
 
     def copy(self):
         """ Data needs to be able to be copied """
-        return PyRuleValue(self._value, type_str=self.type,
-                           data=self._data, params=self._vars,
-                           tags=self._tags, name=self._name)
+        return deepcopy(self)
 
     def bind(self, bindings):
         """ Data needs to be able to bind a dictionary

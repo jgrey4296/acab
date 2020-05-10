@@ -62,15 +62,6 @@ class PyRuleNode(PyRuleValue):
     def children(self):
         return self._children.values()
 
-    def copy(self):
-        return PyRuleNode(self._value,
-                          data=self._data,
-                          type_str=self.type,
-                          tags=self._tags,
-                          name=self._name,
-                          params=self._vars
-                          )
-
 
     def add_child(self, node):
         assert(isinstance(node, PyRuleNode))

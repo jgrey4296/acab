@@ -75,8 +75,6 @@ class BaseTime(PyRuleValue):
         """ Get the length of time the arc describes """
         return self.end - self.start
 
-    def copy(self):
-        return BaseTime(self.arc)
     def bound(self, other):
         assert(isinstance(other, BaseTime))
         start = min(self.start, other.start)
@@ -124,9 +122,6 @@ class TimeEvent(BaseTime):
 
         return var_set
 
-
-    def copy(self):
-        return self.__class__(self.arc, self.event, self._data, self.type)
 
     def pprint(self, wrap=False):
         if isinstance(self._event, PyRuleValue):

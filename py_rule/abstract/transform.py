@@ -44,13 +44,6 @@ class TransformComponent(PO.ProductionComponent):
         return {'in' : in_set, 'out': out_set}
 
 
-    def copy(self):
-        copied = TransformComponent(self.op,
-                                    self._vars,
-                                    rebind=self._rebind,
-                                    type_str=self.type)
-        return copied
-
     def to_sentence(self, target=None):
         head = PyRuleNode(self.op, {util.OPERATOR_S : self})
         return Sentence([head] + self._vars[:] + [self._rebind])
@@ -76,6 +69,3 @@ class Transform(PO.ProductionContainer):
             var_set['out'].add(x._rebind._value)
 
         return var_set
-
-    def copy(self):
-        return Transform([x.copy() for x in self.clauses], type_str=self.type)

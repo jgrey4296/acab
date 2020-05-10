@@ -38,10 +38,6 @@ class FSMBase(PyRuleValue):
         raise NotImplementedError()
 
 
-    def copy(self):
-        """ Data needs to be able to be copied """
-        raise NotImplementedError()
-
     def bind(self, bindings):
         """ Data needs to be able to bind a dictionary
         of values to internal variables """

@@ -83,20 +83,6 @@ class Rule(ProductionContainer):
         return obj
 
 
-    def copy(self):
-        query, action, transform = (None, None, None)
-        if self._query is not None:
-            query = self._query.copy()
-        if self._action is not None:
-            action = self._action.copy()
-        if self._transform is not None:
-            transform = self._transform.copy()
-
-        return Rule(query=query,
-                    action=action,
-                    transform=transform,
-                    name=self._name)
-
     def verify(self):  # can raise an Exception from verify_op
         """ Verify that the outputs of the query match the
         inputs of the transform, match the inputs of the actions """

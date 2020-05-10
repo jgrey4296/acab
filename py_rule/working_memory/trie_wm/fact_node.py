@@ -19,21 +19,6 @@ class FactNode(PyRuleNode):
         """ Get a Root designated node """
         return FactNode(WMU.ROOT_S, WMU.DEFAULT_NODE_DATA)
 
-    @staticmethod
-    def copy_fact(node):
-        """ Lift Trie-nodes to FactNodes as necessary """
-        if isinstance(node, FactNode):
-            return node.copy()
-
-        assert(isinstance(node, PyRuleNode))
-        temp_data = {}
-        temp_data.update(node._data)
-        if WMU.OPERATOR_S not in node._data:
-            temp_data[WMU.OPERATOR_S] = WMU.EXOP.DOT
-        new_node = FactNode(node._value, data=temp_data)
-        # TODO add original tags, vars and possible update type_str
-        return new_node
-
 
     def __init__(self, value, data=None, type_str=None, tags=None, name=None):
         assert isinstance(data[WMU.OPERATOR_S], WMU.EXOP), data
@@ -58,26 +43,14 @@ class FactNode(PyRuleNode):
     def __hash__(self):
         return hash(str(self))
 
-    def copy(self):
-        assert(not bool(self._children))
-        val = self._value
-        if isinstance(val, PyRuleValue):
-            val = self._value.copy()
-
-        copied = FactNode(val,
-                          data=self._data,
-                          type_str=self.type,
-                          tags=self._tags,
-                          name=self._name)
-        return copied
 
     def insert(self, fact):
         """ Insert A Node as a Child of this Node """
         if fact in self:
             return self.get_child(fact)
 
-        copied = FactNode.copy_fact(fact)
-        copied.set_parent(self)
+        new_node = FactNode(fact)
+        new_node.set_parent(self)
 
         # deal with exclusion
         if self._data[WMU.OPERATOR_S] == WMU.EXOP.EX:

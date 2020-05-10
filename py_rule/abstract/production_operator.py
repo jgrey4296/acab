@@ -139,10 +139,6 @@ class ProductionComponent(PyRuleValue):
         op_fix = [0 if len(self._vars) < 2 else 1][0]
         return PrU.print_operator(self, op_fix=op_fix, **kwargs)
 
-    def copy(self):
-        # TODO: fix copies of subclasses to insert OP_CLASS_S
-        raise NotImplementedError()
-
     def to_sentence(self, target=None):
         raise NotImplementedError()
 
@@ -233,9 +229,6 @@ class ProductionContainer(PyRuleStatement):
             op_constraint = self._data[util.OP_CLASS_S]
         for x in self.clauses:
             x.verify(op_constraint=op_constraint)
-
-    def copy(self):
-        raise NotImplementedError()
 
     def pprint(self, as_container=False, **kwargs):
         if as_container:
