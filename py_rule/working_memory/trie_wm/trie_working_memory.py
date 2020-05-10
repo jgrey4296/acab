@@ -107,6 +107,9 @@ class TrieWM(WorkingMemory):
         if pt.query("annotation.*"):
             FP.HOTLOAD_ANNOTATIONS << pt.query("annotation.*")
 
+        if pt.query("query.annotation.*"):
+            QP.HOTLOAD_QUERY_ANNOTATIONS << pt.query("query.annotation.*")
+
         QP.HOTLOAD_QUERY_OP << pt.query("operator.query.*",
                                         "operator.sugar")
 
