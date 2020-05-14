@@ -2,6 +2,8 @@
 from os.path import splitext, split
 import unittest
 import logging
+
+from py_rule.abstract.printing import util as PrU
 from py_rule.modules.values.numbers.parsing import NumberParser as NP
 from py_rule.working_memory.trie_wm.parsing import ActionParser as AP
 from py_rule.working_memory.trie_wm.parsing import TransformParser as TP
@@ -44,16 +46,16 @@ class NumberTransformTests(unittest.TestCase):
         result = TP.transform_core.parseString('$x AddOp 20 -> $y')[0]
         self.assertIsInstance(result, transform.TransformComponent)
         self.assertEqual(result.op, "AddOp")
-        self.assertEqual(len(result._vars), 2)
+        self.assertEqual(len(result._params), 2)
 
 
     def test_basic_transform_core_rebind(self):
         result = TP.transform_core.parseString('$y MulOp 20 -> $z')[0]
         self.assertIsInstance(result, transform.TransformComponent)
         self.assertEqual(result.op, "MulOp")
-        self.assertEqual(result._vars[0]._value, "y")
-        self.assertTrue(result._vars[0].is_var)
-        self.assertEqual(result._vars[1]._value, 20)
+        self.assertEqual(result._params[0]._value, "y")
+        self.assertTrue(result._params[0].is_var)
+        self.assertEqual(result._params[1]._value, 20)
         self.assertIsNotNone(result._rebind)
         self.assertEqual(result._rebind._value, 'z')
 
@@ -69,8 +71,8 @@ class NumberTransformTests(unittest.TestCase):
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result.clauses), 1)
         self.assertEqual(result.clauses[0].op, "AddOp")
-        self.assertEqual(result.clauses[0]._vars[0]._value, 'x')
-        self.assertEqual(result.clauses[0]._vars[1]._value, 20)
+        self.assertEqual(result.clauses[0]._params[0]._value, 'x')
+        self.assertEqual(result.clauses[0]._params[1]._value, 20)
         self.assertIsNotNone(result.clauses[0]._rebind)
 
 
@@ -79,8 +81,8 @@ class NumberTransformTests(unittest.TestCase):
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result.clauses), 1)
         self.assertEqual(result.clauses[0].op, "AddOp")
-        self.assertEqual(result.clauses[0]._vars[0]._value, 'x')
-        self.assertEqual(result.clauses[0]._vars[1]._value, 20)
+        self.assertEqual(result.clauses[0]._params[0]._value, 'x')
+        self.assertEqual(result.clauses[0]._params[1]._value, 20)
         self.assertEqual(result.clauses[0]._rebind._value, 'y')
 
     def test_unary_round(self):
@@ -97,7 +99,7 @@ class NumberTransformTests(unittest.TestCase):
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result.clauses), 1)
         self.assertEqual(result.clauses[0].op, "NegOp")
-        self.assertEqual(result.clauses[0]._vars[0]._value, "x")
+        self.assertEqual(result.clauses[0]._params[0]._value, "x")
         self.assertIsNotNone(result.clauses[0]._rebind)
 
     def test_unary_rebind(self):
@@ -105,7 +107,7 @@ class NumberTransformTests(unittest.TestCase):
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result.clauses), 1)
         self.assertEqual(result.clauses[0].op, "NegOp")
-        self.assertEqual(result.clauses[0]._vars[0]._value, "x")
+        self.assertEqual(result.clauses[0]._params[0]._value, "x")
         self.assertIsNotNone(result.clauses[0]._rebind)
         self.assertEqual(result.clauses[0]._rebind._value, 'y')
 
@@ -123,8 +125,10 @@ class NumberTransformTests(unittest.TestCase):
         ]
         parsed = [TP.parseString(x) for x in transforms]
         zipped = zip(transforms, parsed)
+        def_op = PrU.default_opts()
+        def_op['container'] = True
         for rt,pt in zipped:
-            self.assertEqual(rt, pt.pprint(as_container=True))
+            self.assertEqual(rt, pt.pprint(PrU.default_opts(container=True, join="\n")))
 
 
 

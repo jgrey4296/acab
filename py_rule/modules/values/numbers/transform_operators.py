@@ -9,8 +9,8 @@ class AddOp(TransformOp):
     def __init__(self):
         super().__init__()
         # type sig: num -> num -> num
-    def __call__(self, a, b, data=None, engine=None):
-        return a + b
+    def __call__(self, left, right, data=None, engine=None):
+        return left + right
 
 
 class SubOp(TransformOp):

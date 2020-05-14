@@ -3,6 +3,7 @@ from .parsing import NumberParser as NP
 from . import query_operators as CO
 from . import transform_operators as TO
 
+
 class MODULE(ModuleInterface):
     """ A Module that provides numbers """
 
@@ -34,3 +35,5 @@ class MODULE(ModuleInterface):
                "operator.transform.binary.remain", TO.RemainOp,
                "operator.transform.unary.round", TO.RoundOp,
                "operator.transform.unary.neg", TO.NegOp)
+
+MODULE_SPEC = MODULE()

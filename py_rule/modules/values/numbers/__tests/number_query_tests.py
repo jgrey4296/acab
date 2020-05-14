@@ -2,6 +2,7 @@
 from os.path import splitext, split
 import unittest
 import logging
+
 from py_rule.modules.values.numbers.parsing import NumberParser as NP
 from py_rule.working_memory.trie_wm.parsing import ActionParser as AP
 from py_rule.working_memory.trie_wm.parsing import RuleParser as RP
@@ -115,8 +116,10 @@ class NumberQueryTests(unittest.TestCase):
                    # 'a.b.c(^$x)?']
         parsed = [QP.parseString(x) for x in queries]
         zipped = zip(queries, parsed)
+        def_op = PrU.default_opts()
+        def_op['container'] = True
         for a,q in zipped:
-            self.assertEqual(a, q.pprint(as_container=True))
+            self.assertEqual(a, q.pprint(def_op))
 
 
     def test_rule_binding_expansion(self):
@@ -124,9 +127,9 @@ class NumberQueryTests(unittest.TestCase):
                      "y" : FP.parseString('d.e.f')[0],
                      "z" : FP.parseString('x.y.z')[0] }
         result = RP.parseString("a.rule: (::ρ)\n$y.b.$z?\n\n$x AddOp 2 -> $y\n\n$y\n\nend")[0][-1]
-        expanded = result._value.bind(bindings)
+        expanded = result.value.bind(bindings)
         # Expanding bindings makes a new rule, so its an AnonValue
-        self.assertEqual(expanded.pprint(),
+        self.assertEqual(expanded.pprint(PrU.default_opts(leaf=True)),
                          "AnonRule: (::ρ)\n\td.e.f.b.x.y.z?\n\n\t$x AddOp 2 -> $y\n\n\tActionAdd(d.e.f)\nend")
 
 
@@ -164,9 +167,9 @@ class NumberQueryTests(unittest.TestCase):
         result = self.trie.query('a.c.$x?, a.$y(NEQ c).$v(GT $x)?')
         self.assertTrue(result)
         self.assertEqual(len(result), 1)
-        self.assertEqual(result[0]['x'], 30)
-        self.assertEqual(result[0]['y'], 'd')
-        self.assertEqual(result[0]['v'], 40)
+        self.assertEqual(result[0]['x'].value, 30)
+        self.assertEqual(result[0]['y'].value, 'd')
+        self.assertEqual(result[0]['v'].value, 40)
 
 
     def test_query_multi_alts(self):

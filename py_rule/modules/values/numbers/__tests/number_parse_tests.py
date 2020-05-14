@@ -3,6 +3,8 @@ from os.path import splitext, split
 import unittest
 import logging
 import random
+
+from py_rule.abstract.printing import util as PrU
 from py_rule.modules.values.numbers.parsing import NumberParser as NP
 from py_rule.working_memory.trie_wm.parsing import ActionParser as AP
 from py_rule.working_memory.trie_wm.parsing import TransformParser as TP
@@ -49,7 +51,7 @@ class NumberParseTests(unittest.TestCase):
         result = TP.parseString("20 AddOp 30 -> $z")
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(result.clauses[0].op, 'AddOp')
-        self.assertEqual([x._value for x in result.clauses[0]._vars], [20, 30])
+        self.assertEqual([x._value for x in result.clauses[0]._params], [20, 30])
 
 
     def test_transform_parse(self):
@@ -64,8 +66,10 @@ class NumberParseTests(unittest.TestCase):
         actions = ["2 AddOp 4 -> $x", "3 SubOp 5 -> $y", "RoundOp 4 -> $z"]
         parsed = [TP.parseString(x) for x in actions]
         zipped = zip(actions, parsed)
+        def_op = PrU.default_opts()
+        def_op['container'] = True
         for x,y in zipped:
-            self.assertEqual(x, y.pprint(as_container=True))
+            self.assertEqual(x, y.pprint(def_op))
 
 
     def test_numbers_parsing(self):
