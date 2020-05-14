@@ -89,7 +89,7 @@ class Trie_WM_Tests(unittest.TestCase):
         self.trie.add('q.e.r')
         result = self.trie.query('$x?')
         self.assertEqual(len(result), 2)
-        values = [d['x'] for d in result]
+        values = [d['x'].value for d in result]
         self.assertTrue('a' in values)
         self.assertTrue('q' in values)
 
@@ -109,8 +109,8 @@ class Trie_WM_Tests(unittest.TestCase):
         self.trie.add('a.b.c, d.e.f')
         result = self.trie.query('a.$x?, d.$y?')
         self.assertTrue(result)
-        self.assertEqual(result[0]['x'], 'b')
-        self.assertEqual(result[0]['y'], 'e')
+        self.assertEqual(result[0]['x'].value, 'b')
+        self.assertEqual(result[0]['y'].value, 'e')
 
     def test_query_exclusion(self):
         """ Check that queries of exclusion property work """
@@ -151,7 +151,7 @@ class Trie_WM_Tests(unittest.TestCase):
         self.assertTrue(result)
         result = self.trie.query('a.b.$x.blah?')
         self.assertTrue(result)
-        self.assertEqual(result[0]['x'], "This is a test")
+        self.assertEqual(result[0]['x'].value, "This is a test")
 
     def test_factbase_to_strings(self):
         self.trie.add('a.b.c')
@@ -222,16 +222,16 @@ class Trie_WM_Tests(unittest.TestCase):
 
         self.assertTrue('x' in result[0])
         self.assertTrue('y' in result[0])
-        self.assertEqual(result[0]['x'], 'b')
-        self.assertEqual(result[0]['y'], 'd')
+        self.assertEqual(result[0]['x'].value, 'b')
+        self.assertEqual(result[0]['y'].value, 'd')
 
     def test_multiple_sub_binding_query(self):
         self.trie.add('a.b.c.d')
         result = self.trie.query('a.$x?, @x.$y?, @y.$z?')
         self.assertTrue(all([x in result[0] for x in ['x','y','z']]))
-        self.assertEqual(result[0]['x'], 'b')
-        self.assertEqual(result[0]['y'], 'c')
-        self.assertEqual(result[0]['z'], 'd')
+        self.assertEqual(result[0]['x'].value, 'b')
+        self.assertEqual(result[0]['y'].value, 'c')
+        self.assertEqual(result[0]['z'].value, 'd')
 
     def test_multiple_contexts_sub_binding(self):
         self.trie.add('a.b.c.d')

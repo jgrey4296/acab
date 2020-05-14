@@ -38,9 +38,9 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result.clauses), 1)
         self.assertEqual(result.clauses[0].op, 'RegexOp')
-        self.assertEqual(result.clauses[0]._vars[0]._value, 'x')
-        self.assertEqual(result.clauses[0]._vars[1]._value,'blah')
-        self.assertEqual(result.clauses[0]._vars[2]._value, 'a')
+        self.assertEqual(result.clauses[0]._params[0]._value, 'x')
+        self.assertEqual(result.clauses[0]._params[1]._value,'blah')
+        self.assertEqual(result.clauses[0]._params[2]._value, 'a')
         self.assertIsNotNone(result.clauses[0]._rebind)
 
     def test_ternary_operator_rebind(self):
@@ -48,9 +48,9 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result.clauses), 1)
         self.assertEqual(result.clauses[0].op, 'RegexOp')
-        self.assertEqual(result.clauses[0]._vars[0].name, 'x')
-        self.assertEqual(result.clauses[0]._vars[1].name,'blah')
-        self.assertEqual(result.clauses[0]._vars[2].name, 'awef')
+        self.assertEqual(result.clauses[0]._params[0].name, 'x')
+        self.assertEqual(result.clauses[0]._params[1].name,'blah')
+        self.assertEqual(result.clauses[0]._params[2].name, 'awef')
         self.assertEqual(result.clauses[0]._rebind.name, 'q')
 
     def test_unary_format(self):

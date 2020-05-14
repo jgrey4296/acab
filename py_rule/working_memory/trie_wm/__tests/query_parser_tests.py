@@ -36,8 +36,8 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         result = QP.QUERY_OP_Internal.parseString('RegMatch /blah/')[0]
         self.assertIsInstance(result, QueryComponent)
         self.assertEqual(result.op, 'RegMatch')
-        self.assertEqual(result._vars[0]._value, 'blah')
-        self.assertEqual(result._vars[0]._data[util.VALUE_TYPE_S], util.REGEX_S)
+        self.assertEqual(result._params[0]._value, 'blah')
+        self.assertEqual(result._params[0]._data[util.VALUE_TYPE_S], util.REGEX_S)
 
     def test_basic_clause(self):
         result = QP.clause.parseString('a.b.c?')[0]
@@ -135,7 +135,9 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertEqual(len(result[0][1]._data[util.CONSTRAINT_S]), 1)
         self.assertIsInstance(result[0][1]._data[util.CONSTRAINT_S][0], QueryComponent)
         self.assertEqual(result[0][1]._data[util.CONSTRAINT_S][0].op, "HasTag")
-        self.assertEqual(result[0][1]._data[util.CONSTRAINT_S][0]._vars, ["first", "second", "third"])
+
+        tags = [x.name for x in result[0][1]._data[util.CONSTRAINT_S][0]._params]
+        self.assertEqual(tags, ["first", "second", "third"])
 
     def test_tag_list_interaction(self):
         result = QP.clause.parseString("a.testing(#first, #second, RegMatch /Test/)?")
