@@ -6,7 +6,6 @@ import logging as root_logger
 
 from py_rule import util
 from py_rule.abstract.value import PyRuleValue
-from py_rule.abstract.node import PyRuleNode
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.printing import util as PrU
 
@@ -41,13 +40,14 @@ class ActionComponent(PO.ProductionComponent):
     and a list of values """
 
 
-    def __init__(self, op_str, params=None, **kwargs):
+    def __init__(self, op_str, params=None, data=None):
         """ Create an action with an operator and values """
         assert all([isinstance(x, Sentence) for x in params]), params
         super(ActionComponent, self).__init__(op_str,
-                                              params=params,
-                                              op_class=ActionOp,
-                                              **kwargs)
+                                              params,
+                                              data=data,
+                                              op_class=ActionOp)
+
 
     @property
     def var_set(self):
@@ -60,7 +60,7 @@ class ActionComponent(PO.ProductionComponent):
         ie: +(.a.b.$x) + { x : .a.b.c } -> +(.a.b.a.b.c)
         """
         new_values = []
-        for x in self._vars:
+        for x in self._params:
             if isinstance(x, Sentence):
                 new_values.append(x.bind(bindings))
             else:
@@ -71,22 +71,22 @@ class ActionComponent(PO.ProductionComponent):
         """ Return the action in canonical form """
         # eg : assert a.test  = assert -> a.test -> nil
         # TODO : params are sentences themselves
-        head = PyRuleNode(self.op, {util.OPERATOR_S : self})
-        sen = Sentence([head] + self._vars[:])
+        head = PyRuleValue(self.op, {util.OPERATOR_S : self})
+        sen = Sentence([head] + self._params[:])
         return sen
 
-    def pprint(self, **kwargs):
-        return PrU.print_operator(self, wrap_vars=True, **kwargs)
+    def pprint(self, opts):
+        opts['wrap'] = True
+        return PrU.print_operator(self, opts)
 
 
 class Action(PO.ProductionContainer):
     """ A Container for Action Specifications """
 
-    def __init__(self, clauses, params=None, type_str=util.ACTION_S, **kwargs):
+    def __init__(self, clauses, params=None, type_str=util.ACTION_S):
         super(Action, self).__init__(clauses,
                                      params=params,
-                                     type_str=type_str,
-                                     **kwargs)
+                                     type_str=type_str)
 
     def bind(self, bindings):
         """ Expand stored bindings """

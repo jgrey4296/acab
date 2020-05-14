@@ -33,7 +33,7 @@ class Agenda(Rule):
 
         # TODO: verify actions to registered variables
 
-    def __call__(self, ctxs=None, engine=None, **kwargs):
+    def __call__(self, ctxs=None, engine=None):
         """ Take the proposals, transform them in some way,
         then enact them on the engine """
 
@@ -43,7 +43,7 @@ class Agenda(Rule):
         settings = agenda_settings[0][0]
 
         # Enact agenda
-        resulting_ctxs = self._action(settings, engine, **kwargs)
+        resulting_ctxs = self._action(settings, engine)
         return resulting_ctxs[0][Agenda.RETURN_NAME_S]
 
 

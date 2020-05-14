@@ -70,22 +70,27 @@ class ProductionOperator(PyRuleValue):
 class ProductionComponent(PyRuleValue):
     """ Pairs a an operator with some bindings """
 
-    def __init__(self, op_str, params, rebind=None, type_str=None, op_class=ProductionOperator, **kwargs):
+    def __init__(self, op_str, params, data=None, rebind=None,
+                 type_str=None, name=None, op_class=ProductionOperator):
         assert(op_class is not None)
-        if 'data' not in kwargs:
-            kwargs['data'] = {}
+        if data is None:
+            data = {}
+        data.update({util.OP_CLASS_S : op_class})
 
-        kwargs['data'].update({util.OP_CLASS_S : op_class})
-        super().__init__(op_str, params=params, type_str=type_str, **kwargs)
+        super().__init__(op_str, type_str=type_str, data=data, name=name)
+        self._params = []
         self._rebind = rebind
+
+        self.apply_params(params)
         self.verify()
 
     def __call__(self, ctx, engine):
         # lookup op
         self.verify()
         op_func = self._data[util.OP_CLASS_S].op_list[self.op]
+        assert(x.name in ctx for x in self._vars)
         # get values from data
-        values = self.get_values(ctx)
+        values = self.get_params(ctx)
         # perform action op with data
         return op_func(*values, data=ctx, engine=engine)
 
@@ -97,36 +102,43 @@ class ProductionComponent(PyRuleValue):
     @property
     def var_set(self):
         obj = super(ProductionComponent, self).var_set
-        for p in self._vars:
-            if isinstance(p, PyRuleValue):
-                tempobj = p.var_set
-                obj['in'].update(tempobj['in'])
-                obj['out'].update(tempobj['out'])
+        for p in self._params:
+            tempobj = p.var_set
+            obj['in'].update(tempobj['in'])
+            obj['in'].update(tempobj['out'])
+
+        if self._rebind is not None:
+            obj['out'].add(self._rebind)
         return obj
 
+
+    def apply_params(self, params):
+        safe_params = [PyRuleValue.safe_make(x) for x in params]
+        self._params += safe_params
 
     def set_rebind(self, bind):
         """ Set this transform to rebind its result to a different variable """
         assert(isinstance(bind, PyRuleValue))
-        assert(util.AT_BIND_S not in bind._data)
+        assert(bind.is_var and not bind.is_at_var)
         self._rebind = bind
         return self
 
-    def get_values(self, data):
+    def get_params(self, data):
         """ Output a list of bindings from this action """
         output = []
-        for x in self._vars:
+        # TODO: enable currying
+        for x in self._params:
             if isinstance(x, Sentence):
                 output.append(x.bind(data))
             elif isinstance(x, list):
                 output.append([y.bind(data) for y in x])
             elif isinstance(x, PyRuleValue) and x.is_var:
                 if x.is_at_var:
-                    output.append(data[util.AT_BIND_S + x._value])
+                    output.append(data[util.AT_BIND_S + x.value])
                 else:
-                    output.append(data[x._value])
+                    output.append(data[x.value].value)
             else:
-                output.append(x._value)
+                output.append(x.value)
         return output
 
     def __refine_op_func(self, op_str):
@@ -135,9 +147,10 @@ class ProductionComponent(PyRuleValue):
         assert(op_str in self._data[util.OP_CLASS_S].op_list)
         self._value = op_str
 
-    def pprint(self, **kwargs):
-        op_fix = [0 if len(self._vars) < 2 else 1][0]
-        return PrU.print_operator(self, op_fix=op_fix, **kwargs)
+
+    def pprint(self, opts):
+        opts['op_fix'] = [0 if len(self._params) < 2 else 1][0]
+        return PrU.print_operator(self, opts)
 
     def to_sentence(self, target=None):
         raise NotImplementedError()
@@ -162,9 +175,8 @@ class ProductionComponent(PyRuleValue):
 class ProductionContainer(PyRuleStatement):
     """ Production Container: An applicable statement """
 
-
-    def __init__(self, clauses, params=None, type_str=STATEMENT_S, **kwargs):
-        super().__init__(clauses, params=params, type_str=type_str, **kwargs)
+    def __init__(self, clauses, params=None, type_str=STATEMENT_S, name=None):
+        super().__init__(clauses, params=params, type_str=type_str, name=name)
 
     def __len__(self):
         return len(self.clauses)
@@ -181,7 +193,7 @@ class ProductionContainer(PyRuleStatement):
                 if x._rebind is None and isinstance(result, dict):
                     ctx.update(result)
                 if x._rebind is not None:
-                    ctx[x._rebind._value] = result
+                    ctx[x._rebind.value] = PyRuleValue.safe_make(result)
 
         return ctxs
 
@@ -212,12 +224,12 @@ class ProductionContainer(PyRuleStatement):
         # create a new context based on the data based in
         assert(isinstance(data, list))
         new_ctxs = []
-        current = {}
         for ctx in data:
+            current = {}
+            current.update(ctx)
             for x in self._vars:
                 current[x] = ctx[x]
             new_ctxs.append(current)
-            current = {}
 
         return new_ctxs
 
@@ -230,11 +242,11 @@ class ProductionContainer(PyRuleStatement):
         for x in self.clauses:
             x.verify(op_constraint=op_constraint)
 
-    def pprint(self, as_container=False, **kwargs):
-        if as_container:
-            return PrU.print_container(self, join_str="\n", **kwargs)
+    def pprint(self, opts):
+        if opts['container']:
+            return PrU.print_container(self, opts)
         else:
-            return super(ProductionContainer, self).pprint(**kwargs)
+            return super(ProductionContainer, self).pprint(opts)
 
-    def pprint_body(self, val, **kwargs):
-        return val + PrU.print_container(self, join_str="\n", **kwargs)
+    def pprint_body(self, val):
+        return val + PrU.print_container(self, join_str="\n")

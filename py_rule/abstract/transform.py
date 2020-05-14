@@ -4,8 +4,8 @@ import logging as root_logger
 from py_rule import util
 from py_rule.abstract.printing import util as PrU
 
+from py_rule.abstract.value import PyRuleValue
 from . import production_operator as PO
-from .node import PyRuleNode
 from .sentence import Sentence
 
 logging = root_logger.getLogger(__name__)
@@ -29,24 +29,16 @@ class TransformOp(PO.ProductionOperator):
 
 class TransformComponent(PO.ProductionComponent):
     """ Superclass of OperatorTransform. Holds an Operator """
-    def __init__(self, op_str, params, rebind=None, type_str=None):
-        super(TransformComponent, self).__init__(op_str, params=params,
+    def __init__(self, op_str, params, rebind=None, data=None, type_str=None):
+        super(TransformComponent, self).__init__(op_str, params,
+                                                 data=data,
                                                  rebind=rebind,
                                                  op_class=TransformOp)
 
-    @property
-    def var_set(self):
-        obj = super(TransformComponent, self).var_set
-        in_set = obj['out']
-        out_set = set()
-        if self._rebind is not None:
-            out_set.update(self._rebind.var_set['out'])
-        return {'in' : in_set, 'out': out_set}
-
 
     def to_sentence(self, target=None):
-        head = PyRuleNode(self.op, {util.OPERATOR_S : self})
-        return Sentence([head] + self._vars[:] + [self._rebind])
+        head = PyRuleValue(self.op, data={util.OPERATOR_S : self})
+        return Sentence([head] + self._params[:] + [self._rebind])
 
 
 class Transform(PO.ProductionContainer):
@@ -55,17 +47,17 @@ class Transform(PO.ProductionContainer):
     """
 
     # have min and max bounds
-    def __init__(self, clauses, type_str=util.TRANSFORM_S, **kwargs):
+    def __init__(self, clauses, type_str=util.TRANSFORM_S):
         assert(all([isinstance(x, TransformComponent) for x in clauses]))
-        super(Transform, self).__init__(clauses, type_str=type_str, **kwargs)
+        super(Transform, self).__init__(clauses, type_str=type_str)
 
     @property
     def var_set(self):
         var_set = {'in': set(), 'out': set()}
         for clause in self.clauses:
-            for word in clause._vars:
+            for word in clause._params:
                 if word.is_var:
-                    var_set['in'].add(word._value)
-            var_set['out'].add(x._rebind._value)
+                    var_set['in'].add(word.value)
+            var_set['out'].add(clause._rebind.value)
 
         return var_set

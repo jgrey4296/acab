@@ -6,8 +6,7 @@ from py_rule.util import BIND_S, OPERATOR_S
 from py_rule.util import SEN_S, AT_BIND_S
 from py_rule.abstract.printing import util as PrU
 
-from .value import PyRuleValue
-from .node import PyRuleNode
+from .value import PyRuleValue, PyRuleStatement
 
 
 class Sentence(PyRuleValue):
@@ -17,22 +16,19 @@ class Sentence(PyRuleValue):
 
     def __init__(self, words=None, params=None, tags=None, data=None):
         if words is not None:
-            assert(all([isinstance(x, PyRuleNode) for x in words])), words
+            assert(all([isinstance(x, PyRuleValue) for x in words])), words
             assert(not any([x.is_at_var for x in words[1:]]))
         else:
             words = []
 
-        super().__init__(words,
-                         data=data,
-                         params=params,
-                         tags=tags,
-                         type_str=SEN_S)
+        super().__init__(words, data=data, params=params, tags=tags, type_str=SEN_S)
 
     def __hash__(self):
         return super(Sentence, self).__hash__()
 
     def __eq__(self, other):
-        return hash(self.pprint()) == hash(other.pprint())
+        default_opts = PrU.default_opts()
+        return hash(self.pprint(default_opts)) == hash(other.pprint(default_opts))
 
     def __iter__(self):
         return iter(self.words)
@@ -99,8 +95,41 @@ class Sentence(PyRuleValue):
 
     def add(self, *other):
         for word in other:
-            assert(isinstance(word, PyRuleNode))
+            assert(isinstance(word, PyRuleValue))
             self._value.append(other)
 
-    def pprint(self, **kwargs):
-        return PrU.print_sequence(self, **kwargs)
+        return self
+
+    def pprint(self, opts):
+        if 'leaf'not in opts:
+            opts['leaf'] = True
+        return PrU.print_sequence(self, opts)
+
+    def attach_statement(self, value):
+        assert(isinstance(value, PyRuleStatement))
+        last = self.words[-1]
+        value_copy = value.copy()
+        sen_copy = self.copy()
+
+        value_copy._name = last.name
+        value_copy.set_path(sen_copy)
+
+        sen_copy._value[-1] = value_copy
+
+        return sen_copy
+
+    def detach_statement(self):
+        sen_copy = self.copy()
+        last = None
+
+        if isinstance(sen_copy[-1], PyRuleStatement):
+            last = sen_copy.words[-1].copy()
+            simple_last = last.to_simple_value()
+            sen_copy._value[-1] = simple_last
+
+        return (sen_copy, last)
+
+    def verify(self):
+        [x.verify() for x in self.words]
+
+        return self

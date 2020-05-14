@@ -35,11 +35,12 @@ class QueryOp(PO.ProductionOperator):
 class QueryComponent(PO.ProductionComponent):
     """ Describe a QueryComponent of values and maybe a binding """
 
-    def __init__(self, op_str, param, type_str=None):
+    def __init__(self, op_str, param, data=None, type_str=None):
         if not isinstance(param, list):
             param = [param]
         super(QueryComponent, self).__init__(op_str,
                                              param,
+                                             data=data,
                                              op_class=QueryOp,
                                              type_str=type_str)
         self.verify()
@@ -55,14 +56,9 @@ class QueryComponent(PO.ProductionComponent):
 
 
     @property
-    def var_set(self):
-        obj = super(QueryComponent, self).var_set
-        return {'in': obj['in'].union(obj['out']), 'out': set()}
-
-    @property
     def is_alpha_test(self):
         """ Return boolean of if test does not rely on other bindings """
-        return bool(self._vars) and not any([x.is_var for x in self._vars])
+        return bool(self._params) and not any([x.is_var for x in self._params])
 
     @property
     def is_regex_test(self):
@@ -73,11 +69,11 @@ class QueryComponent(PO.ProductionComponent):
     def to_sentence(self, target=None):
         """ Create a comparison as a canonical sentence """
         # eg: 20(>30) -> > 20 30 -> bool
-        head = PyRuleNode(self.op, {OPERATOR_S : self})
+        head = PyRuleValue(self.op, {OPERATOR_S : self})
         if target is None:
-            return Sentence([head] + self._vars)
-        assert(isinstance(target, PyRuleNode))
-        return Sentence([head, target] + self._vars)
+            return Sentence([head] + self._params)
+        assert(isinstance(target, PyRuleValue))
+        return Sentence([head, target] + self._params)
 
 
 class Query(PO.ProductionContainer):
