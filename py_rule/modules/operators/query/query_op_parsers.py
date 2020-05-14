@@ -3,6 +3,7 @@ import pyparsing as pp
 from py_rule import util
 from py_rule.abstract.parsing import util as PU
 from py_rule.abstract.query import QueryComponent
+from py_rule.abstract.value import PyRuleValue
 
 from . import query_operators as QO
 
