@@ -20,9 +20,5 @@ def has_equivalent_vars_pred(node):
     Finds nodes with multiple vars as children that can be merged """
     if node.name == util.ROOT_S:
         return False
-    var_children = [x for x in node._children.values() if x._is_var]
+    var_children = [x for x in node._children.values() if x.is_var]
     return len(var_children) > 1
-
-
-def is_var(node):
-    return node.is_var

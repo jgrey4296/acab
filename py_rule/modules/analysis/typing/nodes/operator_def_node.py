@@ -45,7 +45,7 @@ class OperatorDefTrieNode(TypeDefTrieNode):
         # add to internal search trie
         if self._typedef_trie is None:
             self._typedef_trie = Trie(node_type=TypeAssignmentTrieNode)
-            self._typedef_trie.root._type_instance = data.build_type_declaration()
+            self._typedef_trie.root._type_instance = data.build_type_instance()
 
         for x in data.structure:
             # TODO This might need to generate new vars

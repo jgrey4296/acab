@@ -13,10 +13,9 @@ class TypeAssignmentTrieNode(MonoTypedNode):
     Enables linking with variable type trie """
 
     def __init__(self, value, _type=None, var_node=None):
+        assert(var_node is None or isinstance(var_node, MonoTypedNode))
         super().__init__(value, _type=_type)
         self._var_node = var_node
-        self._is_var = util.is_var(value)
-
 
     def update(self, node, lookup):
         """ Post-addition update method.
@@ -25,11 +24,11 @@ class TypeAssignmentTrieNode(MonoTypedNode):
                                                          str(node)))
         # apply type if necessary
         self.type_match_wrapper(node)
-        if not (self._is_var == util.is_var(node)):
+        if not (self.is_var == node.is_var):
             # complain if var status doesn't match
             raise te.TypeVariableConflictException(self)
 
-        if self._is_var and self._var_node is None:
+        if self.is_var and self._var_node is None:
             # if var, connect to var type trie
             self._var_node = lookup.add([self._value], [])
             self._var_node.add_node(self)

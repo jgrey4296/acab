@@ -1,7 +1,5 @@
 import logging as root_logger
 
-from py_rule.modules.analysis.typing.util import is_var
-
 from .typed_node import MonoTypedNode
 
 logging = root_logger.getLogger(__name__)
@@ -17,11 +15,10 @@ class VarTypeTrieNode(MonoTypedNode):
 
 
     def add_node(self, node):
-        assert(is_var(node))
+        assert(node.is_var)
         self._nodes.add(node)
         self._var_names.add(node.name)
         self.type_match_wrapper(node)
-        node._is_var = True
         node._var_node = self
 
     def propagate(self):
@@ -32,7 +29,7 @@ class VarTypeTrieNode(MonoTypedNode):
     def merge(self, nodes):
         assert(all([isinstance(x, VarTypeTrieNode) for x in nodes]))
         logging.debug("Merging Variables: {} into {}".format(", ".join([str(x.name) for x in nodes]),
-                                                             self._value))
+                                                             self.value))
         # update self to point to all assignment nodes
         dummy = [self.add_node(y) for x in nodes for y in x._nodes]
 

@@ -122,7 +122,7 @@ class TypeChecker(ActionOp):
         a.b.$c and a.b.$d share the same ._variables node """
         parents_of_equiv_vars = self._declarations.get_nodes(TU.has_equivalent_vars_pred)
         for p in parents_of_equiv_vars:
-            var_nodes = {x._var_node for x in p._children.values() if x._is_var}
+            var_nodes = {x._var_node for x in p._children.values() if x.is_var}
             head = var_nodes.pop()
             head.merge(var_nodes)
             dummy = [self._variables.remove([x]) for x in var_nodes]
@@ -182,14 +182,14 @@ class TypeChecker(ActionOp):
             # TODO branch on structural /functional
 
             # check the head
-            head_type = self._structural_definitions.query(head.type_instance._value)
+            head_type = self._structural_definitions.query(head.type_instance.path)
             if head_type is None:
                 raise te.TypeUndefinedException(head.type_instance, head)
 
             # Propagate the type to all connected variables
             # TODO: if var nodes also link *into* polytype def nodes
             # that would solve generalisation?
-            if head._is_var:
+            if head.is_var:
                 head._var_node.type_match(head.type_instance)
                 head._var_node.propagate()
                 typed_queue.update(head._var_node._nodes)
@@ -202,12 +202,13 @@ class TypeChecker(ActionOp):
 
         return True
 
-    def add_definition(self, definition):
-        assert(isinstance(definition, TypeDefinition))
-        if isinstance(definition, OperatorDefinition):
-            self._functional_definitions.add(definition._path, definition)
-        else:
-            self._structural_definitions.add(definition._path, definition)
+    def add_definition(self, *definitions):
+        for a_def in definitions:
+            assert(isinstance(a_def, TypeDefinition))
+            if isinstance(a_def, OperatorDefinition):
+                self._functional_definitions.add(a_def.path, a_def)
+            else:
+                self._structural_definitions.add(a_def.path, a_def)
 
     def add_assertion(self, sen):
         assert(isinstance(sen, Sentence))

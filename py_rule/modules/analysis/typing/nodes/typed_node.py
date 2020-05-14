@@ -4,6 +4,7 @@ from py_rule.abstract.node import PyRuleNode
 from py_rule.modules.analysis.typing.util import TYPE_DEC_S
 import py_rule.error.type_exceptions as te
 
+from py_rule.modules.analysis.typing.values.type_instance import TypeInstance
 logging = root_logger.getLogger(__name__)
 
 
@@ -11,10 +12,14 @@ class MonoTypedNode(PyRuleNode):
     """ Base Node for a Type Trie """
 
     def __init__(self, value, _type=None):
+        assert(_type is None or isisntance(type, TypeInstance))
         super().__init__(value)
         self._type_instance = _type
 
 
+    @property
+    def is_var(self):
+        return self.value.is_var
     @property
     def type_instance(self):
         return self._type_instance
@@ -26,9 +31,12 @@ class MonoTypedNode(PyRuleNode):
         return self.type_match(node._data[TYPE_DEC_S])
 
     def type_match(self, _type):
+        assert(isinstance(_type, TypeInstance))
+        result = None
         if self._type_instance is None:
             self._type_instance = _type
-            return self
+            result = self
         elif self._type_instance != _type:
             raise te.TypeConflictException(self._type_instance, _type, self.name)
-        return None
+
+        return result

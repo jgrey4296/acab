@@ -20,34 +20,25 @@ class TypeDefinition(TypeStatement):
         # The name is the location. eg: .types.person
         assert isinstance(structure, list)
         assert all([isinstance(x, Sentence) for x in structure])
-        super().__init__(structure, params=params, type_str=type_str)
+        super().__init__(None, params=params, type_str=type_str)
+        self._structure = []
 
-        # unify shared variables across structure sentences to have the same type
-        # go through all sentences
-        variables = {}
-        for sentence in self.structure:
-            # track variables
-            for word in sentence:
-                if word.is_var:
-                    if word._value not in variables:
-                        variables[word._value] = {'types': set(), 'instances': []}
-                    variables[word._value]['instances'].append(word)
-                    # find variables with type annotations
-                    if TYPE_DEC_S in word._data:
-                        variables[word._value]['types'].add(word._data[TYPE_DEC_S])
+        if bool(structure):
+            self._structure += structure
 
-        # Then unify all the variables to have the same type
-        for the_dict in variables.values():
-            types, instances = the_dict.values()
-            assert(len(types) < 2)
-            if bool(types):
-                type_instance = types.pop()
-                for word in instances:
-                    word._data[TYPE_DEC_S] = type_instance
+        self.unify_structure_variables()
+
+    def __eq__(self, other):
+        path_eq = self.path == other.path
+        structure_len = len(self.structure) == len(other.structure)
+        structure_eq = [x == y for x,y in zip(self.structure, other.structure)]
+
+        return path_eq and structure_len and structure_eq
+
 
     @property
     def structure(self):
-        return self._value
+        return self._structure
 
     @property
     def var_set(self):
@@ -60,12 +51,23 @@ class TypeDefinition(TypeStatement):
         return obj
 
 
-    def build_type_declaration(self):
-        just_path = self.path.copy()
-        if just_path[-1]._data[VALUE_TYPE_S] == TYPE_DEF_S:
-            just_path[-1]._data[VALUE_TYPE_S] = NAME_S
-            just_path[-1]._value = self.name
-        return TypeInstance(just_path, args=self.vars)
+    def build_type_instance(self, the_dict=None):
+        just_path, statement = self.path.detach_statement()
+        assert(statement is not None)
+
+        if the_dict is None:
+            return TypeInstance(just_path, params=self.vars)
+
+        new_args = []
+        for x in self.vars:
+            if isinstance(x, PyRuleValue) and x.name in the_dict:
+                new_args.append(the_dict[x.name])
+            else:
+                assert(isinstance(x, TypeInstance))
+                new_args.append(x)
+
+        return TypeInstance(just_path, params=new_args)
+
 
     def verify(self):
         input_vars = set(self.vars)
@@ -76,3 +78,29 @@ class TypeDefinition(TypeStatement):
 
         if bool(input_vars):
             raise PyRuleParseException()
+
+    def unify_structure_variables(self):
+
+        # unify shared variables across structure sentences to have the same type
+        # go through all sentences
+        variables = {}
+        for sentence in self.structure:
+            # track variables
+            var_words = [x for x in sentence if x.is_var]
+            missing_vars = [x.value for x in var_words if x.value not in variables]
+            variables.update({x: {'types': set(), 'instances': []} for x in missing_vars})
+
+            for word in var_words:
+                variables[word.value]['instances'].append(word)
+                    # find variables with type annotations
+                if TYPE_DEC_S in word._data:
+                    variables[word.value]['types'].add(word._data[TYPE_DEC_S])
+
+        # Then unify all the variables to have the same type
+        for the_dict in variables.values():
+            types, instances = the_dict.values()
+            assert(len(types) < 2)
+            if bool(types):
+                type_instance = types.pop()
+                for word in instances:
+                    word._data[TYPE_DEC_S] = type_instance
