@@ -20,12 +20,11 @@ class FactNode(PyRuleNode):
         return FactNode(WMU.ROOT_S, WMU.DEFAULT_NODE_DATA)
 
 
-    def __init__(self, value, data=None, type_str=None, tags=None, name=None):
-        assert isinstance(data[WMU.OPERATOR_S], WMU.EXOP), data
-        if data is None:
-            data = WMU.DEFAULT_NODE_DATA.copy()
-
-        super().__init__(value, data, type_str=type_str, tags=tags, name=name)
+    def __init__(self, value, data=None):
+        default_data = WMU.DEFAULT_NODE_DATA.copy()
+        if data is not None:
+            default_data.update(data)
+        super().__init__(value, default_data)
 
         self._dirty = True
         self._cached = []
@@ -36,42 +35,62 @@ class FactNode(PyRuleNode):
         return str(self) == str(other)
 
     def __contains__(self, other):
+        assert(isinstance(other, PyRuleValue))
         if self.has_child(other):
-            return self.get_child(other)._data[WMU.OPERATOR_S] == other._data[WMU.OPERATOR_S]
+            return self.get_child(other).exop == other._data[WMU.OPERATOR_S]
         return False
 
     def __hash__(self):
         return hash(str(self))
 
 
+    @property
+    def exop(self):
+        if WMU.OPERATOR_S in self.value._data:
+            return self.value._data[WMU.OPERATOR_S]
+        else:
+            return self._data[WMU.OPERATOR_S]
+
     def insert(self, fact):
         """ Insert A Node as a Child of this Node """
+        assert(isinstance(fact, PyRuleValue))
+        # deal with exclusion
         if fact in self:
-            return self.get_child(fact)
+            retrieved_node = self.get_child(fact)
+            # deal with exclusion
+            if self.exop == WMU.EXOP.EX:
+                self.clear_children()
+                self.add_child(retrieved_node)
+
+            return retrieved_node
 
         new_node = FactNode(fact)
         new_node.set_parent(self)
 
         # deal with exclusion
-        if self._data[WMU.OPERATOR_S] == WMU.EXOP.EX:
+        if self.exop == WMU.EXOP.EX:
             self.clear_children()
 
-        self.add_child(copied)
-        return copied
+        self.add_child(new_node)
+        return new_node
 
     def get(self, fact):
         """ Retrieve a Node from this Node """
-        assert(isinstance(fact, PyRuleNode))
+        assert(isinstance(fact, PyRuleValue))
+        potential = None
+        operator = None
         if fact in self:
             potential = self.get_child(fact)
-            if fact._data[WMU.OPERATOR_S] == potential._data[WMU.OPERATOR_S]:
-                return potential
+            operator = potential._data[WMU.OPERATOR_S]
 
-        return None
+        if fact._data[WMU.OPERATOR_S] != operator:
+            potential = None
+
+        return potential
 
     def delete_node(self, fact):
         """ Remove a Node from this Node """
-        assert(isinstance(fact, PyRuleNode))
+        assert(isinstance(fact, PyRuleValue))
         if self.remove_child(fact):
             self._set_dirty_chain()
 
@@ -86,4 +105,3 @@ class FactNode(PyRuleNode):
         # TODO
         # { bindNode : [ options ] }
         raise NotImplementedError()
-

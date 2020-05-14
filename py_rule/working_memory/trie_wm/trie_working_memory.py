@@ -47,6 +47,7 @@ class TrieWM(WorkingMemory):
         else:
             raise PyRuleOperatorException("Incorrect Eq arg: {}".format(type(other)))
 
+
     def add(self, data):
         """ Assert multiple facts from a single string """
         if isinstance(data, str):
@@ -132,8 +133,8 @@ class TrieWM(WorkingMemory):
         """ Assert a sentence of chained facts """
         assert (isinstance(sen, Sentence)), sen
         self._clear_last_node()
-        for new_node in sen:
-            self._last_node = self._last_node.insert(new_node)
+        for word in sen:
+            self._last_node = self._last_node.insert(word)
 
         self._last_node._set_dirty_chain()
 
@@ -156,7 +157,6 @@ class TrieWM(WorkingMemory):
         """ Query a TrieQuery instance """
         assert(isinstance(query, (Query, Sentence)))
         self._clear_last_node()
-        # TODO: handle a passed in context
         initial_context = Contexts(start_node=self._internal_trie._root,
                                    bindings=ctxs, engine=engine)
         return self._internal_query(query, initial_context)
@@ -169,8 +169,8 @@ class TrieWM(WorkingMemory):
         self._last_node = self._internal_trie._root
 
     def _internal_query(self, query, ctxs):
-        """ Go down the trie, running each test as necessary
-        annotating contexts as necessary
+        """ Go down the trie, running each defined test,
+        annotating bind groups as necessary
         """
         contexts = ctxs
         pos, neg = query.split_clauses()
@@ -185,8 +185,8 @@ class TrieWM(WorkingMemory):
         for clause in clauses:
             # Return to root unless clause has a head @ binding
             binding_val = None
-            if clause[0]._data[util.BIND_S] == util.AT_BIND_S:
-                binding_val = clause[0]._value
+            if clause[0].is_at_var:
+                binding_val = clause[0].value
 
             contexts.force_node_position(target=self._internal_trie._root,
                                          binding=binding_val)
@@ -215,7 +215,7 @@ class TrieWM(WorkingMemory):
         """ Test a single clause, annotating contexts upon success and failure """
         assert(isinstance(clause, Sentence))
         logging.debug("Testing Clause: {}".format(repr(clause)))
-        # early exit:
+        # exit early if empty:
         if not contexts:
             return
 
@@ -227,7 +227,7 @@ class TrieWM(WorkingMemory):
             if not bool(contexts):
                 break
 
-            if word._data[util.BIND_S] == util.AT_BIND_S:
+            if word.is_at_var:
                 continue
 
             # test each active alternative
