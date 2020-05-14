@@ -4,6 +4,7 @@ import unittest
 import logging
 from py_rule import abstract
 from py_rule.abstract.node import PyRuleNode
+from py_rule.abstract.value import PyRuleValue as PV
 from py_rule.abstract.action import ActionComponent, ActionOp
 from py_rule import util
 from py_rule.abstract.sentence import Sentence
@@ -31,10 +32,11 @@ class ActionTests(unittest.TestCase):
 
     def test_var_set(self):
         ActionOp.op_list['testOp'] = True
-        param = PyRuleNode("test", data={util.BIND_S: True})
-        action = ActionComponent("testOp", [Sentence([param])])
+        param = PV("test", data={util.BIND_S: True})
+        param_sen = Sentence([param])
+        action = ActionComponent("testOp", [param_sen])
         var_set = action.var_set
-        self.assertTrue("test" in var_set['in'])
+        self.assertTrue(param in var_set['in'])
         del ActionOp.op_list['testOp']
 
 

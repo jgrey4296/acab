@@ -5,6 +5,7 @@ import logging
 from py_rule.abstract.query import QueryComponent, QueryOp
 from py_rule import util
 from py_rule.abstract.node import PyRuleNode
+from py_rule.abstract.value import PyRuleValue as PV
 
 
 
@@ -30,10 +31,11 @@ class QueryTests(unittest.TestCase):
 
     def test_var_set(self):
         QueryOp.op_list['test'] = True
-        bind = PyRuleNode("an_input", data={util.BIND_S: True})
+        bind = PV("an_input", data={util.BIND_S: True})
         comp = QueryComponent("test", [bind])
         var_set = comp.var_set
-        self.assertTrue("an_input" in var_set['in'])
+        var_set_str = [x.name for x in var_set['in']]
+        self.assertTrue("an_input" in var_set_str)
         del QueryOp.op_list['test']
 
 

@@ -18,12 +18,12 @@ class PyRuleNodeTests2(unittest.TestCase):
         the_node = PyRuleNode("test")
         self.assertIsNotNone(the_node)
         self.assertIsInstance(the_node, PyRuleNode)
-        self.assertEqual(the_node._value, "test")
+        self.assertEqual(the_node.name, "test")
 
     def test_root(self):
         root = PyRuleNode.Root()
         self.assertIsInstance(root, PyRuleNode)
-        self.assertEqual(root._value, util.ROOT_S)
+        self.assertEqual(root.name, util.ROOT_S)
 
 
 if __name__ == "__main__":

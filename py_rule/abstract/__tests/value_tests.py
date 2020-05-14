@@ -2,7 +2,9 @@
 from os.path import splitext, split
 import unittest
 import logging
-from py_rule.abstract.value import PyRuleValue
+
+from py_rule.abstract.printing import util as PrU
+from py_rule.abstract.value import PyRuleValue, PyRuleStatement
 from py_rule.abstract.node import PyRuleNode
 from py_rule.abstract.sentence import Sentence
 from py_rule.util import AT_BIND_S, BIND_S
@@ -38,25 +40,37 @@ class PyRuleValueTests(unittest.TestCase):
         var_set = value.var_set
         self.assertTrue(all([x in var_set['in'] for x in ["a","b","c"]]))
 
-    def test_apply_onto(self):
-        value = PyRuleValue("test")
+    def test_attach_statement(self):
+        value = PyRuleStatement("test")
         value._tags.add('testval')
-        sen = Sentence([PyRuleNode(x) for x in range(5)])
-        self.assertEqual(sen[-1]._value, 4)
-        self.assertIsInstance(sen[-1]._value, int)
-        value.apply_onto(sen)
-        self.assertIsInstance(sen[-1]._value, PyRuleValue)
+        sen = Sentence([PyRuleValue(x) for x in range(5)])
+        self.assertEqual(sen[-1].value, 4)
+        self.assertIsInstance(sen[-1].value, int)
+        copied = sen.attach_statement(value)
+        self.assertIsInstance(copied[-1], PyRuleStatement)
+        self.assertEqual(copied[-1]._value, "test")
+        self.assertEqual(copied[-1].name, 4)
 
-    def test_apply_onto_with_tags(self):
-        value = PyRuleValue("test")
+    def test_attach_statement_with_tags(self):
+        value = PyRuleStatement("test")
         value._tags.add('testval')
-        sen = Sentence([PyRuleNode(x) for x in range(5)])
+        sen = Sentence([PyRuleValue(x) for x in range(5)])
         self.assertEqual(sen[-1]._value, 4)
         self.assertIsInstance(sen[-1]._value, int)
-        self.assertFalse("testTag" in value._tags)
-        value.apply_onto(sen, tags=["testTag"])
-        self.assertIsInstance(sen[-1]._value, PyRuleValue)
-        self.assertTrue("testTag" in value._tags)
+        copied = sen.attach_statement(value)
+
+        self.assertIsInstance(copied[-1], PyRuleStatement)
+
+    def test_attach_statement_fail(self):
+        value = PyRuleValue("test")
+        value._tags.add('testval')
+        sen = Sentence([PyRuleValue(x) for x in range(5)])
+        self.assertEqual(sen[-1]._value, 4)
+        self.assertIsInstance(sen[-1]._value, int)
+
+        with self.assertRaises(AssertionError):
+            copied = sen.attach_statement(value)
+
 
     def test_has_tag(self):
         value = PyRuleValue("test")
@@ -82,7 +96,7 @@ class PyRuleValueTests(unittest.TestCase):
         value = PyRuleValue("test")
         value._data.update({BIND_S: AT_BIND_S})
         self.assertTrue(value.is_at_var)
-        self.assertEqual(value.pprint(), "@test")
+        self.assertEqual(value.pprint(PrU.default_opts()), "@test")
 
     @unittest.skip('TODO')
     def test_verify(self):

@@ -3,6 +3,7 @@ from os.path import splitext, split
 import unittest
 import logging
 from py_rule.abstract.node import PyRuleNode
+from py_rule.abstract.value import PyRuleValue as PV
 from py_rule import util
 
 class PyRuleNodeTests(unittest.TestCase):
@@ -19,11 +20,11 @@ class PyRuleNodeTests(unittest.TestCase):
 
     #----------
     def test_basic_creation(self):
-        a_node = PyRuleNode("test")
+        a_node = PyRuleNode(PV("test"))
         self.assertIsNotNone(a_node)
 
     def test_length(self):
-        a_node = PyRuleNode("test")
+        a_node = PyRuleNode(PV("test"))
         self.assertEqual(len(a_node), 0)
         a_node._children['a child'] = True
         self.assertEqual(len(a_node), 1)
@@ -31,7 +32,7 @@ class PyRuleNodeTests(unittest.TestCase):
         self.assertEqual(len(a_node), 2)
 
     def test_bool(self):
-        a_node = PyRuleNode("test")
+        a_node = PyRuleNode(PV("test"))
         self.assertEqual(bool(a_node), False)
         a_node._children['a child'] = True
         self.assertEqual(bool(a_node), True)
@@ -39,14 +40,14 @@ class PyRuleNodeTests(unittest.TestCase):
         self.assertEqual(bool(a_node), True)
 
     def test_contains(self):
-        a_node = PyRuleNode("value")
+        a_node = PyRuleNode(PV("value"))
         a_node._children['child'] = True
         self.assertTrue('child' in a_node)
         self.assertFalse('blah' in a_node)
 
     def test_add_child(self):
-        a_node = PyRuleNode('value')
-        b_node = PyRuleNode('value2')
+        a_node = PyRuleNode(PV('value'))
+        b_node = PyRuleNode(PV('value2'))
         self.assertFalse(bool(a_node))
         self.assertEqual(len(a_node), 0)
         a_node.add_child(b_node)
@@ -55,8 +56,8 @@ class PyRuleNodeTests(unittest.TestCase):
         self.assertTrue('value2' in a_node)
 
     def test_has_child(self):
-        a_node = PyRuleNode('value')
-        b_node = PyRuleNode('value2')
+        a_node = PyRuleNode(PV('value'))
+        b_node = PyRuleNode(PV('value2'))
         self.assertFalse(bool(a_node))
         self.assertEqual(len(a_node), 0)
         a_node.add_child(b_node)
@@ -65,8 +66,8 @@ class PyRuleNodeTests(unittest.TestCase):
         self.assertTrue(a_node.has_child(b_node))
 
     def test_get_child(self):
-        a_node = PyRuleNode('value')
-        b_node = PyRuleNode('value2')
+        a_node = PyRuleNode(PV('value'))
+        b_node = PyRuleNode(PV('value2'))
         self.assertFalse(bool(a_node))
         self.assertEqual(len(a_node), 0)
         a_node.add_child(b_node)
@@ -79,8 +80,8 @@ class PyRuleNodeTests(unittest.TestCase):
         self.assertEqual(gotten_node_b, b_node)
 
     def test_remove_child(self):
-        a_node = PyRuleNode('value')
-        b_node = PyRuleNode('value2')
+        a_node = PyRuleNode(PV('value'))
+        b_node = PyRuleNode(PV('value2'))
         self.assertFalse(bool(a_node))
         self.assertEqual(len(a_node), 0)
         a_node.add_child(b_node)
@@ -92,9 +93,9 @@ class PyRuleNodeTests(unittest.TestCase):
         self.assertFalse(bool(a_node))
 
     def test_clear_children(self):
-        a_node = PyRuleNode('value')
-        b_node = PyRuleNode('value2')
-        c_node = PyRuleNode('value3')
+        a_node = PyRuleNode(PV('value'))
+        b_node = PyRuleNode(PV('value2'))
+        c_node = PyRuleNode(PV('value3'))
         self.assertFalse(bool(a_node))
         self.assertEqual(len(a_node), 0)
         a_node.add_child(b_node)
@@ -106,16 +107,16 @@ class PyRuleNodeTests(unittest.TestCase):
 
 
     def test_var_set(self):
-        node = PyRuleNode("test", data={util.BIND_S: True})
+        node = PyRuleNode(PV("test", data={util.BIND_S: True}))
         var_set = node.var_set
-        self.assertTrue("test" in var_set['out'])
+        var_set_str = [x.name for x in var_set['out']]
+        self.assertTrue("test" in var_set_str)
 
     def test_nested_var_set(self):
-        node = PyRuleNode("inner", data={util.BIND_S: True})
-        outer = PyRuleNode(node)
-        var_set = outer.var_set
-        self.assertTrue("inner" in var_set['out'])
-
+        node = PyRuleNode(PV("inner", data={util.BIND_S: True}))
+        var_set = node.var_set
+        var_set_str = [x.name for x in var_set['in']]
+        self.assertTrue('inner' in var_set_str)
 
 if __name__ == "__main__":
     #run python $filename to use this logging setup

@@ -5,7 +5,7 @@ import logging
 import pyparsing as pp
 from py_rule.abstract.parsing import util as PU
 from py_rule.abstract.node import PyRuleNode
-from py_rule.abstract.value import PyRuleValue
+from py_rule.abstract.value import PyRuleValue, PyRuleStatement
 from py_rule.abstract.sentence import Sentence
 
 class StatementTests(unittest.TestCase):
@@ -24,38 +24,38 @@ class StatementTests(unittest.TestCase):
     #use testcase snippets
     def test_basic_tag(self):
         basic_node_parser = pp.Keyword('test')
-        basic_node_parser.setParseAction(lambda toks: Sentence([PyRuleNode(toks[0])]))
+        basic_node_parser.setParseAction(lambda toks: Sentence([PyRuleValue(toks[0])]))
 
         basic_value_parser = pp.Keyword('value') + pp.lineEnd
-        basic_value_parser.setParseAction(lambda toks: ('value', PyRuleValue(toks[0])))
+        basic_value_parser.setParseAction(lambda toks: ('value', PyRuleStatement(toks[0])))
 
         statement_p = PU.STATEMENT_CONSTRUCTOR(pp.Keyword('blah'),
                                                basic_node_parser,
                                                basic_value_parser)
 
-        result = statement_p.parseString("test: (::blah)\n#test\n\nvalue\nend")
-
-        value = result[0][-1]._value
-
-        self.assertTrue('test' in value._tags)
+        result = statement_p.parseString("test: (::blah)\n#test\n\nvalue\nend")[0]
+        tags_str = [x.value for x in result[-1]._tags]
+        self.assertTrue('test' in tags_str)
 
     def test_basic_tag_plural(self):
         basic_node_parser = pp.Keyword('test')
-        basic_node_parser.setParseAction(lambda toks: Sentence([PyRuleNode(toks[0])]))
+        basic_node_parser.setParseAction(lambda toks: Sentence([PyRuleValue(toks[0])]))
 
         basic_value_parser = pp.Keyword('value') + pp.lineEnd
-        basic_value_parser.setParseAction(lambda toks: ('value', PyRuleValue(toks[0])))
+        basic_value_parser.setParseAction(lambda toks: ('value', PyRuleStatement(toks[0])))
 
         statement_p = PU.STATEMENT_CONSTRUCTOR(pp.Keyword('blah'),
                                                basic_node_parser,
                                                basic_value_parser)
 
-        result = statement_p.parseString("test: (::blah)\n#abcd, #aaaa, #bbbb\n\nvalue\nend")
-        value = result[0][-1]._value
+        result = statement_p.parseString("test: (::blah)\n#abcd, #aaaa, #bbbb\n\nvalue\nend")[0]
+        value = result[-1]
 
-        self.assertTrue('abcd' in value._tags)
-        self.assertTrue('aaaa' in value._tags)
-        self.assertTrue('bbbb' in value._tags)
+        tags_str = [x.value for x in value._tags]
+
+        self.assertTrue('abcd' in tags_str)
+        self.assertTrue('aaaa' in tags_str)
+        self.assertTrue('bbbb' in tags_str)
 
 
 

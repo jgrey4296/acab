@@ -38,7 +38,7 @@ class TrieTests(unittest.TestCase):
         self.assertEqual(3, len(t))
         result = t.query(['a','b','c'])
         self.assertIsInstance(result, PyRuleNode)
-        self.assertEqual(result._value, 'c')
+        self.assertEqual(result.name, 'c')
 
     def test_trie_query_fail(self):
         t = Trie()
@@ -65,7 +65,7 @@ class TrieTests(unittest.TestCase):
         self.assertEqual(3, len(t))
         nodes = t.get_nodes()
         self.assertEqual(3, len(nodes))
-        self.assertEqual({x._value for x in nodes}, {'a','b','c'})
+        self.assertEqual({x.name for x in nodes}, {'a','b','c'})
 
 
     def test_trie_pattern_match(self):
@@ -84,10 +84,10 @@ class TrieTests(unittest.TestCase):
 
 
 def pattern_match_fn(head, available):
-    if head._value == "a":
+    if head.name == "a":
         return available
 
-    return [x for x in available if x._value == head._value]
+    return [x for x in available if x.name == head.name]
 
 
 if __name__ == "__main__":
