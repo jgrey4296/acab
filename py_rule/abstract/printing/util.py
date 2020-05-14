@@ -2,6 +2,7 @@
 Utilities for printing out information
 """
 from py_rule import util
+from collections import defaultdict
 
 #Setup
 def setup_modal_lookups(a_dict, reset=False):
@@ -23,11 +24,22 @@ def setup_primitive_lookups(a_dict, reset=False):
     assert(all([callable(x) for x in a_dict.values()]))
     TYPE_WRAPS.update(a_dict)
 
+
+def default_opts(*args, join="", **kwargs):
+    opts = defaultdict(lambda: False)
+    for x in args:
+        opts[x] = True
+    for x,y in kwargs.items():
+        opts[x] = y
+    opts['join'] = join
+    return opts
+
 # TOP LEVEL UTILITIES
-def print_value(value, leaf=False, **kwargs):
-    # TODO: handle printing a primitive value
+def print_value(value, opts):
 
     val = value.name
+    if 'internal_value' in opts:
+        val = opts['internal_value']
 
     # setup the value type
     type_str = None
@@ -49,23 +61,30 @@ def print_value(value, leaf=False, **kwargs):
         val = _wrap_constraints(val, value._data[util.CONSTRAINT_S])
 
     # Wrap modal Operator
-    if not leaf and util.OPERATOR_S in value._data:
+    if not opts['leaf'] and util.OPERATOR_S in value._data:
         val = _wrap_modal_operator(val, value._data[util.OPERATOR_S])
 
     return val
 
-def print_operator(operator, op_fix=0, wrap_vars=False):
+def print_operator(operator, opts):
     """ Op Fix is the count of vars to print before printing the op.
     eg: op_fix=0 : + 1 2 3 ...
         op_fix=2 : 1 2 + 3 ...
     """
     # Format the vars of the operator
-    the_vars = [x.pprint(leaf=True) for x in operator._vars]
+    op_fix = opts['op_fix']
+    wrap_params = opts['wrap']
+    if not op_fix:
+        op_fix = 0
 
-    if wrap_vars:
-        # Wrap variables in parens if an action
+    def_op = default_opts()
+    def_op['leaf'] = True
+    the_params = [x.pprint(def_op) for x in operator._params]
+
+    if wrap_params:
+        # Wrap params in parens if an action
         assert(op_fix == 0)
-        val = "{}({})".format(operator.op, ",".join(the_vars))
+        val = "{}({})".format(operator.op, ",".join(the_params))
     else:
         # Don't wrap comps or transforms
         head = " ".join([str(x) for x in the_vars[:op_fix]] + [operator.op])
@@ -78,18 +97,19 @@ def print_operator(operator, op_fix=0, wrap_vars=False):
 
     return val
 
-def print_sequence(seq, join_str=None, leaf=True, **kwargs):
+def print_sequence(seq, opts):
+    join_str = opts['join']
+
     if not bool(seq):
         return ""
 
     words = []
     if len(seq) > 1:
-        words = [x.pprint(leaf=False) for x in seq.words[:-1]]
+        def_op = default_opts()
+        words = [x.pprint(def_op) for x in seq.words[:-1]]
 
-    last_word = [seq.words[-1].pprint(leaf=leaf)]
+    last_word = [seq.words[-1].pprint(opts)]
 
-    if join_str is None:
-        join_str = ""
     val = join_str.join(words + last_word)
 
     # Wrap as Query
@@ -106,11 +126,15 @@ def print_sequence(seq, join_str=None, leaf=True, **kwargs):
 
     return val
 
-def print_container(container, join_str="\n\t", **kwargs):
-    the_clauses = [x.pprint(**kwargs) for x in container.clauses]
-    return join_str.join(the_clauses)
+def print_container(container, opts):
+    opts_copy = opts.copy()
+    the_clauses = [x.pprint(opts_copy) for x in container.clauses]
+    if 'join' not in opts:
+        opts['join'] = "\n\t"
 
-def print_statement(statement, is_structured=False, has_end=True, **kwargs):
+    return opts['join'].join(the_clauses)
+
+def print_statement(statement, opts):
 
     head, body = statement.pprint_has_content
 
@@ -129,13 +153,14 @@ def print_statement(statement, is_structured=False, has_end=True, **kwargs):
     # Add the statement body, which is specific to each statement type
     val = statement.pprint_body(val)
 
-    if has_end:
+    if opts['leaf'] or opts['end']:
         val = _wrap_end(val, newline=head or body)
 
     return val
 
 def print_fallback(fallback_list):
-    return ", ".join(["{}:{}".format(_wrap_var(x[0]), x[1].pprint())
+    def_op = default_opts()
+    return ", ".join(["{}:{}".format(_wrap_var(x[0]), x[1].pprint(def_op))
                       for x in fallback_list])
 
 
@@ -180,9 +205,10 @@ def _wrap_rebind(value, rebind, is_sugar=False):
     if is_sugar:
         arrow = "=>"
 
+    def_op = default_opts('leaf')
     return "{} {} {}".format(value,
                              arrow,
-                             print_value(rebind, leaf=True))
+                             print_value(rebind, def_op))
 
 def _wrap_question(value):
     return "{}{}".format(value, util.QUERY_SYMBOL_S)
@@ -194,13 +220,13 @@ def _wrap_fallback(value, fallback_list):
     return "{} || {}".format(value, print_fallback(fallback_list))
 
 def _wrap_tags(value, tags, sep="\n\t"):
-    return "{}{}{}".format(value, sep, ", ".join(sorted([util.TAG_SYMBOL_S + x for x in tags])))
+    tags_s = [x.name for x in tags]
+    return "{}{}{}".format(value, sep, ", ".join(sorted([util.TAG_SYMBOL_S + x for x in tags_s])))
 
 def _maybe_wrap(value, maybeNone, sep=None):
     if maybeNone is None:
         return (value, False)
-
-    return (value + sep + maybeNone.pprint(as_container=True), True)
+    return (value + sep + maybeNone.pprint(default_opts('container')), True)
 
 def _wrap_colon(value, newline=False):
     tail = ""

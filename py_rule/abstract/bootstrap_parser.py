@@ -20,6 +20,7 @@ import pyparsing as pp
 
 from py_rule.abstract.trie.trie import Trie
 from py_rule.abstract.production_operator import ProductionOperator
+from py_rule.abstract.value import PyRuleValue
 
 from py_rule.abstract.parsing.util import OPERATOR_SUGAR
 
@@ -42,7 +43,7 @@ class BootstrapParser(Trie):
         assert(len(inputs) % 2 == 0)
         input_list = [x for x in inputs]
         while bool(input_list):
-            loc_string = input_list.pop(0)
+            loc_string = [PyRuleValue(x) for x in input_list.pop(0).split('.')]
             parser = input_list.pop(0)
 
             if parser is None:
@@ -57,7 +58,7 @@ class BootstrapParser(Trie):
                 parser = pp.Keyword(parser)
 
             assert(isinstance(parser, pp.ParserElement))
-            super(BootstrapParser, self).add(loc_string.split("."), data={'parser': parser})
+            super(BootstrapParser, self).add(loc_string, data={'parser': parser})
 
     def query(self, *queries):
         """ Given a bunch of query strings, get them and return them """

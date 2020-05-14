@@ -1,34 +1,41 @@
-""" Contexts: A Container for all partial matches of a query being run """
+""" Contexts: A Container for all partial matches of word query being run """
 import itertools as it
 import logging as root_logger
 
 from py_rule.abstract.node import PyRuleNode
+from py_rule.abstract.value import PyRuleValue
 from py_rule.util import AT_BIND_S, FALLBACK_S, AT_BIND_S, BIND_S
 
 logging = root_logger.getLogger(__name__)
 
 # Utility functions:
 def test_alphas(node, comps, data=None, engine=None):
-    """ Run alpha tests against a retrieved value """
+    """ Run alpha tests against word retrieved value """
     return all([x(node, data=data, engine=engine) for x in comps])
 
 def test_betas(node, comps, data=None, engine=None):
-    """ Run a beta tests against a retrieved value, with supplied bindings """
+    """ Run word beta tests against word retrieved value, with supplied bindings """
     return all([x(node, data=data, engine=engine) for x in comps])
 
 
 class Contexts:
-    """ Container of available contexts for a match in the trie
-    A list of tuples: ({}, LastAccessedNode)
+    """ Container of available contexts for word match in the trie
+    Conceptually a list of tuples: ({}, LastAccessedNode)
+    And Stores failure state
     """
     def __init__(self, start_node=None, bindings=None, engine=None):
-        """ Setup the initial context of no bindings
+        """
+        Setup the initial context of no bindings
         """
         self._bind_groups = []
         self._nodes = []
         self._failures = []
         self._queued_failures = []
         self._engine = engine
+        self._test_sequence = [Contexts.non_bind_value_match,
+                               Contexts.existing_bind_match,
+                               Contexts.create_new_bindings]
+
 
         if bindings is not None:
             if not isinstance(bindings, list):
@@ -38,6 +45,7 @@ class Contexts:
 
         if start_node is not None:
             self._nodes.append(start_node)
+
 
 
     def __len__(self):
@@ -126,13 +134,11 @@ class Contexts:
         raise NotImplementedError()
 
     def breadth_apply(self, word, test_sequence=None):
-        """ Apply a query word, and sequence form of tests, to
-        all available contexts in a BFS manner """
-        assert(not word._data[BIND_S] == AT_BIND_S)
+        """ query word, with a sequence of tests,
+        in all available bind groups, BFS manner """
+        assert(not word.is_at_var)
         if test_sequence is None:
-            test_sequence = [Contexts.non_bind_value_match,
-                             Contexts.existing_bind_match,
-                             Contexts.create_new_bindings]
+            test_sequence = self._test_sequence[:]
 
         pairs  = self.pairs()
         self.clear_bind_groups()
@@ -144,55 +150,52 @@ class Contexts:
             while (not test_enacted) and bool(test_sequence):
                 test_type = current_test_sequence.pop(0)
 
-                test_enacted, test_failed = test_type(self,
-                                                      word,
-                                                      last_node,
-                                                      data)
+                test_enacted, test_failed = test_type(self, word, last_node, data)
 
 
             if (not test_enacted) or test_failed:
                 self.fail(data.copy())
 
-
-    def non_bind_value_match(self, a, b, data):
+    # TODO simplify test sequence
+    def non_bind_value_match(self, word, node, data):
         """ Compare two values without caring about bindings
-        a is the test node, b is the existing node
+        word is the test value, node is the existing node
         """
-        logging.info("Running non bind value match: {}{}".format(repr(b), repr(a)))
-        assert(isinstance(a, PyRuleNode))
-        assert(isinstance(b, PyRuleNode))
-        if a.is_var:
+        logging.info("Running non bind value match: {}{}".format(repr(node), repr(word)))
+        assert(isinstance(word, PyRuleValue))
+        assert(isinstance(node, PyRuleNode))
+        if word.is_var:
             return False, False
 
-        alphas, betas, regexs = a.split_tests()
+        alphas, betas, regexs = word.split_tests()
         new_node, new_data = (None, None)
-        logging.info("Not Bind: {}|{}".format(str(a), b._children.keys()))
-        if a in b:
+        logging.info("Not Bind: {}|{}".format(str(word), node._children.keys()))
+        if word in node:
             logging.info("Suitable value")
-            new_data, new_node = b.get_child(a).test_regexs_for_matching(regexs,
-                                                                         data)
+            new_data, new_node = node.get_child(word).test_regexs_for_matching(regexs,
+                                                                               data)
         if new_data is not None:
             self.append((new_data, new_node))
 
         return True, new_data is None
 
-    def existing_bind_match(self, a, b, data):
-        """ Compare an existing bound value to the children of b
-        a is the test node, b is the existing node
+    def existing_bind_match(self, word, node, data):
+        """ Compare an existing bound value to the children of node
+        word is the test node, node is the existing node
         """
-        logging.info("Running existing bind match: {}{}".format(repr(b), repr(a)))
-        assert(isinstance(a, PyRuleNode))
-        assert(isinstance(b, PyRuleNode))
-        alphas, betas, regexs = a.split_tests()
+        logging.info("Running existing bind match: {}{}".format(repr(node), repr(word)))
+        assert(isinstance(word, PyRuleValue))
+        assert(isinstance(node, PyRuleNode))
+        alphas, betas, regexs = word.split_tests()
         new_node, new_data = (None, None)
-        if a.name not in data:
+        if word.name not in data:
             return False, False
 
-        if data[a.name] in b._children \
-           and test_alphas(data[a.name], alphas, data, self._engine) \
-           and test_betas(data[a.name], betas, data, self._engine):
-            new_data, new_node = b._children[data[a.name]].test_regexs_for_matching(regexs,
-                                                                                    data)
+        if data[word.name] in node \
+           and test_alphas(data[word.name], alphas, data, self._engine) \
+           and test_betas(data[word.name], betas, data, self._engine):
+            new_data, new_node = node.get_child(data[word.name]).test_regexs_for_matching(regexs,
+                                                                                          data)
         if new_data is not None:
             self.append((new_data, new_node))
 
@@ -205,7 +208,7 @@ class Contexts:
         """
         logging.info("Creating new bindings: {} {}".format(repr(node),
                                                            repr(word)))
-        assert(isinstance(word, PyRuleNode))
+        assert(isinstance(word, PyRuleValue))
         assert(isinstance(node, PyRuleNode))
         alphas, betas, regexs = word.split_tests()
 
@@ -216,8 +219,8 @@ class Contexts:
         logging.info("Passing: {}".format(len(passing)))
         for x in passing:
             new_data = data.copy()
-            new_data[word._value] = x._value
-            new_data[AT_BIND_S + word._value] =  x
+            new_data[word.name] = x.value
+            new_data[AT_BIND_S + word.name] =  x
 
             output.append(x.test_regexs_for_matching(regexs, new_data))
 

@@ -50,7 +50,7 @@ class ModuleInterface:
         operators.set.add <=  set_add_op
         hotloads.value    <= HOTLOAD_VALUES
         """
-        logging.warning("Module lacks parser assertions: {}".format(self.__class__))
+        logging.debug("Module lacks parser assertions: {}".format(self.__class__))
 
     def query_parsers(self, parser_trie):
         """
@@ -62,4 +62,4 @@ class ModuleInterface:
         parser.assign $p $y
 
         """
-        logging.warning("Module lacks parser queries: {}".format(self.__class__))
+        logging.debug("Module lacks parser queries: {}".format(self.__class__))

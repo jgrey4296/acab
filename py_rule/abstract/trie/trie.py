@@ -7,8 +7,9 @@ from weakref import WeakValueDictionary, ref, proxy
 from py_rule.error.pyrule_base_exception import PyRuleBaseException
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.value import PyRuleStatement
-
+from py_rule.abstract.printing import util as PrU
 from py_rule.abstract.node import PyRuleNode
+from py_rule.abstract.value import PyRuleValue as PV
 
 logging = root_logger.getLogger(__name__)
 
@@ -34,6 +35,7 @@ class Trie:
     @property
     def root(self):
         return self._root
+
 
     def query(self, path):
         current = self._root
@@ -101,13 +103,17 @@ class Trie:
     def print_trie(self, join_str=None):
         output = []
         queue = [([], x) for x in self._root]
+        def_op = PrU.default_opts()
+        if join_str is not None:
+            def_op['join'] = join_str
+
         while bool(queue):
             curr_path, current_node = queue.pop(0)
-            total_path = curr_path + [current_node]
-            if not bool(current_node) or isinstance(current_node._value, PyRuleStatement):
+            total_path = curr_path + [current_node.value]
+            if not bool(current_node) or isinstance(current_node.value, PyRuleStatement):
                 # if leaf or statement
                 as_sentence = Sentence(total_path)
-                output.append(as_sentence.pprint(join_str=join_str))
+                output.append(as_sentence.pprint(def_op))
 
             if bool(current_node):
                 queue += [(total_path, x) for x in current_node]
