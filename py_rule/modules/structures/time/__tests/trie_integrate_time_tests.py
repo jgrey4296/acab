@@ -30,7 +30,7 @@ class TrieIntegrationTimeTests(unittest.TestCase):
 
         a = fp.parseString("a.test.sentence.[[a b c $d]]")[0]
         self.assertIsInstance(a, Sentence)
-        self.assertIsInstance(a[-1]._value, TimeContainer)
+        self.assertIsInstance(a[-1], TimeContainer)
         self.assertEqual(a[-1]._data[VALUE_TYPE_S], TU.TIME_PATTERN_S)
 
 if __name__ == "__main__":

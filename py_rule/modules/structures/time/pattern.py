@@ -92,9 +92,9 @@ class PatternChoice(TimeContainer):
 
         return self.handle_call_results(results, just_values)
 
-    def pprint(self, wrap=False):
-        needs_wrapping = not self.is_pure()
-        comps = [x.pprint(needs_wrapping) for x in self.events]
+    def pprint(self, opts):
+        opts['wrap'] = not self.is_pure()
+        comps = [x.pprint(opts) for x in self.events]
 
         joined = self._join_template.join(comps)
         return self._wrap_template.format(joined)
