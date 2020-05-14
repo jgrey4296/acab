@@ -249,4 +249,4 @@ class ProductionContainer(PyRuleStatement):
             return super(ProductionContainer, self).pprint(opts)
 
     def pprint_body(self, val):
-        return val + PrU.print_container(self, join_str="\n")
+        return val + PrU.print_container(self, PrU.default_opts(join="\n"))

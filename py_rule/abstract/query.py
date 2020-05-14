@@ -49,8 +49,8 @@ class QueryComponent(PO.ProductionComponent):
         """ Run a comparison on a node """
         self.verify()
         op = self._data[util.OP_CLASS_S].op_list[self.op]
-        node_value = node._value
-        params = self.get_values(data)
+        node_value = node.value.value
+        params = self.get_params(data)
 
         return op(node_value, *params, data=data)
 

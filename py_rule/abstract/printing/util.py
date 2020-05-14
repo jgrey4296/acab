@@ -87,8 +87,8 @@ def print_operator(operator, opts):
         val = "{}({})".format(operator.op, ",".join(the_params))
     else:
         # Don't wrap comps or transforms
-        head = " ".join([str(x) for x in the_vars[:op_fix]] + [operator.op])
-        tail = "".join([str(x) for x in the_vars[op_fix:]])
+        head = " ".join([str(x) for x in the_params[:op_fix]] + [operator.op])
+        tail = "".join([str(x) for x in the_params[op_fix:]])
         val = "{} {}".format(head, tail)
 
     # Wrap a rebind if there is one
@@ -190,7 +190,7 @@ def _wrap_at_var(value):
 def _wrap_constraints(value, constraints):
     assert(isinstance(value, str))
     assert(isinstance(constraints, list))
-    cons_strs = ", ".join([x.pprint() for x in constraints])
+    cons_strs = ", ".join([x.pprint(default_opts()) for x in constraints])
     return value + "({})".format(cons_strs)
 
 def _wrap_modal_operator(value, op):
