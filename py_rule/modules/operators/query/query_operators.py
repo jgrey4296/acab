@@ -27,5 +27,5 @@ class ELEM(QueryOp):
 
 
 class HasTag(QueryOp):
-    def __call__(self, a, b, data=None, engine=None):
-        return all([x in a._tags for x in b])
+    def __call__(self, value, *tags, data=None, engine=None):
+        return value.has_tag(*tags)

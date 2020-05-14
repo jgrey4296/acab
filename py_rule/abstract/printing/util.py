@@ -220,7 +220,7 @@ def _wrap_fallback(value, fallback_list):
     return "{} || {}".format(value, print_fallback(fallback_list))
 
 def _wrap_tags(value, tags, sep="\n\t"):
-    tags_s = [x.name for x in tags]
+    tags_s = [str(x) for x in tags]
     return "{}{}{}".format(value, sep, ", ".join(sorted([util.TAG_SYMBOL_S + x for x in tags_s])))
 
 def _maybe_wrap(value, maybeNone, sep=None):

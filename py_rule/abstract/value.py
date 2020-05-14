@@ -136,7 +136,7 @@ class PyRuleValue:
         return self
 
     def apply_tags(self, tags):
-        safe_tags = [PyRuleValue.safe_make(x) for x in tags]
+        safe_tags = [x.value if isinstance(x, PyRuleValue) else x for x in tags]
         self._tags.update(safe_tags)
         return self
 
