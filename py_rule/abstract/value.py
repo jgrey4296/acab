@@ -1,6 +1,7 @@
 """
 The Core Value Class
 """
+from weakref import ref
 import logging as root_logger
 from uuid import uuid1
 from fractions import Fraction
@@ -14,23 +15,25 @@ logging = root_logger.getLogger(__name__)
 
 
 class PyRuleValue:
-    value_types = set([int, float, bool, str, list,
-                       tuple, Fraction, Pattern])
+    value_types = set([int, float, Fraction, bool, str, Pattern, list, tuple])
 
-    def __init__(self,
-                 value,
-                 type_str=None,
-                 data=None,
-                 params=None,
-                 tags=None,
-                 name=None):
-        value_type_tuple = tuple(PyRuleValue.value_types) + tuple([PyRuleValue])
+    @staticmethod
+    def safe_make(value, data=None):
+        if isinstance(value, PyRuleValue):
+            new_val = value.copy().set_data(data)
+            return new_val
+        else:
+            return PyRuleValue(value, data=data)
+
+    def __init__(self, value, type_str=None, data=None,
+                 params=None, tags=None, name=None):
+
+        value_type_tuple = tuple([PyRuleValue] + list(PyRuleValue.value_types))
         assert (value is None or isinstance(value, value_type_tuple)), type(value)
 
         self._uuid = uuid1()
         self._name = None
         self._value = value
-        self._path = None
 
         self._vars = []
         self._tags = set()
@@ -43,25 +46,28 @@ class PyRuleValue:
         if data is not None:
             self._data.update(data)
         if params is not None:
-            self._vars += params
+            self.apply_vars(params)
         if tags is not None:
-            self._tags.update(tags)
+            self.apply_tags(tags)
         if name is not None:
             self._name = name
 
     def __str__(self):
         """ Data needs to implement a str method that produces
         output that can be re-parsed """
+        return str(self.name)
+    def __repr__(self):
         uuid = str(self._uuid)
         uuid_chop = "{}..{}".format(uuid[:4],uuid[-4:])
-        return "{}:{}".format(uuid_chop, self.name)
-
-    def __repr__(self):
-        return "{}({})".format(self.__class__.__name__,
-                               str(self))
+        return "({}:{}:{})".format(self.__class__.__name__,
+                                   uuid_chop,
+                                   str(self))
 
     def __hash__(self):
         return hash(str(self))
+
+    def __eq__(self, other):
+        return hash(self) == hash(other)
 
 
     @property
@@ -96,7 +102,13 @@ class PyRuleValue:
         # ie: Query(a.b.$x? a.q.$w?).get_bindings() -> {'in': [], 'out': [x,w]}
         # Action(+(a.b.$x), -(a.b.$w)).get_bindings() -> {'in': [x,w], 'out': []}
         # logging.debug("{} is using default var_set method".format(self.__class__))
-        return {'in': set(self._vars), 'out': set()}
+        out_set = set()
+        in_set = set(self._vars)
+        if self.is_var:
+            in_set.add(self)
+            out_set.add(self)
+
+        return {'in': in_set, 'out': out_set}
 
 
     def copy(self):
@@ -108,64 +120,94 @@ class PyRuleValue:
         of values to internal variables """
         raise NotImplementedError()
 
-    def apply_onto(self, path, tvars=None, tags=None):
-        """ Apply a value onto the leaf of a path.
-        (eg: rules, typedefs etc), use abstract.parsing.util.STATEMENT_CONSTRUCTOR
-        which will call this to apply the location name, and type variables """
-        assert(isinstance(path, PyRuleValue) and path.type == util.SEN_S)
-        node = path[-1]
-        self._name = node.name
-        self._path = path
-
-        node._value                   = self
-        node._data[util.VALUE_TYPE_S] = self.type
-        node._data[util.BIND_S]       = False
-
-        if tvars is not None:
-            assert(all([isinstance(x, str) for x in tvars]))
-            self._vars += tvars
-
-        if tags is not None:
-            assert(all([isinstance(x, str) for x in tags]))
-            self._tags.update(tags)
-
-        return self
-
-    def has_tag(self, *tags):
-        return all([t in self._tags for t in tags])
-
     def verify(self):
         """ Raise An Exception if this necessary """
-        pass
+        return self
 
     def set_data(self, data):
         if data is not None:
             self._data.update(data)
 
-    def pprint(self, leaf=False, **kwargs):
-        if leaf and isinstance(self._value, PyRuleStatement):
-            return self._value.pprint(leaf=leaf, **kwargs)
-        else:
-            return PrU.print_value(self, leaf=leaf, **kwargs)
+        return self
+
+    def apply_vars(self, params):
+        safe_params = [PyRuleValue.safe_make(x) for x in params]
+        self._vars += safe_params
+        return self
+
+    def apply_tags(self, tags):
+        safe_tags = [PyRuleValue.safe_make(x) for x in tags]
+        self._tags.update(safe_tags)
+        return self
+
+    def has_tag(self, *tags):
+        return all([t in self._tags for t in tags])
+
+
+    def pprint(self, opts):
+        if isinstance(self.value, PyRuleValue):
+            opts['internal_value'] = self.value.pprint(opts)
+        return PrU.print_value(self, opts)
+
+
+    def split_tests(self):
+        """ Split tests into (alphas, betas, regexs) """
+        if util.CONSTRAINT_S not in self._data:
+            return ([], [], [])
+
+        comps = self._data[util.CONSTRAINT_S]
+        assert(isinstance(comps, list))
+        alphas = []
+        betas = []
+        regexs = []
+        for c in comps:
+            if c.is_regex_test:
+                regexs.append(c)
+            elif c.is_alpha_test:
+                alphas.append(c)
+            else:
+                betas.append(c)
+        return (alphas, betas, regexs)
 
 
 class PyRuleStatement(PyRuleValue):
 
     def __init__(self, value, **kwargs):
         super(PyRuleStatement, self).__init__(value, **kwargs)
+        self._path = None
 
 
-    def pprint(self, leaf=True, **kwargs):
-        if leaf:
-            return PrU.print_statement(self, **kwargs)
+    @property
+    def path(self):
+        if self._path is None:
+            return None
+        return self._path()
+    @property
+    def value(self):
+        return self
+
+    @property
+    def pprint_has_content(self):
+        return (True, True)
+
+
+    def pprint(self, opts):
+        if opts['leaf']:
+            return PrU.print_statement(self, opts)
         else:
-            return PrU.print_value(self, **kwargs)
-
+            return PrU.print_value(self, opts)
 
     def pprint_body(self, val):
         raise NotImplementedError()
 
 
-    @property
-    def pprint_has_content(self):
-        return (True, True)
+    def set_path(self, sen):
+        assert(isinstance(sen, PyRuleValue))
+        self._path = ref(sen)
+
+        return self
+
+
+    def to_simple_value(self):
+        simple_value = PyRuleValue(self._name)
+        return simple_value

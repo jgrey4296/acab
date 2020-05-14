@@ -1,28 +1,60 @@
-""" The Base Node Class the rest of PyRule extends """
+"""
+The Base Node Class the rest of PyRule extends
+"""
 from re import search
+from uuid import uuid1
 import weakref
+from copy import deepcopy
 
 from py_rule import util
 from py_rule.abstract.printing import util as PrU
 
 from .value import PyRuleValue
 
-class PyRuleNode(PyRuleValue):
-    """ The Abstract Node Class """
+
+class PyRuleNode:
+    """ The Base Node Class for Tries/Data structures etc"""
 
     @staticmethod
     def Root():
-        return PyRuleNode(util.ROOT_S)
+        return PyRuleNode(PyRuleValue(util.ROOT_S))
 
-    def __init__(self, value, data=None, type_str=None, tags=None, name=None, **kwargs):
-        super(PyRuleNode, self).__init__(value,
-                                         data=data,
-                                         type_str=type_str,
-                                         tags=tags,
-                                         name=name,
-                                         **kwargs)
+    def __init__(self, value, data=None):
+
+        #Unwrap Nodes to avoid nesting
+        if isinstance(value, PyRuleNode):
+            node = value
+            value = deepcopy(node.value)
+            if data is None:
+                data = {}
+            data.update(node._data)
+
+        # assert(isinstance(value, PyRuleValue))
+
+        self._uuid = uuid1()
+        # Wrap in a PyRuleValue if necessary:
+        self._value = PyRuleValue.safe_make(value)
+
+        self._path = None
         self._parent = None
         self._children = {}
+
+        self._data = {}
+        self._data.update(util.DEFAULT_VALUE_DATA)
+
+        if data is not None:
+            self._data.update(data)
+
+    def __str__(self):
+        """ Data needs to implement a str method that produces
+        output that can be re-parsed """
+        uuid = str(self._uuid)
+        uuid_chop = "{}..{}".format(uuid[:4],uuid[-4:])
+        return "{}:{}".format(uuid_chop, self._value.name)
+
+    def __repr__(self):
+        return "{}({})".format(self.__class__.__name__,
+                               str(self))
 
     def __len__(self):
         return len(self._children)
@@ -36,27 +68,20 @@ class PyRuleNode(PyRuleValue):
     def __iter__(self):
         return iter(self._children.values())
 
+    def __hash__(self):
+        return hash(str(self))
+
 
     @property
+    def value(self):
+        return self._value
+
+    @property
+    def name(self):
+        return self._value.name
+    @property
     def var_set(self):
-        obj = super(PyRuleNode, self).var_set
-        if isinstance(self._value, PyRuleValue):
-            val_set = self._value.var_set
-            obj['in'].update(val_set['in'])
-            obj['out'].update(val_set['out'])
-
-        #add to 'out' if node is a binding
-        if self.is_var:
-            obj['out'].add(self.name)
-
-        #add annotations to 'in'
-        for v in self._data.values():
-            if isinstance(v, PyRuleValue):
-                tempobj = v.var_set
-                obj['in'].update(tempobj['in'])
-                obj['out'].update(tempobj['out'])
-
-        return obj
+        return self.value.var_set
 
     @property
     def children(self):
@@ -96,7 +121,7 @@ class PyRuleNode(PyRuleValue):
 
     def search_regex(self, regex):
         """ Test a regex on the Nodes value """
-        result = search(regex._vars[0]._value, self.name)
+        result = search(regex._params[0].value, self.name)
         if result is not None:
             return result.groupdict()
         else:
@@ -141,7 +166,7 @@ class PyRuleNode(PyRuleValue):
 
     def bind(self, bindings):
         """ Return a copy that has applied given bindings to this node """
-        if not self._data[util.BIND_S]:
+        if not self.value._data[util.BIND_S]:
             return self.copy()
         else:
             copied = self.copy()
@@ -151,27 +176,19 @@ class PyRuleNode(PyRuleValue):
     def _bind_to_value(self, data):
         """ Set the Nodes value to be one retrieved
         from passed in bindings """
-        assert(self._value in data)
-        assert(util.BIND_S in self._data and self._data[util.BIND_S])
-        self._value = data[self._value]
-        self._data[util.BIND_S] = False
+        assert(self.value in data)
+        assert(util.BIND_S in self.value._data and self.value._data[util.BIND_S])
+        self._value = data[self.value]
+        assert(isinstance(self._value, PyRuleValue))
+
+    def copy(self):
+        return deepcopy(self)
 
 
-    def split_tests(self):
-        """ Split tests into (alphas, betas, regexs) """
-        if util.CONSTRAINT_S not in self._data:
-            return ([], [], [])
+    def pprint(self, opts):
+        return self.value.pprint(opts)
 
-        comps = self._data[util.CONSTRAINT_S]
-        assert(isinstance(comps, list))
-        alphas = []
-        betas = []
-        regexs = []
-        for c in comps:
-            if c.is_regex_test:
-                regexs.append(c)
-            elif c.is_alpha_test:
-                alphas.append(c)
-            else:
-                betas.append(c)
-        return (alphas, betas, regexs)
+
+    def set_data(self, data):
+        if data is not None:
+            self._data.update(data)
