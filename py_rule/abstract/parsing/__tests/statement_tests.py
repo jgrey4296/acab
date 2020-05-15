@@ -34,7 +34,7 @@ class StatementTests(unittest.TestCase):
                                                basic_value_parser)
 
         result = statement_p.parseString("test: (::blah)\n#test\n\nvalue\nend")[0]
-        tags_str = [x.value for x in result[-1]._tags]
+        tags_str = [x for x in result[-1]._tags]
         self.assertTrue('test' in tags_str)
 
     def test_basic_tag_plural(self):
@@ -51,7 +51,7 @@ class StatementTests(unittest.TestCase):
         result = statement_p.parseString("test: (::blah)\n#abcd, #aaaa, #bbbb\n\nvalue\nend")[0]
         value = result[-1]
 
-        tags_str = [x.value for x in value._tags]
+        tags_str = [x for x in value._tags]
 
         self.assertTrue('abcd' in tags_str)
         self.assertTrue('aaaa' in tags_str)

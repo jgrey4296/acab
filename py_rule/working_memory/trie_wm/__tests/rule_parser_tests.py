@@ -112,7 +112,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
         result = RP.parseString('a.test.rule.x: (::ρ)\n\n#blah, #bloo, #blee\n\na.b.c?\n\nActionAdd(a.b.c)\nend')[0]
         self.assertIsInstance(result[-1], Rule)
         self.assertEqual(result.pprint(PrU.default_opts()), "a.test.rule.x: (::ρ)\n\t#blah, #blee, #bloo\n\n\ta.b.c?\n\n\tActionAdd(a.b.c)\nend")
-        tags = [x.name for x in result[-1]._tags]
+        tags = [x for x in result[-1]._tags]
         self.assertTrue(all(x in tags for x in ["blah","bloo","blee"]))
 
 
