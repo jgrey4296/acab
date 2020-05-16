@@ -10,7 +10,6 @@ from py_rule.abstract.sentence import Sentence
 from py_rule.working_memory.trie_wm import util as KBU
 from py_rule import util
 
-def_op = PrU.default_opts()
 
 class Trie_Fact_Parser_Tests(unittest.TestCase):
 
@@ -34,7 +33,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         result = FP.parseString('a.b.c')[0]
         self.assertIsInstance(result, Sentence)
         self.assertTrue(all([isinstance(x, PyRuleValue) for x in result]))
-        self.assertEqual(result.pprint(def_op), "a.b.c")
+        self.assertEqual(result.pprint(), "a.b.c")
         self.assertTrue(all([x._data[KBU.OPERATOR_S] == KBU.EXOP.DOT for x in result]))
 
     def test_parseStrings(self):
@@ -82,21 +81,21 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         parsed = [FP.parseString(x)[0] for x in actions]
         zipped = zip(actions, parsed)
         for a,p in zipped:
-            self.assertEqual(a,p.pprint(def_op))
+            self.assertEqual(a,p.pprint())
 
     def test_leading_bind_str_equal(self):
         actions = ['$x.a.b.c', '$y!b.c', '$x.$y!$z']
         parsed = [FP.parseString(x)[0] for x in actions]
         zipped = zip(actions, parsed)
         for a,p in zipped:
-            self.assertEqual(a, p.pprint(def_op))
+            self.assertEqual(a, p.pprint())
 
     def test_binding_expansion(self):
         bindings = { "a" : FP.parseString("blah")[0],
                      "b": FP.parseString("bloo")[0] }
         result = FP.parseString('$a.b.$b!c')[0]
         expanded = result.bind(bindings)
-        asString = expanded.pprint(def_op)
+        asString = expanded.pprint()
         self.assertEqual(asString, "blah.b.bloo!c")
 
     def test_valbind_expansion(self):
@@ -132,9 +131,9 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
     def test_nested_sentence_statement(self):
         result = FP.SEN_STATEMENT.parseString("a.test.sentence: (::Σ)\ninternal.nested: (::Σ)\ninternal.one\ninternal.two\nend\nblah.bloo.blee\nend")
         self.assertEqual(len(result), 3)
-        self.assertEqual(result[0].pprint(def_op), "a.test.sentence.internal.nested.internal.one")
-        self.assertEqual(result[1].pprint(def_op), "a.test.sentence.internal.nested.internal.two")
-        self.assertEqual(result[2].pprint(def_op), "a.test.sentence.blah.bloo.blee")
+        self.assertEqual(result[0].pprint(), "a.test.sentence.internal.nested.internal.one")
+        self.assertEqual(result[1].pprint(), "a.test.sentence.internal.nested.internal.two")
+        self.assertEqual(result[2].pprint(), "a.test.sentence.blah.bloo.blee")
 
 
 

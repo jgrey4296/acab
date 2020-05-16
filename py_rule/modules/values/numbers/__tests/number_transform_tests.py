@@ -119,16 +119,14 @@ class NumberTransformTests(unittest.TestCase):
                       "$x AddOp 20 -> $y",
                       "$Blah AddOp $bloo -> $BLEE",
                       "NegOp $x -> $y", "RoundOp $x -> $y", "NegOp $x -> $y",
-                      "RoundOp $x -> $y", "$x RegexOp /blah/$a -> $z",
-                      "$x RegexOp /awAddOp/$b -> $blah",
+                      "RoundOp $x -> $y", "$x RegexOp /blah/ $a -> $z",
+                      "$x RegexOp /awAddOp/ $b -> $blah",
                       "$x AddOp 2d5 -> $y"
         ]
         parsed = [TP.parseString(x) for x in transforms]
         zipped = zip(transforms, parsed)
-        def_op = PrU.default_opts()
-        def_op['container'] = True
         for rt,pt in zipped:
-            self.assertEqual(rt, pt.pprint(PrU.default_opts(container=True, join="\n")))
+            self.assertEqual(rt, pt.pprint())
 
 
 

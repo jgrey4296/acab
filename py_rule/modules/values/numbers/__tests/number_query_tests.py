@@ -116,10 +116,8 @@ class NumberQueryTests(unittest.TestCase):
                    # 'a.b.c(^$x)?']
         parsed = [QP.parseString(x) for x in queries]
         zipped = zip(queries, parsed)
-        def_op = PrU.default_opts()
-        def_op['container'] = True
-        for a,q in zipped:
-            self.assertEqual(a, q.pprint(def_op))
+        for the_string,the_result in zipped:
+            self.assertEqual(the_string, the_result.pprint())
 
 
     def test_rule_binding_expansion(self):
@@ -129,7 +127,7 @@ class NumberQueryTests(unittest.TestCase):
         result = RP.parseString("a.rule: (::ρ)\n$y.b.$z?\n\n$x AddOp 2 -> $y\n\n$y\n\nend")[0][-1]
         expanded = result.value.bind(bindings)
         # Expanding bindings makes a new rule, so its an AnonValue
-        self.assertEqual(expanded.pprint(PrU.default_opts(leaf=True)),
+        self.assertEqual(expanded.pprint(),
                          "AnonRule: (::ρ)\n\td.e.f.b.x.y.z?\n\n\t$x AddOp 2 -> $y\n\n\tActionAdd(d.e.f)\nend")
 
 

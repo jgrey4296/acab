@@ -66,10 +66,8 @@ class NumberParseTests(unittest.TestCase):
         actions = ["2 AddOp 4 -> $x", "3 SubOp 5 -> $y", "RoundOp 4 -> $z"]
         parsed = [TP.parseString(x) for x in actions]
         zipped = zip(actions, parsed)
-        def_op = PrU.default_opts()
-        def_op['container'] = True
         for x,y in zipped:
-            self.assertEqual(x, y.pprint(def_op))
+            self.assertEqual(x, y.pprint())
 
 
     def test_numbers_parsing(self):

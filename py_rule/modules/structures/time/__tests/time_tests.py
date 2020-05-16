@@ -8,7 +8,6 @@ from py_rule.modules.structures.time.parsing import parser as tp
 from py_rule.modules.structures.time.util import Time as t
 from py_rule.abstract.parsing import util as PU
 from py_rule.util import BIND_S
-from py_rule.abstract.printing.util import default_opts as DO
 
 class TestTime(unittest.TestCase):
 
@@ -85,7 +84,7 @@ class TestTime(unittest.TestCase):
         an_event = TimeEvent((t(0, 1), t(1, 1)), "a")
         self.assertIsNotNone(an_event)
         self.assertEqual(an_event.arc, (t(0, 1), t(1, 1)))
-        self.assertEqual(an_event.pprint(DO()), "a")
+        self.assertEqual(an_event.pprint(), "a")
 
     def test_event_creation_with_params(self):
         an_event = TimeEvent((t(0, 1), t(2, 4)), "b", data={"test": 5})
@@ -108,7 +107,7 @@ class TestTime(unittest.TestCase):
         an_event = TimeEvent((t(0, 1), t(1, 1)), a_pattern)
         call_result = an_event(t(1, 2))
         self.assertEqual(len(call_result), 1)
-        self.assertEqual(call_result[0].pprint(DO()), "b")
+        self.assertEqual(call_result[0].pprint(), "b")
 
     def test_event_base(self):
         an_event = TimeEvent((t(0, 1), t(1, 1)), "a")
@@ -162,26 +161,26 @@ class TestTime(unittest.TestCase):
         an_event = TimeEvent((t(1, 2), t(3, 4)),
                              "a", {BIND_S : True})
 
-        self.assertEqual(an_event.pprint(DO()), "$a")
+        self.assertEqual(an_event.pprint(), "$a")
         bound = an_event.bind({"a" : "b"})
         self.assertIsInstance(bound, TimeEvent)
-        self.assertEqual(bound.pprint(DO()), "b")
+        self.assertEqual(bound.pprint(), "b")
 
     def test_event_binding_fail(self):
         an_event = TimeEvent((t(1, 2), t(3, 4)),
                              "a", {BIND_S : True})
 
-        self.assertEqual(an_event.pprint(DO()), "$a")
+        self.assertEqual(an_event.pprint(), "$a")
         bound = an_event.bind({"c" : "b"})
-        self.assertEqual(bound.pprint(DO()), "$a")
+        self.assertEqual(bound.pprint(), "$a")
 
     def test_event_binding_fail_non_var(self):
         an_event = TimeEvent((t(1, 2), t(3, 4)),
                              "a", {BIND_S : False})
 
-        self.assertEqual(an_event.pprint(DO()), "a")
+        self.assertEqual(an_event.pprint(), "a")
         bound = an_event.bind({"a" : "b"})
-        self.assertEqual(bound.pprint(DO()), "a")
+        self.assertEqual(bound.pprint(), "a")
 
     def test_event_fail_var_pattern(self):
         with self.assertRaises(AssertionError):
@@ -207,7 +206,7 @@ class TestTime(unittest.TestCase):
                                    TimeEvent((t(1, 2), t(1, 1)), "b")])
         res = a_pattern(t(1, 2))
         self.assertEqual(len(res), 1)
-        self.assertEqual(res[0].pprint(DO()), "b")
+        self.assertEqual(res[0].pprint(), "b")
 
     def test_pattern_call_with_internal_pattern_start(self):
         a_pattern = TimeContainer((t(0, 1), t(1, 2)),

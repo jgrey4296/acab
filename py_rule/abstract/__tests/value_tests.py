@@ -96,7 +96,7 @@ class PyRuleValueTests(unittest.TestCase):
         value = PyRuleValue("test")
         value._data.update({BIND_S: AT_BIND_S})
         self.assertTrue(value.is_at_var)
-        self.assertEqual(value.pprint(PrU.default_opts()), "@test")
+        self.assertEqual(value.pprint(), "@test")
 
     @unittest.skip('TODO')
     def test_verify(self):

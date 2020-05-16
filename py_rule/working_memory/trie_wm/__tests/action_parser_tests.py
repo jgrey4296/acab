@@ -37,24 +37,21 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
         self.assertEqual([x[-1]._value for x in result.clauses[0]._params], ["blah bloo","blee","awef"])
 
     def test_actions_fact_str(self):
-        def_op = PrU.default_opts()
         result = AP.parseString('ActionAdd(a.b.c), ActionAdd(~a!b.d), ActionAdd($x), ActionAdd($x.a.b)')
         self.assertIsInstance(result, action.Action)
         self.assertEqual(len(result), 4)
         self.assertTrue(all([isinstance(x, action.ActionComponent) for x in result]))
-        self.assertEqual(result.clauses[0]._params[0].pprint(def_op), "a.b.c")
-        self.assertEqual(result.clauses[1]._params[0].pprint(def_op), "~a!b.d")
-        self.assertEqual(result.clauses[2]._params[0].pprint(def_op), "$x")
-        self.assertEqual(result.clauses[3]._params[0].pprint(def_op), "$x.a.b")
+        self.assertEqual(result.clauses[0]._params[0].pprint(), "a.b.c")
+        self.assertEqual(result.clauses[1]._params[0].pprint(), "~a!b.d")
+        self.assertEqual(result.clauses[2]._params[0].pprint(), "$x")
+        self.assertEqual(result.clauses[3]._params[0].pprint(), "$x.a.b")
 
     def test_action_binding_expansion(self):
         bindings = {"x" : FP.parseString('a.b.c')[0] }
         parsed_action = AP.parseString("ActionAdd($x)")
         bound_action = parsed_action.bind(bindings)
-        def_op = PrU.default_opts()
-        def_op['container'] = True
         self.assertIsInstance(bound_action, action.Action)
-        self.assertEqual(bound_action.pprint(def_op), "ActionAdd(a.b.c)")
+        self.assertEqual(bound_action.pprint(), "ActionAdd(a.b.c)")
 
     def test_action_definition(self):
         test_str = "test: (::α)\nActionAdd(a.b.c)\n\nend"
