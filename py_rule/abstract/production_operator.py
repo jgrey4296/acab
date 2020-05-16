@@ -13,7 +13,6 @@ from .value import PyRuleValue, PyRuleStatement
 
 logging = root_logger.getLogger(__name__)
 
-
 class ProductionOperator(PyRuleValue):
     """ The Base Operator Class """
 
@@ -148,10 +147,6 @@ class ProductionComponent(PyRuleValue):
         self._value = op_str
 
 
-    def pprint(self, opts):
-        opts['op_fix'] = [0 if len(self._params) < 2 else 1][0]
-        return PrU.print_operator(self, opts)
-
     def to_sentence(self, target=None):
         raise NotImplementedError()
 
@@ -242,11 +237,9 @@ class ProductionContainer(PyRuleStatement):
         for x in self.clauses:
             x.verify(op_constraint=op_constraint)
 
-    def pprint(self, opts):
-        if opts['container']:
-            return PrU.print_container(self, opts)
-        else:
-            return super(ProductionContainer, self).pprint(opts)
-
     def pprint_body(self, val):
-        return val + PrU.print_container(self, PrU.default_opts(join="\n"))
+        return val + PrU.print_container(self)
+
+
+PrU.register_class(ProductionComponent, PrU.print_operator)
+PrU.register_class(ProductionContainer, PrU.print_container)

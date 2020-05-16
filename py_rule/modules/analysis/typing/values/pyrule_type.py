@@ -43,5 +43,4 @@ class TypeStatement(PyRuleStatement):
 
 
     def pprint_body(self, val):
-        def_op = PrU.default_opts()
-        return val + "\n".join([x.pprint(def_op) for x in self.structure])
+        return val + "\n".join([x.pprint() for x in self.structure])

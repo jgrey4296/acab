@@ -5,41 +5,68 @@ from py_rule import util
 from collections import defaultdict
 
 #Setup
-def setup_modal_lookups(a_dict, reset=False):
+def register_modal(a_dict, reset=False):
     if reset:
         MODAL_LOOKUPS.clear()
     assert(not any([k in MODAL_LOOKUPS for k in a_dict.keys()]))
     MODAL_LOOKUPS.update(a_dict)
 
-def setup_statement_lookups(a_dict, reset=False):
+def register_statement(a_dict, reset=False):
     if reset:
         STATEMENT_LOOKUPS.clear()
     assert(not any([k in STATEMENT_LOOKUPS for k in a_dict.keys()])), a_dict
     STATEMENT_LOOKUPS.update(a_dict)
 
-def setup_primitive_lookups(a_dict, reset=False):
+def register_primitive(a_dict, reset=False):
     if reset:
         TYPE_WRAPS.clear()
     assert(not any([k in TYPE_WRAPS for k in a_dict.keys()])), a_dict
     assert(all([callable(x) for x in a_dict.values()]))
     TYPE_WRAPS.update(a_dict)
 
+def register_class(cls, func):
+    assert(isinstance(cls, type))
+    assert(callable(func))
+    assert(cls not in REGISTERED_PPRINTS)
+    REGISTERED_PPRINTS[cls] = func
 
-def default_opts(*args, join="", **kwargs):
+def default_opts(*args, **kwargs):
     opts = defaultdict(lambda: False)
     for x in args:
         opts[x] = True
     for x,y in kwargs.items():
         opts[x] = y
-    opts['join'] = join
     return opts
 
+
 # TOP LEVEL UTILITIES
+def pprint(obj, opts=None):
+    """ Top Level PPrint Routine, looks up class type
+    in registered pprints and calls that, with default opts if necessary """
+    cls = obj.__class__
+
+    if opts is None:
+        opts = default_opts()
+
+    # Best
+    if cls in REGISTERED_PPRINTS:
+        return REGISTERED_PPRINTS[cls](obj, opts)
+
+    # Closest
+    parent = cls.__base__
+    while parent is not None:
+        if parent in REGISTERED_PPRINTS:
+            return REGISTERED_PPRINTS[parent](obj, opts)
+        parent = parent.__base__
+
+    # Default
+    return str(obj)
+
+
+
 def print_value(value, opts):
 
-    val = value.name
-    if 'internal_value' in opts:
-        val = opts['internal_value']
+    val = pprint(value.value, opts)
 
     # setup the value type
     type_str = None
@@ -61,54 +88,29 @@ def print_value(value, opts):
         val = _wrap_constraints(val, value._data[util.CONSTRAINT_S])
 
     # Wrap modal Operator
-    if not opts['leaf'] and util.OPERATOR_S in value._data:
+    print_modal = opts['modal']
+    if print_modal and util.OPERATOR_S in value._data:
         val = _wrap_modal_operator(val, value._data[util.OPERATOR_S])
 
     return val
 
-def print_operator(operator, opts):
-    """ Op Fix is the count of vars to print before printing the op.
-    eg: op_fix=0 : + 1 2 3 ...
-        op_fix=2 : 1 2 + 3 ...
-    """
-    # Format the vars of the operator
-    op_fix = opts['op_fix']
-    wrap_params = opts['wrap']
-    if not op_fix:
-        op_fix = 0
-
-    def_op = default_opts()
-    def_op['leaf'] = True
-    the_params = [x.pprint(def_op) for x in operator._params]
-
-    if wrap_params:
-        # Wrap params in parens if an action
-        assert(op_fix == 0)
-        val = "{}({})".format(operator.op, ",".join(the_params))
-    else:
-        # Don't wrap comps or transforms
-        head = " ".join([str(x) for x in the_params[:op_fix]] + [operator.op])
-        tail = "".join([str(x) for x in the_params[op_fix:]])
-        val = "{} {}".format(head, tail)
-
-    # Wrap a rebind if there is one
-    if hasattr(operator, "_rebind"):
-        val = _wrap_rebind(val, operator._rebind)
-
-    return val
-
 def print_sequence(seq, opts):
-    join_str = opts['join']
+    join_str = opts['seq_join']
+    if not join_str:
+        join_str = ""
 
     if not bool(seq):
         return ""
 
+    modal_backup = opts['modal']
+    opts['modal'] = True
     words = []
     if len(seq) > 1:
-        def_op = default_opts()
-        words = [x.pprint(def_op) for x in seq.words[:-1]]
+        words = [print_value(x, opts) for x in seq.words[:-1]]
 
+    opts['modal'] = False
     last_word = [seq.words[-1].pprint(opts)]
+    opts['modal'] = modal_backup
 
     val = join_str.join(words + last_word)
 
@@ -127,18 +129,20 @@ def print_sequence(seq, opts):
     return val
 
 def print_container(container, opts):
-    opts_copy = opts.copy()
-    the_clauses = [x.pprint(opts_copy) for x in container.clauses]
-    if 'join' not in opts:
-        opts['join'] = "\n\t"
+    the_clauses = [x.pprint(opts) for x in container.clauses]
 
-    return opts['join'].join(the_clauses)
+    join_str = opts['container_join']
+    if not join_str:
+        join_str = "\n"
+
+    return join_str.join(the_clauses)
 
 def print_statement(statement, opts):
 
     head, body = statement.pprint_has_content
 
     val = statement._name
+
     val = _wrap_colon(val)
 
     if statement.type in STATEMENT_LOOKUPS:
@@ -153,31 +157,66 @@ def print_statement(statement, opts):
     # Add the statement body, which is specific to each statement type
     val = statement.pprint_body(val)
 
-    if opts['leaf'] or opts['end']:
-        val = _wrap_end(val, newline=head or body)
+    val = _wrap_end(val, newline=head or body)
 
     return val
 
 def print_fallback(fallback_list):
-    def_op = default_opts()
-    return ", ".join(["{}:{}".format(_wrap_var(x[0]), x[1].pprint(def_op))
+    return ", ".join(["{}:{}".format(_wrap_var(x[0]), x[1].pprint())
                       for x in fallback_list])
 
 
+def print_operator(operator, opts):
+    """ Op Fix is the count of vars to print before printing the op.
+    eg: op_fix=0 : + 1 2 3 ...
+        op_fix=2 : 1 2 + 3 ...
+    """
+    op_fix = [0 if len(operator._params) < 2 else 1][0]
+    join_str = opts['join']
+    if not join_str:
+        join_str = " "
+
+    the_params = [x.pprint() for x in operator._params]
+
+    # Don't wrap comps or transforms
+    head = [str(x) for x in the_params[:op_fix]]
+    tail = [str(x) for x in the_params[op_fix:]]
+    val = join_str.join(head + [operator.op] + tail)
+
+    return val
+
+def print_operator_rebind(operator, opts):
+    val = print_operator(operator, opts)
+    val = _wrap_rebind(val, operator._rebind)
+    return val
+
+def print_operator_wrap(operator, opts):
+    # Format the vars of the operator
+    join_str = opts['join']
+    if not join_str:
+        join_str = ", "
+
+    the_params = [x.pprint() for x in operator._params]
+    val = "{}({})".format(operator.op, join_str.join(the_params))
+
+    return val
+
+
 # PRINTING COMPONENTS
-def _wrap_str(value):
+def _wrap_str(value, opts=None):
     assert(isinstance(value, str))
     return '"{}"'.format(value)
 
-def _wrap_float(value):
+def _wrap_float(value, opts=None):
     return str(value).replace('.', util.DECIMAL_S)
 
-def _wrap_int(value):
+def _wrap_int(value, opts=None):
     return str(value)
-def _wrap_regex(value):
+def _wrap_regex(value, opts=None):
     assert(isinstance(value, str))
     val = "/{}/".format(value)
     return val
+
 
 def _wrap_var(value):
     assert(isinstance(value, str))
@@ -190,7 +229,7 @@ def _wrap_at_var(value):
 def _wrap_constraints(value, constraints):
     assert(isinstance(value, str))
     assert(isinstance(constraints, list))
-    cons_strs = ", ".join([x.pprint(default_opts()) for x in constraints])
+    cons_strs = ", ".join([x.pprint() for x in constraints])
     return value + "({})".format(cons_strs)
 
 def _wrap_modal_operator(value, op):
@@ -205,10 +244,9 @@ def _wrap_rebind(value, rebind, is_sugar=False):
     if is_sugar:
         arrow = "=>"
 
-    def_op = default_opts('leaf')
     return "{} {} {}".format(value,
                              arrow,
-                             print_value(rebind, def_op))
+                             rebind.pprint())
 
 def _wrap_question(value):
     return "{}{}".format(value, util.QUERY_SYMBOL_S)
@@ -226,7 +264,7 @@ def _wrap_tags(value, tags, sep="\n\t"):
 def _maybe_wrap(value, maybeNone, sep=None):
     if maybeNone is None:
         return (value, False)
-    return (value + sep + maybeNone.pprint(default_opts('container')), True)
+    return (value + sep + maybeNone.pprint(), True)
 
 def _wrap_colon(value, newline=False):
     tail = ""
@@ -253,10 +291,10 @@ def _wrap_var_list(val, the_vars, newline=False):
 
 
 
-# TODO: register / add to these
 MODAL_LOOKUPS = {}
 STATEMENT_LOOKUPS = {}
-TYPE_WRAPS = {util.STRING_S : _wrap_str,
-              util.FLOAT_S  : _wrap_float,
-              util.INT_S    : _wrap_int,
-              util.REGEX_S  : _wrap_regex}
+REGISTERED_PPRINTS = {float : _wrap_float,
+                      int   : _wrap_int}
+
+TYPE_WRAPS = {util.REGEX_S  : _wrap_regex,
+              util.STRING_S : _wrap_str}

@@ -61,3 +61,7 @@ class Transform(PO.ProductionContainer):
             var_set['out'].add(clause._rebind.value)
 
         return var_set
+
+
+
+PrU.register_class(TransformComponent, PrU.print_operator_rebind)

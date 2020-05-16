@@ -39,7 +39,7 @@ ACTION_VAL_S  = "action_values"
 #Trie exclusion operator:
 EXOP = Enum('EXOP', 'DOT EX')
 
-PrU.setup_modal_lookups({EXOP.DOT : ".", EXOP.EX : "!" })
+PrU.register_modal({EXOP.DOT : ".", EXOP.EX : "!" })
 
 DEFAULT_NODE_DATA = {
     OPERATOR_S : EXOP.DOT,

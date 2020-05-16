@@ -56,6 +56,7 @@ class PyRuleValue:
         """ Data needs to implement a str method that produces
         output that can be re-parsed """
         return str(self.name)
+
     def __repr__(self):
         uuid = str(self._uuid)
         uuid_chop = "{}..{}".format(uuid[:4],uuid[-4:])
@@ -130,8 +131,8 @@ class PyRuleValue:
 
         return self
 
-    def apply_vars(self, params):
-        safe_params = [PyRuleValue.safe_make(x) for x in params]
+    def apply_vars(self, params, data=None):
+        safe_params = [PyRuleValue.safe_make(x, data=data) for x in params]
         self._vars += safe_params
         return self
 
@@ -144,10 +145,8 @@ class PyRuleValue:
         return all([t in self._tags for t in tags])
 
 
-    def pprint(self, opts):
-        if isinstance(self.value, PyRuleValue):
-            opts['internal_value'] = self.value.pprint(opts)
-        return PrU.print_value(self, opts)
+    def pprint(self, opts=None):
+        return PrU.pprint(self, opts)
 
 
     def split_tests(self):
@@ -191,11 +190,8 @@ class PyRuleStatement(PyRuleValue):
         return (True, True)
 
 
-    def pprint(self, opts):
-        if opts['leaf']:
-            return PrU.print_statement(self, opts)
-        else:
-            return PrU.print_value(self, opts)
+    def pprint(self, opts=None):
+        return PrU.pprint(self, opts)
 
     def pprint_body(self, val):
         raise NotImplementedError()
@@ -211,3 +207,10 @@ class PyRuleStatement(PyRuleValue):
     def to_simple_value(self):
         simple_value = PyRuleValue(self._name)
         return simple_value
+
+
+
+
+
+PrU.register_class(PyRuleValue, PrU.print_value)
+PrU.register_class(PyRuleStatement, PrU.print_statement)

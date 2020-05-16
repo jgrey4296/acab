@@ -27,8 +27,7 @@ class Sentence(PyRuleValue):
         return super(Sentence, self).__hash__()
 
     def __eq__(self, other):
-        default_opts = PrU.default_opts()
-        return hash(self.pprint(default_opts)) == hash(other.pprint(default_opts))
+        return hash(self.pprint()) == hash(other.pprint())
 
     def __iter__(self):
         return iter(self.words)
@@ -100,10 +99,8 @@ class Sentence(PyRuleValue):
 
         return self
 
-    def pprint(self, opts):
-        if 'leaf'not in opts:
-            opts['leaf'] = True
-        return PrU.print_sequence(self, opts)
+    def pprint(self, opts=None):
+        return PrU.pprint(self, opts)
 
     def attach_statement(self, value):
         assert(isinstance(value, PyRuleStatement))
@@ -133,3 +130,6 @@ class Sentence(PyRuleValue):
         [x.verify() for x in self.words]
 
         return self
+
+
+PrU.register_class(Sentence, PrU.print_sequence)

@@ -17,7 +17,7 @@ class PyRuleNode:
 
     @staticmethod
     def Root():
-        return PyRuleNode(PyRuleValue(util.ROOT_S))
+        return PyRuleNode(util.ROOT_S)
 
     def __init__(self, value, data=None):
 
@@ -28,8 +28,6 @@ class PyRuleNode:
             if data is None:
                 data = {}
             data.update(node._data)
-
-        # assert(isinstance(value, PyRuleValue))
 
         self._uuid = uuid1()
         # Wrap in a PyRuleValue if necessary:
@@ -185,7 +183,7 @@ class PyRuleNode:
         return deepcopy(self)
 
 
-    def pprint(self, opts):
+    def pprint(self, opts=None):
         return self.value.pprint(opts)
 
 

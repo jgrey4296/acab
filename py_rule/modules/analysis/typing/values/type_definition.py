@@ -7,7 +7,7 @@ from .pyrule_type import TypeStatement
 from .type_instance import TypeInstance
 from py_rule.modules.analysis.typing.util import TYPE_DEF_S, TYPE_DEC_S
 
-PrU.setup_statement_lookups({TYPE_DEF_S : STRUCTURE_S})
+PrU.register_statement({TYPE_DEF_S : STRUCTURE_S})
 
 class TypeDefinition(TypeStatement):
     """ Defines the Structure of a type """

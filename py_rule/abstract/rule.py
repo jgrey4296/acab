@@ -14,7 +14,6 @@ from .query import Query
 
 logging = root_logger.getLogger(__name__)
 
-PrU.setup_statement_lookups({util.RULE_S : util.RULE_HEAD_S})
 
 class Rule(ProductionContainer):
     """ A Rule holds a query (of N Clauses), a set of transforms,
@@ -150,3 +149,8 @@ class Rule(ProductionContainer):
                                             self._action]])
 
         return (head, body)
+
+
+
+PrU.register_statement({util.RULE_S : util.RULE_HEAD_S})
+PrU.register_class(Rule, PrU.print_statement)

@@ -75,9 +75,8 @@ class ActionComponent(PO.ProductionComponent):
         sen = Sentence([head] + self._params[:])
         return sen
 
-    def pprint(self, opts):
-        opts['wrap'] = True
-        return PrU.print_operator(self, opts)
+    def pprint(self, opts=None):
+        return PrU.pprint(self, opts)
 
 
 class Action(PO.ProductionContainer):
@@ -100,3 +99,7 @@ class Action(PO.ProductionContainer):
         # needs to return both the action sentences,
         # AND the action operators in canonical form
         raise NotImplementedError()
+
+
+
+PrU.register_class(ActionComponent, PrU.print_operator_wrap)
