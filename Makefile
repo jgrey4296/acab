@@ -29,6 +29,9 @@ repl:
 vrepl:
 	python py_rule/repl/repl.py --verbose DEBUG
 
+count:
+	find . -name "*.py" -not -path "./.git/*" -not -name "*_tests.py" -not -name "*__init__.py" -print0 | xargs -0 wc -l | sort > linecounts.stats
+
 re: repl
 vr: vrepl
 
