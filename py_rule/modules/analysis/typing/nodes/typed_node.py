@@ -12,7 +12,7 @@ class MonoTypedNode(PyRuleNode):
     """ Base Node for a Type Trie """
 
     def __init__(self, value, _type=None):
-        assert(_type is None or isisntance(type, TypeInstance))
+        assert(_type is None or isisntance(_type, TypeInstance))
         super().__init__(value)
         self._type_instance = _type
 

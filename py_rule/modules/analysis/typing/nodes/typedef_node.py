@@ -40,7 +40,7 @@ class TypeDefTrieNode(PyRuleNode):
 
 
     def set_data(self, data):
-        """ OverridesPyRuleNode.set_data.
+        """ Overrides PyRuleNode.set_data.
         Builds the subtrie of a type definition at the end of being added
         to the definition trie.
         """
