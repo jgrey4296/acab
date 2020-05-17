@@ -18,6 +18,38 @@ class EngineTests(unittest.TestCase):
 
     #----------
     #use testcase snippets
+    @unittest.skip("TODO")
+    def test_init(self):
+        pass
+
+    @unittest.skip("TODO")
+    def test_load_modules(self):
+        pass
+
+    @unittest.skip("TODO")
+    def test_reload_modules(self):
+        pass
+
+    @unittest.skip("TODO")
+    def test_load_file(self):
+        pass
+
+    @unittest.skip("TODO")
+    def test_save_file(self):
+        pass
+
+    @unittest.skip("TODO")
+    def test_add_two(self):
+        pass
+
+    @unittest.skip("TODO")
+    def test_query(self):
+        pass
+
+    @unittest.skip("TODO")
+    def test_run_thing(self):
+        pass
+
 
 
 if __name__ == "__main__":

@@ -103,6 +103,20 @@ class PyRuleValueTests(unittest.TestCase):
         return
 
 
+    @unittest.skip("TODO")
+    def test_safe_make(self):
+        pass
+
+    @unittest.skip("TODO")
+    def test_statement_init(self):
+        pass
+
+    @unittest.skip("TODO")
+    def test_statement_to_simple_value(self):
+        pass
+
+
+
 if __name__ == "__main__":
     #run python $filename to use this logging setup
     #using python -m unittest $filename won't

@@ -18,6 +18,18 @@ class LayerTests(unittest.TestCase):
 
     #----------
     #use testcase snippets
+    @unittest.skip("TODO")
+    def test_init(self):
+        pass
+
+    @unittest.skip("TODO")
+    def test_call(self):
+        pass
+
+    @unittest.skip("TODO")
+    def test_make(self):
+        pass
+
 
 
 if __name__ == "__main__":

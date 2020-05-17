@@ -18,32 +18,56 @@ class SentenceTests(unittest.TestCase):
 
     #----------
     #use testcase snippets
+    @unittest.skip('TODO')
     def test_construction(self):
         return
 
+    @unittest.skip('TODO')
     def test_length(self):
         return
 
+    @unittest.skip('TODO')
     def test_eq(self):
         return
 
+    @unittest.skip('TODO')
     def test_iter(self):
         return
 
+    @unittest.skip('TODO')
     def test_get_item(self):
         return
 
+    @unittest.skip('TODO')
     def test_bind(self):
         return
 
+    @unittest.skip('TODO')
     def test_copy(self):
         return
 
+    @unittest.skip('TODO')
     def test_add(self):
         return
 
+    @unittest.skip('TODO')
     def test_data(self):
         return
+
+
+    @unittest.skip("TODO")
+    def test_slice(self):
+        pass
+
+    @unittest.skip("TODO")
+    def test_attach_statement(self):
+        pass
+
+    @unittest.skip("TODO")
+    def test_detach_statement(self):
+        pass
+
+
 
 
 if __name__ == "__main__":

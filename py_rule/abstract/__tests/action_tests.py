@@ -39,6 +39,29 @@ class ActionTests(unittest.TestCase):
         self.assertTrue(param in var_set['in'])
         del ActionOp.op_list['testOp']
 
+    @unittest.skip("TODO")
+    def test_component_bind(self):
+        pass
+
+
+    @unittest.skip("TODO")
+    def test_to_sentence(self):
+        pass
+
+    @unittest.skip("TODO")
+    def test_component_pprint(self):
+        pass
+
+    @unittest.skip("TODO")
+    def test_container_bind(self):
+        pass
+
+    @unittest.skip("TODO")
+    def test_container_to_sentences(self):
+        pass
+
+
+
 
 if __name__ == "__main__":
     #run python $filename to use this logging setup
