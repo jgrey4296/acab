@@ -42,7 +42,7 @@ class ActionComponent(PO.ProductionComponent):
 
     def __init__(self, op_str, params=None, data=None):
         """ Create an action with an operator and values """
-        assert all([isinstance(x, Sentence) for x in params]), params
+        assert all([isinstance(x, PyRuleValue) for x in params]), params
         super(ActionComponent, self).__init__(op_str,
                                               params,
                                               data=data,

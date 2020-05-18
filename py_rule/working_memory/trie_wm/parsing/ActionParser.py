@@ -25,7 +25,7 @@ def build_action(toks):
 
 
 # fact string with the option of binds
-vals = pp.delimitedList(PARAM_SEN, delim=PU.COMMA)
+vals = pp.delimitedList(pp.Or([VALBIND, PARAM_SEN]), delim=PU.COMMA)
 
 # action: [op](values)
 action_component = PU.N(WMU.OPERATOR_S, HOTLOAD_OPERATORS) \
