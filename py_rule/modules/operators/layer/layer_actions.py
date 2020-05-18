@@ -1,6 +1,7 @@
 from py_rule.abstract.action import ActionOp
 from py_rule.abstract.transform import TransformOp
-
+from py_rule.abstract.rule import Rule
+from py_rule.abstract.contexts import Contexts
 
 
 class LayerRunRules(TransformOp):
@@ -22,12 +23,12 @@ class LayerRunAgenda(TransformOp):
 
     def __call__(self, agenda, *params, data=None, engine=None):
         if data is None:
-            data = [{}]
+            data = {}
         # rebind passed in parameters from the caller (ie: layer),
         # to the agenda's parameters
-        rebound = util.rebind_across_contexts(agenda._vars,
-                                              params,
-                                              data[0])
+        rebound = Contexts.rebind_across_contexts(agenda._vars,
+                                                  params, data)
+
         return agenda(ctxs=[rebound], engine=engine)
 
 

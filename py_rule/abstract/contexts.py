@@ -23,6 +23,21 @@ class Contexts:
     Conceptually a list of tuples: ({}, LastAccessedNode)
     And Stores failure state
     """
+    @staticmethod
+    def rebind_across_contexts(names, values, base):
+        assert(isinstance(base, dict))
+        assert(isinstance(names, list))
+        assert(isinstance(values, tuple))
+        new_base = {}
+        new_base.update(base)
+        for x,y in zip(names, values):
+            new_base[x.name] = PyRuleValue.safe_make(y)
+
+        return new_base
+
+
+
+
     def __init__(self, start_node=None, bindings=None, engine=None):
         """
         Setup the initial context of no bindings

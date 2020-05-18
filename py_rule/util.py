@@ -77,17 +77,6 @@ DEFAULT_VALUE_DATA = {
     }
 
 
-def rebind_across_contexts(names, values, base):
-    assert(isinstance(base, dict))
-    assert(isinstance(names, list))
-    assert(isinstance(values, list))
-    new_base = {}
-    new_base.update(base)
-    for x,y in zip(names, values):
-        new_base[x] = y
-
-    return new_base
-
 def get_parsers_from_module(module):
     elements = [getattr(module, x) for x in module]
     parsers = [x for x in elements if isinstance(x, pp.ParserElement)]
