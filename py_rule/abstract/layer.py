@@ -21,7 +21,7 @@ end
 
 """
 from py_rule.abstract.rule import Rule
-from py_rule.abstract.production_operator import ProductionOperator
+from py_rule.abstract.production_operator import ProductionOperator, ProductionContainer
 from py_rule import util
 from py_rule.util import NAME_S, STATEMENT_S, TYPE_DEC_S, QUERY_S, TRANSFORM_S, ACTION_S
 from py_rule.abstract.printing import util as PrU
@@ -73,8 +73,8 @@ def make_layer(toks):
     else:
         a = None
 
-    the_layer = Layer(query=c, transform=t, action=t)
-
+    the_layer = Layer(query=c, transform=t, action=a)
     return (the_layer.type, the_layer)
+
 
 PrU.register_statement({util.LAYER_HEAD_S : util.LAYER_HEAD_S})
