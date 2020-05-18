@@ -46,7 +46,7 @@ class Layer(Rule):
         # Run layer actions
         action_results = self._action(ctxs=[results[0][0]], engine=engine)
 
-        return selected
+        return action_results
 
 
 
