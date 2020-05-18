@@ -10,6 +10,8 @@ class LayerRunRules(TransformOp):
         super(LayerRunRules, self).__init__()
 
     def __call__(self, rules, data=None, engine=None):
+        if not isinstance(rules, list):
+            rules = [rules]
         assert(all([isinstance(x, Rule) for x in rules]))
 
         rule_results = []
@@ -36,4 +38,4 @@ class LayerPerform(ActionOp):
 
     def __call__(self, proposals, data=None, engine=None):
         for x,y in proposals:
-            y._action(x, data=data, engine=engine)
+            y._action(ctxs=[x], engine=engine)
