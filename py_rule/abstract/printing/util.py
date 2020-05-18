@@ -133,9 +133,9 @@ def print_container(container, opts):
 
     join_str = opts['container_join']
     if not join_str:
-        join_str = "\n"
+        join_str = "\n\t"
 
-    return join_str.join(the_clauses)
+    return "{}\n".format(join_str.join(the_clauses))
 
 def print_statement(statement, opts):
 
@@ -147,6 +147,8 @@ def print_statement(statement, opts):
 
     if statement.type in STATEMENT_LOOKUPS:
         val = _wrap_statement_type(val, statement.type)
+    else:
+        val += "\n"
 
     if bool(statement._vars):
         val = _wrap_var_list(val, statement._vars)
@@ -157,7 +159,7 @@ def print_statement(statement, opts):
     # Add the statement body, which is specific to each statement type
     val = statement.pprint_body(val)
 
-    val = _wrap_end(val, newline=head or body)
+    val = _wrap_end(val)
 
     return val
 
@@ -171,7 +173,8 @@ def print_operator(operator, opts):
     eg: op_fix=0 : + 1 2 3 ...
         op_fix=2 : 1 2 + 3 ...
     """
-    op_fix = [0 if len(operator._params) < 2 else 1][0]
+    # TODO fix this
+    op_fix = 0 #[0 if len(operator._params) < 2 else 1][0]
     join_str = opts['join']
     if not join_str:
         join_str = " "
@@ -257,7 +260,7 @@ def _wrap_negation(value):
 def _wrap_fallback(value, fallback_list):
     return "{} || {}".format(value, print_fallback(fallback_list))
 
-def _wrap_tags(value, tags, sep="\n\t"):
+def _wrap_tags(value, tags, sep="\t"):
     tags_s = [str(x) for x in tags]
     return "{}{}{}".format(value, sep, ", ".join(sorted([util.TAG_SYMBOL_S + x for x in tags_s])))
 
@@ -273,21 +276,20 @@ def _wrap_colon(value, newline=False):
 
     return "{}:{}".format(value, tail)
 
-def _wrap_end(value, newline=True):
+def _wrap_end(value, newline=False):
     if newline:
-        return "{}\n{}".format(value, util.END_S)
+        return "{}\n{}\n".format(value, util.END_S)
     else:
-        return "{} {}".format(value, util.END_S)
+        return "{}{}\n".format(value, util.END_S)
 
 def _wrap_statement_type(val, type_str):
-    return "{} (::{})".format(val,
-                              STATEMENT_LOOKUPS[type_str])
+    return "{} (::{})\n".format(val, STATEMENT_LOOKUPS[type_str])
 
 def _wrap_var_list(val, the_vars, newline=False):
     head = ""
     if newline:
         head = "\n"
-    return "{}{}\t | {} |\n".format(val, head, ", ".join([_wrap_var(x) for x in the_vars]))
+    return "{}{}\t | {} |\n".format(val, head, ", ".join([_wrap_var(x.name) for x in the_vars]))
 
 
 
