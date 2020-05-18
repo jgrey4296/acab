@@ -215,19 +215,6 @@ class ProductionContainer(PyRuleStatement):
         return obj
 
 
-    def get_variables(self, data):
-        # create a new context based on the data based in
-        assert(isinstance(data, list))
-        new_ctxs = []
-        for ctx in data:
-            current = {}
-            current.update(ctx)
-            for x in self._vars:
-                current[x] = ctx[x]
-            new_ctxs.append(current)
-
-        return new_ctxs
-
     def to_sentences(self, target=None):
         return [x.to_sentence() for x in self.clauses]
 
