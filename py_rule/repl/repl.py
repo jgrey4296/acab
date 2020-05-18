@@ -42,6 +42,9 @@ if __name__ == "__main__":
     init_module = importlib.import_module(splitext(args.engine)[0])
     # build engine
     engine, dummy = ReC.get(ReC.ReplE.INIT)(None, {'params': [args.engine]})
+    # Load Standard modules
+    engine, dummy = ReC.get(ReC.ReplE.MODULE)(engine, {'params': ['py_rule.modules.operators']})
+    engine, dummy = ReC.get(ReC.ReplE.MODULE)(engine, {'params': ['py_rule.modules.structures']})
 
     data = { 'prompt' : 'PyRuleREPL: ',
              'prompt_ml' : '... ',
