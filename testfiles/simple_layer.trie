@@ -1,0 +1,25 @@
+a.b.c
+a.b.d
+
+a.layer.test: (::Layer)
+    a.agenda.$agenda?
+    a.rule.$rule?
+
+    LayerRunRules $rule  -> $props
+    LayerRunAgenda $agenda $props -> $results
+
+    LayerPerform($results)
+end
+
+a.agenda.test: (::Agenda)
+    | $proposals |
+    
+    AgendaReturn($proposals)
+end
+
+a.rule.test: (::ρ)
+    a.b.c?
+
+    a.b.q
+    ActionPrint("Testing")
+end
