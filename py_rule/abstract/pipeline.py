@@ -15,7 +15,8 @@ end
 from py_rule.abstract.rule import Rule
 from py_rule.abstract.production_operator import ProductionOperator
 from py_rule.util import NAME_S, STATEMENT_S, TYPE_DEC_S, QUERY_S, TRANSFORM_S, ACTION_S
-
+from py_rule import util
+from py_rule.abstract.printing import util as PrU
 
 class Pipeline(Rule):
     """ Abstract Class to describe a rule engine pipeline
@@ -27,7 +28,8 @@ class Pipeline(Rule):
         super(Pipeline, self).__init__( query=query,
                                         action=action,
                                         transform=transform,
-                                        name=name)
+                                        name=name,
+                                        type_str=util.PIPE_HEAD_S)
         # Layers in the main loop
         self._layers = []
 
@@ -111,3 +113,6 @@ def make_pipeline(toks):
     the_pipeline = Pipeline(query=c, transform=t, action=t)
 
     return (the_pipeline.type, the_layer)
+
+
+PrU.register_statement({util.PIPE_HEAD_S : util.PIPE_HEAD_S})

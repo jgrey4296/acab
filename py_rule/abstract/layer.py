@@ -24,7 +24,7 @@ from py_rule.abstract.rule import Rule
 from py_rule.abstract.production_operator import ProductionOperator
 from py_rule import util
 from py_rule.util import NAME_S, STATEMENT_S, TYPE_DEC_S, QUERY_S, TRANSFORM_S, ACTION_S
-
+from py_rule.abstract.printing import util as PrU
 
 class Layer(Rule):
     """ The Abstract Layer Class """
@@ -33,8 +33,8 @@ class Layer(Rule):
         super(Layer, self).__init__(query=query,
                                     action=action,
                                     transform=transform,
-                                    name=name)
-        self._data[util.OP_CLASS_S] = LayerAction
+                                    name=name,
+                                    type_str=util.LAYER_HEAD_S)
 
     def __call__(self, ctxs=None, engine=None):
         """ Run a layer, returning actions to perform """
@@ -76,3 +76,5 @@ def make_layer(toks):
     the_layer = Layer(query=c, transform=t, action=t)
 
     return (the_layer.type, the_layer)
+
+PrU.register_statement({util.LAYER_HEAD_S : util.LAYER_HEAD_S})

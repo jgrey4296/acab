@@ -4,9 +4,11 @@ they just need to be registered so
 layers and pipelines can be defined
 """
 from enum import Enum
+from py_rule import util
 from py_rule.util import NAME_S, STATEMENT_S, TYPE_DEC_S, QUERY_S, TRANSFORM_S, ACTION_S
 from py_rule.abstract.rule import Rule
 from py_rule.abstract.production_operator import ProductionOperator, ProductionContainer
+from py_rule.abstract.printing import util as PrU
 
 RELATION_E = Enum('Agenda_Relation', 'ONE MANY')
 
@@ -27,7 +29,8 @@ class Agenda(Rule):
         super(Agenda, self).__init__(query=query,
                                      transform=transform,
                                      action=action,
-                                     name=name)
+                                     name=name,
+                                     type_str=util.AGENDA_HEAD_S)
         # Whether the agenda expands or constrains proposals
         self._relation_type = (None, None)
 
@@ -74,3 +77,6 @@ def make_agenda(toks):
     the_agenda = Agenda(query=c, transform=t, action=a)
 
     return  (the_agenda.type, the_agenda)
+
+
+PrU.register_statement({util.AGENDA_HEAD_S : util.AGENDA_HEAD_S})
