@@ -37,6 +37,9 @@ class FactNode(PyRuleNode):
     def __contains__(self, other):
         assert(isinstance(other, PyRuleValue))
         if self.has_child(other):
+            if WMU.OPERATOR_S not in other._data:
+                return True
+
             return self.get_child(other).exop == other._data[WMU.OPERATOR_S]
         return False
 
