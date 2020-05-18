@@ -53,8 +53,8 @@ class Layer(Rule):
 #Utility function for parser
 def make_layer(toks):
     # Get Conditions
-    if CONDITION_S in toks:
-        c = toks[CONDITION_S][0][1]
+    if QUERY_S in toks:
+        c = toks[QUERY_S][0][1]
         assert(isinstance(c, ProductionContainer))
     else:
         c = None
