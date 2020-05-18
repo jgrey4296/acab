@@ -43,7 +43,7 @@
 """
 from py_rule.abstract.action import ActionOp
 from py_rule.abstract.transform import TransformOp
-
+from py_rule.abstract.agenda import Agenda
 
 class AgendaSelect(TransformOp):
 

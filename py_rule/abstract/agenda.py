@@ -39,7 +39,7 @@ class Agenda(Rule):
     def __call__(self, ctxs=None, engine=None):
         """ Take the proposals, transform them in some way,
         then enact them on the engine """
-
+        assert(isinstance(ctxs, list))
         agenda_settings = super(Agenda, self).__call__(ctxs=ctxs, engine=engine)
 
         assert(len(agenda_settings) == 1)
