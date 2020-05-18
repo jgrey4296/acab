@@ -17,7 +17,7 @@ def buildBinaryTransformComponent(toks):
 
 def buildUnaryTransformComponent(toks):
     return TransformComponent(toks[WMU.OPERATOR_S],
-                              [toks[WMU.RIGHT_S]])
+                              toks[WMU.RIGHT_S][:])
 
 def buildTernaryTransformComponent(toks):
     return TransformComponent(toks[WMU.OPERATOR_S],
@@ -48,7 +48,7 @@ rebind = PU.ARROW + VALBIND
 
 # transform: ( bind op val|bind -> bind)
 unary_transform_core = PU.N(WMU.OPERATOR_S, UNARY_TRANS_OP) \
-    + PU.N(WMU.RIGHT_S, VALBIND)
+    + PU.N(WMU.RIGHT_S, PU.orm(VALBIND))
 
 binary_transform_core = PU.N(WMU.LEFT_S, VALBIND) \
     + PU.N(WMU.OPERATOR_S, BINARY_TRANS_OP) \
