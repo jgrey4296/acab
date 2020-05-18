@@ -22,11 +22,11 @@ class Rule(ProductionContainer):
 
     __count = 0
     # TODO handle None's better
-    def __init__(self, query=None, action=None, transform=None, name="AnonRule"):
+    def __init__(self, query=None, action=None, transform=None, name="AnonRule", type_str=util.RULE_S):
         assert(query is None or isinstance(query, Query))
         assert(action is None or isinstance(action, Action))
         assert(transform is None or isinstance(transform, Transform))
-        super().__init__(None, type_str=util.RULE_S, name=name)
+        super().__init__(None, type_str=type_str, name=name)
         self._query     = query
         self._transform = transform
         self._action    = action
@@ -39,27 +39,26 @@ class Rule(ProductionContainer):
         assert(self.verify())
         assert(isinstance(ctxs, list))
         assert(all([isinstance(x, dict) for x in ctxs]))
+        assert(all([x.value in y for x in self._vars for y in ctxs]))
         logging.info("Running Rule: {}".format(self._name))
         extract_ctxs = []
         if ctxs is not None:
-            extract_ctxs = self.get_variables(ctxs)
+            extract_ctxs = [x.copy() for x in ctxs]
 
         # Run the query
-        # TODO: extract | $variables | from passed in data to create
-        # a local context
-        result = self._query(ctxs=extract_ctxs, engine=engine)
-        if not bool(result):
-            logging.info("Rule {} Failed".format(self._name))
-            return []
+        query_result = extract_ctxs[:]
+        if self._query is not None:
+            query_result = self._query(ctxs=extract_ctxs, engine=engine)
+            if not bool(query_result):
+                logging.info("Rule {} Failed".format(self._name))
+                return []
 
         # Run any transforms
-        transformed = []
+        # This is *not* an unnecessary comprehension
+        # because of how parse results work
+        transformed = query_result[:]
         if self._transform:
-            transformed += self._transform(ctxs=result[:], engine=engine)
-        else:
-            # This is *not* an unnecessary comprehension
-            # because of how parse results work
-            transformed = result[:]
+            transformed = self._transform(ctxs=transformed, engine=engine)
 
         # return final passing dictionaries
         results = []
@@ -124,18 +123,15 @@ class Rule(ProductionContainer):
 
 
     def pprint_body(self, val):
-        sep_list = ["\n\n\t", "\n\n\t", "\n\n\t"]
+        sep_list = ["\t", "\t", "\t"]
         head, body = self.pprint_has_content
-
-        if not head:
-            sep_list.insert(0, "\n\t")
 
         val, pop = PrU._maybe_wrap(val, self._query, sep=sep_list[0])
         if pop:
-            sep_list.pop(0)
+            val += "\n"
         val, pop = PrU._maybe_wrap(val, self._transform, sep=sep_list[0])
         if pop:
-            sep_list.pop(0)
+            val += "\n"
         val, pop = PrU._maybe_wrap(val, self._action, sep=sep_list[0])
 
         return val
