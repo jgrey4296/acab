@@ -108,11 +108,14 @@ class Sentence(PyRuleValue):
         value_copy = value.copy()
         sen_copy = self.copy()
 
+        # TODO clean this
         value_copy._name = last.name
         value_copy.set_path(sen_copy)
+        combined_data = last._data.copy()
+        combined_data.update(value._data)
+        value_copy._data.update(combined_data)
 
         sen_copy._value[-1] = value_copy
-
         return sen_copy
 
     def detach_statement(self):
