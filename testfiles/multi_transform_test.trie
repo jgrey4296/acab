@@ -12,8 +12,8 @@ test.rule: (::ρ)
   format.second.$b?
   a.$x!$y?
 
-  FormatOp $a -> $result
-  FormatOp $b -> $result_b
+  \FormatOp $a -> $result
+  \FormatOp $b -> $result_b
 
   ActionAdd(output.$result_b)
 end

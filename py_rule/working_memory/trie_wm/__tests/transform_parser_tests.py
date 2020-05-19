@@ -14,12 +14,8 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
         bp = BootstrapParser()
         os = StandardOperators()
         os.assert_parsers(bp)
-        TP.UNARY_TRANS_OP << bp.query("operator.transform.unary.*",
-                                      "operator.sugar")
-        TP.BINARY_TRANS_OP << bp.query("operator.transform.binary.*",
-                                       "operator.sugar")
-        TP.TERNARY_TRANS_OP << bp.query("operator.transform.ternary.*",
-                                        "operator.sugar")
+        TP.HOTLOAD_TRANS_OP << bp.query('operator.transform.n_ary.*',
+                                        'operator.sugar')
         TP.HOTLOAD_TRANS_STATEMENTS << bp.query("operator.transform.statements.*",
                                                 "operator.sugar")
 
@@ -34,7 +30,7 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
     #----------
     #use testcase snippets
     def test_ternary_operator(self):
-        result = TP.parseString('$x RegexOp /blah/ $a -> $y')
+        result = TP.parseString('$x \RegexOp /blah/ $a -> $y')
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result.clauses), 1)
         self.assertEqual(result.clauses[0].op, 'RegexOp')
@@ -44,7 +40,7 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
         self.assertIsNotNone(result.clauses[0]._rebind)
 
     def test_ternary_operator_rebind(self):
-        result = TP.parseString('$x RegexOp /blah/ $awef -> $q')
+        result = TP.parseString('$x \RegexOp /blah/ $awef -> $q')
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result.clauses), 1)
         self.assertEqual(result.clauses[0].op, 'RegexOp')
@@ -54,7 +50,7 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
         self.assertEqual(result.clauses[0]._rebind.name, 'q')
 
     def test_unary_format(self):
-        result = TP.parseString('FormatOp blah -> $y')
+        result = TP.parseString('\FormatOp blah -> $y')
         self.assertEqual(result.clauses[0].op, 'FormatOp')
 
 

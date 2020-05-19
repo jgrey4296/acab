@@ -7,7 +7,7 @@ test.rule: (::ρ)
 
   a.$x?
   //blah
-  $x RegexOp /(bl)(ah)/ "\1AH" -> $y
+  $x \RegexOp /(bl)(ah)/ "\1AH" -> $y
 
   ActionAdd(result.$y)
 end

@@ -38,7 +38,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result[0][-1], Rule)
         def_op = PrU.default_opts()
         def_op['leaf'] = True
-        self.assertEqual(result[0][-1].pprint(def_op), "x: (::ρ) end")
+        self.assertEqual(result[0][-1].pprint(def_op).strip(), "x: (::ρ) end")
 
     def test_multi_empty_rules(self):
         result = RP.parseString("a.rule.x: (::ρ) end\n\na.second.rule: (::ρ) end")
@@ -105,13 +105,14 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
         bindings = { "x" : FP.parseString('a.b.c')[0] }
         result = RP.parseString("a.rule.x: (::ρ)\n\n$x?\n\nend")[0]
         expanded = result[-1].bind(bindings)
-        self.assertEqual(expanded.pprint(PrU.default_opts('leaf')),
+        self.assertEqual(expanded.pprint(PrU.default_opts('leaf')).strip(),
                          "AnonRule: (::ρ)\n\ta.b.c?\nend")
 
     def test_rule_tags(self):
-        result = RP.parseString('a.test.rule.x: (::ρ)\n\n#blah, #bloo, #blee\n\na.b.c?\n\nActionAdd(a.b.c)\nend')[0]
+        the_str = 'a.test.rule.x: (::ρ)\n\t#blah, #blee, #bloo\n\n\ta.b.c?\n\n\tActionAdd(a.b.c)\nend'
+        result = RP.parseString(the_str)[0]
         self.assertIsInstance(result[-1], Rule)
-        self.assertEqual(result.pprint(PrU.default_opts()), "a.test.rule.x: (::ρ)\n\t#blah, #blee, #bloo\n\n\ta.b.c?\n\n\tActionAdd(a.b.c)\nend")
+        self.assertEqual(result.pprint().strip(), the_str)
         tags = [x for x in result[-1]._tags]
         self.assertTrue(all(x in tags for x in ["blah","bloo","blee"]))
 

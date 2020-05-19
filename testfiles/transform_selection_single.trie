@@ -8,7 +8,7 @@ test.rule: (::ρ)
   format.string.$a?
   a.$x!$y?
 
-  FormatOp $a -> $result
+  \FormatOp $a -> $result
   
   ActionAdd(output.$result)
 end

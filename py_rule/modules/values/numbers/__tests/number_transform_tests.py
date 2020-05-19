@@ -43,14 +43,14 @@ class NumberTransformTests(unittest.TestCase):
 
 
     def test_basic_transform_core(self):
-        result = TP.transform_core.parseString('$x AddOp 20 -> $y')[0]
+        result = TP.transform_core.parseString('$x \AddOp 20 -> $y')[0]
         self.assertIsInstance(result, transform.TransformComponent)
         self.assertEqual(result.op, "AddOp")
         self.assertEqual(len(result._params), 2)
 
 
     def test_basic_transform_core_rebind(self):
-        result = TP.transform_core.parseString('$y MulOp 20 -> $z')[0]
+        result = TP.transform_core.parseString('$y \MulOp 20 -> $z')[0]
         self.assertIsInstance(result, transform.TransformComponent)
         self.assertEqual(result.op, "MulOp")
         self.assertEqual(result._params[0]._value, "y")
@@ -61,13 +61,13 @@ class NumberTransformTests(unittest.TestCase):
 
 
     def test_basic_transform(self):
-        result = TP.parseString('$x AddOp 20 -> $y, $y AddOp 5 -> $z')
+        result = TP.parseString('$x \AddOp 20 -> $y, $y \AddOp 5 -> $z')
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result.clauses), 2)
 
 
     def test_binary_operator(self):
-        result = TP.parseString('$x AddOp 20 -> $y')
+        result = TP.parseString('$x \AddOp 20 -> $y')
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result.clauses), 1)
         self.assertEqual(result.clauses[0].op, "AddOp")
@@ -77,7 +77,7 @@ class NumberTransformTests(unittest.TestCase):
 
 
     def test_binary_rebind(self):
-        result = TP.parseString('$x AddOp 20 -> $y')
+        result = TP.parseString('$x \AddOp 20 -> $y')
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result.clauses), 1)
         self.assertEqual(result.clauses[0].op, "AddOp")
@@ -86,16 +86,16 @@ class NumberTransformTests(unittest.TestCase):
         self.assertEqual(result.clauses[0]._rebind._value, 'y')
 
     def test_unary_round(self):
-        result = TP.parseString('RoundOp $x -> $y')
+        result = TP.parseString('\RoundOp $x -> $y')
         self.assertEqual(result.clauses[0].op, 'RoundOp')
 
     def test_binary_rand_operator(self):
-        result = TP.parseString('$x RandOp $y -> $z')
+        result = TP.parseString('$x \RandOp $y -> $z')
         self.assertEqual(len(result.clauses), 1)
         self.assertEqual(result.clauses[0].op, 'RandOp')
 
     def test_unary_operator(self):
-        result = TP.parseString('NegOp $x -> $y')
+        result = TP.parseString(r'\NegOp $x -> $y')
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result.clauses), 1)
         self.assertEqual(result.clauses[0].op, "NegOp")
@@ -103,7 +103,7 @@ class NumberTransformTests(unittest.TestCase):
         self.assertIsNotNone(result.clauses[0]._rebind)
 
     def test_unary_rebind(self):
-        result = TP.parseString('NegOp $x -> $y')
+        result = TP.parseString(r'\NegOp $x -> $y')
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result.clauses), 1)
         self.assertEqual(result.clauses[0].op, "NegOp")
@@ -114,19 +114,19 @@ class NumberTransformTests(unittest.TestCase):
 
 
     def test_fact_str_equal(self):
-        transforms = ["$x AddOp 20 -> $y", "$x AddOp 20 -> $y\n$y AddOp 5 -> $z",
-                      "$xc SubOp 10 -> $y", "$x MulOp 100 -> $y",
-                      "$x AddOp 20 -> $y",
-                      "$Blah AddOp $bloo -> $BLEE",
-                      "NegOp $x -> $y", "RoundOp $x -> $y", "NegOp $x -> $y",
-                      "RoundOp $x -> $y", "$x RegexOp /blah/ $a -> $z",
-                      "$x RegexOp /awAddOp/ $b -> $blah",
-                      "$x AddOp 2d5 -> $y"
+        transforms = ["$x \AddOp 20 -> $y", "$x \AddOp 20 -> $y\n$y \AddOp 5 -> $z",
+                      "$xc \SubOp 10 -> $y", "$x \MulOp 100 -> $y",
+                      "$x \AddOp 20 -> $y",
+                      "$Blah \AddOp $bloo -> $BLEE",
+                      r"\NegOp $x -> $y", r"\RoundOp $x -> $y", r"\NegOp $x -> $y",
+                      r"\RoundOp $x -> $y", "$x \RegexOp /blah/ $a -> $z",
+                      "$x \RegexOp /awAddOp/ $b -> $blah",
+                      "$x \AddOp 2d5 -> $y"
         ]
         parsed = [TP.parseString(x) for x in transforms]
         zipped = zip(transforms, parsed)
         for rt,pt in zipped:
-            self.assertEqual(rt, pt.pprint())
+            self.assertEqual(rt, pt.pprint(container_join="\n").strip())
 
 
 
