@@ -10,26 +10,19 @@ from py_rule.working_memory.trie_wm.parsing.FactParser import VALBIND, BASIC_SEN
 logging = root_logger.getLogger(__name__)
 
 # Builders:
-def buildBinaryTransformComponent(toks):
-    return TransformComponent(toks[WMU.OPERATOR_S],
-                              [toks[WMU.LEFT_S],
-                               toks[WMU.RIGHT_S]])
-
-def buildUnaryTransformComponent(toks):
-    return TransformComponent(toks[WMU.OPERATOR_S],
-                              toks[WMU.RIGHT_S][:])
-
-def buildTernaryTransformComponent(toks):
-    return TransformComponent(toks[WMU.OPERATOR_S],
-                              [toks[WMU.SOURCE_S],
-                               toks[WMU.REGEX_S],
-                               toks[WMU.REPLACE_S]])
+def build_transform_component(toks):
+    params = []
+    position = 0
+    if WMU.LEFT_S in toks:
+        params += toks[WMU.LEFT_S][:]
+        position = len(toks[WMU.LEFT_S])
+    params += toks[WMU.RIGHT_S][:]
 
 
-def addRebind(toks):
-    if WMU.TARGET_S in toks:
-        toks[WMU.TRANSFORM_S][0].set_rebind(toks[WMU.TARGET_S][0])
-    return toks[WMU.TRANSFORM_S][0]
+    rebind = toks[WMU.TARGET_S][0]
+    return TransformComponent(toks[WMU.OPERATOR_S][0],
+                              params, op_pos=position,
+                              rebind=rebind)
 
 def build_transform(toks):
     trans = Transform(toks[:])
@@ -37,33 +30,18 @@ def build_transform(toks):
 
 
 # Hotloaded Transform Operators
-BINARY_TRANS_OP = pp.Forward()
-UNARY_TRANS_OP = pp.Forward()
-TERNARY_TRANS_OP = pp.Forward()
+HOTLOAD_TRANS_OP = pp.Forward()
 
 # TODO need to add to this
 HOTLOAD_TRANS_STATEMENTS = pp.Forward()
 
 rebind = PU.ARROW + VALBIND
-
+# TODO: extend transform to take partial transforms?
 # transform: ( bind op val|bind -> bind)
-unary_transform_core = PU.N(WMU.OPERATOR_S, UNARY_TRANS_OP) \
-    + PU.N(WMU.RIGHT_S, PU.orm(VALBIND))
-
-binary_transform_core = PU.N(WMU.LEFT_S, VALBIND) \
-    + PU.N(WMU.OPERATOR_S, BINARY_TRANS_OP) \
-    + PU.N(WMU.RIGHT_S, VALBIND)
-
-ternary_transform_core = PU.N(WMU.SOURCE_S, VALBIND) \
-    + PU.N(WMU.OPERATOR_S, TERNARY_TRANS_OP) \
-    + PU.N(WMU.REGEX_S, VALBIND) \
-    + PU.N(WMU.REPLACE_S, VALBIND)
-
-transform_core = PU.NG(WMU.TRANSFORM_S,
-                       pp.Or([binary_transform_core,
-                              ternary_transform_core,
-                              unary_transform_core])) \
-                              + PU.N(WMU.TARGET_S, rebind)
+transform_core = PU.N(WMU.LEFT_S, pp.ZeroOrMore(VALBIND)) \
+    + PU.N(WMU.OPERATOR_S, PU.BSLASH + HOTLOAD_TRANS_OP) \
+    + PU.N(WMU.RIGHT_S, PU.orm(VALBIND)) \
+    + PU.N(WMU.TARGET_S, rebind)
 
 transform_combined = pp.Or([transform_core, HOTLOAD_TRANS_STATEMENTS])
 
@@ -74,21 +52,10 @@ transform_statement = PU.STATEMENT_CONSTRUCTOR(PU.TRANSFORM_HEAD,
                                                transforms)
 
 # Actions
-binary_transform_core.setParseAction(buildBinaryTransformComponent)
-unary_transform_core.setParseAction(buildUnaryTransformComponent)
-ternary_transform_core.setParseAction(buildTernaryTransformComponent)
-
-transform_core.setParseAction(addRebind)
+transform_core.setParseAction(build_transform_component)
 transforms.setParseAction(build_transform)
 
 # NAMING
-BINARY_TRANS_OP.setName("BinaryTransformOperator")
-UNARY_TRANS_OP.setName("UnaryTransformOperator")
-TERNARY_TRANS_OP.setName("TernaryTransformOperator")
-rebind.setName("RebindStatement")
-unary_transform_core.setName("UnaryTransform_CORE")
-binary_transform_core.setName("BinaryTransform_CORE")
-ternary_transform_core.setName("TernaryTransform_CORE")
 transform_core.setName("Transform_CORE")
 transforms.setName("TransformPlural")
 transform_statement.setName("TransformDefinition")

@@ -27,13 +27,13 @@ class MODULE(ModuleInterface):
         pt.add("operator.query.gt", CO.GT,
                "operator.query.lt", CO.LT)
 
-        pt.add("operator.transform.binary.add", TO.AddOp,
-               "operator.transform.binary.sub", TO.SubOp,
-               "operator.transform.binary.mul", TO.MulOp,
-               "operator.transform.binary.div", TO.DivOp,
-               "operator.transform.binary.rand", TO.RandOp,
-               "operator.transform.binary.remain", TO.RemainOp,
-               "operator.transform.unary.round", TO.RoundOp,
-               "operator.transform.unary.neg", TO.NegOp)
+        pt.add("operator.transform.n_ary.add", TO.AddOp,
+               "operator.transform.n_ary.sub", TO.SubOp,
+               "operator.transform.n_ary.mul", TO.MulOp,
+               "operator.transform.n_ary.div", TO.DivOp,
+               "operator.transform.n_ary.rand", TO.RandOp,
+               "operator.transform.n_ary.remain", TO.RemainOp,
+               "operator.transform.n_ary.round", TO.RoundOp,
+               "operator.transform.n_ary.neg", TO.NegOp)
 
 MODULE_SPEC = MODULE()

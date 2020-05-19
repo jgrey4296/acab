@@ -10,8 +10,8 @@ class MODULE(ModuleInterface):
         super().__init__()
 
     def assert_parsers(self, pt):
-        pt.add("operator.transform.ternary.regex", T.RegexOp,
-               "operator.transform.unary.format", T.FormatOp)
+        pt.add("operator.transform.n_ary.regex", T.RegexOp,
+               "operator.transform.n_ary.format", T.FormatOp)
 
     def query_parsers(self, pt):
         pass

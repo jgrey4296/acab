@@ -114,12 +114,8 @@ class TrieWM(WorkingMemory):
         QP.HOTLOAD_QUERY_OP << pt.query("operator.query.*",
                                         "operator.sugar")
 
-        TP.UNARY_TRANS_OP << pt.query("operator.transform.unary.*",
-                                      "operator.sugar")
-        TP.BINARY_TRANS_OP << pt.query("operator.transform.binary.*",
-                                       "operator.sugar")
-        TP.TERNARY_TRANS_OP << pt.query("operator.transform.ternary.*",
-                                        "operator.sugar")
+        TP.HOTLOAD_TRANS_OP << pt.query("operator.transform.n_ary.*",
+                                "operator.sugar"),
         TP.HOTLOAD_TRANS_STATEMENTS << pt.query("operator.transform.statement.*",
                                                 "operator.sugar")
 

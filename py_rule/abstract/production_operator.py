@@ -69,7 +69,7 @@ class ProductionOperator(PyRuleValue):
 class ProductionComponent(PyRuleValue):
     """ Pairs a an operator with some bindings """
 
-    def __init__(self, op_str, params, data=None, rebind=None,
+    def __init__(self, op_str, params, op_pos=0, data=None, rebind=None,
                  type_str=None, name=None, op_class=ProductionOperator):
         assert(op_class is not None)
         if data is None:
@@ -79,6 +79,7 @@ class ProductionComponent(PyRuleValue):
         super().__init__(op_str, type_str=type_str, data=data, name=name)
         self._params = []
         self._rebind = rebind
+        self._op_position = op_pos
 
         self.apply_params(params)
         self.verify()

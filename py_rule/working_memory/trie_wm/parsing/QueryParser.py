@@ -48,6 +48,7 @@ def build_assignment(toks):
 HOTLOAD_QUERY_OP = pp.Forward()
 HOTLOAD_QUERY_ANNOTATIONS = pp.Forward()
 
+# TODO: add \ but not for sugar syntax
 QUERY_OP_Internal = PU.N(WMU.OPERATOR_S, HOTLOAD_QUERY_OP) \
     + PU.N(WMU.VALUE_S, PARAM_CORE(end=True))
 
