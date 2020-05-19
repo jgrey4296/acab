@@ -75,8 +75,6 @@ class ActionComponent(PO.ProductionComponent):
         sen = Sentence([head] + self._params[:])
         return sen
 
-    def pprint(self, opts=None):
-        return PrU.pprint(self, opts)
 
 
 class Action(PO.ProductionContainer):
@@ -92,7 +90,6 @@ class Action(PO.ProductionContainer):
         exp_clauses = []
         for clause in self.clauses:
             exp_clauses.append(clause.bind(bindings))
-
         return Action(exp_clauses, params=self._vars)
 
     def to_sentences(self, target=None):

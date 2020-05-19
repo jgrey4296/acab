@@ -81,7 +81,7 @@ class BaseTime(PyRuleValue):
         end = max(self.end, other.end)
         return BaseTime((start, end))
 
-    def pprint(self, opts=None):
+    def pprint(self, opts=None, **kwargs):
         return "BaseTime"
 
 
@@ -123,9 +123,9 @@ class TimeEvent(BaseTime):
         return var_set
 
 
-    def pprint(self, opts=None):
+    def pprint(self, opts=None, **kwargs):
         if isinstance(self._event, PyRuleValue):
-            value = self._event.pprint(opts)
+            value = self._event.pprint(opts, **kwargs)
         else:
             value = str(self._event)
 
@@ -302,10 +302,10 @@ class TimeContainer(BaseTime):
 
         return results
 
-    def pprint(self, opts=None):
+    def pprint(self, opts=None, **kwargs):
         top_wrap = opts['wrap']
         opts['wrap'] = not self.is_pure()
-        comps = [x.pprint(opts) for x in self.events]
+        comps = [x.pprint(opts, **kwargs) for x in self.events]
 
         joined = self._join_template.join(comps)
         if top_wrap:

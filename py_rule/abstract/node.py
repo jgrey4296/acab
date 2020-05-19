@@ -183,8 +183,8 @@ class PyRuleNode:
         return deepcopy(self)
 
 
-    def pprint(self, opts=None):
-        return self.value.pprint(opts)
+    def pprint(self, opts=None, **kwargs):
+        return self.value.pprint(opts, **kwargs)
 
 
     def set_data(self, data):

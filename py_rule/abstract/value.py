@@ -145,8 +145,8 @@ class PyRuleValue:
         return all([t in self._tags for t in tags])
 
 
-    def pprint(self, opts=None):
-        return PrU.pprint(self, opts)
+    def pprint(self, opts=None, **kwargs):
+        return PrU.pprint(self, opts, **kwargs)
 
 
     def split_tests(self):
@@ -190,8 +190,8 @@ class PyRuleStatement(PyRuleValue):
         return (True, True)
 
 
-    def pprint(self, opts=None):
-        return PrU.pprint(self, opts)
+    def pprint(self, opts=None, **kwargs):
+        return PrU.pprint(self, opts, **kwargs)
 
     def pprint_body(self, val):
         raise NotImplementedError()

@@ -40,13 +40,15 @@ def default_opts(*args, **kwargs):
 
 
 # TOP LEVEL UTILITIES
-def pprint(obj, opts=None):
+def pprint(obj, opts=None, **kwargs):
     """ Top Level PPrint Routine, looks up class type
     in registered pprints and calls that, with default opts if necessary """
     cls = obj.__class__
 
     if opts is None:
         opts = default_opts()
+
+    opts.update(kwargs)
 
     # Best
     if cls in REGISTERED_PPRINTS:
@@ -157,9 +159,11 @@ def print_statement(statement, opts):
         val = _wrap_tags(val, statement._tags)
 
     # Add the statement body, which is specific to each statement type
-    val = statement.pprint_body(val)
-
-    val = _wrap_end(val)
+    if any(statement.pprint_has_content):
+        val = statement.pprint_body(val)
+        val = _wrap_end(val)
+    else:
+        val = _wrap_end(val.strip() + " ")
 
     return val
 
@@ -174,7 +178,9 @@ def print_operator(operator, opts):
         op_fix=2 : 1 2 + 3 ...
     """
     # TODO fix this
-    op_fix = 0 #[0 if len(operator._params) < 2 else 1][0]
+    op_fix = operator._op_position
+    op_str = "\\{}".format(operator.op)
+
     join_str = opts['join']
     if not join_str:
         join_str = " "
@@ -184,7 +190,7 @@ def print_operator(operator, opts):
     # Don't wrap comps or transforms
     head = [str(x) for x in the_params[:op_fix]]
     tail = [str(x) for x in the_params[op_fix:]]
-    val = join_str.join(head + [operator.op] + tail)
+    val = join_str.join(head + [op_str] + tail)
 
     return val
 
@@ -195,6 +201,7 @@ def print_operator_rebind(operator, opts):
 
 def print_operator_wrap(operator, opts):
     # Format the vars of the operator
+    op_fix = operator._op_position
     join_str = opts['join']
     if not join_str:
         join_str = ", "
@@ -262,7 +269,7 @@ def _wrap_fallback(value, fallback_list):
 
 def _wrap_tags(value, tags, sep="\t"):
     tags_s = [str(x) for x in tags]
-    return "{}{}{}".format(value, sep, ", ".join(sorted([util.TAG_SYMBOL_S + x for x in tags_s])))
+    return "{}{}{}\n\n".format(value, sep, ", ".join(sorted([util.TAG_SYMBOL_S + x for x in tags_s])))
 
 def _maybe_wrap(value, maybeNone, sep=None):
     if maybeNone is None:

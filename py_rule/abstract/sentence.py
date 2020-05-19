@@ -99,8 +99,6 @@ class Sentence(PyRuleValue):
 
         return self
 
-    def pprint(self, opts=None):
-        return PrU.pprint(self, opts)
 
     def attach_statement(self, value):
         assert(isinstance(value, PyRuleStatement))

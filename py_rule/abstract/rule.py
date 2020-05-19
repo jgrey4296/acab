@@ -123,16 +123,19 @@ class Rule(ProductionContainer):
 
 
     def pprint_body(self, val):
-        sep_list = ["\t", "\t", "\t"]
         head, body = self.pprint_has_content
 
-        val, pop = PrU._maybe_wrap(val, self._query, sep=sep_list[0])
-        if pop:
-            val += "\n"
-        val, pop = PrU._maybe_wrap(val, self._transform, sep=sep_list[0])
-        if pop:
-            val += "\n"
-        val, pop = PrU._maybe_wrap(val, self._action, sep=sep_list[0])
+        if self._query is not None:
+            val += "\t"
+            val += self._query.pprint()
+
+        if self._transform is not None:
+            val += "\n\t"
+            val += self._transform.pprint()
+
+        if self._action is not None:
+            val += "\n\t"
+            val += self._action.pprint()
 
         return val
 

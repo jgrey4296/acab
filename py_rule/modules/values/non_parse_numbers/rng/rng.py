@@ -23,9 +23,9 @@ class RNGGen(PyRuleValue):
         # TODO convert seed to string for output
 
 
-    def pprint(self):
+    def pprint(self, opts, **kwargs):
         # TODO output an rng with seed
-
+        pass
 
 # Operators:  https://numpy.org/devdocs/reference/random/generator.html
 # draw (distribution params)
