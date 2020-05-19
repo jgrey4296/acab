@@ -119,7 +119,10 @@ class PyRuleValue:
     def bind(self, bindings):
         """ Data needs to be able to bind a dictionary
         of values to internal variables """
-        raise NotImplementedError()
+        if self.value in bindings:
+            return bindings[self.value]
+        else:
+            return self
 
     def verify(self):
         """ Raise An Exception if this necessary """

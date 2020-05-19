@@ -61,10 +61,7 @@ class ActionComponent(PO.ProductionComponent):
         """
         new_values = []
         for x in self._params:
-            if isinstance(x, Sentence):
-                new_values.append(x.bind(bindings))
-            else:
-                new_values.append(x)
+            new_values.append(x.bind(bindings))
         return ActionComponent(self.op, new_values)
 
     def to_sentence(self):
