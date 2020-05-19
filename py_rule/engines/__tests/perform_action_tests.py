@@ -85,7 +85,7 @@ class ActionTests(unittest.TestCase):
         self.assertEqual(len(result), 1)
         self.assertIsInstance(result, action.Action)
         self.assertEqual(result.clauses[0].op, "ActionBlah")
-        self.assertEqual([x[0].value for x in result.clauses[0]._params], ['a', 'b', 'c'])
+        self.assertEqual([x.value for x in result.clauses[0]._params], ['a', 'b', 'c'])
 
 
 
