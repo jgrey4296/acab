@@ -3,6 +3,7 @@ The combined engine of underlying trie based working memory,
 with support for transforms and actions
 """
 import logging as root_logger
+import pyparsing as pp
 from os.path import join, isfile, exists, isdir, splitext, expanduser
 from os.path import abspath
 from os import listdir
@@ -45,16 +46,19 @@ class TrieEngine(Engine):
         logging.info("Loading: {}".format(filename))
         assert exists(filename), filename
         with open(filename) as f:
-            the_string = f.read()
-        if the_string is not None:
             # everything should be an assertion
-            assertions = TotalP.parseString(the_string)
+            try:
+                assertions = TotalP.parseFile(f)
+            except pp.ParseException as exp:
+                print("-----")
+                print(str(exp))
+                print(exp.markInputline())
+                print("File Not Asserted into WM")
+                return False
+
             # Assert facts:
             for x in assertions:
                 logging.info("File load assertions: {}".format(x))
                 self.add(x)
-
-        else:
-            raise PyRuleParseException("No text found in provided file")
 
         return True

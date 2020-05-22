@@ -24,7 +24,7 @@ statements = pp.Or([RP.rule,
                     FP.SEN_STATEMENT,
                     HOTLOAD_STATEMENTS])
 
-file_component = pp.MatchFirst([statements, FP.PARAM_SEN])
+file_component = pp.Or([statements, FP.PARAM_SEN])
 
 file_total = pp.delimitedList(file_component, delim=PU.component_gap)
 
@@ -38,3 +38,6 @@ parse_point = PU.file_cruft +  file_total.ignore(PU.COMMENT) + PU.file_cruft
 def parseString(in_string):
     assert(isinstance(in_string, str))
     return parse_point.parseString(in_string)[:]
+
+def parseFile(f):
+    return parse_point.parseFile(f, parseAll=True)
