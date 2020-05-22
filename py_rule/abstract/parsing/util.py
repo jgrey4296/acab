@@ -28,7 +28,10 @@ orm        = pp.OneOrMore
 COMMA         = s(pp.Literal(','))
 emptyLine     = s(pp.lineEnd + pp.lineEnd)
 opLn          = s(op(pp.lineEnd))
-gap           = s(pp.OneOrMore(emptyLine))
+gap           = s(pp.OneOrMore(emptyLine)).setFailAction(lambda s,
+                                                         loc,
+                                                         expr,
+                                                         err: print("{}\n{}".format(str(err), err.markInputline())))
 component_gap = s(orm(pp.Or([pp.lineEnd, COMMA])))
 file_cruft    = s(pp.ZeroOrMore(pp.Or([pp.lineEnd])))
 
