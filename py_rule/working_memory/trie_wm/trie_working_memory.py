@@ -115,7 +115,8 @@ class TrieWM(WorkingMemory):
                                         "operator.sugar")
 
         TP.HOTLOAD_TRANS_OP << pt.query("operator.transform.n_ary.*",
-                                "operator.sugar"),
+                                        "operator.sugar")
+
         TP.HOTLOAD_TRANS_STATEMENTS << pt.query("operator.transform.statement.*",
                                                 "operator.sugar")
 

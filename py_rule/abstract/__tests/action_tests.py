@@ -43,7 +43,6 @@ class ActionTests(unittest.TestCase):
     def test_component_bind(self):
         pass
 
-
     @unittest.skip("TODO")
     def test_to_sentence(self):
         pass
