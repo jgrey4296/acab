@@ -53,6 +53,7 @@ if __name__ == "__main__":
              'result' : None,
              'current_str' : None,
              'collect_str' : [],
+             'echo' : False,
              'in_multi_line': False}
     data['current_str'] = input(data['prompt'])
     while data['command'] != ReC.ReplE.EXIT:
@@ -63,7 +64,7 @@ if __name__ == "__main__":
             logging.debug("Parse Response: {}".format(parse_response))
             data.update(parse_response)
 
-            # Change prompt or perform command:
+            # perform command:
             if data['command'] is not None:
                 cmd_fn = ReC.get(data['command'])
                 # Perform the instruction
@@ -79,6 +80,10 @@ if __name__ == "__main__":
             breakpoint()
             data['result']  = []
         finally:
+            if (not data['in_multi_line']) and data['echo']:
+                cmd_fn = ReC.get(ReC.ReplE.PRINT)
+                engine, u_data = cmd_fn(engine, {'params': ['wm']})
+                print(u_data['result'])
             #print result
             if bool(data['result']):
                 print(data['result'])

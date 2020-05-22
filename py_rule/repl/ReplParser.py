@@ -67,6 +67,7 @@ stats_kw     = PU.s(pp.Keyword('stats'))
 step_kw      = PU.s(pp.Keyword('step'))
 prompt_kw    = PU.s(pp.Keyword('prompt'))
 from_kw      = PU.s(pp.Keyword('from'))
+echo_kw      = PU.s(pp.Keyword('echo'))
 
 # Default: Instructions to pass to an Engine
 empty_line = pp.lineStart + pp.lineEnd
@@ -178,6 +179,7 @@ prompt_cmd.setParseAction      (lambda toks: build_command(RE.PROMPT, params=tok
 exit_cmd.setParseAction        (lambda toks: build_command(RE.EXIT))
 help_cmd.setParseAction        (lambda toks: build_command(RE.HELP, params=[]))
 stats.setParseAction           (lambda toks: build_command(RE.STATS, params=toks[:]))
+echo_kw.setParseAction         (lambda toks: build_command(RE.ECHO, params=[]))
 
 # Names
 main_commands = PU.s(pp.Literal(':')) + pp.Or([run_something,
@@ -193,6 +195,7 @@ main_commands = PU.s(pp.Literal(':')) + pp.Or([run_something,
                                                help_cmd,
                                                exit_cmd,
                                                prompt_cmd,
+                                               echo_kw,
                                                HOTLOAD_COMMANDS])
 
 

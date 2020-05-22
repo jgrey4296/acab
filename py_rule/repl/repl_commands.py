@@ -15,7 +15,7 @@ from py_rule.abstract.layer import Layer
 
 logging = root_logger.getLogger(__name__)
 
-ReplE = Enum("Repl Commands", "NOP INIT LOAD SAVE PRINT RUN PASS STEP ACT DECOMPOSE LISTEN CHECK STATS HELP EXIT MULTILINE POP MODULE PROMPT")
+ReplE = Enum("Repl Commands", "NOP INIT LOAD SAVE PRINT RUN PASS STEP ACT DECOMPOSE LISTEN CHECK STATS HELP EXIT MULTILINE POP MODULE PROMPT ECHO")
 repl_commands = {}
 
 # utility functions
@@ -35,6 +35,7 @@ def build_command(cmd_e, **kwargs):
     return command_dict
 
 
+# TODO: Document command implementation
 #--------------------
 
 def engine_init(engine, data):
@@ -145,7 +146,9 @@ def engine_pass(engine, data):
     logging.info("Passing sentences through: {}".format(params))
     # Determine query / assertion
     # FIXME: Simple hack for now
-    if params[0].strip()[-1] == "?":
+    if not bool(params[0]):
+        result = ""
+    elif params[0].strip()[-1] == "?":
         result = engine.query(*params)
     else:
         result = engine.add(*params)
@@ -382,5 +385,14 @@ def engine_nop(engine, data):
     return engine, data
 
 register(ReplE.NOP, engine_nop)
+
+def engine_echo(engine, data):
+    if data['echo']:
+        data['echo'] = False
+    else:
+        data['echo'] = True
+    return engine, data
+
+register(ReplE.ECHO, engine_echo)
 
 #---------------------
