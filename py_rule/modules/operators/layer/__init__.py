@@ -10,8 +10,8 @@ class MODULE(ModuleInterface):
 
     def assert_parsers(self, pt):
 
-        pt.add("operator.transform.unary.run_agenda", LA.LayerRunAgenda,
-               "operator.transform.unary.run_rules", LA.LayerRunRules,
+        pt.add("operator.transform.n_ary.run_agenda", LA.LayerRunAgenda,
+               "operator.transform.n_ary.run_rules", LA.LayerRunRules,
                "operator.action.layer_perform", LA.LayerPerform)
 
     def query_parsers(self, pt):
