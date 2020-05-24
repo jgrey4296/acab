@@ -72,7 +72,7 @@ class TypeChecker(ActionOp):
     # parse their locations, and add them as definitions
 
     def __init__(self):
-        super(TypeChecker, self).__init__(num_params=0)
+        super(TypeChecker, self).__init__()
 
         self._structural_definitions = Trie(TypeDefTrieNode)
         self._functional_definitions = Trie(OperatorDefTrieNode)
@@ -90,25 +90,19 @@ class TypeChecker(ActionOp):
 
     def __call__(self, data=None, engine=None):
         """ Pass in data to type check """
-        # Rules: limited context
-        # other assertions/definitions etc: global context
 
         # TODO: sort statements into assertions/rules to check/ types to ignore
+        sentences = engine.to_sentences()
 
-        for assertion in assertions:
-            if isinstance(assertion, TypeDefinition):
-                self.add_definition(assertion)
+        for sen in sentences:
+            if isinstance(sen[-1], TypeDefinition):
+                self.add_definition(sen)
+            elif isinstance(sen[-1], PyRuleStatement):
+                self.add_statement(sen)
             else:
-                self.add_assertion(assertion)
+                self.add_assertion(sen)
 
         self.validate()
-
-        # for each rule: (in place of functions)
-        for x in rules:
-            self.add_rule(x)
-
-        self.validate()
-
 
     def _get_known_typed_nodes(self):
         # propagate known variable types
@@ -204,11 +198,11 @@ class TypeChecker(ActionOp):
 
     def add_definition(self, *definitions):
         for a_def in definitions:
-            assert(isinstance(a_def, TypeDefinition))
-            if isinstance(a_def, OperatorDefinition):
-                self._functional_definitions.add(a_def.path, a_def)
+            assert(isinstance(a_def[-1], TypeDefinition))
+            if isinstance(a_def[-1], OperatorDefinition):
+                self._functional_definitions.add(a_def[-1].path, a_def[-1])
             else:
-                self._structural_definitions.add(a_def.path, a_def)
+                self._structural_definitions.add(a_def[-1].path, a_def[-1])
 
     def add_assertion(self, sen):
         assert(isinstance(sen, Sentence))
@@ -216,18 +210,15 @@ class TypeChecker(ActionOp):
                                update=lambda c, v, p, d: c.update(v, d),
                                u_data=self._variables)
 
-    def add_rule(self, value):
-        # Add all query sentenes, and their canonical form comparisons
-        for c in value._query.to_sentences():
-            self.add_assertion(c)
+    def add_statement(self, statement):
+        """
+        Statements are treated as having their own local context.
+        So add it, type check it, and then clear any variable associations
+        """
+        sentences = statement.to_local_sentences()
 
-        # Add all canonical form transforms
-        for t in value._transform.to_sentences():
-            self.add_assertion(t)
-
-        # Add all action sentences and their canonical form operators
-        for a in value._action.to_sentences():
-            self.add_assertion(a)
+        for sen in sentences:
+            self.add_assertion(sen)
 
         self.validate()
         self.clear_context()

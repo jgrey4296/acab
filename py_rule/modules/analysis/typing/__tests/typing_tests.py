@@ -59,7 +59,7 @@ class TypingTests(unittest.TestCase):
         loc = FP.parseString('a.test.definition.x')[0]
         copied_loc = loc.attach_statement(type_def)
         self.assertEqual(len(tc._structural_definitions), 0)
-        tc.add_definition(copied_loc[-1])
+        tc.add_definition(copied_loc)
         self.assertEqual(len(tc._structural_definitions), 4)
         defs = tc._structural_definitions.get_nodes(lambda x: isinstance(x.value, TypeDefinition))
         self.assertEqual(1, len(defs))
@@ -89,7 +89,7 @@ class TypingTests(unittest.TestCase):
         """ ::a END, a.$b """
         tc = TypeChecker()
         loc = FP.parseString('a.test.definition.$x')[0].attach_statement(TypeDefinition([]))
-        tc.add_definition(loc[-1])
+        tc.add_definition(loc)
         sen1 = S("a","b")
         sen1[-1]._data[TU.BIND_S] = True
         tc.add_assertion(sen1)
@@ -103,7 +103,7 @@ class TypingTests(unittest.TestCase):
         """ ::a END, a.$b """
         tc = TypeChecker()
         loc = FP.parseString('a.test.definition.$x')[0].attach_statement(TypeDefinition([]))
-        tc.add_definition(loc[-1])
+        tc.add_definition(loc)
         sen1 = S("a","b")
         sen1[-1]._data[TU.BIND_S] = True
         tc.add_assertion(sen1)
@@ -117,7 +117,7 @@ class TypingTests(unittest.TestCase):
         """ ::a END, test.$b(::a), test.$c """
         tc = TypeChecker()
         a_def = S("a").attach_statement(TypeDefinition([]))
-        tc.add_definition(a_def[-1])
+        tc.add_definition(a_def)
         sen1 = S("test","b")
         sen1[-1]._data[TU.BIND_S] = True
         sen1[-1]._data[TU.TYPE_DEC_S] = TypeInstance(S("a"))
@@ -141,7 +141,7 @@ class TypingTests(unittest.TestCase):
         tc = TypeChecker()
         a_def = S("a").attach_statement(TypeDefinition([]))
         b_def = S("b").attach_statement(TypeDefinition([]))
-        tc.add_definition(a_def[-1], b_def[-1])
+        tc.add_definition(a_def, b_def)
         sen1 = S("test","q")
         sen1[-1]._data[TU.BIND_S] = True
         sen1[-1]._data[TU.TYPE_DEC_S] = TypeInstance(S("a"))
@@ -168,10 +168,10 @@ class TypingTests(unittest.TestCase):
         """ ::a END, ::a END """
         tc = TypeChecker()
         a_def = S("a").attach_statement(TypeDefinition([]))
-        tc.add_definition(a_def[-1])
+        tc.add_definition(a_def)
         with self.assertRaises(te.TypeRedefinitionException):
             duplicate_a_def = S("a").attach_statement(TypeDefinition([S("test")]))
-            tc.add_definition(duplicate_a_def[-1])
+            tc.add_definition(duplicate_a_def)
 
     def test_variable_conflict(self):
         """ ::String: END ::Number: END
@@ -180,7 +180,7 @@ class TypingTests(unittest.TestCase):
         tc = TypeChecker()
         str_def = S("String").attach_statement(TypeDefinition([]))
         num_def = S("Number").attach_statement(TypeDefinition([]))
-        tc.add_definition(str_def[-1], num_def[-1])
+        tc.add_definition(str_def, num_def)
 
         sen1 = S("a","b")
         sen1[-1]._data[TU.BIND_S] = True
@@ -200,7 +200,7 @@ class TypingTests(unittest.TestCase):
         tc = TypeChecker()
         a_def = S("a").attach_statement(TypeDefinition([]))
         b_def = S("b").attach_statement(TypeDefinition([]))
-        tc.add_definition(a_def[-1], b_def[-1])
+        tc.add_definition(a_def, b_def)
 
         struct_sen = S("name","x")
         struct_sen[-1]._data[TU.BIND_S] = True
@@ -208,7 +208,7 @@ class TypingTests(unittest.TestCase):
 
 
         first_def = S("first").attach_statement(TypeDefinition([struct_sen]))
-        tc.add_definition(first_def[-1])
+        tc.add_definition(first_def)
 
         sen = S("a","b")
         sen[0]._data[TU.TYPE_DEC_S] = TypeInstance(S("first"))
@@ -226,14 +226,14 @@ class TypingTests(unittest.TestCase):
         tc =TypeChecker()
         str_def = S("String").attach_statement(TypeDefinition([]))
         num_def = S("Number").attach_statement(TypeDefinition([]))
-        tc.add_definition(str_def[-1], num_def[-1])
+        tc.add_definition(str_def, num_def)
 
         struct_sen = S("name","x")
         struct_sen[-1]._data[TU.BIND_S] = True
         struct_sen[-1]._data[TU.TYPE_DEC_S] = TypeInstance(S("String"))
         first_def = S("first").attach_statement(TypeDefinition([struct_sen]))
 
-        tc.add_definition(first_def[-1])
+        tc.add_definition(first_def)
 
         sen = S("a","name","y")
         sen[0]._data[TU.TYPE_DEC_S] = TypeInstance(S("first"))
@@ -253,7 +253,7 @@ class TypingTests(unittest.TestCase):
         tc = TypeChecker()
         str_def = S("String").attach_statement(TypeDefinition([]))
         num_def = S("Number").attach_statement(TypeDefinition([]))
-        tc.add_definition(str_def[-1], num_def[-1])
+        tc.add_definition(str_def, num_def)
 
 
         struct_sen = S("name","x","y")
@@ -262,7 +262,7 @@ class TypingTests(unittest.TestCase):
         struct_sen[-1]._data[TU.BIND_S] = True
         struct_sen[-1]._data[TU.TYPE_DEC_S] = TypeInstance(S("Number"))
         first_def = S("first").attach_statement(TypeDefinition([struct_sen]))
-        tc.add_definition(first_def[-1])
+        tc.add_definition(first_def)
 
         sen = S("bob","name","z","q")
         sen[0]._data[TU.TYPE_DEC_S] = TypeInstance(S("first"))
@@ -300,14 +300,14 @@ class TypingTests(unittest.TestCase):
         tc = TypeChecker()
         str_def = S("String").attach_statement(TypeDefinition([]))
         num_def = S("Number").attach_statement(TypeDefinition([]))
-        tc.add_definition(str_def[-1], num_def[-1])
+        tc.add_definition(str_def, num_def)
 
         #Small Type
         type_1_sen = S("name","x")
         type_1_sen[-1]._data[TU.BIND_S] = True
         type_1_sen[-1]._data[TU.TYPE_DEC_S] = TypeInstance(S("String"))
         small_def = S("small", "type").attach_statement(TypeDefinition([type_1_sen]))
-        tc.add_definition(small_def[-1])
+        tc.add_definition(small_def)
 
         #Large Type
         type_2_sen = S("component","x")
@@ -315,7 +315,7 @@ class TypingTests(unittest.TestCase):
         type_2_sen[-1]._data[TU.TYPE_DEC_S] = TypeInstance(S("small", "type"))
         large_def = S("large", "type").attach_statement(TypeDefinition([type_2_sen]))
 
-        tc.add_definition(large_def[-1])
+        tc.add_definition(large_def)
 
         assertion = S("a","component","q","name","w")
         assertion[0]._data[TU.TYPE_DEC_S] = TypeInstance(S("large", "type"))
@@ -348,7 +348,7 @@ class TypingTests(unittest.TestCase):
         tc = TypeChecker()
         str_def = S("String").attach_statement(TypeDefinition([]))
         num_def = S("Number").attach_statement(TypeDefinition([]))
-        tc.add_definition(str_def[-1], num_def[-1])
+        tc.add_definition(str_def, num_def)
 
         #Small Type
         type_1_sen = S("name","x")
@@ -356,7 +356,7 @@ class TypingTests(unittest.TestCase):
         type_1_sen[-1]._data[TU.TYPE_DEC_S] = TypeInstance(S("String"))
 
         small_def = S("small", "type").attach_statement(TypeDefinition([type_1_sen]))
-        tc.add_definition(small_def[-1])
+        tc.add_definition(small_def)
 
         #Large Type
         type_2_sen = S("component","x")
@@ -364,7 +364,7 @@ class TypingTests(unittest.TestCase):
         type_2_sen[-1]._data[TU.TYPE_DEC_S] = TypeInstance(S("small", "type"))
         large_def = S("large", "type").attach_statement(TypeDefinition([type_2_sen]))
 
-        tc.add_definition(large_def[-1])
+        tc.add_definition(large_def)
 
         assertion = S("a","component","q","name","w")
         assertion[0]._data[TU.TYPE_DEC_S] = TypeInstance(S("large", "type"))
@@ -395,7 +395,7 @@ class TypingTests(unittest.TestCase):
         tc = TypeChecker()
         str_def = S("String").attach_statement(TypeDefinition([]))
         num_def = S("Number").attach_statement(TypeDefinition([]))
-        tc.add_definition(str_def[-1], num_def[-1])
+        tc.add_definition(str_def, num_def)
 
 
         #polytype
@@ -403,7 +403,7 @@ class TypingTests(unittest.TestCase):
         type_1_sen[-1]._data[TU.BIND_S] = True
         poly_def = S("poly", "type").attach_statement(TypeDefinition([type_1_sen],
                                                                      params=[PyRuleValue('x')]))
-        tc.add_definition(poly_def[-1])
+        tc.add_definition(poly_def)
 
         #assertions
         assertion = S("a","name","q")
@@ -439,20 +439,20 @@ class TypingTests(unittest.TestCase):
         tc = TypeChecker()
         str_def = S("String").attach_statement(TypeDefinition([]))
         num_def = S("Number").attach_statement(TypeDefinition([]))
-        tc.add_definition(str_def[-1], num_def[-1])
+        tc.add_definition(str_def, num_def)
 
         #polytype 1
         type_1_sen = S("name","x")
         type_1_sen[-1]._data[TU.BIND_S] = True
         poly_1_def = S("poly", "type", "one").attach_statement(TypeDefinition([type_1_sen], params=["x"]))
-        tc.add_definition(poly_1_def[-1])
+        tc.add_definition(poly_1_def)
 
         #polytype 2
         type_2_sen = S("nested")
         type_2_sen[-1]._data[TU.BIND_S] = True
         type_2_sen[-1]._data[TU.TYPE_DEC_S] = TypeInstance(S("poly", "type", "one"), ["y"])
         poly_2_def = S("poly", "type", "two").attach_statement(TypeDefinition([type_2_sen], params=["y"]))
-        tc.add_definition(poly_2_def[-1])
+        tc.add_definition(poly_2_def)
 
         #Assertion
         assertion = S("a","nested","name","x")
@@ -481,7 +481,7 @@ class TypingTests(unittest.TestCase):
         tc = TypeChecker()
         str_def = S("String").attach_statement(TypeDefinition([]))
         num_def = S("Number").attach_statement(TypeDefinition([]))
-        tc.add_definition(str_def[-1], num_def[-1])
+        tc.add_definition(str_def, num_def)
 
         #polytype
         type_1_sen = S("name","x")
@@ -489,7 +489,7 @@ class TypingTests(unittest.TestCase):
         type_2_sen = S("age","y")
         type_2_sen[-1]._data[TU.BIND_S] = True
         poly_def = S("poly", "type").attach_statement(TypeDefinition([type_1_sen, type_2_sen], params=["x", "y"]))
-        tc.add_definition(poly_def[-1])
+        tc.add_definition(poly_def)
 
         #assertions
         assertion = S("a","name","q")
@@ -547,14 +547,14 @@ class TypingTests(unittest.TestCase):
         tc = TypeChecker()
         str_def = S("String").attach_statement(TypeDefinition([]))
         num_def = S("Number").attach_statement(TypeDefinition([]))
-        tc.add_definition(str_def[-1], num_def[-1])
+        tc.add_definition(str_def, num_def)
 
 
         # define poly type
         type_1_sen = S("name","x")
         type_1_sen[-1]._data[TU.BIND_S] = True
         poly_def = S("polytype").attach_statement(TypeDefinition([type_1_sen], params=[PyRuleValue("x")]))
-        tc.add_definition(poly_def[-1])
+        tc.add_definition(poly_def)
 
 
         # assert
@@ -577,20 +577,20 @@ class TypingTests(unittest.TestCase):
         tc = TypeChecker()
         str_def = S("String").attach_statement(TypeDefinition([]))
         num_def = S("Number").attach_statement(TypeDefinition([]))
-        tc.add_definition(str_def[-1], num_def[-1])
+        tc.add_definition(str_def, num_def)
 
         #polytype 1
         type_1_sen = S("name","x")
         type_1_sen[-1]._data[TU.BIND_S] = True
         poly_1_def = S("poly", "type", "one").attach_statement(TypeDefinition([type_1_sen], params=["x"]))
-        tc.add_definition(poly_1_def[-1])
+        tc.add_definition(poly_1_def)
 
         #polytype 2
         type_2_sen = S("nested")
         type_2_sen[-1]._data[TU.BIND_S] = True
         type_2_sen[-1]._data[TU.TYPE_DEC_S] = TypeInstance(S("poly", "type", "one"), ["y"])
         poly_2_def = S("poly", "type", "two").attach_statement(TypeDefinition([type_2_sen], params=["y"]))
-        tc.add_definition(poly_2_def[-1])
+        tc.add_definition(poly_2_def)
 
         #Assertion
         assertion = S("a","nested","name","x")
@@ -618,7 +618,7 @@ class TypingTests(unittest.TestCase):
         tc = TypeChecker()
         str_def = S("String").attach_statement(TypeDefinition([]))
         num_def = S("Number").attach_statement(TypeDefinition([]))
-        tc.add_definition(str_def[-1], num_def[-1])
+        tc.add_definition(str_def, num_def)
 
         #polytype
         type_1_sen = S("name","x")
@@ -626,7 +626,7 @@ class TypingTests(unittest.TestCase):
         type_2_sen = S("age","y")
         type_2_sen[-1]._data[TU.BIND_S] = True
         poly_def = S("poly", "type").attach_statement(TypeDefinition([type_1_sen, type_2_sen], params=["x","y"]))
-        tc.add_definition(poly_def[-1])
+        tc.add_definition(poly_def)
 
         #assertions
         assertion = S("a","name","q")
@@ -677,7 +677,7 @@ class TypingTests(unittest.TestCase):
         tc = TypeChecker()
         str_type = S("String").attach_statement(TypeDefinition([]))
         num_type = S("Number").attach_statement(TypeDefinition([]))
-        tc.add_definition(str_type[-1], num_type[-1])
+        tc.add_definition(str_type, num_type)
 
         op_struct = S("x", "x", "x")
         op_struct[0]._data[TU.BIND_S] = True
@@ -686,7 +686,7 @@ class TypingTests(unittest.TestCase):
         op_struct[2]._data[TU.BIND_S] = True
 
         op_def = S("AddOp").attach_statement(OperatorDefinition(op_struct))
-        tc.add_definition(op_def[-1])
+        tc.add_definition(op_def)
 
         #Add an operation use
         trans_params = S("x", "y")
@@ -696,7 +696,7 @@ class TypingTests(unittest.TestCase):
         rebind._data[TU.BIND_S] = True
         transform = TransformComponent("AddOp", trans_params, rebind=rebind)
 
-        tc.add_assertion(transform.to_sentence())
+        [tc.add_assertion(x) for x in transform.to_local_sentences()]
 
         tc.validate()
 
