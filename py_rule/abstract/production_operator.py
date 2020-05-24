@@ -148,7 +148,7 @@ class ProductionComponent(PyRuleValue):
         self._value = op_str
 
 
-    def to_sentence(self, target=None):
+    def to_local_sentences(self, target=None):
         raise NotImplementedError()
 
     def verify(self, op_constraint=None):
@@ -216,8 +216,8 @@ class ProductionContainer(PyRuleStatement):
         return obj
 
 
-    def to_sentences(self, target=None):
-        return [x.to_sentence() for x in self.clauses]
+    def to_local_sentences(self, target=None):
+        return [x.to_local_sentences() for x in self.clauses]
 
     def verify(self, op_constraint=None):
         if op_constraint is None and util.OP_CLASS_S in self._data:

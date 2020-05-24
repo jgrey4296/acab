@@ -26,7 +26,6 @@ class Engine:
         assert(issubclass(wm_constructor, WorkingMemory))
         self.__kb_constructor = wm_constructor
         self._working_memory = wm_constructor(init)
-        self._pipeline = None
         # to be updated with printed representations
         # of the kb state after each action
         self._prior_states = []
@@ -111,3 +110,13 @@ class Engine:
             logging.info("Thing Failed")
 
         return result
+
+
+    def to_sentences(self):
+        """
+        Triggers the working memory to produce a full accounting,
+        in canonical style (able to be used by typechecker)
+        All statements are output as leaves,
+        and all paths with non-leaf statements convert to simple formats
+        """
+        raise NotImplementedError()

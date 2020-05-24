@@ -212,6 +212,8 @@ class PyRuleStatement(PyRuleValue):
         return simple_value
 
 
+    def to_local_sentences(self):
+        raise NotImplementedError()
 
 
 

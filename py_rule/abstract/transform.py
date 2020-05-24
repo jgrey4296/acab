@@ -37,9 +37,9 @@ class TransformComponent(PO.ProductionComponent):
                                                  op_pos=op_pos)
 
 
-    def to_sentence(self, target=None):
+    def to_local_sentences(self, target=None):
         head = PyRuleValue(self.op, data={util.OPERATOR_S : self})
-        return Sentence([head] + self._params[:] + [self._rebind])
+        return [Sentence([head] + self._params[:] + [self._rebind])]
 
 
 class Transform(PO.ProductionContainer):

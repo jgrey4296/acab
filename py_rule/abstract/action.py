@@ -64,13 +64,13 @@ class ActionComponent(PO.ProductionComponent):
             new_values.append(x.bind(bindings))
         return ActionComponent(self.op, new_values)
 
-    def to_sentence(self):
+    def to_local_sentences(self):
         """ Return the action in canonical form """
         # eg : assert a.test  = assert -> a.test -> nil
         # TODO : params are sentences themselves
         head = PyRuleValue(self.op, {util.OPERATOR_S : self})
         sen = Sentence([head] + self._params[:])
-        return sen
+        return [sen]
 
 
 
@@ -89,7 +89,7 @@ class Action(PO.ProductionContainer):
             exp_clauses.append(clause.bind(bindings))
         return Action(exp_clauses, params=self._vars)
 
-    def to_sentences(self, target=None):
+    def to_local_sentences(self, target=None):
         # needs to return both the action sentences,
         # AND the action operators in canonical form
         raise NotImplementedError()

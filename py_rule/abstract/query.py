@@ -66,14 +66,14 @@ class QueryComponent(PO.ProductionComponent):
         return self.op == "RegMatch"
 
 
-    def to_sentence(self, target=None):
+    def to_local_sentences(self, target=None):
         """ Create a comparison as a canonical sentence """
         # eg: 20(>30) -> > 20 30 -> bool
         head = PyRuleValue(self.op, {OPERATOR_S : self})
         if target is None:
             return Sentence([head] + self._params)
         assert(isinstance(target, PyRuleValue))
-        return Sentence([head, target] + self._params)
+        return [Sentence([head, target] + self._params)]
 
 
 class Query(PO.ProductionContainer):
@@ -107,7 +107,7 @@ class Query(PO.ProductionContainer):
                 pos.append(c)
         return (pos, neg)
 
-    def to_sentences(self, target=None):
+    def to_local_sentences(self, target=None):
         """ Return all comparisons in canonical form """
         # eg : a.test.$x(>$y)? = > -> $x -> $y -> bool
         # TODO should this actually be all *clauses*? YES
@@ -115,9 +115,10 @@ class Query(PO.ProductionContainer):
                             for word in clause if util.CONSTRAINT_S in word._data]
         # for each constraint, create a sentence
         # only handles comparisons, not typings
-        constraint_sentences = [comp.to_sentence(word)
+        constraint_sentences = [sen
                                 for word in constraint_words
                                 for comp in word._data[util.CONSTRAINT_S]
+                                for sen in comp.to_local_sentences(word)
                                 if isinstance(comp, QueryComponent)]
 
         total_sentences = self.clauses + constraint_sentences
