@@ -93,12 +93,15 @@ class Sentence(PyRuleValue):
                         tags=self._tags)
 
     def add(self, *other):
-        for word in other:
-            assert(isinstance(word, PyRuleValue))
-            self._value.append(other)
+        words = self.words
+        for sen in other:
+            assert(isinstance(sen, (list, Sentence)))
+            words += [x for x in sen]
 
-        return self
 
+        new_sen = self.copy()
+        new_sen._value = words
+        return new_sen
 
     def attach_statement(self, value):
         assert(isinstance(value, PyRuleStatement))
