@@ -5,6 +5,7 @@ from py_rule import util
 from collections import defaultdict
 
 #Setup
+# TODO register additional constraints
 def register_modal(a_dict, reset=False):
     if reset:
         MODAL_LOOKUPS.clear()

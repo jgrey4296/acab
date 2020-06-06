@@ -183,6 +183,7 @@ class Contexts:
             return False, False
 
         alphas, betas, regexs = word.split_tests()
+        # TODO: test alphas and betas
         new_node, new_data = (None, None)
         logging.info("Not Bind: {}|{}".format(str(word), node._children.keys()))
         if word in node:

@@ -26,20 +26,6 @@ class BDI_TESTS(unittest.TestCase):
         self.setUpAgent(["initial_load_test.trie"])
         self.assertIsNotNone(self.e)
 
-    @unittest.skip("Broken")
-    def test_load(self):
-        self.setUpAgent(["initial_load_test.trie"])
-        self.assertEqual(self.e.num_rules(), 3)
-        self.e.run()
-        self.assertTrue(self.e._engine.query("count!$x(> 9)?"))
-
-    @unittest.skip("Broken")
-    def test_responsive(self):
-        self.setUpAgent(["responsive_test.trie"])
-        self.e.run()
-
-
-
     #BDI architecture to test:
     #1) addition / retraction of beliefs
     #2) addition / retraction of rules
