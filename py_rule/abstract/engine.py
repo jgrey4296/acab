@@ -13,7 +13,7 @@ from . import action
 from .agenda import Agenda
 from .rule import Rule
 from .working_memory import WorkingMemory
-from .production_operator import ProductionContainer
+from .production_operator import ProductionContainer, ProductionOperator
 
 
 logging = root_logger.getLogger(__name__)
@@ -38,6 +38,7 @@ class Engine:
 
         # initialise
         if modules is not None:
+            ProductionOperator.clear_registrations()
             self.load_modules(*modules)
 
         if path is None:
@@ -59,6 +60,7 @@ class Engine:
 
     def reload_all_modules(self, clear_bootstrap=False):
         if clear_bootstrap:
+            ProductionOperator.clear_registrations()
             self._working_memory.clear_bootstrap()
         self._working_memory.add_modules(self._loaded_modules.values())
 

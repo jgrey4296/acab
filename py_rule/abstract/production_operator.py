@@ -21,35 +21,18 @@ class ProductionOperator(PyRuleValue):
     op_dict = {}
 
     @staticmethod
-    def construct_subclass_tree():
-        """ Populate a dictionary for auto-generation of parser keywords """
-        logging.info("Constructing Operator Subclass list")
+    def register_operator(name, op):
+        assert(name not in ProductionOperator.op_dict or ProductionOperator.op_dict[name] == op)
+        ProductionOperator.op_dict[name] = op
+
+    @staticmethod
+    def clear_registrations():
+        logging.debug("Clearing registered operators")
         ProductionOperator.op_dict = {}
-        found = []
-        queue = [ProductionOperator]
-        while bool(queue):
-            current = queue.pop(0)
-            if current in found:
-                continue
-            found.append(current)
-            queue += current.__subclasses__()
-
-        # At this point, all subclasses have been found
-        for x in found:
-            module_name = x.__module__
-            operator_name = x.__name__
-            full_name = "{}.{}".format(module_name, operator_name)
-            value = x
-            if value.STATELESS_OP_CLASS:
-                value = value()
-            ProductionOperator.op_dict[full_name] = value
-
-        logging.info("Found {} operators".format(len(found)))
 
     def __init__(self, num_params=2,
                  infix=False,
                  type_str=OPERATOR_S):
-
         super().__init__(self.__class__.__name__,
                          type_str=type_str)
         # TODO this can be done using subclass DFS
@@ -70,11 +53,9 @@ class ProductionComponent(PyRuleValue):
     """ Pairs a an operator with some bindings """
 
     def __init__(self, op_str, params, op_pos=0, data=None, rebind=None,
-                 type_str=None, name=None, op_class=ProductionOperator):
-        assert(op_class is not None)
+                 type_str=None, name=None):
         if data is None:
             data = {}
-        data.update({util.OP_CLASS_S : op_class})
 
         super().__init__(op_str, type_str=type_str, data=data, name=name)
         self._params = []
@@ -87,7 +68,7 @@ class ProductionComponent(PyRuleValue):
     def __call__(self, ctx, engine):
         # lookup op
         self.verify()
-        op_func = self._data[util.OP_CLASS_S].op_list[self.op]
+        op_func = ProductionOperator.op_dict[self.op]
         assert(x.name in ctx for x in self._vars)
         # get values from data
         values = self.get_params(ctx)
@@ -116,13 +97,6 @@ class ProductionComponent(PyRuleValue):
         safe_params = [PyRuleValue.safe_make(x) for x in params]
         self._params += safe_params
 
-    def set_rebind(self, bind):
-        """ Set this transform to rebind its result to a different variable """
-        assert(isinstance(bind, PyRuleValue))
-        assert(bind.is_var and not bind.is_at_var)
-        self._rebind = bind
-        return self
-
     def get_params(self, data):
         """ Output a list of bindings from this action """
         output = []
@@ -144,7 +118,7 @@ class ProductionComponent(PyRuleValue):
     def __refine_op_func(self, op_str):
         """ Replace the current op func set with a specific
         op func, used for type refinement """
-        assert(op_str in self._data[util.OP_CLASS_S].op_list)
+        assert(op_str in ProductionOperator.op_dict)
         self._value = op_str
 
 
@@ -155,16 +129,14 @@ class ProductionComponent(PyRuleValue):
         """ Complains if the operator is not a defined Operator Enum """
         op_dict = {}
         if op_constraint is not None:
-            if isinstance(list):
-                [op_dict.update(x.op_list) for x in op_constraint]
+            if isinstance(op_constraint, list):
+                [op_dict.update(x.op_dict) for x in op_constraint]
             elif isinstance(op_constraint, dict):
                 op_dict.update(op_constraint)
             elif isinstance(op_constraint, type):
-                op_dict.update(op_constraint.op_list)
-        else:
-            op_dict.update(self._data[util.OP_CLASS_S].op_list)
+                op_dict.update(op_constraint.op_dict)
 
-        if self.op not in op_dict:
+        if bool(op_dict) and self.op not in op_dict:
             raise AttributeError("Unrecognised operator: {}".format(self.op))
 
 
@@ -220,8 +192,8 @@ class ProductionContainer(PyRuleStatement):
         return [x.to_local_sentences() for x in self.clauses]
 
     def verify(self, op_constraint=None):
-        if op_constraint is None and util.OP_CLASS_S in self._data:
-            op_constraint = self._data[util.OP_CLASS_S]
+        if op_constraint is None:
+            op_constraint = ProductionOperator
         for x in self.clauses:
             x.verify(op_constraint=op_constraint)
 

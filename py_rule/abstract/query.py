@@ -16,17 +16,17 @@ logging = root_logger.getLogger(__name__)
 class QueryOp(PO.ProductionOperator):
     """ Superclass for Comparisons.
     Instantiation of subclasses auto-registers
-    the comparison into QueryOp.op_list with an operator string
+    the comparison into QueryOp.op_dict with an operator string
     """
-    op_list = {}
+    op_dict = {}
 
     def __init__(self, num_params=2, infix=False):
         # Registers self with class name,
         # DSL later binds to an operator
         super().__init__(num_params=num_params, infix=False)
 
-        if self.op_str not in QueryOp.op_list:
-            QueryOp.op_list[self.op_str] = self
+        if self.op_str not in QueryOp.op_dict:
+            QueryOp.op_dict[self.op_str] = self
 
     def __call__(self, a, b, data=None, engine=None, node=None):
         raise NotImplementedError()
@@ -41,14 +41,13 @@ class QueryComponent(PO.ProductionComponent):
         super(QueryComponent, self).__init__(op_str,
                                              param,
                                              data=data,
-                                             op_class=QueryOp,
                                              type_str=type_str)
         self.verify()
 
     def __call__(self, node, data=None, engine=None):
         """ Run a comparison on a node """
         self.verify()
-        op = self._data[util.OP_CLASS_S].op_list[self.op]
+        op = PO.ProductionOperator.op_dict[self.op]
         node_value = node.value.value
         params = self.get_params(data)
 
@@ -63,7 +62,7 @@ class QueryComponent(PO.ProductionComponent):
     @property
     def is_regex_test(self):
         """ Return boolean of if test is a regular expression test """
-        return self.op == "RegMatch"
+        return self.op == "operator.query.regmatch"
 
 
     def to_local_sentences(self, target=None):

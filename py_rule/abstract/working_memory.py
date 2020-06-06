@@ -51,8 +51,6 @@ class WorkingMemory:
         #Populate the trie
         dummy = [x.assert_parsers(self._bootstrap_parser) for x in mods]
 
-        ProductionOperator.construct_subclass_tree()
-
         # Now query and populate the modules
         dummy = [x.query_parsers(self._bootstrap_parser) for x in mods]
 

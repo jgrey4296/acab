@@ -18,17 +18,17 @@ logging = root_logger.getLogger(__name__)
 class ActionOp(PO.ProductionOperator):
     """ Superclass of all Actions.
     Instantiation of subclasses auto-registers
-    the action into ActionOp.op_list with an operator string
+    the action into ActionOp.op_dict with an operator string
     """
-    op_list = {}
+    op_dict = {}
 
     def __init__(self, num_params=2, infix=False):
         # Registers self with class name,
         # DSL later binds to an operator
         super().__init__(num_params=num_params, infix=False)
 
-        if self.op_str not in ActionOp.op_list:
-            ActionOp.op_list[self.op_str] = self
+        if self.op_str not in ActionOp.op_dict:
+            ActionOp.op_dict[self.op_str] = self
 
     def __call__(self, *params, data=None, engine=None):
         raise NotImplementedError()
@@ -45,8 +45,7 @@ class ActionComponent(PO.ProductionComponent):
         assert all([isinstance(x, PyRuleValue) for x in params]), params
         super(ActionComponent, self).__init__(op_str,
                                               params,
-                                              data=data,
-                                              op_class=ActionOp)
+                                              data=data)
 
 
     @property

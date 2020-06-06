@@ -43,17 +43,21 @@ class BootstrapParser(Trie):
         assert(len(inputs) % 2 == 0)
         input_list = [x for x in inputs]
         while bool(input_list):
-            loc_string = [PyRuleValue(x) for x in input_list.pop(0).split('.')]
+            current = input_list.pop(0)
+            loc_string = [PyRuleValue(x) for x in current.split('.')]
             parser = input_list.pop(0)
 
             if parser is None:
                 logging.warning("Loc given None: {}".format(loc_string))
                 continue
-            elif isinstance(parser, type) and issubclass(parser, ProductionOperator):
-                instance = parser()
-                parser = pp.Keyword(instance.op_str)
-            elif isinstance(parser, ProductionOperator):
-                parser = pp.Keyword(parser.op_str)
+            if isinstance(parser, type) and issubclass(parser, ProductionOperator):
+                parser = parser()
+
+            if isinstance(parser, ProductionOperator):
+                ProductionOperator.register_operator(current, parser)
+                parser = pp.Keyword(current)
+                # https://stackoverflow.com/questions/10452770
+                # parser = parser.setParseAction(lambda s, l, t, force_bind=current: force_bind)
             elif isinstance(parser, str):
                 parser = pp.Keyword(parser)
 
