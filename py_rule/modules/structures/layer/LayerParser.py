@@ -13,12 +13,12 @@ eg:
 	a.rule.selector.$x?
 	another.rule.selector.$y?
 
-	dfs(@x, (::ρ, #a_tag)) -> $z(::[ρ])
-	leaves(@y, (::ρ))      -> $q(::[ρ])
-	merge($z, $q)          -> $i
-
-	LayerRunRules($i)      -> $b
+	dfs(@x, (::ρ, #a_tag))      -> $z(::[ρ])
+	leaves(@y, (::ρ))           -> $q(::[ρ])
+	merge($z, $q)               -> $i
+	LayerRunRules($i)           -> $b
 	LayerRunAgenda($agenda, $b) -> $c
+
 	LayerPerform($c)
 end
 
@@ -52,6 +52,7 @@ layer_stmt = PU.STATEMENT_CONSTRUCTOR(PU.LAYER_HEAD,
 layer_body.setParseAction(make_layer)
 
 parse_point = layer_stmt
+# parse_point.setFailAction(lambda s, loc, expr, err: print("{}\n{}".format(str(err), err.markInputline())))
 
 def parseString(s):
     return parse_point.parseString(s)
