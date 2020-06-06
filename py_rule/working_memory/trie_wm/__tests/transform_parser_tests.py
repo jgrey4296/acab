@@ -19,8 +19,6 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
         TP.HOTLOAD_TRANS_STATEMENTS << bp.query("operator.transform.statements.*",
                                                 "operator.sugar")
 
-        ProductionOperator.construct_subclass_tree()
-
     def setUp(self):
         return 1
 
@@ -30,28 +28,28 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
     #----------
     #use testcase snippets
     def test_ternary_operator(self):
-        result = TP.parseString('$x \RegexOp /blah/ $a -> $y')
+        result = TP.parseString('$x \operator.transform.n_ary.regex /blah/ $a -> $y')
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result.clauses), 1)
-        self.assertEqual(result.clauses[0].op, 'RegexOp')
+        self.assertEqual(result.clauses[0].op, 'operator.transform.n_ary.regex')
         self.assertEqual(result.clauses[0]._params[0]._value, 'x')
         self.assertEqual(result.clauses[0]._params[1]._value,'blah')
         self.assertEqual(result.clauses[0]._params[2]._value, 'a')
         self.assertIsNotNone(result.clauses[0]._rebind)
 
     def test_ternary_operator_rebind(self):
-        result = TP.parseString('$x \RegexOp /blah/ $awef -> $q')
+        result = TP.parseString('$x \operator.transform.n_ary.regex /blah/ $awef -> $q')
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result.clauses), 1)
-        self.assertEqual(result.clauses[0].op, 'RegexOp')
+        self.assertEqual(result.clauses[0].op, 'operator.transform.n_ary.regex')
         self.assertEqual(result.clauses[0]._params[0].name, 'x')
         self.assertEqual(result.clauses[0]._params[1].name,'blah')
         self.assertEqual(result.clauses[0]._params[2].name, 'awef')
         self.assertEqual(result.clauses[0]._rebind.name, 'q')
 
     def test_unary_format(self):
-        result = TP.parseString('\FormatOp blah -> $y')
-        self.assertEqual(result.clauses[0].op, 'FormatOp')
+        result = TP.parseString('\operator.transform.n_ary.format blah -> $y')
+        self.assertEqual(result.clauses[0].op, 'operator.transform.n_ary.format')
 
 
 if __name__ == "__main__":

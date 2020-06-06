@@ -24,19 +24,19 @@ class QueryTests(unittest.TestCase):
     #----------
     #use testcase snippets
     def test_construction(self):
-        QueryOp.op_list['test'] = True
+        QueryOp.op_dict['test'] = True
         comp = QueryComponent("test", [])
         self.assertIsInstance(comp, QueryComponent)
-        del QueryOp.op_list['test']
+        del QueryOp.op_dict['test']
 
     def test_var_set(self):
-        QueryOp.op_list['test'] = True
+        QueryOp.op_dict['test'] = True
         bind = PV("an_input", data={util.BIND_S: True})
         comp = QueryComponent("test", [bind])
         var_set = comp.var_set
         var_set_str = [x.name for x in var_set['in']]
         self.assertTrue("an_input" in var_set_str)
-        del QueryOp.op_list['test']
+        del QueryOp.op_dict['test']
 
 
 

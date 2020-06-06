@@ -48,22 +48,22 @@ class NumberParseTests(unittest.TestCase):
 
 
     def test_simple_transform_parse(self):
-        result = TP.parseString("20 \AddOp 30 -> $z")
+        result = TP.parseString("20 \operator.transform.n_ary.add 30 -> $z")
         self.assertIsInstance(result, transform.Transform)
-        self.assertEqual(result.clauses[0].op, 'AddOp')
+        self.assertEqual(result.clauses[0].op, 'operator.transform.n_ary.add')
         self.assertEqual([x._value for x in result.clauses[0]._params], [20, 30])
 
 
     def test_transform_parse(self):
-        result = TP.parseString('2 \AddOp 3 -> $z, 3 \SubOp 2 -> $a, 2 \MulOp 2 -> $b')
+        result = TP.parseString('2 \operator.transform.n_ary.add 3 -> $z, 3 \operator.transform.n_ary.sub 2 -> $a, 2 \operator.transform.n_ary.mul 2 -> $b')
         self.assertEqual(len(result), 3)
         self.assertTrue(all([isinstance(x, transform.TransformComponent) for x in result.clauses]))
-        for parsed_action, op in zip(result, ['AddOp','SubOp', 'MulOp']):
-            self.assertEqual(parsed_action.op, op)
+        for parsed_action, op in zip(result, ['add','sub', 'mul']):
+            self.assertEqual(parsed_action.op, "operator.transform.n_ary.{}".format(op))
 
 
     def test_transform_str_equal(self):
-        actions = ["2 \AddOp 4 -> $x", "3 \SubOp 5 -> $y", "\RoundOp 4 -> $z"]
+        actions = ["2 \operator.transform.n_ary.add 4 -> $x", "3 \operator.transform.n_ary.sub 5 -> $y", "\operator.transform.n_ary.round 4 -> $z"]
         parsed = [TP.parseString(x) for x in actions]
         zipped = zip(actions, parsed)
         for x,y in zipped:

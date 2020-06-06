@@ -20,7 +20,6 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         QP.HOTLOAD_QUERY_OP << bp.query("operator.query.*",
                                         "operator.sugar")
         QP.HOTLOAD_QUERY_ANNOTATIONS << bp.query("query.annotation.*")
-        ProductionOperator.construct_subclass_tree()
 
 
     def setUp(self):
@@ -33,9 +32,9 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
     #use testcase snippets
 
     def test_basic_regex_comparison(self):
-        result = QP.QUERY_OP_Internal.parseString('RegMatch /blah/')[0]
+        result = QP.QUERY_OP_Internal.parseString('operator.query.regmatch /blah/')[0]
         self.assertIsInstance(result, QueryComponent)
-        self.assertEqual(result.op, 'RegMatch')
+        self.assertEqual(result.op, 'operator.query.regmatch')
         self.assertEqual(result._params[0]._value, 'blah')
         self.assertEqual(result._params[0]._data[util.VALUE_TYPE_S], util.REGEX_S)
 
@@ -93,33 +92,33 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertEqual(result._data[util.FALLBACK_S][1][1][-1]._value, 'e')
 
     def test_comparison_parse(self):
-        result = QP.QueryCore_end.parseString("testing(RegMatch /test/)")
+        result = QP.QueryCore_end.parseString("testing(operator.query.regmatch /test/)")
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result[0]._data[util.CONSTRAINT_S]), 1)
         self.assertIsInstance(result[0]._data[util.CONSTRAINT_S][0], QueryComponent)
-        self.assertEqual(result[0]._data[util.CONSTRAINT_S][0].op, "RegMatch")
+        self.assertEqual(result[0]._data[util.CONSTRAINT_S][0].op, "operator.query.regmatch")
 
     def test_comparison_parse_2(self):
-        result = QP.QueryCore.parseString("testing(RegMatch /test/).")
+        result = QP.QueryCore.parseString("testing(operator.query.regmatch /test/).")
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result[0]._data[util.CONSTRAINT_S]), 1)
         self.assertIsInstance(result[0]._data[util.CONSTRAINT_S][0], QueryComponent)
-        self.assertEqual(result[0]._data[util.CONSTRAINT_S][0].op, "RegMatch")
+        self.assertEqual(result[0]._data[util.CONSTRAINT_S][0].op, "operator.query.regmatch")
 
     def test_comparison_parse_variable(self):
-        result = QP.QueryCore.parseString("$x(RegMatch /test/).")
+        result = QP.QueryCore.parseString("$x(operator.query.regmatch /test/).")
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result[0]._data[util.CONSTRAINT_S]), 1)
         self.assertIsInstance(result[0]._data[util.CONSTRAINT_S][0], QueryComponent)
-        self.assertEqual(result[0]._data[util.CONSTRAINT_S][0].op, "RegMatch")
+        self.assertEqual(result[0]._data[util.CONSTRAINT_S][0].op, "operator.query.regmatch")
 
 
     def test_comparison_in_clause(self):
-        result = QP.clause.parseString("a.testing(RegMatch /test/).clause?")
+        result = QP.clause.parseString("a.testing(operator.query.regmatch /test/).clause?")
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result[0][1]._data[util.CONSTRAINT_S]), 1)
         self.assertIsInstance(result[0][1]._data[util.CONSTRAINT_S][0], QueryComponent)
-        self.assertEqual(result[0][1]._data[util.CONSTRAINT_S][0].op, "RegMatch")
+        self.assertEqual(result[0][1]._data[util.CONSTRAINT_S][0].op, "operator.query.regmatch")
 
 
     def test_tag_query(self):
@@ -140,25 +139,25 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertEqual(tags, ["first", "second", "third"])
 
     def test_tag_list_interaction(self):
-        result = QP.clause.parseString("a.testing(#first, #second, RegMatch /Test/)?")
+        result = QP.clause.parseString("a.testing(#first, #second, operator.query.regmatch /Test/)?")
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result[0][1]._data[util.CONSTRAINT_S]), 2)
         self.assertEqual(result[0][1]._data[util.CONSTRAINT_S][0].op, "HasTag")
-        self.assertEqual(result[0][1]._data[util.CONSTRAINT_S][1].op, "RegMatch")
+        self.assertEqual(result[0][1]._data[util.CONSTRAINT_S][1].op, "operator.query.regmatch")
 
     def test_tag_list_interaction_2(self):
-        result = QP.clause.parseString("a.testing(RegMatch /Test/, #test, #second)?")
+        result = QP.clause.parseString("a.testing(operator.query.regmatch /Test/, #test, #second)?")
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result[0][1]._data[util.CONSTRAINT_S]), 2)
         self.assertEqual(result[0][1]._data[util.CONSTRAINT_S][1].op, "HasTag")
-        self.assertEqual(result[0][1]._data[util.CONSTRAINT_S][0].op, "RegMatch")
+        self.assertEqual(result[0][1]._data[util.CONSTRAINT_S][0].op, "operator.query.regmatch")
 
     def test_tag_list_interaction_3(self):
-        result = QP.clause.parseString("a.testing(#aTag, RegMatch /Test/, #test, #second)?")
+        result = QP.clause.parseString("a.testing(#aTag, operator.query.regmatch /Test/, #test, #second)?")
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result[0][1]._data[util.CONSTRAINT_S]), 3)
         self.assertEqual(result[0][1]._data[util.CONSTRAINT_S][0].op, "HasTag")
-        self.assertEqual(result[0][1]._data[util.CONSTRAINT_S][1].op, "RegMatch")
+        self.assertEqual(result[0][1]._data[util.CONSTRAINT_S][1].op, "operator.query.regmatch")
         self.assertEqual(result[0][1]._data[util.CONSTRAINT_S][2].op, "HasTag")
 
 

@@ -23,13 +23,13 @@ class TransformTests(unittest.TestCase):
     #----------
     #use testcase snippets
     def test_construction(self):
-        TransformOp.op_list['TestOp'] = True
+        TransformOp.op_dict['TestOp'] = True
         transform = TransformComponent("TestOp", [])
         self.assertIsInstance(transform, TransformComponent)
-        del TransformOp.op_list['TestOp']
+        del TransformOp.op_dict['TestOp']
 
     def test_var_set(self):
-        TransformOp.op_list['TestOp'] = True
+        TransformOp.op_dict['TestOp'] = True
         param = PV("input", data={util.BIND_S: True})
         outbind = PV("output", data={util.BIND_S: True})
         transform = TransformComponent("TestOp", [param], rebind=outbind)
@@ -38,7 +38,7 @@ class TransformTests(unittest.TestCase):
         var_set_out_str = [x.name for x in var_set['out']]
         self.assertTrue("input" in var_set_in_str)
         self.assertTrue("output" in var_set_out_str)
-        del TransformOp.op_list['TestOp']
+        del TransformOp.op_dict['TestOp']
 
 
 if __name__ == "__main__":

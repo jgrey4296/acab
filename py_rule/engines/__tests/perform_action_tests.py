@@ -30,13 +30,13 @@ class ActionTests(unittest.TestCase):
 
     #----------
     def test_run_assert_action(self):
-        actions = AP.parseString("ActionAdd(a.b.c)")
+        actions = AP.parseString("operator.action.add(a.b.c)")
         self.assertFalse(self.e.query("a.b.c?"))
         actions({}, self.e)
         self.assertTrue(self.e.query("a.b.c?"))
 
     def test_run_retract_action(self):
-        actions = AP.parseString("ActionAdd(~a.b.c)")
+        actions = AP.parseString("operator.action.add(~a.b.c)")
         self.e.add("a.b.c")
         self.assertTrue(self.e.query("a.b.c?"))
         actions({}, self.e)
@@ -44,14 +44,14 @@ class ActionTests(unittest.TestCase):
         self.assertTrue(self.e.query("~a.b.c?"))
 
     def test_run_assert_multi_action(self):
-        actions = AP.parseString("ActionAdd(a.b.c), ActionAdd(a.b.d)")
+        actions = AP.parseString("operator.action.add(a.b.c), operator.action.add(a.b.d)")
         self.assertFalse(self.e.query("a.b.c?, a.b.d?"))
         self.assertTrue(self.e.query("~a.b.c?, ~a.b.d?"))
         actions({}, self.e)
         self.assertTrue(self.e.query("a.b.c?, a.b.d?"))
 
     def test_run_mixed_multi_action(self):
-        actions = AP.parseString("ActionAdd(a.b.c), ActionAdd(~a.b.d)")
+        actions = AP.parseString("operator.action.add(a.b.c), operator.action.add(~a.b.d)")
         self.e.add("a.b.d")
         self.assertTrue(self.e.query("~a.b.c?, a.b.d?"))
         actions({}, self.e)
@@ -59,14 +59,14 @@ class ActionTests(unittest.TestCase):
 
     def test_run_bound_assert_action(self):
         data = {"x": "blah"}
-        actions = AP.parseString("ActionAdd(a.b.$x)")
+        actions = AP.parseString("operator.action.add(a.b.$x)")
         self.assertTrue(self.e.query("~a.b.blah?"))
         actions(data, self.e)
         self.assertTrue(self.e.query("a.b.blah?"))
 
     def test_run_bound_retract_action(self):
         data = {"blah" : "bloo"}
-        actions = AP.parseString("ActionAdd(~a.$blah.c)")
+        actions = AP.parseString("operator.action.add(~a.$blah.c)")
         self.e.add("a.bloo.c")
         self.assertTrue(self.e.query("a.bloo.c?"))
         actions(data, self.e)
@@ -74,17 +74,17 @@ class ActionTests(unittest.TestCase):
 
     def test_run_mixed_bound_actions(self):
         data = {"blah": "bloo"}
-        actions = AP.parseString("ActionAdd(a.$blah), ActionAdd(~b.$blah)")
+        actions = AP.parseString("operator.action.add(a.$blah), operator.action.add(~b.$blah)")
         self.e.add("b.bloo")
         self.assertTrue(self.e.query("b.bloo?"))
         actions(data, self.e)
         self.assertTrue(self.e.query("a.bloo?, ~b.bloo?"))
 
     def test_custom_action_parse(self):
-        result = AP.parseString("ActionBlah(a, b, c)")
+        result = AP.parseString("operator.action.blah(a, b, c)")
         self.assertEqual(len(result), 1)
         self.assertIsInstance(result, action.Action)
-        self.assertEqual(result.clauses[0].op, "ActionBlah")
+        self.assertEqual(result.clauses[0].op, "operator.action.blah")
         self.assertEqual([x.value for x in result.clauses[0]._params], ['a', 'b', 'c'])
 
 

@@ -7,7 +7,6 @@ a.c!d
 retraction.rule: (::ρ)
   a.b.c?
     
-  ActionAdd(~a.b.c)
-
+  operator.action.add(~a.b.c)
 end
 

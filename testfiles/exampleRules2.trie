@@ -5,14 +5,12 @@ a.other!ex
 example.rule.one: (::ρ)
   a.b.c?
 
-  ActionAdd(d.e.f)
-
+  operator.action.add(d.e.f)
 end
 
 example.rule.two: (::ρ)
   a.b.c?
 
-  ActionAdd(d.e.g)
-
+  operator.action.add(d.e.g)
 end
 

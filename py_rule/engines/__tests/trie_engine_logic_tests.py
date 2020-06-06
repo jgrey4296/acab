@@ -30,7 +30,7 @@ class Engine_Logic_Tests(unittest.TestCase):
     #----------
     #use testcase snippets
     def test_simple_logic(self):
-        self.e.add("""a.test.rule: (::ρ)\na.b.c?\n\nActionAdd(a.b.d)\n\nend""")
+        self.e.add("""a.test.rule: (::ρ)\na.b.c?\n\noperator.action.add(a.b.d)\n\nend""")
         rule = self.e.query('a.test.$x?')[0]['x']
         self.assertIsInstance(rule, Rule)
         self.e.add("a.b.c")

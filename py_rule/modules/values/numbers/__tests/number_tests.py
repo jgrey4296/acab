@@ -18,25 +18,6 @@ class NumberTests(unittest.TestCase):
         return 1
 
     #----------
-    @unittest.skip("Example")
-    def test_bdi_rule_parse(self):
-        rulestr = """
-bdi.blah:
-    #propose
-    count!$x(< 10)?
-
-    $x + 2 -> $y
-    ~{} "Hello: {x}" -> $z
-
-    @ ($z)
-    + (count!$y)
-end
-        """.strip()
-        result = RP.parseString(rulestr)[0]
-        self.assertEqual(result[0], KBU.RULE_S)
-        self.assertIsInstance(result[1], Rule)
-
-
 
 if __name__ == "__main__":
     #run python $filename to use this logging setup

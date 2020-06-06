@@ -103,18 +103,19 @@ class PyRuleValueTests(unittest.TestCase):
         return
 
 
-    @unittest.skip("TODO")
     def test_safe_make(self):
-        pass
+        value = PyRuleValue.safe_make("test")
+        self.assertIsInstance(value, PyRuleValue)
+        value2 = PyRuleValue.safe_make(value)
+        self.assertIsInstance(value2, PyRuleValue)
+        self.assertIsInstance(value2._value, str)
 
-    @unittest.skip("TODO")
-    def test_statement_init(self):
-        pass
 
-    @unittest.skip("TODO")
     def test_statement_to_simple_value(self):
-        pass
-
+        value = PyRuleStatement("test")
+        self.assertIsInstance(value, PyRuleStatement)
+        basic = value.to_simple_value()
+        self.assertIsInstance(basic, PyRuleValue)
 
 
 if __name__ == "__main__":

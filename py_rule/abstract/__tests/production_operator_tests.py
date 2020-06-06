@@ -3,6 +3,7 @@ from os.path import splitext, split
 import unittest
 import logging
 from py_rule.abstract import production_operator as PO
+from py_rule.abstract.value import PyRuleValue, PyRuleStatement
 
 
 class ProductionOperatorTests(unittest.TestCase):
@@ -18,7 +19,6 @@ class ProductionOperatorTests(unittest.TestCase):
         return 1
 
     #----------
-    #use testcase snippets
     @unittest.skip("TODO")
     def test_verify(self):
         # create an action with numerous action components,
@@ -34,29 +34,30 @@ class ProductionOperatorTests(unittest.TestCase):
     def test_op_str(self):
         pass
 
-    @unittest.skip("TODO")
+
     def test_component_init(self):
-        pass
+        val = PO.ProductionComponent("testop", [])
+        self.assertIsInstance(val, PO.ProductionComponent)
+        self.assertIsInstance(val, PyRuleValue)
 
     @unittest.skip("TODO")
     def test_component_call(self):
         pass
 
-    @unittest.skip("TODO")
     def test_component_op(self):
-        pass
+        val = PO.ProductionComponent("testop", [])
+        self.assertEqual(val.op, "testop")
 
     @unittest.skip("TODO")
     def test_component_var_set(self):
         pass
 
-    @unittest.skip("TODO")
-    def test_apply_parameters(self):
-        pass
 
-    @unittest.skip("TODO")
-    def test_set_rebind(self):
-        pass
+    def test_apply_parameters(self):
+        val = PO.ProductionComponent("testop", [])
+        self.assertEqual(len(val._params), 0)
+        val.apply_params(["a","test"])
+        self.assertEqual(len(val._params), 2)
 
     @unittest.skip("TODO")
     def test_get_params(self):
@@ -65,6 +66,7 @@ class ProductionOperatorTests(unittest.TestCase):
     @unittest.skip("TODO")
     def test_to_sentence(self):
         pass
+
 
     @unittest.skip("TODO")
     def test_container_init(self):
@@ -87,7 +89,9 @@ class ProductionOperatorTests(unittest.TestCase):
         pass
 
 
-
+    @unittest.skip("TODO")
+    def test_refine_op_func(self):
+        return
 
 if __name__ == "__main__":
     #run python $filename to use this logging setup

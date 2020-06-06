@@ -18,7 +18,9 @@ def build_component(toks):
                                    toks[WMU.ACTION_VAL_S][:])
 
 def build_action(toks):
-    clauses = [x if isinstance(x, action.ActionComponent) else action.ActionComponent('ActionAdd', [x]) for x in toks]
+    # TODO remove hardcoded default
+    clauses = [x if isinstance(x, action.ActionComponent)
+               else action.ActionComponent('operator.action.add', [x]) for x in toks]
     act = action.Action(clauses)
 
     return (act.type, act)

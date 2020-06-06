@@ -43,37 +43,37 @@ class NumberQueryTests(unittest.TestCase):
 
 
     def test_basic_comp_internal(self):
-        result = QP.QUERY_OP_Internal.parseString('LT 20')[0]
+        result = QP.QUERY_OP_Internal.parseString('operator.query.lt 20')[0]
         self.assertIsInstance(result, QueryComponent)
 
 
     def test_basic_comparison(self):
-        result = QP.constraints.parseString('LT 20, GT 40, NEQ $x, EQ $y, RegMatch /blah/')[0]
+        result = QP.constraints.parseString('operator.query.lt 20, operator.query.gt 40, operator.query.neq $x, operator.query.eq $y, operator.query.regmatch /blah/')[0]
         self.assertEqual(result[0], util.CONSTRAINT_S)
         self.assertEqual(len(result[1]), 5)
         self.assertTrue(all([isinstance(x, QueryComponent) for x in result[1]]))
-        self.assertEqual(result[1][0].op, 'LT')
-        self.assertEqual(result[1][1].op, 'GT')
-        self.assertEqual(result[1][2].op, 'NEQ')
-        self.assertEqual(result[1][3].op, 'EQ')
-        self.assertEqual(result[1][4].op, 'RegMatch')
+        self.assertEqual(result[1][0].op, 'operator.query.lt')
+        self.assertEqual(result[1][1].op, 'operator.query.gt')
+        self.assertEqual(result[1][2].op, 'operator.query.neq')
+        self.assertEqual(result[1][3].op, 'operator.query.eq')
+        self.assertEqual(result[1][4].op, 'operator.query.regmatch')
 
 
     def test_basic_query_core(self):
-        result = QP.QueryCore.parseString('a(GT 20).')[0]
+        result = QP.QueryCore.parseString('a(operator.query.gt 20).')[0]
         self.assertTrue(util.CONSTRAINT_S in result._data)
         self.assertEqual(len(result._data[util.CONSTRAINT_S]), 1)
         self.assertIsInstance(result._data[util.CONSTRAINT_S][0], QueryComponent)
 
 
     def test_basic_query_core_multi_comparison(self):
-        result = QP.QueryCore.parseString('a(GT 20, LT 30).')[0]
+        result = QP.QueryCore.parseString('a(operator.query.gt 20, operator.query.lt 30).')[0]
         self.assertEqual(len(result._data[util.CONSTRAINT_S]), 2)
         self.assertTrue(all([isinstance(x, QueryComponent) for x in result._data[util.CONSTRAINT_S]]))
 
 
     def test_basic_query_core_with_exclusion(self):
-        result = QP.QueryCore.parseString('a(GT 20)!')[0]
+        result = QP.QueryCore.parseString('a(operator.query.gt 20)!')[0]
         self.assertEqual(result._data[util.OPERATOR_S], KBU.EXOP.EX)
 
 
@@ -106,11 +106,11 @@ class NumberQueryTests(unittest.TestCase):
     @unittest.skip("TODO: requires handling of syntax sugar and \\")
     def test_fact_str_equal(self):
         queries = ["a.b.c?", "a.b!c?", 'a.b."a string".c?',
-                   'a.b!"a string"!c?', 'a.b(GT 20)?',
-                   'a.$b?', 'a!$b?', 'a.$b(GT $c)?',
-                   'a.$b(GT 20, LT 40, NEQ $x, EQ $y)?',
+                   'a.b!"a string"!c?', 'a.b(operator.query.gt 20)?',
+                   'a.$b?', 'a!$b?', 'a.$b(operator.query.gt $c)?',
+                   'a.$b(operator.query.gt 20, operator.query.lt 40, Noperator.query.eq $x, operator.query.eq $y)?',
                    '~a.b.c?', '~a!b.c?',
-                   'a.$b(RegMatch /blah/)?',
+                   'a.$b(operator.query.regmatch /blah/)?',
                    'a.b.c? || $x:2',
                    'a.b.d? || $x:5, $y:blah']
                    # 'a.b.c(^$x)?']
@@ -124,45 +124,45 @@ class NumberQueryTests(unittest.TestCase):
         bindings = { "x" : FP.parseString('a.b.c')[0],
                      "y" : FP.parseString('d.e.f')[0],
                      "z" : FP.parseString('x.y.z')[0] }
-        result = RP.parseString("a.rule: (::ρ)\n$y.b.$z?\n\n$x \AddOp 2 -> $y\n\n$y\n\nend")[0][-1]
+        result = RP.parseString("a.rule: (::ρ)\n$y.b.$z?\n\n$x \operator.transform.n_ary.add 2 -> $y\n\n$y\n\nend")[0][-1]
         expanded = result.value.bind(bindings)
         # Expanding bindings makes a new rule, so its an AnonValue
         self.assertEqual(expanded.pprint().strip(),
-                         "AnonRule: (::ρ)\n\td.e.f.b.x.y.z?\n\n\t$x \AddOp 2 -> $y\n\n\tActionAdd(d.e.f)\nend")
+                         "AnonRule: (::ρ)\n\td.e.f.b.x.y.z?\n\n\t$x \operator.transform.n_ary.add 2 -> $y\n\n\toperator.action.add(d.e.f)\nend")
 
 
     def test_query_alpha_comp(self):
         """ Check that alpha comparisons work """
         self.trie.add('a.b.20')
-        result = self.trie.query('a.b.$x(EQ 20)?')
+        result = self.trie.query('a.b.$x(operator.query.eq 20)?')
         self.assertTrue(result)
 
 
     def test_query_alpha_comp_fails(self):
         """ Check that alpha comparisons can fail """
         self.trie.add('a.b.20')
-        result = self.trie.query('a.b.$x(EQ 30)?')
+        result = self.trie.query('a.b.$x(operator.query.eq 30)?')
         self.assertFalse(result)
 
 
-    def test_query_alpha_comp_GT(self):
+    def test_query_alpha_comp_gt(self):
         """ Check that other comparisons from equality can be tested for """
         self.trie.add('a.b.20')
-        result = self.trie.query('a.b.$x(GT 10)?')
+        result = self.trie.query('a.b.$x(operator.query.gt 10)?')
         self.assertTrue(result)
 
 
     def test_query_fail(self):
         """ Check that other comparisons can fail """
         self.trie.add('a.b.20')
-        result = self.trie.query('a.b.$x(GT 30)?')
+        result = self.trie.query('a.b.$x(operator.query.gt 30)?')
         self.assertFalse(result)
 
 
     def test_query_multi_bind_comp(self):
         """ Check that bindings hold across clauses """
         self.trie.add('a.b.20, a.c.30, a.d.40')
-        result = self.trie.query('a.c.$x?, a.$y(NEQ c).$v(GT $x)?')
+        result = self.trie.query('a.c.$x?, a.$y(operator.query.neq c).$v(operator.query.gt $x)?')
         self.assertTrue(result)
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]['x'].value, 30)
@@ -173,7 +173,7 @@ class NumberQueryTests(unittest.TestCase):
     def test_query_multi_alts(self):
         """ Check that queries with bindings provide enumerated alternatives """
         self.trie.add('a.b.20, a.c.30, a.d.40, a.e.50')
-        result = self.trie.query('a.c.$x?, a.$y(NEQ c).$v(GT $x)?')
+        result = self.trie.query('a.c.$x?, a.$y(operator.query.neq c).$v(operator.query.gt $x)?')
         self.assertTrue(result)
         self.assertEqual(len(result), 2)
 

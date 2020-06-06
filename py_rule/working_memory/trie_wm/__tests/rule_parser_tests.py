@@ -77,7 +77,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
         self.assertEqual(len(result[0][-1]._query), 1)
 
     def test_rule_with_actions(self):
-        result = RP.parseString("a.rule.x: (::ρ)\nActionAdd(a.b.c)\nend")
+        result = RP.parseString("a.rule.x: (::ρ)\noperator.action.add(a.b.c)\nend")
         self.assertEqual(len(result), 1)
         self.assertIsInstance(result[0][-1], Rule)
         self.assertIsNone(result[0][-1]._query)
@@ -85,7 +85,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
         self.assertEqual(len(result[0][-1]._action), 1)
 
     def test_multi_action_rule(self):
-        result = RP.parseString("a.rule.x: (::ρ)\nActionAdd(a.b.c)\nActionAdd(~a.b.d)\nend")
+        result = RP.parseString("a.rule.x: (::ρ)\noperator.action.add(a.b.c)\noperator.action.add(~a.b.d)\nend")
         self.assertEqual(len(result[0]), 3)
         self.assertIsInstance(result[0], Sentence)
         self.assertIsInstance(result[0][-1], Rule)
@@ -94,7 +94,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
         self.assertEqual(len(result[0][-1]._action), 2)
 
     def test_multi_action_single_line_rule(self):
-        result = RP.parseString("a.rule.x: (::ρ)\n\nActionAdd(a.b.c), ActionAdd(~a.b.d)\nend")
+        result = RP.parseString("a.rule.x: (::ρ)\n\noperator.action.add(a.b.c), operator.action.add(~a.b.d)\nend")
         self.assertEqual(len(result), 1)
         self.assertIsInstance(result[0][-1], Rule)
         self.assertIsNone(result[0][-1]._query)
@@ -109,7 +109,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
                          "AnonRule: (::ρ)\n\ta.b.c?\nend")
 
     def test_rule_tags(self):
-        the_str = 'a.test.rule.x: (::ρ)\n\t#blah, #blee, #bloo\n\n\ta.b.c?\n\n\tActionAdd(a.b.c)\nend'
+        the_str = 'a.test.rule.x: (::ρ)\n\t#blah, #blee, #bloo\n\n\ta.b.c?\n\n\toperator.action.add(a.b.c)\nend'
         result = RP.parseString(the_str)[0]
         self.assertIsInstance(result[-1], Rule)
         self.assertEqual(result.pprint().strip(), the_str)

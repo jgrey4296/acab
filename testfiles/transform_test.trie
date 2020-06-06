@@ -7,9 +7,9 @@ test.rule: (::ρ)
 
   a.$x?
   //blah
-  $x \RegexOp /(bl)(ah)/ "\1AH" -> $y
+  $x \operator.transform.n_ary.regex /(bl)(ah)/ "\1AH" -> $y
 
-  ActionAdd(result.$y)
+  operator.action.add(result.$y)
 end
 
 //blah

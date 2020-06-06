@@ -199,18 +199,18 @@ class Trie_WM_Tests(unittest.TestCase):
 
     def test_query_regex(self):
         self.trie.add('a.b.cBlah')
-        self.assertTrue(self.trie.query('a.b.$x(RegMatch /cBlah/)?'))
-        self.assertFalse(self.trie.query('a.b.$x(RegMatch /bBlah/)?'))
+        self.assertTrue(self.trie.query('a.b.$x(operator.query.regmatch /cBlah/)?'))
+        self.assertFalse(self.trie.query('a.b.$x(operator.query.regmatch /bBlah/)?'))
 
     def test_query_regex_bind(self):
         self.trie.add('a.b.cBlah')
-        result = self.trie.query('a.b.$x(RegMatch /c(?P<y>.+)/)?')
+        result = self.trie.query('a.b.$x(operator.query.regmatch /c(?P<y>.+)/)?')
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]['y'], 'Blah')
 
     def test_query_regex_multi_bind(self):
         self.trie.add('a.b.cBlah, a.b.cBloo, a.b.dAwef')
-        result = self.trie.query('a.b.$x(RegMatch /c(?P<y>.+)/)?')
+        result = self.trie.query('a.b.$x(operator.query.regmatch /c(?P<y>.+)/)?')
         self.assertEqual(len(result), 2)
         boundSet = set([x['y'] for x in result])
         self.assertTrue('Blah' in boundSet)

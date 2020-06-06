@@ -5,7 +5,7 @@ rule.first: (::ρ)
 
   a.b.c?
 
-  ActionAdd(blah)
+  operator.action.add(blah)
 end
 
 rule.second: (::ρ)
@@ -13,5 +13,5 @@ rule.second: (::ρ)
 
   a.b.c?
 
-  ActionAdd(bloo)
+  operator.action.add(bloo)
 end

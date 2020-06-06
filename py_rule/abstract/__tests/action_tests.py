@@ -25,19 +25,19 @@ class ActionTests(unittest.TestCase):
     #----------
     #use testcase snippets
     def test_construction(self):
-        ActionOp.op_list['testOp'] = True
+        ActionOp.op_dict['testOp'] = True
         action = ActionComponent("testOp", [])
         self.assertIsInstance(action, ActionComponent)
-        del ActionOp.op_list['testOp']
+        del ActionOp.op_dict['testOp']
 
     def test_var_set(self):
-        ActionOp.op_list['testOp'] = True
+        ActionOp.op_dict['testOp'] = True
         param = PV("test", data={util.BIND_S: True})
         param_sen = Sentence([param])
         action = ActionComponent("testOp", [param_sen])
         var_set = action.var_set
         self.assertTrue(param in var_set['in'])
-        del ActionOp.op_list['testOp']
+        del ActionOp.op_dict['testOp']
 
     @unittest.skip("TODO")
     def test_component_bind(self):

@@ -18,8 +18,6 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
         os = StandardOperators()
         os.assert_parsers(bp)
         AP.HOTLOAD_OPERATORS << bp.query("operator.action.*")
-        ProductionOperator.construct_subclass_tree()
-
 
     def setUp(self):
         return 1
@@ -30,14 +28,14 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
     #----------
     #use testcase snippets
     def test_string_value(self):
-        result = AP.parseString('ActionAdd("blah bloo", "blee", "awef")')
+        result = AP.parseString('operator.action.add("blah bloo", "blee", "awef")')
         self.assertEqual(len(result), 1)
         self.assertIsInstance(result, action.Action)
-        self.assertEqual(result.clauses[0].op, "ActionAdd")
+        self.assertEqual(result.clauses[0].op, "operator.action.add")
         self.assertEqual([x._value for x in result.clauses[0]._params], ["blah bloo","blee","awef"])
 
     def test_actions_fact_str(self):
-        result = AP.parseString('ActionAdd(a.b.c), ActionAdd(~a!b.d), ActionAdd($x), ActionAdd($x.a.b)')
+        result = AP.parseString('operator.action.add(a.b.c), operator.action.add(~a!b.d), operator.action.add($x), operator.action.add($x.a.b)')
         self.assertIsInstance(result, action.Action)
         self.assertEqual(len(result), 4)
         self.assertTrue(all([isinstance(x, action.ActionComponent) for x in result]))
@@ -48,13 +46,13 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
 
     def test_action_binding_expansion(self):
         bindings = {"x" : FP.parseString('a.b.c')[0] }
-        parsed_action = AP.parseString("ActionAdd($x)")
+        parsed_action = AP.parseString("operator.action.add($x)")
         bound_action = parsed_action.bind(bindings)
         self.assertIsInstance(bound_action, action.Action)
-        self.assertEqual(bound_action.pprint().strip(), "ActionAdd(a.b.c)")
+        self.assertEqual(bound_action.pprint().strip(), "operator.action.add(a.b.c)")
 
     def test_action_definition(self):
-        test_str = "test: (::α)\nActionAdd(a.b.c)\n\nend"
+        test_str = "test: (::α)\noperator.action.add(a.b.c)\n\nend"
         definition = AP.action_definition.parseString(test_str)
         self.assertEqual(definition[0][-1].name, "test")
 

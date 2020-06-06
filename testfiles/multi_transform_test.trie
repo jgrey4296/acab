@@ -12,9 +12,9 @@ test.rule: (::ρ)
   format.second.$b?
   a.$x!$y?
 
-  \FormatOp $a -> $result
-  \FormatOp $b -> $result_b
+  \operator.transform.n_ary.format $a -> $result
+  \operator.transform.n_ary.format $b -> $result_b
 
-  ActionAdd(output.$result_b)
+  operator.action.add(output.$result_b)
 end
 
