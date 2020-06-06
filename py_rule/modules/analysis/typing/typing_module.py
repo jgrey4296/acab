@@ -31,6 +31,7 @@ class TypingSpec(ModuleInterface):
     def assert_parsers(self, pt):
         pt.add("statement.typing", TDP.COMBINED_DEFS)
         pt.add("annotation.typing", TP.TYPEDEC_CORE)
+        pt.add("query.annotation.typing", TP.TYPEDEC_CORE)
         pt.add("operator.action.typecheck", TypeChecker)
 
     def query_parsers(self, pt):
