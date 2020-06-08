@@ -37,8 +37,6 @@ class ProductionOperator(PyRuleValue):
                          type_str=type_str)
         # TODO this can be done using subclass DFS
         self._num_params = num_params
-        # TODO use infix
-        self._infix = infix
 
     def __call__(self, *params, data=None, engine=None):
         raise NotImplementedError()
