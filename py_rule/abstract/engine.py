@@ -94,6 +94,21 @@ class Engine:
         return result
 
 
+    def add_listeners(self, *words):
+        self._working_memory.register_listeners(words)
+
+    def remove_listeners(self, *words):
+        self._working_memory.unregister_listeners(words)
+
+    def set_listener_threshold(self, a, b):
+        self._working_memory.set_listener_threshold(a, b)
+
+    def get_listeners(self):
+        return self._working_memory._listeners
+
+    def get_listener_threshold(self):
+        return self._working_memory._listener_threshold
+
     # Utility
     def __call__(self, thing, bindings=None):
         """ Where a thing could be an:

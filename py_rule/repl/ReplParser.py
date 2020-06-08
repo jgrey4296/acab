@@ -59,6 +59,7 @@ layer_kw     = PU.s(pp.Keyword('layer'))
 listen_kw    = PU.s(pp.Keyword('listen'))
 listener_kw  = PU.s(pp.Keyword('listener'))
 listeners_kw = PU.s(pp.Keyword('listeners'))
+threshold_kw = PU.s(pp.Keyword("threshold"))
 print_kw     = PU.s(pp.Keyword('print'))
 remove_kw    = PU.s(pp.Keyword('remove'))
 rule_kw      = PU.s(pp.Keyword('rule'))
@@ -135,6 +136,7 @@ decompose = decompose_kw + rest_of_line
 listen_for = listen_kw + for_kw  + rest_of_line
 listeners = listeners_kw
 listener_remove = remove_kw + listener_kw + rest_of_line
+listen_threshold = listen_kw + threshold_kw + rest_of_line
 
 exit_cmd = exit_kw
 
@@ -165,9 +167,10 @@ state_io.setParseAction        (lambda toks: build_command(toks[0], params=toks[
 base_statement.setParseAction  (lambda toks: build_command(RE.PASS, params=toks[:]))
 nop_line.setParseAction        (lambda toks: build_command(RE.NOP, params=toks[:]))
 decompose.setParseAction       (lambda toks: build_command(RE.DECOMPOSE, params=toks[:]))
-listen_for.setParseAction      (lambda toks: build_command(RE.LISTEN, params=toks[:]))
-listener_remove.setParseAction (lambda toks: build_command(RE.LISTEN, params=toks[:]))
-listeners.setParseAction       (lambda toks: build_command(RE.LISTEN, params=toks[:]))
+listen_for.setParseAction      (lambda toks: build_command(RE.LISTEN, type="add", params=toks[:]))
+listener_remove.setParseAction (lambda toks: build_command(RE.LISTEN, type="remove", params=toks[:]))
+listeners.setParseAction       (lambda toks: build_command(RE.LISTEN, type="list", params=toks[:]))
+listen_threshold.setParseAction(lambda toks: build_command(RE.LISTEN, type="threshold", params=toks[:]))
 load_mod.setParseAction        (lambda toks: build_command(RE.MODULE, params=toks[:]))
 manual_act.setParseAction      (lambda toks: build_command(RE.ACT, params=toks[:]))
 print_state.setParseAction     (lambda toks: build_command(RE.PRINT, params=toks[:]))
@@ -183,6 +186,10 @@ echo_kw.setParseAction         (lambda toks: build_command(RE.ECHO, params=[]))
 
 # Names
 main_commands = PU.s(pp.Literal(':')) + pp.Or([run_something,
+                                               listeners,
+                                               listen_threshold,
+                                               listen_for,
+                                               listener_remove,
                                                print_state,
                                                state_io,
                                                reinit,

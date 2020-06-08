@@ -6,6 +6,7 @@ from enum import Enum
 from os.path import split, splitext, exists, expanduser, abspath
 import importlib
 import logging as root_logger
+import re
 
 from py_rule.abstract.production_operator import ProductionOperator
 from py_rule.abstract.agenda import Agenda
@@ -16,6 +17,9 @@ from py_rule.abstract.layer import Layer
 logging = root_logger.getLogger(__name__)
 
 ReplE = Enum("Repl Commands", "NOP INIT LOAD SAVE PRINT RUN PASS STEP ACT DECOMPOSE LISTEN CHECK STATS HELP EXIT MULTILINE POP MODULE PROMPT ECHO")
+
+SPLIT_RE = re.compile("[ .!?/]")
+
 repl_commands = {}
 
 # utility functions
@@ -208,15 +212,23 @@ def engine_listen(engine, data):
     Listen for specific assertions / rule firings / queries,
     and pause on them
     """
-    logging.info("Listener: {}".format(params))
-    # TODO
-    # if add listener:
+    logging.info("Listener ({}): {}".format(data["type"], params))
+    if data['type'] == "add":
+        words = [y for x in params for y in SPLIT_RE.split(x)]
+        engine.add_listeners(*words)
+    elif data['type'] == "remove":
+        words = [y for x in params for y in SPLIT_RE.split(x)]
+        engine.remove_listeners(*words)
+    elif data['type'] == "list":
+        result = []
+        result.append(" ".join(engine.get_listeners()))
+        result.append("Threshold: {}".format(engine.get_listener_threshold()))
+        data["result"] = "\n".join(result)
+    elif data['type'] == "threshold":
+        params = SPLIT_RE.split((params[0]))
+        engine.set_listener_threshold(int(params[0]), int(params[1]))
 
-    # if remove listener
-
-    # if list listeners
-
-    return engine, None
+    return engine, data
 
 register(ReplE.LISTEN, engine_listen)
 

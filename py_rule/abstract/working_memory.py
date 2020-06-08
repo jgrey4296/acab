@@ -17,6 +17,7 @@ From a module it loads Value, Statement, and Annotation parsers.
 """
 import pyparsing as pp
 import logging as root_logger
+from fractions import Fraction
 
 from .production_operator import ProductionOperator
 from .module_interface import ModuleInterface
@@ -36,6 +37,10 @@ class WorkingMemory:
         # Use a Bootstrap DSL for specification
         self._bootstrap_parser = BootstrapParser()
         self.assert_parsers(self._bootstrap_parser)
+        # Listeners are treated as a query *bag*
+        self._listeners = set()
+        self._listener_threshold = Fraction(1,2)
+
 
     def __str__(self):
         """ Print the working memory as a reparseable string """
@@ -58,6 +63,29 @@ class WorkingMemory:
 
     def clear_bootstrap(self):
         self._bootstrap_parser = BootstrapParser()
+
+
+    def clear_listeners(self):
+        self._listeners = set()
+
+    def register_listeners(self, words):
+        self._listeners.update(words)
+
+    def unregister_listeners(self, words):
+        self._listeners.difference_update(words)
+
+    def set_listener_threshold(self, a, b):
+        self._listener_threshold = Fraction(a,b)
+
+    def score_listener(self, words):
+        simple_words = [str(x) if not x.is_var else "$_" for x in words]
+        num_in_listener_bag = sum([1 if x in self._listeners else 0 for x in simple_words])
+        sentence_fraction = Fraction(num_in_listener_bag, len(simple_words))
+        if sentence_fraction >= self._listener_threshold:
+            return True
+
+        return False
+
 
     # Methods to implement:
     def add(self, data):

@@ -1,6 +1,5 @@
 """ The Core Trie Data Structure base """
 import logging as root_logger
-from fractions import Fraction
 
 from py_rule.abstract.contexts import Contexts
 from py_rule.abstract.working_memory import WorkingMemory
@@ -32,9 +31,6 @@ class TrieWM(WorkingMemory):
         super().__init__()
         self._internal_trie = Trie(FactNode)
 
-        # Listeners are treated as a query *bag*
-        self._listeners = set()
-        self._listener_threshold = Fraction(1,2)
         self._last_node = self._internal_trie._root
 
         if init is not None:
@@ -128,25 +124,6 @@ class TrieWM(WorkingMemory):
                                          "operator.sugar")
 
         TotalP.HOTLOAD_STATEMENTS << pt.query("statement.*")
-
-
-    def clear_listeners(self):
-        self._listeners = set()
-
-    def register_listeners(self, is_concrete, *listener_strings):
-        self._listeners.update(listener_strings)
-
-    def set_listener_threshold(self, a, b):
-        self._listener_threshold = Fraction(a,b)
-
-    def score_listener(self, words):
-        simple_words = [str(x) if x.is_var else "$_" for x in words]
-        num_in_listener_bag = sum([1 if x in self._listeners else 0 for x in simple_words])
-        sentence_fraction = Fraction(num_in_listener_bag, len(simple_words))
-        if sentence_fraction > self._listener_threshold:
-            return True
-
-        return False
 
 
     def _assert_sentence(self, sen):
