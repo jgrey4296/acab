@@ -95,18 +95,23 @@ class Engine:
 
 
     # Utility
-    def run_thing(self, thing, bindings=None):
+    def __call__(self, thing, bindings=None):
         """ Where a thing could be an:
         rule/agenda/layer/pipeline,
         action/query/transform
         """
-        # TODO: if thing is string, query it
-        # TODO be able to run multi / sequence of things
-        # TODO should save state
-        assert(isinstance(thing, ProductionContainer))
-        logging.info("Running thing: {}".format(thing))
+        result = False
+        # if thing is string, query it
+        if isinstance(thing, str):
+            thing = [thing]
 
-        result = thing(ctxs=bindings, engine=self)
+        if isinstance(thing, list) and all([isinstance(x, str) for x in thing]):
+            result = [self._working_memory(x) for x in thing]
+
+        else:
+            assert(isinstance(thing, ProductionContainer))
+            logging.info("Running thing: {}".format(thing))
+            result = thing(ctxs=bindings, engine=self)
 
         if not bool(result):
             logging.info("Thing Failed")
