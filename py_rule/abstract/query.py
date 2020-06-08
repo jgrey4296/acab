@@ -109,7 +109,6 @@ class Query(PO.ProductionContainer):
     def to_local_sentences(self, target=None):
         """ Return all comparisons in canonical form """
         # eg : a.test.$x(>$y)? = > -> $x -> $y -> bool
-        # TODO should this actually be all *clauses*? YES
         constraint_words = [word for clause in self.clauses
                             for word in clause if util.CONSTRAINT_S in word._data]
         # for each constraint, create a sentence
