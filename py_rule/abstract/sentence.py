@@ -104,12 +104,14 @@ class Sentence(PyRuleValue):
         return new_sen
 
     def attach_statement(self, value):
+        """
+        Take a statement and attach it to the leaf of the sentence
+        """
         assert(isinstance(value, PyRuleStatement))
         last = self.words[-1]
         value_copy = value.copy()
         sen_copy = self.copy()
 
-        # TODO clean this
         value_copy._name = last.name
         value_copy.set_path(sen_copy)
         combined_data = last._data.copy()
@@ -120,6 +122,10 @@ class Sentence(PyRuleValue):
         return sen_copy
 
     def detach_statement(self):
+        """
+        The inverse of attach_statement.
+        Reduce the leaf of a sentence to a simple value
+        """
         sen_copy = self.copy()
         last = None
 

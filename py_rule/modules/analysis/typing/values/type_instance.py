@@ -65,3 +65,6 @@ class TypeInstance(Type):
                 new_args.append(x)
 
         return TypeInstance(self.path, params=new_args)
+
+
+# TODO Make a type instance query op

@@ -21,7 +21,6 @@ class Rule(ProductionContainer):
     """
 
     __count = 0
-    # TODO handle None's better
     def __init__(self, query=None, action=None, transform=None, name="AnonRule", type_str=util.RULE_S):
         assert(query is None or isinstance(query, Query))
         assert(action is None or isinstance(action, Action))
@@ -84,6 +83,8 @@ class Rule(ProductionContainer):
     def verify(self):  # can raise an Exception from verify_op
         """ Verify that the outputs of the query match the
         inputs of the transform, match the inputs of the actions """
+        # TODO get query, transform, action var sets and unify
+
         if self._transform is not None:
             self._transform.verify()
 

@@ -5,26 +5,26 @@ a.string."test string {x}"
 a.agenda.test: (::Agenda)
     | $proposals |
 
-    AgendaReturn($proposals)
+    operator.action.agenda_return($proposals)
 end
 
 a.rule.test: (::ρ)
     a.b.$x?
     a.string.$y?
 
-    \FormatOp $y -> $z
+    \operator.transform.n_ary.format $y -> $z
 
     a.b.q
-    ActionPrint("Testing")
-    ActionPrint($z)
+    operator.action.print("Testing")
+    operator.action.print($z)
 end
 
 a.layer.test: (::Layer)
     a.agenda.$agenda?
     a.rule.$rule?
 
-    \LayerRunRules $rule -> $props
-    \LayerRunAgenda $agenda $props -> $results
+    \operator.transform.n_ary.run_rules $rule -> $props
+    \operator.transform.n_ary.run_agenda $agenda $props -> $results
 
-    LayerPerform($results)
+    operator.action.layer_perform($results)
 end
