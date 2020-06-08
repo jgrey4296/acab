@@ -1,5 +1,6 @@
 """ The Core Trie Data Structure base """
 import logging as root_logger
+from fractions import Fraction
 
 from py_rule.abstract.contexts import Contexts
 from py_rule.abstract.working_memory import WorkingMemory
@@ -30,7 +31,10 @@ class TrieWM(WorkingMemory):
         """ init is a string of assertions to start the fact base with """
         super().__init__()
         self._internal_trie = Trie(FactNode)
-        # TODO: have a parallel listener trie?
+
+        # Listeners are treated as a query *bag*
+        self._listeners = set()
+        self._listener_threshold = Fraction(1,2)
         self._last_node = self._internal_trie._root
 
         if init is not None:
@@ -126,9 +130,32 @@ class TrieWM(WorkingMemory):
         TotalP.HOTLOAD_STATEMENTS << pt.query("statement.*")
 
 
+    def clear_listeners(self):
+        self._listeners = set()
+
+    def register_listeners(self, is_concrete, *listener_strings):
+        self._listeners.update(listener_strings)
+
+    def set_listener_threshold(self, a, b):
+        self._listener_threshold = Fraction(a,b)
+
+    def score_listener(self, words):
+        simple_words = [str(x) if x.is_var else "$_" for x in words]
+        num_in_listener_bag = sum([1 if x in self._listeners else 0 for x in simple_words])
+        sentence_fraction = Fraction(num_in_listener_bag, len(simple_words))
+        if sentence_fraction > self._listener_threshold:
+            return True
+
+        return False
+
+
     def _assert_sentence(self, sen):
-        """ Assert a sentence of chained facts """
+        """ Assert a (concrete) sentence of chained facts """
         assert (isinstance(sen, Sentence)), sen
+        if self.score_listener(sen.words):
+            # TODO: add more listener options
+            breakpoint()
+
         self._clear_last_node()
         for word in sen:
             self._last_node = self._last_node.insert(word)
@@ -136,8 +163,12 @@ class TrieWM(WorkingMemory):
         self._last_node._set_dirty_chain()
 
     def _retract_sentence(self, sen):
-        """ Retract everything after the end of a sentence """
+        """ Retract everything after the end of a (concrete) sentence """
         assert(isinstance(sen, Sentence))
+        if self.score_listener(sen.words):
+            # TODO: add more listener options
+            breakpoint()
+
         # go down to the child, and remove it
         self._clear_last_node()
         fact_list = sen.words[:]
@@ -153,6 +184,16 @@ class TrieWM(WorkingMemory):
     def _query_sentence(self, query, ctxs=None, engine=None):
         """ Query a TrieQuery instance """
         assert(isinstance(query, (Query, Sentence)))
+        should_listen = False
+        if isinstance(query, Sentence):
+            should_listen = self.score_listener(query.words)
+        else:
+            should_listen = any([self.score_listener(x.words) for x in query.clauses])
+
+        if should_listen:
+            # TODO: add more listener options
+            breakpoint()
+
         self._clear_last_node()
         initial_context = Contexts(start_node=self._internal_trie._root,
                                    bindings=ctxs, engine=engine)

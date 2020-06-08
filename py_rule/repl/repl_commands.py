@@ -134,7 +134,7 @@ def engine_run(engine, data):
     # Get var
     value = query_result[0][params[-2][1]]
 
-    result = engine.run_thing(value)
+    result = engine(value)
 
     data['result'] = result
     return engine, data
@@ -260,13 +260,12 @@ def engine_stats(engine, data):
     if allow_all or "pipeline" in params:
         result.append("--------------------")
         result.append("Pipeline Stats: ")
-        result.append(str(engine._pipeline))
 
     # layers
-    if (allow_all or "layer" in params) and engine._pipeline is not None:
+    if (allow_all or "layer" in params):
         result.append("--------------------")
         result.append("Layer Stats: ")
-        result.append("\t{}".format("\n\t".join([str(x) for x in engine._pipeline._layers])))
+        # result.append("\t{}".format("\n\t".join([str(x) for x in engine._pipeline._layers])))
 
     # modules
     if allow_all or "module" in params:

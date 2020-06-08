@@ -35,7 +35,7 @@ class Engine_Logic_Tests(unittest.TestCase):
         self.assertIsInstance(rule, Rule)
         self.e.add("a.b.c")
         self.assertTrue(self.e.query("~a.b.d?"))
-        proposals = self.e.run_thing(rule)
+        proposals = self.e(rule)
         self.assertTrue(proposals)
         dr = proposals[0]
         dr[1]._action(dr[0], self.e)
@@ -45,7 +45,7 @@ class Engine_Logic_Tests(unittest.TestCase):
         self.e.load_file(self.path("exampleRule1.trie"))
         self.assertTrue(self.e.query("a.b.c?, ~d.e.f?"))
         rule = self.e.query('example.one.$rule?')[0]['rule']
-        proposals = self.e.run_thing(rule)
+        proposals = self.e(rule)
         dr = proposals[0]
         dr[1]._action(dr[0], self.e)
         self.assertTrue(self.e.query("a.b.c?, d.e.f?"))
@@ -58,7 +58,7 @@ class Engine_Logic_Tests(unittest.TestCase):
         # run_thing
         results = []
         for d in rules:
-            results += self.e.run_thing(d['x'])
+            results += self.e(d['x'])
         self.assertEqual(len(results), 2)
         # _perform_actions
         for dr in results:
@@ -76,7 +76,7 @@ class Engine_Logic_Tests(unittest.TestCase):
         self.e.load_file(self.path( "retractionTest.trie"))
         self.assertTrue(self.e.query("a.b.c?"))
         rule = self.e.query('retraction.$rule?')[0]['rule']
-        proposals = self.e.run_thing(rule)
+        proposals = self.e(rule)
         dr = proposals[0]
         dr[1]._action(dr[0], self.e)
         self.assertTrue(self.e.query("~a.b.c?"))
@@ -85,7 +85,7 @@ class Engine_Logic_Tests(unittest.TestCase):
         self.e.load_file(self.path( "multiclause_rule.trie"))
         self.assertTrue(self.e.query("a.b.c?, a.c!d?"))
         rule = self.e.query('multi.clause.rule.$test?')[0]['test']
-        proposals = self.e.run_thing(rule)
+        proposals = self.e(rule)
         dr = proposals[0]
         dr[1]._action(dr[0], self.e)
         self.assertTrue(self.e.query("a.b.c?, a.c!d?, a.b.e?"))
@@ -94,7 +94,7 @@ class Engine_Logic_Tests(unittest.TestCase):
         self.e.load_file(self.path("string_query_test.trie"))
         self.assertTrue(self.e.query("~a.b.e?"))
         rule = self.e.query("a.string.$rule?")[0]['rule']
-        proposals = self.e.run_thing(rule)
+        proposals = self.e(rule)
         dr = proposals[0]
         dr[1]._action(dr[0], self.e)
         self.assertTrue(self.e.query("a.b.e?"))
@@ -103,7 +103,7 @@ class Engine_Logic_Tests(unittest.TestCase):
         self.e.load_file(self.path("string_assert_test.trie"))
         self.assertTrue(self.e.query('~a.b."an asserted string"?'))
         rule = self.e.query('a.string.$rule?')[0]['rule']
-        proposals = self.e.run_thing(rule)
+        proposals = self.e(rule)
         dr = proposals[0]
         dr[1]._action(dr[0], self.e)
         self.assertTrue(self.e.query('a.b."an asserted string"?'))
@@ -112,7 +112,7 @@ class Engine_Logic_Tests(unittest.TestCase):
         self.e.load_file(self.path("string_retract_test.trie"))
         self.assertTrue(self.e.query('a.b."a test string"?'))
         rule = self.e.query('a.string.$rule?')[0]['rule']
-        proposals = self.e.run_thing(rule)
+        proposals = self.e(rule)
         dr = proposals[0]
         dr[1]._action(dr[0], self.e)
         self.assertTrue(self.e.query('~a.b."a test string"?'))
@@ -121,7 +121,7 @@ class Engine_Logic_Tests(unittest.TestCase):
         self.e.load_file(self.path("transform_test.trie"))
         rule = self.e.query('test.$rule?')[0]['rule']
         self.assertFalse(self.e.query('result.blAH?'))
-        proposals = self.e.run_thing(rule)
+        proposals = self.e(rule)
         dr = proposals[0]
         dr[1]._action(dr[0], self.e)
         self.assertTrue(self.e.query('result.blAH?'))
@@ -130,7 +130,7 @@ class Engine_Logic_Tests(unittest.TestCase):
         self.e.load_file(self.path("transform_selection_single.trie"))
         self.assertTrue('a.b!a?')
         rule = self.e.query('test.$rule?')[0]['rule']
-        proposals = self.e.run_thing(rule)
+        proposals = self.e(rule)
         dr = proposals[0]
         dr[1]._action(dr[0], self.e)
         self.assertTrue(self.e.query('output."b : a"?'))
@@ -140,7 +140,7 @@ class Engine_Logic_Tests(unittest.TestCase):
         self.assertTrue(self.e.query('a.b!a?, a.c!b1, a.d!c?'))
 
         rule = self.e.query('test.$rule?')[0]['rule']
-        proposals = self.e.run_thing(rule)
+        proposals = self.e(rule)
         for dr in proposals:
             dr[1]._action(dr[0], self.e)
 
@@ -157,7 +157,7 @@ class Engine_Logic_Tests(unittest.TestCase):
         results = []
         for ctx in ctxs:
             rule = ctx['x']
-            results += self.e.run_thing(rule)
+            results += self.e(rule)
 
         self.assertEqual(len(results), len(ctxs))
 
