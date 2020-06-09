@@ -1,7 +1,9 @@
 from py_rule.abstract.module_interface import ModuleInterface
+from py_rule.abstract.printing import util as PrU
 from .type_checker import TypeChecker
 from .parsing import TypeDefParser as TDP
 from .parsing import TypeParser as TP
+from . import util as TU
 
 
 class TypingSpec(ModuleInterface):
@@ -21,6 +23,7 @@ class TypingSpec(ModuleInterface):
 
     def __init__(self):
         super().__init__()
+        PrU.register_constraint(TU.TYPE_DEC_S)
 
     def parse_string(self, s):
         return TP.parseString(s)
@@ -37,5 +40,4 @@ class TypingSpec(ModuleInterface):
     def query_parsers(self, pt):
         TDP.HOTLOAD_BASIC_SEN << pt.query("sentence.basic")
         TDP.HOTLOAD_PARAM_SEN << pt.query("sentence.param")
-
         TP.HOTLOAD_BASIC_SEN << pt.query("sentence.basic")
