@@ -4,7 +4,8 @@ import logging as root_logger
 
 from py_rule.abstract.node import PyRuleNode
 from py_rule.abstract.value import PyRuleValue
-from py_rule.util import AT_BIND_S, FALLBACK_S, AT_BIND_S, BIND_S
+from py_rule.abstract.query import QueryComponent
+from py_rule.util import AT_BIND_S, FALLBACK_S, AT_BIND_S, BIND_S, CONSTRAINT_S
 
 logging = root_logger.getLogger(__name__)
 
@@ -36,8 +37,6 @@ class Contexts:
         return new_base
 
 
-
-
     def __init__(self, start_node=None, bindings=None, engine=None):
         """
         Setup the initial context of no bindings
@@ -62,7 +61,6 @@ class Contexts:
             self._nodes.append(start_node)
 
 
-
     def __len__(self):
         return len(self._bind_groups)
 
@@ -84,7 +82,6 @@ class Contexts:
 
     def __bool__(self):
         return bool(self._bind_groups)
-
 
 
     def append(self, *data):
@@ -182,7 +179,7 @@ class Contexts:
         if word.is_var:
             return False, False
 
-        alphas, betas, regexs = word.split_tests()
+        alphas, betas, regexs = split_tests(word)
         # TODO: test alphas and betas
         new_node, new_data = (None, None)
         logging.info("Not Bind: {}|{}".format(str(word), node._children.keys()))
@@ -202,7 +199,7 @@ class Contexts:
         logging.info("Running existing bind match: {}{}".format(repr(node), repr(word)))
         assert(isinstance(word, PyRuleValue))
         assert(isinstance(node, PyRuleNode))
-        alphas, betas, regexs = word.split_tests()
+        alphas, betas, regexs = split_tests(word)
         new_node, new_data = (None, None)
         if word.name not in data:
             return False, False
@@ -226,7 +223,7 @@ class Contexts:
                                                            repr(word)))
         assert(isinstance(word, PyRuleValue))
         assert(isinstance(node, PyRuleNode))
-        alphas, betas, regexs = word.split_tests()
+        alphas, betas, regexs = split_tests(word)
 
         output = []
         potentials = node._children.values()
@@ -244,3 +241,24 @@ class Contexts:
         self.append(*successes)
 
         return True, not bool(successes)
+
+
+
+def split_tests(word):
+    """ Split tests into (alphas, betas, regexs) """
+    if CONSTRAINT_S not in word._data:
+        return ([], [], [])
+
+    comps = [x for x in word._data[CONSTRAINT_S] if isinstance(x, QueryComponent)]
+    alphas = []
+    betas = []
+    regexs = []
+    for c in comps:
+        if c.is_regex_test:
+            regexs.append(c)
+        elif c.is_alpha_test:
+            alphas.append(c)
+        else:
+            betas.append(c)
+
+    return (alphas, betas, regexs)
