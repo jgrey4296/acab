@@ -7,25 +7,36 @@ from collections import defaultdict
 #Setup
 # TODO register additional constraints
 def register_modal(a_dict, reset=False):
+    global MODAL_LOOKUPS
     if reset:
         MODAL_LOOKUPS.clear()
     assert(not any([k in MODAL_LOOKUPS for k in a_dict.keys()]))
     MODAL_LOOKUPS.update(a_dict)
 
 def register_statement(a_dict, reset=False):
+    global STATEMENT_LOOKUPS
     if reset:
         STATEMENT_LOOKUPS.clear()
     assert(not any([k in STATEMENT_LOOKUPS for k in a_dict.keys()])), a_dict
     STATEMENT_LOOKUPS.update(a_dict)
 
 def register_primitive(a_dict, reset=False):
+    global TYPE_WRAPS
     if reset:
         TYPE_WRAPS.clear()
     assert(not any([k in TYPE_WRAPS for k in a_dict.keys()])), a_dict
     assert(all([callable(x) for x in a_dict.values()]))
     TYPE_WRAPS.update(a_dict)
 
+def register_constraint(*constraints, reset=False):
+    global REGISTERED_CONSTRAINTS
+    if reset:
+        REGISTERED_CONSTRAINTS = set([util.CONSTRAINTS_S])
+
+    REGISTERED_CONSTRAINTS.update(constraints)
+
 def register_class(cls, func):
+    global REGISTERED_PPRINTS
     assert(isinstance(cls, type))
     assert(callable(func))
     assert(cls not in REGISTERED_PPRINTS)
@@ -86,9 +97,8 @@ def print_value(value, opts):
     elif value.is_var:
         val = _wrap_var(val)
 
-    # Wrap constraints
-    if util.CONSTRAINT_S in value._data:
-        val = _wrap_constraints(val, value._data[util.CONSTRAINT_S])
+    # Wrap constraints (TODO *and* type assigments)
+    val = _wrap_constraints(val, value._data)
 
     # Wrap modal Operator
     print_modal = opts['modal']
@@ -111,6 +121,7 @@ def print_sequence(seq, opts):
     if len(seq) > 1:
         words = [print_value(x, opts) for x in seq.words[:-1]]
 
+    # TODO: convert opts to a class, make it use context entry and exit
     opts['modal'] = False
     last_word = [seq.words[-1].pprint(opts)]
     opts['modal'] = modal_backup
@@ -237,11 +248,23 @@ def _wrap_at_var(value):
     assert(isinstance(value, str))
     return util.AT_VAR_SYMBOL_S + value
 
-def _wrap_constraints(value, constraints):
+def _wrap_constraints(value, data):
     assert(isinstance(value, str))
-    assert(isinstance(constraints, list))
-    cons_strs = ", ".join([x.pprint() for x in constraints])
-    return value + "({})".format(cons_strs)
+    assert(isinstance(data, dict))
+
+    constraints = []
+    for x in REGISTERED_CONSTRAINTS:
+        if x in data:
+            if isinstance(data[x], list):
+                constraints += data[x]
+            else:
+                constraints.append(data[x])
+
+    result = value
+    if bool(constraints):
+        cons_strs = ", ".join([x.pprint() for x in constraints])
+        result += "({})".format(cons_str)
+    return result
 
 def _wrap_modal_operator(value, op):
     assert(isinstance(value, str))
@@ -300,11 +323,13 @@ def _wrap_var_list(val, the_vars, newline=False):
     return "{}{}\t | {} |\n".format(val, head, ", ".join([_wrap_var(x.name) for x in the_vars]))
 
 
-
 MODAL_LOOKUPS = {}
 STATEMENT_LOOKUPS = {}
 REGISTERED_PPRINTS = {float : _wrap_float,
                       int   : _wrap_int}
 
+REGISTERED_CONSTRAINTS = set([util.CONSTRAINT_S])
+
 TYPE_WRAPS = {util.REGEX_S  : _wrap_regex,
               util.STRING_S : _wrap_str}
+
