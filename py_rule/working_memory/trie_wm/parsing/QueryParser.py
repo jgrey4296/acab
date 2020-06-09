@@ -16,11 +16,11 @@ logging = root_logger.getLogger(__name__)
 
 def build_constraint_list(toks):
     """ Build a constraint list """
-    return (WMU.CONSTRAINT_S, toks[:])
+    return (WMU.CONSTRAINT_S, [x[1] for x in toks[:]])
 
 def build_query_component(toks):
     """ Build a comparison """
-    return QueryComponent(toks[WMU.OPERATOR_S], param=toks[WMU.VALUE_S])
+    return (WMU.CONSTRAINT_S, QueryComponent(toks[WMU.OPERATOR_S], param=toks[WMU.VALUE_S]))
 
 def build_clause(toks):
     # detect negation and annotate the clause with it
