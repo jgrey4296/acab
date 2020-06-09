@@ -141,4 +141,4 @@ class Engine:
         All statements are output as leaves,
         and all paths with non-leaf statements convert to simple formats
         """
-        raise NotImplementedError()
+        return self._working_memory.to_sentences()

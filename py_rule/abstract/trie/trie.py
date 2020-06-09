@@ -101,11 +101,16 @@ class Trie:
         return nodes
 
     def print_trie(self, join_str=None):
-        output = []
-        queue = [([], x) for x in self._root]
         def_op = PrU.default_opts()
         if join_str is not None:
             def_op['join'] = join_str
+
+        output = self.to_sentences()
+        return "\n".join(sorted([x.pprint(def_op) for x in output]))
+
+    def to_sentences(self):
+        output = []
+        queue = [([], x) for x in self._root]
 
         while bool(queue):
             curr_path, current_node = queue.pop(0)
@@ -113,12 +118,12 @@ class Trie:
             if not bool(current_node) or isinstance(current_node.value, PyRuleStatement):
                 # if leaf or statement
                 as_sentence = Sentence(total_path)
-                output.append(as_sentence.pprint(def_op))
+                output.append(as_sentence)
 
             if bool(current_node):
                 queue += [(total_path, x) for x in current_node]
 
-        return "\n".join(sorted(output))
+        return output
 
     def match_as_pattern(self, possible_matches, match_func):
         """ Given a trie/node of possible matches, return only actual matches,

@@ -247,3 +247,7 @@ class TrieWM(WorkingMemory):
 
             # test each active alternative
             contexts.breadth_apply(word)
+
+
+    def to_sentences(self):
+        return self._internal_trie.to_sentences()

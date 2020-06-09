@@ -87,6 +87,9 @@ class WorkingMemory:
         return False
 
 
+    def to_sentences(self):
+        return NotImplementedError()
+
     # Methods to implement:
     def add(self, data):
         raise NotImplementedError()
