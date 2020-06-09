@@ -44,7 +44,8 @@ class NumberQueryTests(unittest.TestCase):
 
     def test_basic_comp_internal(self):
         result = QP.QUERY_OP_Internal.parseString('operator.query.lt 20')[0]
-        self.assertIsInstance(result, QueryComponent)
+        self.assertIsInstance(result, tuple)
+        self.assertIsInstance(result[1], QueryComponent)
 
 
     def test_basic_comparison(self):

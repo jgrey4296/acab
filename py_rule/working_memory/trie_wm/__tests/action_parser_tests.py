@@ -56,6 +56,11 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
         definition = AP.action_definition.parseString(test_str)
         self.assertEqual(definition[0][-1].name, "test")
 
+    def test_parse_action_no_params(self):
+        test_str = "operator.action.add()"
+        result = AP.parseString(test_str)
+        self.assertIsInstance(result, action.Action)
+
 
 if __name__ == "__main__":
       LOGLEVEL = logging.INFO

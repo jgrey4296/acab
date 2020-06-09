@@ -40,6 +40,10 @@ class TypeDef_ParserTests(unittest.TestCase):
         self.assertIsNotNone(TD.TYPE_CLASS_DEF)
         self.assertIsNotNone(TD.OP_DEF)
 
+    def test_basic_non_structure_typedef(self):
+        result = TD.parseString("blah.x: (::σ) end")[0]
+        self.assertIsInstance(result[-1], TypeDefinition)
+
     def test_basic_typedef(self):
         result = TD.parseString("blah.x: (::σ)\na.b.c\n\nend")[0]
         self.assertIsInstance(result[-1], TypeDefinition)

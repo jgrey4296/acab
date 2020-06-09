@@ -33,10 +33,12 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
 
     def test_basic_regex_comparison(self):
         result = QP.QUERY_OP_Internal.parseString('operator.query.regmatch /blah/')[0]
-        self.assertIsInstance(result, QueryComponent)
-        self.assertEqual(result.op, 'operator.query.regmatch')
-        self.assertEqual(result._params[0]._value, 'blah')
-        self.assertEqual(result._params[0]._data[util.VALUE_TYPE_S], util.REGEX_S)
+        self.assertIsInstance(result, tuple)
+        qc = result[1]
+        self.assertIsInstance(qc, QueryComponent)
+        self.assertEqual(qc.op, 'operator.query.regmatch')
+        self.assertEqual(qc._params[0]._value, 'blah')
+        self.assertEqual(qc._params[0]._data[util.VALUE_TYPE_S], util.REGEX_S)
 
     def test_basic_clause(self):
         result = QP.clause.parseString('a.b.c?')[0]
