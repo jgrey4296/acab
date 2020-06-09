@@ -14,8 +14,12 @@ HOTLOAD_OPERATORS = pp.Forward()
 
 
 def build_component(toks):
+    action_vals = []
+    if WMU.ACTION_VAL_S in toks:
+        action_vals = toks[WMU.ACTION_VAL_S][:]
+
     return action.ActionComponent(toks[WMU.OPERATOR_S],
-                                   toks[WMU.ACTION_VAL_S][:])
+                                  action_vals)
 
 def build_action(toks):
     # TODO remove hardcoded default
@@ -31,7 +35,7 @@ vals = pp.delimitedList(pp.Or([VALBIND, PARAM_SEN]), delim=PU.COMMA)
 
 # action: [op](values)
 action_component = PU.N(WMU.OPERATOR_S, HOTLOAD_OPERATORS) \
-    + PU.OPAR + PU.N(WMU.ACTION_VAL_S, vals) + PU.CPAR
+    + PU.OPAR + PU.op(PU.N(WMU.ACTION_VAL_S, vals)) + PU.CPAR
 
 # Sentences are asserted by default
 # TODO: block param_sen from beginning with "end"

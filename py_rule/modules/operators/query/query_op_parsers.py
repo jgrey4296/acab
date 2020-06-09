@@ -11,7 +11,7 @@ def construct_tag_query(toks):
     assert(util.TAG_S in toks)
     tags = [x[1] for x in toks[util.TAG_S]]
 
-    return QueryComponent(QO.HasTag().op_str, param=tags)
+    return (util.CONSTRAINT_S, QueryComponent(QO.HasTag().op_str, param=tags))
 
 
 tagList = PU.N(util.TAG_S, pp.delimitedList(PU.tagName, delim=","))
