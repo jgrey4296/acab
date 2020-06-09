@@ -34,6 +34,16 @@ def make_sum_def(toks):
     return (type_def.type, type_def)
 
 
+
+# The simplest type, has no body. useful for defining strings and other
+# primitives
+SIMPLE_BODY = pp.empty
+SIMPLE_BODY.setParseAction(make_record_def)
+
+SIMPLE_DEF = PU.STATEMENT_CONSTRUCTOR(PU.STRUCT_HEAD,
+                                      HOTLOAD_BASIC_SEN,
+                                      SIMPLE_BODY)
+
 # Record Type definition:
 # a.test.type: (::σ)  a.value.$x(::num) end
 RECORD_DEF_BODY = PARAM_SEN_PLURAL
@@ -45,7 +55,7 @@ RECORD_TYPE = PU.STATEMENT_CONSTRUCTOR(PU.STRUCT_HEAD,
 
 # Sum Type definition
 # ie: first subwords are the subtypes. subtypes are automatic records
-SUM_DEF_BODY = pp.delimitedList(RECORD_TYPE, delim=PU.emptyLine)
+SUM_DEF_BODY = pp.delimitedList(pp.Or([RECORD_TYPE, SIMPLE_DEF]), delim=PU.emptyLine)
 SUM_DEF_BODY.setParseAction(make_sum_def)
 
 SUM_TYPE = PU.STATEMENT_CONSTRUCTOR(PU.SUM_HEAD,
@@ -72,7 +82,7 @@ TYPE_CLASS_DEF = PU.STATEMENT_CONSTRUCTOR(PU.TYPE_CLASS_HEAD,
                                           TYPE_CLASS_BODY + PU.emptyLine)
 
 
-COMBINED_DEFS = pp.Or([SUM_TYPE, RECORD_TYPE, OP_DEF])
+COMBINED_DEFS = pp.Or([SIMPLE_DEF, SUM_TYPE, RECORD_TYPE, OP_DEF])
 
 # NAMING
 RECORD_DEF_BODY.setName("TypeDefinitionBody")
