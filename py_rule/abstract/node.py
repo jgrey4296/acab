@@ -117,37 +117,6 @@ class PyRuleNode:
         self._children = {}
 
 
-    def search_regex(self, regex):
-        """ Test a regex on the Nodes value """
-        result = search(regex._params[0].value, self.name)
-        if result is not None:
-            return result.groupdict()
-        else:
-            return None
-
-    def test_regexs_for_matching(self, regexs, data):
-        """ Test a number of regexs on this Node
-        Return a Tuple of Nones if failure, (dict, node) if success
-        """
-        invalidated = False
-        for regex in regexs:
-            result = self.search_regex(regex)
-            if result is None:
-                invalidated = True
-                break
-
-            for k, v in result.items():
-                if k not in data:
-                    data[k] = v
-                elif data[k] != v:
-                    invalidated = True
-                    break
-
-        if invalidated:
-            return (None, None)
-        else:
-            return (data, self)
-
 
     def set_parent(self, parent):
         assert(isinstance(parent, PyRuleNode))
