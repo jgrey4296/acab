@@ -5,11 +5,31 @@ import json
 import logging as root_logger
 import socket
 
+from py_rule.abstract.action import ActionOp
 from py_rule.abstract.agenda import Agenda
 
 from . import util
 
-class UnityServer(Agenda):
+class IOSend(ActionOp):
+
+    def __call__(self, *params, data=None, engine=None):
+        # Get unity server from engine context
+
+        # create message
+
+        # send message
+
+        return
+
+
+class IOListen(ActionOp):
+
+    def __call__(self, *params, data=None, engine=None):
+        # Listen then assert responses
+        return
+
+
+class UnityServer(PyRuleValue):
     """ A Server to connect to unity """
 
     #The types of messages supported
@@ -57,6 +77,7 @@ class UnityServer(Agenda):
         payload_length = len(payload)
         header = self.NET_HEADER(UnityServer.MESSAGE_T.ACTION, payload_length, data=payload)
         return header
+
 
     #Methods:
     def setup(self):
@@ -190,4 +211,8 @@ class UnityServer(Agenda):
         Fire the agenda: Send the proposals out,
         receive information in, and insert it into the engine
         """
-        raise NotImplementedError()
+        # Select all proposals that are IOSends
+        # Send them out
+        # Get messages
+        # return them as actions
+        return
