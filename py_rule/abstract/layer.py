@@ -41,10 +41,15 @@ class Layer(Rule):
         # rule returns [(data,self)]
         results = super(Layer, self).__call__(ctxs=ctxs, engine=engine)
 
-        assert(len(results) == 1)
+        # TODO: reconsider this
+        logging.warning("Layer results: {}".format(len(results) < 1))
 
         # Run layer actions
-        action_results = self._action(ctxs=[results[0][0]], engine=engine)
+        contexts = []
+        if bool(results):
+            contexts.append(results[0][0])
+
+        action_results = self._action(ctxs=contexts, engine=engine)
 
         return action_results
 
