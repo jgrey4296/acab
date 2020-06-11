@@ -3,11 +3,10 @@
 A Transform operator for within a rule:
 
 match $x            -> $y:
-	value           -> value2
-	$var            -> $var2
-	@var.sub.query? -> subvar
-	$x(::sumtype)   -> ...
-	$x(>2)?         -> ...
+	$x(== 20)?      -> value2
+	$x(== $y)?      -> $var2
+	@x.sub.query?   -> $subvar
+	$x(::sumtype)?  -> ...
 	_               -> ...
 end
 
@@ -15,7 +14,19 @@ end
 """
 
 import pyparsing as pp
+
 import py_rule.abstract.parsing.util as PU
+from py_rule.abstract.transform import TransformComponent
+
+def build_transform_component(toks):
+    component = TransformComponent
+
+    # Get head, set rebind
+    # get body -> [(pattern, $val/transform)]
+
+
+    return component
+
 
 HOTLOAD_VALBIND = pp.Forward()
 HOTLOAD_VAR = pp.Forward()
@@ -27,13 +38,13 @@ MATCH_KW = PU.s(pp.Keyword("match"))
 # Parser
 head = MATCH_KW + HOTLOAD_VAR + PU.ARROW + HOTLOAD_VAR + PU.COLON + PU.s(pp.lineEnd)
 
-pattern = pp.empty()
+pattern = HOTLOAD_QUERY
 match_line = pattern + PU.ARROW + HOTLOAD_VALBIND
 
 pattern_match = head + pp.delimitedList(match_line, delim=pp.lineEnd) + PU.END
 
 # Actions
-
+pattern_match.setParseAction(build_transform_component)
 
 parse_point = pattern_match
 
