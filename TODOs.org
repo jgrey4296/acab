@@ -1,9 +1,24 @@
 * Todos file
+  :LOGBOOK:
+  CLOCK: [2020-05-15 Fri 19:52]--[2020-05-15 Fri 20:17] =>  0:25
+  CLOCK: [2020-05-14 Thu 19:24]--[2020-05-14 Thu 19:49] =>  0:25
+  CLOCK: [2020-05-14 Thu 18:21]--[2020-05-14 Thu 18:46] =>  0:25
+  CLOCK: [2020-05-12 Tue 20:19]--[2020-05-12 Tue 20:44] =>  0:25
+  CLOCK: [2020-05-12 Tue 19:31]--[2020-05-12 Tue 19:57] =>  0:26
+  CLOCK: [2020-05-12 Tue 18:29]--[2020-05-12 Tue 18:54] =>  0:25
+  CLOCK: [2020-05-12 Tue 17:53]--[2020-05-12 Tue 18:18] =>  0:25
+  CLOCK: [2020-05-12 Tue 17:18]--[2020-05-12 Tue 17:43] =>  0:25
+  CLOCK: [2020-05-11 Mon 17:27]--[2020-05-11 Mon 18:10] =>  0:43
+  CLOCK: [2020-05-11 Mon 16:51]--[2020-05-11 Mon 17:16] =>  0:25
+  CLOCK: [2020-05-11 Mon 15:59]--[2020-05-11 Mon 16:24] =>  0:25
+  CLOCK: [2020-05-11 Mon 15:16]--[2020-05-11 Mon 15:41] =>  0:25
+  :END:
 ** Functionality
 *** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/parsing/TypeDefParser.py::53][add sum types]]
    <2020-04-23 Thu>
 
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/structures/agenda/AgendaParser.py::22][add query sections to agendas, layers, pipelines etc]]
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/modules/structures/agenda/AgendaParser.py::22][add query sections to agendas, layers, pipelines etc]]
+    CLOSED: [2020-05-07 Thu 15:18]
    <2020-04-12 Sun>
   
    selection.amount: $x(::Number)
