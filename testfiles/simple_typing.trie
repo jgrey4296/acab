@@ -1,0 +1,39 @@
+types.string: (::σ) end
+types.other: (::σ) end
+
+a.b.c(::types.string)
+a.b.d(::types.other)
+
+a.string."test string {x}"
+
+a.agenda.test: (::Agenda)
+    | $proposals |
+
+    operator.action.agenda_return($proposals)
+end
+
+a.rule.test: (::ρ)
+    a.b.$x(::types.string)?
+    a.string.$y?
+
+    \operator.transform.n_ary.format $y -> $z
+
+    a.b.q
+    operator.action.print("Testing")
+    operator.action.print($z)
+end
+
+a.layer.test: (::Layer)
+    a.agenda.$agenda?
+    a.rule.$rules(ctx.collapse)?
+
+    \operator.transform.n_ary.run_rules $rules -> $props
+    \operator.transform.n_ary.run_agenda $agenda $props -> $results
+
+    operator.action.layer_perform($results)
+end
+
+
+a.typing.layer: (::Layer)
+    operator.action.typecheck()
+end
