@@ -66,10 +66,13 @@ class ActionComponent(PO.ProductionComponent):
     def to_local_sentences(self):
         """ Return the action in canonical form """
         # eg : assert a.test  = assert -> a.test -> nil
-        # TODO : params are sentences themselves
+        # TODO possibly create new unique bindings for head sentence -> params
+        # ie: Head: +.$x22532(::sentence).$x26215(::sentence)
+        # and Params: a.b.c.$x(::aval), a.b.$d(::aval)
+        # and bind?
         head = PyRuleValue(self.op, {util.OPERATOR_S : self})
         sen = Sentence([head] + self._params[:])
-        return [sen]
+        return [sen] + self._params[:]
 
 
 
