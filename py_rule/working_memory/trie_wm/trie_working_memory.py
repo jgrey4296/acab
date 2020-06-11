@@ -198,15 +198,7 @@ class TrieWM(WorkingMemory):
 
     def _test_clauses(self, contexts, clauses, is_negative=False):
         for clause in clauses:
-            # Return to root unless clause has a head @ binding
-            binding_val = None
-            if clause[0].is_at_var:
-                binding_val = clause[0].value
-
-            contexts.force_node_position(target=self._internal_trie._root,
-                                         binding=binding_val)
-
-            self._match_clause(clause, contexts)
+            self._internal_trie.contextual_query(clause, contexts)
 
             if is_negative:
                 contexts.invert()
@@ -225,28 +217,6 @@ class TrieWM(WorkingMemory):
                 logging.debug("A {} clause has no successful tests".format(clause_type))
                 break
 
-
-    def _match_clause(self, clause, contexts):
-        """ Test a single clause, annotating contexts upon success and failure """
-        assert(isinstance(clause, Sentence))
-        logging.debug("Testing Clause: {}".format(repr(clause)))
-        # exit early if empty:
-        if not contexts:
-            return
-
-        # Go down from the root by query element:
-        # For each word of the clause sentence, eg: .a in .a.b.word
-        for word in clause:
-            logging.info("Testing node: {}".format(repr(word)))
-            logging.info("Current Contexts: {}".format(len(contexts)))
-            if not bool(contexts):
-                break
-
-            if word.is_at_var:
-                continue
-
-            # test each active alternative
-            contexts.breadth_apply(word)
 
 
     def to_sentences(self):
