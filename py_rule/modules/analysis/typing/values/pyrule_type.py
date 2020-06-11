@@ -1,6 +1,7 @@
 from py_rule.abstract.value import PyRuleValue, PyRuleStatement
 from py_rule.abstract.printing import util as PrU
 
+# TODO: make a QueryOp
 class Type(PyRuleValue):
     """ The unrestricted type """
 

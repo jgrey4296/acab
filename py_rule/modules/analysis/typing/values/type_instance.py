@@ -67,4 +67,7 @@ class TypeInstance(Type):
         return TypeInstance(self.path, params=new_args)
 
 
+    def pprint(self, opts=None):
+        return "::{}".format(self._value.pprint(opts))
+
 # TODO Make a type instance query op

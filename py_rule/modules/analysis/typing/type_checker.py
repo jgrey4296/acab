@@ -90,17 +90,21 @@ class TypeChecker(ActionOp):
 
     def __call__(self, data=None, engine=None):
         """ Pass in data to type check """
-
-        # TODO: sort statements into assertions/rules to check/ types to ignore
+        breakpoint()
+        # Gets all leaf sentences and statements
         sentences = engine.to_sentences()
 
+        local_contexts_to_check = []
         for sen in sentences:
             if isinstance(sen[-1], TypeDefinition):
                 self.add_definition(sen)
             elif isinstance(sen[-1], PyRuleStatement):
-                self.add_statement(sen)
+                local_contexts_to_check.append(sen)
             else:
                 self.add_assertion(sen)
+
+        for statement in local_contexts_to_check:
+            self.add_statement(statement)
 
         self.validate()
 

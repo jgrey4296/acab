@@ -105,3 +105,12 @@ class TypeDefinition(TypeStatement):
                 type_instance = types.pop()
                 for word in instances:
                     word._data[TYPE_DEC_S] = type_instance
+
+
+    @property
+    def pprint_has_content(self):
+        head = any([bool(x) for x in [self._vars,
+                                      self._tags]])
+        body = bool(self.structure)
+
+        return head, body
