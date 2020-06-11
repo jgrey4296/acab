@@ -52,7 +52,6 @@ class Pipeline(Rule):
         return self._layer_dict[i]
 
     def __call__(self, engine):
-        # TODO
         """ Run this pipeline on the given engine for a tick """
         results = super(Pipeline, self).__call__(engine)
 

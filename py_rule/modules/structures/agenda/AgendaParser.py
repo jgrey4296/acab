@@ -14,22 +14,21 @@ primary.agenda: (::DefaultAgenda)
   # Query part:
   @proposals.data.
   some.amount!$x(::Number)?
-
-  # Assignment
   select($proposals, $x) -> $y
-  AgendaLogic($y)
+
+  return($y)
 
 
 secondary.agenda(::RankingAgenda):
   | $proposals |
 
   # Use an already bound var from the rules
-  dfs($proposals, (::Number)) -> $x
-
+  dfs($proposals, $_(::Number)?) -> $x
   curve.sine($x) -> $z
-
   rank($proposals, $z) -> $q
-  return($q)
+  select($q, 5) -> $h
+
+  return($h)
 """
 import logging as root_logger
 import pyparsing as pp

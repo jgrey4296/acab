@@ -34,7 +34,6 @@ class Agenda(Rule):
         # Whether the agenda expands or constrains proposals
         self._relation_type = (None, None)
 
-        # TODO: verify actions to registered variables
 
     def __call__(self, ctxs=None, engine=None):
         """ Take the proposals, transform them in some way,

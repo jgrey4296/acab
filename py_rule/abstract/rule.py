@@ -14,7 +14,7 @@ from .query import Query
 
 logging = root_logger.getLogger(__name__)
 
-
+# TODO: create subclass that flattens/aggregates contexts
 class Rule(ProductionContainer):
     """ A Rule holds a query (of N Clauses), a set of transforms,
     and a set of actions. It can be tagged with attributes.
@@ -40,17 +40,19 @@ class Rule(ProductionContainer):
         assert(all([isinstance(x, dict) for x in ctxs]))
         assert(all([x.value in y for x in self._vars for y in ctxs]))
         logging.info("Running Rule: {}".format(self._name))
-        extract_ctxs = []
+
+        query_result = []
         if ctxs is not None:
-            extract_ctxs = [x.copy() for x in ctxs]
+            query_result = [x.copy() for x in ctxs]
 
         # Run the query
-        query_result = extract_ctxs[:]
         if self._query is not None:
-            query_result = self._query(ctxs=extract_ctxs, engine=engine)
+            query_result = self._query(ctxs=query_result, engine=engine)
             if not bool(query_result):
                 logging.info("Rule {} Failed".format(self._name))
                 return []
+
+        # TODO: Layer/agenda/pipelines need to collapse the context here?
 
         # Run any transforms
         # This is *not* an unnecessary comprehension

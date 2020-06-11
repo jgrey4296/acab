@@ -263,7 +263,7 @@ def _wrap_constraints(value, data):
     result = value
     if bool(constraints):
         cons_strs = ", ".join([x.pprint() for x in constraints])
-        result += "({})".format(cons_str)
+        result += "({})".format(cons_strs)
     return result
 
 def _wrap_modal_operator(value, op):

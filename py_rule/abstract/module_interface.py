@@ -46,7 +46,7 @@ class ModuleInterface:
         """
         Assert parsers from this module for integration later
         ie: values.number <= number_parser
-        values.$time      <= time_parser
+        values.time      <= time_parser
         operators.set.add <=  set_add_op
         hotloads.value    <= HOTLOAD_VALUES
         """
