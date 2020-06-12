@@ -61,13 +61,13 @@ class QueryComponent(PO.ProductionComponent):
 
     @property
     def is_regex_test(self):
-        """ Return boolean of if test is a regular expression test """
+        """ Return boolean if test is a regular expression test """
         return self.op == "operator.query.regmatch"
 
 
     def to_local_sentences(self, target=None):
         """ Create a comparison as a canonical sentence """
-        # eg: 20(>30) -> > 20 30 -> bool
+        # eg: 20(>30) :  > -> 20 -> 30 -> bool
         head = PyRuleValue(self.op, {OPERATOR_S : self})
         if target is None:
             return Sentence([head] + self._params)

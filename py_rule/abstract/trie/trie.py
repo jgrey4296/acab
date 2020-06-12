@@ -138,6 +138,7 @@ class Trie:
         """ Test a single clause,
         annotating contexts upon success and failure """
         assert(isinstance(clause, Sentence))
+        # TODO initialise contexts if necessary
         logging.debug("Testing Clause: {}".format(repr(clause)))
         # Return to root unless clause has a head @ binding
         binding_val = None
@@ -161,6 +162,8 @@ class Trie:
             # test each active alternative
             self._continue_query(word, contexts)
 
+        # TODO Or collapse context here?
+
     def _continue_query(self, query_word, query_context):
         """ query word, with a sequence of tests,
         in all available bind groups, BFS manner """
@@ -169,8 +172,7 @@ class Trie:
         pairs  = query_context.pairs()
         query_context.clear()
         for (data, last_node) in pairs:
-            test_node(query_word, last_node,
-                      data, query_context)
+            test_node(query_word, last_node, data, query_context)
 
         # TODO Add collapse control here
 
@@ -253,7 +255,6 @@ def test_node(query_word, node, data, context):
         context.append(*to_add)
     else:
         context.fail(data.copy())
-
 
 def match_regexs(node, regexs, data):
     invalidated = False
