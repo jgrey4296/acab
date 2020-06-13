@@ -164,7 +164,7 @@ class PyRuleStatement(PyRuleValue):
     def path(self):
         if self._path is None:
             return None
-        return self._path()
+        return self._path
     @property
     def value(self):
         return self
@@ -183,7 +183,7 @@ class PyRuleStatement(PyRuleValue):
 
     def set_path(self, sen):
         assert(isinstance(sen, PyRuleValue))
-        self._path = ref(sen)
+        self._path = sen.copy()
 
         return self
 
