@@ -262,7 +262,7 @@ def _wrap_constraints(value, data):
 
     result = value
     if bool(constraints):
-        cons_strs = ", ".join([x.pprint() for x in constraints])
+        cons_strs = ", ".join([pprint(x) for x in constraints])
         result += "({})".format(cons_strs)
     return result
 
