@@ -77,18 +77,30 @@ class Contexts:
         return bool(self._bind_groups)
 
 
-    def append(self, *data):
+    def append(self, *data, fail_dict=None):
         """ Add a number of matching possibilities into this set of contexts """
         assert(all([isinstance(x, tuple) for x in data]))
-        for x, y in data:
-            assert(x is not None)
-            self._bind_groups.append(x)
-            self._nodes.append(y)
+        successes = set()
+        if fail_dict is None:
+            for d, n in data:
+                self._bind_groups.append(d)
+                self._nodes.append(n)
+        else:
+            for i,d,n  in data:
+                successes.add(i)
+                self._bind_groups.append(d)
+                self._nodes.append(n)
 
-    def fail(self, item=None):
+            to_fail = set(fail_dict.keys()).difference(successes)
+            self.fail(items=[fail_dict[x] for x in to_fail])
+
+
+    def fail(self, item=None, items=None):
         """ Remove all contexts, as none are suitable """
         if item is not None:
             self._queued_failures.append(item)
+        elif items is not None:
+            self._queued_failures += items
         else:
             self.clear()
 
@@ -135,14 +147,18 @@ class Contexts:
         return zip(self._bind_groups, it.cycle(self._nodes))
 
 
-    def collapse(self, on_var):
+    def collapse(self, on_vars):
         """
         Semantics of collapse:
         n[ctx] -> 1[c:ctx]
         where
         c = a_ctx = { on_var : [x[on_var] for x in ctxs] }
         """
+        assert(isinstance(on_vars, list))
         bind_groups = self._bind_groups
+        node_head = self._nodes[0]
         head = self._bind_groups[0]
-        head[on_var] = [x[on_var] for x in bind_groups]
+        for a_var in on_vars:
+            head[a_var] = [x[a_var] for x in bind_groups]
         self._bind_groups = [head]
+        self._nodes = [node_head]
