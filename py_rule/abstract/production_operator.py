@@ -107,6 +107,8 @@ class ProductionComponent(PyRuleValue):
             elif isinstance(x, PyRuleValue) and x.is_var:
                 if x.is_at_var:
                     output.append(data[util.AT_BIND_S + x.value])
+                elif isinstance(data[x.value], list):
+                    output.append(data[x.value])
                 else:
                     output.append(data[x.value].value)
             else:
