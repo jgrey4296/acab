@@ -4,6 +4,7 @@ import pyparsing as pp
 
 from py_rule.abstract.query import Query, QueryOp, QueryComponent
 from py_rule.abstract.sentence import Sentence
+from py_rule.abstract.contexts import CTX_OP
 
 from py_rule.working_memory.trie_wm import util as WMU
 from py_rule.abstract.parsing import util as PU
@@ -55,7 +56,10 @@ QUERY_OP_Internal = PU.N(WMU.OPERATOR_S, HOTLOAD_QUERY_OP) \
 # defined earlier to work with named copies
 QUERY_OP_Internal.setParseAction(build_query_component)
 
-query_or_annotation = pp.Or([QUERY_OP_Internal, HOTLOAD_QUERY_ANNOTATIONS])
+COLLAPSE_CONTEXT = PU.COLLAPSE_CONTEXT
+COLLAPSE_CONTEXT.setParseAction(lambda x: (None, CTX_OP.COLLAPSE))
+
+query_or_annotation = pp.Or([QUERY_OP_Internal, COLLAPSE_CONTEXT, HOTLOAD_QUERY_ANNOTATIONS])
 
 constraints = pp.delimitedList(query_or_annotation, delim=PU.COMMA)
 

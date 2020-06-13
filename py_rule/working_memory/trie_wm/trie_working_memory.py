@@ -217,6 +217,7 @@ class TrieWM(WorkingMemory):
                 logging.debug("A {} clause has no successful tests".format(clause_type))
                 break
 
+        return contexts
 
 
     def to_sentences(self):

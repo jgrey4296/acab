@@ -80,6 +80,7 @@ NEGATION_SYMBOL = N(util.NEGATION_S, pp.Literal(util.NEGATION_SYMBOL_S))
 QUERY_SYMBOL    = s(pp.Literal(util.QUERY_SYMBOL_S))
 TAG_SYMBOL      = s(pp.Literal(util.TAG_SYMBOL_S))
 END             = s(pp.Literal(util.END_S))
+COLLAPSE_CONTEXT = s(pp.Literal(util.CTX_COLLAPSE_S))
 
 # Basic Parsers
 NAME        = pp.Word(util.WORD_COMPONENT_S)

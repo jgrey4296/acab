@@ -1,5 +1,6 @@
 """ Contexts: A Container for all partial matches of word query being run """
 import itertools as it
+from enum import Enum
 import logging as root_logger
 
 from py_rule.abstract.value import PyRuleValue
@@ -8,13 +9,7 @@ from py_rule.util import AT_BIND_S, FALLBACK_S, AT_BIND_S, BIND_S, CONSTRAINT_S
 
 logging = root_logger.getLogger(__name__)
 
-# Utility functions:
-class CtxCollapse(ProductionOperator):
-
-    def __call__(self, *params, data=None, engine=None):
-
-        return
-
+CTX_OP = Enum("Context Operations", "COLLAPSE")
 
 class Contexts:
     """ Container of available contexts for word match in the trie
@@ -154,11 +149,12 @@ class Contexts:
         where
         c = a_ctx = { on_var : [x[on_var] for x in ctxs] }
         """
-        assert(isinstance(on_vars, list))
+        assert(isinstance(on_vars, set))
         bind_groups = self._bind_groups
         node_head = self._nodes[0]
         head = self._bind_groups[0]
         for a_var in on_vars:
             head[a_var] = [x[a_var] for x in bind_groups]
+            # TODO collapse at_bind's as well
         self._bind_groups = [head]
         self._nodes = [node_head]

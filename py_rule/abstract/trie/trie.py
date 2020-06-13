@@ -5,6 +5,7 @@ import logging as root_logger
 from weakref import WeakValueDictionary, ref, proxy
 from re import search
 
+from py_rule.abstract.contexts import Contexts, CTX_OP
 from py_rule.error.pyrule_base_exception import PyRuleBaseException
 from py_rule.abstract.query import QueryComponent
 from py_rule.abstract.sentence import Sentence
@@ -134,11 +135,13 @@ class Trie:
                 return None
         return current
 
-    def contextual_query(self, clause, contexts):
+    def contextual_query(self, clause, contexts=None):
         """ Test a single clause,
         annotating contexts upon success and failure """
         assert(isinstance(clause, Sentence))
-        # TODO initialise contexts if necessary
+        if contexts is None:
+            contexts = Contexts()
+
         logging.debug("Testing Clause: {}".format(repr(clause)))
         # Return to root unless clause has a head @ binding
         binding_val = None
@@ -150,7 +153,7 @@ class Trie:
 
         # Go down from the root by query element:
         # For each word of the clause sentence, eg: .a in .a.b.word
-        collapse_on = []
+        collapse_on = set()
         for word in clause:
             logging.info("Testing node: {}".format(repr(word)))
             logging.info("Current Contexts: {}".format(len(contexts)))
@@ -161,20 +164,25 @@ class Trie:
             if word.is_at_var:
                 continue
 
-            # if word has a collapse operator, add to collapse list
-
             # test each active alternative
-            self._continue_query(word, contexts)
+            annotations = self._continue_query(word, contexts)
+
+            if CTX_OP.COLLAPSE in annotations and word.is_var:
+                collapse_on.add(word.name)
+
+            # TODO add in context growth restrictions?
 
         if bool(collapse_on):
             contexts.collapse(collapse_on)
+
+        return contexts
 
     def _continue_query(self, query_word, query_context):
         """ query word, with a sequence of tests,
         in all available bind groups, BFS manner """
         assert(not query_word.is_at_var)
         engine = query_context._engine
-        alphas, betas, regexs, other = split_tests(query_word)
+        alphas, betas, regexs, annotations = split_constraints(query_word)
         data_set = {x : d for x,d in enumerate(query_context.pairs())}
         pairs  = enumerate(query_context.pairs())
         query_context.clear()
@@ -188,7 +196,7 @@ class Trie:
         to_add = [add_var_to_context(i, query_word, d, n) for i,d,n in passing if n is not None]
 
         query_context.append(*to_add, fail_dict=data_set)
-
+        return annotations
 
 
     def match_as_pattern(self, possible_matches, match_func):
@@ -281,13 +289,13 @@ def match_regexs(node, regexs, data, i):
 
     return (i, final_data, node)
 
-def split_tests(word):
+def split_constraints(word):
     """ Split tests into (alphas, betas, regexs) """
     if CONSTRAINT_S not in word._data:
-        return ([], [], [], [])
+        return ([], [], [], set())
 
     comps = [x for x in word._data[CONSTRAINT_S] if isinstance(x, QueryComponent)]
-    others = [x for x in word._data[CONSTRAINT_S] if not isinstance(x, QueryComponent)]
+    others = set([x for x in word._data[CONSTRAINT_S] if not isinstance(x, QueryComponent)])
     alphas = []
     betas = []
     regexs = []
