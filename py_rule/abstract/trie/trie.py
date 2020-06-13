@@ -150,31 +150,46 @@ class Trie:
 
         # Go down from the root by query element:
         # For each word of the clause sentence, eg: .a in .a.b.word
+        collapse_on = []
         for word in clause:
             logging.info("Testing node: {}".format(repr(word)))
             logging.info("Current Contexts: {}".format(len(contexts)))
+
             if not bool(contexts):
                 break
 
             if word.is_at_var:
                 continue
 
+            # if word has a collapse operator, add to collapse list
+
             # test each active alternative
             self._continue_query(word, contexts)
 
-        # TODO Or collapse context here?
+        if bool(collapse_on):
+            contexts.collapse(collapse_on)
 
     def _continue_query(self, query_word, query_context):
         """ query word, with a sequence of tests,
         in all available bind groups, BFS manner """
         assert(not query_word.is_at_var)
-
-        pairs  = query_context.pairs()
+        engine = query_context._engine
+        alphas, betas, regexs, other = split_tests(query_word)
+        data_set = {x : d for x,d in enumerate(query_context.pairs())}
+        pairs  = enumerate(query_context.pairs())
         query_context.clear()
-        for (data, last_node) in pairs:
-            test_node(query_word, last_node, data, query_context)
 
-        # TODO Add collapse control here
+        potentials = [(i, d[0], passing) for i,d in pairs for passing in retrieve_potentials(query_word, d)]
+        # Apply Tests
+        passing = [match_regexs(n, regexs, d, i) for i,d,n in potentials
+                   if test_alphas(n, alphas, d, engine=engine)
+                   and test_betas(n, betas, d, engine=engine)]
+
+        to_add = [add_var_to_context(i, query_word, d, n) for i,d,n in passing if n is not None]
+
+        query_context.append(*to_add, fail_dict=data_set)
+
+
 
     def match_as_pattern(self, possible_matches, match_func):
         """ Given a trie/node of possible matches, return only actual matches,
@@ -212,14 +227,9 @@ class Trie:
 
 ####################
 # Utilities
-def test_node(query_word, node, data, context):
-
-    assert(isinstance(query_word, PyRuleValue))
-    assert(isinstance(node, PyRuleNode))
-
-    alphas, betas, regexs = split_tests(query_word)
-    successes = []
+def retrieve_potentials(query_word, pair):
     potentials = []
+    data, node = pair
     # Handle query on var
     if query_word.is_var and query_word.name not in data:
         potentials = node._children.values()
@@ -228,35 +238,25 @@ def test_node(query_word, node, data, context):
         value = data[query_word.name]
         if value in node:
             potentials.append(node.get_child(value))
+
     elif query_word in node:
         potentials.append(node.get_child(query_word))
 
-    # Apply Tests
-    passing = [x for x in potentials if test_alphas(x, alphas, data, engine=context._engine)
-               and test_betas(x, betas, data, engine=context._engine)]
 
-    regex_passing = [match_regexs(x, regexs, data) for x in passing]
+    return potentials
 
-    # Context growth
-    for regex_binds, passing_node  in regex_passing:
-        if any([x is None for x in (regex_binds, passing_node)]):
-            continue
+def add_var_to_context(i, query_word, new_data, passing_node):
+    assert(isinstance(query_word, PyRuleValue))
+    assert(isinstance(passing_node, PyRuleNode))
 
-        new_data = data.copy()
-        new_data.update(regex_binds)
-        if query_word.is_var:
-            new_data[query_word.name] = passing_node.value
-            new_data[AT_BIND_S + query_word.name] =  passing_node
-        successes.append((new_data, passing_node))
+    if query_word.is_var:
+        new_data[query_word.name] = passing_node.value
+        new_data[AT_BIND_S + query_word.name] =  passing_node
 
-    # If successful, append to context
-    to_add = [x for x in successes if x[0] is not None]
-    if bool(to_add):
-        context.append(*to_add)
-    else:
-        context.fail(data.copy())
+    return (i, new_data, passing_node)
 
-def match_regexs(node, regexs, data):
+
+def match_regexs(node, regexs, data, i):
     invalidated = False
     new_data = {}
     for regex in regexs:
@@ -273,17 +273,21 @@ def match_regexs(node, regexs, data):
                 break
 
     if invalidated:
-        return (None, None)
+        node = None
+        final_data = None
     else:
-        return (new_data, node)
+        final_data = data.copy()
+        final_data.update(new_data)
 
+    return (i, final_data, node)
 
 def split_tests(word):
     """ Split tests into (alphas, betas, regexs) """
     if CONSTRAINT_S not in word._data:
-        return ([], [], [])
+        return ([], [], [], [])
 
     comps = [x for x in word._data[CONSTRAINT_S] if isinstance(x, QueryComponent)]
+    others = [x for x in word._data[CONSTRAINT_S] if not isinstance(x, QueryComponent)]
     alphas = []
     betas = []
     regexs = []
@@ -295,7 +299,7 @@ def split_tests(word):
         else:
             betas.append(c)
 
-    return (alphas, betas, regexs)
+    return (alphas, betas, regexs, others)
 
 
 def test_alphas(node, comps, data=None, engine=None):
