@@ -144,6 +144,8 @@ class ProductionContainer(PyRuleStatement):
     """ Production Container: An applicable statement """
 
     def __init__(self, clauses, params=None, type_str=STATEMENT_S, name=None):
+        if clauses is None:
+            clauses = []
         super().__init__(clauses, params=params, type_str=type_str, name=name)
 
     def __len__(self):

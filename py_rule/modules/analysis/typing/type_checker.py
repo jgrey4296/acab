@@ -50,6 +50,7 @@ import logging as root_logger
 
 import py_rule.error.type_exceptions as te
 
+from py_rule.abstract.value import PyRuleStatement
 from py_rule.abstract.sentence import Sentence
 from py_rule.abstract.trie.trie import Trie
 from py_rule.abstract.action import ActionOp
@@ -91,20 +92,25 @@ class TypeChecker(ActionOp):
     def __call__(self, data=None, engine=None):
         """ Pass in data to type check """
         # Gets all leaf sentences and statements
+        logging.info("Running Type Checker")
         sentences = engine.to_sentences()
+        logging.info("Checking {} sentences".format(len(sentences)))
 
         local_contexts_to_check = []
         for sen in sentences:
             if isinstance(sen[-1], TypeDefinition):
                 self.add_definition(sen)
             elif isinstance(sen[-1], PyRuleStatement):
-                local_contexts_to_check.append(sen)
+                local_contexts_to_check.append(sen[-1])
             else:
                 self.add_assertion(sen)
 
+        logging.info("Definitions and Assertions added")
+        logging.info("Checking {} local contexts".format(len(local_contexts_to_check)))
         for statement in local_contexts_to_check:
             self.add_statement(statement)
 
+        logging.info("Checking Totality")
         self.validate()
 
     def _get_known_typed_nodes(self):
