@@ -21,7 +21,7 @@ end
 
 a.layer.test: (::Layer)
     a.agenda.$agenda?
-    a.rule.$rule?
+    a.rule.$rule(ctx.collapse)?
 
     \operator.transform.n_ary.run_rules $rule -> $props
     \operator.transform.n_ary.run_agenda $agenda $props -> $results

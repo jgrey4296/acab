@@ -57,7 +57,7 @@ QUERY_OP_Internal = PU.N(WMU.OPERATOR_S, HOTLOAD_QUERY_OP) \
 QUERY_OP_Internal.setParseAction(build_query_component)
 
 COLLAPSE_CONTEXT = PU.COLLAPSE_CONTEXT
-COLLAPSE_CONTEXT.setParseAction(lambda x: (None, CTX_OP.COLLAPSE))
+COLLAPSE_CONTEXT.setParseAction(lambda x: (None, CTX_OP.collapse))
 
 query_or_annotation = pp.Or([QUERY_OP_Internal, COLLAPSE_CONTEXT, HOTLOAD_QUERY_ANNOTATIONS])
 

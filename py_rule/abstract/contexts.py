@@ -9,7 +9,9 @@ from py_rule.util import AT_BIND_S, FALLBACK_S, AT_BIND_S, BIND_S, CONSTRAINT_S
 
 logging = root_logger.getLogger(__name__)
 
-CTX_OP = Enum("Context Operations", "COLLAPSE")
+CTX_OP = Enum("ctx", "collapse")
+
+
 
 class Contexts:
     """ Container of available contexts for word match in the trie

@@ -167,7 +167,7 @@ class Trie:
             # test each active alternative
             annotations = self._continue_query(word, contexts)
 
-            if CTX_OP.COLLAPSE in annotations and word.is_var:
+            if CTX_OP.collapse in annotations and word.is_var:
                 collapse_on.add(word.name)
 
             # TODO add in context growth restrictions?
