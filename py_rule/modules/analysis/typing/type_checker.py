@@ -90,7 +90,6 @@ class TypeChecker(ActionOp):
 
     def __call__(self, data=None, engine=None):
         """ Pass in data to type check """
-        breakpoint()
         # Gets all leaf sentences and statements
         sentences = engine.to_sentences()
 
@@ -204,9 +203,9 @@ class TypeChecker(ActionOp):
         for a_def in definitions:
             assert(isinstance(a_def[-1], TypeDefinition))
             if isinstance(a_def[-1], OperatorDefinition):
-                self._functional_definitions.add(a_def[-1].path, a_def[-1])
+                self._functional_definitions.add(a_def, a_def[-1])
             else:
-                self._structural_definitions.add(a_def[-1].path, a_def[-1])
+                self._structural_definitions.add(a_def, a_def[-1])
 
     def add_assertion(self, sen):
         assert(isinstance(sen, Sentence))

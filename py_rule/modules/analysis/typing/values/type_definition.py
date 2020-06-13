@@ -18,6 +18,7 @@ class TypeDefinition(TypeStatement):
         Only leaves get type anotations. Thus:
         { .a.$x :: String, .b.$c :: Num, .d!$e::Location }
         """
+
         # The name is the location. eg: .types.person
         assert isinstance(structure, list)
         assert all([isinstance(x, Sentence) for x in structure])
@@ -53,8 +54,8 @@ class TypeDefinition(TypeStatement):
 
 
     def build_type_instance(self, the_dict=None):
-        just_path, statement = self.path.detach_statement()
-        assert(statement is not None)
+        just_path = self.path
+        statement = self
 
         if the_dict is None:
             return TypeInstance(just_path, params=self.vars)
