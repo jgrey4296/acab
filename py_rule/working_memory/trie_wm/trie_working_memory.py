@@ -172,7 +172,7 @@ class TrieWM(WorkingMemory):
             breakpoint()
 
         self._clear_last_node()
-        initial_context = Contexts(start_node=self._internal_trie._root,
+        initial_context = Contexts(start_node=self._internal_trie.root,
                                    bindings=ctxs, engine=engine)
         return self._internal_query(query, initial_context)
 

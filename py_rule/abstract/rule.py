@@ -40,9 +40,8 @@ class Rule(ProductionContainer):
         assert(all([isinstance(x, dict) for x in ctxs]))
         assert(all([x.value in y for x in self._vars for y in ctxs]))
         logging.info("Running Rule: {}".format(self._name))
-
-        query_result = []
-        if ctxs is not None:
+        query_result = [{}]
+        if ctxs is not None and bool(ctxs):
             query_result = [x.copy() for x in ctxs]
 
         # Run the query
@@ -51,8 +50,6 @@ class Rule(ProductionContainer):
             if not bool(query_result):
                 logging.info("Rule {} Failed".format(self._name))
                 return []
-
-        # TODO: Layer/agenda/pipelines need to collapse the context here?
 
         # Run any transforms
         # This is *not* an unnecessary comprehension
