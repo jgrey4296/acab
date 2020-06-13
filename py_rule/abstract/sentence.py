@@ -113,7 +113,7 @@ class Sentence(PyRuleValue):
         sen_copy = self.copy()
 
         value_copy._name = last.name
-        value_copy.set_path(sen_copy)
+        value_copy.set_path(self)
         combined_data = last._data.copy()
         combined_data.update(value._data)
         value_copy._data.update(combined_data)
@@ -126,13 +126,14 @@ class Sentence(PyRuleValue):
         The inverse of attach_statement.
         Reduce the leaf of a sentence to a simple value
         """
-        sen_copy = self.copy()
         last = None
 
-        if isinstance(sen_copy[-1], PyRuleStatement):
-            last = sen_copy.words[-1].copy()
-            simple_last = last.to_simple_value()
-            sen_copy._value[-1] = simple_last
+        if not isinstance(self[-1], PyRuleStatement):
+            sen_copy = self
+            last = None
+        else:
+            sen_copy = self[-1].path
+            last = sef[-1]
 
         return (sen_copy, last)
 
