@@ -1,0 +1,13 @@
+types.string: (::σ) end
+types.other: (::σ) end
+
+types.structure: (::σ)
+    a(::types.string)
+end
+
+an.instance(::types.structure)
+an.instance.a(::types.other)
+
+a.typing.layer: (::Layer)
+    operator.action.typecheck()
+end
