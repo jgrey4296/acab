@@ -43,7 +43,7 @@ actions = pp.delimitedList(pp.Or([action_component, PARAM_SEN]), delim=PU.DELIM)
 
 action_definition = PU.STATEMENT_CONSTRUCTOR(PU.ACTION_HEAD,
                                              BASIC_SEN,
-                                             actions + PU.emptyLine)
+                                             actions + PU.component_gap)
 
 # parse action
 action_component.setParseAction(build_component)

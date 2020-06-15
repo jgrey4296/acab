@@ -49,7 +49,7 @@ transforms = pp.delimitedList(transform_combined, delim=PU.DELIM)
 
 transform_statement = PU.STATEMENT_CONSTRUCTOR(PU.TRANSFORM_HEAD,
                                                BASIC_SEN,
-                                               transforms)
+                                               transforms + PU.component_gap)
 
 # Actions
 transform_core.setParseAction(build_transform_component)

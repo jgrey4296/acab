@@ -84,7 +84,9 @@ clause = PU.op(PU.NEGATION_SYMBOL) + PU.N(WMU.MAIN_CLAUSE_S, pp.ZeroOrMore(Query
 
 clauses = pp.delimitedList(clause, delim=PU.DELIM)
 
-query_statement = PU.STATEMENT_CONSTRUCTOR(PU.QUERY_HEAD, BASIC_SEN, clauses)
+query_statement = PU.STATEMENT_CONSTRUCTOR(PU.QUERY_HEAD,
+                                           BASIC_SEN,
+                                           clauses + PU.component_gap)
 
 # Actions
 constraints.setParseAction(build_constraint_list)
