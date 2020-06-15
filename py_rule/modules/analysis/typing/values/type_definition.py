@@ -33,8 +33,8 @@ class TypeDefinition(TypeStatement):
     def __eq__(self, other):
         path_eq = self.path == other.path
         structure_len = len(self.structure) == len(other.structure)
-        structure_eq = [x == y for x,y in zip(self.structure, other.structure)]
-
+        structure_eq = all([x == y for x,y in zip(self.structure, other.structure)])
+        
         return path_eq and structure_len and structure_eq
 
 

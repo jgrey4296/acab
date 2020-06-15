@@ -172,6 +172,16 @@ class TypingTests(unittest.TestCase):
             duplicate_a_def = S("a").attach_statement(TypeDefinition([S("test")]))
             tc.add_definition(duplicate_a_def)
 
+    def test_type_duplicate_definition(self):
+        """ ::a END, ::a END """
+        tc = TypeChecker()
+        a_def = S("a", "b").attach_statement(TypeDefinition([]))
+        a_def2 = S("a", "b").attach_statement(TypeDefinition([]))
+        tc.add_definition(a_def)
+        tc.add_definition(a_def2)
+
+        self.assertEqual(len(tc._structural_definitions), 2)
+
     def test_variable_conflict(self):
         """ ::String: END ::Number: END
         a.$x(::.String) b.$x(::.Number)

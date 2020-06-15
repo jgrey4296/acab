@@ -67,7 +67,5 @@ class TypeInstance(Type):
         return TypeInstance(self.path, params=new_args)
 
 
-    def pprint(self, opts=None):
-        return "::{}".format(self._value.pprint(opts))
-
-# TODO Make a type instance query op
+# Make a type instance query op
+PrU.register_class(TypeInstance, lambda obj, opts: "::{}".format(obj._value.pprint(opts)))

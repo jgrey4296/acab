@@ -51,7 +51,7 @@ RECORD_DEF_BODY.setParseAction(make_record_def)
 
 RECORD_TYPE = PU.STATEMENT_CONSTRUCTOR(PU.STRUCT_HEAD,
                                        HOTLOAD_BASIC_SEN,
-                                       RECORD_DEF_BODY + PU.emptyLine)
+                                       RECORD_DEF_BODY + PU.component_gap)
 
 # Sum Type definition
 # ie: first subwords are the subtypes. subtypes are automatic records
@@ -60,7 +60,7 @@ SUM_DEF_BODY.setParseAction(make_sum_def)
 
 SUM_TYPE = PU.STATEMENT_CONSTRUCTOR(PU.SUM_HEAD,
                                     HOTLOAD_BASIC_SEN,
-                                    SUM_DEF_BODY + PU.emptyLine)
+                                    SUM_DEF_BODY + PU.component_gap)
 
 
 # numAdd: (::λ) $x(::num).$y(::num).$z(::num) => +
@@ -79,10 +79,10 @@ TYPE_CLASS_BODY = pp.delimitedList(OP_DEF, delim=PU.emptyLine)
 
 TYPE_CLASS_DEF = PU.STATEMENT_CONSTRUCTOR(PU.TYPE_CLASS_HEAD,
                                           HOTLOAD_BASIC_SEN,
-                                          TYPE_CLASS_BODY + PU.emptyLine)
+                                          TYPE_CLASS_BODY + PU.component_gap)
 
 
-COMBINED_DEFS = pp.Or([SIMPLE_DEF, SUM_TYPE, RECORD_TYPE, OP_DEF])
+COMBINED_DEFS = pp.Or([SUM_TYPE, RECORD_TYPE, OP_DEF, SIMPLE_DEF])
 
 # NAMING
 RECORD_DEF_BODY.setName("TypeDefinitionBody")
