@@ -46,7 +46,6 @@ class Layer(Rule):
         # rule returns [(data,self)]
         results = super(Layer, self).__call__(ctxs=ctxs, engine=engine)
 
-        # TODO: reconsider this
         logging.warning("Layer results: {}".format(len(results) < 1))
 
         # Run layer actions

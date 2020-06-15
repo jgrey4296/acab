@@ -19,6 +19,8 @@ class RuleTests(unittest.TestCase):
     #----------
     #use testcase snippets
 
+    # TODO: test rule call  with no query/transform/action
+
 
 if __name__ == "__main__":
     #run python $filename to use this logging setup

@@ -62,6 +62,7 @@ class QueryComponent(PO.ProductionComponent):
     @property
     def is_regex_test(self):
         """ Return boolean if test is a regular expression test """
+        # TODO: refactor to not be hard coded
         return self.op == "operator.query.regmatch"
 
 
