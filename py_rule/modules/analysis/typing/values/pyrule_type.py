@@ -1,5 +1,6 @@
 from py_rule.abstract.value import PyRuleValue, PyRuleStatement
 from py_rule.abstract.printing import util as PrU
+from py_rule.util import TAB_S
 
 # TODO: make a QueryOp
 class Type(PyRuleValue):
@@ -44,4 +45,5 @@ class TypeStatement(PyRuleStatement):
 
 
     def pprint_body(self, val):
-        return val + "\n".join([x.pprint() for x in self.structure])
+        # TODO: add tabs
+        return val + TAB_S + "\n{}".format(TAB_S).join([x.pprint() for x in self.structure])

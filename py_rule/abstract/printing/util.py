@@ -171,7 +171,7 @@ def print_statement(statement, opts):
         val = _wrap_tags(val, statement._tags)
 
     # Add the statement body, which is specific to each statement type
-    if any(statement.pprint_has_content):
+    if head or body:
         val = statement.pprint_body(val)
         val = _wrap_end(val)
     else:
@@ -252,7 +252,9 @@ def _wrap_constraints(value, data):
     assert(isinstance(value, str))
     assert(isinstance(data, dict))
 
+    # TODO: expand this as type instance printing is being avoided here
     constraints = []
+    # Get registered data annotations:
     for x in REGISTERED_CONSTRAINTS:
         if x in data:
             if isinstance(data[x], list):
@@ -261,6 +263,7 @@ def _wrap_constraints(value, data):
                 constraints.append(data[x])
 
     result = value
+    # Print the constraints
     if bool(constraints):
         cons_strs = ", ".join([pprint(x) for x in constraints])
         result += "({})".format(cons_strs)

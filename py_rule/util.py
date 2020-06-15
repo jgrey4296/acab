@@ -77,6 +77,7 @@ DEFAULT_VALUE_DATA = {
     VALUE_TYPE_S : NAME_S
     }
 
+TAB_S = "    "
 
 def get_parsers_from_module(module):
     elements = [getattr(module, x) for x in module]
