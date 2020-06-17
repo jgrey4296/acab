@@ -9,10 +9,10 @@ a.string.rng(::RNGGen).seed."the seed"
 """
 import numpy as np
 
-from py_rule.abstract.value import PyRuleValue
+from acab.abstract.value import AcabValue
 
 
-class RNGGen(PyRuleValue):
+class RNGGen(AcabValue):
 
     def __init__(self, seed=None, data=None):
         # TODO convert string to int for seed

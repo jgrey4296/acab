@@ -1,9 +1,9 @@
-from py_rule.abstract.value import PyRuleValue, PyRuleStatement
-from py_rule.abstract.printing import util as PrU
-from py_rule.util import TAB_S
+from acab.abstract.value import AcabValue, AcabStatement
+from acab.abstract.printing import util as PrU
+from acab.util import TAB_S
 
 # TODO: make a QueryOp
-class Type(PyRuleValue):
+class Type(AcabValue):
     """ The unrestricted type """
 
     def __init__(self, value="|∀σ|", **kwargs):
@@ -21,7 +21,7 @@ class Type(PyRuleValue):
         return self._vars
 
 
-class TypeStatement(PyRuleStatement):
+class TypeStatement(AcabStatement):
 
     def __init__(self, value="|∀σ|", **kwargs):
         super().__init__(value, **kwargs)

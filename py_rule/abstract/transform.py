@@ -1,10 +1,10 @@
 """ Simple Transform functions to be used in rules """
 import logging as root_logger
 
-from py_rule import util
-from py_rule.abstract.printing import util as PrU
+from acab import util
+from acab.abstract.printing import util as PrU
 
-from py_rule.abstract.value import PyRuleValue
+from acab.abstract.value import AcabValue
 from . import production_operator as PO
 from .sentence import Sentence
 
@@ -37,7 +37,7 @@ class TransformComponent(PO.ProductionComponent):
 
 
     def to_local_sentences(self, target=None):
-        head = PyRuleValue(self.op, data={util.OPERATOR_S : self})
+        head = AcabValue(self.op, data={util.OPERATOR_S : self})
         return [Sentence([head] + self._params[:] + [self._rebind])]
 
 

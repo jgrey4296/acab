@@ -4,16 +4,16 @@ Used for Comparison, Transform, and Performance Operators
 """
 import logging as root_logger
 
-from py_rule.util import OPERATOR_S, STATEMENT_S
-from py_rule import util
-from py_rule.abstract.printing import util as PrU
-from py_rule.abstract.sentence import Sentence
+from acab.util import OPERATOR_S, STATEMENT_S
+from acab import util
+from acab.abstract.printing import util as PrU
+from acab.abstract.sentence import Sentence
 
-from .value import PyRuleValue, PyRuleStatement
+from .value import AcabValue, AcabStatement
 
 logging = root_logger.getLogger(__name__)
 
-class ProductionOperator(PyRuleValue):
+class ProductionOperator(AcabValue):
     """ The Base Operator Class """
 
     # A class variable to determine when an operator is instanced
@@ -47,7 +47,7 @@ class ProductionOperator(PyRuleValue):
         return self._value
 
 
-class ProductionComponent(PyRuleValue):
+class ProductionComponent(AcabValue):
     """ Pairs a an operator with some bindings """
 
     def __init__(self, op_str, params, op_pos=0, data=None, rebind=None,
@@ -92,7 +92,7 @@ class ProductionComponent(PyRuleValue):
 
 
     def apply_params(self, params):
-        safe_params = [PyRuleValue.safe_make(x) for x in params]
+        safe_params = [AcabValue.safe_make(x) for x in params]
         self._params += safe_params
 
     def get_params(self, data):
@@ -104,7 +104,7 @@ class ProductionComponent(PyRuleValue):
                 output.append(x.bind(data))
             elif isinstance(x, list):
                 output.append([y.bind(data) for y in x])
-            elif isinstance(x, PyRuleValue) and x.is_var:
+            elif isinstance(x, AcabValue) and x.is_var:
                 if x.is_at_var:
                     output.append(data[util.AT_BIND_S + x.value])
                 elif isinstance(data[x.value], list):
@@ -140,7 +140,7 @@ class ProductionComponent(PyRuleValue):
             raise AttributeError("Unrecognised operator: {}".format(self.op))
 
 
-class ProductionContainer(PyRuleStatement):
+class ProductionContainer(AcabStatement):
     """ Production Container: An applicable statement """
 
     def __init__(self, clauses, params=None, type_str=STATEMENT_S, name=None):
@@ -163,7 +163,7 @@ class ProductionContainer(PyRuleStatement):
                 if x._rebind is None and isinstance(result, dict):
                     ctx.update(result)
                 if x._rebind is not None:
-                    ctx[x._rebind.value] = PyRuleValue.safe_make(result)
+                    ctx[x._rebind.value] = AcabValue.safe_make(result)
 
         return ctxs
 
@@ -183,7 +183,7 @@ class ProductionContainer(PyRuleStatement):
         # Action(+(a.b.$x), -(a.b.$w)).var_set -> {'in': [x,w], 'out': []}
         obj = super(ProductionContainer, self).var_set
         for p in self.clauses:
-            if isinstance(p, PyRuleValue):
+            if isinstance(p, AcabValue):
                 tempobj = p.var_set
                 obj['in'].update(tempobj['in'])
                 obj['out'].update(tempobj['out'])

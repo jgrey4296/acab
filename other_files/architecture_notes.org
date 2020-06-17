@@ -1,4 +1,4 @@
-* TODO PyRule Architecture notes
+* TODO Acab Architecture notes
 ** Top Level
 *** Actions.py
     *Defines*: ACTS enum, ACTMACRONAME, Core Engine actions (E_ADD, E_RETRACT, E_PRINT),
@@ -319,7 +319,7 @@
 ** Space
    a module for holding description of space, and pathfind around it
 ** Standard Operators
-   the core operators of pyrule. assertion, retraction, etc
+   the core operators of acab. assertion, retraction, etc
 ** Theoretic Game
    A module to build game theory forms of games
 ** Time

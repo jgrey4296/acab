@@ -3,9 +3,9 @@ Pyparsing based parser for types
 """
 import logging as root_logger
 import pyparsing as pp
-from py_rule.modules.analysis.typing.values.type_instance import TypeInstance
-from py_rule.modules.analysis.typing import util as TYU
-from py_rule.abstract.parsing import util as PU
+from acab.modules.analysis.typing.values.type_instance import TypeInstance
+from acab.modules.analysis.typing import util as TYU
+from acab.abstract.parsing import util as PU
 
 def make_type_dec(toks):
     """ Construct a type declaration / annotation
@@ -18,7 +18,7 @@ def make_type_dec(toks):
     return (TYU.TYPE_DEC_S, TypeInstance(path, args))
 
 # BASIC SENTENCE NEEDS TO BE POPULATED
-# eg: py_rule.working_memory.trie_wm.parsing.FactParser.basic_fact_string
+# eg: acab.working_memory.trie_wm.parsing.FactParser.basic_fact_string
 HOTLOAD_BASIC_SEN= pp.Forward()
 TYPEDEC_CORE = pp.Forward()
 

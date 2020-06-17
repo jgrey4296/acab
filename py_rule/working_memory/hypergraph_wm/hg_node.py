@@ -1,6 +1,6 @@
-from py_rule.abstract.node import PyRuleNode
+from acab.abstract.node import AcabNode
 
-class HGNode(PyRuleNode):
+class HGNode(AcabNode):
     """ A Node in a HyperGraph """
 
     def __init__(self):

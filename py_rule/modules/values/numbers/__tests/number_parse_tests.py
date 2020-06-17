@@ -4,17 +4,17 @@ import unittest
 import logging
 import random
 
-from py_rule.abstract.printing import util as PrU
-from py_rule.modules.values.numbers.parsing import NumberParser as NP
-from py_rule.working_memory.trie_wm.parsing import ActionParser as AP
-from py_rule.working_memory.trie_wm.parsing import TransformParser as TP
-from py_rule.working_memory.trie_wm.parsing import FactParser as FP
-from py_rule.abstract import action
-from py_rule.abstract import transform
-from py_rule import util
-from py_rule.modules.operators.standard_operators import StandardOperators
-from py_rule.modules.values import numbers
-from py_rule.working_memory.trie_wm.trie_working_memory import TrieWM
+from acab.abstract.printing import util as PrU
+from acab.modules.values.numbers.parsing import NumberParser as NP
+from acab.working_memory.trie_wm.parsing import ActionParser as AP
+from acab.working_memory.trie_wm.parsing import TransformParser as TP
+from acab.working_memory.trie_wm.parsing import FactParser as FP
+from acab.abstract import action
+from acab.abstract import transform
+from acab import util
+from acab.modules.operators.standard_operators import StandardOperators
+from acab.modules.values import numbers
+from acab.working_memory.trie_wm.trie_working_memory import TrieWM
 
 class NumberParseTests(unittest.TestCase):
     os = None

@@ -13,9 +13,9 @@ and how they are specified, constrained and constructed
 
 
 """
-from py_rule.abstract.value import PyRuleValue
+from acab.abstract.value import AcabValue
 
-class Artifact(PyRuleValue):
+class Artifact(AcabValue):
     """ Description of a physical artifact """
 
     def __init__(self):

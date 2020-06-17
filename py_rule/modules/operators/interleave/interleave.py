@@ -7,7 +7,7 @@ and interleave them while respecting order
 
 
 """
-from py_rule.abstract.production_operator import ProductionOperator
+from acab.abstract.production_operator import ProductionOperator
 
 class InterleaveOperator(ProductionOperator):
     """  """

@@ -1,10 +1,10 @@
 import pyparsing as pp
 import logging as root_logger
 
-from py_rule.modules.analysis.typing.values.type_definition import TypeDefinition
-from py_rule.modules.analysis.typing.values.operator_definition import OperatorDefinition
-from py_rule.abstract.parsing import util as PU
-from py_rule.modules.analysis.typing import util as TYU
+from acab.modules.analysis.typing.values.type_definition import TypeDefinition
+from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition
+from acab.abstract.parsing import util as PU
+from acab.modules.analysis.typing import util as TYU
 from . import util as TU
 logging = root_logger.getLogger(__name__)
 

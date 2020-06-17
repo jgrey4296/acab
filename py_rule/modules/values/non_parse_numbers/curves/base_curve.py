@@ -1,9 +1,9 @@
 """
 A Means to specify and use easings and curves
 """
-from py_rule.abstract.value import PyRuleValue
+from acab.abstract.value import AcabValue
 
-class Curve(PyRuleValue):
+class Curve(AcabValue):
     """ The Base definition of a curve / easing """
 
     def __init__(self):
@@ -26,11 +26,11 @@ class Curve(PyRuleValue):
         raise NotImplementedError()
 
 
-class SValCurve(PyRuleValue):
+class SValCurve(AcabValue):
     """ A non-parseable Single Value to move along a curve """
     pass
 
-class MValCurve(PyRuleValue):
+class MValCurve(AcabValue):
     """ A non-parseable Distribution of values along a curve to sample from """
     pass
 

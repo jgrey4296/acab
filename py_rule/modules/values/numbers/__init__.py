@@ -1,4 +1,4 @@
-from py_rule.abstract.module_interface import ModuleInterface
+from acab.abstract.module_interface import ModuleInterface
 from .parsing import NumberParser as NP
 from . import query_operators as CO
 from . import transform_operators as TO

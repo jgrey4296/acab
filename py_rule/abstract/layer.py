@@ -22,11 +22,11 @@ end
 """
 import logging as root_logger
 
-from py_rule.abstract.rule import Rule
-from py_rule.abstract.production_operator import ProductionOperator, ProductionContainer
-from py_rule import util
-from py_rule.util import NAME_S, STATEMENT_S, TYPE_DEC_S, QUERY_S, TRANSFORM_S, ACTION_S
-from py_rule.abstract.printing import util as PrU
+from acab.abstract.rule import Rule
+from acab.abstract.production_operator import ProductionOperator, ProductionContainer
+from acab import util
+from acab.util import NAME_S, STATEMENT_S, TYPE_DEC_S, QUERY_S, TRANSFORM_S, ACTION_S
+from acab.abstract.printing import util as PrU
 
 logging = root_logger.getLogger(__name__)
 

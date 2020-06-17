@@ -1,15 +1,15 @@
 """
 Exception types raised by type checking
 """
-from py_rule.error.pyrule_base_exception import PyRuleBaseException
+from acab.error.acab_base_exception import AcabBaseException
 
-class PyRuleTypingException(PyRuleBaseException):
+class AcabTypingException(AcabBaseException):
 
     def __init__(self):
         return
 
 
-class TypeRedefinitionException(PyRuleTypingException):
+class TypeRedefinitionException(AcabTypingException):
 
     def __init__(self, typename):
         self.typename = typename
@@ -19,7 +19,7 @@ class TypeRedefinitionException(PyRuleTypingException):
 
     __repr__ = __str__
 
-class TypeConflictException(PyRuleTypingException):
+class TypeConflictException(AcabTypingException):
 
     def __init__(self, env_type, new_type, stmt):
         self._env_type = env_type
@@ -33,7 +33,7 @@ class TypeConflictException(PyRuleTypingException):
 
     __repr__ = __str__
 
-class TypeUndefinedException(PyRuleTypingException):
+class TypeUndefinedException(AcabTypingException):
 
     def __init__(self, attempted_type, stmt):
         self.attempted_type = attempted_type
@@ -44,7 +44,7 @@ class TypeUndefinedException(PyRuleTypingException):
                                                                                  self.stmt)
 
 
-class TypeVariableConflictException(PyRuleTypingException):
+class TypeVariableConflictException(AcabTypingException):
 
     def __init__(self, node_path):
         self.node_path = node_path
@@ -53,7 +53,7 @@ class TypeVariableConflictException(PyRuleTypingException):
         return "Node specified as both a var and not a var: {}".format("".join(self.node_path))
 
 
-class TypeStructureMismatch(PyRuleTypingException):
+class TypeStructureMismatch(AcabTypingException):
 
     def __init__(self, typename, conflicts):
         self.typename = typename

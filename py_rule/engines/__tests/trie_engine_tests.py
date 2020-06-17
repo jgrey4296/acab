@@ -1,10 +1,10 @@
 import unittest
 import logging
-from py_rule.abstract.contexts import Contexts
-import py_rule.engines.trie_engine as T
-import py_rule.working_memory.trie_wm.parsing.TransformParser as TP
-import py_rule.working_memory.trie_wm.parsing.ActionParser as AP
-from py_rule.abstract.rule import Rule
+from acab.abstract.contexts import Contexts
+import acab.engines.trie_engine as T
+import acab.working_memory.trie_wm.parsing.TransformParser as TP
+import acab.working_memory.trie_wm.parsing.ActionParser as AP
+from acab.abstract.rule import Rule
 from math import isclose
 
 

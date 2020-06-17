@@ -1,5 +1,5 @@
-from py_rule.abstract.module_interface import ModuleInterface
-from py_rule.abstract.printing import util as PrU
+from acab.abstract.module_interface import ModuleInterface
+from acab.abstract.printing import util as PrU
 from .type_checker import TypeChecker
 from .parsing import TypeDefParser as TDP
 from .parsing import TypeParser as TP

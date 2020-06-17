@@ -2,7 +2,7 @@
 from os.path import splitext, split
 import unittest
 import logging
-from py_rule.abstract.node import PyRuleNode
+from acab.abstract.node import AcabNode
 
 
 class WorkingMemoryTests(unittest.TestCase):

@@ -32,10 +32,10 @@ secondary.agenda(::RankingAgenda):
 """
 import logging as root_logger
 import pyparsing as pp
-from py_rule import util
-from py_rule.abstract.parsing import util as PU
-from py_rule.abstract.production_operator import ProductionContainer
-from py_rule.abstract.agenda import Agenda, make_agenda
+from acab import util
+from acab.abstract.parsing import util as PU
+from acab.abstract.production_operator import ProductionContainer
+from acab.abstract.agenda import Agenda, make_agenda
 
 logging = root_logger.getLogger(__name__)
 

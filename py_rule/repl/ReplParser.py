@@ -5,7 +5,7 @@ The parser for the REPL
 import pyparsing as pp
 import logging as root_logger
 
-from py_rule.abstract.parsing import util as PU
+from acab.abstract.parsing import util as PU
 from .repl_commands import ReplE as RE
 from .repl_commands import build_command
 
@@ -108,7 +108,7 @@ file_path = rest_of_line
 state_io = state_io_cmds + file_path
 
 # initialise
-# eg: init py_rule.engines.trie_engine.TrieEngine
+# eg: init acab.engines.trie_engine.TrieEngine
 reinit = init_kw + pp.Optional(rest_of_line)
 
 # step forward or back
@@ -119,7 +119,7 @@ step = step_kw + pp.Optional(pp.Or([back_kw,
 
 # Instructions to load a module
 # load module
-# eg: load py_rule.modules.values.numbers
+# eg: load acab.modules.values.numbers
 load_mod = PU.s(module_kw) + rest_of_line
 
 # Misc Instructions

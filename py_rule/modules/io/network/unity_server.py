@@ -5,8 +5,8 @@ import json
 import logging as root_logger
 import socket
 
-from py_rule.abstract.action import ActionOp
-from py_rule.abstract.agenda import Agenda
+from acab.abstract.action import ActionOp
+from acab.abstract.agenda import Agenda
 
 from . import util
 
@@ -29,7 +29,7 @@ class IOListen(ActionOp):
         return
 
 
-class UnityServer(PyRuleValue):
+class UnityServer(AcabValue):
     """ A Server to connect to unity """
 
     #The types of messages supported

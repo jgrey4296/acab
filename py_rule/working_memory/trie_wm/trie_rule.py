@@ -1,7 +1,7 @@
 """ TrieRule: The Subclass of a rule specifically for trie-implemented
 rule engines
 """
-from py_rule.abstract.rule import Rule
+from acab.abstract.rule import Rule
 
 
 class TrieRule(Rule):

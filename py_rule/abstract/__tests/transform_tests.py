@@ -2,10 +2,10 @@
 from os.path import splitext, split
 import unittest
 import logging
-from py_rule import util
-from py_rule.abstract.transform import TransformComponent, TransformOp
-from py_rule.abstract.node import PyRuleNode
-from py_rule.abstract.value import PyRuleValue as PV
+from acab import util
+from acab.abstract.transform import TransformComponent, TransformOp
+from acab.abstract.node import AcabNode
+from acab.abstract.value import AcabValue as PV
 
 
 class TransformTests(unittest.TestCase):

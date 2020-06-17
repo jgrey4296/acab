@@ -3,21 +3,21 @@ from os.path import splitext, split
 import unittest
 import logging
 
-from py_rule.modules.values.numbers.parsing import NumberParser as NP
-from py_rule.working_memory.trie_wm.parsing import ActionParser as AP
-from py_rule.working_memory.trie_wm.parsing import RuleParser as RP
-from py_rule.working_memory.trie_wm.parsing import TransformParser as TP
-from py_rule.working_memory.trie_wm.parsing import FactParser as FP
-from py_rule.working_memory.trie_wm.parsing import QueryParser as QP
-from py_rule.abstract import action
-from py_rule.abstract.query import QueryComponent, QueryOp
-from py_rule.abstract.sentence import Sentence
-from py_rule import util
-from py_rule.abstract.printing import util as PrU
-from py_rule.modules.operators.standard_operators import StandardOperators
-from py_rule.modules.values import numbers
-from py_rule.working_memory.trie_wm.trie_working_memory import TrieWM
-from py_rule.working_memory.trie_wm import util as KBU
+from acab.modules.values.numbers.parsing import NumberParser as NP
+from acab.working_memory.trie_wm.parsing import ActionParser as AP
+from acab.working_memory.trie_wm.parsing import RuleParser as RP
+from acab.working_memory.trie_wm.parsing import TransformParser as TP
+from acab.working_memory.trie_wm.parsing import FactParser as FP
+from acab.working_memory.trie_wm.parsing import QueryParser as QP
+from acab.abstract import action
+from acab.abstract.query import QueryComponent, QueryOp
+from acab.abstract.sentence import Sentence
+from acab import util
+from acab.abstract.printing import util as PrU
+from acab.modules.operators.standard_operators import StandardOperators
+from acab.modules.values import numbers
+from acab.working_memory.trie_wm.trie_working_memory import TrieWM
+from acab.working_memory.trie_wm import util as KBU
 
 
 class NumberQueryTests(unittest.TestCase):

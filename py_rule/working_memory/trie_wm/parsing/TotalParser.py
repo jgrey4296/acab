@@ -5,12 +5,12 @@ Handles files, and comments
 import pyparsing as pp
 from pyparsing import pyparsing_common as ppc
 
-from py_rule.abstract.sentence import Sentence
-from py_rule.abstract.value import PyRuleValue
-from py_rule.abstract.rule import Rule
-from py_rule.working_memory.trie_wm import util as WMU
-from py_rule.abstract.parsing import util as PU
-from py_rule.error.pyrule_parse_exception import PyRuleParseException
+from acab.abstract.sentence import Sentence
+from acab.abstract.value import AcabValue
+from acab.abstract.rule import Rule
+from acab.working_memory.trie_wm import util as WMU
+from acab.abstract.parsing import util as PU
+from acab.error.acab_parse_exception import AcabParseException
 
 from . import FactParser as FP
 from . import RuleParser as RP

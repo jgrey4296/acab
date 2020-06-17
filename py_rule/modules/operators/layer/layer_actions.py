@@ -1,7 +1,7 @@
-from py_rule.abstract.action import ActionOp
-from py_rule.abstract.transform import TransformOp
-from py_rule.abstract.rule import Rule
-from py_rule.abstract.contexts import Contexts
+from acab.abstract.action import ActionOp
+from acab.abstract.transform import TransformOp
+from acab.abstract.rule import Rule
+from acab.abstract.contexts import Contexts
 
 
 class LayerRunRules(TransformOp):

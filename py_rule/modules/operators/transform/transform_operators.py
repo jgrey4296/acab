@@ -3,7 +3,7 @@ Defintions for Core Transform Operators
 """
 from re import sub
 
-from py_rule.abstract.transform import TransformOp
+from acab.abstract.transform import TransformOp
 
 class RegexOp(TransformOp):
     def __init__(self):

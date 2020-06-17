@@ -7,9 +7,9 @@ vectors
 
 
 """
-from py_rule.abstract.value import PyRuleValue
+from acab.abstract.value import AcabValue
 
-class MetricBase(PyRuleValue):
+class MetricBase(AcabValue):
     """ A Base Class for a means of assessing and comparing  """
 
     def __init__(self):

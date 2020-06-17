@@ -7,7 +7,7 @@ while randomising context
 possibly have a Monte-Carlo Tree Search Alt
 
 """
-from py_rule.abstract.production_operator import ProductionOperator
+from acab.abstract.production_operator import ProductionOperator
 
 class DoOperator(ProductionOperator):
     """  """

@@ -13,9 +13,9 @@ Requirements
 
 
 """
-from py_rule.abstract.value import PyRuleValue
+from acab.abstract.value import AcabValue
 
-class GovernanceDescription(PyRuleValue):
+class GovernanceDescription(AcabValue):
     """ A Description of how a governing organisation operates """
 
     def __init__(self):

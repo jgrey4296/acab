@@ -8,11 +8,11 @@ import importlib
 import logging as root_logger
 import re
 
-from py_rule.abstract.production_operator import ProductionOperator
-from py_rule.abstract.agenda import Agenda
-from py_rule.abstract.action import ActionOp
-from py_rule.abstract.rule import Rule
-from py_rule.abstract.layer import Layer
+from acab.abstract.production_operator import ProductionOperator
+from acab.abstract.agenda import Agenda
+from acab.abstract.action import ActionOp
+from acab.abstract.rule import Rule
+from acab.abstract.layer import Layer
 
 logging = root_logger.getLogger(__name__)
 
@@ -46,7 +46,7 @@ def engine_init(engine, data):
     params = data['params']
     logging.info("Initialising: {}".format(params))
     if not bool(params) or params[0] == "":
-        params = ["py_rule.engines.trie_engine.TrieEngine"]
+        params = ["acab.engines.trie_engine.TrieEngine"]
     init_module = importlib.import_module(splitext(params[0])[0])
     # build engine
     engine = eval('init_module{}'.format(splitext(params[0])[1]))()
@@ -313,10 +313,10 @@ def engine_help(engine, data):
     # TODO
     result = []
     # Print commands
-    result.append("-------------------- PyRule Help:")
+    result.append("-------------------- Acab Help:")
     result.append("---------- Args:")
     result.append("--engine                          : Specify a load engine.")
-    result.append("                                    Defaults to py_rule.engines.trie_engine.TrieEngine")
+    result.append("                                    Defaults to acab.engines.trie_engine.TrieEngine")
     result.append("-v {LEVEL} | --verbose {LEVEL}    : Specify Log level. File Level is one lower")
 
     result.append("")

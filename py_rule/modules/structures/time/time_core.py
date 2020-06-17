@@ -5,8 +5,8 @@ from functools import reduce
 from math import floor
 from random import Random
 
-from py_rule.abstract.value import PyRuleValue
-from py_rule.abstract.printing import util as PrU
+from acab.abstract.value import AcabValue
+from acab.abstract.printing import util as PrU
 from .pattern_iterator import PatternIterator
 
 from . import util
@@ -15,7 +15,7 @@ from .util import TIME_T, Time, f_gcd, PATTERN_S
 logging = root_logger.getLogger(__name__)
 
 
-class BaseTime(PyRuleValue):
+class BaseTime(AcabValue):
 
     def __init__(self, arcTuple, data=None, type_str=None):
         assert(isinstance(arcTuple, (list, tuple)))
@@ -115,7 +115,7 @@ class TimeEvent(BaseTime):
         var_set = {'in' : set(), 'out': set()}
         if self.is_var:
             var_set['in'].add(self.event)
-        elif isinstance(self.event, PyRuleValue):
+        elif isinstance(self.event, AcabValue):
             update_set = self.event.var_set
             var_set['in'].update(update_set['in'])
             var_set['out'].update(update_set['out'])
@@ -124,7 +124,7 @@ class TimeEvent(BaseTime):
 
 
     def pprint(self, opts=None, **kwargs):
-        if isinstance(self._event, PyRuleValue):
+        if isinstance(self._event, AcabValue):
             value = self._event.pprint(opts, **kwargs)
         else:
             value = str(self._event)

@@ -1,5 +1,5 @@
 """
-A PyRule REPL, using default of TrieWM
+A Acab REPL, using default of TrieWM
 """
 # Setup root_logger:
 from pyparsing import ParseException
@@ -11,10 +11,10 @@ import logging as root_logger
 import traceback
 
 ##############################
-from py_rule.repl import ReplParser as ReP
-from py_rule.repl import repl_commands as ReC
-from py_rule.abstract.printing import util as PrU
-from py_rule import util
+from acab.repl import ReplParser as ReP
+from acab.repl import repl_commands as ReC
+from acab.abstract.printing import util as PrU
+from acab import util
 
 # Quiet hook from https://gist.github.com/jhazelwo/86124774833c6ab8f973323cb9c7e251
 if __name__ == "__main__":
@@ -23,7 +23,7 @@ if __name__ == "__main__":
     #see https://docs.python.org/3/howto/argparse.html
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                      epilog = "\n".join([""]))
-    parser.add_argument('--engine', default="py_rule.engines.trie_engine.TrieEngine")
+    parser.add_argument('--engine', default="acab.engines.trie_engine.TrieEngine")
     parser.add_argument('-v', '--verbose', default="WARNING")
     args = parser.parse_args()
 
@@ -43,10 +43,10 @@ if __name__ == "__main__":
     # build engine
     engine, dummy = ReC.get(ReC.ReplE.INIT)(None, {'params': [args.engine]})
     # Load Standard modules
-    engine, dummy = ReC.get(ReC.ReplE.MODULE)(engine, {'params': ['py_rule.modules.operators']})
-    engine, dummy = ReC.get(ReC.ReplE.MODULE)(engine, {'params': ['py_rule.modules.structures']})
+    engine, dummy = ReC.get(ReC.ReplE.MODULE)(engine, {'params': ['acab.modules.operators']})
+    engine, dummy = ReC.get(ReC.ReplE.MODULE)(engine, {'params': ['acab.modules.structures']})
 
-    data = { 'prompt' : 'PyRuleREPL: ',
+    data = { 'prompt' : 'AcabREPL: ',
              'prompt_ml' : '... ',
              'command': ReC.ReplE.NOP,
              'params' : [],

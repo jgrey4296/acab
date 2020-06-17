@@ -4,8 +4,8 @@
 """
 import logging as root_logger
 
-import py_rule.util as util
-from py_rule.abstract.printing import util as PrU
+import acab.util as util
+from acab.abstract.printing import util as PrU
 
 from .production_operator import ProductionContainer
 from .transform import Transform

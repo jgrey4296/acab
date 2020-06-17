@@ -1,5 +1,5 @@
 """
-py_rule is a Production Rule Architecture,
+acab is a Production Rule Architecture,
 based around a Meta-DSL (Exclusion Logic),
 combined with modular DSLs it can host to expand its functionality
 

@@ -2,21 +2,21 @@
 Defines a Sentence of Fact Words, which can be a query, and
 have fallback bindings
 """
-from py_rule.util import BIND_S, OPERATOR_S
-from py_rule.util import SEN_S, AT_BIND_S
-from py_rule.abstract.printing import util as PrU
+from acab.util import BIND_S, OPERATOR_S
+from acab.util import SEN_S, AT_BIND_S
+from acab.abstract.printing import util as PrU
 
-from .value import PyRuleValue, PyRuleStatement
+from .value import AcabValue, AcabStatement
 
 
-class Sentence(PyRuleValue):
+class Sentence(AcabValue):
     """
     The Basic Sentence Class: Essentially a List of Words
     """
 
     def __init__(self, words=None, params=None, tags=None, data=None):
         if words is not None:
-            assert(all([isinstance(x, PyRuleValue) for x in words])), words
+            assert(all([isinstance(x, AcabValue) for x in words])), words
             assert(not any([x.is_at_var for x in words[1:]]))
         else:
             words = []
@@ -107,7 +107,7 @@ class Sentence(PyRuleValue):
         """
         Take a statement and attach it to the leaf of the sentence
         """
-        assert(isinstance(value, PyRuleStatement))
+        assert(isinstance(value, AcabStatement))
         last = self.words[-1]
         value_copy = value.copy()
         sen_copy = self.copy()
@@ -128,7 +128,7 @@ class Sentence(PyRuleValue):
         """
         last = None
 
-        if not isinstance(self[-1], PyRuleStatement):
+        if not isinstance(self[-1], AcabStatement):
             sen_copy = self
             last = None
         else:

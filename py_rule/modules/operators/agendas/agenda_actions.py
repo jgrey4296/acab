@@ -41,9 +41,9 @@
    loop:
        run layer $layer
 """
-from py_rule.abstract.action import ActionOp
-from py_rule.abstract.transform import TransformOp
-from py_rule.abstract.agenda import Agenda
+from acab.abstract.action import ActionOp
+from acab.abstract.transform import TransformOp
+from acab.abstract.agenda import Agenda
 
 class AgendaSelect(TransformOp):
 

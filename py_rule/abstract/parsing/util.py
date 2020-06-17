@@ -3,8 +3,8 @@ Pyparsing utilities
 """
 import logging as root_logger
 import pyparsing as pp
-from py_rule.abstract.sentence import Sentence
-from py_rule import util
+from acab.abstract.sentence import Sentence
+from acab import util
 
 logging = root_logger.getLogger(__name__)
 pp.ParserElement.setDefaultWhitespaceChars(' \t\r')

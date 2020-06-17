@@ -14,7 +14,7 @@ a.pipeline.example: (::φ)
 	// actions:
 
     init:
-		import py_rule.modules.operators
+		import acab.modules.operators
     	typing.layer
 
 	input:
@@ -40,10 +40,10 @@ Where to specify api connections?
 """
 import logging as root_logger
 import pyparsing as pp
-from py_rule.abstract.parsing import util as PU
-from py_rule.abstract.production_operator import ProductionContainer
-from py_rule.abstract.pipeline import Pipeline, make_pipeline
-from py_rule.util import QUERY_S, TRANSFORM_S, ACTION_S
+from acab.abstract.parsing import util as PU
+from acab.abstract.production_operator import ProductionContainer
+from acab.abstract.pipeline import Pipeline, make_pipeline
+from acab.util import QUERY_S, TRANSFORM_S, ACTION_S
 
 logging = root_logger.getLogger(__name__)
 

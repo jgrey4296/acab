@@ -3,18 +3,18 @@ from os.path import splitext, split
 import unittest
 import logging
 
-from py_rule.abstract.value import PyRuleValue
-from py_rule.abstract.sentence import Sentence
+from acab.abstract.value import AcabValue
+from acab.abstract.sentence import Sentence
 
 def S(*values):
-    return Sentence([PyRuleValue(x) for x in values])
+    return Sentence([AcabValue(x) for x in values])
 
 class SentenceTests(unittest.TestCase):
 
     def test_construction(self):
         val = S("a","test","value")
         self.assertIsInstance(val, Sentence)
-        self.assertIsInstance(val, PyRuleValue)
+        self.assertIsInstance(val, AcabValue)
 
     def test_length(self):
         val = S("a","test","value")
@@ -33,7 +33,7 @@ class SentenceTests(unittest.TestCase):
 
     def test_get_item(self):
         val = S("a","test","value")
-        self.assertIsInstance(val[0], PyRuleValue)
+        self.assertIsInstance(val[0], AcabValue)
         self.assertEqual(val[0]._value, "a")
         self.assertEqual(val[1]._value, "test")
         self.assertEqual(val[2]._value, "value")
@@ -65,7 +65,7 @@ class SentenceTests(unittest.TestCase):
         val = S("a","test","value")
         self.assertIsInstance(val[1:], Sentence)
         for x,y in zip(val[1:], ["test", "value"]):
-            self.assertIsInstance(x, PyRuleValue)
+            self.assertIsInstance(x, AcabValue)
             self.assertEqual(x._value, y)
 
     @unittest.skip("TODO")

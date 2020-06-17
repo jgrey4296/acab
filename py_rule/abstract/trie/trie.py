@@ -5,23 +5,23 @@ import logging as root_logger
 from weakref import WeakValueDictionary, ref, proxy
 from re import search
 
-from py_rule.abstract.contexts import Contexts, CTX_OP
-from py_rule.error.pyrule_base_exception import PyRuleBaseException
-from py_rule.abstract.query import QueryComponent
-from py_rule.abstract.sentence import Sentence
-from py_rule.abstract.value import PyRuleStatement
-from py_rule.abstract.printing import util as PrU
-from py_rule.abstract.node import PyRuleNode
-from py_rule.abstract.value import PyRuleValue
+from acab.abstract.contexts import Contexts, CTX_OP
+from acab.error.acab_base_exception import AcabBaseException
+from acab.abstract.query import QueryComponent
+from acab.abstract.sentence import Sentence
+from acab.abstract.value import AcabStatement
+from acab.abstract.printing import util as PrU
+from acab.abstract.node import AcabNode
+from acab.abstract.value import AcabValue
 
-from py_rule.util import CONSTRAINT_S, AT_BIND_S
+from acab.util import CONSTRAINT_S, AT_BIND_S
 
 logging = root_logger.getLogger(__name__)
 
 
 class Trie:
 
-    def __init__(self, node_type=PyRuleNode):
+    def __init__(self, node_type=AcabNode):
         self._root = node_type.Root()
         self._node_type = node_type
         # Stores UUIDs -> Nodes
@@ -112,7 +112,7 @@ class Trie:
         while bool(queue):
             curr_path, current_node = queue.pop(0)
             total_path = curr_path + [current_node.value]
-            if not bool(current_node) or isinstance(current_node.value, PyRuleStatement):
+            if not bool(current_node) or isinstance(current_node.value, AcabStatement):
                 # if leaf or statement
                 as_sentence = Sentence(total_path)
                 output.append(as_sentence)
@@ -206,8 +206,8 @@ class Trie:
         if isinstance(possible_matches, Trie):
             possible_matches = possible_matches.root
 
-        if not isinstance(possible_matches, PyRuleNode):
-            raise PyRuleBaseException()
+        if not isinstance(possible_matches, AcabNode):
+            raise AcabBaseException()
 
         final_matches = []
         pattern_nodes = list(possible_matches._children.values())
@@ -254,8 +254,8 @@ def retrieve_potentials(query_word, pair):
     return potentials
 
 def add_var_to_context(i, query_word, new_data, passing_node):
-    assert(isinstance(query_word, PyRuleValue))
-    assert(isinstance(passing_node, PyRuleNode))
+    assert(isinstance(query_word, AcabValue))
+    assert(isinstance(passing_node, AcabNode))
 
     if query_word.is_var:
         new_data[query_word.name] = passing_node.value

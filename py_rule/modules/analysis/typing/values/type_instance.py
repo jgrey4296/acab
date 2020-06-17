@@ -1,9 +1,9 @@
-from py_rule.abstract.value import PyRuleValue
-from py_rule.abstract.sentence import Sentence
-from py_rule.abstract.printing import util as PrU
+from acab.abstract.value import AcabValue
+from acab.abstract.sentence import Sentence
+from acab.abstract.printing import util as PrU
 
-from py_rule.modules.analysis.typing import util
-from .pyrule_type import Type
+from acab.modules.analysis.typing import util
+from .acab_type import Type
 
 
 class TypeInstance(Type):
@@ -13,7 +13,7 @@ class TypeInstance(Type):
     def __init__(self, path, params=None, type_str=util.TYPE_DEC_S):
         """ Construct a Type Instance with a _path in the type trie """
         assert(isinstance(path, Sentence))
-        assert(params is None or all([isinstance(x, (str, TypeInstance, PyRuleValue)) for x in params]))
+        assert(params is None or all([isinstance(x, (str, TypeInstance, AcabValue)) for x in params]))
         super(TypeInstance, self).__init__(path, type_str=type_str, params=params)
 
     def __hash__(self):
@@ -36,7 +36,7 @@ class TypeInstance(Type):
     @property
     def var_set(self):
         obj = super(TypeInstance, self).var_set
-        if isinstance(self._name, PyRuleValue):
+        if isinstance(self._name, AcabValue):
             name_set = self._name.var_set
             obj['in'].update(name_set['in'])
             obj['in'].update(name_set['out'])
@@ -58,7 +58,7 @@ class TypeInstance(Type):
 
         new_args = []
         for x in self.vars:
-            if isinstance(x, PyRuleValue) and x.name in the_dict:
+            if isinstance(x, AcabValue) and x.name in the_dict:
                 new_args.append(the_dict[x.name])
             else:
                 assert(isinstance(x, TypeInstance))

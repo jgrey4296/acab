@@ -1,9 +1,9 @@
 """ A Trie based Parser module for the creation of action """
 import logging as root_logger
 import pyparsing as pp
-from py_rule.abstract import action as action
-from py_rule.abstract.parsing import util as PU
-from py_rule.working_memory.trie_wm import util as WMU
+from acab.abstract import action as action
+from acab.abstract.parsing import util as PU
+from acab.working_memory.trie_wm import util as WMU
 
 from .FactParser import PARAM_SEN, VALBIND, BASIC_SEN, PARAM_SEN
 

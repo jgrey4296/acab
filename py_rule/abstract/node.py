@@ -1,28 +1,28 @@
 """
-The Base Node Class the rest of PyRule extends
+The Base Node Class the rest of Acab extends
 """
 from re import search
 from uuid import uuid1
 import weakref
 from copy import deepcopy
 
-from py_rule import util
-from py_rule.abstract.printing import util as PrU
+from acab import util
+from acab.abstract.printing import util as PrU
 
-from .value import PyRuleValue
+from .value import AcabValue
 
 
-class PyRuleNode:
+class AcabNode:
     """ The Base Node Class for Tries/Data structures etc"""
 
     @staticmethod
     def Root():
-        return PyRuleNode(util.ROOT_S)
+        return AcabNode(util.ROOT_S)
 
     def __init__(self, value, data=None):
 
         #Unwrap Nodes to avoid nesting
-        if isinstance(value, PyRuleNode):
+        if isinstance(value, AcabNode):
             node = value
             value = deepcopy(node.value)
             if data is None:
@@ -30,8 +30,8 @@ class PyRuleNode:
             data.update(node._data)
 
         self._uuid = uuid1()
-        # Wrap in a PyRuleValue if necessary:
-        self._value = PyRuleValue.safe_make(value)
+        # Wrap in a AcabValue if necessary:
+        self._value = AcabValue.safe_make(value)
 
         self._path = None
         self._parent = None
@@ -87,7 +87,7 @@ class PyRuleNode:
 
 
     def add_child(self, node):
-        assert(isinstance(node, PyRuleNode))
+        assert(isinstance(node, AcabNode))
         self._children[node.name] = node
         return node
 
@@ -119,7 +119,7 @@ class PyRuleNode:
 
 
     def set_parent(self, parent):
-        assert(isinstance(parent, PyRuleNode))
+        assert(isinstance(parent, AcabNode))
         self._parent = weakref.ref(parent)
 
     def parentage(self):
@@ -146,7 +146,7 @@ class PyRuleNode:
         assert(self.value in data)
         assert(util.BIND_S in self.value._data and self.value._data[util.BIND_S])
         self._value = data[self.value]
-        assert(isinstance(self._value, PyRuleValue))
+        assert(isinstance(self._value, AcabValue))
 
     def copy(self):
         return deepcopy(self)

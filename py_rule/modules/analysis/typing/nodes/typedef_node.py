@@ -1,11 +1,11 @@
 import logging as root_logger
 
-from py_rule.abstract.node import PyRuleNode
-from py_rule.abstract.trie.trie import Trie
-from py_rule.error import type_exceptions as te
-from py_rule.modules.analysis.typing.values.type_definition import TypeDefinition
+from acab.abstract.node import AcabNode
+from acab.abstract.trie.trie import Trie
+from acab.error import type_exceptions as te
+from acab.modules.analysis.typing.values.type_definition import TypeDefinition
 
-import py_rule.modules.analysis.typing.util as util
+import acab.modules.analysis.typing.util as util
 
 from .type_assignment_node import TypeAssignmentTrieNode
 
@@ -21,7 +21,7 @@ LOG_MESSAGES['match_type_usage'] = "Matching Type {} onto usage set"
 LOG_MESSAGES['mult_child'] = "Current Def has multiple children, checking for conflicts in structure"
 
 
-class TypeDefTrieNode(PyRuleNode):
+class TypeDefTrieNode(AcabNode):
     """ A Node describing a type definition """
 
     def __init__(self, value):
@@ -40,7 +40,7 @@ class TypeDefTrieNode(PyRuleNode):
 
 
     def set_data(self, data):
-        """ Overrides PyRuleNode.set_data.
+        """ Overrides AcabNode.set_data.
         Builds the subtrie of a type definition at the end of being added
         to the definition trie.
         """

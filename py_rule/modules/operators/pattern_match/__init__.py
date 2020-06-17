@@ -1,4 +1,4 @@
-from py_rule.abstract.module_interface import ModuleInterface
+from acab.abstract.module_interface import ModuleInterface
 
 from . import pattern_match_op as PMO
 from . import pattern_match_parser as PMP

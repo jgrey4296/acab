@@ -2,7 +2,7 @@
 from os.path import splitext, split
 import unittest
 import logging
-from py_rule.modules.analysis.flow.kahn_sort import KahnSort
+from acab.modules.analysis.flow.kahn_sort import KahnSort
 
 class KahnSortTests(unittest.TestCase):
 

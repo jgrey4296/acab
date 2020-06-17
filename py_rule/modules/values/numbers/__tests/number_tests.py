@@ -2,7 +2,7 @@
 from os.path import splitext, split
 import unittest
 import logging
-from py_rule.working_memory.trie_wm.parsing import RuleParser as RP
+from acab.working_memory.trie_wm.parsing import RuleParser as RP
 
 
 class NumberTests(unittest.TestCase):

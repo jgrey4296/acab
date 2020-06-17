@@ -2,8 +2,8 @@
 from os.path import splitext, split
 import unittest
 import logging
-from py_rule.abstract import production_operator as PO
-from py_rule.abstract.value import PyRuleValue, PyRuleStatement
+from acab.abstract import production_operator as PO
+from acab.abstract.value import AcabValue, AcabStatement
 
 
 class ProductionOperatorTests(unittest.TestCase):
@@ -38,7 +38,7 @@ class ProductionOperatorTests(unittest.TestCase):
     def test_component_init(self):
         val = PO.ProductionComponent("testop", [])
         self.assertIsInstance(val, PO.ProductionComponent)
-        self.assertIsInstance(val, PyRuleValue)
+        self.assertIsInstance(val, AcabValue)
 
     @unittest.skip("TODO")
     def test_component_call(self):

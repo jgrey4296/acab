@@ -8,27 +8,27 @@ from fractions import Fraction
 from re import Pattern
 from copy import deepcopy
 
-from py_rule import util
-from py_rule.abstract.printing import util as PrU
+from acab import util
+from acab.abstract.printing import util as PrU
 
 logging = root_logger.getLogger(__name__)
 
 
-class PyRuleValue:
+class AcabValue:
     value_types = set([int, float, Fraction, bool, str, Pattern, list, tuple])
 
     @staticmethod
     def safe_make(value, data=None):
-        if isinstance(value, PyRuleValue):
+        if isinstance(value, AcabValue):
             new_val = value.copy().set_data(data)
             return new_val
         else:
-            return PyRuleValue(value, data=data)
+            return AcabValue(value, data=data)
 
     def __init__(self, value, type_str=None, data=None,
                  params=None, tags=None, name=None):
 
-        value_type_tuple = tuple([PyRuleValue] + list(PyRuleValue.value_types))
+        value_type_tuple = tuple([AcabValue] + list(AcabValue.value_types))
         assert (value is None or isinstance(value, value_type_tuple)), type(value)
 
         self._uuid = uuid1()
@@ -73,7 +73,7 @@ class PyRuleValue:
 
     @property
     def name(self):
-        if isinstance(self._value, PyRuleValue):
+        if isinstance(self._value, AcabValue):
             return self._value.name
         elif self._name is not None:
             return self._name
@@ -135,12 +135,12 @@ class PyRuleValue:
         return self
 
     def apply_vars(self, params, data=None):
-        safe_params = [PyRuleValue.safe_make(x, data=data) for x in params]
+        safe_params = [AcabValue.safe_make(x, data=data) for x in params]
         self._vars += safe_params
         return self
 
     def apply_tags(self, tags):
-        safe_tags = [x.value if isinstance(x, PyRuleValue) else x for x in tags]
+        safe_tags = [x.value if isinstance(x, AcabValue) else x for x in tags]
         self._tags.update(safe_tags)
         return self
 
@@ -153,10 +153,10 @@ class PyRuleValue:
 
 
 
-class PyRuleStatement(PyRuleValue):
+class AcabStatement(AcabValue):
 
     def __init__(self, value, **kwargs):
-        super(PyRuleStatement, self).__init__(value, **kwargs)
+        super(AcabStatement, self).__init__(value, **kwargs)
         self._path = None
 
 
@@ -182,14 +182,14 @@ class PyRuleStatement(PyRuleValue):
 
 
     def set_path(self, sen):
-        assert(isinstance(sen, PyRuleValue))
+        assert(isinstance(sen, AcabValue))
         self._path = sen.copy()
 
         return self
 
 
     def to_simple_value(self):
-        simple_value = PyRuleValue(self._name)
+        simple_value = AcabValue(self._name)
         return simple_value
 
 
@@ -198,5 +198,5 @@ class PyRuleStatement(PyRuleValue):
 
 
 
-PrU.register_class(PyRuleValue, PrU.print_value)
-PrU.register_class(PyRuleStatement, PrU.print_statement)
+PrU.register_class(AcabValue, PrU.print_value)
+PrU.register_class(AcabStatement, PrU.print_statement)

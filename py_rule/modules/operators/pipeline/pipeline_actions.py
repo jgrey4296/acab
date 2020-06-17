@@ -1,5 +1,5 @@
-from py_rule.abstract.action import ActionOp
-from py_rule.abstract.transform import TransformOp
+from acab.abstract.action import ActionOp
+from acab.abstract.transform import TransformOp
 
 class PipelineRunLayer(TransformOp):
     pass

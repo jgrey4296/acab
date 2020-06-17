@@ -1,11 +1,11 @@
 import unittest
 from os.path import splitext, split
 import logging
-from py_rule.abstract.node import PyRuleNode
-from py_rule import util
+from acab.abstract.node import AcabNode
+from acab import util
 
 
-class PyRuleNodeTests2(unittest.TestCase):
+class AcabNodeTests2(unittest.TestCase):
 
     def setUp(self):
         return 1
@@ -15,14 +15,14 @@ class PyRuleNodeTests2(unittest.TestCase):
 
     #----------
     def test_node_creation(self):
-        the_node = PyRuleNode("test")
+        the_node = AcabNode("test")
         self.assertIsNotNone(the_node)
-        self.assertIsInstance(the_node, PyRuleNode)
+        self.assertIsInstance(the_node, AcabNode)
         self.assertEqual(the_node.name, "test")
 
     def test_root(self):
-        root = PyRuleNode.Root()
-        self.assertIsInstance(root, PyRuleNode)
+        root = AcabNode.Root()
+        self.assertIsInstance(root, AcabNode)
         self.assertEqual(root.name, util.ROOT_S)
 
 

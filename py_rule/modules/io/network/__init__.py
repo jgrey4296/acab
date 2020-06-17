@@ -4,7 +4,7 @@ for network communication between
 the pipeline and a separate program (eg: Unity)
 
 """
-from py_rule.abstract.module_interface import ModuleInterface
+from acab.abstract.module_interface import ModuleInterface
 
 class MODULE(ModuleInterface):
 

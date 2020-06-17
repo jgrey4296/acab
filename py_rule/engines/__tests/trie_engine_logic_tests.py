@@ -1,9 +1,9 @@
 import unittest
 import logging
-import py_rule.abstract.trie as T
-from py_rule.engines.trie_engine import TrieEngine
-from py_rule.modules.operators.standard_operators import StandardOperators
-from py_rule.abstract.rule import Rule
+import acab.abstract.trie as T
+from acab.engines.trie_engine import TrieEngine
+from acab.modules.operators.standard_operators import StandardOperators
+from acab.abstract.rule import Rule
 from os.path import join, isfile, exists, isdir
 from os.path import split, splitext, expanduser, abspath
 from os import listdir

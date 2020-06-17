@@ -1,7 +1,7 @@
 """
 Defines the required functions a type needs to implement
 """
-from .pyrule_type import Type
+from .acab_type import Type
 
 class TypeClass(Type):
     """ Definition of a coherent collection of functions """

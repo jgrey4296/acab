@@ -2,12 +2,12 @@ import unittest
 import logging
 import pyparsing as pp
 
-from py_rule.modules.structures.time.time_core import BaseTime, TimeEvent, TimeContainer
-from py_rule.modules.structures.time.pattern import PatternSeq, PatternPar
-from py_rule.modules.structures.time.parsing import parser as tp
-from py_rule.modules.structures.time.util import Time as t
-from py_rule.abstract.parsing import util as PU
-from py_rule.util import BIND_S
+from acab.modules.structures.time.time_core import BaseTime, TimeEvent, TimeContainer
+from acab.modules.structures.time.pattern import PatternSeq, PatternPar
+from acab.modules.structures.time.parsing import parser as tp
+from acab.modules.structures.time.util import Time as t
+from acab.abstract.parsing import util as PU
+from acab.util import BIND_S
 
 class TestTime(unittest.TestCase):
 

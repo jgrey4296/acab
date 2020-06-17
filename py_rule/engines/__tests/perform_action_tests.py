@@ -2,13 +2,13 @@
 from os.path import splitext, split
 import unittest
 import logging
-from py_rule.engines.trie_engine import TrieEngine
-from py_rule.working_memory.trie_wm.parsing import ActionParser as AP
-from py_rule.modules.operators.action import action_operators as act_ops
-from py_rule.abstract import action
-from py_rule.abstract.bootstrap_parser import BootstrapParser
-from py_rule.abstract.production_operator import ProductionOperator
-from py_rule.modules.operators.standard_operators import StandardOperators
+from acab.engines.trie_engine import TrieEngine
+from acab.working_memory.trie_wm.parsing import ActionParser as AP
+from acab.modules.operators.action import action_operators as act_ops
+from acab.abstract import action
+from acab.abstract.bootstrap_parser import BootstrapParser
+from acab.abstract.production_operator import ProductionOperator
+from acab.modules.operators.standard_operators import StandardOperators
 
 class ActionBlah(action.ActionOp):
     def __init__(self):

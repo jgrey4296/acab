@@ -15,8 +15,8 @@ end
 
 import pyparsing as pp
 
-import py_rule.abstract.parsing.util as PU
-from py_rule.abstract.transform import TransformComponent
+import acab.abstract.parsing.util as PU
+from acab.abstract.transform import TransformComponent
 
 def build_transform_component(toks):
     component = TransformComponent

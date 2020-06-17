@@ -3,9 +3,9 @@ import itertools as it
 from enum import Enum
 import logging as root_logger
 
-from py_rule.abstract.value import PyRuleValue
-from py_rule.abstract.production_operator import ProductionOperator
-from py_rule.util import AT_BIND_S, FALLBACK_S, AT_BIND_S, BIND_S, CONSTRAINT_S
+from acab.abstract.value import AcabValue
+from acab.abstract.production_operator import ProductionOperator
+from acab.util import AT_BIND_S, FALLBACK_S, AT_BIND_S, BIND_S, CONSTRAINT_S
 
 logging = root_logger.getLogger(__name__)
 
@@ -26,7 +26,7 @@ class Contexts:
         new_base = {}
         new_base.update(base)
         for x,y in zip(names, values):
-            new_base[x.name] = PyRuleValue.safe_make(y)
+            new_base[x.name] = AcabValue.safe_make(y)
 
         return new_base
 

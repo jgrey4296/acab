@@ -1,11 +1,11 @@
 import unittest
 import logging
-from py_rule.working_memory.trie_wm.parsing import TransformParser as TP
-from py_rule.modules.operators.standard_operators import StandardOperators
-from py_rule.abstract import transform
-from py_rule.working_memory.trie_wm import util as KBU
-from py_rule.abstract.bootstrap_parser import BootstrapParser
-from py_rule.abstract.production_operator import ProductionOperator
+from acab.working_memory.trie_wm.parsing import TransformParser as TP
+from acab.modules.operators.standard_operators import StandardOperators
+from acab.abstract import transform
+from acab.working_memory.trie_wm import util as KBU
+from acab.abstract.bootstrap_parser import BootstrapParser
+from acab.abstract.production_operator import ProductionOperator
 
 class Trie_Transform_Parser_Tests(unittest.TestCase):
 

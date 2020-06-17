@@ -1,10 +1,10 @@
 import unittest
 import logging
-from py_rule.working_memory.trie_wm.trie_working_memory import TrieWM
-from py_rule.modules.operators.standard_operators import StandardOperators
-from py_rule.abstract.contexts import Contexts
-from py_rule.abstract.bootstrap_parser import BootstrapParser
-from py_rule.abstract.production_operator import ProductionOperator
+from acab.working_memory.trie_wm.trie_working_memory import TrieWM
+from acab.modules.operators.standard_operators import StandardOperators
+from acab.abstract.contexts import Contexts
+from acab.abstract.bootstrap_parser import BootstrapParser
+from acab.abstract.production_operator import ProductionOperator
 
 
 class Trie_WM_Tests(unittest.TestCase):

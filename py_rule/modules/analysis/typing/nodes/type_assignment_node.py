@@ -1,7 +1,7 @@
 import logging as root_logger
 
-import py_rule.error.type_exceptions as te
-from py_rule.modules.analysis.typing import util
+import acab.error.type_exceptions as te
+from acab.modules.analysis.typing import util
 from .typed_node import MonoTypedNode
 
 logging = root_logger.getLogger(__name__)

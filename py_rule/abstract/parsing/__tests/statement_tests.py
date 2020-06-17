@@ -3,10 +3,10 @@ from os.path import splitext, split
 import unittest
 import logging
 import pyparsing as pp
-from py_rule.abstract.parsing import util as PU
-from py_rule.abstract.node import PyRuleNode
-from py_rule.abstract.value import PyRuleValue, PyRuleStatement
-from py_rule.abstract.sentence import Sentence
+from acab.abstract.parsing import util as PU
+from acab.abstract.node import AcabNode
+from acab.abstract.value import AcabValue, AcabStatement
+from acab.abstract.sentence import Sentence
 
 class StatementTests(unittest.TestCase):
 
@@ -24,10 +24,10 @@ class StatementTests(unittest.TestCase):
     #use testcase snippets
     def test_basic_tag(self):
         basic_node_parser = pp.Keyword('test')
-        basic_node_parser.setParseAction(lambda toks: Sentence([PyRuleValue(toks[0])]))
+        basic_node_parser.setParseAction(lambda toks: Sentence([AcabValue(toks[0])]))
 
         basic_value_parser = pp.Keyword('value') + pp.lineEnd
-        basic_value_parser.setParseAction(lambda toks: ('value', PyRuleStatement(toks[0])))
+        basic_value_parser.setParseAction(lambda toks: ('value', AcabStatement(toks[0])))
 
         statement_p = PU.STATEMENT_CONSTRUCTOR(pp.Keyword('blah'),
                                                basic_node_parser,
@@ -39,10 +39,10 @@ class StatementTests(unittest.TestCase):
 
     def test_basic_tag_plural(self):
         basic_node_parser = pp.Keyword('test')
-        basic_node_parser.setParseAction(lambda toks: Sentence([PyRuleValue(toks[0])]))
+        basic_node_parser.setParseAction(lambda toks: Sentence([AcabValue(toks[0])]))
 
         basic_value_parser = pp.Keyword('value') + pp.lineEnd
-        basic_value_parser.setParseAction(lambda toks: ('value', PyRuleStatement(toks[0])))
+        basic_value_parser.setParseAction(lambda toks: ('value', AcabStatement(toks[0])))
 
         statement_p = PU.STATEMENT_CONSTRUCTOR(pp.Keyword('blah'),
                                                basic_node_parser,

@@ -18,11 +18,11 @@ values = a.test.location, a.test.location.*
 import logging as root_logger
 import pyparsing as pp
 
-from py_rule.abstract.trie.trie import Trie
-from py_rule.abstract.production_operator import ProductionOperator
-from py_rule.abstract.value import PyRuleValue
+from acab.abstract.trie.trie import Trie
+from acab.abstract.production_operator import ProductionOperator
+from acab.abstract.value import AcabValue
 
-from py_rule.abstract.parsing.util import OPERATOR_SUGAR
+from acab.abstract.parsing.util import OPERATOR_SUGAR
 
 logging = root_logger.getLogger(__name__)
 
@@ -44,7 +44,7 @@ class BootstrapParser(Trie):
         input_list = [x for x in inputs]
         while bool(input_list):
             current = input_list.pop(0)
-            loc_string = [PyRuleValue(x) for x in current.split('.')]
+            loc_string = [AcabValue(x) for x in current.split('.')]
             parser = input_list.pop(0)
 
             if parser is None:

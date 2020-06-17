@@ -43,9 +43,9 @@
 
 
 """
-from py_rule.abstract.value import PyRuleValue
+from acab.abstract.value import AcabValue
 
-class SocialGameBase(PyRuleValue):
+class SocialGameBase(AcabValue):
     """ Base Description of social games """
 
     def __init__(self):

@@ -4,11 +4,11 @@ capable of parsing  multiple facts
 """
 import logging as root_logger
 import pyparsing as pp
-from py_rule.abstract.value import PyRuleValue
-from py_rule.working_memory.trie_wm import util as WMU
-from py_rule.working_memory.trie_wm.parsing import util as WMPU
-from py_rule.abstract.parsing import util as PU
-from py_rule import util
+from acab.abstract.value import AcabValue
+from acab.working_memory.trie_wm import util as WMU
+from acab.working_memory.trie_wm.parsing import util as WMPU
+from acab.abstract.parsing import util as PU
+from acab import util
 
 logging = root_logger.getLogger(__name__)
 # Hotload insertion points:
@@ -41,7 +41,7 @@ def make_value(toks):
     else:
         raise SyntaxError("Unplanned parse type")
 
-    return PyRuleValue.safe_make(value, data=data)
+    return AcabValue.safe_make(value, data=data)
 
 
 def add_annotations(toks):

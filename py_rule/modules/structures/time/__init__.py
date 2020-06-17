@@ -1,4 +1,4 @@
-from py_rule.abstract.module_interface import ModuleInterface
+from acab.abstract.module_interface import ModuleInterface
 from .parsing import parser as TP
 
 

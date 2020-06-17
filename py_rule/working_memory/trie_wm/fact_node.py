@@ -1,16 +1,16 @@
 """ The Core Trie-Node, stores information, meta data """
 import logging as root_logger
 
-from py_rule.abstract.value import PyRuleValue
-from py_rule.abstract.node import PyRuleNode
-from py_rule.working_memory.trie_wm import util as WMU
-from py_rule.abstract.printing import util as PrU
+from acab.abstract.value import AcabValue
+from acab.abstract.node import AcabNode
+from acab.working_memory.trie_wm import util as WMU
+from acab.abstract.printing import util as PrU
 
 logging = root_logger.getLogger(__name__)
 # see https://docs.python.org/3/library/weakref.html#module-weakref
 
 
-class FactNode(PyRuleNode):
+class FactNode(AcabNode):
     """ Both the type of a node in the trie,
     and the representation of data to add into the trie """
 
@@ -35,7 +35,7 @@ class FactNode(PyRuleNode):
         return str(self) == str(other)
 
     def __contains__(self, other):
-        assert(isinstance(other, PyRuleValue))
+        assert(isinstance(other, AcabValue))
         if self.has_child(other):
             if WMU.OPERATOR_S not in other._data:
                 return True
@@ -56,7 +56,7 @@ class FactNode(PyRuleNode):
 
     def insert(self, fact):
         """ Insert A Node as a Child of this Node """
-        assert(isinstance(fact, PyRuleValue))
+        assert(isinstance(fact, AcabValue))
         # deal with exclusion
         if fact in self:
             retrieved_node = self.get_child(fact)
@@ -79,7 +79,7 @@ class FactNode(PyRuleNode):
 
     def get(self, fact):
         """ Retrieve a Node from this Node """
-        assert(isinstance(fact, PyRuleValue))
+        assert(isinstance(fact, AcabValue))
         potential = None
         operator = None
         if fact in self:
@@ -93,7 +93,7 @@ class FactNode(PyRuleNode):
 
     def delete_node(self, fact):
         """ Remove a Node from this Node """
-        assert(isinstance(fact, PyRuleValue))
+        assert(isinstance(fact, AcabValue))
         if self.remove_child(fact):
             self._set_dirty_chain()
 

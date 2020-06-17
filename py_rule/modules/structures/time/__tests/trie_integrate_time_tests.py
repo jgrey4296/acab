@@ -1,13 +1,13 @@
 import unittest
 import logging
-from py_rule.util import VALUE_TYPE_S
-from py_rule.modules.structures.time.parsing import parser as tp
-from py_rule.working_memory.trie_wm.parsing import FactParser as fp
-from py_rule.abstract.sentence import Sentence
-from py_rule.modules.structures.time import util as TU
-from py_rule.modules.structures.time.time_core import TimeContainer
-from py_rule.modules.structures.time.parsing import parser as tp
-from py_rule.abstract.parsing import util as PU
+from acab.util import VALUE_TYPE_S
+from acab.modules.structures.time.parsing import parser as tp
+from acab.working_memory.trie_wm.parsing import FactParser as fp
+from acab.abstract.sentence import Sentence
+from acab.modules.structures.time import util as TU
+from acab.modules.structures.time.time_core import TimeContainer
+from acab.modules.structures.time.parsing import parser as tp
+from acab.abstract.parsing import util as PU
 
 class TrieIntegrationTimeTests(unittest.TestCase):
 

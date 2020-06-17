@@ -1,32 +1,32 @@
 import unittest
 import logging
 
-import py_rule.error.type_exceptions as te
+import acab.error.type_exceptions as te
 
-from py_rule.abstract.bootstrap_parser import BootstrapParser
-from py_rule.abstract.transform import TransformComponent
-from py_rule.modules.analysis.typing.type_checker import TypeChecker
-from py_rule.modules.analysis.typing.values.type_definition import TypeDefinition
-from py_rule.modules.analysis.typing.values.operator_definition import OperatorDefinition
-from py_rule.modules.analysis.typing.values.type_instance import TypeInstance
+from acab.abstract.bootstrap_parser import BootstrapParser
+from acab.abstract.transform import TransformComponent
+from acab.modules.analysis.typing.type_checker import TypeChecker
+from acab.modules.analysis.typing.values.type_definition import TypeDefinition
+from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition
+from acab.modules.analysis.typing.values.type_instance import TypeInstance
 
-from py_rule.modules.operators.standard_operators import StandardOperators
-from py_rule.abstract import action
-from py_rule.abstract.production_operator import ProductionOperator
+from acab.modules.operators.standard_operators import StandardOperators
+from acab.abstract import action
+from acab.abstract.production_operator import ProductionOperator
 
 
-from py_rule.abstract.sentence import Sentence
-from py_rule.abstract.node import PyRuleNode
-from py_rule.modules.analysis.typing import util as TU
-from py_rule.working_memory.trie_wm.parsing import FactParser as FP
-from py_rule.working_memory.trie_wm.parsing import ActionParser as AP
-from py_rule.abstract.printing import util as PrU
-from py_rule import util
-from py_rule.abstract.value import PyRuleValue
+from acab.abstract.sentence import Sentence
+from acab.abstract.node import AcabNode
+from acab.modules.analysis.typing import util as TU
+from acab.working_memory.trie_wm.parsing import FactParser as FP
+from acab.working_memory.trie_wm.parsing import ActionParser as AP
+from acab.abstract.printing import util as PrU
+from acab import util
+from acab.abstract.value import AcabValue
 
 
 def S(*in_string):
-    return Sentence([PyRuleValue(x) for x in in_string])
+    return Sentence([AcabValue(x) for x in in_string])
 
 
 class TypingTests(unittest.TestCase):
@@ -411,7 +411,7 @@ class TypingTests(unittest.TestCase):
         type_1_sen = S("name","x")
         type_1_sen[-1]._data[TU.BIND_S] = True
         poly_def = S("poly", "type").attach_statement(TypeDefinition([type_1_sen],
-                                                                     params=[PyRuleValue('x')]))
+                                                                     params=[AcabValue('x')]))
         tc.add_definition(poly_def)
 
         #assertions
@@ -562,7 +562,7 @@ class TypingTests(unittest.TestCase):
         # define poly type
         type_1_sen = S("name","x")
         type_1_sen[-1]._data[TU.BIND_S] = True
-        poly_def = S("polytype").attach_statement(TypeDefinition([type_1_sen], params=[PyRuleValue("x")]))
+        poly_def = S("polytype").attach_statement(TypeDefinition([type_1_sen], params=[AcabValue("x")]))
         tc.add_definition(poly_def)
 
 

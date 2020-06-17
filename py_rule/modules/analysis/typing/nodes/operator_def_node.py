@@ -1,11 +1,11 @@
 import logging as root_logger
 
-import py_rule.modules.analysis.typing.util as util
-from py_rule.abstract.trie.trie import Trie
-from py_rule.error import type_exceptions as te
-from py_rule.util import OPERATOR_S
+import acab.modules.analysis.typing.util as util
+from acab.abstract.trie.trie import Trie
+from acab.error import type_exceptions as te
+from acab.util import OPERATOR_S
 
-from py_rule.modules.analysis.typing.values.operator_definition import OperatorDefinition
+from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition
 
 from .typedef_node import TypeDefTrieNode
 from .type_assignment_node import TypeAssignmentTrieNode

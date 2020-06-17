@@ -11,7 +11,7 @@ Variables connect variables in the assignments to definitions.
 The Tries use nodes of TypeDefTrieNode,
 TypeAssignmentTrieNode, and VarTypeTrieNode.
 
-The values of the trie nodes are pyrule.abstract.values, subclassed as Types.
+The values of the trie nodes are acab.abstract.values, subclassed as Types.
 They are TypeDefinitions, and TypeInstantiations.
 
 
@@ -48,12 +48,12 @@ If validate succeeds, it returns True. If it Fails, it raises an Exception
 
 import logging as root_logger
 
-import py_rule.error.type_exceptions as te
+import acab.error.type_exceptions as te
 
-from py_rule.abstract.value import PyRuleStatement
-from py_rule.abstract.sentence import Sentence
-from py_rule.abstract.trie.trie import Trie
-from py_rule.abstract.action import ActionOp
+from acab.abstract.value import AcabStatement
+from acab.abstract.sentence import Sentence
+from acab.abstract.trie.trie import Trie
+from acab.abstract.action import ActionOp
 from . import util as TU
 
 from .nodes.operator_def_node import OperatorDefTrieNode
@@ -100,7 +100,7 @@ class TypeChecker(ActionOp):
         for sen in sentences:
             if isinstance(sen[-1], TypeDefinition):
                 self.add_definition(sen)
-            elif isinstance(sen[-1], PyRuleStatement):
+            elif isinstance(sen[-1], AcabStatement):
                 local_contexts_to_check.append(sen[-1])
             else:
                 self.add_assertion(sen)

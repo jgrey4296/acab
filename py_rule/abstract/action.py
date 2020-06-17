@@ -4,10 +4,10 @@ perform, along with associated enums, and IR data structures
 """
 import logging as root_logger
 
-from py_rule import util
-from py_rule.abstract.value import PyRuleValue
-from py_rule.abstract.sentence import Sentence
-from py_rule.abstract.printing import util as PrU
+from acab import util
+from acab.abstract.value import AcabValue
+from acab.abstract.sentence import Sentence
+from acab.abstract.printing import util as PrU
 
 from . import production_operator as PO
 
@@ -42,7 +42,7 @@ class ActionComponent(PO.ProductionComponent):
 
     def __init__(self, op_str, params=None, data=None):
         """ Create an action with an operator and values """
-        assert all([isinstance(x, PyRuleValue) for x in params]), params
+        assert all([isinstance(x, AcabValue) for x in params]), params
         super(ActionComponent, self).__init__(op_str,
                                               params,
                                               data=data)
@@ -70,7 +70,7 @@ class ActionComponent(PO.ProductionComponent):
         # ie: Head: +.$x22532(::sentence).$x26215(::sentence)
         # and Params: a.b.c.$x(::aval), a.b.$d(::aval)
         # and bind?
-        head = PyRuleValue(self.op, {util.OPERATOR_S : self})
+        head = AcabValue(self.op, {util.OPERATOR_S : self})
         sen = Sentence([head] + self._params[:])
         return [sen] + self._params[:]
 

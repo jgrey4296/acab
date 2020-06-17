@@ -1,7 +1,7 @@
 """
 Utilities for printing out information
 """
-from py_rule import util
+from acab import util
 from collections import defaultdict
 
 #Setup

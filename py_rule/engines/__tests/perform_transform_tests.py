@@ -6,14 +6,14 @@ from math import isclose
 import pyparsing as pp
 import unittest
 import logging
-import py_rule
-from py_rule.abstract.contexts import Contexts
-from py_rule.engines.trie_engine import TrieEngine
-from py_rule.working_memory.trie_wm.parsing import TransformParser as TP
-from py_rule.working_memory.trie_wm.parsing import FactParser as FP
-from py_rule.modules.values import numbers as NS
-from py_rule.modules.operators.standard_operators import StandardOperators
-from py_rule.abstract.value import PyRuleValue as PV
+import acab
+from acab.abstract.contexts import Contexts
+from acab.engines.trie_engine import TrieEngine
+from acab.working_memory.trie_wm.parsing import TransformParser as TP
+from acab.working_memory.trie_wm.parsing import FactParser as FP
+from acab.modules.values import numbers as NS
+from acab.modules.operators.standard_operators import StandardOperators
+from acab.abstract.value import AcabValue as PV
 
 class TransformTests(unittest.TestCase):
 

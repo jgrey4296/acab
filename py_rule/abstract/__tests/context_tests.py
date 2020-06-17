@@ -2,8 +2,8 @@
 from os.path import splitext, split
 import unittest
 import logging
-from py_rule.abstract.contexts import Contexts
-from py_rule.util import AT_BIND_S
+from acab.abstract.contexts import Contexts
+from acab.util import AT_BIND_S
 
 class ContextTests(unittest.TestCase):
 

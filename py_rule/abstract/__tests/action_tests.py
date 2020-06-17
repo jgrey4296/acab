@@ -2,12 +2,12 @@
 from os.path import splitext, split
 import unittest
 import logging
-from py_rule import abstract
-from py_rule.abstract.node import PyRuleNode
-from py_rule.abstract.value import PyRuleValue as PV
-from py_rule.abstract.action import ActionComponent, ActionOp
-from py_rule import util
-from py_rule.abstract.sentence import Sentence
+from acab import abstract
+from acab.abstract.node import AcabNode
+from acab.abstract.value import AcabValue as PV
+from acab.abstract.action import ActionComponent, ActionOp
+from acab import util
+from acab.abstract.sentence import Sentence
 
 
 class ActionTests(unittest.TestCase):

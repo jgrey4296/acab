@@ -1,14 +1,14 @@
 import unittest
 import logging
-import py_rule.working_memory.trie_wm.parsing.QueryParser as QP
-from py_rule.abstract.bootstrap_parser import BootstrapParser
-from py_rule.abstract.query import Query
-from py_rule.abstract.sentence import Sentence
-from py_rule.abstract.query import QueryComponent, QueryOp
-from py_rule.modules.operators.standard_operators import StandardOperators
-from py_rule.abstract.production_operator import ProductionOperator
-from py_rule.working_memory.trie_wm import util as KBU
-from py_rule import util
+import acab.working_memory.trie_wm.parsing.QueryParser as QP
+from acab.abstract.bootstrap_parser import BootstrapParser
+from acab.abstract.query import Query
+from acab.abstract.sentence import Sentence
+from acab.abstract.query import QueryComponent, QueryOp
+from acab.modules.operators.standard_operators import StandardOperators
+from acab.abstract.production_operator import ProductionOperator
+from acab.working_memory.trie_wm import util as KBU
+from acab import util
 
 class Trie_Query_Parser_Tests(unittest.TestCase):
 

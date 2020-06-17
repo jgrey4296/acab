@@ -7,9 +7,9 @@ Interleave symbolic actions from set Ss
 
 
 """
-from py_rule.abstract.value import PyRuleValue
+from acab.abstract.value import AcabValue
 
-class RitualBase(PyRuleValue):
+class RitualBase(AcabValue):
     """ Base Description of sequences of actions
     which do not rely on instrumental causality
     """

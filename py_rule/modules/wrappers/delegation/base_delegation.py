@@ -31,10 +31,10 @@ a -> b : b.qualified.action? : action
 
 """
 
-from py_rule.abstract.value import PyRuleValue
+from acab.abstract.value import AcabValue
 
 
-class Delegation(PyRuleValue):
+class Delegation(AcabValue):
     """ A Description of a Task and its delegational possibilities """
 
     def __init__(self):

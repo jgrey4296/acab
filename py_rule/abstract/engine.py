@@ -7,7 +7,7 @@ and can then parse and run an agent DSL pipeline.
 """
 import logging as root_logger
 from os.path import exists, split, expanduser, abspath
-from py_rule import util
+from acab import util
 
 from . import action
 from .agenda import Agenda

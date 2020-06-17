@@ -17,10 +17,10 @@ end
 (possibly MCTS)
 
 """
-from py_rule.abstract.value import PyRuleValue
+from acab.abstract.value import AcabValue
 
 
-class FSMBase(PyRuleValue):
+class FSMBase(AcabValue):
     """ A Description of a Finite State Machine """
 
     def __init__(self):

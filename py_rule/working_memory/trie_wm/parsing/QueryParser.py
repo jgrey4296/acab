@@ -2,14 +2,14 @@
 import logging as root_logger
 import pyparsing as pp
 
-from py_rule.abstract.query import Query, QueryOp, QueryComponent
-from py_rule.abstract.sentence import Sentence
-from py_rule.abstract.contexts import CTX_OP
+from acab.abstract.query import Query, QueryOp, QueryComponent
+from acab.abstract.sentence import Sentence
+from acab.abstract.contexts import CTX_OP
 
-from py_rule.working_memory.trie_wm import util as WMU
-from py_rule.abstract.parsing import util as PU
+from acab.working_memory.trie_wm import util as WMU
+from acab.abstract.parsing import util as PU
 
-from py_rule.error.pyrule_parse_exception import PyRuleParseException
+from acab.error.acab_parse_exception import AcabParseException
 
 from .FactParser import PARAM_CORE, PARAM_SEN, BASIC_SEN
 
@@ -30,7 +30,7 @@ def build_clause(toks):
              WMU.FALLBACK_S : None }
     if WMU.FALLBACK_S in toks:
         if WMU.NEGATION_S in toks:
-            raise PyRuleParseException("Negated Fallback clauses don't make sense")
+            raise AcabParseException("Negated Fallback clauses don't make sense")
         data[WMU.FALLBACK_S] = toks[WMU.FALLBACK_S][:]
     if WMU.NEGATION_S in toks:
         data[WMU.NEGATION_S] = True

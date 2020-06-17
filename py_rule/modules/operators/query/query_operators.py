@@ -3,7 +3,7 @@ Definitions of initial Comparison operators
 """
 import re
 
-from py_rule.abstract.query import QueryOp
+from acab.abstract.query import QueryOp
 
 
 class EQ(QueryOp):

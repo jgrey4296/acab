@@ -8,9 +8,9 @@ Structure
 Operators: Add subtract, path to top, path to bottom
 
 """
-from py_rule.abstract.value import PyRuleValue
+from acab.abstract.value import AcabValue
 
-class LatticeBase(PyRuleValue):
+class LatticeBase(AcabValue):
     """ A Description of a Lattice """
 
     def __init__(self):

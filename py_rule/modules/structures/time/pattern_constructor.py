@@ -11,7 +11,7 @@ from enum import Enum
 from fractions import Fraction as t
 import logging as root_logger
 
-from py_rule.modules.structures.time.util import OPT_S
+from acab.modules.structures.time.util import OPT_S
 
 from .time_core import TimeEvent, TimeContainer
 from .pattern import PatternChoice, PatternPar

@@ -7,9 +7,9 @@ Paths:
 
 
 """
-from py_rule.abstract.value import PyRuleValue
+from acab.abstract.value import AcabValue
 
-class FlowBase(PyRuleValue):
+class FlowBase(AcabValue):
     """ The Base class of a flow analysis """
 
     def __init__(self):

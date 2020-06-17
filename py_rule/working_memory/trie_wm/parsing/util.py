@@ -3,8 +3,8 @@ Pyparsing based parser to turn strings into [FactNode],
 capable of parsing  multiple facts
 """
 import pyparsing as pp
-from py_rule.working_memory.trie_wm import util as WMU
-from py_rule.abstract.printing import util as PrU
+from acab.working_memory.trie_wm import util as WMU
+from acab.abstract.printing import util as PrU
 
 # Create parsers for Exclusion operators:
 # Automatically uses string definitions in WMU

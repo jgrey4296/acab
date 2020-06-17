@@ -1,33 +1,33 @@
 SHELL=/usr/local/bin/bash
-PYS := $(shell find ./py_rule -name '*.py' -not -name '*context.py' -not -name '__init__.py')
-LOGS := $(shell find ./py_rule -name '*log.*')
-CACHES := $(shell find ./py_rule -name '*__pycache__')
+PYS := $(shell find ./acab -name '*.py' -not -name '*context.py' -not -name '__init__.py')
+LOGS := $(shell find ./acab -name '*log.*')
+CACHES := $(shell find ./acab -name '*__pycache__')
 
 .PHONY: all
 all: verbose
 
 test:
-	python -m unittest discover -s ./py_rule -p "*_tests.py"
+	python -m unittest discover -s ./acab -p "*_tests.py"
 
 verbose:
-	python -m unittest discover -s ./py_rule -p "*_tests.py" -v
+	python -m unittest discover -s ./acab -p "*_tests.py" -v
 
 faily:
-	python -m unittest discover -s ./py_rule -p "*_tests.py" -v -f
+	python -m unittest discover -s ./acab -p "*_tests.py" -v -f
 
 # use as: make pattern PAT="X"
 pattern:
-	python -m unittest discover -s ./py_rule -p "*_tests.py" -v -f -k ${PAT}
+	python -m unittest discover -s ./acab -p "*_tests.py" -v -f -k ${PAT}
 
 # make init py's as necessary
 init:
-	find ./py_rule -type d -print0 | xargs -0 -I {} touch "{}/__init__.py"
+	find ./acab -type d -print0 | xargs -0 -I {} touch "{}/__init__.py"
 
 repl:
-	python py_rule/repl/repl.py
+	python acab/repl/repl.py
 
 vrepl:
-	python py_rule/repl/repl.py --verbose DEBUG
+	python acab/repl/repl.py --verbose DEBUG
 
 count:
 	find . -name "*.py" -not -path "./.git/*" -not -name "*_tests.py" -not -name "*__init__.py" -print0 | xargs -0 wc -l | sort > linecounts.stats

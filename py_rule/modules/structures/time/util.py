@@ -1,7 +1,7 @@
 """
 Utils related to rational time
 """
-from py_rule import util
+from acab import util
 from enum import Enum
 from fractions import Fraction
 from math import gcd

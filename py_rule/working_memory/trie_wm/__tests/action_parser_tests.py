@@ -1,13 +1,13 @@
 import unittest
 import logging
 
-from py_rule.abstract.printing import util as PrU
-from py_rule.abstract.bootstrap_parser import BootstrapParser
-from py_rule.working_memory.trie_wm.parsing import ActionParser as AP
-from py_rule.working_memory.trie_wm.parsing import FactParser as FP
-from py_rule.modules.operators.standard_operators import StandardOperators
-from py_rule.abstract import action
-from py_rule.abstract.production_operator import ProductionOperator
+from acab.abstract.printing import util as PrU
+from acab.abstract.bootstrap_parser import BootstrapParser
+from acab.working_memory.trie_wm.parsing import ActionParser as AP
+from acab.working_memory.trie_wm.parsing import FactParser as FP
+from acab.modules.operators.standard_operators import StandardOperators
+from acab.abstract import action
+from acab.abstract.production_operator import ProductionOperator
 
 
 class Trie_Action_Parser_Tests(unittest.TestCase):

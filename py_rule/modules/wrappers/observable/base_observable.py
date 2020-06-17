@@ -10,10 +10,10 @@ Action A : [
 
 
 """
-from py_rule.abstract.value import PyRuleValue
+from acab.abstract.value import AcabValue
 
 
-class ObservableBase(PyRuleValue):
+class ObservableBase(AcabValue):
     """ Description of Actions and how they can be observed """
 
     def __init__(self):

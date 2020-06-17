@@ -2,7 +2,7 @@
 The actual pattern matcher logic as a transform operator
 
 """
-from py_rule.abstract.transform import TransformOp
+from acab.abstract.transform import TransformOp
 
 class PatternMatchOp(TransformOp):
 

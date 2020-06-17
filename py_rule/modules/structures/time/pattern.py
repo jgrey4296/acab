@@ -6,7 +6,7 @@ from math import floor
 from random import Random
 
 from .util import Time
-from py_rule.modules.structures.time.time_core import TimeContainer, TimeEvent
+from acab.modules.structures.time.time_core import TimeContainer, TimeEvent
 
 logging = root_logger.getLogger(__name__)
 

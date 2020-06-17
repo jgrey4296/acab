@@ -1,4 +1,4 @@
-import py_rule.util as util
+import acab.util as util
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
 

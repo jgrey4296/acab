@@ -15,9 +15,9 @@ Segregation
 Suppression
 
 """
-from py_rule.abstract.value import PyRuleValue
+from acab.abstract.value import AcabValue
 
-class VotingBase(PyRuleValue):
+class VotingBase(AcabValue):
     """ Base Description for Voting """
 
     def __init__(self):

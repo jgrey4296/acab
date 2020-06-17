@@ -33,9 +33,9 @@ the hierarchy of Activities - Actions - Operations
 
 
 """
-from py_rule.abstract.value import PyRuleValue
+from acab.abstract.value import AcabValue
 
-class ActivityField(PyRuleValue):
+class ActivityField(AcabValue):
     """ Describe an Activity Field """
 
     def __init__(self):
@@ -68,7 +68,7 @@ class ActivityField(PyRuleValue):
 
 
 
-class ActionField(PyRuleValue):
+class ActionField(AcabValue):
     """ Collection Core actions together for use """
 
     def __init__(self):

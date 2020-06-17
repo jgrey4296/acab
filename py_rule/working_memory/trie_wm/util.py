@@ -3,8 +3,8 @@ Cross-module utilities for the rule engines
 """
 from enum import Enum
 
-from py_rule import util
-from py_rule.abstract.printing import util as PrU
+from acab import util
+from acab.abstract.printing import util as PrU
 
 ROOT_S       = util.ROOT_S
 BIND_S       = util.BIND_S

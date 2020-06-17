@@ -28,9 +28,9 @@ wrap an.action with a.timeout then degrade
 
 
 """
-from py_rule.abstract.value import PyRuleValue
+from acab.abstract.value import AcabValue
 
-class Failure(PyRuleValue):
+class Failure(AcabValue):
     """ A Description of how a task can fail """
 
     def __init__(self):

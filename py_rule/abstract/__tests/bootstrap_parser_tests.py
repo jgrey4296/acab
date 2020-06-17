@@ -4,7 +4,7 @@ import unittest
 import logging
 import pyparsing as pp
 
-from py_rule.abstract.bootstrap_parser import BootstrapParser
+from acab.abstract.bootstrap_parser import BootstrapParser
 
 class BootstrapParserTests(unittest.TestCase):
 

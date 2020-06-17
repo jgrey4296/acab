@@ -6,7 +6,7 @@ and produce ys from 0 - 1
 #pylint: disable=unused-argument
 from enum import Enum
 import numpy as np
-from py_rule.error.pyrule_parse_exception import PyRuleParseException
+from acab.error.acab_parse_exception import AcabParseException
 from .constants import PI
 
 DOMAIN = Enum("Domain of the curve", "FULL LEFT RIGHT")
@@ -137,5 +137,5 @@ def lookup(name):
     if isinstance(name, int):
         return ELOOKUP[ENAMES[name]]
     elif name not in ELOOKUP:
-        raise PyRuleParseException("Unrecognised easing name: {}".format(name))
+        raise AcabParseException("Unrecognised easing name: {}".format(name))
     return ELOOKUP[name]

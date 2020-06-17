@@ -4,11 +4,11 @@ they just need to be registered so
 layers and pipelines can be defined
 """
 from enum import Enum
-from py_rule import util
-from py_rule.util import NAME_S, STATEMENT_S, TYPE_DEC_S, QUERY_S, TRANSFORM_S, ACTION_S
-from py_rule.abstract.rule import Rule
-from py_rule.abstract.production_operator import ProductionOperator, ProductionContainer
-from py_rule.abstract.printing import util as PrU
+from acab import util
+from acab.util import NAME_S, STATEMENT_S, TYPE_DEC_S, QUERY_S, TRANSFORM_S, ACTION_S
+from acab.abstract.rule import Rule
+from acab.abstract.production_operator import ProductionOperator, ProductionContainer
+from acab.abstract.printing import util as PrU
 
 RELATION_E = Enum('Agenda_Relation', 'ONE MANY')
 

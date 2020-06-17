@@ -1,11 +1,11 @@
-from py_rule.abstract.sentence import Sentence
-from py_rule.error.pyrule_parse_exception import PyRuleParseException
-from py_rule.util import STRUCTURE_S, VALUE_TYPE_S, NAME_S
-from py_rule.abstract.printing import util as PrU
+from acab.abstract.sentence import Sentence
+from acab.error.acab_parse_exception import AcabParseException
+from acab.util import STRUCTURE_S, VALUE_TYPE_S, NAME_S
+from acab.abstract.printing import util as PrU
 
-from .pyrule_type import TypeStatement
+from .acab_type import TypeStatement
 from .type_instance import TypeInstance
-from py_rule.modules.analysis.typing.util import TYPE_DEF_S, TYPE_DEC_S
+from acab.modules.analysis.typing.util import TYPE_DEF_S, TYPE_DEC_S
 
 PrU.register_statement({TYPE_DEF_S : STRUCTURE_S})
 # TODO register class
@@ -62,7 +62,7 @@ class TypeDefinition(TypeStatement):
 
         new_args = []
         for x in self.vars:
-            if isinstance(x, PyRuleValue) and x.name in the_dict:
+            if isinstance(x, AcabValue) and x.name in the_dict:
                 new_args.append(the_dict[x.name])
             else:
                 assert(isinstance(x, TypeInstance))
@@ -79,7 +79,7 @@ class TypeDefinition(TypeStatement):
             input_vars.difference_update(temp['out'])
 
         if bool(input_vars):
-            raise PyRuleParseException()
+            raise AcabParseException()
 
     def unify_structure_variables(self):
 

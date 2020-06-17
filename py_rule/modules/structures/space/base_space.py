@@ -7,7 +7,7 @@ connections:
 
 
 """
-from py_rule.abstract.value import PyRuleValue
+from acab.abstract.value import AcabValue
 
 class SpatialBase:
     """ Base Description of a spatial logic """

@@ -1,4 +1,4 @@
-from py_rule.abstract.working_memory import WorkingMemory
+from acab.abstract.working_memory import WorkingMemory
 
 
 class HyperGraphWM(WorkingMemory):

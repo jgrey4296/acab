@@ -25,10 +25,10 @@ end
 """
 import logging as root_logger
 import pyparsing as pp
-from py_rule.util import QUERY_S, TRANSFORM_S, ACTION_S
-from py_rule.abstract.parsing import util as PU
-from py_rule.abstract.production_operator import ProductionContainer
-from py_rule.abstract.layer import Layer, make_layer
+from acab.util import QUERY_S, TRANSFORM_S, ACTION_S
+from acab.abstract.parsing import util as PU
+from acab.abstract.production_operator import ProductionContainer
+from acab.abstract.layer import Layer, make_layer
 
 logging = root_logger.getLogger(__name__)
 

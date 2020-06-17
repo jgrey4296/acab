@@ -1,15 +1,15 @@
 """ The Core Trie Data Structure base """
 import logging as root_logger
 
-from py_rule.abstract.contexts import Contexts
-from py_rule.abstract.working_memory import WorkingMemory
-from py_rule.abstract.query import Query
-from py_rule.abstract.sentence import Sentence
-from py_rule.abstract.trie.trie import Trie
-from py_rule.error.pyrule_operator_exception import PyRuleOperatorException
-from py_rule.error.pyrule_parse_exception import PyRuleParseException
-from py_rule.abstract.printing import util as PrU
-from py_rule.abstract.parsing import util as PU
+from acab.abstract.contexts import Contexts
+from acab.abstract.working_memory import WorkingMemory
+from acab.abstract.query import Query
+from acab.abstract.sentence import Sentence
+from acab.abstract.trie.trie import Trie
+from acab.error.acab_operator_exception import AcabOperatorException
+from acab.error.acab_parse_exception import AcabParseException
+from acab.abstract.printing import util as PrU
+from acab.abstract.parsing import util as PU
 
 from . import util
 from .fact_node import FactNode
@@ -45,7 +45,7 @@ class TrieWM(WorkingMemory):
         elif isinstance(other, Trie):
             return self._internal_trie._root == other._root
         else:
-            raise PyRuleOperatorException("Incorrect Eq arg: {}".format(type(other)))
+            raise AcabOperatorException("Incorrect Eq arg: {}".format(type(other)))
 
 
     def add(self, data):
@@ -63,7 +63,7 @@ class TrieWM(WorkingMemory):
             else:
                 self._assert_sentence(data)
         else:
-            raise PyRuleParseException("Unrecognised addition target: {}".format(type(data)))
+            raise AcabParseException("Unrecognised addition target: {}".format(type(data)))
 
     def query(self, query, ctxs=None, engine=None):
         """ Query a string """
@@ -72,7 +72,7 @@ class TrieWM(WorkingMemory):
         elif isinstance(query, Sentence):
             query = Query([query])
         if not isinstance(query, Query):
-            raise PyRuleParseException("Unrecognised query target: {}".format(type(query)))
+            raise AcabParseException("Unrecognised query target: {}".format(type(query)))
 
         return self._query_sentence(query, ctxs=ctxs, engine=engine)
 

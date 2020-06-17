@@ -1,11 +1,11 @@
 """ Trie-based parser for the transform component of rules """
 import logging as root_logger
 import pyparsing as pp
-from py_rule.abstract.transform import TransformComponent
-from py_rule.abstract.transform import Transform, TransformOp
-from py_rule.abstract.parsing import util as PU
-from py_rule.working_memory.trie_wm import util as WMU
-from py_rule.working_memory.trie_wm.parsing.FactParser import VALBIND, BASIC_SEN
+from acab.abstract.transform import TransformComponent
+from acab.abstract.transform import Transform, TransformOp
+from acab.abstract.parsing import util as PU
+from acab.working_memory.trie_wm import util as WMU
+from acab.working_memory.trie_wm.parsing.FactParser import VALBIND, BASIC_SEN
 
 logging = root_logger.getLogger(__name__)
 

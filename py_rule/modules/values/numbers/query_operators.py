@@ -1,4 +1,4 @@
-from py_rule.abstract.query import QueryOp
+from acab.abstract.query import QueryOp
 
 
 class GT(QueryOp):

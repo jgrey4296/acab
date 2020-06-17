@@ -13,10 +13,10 @@ Layers
 
 
 """
-from py_rule.abstract.value import PyRuleValue
+from acab.abstract.value import AcabValue
 
 
-class ProtocolBase(PyRuleValue):
+class ProtocolBase(AcabValue):
     """ Base description for an ordered protocol of actions """
 
     def __init__(self):

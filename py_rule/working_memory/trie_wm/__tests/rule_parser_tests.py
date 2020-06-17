@@ -1,16 +1,16 @@
 import unittest
 import logging
-from py_rule import util
-from py_rule.abstract.printing import util as PrU
-from py_rule.working_memory.trie_wm import util as KBU
-from py_rule.working_memory.trie_wm.parsing import RuleParser as RP
-from py_rule.working_memory.trie_wm.parsing import FactParser as FP
-from py_rule.working_memory.trie_wm.parsing import ActionParser as AP
-from py_rule.modules.operators.action import MODULE as ActMod
-from py_rule.abstract.rule import Rule
-from py_rule.abstract.sentence import Sentence
-from py_rule.abstract.query import Query
-from py_rule.abstract.bootstrap_parser import BootstrapParser
+from acab import util
+from acab.abstract.printing import util as PrU
+from acab.working_memory.trie_wm import util as KBU
+from acab.working_memory.trie_wm.parsing import RuleParser as RP
+from acab.working_memory.trie_wm.parsing import FactParser as FP
+from acab.working_memory.trie_wm.parsing import ActionParser as AP
+from acab.modules.operators.action import MODULE as ActMod
+from acab.abstract.rule import Rule
+from acab.abstract.sentence import Sentence
+from acab.abstract.query import Query
+from acab.abstract.bootstrap_parser import BootstrapParser
 
 class Trie_Rule_Parser_Tests(unittest.TestCase):
 

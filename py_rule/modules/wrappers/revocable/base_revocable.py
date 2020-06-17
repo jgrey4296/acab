@@ -15,9 +15,9 @@ Give for a time period
 
 """
 
-from py_rule.abstract.value import PyRuleValue
+from acab.abstract.value import AcabValue
 
-class RevocationBase(PyRuleBase):
+class RevocationBase(AcabBase):
     """ Base description of revocable permissions """
 
     def __init__(self):

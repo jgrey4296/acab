@@ -3,13 +3,13 @@ question to pose to the working memory
 """
 import logging as root_logger
 
-from py_rule.util import BIND_S, OPERATOR_S
-from py_rule import util
-from py_rule.abstract.printing import util as PrU
+from acab.util import BIND_S, OPERATOR_S
+from acab import util
+from acab.abstract.printing import util as PrU
 
 from . import production_operator as PO
 from .sentence import Sentence
-from .node import PyRuleNode
+from .node import AcabNode
 
 logging = root_logger.getLogger(__name__)
 
@@ -69,10 +69,10 @@ class QueryComponent(PO.ProductionComponent):
     def to_local_sentences(self, target=None):
         """ Create a comparison as a canonical sentence """
         # eg: 20(>30) :  > -> 20 -> 30 -> bool
-        head = PyRuleValue(self.op, {OPERATOR_S : self})
+        head = AcabValue(self.op, {OPERATOR_S : self})
         if target is None:
             return Sentence([head] + self._params)
-        assert(isinstance(target, PyRuleValue))
+        assert(isinstance(target, AcabValue))
         return [Sentence([head, target] + self._params)]
 
 

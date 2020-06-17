@@ -7,9 +7,9 @@ Distribution
 
 
 """
-from py_rule.abstract.value import PyRuleValue
+from acab.abstract.value import AcabValue
 
-class ProbabilityBase(PyRuleValue):
+class ProbabilityBase(AcabValue):
     """ Base Class for Probabilistic programming and calculations """
 
     def __init__(self):

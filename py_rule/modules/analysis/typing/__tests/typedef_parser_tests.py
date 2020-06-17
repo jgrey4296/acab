@@ -2,19 +2,19 @@ import logging
 import random
 import unittest
 
-import py_rule.modules.analysis.typing.parsing.TypeDefParser as TD
-import py_rule.modules.analysis.typing.parsing.TypeParser as TP
-import py_rule.util as util
+import acab.modules.analysis.typing.parsing.TypeDefParser as TD
+import acab.modules.analysis.typing.parsing.TypeParser as TP
+import acab.util as util
 
-from py_rule.abstract.sentence import Sentence
-from py_rule.abstract.node import PyRuleNode
-from py_rule.error.pyrule_parse_exception import PyRuleParseException
-from py_rule.modules.analysis.typing import util as TU
-from py_rule.modules.analysis.typing.values.type_definition import TypeDefinition
-from py_rule.modules.analysis.typing.values.operator_definition import OperatorDefinition
-from py_rule.working_memory.trie_wm.parsing import FactParser as FP
-from py_rule.abstract.parsing import util as PU
-from py_rule.abstract.printing import util as PrU
+from acab.abstract.sentence import Sentence
+from acab.abstract.node import AcabNode
+from acab.error.acab_parse_exception import AcabParseException
+from acab.modules.analysis.typing import util as TU
+from acab.modules.analysis.typing.values.type_definition import TypeDefinition
+from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition
+from acab.working_memory.trie_wm.parsing import FactParser as FP
+from acab.abstract.parsing import util as PU
+from acab.abstract.printing import util as PrU
 
 class TypeDef_ParserTests(unittest.TestCase):
 
@@ -72,7 +72,7 @@ class TypeDef_ParserTests(unittest.TestCase):
         self.assertEqual(result[-1].structure[0][-1]._data[TU.TYPE_DEC_S].pprint(), '::bloo')
 
     def test_typedef_with_bad_vars(self):
-        with self.assertRaises(PyRuleParseException):
+        with self.assertRaises(AcabParseException):
             result = TD.parseString('blah.x: (::σ)\n| $x |\n\na.b.c\n\nend')[0]
 
     def test_op_def_parse(self):

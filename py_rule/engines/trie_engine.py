@@ -8,22 +8,22 @@ from os.path import join, isfile, exists, isdir, splitext, expanduser
 from os.path import abspath
 from os import listdir
 from random import shuffle
-from py_rule.error.pyrule_parse_exception import PyRuleParseException
+from acab.error.acab_parse_exception import AcabParseException
 
-from py_rule.abstract import action, contexts, query, transform
-from py_rule.abstract.engine import Engine
-from py_rule.abstract.sentence import Sentence
-from py_rule.working_memory.trie_wm.trie_working_memory import TrieWM
-from py_rule.working_memory.trie_wm.fact_node import FactNode
-import py_rule.util as util
+from acab.abstract import action, contexts, query, transform
+from acab.abstract.engine import Engine
+from acab.abstract.sentence import Sentence
+from acab.working_memory.trie_wm.trie_working_memory import TrieWM
+from acab.working_memory.trie_wm.fact_node import FactNode
+import acab.util as util
 
-from py_rule.working_memory.trie_wm.parsing import ActionParser as AP
-from py_rule.working_memory.trie_wm.parsing import FactParser as FP
-from py_rule.working_memory.trie_wm.parsing import TotalParser as TotalP
-from py_rule.working_memory.trie_wm.parsing import QueryParser as QP
-from py_rule.working_memory.trie_wm.parsing import RuleParser as RP
-from py_rule.working_memory.trie_wm.parsing import TransformParser as TP
-from py_rule.working_memory.trie_wm import trie_rule as TR
+from acab.working_memory.trie_wm.parsing import ActionParser as AP
+from acab.working_memory.trie_wm.parsing import FactParser as FP
+from acab.working_memory.trie_wm.parsing import TotalParser as TotalP
+from acab.working_memory.trie_wm.parsing import QueryParser as QP
+from acab.working_memory.trie_wm.parsing import RuleParser as RP
+from acab.working_memory.trie_wm.parsing import TransformParser as TP
+from acab.working_memory.trie_wm import trie_rule as TR
 
 # import and register policies
 
