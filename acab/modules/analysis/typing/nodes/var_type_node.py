@@ -15,23 +15,26 @@ class VarTypeTrieNode(MonoTypedNode):
 
 
     def add_node(self, node):
-        assert(node.is_var)
+        assert(isinstance(node, MonoTypedNode))
         self._nodes.add(node)
-        self._var_names.add(node.name)
-        self.type_match_wrapper(node)
+        if node.is_var:
+            self._var_names.add(node.name)
+        # TODO: make this a weak ref?
         node._var_node = self
 
     def propagate(self):
         if self.type_instance is not None:
             for n in self._nodes:
-                n.type_match(self.type_instance)
+                n.unify_types(self.type_instance)
 
     def merge(self, nodes):
         assert(all([isinstance(x, VarTypeTrieNode) for x in nodes]))
         logging.debug("Merging Variables: {} into {}".format(", ".join([str(x.name) for x in nodes]),
                                                              self.value))
         # update self to point to all assignment nodes
-        dummy = [self.add_node(y) for x in nodes for y in x._nodes]
+        var_nodes = [y for x in nodes for y in x._nodes]
+        for n in var_nodes:
+            self.add_node(n)
 
     def clear_assignments(self):
         for node in self._nodes:
