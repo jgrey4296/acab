@@ -117,10 +117,12 @@ class TypingTests(unittest.TestCase):
         tc = TypeChecker()
         a_def = S("a").attach_statement(TypeDefinition([]))
         tc.add_definition(a_def)
+
         sen1 = S("test","b")
         sen1[-1]._data[TU.BIND_S] = True
         sen1[-1]._data[TU.TYPE_DEC_S] = TypeInstance(S("a"))
         tc.add_assertion(sen1)
+
         sen2 = S("test","c")
         sen2[-1]._data[TU.BIND_S] = True
         tc.add_assertion(sen2)
@@ -132,6 +134,7 @@ class TypingTests(unittest.TestCase):
 
         tc.validate()
         query_result = tc.query(query_sen)[0]
+
         self.assertIsNotNone(query_result._type_instance)
         self.assertEqual(query_result._type_instance, sen1[-1]._data[TU.TYPE_DEC_S])
 
@@ -232,7 +235,7 @@ class TypingTests(unittest.TestCase):
         ::first: name.$x(::String) END
         a(::first).name.$y(::Number)
         """
-        tc =TypeChecker()
+        tc = TypeChecker()
         str_def = S("String").attach_statement(TypeDefinition([]))
         num_def = S("Number").attach_statement(TypeDefinition([]))
         tc.add_definition(str_def, num_def)
@@ -458,25 +461,23 @@ class TypingTests(unittest.TestCase):
 
         #polytype 2
         type_2_sen = S("nested")
-        type_2_sen[-1]._data[TU.BIND_S] = True
         type_2_sen[-1]._data[TU.TYPE_DEC_S] = TypeInstance(S("poly", "type", "one"), ["y"])
         poly_2_def = S("poly", "type", "two").attach_statement(TypeDefinition([type_2_sen], params=["y"]))
         tc.add_definition(poly_2_def)
 
         #Assertion
-        assertion = S("a","nested","name","x")
-        assertion[0]._data[TU.BIND_S] = True
+        assertion = S("a","nested","name","z")
         assertion_param = TypeInstance(S("String"))
         assertion[0]._data[TU.TYPE_DEC_S] = TypeInstance(S("poly", "type", "two"), [assertion_param])
         assertion[-1]._data[TU.BIND_S] = True
         tc.add_assertion(assertion)
 
         #queries
-        query_sen1 = S("a","nested","name","x")
+        query_sen1 = S("a","nested","name","z")
         query_sen1[-1]._data[TU.BIND_S] = True
 
         self.assertIsNone(tc.query(query_sen1)[0]._type_instance)
-
+        
         tc.validate()
 
         self.assertEqual(tc.query(query_sen1)[0]._type_instance, TypeInstance(S("String")))
@@ -656,15 +657,33 @@ class TypingTests(unittest.TestCase):
 
 
 
-    @unittest.skip("TODO")
     def test_polytype_lacking_param(self):
         """
-        ::polytype: | $x | name.$x END
-        missing(::polytype).name.$y
+        ::simple.type: (::σ) end
+        ::polytype: (::σ) | $x | name.$x END
+        missing(::polytype).name.test(::simple.type)
         """
-        # TODO: can I infer upwards?
+        # this should apply generalisation
         # ie: missing(::polytype).name.$y(::String) -> ::polytype(::String)?
-        return
+        tc = TypeChecker()
+        simple_type = S("simple","type").attach_statement(TypeDefinition([]))
+        tc.add_definition(simple_type)
+
+        sen_struct = S("name","x")
+        sen_struct[-1]._data[TU.BIND_S] = True
+        poly_def = S("a","polytype").attach_statement(TypeDefinition([sen_struct], params=["x"]))
+        tc.add_definition(poly_def)
+
+        sen = S("missing","name","blah")
+        sen[0]._data[TU.TYPE_DEC_S] = TypeInstance(S("a", "polytype"))
+        sen[-1]._data[TU.TYPE_DEC_S] = TypeInstance(S("simple","type"))
+
+        tc.add_assertion(sen)
+
+        tc.validate()
+
+        result = tc.query(S("missing"))
+        self.assertIsNotNone(result[0].type_instance.vars[0])
 
 
     @unittest.skip("TODO")
