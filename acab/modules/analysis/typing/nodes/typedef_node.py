@@ -4,6 +4,9 @@ from acab.abstract.node import AcabNode
 from acab.abstract.trie.trie import Trie
 from acab.error import type_exceptions as te
 from acab.modules.analysis.typing.values.type_definition import TypeDefinition
+from acab.modules.analysis.typing.values.type_instance import TypeInstance
+from .var_type_node import VarTypeTrieNode
+
 
 import acab.modules.analysis.typing.util as util
 
@@ -57,20 +60,21 @@ class TypeDefTrieNode(AcabNode):
 
             for x in data.structure:
                 self.trie.add(x, None,
-                              update=lambda c, n, p, d: c.type_match_wrapper(n))
+                              update=lambda c, n, p, d: c.update(n))
 
-    def validate(self, usage_trie):
+    def validate(self, usage_trie, create_var):
         """ Given an instance trie node, type check / infer it
         against self's description of a type.
         returning a list of nodes that have been inferred
         """
-        assert(isinstance(usage_trie, TypeAssignmentTrieNode))
+        assert(callable(create_var))
+        assert(isinstance(usage_trie, TypeAssignmentTrieNode)), breakpoint()
         logging.debug(LOG_MESSAGES['validate_top'].format(repr(self),
                                                           repr(usage_trie)))
         if self.trie is None:
             raise te.TypeUndefinedException(self.value.name, usage_trie)
 
-        type_var_lookup = self._generate_polytype_bindings(usage_trie)
+        type_var_lookup = self._generate_polytype_bindings(usage_trie, create_var)
         # Loop over all elements of the defined type
         newly_typed = []
         # The queue holds tuples of the definition node, and its corresponding declaration nodes
@@ -78,12 +82,7 @@ class TypeDefTrieNode(AcabNode):
         while queue:
             curr_def, curr_usage_set = queue.pop(0)
             self._log_status(curr_def, curr_usage_set)
-            curr_def_type = self._retrieve_type_declaration(curr_def, type_var_lookup)
-            logging.debug("Current Def Type: {}".format(str(curr_def_type)))
-            self._check_local_type_structure(curr_def, curr_usage_set)
-
-            # Always assign current type to usage set
-            newly_typed += self._apply_type_to_set(curr_usage_set, curr_def_type)
+            newly_typed += self._check_local_type_structure(curr_def, curr_usage_set, type_var_lookup)
 
             # Handle Children:
             if len(curr_def._children) == 1:
@@ -94,10 +93,22 @@ class TypeDefTrieNode(AcabNode):
                                                         curr_usage_set)
 
             logging.debug("----------")
+
+        # apply type_var_lookup back onto the usage_trie if necessary
+        self._update_polytype_bindings(usage_trie, type_var_lookup)
+
         return newly_typed
 
+    def _update_polytype_bindings(self, usage_trie, lookup_dict):
+        assert(usage_trie.type_instance is not None)
+        assert(isinstance(lookup_dict, dict))
+        definition_bindings = [lookup_dict[x.name] for x in self.definition.vars]
+        # TODO: convert back to a type instance
+        definition_instances = [x if isinstance(x, TypeInstance) else x.type_instance for x in definition_bindings]
 
-    def _generate_polytype_bindings(self, usage_trie):
+        usage_trie.type_instance._vars = definition_instances
+
+    def _generate_polytype_bindings(self, usage_trie, create_var):
         """ Generate a temporary binding environment for the definition's
         type parameters """
         type_var_lookup = {}
@@ -106,6 +117,15 @@ class TypeDefTrieNode(AcabNode):
            and usage_trie.type_instance.vars:
             zipped = zip(self.definition.vars, usage_trie.type_instance.vars)
             type_var_lookup = {x.name: y for x, y in zipped}
+
+        # infer type vars in polytype if missing
+        for x in self.definition.vars:
+            if x in type_var_lookup:
+                continue
+            else:
+                # create a new type var
+                type_var_lookup[x.name] = create_var(x.name)
+
         return type_var_lookup
 
     def _retrieve_type_declaration(self, curr_def_node, type_var_lookup):
@@ -123,29 +143,45 @@ class TypeDefTrieNode(AcabNode):
 
         return result
 
-    def _check_local_type_structure(self, curr_def, curr_usage_set):
+    def _check_local_type_structure(self, curr_def, curr_usage_set, lookup):
         """ Compare Defined Structure to actual structure """
         if curr_def.value == util.ROOT_S:
-            return
-
-        for x in curr_usage_set:
-            if not x.is_var and curr_def.name != x.name:
-                raise te.TypeStructureMismatch(curr_def.name, [x.name])
-
-    def _apply_type_to_set(self, usage_set, def_type):
-        """ Apply type declarations to nodes """
-        if def_type is None:
             return []
-        type_attempts = [x.type_match(def_type) for x in usage_set]
+
+        if curr_def.is_var and curr_def.name in lookup:
+            curr_def = lookup[curr_def.name]
+
+        # TODO: unify curr_def type instance vars with those in lookup
+        _type = None
+        if isinstance(curr_def, TypeInstance):
+            _type = curr_def
+        else:
+            _type = curr_def.type_instance
+
+        if _type is not None:
+            _type = _type.build_type_instance(lookup)
+
+        if isinstance(curr_def, VarTypeTrieNode):
+            dummy = [curr_def.add_node(x) for x in curr_usage_set]
+
+
+        type_attempts = [x.unify_types(_type) for x in curr_usage_set]
         return [x for x in type_attempts if x is not None]
 
     def _handle_single_child(self, curr_def, curr_usage_set):
         # Special case of handle_multiple_children
         logging.debug("Curr Def has a single child")
         queue_vals = []
+        conflicts = []
         child = list(curr_def.children)[0]
 
         new_usage_set = [y for x in curr_usage_set for y in x.children]
+
+        if not child.is_var:
+            conflicts = [x for x in new_usage_set if not x.is_var and child.name != x.name]
+
+        if bool(conflicts):
+            raise te.TypeStructureMismatch(curr_def, conflicts)
 
         if bool(new_usage_set):
             queue_vals.append((child, new_usage_set))
