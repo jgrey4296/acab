@@ -61,7 +61,6 @@ class TypeInstance(Type):
             if isinstance(x, AcabValue) and x.name in the_dict:
                 new_args.append(the_dict[x.name])
             else:
-                assert(isinstance(x, TypeInstance))
                 new_args.append(x)
 
         return TypeInstance(self.path, params=new_args)
