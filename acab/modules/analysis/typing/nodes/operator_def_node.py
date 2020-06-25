@@ -50,22 +50,22 @@ class OperatorDefTrieNode(TypeDefTrieNode):
         for x in data.structure:
             # TODO This might need to generate new vars
             self._typedef_trie.add(x, {util.OP_DEF_S : data},
-                                   update=lambda c, n, p, d: c.type_match_wrapper(n))
+                                   update=lambda c, n, p, d: c.update(n))
 
-    def validate(self, usage_trie):
-
+    def validate(self, usage_trie, create_var):
+        assert(callable(create_var))
         assert(isinstance(usage_trie, TypeAssignmentTrieNode))
         logging.debug(LOG_MESSAGES['validate_top'].format(repr(self),
                                                           repr(usage_trie)))
-        if self._typedef_trie is None:
+        if self.trie is None:
             raise te.TypeUndefinedException(self.name, usage_trie)
 
         newly_typed = []
 
         # Match actual statements against the operator definition
         # getting back the matches, and how much they match
-        matches = self._typedef_trie.match_as_pattern(usage_trie,
-                                                      pattern_match_type_signature)
+        matches = self.trie.match_as_pattern(usage_trie,
+                                             pattern_match_type_signature)
 
         # Construct result dictionary
         # Combine all matches together by their usage
@@ -81,7 +81,8 @@ class OperatorDefTrieNode(TypeDefTrieNode):
             if len(match_group) == 1:
                 # apply types
                 for the_def, the_use in match_group[0]:
-                    newly_typed.append(the_use.type_match_wrapper(the_def))
+                    _type = the_def.type_instance
+                    newly_typed.append(the_use.unify_types(_type))
                 # refine the type of the operator at head
                 func_name = match_group[0][0]._data[util.OP_DEF_S]._func_name
                 match_group[0][1]._data[OPERATOR_S].__refine_op_func(func_name)
