@@ -47,6 +47,8 @@ If validate succeeds, it returns True. If it Fails, it raises an Exception
 """
 
 import logging as root_logger
+from functools import partial
+from uuid import uuid1
 
 import acab.error.type_exceptions as te
 
@@ -175,9 +177,11 @@ class TypeChecker(ActionOp):
         # TODO: get known operations
 
         # Use known types to infer unknown types
+        create_var = partial(util_create_type_var, self)
         dealt_with = set()
         while bool(typed_queue):
             head = typed_queue.pop()
+            assert(isinstance(head, TypeAssignmentTrieNode)), breakpoint()
             if head in dealt_with:
                 continue
             dealt_with.add(head)
@@ -193,12 +197,15 @@ class TypeChecker(ActionOp):
             # TODO: if var nodes also link *into* polytype def nodes
             # that would solve generalisation?
             if head.is_var:
-                head._var_node.type_match(head.type_instance)
+                head._var_node.unify_types(head.type_instance)
                 head._var_node.propagate()
-                typed_queue.update(head._var_node._nodes)
+                assert(all([isinstance(x, TypeAssignmentTrieNode) for x in head._var_node._nodes])), breakpoint()
+                typed_queue.update([x for x in head._var_node._nodes if isinstance(x, TypeAssignmentTrieNode)])
 
             # Apply a known type to a node, get back newly inferred types
-            typed_queue.update(head_type.validate(head))
+            results = head_type.validate(head, create_var)
+            assert(all([isinstance(x, TypeAssignmentTrieNode) for x in results])), breakpoint()
+            typed_queue.update(results)
 
             # if head validation returns only operators, and
             # the queue is only operators, then error
@@ -231,3 +238,11 @@ class TypeChecker(ActionOp):
 
         self.validate()
         self.clear_context()
+
+
+
+def util_create_type_var(tc, base_name):
+    # Create a new var name
+    assert(isinstance(base_name, str))
+    var_name = str(uuid1())
+    return tc._variables.add([base_name, var_name], [])
