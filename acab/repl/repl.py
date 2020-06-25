@@ -1,5 +1,5 @@
 """
-A Acab REPL, using default of TrieWM
+An Acab REPL, using default of TrieWM
 """
 # Setup root_logger:
 from pyparsing import ParseException
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     engine, dummy = ReC.get(ReC.ReplE.MODULE)(engine, {'params': ['acab.modules.operators']})
     engine, dummy = ReC.get(ReC.ReplE.MODULE)(engine, {'params': ['acab.modules.structures']})
 
-    data = { 'prompt' : 'AcabREPL: ',
+    data = { 'prompt' : 'ACAB REPL: ',
              'prompt_ml' : '... ',
              'command': ReC.ReplE.NOP,
              'params' : [],

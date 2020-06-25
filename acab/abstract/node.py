@@ -30,7 +30,7 @@ class AcabNode:
             data.update(node._data)
 
         self._uuid = uuid1()
-        # Wrap in a AcabValue if necessary:
+        # Wrap in an AcabValue if necessary:
         self._value = AcabValue.safe_make(value)
 
         self._path = None

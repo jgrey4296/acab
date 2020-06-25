@@ -13,7 +13,7 @@ logging = root_logger.getLogger(__name__)
 
 
 def make_valbind(tokens):
-    # TODO: replace this with a acab value
+    # TODO: replace this with an acab value
     data = {BIND_S: False,
             OPT_S: False,
             VALUE_TYPE_S: NAME_S}
