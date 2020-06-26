@@ -78,8 +78,9 @@ class TypeDefinition(TypeStatement):
             input_vars.difference_update(temp['in'])
             input_vars.difference_update(temp['out'])
 
-        if bool(input_vars):
-            raise AcabParseException()
+        # TODO: FIX THIS: was not using nested polytype vars
+        # if bool(input_vars):
+        #     raise AcabParseException()
 
     def unify_structure_variables(self):
 
