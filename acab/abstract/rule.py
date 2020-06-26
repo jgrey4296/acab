@@ -14,7 +14,6 @@ from .query import Query
 
 logging = root_logger.getLogger(__name__)
 
-# TODO: create subclass that flattens/aggregates contexts
 class Rule(ProductionContainer):
     """ A Rule holds a query (of N Clauses), a set of transforms,
     and a set of actions. It can be tagged with attributes.
