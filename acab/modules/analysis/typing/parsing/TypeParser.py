@@ -14,7 +14,7 @@ def make_type_dec(toks):
     path = toks[TYU.SEN_S]
     args = []
     if TYU.ARG_S in toks:
-        args = toks[TYU.ARG_S][:]
+        args = [x[1] if isinstance(x, tuple) else x for x in toks[TYU.ARG_S][:]]
     return (TYU.TYPE_DEC_S, TypeInstance(path, args))
 
 # BASIC SENTENCE NEEDS TO BE POPULATED
