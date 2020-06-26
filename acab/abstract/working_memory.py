@@ -29,7 +29,7 @@ logging = root_logger.getLogger(__name__)
 class WorkingMemory:
     """ The Abstract Working Memory """
 
-    def __init__(self):
+    def __init__(self, init):
         self._have_added_types = False
         self._have_built_operators = False
         self._module_hotload_provision = {}
