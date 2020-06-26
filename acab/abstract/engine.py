@@ -23,7 +23,7 @@ class Engine:
     """ The Abstract class of a production system engine. """
 
     def __init__(self, wm_constructor, modules=None, path=None, init=None):
-        assert(issubclass(wm_constructor, WorkingMemory))
+        assert(callable(wm_constructor))
         self.__kb_constructor = wm_constructor
         self._working_memory = wm_constructor(init)
         # to be updated with printed representations
