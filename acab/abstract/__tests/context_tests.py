@@ -98,31 +98,6 @@ class ContextTests(unittest.TestCase):
             self.assertEqual(x[1], y)
 
 
-    @unittest.skip("TODO")
-    def test_depth_apply(self):
-        pass
-
-    @unittest.skip("TODO")
-    def test_breadth_apply(self):
-        pass
-
-    @unittest.skip("TODO")
-    def test_breadth_apply_alt_sequence(self):
-        pass
-
-    @unittest.skip("TODO")
-    def test_non_bind_value_match(self):
-        pass
-
-    @unittest.skip("TODO")
-    def test_existing_bind_value_match(self):
-        pass
-
-    @unittest.skip("TODO")
-    def test_create_new_bindings(self):
-        pass
-
-
 
 if __name__ == "__main__":
     #run python $filename to use this logging setup
