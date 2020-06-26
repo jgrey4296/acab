@@ -1,0 +1,620 @@
+import unittest
+import logging
+
+import acab.error.type_exceptions as te
+
+from acab.abstract.bootstrap_parser import BootstrapParser
+from acab.abstract.transform import TransformComponent
+from acab.modules.analysis.typing.type_checker import TypeChecker
+from acab.modules.analysis.typing.values.type_definition import TypeDefinition
+from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition
+from acab.modules.analysis.typing.values.type_instance import TypeInstance
+from acab.modules.analysis.typing.typing_module import TypingSpec
+
+from acab.modules.operators.standard_operators import StandardOperators
+from acab.abstract import action
+from acab.abstract.production_operator import ProductionOperator
+
+from acab.working_memory.trie_wm.trie_working_memory import TrieWM
+
+from acab.abstract.sentence import Sentence
+from acab.abstract.node import AcabNode
+from acab.modules.analysis.typing import util as TU
+from acab.abstract.printing import util as PrU
+from acab import util
+from acab.abstract.value import AcabValue
+
+from acab.modules.analysis.typing.parsing import TypeDefParser as TD
+from acab.working_memory.trie_wm.parsing import FactParser as FP
+from acab.working_memory.trie_wm.parsing import ActionParser as AP
+
+def S(*in_string):
+    return Sentence([AcabValue(x) for x in in_string])
+
+
+class TypingCombinedTests(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        bp = BootstrapParser()
+        twm = TrieWM()
+        os = StandardOperators()
+        ts = TypingSpec()
+        twm.assert_parsers(bp)
+        os.assert_parsers(bp)
+        ts.assert_parsers(bp)
+        ts.query_parsers(bp)
+        os.query_parsers(bp)
+        twm.query_parsers(bp)
+
+    def setUp(self):
+        self.tc = TypeChecker()
+
+    def tearDown(self):
+        return 1
+
+    #----------
+    def test_init_parse(self):
+        def1 = TD.parseString("blah.x: (::σ) end")[0]
+        inst = def1[-1].build_type_instance()
+        self.tc.add_definition(def1)
+
+        sen1 = FP.parseString("a.b.c(::blah.x)")[0]
+        self.tc.add_assertion(sen1)
+        self.tc.validate()
+
+        query1 = FP.parseString("a.b.c")[0]
+        result = self.tc.query(query1)
+        self.assertEqual(result[0].type_instance, inst)
+
+
+    def test_add_definition(self):
+        """ :: a END """
+        type_def = TD.parseString("a.test.definition.x: (::σ) end")[0]
+        self.assertEqual(len(self.tc._structural_definitions), 0)
+        self.tc.add_definition(type_def)
+        self.assertEqual(len(self.tc._structural_definitions), 4)
+        defs = self.tc._structural_definitions.get_nodes(lambda x: isinstance(x.value, TypeDefinition))
+        self.assertEqual(1, len(defs))
+
+    def test_add_assertion(self):
+        """ a.b.c.d """
+        self.assertEqual(len(self.tc._declarations), 0)
+        self.tc.add_assertion(FP.parseString("a.b.c.d")[0])
+        self.assertEqual(len(self.tc._declarations), 4)
+
+    def test_get_known_typed_nodes(self):
+        """ a.$b(::a), a.$c """
+
+        self.assertFalse(self.tc._get_known_typed_nodes())
+        sen = FP.parseString("a.$b(::a)")[0]
+        self.tc.add_assertion(sen)
+        self.assertEqual(len(self.tc._get_known_typed_nodes()), 1)
+        sen2 = FP.parseString("a.$c")[0]
+        self.tc.add_assertion(sen2)
+        self.assertEqual(len(self.tc._get_known_typed_nodes()), 1)
+
+    def test_basic_query(self):
+        """ ::a END, a.$b """
+        type_def = TD.parseString("a.test.definition.x: (::σ) end")[0]
+        self.tc.add_definition(type_def)
+        sen1 = FP.parseString("a.$b")[0]
+        self.tc.add_assertion(sen1)
+
+        query_sen = FP.parseString("a.$b")[0]
+        results = self.tc.query(query_sen)
+        self.assertEqual(len(results), 1)
+
+    def test_basic_query_fail(self):
+        """ ::a END, a.$b """
+
+        type_def = TD.parseString("a.test.definition.x: (::σ) end")[0]
+        self.tc.add_definition(type_def)
+        sen1 = FP.parseString("a.$b")[0]
+        self.tc.add_assertion(sen1)
+
+        query_sen = FP.parseString("a.$c")[0]
+        results = self.tc.query(query_sen)
+        self.assertEqual(len(results), 0)
+
+    def test_basic_inference(self):
+        """ ::a END, test.$b(::a), test.$c """
+
+        a_def = TD.parseString("a: (::σ) end")[0]
+        self.tc.add_definition(a_def)
+
+        sen1 = FP.parseString("test.$b(::a)")[0]
+        self.tc.add_assertion(sen1)
+
+        sen2 = FP.parseString("test.$c")[0]
+        self.tc.add_assertion(sen2)
+
+        query_sen = FP.parseString("test.$c")[0]
+        query_result = self.tc.query(query_sen)[0]
+        self.assertIsNone(query_result._type_instance)
+
+        self.tc.validate()
+        query_result = self.tc.query(query_sen)[0]
+
+        self.assertIsNotNone(query_result._type_instance)
+        self.assertEqual(query_result._type_instance, sen1[-1]._data[TU.TYPE_DEC_S])
+
+    def test_type_conflict(self):
+        """ σ::a END, σ::b END test.$q(::a), test.$q(::b) """
+
+        a_def = TD.parseString("a: (::σ) end")[0]
+        b_def = TD.parseString("b: (::σ) end")[0]
+        self.tc.add_definition(a_def, b_def)
+        sen1 = FP.parseString("test.$q(::a)")[0]
+        self.tc.add_assertion(sen1)
+        sen2 = FP.parseString("test.$q(::b)")[0]
+
+        with self.assertRaises(te.TypeConflictException):
+            self.tc.add_assertion(sen2)
+
+    def test_type_undefined(self):
+        """ a.$b(::a) """
+
+        sen1 = FP.parseString("a.$b(::a)")[0]
+        self.tc.add_assertion(sen1)
+
+        with self.assertRaises(te.TypeUndefinedException):
+            self.tc.validate()
+
+    def test_type_redefinition(self):
+        """ ::a END, ::a END """
+
+        a_def = TD.parseString("a: (::σ) end")[0]
+        self.tc.add_definition(a_def)
+        with self.assertRaises(te.TypeRedefinitionException):
+            duplicate_a_def = TD.parseString("a: (::σ)\na.b.c\nend")[0]
+            self.tc.add_definition(duplicate_a_def)
+
+    def test_type_duplicate_definition(self):
+        """ ::a END, ::a END """
+
+        a_def = TD.parseString("a.b: (::σ) end")[0]
+        a_def2 = TD.parseString("a.b: (::σ) end")[0]
+        self.tc.add_definition(a_def)
+        self.tc.add_definition(a_def2)
+
+        self.assertEqual(len(self.tc._structural_definitions), 2)
+
+    def test_variable_conflict(self):
+        """ ::String: END ::Number: END
+        a.$x(::.String) b.$x(::.Number)
+        """
+
+        str_def = TD.parseString("string: (::σ) end")[0]
+        num_def = TD.parseString("number: (::σ) end")[0]
+        self.tc.add_definition(str_def, num_def)
+
+        sen1 = FP.parseString("a.$b(::string)")[0]
+        self.tc.add_assertion(sen1)
+        sen2 = FP.parseString("a.$b(::number)")[0]
+        with self.assertRaises(te.TypeConflictException):
+            self.tc.add_assertion(sen2)
+
+    def test_structure_mismatch(self):
+        """ ::String: END, ::Number: END
+        ::first: name.$x(::.String) END
+        a(::first).b
+        """
+
+        a_def = TD.parseString("a: (::σ) end")[0]
+        b_def = TD.parseString("b: (::σ) end")[0]
+        self.tc.add_definition(a_def, b_def)
+
+        first_def = TD.parseString("first: (::σ)\nname.$x(::a)\nend")[0]
+        self.tc.add_definition(first_def)
+
+        sen = FP.parseString("a(::first).b")[0]
+        self.tc.add_assertion(sen)
+
+        with self.assertRaises(te.TypeStructureMismatch):
+            self.tc.validate()
+
+    def test_structure_type_conflict(self):
+        """ ::String: END, ::Number: END
+        ::first: name.$x(::String) END
+        a(::first).name.$y(::Number)
+        """
+
+        str_def = TD.parseString("string: (::σ) end")[0]
+        num_def = TD.parseString("number: (::σ) end")[0]
+        self.tc.add_definition(str_def, num_def)
+
+        first_def = TD.parseString("first: (::σ)\nname.$x(::string)\nend")[0]
+        self.tc.add_definition(first_def)
+
+        sen = FP.parseString("a(::first).name.$y(::number)")[0]
+        self.tc.add_assertion(sen)
+
+        with self.assertRaises(te.TypeConflictException):
+            self.tc.validate()
+
+    def test_typing_nested_vars(self):
+        """ ::String: END, ::Number: END
+        ::first.type: name.$x(::String).$y(::Number) END
+        .bob(::first.type).name.$z.$q
+        """
+
+        str_def = TD.parseString("string: (::σ) end")[0]
+        num_def = TD.parseString("number: (::σ) end")[0]
+        self.tc.add_definition(str_def, num_def)
+
+
+        first_def = TD.parseString("first: (::σ)\nname.$x(::string).$y(::number)\nend")[0]
+        self.tc.add_definition(first_def)
+
+        sen = FP.parseString("bob(::first).name.$z.$q")[0]
+        self.tc.add_assertion(sen)
+
+        #Query the First Variable, should be untyped
+        query_sen = FP.parseString("bob.name.$z")[0]
+        self.assertIsNone(self.tc.query(query_sen)[0]._type_instance)
+        #then the second, should be untyped
+        query_sen = FP.parseString("bob.name.$z.$q")[0]
+        self.assertIsNone(self.tc.query(query_sen)[0]._type_instance)
+
+        self.tc.validate()
+        #Check the first var is inferred
+        query_sen = FP.parseString("bob.name.$z")[0]
+        str_instance = str_def[-1].build_type_instance()
+        self.assertEqual(self.tc.query(query_sen)[0]._type_instance, str_instance)
+        #Check the second var is inferred
+        query_sen = FP.parseString("bob.name.$z.$q")[0]
+        num_instance = num_def[-1].build_type_instance()
+        self.assertEqual(self.tc.query(query_sen)[0]._type_instance, num_instance)
+
+    def test_typing_nested_types(self):
+        """ ::String: END, ::Number: END
+        ::small.type: name.$x(::String) END
+        ::large.type: component.$x(::small.type) END
+        a(::large.type).component.$q.name.$w
+        """
+
+        str_def = TD.parseString("string: (::σ) end")[0]
+        num_def = TD.parseString("number: (::σ) end")[0]
+        self.tc.add_definition(str_def, num_def)
+
+        #Small Type
+        small_def = TD.parseString("small.type: (::σ)\nname.$x(::string)\nend")[0]
+        self.tc.add_definition(small_def)
+
+        #Large Type
+        large_def = TD.parseString("large.type: (::σ)\ncomponent.$x(::small.type)\nend")[0]
+        self.tc.add_definition(large_def)
+
+        assertion = FP.parseString("a(::large.type).component.$q.name.$w")[0]
+        self.tc.add_assertion(assertion)
+
+        query_sen1 = FP.parseString("a.component.$q")[0]
+        query_sen2 = FP.parseString("a.component.$q.name.$w")[0]
+
+        self.assertIsNone(self.tc.query(query_sen1)[0]._type_instance)
+        self.assertIsNone(self.tc.query(query_sen2)[0]._type_instance)
+
+        self.tc.validate()
+
+        instance = small_def[-1].build_type_instance()
+
+        self.assertEqual(self.tc.query(query_sen1)[0]._type_instance, instance)
+        self.assertEqual(self.tc.query(query_sen2)[0]._type_instance, TypeInstance(S("string")))
+
+    def test_typing_nested_types_fail(self):
+        """ ::String: END, ::Number: END
+        ::small.type: name.$x(::String) END
+        ::large.type: component.$x(::small.type) END
+        a(::large.type).component.$q.name.$w(::Number)
+        """
+
+        str_def = TD.parseString("string: (::σ) end")[0]
+        num_def = TD.parseString("number: (::σ) end")[0]
+        self.tc.add_definition(str_def, num_def)
+
+        #Small Type
+        small_def = TD.parseString("small.type: (::σ)\nname.$x(::string)\nend")[0]
+        self.tc.add_definition(small_def)
+
+        #Large Type
+        large_def = TD.parseString("large.type: (::σ)\ncomponent.$x(::small.type)\nend")[0]
+        self.tc.add_definition(large_def)
+
+        assertion = FP.parseString("a(::large.type).component.$q.name.$w(::number)")[0]
+        self.tc.add_assertion(assertion)
+
+        query_sen1 = FP.parseString("a.component.$q")[0]
+
+        query_sen2 = FP.parseString("a.component.$q.name.$w")[0]
+
+        self.assertIsNone(self.tc.query(query_sen1)[0]._type_instance)
+
+        num_instance = num_def[-1].build_type_instance()
+        self.assertEqual(self.tc.query(query_sen2)[0]._type_instance, num_instance)
+
+        with self.assertRaises(te.TypeConflictException):
+            self.tc.validate()
+
+    def test_typing_polytype(self):
+        """ ::String: END, ::Number: END
+        ::polytype: | $x | name.$x END
+        a(::polytype(::String)).name.$q
+        b(::polytype(::Number)).name.$t
+        """
+
+        str_def = TD.parseString("string: (::σ) end")[0]
+        num_def = TD.parseString("number: (::σ) end")[0]
+        self.tc.add_definition(str_def, num_def)
+
+
+        #polytype
+        poly_def = TD.parseString("poly.type: (::σ)\n| $x |\n\nname.$x\nend")[0]
+        self.tc.add_definition(poly_def)
+
+        #assertions
+        assertion = FP.parseString("a(::poly.type(::string)).name.$q")[0]
+        self.tc.add_assertion(assertion)
+
+        assertion2 = FP.parseString("b(::poly.type(::number)).name.$t")[0]
+        self.tc.add_assertion(assertion2)
+
+        #queries
+        query_sen1 = FP.parseString("a.name.$q")[0]
+
+        query_sen2 = FP.parseString("b.name.$t")[0]
+
+        self.assertIsNone(self.tc.query(query_sen1)[0]._type_instance)
+        self.assertIsNone(self.tc.query(query_sen2)[0]._type_instance)
+
+        self.tc.validate()
+        self.assertEqual(self.tc.query(query_sen1)[0]._type_instance, TypeInstance(S("string")))
+        self.assertEqual(self.tc.query(query_sen2)[0]._type_instance, TypeInstance(S("number")))
+
+    def test_typing_polytype_nested(self):
+        """ ::String: END, ::Number: END
+        ::ptypeOne[$x]: name.$x END
+        ::ptypeTwo[$y]: nested(::ptypeOne(::$y)) END
+        a(::ptypeTwo(::String)).nested.name.$x
+        """
+
+        str_def = TD.parseString("string: (::σ) end")[0]
+        num_def = TD.parseString("number: (::σ) end")[0]
+        self.tc.add_definition(str_def, num_def)
+
+        #polytype 1
+        poly_1_def = TD.parseString("poly.type.one: (::σ)\n | $x |\n\nname.$x\nend")[0]
+        self.tc.add_definition(poly_1_def)
+
+        #polytype 2
+        poly_2_def = TD.parseString("poly.type.two: (::σ)\n | $y |\n\nnested(::poly.type.one($y))\nend")[0]
+        self.tc.add_definition(poly_2_def)
+
+        #Assertion
+        assertion = FP.parseString("a(::poly.type.two(::string)).nested.name.$z")[0]
+        self.tc.add_assertion(assertion)
+
+        #queries
+        query_sen1 = FP.parseString("a.nested.name.$z")[0]
+
+        self.assertIsNone(self.tc.query(query_sen1)[0]._type_instance)
+
+        self.tc.validate()
+
+        self.assertEqual(self.tc.query(query_sen1)[0]._type_instance, TypeInstance(S("string")))
+
+    def test_typing_polytype_multi_param(self):
+        """ ::String: END, ::Number: END
+        ::ptypeOne[$x, $y]: name.$x, age.$y END
+        a(::ptypeOne(::String, ::Number)).name.$q
+        a.age.$w
+        """
+
+        str_def = TD.parseString("string: (::σ) end")[0]
+        num_def = TD.parseString("number: (::σ) end")[0]
+        self.tc.add_definition(str_def, num_def)
+
+        #polytype
+        poly_def = TD.parseString("poly.type: (::σ)\n | $x, $y |\n\nname.$x\nage.$y\nend")[0]
+        self.tc.add_definition(poly_def)
+
+        #assertions
+        assertion = FP.parseString("a(::poly.type(::string, ::number)).name.$q")[0]
+        self.tc.add_assertion(assertion)
+
+        assertion2 = FP.parseString("a.age.$w")[0]
+        self.tc.add_assertion(assertion2)
+
+        #queries
+        query_sen1 = FP.parseString("a.name.$q")[0]
+
+        query_sen2 = FP.parseString("a.age.$w")[0]
+
+        self.assertIsNone(self.tc.query(query_sen1)[0]._type_instance)
+        self.assertIsNone(self.tc.query(query_sen2)[0]._type_instance)
+        self.tc.validate()
+
+        self.assertEqual(self.tc.query(query_sen1)[0]._type_instance, TypeInstance(S("string")))
+        self.assertEqual(self.tc.query(query_sen2)[0]._type_instance, TypeInstance(S("number")))
+
+    def test_typing_context_clear(self):
+
+
+        sen = FP.parseString("a.test.$var")[0]
+        self.tc.add_assertion(sen)
+
+        sen2 = FP.parseString("$var.blah")[0]
+        self.tc.add_assertion(sen2)
+
+        self.assertEqual(len(self.tc._variables), 1)
+        self.assertIsNotNone(self.tc.query(sen)[0]._var_node)
+        self.assertEqual(len(self.tc.query(sen2)), 1)
+
+        self.tc.clear_context()
+
+        self.assertEqual(len(self.tc._variables), 0)
+        self.assertIsNone(self.tc.query(sen)[0]._var_node)
+        self.assertEqual(len(self.tc.query(sen2)), 0)
+
+    def test_typing_polytype_fail(self):
+        """
+        ::String: END, ::Number: END
+        ::polytype: | $x | name.$x END
+        a(::polytype(::String)).name.$q(::Number)
+        """
+
+        str_def = TD.parseString("string: (::σ) end")[0]
+        num_def = TD.parseString("number: (::σ) end")[0]
+        self.tc.add_definition(str_def, num_def)
+
+        # define poly type
+        poly_def = TD.parseString("polytype: (::σ)\n| $x |\n\nname.$x\nend")[0]
+        self.tc.add_definition(poly_def)
+
+
+        # assert
+        assertion = FP.parseString("a(::polytype(::string)).name.$q(::number)")[0]
+        self.tc.add_assertion(assertion)
+
+        with self.assertRaises(te.TypeConflictException):
+            self.tc.validate()
+
+    def test_typing_polytype_nested_fail(self):
+        """
+        ::String: END, ::Number: END
+        ::polytype.small: | $x | name.$x END
+        ::polytype.large: | $x | sub(::polytype.small(::$x)) END
+        a(::polytype.large(::String)).sub.name.$q(::Number)
+        """
+        str_def = TD.parseString("string: (::σ) end")[0]
+        num_def = TD.parseString("number: (::σ) end")[0]
+        self.tc.add_definition(str_def, num_def)
+
+        #polytype 1
+        poly_1_def = TD.parseString("poly.type.one: (::σ)\n | $x |\n\nname.$x\nend")[0]
+        self.tc.add_definition(poly_1_def)
+
+        #polytype 2
+        poly_2_def = TD.parseString("poly.type.two: (::σ)\n | $y |\n\nnested(::poly.type.one($y))\nend")[0]
+        self.tc.add_definition(poly_2_def)
+
+        #Assertion
+        assertion = FP.parseString("a(::poly.type.two(::string)).nested.name.$x(::number)")[0]
+        self.tc.add_assertion(assertion)
+
+        with self.assertRaises(te.TypeConflictException):
+            self.tc.validate()
+
+    def test_typing_polytype_multi_param_fail(self):
+        """
+        ::String: END, ::Number: END
+        ::polytype.small: | $x, $y |
+            name.$x
+            age.$y
+        END
+        ::polytype.large: | $x, $y | sub(::polytype.small(::$x, ::$y)) END
+        a(::polytype.large(::String, ::Number)).sub.name.$q(::String)
+        a.sub.age.$w(::String)
+        """
+        str_def = TD.parseString("string: (::σ) end")[0]
+        num_def = TD.parseString("number: (::σ) end")[0]
+        self.tc.add_definition(str_def, num_def)
+
+        #polytype
+        poly_def = TD.parseString("poly.type: (::σ)\n | $x, $y |\n\nname.$x\nage.$y\nend")[0]
+        self.tc.add_definition(poly_def)
+
+        #assertions
+        assertion = FP.parseString("a(::poly.type(::string, ::number)).name.$q(::string)")[0]
+        self.tc.add_assertion(assertion)
+
+        assertion2 = FP.parseString("a.age.$w(::string)")[0]
+        self.tc.add_assertion(assertion2)
+
+        with self.assertRaises(te.TypeConflictException):
+            self.tc.validate()
+
+
+
+    def test_polytype_lacking_param(self):
+        """
+        ::simple.type: (::σ) end
+        ::polytype: (::σ) | $x | name.$x END
+        missing(::polytype).name.test(::simple.type)
+        """
+        # this should apply generalisation
+        # ie: missing(::polytype).name.$y(::String) -> ::polytype(::String)?
+
+        simple_type = TD.parseString("simple.type: (::σ) end")[0]
+        self.tc.add_definition(simple_type)
+
+        poly_def = TD.parseString("a.polytype: (::σ)\n| $x |\n\nname.$x\nend")[0]
+        self.tc.add_definition(poly_def)
+
+        sen = FP.parseString("missing(::a.polytype).name.blah(::simple.type)")[0]
+        self.tc.add_assertion(sen)
+
+        self.tc.validate()
+
+        result = self.tc.query(S("missing"))
+        self.assertIsNotNone(result[0].type_instance.vars[0])
+
+
+    @unittest.skip("TODO")
+    def test_polytype_nested_lacking_param(self):
+        # TODO
+        return
+
+
+    @unittest.skip("TODO")
+    def test_add_rule(self):
+        # TODO
+        return
+
+
+    def test_add_operation(self):
+        """ ::Number end
+        λ::AddOp: $x(::Number).$x.$x
+        """
+        str_def = TD.parseString("string: (::σ) end")[0]
+        num_def = TD.parseString("number: (::σ) end")[0]
+        self.tc.add_definition(str_def, num_def)
+
+        op_def = TD.parseString("AddOp: (::λ) $x(::number).$x.$x")[0]
+        self.tc.add_definition(op_def)
+
+        #Add an operation use
+        trans_params = S("x", "y")
+        trans_params[0]._data[TU.BIND_S] = True
+        trans_params[1]._data[TU.BIND_S] = True
+        rebind = S("z")[0]
+        rebind._data[TU.BIND_S] = True
+        transform = TransformComponent("AddOp", trans_params, rebind=rebind)
+
+        [self.tc.add_assertion(x) for x in transform.to_local_sentences()]
+
+        self.tc.validate()
+
+
+    @unittest.skip("TODO")
+    def test_infer_from_operation(self):
+        # TODO
+        return
+
+
+    @unittest.skip("TODO")
+    def test_infer_polytype_param_from_use(self):
+        # TODO
+        return
+
+
+if __name__ == "__main__":
+    #use python $filename to use this logging setup
+    LOGLEVEL = logging.INFO
+    logFileName = "log.typing_tests"
+    logging.basicConfig(filename=logFileName, level=LOGLEVEL, filemode='w')
+    console = logging.StreamHandler()
+    console.setLevel(logging.WARN)
+    logging.getLogger().addHandler(console)
+    unittest.main()
+    #reminder: user logging.getLogger().setLevel(logging.NOTSET) for log control
