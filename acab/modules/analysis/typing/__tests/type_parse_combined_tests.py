@@ -534,8 +534,6 @@ class TypingCombinedTests(unittest.TestCase):
         with self.assertRaises(te.TypeConflictException):
             self.tc.validate()
 
-
-
     def test_polytype_lacking_param(self):
         """
         ::simple.type: (::σ) end
@@ -558,19 +556,6 @@ class TypingCombinedTests(unittest.TestCase):
 
         result = self.tc.query(S("missing"))
         self.assertIsNotNone(result[0].type_instance.vars[0])
-
-
-    @unittest.skip("TODO")
-    def test_polytype_nested_lacking_param(self):
-        # TODO
-        return
-
-
-    @unittest.skip("TODO")
-    def test_add_rule(self):
-        # TODO
-        return
-
 
     def test_add_operation(self):
         """ ::Number end
@@ -596,16 +581,81 @@ class TypingCombinedTests(unittest.TestCase):
         self.tc.validate()
 
 
+    @unittest.skip("waiting on local structure unifying type params")
+    def test_polytype_nested_lacking_param(self):
+        """
+        ::simple.type: (::σ) end
+        ::polytype: (::σ) | $x | name.$x END
+        missing(::polytype).name.test(::simple.type)
+        """
+        # this should apply generalisation
+        # ie: missing(::polytype).name.$y(::String) -> ::polytype(::String)?
+
+        simple_type = TD.parseString("simple.type: (::σ) end")[0]
+        self.tc.add_definition(simple_type)
+
+        poly_def_1 = TD.parseString("a.first.polytype: (::σ)\n| $x |\n\nname.$x\nend")[0]
+        self.tc.add_definition(poly_def_1)
+
+        poly_def_2 = TD.parseString("a.second.polytype: (::σ)\n| $x |\n\nsub(::a.first.polytype($x))\nend")[0]
+        self.tc.add_definition(poly_def_2)
+
+        sen = FP.parseString("missing(::a.second.polytype).sub.name.blah(::simple.type)")[0]
+        self.tc.add_assertion(sen)
+
+        self.tc.validate()
+
+        result = self.tc.query(S("missing"))
+        self.assertIsNotNone(result[0].type_instance.vars[0])
+
+
+    @unittest.skip("TODO")
+    def test_add_rule(self):
+        # TODO
+        return
+
+
     @unittest.skip("TODO")
     def test_infer_from_operation(self):
         # TODO
         return
 
-
-    @unittest.skip("TODO")
+    @unittest.skip("waiting on var -> type var coercion")
     def test_infer_polytype_param_from_use(self):
-        # TODO
-        return
+        """
+        simple.type: (::σ) end
+        poly.type: (::σ) | $x | name.$x end
+        a(::poly.type($a)).name.$x(::simple.type)
+        """
+        simple_type = TD.parseString("simple.type: (::σ) end")[0]
+        self.tc.add_definition(simple_type)
+
+        poly_def = TD.parseString("a.polytype: (::σ)\n| $x |\n\nname.$x\nend")[0]
+        self.tc.add_definition(poly_def)
+
+        sen = FP.parseString("missing(::a.polytype($z)).name.blah(::simple.type)")[0]
+        self.tc.add_assertion(sen)
+
+        self.tc.validate()
+
+        result = self.tc.query(S("missing"))
+
+
+    def test_sum_type(self):
+        """
+        a.sum.type: (::Σσ)\n a: (::σ) end\n b: (::σ) end\n end
+
+        first(::a.sum.type.a)
+        second(::a.sum.type.b)
+        """
+        sum_type = TD.parseString("a.sum.type: (::Σσ)\na: (::σ) end\n\nb: (::σ) end\nend")[0]
+        self.tc.add_definition(sum_type)
+
+        assertion_1 = FP.parseString("first(::a.sum.type.a)")[0]
+        self.tc.add_assertion(assertion_1)
+
+        assertion_2 = FP.parseString("second(::a.sum.type.b)")[0]
+        self.tc.add_assertion(assertion_2)
 
 
 if __name__ == "__main__":
