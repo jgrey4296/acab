@@ -83,13 +83,17 @@ class TypeChecker(ActionOp):
         self._variables = Trie(VarTypeTrieNode)
 
     def __str__(self):
-        return "Structs: {}, Funcs: {}, Decs: {}, Vars: {}".format(str(self._structural_definitions).replace('\n', ' '),
-                                                                   str(self._functional_definitions).replace('\n', ' '),
-                                                                   str(self._declarations).replace('\n', ' '),
-                                                                   str(self._variables).replace('\n', ' '))
+        output = []
+        output.append("Structs: {}".format(str(self._structural_definitions).replace('\n', ' ')))
+        output.append("Funcs  : {}".format(str(self._functional_definitions).replace('\n', ' ')))
+        output.append("Decs   : {}".format(str(self._declarations).replace('\n', ' ')))
+        output.append("Vars   : {}".format(str(self._variables).replace('\n', ' ')))
+
+        return "\n".join(output)
 
     def __repr__(self):
         return "TypeChecker({})".format(str(self))
+
 
     def __call__(self, data=None, engine=None):
         """ Pass in data to type check """
@@ -115,6 +119,7 @@ class TypeChecker(ActionOp):
         logging.info("Checking Totality")
         self.validate()
 
+
     def _get_known_typed_nodes(self):
         # propagate known variable types
         dummy = [x.propagate() for x in self._variables.get_nodes(lambda x: x.type_instance is not None)]
@@ -123,8 +128,8 @@ class TypeChecker(ActionOp):
         return val_queue
 
     def _merge_equivalent_nodes(self):
-        """ merge equivalent variables. ie:
-        a.b.$c and a.b.$d share the same ._variables node """
+        """ merge equivalent variables.
+        ie: a.b.$c and a.b.$d share the same ._variables node """
         parents_of_equiv_vars = self._declarations.get_nodes(TU.has_equivalent_vars_pred)
         for p in parents_of_equiv_vars:
             var_nodes = {x._var_node for x in p._children.values() if x.is_var}
@@ -189,6 +194,7 @@ class TypeChecker(ActionOp):
             # TODO branch on structural /functional
 
             # check the head
+            # TODO: handle sum type paths
             head_type = self._structural_definitions.query(head.type_instance.path)
             if head_type is None:
                 raise te.TypeUndefinedException(head.type_instance, head)
