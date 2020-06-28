@@ -31,7 +31,7 @@ def make_op_def(toks):
 
 def make_sum_def(toks):
     sum_def = TypeDefinition(toks[:])
-    return (type_def.type, type_def)
+    return (sum_def.type, sum_def)
 
 
 

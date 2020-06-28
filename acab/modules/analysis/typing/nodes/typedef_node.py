@@ -23,7 +23,6 @@ LOG_MESSAGES['no_children'] = "Val: No Children, assigning type: {} to {}"
 LOG_MESSAGES['match_type_usage'] = "Matching Type {} onto usage set"
 LOG_MESSAGES['mult_child'] = "Current Def has multiple children, checking for conflicts in structure"
 
-
 class TypeDefTrieNode(AcabNode):
     """ A Node describing a type definition """
 
@@ -118,6 +117,7 @@ class TypeDefTrieNode(AcabNode):
             zipped = zip(self.definition.vars, usage_trie.type_instance.vars)
             type_var_lookup = {x.name: y for x, y in zipped}
 
+        # TODO if type param is an acabvalue var.. coerce to a type var
         # infer type vars in polytype if missing
         for x in self.definition.vars:
             if x in type_var_lookup:

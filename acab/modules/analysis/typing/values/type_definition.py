@@ -83,7 +83,6 @@ class TypeDefinition(TypeStatement):
         #     raise AcabParseException()
 
     def unify_structure_variables(self):
-
         # unify shared variables across structure sentences to have the same type
         # go through all sentences
         variables = {}
