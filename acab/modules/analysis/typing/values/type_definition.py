@@ -1,4 +1,5 @@
 from acab.abstract.sentence import Sentence
+from acab.abstract.value import AcabValue
 from acab.error.acab_parse_exception import AcabParseException
 from acab.util import STRUCTURE_S, VALUE_TYPE_S, NAME_S
 from acab.abstract.printing import util as PrU
@@ -123,11 +124,12 @@ class SumTypeDefinition(TypeDefinition):
 
     def __init__(self, structure, params=None, type_str=TYPE_DEF_S):
         # Flatten Product Types out of Structure:
+        # TODO: improve this
         flat_structure = []
         for sen in structure:
             prefix = Sentence(sen.words[:-1] + [sen.words[-1].to_simple_value()])
             flat_structure.append(prefix)
-            flat_structure += [prefix + x for x in sen[-1].structure]
+            flat_structure += [Sentence(prefix.words + x.words) for x in sen[-1].structure]
 
         super(SumTypeDefinition, self).__init__(flat_structure,
                                                 params=params,
