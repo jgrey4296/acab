@@ -62,9 +62,10 @@ from .nodes.operator_def_node import OperatorDefTrieNode
 from .nodes.type_assignment_node import TypeAssignmentTrieNode
 from .nodes.typedef_node import TypeDefTrieNode
 from .nodes.var_type_node import VarTypeTrieNode
+from .nodes.sum_def_node import SumTypeDefTrieNode
 
 from .values.operator_definition import OperatorDefinition
-from .values.type_definition import TypeDefinition
+from .values.type_definition import TypeDefinition, SumTypeDefinition
 
 
 logging = root_logger.getLogger(__name__)
@@ -77,22 +78,20 @@ class TypeChecker(ActionOp):
     def __init__(self):
         super(TypeChecker, self).__init__()
 
-        self._structural_definitions = Trie(TypeDefTrieNode)
-        self._functional_definitions = Trie(OperatorDefTrieNode)
+        self._definitions = Trie(TypeDefTrieNode)
         self._declarations = Trie(TypeAssignmentTrieNode)
         self._variables = Trie(VarTypeTrieNode)
 
     def __str__(self):
         output = []
-        output.append("Structs: {}".format(str(self._structural_definitions).replace('\n', ' ')))
-        output.append("Funcs  : {}".format(str(self._functional_definitions).replace('\n', ' ')))
+        output.append("Defs   : {}".format(str(self._definitions).replace('\n', ' ')))
         output.append("Decs   : {}".format(str(self._declarations).replace('\n', ' ')))
         output.append("Vars   : {}".format(str(self._variables).replace('\n', ' ')))
 
         return "\n".join(output)
 
     def __repr__(self):
-        return "TypeChecker({})".format(str(self))
+        return "TypeChecker: \n{}".format(str(self))
 
 
     def __call__(self, data=None, engine=None):
@@ -195,7 +194,7 @@ class TypeChecker(ActionOp):
 
             # check the head
             # TODO: handle sum type paths
-            head_type = self._structural_definitions.query(head.type_instance.path)
+            head_type = self._definitions.query(head.type_instance.path)
             if head_type is None:
                 raise te.TypeUndefinedException(head.type_instance, head)
 
@@ -221,10 +220,15 @@ class TypeChecker(ActionOp):
     def add_definition(self, *definitions):
         for a_def in definitions:
             assert(isinstance(a_def[-1], TypeDefinition))
+            assert(isinstance(a_def, Sentence))
             if isinstance(a_def[-1], OperatorDefinition):
-                self._functional_definitions.add(a_def, a_def[-1])
+                self._definitions.add(a_def, a_def[-1],
+                                                 leaf_override=OperatorDefTrieNode)
+            elif isinstance(a_def[-1], SumTypeDefinition):
+                self._definitions.add(a_def, a_def[-1],
+                                                 leaf_override=SumTypeDefTrieNode)
             else:
-                self._structural_definitions.add(a_def, a_def[-1])
+                self._definitions.add(a_def, a_def[-1])
 
     def add_assertion(self, sen):
         assert(isinstance(sen, Sentence))

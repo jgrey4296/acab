@@ -11,7 +11,7 @@ PrU.register_statement({TYPE_DEF_S : STRUCTURE_S})
 # TODO register class
 
 class TypeDefinition(TypeStatement):
-    """ Defines the Structure of a type """
+    """ Defines the Structure of a Product type """
 
     def __init__(self, structure, params=None, type_str=TYPE_DEF_S):
         """ Structure creates the dict of locations.
@@ -115,3 +115,21 @@ class TypeDefinition(TypeStatement):
         body = bool(self.structure)
 
         return head, body
+
+
+
+class SumTypeDefinition(TypeDefinition):
+    """ Defines a Sum Type  """
+
+    def __init__(self, structure, params=None, type_str=TYPE_DEF_S):
+        # Flatten Product Types out of Structure:
+        flat_structure = []
+        for sen in structure:
+            prefix = Sentence(sen.words[:-1] + [sen.words[-1].to_simple_value()])
+            flat_structure.append(prefix)
+            flat_structure += [prefix + x for x in sen[-1].structure]
+
+        super(SumTypeDefinition, self).__init__(flat_structure,
+                                                params=params,
+                                                type_str=type_str)
+        assert(bool(self.structure))

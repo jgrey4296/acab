@@ -1,10 +1,12 @@
 import pyparsing as pp
 import logging as root_logger
 
-from acab.modules.analysis.typing.values.type_definition import TypeDefinition
+from acab.modules.analysis.typing.values.type_definition import TypeDefinition, SumTypeDefinition
 from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition
 from acab.abstract.parsing import util as PU
+from acab.abstract.sentence import Sentence
 from acab.modules.analysis.typing import util as TYU
+from acab import util
 from . import util as TU
 logging = root_logger.getLogger(__name__)
 
@@ -30,9 +32,8 @@ def make_op_def(toks):
     return (op_def.type, op_def)
 
 def make_sum_def(toks):
-    sum_def = TypeDefinition(toks[:])
+    sum_def = SumTypeDefinition(toks[:])
     return (sum_def.type, sum_def)
-
 
 
 # The simplest type, has no body. useful for defining strings and other
@@ -61,6 +62,7 @@ SUM_DEF_BODY.setParseAction(make_sum_def)
 SUM_TYPE = PU.STATEMENT_CONSTRUCTOR(PU.SUM_HEAD,
                                     HOTLOAD_BASIC_SEN,
                                     SUM_DEF_BODY + PU.component_gap)
+
 
 
 # numAdd: (::λ) $x(::num).$y(::num).$z(::num) => +
