@@ -42,11 +42,18 @@ class Trie:
         return self._root
 
 
-    def add(self, path, data=None, update=None, u_data=None):
+    def add(self, path, data=None, update=None, u_data=None, leaf_override=None):
         """ Add the data to the leaf defined by path,
         updating each node along the way using update and u_data
+        use leaf_override to add more specific leaves
         """
-        wrapped_path = [self._node_type(x) for x in path]
+        if leaf_override is None:
+            leaf_override = self._node_type
+        assert(issubclass(leaf_override, self._node_type))
+
+        wrapped_path = [self._node_type(x) for x in path[:-1]]
+        wrapped_path.append(leaf_override(path[-1]))
+
 
         current = self._root
         current_path = []
