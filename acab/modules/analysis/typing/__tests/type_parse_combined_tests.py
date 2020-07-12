@@ -614,7 +614,6 @@ class TypingCombinedTests(unittest.TestCase):
         # TODO
         return
 
-
     @unittest.skip("TODO")
     def test_infer_from_operation(self):
         # TODO
@@ -648,15 +647,23 @@ class TypingCombinedTests(unittest.TestCase):
         first(::a.sum.type.a)
         second(::a.sum.type.b)
         """
-        sum_type = TD.parseString("a.sum.type: (::Σσ)\na: (::σ) end\n\nb: (::σ) end\nend")[0]
-        self.tc.add_definition(sum_type)
+        sum_type = TD.parseString("a.sum.type: (::Σσ)\na: (::σ) end\n\nb: (::σ) end\nend")
 
-        assertion_1 = FP.parseString("first(::a.sum.type.a)")[0]
+        self.tc.add_definition(*sum_type)
+
+        assertion_1 = FP.parseString("first!a(::a.sum.type)")[0]
         self.tc.add_assertion(assertion_1)
 
-        assertion_2 = FP.parseString("second(::a.sum.type.b)")[0]
+        assertion_2 = FP.parseString("second!b(::a.sum.type)")[0]
         self.tc.add_assertion(assertion_2)
 
+        self.tc.validate()
+
+        result = self.tc.query(S("first", "a"))
+        self.assertEqual(result[0].type_instance, sum_type[0][-1].build_type_instance())
+
+        result_2 = self.tc.query(S("second", "b"))
+        self.assertEqual(result_2[0].type_instance, sum_type[0][-1].build_type_instance())
 
 if __name__ == "__main__":
     #use python $filename to use this logging setup
