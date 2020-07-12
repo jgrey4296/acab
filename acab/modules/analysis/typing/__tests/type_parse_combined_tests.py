@@ -71,10 +71,10 @@ class TypingCombinedTests(unittest.TestCase):
     def test_add_definition(self):
         """ :: a END """
         type_def = TD.parseString("a.test.definition.x: (::σ) end")[0]
-        self.assertEqual(len(self.tc._structural_definitions), 0)
+        self.assertEqual(len(self.tc._definitions), 0)
         self.tc.add_definition(type_def)
-        self.assertEqual(len(self.tc._structural_definitions), 4)
-        defs = self.tc._structural_definitions.get_nodes(lambda x: isinstance(x.value, TypeDefinition))
+        self.assertEqual(len(self.tc._definitions), 4)
+        defs = self.tc._definitions.get_nodes(lambda x: isinstance(x.value, TypeDefinition))
         self.assertEqual(1, len(defs))
 
     def test_add_assertion(self):
@@ -178,7 +178,7 @@ class TypingCombinedTests(unittest.TestCase):
         self.tc.add_definition(a_def)
         self.tc.add_definition(a_def2)
 
-        self.assertEqual(len(self.tc._structural_definitions), 2)
+        self.assertEqual(len(self.tc._definitions), 2)
 
     def test_variable_conflict(self):
         """ ::String: END ::Number: END
@@ -580,6 +580,197 @@ class TypingCombinedTests(unittest.TestCase):
 
         self.tc.validate()
 
+    def test_sum_type(self):
+        """
+        a.sum.type: (::Σσ)\n a: (::σ) end\n b: (::σ) end\n end
+
+        first(::a.sum.type.a)
+        second(::a.sum.type.b)
+        """
+        sum_type = TD.parseString("a.sum.type: (::Σσ)\na: (::σ) end\n\nb: (::σ) end\nend")
+
+        self.tc.add_definition(*sum_type)
+
+        assertion_1 = FP.parseString("first!a(::a.sum.type)")[0]
+        self.tc.add_assertion(assertion_1)
+
+        assertion_2 = FP.parseString("second!b(::a.sum.type)")[0]
+        self.tc.add_assertion(assertion_2)
+
+        self.tc.validate()
+
+        result = self.tc.query(S("first", "a"))
+        self.assertEqual(result[0].type_instance, sum_type[0][-1].build_type_instance())
+
+        result_2 = self.tc.query(S("second", "b"))
+        self.assertEqual(result_2[0].type_instance, sum_type[0][-1].build_type_instance())
+
+    def test_sum_type_mismatch(self):
+        """
+        a.sum.type: (::Σσ)\n a: (::σ) end\n b: (::σ) end\n end
+
+        first(::a.sum.type.a)
+        second(::a.sum.type.b)
+        """
+        sum_type = TD.parseString("a.sum.type: (::Σσ)\na: (::σ) end\n\nb: (::σ) end\nend")
+
+        self.tc.add_definition(*sum_type)
+
+        assertion_1 = FP.parseString("first!blah(::a.sum.type)")[0]
+        self.tc.add_assertion(assertion_1)
+
+        with self.assertRaises(te.TypeStructureMismatch):
+            self.tc.validate()
+
+    def test_sum_type_sub_product(self):
+        """
+        a.sum.type: (::Σσ)
+            a: (::σ)
+                blah.$x
+                bloo.$y
+            end
+            b: (::σ) end
+        end
+
+        first(::a.sum.type.a)
+        second(::a.sum.type.b)
+        """
+        sum_type = TD.parseString("a.sum.type: (::Σσ)\na: (::σ)\nblah.$x\nbloo.$y\n end\n\nb: (::σ) end\nend")
+
+        self.tc.add_definition(*sum_type)
+
+        assertion_1 = FP.parseString("first!a(::a.sum.type).bloo.awef")[0]
+        self.tc.add_assertion(assertion_1)
+
+        assertion_2 = FP.parseString("second!b(::a.sum.type)")[0]
+        self.tc.add_assertion(assertion_2)
+
+        self.tc.validate()
+
+        result = self.tc.query(S("first", "a"))
+        self.assertEqual(result[0].type_instance, sum_type[0][-1].build_type_instance())
+
+        result_2 = self.tc.query(S("second", "b"))
+        self.assertEqual(result_2[0].type_instance, sum_type[0][-1].build_type_instance())
+
+    def test_sum_type_sub_product_mismatch(self):
+        """
+        a.sum.type: (::Σσ)
+            a: (::σ)
+                blah.$x
+                bloo.$y
+            end
+            b: (::σ) end
+        end
+
+        first(::a.sum.type.a)
+        second(::a.sum.type.b)
+        """
+        sum_type = TD.parseString("a.sum.type: (::Σσ)\na: (::σ)\nblah.$x\nbloo.$y\n end\n\nb: (::σ) end\nend")
+
+        self.tc.add_definition(*sum_type)
+
+        assertion_1 = FP.parseString("first!a(::a.sum.type).awef.awef")[0]
+        self.tc.add_assertion(assertion_1)
+
+        with self.assertRaises(te.TypeStructureMismatch):
+            self.tc.validate()
+
+
+    def test_sum_type_polymorphic(self):
+        """
+        a.sum.type: (::Σσ)
+           | $x |
+            a: (::σ)
+                blah.$x
+            end
+            b: (::σ) end
+        end
+
+        first(::a.sum.type.a)
+        second(::a.sum.type.b)
+        """
+        simple_type = TD.parseString("simple.type: (::σ) end")
+        self.tc.add_definition(*simple_type)
+        other_type = TD.parseString("other.type: (::σ) end")
+        self.tc.add_definition(*other_type)
+
+        sum_type = TD.parseString("a.sum.type: (::Σσ)\n| $x |\n\na: (::σ)\nblah.$x\n\n end\n\nb: (::σ) end\nend")
+        self.tc.add_definition(*sum_type)
+
+        assertion_1 = FP.parseString("first!a(::a.sum.type(::simple.type)).blah.aweg")[0]
+        self.tc.add_assertion(assertion_1)
+
+        self.tc.validate()
+
+        result = self.tc.query(S("first", "a"))
+        self.assertEqual(result[0].type_instance, sum_type[0][-1].build_type_instance({'x':simple_type[0][-1].build_type_instance()}))
+
+    def test_sum_type_polymorphic_mismatch(self):
+        """
+        a.sum.type: (::Σσ)
+           | $x |
+            a: (::σ)
+                blah.$x
+            end
+            b: (::σ) end
+        end
+
+        first(::a.sum.type.a)
+        second(::a.sum.type.b)
+        """
+        simple_type = TD.parseString("simple.type: (::σ) end")
+        self.tc.add_definition(*simple_type)
+        other_type = TD.parseString("other.type: (::σ) end")
+        self.tc.add_definition(*other_type)
+
+        sum_type = TD.parseString("a.sum.type: (::Σσ)\n| $x |\n\na: (::σ)\nblah.$x\n\n end\n\nb: (::σ) end\nend")
+        self.tc.add_definition(*sum_type)
+
+        assertion_1 = FP.parseString("first!a(::a.sum.type(::simple.type)).blah.aweg(::other.type)")[0]
+        self.tc.add_assertion(assertion_1)
+
+        with self.assertRaises(te.TypeConflictException):
+            self.tc.validate()
+
+    def test_sum_type_polymorphic_generalise(self):
+        """
+        a.sum.type: (::Σσ)
+           | $x |
+            a: (::σ)
+                blah.$x
+            end
+            b: (::σ) end
+        end
+
+        first!a(::a.sum.type).blah.awef(::other.type)
+        ->
+        first!a(::a.sum.type(::other.type))
+        """
+        simple_type = TD.parseString("simple.type: (::σ) end")
+        self.tc.add_definition(*simple_type)
+        other_type = TD.parseString("other.type: (::σ) end")
+        self.tc.add_definition(*other_type)
+
+        sum_type = TD.parseString("a.sum.type: (::Σσ)\n| $x |\n\na: (::σ)\nblah.$x\n\n end\n\nb: (::σ) end\nend")
+        self.tc.add_definition(*sum_type)
+
+        assertion_1 = FP.parseString("first!a(::a.sum.type).blah.aweg(::other.type)")[0]
+        self.tc.add_assertion(assertion_1)
+
+        assertion_2 = FP.parseString("second!a(::a.sum.type).blah.aweg(::simple.type)")[0]
+        self.tc.add_assertion(assertion_2)
+
+        self.tc.validate()
+
+        result = self.tc.query(FP.parseString("first!a")[0])
+        self.assertEqual(result[0].type_instance.vars[0], other_type[0][-1].build_type_instance())
+
+        result_2 = self.tc.query(FP.parseString("second!a")[0])
+        self.assertEqual(result_2[0].type_instance.vars[0], simple_type[0][-1].build_type_instance())
+
+
+
 
     @unittest.skip("waiting on local structure unifying type params")
     def test_polytype_nested_lacking_param(self):
@@ -607,7 +798,6 @@ class TypingCombinedTests(unittest.TestCase):
 
         result = self.tc.query(S("missing"))
         self.assertIsNotNone(result[0].type_instance.vars[0])
-
 
     @unittest.skip("TODO")
     def test_add_rule(self):
@@ -640,30 +830,6 @@ class TypingCombinedTests(unittest.TestCase):
         result = self.tc.query(S("missing"))
 
 
-    def test_sum_type(self):
-        """
-        a.sum.type: (::Σσ)\n a: (::σ) end\n b: (::σ) end\n end
-
-        first(::a.sum.type.a)
-        second(::a.sum.type.b)
-        """
-        sum_type = TD.parseString("a.sum.type: (::Σσ)\na: (::σ) end\n\nb: (::σ) end\nend")
-
-        self.tc.add_definition(*sum_type)
-
-        assertion_1 = FP.parseString("first!a(::a.sum.type)")[0]
-        self.tc.add_assertion(assertion_1)
-
-        assertion_2 = FP.parseString("second!b(::a.sum.type)")[0]
-        self.tc.add_assertion(assertion_2)
-
-        self.tc.validate()
-
-        result = self.tc.query(S("first", "a"))
-        self.assertEqual(result[0].type_instance, sum_type[0][-1].build_type_instance())
-
-        result_2 = self.tc.query(S("second", "b"))
-        self.assertEqual(result_2[0].type_instance, sum_type[0][-1].build_type_instance())
 
 if __name__ == "__main__":
     #use python $filename to use this logging setup

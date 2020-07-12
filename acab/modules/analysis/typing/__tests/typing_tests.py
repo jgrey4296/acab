@@ -46,8 +46,7 @@ class TypingTests(unittest.TestCase):
         """ Basic verification of expected structure """
         tc = TypeChecker()
         self.assertIsNotNone(tc)
-        self.assertIsNotNone(tc._structural_definitions)
-        self.assertIsNotNone(tc._functional_definitions)
+        self.assertIsNotNone(tc._definitions)
         self.assertIsNotNone(tc._declarations)
         self.assertIsNotNone(tc._variables)
 
@@ -57,10 +56,10 @@ class TypingTests(unittest.TestCase):
         type_def = TypeDefinition([])
         loc = FP.parseString('a.test.definition.x')[0]
         copied_loc = loc.attach_statement(type_def)
-        self.assertEqual(len(tc._structural_definitions), 0)
+        self.assertEqual(len(tc._definitions), 0)
         tc.add_definition(copied_loc)
-        self.assertEqual(len(tc._structural_definitions), 4)
-        defs = tc._structural_definitions.get_nodes(lambda x: isinstance(x.value, TypeDefinition))
+        self.assertEqual(len(tc._definitions), 4)
+        defs = tc._definitions.get_nodes(lambda x: isinstance(x.value, TypeDefinition))
         self.assertEqual(1, len(defs))
 
     def test_add_assertion(self):
@@ -183,7 +182,7 @@ class TypingTests(unittest.TestCase):
         tc.add_definition(a_def)
         tc.add_definition(a_def2)
 
-        self.assertEqual(len(tc._structural_definitions), 2)
+        self.assertEqual(len(tc._definitions), 2)
 
     def test_variable_conflict(self):
         """ ::String: END ::Number: END
