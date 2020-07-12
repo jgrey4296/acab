@@ -26,10 +26,10 @@ VAR_OR_TYPE_DEC = pp.Or([PU.BIND, TYPEDEC_CORE])
 
 TYPEDEC_CORE <<= PU.DBLCOLON + PU.N(TYU.SEN_S, HOTLOAD_BASIC_SEN) \
     + PU.N(TYU.ARG_S, PU.op(PU.OPAR
-                      + pp.delimitedList(VAR_OR_TYPE_DEC,
-                                         TYU.DELIM_S,
-                                         combine=False)
-                      + PU.CPAR))
+                            + pp.delimitedList(VAR_OR_TYPE_DEC,
+                                               TYU.DELIM_S,
+                                               combine=False)
+                            + PU.CPAR))
 
 TYPEDEC_CORE.setParseAction(make_type_dec)
 
