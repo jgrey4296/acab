@@ -166,7 +166,8 @@ class TypeDefTrieNode(AcabNode):
             conflicts = [x for x in new_usage_set if not x.is_var and child.name != x.name]
 
         if bool(conflicts):
-            raise te.TypeStructureMismatch(curr_def, conflicts)
+            raise te.TypeStructureMismatch(self.definition.path.pprint(),
+                                           conflicts)
 
         if bool(new_usage_set):
             queue_vals.append((child, new_usage_set))
@@ -183,7 +184,8 @@ class TypeDefTrieNode(AcabNode):
                     in x._children.items() if not n.is_var}
         conflicts = usageset.difference(defset)
         if bool(conflicts):
-            raise te.TypeStructureMismatch(curr_def.path, conflicts)
+            raise te.TypeStructureMismatch(self.definition.path.pprint(),
+                                           conflicts)
 
         logging.debug("No Conflicts found, checking children")
         for key in usageset:

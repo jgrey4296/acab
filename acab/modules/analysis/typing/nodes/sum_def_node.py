@@ -33,7 +33,8 @@ class SumTypeDefTrieNode(TypeDefTrieNode):
 
         # usage_trie must be a child of the curr_def
         if usage_trie.name not in self.trie.root:
-            raise te.TypeStructureMistmatch(curr_def.path, [usage_trie.name])
+            raise te.TypeStructureMismatch(self.definition.path.pprint(),
+                                           [usage_trie.name])
 
         # Otherwise match against that specific type
         the_type = self.trie.root.get_child(usage_trie.name)

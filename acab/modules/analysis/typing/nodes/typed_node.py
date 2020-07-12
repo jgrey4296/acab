@@ -41,7 +41,9 @@ class MonoTypedNode(AcabNode):
 
         # TODO: use <
         if (self.type_instance is not None and _type is not None) and self._type_instance != _type:
-            raise te.TypeConflictException(self, _type, self.name)
+            raise te.TypeConflictException(_type.pprint(),
+                                           self.type_instance.pprint(),
+                                           self.name)
 
         self.apply_type_instance(_type)
 
