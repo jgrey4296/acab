@@ -78,7 +78,7 @@ class TypeDefTrieNode(AcabNode):
         newly_typed = []
         # The queue holds tuples of the definition node, and its corresponding declaration nodes
         queue = [(self.trie.root, [usage_trie])]
-        while queue:
+        while bool(queue):
             curr_def, curr_usage_set = queue.pop(0)
             self._log_status(curr_def, curr_usage_set)
             newly_typed += self._check_local_type_structure(curr_def, curr_usage_set, type_var_lookup)
@@ -127,21 +127,6 @@ class TypeDefTrieNode(AcabNode):
                 type_var_lookup[x.name] = create_var(x.name)
 
         return type_var_lookup
-
-    def _retrieve_type_declaration(self, curr_def_node, type_var_lookup):
-        """ Use the temporary binding environment to lookup the relevant
-        type declaration """
-        curr_def = curr_def_node.value
-        result = None
-        if curr_def.name == util.ROOT_S:
-            pass
-        elif curr_def.is_var \
-             and curr_def.name in type_var_lookup:
-            result = type_var_lookup[curr_def.name]
-        elif curr_def_node.type_instance is not None:
-            result = curr_def_node.type_instance.build_type_instance(type_var_lookup)
-
-        return result
 
     def _check_local_type_structure(self, curr_def, curr_usage_set, lookup):
         """ Compare Defined Structure to actual structure """
