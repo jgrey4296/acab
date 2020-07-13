@@ -22,10 +22,10 @@ class ActionOp(PO.ProductionOperator):
     """
     op_dict = {}
 
-    def __init__(self, num_params=2, infix=False):
+    def __init__(self, infix=False):
         # Registers self with class name,
         # DSL later binds to an operator
-        super().__init__(num_params=num_params, infix=False)
+        super().__init__(infix=False)
 
         if self.op_str not in ActionOp.op_dict:
             ActionOp.op_dict[self.op_str] = self

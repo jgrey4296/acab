@@ -30,13 +30,10 @@ class ProductionOperator(AcabValue):
         logging.debug("Clearing registered operators")
         ProductionOperator.op_dict = {}
 
-    def __init__(self, num_params=2,
-                 infix=False,
-                 type_str=OPERATOR_S):
+    def __init__(self, infix=False, type_str=OPERATOR_S):
         super().__init__(self.__class__.__name__,
                          type_str=type_str)
         # TODO this can be done using subclass DFS
-        self._num_params = num_params
 
     def __call__(self, *params, data=None, engine=None):
         raise NotImplementedError()
