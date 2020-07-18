@@ -14,29 +14,6 @@
   CLOCK: [2020-05-11 Mon 15:16]--[2020-05-11 Mon 15:41] =>  0:25
   :END:
 ** Functionality
-*** TODO [[/Volumes/documents/github/acab/acab/modules/analysis/typing/parsing/TypeDefParser.py::53][add sum types]]
-   <2020-04-23 Thu>
-
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/parsing/util.py::81][Build Arglist properly]]                                                 :parsing:
-    <2020-03-26 Thu>
-
-    arglist = VBAR + pp.delimitedList(BIND, delim=COMMA) + VBAR
-
-*** TODO [[/Volumes/documents/github/acab/py_rule/working_memory/trie_wm/nodes/fact_node.py::84][Check fact node's copy semantics]]                                       :semantics:
-    <2020-03-26 Thu>
-
-    TODO: deeper copy
-
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/agendas/expander_agenda.py::3][Implement Expander Agenda]]                                              :agenda:
-    <2020-03-26 Thu>
-
-    class ExpanderAgenda(Agenda):
-
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/layer.py::34][Implement logic for memoized rule selectors]]                            :performance:
-    <2020-03-26 Thu>
-
-    self._memoized_rules = []
-
 *** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/production_operator.py::20][Implement operator infix logic]]                                         :parsing:
     <2020-03-26 Thu>
 
@@ -57,11 +34,6 @@
 
     def verify(self, engine):
 
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/agendas/sandbox_agenda.py::4][Implement SandboxAgenda]]                                                :agenda:
-    <2020-03-26 Thu>
-
-    class SandboxAgenda(Agenda):
-
 *** TODO [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/nodes/fact_node.py::181][Implement trie unification?]]                                            :semantics:
     <2020-03-26 Thu>
 
@@ -72,12 +44,30 @@
 
     class TrieRule(Rule):
 
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/typing_module.py::6][Implement typing module spec]]                                           :api:
+*** DONE [[/Volumes/documents/github/acab/acab/modules/analysis/typing/parsing/TypeDefParser.py::53][add sum types]]
+    CLOSED: [2020-07-13 Mon 17:12]
+   <2020-04-23 Thu>
+
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/abstract/parsing/util.py::81][Build Arglist properly]]                                                 :parsing:
+    CLOSED: [2020-07-13 Mon 17:13]
+    <2020-03-26 Thu>
+
+    arglist = VBAR + pp.delimitedList(BIND, delim=COMMA) + VBAR
+
+*** DONE [[/Volumes/documents/github/acab/py_rule/working_memory/trie_wm/nodes/fact_node.py::84][Check fact node's copy semantics]]                                       :semantics:
+    CLOSED: [2020-07-13 Mon 17:13]
+    <2020-03-26 Thu>
+
+    TODO: deeper copy
+
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/typing_module.py::6][Implement typing module spec]]                                           :api:
+    CLOSED: [2020-07-13 Mon 17:14]
     <2020-03-26 Thu>
 
     class TypingSpec(ModuleSpecification):
 
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/agendas/parsing/::4][Write Parser for Agendas]]                                               :parsing:
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/agendas/parsing/::4][Write Parser for Agendas]]                                               :parsing:
+    CLOSED: [2020-07-13 Mon 17:14]
     <2020-03-26 Thu>
 
 *** DONE [[/Volumes/documents/github/py_rule/py_rule/modules/structures/agenda/AgendaParser.py::22][add query sections to agendas, layers, pipelines etc]]
@@ -129,7 +119,7 @@
 *** TODO [[/Volumes/documents/github/acab/acab/abstract/parsing/repl_commands.py::112][add asyncio]]
     <2020-04-19 Sun>
   
-  register(ReplE.STEP, engine_step)
+    register(ReplE.STEP, engine_step)
 
 *** TODO [[/Volumes/documents/github/acab/acab/modules/structures/agenda/AgendaParser.py::22][add chained transforms]]
    <2020-04-12 Sun>
@@ -188,11 +178,6 @@
 
     class Pattern(AcabValue):
 
-*** TODO [[/Volumes/documents/github/acab/acab/agendas/::6][Parameterize Agendas]]                                                   :parsing:
-    <2020-03-26 Thu>
-
-    -rw-r--r--  1 johngrey staff  470 Mar 25 22:11 cycle_agenda.py
-
 *** TODO [[/Volumes/documents/github/acab/acab/abstract/production_operator.py::17][Possibly use subclass DFS for operator name registration]]               :performance:
     <2020-03-26 Thu>
 
@@ -209,25 +194,6 @@
     result = RP.parseString("ρ::a.rule:\n$y.b.$z?\n\n$x + 2 -> $y\n\n+($y)\n\nend")[0][-1]
 
     # Remove quotes from around strings:
-*** TODO [[/Volumes/documents/github/acab/acab/abstract/agenda.py::13][Make Agenda a subclass of production component?]]
-    <2020-04-04 Sat>
-
-    # TODO: make this a subclass of production component?
-
-*** TODO [[/Volumes/documents/github/acab/acab/abstract/layer.py::25][Make Layer a subclass of production container]]
-    <2020-04-04 Sat>
-
-    class Layer:
-
-*** TODO [[/Volumes/documents/github/acab/acab/abstract/pipeline.py::17][Make pipeline a subclass of production container]]
-    <2020-04-04 Sat>
-
-    class Pipeline:
-
-*** TODO [[/Volumes/documents/github/acab/acab/abstract/rule.py::15][Make rule a subclass of production container]]
-    <2020-04-04 Sat>
-
-    class Rule(AcabValue):
 *** TODO [[/Volumes/documents/github/acab/acab/abstract/comparison.py::81][replace magic string with a constant]]
      <2020-04-02 Thu>
 
@@ -243,11 +209,6 @@
 
     UUID_HEAD        = "υ"
 
-*** TODO [[/Volumes/documents/github/acab/acab/working_memory/trie_wm/nodes/fact_node.py::33][update face_node copying/construction]]
-    <2020-04-03 Fri>
-
-    # TODO add original tags, vars and possible update type_str
-
 *** TODO [[/Volumes/documents/github/acab/acab/abstract/printing/util.py::61][refactor regex parsing to hold params as well]]
     <2020-04-04 Sat>
 
@@ -255,6 +216,41 @@
   <2020-04-24 Fri>
   
   # TODO: Handle DFS/BFS/Leaf retrieval
+
+*** DONE [[/Volumes/documents/github/acab/acab/agendas/::6][Parameterize Agendas]]                                                   :parsing:
+    CLOSED: [2020-07-13 Mon 17:45]
+    <2020-03-26 Thu>
+
+    -rw-r--r--  1 johngrey staff  470 Mar 25 22:11 cycle_agenda.py
+
+*** DONE [[/Volumes/documents/github/acab/acab/abstract/agenda.py::13][Make Agenda a subclass of rule]]
+    CLOSED: [2020-07-13 Mon 17:15]
+    <2020-04-04 Sat>
+
+    # TODO: make this a subclass of production component?
+
+*** DONE [[/Volumes/documents/github/acab/acab/abstract/layer.py::25][Make Layer a subclass of rule]]
+    CLOSED: [2020-07-13 Mon 17:15]
+    <2020-04-04 Sat>
+
+    class Layer:
+
+*** DONE [[/Volumes/documents/github/acab/acab/abstract/pipeline.py::17][Make pipeline a subclass of rule]]
+    CLOSED: [2020-07-13 Mon 17:16]
+    <2020-04-04 Sat>
+
+    class Pipeline:
+
+*** DONE [[/Volumes/documents/github/acab/acab/abstract/rule.py::15][Make rule a subclass of production container]]
+    CLOSED: [2020-07-13 Mon 17:16]
+    <2020-04-04 Sat>
+
+    class Rule(AcabValue):
+*** DONE [[/Volumes/documents/github/acab/acab/working_memory/trie_wm/nodes/fact_node.py::33][update face_node copying/construction]]
+    CLOSED: [2020-07-13 Mon 17:23]
+    <2020-04-03 Fri>
+
+    # TODO add original tags, vars and possible update type_str
 
 *** DONE [[/Volumes/documents/github/acab/acab/abstract/engine.py::174][shift rule running logic into rule and production containers]]
     CLOSED: [2020-04-24 Fri 22:01]
