@@ -10,6 +10,8 @@ class Type(AcabValue):
         super().__init__(value, **kwargs)
 
 
+    # TODO: pprint types better
+
     @property
     def path(self):
         return self.value

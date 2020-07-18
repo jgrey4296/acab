@@ -50,12 +50,12 @@ import logging as root_logger
 from functools import partial
 from uuid import uuid1
 
-import acab.error.type_exceptions as te
-
 from acab.abstract.value import AcabStatement
 from acab.abstract.sentence import Sentence
 from acab.abstract.trie.trie import Trie
 from acab.abstract.action import ActionOp
+
+from . import type_exceptions as te
 from . import util as TU
 
 from .nodes.operator_def_node import OperatorDefTrieNode

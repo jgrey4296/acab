@@ -1,6 +1,6 @@
 import logging as root_logger
 
-import acab.error.type_exceptions as te
+from acab.modules.analysis.typing import type_exceptions as te
 from acab.modules.analysis.typing import util
 from acab.modules.analysis.typing.util import TYPE_DEC_S
 from .typed_node import MonoTypedNode

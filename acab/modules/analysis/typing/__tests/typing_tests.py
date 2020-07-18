@@ -1,7 +1,7 @@
 import unittest
 import logging
 
-import acab.error.type_exceptions as te
+from acab.modules.analysis.typing import type_exceptions as te
 
 from acab.abstract.bootstrap_parser import BootstrapParser
 from acab.abstract.transform import TransformComponent

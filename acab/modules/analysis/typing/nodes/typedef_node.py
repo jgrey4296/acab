@@ -2,7 +2,7 @@ import logging as root_logger
 
 from acab.abstract.node import AcabNode
 from acab.abstract.trie.trie import Trie
-from acab.error import type_exceptions as te
+from acab.modules.analysis.typing import type_exceptions as te
 from acab.modules.analysis.typing.values.type_definition import TypeDefinition
 from acab.modules.analysis.typing.values.type_instance import TypeInstance
 from .var_type_node import VarTypeTrieNode

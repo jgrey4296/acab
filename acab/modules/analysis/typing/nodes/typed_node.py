@@ -3,7 +3,7 @@ import logging as root_logger
 from acab.abstract.value import AcabValue
 from acab.abstract.node import AcabNode
 from acab.modules.analysis.typing.util import TYPE_DEC_S
-import acab.error.type_exceptions as te
+from acab.modules.analysis.typing import type_exceptions as te
 
 from acab.modules.analysis.typing.values.type_instance import TypeInstance
 logging = root_logger.getLogger(__name__)

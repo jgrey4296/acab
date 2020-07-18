@@ -2,7 +2,7 @@ import logging as root_logger
 
 import acab.modules.analysis.typing.util as util
 from acab.abstract.trie.trie import Trie
-from acab.error import type_exceptions as te
+from acab.modules.analysis.typing import type_exceptions as te
 from acab.util import OPERATOR_S
 
 from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition

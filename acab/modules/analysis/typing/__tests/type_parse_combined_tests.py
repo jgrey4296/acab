@@ -1,7 +1,7 @@
 import unittest
 import logging
 
-import acab.error.type_exceptions as te
+from acab.modules.analysis.typing import type_exceptions as te
 
 from acab.abstract.bootstrap_parser import BootstrapParser
 from acab.abstract.transform import TransformComponent
@@ -83,6 +83,30 @@ class TypingCombinedTests(unittest.TestCase):
         self.tc.add_assertion(FP.parseString("a.b.c.d")[0])
         self.assertEqual(len(self.tc._declarations), 4)
 
+    def test_add_operation(self):
+        """ ::Number end
+        λ::AddOp: $x(::Number).$x.$x
+        """
+        str_def = TD.parseString("string: (::σ) end")[0]
+        num_def = TD.parseString("number: (::σ) end")[0]
+        self.tc.add_definition(str_def, num_def)
+
+        op_def = TD.parseString("AddOp: (::λ) $x(::number).$x.$x")[0]
+        self.tc.add_definition(op_def)
+
+        #Add an operation use
+        trans_params = S("x", "y")
+        trans_params[0]._data[TU.BIND_S] = True
+        trans_params[1]._data[TU.BIND_S] = True
+        rebind = S("z")[0]
+        rebind._data[TU.BIND_S] = True
+        transform = TransformComponent("AddOp", trans_params, rebind=rebind)
+
+        [self.tc.add_assertion(x) for x in transform.to_local_sentences()]
+
+        self.tc.validate()
+
+
     def test_get_known_typed_nodes(self):
         """ a.$b(::a), a.$c """
 
@@ -138,6 +162,7 @@ class TypingCombinedTests(unittest.TestCase):
 
         self.assertIsNotNone(query_result._type_instance)
         self.assertEqual(query_result._type_instance, sen1[-1]._data[TU.TYPE_DEC_S])
+
 
     def test_type_conflict(self):
         """ σ::a END, σ::b END test.$q(::a), test.$q(::b) """
@@ -232,6 +257,7 @@ class TypingCombinedTests(unittest.TestCase):
 
         with self.assertRaises(te.TypeConflictException):
             self.tc.validate()
+
 
     def test_typing_nested_vars(self):
         """ ::String: END, ::Number: END
@@ -336,6 +362,7 @@ class TypingCombinedTests(unittest.TestCase):
         with self.assertRaises(te.TypeConflictException):
             self.tc.validate()
 
+
     def test_typing_polytype(self):
         """ ::String: END, ::Number: END
         ::polytype: | $x | name.$x END
@@ -438,8 +465,6 @@ class TypingCombinedTests(unittest.TestCase):
         self.assertEqual(self.tc.query(query_sen2)[0]._type_instance, TypeInstance(S("number")))
 
     def test_typing_context_clear(self):
-
-
         sen = FP.parseString("a.test.$var")[0]
         self.tc.add_assertion(sen)
 
@@ -455,6 +480,7 @@ class TypingCombinedTests(unittest.TestCase):
         self.assertEqual(len(self.tc._variables), 0)
         self.assertIsNone(self.tc.query(sen)[0]._var_node)
         self.assertEqual(len(self.tc.query(sen2)), 0)
+
 
     def test_typing_polytype_fail(self):
         """
@@ -534,7 +560,7 @@ class TypingCombinedTests(unittest.TestCase):
         with self.assertRaises(te.TypeConflictException):
             self.tc.validate()
 
-    def test_polytype_lacking_param(self):
+    def test_polytype_generalise(self):
         """
         ::simple.type: (::σ) end
         ::polytype: (::σ) | $x | name.$x END
@@ -555,30 +581,8 @@ class TypingCombinedTests(unittest.TestCase):
         self.tc.validate()
 
         result = self.tc.query(S("missing"))
-        self.assertIsNotNone(result[0].type_instance.vars[0])
+        self.assertEqual(result[0].type_instance.vars[0], simple_type[-1].build_type_instance())
 
-    def test_add_operation(self):
-        """ ::Number end
-        λ::AddOp: $x(::Number).$x.$x
-        """
-        str_def = TD.parseString("string: (::σ) end")[0]
-        num_def = TD.parseString("number: (::σ) end")[0]
-        self.tc.add_definition(str_def, num_def)
-
-        op_def = TD.parseString("AddOp: (::λ) $x(::number).$x.$x")[0]
-        self.tc.add_definition(op_def)
-
-        #Add an operation use
-        trans_params = S("x", "y")
-        trans_params[0]._data[TU.BIND_S] = True
-        trans_params[1]._data[TU.BIND_S] = True
-        rebind = S("z")[0]
-        rebind._data[TU.BIND_S] = True
-        transform = TransformComponent("AddOp", trans_params, rebind=rebind)
-
-        [self.tc.add_assertion(x) for x in transform.to_local_sentences()]
-
-        self.tc.validate()
 
     def test_sum_type(self):
         """
@@ -676,7 +680,6 @@ class TypingCombinedTests(unittest.TestCase):
         with self.assertRaises(te.TypeStructureMismatch):
             self.tc.validate()
 
-
     def test_sum_type_polymorphic(self):
         """
         a.sum.type: (::Σσ)
@@ -773,7 +776,7 @@ class TypingCombinedTests(unittest.TestCase):
 
 
     @unittest.skip("waiting on local structure unifying type params")
-    def test_polytype_nested_lacking_param(self):
+    def test_polytype_nested_generalise(self):
         """
         ::simple.type: (::σ) end
         ::polytype: (::σ) | $x | name.$x END
@@ -797,7 +800,7 @@ class TypingCombinedTests(unittest.TestCase):
         self.tc.validate()
 
         result = self.tc.query(S("missing"))
-        self.assertIsNotNone(result[0].type_instance.vars[0])
+        self.assertEqual(result[0].type_instance.vars[0], simple_type[0][-1].build_type_instance())
 
     @unittest.skip("TODO")
     def test_add_rule(self):
