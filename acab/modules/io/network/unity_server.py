@@ -5,29 +5,7 @@ import json
 import logging as root_logger
 import socket
 
-from acab.abstract.action import ActionOp
-from acab.abstract.agenda import Agenda
-
 from . import util
-
-class IOSend(ActionOp):
-
-    def __call__(self, *params, data=None, engine=None):
-        # Get unity server from engine context
-
-        # create message
-
-        # send message
-
-        return
-
-
-class IOListen(ActionOp):
-
-    def __call__(self, *params, data=None, engine=None):
-        # Listen then assert responses
-        return
-
 
 class UnityServer(AcabValue):
     """ A Server to connect to unity """
@@ -85,6 +63,9 @@ class UnityServer(AcabValue):
         self._theSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._theSocket.bind((self._host, self._port))
         self._theSocket.listen(self._backlog)
+
+    # TODO: setup_pair
+    # setup a pair of sockets for testing basic connection methods
 
     def close(self):
         logging.info("Closing Socket")
