@@ -34,6 +34,7 @@ def get(cmd):
 
 
 def build_command(cmd_e, **kwargs):
+    assert(isinstance(cmd_e, ReplE))
     command_dict = {'command' : cmd_e}
     command_dict.update(kwargs)
     return command_dict
