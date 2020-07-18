@@ -1,7 +1,5 @@
 """"
-Agendas don't need to be parsable,
-they just need to be registered so
-layers and pipelines can be defined
+Agendas are special cases of rules
 """
 from enum import Enum
 from acab import util
@@ -13,7 +11,7 @@ from acab.abstract.printing import util as PrU
 RELATION_E = Enum('Agenda_Relation', 'ONE MANY')
 
 class Agenda(Rule):
-    """ Abstract Class of Rule Layer Agendas
+    """
     Takes a set of potential rule activations
     and applys a transform, filter, or other function on them
     """
@@ -36,8 +34,7 @@ class Agenda(Rule):
 
 
     def __call__(self, ctxs=None, engine=None):
-        """ Take the proposals, transform them in some way,
-        then enact them on the engine """
+        """ Runs an agenda rule on activated rules """
         assert(isinstance(ctxs, list))
         agenda_settings = super(Agenda, self).__call__(ctxs=ctxs, engine=engine)
 

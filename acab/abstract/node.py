@@ -1,5 +1,6 @@
 """
-The Base Node Class the rest of Acab extends
+AcabNode: The internal type which knowledge base data structures use.
+
 """
 from re import search
 from uuid import uuid1
@@ -17,10 +18,10 @@ class AcabNode:
 
     @staticmethod
     def Root():
+        """ Get a default defined root node """
         return AcabNode(util.ROOT_S)
 
     def __init__(self, value, data=None):
-
         #Unwrap Nodes to avoid nesting
         if isinstance(value, AcabNode):
             node = value
@@ -29,6 +30,7 @@ class AcabNode:
                 data = {}
             data.update(node._data)
 
+        # A Unique identifier for this node:
         self._uuid = uuid1()
         # Wrap in an AcabValue if necessary:
         self._value = AcabValue.safe_make(value)
@@ -87,23 +89,27 @@ class AcabNode:
 
 
     def add_child(self, node):
+        """ Add a node as a child of this node """
         assert(isinstance(node, AcabNode))
         self._children[node.name] = node
         return node
 
     def get_child(self, node):
+        """" Get a node using a string, or a node itself """
         if isinstance(node, str):
             return self._children[node]
         else:
             return self._children[node.name]
 
     def has_child(self, node):
+        """ Question if this node has a particular child """
         if isinstance(node, str):
             return node in self._children
         else:
             return node.name in self._children
 
     def remove_child(self, node):
+        """ Delete a child from this node, return success state """
         if node in self:
             if isinstance(node, str):
                 del self._children[node]
@@ -114,15 +120,17 @@ class AcabNode:
         return False
 
     def clear_children(self):
+        """ Remove all children from this node """
         self._children = {}
 
 
-
     def set_parent(self, parent):
+        """ Set the parent node to this node """
         assert(isinstance(parent, AcabNode))
         self._parent = weakref.ref(parent)
 
     def parentage(self):
+        """ Get the full path from the root to this node """
         path = []
         current = self
         while current is not None:
@@ -132,7 +140,7 @@ class AcabNode:
 
 
     def bind(self, bindings):
-        """ Return a copy that has applied given bindings to this node """
+        """ Return a copy that has applied given bindings to its value"""
         if not self.value._data[util.BIND_S]:
             return self.copy()
         else:
@@ -141,7 +149,7 @@ class AcabNode:
             return copied
 
     def _bind_to_value(self, data):
-        """ Set the Nodes value to be one retrieved
+        """ Set the Node's value to be one retrieved
         from passed in bindings """
         assert(self.value in data)
         assert(util.BIND_S in self.value._data and self.value._data[util.BIND_S])

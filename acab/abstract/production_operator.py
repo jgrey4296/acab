@@ -1,6 +1,12 @@
 """
 The Base Operator Definition
 Used for Comparison, Transform, and Performance Operators
+
+Structure is:
+ProductionOperator  : The implementation
+ProductionComponent : Pairs the Operator with bindings
+ProductionContainer : Groups Components together
+
 """
 import logging as root_logger
 
@@ -31,9 +37,7 @@ class ProductionOperator(AcabValue):
         ProductionOperator.op_dict = {}
 
     def __init__(self, infix=False, type_str=OPERATOR_S):
-        super().__init__(self.__class__.__name__,
-                         type_str=type_str)
-        # TODO this can be done using subclass DFS
+        super().__init__(self.__class__.__name__, type_str=type_str)
 
     def __call__(self, *params, data=None, engine=None):
         raise NotImplementedError()
@@ -53,14 +57,20 @@ class ProductionComponent(AcabValue):
             data = {}
 
         super().__init__(op_str, type_str=type_str, data=data, name=name)
+        # Parameters of the operation
         self._params = []
+        # The value name of the result
         self._rebind = rebind
+        # The Position the operator takes: eg: 0: + 1 2, 1: 1 + 2
         self._op_position = op_pos
 
         self.apply_params(params)
         self.verify()
 
     def __call__(self, ctx, engine):
+        """
+        Run the operation, on the passed in context and engine
+        """
         # lookup op
         self.verify()
         op_func = ProductionOperator.op_dict[self.op]
@@ -89,6 +99,7 @@ class ProductionComponent(AcabValue):
 
 
     def apply_params(self, params):
+        """ Safely wrap all passed in parameters as Values, then store """
         safe_params = [AcabValue.safe_make(x) for x in params]
         self._params += safe_params
 
@@ -149,6 +160,7 @@ class ProductionContainer(AcabStatement):
         return len(self.clauses)
 
     def __call__(self, ctxs=None, engine=None):
+        """ Apply the clauses in one move """
         if ctxs is None:
             ctxs = [{}]
         if not isinstance(ctxs, list):

@@ -19,6 +19,8 @@ class AcabValue:
 
     @staticmethod
     def safe_make(value, data=None):
+        """ Wrap the provided value in an AcabValue,
+        but only if it isn't an AcabValue already """
         if isinstance(value, AcabValue):
             new_val = value.copy().set_data(data)
             return new_val
@@ -154,6 +156,9 @@ class AcabValue:
 
 
 class AcabStatement(AcabValue):
+    """ AcabStatement functions the same as AcabValue,
+    but provides specific functionality for converting to a string
+    """
 
     def __init__(self, value, **kwargs):
         super(AcabStatement, self).__init__(value, **kwargs)

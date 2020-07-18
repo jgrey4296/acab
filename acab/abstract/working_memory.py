@@ -1,7 +1,7 @@
 """
 The abstract form of a working memory
 
-Working Memory is responsible for the core agent capabilities.
+Working Memory is responsible for the core system capabilities.
 It provides an ontology structure, parsers for that structure,
 and integrates modules into those parsers.
 

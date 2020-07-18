@@ -1,5 +1,5 @@
 """
-Bootstrap dsl
+Bootstrap dsl: A Simple Trie to register and query parser fragments
 
 Add:
 a.test.location = blah

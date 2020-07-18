@@ -1,5 +1,5 @@
-""" EngineBase: The Core Interface and implementation independent code for the
-    production systems
+"""
+EngineBase: The Core Interface and implementation independent code for the production systems
 
 Engine's are the main programming interface.
 You create one with a working memory, load some modules,
@@ -55,10 +55,15 @@ class Engine:
 
     # Initialisation:
     def load_modules(self, *modules):
+        """ Given ModuleInterface objects,
+        store them then tell the working memory to load them
+        """
         self._loaded_modules.update({x.__class__.__name__ : x for x in modules})
         self._working_memory.add_modules(self._loaded_modules.values())
 
     def reload_all_modules(self, clear_bootstrap=False):
+        """ Reload all modules, optionally clearing the constructed
+        parser fragment trie first """
         if clear_bootstrap:
             ProductionOperator.clear_registrations()
             self._working_memory.clear_bootstrap()
@@ -87,7 +92,7 @@ class Engine:
         self._working_memory.add(s)
 
     def query(self, s, ctxs=None, cache=True):
-        """ As a question of the working memory """
+        """ Ask a question of the working memory """
         result = self._working_memory.query(s, ctxs=ctxs, engine=self)
         if cache:
             self._cached_bindings = result
@@ -95,12 +100,16 @@ class Engine:
 
 
     def add_listeners(self, *words):
+        """ Add basic data breakpoints """
         self._working_memory.register_listeners(words)
 
     def remove_listeners(self, *words):
+        """ Remove data breakpoints """
         self._working_memory.unregister_listeners(words)
 
     def set_listener_threshold(self, a, b):
+        """ Specify the number of word matches
+        are needed to trigger the breakpoint """
         self._working_memory.set_listener_threshold(a, b)
 
     def get_listeners(self):

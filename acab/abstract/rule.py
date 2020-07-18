@@ -1,6 +1,7 @@
-""" Rule:  Stores the representation of an entire rule for an engine.
-    Holds a query of clauses, bindings are passed to a transform,
-    the results are passed to the action list
+"""
+Rule:  Stores the representation of an entire rule for an engine.
+Holds a query of clauses, bindings are passed to a transform,
+the results are passed to the action list
 """
 import logging as root_logger
 
@@ -20,6 +21,7 @@ class Rule(ProductionContainer):
     """
 
     __count = 0
+
     def __init__(self, query=None, action=None, transform=None, name="AnonRule", type_str=util.RULE_S):
         assert(query is None or isinstance(query, Query))
         assert(action is None or isinstance(action, Action))

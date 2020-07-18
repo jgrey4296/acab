@@ -1,6 +1,6 @@
 """
 The Module Interface definition that modules need to enact.
-Comes in two parts: The Parser, and the data
+Registers and uses parser fragments.
 
 """
 import logging as root_logger

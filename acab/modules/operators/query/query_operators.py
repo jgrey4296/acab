@@ -18,6 +18,7 @@ class NEQ(QueryOp):
 
 class RegMatch(QueryOp):
     def __call__(self, a, b, data=None, engine=None):
+        # TODO: use re.RegexFlag 's 
         return re.search(b, a)
 
 

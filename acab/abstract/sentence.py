@@ -1,5 +1,5 @@
 """
-Defines a Sentence of Fact Words, which can be a query, and
+Defines a Sentence of Words, which can be a query, and
 have fallback bindings
 """
 from acab.util import BIND_S, OPERATOR_S
@@ -93,6 +93,9 @@ class Sentence(AcabValue):
                         tags=self._tags)
 
     def add(self, *other):
+        """ Return a copy of the sentence, with words added to the end.
+        This can flatten entire sentences onto the end
+        """
         words = self.words
         for sen in other:
             assert(isinstance(sen, (list, Sentence)))
@@ -105,7 +108,10 @@ class Sentence(AcabValue):
 
     def attach_statement(self, value):
         """
-        Take a statement and attach it to the leaf of the sentence
+        Copy the sentence,
+        Replace the leaf with the provided statement,
+        Name the statement to the name of the former leaf
+
         """
         assert(isinstance(value, AcabStatement))
         last = self.words[-1]
@@ -124,7 +130,9 @@ class Sentence(AcabValue):
     def detach_statement(self):
         """
         The inverse of attach_statement.
+        Copy the sentence,
         Reduce the leaf of a sentence to a simple value
+        Return the copy, and the statement
         """
         last = None
 

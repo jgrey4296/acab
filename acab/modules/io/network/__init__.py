@@ -1,6 +1,6 @@
 """
 This Module provides the core components
-for network communication between
+for basic network communication between
 the pipeline and a separate program (eg: Unity)
 
 """
@@ -15,10 +15,11 @@ class MODULE(ModuleInterface):
         return TP.parseString(s)
 
     def assert_parsers(self, pt):
-        pt.add("value.time", TP.main_pattern)
+        # TODO: Assert IO Actions
+        return
 
     def query_parsers(self, pt):
-        TP.HOTLOAD_VALUE << pt.query("valbind")
-        TP.HOTLOAD_BIND << pt.query("valbind")
+        pass
 
+    
 MODULE_SPEC = MODULE()

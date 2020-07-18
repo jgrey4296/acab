@@ -1,5 +1,5 @@
 """
-A Trie for Types
+A Trie Structure, using AcabNodes
 """
 import logging as root_logger
 from weakref import WeakValueDictionary, ref, proxy
@@ -155,16 +155,14 @@ class Trie:
         if clause[0].is_at_var:
             binding_val = clause[0].value
 
-        contexts.force_node_position(target=self.root,
-                                     binding=binding_val)
+        contexts.force_node_position(target=self.root, binding=binding_val)
 
         # Go down from the root by query element:
-        # For each word of the clause sentence, eg: .a in .a.b.word
+        # For each word of the clause sentence, eg: a. in a.b.word
         collapse_on = set()
         for word in clause:
             logging.info("Testing node: {}".format(repr(word)))
             logging.info("Current Contexts: {}".format(len(contexts)))
-
             if not bool(contexts):
                 break
 

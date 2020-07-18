@@ -1,5 +1,10 @@
-""" Query: The Datastructure to hold a
-question to pose to the working memory
+"""
+Query uses production_operator structuring.
+
+A Query is a container of clauses.
+Each Clause is a Sentence where individual words have Components describing tests.
+Each Component combines a QueryOp with values to use.
+
 """
 import logging as root_logger
 

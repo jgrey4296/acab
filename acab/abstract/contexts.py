@@ -1,4 +1,8 @@
-""" Contexts: A Container for all partial matches of word query being run """
+"""
+Contexts: A Container for mutually inclusive binding fragments
+Essentially a possibility space of rule results
+
+"""
 import itertools as it
 from enum import Enum
 import logging as root_logger
@@ -20,6 +24,7 @@ class Contexts:
     """
     @staticmethod
     def rebind_across_contexts(names, values, base):
+        """ Utility method to perform alpha conversion """
         assert(isinstance(base, dict))
         assert(isinstance(names, list))
         assert(isinstance(values, tuple))
@@ -35,9 +40,13 @@ class Contexts:
         """
         Setup the initial context of no bindings
         """
+        # Bind Groups:: List(dict)
         self._bind_groups = []
+        # Nodes: List(Node), where each node is a reference into the trie
         self._nodes = []
+        # Failures: Records true failures
         self._failures = []
+        # Queued Failures: Records failures that may potentially have fallback values
         self._queued_failures = []
         self._engine = engine
 
@@ -75,7 +84,9 @@ class Contexts:
 
 
     def append(self, *data, fail_dict=None):
-        """ Add a number of matching possibilities into this set of contexts """
+        """
+        Add pairs of (bind_dict, node) to the context
+        """
         assert(all([isinstance(x, tuple) for x in data]))
         successes = set()
         if fail_dict is None:
@@ -93,7 +104,10 @@ class Contexts:
 
 
     def fail(self, item=None, items=None):
-        """ Remove all contexts, as none are suitable """
+        """
+        Either add specific failures to the queue,
+        or remove all bind dicts, as none are suitable
+        """
         if item is not None:
             self._queued_failures.append(item)
         elif items is not None:
@@ -103,27 +117,42 @@ class Contexts:
 
 
     def invert(self):
-        # swap failures with successes
+        """
+        Swap failures with successes.
+        This is used when evaluating negated clauses
+        """
         temp = self._bind_groups
         self._bind_groups = self._queued_failures
         self._queued_failures = temp
 
     def promote_failures(self, fallback_pairs):
+        """
+        Raise potential failures to successes if they have
+        appropriate fallback values
+        """
         while bool(self._queued_failures):
             current = self._queued_failures.pop(0)
             for bind_target, val in clause._data[FALLBACK_S]:
                 current[bind_target.value] = val
-                self.append((current, None))
+
+            self.append((current, None))
 
     def demote_failures(self):
+        """ Demote all potential failures to true failures """
         self._failures += self._queued_failures
         self._queued_failures = []
 
     def clear(self):
+        """ Clear the entire context ready for new additions """
         self._bind_groups = []
         self._nodes = []
 
     def force_node_position(self, target=None, binding=None):
+        """
+        Override current node positions for bind groups,
+        either with a single target node (ie: root)
+        or with a binding in the bind groups (ie: @x)
+        """
         assert (target is not None or binding)
         if not bool(self):
             self._bind_groups = [{}]
@@ -141,13 +170,18 @@ class Contexts:
         self._nodes = [x[bind_node_name] for x in self._bind_groups]
 
     def pairs(self):
+        """ Return an iterator of bind groups with their location node """
         return zip(self._bind_groups, it.cycle(self._nodes))
 
 
     def collapse(self, on_vars):
         """
+        Context collapse on specific vars.
+        Flattens many contexts into one, with specified variables
+        now as lists accumulated from across the contexts.
+
         Semantics of collapse:
-        n[ctx] -> 1[c:ctx]
+        1[ctx]n -> 1[c:ctx]1
         where
         c = a_ctx = { on_var : [x[on_var] for x in ctxs] }
         """

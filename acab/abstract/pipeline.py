@@ -1,6 +1,7 @@
 """
-As Pipelines are collections of layers,
-and the layer ordering is determined by topological sorting,
+Pipelines are special cases of Rules.
+
+The layer ordering is determined by topological sorting,
 a pipeline is just a set of layers that forms
 a unified flow from inputs to outputs
 while also storing terminals and

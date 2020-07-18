@@ -1,6 +1,8 @@
 """
 Actions: Describes the *ENGINE AGNOSTIC* basic actions that a working memory can
 perform, along with associated enums, and IR data structures
+
+Uses the structure of production operators.
 """
 import logging as root_logger
 
@@ -23,14 +25,17 @@ class ActionOp(PO.ProductionOperator):
     op_dict = {}
 
     def __init__(self, infix=False):
-        # Registers self with class name,
-        # DSL later binds to an operator
+        """ Registers self with class name,
+         DSL later binds to an operator """
         super().__init__(infix=False)
 
         if self.op_str not in ActionOp.op_dict:
             ActionOp.op_dict[self.op_str] = self
 
     def __call__(self, *params, data=None, engine=None):
+        """ The Abstract Call Method.
+        Takes a variable number of params, the current context dict,
+        and the engine itself for broader effects """
         raise NotImplementedError()
 
 
@@ -50,6 +55,7 @@ class ActionComponent(PO.ProductionComponent):
 
     @property
     def var_set(self):
+        """ Get the input and output variables of the component """
         obj = super(ActionComponent, self).var_set
         return {'in' : obj['in'].union(obj['out']), 'out': set()}
 
@@ -66,7 +72,7 @@ class ActionComponent(PO.ProductionComponent):
     def to_local_sentences(self):
         """ Return the action in canonical form """
         # eg : assert a.test  = assert -> a.test -> nil
-        # TODO possibly create new unique bindings for head sentence -> params
+        # TODO alpha renaming
         # ie: Head: +.$x22532(::sentence).$x26215(::sentence)
         # and Params: a.b.c.$x(::aval), a.b.$d(::aval)
         # and bind?

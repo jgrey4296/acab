@@ -20,11 +20,11 @@ from acab.abstract.transform import TransformComponent
 
 def build_transform_component(toks):
     component = TransformComponent
-
+    # TODO construct pattern match component
     # Get head, set rebind
     # get body -> [(pattern, $val/transform)]
 
-
+    # TODO complain if there isn't a catchall at the end
     return component
 
 

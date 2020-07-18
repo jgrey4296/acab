@@ -1,4 +1,10 @@
-""" Simple Transform functions to be used in rules """
+"""
+Transform follows the structure of production_operator
+
+Transform is a container of clauses.
+Each clause is a Component, which combines values with an operator
+
+"""
 import logging as root_logger
 
 from acab import util

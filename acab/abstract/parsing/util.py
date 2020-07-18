@@ -91,6 +91,7 @@ STRING      = pp.dblQuotedString
 STRING.setParseAction(pp.removeQuotes)
 STRING.addParseAction(lambda toks: (util.STRING_S, toks[0]))
 
+# TODO: add re.RegexFlag 's to parser
 REGEX       = pp.Regex(r'/.+?/')
 REGEX.setParseAction(lambda t: (util.REGEX_S, t[0][1:-1]))
 

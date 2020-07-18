@@ -1,6 +1,5 @@
 """ Cross-module utilities for the rule engines """
 from enum import Enum
-from random import choice
 import pyparsing as pp
 
 # Globally constant strings:

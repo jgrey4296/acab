@@ -1,6 +1,7 @@
 """
-Layers can be parsable
-and inserted or removed from pipelines?
+Layers are a special case of Rule.
+They query for rules, then run them,
+passing the results to an agenda.
 
 should also hold tests to ensure particular results from
 particular inputs, and statistical ranges
