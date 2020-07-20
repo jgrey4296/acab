@@ -40,6 +40,7 @@ class AcabValue:
         self._uuid = uuid1()
         self._name = None
         self._value = value
+        self._hash_name = None
 
         self._vars = []
         self._tags = set()
@@ -74,7 +75,10 @@ class AcabValue:
                                    str(self))
 
     def __hash__(self):
-        return hash(str(self))
+        if self._hash_name is None:
+            self._hash_name = hash(str(self))
+
+        return self._hash_name
 
     def __eq__(self, other):
         return hash(self) == hash(other)
