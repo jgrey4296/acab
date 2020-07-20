@@ -2,7 +2,6 @@ import logging as root_logger
 
 from acab.modules.analysis.typing import type_exceptions as te
 from acab.modules.analysis.typing import util
-from acab.modules.analysis.typing.util import TYPE_DEC_S
 from .typed_node import MonoTypedNode
 
 logging = root_logger.getLogger(__name__)
@@ -24,8 +23,7 @@ class TypeAssignmentTrieNode(MonoTypedNode):
         logging.debug("Node: {} updating with {}".format(self._value,
                                                          str(word)))
         # apply type if necessary
-        if TYPE_DEC_S in word._data:
-            self.unify_types(word._data[TYPE_DEC_S])
+        self.unify_types(word.type, lookup=lookup)
 
         if not (self.is_var == word.is_var):
             # complain if var status doesn't match
