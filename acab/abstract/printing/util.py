@@ -1,26 +1,31 @@
 """
 Utilities for printing out information
 """
-from acab import util
 from collections import defaultdict
+from acab import util
+
+from acab.abstract.type_base import REGEX, STRING, ATOM
 
 #Setup
 # TODO register additional constraints
 def register_modal(a_dict, reset=False):
+    """ Register how to print a modal operator
+    ie: For exclusion logic: DOT -> ".", EX -> "!"
+    """
     global MODAL_LOOKUPS
     if reset:
         MODAL_LOOKUPS.clear()
     assert(not any([k in MODAL_LOOKUPS for k in a_dict.keys()]))
     MODAL_LOOKUPS.update(a_dict)
 
-def register_statement(a_dict, reset=False):
-    global STATEMENT_LOOKUPS
-    if reset:
-        STATEMENT_LOOKUPS.clear()
-    assert(not any([k in STATEMENT_LOOKUPS for k in a_dict.keys()])), a_dict
-    STATEMENT_LOOKUPS.update(a_dict)
-
 def register_primitive(a_dict, reset=False):
+    """
+    Register additional primitive formats
+
+    The two base primitive examples are:
+    REGEX: /{}/
+    STRING: "{}"
+    """
     global TYPE_WRAPS
     if reset:
         TYPE_WRAPS.clear()
@@ -29,6 +34,10 @@ def register_primitive(a_dict, reset=False):
     TYPE_WRAPS.update(a_dict)
 
 def register_constraint(*constraints, reset=False):
+    """
+    Register constraints / annotations of a value to represent for a value:
+    eg: x (::a.type), or y(>2)...
+    """
     global REGISTERED_CONSTRAINTS
     if reset:
         REGISTERED_CONSTRAINTS = set([util.CONSTRAINTS_S])
@@ -36,6 +45,11 @@ def register_constraint(*constraints, reset=False):
     REGISTERED_CONSTRAINTS.update(constraints)
 
 def register_class(cls, func):
+    """
+    Register a function which prints a specific class
+
+    Enables separating print logic from the class
+    """
     global REGISTERED_PPRINTS
     assert(isinstance(cls, type))
     assert(callable(func))
@@ -43,6 +57,7 @@ def register_class(cls, func):
     REGISTERED_PPRINTS[cls] = func
 
 def default_opts(*args, **kwargs):
+    """ Create the default options for pprint """
     opts = defaultdict(lambda: False)
     for x in args:
         opts[x] = True
@@ -83,13 +98,8 @@ def print_value(value, opts):
     val = pprint(value.value, opts)
 
     # setup the value type
-    type_str = None
-    if util.VALUE_TYPE_S in value._data:
-        type_str = value._data[util.VALUE_TYPE_S]
-
-    # Format core value if it is a primitive
-    if type_str in TYPE_WRAPS:
-        val = TYPE_WRAPS[type_str](val)
+    if hasattr(value, "type") and value.type in TYPE_WRAPS:
+        val = TYPE_WRAPS[value.type](val)
 
     # Wrap binding
     if value.is_at_var:
@@ -159,10 +169,8 @@ def print_statement(statement, opts):
 
     val = _wrap_colon(val)
 
-    if statement.type in STATEMENT_LOOKUPS:
-        val = _wrap_statement_type(val, statement.type)
-    else:
-        val += "\n"
+    if statement.type != ATOM:
+        val = _wrap_statement_type(val, statement.type.pprint())
 
     if bool(statement._vars):
         val = _wrap_var_list(val, statement._vars)
@@ -317,7 +325,7 @@ def _wrap_end(value, newline=False):
         return "{}{}\n".format(value, util.END_S)
 
 def _wrap_statement_type(val, type_str):
-    return "{} (::{})\n".format(val, STATEMENT_LOOKUPS[type_str])
+    return "{} ({})\n".format(val, type_str)
 
 def _wrap_var_list(val, the_vars, newline=False):
     head = ""
@@ -327,12 +335,11 @@ def _wrap_var_list(val, the_vars, newline=False):
 
 
 MODAL_LOOKUPS = {}
-STATEMENT_LOOKUPS = {}
 REGISTERED_PPRINTS = {float : _wrap_float,
                       int   : _wrap_int}
 
 REGISTERED_CONSTRAINTS = set([util.CONSTRAINT_S])
 
-TYPE_WRAPS = {util.REGEX_S  : _wrap_regex,
-              util.STRING_S : _wrap_str}
+TYPE_WRAPS = {REGEX: _wrap_regex,
+              STRING: _wrap_str}
 
