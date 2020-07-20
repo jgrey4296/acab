@@ -10,6 +10,7 @@ from copy import deepcopy
 
 from acab import util
 from acab.abstract.printing import util as PrU
+from acab.abstract.type_base import TypeInstance, ATOM
 
 logging = root_logger.getLogger(__name__)
 
@@ -18,17 +19,20 @@ class AcabValue:
     value_types = set([int, float, Fraction, bool, str, Pattern, list, tuple])
 
     @staticmethod
-    def safe_make(value, data=None):
+    def safe_make(value, data=None, _type=None):
         """ Wrap the provided value in an AcabValue,
         but only if it isn't an AcabValue already """
         if isinstance(value, AcabValue):
+            assert(_type is None)
             new_val = value.copy().set_data(data)
             return new_val
         else:
-            return AcabValue(value, data=data)
+            # TODO: detect base types
+            return AcabValue(value, data=data, _type=_type)
 
-    def __init__(self, value, type_str=None, data=None,
-                 params=None, tags=None, name=None):
+    def __init__(self, value, data=None,
+                 params=None, tags=None,
+                 name=None, _type=None):
 
         value_type_tuple = tuple([AcabValue] + list(AcabValue.value_types))
         assert (value is None or isinstance(value, value_type_tuple)), type(value)
@@ -39,14 +43,17 @@ class AcabValue:
 
         self._vars = []
         self._tags = set()
-        self._data = {}
+        self._data = {util.VALUE_TYPE_S: ATOM}
 
         self._data.update(util.DEFAULT_VALUE_DATA)
 
-        if type_str is not None:
-            self._data[util.VALUE_TYPE_S] = type_str
         if data is not None:
             self._data.update(data)
+
+        if _type is not None:
+            assert(isinstance(_type, TypeInstance))
+            self._data[util.VALUE_TYPE_S] = _type
+
         if params is not None:
             self.apply_vars(params)
         if tags is not None:
@@ -86,16 +93,16 @@ class AcabValue:
     def value(self):
         return self._value
     @property
+    def type(self):
+        return self._data[util.VALUE_TYPE_S]
+
+    @property
     def is_var(self):
         return self._data[util.BIND_S] is not False
 
     @property
     def is_at_var(self):
         return self._data[util.BIND_S] == util.AT_BIND_S
-
-    @property
-    def type(self):
-        return self._data[util.VALUE_TYPE_S]
 
     @property
     def var_set(self):
