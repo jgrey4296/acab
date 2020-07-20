@@ -1,29 +1,34 @@
-from acab.abstract.sentence import Sentence
-from acab.abstract.value import AcabValue
-from acab.error.acab_parse_exception import AcabParseException
-from acab.util import STRUCTURE_S, VALUE_TYPE_S, NAME_S
 from acab.abstract.printing import util as PrU
+from acab.abstract.sentence import Sentence
+from acab.abstract.type_base import TypeInstance, ATOM
+from acab.abstract.value import AcabValue
+
+from acab.error.acab_parse_exception import AcabParseException
+from acab.modules.analysis.typing.util import TYPE_DEFINITION, SUM_DEFINITION, TYPE_DEF_S
+from acab.modules.analysis.typing import type_exceptions as TE
+
+from acab.util import STRUCTURE_S, VALUE_TYPE_S, NAME_S
 
 from .acab_type import TypeStatement
-from .type_instance import TypeInstance
-from acab.modules.analysis.typing.util import TYPE_DEF_S, TYPE_DEC_S
 
-PrU.register_statement({TYPE_DEF_S : STRUCTURE_S})
+PrU.register_statement({TYPE_DEFINITION: STRUCTURE_S})
 # TODO register class
 
 class TypeDefinition(TypeStatement):
     """ Defines the Structure of a Product type """
 
-    def __init__(self, structure, params=None, type_str=TYPE_DEF_S):
+    def __init__(self, structure, params=None, _type=None):
         """ Structure creates the dict of locations.
         Only leaves get type anotations. Thus:
         { .a.$x :: String, .b.$c :: Num, .d!$e::Location }
         """
-
         # The name is the location. eg: .types.person
         assert isinstance(structure, list)
         assert all([isinstance(x, Sentence) for x in structure])
-        super().__init__(None, params=params, type_str=type_str)
+        if _type is None:
+            _type = TYPE_DEFINITION
+
+        super().__init__(None, params=params, _type=_type)
         self._structure = []
 
         if bool(structure):
@@ -95,18 +100,22 @@ class TypeDefinition(TypeStatement):
 
             for word in var_words:
                 variables[word.value]['instances'].append(word)
-                    # find variables with type annotations
-                if TYPE_DEC_S in word._data:
-                    variables[word.value]['types'].add(word._data[TYPE_DEC_S])
+                # find variables with type annotations
+                variables[word.value]['types'].add(word.type)
 
         # Then unify all the variables to have the same type
         for the_dict in variables.values():
             types, instances = the_dict.values()
-            assert(len(types) < 2)
+            if ATOM in types:
+                types.remove(ATOM)
+                
+            if len(types) > 1:
+                raise TE.TypeConflictException(types.pop(), types, self)
+
             if bool(types):
                 type_instance = types.pop()
                 for word in instances:
-                    word._data[TYPE_DEC_S] = type_instance
+                    word._data[TYPE_DEF_S] = type_instance
 
 
     @property
@@ -122,7 +131,7 @@ class TypeDefinition(TypeStatement):
 class SumTypeDefinition(TypeDefinition):
     """ Defines a Sum Type  """
 
-    def __init__(self, structure, params=None, type_str=TYPE_DEF_S):
+    def __init__(self, structure, params=None, _type=None):
         # Flatten Product Types out of Structure:
         # TODO: improve this
         flat_structure = []
@@ -131,7 +140,21 @@ class SumTypeDefinition(TypeDefinition):
             flat_structure.append(prefix)
             flat_structure += [Sentence(prefix.words + x.words) for x in sen[-1].structure]
 
+        if _type is None:
+            _type = SUM_DEFINITION
         super(SumTypeDefinition, self).__init__(flat_structure,
                                                 params=params,
-                                                type_str=type_str)
+                                                _type=_type)
         assert(bool(self.structure))
+
+
+
+# Auto Build Primitive Definitions
+def build_primitive_definitions():
+    prim_defs = []
+    for x in TypeInstance.Primitives:
+        prim_path = Sentence([AcabValue(y.name) for y in x])
+        primitive = prim_path.attach_statement(TypeDefinition([]))
+        prim_defs.append(primitive)
+
+    return prim_defs

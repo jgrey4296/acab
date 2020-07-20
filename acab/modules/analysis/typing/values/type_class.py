@@ -3,7 +3,7 @@ Defines the required functions a type needs to implement
 """
 from .acab_type import Type
 
-class TypeClass(Type):
+class TypeClass(TypeStatement):
     """ Definition of a coherent collection of functions """
 
     def __init__(self):

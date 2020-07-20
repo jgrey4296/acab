@@ -1,27 +1,6 @@
-from acab.abstract.value import AcabValue, AcabStatement
+from acab.abstract.value import AcabStatement
 from acab.abstract.printing import util as PrU
 from acab.util import TAB_S
-
-# TODO: make a QueryOp
-class Type(AcabValue):
-    """ The unrestricted type """
-
-    def __init__(self, value="|∀σ|", **kwargs):
-        super().__init__(value, **kwargs)
-
-
-    # TODO: pprint types better
-
-    @property
-    def path(self):
-        return self.value
-    @property
-    def head(self):
-        return self.path[-1]
-    @property
-    def vars(self):
-        return self._vars
-
 
 class TypeStatement(AcabStatement):
 
