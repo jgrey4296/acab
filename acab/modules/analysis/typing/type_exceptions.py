@@ -43,7 +43,6 @@ class TypeUndefinedException(AcabTypingException):
         return "Exception: Attempted to declare as missing type {} in {}".format(self.attempted_type,
                                                                                  self.stmt)
 
-
 class TypeVariableConflictException(AcabTypingException):
 
     def __init__(self, node_path):
@@ -51,7 +50,6 @@ class TypeVariableConflictException(AcabTypingException):
 
     def __str__(self):
         return "Node specified as both a var and not a var: {}".format("".join(self.node_path))
-
 
 class TypeStructureMismatch(AcabTypingException):
 
