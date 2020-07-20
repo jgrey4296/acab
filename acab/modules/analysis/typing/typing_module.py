@@ -23,7 +23,6 @@ class TypingSpec(ModuleInterface):
 
     def __init__(self):
         super().__init__()
-        PrU.register_constraint(TU.TYPE_DEC_S)
 
     def parse_string(self, s):
         return TP.parseString(s)
