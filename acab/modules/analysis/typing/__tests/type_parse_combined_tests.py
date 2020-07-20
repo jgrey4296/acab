@@ -1,32 +1,31 @@
 import unittest
 import logging
 
-from acab.modules.analysis.typing import type_exceptions as te
-
-from acab.abstract.bootstrap_parser import BootstrapParser
-from acab.abstract.transform import TransformComponent
-from acab.modules.analysis.typing.type_checker import TypeChecker
-from acab.modules.analysis.typing.values.type_definition import TypeDefinition
-from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition
-from acab.modules.analysis.typing.values.type_instance import TypeInstance
-from acab.modules.analysis.typing.typing_module import TypingSpec
-
-from acab.modules.operators.standard_operators import StandardOperators
-from acab.abstract import action
-from acab.abstract.production_operator import ProductionOperator
-
-from acab.working_memory.trie_wm.trie_working_memory import TrieWM
-
-from acab.abstract.sentence import Sentence
-from acab.abstract.node import AcabNode
-from acab.modules.analysis.typing import util as TU
-from acab.abstract.printing import util as PrU
 from acab import util
+from acab.abstract import action
+from acab.abstract.bootstrap_parser import BootstrapParser
+from acab.abstract.node import AcabNode
+from acab.abstract.type_base import TypeInstance, ATOM
+from acab.abstract.printing import util as PrU
+from acab.abstract.production_operator import ProductionOperator
+from acab.abstract.sentence import Sentence
+from acab.abstract.transform import TransformComponent
+from acab.abstract.type_base import TypeInstance
 from acab.abstract.value import AcabValue
 
+from acab.modules.analysis.typing import type_exceptions as te
+from acab.modules.analysis.typing import util as TU
 from acab.modules.analysis.typing.parsing import TypeDefParser as TD
-from acab.working_memory.trie_wm.parsing import FactParser as FP
+from acab.modules.analysis.typing.type_checker import TypeChecker
+from acab.modules.analysis.typing.typing_module import TypingSpec
+from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition
+from acab.modules.analysis.typing.values.type_definition import TypeDefinition
+from acab.modules.operators.standard_operators import StandardOperators
+
 from acab.working_memory.trie_wm.parsing import ActionParser as AP
+from acab.working_memory.trie_wm.parsing import FactParser as FP
+from acab.working_memory.trie_wm.trie_working_memory import TrieWM
+
 
 def S(*in_string):
     return Sentence([AcabValue(x) for x in in_string])
@@ -70,12 +69,13 @@ class TypingCombinedTests(unittest.TestCase):
 
     def test_add_definition(self):
         """ :: a END """
+        n_primitives = len(TypeInstance.Primitives)
         type_def = TD.parseString("a.test.definition.x: (::σ) end")[0]
-        self.assertEqual(len(self.tc._definitions), 0)
+        self.assertEqual(len(self.tc._definitions), n_primitives)
         self.tc.add_definition(type_def)
-        self.assertEqual(len(self.tc._definitions), 4)
+        self.assertEqual(len(self.tc._definitions), n_primitives + 4)
         defs = self.tc._definitions.get_nodes(lambda x: isinstance(x.value, TypeDefinition))
-        self.assertEqual(1, len(defs))
+        self.assertEqual(n_primitives + 1, len(defs))
 
     def test_add_assertion(self):
         """ a.b.c.d """
@@ -155,13 +155,13 @@ class TypingCombinedTests(unittest.TestCase):
 
         query_sen = FP.parseString("test.$c")[0]
         query_result = self.tc.query(query_sen)[0]
-        self.assertIsNone(query_result._type_instance)
+        self.assertEqual(query_result._type_instance, ATOM)
 
         self.tc.validate()
         query_result = self.tc.query(query_sen)[0]
 
         self.assertIsNotNone(query_result._type_instance)
-        self.assertEqual(query_result._type_instance, sen1[-1]._data[TU.TYPE_DEC_S])
+        self.assertEqual(query_result._type_instance, sen1[-1].type)
 
 
     def test_type_conflict(self):
@@ -203,7 +203,7 @@ class TypingCombinedTests(unittest.TestCase):
         self.tc.add_definition(a_def)
         self.tc.add_definition(a_def2)
 
-        self.assertEqual(len(self.tc._definitions), 2)
+        self.assertEqual(len(self.tc._definitions), len(TypeInstance.Primitives) + 2)
 
     def test_variable_conflict(self):
         """ ::String: END ::Number: END
@@ -278,10 +278,10 @@ class TypingCombinedTests(unittest.TestCase):
 
         #Query the First Variable, should be untyped
         query_sen = FP.parseString("bob.name.$z")[0]
-        self.assertIsNone(self.tc.query(query_sen)[0]._type_instance)
+        self.assertEqual(self.tc.query(query_sen)[0]._type_instance, ATOM)
         #then the second, should be untyped
         query_sen = FP.parseString("bob.name.$z.$q")[0]
-        self.assertIsNone(self.tc.query(query_sen)[0]._type_instance)
+        self.assertEqual(self.tc.query(query_sen)[0]._type_instance, ATOM)
 
         self.tc.validate()
         #Check the first var is inferred
@@ -318,8 +318,8 @@ class TypingCombinedTests(unittest.TestCase):
         query_sen1 = FP.parseString("a.component.$q")[0]
         query_sen2 = FP.parseString("a.component.$q.name.$w")[0]
 
-        self.assertIsNone(self.tc.query(query_sen1)[0]._type_instance)
-        self.assertIsNone(self.tc.query(query_sen2)[0]._type_instance)
+        self.assertEqual(self.tc.query(query_sen1)[0]._type_instance, ATOM)
+        self.assertEqual(self.tc.query(query_sen2)[0]._type_instance, ATOM)
 
         self.tc.validate()
 
@@ -354,7 +354,7 @@ class TypingCombinedTests(unittest.TestCase):
 
         query_sen2 = FP.parseString("a.component.$q.name.$w")[0]
 
-        self.assertIsNone(self.tc.query(query_sen1)[0]._type_instance)
+        self.assertEqual(self.tc.query(query_sen1)[0]._type_instance, ATOM)
 
         num_instance = num_def[-1].build_type_instance()
         self.assertEqual(self.tc.query(query_sen2)[0]._type_instance, num_instance)
@@ -391,8 +391,8 @@ class TypingCombinedTests(unittest.TestCase):
 
         query_sen2 = FP.parseString("b.name.$t")[0]
 
-        self.assertIsNone(self.tc.query(query_sen1)[0]._type_instance)
-        self.assertIsNone(self.tc.query(query_sen2)[0]._type_instance)
+        self.assertEqual(self.tc.query(query_sen1)[0]._type_instance, ATOM)
+        self.assertEqual(self.tc.query(query_sen2)[0]._type_instance, ATOM)
 
         self.tc.validate()
         self.assertEqual(self.tc.query(query_sen1)[0]._type_instance, TypeInstance(S("string")))
@@ -424,7 +424,7 @@ class TypingCombinedTests(unittest.TestCase):
         #queries
         query_sen1 = FP.parseString("a.nested.name.$z")[0]
 
-        self.assertIsNone(self.tc.query(query_sen1)[0]._type_instance)
+        self.assertEqual(self.tc.query(query_sen1)[0]._type_instance, ATOM)
 
         self.tc.validate()
 
@@ -457,8 +457,8 @@ class TypingCombinedTests(unittest.TestCase):
 
         query_sen2 = FP.parseString("a.age.$w")[0]
 
-        self.assertIsNone(self.tc.query(query_sen1)[0]._type_instance)
-        self.assertIsNone(self.tc.query(query_sen2)[0]._type_instance)
+        self.assertEqual(self.tc.query(query_sen1)[0]._type_instance, ATOM)
+        self.assertEqual(self.tc.query(query_sen2)[0]._type_instance, ATOM)
         self.tc.validate()
 
         self.assertEqual(self.tc.query(query_sen1)[0]._type_instance, TypeInstance(S("string")))

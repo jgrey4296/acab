@@ -48,7 +48,7 @@ class TypeDef_ParserTests(unittest.TestCase):
         result = TD.parseString("blah.x: (::σ)\na.b.c\n\nend")[0]
         self.assertIsInstance(result[-1], TypeDefinition)
         self.assertEqual(result[-1].is_var, False)
-        self.assertEqual(result[-1]._data[util.VALUE_TYPE_S], TU.TYPE_DEF_S)
+        self.assertEqual(result[-1].type, TU.TYPE_DEFINITION)
         self.assertEqual(len(result[-1]._vars), 0)
         self.assertEqual(result[-1].name, "x")
         self.assertEqual(len(result[-1].structure), 1)
@@ -69,7 +69,7 @@ class TypeDef_ParserTests(unittest.TestCase):
 
     def test_typedef_with_structure_types(self):
         result = TD.parseString('blah.x: (::σ)\na.b.c(::bloo)\n\nend')[0]
-        self.assertEqual(result[-1].structure[0][-1]._data[TU.TYPE_DEC_S].pprint(), '::bloo')
+        self.assertEqual(result[-1].structure[0][-1].type.pprint(), '::bloo')
 
     @unittest.skip("TODO: broken, needs to fix typedef var checks")
     def test_typedef_with_bad_vars(self):
