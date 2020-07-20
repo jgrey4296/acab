@@ -72,8 +72,8 @@ class TypeInstance:
 
     def __init__(self, path, params=None, primitive=False, type_alias_str=None):
         """ Construct a Type Instance with a _path in the type trie """
-        assert(hasattr(path, "type")), breakpoint()
         if primitive:
+            path = _Bootstrap_Sentence(path)
             TypeInstance.Primitives.append(path)
 
         assert(params is None or all([isinstance(x, (str, TypeInstance)) or hasattr(x, "type") for x in params])), breakpoint()
@@ -159,19 +159,22 @@ class TypeInstance:
         if self._type_alias is not None:
             return TYPE_FMT_S.format(self._type_alias)
         else:
+            return TYPE_FMT_S.format(self.path.pprint(opts))
+
+
 # Construct the primitive types
-ATOM = TypeInstance(primitive=["atom"])
-STRING = TypeInstance(primitive=["string"])
-NUMBER = TypeInstance(primitive=["number"])
-REGEX = TypeInstance(primitive=["regex"])
+ATOM      = TypeInstance(path=["atom"], primitive=True)
+STRING    = TypeInstance(path=["string"], primitive=True)
+NUMBER    = TypeInstance(path=["number"], primitive=True)
+REGEX     = TypeInstance(path=["regex"], primitive=True)
 
-SENTENCE = TypeInstance(primitive=["sentence"])
+SENTENCE  = TypeInstance(path=["sentence"], primitive=True)
 
-OPERATOR = TypeInstance(primitive=["operator"])
-COMPONENT = TypeInstance(primitive=["component"])
-CONTAINER = TypeInstance(primitive=["container"])
+OPERATOR  = TypeInstance(path=["operator"], primitive=True)
+COMPONENT = TypeInstance(path=["component"], primitive=True)
+CONTAINER = TypeInstance(path=["container"], primitive=True)
 
-QUERY = TypeInstance(primitive=["query"])
-TRANSFORM = TypeInstance(primitive=["transform"])
-ACTION = TypeInstance(primitive=["action"])
-RULE = TypeInstance(primitive=["rule"], type_alias_str="ρ")
+QUERY     = TypeInstance(path=["query"], primitive=True)
+TRANSFORM = TypeInstance(path=["transform"], primitive=True)
+ACTION    = TypeInstance(path=["action"], primitive=True)
+RULE      = TypeInstance(path=["rule"], type_alias_str="ρ", primitive=True)

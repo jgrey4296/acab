@@ -20,9 +20,9 @@ DELIM_S       = ", "
 ARG_S         = "arguments"
 SYNTAX_BIND_S = "syntax_bind"
 
-TYPE_DEFINITION = TypeInstance(primitive=[TYPE_DEF_S])
-OPERATOR_DEFINITION = TypeInstance(primitive=[OP_DEF_S])
-SUM_DEFINITION = TypeInstance(primitive=[SUM_DEF_S])
+TYPE_DEFINITION = TypeInstance(path=[TYPE_DEF_S], primitive=True)
+OPERATOR_DEFINITION = TypeInstance(path=[OP_DEF_S], primitive=True)
+SUM_DEFINITION = TypeInstance(path=[SUM_DEF_S], primitive=True)
 
 def has_equivalent_vars_pred(node):
     """ A Predicate to use with Trie.get_nodes
