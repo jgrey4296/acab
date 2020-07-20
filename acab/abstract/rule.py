@@ -8,6 +8,8 @@ import logging as root_logger
 import acab.util as util
 from acab.abstract.printing import util as PrU
 
+from . import type_base as TB
+
 from .production_operator import ProductionContainer
 from .transform import Transform
 from .action import Action
@@ -22,11 +24,11 @@ class Rule(ProductionContainer):
 
     __count = 0
 
-    def __init__(self, query=None, action=None, transform=None, name="AnonRule", type_str=util.RULE_S):
+    def __init__(self, query=None, action=None, transform=None, name="AnonRule"):
         assert(query is None or isinstance(query, Query))
         assert(action is None or isinstance(action, Action))
         assert(transform is None or isinstance(transform, Transform))
-        super().__init__(None, type_str=type_str, name=name)
+        super().__init__(None, name=name, _type=TB.RULE)
         self._query     = query
         self._transform = transform
         self._action    = action
@@ -152,5 +154,5 @@ class Rule(ProductionContainer):
 
 
 
-PrU.register_statement({util.RULE_S : util.RULE_HEAD_S})
+PrU.register_statement({TB.RULE: util.RULE_HEAD_S})
 PrU.register_class(Rule, PrU.print_statement)

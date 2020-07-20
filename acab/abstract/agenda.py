@@ -3,10 +3,12 @@ Agendas are special cases of rules
 """
 from enum import Enum
 from acab import util
-from acab.util import NAME_S, STATEMENT_S, TYPE_DEC_S, QUERY_S, TRANSFORM_S, ACTION_S
+from acab.util import NAME_S, STATEMENT_S, QUERY_S, TRANSFORM_S, ACTION_S
 from acab.abstract.rule import Rule
 from acab.abstract.production_operator import ProductionOperator, ProductionContainer
 from acab.abstract.printing import util as PrU
+
+from . import type_base as TB
 
 RELATION_E = Enum('Agenda_Relation', 'ONE MANY')
 
@@ -27,8 +29,7 @@ class Agenda(Rule):
         super(Agenda, self).__init__(query=query,
                                      transform=transform,
                                      action=action,
-                                     name=name,
-                                     type_str=util.AGENDA_HEAD_S)
+                                     name=name)
         # Whether the agenda expands or constrains proposals
         self._relation_type = (None, None)
 

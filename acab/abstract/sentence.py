@@ -6,6 +6,8 @@ from acab.util import BIND_S, OPERATOR_S
 from acab.util import SEN_S, AT_BIND_S
 from acab.abstract.printing import util as PrU
 
+from . import type_base as TB
+
 from .value import AcabValue, AcabStatement
 
 
@@ -21,7 +23,8 @@ class Sentence(AcabValue):
         else:
             words = []
 
-        super().__init__(words, data=data, params=params, tags=tags, type_str=SEN_S)
+        super().__init__(words, data=data, params=params,
+                         tags=tags, _type=TB.SENTENCE)
 
     def __hash__(self):
         return super(Sentence, self).__hash__()

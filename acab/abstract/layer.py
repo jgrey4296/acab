@@ -26,8 +26,10 @@ import logging as root_logger
 from acab.abstract.rule import Rule
 from acab.abstract.production_operator import ProductionOperator, ProductionContainer
 from acab import util
-from acab.util import NAME_S, STATEMENT_S, TYPE_DEC_S, QUERY_S, TRANSFORM_S, ACTION_S
+from acab.util import NAME_S, STATEMENT_S, QUERY_S, TRANSFORM_S, ACTION_S
 from acab.abstract.printing import util as PrU
+
+from . import type_base as TB
 
 logging = root_logger.getLogger(__name__)
 
@@ -39,8 +41,7 @@ class Layer(Rule):
         super(Layer, self).__init__(query=query,
                                     action=action,
                                     transform=transform,
-                                    name=name,
-                                    type_str=util.LAYER_HEAD_S)
+                                    name=name)
 
     def __call__(self, ctxs=None, engine=None):
         """ Run a layer, returning actions to perform """

@@ -10,9 +10,11 @@ import logging as root_logger
 from acab import util
 from acab.abstract.printing import util as PrU
 
-from acab.abstract.value import AcabValue
 from . import production_operator as PO
+from . import type_base as TB
+
 from .sentence import Sentence
+from acab.abstract.value import AcabValue
 
 logging = root_logger.getLogger(__name__)
 
@@ -35,7 +37,7 @@ class TransformOp(PO.ProductionOperator):
 
 class TransformComponent(PO.ProductionComponent):
     """ Superclass of OperatorTransform. Holds an Operator """
-    def __init__(self, op_str, params, op_pos=0, rebind=None, data=None, type_str=None):
+    def __init__(self, op_str, params, op_pos=0, rebind=None, data=None):
         super(TransformComponent, self).__init__(op_str, params,
                                                  data=data,
                                                  rebind=rebind,
@@ -53,9 +55,9 @@ class Transform(PO.ProductionContainer):
     """
 
     # have min and max bounds
-    def __init__(self, clauses, type_str=util.TRANSFORM_S):
+    def __init__(self, clauses):
         assert(all([isinstance(x, TransformComponent) for x in clauses]))
-        super(Transform, self).__init__(clauses, type_str=type_str)
+        super(Transform, self).__init__(clauses, _type=TB.TRANSFORM)
 
     @property
     def var_set(self):

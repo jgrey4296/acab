@@ -13,8 +13,10 @@ from acab import util
 from acab.abstract.printing import util as PrU
 
 from . import production_operator as PO
+from . import type_base as TB
 from .sentence import Sentence
 from .node import AcabNode
+
 
 logging = root_logger.getLogger(__name__)
 
@@ -40,13 +42,12 @@ class QueryOp(PO.ProductionOperator):
 class QueryComponent(PO.ProductionComponent):
     """ Describe a QueryComponent of values and maybe a binding """
 
-    def __init__(self, op_str, param, data=None, type_str=None):
+    def __init__(self, op_str, param, data=None):
         if not isinstance(param, list):
             param = [param]
         super(QueryComponent, self).__init__(op_str,
                                              param,
-                                             data=data,
-                                             type_str=type_str)
+                                             data=data)
         self.verify()
 
     def __call__(self, node, data=None, engine=None):
@@ -84,9 +85,9 @@ class QueryComponent(PO.ProductionComponent):
 class Query(PO.ProductionContainer):
     """ A Query for the working memory """
 
-    def __init__(self, clauses, type_str=util.QUERY_S):
+    def __init__(self, clauses):
         assert(all([isinstance(x, Sentence) for x in clauses]))
-        super(Query, self).__init__(clauses, type_str=type_str)
+        super(Query, self).__init__(clauses, _type=TB.QUERY)
 
     def __call__(self, ctxs=None, engine=None):
         return engine.query(self, ctxs=ctxs)

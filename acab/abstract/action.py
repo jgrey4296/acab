@@ -12,6 +12,7 @@ from acab.abstract.sentence import Sentence
 from acab.abstract.printing import util as PrU
 
 from . import production_operator as PO
+from . import type_base as TB
 
 logging = root_logger.getLogger(__name__)
 
@@ -85,10 +86,9 @@ class ActionComponent(PO.ProductionComponent):
 class Action(PO.ProductionContainer):
     """ A Container for Action Specifications """
 
-    def __init__(self, clauses, params=None, type_str=util.ACTION_S):
-        super(Action, self).__init__(clauses,
-                                     params=params,
-                                     type_str=type_str)
+    def __init__(self, clauses, params=None):
+        super(Action, self).__init__(clauses, params=params, _type=TB.ACTION)
+
 
     def bind(self, bindings):
         """ Expand stored bindings """

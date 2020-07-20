@@ -15,7 +15,7 @@ end
 """
 from acab.abstract.rule import Rule
 from acab.abstract.production_operator import ProductionOperator
-from acab.util import NAME_S, STATEMENT_S, TYPE_DEC_S, QUERY_S, TRANSFORM_S, ACTION_S
+from acab.util import NAME_S, STATEMENT_S, QUERY_S, TRANSFORM_S, ACTION_S
 from acab import util
 from acab.abstract.printing import util as PrU
 
@@ -29,8 +29,7 @@ class Pipeline(Rule):
         super(Pipeline, self).__init__( query=query,
                                         action=action,
                                         transform=transform,
-                                        name=name,
-                                        type_str=util.PIPE_HEAD_S)
+                                        name=name)
         # Layers in the main loop
         self._layers = []
 

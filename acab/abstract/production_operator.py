@@ -16,6 +16,7 @@ from acab.abstract.printing import util as PrU
 from acab.abstract.sentence import Sentence
 
 from .value import AcabValue, AcabStatement
+from . import type_base as TB
 
 logging = root_logger.getLogger(__name__)
 
@@ -36,8 +37,8 @@ class ProductionOperator(AcabValue):
         logging.debug("Clearing registered operators")
         ProductionOperator.op_dict = {}
 
-    def __init__(self, infix=False, type_str=OPERATOR_S):
-        super().__init__(self.__class__.__name__, type_str=type_str)
+    def __init__(self, infix=False):
+        super().__init__(self.__class__.__name__, _type=TB.OPERATOR)
 
     def __call__(self, *params, data=None, engine=None):
         raise NotImplementedError()
@@ -51,12 +52,11 @@ class ProductionOperator(AcabValue):
 class ProductionComponent(AcabValue):
     """ Pairs a an operator with some bindings """
 
-    def __init__(self, op_str, params, op_pos=0, data=None, rebind=None,
-                 type_str=None, name=None):
+    def __init__(self, op_str, params, op_pos=0, data=None, rebind=None, name=None):
         if data is None:
             data = {}
 
-        super().__init__(op_str, type_str=type_str, data=data, name=name)
+        super().__init__(op_str, data=data, name=name, _type=TB.COMPONENT)
         # Parameters of the operation
         self._params = []
         # The value name of the result
@@ -151,10 +151,10 @@ class ProductionComponent(AcabValue):
 class ProductionContainer(AcabStatement):
     """ Production Container: An applicable statement """
 
-    def __init__(self, clauses, params=None, type_str=STATEMENT_S, name=None):
+    def __init__(self, clauses, params=None, name=None, _type=TB.CONTAINER):
         if clauses is None:
             clauses = []
-        super().__init__(clauses, params=params, type_str=type_str, name=name)
+        super().__init__(clauses, params=params, name=name, _type=_type)
 
     def __len__(self):
         return len(self.clauses)
