@@ -19,7 +19,6 @@ STATEMENT_S  = "statement"
 TAG_S        = "tag"
 VALUE_S      = "value"
 VALUE_TYPE_S = "value_type"
-TYPE_DEC_S   = "type_declaration"
 OP_CLASS_S   = "operator_class"
 CTX_COLLAPSE_S = "ctx.collapse"
 
@@ -73,7 +72,6 @@ QUERY_SYMBOL_S    = "?"
 # Default Data for any value:
 DEFAULT_VALUE_DATA = {
     BIND_S       : False,
-    VALUE_TYPE_S : NAME_S
     }
 
 TAB_S = "    "
