@@ -54,6 +54,7 @@ from acab.abstract.value import AcabStatement
 from acab.abstract.sentence import Sentence
 from acab.abstract.trie.trie import Trie
 from acab.abstract.action import ActionOp
+from acab.abstract import type_base as TB
 
 from . import type_exceptions as te
 from . import util as TU
@@ -65,7 +66,7 @@ from .nodes.var_type_node import VarTypeTrieNode
 from .nodes.sum_def_node import SumTypeDefTrieNode
 
 from .values.operator_definition import OperatorDefinition
-from .values.type_definition import TypeDefinition, SumTypeDefinition
+from .values import type_definition as TD
 
 
 logging = root_logger.getLogger(__name__)
@@ -81,6 +82,9 @@ class TypeChecker(ActionOp):
         self._definitions = Trie(TypeDefTrieNode)
         self._declarations = Trie(TypeAssignmentTrieNode)
         self._variables = Trie(VarTypeTrieNode)
+
+        # add basic types
+        self.add_definition(*TD.build_primitive_definitions())
 
     def __str__(self):
         output = []
@@ -103,7 +107,7 @@ class TypeChecker(ActionOp):
 
         local_contexts_to_check = []
         for sen in sentences:
-            if isinstance(sen[-1], TypeDefinition):
+            if isinstance(sen[-1], TD.TypeDefinition):
                 self.add_definition(sen)
             elif isinstance(sen[-1], AcabStatement):
                 local_contexts_to_check.append(sen[-1])
@@ -121,9 +125,9 @@ class TypeChecker(ActionOp):
 
     def _get_known_typed_nodes(self):
         # propagate known variable types
-        dummy = [x.propagate() for x in self._variables.get_nodes(lambda x: x.type_instance is not None)]
+        dummy = [x.propagate() for x in self._variables.get_nodes(lambda x: x.type_instance != TB.ATOM)]
         # get all known declared types
-        val_queue = {y for y in self._declarations.get_nodes(lambda x: x.type_instance is not None)}
+        val_queue = {y for y in self._declarations.get_nodes(lambda x: x.type_instance != TB.ATOM)}
         return val_queue
 
     def _merge_equivalent_nodes(self):
@@ -161,14 +165,12 @@ class TypeChecker(ActionOp):
             queried = self._declarations.query(line)
             if queried is None:
                 continue
-            line_is_typed = TU.TYPE_DEC_S in line[-1]._data
-            result_is_typed = TU.TYPE_DEC_S in queried._data
-            types_match = (line_is_typed
-                           and result_is_typed
-                           and line[-1]._data[TU.TYPE_DEC_S] == queried._data[TU.TYPE_DEC_S])
-            if line_is_typed and result_is_typed and not types_match:
-                raise te.TypeConflictException(line[-1]._data[TU.TYPE_DEC_S],
-                                               queried._data[TU.TYPE_DEC_S],
+            # Compare a sentence type(instance) to the node's type_instance
+            # (as a node can have its own type)
+            types_match = (line[-1].type < queried.type_instance)
+            if not types_match:
+                raise te.TypeConflictException(line[-1].type,
+                                               queried.type_instance,
                                                "".join([str(x) for x in line]))
             results.append(queried)
         return results
@@ -219,12 +221,12 @@ class TypeChecker(ActionOp):
 
     def add_definition(self, *definitions):
         for a_def in definitions:
-            assert(isinstance(a_def[-1], TypeDefinition))
             assert(isinstance(a_def, Sentence))
+            assert(isinstance(a_def[-1], TD.TypeDefinition))
             if isinstance(a_def[-1], OperatorDefinition):
                 self._definitions.add(a_def, a_def[-1],
                                                  leaf_override=OperatorDefTrieNode)
-            elif isinstance(a_def[-1], SumTypeDefinition):
+            elif isinstance(a_def[-1], TD.SumTypeDefinition):
                 self._definitions.add(a_def, a_def[-1],
                                                  leaf_override=SumTypeDefTrieNode)
             else:
