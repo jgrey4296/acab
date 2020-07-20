@@ -4,6 +4,7 @@ Only Provides automatic *primitives*.
 Manual typing and Product/Sum types are implemented
 in the separate typing module.
 """
+from acab.util import TYPE_FMT_S
 from acab.abstract.printing import util as PrU
 
 class _Bootstrap_Value:
@@ -69,21 +70,17 @@ class TypeInstance:
     TypeCounter = 0
     Primitives = []
 
-    def __init__(self, path=None, params=None, primitive=None, type_alias_str=None):
+    def __init__(self, path, params=None, primitive=False, type_alias_str=None):
         """ Construct a Type Instance with a _path in the type trie """
-        if path is not None:
-            assert(hasattr(path, "type")), breakpoint()
-            assert(path.type == SENTENCE)
-        else:
-            assert(isinstance(primitive, list))
-            path = _Bootstrap_Sentence(primitive)
+        assert(hasattr(path, "type")), breakpoint()
+        if primitive:
             TypeInstance.Primitives.append(path)
 
         assert(params is None or all([isinstance(x, (str, TypeInstance)) or hasattr(x, "type") for x in params])), breakpoint()
         self._path = path
         self._type_alias = type_alias_str
         self._vars = []
-        self._primitive = primitive is not None
+        self._primitive = primitive
 
 
         if params is not None:
@@ -159,15 +156,9 @@ class TypeInstance:
 
 
     def pprint(self, opts=None):
-        fmt_str = "::{}"
         if self._type_alias is not None:
-            return fmt_str.format(self._type_alias)
-        if isinstance(self.path, list):
-            return fmt_str.format(".".join([str(x) for x in self.path]))
+            return TYPE_FMT_S.format(self._type_alias)
         else:
-            return fmt_str.format(self.path.pprint(opts))
-
-
 # Construct the primitive types
 ATOM = TypeInstance(primitive=["atom"])
 STRING = TypeInstance(primitive=["string"])

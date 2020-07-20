@@ -11,7 +11,6 @@ from acab.util import STRUCTURE_S, VALUE_TYPE_S, NAME_S
 
 from .acab_type import TypeStatement
 
-PrU.register_statement({TYPE_DEFINITION: STRUCTURE_S})
 # TODO register class
 
 class TypeDefinition(TypeStatement):

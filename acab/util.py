@@ -69,6 +69,8 @@ TAG_SYMBOL_S      = "#"
 NEGATION_SYMBOL_S = "~"
 QUERY_SYMBOL_S    = "?"
 
+
+TYPE_FMT_S        = "::{}"
 # Default Data for any value:
 DEFAULT_VALUE_DATA = {
     BIND_S       : False,

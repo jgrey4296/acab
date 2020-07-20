@@ -154,5 +154,4 @@ class Rule(ProductionContainer):
 
 
 
-PrU.register_statement({TB.RULE: util.RULE_HEAD_S})
 PrU.register_class(Rule, PrU.print_statement)

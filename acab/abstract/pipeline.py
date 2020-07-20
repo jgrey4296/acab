@@ -114,4 +114,3 @@ def make_pipeline(toks):
     return (the_pipeline.type, the_layer)
 
 
-PrU.register_statement({util.PIPE_HEAD_S : util.PIPE_HEAD_S})

@@ -15,6 +15,10 @@ class Sentence(AcabValue):
     """
     The Basic Sentence Class: Essentially a List of Words
     """
+    @staticmethod
+    def build(words):
+        safe_words = [AcabValue.safe_make(x) for x in words]
+        return Sentence(safe_words)
 
     def __init__(self, words=None, params=None, tags=None, data=None):
         if words is not None:

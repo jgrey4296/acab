@@ -88,4 +88,3 @@ def make_layer(toks):
     return (the_layer.type, the_layer)
 
 
-PrU.register_statement({util.LAYER_HEAD_S : util.LAYER_HEAD_S})

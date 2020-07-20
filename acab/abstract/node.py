@@ -26,9 +26,6 @@ class AcabNode:
         if isinstance(value, AcabNode):
             node = value
             value = deepcopy(node.value)
-            if data is None:
-                data = {}
-            data.update(node._data)
 
         # A Unique identifier for this node:
         self._uuid = uuid1()
@@ -40,7 +37,6 @@ class AcabNode:
         self._children = {}
 
         self._data = {}
-        self._data.update(util.DEFAULT_VALUE_DATA)
 
         if data is not None:
             self._data.update(data)

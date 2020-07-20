@@ -76,4 +76,3 @@ def make_agenda(toks):
     return  (the_agenda.type, the_agenda)
 
 
-PrU.register_statement({util.AGENDA_HEAD_S : util.AGENDA_HEAD_S})
