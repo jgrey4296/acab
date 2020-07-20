@@ -4,17 +4,19 @@ import unittest
 import logging
 import random
 
-from acab.abstract.printing import util as PrU
-from acab.modules.values.numbers.parsing import NumberParser as NP
-from acab.working_memory.trie_wm.parsing import ActionParser as AP
-from acab.working_memory.trie_wm.parsing import TransformParser as TP
-from acab.working_memory.trie_wm.parsing import FactParser as FP
+from acab import util
 from acab.abstract import action
 from acab.abstract import transform
-from acab import util
+from acab.abstract.printing import util as PrU
 from acab.modules.operators.standard_operators import StandardOperators
 from acab.modules.values import numbers
+from acab.modules.values.numbers.parsing import NumberParser as NP
+from acab.modules.values.numbers.util import FLOAT, INT
+from acab.working_memory.trie_wm.parsing import ActionParser as AP
+from acab.working_memory.trie_wm.parsing import FactParser as FP
+from acab.working_memory.trie_wm.parsing import TransformParser as TP
 from acab.working_memory.trie_wm.trie_working_memory import TrieWM
+
 
 class NumberParseTests(unittest.TestCase):
     os = None
@@ -37,13 +39,13 @@ class NumberParseTests(unittest.TestCase):
     def test_int_number_parsing(self):
         result = FP.parseString("number.test.20")[0]
         self.assertIsNotNone(result)
-        self.assertEqual(result[-1]._data[util.VALUE_TYPE_S], util.INT_S)
+        self.assertEqual(result[-1].type, INT)
         self.assertEqual(result[-1]._value, 20)
 
     def test_float_number_parsing(self):
         result = FP.parseString("number.test.20d325")[0]
         self.assertIsNotNone(result)
-        self.assertEqual(result[-1]._data[util.VALUE_TYPE_S], util.FLOAT_S)
+        self.assertEqual(result[-1].type, FLOAT)
         self.assertEqual(result[-1]._value, 20.325)
 
 

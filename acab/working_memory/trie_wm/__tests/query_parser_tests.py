@@ -2,6 +2,7 @@ import unittest
 import logging
 import acab.working_memory.trie_wm.parsing.QueryParser as QP
 from acab.abstract.bootstrap_parser import BootstrapParser
+from acab.abstract.type_base import REGEX
 from acab.abstract.query import Query
 from acab.abstract.sentence import Sentence
 from acab.abstract.query import QueryComponent, QueryOp
@@ -38,7 +39,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(qc, QueryComponent)
         self.assertEqual(qc.op, 'operator.query.regmatch')
         self.assertEqual(qc._params[0]._value, 'blah')
-        self.assertEqual(qc._params[0]._data[util.VALUE_TYPE_S], util.REGEX_S)
+        self.assertEqual(qc._params[0].type, REGEX)
 
     def test_basic_clause(self):
         result = QP.clause.parseString('a.b.c?')[0]
