@@ -20,7 +20,7 @@ PARAM_SEN_PLURAL = pp.delimitedList(HOTLOAD_PARAM_SEN, delim=PU.DELIM)
 
 def make_record_def(toks):
     type_def = TypeDefinition(toks[:])
-    return (type_def.type, type_def)
+    return (util.VALUE_TYPE_S, type_def)
 
 def make_op_def(toks):
     syntax_bind = None
@@ -29,11 +29,11 @@ def make_op_def(toks):
 
     op_def = OperatorDefinition(toks[TYU.STRUCT_S][0], sugar_syntax=syntax_bind)
 
-    return (op_def.type, op_def)
+    return (util.VALUE_TYPE_S, op_def)
 
 def make_sum_def(toks):
     sum_def = SumTypeDefinition(toks[:])
-    return (sum_def.type, sum_def)
+    return (util.VALUE_TYPE_S, sum_def)
 
 
 # The simplest type, has no body. useful for defining strings and other

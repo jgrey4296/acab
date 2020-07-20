@@ -3,7 +3,9 @@ Pyparsing based parser for types
 """
 import logging as root_logger
 import pyparsing as pp
-from acab.modules.analysis.typing.values.type_instance import TypeInstance
+
+from acab.util import VALUE_TYPE_S
+from acab.abstract.type_base import TypeInstance
 from acab.modules.analysis.typing import util as TYU
 from acab.abstract.parsing import util as PU
 
@@ -15,7 +17,7 @@ def make_type_dec(toks):
     args = []
     if TYU.ARG_S in toks:
         args = [x[1] if isinstance(x, tuple) else x for x in toks[TYU.ARG_S][:]]
-    return (TYU.TYPE_DEC_S, TypeInstance(path, args))
+    return (VALUE_TYPE_S, TypeInstance(path, args))
 
 # BASIC SENTENCE NEEDS TO BE POPULATED
 # eg: acab.working_memory.trie_wm.parsing.FactParser.basic_fact_string
