@@ -1,5 +1,6 @@
 from acab.abstract.parsing import util as PU
 from acab import util
+from acab.modules.values.numbers.util import FLOAT, INT
 import logging as root_logger
 import pyparsing as pp
 
@@ -10,9 +11,9 @@ def construct_num(toks):
     # TODO: add in fractions and underscores
     as_str = "".join(toks)
     if util.DECIMAL_S in toks[0]:
-        return (util.FLOAT_S, float(as_str.replace(util.DECIMAL_S, '.')))
+        return (FLOAT, float(as_str.replace(util.DECIMAL_S, '.')))
     else:
-        return (util.INT_S, int(as_str))
+        return (INT, int(as_str))
 
 # This avoids trying to parse rebind arrows as numbers
 NEG = pp.Keyword("-", identChars=">")
