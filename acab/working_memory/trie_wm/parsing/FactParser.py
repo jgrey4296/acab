@@ -24,14 +24,12 @@ def make_value(toks):
         # is variable
         assert(isinstance(toks[WMU.BIND_S][0], tuple))
         value = toks[WMU.BIND_S][0][1]
-        data[WMU.VALUE_TYPE_S] = WMU.NAME_S
         data[WMU.BIND_S] = True
     elif WMU.AT_BIND_S in toks:
         # is a reference
         # (can only be at head of a sentence)
         assert(isinstance(toks[WMU.AT_BIND_S][0], tuple))
         value = toks[WMU.AT_BIND_S][0][1]
-        data[WMU.VALUE_TYPE_S] = WMU.NAME_S
         data[WMU.BIND_S] = WMU.AT_BIND_S
     elif WMU.VALUE_S in toks:
         # is an actual value
