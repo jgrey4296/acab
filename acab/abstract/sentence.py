@@ -16,9 +16,9 @@ class Sentence(AcabValue):
     The Basic Sentence Class: Essentially a List of Words
     """
     @staticmethod
-    def build(words):
+    def build(words, **kwargs):
         safe_words = [AcabValue.safe_make(x) for x in words]
-        return Sentence(safe_words)
+        return Sentence(safe_words, **kwargs)
 
     def __init__(self, words=None, params=None, tags=None, data=None):
         if words is not None:
@@ -90,14 +90,18 @@ class Sentence(AcabValue):
                 continue
 
             copied_node = word.copy()
-            copied_node._value = retrieved
-            copied_node._data[BIND_S] = False
+            if isinstance(retrieved, AcabValue):
+                copied_node._value = retrieved.value
+                copied_node._data.update(retrieved._data)
+            else:
+                copied_node._value = retrieved
+                copied_node._data[BIND_S] = False
             output.append(copied_node)
 
-        return Sentence(output,
-                        data=self._data,
-                        params=self._vars,
-                        tags=self._tags)
+        return Sentence.build(output,
+                              data=self._data,
+                              params=self._vars,
+                              tags=self._tags)
 
     def add(self, *other):
         """ Return a copy of the sentence, with words added to the end.

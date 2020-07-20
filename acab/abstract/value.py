@@ -34,7 +34,7 @@ class AcabValue:
                  params=None, tags=None,
                  name=None, _type=None):
 
-        value_type_tuple = tuple([AcabValue] + list(AcabValue.value_types))
+        value_type_tuple = tuple(AcabValue.value_types)
         assert (value is None or isinstance(value, value_type_tuple)), type(value)
 
         self._uuid = uuid1()
@@ -82,12 +82,10 @@ class AcabValue:
 
     @property
     def name(self):
-        if isinstance(self._value, AcabValue):
-            return self._value.name
-        elif self._name is not None:
+        if self._name is not None:
             return self._name
-        else:
-            return self._value
+
+        return self._value
 
     @property
     def value(self):
