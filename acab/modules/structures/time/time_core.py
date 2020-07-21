@@ -17,11 +17,11 @@ logging = root_logger.getLogger(__name__)
 
 class BaseTime(AcabValue):
 
-    def __init__(self, arcTuple, data=None, type_str=None):
+    def __init__(self, arcTuple, data=None):
         assert(isinstance(arcTuple, (list, tuple)))
         assert(all([isinstance(x, Fraction) for x in arcTuple]))
         assert(arcTuple[0] < arcTuple[1])
-        super(BaseTime, self).__init__(arcTuple, data=data, type_str=type_str)
+        super(BaseTime, self).__init__(arcTuple, data=data)
 
     def __contains__(self, other):
         """ Test whether the given time is within bounds """
@@ -87,8 +87,8 @@ class BaseTime(AcabValue):
 
 class TimeEvent(BaseTime):
 
-    def __init__(self, arcTuple, event, data=None, type_str=util.TIME_EVENT_S):
-        super(TimeEvent, self).__init__(arcTuple, data=data, type_str=type_str)
+    def __init__(self, arcTuple, event, data=None):
+        super(TimeEvent, self).__init__(arcTuple, data=data)
         self._event = event
         assert(not (isinstance(event, TimeContainer) and self.is_var))
 
@@ -152,14 +152,13 @@ class TimeEvent(BaseTime):
 class TimeContainer(BaseTime):
     """ The Core Time Structure, describing an rational arc of time """
 
-    def __init__(self, arcTuple, events=None, data=None, type_str=util.TIME_PATTERN_S):
+    def __init__(self, arcTuple, events=None, data=None):
         if events is None:
             events = []
         assert(all([isinstance(x, BaseTime) for x in events]))
         sorted_events= sorted(events, key=lambda x: x.key)
         super(BaseTime, self).__init__(arcTuple,
-                                       data=data,
-                                       type_str=type_str)
+                                       data=data)
         self._events = sorted_events
         self._wrap_template = "[{}]"
         self._join_template = " "

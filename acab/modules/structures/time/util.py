@@ -1,12 +1,14 @@
 """
 Utils related to rational time
 """
-from acab import util
 from enum import Enum
 from fractions import Fraction
 from math import gcd
 from functools import reduce
 import logging as root_logger
+
+from acab import util
+from acab.abstract.type_base import TypeInstance
 
 logging = root_logger.getLogger(__name__)
 
@@ -23,6 +25,11 @@ VALUE_S        = util.VALUE_S
 VALUE_TYPE_S   = util.VALUE_TYPE_S
 TIME_EVENT_S   = "event"
 TIME_PATTERN_S = "pattern"
+
+# Primitive Type instances
+# EVENT
+# DURATION
+# PATTERN
 
 def lcm(a, b):
     """Return lowest common multiple.
@@ -52,4 +59,4 @@ def time_str(time):
 
 
 
-# Printing utilities
+# TODO Printing utilities

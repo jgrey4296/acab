@@ -23,7 +23,8 @@ class PatternSeq(TimeContainer):
             else:
                 flat_vals.append(x)
 
-        super().__init__(a, flat_vals, data, bindings)
+        # TODO Handle bindings
+        super().__init__(a, flat_vals, data)
         self._wrap_template = "[{}]"
         self._join_template = " -> "
 
@@ -42,7 +43,8 @@ class PatternSeq(TimeContainer):
 class PatternPar(TimeContainer):
     def __init__(self, a, vals=None, data=None, bindings=None):
         assert(all([isinstance(x, TimeContainer) for x in vals]))
-        super().__init__(a, vals, data, bindings)
+        # TODO: Handle bindings
+        super().__init__(a, vals, data)
         self._wrap_template = "[{}]"
         self._join_template = ", "
 
@@ -77,7 +79,8 @@ class PatternChoice(TimeContainer):
         base_arc = (Time(0, 1), Time(1, 1))
         vals = [TimeEvent(base_arc, x) if isinstance(x, TimeContainer)
                 else x.set_arc(base_arc) for x in components]
-        super().__init__(a, vals, data, bindings)
+        # TODO: Handle bindings
+        super().__init__(a, vals, data)
         self._wrap_template = "<{}>"
         self._join_template = " "
 
