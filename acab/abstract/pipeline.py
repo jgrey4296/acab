@@ -112,5 +112,3 @@ def make_pipeline(toks):
     the_pipeline = Pipeline(query=c, transform=t, action=t)
 
     return (the_pipeline.type, the_layer)
-
-

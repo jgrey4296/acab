@@ -161,6 +161,7 @@ class Engine_Logic_Tests(unittest.TestCase):
 
         self.assertEqual(len(results), len(ctxs))
 
+    # TODO
     def rule_load_with_comments(self):
         self.e.load_file(self.path("rule_with_comments.trie"))
         rule = self.e._rules['a.rule']

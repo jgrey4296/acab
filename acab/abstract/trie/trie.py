@@ -259,6 +259,7 @@ def retrieve_potentials(query_word, pair):
     return potentials
 
 def add_var_to_context(i, query_word, new_data, passing_node):
+    """ Prepare a tuple for adding to the context """
     assert(isinstance(query_word, AcabValue))
     assert(isinstance(passing_node, AcabNode))
 
@@ -273,6 +274,7 @@ def match_regexs(node, regexs, data, i):
     invalidated = False
     new_data = {}
     for regex in regexs:
+        # TODO: expand regex usng data first
         result = search(regex._params[0].value, node.name)
         if result is None:
             invalidated = True
@@ -305,7 +307,7 @@ def split_constraints(word):
     betas = []
     regexs = []
     for c in comps:
-        if c.is_regex_test:
+        if c.is_sub_bind_test:
             regexs.append(c)
         elif c.is_alpha_test:
             alphas.append(c)

@@ -63,3 +63,5 @@ class ModuleInterface:
 
         """
         logging.debug("Module lacks parser queries: {}".format(self.__class__))
+
+    # TODO debug parser assertions / queries 

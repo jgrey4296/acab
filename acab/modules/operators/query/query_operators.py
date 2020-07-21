@@ -3,7 +3,7 @@ Definitions of initial Comparison operators
 """
 import re
 
-from acab.abstract.query import QueryOp
+from acab.abstract.query import QueryOp, QueryOp_SubBind
 
 
 class EQ(QueryOp):
@@ -16,9 +16,9 @@ class NEQ(QueryOp):
         return a != b
 
 
-class RegMatch(QueryOp):
+class RegMatch(QueryOp_SubBind):
     def __call__(self, a, b, data=None, engine=None):
-        # TODO: use re.RegexFlag 's 
+        # TODO: use re.RegexFlag 's
         return re.search(b, a)
 
 

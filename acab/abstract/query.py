@@ -39,6 +39,13 @@ class QueryOp(PO.ProductionOperator):
         raise NotImplementedError()
 
 
+class QueryOp_SubBind(QueryOp):
+    """
+    A Special Query Op Type for Regex's and similar,
+    which can create additional binding values
+    """
+    pass
+
 class QueryComponent(PO.ProductionComponent):
     """ Describe a QueryComponent of values and maybe a binding """
 
@@ -66,10 +73,12 @@ class QueryComponent(PO.ProductionComponent):
         return bool(self._params) and not any([x.is_var for x in self._params])
 
     @property
-    def is_regex_test(self):
-        """ Return boolean if test is a regular expression test """
-        # TODO: refactor to not be hard coded
-        return self.op == "operator.query.regmatch"
+    def is_sub_bind_test(self):
+        """ Return boolean if test is a query that can create sub bindings,
+        eg: regular expressions
+        """
+        op = PO.ProductionOperator.op_dict[self.op]
+        return isinstance(op, QueryOp_SubBind)
 
 
     def to_local_sentences(self, target=None):
