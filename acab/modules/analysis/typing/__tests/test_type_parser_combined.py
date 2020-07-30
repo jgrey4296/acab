@@ -20,9 +20,9 @@ from acab.modules.analysis.typing.type_checker import TypeChecker
 from acab.modules.analysis.typing.typing_module import TypingSpec
 from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition
 from acab.modules.analysis.typing.values.type_definition import TypeDefinition
-from acab.modules.operators.standard_operators import StandardOperators
 
 from acab.working_memory.trie_wm.parsing import ActionParser as AP
+from acab.working_memory.trie_wm.parsing import TransformParser as TP
 from acab.working_memory.trie_wm.parsing import FactParser as FP
 from acab.working_memory.trie_wm.trie_working_memory import TrieWM
 
@@ -37,7 +37,6 @@ class TypingCombinedTests(unittest.TestCase):
     def setUpClass(cls):
         bp = BootstrapParser()
         twm = TrieWM()
-        os = StandardOperators()
         ts = TypingSpec()
         twm.assert_parsers(bp)
         os.assert_parsers(bp)
@@ -772,6 +771,55 @@ class TypingCombinedTests(unittest.TestCase):
         result_2 = self.tc.query(FP.parseString("second!a")[0])
         self.assertEqual(result_2[0].type_instance.vars[0], simple_type[0][-1].build_type_instance())
 
+
+    # Test operators:
+    # Define an operator
+    # infer types from operator
+    # define multiple operators
+    # spec operator alias'
+    # infer operators from alias
+    # infer from amongst multiple possible operators
+
+
+    def test_add_operation(self):
+        """ ::Number end
+        λ::AddOp: $x(::Number).$x.$x
+        """
+        str_type = TD.parseString("a.string: (::σ) end")
+        num_type = TD.parseString("a.num: (::σ) end")
+        self.tc.add_definition(*str_type, *num_type)
+
+        op_def = TD.parseString("operator.transform.n_ary.format: (::λ) $x(::a.string).$x.$x")
+        self.tc.add_definition(*op_def)
+
+        #Add an operation use
+        transform = TP.parseString("\operator.transform.n_ary.format $a $b -> $c")
+
+        self.tc.add_assertion(*transform.to_local_sentences())
+
+        self.tc.validate()
+        breakpoint()
+
+        print(self.tc)
+
+
+    def test_add_operation_alias(self):
+        """ ::Number end
+        λ::AddOp: $x(::Number).$x.$x
+        """
+        str_type = TD.parseString("a.string: (::σ) end")
+        num_type = TD.parseString("a.num: (::σ) end")
+        self.tc.add_definition(*str_type, *num_type)
+
+        op_def = TD.parseString("operator.transform.n_ary.format: (::λ) $x(::a.num).$x.$x => ~=")
+        self.tc.add_definition(*op_def)
+
+        #Add an operation use
+        transform = TP.parseString("$a \~= $b -> $c")
+
+        self.tc.add_assertion(*transform.to_local_sentences())
+
+        self.tc.validate()
 
 
 

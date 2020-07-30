@@ -2,9 +2,14 @@
 from os.path import splitext, split
 import unittest
 import logging
+from acab.abstract.query import QueryComponent, QueryOp
+from acab import util
+from acab.abstract.node import AcabNode
+from acab.abstract.value import AcabValue as PV
 
 
-class CycleAgendaTests(unittest.TestCase):
+
+class QueryTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -18,6 +23,18 @@ class CycleAgendaTests(unittest.TestCase):
 
     #----------
     #use testcase snippets
+    def test_construction(self):
+        comp = QueryComponent("test", [])
+        self.assertIsInstance(comp, QueryComponent)
+
+    def test_var_set(self):
+        bind = PV("an_input", data={util.BIND_S: True})
+        comp = QueryComponent("test", [bind])
+        var_set = comp.var_set
+        var_set_str = [x.name for x in var_set['in']]
+        self.assertTrue("an_input" in var_set_str)
+
+
 
 
 if __name__ == "__main__":

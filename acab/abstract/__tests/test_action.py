@@ -2,14 +2,15 @@
 from os.path import splitext, split
 import unittest
 import logging
-from acab.abstract.query import QueryComponent, QueryOp
-from acab import util
+from acab import abstract
 from acab.abstract.node import AcabNode
 from acab.abstract.value import AcabValue as PV
+from acab.abstract.action import ActionComponent, ActionOp
+from acab import util
+from acab.abstract.sentence import Sentence
 
 
-
-class QueryTests(unittest.TestCase):
+class ActionTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -24,19 +25,35 @@ class QueryTests(unittest.TestCase):
     #----------
     #use testcase snippets
     def test_construction(self):
-        QueryOp.op_dict['test'] = True
-        comp = QueryComponent("test", [])
-        self.assertIsInstance(comp, QueryComponent)
-        del QueryOp.op_dict['test']
+        action = ActionComponent("testOp", [])
+        self.assertIsInstance(action, ActionComponent)
 
     def test_var_set(self):
-        QueryOp.op_dict['test'] = True
-        bind = PV("an_input", data={util.BIND_S: True})
-        comp = QueryComponent("test", [bind])
-        var_set = comp.var_set
-        var_set_str = [x.name for x in var_set['in']]
-        self.assertTrue("an_input" in var_set_str)
-        del QueryOp.op_dict['test']
+        param = PV("test", data={util.BIND_S: True})
+        param_sen = Sentence([param])
+        action = ActionComponent("testOp", [param_sen])
+        var_set = action.var_set
+        self.assertTrue(param in var_set['in'])
+
+    @unittest.skip("TODO")
+    def test_component_bind(self):
+        pass
+
+    @unittest.skip("TODO")
+    def test_to_sentence(self):
+        pass
+
+    @unittest.skip("TODO")
+    def test_component_pprint(self):
+        pass
+
+    @unittest.skip("TODO")
+    def test_container_bind(self):
+        pass
+
+    @unittest.skip("TODO")
+    def test_container_to_sentences(self):
+        pass
 
 
 

@@ -1,7 +1,6 @@
 import unittest
 import logging
 from acab.working_memory.trie_wm.parsing import TransformParser as TP
-from acab.modules.operators.standard_operators import StandardOperators
 from acab.abstract import transform
 from acab.working_memory.trie_wm import util as KBU
 from acab.abstract.bootstrap_parser import BootstrapParser
@@ -12,7 +11,6 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         bp = BootstrapParser()
-        os = StandardOperators()
         os.assert_parsers(bp)
         TP.HOTLOAD_TRANS_OP << bp.query('operator.transform.n_ary.*',
                                         'operator.sugar')

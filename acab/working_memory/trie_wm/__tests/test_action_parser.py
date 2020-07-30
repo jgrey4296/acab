@@ -5,7 +5,6 @@ from acab.abstract.printing import util as PrU
 from acab.abstract.bootstrap_parser import BootstrapParser
 from acab.working_memory.trie_wm.parsing import ActionParser as AP
 from acab.working_memory.trie_wm.parsing import FactParser as FP
-from acab.modules.operators.standard_operators import StandardOperators
 from acab.abstract import action
 from acab.abstract.production_operator import ProductionOperator
 
@@ -15,7 +14,6 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         bp = BootstrapParser()
-        os = StandardOperators()
         os.assert_parsers(bp)
         AP.HOTLOAD_OPERATORS << bp.query("operator.action.*")
 

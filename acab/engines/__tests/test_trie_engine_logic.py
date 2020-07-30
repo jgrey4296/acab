@@ -2,7 +2,6 @@ import unittest
 import logging
 import acab.abstract.trie as T
 from acab.engines.trie_engine import TrieEngine
-from acab.modules.operators.standard_operators import StandardOperators
 from acab.abstract.rule import Rule
 from os.path import join, isfile, exists, isdir
 from os.path import split, splitext, expanduser, abspath
@@ -10,11 +9,6 @@ from os import listdir
 
 
 class Engine_Logic_Tests(unittest.TestCase):
-    os = None
-
-    @classmethod
-    def setUpClass(cls):
-        Engine_Logic_Tests.os = StandardOperators()
 
     def path(self, filename):
         """ Navigate from the file,
@@ -22,7 +16,7 @@ class Engine_Logic_Tests(unittest.TestCase):
         return abspath(join("testfiles", filename))
 
     def setUp(self):
-        self.e = TrieEngine(modules=[Engine_Logic_Tests.os])
+        self.e = TrieEngine(modules=["acab.modules.operators.standard_operators"])
 
     def tearDown(self):
         return 1

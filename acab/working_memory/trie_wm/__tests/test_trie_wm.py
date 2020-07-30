@@ -1,7 +1,6 @@
 import unittest
 import logging
 from acab.working_memory.trie_wm.trie_working_memory import TrieWM
-from acab.modules.operators.standard_operators import StandardOperators
 from acab.abstract.contexts import Contexts
 from acab.abstract.bootstrap_parser import BootstrapParser
 from acab.abstract.production_operator import ProductionOperator
@@ -10,16 +9,10 @@ from acab.abstract.production_operator import ProductionOperator
 class Trie_WM_Tests(unittest.TestCase):
     """ Unit test for basic Trie working memory functionality """
 
-    @classmethod
-    def setUpClass(cls):
-        pass
-
     def setUp(self):
-        os = StandardOperators()
         bp = BootstrapParser()
         self.trie = TrieWM()
         self.trie.assert_parsers(bp)
-        os.assert_parsers(bp)
         self.trie.query_parsers(bp)
 
     def tearDown(self):

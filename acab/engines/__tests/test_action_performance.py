@@ -3,12 +3,15 @@ from os.path import splitext, split
 import unittest
 import logging
 from acab.engines.trie_engine import TrieEngine
+from acab.abstract.sentence import Sentence
 from acab.working_memory.trie_wm.parsing import ActionParser as AP
 from acab.modules.operators.action import action_operators as act_ops
 from acab.abstract import action
 from acab.abstract.bootstrap_parser import BootstrapParser
 from acab.abstract.production_operator import ProductionOperator
-from acab.modules.operators.standard_operators import StandardOperators
+
+def S(*words):
+    return Sentence.build(words)
 
 class ActionBlah(action.ActionOp):
     def __init__(self):
@@ -21,22 +24,23 @@ class ActionBlah(action.ActionOp):
 class ActionTests(unittest.TestCase):
 
     def setUp(self):
-        self.e = TrieEngine(modules=[StandardOperators()])
-        self.e._working_memory._bootstrap_parser.add("operator.action.blah", ActionBlah)
-        self.e.reload_all_modules()
+        self.e = TrieEngine(modules=["acab.modules.operators.standard_operators"])
+        self.e.alias_module(S("acab","modules","operators","standard_operators"), S("A"))
+        self.e.register_operator_dict("Base",{"Blah" : ActionBlah()})
+        self.e.build_DSL()
 
     def tearDown(self):
         return 1
 
     #----------
     def test_run_assert_action(self):
-        actions = AP.parseString("operator.action.add(a.b.c)")
+        actions = AP.parseString("\A.ActionAdd(a.b.c)")
         self.assertFalse(self.e.query("a.b.c?"))
         actions({}, self.e)
         self.assertTrue(self.e.query("a.b.c?"))
 
     def test_run_retract_action(self):
-        actions = AP.parseString("operator.action.add(~a.b.c)")
+        actions = AP.parseString("\A.ActionAdd(~a.b.c)")
         self.e.add("a.b.c")
         self.assertTrue(self.e.query("a.b.c?"))
         actions({}, self.e)
@@ -44,14 +48,14 @@ class ActionTests(unittest.TestCase):
         self.assertTrue(self.e.query("~a.b.c?"))
 
     def test_run_assert_multi_action(self):
-        actions = AP.parseString("operator.action.add(a.b.c), operator.action.add(a.b.d)")
+        actions = AP.parseString("\A.ActionAdd(a.b.c),\A.ActionAdd(a.b.d)")
         self.assertFalse(self.e.query("a.b.c?, a.b.d?"))
         self.assertTrue(self.e.query("~a.b.c?, ~a.b.d?"))
         actions({}, self.e)
         self.assertTrue(self.e.query("a.b.c?, a.b.d?"))
 
     def test_run_mixed_multi_action(self):
-        actions = AP.parseString("operator.action.add(a.b.c), operator.action.add(~a.b.d)")
+        actions = AP.parseString("\A.ActionAdd(a.b.c), \A.ActionAdd(~a.b.d)")
         self.e.add("a.b.d")
         self.assertTrue(self.e.query("~a.b.c?, a.b.d?"))
         actions({}, self.e)
@@ -59,14 +63,14 @@ class ActionTests(unittest.TestCase):
 
     def test_run_bound_assert_action(self):
         data = {"x": "blah"}
-        actions = AP.parseString("operator.action.add(a.b.$x)")
+        actions = AP.parseString("\A.ActionAdd(a.b.$x)")
         self.assertTrue(self.e.query("~a.b.blah?"))
         actions(data, self.e)
         self.assertTrue(self.e.query("a.b.blah?"))
 
     def test_run_bound_retract_action(self):
         data = {"blah" : "bloo"}
-        actions = AP.parseString("operator.action.add(~a.$blah.c)")
+        actions = AP.parseString("\A.ActionAdd(~a.$blah.c)")
         self.e.add("a.bloo.c")
         self.assertTrue(self.e.query("a.bloo.c?"))
         actions(data, self.e)
@@ -74,17 +78,18 @@ class ActionTests(unittest.TestCase):
 
     def test_run_mixed_bound_actions(self):
         data = {"blah": "bloo"}
-        actions = AP.parseString("operator.action.add(a.$blah), operator.action.add(~b.$blah)")
+        actions = AP.parseString("\A.ActionAdd(a.$blah), \A.ActionAdd(~b.$blah)")
         self.e.add("b.bloo")
         self.assertTrue(self.e.query("b.bloo?"))
         actions(data, self.e)
         self.assertTrue(self.e.query("a.bloo?, ~b.bloo?"))
 
     def test_custom_action_parse(self):
-        result = AP.parseString("operator.action.blah(a, b, c)")
+        result = AP.parseString(r"\Base.blah(a, b, c)")
         self.assertEqual(len(result), 1)
         self.assertIsInstance(result, action.Action)
-        self.assertEqual(result.clauses[0].op, "operator.action.blah")
+
+        self.assertEqual(result.clauses[0].op.pprint(), "Base.blah")
         self.assertEqual([x.value for x in result.clauses[0]._params], ['a', 'b', 'c'])
 
 

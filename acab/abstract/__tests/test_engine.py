@@ -26,11 +26,13 @@ class EngineTests(unittest.TestCase):
 
     #----------
     #use testcase snippets
+    @unittest.skip("obsolete?")
     @mock.patch('acab.abstract.engine.WorkingMemory', autospec=True)
     def test_init(self, wm_mock):
         engine = Engine(wm_mock)
         wm_mock.assert_called_once_with(None)
 
+    @unittest.skip("obsolete?")
     @mock.patch('acab.abstract.engine.ProductionOperator', autospec=True)
     @mock.patch('acab.abstract.engine.WorkingMemory', autospec=True)
     def test_load_modules(self, wm_mock, op_mock):
@@ -39,6 +41,7 @@ class EngineTests(unittest.TestCase):
         op_mock.clear_registrations.assert_called_once()
         engine._working_memory.add_modules.assert_called_once()
 
+    @unittest.skip("obsolete?")
     @mock.patch('acab.abstract.engine.ProductionOperator', autospec=True)
     @mock.patch('acab.abstract.engine.WorkingMemory', autospec=True)
     def test_reload_modules(self, wm_mock, op_mock):

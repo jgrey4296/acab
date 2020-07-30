@@ -8,7 +8,6 @@ from acab import util
 from acab.abstract import action
 from acab.abstract import transform
 from acab.abstract.printing import util as PrU
-from acab.modules.operators.standard_operators import StandardOperators
 from acab.modules.values import numbers
 from acab.modules.values.numbers.parsing import NumberParser as NP
 from acab.modules.values.numbers.util import FLOAT, INT
@@ -19,17 +18,15 @@ from acab.working_memory.trie_wm.trie_working_memory import TrieWM
 
 
 class NumberParseTests(unittest.TestCase):
-    os = None
     ns = None
 
     @classmethod
     def setUpClass(cls):
-        NumberParseTests.os = StandardOperators()
         NumberParseTests.ns = numbers.MODULE()
 
     def setUp(self):
         self.trie = TrieWM()
-        self.trie.add_modules([NumberParseTests.os, NumberParseTests.ns])
+        self.trie.add_modules(["acab.modules.operators.standard_operators", NumberParseTests.ns])
 
     def tearDown(self):
         return 1

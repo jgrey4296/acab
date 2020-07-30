@@ -6,7 +6,6 @@ from acab.abstract.type_base import REGEX
 from acab.abstract.query import Query
 from acab.abstract.sentence import Sentence
 from acab.abstract.query import QueryComponent, QueryOp
-from acab.modules.operators.standard_operators import StandardOperators
 from acab.abstract.production_operator import ProductionOperator
 from acab.working_memory.trie_wm import util as KBU
 from acab import util
@@ -16,7 +15,6 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         bp = BootstrapParser()
-        os = StandardOperators()
         os.assert_parsers(bp)
         QP.HOTLOAD_QUERY_OP << bp.query("operator.query.*",
                                         "operator.sugar")

@@ -17,7 +17,6 @@ from acab.modules.analysis.typing import util as TU
 from acab.modules.analysis.typing.type_checker import TypeChecker
 from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition
 from acab.modules.analysis.typing.values.type_definition import TypeDefinition
-from acab.modules.operators.standard_operators import StandardOperators
 
 from acab.working_memory.trie_wm.parsing import ActionParser as AP
 from acab.working_memory.trie_wm.parsing import FactParser as FP
@@ -31,8 +30,6 @@ class TypingTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         bp = BootstrapParser()
-        os = StandardOperators()
-        os.assert_parsers(bp)
         AP.HOTLOAD_OPERATORS << bp.query("operator.action.*")
 
     def tearDown(self):

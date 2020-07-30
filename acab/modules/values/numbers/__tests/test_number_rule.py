@@ -14,24 +14,21 @@ from acab.abstract.sentence import Sentence
 from acab.abstract import transform
 from acab.abstract.rule import Rule
 from acab import util
-from acab.modules.operators.standard_operators import StandardOperators
 from acab.modules.values import numbers
 from acab.working_memory.trie_wm.trie_working_memory import TrieWM
 from acab.working_memory.trie_wm import util as KBU
 
 
 class NumberRuleTests(unittest.TestCase):
-    os = None
     ns = None
 
     @classmethod
     def setUpClass(cls):
-        NumberRuleTests.os = StandardOperators()
         NumberRuleTests.ns = numbers.MODULE()
 
     def setUp(self):
         self.trie = TrieWM()
-        self.trie.add_modules([NumberRuleTests.os, NumberRuleTests.ns])
+        self.trie.add_modules(["acab.modules.operators.standard_operators", NumberRuleTests.ns])
 
     def tearDown(self):
         return 1

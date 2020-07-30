@@ -14,24 +14,21 @@ from acab.abstract.query import QueryComponent, QueryOp
 from acab.abstract.sentence import Sentence
 from acab import util
 from acab.abstract.printing import util as PrU
-from acab.modules.operators.standard_operators import StandardOperators
 from acab.modules.values import numbers
 from acab.working_memory.trie_wm.trie_working_memory import TrieWM
 from acab.working_memory.trie_wm import util as KBU
 
 
 class NumberQueryTests(unittest.TestCase):
-    os = None
     ns = None
 
     @classmethod
     def setUpClass(cls):
-        NumberQueryTests.os = StandardOperators()
         NumberQueryTests.ns = numbers.MODULE()
 
     def setUp(self):
         self.trie = TrieWM()
-        self.trie.add_modules([NumberQueryTests.os, NumberQueryTests.ns])
+        self.trie.add_modules(["acab.modules.operators.standard_operators", NumberQueryTests.ns])
 
     def tearDown(self):
         return 1

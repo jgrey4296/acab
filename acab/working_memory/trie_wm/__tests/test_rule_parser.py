@@ -6,7 +6,7 @@ from acab.working_memory.trie_wm import util as KBU
 from acab.working_memory.trie_wm.parsing import RuleParser as RP
 from acab.working_memory.trie_wm.parsing import FactParser as FP
 from acab.working_memory.trie_wm.parsing import ActionParser as AP
-from acab.modules.operators.action import MODULE as ActMod
+# from acab.modules.operators.action import MODULE as ActMod
 from acab.abstract.rule import Rule
 from acab.abstract.sentence import Sentence
 from acab.abstract.query import Query
@@ -17,7 +17,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         bp = BootstrapParser()
-        am = ActMod()
+        # am = ActMod()
         am.assert_parsers(bp)
         AP.HOTLOAD_OPERATORS << bp.query("operator.action.*")
 

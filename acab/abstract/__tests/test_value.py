@@ -68,7 +68,7 @@ class AcabValueTests(unittest.TestCase):
         self.assertEqual(sen[-1]._value, 4)
         self.assertIsInstance(sen[-1]._value, int)
 
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(AttributeError):
             copied = sen.attach_statement(value)
 
 
