@@ -1,5 +1,5 @@
 """
-The Module Interface definition that modules need to enact.
+The DSL fragment definition that enables extension of the base language
 Registers and uses parser fragments.
 
 """
@@ -10,11 +10,10 @@ from .value import AcabValue
 logging = root_logger.getLogger(__name__)
 
 
-class ModuleInterface:
-    """ A Module specification.
-    Should be constructed in a module's __init__,
-    into a MODULE_SPEC variable.
+class DSL_Fragment:
+    """ DSL Fragment specification.
 
+    The way to plug a sub-dsl into the working memory language.
     Implement:
     parse_string,
     init_strings
@@ -64,4 +63,4 @@ class ModuleInterface:
         """
         logging.debug("Module lacks parser queries: {}".format(self.__class__))
 
-    # TODO debug parser assertions / queries 
+    # TODO debug parser assertions / queries
