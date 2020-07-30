@@ -1,4 +1,4 @@
-from acab.abstract.module_interface import ModuleInterface
+from acab.abstract.dsl_fragment import DSL_Fragment
 from acab.abstract.printing import util as PrU
 from .type_checker import TypeChecker
 from .parsing import TypeDefParser as TDP
@@ -6,7 +6,7 @@ from .parsing import TypeParser as TP
 from . import util as TU
 
 
-class TypingSpec(ModuleInterface):
+class TypingSpec(DSL_Fragment):
     """ Typing Spec Class, providing entry points
     for an engine and working memory to handle type inference
 
@@ -34,7 +34,7 @@ class TypingSpec(ModuleInterface):
         pt.add("statement.typing", TDP.COMBINED_DEFS)
         pt.add("annotation.typing", TP.TYPEDEC_CORE)
         pt.add("query.annotation.typing", TP.TYPEDEC_CORE)
-        pt.add("operator.action.typecheck", TypeChecker)
+        # pt.add("operator.action.typecheck", TypeChecker)
 
     def query_parsers(self, pt):
         TDP.HOTLOAD_BASIC_SEN << pt.query("sentence.basic")

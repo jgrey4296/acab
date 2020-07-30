@@ -1,10 +1,10 @@
-from acab.abstract.module_interface import ModuleInterface
+from acab.abstract.dsl_fragment import DSL_Fragment
 from .parsing import NumberParser as NP
-from . import query_operators as CO
-from . import transform_operators as TO
+from .query_operators import GT, LT
+from .transform_operators import AddOp, SubOp, MulOp, DivOp, RandOp, RemainOp, RoundOp, NegOp
 
 
-class MODULE(ModuleInterface):
+class MODULE(DSL_Fragment):
     """ A Module that provides numbers """
 
     def __init__(self):
@@ -24,16 +24,4 @@ class MODULE(ModuleInterface):
     def assert_parsers(self, pt):
         pt.add("value.numbers", NP.NUM)
 
-        pt.add("operator.query.gt", CO.GT,
-               "operator.query.lt", CO.LT)
 
-        pt.add("operator.transform.n_ary.add", TO.AddOp,
-               "operator.transform.n_ary.sub", TO.SubOp,
-               "operator.transform.n_ary.mul", TO.MulOp,
-               "operator.transform.n_ary.div", TO.DivOp,
-               "operator.transform.n_ary.rand", TO.RandOp,
-               "operator.transform.n_ary.remain", TO.RemainOp,
-               "operator.transform.n_ary.round", TO.RoundOp,
-               "operator.transform.n_ary.neg", TO.NegOp)
-
-MODULE_SPEC = MODULE()

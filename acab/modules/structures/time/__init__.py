@@ -1,8 +1,8 @@
-from acab.abstract.module_interface import ModuleInterface
+from acab.abstract.dsl_fragment import DSL_Fragment
 from .parsing import parser as TP
 
 
-class MODULE(ModuleInterface):
+class MODULE(DSL_Fragment):
     """ TimeParser Class, providing entry points
     for an engine and working memory to parse Time Strings
     """

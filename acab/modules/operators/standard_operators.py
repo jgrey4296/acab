@@ -1,32 +1,11 @@
-from acab.abstract.module_interface import ModuleInterface
+from acab.abstract.dsl_fragment import DSL_Fragment
 
-from . import agendas as AA
-from . import layer as LA
-from . import pipeline as PA
-from . import query as QO
-from . import action as A
-from . import transform as T
-from . import pattern_match as PMM
+from .agendas import *
+from .layer import *
+from .pipeline import *
+from .query import *
+from .action import *
+from .transform import *
+from .pattern_match import *
 
-
-class StandardOperators(ModuleInterface):
-    """ The Module Spec for base operators """
-
-    def __init__(self):
-        super().__init__()
-        self._modules = [QO.MODULE(),
-                         A.MODULE(),
-                         AA.MODULE(),
-                         LA.MODULE(),
-                         PA.MODULE(),
-                         T.MODULE(),
-                         PMM.MODULE()]
-
-    def assert_parsers(self, pt):
-        dummy = [x.assert_parsers(pt) for x in self._modules]
-
-    def query_parsers(self, pt):
-        dummy = [x.query_parsers(pt) for x in self._modules]
-
-    def init_strings(self):
-        return []
+from . import action

@@ -1,9 +1,9 @@
-from acab.abstract.module_interface import ModuleInterface
+from acab.abstract.dsl_fragment import DSL_Fragment
 
 from . import PipelineParser as PP
 
 
-class MODULE(ModuleInterface):
+class MODULE(DSL_Fragment):
     """ The Module Spec for base structures
     ie: Agenda/Layer/Pipeline
     """

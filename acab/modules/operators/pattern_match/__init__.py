@@ -1,10 +1,10 @@
-from acab.abstract.module_interface import ModuleInterface
+from acab.abstract.dsl_fragment import DSL_Fragment
 
-from . import pattern_match_op as PMO
+from .pattern_match_op import PatternMatchOp
 from . import pattern_match_parser as PMP
 
 
-class MODULE(ModuleInterface):
+class MODULE(DSL_Fragment):
     """ The Module Spec for base operators """
 
     def __init__(self):

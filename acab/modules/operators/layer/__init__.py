@@ -1,18 +1,18 @@
-from acab.abstract.module_interface import ModuleInterface
+from acab.abstract.dsl_fragment import DSL_Fragment
 
-from . import layer_actions as LA
+from .layer_actions import LayerRunAgenda, LayerRunRules, LayerPerform
 
-class MODULE(ModuleInterface):
+class MODULE(DSL_Fragment):
     """ The Module Spec for base operators """
 
     def __init__(self):
         super().__init__()
 
     def assert_parsers(self, pt):
-
-        pt.add("operator.transform.n_ary.run_agenda", LA.LayerRunAgenda,
-               "operator.transform.n_ary.run_rules", LA.LayerRunRules,
-               "operator.action.layer_perform", LA.LayerPerform)
+        # pt.add("operator.transform.n_ary.run_agenda", LA.LayerRunAgenda,
+        #        "operator.transform.n_ary.run_rules", LA.LayerRunRules,
+        #        "operator.action.layer_perform", LA.LayerPerform)
+        pass
 
     def query_parsers(self, pt):
         pass
