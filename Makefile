@@ -7,17 +7,17 @@ CACHES := $(shell find ./acab -name '*__pycache__')
 all: verbose
 
 test:
-	python -m unittest discover -s ./acab -p "*_tests.py"
+	python -m unittest discover -s ./acab -p "test_*.py"
 
 verbose:
-	python -m unittest discover -s ./acab -p "*_tests.py" -v
+	python -m unittest discover -s ./acab -p "test_*.py" -v
 
 faily:
-	python -m unittest discover -s ./acab -p "*_tests.py" -v -f
+	python -m unittest discover -s ./acab -p "test_*.py" -v -f
 
 # use as: make pattern PAT="X"
 pattern:
-	python -m unittest discover -s ./acab -p "*_tests.py" -v -f -k ${PAT}
+	python -m unittest discover -s ./acab -p "test_*.py" -v -f -k ${PAT}
 
 # make init py's as necessary
 init:
@@ -30,7 +30,7 @@ vrepl:
 	python acab/repl/repl.py --verbose DEBUG
 
 count:
-	find . -name "*.py" -not -path "./.git/*" -not -name "*_tests.py" -not -name "*__init__.py" -print0 | xargs -0 wc -l | sort > linecounts.stats
+	find . -name "*.py" -not -path "./.git/*" -not -name "test_*.py" -not -name "*__init__.py" -print0 | xargs -0 wc -l | sort > linecounts.stats
 
 re: repl
 vr: vrepl
