@@ -23,13 +23,8 @@ OP_CLASS_S   = "operator_class"
 CTX_COLLAPSE_S = "ctx.collapse"
 
 # Core Value Types
-FLOAT_S      = "float"
-INT_S        = "int"
 #Use to signify a decimal, eg: 34d423 = 34.423
 DECIMAL_S    = "d"
-
-REGEX_S      = "regex"
-STRING_S     = "string"
 
 ACTION_S     = "action"
 QUERY_S      = "query"
@@ -51,11 +46,13 @@ QUERY_HEAD_S      = "γ"
 TRANSFORM_HEAD_S  = "τ"
 ACTION_HEAD_S     = "α"
 FACT_HEAD_S       = "Σ"
+
 # Typing:
 SUM_HEAD_S        = "Σσ"
 STRUCTURE_S       = "σ"
 FUNC_S            = "λ"
 TYPE_CLASS_S      = "γ"
+
 # Misc:
 UUID_HEAD         = "υ"
 AGENDA_HEAD_S     = "Agenda"
@@ -69,17 +66,12 @@ TAG_SYMBOL_S      = "#"
 NEGATION_SYMBOL_S = "~"
 QUERY_SYMBOL_S    = "?"
 
-
 TYPE_FMT_S        = "::{}"
+TAB_S = "    "
+
 # Default Data for any value:
+# Note: type instance is not shown as it needs to be constructed elsewhere.
+# See type_base and acabvalue
 DEFAULT_VALUE_DATA = {
     BIND_S       : False,
     }
-
-TAB_S = "    "
-
-def get_parsers_from_module(module):
-    elements = [getattr(module, x) for x in module]
-    parsers = [x for x in elements if isinstance(x, pp.ParserElement)]
-
-    return parsers
