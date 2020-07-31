@@ -50,16 +50,10 @@ class BootstrapParser(Trie):
             if parser is None:
                 logging.warning("Loc given None: {}".format(loc_string))
                 continue
-            if isinstance(parser, type) and issubclass(parser, ProductionOperator):
-                parser = parser()
-
-            if isinstance(parser, ProductionOperator):
-                ProductionOperator.register_operator(current, parser)
-                parser = pp.Keyword(current)
-                # https://stackoverflow.com/questions/10452770
-                # parser = parser.setParseAction(lambda s, l, t, force_bind=current: force_bind)
             elif isinstance(parser, str):
-                parser = pp.Keyword(parser)
+                parser = pp.Literal(parser)
+            if isinstance(parser, type) and issubclass(parser, ProductionOperator):
+                raise DeprecationWarning("Production Operators shouldn't be being built here any more")
 
             assert(isinstance(parser, pp.ParserElement))
             super(BootstrapParser, self).add(loc_string, data={'parser': parser})
@@ -72,7 +66,7 @@ class BootstrapParser(Trie):
         for query in queries:
             node = self._query(query)
             if node is None:
-                logging.warning("No parser found in: {}".formar(query))
+                logging.warning("No parser found in: {}".format(query))
             elif isinstance(node, list):
                 results += [x._data['parser'] for x in node if 'parser' in x._data]
 
@@ -80,7 +74,8 @@ class BootstrapParser(Trie):
         if len(results) == 1:
             final_parser = results[0]
         if not bool(results):
-            final_parser = None
+            raise Exception("No Parsers found for: {}".format(" | ".join(queries)))
+
 
         return final_parser
 
