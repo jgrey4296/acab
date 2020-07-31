@@ -23,21 +23,7 @@ logging = root_logger.getLogger(__name__)
 class ProductionOperator(AcabValue):
     """ The Base Operator Class """
 
-    # A class variable to determine when an operator is instanced
-    STATELESS_OP_CLASS = True
-    op_dict = {}
-
-    @staticmethod
-    def register_operator(name, op):
-        assert(name not in ProductionOperator.op_dict or ProductionOperator.op_dict[name] == op)
-        ProductionOperator.op_dict[name] = op
-
-    @staticmethod
-    def clear_registrations():
-        logging.debug("Clearing registered operators")
-        ProductionOperator.op_dict = {}
-
-    def __init__(self, infix=False):
+    def __init__(self):
         super().__init__(self.__class__.__name__, _type=TB.OPERATOR)
 
     def __call__(self, *params, data=None, engine=None):
@@ -73,7 +59,8 @@ class ProductionComponent(AcabValue):
         """
         # lookup op
         self.verify()
-        op_func = ProductionOperator.op_dict[self.op]
+        # retrieve op func from active TagEnvs
+        op_func = engine.get_operator(self._value)
         assert(x.name in ctx for x in self._vars)
         # get values from data
         values = self.get_params(ctx)
@@ -126,7 +113,6 @@ class ProductionComponent(AcabValue):
     def __refine_op_func(self, op_str):
         """ Replace the current op func set with a specific
         op func, used for type refinement """
-        assert(op_str in ProductionOperator.op_dict)
         self._value = op_str
 
 
@@ -200,7 +186,7 @@ class ProductionContainer(AcabStatement):
 
 
     def to_local_sentences(self, target=None):
-        return [x.to_local_sentences() for x in self.clauses]
+        return [y for x in self.clauses for y in x.to_local_sentences()]
 
     def verify(self, op_constraint=None):
         if op_constraint is None:
