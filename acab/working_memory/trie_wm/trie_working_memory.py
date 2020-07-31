@@ -103,13 +103,20 @@ class TrieWM(WorkingMemory):
                "statement.rule", RP.rule)
 
     def query_parsers(self, pt):
-        if pt.query("value.*"):
+        try:
             FP.HOTLOAD_VALUES << pt.query("value.*")
-        if pt.query("annotation.*"):
-            FP.HOTLOAD_ANNOTATIONS << pt.query("annotation.*")
+        except Exception:
+            logging.warning("No values loaded into DSL")
 
-        if pt.query("query.annotation.*"):
+        try:
+            FP.HOTLOAD_ANNOTATIONS << pt.query("annotation.*")
+        except Exception:
+            logging.warning("No annotations loaded into DSL")
+
+        try:
             QP.HOTLOAD_QUERY_ANNOTATIONS << pt.query("query.annotation.*")
+        except Exception:
+            logging.warning("No query annotations loaded into DSL")
 
         QP.HOTLOAD_QUERY_OP << pt.query("operator.query.*",
                                         "operator.sugar")
@@ -130,7 +137,7 @@ class TrieWM(WorkingMemory):
         """ Assert a (concrete) sentence of chained facts """
         assert (isinstance(sen, Sentence)), sen
         if self.score_listener(sen.words):
-            # TODO: add more listener options
+            # TODO: add more listener options: pre, on and post
             breakpoint()
 
         self._clear_last_node()
