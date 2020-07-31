@@ -102,12 +102,10 @@ def print_value(value, opts):
         val = TYPE_WRAPS[value.type](val)
 
     # Wrap binding
-    if value.is_at_var:
-        val = _wrap_at_var(val)
-    elif value.is_var:
-        val = _wrap_var(val)
+    if value.is_var:
+        val = _wrap_var(val, is_at_var=value.is_at_var)
 
-    # Wrap constraints (TODO *and* type assigments)
+    # Wrap constraints
     val = _wrap_constraints(val, value._data)
 
     # Wrap modal Operator
@@ -115,9 +113,11 @@ def print_value(value, opts):
     if print_modal and util.OPERATOR_S in value._data:
         val = _wrap_modal_operator(val, value._data[util.OPERATOR_S])
 
+
     return val
 
 def print_sequence(seq, opts):
+    """ Pretty Print a Sequence, ie: things like sentences """
     join_str = opts['seq_join']
     if not join_str:
         join_str = ""
@@ -248,19 +248,19 @@ def _wrap_regex(value, opts=None):
     return val
 
 
-def _wrap_var(value):
+def _wrap_var(value, is_at_var=False):
     assert(isinstance(value, str))
-    return util.VAR_SYMBOL_S + value
-
-def _wrap_at_var(value):
-    assert(isinstance(value, str))
-    return util.AT_VAR_SYMBOL_S + value
+    sym = util.VAR_SYMBOL_S
+    if is_at_var:
+        sym = util.AT_VAR_SYMBOL_S
+    return sym + value
 
 def _wrap_constraints(value, data):
     assert(isinstance(value, str))
     assert(isinstance(data, dict))
 
     # TODO: expand this as type instance printing is being avoided here
+    # needs to print type constraints other than ATOM, num, str, ...?
     constraints = []
     # Get registered data annotations:
     for x in REGISTERED_CONSTRAINTS:
@@ -278,8 +278,8 @@ def _wrap_constraints(value, data):
     return result
 
 def _wrap_modal_operator(value, op):
-    assert(isinstance(value, str))
-    assert(op in MODAL_LOOKUPS)
+    assert(isinstance(value, str)), value
+    assert(op in MODAL_LOOKUPS), op
     return value + MODAL_LOOKUPS[op]
 
 def _wrap_rebind(value, rebind, is_sugar=False):
@@ -322,7 +322,7 @@ def _wrap_end(value, newline=False):
     if newline:
         return "{}\n{}\n".format(value, util.END_S)
     else:
-        return "{}{}\n".format(value, util.END_S)
+        return "{} {}\n".format(value, util.END_S)
 
 def _wrap_statement_type(val, type_str):
     return "{} ({})\n".format(val, type_str)
@@ -342,4 +342,3 @@ REGISTERED_CONSTRAINTS = set([util.CONSTRAINT_S])
 
 TYPE_WRAPS = {REGEX: _wrap_regex,
               STRING: _wrap_str}
-
