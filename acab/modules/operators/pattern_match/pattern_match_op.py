@@ -7,7 +7,7 @@ from acab.abstract.transform import TransformOp
 class PatternMatchOp(TransformOp):
 
     def __init__(self):
-        super(PatternMatchOp, self).__init__(-1)
+        super(PatternMatchOp, self).__init__()
 
     def __call__(self, node, patterns, data=None, engine=None):
         assert(all([isinstance(x, tuple) for x in patterns]))

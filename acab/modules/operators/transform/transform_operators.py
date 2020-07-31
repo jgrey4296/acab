@@ -7,7 +7,7 @@ from acab.abstract.transform import TransformOp
 
 class RegexOp(TransformOp):
     def __init__(self):
-        super().__init__(3)
+        super().__init__()
 
     def __call__(self, value, pattern, replacement, data=None, engine=None):
         """ Substitute value pattern with value value from passed in data
@@ -22,7 +22,7 @@ class RegexOp(TransformOp):
 
 class FormatOp(TransformOp):
     def __init__(self):
-        super().__init__(1)
+        super().__init__()
 
     def __call__(self, value, data=None, engine=None):
         """ Use str.format variant with value data dictionary

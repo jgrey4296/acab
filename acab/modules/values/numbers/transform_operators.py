@@ -57,7 +57,7 @@ class RemainOp(TransformOp):
 
 class RoundOp(TransformOp):
     def __init__(self):
-        super().__init__(1)
+        super().__init__()
 
     def __call__(self, a, data=None, engine=None):
         # round to integer
@@ -66,7 +66,7 @@ class RoundOp(TransformOp):
 
 class NegOp(TransformOp):
     def __init__(self):
-        super().__init__(1)
+        super().__init__()
 
     def __call__(self, a, data=None, engine=None):
         # invert the number
