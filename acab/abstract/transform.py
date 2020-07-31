@@ -20,15 +20,11 @@ logging = root_logger.getLogger(__name__)
 
 
 class TransformOp(PO.ProductionOperator):
-    op_dict = {}
 
-    def __init__(self, infix=False):
+    def __init__(self):
         # Registers self with class name,
         # DSL later binds to an operator
-        super().__init__(infix=False)
-
-        if self.op_str not in TransformOp.op_dict:
-            TransformOp.op_dict[self.op_str] = self
+        super().__init__()
 
 
     def __call__(self, a, b, data=None, engine=None):
@@ -45,7 +41,7 @@ class TransformComponent(PO.ProductionComponent):
 
 
     def to_local_sentences(self, target=None):
-        head = AcabValue(self.op, data={util.OPERATOR_S : self})
+        head = AcabValue(self.op, data={'op_reference': self})
         return [Sentence([head] + self._params[:] + [self._rebind])]
 
 

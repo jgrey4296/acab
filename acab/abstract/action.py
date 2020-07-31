@@ -23,15 +23,11 @@ class ActionOp(PO.ProductionOperator):
     Instantiation of subclasses auto-registers
     the action into ActionOp.op_dict with an operator string
     """
-    op_dict = {}
 
-    def __init__(self, infix=False):
+    def __init__(self):
         """ Registers self with class name,
          DSL later binds to an operator """
-        super().__init__(infix=False)
-
-        if self.op_str not in ActionOp.op_dict:
-            ActionOp.op_dict[self.op_str] = self
+        super().__init__()
 
     def __call__(self, *params, data=None, engine=None):
         """ The Abstract Call Method.

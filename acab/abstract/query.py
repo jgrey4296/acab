@@ -25,15 +25,11 @@ class QueryOp(PO.ProductionOperator):
     Instantiation of subclasses auto-registers
     the comparison into QueryOp.op_dict with an operator string
     """
-    op_dict = {}
 
-    def __init__(self, infix=False):
+    def __init__(self):
         # Registers self with class name,
         # DSL later binds to an operator
-        super().__init__(infix=False)
-
-        if self.op_str not in QueryOp.op_dict:
-            QueryOp.op_dict[self.op_str] = self
+        super().__init__()
 
     def __call__(self, a, b, data=None, engine=None, node=None):
         raise NotImplementedError()
@@ -60,7 +56,9 @@ class QueryComponent(PO.ProductionComponent):
     def __call__(self, node, data=None, engine=None):
         """ Run a comparison on a node """
         self.verify()
-        op = PO.ProductionOperator.op_dict[self.op]
+        # TODO: Get op from engine
+        op = engine.get_operator(self._value)
+        # op = self._value
         node_value = node.value.value
         params = self.get_params(data)
 
@@ -77,13 +75,14 @@ class QueryComponent(PO.ProductionComponent):
         """ Return boolean if test is a query that can create sub bindings,
         eg: regular expressions
         """
-        op = PO.ProductionOperator.op_dict[self.op]
+        op = self._value
         return isinstance(op, QueryOp_SubBind)
 
 
     def to_local_sentences(self, target=None):
         """ Create a comparison as a canonical sentence """
         # eg: 20(>30) :  > -> 20 -> 30 -> bool
+        # TODO assign a type instance
         head = AcabValue(self.op, {OPERATOR_S : self})
         if target is None:
             return Sentence([head] + self._params)
