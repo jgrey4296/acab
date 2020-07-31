@@ -1,5 +1,6 @@
 """
-Utility functions for the REPL
+Commands for the REPL
+
 """
 from datetime import datetime
 from enum import Enum
@@ -40,7 +41,6 @@ def build_command(cmd_e, **kwargs):
     return command_dict
 
 
-# TODO: Document command implementation
 #--------------------
 
 def engine_init(engine, data):
@@ -58,8 +58,7 @@ register(ReplE.INIT, engine_init)
 def engine_module(engine, data):
     params = data['params']
     logging.info("Loading Module: {}".format(params))
-    temp_module = importlib.import_module(params[0])
-    engine.load_modules(temp_module.MODULE_SPEC)
+    engine.load_modules(params)
     engine.reload_all_modules()
     return engine, None
 
@@ -255,7 +254,8 @@ def engine_stats(engine, data):
     # Operators
     if allow_all or "operator" in params:
         result.append("Operator Stats: ")
-        result.append("\t{}".format("\n\t".join([str(x) for x in ProductionOperator.op_dict])))
+        # TODO
+        # result.append("\t{}".format("\n\t".join([str(x) for x in ProductionOperator.op_dict])))
 
     # agendas
     if allow_all or "agenda" in params:
@@ -324,23 +324,25 @@ def engine_help(engine, data):
     result.append("---------- Commands:")
     result.append("\tany.valid.sentence     : Assert")
     result.append("\tany.value.sentence?    : Query")
+    result.append("")
 
-    result.append("\tquit                   : Quit the interpreter")
-    result.append("\tstats                  : Print interpreter stats")
+    result.append("\t:quit                   : Quit the interpreter")
+    result.append("\t:stats                  : Print interpreter stats")
 
-    result.append("\tinit {a.class}         : Initialise a new engine")
-    result.append("\tmodule {a.module}      : Add a new module to the engine")
+    result.append("\t:init {a.class}         : Initialise a new engine")
+    result.append("\t:module {a.module}      : Add a new module to the engine")
 
-    result.append("\tload {file}            : Load a file into the engine")
-    result.append("\tsave {file}            : Save a file to the engine")
+    result.append("\t:load {file}            : Load a file into the engine")
+    result.append("\t:save {file}            : Save a file to the engine")
 
-    result.append("\tprint                  : TODO print")
-    result.append("\trun                    : TODO run")
-    result.append("\tact                    : TODO act")
-    result.append("\tlisten et al           : TODO listen")
-    result.append("\tcheck                  : TODO check")
+    result.append("\t:print                  : TODO print (binding)")
+    result.append("\t:run                    : TODO run")
+    result.append("\t:act                    : TODO act")
+    result.append("\t:listen et al           : listen (for {xs}) (remove {xs}) (threshold x/y) ")
+    result.append("\t:check                  : TODO check")
+    result.append("\t:echo                   : TODO echo")
 
-    result.append("\thelp                   : Print this help")
+    result.append("\t:help                   : Print this help")
 
     data['result'] = "\n".join(result)
     return engine, data

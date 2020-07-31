@@ -79,17 +79,17 @@ if __name__ == "__main__":
             # traceback.print_tb(exc_tb, limit=4)
             breakpoint()
             data['result']  = []
-        finally:
-            if (not data['in_multi_line']) and data['echo']:
-                cmd_fn = ReC.get(ReC.ReplE.PRINT)
-                engine, u_data = cmd_fn(engine, {'params': ['wm']})
-                print(u_data['result'])
-            #print result
-            if bool(data['result']):
-                print(data['result'])
-                data['result'] = None
-            # Repeat
-            if data['command'] != ReC.ReplE.EXIT:
-                data['current_str'] = input(data['prompt'])
+
+        if (not data['in_multi_line']) and data['echo']:
+            cmd_fn = ReC.get(ReC.ReplE.PRINT)
+            engine, u_data = cmd_fn(engine, {'params': ['wm']})
+            print(u_data['result'])
+        #print result
+        if bool(data['result']):
+            print(data['result'])
+            data['result'] = None
+        # Repeat
+        if data['command'] != ReC.ReplE.EXIT:
+            data['current_str'] = input(data['prompt'])
 
     logging.info("Shutting down engine: {}".format(args.engine))
