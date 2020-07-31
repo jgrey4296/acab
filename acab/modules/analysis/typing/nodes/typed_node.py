@@ -36,7 +36,6 @@ class MonoTypedNode(AcabNode):
 
         # TODO: unify type instance and type vars separately?
 
-        # TODO: use <
         if self._type_instance < _type:
             self.apply_type_instance(_type)
         elif not _type < self._type_instance:

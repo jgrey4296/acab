@@ -103,7 +103,6 @@ class TypeDefTrieNode(AcabNode):
         assert(usage_trie.type_instance is not None)
         assert(isinstance(lookup_dict, dict))
         definition_bindings = [lookup_dict[x.name] for x in self.definition.vars]
-        # TODO: convert back to a type instance
         definition_instances = [x if isinstance(x, TypeInstance) else x.type_instance for x in definition_bindings]
 
         usage_trie.type_instance._vars = definition_instances

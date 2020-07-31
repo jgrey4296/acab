@@ -89,7 +89,7 @@ class TypeChecker(ActionOp):
     def __str__(self):
         output = []
         output.append("Defs   : {}".format(str(self._definitions).replace('\n', ' ')))
-        output.append("Decs   : {}".format(str(self._declarations).replace('\n', ' ')))
+        output.append("Decs   : {}".format(self._declarations.print_trie(join_str=".").replace('\n', ' ')))
         output.append("Vars   : {}".format(str(self._variables).replace('\n', ' ')))
 
         return "\n".join(output)
@@ -180,8 +180,6 @@ class TypeChecker(ActionOp):
         self._merge_equivalent_nodes()
         typed_queue = self._get_known_typed_nodes()
 
-        # TODO: get known operations
-
         # Use known types to infer unknown types
         create_var = partial(util_create_type_var, self)
         dealt_with = set()
@@ -192,10 +190,7 @@ class TypeChecker(ActionOp):
                 continue
             dealt_with.add(head)
 
-            # TODO branch on structural /functional
-
             # check the head
-            # TODO: handle sum type paths
             head_type = self._definitions.query(head.type_instance.path)
             if head_type is None:
                 raise te.TypeUndefinedException(head.type_instance, head)
@@ -214,7 +209,7 @@ class TypeChecker(ActionOp):
             assert(all([isinstance(x, TypeAssignmentTrieNode) for x in results])), breakpoint()
             typed_queue.update(results)
 
-            # if head validation returns only operators, and
+            # TODO if head validation returns only operators, and
             # the queue is only operators, then error
 
         return True
@@ -232,11 +227,12 @@ class TypeChecker(ActionOp):
             else:
                 self._definitions.add(a_def, a_def[-1])
 
-    def add_assertion(self, sen):
-        assert(isinstance(sen, Sentence))
-        self._declarations.add(sen, None,
-                               update=lambda c, v, p, d: c.update(v, d),
-                               u_data=self._variables)
+    def add_assertion(self, *sens):
+        for x in sens:
+            assert(isinstance(x, Sentence))
+            self._declarations.add(x, None,
+                                   update=lambda c, v, p, d: c.update(v, d),
+                                   u_data=self._variables)
 
     def add_statement(self, statement):
         """

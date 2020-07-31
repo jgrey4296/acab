@@ -107,7 +107,7 @@ class TypeDefinition(TypeStatement):
             types, instances = the_dict.values()
             if ATOM in types:
                 types.remove(ATOM)
-                
+
             if len(types) > 1:
                 raise TE.TypeConflictException(types.pop(), types, self)
 
