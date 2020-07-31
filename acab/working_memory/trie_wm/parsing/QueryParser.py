@@ -49,8 +49,10 @@ def build_assignment(toks):
 HOTLOAD_QUERY_OP = pp.Forward()
 HOTLOAD_QUERY_ANNOTATIONS = pp.Forward()
 
-# TODO: add \ but not for sugar syntax
-QUERY_OP_Internal = PU.N(WMU.OPERATOR_S, HOTLOAD_QUERY_OP) \
+# TODO: blash -> blash | λ
+op_path = pp.Or([HOTLOAD_QUERY_OP, PU.BSLASH + BASIC_SEN])
+
+QUERY_OP_Internal = PU.N(WMU.OPERATOR_S, op_path) \
     + PU.N(WMU.VALUE_S, PARAM_CORE(end=True))
 
 # defined earlier to work with named copies
@@ -96,6 +98,7 @@ assignment.setParseAction(build_assignment)
 
 # NAMING
 HOTLOAD_QUERY_OP.setName("QueryOperators")
+HOTLOAD_QUERY_ANNOTATIONS.setName("QueryAnnotation")
 QUERY_OP_Internal.setName("Query_Statements")
 query_or_annotation.setName("QueryOrAnnotation")
 constraints.setName("ConstraintList")
@@ -107,6 +110,7 @@ QueryCore_end.setName("QueryCoreEndStatement")
 clause.setName("QueryComponent")
 clauses.setName("QueryComponentContainer")
 query_statement.setName("QueryDefinition")
+
 
 # parse_point = clauses.ignore(PU.COMMENT)
 parse_point = clauses

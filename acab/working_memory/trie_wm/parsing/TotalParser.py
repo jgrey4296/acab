@@ -29,6 +29,7 @@ file_component = pp.Or([statements, FP.PARAM_SEN])
 file_total = pp.delimitedList(file_component, delim=PU.component_gap)
 
 # NAMING
+HOTLOAD_STATEMENTS.setName("HotloadStatement")
 statements.setName("StatementCollection")
 file_component.setName("FileComponent")
 

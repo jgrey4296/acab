@@ -106,7 +106,9 @@ PARAM_BINDING_END.setName("ParamBindEnd")
 BASIC_SEN.setName("BasicSentence")
 PARAM_SEN.setName("ParameterisedSentence")
 PARAM_SEN_PLURAL.setName("ParamSentencePlural")
-
+HOTLOAD_ANNOTATIONS.setName("Annotations")
+HOTLOAD_VALUES.setName("HotloadValues")
+SEN_STATEMENT.setName("SentenceStatement")
 
 # parse_point = PARAM_SEN_PLURAL.ignore(PU.COMMENT)
 parse_point = PARAM_SEN_PLURAL

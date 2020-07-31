@@ -32,14 +32,18 @@ def build_transform(toks):
 # Hotloaded Transform Operators
 HOTLOAD_TRANS_OP = pp.Forward()
 
+
 # TODO need to add to this
 HOTLOAD_TRANS_STATEMENTS = pp.Forward()
 
 rebind = PU.ARROW + VALBIND
 # TODO: extend transform to take partial transforms?
+# TODO: convert BLASH + BASIC_SEN to Blash/lambda + basic sen
 # transform: ( bind op val|bind -> bind)
+op_path  = pp.Or([HOTLOAD_TRANS_OP, PU.BSLASH + BASIC_SEN])
+
 transform_core = PU.N(WMU.LEFT_S, pp.ZeroOrMore(VALBIND)) \
-    + PU.N(WMU.OPERATOR_S, PU.BSLASH + HOTLOAD_TRANS_OP) \
+    + PU.N(WMU.OPERATOR_S, op_path) \
     + PU.N(WMU.RIGHT_S, PU.orm(VALBIND)) \
     + PU.N(WMU.TARGET_S, rebind)
 
@@ -59,6 +63,8 @@ transforms.setParseAction(build_transform)
 transform_core.setName("Transform_CORE")
 transforms.setName("TransformPlural")
 transform_statement.setName("TransformDefinition")
+HOTLOAD_TRANS_OP.setName("Transform_Op")
+HOTLOAD_TRANS_STATEMENTS.setName("Transform_Statement")
 
 # parse_point = transforms.ignore(PU.COMMENT)
 parse_point = transforms

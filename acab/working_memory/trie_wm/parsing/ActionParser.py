@@ -3,6 +3,7 @@ import logging as root_logger
 import pyparsing as pp
 from acab.abstract import action as action
 from acab.abstract.parsing import util as PU
+from acab.abstract.sentence import Sentence
 from acab.working_memory.trie_wm import util as WMU
 
 from .FactParser import PARAM_SEN, VALBIND, BASIC_SEN, PARAM_SEN
@@ -18,13 +19,12 @@ def build_component(toks):
     if WMU.ACTION_VAL_S in toks:
         action_vals = toks[WMU.ACTION_VAL_S][:]
 
-    return action.ActionComponent(toks[WMU.OPERATOR_S],
-                                  action_vals)
+    return action.ActionComponent(toks[WMU.OPERATOR_S][0], action_vals)
 
 def build_action(toks):
     # TODO remove hardcoded default
     clauses = [x if isinstance(x, action.ActionComponent)
-               else action.ActionComponent('operator.action.add', [x]) for x in toks]
+               else action.ActionComponent('DEFAULT_ACTION', [x]) for x in toks]
     act = action.Action(clauses)
 
     return (act.type, act)
@@ -33,8 +33,11 @@ def build_action(toks):
 # fact string with the option of binds
 vals = pp.delimitedList(pp.Or([VALBIND, PARAM_SEN]), delim=PU.COMMA)
 
+# TODO: Bslash -> Bslash | λ
+op_path = pp.Or([HOTLOAD_OPERATORS, PU.BSLASH + BASIC_SEN])
+
 # action: [op](values)
-action_component = PU.N(WMU.OPERATOR_S, HOTLOAD_OPERATORS) \
+action_component = PU.N(WMU.OPERATOR_S, op_path) \
     + PU.OPAR + PU.op(PU.N(WMU.ACTION_VAL_S, vals)) + PU.CPAR
 
 # Sentences are asserted by default
@@ -54,6 +57,7 @@ vals.setName("ActionValueList")
 action_component.setName("ActionComponent")
 actions.setName("ActionsContainer")
 action_definition.setName("ActionDefinition")
+HOTLOAD_OPERATORS.setName("HotloadOp")
 
 # parse_point = actions.ignore(PU.COMMENT)
 parse_point = actions
