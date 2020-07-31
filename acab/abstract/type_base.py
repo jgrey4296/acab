@@ -4,7 +4,7 @@ Only Provides automatic *primitives*.
 Manual typing and Product/Sum types are implemented
 in the separate typing module.
 """
-from acab.util import TYPE_FMT_S
+from acab import util
 from acab.abstract.printing import util as PrU
 
 class _Bootstrap_Value:
@@ -90,17 +90,23 @@ class TypeInstance:
         return hash(str(self.path))
 
     def __eq__(self, other):
-        # TODO: match inheritance
-        if not other:
+        """
+        Two Type Instances are equal if have the same path,
+        and if they have matching parameters
+        """
+        if not (other or isinstance(other, TypeInstance)):
             return False
-        if not (isinstance(other, TypeInstance)):
-            return False
+
         path_match = self._path == other._path
         args_match = all([a == b for a, b in zip(self.vars, other.vars)])
         return path_match and args_match
 
     def __lt__(self, other):
-        """ Operator to form a partial order over all types """
+        """
+        Operator to form a partial order over all types
+        ATOM is TOP
+        TODO BOTTOM
+        """
         assert(isinstance(other, TypeInstance))
         if self == ATOM:
             return True
@@ -113,6 +119,7 @@ class TypeInstance:
 
     def __repr__(self):
         return "(TypeInstance {})".format(str(self))
+
 
     @property
     def path(self):
@@ -151,15 +158,15 @@ class TypeInstance:
             else:
                 new_args.append(x)
 
-        # TODO: copy the path
         return TypeInstance(self.path, params=new_args)
 
 
     def pprint(self, opts=None):
+        # TODO: handle type parameters
         if self._type_alias is not None:
-            return TYPE_FMT_S.format(self._type_alias)
+            return util.TYPE_FMT_S.format(self._type_alias)
         else:
-            return TYPE_FMT_S.format(self.path.pprint(opts))
+            return util.TYPE_FMT_S.format(self.path.pprint(opts))
 
 
 # Construct the primitive types
@@ -174,7 +181,7 @@ OPERATOR  = TypeInstance(path=["operator"], primitive=True)
 COMPONENT = TypeInstance(path=["component"], primitive=True)
 CONTAINER = TypeInstance(path=["container"], primitive=True)
 
-QUERY     = TypeInstance(path=["query"], primitive=True)
-TRANSFORM = TypeInstance(path=["transform"], primitive=True)
-ACTION    = TypeInstance(path=["action"], primitive=True)
-RULE      = TypeInstance(path=["rule"], type_alias_str="ρ", primitive=True)
+QUERY     = TypeInstance(path=["query"], type_alias_str=util.QUERY_HEAD_S, primitive=True)
+TRANSFORM = TypeInstance(path=["transform"], type_alias_str=util.TRANSFORM_HEAD_S, primitive=True)
+ACTION    = TypeInstance(path=["action"], type_alias_str=util.ACTION_HEAD_S, primitive=True)
+RULE      = TypeInstance(path=["rule"], type_alias_str=util.RULE_HEAD_S, primitive=True)
