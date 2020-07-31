@@ -84,6 +84,7 @@ END             = s(pp.Literal(util.END_S))
 COLLAPSE_CONTEXT = s(pp.Literal(util.CTX_COLLAPSE_S))
 
 # Basic Parsers
+# TODO: rename to ATOM
 NAME        = pp.Word(util.WORD_COMPONENT_S)
 NAME.setParseAction(lambda t: (TB.ATOM, t[0]))
 
@@ -92,7 +93,7 @@ STRING      = pp.dblQuotedString
 STRING.setParseAction(pp.removeQuotes)
 STRING.addParseAction(lambda toks: (TB.STRING, toks[0]))
 
-# TODO: add re.RegexFlag 's to parser
+# TODO: add re.RegexFlag 's to parser: g and i
 REGEX       = pp.Regex(r'/.+?/')
 REGEX.setParseAction(lambda t: (TB.REGEX, t[0][1:-1]))
 
