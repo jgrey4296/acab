@@ -1,5 +1,4 @@
 """
-
 A Transform operator for within a rule:
 
 match $x            -> $y:
@@ -36,9 +35,11 @@ HOTLOAD_QUERY = pp.Forward()
 MATCH_KW = PU.s(pp.Keyword("match"))
 
 # Parser
+# TODO: catch module alias (eg: λPM.match $x -> ...)?
 head = MATCH_KW + HOTLOAD_VAR + PU.ARROW + HOTLOAD_VAR + PU.COLON + PU.s(pp.lineEnd)
 
 pattern = HOTLOAD_QUERY
+# TODO: make result a sentence that will place a value in the head's var
 match_line = pattern + PU.ARROW + HOTLOAD_VALBIND
 
 pattern_match = head + pp.delimitedList(match_line, delim=pp.lineEnd) + PU.END
