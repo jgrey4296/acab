@@ -106,5 +106,8 @@ class FactNode(AcabNode):
     def _unify(self, other):
         """ Test two tries to see if they can match with substitutions """
         # TODO
+        # do as dfs loop, matching vars / eq nodes,
+        # breaking on node missmatch or child missing
+
         # { bindNode : [ options ] }
         raise NotImplementedError()

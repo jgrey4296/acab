@@ -14,7 +14,7 @@ class TrieRule(Rule):
                          action=action,
                          transform=transform)
 
-    def to_node_lists(self):
+    def to_components(self):
         """ Convert a rule to a list of node lists  """
         # TODO
         base_name = None
