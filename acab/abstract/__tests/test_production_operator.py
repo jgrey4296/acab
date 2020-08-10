@@ -3,6 +3,7 @@ from os.path import splitext, split
 import unittest
 import logging
 from acab.abstract import production_operator as PO
+from acab.abstract.sentence import Sentence
 from acab.abstract.value import AcabValue, AcabStatement
 
 
@@ -36,7 +37,7 @@ class ProductionOperatorTests(unittest.TestCase):
 
 
     def test_component_init(self):
-        val = PO.ProductionComponent("testop", [])
+        val = PO.ProductionComponent(Sentence.build(["testop"]), [])
         self.assertIsInstance(val, PO.ProductionComponent)
         self.assertIsInstance(val, AcabValue)
 
@@ -45,8 +46,8 @@ class ProductionOperatorTests(unittest.TestCase):
         pass
 
     def test_component_op(self):
-        val = PO.ProductionComponent("testop", [])
-        self.assertEqual(val.op, "testop")
+        val = PO.ProductionComponent(Sentence.build(["testop"]), [])
+        self.assertEqual(val.op, Sentence.build(["testop"]))
 
     @unittest.skip("TODO")
     def test_component_var_set(self):
@@ -54,7 +55,7 @@ class ProductionOperatorTests(unittest.TestCase):
 
 
     def test_apply_parameters(self):
-        val = PO.ProductionComponent("testop", [])
+        val = PO.ProductionComponent(Sentence.build(["testop"]), [])
         self.assertEqual(len(val._params), 0)
         val.apply_params(["a","test"])
         self.assertEqual(len(val._params), 2)

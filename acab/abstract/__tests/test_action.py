@@ -25,13 +25,13 @@ class ActionTests(unittest.TestCase):
     #----------
     #use testcase snippets
     def test_construction(self):
-        action = ActionComponent("testOp", [])
+        action = ActionComponent(Sentence.build(["testOp"]), [])
         self.assertIsInstance(action, ActionComponent)
 
     def test_var_set(self):
         param = PV("test", data={util.BIND_S: True})
         param_sen = Sentence([param])
-        action = ActionComponent("testOp", [param_sen])
+        action = ActionComponent(Sentence.build(["testOp"]), [param_sen])
         var_set = action.var_set
         self.assertTrue(param in var_set['in'])
 

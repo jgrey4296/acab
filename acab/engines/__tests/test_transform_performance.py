@@ -7,20 +7,25 @@ import pyparsing as pp
 import unittest
 import logging
 import acab
+
 from acab.abstract.contexts import Contexts
+from acab.abstract.sentence import Sentence
 from acab.engines.trie_engine import TrieEngine
 from acab.working_memory.trie_wm.parsing import TransformParser as TP
 from acab.working_memory.trie_wm.parsing import FactParser as FP
 from acab.modules.values import numbers as NS
 from acab.abstract.value import AcabValue as PV
 
+def S(*words):
+    return Sentence.build(words)
+
 class TransformTests(unittest.TestCase):
 
     def setUp(self):
         self.e = TrieEngine(modules=["acab.modules.values.numbers",
                                      "acab.modules.operators.standard_operators"])
-        self.e.alias_module("acab.modules.values.numbers", "N")
-        self.e.alias_module("acab.modules.operators.standard_operators", "S")
+        self.e.alias_module(S("acab", "modules", "values", "numbers"), S("N"))
+        self.e.alias_module(S("acab", "modules", "operators"), S("S"))
         self.e.build_DSL()
 
     def tearDown(self):
