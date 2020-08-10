@@ -199,7 +199,7 @@ def print_operator(operator, opts):
     """
     # TODO fix this
     op_fix = operator._op_position
-    op_str = "\\{}".format(operator.op)
+    op_str = "{}{}".format(util.FUNC_S, pprint(operator.op))
 
     join_str = opts['join']
     if not join_str:
@@ -226,8 +226,8 @@ def print_operator_wrap(operator, opts):
     if not join_str:
         join_str = ", "
 
-    the_params = [x.pprint() for x in operator._params]
-    val = "{}({})".format(operator.op, join_str.join(the_params))
+    the_params = [x.pprint(opts) for x in operator._params]
+    val = "{}{}({})".format(util.FUNC_S, pprint(operator.op, opts), join_str.join(the_params))
 
     return val
 
@@ -322,7 +322,7 @@ def _wrap_end(value, newline=False):
     if newline:
         return "{}\n{}\n".format(value, util.END_S)
     else:
-        return "{} {}\n".format(value, util.END_S)
+        return "{}{}\n".format(value, util.END_S)
 
 def _wrap_statement_type(val, type_str):
     return "{} ({})\n".format(val, type_str)
