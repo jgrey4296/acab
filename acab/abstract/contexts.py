@@ -83,6 +83,10 @@ class Contexts:
         return bool(self._bind_groups)
 
 
+    @property
+    def nodes(self):
+        return self._nodes
+
     def append(self, *data, fail_dict=None):
         """
         Add pairs of (bind_dict, node) to the context
@@ -101,7 +105,6 @@ class Contexts:
 
             to_fail = set(fail_dict.keys()).difference(successes)
             self.fail(items=[fail_dict[x] for x in to_fail])
-
 
     def fail(self, item=None, items=None):
         """
