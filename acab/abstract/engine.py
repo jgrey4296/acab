@@ -1,19 +1,26 @@
 """
 EngineBase: The Core Interface and implementation independent code for the production systems
 
-Engine's are the main programming interface.
+Engine's are the main programming dsl_fragments.
 You create one with a working memory, load some modules,
 and can then parse and run an agent DSL pipeline.
 """
 import logging as root_logger
 from os.path import exists, split, expanduser, abspath
+from importlib import import_module
 from acab import util
+from acab.error.acab_import_exception import AcabImportException
 
+from .value import AcabValue
+from .sentence import Sentence
+from .production_operator import ProductionOperator
+from .dsl_fragment import DSL_Fragment
 from . import action
 from .agenda import Agenda
 from .rule import Rule
 from .working_memory import WorkingMemory
 from .production_operator import ProductionContainer, ProductionOperator
+
 
 
 logging = root_logger.getLogger(__name__)
@@ -25,20 +32,30 @@ class Engine:
     def __init__(self, wm_constructor, modules=None, path=None, init=None):
         assert(callable(wm_constructor))
         self.__kb_constructor = wm_constructor
+
         self._working_memory = wm_constructor(init)
+        # modules
+        self._loaded_modules = set()
+        self._loaded_DSL_fragments = {}
+        # TODO: initialise with base import operators
+        self._operators = wm_constructor()
+
         # to be updated with printed representations
         # of the kb state after each action
         self._prior_states = []
         # named recall states of past kb states
         self._recall_states = {}
-        # modules
-        self._loaded_modules = {}
-        # cached bindings
+                # cached bindings
         self._cached_bindings = []
+
+        # TODO use these to enable breakpoint context:
+        self._current_rule = None
+        self._current_query = None
+        self._current_transform = None
+        self._current_action = None
 
         # initialise
         if modules is not None:
-            ProductionOperator.clear_registrations()
             self.load_modules(*modules)
 
         if path is None:
@@ -50,24 +67,74 @@ class Engine:
             self.load_file(path)
 
 
-    def __len__(self):
-        raise NotImplementedError()
-
     # Initialisation:
     def load_modules(self, *modules):
         """ Given ModuleInterface objects,
         store them then tell the working memory to load them
+        return a list of dictionaries
         """
-        self._loaded_modules.update({x.__class__.__name__ : x for x in modules})
-        self._working_memory.add_modules(self._loaded_modules.values())
+        return [self.load_module_values(x) for x in modules]
 
-    def reload_all_modules(self, clear_bootstrap=False):
-        """ Reload all modules, optionally clearing the constructed
-        parser fragment trie first """
-        if clear_bootstrap:
-            ProductionOperator.clear_registrations()
-            self._working_memory.clear_bootstrap()
-        self._working_memory.add_modules(self._loaded_modules.values())
+    def load_module_values(self, module_sen):
+        """
+        Load a module, extract operators and dsl fragments from it,
+        put the operators into the working memory of operators,
+        register the dsl fragments for later use
+
+        Returns a working_memory query result of the module
+        """
+        # Prepare path
+        mod_str = module_sen
+        if not isinstance(mod_str, str):
+            mod_str = module_sen.pprint(join_seq=".")
+
+        # Return early if already loaded
+        if module_sen in self._loaded_modules:
+            logging.info("Module already loaded: {}".format(module_sen))
+            # TODO: extract node from return context
+            return self._operators.query(module_sen)
+
+        # Load
+        try:
+            the_module = import_module(mod_str)
+        except ModuleNotFoundError as e:
+            raise AcabImportException(module_sen) from None
+
+        # Extract
+        operator_sentences, dsl_fragments = self.extract_from_module(the_module)
+
+        # Register DSL Fragments
+        self._loaded_DSL_fragments[module_sen] = dsl_fragments
+        self.register_ops(operator_sentences)
+
+        self._loaded_modules.add(module_sen)
+        # TODO: extract node from return context
+        if isinstance(module_sen, str):
+            return self._operators.query(module_sen + "?")
+        else:
+            return self._operators.query(module_sen)
+
+    def build_DSL(self):
+        self._working_memory.clear_bootstrap()
+        self._working_memory.construct_parsers_from_fragments([y for x in self._loaded_DSL_fragments.values() for y in x])
+
+
+    def register_ops(self, sentences):
+        """
+        Assert sentences into the operator working memory
+        """
+        raise NotImplementedError()
+
+    def alias_module(self, mod_name, alias_name):
+        """
+        Assert an alias of a module into the operator wm
+        """
+        raise NotImplementedError()
+
+    def get_operator(self, op_name):
+        """ Get an operator from the operator wm """
+        raise NotImplementedError()
+
 
     def load_file(self, filename):
         """ Load a file spec for the facts / rules / layers for this engine """
@@ -118,6 +185,7 @@ class Engine:
     def get_listener_threshold(self):
         return self._working_memory._listener_threshold
 
+
     # Utility
     def __call__(self, thing, bindings=None):
         """ Where a thing could be an:
@@ -135,13 +203,13 @@ class Engine:
         else:
             assert(isinstance(thing, ProductionContainer))
             logging.info("Running thing: {}".format(thing))
+            # TODO: activate TagEnv's here?
             result = thing(ctxs=bindings, engine=self)
 
         if not bool(result):
             logging.info("Thing Failed")
 
         return result
-
 
     def to_sentences(self):
         """
@@ -151,3 +219,10 @@ class Engine:
         and all paths with non-leaf statements convert to simple formats
         """
         return self._working_memory.to_sentences()
+
+    def extract_from_module(self, module):
+        raise NotImplementedError()
+
+    # Deprecated
+    def reload_all_modules(self):
+        raise DeprecationWarning("Use build_DSL")
