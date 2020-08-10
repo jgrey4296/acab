@@ -57,7 +57,9 @@ from acab.abstract.action import ActionOp
 from acab.abstract import type_base as TB
 
 from . import type_exceptions as te
-from . import util as TU
+# MUST BE FULL PATH otherwise type instances are built twice for some reason
+# from . import util as TU
+from acab.modules.analysis.typing import util as TU
 
 from .nodes.operator_def_node import OperatorDefTrieNode
 from .nodes.type_assignment_node import TypeAssignmentTrieNode
