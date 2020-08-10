@@ -20,7 +20,7 @@ import logging as root_logger
 from fractions import Fraction
 
 from .production_operator import ProductionOperator
-from .module_interface import ModuleInterface
+from .dsl_fragment import DSL_Fragment
 from .bootstrap_parser import BootstrapParser
 
 logging = root_logger.getLogger(__name__)
@@ -36,7 +36,6 @@ class WorkingMemory:
 
         # Use a Bootstrap DSL for specification
         self._bootstrap_parser = BootstrapParser()
-        self.assert_parsers(self._bootstrap_parser)
         # Listeners are treated as a query *bag*
         self._listeners = set()
         self._listener_threshold = Fraction(1,2)
@@ -48,21 +47,6 @@ class WorkingMemory:
 
     def __eq__(self, other):
         raise NotImplementedError()
-
-
-    def add_modules(self, mods):
-        """ Add types into the parser """
-        assert(all([isinstance(x, ModuleInterface) for x in mods]))
-        #Populate the trie
-        dummy = [x.assert_parsers(self._bootstrap_parser) for x in mods]
-
-        # Now query and populate the modules
-        dummy = [x.query_parsers(self._bootstrap_parser) for x in mods]
-
-        self.query_parsers(self._bootstrap_parser)
-
-    def clear_bootstrap(self):
-        self._bootstrap_parser = BootstrapParser()
 
 
     def clear_listeners(self):
@@ -90,19 +74,50 @@ class WorkingMemory:
     def to_sentences(self):
         return NotImplementedError()
 
+
+    def construct_parsers_from_fragments(self, fragments):
+        """ Assemble parsers from the fragments of the wm and loaded modules """
+        assert(all([isinstance(x, DSL_Fragment) for x in fragments]))
+        self.assert_parsers(self._bootstrap_parser)
+        #Populate the trie
+        dummy = [x.assert_parsers(self._bootstrap_parser) for x in fragments]
+
+        # Now query and populate the modules
+        dummy = [x.query_parsers(self._bootstrap_parser) for x in fragments]
+
+        self.query_parsers(self._bootstrap_parser)
+
+    def clear_bootstrap(self):
+        self._bootstrap_parser = BootstrapParser()
+
+
     # Methods to implement:
-    def add(self, data):
+    def assert_parsers(self, parser_trie):
+        """ Assert base parser fragments of the wm's DSL """
         raise NotImplementedError()
 
-    def retract(self, data):
-        raise DeprecationWarning()
+    def query_parsers(self, parser_trie):
+        """ Retrieve parser fragments to finalize the wm's DSL """
+        raise NotImplementedError()
+
+
+    def add(self, data, leaf=None):
+        """
+        Add a sentence to the working memory.
+        If leaf is specified, it is an AcabValue which will be attached
+        as the leaf, with the sentence's name.
+        eg: add(a.test.sentence.x, leaf=some_value) -> a.test.sentence.x(::some_value)
+        """
+        raise NotImplementedError()
 
     def query(self, ctxs=None, engine=None):
         raise NotImplementedError()
 
 
-    def assert_parsers(self, parser_trie):
-        raise NotImplementedError()
+    # Deprecated
+    def retract(self, data):
+        raise DeprecationWarning()
 
-    def query_parsers(self, parser_trie):
-        raise NotImplementedError()
+    def add_modules(self, mods):
+        raise DeprecationWarning("add_modules is deprecated use construct_parsers_from_fragments")
+
