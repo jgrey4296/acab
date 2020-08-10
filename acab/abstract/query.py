@@ -51,14 +51,15 @@ class QueryComponent(PO.ProductionComponent):
         super(QueryComponent, self).__init__(op_str,
                                              param,
                                              data=data)
-        self.verify()
 
     def __call__(self, node, data=None, engine=None):
-        """ Run a comparison on a node """
-        self.verify()
-        # TODO: Get op from engine
-        op = engine.get_operator(self._value)
-        # op = self._value
+        """ Run a comparison on a node
+        A Specialisation of ProductionComponent.__call__,
+        because the comparison has the implicit first param of the node's value
+        """
+        # Get op from engine
+        op = engine.get_operator(self.op)
+        # AcabNode -> AcabValue -> Actual Value
         node_value = node.value.value
         params = self.get_params(data)
 
