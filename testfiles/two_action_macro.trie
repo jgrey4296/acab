@@ -4,16 +4,16 @@ a.c.second
 α::first.action:
   | $x, $y | 
 
-  ActionAdd(a.c.$x)
-  ActionAdd(a.b.$y)
-  ActionAdd(~a.c.$y)
-  ActionAdd(~a.b.$x)
+  \S.ActionAdd(a.c.$x)
+  \S.ActionAdd(a.b.$y)
+  \S.ActionAdd(~a.c.$y)
+  \S.ActionAdd(~a.b.$x)
 
 end
 
 α::second.action:
-  ActionAdd(blah)
-  ActionAdd(bloo)
+  \S.ActionAdd(blah)
+  \S.ActionAdd(bloo)
 
 end
 
@@ -21,8 +21,8 @@ end
   a.b.$a?
   a.c.$b?
 
-  first.action($a, $b)
-  second.action()
+  \first.action($a, $b)
+  \second.action()
 
 end
 

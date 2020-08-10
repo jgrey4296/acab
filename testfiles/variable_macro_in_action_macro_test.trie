@@ -2,7 +2,7 @@ a.b.c
 
 $x <- a.b.blah
 α::first.action:
-  ActionAdd($x)
+  \S.ActionAdd($x)
 
 end
 
@@ -11,6 +11,6 @@ clear $x
 ρ::an.action.macro.rule:
   a.b.c?
 
-  first.action
+  \S.first.action
 end
 

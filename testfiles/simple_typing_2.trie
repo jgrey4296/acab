@@ -9,5 +9,5 @@ an.instance(::types.structure)
 an.instance.a(::types.other)
 
 a.typing.layer: (::Layer)
-    operator.action.typecheck()
+    \S.TypeCheck()
 end

@@ -12,6 +12,6 @@ a.other!ex
 comment.rule.two: (::ρ)
   a.b.c?
 
-  operator.action.add(d.e.g)
+  \S.ActionAdd(d.e.g)
 
 end

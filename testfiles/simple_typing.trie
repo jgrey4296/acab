@@ -9,7 +9,7 @@ a.string."test string {x}"
 a.agenda.test: (::Agenda)
     | $proposals |
 
-    operator.action.agenda_return($proposals)
+    \S.AgendaReturn($proposals)
 end
 
 a.rule.test: (::ρ)
@@ -19,21 +19,21 @@ a.rule.test: (::ρ)
     \operator.transform.n_ary.format $y -> $z
 
     a.b.q
-    operator.action.print("Testing")
-    operator.action.print($z)
+    \S.ActionPrint("Testing")
+    \S.ActionPrint($z)
 end
 
 a.layer.test: (::Layer)
     a.agenda.$agenda?
     a.rule.$rules(ctx.collapse)?
 
-    \operator.transform.n_ary.run_rules $rules -> $props
-    \operator.transform.n_ary.run_agenda $agenda $props -> $results
+    \S.LayerRunRules $rules -> $props
+    \S.LayerRunAgenda $agenda $props -> $results
 
-    operator.action.layer_perform($results)
+    \S.LayerPerform ($results)
 end
 
 
 a.typing.layer: (::Layer)
-    operator.action.typecheck()
+    \S.TypeCheck()
 end

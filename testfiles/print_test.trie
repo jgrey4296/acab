@@ -9,8 +9,8 @@ a.d!c
   string.$a?
   a.$x!$y?
 
-  FormatOp $a -> $b
+  \S.FormatOp $a -> $b
     
-  ActionPrint($b)
+  \S.ActionPrint($b)
 
 end

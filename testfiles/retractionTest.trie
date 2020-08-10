@@ -7,6 +7,6 @@ a.c!d
 retraction.rule: (::ρ)
   a.b.c?
     
-  operator.action.add(~a.b.c)
+  \S.ActionAdd (~a.b.c)
 end
 

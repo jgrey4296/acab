@@ -6,6 +6,6 @@ a.b."a test string"
 a.string.rule: (::ρ)
   a.b."a test string"?
     
-  operator.action.add(a.b.e)
+  \S.ActionAdd(a.b.e)
 end
 

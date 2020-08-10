@@ -3,7 +3,7 @@ a.b.c
 example.one.rule: (::ρ)
 	a.b.c?
 
-  operator.action.add(d.e.f)
+  \S.ActionAdd(d.e.f)
 end
 
 

@@ -3,14 +3,14 @@ a.b.c
 α::first.action:
   | $x | 
 
-  ActionAdd(a.b.$x)
+  \S.ActionAdd(a.b.$x)
   
 end
 
 ρ::a.rule:
   a.b.c?
 
-  first.action("this is a test")    
+  \S.first.action("this is a test")    
 
 end
 

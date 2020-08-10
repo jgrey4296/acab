@@ -14,10 +14,10 @@ a.c.b
     //Middle transform comment
     $x + 30
     //Action comment
-    ActionAdd(a.d.c)
+    \S.ActionAdd(a.d.c)
     //Middle Action comment
-    ActionAdd(a.d.d)
-    ActionAdd(a.b!$z)
+    \S.ActionAdd(a.d.d)
+    \S.ActionAdd(a.b!$z)
 
 end
 //End comment

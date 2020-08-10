@@ -6,7 +6,7 @@ a.b.c
     
   $x + 20 -> $y
     
-  ActionAdd(d.e.f)
+  \S.ActionAdd(d.e.f)
 end
 
 

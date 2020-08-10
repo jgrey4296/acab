@@ -8,7 +8,7 @@ multi.clause.rule.test: (::ρ)
   a.b.c?
   a.c!d?
     
-  operator.action.add(a.b.e)
+  \S.ActionAdd(a.b.e)
 
 end
 

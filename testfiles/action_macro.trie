@@ -4,17 +4,17 @@ a.c.second
 α::an.action.x:
   | $x, $y | 
 
-    ActionAdd(a.c.$x)
-    ActionAdd(~a.c.$y)
-    ActionAdd(a.b.$y)
-    ActionAdd(~a.b.$x)
+    \S.ActionAdd(a.c.$x)
+    \S.ActionAdd(~a.c.$y)
+    \S.ActionAdd(a.b.$y)
+    \S.ActionAdd(~a.b.$x)
 end
 
 ρ::an.action.macro.rule:
     a.b.$a?
     a.c.$b?
 
-    an.action.x($a, $b)
+    \an.action.x($a, $b)
 
 end
 
