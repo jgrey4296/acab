@@ -34,8 +34,8 @@ class AcabValue:
                  params=None, tags=None,
                  name=None, _type=None):
 
-        value_type_tuple = tuple(AcabValue.value_types)
-        assert (value is None or isinstance(value, value_type_tuple)), type(value)
+        value_type_tuple = tuple([AcabValue] + list(AcabValue.value_types))
+        assert (value is None or isinstance(value, value_type_tuple)), breakpoint()
 
         self._uuid = uuid1()
         self._name = None
@@ -121,6 +121,10 @@ class AcabValue:
             out_set.add(self)
 
         return {'in': in_set, 'out': out_set}
+
+    @property
+    def tags(self):
+        return self._tags
 
 
     def copy(self):
