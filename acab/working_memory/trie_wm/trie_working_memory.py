@@ -48,25 +48,29 @@ class TrieWM(WorkingMemory):
             raise AcabOperatorException("Incorrect Eq arg: {}".format(type(other)))
 
 
-    def add(self, data):
+    def add(self, data, leaf=None):
         """ Assert multiple facts from a single string """
+        assertions = None
         if isinstance(data, str):
             assertions = TotalP.parseString(data)
-            for x in assertions:
-                if util.NEGATION_S in x._data and x._data[util.NEGATION_S]:
-                    self._retract_sentence(x)
-                else:
-                    self._assert_sentence(x)
         elif isinstance(data, Sentence):
-            if util.NEGATION_S in data._data and data._data[util.NEGATION_S]:
-                self._retract_sentence(data)
-            else:
-                self._assert_sentence(data)
+            assertions = [data]
         else:
             raise AcabParseException("Unrecognised addition target: {}".format(type(data)))
 
+        assert(isinstance(assertions, list))
+        assert(all([isinstance(x, Sentence) for x in assertions]))
+
+        for x in assertions:
+            if util.NEGATION_S in x._data and x._data[util.NEGATION_S]:
+                self._retract_sentence(x)
+            else:
+                if len(assertions) == 1 and leaf:
+                    x = x.attach_statement(leaf)
+                self._assert_sentence(x)
+
     def query(self, query, ctxs=None, engine=None):
-        """ Query a string """
+        """ Query a string, return a Contexts """
         if isinstance(query, str):
             query = QP.parseString(query)
         elif isinstance(query, Sentence):
