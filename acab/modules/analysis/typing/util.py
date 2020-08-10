@@ -28,7 +28,8 @@ SUM_DEFINITION = TypeInstance(path=[SUM_DEF_S], type_alias_str=util.SUM_HEAD_S, 
 def has_equivalent_vars_pred(node):
     """ A Predicate to use with Trie.get_nodes
     Finds nodes with multiple vars as children that can be merged """
-    if node.name == util.ROOT_S:
+    if node.name is util.ROOT_S:
         return False
     var_children = [x for x in node._children.values() if x.is_var]
+
     return len(var_children) > 1
