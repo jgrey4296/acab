@@ -72,7 +72,7 @@ AGENDA_HEAD    = s(pp.Keyword(util.AGENDA_HEAD_S))
 LAYER_HEAD     = s(pp.Keyword(util.LAYER_HEAD_S))
 PIPE_HEAD      = s(pp.Keyword(util.PIPE_HEAD_S))
 
-
+OP_PATH_PREFIX = s(pp.Or([pp.Literal("\\"), pp.Literal(util.FUNC_S)]))
 
 VAR_SYMBOL     = s(pp.Literal(util.VAR_SYMBOL_S))
 AT_BIND_SYMBOL = s(pp.Literal(util.AT_VAR_SYMBOL_S))
@@ -185,6 +185,10 @@ def STATEMENT_CONSTRUCTOR(head_p,
     return parser
 
 
+def OP_PATH_C(sen):
+    op_path = OP_PATH_PREFIX + sen
+    op_path.setName("Operator_Path")
+    return op_path
 
 # NAMING
 file_cruft.setName("FileCruft")
