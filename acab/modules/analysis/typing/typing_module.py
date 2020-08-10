@@ -3,7 +3,6 @@ from acab.abstract.printing import util as PrU
 from .type_checker import TypeChecker
 from .parsing import TypeDefParser as TDP
 from .parsing import TypeParser as TP
-from . import util as TU
 
 
 class TypingSpec(DSL_Fragment):
