@@ -124,13 +124,14 @@ class Sentence(AcabValue):
         Name the statement to the name of the former leaf
 
         """
-        assert(isinstance(value, AcabStatement))
+        assert(isinstance(value, AcabValue))
         last = self.words[-1]
         value_copy = value.copy()
         sen_copy = self.copy()
 
         value_copy._name = last.name
-        value_copy.set_path(self)
+        if isinstance(value_copy, AcabStatement):
+            value_copy.set_path(self)
         combined_data = last._data.copy()
         combined_data.update(value._data)
         value_copy._data.update(combined_data)
@@ -160,6 +161,7 @@ class Sentence(AcabValue):
         [x.verify() for x in self.words]
 
         return self
+
 
 
 PrU.register_class(Sentence, PrU.print_sequence)
