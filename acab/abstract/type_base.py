@@ -49,6 +49,10 @@ class _Bootstrap_Sentence:
 
     def __str__(self):
         return self.pprint()
+
+    def __repr__(self):
+        return "BootstrapSentence({})".format(str(self))
+
     def __getitem__(self, i):
         return self.words.__getitem__(i)
 
@@ -74,6 +78,7 @@ class TypeInstance:
         """ Construct a Type Instance with a _path in the type trie """
         if primitive:
             path = _Bootstrap_Sentence(path)
+            assert(path not in TypeInstance.Primitives)
             TypeInstance.Primitives.append(path)
 
         assert(params is None or all([isinstance(x, (str, TypeInstance)) or hasattr(x, "type") for x in params])), breakpoint()
