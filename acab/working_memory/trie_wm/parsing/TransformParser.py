@@ -1,6 +1,7 @@
 """ Trie-based parser for the transform component of rules """
 import logging as root_logger
 import pyparsing as pp
+from acab.abstract.sentence import Sentence 
 from acab.abstract.transform import TransformComponent
 from acab.abstract.transform import Transform, TransformOp
 from acab.abstract.parsing import util as PU
@@ -18,9 +19,11 @@ def build_transform_component(toks):
         position = len(toks[WMU.LEFT_S])
     params += toks[WMU.RIGHT_S][:]
 
-
+    op = toks[WMU.OPERATOR_S][0]
+    if isinstance(op, str):
+        op = Sentence.build([op])
     rebind = toks[WMU.TARGET_S][0]
-    return TransformComponent(toks[WMU.OPERATOR_S][0],
+    return TransformComponent(op,
                               params, op_pos=position,
                               rebind=rebind)
 
@@ -40,7 +43,7 @@ rebind = PU.ARROW + VALBIND
 # TODO: extend transform to take partial transforms?
 # TODO: convert BLASH + BASIC_SEN to Blash/lambda + basic sen
 # transform: ( bind op val|bind -> bind)
-op_path  = pp.Or([HOTLOAD_TRANS_OP, PU.BSLASH + BASIC_SEN])
+op_path  = pp.Or([HOTLOAD_TRANS_OP, PU.OP_PATH_C(BASIC_SEN)])
 
 transform_core = PU.N(WMU.LEFT_S, pp.ZeroOrMore(VALBIND)) \
     + PU.N(WMU.OPERATOR_S, op_path) \

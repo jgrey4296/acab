@@ -21,7 +21,8 @@ def build_constraint_list(toks):
 
 def build_query_component(toks):
     """ Build a comparison """
-    return (WMU.CONSTRAINT_S, QueryComponent(toks[WMU.OPERATOR_S], param=toks[WMU.VALUE_S]))
+    op = toks[WMU.OPERATOR_S][0]
+    return (WMU.CONSTRAINT_S, QueryComponent(op, param=toks[WMU.VALUE_S]))
 
 def build_clause(toks):
     # detect negation and annotate the clause with it
@@ -50,7 +51,7 @@ HOTLOAD_QUERY_OP = pp.Forward()
 HOTLOAD_QUERY_ANNOTATIONS = pp.Forward()
 
 # TODO: blash -> blash | λ
-op_path = pp.Or([HOTLOAD_QUERY_OP, PU.BSLASH + BASIC_SEN])
+op_path = pp.Or([HOTLOAD_QUERY_OP, PU.OP_PATH_C(BASIC_SEN)])
 
 QUERY_OP_Internal = PU.N(WMU.OPERATOR_S, op_path) \
     + PU.N(WMU.VALUE_S, PARAM_CORE(end=True))

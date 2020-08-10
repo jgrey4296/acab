@@ -18,13 +18,13 @@ def build_component(toks):
     action_vals = []
     if WMU.ACTION_VAL_S in toks:
         action_vals = toks[WMU.ACTION_VAL_S][:]
-
-    return action.ActionComponent(toks[WMU.OPERATOR_S][0], action_vals)
+    op = toks[WMU.OPERATOR_S][0]
+    return action.ActionComponent(op, action_vals)
 
 def build_action(toks):
     # TODO remove hardcoded default
     clauses = [x if isinstance(x, action.ActionComponent)
-               else action.ActionComponent('DEFAULT_ACTION', [x]) for x in toks]
+               else action.ActionComponent(Sentence.build(['DEFAULT_ACTION']), [x]) for x in toks]
     act = action.Action(clauses)
 
     return (act.type, act)
@@ -33,12 +33,11 @@ def build_action(toks):
 # fact string with the option of binds
 vals = pp.delimitedList(pp.Or([VALBIND, PARAM_SEN]), delim=PU.COMMA)
 
-# TODO: Bslash -> Bslash | λ
-op_path = pp.Or([HOTLOAD_OPERATORS, PU.BSLASH + BASIC_SEN])
+op_path = pp.Or([HOTLOAD_OPERATORS, PU.OP_PATH_C(BASIC_SEN)])
 
 # action: [op](values)
 action_component = PU.N(WMU.OPERATOR_S, op_path) \
-    + PU.OPAR + PU.op(PU.N(WMU.ACTION_VAL_S, vals)) + PU.CPAR
+    + PU.op(PU.OPAR + PU.N(WMU.ACTION_VAL_S, vals) + PU.CPAR)
 
 # Sentences are asserted by default
 # TODO: block param_sen from beginning with "end"
