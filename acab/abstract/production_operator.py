@@ -14,6 +14,7 @@ from acab.util import OPERATOR_S, STATEMENT_S
 from acab import util
 from acab.abstract.printing import util as PrU
 from acab.abstract.sentence import Sentence
+from acab.error.acab_operator_exception import AcabOperatorException
 
 from .value import AcabValue, AcabStatement
 from . import type_base as TB
@@ -42,26 +43,24 @@ class ProductionComponent(AcabValue):
         if data is None:
             data = {}
 
+        assert(isinstance(op_str, (Sentence, ProductionOperator)))
         super().__init__(op_str, data=data, name=name, _type=TB.COMPONENT)
         # Parameters of the operation
         self._params = []
         # The value name of the result
         self._rebind = rebind
-        # The Position the operator takes: eg: 0: + 1 2, 1: 1 + 2
+        # TODO The Position the operator takes: eg: 0: + 1 2, 1: 1 + 2
         self._op_position = op_pos
 
         self.apply_params(params)
-        self.verify()
 
     def __call__(self, ctx, engine):
         """
         Run the operation, on the passed in context and engine
         """
-        # lookup op
-        self.verify()
-        # retrieve op func from active TagEnvs
-        op_func = engine.get_operator(self._value)
         assert(x.name in ctx for x in self._vars)
+        # retrieve op func from active TagEnvs
+        op_func = engine.get_operator(self.op)
         # get values from data
         values = self.get_params(ctx)
         # perform action op with data
@@ -119,19 +118,25 @@ class ProductionComponent(AcabValue):
     def to_local_sentences(self, target=None):
         raise NotImplementedError()
 
-    def verify(self, op_constraint=None):
-        """ Complains if the operator is not a defined Operator Enum """
-        op_dict = {}
-        if op_constraint is not None:
-            if isinstance(op_constraint, list):
-                [op_dict.update(x.op_dict) for x in op_constraint]
-            elif isinstance(op_constraint, dict):
-                op_dict.update(op_constraint)
-            elif isinstance(op_constraint, type):
-                op_dict.update(op_constraint.op_dict)
+    def verify(self, ctx=None, engine=None):
+        """ Verify the Component, retrieving the operator from the engine
+        if necessary """
+        # $op -> retrieve from ctx
+        op = self.op
+        if len(op) == 1 and op[0].is_var and ctx is not None:
+            op = ctx[op.value]
 
-        if bool(op_dict) and self.op not in op_dict:
-            raise AttributeError("Unrecognised operator: {}".format(self.op))
+        if not isinstance(op, ProductionOperator) and engine is not None:
+            op = engine.get_operator(op)
+
+        # TODO: should op's be able to be Components and Containers as well?
+        if not isinstance(op, ProductionOperator) and engine is not None:
+            raise AcabOperatorException(op)
+
+        verified = self.copy()
+        verified._value = op
+
+        return verified
 
 
 class ProductionContainer(AcabStatement):
@@ -188,11 +193,9 @@ class ProductionContainer(AcabStatement):
     def to_local_sentences(self, target=None):
         return [y for x in self.clauses for y in x.to_local_sentences()]
 
-    def verify(self, op_constraint=None):
-        if op_constraint is None:
-            op_constraint = ProductionOperator
+    def verify(self, ctx=None, engine=None):
         for x in self.clauses:
-            x.verify(op_constraint=op_constraint)
+            x.verify(ctx=ctx, engine=engine)
 
     def pprint_body(self, val):
         return val + PrU.print_container(self)
