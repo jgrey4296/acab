@@ -61,6 +61,7 @@ class AcabValueTests(unittest.TestCase):
 
         self.assertIsInstance(copied[-1], AcabStatement)
 
+    @unittest.skip("Deprecated?")
     def test_attach_statement_fail(self):
         value = AcabValue("test")
         value._tags.add('testval')
