@@ -107,7 +107,7 @@ class Trie:
     def print_trie(self, join_str=None):
         def_op = PrU.default_opts()
         if join_str is not None:
-            def_op['join'] = join_str
+            def_op['seq_join'] = join_str
 
         output = self.to_sentences()
         return "\n".join(sorted([x.pprint(def_op) for x in output]))
@@ -141,6 +141,22 @@ class Trie:
             else:
                 return None
         return current
+
+    def query_with_remainder(self, path):
+        """
+        Query the trie, getting the best leaf along the path
+        eg: For Trie(a.b.c.d.e).query_longest_match(a.b.c.q) -> (c, d.e)
+        """
+        current = self._root
+        queue = [x for x in path]
+        while bool(queue):
+            current = queue.pop(0)
+            logging.debug("Searching {} for: {}".format(str(current), x))
+            if current.has_child(x):
+                current = current.get_child(x)
+            else:
+                return (current, queue)
+        return (current, queue)
 
     def contextual_query(self, clause, contexts=None):
         """ Test a single clause,
@@ -187,13 +203,16 @@ class Trie:
         in all available bind groups, BFS manner """
         assert(not query_word.is_at_var)
         engine = query_context._engine
-        alphas, betas, regexs, annotations = split_constraints(query_word)
+        # TODO: validate on activate context too
+        alphas, betas, regexs, annotations = validate_and_split_constraints(query_word, engine=engine)
         data_set = {x : d for x,d in enumerate(query_context.pairs())}
         pairs  = enumerate(query_context.pairs())
         query_context.clear()
 
+
         potentials = [(i, d[0], passing) for i,d in pairs for passing in retrieve_potentials(query_word, d)]
         # Apply Tests
+        # TODO: test type instance if not ATOM
         passing = [match_regexs(n, regexs, d, i) for i,d,n in potentials
                    if test_alphas(n, alphas, d, engine=engine)
                    and test_betas(n, betas, d, engine=engine)]
@@ -296,12 +315,14 @@ def match_regexs(node, regexs, data, i):
 
     return (i, final_data, node)
 
-def split_constraints(word):
-    """ Split tests into (alphas, betas, regexs) """
+def validate_and_split_constraints(word, ctx=None, engine=None):
+    """ Split tests into (alphas, betas, regexs),
+    Also connect Components to actual operators
+    """
     if CONSTRAINT_S not in word._data:
         return ([], [], [], set())
 
-    comps = [x for x in word._data[CONSTRAINT_S] if isinstance(x, QueryComponent)]
+    comps = [x.verify(ctx=ctx, engine=engine) for x in word._data[CONSTRAINT_S] if isinstance(x, QueryComponent)]
     others = set([x for x in word._data[CONSTRAINT_S] if not isinstance(x, QueryComponent)])
     alphas = []
     betas = []
