@@ -6,7 +6,8 @@ from acab.working_memory.trie_wm import util as KBU
 from acab.working_memory.trie_wm.parsing import RuleParser as RP
 from acab.working_memory.trie_wm.parsing import FactParser as FP
 from acab.working_memory.trie_wm.parsing import ActionParser as AP
-# from acab.modules.operators.action import MODULE as ActMod
+from acab.modules.operators import query as QOP
+import acab.working_memory.trie_wm.parsing.QueryParser as QP
 from acab.abstract.rule import Rule
 from acab.abstract.sentence import Sentence
 from acab.abstract.query import Query
@@ -17,9 +18,10 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         bp = BootstrapParser()
-        # am = ActMod()
-        am.assert_parsers(bp)
-        AP.HOTLOAD_OPERATORS << bp.query("operator.action.*")
+        qmod = QOP.MODULE()
+        qmod.assert_parsers(bp)
+        QP.HOTLOAD_QUERY_OP << bp.query("operator.sugar")
+        QP.HOTLOAD_QUERY_ANNOTATIONS << bp.query("query.annotation.*")
 
     def setUp(self):
             return 1
@@ -77,7 +79,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
         self.assertEqual(len(result[0][-1]._query), 1)
 
     def test_rule_with_actions(self):
-        result = RP.parseString("a.rule.x: (::ρ)\noperator.action.add(a.b.c)\nend")
+        result = RP.parseString("a.rule.x: (::ρ)\nλoperator.action.add(a.b.c)\nend")
         self.assertEqual(len(result), 1)
         self.assertIsInstance(result[0][-1], Rule)
         self.assertIsNone(result[0][-1]._query)
@@ -85,7 +87,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
         self.assertEqual(len(result[0][-1]._action), 1)
 
     def test_multi_action_rule(self):
-        result = RP.parseString("a.rule.x: (::ρ)\noperator.action.add(a.b.c)\noperator.action.add(~a.b.d)\nend")
+        result = RP.parseString("a.rule.x: (::ρ)\nλoperator.action.add(a.b.c)\nλoperator.action.add(~a.b.d)\nend")
         self.assertEqual(len(result[0]), 3)
         self.assertIsInstance(result[0], Sentence)
         self.assertIsInstance(result[0][-1], Rule)
@@ -94,7 +96,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
         self.assertEqual(len(result[0][-1]._action), 2)
 
     def test_multi_action_single_line_rule(self):
-        result = RP.parseString("a.rule.x: (::ρ)\n\noperator.action.add(a.b.c), operator.action.add(~a.b.d)\nend")
+        result = RP.parseString("a.rule.x: (::ρ)\n\nλoperator.action.add(a.b.c), λoperator.action.add(~a.b.d)\nend")
         self.assertEqual(len(result), 1)
         self.assertIsInstance(result[0][-1], Rule)
         self.assertIsNone(result[0][-1]._query)
@@ -109,7 +111,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
                          "AnonRule: (::ρ)\n\ta.b.c?\nend")
 
     def test_rule_tags(self):
-        the_str = 'a.test.rule.x: (::ρ)\n\t#blah, #blee, #bloo\n\n\ta.b.c?\n\n\toperator.action.add(a.b.c)\nend'
+        the_str = 'a.test.rule.x: (::ρ)\n\t#blah, #blee, #bloo\n\n\ta.b.c?\n\n\tλoperator.action.add(a.b.c)\nend'
         result = RP.parseString(the_str)[0]
         self.assertIsInstance(result[-1], Rule)
         self.assertEqual(result.pprint().strip(), the_str)

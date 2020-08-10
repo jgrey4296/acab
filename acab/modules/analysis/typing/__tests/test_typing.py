@@ -27,11 +27,6 @@ def S(*in_string):
 
 class TypingTests(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        bp = BootstrapParser()
-        AP.HOTLOAD_OPERATORS << bp.query("operator.action.*")
-
     def tearDown(self):
 	    return 1
 
@@ -715,7 +710,7 @@ class TypingTests(unittest.TestCase):
         trans_params[1]._data[TU.BIND_S] = True
         rebind = S("z")[0]
         rebind._data[TU.BIND_S] = True
-        transform = TransformComponent("AddOp", trans_params, rebind=rebind)
+        transform = TransformComponent(Sentence.build(["AddOp"]), trans_params, rebind=rebind)
 
         [tc.add_assertion(x) for x in transform.to_local_sentences()]
 

@@ -1,12 +1,16 @@
 import unittest
 import logging
+
 import acab.abstract.trie as T
+from acab.abstract.sentence import Sentence
 from acab.engines.trie_engine import TrieEngine
 from acab.abstract.rule import Rule
 from os.path import join, isfile, exists, isdir
 from os.path import split, splitext, expanduser, abspath
 from os import listdir
 
+def S(*words):
+    return Sentence.build(words)
 
 class Engine_Logic_Tests(unittest.TestCase):
 
@@ -17,6 +21,7 @@ class Engine_Logic_Tests(unittest.TestCase):
 
     def setUp(self):
         self.e = TrieEngine(modules=["acab.modules.operators.standard_operators"])
+        self.e.alias_module(S("acab", "modules", "operators"), S("S"))
 
     def tearDown(self):
         return 1
@@ -24,7 +29,7 @@ class Engine_Logic_Tests(unittest.TestCase):
     #----------
     #use testcase snippets
     def test_simple_logic(self):
-        self.e.add("""a.test.rule: (::ρ)\na.b.c?\n\noperator.action.add(a.b.d)\n\nend""")
+        self.e.add('a.test.rule: (::ρ)\na.b.c?\n\nλS.ActionAdd(a.b.d)\n\nend')
         rule = self.e.query('a.test.$x?')[0]['x']
         self.assertIsInstance(rule, Rule)
         self.e.add("a.b.c")
@@ -131,7 +136,7 @@ class Engine_Logic_Tests(unittest.TestCase):
 
     def test_file_load_multi_transform(self):
         self.e.load_file(self.path("multi_transform_test.trie"))
-        self.assertTrue(self.e.query('a.b!a?, a.c!b1, a.d!c?'))
+        self.assertTrue(self.e.query('a.b!a?, a.c!b?, a.d!c?'))
 
         rule = self.e.query('test.$rule?')[0]['rule']
         proposals = self.e(rule)

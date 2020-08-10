@@ -25,8 +25,8 @@ class ActionTests(unittest.TestCase):
 
     def setUp(self):
         self.e = TrieEngine(modules=["acab.modules.operators.standard_operators"])
-        self.e.alias_module(S("acab","modules","operators","standard_operators"), S("A"))
-        self.e.register_operator_dict("Base",{"Blah" : ActionBlah()})
+        self.e.alias_module(S("acab","modules","operators"), S("A"))
+        self.e.register_ops([(S("Blah"), ActionBlah())])
         self.e.build_DSL()
 
     def tearDown(self):

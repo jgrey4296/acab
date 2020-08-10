@@ -39,10 +39,8 @@ class TypingCombinedTests(unittest.TestCase):
         twm = TrieWM()
         ts = TypingSpec()
         twm.assert_parsers(bp)
-        os.assert_parsers(bp)
         ts.assert_parsers(bp)
         ts.query_parsers(bp)
-        os.query_parsers(bp)
         twm.query_parsers(bp)
 
     def setUp(self):
@@ -798,7 +796,7 @@ class TypingCombinedTests(unittest.TestCase):
         self.tc.add_assertion(*transform.to_local_sentences())
 
         self.tc.validate()
-        breakpoint()
+        # TODO
 
         print(self.tc)
 
@@ -815,7 +813,7 @@ class TypingCombinedTests(unittest.TestCase):
         self.tc.add_definition(*op_def)
 
         #Add an operation use
-        transform = TP.parseString("$a \~= $b -> $c")
+        transform = TP.parseString("$a ~= $b -> $c")
 
         self.tc.add_assertion(*transform.to_local_sentences())
 

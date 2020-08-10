@@ -28,7 +28,7 @@ class NumberRuleTests(unittest.TestCase):
 
     def setUp(self):
         self.trie = TrieWM()
-        self.trie.add_modules(["acab.modules.operators.standard_operators", NumberRuleTests.ns])
+        self.trie.construct_parsers_from_fragments([NumberRuleTests.ns])
 
     def tearDown(self):
         return 1
@@ -64,7 +64,7 @@ class NumberRuleTests(unittest.TestCase):
 
 
     def test_rule_with_query_transform_actions(self):
-        result = RP.parseString("a.rule: (::ρ)\na.b.c?\n\n$x \operator.transform.n_ary.add 20 -> $y\n\noperator.action.add(a.b.c)\n\nend")
+        result = RP.parseString("a.rule: (::ρ)\na.b.c?\n\n$x \operator.transform.n_ary.add 20 -> $y\n\nλoperator.action.add(a.b.c)\n\nend")
         self.assertEqual(len(result), 1)
         self.assertIsInstance(result[0][-1].value, Rule)
         self.assertIsNotNone(result[0][-1].value._query)
