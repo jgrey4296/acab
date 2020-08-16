@@ -70,6 +70,9 @@ class WorkingMemory:
 
         return False
 
+    def breakpoint(self):
+        # TODO: add more listener options: pre, on and post
+        breakpoint()
 
     def to_sentences(self):
         return NotImplementedError()

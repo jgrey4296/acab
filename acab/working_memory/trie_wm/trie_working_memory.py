@@ -141,8 +141,7 @@ class TrieWM(WorkingMemory):
         """ Assert a (concrete) sentence of chained facts """
         assert (isinstance(sen, Sentence)), sen
         if self.score_listener(sen.words):
-            # TODO: add more listener options: pre, on and post
-            breakpoint()
+            self.breakpoint()
 
         self._clear_last_node()
         for word in sen:
@@ -155,7 +154,7 @@ class TrieWM(WorkingMemory):
         assert(isinstance(sen, Sentence))
         if self.score_listener(sen.words):
             # TODO: add more listener options
-            breakpoint()
+            self.breakpoint()
 
         # go down to the child, and remove it
         self._clear_last_node()
@@ -179,8 +178,7 @@ class TrieWM(WorkingMemory):
             should_listen = any([self.score_listener(x.words) for x in query.clauses])
 
         if should_listen:
-            # TODO: add more listener options
-            breakpoint()
+            self.breakpoint()
 
         self._clear_last_node()
         initial_context = Contexts(start_node=self._internal_trie.root,
