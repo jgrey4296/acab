@@ -162,6 +162,11 @@ class AcabValue:
     def has_tag(self, *tags):
         return all([t in self._tags for t in tags])
 
+    def to_simple_value(self):
+        simple_value = AcabValue(self._name, data=self._data)
+        simple_value.set_data({util.VALUE_TYPE_S: ATOM})
+        return simple_value
+
 
     def pprint(self, opts=None, **kwargs):
         return PrU.pprint(self, opts, **kwargs)
@@ -204,11 +209,6 @@ class AcabStatement(AcabValue):
         self._path = sen.copy()
 
         return self
-
-
-    def to_simple_value(self):
-        simple_value = AcabValue(self._name)
-        return simple_value
 
 
     def to_local_sentences(self):

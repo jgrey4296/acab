@@ -3,6 +3,7 @@ from os.path import splitext, split
 import unittest
 import logging
 
+from acab import util
 from acab.abstract.value import AcabValue
 from acab.abstract.sentence import Sentence
 
@@ -26,31 +27,41 @@ class SentenceTests(unittest.TestCase):
         self.assertEqual(val, val2)
         self.assertEqual(val, val)
 
-    def test_iter(self):
+    def test_build(self):
         val = S("a","test","value")
+        val2 = Sentence.build(["a", "test","value"])
+        self.assertEqual(val, val2)
+
+
+    def test_iter(self):
+        val = Sentence.build(["a","test","value"])
         for x,y in zip(val, ["a","test","value"]):
             self.assertEqual(x._value, y)
 
     def test_get_item(self):
-        val = S("a","test","value")
+        val = Sentence.build(["a","test","value"])
         self.assertIsInstance(val[0], AcabValue)
         self.assertEqual(val[0]._value, "a")
         self.assertEqual(val[1]._value, "test")
         self.assertEqual(val[2]._value, "value")
 
 
-    @unittest.skip("TODO")
-    def test_bind(self):
-        return
-
     def test_copy(self):
-        val = S("a","test","value")
+        val = Sentence.build(["a","test","value"])
         val2 = val.copy()
         self.assertEqual(val, val2)
 
+    def test_copy_independence(self):
+        val = Sentence.build(["a","test","value"])
+        val2 = val.copy()
+        val.words.append(Sentence.build(["test"])[0])
+
+        self.assertNotEqual(val, val2)
+
+
     def test_add(self):
-        val = S("a","test","value")
-        val2 = S("additional", "sentence")
+        val = Sentence.build(["a","test","value"])
+        val2 = Sentence.build(["additional", "sentence"])
         val3 = val.add(val2)
 
         self.assertIsInstance(val, Sentence)
@@ -62,21 +73,52 @@ class SentenceTests(unittest.TestCase):
 
 
     def test_slice(self):
-        val = S("a","test","value")
+        val = Sentence.build(["a","test","value"])
         self.assertIsInstance(val[1:], Sentence)
         for x,y in zip(val[1:], ["test", "value"]):
             self.assertIsInstance(x, AcabValue)
             self.assertEqual(x._value, y)
 
-    @unittest.skip("TODO")
     def test_attach_statement(self):
-        pass
+        sen = Sentence.build(["a","test","value"])
+        to_attach = Sentence.build(["blah","bloo"])
 
-    @unittest.skip("TODO")
+        attached = sen.attach_statement(to_attach)
+
+        self.assertNotEqual(sen, attached)
+        self.assertEqual(sen[0:2], attached[0:2])
+
+        self.assertEqual(attached[-1], to_attach)
+        self.assertEqual(attached[-1].name, "value")
+
     def test_detach_statement(self):
-        pass
+        sen = Sentence.build(["a","test","value"])
+        to_attach = Sentence.build(["blah","bloo"])
+        attached = sen.attach_statement(to_attach)
 
+        self.assertNotEqual(sen, attached)
+        detached, statements = attached.detach_statement()
 
+        self.assertEqual(detached, sen)
+        self.assertEqual(statements[0][:], to_attach)
+
+    def test_detach_complete(self):
+        sen = Sentence.build(["a","test","value"])
+        to_attach = Sentence.build(["blah","bloo"])
+        attached_first = sen.attach_statement(to_attach)
+
+        sen2 = Sentence.build(["aweg"])
+        second_attach = Sentence.build(["qwer", "qwop"])
+        attached_second = sen2.attach_statement(second_attach)
+
+        combined = attached_first.add(attached_second)
+        combined_simple = Sentence.build(["a","test","value","aweg"])
+
+        self.assertNotEqual(combined, combined_simple)
+        detached, statements = combined.detach_statement(complete=True)
+
+        self.assertEqual(len(statements), 2)
+        self.assertEqual(combined_simple, detached)
 
 
 if __name__ == "__main__":

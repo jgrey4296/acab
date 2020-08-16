@@ -63,6 +63,11 @@ class Sentence(AcabValue):
         return obj
 
 
+    def clear(self):
+        self_copy = self.copy()
+        self_copy._value = []
+        return self_copy
+
     def bind(self, bindings):
         """ Given a dictionary of bindings, reify the sentence,
         using those bindings.
@@ -139,23 +144,31 @@ class Sentence(AcabValue):
         sen_copy._value[-1] = value_copy
         return sen_copy
 
-    def detach_statement(self):
+    def detach_statement(self, complete=False):
         """
         The inverse of attach_statement.
         Copy the sentence,
         Reduce the leaf of a sentence to a simple value
         Return the copy, and the statement
         """
-        last = None
+        statements = []
 
-        if not isinstance(self[-1], AcabStatement):
-            sen_copy = self
-            last = None
+        if complete:
+            sen_copy = self.clear()
+            words = self.words[:]
         else:
-            sen_copy = self[-1].path
-            last = sef[-1]
+            sen_copy = self.copy()
+            words = [sen_copy.words.pop()]
 
-        return (sen_copy, last)
+        # collect leaf statements
+        for word in words:
+            if isinstance(word, (Sentence, AcabStatement)):
+                sen_copy.words.append(word.to_simple_value())
+                statements.append(word)
+            else:
+                sen_copy.words.append(word)
+
+        return (sen_copy, statements)
 
     def verify(self):
         [x.verify() for x in self.words]
