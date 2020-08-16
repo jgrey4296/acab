@@ -22,6 +22,6 @@ class MODULE(DSL_Fragment):
         return []
 
     def assert_parsers(self, pt):
-        pt.add("value.numbers", NP.NUM)
+        pt.add("value.number", NP.NEG_NUM)
 
 

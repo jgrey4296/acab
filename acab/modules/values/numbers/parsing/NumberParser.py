@@ -1,25 +1,39 @@
 from acab.abstract.parsing import util as PU
 from acab import util
-from acab.modules.values.numbers.util import FLOAT, INT
+from acab.modules.values.numbers import util as NU
+from fractions import Fraction
 import logging as root_logger
 import pyparsing as pp
 
 logging = root_logger.getLogger(__name__)
 
-
 def construct_num(toks):
-    # TODO: add in fractions and underscores
-    as_str = "".join(toks)
-    if util.DECIMAL_S in toks[0]:
-        return (FLOAT, float(as_str.replace(util.DECIMAL_S, '.')))
-    else:
-        return (INT, int(as_str))
+    num = toks['num']
+    mul = 1
+    if 'neg' in toks:
+        mul = -1
+
+    return (num[0], num[1] * mul)
 
 # This avoids trying to parse rebind arrows as numbers
-NEG = pp.Keyword("-", identChars=">")
+NEG = pp.Group(pp.Keyword("-", identChars=">")).setResultsName("neg")
+DECIMAL_MARK = PU.s(pp.Literal(util.DECIMAL_S))
 
-NUM = PU.op(NEG) + pp.Word(pp.nums + util.DECIMAL_S)
-NUM.setParseAction(construct_num)
+INT = pp.Word(pp.nums)
+DEC = INT + DECIMAL_MARK + INT
+FRACT = INT + PU.SLASH + INT
+# TODO: parse octal and hex numbers?
+OCT = pp.empty
+HEX = pp.empty
+
+INT.setParseAction(lambda toks: (NU.INT, int(toks[0])))
+DEC.setParseAction(lambda toks: (NU.FLOAT, float("{}.{}".format(toks[0][1],toks[1][1]))))
+FRACT.setParseAction(lambda toks: (NU.FRACT, Fraction(toks[0][1], toks[1][1])))
+
+NUM = pp.Or([FRACT, DEC, INT]).setResultsName("num")
+NEG_NUM = PU.op(NEG) + NUM
+
+NEG_NUM.setParseAction(construct_num)
 
 def parseString(s):
     return NUM.parseString(s)[0][1]
