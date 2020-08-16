@@ -126,7 +126,7 @@ class NumberQueryTests(unittest.TestCase):
         expanded = result.value.bind(bindings)
         # Expanding bindings makes a new rule, so its an AnonValue
         self.assertEqual(expanded.pprint().strip(),
-                         "AnonRule: (::ρ)\n\td.e.f.b.x.y.z?\n\n\t$x λoperator.transform.n_ary.add 2 -> $y\n\n\tλDEFAULT_ACTION(d.e.f)\nend")
+                         "AnonRule: (::ρ)\n\td.e.f.b.x.y.z?\n\n\t$x λoperator.transform.n_ary.add 2 -> $y\n\n\tλdefault_action(d.e.f)\nend")
 
 
     @unittest.skip("move this to engine logic tests")
