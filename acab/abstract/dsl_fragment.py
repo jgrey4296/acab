@@ -22,16 +22,20 @@ class DSL_Fragment:
 
 
     def __init__(self):
-        # A Parser has to provide a parser combinator to
-        # integrate into the Working Memory Lanuage.
-        # (By Default Exclusion Trie).
-        # The Combinator *must* return a tuple:
-        # ("typestr", data)
-        # TODO add printing lookup dictionaries
+        """
+        A Parser has to provide a parser combinator to
+        integrate into the Working Memory Lanuage.
+        (By Default Exclusion Trie).
+        The Combinator *must* return a tuple:
+        ("typestr", data)
+        """
         pass
 
     def parse_string(self, string):
         """ Takes a String, parses it into Data format """
+        raise NotImplementedError()
+
+    def register_printers(self):
         raise NotImplementedError()
 
     def init_strings(self):
@@ -63,4 +67,3 @@ class DSL_Fragment:
         """
         logging.debug("Module lacks parser queries: {}".format(self.__class__))
 
-    # TODO debug parser assertions / queries

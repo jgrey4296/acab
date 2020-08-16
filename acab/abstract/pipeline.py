@@ -60,12 +60,16 @@ class Pipeline(Rule):
 
         return output
 
-    # TODO input constraints
     def input_constraints(self):
+        """
+        TODO get the base input language of the pipeline.
+        """
         raise NotImplementedError()
 
-    # TODO output constraints
     def output_constraints(self):
+        """
+        TODO get the base output language of the pipeline
+        """
         raise NotImplementedError()
 
     def verify(self, engine):

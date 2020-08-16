@@ -49,6 +49,7 @@ class Engine:
         self._cached_bindings = []
 
         # TODO use these to enable breakpoint context:
+        self._current_layer = None
         self._current_rule = None
         self._current_query = None
         self._current_transform = None

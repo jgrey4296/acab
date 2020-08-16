@@ -49,7 +49,7 @@ class ProductionComponent(AcabValue):
         self._params = []
         # The value name of the result
         self._rebind = rebind
-        # TODO The Position the operator takes: eg: 0: + 1 2, 1: 1 + 2
+        # The Position the operator takes: eg: 0: + 1 2, 1: 1 + 2
         self._op_position = op_pos
 
         self.apply_params(params)

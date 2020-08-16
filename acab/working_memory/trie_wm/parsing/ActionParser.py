@@ -4,6 +4,7 @@ import pyparsing as pp
 from acab.abstract import action as action
 from acab.abstract.parsing import util as PU
 from acab.abstract.sentence import Sentence
+from acab import util
 from acab.working_memory.trie_wm import util as WMU
 
 from .FactParser import PARAM_SEN, VALBIND, BASIC_SEN, PARAM_SEN
@@ -22,9 +23,8 @@ def build_component(toks):
     return action.ActionComponent(op, action_vals)
 
 def build_action(toks):
-    # TODO remove hardcoded default
     clauses = [x if isinstance(x, action.ActionComponent)
-               else action.ActionComponent(Sentence.build(['DEFAULT_ACTION']), [x]) for x in toks]
+               else action.ActionComponent(Sentence.build([util.DEFAULT_ACTION_S]), [x]) for x in toks]
     act = action.Action(clauses)
 
     return (act.type, act)
@@ -40,7 +40,6 @@ action_component = PU.N(WMU.OPERATOR_S, op_path) \
     + PU.op(PU.OPAR + PU.N(WMU.ACTION_VAL_S, vals) + PU.CPAR)
 
 # Sentences are asserted by default
-# TODO: block param_sen from beginning with "end"
 actions = pp.delimitedList(pp.Or([action_component, PARAM_SEN]), delim=PU.DELIM)
 
 action_definition = PU.STATEMENT_CONSTRUCTOR(PU.ACTION_HEAD,

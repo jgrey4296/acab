@@ -26,5 +26,4 @@ class TypeStatement(AcabStatement):
 
 
     def pprint_body(self, val):
-        # TODO: add tabs
         return val + TAB_S + "\n{}".format(TAB_S).join([x.pprint() for x in self.structure])

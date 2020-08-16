@@ -21,6 +21,7 @@ VALUE_S      = "value"
 VALUE_TYPE_S = "value_type"
 OP_CLASS_S   = "operator_class"
 CTX_COLLAPSE_S = "ctx.collapse"
+DEFAULT_ACTION_S = "default_action"
 
 # Core Value Types
 #Use to signify a decimal, eg: 34d423 = 34.423
