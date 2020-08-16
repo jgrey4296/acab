@@ -1,8 +1,10 @@
 """
 Pyparsing utilities
 """
+import re
 import logging as root_logger
 import pyparsing as pp
+
 from acab.abstract.sentence import Sentence
 from acab.abstract import type_base as TB
 from acab import util
@@ -84,7 +86,7 @@ END             = s(pp.Literal(util.END_S))
 COLLAPSE_CONTEXT = s(pp.Literal(util.CTX_COLLAPSE_S))
 
 # Basic Parsers
-# TODO: rename to ATOM
+# TODO rename to ATOM
 NAME        = pp.Word(util.WORD_COMPONENT_S)
 NAME.setParseAction(lambda t: (TB.ATOM, t[0]))
 
@@ -93,9 +95,10 @@ STRING      = pp.dblQuotedString
 STRING.setParseAction(pp.removeQuotes)
 STRING.addParseAction(lambda toks: (TB.STRING, toks[0]))
 
-# TODO: add re.RegexFlag 's to parser: g and i
+# TODO add re.RegexFlag 's to parser: g and i
+# TODO compile the regex
 REGEX       = pp.Regex(r'/.+?/')
-REGEX.setParseAction(lambda t: (TB.REGEX, t[0][1:-1]))
+REGEX.setParseAction(lambda t: (TB.REGEX, re.compile(t[0][1:-1])))
 
 BASIC_VALUE = pp.Or([NAME, STRING, REGEX])
 BIND        = VAR_SYMBOL + NAME

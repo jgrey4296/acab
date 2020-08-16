@@ -35,13 +35,10 @@ def build_transform(toks):
 # Hotloaded Transform Operators
 HOTLOAD_TRANS_OP = pp.Forward()
 
-
-# TODO need to add to this
 HOTLOAD_TRANS_STATEMENTS = pp.Forward()
 
 rebind = PU.ARROW + VALBIND
 # TODO: extend transform to take partial transforms?
-# TODO: convert BLASH + BASIC_SEN to Blash/lambda + basic sen
 # transform: ( bind op val|bind -> bind)
 op_path  = pp.Or([HOTLOAD_TRANS_OP, PU.OP_PATH_C(BASIC_SEN)])
 

@@ -1,5 +1,6 @@
 import unittest
 import logging
+import re
 from acab.working_memory.trie_wm.parsing import TransformParser as TP
 from acab.abstract import transform
 from acab.working_memory.trie_wm import util as KBU
@@ -29,9 +30,9 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result.clauses), 1)
         self.assertEqual(result.clauses[0].op.pprint(), 'operator.transform.n_ary.regex')
-        self.assertEqual(result.clauses[0]._params[0]._value, 'x')
-        self.assertEqual(result.clauses[0]._params[1]._value,'blah')
-        self.assertEqual(result.clauses[0]._params[2]._value, 'a')
+        self.assertEqual(result.clauses[0]._params[0].value, 'x')
+        self.assertEqual(result.clauses[0]._params[1].value, re.compile('blah'))
+        self.assertEqual(result.clauses[0]._params[2].value, 'a')
         self.assertIsNotNone(result.clauses[0]._rebind)
 
     def test_ternary_operator_rebind(self):
@@ -40,7 +41,7 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
         self.assertEqual(len(result.clauses), 1)
         self.assertEqual(result.clauses[0].op.pprint(), 'operator.transform.n_ary.regex')
         self.assertEqual(result.clauses[0]._params[0].name, 'x')
-        self.assertEqual(result.clauses[0]._params[1].name,'blah')
+        self.assertEqual(result.clauses[0]._params[1].name, re.compile('blah'))
         self.assertEqual(result.clauses[0]._params[2].name, 'awef')
         self.assertEqual(result.clauses[0]._rebind.name, 'q')
 

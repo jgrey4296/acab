@@ -1,6 +1,7 @@
 """
 Utilities for printing out information
 """
+from re import Pattern
 from collections import defaultdict
 from acab import util
 
@@ -197,7 +198,7 @@ def print_operator(operator, opts):
     eg: op_fix=0 : + 1 2 3 ...
         op_fix=2 : 1 2 + 3 ...
     """
-    # TODO fix this
+    # TODO actually use the op_position
     op_fix = operator._op_position
     op_str = "{}{}".format(util.FUNC_S, pprint(operator.op))
 
@@ -243,8 +244,8 @@ def _wrap_float(value, opts=None):
 def _wrap_int(value, opts=None):
     return str(value)
 def _wrap_regex(value, opts=None):
-    assert(isinstance(value, str))
-    val = "/{}/".format(value)
+    assert(isinstance(value, Pattern))
+    val = "/{}/".format(value.pattern)
     return val
 
 
@@ -336,9 +337,9 @@ def _wrap_var_list(val, the_vars, newline=False):
 
 MODAL_LOOKUPS = {}
 REGISTERED_PPRINTS = {float : _wrap_float,
-                      int   : _wrap_int}
+                      int   : _wrap_int,
+                      Pattern: _wrap_regex}
 
 REGISTERED_CONSTRAINTS = set([util.CONSTRAINT_S])
 
-TYPE_WRAPS = {REGEX: _wrap_regex,
-              STRING: _wrap_str}
+TYPE_WRAPS = {STRING: _wrap_str}

@@ -37,7 +37,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         qc = result[1]
         self.assertIsInstance(qc, QueryComponent)
         self.assertEqual(qc.op.pprint(), 'operator.query.regmatch')
-        self.assertEqual(qc._params[0]._value, 'blah')
+        self.assertEqual(qc._params[0].pprint(), '/blah/')
         self.assertEqual(qc._params[0].type, REGEX)
 
     def test_basic_clause(self):

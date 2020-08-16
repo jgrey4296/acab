@@ -50,7 +50,6 @@ def build_assignment(toks):
 HOTLOAD_QUERY_OP = pp.Forward()
 HOTLOAD_QUERY_ANNOTATIONS = pp.Forward()
 
-# TODO: blash -> blash | λ
 op_path = pp.Or([HOTLOAD_QUERY_OP, PU.OP_PATH_C(BASIC_SEN)])
 
 QUERY_OP_Internal = PU.N(WMU.OPERATOR_S, op_path) \
@@ -75,7 +74,6 @@ QueryCore = PARAM_CORE(constraints)
 QueryCore_end = PARAM_CORE(constraints, end=True)
 
 # TODO add syntax for binding a sentence
-# TODO add syntax for binding all leaves
 # a.test.query..<$x?
 # a.test.query..<$x(::Rule)?
 # Core Query Chain

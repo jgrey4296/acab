@@ -16,8 +16,7 @@ class RegexOp(TransformOp):
 
         sub(pattern, replacement, string, count, flags)
         """
-        # TODO: use re.RegexFlag 's
-        return sub(str(pattern), str(replacement), str(value))
+        return sub(pattern, replacement, value)
 
 
 class FormatOp(TransformOp):

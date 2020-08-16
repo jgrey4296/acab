@@ -3,6 +3,7 @@ from os.path import splitext, split
 import unittest
 import logging
 from acab import util
+from acab.abstract.sentence import Sentence
 from acab.abstract.transform import TransformComponent, TransformOp
 from acab.abstract.node import AcabNode
 from acab.abstract.value import AcabValue as PV
@@ -23,13 +24,13 @@ class TransformTests(unittest.TestCase):
     #----------
     #use testcase snippets
     def test_construction(self):
-        transform = TransformComponent("TestOp", [])
+        transform = TransformComponent(Sentence.build(["TestOp"]), [])
         self.assertIsInstance(transform, TransformComponent)
 
     def test_var_set(self):
         param = PV("input", data={util.BIND_S: True})
         outbind = PV("output", data={util.BIND_S: True})
-        transform = TransformComponent("TestOp", [param], rebind=outbind)
+        transform = TransformComponent(Sentence.build(["TestOp"]), [param], rebind=outbind)
         var_set = transform.var_set
         var_set_in_str = [x.name for x in var_set['in']]
         var_set_out_str = [x.name for x in var_set['out']]
