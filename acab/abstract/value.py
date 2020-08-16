@@ -144,6 +144,9 @@ class AcabValue:
         return self
 
     def set_data(self, data):
+        """ Force a value's data to be updated,
+        Modifies, not copies
+        """
         if data is not None:
             self._data.update(data)
 

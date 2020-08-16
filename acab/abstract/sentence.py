@@ -82,6 +82,10 @@ class Sentence(AcabValue):
                 output.append(word.copy())
                 continue
 
+            if not word._value in bindings:
+                output.append(word.copy())
+                continue
+
             # Sentence invariant: only word[0] can have an at_bind
             if word.is_at_var:
                 retrieved = bindings[AT_BIND_S + word._value]

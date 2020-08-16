@@ -71,6 +71,32 @@ class SentenceTests(unittest.TestCase):
         for x,y in zip(val3, ["a","test","value","additional","sentence"]):
             self.assertEqual(x._value, y)
 
+    def test_bind(self):
+        val = Sentence.build(["a","test","value"])
+        var = Sentence.build(["var"])
+        var[0].set_data({util.BIND_S : True})
+        sen = val.add(var)
+
+        bound = sen.bind({"var" : "blah"})
+
+        self.assertFalse(bound[-1].is_var)
+        self.assertEqual(bound[-1].value, "blah")
+
+    def test_bind_nop(self):
+        val = Sentence.build(["a","test","value"])
+        var = Sentence.build(["var"])
+        var[0].set_data({util.BIND_S: True})
+        val[2].set_data({util.BIND_S : True})
+        sen = val.add(var)
+
+        bound = sen.bind({"not_var" : "blah"})
+
+        self.assertEqual(sen,bound)
+        self.assertTrue(bound[2].is_var)
+        self.assertTrue(bound[-1].is_var)
+        self.assertEqual(bound[-1].value, "var")
+
+
 
     def test_slice(self):
         val = Sentence.build(["a","test","value"])
