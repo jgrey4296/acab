@@ -2,6 +2,7 @@
 from os.path import splitext, split
 import unittest
 import logging
+from pyparsing import ParseException
 
 from acab.modules.values.numbers.parsing import NumberParser as NP
 from acab.working_memory.trie_wm.parsing import ActionParser as AP
@@ -101,20 +102,20 @@ class NumberQueryTests(unittest.TestCase):
         self.assertEqual(result._data[util.FALLBACK_S][1][0], 'y')
         self.assertEqual(result._data[util.FALLBACK_S][1][1][-1]._value, 5)
 
-    @unittest.skip("TODO: requires handling of syntax sugar and \\")
+
     def test_fact_str_equal(self):
         queries = ["a.b.c?", "a.b!c?", 'a.b."a string".c?',
-                   'a.b!"a string"!c?', 'a.b(operator.query.gt 20)?',
-                   'a.$b?', 'a!$b?', 'a.$b(operator.query.gt $c)?',
-                   'a.$b(operator.query.gt 20, operator.query.lt 40, Noperator.query.eq $x, operator.query.eq $y)?',
+                   'a.b!"a string"!c?', 'a.b(λoperator.query.gt 20)?',
+                   'a.$b?', 'a!$b?', 'a.$b(λoperator.query.gt $c)?',
+                   'a.$b(λoperator.query.gt 20, λoperator.query.lt 40, λoperator.query.eq $x, λoperator.query.eq $y)?',
                    '~a.b.c?', '~a!b.c?',
-                   'a.$b(operator.query.regmatch /blah/)?',
+                   'a.$b(λoperator.query.regmatch /blah/)?',
                    'a.b.c? || $x:2',
                    'a.b.d? || $x:5, $y:blah']
                    # 'a.b.c(^$x)?']
-        parsed = [QP.parseString(x) for x in queries]
-        zipped = zip(queries, parsed)
-        for the_string,the_result in zipped:
+
+        for the_string in queries:
+            the_result = QP.parseString(the_string)
             self.assertEqual(the_string, the_result.pprint().strip())
 
 

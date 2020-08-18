@@ -2,8 +2,8 @@
 from os.path import splitext, split
 import unittest
 import logging
-from acab.working_memory.trie_wm.parsing import RuleParser as RP
 
+from acab.modules.values.numbers.parsing import NumberParser as NP
 
 class NumberTests(unittest.TestCase):
 
@@ -18,6 +18,13 @@ class NumberTests(unittest.TestCase):
         return 1
 
     #----------
+
+    def test_init(self):
+        result = NP.NEG_NUM.parseString("20")
+
+    def test_init_2(self):
+        result = NP.NEG_NUM.parseString("-20")
+
 
 if __name__ == "__main__":
     #run python $filename to use this logging setup
