@@ -82,13 +82,18 @@ class WorkingMemory:
         """ Assemble parsers from the fragments of the wm and loaded modules """
         assert(all([isinstance(x, DSL_Fragment) for x in fragments]))
         self.assert_parsers(self._bootstrap_parser)
-        #Populate the trie
-        dummy = [x.assert_parsers(self._bootstrap_parser) for x in fragments]
+        for x in fragments:
+            #Populate the trie
+            x.assert_parsers(self._bootstrap_parser)
 
-        # Now query and populate the modules
-        dummy = [x.query_parsers(self._bootstrap_parser) for x in fragments]
+        for x in fragments:
+            # Now query and populate the modules
+            x.query_parsers(self._bootstrap_parser)
 
         self.query_parsers(self._bootstrap_parser)
+
+        for x in fragments:
+            x.verify()
 
     def clear_bootstrap(self):
         self._bootstrap_parser = BootstrapParser()
