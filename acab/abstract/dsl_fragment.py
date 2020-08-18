@@ -67,3 +67,6 @@ class DSL_Fragment:
         """
         logging.debug("Module lacks parser queries: {}".format(self.__class__))
 
+
+    def verify(self):
+        logging.debug("No Verification specified")
