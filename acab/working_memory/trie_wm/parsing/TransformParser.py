@@ -34,13 +34,17 @@ def build_transform(toks):
 
 # Hotloaded Transform Operators
 HOTLOAD_TRANS_OP = pp.Forward()
-
 HOTLOAD_TRANS_STATEMENTS = pp.Forward()
+HOTLOAD_TRANS_OP.setName("Transform_Op")
+HOTLOAD_TRANS_STATEMENTS.setName("Transform_Statement")
+
 
 rebind = PU.ARROW + VALBIND
+rebind.setName("Rebind")
 # TODO: extend transform to take partial transforms?
 # transform: ( bind op val|bind -> bind)
 op_path  = pp.Or([HOTLOAD_TRANS_OP, PU.OP_PATH_C(BASIC_SEN)])
+op_path.setName("OperatorPath")
 
 transform_core = PU.N(WMU.LEFT_S, pp.ZeroOrMore(VALBIND)) \
     + PU.N(WMU.OPERATOR_S, op_path) \
@@ -63,10 +67,7 @@ transforms.setParseAction(build_transform)
 transform_core.setName("Transform_CORE")
 transforms.setName("TransformPlural")
 transform_statement.setName("TransformDefinition")
-HOTLOAD_TRANS_OP.setName("Transform_Op")
-HOTLOAD_TRANS_STATEMENTS.setName("Transform_Statement")
 
-# parse_point = transforms.ignore(PU.COMMENT)
 parse_point = transforms
 
 # Main Parser:
