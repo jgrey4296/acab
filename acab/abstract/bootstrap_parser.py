@@ -70,12 +70,12 @@ class BootstrapParser(Trie):
             elif isinstance(node, list):
                 results += [x._data['parser'] for x in node if 'parser' in x._data]
 
-        final_parser = pp.Or(results)
-        if len(results) == 1:
-            final_parser = results[0]
         if not bool(results):
             raise Exception("No Parsers found for: {}".format(" | ".join(queries)))
-
+        elif len(results) == 1:
+            final_parser = results[0]
+        else:
+            final_parser = pp.Or(results)
 
         return final_parser
 
