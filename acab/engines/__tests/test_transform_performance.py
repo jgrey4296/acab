@@ -91,8 +91,7 @@ class TransformTests(unittest.TestCase):
         stub_ctx = Contexts()
         stub_ctx.append(({'a':PV(2),'b':PV(-2),'c':PV(2.53)},"blah"))
 
-
-        stub_transform = TP.parseString(r'$a \N.AddOp 20 -> $x, $b \N.SubOp 20 -> $y, $c \N.AddOp $x -> $z')
+        stub_transform = TP.parseString(r'$a λN.AddOp 20 -> $x, $b λN.SubOp 20 -> $y, $c λN.AddOp $x -> $z')
         result = stub_transform(stub_ctx[0], self.e)[0]
         self.assertIsInstance(result, dict)
         self.assertEqual(result['a'].value, 2)
