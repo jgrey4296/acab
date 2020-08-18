@@ -26,11 +26,6 @@ class ProductionOperatorTests(unittest.TestCase):
         pass
 
 
-
-    @unittest.skip("TODO")
-    def test_subclass_tree(self):
-        pass
-
     @unittest.skip("TODO")
     def test_op_str(self):
         pass
@@ -93,6 +88,8 @@ class ProductionOperatorTests(unittest.TestCase):
     @unittest.skip("TODO")
     def test_refine_op_func(self):
         return
+
+
 
 if __name__ == "__main__":
     #run python $filename to use this logging setup
