@@ -8,10 +8,11 @@ import pyparsing as pp
 logging = root_logger.getLogger(__name__)
 
 def construct_num(toks):
-    num = toks['num']
+    num = toks[0]
     mul = 1
     if 'neg' in toks:
         mul = -1
+        num = toks[1]
 
     return (num[0], num[1] * mul)
 
@@ -26,14 +27,39 @@ FRACT = INT + PU.SLASH + INT
 OCT = pp.empty
 HEX = pp.empty
 
-INT.setParseAction(lambda toks: (NU.INT, int(toks[0])))
-DEC.setParseAction(lambda toks: (NU.FLOAT, float("{}.{}".format(toks[0][1],toks[1][1]))))
-FRACT.setParseAction(lambda toks: (NU.FRACT, Fraction(toks[0][1], toks[1][1])))
+def build_int(toks):
+    return (NU.INT_t, int(toks[0]))
 
-NUM = pp.Or([FRACT, DEC, INT]).setResultsName("num")
-NEG_NUM = PU.op(NEG) + NUM
+def build_decimal(toks):
+    the_num = float("{}.{}".format(toks[0][1],toks[1][1]))
+    return (NU.FLOAT_t, the_num)
 
-NEG_NUM.setParseAction(construct_num)
+def build_fraction(toks):
+    the_num = Fraction(toks[0][1], toks[1][1])
+    return (NU.FRACT_t, the_num)
+
+
+INT.addParseAction(build_int)
+DEC.setParseAction(build_decimal)
+FRACT.setParseAction(build_fraction)
+
+# INT.addCondition(lambda toks: isinstance(toks[0], tuple))
+# DEC.addCondition(lambda toks: isinstance(toks[0], tuple))
+# FRACT.addCondition(lambda toks: isinstance(toks[0], tuple))
+# NUM = pp.Or([FRACT, DEC, INT]).setResultsName("num")
+# NEG_NUM = PU.op(NEG) + NUM
+INT.setName("int")
+DEC.setName("decimal")
+FRACT.setName("fraction")
+
+NEG_NUM = PU.op(NEG) + pp.Or([FRACT, DEC, INT]).setResultsName("num")
+
+# NEG_NUM.addParseAction(lambda toks: breakpoint())
+# NEG_NUM.addCondition(lambda toks: isinstance(toks['num'][0], tuple))
+NEG_NUM.addParseAction(construct_num)
+
+NEG_NUM.setName("NumP")
+
 
 def parseString(s):
-    return NUM.parseString(s)[0][1]
+    return NEG_NUM.parseString(s)[0]
