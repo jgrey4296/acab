@@ -1,78 +1,51 @@
 """ Cross-module utilities for the rule engines """
+from configparser import ConfigParser, ExtendedInterpolation
+from acab.error.acab_config_exception import AcabConfigException
 from enum import Enum
-import pyparsing as pp
 
-# Globally constant strings:
+# Provide accessor and setup from config file
 
-# Basic constants
-ARG_S        = "args"
-AT_BIND_S    = "at_bind_"
-BIND_S       = "bind"
-CONSTRAINT_S = "constraints"
-END_S        = "end"
-FALLBACK_S   = "fallback"
-NAME_S       = "name"
-NEGATION_S   = "negated"
-OPERATOR_S   = "operator"
-SEN_S        = "sentence"
-STATEMENT_S  = "statement"
-TAG_S        = "tag"
-VALUE_S      = "value"
-VALUE_TYPE_S = "value_type"
-OP_CLASS_S   = "operator_class"
-CTX_COLLAPSE_S = "ctx.collapse"
-DEFAULT_ACTION_S = "default_action"
+class AcabConfig:
+    """ A Singleton class for the active configuration
+    Uses ${SectionName:Key} interpolation in values,
+    Turns multi-line values into lists
+    """
 
-# Core Value Types
-#Use to signify a decimal, eg: 34d423 = 34.423
-DECIMAL_S    = "d"
+    actions_e = Enum("Config Actions", "STRIPQUOTE")
+    actions = {
+        AcabConfig.actions_e.STRIP : lambda x: x.strip("'")
+        }
+    instance = None
 
-ACTION_S     = "action"
-QUERY_S      = "query"
-TRANSFORM_S  = "transform"
+    @staticmethod
+    def Get():
+        if AcabConfig.instance is None:
+            AcabConfig()
+        return AcabConfig.instance
 
-# Trie Root Node Name
-ROOT_S       = "__root"
+    def __init__(self, *paths):
+        if AcabConfig.instance is not None:
+            raise AcabConfigException("AcabConfig Already Exists")
 
-# Parser Constants
-WORD_COMPONENT_S  = pp.alphas + "_"
-OPERATOR_SYNTAX_S = "%^&*_-+={}[]|<>?~§';⊂⊃∨∧⧼⧽¿£ΔΣΩ∩∪√∀∈∃¬∄⟙⟘⊢∴◇□⚬"
+        AcabConfig.instance = self
 
-# Rule Constants
-RULE_S = "rule"
+        self._config = ConfigParser(interpolation=ExtendedInterpolation())
+        self._files = set()
 
-# Higher Level Structure Heads
-RULE_HEAD_S       = "ρ"
-QUERY_HEAD_S      = "γ"
-TRANSFORM_HEAD_S  = "τ"
-ACTION_HEAD_S     = "α"
-FACT_HEAD_S       = "Σ"
+        for path in paths:
+            self.read(path)
 
-# Typing:
-SUM_HEAD_S        = "Σσ"
-STRUCTURE_S       = "σ"
-FUNC_S            = "λ"
-TYPE_CLASS_S      = "γ"
+    def read(self, path, force=False):
+        if force or path not in self._files:
+            self._config.read(path)
+            self._files.add(path)
 
-# Misc:
-UUID_HEAD         = "υ"
-AGENDA_HEAD_S     = "Agenda"
-LAYER_HEAD_S      = "Layer"
-PIPE_HEAD_S       = "Pipeline"
+    def __call__(self, section, key, action=None):
+        """
+        Get a value from the config
+        """
+        value = self.config[section][key]
+        if action in AcabConfig.actions:
+            value = AcabConfig.actions[action](value)
 
-
-VAR_SYMBOL_S      = "$"
-AT_VAR_SYMBOL_S   = "@"
-TAG_SYMBOL_S      = "#"
-NEGATION_SYMBOL_S = "~"
-QUERY_SYMBOL_S    = "?"
-
-TYPE_FMT_S        = "::{}"
-TAB_S = "    "
-
-# Default Data for any value:
-# Note: type instance is not shown as it needs to be constructed elsewhere.
-# See type_base and acabvalue
-DEFAULT_VALUE_DATA = {
-    BIND_S       : False,
-    }
+        return value
