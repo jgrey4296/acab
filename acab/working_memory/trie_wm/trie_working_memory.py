@@ -87,6 +87,7 @@ class TrieWM(WorkingMemory):
 
     def assert_parsers(self, pt):
         # Core
+        # TODO: Make these configurable?
         pt.add("valbind", FP.VALBIND,
                "sentence.basic", FP.BASIC_SEN,
                "sentence.param", FP.PARAM_SEN,

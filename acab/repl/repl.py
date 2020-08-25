@@ -12,24 +12,19 @@ import logging as root_logger
 import traceback
 
 ##############################
-from acab.repl import ReplParser as ReP
-from acab.repl import repl_commands as ReC
-from acab.abstract.printing import util as PrU
-from acab.config import AcabConfig
-
-util = AcabConfig.Get()
-
 
 # Quiet hook from https://gist.github.com/jhazelwo/86124774833c6ab8f973323cb9c7e251
 if __name__ == "__main__":
-
+    from acab.config import AcabConfig
+    util = AcabConfig.Get()
 
     #see https://docs.python.org/3/howto/argparse.html
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                      epilog = "\n".join([""]))
     parser.add_argument('--config', action="append")
-    parser.add_argument('--engine')
+    parser.add_argument('--engine', action="append")
     parser.add_argument('-v', '--verbose', default="WARNING")
+
     args = parser.parse_args()
     args.config = [abspath(expanduser(x)) for x in args.config]
 
@@ -42,9 +37,13 @@ if __name__ == "__main__":
     root_logger.getLogger('').addHandler(console)
     logging = root_logger.getLogger(__name__)
 
-
     logging.info("Reading Config: {}".format(args.config))
     util.read_list(args.config)
+
+    # Only after having read in config, import rest of acab
+    from acab.repl import ReplParser as ReP
+    from acab.repl import repl_commands as ReC
+    from acab.abstract.printing import util as PrU
 
     logging.info("Setting up engine: {}".format(args.engine))
     #import then build engine or default trie engine from args
@@ -57,7 +56,7 @@ if __name__ == "__main__":
     engine, dummy = ReC.get(ReC.ReplE.INIT)(None, {'params': [engine]})
     # TODO Load Standard modules
     load_cmd = ReC.get(ReC.ReplE.MODULE)
-    initial_modules = util("REPL", "MODULES", action=AcabConfig.actions_e.LIST):
+    initial_modules = util("REPL", "MODULES", action=AcabConfig.actions_e.LIST)
     engine, dummy = load_cmd(engine, {'params': initial_modules})
 
     data = { 'prompt' : util("REPL", "PROMPT"),
@@ -72,7 +71,7 @@ if __name__ == "__main__":
              'in_multi_line': False}
     while data['command'] != ReC.ReplE.EXIT:
         try:
-            data['current_str'] = input(data['prompt'])
+            data['current_str'] = input(data['prompt'] + " ")
             # parse string in REPL parser
             parse_response = ReP.parseString(data['current_str'],
                                              in_multi_line=data['in_multi_line'])

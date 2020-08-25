@@ -30,6 +30,7 @@ class TypingSpec(DSL_Fragment):
         return ""
 
     def assert_parsers(self, pt):
+        pt.add("value.typing", TP.EXTENDED_ATOM)
         pt.add("statement.typing", TDP.COMBINED_DEFS)
         pt.add("annotation.typing", TP.TYPEDEC_CORE)
         pt.add("query.annotation.typing", TP.TYPEDEC_CORE)

@@ -4,14 +4,14 @@ Pyparsing based parser for types
 import logging as root_logger
 import pyparsing as pp
 
-from acab.abstract.type_base import TypeInstance
+from acab.abstract.type_base import TypeInstance, ATOM
 from acab.modules.analysis.typing import util as TYU
 from acab.abstract.parsing import util as PU
 from acab.config import AcabConfig
 
 util = AcabConfig.Get()
 VALUE_TYPE_S = util("Parsing.Structure", "VALUE_TYPE_S")
-
+EXTENDED_LANGUAGE_SYNTAX_S = util("Module.Typing", "EXTENDED_LANGUAGE_SYNTAX_S")
 
 def make_type_dec(toks):
     """ Construct a type declaration / annotation
@@ -28,10 +28,12 @@ def make_type_dec(toks):
 HOTLOAD_BASIC_SEN= pp.Forward()
 TYPEDEC_CORE = pp.Forward()
 
+EXTENDED_ATOM = pp.Word(EXTENDED_LANGUAGE_SYNTAX_S)
+EXTENDED_ATOM.setParseAction(lambda t: (ATOM, t[0]))
+
 VAR_OR_TYPE_DEC = pp.Or([PU.BIND, TYPEDEC_CORE])
 
-# TODO: extract primitives' type_aliases
-TYPE_NAME = pp.Or([HOTLOAD_BASIC_SEN])
+TYPE_NAME = HOTLOAD_BASIC_SEN
 
 # TODO: auto recognise primitives and their aliases
 TYPEDEC_CORE <<= PU.DBLCOLON + PU.N(TYU.SEN_S, TYPE_NAME) \
@@ -42,6 +44,8 @@ TYPEDEC_CORE <<= PU.DBLCOLON + PU.N(TYU.SEN_S, TYPE_NAME) \
                             + PU.CPAR))
 
 TYPEDEC_CORE.setParseAction(make_type_dec)
+
+
 
 # NAMING
 TYPEDEC_CORE.setName("TypeDeclarationStatement")

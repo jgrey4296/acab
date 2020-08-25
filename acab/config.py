@@ -37,11 +37,10 @@ class AcabConfig:
         self._config = ConfigParser(interpolation=ExtendedInterpolation())
         self._files = set()
 
-        for path in paths:
-            self.read(path)
+        self.read_list(paths)
 
     def read_list(self, lst):
-        assert(isinstance(lst, list))
+        assert(isinstance(lst, (list, tuple)))
         for x in lst:
             self.read(x)
 
@@ -54,7 +53,11 @@ class AcabConfig:
         """
         Get a value from the config
         """
-        value = self._config[section][key]
+        try:
+            value = self._config[section][key]
+        except KeyError as e:
+            breakpoint()
+
         if action in AcabConfig.actions:
             value = AcabConfig.actions[action](value)
 
@@ -62,3 +65,8 @@ class AcabConfig:
             value = AcabConfig.actions[action](value)
 
         return value
+
+
+    @property
+    def loaded(self):
+        return bool(self._files)

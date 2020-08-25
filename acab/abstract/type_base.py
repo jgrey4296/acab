@@ -25,6 +25,7 @@ class _Bootstrap_Value:
 
     def __init__(self, value):
         self._value = value
+        self._primitive = None
 
     def __str__(self):
         return self.name
@@ -51,9 +52,10 @@ class _Bootstrap_Sentence:
     Main Requirements: attribute access and eq
     """
 
-    def __init__(self, values):
+    def __init__(self, values, primitive):
         assert(isinstance(values, list))
         self._value = [_Bootstrap_Value(x) for x in values]
+        self._value[-1]._primitive = primitive
 
     def __str__(self):
         return self.pprint()
@@ -82,10 +84,16 @@ class TypeInstance:
     TypeCounter = 0
     Primitives = []
 
+    @staticmethod
+    def get_alias_chars():
+        sigils = [x[-1]._primitive._type_alias for x in TypeInstance.Primitives]
+        sigils_str = "".join([x for x in sigils if x is not None])
+        return sigils_str
+
     def __init__(self, path, params=None, primitive=False, type_alias_str=None):
         """ Construct a Type Instance with a _path in the type trie """
         if primitive:
-            path = _Bootstrap_Sentence(path)
+            path = _Bootstrap_Sentence(path, self)
             assert(path not in TypeInstance.Primitives)
             TypeInstance.Primitives.append(path)
 

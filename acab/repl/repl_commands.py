@@ -208,7 +208,7 @@ def engine_act(engine, data):
 register(ReplE.ACT, engine_act)
 
 def engine_listen(engine, data):
-   """ Listeners:
+    """ Listeners:
     Listen for specific assertions / rule firings / queries,
     and pause on them
     """
