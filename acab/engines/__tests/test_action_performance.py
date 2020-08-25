@@ -2,6 +2,10 @@
 from os.path import splitext, split
 import unittest
 import logging
+
+from acab.config import AcabConfig
+AcabConfig.Get().read("acab/util.config")
+
 from acab.engines.trie_engine import TrieEngine
 from acab.abstract.sentence import Sentence
 from acab.working_memory.trie_wm.parsing import ActionParser as AP

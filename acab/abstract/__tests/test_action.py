@@ -2,13 +2,17 @@
 from os.path import splitext, split
 import unittest
 import logging
+
+from acab.config import AcabConfig
+AcabConfig.Get().read("acab/util.config")
+
 from acab import abstract
 from acab.abstract.node import AcabNode
 from acab.abstract.value import AcabValue as PV
 from acab.abstract.action import ActionComponent, ActionOp
-from acab import util
 from acab.abstract.sentence import Sentence
 
+BIND_S = AcabConfig.Get()("Parsing.Structure", "BIND_S")
 
 class ActionTests(unittest.TestCase):
 
@@ -29,7 +33,7 @@ class ActionTests(unittest.TestCase):
         self.assertIsInstance(action, ActionComponent)
 
     def test_var_set(self):
-        param = PV("test", data={util.BIND_S: True})
+        param = PV("test", data={BIND_S: True})
         param_sen = Sentence([param])
         action = ActionComponent(Sentence.build(["testOp"]), [param_sen])
         var_set = action.var_set

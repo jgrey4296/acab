@@ -4,6 +4,9 @@ import unittest
 import logging
 from pyparsing import ParseException
 
+from acab.config import AcabConfig
+AcabConfig.Get().read("acab/util.config")
+
 from acab.modules.values.numbers.parsing import NumberParser as NP
 from acab.working_memory.trie_wm.parsing import ActionParser as AP
 from acab.working_memory.trie_wm.parsing import RuleParser as RP
@@ -13,12 +16,14 @@ from acab.working_memory.trie_wm.parsing import QueryParser as QP
 from acab.abstract import action
 from acab.abstract.query import QueryComponent, QueryOp
 from acab.abstract.sentence import Sentence
-from acab import util
 from acab.abstract.printing import util as PrU
 from acab.modules.values import numbers
 from acab.working_memory.trie_wm.trie_working_memory import TrieWM
 from acab.working_memory.trie_wm import util as KBU
 
+CONSTRAINT_S = AcabConfig.Get()("Parsing.Structure", "CONSTRAINT_S")
+OPERATOR_S = AcabConfig.Get()("Parsing.Structure", "OPERATOR_S")
+FALLBACK_S = AcabConfig.Get()("Parsing.Structure", "FALLBACK_S")
 
 class NumberQueryTests(unittest.TestCase):
     ns = None
@@ -48,7 +53,7 @@ class NumberQueryTests(unittest.TestCase):
 
     def test_basic_comparison(self):
         result = QP.constraints.parseString('\operator.query.lt 20, \operator.query.gt 40, \operator.query.neq $x, \operator.query.eq $y, \operator.query.regmatch /blah/')[0]
-        self.assertEqual(result[0], util.CONSTRAINT_S)
+        self.assertEqual(result[0], CONSTRAINT_S)
         self.assertEqual(len(result[1]), 5)
         self.assertTrue(all([isinstance(x, QueryComponent) for x in result[1]]))
         self.assertEqual(result[1][0].op.pprint(), 'operator.query.lt')
@@ -60,31 +65,31 @@ class NumberQueryTests(unittest.TestCase):
 
     def test_basic_query_core(self):
         result = QP.QueryCore.parseString('a(\operator.query.gt 20).')[0]
-        self.assertTrue(util.CONSTRAINT_S in result._data)
-        self.assertEqual(len(result._data[util.CONSTRAINT_S]), 1)
-        self.assertIsInstance(result._data[util.CONSTRAINT_S][0], QueryComponent)
+        self.assertTrue(CONSTRAINT_S in result._data)
+        self.assertEqual(len(result._data[CONSTRAINT_S]), 1)
+        self.assertIsInstance(result._data[CONSTRAINT_S][0], QueryComponent)
 
 
     def test_basic_query_core_multi_comparison(self):
         result = QP.QueryCore.parseString('a(\operator.query.gt 20, \operator.query.lt 30).')[0]
-        self.assertEqual(len(result._data[util.CONSTRAINT_S]), 2)
-        self.assertTrue(all([isinstance(x, QueryComponent) for x in result._data[util.CONSTRAINT_S]]))
+        self.assertEqual(len(result._data[CONSTRAINT_S]), 2)
+        self.assertTrue(all([isinstance(x, QueryComponent) for x in result._data[CONSTRAINT_S]]))
 
 
     def test_basic_query_core_with_exclusion(self):
         result = QP.QueryCore.parseString('a(\operator.query.gt 20)!')[0]
-        self.assertEqual(result._data[util.OPERATOR_S], KBU.EXOP.EX)
+        self.assertEqual(result._data[OPERATOR_S], KBU.EXOP.EX)
 
 
     def test_clause_fallback(self):
         result = QP.clause.parseString('a.b.c? || $x:2')[0]
         self.assertIsInstance(result, Sentence)
-        self.assertTrue(util.FALLBACK_S in result._data)
-        self.assertIsNotNone(result._data[util.FALLBACK_S])
-        self.assertEqual(len(result._data[util.FALLBACK_S]), 1)
+        self.assertTrue(FALLBACK_S in result._data)
+        self.assertIsNotNone(result._data[FALLBACK_S])
+        self.assertEqual(len(result._data[FALLBACK_S]), 1)
 
-        self.assertEqual(result._data[util.FALLBACK_S][0][0], 'x')
-        self.assertEqual(result._data[util.FALLBACK_S][0][1][-1]._value, 2)
+        self.assertEqual(result._data[FALLBACK_S][0][0], 'x')
+        self.assertEqual(result._data[FALLBACK_S][0][1][-1]._value, 2)
 
 
     def test_clause_negated_fallback(self):
@@ -95,12 +100,12 @@ class NumberQueryTests(unittest.TestCase):
     def test_clause_multi_fallback(self):
         result = QP.clause.parseString('a.b.c? || $x:2, $y:5')[0]
         self.assertIsInstance(result, Sentence)
-        self.assertIsNotNone(result._data[util.FALLBACK_S])
-        self.assertEqual(len(result._data[util.FALLBACK_S]), 2)
-        self.assertEqual(result._data[util.FALLBACK_S][0][0], 'x')
-        self.assertEqual(result._data[util.FALLBACK_S][0][1][-1]._value, 2)
-        self.assertEqual(result._data[util.FALLBACK_S][1][0], 'y')
-        self.assertEqual(result._data[util.FALLBACK_S][1][1][-1]._value, 5)
+        self.assertIsNotNone(result._data[FALLBACK_S])
+        self.assertEqual(len(result._data[FALLBACK_S]), 2)
+        self.assertEqual(result._data[FALLBACK_S][0][0], 'x')
+        self.assertEqual(result._data[FALLBACK_S][0][1][-1]._value, 2)
+        self.assertEqual(result._data[FALLBACK_S][1][0], 'y')
+        self.assertEqual(result._data[FALLBACK_S][1][1][-1]._value, 5)
 
 
     def test_fact_str_equal(self):

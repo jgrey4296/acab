@@ -2,9 +2,14 @@
 from os.path import splitext, split
 import unittest
 import logging
+from acab.config import AcabConfig
+AcabConfig.Get().read("acab/util.config")
+
 from acab.abstract.node import AcabNode
 from acab.abstract.value import AcabValue as PV
-from acab import util
+
+BIND_S = AcabConfig.Get()("Parsing.Structure", "BIND_S")
+
 
 class AcabNodeTests(unittest.TestCase):
 
@@ -107,13 +112,13 @@ class AcabNodeTests(unittest.TestCase):
 
 
     def test_var_set(self):
-        node = AcabNode(PV("test", data={util.BIND_S: True}))
+        node = AcabNode(PV("test", data={BIND_S: True}))
         var_set = node.var_set
         var_set_str = [x.name for x in var_set['out']]
         self.assertTrue("test" in var_set_str)
 
     def test_nested_var_set(self):
-        node = AcabNode(PV("inner", data={util.BIND_S: True}))
+        node = AcabNode(PV("inner", data={BIND_S: True}))
         var_set = node.var_set
         var_set_str = [x.name for x in var_set['in']]
         self.assertTrue('inner' in var_set_str)

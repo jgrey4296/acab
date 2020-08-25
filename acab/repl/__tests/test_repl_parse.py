@@ -3,6 +3,9 @@ from os.path import splitext, split
 import unittest
 import logging
 
+from acab.config import AcabConfig
+AcabConfig.Get().read("acab/util.config")
+
 
 class ReplParseTests(unittest.TestCase):
 

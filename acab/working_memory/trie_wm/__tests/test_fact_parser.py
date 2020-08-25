@@ -3,13 +3,17 @@ import logging
 import random
 import pyparsing as pp
 
+from acab.config import AcabConfig
+AcabConfig.Get().read("acab/util.config")
+
 from acab.abstract.printing import util as PrU
 import acab.working_memory.trie_wm.parsing.FactParser as FP
 from acab.abstract.value import AcabValue
 from acab.abstract.sentence import Sentence
 from acab.working_memory.trie_wm import util as KBU
-from acab import util
 
+NEGATION_S = AcabConfig.Get()("Parsing.Structure", "NEGATION_S")
+VALUE_TYPE_S = AcabConfig.Get()("Parsing.Structure", "VALUE_TYPE_S")
 
 class Trie_Fact_Parser_Tests(unittest.TestCase):
 
@@ -107,17 +111,17 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
 
         a = FP.VALBIND.parseString("¿awef")[0]
         self.assertEqual(a._value, "¿awef")
-        self.assertEqual(a._data[KBU.VALUE_TYPE_S], "awef")
+        self.assertEqual(a._data[VALUE_TYPE_S], "awef")
 
     def test_negated_basic_sentence(self):
         result = FP.BASIC_SEN.parseString('~a.test!string')[0]
         self.assertIsInstance(result, Sentence)
-        self.assertTrue(result._data[util.NEGATION_S])
+        self.assertTrue(result._data[NEGATION_S])
 
     def test_positive_basic_sentence(self):
         result = FP.BASIC_SEN.parseString('a.test!string')[0]
         self.assertIsInstance(result, Sentence)
-        self.assertFalse(result._data[util.NEGATION_S])
+        self.assertFalse(result._data[NEGATION_S])
 
     def test_sentence_statement(self):
         result = FP.SEN_STATEMENT.parseString("a.test.sentence: (::Σ)\nextension.sentence\nsecond.extension\n end")

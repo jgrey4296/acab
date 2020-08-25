@@ -4,6 +4,9 @@ import pyparsing as pp
 import unittest
 import logging
 
+from acab.config import AcabConfig
+AcabConfig.Get().read("acab/util.config")
+
 from acab.abstract.printing import util as PrU
 from acab.modules.values.numbers.parsing import NumberParser as NP
 from acab.working_memory.trie_wm.parsing import ActionParser as AP
@@ -14,7 +17,6 @@ from acab.abstract import action
 from acab.abstract.query import QueryComponent, QueryOp
 from acab.abstract.sentence import Sentence
 from acab.abstract import transform
-from acab import util
 from acab.modules.values import numbers
 from acab.working_memory.trie_wm.trie_working_memory import TrieWM
 from acab.working_memory.trie_wm import util as KBU

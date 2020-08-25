@@ -3,6 +3,9 @@ import logging
 # https://docs.python.org/3/library/unittest.mock.html
 import unittest.mock as mock
 
+from acab.config import AcabConfig
+AcabConfig.Get().read("acab/util.config")
+
 from acab.modules.operators.query import RegMatch
 from acab.abstract.engine import Engine
 from acab.working_memory.trie_wm.trie_working_memory import TrieWM

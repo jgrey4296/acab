@@ -1,6 +1,9 @@
 import unittest
 import logging
-from acab import util
+
+from acab.config import AcabConfig
+AcabConfig.Get().read("acab/util.config")
+
 from acab.abstract.printing import util as PrU
 from acab.working_memory.trie_wm import util as KBU
 from acab.working_memory.trie_wm.parsing import RuleParser as RP

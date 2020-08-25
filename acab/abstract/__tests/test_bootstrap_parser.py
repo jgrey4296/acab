@@ -4,6 +4,9 @@ import unittest
 import logging
 import pyparsing as pp
 
+from acab.config import AcabConfig
+AcabConfig.Get().read("acab/util.config")
+
 from acab.abstract.bootstrap_parser import BootstrapParser
 
 class BootstrapParserTests(unittest.TestCase):

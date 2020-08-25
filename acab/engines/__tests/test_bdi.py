@@ -1,11 +1,13 @@
 import unittest
 import logging
-import acab.util as util
-from acab.engines import bdi_engine as bdi
 from os.path import join, isfile, exists, isdir, splitext, expanduser
 from os.path import abspath, split
 from os import listdir
 
+from acab.config import AcabConfig
+AcabConfig.Get().read("acab/util.config")
+
+from acab.engines import bdi_engine as bdi
 
 @unittest.skip("Broken")
 class BDI_TESTS(unittest.TestCase):

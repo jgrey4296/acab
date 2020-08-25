@@ -1,6 +1,10 @@
 import unittest
 import logging
 import re
+
+from acab.config import AcabConfig
+AcabConfig.Get().read("acab/util.config")
+
 from acab.working_memory.trie_wm.parsing import TransformParser as TP
 from acab.abstract import transform
 from acab.working_memory.trie_wm import util as KBU

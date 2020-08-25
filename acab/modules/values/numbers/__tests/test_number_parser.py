@@ -4,7 +4,9 @@ import unittest
 import logging
 import random
 
-from acab import util
+from acab.config import AcabConfig
+AcabConfig.Get().read("acab/util.config")
+
 from acab.abstract import action
 from acab.abstract import transform
 from acab.abstract.printing import util as PrU

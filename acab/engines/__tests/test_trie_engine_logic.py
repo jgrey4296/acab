@@ -1,14 +1,16 @@
 import unittest
 import logging
+from os.path import join, isfile, exists, isdir
+from os.path import split, splitext, expanduser, abspath
+from os import listdir
+
+from acab.config import AcabConfig
+AcabConfig.Get().read("acab/util.config")
 
 import acab.abstract.trie as T
 from acab.abstract.sentence import Sentence
 from acab.engines.trie_engine import TrieEngine
 from acab.abstract.rule import Rule
-from os.path import join, isfile, exists, isdir
-from os.path import split, splitext, expanduser, abspath
-from os import listdir
-
 def S(*words):
     return Sentence.build(words)
 

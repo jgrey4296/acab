@@ -3,11 +3,16 @@ from os.path import splitext, split
 import unittest
 import logging
 
+from acab.config import AcabConfig
+AcabConfig.Get().read("acab/util.config")
+
 from acab.abstract.printing import util as PrU
 from acab.abstract.value import AcabValue, AcabStatement
 from acab.abstract.node import AcabNode
 from acab.abstract.sentence import Sentence
-from acab.util import AT_BIND_S, BIND_S
+
+AT_BIND_S = AcabConfig.Get()("Parsing.Structure", "AT_BIND_S")
+BIND_S = AcabConfig.Get()("Parsing.Structure", "BIND_S")
 
 class AcabValueTests(unittest.TestCase):
 

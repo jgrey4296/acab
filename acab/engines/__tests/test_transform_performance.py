@@ -6,7 +6,9 @@ from math import isclose
 import pyparsing as pp
 import unittest
 import logging
-import acab
+
+from acab.config import AcabConfig
+AcabConfig.Get().read("acab/util.config")
 
 from acab.abstract.contexts import Contexts
 from acab.abstract.sentence import Sentence

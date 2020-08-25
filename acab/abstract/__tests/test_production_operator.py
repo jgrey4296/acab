@@ -2,6 +2,10 @@
 from os.path import splitext, split
 import unittest
 import logging
+
+from acab.config import AcabConfig
+AcabConfig.Get().read("acab/util.config")
+
 from acab.abstract import production_operator as PO
 from acab.abstract.sentence import Sentence
 from acab.abstract.value import AcabValue, AcabStatement

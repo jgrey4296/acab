@@ -4,6 +4,9 @@ import unittest
 import unittest.mock as mock
 import logging
 
+from acab.config import AcabConfig
+AcabConfig.Get().read("acab/util.config")
+
 from acab.abstract.working_memory import WorkingMemory
 from acab.abstract.engine import Engine
 

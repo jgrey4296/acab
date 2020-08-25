@@ -2,7 +2,12 @@
 from os.path import splitext, split
 import unittest
 import logging
+
+from acab.config import AcabConfig
+AcabConfig.Get().read("acab/util.config")
+
 from acab.abstract.node import AcabNode
+
 
 
 class WorkingMemoryTests(unittest.TestCase):

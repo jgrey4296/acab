@@ -7,7 +7,11 @@ from acab.modules.structures.time.pattern import PatternSeq, PatternPar
 from acab.modules.structures.time.parsing import parser as tp
 from acab.modules.structures.time.util import Time as t
 from acab.abstract.parsing import util as PU
-from acab.util import BIND_S
+from acab.config import AcabConfig
+
+util = AcabConfig.Get()
+
+BIND_S = util("Parsing.Structure", "BIND_S")
 
 class TestTime(unittest.TestCase):
 

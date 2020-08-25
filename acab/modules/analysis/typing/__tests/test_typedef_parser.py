@@ -2,9 +2,11 @@ import logging
 import random
 import unittest
 
+from acab.config import AcabConfig
+AcabConfig.Get().read("acab/util.config")
+
 import acab.modules.analysis.typing.parsing.TypeDefParser as TD
 import acab.modules.analysis.typing.parsing.TypeParser as TP
-import acab.util as util
 
 from acab.abstract.sentence import Sentence
 from acab.abstract.node import AcabNode

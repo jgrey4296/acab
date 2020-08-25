@@ -3,6 +3,10 @@ from os.path import splitext, split
 import unittest
 import logging
 import pyparsing as pp
+
+from acab.config import AcabConfig
+AcabConfig.Get().read("acab/util.config")
+
 from acab.abstract.parsing import util as PU
 from acab.abstract.node import AcabNode
 from acab.abstract.value import AcabValue, AcabStatement

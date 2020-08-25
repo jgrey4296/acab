@@ -1,5 +1,9 @@
 import unittest
 import logging
+
+from acab.config import AcabConfig
+AcabConfig.Get().read("acab/util.config")
+
 from acab.abstract.trie.trie import Trie
 from acab.abstract.node import AcabNode
 

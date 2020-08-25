@@ -1,7 +1,10 @@
 import unittest
 import logging
 
-from acab import util
+from acab.config import AcabConfig
+AcabConfig.Get().read("acab/util.config")
+
+
 from acab.abstract import action
 from acab.abstract.bootstrap_parser import BootstrapParser
 from acab.abstract.node import AcabNode

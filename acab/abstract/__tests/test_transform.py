@@ -2,12 +2,16 @@
 from os.path import splitext, split
 import unittest
 import logging
-from acab import util
+
+from acab.config import AcabConfig
+AcabConfig.Get().read("acab/util.config")
+
 from acab.abstract.sentence import Sentence
 from acab.abstract.transform import TransformComponent, TransformOp
 from acab.abstract.node import AcabNode
 from acab.abstract.value import AcabValue as PV
 
+BIND_S = AcabConfig.Get()("Parsing.Structure", "BIND_S")
 
 class TransformTests(unittest.TestCase):
 
@@ -28,8 +32,8 @@ class TransformTests(unittest.TestCase):
         self.assertIsInstance(transform, TransformComponent)
 
     def test_var_set(self):
-        param = PV("input", data={util.BIND_S: True})
-        outbind = PV("output", data={util.BIND_S: True})
+        param = PV("input", data={BIND_S: True})
+        outbind = PV("output", data={BIND_S: True})
         transform = TransformComponent(Sentence.build(["TestOp"]), [param], rebind=outbind)
         var_set = transform.var_set
         var_set_in_str = [x.name for x in var_set['in']]

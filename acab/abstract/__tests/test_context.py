@@ -3,7 +3,10 @@ from os.path import splitext, split
 import unittest
 import logging
 from acab.abstract.contexts import Contexts
-from acab.util import AT_BIND_S
+from acab.config import AcabConfig
+AcabConfig.Get().read("acab/util.config")
+
+AT_BIND_S = AcabConfig.Get()("Parsing.Structure", "AT_BIND_S")
 
 class ContextTests(unittest.TestCase):
 

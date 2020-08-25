@@ -3,9 +3,13 @@ from os.path import splitext, split
 import unittest
 import logging
 
-from acab import util
+from acab.config import AcabConfig
+AcabConfig.Get().read("acab/util.config")
+
 from acab.abstract.value import AcabValue
 from acab.abstract.sentence import Sentence
+
+BIND_S = AcabConfig.Get()("Parsing.Structure", "BIND_S")
 
 def S(*values):
     return Sentence([AcabValue(x) for x in values])
@@ -74,7 +78,7 @@ class SentenceTests(unittest.TestCase):
     def test_bind(self):
         val = Sentence.build(["a","test","value"])
         var = Sentence.build(["var"])
-        var[0].set_data({util.BIND_S : True})
+        var[0].set_data({BIND_S : True})
         sen = val.add(var)
 
         bound = sen.bind({"var" : "blah"})
@@ -85,8 +89,8 @@ class SentenceTests(unittest.TestCase):
     def test_bind_nop(self):
         val = Sentence.build(["a","test","value"])
         var = Sentence.build(["var"])
-        var[0].set_data({util.BIND_S: True})
-        val[2].set_data({util.BIND_S : True})
+        var[0].set_data({BIND_S: True})
+        val[2].set_data({BIND_S : True})
         sen = val.add(var)
 
         bound = sen.bind({"not_var" : "blah"})

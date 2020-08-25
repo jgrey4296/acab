@@ -2,13 +2,16 @@
 from os.path import splitext, split
 import unittest
 import logging
+
+from acab.config import AcabConfig
+AcabConfig.Get().read("acab/util.config")
+
 from acab.abstract.query import QueryComponent, QueryOp
-from acab import util
 from acab.abstract.node import AcabNode
 from acab.abstract.value import AcabValue as PV
 from acab.abstract.sentence import Sentence
 
-
+BIND_S = AcabConfig.Get()("Parsing.Structure", "BIND_S")
 
 class QueryTests(unittest.TestCase):
 
@@ -29,7 +32,7 @@ class QueryTests(unittest.TestCase):
         self.assertIsInstance(comp, QueryComponent)
 
     def test_var_set(self):
-        bind = PV("an_input", data={util.BIND_S: True})
+        bind = PV("an_input", data={BIND_S: True})
         comp = QueryComponent(Sentence.build(["test"]), [bind])
         var_set = comp.var_set
         var_set_str = [x.name for x in var_set['in']]
