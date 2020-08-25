@@ -228,11 +228,6 @@
 
     Defines the implementation of the BaseEngine, for a trie backing.
 
-*** TrieRule.py
-    *Defines*: TrieRule
-
-    Defines the trie based implementation of a rule.
-
 ** Institutions
    If institutions are a module/file level construct, that would mean
    that files define:

@@ -1,7 +1,7 @@
 """ Trie-based parser to construct rules """
 import logging as root_logger
 import pyparsing as pp
-from acab.working_memory.trie_wm.trie_rule import TrieRule
+from acab.abstract.rule import Rule
 from acab.abstract.parsing import util as PU
 from acab.working_memory.trie_wm import util as WMU
 from acab.working_memory.trie_wm.fact_node import FactNode
@@ -45,7 +45,7 @@ def build_rule(toks):
         a = None
 
 
-    rule = TrieRule(c, action=a, transform=t)
+    rule = Rule(c, action=a, transform=t)
     return (rule.type, rule)
 
 
