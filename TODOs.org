@@ -14,12 +14,14 @@
   CLOCK: [2020-05-11 Mon 15:16]--[2020-05-11 Mon 15:41] =>  0:25
   :END:
 ** Functionality
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/abstract/production_operator.py::20][Implement operator infix logic]]                                         :parsing:
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/abstract/production_operator.py::20][Implement operator infix logic]]                                         :parsing:
+    CLOSED: [2020-08-25 Tue 21:58]
     <2020-03-26 Thu>
 
     self._infix = infix
 
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/type_checker.py::139][Implement operator type checking]]                                       :typing:
+*** DONE [[/Volumes/documents/github/py_rule/py_rule/modules/analysis/typing/type_checker.py::139][Implement operator type checking]]                                       :typing:
+    CLOSED: [2020-08-25 Tue 22:02]
     <2020-03-26 Thu>
 
     def validate(self):
@@ -38,11 +40,6 @@
     <2020-03-26 Thu>
 
     def _unify(self, other):
-
-*** TODO [[/Volumes/documents/github/py_rule/py_rule/working_memory/trie_wm/trie_rule.py::9][Implement TrieRule features]]                                            :semantics:
-    <2020-03-26 Thu>
-
-    class TrieRule(Rule):
 
 *** DONE [[/Volumes/documents/github/acab/acab/modules/analysis/typing/parsing/TypeDefParser.py::53][add sum types]]
     CLOSED: [2020-07-13 Mon 17:12]
@@ -143,7 +140,8 @@
     <2020-03-26 Thu>
 
     TODO: add rule modification actions:
-*** TODO [[/Volumes/documents/github/acab/acab/modules/values/numbers/parsing/NumberParser.py::9][Add fraction parsing]]                                                   :parsing:
+*** DONE [[/Volumes/documents/github/acab/acab/modules/values/numbers/parsing/NumberParser.py::9][Add fraction parsing]]                                                   :parsing:
+    CLOSED: [2020-08-25 Tue 22:18]
     <2020-03-26 Thu>
 
     def construct_num(toks):
@@ -178,7 +176,8 @@
 
     class Pattern(AcabValue):
 
-*** TODO [[/Volumes/documents/github/acab/acab/abstract/production_operator.py::17][Possibly use subclass DFS for operator name registration]]               :performance:
+*** DONE [[/Volumes/documents/github/acab/acab/abstract/production_operator.py::17][Possibly use subclass DFS for operator name registration]]               :performance:
+    CLOSED: [2020-08-25 Tue 22:18]
     <2020-03-26 Thu>
 
     self._op_str = self.__class__.__name__
@@ -194,7 +193,8 @@
     result = RP.parseString("ρ::a.rule:\n$y.b.$z?\n\n$x + 2 -> $y\n\n+($y)\n\nend")[0][-1]
 
     # Remove quotes from around strings:
-*** TODO [[/Volumes/documents/github/acab/acab/abstract/comparison.py::81][replace magic string with a constant]]
+*** DONE [[/Volumes/documents/github/acab/acab/abstract/comparison.py::81][replace magic string with a constant]]
+    CLOSED: [2020-08-25 Tue 22:22]
      <2020-04-02 Thu>
 
      return self._op == "RegMatch"
