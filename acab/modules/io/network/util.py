@@ -1,5 +1,9 @@
-DEFAULT_PORT = 50000
-DEFAULT_BLOCKSIZE = 1024
-DEFAULT_HEADERSIZE = 128
-DEFAULT_BACKLOG = 10
-DEFAULT_HOST = "localhost"
+from acab.config import AcabConfig
+
+util = AcabConfig.Get()
+
+DEFAULT_PORT = util("Module.Network", "DEFAULT_PORT")
+DEFAULT_BLOCKSIZE = util("Module.Network", "DEFAULT_BLOCKSIZE")
+DEFAULT_HEADERSIZE = util("Module.Network", "DEFAULT_HEADERSIZE")
+DEFAULT_BACKLOG = util("Module.Network", "DEFAULT_BACKLOG")
+DEFAULT_HOST = util("Module.Network", "DEFAULT_HOST")

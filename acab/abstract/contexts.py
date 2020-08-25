@@ -9,7 +9,15 @@ import logging as root_logger
 
 from acab.abstract.value import AcabValue
 from acab.abstract.production_operator import ProductionOperator
-from acab.util import AT_BIND_S, FALLBACK_S, AT_BIND_S, BIND_S, CONSTRAINT_S
+from acab.config import AcabConfig
+
+util = AcabConfig.Get()
+
+AT_BIND_S = util("Parsing.Structure", "AT_BIND_S")
+FALLBACK_S = util("Parsing.Structure", "FALLBACK_S")
+BIND_S = util("Parsing.Structure", "BIND_S")
+CONSTRAINT_S = util("Parsing.Structure", "CONSTRAINT_S")
+
 
 logging = root_logger.getLogger(__name__)
 

@@ -6,11 +6,17 @@ from acab.abstract.parsing import util as PU
 from acab.working_memory.trie_wm import util as WMU
 from acab.working_memory.trie_wm.fact_node import FactNode
 from acab.abstract.production_operator import ProductionContainer
+from acab.config import AcabConfig
 
 from . import FactParser as FP
 from . import QueryParser as QP
 from . import TransformParser as TP
 from . import ActionParser as AP
+
+util = AcabConfig.Get()
+QUERY_S = util("Parsing.Structure", "QUERY_S")
+TRANSFORM_S = util("Parsing.Structure", "TRANSFORM_S")
+ACTION_S = util("Parsing.Structure", "ACTION_S")
 
 logging = root_logger.getLogger(__name__)
 
@@ -18,22 +24,22 @@ logging = root_logger.getLogger(__name__)
 def build_rule(toks):
 
     # Get Conditions
-    if WMU.QUERY_S in toks:
-        c = toks[WMU.QUERY_S][0][1]
+    if QUERY_S in toks:
+        c = toks[QUERY_S][0][1]
         assert(isinstance(c, ProductionContainer))
     else:
         c = None
 
     # Get Transform
-    if WMU.TRANSFORM_S in toks:
-        t = toks[WMU.TRANSFORM_S][0][1]
+    if TRANSFORM_S in toks:
+        t = toks[TRANSFORM_S][0][1]
         assert(isinstance(t, ProductionContainer))
     else:
         t = None
 
     # Get Action
-    if WMU.ACTION_S in toks:
-        a = toks[WMU.ACTION_S][0][1]
+    if ACTION_S in toks:
+        a = toks[ACTION_S][0][1]
         assert(isinstance(a, ProductionContainer))
     else:
         a = None
@@ -43,9 +49,9 @@ def build_rule(toks):
     return (rule.type, rule)
 
 
-conditions = PU.N(WMU.QUERY_S, QP.clauses + PU.gap)
-transforms = PU.N(WMU.TRANSFORM_S, TP.transforms + PU.gap)
-actions    = PU.NG(WMU.ACTION_S, AP.actions + PU.component_gap)
+conditions = PU.N(QUERY_S, QP.clauses + PU.gap)
+transforms = PU.N(TRANSFORM_S, TP.transforms + PU.gap)
+actions    = PU.NG(ACTION_S, AP.actions + PU.component_gap)
 
 rule_body = PU.op(conditions) + PU.op(transforms) + PU.op(actions)
 

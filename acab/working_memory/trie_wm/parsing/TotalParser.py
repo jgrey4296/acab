@@ -8,7 +8,6 @@ from pyparsing import pyparsing_common as ppc
 from acab.abstract.sentence import Sentence
 from acab.abstract.value import AcabValue
 from acab.abstract.rule import Rule
-from acab.working_memory.trie_wm import util as WMU
 from acab.abstract.parsing import util as PU
 from acab.error.acab_parse_exception import AcabParseException
 

@@ -14,7 +14,13 @@ from acab.abstract.printing import util as PrU
 from acab.abstract.node import AcabNode
 from acab.abstract.value import AcabValue
 
-from acab.util import CONSTRAINT_S, AT_BIND_S
+from acab.config import AcabConfig
+util = AcabConfig.Get()
+
+CONSTRAINT_S = util("Parsing.Structure", "CONSTRAINT_S")
+AT_BIND_S = util("Parsing.Structure", "AT_BIND_S")
+
+
 
 logging = root_logger.getLogger(__name__)
 
@@ -215,7 +221,8 @@ class Trie:
         # TODO: test type instance if not ATOM
         passing = [match_regexs(n, regexs, d, i) for i,d,n in potentials
                    if test_alphas(n, alphas, d, engine=engine)
-                   and test_betas(n, betas, d, engine=engine)]
+                   and test_betas(n, betas, d, engine=engine)
+                   and test_annotations(n, annotations, d, engine)]
 
         to_add = [add_var_to_context(i, query_word, d, n) for i,d,n in passing if n is not None]
 
@@ -316,26 +323,26 @@ def match_regexs(node, regexs, data, i):
     return (i, final_data, node)
 
 def validate_and_split_constraints(word, ctx=None, engine=None):
-    """ Split tests into (alphas, betas, regexs),
+    """ Split tests into (alphas, betas, sub_binds),
     Also connect Components to actual operators
     """
     if CONSTRAINT_S not in word._data:
         return ([], [], [], set())
 
     comps = [x.verify(ctx=ctx, engine=engine) for x in word._data[CONSTRAINT_S] if isinstance(x, QueryComponent)]
-    others = set([x for x in word._data[CONSTRAINT_S] if not isinstance(x, QueryComponent)])
+    others = set([x for x in word._data[CONSTRAINT_S] if not isinstance(x, QueryComponent) and hasattr(x, '__call__')])
     alphas = []
     betas = []
-    regexs = []
+    sub_binds = []
     for c in comps:
         if c.is_sub_bind_test:
-            regexs.append(c)
+            sub_binds.append(c)
         elif c.is_alpha_test:
             alphas.append(c)
         else:
             betas.append(c)
 
-    return (alphas, betas, regexs, others)
+    return (alphas, betas, sub_binds, others)
 
 
 def test_alphas(node, comps, data=None, engine=None):
@@ -344,4 +351,7 @@ def test_alphas(node, comps, data=None, engine=None):
 
 def test_betas(node, comps, data=None, engine=None):
     """ Run word beta tests against word retrieved value, with supplied bindings """
+    return all([x(node, data=data, engine=engine) for x in comps])
+
+def test_annotations(node, comps, data=None, engine=None):
     return all([x(node, data=data, engine=engine) for x in comps])

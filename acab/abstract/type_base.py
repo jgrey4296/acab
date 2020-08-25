@@ -4,8 +4,16 @@ Only Provides automatic *primitives*.
 Manual typing and Product/Sum types are implemented
 in the separate typing module.
 """
-from acab import util
 from acab.abstract.printing import util as PrU
+from acab.config import AcabConfig
+
+util = AcabConfig.Get()
+
+TYPE_FMT_S = util("Printing", "TYPE_FMT_S")
+QUERY_HEAD_S = util("Parsing.Statements", "QUERY_HEAD_S")
+TRANSFORM_HEAD_S = util("Parsing.Statements", "TRANSFORM_HEAD_S")
+ACTION_HEAD_S = util("Parsing.Statements", "ACTION_HEAD_S")
+RULE_HEAD_S = util("Parsing.Statements", "RULE_HEAD_S")
 
 class _Bootstrap_Value:
     """
@@ -126,6 +134,15 @@ class TypeInstance:
         return "(TypeInstance {})".format(str(self))
 
 
+    def __call__(self, node, data=None, engine=None):
+        """
+        An example light weight annotation for querying
+        This *could* be wrapped in a ProductionOperator, or a QueryOperator,
+        but this way requires less setup
+        """
+        return self == node.value.type
+
+
     @property
     def path(self):
         return self._path
@@ -169,9 +186,9 @@ class TypeInstance:
     def pprint(self, opts=None):
         # TODO: handle type parameters
         if self._type_alias is not None:
-            return util.TYPE_FMT_S.format(self._type_alias)
+            return TYPE_FMT_S.format(self._type_alias)
         else:
-            return util.TYPE_FMT_S.format(self.path.pprint(opts))
+            return TYPE_FMT_S.format(self.path.pprint(opts))
 
 
 # Construct the primitive types
@@ -186,7 +203,7 @@ OPERATOR  = TypeInstance(path=["operator"], primitive=True)
 COMPONENT = TypeInstance(path=["component"], primitive=True)
 CONTAINER = TypeInstance(path=["container"], primitive=True)
 
-QUERY     = TypeInstance(path=["query"], type_alias_str=util.QUERY_HEAD_S, primitive=True)
-TRANSFORM = TypeInstance(path=["transform"], type_alias_str=util.TRANSFORM_HEAD_S, primitive=True)
-ACTION    = TypeInstance(path=["action"], type_alias_str=util.ACTION_HEAD_S, primitive=True)
-RULE      = TypeInstance(path=["rule"], type_alias_str=util.RULE_HEAD_S, primitive=True)
+QUERY     = TypeInstance(path=["query"], type_alias_str=QUERY_HEAD_S, primitive=True)
+TRANSFORM = TypeInstance(path=["transform"], type_alias_str=TRANSFORM_HEAD_S, primitive=True)
+ACTION    = TypeInstance(path=["action"], type_alias_str=ACTION_HEAD_S, primitive=True)
+RULE      = TypeInstance(path=["rule"], type_alias_str=RULE_HEAD_S, primitive=True)

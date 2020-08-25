@@ -7,11 +7,15 @@ from uuid import uuid1
 import weakref
 from copy import deepcopy
 
-from acab import util
 from acab.abstract.printing import util as PrU
+from acab.config import AcabConfig
 
 from .value import AcabValue
 
+util = AcabConfig.Get()
+
+ROOT_S = util("Data.Trie", "ROOT_S")
+BIND_S = util("Parsing.Structure", "BIND_S")
 
 class AcabNode:
     """ The Base Node Class for Tries/Data structures etc"""
@@ -19,7 +23,7 @@ class AcabNode:
     @staticmethod
     def Root():
         """ Get a default defined root node """
-        return AcabNode(util.ROOT_S)
+        return AcabNode(ROOT_S)
 
     def __init__(self, value, data=None):
         #Unwrap Nodes to avoid nesting
@@ -137,7 +141,7 @@ class AcabNode:
 
     def bind(self, bindings):
         """ Return a copy that has applied given bindings to its value"""
-        if not self.value._data[util.BIND_S]:
+        if not self.value._data[BIND_S]:
             return self.copy()
         else:
             copied = self.copy()
@@ -148,7 +152,7 @@ class AcabNode:
         """ Set the Node's value to be one retrieved
         from passed in bindings """
         assert(self.value in data)
-        assert(util.BIND_S in self.value._data and self.value._data[util.BIND_S])
+        assert(BIND_S in self.value._data and self.value._data[BIND_S])
         self._value = data[self.value]
         assert(isinstance(self._value, AcabValue))
 

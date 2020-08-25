@@ -7,7 +7,7 @@ Each clause is a Component, which combines values with an operator
 """
 import logging as root_logger
 
-from acab import util
+from acab.config import AcabConfig
 from acab.abstract.printing import util as PrU
 
 from . import production_operator as PO
@@ -18,6 +18,7 @@ from acab.abstract.value import AcabValue
 
 logging = root_logger.getLogger(__name__)
 
+util = AcabConfig.Get()
 
 class TransformOp(PO.ProductionOperator):
 

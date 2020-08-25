@@ -10,8 +10,8 @@ from acab.error.acab_operator_exception import AcabOperatorException
 from acab.error.acab_parse_exception import AcabParseException
 from acab.abstract.printing import util as PrU
 from acab.abstract.parsing import util as PU
+from acab.config import AcabConfig
 
-from . import util
 from .fact_node import FactNode
 from .parsing import ActionParser as AP
 from .parsing import FactParser as FP
@@ -22,6 +22,10 @@ from .parsing import RuleParser as RP
 
 logging = root_logger.getLogger(__name__)
 
+util = AcabConfig.Get()
+
+NEGATION_S = util("Parsing.Structure", "NEGATION_S")
+FALLBACK_S = util("Parsing.Structure", "FALLBACK_S")
 
 class TrieWM(WorkingMemory):
     """ A Trie based working memory"""
@@ -62,7 +66,7 @@ class TrieWM(WorkingMemory):
         assert(all([isinstance(x, Sentence) for x in assertions]))
 
         for x in assertions:
-            if util.NEGATION_S in x._data and x._data[util.NEGATION_S]:
+            if NEGATION_S in x._data and x._data[NEGATION_S]:
                 self._retract_sentence(x)
             else:
                 if len(assertions) == 1 and leaf:
@@ -153,7 +157,6 @@ class TrieWM(WorkingMemory):
         """ Retract everything after the end of a (concrete) sentence """
         assert(isinstance(sen, Sentence))
         if self.score_listener(sen.words):
-            # TODO: add more listener options
             self.breakpoint()
 
         # go down to the child, and remove it
@@ -213,8 +216,8 @@ class TrieWM(WorkingMemory):
                 contexts.invert()
 
             # add all failures back in, if theres a default value
-            if util.FALLBACK_S in clause._data and bool(clause._data[util.FALLBACK_S]):
-                contexts.promote_failures(clause._data[util.FALLBACK_S])
+            if FALLBACK_S in clause._data and bool(clause._data[FALLBACK_S]):
+                contexts.promote_failures(clause._data[FALLBACK_S])
             else:
                 contexts.demote_failures()
 

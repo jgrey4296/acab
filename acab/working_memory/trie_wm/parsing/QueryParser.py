@@ -5,38 +5,46 @@ import pyparsing as pp
 from acab.abstract.query import Query, QueryOp, QueryComponent
 from acab.abstract.sentence import Sentence
 from acab.abstract.contexts import CTX_OP
-
 from acab.working_memory.trie_wm import util as WMU
 from acab.abstract.parsing import util as PU
-
 from acab.error.acab_parse_exception import AcabParseException
+from acab.config import AcabConfig
 
 from .FactParser import PARAM_CORE, PARAM_SEN, BASIC_SEN
 
 logging = root_logger.getLogger(__name__)
 
+util = AcabConfig.Get()
+CONSTRAINT_S = util("Parsing.Structure", "CONSTRAINT_S")
+OPERATOR_S = util("Parsing.Structure", "OPERATOR_S")
+VALUE_S = util("Parsing.Structure", "VALUE_S")
+QUERY_S = util("Parsing.Structure", "QUERY_S")
+NEGATION_S = util("Parsing.Structure", "NEGATION_S")
+FALLBACK_S = util("Parsing.Structure", "FALLBACK_S")
+MAIN_CLAUSE_S = util("WorkingMemory.TrieWM", "MAIN_CLAUSE_S")
+
 def build_constraint_list(toks):
     """ Build a constraint list """
-    return (WMU.CONSTRAINT_S, [x[1] for x in toks[:]])
+    return (CONSTRAINT_S, [x[1] for x in toks[:]])
 
 def build_query_component(toks):
     """ Build a comparison """
-    op = toks[WMU.OPERATOR_S][0]
-    return (WMU.CONSTRAINT_S, QueryComponent(op, param=toks[WMU.VALUE_S]))
+    op = toks[OPERATOR_S][0]
+    return (CONSTRAINT_S, QueryComponent(op, param=toks[VALUE_S]))
 
 def build_clause(toks):
     # detect negation and annotate the clause with it
-    data = { WMU.QUERY_S : True,
-             WMU.NEGATION_S : False,
-             WMU.FALLBACK_S : None }
-    if WMU.FALLBACK_S in toks:
-        if WMU.NEGATION_S in toks:
+    data = { QUERY_S : True,
+             NEGATION_S : False,
+             FALLBACK_S : None }
+    if FALLBACK_S in toks:
+        if NEGATION_S in toks:
             raise AcabParseException("Negated Fallback clauses don't make sense")
-        data[WMU.FALLBACK_S] = toks[WMU.FALLBACK_S][:]
-    if WMU.NEGATION_S in toks:
-        data[WMU.NEGATION_S] = True
+        data[FALLBACK_S] = toks[FALLBACK_S][:]
+    if NEGATION_S in toks:
+        data[NEGATION_S] = True
 
-    return Sentence(toks[WMU.MAIN_CLAUSE_S][:], data=data)
+    return Sentence(toks[MAIN_CLAUSE_S][:], data=data)
 
 def build_query(toks):
     query = Query(toks[:])
@@ -52,8 +60,8 @@ HOTLOAD_QUERY_ANNOTATIONS = pp.Forward()
 
 op_path = pp.Or([HOTLOAD_QUERY_OP, PU.OP_PATH_C(BASIC_SEN)])
 
-QUERY_OP_Internal = PU.N(WMU.OPERATOR_S, op_path) \
-    + PU.N(WMU.VALUE_S, PARAM_CORE(end=True))
+QUERY_OP_Internal = PU.N(OPERATOR_S, op_path) \
+    + PU.N(VALUE_S, PARAM_CORE(end=True))
 
 # defined earlier to work with named copies
 QUERY_OP_Internal.setParseAction(build_query_component)
@@ -77,10 +85,10 @@ QueryCore_end = PARAM_CORE(constraints, end=True)
 # a.test.query..<$x?
 # a.test.query..<$x(::Rule)?
 # Core Query Chain
-clause = PU.op(PU.NEGATION_SYMBOL) + PU.N(WMU.MAIN_CLAUSE_S, pp.ZeroOrMore(QueryCore)
+clause = PU.op(PU.NEGATION_SYMBOL) + PU.N(MAIN_CLAUSE_S, pp.ZeroOrMore(QueryCore)
                                           + QueryCore_end) \
                                           + PU.QUERY_SYMBOL\
-                                          + PU.N(WMU.FALLBACK_S,
+                                          + PU.N(FALLBACK_S,
                                                  PU.op(fallback))
 
 clauses = pp.delimitedList(clause, delim=PU.DELIM)

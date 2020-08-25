@@ -40,12 +40,19 @@ Where to specify api connections?
 """
 import logging as root_logger
 import pyparsing as pp
+
+from acab.config import AcabConfig
+AcabConfig.Get().read("acab/util.config")
 from acab.abstract.parsing import util as PU
 from acab.abstract.production_operator import ProductionContainer
 from acab.abstract.pipeline import Pipeline, make_pipeline
-from acab.util import QUERY_S, TRANSFORM_S, ACTION_S
 
 logging = root_logger.getLogger(__name__)
+
+util = AcabConfig.Get()
+QUERY_S = util("Parsing.Structure", "QUERY_S")
+TRANSFORM_S = util("Parsing.Structure", "TRANSFORM_S")
+ACTION_S = util("Parsing.Structure", "ACTION_S")
 
 HOTLOAD_BASIC_SEN = pp.Forward()
 HOTLOAD_QUERY = pp.Forward()

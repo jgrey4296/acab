@@ -4,10 +4,14 @@ Pyparsing based parser for types
 import logging as root_logger
 import pyparsing as pp
 
-from acab.util import VALUE_TYPE_S
 from acab.abstract.type_base import TypeInstance
 from acab.modules.analysis.typing import util as TYU
 from acab.abstract.parsing import util as PU
+from acab.config import AcabConfig
+
+util = AcabConfig.Get()
+VALUE_TYPE_S = util("Parsing.Structure", "VALUE_TYPE_S")
+
 
 def make_type_dec(toks):
     """ Construct a type declaration / annotation
@@ -26,7 +30,11 @@ TYPEDEC_CORE = pp.Forward()
 
 VAR_OR_TYPE_DEC = pp.Or([PU.BIND, TYPEDEC_CORE])
 
-TYPEDEC_CORE <<= PU.DBLCOLON + PU.N(TYU.SEN_S, HOTLOAD_BASIC_SEN) \
+# TODO: extract primitives' type_aliases
+TYPE_NAME = pp.Or([HOTLOAD_BASIC_SEN])
+
+# TODO: auto recognise primitives and their aliases
+TYPEDEC_CORE <<= PU.DBLCOLON + PU.N(TYU.SEN_S, TYPE_NAME) \
     + PU.N(TYU.ARG_S, PU.op(PU.OPAR
                             + pp.delimitedList(VAR_OR_TYPE_DEC,
                                                TYU.DELIM_S,

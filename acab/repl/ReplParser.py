@@ -5,12 +5,17 @@ The parser for the REPL
 import pyparsing as pp
 import logging as root_logger
 
+from acab.config import AcabConfig
 from acab.abstract.parsing import util as PU
 from .repl_commands import ReplE as RE
 from .repl_commands import build_command
 
 logging = root_logger.getLogger(__name__)
 HOTLOAD_COMMANDS = pp.Forward()
+util = AcabConfig.Get()
+
+MULTI_LINE_REGEX = util("REPL", "MULTI_LINE_REGEX")
+
 
 def build_slice(toks):
     result = None
@@ -44,6 +49,8 @@ action_kw    = pp.Keyword("action")
 operator_kw  = pp.Keyword("operator")
 agenda_kw    = pp.Keyword("agenda")
 binding_kw   = pp.Keyword("binding")
+break_kw     = pp.Keyword("break")
+keyword_kw   = pp.Keyword("keyword")
 module_kw    = pp.Or([pp.Keyword(x) for x in ['module', 'mod']])
 
 for_kw       = PU.s(pp.Keyword('for'))
@@ -74,7 +81,7 @@ echo_kw      = PU.s(pp.Keyword('echo'))
 empty_line = pp.lineStart + pp.lineEnd
 rest_of_line = PU.op(PU.s(pp.White())) + pp.restOfLine
 
-multi_line = pp.Regex("^:[{}]$")
+multi_line = pp.Regex(MULTI_LINE_REGEX)
 multi_line_pop = pp.Literal(':pop')
 
 # TODO
@@ -147,11 +154,13 @@ type_check = check_kw + pp.Optional(rest_of_line)
 # Print stats
 # TODO: add control over stats
 stat_words = pp.Or([operator_kw, agenda_kw, rule_kw, pipeline_kw,
-                    layer_kw, module_kw, wm_kw, binding_kw])
+                    layer_kw, module_kw, wm_kw, binding_kw, keyword_kw])
 stats = stats_kw + pp.ZeroOrMore(stat_words)
 
 # Set prompt
 prompt_cmd = prompt_kw + rest_of_line
+
+break_cmd = break_kw
 
 # Actions
 slice_p.setParseAction      (build_slice)
@@ -163,6 +172,8 @@ multi_line.setParseAction   (build_multiline)
 multi_line_pop.setParseAction(lambda toks: (RE.POP))
 empty_line.setParseAction   (lambda toks: build_command(RE.NOP, params=[]))
 
+
+break_cmd.setParseAction       (lambda toks: build_command(RE.BREAK))
 state_io.setParseAction        (lambda toks: build_command(toks[0], params=toks[1:]))
 base_statement.setParseAction  (lambda toks: build_command(RE.PASS, params=toks[:]))
 nop_line.setParseAction        (lambda toks: build_command(RE.NOP, params=toks[:]))
@@ -203,6 +214,7 @@ main_commands = PU.s(pp.Literal(':')) + pp.Or([run_something,
                                                exit_cmd,
                                                prompt_cmd,
                                                echo_kw,
+                                               break_cmd,
                                                HOTLOAD_COMMANDS])
 
 

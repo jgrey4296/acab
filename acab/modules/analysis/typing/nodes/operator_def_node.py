@@ -3,7 +3,6 @@ import logging as root_logger
 import acab.modules.analysis.typing.util as util
 from acab.abstract.trie.trie import Trie
 from acab.modules.analysis.typing import type_exceptions as te
-from acab.util import OPERATOR_S
 
 from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition
 
@@ -85,7 +84,7 @@ class OperatorDefTrieNode(TypeDefTrieNode):
                     newly_typed.append(the_use.unify_types(_type))
                 # refine the type of the operator at head
                 func_name = match_group[0][0]._data[util.OP_DEF_S]._func_name
-                match_group[0][1]._data[OPERATOR_S].__refine_op_func(func_name)
+                match_group[0][1]._data[util.OPERATOR_S].__refine_op_func(func_name)
                 continue
 
         return [x for x in newly_typed if x is not None]

@@ -6,9 +6,14 @@ from acab.modules.analysis.typing.values.operator_definition import OperatorDefi
 from acab.abstract.parsing import util as PU
 from acab.abstract.sentence import Sentence
 from acab.modules.analysis.typing import util as TYU
-from acab import util
+from acab.config import AcabConfig
+
 from . import util as TU
 logging = root_logger.getLogger(__name__)
+
+util = AcabConfig.Get()
+VALUE_TYPE_S = util("Parsing.Structure", "VALUE_TYPE_S")
+
 
 #Hotloaded definitions:
 ## Basic sentence (unable to parse annotations)
@@ -20,7 +25,7 @@ PARAM_SEN_PLURAL = pp.delimitedList(HOTLOAD_PARAM_SEN, delim=PU.DELIM)
 
 def make_record_def(toks):
     type_def = TypeDefinition(toks[:])
-    return (util.VALUE_TYPE_S, type_def)
+    return (VALUE_TYPE_S, type_def)
 
 def make_op_def(toks):
     syntax_bind = None
@@ -29,11 +34,11 @@ def make_op_def(toks):
 
     op_def = OperatorDefinition(toks[TYU.STRUCT_S][0], sugar_syntax=syntax_bind)
 
-    return (util.VALUE_TYPE_S, op_def)
+    return (VALUE_TYPE_S, op_def)
 
 def make_sum_def(toks):
     sum_def = SumTypeDefinition(toks[:])
-    return (util.VALUE_TYPE_S, sum_def)
+    return (VALUE_TYPE_S, sum_def)
 
 
 # The simplest type, has no body. useful for defining strings and other
@@ -41,7 +46,7 @@ def make_sum_def(toks):
 SIMPLE_BODY = pp.empty
 SIMPLE_BODY.setParseAction(make_record_def)
 
-SIMPLE_DEF = PU.STATEMENT_CONSTRUCTOR(PU.STRUCT_HEAD,
+SIMPLE_DEF = PU.STATEMENT_CONSTRUCTOR(TYU.STRUCT_HEAD,
                                       HOTLOAD_BASIC_SEN,
                                       SIMPLE_BODY)
 
@@ -50,7 +55,7 @@ SIMPLE_DEF = PU.STATEMENT_CONSTRUCTOR(PU.STRUCT_HEAD,
 RECORD_DEF_BODY = PARAM_SEN_PLURAL
 RECORD_DEF_BODY.setParseAction(make_record_def)
 
-RECORD_TYPE = PU.STATEMENT_CONSTRUCTOR(PU.STRUCT_HEAD,
+RECORD_TYPE = PU.STATEMENT_CONSTRUCTOR(TYU.STRUCT_HEAD,
                                        HOTLOAD_BASIC_SEN,
                                        RECORD_DEF_BODY + PU.component_gap)
 
@@ -59,7 +64,7 @@ RECORD_TYPE = PU.STATEMENT_CONSTRUCTOR(PU.STRUCT_HEAD,
 SUM_DEF_BODY = pp.delimitedList(pp.Or([RECORD_TYPE, SIMPLE_DEF]), delim=PU.emptyLine)
 SUM_DEF_BODY.setParseAction(make_sum_def)
 
-SUM_TYPE = PU.STATEMENT_CONSTRUCTOR(PU.SUM_HEAD,
+SUM_TYPE = PU.STATEMENT_CONSTRUCTOR(TYU.SUM_HEAD,
                                     HOTLOAD_BASIC_SEN,
                                     SUM_DEF_BODY + PU.component_gap)
 
@@ -70,7 +75,7 @@ OP_DEF_BODY = PU.NG(TYU.STRUCT_S, HOTLOAD_PARAM_SEN) \
     + PU.op(PU.DBLARROW + PU.N(TYU.SYNTAX_BIND_S, PU.OPERATOR_SUGAR))
 OP_DEF_BODY.setParseAction(make_op_def)
 
-OP_DEF = PU.STATEMENT_CONSTRUCTOR(PU.FUNC_HEAD,
+OP_DEF = PU.STATEMENT_CONSTRUCTOR(TYU.FUNC_HEAD,
                                   HOTLOAD_BASIC_SEN,
                                   OP_DEF_BODY,
                                   end=pp.lineEnd,
@@ -79,7 +84,7 @@ OP_DEF = PU.STATEMENT_CONSTRUCTOR(PU.FUNC_HEAD,
 # Type class constructor:
 TYPE_CLASS_BODY = pp.delimitedList(OP_DEF, delim=PU.emptyLine)
 
-TYPE_CLASS_DEF = PU.STATEMENT_CONSTRUCTOR(PU.TYPE_CLASS_HEAD,
+TYPE_CLASS_DEF = PU.STATEMENT_CONSTRUCTOR(TYU.TYPE_CLASS_HEAD,
                                           HOTLOAD_BASIC_SEN,
                                           TYPE_CLASS_BODY + PU.component_gap)
 

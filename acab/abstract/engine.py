@@ -8,7 +8,7 @@ and can then parse and run an agent DSL pipeline.
 import logging as root_logger
 from os.path import exists, split, expanduser, abspath
 from importlib import import_module
-from acab import util
+from acab.config import AcabConfig
 from acab.error.acab_import_exception import AcabImportException
 
 from .value import AcabValue
@@ -21,7 +21,7 @@ from .rule import Rule
 from .working_memory import WorkingMemory
 from .production_operator import ProductionContainer, ProductionOperator
 
-
+util = AcabConfig.Get()
 
 logging = root_logger.getLogger(__name__)
 
@@ -67,6 +67,10 @@ class Engine:
         else:
             self.load_file(path)
 
+
+    @property
+    def bindings(self):
+        return self.bindings
 
     # Initialisation:
     def load_modules(self, *modules):

@@ -32,12 +32,19 @@ secondary.agenda(::RankingAgenda):
 """
 import logging as root_logger
 import pyparsing as pp
-from acab import util
+from acab.config import AcabConfig
+
 from acab.abstract.parsing import util as PU
 from acab.abstract.production_operator import ProductionContainer
 from acab.abstract.agenda import Agenda, make_agenda
 
 logging = root_logger.getLogger(__name__)
+
+util = AcabConfig.Get()
+QUERY_S = util("Parsing.Structure", "QUERY_S")
+TRANSFORM_S = util("Parsing.Structure", "TRANSFORM_S")
+ACTION_S = util("Parsing.Structure", "ACTION_S")
+
 
 HOTLOAD_BASIC_SEN = pp.Forward()
 HOTLOAD_QUERY = pp.Forward()
@@ -46,9 +53,9 @@ HOTLOAD_ACTION = pp.Forward()
 
 
 # agenda should be a special case of rule
-conditions  = PU.N(util.QUERY_S , HOTLOAD_QUERY     + PU.gap)
-transforms  = PU.N(util.TRANSFORM_S , HOTLOAD_TRANSFORM + PU.gap)
-var_setting = PU.NG(util.ACTION_S   , HOTLOAD_ACTION    + PU.component_gap)
+conditions  = PU.N(QUERY_S , HOTLOAD_QUERY     + PU.gap)
+transforms  = PU.N(TRANSFORM_S , HOTLOAD_TRANSFORM + PU.gap)
+var_setting = PU.NG(ACTION_S   , HOTLOAD_ACTION    + PU.component_gap)
 
 agenda_body = PU.op(conditions) + PU.op(transforms) + PU.op(var_setting)
 

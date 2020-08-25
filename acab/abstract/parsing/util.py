@@ -7,10 +7,26 @@ import pyparsing as pp
 
 from acab.abstract.sentence import Sentence
 from acab.abstract import type_base as TB
-from acab import util
+from acab.config import AcabConfig
+
+util = AcabConfig.Get()
+
+TAG_S = util("Parsing.Structure", "TAG_S")
+
+OPERATOR_SYNTAX_S = util("Parsing", "OPERATOR_SYNTAX_S")
+WORD_COMPONENT_S = util("Parsing", "WORD_COMPONENT_S")
+WHITE_SPACE = util("Parsing", "WHITE_SPACE", AcabConfig.actions_e.STRIPQUOTE, AcabConfig.actions_e.UNESCAPE)
+COMMENT_RE = util("Parsing", "COMMENT_RE", AcabConfig.actions_e.UNESCAPE)
+
+NAME_S = util("Parsing.Structure", "NAME_S")
+STATEMENT_S = util("Parsing.Structure", "STATEMENT_S")
+NEGATION_S = util("Parsing.Structure", "NEGATION_S")
+SEN_S = util("Parsing.Structure", "SEN_S")
+ARG_S = util("Parsing.Structure", "ARG_S")
+TAG_S = util("Parsing.Structure", "TAG_S")
 
 logging = root_logger.getLogger(__name__)
-pp.ParserElement.setDefaultWhitespaceChars(' \t\r')
+pp.ParserElement.setDefaultWhitespaceChars(WHITE_SPACE)
 
 
 def NG(name, grp):
@@ -22,7 +38,7 @@ def N(name, parser):
 
 
 # UTILITIES
-COMMENT   = pp.dblSlashComment
+COMMENT   = pp.Regex(COMMENT_RE)
 
 s          = pp.Suppress
 op         = pp.Optional
@@ -61,34 +77,33 @@ MORE      = s(pp.Literal('>'))
 VBAR      = s(pp.Literal('|'))
 DELIM     = pp.Or([COMMA, op(pp.lineEnd)])
 
-RULE_HEAD      = s(pp.Keyword(util.RULE_HEAD_S))
-QUERY_HEAD     = s(pp.Keyword(util.QUERY_HEAD_S))
-TRANSFORM_HEAD = s(pp.Keyword(util.TRANSFORM_HEAD_S))
-ACTION_HEAD    = s(pp.Keyword(util.ACTION_HEAD_S))
-FACT_HEAD      = s(pp.Keyword(util.FACT_HEAD_S))
-SUM_HEAD       = s(pp.Keyword(util.SUM_HEAD_S))
-STRUCT_HEAD    = s(pp.Keyword(util.STRUCTURE_S))
-FUNC_HEAD      = s(pp.Keyword(util.FUNC_S))
-TYPE_CLASS_HEAD = s(pp.Keyword(util.TYPE_CLASS_S))
-AGENDA_HEAD    = s(pp.Keyword(util.AGENDA_HEAD_S))
-LAYER_HEAD     = s(pp.Keyword(util.LAYER_HEAD_S))
-PIPE_HEAD      = s(pp.Keyword(util.PIPE_HEAD_S))
+RULE_HEAD      = s(util("Parsing.Statements", "RULE_HEAD_S", action=AcabConfig.actions_e.KEYWORD))
+QUERY_HEAD     = s(util("Parsing.Statements", "QUERY_HEAD_S", action=AcabConfig.actions_e.KEYWORD))
+TRANSFORM_HEAD = s(util("Parsing.Statements", "TRANSFORM_HEAD_S", action=AcabConfig.actions_e.KEYWORD))
+ACTION_HEAD    = s(util("Parsing.Statements", "ACTION_HEAD_S", action=AcabConfig.actions_e.KEYWORD))
+FACT_HEAD      = s(util("Parsing.Statements", "FACT_HEAD_S", action=AcabConfig.actions_e.KEYWORD))
 
-OP_PATH_PREFIX = s(pp.Or([pp.Literal("\\"), pp.Literal(util.FUNC_S)]))
+AGENDA_HEAD    = s(util("Parsing.Statements", "AGENDA_HEAD_S", action=AcabConfig.actions_e.KEYWORD))
+LAYER_HEAD     = s(util("Parsing.Statements", "LAYER_HEAD_S", action=AcabConfig.actions_e.KEYWORD))
+PIPE_HEAD      = s(util("Parsing.Statements", "PIPE_HEAD_S", action=AcabConfig.actions_e.KEYWORD))
 
-VAR_SYMBOL     = s(pp.Literal(util.VAR_SYMBOL_S))
-AT_BIND_SYMBOL = s(pp.Literal(util.AT_VAR_SYMBOL_S))
+FUNC_SYMBOL    = s(pp.Word(util("Parsing", "FUNC_SYMBOL_S")))
 
-NEGATION_SYMBOL = N(util.NEGATION_S, pp.Literal(util.NEGATION_SYMBOL_S))
-QUERY_SYMBOL    = s(pp.Literal(util.QUERY_SYMBOL_S))
-TAG_SYMBOL      = s(pp.Literal(util.TAG_SYMBOL_S))
-END             = s(pp.Literal(util.END_S))
-COLLAPSE_CONTEXT = s(pp.Literal(util.CTX_COLLAPSE_S))
+VAR_SYMBOL     = s(util("Parsing", "VAR_SYMBOL_S", action=AcabConfig.actions_e.LITERAL))
+AT_BIND_SYMBOL = s(util("Parsing", "AT_VAR_SYMBOL_S", action=AcabConfig.actions_e.LITERAL))
+
+NEGATION_SYMBOL = N(util("Parsing.Structure", "NEGATION_S"),
+                    util("Parsing", "NEGATION_SYMBOL_S", action=AcabConfig.actions_e.LITERAL))
+QUERY_SYMBOL    = s(util("Parsing", "QUERY_SYMBOL_S", action=AcabConfig.actions_e.LITERAL))
+TAG_SYMBOL      = s(util("Parsing", "TAG_SYMBOL_S", action=AcabConfig.actions_e.LITERAL))
+END             = s(util("Parsing", "END_S", action=AcabConfig.actions_e.LITERAL))
+COLLAPSE_CONTEXT = s(util("Parsing", "CTX_COLLAPSE_S", action=AcabConfig.actions_e.LITERAL))
 
 # Basic Parsers
-# TODO rename to ATOM
-NAME        = pp.Word(util.WORD_COMPONENT_S)
-NAME.setParseAction(lambda t: (TB.ATOM, t[0]))
+OPERATOR_SUGAR = pp.Word(OPERATOR_SYNTAX_S)
+
+ATOM        = pp.Word(WORD_COMPONENT_S)
+ATOM.setParseAction(lambda t: (TB.ATOM, t[0]))
 
 STRING      = pp.dblQuotedString
 # Remove quotes from around strings:
@@ -100,21 +115,20 @@ STRING.addParseAction(lambda toks: (TB.STRING, toks[0]))
 REGEX       = pp.Regex(r'/.+?/')
 REGEX.setParseAction(lambda t: (TB.REGEX, re.compile(t[0][1:-1])))
 
-BASIC_VALUE = pp.Or([NAME, STRING, REGEX])
-BIND        = VAR_SYMBOL + NAME
-AT_BIND     = AT_BIND_SYMBOL + NAME
+BASIC_VALUE = pp.Or([ATOM, STRING, REGEX])
+BIND        = VAR_SYMBOL + ATOM
+AT_BIND     = AT_BIND_SYMBOL + ATOM
 
 arglist = VBAR + pp.delimitedList(BIND, delim=COMMA) + VBAR
 
-tagName = TAG_SYMBOL + NAME
-tagList    = op(N(util.TAG_S, pp.delimitedList(tagName, delim=DELIM) + emptyLine))
+tagName = TAG_SYMBOL + ATOM
+tagList    = op(N(TAG_S, pp.delimitedList(tagName, delim=DELIM) + emptyLine))
 
 
-OPERATOR_SUGAR = pp.Word(util.OPERATOR_SYNTAX_S)
 
 def construct_multi_sentences(toks):
-    base_sen = toks[util.NAME_S][0]
-    additional_sentences = toks[util.STATEMENT_S]
+    base_sen = toks[NAME_S][0]
+    additional_sentences = toks[STATEMENT_S]
 
     new_sentences = []
     # combine
@@ -129,24 +143,24 @@ def construct_multi_sentences(toks):
     return new_sentences
 
 def construct_sentence(toks):
-    data = { util.NEGATION_S : False }
-    if util.NEGATION_S in toks:
-        data[util.NEGATION_S] = True
-    return Sentence(toks[util.SEN_S][:], data=data)
+    data = { NEGATION_S : False }
+    if NEGATION_S in toks:
+        data[NEGATION_S] = True
+    return Sentence(toks[SEN_S][:], data=data)
 
 def construct_statement(toks):
     # Take the statement, and add it to the location
-    sen  = toks[util.NAME_S][0]
+    sen  = toks[NAME_S][0]
     targs = []
     tags  = []
-    if util.ARG_S in toks:
-        # BIND's NAME returns a tuple of ('name', VARNAME)
-        targs = [y for x,y in toks[util.ARG_S][:]]
+    if ARG_S in toks:
+        # BIND's ATOM returns a tuple of ('name', VARNAME)
+        targs = [y for x,y in toks[ARG_S][:]]
     # Get Tags
-    if util.TAG_S in toks:
-        tags = [x[1] for x in toks[util.TAG_S]]
+    if TAG_S in toks:
+        tags = [x[1] for x in toks[TAG_S]]
 
-    obj_tuple  = toks[util.STATEMENT_S][0]
+    obj_tuple  = toks[STATEMENT_S][0]
     obj_tuple[1].apply_vars(targs).apply_tags(tags)
 
     new_sentence = sen.attach_statement(obj_tuple[1]).verify()
@@ -174,12 +188,12 @@ def STATEMENT_CONSTRUCTOR(head_p,
         end_p = end
 
     if args:
-        arg_p = op(NG(util.ARG_S, arglist + line_p))
+        arg_p = op(NG(ARG_S, arglist + line_p))
 
     head_hint = OPAR + DBLCOLON + head_p + CPAR
 
-    parser = NG(util.NAME_S, name_p) + COLON + s(head_hint) + op(pp.lineEnd) \
-        + arg_p + tagList + NG(util.STATEMENT_S, body_p) + end_p
+    parser = NG(NAME_S, name_p) + COLON + s(head_hint) + op(pp.lineEnd) \
+        + arg_p + tagList + NG(STATEMENT_S, body_p) + end_p
 
     if parse_fn is not None:
         parser.addParseAction(parse_fn)
@@ -189,7 +203,7 @@ def STATEMENT_CONSTRUCTOR(head_p,
 
 
 def OP_PATH_C(sen):
-    op_path = OP_PATH_PREFIX + sen
+    op_path = FUNC_SYMBOL + sen
     op_path.setName("Operator_Path")
     return op_path
 
@@ -201,8 +215,6 @@ RULE_HEAD.setName("RuleHead")
 QUERY_HEAD.setName("QueryHead")
 TRANSFORM_HEAD.setName("TransformHead")
 ACTION_HEAD.setName("ActionHead")
-STRUCT_HEAD.setName("StructHead")
-FUNC_HEAD.setName("FuncHead")
 VAR_SYMBOL.setName("VarSymbol")
 AT_BIND_SYMBOL.setName("AtSymbol")
 NEGATION_SYMBOL.setName("NegationSymbol")
@@ -210,7 +222,7 @@ QUERY_SYMBOL.setName("QuerySymbol")
 TAG_SYMBOL.setName("TagSymbol")
 END.setName("End")
 
-NAME.setName("NameWord")
+ATOM.setName("NameWord")
 STRING.setName("StringWord")
 REGEX.setName("RegexWord")
 BASIC_VALUE.setName("BasicValue")

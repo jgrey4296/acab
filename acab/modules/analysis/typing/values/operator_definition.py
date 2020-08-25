@@ -1,10 +1,11 @@
-from acab.util import FUNC_S, NAME_S
+from acab.config import AcabConfig
 from acab.abstract.printing import util as PrU
 from acab.abstract.type_base import TypeInstance
 from acab.modules.analysis.typing import util as TU
 
 from .type_definition import TypeDefinition
 
+util = AcabConfig.Get()
 
 class OperatorDefinition(TypeDefinition):
     """ Defines the type signature of an operator"""

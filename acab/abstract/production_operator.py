@@ -10,14 +10,19 @@ ProductionContainer : Groups Components together
 """
 import logging as root_logger
 
-from acab.util import OPERATOR_S, STATEMENT_S
-from acab import util
 from acab.abstract.printing import util as PrU
 from acab.abstract.sentence import Sentence
 from acab.error.acab_operator_exception import AcabOperatorException
+from acab.config import AcabConfig
 
 from .value import AcabValue, AcabStatement
 from . import type_base as TB
+
+util = AcabConfig.Get()
+
+OPERATOR_S = util("Parsing.Structure", "OPERATOR_S")
+STATEMENT_S = util("Parsing.Structure", "STATEMENT_S")
+AT_BIND_S = util("Parsing.Structure", "AT_BIND_S")
 
 logging = root_logger.getLogger(__name__)
 
@@ -100,7 +105,7 @@ class ProductionComponent(AcabValue):
                 output.append([y.bind(data) for y in x])
             elif isinstance(x, AcabValue) and x.is_var:
                 if x.is_at_var:
-                    output.append(data[util.AT_BIND_S + x.value])
+                    output.append(data[AT_BIND_S + x.value])
                 elif isinstance(data[x.value], list):
                     output.append(data[x.value])
                 else:

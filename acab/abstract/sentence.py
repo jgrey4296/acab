@@ -2,13 +2,19 @@
 Defines a Sentence of Words, which can be a query, and
 have fallback bindings
 """
-from acab.util import BIND_S, OPERATOR_S
-from acab.util import SEN_S, AT_BIND_S
+from acab.config import AcabConfig
 from acab.abstract.printing import util as PrU
 
 from . import type_base as TB
 
 from .value import AcabValue, AcabStatement
+
+util = AcabConfig.Get()
+
+BIND_S = util("Parsing.Structure", "BIND_S")
+AT_BIND_S = util("Parsing.Structure", "AT_BIND_S")
+OPERATOR_S = util("Parsing.Structure", "OPERATOR_S")
+SEN_S = util("Parsing.Structure", "SEN_S")
 
 
 class Sentence(AcabValue):

@@ -5,9 +5,8 @@ the results are passed to the action list
 """
 import logging as root_logger
 
-import acab.util as util
+from acab.config import AcabConfig
 from acab.abstract.printing import util as PrU
-
 from . import type_base as TB
 
 from .production_operator import ProductionContainer
@@ -15,6 +14,7 @@ from .transform import Transform
 from .action import Action
 from .query import Query
 
+util = AcabConfig.Get()
 logging = root_logger.getLogger(__name__)
 
 class Rule(ProductionContainer):

@@ -1,6 +1,10 @@
 from acab.abstract.value import AcabStatement
 from acab.abstract.printing import util as PrU
-from acab.util import TAB_S
+from acab.config import AcabConfig
+
+util = AcabConfig.Get()
+
+TAB_S = util("Printing", "TAB_S")
 
 class TypeStatement(AcabStatement):
 
@@ -26,4 +30,5 @@ class TypeStatement(AcabStatement):
 
 
     def pprint_body(self, val):
-        return val + TAB_S + "\n{}".format(TAB_S).join([x.pprint() for x in self.structure])
+        body = ("\n" + TAB_S).join([x.pprint() for x in self.structure])
+        return val + TAB_S + body + "\n"

@@ -3,44 +3,21 @@ Cross-module utilities for the rule engines
 """
 from enum import Enum
 
-from acab import util
+from acab.config import AcabConfig
 from acab.abstract.printing import util as PrU
 
-ROOT_S       = util.ROOT_S
-BIND_S       = util.BIND_S
-AT_BIND_S    = util.AT_BIND_S
-VALUE_S      = util.VALUE_S
-NAME_S       = util.NAME_S
-VALUE_TYPE_S = util.VALUE_TYPE_S
-CONSTRAINT_S = util.CONSTRAINT_S
-OPERATOR_S   = util.OPERATOR_S
-RULE_S       = util.RULE_S
-NEGATION_S   = util.NEGATION_S
-FALLBACK_S   = util.FALLBACK_S
-QUERY_S      = util.QUERY_S
-TRANSFORM_S  = util.TRANSFORM_S
-ACTION_S     = util.ACTION_S
+util = AcabConfig.Get()
 
-
-NODE_S        = "node"
-MAIN_CLAUSE_S = "main_clause"
-LEFT_S        = "left"
-RIGHT_S       = "right"
-SOURCE_S      = "source"
-REPLACE_S     = "replace"
-TARGET_S      = "target"
-ANNOTATION_S  = "annotations"
-RULE_NAME_S   = "rule_name"
-ACTION_VAL_S  = "action_values"
-
-
+OPERATOR_S = util("Parsing.Structure", "OPERATOR_S")
+ROOT_S = util("Data.Trie", "ROOT_S")
 #Trie exclusion operator:
 EXOP = Enum('EXOP', 'DOT EX')
 
-PrU.register_modal({EXOP.DOT : ".", EXOP.EX : "!" })
+PrU.register_modal({EXOP.DOT : util("WorkingMemory.TrieWM.Parsing", "EXOP.DOT_S"),
+                    EXOP.EX : util("WorkingMemory.TrieWM.Parsing", "EXOP.EX_S")})
 
 DEFAULT_NODE_DATA = {
-    OPERATOR_S : EXOP.DOT,
+    OPERATOR_S : EXOP[util("WorkingMemory.TrieWM", "DEFAULT_EXOP")]
     }
 
 

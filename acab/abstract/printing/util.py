@@ -3,9 +3,26 @@ Utilities for printing out information
 """
 from re import Pattern
 from collections import defaultdict
-from acab import util
+from acab.config import AcabConfig
 
-from acab.abstract.type_base import REGEX, STRING, ATOM
+util = AcabConfig.Get()
+
+CONSTRAINT_S = util("Parsing.Structure", "CONSTRAINT_S")
+OPERATOR_S = util("Parsing.Structure", "OPERATOR_S")
+QUERY_S = util("Parsing.Structure", "QUERY_S")
+NEGATION_S = util("Parsing.Structure", "NEGATION_S")
+FALLBACK_S = util("Parsing.Structure", "FALLBACK_S")
+VALUE_TYPE_S = util("Parsing.Structure", "VALUE_TYPE_S")
+
+FUNC_SYMBOL_S = util("Printing", "FUNC_SYMBOL_S")
+
+VAR_SYMBOL_S = util("Parsing", "VAR_SYMBOL_S")
+AT_VAR_SYMBOL_S = util("Parsing", "AT_VAR_SYMBOL_S")
+QUERY_SYMBOL_S = util("Parsing", "QUERY_SYMBOL_S")
+NEGATION_SYMBOL_S = util("Parsing", "NEGATION_SYMBOL_S")
+TAG_SYMBOL_S = util("Parsing", "TAG_SYMBOL_S")
+END_S = util("Parsing", "END_S")
+
 
 #Setup
 # TODO register additional constraints
@@ -41,7 +58,7 @@ def register_constraint(*constraints, reset=False):
     """
     global REGISTERED_CONSTRAINTS
     if reset:
-        REGISTERED_CONSTRAINTS = set([util.CONSTRAINTS_S])
+        REGISTERED_CONSTRAINTS = set([CONSTRAINTS_S])
 
     REGISTERED_CONSTRAINTS.update(constraints)
 
@@ -111,8 +128,8 @@ def print_value(value, opts):
 
     # Wrap modal Operator
     print_modal = opts['modal']
-    if print_modal and util.OPERATOR_S in value._data:
-        val = _wrap_modal_operator(val, value._data[util.OPERATOR_S])
+    if print_modal and OPERATOR_S in value._data:
+        val = _wrap_modal_operator(val, value._data[OPERATOR_S])
 
 
     return val
@@ -140,16 +157,16 @@ def print_sequence(seq, opts):
     val = join_str.join(words + last_word)
 
     # Wrap as Query
-    if util.QUERY_S in seq._data:
+    if QUERY_S in seq._data:
         val = _wrap_question(val)
 
     # Wrap as negated
-    if util.NEGATION_S in seq._data and seq._data[util.NEGATION_S]:
+    if NEGATION_S in seq._data and seq._data[NEGATION_S]:
         val = _wrap_negation(val)
 
     # Wrap fallback vars
-    if util.FALLBACK_S in seq._data and bool(seq._data[util.FALLBACK_S]):
-        val = _wrap_fallback(val, seq._data[util.FALLBACK_S])
+    if FALLBACK_S in seq._data and bool(seq._data[FALLBACK_S]):
+        val = _wrap_fallback(val, seq._data[FALLBACK_S])
 
     return val
 
@@ -200,7 +217,7 @@ def print_operator(operator, opts):
     """
     # TODO actually use the op_position
     op_fix = operator._op_position
-    op_str = "{}{}".format(util.FUNC_S, pprint(operator.op))
+    op_str = "{}{}".format(FUNC_SYMBOL_S, pprint(operator.op))
 
     join_str = opts['join']
     if not join_str:
@@ -228,7 +245,7 @@ def print_operator_wrap(operator, opts):
         join_str = ", "
 
     the_params = [x.pprint(opts) for x in operator._params]
-    val = "{}{}({})".format(util.FUNC_S, pprint(operator.op, opts), join_str.join(the_params))
+    val = "{}{}({})".format(FUNC_SYMBOL_S, pprint(operator.op, opts), join_str.join(the_params))
 
     return val
 
@@ -238,11 +255,6 @@ def _wrap_str(value, opts=None):
     assert(isinstance(value, str))
     return '"{}"'.format(value)
 
-def _wrap_float(value, opts=None):
-    return str(value).replace('.', util.DECIMAL_S)
-
-def _wrap_int(value, opts=None):
-    return str(value)
 def _wrap_regex(value, opts=None):
     assert(isinstance(value, Pattern))
     val = "/{}/".format(value.pattern)
@@ -295,17 +307,17 @@ def _wrap_rebind(value, rebind, is_sugar=False):
                              rebind.pprint())
 
 def _wrap_question(value):
-    return "{}{}".format(value, util.QUERY_SYMBOL_S)
+    return "{}{}".format(value, QUERY_SYMBOL_S)
 
 def _wrap_negation(value):
-    return "{}{}".format(util.NEGATION_SYMBOL_S, value)
+    return "{}{}".format(NEGATION_SYMBOL_S, value)
 
 def _wrap_fallback(value, fallback_list):
     return "{} || {}".format(value, print_fallback(fallback_list))
 
 def _wrap_tags(value, tags, sep="\t"):
     tags_s = [str(x) for x in tags]
-    return "{}{}{}\n\n".format(value, sep, ", ".join(sorted([util.TAG_SYMBOL_S + x for x in tags_s])))
+    return "{}{}{}\n\n".format(value, sep, ", ".join(sorted([TAG_SYMBOL_S + x for x in tags_s])))
 
 def _maybe_wrap(value, maybeNone, sep=None):
     if maybeNone is None:
@@ -321,9 +333,9 @@ def _wrap_colon(value, newline=False):
 
 def _wrap_end(value, newline=False):
     if newline:
-        return "{}\n{}\n".format(value, util.END_S)
+        return "{}\n{}\n".format(value, END_S)
     else:
-        return "{}{}\n".format(value, util.END_S)
+        return "{}{}\n".format(value, END_S)
 
 def _wrap_statement_type(val, type_str):
     return "{} ({})\n".format(val, type_str)

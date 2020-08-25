@@ -1,28 +1,36 @@
 """ Trie-based parser for the transform component of rules """
 import logging as root_logger
 import pyparsing as pp
-from acab.abstract.sentence import Sentence 
+from acab.abstract.sentence import Sentence
 from acab.abstract.transform import TransformComponent
 from acab.abstract.transform import Transform, TransformOp
 from acab.abstract.parsing import util as PU
 from acab.working_memory.trie_wm import util as WMU
 from acab.working_memory.trie_wm.parsing.FactParser import VALBIND, BASIC_SEN
+from acab.config import AcabConfig
 
 logging = root_logger.getLogger(__name__)
+
+util = AcabConfig.Get()
+LEFT_S = util("WorkingMemory.TrieWM", "LEFT_S")
+RIGHT_S = util("WorkingMemory.TrieWM", "RIGHT_S")
+OPERATOR_S = util("Parsing.Structure", "OPERATOR_S")
+TARGET_S = util("WorkingMemory.TrieWM", "TARGET_S")
+
 
 # Builders:
 def build_transform_component(toks):
     params = []
     position = 0
-    if WMU.LEFT_S in toks:
-        params += toks[WMU.LEFT_S][:]
-        position = len(toks[WMU.LEFT_S])
-    params += toks[WMU.RIGHT_S][:]
+    if LEFT_S in toks:
+        params += toks[LEFT_S][:]
+        position = len(toks[LEFT_S])
+    params += toks[RIGHT_S][:]
 
-    op = toks[WMU.OPERATOR_S][0]
+    op = toks[OPERATOR_S][0]
     if isinstance(op, str):
         op = Sentence.build([op])
-    rebind = toks[WMU.TARGET_S][0]
+    rebind = toks[TARGET_S][0]
     return TransformComponent(op,
                               params, op_pos=position,
                               rebind=rebind)
@@ -46,10 +54,10 @@ rebind.setName("Rebind")
 op_path  = pp.Or([HOTLOAD_TRANS_OP, PU.OP_PATH_C(BASIC_SEN)])
 op_path.setName("OperatorPath")
 
-transform_core = PU.N(WMU.LEFT_S, pp.ZeroOrMore(VALBIND)) \
-    + PU.N(WMU.OPERATOR_S, op_path) \
-    + PU.N(WMU.RIGHT_S, PU.orm(VALBIND)) \
-    + PU.N(WMU.TARGET_S, rebind)
+transform_core = PU.N(LEFT_S, pp.ZeroOrMore(VALBIND)) \
+    + PU.N(OPERATOR_S, op_path) \
+    + PU.N(RIGHT_S, PU.orm(VALBIND)) \
+    + PU.N(TARGET_S, rebind)
 
 transform_combined = pp.Or([transform_core, HOTLOAD_TRANS_STATEMENTS])
 

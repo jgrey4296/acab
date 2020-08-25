@@ -17,7 +17,7 @@ from acab.abstract.layer import Layer
 
 logging = root_logger.getLogger(__name__)
 
-ReplE = Enum("Repl Commands", "NOP INIT LOAD SAVE PRINT RUN PASS STEP ACT DECOMPOSE LISTEN CHECK STATS HELP EXIT MULTILINE POP MODULE PROMPT ECHO")
+ReplE = Enum("Repl Commands", "NOP INIT LOAD SAVE PRINT RUN PASS STEP ACT DECOMPOSE LISTEN CHECK STATS HELP EXIT MULTILINE POP MODULE PROMPT ECHO BREAK")
 
 SPLIT_RE = re.compile("[ .!?/]")
 
@@ -48,6 +48,7 @@ def engine_init(engine, data):
     logging.info("Initialising: {}".format(params))
     if not bool(params) or params[0] == "":
         params = ["acab.engines.trie_engine.TrieEngine"]
+
     init_module = importlib.import_module(splitext(params[0])[0])
     # build engine
     engine = eval('init_module{}'.format(splitext(params[0])[1]))()
@@ -58,8 +59,8 @@ register(ReplE.INIT, engine_init)
 def engine_module(engine, data):
     params = data['params']
     logging.info("Loading Module: {}".format(params))
-    engine.load_modules(params)
-    engine.reload_all_modules()
+    engine.load_modules(*params)
+    engine.build_DSL()
     return engine, None
 
 register(ReplE.MODULE, engine_module)
@@ -207,17 +208,16 @@ def engine_act(engine, data):
 register(ReplE.ACT, engine_act)
 
 def engine_listen(engine, data):
-    params = data['params']
-    """ Listeners:
+   """ Listeners:
     Listen for specific assertions / rule firings / queries,
     and pause on them
     """
+    params = data['params']
     logging.info("Listener ({}): {}".format(data["type"], params))
+    words = [y for x in params for y in SPLIT_RE.split(x)]
     if data['type'] == "add":
-        words = [y for x in params for y in SPLIT_RE.split(x)]
         engine.add_listeners(*words)
     elif data['type'] == "remove":
-        words = [y for x in params for y in SPLIT_RE.split(x)]
         engine.remove_listeners(*words)
     elif data['type'] == "list":
         result = []
@@ -256,6 +256,7 @@ def engine_stats(engine, data):
         result.append("Operator Stats: ")
         # TODO
         # result.append("\t{}".format("\n\t".join([str(x) for x in ProductionOperator.op_dict])))
+        result.append(str(engine._operators))
 
     # agendas
     if allow_all or "agenda" in params:
@@ -267,18 +268,20 @@ def engine_stats(engine, data):
     if allow_all or "rule" in params:
         result.append("--------------------")
         result.append("Rule Stats: ")
-
+        # TODO rule stats
 
     # pipeline
     if allow_all or "pipeline" in params:
         result.append("--------------------")
         result.append("Pipeline Stats: ")
+        # TODO pipeline stats
 
     # layers
     if (allow_all or "layer" in params):
         result.append("--------------------")
         result.append("Layer Stats: ")
         # result.append("\t{}".format("\n\t".join([str(x) for x in engine._pipeline._layers])))
+        # TODO layer stats
 
     # modules
     if allow_all or "module" in params:
@@ -300,7 +303,15 @@ def engine_stats(engine, data):
         bind_groups = engine._cached_bindings[:]
         result.append("\t{}".format("\n\t".join([str(x) for x in bind_groups])))
 
-    # TODO add parser stats/trie
+    # TODO add parser stats
+
+    # Print Keywords
+    if allow_all or "keywords" in params:
+        result.append("--------------------")
+        result.append("Keywords: ")
+        result.append("\t{}".format(" ".join(x for x in ["operator", "agenda", "rule", "pipeline",
+                                                         "layer", "module", "wm", "binding", "keywords"])))
+
 
     result.append("")
     data['result'] = "\n".join(result)
@@ -408,5 +419,15 @@ def engine_echo(engine, data):
     return engine, data
 
 register(ReplE.ECHO, engine_echo)
+
+def engine_break(engine, data):
+    if "toggle" not in data['current_str']:
+        raise Exception("Triggering breakpoint")
+
+    data['stack'] = not data['stack']
+    return engine, data
+
+
+register(ReplE.BREAK, engine_break)
 
 #---------------------

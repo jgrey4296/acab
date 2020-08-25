@@ -2,7 +2,9 @@
 from time import sleep
 import logging as root_logger
 from .trie_engine import TrieEngine
-import acab.util as util
+from acab.config import AcabConfig
+
+util = AcabConfig.Get()
 
 logging = root_logger.getLogger(__name__)
 

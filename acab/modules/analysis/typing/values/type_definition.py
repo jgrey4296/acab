@@ -6,10 +6,16 @@ from acab.abstract.value import AcabValue
 from acab.error.acab_parse_exception import AcabParseException
 from acab.modules.analysis.typing.util import TYPE_DEFINITION, SUM_DEFINITION, TYPE_DEF_S
 from acab.modules.analysis.typing import type_exceptions as TE
-
-from acab.util import STRUCTURE_S, VALUE_TYPE_S, NAME_S
+from acab.config import AcabConfig
 
 from .acab_type import TypeStatement
+
+util = AcabConfig.Get()
+
+STRUCTURE_S = util("Module.Typing", "STRUCTURE_S")
+VALUE_TYPE_S = util("Parsing.Structure", "VALUE_TYPE_S")
+NAME_S = util("Parsing.Structure", "NAME_S")
+
 
 # TODO register class
 

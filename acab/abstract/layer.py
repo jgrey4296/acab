@@ -25,11 +25,19 @@ import logging as root_logger
 
 from acab.abstract.rule import Rule
 from acab.abstract.production_operator import ProductionOperator, ProductionContainer
-from acab import util
-from acab.util import NAME_S, STATEMENT_S, QUERY_S, TRANSFORM_S, ACTION_S
 from acab.abstract.printing import util as PrU
+from acab.config import AcabConfig
 
 from . import type_base as TB
+
+util = AcabConfig.Get()
+
+NAME_S = util("Parsing.Structure", "NAME_S")
+STATEMENT_S = util("Parsing.Structure", "STATEMENT_S")
+QUERY_S = util("Parsing.Structure", "QUERY_S")
+TRANSFORM_S = util("Parsing.Structure", "TRANSFORM_S")
+ACTION_S = util("Parsing.Structure", "ACTION_S")
+
 
 logging = root_logger.getLogger(__name__)
 

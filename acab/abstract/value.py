@@ -8,11 +8,16 @@ from fractions import Fraction
 from re import Pattern
 from copy import deepcopy
 
-from acab import util
+from acab.config import AcabConfig
 from acab.abstract.printing import util as PrU
 from acab.abstract.type_base import TypeInstance, ATOM
 
 logging = root_logger.getLogger(__name__)
+
+util = AcabConfig.Get()
+VALUE_TYPE_S = util("Parsing.Structure", "VALUE_TYPE_S")
+BIND_S = util("Parsing.Structure", "BIND_S")
+AT_BIND_S = util("Parsing.Structure", "AT_BIND_S")
 
 
 class AcabValue:
@@ -44,16 +49,15 @@ class AcabValue:
 
         self._vars = []
         self._tags = set()
-        self._data = {util.VALUE_TYPE_S: ATOM}
-
-        self._data.update(util.DEFAULT_VALUE_DATA)
+        self._data = {VALUE_TYPE_S: ATOM,
+                      BIND_S : False}
 
         if data is not None:
             self._data.update(data)
 
         if _type is not None:
             assert(isinstance(_type, TypeInstance))
-            self._data[util.VALUE_TYPE_S] = _type
+            self._data[VALUE_TYPE_S] = _type
 
         if params is not None:
             self.apply_vars(params)
@@ -96,15 +100,15 @@ class AcabValue:
         return self._value
     @property
     def type(self):
-        return self._data[util.VALUE_TYPE_S]
+        return self._data[VALUE_TYPE_S]
 
     @property
     def is_var(self):
-        return self._data[util.BIND_S] is not False
+        return self._data[BIND_S] is not False
 
     @property
     def is_at_var(self):
-        return self._data[util.BIND_S] == util.AT_BIND_S
+        return self._data[BIND_S] == AT_BIND_S
 
     @property
     def var_set(self):
@@ -167,7 +171,7 @@ class AcabValue:
 
     def to_simple_value(self):
         simple_value = AcabValue(self._name, data=self._data)
-        simple_value.set_data({util.VALUE_TYPE_S: ATOM})
+        simple_value.set_data({VALUE_TYPE_S: ATOM})
         return simple_value
 
 

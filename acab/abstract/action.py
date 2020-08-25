@@ -6,7 +6,7 @@ Uses the structure of production operators.
 """
 import logging as root_logger
 
-from acab import util
+from acab.config import AcabConfig
 from acab.abstract.value import AcabValue
 from acab.abstract.sentence import Sentence
 from acab.abstract.printing import util as PrU
@@ -16,6 +16,9 @@ from . import type_base as TB
 
 logging = root_logger.getLogger(__name__)
 
+util = AcabConfig.Get()
+
+OPERATOR_S = util("Parsing.Structure", "OPERATOR_S")
 
 # Action function template:
 class ActionOp(PO.ProductionOperator):
@@ -73,7 +76,7 @@ class ActionComponent(PO.ProductionComponent):
         # ie: Head: +.$x22532(::sentence).$x26215(::sentence)
         # and Params: a.b.c.$x(::aval), a.b.$d(::aval)
         # and bind?
-        head = AcabValue(self.op, {util.OPERATOR_S : self})
+        head = AcabValue(self.op, {OPERATOR_S : self})
         sen = Sentence([head] + self._params[:])
         return [sen] + self._params[:]
 

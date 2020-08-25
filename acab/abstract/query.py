@@ -8,8 +8,7 @@ Each Component combines a QueryOp with values to use.
 """
 import logging as root_logger
 
-from acab.util import BIND_S, OPERATOR_S
-from acab import util
+from acab.config import AcabConfig
 from acab.abstract.printing import util as PrU
 
 from . import production_operator as PO
@@ -17,18 +16,18 @@ from . import type_base as TB
 from .sentence import Sentence
 from .node import AcabNode
 
+util = AcabConfig.Get()
+BIND_S = util("Parsing.Structure", "BIND_S")
+OPERATOR_S = util("Parsing.Structure", "OPERATOR_S")
+NEGATION_S = util("Parsing.Structure", "NEGATION_S")
+CONSTRAINT_S = util("Parsing.Structure", "CONSTRAINT_S")
 
 logging = root_logger.getLogger(__name__)
 
 class QueryOp(PO.ProductionOperator):
-    """ Superclass for Comparisons.
-    Instantiation of subclasses auto-registers
-    the comparison into QueryOp.op_dict with an operator string
-    """
+    """ Superclass for Comparisons. """
 
     def __init__(self):
-        # Registers self with class name,
-        # DSL later binds to an operator
         super().__init__()
 
     def __call__(self, a, b, data=None, engine=None, node=None):
@@ -116,7 +115,7 @@ class Query(PO.ProductionContainer):
         pos = []
         neg = []
         for c in self.clauses:
-            if util.NEGATION_S in c._data and c._data[util.NEGATION_S]:
+            if NEGATION_S in c._data and c._data[NEGATION_S]:
                 neg.append(c)
             else:
                 pos.append(c)
@@ -126,12 +125,12 @@ class Query(PO.ProductionContainer):
         """ Return all comparisons in canonical form """
         # eg : a.test.$x(>$y)? = > -> $x -> $y -> bool
         constraint_words = [word for clause in self.clauses
-                            for word in clause if util.CONSTRAINT_S in word._data]
+                            for word in clause if CONSTRAINT_S in word._data]
         # for each constraint, create a sentence
         # only handles comparisons, not typings
         constraint_sentences = [sen
                                 for word in constraint_words
-                                for comp in word._data[util.CONSTRAINT_S]
+                                for comp in word._data[CONSTRAINT_S]
                                 for sen in comp.to_local_sentences(word)
                                 if isinstance(comp, QueryComponent)]
 

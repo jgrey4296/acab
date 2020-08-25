@@ -15,9 +15,16 @@ end
 """
 from acab.abstract.rule import Rule
 from acab.abstract.production_operator import ProductionOperator
-from acab.util import NAME_S, STATEMENT_S, QUERY_S, TRANSFORM_S, ACTION_S
-from acab import util
 from acab.abstract.printing import util as PrU
+from acab.config import AcabConfig
+
+util = AcabConfig.Get()
+
+NAME_S = util("Parsing.Structure", "NAME_S")
+STATEMENT_S = util("Parsing.Structure", "STATEMENT_S")
+QUERY_S = util("Parsing.Structure", "QUERY_S")
+TRANSFORM_S = util("Parsing.Structure", "TRANSFORM_S")
+ACTION_S = util("Parsing.Structure", "ACTION_S")
 
 class Pipeline(Rule):
     """ Abstract Class to describe a rule engine pipeline

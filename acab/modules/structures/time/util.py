@@ -7,25 +7,28 @@ from math import gcd
 from functools import reduce
 import logging as root_logger
 
-from acab import util
 from acab.abstract.type_base import TypeInstance
+from acab.config import AcabConfig
 
 logging = root_logger.getLogger(__name__)
 
+util = AcabConfig.Get()
 
 #CONSTANTS:
-BIND_S         = util.BIND_S
-NAME_S         = util.NAME_S
-OPT_S          = "opt"
-PATTERN_S      = "pattern"
+BIND_S         = util("Parsing.Structure", "BIND_S")
+NAME_S         = util("Parsing.Structure", "NAME_S")
+VALUE_S        = util("Parsing.Structure", "VALUE_S")
+VALUE_TYPE_S   = util("Parsing.Structure", "VALUE_TYPE_S")
+
+OPT_S          = util("Module.Time", "OPT_S")
+PATTERN_S      = util("Module.Time", "PATTERN_S")
+TIME_EVENT_S   = util("Module.Time", "TIME_EVENT_S")
+TIME_PATTERN_S = util("Module.Time", "TIME_PATTERN_S")
+TIME_FORMAT_S  = util("Module.Time", "TIME_FORMAT_S")
+
 PATTERN_T      = Enum("Pattern Type", "DISCRETE ANALOG")
 TIME_T         = Enum("Time Type", "CLOCK EVENT SET SYMBOLIC")
 Time           = Fraction
-VALUE_S        = util.VALUE_S
-VALUE_TYPE_S   = util.VALUE_TYPE_S
-TIME_EVENT_S   = "event"
-TIME_PATTERN_S = "pattern"
-
 # Primitive Type instances
 # EVENT
 # DURATION
@@ -55,7 +58,7 @@ def f_gcd(x, y):
 
 
 def time_str(time):
-    return "{}/{}".format(time.numerator, time.denominator)
+    return TIME_FORMAT_S.format(time.numerator, time.denominator)
 
 
 

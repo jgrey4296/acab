@@ -3,6 +3,7 @@ An Acab REPL, using default of TrieWM
 """
 # Setup root_logger:
 from pyparsing import ParseException
+from os.path import expanduser, abspath
 from os.path import splitext, split
 import sys
 import argparse
@@ -14,7 +15,10 @@ import traceback
 from acab.repl import ReplParser as ReP
 from acab.repl import repl_commands as ReC
 from acab.abstract.printing import util as PrU
-from acab import util
+from acab.config import AcabConfig
+
+util = AcabConfig.Get()
+
 
 # Quiet hook from https://gist.github.com/jhazelwo/86124774833c6ab8f973323cb9c7e251
 if __name__ == "__main__":
@@ -23,9 +27,11 @@ if __name__ == "__main__":
     #see https://docs.python.org/3/howto/argparse.html
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                      epilog = "\n".join([""]))
-    parser.add_argument('--engine', default="acab.engines.trie_engine.TrieEngine")
+    parser.add_argument('--config', action="append")
+    parser.add_argument('--engine')
     parser.add_argument('-v', '--verbose', default="WARNING")
     args = parser.parse_args()
+    args.config = [abspath(expanduser(x)) for x in args.config]
 
     LOGLEVEL = root_logger._nameToLevel[args.verbose]
     LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
@@ -36,28 +42,37 @@ if __name__ == "__main__":
     root_logger.getLogger('').addHandler(console)
     logging = root_logger.getLogger(__name__)
 
+
+    logging.info("Reading Config: {}".format(args.config))
+    util.read_list(args.config)
+
     logging.info("Setting up engine: {}".format(args.engine))
-
     #import then build engine or default trie engine from args
-    init_module = importlib.import_module(splitext(args.engine)[0])
-    # build engine
-    engine, dummy = ReC.get(ReC.ReplE.INIT)(None, {'params': [args.engine]})
-    # TODO Load Standard modules
-    engine, dummy = ReC.get(ReC.ReplE.MODULE)(engine, {'params': ['acab.modules.operators']})
-    engine, dummy = ReC.get(ReC.ReplE.MODULE)(engine, {'params': ['acab.modules.structures']})
+    engine = util("REPL", "ENGINE")
+    if args.engine is not None:
+        engine = args.engine
 
-    data = { 'prompt' : 'ACAB REPL: ',
-             'prompt_ml' : '... ',
+    init_module = importlib.import_module(splitext(engine)[0])
+    # build engine
+    engine, dummy = ReC.get(ReC.ReplE.INIT)(None, {'params': [engine]})
+    # TODO Load Standard modules
+    load_cmd = ReC.get(ReC.ReplE.MODULE)
+    initial_modules = util("REPL", "MODULES", action=AcabConfig.actions_e.LIST):
+    engine, dummy = load_cmd(engine, {'params': initial_modules})
+
+    data = { 'prompt' : util("REPL", "PROMPT"),
+             'prompt_ml' : util("REPL", "PROMPT_ML"),
              'command': ReC.ReplE.NOP,
              'params' : [],
              'result' : None,
              'current_str' : None,
              'collect_str' : [],
              'echo' : False,
+             'stack' : False,
              'in_multi_line': False}
-    data['current_str'] = input(data['prompt'])
     while data['command'] != ReC.ReplE.EXIT:
         try:
+            data['current_str'] = input(data['prompt'])
             # parse string in REPL parser
             parse_response = ReP.parseString(data['current_str'],
                                              in_multi_line=data['in_multi_line'])
@@ -73,12 +88,14 @@ if __name__ == "__main__":
                     data.update(u_data)
 
         except Exception as exp:
-            logging.exception(str(exp))
-            print("Error: {}".format(str(exp)))
-            exc_type, exc_value, exc_tb = sys.exc_info()
-            # traceback.print_tb(exc_tb, limit=4)
+            if data['stack']:
+                logging.exception(str(exp))
+                exc_type, exc_value, exc_tb = sys.exc_info()
+                # traceback.print_tb(exc_tb, limit=4)
+
+            print("(Trace: {}) Error: {}".format(data['stack'], str(exp)))
             breakpoint()
-            data['result']  = []
+            data['result']  = ["Look at data, and engine"]
 
         if (not data['in_multi_line']) and data['echo']:
             cmd_fn = ReC.get(ReC.ReplE.PRINT)
@@ -88,8 +105,5 @@ if __name__ == "__main__":
         if bool(data['result']):
             print(data['result'])
             data['result'] = None
-        # Repeat
-        if data['command'] != ReC.ReplE.EXIT:
-            data['current_str'] = input(data['prompt'])
 
     logging.info("Shutting down engine: {}".format(args.engine))
