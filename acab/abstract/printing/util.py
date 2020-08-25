@@ -74,6 +74,13 @@ def register_class(cls, func):
     assert(cls not in REGISTERED_PPRINTS)
     REGISTERED_PPRINTS[cls] = func
 
+def register_obvious_types(*type_instances):
+    """ Register Type Instances which do not need pretty printing
+    eg: ATOMs and INTs don't need it: an_atom(::atom) 2(::number.int)
+    """
+    global OBVIOUS_TYPES
+    OBVIOUS_TYPES.update(type_instances)
+
 def default_opts(*args, **kwargs):
     """ Create the default options for pprint """
     opts = defaultdict(lambda: False)
@@ -187,7 +194,7 @@ def print_statement(statement, opts):
 
     val = _wrap_colon(val)
 
-    if statement.type != ATOM:
+    if statement.type not in OBVIOUS_TYPES:
         val = _wrap_statement_type(val, statement.type.pprint())
 
     if bool(statement._vars):
@@ -263,18 +270,22 @@ def _wrap_regex(value, opts=None):
 
 def _wrap_var(value, is_at_var=False):
     assert(isinstance(value, str))
-    sym = util.VAR_SYMBOL_S
+    sym = VAR_SYMBOL_S
     if is_at_var:
-        sym = util.AT_VAR_SYMBOL_S
+        sym = AT_VAR_SYMBOL_S
     return sym + value
 
 def _wrap_constraints(value, data):
     assert(isinstance(value, str))
     assert(isinstance(data, dict))
 
+    constraints = []
+
     # TODO: expand this as type instance printing is being avoided here
     # needs to print type constraints other than ATOM, num, str, ...?
-    constraints = []
+    if data[VALUE_TYPE_S] not in OBVIOUS_TYPES:
+        constraints.append(data[VALUE_TYPE_S])
+
     # Get registered data annotations:
     for x in REGISTERED_CONSTRAINTS:
         if x in data:
@@ -348,10 +359,10 @@ def _wrap_var_list(val, the_vars, newline=False):
 
 
 MODAL_LOOKUPS = {}
-REGISTERED_PPRINTS = {float : _wrap_float,
-                      int   : _wrap_int,
-                      Pattern: _wrap_regex}
+REGISTERED_PPRINTS = {Pattern: _wrap_regex}
 
-REGISTERED_CONSTRAINTS = set([util.CONSTRAINT_S])
+REGISTERED_CONSTRAINTS = set([CONSTRAINT_S])
 
-TYPE_WRAPS = {STRING: _wrap_str}
+TYPE_WRAPS = {}
+
+OBVIOUS_TYPES = set([])

@@ -207,3 +207,6 @@ QUERY     = TypeInstance(path=["query"], type_alias_str=QUERY_HEAD_S, primitive=
 TRANSFORM = TypeInstance(path=["transform"], type_alias_str=TRANSFORM_HEAD_S, primitive=True)
 ACTION    = TypeInstance(path=["action"], type_alias_str=ACTION_HEAD_S, primitive=True)
 RULE      = TypeInstance(path=["rule"], type_alias_str=RULE_HEAD_S, primitive=True)
+
+PrU.register_obvious_types(ATOM, REGEX, STRING)
+PrU.register_primitive({STRING: PrU._wrap_str})
