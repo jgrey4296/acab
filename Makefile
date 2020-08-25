@@ -24,7 +24,7 @@ init:
 	find ./acab -type d -print0 | xargs -0 -I {} touch "{}/__init__.py"
 
 repl:
-	python acab/repl/repl.py
+	python acab/repl/repl.py --config ./acab/util.config
 
 vrepl:
 	python acab/repl/repl.py --verbose DEBUG
