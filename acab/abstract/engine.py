@@ -8,8 +8,10 @@ and can then parse and run an agent DSL pipeline.
 import logging as root_logger
 from os.path import exists, split, expanduser, abspath
 from importlib import import_module
+
 from acab.config import AcabConfig
 from acab.error.acab_import_exception import AcabImportException
+from acab.error.acab_base_exception import AcabBaseException
 
 from .value import AcabValue
 from .sentence import Sentence
@@ -31,6 +33,8 @@ class Engine:
 
     def __init__(self, wm_constructor, modules=None, path=None, init=None):
         assert(callable(wm_constructor))
+        self._initialised = False
+
         self.__kb_constructor = wm_constructor
 
         self._working_memory = wm_constructor(init)
@@ -122,6 +126,7 @@ class Engine:
     def build_DSL(self):
         self._working_memory.clear_bootstrap()
         self._working_memory.construct_parsers_from_fragments([y for x in self._loaded_DSL_fragments.values() for y in x])
+        self._initialised = True
 
 
     def register_ops(self, sentences):
@@ -143,6 +148,12 @@ class Engine:
 
     def load_file(self, filename):
         """ Load a file spec for the facts / rules / layers for this engine """
+        if not self._initialised:
+            raise AcabBaseException("DSL Not Initialised")
+
+        return self._load_file(filename)
+
+    def _load_file(self, filename):
         raise NotImplementedError("Base Engine Stub")
 
     def save_file(self, filename):
@@ -161,10 +172,14 @@ class Engine:
     def add(self, s):
         """ Assert a new fact into the engine """
         # pylint: disable=unused-argument,no-self-use
+        if not self._initialised:
+            raise AcabBaseException("DSL Not Initialised")
         self._working_memory.add(s)
 
     def query(self, s, ctxs=None, cache=True):
         """ Ask a question of the working memory """
+        if not self._initialised:
+            raise AcabBaseException("DSL Not Initialised")
         result = self._working_memory.query(s, ctxs=ctxs, engine=self)
         if cache:
             self._cached_bindings = result
@@ -197,6 +212,8 @@ class Engine:
         rule/agenda/layer/pipeline,
         action/query/transform
         """
+        if not self._initialised:
+            raise AcabBaseException("DSL Not Initialised")
         result = False
         # if thing is string, query it
         if isinstance(thing, str):
