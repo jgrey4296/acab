@@ -43,6 +43,7 @@ COMMENT   = pp.Regex(COMMENT_RE)
 s          = pp.Suppress
 op         = pp.Optional
 orm        = pp.OneOrMore
+zrm        = pp.ZeroOrMore
 
 COMMA         = s(pp.Literal(','))
 emptyLine     = s(pp.lineEnd + pp.lineEnd)
