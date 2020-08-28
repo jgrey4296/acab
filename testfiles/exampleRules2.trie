@@ -5,12 +5,12 @@ a.other!ex
 example.rule.one: (::ρ)
   a.b.c?
 
-  \S.ActionAdd(d.e.f)
+  λS.ActionAdd d.e.f
 end
 
 example.rule.two: (::ρ)
   a.b.c?
 
-  \S.ActionAdd(d.e.g)
+  λS.ActionAdd d.e.g
 end
 

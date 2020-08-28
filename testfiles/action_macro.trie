@@ -1,20 +1,19 @@
 a.b.first
 a.c.second
 
-α::an.action.x:
+an.action.x: (::α)
   | $x, $y | 
 
-    \S.ActionAdd(a.c.$x)
-    \S.ActionAdd(~a.c.$y)
-    \S.ActionAdd(a.b.$y)
-    \S.ActionAdd(~a.b.$x)
+    λS.ActionAdd a.c.$x
+    λS.ActionAdd ~a.c.$y
+    λS.ActionAdd a.b.$y
+    λS.ActionAdd ~a.b.$x
 end
 
-ρ::an.action.macro.rule:
+an.action.macro.rule: (::ρ)
     a.b.$a?
     a.c.$b?
 
-    \an.action.x($a, $b)
-
+    λan.action.x $a, $b
 end
 

@@ -12,9 +12,9 @@ test.rule: (::ρ)
   format.second.$b?
   a.$x!$y?
 
-  \S.FormatOp $a -> $result
-  \S.FormatOp $b -> $result_b
+  λS.FormatOp $a -> $result
+  λS.FormatOp $b -> $result_b
 
-  \S.ActionAdd (output.$result_b)
+  λS.ActionAdd output.$result_b
 end
 

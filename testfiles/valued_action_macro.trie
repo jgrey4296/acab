@@ -1,16 +1,15 @@
 a.b.c
 
 α::first.action:
-  | $x | 
+  | $x |
 
-  \S.ActionAdd(a.b.$x)
-  
+  λS.ActionAdd a.b.$x
+
 end
 
 ρ::a.rule:
   a.b.c?
 
-  \S.first.action("this is a test")    
+  λS.first.action "this is a test"
 
 end
-

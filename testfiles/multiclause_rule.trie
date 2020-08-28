@@ -7,8 +7,6 @@ a.c!d
 multi.clause.rule.test: (::ρ)
   a.b.c?
   a.c!d?
-    
-  \S.ActionAdd(a.b.e)
 
+  λS.ActionAdd a.b.e
 end
-

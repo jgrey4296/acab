@@ -5,26 +5,25 @@ a.string."test string {x}"
 a.agenda.test: (::Agenda)
     | $proposals |
 
-    \S.AgendaReturn($proposals)
+    λacab.modules.operators.AgendaReturn $proposals
 end
 
 a.rule.test: (::ρ)
     a.b.$x?
     a.string.$y?
 
-    \S.FormatOp $y -> $z
+    λacab.modules.operators.FormatOp $y -> $z
 
-    a.b.q
-    \S.ActionPrint("Testing")
-    \S.ActionPrint($z)
+    λacab.modules.operators.ActionPrint "Testing"
+    λacab.modules.operators.ActionPrint $z
 end
 
 a.layer.test: (::Layer)
     a.agenda.$agenda?
     a.rule.$rule(ctx.collapse)?
 
-    \S.LayerRunRules $rule -> $props
-    \S.LayerRunAgenda $agenda $props -> $results
+    λacab.modules.operators.LayerRunRules $rule -> $props
+    λacab.modules.operators.LayerRunAgenda $agenda $props -> $results
 
-    \S.LayerPerform($results)
+    λacab.modules.operators.LayerPerform $results
 end

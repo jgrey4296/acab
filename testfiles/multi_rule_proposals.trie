@@ -5,7 +5,7 @@ rule.first: (::ρ)
 
   a.b.c?
 
-  \S.ActionAdd(blah)
+  λS.ActionAdd blah
 end
 
 rule.second: (::ρ)
@@ -13,5 +13,5 @@ rule.second: (::ρ)
 
   a.b.c?
 
-  \S.ActionAdd(bloo)
+  λS.ActionAdd bloo
 end

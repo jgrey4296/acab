@@ -8,8 +8,8 @@ test.rule: (::ρ)
   format.string.$a?
   a.$x!$y?
 
-  \S.FormatOp $a -> $result
+  λS.FormatOp $a -> $result
   
-  \S.ActionAdd(output.$result)
+  λS.ActionAdd output.$result
 end
 

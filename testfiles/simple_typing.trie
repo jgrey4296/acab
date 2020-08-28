@@ -9,31 +9,31 @@ a.string."test string {x}"
 a.agenda.test: (::Agenda)
     | $proposals |
 
-    \S.AgendaReturn($proposals)
+    λacab.modules.operators.AgendaReturn $proposals
 end
 
 a.rule.test: (::ρ)
     a.b.$x(::types.string)?
     a.string.$y?
 
-    \operator.transform.n_ary.format $y -> $z
+    \acab.modules.operators.FormatOp $y -> $z
 
     a.b.q
-    \S.ActionPrint("Testing")
-    \S.ActionPrint($z)
+    λacab.modules.operators.ActionPrint "Testing"
+    λacab.modules.operators.ActionPrint $z
 end
 
 a.layer.test: (::Layer)
     a.agenda.$agenda?
     a.rule.$rules(ctx.collapse)?
 
-    \S.LayerRunRules $rules -> $props
-    \S.LayerRunAgenda $agenda $props -> $results
+    λacab.modules.operators.LayerRunRules $rules -> $props
+    λacab.modules.operators.LayerRunAgenda $agenda $props -> $results
 
-    \S.LayerPerform ($results)
+    λacab.modules.operators.LayerPerform $results
 end
 
 
 a.typing.layer: (::Layer)
-    \S.TypeCheck()
+    λacab.modules.operators.TypeCheck
 end

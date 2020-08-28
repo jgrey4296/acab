@@ -2,16 +2,15 @@
 a.b.c
 a.other!ex
 
-// ρ::comment.rule.one:
+// comment.rule.one: (::ρ)
 //     a.b.c?
 //
-//     ActionAdd(d.e.f)
+//     ActionAdd d.e.f
 // end
     
 //Another Test Comment
 comment.rule.two: (::ρ)
   a.b.c?
 
-  \S.ActionAdd(d.e.g)
-
+  λS.ActionAdd d.e.g
 end

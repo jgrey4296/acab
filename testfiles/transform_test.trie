@@ -7,9 +7,9 @@ test.rule: (::ρ)
 
   a.$x?
   //blah
-  $x \S.RegexOp /(bl)(ah)/ "\1AH" -> $y
+  λS.RegexOp $x /(bl)(ah)/ "\1AH" -> $y
 
-  \S.ActionAdd (result.$y)
+  λS.ActionAdd result.$y
 end
 
 //blah
