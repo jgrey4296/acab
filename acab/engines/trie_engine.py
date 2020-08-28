@@ -28,7 +28,7 @@ class TrieEngine(Engine):
     def __init__(self, modules=None, path=None, init=None):
         super().__init__(TrieWM, modules=modules, path=path, init=init)
 
-    def load_file(self, filename):
+    def _load_file(self, filename):
         """ Given a filename, read it, and interpret it as an EL DSL string """
         assert(isinstance(filename, str))
         filename = abspath(expanduser(filename))
@@ -89,7 +89,7 @@ class TrieEngine(Engine):
             assert(isinstance(op, ProductionOperator))
             return op
 
-        raise Exception("Operator Not Found: {}".format(op_sen.pprint(seq_join=".")))
+        raise Exception("Operator Not Found: {}".format(op_sen.pprint()))
 
     def alias_module(self, sentence, alias_sentence):
         """
