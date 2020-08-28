@@ -71,6 +71,7 @@ SUM_TYPE = PU.STATEMENT_CONSTRUCTOR(TYU.SUM_HEAD,
 
 
 # numAdd: (::λ) $x(::num).$y(::num).$z(::num) => +
+# TODO: enable alias paths, not just sugar
 OP_DEF_BODY = PU.NG(TYU.STRUCT_S, HOTLOAD_PARAM_SEN) \
     + PU.op(PU.DBLARROW + PU.N(TYU.SYNTAX_BIND_S, PU.OPERATOR_SUGAR))
 OP_DEF_BODY.setParseAction(make_op_def)

@@ -56,6 +56,7 @@ class FactNode(AcabNode):
 
     def insert(self, fact):
         """ Insert A Node as a Child of this Node """
+        # TODO factor these semantics elsewhere?
         assert(isinstance(fact, AcabValue))
         # deal with exclusion
         if fact in self:

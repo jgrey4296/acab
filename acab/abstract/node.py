@@ -167,3 +167,16 @@ class AcabNode:
     def set_data(self, data):
         if data is not None:
             self._data.update(data)
+
+
+    def unify(self, node):
+        """
+        TODO Unify a pair of tries together
+        """
+        raise NotImplementedError()
+
+    def diff(self, node):
+        """
+        TODO compare two tries
+        """
+        raise NotImplementedError()
