@@ -12,18 +12,24 @@ logging = root_logger.getLogger(__name__)
 util = AcabConfig.Get()
 
 DEFAULT_ACTION_S = util("Parsing.Structure", "DEFAULT_ACTION_S")
-ACTION_VAL_S = util("WorkingMemory.TrieWM", "ACTION_VAL_S")
+
+LEFT_S = util("WorkingMemory.TrieWM", "LEFT_S")
+RIGHT_S = util("WorkingMemory.TrieWM", "RIGHT_S")
 OPERATOR_S = util("Parsing.Structure", "OPERATOR_S")
+
 
 HOTLOAD_OPERATORS = pp.Forward()
 
 
-def build_component(toks):
-    action_vals = []
-    if ACTION_VAL_S in toks:
-        action_vals = toks[ACTION_VAL_S][:]
+def build_action_component(toks):
+    params = []
+    if LEFT_S in toks:
+        params.append(toks[LEFT_S])
+    if RIGHT_S in toks:
+        params = toks[RIGHT_S][:]
     op = toks[OPERATOR_S][0]
-    return action.ActionComponent(op, action_vals)
+    filtered_params = [x[0] if len(x) == 1 else x for x in params]
+    return action.ActionComponent(op, filtered_params, sugared=LEFT_S in toks)
 
 def build_action(toks):
     clauses = [x if isinstance(x, action.ActionComponent)
@@ -34,13 +40,16 @@ def build_action(toks):
 
 
 # fact string with the option of binds
-vals = pp.delimitedList(pp.Or([VALBIND, PARAM_SEN]), delim=PU.COMMA)
+vals = PU.N(RIGHT_S, PU.zrm(PARAM_SEN))
 
-op_path = pp.Or([HOTLOAD_OPERATORS, PU.OP_PATH_C(BASIC_SEN)])
+op_path = PU.OP_PATH_C(BASIC_SEN)
 
 # action: [op](values)
-action_component = PU.N(OPERATOR_S, op_path) \
-    + PU.op(PU.OPAR + PU.N(ACTION_VAL_S, vals) + PU.CPAR)
+action_component = PU.N(OPERATOR_S, op_path) + vals
+
+action_sugar = PU.N(LEFT_S, VALBIND) \
+    + PU.N(OPERATOR_S, HOTLOAD_OPERATORS) \
+    + vals
 
 # Sentences are asserted by default
 actions = pp.delimitedList(pp.Or([action_component, PARAM_SEN]), delim=PU.DELIM)
@@ -50,7 +59,7 @@ action_definition = PU.STATEMENT_CONSTRUCTOR(PU.ACTION_HEAD,
                                              actions + PU.component_gap)
 
 # parse action
-action_component.setParseAction(build_component)
+action_component.setParseAction(build_action_component)
 actions.setParseAction(build_action)
 
 # NAMING

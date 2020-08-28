@@ -6,7 +6,7 @@ from acab.abstract.transform import TransformComponent
 from acab.abstract.transform import Transform, TransformOp
 from acab.abstract.parsing import util as PU
 from acab.working_memory.trie_wm import util as WMU
-from acab.working_memory.trie_wm.parsing.FactParser import VALBIND, BASIC_SEN
+from acab.working_memory.trie_wm.parsing.FactParser import VALBIND, BASIC_SEN, PARAM_SEN
 from acab.config import AcabConfig
 
 logging = root_logger.getLogger(__name__)
@@ -21,19 +21,18 @@ TARGET_S = util("WorkingMemory.TrieWM", "TARGET_S")
 # Builders:
 def build_transform_component(toks):
     params = []
-    position = 0
     if LEFT_S in toks:
-        params += toks[LEFT_S][:]
-        position = len(toks[LEFT_S])
+        params.append(toks[LEFT_S][0])
     params += toks[RIGHT_S][:]
 
     op = toks[OPERATOR_S][0]
     if isinstance(op, str):
         op = Sentence.build([op])
+
     rebind = toks[TARGET_S][0]
-    return TransformComponent(op,
-                              params, op_pos=position,
-                              rebind=rebind)
+    filtered_params = [x[0] if len(x) == 1 else x for x in params]
+
+    return TransformComponent(op, filtered_params, rebind=rebind, sugared=LEFT_S in toks)
 
 def build_transform(toks):
     trans = Transform(toks[:])
@@ -46,20 +45,27 @@ HOTLOAD_TRANS_STATEMENTS = pp.Forward()
 HOTLOAD_TRANS_OP.setName("Transform_Op")
 HOTLOAD_TRANS_STATEMENTS.setName("Transform_Statement")
 
-
 rebind = PU.ARROW + VALBIND
 rebind.setName("Rebind")
+
 # TODO: extend transform to take partial transforms?
 # transform: ( bind op val|bind -> bind)
-op_path  = pp.Or([HOTLOAD_TRANS_OP, PU.OP_PATH_C(BASIC_SEN)])
+op_path  = PU.OP_PATH_C(BASIC_SEN)
 op_path.setName("OperatorPath")
 
-transform_core = PU.N(LEFT_S, pp.ZeroOrMore(VALBIND)) \
-    + PU.N(OPERATOR_S, op_path) \
-    + PU.N(RIGHT_S, PU.orm(VALBIND)) \
+vals = PU.N(RIGHT_S, PU.zrm(PARAM_SEN))
+vals.addCondition(lambda toks: all([isinstance(x, Sentence) for x in toks]))
+
+transform_core = PU.N(OPERATOR_S, op_path) \
+    + vals \
     + PU.N(TARGET_S, rebind)
 
-transform_combined = pp.Or([transform_core, HOTLOAD_TRANS_STATEMENTS])
+transform_sugar = PU.NG(LEFT_S, PARAM_SEN) \
+    + PU.N(OPERATOR_S, HOTLOAD_TRANS_OP) \
+    + vals \
+    + PU.N(TARGET_S, rebind)
+
+transform_combined = pp.Or([transform_core, HOTLOAD_TRANS_STATEMENTS, transform_sugar])
 
 transforms = pp.delimitedList(transform_combined, delim=PU.DELIM)
 
@@ -69,6 +75,7 @@ transform_statement = PU.STATEMENT_CONSTRUCTOR(PU.TRANSFORM_HEAD,
 
 # Actions
 transform_core.setParseAction(build_transform_component)
+transform_sugar.addParseAction(build_transform_component)
 transforms.setParseAction(build_transform)
 
 # NAMING
