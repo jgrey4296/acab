@@ -36,6 +36,8 @@ class _Bootstrap_Value:
 
     def __hash__(self):
         return hash(str(self))
+    def __str__(self):
+        return self.name
     @property
     def is_var(self):
         return False
@@ -103,7 +105,6 @@ class TypeInstance:
         self._vars = []
         self._primitive = primitive
 
-
         if params is not None:
             self._vars += params
 
@@ -117,6 +118,9 @@ class TypeInstance:
         """
         if not (other or isinstance(other, TypeInstance)):
             return False
+
+        if other._primitive and other._type_alias is not None and self._path.pprint() == other._type_alias:
+            return True
 
         path_match = self._path == other._path
         args_match = all([a == b for a, b in zip(self.vars, other.vars)])
@@ -196,7 +200,7 @@ class TypeInstance:
         if self._type_alias is not None:
             return TYPE_FMT_S.format(self._type_alias)
         else:
-            return TYPE_FMT_S.format(self.path.pprint(opts))
+            return TYPE_FMT_S.format(PrU.pprint(self.path, opts))
 
 
 # Construct the primitive types
