@@ -23,6 +23,7 @@ NEGATION_SYMBOL_S = util("Parsing", "NEGATION_SYMBOL_S")
 TAG_SYMBOL_S = util("Parsing", "TAG_SYMBOL_S")
 END_S = util("Parsing", "END_S")
 
+TAB_S = util("Printing", "TAB_S", action=AcabConfig.actions_e.STRIPQUOTE)
 
 #Setup
 # TODO register additional constraints
@@ -182,7 +183,7 @@ def print_container(container, opts):
 
     join_str = opts['container_join']
     if not join_str:
-        join_str = "\n\t"
+        join_str = "\n" + TAB_S
 
     return "{}\n".format(join_str.join(the_clauses))
 
@@ -194,8 +195,9 @@ def print_statement(statement, opts):
 
     val = _wrap_colon(val)
 
-    if statement.type not in OBVIOUS_TYPES:
-        val = _wrap_statement_type(val, statement.type.pprint())
+    val += " "
+    val = _wrap_constraints(val, statement._data)
+    val += "\n"
 
     if bool(statement._vars):
         val = _wrap_var_list(val, statement._vars)
@@ -222,8 +224,6 @@ def print_operator(operator, opts):
     eg: op_fix=0 : + 1 2 3 ...
         op_fix=2 : 1 2 + 3 ...
     """
-    # TODO actually use the op_position
-    op_fix = operator._op_position
     op_str = "{}{}".format(FUNC_SYMBOL_S, pprint(operator.op))
 
     join_str = opts['join']
@@ -232,9 +232,12 @@ def print_operator(operator, opts):
 
     the_params = [x.pprint() for x in operator._params]
 
-    # Don't wrap comps or transforms
-    head = [str(x) for x in the_params[:op_fix]]
-    tail = [str(x) for x in the_params[op_fix:]]
+    head = []
+    tail = the_params
+    if operator._sugared:
+        head = [str(x) for x in the_params[:1]]
+        tail = [str(x) for x in the_params[1:]]
+
     val = join_str.join(head + [op_str] + tail)
 
     return val
@@ -246,13 +249,13 @@ def print_operator_rebind(operator, opts):
 
 def print_operator_wrap(operator, opts):
     # Format the vars of the operator
-    op_fix = operator._op_position
     join_str = opts['join']
     if not join_str:
-        join_str = ", "
+        join_str = " "
 
+    # TODO handle sugared
     the_params = [x.pprint(opts) for x in operator._params]
-    val = "{}{}({})".format(FUNC_SYMBOL_S, pprint(operator.op, opts), join_str.join(the_params))
+    val = "{}{} {}".format(FUNC_SYMBOL_S, pprint(operator.op, opts), join_str.join(the_params))
 
     return val
 
@@ -281,8 +284,6 @@ def _wrap_constraints(value, data):
 
     constraints = []
 
-    # TODO: expand this as type instance printing is being avoided here
-    # needs to print type constraints other than ATOM, num, str, ...?
     if data[VALUE_TYPE_S] not in OBVIOUS_TYPES:
         constraints.append(data[VALUE_TYPE_S])
 
@@ -313,9 +314,10 @@ def _wrap_rebind(value, rebind, is_sugar=False):
     if is_sugar:
         arrow = "=>"
 
+
     return "{} {} {}".format(value,
                              arrow,
-                             rebind.pprint())
+                             pprint(rebind))
 
 def _wrap_question(value):
     return "{}{}".format(value, QUERY_SYMBOL_S)
@@ -326,7 +328,7 @@ def _wrap_negation(value):
 def _wrap_fallback(value, fallback_list):
     return "{} || {}".format(value, print_fallback(fallback_list))
 
-def _wrap_tags(value, tags, sep="\t"):
+def _wrap_tags(value, tags, sep=TAB_S):
     tags_s = [str(x) for x in tags]
     return "{}{}{}\n\n".format(value, sep, ", ".join(sorted([TAG_SYMBOL_S + x for x in tags_s])))
 
@@ -348,14 +350,11 @@ def _wrap_end(value, newline=False):
     else:
         return "{}{}\n".format(value, END_S)
 
-def _wrap_statement_type(val, type_str):
-    return "{} ({})\n".format(val, type_str)
-
 def _wrap_var_list(val, the_vars, newline=False):
     head = ""
     if newline:
         head = "\n"
-    return "{}{}\t | {} |\n".format(val, head, ", ".join([_wrap_var(x.name) for x in the_vars]))
+    return "{}{}{}| {} |\n".format(val, head, TAB_S, ", ".join([_wrap_var(x.name) for x in the_vars]))
 
 
 MODAL_LOOKUPS = {}
