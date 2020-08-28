@@ -18,7 +18,8 @@ def construct_tag_query(toks):
     tags = [x[1] for x in toks[TAG_S]]
 
     tag_op_path = Sentence.build([QO.HasTag.__name__])
-    return (CONSTRAINT_S, QueryComponent(tag_op_path, param=tags))
+    value_tags = [AcabValue(x) for x in tags]
+    return (CONSTRAINT_S, QueryComponent(tag_op_path, param=value_tags))
 
 
 tagList = PU.N(TAG_S, pp.delimitedList(PU.tagName, delim=","))
