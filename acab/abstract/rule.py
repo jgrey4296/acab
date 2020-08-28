@@ -17,6 +17,8 @@ from .query import Query
 util = AcabConfig.Get()
 logging = root_logger.getLogger(__name__)
 
+TAB_S = util("Printing", "TAB_S", action=AcabConfig.actions_e.STRIPQUOTE)
+
 class Rule(ProductionContainer):
     """ A Rule holds a query (of N Clauses), a set of transforms,
     and a set of actions. It can be tagged with attributes.
@@ -129,15 +131,15 @@ class Rule(ProductionContainer):
         head, body = self.pprint_has_content
 
         if self._query is not None:
-            val += "\t"
+            val += TAB_S
             val += self._query.pprint()
 
         if self._transform is not None:
-            val += "\n\t"
+            val += "\n" + TAB_S
             val += self._transform.pprint()
 
         if self._action is not None:
-            val += "\n\t"
+            val += "\n" + TAB_S
             val += self._action.pprint()
 
         return val
