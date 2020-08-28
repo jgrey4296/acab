@@ -14,7 +14,7 @@ class AcabConfig:
     """
     actions_e = actions_e
     actions = {
-        actions_e.STRIPQUOTE : lambda x: x.strip("'"),
+        actions_e.STRIPQUOTE : lambda x: x.strip("\"'"),
         actions_e.KEYWORD : lambda x: pp.Keyword(x),
         actions_e.LITERAL : lambda x: pp.Literal(x),
         actions_e.LIST : lambda x: x.split("\n"),
