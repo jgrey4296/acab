@@ -211,6 +211,7 @@ class Trie:
         engine = query_context._engine
         # TODO: validate on activate context too
         alphas, betas, regexs, annotations = validate_and_split_constraints(query_word, engine=engine)
+        callable_annotations = [x for x in annotations if hasattr(x, "__call__")]
         data_set = {x : d for x,d in enumerate(query_context.pairs())}
         pairs  = enumerate(query_context.pairs())
         query_context.clear()
@@ -222,7 +223,7 @@ class Trie:
         passing = [match_regexs(n, regexs, d, i) for i,d,n in potentials
                    if test_alphas(n, alphas, d, engine=engine)
                    and test_betas(n, betas, d, engine=engine)
-                   and test_annotations(n, annotations, d, engine)]
+                   and test_annotations(n, callable_annotations, d, engine)]
 
         to_add = [add_var_to_context(i, query_word, d, n) for i,d,n in passing if n is not None]
 
@@ -297,6 +298,7 @@ def add_var_to_context(i, query_word, new_data, passing_node):
 
 
 def match_regexs(node, regexs, data, i):
+    # TODO Factor this into queryop subbind?
     invalidated = False
     new_data = {}
     for regex in regexs:
@@ -330,7 +332,7 @@ def validate_and_split_constraints(word, ctx=None, engine=None):
         return ([], [], [], set())
 
     comps = [x.verify(ctx=ctx, engine=engine) for x in word._data[CONSTRAINT_S] if isinstance(x, QueryComponent)]
-    others = set([x for x in word._data[CONSTRAINT_S] if not isinstance(x, QueryComponent) and hasattr(x, '__call__')])
+    others = set([x for x in word._data[CONSTRAINT_S] if not isinstance(x, QueryComponent)])
     alphas = []
     betas = []
     sub_binds = []
