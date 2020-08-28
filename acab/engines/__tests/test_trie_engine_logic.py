@@ -24,6 +24,7 @@ class Engine_Logic_Tests(unittest.TestCase):
     def setUp(self):
         self.e = TrieEngine(modules=["acab.modules.operators.standard_operators"])
         self.e.alias_module(S("acab", "modules", "operators"), S("S"))
+        self.e.build_DSL()
 
     def tearDown(self):
         return 1
@@ -31,7 +32,7 @@ class Engine_Logic_Tests(unittest.TestCase):
     #----------
     #use testcase snippets
     def test_simple_logic(self):
-        self.e.add('a.test.rule: (::ρ)\na.b.c?\n\nλS.ActionAdd(a.b.d)\n\nend')
+        self.e.add('a.test.rule: (::ρ)\na.b.c?\n\nλS.ActionAdd a.b.d\n\nend')
         rule = self.e.query('a.test.$x?')[0]['x']
         self.assertIsInstance(rule, Rule)
         self.e.add("a.b.c")

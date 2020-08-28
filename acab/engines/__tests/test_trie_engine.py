@@ -16,7 +16,7 @@ class Engine_Tests(unittest.TestCase):
 
     def setUp(self):
         self.e = T.TrieEngine()
-
+        self.e.build_DSL()
 
     def tearDown(self):
         self.e = None

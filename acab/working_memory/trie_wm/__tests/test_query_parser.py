@@ -39,7 +39,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
     #use testcase snippets
 
     def test_basic_regex_comparison(self):
-        result = QP.QUERY_OP_Internal.parseString(r'\operator.query.regmatch /blah/')[0]
+        result = QP.QUERY_OP_Internal.parseString(r'λoperator.query.regmatch /blah/')[0]
         self.assertIsInstance(result, tuple)
         qc = result[1]
         self.assertIsInstance(qc, QueryComponent)
@@ -101,21 +101,21 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertEqual(result._data[FALLBACK_S][1][1][-1]._value, 'e')
 
     def test_comparison_parse(self):
-        result = QP.QueryCore_end.parseString("testing(\operator.query.regmatch /test/)")
+        result = QP.QueryCore_end.parseString("testing(λoperator.query.regmatch /test/)")
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result[0]._data[CONSTRAINT_S]), 1)
         self.assertIsInstance(result[0]._data[CONSTRAINT_S][0], QueryComponent)
         self.assertEqual(result[0]._data[CONSTRAINT_S][0].op.pprint(), "operator.query.regmatch")
 
     def test_comparison_parse_2(self):
-        result = QP.QueryCore.parseString("testing(\operator.query.regmatch /test/).")
+        result = QP.QueryCore.parseString("testing(λoperator.query.regmatch /test/).")
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result[0]._data[CONSTRAINT_S]), 1)
         self.assertIsInstance(result[0]._data[CONSTRAINT_S][0], QueryComponent)
         self.assertEqual(result[0]._data[CONSTRAINT_S][0].op.pprint(), "operator.query.regmatch")
 
     def test_comparison_parse_variable(self):
-        result = QP.QueryCore.parseString("$x(\operator.query.regmatch /test/).")
+        result = QP.QueryCore.parseString("$x(λoperator.query.regmatch /test/).")
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result[0]._data[CONSTRAINT_S]), 1)
         self.assertIsInstance(result[0]._data[CONSTRAINT_S][0], QueryComponent)
@@ -123,7 +123,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
 
 
     def test_comparison_in_clause(self):
-        result = QP.clause.parseString("a.testing(\operator.query.regmatch /test/).clause?")
+        result = QP.clause.parseString("a.testing(λoperator.query.regmatch /test/).clause?")
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result[0][1]._data[CONSTRAINT_S]), 1)
         self.assertIsInstance(result[0][1]._data[CONSTRAINT_S][0], QueryComponent)
@@ -148,21 +148,21 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertEqual(tags, ["first", "second", "third"])
 
     def test_tag_list_interaction(self):
-        result = QP.clause.parseString("a.testing(#first, #second, \operator.query.regmatch /Test/)?")
+        result = QP.clause.parseString("a.testing(#first, #second, λoperator.query.regmatch /Test/)?")
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result[0][1]._data[CONSTRAINT_S]), 2)
         self.assertEqual(result[0][1]._data[CONSTRAINT_S][0].op.pprint(), "HasTag")
         self.assertEqual(result[0][1]._data[CONSTRAINT_S][1].op.pprint(), "operator.query.regmatch")
 
     def test_tag_list_interaction_2(self):
-        result = QP.clause.parseString("a.testing(\operator.query.regmatch /Test/, #test, #second)?")
+        result = QP.clause.parseString("a.testing(λoperator.query.regmatch /Test/, #test, #second)?")
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result[0][1]._data[CONSTRAINT_S]), 2)
         self.assertEqual(result[0][1]._data[CONSTRAINT_S][1].op.pprint(), "HasTag")
         self.assertEqual(result[0][1]._data[CONSTRAINT_S][0].op.pprint(), "operator.query.regmatch")
 
     def test_tag_list_interaction_3(self):
-        result = QP.clause.parseString("a.testing(#aTag, \operator.query.regmatch /Test/, #test, #second)?")
+        result = QP.clause.parseString("a.testing(#aTag, λoperator.query.regmatch /Test/, #test, #second)?")
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result[0][1]._data[CONSTRAINT_S]), 3)
         self.assertEqual(result[0][1]._data[CONSTRAINT_S][0].op.pprint(), "HasTag")

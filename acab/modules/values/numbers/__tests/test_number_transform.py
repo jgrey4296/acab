@@ -43,16 +43,16 @@ class NumberTransformTests(unittest.TestCase):
 
 
     def test_basic_transform_core(self):
-        result = TP.transform_core.parseString('$x \operator.transform.n_ary.add 20 -> $y')[0]
+        result = TP.transform_core.parseString('λoperator.transform.add $x 20 -> $y')[0]
         self.assertIsInstance(result, transform.TransformComponent)
-        self.assertEqual(result.op.pprint(), "operator.transform.n_ary.add")
+        self.assertEqual(result.op.pprint(), "operator.transform.add")
         self.assertEqual(len(result._params), 2)
 
 
     def test_basic_transform_core_rebind(self):
-        result = TP.transform_core.parseString('$y \operator.transform.n_ary.mul 20 -> $z')[0]
+        result = TP.transform_core.parseString('λoperator.transform.mul $y 20 -> $z')[0]
         self.assertIsInstance(result, transform.TransformComponent)
-        self.assertEqual(result.op.pprint(), "operator.transform.n_ary.mul")
+        self.assertEqual(result.op.pprint(), "operator.transform.mul")
         self.assertEqual(result._params[0]._value, "y")
         self.assertTrue(result._params[0].is_var)
         self.assertEqual(result._params[1]._value, 20)
@@ -61,52 +61,52 @@ class NumberTransformTests(unittest.TestCase):
 
 
     def test_basic_transform(self):
-        result = TP.parseString('$x \operator.transform.n_ary.add 20 -> $y, $y \operator.transform.n_ary.add 5 -> $z')
+        result = TP.parseString('λoperator.transform.add $x 20 -> $y, λoperator.transform.add $y 5 -> $z')
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result.clauses), 2)
 
 
     def test_binary_operator(self):
-        result = TP.parseString('$x \operator.transform.n_ary.add 20 -> $y')
+        result = TP.parseString('λoperator.transform.add $x 20 -> $y')
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result.clauses), 1)
-        self.assertEqual(result.clauses[0].op.pprint(), "operator.transform.n_ary.add")
+        self.assertEqual(result.clauses[0].op.pprint(), "operator.transform.add")
         self.assertEqual(result.clauses[0]._params[0]._value, 'x')
         self.assertEqual(result.clauses[0]._params[1]._value, 20)
         self.assertIsNotNone(result.clauses[0]._rebind)
 
 
     def test_binary_rebind(self):
-        result = TP.parseString('$x \operator.transform.n_ary.add 20 -> $y')
+        result = TP.parseString('λoperator.transform.add $x 20 -> $y')
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result.clauses), 1)
-        self.assertEqual(result.clauses[0].op.pprint(), "operator.transform.n_ary.add")
+        self.assertEqual(result.clauses[0].op.pprint(), "operator.transform.add")
         self.assertEqual(result.clauses[0]._params[0]._value, 'x')
         self.assertEqual(result.clauses[0]._params[1]._value, 20)
         self.assertEqual(result.clauses[0]._rebind._value, 'y')
 
     def test_unary_round(self):
-        result = TP.parseString('\operator.transform.n_ary.round $x -> $y')
-        self.assertEqual(result.clauses[0].op.pprint(), 'operator.transform.n_ary.round')
+        result = TP.parseString('λoperator.transform.round $x -> $y')
+        self.assertEqual(result.clauses[0].op.pprint(), 'operator.transform.round')
 
     def test_binary_rand_operator(self):
-        result = TP.parseString('$x \operator.transform.n_ary.rand $y -> $z')
+        result = TP.parseString('λoperator.transform.rand $x $y -> $z')
         self.assertEqual(len(result.clauses), 1)
-        self.assertEqual(result.clauses[0].op.pprint(), 'operator.transform.n_ary.rand')
+        self.assertEqual(result.clauses[0].op.pprint(), 'operator.transform.rand')
 
     def test_unary_operator(self):
-        result = TP.parseString(r'\operator.transform.n_ary.neg $x -> $y')
+        result = TP.parseString(r'λoperator.transform.neg $x -> $y')
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result.clauses), 1)
-        self.assertEqual(result.clauses[0].op.pprint(), "operator.transform.n_ary.neg")
+        self.assertEqual(result.clauses[0].op.pprint(), "operator.transform.neg")
         self.assertEqual(result.clauses[0]._params[0]._value, "x")
         self.assertIsNotNone(result.clauses[0]._rebind)
 
     def test_unary_rebind(self):
-        result = TP.parseString(r'\operator.transform.n_ary.neg $x -> $y')
+        result = TP.parseString(r'λoperator.transform.neg $x -> $y')
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result.clauses), 1)
-        self.assertEqual(result.clauses[0].op.pprint(), "operator.transform.n_ary.neg")
+        self.assertEqual(result.clauses[0].op.pprint(), "operator.transform.neg")
         self.assertEqual(result.clauses[0]._params[0]._value, "x")
         self.assertIsNotNone(result.clauses[0]._rebind)
         self.assertEqual(result.clauses[0]._rebind._value, 'y')
@@ -114,19 +114,19 @@ class NumberTransformTests(unittest.TestCase):
 
 
     def test_fact_str_equal(self):
-        transforms = ["$x λoperator.transform.n_ary.add 20 -> $y",
-                      "$x λoperator.transform.n_ary.add 20 -> $y\n$y λoperator.transform.n_ary.add 5 -> $z",
-                      "$x λoperator.transform.n_ary.sub 10 -> $y",
-                      "$x λoperator.transform.n_ary.mul 100 -> $y",
-                      "$x λoperator.transform.n_ary.add 20 -> $y",
-                      "$Blah λoperator.transform.n_ary.add $bloo -> $BLEE",
-                      r"λoperator.transform.n_ary.neg $x -> $y",
-                      r"λoperator.transform.n_ary.round $x -> $y",
-                      r"λoperator.transform.n_ary.neg $x -> $y",
-                      r"λoperator.transform.n_ary.round $x -> $y",
-                      "$x λoperator.transform.n_ary.regex /blah/ $a -> $z",
-                      "$x λoperator.transform.n_ary.regex /aw/ $b -> $blah",
-                      "$x λoperator.transform.n_ary.add 2d5 -> $y"
+        transforms = ["λoperator.transform.add $x 20 -> $y",
+                      "λoperator.transform.add $x 20 -> $y\nλoperator.transform.add $y 5 -> $z",
+                      "λoperator.transform.sub $x 10 -> $y",
+                      "λoperator.transform.mul $x 100 -> $y",
+                      "λoperator.transform.add $x 20 -> $y",
+                      "λoperator.transform.add $blah $bloo -> $BLEE",
+                      "λoperator.transform.neg $x -> $y",
+                      "λoperator.transform.round $x -> $y",
+                      "λoperator.transform.neg $x -> $y",
+                      "λoperator.transform.round $x -> $y",
+                      "λoperator.transform.regex $x /blah/ $a -> $z",
+                      "λoperator.transform.regex $x /aw/ $b -> $blah",
+                      "λoperator.transform.add $x 2d5 -> $y"
         ]
         for a_string in transforms:
             try:

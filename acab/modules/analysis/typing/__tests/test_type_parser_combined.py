@@ -793,7 +793,7 @@ class TypingCombinedTests(unittest.TestCase):
         self.tc.add_definition(*op_def)
 
         #Add an operation use
-        transform = TP.parseString("\operator.transform.n_ary.format $a $b -> $c")
+        transform = TP.parseString("λoperator.transform.n_ary.format $a $b -> $c")
 
         self.tc.add_assertion(*transform.to_local_sentences())
 
@@ -811,7 +811,7 @@ class TypingCombinedTests(unittest.TestCase):
         num_type = TD.parseString("a.num: (::σ) end")
         self.tc.add_definition(*str_type, *num_type)
 
-        op_def = TD.parseString("operator.transform.n_ary.format: (::λ) $x(::a.num).$x.$x => ~=")
+        op_def = TD.parseString("operator.transform.FormatOp: (::λ) $x(::a.num).$x.$x => ~=")
         self.tc.add_definition(*op_def)
 
         #Add an operation use

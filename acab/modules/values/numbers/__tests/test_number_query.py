@@ -46,13 +46,13 @@ class NumberQueryTests(unittest.TestCase):
 
 
     def test_basic_comp_internal(self):
-        result = QP.QUERY_OP_Internal.parseString('\operator.query.lt 20')[0]
+        result = QP.QUERY_OP_Internal.parseString('λoperator.query.lt 20')[0]
         self.assertIsInstance(result, tuple)
         self.assertIsInstance(result[1], QueryComponent)
 
 
     def test_basic_comparison(self):
-        result = QP.constraints.parseString('\operator.query.lt 20, \operator.query.gt 40, \operator.query.neq $x, \operator.query.eq $y, \operator.query.regmatch /blah/')[0]
+        result = QP.constraints.parseString('λoperator.query.lt 20, λoperator.query.gt 40, λoperator.query.neq $x, λoperator.query.eq $y, λoperator.query.regmatch /blah/')[0]
         self.assertEqual(result[0], CONSTRAINT_S)
         self.assertEqual(len(result[1]), 5)
         self.assertTrue(all([isinstance(x, QueryComponent) for x in result[1]]))
@@ -64,20 +64,20 @@ class NumberQueryTests(unittest.TestCase):
 
 
     def test_basic_query_core(self):
-        result = QP.QueryCore.parseString('a(\operator.query.gt 20).')[0]
+        result = QP.QueryCore.parseString('a(λoperator.query.gt 20).')[0]
         self.assertTrue(CONSTRAINT_S in result._data)
         self.assertEqual(len(result._data[CONSTRAINT_S]), 1)
         self.assertIsInstance(result._data[CONSTRAINT_S][0], QueryComponent)
 
 
     def test_basic_query_core_multi_comparison(self):
-        result = QP.QueryCore.parseString('a(\operator.query.gt 20, \operator.query.lt 30).')[0]
+        result = QP.QueryCore.parseString('a(λoperator.query.gt 20, λoperator.query.lt 30).')[0]
         self.assertEqual(len(result._data[CONSTRAINT_S]), 2)
         self.assertTrue(all([isinstance(x, QueryComponent) for x in result._data[CONSTRAINT_S]]))
 
 
     def test_basic_query_core_with_exclusion(self):
-        result = QP.QueryCore.parseString('a(\operator.query.gt 20)!')[0]
+        result = QP.QueryCore.parseString('a(λoperator.query.gt 20)!')[0]
         self.assertEqual(result._data[OPERATOR_S], KBU.EXOP.EX)
 
 
@@ -128,46 +128,46 @@ class NumberQueryTests(unittest.TestCase):
         bindings = { "x" : FP.parseString('a.b.c')[0],
                      "y" : FP.parseString('d.e.f')[0],
                      "z" : FP.parseString('x.y.z')[0] }
-        result = RP.parseString("a.rule: (::ρ)\n$y.b.$z?\n\n$x \operator.transform.n_ary.add 2 -> $y\n\n$y\nend")[0][-1]
+        result = RP.parseString("a.rule: (::ρ)\n$y.b.$z?\n\nλoperator.transform.add $x 2 -> $y\n\n$y\nend")[0][-1]
         expanded = result.value.bind(bindings)
         # Expanding bindings makes a new rule, so its an AnonValue
         self.assertEqual(expanded.pprint().strip(),
-                         "AnonRule: (::ρ)\n\td.e.f.b.x.y.z?\n\n\t$x λoperator.transform.n_ary.add 2 -> $y\n\n\tλdefault_action(d.e.f)\nend")
+                         "AnonRule: (::ρ)\n    d.e.f.b.x.y.z?\n\n    λoperator.transform.add $x 2 -> $y\n\n    λdefault_action d.e.f\nend")
 
 
     @unittest.skip("move this to engine logic tests")
     def test_query_alpha_comp(self):
         """ Check that alpha comparisons work """
         self.trie_wm.add('a.b.20')
-        result = self.trie_wm.query('a.b.$x(\operator.query.eq 20)?')
+        result = self.trie_wm.query('a.b.$x(λoperator.query.eq 20)?')
         self.assertTrue(result)
 
     @unittest.skip("move this to engine logic tests")
     def test_query_alpha_comp_fails(self):
         """ Check that alpha comparisons can fail """
         self.trie_wm.add('a.b.20')
-        result = self.trie_wm.query('a.b.$x(\operator.query.eq 30)?')
+        result = self.trie_wm.query('a.b.$x(λoperator.query.eq 30)?')
         self.assertFalse(result)
 
     @unittest.skip("move this to engine logic tests")
     def test_query_alpha_comp_gt(self):
         """ Check that other comparisons from equality can be tested for """
         self.trie_wm.add('a.b.20')
-        result = self.trie_wm.query('a.b.$x(\operator.query.gt 10)?')
+        result = self.trie_wm.query('a.b.$x(λoperator.query.gt 10)?')
         self.assertTrue(result)
 
     @unittest.skip("move this to engine logic tests")
     def test_query_fail(self):
         """ Check that other comparisons can fail """
         self.trie_wm.add('a.b.20')
-        result = self.trie_wm.query('a.b.$x(\operator.query.gt 30)?')
+        result = self.trie_wm.query('a.b.$x(λoperator.query.gt 30)?')
         self.assertFalse(result)
 
     @unittest.skip("move this to engine logic tests")
     def test_query_multi_bind_comp(self):
         """ Check that bindings hold across clauses """
         self.trie_wm.add('a.b.20, a.c.30, a.d.40')
-        result = self.trie_wm.query('a.c.$x?, a.$y(\operator.query.neq c).$v(\operator.query.gt $x)?')
+        result = self.trie_wm.query('a.c.$x?, a.$y(λoperator.query.neq c).$v(λoperator.query.gt $x)?')
         self.assertTrue(result)
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]['x'].value, 30)
@@ -178,7 +178,7 @@ class NumberQueryTests(unittest.TestCase):
     def test_query_multi_alts(self):
         """ Check that queries with bindings provide enumerated alternatives """
         self.trie_wm.add('a.b.20, a.c.30, a.d.40, a.e.50')
-        result = self.trie_wm.query('a.c.$x?, a.$y(\operator.query.neq c).$v(\operator.query.gt $x)?')
+        result = self.trie_wm.query('a.c.$x?, a.$y(λoperator.query.neq c).$v(λoperator.query.gt $x)?')
         self.assertTrue(result)
         self.assertEqual(len(result), 2)
 

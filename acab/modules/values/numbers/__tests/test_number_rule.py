@@ -43,7 +43,7 @@ class NumberRuleTests(unittest.TestCase):
 
 
     def test_rule_with_transform(self):
-        result = RP.parseString("a.rule: (::ρ)\n$x \operator.transform.n_ary.add 20 -> $y\n\nend")
+        result = RP.parseString("a.rule: (::ρ)\nλoperator.transform.add $x 20 -> $y\n\nend")
         self.assertEqual(len(result), 1)
         self.assertIsInstance(result[0][-1].value, Rule)
         self.assertIsNone(result[0][-1].value._query)
@@ -51,7 +51,7 @@ class NumberRuleTests(unittest.TestCase):
 
 
     def test_rule_with_multiple_transforms(self):
-        result = RP.parseString("a.rule: (::ρ)\n$x \operator.transform.n_ary.add 30 -> $y\n$y \operator.transform.n_ary.sub 20 -> $z\n\nend\n")
+        result = RP.parseString("a.rule: (::ρ)\nλoperator.transform.add $x 30 -> $y\nλoperator.transform.sub $y 20 -> $z\n\nend\n")
         self.assertEqual(len(result), 1)
         self.assertIsInstance(result[0][-1].value, Rule)
         self.assertIsNone(result[0][-1].value._query)
@@ -59,7 +59,7 @@ class NumberRuleTests(unittest.TestCase):
 
 
     def test_rule_with_multiple_transforms_on_single_line(self):
-        result = RP.parseString("a.rule: (::ρ)\n$x \operator.transform.n_ary.add 20 -> $y, $y \operator.transform.n_ary.sub 20 -> $z\n\nend")
+        result = RP.parseString("a.rule: (::ρ)\nλoperator.transform.add 20 -> $y, λoperator.transform.sub $y 20 -> $z\n\nend")
         self.assertEqual(len(result), 1)
         self.assertIsInstance(result[0][-1].value, Rule)
         self.assertIsNone(result[0][-1].value._query)
@@ -67,7 +67,7 @@ class NumberRuleTests(unittest.TestCase):
 
 
     def test_rule_with_query_transform_actions(self):
-        result = RP.parseString("a.rule: (::ρ)\na.b.c?\n\n$x \operator.transform.n_ary.add 20 -> $y\n\nλoperator.action.add(a.b.c)\n\nend")
+        result = RP.parseString("a.rule: (::ρ)\na.b.c?\n\nλoperator.transform.add $x 20 -> $y\n\nλoperator.action.add a.b.c\n\nend")
         self.assertEqual(len(result), 1)
         self.assertIsInstance(result[0][-1].value, Rule)
         self.assertIsNotNone(result[0][-1].value._query)
