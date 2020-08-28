@@ -5,6 +5,7 @@ import logging as root_logger
 import pyparsing as pp
 
 from acab.abstract.type_base import TypeInstance, ATOM
+from acab.abstract.sentence import Sentence
 from acab.modules.analysis.typing import util as TYU
 from acab.abstract.parsing import util as PU
 from acab.config import AcabConfig
@@ -29,13 +30,12 @@ HOTLOAD_BASIC_SEN= pp.Forward()
 TYPEDEC_CORE = pp.Forward()
 
 EXTENDED_ATOM = pp.Word(EXTENDED_LANGUAGE_SYNTAX_S)
-EXTENDED_ATOM.setParseAction(lambda t: (ATOM, t[0]))
+EXTENDED_ATOM.setParseAction(lambda t: Sentence.build(t[0]))
 
 VAR_OR_TYPE_DEC = pp.Or([PU.BIND, TYPEDEC_CORE])
 
-TYPE_NAME = HOTLOAD_BASIC_SEN
+TYPE_NAME = pp.Or([HOTLOAD_BASIC_SEN, EXTENDED_ATOM])
 
-# TODO: auto recognise primitives and their aliases
 TYPEDEC_CORE <<= PU.DBLCOLON + PU.N(TYU.SEN_S, TYPE_NAME) \
     + PU.N(TYU.ARG_S, PU.op(PU.OPAR
                             + pp.delimitedList(VAR_OR_TYPE_DEC,
