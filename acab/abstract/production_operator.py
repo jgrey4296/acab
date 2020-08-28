@@ -44,18 +44,21 @@ class ProductionOperator(AcabValue):
 class ProductionComponent(AcabValue):
     """ Pairs a an operator with some bindings """
 
-    def __init__(self, op_str, params, op_pos=0, data=None, rebind=None, name=None):
+    def __init__(self, op_str, params, sugared=False, data=None, rebind=None, name=None):
         if data is None:
             data = {}
 
         assert(isinstance(op_str, (Sentence, ProductionOperator)))
+        assert all([isinstance(x, AcabValue) for x in params]), params
         super().__init__(op_str, data=data, name=name, _type=TB.COMPONENT)
         # Parameters of the operation
         self._params = []
         # The value name of the result
         self._rebind = rebind
-        # The Position the operator takes: eg: 0: + 1 2, 1: 1 + 2
-        self._op_position = op_pos
+        # Sugared: Denotes whether the parse originated from a sugared operator
+        # eg: $x ~= /blah/ -> $x
+        self._sugared = sugared
+
 
         self.apply_params(params)
 
