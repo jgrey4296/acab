@@ -25,5 +25,6 @@ class OperatorDefinition(TypeDefinition):
 
 
     def pprint_body(self, val):
-        new_val = super(OperatorDefinition, self).pprint_body(val)
-        return PrU._wrap_rebind(new_val, self._func_name, is_sugar=True)
+        assert(len(self.structure) == 1)
+        body = self.structure[0].pprint()
+        return PrU._wrap_rebind(val + body, self._func_name, is_sugar=True)
