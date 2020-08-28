@@ -34,13 +34,6 @@ class TransformOp(PO.ProductionOperator):
 
 class TransformComponent(PO.ProductionComponent):
     """ Superclass of OperatorTransform. Holds an Operator """
-    def __init__(self, op_str, params, op_pos=0, rebind=None, data=None):
-        super(TransformComponent, self).__init__(op_str, params,
-                                                 data=data,
-                                                 rebind=rebind,
-                                                 op_pos=op_pos)
-
-
     def to_local_sentences(self, target=None):
         head = AcabValue(self.op, data={'op_reference': self})
         return [Sentence([head] + self._params[:] + [self._rebind])]

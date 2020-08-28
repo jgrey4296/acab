@@ -44,15 +44,6 @@ class ActionComponent(PO.ProductionComponent):
     """ The Core Action Class, holds an operator,
     and a list of values """
 
-
-    def __init__(self, op_str, params=None, data=None):
-        """ Create an action with an operator and values """
-        assert all([isinstance(x, AcabValue) for x in params]), params
-        super(ActionComponent, self).__init__(op_str,
-                                              params,
-                                              data=data)
-
-
     @property
     def var_set(self):
         """ Get the input and output variables of the component """
