@@ -68,8 +68,8 @@ register(ReplE.MODULE, engine_module)
 def engine_load(engine, data):
     params = data['params']
     logging.info("Loading: {}".format(params))
-    filename = abspath(expanduser(params[0]))
-    assert(exists(filename))
+    filename = abspath(expanduser(params[0])).strip()
+    assert(exists(filename)), filename
     engine.load_file(filename)
     return engine, None
 
