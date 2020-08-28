@@ -203,6 +203,6 @@ class Contexts:
         for a_var in on_vars:
             head[a_var] = [x[a_var] for x in bind_groups]
             # TODO collapse at_bind's as well
-            
+
         self._bind_groups = [head]
         self._nodes = [node_head]

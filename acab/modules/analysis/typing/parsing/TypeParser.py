@@ -32,6 +32,7 @@ TYPEDEC_CORE = pp.Forward()
 EXTENDED_ATOM = pp.Word(EXTENDED_LANGUAGE_SYNTAX_S)
 EXTENDED_ATOM.setParseAction(lambda t: Sentence.build(t[0]))
 
+
 VAR_OR_TYPE_DEC = pp.Or([PU.BIND, TYPEDEC_CORE])
 
 TYPE_NAME = pp.Or([HOTLOAD_BASIC_SEN, EXTENDED_ATOM])
