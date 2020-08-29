@@ -125,7 +125,7 @@ class TypeDefinition(TypeStatement):
 
     @property
     def pprint_has_content(self):
-        head = any([bool(x) for x in [self._vars,
+        head = any([bool(x) for x in [self._params,
                                       self._tags]])
         body = bool(self.structure)
 

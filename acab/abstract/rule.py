@@ -43,7 +43,7 @@ class Rule(ProductionContainer):
         assert(self.verify())
         assert(isinstance(ctxs, list))
         assert(all([isinstance(x, dict) for x in ctxs]))
-        assert(all([x.value in y for x in self._vars for y in ctxs]))
+        assert(all([x.value in y for x in self._params for y in ctxs]))
         logging.info("Running Rule: {}".format(self._name))
         query_result = [{}]
         if ctxs is not None and bool(ctxs):
@@ -146,7 +146,7 @@ class Rule(ProductionContainer):
 
     @property
     def pprint_has_content(self):
-        head = any([bool(x) for x in [self._vars,
+        head = any([bool(x) for x in [self._params,
                                       self._tags]])
         body = any([x is not None for x in [self._query,
                                             self._transform,

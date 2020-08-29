@@ -35,7 +35,6 @@ class ProductionOperator(AcabValue):
     def __call__(self, *params, data=None, engine=None):
         raise NotImplementedError()
 
-
     @property
     def op_str(self):
         return self._value
@@ -50,23 +49,19 @@ class ProductionComponent(AcabValue):
 
         assert(isinstance(op_str, (Sentence, ProductionOperator)))
         assert all([isinstance(x, AcabValue) for x in params]), params
-        super().__init__(op_str, data=data, name=name, _type=TB.COMPONENT)
-        # Parameters of the operation
-        self._params = []
+        super().__init__(op_str, params=params, data=data, name=name, _type=TB.COMPONENT)
         # The value name of the result
         self._rebind = rebind
         # Sugared: Denotes whether the parse originated from a sugared operator
         # eg: $x ~= /blah/ -> $x
         self._sugared = sugared
 
-
-        self.apply_params(params)
-
     def __call__(self, ctx, engine):
         """
         Run the operation, on the passed in context and engine
         """
-        assert(x.name in ctx for x in self._vars)
+        assert(isinstance(ctx, dict))
+        assert(x.name in ctx for x in self._params)
         # retrieve op func from active TagEnvs
         op_func = engine.get_operator(self.op)
         # get values from data
@@ -92,13 +87,11 @@ class ProductionComponent(AcabValue):
         return obj
 
 
-    def apply_params(self, params):
-        """ Safely wrap all passed in parameters as Values, then store """
-        safe_params = [AcabValue.safe_make(x) for x in params]
-        self._params += safe_params
-
     def get_params(self, data):
-        """ Output a list of bindings from this action """
+        """ Output a list of bindings from this action,
+        Unwraps as necessary
+        """
+        assert(isinstance(data, dict))
         output = []
         # TODO: enable currying
         for x in self._params:
@@ -107,9 +100,11 @@ class ProductionComponent(AcabValue):
             elif isinstance(x, list):
                 output.append([y.bind(data) for y in x])
             elif isinstance(x, AcabValue) and x.is_var:
+                assert(x.value in data)
                 if x.is_at_var:
                     output.append(data[AT_BIND_S + x.value])
                 elif isinstance(data[x.value], list):
+                    # TODO does this need to unwrap all list values?
                     output.append(data[x.value])
                 else:
                     output.append(data[x.value].value)
@@ -148,7 +143,7 @@ class ProductionComponent(AcabValue):
 
 
 class ProductionContainer(AcabStatement):
-    """ Production Container: An applicable statement """
+    """ Production Container: An applicable statement of multiple component clauses """
 
     def __init__(self, clauses, params=None, name=None, _type=TB.CONTAINER):
         if clauses is None:

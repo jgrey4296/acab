@@ -41,7 +41,7 @@ class AcabValueTests(unittest.TestCase):
 
     def test_var_set_with_vars(self):
         value = AcabValue("test")
-        value._vars = ["a","b","c"]
+        value._params = ["a","b","c"]
         var_set = value.var_set
         self.assertTrue(all([x in var_set['in'] for x in ["a","b","c"]]))
 
@@ -65,18 +65,6 @@ class AcabValueTests(unittest.TestCase):
         copied = sen.attach_statement(value)
 
         self.assertIsInstance(copied[-1], AcabStatement)
-
-    @unittest.skip("Deprecated?")
-    def test_attach_statement_fail(self):
-        value = AcabValue("test")
-        value._tags.add('testval')
-        sen = Sentence([AcabValue(x) for x in range(5)])
-        self.assertEqual(sen[-1]._value, 4)
-        self.assertIsInstance(sen[-1]._value, int)
-
-        with self.assertRaises(AttributeError):
-            copied = sen.attach_statement(value)
-
 
     def test_has_tag(self):
         value = AcabValue("test")
@@ -108,6 +96,9 @@ class AcabValueTests(unittest.TestCase):
     def test_verify(self):
         return
 
+    @unittest.skip("TODO")
+    def test_verify_fail(self):
+        return
 
     def test_safe_make(self):
         value = AcabValue.safe_make("test")

@@ -47,7 +47,7 @@ class AcabValue:
         self._value = value
         self._hash_name = None
 
-        self._vars = []
+        self._params = []
         self._tags = set()
         self._data = {VALUE_TYPE_S: ATOM,
                       BIND_S : False}
@@ -60,7 +60,7 @@ class AcabValue:
             self._data[VALUE_TYPE_S] = _type
 
         if params is not None:
-            self.apply_vars(params)
+            self.apply_params(params)
         if tags is not None:
             self.apply_tags(tags)
         if name is not None:
@@ -117,11 +117,16 @@ class AcabValue:
         """
         # ie: Query(a.b.$x? a.q.$w?).get_bindings() -> {'in': [], 'out': [x,w]}
         # Action(+(a.b.$x), -(a.b.$w)).get_bindings() -> {'in': [x,w], 'out': []}
+        # a.b.$x -> {'in': [x], 'out' : [x]}
+
         # logging.debug("{} is using default var_set method".format(self.__class__))
+
+        # TODO: get var_set of value if its an acab_value?
         out_set = set()
-        in_set = set(self._vars)
+        in_set = set(self._params)
         if self.is_var:
             in_set.add(self)
+            # TODO why in the out_set as well?
             out_set.add(self)
 
         return {'in': in_set, 'out': out_set}
@@ -145,6 +150,13 @@ class AcabValue:
 
     def verify(self):
         """ Raise An Exception if this necessary """
+        assert(self._value is not None)
+        value_type_tuple = tuple([AcabValue] + list(AcabValue.value_types))
+        assert(isinstance(self._value, value_type_tuple))
+        assert(self.type is not None)
+        # TODO verify keys used in data
+
+
         return self
 
     def set_data(self, data):
@@ -156,9 +168,9 @@ class AcabValue:
 
         return self
 
-    def apply_vars(self, params, data=None):
+    def apply_params(self, params, data=None):
         safe_params = [AcabValue.safe_make(x, data=data) for x in params]
-        self._vars += safe_params
+        self._params += safe_params
         return self
 
     def apply_tags(self, tags):

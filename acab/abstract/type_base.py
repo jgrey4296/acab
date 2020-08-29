@@ -102,11 +102,11 @@ class TypeInstance:
         assert(params is None or all([isinstance(x, (str, TypeInstance)) or hasattr(x, "type") for x in params])), breakpoint()
         self._path = path
         self._type_alias = type_alias_str
-        self._vars = []
+        self._params = []
         self._primitive = primitive
 
         if params is not None:
-            self._vars += params
+            self._params += params
 
     def __hash__(self):
         return hash(str(self.path))
@@ -163,7 +163,7 @@ class TypeInstance:
         return self.path[-1]
     @property
     def vars(self):
-        return self._vars
+        return self._params
     @property
     def var_set(self):
         raise NotImplementedError()

@@ -105,7 +105,7 @@ class TypeDefTrieNode(AcabNode):
         definition_bindings = [lookup_dict[x.name] for x in self.definition.vars]
         definition_instances = [x if isinstance(x, TypeInstance) else x.type_instance for x in definition_bindings]
 
-        usage_trie.type_instance._vars = definition_instances
+        usage_trie.type_instance._params = definition_instances
 
     def _generate_polytype_bindings(self, usage_trie, create_var):
         """ Generate a temporary binding environment for the definition's

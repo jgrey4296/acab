@@ -85,7 +85,7 @@ class Action(PO.ProductionContainer):
         exp_clauses = []
         for clause in self.clauses:
             exp_clauses.append(clause.bind(bindings))
-        return Action(exp_clauses, params=self._vars)
+        return Action(exp_clauses, params=self._params)
 
     def to_local_sentences(self, target=None):
         # needs to return both the action sentences,

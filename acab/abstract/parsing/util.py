@@ -162,7 +162,7 @@ def construct_statement(toks):
         tags = [x[1] for x in toks[TAG_S]]
 
     obj_tuple  = toks[STATEMENT_S][0]
-    obj_tuple[1].apply_vars(targs).apply_tags(tags)
+    obj_tuple[1].apply_params(targs).apply_tags(tags)
 
     new_sentence = sen.attach_statement(obj_tuple[1]).verify()
 

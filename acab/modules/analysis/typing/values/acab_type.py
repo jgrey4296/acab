@@ -18,11 +18,11 @@ class TypeStatement(AcabStatement):
         return self.path[-1]
     @property
     def vars(self):
-        return self._vars
+        return self._params
 
     @property
     def pprint_has_content(self):
-        head_content = any([bool(x) for x in [self._vars,
+        head_content = any([bool(x) for x in [self._params,
                                               self._tags]])
         struc_content = self.structure is not None
 

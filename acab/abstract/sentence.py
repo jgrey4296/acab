@@ -115,7 +115,7 @@ class Sentence(AcabValue):
 
         return Sentence.build(output,
                               data=self._data,
-                              params=self._vars,
+                              params=self._params,
                               tags=self._tags)
 
     def add(self, *other):

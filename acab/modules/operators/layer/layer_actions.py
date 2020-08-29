@@ -28,7 +28,7 @@ class LayerRunAgenda(TransformOp):
             data = {}
         # rebind passed in parameters from the caller (ie: layer),
         # to the agenda's parameters
-        rebound = Contexts.rebind_across_contexts(agenda._vars,
+        rebound = Contexts.rebind_across_contexts(agenda._params,
                                                   params, data)
 
         return agenda(ctxs=[rebound], engine=engine)
