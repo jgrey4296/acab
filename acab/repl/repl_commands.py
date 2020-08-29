@@ -25,16 +25,25 @@ repl_commands = {}
 
 # utility functions
 def register(cmd, fn, override=False):
+    """
+    Register a function with its ReplE, so the repl parser can find it
+    """
     assert(isinstance(cmd, ReplE))
     assert(override or cmd not in repl_commands)
     repl_commands[cmd] = fn
 
 def get(cmd):
+    """
+    Retrieve a repl command for use
+    """
     assert(isinstance(cmd, ReplE))
     return repl_commands[cmd]
 
 
 def build_command(cmd_e, **kwargs):
+    """
+    Package parameters up for use in a command
+    """
     assert(isinstance(cmd_e, ReplE))
     command_dict = {'command' : cmd_e}
     command_dict.update(kwargs)
@@ -44,6 +53,11 @@ def build_command(cmd_e, **kwargs):
 #--------------------
 
 def engine_init(engine, data):
+    """
+    Specify the Engine to initialise.
+    Imports the module, and uses the final component as the Engine Class.
+    eg: acab.engines.trie_engine.TrieEngine -> TrieEngine
+    """
     params = data['params']
     logging.info("Initialising: {}".format(params))
     if not bool(params) or params[0] == "":
@@ -52,11 +66,16 @@ def engine_init(engine, data):
     init_module = importlib.import_module(splitext(params[0])[0])
     # build engine
     engine = eval('init_module{}'.format(splitext(params[0])[1]))()
+    engine.build_DSL()
     return engine, None
 
 register(ReplE.INIT, engine_init)
 
 def engine_module(engine, data):
+    """
+    Load an acab compliant python module into the engine
+    Rebuilds the DSL after import.
+    """
     params = data['params']
     logging.info("Loading Module: {}".format(params))
     engine.load_modules(*params)
@@ -66,6 +85,9 @@ def engine_module(engine, data):
 register(ReplE.MODULE, engine_module)
 
 def engine_load(engine, data):
+    """
+    Load a dsl file into the engine
+    """
     params = data['params']
     logging.info("Loading: {}".format(params))
     filename = abspath(expanduser(params[0])).strip()
@@ -76,6 +98,9 @@ def engine_load(engine, data):
 register(ReplE.LOAD, engine_load)
 
 def engine_save(engine, data):
+    """
+    Save the state of the working memory into a file
+    """
     params = data['params']
     logging.info("Saving State to: {}".format(params))
     filename = abspath(expanduser(params[0]))
@@ -86,6 +111,9 @@ def engine_save(engine, data):
 register(ReplE.SAVE, engine_save)
 
 def engine_print(engine, data):
+    """
+    Print out information
+    """
     params = data['params']
     logging.info("Printing: {}".format(params))
     result = []
@@ -119,11 +147,17 @@ def engine_print(engine, data):
         result.append("Querying: {}")
 
     data['result' ] = "\n".join(result)
+    # TODO print keywords if passed nothing
+
     return engine, data
 
 register(ReplE.PRINT, engine_print)
 
 def engine_run(engine, data):
+    """
+    Take a binding from a query, and run it.
+    Used for running rules, queries, actions, layers, pipelines...
+    """
     params = data['params']
     result = None
     logging.info("Running: {}".format(params))
@@ -147,6 +181,9 @@ def engine_run(engine, data):
 register(ReplE.RUN, engine_run)
 
 def engine_pass(engine, data):
+    """
+    Pass strings through to the engine/working memory
+    """
     params = data['params']
     logging.info("Passing sentences through: {}".format(params))
     # Determine query / assertion
@@ -164,8 +201,12 @@ def engine_pass(engine, data):
 register(ReplE.PASS, engine_pass)
 
 def engine_decompose(engine, data):
+    """
+    Decompose an object into a trie of its components.
+    Useful for decomposing rules
+    """
     params = data['params']
-    # TODO
+    # TODO : split objects into tries
     # run query
     # split result into bindings
     return engine, None
@@ -173,6 +214,11 @@ def engine_decompose(engine, data):
 register(ReplE.DECOMPOSE, engine_decompose)
 
 def engine_step(engine, data):
+    """
+    Control the engine state,
+    Enabling rewinding to last saved rng position (ie: start of this pipeline loop)
+    and stepping forwards by rule/layer/pipeline
+    """
     params = data['params']
     logging.info("Stepping {}".format(params))
     # TODO
@@ -192,6 +238,9 @@ def engine_step(engine, data):
 register(ReplE.STEP, engine_step)
 
 def engine_act(engine, data):
+    """
+    Manually perform an output action
+    """
     params = data['params']
     logging.info("Manually acting: {}".format(params))
     # TODO
@@ -233,6 +282,9 @@ def engine_listen(engine, data):
 register(ReplE.LISTEN, engine_listen)
 
 def engine_type_check(engine, data):
+    """
+    Trigger the type checking of the working memory state
+    """
     params = data['params']
     logging.info("Type Checking: {}".format(params))
     # TODO
@@ -247,6 +299,10 @@ def engine_type_check(engine, data):
 register(ReplE.CHECK, engine_type_check)
 
 def engine_stats(engine, data):
+    """
+    Print Stats about the engine.
+    ie: Modules/Operators/Pipelines/Layers/Rules....
+    """
     params = data['params']
     logging.info("Getting Stats: {}".format(params))
     allow_all = not bool(params)
@@ -254,21 +310,7 @@ def engine_stats(engine, data):
     # Operators
     if allow_all or "operator" in params:
         result.append("Operator Stats: ")
-        # TODO
-        # result.append("\t{}".format("\n\t".join([str(x) for x in ProductionOperator.op_dict])))
         result.append(str(engine._operators))
-
-    # agendas
-    if allow_all or "agenda" in params:
-        result.append("--------------------")
-        result.append("Agenda Stats: ")
-        # TODO: need to query for agendas
-
-    # rules
-    if allow_all or "rule" in params:
-        result.append("--------------------")
-        result.append("Rule Stats: ")
-        # TODO rule stats
 
     # pipeline
     if allow_all or "pipeline" in params:
@@ -283,6 +325,18 @@ def engine_stats(engine, data):
         # result.append("\t{}".format("\n\t".join([str(x) for x in engine._pipeline._layers])))
         # TODO layer stats
 
+    # agendas
+    if allow_all or "agenda" in params:
+        result.append("--------------------")
+        result.append("Agenda Stats: ")
+        # TODO: need to query for agendas
+
+    # rules
+    if allow_all or "rule" in params:
+        result.append("--------------------")
+        result.append("Rule Stats: ")
+        # TODO rule stats
+
     # modules
     if allow_all or "module" in params:
         result.append("--------------------")
@@ -293,13 +347,14 @@ def engine_stats(engine, data):
     if allow_all or "wm" in params:
         result.append("--------------------")
         result.append("WM Stats: ")
+        # TODO
         result.append(str(engine._working_memory))
 
     # Bindings
     if allow_all or "binding" in params:
         result.append("--------------------")
         result.append("Binding Stats: ")
-        # TODO possibly filter out at binds
+        # TODO pretty print bindings
         bind_groups = engine._cached_bindings[:]
         result.append("\t{}".format("\n\t".join([str(x) for x in bind_groups])))
 
@@ -320,12 +375,15 @@ def engine_stats(engine, data):
 register(ReplE.STATS, engine_stats)
 
 def engine_help(engine, data):
+    """
+    Get reminders of use
+    """
     params = data['params']
     logging.info("Printing Help")
-    # TODO
+    # TODO update this
     result = []
     # Print commands
-    result.append("-------------------- Acab Help:")
+    result.append("-------------------- Acab Help: (outdated)")
     result.append("---------- Args:")
     result.append("--engine                          : Specify a load engine.")
     result.append("                                    Defaults to acab.engines.trie_engine.TrieEngine")
@@ -361,6 +419,9 @@ def engine_help(engine, data):
 register(ReplE.HELP, engine_help)
 
 def engine_prompt(engine, data):
+    """
+    Change the prompt of the repl
+    """
     data['prompt'] = data['params'][0]
 
     return engine, data
@@ -368,6 +429,9 @@ def engine_prompt(engine, data):
 register(ReplE.PROMPT, engine_prompt)
 
 def engine_exit(engine, data):
+    """
+    Exit the repl, automatically saving the engine state
+    """
     logging.info("Quit Command")
     filename = "{}_{}.auto".format(engine.__class__.__name__,
                                    datetime.now().strftime("%Y_%m-%d_%H_%M"))
@@ -377,6 +441,9 @@ def engine_exit(engine, data):
 register(ReplE.EXIT, engine_exit)
 
 def engine_multi(engine, data):
+    """
+    Activate multi-line collation
+    """
     param = data['params'][0]
     if param:
         # Start
@@ -397,12 +464,20 @@ def engine_multi(engine, data):
 register(ReplE.MULTILINE, engine_multi)
 
 def engine_multi_pop(engine, data):
+    """
+    Pop off the last string added in multi-line mode,
+    for when an error was made
+    """
     data['collect_str'].pop()
     return engine, data
 
 register(ReplE.POP, engine_multi_pop)
 
 def engine_nop(engine, data):
+    """
+    A null command used to collect strings in multi-line mode
+    without making any changes to the engine state
+    """
     if data['in_multi_line']:
         data['collect_str'].append(data['current_str'])
         logging.info("Collecting: {}".format(data['collect_str']))
@@ -412,6 +487,9 @@ def engine_nop(engine, data):
 register(ReplE.NOP, engine_nop)
 
 def engine_echo(engine, data):
+    """
+    Toggle echoing of working memory state
+    """
     if data['echo']:
         data['echo'] = False
     else:
@@ -421,6 +499,9 @@ def engine_echo(engine, data):
 register(ReplE.ECHO, engine_echo)
 
 def engine_break(engine, data):
+    """
+    Manually switch to PDB for debugging
+    """
     if "toggle" not in data['current_str']:
         raise Exception("Triggering breakpoint")
 
