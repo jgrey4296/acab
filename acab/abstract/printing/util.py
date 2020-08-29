@@ -199,8 +199,8 @@ def print_statement(statement, opts):
     val = _wrap_constraints(val, statement._data)
     val += "\n"
 
-    if bool(statement._vars):
-        val = _wrap_var_list(val, statement._vars)
+    if bool(statement._params):
+        val = _wrap_var_list(val, statement._params)
 
     if bool(statement._tags):
         val = _wrap_tags(val, statement._tags)
