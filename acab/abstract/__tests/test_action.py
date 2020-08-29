@@ -8,7 +8,7 @@ AcabConfig.Get().read("acab/util.config")
 
 from acab import abstract
 from acab.abstract.node import AcabNode
-from acab.abstract.value import AcabValue as PV
+from acab.abstract.value import AcabValue as AV
 from acab.abstract.action import ActionComponent, ActionOp
 from acab.abstract.sentence import Sentence
 
@@ -33,7 +33,7 @@ class ActionTests(unittest.TestCase):
         self.assertIsInstance(action, ActionComponent)
 
     def test_var_set(self):
-        param = PV("test", data={BIND_S: True})
+        param = AV("test", data={BIND_S: True})
         param_sen = Sentence([param])
         action = ActionComponent(Sentence.build(["testOp"]), [param_sen])
         var_set = action.var_set
