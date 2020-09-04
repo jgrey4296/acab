@@ -23,12 +23,12 @@ end
 """
 import logging as root_logger
 
-from acab.abstract.rule import Rule
-from acab.abstract.production_operator import ProductionOperator, ProductionContainer
+from acab.abstract.core import type_base as TB
+from acab.abstract.rule.rule import Rule
+from acab.abstract.rule.production_operator import ProductionOperator, ProductionContainer
 from acab.abstract.printing import util as PrU
 from acab.config import AcabConfig
 
-from . import type_base as TB
 
 util = AcabConfig.Get()
 
