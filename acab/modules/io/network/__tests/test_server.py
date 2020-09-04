@@ -28,6 +28,10 @@ class ServerTests(unittest.TestCase):
     # @patch(' ') / with patch.object(...)
 
     # TODO: use socket.socketpair for testing
+    @unittest.skip("TODO")
+    def test_network_init(self):
+        pass
+
     # test init
 
     # test sending

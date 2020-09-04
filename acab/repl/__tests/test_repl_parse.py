@@ -21,7 +21,9 @@ class ReplParseTests(unittest.TestCase):
 
     #----------
     #use testcase snippets
-
+    @unittest.skip("TODO")
+    def test_repl_parse_init(self):
+        pass
 
 if __name__ == "__main__":
     #run python $filename to use this logging setup

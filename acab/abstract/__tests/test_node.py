@@ -5,8 +5,8 @@ import logging
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
-from acab.abstract.node import AcabNode
-from acab.abstract.value import AcabValue as PV
+from acab.abstract.data.node import AcabNode
+from acab.abstract.core.value import AcabValue as PV
 
 BIND_S = AcabConfig.Get()("Parsing.Structure", "BIND_S")
 

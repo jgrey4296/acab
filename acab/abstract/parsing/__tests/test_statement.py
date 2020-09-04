@@ -8,9 +8,9 @@ from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
 from acab.abstract.parsing import util as PU
-from acab.abstract.node import AcabNode
-from acab.abstract.value import AcabValue, AcabStatement
-from acab.abstract.sentence import Sentence
+from acab.abstract.core.value import AcabValue, AcabStatement
+from acab.abstract.core.sentence import Sentence
+from acab.abstract.data.node import AcabNode
 
 class StatementTests(unittest.TestCase):
 

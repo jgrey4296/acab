@@ -23,6 +23,9 @@ class RuleTests(unittest.TestCase):
     #use testcase snippets
 
     # TODO: test rule call  with no query/transform/action
+    @unittest.skip("TODO")
+    def test_rule_init(self):
+        pass
 
 
 if __name__ == "__main__":

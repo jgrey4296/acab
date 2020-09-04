@@ -2,7 +2,7 @@
 from os.path import splitext, split
 import unittest
 import logging
-from acab.abstract.contexts import Contexts
+from acab.abstract.data.contexts import Contexts
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 

@@ -61,6 +61,9 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result, action.ActionComponent)
 
     # TODO test action sugar, test sentences, test values, test multi params
+    @unittest.skip("TODO")
+    def test_action_sugar(self):
+        return
 
 
 if __name__ == "__main__":

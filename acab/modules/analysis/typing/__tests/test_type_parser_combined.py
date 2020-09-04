@@ -101,7 +101,7 @@ class TypingCombinedTests(unittest.TestCase):
         rebind._data[TU.BIND_S] = True
         transform = TransformComponent("AddOp", trans_params, rebind=rebind)
 
-        [self.tc.add_assertion(x) for x in transform.to_local_sentences()]
+        [self.tc.add_assertion(x) for x in transform.to_abstract_sentences()]
 
         self.tc.validate()
 
@@ -203,6 +203,7 @@ class TypingCombinedTests(unittest.TestCase):
         self.tc.add_definition(a_def2)
 
         self.assertEqual(len(self.tc._definitions), len(TypeInstance.Primitives) + 2)
+
 
     def test_variable_conflict(self):
         """ ::String: END ::Number: END
@@ -785,20 +786,22 @@ class TypingCombinedTests(unittest.TestCase):
         """ ::Number end
         λ::AddOp: $x(::Number).$x.$x
         """
+
         str_type = TD.parseString("a.string: (::σ) end")
         num_type = TD.parseString("a.num: (::σ) end")
         self.tc.add_definition(*str_type, *num_type)
 
-        op_def = TD.parseString("operator.transform.n_ary.format: (::λ) $x(::a.string).$x.$x")
+        op_def = TD.parseString("operator.transform.format: (::λ) $x(::a.string).$x.$x")
         self.tc.add_definition(*op_def)
 
         #Add an operation use
         transform = TP.parseString("λoperator.transform.n_ary.format $a $b -> $c")
 
-        self.tc.add_assertion(*transform.to_local_sentences())
+        self.tc.add_assertion(*transform.to_abstract_sentences())
 
         self.tc.validate()
-        # TODO
+        breakpoint()
+
 
         print(self.tc)
 
@@ -817,7 +820,7 @@ class TypingCombinedTests(unittest.TestCase):
         #Add an operation use
         transform = TP.parseString("$a ~= $b -> $c")
 
-        self.tc.add_assertion(*transform.to_local_sentences())
+        self.tc.add_assertion(*transform.to_abstract_sentences())
 
         self.tc.validate()
 

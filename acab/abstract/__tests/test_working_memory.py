@@ -6,7 +6,7 @@ import logging
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
-from acab.abstract.node import AcabNode
+from acab.abstract.data.node import AcabNode
 
 
 
@@ -24,7 +24,9 @@ class WorkingMemoryTests(unittest.TestCase):
 
     #----------
     #use testcase snippets
-
+    @unittest.skip("TODO")
+    def test_working_memory_init(self):
+        pass
 
 
 if __name__ == "__main__":

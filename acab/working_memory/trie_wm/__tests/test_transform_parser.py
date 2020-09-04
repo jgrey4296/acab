@@ -55,6 +55,9 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
 
 
     # TODO test transform sugar, test multi variables, test sentences, test values
+    @unittest.skip("TODO")
+    def test_transform_sugar(self):
+        return
 
 if __name__ == "__main__":
     LOGLEVEL = logging.INFO

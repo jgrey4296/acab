@@ -7,9 +7,9 @@ from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
 from acab.abstract.printing import util as PrU
-from acab.abstract.value import AcabValue, AcabStatement
-from acab.abstract.node import AcabNode
-from acab.abstract.sentence import Sentence
+from acab.abstract.core.value import AcabValue, AcabStatement
+from acab.abstract.data.node import AcabNode
+from acab.abstract.core.sentence import Sentence
 
 AT_BIND_S = AcabConfig.Get()("Parsing.Structure", "AT_BIND_S")
 BIND_S = AcabConfig.Get()("Parsing.Structure", "BIND_S")

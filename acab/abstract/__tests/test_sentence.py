@@ -6,8 +6,8 @@ import logging
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
-from acab.abstract.value import AcabValue
-from acab.abstract.sentence import Sentence
+from acab.abstract.core.value import AcabValue
+from acab.abstract.core.sentence import Sentence
 
 BIND_S = AcabConfig.Get()("Parsing.Structure", "BIND_S")
 

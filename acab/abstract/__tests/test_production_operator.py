@@ -7,10 +7,11 @@ import logging
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
-from acab.abstract import production_operator as PO
-from acab.abstract.type_base import OPERATOR, COMPONENT
-from acab.abstract.sentence import Sentence
-from acab.abstract.value import AcabValue, AcabStatement
+from acab.abstract.core.type_base import OPERATOR, COMPONENT
+from acab.abstract.core.sentence import Sentence
+from acab.abstract.core.value import AcabValue, AcabStatement
+
+from acab.abstract.rule import production_operator as PO
 
 util = AcabConfig.Get()
 BIND_S = util("Parsing.Structure", "BIND_S")

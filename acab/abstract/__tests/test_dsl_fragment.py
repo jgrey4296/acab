@@ -7,7 +7,7 @@ from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
 
-class ModInterfaceTests(unittest.TestCase):
+class DSL_Fragment_Tests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -21,7 +21,9 @@ class ModInterfaceTests(unittest.TestCase):
 
     #----------
     #use testcase snippets
-
+    @unittest.skip("TODO")
+    def test_dsl_fragment_init(self):
+        pass
 
 if __name__ == "__main__":
     #run python $filename to use this logging setup

@@ -7,8 +7,8 @@ import logging
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
-from acab.abstract.working_memory import WorkingMemory
-from acab.abstract.engine import Engine
+from acab.abstract.engine.working_memory import WorkingMemory
+from acab.abstract.engine.engine import Engine
 
 # https://docs.python.org/3/library/unittest.mock.html
 # mock.Mock / MagicMock

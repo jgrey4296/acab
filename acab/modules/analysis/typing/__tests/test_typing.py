@@ -61,6 +61,7 @@ class TypingTests(unittest.TestCase):
         tc.add_assertion(S('a','b','c','d'))
         self.assertEqual(len(tc._declarations), 4)
 
+
     def test_get_known_typed_nodes(self):
         """ a.$b(::a), a.$c """
         tc = TypeChecker()
@@ -129,6 +130,7 @@ class TypingTests(unittest.TestCase):
         self.assertIsNotNone(query_result._type_instance)
         self.assertEqual(query_result._type_instance, sen1[-1].type)
 
+
     def test_type_conflict(self):
         """ σ::a END, σ::b END test.$q(::a), test.$q(::b) """
         tc = TypeChecker()
@@ -175,6 +177,7 @@ class TypingTests(unittest.TestCase):
         tc.add_definition(a_def2)
 
         self.assertEqual(len(tc._definitions), len(TypeInstance.Primitives) + 2)
+
 
     def test_variable_conflict(self):
         """ ::String: END ::Number: END
@@ -247,6 +250,7 @@ class TypingTests(unittest.TestCase):
 
         with self.assertRaises(te.TypeConflictException):
             tc.validate()
+
 
     def test_typing_nested_vars(self):
         """ ::String: END, ::Number: END
@@ -388,6 +392,7 @@ class TypingTests(unittest.TestCase):
 
         with self.assertRaises(te.TypeConflictException):
             tc.validate()
+
 
     def test_typing_polytype(self):
         """ ::String: END, ::Number: END
@@ -539,6 +544,7 @@ class TypingTests(unittest.TestCase):
         self.assertIsNone(tc.query(sen)[0]._var_node)
         self.assertEqual(len(tc.query(sen2)), 0)
 
+
     def test_typing_polytype_fail(self):
         """
         ::String: END, ::Number: END
@@ -647,7 +653,6 @@ class TypingTests(unittest.TestCase):
             tc.validate()
 
 
-
     def test_polytype_lacking_param(self):
         """
         ::simple.type: (::σ) end
@@ -715,9 +720,12 @@ class TypingTests(unittest.TestCase):
         rebind._data[TU.BIND_S] = True
         transform = TransformComponent(Sentence.build(["AddOp"]), trans_params, rebind=rebind)
 
-        [tc.add_assertion(x) for x in transform.to_local_sentences()]
+        [tc.add_assertion(x) for x in transform.to_abstract_sentences()]
 
         tc.validate()
+        # TODO
+
+
 
 
     @unittest.skip("TODO")

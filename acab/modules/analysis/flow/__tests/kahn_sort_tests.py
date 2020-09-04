@@ -25,30 +25,39 @@ class KahnSortTests(unittest.TestCase):
         self.assertIsNone(failure)
         self.assertIsNotNone(success)
 
+    @unittest.skip("TODO")
     def test_failure(self):
         return
 
+    @unittest.skip("TODO")
     def test_graph_2(self):
         return
 
+    @unittest.skip("TODO")
     def test_empty_graph(self):
         return
 
+    @unittest.skip("TODO")
     def test_cycle(self):
         return
 
+    @unittest.skip("TODO")
     def test_island(self):
         return
 
+    @unittest.skip("TODO")
     def test_multi_layer(self):
         return
 
+    @unittest.skip("TODO")
     def test_initial_set_empty(self):
         return
 
+    @unittest.skip("TODO")
     def test_multi_graph(self):
         return
 
+    @unittest.skip("TODO")
     def test_duplicate_names(self):
         return
 

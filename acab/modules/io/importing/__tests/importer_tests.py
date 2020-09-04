@@ -59,7 +59,9 @@ class ImporterTests(unittest.TestCase):
         self.assertTrue("acab.modules.operators.action" in self.e._loaded_modules)
         self.assertFalse(self.e._loaded_DSL_fragments)
 
-    # TODO: test_multi_import
+    @unittest.skip("TODO")
+    def test_multi_import(self):
+        pass
 
     def test_no_module_existence(self):
         im_query = ImportQuery([Sentence.build(["non","existent","module"])])
