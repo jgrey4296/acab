@@ -1,6 +1,7 @@
-from acab.abstract.query import Query
-from acab.abstract.transform import TransformOp
-from acab.abstract.action import ActionOp
+from acab.abstract.rule.query import Query
+from acab.abstract.rule.transform import TransformOp
+from acab.abstract.rule.action import ActionOp
+
 from acab.error.acab_import_exception import AcabImportException
 
 

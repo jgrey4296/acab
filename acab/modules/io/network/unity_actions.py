@@ -1,7 +1,7 @@
 import logging as root_logger
 
-from acab.abstract.transform import TransformOp
-from acab.abstract.action import ActionOp
+from acab.abstract.rule.transform import TransformOp
+from acab.abstract.rule.action import ActionOp
 
 from .unity_server import UnityServer
 from . import util

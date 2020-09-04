@@ -5,6 +5,8 @@ import json
 import logging as root_logger
 import socket
 
+from acab.abstract.core.value import AcabValue
+
 from . import util
 
 class UnityServer(AcabValue):
