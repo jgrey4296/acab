@@ -27,9 +27,10 @@ import logging as root_logger
 import pyparsing as pp
 
 from acab.config import AcabConfig
+
 from acab.abstract.parsing import util as PU
-from acab.abstract.production_operator import ProductionContainer
-from acab.abstract.layer import Layer, make_layer
+from acab.abstract.rule.production_operator import ProductionContainer
+from acab.abstract.pipeline.layer import Layer, make_layer
 
 logging = root_logger.getLogger(__name__)
 

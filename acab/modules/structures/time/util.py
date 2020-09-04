@@ -7,7 +7,7 @@ from math import gcd
 from functools import reduce
 import logging as root_logger
 
-from acab.abstract.type_base import TypeInstance
+from acab.abstract.core.type_base import TypeInstance
 from acab.config import AcabConfig
 
 logging = root_logger.getLogger(__name__)

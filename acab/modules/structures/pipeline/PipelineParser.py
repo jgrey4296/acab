@@ -43,9 +43,10 @@ import pyparsing as pp
 
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
+
 from acab.abstract.parsing import util as PU
-from acab.abstract.production_operator import ProductionContainer
-from acab.abstract.pipeline import Pipeline, make_pipeline
+from acab.abstract.rule.production_operator import ProductionContainer
+from acab.abstract.pipeline.pipeline import Pipeline, make_pipeline
 
 logging = root_logger.getLogger(__name__)
 

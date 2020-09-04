@@ -1,4 +1,4 @@
-from acab.abstract.dsl_fragment import DSL_Fragment
+from acab.abstract.engine.dsl_fragment import DSL_Fragment
 
 from . import agenda as AP
 from . import layer as LP

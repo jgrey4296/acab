@@ -1,13 +1,15 @@
 """"
 A PyParsing parser to create patterns
 """
-from acab.modules.structures.time.pattern_constructor import CTOR_ACT
-from acab.modules.structures.time.pattern_constructor import construct_pattern_simple
-from acab.abstract.parsing import util as PU
-from acab.modules.structures.time.util import BIND_S, VALUE_TYPE_S, VALUE_S, NAME_S, OPT_S, PATTERN_S
 from fractions import Fraction
 import pyparsing as pp
 import logging as root_logger
+
+from acab.modules.structures.time.pattern_constructor import CTOR_ACT
+from acab.modules.structures.time.pattern_constructor import construct_pattern_simple
+from acab.modules.structures.time.util import BIND_S, VALUE_TYPE_S, VALUE_S, NAME_S, OPT_S, PATTERN_S
+
+from acab.abstract.parsing import util as PU
 
 logging = root_logger.getLogger(__name__)
 

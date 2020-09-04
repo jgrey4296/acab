@@ -35,8 +35,8 @@ import pyparsing as pp
 from acab.config import AcabConfig
 
 from acab.abstract.parsing import util as PU
-from acab.abstract.production_operator import ProductionContainer
-from acab.abstract.agenda import Agenda, make_agenda
+from acab.abstract.rule.production_operator import ProductionContainer
+from acab.abstract.pipeline.agenda import Agenda, make_agenda
 
 logging = root_logger.getLogger(__name__)
 
