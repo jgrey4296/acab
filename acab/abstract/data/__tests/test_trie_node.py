@@ -5,7 +5,7 @@ import logging
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
-from acab.abstract.node import AcabNode
+from acab.abstract.data.node import AcabNode
 
 ROOT_S = AcabConfig.Get()("Data.Trie", "ROOT_S")
 

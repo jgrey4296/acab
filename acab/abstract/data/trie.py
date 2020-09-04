@@ -5,14 +5,14 @@ import logging as root_logger
 from weakref import WeakValueDictionary, ref, proxy
 from re import search
 
-from acab.abstract.contexts import Contexts, CTX_OP
-from acab.error.acab_base_exception import AcabBaseException
-from acab.abstract.query import QueryComponent
-from acab.abstract.sentence import Sentence
-from acab.abstract.value import AcabStatement
 from acab.abstract.printing import util as PrU
-from acab.abstract.node import AcabNode
-from acab.abstract.value import AcabValue
+from acab.error.acab_base_exception import AcabBaseException
+from acab.abstract.core.sentence import Sentence
+from acab.abstract.core.value import AcabValue, AcabStatement
+from acab.abstract.rule.query import QueryComponent
+
+from .node import AcabNode
+from .contexts import Contexts, CTX_OP
 
 from acab.config import AcabConfig
 util = AcabConfig.Get()

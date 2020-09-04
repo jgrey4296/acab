@@ -4,8 +4,8 @@ import logging
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
-from acab.abstract.trie.trie import Trie
-from acab.abstract.node import AcabNode
+from acab.abstract.data.trie import Trie
+from acab.abstract.data.node import AcabNode
 
 
 class TrieTests(unittest.TestCase):

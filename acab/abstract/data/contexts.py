@@ -7,8 +7,7 @@ import itertools as it
 from enum import Enum
 import logging as root_logger
 
-from acab.abstract.value import AcabValue
-from acab.abstract.production_operator import ProductionOperator
+from acab.abstract.core.value import AcabValue
 from acab.config import AcabConfig
 
 util = AcabConfig.Get()

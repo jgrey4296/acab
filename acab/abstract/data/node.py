@@ -10,7 +10,7 @@ from copy import deepcopy
 from acab.abstract.printing import util as PrU
 from acab.config import AcabConfig
 
-from .value import AcabValue
+from acab.abstract.core.value import AcabValue
 
 util = AcabConfig.Get()
 
