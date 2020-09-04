@@ -13,15 +13,17 @@ from acab.config import AcabConfig
 from acab.error.acab_import_exception import AcabImportException
 from acab.error.acab_base_exception import AcabBaseException
 
-from .value import AcabValue
-from .sentence import Sentence
-from .production_operator import ProductionOperator
-from .dsl_fragment import DSL_Fragment
-from . import action
-from .agenda import Agenda
-from .rule import Rule
-from .working_memory import WorkingMemory
-from .production_operator import ProductionContainer, ProductionOperator
+from acab.abstract.core.value import AcabValue
+from acab.abstract.core.sentence import Sentence
+
+from acab.abstract.rule.production_operator import ProductionOperator, ProductionContainer
+from acab.abstract.rule import action
+from acab.abstract.rule.rule import Rule
+
+from acab.abstract.pipeline.agenda import Agenda
+
+from acab.abstract.engine.dsl_fragment import DSL_Fragment
+from acab.abstract.engine.working_memory import WorkingMemory
 
 util = AcabConfig.Get()
 
@@ -33,23 +35,23 @@ class Engine:
 
     def __init__(self, wm_constructor, modules=None, path=None, init=None):
         assert(callable(wm_constructor))
+
+        # Blocks engine use until build_DSL has been called
         self._initialised = False
 
-        self.__kb_constructor = wm_constructor
+        self.__wm_constructor = wm_constructor
 
         self._working_memory = wm_constructor(init)
         # modules
         self._loaded_modules = set()
         self._loaded_DSL_fragments = {}
-        # TODO: initialise with base import operators
         self._operators = wm_constructor()
 
-        # to be updated with printed representations
-        # of the kb state after each action
+        # TODO  update with reloadable state of working memory
         self._prior_states = []
         # named recall states of past kb states
         self._recall_states = {}
-                # cached bindings
+        # cached bindings
         self._cached_bindings = []
 
         # TODO use these to enable breakpoint context:
@@ -74,7 +76,7 @@ class Engine:
 
     @property
     def bindings(self):
-        return self.bindings
+        return self._cached_bindings
 
     # Initialisation:
     def load_modules(self, *modules):
@@ -100,7 +102,7 @@ class Engine:
         # Return early if already loaded
         if module_sen in self._loaded_modules:
             logging.info("Module already loaded: {}".format(module_sen))
-            # TODO: extract node from return context
+            # TODO extract node from return context?
             return self._operators.query(module_sen)
 
         # Load
@@ -117,13 +119,16 @@ class Engine:
         self.register_ops(operator_sentences)
 
         self._loaded_modules.add(module_sen)
-        # TODO: extract node from return context
+        # TODO extract node from return context?
         if isinstance(module_sen, str):
             return self._operators.query(module_sen + "?")
         else:
             return self._operators.query(module_sen)
 
     def build_DSL(self):
+        """
+        Using currently loaded modules, rebuild the usable DSL parser from fragments
+        """
         self._working_memory.clear_bootstrap()
         self._working_memory.construct_parsers_from_fragments([y for x in self._loaded_DSL_fragments.values() for y in x])
         self._initialised = True
@@ -225,7 +230,6 @@ class Engine:
         else:
             assert(isinstance(thing, ProductionContainer))
             logging.info("Running thing: {}".format(thing))
-            # TODO: activate TagEnv's here?
             result = thing(ctxs=bindings, engine=self)
 
         if not bool(result):

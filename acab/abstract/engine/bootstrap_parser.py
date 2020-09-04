@@ -18,9 +18,9 @@ values = a.test.location, a.test.location.*
 import logging as root_logger
 import pyparsing as pp
 
-from acab.abstract.trie.trie import Trie
-from acab.abstract.production_operator import ProductionOperator
-from acab.abstract.value import AcabValue
+from acab.abstract.core.value import AcabValue
+from acab.abstract.data.trie import Trie
+from acab.abstract.rule.production_operator import ProductionOperator
 
 from acab.abstract.parsing.util import OPERATOR_SUGAR
 

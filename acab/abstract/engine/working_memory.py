@@ -19,9 +19,9 @@ import pyparsing as pp
 import logging as root_logger
 from fractions import Fraction
 
-from .production_operator import ProductionOperator
-from .dsl_fragment import DSL_Fragment
-from .bootstrap_parser import BootstrapParser
+from acab.abstract.rule.production_operator import ProductionOperator
+from acab.abstract.engine.dsl_fragment import DSL_Fragment
+from acab.abstract.engine.bootstrap_parser import BootstrapParser
 
 logging = root_logger.getLogger(__name__)
 
