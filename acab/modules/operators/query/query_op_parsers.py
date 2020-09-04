@@ -1,10 +1,12 @@
 import pyparsing as pp
 
 from acab.abstract.parsing import util as PU
-from acab.abstract.query import QueryComponent
-from acab.abstract.value import AcabValue
-from acab.abstract.sentence import Sentence
 from acab.config import AcabConfig
+
+from acab.abstract.core.value import AcabValue
+from acab.abstract.core.sentence import Sentence
+
+from acab.abstract.rule.query import QueryComponent
 
 from . import query_operators as QO
 

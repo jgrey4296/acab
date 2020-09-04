@@ -3,7 +3,7 @@ Definitions of initial Comparison operators
 """
 import re
 
-from acab.abstract.query import QueryOp, QueryOp_SubBind
+from acab.abstract.rule.query import QueryOp, QueryOp_SubBind
 
 
 class EQ(QueryOp):

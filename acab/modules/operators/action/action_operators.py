@@ -4,7 +4,7 @@ Definitions of the Core Performance Operators
 import logging as root_logger
 from enum import Enum
 
-from acab.abstract.action import ActionOp
+from acab.abstract.rule.action import ActionOp
 
 logging = root_logger.getLogger(__name__)
 

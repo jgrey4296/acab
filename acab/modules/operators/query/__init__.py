@@ -1,4 +1,4 @@
-from acab.abstract.dsl_fragment import DSL_Fragment
+from acab.abstract.engine.dsl_fragment import DSL_Fragment
 
 from .query_operators import EQ, NEQ, RegMatch, ELEM, HasTag
 from . import query_op_parsers as QOP
