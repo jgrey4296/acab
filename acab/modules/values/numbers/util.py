@@ -6,9 +6,9 @@ util = AcabConfig.Get()
 DECIMAL_S = util("Module.Numbers", "DECIMAL_S")
 
 
-FLOAT_t = TypeInstance(path=["number.float"], primitive=True)
-INT_t = TypeInstance(path=["number.int"], primitive=True)
-FRACT_t = TypeInstance(path=["number.fract"], primitive=True)
+FLOAT_t = TypeInstance(path=["number", "float"], primitive=True)
+INT_t = TypeInstance(path=["number", "int"], primitive=True)
+FRACT_t = TypeInstance(path=["number", "fract"], primitive=True)
 
 
 def _wrap_float(value, opts=None):

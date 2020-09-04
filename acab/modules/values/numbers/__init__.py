@@ -1,4 +1,4 @@
-from acab.abstract.dsl_fragment import DSL_Fragment
+from acab.abstract.engine.dsl_fragment import DSL_Fragment
 from .parsing import NumberParser as NP
 from .query_operators import GT, LT
 from .transform_operators import AddOp, SubOp, MulOp, DivOp, RandOp, RemainOp, RoundOp, NegOp
