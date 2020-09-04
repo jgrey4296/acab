@@ -1,11 +1,15 @@
 """ Trie-based parser to construct rules """
 import logging as root_logger
 import pyparsing as pp
-from acab.abstract.rule import Rule
+
+from acab.abstract.rule.rule import Rule
+from acab.abstract.rule.production_operator import ProductionContainer
+
 from acab.abstract.parsing import util as PU
+
 from acab.working_memory.trie_wm import util as WMU
 from acab.working_memory.trie_wm.fact_node import FactNode
-from acab.abstract.production_operator import ProductionContainer
+
 from acab.config import AcabConfig
 
 from . import FactParser as FP

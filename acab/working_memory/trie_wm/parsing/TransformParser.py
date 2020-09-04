@@ -1,12 +1,15 @@
 """ Trie-based parser for the transform component of rules """
 import logging as root_logger
 import pyparsing as pp
-from acab.abstract.sentence import Sentence
-from acab.abstract.transform import TransformComponent
-from acab.abstract.transform import Transform, TransformOp
+
+from acab.abstract.core.sentence import Sentence
+from acab.abstract.rule.transform import TransformComponent
+from acab.abstract.rule.transform import Transform, TransformOp
 from acab.abstract.parsing import util as PU
+
 from acab.working_memory.trie_wm import util as WMU
 from acab.working_memory.trie_wm.parsing.FactParser import VALBIND, BASIC_SEN, PARAM_SEN
+
 from acab.config import AcabConfig
 
 logging = root_logger.getLogger(__name__)

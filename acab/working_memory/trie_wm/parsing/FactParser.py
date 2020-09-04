@@ -4,11 +4,14 @@ capable of parsing  multiple facts
 """
 import logging as root_logger
 import pyparsing as pp
-from acab.abstract.value import AcabValue
+
+from acab.config import AcabConfig
+from acab.abstract.parsing import util as PU
+
+from acab.abstract.core.value import AcabValue
+
 from acab.working_memory.trie_wm import util as WMU
 from acab.working_memory.trie_wm.parsing import util as WMPU
-from acab.abstract.parsing import util as PU
-from acab.config import AcabConfig
 
 util = AcabConfig.Get()
 SEN_S = util("Parsing.Structure", "SEN_S")

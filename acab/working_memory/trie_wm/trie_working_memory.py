@@ -1,16 +1,19 @@
 """ The Core Trie Data Structure base """
 import logging as root_logger
 
-from acab.abstract.contexts import Contexts
-from acab.abstract.working_memory import WorkingMemory
-from acab.abstract.query import Query
-from acab.abstract.sentence import Sentence
-from acab.abstract.trie.trie import Trie
-from acab.error.acab_operator_exception import AcabOperatorException
-from acab.error.acab_parse_exception import AcabParseException
+from acab.config import AcabConfig
+
 from acab.abstract.printing import util as PrU
 from acab.abstract.parsing import util as PU
-from acab.config import AcabConfig
+from acab.abstract.core.sentence import Sentence
+from acab.abstract.data.contexts import Contexts
+from acab.abstract.data.trie import Trie
+from acab.abstract.rule.query import Query
+
+from acab.abstract.engine.working_memory import WorkingMemory
+
+from acab.error.acab_operator_exception import AcabOperatorException
+from acab.error.acab_parse_exception import AcabParseException
 
 from .fact_node import FactNode
 from .parsing import ActionParser as AP

@@ -5,10 +5,11 @@ Handles files, and comments
 import pyparsing as pp
 from pyparsing import pyparsing_common as ppc
 
-from acab.abstract.sentence import Sentence
-from acab.abstract.value import AcabValue
-from acab.abstract.rule import Rule
+from acab.abstract.core.value import AcabValue
+from acab.abstract.core.sentence import Sentence
+from acab.abstract.rule.rule import Rule
 from acab.abstract.parsing import util as PU
+
 from acab.error.acab_parse_exception import AcabParseException
 
 from . import FactParser as FP

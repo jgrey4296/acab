@@ -2,11 +2,13 @@
 import logging as root_logger
 import pyparsing as pp
 
-from acab.abstract.query import Query, QueryOp, QueryComponent
-from acab.abstract.sentence import Sentence
-from acab.abstract.contexts import CTX_OP
-from acab.working_memory.trie_wm import util as WMU
 from acab.abstract.parsing import util as PU
+from acab.abstract.core.sentence import Sentence
+from acab.abstract.rule.query import Query, QueryOp, QueryComponent
+from acab.abstract.data.contexts import CTX_OP
+
+from acab.working_memory.trie_wm import util as WMU
+
 from acab.error.acab_parse_exception import AcabParseException
 from acab.config import AcabConfig
 

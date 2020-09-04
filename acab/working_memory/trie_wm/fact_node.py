@@ -1,10 +1,13 @@
 """ The Core Trie-Node, stores information, meta data """
 import logging as root_logger
 
-from acab.abstract.value import AcabValue
-from acab.abstract.node import AcabNode
-from acab.working_memory.trie_wm import util as WMU
 from acab.abstract.printing import util as PrU
+from acab.abstract.core.value import AcabValue
+
+from acab.abstract.data.node import AcabNode
+
+from acab.working_memory.trie_wm import util as WMU
+
 
 logging = root_logger.getLogger(__name__)
 # see https://docs.python.org/3/library/weakref.html#module-weakref

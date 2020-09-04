@@ -1,9 +1,11 @@
 """ A Trie based Parser module for the creation of action """
 import logging as root_logger
 import pyparsing as pp
-from acab.abstract import action as action
+
+from acab.abstract.core.sentence import Sentence
+from acab.abstract.rule import action as action
 from acab.abstract.parsing import util as PU
-from acab.abstract.sentence import Sentence
+
 from acab.config import AcabConfig
 
 from .FactParser import PARAM_SEN, VALBIND, BASIC_SEN, PARAM_SEN
