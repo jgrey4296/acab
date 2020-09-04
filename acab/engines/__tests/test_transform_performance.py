@@ -10,13 +10,17 @@ import logging
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
-from acab.abstract.contexts import Contexts
-from acab.abstract.sentence import Sentence
+from acab.abstract.core.value import AcabValue as PV
+from acab.abstract.core.sentence import Sentence
+from acab.abstract.data.contexts import Contexts
+
 from acab.engines.trie_engine import TrieEngine
+
 from acab.working_memory.trie_wm.parsing import TransformParser as TP
 from acab.working_memory.trie_wm.parsing import FactParser as FP
+
 from acab.modules.values import numbers as NS
-from acab.abstract.value import AcabValue as PV
+
 
 def S(*words):
     return Sentence.build(words)

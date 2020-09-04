@@ -7,10 +7,10 @@ from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
 from acab.abstract.printing import util as PrU
-import acab.working_memory.trie_wm.parsing.FactParser as FP
-from acab.abstract.value import AcabValue
-from acab.abstract.sentence import Sentence
+from acab.abstract.core.sentence import Sentence
+from acab.abstract.core.value import AcabValue
 from acab.working_memory.trie_wm import util as KBU
+import acab.working_memory.trie_wm.parsing.FactParser as FP
 
 NEGATION_S = AcabConfig.Get()("Parsing.Structure", "NEGATION_S")
 VALUE_TYPE_S = AcabConfig.Get()("Parsing.Structure", "VALUE_TYPE_S")

@@ -5,11 +5,13 @@ from math import isclose
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
-from acab.abstract.contexts import Contexts
+from acab.abstract.rule.rule import Rule
+from acab.abstract.data.contexts import Contexts
+
 import acab.engines.trie_engine as T
+
 import acab.working_memory.trie_wm.parsing.TransformParser as TP
 import acab.working_memory.trie_wm.parsing.ActionParser as AP
-from acab.abstract.rule import Rule
 
 
 class Engine_Tests(unittest.TestCase):

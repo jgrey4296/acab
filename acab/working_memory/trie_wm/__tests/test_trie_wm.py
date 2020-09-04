@@ -6,12 +6,13 @@ import unittest.mock as mock
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
+from acab.abstract.data.contexts import Contexts
+from acab.abstract.engine.bootstrap_parser import BootstrapParser
+from acab.abstract.engine.engine import Engine
+from acab.abstract.rule.production_operator import ProductionOperator
+
 from acab.modules.operators.query import RegMatch
-from acab.abstract.engine import Engine
 from acab.working_memory.trie_wm.trie_working_memory import TrieWM
-from acab.abstract.contexts import Contexts
-from acab.abstract.bootstrap_parser import BootstrapParser
-from acab.abstract.production_operator import ProductionOperator
 
 
 class Trie_WM_Tests(unittest.TestCase):

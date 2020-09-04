@@ -7,10 +7,10 @@ from os import listdir
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
-import acab.abstract.trie as T
-from acab.abstract.sentence import Sentence
+from acab.abstract.core.sentence import Sentence
+from acab.abstract.rule.rule import Rule
 from acab.engines.trie_engine import TrieEngine
-from acab.abstract.rule import Rule
+
 def S(*words):
     return Sentence.build(words)
 

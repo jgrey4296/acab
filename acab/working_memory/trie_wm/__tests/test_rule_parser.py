@@ -4,17 +4,17 @@ import logging
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
+from acab.abstract.core.sentence import Sentence
+from acab.abstract.engine.bootstrap_parser import BootstrapParser
 from acab.abstract.printing import util as PrU
-from acab.working_memory.trie_wm import util as KBU
-from acab.working_memory.trie_wm.parsing import RuleParser as RP
-from acab.working_memory.trie_wm.parsing import FactParser as FP
-from acab.working_memory.trie_wm.parsing import ActionParser as AP
+from acab.abstract.rule.query import Query
+from acab.abstract.rule.rule import Rule
 from acab.modules.operators import query as QOP
+from acab.working_memory.trie_wm import util as KBU
+from acab.working_memory.trie_wm.parsing import ActionParser as AP
+from acab.working_memory.trie_wm.parsing import FactParser as FP
+from acab.working_memory.trie_wm.parsing import RuleParser as RP
 import acab.working_memory.trie_wm.parsing.QueryParser as QP
-from acab.abstract.rule import Rule
-from acab.abstract.sentence import Sentence
-from acab.abstract.query import Query
-from acab.abstract.bootstrap_parser import BootstrapParser
 
 class Trie_Rule_Parser_Tests(unittest.TestCase):
 

@@ -8,15 +8,17 @@ AcabConfig.Get().read("acab/util.config")
 import acab.modules.analysis.typing.parsing.TypeDefParser as TD
 import acab.modules.analysis.typing.parsing.TypeParser as TP
 
-from acab.abstract.sentence import Sentence
-from acab.abstract.node import AcabNode
-from acab.error.acab_parse_exception import AcabParseException
-from acab.modules.analysis.typing import util as TU
-from acab.modules.analysis.typing.values.type_definition import TypeDefinition
-from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition
-from acab.working_memory.trie_wm.parsing import FactParser as FP
+from acab.abstract.core.sentence import Sentence
+from acab.abstract.data.node import AcabNode
 from acab.abstract.parsing import util as PU
 from acab.abstract.printing import util as PrU
+
+from acab.error.acab_parse_exception import AcabParseException
+
+from acab.modules.analysis.typing import util as TU
+from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition
+from acab.modules.analysis.typing.values.type_definition import TypeDefinition
+from acab.working_memory.trie_wm.parsing import FactParser as FP
 
 class TypeDef_ParserTests(unittest.TestCase):
 

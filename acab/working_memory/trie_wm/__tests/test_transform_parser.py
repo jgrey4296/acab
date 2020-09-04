@@ -5,11 +5,11 @@ import re
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
-from acab.working_memory.trie_wm.parsing import TransformParser as TP
-from acab.abstract import transform
+from acab.abstract.engine.bootstrap_parser import BootstrapParser
+from acab.abstract.rule import transform
+from acab.abstract.rule.production_operator import ProductionOperator
 from acab.working_memory.trie_wm import util as KBU
-from acab.abstract.bootstrap_parser import BootstrapParser
-from acab.abstract.production_operator import ProductionOperator
+from acab.working_memory.trie_wm.parsing import TransformParser as TP
 
 class Trie_Transform_Parser_Tests(unittest.TestCase):
 

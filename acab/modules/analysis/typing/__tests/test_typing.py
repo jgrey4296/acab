@@ -4,16 +4,17 @@ import logging
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
+from acab.abstract.core.sentence import Sentence
+from acab.abstract.core.type_base import TypeInstance, ATOM
+from acab.abstract.core.value import AcabValue
+from acab.abstract.data.node import AcabNode
 
-from acab.abstract import action
-from acab.abstract.bootstrap_parser import BootstrapParser
-from acab.abstract.node import AcabNode
+from acab.abstract.engine.bootstrap_parser import BootstrapParser
 from acab.abstract.printing import util as PrU
-from acab.abstract.production_operator import ProductionOperator
-from acab.abstract.sentence import Sentence
-from acab.abstract.transform import TransformComponent
-from acab.abstract.type_base import TypeInstance, ATOM
-from acab.abstract.value import AcabValue
+
+from acab.abstract.rule import action
+from acab.abstract.rule.production_operator import ProductionOperator
+from acab.abstract.rule.transform import TransformComponent
 
 from acab.modules.analysis.typing import type_exceptions as te
 from acab.modules.analysis.typing import util as TU

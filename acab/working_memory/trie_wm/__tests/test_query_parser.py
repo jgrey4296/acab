@@ -5,14 +5,15 @@ from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
 import acab.working_memory.trie_wm.parsing.QueryParser as QP
-from acab.abstract.bootstrap_parser import BootstrapParser
-from acab.abstract.type_base import REGEX
-from acab.abstract.query import Query
-from acab.abstract.sentence import Sentence
-from acab.abstract.query import QueryComponent, QueryOp
-from acab.abstract.production_operator import ProductionOperator
-from acab.working_memory.trie_wm import util as KBU
+
+from acab.abstract.core.sentence import Sentence
+from acab.abstract.core.type_base import REGEX
+from acab.abstract.engine.bootstrap_parser import BootstrapParser
+from acab.abstract.rule.production_operator import ProductionOperator
+from acab.abstract.rule.query import Query, QueryComponent, QueryOp
+
 from acab.modules.operators import query as QOP
+from acab.working_memory.trie_wm import util as KBU
 
 NEGATION_S = AcabConfig.Get()("Parsing.Structure", "NEGATION_S")
 FALLBACK_S = AcabConfig.Get()("Parsing.Structure", "FALLBACK_S")

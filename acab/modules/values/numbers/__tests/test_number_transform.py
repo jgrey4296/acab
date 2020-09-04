@@ -13,10 +13,10 @@ from acab.working_memory.trie_wm.parsing import ActionParser as AP
 from acab.working_memory.trie_wm.parsing import TransformParser as TP
 from acab.working_memory.trie_wm.parsing import FactParser as FP
 from acab.working_memory.trie_wm.parsing import QueryParser as QP
-from acab.abstract import action
-from acab.abstract.query import QueryComponent, QueryOp
-from acab.abstract.sentence import Sentence
-from acab.abstract import transform
+from acab.abstract.rule import action
+from acab.abstract.rule.query import QueryComponent, QueryOp
+from acab.abstract.core.sentence import Sentence
+from acab.abstract.rule import transform
 from acab.modules.values import numbers
 from acab.working_memory.trie_wm.trie_working_memory import TrieWM
 from acab.working_memory.trie_wm import util as KBU

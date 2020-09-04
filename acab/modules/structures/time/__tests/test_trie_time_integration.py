@@ -3,13 +3,13 @@ import logging
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
-from acab.modules.structures.time.parsing import parser as tp
-from acab.working_memory.trie_wm.parsing import FactParser as fp
-from acab.abstract.sentence import Sentence
-from acab.modules.structures.time import util as TU
-from acab.modules.structures.time.time_core import TimeContainer
-from acab.modules.structures.time.parsing import parser as tp
+from acab.abstract.core.sentence import Sentence
 from acab.abstract.parsing import util as PU
+from acab.modules.structures.time import util as TU
+from acab.modules.structures.time.parsing import parser as tp
+from acab.modules.structures.time.parsing import parser as tp
+from acab.modules.structures.time.time_core import TimeContainer
+from acab.working_memory.trie_wm.parsing import FactParser as fp
 
 VALUE_TYPE_S = AcabConfig.Get()("Parsing.Structure", "VALUE_TYPE_S")
 
