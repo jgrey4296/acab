@@ -28,7 +28,7 @@ class _Bootstrap_Value:
         self._primitive = None
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
     def __eq__(self, other):
         assert(hasattr(other, "name"))
@@ -60,7 +60,7 @@ class _Bootstrap_Sentence:
         self._value[-1]._primitive = primitive
 
     def __str__(self):
-        return self.pprint()
+        return ".".join([str(x) for x in self._value])
 
     def __repr__(self):
         return "BootstrapSentence({})".format(str(self))
@@ -70,9 +70,14 @@ class _Bootstrap_Sentence:
 
     def __eq__(self, other):
         hasattr(other, "words")
+        if len(self.words) != len(other.words):
+            return False
+
         word_eq = all([x == y for x,y in zip(other.words, self.words)])
         return word_eq
 
+    def __hash__(self):
+        return hash(str(self))
     @property
     def words(self):
         return self._value
@@ -96,7 +101,7 @@ class TypeInstance:
         """ Construct a Type Instance with a _path in the type trie """
         if primitive:
             path = _Bootstrap_Sentence(path, self)
-            assert(path not in TypeInstance.Primitives)
+            assert(path not in TypeInstance.Primitives), breakpoint()
             TypeInstance.Primitives.append(path)
 
         assert(params is None or all([isinstance(x, (str, TypeInstance)) or hasattr(x, "type") for x in params])), breakpoint()
@@ -109,7 +114,7 @@ class TypeInstance:
             self._params += params
 
     def __hash__(self):
-        return hash(str(self.path))
+        return hash(self.path)
 
     def __eq__(self, other):
         """
@@ -140,7 +145,17 @@ class TypeInstance:
 
 
     def __str__(self):
-        return self.pprint()
+
+        path = str(self._path)
+        if self._type_alias is not None:
+            path += self._type_alias
+
+        path += ".".join([str(x) for x in self._params])
+
+        if self._primitive:
+            return "primitive." + path
+
+        return path
 
     def __repr__(self):
         return "(TypeInstance {})".format(str(self))
@@ -222,3 +237,4 @@ RULE      = TypeInstance(path=["rule"], type_alias_str=RULE_HEAD_S, primitive=Tr
 
 PrU.register_obvious_types(ATOM, REGEX, STRING)
 PrU.register_primitive({STRING: PrU._wrap_str})
+PrU.register_class(TypeInstance, TypeInstance.pprint)

@@ -10,7 +10,8 @@ from copy import deepcopy
 
 from acab.config import AcabConfig
 from acab.abstract.printing import util as PrU
-from acab.abstract.type_base import TypeInstance, ATOM
+
+from .type_base import TypeInstance, ATOM
 
 logging = root_logger.getLogger(__name__)
 
@@ -136,6 +137,12 @@ class AcabValue:
         return self._tags
 
 
+    def alpha_rename(self):
+        """
+        TODO should variables be de bruijn indexed instead?
+        """
+        raise NotImplementedError()
+
     def copy(self):
         """ Data needs to be able to be copied """
         return deepcopy(self)
@@ -182,7 +189,7 @@ class AcabValue:
         return all([t in self._tags for t in tags])
 
     def to_simple_value(self):
-        simple_value = AcabValue(self._name, data=self._data)
+        simple_value = AcabValue.safe_make(self._name, data=self._data)
         simple_value.set_data({VALUE_TYPE_S: ATOM})
         return simple_value
 
@@ -204,8 +211,6 @@ class AcabStatement(AcabValue):
 
     @property
     def path(self):
-        if self._path is None:
-            return None
         return self._path
     @property
     def value(self):
@@ -230,7 +235,7 @@ class AcabStatement(AcabValue):
         return self
 
 
-    def to_local_sentences(self):
+    def to_abstract_sentences(self):
         raise NotImplementedError()
 
 
