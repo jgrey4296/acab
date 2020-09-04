@@ -11,20 +11,20 @@
     These core acts link with the symbols +,-, and @.
 
     The Action class is the AST representation of an action. Holds an operator, and values.
-    ActionMacro defines a sequence of actions, with a set of bindings. 
-    ActionMacroUse defines a AST representation of where to expand out action macros.    
+    ActionMacro defines a sequence of actions, with a set of bindings.
+    ActionMacroUse defines a AST representation of where to expand out action macros.
 
 *** Clause.py
     *Defines*: Clause.
 
-    Clause is an implementation agnostic representation of a query clause. 
-    A clause is negatable, holds a set of components, and can have bindings applied to variables.    
+    Clause is an implementation agnostic representation of a query clause.
+    A clause is negatable, holds a set of components, and can have bindings applied to variables.
 
 *** Comparisons.py
     *Defines*: Core Comparison functions (EQ, GT, LT, NEQ, REGMATCH), Comparison class.
 
-    The main comparison functions link with < > != == ~=. 
-    Comparison is the AST representation. It holds the operator, the value(s) or the binding(s). 
+    The main comparison functions link with < > != == ~=.
+    Comparison is the AST representation. It holds the operator, the value(s) or the binding(s).
 
 *** Contexts.py
     *Defines*: Contexts.
@@ -36,10 +36,10 @@
 *** EngineBase.py
     *Defines*: EngineBase.
 
-    EngineBase is the abstract class that defines common functionality between trie and 
-    wme based knowledge engines. Specifies that an engine can load a file, register actions and rules, 
+    EngineBase is the abstract class that defines common functionality between trie and
+    wme based knowledge engines. Specifies that an engine can load a file, register actions and rules,
     add/assert, retract, run rules, transform data.
-    
+
     Can perform all available actions, or select by a policy.
     The policy is a passed in function, that takes the list of all proposed actions and selects by some criteria.
     Policy operates on (dict, Rule).
@@ -50,8 +50,8 @@
 
     These two types should cover most eventualities. Specificity can be measured with a dynamic policy
     of len(rule._query). Priority can be a tag. Dynamic priority can be a binding. Policies to apply
-    one rule per actor can be achieved with a dictionary to track the selected actions in the policy, etc etc. 
-    
+    one rule per actor can be achieved with a dictionary to track the selected actions in the policy, etc etc.
+
 *** Query.py
     *Defines*: Query.
 
@@ -61,7 +61,7 @@
 *** Rule.py
     *Defines*: Rule.
 
-    The rule class is the abstract definition of a rule. It holds a query, transform, and a list of actions. 
+    The rule class is the abstract definition of a rule. It holds a query, transform, and a list of actions.
     It has a name, and set of tags.
 
 *** Transforms.py
@@ -72,7 +72,7 @@
 
     TransformComponent is the superclass of SelectionTransform and OperatorTransform.
     They define how to either transform a binding, such as with addition,
-    or how to select a number of possible bindings. 
+    or how to select a number of possible bindings.
     Selection transforms trigger the Context.select method.
     *This could expand to select by more than numeric count, getting towards something like
     policies*.
@@ -82,14 +82,14 @@
 
     EXOP (Exclusion Operator) defines the type of node in a trie, either non-exclusive or exclusive.
     META_OP defines the additional annotation of a trie node, either a binding, a comparison, or a rule.
-    
+
     The Bind class is a simple holder for a variable name.
-    
+
     expandFact takes a fact and a dictionary of bindings, and converts all bindings that are in the dict.
     So .a.b.$x!$y + {x:"blah", y:"bloo"} -> .a.b.blah!bloo
-    
-    build_rebind_dict enables internal bindings of an action macro to be rebound to align with 
-    the passed in bindings of its usage. 
+
+    build_rebind_dict enables internal bindings of an action macro to be rebound to align with
+    the passed in bindings of its usage.
 
     default_action_policy is the simplest policy, it selects a single random (bindings, rule) pairing to enact.
 
@@ -101,15 +101,15 @@
 
 *** Game.py
     *Defines*: Game.
-    
-    The Game works as a means to represent a Game Theory / CiF style game. 
-    It describes an J player, K move, L turn game. 
+
+    The Game works as a means to represent a Game Theory / CiF style game.
+    It describes an J player, K move, L turn game.
     The game can have an entry condition (intended to be a simple EL String.
     Designed to play atomicly, either randomly (play_random),
     or with assessments/queries from the knowledgebase (play_with_assessments).
 
     Both forms of play take a *data* parameter, a dictionary of variables to substitute into the outputs.
-    Play_with_assessments also takes a knowledgebase to query. 
+    Play_with_assessments also takes a knowledgebase to query.
 
 *** TimeSpaceTree.py
     *Defines*: TimeSpaceTree.
@@ -123,15 +123,15 @@
     A usage of a balanced tree to allow loose collections of pairings (a < b) (b < c)
     to be auto balanced. Avoids the use of having to specify actual weights.
 
-    *TODO*: Add a distribution to apply the ordering to.  
+    *TODO*: Add a distribution to apply the ordering to.
 
 ** Trie
 *** ActionParser.py
     Defines the parser combinator for parsing Actions.
     ie: +(.a.b.c)
-    
+
     Enables assertion, retraction, and printing, using + - and @.
-    Also custom registered actions that are anything else. 
+    Also custom registered actions that are anything else.
     ie: blah(.a.b.c)
 
     Multiple values can be passed in:
@@ -147,14 +147,14 @@
     	+(.a.$x.$y.$z)
         +(.b.$z)
     end
-    
+
     Action macros expand out in actions at parse time.
 
 *** FactParser.py
     Defines the parser combinator for the core fact definition.
     ie: .a.b!c
     .a.b.$x
-    
+
     Covers basic names, numbers, bindings, and double quoted strings.
     String can be combinations of the above, always starting with a .
     and with exclusion op (!)  where necessary.
@@ -165,7 +165,7 @@
     ie: $x <- .a.b.c
     .a.b.$x
     clear
-    
+
     will result in .a.b.a.b.c
 
     *TODO*: When are file bindings expanded again?
@@ -185,8 +185,8 @@
 
 *** QueryParser.py
     Defines the parser combinator for queries. Combines FactParser with ?
-    
-    Allows factstrings to hold comparisons. 
+
+    Allows factstrings to hold comparisons.
     ie: .a.$x(>20)?
 
 *** RuleParser.py
@@ -197,7 +197,7 @@
     *Unfinished*
 
 *** TransformParser.py
-    Defines the parser combinator for transforms. 
+    Defines the parser combinator for transforms.
     ie: $x + 2 -> $y
 
     Makes use of defined bindings, and modifies them.
@@ -218,7 +218,7 @@
     ie: select 2 - 4
 
 *** Trie.py
-    *Defines*: Trie. 
+    *Defines*: Trie.
 
     Trie is the core of the data representation. Supports assertion and retraction, exclusion semantics,
     querying and matching.
@@ -258,7 +258,7 @@
    Values should match defined concepts.
    Games should verify.
    Sanctions should rank.
-   
+
 ** Norms in the engine
    The engine needs bayesian weighting of norm obedience, and underlying
    processes of internalization. Explicit linkings of norm deviance with
@@ -268,13 +268,13 @@
 
 
 
-   
+
 * Module Notes
 
 ** Activity
    Activity Theory Module.
    Should be able to describe an activity pyramid,
-   involving actor, tool, object, objective, 
+   involving actor, tool, object, objective,
    community, rules, division of labour
 ** Artifact
    Encode the construction of artifacts,
@@ -324,3 +324,29 @@
 ** Weights
    a module to weight different values and ensure partial orders
 
+
+* Languages and Transformation
+  The architecture creates a superset language of all layers,
+  and uses only subsets for individual layers.
+
+  To use the typechecking layer, it reduces the language down to a typing Language
+
+  To use the FSM module, it will reduce down to the FSM spec and manipulation language.
+
+  Queries asked of the global state, are then transformed down, and expanded out again with
+  actions.
+
+
+  Base Abstract Language:
+  Words
+  Variables
+  Sentences
+
+  Rule Language:
+  Base + Query, Transform, Action, Rule
+
+  Pipeline Language:
+  Base, Rule + Agenda, Layer, Pipeline
+
+  Typing Language
+  Base + Syntax Context, TypeDef, OpDef, SumDef, TypeDec
