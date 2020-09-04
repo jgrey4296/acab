@@ -16,7 +16,7 @@ a.rule.test: (::ρ)
     a.b.$x(::types.string)?
     a.string.$y?
 
-    \acab.modules.operators.FormatOp $y -> $z
+    λacab.modules.operators.FormatOp $y -> $z
 
     a.b.q
     λacab.modules.operators.ActionPrint "Testing"
