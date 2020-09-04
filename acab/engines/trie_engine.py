@@ -8,17 +8,20 @@ from os.path import exists, expanduser
 from os.path import abspath
 import pyparsing as pp
 
-from acab.abstract.dsl_fragment import DSL_Fragment
 from acab.error.acab_parse_exception import AcabParseException
-from acab.abstract.sentence import Sentence
-from acab.abstract.production_operator import ProductionOperator
-from acab.abstract.engine import Engine
+
+from acab.abstract.core.sentence import Sentence
+
+from acab.abstract.rule.production_operator import ProductionOperator
+from acab.abstract.engine.dsl_fragment import DSL_Fragment
+from acab.abstract.engine.engine import Engine
+
 from acab.working_memory.trie_wm.trie_working_memory import TrieWM
 from acab.working_memory.trie_wm.parsing import TotalParser as TotalP
 
 logging = root_logger.getLogger(__name__)
 
-
+# TODO Deprecate this, move code into abstract.engine, or a working memory instance
 class TrieEngine(Engine):
     """ The Engine for an Agent.
     Holds a working memory, with rules, keeps track of proposed actions
@@ -37,6 +40,7 @@ class TrieEngine(Engine):
         with open(filename) as f:
             # everything should be an assertion
             try:
+                # TODO switch this to a working memory call
                 assertions = TotalP.parseFile(f)
             except pp.ParseException as exp:
                 print("-----")
