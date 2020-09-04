@@ -7,7 +7,8 @@ import logging as root_logger
 
 from acab.config import AcabConfig
 from acab.abstract.printing import util as PrU
-from . import type_base as TB
+
+from acab.abstract.core import type_base as TB
 
 from .production_operator import ProductionContainer
 from .transform import Transform

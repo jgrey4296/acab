@@ -11,10 +11,13 @@ import logging as root_logger
 from acab.config import AcabConfig
 from acab.abstract.printing import util as PrU
 
+from acab.abstract.core import type_base as TB
+from acab.abstract.core.sentence import Sentence
+
+from acab.abstract.data.node import AcabNode
+
 from . import production_operator as PO
-from . import type_base as TB
-from .sentence import Sentence
-from .node import AcabNode
+
 
 util = AcabConfig.Get()
 BIND_S = util("Parsing.Structure", "BIND_S")
@@ -79,15 +82,16 @@ class QueryComponent(PO.ProductionComponent):
         return isinstance(op, QueryOp_SubBind)
 
 
-    def to_local_sentences(self, target=None):
+    def to_abstract_sentences(self, target=None):
         """ Create a comparison as a canonical sentence """
         # eg: 20(>30) :  > -> 20 -> 30 -> bool
+        # TODO make head a reference for type checking
         # TODO assign a type instance
         head = AcabValue(self.op, {OPERATOR_S : self})
         if target is None:
-            return Sentence([head] + self._params)
+            return Sentence.build(([head] + self._params))
         assert(isinstance(target, AcabValue))
-        return [Sentence([head, target] + self._params)]
+        return [Sentence.build([head, target] + self._params)]
 
 
 class Query(PO.ProductionContainer):
@@ -121,7 +125,7 @@ class Query(PO.ProductionContainer):
                 pos.append(c)
         return (pos, neg)
 
-    def to_local_sentences(self, target=None):
+    def to_abstract_sentences(self, target=None):
         """ Return all comparisons in canonical form """
         # eg : a.test.$x(>$y)? = > -> $x -> $y -> bool
         constraint_words = [word for clause in self.clauses
@@ -131,7 +135,7 @@ class Query(PO.ProductionContainer):
         constraint_sentences = [sen
                                 for word in constraint_words
                                 for comp in word._data[CONSTRAINT_S]
-                                for sen in comp.to_local_sentences(word)
+                                for sen in comp.to_abstract_sentences(word)
                                 if isinstance(comp, QueryComponent)]
 
         total_sentences = self.clauses + constraint_sentences

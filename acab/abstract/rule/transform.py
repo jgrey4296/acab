@@ -10,11 +10,11 @@ import logging as root_logger
 from acab.config import AcabConfig
 from acab.abstract.printing import util as PrU
 
-from . import production_operator as PO
-from . import type_base as TB
+from acab.abstract.core.value import AcabValue
+from acab.abstract.core import type_base as TB
+from acab.abstract.core.sentence import Sentence
 
-from .sentence import Sentence
-from acab.abstract.value import AcabValue
+from . import production_operator as PO
 
 logging = root_logger.getLogger(__name__)
 
@@ -34,9 +34,10 @@ class TransformOp(PO.ProductionOperator):
 
 class TransformComponent(PO.ProductionComponent):
     """ Superclass of OperatorTransform. Holds an Operator """
-    def to_local_sentences(self, target=None):
+    def to_abstract_sentences(self, target=None):
+        # TODO make head a reference for type checking
         head = AcabValue(self.op, data={'op_reference': self})
-        return [Sentence([head] + self._params[:] + [self._rebind])]
+        return [Sentence.build([head] + self._params[:] + [self._rebind])]
 
 
 class Transform(PO.ProductionContainer):

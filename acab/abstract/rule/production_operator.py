@@ -11,12 +11,12 @@ ProductionContainer : Groups Components together
 import logging as root_logger
 
 from acab.abstract.printing import util as PrU
-from acab.abstract.sentence import Sentence
 from acab.error.acab_operator_exception import AcabOperatorException
 from acab.config import AcabConfig
 
-from .value import AcabValue, AcabStatement
-from . import type_base as TB
+from acab.abstract.core.value import AcabValue, AcabStatement
+from acab.abstract.core.sentence import Sentence
+from acab.abstract.core import type_base as TB
 
 util = AcabConfig.Get()
 
@@ -118,7 +118,10 @@ class ProductionComponent(AcabValue):
         self._value = op_str
 
 
-    def to_local_sentences(self, target=None):
+    def to_abstract_sentences(self, target=None):
+        """
+
+        """
         raise NotImplementedError()
 
     def verify(self, ctx=None, engine=None):
@@ -136,6 +139,7 @@ class ProductionComponent(AcabValue):
         if not isinstance(op, ProductionOperator) and engine is not None:
             raise AcabOperatorException(op)
 
+        # TODO make op cached, rather than this:
         verified = self.copy()
         verified._value = op
 
@@ -193,8 +197,8 @@ class ProductionContainer(AcabStatement):
         return obj
 
 
-    def to_local_sentences(self, target=None):
-        return [y for x in self.clauses for y in x.to_local_sentences()]
+    def to_abstract_sentences(self, target=None):
+        return [y for x in self.clauses for y in x.to_abstract_sentences()]
 
     def verify(self, ctx=None, engine=None):
         for x in self.clauses:

@@ -7,12 +7,15 @@ Uses the structure of production operators.
 import logging as root_logger
 
 from acab.config import AcabConfig
-from acab.abstract.value import AcabValue
-from acab.abstract.sentence import Sentence
+
+from acab.abstract.core.value import AcabValue
+from acab.abstract.core.sentence import Sentence
+from acab.abstract.core import type_base as TB
+
+from acab.abstract.rule import production_operator as PO
+
 from acab.abstract.printing import util as PrU
 
-from . import production_operator as PO
-from . import type_base as TB
 
 logging = root_logger.getLogger(__name__)
 
@@ -60,10 +63,10 @@ class ActionComponent(PO.ProductionComponent):
             new_values.append(x.bind(bindings))
         return ActionComponent(self.op, new_values)
 
-    def to_local_sentences(self):
+    def to_abstract_sentences(self):
         """ Return the action in canonical form """
         # eg : assert a.test  = assert -> a.test -> nil
-        # TODO alpha renaming
+        # TODO make head a reference for type checking
         # ie: Head: +.$x22532(::sentence).$x26215(::sentence)
         # and Params: a.b.c.$x(::aval), a.b.$d(::aval)
         # and bind?
@@ -87,7 +90,7 @@ class Action(PO.ProductionContainer):
             exp_clauses.append(clause.bind(bindings))
         return Action(exp_clauses, params=self._params)
 
-    def to_local_sentences(self, target=None):
+    def to_abstract_sentences(self, target=None):
         # needs to return both the action sentences,
         # AND the action operators in canonical form
         raise NotImplementedError()
