@@ -24,6 +24,7 @@ TAG_SYMBOL_S = util("Parsing", "TAG_SYMBOL_S")
 END_S = util("Parsing", "END_S")
 
 TAB_S = util("Printing", "TAB_S", action=AcabConfig.actions_e.STRIPQUOTE)
+FALLBACK_MODAL_S = util("Printing", "FALLBACK_MODAL_S", action=AcabConfig.actions_e.STRIPQUOTE)
 
 #Setup
 # TODO register additional constraints
@@ -115,15 +116,17 @@ def pprint(obj, opts=None, **kwargs):
         parent = parent.__base__
 
     # Default
+
     return str(obj)
 
 
 
 def print_value(value, opts):
 
-    val = pprint(value.value, opts)
+    val = pprint(value.name, opts)
 
-    # setup the value type
+    # transform the value format if necessary
+    # eg: 2.34 => 2d34
     if hasattr(value, "type") and value.type in TYPE_WRAPS:
         val = TYPE_WRAPS[value.type](val)
 
@@ -136,11 +139,13 @@ def print_value(value, opts):
 
     # Wrap modal Operator
     print_modal = opts['modal']
-    if print_modal and OPERATOR_S in value._data:
-        val = _wrap_modal_operator(val, value._data[OPERATOR_S])
+    if not print_modal:
+        return val
 
+    if OPERATOR_S in value._data:
+        return _wrap_modal_operator(val, value._data[OPERATOR_S])
 
-    return val
+    return _wrap_modal_operator(val, None)
 
 def print_sequence(seq, opts):
     """ Pretty Print a Sequence, ie: things like sentences """
@@ -304,6 +309,9 @@ def _wrap_constraints(value, data):
 
 def _wrap_modal_operator(value, op):
     assert(isinstance(value, str)), value
+    if op is None:
+        return value + FALLBACK_MODAL_S
+
     assert(op in MODAL_LOOKUPS), op
     return value + MODAL_LOOKUPS[op]
 

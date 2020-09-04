@@ -5,8 +5,8 @@ import re
 import logging as root_logger
 import pyparsing as pp
 
-from acab.abstract.sentence import Sentence
-from acab.abstract import type_base as TB
+from acab.abstract.core.sentence import Sentence
+from acab.abstract.core import type_base as TB
 from acab.config import AcabConfig
 
 util = AcabConfig.Get()
