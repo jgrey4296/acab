@@ -4,10 +4,12 @@ Pyparsing based parser for types
 import logging as root_logger
 import pyparsing as pp
 
-from acab.abstract.type_base import TypeInstance, ATOM
-from acab.abstract.sentence import Sentence
-from acab.modules.analysis.typing import util as TYU
+from acab.abstract.core.type_base import TypeInstance, ATOM
+from acab.abstract.core.sentence import Sentence
 from acab.abstract.parsing import util as PU
+
+from acab.modules.analysis.typing import util as TYU
+
 from acab.config import AcabConfig
 
 util = AcabConfig.Get()

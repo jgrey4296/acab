@@ -1,11 +1,13 @@
 from acab.abstract.printing import util as PrU
-from acab.abstract.sentence import Sentence
-from acab.abstract.type_base import TypeInstance, ATOM
-from acab.abstract.value import AcabValue
+from acab.abstract.core.value import AcabValue
+from acab.abstract.core.sentence import Sentence
+from acab.abstract.core.type_base import TypeInstance, ATOM
 
 from acab.error.acab_parse_exception import AcabParseException
+
 from acab.modules.analysis.typing.util import TYPE_DEFINITION, SUM_DEFINITION, TYPE_DEF_S
 from acab.modules.analysis.typing import type_exceptions as TE
+
 from acab.config import AcabConfig
 
 from .acab_type import TypeStatement

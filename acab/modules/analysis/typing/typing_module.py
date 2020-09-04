@@ -1,6 +1,9 @@
-from acab.abstract.dsl_fragment import DSL_Fragment
+from acab.abstract.engine.dsl_fragment import DSL_Fragment
+
 from acab.abstract.printing import util as PrU
+
 from .type_checker import TypeChecker
+
 from .parsing import TypeDefParser as TDP
 from .parsing import TypeParser as TP
 

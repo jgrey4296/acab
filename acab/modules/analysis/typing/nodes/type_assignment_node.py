@@ -2,6 +2,7 @@ import logging as root_logger
 
 from acab.modules.analysis.typing import type_exceptions as te
 from acab.modules.analysis.typing import util
+
 from .typed_node import MonoTypedNode
 
 logging = root_logger.getLogger(__name__)

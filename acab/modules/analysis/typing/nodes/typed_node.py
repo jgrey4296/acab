@@ -1,8 +1,10 @@
 import logging as root_logger
 
-from acab.abstract.value import AcabValue
-from acab.abstract.node import AcabNode
-from acab.abstract.type_base import TypeInstance, ATOM
+from acab.abstract.core.value import AcabValue
+from acab.abstract.core.type_base import TypeInstance, ATOM
+
+from acab.abstract.data.node import AcabNode
+
 from acab.modules.analysis.typing import type_exceptions as te
 
 logging = root_logger.getLogger(__name__)

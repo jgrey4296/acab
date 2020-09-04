@@ -3,8 +3,9 @@ import pyparsing as pp
 
 from acab.config import AcabConfig
 
+from acab.abstract.core.type_base import TypeInstance
+
 from acab.abstract.parsing.util import s
-from acab.abstract.type_base import TypeInstance
 
 logging = root_logger.getLogger(__name__)
 

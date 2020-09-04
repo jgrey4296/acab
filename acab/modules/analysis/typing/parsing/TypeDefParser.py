@@ -1,14 +1,17 @@
 import pyparsing as pp
 import logging as root_logger
 
+from acab.abstract.core.sentence import Sentence
+from acab.abstract.parsing import util as PU
+
 from acab.modules.analysis.typing.values.type_definition import TypeDefinition, SumTypeDefinition
 from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition
-from acab.abstract.parsing import util as PU
-from acab.abstract.sentence import Sentence
 from acab.modules.analysis.typing import util as TYU
+
 from acab.config import AcabConfig
 
 from . import util as TU
+
 logging = root_logger.getLogger(__name__)
 
 util = AcabConfig.Get()

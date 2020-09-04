@@ -50,15 +50,18 @@ import logging as root_logger
 from functools import partial
 from uuid import uuid1
 
-from acab.abstract.value import AcabStatement
-from acab.abstract.sentence import Sentence
-from acab.abstract.trie.trie import Trie
-from acab.abstract.action import ActionOp
-from acab.abstract import type_base as TB
+from acab.abstract.core.value import AcabStatement
+from acab.abstract.core.sentence import Sentence
+from acab.abstract.core import type_base as TB
+
+from acab.abstract.data.trie import Trie
+
+from acab.abstract.rule.action import ActionOp
 
 from . import type_exceptions as te
+
 # MUST BE FULL PATH otherwise type instances are built twice for some reason
-# from . import util as TU
+# NOT : from . import util as TU
 from acab.modules.analysis.typing import util as TU
 
 from .nodes.operator_def_node import OperatorDefTrieNode
@@ -69,7 +72,6 @@ from .nodes.sum_def_node import SumTypeDefTrieNode
 
 from .values.operator_definition import OperatorDefinition
 from .values import type_definition as TD
-
 
 logging = root_logger.getLogger(__name__)
 
@@ -129,6 +131,7 @@ class TypeChecker(ActionOp):
         # propagate known variable types
         dummy = [x.propagate() for x in self._variables.get_nodes(lambda x: x.type_instance != TB.ATOM)]
         # get all known declared types
+        # TODO: get references as well
         val_queue = {y for y in self._declarations.get_nodes(lambda x: x.type_instance != TB.ATOM)}
         return val_queue
 
@@ -193,6 +196,8 @@ class TypeChecker(ActionOp):
             dealt_with.add(head)
 
             # check the head
+            # TODO : for operators (eg: transforms),
+            # make operators an entire node, with their path to the definition accessible
             head_type = self._definitions.query(head.type_instance.path)
             if head_type is None:
                 raise te.TypeUndefinedException(head.type_instance, head)
@@ -222,10 +227,10 @@ class TypeChecker(ActionOp):
             assert(isinstance(a_def[-1], TD.TypeDefinition))
             if isinstance(a_def[-1], OperatorDefinition):
                 self._definitions.add(a_def, a_def[-1],
-                                                 leaf_override=OperatorDefTrieNode)
+                                      leaf_override=OperatorDefTrieNode)
             elif isinstance(a_def[-1], TD.SumTypeDefinition):
                 self._definitions.add(a_def, a_def[-1],
-                                                 leaf_override=SumTypeDefTrieNode)
+                                      leaf_override=SumTypeDefTrieNode)
             else:
                 self._definitions.add(a_def, a_def[-1])
 
@@ -241,7 +246,7 @@ class TypeChecker(ActionOp):
         Statements are treated as having their own local context.
         So add it, type check it, and then clear any variable associations
         """
-        sentences = statement.to_local_sentences()
+        sentences = statement.to_abstract_sentences()
 
         for sen in sentences:
             self.add_assertion(sen)
