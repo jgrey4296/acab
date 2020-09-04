@@ -13,7 +13,7 @@ a.pipeline(::Pipeline):
    a.third.layer
 end
 """
-from acab.abstract.rule.ruleimport Rule
+from acab.abstract.rule.rule import Rule
 from acab.abstract.rule.production_operator import ProductionOperator
 from acab.abstract.printing import util as PrU
 from acab.config import AcabConfig

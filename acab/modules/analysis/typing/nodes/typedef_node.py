@@ -1,9 +1,9 @@
 import logging as root_logger
 
-from acab.abstract.core.node import AcabNode
 from acab.abstract.core.type_base import TypeInstance
 
 from acab.abstract.data.trie import Trie
+from acab.abstract.data.node import AcabNode
 
 from acab.modules.analysis.typing import type_exceptions as te
 from acab.modules.analysis.typing.values.type_definition import TypeDefinition

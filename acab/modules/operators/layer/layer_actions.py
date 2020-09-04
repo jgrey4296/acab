@@ -1,7 +1,7 @@
-from acab.abstract.core.action import ActionOp
 from acab.abstract.data.contexts import Contexts
 from acab.abstract.rule.transform import TransformOp
 from acab.abstract.rule.rule import Rule
+from acab.abstract.rule.action import ActionOp
 
 
 class LayerRunRules(TransformOp):

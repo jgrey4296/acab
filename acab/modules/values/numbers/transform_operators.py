@@ -2,7 +2,7 @@ from random import uniform
 from math import floor
 from re import sub
 
-from acab.abstract.transform import TransformOp
+from acab.abstract.rule.transform import TransformOp
 
 
 class AddOp(TransformOp):

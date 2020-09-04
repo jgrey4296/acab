@@ -118,17 +118,17 @@ class TrieWM(WorkingMemory):
         try:
             FP.HOTLOAD_VALUES << pt.query("value.*")
         except Exception:
-            logging.warning("No values loaded into DSL")
+            logging.debug("No values loaded into DSL")
 
         try:
             FP.HOTLOAD_ANNOTATIONS << pt.query("annotation.*")
         except Exception:
-            logging.warning("No annotations loaded into DSL")
+            logging.debug("No annotations loaded into DSL")
 
         try:
             QP.HOTLOAD_QUERY_ANNOTATIONS << pt.query("query.annotation.*")
         except Exception:
-            logging.warning("No query annotations loaded into DSL")
+            logging.debug("No query annotations loaded into DSL")
 
         QP.HOTLOAD_QUERY_OP << pt.query("operator.query.*",
                                         "operator.sugar")

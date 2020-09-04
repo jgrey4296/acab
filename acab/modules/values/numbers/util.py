@@ -1,4 +1,4 @@
-from acab.abstract.type_base import TypeInstance
+from acab.abstract.core.type_base import TypeInstance
 from acab.config import AcabConfig
 import acab.abstract.printing.util as PrU
 
