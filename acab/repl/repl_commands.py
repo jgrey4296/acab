@@ -9,11 +9,12 @@ import importlib
 import logging as root_logger
 import re
 
-from acab.abstract.production_operator import ProductionOperator
-from acab.abstract.agenda import Agenda
-from acab.abstract.action import ActionOp
-from acab.abstract.rule import Rule
-from acab.abstract.layer import Layer
+from acab.abstract.rule.action import ActionOp
+from acab.abstract.rule.rule import Rule
+from acab.abstract.rule.production_operator import ProductionOperator
+
+from acab.abstract.pipeline.agenda import Agenda
+from acab.abstract.pipeline.layer import Layer
 
 logging = root_logger.getLogger(__name__)
 
