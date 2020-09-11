@@ -3,6 +3,12 @@ Contexts: A Container for mutually inclusive binding fragments
 Essentially a possibility space of rule results
 
 """
+# https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
+from typing import List, Set, Dict, Tuple, Optional, Any
+from typing import Callable, Iterator, Union, Match, AliasType
+from typing import Mapping, MutableMapping, Sequence, Iterable
+from typing import cast, ClassVar
+
 import itertools as it
 from enum import Enum
 import logging as root_logger
@@ -21,7 +27,6 @@ CONSTRAINT_S = util("Parsing.Structure", "CONSTRAINT_S")
 logging = root_logger.getLogger(__name__)
 
 CTX_OP = Enum("ctx", "collapse")
-
 
 
 class Contexts:
@@ -47,14 +52,20 @@ class Contexts:
         """
         Setup the initial context of no bindings
         """
-        # Bind Groups:: List(dict)
-        self._bind_groups = []
-        # Nodes: List(Node), where each node is a reference into the trie
-        self._nodes = []
+        # Link the context with what asked it:
+        self._query_history = []
+        self._query_fail_clause = None
+        self._query_remainder = []
+        # Bind Groups
+        self._bind_groups : List[Dict] = []
+        # Nodes
+        self._nodes : List[AcabNode] = []
         # Failures: Records true failures
-        self._failures = []
+        self._failures : List[Dict] = []
         # Queued Failures: Records failures that may potentially have fallback values
-        self._queued_failures = []
+        self._queued_failures : List[Dict] = []
+
+        # The Engine used for operator retrieval
         self._engine = engine
 
         if bindings is not None:
