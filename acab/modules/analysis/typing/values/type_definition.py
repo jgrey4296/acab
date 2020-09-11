@@ -15,6 +15,7 @@ from .acab_type import TypeStatement
 util = AcabConfig.Get()
 
 STRUCTURE_S = util("Module.Typing", "STRUCTURE_S")
+PRIMITIVE_ANNOTATION_S = util("Module.Typing", "PRIMITIVE_ANNOTATION_S")
 VALUE_TYPE_S = util("Parsing.Structure", "VALUE_TYPE_S")
 NAME_S = util("Parsing.Structure", "NAME_S")
 
@@ -50,6 +51,10 @@ class TypeDefinition(TypeStatement):
 
         return path_eq and structure_len and structure_eq
 
+
+    def set_primitive(self):
+        self.set_data({'primitive_annotation': PRIMITIVE_ANNOTATION_S})
+        return self
 
     @property
     def structure(self):
@@ -160,8 +165,12 @@ class SumTypeDefinition(TypeDefinition):
 def build_primitive_definitions():
     prim_defs = []
     for x in TypeInstance.Primitives:
-        prim_path = Sentence([AcabValue(y.name) for y in x])
-        primitive = prim_path.attach_statement(TypeDefinition([]))
+        prim_path = Sentence.build([y.name for y in x])
+        primitive = prim_path.attach_statement(TypeDefinition([]).set_primitive())
+
         prim_defs.append(primitive)
 
     return prim_defs
+
+
+PrU.register_constraint('primitive_annotation')

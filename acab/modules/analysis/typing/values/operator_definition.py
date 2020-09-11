@@ -26,6 +26,10 @@ class OperatorDefinition(TypeDefinition):
         return hash(str(self))
 
 
+    def pprint(self, opts=None):
+        return "{}: (::λ) {}".format(self._name,
+                                     self._structure[0].pprint())
+
     def pprint_body(self, val):
         assert(len(self.structure) == 1)
         body = self.structure[0].pprint()

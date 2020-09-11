@@ -62,6 +62,7 @@ from . import type_exceptions as te
 
 # MUST BE FULL PATH otherwise type instances are built twice for some reason
 # NOT : from . import util as TU
+# from . import util as TU
 from acab.modules.analysis.typing import util as TU
 
 from .nodes.operator_def_node import OperatorDefTrieNode
@@ -71,6 +72,7 @@ from .nodes.var_type_node import VarTypeTrieNode
 from .nodes.sum_def_node import SumTypeDefTrieNode
 
 from .values.operator_definition import OperatorDefinition
+from .values.type_definition import TypeDefinition, SumTypeDefinition
 from .values import type_definition as TD
 
 logging = root_logger.getLogger(__name__)
@@ -92,8 +94,19 @@ class TypeChecker(ActionOp):
 
     def __str__(self):
         output = []
-        output.append("Defs   : {}".format(str(self._definitions).replace('\n', ' ')))
-        output.append("Decs   : {}".format(self._declarations.print_trie(join_str=".").replace('\n', ' ')))
+        structures = self._definitions.to_sentences(leaf_predicate=lambda x: isinstance(x, TypeDefTrieNode))
+        sum_types = self._definitions.to_sentences(leaf_predicate=lambda x: isinstance(x, SumTypeDefTrieNode))
+        funcs = self._definitions.to_sentences(leaf_predicate=lambda x: isinstance(x, OperatorDefTrieNode))
+
+
+        if bool(structures):
+            output.append("Structures: \n\t{}\n".format("\t".join(sorted([x.pprint() for x in structures]))))
+        if bool(sum_types):
+            output.append("Sum Types: \n\t{}\n".format("\t".join(sorted([x.pprint() for x in sum_types]))))
+        if bool(funcs):
+            output.append("Operators: \n\t{}\n".format("\t".join(sorted([x.pprint() for x in funcs]))))
+        # output.append("Defs   : {}".format(str(self._definitions).replace('\n', ' ')))
+        output.append("Decs   : {}".format(self._declarations.print_trie().replace('\n', ' ')))
         output.append("Vars   : {}".format(str(self._variables).replace('\n', ' ')))
 
         return "\n".join(output)
