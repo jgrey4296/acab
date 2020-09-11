@@ -1,5 +1,6 @@
 """ The Core Trie Data Structure base """
 import logging as root_logger
+from copy import deepcopy
 
 from acab.config import AcabConfig
 
@@ -32,13 +33,16 @@ FALLBACK_S = util("Parsing.Structure", "FALLBACK_S")
 
 class TrieWM(WorkingMemory):
     """ A Trie based working memory"""
+    # TODO set default semantics class
 
     def __init__(self, init=None):
         """ init is a string of assertions to start the fact base with """
+        # TODO enable passing of starting node semantics
         super().__init__(init)
         self._internal_trie = Trie(FactNode)
-
-        self._last_node = self._internal_trie._root
+        # parser : PyParsing.ParserElement
+        self._main_parser = None
+        self._query_parser = None
 
         if init is not None:
             self.add(init)
@@ -234,6 +238,11 @@ class TrieWM(WorkingMemory):
                 break
 
         return contexts
+        # At this point, parser is constructed, and will not change again
+        # freeze the parser with Deep Copy
+        # This enables having multiple working memories with non-interacting parsers
+        self._main_parser = deepcopy(TotalP.parse_point)
+        self._query_parser = deepcopy(QP.parse_point)
 
 
     def to_sentences(self):
