@@ -73,6 +73,7 @@ class ActionTests(unittest.TestCase):
         actions(data, self.e)
         self.assertTrue(self.e.query("a.b.blah?"))
 
+
     def test_run_bound_retract_action(self):
         data = {"blah" : "bloo"}
         actions = AP.parseString("λA.ActionAdd ~a.$blah.c")

@@ -45,6 +45,7 @@ class Rule(ProductionContainer):
         assert(isinstance(ctxs, list))
         assert(all([isinstance(x, dict) for x in ctxs]))
         assert(all([x.value in y for x in self._params for y in ctxs]))
+        # TODO extract semantics
         logging.info("Running Rule: {}".format(self._name))
         query_result = [{}]
         if ctxs is not None and bool(ctxs):

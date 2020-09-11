@@ -58,6 +58,10 @@ class TrieEngine(Engine):
 
 
     def register_ops(self, sentences):
+        """
+        Take a list of tuples: [(Sentence, Operator)], and add
+        the operators as the leaf of the sentence
+        """
         assert(isinstance(sentences, list))
         assert(all([isinstance(x, (Sentence, str)) for x,y in sentences]))
         assert(all([isinstance(y, ProductionOperator) for x,y in sentences]))

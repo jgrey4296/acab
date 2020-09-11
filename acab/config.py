@@ -53,10 +53,10 @@ class AcabConfig:
         """
         Get a value from the config
         """
-        try:
-            value = self._config[section][key]
-        except KeyError as e:
-            breakpoint()
+        # try:
+        value = self._config[section][key]
+        # except KeyError as e:
+            # breakpoint()
 
         if action in AcabConfig.actions:
             value = AcabConfig.actions[action](value)

@@ -62,6 +62,7 @@ class Pipeline(Rule):
         """ Run this pipeline on the given engine for a tick """
         results = super(Pipeline, self).__call__(engine)
 
+        # TODO extract semantics
         # Run pipeline actions
         output = []
 

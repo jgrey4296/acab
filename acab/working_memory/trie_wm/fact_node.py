@@ -58,8 +58,10 @@ class FactNode(AcabNode):
             return self._data[WMU.OPERATOR_S]
 
     def insert(self, fact):
-        """ Insert A Node as a Child of this Node """
-        # TODO factor these semantics elsewhere?
+        """ Insert A Node as a Child of this Node
+        mutate object, return new node
+        """
+        # TODO refactor semantics elsewhere
         assert(isinstance(fact, AcabValue))
         # deal with exclusion
         if fact in self:
@@ -83,6 +85,7 @@ class FactNode(AcabNode):
 
     def get(self, fact):
         """ Retrieve a Node from this Node """
+        # TODO extract semantics
         assert(isinstance(fact, AcabValue))
         potential = None
         operator = None
@@ -96,7 +99,10 @@ class FactNode(AcabNode):
         return potential
 
     def delete_node(self, fact):
-        """ Remove a Node from this Node """
+        """ Remove a Node from this Node
+        mutate object
+        """
+        # TODO extract semantics
         assert(isinstance(fact, AcabValue))
         if self.remove_child(fact):
             self._set_dirty_chain()

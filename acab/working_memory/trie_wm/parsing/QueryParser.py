@@ -125,6 +125,6 @@ query_statement.setName("QueryDefinition")
 parse_point = clauses
 
 # Main parser:
-def parseString(in_string):
+def parseString(in_string, parse_point=parse_point):
     """ .a.b(>20)!d.$X, ... -> Query """
     return parse_point.parseString(in_string)[0][1]

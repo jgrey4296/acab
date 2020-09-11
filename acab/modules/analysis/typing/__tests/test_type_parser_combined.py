@@ -107,6 +107,8 @@ class TypingCombinedTests(unittest.TestCase):
 
         self.tc.validate()
 
+        # TODO verify
+
 
     def test_get_known_typed_nodes(self):
         """ a.$b(::a), a.$c """
@@ -797,14 +799,14 @@ class TypingCombinedTests(unittest.TestCase):
         self.tc.add_definition(*op_def)
 
         #Add an operation use
-        transform = TP.parseString("λoperator.transform.n_ary.format $a $b -> $c")
+        transform = TP.parseString("λoperator.transform.format $a $b -> $c")
 
         self.tc.add_assertion(*transform.to_abstract_sentences())
 
         self.tc.validate()
         breakpoint()
 
-
+        # TODO verify
         print(self.tc)
 
 
@@ -826,6 +828,7 @@ class TypingCombinedTests(unittest.TestCase):
 
         self.tc.validate()
 
+        # TODO verify
 
 
     @unittest.skip("waiting on local structure unifying type params")
@@ -884,6 +887,8 @@ class TypingCombinedTests(unittest.TestCase):
         self.tc.validate()
 
         result = self.tc.query(S("missing"))
+
+        # TODO verify
 
 
 

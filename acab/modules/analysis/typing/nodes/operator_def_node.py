@@ -84,6 +84,7 @@ class OperatorDefTrieNode(TypeDefTrieNode):
                     newly_typed.append(the_use.unify_types(_type))
                 # refine the type of the operator at head
                 func_name = match_group[0][0]._data[util.OP_DEF_S]._func_name
+                # TODO update this
                 match_group[0][1]._data[util.OPERATOR_S].__refine_op_func(func_name)
                 continue
 

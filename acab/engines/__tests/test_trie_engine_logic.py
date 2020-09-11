@@ -3,6 +3,7 @@ import logging
 from os.path import join, isfile, exists, isdir
 from os.path import split, splitext, expanduser, abspath
 from os import listdir
+import timeit
 
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")

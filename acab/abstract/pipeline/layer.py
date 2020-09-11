@@ -20,6 +20,7 @@ a.layer(::Layer):
     + agenda
 end
 
+# TODO specify working memory?
 """
 import logging as root_logger
 

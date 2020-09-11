@@ -36,9 +36,9 @@ file_component.setName("FileComponent")
 parse_point = PU.file_cruft +  file_total.ignore(PU.COMMENT) + PU.file_cruft
 # parse_point = PU.file_cruft +  file_total + PU.file_cruft
 
-def parseString(in_string):
+def parseString(in_string, parse_point=parse_point):
     assert(isinstance(in_string, str))
     return parse_point.parseString(in_string)[:]
 
-def parseFile(f):
+def parseFile(f, parse_point=parse_point):
     return parse_point.parseFile(f, parseAll=True)

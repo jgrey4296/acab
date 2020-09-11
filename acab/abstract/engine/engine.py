@@ -33,12 +33,16 @@ logging = root_logger.getLogger(__name__)
 class Engine:
     """ The Abstract class of a production system engine. """
 
-    def __init__(self, wm_constructor, modules=None, path=None, init=None):
+    def __init__(self, wm_constructor, op_wm_constructor=None, modules=None, path=None, init=None):
         assert(callable(wm_constructor))
+
+        if op_wm_constructor = None:
+            op_wm_constructor=wm_constructor
 
         # Blocks engine use until build_DSL has been called
         self._initialised = False
 
+        # TODO: enable separated working memories for separate layers
         self.__wm_constructor = wm_constructor
 
         self._working_memory = wm_constructor(init)

@@ -68,6 +68,8 @@ class TypeDefTrieNode(AcabNode):
         """ Given an instance trie node, type check / infer it
         against self's description of a type.
         returning a list of nodes that have been inferred
+
+        ie: check IS against SHOULD (u_t v self)
         """
         assert(callable(create_var))
         assert(isinstance(usage_trie, TypeAssignmentTrieNode)), breakpoint()

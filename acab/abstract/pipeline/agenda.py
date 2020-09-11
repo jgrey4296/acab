@@ -46,12 +46,14 @@ class Agenda(Rule):
         assert(isinstance(ctxs, list))
         agenda_settings = super(Agenda, self).__call__(ctxs=ctxs, engine=engine)
 
+        # TODO extract semantics
         assert(len(agenda_settings) == 1)
         settings = agenda_settings[0][0]
 
         # Enact agenda
         resulting_ctxs = self._action(settings, engine)
         return resulting_ctxs[0][Agenda.RETURN_NAME_S]
+
 
 
 # Utility construction function for parser
@@ -81,5 +83,3 @@ def make_agenda(toks):
     the_agenda = Agenda(query=c, transform=t, action=a)
 
     return  (the_agenda.type, the_agenda)
-
-
