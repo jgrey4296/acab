@@ -2,11 +2,11 @@
 The abstract form of a working memory
 
 Working Memory is responsible for the core system capabilities.
-It provides an ontology structure, parsers for that structure,
-and integrates modules into those parsers.
+It provides an ontology structure, a base parser for that structure,
+and integrates dsl fragments into that base.
 
 The canonical working memory is the Trie_WM.
-It provides an Exclusion Logic Trie data structure,
+It uses an Exclusion Logic Semantics on a Trie data structure,
 Parsers to define sentences and rules in that data structure,
 and can load modules to extend its capabilities.
 
@@ -39,6 +39,8 @@ class WorkingMemory:
         # Listeners are treated as a query *bag*
         self._listeners = set()
         self._listener_threshold = Fraction(1,2)
+        # TODO : initialise this
+        self._node_semantics = None
 
 
     def __str__(self):
@@ -73,6 +75,7 @@ class WorkingMemory:
     def breakpoint(self):
         # TODO: add more listener options: pre, on and post
         breakpoint()
+
 
     def to_sentences(self):
         return NotImplementedError()

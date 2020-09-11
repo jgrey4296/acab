@@ -59,31 +59,26 @@ class TrieWM(WorkingMemory):
             raise AcabOperatorException("Incorrect Eq arg: {}".format(type(other)))
 
 
-    def add(self, data, leaf=None):
+    def add(self, data, leaf=None, semantics=None):
         """ Assert multiple facts from a single string """
         assertions = None
         if isinstance(data, str):
-            assertions = TotalP.parseString(data)
+            assertions = TotalP.parseString(data, self._main_parser)
         elif isinstance(data, Sentence):
             assertions = [data]
         else:
             raise AcabParseException("Unrecognised addition target: {}".format(type(data)))
 
-        assert(isinstance(assertions, list))
-        assert(all([isinstance(x, Sentence) for x in assertions]))
+        if len(assertions) == 1 and leaf:
+            assertions = [assertions[0].attach_statement(leaf)]
 
-        for x in assertions:
-            if NEGATION_S in x._data and x._data[NEGATION_S]:
-                self._retract_sentence(x)
-            else:
-                if len(assertions) == 1 and leaf:
-                    x = x.attach_statement(leaf)
-                self._assert_sentence(x)
+        return semantics.add(self._internal_trie, assertions)
+
 
     def query(self, query, ctxs=None, engine=None):
         """ Query a string, return a Contexts """
         if isinstance(query, str):
-            query = QP.parseString(query)
+            query = QP.parseString(query, self._query_parser)
         elif isinstance(query, Sentence):
             query = Query([query])
         if not isinstance(query, Query):
@@ -148,96 +143,6 @@ class TrieWM(WorkingMemory):
 
         TotalP.HOTLOAD_STATEMENTS << pt.query("statement.*")
 
-
-    def _assert_sentence(self, sen):
-        """ Assert a (concrete) sentence of chained facts """
-        assert (isinstance(sen, Sentence)), sen
-        if self.score_listener(sen.words):
-            self.breakpoint()
-
-        self._clear_last_node()
-        for word in sen:
-            self._last_node = self._last_node.insert(word)
-
-        self._last_node._set_dirty_chain()
-
-    def _retract_sentence(self, sen):
-        """ Retract everything after the end of a (concrete) sentence """
-        assert(isinstance(sen, Sentence))
-        if self.score_listener(sen.words):
-            self.breakpoint()
-
-        # go down to the child, and remove it
-        self._clear_last_node()
-        fact_list = sen.words[:]
-        last_in_list = fact_list.pop()
-
-        for node in fact_list:
-            self._last_node = self._last_node.get(node)
-            if self._last_node is None:
-                return
-
-        self._last_node.delete_node(last_in_list)
-
-    def _query_sentence(self, query, ctxs=None, engine=None):
-        """ Query a TrieQuery instance """
-        assert(isinstance(query, (Query, Sentence)))
-        should_listen = False
-        if isinstance(query, Sentence):
-            should_listen = self.score_listener(query.words)
-        else:
-            should_listen = any([self.score_listener(x.words) for x in query.clauses])
-
-        if should_listen:
-            self.breakpoint()
-
-        self._clear_last_node()
-        initial_context = Contexts(start_node=self._internal_trie.root,
-                                   bindings=ctxs, engine=engine)
-        return self._internal_query(query, initial_context)
-
-
-    def _clear_last_node(self):
-        """ Reset internal memory to point to the root.
-        currently only used for retraction
-        """
-        self._last_node = self._internal_trie._root
-
-    def _internal_query(self, query, ctxs):
-        """ Go down the trie, running each defined test,
-        annotating bind groups as necessary
-        """
-        contexts = ctxs
-        pos, neg = query.split_clauses()
-
-        logging.debug("Testing clauses: {} {}".format(len(pos), len(neg)))
-        self._test_clauses(contexts, pos)
-        self._test_clauses(contexts, neg, is_negative=True)
-
-        return contexts
-
-    def _test_clauses(self, contexts, clauses, is_negative=False):
-        for clause in clauses:
-            self._internal_trie.contextual_query(clause, contexts)
-
-            if is_negative:
-                contexts.invert()
-
-            # add all failures back in, if theres a default value
-            if FALLBACK_S in clause._data and bool(clause._data[FALLBACK_S]):
-                contexts.promote_failures(clause._data[FALLBACK_S])
-            else:
-                contexts.demote_failures()
-
-            # If No successful clauses, break
-            if not bool(contexts):
-                clause_type = "positive"
-                if is_negative:
-                    clause_type = "negative"
-                logging.debug("A {} clause has no successful tests".format(clause_type))
-                break
-
-        return contexts
         # At this point, parser is constructed, and will not change again
         # freeze the parser with Deep Copy
         # This enables having multiple working memories with non-interacting parsers
@@ -245,5 +150,5 @@ class TrieWM(WorkingMemory):
         self._query_parser = deepcopy(QP.parse_point)
 
 
-    def to_sentences(self):
-        return self._internal_trie.to_sentences()
+    def to_sentences(self, semantics):
+        return semantics.down(self._internal_trie)

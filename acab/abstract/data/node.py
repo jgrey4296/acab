@@ -2,6 +2,7 @@
 AcabNode: The internal type which knowledge base data structures use.
 
 """
+
 from re import search
 from uuid import uuid1
 import weakref
@@ -43,6 +44,7 @@ class AcabNode:
         self._data = {}
 
         if data is not None:
+            logging.warning("Setting data of Node: {}".format(data))
             self._data.update(data)
 
     def __str__(self):
@@ -63,7 +65,7 @@ class AcabNode:
         return bool(self._children)
 
     def __contains__(self, v):
-        return self.has_child(v)
+        raise DeprecationWarning("Deprecated to force ability to specify semantics. Use has_child")
 
     def __iter__(self):
         return iter(self._children.values())
@@ -88,29 +90,42 @@ class AcabNode:
         return self._children.values()
 
 
-    def add_child(self, node):
-        """ Add a node as a child of this node """
+    def add_child(self, node, semantics=None):
+        """ Add a node as a child of this node
+        mutate object
+        """
         assert(isinstance(node, AcabNode))
+        if semantics is not None:
+            return semantics.node_add(node)
+
         self._children[node.name] = node
         return node
 
-    def get_child(self, node):
-        """" Get a node using a string, or a node itself """
-        if isinstance(node, str):
+    def get_child(self, node, semantics=None):
+        """ Get a node using a string, or a node itself """
+        if semantics is not None:
+            return semantics.node_get(self, node)
+        elif isinstance(node, str):
             return self._children[node]
         else:
             return self._children[node.name]
 
-    def has_child(self, node):
+    def has_child(self, node, semantics=None):
         """ Question if this node has a particular child """
-        if isinstance(node, str):
+        if semantics is not None:
+            return semantics.node_contain(self, node)
+        elif isinstance(node, str):
             return node in self._children
         else:
             return node.name in self._children
 
-    def remove_child(self, node):
-        """ Delete a child from this node, return success state """
-        if node in self:
+    def remove_child(self, node, semantics=None):
+        """ Delete a child from this node, return success state
+        mutate object
+        """
+        if semantics is not None:
+            return semantics.node_delete(self, node)
+        elif node in self:
             if isinstance(node, str):
                 del self._children[node]
             else:
@@ -120,12 +135,16 @@ class AcabNode:
         return False
 
     def clear_children(self):
-        """ Remove all children from this node """
+        """ Remove all children from this node
+        mutate object
+        """
         self._children = {}
 
 
     def set_parent(self, parent):
-        """ Set the parent node to this node """
+        """ Set the parent node to this node
+        mutate object
+        """
         assert(isinstance(parent, AcabNode))
         self._parent = weakref.ref(parent)
 
@@ -140,34 +159,25 @@ class AcabNode:
 
 
     def bind(self, bindings):
-        """ Return a copy that has applied given bindings to its value"""
-        if not self.value._data[BIND_S]:
-            return self.copy()
-        else:
-            copied = self.copy()
-            copied._bind_to_value(bindings)
-            return copied
+        """ Return a copy that has applied given bindings to its value
+        TODO : deprecate
+        """
+        raise DeprecationWarning()
 
     def _bind_to_value(self, data):
         """ Set the Node's value to be one retrieved
         from passed in bindings """
-        assert(self.value in data)
-        assert(BIND_S in self.value._data and self.value._data[BIND_S])
-        self._value = data[self.value]
-        assert(isinstance(self._value, AcabValue))
+        raise DeprecationWarning()
 
     def copy(self):
-        return deepcopy(self)
-
+        raise DeprecationWarning()
 
     def pprint(self, opts=None, **kwargs):
         return self.value.pprint(opts, **kwargs)
 
 
     def set_data(self, data):
-        if data is not None:
-            self._data.update(data)
-
+        raise DeprecationWarning()
 
     def unify(self, node):
         """

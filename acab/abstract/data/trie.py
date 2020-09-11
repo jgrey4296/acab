@@ -5,6 +5,7 @@ import logging as root_logger
 from weakref import WeakValueDictionary, ref, proxy
 from re import search
 
+from acab.abstract.data.structure import DataStructure
 from acab.abstract.printing import util as PrU
 from acab.error.acab_base_exception import AcabBaseException
 from acab.abstract.core.sentence import Sentence
@@ -25,7 +26,7 @@ AT_BIND_S = util("Parsing.Structure", "AT_BIND_S")
 logging = root_logger.getLogger(__name__)
 
 
-class Trie:
+class Trie(DataStructure):
 
     def __init__(self, node_type=AcabNode):
         self._root = node_type.Root()
@@ -48,42 +49,15 @@ class Trie:
         return self._root
 
 
-    def add(self, path, data=None, update=None, u_data=None, leaf_override=None):
+    def add(self, path, data=None, semantics=None):
         """ Add the data to the leaf defined by path,
         updating each node along the way using update and u_data
         use leaf_override to add more specific leaves
         """
-        if leaf_override is None:
-            leaf_override = self._node_type
-        assert(issubclass(leaf_override, self._node_type))
+        return semantics.add(self, path, leaf_data=data)
 
-        wrapped_path = [self._node_type(x) for x in path[:-1]]
-        wrapped_path.append(leaf_override(path[-1]))
-
-
-        current = self._root
-        current_path = []
-        for x, y in zip(wrapped_path, path):
-            current_path.append(x)
-            if current.has_child(x):
-                current = current.get_child(x)
-                logging.debug("Trie: Retrieved: {}".format(current))
-            else:
-                current = current.add_child(x)
-                logging.debug("Trie: Added: {}".format(current))
-                self._all_nodes[current._uuid] = current
-            if update is not None:
-                update(current, y, current_path, u_data)
-
-        current.set_data(data)
-
-        return current
-
-    def remove(self, path):
-        query_result = self.query(path[:-1])
-        if query_result is not None:
-            query_result.remove_child(path[-1])
-
+    def remove(self, path, semantics=None):
+        return semantics.delete(self, path)
 
     def get_nodes(self, pred=None, explore=None):
         assert(pred is None or callable(pred))
@@ -118,7 +92,7 @@ class Trie:
         output = self.to_sentences()
         return "\n".join(sorted([x.pprint(def_op) for x in output]))
 
-    def to_sentences(self):
+    def to_sentences(self, leaf_predicate=None):
         output = []
         queue = [([], x) for x in self._root]
 
@@ -126,9 +100,9 @@ class Trie:
             curr_path, current_node = queue.pop(0)
             total_path = curr_path + [current_node.value]
             if not bool(current_node) or isinstance(current_node.value, AcabStatement):
-                # if leaf or statement
-                as_sentence = Sentence(total_path)
-                output.append(as_sentence)
+                if leaf_predicate is None or leaf_predicate(current_node):
+                    as_sentence = Sentence(total_path)
+                    output.append(as_sentence)
 
             if bool(current_node):
                 queue += [(total_path, x) for x in current_node]
@@ -136,11 +110,12 @@ class Trie:
         return output
 
 
-    def query(self, path):
+    def query(self, path, semantics=None):
         """ Simple Query: Given a basic path,
         either return the leaf, or None """
         current = self._root
         for x in path:
+            # TODO extract query semantics
             logging.debug("Searching {} for: {}".format(str(current), x))
             if current.has_child(x):
                 current = current.get_child(x)
@@ -151,11 +126,13 @@ class Trie:
     def query_with_remainder(self, path):
         """
         Query the trie, getting the best leaf along the path
+        TODO rename Least Upper Bound?
         eg: For Trie(a.b.c.d.e).query_longest_match(a.b.c.q) -> (c, d.e)
         """
         current = self._root
         queue = [x for x in path]
         while bool(queue):
+            # TODO extract query semantics
             current = queue.pop(0)
             logging.debug("Searching {} for: {}".format(str(current), x))
             if current.has_child(x):
@@ -192,7 +169,7 @@ class Trie:
                 continue
 
             # test each active alternative
-            annotations = self._continue_query(word, contexts)
+            annotations = _test_word(word, contexts)
 
             if CTX_OP.collapse in annotations and word.is_var:
                 collapse_on.add(word.name)
@@ -203,32 +180,6 @@ class Trie:
             contexts.collapse(collapse_on)
 
         return contexts
-
-    def _continue_query(self, query_word, query_context):
-        """ query word, with a sequence of tests,
-        in all available bind groups, BFS manner """
-        assert(not query_word.is_at_var)
-        engine = query_context._engine
-        # TODO: validate on activate context too
-        alphas, betas, regexs, annotations = validate_and_split_constraints(query_word, engine=engine)
-        callable_annotations = [x for x in annotations if hasattr(x, "__call__")]
-        data_set = {x : d for x,d in enumerate(query_context.pairs())}
-        pairs  = enumerate(query_context.pairs())
-        query_context.clear()
-
-
-        potentials = [(i, d[0], passing) for i,d in pairs for passing in retrieve_potentials(query_word, d)]
-        # Apply Tests
-        # TODO: test type instance if not ATOM
-        passing = [match_regexs(n, regexs, d, i) for i,d,n in potentials
-                   if test_alphas(n, alphas, d, engine=engine)
-                   and test_betas(n, betas, d, engine=engine)
-                   and test_annotations(n, callable_annotations, d, engine)]
-
-        to_add = [add_var_to_context(i, query_word, d, n) for i,d,n in passing if n is not None]
-
-        query_context.append(*to_add, fail_dict=data_set)
-        return annotations
 
 
     def match_as_pattern(self, possible_matches, match_func):
@@ -268,6 +219,7 @@ class Trie:
 ####################
 # Utilities
 def retrieve_potentials(query_word, pair):
+    # TODO extract semantics
     potentials = []
     data, node = pair
     # Handle query on var
@@ -297,7 +249,7 @@ def add_var_to_context(i, query_word, new_data, passing_node):
     return (i, new_data, passing_node)
 
 
-def match_regexs(node, regexs, data, i):
+def run_subbinds(node, regexs, data, i):
     # TODO Factor this into queryop subbind?
     invalidated = False
     new_data = {}
@@ -345,6 +297,33 @@ def validate_and_split_constraints(word, ctx=None, engine=None):
             betas.append(c)
 
     return (alphas, betas, sub_binds, others)
+
+def _test_word(query_word, query_context):
+    """ query word, with a sequence of tests,
+    in all available bind groups, BFS manner
+    """
+    assert(not query_word.is_at_var)
+    engine = query_context._engine
+    # TODO: validate on activate context too
+    alphas, betas, regexs, annotations = validate_and_split_constraints(query_word, engine=engine)
+    callable_annotations = [x for x in annotations if hasattr(x, "__call__")]
+    data_set = {x : d for x,d in enumerate(query_context.pairs())}
+    pairs  = enumerate(query_context.pairs())
+    query_context.clear()
+
+
+    potentials = [(i, d[0], passing) for i,d in pairs for passing in retrieve_potentials(query_word, d)]
+    # Apply Tests
+    # TODO: test type instance if not ATOM
+    passing = [run_subbinds(n, regexs, d, i) for i,d,n in potentials
+               if test_alphas(n, alphas, d, engine=engine)
+               and test_betas(n, betas, d, engine=engine)
+               and test_annotations(n, callable_annotations, d, engine)]
+
+    to_add = [add_var_to_context(i, query_word, d, n) for i,d,n in passing if n is not None]
+
+    query_context.append(*to_add, fail_dict=data_set)
+    return annotations
 
 
 def test_alphas(node, comps, data=None, engine=None):
