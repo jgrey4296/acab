@@ -53,6 +53,9 @@ class Sentence(AcabValue):
     def __len__(self):
         return len(self.words)
 
+    @property
+    def value(self):
+        return self
 
     @property
     def words(self):
@@ -70,6 +73,9 @@ class Sentence(AcabValue):
 
 
     def clear(self):
+        """
+        return modified copy
+        """
         self_copy = self.copy()
         self_copy._value = []
         return self_copy
@@ -78,6 +84,7 @@ class Sentence(AcabValue):
         """ Given a dictionary of bindings, reify the sentence,
         using those bindings.
         ie: .a.b.$x with {x: blah} => .a.b.blah
+        return modified copy
         """
         assert(isinstance(bindings, dict))
         output = []
@@ -121,6 +128,7 @@ class Sentence(AcabValue):
     def add(self, *other):
         """ Return a copy of the sentence, with words added to the end.
         This can flatten entire sentences onto the end
+        return modified copy
         """
         words = self.words
         for sen in other:
@@ -137,7 +145,7 @@ class Sentence(AcabValue):
         Copy the sentence,
         Replace the leaf with the provided statement,
         Name the statement to the name of the former leaf
-
+        return modified copy
         """
         assert(isinstance(value, AcabValue))
         last = self.words[-1]
@@ -159,7 +167,7 @@ class Sentence(AcabValue):
         The inverse of attach_statement.
         Copy the sentence,
         Reduce the leaf of a sentence to a simple value
-        Return the copy, and the statement
+        Return modified copy, and the statement
         """
         statements = []
 
@@ -181,6 +189,7 @@ class Sentence(AcabValue):
         return (sen_copy, statements)
 
     def verify(self):
+        """ return modified copy """
         [x.verify() for x in self.words]
 
         return self

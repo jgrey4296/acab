@@ -140,6 +140,7 @@ class AcabValue:
     def alpha_rename(self):
         """
         TODO should variables be de bruijn indexed instead?
+        return modified copy
         """
         raise NotImplementedError()
 
@@ -149,14 +150,19 @@ class AcabValue:
 
     def bind(self, bindings):
         """ Data needs to be able to bind a dictionary
-        of values to internal variables """
+        of values to internal variables
+        return modified copy
+        """
+        # TODO recurse this
         if self.value in bindings:
             return bindings[self.value]
         else:
             return self
 
     def verify(self):
-        """ Raise An Exception if this necessary """
+        """ Raise An Exception if this necessary
+        return modified copy
+        """
         assert(self._value is not None)
         value_type_tuple = tuple([AcabValue] + list(AcabValue.value_types))
         assert(isinstance(self._value, value_type_tuple))
@@ -168,7 +174,7 @@ class AcabValue:
 
     def set_data(self, data):
         """ Force a value's data to be updated,
-        Modifies, not copies
+        return modified copy
         """
         if data is not None:
             self._data.update(data)
@@ -176,11 +182,17 @@ class AcabValue:
         return self
 
     def apply_params(self, params, data=None):
+        """
+        return modified copy
+        """
         safe_params = [AcabValue.safe_make(x, data=data) for x in params]
         self._params += safe_params
         return self
 
     def apply_tags(self, tags):
+        """
+        return modified copy
+        """
         safe_tags = [x.value if isinstance(x, AcabValue) else x for x in tags]
         self._tags.update(safe_tags)
         return self
@@ -229,6 +241,9 @@ class AcabStatement(AcabValue):
 
 
     def set_path(self, sen):
+        """
+        return modified copy
+        """
         assert(isinstance(sen, AcabValue))
         self._path = sen.copy()
 
@@ -236,6 +251,13 @@ class AcabStatement(AcabValue):
 
 
     def to_abstract_sentences(self):
+        """
+        Represent a Complex Object in the verbose Core Language.
+        (ie: just Words, Sentences, Variables, and Types)
+        eg: Convert a Query "a.b(>20).c?" into a set of explicit sentences:
+        query.[a.b.c]
+        operator(λgreaterThan).[a.b].20.Bool
+        """
         raise NotImplementedError()
 
 
