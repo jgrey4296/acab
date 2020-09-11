@@ -1,0 +1,16 @@
+
+rule.first: (::ρ)
+  a.b.c?
+
+  q
+end
+
+rule.second: (::ρ)
+  a.b.d?
+  
+  w
+end
+
+
+
+
