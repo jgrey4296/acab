@@ -36,20 +36,17 @@ class ProductionOperator(AcabValue):
         raise NotImplementedError()
 
     @property
-    def op_str(self):
+    def op_path(self):
         return self._value
 
 
 class ProductionComponent(AcabValue):
     """ Pairs a an operator with some bindings """
 
-    def __init__(self, op_str, params, sugared=False, data=None, rebind=None, name=None):
-        if data is None:
-            data = {}
-
-        assert(isinstance(op_str, (Sentence, ProductionOperator)))
+    def __init__(self, op_path, params, sugared=False, data=None, rebind=None, name=None):
+        assert(isinstance(op_path, Sentence))
         assert all([isinstance(x, AcabValue) for x in params]), params
-        super().__init__(op_str, params=params, data=data, name=name, _type=TB.COMPONENT)
+        super().__init__(op_path, params=params, data=data, name=name, _type=TB.COMPONENT)
         # The value name of the result
         self._rebind = rebind
         # Sugared: Denotes whether the parse originated from a sugared operator
@@ -112,10 +109,10 @@ class ProductionComponent(AcabValue):
                 output.append(x.value)
         return output
 
-    def __refine_op_func(self, op_str):
+    def __refine_op_func(self, op_path):
         """ Replace the current op func set with a specific
         op func, used for type refinement """
-        self._value = op_str
+        raise DeprecationWarning()
 
 
     def to_abstract_sentences(self, target=None):
@@ -135,7 +132,7 @@ class ProductionComponent(AcabValue):
         if not isinstance(op, ProductionOperator) and engine is not None:
             op = engine.get_operator(op)
 
-        # TODO: should op's be able to be Components and Containers as well?
+        # TODO: op's should be able to be Components and Containers as well?
         if not isinstance(op, ProductionOperator) and engine is not None:
             raise AcabOperatorException(op)
 
