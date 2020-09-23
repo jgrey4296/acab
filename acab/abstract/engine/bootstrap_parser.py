@@ -18,6 +18,7 @@ values = a.test.location, a.test.location.*
 import logging as root_logger
 import pyparsing as pp
 
+from acab.abstract.core.sentence import Sentence
 from acab.abstract.core.value import AcabValue
 from acab.abstract.data.trie import Trie
 from acab.abstract.rule.production_operator import ProductionOperator
@@ -44,7 +45,7 @@ class BootstrapParser(Trie):
         input_list = [x for x in inputs]
         while bool(input_list):
             current = input_list.pop(0)
-            loc_string = [AcabValue(x) for x in current.split('.')]
+            loc_string = Sentence.build(current.split('.'))
             parser = input_list.pop(0)
 
             if parser is None:
