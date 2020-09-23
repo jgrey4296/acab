@@ -47,7 +47,7 @@ class Sentence(AcabValue):
 
     def __getitem__(self, i):
         if isinstance(i, slice):
-            return Sentence(self.words.__getitem__(i))
+            return Sentence(self.words.__getitem__(i), data=self._data)
         return self.words.__getitem__(i)
 
     def __len__(self):
