@@ -32,7 +32,6 @@ class ProductionOperatorTests(unittest.TestCase):
     def test_init_operator(self):
         op = PO.ProductionOperator()
         self.assertIsInstance(op, PO.ProductionOperator)
-        self.assertEqual(op.op_str, PO.ProductionOperator.__name__)
         self.assertEqual(op.type, OPERATOR)
 
     def test_component_init(self):
