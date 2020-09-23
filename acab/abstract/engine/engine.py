@@ -25,6 +25,8 @@ from acab.abstract.pipeline.agenda import Agenda
 from acab.abstract.engine.dsl_fragment import DSL_Fragment
 from acab.abstract.engine.working_memory import WorkingMemory
 
+from acab.abstract.data.trie import Trie
+
 util = AcabConfig.Get()
 
 logging = root_logger.getLogger(__name__)
@@ -33,11 +35,12 @@ logging = root_logger.getLogger(__name__)
 class Engine:
     """ The Abstract class of a production system engine. """
 
-    def __init__(self, wm_constructor, op_wm_constructor=None, modules=None, path=None, init=None):
+    def __init__(self, wm_constructor, op_constructor=None, modules=None, path=None, init=None):
         assert(callable(wm_constructor))
+        if op_constructor is None:
+            op_constructor = Trie
 
-        if op_wm_constructor = None:
-            op_wm_constructor=wm_constructor
+        assert(callable(op_constructor))
 
         # Blocks engine use until build_DSL has been called
         self._initialised = False
@@ -49,7 +52,6 @@ class Engine:
         # modules
         self._loaded_modules = set()
         self._loaded_DSL_fragments = {}
-        self._operators = wm_constructor()
 
         # TODO  update with reloadable state of working memory
         self._prior_states = []
@@ -93,7 +95,7 @@ class Engine:
     def load_module_values(self, module_sen):
         """
         Load a module, extract operators and dsl fragments from it,
-        put the operators into the working memory of operators,
+        put the operators into the operators store,
         register the dsl fragments for later use
 
         Returns a working_memory query result of the module
@@ -107,7 +109,7 @@ class Engine:
         if module_sen in self._loaded_modules:
             logging.info("Module already loaded: {}".format(module_sen))
             # TODO extract node from return context?
-            return self._operators.query(module_sen)
+            return self._working_memory.query(module_sen)
 
         # Load
         try:
@@ -125,9 +127,9 @@ class Engine:
         self._loaded_modules.add(module_sen)
         # TODO extract node from return context?
         if isinstance(module_sen, str):
-            return self._operators.query(module_sen + "?")
+            return self._working_memory.query(module_sen + "?")
         else:
-            return self._operators.query(module_sen)
+            return self._working_memory.query(module_sen)
 
     def build_DSL(self):
         """
