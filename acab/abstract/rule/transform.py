@@ -36,7 +36,7 @@ class TransformComponent(PO.ProductionComponent):
     """ Superclass of OperatorTransform. Holds an Operator """
     def to_abstract_sentences(self, target=None):
         # TODO make head a reference for type checking
-        head = AcabValue(self.op, data={'op_reference': self})
+        head = AcabValue(self.op, data={'component_reference': self})
         return [Sentence.build([head] + self._params[:] + [self._rebind])]
 
 
