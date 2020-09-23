@@ -5,7 +5,7 @@ Essentially a possibility space of rule results
 """
 # https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
 from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match, AliasType
+from typing import Callable, Iterator, Union, Match, TypeVar
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar
 
