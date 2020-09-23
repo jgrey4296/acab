@@ -1,3 +1,7 @@
+from acab.abstract.core.sentence import Sentence
+from acab.abstract.core.value import AcabValue
+from acab.abstract.data.node import AcabNode
+from acab.abstract.data.contexts import Contexts
 
 class DataStructure:
     """
@@ -5,17 +9,28 @@ class DataStructure:
     Anything that wants to use StructureSemantics has to fulfill this
 
     """
-    def __init__(self):
+    def __init__(self, semantics=None, node_type=None):
+        assert(semantics is not None)
+        if node_type is not None:
+            semantics.set_node_type(node_type)
+
         self._root = None
+        self._semantics = semantics
+
+
+    @property
+    def root(self):
+        return self._root
+
 
 
     def query(self, path : Sentence, semantics=None) -> Contexts:
         """ Simple Query: Given a basic path,
         either return the leaf, or None """
-        assert(isinstance(semantics, AcabStructureSemantics))
-        current = self._root
+        if semantics is None:
+            semantics = self._semantics
 
-        return semantics.get(path)
+        return semantics.get(self, path)
 
     def query_with_remainder(self, path):
         """
@@ -81,7 +96,7 @@ class DataStructure:
         """ Given a trie/node of possible matches, return only actual matches,
         Treating self as the pattern
         """
-        if isinstance(possible_matches, Trie):
+        if isinstance(possible_matches, DataStructure):
             possible_matches = possible_matches.root
 
         if not isinstance(possible_matches, AcabNode):
