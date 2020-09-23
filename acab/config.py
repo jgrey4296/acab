@@ -7,6 +7,12 @@ from acab.error.acab_config_exception import AcabConfigException
 
 actions_e = Enum("Config Actions", "STRIPQUOTE KEYWORD LITERAL DICT LIST UNESCAPE")
 
+def GET(s=None):
+    config = AcabConfig.Get()
+    if s is not None:
+        config.read(s)
+    return config
+
 class AcabConfig:
     """ A Singleton class for the active configuration
     Uses ${SectionName:Key} interpolation in values,
