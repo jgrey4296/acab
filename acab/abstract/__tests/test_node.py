@@ -44,11 +44,14 @@ class AcabNodeTests(unittest.TestCase):
         a_node._children['another child'] = True
         self.assertEqual(bool(a_node), True)
 
-    def test_contains(self):
+    def test_contains_true(self):
         a_node = AcabNode(PV("value"))
         a_node._children['child'] = True
-        self.assertTrue('child' in a_node)
-        self.assertFalse('blah' in a_node)
+        self.assertTrue(a_node.has_child('child'))
+
+    def test_contains_false(self):
+        a_node = AcabNode(PV("value"))
+        self.assertFalse(a_node.has_child('blah'))
 
     def test_add_child(self):
         a_node = AcabNode(PV('value'))
@@ -58,7 +61,7 @@ class AcabNodeTests(unittest.TestCase):
         a_node.add_child(b_node)
         self.assertTrue(bool(a_node))
         self.assertEqual(len(a_node), 1)
-        self.assertTrue('value2' in a_node)
+        self.assertTrue(a_node.has_child('value2'))
 
     def test_has_child(self):
         a_node = AcabNode(PV('value'))
