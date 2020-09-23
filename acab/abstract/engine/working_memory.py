@@ -19,9 +19,11 @@ import pyparsing as pp
 import logging as root_logger
 from fractions import Fraction
 
+from acab.abstract.data.node import AcabNode
 from acab.abstract.rule.production_operator import ProductionOperator
 from acab.abstract.engine.dsl_fragment import DSL_Fragment
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
+from acab.modules.semantics.basic_semantics import BasicTrieSemantics, BasicNodeSemantics
 
 logging = root_logger.getLogger(__name__)
 
@@ -29,7 +31,7 @@ logging = root_logger.getLogger(__name__)
 class WorkingMemory:
     """ The Abstract Working Memory """
 
-    def __init__(self, init):
+    def __init__(self, init, semantics=None):
         self._have_added_types = False
         self._have_built_operators = False
         self._module_hotload_provision = {}
@@ -40,7 +42,9 @@ class WorkingMemory:
         self._listeners = set()
         self._listener_threshold = Fraction(1,2)
         # TODO : initialise this
-        self._node_semantics = None
+        self._node_semantics = semantics
+        if self._node_semantics is None:
+            self._node_semantics = BasicTrieSemantics(BasicNodeSemantics(), AcabNode)
 
 
     def __str__(self):
