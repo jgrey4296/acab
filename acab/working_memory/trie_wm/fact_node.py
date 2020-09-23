@@ -43,19 +43,19 @@ class FactNode(AcabNode):
             if WMU.OPERATOR_S not in other._data:
                 return True
 
-            return self.get_child(other).exop == other._data[WMU.OPERATOR_S]
+            return self.get_child(other)._data[WMU.OPERATOR_S] == other._data[WMU.OPERATOR_S]
         return False
 
     def __hash__(self):
         return hash(str(self))
 
 
-    @property
-    def exop(self):
-        if WMU.OPERATOR_S in self.value._data:
-            return self.value._data[WMU.OPERATOR_S]
-        else:
-            return self._data[WMU.OPERATOR_S]
+    # @property
+    # def exop(self):
+    #     if WMU.OPERATOR_S in self.value._data:
+    #         return self.value._data[WMU.OPERATOR_S]
+    #     else:
+    #         return self._data[WMU.OPERATOR_S]
 
     def insert(self, fact):
         """ Insert A Node as a Child of this Node
