@@ -1,24 +1,39 @@
 # https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
 from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match, AliasType
+from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar
+from typing import cast, ClassVar, TypeVar
 
 from acab.abstract.core.value import AcabValue
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.data.node import AcabNode
-from acab.abstract.data.trie import Trie
 from acab.abstract.data.contexts import Contexts
+from acab.abstract.data.structure import DataStructure
+from acab.abstract.data.node_semantics import AcabNodeSemantics
+
+from acab.config import AcabConfig
+
+util = AcabConfig.Get()
+
+NEGATION_S = util("Parsing.Structure", "NEGATION_S")
+CONSTRAINT_S = util("Parsing.Structure", "CONSTRAINT_S")
+AT_BIND_S = util("Parsing.Structure", "AT_BIND_S")
 
 class AcabStructureSemantics:
     # TODO Locate listeners in semantics not WM
 
-    def __init__(self, node_semantics):
-        assert(isinstance(node_semantics, AcabNodeSemantics))
+    def __init__(self, node_semantics : AcabNodeSemantics, node_type=AcabNode):
         self._ns = node_semantics
+        self._node_type = node_type
+
+    def set_node_type(self, node_type : AcabNode):
+        self._node_type = node_type
+
+    def set_node_semantics(self, ns : AcabNodeSemantics):
+        self._ns = ns
 
 
-    def add(self, structure : DataStructure, to_add : List[Sentence]) -> List[AcabNode]
+    def add(self, structure : DataStructure, to_add : List[Sentence]) -> List[AcabNode]:
         """ Inserting a coherent set of sentences into the structure """
         raise NotImplementedError()
 
@@ -26,7 +41,7 @@ class AcabStructureSemantics:
         """ Getting a path of nodes corresponding to the sentence """
         raise NotImplementedError()
 
-    def contain(self, structure, sentence) -> Bool:
+    def contain(self, structure, sentence) -> bool:
         """ Can the sentence be found in the structure """
         raise NotImplementedError()
 
@@ -35,14 +50,14 @@ class AcabStructureSemantics:
         raise NotImplementedError()
 
 
-    def query(self, structure, clause : Sentence, ctxs : Contexts, engine : AcabEngine):
+    def query(self, structure, clause : Sentence, ctxs : Contexts, engine : 'Engine'):
         """ Answer a clause asked of the data structure """
         # TODO is this part of call semantics?
         # open / closed world
         # depth / breath search
         # match as pattern?
         # return type
-        pass
+        raise NotImplementedError()
 
 
     def down(self, data_structure : DataStructure) -> List[Sentence]:
@@ -52,325 +67,11 @@ class AcabStructureSemantics:
     def lift(self, sentences : List[Sentence]) -> DataStructure:
         """ Raise a set of sentences into a data structure """
         raise NotImplementedError()
-
-
-class BasicTrieSemantics(AcabStructureSemantics):
-
-    def __init__(self, node_semantics, node_type,
-                 leaf_type=None, update_data=None, update_func=None):
-        super(BasicTrieSemantics, self).__init__(node_semantics)
-
-        self._node_type = node_type
-        self._leaf_type = leaf_type or node_type
-        self._update_data = {}
-        self._update_func = update_func or lambda a,b,c: a
-
-        if update_data is not None:
-            self._update_data.update(update_data)
-
-    def add(self, structure, to_add, leaf_data=None):
-        assert(isinstance(structure, Trie))
-        assert(isinstance(to_add, list))
-
-        to_add = sorted(to_add,
-                        key=lambda x: NEGATION_S in x._data and x._data[NEGATION_S])
-        if leaf_data is None:
-            leaf_data = {}
-
-        # Get the root
-        current = None
-        current_path = []
-        for sen in to_add:
-            current = structure.root
-            if NEGATION_S in sen._data and sen._data[NEGATION_S]:
-                self.delete(structure, sen)
-                continue
-
-            # Add to nodes
-            for word in to_add:
-                current = self._ns.add(current, word)
-                self._update_func(current, curr_path, self._update_data)
-                current_path.append(current)
-
-            current._data.update(leaf_data)
-            # TODO Register new nodes with structure weak index
-
-        return current_path[:-1]
-
-    def get(self, structure, sentence):
-        assert(isinstance(structure, Trie))
-        assert(isinstance(sentence, Sentence))
-
-        # Get the root
-        current = structure._root
-        # Get Nodes
-        for word in to_add:
-            current = self._ns.get(current, word)
-            if current is None:
-                return []
-
-        return [current]
-
-    def contain(self, structure, sentence):
-        return bool(self.get(structure, sentence))
-
-    def delete(self, structure, sentence):
-        retrieved = self.get(structure, sentence[:-1])
-        return_list = []
-        if bool(retrieved):
-            removed = self._ns.delete(retrieved[0], sentence[-1])
-            if removed is not None:
-                return_list.append(removed)
-
-        return return_list
-
-    def query(self, structure, query, ctxs, engine):
-        initial_context = Contexts(start_node=structure.root,
-                                   bindings=ctxs, engine=engine)
-
-        pos, neg = query.split_clauses()
-        try:
-            for clause in pos:
-                self._clause_query(structure, clause, initial_context, engine)
-            for clause in neg:
-                self._clause_query(structure, clause, initial_context, engine, is_negative=True)
-        except AcabSemanticsException as e:
-            logging.warning(str(e))
-            initial_context.demote_failures()
-            # TODO set context query_history and remainder
-        finally:
-            return initial_context
-
-
-    def down(self, data_structure):
-        output = []
-        queue = [([], x) for x in data_structure._root]
-
-        while bool(queue):
-            curr_path, current_node = queue.pop(0)
-            total_path = curr_path + [current_node.value]
-            if not bool(current_node) or isinstance(current_node.value, AcabStatement):
-                if leaf_predicate is None or leaf_predicate(current_node):
-                    as_sentence = Sentence(total_path)
-                    output.append(as_sentence)
-
-            if bool(current_node):
-                queue += [(total_path, x) for x in current_node]
-
-        return output
-
-
-    def _start_word_semantics(self, structure, contexts, clause):
-        binding = None
-        if word.is_at_var:
-            binding = word.value
-
-        contexts.force_node_position(target=structure.root,
-                                     binding=binding)
-
-        if binding is not None:
-            return clause[1:]
-
-        return clause
-
-
-    def _collapse_semantics(self, ctxs, collapse_set):
-         if bool(collapse_set):
-            contexts.collapse(collapse_on)
-
-    def _negation_semantics(self, contexts, clause):
-        if clause._data[NEGATION_S]:
-            contexts.invert()
-
-    def _failure_semantics(self, contexts, clause):
-        # add all failures back in, if theres a default value
-        if FALLBACK_S in clause._data and bool(clause._data[FALLBACK_S]):
-            contexts.promote_failures(clause._data[FALLBACK_S])
-        else:
-            contexts.demote_failures()
-
-
-    def _clause_query(self, structure, clause : Sentence, contexts, engine):
-        """ Test a single clause,
-        annotating contexts upon success and failure """
-        logging.debug("Testing Clause: {}".format(repr(clause)))
-
-        clause = self._start_word_semantics(structure, contexts, clause)
-        # Go down from the root by query element:
-        # For each word of the clause sentence, eg: a. in a.b.word
-        collapse_on = set()
-        for word in clause:
-            logging.info("Testing node: {}".format(repr(word)))
-            logging.info("Current Contexts: {}".format(len(contexts)))
-                        # test each active alternative
-            annotations = _test_word(word, contexts)
-
-            if CTX_OP.collapse in annotations and word.is_var:
-                collapse_on.add(word.name)
-
-            # TODO add in context growth restrictions?
-            if not bool(contexts):
-                break
-
-        self._collapse_semantics(contexts, collapse_on)
-        self._negation_semantics(contexts, clause)
-        self._failure_semantics(contexts, clause)
-
-        if not bool(contexts):
-            raise AcabSemanticException("No successful contexts", clause)
-
-        return contexts
-
-
-class RDFSemantics(AcabStructureSemantics):
-    """
-    Semantics for Subject Predicate Object Triples
-    """
-    def __init__(self, node_semantics, node_type,
-                 leaf_type=None, update_data=None, update_func=None):
-        super(BasicTrieSemantics, self).__init__(node_semantics)
-
-        self._node_type = node_type
-        self._leaf_type = leaf_type or node_type
-        self._update_data = {}
-        self._update_func = update_func or lambda a,b,c: a
-
-        if update_data is not None:
-            self._update_data.update(update_data)
-
-    def add(self, structure, to_add, leaf_data=None):
-        assert(isinstance(structure, Trie))
-        assert(isinstance(to_add, Sentence))
-
-        # Get the root
-        current = structure.root
-        current_path = []
-        # Add to nodes
-        for word in to_add:
-            current = self._ns.add(current, word)
-            self._update_func(current, curr_path, self._update_data)
-            current_path.append(current)
-
-            # TODO Register new nodes with structure weak index
-
-        return current
-
-    def get(self, structure, sentence):
-        pass
-
-    def contain(self, structure, sentence):
-        pass
-
-    def delete(self, structure, sentence):
-        pass
-
-    def query(self, structure, clause, ctxs, engine):
-        pass
-
-    def down(self, data_structure):
-        pass
-
-    def lift(self, sentences):
-        pass
-
-
-class ReteSemantics(AcabStructureSemantics):
-    """
-    Semantics of a compiled rete net
-    """
-    def __init__(self, node_semantics, node_type,
-                 leaf_type=None, update_data=None, update_func=None):
-        super(BasicTrieSemantics, self).__init__(node_semantics)
-
-        self._node_type = node_type
-        self._leaf_type = leaf_type or node_type
-        self._update_data = {}
-        self._update_func = update_func or lambda a,b,c: a
-
-        if update_data is not None:
-            self._update_data.update(update_data)
-
-    def add(self, structure, to_add, leaf_data=None):
-        assert(isinstance(structure, Trie))
-        assert(isinstance(to_add, Sentence))
-
-        # Get the root
-        current = structure.root
-        current_path = []
-        # Add to nodes
-        for word in to_add:
-            current = self._ns.add(current, word)
-            self._update_func(current, curr_path, self._update_data)
-            current_path.append(current)
-
-            # TODO Register new nodes with structure weak index
-
-        return current
-
-    def get(self, structure, sentence):
-        pass
-
-    def contain(self, structure, sentence):
-        pass
-
-    def delete(self, structure, sentence):
-        pass
-
-    def query(self, structure, clause, ctxs, engine):
-        pass
-
-    def down(self, data_structure):
-        pass
-
-    def lift(self, sentences):
-        pass
-
-
-class TypingSemantics(AcabStructureSemantics):
-        def __init__(self, node_semantics):
-        assert(isinstance(node_semantics, AcabNodeSemantics))
-        self._ns = node_semantics
-
-
-    def add(self, structure : DataStructure, to_add : List[Sentence]) -> List[AcabNode]
-        """ Inserting a coherent set of sentences into the structure """
-        raise NotImplementedError()
-
-    def get(self, structure : DataStructure, sentence) -> List[AcabNode]:
-        """ Getting a path of nodes corresponding to the sentence """
-        raise NotImplementedError()
-
-    def contain(self, structure, sentence) -> Bool:
-        """ Can the sentence be found in the structure """
-        raise NotImplementedError()
-
-    def delete(self, structure, sentence) -> List[AcabNode]:
-        """ Remove a sentence from the structure """
-        raise NotImplementedError()
-
-
-    def query(self, structure, clause : Sentence, ctxs : Contexts, engine : AcabEngine):
-        """ Answer a clause asked of the data structure """
-        # TODO is this part of call semantics?
-        # open / closed world
-        # depth / breath search
-        # match as pattern?
-        # return type
-        pass
-
-
-    def down(self, data_structure : DataStructure) -> List[Sentence]:
-        """ Take a complex data structure down to basic sentences """
-        raise NotImplementedError()
-
-    def lift(self, sentences : List[Sentence]) -> DataStructure:
-        """ Raise a set of sentences into a data structure """
-        raise NotImplementedError()
-
 
 
 
 #--------------------------------------------------
+
 def retrieve_potentials(query_word, pair):
     # TODO should this be a node semantic?
     potentials = []
@@ -381,10 +82,10 @@ def retrieve_potentials(query_word, pair):
     elif query_word.is_var:
         assert(query_word.name in data)
         value = data[query_word.name]
-        if value in node:
+        if node.has_child(value):
             potentials.append(node.get_child(value))
 
-    elif query_word in node:
+    elif node.has_child(query_word):
         potentials.append(node.get_child(query_word))
 
 
