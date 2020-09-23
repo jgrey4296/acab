@@ -6,6 +6,7 @@ AcabConfig.Get().read("acab/util.config")
 
 from acab.abstract.data.trie import Trie
 from acab.abstract.data.node import AcabNode
+from acab.abstract.core.sentence import Sentence
 
 
 class TrieTests(unittest.TestCase):
@@ -30,42 +31,42 @@ class TrieTests(unittest.TestCase):
     def test_trie_add(self):
         t = Trie()
         self.assertEqual(0, len(t))
-        t.add(['a'])
+        t.add(Sentence.build(['a']))
         self.assertEqual(1, len(t))
-        t.add(['b'])
+        t.add(Sentence.build(['b']))
         self.assertEqual(2, len(t))
 
     def test_trie_query(self):
         t = Trie()
         self.assertEqual(0, len(t))
-        t.add(['a','b','c'])
+        t.add(Sentence.build(['a','b','c']))
         self.assertEqual(3, len(t))
-        result = t.query(['a','b','c'])
+        result = t.query(Sentence.build(['a','b','c']))[0]
         self.assertIsInstance(result, AcabNode)
         self.assertEqual(result.name, 'c')
 
     def test_trie_query_fail(self):
         t = Trie()
         self.assertEqual(0, len(t))
-        t.add(['a','b','c'])
+        t.add(Sentence.build(['a','b','c']))
         self.assertEqual(3, len(t))
-        result = t.query(['a','b','d'])
-        self.assertIsNone(result)
+        result = t.query(Sentence.build(['a','b','d']))
+        self.assertFalse(result)
 
     def test_trie_remove(self):
         t = Trie()
         self.assertEqual(0, len(t))
-        t.add(['a','b','c'])
+        t.add(Sentence.build(['a','b','c']))
         self.assertEqual(3, len(t))
-        t.remove(['a','b','c'])
+        t.remove(Sentence.build(['a','b','c']))
         self.assertEqual(2, len(t))
-        result = t.query(['a','b','c'])
-        self.assertIsNone(result)
+        result = t.query(Sentence.build(['a','b','c']))
+        self.assertFalse(result)
 
     def test_trie_get_nodes(self):
         t = Trie()
         self.assertEqual(0, len(t))
-        t.add(['a','b','c'])
+        t.add(Sentence.build(['a','b','c']))
         self.assertEqual(3, len(t))
         nodes = t.get_nodes()
         self.assertEqual(3, len(nodes))
@@ -74,13 +75,13 @@ class TrieTests(unittest.TestCase):
 
     def test_trie_pattern_match(self):
         pattern_trie = Trie()
-        pattern_trie.add(['a','b','c'])
-        pattern_trie.add(['a','b','d'])
+        pattern_trie.add(Sentence.build(['a','b','c']))
+        pattern_trie.add(Sentence.build(['a','b','d']))
 
         query_trie = Trie()
-        query_trie.add(['q','b','c'])
-        query_trie.add(['q','b','d'])
-        query_trie.add(['q','c','d'])
+        query_trie.add(Sentence.build(['q','b','c']))
+        query_trie.add(Sentence.build(['q','b','d']))
+        query_trie.add(Sentence.build(['q','c','d']))
 
         matches = pattern_trie.match_as_pattern(query_trie, pattern_match_fn)
 

@@ -150,6 +150,7 @@ class Trie_WM_Tests(unittest.TestCase):
         """ Check that double quoted strings work as fact components and can be matched against """
         self.trieWM.add('a.b."This is a test".blah')
         result = self.trieWM.query('a.b."This is a test".blah?')
+        
         self.assertTrue(result)
         result = self.trieWM.query('a.b.$x.blah?')
         self.assertTrue(result)
@@ -238,6 +239,7 @@ class Trie_WM_Tests(unittest.TestCase):
     def test_multiple_sub_binding_query(self):
         self.trieWM.add('a.b.c.d')
         result = self.trieWM.query('a.$x?, @x.$y?, @y.$z?')
+
         self.assertTrue(all([x in result[0] for x in ['x','y','z']]))
         self.assertEqual(result[0]['x'].value, 'b')
         self.assertEqual(result[0]['y'].value, 'c')
