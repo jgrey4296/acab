@@ -63,12 +63,13 @@ class TrieEngine(Engine):
         the operators as the leaf of the sentence
         """
         assert(isinstance(sentences, list))
+        # TODO convert strings
         assert(all([isinstance(x, (Sentence, str)) for x,y in sentences]))
         assert(all([isinstance(y, ProductionOperator) for x,y in sentences]))
 
         # TODO: error on duplication
         for x,y in sentences:
-            self._operators.add(x, leaf=y)
+            self._working_memory.add(x, leaf=y)
 
 
     def get_operator(self, op_sen):
@@ -85,13 +86,13 @@ class TrieEngine(Engine):
 
         # Attempt alias expansion first
         head = op_sen[0:1]
-        alias_result = self._operators.query(head)
+        alias_result = self._working_memory.query(head)
         if bool(alias_result) and isinstance(alias_result.nodes[0].value, Sentence):
             alias_words = alias_result.nodes[0].value.words
             op_sen = Sentence.build(alias_words + op_sen[1:].words)
 
         # extract operator from return context
-        op_result = self._operators.query(op_sen)
+        op_result = self._working_memory.query(op_sen)
         if bool(op_result):
             op = op_result.nodes[0].value
             assert(isinstance(op, ProductionOperator))
@@ -106,7 +107,7 @@ class TrieEngine(Engine):
         assert(isinstance(sentence, Sentence))
         assert(isinstance(alias_sentence, Sentence))
         assert(len(alias_sentence) == 1)
-        self._operators.add(alias_sentence, leaf=sentence)
+        self._working_memory.add(alias_sentence, leaf=sentence)
 
     def extract_from_module(self, module):
         """
