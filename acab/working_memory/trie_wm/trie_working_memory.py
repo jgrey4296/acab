@@ -24,6 +24,9 @@ from .parsing import TotalParser as TotalP
 from .parsing import TransformParser as TP
 from .parsing import RuleParser as RP
 
+from acab.modules.semantics.basic_semantics import BasicTrieSemantics
+from . import exclusion_semantics as ES
+
 logging = root_logger.getLogger(__name__)
 
 util = AcabConfig.Get()
@@ -38,11 +41,12 @@ class TrieWM(WorkingMemory):
     def __init__(self, init=None):
         """ init is a string of assertions to start the fact base with """
         # TODO enable passing of starting node semantics
-        super().__init__(init)
+        super().__init__(init, semantics=BasicTrieSemantics(ES.ExclusionNodeSemantics(), FactNode))
         self._internal_trie = Trie(FactNode)
         # parser : PyParsing.ParserElement
-        self._main_parser = None
-        self._query_parser = None
+        self._main_parser = TotalP.parse_point
+        self._query_parser = QP.parse_point
+        self._parsers_initialised = False
 
         if init is not None:
             self.add(init)
@@ -62,6 +66,7 @@ class TrieWM(WorkingMemory):
     def add(self, data, leaf=None, semantics=None):
         """ Assert multiple facts from a single string """
         assertions = None
+        use_semantics = semantics or self._node_semantics
         if isinstance(data, str):
             assertions = TotalP.parseString(data, self._main_parser)
         elif isinstance(data, Sentence):
@@ -72,11 +77,12 @@ class TrieWM(WorkingMemory):
         if len(assertions) == 1 and leaf:
             assertions = [assertions[0].attach_statement(leaf)]
 
-        return semantics.add(self._internal_trie, assertions)
+        return use_semantics.add(self._internal_trie, assertions)
 
 
-    def query(self, query, ctxs=None, engine=None):
+    def query(self, query, ctxs=None, engine=None, semantics=None):
         """ Query a string, return a Contexts """
+        use_semantics = semantics or self._node_semantics
         if isinstance(query, str):
             query = QP.parseString(query, self._query_parser)
         elif isinstance(query, Sentence):
@@ -84,7 +90,7 @@ class TrieWM(WorkingMemory):
         if not isinstance(query, Query):
             raise AcabParseException("Unrecognised query target: {}".format(type(query)))
 
-        return self._query_sentence(query, ctxs=ctxs, engine=engine)
+        return use_semantics.query(self._internal_trie, query, ctxs=ctxs, engine=engine)
 
 
     def assert_parsers(self, pt):
@@ -146,9 +152,12 @@ class TrieWM(WorkingMemory):
         # At this point, parser is constructed, and will not change again
         # freeze the parser with Deep Copy
         # This enables having multiple working memories with non-interacting parsers
-        self._main_parser = deepcopy(TotalP.parse_point)
-        self._query_parser = deepcopy(QP.parse_point)
+        self._main_parser = TotalP.parse_point
+        self._query_parser = QP.parse_point
+        self._parsers_initialised = True
 
 
-    def to_sentences(self, semantics):
-        return semantics.down(self._internal_trie)
+
+    def to_sentences(self, semantics=None):
+        use_semantics = semantics or self._node_semantics
+        return use_semantics.down(self._internal_trie)
