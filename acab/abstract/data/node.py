@@ -2,7 +2,7 @@
 AcabNode: The internal type which knowledge base data structures use.
 
 """
-
+import logging as root_logger
 from re import search
 from uuid import uuid1
 import weakref
@@ -12,6 +12,8 @@ from acab.abstract.printing import util as PrU
 from acab.config import AcabConfig
 
 from acab.abstract.core.value import AcabValue
+
+logging = root_logger.getLogger(__name__)
 
 util = AcabConfig.Get()
 
@@ -23,7 +25,7 @@ class AcabNode:
 
     @staticmethod
     def Root():
-        """ Get a default defined root node """
+        """ Create a new root node """
         return AcabNode(ROOT_S)
 
     def __init__(self, value, data=None):
@@ -44,7 +46,7 @@ class AcabNode:
         self._data = {}
 
         if data is not None:
-            logging.warning("Setting data of Node: {}".format(data))
+            logging.warning("Updating data of Node to: {}".format(data))
             self._data.update(data)
 
     def __str__(self):
@@ -125,7 +127,7 @@ class AcabNode:
         """
         if semantics is not None:
             return semantics.node_delete(self, node)
-        elif node in self:
+        elif self.has_child(node):
             if isinstance(node, str):
                 del self._children[node]
             else:
