@@ -61,10 +61,9 @@ class OperatorDefTrieNode(TypeDefTrieNode):
 
         newly_typed = []
 
-        # Match actual statements against the operator definition
-        # getting back the matches, and how much they match
-        matches = self.trie.match_as_pattern(usage_trie,
-                                             pattern_match_type_signature)
+        # Get op_def patterns which are applicable to usage trie
+        matches = self.trie.filter_candidates(usage_trie,
+                                              pattern_match_type_signature)
 
         # Construct result dictionary
         # Combine all matches together by their usage
