@@ -36,6 +36,7 @@ class TrieTests(unittest.TestCase):
         t.add(Sentence.build(['b']))
         self.assertEqual(2, len(t))
 
+    @unittest.skip("Separated into semantics")
     def test_trie_query(self):
         t = Trie()
         self.assertEqual(0, len(t))
@@ -45,6 +46,7 @@ class TrieTests(unittest.TestCase):
         self.assertIsInstance(result, AcabNode)
         self.assertEqual(result.name, 'c')
 
+    @unittest.skip("separated into semantics")
     def test_trie_query_fail(self):
         t = Trie()
         self.assertEqual(0, len(t))
@@ -60,8 +62,6 @@ class TrieTests(unittest.TestCase):
         self.assertEqual(3, len(t))
         t.remove(Sentence.build(['a','b','c']))
         self.assertEqual(2, len(t))
-        result = t.query(Sentence.build(['a','b','c']))
-        self.assertFalse(result)
 
     def test_trie_get_nodes(self):
         t = Trie()
@@ -72,6 +72,7 @@ class TrieTests(unittest.TestCase):
         self.assertEqual(3, len(nodes))
         self.assertEqual({x.name for x in nodes}, {'a','b','c'})
 
+    # TODO test get_nodes with predicate and explore funcs
 
     def test_trie_pattern_match(self):
         pattern_trie = Trie()
@@ -83,7 +84,7 @@ class TrieTests(unittest.TestCase):
         query_trie.add(Sentence.build(['q','b','d']))
         query_trie.add(Sentence.build(['q','c','d']))
 
-        matches = pattern_trie.match_as_pattern(query_trie, pattern_match_fn)
+        matches = pattern_trie.filter_candidates(query_trie, pattern_match_fn)
 
         self.assertEqual(len(matches), 2)
 
