@@ -18,7 +18,10 @@ class NEQ(QueryOp):
 
 class RegMatch(QueryOp_SubBind):
     def __call__(self, a, b, data=None, engine=None):
-        return re.search(b, a)
+        result = re.search(b, a)
+        if result is not None:
+            result = result.groupdict()
+        return result
 
 
 class ELEM(QueryOp):
