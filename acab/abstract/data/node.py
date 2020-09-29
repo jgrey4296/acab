@@ -94,49 +94,41 @@ class AcabNode:
         return self._children.values()
 
 
-    def add_child(self, node, semantics=None):
+    def add_child(self, node):
         """ Add a node as a child of this node
         mutate object
         """
         assert(isinstance(node, AcabNode))
-        if semantics is not None:
-            return semantics.node_add(node)
-
         self._children[node.name] = node
         return node
 
-    def get_child(self, node, semantics=None):
+    def get_child(self, node):
         """ Get a node using a string, or a node itself """
-        if semantics is not None:
-            return semantics.node_get(self, node)
-        elif isinstance(node, str):
+        if isinstance(node, str):
             return self._children[node]
         else:
             return self._children[node.name]
 
-    def has_child(self, node, semantics=None):
+    def has_child(self, node):
         """ Question if this node has a particular child """
-        if semantics is not None:
-            return semantics.node_contain(self, node)
-        elif isinstance(node, str):
+        if isinstance(node, str):
             return node in self._children
         else:
             return node.name in self._children
 
-    def remove_child(self, node, semantics=None):
+    def remove_child(self, node):
         """ Delete a child from this node, return success state
         mutate object
         """
-        if semantics is not None:
-            return semantics.node_delete(self, node)
-        elif self.has_child(node):
+        result = None
+        if self.has_child(node):
+            result = self.get_child(node)
             if isinstance(node, str):
                 del self._children[node]
             else:
                 del self._children[node.name]
-            return True
 
-        return False
+        return result
 
     def clear_children(self):
         """ Remove all children from this node
