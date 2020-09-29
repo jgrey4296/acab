@@ -27,6 +27,24 @@ FALLBACK_S = util("Parsing.Structure", "FALLBACK_S")
 
 class BasicNodeSemantics(AcabNodeSemantics):
 
+    def accessible(self, word_data, term):
+        potentials = []
+        data, node = word_data
+        # Expand if variable -> Grab All
+        if term.is_var and term.name not in data:
+            potentials += node.children
+        # Get only matching child if variable is already set
+        elif term.is_var:
+            assert(term.name in data)
+            value = data[term.name]
+            if self.contain(node, value):
+                potentials.append(node.get_child(value))
+
+        elif self.contain(node, term):
+            potentials.append(node.get_child(term))
+
+        return potentials
+
     def lift(self, word : AcabValue) -> AcabNode:
         """ The Most Basic Lift """
         assert(isinstance(word, AcabValue))
@@ -36,7 +54,7 @@ class BasicNodeSemantics(AcabNodeSemantics):
     def contain(self, node : AcabNode, query_term : AcabValue) -> bool:
         assert(isinstance(node, AcabNode))
         assert(isinstance(query_term, AcabValue))
-        in_children = query_term.name in node._children
+        in_children = query_term in node
         return in_children
 
     def get(self, node : AcabNode, query_term : AcabValue) -> Optional[AcabNode]:
@@ -46,7 +64,7 @@ class BasicNodeSemantics(AcabNodeSemantics):
         if not self.contain(node, query_term):
             return None
 
-        return node._children[query_term.name]
+        return node.get_child(query_term)
 
     def add(self, node : AcabNode, to_add : AcabValue) -> AcabNode:
         assert(isinstance(node, AcabNode))
@@ -56,7 +74,7 @@ class BasicNodeSemantics(AcabNodeSemantics):
             return self.get(node, to_add)
 
         new_node = self.lift(to_add)
-        node._children[to_add.name] = new_node
+        node.add_child(new_node)
 
         return new_node
 
@@ -64,11 +82,10 @@ class BasicNodeSemantics(AcabNodeSemantics):
         assert(isinstance(node, AcabNode))
         assert(isinstance(to_delete, AcabValue))
 
-        removed = self.get(node, to_delete)
-        if removed is not None:
-            del node._children[to_delete.name]
-
+        removed = node.remove_child(to_delete)
         return removed
+
+
 
 
 
@@ -148,7 +165,7 @@ class BasicTrieSemantics(AcabStructureSemantics):
             for clause in pos:
                 self._clause_query(structure, clause, initial_context, engine)
             for clause in neg:
-                self._clause_query(structure, clause, initial_context, engine, is_negative=True)
+                self._clause_query(structure, clause, initial_context, engine)
         except AcabSemanticsException as e:
             logging.warning(str(e))
             initial_context.demote_failures()
@@ -217,8 +234,8 @@ class BasicTrieSemantics(AcabStructureSemantics):
         for word in clause:
             logging.info("Testing node: {}".format(repr(word)))
             logging.info("Current Contexts: {}".format(len(contexts)))
-                        # test each active alternative
-            annotations = SSem._test_word(word, contexts)
+            # test each active alternative
+            annotations = self._ns._test_word(word, contexts)
 
             if CTX_OP.collapse in annotations and word.is_var:
                 collapse_on.add(word.name)
@@ -235,3 +252,42 @@ class BasicTrieSemantics(AcabStructureSemantics):
             raise AcabSemanticException("No successful contexts", clause)
 
         return contexts
+
+
+    def filter_candidates(self, target_pattern, candidates, match_func):
+        """ Filter candidates using match_func to compare
+        against this data_structure
+
+        Where a Match = [(PatternNode, MatchNode)]
+        Return [Match]
+
+        match_func : Node -> [Node] -> [Node]
+        """
+        assert(isinstance(target_pattern, DataStructure))
+
+        if isinstance(candidates, DataStructure):
+            candidates = candidates.root
+
+        if not isinstance(candidates, AcabNode):
+            raise AcabBaseException()
+
+        final_matches = []
+        pattern_nodes = list(candidates.children)
+        # (current pattern position, available choices, match state)
+        queue = [(word, pattern_nodes, []) for word in target_pattern.root.children]
+
+        while bool(queue):
+            current, available_nodes, match_state = queue.pop(0)
+
+            matching_nodes = match_func(current, available_nodes)
+            for node in matching_nodes:
+                next_match_state = match_state + [(current, node)]
+
+                if bool(current):
+                    next_available = list(node.children)
+                    next_patterns = list(current.children)
+                    queue += [(word, next_available, next_match_state) for word in next_patterns]
+                else:
+                    final_matches.append(next_match_state)
+
+        return final_matches
