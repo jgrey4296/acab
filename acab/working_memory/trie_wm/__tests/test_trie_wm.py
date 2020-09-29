@@ -150,7 +150,6 @@ class Trie_WM_Tests(unittest.TestCase):
         """ Check that double quoted strings work as fact components and can be matched against """
         self.trieWM.add('a.b."This is a test".blah')
         result = self.trieWM.query('a.b."This is a test".blah?')
-        
         self.assertTrue(result)
         result = self.trieWM.query('a.b.$x.blah?')
         self.assertTrue(result)
