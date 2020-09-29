@@ -46,7 +46,6 @@ class AcabNode:
         self._data = {}
 
         if data is not None:
-            logging.warning("Updating data of Node to: {}".format(data))
             self._data.update(data)
 
     def __str__(self):
