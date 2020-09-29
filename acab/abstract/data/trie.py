@@ -23,10 +23,7 @@ util = AcabConfig.Get()
 CONSTRAINT_S = util("Parsing.Structure", "CONSTRAINT_S")
 AT_BIND_S = util("Parsing.Structure", "AT_BIND_S")
 
-
-
 logging = root_logger.getLogger(__name__)
-
 
 class Trie(DataStructure):
 
@@ -67,6 +64,11 @@ class Trie(DataStructure):
         return semantics.delete(self, path)
 
     def get_nodes(self, pred=None, explore=None):
+        """ Get nodes passing a predicate function,
+        exploring by an explore function:
+
+        explore : [node] -> node -> [node]
+        """
         assert(pred is None or callable(pred))
         assert(explore is None or callable(explore))
         nodes = []
@@ -86,10 +88,15 @@ class Trie(DataStructure):
                 queue += [x for x in list(current._children.values())
                           if x not in visited]
             else:
-                queue += explore(current)
+                queue = explore(queue, current)
 
         return nodes
 
+    def filter_candidates(self, candidates, match_func, semantics=None):
+        if semantics is None:
+            semantics = self._semantics
+
+        return semantics.filter_candidates(self, candidates, match_func)
 
     def print_trie(self, join_str=None):
         def_op = PrU.default_opts()
