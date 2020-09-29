@@ -66,7 +66,10 @@ class AcabNode:
         return bool(self._children)
 
     def __contains__(self, v):
-        raise DeprecationWarning("Deprecated to force ability to specify semantics. Use has_child")
+        if isinstance(v, str):
+            return v in self._children
+        else:
+            return v.name in self._children
 
     def __iter__(self):
         return iter(self._children.values())
