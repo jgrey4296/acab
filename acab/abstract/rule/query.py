@@ -42,7 +42,11 @@ class QueryOp_SubBind(QueryOp):
     A Special Query Op Type for Regex's and similar,
     which can create additional binding values
     """
-    pass
+    def __call__(self, a, b, data=None, engine=None, node=None):
+        """
+        A Special case of querying. Returns a dictionary of new bindings
+        """
+        raise NotImplementedError()
 
 class QueryComponent(PO.ProductionComponent):
     """ Describe a QueryComponent of values and maybe a binding """
