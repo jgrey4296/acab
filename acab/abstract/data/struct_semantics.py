@@ -91,18 +91,6 @@ def retrieve_potentials(query_word, pair):
 
     return potentials
 
-def add_var_to_context(i, query_word, new_data, passing_node):
-    """ Prepare a tuple for adding to the context """
-    # TODO move this to Contexts
-    assert(isinstance(query_word, AcabValue))
-    assert(isinstance(passing_node, AcabNode))
-
-    if query_word.is_var:
-        new_data[query_word.name] = passing_node.value
-        new_data[AT_BIND_S + query_word.name] =  passing_node
-
-    return (i, new_data, passing_node)
-
 
 def run_subbinds(node, regexs, data, i):
     # TODO Factor this into queryop subbind?

@@ -13,6 +13,7 @@ import itertools as it
 from enum import Enum
 import logging as root_logger
 
+from acab.abstract.data.node import AcabNode
 from acab.abstract.core.value import AcabValue
 from acab.config import AcabConfig
 
@@ -116,7 +117,8 @@ class Contexts:
                 self._bind_groups.append(d)
                 self._nodes.append(n)
         else:
-            for i,d,n  in data:
+            # If failures are being tracked:
+            for i,d,n in data:
                 successes.add(i)
                 self._bind_groups.append(d)
                 self._nodes.append(n)
@@ -216,3 +218,14 @@ class Contexts:
 
         self._bind_groups = [head]
         self._nodes = [node_head]
+
+
+    def prepare_tuple_dict(self, i, new_data : dict, passing_node : AcabNode, query_term : AcabValue):
+        """ Prepare a tuple for adding to the context
+
+        """
+        if query_term.is_var:
+            new_data[query_term.name] = passing_node.value
+            new_data[AT_BIND_S + query_term.name] =  passing_node
+
+        return (i, new_data, passing_node)
