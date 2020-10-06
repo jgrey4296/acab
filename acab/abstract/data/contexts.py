@@ -106,18 +106,19 @@ class Contexts:
     def nodes(self):
         return self._nodes
 
-    def append(self, *data, fail_dict=None):
+    def append(self, data, fail_dict=None):
         """
         Add pairs of (bind_dict, node) to the context
         """
         assert(all([isinstance(x, tuple) for x in data]))
         successes = set()
         if fail_dict is None:
+            # Failures not tracked
             for d, n in data:
                 self._bind_groups.append(d)
                 self._nodes.append(n)
         else:
-            # If failures are being tracked:
+            # failures are being tracked:
             for i,d,n in data:
                 successes.add(i)
                 self._bind_groups.append(d)
@@ -219,13 +220,14 @@ class Contexts:
         self._bind_groups = [head]
         self._nodes = [node_head]
 
-
-    def prepare_tuple_dict(self, i, new_data : dict, passing_node : AcabNode, query_term : AcabValue):
-        """ Prepare a tuple for adding to the context
-
-        """
-        if query_term.is_var:
-            new_data[query_term.name] = passing_node.value
-            new_data[AT_BIND_S + query_term.name] =  passing_node
-
-        return (i, new_data, passing_node)
+    def group_by_type(self):
+        pairs = self.pairs()
+        ancestor_tracker = {}
+        groups = {}
+        for i,xy in enumerate(pairs):
+            the_type = type(xy[1])
+            if the_type not in groups:
+                groups[the_type] = []
+            groups[the_type].append((i, xy[0], xy[1]))
+            ancestor_tracker[i] = xy
+        return groups, ancestor_tracker
