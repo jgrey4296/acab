@@ -1,18 +1,17 @@
+"""
+Node description of a basic type definition node
+"""
 import logging as root_logger
 
 from acab.abstract.core.type_base import TypeInstance
-
-from acab.abstract.data.trie import Trie
 from acab.abstract.data.node import AcabNode
 
+from acab.modules.structures.trie.trie import Trie
 from acab.modules.analysis.typing import type_exceptions as te
 from acab.modules.analysis.typing.values.type_definition import TypeDefinition
-
-from .var_type_node import VarTypeTrieNode
-
-
 import acab.modules.analysis.typing.util as util
 
+from .var_type_node import VarTypeTrieNode
 from .type_assignment_node import TypeAssignmentTrieNode
 
 logging = root_logger.getLogger(__name__)
