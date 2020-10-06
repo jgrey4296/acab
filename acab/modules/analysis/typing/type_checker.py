@@ -124,7 +124,7 @@ class TypeChecker(ActionOp):
         if bool(funcs):
             output.append("Operators: \n\t{}\n".format("\t".join(sorted([x.pprint() for x in funcs]))))
         # output.append("Defs   : {}".format(str(self._definitions).replace('\n', ' ')))
-        output.append("Decs   : {}".format(self._declarations.print_trie().replace('\n', ' ')))
+        output.append("Decs   : {}".format(self._assignments.print_trie().replace('\n', ' ')))
         output.append("Vars   : {}".format(str(self._variables).replace('\n', ' ')))
 
         return "\n".join(output)
@@ -163,13 +163,13 @@ class TypeChecker(ActionOp):
         dummy = [x.propagate() for x in self._variables.get_nodes(lambda x: x.type_instance != TB.ATOM)]
         # get all known declared types
         # TODO: get references as well
-        val_queue = {y for y in self._declarations.get_nodes(lambda x: x.type_instance != TB.ATOM)}
+        val_queue = {y for y in self._assignments.get_nodes(lambda x: x.type_instance != TB.ATOM)}
         return val_queue
 
     def _merge_equivalent_nodes(self):
         """ merge equivalent variables.
         ie: a.b.$c and a.b.$d share the same ._variables node """
-        parents_of_equiv_vars = self._declarations.get_nodes(TU.has_equivalent_vars_pred)
+        parents_of_equiv_vars = self._assignments.get_nodes(TU.has_equivalent_vars_pred)
         for p in parents_of_equiv_vars:
             var_nodes = {x._var_node for x in p._children.values() if x.is_var}
             head = var_nodes.pop()
@@ -186,7 +186,7 @@ class TypeChecker(ActionOp):
 
         # remove all sentences in declarations that start with a variable
         # TODO or an operator
-        dummy = [self._declarations.remove([x]) for x in var_nodes]
+        dummy = [self._assignments.remove([x]) for x in var_nodes]
 
         # remove the variables
         dummy = [self._variables.remove([x]) for x in var_nodes]
@@ -198,7 +198,7 @@ class TypeChecker(ActionOp):
 
         results = []
         for line in queries:
-            queried = self._declarations.query(line)
+            queried = self._assignments.query(line)
             if queried is None:
                 continue
             # Compare a sentence type(instance) to the node's type_instance
@@ -256,21 +256,12 @@ class TypeChecker(ActionOp):
         for a_def in definitions:
             assert(isinstance(a_def, Sentence))
             assert(isinstance(a_def[-1], TD.TypeDefinition))
-            if isinstance(a_def[-1], OperatorDefinition):
-                self._definitions.add(a_def, a_def[-1],
-                                      leaf_override=OperatorDefTrieNode)
-            elif isinstance(a_def[-1], TD.SumTypeDefinition):
-                self._definitions.add(a_def, a_def[-1],
-                                      leaf_override=SumTypeDefTrieNode)
-            else:
-                self._definitions.add(a_def, a_def[-1])
+            self._definitions.add(a_def)
 
     def add_assertion(self, *sens):
         for x in sens:
             assert(isinstance(x, Sentence))
-            self._declarations.add(x, None,
-                                   update=lambda c, v, p, d: c.update(v, d),
-                                   u_data=self._variables)
+            self._assignments.add(x, context_data=self._variables)
 
     def add_statement(self, statement):
         """
