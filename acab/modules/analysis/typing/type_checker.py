@@ -50,15 +50,20 @@ import logging as root_logger
 from functools import partial
 from uuid import uuid1
 
-from acab.abstract.core.value import AcabStatement
+from acab.abstract.core.value import AcabValue, AcabStatement
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.core import type_base as TB
-
-from acab.abstract.data.trie import Trie
-
+from acab.abstract.data.node import AcabNode
 from acab.abstract.rule.action import ActionOp
 
+from acab.modules.structures.trie.trie import Trie
+from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics
+
+
 from . import type_exceptions as te
+from .typing_node_assignment_semantics import TypingAssignmentSemantics, TypeAssignmentTrieNode
+from .typing_node_definition_semantics import TypingDefinitionSemantics, TypeDefTrieNode, SumTypeDefTrieNode, OperatorDefTrieNode
+from .typing_node_var_semantics import TypingVarSemantics, VarTypeTrieNode
 
 # MUST BE FULL PATH otherwise type instances are built twice for some reason
 # NOT : from . import util as TU
@@ -85,9 +90,22 @@ class TypeChecker(ActionOp):
     def __init__(self):
         super(TypeChecker, self).__init__()
 
-        self._definitions = Trie(TypeDefTrieNode)
-        self._declarations = Trie(TypeAssignmentTrieNode)
-        self._variables = Trie(VarTypeTrieNode)
+        def_semantics = BasicTrieSemantics({AcabNode : TypingDefinitionSemantics()},
+                                           {AcabValue : (AcabNode, {}, lambda c, p, u, ctx: c),
+                                            TypeDefinition : (TypeDefTrieNode, {}, lambda c, p, u, ctx: c),
+                                            SumTypeDefinition : (SumTypeDefTrieNode, {}, lambda c, p, u, ctx: c),
+                                            OperatorDefinition : (OperatorDefTrieNode, {}, lambda c, p, u, ctx: c)
+                                           })
+        ass_semantics = BasicTrieSemantics({AcabNode : TypingAssignmentSemantics()},
+                                           {AcabValue : (TypeAssignmentTrieNode, {}, lambda c, p, u, ctx: c)
+                                            })
+
+        var_semantics = BasicTrieSemantics({AcabNode : TypingVarSemantics()},
+                                           {AcabValue : (VarTypeTrieNode, {}, lambda c, p, u, ctx: c)})
+
+        self._definitions = Trie(semantics=def_semantics)
+        self._assignments = Trie(semantics=ass_semantics)
+        self._variables = Trie(semantics=var_semantics)
 
         # add basic types
         self.add_definition(*TD.build_primitive_definitions())
