@@ -25,7 +25,7 @@ from acab.abstract.pipeline.agenda import Agenda
 from acab.abstract.engine.dsl_fragment import DSL_Fragment
 from acab.abstract.engine.working_memory import WorkingMemory
 
-from acab.abstract.data.trie import Trie
+from acab.modules.structures.trie.trie import Trie
 
 util = AcabConfig.Get()
 
