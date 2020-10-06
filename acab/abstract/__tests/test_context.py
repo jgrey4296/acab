@@ -37,19 +37,19 @@ class ContextTests(unittest.TestCase):
         ctx = Contexts()
         self.assertFalse(bool(ctx))
         self.assertEqual(len(ctx), 0)
-        ctx.append(({}, "test"))
+        ctx.append([({}, "test")])
         self.assertTrue(bool(ctx))
         self.assertEqual(len(ctx), 1)
-        ctx.append(({}, "test2"))
+        ctx.append([({}, "test2")])
         self.assertEqual(len(ctx), 2)
 
     def test_append_2(self):
         ctx = Contexts()
         self.assertFalse(bool(ctx))
         self.assertEqual(len(ctx), 0)
-        ctx.append(({}, "test"),
+        ctx.append([({}, "test"),
                    ({}, "test2"),
-                   ({}, "test3"))
+                   ({}, "test3")])
         self.assertTrue(bool(ctx))
         self.assertEqual(len(ctx), 3)
 
@@ -62,18 +62,18 @@ class ContextTests(unittest.TestCase):
 
     def test_iteration(self):
         ctx = Contexts()
-        ctx.append(({'a': True}, "test"))
-        ctx.append(({'b': True}, "test2"))
-        ctx.append(({'c': True}, "test3"))
+        ctx.append([({'a': True}, "test")])
+        ctx.append([({'b': True}, "test2")])
+        ctx.append([({'c': True}, "test3")])
 
         for x,y in zip(ctx, ['a','b','c']):
             self.assertTrue(y in x.keys())
 
     def test_force_node_position_target(self):
         ctx = Contexts()
-        ctx.append(({'a': True}, "test"))
-        ctx.append(({'b': True}, "test2"))
-        ctx.append(({'c': True}, "test3"))
+        ctx.append([({'a': True}, "test")])
+        ctx.append([({'b': True}, "test2")])
+        ctx.append([({'c': True}, "test3")])
         ctx.force_node_position(target="blah")
         self.assertEqual(3, len(ctx))
         for x,y in ctx.pairs():
@@ -81,9 +81,9 @@ class ContextTests(unittest.TestCase):
 
     def test_all_alts_binding(self):
         ctx = Contexts()
-        ctx.append(({AT_BIND_S + 'a': "blah"}, "test"))
-        ctx.append(({AT_BIND_S + 'a': "bloo"}, "test2"))
-        ctx.append(({AT_BIND_S + 'a': "blee"}, "test3"))
+        ctx.append([({AT_BIND_S + 'a': "blah"}, "test")])
+        ctx.append([({AT_BIND_S + 'a': "bloo"}, "test2")])
+        ctx.append([({AT_BIND_S + 'a': "blee"}, "test3")])
         ctx.force_node_position(binding="a")
         self.assertEqual(len(ctx), 3)
         for x,y in zip(ctx, ["blah","bloo","blee"]):
@@ -91,10 +91,10 @@ class ContextTests(unittest.TestCase):
 
     def test_all_alts_invalidate_binding(self):
         ctx = Contexts()
-        ctx.append(({AT_BIND_S + 'a': "blah"}, "test"))
-        ctx.append(({AT_BIND_S + 'b': "bloo"}, "test2"))
-        ctx.append(({AT_BIND_S + 'a': "blee"}, "test3"))
-        ctx.append(({'a' : "awef"}, "test4"))
+        ctx.append([({AT_BIND_S + 'a': "blah"}, "test")])
+        ctx.append([({AT_BIND_S + 'b': "bloo"}, "test2")])
+        ctx.append([({AT_BIND_S + 'a': "blee"}, "test3")])
+        ctx.append([({'a' : "awef"}, "test4")])
         ctx.force_node_position(binding="a")
         self.assertEqual(len(ctx), 2)
         for x,y in zip(ctx.pairs(), ["blah", "blee"]):

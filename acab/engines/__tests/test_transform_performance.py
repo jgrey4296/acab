@@ -41,7 +41,7 @@ class TransformTests(unittest.TestCase):
     #use testcase snippets
     def test_run_transform(self):
         stub_ctx = Contexts()
-        stub_ctx.append(({'a': PV(2), 'b': PV(4)}, 'blah'))
+        stub_ctx.append([({'a': PV(2), 'b': PV(4)}, 'blah')])
 
         stub_transform = TP.parseString(r'λN.AddOp $a 20 -> $y, λN.MulOp $b 2 -> $z')
 
@@ -55,7 +55,7 @@ class TransformTests(unittest.TestCase):
 
     def test_run_transform_rebind(self):
         stub_ctx = Contexts()
-        stub_ctx.append(({'a': PV(2), 'b': PV(8)}, "blah"))
+        stub_ctx.append([({'a': PV(2), 'b': PV(8)}, "blah")])
 
         stub_transform = TP.parseString(r'λN.AddOp $a 20 -> $q, λN.MulOp $b $a -> $w')
         result = stub_transform(stub_ctx[0], self.e)[0]
@@ -67,7 +67,7 @@ class TransformTests(unittest.TestCase):
 
     def test_run_unary_transform(self):
         stub_ctx = Contexts()
-        stub_ctx.append(({'a': PV(2), 'b': PV(-2), 'c': PV(2.53)}, 'blah'))
+        stub_ctx.append([({'a': PV(2), 'b': PV(-2), 'c': PV(2.53)}, 'blah')])
 
         stub_transform = TP.parseString(r'λN.NegOp $a -> $x, λN.NegOp $b -> $y, λN.RoundOp $c -> $z')
         result = stub_transform(stub_ctx[0], self.e)[0]
@@ -81,7 +81,7 @@ class TransformTests(unittest.TestCase):
 
     def test_run_unary_transform_rebind(self):
         stub_ctx = Contexts()
-        stub_ctx.append(({'a': PV(2), 'b':PV(-2), 'c': PV(2.53)}, 'blah'))
+        stub_ctx.append([({'a': PV(2), 'b':PV(-2), 'c': PV(2.53)}, 'blah')])
 
         stub_transform = TP.parseString(r'λN.NegOp $a -> $x, λN.NegOp $b -> $y, λN.RoundOp $c -> $z')
         result = stub_transform(stub_ctx[0], self.e)[0]
@@ -95,10 +95,10 @@ class TransformTests(unittest.TestCase):
 
     def test_run_binary_transform(self):
         stub_ctx = Contexts()
-        stub_ctx.append(({'a':PV(2),
+        stub_ctx.append([({'a':PV(2),
                           'b':PV(-2),
                           'c':PV(2.53)},
-                         "blah"))
+                          "blah")])
 
         stub_transform = TP.parseString(r'λN.AddOp $a 20 -> $x, λN.SubOp $b 20 -> $y, λN.AddOp $c $x -> $z')
         result = stub_transform(stub_ctx[0], self.e)[0]
@@ -112,7 +112,7 @@ class TransformTests(unittest.TestCase):
 
     def test_run_binary_transform_rebind(self):
         stub_ctx = Contexts()
-        stub_ctx.append(({'a': PV(2), 'b':PV(-2), 'c': PV(2.53)}, 'blah'))
+        stub_ctx.append([({'a': PV(2), 'b':PV(-2), 'c': PV(2.53)}, 'blah')])
 
         stub_transform = TP.parseString(r'λN.AddOp $a 20 -> $x, λN.SubOp $b 20 -> $y, λN.AddOp $c $a -> $z')
         result = stub_transform(stub_ctx[0], self.e)[0]
@@ -126,10 +126,10 @@ class TransformTests(unittest.TestCase):
 
     def test_run_ternary_regex_transform(self):
         stub_ctx = Contexts()
-        stub_ctx.append(({'a': PV("blah"),
-                          'b': PV("aaablah"),
-                          'c': PV("awefblahawef"),
-                          'd': PV("AAAA")}, "blah"))
+        stub_ctx.append([({'a': PV("blah"),
+                           'b': PV("aaablah"),
+                           'c': PV("awefblahawef"),
+                           'd': PV("AAAA")}, "blah")])
 
         stub_transform = TP.parseString(r'λS.RegexOp $a /blah/ bloo -> $x, λS.RegexOp $b /aaa\w+/ $d -> $y, λS.RegexOp $c /awef(\w+)awef/ $d -> $z')
         result = stub_transform(stub_ctx[0], self.e)[0]
@@ -143,11 +143,11 @@ class TransformTests(unittest.TestCase):
 
     def test_run_ternary_regex_rebind(self):
         stub_ctx = Contexts()
-        stub_ctx.append(({
+        stub_ctx.append([({
             'a': PV("blah"),
             'b': PV("aaablah"),
             'c': PV("awefblahawef"),
-            'd':  PV("AAAA")}, "blah"))
+            'd':  PV("AAAA")}, "blah")])
 
         stub_transform = TP.parseString(r'λS.RegexOp $a /blah/ bloo -> $x, λS.RegexOp $b /aaa\w+/ $d -> $y, λS.RegexOp $c /awef(\w+)awef/ "\g<1> \g<1>" -> $z')
         result = stub_transform(stub_ctx[0], self.e)[0]
@@ -161,12 +161,12 @@ class TransformTests(unittest.TestCase):
 
     def test_run_unary_format(self):
         stub_ctx = Contexts()
-        stub_ctx.append(({'a': PV("AAA"),
+        stub_ctx.append([({'a': PV("AAA"),
                           'b': PV("BBB"),
                           'c': PV("CCC"),
                           'x': PV("{a}"),
                           'y': PV("{a} blah {b}"),
-                          'z': PV("{c} {b} {a}")}, "blah"))
+                           'z': PV("{c} {b} {a}")}, "blah")])
 
         stub_transform = TP.parseString(r'λS.FormatOp $x -> $q, λS.FormatOp $y -> $w, λS.FormatOp $z -> $e')
         result = stub_transform(stub_ctx[0], self.e)[0]
@@ -180,12 +180,12 @@ class TransformTests(unittest.TestCase):
 
     def test_run_unary_format_rebind(self):
         stub_ctx = Contexts()
-        stub_ctx.append(({'a': PV("AAA"),
+        stub_ctx.append([({'a': PV("AAA"),
                           'b': PV("BBB"),
                           'c': PV("CCC"),
                           'x': PV("{a}"),
                           'y': PV("{a} blah {b}"),
-                          'z': PV("{c} {b} {a}")}, "blah"))
+                           'z': PV("{c} {b} {a}")}, "blah")])
 
         stub_transform = TP.parseString(r'λS.FormatOp $x -> $xa, λS.FormatOp $y -> $ya, λS.FormatOp $z -> $za')
         result = stub_transform(stub_ctx[0], self.e)[0]

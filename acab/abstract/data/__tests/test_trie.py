@@ -4,10 +4,10 @@ import logging
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
-from acab.abstract.data.trie import Trie
 from acab.abstract.data.node import AcabNode
 from acab.abstract.core.sentence import Sentence
 
+from acab.modules.structures.trie.trie import Trie
 
 class TrieTests(unittest.TestCase):
 
