@@ -9,7 +9,7 @@ from acab.abstract.printing import util as PrU
 util = AcabConfig.Get()
 
 OPERATOR_S = util("Parsing.Structure", "OPERATOR_S")
-ROOT_S = util("Data.Trie", "ROOT_S")
+ROOT_S = util("Data.Struct", "ROOT_S")
 #Trie exclusion operator:
 EXOP = Enum('EXOP', 'DOT EX')
 

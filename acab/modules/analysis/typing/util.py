@@ -11,7 +11,7 @@ logging = root_logger.getLogger(__name__)
 
 util = AcabConfig.Get()
 
-ROOT_S        = util("Data.Trie", "ROOT_S")
+ROOT_S        = util("Data.Struct", "ROOT_S")
 BIND_S        = util("Parsing.Structure", "BIND_S")
 SEN_S         = util("Parsing.Structure", "SEN_S")
 VALUE_TYPE_S  = util("Parsing.Structure", "VALUE_TYPE_S")
