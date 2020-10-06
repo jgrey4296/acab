@@ -9,15 +9,14 @@ class DataStructure:
     Anything that wants to use StructureSemantics has to fulfill this
 
     """
-    def __init__(self, semantics=None, node_type=None):
+    def __init__(self, semantics):
         assert(semantics is not None)
-        if node_type is not None:
-            semantics.set_node_type(node_type)
-
-        self._root = None
         self._semantics = semantics
-
+        self._root = semantics.make_root()
 
     @property
     def root(self):
         return self._root
+
+    def __bool__(self):
+        return bool(self._root)

@@ -53,13 +53,13 @@ class AcabNodeSemantics:
     def equal(self, word : AcabNode, word2 : AcabNode) -> bool:
         raise NotImplementedError()
 
-    def lift(self, word : AcabValue) -> AcabNode:
-        """ Lifting a value to a data node """
+    def lift(self, word : AcabValue, constructor : Callable) -> AcabNode:
+        """ Lifting a node to ensure it has necessary information """
         # could include vocabulary tracking a la spacy
         raise NotImplementedError()
 
 
-    def add(self, node : AcabNode, to_add : AcabValue) -> AcabNode:
+    def add(self, node : AcabNode, word: AcabValue, node_constructor : Callable) -> AcabNode:
         raise NotImplementedError()
 
     def get(self, node : AcabNode, query_term : AcabValue) -> Optional[AcabNode]:
@@ -77,58 +77,38 @@ class AcabNodeSemantics:
 
 
 
-    def _test_word(self, query_term, query_context):
+
+    def test_candidates(self, term, candidate_pairs, tests, engine):
         """ query word, with a sequence of tests,
         in all available bind groups, BFS manner
         """
-        assert(not query_term.is_at_var)
-        engine = query_context._engine
+        assert(not term.is_at_var)
         # TODO: validate on activate context too
-        alphas, betas, subbinds, annotations = self.validate_and_split_constraints(query_term, engine=engine)
-        callable_annotations = [word for word in annotations if hasattr(word, "__call__")]
-        data_set = {word : d for word,d in enumerate(query_context.pairs())}
-        pairs  = list(enumerate(query_context.pairs()))
-        query_context.clear()
+
+        potentials = [(i, d, passing) for i,d,n in candidate_pairs for passing in self.accessible(n, d, term)]
+        passing = potentials
+
+        if tests is not None:
+            alphas, betas, subbinds, annotations, variable_ops = tests
+
+            if bool(variable_ops):
+                raise Exception("TODO : Variable Ops")
+
+            # Apply Tests
+            # TODO: test type instance if not ATOM
+            passing = [self._run_subbinds(n, subbinds, d, i, engine=engine) for i,d,n in potentials
+                       if self._test_alphas(n, alphas, d, engine=engine)
+                       and self._test_betas(n, betas, d, engine=engine)
+                       and self._test_annotations(n, annotations, d, engine=engine)]
+
+        
+        to_add = [(i, self._prepare_dict(d, n, term), n) for i,d,n in passing if n is not None]
+        return to_add
 
 
-        potentials = [(i, d[0], passing) for i,d in pairs for passing in self.accessible(d, query_term)]
-        # Apply Tests
-        # TODO: test type instance if not ATOM
-        passing = [self.run_subbinds(n, subbinds, d, i, engine=engine) for i,d,n in potentials
-                   if self.test_alphas(n, alphas, d, engine=engine)
-                   and self.test_betas(n, betas, d, engine=engine)
-                   and self.test_annotations(n, callable_annotations, d, engine)]
 
-        to_add = [query_context.prepare_tuple_dict(i, d, n, query_term) for i,d,n in passing if n is not None]
-
-        query_context.append(*to_add, fail_dict=data_set)
-        return annotations
-
-
-    def validate_and_split_constraints(self, word, ctx=None, engine=None):
-        """ Split tests into (alphas, betas, sub_binds),
-        Also connect Components to actual operators
-        """
-        # TODO make this a node semantic
-        if CONSTRAINT_S not in word._data:
-            return ([], [], [], set())
-
-        comps = [word.verify(ctx=ctx, engine=engine) for word in word._data[CONSTRAINT_S] if isinstance(word, QueryComponent)]
-        others = set([word for word in word._data[CONSTRAINT_S] if not isinstance(word, QueryComponent)])
-        alphas = []
-        betas = []
-        sub_binds = []
-        for c in comps:
-            if c.is_sub_bind_test:
-                sub_binds.append(c)
-            elif c.is_alpha_test:
-                alphas.append(c)
-            else:
-                betas.append(c)
-
-        return (alphas, betas, sub_binds, others)
-
-    def run_subbinds(self, node, subbind_comps, data, i, engine=None):
+    # internal
+    def _run_subbinds(self, node, subbind_comps, data, i, engine=None):
         # TODO Factor this into queryop subbind?
         invalidated = False
         new_data = {}
@@ -157,13 +137,25 @@ class AcabNodeSemantics:
 
         return (i, final_data, node)
 
-    def test_alphas(self, node, comps, data=None, engine=None):
+    def _test_alphas(self, node, comps, data=None, engine=None):
         """ Run alpha tests against word retrieved value """
         return all([word(node, data=data, engine=engine) for word in comps])
 
-    def test_betas(self, node, comps, data=None, engine=None):
+    def _test_betas(self, node, comps, data=None, engine=None):
         """ Run word beta tests against word retrieved value, with supplied bindings """
         return all([word(node, data=data, engine=engine) for word in comps])
 
-    def test_annotations(self, node, comps, data=None, engine=None):
+    def _test_annotations(self, node, comps, data=None, engine=None):
         return all([word(node, data=data, engine=engine) for word in comps])
+
+    def _prepare_dict(self, data : dict, passing_node : AcabNode, query_term : AcabValue):
+        """ Prepare a tuple for adding to the context
+
+        """
+        data_copy = {}
+        data_copy.update(data)
+        if query_term.is_var:
+            data_copy[query_term.name] = passing_node.value
+            data_copy[AT_BIND_S + query_term.name] =  passing_node
+
+        return data_copy
