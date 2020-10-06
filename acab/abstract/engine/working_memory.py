@@ -20,10 +20,12 @@ import logging as root_logger
 from fractions import Fraction
 
 from acab.abstract.data.node import AcabNode
-from acab.abstract.rule.production_operator import ProductionOperator
-from acab.abstract.engine.dsl_fragment import DSL_Fragment
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
-from acab.modules.semantics.basic_semantics import BasicTrieSemantics, BasicNodeSemantics
+from acab.abstract.engine.dsl_fragment import DSL_Fragment
+from acab.abstract.rule.production_operator import ProductionOperator
+
+from acab.modules.semantics.basic_semantics import BasicNodeSemantics
+from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics
 
 logging = root_logger.getLogger(__name__)
 
@@ -31,7 +33,7 @@ logging = root_logger.getLogger(__name__)
 class WorkingMemory:
     """ The Abstract Working Memory """
 
-    def __init__(self, init, semantics=None):
+    def __init__(self, init, semantics):
         self._have_added_types = False
         self._have_built_operators = False
         self._module_hotload_provision = {}
@@ -41,10 +43,8 @@ class WorkingMemory:
         # Listeners are treated as a query *bag*
         self._listeners = set()
         self._listener_threshold = Fraction(1,2)
-        # TODO : initialise this
-        self._node_semantics = semantics
-        if self._node_semantics is None:
-            self._node_semantics = BasicTrieSemantics(BasicNodeSemantics(), AcabNode)
+        # Default semantics to use for the working memory:
+        self._semantics = semantics
 
 
     def __str__(self):

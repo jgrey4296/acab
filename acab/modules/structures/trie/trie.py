@@ -5,17 +5,18 @@ import logging as root_logger
 from weakref import WeakValueDictionary, ref, proxy
 from re import search
 
-from acab.abstract.data.structure import DataStructure
-from acab.abstract.printing import util as PrU
-from acab.error.acab_base_exception import AcabBaseException
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.core.value import AcabValue, AcabStatement
+from acab.abstract.data.node import AcabNode
+from acab.abstract.data.contexts import Contexts, CTX_OP
+from acab.abstract.data.structure import DataStructure
+from acab.abstract.printing import util as PrU
 from acab.abstract.rule.query import QueryComponent
 
-from acab.modules.semantics.basic_semantics import BasicNodeSemantics, BasicTrieSemantics
+from acab.error.acab_base_exception import AcabBaseException
+from acab.modules.semantics.basic_semantics import BasicNodeSemantics
 
-from .node import AcabNode
-from .contexts import Contexts, CTX_OP
+from .trie_semantics import BasicTrieSemantics
 
 from acab.config import AcabConfig
 util = AcabConfig.Get()
@@ -27,13 +28,12 @@ logging = root_logger.getLogger(__name__)
 
 class Trie(DataStructure):
 
-    def __init__(self, node_type=AcabNode, semantics=None):
+    def __init__(self, semantics=None):
         if semantics is None:
-            semantics = BasicTrieSemantics(BasicNodeSemantics(),
-                                           node_type)
-        super(Trie, self).__init__(semantics, node_type)
+            semantics = BasicTrieSemantics({AcabNode : BasicNodeSemantics()},
+                                           {AcabValue : (AcabNode, {}, lambda c,p,u,ctx: c)})
+        super(Trie, self).__init__(semantics)
 
-        self._root = node_type.Root()
         # Stores UUIDs -> Nodes
         self._all_nodes = WeakValueDictionary()
 
@@ -47,15 +47,13 @@ class Trie(DataStructure):
         return len(self.get_nodes())
 
 
-    def add(self, path, data=None, semantics=None):
+    def add(self, path, data=None, semantics=None, **kwargs):
         """ Add the data to the leaf defined by path,
-        updating each node along the way using update and u_data
-        use leaf_override to add more specific leaves
         """
         if semantics is None:
             semantics = self._semantics
 
-        return semantics.add(self, [path], leaf_data=data)
+        return semantics.add(self, [path], leaf_data=data, **kwargs)
 
     def remove(self, path, semantics=None):
         if semantics is None:

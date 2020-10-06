@@ -8,7 +8,8 @@ from acab.abstract.printing import util as PrU
 from acab.abstract.parsing import util as PU
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.data.contexts import Contexts
-from acab.abstract.data.trie import Trie
+from acab.abstract.data.node import AcabNode
+from acab.abstract.core.value import AcabValue
 from acab.abstract.rule.query import Query
 
 from acab.abstract.engine.working_memory import WorkingMemory
@@ -24,7 +25,9 @@ from .parsing import TotalParser as TotalP
 from .parsing import TransformParser as TP
 from .parsing import RuleParser as RP
 
-from acab.modules.semantics.basic_semantics import BasicTrieSemantics
+from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics
+from acab.modules.structures.trie.trie import Trie
+
 from . import exclusion_semantics as ES
 
 logging = root_logger.getLogger(__name__)
@@ -41,8 +44,10 @@ class TrieWM(WorkingMemory):
     def __init__(self, init=None):
         """ init is a string of assertions to start the fact base with """
         # TODO enable passing of starting node semantics
-        super().__init__(init, semantics=BasicTrieSemantics(ES.ExclusionNodeSemantics(), FactNode))
-        self._internal_trie = Trie(FactNode)
+        semantics = BasicTrieSemantics({AcabNode : ES.ExclusionNodeSemantics()},
+                                       {AcabValue : (FactNode, {}, lambda c, p, u, ctx: c)})
+        super().__init__(init, semantics=semantics)
+        self._internal_trie = Trie(semantics)
         # parser : PyParsing.ParserElement
         self._main_parser = TotalP.parse_point
         self._query_parser = QP.parse_point
@@ -66,7 +71,7 @@ class TrieWM(WorkingMemory):
     def add(self, data, leaf=None, semantics=None):
         """ Assert multiple facts from a single string """
         assertions = None
-        use_semantics = semantics or self._node_semantics
+        use_semantics = semantics or self._semantics
         if isinstance(data, str):
             assertions = TotalP.parseString(data, self._main_parser)
         elif isinstance(data, Sentence):
@@ -82,7 +87,7 @@ class TrieWM(WorkingMemory):
 
     def query(self, query, ctxs=None, engine=None, semantics=None):
         """ Query a string, return a Contexts """
-        use_semantics = semantics or self._node_semantics
+        use_semantics = semantics or self._semantics
         if isinstance(query, str):
             query = QP.parseString(query, self._query_parser)
         elif isinstance(query, Sentence):
@@ -159,5 +164,5 @@ class TrieWM(WorkingMemory):
 
 
     def to_sentences(self, semantics=None):
-        use_semantics = semantics or self._node_semantics
+        use_semantics = semantics or self._semantics
         return use_semantics.down(self._internal_trie)

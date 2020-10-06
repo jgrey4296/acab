@@ -20,9 +20,8 @@ DEFAULT_EXOP = config("WorkingMemory.TrieWM", "DEFAULT_EXOP")
 
 class ExclusionNodeSemantics(AcabNodeSemantics):
 
-    def accessible(self, word_data, term):
+    def accessible(self, node, data, term):
         potentials = []
-        data, node = word_data
         # Expand if variable -> Grab All
         if term.is_var and term.name not in data:
             potentials += node.children
@@ -40,7 +39,7 @@ class ExclusionNodeSemantics(AcabNodeSemantics):
             potentials = [x for x in potentials if x._data[OPERATOR_S] == term._data[OPERATOR_S]]
         return potentials
 
-    def lift(self, word):
+    def lift(self, word, constructor):
         assert(isinstance(word, AcabValue))
         exop = EXOP_enum[DEFAULT_EXOP]
         if EXOP in word._data:
@@ -48,7 +47,8 @@ class ExclusionNodeSemantics(AcabNodeSemantics):
         elif OPERATOR_S in word._data:
             exop = word._data[OPERATOR_S]
 
-        return AcabNode(word, data={OPERATOR_S: exop})
+        word_node = constructor(word, {OPERATOR_S: exop})
+        return word_node
 
 
     def contain(self, node, query_term):
@@ -71,25 +71,25 @@ class ExclusionNodeSemantics(AcabNodeSemantics):
 
         return result
 
-    def add(self, node, to_add):
+    def add(self, node, word, node_constructor):
         assert(isinstance(node, AcabNode))
-        assert(isinstance(to_add, AcabValue))
+        assert(isinstance(word, AcabValue))
+        assert(callable(node_constructor))
 
         # insert the target and cause changes
-        result = None
-        if self.contain(node, to_add):
-            result = self.get(node, to_add)
-        else:
-            result = self.lift(to_add)
+        result = self.get(node, word)
+
+        if result is None:
+            result = self.lift(word, node_constructor)
 
         if node._data[OPERATOR_S] is EXOP_enum.EX and \
-           len(node.children) >= 1 and \
-           result is not None:
+           len(node.children) >= 1 and result is not None:
             node.clear_children()
 
         node.add_child(result)
 
-        if OPERATOR_S in to_add._data and  to_add._data[OPERATOR_S] is EXOP_enum.EX:
+        # coerce to exclusive if necessary
+        if OPERATOR_S in word._data and word._data[OPERATOR_S] is EXOP_enum.EX:
             result._data[OPERATOR_S] = EXOP_enum.EX
 
         return result

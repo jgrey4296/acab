@@ -20,24 +20,36 @@ import pyparsing as pp
 
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.core.value import AcabValue
-from acab.abstract.data.trie import Trie
+from acab.abstract.data.node import AcabNode
 from acab.abstract.rule.production_operator import ProductionOperator
-
 from acab.abstract.parsing.util import OPERATOR_SUGAR
+
+from acab.modules.structures.trie.trie import Trie
+from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics
+from acab.modules.semantics.basic_semantics import BasicNodeSemantics
 
 logging = root_logger.getLogger(__name__)
 
 
 
-class BootstrapParser(Trie):
+class BootstrapParser:
     """ Manage parsers and allow queries for hotloading,
     used in working memory and module interfaces """
 
     def __init__(self, empty=False):
-        super(BootstrapParser, self).__init__()
+        semantics = BasicTrieSemantics({AcabNode : BasicNodeSemantics()},
+                                       {AcabValue : (AcabNode, {}, lambda c,p,u,ctx: c)},
+                                       sentence_sort=lambda x: str(x))
+        self._internal_trie = Trie(semantics)
         if not empty:
             self.add("operator.sugar", OPERATOR_SUGAR)
 
+    def __len__(self):
+        return len(self._internal_trie)
+    def __bool__(self):
+        return bool(self._internal_trie)
+
+    
     def add(self, *inputs):
         """ Use inputs as a plist,
         alternating between location string, and parser """
@@ -57,7 +69,7 @@ class BootstrapParser(Trie):
                 raise DeprecationWarning("Production Operators shouldn't be being built here any more")
 
             assert(isinstance(parser, pp.ParserElement))
-            super(BootstrapParser, self).add(loc_string, data={'parser': parser})
+            self._internal_trie.add(loc_string, data={'parser': parser})
 
     def query(self, *queries):
         """ Given a bunch of query strings, get them and return them """
@@ -81,10 +93,11 @@ class BootstrapParser(Trie):
         return final_parser
 
     def _query(self, query):
+        # TODO convert this to semantics
         assert(isinstance(query,str))
 
         results = []
-        queue = [(self._root, query.split("."))]
+        queue = [(self._internal_trie.root, query.split("."))]
         while queue:
             curr_node, remaining_path = queue.pop(0)
             if not bool(remaining_path):
@@ -104,4 +117,4 @@ class BootstrapParser(Trie):
     def print_trie(self):
         """ Print the trie of parsers, marking nodes that have been used,
         and the queries that are used """
-        return super(BootstrapParser, self).print_trie(join_str=".")
+        return self._internal_trie.print_trie(join_str=".")
