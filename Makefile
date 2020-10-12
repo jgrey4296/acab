@@ -4,10 +4,10 @@ LOGS := $(shell find ./acab -name '*log.*')
 CACHES := $(shell find ./acab -name '*__pycache__')
 
 .PHONY: all
-all: verbose
+all: verbose long
 
-test:
-	python -m unittest discover -s ./acab -p "test_*.py"
+long:
+	python -m unittest discover -s ./acab -p "*_tests.py"
 
 verbose:
 	python -m unittest discover -s ./acab -p "test_*.py" -v
@@ -17,7 +17,7 @@ faily:
 
 # use as: make pattern PAT="X"
 pattern:
-	python -m unittest discover -s ./acab -p "test_*.py" -v -f -k ${PAT}
+	python -m unittest discover -s ./acab -p "test_*.py" -p "*_tests.py" -v -f -k ${PAT}
 
 # make init py's as necessary
 init:
