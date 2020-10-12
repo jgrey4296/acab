@@ -32,7 +32,7 @@ class Timing_Tests(unittest.TestCase):
 
     def setUp(self):
         self.e = TrieEngine(modules=["acab.modules.operators.standard_operators"])
-        self.e.alias_module(S("acab", "modules", "operators"), S("S"))
+        self.e.alias_module(S("acab", "modules", "operators", "standard", "operators"), S("S"))
         self.e.build_DSL()
 
     def tearDown(self):
