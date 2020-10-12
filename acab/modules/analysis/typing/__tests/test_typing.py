@@ -10,7 +10,6 @@ from acab.abstract.core.value import AcabValue
 from acab.abstract.data.node import AcabNode
 
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
-from acab.abstract.printing import util as PrU
 
 from acab.abstract.rule import action
 from acab.abstract.rule.production_operator import ProductionOperator

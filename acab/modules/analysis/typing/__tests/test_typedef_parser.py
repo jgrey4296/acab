@@ -11,7 +11,6 @@ import acab.modules.analysis.typing.parsing.TypeParser as TP
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.data.node import AcabNode
 from acab.abstract.parsing import util as PU
-from acab.abstract.printing import util as PrU
 
 from acab.error.acab_parse_exception import AcabParseException
 

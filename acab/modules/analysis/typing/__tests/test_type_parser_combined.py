@@ -4,8 +4,6 @@ import logging
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
-from acab.abstract.printing import util as PrU
-
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.core.type_base import TypeInstance
 from acab.abstract.core.type_base import TypeInstance, ATOM

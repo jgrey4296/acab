@@ -8,7 +8,6 @@ from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
 from acab.abstract.core.sentence import Sentence
-from acab.abstract.printing import util as PrU
 from acab.abstract.rule import action
 from acab.abstract.rule.query import QueryComponent, QueryOp
 

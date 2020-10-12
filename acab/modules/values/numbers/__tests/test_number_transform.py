@@ -7,7 +7,6 @@ import logging
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
-from acab.abstract.printing import util as PrU
 from acab.modules.values.numbers.parsing import NumberParser as NP
 from acab.working_memory.trie_wm.parsing import ActionParser as AP
 from acab.working_memory.trie_wm.parsing import TransformParser as TP

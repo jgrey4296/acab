@@ -4,7 +4,6 @@ capable of parsing  multiple facts
 """
 import pyparsing as pp
 
-from acab.abstract.printing import util as PrU
 from acab.working_memory.trie_wm import util as WMU
 from acab.config import AcabConfig
 util = AcabConfig.Get()

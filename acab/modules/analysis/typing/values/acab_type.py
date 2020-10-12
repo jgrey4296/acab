@@ -1,5 +1,4 @@
 from acab.abstract.core.value import AcabStatement
-from acab.abstract.printing import util as PrU
 
 from acab.config import AcabConfig
 
@@ -12,6 +11,7 @@ class TypeStatement(AcabStatement):
     def __init__(self, value="|∀σ|", **kwargs):
         super().__init__(value, **kwargs)
         self._path = None
+        self._structure = []
 
 
     @property
@@ -20,6 +20,10 @@ class TypeStatement(AcabStatement):
     @property
     def vars(self):
         return self._params
+
+    @property
+    def structure(self):
+        return self._structure
 
     @property
     def pprint_has_content(self):

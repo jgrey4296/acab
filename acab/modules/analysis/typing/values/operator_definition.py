@@ -1,7 +1,6 @@
 from acab.config import AcabConfig
 
 from acab.abstract.core.type_base import TypeInstance
-from acab.abstract.printing import util as PrU
 
 from acab.modules.analysis.typing import util as TU
 
@@ -27,10 +26,12 @@ class OperatorDefinition(TypeDefinition):
 
 
     def pprint(self, opts=None):
-        return "{}: (::λ) {}".format(self._name,
-                                     self._structure[0].pprint())
+        raise DeprecationWarning("Use Print Semantics")
+        # return "{}: (::λ) {}".format(self._name,
+                                     # self._structure[0].pprint())
 
     def pprint_body(self, val):
-        assert(len(self.structure) == 1)
-        body = self.structure[0].pprint()
-        return PrU._wrap_rebind(val + body, self._func_name, is_sugar=True)
+        raise DeprecationWarning("Use Print Semantics")
+        # assert(len(self.structure) == 1)
+        # body = self.structure[0].pprint()
+        # return PrU._wrap_rebind(val + body, self._func_name, is_sugar=True)

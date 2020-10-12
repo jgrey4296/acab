@@ -43,7 +43,6 @@ if __name__ == "__main__":
     # Only after having read in config, import rest of acab
     from acab.repl import ReplParser as ReP
     from acab.repl import repl_commands as ReC
-    from acab.abstract.printing import util as PrU
 
     logging.info("Setting up engine: {}".format(args.engine))
     #import then build engine or default trie engine from args

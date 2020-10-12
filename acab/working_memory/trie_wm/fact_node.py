@@ -1,7 +1,6 @@
 """ The Core Trie-Node, stores information, meta data """
 import logging as root_logger
 
-from acab.abstract.printing import util as PrU
 from acab.abstract.core.value import AcabValue
 
 from acab.abstract.data.node import AcabNode
@@ -50,12 +49,12 @@ class FactNode(AcabNode):
         return hash(str(self))
 
 
-    # @property
-    # def exop(self):
-    #     if WMU.OPERATOR_S in self.value._data:
-    #         return self.value._data[WMU.OPERATOR_S]
-    #     else:
-    #         return self._data[WMU.OPERATOR_S]
+    @property
+    def exop(self):
+        if WMU.OPERATOR_S in self.value._data:
+            return self.value._data[WMU.OPERATOR_S]
+        else:
+            return self._data[WMU.OPERATOR_S]
 
     def insert(self, fact):
         """ Insert A Node as a Child of this Node

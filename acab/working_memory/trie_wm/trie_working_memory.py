@@ -4,7 +4,6 @@ from copy import deepcopy
 
 from acab.config import AcabConfig
 
-from acab.abstract.printing import util as PrU
 from acab.abstract.parsing import util as PU
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.data.contexts import Contexts

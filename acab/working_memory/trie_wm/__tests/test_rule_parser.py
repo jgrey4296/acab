@@ -6,7 +6,6 @@ AcabConfig.Get().read("acab/util.config")
 
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
-from acab.abstract.printing import util as PrU
 from acab.abstract.rule.query import Query
 from acab.abstract.rule.rule import Rule
 from acab.modules.operators import query as QOP

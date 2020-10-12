@@ -6,7 +6,6 @@ import pyparsing as pp
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
-from acab.abstract.printing import util as PrU
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.core.value import AcabValue
 from acab.working_memory.trie_wm import util as KBU

@@ -9,7 +9,6 @@ AcabConfig.Get().read("acab/util.config")
 
 from acab.abstract.rule import action
 from acab.abstract.rule import transform
-from acab.abstract.printing import util as PrU
 from acab.modules.values import numbers
 from acab.modules.values.numbers.parsing import NumberParser as NP
 from acab.modules.values.numbers.util import FLOAT_t, INT_t

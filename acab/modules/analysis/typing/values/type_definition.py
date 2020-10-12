@@ -1,4 +1,3 @@
-from acab.abstract.printing import util as PrU
 from acab.abstract.core.value import AcabValue
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.core.type_base import TypeInstance, ATOM
@@ -37,7 +36,6 @@ class TypeDefinition(TypeStatement):
             _type = TYPE_DEFINITION
 
         super().__init__(None, params=params, _type=_type)
-        self._structure = []
 
         if bool(structure):
             self._structure += structure
@@ -55,10 +53,6 @@ class TypeDefinition(TypeStatement):
     def set_primitive(self):
         self.set_data({'primitive_annotation': PRIMITIVE_ANNOTATION_S})
         return self
-
-    @property
-    def structure(self):
-        return self._structure
 
     @property
     def var_set(self):
@@ -171,6 +165,3 @@ def build_primitive_definitions():
         prim_defs.append(primitive)
 
     return prim_defs
-
-
-PrU.register_constraint('primitive_annotation')
