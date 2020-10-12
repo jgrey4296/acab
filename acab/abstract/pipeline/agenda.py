@@ -3,7 +3,6 @@ Agendas are special cases of rules
 """
 from enum import Enum
 from acab.config import AcabConfig
-from acab.abstract.printing import util as PrU
 
 from acab.abstract.core  import type_base as TB
 from acab.abstract.rule.rule import Rule

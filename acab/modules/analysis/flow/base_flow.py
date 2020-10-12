@@ -7,7 +7,7 @@ Paths:
 
 
 """
-from acab.abstract.value import AcabValue
+from acab.abstract.core.value import AcabValue
 
 class FlowBase(AcabValue):
     """ The Base class of a flow analysis """

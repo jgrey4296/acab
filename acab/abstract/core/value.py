@@ -1,6 +1,12 @@
 """
 The Core Value Class
 """
+# https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
+from typing import List, Set, Dict, Tuple, Optional, Any
+from typing import Callable, Iterator, Union, Match
+from typing import Mapping, MutableMapping, Sequence, Iterable
+from typing import cast, ClassVar, TypeVar
+
 from weakref import ref
 import logging as root_logger
 from uuid import uuid1
@@ -9,7 +15,6 @@ from re import Pattern
 from copy import deepcopy
 
 from acab.config import AcabConfig
-from acab.abstract.printing import util as PrU
 
 from .type_base import TypeInstance, ATOM
 
@@ -20,12 +25,13 @@ VALUE_TYPE_S = util("Parsing.Structure", "VALUE_TYPE_S")
 BIND_S = util("Parsing.Structure", "BIND_S")
 AT_BIND_S = util("Parsing.Structure", "AT_BIND_S")
 
-
 class AcabValue:
     value_types = set([int, float, Fraction, bool, str, Pattern, list, tuple])
 
     @staticmethod
-    def safe_make(value, data=None, _type=None):
+    def safe_make(value: Any,
+                  data: Optional[Dict[Any, Any]]=None,
+                  _type: Optional['TypeInstance']=None) -> 'AcabValue':
         """ Wrap the provided value in an AcabValue,
         but only if it isn't an AcabValue already """
         if isinstance(value, AcabValue):
@@ -36,7 +42,8 @@ class AcabValue:
             # TODO: detect base types
             return AcabValue(value, data=data, _type=_type)
 
-    def __init__(self, value, data=None,
+    def __init__(self, value,
+                 data=None,
                  params=None, tags=None,
                  name=None, _type=None):
 
@@ -90,7 +97,7 @@ class AcabValue:
 
 
     @property
-    def name(self):
+    def name(self) -> str:
         if self._name is not None:
             return self._name
 
@@ -100,19 +107,19 @@ class AcabValue:
     def value(self):
         return self._value
     @property
-    def type(self):
+    def type(self) -> 'TypeInstance':
         return self._data[VALUE_TYPE_S]
 
     @property
-    def is_var(self):
+    def is_var(self) -> bool:
         return self._data[BIND_S] is not False
 
     @property
-    def is_at_var(self):
+    def is_at_var(self) -> bool:
         return self._data[BIND_S] == AT_BIND_S
 
     @property
-    def var_set(self):
+    def var_set(self) -> Dict[str, Set[Any]]:
         """ Return a dict of sets of all bindings this value utilizes
         returns { 'in' : set(), 'out' : set() }
         """
@@ -133,7 +140,7 @@ class AcabValue:
         return {'in': in_set, 'out': out_set}
 
     @property
-    def tags(self):
+    def tags(self) -> Set[str]:
         return self._tags
 
 
@@ -144,11 +151,11 @@ class AcabValue:
         """
         raise NotImplementedError()
 
-    def copy(self):
+    def copy(self) -> 'AcabValue':
         """ Data needs to be able to be copied """
         return deepcopy(self)
 
-    def bind(self, bindings):
+    def bind(self, bindings) -> 'AcabValue':
         """ Data needs to be able to bind a dictionary
         of values to internal variables
         return modified copy
@@ -159,7 +166,7 @@ class AcabValue:
         else:
             return self
 
-    def verify(self):
+    def verify(self) -> 'AcabValue':
         """ Raise An Exception if this necessary
         return modified copy
         """
@@ -172,7 +179,7 @@ class AcabValue:
 
         return self
 
-    def set_data(self, data):
+    def set_data(self, data) -> 'AcabValue':
         """ Force a value's data to be updated,
         return modified copy
         """
@@ -181,7 +188,7 @@ class AcabValue:
 
         return self
 
-    def apply_params(self, params, data=None):
+    def apply_params(self, params, data=None) -> 'AcabValue':
         """
         return modified copy
         """
@@ -189,7 +196,7 @@ class AcabValue:
         self._params += safe_params
         return self
 
-    def apply_tags(self, tags):
+    def apply_tags(self, tags) -> 'AcabValue':
         """
         return modified copy
         """
@@ -197,17 +204,17 @@ class AcabValue:
         self._tags.update(safe_tags)
         return self
 
-    def has_tag(self, *tags):
+    def has_tag(self, *tags) -> bool:
         return all([t in self._tags for t in tags])
 
-    def to_simple_value(self):
+    def to_simple_value(self) -> 'AcabValue':
         simple_value = AcabValue.safe_make(self._name, data=self._data)
         simple_value.set_data({VALUE_TYPE_S: ATOM})
         return simple_value
 
 
-    def pprint(self, opts=None, **kwargs):
-        return PrU.pprint(self, opts, **kwargs)
+    def pprint(self, opts=None, **kwargs) -> str:
+        raise DeprecationWarning("Use Print Semantics")
 
 
 
@@ -222,25 +229,17 @@ class AcabStatement(AcabValue):
 
 
     @property
-    def path(self):
+    def path(self) -> 'Sentence':
         return self._path
     @property
-    def value(self):
+    def value(self) -> 'AcabStatement':
         return self
 
     @property
-    def pprint_has_content(self):
-        return (True, True)
+    def pprint_has_content(self) -> bool:
+        raise DeprecationWarning("Use Print Semantics")
 
-
-    def pprint(self, opts=None, **kwargs):
-        return PrU.pprint(self, opts, **kwargs)
-
-    def pprint_body(self, val):
-        raise NotImplementedError()
-
-
-    def set_path(self, sen):
+    def set_path(self, sen) -> 'AcabStatement':
         """
         return modified copy
         """
@@ -250,7 +249,7 @@ class AcabStatement(AcabValue):
         return self
 
 
-    def to_abstract_sentences(self):
+    def to_abstract_sentences(self) -> List['Sentence']:
         """
         Represent a Complex Object in the verbose Core Language.
         (ie: just Words, Sentences, Variables, and Types)
@@ -260,7 +259,8 @@ class AcabStatement(AcabValue):
         """
         raise NotImplementedError()
 
+    def pprint(self, opts=None, **kwargs) -> str:
+        raise DeprecationWarning("Use Print Semantics")
 
-
-PrU.register_class(AcabValue, PrU.print_value)
-PrU.register_class(AcabStatement, PrU.print_statement)
+    def pprint_body(self, val) -> str:
+        raise NotImplementedError()

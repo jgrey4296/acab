@@ -38,7 +38,7 @@ class AcabStructureSemantics:
         constructor, u_data, u_func = self._value_pairings[AcabValue]
         return constructor(ROOT_S)
 
-    def semantics_for(self, node):
+    def retrieve_semantics(self, node):
         assert(isinstance(node, type))
         # TODO should I be using my type instances for semantics?
         curr = node
@@ -52,8 +52,7 @@ class AcabStructureSemantics:
                 descendents_to_update.append(curr)
 
         if retrieved is None:
-            raise AcabSemanticException("Missing Node Semantic Binding for: {}".format(node),
-                                        None)
+            raise AcabSemanticException("Missing Node Semantic Binding for: {}".format(node), None)
 
         if len(descendents_to_update) > 1:
             self._node_semantics.update({x : retrieved for x in descendents_to_update})

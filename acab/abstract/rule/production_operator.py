@@ -10,7 +10,6 @@ ProductionContainer : Groups Components together
 """
 import logging as root_logger
 
-from acab.abstract.printing import util as PrU
 from acab.error.acab_operator_exception import AcabOperatorException
 from acab.config import AcabConfig
 
@@ -201,9 +200,5 @@ class ProductionContainer(AcabStatement):
         for x in self.clauses:
             x.verify(ctx=ctx, engine=engine)
 
-    def pprint_body(self, val):
-        return val + PrU.print_container(self)
-
-
-PrU.register_class(ProductionComponent, PrU.print_operator)
-PrU.register_class(ProductionContainer, PrU.print_container)
+    def pprint_body(self, val, opts):
+        raise DeprecationWarning("Use Print Semantics")

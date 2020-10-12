@@ -10,7 +10,6 @@ from acab.abstract.core.value import AcabValue, AcabStatement
 from acab.abstract.data.node import AcabNode
 from acab.abstract.data.contexts import Contexts, CTX_OP
 from acab.abstract.data.structure import DataStructure
-from acab.abstract.printing import util as PrU
 from acab.abstract.rule.query import QueryComponent
 
 from acab.error.acab_base_exception import AcabBaseException
@@ -61,6 +60,11 @@ class Trie(DataStructure):
 
         return semantics.delete(self, path)
 
+    def query(self, query, ctxs=None, engine=None, semantics=None):
+        use_semantics = semantics or self._semantics
+
+        return use_semantics.query(self, query, ctxs=ctxs, engine=engine)
+
     def get_nodes(self, pred=None, explore=None):
         """ Get nodes passing a predicate function,
         exploring by an explore function:
@@ -97,12 +101,13 @@ class Trie(DataStructure):
         return semantics.filter_candidates(self, candidates, match_func)
 
     def print_trie(self, join_str=None):
-        def_op = PrU.default_opts()
-        if join_str is not None:
-            def_op['seq_join'] = join_str
+        raise DeprecationWarning("Use Print Semantics")
+        # def_op = PrU.default_opts()
+        # if join_str is not None:
+        #     def_op['seq_join'] = join_str
 
-        output = self.to_sentences()
-        return "\n".join(sorted([x.pprint(def_op) for x in output]))
+        # output = self.to_sentences()
+        # return "\n".join(sorted([x.pprint(def_op) for x in output]))
 
     def to_sentences(self, leaf_predicate=None):
         output = []

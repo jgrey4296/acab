@@ -3,7 +3,6 @@ Defines a Sentence of Words, which can be a query, and
 have fallback bindings
 """
 from acab.config import AcabConfig
-from acab.abstract.printing import util as PrU
 
 from . import type_base as TB
 
@@ -193,7 +192,3 @@ class Sentence(AcabValue):
         [x.verify() for x in self.words]
 
         return self
-
-
-
-PrU.register_class(Sentence, PrU.print_sequence)

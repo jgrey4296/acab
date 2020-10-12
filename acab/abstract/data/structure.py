@@ -1,7 +1,10 @@
+from uuid import uuid1
+
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.core.value import AcabValue
 from acab.abstract.data.node import AcabNode
 from acab.abstract.data.contexts import Contexts
+
 
 class DataStructure:
     """
@@ -11,6 +14,7 @@ class DataStructure:
     """
     def __init__(self, semantics):
         assert(semantics is not None)
+        self._uuiid = uuid1()
         self._semantics = semantics
         self._root = semantics.make_root()
 

@@ -2,13 +2,18 @@
 AcabNode: The internal type which knowledge base data structures use.
 
 """
+# https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
+from typing import List, Set, Dict, Tuple, Optional, Any
+from typing import Callable, Iterator, Union, Match
+from typing import Mapping, MutableMapping, Sequence, Iterable
+from typing import cast, ClassVar, TypeVar
+
 import logging as root_logger
 from re import search
 from uuid import uuid1
 import weakref
 from copy import deepcopy
 
-from acab.abstract.printing import util as PrU
 from acab.config import AcabConfig
 
 from acab.abstract.core.value import AcabValue
@@ -186,3 +191,9 @@ class AcabNode:
         TODO compare two tries
         """
         raise NotImplementedError()
+
+
+    def _default_setup(self, path: ['AcabNode'], data: Dict[Any,Any], context: Dict[Any,Any]):
+        """ Called by a Semantics upon creation and addition of a new node,
+        *if* an override hasn't been specified in the semnatic's value_constructor map"""
+        pass

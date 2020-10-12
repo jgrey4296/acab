@@ -6,7 +6,6 @@ the results are passed to the action list
 import logging as root_logger
 
 from acab.config import AcabConfig
-from acab.abstract.printing import util as PrU
 
 from acab.abstract.core import type_base as TB
 
@@ -130,32 +129,8 @@ class Rule(ProductionContainer):
 
 
     def pprint_body(self, val):
-        head, body = self.pprint_has_content
-
-        if self._query is not None:
-            val += TAB_S
-            val += self._query.pprint()
-
-        if self._transform is not None:
-            val += "\n" + TAB_S
-            val += self._transform.pprint()
-
-        if self._action is not None:
-            val += "\n" + TAB_S
-            val += self._action.pprint()
-
-        return val
+        raise DeprecationWarning("Use Print Semantics")
 
     @property
     def pprint_has_content(self):
-        head = any([bool(x) for x in [self._params,
-                                      self._tags]])
-        body = any([x is not None for x in [self._query,
-                                            self._transform,
-                                            self._action]])
-
-        return (head, body)
-
-
-
-PrU.register_class(Rule, PrU.print_statement)
+        raise DeprecationWarning("Use Print Semantics")

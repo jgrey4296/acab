@@ -8,7 +8,6 @@ Each clause is a Component, which combines values with an operator
 import logging as root_logger
 
 from acab.config import AcabConfig
-from acab.abstract.printing import util as PrU
 
 from acab.abstract.core.value import AcabValue
 from acab.abstract.core import type_base as TB
@@ -60,7 +59,3 @@ class Transform(PO.ProductionContainer):
             var_set['out'].add(clause._rebind.value)
 
         return var_set
-
-
-
-PrU.register_class(TransformComponent, PrU.print_operator_rebind)

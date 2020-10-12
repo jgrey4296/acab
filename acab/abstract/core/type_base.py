@@ -4,7 +4,8 @@ Only Provides automatic *primitives*.
 Manual typing and Product/Sum types are implemented
 in the separate typing module.
 """
-from acab.abstract.printing import util as PrU
+from uuid import uuid1
+from copy import copy
 from acab.config import AcabConfig
 
 util = AcabConfig.Get()
@@ -36,8 +37,6 @@ class _Bootstrap_Value:
 
     def __hash__(self):
         return hash(str(self))
-    def __str__(self):
-        return self.name
     @property
     def is_var(self):
         return False
@@ -105,6 +104,7 @@ class TypeInstance:
             TypeInstance.Primitives.append(path)
 
         assert(params is None or all([isinstance(x, (str, TypeInstance)) or hasattr(x, "type") for x in params])), breakpoint()
+        self._uuid = uuid1()
         self._path = path
         self._type_alias = type_alias_str
         self._params = []
@@ -198,7 +198,7 @@ class TypeInstance:
             return new_type.copy()
 
         if the_dict is None:
-            return self.copy()
+            return copy(self)
 
         new_args = []
         for x in self.vars:
@@ -211,11 +211,7 @@ class TypeInstance:
 
 
     def pprint(self, opts=None):
-        # TODO: handle type parameters
-        if self._type_alias is not None:
-            return TYPE_FMT_S.format(self._type_alias)
-        else:
-            return TYPE_FMT_S.format(PrU.pprint(self.path, opts))
+        raise DeprecationWarning("Use Print Semantics")
 
 
 # Construct the primitive types
@@ -234,7 +230,3 @@ QUERY     = TypeInstance(path=["query"], type_alias_str=QUERY_HEAD_S, primitive=
 TRANSFORM = TypeInstance(path=["transform"], type_alias_str=TRANSFORM_HEAD_S, primitive=True)
 ACTION    = TypeInstance(path=["action"], type_alias_str=ACTION_HEAD_S, primitive=True)
 RULE      = TypeInstance(path=["rule"], type_alias_str=RULE_HEAD_S, primitive=True)
-
-PrU.register_obvious_types(ATOM, REGEX, STRING)
-PrU.register_primitive({STRING: PrU._wrap_str})
-PrU.register_class(TypeInstance, TypeInstance.pprint)

@@ -14,9 +14,6 @@ from acab.abstract.core import type_base as TB
 
 from acab.abstract.rule import production_operator as PO
 
-from acab.abstract.printing import util as PrU
-
-
 logging = root_logger.getLogger(__name__)
 
 util = AcabConfig.Get()
@@ -94,7 +91,3 @@ class Action(PO.ProductionContainer):
         # needs to return both the action sentences,
         # AND the action operators in canonical form
         raise NotImplementedError()
-
-
-
-PrU.register_class(ActionComponent, PrU.print_operator_wrap)

@@ -7,12 +7,13 @@ from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar
 
 from acab.abstract.core.sentence import Sentence
-from acab.abstract.core.value import AcabValue
+from acab.abstract.core.value import AcabValue, AcabStatement
 from acab.abstract.data.contexts import Contexts, CTX_OP
 from acab.abstract.data.node import AcabNode
 from acab.abstract.data.node_semantics import AcabNodeSemantics
 from acab.abstract.data.struct_semantics import AcabStructureSemantics
 from acab.abstract.data.structure import DataStructure
+from acab.abstract.rule.query import QueryComponent
 
 from acab.error.acab_semantic_exception import AcabSemanticException
 
@@ -44,7 +45,11 @@ class BasicTrieSemantics(AcabStructureSemantics):
         if sentence_sort is not None:
             self._sentence_sort = sentence_sort
 
-    def add(self, structure : 'Trie', to_add : List[Sentence], leaf_data=None, leaf_func=None, context_data=None):
+    def add(self, structure : 'Trie',
+            to_add : List[Sentence],
+            leaf_data=None,
+            leaf_func=None,
+            context_data=None):
         to_add = sorted(to_add, key=self._sentence_sort)
 
         # Get the root
@@ -63,9 +68,12 @@ class BasicTrieSemantics(AcabStructureSemantics):
                 semantics for progressing
                 """
                 node_c, u_data, u_func = self.value_constructor(type(word))
-                node_semantics = self.semantics_for(type(current))
-                current = node_semantics.add(current, word, node_c)
-                u_func(current, current_path, u_data, context_data)
+                node_semantics = self.retrieve_semantics(type(current))
+                is_new_node, current = node_semantics.add(current, word, node_c)
+                if u_func is None:
+                    u_func = node_c._default_setup
+                if is_new_node:
+                    u_func(current, current_path, u_data, context_data)
                 current_path.append(current)
 
 
@@ -88,7 +96,7 @@ class BasicTrieSemantics(AcabStructureSemantics):
         current = structure._root
         # Get Nodes
         for word in sentence:
-            node_semantics = self.semantics_for(type(current))
+            node_semantics = self.retrieve_semantics(type(current))
             current = node_semantics.get(current, word)
             if current is None:
                 return []
@@ -104,7 +112,7 @@ class BasicTrieSemantics(AcabStructureSemantics):
         if bool(retrieved):
             # Use the semantics of the penultimate node
             # to delete the target node
-            node_semantics = self.semantics_for(type(retrieved[0]))
+            node_semantics = self.retrieve_semantics(type(retrieved[0]))
             removed = node_semantics.delete(retrieved[0], sentence[-1])
             if removed is not None:
                 return_list.append(removed)
@@ -121,15 +129,16 @@ class BasicTrieSemantics(AcabStructureSemantics):
                 self._clause_query(structure, clause, initial_context, engine)
             for clause in neg:
                 self._clause_query(structure, clause, initial_context, engine)
-        except AcabSemanticsException as e:
-            logging.warning(str(e))
+        except AcabSemanticException as e:
+            logging.debug(str(e))
             initial_context.demote_failures()
             # TODO set context query_history and remainder
         finally:
             return initial_context
 
 
-    def down(self, data_structure):
+    def down(self, data_structure, leaf_predicate=None):
+        # TODO leaf_predicate
         output = []
         queue = [([], x) for x in data_structure._root]
 
@@ -163,7 +172,7 @@ class BasicTrieSemantics(AcabStructureSemantics):
 
     def _collapse_semantics(self, ctxs, collapse_set):
          if bool(collapse_set):
-            contexts.collapse(collapse_on)
+            ctxs.collapse(collapse_set)
 
     def _negation_semantics(self, contexts, clause):
         if NEGATION_S in clause._data and clause._data[NEGATION_S]:
@@ -194,7 +203,7 @@ class BasicTrieSemantics(AcabStructureSemantics):
             logging.info("Testing node: {}".format(repr(word)))
             logging.info("Current Contexts: {}".format(len(contexts)))
             node_groups, ancestor_tracker = contexts.group_by_type()
-            group_semantics = {self.semantics_for(x) : y for x,y in node_groups.items()}
+            group_semantics = {self.retrieve_semantics(x) : y for x,y in node_groups.items()}
 
             # test each active alternative
             passing_candidates = [r for x,y in group_semantics.items() for r in x.test_candidates(word, y, tests, engine)]
@@ -212,7 +221,7 @@ class BasicTrieSemantics(AcabStructureSemantics):
         self._failure_semantics(contexts, clause)
 
         if not bool(contexts):
-            raise AcabSemanticException("No successful contexts", clause)
+            raise AcabSemanticException("No successful contexts", clause.pprint())
 
         return contexts
 

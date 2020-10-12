@@ -6,7 +6,6 @@ from math import floor
 from random import Random
 
 from acab.abstract.core.value import AcabValue
-from acab.abstract.printing import util as PrU
 from .pattern_iterator import PatternIterator
 
 from . import util
@@ -124,17 +123,18 @@ class TimeEvent(BaseTime):
 
 
     def pprint(self, opts=None, **kwargs):
-        if isinstance(self._event, AcabValue):
-            value = self._event.pprint(opts, **kwargs)
-        else:
-            value = str(self._event)
+        raise DeprecationWarning("Use Print Semantics")
+        # if isinstance(self._event, AcabValue):
+        #     value = self._event.pprint(opts, **kwargs)
+        # else:
+        #     value = str(self._event)
 
-        if self.is_var:
-            value = PrU._wrap_var(value)
-        if util.OPT_S in self._data and self._data[util.OPT_S]:
-            value = PrU._wrap_question(value)
+        # if self.is_var:
+        #     value = PrU._wrap_var(value)
+        # if util.OPT_S in self._data and self._data[util.OPT_S]:
+        #     value = PrU._wrap_question(value)
 
-        return value
+        # return value
 
     def bind(self, bindings):
         assert(self.is_pure())

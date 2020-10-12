@@ -9,13 +9,13 @@ exclusion semantics
 etc
 
 Semantics fall into a hierarchy:
-Structure : open/closed world,
+Structure: open/closed world,
  exclusion, modal, binding, context growth
  reinforcement, matching
 ↓
-Node : lift, contains, call
+Node: lift, contains, call
 ↓
-Value : transform, call, query
+Value: transform, call, query
 
 
 """
@@ -43,34 +43,34 @@ class AcabNodeSemantics:
     Always handles AcabNodes wrapping AcabValues
 
     """
-    def accessible(self, word : AcabNode, term : AcabValue) -> [AcabNode]:
+    def accessible(self, node: AcabNode, data: Dict[Any, Any], term: AcabValue) -> [AcabNode]:
         """
         Retrieve a list of all nodes accessible from this node,
         according to a constraint term
         """
         raise NotImplementedError()
 
-    def equal(self, word : AcabNode, word2 : AcabNode) -> bool:
+    def equal(self, word: AcabNode, word2: AcabNode) -> bool:
         raise NotImplementedError()
 
-    def lift(self, word : AcabValue, constructor : Callable) -> AcabNode:
+    def lift(self, word: AcabValue, constructor: Callable) -> AcabNode:
         """ Lifting a node to ensure it has necessary information """
         # could include vocabulary tracking a la spacy
         raise NotImplementedError()
 
 
-    def add(self, node : AcabNode, word: AcabValue, node_constructor : Callable) -> AcabNode:
+    def add(self, node: AcabNode, word: AcabValue, node_constructor: Callable) -> Tuple[bool, AcabNode]:
         raise NotImplementedError()
 
-    def get(self, node : AcabNode, query_term : AcabValue) -> Optional[AcabNode]:
+    def get(self, node: AcabNode, query_term: AcabValue) -> Optional[AcabNode]:
         """ Getting a node from the data structure """
         raise NotImplementedError()
 
-    def contain(self, node : AcabNode, query_term : AcabValue) -> bool:
+    def contain(self, node: AcabNode, query_term: AcabValue) -> bool:
         """ Getting Node inclusion in a set """
         raise NotImplementedError()
 
-    def delete(self, node : AcabNode, to_delete : AcabValue) -> Optional[AcabNode]:
+    def delete(self, node: AcabNode, to_delete: AcabValue) -> Optional[AcabNode]:
         """ Removing a node from the data structure """
         raise NotImplementedError()
 
@@ -85,14 +85,18 @@ class AcabNodeSemantics:
         assert(not term.is_at_var)
         # TODO: validate on activate context too
 
-        potentials = [(i, d, passing) for i,d,n in candidate_pairs for passing in self.accessible(n, d, term)]
+        # Get the frontier
+        potentials = [(i, d, passing) for i,d,n in candidate_pairs
+                      for passing in self.accessible(n, d, term)]
+        
         passing = potentials
 
+        # Filter the frontier
         if tests is not None:
             alphas, betas, subbinds, annotations, variable_ops = tests
 
             if bool(variable_ops):
-                raise Exception("TODO : Variable Ops")
+                raise Exception("TODO: Variable Ops")
 
             # Apply Tests
             # TODO: test type instance if not ATOM
@@ -148,7 +152,7 @@ class AcabNodeSemantics:
     def _test_annotations(self, node, comps, data=None, engine=None):
         return all([word(node, data=data, engine=engine) for word in comps])
 
-    def _prepare_dict(self, data : dict, passing_node : AcabNode, query_term : AcabValue):
+    def _prepare_dict(self, data: dict, passing_node: AcabNode, query_term: AcabValue):
         """ Prepare a tuple for adding to the context
 
         """
@@ -156,6 +160,6 @@ class AcabNodeSemantics:
         data_copy.update(data)
         if query_term.is_var:
             data_copy[query_term.name] = passing_node.value
-            data_copy[AT_BIND_S + query_term.name] =  passing_node
+            data_copy[AT_BIND_S + query_term.name] = passing_node
 
         return data_copy

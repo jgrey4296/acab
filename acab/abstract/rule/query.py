@@ -9,10 +9,10 @@ Each Component combines a QueryOp with values to use.
 import logging as root_logger
 
 from acab.config import AcabConfig
-from acab.abstract.printing import util as PrU
 
 from acab.abstract.core import type_base as TB
 from acab.abstract.core.sentence import Sentence
+from acab.abstract.core.value import AcabValue
 
 from acab.abstract.data.node import AcabNode
 

@@ -14,8 +14,7 @@ a.pipeline(::Pipeline):
 end
 """
 from acab.abstract.rule.rule import Rule
-from acab.abstract.rule.production_operator import ProductionOperator
-from acab.abstract.printing import util as PrU
+from acab.abstract.rule.production_operator import ProductionOperator, ProductionContainer
 from acab.config import AcabConfig
 
 util = AcabConfig.Get()
@@ -123,4 +122,4 @@ def make_pipeline(toks):
 
     the_pipeline = Pipeline(query=c, transform=t, action=t)
 
-    return (the_pipeline.type, the_layer)
+    return (the_pipeline.type, the_pipeline)

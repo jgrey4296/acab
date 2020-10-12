@@ -9,6 +9,7 @@ from typing import Callable, Iterator, Union, Match, TypeVar
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar
 
+from uuid import uuid1
 import itertools as it
 from enum import Enum
 import logging as root_logger
@@ -43,7 +44,7 @@ class Contexts:
         assert(isinstance(values, tuple))
         new_base = {}
         new_base.update(base)
-        for x,y in zip(names, values):
+        for x, y in zip(names, values):
             new_base[x.name] = AcabValue.safe_make(y)
 
         return new_base
@@ -54,17 +55,18 @@ class Contexts:
         Setup the initial context of no bindings
         """
         # Link the context with what asked it:
+        self._uuid = uuid1()
         self._query_history = []
         self._query_fail_clause = None
         self._query_remainder = []
         # Bind Groups
-        self._bind_groups : List[Dict] = []
+        self._bind_groups: List[Dict] = []
         # Nodes
-        self._nodes : List[AcabNode] = []
+        self._nodes: List[AcabNode] = []
         # Failures: Records true failures
-        self._failures : List[Dict] = []
+        self._failures: List[Dict] = []
         # Queued Failures: Records failures that may potentially have fallback values
-        self._queued_failures : List[Dict] = []
+        self._queued_failures: List[Dict] = []
 
         # The Engine used for operator retrieval
         self._engine = engine
@@ -119,7 +121,7 @@ class Contexts:
                 self._nodes.append(n)
         else:
             # failures are being tracked:
-            for i,d,n in data:
+            for i, d, n in data:
                 successes.add(i)
                 self._bind_groups.append(d)
                 self._nodes.append(n)
@@ -156,7 +158,7 @@ class Contexts:
         """
         while bool(self._queued_failures):
             current = self._queued_failures.pop(0)
-            for bind_target, val in clause._data[FALLBACK_S]:
+            for bind_target, val in fallback_pairs:
                 current[bind_target.value] = val
 
             self.append((current, None))
@@ -207,7 +209,7 @@ class Contexts:
         Semantics of collapse:
         1[ctx]n -> 1[c:ctx]1
         where
-        c = a_ctx = { on_var : [x[on_var] for x in ctxs] }
+        c = a_ctx = { on_var: [x[on_var] for x in ctxs] }
         """
         assert(isinstance(on_vars, set))
         bind_groups = self._bind_groups
@@ -224,7 +226,7 @@ class Contexts:
         pairs = self.pairs()
         ancestor_tracker = {}
         groups = {}
-        for i,xy in enumerate(pairs):
+        for i, xy in enumerate(pairs):
             the_type = type(xy[1])
             if the_type not in groups:
                 groups[the_type] = []
