@@ -13,6 +13,13 @@
   CLOCK: [2020-05-11 Mon 15:59]--[2020-05-11 Mon 16:24] =>  0:25
   CLOCK: [2020-05-11 Mon 15:16]--[2020-05-11 Mon 15:41] =>  0:25
   :END:
+
+  "Words are ephemeral,
+  Nodes fade away,
+  Actions are forever"
+
+
+  add ladd lisp like ,@ splice for sentences
 ** Functionality
 *** DONE [[/Volumes/documents/github/py_rule/py_rule/abstract/production_operator.py::20][Implement operator infix logic]]                                         :parsing:
     CLOSED: [2020-08-25 Tue 21:58]
@@ -293,7 +300,7 @@
      TODO Retract negated sentences
 
 ** Testing
-*** TODO [[/Volumes/documents/github/acab/py_rule/working_memory/trie_wm/__tests/trie_wm_tests.py::126][Decide on semantics of switching exclusion operators]]
+*** DONE [[/Volumes/documents/github/acab/py_rule/working_memory/trie_wm/__tests/trie_wm_tests.py::126][Decide on semantics of switching exclusion operators]]
 
     TODO: make this so you can't switch between . and ! ?
 
