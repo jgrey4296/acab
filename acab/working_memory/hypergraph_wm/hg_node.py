@@ -1,4 +1,4 @@
-from acab.abstract.node import AcabNode
+from acab.abstract.data.node import AcabNode
 
 class HGNode(AcabNode):
     """ A Node in a HyperGraph """
