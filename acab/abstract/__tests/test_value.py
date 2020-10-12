@@ -6,7 +6,6 @@ import logging
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
-from acab.abstract.printing import util as PrU
 from acab.abstract.core.value import AcabValue, AcabStatement
 from acab.abstract.data.node import AcabNode
 from acab.abstract.core.sentence import Sentence

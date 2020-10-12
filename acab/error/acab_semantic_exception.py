@@ -9,5 +9,3 @@ class AcabSemanticException(AcabBaseException):
 
     def __str__(self):
         return "Semantic Failure: {} at: {}".format(self._info, str(self._data))
-
-
