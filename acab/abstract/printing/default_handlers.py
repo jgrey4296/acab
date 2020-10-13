@@ -1,97 +1,66 @@
 #!/usr/bin/env python
 from . import wrappers
 
+def regrouper(PS, source, processed, acc):
+    acc['words'] = processed
+    return (PS.e_pass, None, None)
 
-def value_handler(semantics: 'AcabPrintSemantics', value: 'AcabValue') -> str:
+
+# Sentinels
+def value_sentinel(PS, source, processed, acc):
+    # name, modal, constraints
+    modal_data_field = PS.ask('MODAL_FIELD')
+
+    name = acc['name']
+    modal = ""
+    if modal_data_field is not False:
+        modal = acc[modal_data_field]
+    if PS.ask("drop_end_op", for_uuid=acc['uuid']):
+        modal = ""
+
+    constraints = acc['constraints']
+    joined_constraints = ""
+    if bool(constraints):
+        joined_constraints = wrappers._wrap_constraints(PS, joined_constraints, acc)
+
+    return (PS.SIMPLE, "{}{}{}".format(name, joined_constraints,modal))
+
+def simple_value_sentinel(PS: 'AcabPrintSemantics', value: 'AcabValue', acc):
     """ Basic Value Handler, returns the name """
-    current_str = str(value.name)
-    for func in [wrappers._maybe_wrap_str,
-                 wrappers._maybe_wrap_regex,
-                 wrappers._maybe_wrap_var]:
-        current_str = func(semantics, value, current_str)
+    current_str = acc['name']
+    return (PS.simple, current_str)
 
-    # TODO use continuation to print type instance then combine
-    # TODO add constraints to continuation
-    # transform the value format if necessary
-    # eg: 2.34 => 2d34
-    # if hasattr(value, "type") and value.type in TYPE_WRAPS:
-    #     val = TYPE_WRAPS[value.type](val)
+def value_uuid_long_sentinel(PS, value, processed, acc):
+    uuid = accum['uuid']
+    name = accum['name']
 
-    # # Wrap constraints
-    # val = _wrap_constraints(val, value._data)
+    return (PS.simple, "({} : {})".format(name, uuid))
 
-    return current_str
-
-
-def value_uuid_long_handler(semantics, value) -> str:
-    uuid = str(value._uuid)
-    current_str = str(value.name)
-    for func in [wrappers._maybe_wrap_str,
-                 wrappers._maybe_wrap_regex,
-                 wrappers._maybe_wrap_var]:
-        current_str = func(semantics, value, current_str)
-
-    return "({} : {})".format(current_str, uuid)
-
-def value_modal_handler(semantics, value) -> str:
-    modal_data_field = semantics.ask('MODAL_FIELD')
+def value_modal_sentinel(PS, value, processed, acc):
+    modal_data_field = PS.ask('MODAL_FIELD')
     assert(modal_data_field is not False)
+    name = acc['name']
+    modal_str = acc[modal_data_field]
 
-    current_str = str(value.name)
-    modal_str = wrappers._modal_operator(semantics, value, name)
-
-    for func in [wrappers._maybe_wrap_str,
-                 wrappers._maybe_wrap_regex,
-                 wrappers._maybe_wrap_var]:
-        current_str = func(semantics, value, current_str)
-
-    # Return as tuple, to leave off modal-str if necessary
-    # at end of sentence
-    drop_end = semantics.ask("drop_end_op", for_uuid=value._uuid)
+    drop_end = PS.ask("drop_end_op", for_uuid=value._uuid)
     if drop_end:
-        return current_str
+        return name
     else:
-        return "{}{}".format(current_str, modal_str)
+        return "{}{}".format(name, modal_str)
 
-
-def sentence_finaliser(semantics, source, processed):
+def sentence_sentinel(PS, source, processed, acc):
     # combine the words
-    join_str = semantics.ask("sentence_join_str")
-    remaining = ""
-    combined = ""
-    try:
-        # TODO
-        fallback_index = processed.index(("fallback_separator", None))
-        combined = join_str.join(processed[:fallback_index])
-        remaining = wrappers._wrap_fallback(semantics, processed[fallback_index+1:])
-    except ValueError:
-        combined = join_str.join(processed)
+    join_str = PS.ask("sentence_join_str")
+    words = acc['words']
+    combined = join_str.join(words)
 
-    as_query = wrappers._maybe_wrap_question(semantics, value, combined)
-    as_negated = wrappers._maybe_wrap_negation(semantics, value, combined)
+    as_query = wrappers._maybe_wrap_question(PS, value, combined)
+    as_negated = wrappers._maybe_wrap_negation(PS, value, combined)
 
-    final = as_negated + remaining
+    final = as_negated
+    return (PS.simple, as_negated, None)
 
-    return as_negated
-
-def sentence_handler(semantics, value):
-    words = value.words
-    semantics.set_for_uuid(words[-1]._uuid, "drop_end_op", True)
-
-    # TODO: fallback values
-    FALLBACK_S = semantics.ask("FALLBACK_S")
-    try:
-        # TODO use an enum here
-        fallback_words = [("fallback_separator", None)]
-        fallback_words += value._data[FALLBACK_S]
-        words += [y for x in fallback_words for y in x]
-    except KeyError:
-        pass
-
-    return (value, words, sentence_finaliser)
-
-
-def operator_finaliser(semantics, source, processed) -> str:
+def operator_sentinel(PS, source, processed, acc):
     # Get func symbol
 
     # split processed
@@ -103,7 +72,39 @@ def operator_finaliser(semantics, source, processed) -> str:
 
     return val
 
-def operator_handler(semantics, value) -> str:
+def container_sentinel(PS, source, processed, acc):
+    # TODO combine clauses as needed
+
+    return None
+
+def statement_sentinel(PS, source, processed, acc):
+    # Sequence processed into final form
+
+    return None
+
+
+# Accumulators
+
+def value_uuid_accumulator(PS, value, acc):
+    return (PS.accumulate, {'uuid': str(value._uuid)})
+
+def value_name_accumulator(PS, value, acc):
+    return (PS.accumulate, {'name': str(value.name)})
+
+
+# Substructs
+
+def value_params_substuct(PS, value, acc):
+    # TODO specify a sentinel too
+    return (PS.substruct, value._params)
+
+def sentence_substruct(PS, value, acc):
+    words = value.words
+    PS.set_for_uuid(words[-1]._uuid, "drop_end_op", True)
+
+    return (PS.substruct, words, regrouper)
+
+def operator_substruct(PS, value, acc):
     """ Op Fix is the count of vars to print before printing the op.
     eg: op_fix=0 : + 1 2 3 ...
         op_fix=2 : 1 2 + 3 ...
@@ -121,25 +122,13 @@ def operator_handler(semantics, value) -> str:
     components = head + [operator] + tail
 
 
-    return (value, components, operator_finaliser)
+    return (value, components, operator_sentinel)
 
+# Simple Handlers
 
-def container_finaliser(semantics, source, processed) -> str:
-    # TODO combine clauses as needed
+def container_handler(PS, container): the_clauses = container.clauses return (container, the_clauses, container_sentinel)
 
-    return None
-
-def container_handler(semantics, container) -> str:
-    the_clauses = container.clauses
-    return (container, the_clauses, container_finaliser)
-
-
-def statement_finaliser(semantics, source, processed) -> str:
-    # Sequence processed into final form
-
-    return None
-
-def statement_handler(semantics, value) -> str:
+def statement_handler(PS, value, acc):
     # Get name
 
     # Get type
@@ -152,4 +141,4 @@ def statement_handler(semantics, value) -> str:
 
     # TODO Order contents with tuples
     content = []
-    return (value, content, statement_finaliser)
+    return (value, content, statement_sentinel)
