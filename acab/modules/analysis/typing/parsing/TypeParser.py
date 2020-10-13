@@ -52,3 +52,8 @@ TYPEDEC_CORE.setParseAction(make_type_dec)
 
 # NAMING
 TYPEDEC_CORE.setName("TypeDeclarationStatement")
+
+parse_point = TYPEDEC_CORE
+
+def parseString(in_string):
+    return parse_point.parseString(in_string)[:]
