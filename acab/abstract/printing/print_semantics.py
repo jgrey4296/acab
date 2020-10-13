@@ -8,6 +8,7 @@ from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar
 
 from collections import defaultdict
+from enum import Enum
 
 from acab.abstract.core.type_base import TypeInstance
 from acab.abstract.core.value import AcabValue
@@ -49,14 +50,20 @@ FALLBACK_MODAL_S  = util("Printing", "FALLBACK_MODAL_S", action=AcabConfig.actio
 Printable = Union[AcabValue, AcabNode, DataStructure, Contexts, TypeInstance, str]
 # pylint: enable=line-too-long
 
-HandlerContinuation h Union[str, Tuple[Printable, List[Printable], Callable]]
+RET_enum = Enum("Handler Return Form", "PASS SIMPLE ACCUMULATOR SUBSTRUCT CALL SENTINEL PRINTABLE")
 
-ContextValues = Union[str, Tuple[Any]]
-StackValues = Tuple[List[Printable],
-                    List[ContextValues]]
-QueueValues = Union[Printable,
-                    Tuple[Printable, Callable]]
+AccumulatorReturn = Tuple[RET_enum, Dict[str, Any], None]
+SubstructReturn = Tuple[RET_enum, List[Printable], Optional['Sentinel']]
+SimpleReturn = Tuple[RET_enum, str, None]
+HandlerReturnUnion = Union[AccumulatorReturn, SubstrctReturn, SimpleReturn]
 
+Handler = Callable[['AcabPrintSemantics', Printable], HandlerReturnUnion]
+Sentinel = Callable[['AcabPrintSemantics', Printable, List[str], Dict[Any, Any]], HandlerReturnUnion]
+
+SemanticSpec = Tuple[List[Handler], Sentinel]
+ContextValue = str
+SemBox = Tuple[RET_enum, Callable, Printable]
+StackValue = Tuple[List[SemBox], List[str], Dict[Any, Any]]
 
 
 class AcabPrintSemantics:
@@ -64,18 +71,23 @@ class AcabPrintSemantics:
     Provides the basic walk through of a value/node/container etc
     to call handlers to produce a re-parseable string
     """
+    HANDLER_E = RET_enum
+
+    # Utility access for handlers:
+    accumulate = RET_enum.ACCUMULATOR
+    substruct = RET_enum.SUBSTRUCT
+    simple = RET_enum.SIMPLE
+    e_pass = RET_enum.PASS
 
     def __init__(self,
-                 type_print_semantics: Dict[AcabValue, Callable],
+                 type_print_semantics: Dict[Printable, SemanticSpec],
                  str_aliases: Dict[Any, str],
                  default_true: List[str] = None,
                  default_values: Dict[str, Any] = None):
 
         self._uuid_board: Dict['UUID', 'DefaultDict'] = {}
-        self._context_stack: List[List[ContextValues]] = []
-        self._current_context: List[ContextValues] = []
-        self._bottom_semantic = lambda s, x: str(x)
-        self._type_semantics = type_print_semantics
+        self._bottom_semantic = ([], lambda PS, val, processed, acc: str(val))
+        self._type_semantics: Dict[Printable, SemanticSpec] = type_print_semantics
         self._aliases = str_aliases
         self._opts = self.default_opts(default_true, default_values)
 
@@ -115,7 +127,7 @@ class AcabPrintSemantics:
             opts[x] = y
         return opts
 
-    def retrieve_semantics(self, val: Printable) -> Union[Callable, str]:
+    def retrieve_semantics(self, current_val: Printable) -> Union[SemanticSpec, str]:
         """
         use the_type (ie: python type) first, if its necessary, differentiate using type_instance
 
@@ -124,29 +136,29 @@ class AcabPrintSemantics:
         chosen: Callable = self._bottom_semantic
 
         # first do a straight lookup:
-        if val in self._type_semantics:
-            return self._type_semantics[val]
+        if current_val in self._type_semantics:
+            return self._type_semantics[current_val]
 
         # if a str, check aliases
-        if isinstance(val, str) and val in self._aliases:
-            return self._aliases[val]
+        if isinstance(current_val, str) and current_val in self._aliases:
+            return self._aliases[current_val]
 
         # Next lookup by UUID
-        val_uuid = val._uuid
+        val_uuid = current_val._uuid
         if val_uuid in self._type_semantics:
             return self._type_semantics[val_uuid]
 
-        # Then try the acab type hierarchy
+        # TODO Then try the acab type hierarchy
 
-        # then try the python type hierarchy
+        # TODO then try the python type hierarchy
 
-        # update _type_semantics chain with found bindings from hierarchy
-
-
-        # then error
+        # TODO update _type_semantics chain with found bindings from hierarchy
 
 
-    def old_retrieve_semantics(self, val: Printable) -> Callable:
+        return chosen
+
+
+    def old_retrieve_semantics(self, current_val: Printable) -> Callable:
         # TODO : override tuples
         # TODO should I be using my type instances for semantics?
         curr = type_instance
@@ -177,64 +189,71 @@ class AcabPrintSemantics:
         to str's, and combines them using a final-handler or "\n".join
         """
         # Context: Processed strings.
-        context: List[ContextValues] = []
+        context: List[ContextValue] = []
         # The paused stack of contexts. Invariant: all(x:Tuple for x in stack])
-        stack: List[StackValues] = []
+        stack: List[StackValue] = []
         # The current queue of values to process
-        queue: List[QueueValues] = values[:]
+        queue: List[SemBox] = [(RET_enum.PRINTABLE, None, x) for x in values]
         # The completed context of strings to join
-        processed_sub_ctx: Optional[List[ContextValues]] = None
-
+        processed_sub_ctx: List[ContextValue] = []
+        accumulator: Dict[str, Any] = {}
         while bool(stack) or bool(queue):
-            result = None
-            direct_add = False
+            result_form, result, result_sentinel = None, None, None
             if not bool(queue):
                 # Queue is empty, so get the next paused context
                 processed_sub_ctx = context
-                stack_q, stack_ctx = stack.pop()
+                stack_q, stack_ctx, stack_accumulator = stack.pop()
                 context = stack_ctx
                 queue = stack_q
+                accumulator = stack_accumulator
 
-            # Get something to process
-            val = queue.pop(0)
-            if processed_sub_ctx is not None and isinstance(val, tuple):
-                # got a completed context and a handler for it, use it
-                assert(all([isinstance(x, (tuple, str)) for x in processed_sub_ctx]))
-                source, finaliser = val
-                result = finaliser(self, source, processed_sub_ctx)
-                assert(isinstance(result, str))
-                direct_add = True
-                processed_sub_ctx = None
-
-            elif isinstance(val, (str, tuple)):
-                # Ignore tuples, they are info for handlers
-                # Ignore strings because theres nothing to do to them
-                result = val
-                direct_add = True
+            instruction_e, func, data = queue.pop(0)
+            if instruction is RET_enum.PRINTABLE:
+                # A Printable value to find instructions for
+                handlers, sentinel = self.retrieve_semantics(data)
+                # Add the handlers to the front of the queue
+                new_head = [(RET_enum.CALL, handler, data) for handler in handlers] + [(RET_enum.SENTINEL, sentinel, data)]
+                queue = new_head + queue
+            elif instruction is RET_enum.SIMPLE:
+                # SIMPLE just gets added to the context, nothing to do
+                result_form = instruction
+                result = data
+            elif instruction is RET_enum.CALL:
+                result_form, result, result_sentinel = func(self, data, accumulator)
+            elif instruction is RET_enum.SENTINEL:
+                # Run a sentinel to collect the context together
+                result_form, result, result_sentinel = func(self, data, processed_sub_ctx, accumulator)
+                processed_sub_ctx = []
             else:
-                # Otherwiser, val is a printable, so start the process
-                handler = self.retrieve_semantics(val)
-                result = handler(self, val)
+                raise Exception("Unrecognised Instruction: {}".format(instruction))
 
+            #------------------------------------------------------------
+            if result_form is RET_enum.ACCUMULATOR:
+                assert(isinstance(result, dict))
+                accumulator.update(result)
 
-            assert(result is not None)
-            if direct_add or isinstance(result, str):
-                # Handler returned a non-continued clause : You're done
-                context.append(result)
-            else:
-                # Handler returned incomplete
-                # So pause current context, step down, process, step up
-                source, remaining, finaliser = result
-                queue.insert(0, (source, finaliser))
-                stack.append((queue, context))
-                queue = remaining
+            elif result_form is RET_enum.SUBSTRUCT:
+                # add to stack:
+
+                stack.append((queue, context, accumulator))
+                queue = [(RET_enum.PRINTABLE, None, x) for x in result] + result_sentinel_sembox
+                if result_sentinel is not None:
+                    queue.append((RET_enum.SENTINEL, result_sentinel, data))
+
                 context = []
 
+            elif result_form is RET_enum.SIMPLE:
+                assert(isinstance(result, str))
+                context += result
+            elif result_form is RET_enum.PASS:
+                continue
+            else:
+                raise Exception("Unrecognised Result Form: {} : {}".format(result_form, result))
 
-        # TODO : finalise the final context with a handler if necessary
         if final_handler is not None:
-            # handler is responsible for filtering out tuples:
-            return final_handler(self, context)
+            final_val = final_handler(self, context, accumulator)
+            assert(isinstance(final_val, str))
+            return final_val
         else:
             # Filter out info tuples if necessary for default:
             # DEFAULT join
@@ -242,16 +261,18 @@ class AcabPrintSemantics:
 
 
 
-def default_handler(print_semantics: AcabPrintSemantics, value: Printable) -> HandlerContinuation:
+def default_handler(print_semantics: AcabPrintSemantics, value: Printable) -> HandlerReturnUnion:
     """
     The simplest print handler.
     """
-    return str(value)
+    return RET_enum.SIMPLE, str(value)
 
 
-def default_finaliser(print_semantics: AcabPrintSemantics,
-                      value: Printable, ctx: List[Union[Tuple[Any], str]]) -> str:
+def default_sentinel(print_semantics: AcabPrintSemantics,
+                     value: Printable,
+                     ctx: List[ContextValue],
+                     accumulator: Dict[Any, Any]) -> HandlerReturnUnion:
     """
-    The Simplest finaliser
+    The Simplest sentinel
     """
-    return " ".join(ctx)
+    return RET_enum.SIMPLE, " ".join(ctx)
