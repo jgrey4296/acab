@@ -51,14 +51,14 @@ class AcabValue:
         assert (value is None or isinstance(value, value_type_tuple)), breakpoint()
 
         self._uuid = uuid1()
-        self._name = None
-        self._value = value
-        self._hash_name = None
+        self._name : Optional[str] = None
+        self._value : Any = value
+        self._hash_name : str = None
 
-        self._params = []
-        self._tags = set()
-        self._data = {VALUE_TYPE_S: ATOM,
-                      BIND_S : False}
+        self._params : List[Any] = []
+        self._tags : Set[str] = set()
+        self._data : Dict[str, Any] = {VALUE_TYPE_S: ATOM,
+                                       BIND_S : False}
 
         if data is not None:
             self._data.update(data)
@@ -77,14 +77,17 @@ class AcabValue:
     def __str__(self):
         """ Data needs to implement a str method that produces
         output that can be re-parsed """
+        if self.name is None:
+            return repr(self)
         return str(self.name)
 
     def __repr__(self):
         uuid = str(self._uuid)
         uuid_chop = "{}..{}".format(uuid[:4],uuid[-4:])
-        return "({}:{}:{})".format(self.__class__.__name__,
-                                   uuid_chop,
-                                   str(self))
+        return "({}:{}:{}:{})".format(self.__class__.__name__,
+                                      uuid_chop,
+                                      str(self.name),
+                                      str(self.value))
 
     def __hash__(self):
         if self._hash_name is None:
@@ -97,11 +100,8 @@ class AcabValue:
 
 
     @property
-    def name(self) -> str:
-        if self._name is not None:
-            return self._name
-
-        return self._value
+    def name(self) -> Optional[str]:
+        return self._name
 
     @property
     def value(self):

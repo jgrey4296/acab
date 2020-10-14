@@ -13,6 +13,7 @@ from re import search
 from uuid import uuid1
 import weakref
 from copy import deepcopy
+from weakref import WeakValueDictionary, ref, proxy
 
 from acab.config import AcabConfig
 
@@ -47,6 +48,7 @@ class AcabNode:
         self._path = None
         self._parent = None
         self._children = {}
+        self._uuid_children = WeakValueDictionary()
 
         self._data = {}
 
@@ -71,10 +73,7 @@ class AcabNode:
         return bool(self._children)
 
     def __contains__(self, v):
-        if isinstance(v, str):
-            return v in self._children
-        else:
-            return v.name in self._children
+        return self.has_child(v)
 
     def __iter__(self):
         return iter(self._children.values())
@@ -105,21 +104,26 @@ class AcabNode:
         """
         assert(isinstance(node, AcabNode))
         self._children[node.name] = node
+        self._uuid_children[node.uuid] = node
         return node
 
     def get_child(self, node):
         """ Get a node using a string, or a node itself """
         if isinstance(node, str):
             return self._children[node]
-        else:
-            return self._children[node.name]
+        assert(isinstance(node, AcabNode))
+        return self._children[node.uuid]
 
     def has_child(self, node):
         """ Question if this node has a particular child """
-        if isinstance(node, str):
-            return node in self._children
+        if isinstance(v, str):
+            return v in self._children
+        elif isinstance(v, AcabNode):
+            return v._uuid in self._uuid_children
+        elif isinstance(AcabValue):
+            return v.name in self._children
         else:
-            return node.name in self._children
+            return False
 
     def remove_child(self, node):
         """ Delete a child from this node, return success state
@@ -131,6 +135,7 @@ class AcabNode:
             if isinstance(node, str):
                 del self._children[node]
             else:
+                assert(isinstance(node, AcabNode))
                 del self._children[node.name]
 
         return result
@@ -140,7 +145,6 @@ class AcabNode:
         mutate object
         """
         self._children = {}
-
 
     def set_parent(self, parent):
         """ Set the parent node to this node
@@ -174,8 +178,7 @@ class AcabNode:
         raise DeprecationWarning()
 
     def pprint(self, opts=None, **kwargs):
-        return self.value.pprint(opts, **kwargs)
-
+        raise DeprecationWarning("Use Print Semantics")
 
     def set_data(self, data):
         raise DeprecationWarning()
