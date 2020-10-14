@@ -1,12 +1,24 @@
 #!/usr/bin/env python
 from . import wrappers
+from acab.config import AcabConfig
+
+util = AcabConfig.Get()
+FUNC_SYMBOL_S = util("Parsing", "FUNC_SYMBOL_S")
+QUERY_SYMBOL_S = util("Parsing", "QUERY_SYMBOL_S")
+
 
 def regrouper(PS, source, processed, acc):
-    acc['words'] = processed
-    return (PS.e_pass, None, None)
+    """
+    Regroup some processed into a position in the accumulator
+    """
+    return (PS.accumulate, {'words': processed}, None)
 
+
+# Handler Types: Simple, Record, Destruct, Sentinel, Override
 
 # Sentinels
+
+
 def value_sentinel(PS, source, processed, acc):
     # name, modal, constraints
     modal_data_field = PS.ask('MODAL_FIELD')
@@ -23,32 +35,27 @@ def value_sentinel(PS, source, processed, acc):
     if bool(constraints):
         joined_constraints = wrappers._wrap_constraints(PS, joined_constraints, acc)
 
-    return (PS.SIMPLE, "{}{}{}".format(name, joined_constraints,modal))
+    # TODO add variable wrap / type wrap
+
+    return (PS.simple, "{}{}{}".format(name, joined_constraints,modal), None)
 
 def simple_value_sentinel(PS: 'AcabPrintSemantics', value: 'AcabValue', acc):
-    """ Basic Value Handler, returns the name """
+    """ Basic Value Handler, returns the name or a basic variable glyph """
     current_str = acc['name']
-    return (PS.simple, current_str)
+    if current_str is None and value.is_var:
+        current_str = "$_"
+
+    return (PS.simple, current_str, None)
 
 def value_uuid_long_sentinel(PS, value, processed, acc):
+    """ A Basic sentinel for tracking specific objects """
     uuid = accum['uuid']
     name = accum['name']
 
-    return (PS.simple, "({} : {})".format(name, uuid))
-
-def value_modal_sentinel(PS, value, processed, acc):
-    modal_data_field = PS.ask('MODAL_FIELD')
-    assert(modal_data_field is not False)
-    name = acc['name']
-    modal_str = acc[modal_data_field]
-
-    drop_end = PS.ask("drop_end_op", for_uuid=value._uuid)
-    if drop_end:
-        return name
-    else:
-        return "{}{}".format(name, modal_str)
+    return (PS.simple, "({} : {})".format(name, uuid), None)
 
 def sentence_sentinel(PS, source, processed, acc):
+    """ Combines its destruct'd words, with its parameters """
     # combine the words
     join_str = PS.ask("sentence_join_str")
     words = acc['words']
@@ -62,15 +69,18 @@ def sentence_sentinel(PS, source, processed, acc):
 
 def operator_sentinel(PS, source, processed, acc):
     # Get func symbol
-
-    # split processed
-
-
+    # TODO have default, plus override from PS?
+    param_join = PS.ask("params_join_str")
+    func_symbol = FUNC_SYMBOL_S
+    # TODO split unary and n-ary operators
+    op_name = acc['op_name']
     # combine for final value
-    # op_str = "{}{}".format(FUNC_SYMBOL_S, pprint(operator.op))
-    # the_params = [x.pprint() for x in operator._params]
+    params = param_join.join(acc['params'])
 
-    return val
+    # TODO if operator._sugared:
+
+    total = "{}{} ({})".format(func_symbol, op_name, params)
+    return (PS.simple, total, None)
 
 def container_sentinel(PS, source, processed, acc):
     # TODO combine clauses as needed
@@ -79,6 +89,11 @@ def container_sentinel(PS, source, processed, acc):
 
 def statement_sentinel(PS, source, processed, acc):
     # Sequence processed into final form
+    # Get name
+    # Get type
+    # Get params
+    # Get Tags
+    # Get body
 
     return None
 
@@ -86,22 +101,27 @@ def statement_sentinel(PS, source, processed, acc):
 # Accumulators
 
 def value_uuid_accumulator(PS, value, acc):
-    return (PS.accumulate, {'uuid': str(value._uuid)})
+    return (PS.accumulate, {'uuid': str(value._uuid)}, None)
 
 def value_name_accumulator(PS, value, acc):
-    return (PS.accumulate, {'name': str(value.name)})
+    return (PS.accumulate, {'name': value.name}, None)
 
 
 # Substructs
 
 def value_params_substuct(PS, value, acc):
     # TODO specify a sentinel too
-    return (PS.substruct, value._params)
+    params = [(PS.e_print, None, x) for x in value._params]
+    return (PS.substruct, params, None)
 
 def sentence_substruct(PS, value, acc):
     words = value.words
+    # TODO: change this to an Override registration
     PS.set_for_uuid(words[-1]._uuid, "drop_end_op", True)
 
+    words = [(PS.e_print, x, None) for x in value.words[:-1]]
+    # words.append((PS.e_call, x, SPECIAL_FUNC))
+    # Return an additional accumulator sentinel for the words
     return (PS.substruct, words, regrouper)
 
 def operator_substruct(PS, value, acc):
@@ -114,31 +134,25 @@ def operator_substruct(PS, value, acc):
     # Get Params
     the_params = value._params
 
-    if operator._sugared:
-        head = [x for x in the_params[:1]]
-        tail = [x for x in the_params[1:]]
+    # TODO add custom accumulator sentinels
+    components = [(PS.e_print, operator, None)]
+    components += [(PS.e_print, x, None) for x in the_params]
 
-    # TODO add info tuples
-    components = head + [operator] + tail
-
-
-    return (value, components, operator_sentinel)
+    return (value, components, None)
 
 # Simple Handlers
 
-def container_handler(PS, container): the_clauses = container.clauses return (container, the_clauses, container_sentinel)
+def container_handler(PS, container):
+    the_clauses = [(PS.e_print, x, None) for x in container.clauses]
+    return (container, the_clauses, None)
 
 def statement_handler(PS, value, acc):
     # Get name
-
     # Get type
-
     # Get params
-
     # Get Tags
-
     # Get body
 
     # TODO Order contents with tuples
     content = []
-    return (value, content, statement_sentinel)
+    return (value, content, None)
