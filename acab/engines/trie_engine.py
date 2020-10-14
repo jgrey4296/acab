@@ -2,12 +2,20 @@
 The combined engine of underlying trie based working memory,
 with support for transforms and actions
 """
+# https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
+from typing import List, Set, Dict, Tuple, Optional, Any
+from typing import Callable, Iterator, Union, Match
+from typing import Mapping, MutableMapping, Sequence, Iterable
+from typing import cast, ClassVar, TypeVar, Generic
+
 import logging as root_logger
 from types import ModuleType
 from os.path import exists, expanduser
 from os.path import abspath
 import pyparsing as pp
+import re
 
+from acab.config import AcabConfig
 from acab.error.acab_parse_exception import AcabParseException
 
 from acab.abstract.core.sentence import Sentence
@@ -20,6 +28,10 @@ from acab.working_memory.trie_wm.trie_working_memory import TrieWM
 from acab.working_memory.trie_wm.parsing import TotalParser as TotalP
 
 logging = root_logger.getLogger(__name__)
+
+util = AcabConfig.Get()
+
+MODULE_SPLIT_REG = re.compile(util("DEFAULT", "MODULE_SPLIT_REG_S"))
 
 # TODO Deprecate this, move code into abstract.engine, or a working memory instance
 class TrieEngine(Engine):
@@ -57,19 +69,18 @@ class TrieEngine(Engine):
         return True
 
 
-    def register_ops(self, sentences):
+    def register_ops(self, sentences: List[Sentence]):
         """
         Take a list of tuples: [(Sentence, Operator)], and add
-        the operators as the leaf of the sentence
+        the operators as the leaves of the sentence
         """
         assert(isinstance(sentences, list))
         # TODO convert strings
-        assert(all([isinstance(x, (Sentence, str)) for x,y in sentences]))
-        assert(all([isinstance(y, ProductionOperator) for x,y in sentences]))
+        assert(all([isinstance(x, Sentence) for x in sentences])), breakpoint()
 
         # TODO: error on duplication
-        for x,y in sentences:
-            self._working_memory.add(x, leaf=y)
+        for x in sentences:
+            self._working_memory.add(x)
 
 
     def get_operator(self, op_sen):
@@ -109,13 +120,14 @@ class TrieEngine(Engine):
         assert(len(alias_sentence) == 1)
         self._working_memory.add(alias_sentence, leaf=sentence)
 
-    def extract_from_module(self, module):
+    def extract_from_module(self, module: ModuleType) -> Tuple[List[Sentence], List['DSL_Fragment']]:
         """
         DFS on a module to retrieve dsl fragments and operators
         Only searches descendents of the original module,
         and only those descendents' __init__ files.
         """
         base_path = module.__package__
+        reference_path = MODULE_SPLIT_REG.split(module.__name__)
         queue = [(base_path, module)]
         components = []
         dsl_fragments = []
@@ -134,9 +146,14 @@ class TrieEngine(Engine):
             dsl_fragments += [y() for x,y in mod_contents if (not y == DSL_Fragment) and isinstance(y, type) and issubclass(y, DSL_Fragment)]
 
             # Get operators:
-            components += [(curr_path + "." + x,  y) for x,y in mod_contents if isinstance(y, ProductionOperator)]
-            components += [(curr_path + "." + x,  y()) for x,y in mod_contents if (not y == ProductionOperator) and isinstance(y, type) and issubclass(y, ProductionOperator)]
+            applicable_operator = lambda y: isinstance(y, ProductionOperator) or isinstance(y, type) and issubclass(y, ProductionOperator)
+            op_needs_instantiation = lambda y: (not y == ProductionOperator) and isinstance(y, type) and issubclass(y, ProductionOperator)
 
+            loc_op_pairs = [(reference_path + MODULE_SPLIT_REG.split(x), y) for x,y in mod_contents if applicable_operator(y)]
+            instanced_operators = [(xs, y() if op_needs_instantiation else y) for xs, y in loc_op_pairs]
+
+            sentences = [Sentence.build(xs).attach_statement(y) for xs, y in instanced_operators]
+            components += sentences
 
         # TODO: load any values needed for the operators?
 
