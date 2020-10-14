@@ -4,14 +4,38 @@ from acab.config import AcabConfig
 
 from acab.abstract.core.type_base import TypeInstance
 
-
 util = AcabConfig.Get()
 
-def _maybe_wrap_str(semantics, value, current):
+# pylint: disable=bad-whitespace
+CONSTRAINT_S      = util("Parsing.Structure", "CONSTRAINT_S")
+OPERATOR_S        = util("Parsing.Structure", "OPERATOR_S")
+QUERY_S           = util("Parsing.Structure", "QUERY_S")
+NEGATION_S        = util("Parsing.Structure", "NEGATION_S")
+FALLBACK_S        = util("Parsing.Structure", "FALLBACK_S")
+VALUE_TYPE_S      = util("Parsing.Structure", "VALUE_TYPE_S")
+
+FUNC_SYMBOL_S     = util("Printing", "FUNC_SYMBOL_S")
+
+VAR_SYMBOL_S      = util("Parsing", "VAR_SYMBOL_S")
+AT_VAR_SYMBOL_S   = util("Parsing", "AT_VAR_SYMBOL_S")
+QUERY_SYMBOL_S    = util("Parsing", "QUERY_SYMBOL_S")
+NEGATION_SYMBOL_S = util("Parsing", "NEGATION_SYMBOL_S")
+TAG_SYMBOL_S      = util("Parsing", "TAG_SYMBOL_S")
+END_S             = util("Parsing", "END_S")
+
+TAB_S             = util("Printing", "TAB_S", action=AcabConfig.actions_e.STRIPQUOTE)
+FALLBACK_MODAL_S  = util("Printing", "FALLBACK_MODAL_S", action=AcabConfig.actions_e.STRIPQUOTE)
+
+# TODO: possibly convert this to instances?
+OBVIOUS_TYPES     = util("Printing", "IMPLICIT_TYPES").split(" ")
+# pylint: enable=bad-whitespace
+
+
+def _maybe_wrap_str(PS, value, current):
 
     return '"{}"'.format(current)
 
-def _wrap_regex(semantics, value, current):
+def _wrap_regex(PS, value, current):
     if not isinstance(value.value, Pattern):
         return current
 
@@ -19,15 +43,15 @@ def _wrap_regex(semantics, value, current):
     return val
 
 
-def _maybe_wrap_var(semantics, value, current):
+def _maybe_wrap_var(PS, value, current):
     assert(isinstance(value, str))
-    sym = semantics.get_alias("VAR_SYMBOL_S")
+    sym = PS.get_alias("VAR_SYMBOL_S")
     if value.is_at_var:
-        sym = semantics.get_alias("AT_VAR_SYMBOL_S")
+        sym = PS.get_alias("AT_VAR_SYMBOL_S")
     if value.is_var:
         return sym + current
     else:
-        return curren
+        return current
 
 
 def _wrap_constraints(value, data):
@@ -39,27 +63,27 @@ def _wrap_constraints(value, data):
     if data[VALUE_TYPE_S] not in OBVIOUS_TYPES:
         constraints.append(data[VALUE_TYPE_S])
 
-    # Get registered data annotations:
-    for x in REGISTERED_CONSTRAINTS:
-        if x in data:
-            if isinstance(data[x], list):
-                constraints += data[x]
-            else:
-                constraints.append(data[x])
+    # # Get registered data annotations:
+    # for x in REGISTERED_CONSTRAINTS:
+    #     if x in data:
+    #         if isinstance(data[x], list):
+    #             constraints += data[x]
+    #         else:
+    #             constraints.append(data[x])
 
     result = value
     # Print the constraints
     if bool(constraints):
-        cons_strs = ", ".join([pprint(x) for x in constraints])
+        cons_strs = ", ".join([str(x) for x in constraints])
         result += "({})".format(cons_strs)
     return result
 
-def _modal_operator(semantics, value, current):
-    modal_data_field = semantics.ask('MODAL_FIELD')
+def _modal_operator(PS, value, current):
+    modal_data_field = PS.ask('MODAL_FIELD')
     if modal_data_field not in value._data:
-        modal_str = semantics.get_alias("FALLBACK_MODAL_S")
+        modal_str = PS.get_alias("FALLBACK_MODAL_S")
     else:
-        modal_str = semantics.get_alias(modal_data_field)
+        modal_str = PS.get_alias(modal_data_field)
 
     return modal_str
 
@@ -73,23 +97,23 @@ def _wrap_rebind(value, rebind, is_sugar=False):
 
     return "{} {} {}".format(value,
                              arrow,
-                             pprint(rebind))
+                             str(rebind))
 
-def _maybe_wrap_question(semantics, value, current):
+def _maybe_wrap_question(PS, value, current):
     query_symbol = ""
     if value._data["QUERY_S"]:
-        query_symol = semantics.get_alias("QUERY_SYMBOL_S")
+        query_symol = PS.get_alias("QUERY_SYMBOL_S")
 
     return "{}{}".format(current, query_symbol)
 
-def _maybe_wrap_negation(semantics, value, current):
+def _maybe_wrap_negation(PS, value, current):
     neg_symbol = ""
     if "NEGATION_S" in value._data and value._data["NEGATION_S"]:
-        neg_symbol = semantics.get_alias("NEGATION_SYMBOL_S")
+        neg_symbol = PS.get_alias("NEGATION_SYMBOL_S")
 
     return "{}{}".format(neg_symbol, current)
 
-def _wrap_fallback(semantics, the_list):
+def _wrap_fallback(PS, the_list):
     assert(len(the_list)%2 == 0)
 
     the_vars = [x for i, x in enumerate(the_list) if i%2==0]
@@ -122,8 +146,9 @@ def _wrap_end(value, newline=False):
     else:
         return "{}{}\n".format(value, END_S)
 
-def _wrap_var_list(val, the_vars, newline=False):
-    head = ""
-    if newline:
-        head = "\n"
-    return "{}{}{}| {} |\n".format(val, head, TAB_S, ", ".join([_wrap_var(x.name) for x in the_vars]))
+def _wrap_var_list(PS, val, current): 
+    # head = ""
+    # if newline:
+    #     head = "\n"
+    # return "{}{}{}| {} |\n".format(val, head, TAB_S, ", ".join([_maybe_wrap_var(x.name) for x in the_vars]))
+    return None
