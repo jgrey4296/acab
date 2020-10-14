@@ -50,12 +50,12 @@ FALLBACK_MODAL_S  = util("Printing", "FALLBACK_MODAL_S", action=AcabConfig.actio
 Printable = Union[AcabValue, AcabNode, DataStructure, Contexts, TypeInstance, str]
 # pylint: enable=line-too-long
 
-RET_enum = Enum("Handler Return Form", "PASS SIMPLE ACCUMULATOR SUBSTRUCT CALL SENTINEL PRINTABLE")
+RET_enum = Enum("Handler Return Form", "PASS SIMPLE ACCUMULATOR SUBSTRUCT CALL SENTINEL PRINTABLE PUSHSTACK")
 
 AccumulatorReturn = Tuple[RET_enum, Dict[str, Any], None]
 SubstructReturn = Tuple[RET_enum, List[Printable], Optional['Sentinel']]
 SimpleReturn = Tuple[RET_enum, str, None]
-HandlerReturnUnion = Union[AccumulatorReturn, SubstrctReturn, SimpleReturn]
+HandlerReturnUnion = Union[AccumulatorReturn, SubstructReturn, SimpleReturn]
 
 Handler = Callable[['AcabPrintSemantics', Printable], HandlerReturnUnion]
 Sentinel = Callable[['AcabPrintSemantics', Printable, List[str], Dict[Any, Any]], HandlerReturnUnion]
@@ -74,6 +74,8 @@ class AcabPrintSemantics:
     HANDLER_E = RET_enum
 
     # Utility access for handlers:
+    e_print = RET_enum.PRINTABLE
+    e_call = RET_enum.CALL
     accumulate = RET_enum.ACCUMULATOR
     substruct = RET_enum.SUBSTRUCT
     simple = RET_enum.SIMPLE
@@ -159,29 +161,26 @@ class AcabPrintSemantics:
 
 
     def old_retrieve_semantics(self, current_val: Printable) -> Callable:
-        # TODO : override tuples
-        # TODO should I be using my type instances for semantics?
-        curr = type_instance
         retrieved = None
         descendents_to_update = []
         # TODO adjust the climb:
-        while retrieved is None and curr not in (object, None):
-            if curr in self._type_semantics:
-                retrieved = self._type_semantics[curr]
-            else:
-                curr = curr.__base__
-                descendents_to_update.append(curr)
+        # while retrieved is None and curr not in (object, None):
+        #     if curr in self._type_semantics:
+        #         retrieved = self._type_semantics[curr]
+        #     else:
+        #         curr = curr.__base__
+        #         descendents_to_update.append(curr)
 
-        if retrieved is None:
-            # TODO: should this be a warning?
-            msg = "Missing Print Semantic Binding for: {}".format(the_type)
-            raise AcabSemanticException(msg, the_type)
+        # if retrieved is None:
+        #     # TODO: should this be a warning?
+        #     msg = "Missing Print Semantic Binding for: {}".format(the_type)
+        #     raise AcabSemanticException(msg, the_type)
 
-        if len(descendents_to_update) > 1:
-            # Cache the climb
-            self._type_semantics.update({x : retrieved for x in descendents_to_update})
+        # if len(descendents_to_update) > 1:
+        #     # Cache the climb
+        #     self._type_semantics.update({x : retrieved for x in descendents_to_update})
 
-        return retrieved
+        return None
 
     def print(self, values: List[Printable], final_handler: Callable = None) -> str:
         """
@@ -200,20 +199,18 @@ class AcabPrintSemantics:
         while bool(stack) or bool(queue):
             result_form, result, result_sentinel = None, None, None
             if not bool(queue):
-                # Queue is empty, so get the next paused context
-                processed_sub_ctx = context
-                stack_q, stack_ctx, stack_accumulator = stack.pop()
-                context = stack_ctx
-                queue = stack_q
-                accumulator = stack_accumulator
+                instruction, func, data = (RET_enum.SENTINEL, lambda ps, s, p, a: (RET_enum.SIMPLE, str(p), None), None)
+            else:
+                instruction, func, data = queue.pop(0)
 
-            instruction_e, func, data = queue.pop(0)
             if instruction is RET_enum.PRINTABLE:
                 # A Printable value to find instructions for
+                assert(func is None)
                 handlers, sentinel = self.retrieve_semantics(data)
                 # Add the handlers to the front of the queue
-                new_head = [(RET_enum.CALL, handler, data) for handler in handlers] + [(RET_enum.SENTINEL, sentinel, data)]
-                queue = new_head + queue
+                result = [(RET_enum.CALL, handler, data) for handler in handlers] + [(RET_enum.SENTINEL, sentinel, data)]
+                result_form = RET_enum.SUBSTRUCT
+
             elif instruction is RET_enum.SIMPLE:
                 # SIMPLE just gets added to the context, nothing to do
                 result_form = instruction
@@ -221,9 +218,16 @@ class AcabPrintSemantics:
             elif instruction is RET_enum.CALL:
                 result_form, result, result_sentinel = func(self, data, accumulator)
             elif instruction is RET_enum.SENTINEL:
+                # STACK POP
                 # Run a sentinel to collect the context together
-                result_form, result, result_sentinel = func(self, data, processed_sub_ctx, accumulator)
-                processed_sub_ctx = []
+                result_form, result, result_sentinel = func(self, data, context, accumulator)
+                context = []
+                if not bool(queue):
+                    stack_q, stack_ctx, stack_accumulator = stack.pop()
+                    queue = stack_q
+                    context = stack_ctx
+                    accumulator = stack_accumulator
+
             else:
                 raise Exception("Unrecognised Instruction: {}".format(instruction))
 
@@ -233,18 +237,23 @@ class AcabPrintSemantics:
                 accumulator.update(result)
 
             elif result_form is RET_enum.SUBSTRUCT:
-                # add to stack:
-
+                assert(all([isinstance(x, tuple) for x in result]))
+                # PUSH STACK:
                 stack.append((queue, context, accumulator))
-                queue = [(RET_enum.PRINTABLE, None, x) for x in result] + result_sentinel_sembox
-                if result_sentinel is not None:
-                    queue.append((RET_enum.SENTINEL, result_sentinel, data))
 
+                if result_sentinel is not None:
+                    result.append((RET_enum.SENTINEL, result_sentinel, data))
+                queue = result
                 context = []
+                accumulator = {}
 
             elif result_form is RET_enum.SIMPLE:
-                assert(isinstance(result, str))
-                context += result
+                if isinstance(result, str):
+                    context.append(result)
+                elif isinstance(result, list):
+                    context += result
+                else:
+                    raise Exception("Expected a str or a list")
             elif result_form is RET_enum.PASS:
                 continue
             else:
