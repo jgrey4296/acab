@@ -88,7 +88,7 @@ class AcabPrintSemantics:
                  default_values: Dict[str, Any] = None):
 
         self._uuid_board: Dict['UUID', 'DefaultDict'] = {}
-        self._bottom_semantic = ([], lambda PS, val, processed, acc: str(val))
+        self._bottom_semantic = ([], lambda PS, val, processed, acc: (RET_enum.SIMPLE, str(val), None))
         self._type_semantics: Dict[Printable, SemanticSpec] = type_print_semantics
         self._aliases = str_aliases
         self._opts = self.default_opts(default_true, default_values)
@@ -187,6 +187,8 @@ class AcabPrintSemantics:
         The public print function. Takes a list of values, converts them
         to str's, and combines them using a final-handler or "\n".join
         """
+        if not isinstance(values, list):
+            values = [values]
         # Context: Processed strings.
         context: List[ContextValue] = []
         # The paused stack of contexts. Invariant: all(x:Tuple for x in stack])
