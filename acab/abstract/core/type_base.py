@@ -15,6 +15,7 @@ QUERY_HEAD_S = util("Parsing.Statements", "QUERY_HEAD_S")
 TRANSFORM_HEAD_S = util("Parsing.Statements", "TRANSFORM_HEAD_S")
 ACTION_HEAD_S = util("Parsing.Statements", "ACTION_HEAD_S")
 RULE_HEAD_S = util("Parsing.Statements", "RULE_HEAD_S")
+PRIMITIVE_SIGNIFIER = util("Printing", "PRIMITIVE_SIGNIFIER")
 
 class _Bootstrap_Value:
     """
@@ -145,17 +146,23 @@ class TypeInstance:
 
 
     def __str__(self):
+        path_strs = [str(x) for x in self._path]
 
-        path = str(self._path)
         if self._type_alias is not None:
-            path += self._type_alias
+            path_strs = [self._type_alias]
 
-        path += ".".join([str(x) for x in self._params])
+        params = ""
+        if self._params:
+            params = "({})".format(", ".join([str(x) for x in self._params]))
 
+        prim = ""
         if self._primitive:
-            return "primitive." + path
+            prim = PRIMITIVE_SIGNIFIER
 
-        return path
+
+        final = ".".join([prim] + path_strs)
+        final += params
+        return final
 
     def __repr__(self):
         return "(TypeInstance {})".format(str(self))

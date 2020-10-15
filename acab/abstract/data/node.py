@@ -104,24 +104,24 @@ class AcabNode:
         """
         assert(isinstance(node, AcabNode))
         self._children[node.name] = node
-        self._uuid_children[node.uuid] = node
+        self._uuid_children[node._uuid] = node
         return node
 
     def get_child(self, node):
         """ Get a node using a string, or a node itself """
         if isinstance(node, str):
             return self._children[node]
-        assert(isinstance(node, AcabNode))
-        return self._children[node.uuid]
+
+        return self._children[node.name]
 
     def has_child(self, node):
         """ Question if this node has a particular child """
-        if isinstance(v, str):
-            return v in self._children
-        elif isinstance(v, AcabNode):
-            return v._uuid in self._uuid_children
-        elif isinstance(AcabValue):
-            return v.name in self._children
+        if isinstance(node, str):
+            return node in self._children
+        elif isinstance(node, AcabNode):
+            return node._uuid in self._uuid_children
+        elif isinstance(node, AcabValue):
+            return node.name in self._children
         else:
             return False
 
@@ -135,8 +135,8 @@ class AcabNode:
             if isinstance(node, str):
                 del self._children[node]
             else:
-                assert(isinstance(node, AcabNode))
                 del self._children[node.name]
+
 
         return result
 

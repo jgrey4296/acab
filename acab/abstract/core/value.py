@@ -24,6 +24,9 @@ util = AcabConfig.Get()
 VALUE_TYPE_S = util("Parsing.Structure", "VALUE_TYPE_S")
 BIND_S = util("Parsing.Structure", "BIND_S")
 AT_BIND_S = util("Parsing.Structure", "AT_BIND_S")
+ANON_VALUE = util("Printing", "ANON_VALUE")
+
+UUID_CHOP = bool(int(util("Printing", "UUID_CHOP")))
 
 class AcabValue:
     value_types = set([int, float, Fraction, bool, str, Pattern, list, tuple])
@@ -73,25 +76,38 @@ class AcabValue:
             self.apply_tags(tags)
         if name is not None:
             self._name = name
+        else:
+            self._name = str(self.value)
 
     def __str__(self):
         """ Data needs to implement a str method that produces
         output that can be re-parsed """
-        if self.name is None:
-            return repr(self)
-        return str(self.name)
+        if self.name is not None:
+            return str(self.name)
+
+        return ANON_VALUE
 
     def __repr__(self):
         uuid = str(self._uuid)
-        uuid_chop = "{}..{}".format(uuid[:4],uuid[-4:])
-        return "({}:{}:{}:{})".format(self.__class__.__name__,
-                                      uuid_chop,
-                                      str(self.name),
-                                      str(self.value))
+        if UUID_CHOP:
+            uuid = "{}..{}".format(uuid[:4],uuid[-4:])
+        val_str = ""
+        if self.value is not self and self.value is not self.name:
+            val_str = ":" + str(self.value)
+
+        return "({}:{}:{}{})".format(self.__class__.__name__,
+                                      uuid,
+                                      str(self._name),
+                                      val_str)
 
     def __hash__(self):
-        if self._hash_name is None:
-            self._hash_name = hash(str(self))
+        if self._hash_name is not None:
+            return self._hash_name
+
+        if self.name == ANON_VALUE:
+            self._hash_name = hash(self._uuid)
+        else:
+            self._hash_name = hash(str(self) + str(self.type))
 
         return self._hash_name
 
@@ -100,7 +116,7 @@ class AcabValue:
 
 
     @property
-    def name(self) -> Optional[str]:
+    def name(self) -> str:
         return self._name
 
     @property
@@ -153,7 +169,12 @@ class AcabValue:
 
     def copy(self) -> 'AcabValue':
         """ Data needs to be able to be copied """
-        return deepcopy(self)
+        new_copy = deepcopy(self)
+        # Override the UUID copy
+        new_copy._uuid = uuid1()
+        # Override cached hash name
+        new_copy._hash_name = None
+        return new_copy
 
     def bind(self, bindings) -> 'AcabValue':
         """ Data needs to be able to bind a dictionary

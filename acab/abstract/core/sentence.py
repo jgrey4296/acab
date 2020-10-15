@@ -14,9 +14,9 @@ BIND_S = util("Parsing.Structure", "BIND_S")
 AT_BIND_S = util("Parsing.Structure", "AT_BIND_S")
 OPERATOR_S = util("Parsing.Structure", "OPERATOR_S")
 SEN_S = util("Parsing.Structure", "SEN_S")
+ANON_VALUE = util("Printing", "ANON_VALUE")
 
-
-class Sentence(AcabValue):
+class Sentence(AcabStatement):
     """
     The Basic Sentence Class: Essentially a List of Words
     """
@@ -36,10 +36,23 @@ class Sentence(AcabValue):
                          tags=tags, _type=TB.SENTENCE)
 
     def __hash__(self):
-        return super(Sentence, self).__hash__()
+        if self._hash_name is not None:
+            return self._hash_name
+
+        if self.name == ANON_VALUE:
+            word_hashes = " ".join([str(hash(x)) for x in self.words])
+            self._hash_name = hash(word_hashes)
+        else:
+            self._hash_name = hash(str(self) + str(self.type))
+
+        return self._hash_name
 
     def __eq__(self, other):
-        return hash(self.pprint()) == hash(other.pprint())
+        if isinstance(other, Sentence):
+            return (len(self) == len(other)
+                    and all([a == b for a,b in zip(self, other)]))
+
+        return hash(self) == hash(other)
 
     def __iter__(self):
         return iter(self.words)
@@ -51,10 +64,6 @@ class Sentence(AcabValue):
 
     def __len__(self):
         return len(self.words)
-
-    @property
-    def value(self):
-        return self
 
     @property
     def words(self):
