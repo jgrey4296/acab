@@ -6,7 +6,7 @@ import logging as root_logger
 import pyparsing as pp
 
 from acab.abstract.core.sentence import Sentence
-from acab.abstract.core import type_base as TB
+from acab.abstract.core.type_system import type_system as TB
 from acab.config import AcabConfig
 
 util = AcabConfig.Get()
@@ -104,17 +104,17 @@ COLLAPSE_CONTEXT = s(util("Parsing", "CTX_COLLAPSE_S", action=AcabConfig.actions
 OPERATOR_SUGAR = pp.Word(OPERATOR_SYNTAX_S)
 
 ATOM        = pp.Word(WORD_COMPONENT_S)
-ATOM.setParseAction(lambda t: (TB.ATOM, t[0]))
+ATOM.setParseAction(lambda t: (TB.GET().ATOM, t[0]))
 
 STRING      = pp.dblQuotedString
 # Remove quotes from around strings:
 STRING.setParseAction(pp.removeQuotes)
-STRING.addParseAction(lambda toks: (TB.STRING, toks[0]))
+STRING.addParseAction(lambda toks: (TB.GET().STRING, toks[0]))
 
 # TODO add re.RegexFlag 's to parser: g and i
 # TODO compile the regex
 REGEX       = pp.Regex(r'/.+?/')
-REGEX.setParseAction(lambda t: (TB.REGEX, re.compile(t[0][1:-1])))
+REGEX.setParseAction(lambda t: (TB.GET().REGEX, re.compile(t[0][1:-1])))
 
 BASIC_VALUE = pp.Or([ATOM, STRING, REGEX])
 BIND        = VAR_SYMBOL + ATOM

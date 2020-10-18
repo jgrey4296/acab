@@ -1,6 +1,5 @@
 from acab.abstract.core.value import AcabValue
 from acab.abstract.core.sentence import Sentence
-from acab.abstract.core.type_base import TypeInstance, ATOM
 
 from acab.error.acab_parse_exception import AcabParseException
 
@@ -70,17 +69,17 @@ class TypeDefinition(TypeStatement):
         statement = self
 
         if the_dict is None:
-            return TypeInstance(just_path, params=self.vars)
+            return AcabValue._type_system.INSTANCE(just_path, params=self.vars)
 
         new_args = []
         for x in self.vars:
             if isinstance(x, AcabValue) and x.name in the_dict:
                 new_args.append(the_dict[x.name])
             else:
-                assert(isinstance(x, TypeInstance))
+                assert(isinstance(x, AcabValue._type_system.INSTANCE))
                 new_args.append(x)
 
-        return TypeInstance(just_path, params=new_args)
+        return AcabValue._type_system.INSTANCE(just_path, params=new_args)
 
 
     def verify(self):
@@ -112,8 +111,8 @@ class TypeDefinition(TypeStatement):
         # Then unify all the variables to have the same type
         for the_dict in variables.values():
             types, instances = the_dict.values()
-            if ATOM in types:
-                types.remove(ATOM)
+            if AcabValue._type_system.BOTTOM in types:
+                types.remove(AcabValue._type_system.BOTTOM)
 
             if len(types) > 1:
                 raise TE.TypeConflictException(types.pop(), types, self)
@@ -158,7 +157,7 @@ class SumTypeDefinition(TypeDefinition):
 # Auto Build Primitive Definitions
 def build_primitive_definitions():
     prim_defs = []
-    for x in TypeInstance.Primitives:
+    for x in AcabValue._type_system.INSTANCE.Primitives:
         prim_path = Sentence.build([y.name for y in x])
         primitive = prim_path.attach_statement(TypeDefinition([]).set_primitive())
 

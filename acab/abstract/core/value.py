@@ -16,8 +16,6 @@ from copy import deepcopy
 
 from acab.config import AcabConfig
 
-from .type_base import TypeInstance, ATOM
-
 logging = root_logger.getLogger(__name__)
 
 util = AcabConfig.Get()
@@ -30,11 +28,22 @@ UUID_CHOP = bool(int(util("Printing", "UUID_CHOP")))
 
 class AcabValue:
     value_types = set([int, float, Fraction, bool, str, Pattern, list, tuple])
+    _type_system = None
+    _type_bottom = None
+
+
+    @staticmethod
+    def _set_type_system(type_system):
+        """
+        Late binding to the type system, a clean import chain
+        """
+        AcabValue._type_system = type_system
+        AcabValue._type_bottom = type_system.BOTTOM
 
     @staticmethod
     def safe_make(value: Any,
                   data: Optional[Dict[Any, Any]]=None,
-                  _type: Optional['TypeInstance']=None) -> 'AcabValue':
+                  _type: Optional['AcabValue._type_system']=None) -> 'AcabValue':
         """ Wrap the provided value in an AcabValue,
         but only if it isn't an AcabValue already """
         if isinstance(value, AcabValue):
@@ -60,14 +69,14 @@ class AcabValue:
 
         self._params : List[Any] = []
         self._tags : Set[str] = set()
-        self._data : Dict[str, Any] = {VALUE_TYPE_S: ATOM,
+        self._data : Dict[str, Any] = {VALUE_TYPE_S: AcabValue._type_bottom,
                                        BIND_S : False}
 
         if data is not None:
             self._data.update(data)
 
         if _type is not None:
-            assert(isinstance(_type, TypeInstance))
+            assert(isinstance(_type, AcabValue._type_system.INSTANCE))
             self._data[VALUE_TYPE_S] = _type
 
         if params is not None:
@@ -123,7 +132,7 @@ class AcabValue:
     def value(self):
         return self._value
     @property
-    def type(self) -> 'TypeInstance':
+    def type(self) -> 'AcabValue._type_system':
         return self._data[VALUE_TYPE_S]
 
     @property
@@ -230,7 +239,7 @@ class AcabValue:
 
     def to_simple_value(self) -> 'AcabValue':
         simple_value = AcabValue.safe_make(self._name, data=self._data)
-        simple_value.set_data({VALUE_TYPE_S: ATOM})
+        simple_value.set_data({VALUE_TYPE_S: AcabValue._type_bottom})
         return simple_value
 
 

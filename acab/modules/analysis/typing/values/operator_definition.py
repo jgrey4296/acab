@@ -1,7 +1,5 @@
 from acab.config import AcabConfig
 
-from acab.abstract.core.type_base import TypeInstance
-
 from acab.modules.analysis.typing import util as TU
 
 from .type_definition import TypeDefinition

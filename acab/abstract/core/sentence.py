@@ -4,8 +4,6 @@ have fallback bindings
 """
 from acab.config import AcabConfig
 
-from . import type_base as TB
-
 from .value import AcabValue, AcabStatement
 
 util = AcabConfig.Get()
@@ -33,7 +31,7 @@ class Sentence(AcabStatement):
             words = []
 
         super().__init__(words, data=data, params=params,
-                         tags=tags, _type=TB.SENTENCE)
+                         tags=tags, _type=AcabValue._type_system.SENTENCE)
 
     def __hash__(self):
         if self._hash_name is not None:
