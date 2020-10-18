@@ -25,7 +25,7 @@ from typing import Callable, Iterator, Union, Match, TypeVar
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar
 
-from acab.abstract.core.value import AcabValue
+from acab.abstract.core.value import AcabValue, AcabStatement
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.data.node import AcabNode
 from acab.abstract.rule.query import QueryComponent
@@ -37,7 +37,7 @@ NEGATION_S = util("Parsing.Structure", "NEGATION_S")
 CONSTRAINT_S = util("Parsing.Structure", "CONSTRAINT_S")
 AT_BIND_S = util("Parsing.Structure", "AT_BIND_S")
 
-class AcabNodeSemantics:
+class AcabNodeSemantics(AcabStatement):
     """ A Single Class to provide
     interchangeable core semantics
     Always handles AcabNodes wrapping AcabValues

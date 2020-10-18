@@ -7,6 +7,8 @@ in the separate typing module.
 from uuid import uuid1
 from copy import copy
 
+from acab.abstract.core.value import AcabValue
+
 from acab.config import AcabConfig
 
 util = AcabConfig.Get()
@@ -18,31 +20,22 @@ ACTION_HEAD_S = util("Parsing.Statements", "ACTION_HEAD_S")
 RULE_HEAD_S = util("Parsing.Statements", "RULE_HEAD_S")
 PRIMITIVE_SIGNIFIER = util("Printing", "PRIMITIVE_SIGNIFIER")
 
-class TypeInstance:
+class TypeInstance(AcabValue):
     """ A Type Instance can be polytyped or monotyped """
     TypeCounter = 0
-    _type_system = None
-
-    @staticmethod
-    def _set_type_system(type_system):
-        TypeInstance._type_system = type_system
 
     @staticmethod
     def get_alias_chars():
-        sigils = [x[-1]._primitive._type_alias for x in TypeInstance._type_system.primitives]
-        sigils_str = "".join([x for x in sigils if x is not None])
-        return sigils_str
+        raise DeprecationWarning()
 
     def __init__(self, path, params=None, type_alias_str=None):
         """ Construct a Type Instance with a _path in the type trie """
-        assert(params is None or all([isinstance(x, (str, TypeInstance)) or hasattr(x, "type") for x in params])), breakpoint()
-        self._uuid = uuid1()
-        self._path = path
-        self._type_alias = type_alias_str
-        self._params = []
-
-        if params is not None:
-            self._params += params
+        assert(params is None or all([isinstance(x, (str, AcabValue._type_system._instance_constructor))
+                                      or hasattr(x, "type") for x in params])), breakpoint()
+        super(AcabValue, self).__init__(path,
+                                        data=None
+                                        params=None, tags=None,
+                                        name=None, _type=None)
 
     def __hash__(self):
         return hash(self.path)
@@ -67,7 +60,7 @@ class TypeInstance:
         TODO BOTTOM
         """
         assert(isinstance(other, TypeInstance))
-        if self == ATOM:
+        if self == AcabValue._type_system.BOTTOM:
             return True
 
         return False
@@ -126,10 +119,11 @@ class TypeInstance:
         """
         index = self.path[-1]
 
-        if self._primitive:
+        if not bool(self._params):
             return self
 
         if the_dict is not None and index.is_var and index.name in the_dict:
+            # TODO whats going on here
             new_type = the_dict[index.name]
             return new_type.copy()
 

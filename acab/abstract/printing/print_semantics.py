@@ -2,6 +2,9 @@
 """ A Semantics Class for defining how to print out
 ACAB structures
 """
+import logging as root_logger
+logging = root_logger.getLogger(__name__)
+
 from typing import List, Set, Dict, Tuple, Optional, Any
 from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
@@ -10,7 +13,6 @@ from typing import cast, ClassVar, TypeVar
 from collections import defaultdict
 from enum import Enum
 
-from acab.abstract.core.type_base import TypeInstance
 from acab.abstract.core.value import AcabValue
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.data.node import AcabNode
@@ -46,8 +48,8 @@ FALLBACK_MODAL_S  = util("Printing", "FALLBACK_MODAL_S", action=AcabConfig.actio
 # pylint: enable=bad-whitespace
 
 # pylint: disable=line-too-long
-# AcabValue -> Value, Statement, Sentence, Op, Component, Container, Query, Transform, Action, Rule, Agenda, Layer, Pipeline
-Printable = Union[AcabValue, AcabNode, DataStructure, Contexts, TypeInstance, str]
+# AcabValue -> Value(Op, TypeInstance), Statement(Sentence, Component) Container(Query, Transform, Action), Structured:(Rule, Agenda, Layer, Pipeline)
+Printable = Union[AcabValue, AcabNode, DataStructure, Contexts, 'TypeInstance', str]
 # pylint: enable=line-too-long
 
 RET_enum = Enum("Handler Return Form", "PASS SIMPLE ACCUMULATOR SUBSTRUCT CALL SENTINEL PRINTABLE PUSHSTACK")
@@ -62,11 +64,11 @@ Sentinel = Callable[['AcabPrintSemantics', Printable, List[str], Dict[Any, Any]]
 
 SemanticSpec = Tuple[List[Handler], Sentinel]
 ContextValue = str
-SemBox = Tuple[RET_enum, Callable, Printable]
+SemBox = Tuple[RET_enum, Printable, Callable]
 StackValue = Tuple[List[SemBox], List[str], Dict[Any, Any]]
 
 
-class AcabPrintSemantics:
+class AcabPrintSemantics(AcabValue):
     """ Abstract Class of Print Semantics
     Provides the basic walk through of a value/node/container etc
     to call handlers to produce a re-parseable string
@@ -86,6 +88,7 @@ class AcabPrintSemantics:
                  str_aliases: Dict[Any, str],
                  default_true: List[str] = None,
                  default_values: Dict[str, Any] = None):
+        super(AcabPrintSemantics, self).__init__(None)
 
         self._uuid_board: Dict['UUID', 'DefaultDict'] = {}
         self._bottom_semantic = ([], lambda PS, val, processed, acc: (RET_enum.SIMPLE, str(val), None))
@@ -123,10 +126,12 @@ class AcabPrintSemantics:
     def default_opts(trues, vals):
         """ Create the default options for pprint """
         opts = defaultdict(lambda: False)
-        for x in trues:
-            opts[x] = True
-        for x, y in vals.items():
-            opts[x] = y
+        if trues is not None:
+            for x in trues:
+                opts[x] = True
+        if vals is not None:
+            for x, y in vals.items():
+                opts[x] = y
         return opts
 
     def retrieve_semantics(self, current_val: Printable) -> Union[SemanticSpec, str]:
@@ -153,6 +158,8 @@ class AcabPrintSemantics:
         # TODO Then try the acab type hierarchy
 
         # TODO then try the python type hierarchy
+        if current_val.__class__ in self._type_semantics:
+            return self._type_semantics[current_val.__class__]
 
         # TODO update _type_semantics chain with found bindings from hierarchy
 
@@ -194,23 +201,25 @@ class AcabPrintSemantics:
         # The paused stack of contexts. Invariant: all(x:Tuple for x in stack])
         stack: List[StackValue] = []
         # The current queue of values to process
-        queue: List[SemBox] = [(RET_enum.PRINTABLE, None, x) for x in values]
+        queue: List[SemBox] = [(RET_enum.PRINTABLE, x, None) for x in values]
         # The completed context of strings to join
         processed_sub_ctx: List[ContextValue] = []
         accumulator: Dict[str, Any] = {}
+        
         while bool(stack) or bool(queue):
             result_form, result, result_sentinel = None, None, None
             if not bool(queue):
-                instruction, func, data = (RET_enum.SENTINEL, lambda ps, s, p, a: (RET_enum.SIMPLE, str(p), None), None)
+                instruction, data, func = (RET_enum.SENTINEL, "", lambda ps, s, p, a: (RET_enum.SIMPLE, str(p), None))
             else:
-                instruction, func, data = queue.pop(0)
+                instruction, data, func = queue.pop(0)
+
 
             if instruction is RET_enum.PRINTABLE:
                 # A Printable value to find instructions for
                 assert(func is None)
                 handlers, sentinel = self.retrieve_semantics(data)
                 # Add the handlers to the front of the queue
-                result = [(RET_enum.CALL, handler, data) for handler in handlers] + [(RET_enum.SENTINEL, sentinel, data)]
+                result = [(RET_enum.CALL, data, handler) for handler in handlers] + [(RET_enum.SENTINEL, data, sentinel)]
                 result_form = RET_enum.SUBSTRUCT
 
             elif instruction is RET_enum.SIMPLE:
@@ -244,7 +253,7 @@ class AcabPrintSemantics:
                 stack.append((queue, context, accumulator))
 
                 if result_sentinel is not None:
-                    result.append((RET_enum.SENTINEL, result_sentinel, data))
+                    result.append((RET_enum.SENTINEL, data, result_sentinel))
                 queue = result
                 context = []
                 accumulator = {}
@@ -260,6 +269,7 @@ class AcabPrintSemantics:
                 continue
             else:
                 raise Exception("Unrecognised Result Form: {} : {}".format(result_form, result))
+          
 
         if final_handler is not None:
             final_val = final_handler(self, context, accumulator)

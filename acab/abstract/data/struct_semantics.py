@@ -22,11 +22,12 @@ CONSTRAINT_S = util("Parsing.Structure", "CONSTRAINT_S")
 AT_BIND_S = util("Parsing.Structure", "AT_BIND_S")
 ROOT_S = util("Data.Struct", "ROOT_S")
 
-class AcabStructureSemantics:
+class AcabStructureSemantics(AcabValue):
     # TODO Locate listeners in semantics not WM
 
     def __init__(self, node_semantics : Dict[AcabNode, AcabNodeSemantics],
                  value_pairings: Dict[AcabValue, Tuple[AcabNode, Dict[Any, Any], Callable]]):
+        super(AcabStructureSemantics, self).__init__(None)
         self._node_semantics = node_semantics
         self._value_pairings = value_pairings
         # Todo: verify value -> node_c -> semantic chains
