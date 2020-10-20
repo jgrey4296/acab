@@ -8,9 +8,7 @@ from acab.error.acab_config_exception import AcabConfigException
 actions_e = Enum("Config Actions", "STRIPQUOTE KEYWORD LITERAL DICT LIST UNESCAPE")
 
 def GET(s=None):
-    config = AcabConfig.Get()
-    if s is not None:
-        config.read(s)
+    config = AcabConfig.Get(s)
     return config
 
 class AcabConfig:
@@ -29,9 +27,11 @@ class AcabConfig:
     instance = None
 
     @staticmethod
-    def Get():
+    def Get(path=None):
         if AcabConfig.instance is None:
             AcabConfig()
+        if path is not None:
+            AcabConfig.instance.read(path)
         return AcabConfig.instance
 
     def __init__(self, *paths):
