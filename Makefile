@@ -1,9 +1,10 @@
 SHELL=/usr/local/bin/bash
 PYS := $(shell find ./acab -name '*.py' -not -name '*context.py' -not -name '__init__.py')
 LOGS := $(shell find ./acab -name '*log.*')
-CACHES := $(shell find ./acab -name '*__pycache__')
+CACHES := $(shell find ./acab/ -regextype posix-egrep -regex .*\(.mypy_cache\|__pycache__\)$ -prune)
 
-.PHONY: all
+.PHONY: all pylint
+
 all: verbose long
 
 long:
@@ -13,11 +14,15 @@ verbose:
 	python -m unittest discover -s ./acab -p "test_*.py" -v
 
 faily:
-	python -m unittest discover -s ./acab -p "test_*.py" -v -f
+ifeq (${only}, )
+	python -m unittest discover  -v -f -s ./acab -p "test_*.py"
+else
+	python -m unittest discover  -v -f -k ${only} -s ./acab -p "test_*.py"
+endif
 
 # use as: make pattern PAT="X"
 pattern:
-	python -m unittest discover -s ./acab -p "test_*.py" -p "*_tests.py" -v -f -k ${PAT}
+	python -m unittest discover  -v -f -k ${PAT} -s ./acab -p "test_*.py"
 
 # make init py's as necessary
 init:
@@ -34,6 +39,13 @@ count:
 
 re: repl
 vr: vrepl
+
+pylint:
+	pylint --rcfile=./.pylintrc ./acab --ignore=${ig} --ignore-patterns=${igpat}
+
+elint:
+	pylint --rcfile=./.pylintrc ./acab --ignore=${ig} --ignore-patterns=${igpat} -E
+
 
 clean:
 ifeq (${LOGS}, )
