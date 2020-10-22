@@ -1,8 +1,9 @@
 """
-The Base Types of Acab.
-Only Provides automatic *primitives*.
-Manual typing and Product/Sum types are implemented
-in the separate typing module.
+The Acab type descriptor.
+Essentially a wrapper around a sentence
+
+Only provides type *instances* of primitives in abstract
+Actual Type *checking* and *inference* is a module
 """
 from uuid import uuid1
 from copy import copy
@@ -18,7 +19,6 @@ QUERY_HEAD_S = util("Parsing.Statements", "QUERY_HEAD_S")
 TRANSFORM_HEAD_S = util("Parsing.Statements", "TRANSFORM_HEAD_S")
 ACTION_HEAD_S = util("Parsing.Statements", "ACTION_HEAD_S")
 RULE_HEAD_S = util("Parsing.Statements", "RULE_HEAD_S")
-PRIMITIVE_SIGNIFIER = util("Printing", "PRIMITIVE_SIGNIFIER")
 
 class TypeInstance(AcabValue):
     """ A Type Instance can be polytyped or monotyped """
@@ -28,12 +28,12 @@ class TypeInstance(AcabValue):
     def get_alias_chars():
         raise DeprecationWarning()
 
-    def __init__(self, path, params=None, type_alias_str=None):
+    def __init__(self, path, params=None):
         """ Construct a Type Instance with a _path in the type trie """
         assert(params is None or all([isinstance(x, (str, AcabValue._type_system._instance_constructor))
                                       or hasattr(x, "type") for x in params])), breakpoint()
-        super(AcabValue, self).__init__(path,
-                                        data=None
+        super(TypeInstance, self).__init__(path,
+                                        data=None,
                                         params=None, tags=None,
                                         name=None, _type=None)
 
@@ -49,7 +49,7 @@ class TypeInstance(AcabValue):
             return False
 
         # TODO may need to handle type aliases
-        path_match = self._path == other._path
+        path_match = self.value == other.value
         args_match = all([a == b for a, b in zip(self.vars, other.vars)])
         return path_match and args_match
 
@@ -67,21 +67,14 @@ class TypeInstance(AcabValue):
 
 
     def __str__(self):
-        path_strs = [str(x) for x in self._path]
-
-        if self._type_alias is not None:
-            path_strs = [self._type_alias]
+        path_str = str(self.value)
 
         params = ""
         if self._params:
             params = "({})".format(", ".join([str(x) for x in self._params]))
 
-        prim = ""
-        if self._primitive:
-            prim = PRIMITIVE_SIGNIFIER
-
-
-        final = ".".join([prim] + path_strs)
+        # TODO: put this into util.config
+        final = "τ:" + path_str
         final += params
         return final
 
@@ -100,7 +93,7 @@ class TypeInstance(AcabValue):
 
     @property
     def path(self):
-        return self._path
+        return self.value
     @property
     def head(self):
         return self.path[-1]
