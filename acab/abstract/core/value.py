@@ -32,7 +32,6 @@ class AcabValue:
     _type_system = None
     _type_bottom = None
 
-
     @staticmethod
     def _set_type_system(type_system):
         """
