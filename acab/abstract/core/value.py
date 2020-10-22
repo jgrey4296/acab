@@ -1,6 +1,7 @@
 """
 The Core Value Class
 """
+# pylint: disable=bad-whitespace
 # https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
 from typing import List, Set, Dict, Tuple, Optional, Any
 from typing import Callable, Iterator, Union, Match
@@ -38,7 +39,10 @@ class AcabValue:
         Late binding to the type system, a clean import chain
         """
         AcabValue._type_system = type_system
-        AcabValue._type_bottom = type_system.BOTTOM
+
+    @property
+    def type_bottom(self):
+        return AcabValue._type_system.BOTTOM
 
     @staticmethod
     def safe_make(value: Any,
@@ -54,8 +58,7 @@ class AcabValue:
             # TODO: detect base types
             return AcabValue(value, data=data, _type=_type)
 
-    def __init__(self, value,
-                 data=None,
+    def __init__(self, value, data=None,
                  params=None, tags=None,
                  name=None, _type=None):
 
@@ -105,9 +108,9 @@ class AcabValue:
             val_str = ":" + str(self.value)
 
         return "({}:{}:{}{})".format(self.__class__.__name__,
-                                      uuid,
-                                      str(self._name),
-                                      val_str)
+                                     uuid,
+                                     str(self._name),
+                                     val_str)
 
     def __hash__(self):
         if self._hash_name is not None:

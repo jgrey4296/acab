@@ -30,8 +30,9 @@ class Sentence(AcabStatement):
         else:
             words = []
 
+        _type = AcabValue._type_system.SENTENCE
         super().__init__(words, data=data, params=params,
-                         tags=tags, _type=AcabValue._type_system.SENTENCE)
+                         tags=tags, _type=_type)
 
     def __hash__(self):
         if self._hash_name is not None:
