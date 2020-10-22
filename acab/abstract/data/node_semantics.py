@@ -43,6 +43,10 @@ class AcabNodeSemantics(AcabStatement):
     Always handles AcabNodes wrapping AcabValues
 
     """
+    def __init__(self):
+        super(AcabNodeSemantics, self).__init__(Sentence.build(self.__class__.__name__))
+
+
     def accessible(self, node: AcabNode, data: Dict[Any, Any], term: AcabValue) -> [AcabNode]:
         """
         Retrieve a list of all nodes accessible from this node,
