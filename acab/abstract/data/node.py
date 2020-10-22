@@ -27,7 +27,9 @@ ROOT_S = util("Data.Struct", "ROOT_S")
 BIND_S = util("Parsing.Structure", "BIND_S")
 
 class AcabNode:
-    """ The Base Node Class for Tries/Data structures etc"""
+    """ The Base Node Class for Tries/Data structures etc
+    Not an AcabValue
+    """
 
     @staticmethod
     def Root():
@@ -35,10 +37,11 @@ class AcabNode:
         return AcabNode(ROOT_S)
 
     def __init__(self, value, data=None):
-        #Unwrap Nodes to avoid nesting
+        # Unwrap Nodes to avoid nesting
+        # TODO should this be the case?
         if isinstance(value, AcabNode):
             node = value
-            value = deepcopy(node.value)
+            value = node.value.copy()
 
         # A Unique identifier for this node:
         self._uuid = uuid1()
