@@ -1,16 +1,12 @@
 from uuid import uuid1
 
-from acab.abstract.core.sentence import Sentence
-from acab.abstract.core.value import AcabValue
-from acab.abstract.data.node import AcabNode
-from acab.abstract.data.contexts import Contexts
 
 
 class DataStructure:
     """
     The Abstract DataStructure Class
     Anything that wants to use StructureSemantics has to fulfill this
-
+    Like AcabNode, is not a value, thus not directly able to be talked about
     """
     def __init__(self, semantics):
         assert(semantics is not None)
