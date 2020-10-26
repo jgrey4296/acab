@@ -1,7 +1,7 @@
 """
 Defines the required functions a type needs to implement
 """
-from .acab_type import Type
+from .acab_type import TypeStatement
 
 class TypeClass(TypeStatement):
     """ Definition of a coherent collection of functions """
@@ -11,7 +11,7 @@ class TypeClass(TypeStatement):
 
 
 
-class TypeClassInstance(Type):
+class TypeClassInstance():
     """ A Pairing of a type, with a type class it implements """
 
     def __init__(self):
