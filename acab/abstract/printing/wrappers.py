@@ -33,9 +33,9 @@ def _wrap_regex(PS, value, current):
 
 def _maybe_wrap_var(PS, value, current):
     assert(isinstance(value, str))
-    sym = PS.get_alias("VAR_SYMBOL_S")
+    sym = PS.ask("BIND_")
     if value.is_at_var:
-        sym = PS.get_alias("AT_VAR_SYMBOL_S")
+        sym = PS.ask("AT_BIND_")
     if value.is_var:
         return sym + current
     else:
@@ -69,19 +69,18 @@ def _wrap_constraints(value, data):
 def _modal_operator(PS, value, current):
     modal_data_field = PS.ask('MODAL_FIELD')
     if modal_data_field not in value._data:
-        modal_str = PS.get_alias("FALLBACK_MODAL_S")
+        modal_str = PS.ask("FALLBACK_MODAL_S")
     else:
-        modal_str = PS.get_alias(modal_data_field)
+        modal_str = PS.ask(modal_data_field)
 
     return modal_str
 
-def _wrap_rebind(value, rebind, is_sugar=False):
-    arrow = "->"
+def _wrap_rebind(PS, value, rebind, is_sugar=False):
+    arrow = PS.ask(REBIND_S)
     if rebind is None:
         return value
     if is_sugar:
-        arrow = "=>"
-
+        arrow = PS.ask(SUGAR_S)
 
     return "{} {} {}".format(value,
                              arrow,
@@ -89,15 +88,15 @@ def _wrap_rebind(value, rebind, is_sugar=False):
 
 def _maybe_wrap_question(PS, value, current):
     query_symbol = ""
-    if value._data["QUERY_S"]:
-        query_symol = PS.get_alias("QUERY_SYMBOL_S")
+    if QUERY_S in value._data and value._data[QUERY_S]:
+        query_symbol = PS.ask(QUERY_S)
 
     return "{}{}".format(current, query_symbol)
 
 def _maybe_wrap_negation(PS, value, current):
     neg_symbol = ""
-    if "NEGATION_S" in value._data and value._data["NEGATION_S"]:
-        neg_symbol = PS.get_alias("NEGATION_SYMBOL_S")
+    if NEGATION_S in value._data and value._data[NEGATION_S]:
+        neg_symbol = PS.ask(NEGATION_S)
 
     return "{}{}".format(neg_symbol, current)
 
@@ -110,33 +109,31 @@ def _wrap_fallback(PS, the_list):
     joined = ", ".join(["{}:{}".format(x, y) for x, y
                         in zip(the_vars, the_vals)])
 
+    # TODO shove this into config file
     return " || {}".format(joined)
 
-def _wrap_tags(value, tags, sep=TAB_S):
+def _wrap_tags(PS, value, tags, sep=TAB_S):
     tags_s = [str(x) for x in tags]
-    return "{}{}{}\n\n".format(value, sep, ", ".join(sorted([TAG_SYMBOL_S + x for x in tags_s])))
+    tag_symbol = PS.ask(TAG_S)
+    return "{}{}{}\n\n".format(value, sep, ", ".join(sorted([tag_symbol + x for x in tags_s])))
 
-def _maybe_wrap(value, maybeNone, sep=None):
-    if maybeNone is None:
-        return (value, False)
-    return (value + sep + maybeNone.pprint(), True)
-
-def _wrap_colon(value, newline=False):
+def _wrap_colon(PS, value, newline=False):
     tail = ""
     if newline:
         tail = "\n"
 
     return "{}:{}".format(value, tail)
 
-def _wrap_end(value, newline=False):
+def _wrap_end(PS, value, newline=False):
+    end_symbol = PS.ask(END_S)
     if newline:
-        return "{}\n{}\n".format(value, END_S)
+        return "{}\n{}\n".format(value, end_symbol)
     else:
-        return "{}{}\n".format(value, END_S)
+        return "{}{}\n".format(value, end_symbol)
 
-def _wrap_var_list(PS, val, current): 
+def _wrap_var_list(PS, val, current):
+    raise NotImplementedError()
     # head = ""
     # if newline:
     #     head = "\n"
     # return "{}{}{}| {} |\n".format(val, head, TAB_S, ", ".join([_maybe_wrap_var(x.name) for x in the_vars]))
-    return None
