@@ -23,6 +23,7 @@ from .parsing import QueryParser as QP
 from .parsing import TotalParser as TotalP
 from .parsing import TransformParser as TP
 from .parsing import RuleParser as RP
+from .parsing import util as TPU
 
 from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics
 from acab.modules.structures.trie.trie import Trie
@@ -34,7 +35,7 @@ logging = root_logger.getLogger(__name__)
 util = AcabConfig.Get()
 
 NEGATION_S = util("Parsing.Structure", "NEGATION_S")
-FALLBACK_S = util("Parsing.Structure", "FALLBACK_S")
+QUERY_FALLBACK_S = util("Parsing.Structure", "QUERY_FALLBACK_S")
 
 class TrieWM(WorkingMemory):
     """ A Trie based working memory"""
@@ -100,7 +101,7 @@ class TrieWM(WorkingMemory):
     def assert_parsers(self, pt):
         # Core
         # TODO: Make these configurable?
-        pt.add("valbind", FP.VALBIND,
+        pt.add("valbind", TPU.VALBIND,
                "sentence.basic", FP.BASIC_SEN,
                "sentence.param", FP.PARAM_SEN,
                "statement.sentence", FP.SEN_STATEMENT,
@@ -134,12 +135,12 @@ class TrieWM(WorkingMemory):
         except Exception:
             logging.debug("No annotations loaded into DSL")
 
-        try:
-            QP.HOTLOAD_QUERY_ANNOTATIONS << pt.query("query.annotation.*")
-        except Exception:
-            logging.debug("No query annotations loaded into DSL")
+        # try:
+        #     QP.HOTLOAD_QUERY_ANNOTATIONS << pt.query("query.annotation.*")
+        # except Exception:
+        #     logging.debug("No query annotations loaded into DSL")
 
-        QP.HOTLOAD_QUERY_OP << pt.query("operator.query.*",
+        FP.HOTLOAD_QUERY_OP << pt.query("operator.query.*",
                                         "operator.sugar")
 
         TP.HOTLOAD_TRANS_OP << pt.query("operator.transform.n_ary.*",
