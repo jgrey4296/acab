@@ -7,6 +7,7 @@ import logging
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
+from acab.abstract.core.type_system import build_simple_type_system
 from acab.modules.values.numbers.parsing import NumberParser as NP
 from acab.working_memory.trie_wm.parsing import ActionParser as AP
 from acab.working_memory.trie_wm.parsing import TransformParser as TP
@@ -26,6 +27,9 @@ class NumberTransformTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        # setup class
+        type_sys = build_simple_type_system()
+        AcabValue._set_type_system(type_sys)
         NumberTransformTests.ns = numbers.MODULE()
 
     def setUp(self):

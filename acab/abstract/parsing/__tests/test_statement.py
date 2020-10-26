@@ -4,9 +4,10 @@ import unittest
 import logging
 import pyparsing as pp
 
-from acab.config import AcabConfig
-AcabConfig.Get().read("acab/util.config")
+from acab.config import GET
+GET("acab/util.config")
 
+from acab.abstract.core.type_system import build_simple_type_system
 from acab.abstract.parsing import util as PU
 from acab.abstract.core.value import AcabValue, AcabStatement
 from acab.abstract.core.sentence import Sentence
@@ -16,7 +17,9 @@ class StatementTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        return
+        # setup class
+        type_sys = build_simple_type_system()
+        AcabValue._set_type_system(type_sys)
 
     def setUp(self):
         return 1

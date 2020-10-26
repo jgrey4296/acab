@@ -7,6 +7,8 @@ from pyparsing import ParseException
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
+from acab.abstract.core.type_system import build_simple_type_system
+from acab.abstract.core.value import AcabValue
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.rule import action
 from acab.abstract.rule.query import QueryComponent, QueryOp
@@ -24,13 +26,16 @@ from acab.working_memory.trie_wm.trie_working_memory import TrieWM
 
 CONSTRAINT_S = AcabConfig.Get()("Parsing.Structure", "CONSTRAINT_S")
 OPERATOR_S = AcabConfig.Get()("Parsing.Structure", "OPERATOR_S")
-FALLBACK_S = AcabConfig.Get()("Parsing.Structure", "FALLBACK_S")
+QUERY_FALLBACK_S = AcabConfig.Get()("Parsing.Structure", "QUERY_FALLBACK_S")
 
 class NumberQueryTests(unittest.TestCase):
     ns = None
 
     @classmethod
     def setUpClass(cls):
+        # setup class
+        type_sys = build_simple_type_system()
+        AcabValue._set_type_system(type_sys)
         NumberQueryTests.ns = numbers.MODULE()
 
     def setUp(self):
@@ -85,12 +90,12 @@ class NumberQueryTests(unittest.TestCase):
     def test_clause_fallback(self):
         result = QP.clause.parseString('a.b.c? || $x:2')[0]
         self.assertIsInstance(result, Sentence)
-        self.assertTrue(FALLBACK_S in result._data)
-        self.assertIsNotNone(result._data[FALLBACK_S])
-        self.assertEqual(len(result._data[FALLBACK_S]), 1)
+        self.assertTrue(QUERY_FALLBACK_S in result._data)
+        self.assertIsNotNone(result._data[QUERY_FALLBACK_S])
+        self.assertEqual(len(result._data[QUERY_FALLBACK_S]), 1)
 
-        self.assertEqual(result._data[FALLBACK_S][0][0], 'x')
-        self.assertEqual(result._data[FALLBACK_S][0][1][-1]._value, 2)
+        self.assertEqual(result._data[QUERY_FALLBACK_S][0][0], 'x')
+        self.assertEqual(result._data[QUERY_FALLBACK_S][0][1][-1]._value, 2)
 
 
     def test_clause_negated_fallback(self):
@@ -101,12 +106,12 @@ class NumberQueryTests(unittest.TestCase):
     def test_clause_multi_fallback(self):
         result = QP.clause.parseString('a.b.c? || $x:2, $y:5')[0]
         self.assertIsInstance(result, Sentence)
-        self.assertIsNotNone(result._data[FALLBACK_S])
-        self.assertEqual(len(result._data[FALLBACK_S]), 2)
-        self.assertEqual(result._data[FALLBACK_S][0][0], 'x')
-        self.assertEqual(result._data[FALLBACK_S][0][1][-1]._value, 2)
-        self.assertEqual(result._data[FALLBACK_S][1][0], 'y')
-        self.assertEqual(result._data[FALLBACK_S][1][1][-1]._value, 5)
+        self.assertIsNotNone(result._data[QUERY_FALLBACK_S])
+        self.assertEqual(len(result._data[QUERY_FALLBACK_S]), 2)
+        self.assertEqual(result._data[QUERY_FALLBACK_S][0][0], 'x')
+        self.assertEqual(result._data[QUERY_FALLBACK_S][0][1][-1]._value, 2)
+        self.assertEqual(result._data[QUERY_FALLBACK_S][1][0], 'y')
+        self.assertEqual(result._data[QUERY_FALLBACK_S][1][1][-1]._value, 5)
 
 
     def test_fact_str_equal(self):

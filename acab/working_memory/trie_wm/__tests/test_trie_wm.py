@@ -6,6 +6,7 @@ import unittest.mock as mock
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
+from acab.abstract.core.type_system import build_simple_type_system
 from acab.abstract.data.contexts import Contexts
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
 from acab.abstract.engine.engine import Engine
@@ -17,6 +18,12 @@ from acab.working_memory.trie_wm.trie_working_memory import TrieWM
 
 class Trie_WM_Tests(unittest.TestCase):
     """ Unit test for basic Trie working memory functionality """
+
+    @classmethod
+    def setUpClass(cls):
+        # setup class
+        type_sys = build_simple_type_system()
+        AcabValue._set_type_system(type_sys)
 
     def setUp(self):
         bp = BootstrapParser()

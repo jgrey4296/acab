@@ -6,7 +6,7 @@ AcabConfig.Get().read("acab/util.config")
 
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.core.type_base import TypeInstance
-from acab.abstract.core.type_base import TypeInstance, ATOM
+from acab.abstract.core.type_base import TypeInstance
 from acab.abstract.core.value import AcabValue
 
 from acab.abstract.data.node import AcabNode
@@ -28,6 +28,7 @@ from acab.working_memory.trie_wm.parsing import TransformParser as TP
 from acab.working_memory.trie_wm.parsing import FactParser as FP
 from acab.working_memory.trie_wm.trie_working_memory import TrieWM
 
+from acab.abstract.core.type_system import build_simple_type_system
 
 def S(*in_string):
     return Sentence([AcabValue(x) for x in in_string])
@@ -37,6 +38,10 @@ class TypingCombinedTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        # setup class
+        type_sys = build_simple_type_system()
+        AcabValue._set_type_system(type_sys)
+
         bp = BootstrapParser()
         twm = TrieWM()
         ts = TypingSpec()

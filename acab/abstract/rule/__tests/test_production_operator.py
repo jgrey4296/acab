@@ -5,13 +5,13 @@ import unittest.mock as mock
 import logging
 
 from acab.config import AcabConfig
-AcabConfig.Get().read("acab/util.config")
+AcabConfig.Get("acab/util.config")
 
-from acab.abstract.core.type_base import OPERATOR, COMPONENT
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.core.value import AcabValue, AcabStatement
 
 from acab.abstract.rule import production_operator as PO
+from acab.abstract.core.type_system import build_simple_type_system
 
 util = AcabConfig.Get()
 BIND_S = util("Parsing.Structure", "BIND_S")
@@ -20,7 +20,9 @@ class ProductionOperatorTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        return
+        # setup class
+        type_sys = build_simple_type_system()
+        AcabValue._set_type_system(type_sys)
 
     def setUp(self):
         return 1
@@ -32,6 +34,7 @@ class ProductionOperatorTests(unittest.TestCase):
     def test_init_operator(self):
         op = PO.ProductionOperator()
         self.assertIsInstance(op, PO.ProductionOperator)
+        # TODO OPERATOR, COMPONENT
         self.assertEqual(op.type, OPERATOR)
 
     def test_component_init(self):
@@ -52,10 +55,11 @@ class ProductionOperatorTests(unittest.TestCase):
         engine_mock = mock.Mock()
         engine_mock.get_operator = mock.Mock(return_value=lambda x, y, data=None, engine=None: x + y)
 
-        val = PO.ProductionComponent(Sentence.build(["testop"]), [AcabValue("a"), AcabValue("b")])
+        test_sen = Sentence.build(["testop"])
+        val = PO.ProductionComponent(test_sen, [AcabValue("a"), AcabValue("b")])
         result = val({}, engine_mock)
 
-        engine_mock.get_operator.assert_called_with(Sentence.build(["testop"]))
+        engine_mock.get_operator.assert_called_with(test_sen)
         self.assertEqual(result, "ab")
 
 

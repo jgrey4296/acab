@@ -7,6 +7,7 @@ import random
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
+from acab.abstract.core.type_system import build_simple_type_system
 from acab.abstract.rule import action
 from acab.abstract.rule import transform
 from acab.modules.values import numbers
@@ -23,6 +24,9 @@ class NumberParseTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        # setup class
+        type_sys = build_simple_type_system()
+        AcabValue._set_type_system(type_sys)
         NumberParseTests.ns = numbers.MODULE()
 
     def setUp(self):

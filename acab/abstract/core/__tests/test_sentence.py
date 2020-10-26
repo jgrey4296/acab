@@ -8,13 +8,21 @@ AcabConfig.Get().read("acab/util.config")
 
 from acab.abstract.core.value import AcabValue
 from acab.abstract.core.sentence import Sentence
+from acab.abstract.core.type_system import build_simple_type_system
 
 BIND_S = AcabConfig.Get()("Parsing.Structure", "BIND_S")
 
 def S(*values):
-    return Sentence([AcabValue(x) for x in values])
+    return Sentence.build(values)
 
 class SentenceTests(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        # setup class
+        type_sys = build_simple_type_system()
+        AcabValue._set_type_system(type_sys)
+
 
     def test_construction(self):
         val = S("a","test","value")
@@ -59,7 +67,6 @@ class SentenceTests(unittest.TestCase):
         val = Sentence.build(["a","test","value"])
         val2 = val.copy()
         val.words.append(Sentence.build(["test"])[0])
-
         self.assertNotEqual(val, val2)
 
 
@@ -114,10 +121,10 @@ class SentenceTests(unittest.TestCase):
         to_attach = Sentence.build(["blah","bloo"])
 
         attached = sen.attach_statement(to_attach)
-
+        
         self.assertNotEqual(sen, attached)
         self.assertEqual(sen[0:2], attached[0:2])
-
+        
         self.assertEqual(attached[-1], to_attach)
         self.assertEqual(attached[-1].name, "value")
 

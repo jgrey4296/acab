@@ -10,6 +10,7 @@ from acab.abstract.core.sentence import Sentence
 from acab.abstract.rule import action
 from acab.abstract.rule.production_operator import ProductionOperator
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
+from acab.abstract.core.type_system import build_simple_type_system
 
 from acab.engines.trie_engine import TrieEngine
 from acab.working_memory.trie_wm.parsing import ActionParser as AP
@@ -28,10 +29,17 @@ class ActionBlah(action.ActionOp):
 
 class ActionTests(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        # setup class
+        type_sys = build_simple_type_system()
+        AcabValue._set_type_system(type_sys)
+
+
     def setUp(self):
         self.e = TrieEngine(modules=["acab.modules.operators.standard_operators"])
-        self.e.alias_module(S("acab","modules","operators"), S("A"))
-        self.e.register_ops([(S("Blah"), ActionBlah())])
+        self.e.alias_module(S("acab","modules","operators", "standard", "operators"), S("A"))
+        self.e.register_ops([S("Blah").attach_statement(ActionBlah())])
         self.e.build_DSL()
 
     def tearDown(self):

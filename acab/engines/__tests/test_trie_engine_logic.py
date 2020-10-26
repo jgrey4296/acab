@@ -8,6 +8,7 @@ import timeit
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
+from acab.abstract.core.type_system import build_simple_type_system
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.rule.rule import Rule
 from acab.engines.trie_engine import TrieEngine
@@ -17,6 +18,12 @@ def S(*words):
 
 class Engine_Logic_Tests(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        # setup class
+        type_sys = build_simple_type_system()
+        AcabValue._set_type_system(type_sys)
+
     def path(self, filename):
         """ Navigate from the file,
         not the cwd """
@@ -24,7 +31,7 @@ class Engine_Logic_Tests(unittest.TestCase):
 
     def setUp(self):
         self.e = TrieEngine(modules=["acab.modules.operators.standard_operators"])
-        self.e.alias_module(S("acab", "modules", "operators"), S("S"))
+        self.e.alias_module(S("acab", "modules", "operators", "standard", "operators"), S("S"))
         self.e.build_DSL()
 
     def tearDown(self):

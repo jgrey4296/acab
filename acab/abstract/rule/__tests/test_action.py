@@ -11,6 +11,7 @@ from acab.abstract.data.node import AcabNode
 from acab.abstract.core.value import AcabValue as AV
 from acab.abstract.rule.action import ActionComponent, ActionOp
 from acab.abstract.core.sentence import Sentence
+from acab.abstract.core.type_system import build_simple_type_system
 
 BIND_S = AcabConfig.Get()("Parsing.Structure", "BIND_S")
 
@@ -18,7 +19,9 @@ class ActionTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        return
+        # setup class
+        type_sys = build_simple_type_system()
+        AV._set_type_system(type_sys)
 
     def setUp(self):
         return 1

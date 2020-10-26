@@ -8,8 +8,8 @@ import unittest.mock as mock
 
 import logging
 
-from acab.abstract.engine import Engine
-from acab.abstract.sentence import Sentence
+from acab.abstract.engine.engine import Engine
+from acab.abstract.core.sentence import Sentence
 from acab.modules.io.importing.actions import ImportQuery
 from acab.error.acab_import_exception import AcabImportException
 
@@ -38,17 +38,19 @@ class ImporterTests(unittest.TestCase):
 
     def test_import_duplicate_guard(self):
         self.assertFalse(self.e._loaded_modules)
-        self.e._loaded_modules['acab.modules.operators.transform'] = "TEST_STR"
+        self.e._loaded_modules.add('acab.modules.operators.transform')
         self.assertTrue("acab.modules.operators.transform" in self.e._loaded_modules)
         im_query = ImportQuery([Sentence.build(["acab","modules","operators","transform"])])
         result = im_query(None, self.e)
         self.assertTrue("acab.modules.operators.transform" in self.e._loaded_modules)
-        self.assertEqual(result[0], "TEST_STR")
 
     def test_dsl_fragment_load(self):
         self.assertFalse(self.e._loaded_modules)
         im_query = ImportQuery([Sentence.build(["acab","modules","operators","transform"])])
+
+        breakpoint()
         result = im_query(None, self.e)
+
         self.assertTrue("acab.modules.operators.transform" in self.e._loaded_modules)
         self.assertTrue("acab.modules.operators.transform" in self.e._loaded_DSL_fragments)
 

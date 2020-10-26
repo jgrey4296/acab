@@ -7,8 +7,9 @@ from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
 from acab.abstract.core.value import AcabValue, AcabStatement
-from acab.abstract.data.node import AcabNode
+from acab.abstract.core.type_system import AcabTypeSystem, build_simple_type_system
 from acab.abstract.core.sentence import Sentence
+from acab.abstract.data.node import AcabNode
 
 AT_BIND_S = AcabConfig.Get()("Parsing.Structure", "AT_BIND_S")
 BIND_S = AcabConfig.Get()("Parsing.Structure", "BIND_S")
@@ -17,7 +18,9 @@ class AcabValueTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        return
+        # setup class
+        type_sys = build_simple_type_system()
+        AcabValue._set_type_system(type_sys)
 
     def setUp(self):
         return 1
@@ -53,7 +56,7 @@ class AcabValueTests(unittest.TestCase):
         copied = sen.attach_statement(value)
         self.assertIsInstance(copied[-1], AcabStatement)
         self.assertEqual(copied[-1]._value, "test")
-        self.assertEqual(copied[-1].name, 4)
+        self.assertEqual(copied[-1].name, str(4))
 
     def test_attach_statement_with_tags(self):
         value = AcabStatement("test")
@@ -89,7 +92,7 @@ class AcabValueTests(unittest.TestCase):
         value = AcabValue("test")
         value._data.update({BIND_S: AT_BIND_S})
         self.assertTrue(value.is_at_var)
-        self.assertEqual(value.pprint(), "@test")
+        self.assertEqual(str(value), "test")
 
     @unittest.skip('TODO')
     def test_verify(self):

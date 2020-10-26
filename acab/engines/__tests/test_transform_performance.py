@@ -21,17 +21,24 @@ from acab.working_memory.trie_wm.parsing import FactParser as FP
 
 from acab.modules.values import numbers as NS
 
+from acab.abstract.core.type_system import build_simple_type_system
 
 def S(*words):
     return Sentence.build(words)
 
 class TransformTests(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        # setup class
+        type_sys = build_simple_type_system()
+        AcabValue._set_type_system(type_sys)
+
     def setUp(self):
         self.e = TrieEngine(modules=["acab.modules.values.numbers",
                                      "acab.modules.operators.standard_operators"])
         self.e.alias_module(S("acab", "modules", "values", "numbers"), S("N"))
-        self.e.alias_module(S("acab", "modules", "operators"), S("S"))
+        self.e.alias_module(S("acab", "modules", "operators", "standard", "operators"), S("S"))
         self.e.build_DSL()
 
     def tearDown(self):

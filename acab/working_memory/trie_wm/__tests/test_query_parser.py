@@ -4,10 +4,10 @@ import logging
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
+from acab.abstract.core.type_system import build_simple_type_system
 import acab.working_memory.trie_wm.parsing.QueryParser as QP
 
 from acab.abstract.core.sentence import Sentence
-from acab.abstract.core.type_base import REGEX
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
 from acab.abstract.rule.production_operator import ProductionOperator
 from acab.abstract.rule.query import Query, QueryComponent, QueryOp
@@ -16,13 +16,16 @@ from acab.modules.operators import query as QOP
 from acab.working_memory.trie_wm import util as KBU
 
 NEGATION_S = AcabConfig.Get()("Parsing.Structure", "NEGATION_S")
-FALLBACK_S = AcabConfig.Get()("Parsing.Structure", "FALLBACK_S")
+QUERY_FALLBACK_S = AcabConfig.Get()("Parsing.Structure", "QUERY_FALLBACK_S")
 CONSTRAINT_S = AcabConfig.Get()("Parsing.Structure", "CONSTRAINT_S")
 
 class Trie_Query_Parser_Tests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        # setup class
+        type_sys = build_simple_type_system()
+        AcabValue._set_type_system(type_sys)
         bp = BootstrapParser()
         qmod = QOP.MODULE()
         qmod.assert_parsers(bp)
@@ -46,6 +49,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(qc, QueryComponent)
         self.assertEqual(qc.op.pprint(), 'operator.query.regmatch')
         self.assertEqual(qc._params[0].pprint(), '/blah/')
+        # TODO convert this to a type system lookup
         self.assertEqual(qc._params[0].type, REGEX)
 
     def test_basic_clause(self):
@@ -94,12 +98,12 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
     def test_clause_fallback_strings(self):
         result = QP.clause.parseString('a.b.c? || $x:a.b!c, $y:b.d.e')[0]
         self.assertIsInstance(result, Sentence)
-        self.assertIsNotNone(result._data[FALLBACK_S])
-        self.assertEqual(len(result._data[FALLBACK_S]), 2)
-        self.assertEqual(result._data[FALLBACK_S][0][0], 'x')
-        self.assertEqual(result._data[FALLBACK_S][0][1][-1]._value, 'c')
-        self.assertEqual(result._data[FALLBACK_S][1][0], 'y')
-        self.assertEqual(result._data[FALLBACK_S][1][1][-1]._value, 'e')
+        self.assertIsNotNone(result._data[QUERY_FALLBACK_S])
+        self.assertEqual(len(result._data[QUERY_FALLBACK_S]), 2)
+        self.assertEqual(result._data[QUERY_FALLBACK_S][0][0], 'x')
+        self.assertEqual(result._data[QUERY_FALLBACK_S][0][1][-1]._value, 'c')
+        self.assertEqual(result._data[QUERY_FALLBACK_S][1][0], 'y')
+        self.assertEqual(result._data[QUERY_FALLBACK_S][1][1][-1]._value, 'e')
 
     def test_comparison_parse(self):
         result = QP.QueryCore_end.parseString("testing(λoperator.query.regmatch /test/)")

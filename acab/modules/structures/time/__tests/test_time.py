@@ -2,14 +2,15 @@ import unittest
 import logging
 import pyparsing as pp
 
+
+from acab.config import AcabConfig
+util = AcabConfig.Get("util.config")
+
 from acab.modules.structures.time.time_core import BaseTime, TimeEvent, TimeContainer
 from acab.modules.structures.time.pattern import PatternSeq, PatternPar
 from acab.modules.structures.time.parsing import parser as tp
 from acab.modules.structures.time.util import Time as t
 from acab.abstract.parsing import util as PU
-from acab.config import AcabConfig
-
-util = AcabConfig.Get()
 
 BIND_S = util("Parsing.Structure", "BIND_S")
 
@@ -17,6 +18,9 @@ class TestTime(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        # setup class
+        type_sys = build_simple_type_system()
+        AcabValue._set_type_system(type_sys)
         #Hotload value and bind
         tp.HOTLOAD_VALUE << PU.BASIC_VALUE
         tp.HOTLOAD_BIND << PU.BIND

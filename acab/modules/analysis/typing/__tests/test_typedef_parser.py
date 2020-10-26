@@ -8,6 +8,7 @@ AcabConfig.Get().read("acab/util.config")
 import acab.modules.analysis.typing.parsing.TypeDefParser as TD
 import acab.modules.analysis.typing.parsing.TypeParser as TP
 
+from acab.abstract.core.type_system import build_simple_type_system
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.data.node import AcabNode
 from acab.abstract.parsing import util as PU
@@ -23,6 +24,10 @@ class TypeDef_ParserTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        # setup class
+        type_sys = build_simple_type_system()
+        AcabValue._set_type_system(type_sys)
+
         FP.HOTLOAD_ANNOTATIONS << TP.TYPEDEC_CORE
         TP.HOTLOAD_BASIC_SEN << FP.BASIC_SEN
         TD.HOTLOAD_BASIC_SEN << FP.BASIC_SEN

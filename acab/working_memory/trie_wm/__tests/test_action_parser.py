@@ -4,6 +4,7 @@ import logging
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
+from acab.abstract.core.type_system import build_simple_type_system
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.rule import action
@@ -15,6 +16,13 @@ def S(*words):
     return Sentence.build(words)
 
 class Trie_Action_Parser_Tests(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        # setup class
+        type_sys = build_simple_type_system()
+        AcabValue._set_type_system(type_sys)
+
 
     def setUp(self):
         return 1
