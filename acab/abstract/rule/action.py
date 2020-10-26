@@ -10,7 +10,7 @@ from acab.config import AcabConfig
 
 from acab.abstract.core.value import AcabValue
 from acab.abstract.core.sentence import Sentence
-from acab.abstract.core import type_base as TB
+from acab.abstract.core.type_system import AcabTypeSystem as TB
 
 from acab.abstract.rule import production_operator as PO
 
@@ -77,7 +77,8 @@ class Action(PO.ProductionContainer):
     """ A Container for Action Specifications """
 
     def __init__(self, clauses, params=None):
-        super(Action, self).__init__(clauses, params=params, _type=TB.ACTION)
+        _type = AcabValue._type_system.CONTAINER
+        super(Action, self).__init__(clauses, params=params, _type=_type)
 
 
     def bind(self, bindings):

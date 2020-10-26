@@ -101,15 +101,16 @@ class Engine:
         Returns a working_memory query result of the module
         """
         # Prepare path
+        # TODO use utility constants for joining and query
         mod_str = module_sen
         if not isinstance(mod_str, str):
-            mod_str = module_sen.pprint(join_seq=".")
+            mod_str = module_sen.pprint(seq_join=".")
 
         # Return early if already loaded
         if module_sen in self._loaded_modules:
             logging.info("Module already loaded: {}".format(module_sen))
             # TODO extract node from return context?
-            return self._working_memory.query(module_sen)
+            return self._working_memory.query(module_sen + "?")
 
         # Load
         try:

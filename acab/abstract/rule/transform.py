@@ -10,7 +10,6 @@ import logging as root_logger
 from acab.config import AcabConfig
 
 from acab.abstract.core.value import AcabValue
-from acab.abstract.core import type_base as TB
 from acab.abstract.core.sentence import Sentence
 
 from . import production_operator as PO
@@ -47,7 +46,8 @@ class Transform(PO.ProductionContainer):
     # have min and max bounds
     def __init__(self, clauses):
         assert(all([isinstance(x, TransformComponent) for x in clauses]))
-        super(Transform, self).__init__(clauses, _type=TB.TRANSFORM)
+        _type = AcabValue._type_system.CONTAINER
+        super(Transform, self).__init__(clauses, _type=_type)
 
     @property
     def var_set(self):

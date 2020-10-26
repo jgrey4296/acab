@@ -7,8 +7,7 @@ import logging as root_logger
 
 from acab.config import AcabConfig
 
-from acab.abstract.core import type_base as TB
-
+from acab.abstract.core.value import AcabValue
 from .production_operator import ProductionContainer
 from .transform import Transform
 from .action import Action
@@ -30,7 +29,8 @@ class Rule(ProductionContainer):
         assert(query is None or isinstance(query, Query))
         assert(action is None or isinstance(action, Action))
         assert(transform is None or isinstance(transform, Transform))
-        super().__init__(None, name=name, _type=TB.RULE)
+        _type = AcabValue._type_system.CONTAINER
+        super().__init__(None, name=name, _type=_type)
         self._query     = query
         self._transform = transform
         self._action    = action

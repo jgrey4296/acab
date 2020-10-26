@@ -20,6 +20,7 @@ class DSL_Fragment:
     assert/query _parsers
     """
 
+    # TODO pass the type system in to be extended?
 
     def __init__(self):
         """

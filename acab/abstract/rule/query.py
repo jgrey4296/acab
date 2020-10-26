@@ -10,7 +10,6 @@ import logging as root_logger
 
 from acab.config import AcabConfig
 
-from acab.abstract.core import type_base as TB
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.core.value import AcabValue
 
@@ -103,7 +102,8 @@ class Query(PO.ProductionContainer):
 
     def __init__(self, clauses):
         assert(all([isinstance(x, Sentence) for x in clauses]))
-        super(Query, self).__init__(clauses, _type=TB.QUERY)
+        _type = AcabValue._type_system.CONTAINER
+        super(Query, self).__init__(clauses, _type=_type)
 
     def __call__(self, ctxs=None, engine=None):
         return engine.query(self, ctxs=ctxs)

@@ -15,7 +15,6 @@ from acab.config import AcabConfig
 
 from acab.abstract.core.value import AcabValue, AcabStatement
 from acab.abstract.core.sentence import Sentence
-from acab.abstract.core import type_base as TB
 
 util = AcabConfig.Get()
 
@@ -29,7 +28,8 @@ class ProductionOperator(AcabValue):
     """ The Base Operator Class """
 
     def __init__(self):
-        super().__init__(self.__class__.__name__, _type=TB.OPERATOR)
+        _type = AcabValue._type_system.OPERATOR
+        super().__init__(self.__class__.__name__, _type=_type)
 
     def __call__(self, *params, data=None, engine=None):
         raise NotImplementedError()
@@ -45,7 +45,7 @@ class ProductionComponent(AcabValue):
     def __init__(self, op_path, params, sugared=False, data=None, rebind=None, name=None):
         assert(isinstance(op_path, Sentence))
         assert all([isinstance(x, AcabValue) for x in params]), params
-        super().__init__(op_path, params=params, data=data, name=name, _type=TB.COMPONENT)
+        super().__init__(op_path, params=params, data=data, name=name, _type=TB.GET().COMPONENT)
         # The value name of the result
         self._rebind = rebind
         # Sugared: Denotes whether the parse originated from a sugared operator
@@ -145,9 +145,13 @@ class ProductionComponent(AcabValue):
 class ProductionContainer(AcabStatement):
     """ Production Container: An applicable statement of multiple component clauses """
 
-    def __init__(self, clauses, params=None, name=None, _type=TB.CONTAINER):
+    def __init__(self, clauses, params=None, name=None, _type=None):
+        if _type is None:
+            _type = AcabValue._type_system.CONTAINER
+
         if clauses is None:
             clauses = []
+
         super().__init__(clauses, params=params, name=name, _type=_type)
 
     def __len__(self):

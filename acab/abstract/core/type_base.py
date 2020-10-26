@@ -37,6 +37,9 @@ class TypeInstance(AcabValue):
                                         params=None, tags=None,
                                         name=None, _type=None)
 
+        # TODO : Contracts
+        self._contracts: List['TypeClass']
+
     def __hash__(self):
         return hash(self.path)
 
