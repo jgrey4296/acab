@@ -1,14 +1,16 @@
 """ Trie-based parser to construct rules """
+# pylint: disable=bad-whitespace
 import logging as root_logger
 import pyparsing as pp
 
-from acab.abstract.rule.rule import Rule
-from acab.abstract.rule.production_operator import ProductionContainer
-
 from acab.abstract.parsing import util as PU
-
+from acab.abstract.parsing import funcs as Pfunc
+from acab.abstract.parsing.consts import ARROW, DOUBLEBAR, COLON, COMMA, COLON, DELIM, component_gap
+from acab.abstract.parsing.consts import RULE_HEAD, N, NG, orm, op, gap, component_gap, emptyLine
 from acab.working_memory.trie_wm import util as WMU
-from acab.working_memory.trie_wm.fact_node import FactNode
+from acab.working_memory.trie_wm.parsing import util as WMPU
+
+from acab.working_memory.trie_wm.parsing.util import QUERY_S, TRANSFORM_S, ACTION_S, build_rule
 
 from acab.config import AcabConfig
 
@@ -17,54 +19,20 @@ from . import QueryParser as QP
 from . import TransformParser as TP
 from . import ActionParser as AP
 
-util = AcabConfig.Get()
-QUERY_S = util("Parsing.Structure", "QUERY_S")
-TRANSFORM_S = util("Parsing.Structure", "TRANSFORM_S")
-ACTION_S = util("Parsing.Structure", "ACTION_S")
-
 logging = root_logger.getLogger(__name__)
 
-# Constructor:
-def build_rule(toks):
+conditions = N(QUERY_S, QP.clauses + gap)
+transforms = N(TRANSFORM_S, TP.transforms + gap)
+actions    = NG(ACTION_S, AP.actions + component_gap)
 
-    # Get Conditions
-    if QUERY_S in toks:
-        c = toks[QUERY_S][0][1]
-        assert(isinstance(c, ProductionContainer))
-    else:
-        c = None
+rule_body = op(conditions) + op(transforms) + op(actions)
 
-    # Get Transform
-    if TRANSFORM_S in toks:
-        t = toks[TRANSFORM_S][0][1]
-        assert(isinstance(t, ProductionContainer))
-    else:
-        t = None
+rule = Pfunc.STATEMENT_CONSTRUCTOR(RULE_HEAD,
+                                   FP.BASIC_SEN,
+                                   rule_body,
+                                   args=False)
 
-    # Get Action
-    if ACTION_S in toks:
-        a = toks[ACTION_S][0][1]
-        assert(isinstance(a, ProductionContainer))
-    else:
-        a = None
-
-
-    rule = Rule(c, action=a, transform=t)
-    return (rule.type, rule)
-
-
-conditions = PU.N(QUERY_S, QP.clauses + PU.gap)
-transforms = PU.N(TRANSFORM_S, TP.transforms + PU.gap)
-actions    = PU.NG(ACTION_S, AP.actions + PU.component_gap)
-
-rule_body = PU.op(conditions) + PU.op(transforms) + PU.op(actions)
-
-rule = PU.STATEMENT_CONSTRUCTOR(PU.RULE_HEAD,
-                                FP.BASIC_SEN,
-                                rule_body,
-                                args=False)
-
-rules = pp.delimitedList(rule, delim=PU.emptyLine)
+rules = pp.delimitedList(rule, delim=emptyLine)
 
 # Actions:
 rule_body.setParseAction(build_rule)

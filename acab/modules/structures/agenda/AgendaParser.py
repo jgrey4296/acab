@@ -35,8 +35,9 @@ import pyparsing as pp
 from acab.config import AcabConfig
 
 from acab.abstract.parsing import util as PU
-from acab.abstract.rule.production_operator import ProductionContainer
-from acab.abstract.pipeline.agenda import Agenda, make_agenda
+from acab.abstract.parsing.util import N, NG
+from acab.abstract.parsing.consts import AGENDA_HEAD
+from acab.abstract.pipeline.agenda import make_agenda
 
 logging = root_logger.getLogger(__name__)
 
@@ -53,13 +54,13 @@ HOTLOAD_ACTION = pp.Forward()
 
 
 # agenda should be a special case of rule
-conditions  = PU.N(QUERY_S , HOTLOAD_QUERY     + PU.gap)
-transforms  = PU.N(TRANSFORM_S , HOTLOAD_TRANSFORM + PU.gap)
-var_setting = PU.NG(ACTION_S   , HOTLOAD_ACTION    + PU.component_gap)
+conditions  = N(QUERY_S , HOTLOAD_QUERY + PU.gap)
+transforms  = N(TRANSFORM_S , HOTLOAD_TRANSFORM + PU.gap)
+var_setting = NG(ACTION_S   , HOTLOAD_ACTION    + PU.component_gap)
 
 agenda_body = PU.op(conditions) + PU.op(transforms) + PU.op(var_setting)
 
-agenda_stmt = PU.STATEMENT_CONSTRUCTOR(PU.AGENDA_HEAD,
+agenda_stmt = PU.STATEMENT_CONSTRUCTOR(AGENDA_HEAD,
                                        HOTLOAD_BASIC_SEN,
                                        agenda_body)
 

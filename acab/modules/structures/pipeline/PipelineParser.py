@@ -45,6 +45,7 @@ from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
 from acab.abstract.parsing import util as PU
+from acab.abstract.parsing.consts import PIPE_HEAD
 from acab.abstract.rule.production_operator import ProductionContainer
 from acab.abstract.pipeline.pipeline import Pipeline, make_pipeline
 
@@ -68,7 +69,7 @@ var_setting = PU.NG(ACTION_S   , HOTLOAD_ACTION    + PU.component_gap)
 
 pipeline_body = PU.op(conditions) + PU.op(transforms) + PU.op(var_setting)
 
-pipeline_stmt = PU.STATEMENT_CONSTRUCTOR(PU.PIPE_HEAD,
+pipeline_stmt = PU.STATEMENT_CONSTRUCTOR(PIPE_HEAD,
                                          HOTLOAD_BASIC_SEN,
                                          pipeline_body)
 

@@ -29,6 +29,7 @@ import pyparsing as pp
 from acab.config import AcabConfig
 
 from acab.abstract.parsing import util as PU
+from acab.abstract.parsing.consts import LAYER_HEAD
 from acab.abstract.rule.production_operator import ProductionContainer
 from acab.abstract.pipeline.layer import Layer, make_layer
 
@@ -51,7 +52,7 @@ var_setting = PU.NG(ACTION_S   , HOTLOAD_ACTION    + PU.component_gap)
 
 layer_body = PU.op(conditions) + PU.op(transforms) + PU.op(var_setting)
 
-layer_stmt = PU.STATEMENT_CONSTRUCTOR(PU.LAYER_HEAD,
+layer_stmt = PU.STATEMENT_CONSTRUCTOR(LAYER_HEAD,
                                       HOTLOAD_BASIC_SEN,
                                       layer_body)
 
