@@ -62,45 +62,82 @@ def value_sentinel(PS, source, processed, acc, params):
     constraints = acc['constraints']
     joined_constraints = ""
     if bool(constraints):
-        joined_constraints = wrappers._wrap_constraints(PS, joined_constraints, acc)
+        # TODO fix this
+        joined_constraints = wrappers._wrap_constraints(PS, joined_constraints)
 
     # TODO add variable wrap / type wrap
 
-    return (PS.simple, "{}{}{}".format(name, joined_constraints,modal), None)
+    return (PS.simple, "{}{}{}".format(name, joined_constraints,modal))
 
-def simple_value_sentinel(PS: 'AcabPrintSemantics', value: 'AcabValue', acc):
+
+def simple_value_sentinel(PS: 'AcabPrintSemantics', value: 'AcabValue', processed, acc, params: Any):
     """ Basic Value Handler, returns the name or a basic variable glyph """
     current_str = acc['name']
     if current_str is None and value.is_var:
-        current_str = "$_"
+        # TODO update to anon value
+        current_str = PS.ask(ANON_VALUE_S)
 
     return (PS.simple, current_str, None)
 
-def value_uuid_long_sentinel(PS, value, processed, acc):
+
+def value_uuid_accumulator(PS, value, acc, params):
+    return (PS.accumulate, {'uuid': str(value._uuid)}, None)
+
+def value_name_accumulator(PS, value, acc, params):
+    return (PS.accumulate, {'name': value.name}, None)
+
+def value_uuid_long_sentinel(PS, value, processed, acc, params):
     """ A Basic sentinel for tracking specific objects """
-    uuid = accum['uuid']
-    name = accum['name']
+    uuid = acc['uuid']
+    name = acc['name']
 
     return (PS.simple, "({} : {})".format(name, uuid), None)
 
-def sentence_sentinel(PS, source, processed, acc):
+
+
+
+def type_instance_substruct(PS, value, acc, params):
+    return None
+def type_instance_sentinel(PS, value, processed, acc, params):
+    return None
+def sentence_substruct(PS, value, acc, params):
+    words = value.words
+    # TODO: change this to an Override registration
+    PS.set_for_uuid(words[-1]._uuid, ["drop_end_op"])
+    words = list_to_inst_list(PS, value, [x for x in value.words], acc, "words")
+    return (PS.substruct, words, None)
+
+def sentence_sentinel(PS, source, processed, acc, params):
     """ Combines its destruct'd words, with its parameters """
     # combine the words
-    join_str = PS.ask("sentence_join_str")
+    join_str = PS.ask(SEN_JOIN_S)
     words = acc['words']
     combined = join_str.join(words)
 
-    as_query = wrappers._maybe_wrap_question(PS, value, combined)
-    as_negated = wrappers._maybe_wrap_negation(PS, value, combined)
+    as_query = wrappers._maybe_wrap_question(PS, source, combined)
+    as_negated = wrappers._maybe_wrap_negation(PS, source, as_query)
 
     final = as_negated
     return (PS.simple, as_negated, None)
 
-def operator_sentinel(PS, source, processed, acc):
+
+def operator_substruct(PS, value, acc, params):
+    """ Op Fix is the count of vars to print before printing the op.
+    eg: op_fix=0 : + 1 2 3 ...
+        op_fix=2 : 1 2 + 3 ...
+    """
+    # Get op
+    operator = value.op
+    # Get Params
+    the_params = list_to_inst_list(PS, value, [x for x in value._params], acc,"params")
+    op_name = list_to_inst_list(PS, value, [operator], acc, "op_name")
+    return (PS.substruct, the_params + op_name, operator_sentinel)
+
+def operator_sentinel(PS, source, processed, acc, params):
     # Get func symbol
     # TODO have default, plus override from PS?
-    param_join = PS.ask("params_join_str")
-    func_symbol = FUNC_SYMBOL_S
+    param_join = PS.ask(PARAM_JOIN_S)
+    func_symbol = PS.ask(FUNC_S)
     # TODO split unary and n-ary operators
     op_name = acc['op_name']
     # combine for final value
@@ -111,71 +148,19 @@ def operator_sentinel(PS, source, processed, acc):
     total = "{}{} ({})".format(func_symbol, op_name, params)
     return (PS.simple, total, None)
 
-def container_sentinel(PS, source, processed, acc):
-    # TODO combine clauses as needed
 
-    return None
+def container_handler(PS, container, acc, params):
+    the_clauses = list_to_inst_list(PS, container, [x for x in container.clauses], acc, "clauses")
+    return (PS.SUBSTRUCT, the_clauses, None)
 
-def statement_sentinel(PS, source, processed, acc):
-    # Sequence processed into final form
-    # Get name
-    # Get type
-    # Get params
-    # Get Tags
-    # Get body
-
-    return None
+def container_sentinel(PS, source, processed, acc, params):
+    join_str = PS.ask(CONTAINER_JOIN_S)
+    clauses = acc['clauses']
+    final = join_str.join(clauses)
+    return (PS.simple, final, None)
 
 
-# Accumulators
-
-def value_uuid_accumulator(PS, value, acc):
-    return (PS.accumulate, {'uuid': str(value._uuid)}, None)
-
-def value_name_accumulator(PS, value, acc):
-    return (PS.accumulate, {'name': value.name}, None)
-
-
-# Substructs
-
-def value_params_substuct(PS, value, acc):
-    # TODO specify a sentinel too
-    params = [(PS.e_print, None, x) for x in value._params]
-    return (PS.substruct, params, None)
-
-def sentence_substruct(PS, value, acc):
-    words = value.words
-    # TODO: change this to an Override registration
-    PS.set_for_uuid(words[-1]._uuid, "drop_end_op", True)
-
-    words = [(PS.e_print, x, None) for x in value.words[:-1]]
-    # words.append((PS.e_call, x, SPECIAL_FUNC))
-    # Return an additional accumulator sentinel for the words
-    return (PS.substruct, words, regrouper)
-
-def operator_substruct(PS, value, acc):
-    """ Op Fix is the count of vars to print before printing the op.
-    eg: op_fix=0 : + 1 2 3 ...
-        op_fix=2 : 1 2 + 3 ...
-    """
-    # Get op
-    operator = value.op
-    # Get Params
-    the_params = value._params
-
-    # TODO add custom accumulator sentinels
-    components = [(PS.e_print, operator, None)]
-    components += [(PS.e_print, x, None) for x in the_params]
-
-    return (value, components, None)
-
-# Simple Handlers
-
-def container_handler(PS, container):
-    the_clauses = [(PS.e_print, x, None) for x in container.clauses]
-    return (container, the_clauses, None)
-
-def statement_handler(PS, value, acc):
+def statement_handler(PS, value, acc, params):
     # Get name
     # Get type
     # Get params
@@ -184,4 +169,31 @@ def statement_handler(PS, value, acc):
 
     # TODO Order contents with tuples
     content = []
-    return (value, content, None)
+    return (PS.substruct, content, None)
+
+def statement_sentinel(PS, source, processed, acc, params):
+    # Sequence processed into final form
+    # Get name
+    name = acc['name']
+    # Get type
+    _type = acc['type']
+    # Get params
+    params = acc['params']
+    # Get Tags
+    tags = acc['tags']
+    # Get body
+    body = acc['body']
+
+    # TODO
+    final = ""
+    return (None, final, None)
+
+
+
+# Default Pairings:
+DEF_VALUE_PAIR = ([value_name_accumulator], simple_value_sentinel)
+DEF_UUID_PAIR = ([value_uuid_accumulator, value_name_accumulator], value_uuid_long_sentinel)
+DEF_SEN_PAIR = ([sentence_substruct], sentence_sentinel)
+DEF_TYPE_PAIR = ([type_instance_substruct], type_instance_sentinel)
+DEF_OP_PAIR = ([operator_substruct], operator_sentinel)
+DEF_CONTAINER_PAIR = ([container_handler], container_sentinel)
