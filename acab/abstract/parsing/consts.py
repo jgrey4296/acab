@@ -11,15 +11,15 @@ logging = root_logger.getLogger(__name__)
 util = AcabConfig.Get()
 
 ARG_S             = util("Parsing.Structure", "ARG_S")
-COMMENT_RE        = util("Parsing", "COMMENT_RE", AcabConfig.actions_e.UNESCAPE)
+COMMENT_RE        = util("Visual.Symbols", "COMMENT_RE", AcabConfig.actions_e.UNESCAPE)
 NAME_S            = util("Parsing.Structure", "NAME_S")
 NEGATION_S        = util("Parsing.Structure", "NEGATION_S")
-OPERATOR_SYNTAX_S = util("Parsing", "OPERATOR_SYNTAX_S")
+OPERATOR_SYNTAX_S = util("Visual.Symbols", "OPERATOR_SYNTAX_S")
 SEN_S             = util("Parsing.Structure", "SEN_S")
 STATEMENT_S       = util("Parsing.Structure", "STATEMENT_S")
 TAG_S             = util("Parsing.Structure", "TAG_S")
-WHITE_SPACE       = util("Parsing", "WHITE_SPACE", AcabConfig.actions_e.STRIPQUOTE, AcabConfig.actions_e.UNESCAPE)
-WORD_COMPONENT_S  = util("Parsing", "WORD_COMPONENT_S")
+WHITE_SPACE       = util("Visual.Symbols", "WHITE_SPACE", AcabConfig.actions_e.STRIPQUOTE, AcabConfig.actions_e.UNESCAPE)
+WORD_COMPONENT_S  = util("Visual.Symbols", "WORD_COMPONENT_S")
 
 
 pp.ParserElement.setDefaultWhitespaceChars(WHITE_SPACE)
@@ -31,7 +31,7 @@ zrm       = pp.ZeroOrMore
 
 
 emptyLine         = pp.Suppress(pp.lineEnd + pp.lineEnd)
-END               = s(util("Parsing", "END_S", action=AcabConfig.actions_e.LITERAL))
+END               = s(util("Visual.Symbols", "END_SYMBOL_S", action=AcabConfig.actions_e.LITERAL))
 VBAR              = s(pp.Literal('|'))
 COMMENT           = pp.Regex(COMMENT_RE)
 COMMA             = s(pp.Literal(','))
@@ -84,17 +84,17 @@ AGENDA_HEAD       = s(util("Parsing.Statements", "AGENDA_HEAD_S", action=AcabCon
 LAYER_HEAD        = s(util("Parsing.Statements", "LAYER_HEAD_S", action=AcabConfig.actions_e.KEYWORD))
 PIPE_HEAD         = s(util("Parsing.Statements", "PIPE_HEAD_S", action=AcabConfig.actions_e.KEYWORD))
 
-FUNC_SYMBOL       = s(pp.Word(util("Parsing", "FUNC_SYMBOL_S")))
+FUNC_SYMBOL       = s(pp.Word(util("Visual.Symbols", "FUNC_SYMBOL_S")))
 
-VAR_SYMBOL        = s(util("Parsing", "VAR_SYMBOL_S", action=AcabConfig.actions_e.LITERAL))
-AT_BIND_SYMBOL    = s(util("Parsing", "AT_VAR_SYMBOL_S", action=AcabConfig.actions_e.LITERAL))
+BIND_SYMBOL        = s(util("Visual.Symbols", "BIND_SYMBOL_S", action=AcabConfig.actions_e.LITERAL))
+AT_BIND_SYMBOL    = s(util("Visual.Symbols", "AT_BIND_SYMBOL_S", action=AcabConfig.actions_e.LITERAL))
 
-QUERY_SYMBOL      = s(util("Parsing", "QUERY_SYMBOL_S", action=AcabConfig.actions_e.LITERAL))
-TAG_SYMBOL        = s(util("Parsing", "TAG_SYMBOL_S", action=AcabConfig.actions_e.LITERAL))
-COLLAPSE_CONTEXT  = s(util("Parsing", "CTX_COLLAPSE_S", action=AcabConfig.actions_e.LITERAL))
+QUERY_SYMBOL      = s(util("Visual.Symbols", "QUERY_SYMBOL_S", action=AcabConfig.actions_e.LITERAL))
+TAG_SYMBOL        = s(util("Visual.Symbols", "TAG_SYMBOL_S", action=AcabConfig.actions_e.LITERAL))
+COLLAPSE_CONTEXT  = s(util("Visual.Symbols", "CTX_COLLAPSE_S", action=AcabConfig.actions_e.LITERAL))
 
 NEGATION_SYMBOL   = N(util("Parsing.Structure", "NEGATION_S"),
-                      util("Parsing", "NEGATION_SYMBOL_S", action=AcabConfig.actions_e.LITERAL))
+                      util("Visual.Symbols", "NEGATION_SYMBOL_S", action=AcabConfig.actions_e.LITERAL))
 
 
 END.setName("End")
@@ -105,7 +105,7 @@ RULE_HEAD.setName("RuleHead")
 QUERY_HEAD.setName("QueryHead")
 TRANSFORM_HEAD.setName("TransformHead")
 ACTION_HEAD.setName("ActionHead")
-VAR_SYMBOL.setName("VarSymbol")
+BIND_SYMBOL.setName("VarSymbol")
 AT_BIND_SYMBOL.setName("AtSymbol")
 NEGATION_SYMBOL.setName("NegationSymbol")
 QUERY_SYMBOL.setName("QuerySymbol")

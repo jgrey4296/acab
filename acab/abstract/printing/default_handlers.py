@@ -1,25 +1,54 @@
 #!/usr/bin/env python
+# https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
+from typing import List, Set, Dict, Tuple, Optional, Any
+from typing import Callable, Iterator, Union, Match
+from typing import Mapping, MutableMapping, Sequence, Iterable
+from typing import cast, ClassVar, TypeVar, Generic
+
 from . import wrappers
 from acab.config import AcabConfig
 
 util = AcabConfig.Get()
-FUNC_SYMBOL_S = util("Parsing", "FUNC_SYMBOL_S")
-QUERY_SYMBOL_S = util("Parsing", "QUERY_SYMBOL_S")
 
-
-def regrouper(PS, source, processed, acc):
-    """
-    Regroup some processed into a position in the accumulator
-    """
-    return (PS.accumulate, {'words': processed}, None)
+ANON_VALUE_S    = util("Printing", "ANON_VALUE_S")
+FUNC_S           = util("Parsing.Structure", "FUNC_S")
+QUERY_S          = util("Parsing.Structure", "QUERY_S")
+AT_BIND_S         = util("Parsing.Structure", "AT_BIND_S")
+CONSTRAINT_S     = util("Parsing.Structure", "CONSTRAINT_S")
+END_S            = util("Parsing.Structure", "END_S")
+FALLBACK_MODAL_S = util("Printing", "FALLBACK_MODAL_S")
+NEGATION_S       = util("Parsing.Structure", "NEGATION_S")
+SEN_JOIN_S       = util("Printing", "SEN_JOIN_S")
+CONTAINER_JOIN_S = util("Printing", "CONTAINER_JOIN_S")
+PARAM_JOIN_S     = util("Printing", "PARAM_JOIN_S")
+OBVIOUS_TYPES    = []
+OPERATOR_S       = util("Parsing.Structure", "OPERATOR_S")
+QUERY_S          = util("Parsing.Structure", "QUERY_S")
+TAB_S            = util("Printing", "TAB_S", action=AcabConfig.actions_e.STRIPQUOTE)
+TAG_S            = util("Parsing.Structure", "TAG_S")
+VALUE_TYPE_S     = util("Parsing.Structure", "VALUE_TYPE_S")
+BIND_S            = util("Parsing.Structure", "BIND_S")
 
 
 # Handler Types: Simple, Record, Destruct, Sentinel, Override
+def regroup_sentinel(PS, source, processed, acc, params):
+    """
+    A Generic Regroup Sentinel. Takes the context and
+    puts it in the accumulation, using the params as the key
+    """
+    target_name = params
+    if target_name in acc:
+        processed = acc[target_name] + processed
+    return (PS.accumulate, {target_name: processed}, None)
 
-# Sentinels
 
+def list_to_inst_list(PS, source, the_list, acc, regroup_name) -> List[Tuple[Any, Any, Any, Any]]:
+    assert(isinstance(the_list, List))
+    inst_list = [(PS.e_print, x, None, None) for x in the_list]
+    inst_list.append((PS.sentinel, source, regroup_sentinel, regroup_name))
+    return inst_list
 
-def value_sentinel(PS, source, processed, acc):
+def value_sentinel(PS, source, processed, acc, params):
     # name, modal, constraints
     modal_data_field = PS.ask('MODAL_FIELD')
 

@@ -8,11 +8,11 @@ from .value import AcabValue, AcabStatement
 
 util = AcabConfig.Get()
 
-BIND_S = util("Parsing.Structure", "BIND_S")
-AT_BIND_S = util("Parsing.Structure", "AT_BIND_S")
-OPERATOR_S = util("Parsing.Structure", "OPERATOR_S")
-SEN_S = util("Parsing.Structure", "SEN_S")
-ANON_VALUE = util("Printing", "ANON_VALUE")
+BIND_S       = util("Parsing.Structure", "BIND_S")
+AT_BIND_S    = util("Parsing.Structure", "AT_BIND_S")
+OPERATOR_S   = util("Parsing.Structure", "OPERATOR_S")
+SEN_S        = util("Parsing.Structure", "SEN_S")
+ANON_VALUE_S = util("Printing", "ANON_VALUE_S")
 
 class Sentence(AcabStatement):
     """
@@ -38,7 +38,7 @@ class Sentence(AcabStatement):
         if self._hash_name is not None:
             return self._hash_name
 
-        if self.name == ANON_VALUE:
+        if self.name == ANON_VALUE_S:
             word_hashes = " ".join([str(hash(x)) for x in self.words])
             self._hash_name = hash(word_hashes)
         else:

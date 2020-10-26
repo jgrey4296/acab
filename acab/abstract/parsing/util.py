@@ -32,7 +32,7 @@ REGEX       = pp.Regex(r'/.+?/')
 REGEX.setParseAction(lambda t: ('REGEX', re.compile(t[0][1:-1])))
 
 BASIC_VALUE = pp.Or([ATOM, STRING, REGEX])
-BIND        = PConst.VAR_SYMBOL + ATOM
+BIND        = PConst.BIND_SYMBOL + ATOM
 AT_BIND     = PConst.AT_BIND_SYMBOL + ATOM
 
 Fwd_ArgList <<= PConst.VBAR + pp.delimitedList(BIND, delim=PConst.COMMA) + PConst.VBAR

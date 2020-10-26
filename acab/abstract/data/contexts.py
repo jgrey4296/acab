@@ -21,7 +21,6 @@ from acab.config import AcabConfig
 util = AcabConfig.Get()
 
 AT_BIND_S = util("Parsing.Structure", "AT_BIND_S")
-FALLBACK_S = util("Parsing.Structure", "FALLBACK_S")
 BIND_S = util("Parsing.Structure", "BIND_S")
 CONSTRAINT_S = util("Parsing.Structure", "CONSTRAINT_S")
 

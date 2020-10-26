@@ -6,33 +6,21 @@ from acab.abstract.core.type_base import TypeInstance
 
 util = AcabConfig.Get()
 
-# pylint: disable=bad-whitespace
-CONSTRAINT_S      = util("Parsing.Structure", "CONSTRAINT_S")
-OPERATOR_S        = util("Parsing.Structure", "OPERATOR_S")
-QUERY_S           = util("Parsing.Structure", "QUERY_S")
-NEGATION_S        = util("Parsing.Structure", "NEGATION_S")
-FALLBACK_S        = util("Parsing.Structure", "FALLBACK_S")
-VALUE_TYPE_S      = util("Parsing.Structure", "VALUE_TYPE_S")
-
-FUNC_SYMBOL_S     = util("Printing", "FUNC_SYMBOL_S")
-
-VAR_SYMBOL_S      = util("Parsing", "VAR_SYMBOL_S")
-AT_VAR_SYMBOL_S   = util("Parsing", "AT_VAR_SYMBOL_S")
-QUERY_SYMBOL_S    = util("Parsing", "QUERY_SYMBOL_S")
-NEGATION_SYMBOL_S = util("Parsing", "NEGATION_SYMBOL_S")
-TAG_SYMBOL_S      = util("Parsing", "TAG_SYMBOL_S")
-END_S             = util("Parsing", "END_S")
-
-TAB_S             = util("Printing", "TAB_S", action=AcabConfig.actions_e.STRIPQUOTE)
-FALLBACK_MODAL_S  = util("Printing", "FALLBACK_MODAL_S", action=AcabConfig.actions_e.STRIPQUOTE)
-
-# TODO: possibly convert this to instances?
-OBVIOUS_TYPES     = util("Printing", "IMPLICIT_TYPES").split(" ")
-# pylint: enable=bad-whitespace
-
+AT_BIND_S         = util("Parsing.Structure", "AT_BIND_S")
+CONSTRAINT_S     = util("Parsing.Structure", "CONSTRAINT_S")
+END_S            = util("Parsing.Structure", "END_S")
+FALLBACK_MODAL_S = util("Printing", "FALLBACK_MODAL_S", action=AcabConfig.actions_e.STRIPQUOTE)
+FUNC_S           = util("Parsing.Structure", "FUNC_S")
+NEGATION_S       = util("Parsing.Structure", "NEGATION_S")
+OBVIOUS_TYPES    = []
+OPERATOR_S       = util("Parsing.Structure", "OPERATOR_S")
+QUERY_S          = util("Parsing.Structure", "QUERY_S")
+TAB_S            = util("Printing", "TAB_S", action=AcabConfig.actions_e.STRIPQUOTE)
+TAG_S            = util("Parsing.Structure", "TAG_S")
+VALUE_TYPE_S     = util("Parsing.Structure", "VALUE_TYPE_S")
+BIND_S            = util("Parsing.Structure", "BIND_S")
 
 def _maybe_wrap_str(PS, value, current):
-
     return '"{}"'.format(current)
 
 def _wrap_regex(PS, value, current):

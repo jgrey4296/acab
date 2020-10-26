@@ -23,7 +23,7 @@ util = AcabConfig.Get()
 VALUE_TYPE_S = util("Parsing.Structure", "VALUE_TYPE_S")
 BIND_S = util("Parsing.Structure", "BIND_S")
 AT_BIND_S = util("Parsing.Structure", "AT_BIND_S")
-ANON_VALUE = util("Printing", "ANON_VALUE")
+ANON_VALUE_S = util("Printing", "ANON_VALUE_S")
 
 UUID_CHOP = bool(int(util("Printing", "UUID_CHOP")))
 
@@ -61,6 +61,7 @@ class AcabValue:
                  params=None, tags=None,
                  name=None, _type=None):
 
+        # Applicable values: Self + any registered
         value_type_tuple = tuple([AcabValue] + list(AcabValue.value_types))
         assert (value is None or isinstance(value, value_type_tuple)), breakpoint()
 
@@ -96,7 +97,7 @@ class AcabValue:
         if self.name is not None:
             return str(self.name)
 
-        return ANON_VALUE
+        return ANON_VALUE_S
 
     def __repr__(self):
         uuid = str(self._uuid)
@@ -115,7 +116,7 @@ class AcabValue:
         if self._hash_name is not None:
             return self._hash_name
 
-        if self.name == ANON_VALUE:
+        if self.name == ANON_VALUE_S:
             self._hash_name = hash(self._uuid)
         else:
             self._hash_name = hash(str(self) + str(self.type))

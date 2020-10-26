@@ -168,7 +168,6 @@ class AcabNode:
 
     def bind(self, bindings):
         """ Return a copy that has applied given bindings to its value
-        TODO : deprecate
         """
         raise DeprecationWarning()
 
