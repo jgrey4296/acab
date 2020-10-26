@@ -31,7 +31,7 @@ a -> b : b.qualified.action? : action
 
 """
 
-from acab.abstract.value import AcabValue
+from acab.abstract.core.value import AcabValue
 
 
 class Delegation(AcabValue):

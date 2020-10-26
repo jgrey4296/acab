@@ -7,7 +7,7 @@ and produce ys from 0 - 1
 from enum import Enum
 import numpy as np
 from acab.error.acab_parse_exception import AcabParseException
-from .constants import PI
+from math import pi as PI
 
 DOMAIN = Enum("Domain of the curve", "FULL LEFT RIGHT")
 

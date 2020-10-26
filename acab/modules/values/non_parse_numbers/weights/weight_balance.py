@@ -8,7 +8,7 @@ and where for any (a < b), (a.upperbound < b.lowerbound)
 """
 import numpy as np
 from collections import defaultdict
-from cairo_utils import BeachLine
+# from cairo_utils import BeachLine
 
 defaultZeros = lambda : defaultdict(lambda: 0)
 
@@ -40,15 +40,15 @@ class WeightBalance:
 
     def __call__(self):
         """ Set the balancing algorithm going """
-        self.aggregate()
-        t = BeachLine(arc=False)
-        t.insert_many(*list(self.comparisons.values()))
-        chain = [x for x in t.get_chain()]
-        #give each value in chain a range based on bins from the distribution function
-        xs = [x.value.key for x in chain]
-        ys = self.dist(self.range[0], self.range[1], len(xs))
-        #TODO: turn these into ranges?
-        self.weights = { x : y for (x,y) in zip(xs, ys) }
+        # self.aggregate()
+        # t = BeachLine(arc=False)
+        # t.insert_many(*list(self.comparisons.values()))
+        # chain = [x for x in t.get_chain()]
+        # #give each value in chain a range based on bins from the distribution function
+        # xs = [x.value.key for x in chain]
+        # ys = self.dist(self.range[0], self.range[1], len(xs))
+        # #TODO: turn these into ranges?
+        # self.weights = { x : y for (x,y) in zip(xs, ys) }
 
     def __getitem__(self, key):
         return self.weights[self.weights[key]]

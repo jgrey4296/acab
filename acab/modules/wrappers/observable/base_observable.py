@@ -10,7 +10,7 @@ Action A : [
 
 
 """
-from acab.abstract.value import AcabValue
+from acab.abstract.core.value import AcabValue
 
 
 class ObservableBase(AcabValue):

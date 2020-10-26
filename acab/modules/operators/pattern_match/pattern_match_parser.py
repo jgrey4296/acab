@@ -14,6 +14,7 @@ end
 
 import pyparsing as pp
 
+from acab.abstract.parsing.consts import ARROW, END, COLON, s
 import acab.abstract.parsing.util as PU
 
 from acab.abstract.rule.transform import TransformComponent
@@ -33,17 +34,17 @@ HOTLOAD_VAR = pp.Forward()
 HOTLOAD_SEN = pp.Forward()
 HOTLOAD_QUERY = pp.Forward()
 
-MATCH_KW = PU.s(pp.Keyword("match"))
+MATCH_KW = s(pp.Keyword("match"))
 
 # Parser
 # TODO: catch module alias (eg: λPM.match $x -> ...)?
-head = MATCH_KW + HOTLOAD_VAR + PU.ARROW + HOTLOAD_VAR + PU.COLON + PU.s(pp.lineEnd)
+head = MATCH_KW + HOTLOAD_VAR + ARROW + HOTLOAD_VAR + COLON + s(pp.lineEnd)
 
 pattern = HOTLOAD_QUERY
 # TODO: make result a sentence that will place a value in the head's var
-match_line = pattern + PU.ARROW + HOTLOAD_VALBIND
+match_line = pattern + ARROW + HOTLOAD_VALBIND
 
-pattern_match = head + pp.delimitedList(match_line, delim=pp.lineEnd) + PU.END
+pattern_match = head + pp.delimitedList(match_line, delim=pp.lineEnd) + END
 
 # Actions
 pattern_match.setParseAction(build_transform_component)

@@ -10,6 +10,11 @@ from acab.abstract.data.node import AcabNode
 from acab.abstract.data.contexts import Contexts
 from acab.abstract.data.structure import DataStructure
 from acab.abstract.data.node_semantics import AcabNodeSemantics
+from acab.abstract.data.struct_semantics import AcabStructureSemantics
+
+from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics
+from acab.modules.structures.trie.trie import Trie
+
 
 from acab.config import AcabConfig
 
@@ -43,7 +48,7 @@ class RDFSemantics(AcabStructureSemantics):
         # Add to nodes
         for word in to_add:
             current = self._ns.add(current, word)
-            self._update_func(current, curr_path, self._update_data)
+            self._update_func(current, current_path, self._update_data)
             current_path.append(current)
 
             # TODO Register new nodes with structure weak index

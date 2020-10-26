@@ -7,7 +7,7 @@ Interleave symbolic actions from set Ss
 
 
 """
-from acab.abstract.value import AcabValue
+from acab.abstract.core.value import AcabValue
 
 class RitualBase(AcabValue):
     """ Base Description of sequences of actions

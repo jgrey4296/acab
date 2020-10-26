@@ -5,7 +5,7 @@ class HyperGraphWM(WorkingMemory):
     """ A HyperGraph Working Memory  """
 
     def __init__(self):
-        super().__init__()
+        super().__init__(None)
         self._nodes = set()
         self._hyper_edges = set()
 

@@ -1,6 +1,6 @@
 
 
-from acab.abstract.transform import TransformOp
+from acab.abstract.core.transform import TransformOp
 
 
 class DFS(TransformOp):

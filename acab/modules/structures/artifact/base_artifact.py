@@ -13,7 +13,7 @@ and how they are specified, constrained and constructed
 
 
 """
-from acab.abstract.value import AcabValue
+from acab.abstract.core.value import AcabValue
 
 class Artifact(AcabValue):
     """ Description of a physical artifact """

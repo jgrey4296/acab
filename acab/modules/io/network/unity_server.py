@@ -21,7 +21,7 @@ class UnityServer(AcabValue):
                  host=util.DEFAULT_HOST,
                  backlog=util.DEFAULT_BACKLOG,
                  blockSize=util.DEFAULT_BLOCKSIZE,
-                 headerSize=util.DEFAULT_HEADERSIZE)
+                 headerSize=util.DEFAULT_HEADERSIZE):
 
         self._theSocket  = None
         self._host = host
