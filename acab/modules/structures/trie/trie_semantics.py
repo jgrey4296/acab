@@ -17,6 +17,8 @@ from acab.abstract.rule.query import QueryComponent
 
 from acab.error.acab_semantic_exception import AcabSemanticException
 
+from acab.error.acab_base_exception import AcabBaseException
+
 from acab.config import AcabConfig
 
 logging = root_logger.getLogger(__name__)
@@ -24,7 +26,7 @@ util = AcabConfig.Get()
 
 CONSTRAINT_S = util("Parsing.Structure", "CONSTRAINT_S")
 NEGATION_S = util("Parsing.Structure", "NEGATION_S")
-FALLBACK_S = util("Parsing.Structure", "FALLBACK_S")
+QUERY_FALLBACK_S = util("Parsing.Structure", "QUERY_FALLBACK_S")
 
 class BasicTrieSemantics(AcabStructureSemantics):
     """
@@ -180,8 +182,8 @@ class BasicTrieSemantics(AcabStructureSemantics):
 
     def _failure_semantics(self, contexts, clause):
         # add all failures back in, if theres a default value
-        if FALLBACK_S in clause._data and bool(clause._data[FALLBACK_S]):
-            contexts.promote_failures(clause._data[FALLBACK_S])
+        if QUERY_FALLBACK_S in clause._data and bool(clause._data[QUERY_FALLBACK_S]):
+            contexts.promote_failures(clause._data[QUERY_FALLBACK_S])
         else:
             contexts.demote_failures()
 
@@ -284,7 +286,7 @@ class BasicTrieSemantics(AcabStructureSemantics):
                 callable_annotations.append(c)
             # intentionally not elif:
             if not isinstance(c, QueryComponent):
-                annotations.append(c)
+                annotations.add(c)
             # intentionally elifs:
             elif c.is_var:
                 variable_ops.append(c)

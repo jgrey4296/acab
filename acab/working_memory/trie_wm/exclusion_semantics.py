@@ -19,13 +19,12 @@ EXOP = config("WorkingMemory.TrieWM", "EXOP")
 DEFAULT_EXOP = config("WorkingMemory.TrieWM", "DEFAULT_EXOP")
 
 class ExclusionNodeSemantics(AcabNodeSemantics):
-
     def accessible(self, node, data, term):
         potentials = []
         # Expand if variable -> Grab All
         if term.is_var and term.name not in data:
             potentials += node.children
-        # Get only matching child if variable is already set
+            # Get only matching child if variable is already set
         elif term.is_var:
             assert(term.name in data)
             value = data[term.name]
@@ -71,19 +70,21 @@ class ExclusionNodeSemantics(AcabNodeSemantics):
 
         return result
 
-    def add(self, node, word, node_constructor):
+    def add(self, node, word, node_constructor) -> Tuple[bool, AcabNode]:
         assert(isinstance(node, AcabNode))
         assert(isinstance(word, AcabValue))
         assert(callable(node_constructor))
 
+        is_new_node = False
         # insert the target and cause changes
         result = self.get(node, word)
 
         if result is None:
             result = self.lift(word, node_constructor)
+            is_new_node = True
 
         if node._data[OPERATOR_S] is EXOP_enum.EX and \
-           len(node.children) >= 1 and result is not None:
+        len(node.children) >= 1 and result is not None:
             node.clear_children()
 
         node.add_child(result)
@@ -92,7 +93,7 @@ class ExclusionNodeSemantics(AcabNodeSemantics):
         if OPERATOR_S in word._data and word._data[OPERATOR_S] is EXOP_enum.EX:
             result._data[OPERATOR_S] = EXOP_enum.EX
 
-        return result
+        return is_new_node, result
 
     def delete(self, node, to_delete):
         assert(isinstance(node, AcabNode))

@@ -11,19 +11,21 @@ from typing import cast, ClassVar, TypeVar
 
 
 from acab.abstract.core.type_base import TypeInstance
-from acab.abstract.data.node import AcabNode
 from acab.abstract.core.value import AcabValue
+from acab.abstract.data.node import AcabNode
+from acab.abstract.data.node_semantics import AcabNodeSemantics
 
 from acab.modules.analysis.typing import type_exceptions as te
 from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition
 from acab.modules.analysis.typing.values.type_definition import TypeDefinition, SumTypeDefinition
 from acab.modules.structures.trie.trie import Trie
 from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics
+from acab.modules.semantics.basic_semantics import BasicNodeSemantics
 
 import acab.modules.analysis.typing.util as util
 
-from .typing_node_assignment_semantics import TypeAssignmentTrieNode
-from .typing_node_var_semantics import VarTypeTrieNode
+from .type_assignment_semantics import TypeAssignmentNode
+from .type_variable_semantics import VarTypeNode
 
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
@@ -36,110 +38,67 @@ LOG_MESSAGES['match_type_usage'] = "Matching Type {} onto usage set"
 LOG_MESSAGES['mult_child'] = "Current Def has multiple children, checking for conflicts in structure"
 LOG_MESSAGES['no_children'] = "Val: No Children, assigning type: {} to {}"
 LOG_MESSAGES['validate_top'] = "Validating: {} on {}"
-from acab.abstract.data.node_semantics import  AcabNodeSemantics
 
 
-class TypingDefinitionSemantics(AcabNodeSemantics):
-
-    def __init__(self):
-        pass
-    def accessible(self, word : AcabNode, term : AcabValue) -> [AcabNode]:
-        """
-        Retrieve a list of all nodes accessible from this node,
-        according to a constraint term
-        """
-        raise NotImplementedError()
-
-    def equal(self, word : AcabNode, word2 : AcabNode) -> bool:
-        raise NotImplementedError()
-
-    def lift(self, word : AcabValue) -> AcabNode:
-        """ Lifting a value to a data node """
-        # could include vocabulary tracking a la spacy
-        raise NotImplementedError()
-
-
-    def add(self, node : AcabNode, to_add : AcabValue, node_constructor : Callable) -> AcabNode:
-        raise NotImplementedError()
-
-    def get(self, node : AcabNode, query_term : AcabValue) -> Optional[AcabNode]:
-        """ Getting a node from the data structure """
-        raise NotImplementedError()
-
-    def contain(self, node : AcabNode, query_term : AcabValue) -> bool:
-        """ Getting Node inclusion in a set """
-        raise NotImplementedError()
-
-    def delete(self, node : AcabNode, to_delete : AcabValue) -> Optional[AcabNode]:
-        """ Removing a node from the data structure """
-        raise NotImplementedError()
-
-    def test_word(self, query_term, query_context):
-        """ query word, with a sequence of tests,
-        in all available bind groups, BFS manner
-        """
-        assert(not query_term.is_at_var)
-        engine = query_context._engine
-        # TODO: validate on activate context too
-        alphas, betas, subbinds, annotations = self._validate_and_split_constraints(query_term, engine=engine)
-        callable_annotations = [word for word in annotations if hasattr(word, "__call__")]
-        data_set = {word : d for word,d in enumerate(query_context.pairs())}
-        pairs  = list(enumerate(query_context.pairs()))
-        query_context.clear()
-
-        potentials = [(i, d[0], passing) for i,d in pairs for passing in self.accessible(d, query_term)]
-        # Apply Tests
-        # TODO: test type instance if not ATOM
-        passing = [self._run_subbinds(n, subbinds, d, i, engine=engine) for i,d,n in potentials
-                   if self._test_alphas(n, alphas, d, engine=engine)
-                   and self._test_betas(n, betas, d, engine=engine)
-                   and self._test_annotations(n, callable_annotations, d, engine)]
-
-        to_add = [query_context.prepare_tuple_dict(i, d, n, query_term) for i,d,n in passing if n is not None]
-
-        query_context.append(*to_add, fail_dict=data_set)
-        return annotations
+class TypingDefinitionSemantics(BasicNodeSemantics):
+    def lift(self, word : AcabValue, constructor : Callable) -> AcabNode:
+        """ The Most Basic Lift """
+        assert(isinstance(word, AcabValue))
+        return constructor(word)
 
 
 
-    # internal
-class TypeDefTrieNode(AcabNode):
+    def add(self, node : AcabNode, word: AcabValue, node_constructor : Callable) -> Tuple[bool, AcabNode]:
+        assert(isinstance(node, AcabNode))
+        assert(isinstance(word, AcabValue))
+
+        is_new_node = False
+        result = self.get(node, word)
+
+        if result is None:
+            result = self.lift(word, node_constructor)
+            node.add_child(result)
+            is_new_node = True
+        elif (isinstance(word, TypeDefinition)
+              and result.definition is not None
+              and result.definition.structure != word.structure):
+            raise te.TypeRedefinitionException(result.definition)
+
+
+        return True, result
+
+
+class TypeDefNode(AcabNode):
     """ A Node describing a type definition """
 
     def __init__(self, value):
-        logging.debug("TypeDefTrieNode: init: {}".format(value))
+        logging.debug("TypeDefNode: init: {}".format(value))
         super().__init__(value)
         self._typedef_trie = None
-        self._definition = None
 
     @property
     def definition(self):
-        return self._definition
+        return self.value
 
     @property
     def trie(self):
         return self._typedef_trie
 
 
-    def set_data(self, data):
+    def _default_setup(self, path : [AcabNode], data : Dict[Any, Any], context : Dict[Any, Any]):
         """ Overrides AcabNode.set_data.
-        Builds the subtrie of a type definition at the end of being added
-        to the definition trie.
+        Builds the static assignment expression of a definition, to use to type check against
         """
-        assert(isinstance(data, TypeDefinition))
-        if self.definition is not None and self.definition != data:
-            raise te.TypeRedefinitionException(self.definition)
 
+        assignment_semantics = data["assignment"]
         logging.debug("TypeDef.set_data: {}".format(data))
-        if self.definition is None:
-            self._definition = data
-            # construct the internal trie
-            self._typedef_trie = Trie(node_type=TypeAssignmentTrieNode)
-            self.trie.root._type_instance = self.definition.build_type_instance()
+        # construct the internal trie
+        self._typedef_trie = Trie(semantics=assignment_semantics)
+        # TODO May be unnecessary:
+        self.trie.root._type_instance = self.definition.build_type_instance()
 
-            for x in data.structure:
-                self.trie.add(x, None,
-                              update=lambda c, n, p, d: c.update(n))
+        for x in self.definition.structure:
+            self.trie.add(x)
 
     def validate(self, usage_trie, create_var):
         """ Given an instance trie node, type check / infer it
@@ -149,7 +108,7 @@ class TypeDefTrieNode(AcabNode):
         ie: check IS against SHOULD (u_t v self)
         """
         assert(callable(create_var))
-        assert(isinstance(usage_trie, TypeAssignmentTrieNode)), breakpoint()
+        assert(isinstance(usage_trie, TypeAssignmentNode)), breakpoint()
         logging.debug(LOG_MESSAGES['validate_top'].format(repr(self),
                                                           repr(usage_trie)))
         if self.trie is None:
@@ -227,7 +186,7 @@ class TypeDefTrieNode(AcabNode):
         if _type is not None:
             _type = _type.build_type_instance(lookup)
 
-        if isinstance(curr_def, VarTypeTrieNode):
+        if isinstance(curr_def, VarTypeNode):
             dummy = [curr_def.add_node(x) for x in curr_usage_set]
 
 
@@ -296,16 +255,15 @@ class TypeDefTrieNode(AcabNode):
 
 
 
-
-class SumTypeDefTrieNode(TypeDefTrieNode):
-    """ A Specialised TypeDefTrieNode to validate Sum Types  """
+class SumTypeDefNode(TypeDefNode):
+    """ A Specialised TypeDefNode to validate Sum Types  """
 
     def __init__(self, value):
-        super(SumTypeDefTrieNode, self).__init__(value)
+        super(SumTypeDefNode, self).__init__(value)
 
     def validate(self, usage_trie, create_var):
         assert(callable(create_var))
-        assert(isinstance(usage_trie, TypeAssignmentTrieNode)), breakpoint()
+        assert(isinstance(usage_trie, TypeAssignmentNode)), breakpoint()
 
         if self.trie is None:
             raise te.TypeUndefinedException(self.value.name, usage_trie)
@@ -342,8 +300,7 @@ class SumTypeDefTrieNode(TypeDefTrieNode):
         return newly_typed
 
 
-
-class OperatorDefTrieNode(TypeDefTrieNode):
+class OperatorDefNode(TypeDefNode):
     """ Operator definition nodes are the head to
     a trie of all that operator's type signatures.
     It pattern matches on provided usage, and types nodes if
@@ -365,7 +322,8 @@ class OperatorDefTrieNode(TypeDefTrieNode):
 
         # add to internal search trie
         if self._typedef_trie is None:
-            self._typedef_trie = Trie(node_type=TypeAssignmentTrieNode)
+            # TODO setup the semantics for this trie
+            self._typedef_trie = Trie() #TypeAssignmentNode
             self._typedef_trie.root._type_instance = data.build_type_instance()
 
         for x in data.structure:
@@ -375,7 +333,7 @@ class OperatorDefTrieNode(TypeDefTrieNode):
 
     def validate(self, usage_trie, create_var):
         assert(callable(create_var))
-        assert(isinstance(usage_trie, TypeAssignmentTrieNode))
+        assert(isinstance(usage_trie, TypeAssignmentNode))
         logging.debug(LOG_MESSAGES['validate_top'].format(repr(self),
                                                           repr(usage_trie)))
         if self.trie is None:

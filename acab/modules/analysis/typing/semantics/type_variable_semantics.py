@@ -8,7 +8,7 @@ from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar
 
 from acab.abstract.core.value import AcabValue
-from acab.abstract.core.type_base import TypeInstance, ATOM
+from acab.abstract.core.type_base import TypeInstance
 from acab.abstract.data.node import AcabNode
 from acab.abstract.data.node_semantics import AcabNodeSemantics
 
@@ -53,43 +53,18 @@ class TypingVarSemantics(AcabNodeSemantics):
         """ Removing a node from the data structure """
         raise NotImplementedError()
 
-    def test_word(self, query_term, query_context):
-        """ query word, with a sequence of tests,
-        in all available bind groups, BFS manner
-        """
-        assert(not query_term.is_at_var)
-        engine = query_context._engine
-        # TODO: validate on activate context too
-        alphas, betas, subbinds, annotations = self._validate_and_split_constraints(query_term, engine=engine)
-        callable_annotations = [word for word in annotations if hasattr(word, "__call__")]
-        data_set = {word : d for word,d in enumerate(query_context.pairs())}
-        pairs  = list(enumerate(query_context.pairs()))
-        query_context.clear()
-
-        potentials = [(i, d[0], passing) for i,d in pairs for passing in self.accessible(d, query_term)]
-        # Apply Tests
-        # TODO: test type instance if not ATOM
-        passing = [self._run_subbinds(n, subbinds, d, i, engine=engine) for i,d,n in potentials
-                   if self._test_alphas(n, alphas, d, engine=engine)
-                   and self._test_betas(n, betas, d, engine=engine)
-                   and self._test_annotations(n, callable_annotations, d, engine)]
-
-        to_add = [query_context.prepare_tuple_dict(i, d, n, query_term) for i,d,n in passing if n is not None]
-
-        query_context.append(*to_add, fail_dict=data_set)
-        return annotations
-
-
-
-    # internal
-class MonoTypedNode(AcabNode):
-    """ Base Node for a Type Trie """
+    
+class VarTypeNode(AcabNode):
+    """ Node describing a variable's type """
 
     def __init__(self, value, _type=None):
-        assert(_type is None or isisntance(_type, TypeInstance))
+        assert(_type is None or isinstance(_type, TypeInstance))
         super().__init__(value)
-        self._type_instance = _type or ATOM
+        # TODO or type_bottom
+        self._type_instance = _type
         self._var_node = None
+        self._nodes = set([])
+        self._var_names = set([])
 
     @property
     def is_var(self):
@@ -125,22 +100,16 @@ class MonoTypedNode(AcabNode):
 
 
 # TODO convert to node semantics
-class VarTypeTrieNode(MonoTypedNode):
-    """ Node describing a variable's type """
 
-    def __init__(self, value, _type=None):
-        super().__init__(value, _type=_type)
-        self._nodes = set([])
-        self._var_names = set([])
 
 
     def add_node(self, node):
-        assert(isinstance(node, MonoTypedNode))
+        assert(isinstance(node, AcabNode))
         self._nodes.add(node)
         if node.is_var:
             self._var_names.add(node.name)
-        # TODO: make this a weak ref?
-        node._var_node = self
+        # # TODO: make this a weak ref?
+        # node._var_node = self
 
     def propagate(self):
         if self.type_instance is not None:
@@ -148,7 +117,7 @@ class VarTypeTrieNode(MonoTypedNode):
                 n.unify_types(self.type_instance)
 
     def merge(self, nodes):
-        assert(all([isinstance(x, VarTypeTrieNode) for x in nodes]))
+        assert(all([isinstance(x, VarTypeNode) for x in nodes]))
         logging.debug("Merging Variables: {} into {}".format(", ".join([str(x.name) for x in nodes]),
                                                              self.value))
         # update self to point to all assignment nodes
