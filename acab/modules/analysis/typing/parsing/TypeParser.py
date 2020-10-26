@@ -4,7 +4,9 @@ Pyparsing based parser for types
 import logging as root_logger
 import pyparsing as pp
 
-from acab.abstract.core.type_base import TypeInstance, ATOM
+from acab.abstract.parsing.consts import DOUBLEBAR, COLON, COMMA, DBLCOLON, DELIM, component_gap
+from acab.abstract.parsing.consts import N, NG, op, OPAR, CPAR
+from acab.abstract.core.type_base import TypeInstance
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.parsing import util as PU
 
@@ -39,12 +41,12 @@ VAR_OR_TYPE_DEC = pp.Or([PU.BIND, TYPEDEC_CORE])
 
 TYPE_NAME = pp.Or([HOTLOAD_BASIC_SEN, EXTENDED_ATOM])
 
-TYPEDEC_CORE <<= PU.DBLCOLON + PU.N(TYU.SEN_S, TYPE_NAME) \
-    + PU.N(TYU.ARG_S, PU.op(PU.OPAR
+TYPEDEC_CORE <<= DBLCOLON + N(TYU.SEN_S, TYPE_NAME) \
+    + N(TYU.ARG_S, op(OPAR
                             + pp.delimitedList(VAR_OR_TYPE_DEC,
                                                TYU.DELIM_S,
                                                combine=False)
-                            + PU.CPAR))
+                            + CPAR))
 
 TYPEDEC_CORE.setParseAction(make_type_dec)
 
