@@ -59,22 +59,18 @@ from acab.abstract.rule.action import ActionOp
 from acab.modules.structures.trie.trie import Trie
 from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics
 
+from acab.modules.semantics.basic_semantics import BasicNodeSemantics
 
 from . import type_exceptions as te
-from .typing_node_assignment_semantics import TypingAssignmentSemantics, TypeAssignmentTrieNode
-from .typing_node_definition_semantics import TypingDefinitionSemantics, TypeDefTrieNode, SumTypeDefTrieNode, OperatorDefTrieNode
-from .typing_node_var_semantics import TypingVarSemantics, VarTypeTrieNode
 
 # MUST BE FULL PATH otherwise type instances are built twice for some reason
 # NOT : from . import util as TU
 # from . import util as TU
 from acab.modules.analysis.typing import util as TU
 
-from .nodes.operator_def_node import OperatorDefTrieNode
-from .nodes.type_assignment_node import TypeAssignmentTrieNode
-from .nodes.typedef_node import TypeDefTrieNode
-from .nodes.var_type_node import VarTypeTrieNode
-from .nodes.sum_def_node import SumTypeDefTrieNode
+from .semantics.type_assignment_semantics import TypingAssignmentSemantics, TypeAssignmentNode
+from .semantics.type_definition_semantics import TypingDefinitionSemantics, TypeDefNode, SumTypeDefNode, OperatorDefNode
+from .semantics.type_variable_semantics import TypingVarSemantics, VarTypeNode
 
 from .values.operator_definition import OperatorDefinition
 from .values.type_definition import TypeDefinition, SumTypeDefinition
@@ -87,21 +83,20 @@ class TypeChecker(ActionOp):
     """ Abstract Class for Type Checking """
     # parse their locations, and add them as definitions
 
+    # TODO Link with type_system
     def __init__(self):
         super(TypeChecker, self).__init__()
-
-        def_semantics = BasicTrieSemantics({AcabNode : TypingDefinitionSemantics()},
-                                           {AcabValue : (AcabNode, {}, lambda c, p, u, ctx: c),
-                                            TypeDefinition : (TypeDefTrieNode, {}, lambda c, p, u, ctx: c),
-                                            SumTypeDefinition : (SumTypeDefTrieNode, {}, lambda c, p, u, ctx: c),
-                                            OperatorDefinition : (OperatorDefTrieNode, {}, lambda c, p, u, ctx: c)
-                                           })
-        ass_semantics = BasicTrieSemantics({AcabNode : TypingAssignmentSemantics()},
-                                           {AcabValue : (TypeAssignmentTrieNode, {}, lambda c, p, u, ctx: c)
-                                            })
+        ass_semantics = BasicTrieSemantics({AcabNode : ()},
+                                           {AcabValue : (TypeAssignmentNode, {}, None)})
 
         var_semantics = BasicTrieSemantics({AcabNode : TypingVarSemantics()},
-                                           {AcabValue : (VarTypeTrieNode, {}, lambda c, p, u, ctx: c)})
+                                           {AcabValue : (VarTypeNode, {}, None)})
+
+        def_semantics = BasicTrieSemantics({AcabNode : TypingDefinitionSemantics()},
+                                           {AcabValue : (AcabNode, {}, None),
+                                            TypeDefinition : (TypeDefNode, {"assignment" : ass_semantics}, None),
+                                            SumTypeDefinition : (SumTypeDefNode, {"assignment" : ass_semantics}, None),
+                                            OperatorDefinition : (OperatorDefNode, {"assignment" : ass_semantics}, None)})
 
         self._definitions = Trie(semantics=def_semantics)
         self._assignments = Trie(semantics=ass_semantics)
@@ -112,9 +107,9 @@ class TypeChecker(ActionOp):
 
     def __str__(self):
         output = []
-        structures = self._definitions.to_sentences(leaf_predicate=lambda x: isinstance(x, TypeDefTrieNode))
-        sum_types = self._definitions.to_sentences(leaf_predicate=lambda x: isinstance(x, SumTypeDefTrieNode))
-        funcs = self._definitions.to_sentences(leaf_predicate=lambda x: isinstance(x, OperatorDefTrieNode))
+        structures = self._definitions.to_sentences(leaf_predicate=lambda x: isinstance(x, TypeDefNode))
+        sum_types = self._definitions.to_sentences(leaf_predicate=lambda x: isinstance(x, SumTypeDefNode))
+        funcs = self._definitions.to_sentences(leaf_predicate=lambda x: isinstance(x, OperatorDefNode))
 
 
         if bool(structures):
@@ -160,6 +155,7 @@ class TypeChecker(ActionOp):
 
     def _get_known_typed_nodes(self):
         # propagate known variable types
+        # TODO shift to type bottom
         dummy = [x.propagate() for x in self._variables.get_nodes(lambda x: x.type_instance != TB.ATOM)]
         # get all known declared types
         # TODO: get references as well
@@ -221,7 +217,7 @@ class TypeChecker(ActionOp):
         dealt_with = set()
         while bool(typed_queue):
             head = typed_queue.pop()
-            assert(isinstance(head, TypeAssignmentTrieNode)), breakpoint()
+            assert(isinstance(head, TypeAssignmentNode)), breakpoint()
             if head in dealt_with:
                 continue
             dealt_with.add(head)
@@ -239,12 +235,12 @@ class TypeChecker(ActionOp):
             if head.is_var:
                 head._var_node.unify_types(head.type_instance)
                 head._var_node.propagate()
-                assert(all([isinstance(x, TypeAssignmentTrieNode) for x in head._var_node._nodes])), breakpoint()
-                typed_queue.update([x for x in head._var_node._nodes if isinstance(x, TypeAssignmentTrieNode)])
+                assert(all([isinstance(x, TypeAssignmentNode) for x in head._var_node._nodes])), breakpoint()
+                typed_queue.update([x for x in head._var_node._nodes if isinstance(x, TypeAssignmentNode)])
 
             # Apply a known type to a node, get back newly inferred types
             results = head_type.validate(head, create_var)
-            assert(all([isinstance(x, TypeAssignmentTrieNode) for x in results])), breakpoint()
+            assert(all([isinstance(x, TypeAssignmentNode) for x in results])), breakpoint()
             typed_queue.update(results)
 
             # TODO if head validation returns only operators, and
@@ -261,7 +257,7 @@ class TypeChecker(ActionOp):
     def add_assertion(self, *sens):
         for x in sens:
             assert(isinstance(x, Sentence))
-            self._assignments.add(x, context_data=self._variables)
+            self._assignments.add(x, context_data={"var_struct" : self._variables})
 
     def add_statement(self, statement):
         """
