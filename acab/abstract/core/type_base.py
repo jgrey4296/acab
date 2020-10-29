@@ -14,6 +14,7 @@ from acab.config import AcabConfig
 
 util = AcabConfig.Get()
 
+TYPE_INSTANCE_S = util("Parsing.Structure", "TYPE_INSTANCE_S")
 TYPE_FMT_S = util("Printing", "TYPE_FMT_S")
 QUERY_HEAD_S = util("Parsing.Statements", "QUERY_HEAD_S")
 TRANSFORM_HEAD_S = util("Parsing.Statements", "TRANSFORM_HEAD_S")
@@ -30,12 +31,13 @@ class TypeInstance(AcabValue):
 
     def __init__(self, path, params=None):
         """ Construct a Type Instance with a _path in the type trie """
+        raise DeprecationWarning()
         assert(params is None or all([isinstance(x, (str, AcabValue._type_system._instance_constructor))
                                       or hasattr(x, "type") for x in params])), breakpoint()
         super(TypeInstance, self).__init__(path,
-                                        data=None,
-                                        params=None, tags=None,
-                                        name=None, _type=None)
+                                           data=None,
+                                           params=None, tags=None,
+                                           name=None, _type=TYPE_INSTANCE_S)
 
         # TODO : Contracts
         self._contracts: List['TypeClass']

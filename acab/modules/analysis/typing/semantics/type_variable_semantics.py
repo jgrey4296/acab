@@ -8,7 +8,7 @@ from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar
 
 from acab.abstract.core.value import AcabValue
-from acab.abstract.core.type_base import TypeInstance
+from acab.abstract.core.sentence import Sentence
 from acab.abstract.data.node import AcabNode
 from acab.abstract.data.node_semantics import AcabNodeSemantics
 
@@ -58,7 +58,7 @@ class VarTypeNode(AcabNode):
     """ Node describing a variable's type """
 
     def __init__(self, value, _type=None):
-        assert(_type is None or isinstance(_type, TypeInstance))
+        assert(_type is None or isinstance(_type, Sentence.build))
         super().__init__(value)
         # TODO or type_bottom
         self._type_instance = _type
@@ -78,7 +78,7 @@ class VarTypeNode(AcabNode):
         self._type_instance = _type
 
     def unify_types(self, _type, lookup=None):
-        assert(_type is None or isinstance(_type, TypeInstance))
+        assert(_type is None or isinstance(_type, Sentence.build))
 
         if self.type_instance == _type:
             return None

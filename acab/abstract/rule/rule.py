@@ -16,7 +16,7 @@ from .query import Query
 util = AcabConfig.Get()
 logging = root_logger.getLogger(__name__)
 
-TAB_S = util("Printing", "TAB_S", action=AcabConfig.actions_e.STRIPQUOTE)
+TAB_S = util("Printing", "TAB_S", actions=[AcabConfig.actions_e.STRIPQUOTE])
 
 class Rule(ProductionContainer):
     """ A Rule holds a query (of N Clauses), a set of transforms,

@@ -10,7 +10,6 @@ from acab.config import AcabConfig
 
 from acab.abstract.core.value import AcabValue
 from acab.abstract.core.sentence import Sentence
-from acab.abstract.core.type_system import AcabTypeSystem as TB
 
 from acab.abstract.rule import production_operator as PO
 
@@ -19,6 +18,7 @@ logging = root_logger.getLogger(__name__)
 util = AcabConfig.Get()
 
 OPERATOR_S = util("Parsing.Structure", "OPERATOR_S")
+CONTAINER_TYPE_PRIM_S = util("Typing.Primitives", "CONTAINER_TYPE_PRIM_S")
 
 # Action function template:
 class ActionOp(PO.ProductionOperator):
@@ -77,7 +77,7 @@ class Action(PO.ProductionContainer):
     """ A Container for Action Specifications """
 
     def __init__(self, clauses, params=None):
-        _type = AcabValue._type_system.CONTAINER
+        _type = Sentence.build([CONTAINER_TYPE_PRIM_S])
         super(Action, self).__init__(clauses, params=params, _type=_type)
 
 

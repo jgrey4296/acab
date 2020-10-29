@@ -11,7 +11,6 @@ from acab.abstract.data.node import AcabNode
 from acab.abstract.core.value import AcabValue
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.data.node_semantics import AcabNodeSemantics
-from acab.abstract.core.type_base import TypeInstance
 from acab.modules.analysis.typing import type_exceptions as te
 from acab.modules.analysis.typing import util
 from acab.modules.semantics.basic_semantics import BasicNodeSemantics
@@ -38,7 +37,7 @@ class TypeAssignmentNode(AcabNode):
     Enables linking with variable type struct"""
 
     def __init__(self, value, _type=None, var_node=None):
-        assert(_type is None or isinstance(_type, TypeInstance))
+        assert(_type is None or isinstance(_type, Sentence.build))
         assert(var_node is None or isinstance(var_node, AcabNode))
         super().__init__(value)
         self._type_instance = _type or ATOM
@@ -70,7 +69,7 @@ class TypeAssignmentNode(AcabNode):
         self._type_instance = _type
 
     def unify_types(self, _type, lookup: Dict[Any, Any]=None):
-        assert(_type is None or isinstance(_type, TypeInstance))
+        assert(_type is None or isinstance(_type, Sentence.build))
 
         if self.type_instance == _type:
             return None

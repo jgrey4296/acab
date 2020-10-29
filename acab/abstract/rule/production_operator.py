@@ -21,6 +21,9 @@ util = AcabConfig.Get()
 OPERATOR_S = util("Parsing.Structure", "OPERATOR_S")
 STATEMENT_S = util("Parsing.Structure", "STATEMENT_S")
 AT_BIND_S = util("Parsing.Structure", "AT_BIND_S")
+CONTAINER_TYPE_PRIM_S = util("Typing.Primitives", "CONTAINER_TYPE_PRIM_S")
+COMPONENT_TYPE_PRIM_S = util("Typing.Primitives", "COMPONENT_TYPE_PRIM_S")
+OPERATOR_TYPE_PRIM_S = util("Typing.Primitives", "OPERATOR_TYPE_PRIM_S")
 
 logging = root_logger.getLogger(__name__)
 
@@ -28,7 +31,7 @@ class ProductionOperator(AcabValue):
     """ The Base Operator Class """
 
     def __init__(self):
-        _type = AcabValue._type_system.OPERATOR
+        _type = OPERATOR_TYPE_PRIM_S
         super().__init__(self.__class__.__name__, _type=_type)
 
     def __call__(self, *params, data=None, engine=None):
@@ -42,10 +45,12 @@ class ProductionOperator(AcabValue):
 class ProductionComponent(AcabValue):
     """ Pairs a an operator with some bindings """
 
-    def __init__(self, op_path, params, sugared=False, data=None, rebind=None, name=None):
+    def __init__(self, op_path, params, sugared=False, data=None, rebind=None, name=None, _type=None):
         assert(isinstance(op_path, Sentence))
         assert all([isinstance(x, AcabValue) for x in params]), params
-        super().__init__(op_path, params=params, data=data, name=name, _type=TB.GET().COMPONENT)
+        if _type is None:
+            _type = COMPONENT_TYPE_PRIM_S
+        super().__init__(op_path, params=params, data=data, name=name, _type=_type)
         # The value name of the result
         self._rebind = rebind
         # Sugared: Denotes whether the parse originated from a sugared operator
@@ -147,7 +152,7 @@ class ProductionContainer(AcabStatement):
 
     def __init__(self, clauses, params=None, name=None, _type=None):
         if _type is None:
-            _type = AcabValue._type_system.CONTAINER
+            _type = CONTAINER_TYPE_PRIM_S
 
         if clauses is None:
             clauses = []

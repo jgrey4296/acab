@@ -10,8 +10,8 @@ from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar
 
 
-from acab.abstract.core.type_base import TypeInstance
 from acab.abstract.core.value import AcabValue
+from acab.abstract.core.sentence import Sentence
 from acab.abstract.data.node import AcabNode
 from acab.abstract.data.node_semantics import AcabNodeSemantics
 
@@ -143,7 +143,7 @@ class TypeDefNode(AcabNode):
         assert(usage_trie.type_instance is not None)
         assert(isinstance(lookup_dict, dict))
         definition_bindings = [lookup_dict[x.name] for x in self.definition.vars]
-        definition_instances = [x if isinstance(x, TypeInstance) else x.type_instance for x in definition_bindings]
+        definition_instances = [x if isinstance(x, Sentence.build) else x.type_instance for x in definition_bindings]
 
         usage_trie.type_instance._params = definition_instances
 
@@ -178,7 +178,7 @@ class TypeDefNode(AcabNode):
 
         # TODO: unify curr_def type instance vars with those in lookup
         _type = None
-        if isinstance(curr_def, TypeInstance):
+        if isinstance(curr_def, Sentence.build):
             _type = curr_def
         else:
             _type = curr_def.type_instance

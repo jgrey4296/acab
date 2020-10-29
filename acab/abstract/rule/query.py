@@ -23,6 +23,7 @@ BIND_S = util("Parsing.Structure", "BIND_S")
 OPERATOR_S = util("Parsing.Structure", "OPERATOR_S")
 NEGATION_S = util("Parsing.Structure", "NEGATION_S")
 CONSTRAINT_S = util("Parsing.Structure", "CONSTRAINT_S")
+QUERY_TYPE_PRIM_S = util("Typing.Primitives", "QUERY_TYPE_PRIM_S")
 
 logging = root_logger.getLogger(__name__)
 
@@ -102,7 +103,7 @@ class Query(PO.ProductionContainer):
 
     def __init__(self, clauses):
         assert(all([isinstance(x, Sentence) for x in clauses]))
-        _type = AcabValue._type_system.CONTAINER
+        _type = QUERY_TYPE_PRIM_S
         super(Query, self).__init__(clauses, _type=_type)
 
     def __call__(self, ctxs=None, engine=None):

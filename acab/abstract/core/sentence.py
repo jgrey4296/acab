@@ -8,11 +8,13 @@ from .value import AcabValue, AcabStatement
 
 util = AcabConfig.Get()
 
+VALUE_TYPE_S = util("Parsing.Structure", "VALUE_TYPE_S")
 BIND_S       = util("Parsing.Structure", "BIND_S")
 AT_BIND_S    = util("Parsing.Structure", "AT_BIND_S")
 OPERATOR_S   = util("Parsing.Structure", "OPERATOR_S")
 SEN_S        = util("Parsing.Structure", "SEN_S")
 ANON_VALUE_S = util("Printing", "ANON_VALUE_S")
+SENTENCE_TYPE_PRIM_S = util("Typing.Primitives", "SENTENCE_TYPE_PRIM_S")
 
 class Sentence(AcabStatement):
     """
@@ -30,9 +32,15 @@ class Sentence(AcabStatement):
         else:
             words = []
 
-        _type = AcabValue._type_system.SENTENCE
-        super().__init__(words, data=data, params=params,
-                         tags=tags, _type=_type)
+        super().__init__(words, data=data, params=params, tags=tags)
+
+    @property
+    def type(self):
+        """ Lazy Type Construction """
+        if self._data[VALUE_TYPE_S] is None:
+            self._data[VALUE_TYPE_S] = Sentence.build([SENTENCE_TYPE_PRIM_S])
+
+        return self._data[VALUE_TYPE_S]
 
     def __hash__(self):
         if self._hash_name is not None:
@@ -47,11 +55,19 @@ class Sentence(AcabStatement):
         return self._hash_name
 
     def __eq__(self, other):
-        if isinstance(other, Sentence):
-            return (len(self) == len(other)
-                    and all([a == b for a,b in zip(self, other)]))
+        """ Equality based on words, not identity """
+        if id(self) == id(other):
+            return True
 
-        return hash(self) == hash(other)
+        if not isinstance(other, Sentence):
+            return False
+
+        if len(self) != len(other):
+            return False
+
+        words = all([a == b for a,b in zip(self.words, other.words)])
+        return words
+
 
     def __iter__(self):
         return iter(self.words)
