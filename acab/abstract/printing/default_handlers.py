@@ -24,7 +24,7 @@ PARAM_JOIN_S     = util("Printing", "PARAM_JOIN_S")
 OBVIOUS_TYPES    = []
 OPERATOR_S       = util("Parsing.Structure", "OPERATOR_S")
 QUERY_S          = util("Parsing.Structure", "QUERY_S")
-TAB_S            = util("Printing", "TAB_S", action=AcabConfig.actions_e.STRIPQUOTE)
+TAB_S            = util("Printing", "TAB_S", actions=[AcabConfig.actions_e.STRIPQUOTE])
 TAG_S            = util("Parsing.Structure", "TAG_S")
 VALUE_TYPE_S     = util("Parsing.Structure", "VALUE_TYPE_S")
 BIND_S            = util("Parsing.Structure", "BIND_S")
@@ -56,18 +56,19 @@ def value_sentinel(PS, source, processed, acc, params):
     modal = ""
     if modal_data_field is not False:
         modal = acc[modal_data_field]
-    if PS.ask("drop_end_op", for_uuid=acc['uuid']):
+    if PS.ask("drop_modal", for_uuid=source._uuid):
         modal = ""
 
-    constraints = acc['constraints']
     joined_constraints = ""
-    if bool(constraints):
-        # TODO fix this
-        joined_constraints = wrappers._wrap_constraints(PS, joined_constraints)
+    if 'constraints' in acc:
+        constraints = acc['constraints']
+        if bool(constraints):
+            # TODO fix this
+            joined_constraints = wrappers._wrap_constraints(PS, joined_constraints)
 
     # TODO add variable wrap / type wrap
 
-    return (PS.simple, "{}{}{}".format(name, joined_constraints,modal))
+    return (PS.simple, "{}{}{}".format(name, joined_constraints,modal), None)
 
 
 def simple_value_sentinel(PS: 'AcabPrintSemantics', value: 'AcabValue', processed, acc, params: Any):
@@ -85,6 +86,18 @@ def value_uuid_accumulator(PS, value, acc, params):
 
 def value_name_accumulator(PS, value, acc, params):
     return (PS.accumulate, {'name': value.name}, None)
+def modality_accumulator(PS, value, acc, params):
+    modal_field = PS.ask('MODAL_FIELD')
+    if modal_field in value._data:
+        modal_value = str(value._data[modal_field])
+
+    modal_alias = PS.ask(modal_value)
+    if bool(modal_alias):
+        modal_value = modal_alias
+    else:
+        modal_value = " [{}] ".format(modal_value)
+
+    return (PS.accumulate, {modal_field: modal_value}, None)
 
 def value_uuid_long_sentinel(PS, value, processed, acc, params):
     """ A Basic sentinel for tracking specific objects """
@@ -103,7 +116,7 @@ def type_instance_sentinel(PS, value, processed, acc, params):
 def sentence_substruct(PS, value, acc, params):
     words = value.words
     # TODO: change this to an Override registration
-    PS.set_for_uuid(words[-1]._uuid, ["drop_end_op"])
+    PS.set_for_uuid(words[-1]._uuid, ["drop_modal"])
     words = list_to_inst_list(PS, value, [x for x in value.words], acc, "words")
     return (PS.substruct, words, None)
 

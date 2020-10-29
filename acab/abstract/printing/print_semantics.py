@@ -26,48 +26,50 @@ from acab.config import AcabConfig
 
 util = AcabConfig.Get()
 
-AT_BIND_S         = util("Parsing.Structure", "AT_BIND_S")
-AT_BIND_SYMBOL_S         = util("Visual.Symbols", "AT_BIND_SYMBOL_S")
+AT_BIND_S                    = util("Parsing.Structure", "AT_BIND_S")
+AT_BIND_SYMBOL_S             = util("Visual.Symbols", "AT_BIND_SYMBOL_S")
 
-BIND_S           = util("Parsing.Structure", "BIND_S")
-BIND_SYMBOL_S            = util("Visual.Symbols", "BIND_SYMBOL_S")
+BIND_S                       = util("Parsing.Structure", "BIND_S")
+BIND_SYMBOL_S                = util("Visual.Symbols", "BIND_SYMBOL_S")
 
-CONSTRAINT_S     = util("Parsing.Structure", "CONSTRAINT_S")
+CONSTRAINT_S                 = util("Parsing.Structure", "CONSTRAINT_S")
 
-END_S            = util("Parsing.Structure", "END_S")
-END_SYMBOL_S            = util("Visual.Symbols", "END_SYMBOL_S")
+END_S                        = util("Parsing.Structure", "END_S")
+END_SYMBOL_S                 = util("Visual.Symbols", "END_SYMBOL_S")
 
-FALLBACK_MODAL_S = util("Printing", "FALLBACK_MODAL_S")
-FALLBACK_MODAL_SYMBOL_S = util("Visual.Symbols", "FALLBACK_MODAL_SYMBOL_S", action=AcabConfig.actions_e.STRIPQUOTE)
+FALLBACK_MODAL_S             = util("Printing", "FALLBACK_MODAL_S")
+FALLBACK_MODAL_SYMBOL_S      = util("Visual.Symbols", "FALLBACK_MODAL_SYMBOL_S", actions=[AcabConfig.actions_e.STRIPQUOTE])
 
-FUNC_S           = util("Parsing.Structure", "FUNC_S")
-FUNC_SYMBOL_S           = util("Visual.Symbols", "FUNC_SYMBOL_S")
+FUNC_S                       = util("Parsing.Structure", "FUNC_S")
+FUNC_SYMBOL_S                = util("Visual.Symbols", "FUNC_SYMBOL_S")
 
-NEGATION_S       = util("Parsing.Structure", "NEGATION_S")
-NEGATION_SYMBOL_S       = util("Visual.Symbols", "NEGATION_SYMBOL_S")
+NEGATION_S                   = util("Parsing.Structure", "NEGATION_S")
+NEGATION_SYMBOL_S            = util("Visual.Symbols", "NEGATION_SYMBOL_S")
 
-OBVIOUS_TYPES    = []
+OBVIOUS_TYPES                = []
 
-OPERATOR_S       = util("Parsing.Structure", "OPERATOR_S")
+OPERATOR_S                   = util("Parsing.Structure", "OPERATOR_S")
 
-QUERY_S          = util("Parsing.Structure", "QUERY_S")
-QUERY_SYMBOL_S          = util("Visual.Symbols", "QUERY_SYMBOL_S")
+QUERY_S                      = util("Parsing.Structure", "QUERY_S")
+QUERY_SYMBOL_S               = util("Visual.Symbols", "QUERY_SYMBOL_S")
 
-SEN_JOIN_S       = util("Printing", "SEN_JOIN_S")
-SEN_JOIN_SYMBOL_S = util("Visual.Symbols", "SEN_JOIN_SYMBOL_S", action=AcabConfig.actions_e.STRIPQUOTE)
+PRINT_SENTINEL_JOIN_S        = util("Printing", "PRINT_SENTINEL_JOIN_S")
+PRINT_SENTINEL_JOIN_SYMBOL_S = util("Visual.Symbols", "PRINT_SENTINEL_JOIN_SYMBOL_S", actions=[AcabConfig.actions_e.STRIPQUOTE])
+SEN_JOIN_S                  = util("Printing", "SEN_JOIN_S")
+SEN_JOIN_SYMBOL_S            = util("Visual.Symbols", "SEN_JOIN_SYMBOL_S", actions=[AcabConfig.actions_e.STRIPQUOTE])
 
-TAB_S            = util("Printing", "TAB_S", action=AcabConfig.actions_e.STRIPQUOTE)
+TAB_S                        = util("Printing", "TAB_S", actions=[AcabConfig.actions_e.STRIPQUOTE])
 
-TAG_S            = util("Parsing.Structure", "TAG_S")
-TAG_SYMBOL_S            = util("Visual.Symbols", "TAG_SYMBOL_S")
+TAG_S                        = util("Parsing.Structure", "TAG_S")
+TAG_SYMBOL_S                 = util("Visual.Symbols", "TAG_SYMBOL_S")
 
-VALUE_TYPE_S     = util("Parsing.Structure", "VALUE_TYPE_S")
+VALUE_TYPE_S                 = util("Parsing.Structure", "VALUE_TYPE_S")
 
 
 
 # pylint: disable=line-too-long
-# AcabValue -> Value(Op, TypeInstance), Statement(Sentence, Component) Container(Query, Transform, Action), Structured:(Rule, Agenda, Layer, Pipeline)
-Printable = Union[AcabValue, AcabNode, DataStructure, Contexts, 'TypeInstance', str]
+# AcabValue -> Value(Op), Statement(Sentence, Component) Container(Query, Transform, Action), Structured:(Rule, Agenda, Layer, Pipeline)
+Printable = Union[AcabValue, AcabNode, DataStructure, Contexts, str]
 # pylint: enable=line-too-long
 
 RET_enum = Enum("Handler Return Form", "PASS SIMPLE ACCUMULATOR SUBSTRUCT CALL SENTINEL PRINTABLE PUSHSTACK")
@@ -129,13 +131,16 @@ class AcabPrintSemantics(AcabValue):
 
 
 
-    def print(self, values: List[Printable], final_handler: Callable = None) -> str:
+    def print(self, values: List[Printable], final_handler: Callable = None, overrides=None) -> str:
         """
         The public print function. Takes a list of values, converts them
         to str's, and combines them using a final-handler or "\n".join
         """
         if not isinstance(values, list):
             values = [values]
+
+        if overrides is not None:
+            self.set_overrides(overrides)
 
         # Context: Processed strings.
         context: List[ContextValue] = []
@@ -224,7 +229,9 @@ class AcabPrintSemantics(AcabValue):
         else:
             # Filter out info tuples if necessary for default:
             # DEFAULT join
-            return "\n".join([x for x in context if isinstance(x, str)])
+            default_join = self.ask(PRINT_SENTINEL_JOIN_S)
+
+            return default_join.join([x for x in context if isinstance(x, str)])
 
 
 
@@ -244,7 +251,8 @@ class AcabPrintSemantics(AcabValue):
         else:
             self._uuid_board[uuid].update(default_trues, kwargs)
 
-
+    def set_overrides(self, overrides):
+        self._opts.update(overrides)
 
     @staticmethod
     def _default_opts(trues, vals):
@@ -364,6 +372,7 @@ def default_aliases() -> Dict[Any, str]:
             FUNC_S : FUNC_SYMBOL_S,
             NEGATION_S : NEGATION_SYMBOL_S,
             QUERY_S : QUERY_SYMBOL_S,
+            PRINT_SENTINEL_JOIN_S : PRINT_SENTINEL_JOIN_SYMBOL_S,
             SEN_JOIN_S : SEN_JOIN_SYMBOL_S,
             TAG_S : TAG_SYMBOL_S,
             FALLBACK_MODAL_S : FALLBACK_MODAL_SYMBOL_S

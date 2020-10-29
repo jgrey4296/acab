@@ -2,20 +2,19 @@
 from re import Pattern
 from acab.config import AcabConfig
 
-from acab.abstract.core.type_base import TypeInstance
 
 util = AcabConfig.Get()
 
 AT_BIND_S         = util("Parsing.Structure", "AT_BIND_S")
 CONSTRAINT_S     = util("Parsing.Structure", "CONSTRAINT_S")
 END_S            = util("Parsing.Structure", "END_S")
-FALLBACK_MODAL_S = util("Printing", "FALLBACK_MODAL_S", action=AcabConfig.actions_e.STRIPQUOTE)
+FALLBACK_MODAL_S = util("Printing", "FALLBACK_MODAL_S", actions=[AcabConfig.actions_e.STRIPQUOTE])
 FUNC_S           = util("Parsing.Structure", "FUNC_S")
 NEGATION_S       = util("Parsing.Structure", "NEGATION_S")
 OBVIOUS_TYPES    = []
 OPERATOR_S       = util("Parsing.Structure", "OPERATOR_S")
 QUERY_S          = util("Parsing.Structure", "QUERY_S")
-TAB_S            = util("Printing", "TAB_S", action=AcabConfig.actions_e.STRIPQUOTE)
+TAB_S            = util("Printing", "TAB_S", actions=[AcabConfig.actions_e.STRIPQUOTE])
 TAG_S            = util("Parsing.Structure", "TAG_S")
 VALUE_TYPE_S     = util("Parsing.Structure", "VALUE_TYPE_S")
 BIND_S            = util("Parsing.Structure", "BIND_S")

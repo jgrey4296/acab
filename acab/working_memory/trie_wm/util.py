@@ -11,10 +11,12 @@ logging = root_logger.getLogger(__name__)
 
 util = AcabConfig.Get()
 
+MODAL_NAME_S = util("WorkingMemory.TrieWM", "MODAL_NAME_S")
+MODAL_ENUM_S = util("WorkingMemory.TrieWM", "MODAL_ENUMS_S")
 OPERATOR_S = util("Parsing.Structure", "OPERATOR_S")
 ROOT_S = util("Data.Struct", "ROOT_S")
 #Trie exclusion operator:
-EXOP = Enum('EXOP', 'DOT EX')
+EXOP = Enum(MODAL_NAME_S, MODAL_ENUM_S)
 
 # TODO
 # PrU.register_modal({EXOP.DOT : util("WorkingMemory.TrieWM.Parsing", "EXOP.DOT_S"),

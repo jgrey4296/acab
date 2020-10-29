@@ -55,17 +55,22 @@ class AcabConfig:
             self._config.read(path)
             self._files.add(path)
 
-    def __call__(self, section, key, *actions, action=None):
+    def __call__(self, section, key=None, actions=None, as_list=False, as_dict=False):
         """
         Get a value from the config
         """
+        if as_list and key is None:
+            return list(self._config[section].values())
+        elif as_dict and key is None:
+            return dict(self._config[section].items())
+
         # try:
         value = self._config[section][key]
         # except KeyError as e:
             # breakpoint()
 
-        if action in AcabConfig.actions:
-            value = AcabConfig.actions[action](value)
+        if actions is None:
+            actions = []
 
         for action in actions:
             value = AcabConfig.actions[action](value)

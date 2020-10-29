@@ -15,7 +15,7 @@ from acab.config import AcabConfig
 
 config = AcabConfig.Get()
 OPERATOR_S = config("Parsing.Structure", "OPERATOR_S")
-EXOP = config("WorkingMemory.TrieWM", "EXOP")
+EXOP = config("WorkingMemory.TrieWM", "MODAL_NAME_S")
 DEFAULT_EXOP = config("WorkingMemory.TrieWM", "DEFAULT_EXOP")
 
 class ExclusionNodeSemantics(AcabNodeSemantics):

@@ -34,7 +34,6 @@ CONSTRAINT_S     = util("Parsing.Structure", "CONSTRAINT_S")
 DEFAULT_ACTION_S = util("Parsing.Structure", "DEFAULT_ACTION_S")
 QUERY_FALLBACK_S  = util("Parsing.Structure", "QUERY_FALLBACK_S")
 LEFT_S           = util("WorkingMemory.TrieWM", "LEFT_S")
-MAIN_CLAUSE_S    = util("WorkingMemory.TrieWM", "MAIN_CLAUSE_S")
 NEGATION_S       = util("Parsing.Structure", "NEGATION_S")
 NODE_S           = util("WorkingMemory.TrieWM", "NODE_S")
 OPERATOR_S       = util("Parsing.Structure", "OPERATOR_S")
@@ -46,8 +45,8 @@ TRANSFORM_S      = util("Parsing.Structure", "TRANSFORM_S")
 VALUE_S          = util("Parsing.Structure", "VALUE_S")
 VALUE_TYPE_S     = util("Parsing.Structure", "VALUE_TYPE_S")
 
-EXOP_DOT_SYMBOL_S = util("WorkingMemory.TrieWM.Symbols", "EXOP.DOT_SYMBOL_S")
-EXOP_EX_SYMBOL_S = util("WorkingMemory.TrieWM.Symbols", "EXOP.EX_SYMBOL_S")
+EXOP_DOT_SYMBOL_S = util("WorkingMemory.TrieWM.Symbols", "EXOP.DOT")
+EXOP_EX_SYMBOL_S = util("WorkingMemory.TrieWM.Symbols", "EXOP.EX")
 
 # Create parsers for Exclusion operators:
 DOT = pp.Keyword(EXOP_DOT_SYMBOL_S, identChars=EXOP_EX_SYMBOL_S)
@@ -144,7 +143,7 @@ def build_clause(toks):
     if NEGATION_S in toks:
         data[NEGATION_S] = True
 
-    return Sentence(toks[MAIN_CLAUSE_S][:], data=data)
+    return toks[0].set_data(data)
 
 def build_query(toks):
     query = Query(toks[:])
