@@ -29,7 +29,6 @@ class NumberTransformTests(unittest.TestCase):
     def setUpClass(cls):
         # setup class
         type_sys = build_simple_type_system()
-        AcabValue._set_type_system(type_sys)
         NumberTransformTests.ns = numbers.MODULE()
 
     def setUp(self):

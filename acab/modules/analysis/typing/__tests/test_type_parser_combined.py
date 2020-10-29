@@ -5,8 +5,6 @@ from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
 from acab.abstract.core.sentence import Sentence
-from acab.abstract.core.type_base import TypeInstance
-from acab.abstract.core.type_base import TypeInstance
 from acab.abstract.core.value import AcabValue
 
 from acab.abstract.data.node import AcabNode
@@ -40,7 +38,6 @@ class TypingCombinedTests(unittest.TestCase):
     def setUpClass(cls):
         # setup class
         type_sys = build_simple_type_system()
-        AcabValue._set_type_system(type_sys)
 
         bp = BootstrapParser()
         twm = TrieWM()
@@ -73,7 +70,7 @@ class TypingCombinedTests(unittest.TestCase):
 
     def test_add_definition(self):
         """ :: a END """
-        n_primitives = len(TypeInstance.Primitives)
+        n_primitives = len(Sentence.build.Primitives)
         type_def = TD.parseString("a.test.definition.x: (::σ) end")[0]
         self.assertEqual(len(self.tc._definitions), n_primitives)
         self.tc.add_definition(type_def)
@@ -209,7 +206,7 @@ class TypingCombinedTests(unittest.TestCase):
         self.tc.add_definition(a_def)
         self.tc.add_definition(a_def2)
 
-        self.assertEqual(len(self.tc._definitions), len(TypeInstance.Primitives) + 2)
+        self.assertEqual(len(self.tc._definitions), len(Sentence.build.Primitives) + 2)
 
 
     def test_variable_conflict(self):
@@ -333,7 +330,7 @@ class TypingCombinedTests(unittest.TestCase):
         instance = small_def[-1].build_type_instance()
 
         self.assertEqual(self.tc.query(query_sen1)[0]._type_instance, instance)
-        self.assertEqual(self.tc.query(query_sen2)[0]._type_instance, TypeInstance(S("string")))
+        self.assertEqual(self.tc.query(query_sen2)[0]._type_instance, Sentence.build(S("string")))
 
     def test_typing_nested_types_fail(self):
         """ ::String: END, ::Number: END
@@ -402,8 +399,8 @@ class TypingCombinedTests(unittest.TestCase):
         self.assertEqual(self.tc.query(query_sen2)[0]._type_instance, ATOM)
 
         self.tc.validate()
-        self.assertEqual(self.tc.query(query_sen1)[0]._type_instance, TypeInstance(S("string")))
-        self.assertEqual(self.tc.query(query_sen2)[0]._type_instance, TypeInstance(S("number")))
+        self.assertEqual(self.tc.query(query_sen1)[0]._type_instance, Sentence.build(S("string")))
+        self.assertEqual(self.tc.query(query_sen2)[0]._type_instance, Sentence.build(S("number")))
 
     def test_typing_polytype_nested(self):
         """ ::String: END, ::Number: END
@@ -435,7 +432,7 @@ class TypingCombinedTests(unittest.TestCase):
 
         self.tc.validate()
 
-        self.assertEqual(self.tc.query(query_sen1)[0]._type_instance, TypeInstance(S("string")))
+        self.assertEqual(self.tc.query(query_sen1)[0]._type_instance, Sentence.build(S("string")))
 
     def test_typing_polytype_multi_param(self):
         """ ::String: END, ::Number: END
@@ -468,8 +465,8 @@ class TypingCombinedTests(unittest.TestCase):
         self.assertEqual(self.tc.query(query_sen2)[0]._type_instance, ATOM)
         self.tc.validate()
 
-        self.assertEqual(self.tc.query(query_sen1)[0]._type_instance, TypeInstance(S("string")))
-        self.assertEqual(self.tc.query(query_sen2)[0]._type_instance, TypeInstance(S("number")))
+        self.assertEqual(self.tc.query(query_sen1)[0]._type_instance, Sentence.build(S("string")))
+        self.assertEqual(self.tc.query(query_sen2)[0]._type_instance, Sentence.build(S("number")))
 
     def test_typing_context_clear(self):
         sen = FP.parseString("a.test.$var")[0]

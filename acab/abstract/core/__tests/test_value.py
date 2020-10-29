@@ -20,7 +20,6 @@ class AcabValueTests(unittest.TestCase):
     def setUpClass(cls):
         # setup class
         type_sys = build_simple_type_system()
-        AcabValue._set_type_system(type_sys)
 
     def setUp(self):
         return 1

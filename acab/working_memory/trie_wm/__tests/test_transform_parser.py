@@ -18,7 +18,6 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
     def setUpClass(cls):
         # setup class
         type_sys = build_simple_type_system()
-        AcabValue._set_type_system(type_sys)
         bp = BootstrapParser()
         TP.HOTLOAD_TRANS_OP << bp.query('operator.transform.*',
                                         'operator.sugar')

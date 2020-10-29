@@ -15,13 +15,13 @@ import acab.working_memory.trie_wm.parsing.FactParser as FP
 NEGATION_S = AcabConfig.Get()("Parsing.Structure", "NEGATION_S")
 VALUE_TYPE_S = AcabConfig.Get()("Parsing.Structure", "VALUE_TYPE_S")
 
+
 class Trie_Fact_Parser_Tests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
         # setup class
         type_sys = build_simple_type_system()
-        AcabValue._set_type_system(type_sys)
 
     def setUp(self):
         return 1

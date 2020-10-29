@@ -5,7 +5,6 @@ from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
 from acab.abstract.core.sentence import Sentence
-from acab.abstract.core.type_base import TypeInstance
 from acab.abstract.core.value import AcabValue
 from acab.abstract.data.node import AcabNode
 from acab.abstract.core.type_system import build_simple_type_system
@@ -34,7 +33,6 @@ class TypingTests(unittest.TestCase):
     def setUpClass(cls):
         # setup class
         type_sys = build_simple_type_system()
-        AcabValue._set_type_system(type_sys)
 
     def tearDown(self):
 	    return 1
@@ -54,11 +52,11 @@ class TypingTests(unittest.TestCase):
         type_def = TypeDefinition([])
         loc = FP.parseString('a.test.definition.x')[0]
         copied_loc = loc.attach_statement(type_def)
-        self.assertEqual(len(tc._definitions), len(TypeInstance.Primitives))
+        self.assertEqual(len(tc._definitions), len(Sentence.build.Primitives))
         tc.add_definition(copied_loc)
-        self.assertEqual(len(tc._definitions), len(TypeInstance.Primitives) + 4)
+        self.assertEqual(len(tc._definitions), len(Sentence.build.Primitives) + 4)
         defs = tc._definitions.get_nodes(lambda x: isinstance(x.value, TypeDefinition))
-        self.assertEqual(len(TypeInstance.Primitives) + 1, len(defs))
+        self.assertEqual(len(Sentence.build.Primitives) + 1, len(defs))
 
     def test_add_assertion(self):
         """ a.b.c.d """
@@ -74,7 +72,7 @@ class TypingTests(unittest.TestCase):
         self.assertFalse(tc._get_known_typed_nodes())
         sen = S("a","b")
         sen[-1]._data[TU.BIND_S] = True
-        sen[-1]._data[TU.VALUE_TYPE_S] = TypeInstance(S("a"))
+        sen[-1]._data[TU.VALUE_TYPE_S] = Sentence.build(S("a"))
         tc.add_assertion(sen)
         self.assertEqual(len(tc._get_known_typed_nodes()), 1)
         sen2 = S("a","c")
@@ -118,7 +116,7 @@ class TypingTests(unittest.TestCase):
 
         sen1 = S("test","b")
         sen1[-1]._data[TU.BIND_S] = True
-        sen1[-1]._data[TU.VALUE_TYPE_S] = TypeInstance(S("a"))
+        sen1[-1]._data[TU.VALUE_TYPE_S] = Sentence.build(S("a"))
         tc.add_assertion(sen1)
 
         sen2 = S("test","c")
@@ -145,11 +143,11 @@ class TypingTests(unittest.TestCase):
         tc.add_definition(a_def, b_def)
         sen1 = S("test","q")
         sen1[-1]._data[TU.BIND_S] = True
-        sen1[-1]._data[TU.VALUE_TYPE_S] = TypeInstance(S("a"))
+        sen1[-1]._data[TU.VALUE_TYPE_S] = Sentence.build(S("a"))
         tc.add_assertion(sen1)
         sen2 = S("test","q")
         sen2[-1]._data[TU.BIND_S] = True
-        sen2[-1]._data[TU.VALUE_TYPE_S] = TypeInstance(S("b"))
+        sen2[-1]._data[TU.VALUE_TYPE_S] = Sentence.build(S("b"))
 
         with self.assertRaises(te.TypeConflictException):
             tc.add_assertion(sen2)
@@ -159,7 +157,7 @@ class TypingTests(unittest.TestCase):
         tc = TypeChecker()
         sen1 = S("a","b")
         sen1[-1]._data[TU.BIND_S] = True
-        sen1[-1]._data[TU.VALUE_TYPE_S] = TypeInstance(S("a"))
+        sen1[-1]._data[TU.VALUE_TYPE_S] = Sentence.build(S("a"))
         tc.add_assertion(sen1)
 
         with self.assertRaises(te.TypeUndefinedException):
@@ -182,7 +180,7 @@ class TypingTests(unittest.TestCase):
         tc.add_definition(a_def)
         tc.add_definition(a_def2)
 
-        self.assertEqual(len(tc._definitions), len(TypeInstance.Primitives) + 2)
+        self.assertEqual(len(tc._definitions), len(Sentence.build.Primitives) + 2)
 
 
     def test_variable_conflict(self):
@@ -196,11 +194,11 @@ class TypingTests(unittest.TestCase):
 
         sen1 = S("a","b")
         sen1[-1]._data[TU.BIND_S] = True
-        sen1[-1]._data[TU.VALUE_TYPE_S] = TypeInstance(S("String"))
+        sen1[-1]._data[TU.VALUE_TYPE_S] = Sentence.build(S("String"))
         tc.add_assertion(sen1)
         sen2 = S("a","b")
         sen2[-1]._data[TU.BIND_S] = True
-        sen2[-1]._data[TU.VALUE_TYPE_S] = TypeInstance(S("Number"))
+        sen2[-1]._data[TU.VALUE_TYPE_S] = Sentence.build(S("Number"))
         with self.assertRaises(te.TypeConflictException):
             tc.add_assertion(sen2)
 
@@ -216,14 +214,14 @@ class TypingTests(unittest.TestCase):
 
         struct_sen = S("name","x")
         struct_sen[-1]._data[TU.BIND_S] = True
-        struct_sen[-1]._data[TU.VALUE_TYPE_S] = TypeInstance(S("String"))
+        struct_sen[-1]._data[TU.VALUE_TYPE_S] = Sentence.build(S("String"))
 
 
         first_def = S("first").attach_statement(TypeDefinition([struct_sen]))
         tc.add_definition(first_def)
 
         sen = S("a","b")
-        sen[0]._data[TU.VALUE_TYPE_S] = TypeInstance(S("first"))
+        sen[0]._data[TU.VALUE_TYPE_S] = Sentence.build(S("first"))
 
         tc.add_assertion(sen)
 
@@ -242,15 +240,15 @@ class TypingTests(unittest.TestCase):
 
         struct_sen = S("name","x")
         struct_sen[-1]._data[TU.BIND_S] = True
-        struct_sen[-1]._data[TU.VALUE_TYPE_S] = TypeInstance(S("String"))
+        struct_sen[-1]._data[TU.VALUE_TYPE_S] = Sentence.build(S("String"))
         first_def = S("first").attach_statement(TypeDefinition([struct_sen]))
 
         tc.add_definition(first_def)
 
         sen = S("a","name","y")
-        sen[0]._data[TU.VALUE_TYPE_S] = TypeInstance(S("first"))
+        sen[0]._data[TU.VALUE_TYPE_S] = Sentence.build(S("first"))
         sen[-1]._data[TU.BIND_S] = True
-        sen[-1]._data[TU.VALUE_TYPE_S] = TypeInstance(S("Number"))
+        sen[-1]._data[TU.VALUE_TYPE_S] = Sentence.build(S("Number"))
 
         tc.add_assertion(sen)
 
@@ -271,14 +269,14 @@ class TypingTests(unittest.TestCase):
 
         struct_sen = S("name","x","y")
         struct_sen[-2]._data[TU.BIND_S] = True
-        struct_sen[-2]._data[TU.VALUE_TYPE_S] = TypeInstance(S("String"))
+        struct_sen[-2]._data[TU.VALUE_TYPE_S] = Sentence.build(S("String"))
         struct_sen[-1]._data[TU.BIND_S] = True
-        struct_sen[-1]._data[TU.VALUE_TYPE_S] = TypeInstance(S("Number"))
+        struct_sen[-1]._data[TU.VALUE_TYPE_S] = Sentence.build(S("Number"))
         first_def = S("first").attach_statement(TypeDefinition([struct_sen]))
         tc.add_definition(first_def)
 
         sen = S("bob","name","z","q")
-        sen[0]._data[TU.VALUE_TYPE_S] = TypeInstance(S("first"))
+        sen[0]._data[TU.VALUE_TYPE_S] = Sentence.build(S("first"))
         sen[-2]._data[TU.BIND_S] = True
         sen[-1]._data[TU.BIND_S] = True
         tc.add_assertion(sen)
@@ -297,12 +295,12 @@ class TypingTests(unittest.TestCase):
         #Check the first var is inferred
         query_sen = S("bob","name","z")
         query_sen[-1]._data[TU.BIND_S] = True
-        self.assertEqual(tc.query(query_sen)[0]._type_instance, TypeInstance(S("String")))
+        self.assertEqual(tc.query(query_sen)[0]._type_instance, Sentence.build(S("String")))
         #Check the second var is inferred
         query_sen = S("bob","name","z","q")
         query_sen[-2]._data[TU.BIND_S] = True
         query_sen[-1]._data[TU.BIND_S] = True
-        self.assertEqual(tc.query(query_sen)[0]._type_instance, TypeInstance(S("Number")))
+        self.assertEqual(tc.query(query_sen)[0]._type_instance, Sentence.build(S("Number")))
 
     def test_typing_nested_types(self):
         """ ::String: END, ::Number: END
@@ -318,20 +316,20 @@ class TypingTests(unittest.TestCase):
         #Small Type
         type_1_sen = S("name","x")
         type_1_sen[-1]._data[TU.BIND_S] = True
-        type_1_sen[-1]._data[TU.VALUE_TYPE_S] = TypeInstance(S("String"))
+        type_1_sen[-1]._data[TU.VALUE_TYPE_S] = Sentence.build(S("String"))
         small_def = S("small", "type").attach_statement(TypeDefinition([type_1_sen]))
         tc.add_definition(small_def)
 
         #Large Type
         type_2_sen = S("component","x")
         type_2_sen[-1]._data[TU.BIND_S] = True
-        type_2_sen[-1]._data[TU.VALUE_TYPE_S] = TypeInstance(S("small", "type"))
+        type_2_sen[-1]._data[TU.VALUE_TYPE_S] = Sentence.build(S("small", "type"))
         large_def = S("large", "type").attach_statement(TypeDefinition([type_2_sen]))
 
         tc.add_definition(large_def)
 
         assertion = S("a","component","q","name","w")
-        assertion[0]._data[TU.VALUE_TYPE_S] = TypeInstance(S("large", "type"))
+        assertion[0]._data[TU.VALUE_TYPE_S] = Sentence.build(S("large", "type"))
         assertion[2]._data[TU.BIND_S] = True
         assertion[-1]._data[TU.BIND_S] = True
 
@@ -349,8 +347,8 @@ class TypingTests(unittest.TestCase):
 
         tc.validate()
 
-        self.assertEqual(tc.query(query_sen1)[0]._type_instance, TypeInstance(S("small", "type")))
-        self.assertEqual(tc.query(query_sen2)[0]._type_instance, TypeInstance(S("String")))
+        self.assertEqual(tc.query(query_sen1)[0]._type_instance, Sentence.build(S("small", "type")))
+        self.assertEqual(tc.query(query_sen2)[0]._type_instance, Sentence.build(S("String")))
 
     def test_typing_nested_types_fail(self):
         """ ::String: END, ::Number: END
@@ -366,7 +364,7 @@ class TypingTests(unittest.TestCase):
         #Small Type
         type_1_sen = S("name","x")
         type_1_sen[-1]._data[TU.BIND_S] = True
-        type_1_sen[-1]._data[TU.VALUE_TYPE_S] = TypeInstance(S("String"))
+        type_1_sen[-1]._data[TU.VALUE_TYPE_S] = Sentence.build(S("String"))
 
         small_def = S("small", "type").attach_statement(TypeDefinition([type_1_sen]))
         tc.add_definition(small_def)
@@ -374,16 +372,16 @@ class TypingTests(unittest.TestCase):
         #Large Type
         type_2_sen = S("component","x")
         type_2_sen[-1]._data[TU.BIND_S] = True
-        type_2_sen[-1]._data[TU.VALUE_TYPE_S] = TypeInstance(S("small", "type"))
+        type_2_sen[-1]._data[TU.VALUE_TYPE_S] = Sentence.build(S("small", "type"))
         large_def = S("large", "type").attach_statement(TypeDefinition([type_2_sen]))
 
         tc.add_definition(large_def)
 
         assertion = S("a","component","q","name","w")
-        assertion[0]._data[TU.VALUE_TYPE_S] = TypeInstance(S("large", "type"))
+        assertion[0]._data[TU.VALUE_TYPE_S] = Sentence.build(S("large", "type"))
         assertion[2]._data[TU.BIND_S] = True
         assertion[-1]._data[TU.BIND_S] = True
-        assertion[-1]._data[TU.VALUE_TYPE_S] = TypeInstance(S("Number"))
+        assertion[-1]._data[TU.VALUE_TYPE_S] = Sentence.build(S("Number"))
         tc.add_assertion(assertion)
 
         query_sen1 = S("a","component","q")
@@ -394,7 +392,7 @@ class TypingTests(unittest.TestCase):
         query_sen2[-1]._data[TU.BIND_S] = True
 
         self.assertEqual(tc.query(query_sen1)[0]._type_instance, ATOM)
-        self.assertEqual(tc.query(query_sen2)[0]._type_instance, TypeInstance(S("Number")))
+        self.assertEqual(tc.query(query_sen2)[0]._type_instance, Sentence.build(S("Number")))
 
         with self.assertRaises(te.TypeConflictException):
             tc.validate()
@@ -421,12 +419,12 @@ class TypingTests(unittest.TestCase):
 
         #assertions
         assertion = S("a","name","q")
-        assertion[0]._data[TU.VALUE_TYPE_S] = TypeInstance(S("poly", "type"), [TypeInstance(S("String"))])
+        assertion[0]._data[TU.VALUE_TYPE_S] = Sentence.build(S("poly", "type"), [Sentence.build(S("String"))])
         assertion[-1]._data[TU.BIND_S] = True
         tc.add_assertion(assertion)
 
         assertion2 = S("b","name","t")
-        assertion2[0]._data[TU.VALUE_TYPE_S] = TypeInstance(S("poly", "type"), [TypeInstance(S("Number"), ["Number"])])
+        assertion2[0]._data[TU.VALUE_TYPE_S] = Sentence.build(S("poly", "type"), [Sentence.build(S("Number"), ["Number"])])
         assertion2[-1]._data[TU.BIND_S] = True
         tc.add_assertion(assertion2)
 
@@ -441,8 +439,8 @@ class TypingTests(unittest.TestCase):
         self.assertEqual(tc.query(query_sen2)[0]._type_instance, ATOM)
 
         tc.validate()
-        self.assertEqual(tc.query(query_sen1)[0]._type_instance, TypeInstance(S("String")))
-        self.assertEqual(tc.query(query_sen2)[0]._type_instance, TypeInstance(S("Number")))
+        self.assertEqual(tc.query(query_sen1)[0]._type_instance, Sentence.build(S("String")))
+        self.assertEqual(tc.query(query_sen2)[0]._type_instance, Sentence.build(S("Number")))
 
     def test_typing_polytype_nested(self):
         """ ::String: END, ::Number: END
@@ -463,14 +461,14 @@ class TypingTests(unittest.TestCase):
 
         #polytype 2
         type_2_sen = S("nested")
-        type_2_sen[-1]._data[TU.VALUE_TYPE_S] = TypeInstance(S("poly", "type", "one"), ["y"])
+        type_2_sen[-1]._data[TU.VALUE_TYPE_S] = Sentence.build(S("poly", "type", "one"), ["y"])
         poly_2_def = S("poly", "type", "two").attach_statement(TypeDefinition([type_2_sen], params=["y"]))
         tc.add_definition(poly_2_def)
 
         #Assertion
         assertion = S("a","nested","name","z")
-        assertion_param = TypeInstance(S("String"))
-        assertion[0]._data[TU.VALUE_TYPE_S] = TypeInstance(S("poly", "type", "two"), [assertion_param])
+        assertion_param = Sentence.build(S("String"))
+        assertion[0]._data[TU.VALUE_TYPE_S] = Sentence.build(S("poly", "type", "two"), [assertion_param])
         assertion[-1]._data[TU.BIND_S] = True
         tc.add_assertion(assertion)
 
@@ -482,7 +480,7 @@ class TypingTests(unittest.TestCase):
 
         tc.validate()
 
-        self.assertEqual(tc.query(query_sen1)[0]._type_instance, TypeInstance(S("String")))
+        self.assertEqual(tc.query(query_sen1)[0]._type_instance, Sentence.build(S("String")))
 
     def test_typing_polytype_multi_param(self):
         """ ::String: END, ::Number: END
@@ -505,9 +503,9 @@ class TypingTests(unittest.TestCase):
 
         #assertions
         assertion = S("a","name","q")
-        assertion[0]._data[TU.VALUE_TYPE_S] = TypeInstance(S("poly", "type"),
-                                                         [TypeInstance(S("String")),
-                                                          TypeInstance(S("Number"))])
+        assertion[0]._data[TU.VALUE_TYPE_S] = Sentence.build(S("poly", "type"),
+                                                         [Sentence.build(S("String")),
+                                                          Sentence.build(S("Number"))])
         assertion[-1]._data[TU.BIND_S] = True
         tc.add_assertion(assertion)
 
@@ -526,8 +524,8 @@ class TypingTests(unittest.TestCase):
         self.assertEqual(tc.query(query_sen2)[0]._type_instance, ATOM)
         tc.validate()
 
-        self.assertEqual(tc.query(query_sen1)[0]._type_instance, TypeInstance(S("String")))
-        self.assertEqual(tc.query(query_sen2)[0]._type_instance, TypeInstance(S("Number")))
+        self.assertEqual(tc.query(query_sen1)[0]._type_instance, Sentence.build(S("String")))
+        self.assertEqual(tc.query(query_sen2)[0]._type_instance, Sentence.build(S("Number")))
 
     def test_typing_context_clear(self):
         tc = TypeChecker()
@@ -572,9 +570,9 @@ class TypingTests(unittest.TestCase):
 
         # assert
         assertion = S("a","name","q")
-        assertion[0]._data[TU.VALUE_TYPE_S] = TypeInstance(S("polytype"), [TypeInstance(S("String"))])
+        assertion[0]._data[TU.VALUE_TYPE_S] = Sentence.build(S("polytype"), [Sentence.build(S("String"))])
         assertion[-1]._data[TU.BIND_S] = True
-        assertion[-1]._data[TU.VALUE_TYPE_S] = TypeInstance(S("Number"))
+        assertion[-1]._data[TU.VALUE_TYPE_S] = Sentence.build(S("Number"))
         tc.add_assertion(assertion)
 
         with self.assertRaises(te.TypeConflictException):
@@ -601,17 +599,17 @@ class TypingTests(unittest.TestCase):
         #polytype 2
         type_2_sen = S("nested")
         type_2_sen[-1]._data[TU.BIND_S] = True
-        type_2_sen[-1]._data[TU.VALUE_TYPE_S] = TypeInstance(S("poly", "type", "one"), ["y"])
+        type_2_sen[-1]._data[TU.VALUE_TYPE_S] = Sentence.build(S("poly", "type", "one"), ["y"])
         poly_2_def = S("poly", "type", "two").attach_statement(TypeDefinition([type_2_sen], params=["y"]))
         tc.add_definition(poly_2_def)
 
         #Assertion
         assertion = S("a","nested","name","x")
         assertion[0]._data[TU.BIND_S] = True
-        assertion_param = TypeInstance(S("String"))
-        assertion[0]._data[TU.VALUE_TYPE_S] = TypeInstance(S("poly", "type", "two"), [assertion_param])
+        assertion_param = Sentence.build(S("String"))
+        assertion[0]._data[TU.VALUE_TYPE_S] = Sentence.build(S("poly", "type", "two"), [assertion_param])
         assertion[-1]._data[TU.BIND_S] = True
-        assertion[-1]._data[TU.VALUE_TYPE_S] = TypeInstance(S("Number"))
+        assertion[-1]._data[TU.VALUE_TYPE_S] = Sentence.build(S("Number"))
         tc.add_assertion(assertion)
 
         with self.assertRaises(te.TypeConflictException):
@@ -643,16 +641,16 @@ class TypingTests(unittest.TestCase):
 
         #assertions
         assertion = S("a","name","q")
-        assertion[0]._data[TU.VALUE_TYPE_S] = TypeInstance(S("poly", "type"),
-                                                         [TypeInstance(S("String")),
-                                                          TypeInstance(S("Number"))])
+        assertion[0]._data[TU.VALUE_TYPE_S] = Sentence.build(S("poly", "type"),
+                                                         [Sentence.build(S("String")),
+                                                          Sentence.build(S("Number"))])
         assertion[-1]._data[TU.BIND_S] = True
-        assertion[-1]._data[TU.VALUE_TYPE_S] = TypeInstance(S("String"))
+        assertion[-1]._data[TU.VALUE_TYPE_S] = Sentence.build(S("String"))
         tc.add_assertion(assertion)
 
         assertion2 = S("a","age","w")
         assertion2[-1]._data[TU.BIND_S] = True
-        assertion2[-1]._data[TU.VALUE_TYPE_S] = TypeInstance(S("String"))
+        assertion2[-1]._data[TU.VALUE_TYPE_S] = Sentence.build(S("String"))
         tc.add_assertion(assertion2)
 
         with self.assertRaises(te.TypeConflictException):
@@ -677,8 +675,8 @@ class TypingTests(unittest.TestCase):
         tc.add_definition(poly_def)
 
         sen = S("missing","name","blah")
-        sen[0]._data[TU.VALUE_TYPE_S] = TypeInstance(S("a", "polytype"))
-        sen[-1]._data[TU.VALUE_TYPE_S] = TypeInstance(S("simple","type"))
+        sen[0]._data[TU.VALUE_TYPE_S] = Sentence.build(S("a", "polytype"))
+        sen[-1]._data[TU.VALUE_TYPE_S] = Sentence.build(S("simple","type"))
 
         tc.add_assertion(sen)
 
@@ -711,7 +709,7 @@ class TypingTests(unittest.TestCase):
 
         op_struct = S("x", "x", "x")
         op_struct[0]._data[TU.BIND_S] = True
-        op_struct[0]._data[TU.VALUE_TYPE_S] = TypeInstance(S("Number"))
+        op_struct[0]._data[TU.VALUE_TYPE_S] = Sentence.build(S("Number"))
         op_struct[1]._data[TU.BIND_S] = True
         op_struct[2]._data[TU.BIND_S] = True
 

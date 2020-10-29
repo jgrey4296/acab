@@ -25,7 +25,6 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
     def setUpClass(cls):
         # setup class
         type_sys = build_simple_type_system()
-        AcabValue._set_type_system(type_sys)
         bp = BootstrapParser()
         qmod = QOP.MODULE()
         qmod.assert_parsers(bp)

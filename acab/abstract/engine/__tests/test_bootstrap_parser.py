@@ -7,6 +7,7 @@ import pyparsing as pp
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
+from acab.abstract.core.value import AcabValue
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
 from acab.abstract.core.type_system import build_simple_type_system
 
@@ -16,7 +17,6 @@ class BootstrapParserTests(unittest.TestCase):
     def setUpClass(cls):
         # setup class
         type_sys = build_simple_type_system()
-        AcabValue._set_type_system(type_sys)
 
     def setUp(self):
         self.bp = BootstrapParser(empty=True)

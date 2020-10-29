@@ -5,6 +5,7 @@ from math import isclose
 from acab.config import AcabConfig
 AcabConfig.Get().read("acab/util.config")
 
+from acab.abstract.core.value import AcabValue
 from acab.abstract.core.type_system import build_simple_type_system
 from acab.abstract.rule.rule import Rule
 from acab.abstract.data.contexts import Contexts
@@ -21,7 +22,6 @@ class Engine_Tests(unittest.TestCase):
     def setUpClass(cls):
         # setup class
         type_sys = build_simple_type_system()
-        AcabValue._set_type_system(type_sys)
 
     def setUp(self):
         self.e = T.TrieEngine()

@@ -20,7 +20,6 @@ class TestTime(unittest.TestCase):
     def setUpClass(cls):
         # setup class
         type_sys = build_simple_type_system()
-        AcabValue._set_type_system(type_sys)
         #Hotload value and bind
         tp.HOTLOAD_VALUE << PU.BASIC_VALUE
         tp.HOTLOAD_BIND << PU.BIND

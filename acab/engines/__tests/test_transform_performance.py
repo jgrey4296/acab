@@ -32,7 +32,6 @@ class TransformTests(unittest.TestCase):
     def setUpClass(cls):
         # setup class
         type_sys = build_simple_type_system()
-        AcabValue._set_type_system(type_sys)
 
     def setUp(self):
         self.e = TrieEngine(modules=["acab.modules.values.numbers",

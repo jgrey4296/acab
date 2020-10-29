@@ -15,6 +15,7 @@ from acab.abstract.core.type_system import build_simple_type_system
 
 util = AcabConfig.Get()
 BIND_S = util("Parsing.Structure", "BIND_S")
+OPERATOR_TYPE_PRIM_S = util("Typing.Primitives", "OPERATOR_TYPE_PRIM_S")
 
 class ProductionOperatorTests(unittest.TestCase):
 
@@ -22,7 +23,6 @@ class ProductionOperatorTests(unittest.TestCase):
     def setUpClass(cls):
         # setup class
         type_sys = build_simple_type_system()
-        AcabValue._set_type_system(type_sys)
 
     def setUp(self):
         return 1
@@ -35,7 +35,7 @@ class ProductionOperatorTests(unittest.TestCase):
         op = PO.ProductionOperator()
         self.assertIsInstance(op, PO.ProductionOperator)
         # TODO OPERATOR, COMPONENT
-        self.assertEqual(op.type, OPERATOR)
+        self.assertEqual(op.type, Sentence.build([OPERATOR_TYPE_PRIM_S]))
 
     def test_component_init(self):
         val = PO.ProductionComponent(Sentence.build(["testop"]), [])

@@ -26,7 +26,6 @@ class TypeDef_ParserTests(unittest.TestCase):
     def setUpClass(cls):
         # setup class
         type_sys = build_simple_type_system()
-        AcabValue._set_type_system(type_sys)
 
         FP.HOTLOAD_ANNOTATIONS << TP.TYPEDEC_CORE
         TP.HOTLOAD_BASIC_SEN << FP.BASIC_SEN
