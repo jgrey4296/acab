@@ -24,29 +24,25 @@ VALUE_TYPE_S = util("Parsing.Structure", "VALUE_TYPE_S")
 BIND_S = util("Parsing.Structure", "BIND_S")
 AT_BIND_S = util("Parsing.Structure", "AT_BIND_S")
 ANON_VALUE_S = util("Printing", "ANON_VALUE_S")
-
+TYPE_BOTTOM_NAME_S = util("Typing.Primitives", "TYPE_BOTTOM_NAME_S")
 UUID_CHOP = bool(int(util("Printing", "UUID_CHOP")))
 
 class AcabValue:
     value_types = set([int, float, Fraction, bool, str, Pattern, list, tuple])
-    _type_system = None
-    _type_bottom = None
+    _sentence_constructor: type = None
 
     @staticmethod
-    def _set_type_system(type_system):
+    def _set_sentence_constructor(constructor: Callable):
         """
         Late binding to the type system, a clean import chain
         """
-        AcabValue._type_system = type_system
+        AcabValue._sentence_constructor= constructor
 
-    @property
-    def type_bottom(self):
-        return AcabValue._type_system.BOTTOM
 
     @staticmethod
     def safe_make(value: Any,
                   data: Optional[Dict[Any, Any]]=None,
-                  _type: Optional['AcabValue._type_system']=None) -> 'AcabValue':
+                  _type: Optional['Sentence']=None) -> 'AcabValue':
         """ Wrap the provided value in an AcabValue,
         but only if it isn't an AcabValue already """
         if isinstance(value, AcabValue):
@@ -72,14 +68,15 @@ class AcabValue:
 
         self._params : List[Any] = []
         self._tags : Set[str] = set()
-        self._data : Dict[str, Any] = {VALUE_TYPE_S: AcabValue._type_bottom,
-                                       BIND_S : False}
+        self._data : Dict[str, Any] = {VALUE_TYPE_S: None, BIND_S : False}
 
         if data is not None:
             self._data.update(data)
 
         if _type is not None:
-            assert(isinstance(_type, AcabValue._type_system.INSTANCE))
+            if not isinstance(_type, AcabValue):
+                _type = AcabValue._sentence_constructor([_type])
+
             self._data[VALUE_TYPE_S] = _type
 
         if params is not None:
@@ -124,6 +121,10 @@ class AcabValue:
         return self._hash_name
 
     def __eq__(self, other):
+        """ Base eq: compare hashes  """
+        if self._uuid == other._uuid:
+            return True
+
         return hash(self) == hash(other)
 
 
@@ -135,8 +136,13 @@ class AcabValue:
     def value(self):
         return self._value
     @property
-    def type(self) -> 'AcabValue._type_system':
+    def type(self) -> 'Sentence':
+        """ Lazy Type Construction """
+        if self._data[VALUE_TYPE_S] is None:
+            self._data[VALUE_TYPE_S] = AcabValue._sentence_constructor([TYPE_BOTTOM_NAME_S])
+
         return self._data[VALUE_TYPE_S]
+
 
     @property
     def is_var(self) -> bool:
@@ -181,7 +187,12 @@ class AcabValue:
 
     def copy(self) -> 'AcabValue':
         """ Data needs to be able to be copied """
-        new_copy = deepcopy(self)
+        try:
+            new_copy = deepcopy(self)
+        except TypeError as err:
+            breakpoint()
+
+            new_copy = deepcopy(self)
         # Override the UUID copy
         new_copy._uuid = uuid1()
         # Override cached hash name
@@ -242,7 +253,7 @@ class AcabValue:
 
     def to_simple_value(self) -> 'AcabValue':
         simple_value = AcabValue.safe_make(self._name, data=self._data)
-        simple_value.set_data({VALUE_TYPE_S: AcabValue._type_bottom})
+        simple_value.set_data({VALUE_TYPE_S: AcabValue._sentence_constructor([TYPE_BOTTOM_NAME_S])})
         return simple_value
 
 
@@ -260,6 +271,16 @@ class AcabStatement(AcabValue):
         super(AcabStatement, self).__init__(value, **kwargs)
         self._path = None
 
+
+    def __eq__(self, other):
+        """ Base Statement eq: """
+        if id(self) == id(other):
+            return True
+
+        if self.value == other.value:
+            return True
+
+        return False
 
     @property
     def path(self) -> 'Sentence':
@@ -296,4 +317,4 @@ class AcabStatement(AcabValue):
         raise DeprecationWarning("Use Print Semantics")
 
     def pprint_body(self, val) -> str:
-        raise NotImplementedError()
+        raise DeprecationWarning("Use Print Semantics")
