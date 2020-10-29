@@ -20,9 +20,10 @@ SEN_JOIN_S = util("Printing", "SEN_JOIN_S")
 QUERY_S = util("Parsing.Structure", "QUERY_S")
 QUERY_SYMBOL_S = util("Visual.Symbols", "QUERY_SYMBOL_S")
 
+MODAL_SYMBOLS = util("WorkingMemory.TrieWM.Symbols", as_dict=True)
+
 from acab.abstract.core.value import AcabValue, AcabStatement
 from acab.abstract.core.sentence import Sentence
-from acab.abstract.core.type_base import TypeInstance
 from acab.abstract.rule.production_operator import ProductionContainer
 from acab.abstract.rule.query import Query
 from acab.abstract.rule.transform import Transform
@@ -44,7 +45,6 @@ basic = {AcabValue: ([], lambda s, d, c, a, p: (RET_enum.SIMPLE, str(d), None))}
 
 basic_plus = {AcabValue: DH.DEF_VALUE_PAIR,
               Sentence: DH.DEF_SEN_PAIR,
-              TypeInstance: DH.DEF_TYPE_PAIR,
               AcabStatement: ([], None),
               ProductionContainer: DH.DEF_CONTAINER_PAIR,
               Query: ([], None),
@@ -66,8 +66,6 @@ class PrintSemanticTests(unittest.TestCase):
     def setUpClass(cls):
         # setup class
         type_sys = build_simple_type_system()
-        AcabValue._set_type_system(type_sys)
-
     def setUp(self):
         return 1
 
@@ -88,7 +86,13 @@ class PrintSemanticTests(unittest.TestCase):
     def test_multiple(self):
         sem = AcabPrintSemantics(basic)
         result = sem.print([AcabValue("a"), AcabValue("b"), AcabValue("c")])
-        self.assertEqual(result, "a\nb\nc")
+        self.assertEqual(result, r"a\nb\nc")
+
+    def test_multiple2(self):
+        sem = AcabPrintSemantics(basic,
+                                 default_values={'print_sen_join': " -- "})
+        result = sem.print([AcabValue("a"), AcabValue("b"), AcabValue("c")])
+        self.assertEqual(result, "a -- b -- c")
 
 
     def test_sentence_basic(self):
@@ -99,6 +103,14 @@ class PrintSemanticTests(unittest.TestCase):
 
     def test_sentence_words(self):
         join_str = "."
+        sem = AcabPrintSemantics(basic_plus,
+                                 {SEN_JOIN_S : join_str})
+        sentence = Sentence.build(["a", "b", "c", "d"])
+        result = sem.print(sentence)
+        self.assertEqual(result, join_str.join(["a", "b", "c", "d"]))
+
+    def test_sentence_words2(self):
+        join_str = "-"
         sem = AcabPrintSemantics(basic_plus,
                                  {SEN_JOIN_S : join_str})
         sentence = Sentence.build(["a", "b", "c", "d"])
@@ -128,6 +140,17 @@ class PrintSemanticTests(unittest.TestCase):
         self.assertEqual(result, "{}{}".format(join_str.join(["a", "b", "c", "d"]),
                                                QUERY_SYMBOL_S))
 
+    def test_sentence_words(self):
+        join_str = "."
+        sem = AcabPrintSemantics(basic_plus,
+                                 {SEN_JOIN_S: join_str})
+        sentence = Sentence.build(["test","one","bumble","foo"])
+        sentence._data[QUERY_S] = True
+
+        result = sem.print(sentence)
+        self.assertEqual(result, "{}{}".format(join_str.join(["test","one","bumble","foo"]),
+                                               QUERY_SYMBOL_S))
+
 
 
     # value : show_uuid, not, variable, at var
@@ -139,10 +162,23 @@ class PrintSemanticTests(unittest.TestCase):
 
     # Type Instance
     def test_type_instance(self):
-        instance = TypeInstance(Sentence.build(["a","b","c"]))
+        instance = Sentence.build(["a","b","c"])
         sem = AcabPrintSemantics(basic_plus)
 
     # drop end op, constraints
+    def test_value_drop_terminal_modality(self):
+        # TODO register a modality str pair
+        sem = AcabPrintSemantics({
+            AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel)
+        }, default_values={"BLAH" : " -~- "})
+        value = AcabValue("Test", data={'MODALITY': "BLAH"})
+        result = sem.print(value, overrides={'MODAL_FIELD': 'MODALITY'})
+        self.assertEqual(result, "Test -~- ")
+
+        sem.set_for_uuid(value._uuid, ["drop_modal"])
+        result2 = sem.print(value)
+        self.assertEqual(result2, "Test")
+
 
 
     # AcabValue(Op)
