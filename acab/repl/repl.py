@@ -55,7 +55,7 @@ if __name__ == "__main__":
     engine, dummy = ReC.get(ReC.ReplE.INIT)(None, {'params': [engine]})
     # TODO Load Standard modules
     load_cmd = ReC.get(ReC.ReplE.MODULE)
-    initial_modules = util("REPL", "MODULES", action=AcabConfig.actions_e.LIST)
+    initial_modules = util("REPL", "MODULES", actions=[AcabConfig.actions_e.LIST])
     engine, dummy = load_cmd(engine, {'params': initial_modules})
 
     data = { 'prompt' : util("REPL", "PROMPT"),
