@@ -4,16 +4,11 @@ import unittest
 import logging
 
 from acab.config import AcabConfig
-AcabConfig.Get().read("acab/util.config")
+AcabConfig.Get().read("acab")
 
-from acab.abstract.core.type_system import build_simple_type_system
 
 class ReplParseTests(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        # setup class
-        type_sys = build_simple_type_system()
 
     def setUp(self):
         return 1
