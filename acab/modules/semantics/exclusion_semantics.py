@@ -14,9 +14,9 @@ from .util import EXOP as EXOP_enum
 from acab.config import AcabConfig
 
 config = AcabConfig.Get()
-OPERATOR_S = config("Parsing.Structure", "OPERATOR_S")
-EXOP = config("WorkingMemory.TrieWM", "MODAL_NAME_S")
-DEFAULT_EXOP = config("WorkingMemory.TrieWM", "DEFAULT_EXOP")
+OPERATOR     = config.value("Value.Structure", "OPERATOR")
+EXOP         = config.value("Modal.Exclusion", "MODAL_NAME")
+DEFAULT_EXOP = config.value("Modal.Exclusion", "DEFAULT_EXOP")
 
 class ExclusionNodeSemantics(AcabNodeSemantics):
     def accessible(self, node, data, term):
@@ -34,8 +34,8 @@ class ExclusionNodeSemantics(AcabNodeSemantics):
         elif self.contain(node, term):
             potentials.append(node.get_child(term))
 
-        if OPERATOR_S in term._data:
-            potentials = [x for x in potentials if x._data[OPERATOR_S] == term._data[OPERATOR_S]]
+        if OPERATOR in term._data:
+            potentials = [x for x in potentials if x._data[OPERATOR] == term._data[OPERATOR]]
         return potentials
 
     def lift(self, word, constructor):
@@ -43,10 +43,10 @@ class ExclusionNodeSemantics(AcabNodeSemantics):
         exop = EXOP_enum[DEFAULT_EXOP]
         if EXOP in word._data:
             exop = word._data[EXOP]
-        elif OPERATOR_S in word._data:
-            exop = word._data[OPERATOR_S]
+        elif OPERATOR in word._data:
+            exop = word._data[OPERATOR]
 
-        word_node = constructor(word, {OPERATOR_S: exop})
+        word_node = constructor(word, {OPERATOR: exop})
         return word_node
 
 
@@ -83,15 +83,15 @@ class ExclusionNodeSemantics(AcabNodeSemantics):
             result = self.lift(word, node_constructor)
             is_new_node = True
 
-        if node._data[OPERATOR_S] is EXOP_enum.EX and \
+        if node._data[OPERATOR] is EXOP_enum.EX and \
         len(node.children) >= 1 and result is not None:
             node.clear_children()
 
         node.add_child(result)
 
         # coerce to exclusive if necessary
-        if OPERATOR_S in word._data and word._data[OPERATOR_S] is EXOP_enum.EX:
-            result._data[OPERATOR_S] = EXOP_enum.EX
+        if OPERATOR in word._data and word._data[OPERATOR] is EXOP_enum.EX:
+            result._data[OPERATOR] = EXOP_enum.EX
 
         return is_new_node, result
 
