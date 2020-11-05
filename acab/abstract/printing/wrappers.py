@@ -4,37 +4,52 @@ from acab.config import AcabConfig
 
 
 util = AcabConfig.Get()
+#Static
+TYPE_INSTANCE_V  = util.value("Value.Structure", "TYPE_INSTANCE")
+BIND_V           = util.value("Value.Structure", "BIND")
+CONSTRAINT_V     = util.value("Value.Structure", "CONSTRAINT")
+OPERATOR_V       = util.value("Value.Structure", "OPERATOR")
+NEGATION_V       = util.value("Value.Structure", "NEGATION")
+QUERY_V          = util.value("Value.Structure", "QUERY")
 
-AT_BIND_S         = util("Parsing.Structure", "AT_BIND_S")
-CONSTRAINT_S     = util("Parsing.Structure", "CONSTRAINT_S")
-END_S            = util("Parsing.Structure", "END_S")
-FALLBACK_MODAL_S = util("Printing", "FALLBACK_MODAL_S", actions=[AcabConfig.actions_e.STRIPQUOTE])
-FUNC_S           = util("Parsing.Structure", "FUNC_S")
-NEGATION_S       = util("Parsing.Structure", "NEGATION_S")
-OBVIOUS_TYPES    = []
-OPERATOR_S       = util("Parsing.Structure", "OPERATOR_S")
-QUERY_S          = util("Parsing.Structure", "QUERY_S")
-TAB_S            = util("Printing", "TAB_S", actions=[AcabConfig.actions_e.STRIPQUOTE])
-TAG_S            = util("Parsing.Structure", "TAG_S")
-VALUE_TYPE_S     = util("Parsing.Structure", "VALUE_TYPE_S")
-BIND_S            = util("Parsing.Structure", "BIND_S")
+# Runtime dynamic
+OBVIOUS_TYPES_P  = util.prepare("Print.Data", "SUPPRESSION_TYPES", actions=[AcabConfig.actions_e.SPLIT])
+
+TAB_P            = util.prepare("Print.Patterns", "TAB", actions=[AcabConfig.actions_e.STRIPQUOTE])
+WRAP_FORMAT_P    = util.prepare("Print.Patterns", "WRAP_FORMAT")
+PARAM_JOIN_P     = util.prepare("Print.Patterns", "PARAM_JOIN")
+
+AT_BIND_P        = util.prepare("Symbols", "AT_BIND")
+END_P            = util.prepare("Symbols", "END")
+FALLBACK_MODAL_P = util.prepare("Symbols", "FALLBACK_MODAL", actions=[AcabConfig.actions_e.STRIPQUOTE])
+FUNC_P           = util.prepare("Symbols", "FUNC")
+NEGATION_P       = util.prepare("Symbols", "NEGATION")
+QUERY_P          = util.prepare("Symbols", "QUERY")
+TAG_P            = util.prepare("Symbols", "TAG")
+REBIND_P         = util.prepare("Symbols", "REBIND")
+SUGAR_P          = util.prepare("Symbols", "SUGAR")
+
+
+
 
 def _maybe_wrap_str(PS, value, current):
+    # TODO put this into config
     return '"{}"'.format(current)
 
 def _wrap_regex(PS, value, current):
     if not isinstance(value.value, Pattern):
         return current
 
+    # TODO put this into config
     val = "/{}/".format(current)
     return val
 
 
 def _maybe_wrap_var(PS, value, current):
     assert(isinstance(value, str))
-    sym = PS.ask("BIND_")
+    sym = PS.use(BIND)
     if value.is_at_var:
-        sym = PS.ask("AT_BIND_")
+        sym = PS.use(AT_BIND_P)
     if value.is_var:
         return sym + current
     else:
@@ -47,8 +62,8 @@ def _wrap_constraints(value, data):
 
     constraints = []
 
-    if data[VALUE_TYPE_S] not in OBVIOUS_TYPES:
-        constraints.append(data[VALUE_TYPE_S])
+    if data[TYPE_INSTANCE_V] not in OBVIOUS_TYPES_P:
+        constraints.append(data[TYPE_INSTANCE_V])
 
     # # Get registered data annotations:
     # for x in REGISTERED_CONSTRAINTS:
@@ -68,34 +83,33 @@ def _wrap_constraints(value, data):
 def _modal_operator(PS, value, current):
     modal_data_field = PS.ask('MODAL_FIELD')
     if modal_data_field not in value._data:
-        modal_str = PS.ask("FALLBACK_MODAL_S")
+        modal_str = PS.use(FALLBACK_MODAL_P)
     else:
         modal_str = PS.ask(modal_data_field)
 
     return modal_str
 
-def _wrap_rebind(PS, value, rebind, is_sugar=False):
-    arrow = PS.ask(REBIND_S)
+def _maybe_wrap_rebind(PS, rebind, is_sugar=False):
     if rebind is None:
-        return value
-    if is_sugar:
-        arrow = PS.ask(SUGAR_S)
+        return ""
 
-    return "{} {} {}".format(value,
-                             arrow,
-                             str(rebind))
+    arrow = PS.use(REBIND_P)
+    if is_sugar:
+        arrow = PS.use(SUGAR_P)
+
+    return " {} {}".format(arrow, str(rebind))
 
 def _maybe_wrap_question(PS, value, current):
     query_symbol = ""
-    if QUERY_S in value._data and value._data[QUERY_S]:
-        query_symbol = PS.ask(QUERY_S)
+    if QUERY_V in value._data and value._data[QUERY_V]:
+        query_symbol = PS.ask(QUERY_V)
 
     return "{}{}".format(current, query_symbol)
 
 def _maybe_wrap_negation(PS, value, current):
     neg_symbol = ""
-    if NEGATION_S in value._data and value._data[NEGATION_S]:
-        neg_symbol = PS.ask(NEGATION_S)
+    if NEGATION_V in value._data and value._data[NEGATION_V]:
+        neg_symbol = PS.ask(NEGATION_V)
 
     return "{}{}".format(neg_symbol, current)
 
@@ -111,9 +125,11 @@ def _wrap_fallback(PS, the_list):
     # TODO shove this into config file
     return " || {}".format(joined)
 
-def _wrap_tags(PS, value, tags, sep=TAB_S):
+def _wrap_tags(PS, value, tags, sep=None):
+    if sep is None:
+        sep = PS.use(TAB_P)
     tags_s = [str(x) for x in tags]
-    tag_symbol = PS.ask(TAG_S)
+    tag_symbol = PS.use(TAG_P)
     return "{}{}{}\n\n".format(value, sep, ", ".join(sorted([tag_symbol + x for x in tags_s])))
 
 def _wrap_colon(PS, value, newline=False):
@@ -124,7 +140,7 @@ def _wrap_colon(PS, value, newline=False):
     return "{}:{}".format(value, tail)
 
 def _wrap_end(PS, value, newline=False):
-    end_symbol = PS.ask(END_S)
+    end_symbol = PS.use(END_P)
     if newline:
         return "{}\n{}\n".format(value, end_symbol)
     else:
@@ -136,3 +152,18 @@ def _wrap_var_list(PS, val, current):
     # if newline:
     #     head = "\n"
     # return "{}{}{}| {} |\n".format(val, head, TAB_S, ", ".join([_maybe_wrap_var(x.name) for x in the_vars]))
+
+
+def _maybe_wrap_list(PS, maybe_list, wrap=None, join=None):
+    if not bool(maybe_list):
+        return ""
+
+    wrap_fmt = PS.use(WRAP_FORMAT_P)
+    join_fmt = PS.use(PARAM_JOIN_P)
+
+    if wrap is not None:
+        wrap_fmt = wrap
+    if join is not None:
+        join_fmt = join
+
+    return " " + wrap_fmt.format(join_fmt.join(maybe_list))

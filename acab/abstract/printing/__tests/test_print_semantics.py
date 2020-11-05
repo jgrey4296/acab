@@ -8,23 +8,35 @@ from os.path import splitext, split
 import unittest
 import unittest.mock as mock
 
-import logging
+import logging as root_logger
+LOGLEVEL = root_logger.WARNING
+LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
+root_logger.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
+
+console = root_logger.StreamHandler()
+console.setLevel(root_logger.INFO)
+root_logger.getLogger('').addHandler(console)
+logging = root_logger.getLogger(__name__)
+##############################
+
 
 from acab.config import GET
-util = GET("acab/util.config")
+util = GET("acab")
 
-NEGATION_SYMBOL_S = util("Visual.Symbols", "NEGATION_SYMBOL_S")
-NEGATION_S       = util("Parsing.Structure", "NEGATION_S")
-ANON_VALUE_S = util("Printing", "ANON_VALUE_S")
-SEN_JOIN_S = util("Printing", "SEN_JOIN_S")
-QUERY_S = util("Parsing.Structure", "QUERY_S")
-QUERY_SYMBOL_S = util("Visual.Symbols", "QUERY_SYMBOL_S")
 
-MODAL_SYMBOLS = util("WorkingMemory.TrieWM.Symbols", as_dict=True)
+NEGATION_S        = util.value("Value.Structure", "NEGATION")
+QUERY_S           = util.value("Value.Structure", "QUERY")
+
+NEGATION_SYMBOL_S = util.value("Symbols", "NEGATION")
+ANON_VALUE_S      = util.value("Symbols", "ANON_VALUE")
+QUERY_SYMBOL_S    = util.value("Symbols", "QUERY")
+
+SEN_JOIN_S        = util.prepare("Print.Patterns", "SEN_JOIN")[1]
+MODAL_SYMBOLS     = util.value("Modal.Exclusion.Symbols", as_dict=True)
 
 from acab.abstract.core.value import AcabValue, AcabStatement
 from acab.abstract.core.sentence import Sentence
-from acab.abstract.rule.production_operator import ProductionContainer
+from acab.abstract.rule.production_operator import ProductionContainer, ProductionComponent, ProductionOperator
 from acab.abstract.rule.query import Query
 from acab.abstract.rule.transform import Transform
 from acab.abstract.rule.action import Action
@@ -37,11 +49,10 @@ from acab.abstract.printing.print_semantics import AcabPrintSemantics, RET_enum
 
 from acab.abstract.printing import default_handlers as DH
 
-from acab.abstract.core.type_system import build_simple_type_system
 
 # Semantic Collections
 # Dict[type, Tuple[List[Callable], Callable, Any]]
-basic = {AcabValue: ([], lambda s, d, c, a, p: (RET_enum.SIMPLE, str(d), None))}
+basic = {AcabValue: ([], lambda s, d, c, a, p: (RET_enum.SIMPLE, str(d), None, None))}
 
 basic_plus = {AcabValue: DH.DEF_VALUE_PAIR,
               Sentence: DH.DEF_SEN_PAIR,
@@ -62,10 +73,6 @@ basic_uuid = {AcabValue: DH.DEF_UUID_PAIR}
 class PrintSemanticTests(unittest.TestCase):
     """ Test the basic Print Semantics using default settings """
 
-    @classmethod
-    def setUpClass(cls):
-        # setup class
-        type_sys = build_simple_type_system()
     def setUp(self):
         return 1
 
@@ -90,7 +97,7 @@ class PrintSemanticTests(unittest.TestCase):
 
     def test_multiple2(self):
         sem = AcabPrintSemantics(basic,
-                                 default_values={'print_sen_join': " -- "})
+                                 default_values={'PRINT_SENTINEL_JOIN': " -- "})
         result = sem.print([AcabValue("a"), AcabValue("b"), AcabValue("c")])
         self.assertEqual(result, "a -- b -- c")
 
@@ -140,7 +147,7 @@ class PrintSemanticTests(unittest.TestCase):
         self.assertEqual(result, "{}{}".format(join_str.join(["a", "b", "c", "d"]),
                                                QUERY_SYMBOL_S))
 
-    def test_sentence_words(self):
+    def test_sentence_words3(self):
         join_str = "."
         sem = AcabPrintSemantics(basic_plus,
                                  {SEN_JOIN_S: join_str})
@@ -148,6 +155,7 @@ class PrintSemanticTests(unittest.TestCase):
         sentence._data[QUERY_S] = True
 
         result = sem.print(sentence)
+
         self.assertEqual(result, "{}{}".format(join_str.join(["test","one","bumble","foo"]),
                                                QUERY_SYMBOL_S))
 
@@ -165,9 +173,10 @@ class PrintSemanticTests(unittest.TestCase):
         instance = Sentence.build(["a","b","c"])
         sem = AcabPrintSemantics(basic_plus)
 
+        # TODO test type instance
+
     # drop end op, constraints
     def test_value_drop_terminal_modality(self):
-        # TODO register a modality str pair
         sem = AcabPrintSemantics({
             AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel)
         }, default_values={"BLAH" : " -~- "})
@@ -179,9 +188,28 @@ class PrintSemanticTests(unittest.TestCase):
         result2 = sem.print(value)
         self.assertEqual(result2, "Test")
 
+    def test_component_simple(self):
+        component = ProductionComponent(Sentence.build(["testop", "blah"]), [])
+        sem = AcabPrintSemantics({
+            ProductionComponent: ([DH.component_substruct], DH.component_sentinel),
+            Sentence: DH.DEF_SEN_PAIR,
+            AcabValue: ([], lambda s, d, c, a, p: (RET_enum.SIMPLE, str(d), None, None))
+        },
+                                 {SEN_JOIN_S: "."})
+
+        result = sem.print(component)
+        self.assertEqual(result, "λtestop.blah")
+
+    # test component params
+
+    # test component rebind
+
+    # test component sugar
 
 
     # AcabValue(Op)
+    # TODO wrap specific types: int, str, regex
+
     # name, path, alias, tags,
 
     # Statement(Sentence, Component)

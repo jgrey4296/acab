@@ -4,51 +4,66 @@ from typing import List, Set, Dict, Tuple, Optional, Any
 from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic
+import logging as root_logger
+logging = root_logger.getLogger(__name__)
 
 from . import wrappers
 from acab.config import AcabConfig
 
 util = AcabConfig.Get()
+# These don't vary at run time, so use .value
+QUERY_V          = util.value("Value.Structure", "QUERY")
+AT_BIND_V        = util.value("Value.Structure", "AT_BIND")
+CONSTRAINT_V     = util.value("Value.Structure", "CONSTRAINT")
+NEGATION_V       = util.value("Value.Structure", "NEGATION")
+OPERATOR_V       = util.value("Value.Structure", "OPERATOR")
+TYPE_INSTANCE_V  = util.value("Value.Structure", "TYPE_INSTANCE")
+BIND_V           = util.value("Value.Structure", "BIND")
 
-ANON_VALUE_S    = util("Printing", "ANON_VALUE_S")
-FUNC_S           = util("Parsing.Structure", "FUNC_S")
-QUERY_S          = util("Parsing.Structure", "QUERY_S")
-AT_BIND_S         = util("Parsing.Structure", "AT_BIND_S")
-CONSTRAINT_S     = util("Parsing.Structure", "CONSTRAINT_S")
-END_S            = util("Parsing.Structure", "END_S")
-FALLBACK_MODAL_S = util("Printing", "FALLBACK_MODAL_S")
-NEGATION_S       = util("Parsing.Structure", "NEGATION_S")
-SEN_JOIN_S       = util("Printing", "SEN_JOIN_S")
-CONTAINER_JOIN_S = util("Printing", "CONTAINER_JOIN_S")
-PARAM_JOIN_S     = util("Printing", "PARAM_JOIN_S")
-OBVIOUS_TYPES    = []
-OPERATOR_S       = util("Parsing.Structure", "OPERATOR_S")
-QUERY_S          = util("Parsing.Structure", "QUERY_S")
-TAB_S            = util("Printing", "TAB_S", actions=[AcabConfig.actions_e.STRIPQUOTE])
-TAG_S            = util("Parsing.Structure", "TAG_S")
-VALUE_TYPE_S     = util("Parsing.Structure", "VALUE_TYPE_S")
-BIND_S            = util("Parsing.Structure", "BIND_S")
+# These can vary at runtime, so prepare then use with print semantics:
+OBVIOUS_TYPES    = util.prepare("Print.Data", "SUPPRESSION_TYPES", actions=[AcabConfig.actions_e.SPLIT])
+
+ANON_VALUE_P     = util.prepare("Symbols", "ANON_VALUE")
+FUNC_P           = util.prepare("Symbols", "FUNC")
+END_P            = util.prepare("Symbols", "END")
+FALLBACK_MODAL_P = util.prepare("Symbols", "FALLBACK_MODAL")
+QUERY_SYMBOL_P   = util.prepare("Symbols", "QUERY")
+TAG_P            = util.prepare("Symbols", "TAG")
+
+SEN_JOIN_P       = util.prepare("Print.Patterns", "SEN_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE])
+CONTAINER_JOIN_P = util.prepare("Print.Patterns", "CONTAINER_JOIN")
+PARAM_JOIN_P     = util.prepare("Print.Patterns", "PARAM_JOIN")
+TAB_P            = util.prepare("Print.Patterns", "TAB", actions=[AcabConfig.actions_e.STRIPQUOTE])
+
 
 
 # Handler Types: Simple, Record, Destruct, Sentinel, Override
-def regroup_sentinel(PS, source, processed, acc, params):
+def regroup_sentinel(PS, source_val, processed, acc, params):
     """
     A Generic Regroup Sentinel. Takes the context and
     puts it in the accumulation, using the params as the key
     """
     target_name = params
+    copied = processed[:]
+    processed.clear()
     if target_name in acc:
-        processed = acc[target_name] + processed
-    return (PS.accumulate, {target_name: processed}, None)
+        copied = acc[target_name] + copied
+    return (PS.accumulate, {target_name: copied}, None, None)
 
 
-def list_to_inst_list(PS, source, the_list, acc, regroup_name) -> List[Tuple[Any, Any, Any, Any]]:
+def list_to_inst_list(PS, source_val, the_list, acc, regroup_name) -> List[Tuple[Any, Any, Any, Any]]:
+    """ Convert a list into a list of instructions to handle,
+    then group it
+    """
     assert(isinstance(the_list, List))
     inst_list = [(PS.e_print, x, None, None) for x in the_list]
-    inst_list.append((PS.sentinel, source, regroup_sentinel, regroup_name))
+    if bool(inst_list):
+        inst_list.append((PS.sentinel, source_val, regroup_sentinel, regroup_name))
+    else:
+        inst_list.append((PS.accumulate, {regroup_name: ''}, None, None))
     return inst_list
 
-def value_sentinel(PS, source, processed, acc, params):
+def value_sentinel(PS, source_val, processed, acc, params):
     # name, modal, constraints
     modal_data_field = PS.ask('MODAL_FIELD')
 
@@ -56,7 +71,7 @@ def value_sentinel(PS, source, processed, acc, params):
     modal = ""
     if modal_data_field is not False:
         modal = acc[modal_data_field]
-    if PS.ask("drop_modal", for_uuid=source._uuid):
+    if PS.ask("drop_modal", for_uuid=source_val._uuid):
         modal = ""
 
     joined_constraints = ""
@@ -66,9 +81,8 @@ def value_sentinel(PS, source, processed, acc, params):
             # TODO fix this
             joined_constraints = wrappers._wrap_constraints(PS, joined_constraints)
 
-    # TODO add variable wrap / type wrap
 
-    return (PS.simple, "{}{}{}".format(name, joined_constraints,modal), None)
+    return (PS.simple, "{}{}{}".format(name, joined_constraints,modal), None, None)
 
 
 def simple_value_sentinel(PS: 'AcabPrintSemantics', value: 'AcabValue', processed, acc, params: Any):
@@ -76,16 +90,20 @@ def simple_value_sentinel(PS: 'AcabPrintSemantics', value: 'AcabValue', processe
     current_str = acc['name']
     if current_str is None and value.is_var:
         # TODO update to anon value
-        current_str = PS.ask(ANON_VALUE_S)
+        current_str = PS.use(ANON_VALUE_P)
 
-    return (PS.simple, current_str, None)
+    return (PS.simple, current_str, None, None)
 
 
 def value_uuid_accumulator(PS, value, acc, params):
-    return (PS.accumulate, {'uuid': str(value._uuid)}, None)
+    return (PS.accumulate, {'uuid': str(value._uuid)}, None, None)
 
 def value_name_accumulator(PS, value, acc, params):
-    return (PS.accumulate, {'name': value.name}, None)
+    # TODO add variable wrap / type wrap
+    # if source_val.type is STRING: wrap
+    # if source_val.type is REGEX: wrap
+
+    return (PS.accumulate, {'name': value.name}, None, None)
 def modality_accumulator(PS, value, acc, params):
     modal_field = PS.ask('MODAL_FIELD')
     if modal_field in value._data:
@@ -97,14 +115,14 @@ def modality_accumulator(PS, value, acc, params):
     else:
         modal_value = " [{}] ".format(modal_value)
 
-    return (PS.accumulate, {modal_field: modal_value}, None)
+    return (PS.accumulate, {modal_field: modal_value}, None, None)
 
 def value_uuid_long_sentinel(PS, value, processed, acc, params):
     """ A Basic sentinel for tracking specific objects """
     uuid = acc['uuid']
     name = acc['name']
 
-    return (PS.simple, "({} : {})".format(name, uuid), None)
+    return (PS.simple, "({} : {})".format(name, uuid), None, None)
 
 
 
@@ -114,24 +132,27 @@ def type_instance_substruct(PS, value, acc, params):
 def type_instance_sentinel(PS, value, processed, acc, params):
     return None
 def sentence_substruct(PS, value, acc, params):
+    logging.info("Sentence Substruct: {}".format(value))
     words = value.words
     # TODO: change this to an Override registration
     PS.set_for_uuid(words[-1]._uuid, ["drop_modal"])
     words = list_to_inst_list(PS, value, [x for x in value.words], acc, "words")
-    return (PS.substruct, words, None)
+    return (PS.substruct, words, None, None)
 
-def sentence_sentinel(PS, source, processed, acc, params):
+def sentence_sentinel(PS, source_val, processed, acc, params):
     """ Combines its destruct'd words, with its parameters """
+    logging.info("Sentence Sentinel: {}".format(source_val))
+
     # combine the words
-    join_str = PS.ask(SEN_JOIN_S)
+    join_str = PS.use(SEN_JOIN_P)
     words = acc['words']
     combined = join_str.join(words)
 
-    as_query = wrappers._maybe_wrap_question(PS, source, combined)
-    as_negated = wrappers._maybe_wrap_negation(PS, source, as_query)
+    as_query = wrappers._maybe_wrap_question(PS, source_val, combined)
+    as_negated = wrappers._maybe_wrap_negation(PS, source_val, as_query)
 
     final = as_negated
-    return (PS.simple, as_negated, None)
+    return (PS.simple, as_negated, None, None)
 
 
 def operator_substruct(PS, value, acc, params):
@@ -144,13 +165,13 @@ def operator_substruct(PS, value, acc, params):
     # Get Params
     the_params = list_to_inst_list(PS, value, [x for x in value._params], acc,"params")
     op_name = list_to_inst_list(PS, value, [operator], acc, "op_name")
-    return (PS.substruct, the_params + op_name, operator_sentinel)
+    return (PS.substruct, the_params + op_name, operator_sentinel, None)
 
-def operator_sentinel(PS, source, processed, acc, params):
+def operator_sentinel(PS, source_val, processed, acc, params):
     # Get func symbol
     # TODO have default, plus override from PS?
-    param_join = PS.ask(PARAM_JOIN_S)
-    func_symbol = PS.ask(FUNC_S)
+    param_join = PS.use(PARAM_JOIN_P)
+    func_symbol = PS.use(FUNC_P)
     # TODO split unary and n-ary operators
     op_name = acc['op_name']
     # combine for final value
@@ -159,18 +180,18 @@ def operator_sentinel(PS, source, processed, acc, params):
     # TODO if operator._sugared:
 
     total = "{}{} ({})".format(func_symbol, op_name, params)
-    return (PS.simple, total, None)
+    return (PS.simple, total, None, None)
 
 
 def container_handler(PS, container, acc, params):
     the_clauses = list_to_inst_list(PS, container, [x for x in container.clauses], acc, "clauses")
-    return (PS.SUBSTRUCT, the_clauses, None)
+    return (PS.SUBSTRUCT, the_clauses, None, None)
 
-def container_sentinel(PS, source, processed, acc, params):
-    join_str = PS.ask(CONTAINER_JOIN_S)
+def container_sentinel(PS, source_val, processed, acc, params):
+    join_str = PS.use(CONTAINER_JOIN_P)
     clauses = acc['clauses']
     final = join_str.join(clauses)
-    return (PS.simple, final, None)
+    return (PS.simple, final, None, None)
 
 
 def statement_handler(PS, value, acc, params):
@@ -182,9 +203,9 @@ def statement_handler(PS, value, acc, params):
 
     # TODO Order contents with tuples
     content = []
-    return (PS.substruct, content, None)
+    return (PS.substruct, content, None, None)
 
-def statement_sentinel(PS, source, processed, acc, params):
+def statement_sentinel(PS, source_val, processed, acc, params):
     # Sequence processed into final form
     # Get name
     name = acc['name']
@@ -199,8 +220,41 @@ def statement_sentinel(PS, source, processed, acc, params):
 
     # TODO
     final = ""
-    return (None, final, None)
+    return (None, final, None, None)
 
+
+
+
+def component_substruct(PS, source_val, acc, params):
+    logging.info("Component Substruct: {}".format(source_val))
+    components = []
+    components.append((PS.e_print, source_val.op, None, None))
+    components.append((PS.sentinel, source_val, regroup_sentinel, 'op'))
+
+    if source_val.rebind is not None:
+        components.append((PS.e_print, source_val.rebind, regroup_sentinel, 'rebind'))
+    else:
+        components.append((PS.accumulate, {'rebind' : None}, None, None))
+
+    components += list_to_inst_list(PS, source_val, source_val.params, acc, 'params')
+    return (PS.substruct, components, None, None)
+
+def component_sentinel(PS, source_val, processed, acc, params):
+    logging.info("Component Sentinel: {}".format(source_val))
+    operator = acc['op']
+    params = acc['params']
+    rebind = acc['rebind']
+    func_symbol = PS.use(FUNC_P)
+
+
+    final_str = "{}{}".format(func_symbol, operator[0])
+    # todo wrap list
+    final_str += wrappers._maybe_wrap_list(PS, params)
+
+    # todo wrap_rebind
+    final_str += wrappers._maybe_wrap_rebind(PS, rebind)
+
+    return (PS.simple, final_str, None, None)
 
 
 # Default Pairings:
