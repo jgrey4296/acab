@@ -2,21 +2,20 @@
 Agendas are special cases of rules
 """
 from enum import Enum
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
-from acab.abstract.core  import type_base as TB
 from acab.abstract.rule.rule import Rule
 from acab.abstract.rule.production_operator import ProductionOperator, ProductionContainer
 
 util = AcabConfig.Get()
 
-NAME_S = util("Parsing.Structure", "NAME_S")
-STATEMENT_S = util("Parsing.Structure", "STATEMENT_S")
-QUERY_S = util("Parsing.Structure", "QUERY_S")
-TRANSFORM_S = util("Parsing.Structure", "TRANSFORM_S")
-ACTION_S = util("Parsing.Structure", "ACTION_S")
+NAME_S      = util.value("Parse.Structure", "NAME")
+STATEMENT_S = util.value("Parse.Structure", "STATEMENT")
+QUERY_S     = util.value("Parse.Structure", "QUERY")
+TRANSFORM_S = util.value("Parse.Structure", "TRANSFORM")
+ACTION_S    = util.value("Parse.Structure", "ACTION")
 
-RELATION_E = Enum('Agenda_Relation', 'ONE MANY')
+RELATION_E  = Enum('Agenda_Relation', 'ONE MANY')
 
 class Agenda(Rule):
     """
@@ -55,30 +54,3 @@ class Agenda(Rule):
 
 
 
-# Utility construction function for parser
-def make_agenda(toks):
-    # Get Conditions
-    if QUERY_S in toks:
-        c = toks[QUERY_S][0][1]
-        assert(isinstance(c, ProductionContainer))
-    else:
-        c = None
-
-    # Get Transform
-    if TRANSFORM_S in toks:
-        t = toks[TRANSFORM_S][0][1]
-        assert(isinstance(t, ProductionContainer))
-    else:
-        t = None
-
-    # Get Action
-    if ACTION_S in toks:
-        a = toks[ACTION_S][0][1]
-        assert(isinstance(a, ProductionContainer))
-    else:
-        a = None
-
-    # make the agenda
-    the_agenda = Agenda(query=c, transform=t, action=a)
-
-    return  (the_agenda.type, the_agenda)

@@ -24,19 +24,18 @@ end
 """
 import logging as root_logger
 
-from acab.abstract.core import type_base as TB
 from acab.abstract.rule.rule import Rule
 from acab.abstract.rule.production_operator import ProductionOperator, ProductionContainer
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
 
 util = AcabConfig.Get()
 
-NAME_S = util("Parsing.Structure", "NAME_S")
-STATEMENT_S = util("Parsing.Structure", "STATEMENT_S")
-QUERY_S = util("Parsing.Structure", "QUERY_S")
-TRANSFORM_S = util("Parsing.Structure", "TRANSFORM_S")
-ACTION_S = util("Parsing.Structure", "ACTION_S")
+NAME_S      = util.value("Parse.Structure", "NAME")
+STATEMENT_S = util.value("Parse.Structure", "STATEMENT")
+QUERY_S     = util.value("Parse.Structure", "QUERY")
+TRANSFORM_S = util.value("Parse.Structure", "TRANSFORM")
+ACTION_S    = util.value("Parse.Structure", "ACTION")
 
 
 logging = root_logger.getLogger(__name__)
@@ -67,32 +66,5 @@ class Layer(Rule):
 
         return action_results
 
-
-
-#Utility function for parser
-def make_layer(toks):
-    # Get Conditions
-    if QUERY_S in toks:
-        c = toks[QUERY_S][0][1]
-        assert(isinstance(c, ProductionContainer))
-    else:
-        c = None
-
-    # Get Transform
-    if TRANSFORM_S in toks:
-        t = toks[TRANSFORM_S][0][1]
-        assert(isinstance(t, ProductionContainer))
-    else:
-        t = None
-
-    # Get Action
-    if ACTION_S in toks:
-        a = toks[ACTION_S][0][1]
-        assert(isinstance(a, ProductionContainer))
-    else:
-        a = None
-
-    the_layer = Layer(query=c, transform=t, action=a)
-    return (the_layer.type, the_layer)
 
 
