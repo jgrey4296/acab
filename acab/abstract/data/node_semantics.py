@@ -30,12 +30,12 @@ from acab.abstract.core.sentence import Sentence
 from acab.abstract.data.node import AcabNode
 from acab.abstract.rule.query import QueryComponent
 
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
-util = AcabConfig.Get()
-NEGATION_S = util("Parsing.Structure", "NEGATION_S")
-CONSTRAINT_S = util("Parsing.Structure", "CONSTRAINT_S")
-AT_BIND_S = util("Parsing.Structure", "AT_BIND_S")
+util         = AcabConfig.Get()
+NEGATION_S   = util.value("Value.Structure", "NEGATION")
+CONSTRAINT_S = util.value("Value.Structure", "CONSTRAINT")
+AT_BIND_S    = util.value("Value.Structure", "AT_BIND")
 
 class AcabNodeSemantics(AcabStatement):
     """ A Single Class to provide
@@ -44,7 +44,7 @@ class AcabNodeSemantics(AcabStatement):
 
     """
     def __init__(self):
-        super(AcabNodeSemantics, self).__init__(Sentence.build(self.__class__.__name__))
+        super(AcabNodeSemantics, self).__init__(Sentence.build([self.__class__.__name__]))
 
 
     def accessible(self, node: AcabNode, data: Dict[Any, Any], term: AcabValue) -> [AcabNode]:

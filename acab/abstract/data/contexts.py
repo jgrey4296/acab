@@ -16,18 +16,19 @@ import logging as root_logger
 
 from acab.abstract.data.node import AcabNode
 from acab.abstract.core.value import AcabValue
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
 util = AcabConfig.Get()
 
-AT_BIND_S = util("Parsing.Structure", "AT_BIND_S")
-BIND_S = util("Parsing.Structure", "BIND_S")
-CONSTRAINT_S = util("Parsing.Structure", "CONSTRAINT_S")
+AT_BIND    = util.value("Value.Structure", "AT_BIND")
+BIND       = util.value("Value.Structure", "BIND")
+CONSTRAINT = util.value("Value.Structure", "CONSTRAINT")
 
+# TODO deprecate this?
+CTX_OP = Enum("ctx", "collapse")
 
 logging = root_logger.getLogger(__name__)
 
-CTX_OP = Enum("ctx", "collapse")
 
 
 class Contexts:
@@ -187,7 +188,7 @@ class Contexts:
             return
 
         assert(binding is not None)
-        bind_node_name = AT_BIND_S + binding
+        bind_node_name = AT_BIND + binding
         bind_groups = self._bind_groups
         self.clear()
 

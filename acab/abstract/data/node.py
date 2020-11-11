@@ -15,7 +15,7 @@ import weakref
 from copy import deepcopy
 from weakref import WeakValueDictionary, ref, proxy
 
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
 from acab.abstract.core.value import AcabValue
 
@@ -23,8 +23,8 @@ logging = root_logger.getLogger(__name__)
 
 util = AcabConfig.Get()
 
-ROOT_S = util("Data.Struct", "ROOT_S")
-BIND_S = util("Parsing.Structure", "BIND_S")
+ROOT = util.value("Data", "ROOT")
+BIND = util.value("Value.Structure", "BIND")
 
 class AcabNode:
     """ The Base Node Class for Tries/Data structures etc
@@ -34,7 +34,7 @@ class AcabNode:
     @staticmethod
     def Root():
         """ Create a new root node """
-        return AcabNode(ROOT_S)
+        return AcabNode(ROOT)
 
     def __init__(self, value, data=None):
         # Unwrap Nodes to avoid nesting
@@ -62,8 +62,8 @@ class AcabNode:
         """ Data needs to implement a str method that produces
         output that can be re-parsed """
         uuid = str(self._uuid)
-        uuid_chop = "{}..{}".format(uuid[:4],uuid[-4:])
-        return "{}:{}".format(uuid_chop, self._value.name)
+        # uuid_chop = "{}..{}".format(uuid[:4],uuid[-4:])
+        return "{}:{}".format(uuid, self._value.name)
 
     def __repr__(self):
         return "{}({})".format(self.__class__.__name__,
@@ -119,10 +119,13 @@ class AcabNode:
 
     def has_child(self, node):
         """ Question if this node has a particular child """
+        # TODO handle if looking for a variable
         if isinstance(node, str):
             return node in self._children
         elif isinstance(node, AcabNode):
             return node._uuid in self._uuid_children
+        elif isinstance(node, AcabValue) and node.is_var:
+            return bool(self)
         elif isinstance(node, AcabValue):
             return node.name in self._children
         else:

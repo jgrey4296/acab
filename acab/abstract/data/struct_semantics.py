@@ -13,14 +13,14 @@ from acab.abstract.data.node_semantics import AcabNodeSemantics
 
 from acab.error.acab_semantic_exception import AcabSemanticException
 
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
 util = AcabConfig.Get()
 
-NEGATION_S = util("Parsing.Structure", "NEGATION_S")
-CONSTRAINT_S = util("Parsing.Structure", "CONSTRAINT_S")
-AT_BIND_S = util("Parsing.Structure", "AT_BIND_S")
-ROOT_S = util("Data.Struct", "ROOT_S")
+NEGATION_S   = util.value("Value.Structure", "NEGATION")
+CONSTRAINT_S = util.value("Value.Structure", "CONSTRAINT")
+AT_BIND_S    = util.value("Value.Structure", "AT_BIND")
+ROOT_S       = util.value("Data", "ROOT")
 
 class AcabStructureSemantics(AcabValue):
     # TODO Locate listeners in semantics not WM
