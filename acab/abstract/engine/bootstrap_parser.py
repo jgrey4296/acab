@@ -22,7 +22,7 @@ from acab.abstract.core.sentence import Sentence
 from acab.abstract.core.value import AcabValue
 from acab.abstract.data.node import AcabNode
 from acab.abstract.rule.production_operator import ProductionOperator
-from acab.abstract.parsing.util import OPERATOR_SUGAR
+from acab.abstract.parsing.parsers import OPERATOR_SUGAR
 
 from acab.modules.structures.trie.trie import Trie
 from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics

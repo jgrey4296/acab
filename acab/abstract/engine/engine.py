@@ -9,7 +9,7 @@ import logging as root_logger
 from os.path import exists, split, expanduser, abspath
 from importlib import import_module
 
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 from acab.error.acab_import_exception import AcabImportException
 from acab.error.acab_base_exception import AcabBaseException
 
@@ -104,7 +104,8 @@ class Engine:
         # TODO use utility constants for joining and query
         mod_str = module_sen
         if not isinstance(mod_str, str):
-            mod_str = module_sen.pprint(seq_join=".")
+            raise Exception("TODO: handle sentence -> module import")
+            # mod_str = str(module_sen)
 
         # Return early if already loaded
         if module_sen in self._loaded_modules:

@@ -1,20 +1,27 @@
 #https://docs.python.org/3/library/unittest.html
 from os.path import splitext, split
 import unittest
-import logging
+import logging as root_logger
+logging = root_logger.getLogger(__name__)
 
-from acab.config import AcabConfig
-AcabConfig.Get().read("acab/util.config")
+
+from acab.abstract.config.config import AcabConfig
+AcabConfig.Get().read("acab/abstract/config")
 
 from acab.abstract.core.value import AcabValue
-from acab.abstract.core.type_system import build_simple_type_system
 
 class DSL_Fragment_Tests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        # setup class
-        type_sys = build_simple_type_system()
+        LOGLEVEL = root_logger.DEBUG
+        LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
+        root_logger.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
+
+        console = root_logger.StreamHandler()
+        console.setLevel(root_logger.INFO)
+        root_logger.getLogger('').addHandler(console)
+        logging = root_logger.getLogger(__name__)
 
     def setUp(self):
         return 1
