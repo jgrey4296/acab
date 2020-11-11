@@ -6,7 +6,7 @@ Uses the structure of production operators.
 """
 import logging as root_logger
 
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
 from acab.abstract.core.value import AcabValue
 from acab.abstract.core.sentence import Sentence
@@ -17,8 +17,8 @@ logging = root_logger.getLogger(__name__)
 
 util = AcabConfig.Get()
 
-OPERATOR_S = util("Parsing.Structure", "OPERATOR_S")
-CONTAINER_TYPE_PRIM_S = util("Typing.Primitives", "CONTAINER_TYPE_PRIM_S")
+OPERATOR_S            = util.value("Value.Structure", "OPERATOR")
+CONTAINER_TYPE_PRIM_S = util.value("Type.Primitive", "CONTAINER")
 
 # Action function template:
 class ActionOp(PO.ProductionOperator):

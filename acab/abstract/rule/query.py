@@ -8,7 +8,7 @@ Each Component combines a QueryOp with values to use.
 """
 import logging as root_logger
 
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.core.value import AcabValue
@@ -19,11 +19,11 @@ from . import production_operator as PO
 
 
 util = AcabConfig.Get()
-BIND_S = util("Parsing.Structure", "BIND_S")
-OPERATOR_S = util("Parsing.Structure", "OPERATOR_S")
-NEGATION_S = util("Parsing.Structure", "NEGATION_S")
-CONSTRAINT_S = util("Parsing.Structure", "CONSTRAINT_S")
-QUERY_TYPE_PRIM_S = util("Typing.Primitives", "QUERY_TYPE_PRIM_S")
+BIND_S            = util.value("Value.Structure", "BIND")
+OPERATOR_S        = util.value("Value.Structure", "OPERATOR")
+NEGATION_S        = util.value("Value.Structure", "NEGATION")
+CONSTRAINT_S      = util.value("Value.Structure", "CONSTRAINT")
+QUERY_TYPE_PRIM_S = util.value("Type.Primitive", "QUERY")
 
 logging = root_logger.getLogger(__name__)
 

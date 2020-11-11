@@ -5,7 +5,7 @@ the results are passed to the action list
 """
 import logging as root_logger
 
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
 from acab.abstract.core.value import AcabValue
 from .production_operator import ProductionContainer
@@ -16,7 +16,8 @@ from .query import Query
 util = AcabConfig.Get()
 logging = root_logger.getLogger(__name__)
 
-TAB_S = util("Printing", "TAB_S", actions=[AcabConfig.actions_e.STRIPQUOTE])
+TAB_S = util.value("Print.Patterns", "TAB", actions=[AcabConfig.actions_e.STRIPQUOTE])
+CONTAINER_V = util.value("Type.Primitive", "CONTAINER")
 
 class Rule(ProductionContainer):
     """ A Rule holds a query (of N Clauses), a set of transforms,
@@ -29,7 +30,7 @@ class Rule(ProductionContainer):
         assert(query is None or isinstance(query, Query))
         assert(action is None or isinstance(action, Action))
         assert(transform is None or isinstance(transform, Transform))
-        _type = AcabValue._type_system.CONTAINER
+        _type = AcabValue._sentence_constructor(CONTAINER_V)
         super().__init__(None, name=name, _type=_type)
         self._query     = query
         self._transform = transform
@@ -126,11 +127,3 @@ class Rule(ProductionContainer):
         new_rule._tags.update(self._tags)
 
         return new_rule
-
-
-    def pprint_body(self, val):
-        raise DeprecationWarning("Use Print Semantics")
-
-    @property
-    def pprint_has_content(self):
-        raise DeprecationWarning("Use Print Semantics")

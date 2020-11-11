@@ -11,19 +11,18 @@ ProductionContainer : Groups Components together
 import logging as root_logger
 
 from acab.error.acab_operator_exception import AcabOperatorException
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
 from acab.abstract.core.value import AcabValue, AcabStatement
 from acab.abstract.core.sentence import Sentence
 
 util = AcabConfig.Get()
 
-OPERATOR_S = util("Parsing.Structure", "OPERATOR_S")
-STATEMENT_S = util("Parsing.Structure", "STATEMENT_S")
-AT_BIND_S = util("Parsing.Structure", "AT_BIND_S")
-CONTAINER_TYPE_PRIM_S = util("Typing.Primitives", "CONTAINER_TYPE_PRIM_S")
-COMPONENT_TYPE_PRIM_S = util("Typing.Primitives", "COMPONENT_TYPE_PRIM_S")
-OPERATOR_TYPE_PRIM_S = util("Typing.Primitives", "OPERATOR_TYPE_PRIM_S")
+OPERATOR_S            = util.value("Value.Structure", "OPERATOR")
+AT_BIND_S             = util.value("Value.Structure", "AT_BIND")
+CONTAINER_TYPE_PRIM_S = util.value("Type.Primitive", "CONTAINER")
+COMPONENT_TYPE_PRIM_S = util.value("Type.Primitive", "COMPONENT")
+OPERATOR_TYPE_PRIM_S  = util.value("Type.Primitive", "OPERATOR")
 
 logging = root_logger.getLogger(__name__)
 
@@ -46,7 +45,7 @@ class ProductionComponent(AcabValue):
     """ Pairs a an operator with some bindings """
 
     def __init__(self, op_path, params, sugared=False, data=None, rebind=None, name=None, _type=None):
-        assert(isinstance(op_path, Sentence))
+        assert(isinstance(op_path, Sentence)), breakpoint()
         assert all([isinstance(x, AcabValue) for x in params]), params
         if _type is None:
             _type = COMPONENT_TYPE_PRIM_S
@@ -87,6 +86,10 @@ class ProductionComponent(AcabValue):
             obj['out'].add(self._rebind)
         return obj
 
+
+    @property
+    def rebind(self):
+        return self._rebind
 
     def get_params(self, data):
         """ Output a list of bindings from this action,
@@ -208,6 +211,3 @@ class ProductionContainer(AcabStatement):
     def verify(self, ctx=None, engine=None):
         for x in self.clauses:
             x.verify(ctx=ctx, engine=engine)
-
-    def pprint_body(self, val, opts):
-        raise DeprecationWarning("Use Print Semantics")

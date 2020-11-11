@@ -7,7 +7,7 @@ Each clause is a Component, which combines values with an operator
 """
 import logging as root_logger
 
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
 from acab.abstract.core.value import AcabValue
 from acab.abstract.core.sentence import Sentence
@@ -17,6 +17,7 @@ from . import production_operator as PO
 logging = root_logger.getLogger(__name__)
 
 util = AcabConfig.Get()
+CONTAINER_V = util.value("Type.Primitive", "CONTAINER")
 
 class TransformOp(PO.ProductionOperator):
 
@@ -46,7 +47,7 @@ class Transform(PO.ProductionContainer):
     # have min and max bounds
     def __init__(self, clauses):
         assert(all([isinstance(x, TransformComponent) for x in clauses]))
-        _type = AcabValue._type_system.CONTAINER
+        _type = AcabValue._sentence_constructor(CONTAINER_V)
         super(Transform, self).__init__(clauses, _type=_type)
 
     @property
