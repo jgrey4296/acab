@@ -15,7 +15,7 @@ from os.path import abspath
 import pyparsing as pp
 import re
 
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 from acab.error.acab_parse_exception import AcabParseException
 
 from acab.abstract.core.sentence import Sentence
@@ -31,7 +31,7 @@ logging = root_logger.getLogger(__name__)
 
 util = AcabConfig.Get()
 
-MODULE_SPLIT_REG = re.compile(util("DEFAULT", "MODULE_SPLIT_REG_S"))
+MODULE_SPLIT_REG = re.compile(util.value("Parse.Patterns", "MODULE_SPLIT_REG"))
 
 # TODO Deprecate this, move code into abstract.engine, or a working memory instance
 class TrieEngine(Engine):
@@ -109,7 +109,7 @@ class TrieEngine(Engine):
             assert(isinstance(op, ProductionOperator))
             return op
 
-        raise Exception("Operator Not Found: {}".format(op_sen.pprint()))
+        raise Exception("Operator Not Found: {}".format(str(op_sen)))
 
     def alias_module(self, sentence, alias_sentence):
         """
