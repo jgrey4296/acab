@@ -19,14 +19,14 @@ from acab.error.acab_semantic_exception import AcabSemanticException
 
 from acab.error.acab_base_exception import AcabBaseException
 
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
 logging = root_logger.getLogger(__name__)
 util = AcabConfig.Get()
 
-CONSTRAINT_S = util("Parsing.Structure", "CONSTRAINT_S")
-NEGATION_S = util("Parsing.Structure", "NEGATION_S")
-QUERY_FALLBACK_S = util("Parsing.Structure", "QUERY_FALLBACK_S")
+CONSTRAINT_S     = util.value("Value.Structure", "CONSTRAINT")
+NEGATION_S       = util.value("Value.Structure", "NEGATION")
+QUERY_FALLBACK_S = util.value("Value.Structure", "QUERY_FALLBACK")
 
 class BasicTrieSemantics(AcabStructureSemantics):
     """
@@ -71,8 +71,11 @@ class BasicTrieSemantics(AcabStructureSemantics):
                 """
                 node_c, u_data, u_func = self.value_constructor(type(word))
                 node_semantics = self.retrieve_semantics(type(current))
+                if isinstance(node_semantics, tuple):
+                    breakpoint()
                 is_new_node, current = node_semantics.add(current, word, node_c)
                 if u_func is None:
+                    # TODO check this
                     u_func = node_c._default_setup
                 if is_new_node:
                     u_func(current, current_path, u_data, context_data)
@@ -223,7 +226,7 @@ class BasicTrieSemantics(AcabStructureSemantics):
         self._failure_semantics(contexts, clause)
 
         if not bool(contexts):
-            raise AcabSemanticException("No successful contexts", clause.pprint())
+            raise AcabSemanticException("No successful contexts", str(clause))
 
         return contexts
 

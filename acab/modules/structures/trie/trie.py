@@ -17,11 +17,11 @@ from acab.modules.semantics.basic_semantics import BasicNodeSemantics
 
 from .trie_semantics import BasicTrieSemantics
 
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 util = AcabConfig.Get()
 
-CONSTRAINT_S = util("Parsing.Structure", "CONSTRAINT_S")
-AT_BIND_S = util("Parsing.Structure", "AT_BIND_S")
+CONSTRAINT_S = util.value("Value.Structure", "CONSTRAINT")
+AT_BIND_S    = util.value("Value.Structure", "AT_BIND")
 
 logging = root_logger.getLogger(__name__)
 
@@ -107,7 +107,7 @@ class Trie(DataStructure):
         #     def_op['seq_join'] = join_str
 
         # output = self.to_sentences()
-        # return "\n".join(sorted([x.pprint(def_op) for x in output]))
+        # return "\n".join(sorted([str(x) for x in output]))
 
     def to_sentences(self, leaf_predicate=None):
         output = []
