@@ -1,4 +1,21 @@
-""" Cross-module utilities for the rule engines """
+""" Cross-module utilities for the rule engines
+Behaves as a Singleton, *must* be loaded before the rest of ACAB.
+
+Has Two Main methods:
+Prepare, and Value
+
+Prepare ensures a config section and value exists at startup,
+but defers the retrieval to later.
+This enables PrintSemantics to override at print time if necessary.
+
+Value gets the value at call time.
+
+Actions are available for preprocessing the value
+
+TODO add hook functionality
+TODO use acab errors instead
+TODO have default config files
+"""
 from os.path import join, isfile, exists, abspath
 from os.path import split, isdir, splitext, expanduser
 from os import listdir
