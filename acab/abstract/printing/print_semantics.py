@@ -22,7 +22,7 @@ from acab.abstract.data.node_semantics import AcabNodeSemantics
 
 from acab.error.acab_semantic_exception import AcabSemanticException
 
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
 util = AcabConfig.Get()
 
@@ -192,8 +192,8 @@ class AcabPrintSemantics(AcabValue):
             logging.info("--------------------")
             logging.info("Running      : {}".format(instruction_tuple))
             logging.info("Queue        : {}".format(len(self._queue)))
-            logging.info("Context      : {}".format(len(self._context)))
-            logging.info("Accumulation : {}".format(len(self._accumulation)))
+            logging.info("Context      : {}".format(" ".join(self._context)))
+            logging.info("Accumulation : {}".format(str(self._accumulation)))
             logging.info("Stack        : {}".format(format(len(self._stack))))
             result = instruction_handler(self, instruction_tuple[1], instruction_tuple[2], instruction_tuple[3])
             logging.info("Result       : {}".format(str(result)))
@@ -221,7 +221,6 @@ class AcabPrintSemantics(AcabValue):
         Ask the semantics for the value of something
         Will always return at least False
         """
-        assert(isinstance(lookup, str))
         if for_uuid is not None and for_uuid in self._uuid_board:
             return self._uuid_board[for_uuid][lookup]
 

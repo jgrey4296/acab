@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 #https://docs.python.org/3/library/unittest.html
 # https://docs.python.org/3/library/unittest.mock.html
 
@@ -9,18 +8,11 @@ import unittest
 import unittest.mock as mock
 
 import logging as root_logger
-LOGLEVEL = root_logger.WARNING
-LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-root_logger.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
-
-console = root_logger.StreamHandler()
-console.setLevel(root_logger.INFO)
-root_logger.getLogger('').addHandler(console)
 logging = root_logger.getLogger(__name__)
 ##############################
 
 
-from acab.config import GET
+from acab.abstract.config.config import GET
 util = GET("acab")
 
 
@@ -32,7 +24,6 @@ ANON_VALUE_S      = util.value("Symbols", "ANON_VALUE")
 QUERY_SYMBOL_S    = util.value("Symbols", "QUERY")
 
 SEN_JOIN_S        = util.prepare("Print.Patterns", "SEN_JOIN")[1]
-MODAL_SYMBOLS     = util.value("Modal.Exclusion.Symbols", as_dict=True)
 
 from acab.abstract.core.value import AcabValue, AcabStatement
 from acab.abstract.core.sentence import Sentence
@@ -73,6 +64,17 @@ basic_uuid = {AcabValue: DH.DEF_UUID_PAIR}
 class PrintSemanticTests(unittest.TestCase):
     """ Test the basic Print Semantics using default settings """
 
+    @classmethod
+    def setUpClass(cls):
+        LOGLEVEL = root_logger.DEBUG
+        LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
+        root_logger.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
+
+        console = root_logger.StreamHandler()
+        console.setLevel(root_logger.INFO)
+        root_logger.getLogger('').addHandler(console)
+        logging = root_logger.getLogger(__name__)
+
     def setUp(self):
         return 1
 
@@ -104,9 +106,10 @@ class PrintSemanticTests(unittest.TestCase):
 
     def test_sentence_basic(self):
         sem = AcabPrintSemantics(basic)
-        sentence = Sentence.build(["a", "b", "c", "d"])
+        words = ["a", "b", "c", "d"]
+        sentence = Sentence.build(words)
         result = sem.print(sentence)
-        self.assertEqual(result, ANON_VALUE_S)
+        self.assertEqual(result, " ".join(words))
 
     def test_sentence_words(self):
         join_str = "."
@@ -222,6 +225,15 @@ class PrintSemanticTests(unittest.TestCase):
     # Structured:(Rule, Agenda, Layer, Pipeline)
 
 
+
+
+    @unittest.skip
+    def test_pprint_at_var(self):
+        # TODO update this
+        value = AcabValue("test")
+        value._data.update({BIND_S: AT_BIND_S})
+        self.assertTrue(value.is_at_var)
+        self.assertEqual(str(value), "test")
 
 if __name__ == "__main__":
     #run python $filename to use this logging setup

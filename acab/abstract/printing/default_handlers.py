@@ -8,7 +8,8 @@ import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
 from . import wrappers
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
+from acab.abstract.config.modal import MODAL_PRINTING
 
 util = AcabConfig.Get()
 # These don't vary at run time, so use .value
@@ -26,7 +27,7 @@ OBVIOUS_TYPES    = util.prepare("Print.Data", "SUPPRESSION_TYPES", actions=[Acab
 ANON_VALUE_P     = util.prepare("Symbols", "ANON_VALUE")
 FUNC_P           = util.prepare("Symbols", "FUNC")
 END_P            = util.prepare("Symbols", "END")
-FALLBACK_MODAL_P = util.prepare("Symbols", "FALLBACK_MODAL")
+FALLBACK_MODAL_P = util.prepare("Symbols", "FALLBACK_MODAL", actions=[AcabConfig.actions_e.STRIPQUOTE])
 QUERY_SYMBOL_P   = util.prepare("Symbols", "QUERY")
 TAG_P            = util.prepare("Symbols", "TAG")
 
@@ -46,8 +47,7 @@ def regroup_sentinel(PS, source_val, processed, acc, params):
     target_name = params
     copied = processed[:]
     processed.clear()
-    if target_name in acc:
-        copied = acc[target_name] + copied
+    # NOTE: does not integrate already existing values in target_name
     return (PS.accumulate, {target_name: copied}, None, None)
 
 
@@ -81,7 +81,6 @@ def value_sentinel(PS, source_val, processed, acc, params):
             # TODO fix this
             joined_constraints = wrappers._wrap_constraints(PS, joined_constraints)
 
-
     return (PS.simple, "{}{}{}".format(name, joined_constraints,modal), None, None)
 
 
@@ -99,21 +98,28 @@ def value_uuid_accumulator(PS, value, acc, params):
     return (PS.accumulate, {'uuid': str(value._uuid)}, None, None)
 
 def value_name_accumulator(PS, value, acc, params):
-    # TODO add variable wrap / type wrap
-    # if source_val.type is STRING: wrap
-    # if source_val.type is REGEX: wrap
+    base = value.name
+    reg_wrapped = wrappers._maybe_wrap_regex(PS, value, base)
+    str_wrapped = wrappers._maybe_wrap_str(PS, value, reg_wrapped)
+    with_var = wrappers._maybe_wrap_var(PS, value, str_wrapped)
 
-    return (PS.accumulate, {'name': value.name}, None, None)
+    # TODO call type registered transforms
+    return (PS.accumulate, {'name': with_var}, None, None)
+
 def modality_accumulator(PS, value, acc, params):
     modal_field = PS.ask('MODAL_FIELD')
+    modal_value = None
     if modal_field in value._data:
-        modal_value = str(value._data[modal_field])
+        modal_value = value._data[modal_field]
 
     modal_alias = PS.ask(modal_value)
     if bool(modal_alias):
         modal_value = modal_alias
+    elif modal_value in MODAL_PRINTING:
+        modal_value = MODAL_PRINTING[modal_value]
     else:
-        modal_value = " [{}] ".format(modal_value)
+        # TODO define this in config
+        modal_value = PS.use(FALLBACK_MODAL_P)
 
     return (PS.accumulate, {modal_field: modal_value}, None, None)
 

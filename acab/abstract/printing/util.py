@@ -6,7 +6,7 @@ wrappers.py
 default_handlers.py
 """
 from re import Pattern
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
 util = AcabConfig.Get()
 

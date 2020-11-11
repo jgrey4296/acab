@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 from re import Pattern
-from acab.config import AcabConfig
-
+from acab.abstract.config.config import AcabConfig
 
 util = AcabConfig.Get()
 #Static
@@ -18,7 +17,11 @@ OBVIOUS_TYPES_P  = util.prepare("Print.Data", "SUPPRESSION_TYPES", actions=[Acab
 TAB_P            = util.prepare("Print.Patterns", "TAB", actions=[AcabConfig.actions_e.STRIPQUOTE])
 WRAP_FORMAT_P    = util.prepare("Print.Patterns", "WRAP_FORMAT")
 PARAM_JOIN_P     = util.prepare("Print.Patterns", "PARAM_JOIN")
+STR_WRAP_P       = util.prepare("Print.Patterns", "STR_WRAP")
+REGEX_WRAP_P     = util.prepare("Print.Patterns", "REGEX_WRAP")
 
+
+BIND_P           = util.prepare("Symbols", "BIND")
 AT_BIND_P        = util.prepare("Symbols", "AT_BIND")
 END_P            = util.prepare("Symbols", "END")
 FALLBACK_MODAL_P = util.prepare("Symbols", "FALLBACK_MODAL", actions=[AcabConfig.actions_e.STRIPQUOTE])
@@ -29,25 +32,33 @@ TAG_P            = util.prepare("Symbols", "TAG")
 REBIND_P         = util.prepare("Symbols", "REBIND")
 SUGAR_P          = util.prepare("Symbols", "SUGAR")
 
+# TODO add an action to build a sentence
+STRING_V           = util.value("Type.Primitive", "STRING")
+REGEX_V            = util.value("Type.Primitive", "REGEX")
 
 
 
 def _maybe_wrap_str(PS, value, current):
-    # TODO put this into config
-    return '"{}"'.format(current)
-
-def _wrap_regex(PS, value, current):
-    if not isinstance(value.value, Pattern):
+    if value.type != STRING_V:
         return current
 
-    # TODO put this into config
-    val = "/{}/".format(current)
+    # originally "{}"
+    str_wrap = PS.use(STR_WRAP_P)
+    return str_wrap.format(current)
+
+def _maybe_wrap_regex(PS, value, current):
+    if not isinstance(value.value, Pattern) or value.type != REGEX_V:
+        return current
+
+    # originally /{}/
+    reg_wrap = PS.use(REGEX_WRAP_P)
+    val = reg_wrap.format(current)
     return val
 
 
 def _maybe_wrap_var(PS, value, current):
-    assert(isinstance(value, str))
-    sym = PS.use(BIND)
+    assert(isinstance(current, str))
+    sym = PS.use(BIND_P)
     if value.is_at_var:
         sym = PS.use(AT_BIND_P)
     if value.is_var:
@@ -56,7 +67,7 @@ def _maybe_wrap_var(PS, value, current):
         return current
 
 
-def _wrap_constraints(value, data):
+def _wrap_constraints(PS, value, data):
     assert(isinstance(value, str))
     assert(isinstance(data, dict))
 
@@ -79,15 +90,6 @@ def _wrap_constraints(value, data):
         cons_strs = ", ".join([str(x) for x in constraints])
         result += "({})".format(cons_strs)
     return result
-
-def _modal_operator(PS, value, current):
-    modal_data_field = PS.ask('MODAL_FIELD')
-    if modal_data_field not in value._data:
-        modal_str = PS.use(FALLBACK_MODAL_P)
-    else:
-        modal_str = PS.ask(modal_data_field)
-
-    return modal_str
 
 def _maybe_wrap_rebind(PS, rebind, is_sugar=False):
     if rebind is None:
