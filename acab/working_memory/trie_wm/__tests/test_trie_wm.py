@@ -1,12 +1,14 @@
 import unittest
-import logging
+from os.path import splitext, split
+import logging as root_logger
+logging = root_logger.getLogger(__name__)
+
 # https://docs.python.org/3/library/unittest.mock.html
 import unittest.mock as mock
 
-from acab.config import AcabConfig
-AcabConfig.Get().read("acab/util.config")
+from acab.abstract.config.config import AcabConfig
+AcabConfig.Get().read("acab/abstract/config")
 
-from acab.abstract.core.type_system import build_simple_type_system
 from acab.abstract.data.contexts import Contexts
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
 from acab.abstract.engine.engine import Engine
@@ -21,8 +23,14 @@ class Trie_WM_Tests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        # setup class
-        type_sys = build_simple_type_system()
+        LOGLEVEL = root_logger.DEBUG
+        LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
+        root_logger.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
+
+        console = root_logger.StreamHandler()
+        console.setLevel(root_logger.INFO)
+        root_logger.getLogger('').addHandler(console)
+        logging = root_logger.getLogger(__name__)
 
     def setUp(self):
         bp = BootstrapParser()
@@ -162,10 +170,12 @@ class Trie_WM_Tests(unittest.TestCase):
         self.assertEqual(result[0]['x'].value, "This is a test")
 
     def test_factbase_to_strings(self):
+        # TODO print semantics
         self.trieWM.add('a.b.c')
         self.assertEqual(str(self.trieWM), 'a.b.c')
 
     def test_factbase_to_multi_strings(self):
+        # TODO convert to new print semantics
         self.trieWM.add('a.b.c, q.e.r, t.y!u')
         s = str(self.trieWM)
         self.assertTrue('a.b.c' in s)
@@ -178,6 +188,7 @@ class Trie_WM_Tests(unittest.TestCase):
         self.assertTrue(result)
 
     def test_factbase_from_string_recovery(self):
+        # TODO convert this to new print semantics
         self.trieWM.add('a.b.c, q.e.r, t.y!u')
         the_s = str(self.trieWM)
         newTrie = TrieWM(the_s)

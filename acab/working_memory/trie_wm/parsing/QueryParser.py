@@ -2,16 +2,13 @@
 import logging as root_logger
 import pyparsing as pp
 
-from acab.abstract.parsing import util as PU
+from acab.abstract.parsing import parsers as PU
 from acab.abstract.parsing import funcs as Pfunc
 from acab.abstract.parsing.consts import QUERY_SYMBOL, DOUBLEBAR, COLON, COMMA, COLON, DELIM, component_gap
-from acab.abstract.parsing.consts import op, N, NG, QUERY_HEAD
-from acab.working_memory.trie_wm.parsing import util as WMPU
+from acab.abstract.parsing.consts import op, N, NG, QUERY_HEAD, QUERY_FALLBACK_S
+from acab.abstract.parsing.funcs import build_clause, build_query, build_assignment
 
-from acab.working_memory.trie_wm.parsing.util import QUERY_FALLBACK_S, build_clause, build_query, build_assignment
-from acab.working_memory.trie_wm.parsing.util import PARAM_CORE
-
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
 from .FactParser import PARAM_SEN, BASIC_SEN
 
@@ -32,9 +29,9 @@ clause = PARAM_SEN + QUERY_SYMBOL \
 
 clauses = pp.delimitedList(clause, delim=DELIM)
 
-query_statement = Pfunc.STATEMENT_CONSTRUCTOR(QUERY_HEAD,
-                                              BASIC_SEN,
-                                              clauses + component_gap)
+query_statement = PU.STATEMENT_CONSTRUCTOR(QUERY_HEAD,
+                                           BASIC_SEN,
+                                           clauses + component_gap)
 
 # Actions
 clause.setParseAction(build_clause)

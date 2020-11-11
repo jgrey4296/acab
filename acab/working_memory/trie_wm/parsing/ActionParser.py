@@ -2,14 +2,13 @@
 import logging as root_logger
 import pyparsing as pp
 
-from acab.abstract.parsing import util as PU
+from acab.abstract.parsing import parsers as PU
 from acab.abstract.parsing.consts import N, NG, zrm, orm, ACTION_HEAD, DELIM, component_gap
+from acab.abstract.parsing.consts import RIGHT_S, LEFT_S, OPERATOR_S
+from acab.abstract.parsing.parsers import VALBIND
 from acab.abstract.parsing import funcs as Pfunc
-from acab.working_memory.trie_wm.parsing import util as WMPU
-from acab.working_memory.trie_wm.parsing.util import RIGHT_S, LEFT_S, OPERATOR_S
-from acab.working_memory.trie_wm.parsing.util import build_action_component, build_action
 
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
 from .FactParser import PARAM_SEN, BASIC_SEN, PARAM_SEN, op_path
 
@@ -24,20 +23,20 @@ vals = N(RIGHT_S, PU.zrm(PARAM_SEN))
 # action: [op](values)
 action_component = N(OPERATOR_S, op_path) + vals
 
-action_sugar = N(LEFT_S, WMPU.VALBIND) \
+action_sugar = N(LEFT_S, VALBIND) \
     + N(OPERATOR_S, HOTLOAD_OPERATORS) \
     + vals
 
 # Sentences are asserted by default
 actions = pp.delimitedList(pp.Or([action_component, PARAM_SEN]), delim=DELIM)
 
-action_definition = Pfunc.STATEMENT_CONSTRUCTOR(ACTION_HEAD,
-                                                BASIC_SEN,
-                                                actions + component_gap)
+action_definition = PU.STATEMENT_CONSTRUCTOR(ACTION_HEAD,
+                                             BASIC_SEN,
+                                             actions + component_gap)
 
 # parse action
-action_component.setParseAction(build_action_component)
-actions.setParseAction(build_action)
+action_component.setParseAction(Pfunc.build_action_component)
+actions.setParseAction(Pfunc.build_action)
 
 # NAMING
 vals.setName("ActionValueList")

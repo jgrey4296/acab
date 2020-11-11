@@ -3,16 +3,14 @@
 import logging as root_logger
 import pyparsing as pp
 
-from acab.abstract.parsing import util as PU
+from acab.abstract.parsing import parsers as PU
 from acab.abstract.parsing import funcs as Pfunc
 from acab.abstract.parsing.consts import ARROW, DOUBLEBAR, COLON, COMMA, COLON, DELIM, component_gap
 from acab.abstract.parsing.consts import RULE_HEAD, N, NG, orm, op, gap, component_gap, emptyLine
-from acab.working_memory.trie_wm import util as WMU
-from acab.working_memory.trie_wm.parsing import util as WMPU
+from acab.abstract.parsing.consts import QUERY_S, TRANSFORM_S, ACTION_S
+from acab.abstract.parsing.funcs import build_rule
 
-from acab.working_memory.trie_wm.parsing.util import QUERY_S, TRANSFORM_S, ACTION_S, build_rule
-
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
 from . import FactParser as FP
 from . import QueryParser as QP
@@ -27,7 +25,7 @@ actions    = NG(ACTION_S, AP.actions + component_gap)
 
 rule_body = op(conditions) + op(transforms) + op(actions)
 
-rule = Pfunc.STATEMENT_CONSTRUCTOR(RULE_HEAD,
+rule = PU.STATEMENT_CONSTRUCTOR(RULE_HEAD,
                                    FP.BASIC_SEN,
                                    rule_body,
                                    args=False)

@@ -2,19 +2,17 @@
 import logging as root_logger
 import pyparsing as pp
 
-from acab.abstract.parsing import util as PU
+from acab.abstract.parsing import parsers as PU
 from acab.abstract.parsing import funcs as Pfunc
 from acab.abstract.parsing.consts import ARROW, DOUBLEBAR, COLON, COMMA, COLON, DELIM, component_gap
 from acab.abstract.parsing.consts import N, NG, zrm, TRANSFORM_HEAD
-from acab.working_memory.trie_wm.parsing import util as WMPU
-
-from acab.working_memory.trie_wm.parsing.util import RIGHT_S, OPERATOR_S, TARGET_S, LEFT_S
-from acab.working_memory.trie_wm.parsing.util import build_transform_component, build_transform
+from acab.abstract.parsing.consts import RIGHT_S, OPERATOR_S, TARGET_S, LEFT_S
+from acab.abstract.parsing.funcs import build_transform_component, build_transform
 
 from acab.working_memory.trie_wm import util as WMU
 from acab.working_memory.trie_wm.parsing.FactParser import BASIC_SEN, PARAM_SEN, op_path
 
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
 logging = root_logger.getLogger(__name__)
 
@@ -24,7 +22,7 @@ HOTLOAD_TRANS_STATEMENTS = pp.Forward()
 HOTLOAD_TRANS_OP.setName("Transform_Op")
 HOTLOAD_TRANS_STATEMENTS.setName("Transform_Statement")
 
-rebind = ARROW + WMPU.VALBIND
+rebind = ARROW + PU.VALBIND
 rebind.setName("Rebind")
 
 # TODO: extend transform to take partial transforms?
@@ -46,9 +44,9 @@ transform_combined = pp.Or([transform_core, HOTLOAD_TRANS_STATEMENTS, transform_
 
 transforms = pp.delimitedList(transform_combined, delim=DELIM)
 
-transform_statement = Pfunc.STATEMENT_CONSTRUCTOR(TRANSFORM_HEAD,
-                                                  BASIC_SEN,
-                                                  transforms + component_gap)
+transform_statement = PU.STATEMENT_CONSTRUCTOR(TRANSFORM_HEAD,
+                                               BASIC_SEN,
+                                               transforms + component_gap)
 
 # Actions
 transform_core.setParseAction(build_transform_component)

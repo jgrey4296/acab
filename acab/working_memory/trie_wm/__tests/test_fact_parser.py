@@ -1,27 +1,45 @@
 import unittest
-import logging
+from os.path import splitext, split
+import logging as root_logger
+logging = root_logger.getLogger(__name__)
+
 import random
 import pyparsing as pp
 
-from acab.config import AcabConfig
-AcabConfig.Get().read("acab/util.config")
+from acab.abstract.config.config import AcabConfig
+AcabConfig.Get().read("acab/abstract/config")
 
-from acab.abstract.core.type_system import build_simple_type_system
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.core.value import AcabValue
+from acab.abstract.printing.print_semantics import AcabPrintSemantics
+from acab.abstract.printing import default_handlers as DH
 from acab.working_memory.trie_wm import util as KBU
 import acab.working_memory.trie_wm.parsing.FactParser as FP
 
-NEGATION_S = AcabConfig.Get()("Parsing.Structure", "NEGATION_S")
-VALUE_TYPE_S = AcabConfig.Get()("Parsing.Structure", "VALUE_TYPE_S")
+from acab.working_memory.trie_wm.parsing import util as WMPU
 
+NEGATION_S      = AcabConfig.Get().value("Parse.Structure", "NEGATION")
+TYPE_INSTANCE_S = AcabConfig.Get().value("Parse.Structure", "TYPE_INSTANCE")
+
+basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel),
+              Sentence: DH.DEF_SEN_PAIR}
+
+Printer = AcabPrintSemantics(basic_plus, default_values={'MODAL_FIELD' : 'exop',
+                                                         'EXOP.DOT'    : ".",
+                                                         'EXOP.EX'     : "!"})
 
 class Trie_Fact_Parser_Tests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        # setup class
-        type_sys = build_simple_type_system()
+        LOGLEVEL = root_logger.DEBUG
+        LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
+        root_logger.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
+
+        console = root_logger.StreamHandler()
+        console.setLevel(root_logger.WARN)
+        root_logger.getLogger('').addHandler(console)
+        logging = root_logger.getLogger(__name__)
 
     def setUp(self):
         return 1
@@ -39,7 +57,8 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         result = FP.parseString('a.b.c')[0]
         self.assertIsInstance(result, Sentence)
         self.assertTrue(all([isinstance(x, AcabValue) for x in result]))
-        self.assertEqual(result.pprint(), "a.b.c")
+
+        self.assertEqual(Printer.print(result), "a.b.c")
         self.assertTrue(all([x._data[KBU.OPERATOR_S] == KBU.EXOP.DOT for x in result]))
 
     def test_parseStrings(self):
@@ -78,6 +97,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertTrue(result[0].is_var)
 
     def test_fact_str_equal(self):
+        # TODO needs str type wrapping
         actions = ["a.b.c",
                    "a.b!c",
                    'a.b."a string".c',
@@ -86,22 +106,26 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
                    'a!$x!y']
         parsed = [FP.parseString(x)[0] for x in actions]
         zipped = zip(actions, parsed)
-        for a,p in zipped:
-            self.assertEqual(a,p.pprint())
+
+        for act,par in zipped:
+            self.assertEqual(act,Printer.print(par))
 
     def test_leading_bind_str_equal(self):
+        # TODO needs var type wrapping
         actions = ['$x.a.b.c', '$y!b.c', '$x.$y!$z']
         parsed = [FP.parseString(x)[0] for x in actions]
         zipped = zip(actions, parsed)
+
         for a,p in zipped:
-            self.assertEqual(a, p.pprint())
+            self.assertEqual(a, Printer.print(p))
 
     def test_binding_expansion(self):
         bindings = { "a" : FP.parseString("blah")[0],
                      "b": FP.parseString("bloo")[0] }
         result = FP.parseString('$a.b.$b!c')[0]
         expanded = result.bind(bindings)
-        asString = expanded.pprint()
+        asString = Printer.print(expanded)
+        breakpoint()
         self.assertEqual(asString, "blah.b.bloo!c")
 
     def test_valbind_expansion(self):
@@ -109,11 +133,11 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         new_parser = pp.Word("¿awef")
         new_parser.setParseAction(lambda t: ("awef", t[0]))
 
-        FP.HOTLOAD_VALUES << new_parser
+        WMPU.HOTLOAD_VALUES << new_parser
 
-        a = FP.VALBIND.parseString("¿awef")[0]
+        a = WMPU.VALBIND.parseString("¿awef")[0]
         self.assertEqual(a._value, "¿awef")
-        self.assertEqual(a._data[VALUE_TYPE_S], "awef")
+        self.assertEqual(a._data[TYPE_INSTANCE_S], Sentence.build(["awef"]))
 
     def test_negated_basic_sentence(self):
         result = FP.BASIC_SEN.parseString('~a.test!string')[0]
@@ -137,9 +161,9 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
     def test_nested_sentence_statement(self):
         result = FP.SEN_STATEMENT.parseString("a.test.sentence: (::Σ)\ninternal.nested: (::Σ)\ninternal.one\ninternal.two\nend\nblah.bloo.blee\nend")
         self.assertEqual(len(result), 3)
-        self.assertEqual(result[0].pprint(), "a.test.sentence.internal.nested.internal.one")
-        self.assertEqual(result[1].pprint(), "a.test.sentence.internal.nested.internal.two")
-        self.assertEqual(result[2].pprint(), "a.test.sentence.blah.bloo.blee")
+        self.assertEqual(Printer.print(result[0]), "a.test.sentence.internal.nested.internal.one")
+        self.assertEqual(Printer.print(result[1]), "a.test.sentence.internal.nested.internal.two")
+        self.assertEqual(Printer.print(result[2]), "a.test.sentence.blah.bloo.blee")
 
 
 

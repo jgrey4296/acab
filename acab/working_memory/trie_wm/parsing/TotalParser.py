@@ -5,7 +5,7 @@ Handles files, and comments
 import pyparsing as pp
 from pyparsing import pyparsing_common as ppc
 
-from acab.abstract.parsing import util as PU
+from acab.abstract.parsing import parsers as PU
 from acab.abstract.parsing.consts import ARROW, DOUBLEBAR, COLON, COMMA, COLON, DELIM, component_gap
 from acab.abstract.parsing.consts import file_cruft, N, NG, COMMENT
 

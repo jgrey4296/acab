@@ -2,9 +2,9 @@
 import logging as root_logger
 from copy import deepcopy
 
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
-from acab.abstract.parsing import util as PU
+from acab.abstract.parsing import parsers as PU
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.data.contexts import Contexts
 from acab.abstract.data.node import AcabNode
@@ -28,14 +28,14 @@ from .parsing import util as TPU
 from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics
 from acab.modules.structures.trie.trie import Trie
 
-from . import exclusion_semantics as ES
+from acab.modules.semantics import exclusion_semantics as ES
 
 logging = root_logger.getLogger(__name__)
 
 util = AcabConfig.Get()
 
-NEGATION_S = util("Parsing.Structure", "NEGATION_S")
-QUERY_FALLBACK_S = util("Parsing.Structure", "QUERY_FALLBACK_S")
+NEGATION_S       = util.value("Parse.Structure", "NEGATION")
+QUERY_FALLBACK_S = util.value("Parse.Structure", "QUERY_FALLBACK")
 
 class TrieWM(WorkingMemory):
     """ A Trie based working memory"""
@@ -99,9 +99,10 @@ class TrieWM(WorkingMemory):
 
 
     def assert_parsers(self, pt):
+        """ Provide fragments for other parsers """
         # Core
         # TODO: Make these configurable?
-        pt.add("valbind", TPU.VALBIND,
+        pt.add("valbind", PU.VALBIND,
                "sentence.basic", FP.BASIC_SEN,
                "sentence.param", FP.PARAM_SEN,
                "statement.sentence", FP.SEN_STATEMENT,
@@ -125,8 +126,9 @@ class TrieWM(WorkingMemory):
                "statement.rule", RP.rule)
 
     def query_parsers(self, pt):
+        """ Load in fragments """
         try:
-            FP.HOTLOAD_VALUES << pt.query("value.*")
+            PU.HOTLOAD_VALUES << pt.query("value.*")
         except Exception:
             logging.debug("No values loaded into DSL")
 
@@ -135,15 +137,10 @@ class TrieWM(WorkingMemory):
         except Exception:
             logging.debug("No annotations loaded into DSL")
 
-        # try:
-        #     QP.HOTLOAD_QUERY_ANNOTATIONS << pt.query("query.annotation.*")
-        # except Exception:
-        #     logging.debug("No query annotations loaded into DSL")
-
         FP.HOTLOAD_QUERY_OP << pt.query("operator.query.*",
                                         "operator.sugar")
 
-        TP.HOTLOAD_TRANS_OP << pt.query("operator.transform.n_ary.*",
+        TP.HOTLOAD_TRANS_OP << pt.query("operator.transform.*",
                                         "operator.sugar")
 
         TP.HOTLOAD_TRANS_STATEMENTS << pt.query("operator.transform.statement.*",
@@ -155,8 +152,7 @@ class TrieWM(WorkingMemory):
         TotalP.HOTLOAD_STATEMENTS << pt.query("statement.*")
 
         # At this point, parser is constructed, and will not change again
-        # freeze the parser with Deep Copy
-        # This enables having multiple working memories with non-interacting parsers
+        # however, can't deep-copy the parser for multiple versions
         self._main_parser = TotalP.parse_point
         self._query_parser = QP.parse_point
         self._parsers_initialised = True

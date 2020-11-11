@@ -4,13 +4,14 @@ import logging as root_logger
 from acab.abstract.core.value import AcabValue
 
 from acab.abstract.data.node import AcabNode
+from acab.abstract.parsing.consts import DEFAULT_NODE_DATA
 
 from acab.working_memory.trie_wm import util as WMU
 
 
 logging = root_logger.getLogger(__name__)
 # see https://docs.python.org/3/library/weakref.html#module-weakref
-
+# TODO shift operator_s to modal
 
 class FactNode(AcabNode):
     """ Both the type of a node in the trie,
@@ -19,11 +20,11 @@ class FactNode(AcabNode):
     @staticmethod
     def Root():
         """ Get a Root designated node """
-        return FactNode(WMU.ROOT_S, WMU.DEFAULT_NODE_DATA)
+        return FactNode(WMU.ROOT_S, DEFAULT_NODE_DATA)
 
 
     def __init__(self, value, data=None):
-        default_data = WMU.DEFAULT_NODE_DATA.copy()
+        default_data = DEFAULT_NODE_DATA.copy()
         if data is not None:
             default_data.update(data)
         super().__init__(value, default_data)

@@ -1,10 +1,13 @@
 import unittest
-import logging
+from os.path import splitext, split
+import logging as root_logger
+logging = root_logger.getLogger(__name__)
 
-from acab.config import AcabConfig
-AcabConfig.Get().read("acab/util.config")
 
-from acab.abstract.core.type_system import build_simple_type_system
+from acab.abstract.config.config import AcabConfig
+AcabConfig.Get().read("acab/abstract/config")
+
+from acab.abstract.core.value import AcabValue
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
 from acab.abstract.rule.query import Query
@@ -15,18 +18,35 @@ from acab.working_memory.trie_wm.parsing import ActionParser as AP
 from acab.working_memory.trie_wm.parsing import FactParser as FP
 from acab.working_memory.trie_wm.parsing import RuleParser as RP
 import acab.working_memory.trie_wm.parsing.QueryParser as QP
+from acab.abstract.printing.print_semantics import AcabPrintSemantics
+from acab.abstract.printing import default_handlers as DH
+
+basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel),
+              Sentence: DH.DEF_SEN_PAIR}
+
+Printer = AcabPrintSemantics(basic_plus, default_values={'MODAL_FIELD' : 'OPERATOR',
+                                                         'EXOP.DOT'    : ".",
+                                                         'EXOP.EX'     : "!"})
 
 class Trie_Rule_Parser_Tests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        LOGLEVEL = root_logger.DEBUG
+        LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
+        root_logger.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
+
+        console = root_logger.StreamHandler()
+        console.setLevel(root_logger.INFO)
+        root_logger.getLogger('').addHandler(console)
+        logging = root_logger.getLogger(__name__)
+
         # setup class
-        type_sys = build_simple_type_system()
         bp = BootstrapParser()
         qmod = QOP.MODULE()
         qmod.assert_parsers(bp)
-        QP.HOTLOAD_QUERY_OP << bp.query("operator.sugar")
-        QP.HOTLOAD_QUERY_ANNOTATIONS << bp.query("query.annotation.*")
+        FP.HOTLOAD_QUERY_OP << bp.query("operator.sugar")
+        FP.HOTLOAD_ANNOTATIONS << bp.query("query.annotation.*")
 
     def setUp(self):
             return 1
@@ -43,9 +63,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
         result = RP.parseString("a.rule.x: (::ρ) end")
         self.assertEqual(len(result), 1)
         self.assertIsInstance(result[0][-1], Rule)
-        def_op = PrU.default_opts()
-        def_op['leaf'] = True
-        self.assertEqual(result[0][-1].pprint(def_op).strip(), "x: (::ρ) end")
+        self.assertEqual(Printer.print(result[0][-1]).strip(), "x: (::ρ) end")
 
     def test_multi_empty_rules(self):
         result = RP.parseString("a.rule.x: (::ρ) end\n\na.second.rule: (::ρ) end")
@@ -112,14 +130,14 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
         bindings = { "x" : FP.parseString('a.b.c')[0] }
         result = RP.parseString("a.rule.x: (::ρ)\n\n$x?\n\nend")[0]
         expanded = result[-1].bind(bindings)
-        self.assertEqual(expanded.pprint(PrU.default_opts('leaf')).strip(),
+        self.assertEqual(Printer.print(expanded).strip(),
                          "AnonRule: (::ρ)\n    a.b.c?\nend")
 
     def test_rule_tags(self):
         the_str = 'a.test.rule.x: (::ρ)\n    #blah, #blee, #bloo\n\n    a.b.c?\n\n    λoperator.action.add a.b.c\nend'
         result = RP.parseString(the_str)[0]
         self.assertIsInstance(result[-1], Rule)
-        self.assertEqual(result.pprint().strip(), the_str)
+        self.assertEqual(Printer.print(result).strip(), the_str)
         tags = [x for x in result[-1]._tags]
         self.assertTrue(all(x in tags for x in ["blah","bloo","blee"]))
 
