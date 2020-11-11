@@ -1,25 +1,31 @@
 #https://docs.python.org/3/library/unittest.html
 from os.path import splitext, split
 import unittest
-import logging
+import logging as root_logger
+logging = root_logger.getLogger(__name__)
 
-from acab.config import AcabConfig
-AcabConfig.Get().read("acab/util.config")
+from acab.abstract.config.config import AcabConfig
+CONFIG = AcabConfig.Get().read("acab/abstract/config")
 
 from acab.abstract.core.value import AcabValue, AcabStatement
-from acab.abstract.core.type_system import AcabTypeSystem, build_simple_type_system
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.data.node import AcabNode
 
-AT_BIND_S = AcabConfig.Get()("Parsing.Structure", "AT_BIND_S")
-BIND_S = AcabConfig.Get()("Parsing.Structure", "BIND_S")
+AT_BIND_S = CONFIG.value("Value.Structure", "AT_BIND")
+BIND_S    = CONFIG.value("Value.Structure", "BIND")
 
 class AcabValueTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        # setup class
-        type_sys = build_simple_type_system()
+        LOGLEVEL = root_logger.DEBUG
+        LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
+        root_logger.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
+
+        console = root_logger.StreamHandler()
+        console.setLevel(root_logger.INFO)
+        root_logger.getLogger('').addHandler(console)
+        logging = root_logger.getLogger(__name__)
 
     def setUp(self):
         return 1
@@ -86,12 +92,6 @@ class AcabValueTests(unittest.TestCase):
         value = AcabValue("test")
         value._tags.update(["a", "b", "c"])
         self.assertFalse(value.has_tag("a", "b", "c", "q"))
-
-    def test_pprint_at_var(self):
-        value = AcabValue("test")
-        value._data.update({BIND_S: AT_BIND_S})
-        self.assertTrue(value.is_at_var)
-        self.assertEqual(str(value), "test")
 
     @unittest.skip('TODO')
     def test_verify(self):

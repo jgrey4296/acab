@@ -15,17 +15,19 @@ from fractions import Fraction
 from re import Pattern
 from copy import deepcopy
 
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
-logging = root_logger.getLogger(__name__)
+logging            = root_logger.getLogger(__name__)
 
-util = AcabConfig.Get()
-VALUE_TYPE_S = util("Parsing.Structure", "VALUE_TYPE_S")
-BIND_S = util("Parsing.Structure", "BIND_S")
-AT_BIND_S = util("Parsing.Structure", "AT_BIND_S")
-ANON_VALUE_S = util("Printing", "ANON_VALUE_S")
-TYPE_BOTTOM_NAME_S = util("Typing.Primitives", "TYPE_BOTTOM_NAME_S")
-UUID_CHOP = bool(int(util("Printing", "UUID_CHOP")))
+util             = AcabConfig.Get()
+TYPE_INSTANCE    = util.value("Value.Structure", "TYPE_INSTANCE")
+BIND             = util.value("Value.Structure", "BIND")
+AT_BIND          = util.value("Value.Structure", "AT_BIND")
+ANON_VALUE       = util.value("Symbols", "ANON_VALUE")
+BIND_SYMBOL      = util.value("Symbols", "BIND")
+AT_BIND_SYMBOL   = util.value("Symbols", "AT_BIND")
+TYPE_BOTTOM_NAME = util.value("Data", "TYPE_BOTTOM_NAME")
+UUID_CHOP        = bool(int(util.value("Print.Data", "UUID_CHOP")))
 
 class AcabValue:
     value_types = set([int, float, Fraction, bool, str, Pattern, list, tuple])
@@ -36,7 +38,7 @@ class AcabValue:
         """
         Late binding to the type system, a clean import chain
         """
-        AcabValue._sentence_constructor= constructor
+        AcabValue._sentence_constructor = constructor
 
 
     @staticmethod
@@ -68,16 +70,17 @@ class AcabValue:
 
         self._params : List[Any] = []
         self._tags : Set[str] = set()
-        self._data : Dict[str, Any] = {VALUE_TYPE_S: None, BIND_S : False}
+        self._data : Dict[str, Any] = {TYPE_INSTANCE: None, BIND : False}
 
         if data is not None:
             self._data.update(data)
 
         if _type is not None:
             if not isinstance(_type, AcabValue):
+                # TODO remove need to wrap in list
                 _type = AcabValue._sentence_constructor([_type])
 
-            self._data[VALUE_TYPE_S] = _type
+            self._data[TYPE_INSTANCE] = _type
 
         if params is not None:
             self.apply_params(params)
@@ -86,15 +89,20 @@ class AcabValue:
         if name is not None:
             self._name = name
         else:
-            self._name = str(self.value)
+            self._name = str(self._value)
 
     def __str__(self):
-        """ Data needs to implement a str method that produces
-        output that can be re-parsed """
-        if self.name is not None:
-            return str(self.name)
+        """ the simplest representation of the value,
+        for internal use.
+        For reparseable output, use a PrintSemantics
+        """
+        if self.is_at_var:
+            return AT_BIND_SYMBOL + ANON_VALUE
+        elif self.is_var:
+            return BIND_SYMBOL + ANON_VALUE
+        else:
+            return self.name
 
-        return ANON_VALUE_S
 
     def __repr__(self):
         uuid = str(self._uuid)
@@ -113,19 +121,22 @@ class AcabValue:
         if self._hash_name is not None:
             return self._hash_name
 
-        if self.name == ANON_VALUE_S:
-            self._hash_name = hash(self._uuid)
-        else:
-            self._hash_name = hash(str(self) + str(self.type))
-
+        self._hash_name = hash(str(self))
         return self._hash_name
 
     def __eq__(self, other):
         """ Base eq: compare hashes  """
-        if self._uuid == other._uuid:
+        if id(self) == id(other):
             return True
+        elif isinstance(other, str):
+            return str(self) == other
+        elif not isinstance(other, AcabValue):
+            return False
 
-        return hash(self) == hash(other)
+        assert(isinstance(other, AcabValue))
+        uuid_match = self._uuid == other._uuid
+        hash_match = hash(self) == hash(other)
+        return uuid_match or hash_match
 
 
     @property
@@ -138,19 +149,19 @@ class AcabValue:
     @property
     def type(self) -> 'Sentence':
         """ Lazy Type Construction """
-        if self._data[VALUE_TYPE_S] is None:
-            self._data[VALUE_TYPE_S] = AcabValue._sentence_constructor([TYPE_BOTTOM_NAME_S])
+        if self._data[TYPE_INSTANCE] is None:
+            self._data[TYPE_INSTANCE] = AcabValue._sentence_constructor([TYPE_BOTTOM_NAME])
 
-        return self._data[VALUE_TYPE_S]
+        return self._data[TYPE_INSTANCE]
 
 
     @property
     def is_var(self) -> bool:
-        return self._data[BIND_S] is not False
+        return self._data[BIND] is not False
 
     @property
     def is_at_var(self) -> bool:
-        return self._data[BIND_S] == AT_BIND_S
+        return self._data[BIND] == AT_BIND
 
     @property
     def var_set(self) -> Dict[str, Set[Any]]:
@@ -178,6 +189,9 @@ class AcabValue:
         return self._tags
 
 
+    @property
+    def params(self):
+        return self._params
     def alpha_rename(self):
         """
         TODO should variables be de bruijn indexed instead?
@@ -205,7 +219,7 @@ class AcabValue:
         return modified copy
         """
         # TODO recurse this
-        if self.value in bindings:
+        if self.is_var and self.value in bindings:
             return bindings[self.value]
         else:
             return self
@@ -253,7 +267,7 @@ class AcabValue:
 
     def to_simple_value(self) -> 'AcabValue':
         simple_value = AcabValue.safe_make(self._name, data=self._data)
-        simple_value.set_data({VALUE_TYPE_S: AcabValue._sentence_constructor([TYPE_BOTTOM_NAME_S])})
+        simple_value.set_data({TYPE_INSTANCE: AcabValue._sentence_constructor([TYPE_BOTTOM_NAME])})
         return simple_value
 
 
@@ -271,16 +285,6 @@ class AcabStatement(AcabValue):
         super(AcabStatement, self).__init__(value, **kwargs)
         self._path = None
 
-
-    def __eq__(self, other):
-        """ Base Statement eq: """
-        if id(self) == id(other):
-            return True
-
-        if self.value == other.value:
-            return True
-
-        return False
 
     @property
     def path(self) -> 'Sentence':
@@ -312,9 +316,6 @@ class AcabStatement(AcabValue):
         operator(λgreaterThan).[a.b].20.Bool
         """
         raise NotImplementedError()
-
-    def pprint(self, opts=None, **kwargs) -> str:
-        raise DeprecationWarning("Use Print Semantics")
 
     def pprint_body(self, val) -> str:
         raise DeprecationWarning("Use Print Semantics")

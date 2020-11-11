@@ -2,19 +2,18 @@
 Defines a Sentence of Words, which can be a query, and
 have fallback bindings
 """
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
 from .value import AcabValue, AcabStatement
 
 util = AcabConfig.Get()
 
-VALUE_TYPE_S = util("Parsing.Structure", "VALUE_TYPE_S")
-BIND_S       = util("Parsing.Structure", "BIND_S")
-AT_BIND_S    = util("Parsing.Structure", "AT_BIND_S")
-OPERATOR_S   = util("Parsing.Structure", "OPERATOR_S")
-SEN_S        = util("Parsing.Structure", "SEN_S")
-ANON_VALUE_S = util("Printing", "ANON_VALUE_S")
-SENTENCE_TYPE_PRIM_S = util("Typing.Primitives", "SENTENCE_TYPE_PRIM_S")
+TYPE_INSTANCE      = util.value("Value.Structure", "TYPE_INSTANCE")
+BIND               = util.value("Value.Structure", "BIND")
+AT_BIND            = util.value("Value.Structure", "AT_BIND")
+OPERATOR           = util.value("Value.Structure", "OPERATOR")
+SENTENCE_TYPE      = util.value("Type.Primitive", "SENTENCE")
+ANON_VALUE         = util.value("Symbols", "ANON_VALUE")
 
 class Sentence(AcabStatement):
     """
@@ -27,47 +26,24 @@ class Sentence(AcabStatement):
 
     def __init__(self, words=None, params=None, tags=None, data=None):
         if words is not None:
-            assert(all([isinstance(x, AcabValue) for x in words])), words
+            assert(all([isinstance(x, AcabValue) for x in words])), breakpoint()
             assert(not any([x.is_at_var for x in words[1:]]))
         else:
             words = []
 
         super().__init__(words, data=data, params=params, tags=tags)
 
+    def __str__(self):
+        words_str = [str(x) for x in self.words]
+        return " ".join(words_str)
+
     @property
     def type(self):
         """ Lazy Type Construction """
-        if self._data[VALUE_TYPE_S] is None:
-            self._data[VALUE_TYPE_S] = Sentence.build([SENTENCE_TYPE_PRIM_S])
+        if self._data[TYPE_INSTANCE] is None:
+            self._data[TYPE_INSTANCE] = Sentence.build([SENTENCE_TYPE])
 
-        return self._data[VALUE_TYPE_S]
-
-    def __hash__(self):
-        if self._hash_name is not None:
-            return self._hash_name
-
-        if self.name == ANON_VALUE_S:
-            word_hashes = " ".join([str(hash(x)) for x in self.words])
-            self._hash_name = hash(word_hashes)
-        else:
-            self._hash_name = hash(str(self) + str(self.type))
-
-        return self._hash_name
-
-    def __eq__(self, other):
-        """ Equality based on words, not identity """
-        if id(self) == id(other):
-            return True
-
-        if not isinstance(other, Sentence):
-            return False
-
-        if len(self) != len(other):
-            return False
-
-        words = all([a == b for a,b in zip(self.words, other.words)])
-        return words
-
+        return self._data[TYPE_INSTANCE]
 
     def __iter__(self):
         return iter(self.words)
@@ -115,33 +91,29 @@ class Sentence(AcabStatement):
         for word in self:
             # early expand if a plain node
             if not word.is_var:
-                output.append(word.copy())
+                output.append(word)
                 continue
 
             if not word._value in bindings:
-                output.append(word.copy())
+                output.append(word)
                 continue
 
             # Sentence invariant: only word[0] can have an at_bind
             if word.is_at_var:
-                retrieved = bindings[AT_BIND_S + word._value]
+                retrieved = bindings[AT_BIND + word._value]
             else:
                 retrieved = bindings[word._value]
 
-            # Fixup the last modal operator if a sentence has been inserted
-            if isinstance(retrieved, Sentence):
-                output += [y.copy() for y in retrieved]
-                output[-1]._data[OPERATOR_S] = word._data[OPERATOR_S]
-                continue
 
-            copied_node = word.copy()
             if isinstance(retrieved, AcabValue):
-                copied_node._value = retrieved.value
-                copied_node._data.update(retrieved._data)
+                output.append(retrieved)
             else:
-                copied_node._value = retrieved
-                copied_node._data[BIND_S] = False
-            output.append(copied_node)
+                # TODO how often should this actually happen?
+                # won't most things be values already?
+                # TODO get a type for basic values
+                new_word = AcabValue(retrieved, data=word._data)
+                new_word._data[BIND] = False
+                output.append(new_word)
 
         return Sentence.build(output,
                               data=self._data,
@@ -216,3 +188,6 @@ class Sentence(AcabStatement):
         [x.verify() for x in self.words]
 
         return self
+
+# This enables values to build their type sentences
+AcabValue._set_sentence_constructor(Sentence.build)
