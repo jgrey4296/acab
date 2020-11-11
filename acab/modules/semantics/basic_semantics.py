@@ -16,7 +16,7 @@ from acab.abstract.data.structure import DataStructure
 
 import acab.abstract.data.struct_semantics as SSem
 
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
 logging = root_logger.getLogger(__name__)
 util = AcabConfig.Get()

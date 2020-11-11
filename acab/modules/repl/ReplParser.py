@@ -5,7 +5,7 @@ The parser for the REPL
 import pyparsing as pp
 import logging as root_logger
 
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 from acab.abstract.parsing import util as PU
 
 from .repl_commands import ReplE as RE

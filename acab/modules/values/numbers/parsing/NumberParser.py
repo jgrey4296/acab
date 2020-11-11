@@ -2,18 +2,18 @@ from fractions import Fraction
 import logging as root_logger
 import pyparsing as pp
 
-from acab.abstract.parsing import util as PU
+from acab.abstract.parsing import parsers as PU
 from acab.abstract.parsing.consts import SLASH, op, s
 from acab.modules.values.numbers import util as NU
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
 logging = root_logger.getLogger(__name__)
 
 util = AcabConfig.Get()
-DECIMAL_SYMBOL_S = util("Module.Numbers", "DECIMAL_SYMBOL_S")
+DECIMAL_SYMBOL_S = util.value("Module.Numbers", "DECIMAL")
 
-USE_PARSER = util("Module.Numbers", "USE_PARSER")
-ALLOW_NEG = util("Module.Numbers", "ALLOW_NEG")
+USE_PARSER       = util.value("Module.Numbers", "USE_PARSER")
+ALLOW_NEG        = util.value("Module.Numbers", "ALLOW_NEG")
 
 
 def construct_num(toks):

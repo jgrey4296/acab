@@ -96,8 +96,9 @@ class PatternChoice(TimeContainer):
         return self.handle_call_results(results, just_values)
 
     def pprint(self, opts=None, **kwargs):
-        opts['wrap'] = not self.is_pure()
-        comps = [x.pprint(opts, **kwargs) for x in self.events]
+        raise DeprecationWarning("Use Print Semantics")
+        # opts['wrap'] = not self.is_pure()
+        # comps = [str(x) for x in self.events]
 
-        joined = self._join_template.join(comps)
-        return self._wrap_template.format(joined)
+        # joined = self._join_template.join(comps)
+        # return self._wrap_template.format(joined)

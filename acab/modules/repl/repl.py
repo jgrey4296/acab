@@ -15,7 +15,7 @@ import traceback
 
 # Quiet hook from https://gist.github.com/jhazelwo/86124774833c6ab8f973323cb9c7e251
 if __name__ == "__main__":
-    from acab.config import AcabConfig
+    from acab.abstract.config.config import AcabConfig
     util = AcabConfig.Get()
 
     #see https://docs.python.org/3/howto/argparse.html

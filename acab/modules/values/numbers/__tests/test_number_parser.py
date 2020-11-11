@@ -1,13 +1,16 @@
 #https://docs.python.org/3/library/unittest.html
 from os.path import splitext, split
 import unittest
-import logging
+import logging as root_logger
+logging = root_logger.getLogger(__name__)
+
 import random
 
-from acab.config import AcabConfig
-AcabConfig.Get().read("acab/util.config")
+from acab.abstract.config.config import AcabConfig
+AcabConfig.Get().read("acab/abstract/config")
 
-from acab.abstract.core.type_system import build_simple_type_system
+from acab.abstract.core.value import AcabValue
+from acab.abstract.core.sentence import Sentence
 from acab.abstract.rule import action
 from acab.abstract.rule import transform
 from acab.modules.values import numbers
@@ -17,6 +20,15 @@ from acab.working_memory.trie_wm.parsing import ActionParser as AP
 from acab.working_memory.trie_wm.parsing import FactParser as FP
 from acab.working_memory.trie_wm.parsing import TransformParser as TP
 from acab.working_memory.trie_wm.trie_working_memory import TrieWM
+from acab.abstract.printing.print_semantics import AcabPrintSemantics
+from acab.abstract.printing import default_handlers as DH
+
+basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel),
+              Sentence: DH.DEF_SEN_PAIR}
+
+Printer = AcabPrintSemantics(basic_plus, default_values={'MODAL_FIELD' : 'OPERATOR',
+                                                         'EXOP.DOT'    : ".",
+                                                         'EXOP.EX'     : "!"})
 
 
 class NumberParseTests(unittest.TestCase):
@@ -24,8 +36,16 @@ class NumberParseTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        LOGLEVEL = root_logger.DEBUG
+        LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
+        root_logger.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
+
+        console = root_logger.StreamHandler()
+        console.setLevel(root_logger.INFO)
+        root_logger.getLogger('').addHandler(console)
+        logging = root_logger.getLogger(__name__)
+
         # setup class
-        type_sys = build_simple_type_system()
         NumberParseTests.ns = numbers.MODULE()
 
     def setUp(self):
@@ -53,7 +73,7 @@ class NumberParseTests(unittest.TestCase):
     def test_simple_transform_parse(self):
         result = TP.parseString("λoperator.transform.add 20 30 -> $z")
         self.assertIsInstance(result, transform.Transform)
-        self.assertEqual(result.clauses[0].op.pprint(), 'operator.transform.add')
+        self.assertEqual(Printer.print(result.clauses[0].op), 'operator.transform.add')
         self.assertEqual([x._value for x in result.clauses[0]._params], [20, 30])
 
 
@@ -62,7 +82,7 @@ class NumberParseTests(unittest.TestCase):
         self.assertEqual(len(result), 3)
         self.assertTrue(all([isinstance(x, transform.TransformComponent) for x in result.clauses]))
         for parsed_action, op in zip(result, ['add','sub', 'mul']):
-            self.assertEqual(parsed_action.op.pprint(), "operator.transform.{}".format(op))
+            self.assertEqual(Printer.print(parsed_action.op), "operator.transform.{}".format(op))
 
 
     def test_transform_str_equal(self):
@@ -70,7 +90,7 @@ class NumberParseTests(unittest.TestCase):
         parsed = [TP.parseString(x) for x in actions]
         zipped = zip(actions, parsed)
         for x,y in zipped:
-            self.assertEqual(x, y.pprint().strip())
+            self.assertEqual(x, Printer.print(y).strip())
 
 
     def test_numbers_parsing(self):

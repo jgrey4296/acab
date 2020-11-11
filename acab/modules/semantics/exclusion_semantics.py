@@ -9,14 +9,22 @@ from acab.abstract.core.sentence import Sentence
 from acab.abstract.data.node import AcabNode
 from acab.abstract.data.node_semantics import AcabNodeSemantics
 
-from .util import EXOP as EXOP_enum
-
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
+from acab.abstract.config.modal import MODAL_DEFAULTS, MODAL_ENUMS
 
 config = AcabConfig.Get()
-OPERATOR     = config.value("Value.Structure", "OPERATOR")
-EXOP         = config.value("Modal.Exclusion", "MODAL_NAME")
-DEFAULT_EXOP = config.value("Modal.Exclusion", "DEFAULT_EXOP")
+# TODO replace operator with specific modal name
+EXOP = config.value("MODAL", "exop")
+DEFAULT_EXOP = MODAL_DEFAULTS[EXOP]
+EXOP_enum = MODAL_ENUMS[EXOP]
+
+
+# Fixup the last modal operator if a sentence has been inserted
+# TODO move this to exclusion semantics
+# if isinstance(retrieved, Sentence):
+#     output += [y.copy() for y in retrieved]
+#     output[-1]._data[OPERATOR] = word._data[OPERATOR]
+#     continue
 
 class ExclusionNodeSemantics(AcabNodeSemantics):
     def accessible(self, node, data, term):
@@ -34,19 +42,17 @@ class ExclusionNodeSemantics(AcabNodeSemantics):
         elif self.contain(node, term):
             potentials.append(node.get_child(term))
 
-        if OPERATOR in term._data:
-            potentials = [x for x in potentials if x._data[OPERATOR] == term._data[OPERATOR]]
+        if EXOP in term._data:
+            potentials = [x for x in potentials if x._data[EXOP] == term._data[EXOP]]
         return potentials
 
     def lift(self, word, constructor):
         assert(isinstance(word, AcabValue))
-        exop = EXOP_enum[DEFAULT_EXOP]
+        exop_val = DEFAULT_EXOP
         if EXOP in word._data:
-            exop = word._data[EXOP]
-        elif OPERATOR in word._data:
-            exop = word._data[OPERATOR]
+            exop_val = word._data[EXOP]
 
-        word_node = constructor(word, {OPERATOR: exop})
+        word_node = constructor(word, {EXOP: exop_val})
         return word_node
 
 
@@ -83,15 +89,15 @@ class ExclusionNodeSemantics(AcabNodeSemantics):
             result = self.lift(word, node_constructor)
             is_new_node = True
 
-        if node._data[OPERATOR] is EXOP_enum.EX and \
+        if node._data[EXOP] is EXOP_enum.EX and \
         len(node.children) >= 1 and result is not None:
             node.clear_children()
 
         node.add_child(result)
 
         # coerce to exclusive if necessary
-        if OPERATOR in word._data and word._data[OPERATOR] is EXOP_enum.EX:
-            result._data[OPERATOR] = EXOP_enum.EX
+        if EXOP in word._data and word._data[EXOP] is EXOP_enum.EX:
+            result._data[EXOP] = EXOP_enum.EX
 
         return is_new_node, result
 

@@ -16,11 +16,11 @@ from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics
 from acab.modules.structures.trie.trie import Trie
 
 
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
 util = AcabConfig.Get()
 
-NEGATION_S = util("Parsing.Structure", "NEGATION_S")
+NEGATION_S = util("Value.Structure", "NEGATION")
 
 class RDFSemantics(AcabStructureSemantics):
     """

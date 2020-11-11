@@ -15,7 +15,7 @@ end
 import pyparsing as pp
 
 from acab.abstract.parsing.consts import ARROW, END, COLON, s
-import acab.abstract.parsing.util as PU
+import acab.abstract.parsing.parsers as PU
 
 from acab.abstract.rule.transform import TransformComponent
 

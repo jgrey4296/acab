@@ -26,19 +26,20 @@ end
 import logging as root_logger
 import pyparsing as pp
 
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
-from acab.abstract.parsing import util as PU
+from acab.abstract.parsing import parsers as PU
 from acab.abstract.parsing.consts import LAYER_HEAD
+from acab.abstract.parsing.funcs import make_layer
 from acab.abstract.rule.production_operator import ProductionContainer
-from acab.abstract.pipeline.layer import Layer, make_layer
+from acab.abstract.pipeline.layer import Layer
 
 logging = root_logger.getLogger(__name__)
 
-util = AcabConfig.Get()
-QUERY_S = util("Parsing.Structure", "QUERY_S")
-TRANSFORM_S = util("Parsing.Structure", "TRANSFORM_S")
-ACTION_S = util("Parsing.Structure", "ACTION_S")
+util        = AcabConfig.Get()
+QUERY_S     = util.value("Parse.Structure", "QUERY")
+TRANSFORM_S = util.value("Parse.Structure", "TRANSFORM")
+ACTION_S    = util.value("Parse.Structure", "ACTION")
 
 HOTLOAD_BASIC_SEN = pp.Forward()
 HOTLOAD_QUERY = pp.Forward()

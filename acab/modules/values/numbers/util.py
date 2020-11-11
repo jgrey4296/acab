@@ -1,12 +1,12 @@
 from acab.abstract.core.sentence import Sentence
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
 util = AcabConfig.Get()
-DECIMAL_SYMBOL_S = util("Module.Numbers", "DECIMAL_SYMBOL_S")
+DECIMAL = util.value("Module.Numbers", "DECIMAL")
 
-# TODO replace this with type_system registration
+# TODO use config primitives
 FLOAT_t = Sentence.build(["number", "float"])
-INT_t = Sentence.build(["number", "int"])
+INT_t   = Sentence.build(["number", "int"])
 FRACT_t = Sentence.build(["number", "fract"])
 
 

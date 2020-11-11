@@ -1,13 +1,14 @@
 #https://docs.python.org/3/library/unittest.html
 from os.path import splitext, split
 import unittest
-import logging
+import logging as root_logger
+logging = root_logger.getLogger(__name__)
+
 from pyparsing import ParseException
 
-from acab.config import AcabConfig
-AcabConfig.Get().read("acab/util.config")
+from acab.abstract.config.config import AcabConfig
+AcabConfig.Get().read("acab/abstract/config")
 
-from acab.abstract.core.type_system import build_simple_type_system
 from acab.abstract.core.value import AcabValue
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.rule import action
@@ -23,18 +24,34 @@ from acab.working_memory.trie_wm.parsing import QueryParser as QP
 from acab.working_memory.trie_wm.parsing import RuleParser as RP
 from acab.working_memory.trie_wm.parsing import TransformParser as TP
 from acab.working_memory.trie_wm.trie_working_memory import TrieWM
+from acab.abstract.printing.print_semantics import AcabPrintSemantics
+from acab.abstract.printing import default_handlers as DH
 
-CONSTRAINT_S = AcabConfig.Get()("Parsing.Structure", "CONSTRAINT_S")
-OPERATOR_S = AcabConfig.Get()("Parsing.Structure", "OPERATOR_S")
-QUERY_FALLBACK_S = AcabConfig.Get()("Parsing.Structure", "QUERY_FALLBACK_S")
+basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel),
+              Sentence: DH.DEF_SEN_PAIR}
+
+Printer = AcabPrintSemantics(basic_plus, default_values={'MODAL_FIELD' : 'OPERATOR',
+                                                         'EXOP.DOT'    : ".",
+                                                         'EXOP.EX'     : "!"})
+
+CONSTRAINT_S     = AcabConfig.Get().value("Value.Structure", "CONSTRAINT")
+OPERATOR_S       = AcabConfig.Get().value("Value.Structure", "OPERATOR")
+QUERY_FALLBACK_S = AcabConfig.Get().value("Value.Structure", "QUERY_FALLBACK")
 
 class NumberQueryTests(unittest.TestCase):
     ns = None
 
     @classmethod
     def setUpClass(cls):
+        LOGLEVEL = root_logger.DEBUG
+        LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
+        root_logger.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
+
+        console = root_logger.StreamHandler()
+        console.setLevel(root_logger.INFO)
+        root_logger.getLogger('').addHandler(console)
+        logging = root_logger.getLogger(__name__)
         # setup class
-        type_sys = build_simple_type_system()
         NumberQueryTests.ns = numbers.MODULE()
 
     def setUp(self):
@@ -61,26 +78,27 @@ class NumberQueryTests(unittest.TestCase):
         self.assertEqual(result[0], CONSTRAINT_S)
         self.assertEqual(len(result[1]), 5)
         self.assertTrue(all([isinstance(x, QueryComponent) for x in result[1]]))
-        self.assertEqual(result[1][0].op.pprint(), 'operator.query.lt')
-        self.assertEqual(result[1][1].op.pprint(), 'operator.query.gt')
-        self.assertEqual(result[1][2].op.pprint(), 'operator.query.neq')
-        self.assertEqual(result[1][3].op.pprint(), 'operator.query.eq')
-        self.assertEqual(result[1][4].op.pprint(), 'operator.query.regmatch')
+        self.assertEqual(Printer.print(result[1][0].op), 'operator.query.lt')
+        self.assertEqual(Printer.print(result[1][1].op), 'operator.query.gt')
+        self.assertEqual(Printer.print(result[1][2].op), 'operator.query.neq')
+        self.assertEqual(Printer.print(result[1][3].op), 'operator.query.eq')
+        self.assertEqual(Printer.print(result[1][4].op), 'operator.query.regmatch')
 
 
+    @unittest.skip
     def test_basic_query_core(self):
         result = QP.QueryCore.parseString('a(λoperator.query.gt 20).')[0]
         self.assertTrue(CONSTRAINT_S in result._data)
         self.assertEqual(len(result._data[CONSTRAINT_S]), 1)
         self.assertIsInstance(result._data[CONSTRAINT_S][0], QueryComponent)
 
-
+    @unittest.skip
     def test_basic_query_core_multi_comparison(self):
         result = QP.QueryCore.parseString('a(λoperator.query.gt 20, λoperator.query.lt 30).')[0]
         self.assertEqual(len(result._data[CONSTRAINT_S]), 2)
         self.assertTrue(all([isinstance(x, QueryComponent) for x in result._data[CONSTRAINT_S]]))
 
-
+    @unittest.skip
     def test_basic_query_core_with_exclusion(self):
         result = QP.QueryCore.parseString('a(λoperator.query.gt 20)!')[0]
         self.assertEqual(result._data[OPERATOR_S], KBU.EXOP.EX)
@@ -126,7 +144,7 @@ class NumberQueryTests(unittest.TestCase):
 
         for the_string in queries:
             the_result = QP.parseString(the_string)
-            self.assertEqual(the_string, the_result.pprint().strip())
+            self.assertEqual(Printer.print(the_string, the_result).strip())
 
 
     def test_rule_binding_expansion(self):
@@ -136,7 +154,7 @@ class NumberQueryTests(unittest.TestCase):
         result = RP.parseString("a.rule: (::ρ)\n$y.b.$z?\n\nλoperator.transform.add $x 2 -> $y\n\n$y\nend")[0][-1]
         expanded = result.value.bind(bindings)
         # Expanding bindings makes a new rule, so its an AnonValue
-        self.assertEqual(expanded.pprint().strip(),
+        self.assertEqual(Printer.print(expanded).strip(),
                          "AnonRule: (::ρ)\n    d.e.f.b.x.y.z?\n\n    λoperator.transform.add $x 2 -> $y\n\n    λdefault_action d.e.f\nend")
 
 

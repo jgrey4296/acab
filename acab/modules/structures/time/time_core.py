@@ -81,7 +81,8 @@ class BaseTime(AcabValue):
         return BaseTime((start, end))
 
     def pprint(self, opts=None, **kwargs):
-        return "BaseTime"
+        raise DeprecationWarning("Use Print Semantics")
+        # return "BaseTime"
 
 
 class TimeEvent(BaseTime):
@@ -124,10 +125,7 @@ class TimeEvent(BaseTime):
 
     def pprint(self, opts=None, **kwargs):
         raise DeprecationWarning("Use Print Semantics")
-        # if isinstance(self._event, AcabValue):
-        #     value = self._event.pprint(opts, **kwargs)
-        # else:
-        #     value = str(self._event)
+        #value = str(self._event)
 
         # if self.is_var:
         #     value = PrU._wrap_var(value)
@@ -302,13 +300,13 @@ class TimeContainer(BaseTime):
         return results
 
     def pprint(self, opts=None, **kwargs):
-        top_wrap = opts['wrap']
-        opts['wrap'] = not self.is_pure()
-        comps = [x.pprint(opts, **kwargs) for x in self.events]
+        raise DeprecationWarning("Deprecated, use print semantics")
+        # top_wrap = opts['wrap']
+        # opts['wrap'] = not self.is_pure()
+        # comps = [str(x) for x in self.events]
 
-        joined = self._join_template.join(comps)
-        if top_wrap:
-            joined = self._wrap_template.format(joined)
+        # joined = self._join_template.join(comps)
+        # if top_wrap:
+        #     joined = self._wrap_template.format(joined)
 
-        return joined
-
+        # return joined

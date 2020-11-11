@@ -2,12 +2,15 @@
 from os.path import splitext, split
 import pyparsing as pp
 import unittest
-import logging
+import logging as root_logger
+logging = root_logger.getLogger(__name__)
 
-from acab.config import AcabConfig
-AcabConfig.Get().read("acab/util.config")
 
-from acab.abstract.core.type_system import build_simple_type_system
+from acab.abstract.config.config import AcabConfig
+AcabConfig.Get().read("acab/abstract/config")
+
+from acab.abstract.core.value import AcabValue
+from acab.abstract.core.sentence import Sentence
 from acab.modules.values.numbers.parsing import NumberParser as NP
 from acab.working_memory.trie_wm.parsing import ActionParser as AP
 from acab.working_memory.trie_wm.parsing import TransformParser as TP
@@ -20,6 +23,15 @@ from acab.abstract.rule import transform
 from acab.modules.values import numbers
 from acab.working_memory.trie_wm.trie_working_memory import TrieWM
 from acab.working_memory.trie_wm import util as KBU
+from acab.abstract.printing.print_semantics import AcabPrintSemantics
+from acab.abstract.printing import default_handlers as DH
+
+basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel),
+              Sentence: DH.DEF_SEN_PAIR}
+
+Printer = AcabPrintSemantics(basic_plus, default_values={'MODAL_FIELD' : 'OPERATOR',
+                                                         'EXOP.DOT'    : ".",
+                                                         'EXOP.EX'     : "!"})
 
 
 class NumberTransformTests(unittest.TestCase):
@@ -27,8 +39,15 @@ class NumberTransformTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        # setup class
-        type_sys = build_simple_type_system()
+        LOGLEVEL = root_logger.DEBUG
+        LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
+        root_logger.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
+
+        console = root_logger.StreamHandler()
+        console.setLevel(root_logger.INFO)
+        root_logger.getLogger('').addHandler(console)
+        logging = root_logger.getLogger(__name__)
+
         NumberTransformTests.ns = numbers.MODULE()
 
     def setUp(self):
@@ -72,7 +91,7 @@ class NumberTransformTests(unittest.TestCase):
         result = TP.parseString('λoperator.transform.add $x 20 -> $y')
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result.clauses), 1)
-        self.assertEqual(result.clauses[0].op.pprint(), "operator.transform.add")
+        self.assertEqual(Printer.print(result.clauses[0].op), "operator.transform.add")
         self.assertEqual(result.clauses[0]._params[0]._value, 'x')
         self.assertEqual(result.clauses[0]._params[1]._value, 20)
         self.assertIsNotNone(result.clauses[0]._rebind)
@@ -82,25 +101,25 @@ class NumberTransformTests(unittest.TestCase):
         result = TP.parseString('λoperator.transform.add $x 20 -> $y')
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result.clauses), 1)
-        self.assertEqual(result.clauses[0].op.pprint(), "operator.transform.add")
+        self.assertEqual(Printer.print(result.clauses[0].op), "operator.transform.add")
         self.assertEqual(result.clauses[0]._params[0]._value, 'x')
         self.assertEqual(result.clauses[0]._params[1]._value, 20)
         self.assertEqual(result.clauses[0]._rebind._value, 'y')
 
     def test_unary_round(self):
         result = TP.parseString('λoperator.transform.round $x -> $y')
-        self.assertEqual(result.clauses[0].op.pprint(), 'operator.transform.round')
+        self.assertEqual(Printer.print(result.clauses[0].op), 'operator.transform.round')
 
     def test_binary_rand_operator(self):
         result = TP.parseString('λoperator.transform.rand $x $y -> $z')
         self.assertEqual(len(result.clauses), 1)
-        self.assertEqual(result.clauses[0].op.pprint(), 'operator.transform.rand')
+        self.assertEqual(Printer.print(result.clauses[0].op), 'operator.transform.rand')
 
     def test_unary_operator(self):
         result = TP.parseString(r'λoperator.transform.neg $x -> $y')
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result.clauses), 1)
-        self.assertEqual(result.clauses[0].op.pprint(), "operator.transform.neg")
+        self.assertEqual(Printer.print(result.clauses[0].op), "operator.transform.neg")
         self.assertEqual(result.clauses[0]._params[0]._value, "x")
         self.assertIsNotNone(result.clauses[0]._rebind)
 
@@ -108,7 +127,7 @@ class NumberTransformTests(unittest.TestCase):
         result = TP.parseString(r'λoperator.transform.neg $x -> $y')
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result.clauses), 1)
-        self.assertEqual(result.clauses[0].op.pprint(), "operator.transform.neg")
+        self.assertEqual(Printer.print(result.clauses[0].op), "operator.transform.neg")
         self.assertEqual(result.clauses[0]._params[0]._value, "x")
         self.assertIsNotNone(result.clauses[0]._rebind)
         self.assertEqual(result.clauses[0]._rebind._value, 'y')
@@ -131,12 +150,8 @@ class NumberTransformTests(unittest.TestCase):
                       "λoperator.transform.add $x 2d5 -> $y"
         ]
         for a_string in transforms:
-            try:
-                parsed = TP.parseString(a_string)
-                self.assertEqual(parsed.pprint(container_join="\n").strip(), a_string)
-            except pp.ParseException:
-                breakpoint()
-                print("blah")
+            parsed = TP.parseString(a_string)
+            self.assertEqual(Printer.print(parsed).strip(), a_string)
 
 
 if __name__ == "__main__":

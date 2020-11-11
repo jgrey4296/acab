@@ -8,27 +8,29 @@ from functools import reduce
 import logging as root_logger
 
 from acab.abstract.core.sentence import Sentence
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
 logging = root_logger.getLogger(__name__)
 
 util = AcabConfig.Get()
 
+TIME_FORMAT_S   = util.value("Modules.Time", "TIME_FORMAT")
+
 #CONSTANTS:
-BIND_S         = util("Parsing.Structure", "BIND_S")
-NAME_S         = util("Parsing.Structure", "NAME_S")
-VALUE_S        = util("Parsing.Structure", "VALUE_S")
-VALUE_TYPE_S   = util("Parsing.Structure", "VALUE_TYPE_S")
+BIND_S          = util.value("Value.Structure", "BIND")
+NAME_S          = util.value("Value.Structure", "NAME")
+TYPE_INSTANCE_S = util.value("Value.Structure", "TYPE_INSTANCE")
 
-OPT_S          = util("Module.Time", "OPT_S")
-PATTERN_S      = util("Module.Time", "PATTERN_S")
-TIME_EVENT_S   = util("Module.Time", "TIME_EVENT_S")
-TIME_PATTERN_S = util("Module.Time", "TIME_PATTERN_S")
-TIME_FORMAT_S  = util("Module.Time", "TIME_FORMAT_S")
 
-PATTERN_T      = Enum("Pattern Type", "DISCRETE ANALOG")
-TIME_T         = Enum("Time Type", "CLOCK EVENT SET SYMBOLIC")
-Time           = Fraction
+VALUE_S         = util.value("Parse.Structure", "VALUE")
+OPT_S           = util.value("Parse.Structure", "OPT")
+PATTERN_S       = util.value("Parse.Structure", "PATTERN")
+TIME_EVENT_S    = util.value("Parse.Structure", "TIME_EVENT")
+TIME_PATTERN_S  = util.value("Parse.Structure", "TIME_PATTERN")
+
+PATTERN_T       = Enum("Pattern Type", "DISCRETE ANALOG")
+TIME_T          = Enum("Time Type", "CLOCK EVENT SET SYMBOLIC")
+Time            = Fraction
 # Primitive Type instances
 # EVENT
 # DURATION

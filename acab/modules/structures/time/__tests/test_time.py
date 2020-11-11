@@ -1,25 +1,47 @@
 import unittest
-import logging
+import logging as root_logger
+logging = root_logger.getLogger(__name__)
+
 import pyparsing as pp
 
 
-from acab.config import AcabConfig
-util = AcabConfig.Get("util.config")
+from acab.abstract.config.config import AcabConfig
+util = AcabConfig.Get("acab")
 
+from acab.abstract.core.value import AcabValue
+from acab.abstract.core.sentence import Sentence
 from acab.modules.structures.time.time_core import BaseTime, TimeEvent, TimeContainer
 from acab.modules.structures.time.pattern import PatternSeq, PatternPar
 from acab.modules.structures.time.parsing import parser as tp
 from acab.modules.structures.time.util import Time as t
 from acab.abstract.parsing import util as PU
+from acab.abstract.printing.print_semantics import AcabPrintSemantics
+from acab.abstract.printing import default_handlers as DH
 
-BIND_S = util("Parsing.Structure", "BIND_S")
+basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel),
+              Sentence: DH.DEF_SEN_PAIR}
+
+Printer = AcabPrintSemantics(basic_plus, default_values={'MODAL_FIELD' : 'OPERATOR',
+                                                         'EXOP.DOT'    : ".",
+                                                         'EXOP.EX'     : "!"})
+
+BIND_S = util.value("Parse.Structure", "BIND")
 
 class TestTime(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        # setup class
-        type_sys = build_simple_type_system()
+        LOGLEVEL = root_logger.DEBUG
+        LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
+        root_logger.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
+
+        console = root_logger.StreamHandler()
+        console.setLevel(root_logger.INFO)
+        root_logger.getLogger('').addHandler(console)
+        logging = root_logger.getLogger(__name__)
+
+    @classmethod
+    def setUpClass(cls):
         #Hotload value and bind
         tp.HOTLOAD_VALUE << PU.BASIC_VALUE
         tp.HOTLOAD_BIND << PU.BIND
@@ -91,7 +113,7 @@ class TestTime(unittest.TestCase):
         an_event = TimeEvent((t(0, 1), t(1, 1)), "a")
         self.assertIsNotNone(an_event)
         self.assertEqual(an_event.arc, (t(0, 1), t(1, 1)))
-        self.assertEqual(an_event.pprint(), "a")
+        self.assertEqual(Printer.print(an_event), "a")
 
     def test_event_creation_with_params(self):
         an_event = TimeEvent((t(0, 1), t(2, 4)), "b", data={"test": 5})
@@ -114,7 +136,7 @@ class TestTime(unittest.TestCase):
         an_event = TimeEvent((t(0, 1), t(1, 1)), a_pattern)
         call_result = an_event(t(1, 2))
         self.assertEqual(len(call_result), 1)
-        self.assertEqual(call_result[0].pprint(), "b")
+        self.assertEqual(Printer.print(call_result[0]), "b")
 
     def test_event_base(self):
         an_event = TimeEvent((t(0, 1), t(1, 1)), "a")
@@ -168,26 +190,26 @@ class TestTime(unittest.TestCase):
         an_event = TimeEvent((t(1, 2), t(3, 4)),
                              "a", {BIND_S : True})
 
-        self.assertEqual(an_event.pprint(), "$a")
+        self.assertEqual(Printer.print(an_event), "$a")
         bound = an_event.bind({"a" : "b"})
         self.assertIsInstance(bound, TimeEvent)
-        self.assertEqual(bound.pprint(), "b")
+        self.assertEqual(Printer.print(bound), "b")
 
     def test_event_binding_fail(self):
         an_event = TimeEvent((t(1, 2), t(3, 4)),
                              "a", {BIND_S : True})
 
-        self.assertEqual(an_event.pprint(), "$a")
+        self.assertEqual(Printer.print(an_event), "$a")
         bound = an_event.bind({"c" : "b"})
-        self.assertEqual(bound.pprint(), "$a")
+        self.assertEqual(Printer.print(bound), "$a")
 
     def test_event_binding_fail_non_var(self):
         an_event = TimeEvent((t(1, 2), t(3, 4)),
                              "a", {BIND_S : False})
 
-        self.assertEqual(an_event.pprint(), "a")
+        self.assertEqual(Printer.print(an_event), "a")
         bound = an_event.bind({"a" : "b"})
-        self.assertEqual(bound.pprint(), "a")
+        self.assertEqual(Printer.print(bound), "a")
 
     def test_event_fail_var_pattern(self):
         with self.assertRaises(AssertionError):
@@ -213,7 +235,7 @@ class TestTime(unittest.TestCase):
                                    TimeEvent((t(1, 2), t(1, 1)), "b")])
         res = a_pattern(t(1, 2))
         self.assertEqual(len(res), 1)
-        self.assertEqual(res[0].pprint(), "b")
+        self.assertEqual(Printer.print(res[0]), "b")
 
     def test_pattern_call_with_internal_pattern_start(self):
         a_pattern = TimeContainer((t(0, 1), t(1, 2)),

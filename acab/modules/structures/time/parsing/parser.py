@@ -9,7 +9,7 @@ from acab.abstract.parsing import consts as PC
 from acab.abstract.parsing.consts import QUERY_SYMBOL, N, NG, OPAR, CPAR
 from acab.modules.structures.time.pattern_constructor import CTOR_ACT
 from acab.modules.structures.time.pattern_constructor import construct_pattern_simple
-from acab.modules.structures.time.util import BIND_S, VALUE_TYPE_S, VALUE_S, NAME_S, OPT_S, PATTERN_S
+from acab.modules.structures.time.util import BIND_S, TYPE_INSTANCE_S, VALUE_S, NAME_S, OPT_S, PATTERN_S
 
 from acab.abstract.parsing import util as PU
 
@@ -20,14 +20,14 @@ def make_valbind(tokens):
     # TODO: replace this with an acab value
     data = {BIND_S: False,
             OPT_S: False,
-            VALUE_TYPE_S: NAME_S}
+            TYPE_INSTANCE_S: NAME_S}
     value = None
     if BIND_S in tokens:
         value = tokens[BIND_S][1]
         data[BIND_S] = True
     elif VALUE_S in tokens:
         value = tokens[VALUE_S][1]
-        data[VALUE_TYPE_S] = tokens[VALUE_S][0]
+        data[TYPE_INSTANCE_S] = tokens[VALUE_S][0]
 
     if OPT_S in tokens:
         data[OPT_S] = True
