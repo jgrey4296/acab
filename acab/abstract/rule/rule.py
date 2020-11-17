@@ -8,7 +8,7 @@ import logging as root_logger
 from acab.abstract.config.config import AcabConfig
 
 from acab.abstract.core.value import AcabValue
-from .production_operator import ProductionContainer
+from .production_operator import ProductionContainer, ProductionStructure
 from .transform import Transform
 from .action import Action
 from .query import Query
@@ -16,10 +16,13 @@ from .query import Query
 util = AcabConfig.Get()
 logging = root_logger.getLogger(__name__)
 
-TAB_S = util.value("Print.Patterns", "TAB", actions=[AcabConfig.actions_e.STRIPQUOTE])
+TAB_S       = util.value("Print.Patterns", "TAB", actions=[AcabConfig.actions_e.STRIPQUOTE])
 CONTAINER_V = util.value("Type.Primitive", "CONTAINER")
+QUERY_V     = util.value("Structure.Components", "QUERY")
+TRANSFORM_V = util.value("Structure.Components", "TRANSFORM")
+ACTION_V    = util.value("Structure.Components", "ACTION")
 
-class Rule(ProductionContainer):
+class Rule(ProductionStructure):
     """ A Rule holds a query (of N Clauses), a set of transforms,
     and a set of actions. It can be tagged with attributes.
     """
@@ -31,11 +34,24 @@ class Rule(ProductionContainer):
         assert(action is None or isinstance(action, Action))
         assert(transform is None or isinstance(transform, Transform))
         _type = AcabValue._sentence_constructor(CONTAINER_V)
-        super().__init__(None, name=name, _type=_type)
-        self._query     = query
-        self._transform = transform
-        self._action    = action
+        clauses = {QUERY_V: query,
+                   TRANSFORM_V: transform,
+                   ACTION_V: action}
+
+        super().__init__(clauses, name=name, _type=_type)
         Rule.__count += 1
+
+    @property
+    def _query(self):
+        return self[QUERY_V]
+
+    @property
+    def _transform(self):
+        return self[TRANSFORM_V]
+
+    @property
+    def _action(self):
+        return self[ACTION_V]
 
     def __call__(self, ctxs=None, engine=None):
         """ Rule Logic, returns action proposals """
