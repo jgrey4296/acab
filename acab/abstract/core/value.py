@@ -86,8 +86,12 @@ class AcabValue:
             self.apply_params(params)
         if tags is not None:
             self.apply_tags(tags)
+        # TODO: this could be a sieve?
         if name is not None:
+            assert(isinstance(name, str))
             self._name = name
+        elif isinstance(self._value, Pattern):
+            self._name = self._value.pattern
         else:
             self._name = str(self._value)
 
