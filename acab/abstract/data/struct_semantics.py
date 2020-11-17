@@ -26,7 +26,14 @@ class AcabStructureSemantics(AcabValue):
     # TODO Locate listeners in semantics not WM
 
     def __init__(self, node_semantics : Dict[AcabNode, AcabNodeSemantics],
-                 value_pairings: Dict[AcabValue, Tuple[AcabNode, Dict[Any, Any], Callable]]):
+                 value_pairings: Dict[AcabValue, Tuple[AcabNode, Dict[Any, Any]]]):
+        """
+        Structure Semantics define the behaviour of a *collection* of nodes,
+        and uses two mappings:
+        1) Node -> Node Semantics
+        2) Value -> Node
+
+        """
         super(AcabStructureSemantics, self).__init__(None)
         self._node_semantics = node_semantics
         self._value_pairings = value_pairings
@@ -36,10 +43,14 @@ class AcabStructureSemantics(AcabValue):
         """
         Create a basic root node / entry point for a data structure
         """
-        constructor, u_data, u_func = self._value_pairings[AcabValue]
-        return constructor(ROOT_S)
+        constructor, u_data = self._value_pairings[AcabValue]
+        node_semantics = self.retrieve_semantics(constructor)
+        return node_semantics.lift(AcabValue(ROOT_S), constructor)
 
     def retrieve_semantics(self, node):
+        """
+        Map node -> its semantics
+        """
         assert(isinstance(node, type))
         # TODO should I be using my type instances for semantics?
         curr = node
@@ -61,6 +72,9 @@ class AcabStructureSemantics(AcabValue):
         return retrieved
 
     def value_constructor(self, value):
+        """
+        Get the most applicable lifting from value -> node
+        """
         assert(isinstance(value, type))
         # TODO should I be using my type instances for semantics?
         curr = value
@@ -101,7 +115,7 @@ class AcabStructureSemantics(AcabValue):
         raise NotImplementedError()
 
 
-    def query(self, structure, clause : Sentence, ctxs : Contexts, engine : 'Engine'):
+    def query(self, structure, clause : Sentence, ctxs : Contexts, engine : 'Engine') -> Contexts:
         """ Answer a clause asked of the data structure """
         # TODO is this part of call semantics?
         # open / closed world
