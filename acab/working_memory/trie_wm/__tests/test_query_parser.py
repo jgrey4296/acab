@@ -7,6 +7,9 @@ logging = root_logger.getLogger(__name__)
 from acab.abstract.config.config import AcabConfig
 AcabConfig.Get().read("acab/abstract/config")
 
+from acab.abstract.config.modal import MODAL_ENUMS
+from acab.abstract.parsing.parsers import HOTLOAD_VALUES, VALBIND
+
 import acab.working_memory.trie_wm.parsing.FactParser as FP
 import acab.working_memory.trie_wm.parsing.QueryParser as QP
 
@@ -25,13 +28,14 @@ from acab.abstract.printing import default_handlers as DH
 basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel),
               Sentence: DH.DEF_SEN_PAIR}
 
-Printer = AcabPrintSemantics(basic_plus, default_values={'MODAL_FIELD' : 'OPERATOR',
+Printer = AcabPrintSemantics(basic_plus, default_values={'MODAL_FIELD' : 'exop',
                                                          'EXOP.DOT'    : ".",
                                                          'EXOP.EX'     : "!"})
 
 NEGATION_V       = AcabConfig.Get().value("Parse.Structure", "NEGATION")
 QUERY_FALLBACK_V = AcabConfig.Get().value("Parse.Structure", "QUERY_FALLBACK")
 CONSTRAINT_V     = AcabConfig.Get().value("Parse.Structure", "CONSTRAINT")
+REGEX_PRIM       = AcabConfig.Get().value("Type.Primitive", "REGEX")
 
 class Trie_Query_Parser_Tests(unittest.TestCase):
 
@@ -68,23 +72,24 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         qc = result[1]
         self.assertIsInstance(qc, QueryComponent)
         self.assertEqual(Printer.print(qc.op), 'operator.query.regmatch')
-        self.assertEqual(Printer.print(qc._params[0]), '/blah/')
+        # Note the end modal '.'
+        self.assertEqual(Printer.print(qc._params[0]), '/blah/.')
         # TODO convert this to a type system lookup
-        self.assertEqual(qc._params[0].type, REGEX)
+        self.assertEqual(qc._params[0].type, REGEX_PRIM)
 
     def test_basic_clause(self):
         result = QP.clause.parseString('a.b.c?')[0]
         self.assertIsInstance(result, Sentence)
         self.assertEqual(len(result), 3)
         self.assertEqual(result[-1]._value, 'c')
-        self.assertEqual(result[-1]._data[KBU.OPERATOR_S], KBU.EXOP.DOT)
+        self.assertEqual(result[-1]._data['exop'], MODAL_ENUMS['exop'].DOT)
 
     def test_basic_clause_with_bind(self):
         result = QP.clause.parseString('a.b.$c?')[0]
         self.assertIsInstance(result, Sentence)
         self.assertEqual(len(result), 3)
         self.assertEqual(result[-1]._value, 'c')
-        self.assertEqual(result[-1]._data[KBU.OPERATOR_S], KBU.EXOP.DOT)
+        self.assertEqual(result[-1]._data['exop'], MODAL_ENUMS['exop'].DOT)
         self.assertTrue(result[-1].is_var)
 
     def test_basic_negated_clause(self):

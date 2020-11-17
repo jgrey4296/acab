@@ -11,12 +11,15 @@ AcabConfig.Get().read("acab/abstract/config")
 
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.core.value import AcabValue
+
+from acab.abstract.config.modal import MODAL_ENUMS
+from acab.abstract.parsing.parsers import HOTLOAD_VALUES, VALBIND
+
 from acab.abstract.printing.print_semantics import AcabPrintSemantics
 from acab.abstract.printing import default_handlers as DH
 from acab.working_memory.trie_wm import util as KBU
 import acab.working_memory.trie_wm.parsing.FactParser as FP
 
-from acab.working_memory.trie_wm.parsing import util as WMPU
 
 NEGATION_S      = AcabConfig.Get().value("Parse.Structure", "NEGATION")
 TYPE_INSTANCE_S = AcabConfig.Get().value("Parse.Structure", "TYPE_INSTANCE")
@@ -59,7 +62,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertTrue(all([isinstance(x, AcabValue) for x in result]))
 
         self.assertEqual(Printer.print(result), "a.b.c")
-        self.assertTrue(all([x._data[KBU.OPERATOR_S] == KBU.EXOP.DOT for x in result]))
+        self.assertTrue(all([x._data['exop'] == MODAL_ENUMS['exop'].DOT for x in result]))
 
     def test_parseStrings(self):
         result = FP.parseString('a.b.c, b.c.d')
@@ -80,7 +83,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
 
     def test_exclusion_operator_parsing(self):
         result = FP.parseString('a!b!c')[0]
-        self.assertTrue(all([x._data[KBU.OPERATOR_S] == KBU.EXOP.EX for x in result[:-1]]))
+        self.assertTrue(all([x._data['exop'] == MODAL_ENUMS['exop'].EX for x in result[:-1]]))
 
     def test_strings(self):
         result = FP.parseString('a.b."This is a test"!c')[0]
@@ -125,7 +128,6 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         result = FP.parseString('$a.b.$b!c')[0]
         expanded = result.bind(bindings)
         asString = Printer.print(expanded)
-        breakpoint()
         self.assertEqual(asString, "blah.b.bloo!c")
 
     def test_valbind_expansion(self):
@@ -133,9 +135,9 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         new_parser = pp.Word("¿awef")
         new_parser.setParseAction(lambda t: ("awef", t[0]))
 
-        WMPU.HOTLOAD_VALUES << new_parser
+        HOTLOAD_VALUES << new_parser
 
-        a = WMPU.VALBIND.parseString("¿awef")[0]
+        a = VALBIND.parseString("¿awef")[0]
         self.assertEqual(a._value, "¿awef")
         self.assertEqual(a._data[TYPE_INSTANCE_S], Sentence.build(["awef"]))
 
