@@ -222,7 +222,11 @@ class Contexts:
         self._bind_groups = [head]
         self._nodes = [node_head]
 
-    def group_by_type(self):
+    def group_by_type(self) -> Tuple[Dict['type', List[Tuple[int, 'dict', 'node']]],
+                                     Dict[int, 'tuple']]:
+        """
+        group contexts together by the type of the node it is at
+        """
         pairs = self.pairs()
         ancestor_tracker = {}
         groups = {}
