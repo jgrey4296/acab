@@ -47,7 +47,9 @@ class AcabNodeSemantics(AcabStatement):
         super(AcabNodeSemantics, self).__init__(Sentence.build([self.__class__.__name__]))
 
 
-    def accessible(self, node: AcabNode, data: Dict[Any, Any], term: AcabValue) -> [AcabNode]:
+    def accessible(self, node: AcabNode,
+                   data: Dict[Any, Any],
+                   term: AcabValue) -> [AcabNode]:
         """
         Retrieve a list of all nodes accessible from this node,
         according to a constraint term
@@ -112,7 +114,6 @@ class AcabNodeSemantics(AcabStatement):
         
         to_add = [(i, self._prepare_dict(d, n, term), n) for i,d,n in passing if n is not None]
         return to_add
-
 
 
     # internal
