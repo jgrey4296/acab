@@ -117,19 +117,6 @@ class Query(PO.ProductionContainer):
             new_clauses.append(x.bind(bindings))
         return Query(new_clauses)
 
-    def split_clauses(self):
-        """ Separate out the clauses of the query
-        into positive and negative clauses
-        """
-        pos = []
-        neg = []
-        for c in self.clauses:
-            if NEGATION_S in c._data and c._data[NEGATION_S]:
-                neg.append(c)
-            else:
-                pos.append(c)
-        return (pos, neg)
-
     def to_abstract_sentences(self, target=None):
         """ Return all comparisons in canonical form """
         # eg : a.test.$x(>$y)? = > -> $x -> $y -> bool

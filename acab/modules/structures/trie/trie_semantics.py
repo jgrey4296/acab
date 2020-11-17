@@ -125,10 +125,19 @@ class BasicTrieSemantics(AcabStructureSemantics):
         return return_list
 
     def query(self, structure, query, ctxs, engine):
-        initial_context = Contexts(start_node=structure.root,
-                                   bindings=ctxs, engine=engine)
+        initial_context = Contexts(
+            start_node=structure.root, bindings=ctxs, engine=engine
+        )
 
-        pos, neg = query.split_clauses()
+        clauses = []
+        if isinstance(query, Sentence):
+            clauses.append(query)
+        else:
+            assert isinstance(query, ProductionContainer)
+            clauses += query.clauses
+
+        # TODO refactor this:
+        pos, neg = split_clauses(clauses)
         try:
             for clause in pos:
                 self._clause_query(structure, clause, initial_context, engine)
@@ -300,4 +309,22 @@ class BasicTrieSemantics(AcabStructureSemantics):
             else:
                 betas.append(c)
 
-        return ((alphas, betas, sub_binds, callable_annotations, variable_ops), annotations)
+        return (
+            (alphas, betas, sub_binds, callable_annotations, variable_ops),
+            annotations,
+        )
+
+
+def split_clauses(sentences):
+    """ Separate out the clauses of the query
+        into positive and negative clauses
+        """
+    pos = []
+    neg = []
+    for c in sentences:
+        if NEGATION_S in c._data and c._data[NEGATION_S]:
+            neg.append(c)
+        else:
+            pos.append(c)
+
+    return (pos, neg)
