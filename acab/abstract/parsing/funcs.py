@@ -118,7 +118,7 @@ def build_constraint_list(toks):
 
 def build_query_component(toks):
     """ Build a comparison """
-    op = toks[PConst.PConst.OPERATOR_S][0]
+    op = toks[PConst.OPERATOR_S][0]
     return (PConst.CONSTRAINT_S, QueryComponent(op, param=toks[PConst.VALUE_S]))
 
 def build_clause(toks):
