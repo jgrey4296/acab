@@ -211,3 +211,36 @@ class ProductionContainer(AcabStatement):
     def verify(self, ctx=None, engine=None):
         for x in self.clauses:
             x.verify(ctx=ctx, engine=engine)
+
+
+
+class ProductionStructure(ProductionContainer):
+    """
+    A ProductionContainer, supplemented by a dictionary
+    to group the clauses
+    """
+
+    def __init__(self, clauses, params=None, name=None, _type=None):
+        if _type is None:
+            _type = CONTAINER_TYPE_PRIM_S
+
+
+        clause_dict = {}
+        if clauses is None:
+            clauses = []
+        else:
+            assert(isinstance(clauses, dict))
+            clause_dict.update(clauses)
+            clauses = list(clauses.values())
+
+        super().__init__(clauses, params=params, name=name, _type=_type)
+
+        self._structure = clause_dict
+
+
+    @property
+    def keys(self):
+        return self._structure.keys()
+
+    def __getitem__(self, key):
+        return self._structure[key]
