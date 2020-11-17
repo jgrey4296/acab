@@ -52,7 +52,7 @@ def _maybe_wrap_regex(PS, value, current):
 
     # originally /{}/
     reg_wrap = PS.use(REGEX_WRAP_P)
-    val = reg_wrap.format(current)
+    val = reg_wrap.format(value.name)
     return val
 
 
