@@ -71,6 +71,7 @@ def value_sentinel(PS, source_val, processed, acc, params):
     modal = ""
     if modal_data_field is not False:
         modal = acc[modal_data_field]
+    # TODO this is relevant to statements as leaves/not
     if PS.ask("drop_modal", for_uuid=source_val._uuid):
         modal = ""
 
@@ -135,8 +136,10 @@ def value_uuid_long_sentinel(PS, value, processed, acc, params):
 
 def type_instance_substruct(PS, value, acc, params):
     return None
+
 def type_instance_sentinel(PS, value, processed, acc, params):
     return None
+
 def sentence_substruct(PS, value, acc, params):
     logging.info("Sentence Substruct: {}".format(value))
     words = value.words
@@ -229,8 +232,6 @@ def statement_sentinel(PS, source_val, processed, acc, params):
     return (None, final, None, None)
 
 
-
-
 def component_substruct(PS, source_val, acc, params):
     logging.info("Component Substruct: {}".format(source_val))
     components = []
@@ -261,6 +262,19 @@ def component_sentinel(PS, source_val, processed, acc, params):
     final_str += wrappers._maybe_wrap_rebind(PS, rebind)
 
     return (PS.simple, final_str, None, None)
+
+
+def structure_substruct(PS, source_val, acc, params):
+    # TODO: split out anything in the structure, plus name, etc
+    # TODO: detect context: as leaf of sentence or not
+
+    components = []
+    return (PS.substruct, components, None, None)
+
+def structure_sentinel(PS, source_val, processed, acc, params):
+    # combine in a statement format
+
+    return (PS.simple, "", None, None)
 
 
 # Default Pairings:
