@@ -5,87 +5,247 @@ print_semantics.py
 wrappers.py
 default_handlers.py
 """
+# https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
+from typing import List, Set, Dict, Tuple, Optional, Any
+from typing import Callable, Iterator, Union, Match
+from typing import Mapping, MutableMapping, Sequence, Iterable
+from typing import cast, ClassVar, TypeVar, Generic
+
 from re import Pattern
+
+from collections import defaultdict
+from enum import Enum
+
+from acab.abstract.core.value import AcabValue
+from acab.abstract.core.sentence import Sentence
+from acab.abstract.data.node import AcabNode
+from acab.abstract.data.contexts import Contexts
+from acab.abstract.data.structure import DataStructure
+from acab.abstract.data.node_semantics import AcabNodeSemantics
+
+from acab.error.acab_semantic_exception import AcabSemanticException
+
 from acab.abstract.config.config import AcabConfig
+from acab.abstract.core.value import AcabValue
+from acab.abstract.data.node import AcabNode
 
 util = AcabConfig.Get()
 
-#Setup
-# TODO register additional constraints
-def register_modal(a_dict, reset=False):
-    """ Register how to print a modal operator
-    ie: For exclusion logic: DOT -> ".", EX -> "!"
+# pylint: disable       =line-too-long
+# AcabValue -> Value(Op), Statement(Sentence, Component) Container(Query, Transform, Action), Structured:(Rule, Agenda, Layer, Pipeline)
+Printable = Union[AcabValue, AcabNode, DataStructure, Contexts, str]
+# pylint: enable        =line-too-long
+
+RET_enum = Enum(
+    "HandlerEnum", "PASS SIMPLE ACCUMULATOR SUBSTRUCT CALL SENTINEL PRINTABLE"
+)
+SEARCH_enum = Enum("Semantic Searches", "UUID NAME VALUE ACAB_T PY_T THROW")
+
+DEFAULT_SEMANTIC_SEARCH = [
+    SEARCH_enum[x]
+    for x in util.value("Print.Data", "DEFAULT_SEMANTIC_SEARCH").split(" ")
+]
+
+AccumulationDict = Dict[Any, Any]
+AccumulatorReturn = Tuple[RET_enum, Dict[str, Any], None]
+SubstructReturn = Tuple[RET_enum, List[Printable], Optional["Sentinel"]]
+SimpleReturn = Tuple[RET_enum, str, None]
+HandlerReturnUnion = Union[AccumulatorReturn, SubstructReturn, SimpleReturn]
+
+Handler = Callable[
+    ["AcabPrintSemantics", Printable, AccumulationDict, Any], HandlerReturnUnion
+]
+Sentinel = Callable[
+    ["AcabPrintSemantics", Printable, List[str], AccumulationDict, Any],
+    HandlerReturnUnion,
+]
+
+SemanticSpec = Tuple[List[Handler], Sentinel]
+ContextValue = str
+SemBox = Tuple[RET_enum, Printable, Callable]
+StackValue = Tuple[List[SemBox], List[str], Dict[Any, Any]]
+
+util = AcabConfig.Get()
+OBVIOUS_TYPES = util.value("Print.Data", "SUPPRESSION_TYPES").split(" ")
+
+# TODO replace this with pulling the dict straight from config
+PARAM_JOIN_V = util.value(
+    "Print.Patterns", "PARAM_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE]
+)
+PRINT_SENTINEL_JOIN_P = util.prepare(
+    "Print.Patterns", "PRINT_SENTINEL_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE]
+)
+SEN_JOIN_V = util.value(
+    "Print.Patterns", "SEN_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE]
+)
+TAB_V = util.value("Print.Patterns", "TAB", actions=[AcabConfig.actions_e.STRIPQUOTE])
+WRAP_FORMAT_V = util.value("Print.Patterns", "WRAP_FORMAT")
+CONTAINER_JOIN_V = util.value(
+    "Print.Patterns", "CONTAINER_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE]
+)
+
+AT_BIND_V = util.value("Value.Structure", "AT_BIND")
+BIND_V = util.value("Value.Structure", "BIND")
+CONSTRAINT_V = util.value("Value.Structure", "CONSTRAINT")
+NEGATION_V = util.value("Value.Structure", "NEGATION")
+OPERATOR_V = util.value("Value.Structure", "OPERATOR")
+QUERY_V = util.value("Value.Structure", "QUERY")
+TAG_V = util.value("Value.Structure", "TAG")
+TYPE_INSTANCE_V = util.value("Value.Structure", "TYPE_INSTANCE")
+
+END_V = util.value("Parse.Structure", "END")
+FUNC_V = util.value("Parse.Structure", "FUNC")
+
+AT_BIND_SYMBOL_V = util.value("Symbols", "AT_BIND")
+BIND_SYMBOL_V = util.value("Symbols", "BIND")
+END_SYMBOL_V = util.value("Symbols", "END")
+FALLBACK_MODAL_SYMBOL_V = util.value(
+    "Symbols", "FALLBACK_MODAL", actions=[AcabConfig.actions_e.STRIPQUOTE]
+)
+FUNC_SYMBOL_V = util.value("Symbols", "FUNC")
+NEGATION_SYMBOL_V = util.value("Symbols", "NEGATION")
+QUERY_SYMBOL_V = util.value("Symbols", "QUERY")
+TAG_SYMBOL_V = util.value("Symbols", "TAG")
+
+def _get_by_uuid(printer, val: Printable) -> SemanticSpec:
+        if val._uuid in printer._type_semantics:
+            return printer._type_semantics[val._uuid]
+
+        return None
+
+def _get_by_name(printer, val: Printable) -> Optional[SemanticSpec]:
+        if val.name in printer._type_semantics:
+            return printer._type_semantics[val.name]
+
+        return None
+
+def _get_by_value(printer, val: Printable) -> Optional[SemanticSpec]:
+        if val.value in printer._type_semantics:
+            return printer._type_semantics[val.name]
+
+        return None
+
+def _get_by_acab_type_hierarchy(printer, val) -> Optional[SemanticSpec]:
+        acab_types = [val.type]
+
+        while bool(acab_types):
+            current = acab_types.pop(0)
+            if current in printer._type_semantics:
+                return printer._type_semantics[current]
+
+        return None
+
+def _get_by_python_type_hierarchy(printer, val) -> Optional[SemanticSpec]:
+        types = [val.__class__]
+        while bool(types):
+            current = types.pop(0)
+            if current in printer._type_semantics:
+                return printer._type_semantics[current]
+            elif current.__base__ is not object:
+                types.append(current.__base__)
+
+
+        return None
+
+
+def _throw_semantic_search(printer, val):
+    raise AcabSemanticException(str(val), val)
+def _handle_printable(printer, data, func, params):
+        # A Printable value to find instructions for
+        assert func is None
+        handlers, sentinel = printer._retrieve_semantics(data)
+        # Add the handlers to the front of the queue
+        result = [(RET_enum.CALL, data, handler, None) for handler in handlers] + [
+            (RET_enum.SENTINEL, data, sentinel, None)
+        ]
+        printer._queue = result + printer._queue
+        return RET_enum.PASS, None, None, None
+
+def _handle_simple(printer, data, func, params):
+        printer._add_to_context(data)
+
+        return (RET_enum.PASS, None, None, None)
+
+def _handle_call(printer, data, func, params):
+        assert func is not None
+        return func(printer, data, printer._accumulation, params)
+
+def _handle_sentinel(printer, data, func, params):
+        result_tuple = func(printer, data, printer._context, printer._accumulation, params)
+        assert len(result_tuple) == 4, breakpoint()
+        printer._pop_stack()
+        return result_tuple
+
+def _handle_accumulator(printer, data, sentinel, params):
+        assert isinstance(data, dict)
+        printer._add_to_accumulation(data)
+        return (RET_enum.PASS, None, None, None)
+
+def _handle_substruct(printer, data, sentinel, params):
+        assert isinstance(data, list)
+        # PUSH STACK:
+        printer._push_stack(data, sentinel, params)
+        return (RET_enum.PASS, None, None, None)
+
+
+
+
+
+def default_handler(
+    print_semantics: 'AcabPrintSemantics', value: Printable, accum, params
+) -> HandlerReturnUnion:
     """
-    raise DeprecationWarning("Use Print Semantics instead")
-
-
-def register_primitive(a_dict, reset=False):
+    The simplest print handler.
     """
-    Register additional primitive formats
+    return RET_enum.SIMPLE, str(value), None, None
 
-    The two base primitive examples are:
-    REGEX: /{}/
-    STRING: "{}"
+
+def default_sentinel(
+    print_semantics: 'AcabPrintSemantics',
+    value: Printable,
+    ctx: List[ContextValue],
+    accumulator: Dict[Any, Any],
+    params: Any,
+) -> HandlerReturnUnion:
     """
-    raise DeprecationWarning("Use Print Semantics instead")
-
-
-def register_constraint(*constraints, reset=False):
+    The Simplest sentinel
     """
-    Register constraints / annotations of a value to represent for a value:
-    eg: x (::a.type), or y(>2)...
-    """
-    raise DeprecationWarning("Use Print Semantics Instead")
-
-def register_class(cls, func):
-    """
-    Register a function which prints a specific class
-
-    Enables separating print logic from the class
-    """
-    raise DeprecationWarning("Use Print Semantics Instead")
+    return RET_enum.SIMPLE, " ".join(ctx), None, None
 
 
-def register_obvious_types(*type_instances):
-    """ Register Type Instances which do not need pretty printing
-    eg: ATOMs and INTs don't need it: an_atom(::atom) 2(::number.int)
-    """
-    raise DeprecationWarning("Use Print Semantics instead")
+def default_aliases() -> Dict[Any, str]:
+    return {
+        AT_BIND_V: AT_BIND_SYMBOL_V,
+        BIND_V: BIND_SYMBOL_V,
+        END_V: END_SYMBOL_V,
+        FUNC_V: FUNC_SYMBOL_V,
+        NEGATION_V: NEGATION_SYMBOL_V,
+        QUERY_V: QUERY_SYMBOL_V,
+        PRINT_SENTINEL_JOIN_P[1]: util.value(*PRINT_SENTINEL_JOIN_P),
+        SEN_JOIN_V: SEN_JOIN_V,
+        TAG_V: TAG_SYMBOL_V,
+        FALLBACK_MODAL_SYMBOL_V: FALLBACK_MODAL_SYMBOL_V,
+        PARAM_JOIN_V: PARAM_JOIN_V,
+        WRAP_FORMAT_V: WRAP_FORMAT_V,
+    }
 
-def default_opts(*args, **kwargs):
-    """ Create the default options for pprint """
-    raise DeprecationWarning("Use print semantics instead")
 
-def pprint(obj, opts=None, **kwargs):
-    """ Top Level PPrint Routine, looks up class type
-    in registered pprints and calls that, with default opts if necessary """
-    raise DeprecationWarning("Use Print Semantics instead")
+def default_enum_lookup():
+    initial = {x: _throw_semantic_search for x in SEARCH_enum}
+    initial[SEARCH_enum.UUID] = _get_by_uuid
+    initial[SEARCH_enum.NAME] = _get_by_name
+    initial[SEARCH_enum.VALUE] = _get_by_value
+    initial[SEARCH_enum.ACAB_T] = _get_by_acab_type_hierarchy
+    initial[SEARCH_enum.PY_T] = _get_by_python_type_hierarchy
 
-def print_value(value, opts):
-    raise DeprecationWarning("Use Print Semantics instead")
+    return initial
 
-def print_sequence(seq, opts):
-    """ Pretty Print a Sequence, ie: things like sentences """
-    raise DeprecationWarning("Use Print Semantics instead")
-
-def print_container(container, opts):
-    raise DeprecationWarning("Use Print Semantics instead")
-
-def print_statement(statement, opts):
-    raise DeprecationWarning("Use Print Semantics instead")
-
-def print_fallback(fallback_list):
-    raise DeprecationWarning("Use Print Semantics instead")
-
-def print_operator(operator, opts):
-    """ Op Fix is the count of vars to print before printing the op.
-    eg: op_fix=0 : + 1 2 3 ...
-        op_fix=2 : 1 2 + 3 ...
-    """
-    raise DeprecationWarning("Use Print Semantics instead")
-
-def print_operator_rebind(operator, opts):
-    raise DeprecationWarning("Use Print Semantics instead")
-
-def print_operator_wrap(operator, opts):
-    raise DeprecationWarning("Use Print Semantics instead")
+def setup_instruction_mappings() -> Dict[Enum, Callable]:
+    return {
+        RET_enum.SIMPLE: _handle_simple,
+        RET_enum.ACCUMULATOR: _handle_accumulator,
+        RET_enum.SUBSTRUCT: _handle_substruct,
+        RET_enum.CALL: _handle_call,
+        RET_enum.SENTINEL: _handle_sentinel,
+        RET_enum.PRINTABLE: _handle_printable,
+    }
