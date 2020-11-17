@@ -30,15 +30,13 @@ from acab.modules.semantics.basic_semantics import BasicNodeSemantics
 
 logging = root_logger.getLogger(__name__)
 
-
-
 class BootstrapParser:
     """ Manage parsers and allow queries for hotloading,
     used in working memory and module interfaces """
 
     def __init__(self, empty=False):
         semantics = BasicTrieSemantics({AcabNode : BasicNodeSemantics()},
-                                       {AcabValue : (AcabNode, {}, lambda c,p,u,ctx: c)},
+                                       {AcabValue : (AcabNode, {})},
                                        sentence_sort=lambda x: str(x))
         self._internal_trie = Trie(semantics)
         if not empty:
