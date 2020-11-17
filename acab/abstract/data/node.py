@@ -36,6 +36,17 @@ class AcabNode:
         """ Create a new root node """
         return AcabNode(ROOT)
 
+    @classmethod
+    def match(cls, node):
+        node_cls = node.__class__
+        if node_cls == cls:
+            return True
+
+        else:
+            return False
+
+
+
     def __init__(self, value, data=None):
         # Unwrap Nodes to avoid nesting
         # TODO should this be the case?
@@ -125,7 +136,7 @@ class AcabNode:
         elif isinstance(node, AcabNode):
             return node._uuid in self._uuid_children
         elif isinstance(node, AcabValue) and node.is_var:
-            return bool(self)
+            return node.name in self._children
         elif isinstance(node, AcabValue):
             return node.name in self._children
         else:
@@ -202,6 +213,7 @@ class AcabNode:
 
 
     def _default_setup(self, path: ['AcabNode'], data: Dict[Any,Any], context: Dict[Any,Any]):
-        """ Called by a Semantics upon creation and addition of a new node,
-        *if* an override hasn't been specified in the semnatic's value_constructor map"""
+        """ Called by a Semantics upon creation of a new node """
         pass
+    def _update_node(self, path, data, context):
+        """ Called by a semantics for passing through a node """
