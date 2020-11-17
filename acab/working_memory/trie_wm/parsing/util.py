@@ -23,7 +23,6 @@ from acab.abstract.rule.rule import Rule
 
 from acab.error.acab_parse_exception import AcabParseException
 from acab.working_memory.trie_wm import util as WMU
-from acab.working_memory.trie_wm.fact_node import FactNode
 
 util = AcabConfig.Get()
 

@@ -16,7 +16,6 @@ from acab.abstract.engine.working_memory import WorkingMemory
 from acab.error.acab_operator_exception import AcabOperatorException
 from acab.error.acab_parse_exception import AcabParseException
 
-from .fact_node import FactNode
 from .parsing import ActionParser as AP
 from .parsing import FactParser as FP
 from .parsing import QueryParser as QP
@@ -39,13 +38,12 @@ QUERY_FALLBACK_S = util.value("Parse.Structure", "QUERY_FALLBACK")
 
 class TrieWM(WorkingMemory):
     """ A Trie based working memory"""
-    # TODO set default semantics class
 
     def __init__(self, init=None):
         """ init is a string of assertions to start the fact base with """
         # TODO enable passing of starting node semantics
         semantics = BasicTrieSemantics({AcabNode : ES.ExclusionNodeSemantics()},
-                                       {AcabValue : (FactNode, {}, lambda c, p, u, ctx: c)})
+                                       {AcabValue : (AcabNode, {})})
         super().__init__(init, semantics=semantics)
         self._internal_trie = Trie(semantics)
         # parser : PyParsing.ParserElement
