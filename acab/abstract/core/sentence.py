@@ -105,7 +105,15 @@ class Sentence(AcabStatement):
                 retrieved = bindings[word._value]
 
 
-            if isinstance(retrieved, AcabValue):
+            if isinstance(retrieved, Sentence) and len(retrieved) == 1:
+                copied = retrieved[0].copy()
+                copied._data.update(word._data)
+                copied._data[BIND] = False
+                output.append(copied)
+            elif isinstance(retrieved, AcabValue):
+                copied = retrieved.copy()
+                copied._data.update(word._data)
+                copied._data[BIND] = False
                 output.append(retrieved)
             else:
                 # TODO how often should this actually happen?
