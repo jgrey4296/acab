@@ -101,12 +101,3 @@ class Engine_Tests(unittest.TestCase):
 
     # TODO: in place of action registration, check operators are called appropriately
 
-if __name__ == "__main__":
-    LOGLEVEL = logging.INFO
-    logFileName = "log.engine_tests"
-    logging.basicConfig(filename=logFileName, level=LOGLEVEL, filemode='w')
-    console = logging.StreamHandler()
-    console.setLevel(logging.WARN)
-    logging.getLogger().addHandler(console)
-    unittest.main()
-    #reminder: user logging.getLogger().setLevel(logging.NOTSET) for log control

@@ -200,13 +200,3 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertEqual(Printer.print(result[0][1]._data[CONSTRAINT_V][2].op), "HasTag")
 
 
-
-if __name__ == "__main__":
-      LOGLEVEL = logging.INFO
-      logFileName = "log.Trie_Query_Parser_Tests"
-      logging.basicConfig(filename=logFileName, level=LOGLEVEL, filemode='w')
-      console = logging.StreamHandler()
-      console.setLevel(logging.WARN)
-      logging.getLogger().addHandler(console)
-      unittest.main()
-      #reminder: user logging.getLogger().setLevel(logging.NOTSET) for log control

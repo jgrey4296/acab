@@ -153,12 +153,3 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
         self.assertTrue(all(x in tags for x in ["blah","bloo","blee"]))
 
 
-if __name__ == "__main__":
-      LOGLEVEL = logging.INFO
-      logFileName = "log.Trie_Rule_Parser_Tests"
-      logging.basicConfig(filename=logFileName, level=LOGLEVEL, filemode='w')
-      console = logging.StreamHandler()
-      console.setLevel(logging.WARN)
-      logging.getLogger().addHandler(console)
-      unittest.main()
-      #reminder: user logging.getLogger().setLevel(logging.NOTSET) for log control

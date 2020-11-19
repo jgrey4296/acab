@@ -103,12 +103,3 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
         return
 
 
-if __name__ == "__main__":
-    LOGLEVEL = logging.INFO
-    logFileName = "log.Trie_Action_Parser_Tests"
-    logging.basicConfig(filename=logFileName, level=LOGLEVEL, filemode='w')
-    console = logging.StreamHandler()
-    console.setLevel(logging.WARN)
-    logging.getLogger().addHandler(console)
-    unittest.main()
-    #reminder: user logging.getLogger().setLevel(logging.NOTSET) for log control

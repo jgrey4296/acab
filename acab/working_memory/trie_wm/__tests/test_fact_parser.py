@@ -169,12 +169,3 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
 
 
 
-if __name__ == "__main__":
-    LOGLEVEL = logging.INFO
-    logFileName = "log.trie_fact_parser_tests"
-    logging.basicConfig(filename=logFileName, level=LOGLEVEL, filemode='w')
-    console = logging.StreamHandler()
-    console.setLevel(logging.WARN)
-    logging.getLogger().addHandler(console)
-    unittest.main()
-    #reminder: user logging.getLogger().setLevel(logging.NOTSET) for log control

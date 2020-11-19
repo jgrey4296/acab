@@ -509,13 +509,3 @@ class TestTime(unittest.TestCase):
         self.assertEqual(len(a_pattern.events[1].events), 2)
 
 
-if __name__ == "__main__":
-    #use python $filename to use this logging setup
-    LOGLEVEL = logging.INFO
-    logFileName = "log.test_time"
-    logging.basicConfig(filename=logFileName, level=LOGLEVEL, filemode='w')
-    console = logging.StreamHandler()
-    console.setLevel(logging.INFO)
-    logging.getLogger().addHandler(console)
-    unittest.main()
-    #reminder: user logging.getLogger().setLevel(logging.NOTSET) for log control

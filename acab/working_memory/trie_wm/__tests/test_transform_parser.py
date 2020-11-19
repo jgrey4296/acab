@@ -88,12 +88,3 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
     def test_transform_sugar(self):
         return
 
-if __name__ == "__main__":
-    LOGLEVEL = logging.INFO
-    logFileName = "log.Trie_Transform_Parser_Tests"
-    logging.basicConfig(filename=logFileName, level=LOGLEVEL, filemode='w')
-    console = logging.StreamHandler()
-    console.setLevel(logging.WARN)
-    logging.getLogger().addHandler(console)
-    unittest.main()
-    #reminder: user logging.getLogger().setLevel(logging.NOTSET) for log control

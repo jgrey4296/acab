@@ -110,13 +110,3 @@ def pattern_match_fn(head, available):
     return [x for x in available if x.name == head.name]
 
 
-if __name__ == "__main__":
-    #use python $filename to use this logging setup
-    LOGLEVEL = logging.INFO
-    logFileName = "log.trie_tests"
-    logging.basicConfig(filename=logFileName, level=LOGLEVEL, filemode='w')
-    console = logging.StreamHandler()
-    console.setLevel(logging.WARN)
-    logging.getLogger().addHandler(console)
-    unittest.main()
-    #reminder: user logging.getLogger().setLevel(logging.NOTSET) for log control

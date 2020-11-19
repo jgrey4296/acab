@@ -288,11 +288,3 @@ class Trie_WM_Tests(unittest.TestCase):
 
 
 
-if __name__ == "__main__":
-    LOGLEVEL = logging.INFO
-    logFileName = "log.RuleFactTrieTests"
-    logging.basicConfig(filename=logFileName, level=LOGLEVEL, filemode='w')
-    console = logging.StreamHandler()
-    console.setLevel(logging.WARN)
-    logging.getLogger().addHandler(console)
-    unittest.main()

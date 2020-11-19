@@ -48,13 +48,3 @@ class TrieIntegrationTimeTests(unittest.TestCase):
         self.assertIsInstance(a[-1], TimeContainer)
         self.assertEqual(a[-1]._data[TYPE_INSTANCE_S], TU.TIME_PATTERN_S)
 
-if __name__ == "__main__":
-    #use python $filename to use this logging setup
-    LOGLEVEL = logging.INFO
-    logFileName = "log.TrieIntegrationTimeTests"
-    logging.basicConfig(filename=logFileName, level=LOGLEVEL, filemode='w')
-    console = logging.StreamHandler()
-    console.setLevel(logging.WARN)
-    logging.getLogger().addHandler(console)
-    unittest.main()
-    #reminder: user logging.getLogger().setLevel(logging.NOTSET) for log control

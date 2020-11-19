@@ -98,12 +98,3 @@ class TypeDef_ParserTests(unittest.TestCase):
         self.assertIsInstance(result[-1], OperatorDefinition)
 
 
-if __name__ == "__main__":
-    LOGLEVEL = logging.INFO
-    logFileName = "log.trie_typedef_parser"
-    logging.basicConfig(filename=logFileName, level=LOGLEVEL, filemode='w')
-    console = logging.StreamHandler()
-    console.setLevel(logging.WARN)
-    logging.getLogger().addHandler(console)
-    unittest.main()
-    #reminder: user logging.getLogger().setLevel(logging.NOTSET) for log control

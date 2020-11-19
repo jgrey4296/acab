@@ -191,13 +191,3 @@ class Engine_Logic_Tests(unittest.TestCase):
         self.assertTrue(self.e.query('a.d.c?, a.d.d?, a.b!30?'))
 
 
-if __name__ == "__main__":
-    #use python $filename to use this logging setup
-      LOGLEVEL = logging.INFO
-      logFileName = "log.Engine_Logic_Tests"
-      logging.basicConfig(filename=logFileName, level=LOGLEVEL, filemode='w')
-      console = logging.StreamHandler()
-      console.setLevel(logging.WARN)
-      logging.getLogger().addHandler(console)
-      unittest.main()
-      #reminder: user logging.getLogger().setLevel(logging.NOTSET) for log control

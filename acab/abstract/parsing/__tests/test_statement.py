@@ -7,7 +7,7 @@ logging = root_logger.getLogger(__name__)
 import pyparsing as pp
 
 from acab.abstract.config.config import GET
-GET("acab")
+GET("acab/abstract/config")
 
 from acab.abstract.parsing import parsers as PU
 from acab.abstract.core.value import AcabValue, AcabStatement
@@ -70,18 +70,3 @@ class StatementTests(unittest.TestCase):
         self.assertTrue('abcd' in tags_str)
         self.assertTrue('aaaa' in tags_str)
         self.assertTrue('bbbb' in tags_str)
-
-
-
-
-if __name__ == "__main__":
-    #run python $filename to use this logging setup
-    #using python -m unittest $filename won't
-    LOGLEVEL = logging.INFO
-    logFileName = "log.{}".format(splitext(split(__file__)[1])[0])
-    logging.basicConfig(filename=logFileName, level=LOGLEVEL, filemode='w')
-    console = logging.StreamHandler()
-    console.setLevel(logging.WARN)
-    logging.getLogger().addHandler(console)
-    unittest.main()
-    #reminder: user logging.getLogger().setLevel(logging.NOTSET) for log control

@@ -891,14 +891,3 @@ class TypingCombinedTests(unittest.TestCase):
         # TODO verify
 
 
-
-if __name__ == "__main__":
-    #use python $filename to use this logging setup
-    LOGLEVEL = logging.INFO
-    logFileName = "log.typing_tests"
-    logging.basicConfig(filename=logFileName, level=LOGLEVEL, filemode='w')
-    console = logging.StreamHandler()
-    console.setLevel(logging.WARN)
-    logging.getLogger().addHandler(console)
-    unittest.main()
-    #reminder: user logging.getLogger().setLevel(logging.NOTSET) for log control
