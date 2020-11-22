@@ -8,10 +8,11 @@ logging = root_logger.getLogger(__name__)
 from acab.abstract.config.config import AcabConfig
 AcabConfig.Get().read("acab/abstract/config")
 
+from acab.abstract.parsing import consts as PConst
+
 from acab.abstract.core.value import  AcabValue
 from acab.abstract.core.sentence import Sentence
-from acab.abstract.rule import action
-from acab.abstract.rule.production_operator import ProductionOperator
+from acab.abstract.rule.production_abstractions import ProductionOperator, ProductionContainer
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
 
 from acab.engines.trie_engine import TrieEngine

@@ -16,8 +16,7 @@ import acab.working_memory.trie_wm.parsing.QueryParser as QP
 from acab.abstract.core.value import AcabValue
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
-from acab.abstract.rule.production_operator import ProductionOperator
-from acab.abstract.rule.query import Query, QueryComponent, QueryOp
+from acab.abstract.rule.production_abstractions import ProductionOperator, ProductionContainer, ProductionComponent
 
 from acab.modules.operators import query as QOP
 from acab.working_memory.trie_wm import util as KBU

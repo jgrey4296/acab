@@ -47,8 +47,7 @@ AcabConfig.Get().read("acab/abstract/config")
 from acab.abstract.parsing import parsers as PU
 from acab.abstract.parsing.consts import PIPE_HEAD
 from acab.abstract.parsing.funcs import make_pipeline
-from acab.abstract.rule.production_operator import ProductionContainer
-from acab.abstract.pipeline.pipeline import Pipeline
+from acab.abstract.rule.production_abstractions import ProductionContainer
 
 logging = root_logger.getLogger(__name__)
 

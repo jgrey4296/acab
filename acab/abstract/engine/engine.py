@@ -16,12 +16,7 @@ from acab.error.acab_base_exception import AcabBaseException
 from acab.abstract.core.value import AcabValue
 from acab.abstract.core.sentence import Sentence
 
-from acab.abstract.rule.production_operator import ProductionOperator, ProductionContainer
-from acab.abstract.rule import action
-from acab.abstract.rule.rule import Rule
-
-from acab.abstract.pipeline.agenda import Agenda
-
+from acab.abstract.rule.production_abstractions import ProductionOperator, ProductionContainer
 from acab.abstract.engine.dsl_fragment import DSL_Fragment
 from acab.abstract.engine.working_memory import WorkingMemory
 

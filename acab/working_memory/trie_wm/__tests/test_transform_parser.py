@@ -11,8 +11,7 @@ AcabConfig.Get().read("acab/abstract/config")
 from acab.abstract.core.value import AcabValue
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
-from acab.abstract.rule import transform
-from acab.abstract.rule.production_operator import ProductionOperator
+from acab.abstract.rule.production_abstractions import ProductionOperator, ProductionContainer
 from acab.working_memory.trie_wm import util as KBU
 from acab.working_memory.trie_wm.parsing import TransformParser as TP
 

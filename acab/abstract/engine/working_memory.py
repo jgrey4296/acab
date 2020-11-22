@@ -22,7 +22,7 @@ from fractions import Fraction
 from acab.abstract.data.node import AcabNode
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
 from acab.abstract.engine.dsl_fragment import DSL_Fragment
-from acab.abstract.rule.production_operator import ProductionOperator
+from acab.abstract.rule.production_abstractions import ProductionOperator
 
 from acab.modules.semantics.basic_semantics import BasicNodeSemantics
 from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics

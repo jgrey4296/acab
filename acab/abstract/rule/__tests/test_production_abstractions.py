@@ -12,13 +12,14 @@ AcabConfig.Get("acab")
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.core.value import AcabValue, AcabStatement
 
-from acab.abstract.rule import production_operator as PO
+from acab.abstract.rule import production_abstractions as PO
 
 util                 = AcabConfig.Get()
 BIND_S               = util.value("Value.Structure", "BIND")
 OPERATOR_TYPE_PRIM_S = util.value("Type.Primitive", "OPERATOR")
 
-class ProductionOperatorTests(unittest.TestCase):
+class ProductionAbstractionTests(unittest.TestCase):
+    """ Test the construction of production abstractions """
 
     @classmethod
     def setUpClass(cls):

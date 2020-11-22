@@ -12,8 +12,7 @@ from acab.abstract.core.value import AcabValue
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
 from acab.abstract.core.sentence import Sentence
-from acab.abstract.rule import action
-from acab.abstract.rule.production_operator import ProductionOperator
+from acab.abstract.rule.production_abstractions import ProductionOperator, ProductionComponent, ProductionContainer
 from acab.abstract.printing.print_semantics import AcabPrintSemantics
 from acab.abstract.printing import default_handlers as DH
 

@@ -12,11 +12,7 @@ from acab.abstract.config.config import AcabConfig
 from acab.abstract.parsing import consts as PConst
 from acab.abstract.core.value import AcabValue
 from acab.abstract.core.sentence import Sentence
-from acab.abstract.rule.query import Query, QueryComponent
-from acab.abstract.rule.transform import Transform, TransformComponent
-from acab.abstract.rule.action import Action, ActionComponent
-from acab.abstract.rule.rule import Rule
-from acab.abstract.rule.production_operator import ProductionContainer
+from acab.abstract.rule.production_abstractions import ProductionContainer, ProductionComponent, ProductionStructure
 
 logging = root_logger.getLogger(__name__)
 

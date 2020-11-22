@@ -2,10 +2,9 @@
 Defintions for Core Transform Operators
 """
 from re import sub
+from acab.abstract.rule.production_abstractions import ProductionOperator
 
-from acab.abstract.rule.transform import TransformOp
-
-class RegexOp(TransformOp):
+class RegexOp(ProductionOperator):
     def __init__(self):
         super().__init__()
 

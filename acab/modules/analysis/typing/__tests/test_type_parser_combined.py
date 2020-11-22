@@ -1,16 +1,18 @@
 import unittest
-import logging
+import logging as root_logger
+from os.path import split, splitext
+logging = root_logger.getLogger(__name__)
 
-from acab.config import AcabConfig
-AcabConfig.Get().read("acab/util.config")
+
+from acab.abstract.config.config import AcabConfig
+AcabConfig.Get().read("acab/abstract/config")
 
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.core.value import AcabValue
 
 from acab.abstract.data.node import AcabNode
 from acab.abstract.rule import action
-from acab.abstract.rule.production_operator import ProductionOperator
-from acab.abstract.rule.transform import TransformComponent
+from acab.abstract.rule.production_abstractions import ProductionOperator, ProductionComponent
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
 
 from acab.modules.analysis.typing import type_exceptions as te

@@ -21,7 +21,7 @@ import pyparsing as pp
 from acab.abstract.core.sentence import Sentence
 from acab.abstract.core.value import AcabValue
 from acab.abstract.data.node import AcabNode
-from acab.abstract.rule.production_operator import ProductionOperator
+from acab.abstract.rule.production_abstractions import ProductionOperator
 from acab.abstract.parsing.parsers import OPERATOR_SUGAR
 
 from acab.modules.structures.trie.trie import Trie

@@ -4,7 +4,7 @@ Definitions of Set Operations
 treat a node as set
 
 """
-from acab.abstract.core.production_operator import ProductionOperator
+from acab.abstract.core.production_abstractions import ProductionOperator
 
 
 class SetOperator(ProductionOperator):

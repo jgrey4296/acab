@@ -15,11 +15,7 @@ from acab.abstract.parsing import funcs as Pfunc
 from acab.abstract.core.value import AcabValue
 from acab.abstract.core.sentence import Sentence
 
-from acab.abstract.rule.query import Query, QueryComponent
-from acab.abstract.rule.action import ActionComponent, Action
-from acab.abstract.rule.transform import TransformComponent, Transform
-from acab.abstract.rule.production_operator import ProductionContainer
-from acab.abstract.rule.rule import Rule
+from acab.abstract.rule.production_abstractions import ProductionContainer
 
 from acab.error.acab_parse_exception import AcabParseException
 from acab.working_memory.trie_wm import util as WMU
