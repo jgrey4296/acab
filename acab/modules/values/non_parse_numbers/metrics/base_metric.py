@@ -7,7 +7,7 @@ vectors
 
 
 """
-from acab.abstract.core.value import AcabValue
+from acab.abstract.core.core_abstractions import AcabValue
 
 class MetricBase(AcabValue):
     """ A Base Class for a means of assessing and comparing  """

@@ -13,8 +13,8 @@ import logging as root_logger
 from acab.error.acab_operator_exception import AcabOperatorException
 from acab.abstract.config.config import AcabConfig
 
-from acab.abstract.core.value import AcabValue, AcabStatement
-from acab.abstract.core.sentence import Sentence
+from acab.abstract.core.core_abstractions import AcabValue, AcabStatement
+from acab.abstract.core.core_abstractions import Sentence
 
 util = AcabConfig.Get()
 

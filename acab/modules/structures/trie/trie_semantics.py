@@ -6,14 +6,14 @@ from typing import Callable, Iterator, Union, Match, TypeVar
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar
 
-from acab.abstract.core.sentence import Sentence
-from acab.abstract.core.value import AcabValue, AcabStatement
+from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.core_abstractions import AcabValue, AcabStatement
 from acab.abstract.data.contexts import Contexts, CTX_OP
 from acab.abstract.data.node import AcabNode
 from acab.abstract.data.node_semantics import AcabNodeSemantics
 from acab.abstract.data.struct_semantics import AcabStructureSemantics
 from acab.abstract.data.structure import DataStructure
-from acab.abstract.rule.query import QueryComponent
+from acab.abstract.rule.production_abstractions import ProductionContainer
 
 from acab.error.acab_semantic_exception import AcabSemanticException
 

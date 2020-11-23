@@ -9,17 +9,15 @@ logging = root_logger.getLogger(__name__)
 from acab.abstract.config.config import AcabConfig
 AcabConfig.Get().read("acab/abstract/config")
 
-from acab.abstract.core.value import AcabValue
-from acab.abstract.core.sentence import Sentence
+from acab.abstract.core.core_abstractions import AcabValue
+from acab.abstract.core.core_abstractions import Sentence
 from acab.modules.values.numbers.parsing import NumberParser as NP
 from acab.working_memory.trie_wm.parsing import ActionParser as AP
 from acab.working_memory.trie_wm.parsing import TransformParser as TP
 from acab.working_memory.trie_wm.parsing import FactParser as FP
 from acab.working_memory.trie_wm.parsing import QueryParser as QP
-from acab.abstract.rule import action
-from acab.abstract.rule.query import QueryComponent, QueryOp
-from acab.abstract.core.sentence import Sentence
-from acab.abstract.rule import transform
+
+from acab.abstract.rule.production_abstractions import ProductionComponent, ProductionOperator
 from acab.modules.values import numbers
 from acab.working_memory.trie_wm.trie_working_memory import TrieWM
 from acab.working_memory.trie_wm import util as KBU

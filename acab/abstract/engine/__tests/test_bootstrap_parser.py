@@ -9,7 +9,7 @@ import pyparsing as pp
 from acab.abstract.config.config import AcabConfig
 AcabConfig.Get().read("acab/abstract/config")
 
-from acab.abstract.core.value import AcabValue
+from acab.abstract.core.core_abstractions import AcabValue
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
 
 class BootstrapParserTests(unittest.TestCase):

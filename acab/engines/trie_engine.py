@@ -18,7 +18,7 @@ import re
 from acab.abstract.config.config import AcabConfig
 from acab.error.acab_parse_exception import AcabParseException
 
-from acab.abstract.core.sentence import Sentence
+from acab.abstract.core.core_abstractions import Sentence
 
 from acab.abstract.rule.production_abstractions import ProductionOperator
 from acab.abstract.engine.dsl_fragment import DSL_Fragment

@@ -8,9 +8,12 @@ from typing import cast, ClassVar, TypeVar
 
 
 from acab.abstract.data.node import AcabNode
-from acab.abstract.core.value import AcabValue
-from acab.abstract.core.sentence import Sentence
+from acab.abstract.core.core_abstractions import AcabValue
+from acab.abstract.core.core_abstractions import Sentence
 from acab.abstract.data.node_semantics import AcabNodeSemantics
+
+from acab.abstract.parsing.consts import ATOM_V
+
 from acab.modules.analysis.typing import type_exceptions as te
 from acab.modules.analysis.typing import util
 from acab.modules.semantics.basic_semantics import BasicNodeSemantics

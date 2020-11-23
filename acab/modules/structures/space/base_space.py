@@ -7,7 +7,7 @@ connections:
 
 
 """
-from acab.abstract.core.value import AcabValue
+from acab.abstract.core.core_abstractions import AcabValue
 
 class SpatialBase:
     """ Base Description of a spatial logic """

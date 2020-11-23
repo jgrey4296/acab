@@ -7,7 +7,7 @@ from acab.abstract.config.config import AcabConfig
 AcabConfig.Get().read("acab/abstract/config")
 
 from acab.abstract.data.node import AcabNode
-from acab.abstract.core.value import AcabValue
+from acab.abstract.core.core_abstractions import AcabValue
 
 BIND_S = AcabConfig.Get().value("Value.Structure", "BIND")
 AV = AcabValue

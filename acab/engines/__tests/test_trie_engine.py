@@ -8,8 +8,8 @@ from math import isclose
 from acab.abstract.config.config import AcabConfig
 AcabConfig.Get().read("acab/abstract/config")
 
-from acab.abstract.core.value import AcabValue
-from acab.abstract.rule.rule import Rule
+from acab.abstract.core.core_abstractions import AcabValue
+from acab.abstract.rule.production_abstractions import ProductionStructure
 from acab.abstract.data.contexts import Contexts
 
 import acab.engines.trie_engine as T

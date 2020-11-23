@@ -13,8 +13,8 @@ from acab.abstract.parsing.parsers import HOTLOAD_VALUES, VALBIND
 import acab.working_memory.trie_wm.parsing.FactParser as FP
 import acab.working_memory.trie_wm.parsing.QueryParser as QP
 
-from acab.abstract.core.value import AcabValue
-from acab.abstract.core.sentence import Sentence
+from acab.abstract.core.core_abstractions import AcabValue
+from acab.abstract.core.core_abstractions import Sentence
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
 from acab.abstract.rule.production_abstractions import ProductionOperator, ProductionContainer, ProductionComponent
 

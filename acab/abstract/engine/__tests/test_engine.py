@@ -9,7 +9,7 @@ logging = root_logger.getLogger(__name__)
 from acab.abstract.config.config import AcabConfig
 AcabConfig.Get().read("acab/abstract/config")
 
-from acab.abstract.core.value import AcabValue
+from acab.abstract.core.core_abstractions import AcabValue
 from acab.abstract.engine.working_memory import WorkingMemory
 from acab.abstract.engine.engine import Engine
 

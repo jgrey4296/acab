@@ -1,17 +1,19 @@
-import logging
+import logging as root_logger
+logging = root_logger.getLogger(__name__)
+
 import random
 import unittest
 
-from acab.config import AcabConfig
-AcabConfig.Get().read("acab/util.config")
+from acab.abstract.config.config import AcabConfig
+AcabConfig.Get().read("acab/abstract/config")
 
 import acab.modules.analysis.typing.parsing.TypeDefParser as TD
 import acab.modules.analysis.typing.parsing.TypeParser as TP
 
-from acab.abstract.core.type_system import build_simple_type_system
-from acab.abstract.core.sentence import Sentence
+from acab.abstract.core.core_abstractions import AcabValue
+from acab.abstract.core.core_abstractions import Sentence
 from acab.abstract.data.node import AcabNode
-from acab.abstract.parsing import util as PU
+from acab.abstract.parsing import parsers as PU
 
 from acab.error.acab_parse_exception import AcabParseException
 

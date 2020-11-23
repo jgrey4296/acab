@@ -5,7 +5,7 @@ Registers and uses parser fragments.
 """
 import logging as root_logger
 
-from acab.abstract.core.value import AcabValue
+from acab.abstract.core.core_abstractions import AcabValue
 
 logging = root_logger.getLogger(__name__)
 

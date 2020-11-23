@@ -1,21 +1,20 @@
-from acab.abstract.core.value import AcabValue
-from acab.abstract.core.sentence import Sentence
+from acab.abstract.core.core_abstractions import AcabValue
+from acab.abstract.core.core_abstractions import Sentence
 
 from acab.error.acab_parse_exception import AcabParseException
 
 from acab.modules.analysis.typing.util import TYPE_DEFINITION, SUM_DEFINITION, TYPE_DEF_S
 from acab.modules.analysis.typing import type_exceptions as TE
 
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
 from .acab_type import TypeStatement
 
 util = AcabConfig.Get()
 
-STRUCTURE_S = util("Module.Typing", "STRUCTURE_S")
-PRIMITIVE_ANNOTATION_S = util("Module.Typing", "PRIMITIVE_ANNOTATION_S")
-VALUE_TYPE_S = util("Parsing.Structure", "VALUE_TYPE_S")
-NAME_S = util("Parsing.Structure", "NAME_S")
+PRIMITIVE_S     = util.value("Typing.Primitives", "PRIMITIVE")
+TYPE_INSTANCE_S = util.value("Parse.Structure", "TYPE_INSTANCE")
+NAME_S          = util.value("Parse.Structure", "NAME")
 
 
 # TODO register class

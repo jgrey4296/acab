@@ -12,8 +12,14 @@ logging = root_logger.getLogger(__name__)
 
 
 from acab.abstract.config.config import GET
-util = GET("acab")
+util = GET("acab/abstract/config")
 
+from acab.abstract.core.core_abstractions import AcabValue, AcabStatement
+from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.rule.production_abstractions import ProductionContainer, ProductionComponent, ProductionOperator
+
+from acab.abstract.printing.print_semantics import AcabPrintSemantics, RET_enum
+from acab.abstract.printing import default_handlers as DH
 
 NEGATION_S        = util.value("Value.Structure", "NEGATION")
 QUERY_S           = util.value("Value.Structure", "QUERY")

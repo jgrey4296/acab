@@ -6,9 +6,9 @@ from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar
 
 from acab.abstract.data.node import AcabNode
-from acab.abstract.core.value import AcabValue
+from acab.abstract.core.core_abstractions import AcabValue
 from acab.abstract.data.structure import DataStructure
-from acab.abstract.core.sentence import Sentence
+from acab.abstract.core.core_abstractions import Sentence
 from acab.abstract.data.contexts import Contexts
 from acab.abstract.data.node_semantics import AcabNodeSemantics
 

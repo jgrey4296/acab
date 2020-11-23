@@ -1,41 +1,42 @@
 import logging as root_logger
 import pyparsing as pp
 
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
-from acab.abstract.core.type_system import AcabTypeSystem
-from acab.abstract.core.type_base import TypeInstance
+from acab.abstract.core.core_abstractions import Sentence
 
-from acab.abstract.parsing.util import s
+from acab.abstract.parsing.consts import s
 
 logging = root_logger.getLogger(__name__)
 
 util = AcabConfig.Get()
 
-ROOT_S        = util("Data.Struct", "ROOT_S")
-BIND_S        = util("Parsing.Structure", "BIND_S")
-SEN_S         = util("Parsing.Structure", "SEN_S")
-VALUE_TYPE_S  = util("Parsing.Structure", "VALUE_TYPE_S")
-ARG_S         = util("Parsing.Structure", "ARG_S")
-OPERATOR_S    = util("Parsing.Structure", "OPERATOR_S")
-TYPE_DEF_S    = util("Module.Typing", "TYPE_DEF_S")
-OP_DEF_S      = util("Module.Typing", "OP_DEF_S")
-SUM_DEF_S     = util("Module.Typing", "SUM_DEF_S")
-STRUCT_S      = util("Module.Typing", "STRUCT_S")
-TVAR_S        = util("Module.Typing", "TVAR_S")
-SYNTAX_BIND_S = util("Module.Typing", "SYNTAX_BIND_S")
+ROOT_S          = util.value("Data", "ROOT")
 
-SUM_HEAD       = s(util("Module.Typing.Symbols", "SUM_HEAD_S", action=AcabConfig.actions_e.KEYWORD))
-STRUCT_HEAD    = s(util("Module.Typing.Symbols", "STRUCTURE_S", action=AcabConfig.actions_e.KEYWORD))
-TYPE_CLASS_HEAD = s(util("Module.Typing.Symbols", "TYPE_CLASS_S", action=AcabConfig.actions_e.KEYWORD))
-FUNC_HEAD      = s(pp.Word(util("Visual.Symbols", "FUNC_SYMBOL_S")))
+BIND_S          = util.value("Value.Structure", "BIND")
+TYPE_INSTANCE_S = util.value("Value.Structure", "TYPE_INSTANCE")
+ARG_S           = util.value("Value.Structure", "PARAMS")
+OPERATOR_S      = util.value("Value.Structure", "OPERATOR")
+SEN_S           = util.value("Value.Structure", "SEN")
 
-DELIM_S       = util("Module.Typing", "DELIM_S", action=AcabConfig.actions_e.STRIPQUOTE)
+TYPE_DEF_S      = util.value("Typing.Primitives", "TYPE_DEF")
+OP_DEF_S        = util.value("Typing.Primitives", "OP_DEF")
+SUM_DEF_S       = util.value("Typing.Primitives", "SUM_DEF")
+STRUCT_S        = util.value("Typing.Primitives", "STRUCT")
+TVAR_S          = util.value("Typing.Primitives", "TVAR")
+SYNTAX_BIND_S   = util.value("Typing.Primitives", "SYNTAX_BIND")
+
+PARAM_JOIN_S    = util.value("Print.Patterns", "PARAM_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE])
+
+SUM_HEAD        = s(util.value("Symbols", "SUM", actions=[AcabConfig.actions_e.KEYWORD]))
+STRUCT_HEAD     = s(util.value("Symbols", "STRUCTURE", actions=[AcabConfig.actions_e.KEYWORD]))
+TYPE_CLASS_HEAD = s(util.value("Symbols", "TYPE_CLASS", actions=[AcabConfig.actions_e.KEYWORD]))
+FUNC_HEAD       = s(pp.Word(util.value("Symbols", "FUNC")))
 
 # TODO make these registrations
-TYPE_DEFINITION = TypeInstance(path=[TYPE_DEF_S])
-SUM_DEFINITION = TypeInstance(path=[SUM_DEF_S])
-OPERATOR_DEFINITION = TypeInstance(path=[OP_DEF_S])
+TYPE_DEFINITION = Sentence.build([TYPE_DEF_S])
+SUM_DEFINITION = Sentence.build([SUM_DEF_S])
+OPERATOR_DEFINITION = Sentence.build([OP_DEF_S])
 # TODO TYPE CLASS
 
 STRUCT_HEAD.setName("StructHead")

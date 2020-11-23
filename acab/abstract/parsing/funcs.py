@@ -10,8 +10,8 @@ import pyparsing as pp
 from acab.abstract.config.config import AcabConfig
 
 from acab.abstract.parsing import consts as PConst
-from acab.abstract.core.value import AcabValue
-from acab.abstract.core.sentence import Sentence
+from acab.abstract.core.core_abstractions import AcabValue
+from acab.abstract.core.core_abstractions import Sentence
 from acab.abstract.rule.production_abstractions import ProductionContainer, ProductionComponent, ProductionStructure
 
 logging = root_logger.getLogger(__name__)

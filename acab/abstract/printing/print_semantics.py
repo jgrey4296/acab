@@ -14,8 +14,8 @@ from typing import cast, ClassVar, TypeVar
 from collections import defaultdict
 from enum import Enum
 
-from acab.abstract.core.value import AcabValue
-from acab.abstract.core.sentence import Sentence
+from acab.abstract.core.core_abstractions import AcabValue
+from acab.abstract.core.core_abstractions import Sentence
 from acab.abstract.data.node import AcabNode
 from acab.abstract.data.contexts import Contexts
 from acab.abstract.data.structure import DataStructure

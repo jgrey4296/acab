@@ -9,7 +9,7 @@ a.string.rng(::RNGGen).seed."the seed"
 """
 import numpy as np
 
-from acab.abstract.core.value import AcabValue
+from acab.abstract.core.core_abstractions import AcabValue
 
 
 class RNGGen(AcabValue):

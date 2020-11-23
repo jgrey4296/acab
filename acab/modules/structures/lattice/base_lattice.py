@@ -8,7 +8,7 @@ Structure
 Operators: Add subtract, path to top, path to bottom
 
 """
-from acab.abstract.core.value import AcabValue
+from acab.abstract.core.core_abstractions import AcabValue
 
 class LatticeBase(AcabValue):
     """ A Description of a Lattice """

@@ -9,8 +9,8 @@ import pyparsing as pp
 from acab.abstract.config.config import AcabConfig
 AcabConfig.Get().read("acab/abstract/config")
 
-from acab.abstract.core.sentence import Sentence
-from acab.abstract.core.value import AcabValue
+from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.core_abstractions import AcabValue
 
 from acab.abstract.config.modal import MODAL_ENUMS
 from acab.abstract.parsing.parsers import HOTLOAD_VALUES, VALBIND

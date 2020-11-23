@@ -9,10 +9,9 @@ from pyparsing import ParseException
 from acab.abstract.config.config import AcabConfig
 AcabConfig.Get().read("acab/abstract/config")
 
-from acab.abstract.core.value import AcabValue
-from acab.abstract.core.sentence import Sentence
-from acab.abstract.rule import action
-from acab.abstract.rule.query import QueryComponent, QueryOp
+from acab.abstract.core.core_abstractions import AcabValue
+from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.rule.production_abstractions import ProductionComponent, ProductionOperator
 
 from acab.modules.values import numbers
 from acab.modules.values.numbers.parsing import NumberParser as NP

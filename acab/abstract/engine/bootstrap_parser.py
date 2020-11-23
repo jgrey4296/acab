@@ -18,8 +18,8 @@ values = a.test.location, a.test.location.*
 import logging as root_logger
 import pyparsing as pp
 
-from acab.abstract.core.sentence import Sentence
-from acab.abstract.core.value import AcabValue
+from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.core_abstractions import AcabValue
 from acab.abstract.data.node import AcabNode
 from acab.abstract.rule.production_abstractions import ProductionOperator
 from acab.abstract.parsing.parsers import OPERATOR_SUGAR

@@ -25,10 +25,9 @@ from typing import Callable, Iterator, Union, Match, TypeVar
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar
 
-from acab.abstract.core.value import AcabValue, AcabStatement
-from acab.abstract.core.sentence import Sentence
+from acab.abstract.core.core_abstractions import AcabValue, AcabStatement
+from acab.abstract.core.core_abstractions import Sentence
 from acab.abstract.data.node import AcabNode
-from acab.abstract.rule.query import QueryComponent
 
 from acab.abstract.config.config import AcabConfig
 

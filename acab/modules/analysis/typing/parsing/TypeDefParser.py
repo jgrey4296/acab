@@ -1,23 +1,24 @@
 import pyparsing as pp
 import logging as root_logger
 
-from acab.abstract.core.sentence import Sentence
-from acab.abstract.parsing import util as PU
-from acab.abstract.parsing.consts import DELIM, op, N, NG, component_gap, emptyLine, DBLARROW
+from acab.abstract.core.core_abstractions import Sentence
+
+from acab.abstract.parsing import parsers as PU
 from acab.abstract.parsing import funcs as Pfunc
+from acab.abstract.parsing.consts import DELIM, op, N, NG, component_gap, emptyLine, DBLARROW
 
 from acab.modules.analysis.typing.values.type_definition import TypeDefinition, SumTypeDefinition
 from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition
 from acab.modules.analysis.typing import util as TYU
 
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
 from . import util as TU
 
 logging = root_logger.getLogger(__name__)
 
 util = AcabConfig.Get()
-VALUE_TYPE_S = util("Parsing.Structure", "VALUE_TYPE_S")
+TYPE_INSTANCE_S = util.value("Parse.Structure", "TYPE_INSTANCE")
 
 
 #Hotloaded definitions:

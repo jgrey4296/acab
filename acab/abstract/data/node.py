@@ -17,7 +17,7 @@ from weakref import WeakValueDictionary, ref, proxy
 
 from acab.abstract.config.config import AcabConfig
 
-from acab.abstract.core.value import AcabValue
+from acab.abstract.core.core_abstractions import AcabValue
 
 logging = root_logger.getLogger(__name__)
 

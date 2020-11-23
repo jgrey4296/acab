@@ -10,8 +10,8 @@ AcabConfig.Get().read("acab/abstract/config")
 
 from acab.abstract.parsing import consts as PConst
 
-from acab.abstract.core.value import  AcabValue
-from acab.abstract.core.sentence import Sentence
+from acab.abstract.core.core_abstractions import  AcabValue
+from acab.abstract.core.core_abstractions import Sentence
 from acab.abstract.rule.production_abstractions import ProductionOperator, ProductionContainer
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
 

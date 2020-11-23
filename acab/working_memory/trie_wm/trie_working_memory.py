@@ -5,10 +5,10 @@ from copy import deepcopy
 from acab.abstract.config.config import AcabConfig
 
 from acab.abstract.parsing import parsers as PU
-from acab.abstract.core.sentence import Sentence
+from acab.abstract.core.core_abstractions import Sentence
 from acab.abstract.data.contexts import Contexts
 from acab.abstract.data.node import AcabNode
-from acab.abstract.core.value import AcabValue
+from acab.abstract.core.core_abstractions import AcabValue
 from acab.abstract.rule.production_abstractions import ProductionContainer
 
 from acab.abstract.engine.working_memory import WorkingMemory

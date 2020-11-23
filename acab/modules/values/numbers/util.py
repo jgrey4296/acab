@@ -1,4 +1,4 @@
-from acab.abstract.core.sentence import Sentence
+from acab.abstract.core.core_abstractions import Sentence
 from acab.abstract.config.config import AcabConfig
 
 util = AcabConfig.Get()

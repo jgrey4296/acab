@@ -50,11 +50,10 @@ import logging as root_logger
 from functools import partial
 from uuid import uuid1
 
-from acab.abstract.core.value import AcabValue, AcabStatement
-from acab.abstract.core.sentence import Sentence
-from acab.abstract.core import type_base as TB
+from acab.abstract.core.core_abstractions import AcabValue, AcabStatement
+from acab.abstract.core.core_abstractions import Sentence
 from acab.abstract.data.node import AcabNode
-from acab.abstract.rule.action import ActionOp
+from acab.abstract.rule.production_abstractions import ProductionOperator
 
 from acab.modules.structures.trie.trie import Trie
 from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics

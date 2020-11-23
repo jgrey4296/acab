@@ -6,16 +6,16 @@ import pyparsing as pp
 
 from acab.abstract.parsing.consts import DOUBLEBAR, COLON, COMMA, DBLCOLON, DELIM, component_gap
 from acab.abstract.parsing.consts import N, NG, op, OPAR, CPAR
-from acab.abstract.core.sentence import Sentence
-from acab.abstract.parsing import util as PU
+from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.parsing import parsers as PU
 
 from acab.modules.analysis.typing import util as TYU
 
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
 util = AcabConfig.Get()
-VALUE_TYPE_S = util("Parsing.Structure", "VALUE_TYPE_S")
-EXTENDED_LANGUAGE_SYNTAX_S = util("Module.Typing", "EXTENDED_LANGUAGE_SYNTAX_S")
+TYPE_INSTANCE_S            = util.value("Value.Structure", "TYPE_INSTANCE")
+EXTENDED_LANGUAGE_SYNTAX_S = util.value("Parse.Patterns", "EXTENDED_LANGUAGE_SYNTAX")
 
 def make_type_dec(toks):
     """ Construct a type declaration / annotation

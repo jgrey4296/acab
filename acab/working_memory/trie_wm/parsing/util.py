@@ -12,8 +12,8 @@ from acab.abstract.parsing.consts import OPAR, CPAR, ATOM_V
 from acab.abstract.parsing.parsers import MODAL
 from acab.abstract.parsing import funcs as Pfunc
 
-from acab.abstract.core.value import AcabValue
-from acab.abstract.core.sentence import Sentence
+from acab.abstract.core.core_abstractions import AcabValue
+from acab.abstract.core.core_abstractions import Sentence
 
 from acab.abstract.rule.production_abstractions import ProductionContainer
 

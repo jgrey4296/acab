@@ -5,13 +5,12 @@ logging = root_logger.getLogger(__name__)
 
 
 from acab.abstract.config.config import AcabConfig
-AcabConfig.Get().read("acab/abstract/config")
+util = AcabConfig.Get().read("acab/abstract/config")
 
-from acab.abstract.core.value import AcabValue
-from acab.abstract.core.sentence import Sentence
+from acab.abstract.core.core_abstractions import AcabValue
+from acab.abstract.core.core_abstractions import Sentence
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
-from acab.abstract.rule.query import Query
-from acab.abstract.rule.rule import Rule
+from acab.abstract.rule.production_abstractions import ProductionOperator, ProductionComponent, ProductionContainer, ProductionStructure
 from acab.modules.operators import query as QOP
 from acab.working_memory.trie_wm import util as KBU
 from acab.working_memory.trie_wm.parsing import ActionParser as AP

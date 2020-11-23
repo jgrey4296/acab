@@ -10,8 +10,8 @@ from acab.abstract.config.config import GET
 GET("acab/abstract/config")
 
 from acab.abstract.parsing import parsers as PU
-from acab.abstract.core.value import AcabValue, AcabStatement
-from acab.abstract.core.sentence import Sentence
+from acab.abstract.core.core_abstractions import AcabValue, AcabStatement
+from acab.abstract.core.core_abstractions import Sentence
 from acab.abstract.data.node import AcabNode
 
 class StatementTests(unittest.TestCase):

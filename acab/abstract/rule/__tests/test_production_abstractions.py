@@ -9,8 +9,8 @@ logging = root_logger.getLogger(__name__)
 from acab.abstract.config.config import AcabConfig
 AcabConfig.Get("acab")
 
-from acab.abstract.core.sentence import Sentence
-from acab.abstract.core.value import AcabValue, AcabStatement
+from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.core_abstractions import AcabValue, AcabStatement
 
 from acab.abstract.rule import production_abstractions as PO
 

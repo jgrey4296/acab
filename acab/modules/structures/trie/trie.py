@@ -5,12 +5,11 @@ import logging as root_logger
 from weakref import WeakValueDictionary, ref, proxy
 from re import search
 
-from acab.abstract.core.sentence import Sentence
-from acab.abstract.core.value import AcabValue, AcabStatement
+from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.core_abstractions import AcabValue, AcabStatement
 from acab.abstract.data.node import AcabNode
 from acab.abstract.data.contexts import Contexts, CTX_OP
 from acab.abstract.data.structure import DataStructure
-from acab.abstract.rule.query import QueryComponent
 
 from acab.error.acab_base_exception import AcabBaseException
 from acab.modules.semantics.basic_semantics import BasicNodeSemantics
