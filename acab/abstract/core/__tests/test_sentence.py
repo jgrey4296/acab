@@ -53,14 +53,14 @@ class SentenceTests(unittest.TestCase):
     def test_iter(self):
         val = Sentence.build(["a","test","value"])
         for x,y in zip(val, ["a","test","value"]):
-            self.assertEqual(x._value, y)
+            self.assertEqual(x.value, y)
 
     def test_get_item(self):
         val = Sentence.build(["a","test","value"])
         self.assertIsInstance(val[0], AcabValue)
-        self.assertEqual(val[0]._value, "a")
-        self.assertEqual(val[1]._value, "test")
-        self.assertEqual(val[2]._value, "value")
+        self.assertEqual(val[0].value, "a")
+        self.assertEqual(val[1].value, "test")
+        self.assertEqual(val[2].value, "value")
 
 
     def test_copy(self):
@@ -74,6 +74,12 @@ class SentenceTests(unittest.TestCase):
         val.words.append(Sentence.build(["test"])[0])
         self.assertNotEqual(val, val2)
 
+    def test_copy_data_independence(self):
+        val = Sentence.build(["a","test","value"])
+        val2 = val.copy()
+        val.data.update({"blah" : "bloo"})
+        self.assertFalse("blah" in val2.data)
+
 
     def test_add(self):
         val = Sentence.build(["a","test","value"])
@@ -85,12 +91,12 @@ class SentenceTests(unittest.TestCase):
         self.assertIsInstance(val3, Sentence)
 
         for x,y in zip(val3, ["a","test","value","additional","sentence"]):
-            self.assertEqual(x._value, y)
+            self.assertEqual(x.value, y)
 
     def test_bind(self):
         val = Sentence.build(["a","test","value"])
         var = Sentence.build(["var"])
-        var[0].set_data({BIND_S : True})
+        var[0].data.update({BIND_S : True})
         sen = val.add(var)
 
         bound = sen.bind({"var" : "blah"})
@@ -101,8 +107,8 @@ class SentenceTests(unittest.TestCase):
     def test_bind_nop(self):
         val = Sentence.build(["a","test","value"])
         var = Sentence.build(["var"])
-        var[0].set_data({BIND_S: True})
-        val[2].set_data({BIND_S : True})
+        var[0].data.update({BIND_S: True})
+        val[2].data.update({BIND_S : True})
         sen = val.add(var)
 
         bound = sen.bind({"not_var" : "blah"})
@@ -119,18 +125,17 @@ class SentenceTests(unittest.TestCase):
         self.assertIsInstance(val[1:], Sentence)
         for x,y in zip(val[1:], ["test", "value"]):
             self.assertIsInstance(x, AcabValue)
-            self.assertEqual(x._value, y)
+            self.assertEqual(x.value, y)
 
     def test_attach_statement(self):
         sen = Sentence.build(["a","test","value"])
         to_attach = Sentence.build(["blah","bloo"])
 
         attached = sen.attach_statement(to_attach)
-        
+
         self.assertNotEqual(sen, attached)
         self.assertEqual(sen[0:2], attached[0:2])
-        
-        self.assertEqual(attached[-1], to_attach)
+        self.assertTrue(all([x == y for x,y in zip(attached[-1].words, to_attach.words)]))
         self.assertEqual(attached[-1].name, "value")
 
     def test_detach_statement(self):
@@ -157,7 +162,8 @@ class SentenceTests(unittest.TestCase):
         combined_simple = Sentence.build(["a","test","value","aweg"])
 
         self.assertNotEqual(combined, combined_simple)
-        detached, statements = combined.detach_statement(complete=True)
+
+        detached, statements = combined.detach_statement()
 
         self.assertEqual(len(statements), 2)
         self.assertEqual(combined_simple, detached)

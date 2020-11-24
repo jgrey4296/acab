@@ -47,66 +47,57 @@ class AcabValueTests(unittest.TestCase):
         self.assertTrue("out" in var_set)
 
     def test_var_set_with_vars(self):
-        value = AcabValue("test")
-        value._params = ["a","b","c"]
+        value = AcabValue("test", params=["a","b","c"])
         var_set = value.var_set
         self.assertTrue(all([x in var_set['in'] for x in ["a","b","c"]]))
 
     def test_attach_statement(self):
-        value = AcabStatement("test")
-        value._tags.add('testval')
-        sen = Sentence([AcabValue(x) for x in range(5)])
-        self.assertEqual(sen[-1].value, 4)
-        self.assertIsInstance(sen[-1].value, int)
+        value = AcabStatement(value="test")
+        sen = Sentence.build(["a", "b", "c", "d", "e"])
+        self.assertEqual(sen[-1].value, "e")
+        self.assertIsInstance(sen[-1].value, str)
         copied = sen.attach_statement(value)
         self.assertIsInstance(copied[-1], AcabStatement)
-        self.assertEqual(copied[-1]._value, "test")
-        self.assertEqual(copied[-1].name, str(4))
+        self.assertEqual(copied[-1].value, "test")
+        self.assertEqual(copied[-1].name, "e")
 
     def test_attach_statement_with_tags(self):
         value = AcabStatement("test")
-        value._tags.add('testval')
-        sen = Sentence([AcabValue(x) for x in range(5)])
-        self.assertEqual(sen[-1]._value, 4)
-        self.assertIsInstance(sen[-1]._value, int)
+        value.tags.add('testval')
+        sen = Sentence.build(["a", "b", "c", "d", "e"])
+        self.assertEqual(sen[-1].value, "e")
+        self.assertIsInstance(sen[-1].value, str)
         copied = sen.attach_statement(value)
 
+        self.assertTrue("testval" in copied[-1].tags)
         self.assertIsInstance(copied[-1], AcabStatement)
 
     def test_has_tag(self):
         value = AcabValue("test")
-        value._tags.update(["a"])
+        value.tags.update(["a"])
         self.assertTrue(value.has_tag("a"))
 
     def test_has_tag_fail(self):
         value = AcabValue("test")
-        value._tags.update(["a"])
+        value.tags.update(["a"])
         self.assertFalse(value.has_tag("q"))
 
     def test_has_tag_multi(self):
         value = AcabValue("test")
-        value._tags.update(["a", "b", "c"])
+        value.tags.update(["a", "b", "c"])
         self.assertTrue(value.has_tag("a", "b", "c"))
 
     def test_has_tag_multi_fail(self):
         value = AcabValue("test")
-        value._tags.update(["a", "b", "c"])
+        value.tags.update(["a", "b", "c"])
         self.assertFalse(value.has_tag("a", "b", "c", "q"))
-
-    @unittest.skip('TODO')
-    def test_verify(self):
-        return
-
-    @unittest.skip("TODO")
-    def test_verify_fail(self):
-        return
 
     def test_safe_make(self):
         value = AcabValue.safe_make("test")
         self.assertIsInstance(value, AcabValue)
         value2 = AcabValue.safe_make(value)
         self.assertIsInstance(value2, AcabValue)
-        self.assertIsInstance(value2._value, str)
+        self.assertIsInstance(value2.value, str)
 
 
     def test_statement_to_simple_value(self):

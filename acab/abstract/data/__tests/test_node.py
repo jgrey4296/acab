@@ -40,22 +40,22 @@ class AcabNodeTests(unittest.TestCase):
     def test_length(self):
         a_node = AcabNode(AV("test"))
         self.assertEqual(len(a_node), 0)
-        a_node._children['a child'] = True
+        a_node.children['a child'] = True
         self.assertEqual(len(a_node), 1)
-        a_node._children['another child'] = True
+        a_node.children['another child'] = True
         self.assertEqual(len(a_node), 2)
 
     def test_bool(self):
         a_node = AcabNode(AV("test"))
         self.assertEqual(bool(a_node), False)
-        a_node._children['a child'] = True
+        a_node.children['a child'] = True
         self.assertEqual(bool(a_node), True)
-        a_node._children['another child'] = True
+        a_node.children['another child'] = True
         self.assertEqual(bool(a_node), True)
 
     def test_contains_true(self):
         a_node = AcabNode(AV("value"))
-        a_node._children['child'] = True
+        a_node.children['child'] = True
         self.assertTrue(a_node.has_child('child'))
 
     def test_contains_false(self):

@@ -31,6 +31,7 @@ BIND_SYMBOL      = util.value("Symbols", "BIND")
 AT_BIND_SYMBOL   = util.value("Symbols", "AT_BIND")
 TYPE_BOTTOM_NAME = util.value("Data", "TYPE_BOTTOM_NAME")
 UUID_CHOP        = bool(int(util.value("Print.Data", "UUID_CHOP")))
+FALLBACK_MODAL   = util.value("Symbols", "FALLBACK_MODAL", actions=[util.actions_e.STRIPQUOTE])
 
 @dataclass(frozen=True)
 class AcabValue:
@@ -45,6 +46,7 @@ class AcabValue:
 
     @staticmethod
     def safe_make(value: Any,
+                  name: str=None,
                   data: Optional[Dict[Any, Any]]=None,
                   _type: Optional['Sentence']=None,
                   **kwargs) -> 'AcabValue':
@@ -58,22 +60,25 @@ class AcabValue:
 
         if isinstance(value, AcabValue):
             assert(_type is None)
-            new_val = value.set_data(_data)
+            new_val = value.copy()
+            new_val.data.update(_data)
             return new_val
         else:
-            # TODO: detect base types
-            return AcabValue(value, data=_data, **kwargs)
+            return AcabValue(value=value, data=_data, **kwargs)
 
     def __post_init__(self):
         # Applicable values: Self + any registered
         value_type_tuple = tuple([AcabValue] + list(AcabValue._value_types))
-        assert (self.value is None or isinstance(self.value, value_type_tuple)), breakpoint()
+
+        assert (self.value is None or isinstance(self.value, value_type_tuple))
+        assert(all([isinstance(x, str) for x in self.params]))
 
         # NOTE: use of setattr to override frozen temporarily to update name
         #
         # TODO: this could be a sieve?
-        assert(self.name is not None or self.value is not None)
         name_update = None
+        if self.name is None and self.value is None:
+            name_update = self.__class__.__name__
         if self.name is not None:
             assert(isinstance(self.name, str))
         elif isinstance(self.value, Pattern):
@@ -89,8 +94,12 @@ class AcabValue:
         if self.value is None:
             object.__setattr__(self, "value", self.name)
 
+
         if TYPE_INSTANCE not in self.data:
             self.data[TYPE_INSTANCE] = TYPE_BOTTOM_NAME
+
+        if BIND not in self.data:
+            self.data[BIND] = False
 
 
     def __str__(self):
@@ -107,17 +116,31 @@ class AcabValue:
 
 
     def __repr__(self):
-        uuid = str(self.uuid)
-        if UUID_CHOP:
-            uuid = "{}..{}".format(uuid[:4],uuid[-4:])
         val_str = ""
-        if self.value is not self and self.value is not self.name:
-            val_str = ":" + str(self.value)
+        if self.value is not self.name:
+            val_str = "..."
 
-        return "({}:{}:{}{})".format(self.__class__.__name__,
-                                     uuid,
-                                     str(self.name),
+        return "({}:{}:{})".format(self.__class__.__name__,
+                                     str(self),
                                      val_str)
+
+    def __hash__(self):
+        return hash(str(self))
+
+    def __eq__(self, other):
+        """ Base eq: compare hashes  """
+        if id(self) == id(other):
+            return True
+        elif isinstance(other, str):
+            return str(self) == other
+        elif not isinstance(other, AcabValue):
+            return False
+        elif self.uuid == other.uuid:
+            return True
+        else:
+            return str(self) == str(other)
+
+
 
     @property
     def type(self) -> 'Sentence':
@@ -127,29 +150,6 @@ class AcabValue:
             self.data[TYPE_INSTANCE] = Sentence.build([self.data[TYPE_INSTANCE]])
 
         return self.data[TYPE_INSTANCE]
-
-    # def __hash__(self):
-    #     if self._hash_name is not None:
-    #         return self._hash_name
-
-    #     self._hash_name = hash(str(self))
-    #     return self._hash_name
-
-    # def __eq__(self, other):
-    #     """ Base eq: compare hashes  """
-    #     if id(self) == id(other):
-    #         return True
-    #     elif isinstance(other, str):
-    #         return str(self) == other
-    #     elif not isinstance(other, AcabValue):
-    #         return False
-
-    #     assert(isinstance(other, AcabValue))
-    #     uuid_match = self._uuid == other._uuid
-    #     hash_match = hash(self) == hash(other)
-    #     return uuid_match or hash_match
-
-
 
 
     @property
@@ -189,19 +189,16 @@ class AcabValue:
         """
         raise NotImplementedError()
 
-    def copy(self) -> 'AcabValue':
-        """ Data needs to be able to be copied """
-        try:
-            new_copy = deepcopy(self)
-        except TypeError as err:
-            breakpoint()
+    def copy(self, **kwargs) -> 'AcabValue':
+        """ copy the object, but give it a new uuid """
+        if 'params' not in kwargs:
+            kwargs['params'] = self.params[:]
+        if 'tags' not in kwargs:
+            kwargs['tags'] = self.tags.copy()
+        if 'data' not in kwargs:
+            kwargs['data'] = self.data.copy()
 
-            new_copy = deepcopy(self)
-        # Override the UUID copy
-        new_copy._uuid = uuid1()
-        # Override cached hash name
-        new_copy._hash_name = None
-        return new_copy
+        return replace(self, uuid=uuid1(), **kwargs)
 
     def bind(self, bindings) -> 'AcabValue':
         """ Data needs to be able to bind a dictionary
@@ -215,37 +212,29 @@ class AcabValue:
             return self
 
 
-    def set_data(self, data) -> 'AcabValue':
-        """ Force a value's data to be updated,
-        return modified copy
-        """
-        if data is not None:
-            self.data.update(data)
-
-        return self
 
     def apply_params(self, params, data=None) -> 'AcabValue':
         """
         return modified copy
         """
         safe_params = [AcabValue.safe_make(x, data=data) for x in params]
-        self.params += safe_params
-        return self
+        return self.copy(params=safe_params)
 
     def apply_tags(self, tags) -> 'AcabValue':
         """
         return modified copy
         """
-        safe_tags = [x.value if isinstance(x, AcabValue) else x for x in tags]
-        self.tags.update(safe_tags)
-        return self
+        safe_tags = [x.name if isinstance(x, AcabValue) else x for x in tags]
+        return self.copy(tags=safe_tags)
 
     def has_tag(self, *tags) -> bool:
         return all([t in self.tags for t in tags])
 
     def to_simple_value(self) -> 'AcabValue':
-        simple_value = AcabValue.safe_make(self.name, data=self.data)
-        simple_value.set_data({TYPE_INSTANCE: Sentence.build([TYPE_BOTTOM_NAME])})
+        new_data = {}
+        new_data.update(self.data)
+        new_data.update({TYPE_INSTANCE: Sentence.build([TYPE_BOTTOM_NAME])})
+        simple_value = AcabValue.safe_make(self.name, data=new_data)
         return simple_value
 
 
@@ -258,10 +247,6 @@ class AcabStatement(AcabValue):
     """ AcabStatement functions the same as AcabValue,
     but provides specific functionality for converting to a string
     """
-    # @property
-    # def value(self) -> 'AcabStatement':
-    #     return self
-
     def __post_init__(self):
         super(AcabStatement, self).__post_init__()
 
@@ -288,6 +273,21 @@ class Sentence(AcabStatement):
         super(Sentence, self).__post_init__()
         self.data[TYPE_INSTANCE] = SENTENCE_TYPE
 
+    def __eq__(self, other):
+        if isinstance(other, str):
+            return str(self) == other
+        elif not isinstance(other, Sentence):
+            return False
+        elif len(self) != len(other):
+            return False
+        else:
+            return all([x == y for x,y in zip(self.words, other.words)])
+
+
+    def __str__(self):
+        words = FALLBACK_MODAL.join([str(x) for x in self.words])
+        return "{}:{}".format(self.name, words)
+
     def __len__(self):
         return len(self.words)
     def __iter__(self):
@@ -295,8 +295,14 @@ class Sentence(AcabStatement):
 
     def __getitem__(self, i):
         if isinstance(i, slice):
-            return Sentence(self.words.__getitem__(i), data=self._data)
+            return Sentence.build(self.words.__getitem__(i), data=self.data)
         return self.words.__getitem__(i)
+
+    def copy(self, **kwargs):
+        if 'value' not in kwargs:
+            kwargs['value'] = [x.copy() for x in self.value]
+
+        return super(Sentence, self).copy(**kwargs)
 
     @property
     def words(self):
@@ -306,9 +312,7 @@ class Sentence(AcabStatement):
         """
         return modified copy
         """
-        self_copy = self.copy()
-        self_copy.value = []
-        return self_copy
+        return self.copy(value=[])
 
     def bind(self, bindings):
         """ Given a dictionary of bindings, reify the sentence,
@@ -325,39 +329,39 @@ class Sentence(AcabStatement):
                 output.append(word)
                 continue
 
-            if not word._value in bindings:
+            if not word.value in bindings:
                 output.append(word)
                 continue
 
             # Sentence invariant: only word[0] can have an at_bind
             if word.is_at_var:
-                retrieved = bindings[AT_BIND + word._value]
+                retrieved = bindings[AT_BIND + word.value]
             else:
-                retrieved = bindings[word._value]
+                retrieved = bindings[word.value]
 
 
             if isinstance(retrieved, Sentence) and len(retrieved) == 1:
                 copied = retrieved[0].copy()
-                copied._data.update(word._data)
-                copied._data[BIND] = False
+                copied.data.update(word.data)
+                copied.data[BIND] = False
                 output.append(copied)
             elif isinstance(retrieved, AcabValue):
                 copied = retrieved.copy()
-                copied._data.update(word._data)
-                copied._data[BIND] = False
+                copied.data.update(word.data)
+                copied.data[BIND] = False
                 output.append(retrieved)
             else:
                 # TODO how often should this actually happen?
                 # won't most things be values already?
                 # TODO get a type for basic values
-                new_word = AcabValue(retrieved, data=word._data)
-                new_word._data[BIND] = False
+                new_word = AcabValue(retrieved, data=word.data)
+                new_word.data[BIND] = False
                 output.append(new_word)
 
         return Sentence.build(output,
-                              data=self._data,
-                              params=self._params,
-                              tags=self._tags)
+                              data=self.data,
+                              params=self.params,
+                              tags=self.tags)
 
     def add(self, *other):
         """ Return a copy of the sentence, with words added to the end.
@@ -369,9 +373,7 @@ class Sentence(AcabStatement):
             assert(isinstance(sen, (list, Sentence)))
             words += [x for x in sen]
 
-
-        new_sen = self.copy()
-        new_sen._value = words
+        new_sen = replace(self, value=words)
         return new_sen
 
     def attach_statement(self, value):
@@ -383,20 +385,15 @@ class Sentence(AcabStatement):
         """
         assert(isinstance(value, AcabValue))
         last = self.words[-1]
-        value_copy = value.copy()
-        sen_copy = self.copy()
+        combined_data = last.data.copy()
+        combined_data.update(value.data)
+        value_copy = value.copy(name=last.name, data=combined_data)
 
-        value_copy._name = last.name
-        if isinstance(value_copy, AcabStatement):
-            value_copy.set_path(self)
-        combined_data = last._data.copy()
-        combined_data.update(value._data)
-        value_copy._data.update(combined_data)
-
-        sen_copy._value[-1] = value_copy
+        new_words = self.words[:-1] + [value_copy]
+        sen_copy = self.copy(value=new_words)
         return sen_copy
 
-    def detach_statement(self, complete=False):
+    def detach_statement(self):
         """
         The inverse of attach_statement.
         Copy the sentence,
@@ -404,22 +401,17 @@ class Sentence(AcabStatement):
         Return modified copy, and the statement
         """
         statements = []
-
-        if complete:
-            sen_copy = self.clear()
-            words = self.words[:]
-        else:
-            sen_copy = self.copy()
-            words = [sen_copy.words.pop()]
+        out_words  = []
 
         # collect leaf statements
-        for word in words:
-            if isinstance(word, (Sentence, AcabStatement)):
-                sen_copy.words.append(word.to_simple_value())
+        for word in self.words:
+            if isinstance(word, AcabStatement):
+                out_words.append(word.to_simple_value())
                 statements.append(word)
             else:
-                sen_copy.words.append(word)
+                out_words.append(word)
 
+        sen_copy = self.copy(value=out_words)
         return (sen_copy, statements)
 
 
