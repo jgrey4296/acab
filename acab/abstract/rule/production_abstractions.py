@@ -8,13 +8,24 @@ ProductionComponent : Pairs the Operator with bindings
 ProductionContainer : Groups Components together
 
 """
+# https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
+from typing import List, Set, Dict, Tuple, Optional, Any
+from typing import Callable, Iterator, Union, Match
+from typing import Mapping, MutableMapping, Sequence, Iterable
+from typing import cast, ClassVar, TypeVar, Generic
+
+from copy import deepcopy
+from dataclasses import dataclass, field, InitVar, replace
+from fractions import Fraction
+from re import Pattern
+from uuid import uuid1, UUID
+from weakref import ref
 import logging as root_logger
 
 from acab.error.acab_operator_exception import AcabOperatorException
 from acab.abstract.config.config import AcabConfig
 
-from acab.abstract.core.core_abstractions import AcabValue, AcabStatement
-from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.core_abstractions import AcabValue, AcabStatement, Sentence
 
 util = AcabConfig.Get()
 
@@ -30,49 +41,35 @@ class ProductionOperator(AcabValue):
     """ The Base Operator Class """
 
     def __init__(self):
-        _type = OPERATOR_TYPE_PRIM_S
-        super().__init__(self.__class__.__name__, _type=_type)
+        super().__init__(self.__class__.__name__, data={TYPE_INSTANCE: OPERATOR_TYPE_PRIM_S})
 
     def __call__(self, *params, data=None, engine=None):
         raise NotImplementedError()
 
     @property
     def op_path(self):
-        return self._value
+        return self.value
 
 
-class ProductionComponent(AcabValue):
+
+@dataclass(frozen=True)
+class ProductionComponent(AcabStatement):
     """ Pairs a an operator with some bindings """
 
-    def __init__(self, op_path, params, sugared=False, data=None, rebind=None, name=None, _type=None):
-        assert(isinstance(op_path, Sentence)), breakpoint()
-        assert all([isinstance(x, AcabValue) for x in params]), params
-        if _type is None:
-            _type = COMPONENT_TYPE_PRIM_S
-        super().__init__(op_path, params=params, data=data, name=name, _type=_type)
-        # The value name of the result
-        self._rebind = rebind
-        # Sugared: Denotes whether the parse originated from a sugared operator
-        # eg: $x ~= /blah/ -> $x
-        self._sugared = sugared
+    # Sugared: Denotes whether the parse originated from a sugared operator
+    # eg: $x ~= /blah/ -> $x
+    sugared : bool      = False
+    rebind  : AcabValue = field(default=None)
 
-    def __call__(self, ctx, engine):
-        """
-        Run the operation, on the passed in context and engine
-        """
-        assert(isinstance(ctx, dict))
-        assert(x.name in ctx for x in self._params)
-        # retrieve op func from active TagEnvs
-        op_func = engine.get_operator(self.op)
-        # get values from data
-        values = self.get_params(ctx)
-        # perform action op with data
-        return op_func(*values, data=ctx, engine=engine)
+    def __post_init__(self):
+        super(ProductionComponent, self).__post_init__()
+        assert(isinstance(self.value, Sentence))
+        self.data[TYPE_INSTANCE] = Sentence.build([COMPONENT_TYPE_PRIM_S])
 
 
     @property
     def op(self):
-        return self._value
+        return self.value
 
     @property
     def var_set(self):
@@ -150,46 +147,22 @@ class ProductionComponent(AcabValue):
         return verified
 
 
+@dataclass(frozen=True)
 class ProductionContainer(AcabStatement):
     """ Production Container: An applicable statement of multiple component clauses """
-
-    def __init__(self, clauses, params=None, name=None, _type=None):
-        if _type is None:
-            _type = CONTAINER_TYPE_PRIM_S
-
-        if clauses is None:
-            clauses = []
-
-        super().__init__(clauses, params=params, name=name, _type=_type)
+    def __post_init__(self):
+        super(ProductionContainer, self).__post_init__()
+        self.data[TYPE_INSTANCE] = CONTAINER_TYPE_PRIM_S
 
     def __len__(self):
         return len(self.clauses)
 
-    def __call__(self, ctxs=None, engine=None):
-        """ Apply the clauses in one move """
-        if ctxs is None:
-            ctxs = [{}]
-        if not isinstance(ctxs, list):
-            ctxs = [ctxs]
-
-        for ctx in ctxs:
-            for x in self.clauses:
-                result = x(ctx, engine)
-                if x._rebind is None and isinstance(result, dict):
-                    ctx.update(result)
-                if x._rebind is not None:
-                    ctx[x._rebind.value] = AcabValue.safe_make(result)
-
-        return ctxs
-
     def __iter__(self):
-        for x in self.clauses:
-            yield x
-
+        return self.clauses.iter()
 
     @property
     def clauses(self):
-        return self._value
+        return self.value
 
     @property
     def var_set(self):
@@ -208,39 +181,27 @@ class ProductionContainer(AcabStatement):
     def to_abstract_sentences(self, target=None):
         return [y for x in self.clauses for y in x.to_abstract_sentences()]
 
-    def verify(self, ctx=None, engine=None):
-        for x in self.clauses:
-            x.verify(ctx=ctx, engine=engine)
 
 
-
+@dataclass(frozen=True)
 class ProductionStructure(ProductionContainer):
     """
     A ProductionContainer, supplemented by a dictionary
     to group the clauses
     """
+    structure: Dict[str, ProductionContainer] = field(default_factory=dict)
 
-    def __init__(self, clauses, params=None, name=None, _type=None):
-        if _type is None:
-            _type = CONTAINER_TYPE_PRIM_S
+    def __post_init__(self):
+        super(ProductionComponent, self).__post_init__()
+        self.data[TYPE_INSTANCE] = CONTAINER_TYPE_PRIM_S
+        assert(not bool(self.clauses))
 
-
-        clause_dict = {}
-        if clauses is None:
-            clauses = []
-        else:
-            assert(isinstance(clauses, dict))
-            clause_dict.update(clauses)
-            clauses = list(clauses.values())
-
-        super().__init__(clauses, params=params, name=name, _type=_type)
-
-        self._structure = clause_dict
-
+        clauses = list(self.structure.values())
+        self.clauses += clauses
 
     @property
     def keys(self):
-        return self._structure.keys()
+        return self.structure.keys()
 
     def __getitem__(self, key):
-        return self._structure[key]
+        return self.structure[key]

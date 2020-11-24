@@ -35,8 +35,8 @@ class BootstrapParser:
     used in working memory and module interfaces """
 
     def __init__(self, empty=False):
-        semantics = BasicTrieSemantics({AcabNode : BasicNodeSemantics()},
-                                       {AcabValue : (AcabNode, {})},
+        semantics = BasicTrieSemantics(node_semantics={AcabNode : BasicNodeSemantics()},
+                                       value_pairings={AcabValue : (AcabNode, {})},
                                        sentence_sort=lambda x: str(x))
         self._internal_trie = Trie(semantics)
         if not empty:

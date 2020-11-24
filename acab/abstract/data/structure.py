@@ -1,22 +1,27 @@
-from uuid import uuid1
+from copy import deepcopy
+from dataclasses import dataclass, field, InitVar, replace
+from fractions import Fraction
+from re import Pattern
+from uuid import uuid1, UUID
+from weakref import ref
+import logging as root_logger
 
 
-
+@dataclass
 class DataStructure:
     """
     The Abstract DataStructure Class
     Anything that wants to use StructureSemantics has to fulfill this
     Like AcabNode, is not a value, thus not directly able to be talked about
     """
-    def __init__(self, semantics):
-        assert(semantics is not None)
-        self._uuiid = uuid1()
-        self._semantics = semantics
-        self._root = semantics.make_root()
 
-    @property
-    def root(self):
-        return self._root
+    semantics : 'AcabStructureSemantics' = field(default=None)
+    uuid : UUID                          = field(default_factory=uuid1)
+    root : 'AcabNode'                    = field(init=False)
+
+    def __post_init__(self):
+        assert(self.semantics is not None)
+        self.root = self.semantics.make_root()
 
     def __bool__(self):
-        return bool(self._root)
+        return bool(self.root)

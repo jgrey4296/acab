@@ -4,6 +4,15 @@ from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar
 
+from copy import deepcopy
+from dataclasses import dataclass, field, InitVar, replace
+from fractions import Fraction
+from re import Pattern
+from uuid import uuid1, UUID
+from weakref import ref
+import logging as root_logger
+
+
 from acab.abstract.core.core_abstractions import AcabValue
 from acab.abstract.core.core_abstractions import Sentence
 from acab.abstract.data.node import AcabNode
@@ -22,11 +31,14 @@ CONSTRAINT_S = util.value("Value.Structure", "CONSTRAINT")
 AT_BIND_S    = util.value("Value.Structure", "AT_BIND")
 ROOT_S       = util.value("Data", "ROOT")
 
+@dataclass(frozen=True)
 class AcabStructureSemantics(AcabValue):
     # TODO Locate listeners in semantics not WM
 
-    def __init__(self, node_semantics : Dict[AcabNode, AcabNodeSemantics],
-                 value_pairings: Dict[AcabValue, Tuple[AcabNode, Dict[Any, Any]]]):
+    node_semantics: Dict[AcabNode, AcabNodeSemantics] = field(default_factory=dict)
+    value_pairings: Dict[AcabValue, Tuple[AcabNode, Dict[Any, Any]]] = field(default_factory=dict)
+
+    def __post_init__(self):
         """
         Structure Semantics define the behaviour of a *collection* of nodes,
         and uses two mappings:
@@ -34,16 +46,15 @@ class AcabStructureSemantics(AcabValue):
         2) Value -> Node
 
         """
-        super(AcabStructureSemantics, self).__init__(None)
-        self._node_semantics = node_semantics
-        self._value_pairings = value_pairings
-        # Todo: verify value -> node_c -> semantic chains
+        super(AcabStructureSemantics, self).__post_init__()
+
+        # TODO: verify value -> node_c -> semantic chains
 
     def make_root(self):
         """
         Create a basic root node / entry point for a data structure
         """
-        constructor, u_data = self._value_pairings[AcabValue]
+        constructor, u_data = self.value_pairings[AcabValue]
         node_semantics = self.retrieve_semantics(constructor)
         return node_semantics.lift(AcabValue(ROOT_S), constructor)
 
@@ -57,8 +68,8 @@ class AcabStructureSemantics(AcabValue):
         retrieved = None
         descendents_to_update = []
         while retrieved is None and curr not in (object, None):
-            if curr in self._node_semantics:
-                retrieved = self._node_semantics[curr]
+            if curr in self.node_semantics:
+                retrieved = self.node_semantics[curr]
             else:
                 curr = curr.__base__
                 descendents_to_update.append(curr)
@@ -67,7 +78,7 @@ class AcabStructureSemantics(AcabValue):
             raise AcabSemanticException("Missing Node Semantic Binding for: {}".format(node), None)
 
         if len(descendents_to_update) > 1:
-            self._node_semantics.update({x : retrieved for x in descendents_to_update})
+            self.node_semantics.update({x : retrieved for x in descendents_to_update})
 
         return retrieved
 
@@ -81,8 +92,8 @@ class AcabStructureSemantics(AcabValue):
         retrieved = None
         descendents_to_update = []
         while retrieved is None and curr not in (object, None):
-            if curr in self._value_pairings:
-                retrieved = self._value_pairings[curr]
+            if curr in self.value_pairings:
+                retrieved = self.value_pairings[curr]
             else:
                 curr = curr.__base__
                 descendents_to_update.append(curr)
@@ -93,7 +104,7 @@ class AcabStructureSemantics(AcabValue):
                                         None)
 
         if len(descendents_to_update) > 1:
-            self._value_pairings.update({x : retrieved for x in descendents_to_update})
+            self.value_pairings.update({x : retrieved for x in descendents_to_update})
 
         return retrieved
 

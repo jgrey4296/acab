@@ -8,7 +8,7 @@ from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar
 
-from dataclasses import dataclass, field, InitVar
+from dataclasses import dataclass, field, InitVar, replace
 
 from weakref import ref
 import logging as root_logger
