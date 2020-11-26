@@ -18,6 +18,7 @@ from re import Pattern
 from copy import deepcopy
 
 from acab.abstract.config.config import AcabConfig
+from acab.abstract.interfaces import value_interfaces as VI
 
 logging            = root_logger.getLogger(__name__)
 
@@ -33,16 +34,17 @@ TYPE_BOTTOM_NAME = util.value("Data", "TYPE_BOTTOM_NAME")
 UUID_CHOP        = bool(int(util.value("Print.Data", "UUID_CHOP")))
 FALLBACK_MODAL   = util.value("Symbols", "FALLBACK_MODAL", actions=[util.actions_e.STRIPQUOTE])
 
-@dataclass(frozen=True)
+@VI.ValueInterface.register
+@dataclass
 class AcabValue:
     _value_types: ClassVar[Set[Any]]          = set([str, Pattern, list])
 
-    name : str            = field(default=None)
-    value : Any           = field(default=None)
-    params : List[Any]    = field(default_factory=list)
-    tags : Set[str]       = field(default_factory=set)
-    data : Dict[str, Any] = field(default_factory=dict)
-    uuid : UUID           = field(default_factory=uuid1)
+    name : str                 = field(default=None)
+    value : Any                = field(default=None)
+    params : List['AcabValue'] = field(default_factory=list)
+    tags : Set[str]            = field(default_factory=set)
+    data : Dict[str, Any]      = field(default_factory=dict)
+    uuid : UUID                = field(default_factory=uuid1)
 
     @staticmethod
     def safe_make(value: Any,
@@ -71,7 +73,6 @@ class AcabValue:
         value_type_tuple = tuple([AcabValue] + list(AcabValue._value_types))
 
         assert (self.value is None or isinstance(self.value, value_type_tuple))
-        assert(all([isinstance(x, str) for x in self.params]))
 
         # NOTE: use of setattr to override frozen temporarily to update name
         #
@@ -80,7 +81,7 @@ class AcabValue:
         if self.name is None and self.value is None:
             name_update = self.__class__.__name__
         if self.name is not None:
-            assert(isinstance(self.name, str))
+            assert(isinstance(self.name, str)), breakpoint()
         elif isinstance(self.value, Pattern):
             name_update = self.value.pattern
         elif isinstance(self.value, (list, AcabStatement)):
@@ -100,6 +101,11 @@ class AcabValue:
 
         if BIND not in self.data:
             self.data[BIND] = False
+
+        if any([not isinstance(x, AcabValue) for x in self.params]):
+            original_params = self.params[:]
+            self.params.clear()
+            self.params.extend([AcabValue.safe_make(x) for x in original_params])
 
 
     def __str__(self):
@@ -198,7 +204,12 @@ class AcabValue:
         if 'data' not in kwargs:
             kwargs['data'] = self.data.copy()
 
-        return replace(self, uuid=uuid1(), **kwargs)
+        try:
+            return replace(self, uuid=uuid1(), **kwargs)
+        except TypeError as err:
+            breakpoint()
+            logging.info("blah")
+
 
     def bind(self, bindings) -> 'AcabValue':
         """ Data needs to be able to bind a dictionary
@@ -217,13 +228,20 @@ class AcabValue:
         """
         return modified copy
         """
-        safe_params = [AcabValue.safe_make(x, data=data) for x in params]
+        if not bool(params):
+            return self
+
+        # TODO should these be just strings?
+        safe_params = [x if isinstance(x, AcabValue) else AcabValue(x) for x in params]
         return self.copy(params=safe_params)
 
     def apply_tags(self, tags) -> 'AcabValue':
         """
         return modified copy
         """
+        if not bool(tags):
+            return self
+
         safe_tags = [x.name if isinstance(x, AcabValue) else x for x in tags]
         return self.copy(tags=safe_tags)
 
@@ -250,7 +268,7 @@ class AcabStatement(AcabValue):
     def __post_init__(self):
         super(AcabStatement, self).__post_init__()
 
-    def to_abstract_sentences(self) -> List['Sentence']:
+    def to_sentences(self) -> List['Sentence']:
         """
         Represent a Complex Object in the verbose Core Language.
         (ie: just Words, Sentences, Variables, and Types)
@@ -262,7 +280,9 @@ class AcabStatement(AcabValue):
 
 
 
-class Sentence(AcabStatement):
+
+@VI.SentenceInterface.register
+class Sentence(AcabStatement, VI.SentenceInterface):
     @staticmethod
     def build(words, **kwargs):
         safe_words = [AcabValue.safe_make(x) for x in words]
@@ -284,6 +304,8 @@ class Sentence(AcabStatement):
             return all([x == y for x,y in zip(self.words, other.words)])
 
 
+    def __hash__(self):
+        return hash(str(self))
     def __str__(self):
         words = FALLBACK_MODAL.join([str(x) for x in self.words])
         return "{}:{}".format(self.name, words)
