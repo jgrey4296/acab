@@ -5,14 +5,14 @@ from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar
 
-from acab.abstract.data.node import AcabNode
+from acab.abstract.core.node import AcabNode
 from acab.abstract.core.core_abstractions import AcabValue
-from acab.abstract.data.structure import DataStructure
+from acab.abstract.core.structure import DataStructure
 from acab.abstract.core.core_abstractions import Sentence
-from acab.abstract.data.contexts import Contexts
-from acab.abstract.data.node_semantics import AcabNodeSemantics
+from acab.abstract.core.contexts import Contexts
+from acab.abstract.core.node_semantics import AcabNodeSemantics
 
-from acab.abstract.data.struct_semantics import AcabStructureSemantics
+from acab.abstract.core.struct_semantics import AcabStructureSemantics
 
 class TypingStructSemantics(AcabStructureSemantics):
     # TODO Locate listeners in semantics not WM

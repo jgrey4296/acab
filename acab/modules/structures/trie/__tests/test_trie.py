@@ -7,7 +7,7 @@ from acab.abstract.config.config import AcabConfig
 AcabConfig.Get().read("acab/abstract/config")
 
 from acab.abstract.core.core_abstractions import AcabValue
-from acab.abstract.data.node import AcabNode
+from acab.abstract.core.node import AcabNode
 from acab.abstract.core.core_abstractions import Sentence
 
 from acab.modules.structures.trie.trie import Trie

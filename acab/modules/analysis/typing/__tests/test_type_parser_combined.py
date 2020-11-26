@@ -10,7 +10,7 @@ AcabConfig.Get().read("acab/abstract/config")
 from acab.abstract.core.core_abstractions import Sentence
 from acab.abstract.core.core_abstractions import AcabValue
 
-from acab.abstract.data.node import AcabNode
+from acab.abstract.core.node import AcabNode
 from acab.abstract.rule import action
 from acab.abstract.rule.production_abstractions import ProductionOperator, ProductionComponent
 from acab.abstract.engine.bootstrap_parser import BootstrapParser

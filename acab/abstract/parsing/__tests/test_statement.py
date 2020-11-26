@@ -12,7 +12,7 @@ GET("acab/abstract/config")
 from acab.abstract.parsing import parsers as PU
 from acab.abstract.core.core_abstractions import AcabValue, AcabStatement
 from acab.abstract.core.core_abstractions import Sentence
-from acab.abstract.data.node import AcabNode
+from acab.abstract.core.node import AcabNode
 
 class StatementTests(unittest.TestCase):
 

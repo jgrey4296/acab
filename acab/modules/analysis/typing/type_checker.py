@@ -52,7 +52,7 @@ from uuid import uuid1
 
 from acab.abstract.core.core_abstractions import AcabValue, AcabStatement
 from acab.abstract.core.core_abstractions import Sentence
-from acab.abstract.data.node import AcabNode
+from acab.abstract.core.node import AcabNode
 from acab.abstract.rule.production_abstractions import ProductionOperator
 
 from acab.modules.structures.trie.trie import Trie

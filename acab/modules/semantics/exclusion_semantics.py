@@ -6,8 +6,8 @@ from typing import cast, ClassVar
 
 from acab.abstract.core.core_abstractions import AcabValue
 from acab.abstract.core.core_abstractions import Sentence
-from acab.abstract.data.node import AcabNode
-from acab.abstract.data.node_semantics import AcabNodeSemantics
+from acab.abstract.core.node import AcabNode
+from acab.abstract.core.node_semantics import AcabNodeSemantics
 
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.config.modal import MODAL_DEFAULTS, MODAL_ENUMS

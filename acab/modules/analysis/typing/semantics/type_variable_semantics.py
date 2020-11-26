@@ -9,7 +9,7 @@ from typing import cast, ClassVar, TypeVar
 
 from acab.abstract.core.core_abstractions import AcabValue
 from acab.abstract.core.core_abstractions import Sentence
-from acab.abstract.data.node import AcabNode
+from acab.abstract.core.node import AcabNode
 
 from acab.modules.semantics.basic_semantics import BasicNodeSemantics
 

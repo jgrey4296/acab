@@ -12,7 +12,7 @@ from acab.abstract.parsing.consts import NEGATION_SYMBOL, END, opLn, FACT_HEAD, 
 from acab.abstract.parsing.consts import COLLAPSE_CONTEXT, COMMA, DELIM
 from acab.abstract.parsing.consts import BIND_S, AT_BIND_S, VALUE_S, OPERATOR_S
 
-from acab.abstract.data.contexts import CTX_OP
+from acab.abstract.core.contexts import CTX_OP
 
 from acab.working_memory.trie_wm import util as WMU
 

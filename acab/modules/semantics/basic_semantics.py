@@ -8,13 +8,13 @@ from typing import cast, ClassVar
 
 from acab.abstract.core.core_abstractions import Sentence
 from acab.abstract.core.core_abstractions import AcabValue
-from acab.abstract.data.contexts import Contexts, CTX_OP
-from acab.abstract.data.node import AcabNode
-from acab.abstract.data.node_semantics import AcabNodeSemantics
-from acab.abstract.data.struct_semantics import AcabStructureSemantics
-from acab.abstract.data.structure import DataStructure
+from acab.abstract.core.contexts import Contexts, CTX_OP
+from acab.abstract.core.node import AcabNode
+from acab.abstract.core.node_semantics import AcabNodeSemantics
+from acab.abstract.core.struct_semantics import AcabStructureSemantics
+from acab.abstract.core.structure import DataStructure
 
-import acab.abstract.data.struct_semantics as SSem
+import acab.abstract.core.struct_semantics as SSem
 
 from acab.abstract.config.config import AcabConfig
 

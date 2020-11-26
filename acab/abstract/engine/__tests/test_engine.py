@@ -40,7 +40,7 @@ class EngineTests(unittest.TestCase):
     #----------
     #use testcase snippets
     @mock.patch('acab.abstract.engine.working_memory.WorkingMemory', autospec=True)
-    @mock.patch('acab.abstract.data.struct_semantics.AcabStructureSemantics', autospec=True)
+    @mock.patch('acab.abstract.core.struct_semantics.AcabStructureSemantics', autospec=True)
     def test_init(self, wm_mock, sem_mock):
         engine = Engine(wm_mock)
         wm_mock.assert_called_once_with(None)

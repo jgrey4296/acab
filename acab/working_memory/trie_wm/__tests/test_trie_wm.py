@@ -11,7 +11,7 @@ AcabConfig.Get().read("acab/abstract/config")
 
 from acab.abstract.core.core_abstractions import AcabValue
 from acab.abstract.core.core_abstractions import Sentence
-from acab.abstract.data.contexts import Contexts
+from acab.abstract.core.contexts import Contexts
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
 from acab.abstract.engine.engine import Engine
 from acab.abstract.rule.production_abstractions import ProductionOperator

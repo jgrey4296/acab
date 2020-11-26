@@ -9,7 +9,7 @@ CONFIG = AcabConfig.Get().read("acab/abstract/config")
 
 from acab.abstract.core.core_abstractions import AcabValue, AcabStatement
 from acab.abstract.core.core_abstractions import Sentence
-from acab.abstract.data.node import AcabNode
+from acab.abstract.core.node import AcabNode
 
 AT_BIND_S = CONFIG.value("Value.Structure", "AT_BIND")
 BIND_S    = CONFIG.value("Value.Structure", "BIND")

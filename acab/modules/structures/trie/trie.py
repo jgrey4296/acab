@@ -7,9 +7,9 @@ from re import search
 
 from acab.abstract.core.core_abstractions import Sentence
 from acab.abstract.core.core_abstractions import AcabValue, AcabStatement
-from acab.abstract.data.node import AcabNode
-from acab.abstract.data.contexts import Contexts, CTX_OP
-from acab.abstract.data.structure import DataStructure
+from acab.abstract.core.node import AcabNode
+from acab.abstract.core.contexts import Contexts, CTX_OP
+from acab.abstract.core.structure import DataStructure
 
 from acab.error.acab_base_exception import AcabBaseException
 from acab.modules.semantics.basic_semantics import BasicNodeSemantics

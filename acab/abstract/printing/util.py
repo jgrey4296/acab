@@ -18,16 +18,16 @@ from enum import Enum
 
 from acab.abstract.core.core_abstractions import AcabValue
 from acab.abstract.core.core_abstractions import Sentence
-from acab.abstract.data.node import AcabNode
-from acab.abstract.data.contexts import Contexts
-from acab.abstract.data.structure import DataStructure
-from acab.abstract.data.node_semantics import AcabNodeSemantics
+from acab.abstract.core.node import AcabNode
+from acab.abstract.core.contexts import Contexts
+from acab.abstract.core.structure import DataStructure
+from acab.abstract.core.node_semantics import AcabNodeSemantics
 
 from acab.error.acab_semantic_exception import AcabSemanticException
 
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.core_abstractions import AcabValue
-from acab.abstract.data.node import AcabNode
+from acab.abstract.core.node import AcabNode
 
 util = AcabConfig.Get()
 

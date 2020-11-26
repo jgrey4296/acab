@@ -14,7 +14,7 @@ import itertools as it
 from enum import Enum
 import logging as root_logger
 
-from acab.abstract.data.node import AcabNode
+from acab.abstract.core.node import AcabNode
 from acab.abstract.core.core_abstractions import AcabValue
 from acab.abstract.config.config import AcabConfig
 

@@ -12,7 +12,7 @@ import acab.modules.analysis.typing.parsing.TypeParser as TP
 
 from acab.abstract.core.core_abstractions import AcabValue
 from acab.abstract.core.core_abstractions import Sentence
-from acab.abstract.data.node import AcabNode
+from acab.abstract.core.node import AcabNode
 from acab.abstract.parsing import parsers as PU
 
 from acab.error.acab_parse_exception import AcabParseException

@@ -18,8 +18,10 @@ From a module it loads Value, Statement, and Annotation parsers.
 import pyparsing as pp
 import logging as root_logger
 from fractions import Fraction
+# https://docs.python.org/3/library/abc.html
+import abc
 
-from acab.abstract.data.node import AcabNode
+from acab.abstract.core.node import AcabNode
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
 from acab.abstract.engine.dsl_fragment import DSL_Fragment
 from acab.abstract.rule.production_abstractions import ProductionOperator

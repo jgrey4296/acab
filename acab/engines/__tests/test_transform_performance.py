@@ -14,7 +14,7 @@ AcabConfig.Get().read("acab/abstract/config")
 
 from acab.abstract.core.core_abstractions import AcabValue as PV
 from acab.abstract.core.core_abstractions import Sentence
-from acab.abstract.data.contexts import Contexts
+from acab.abstract.core.contexts import Contexts
 
 from acab.engines.trie_engine import TrieEngine
 
