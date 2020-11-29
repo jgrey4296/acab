@@ -5,10 +5,10 @@ from copy import deepcopy
 from acab.abstract.config.config import AcabConfig
 
 from acab.abstract.parsing import parsers as PU
-from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.values import Sentence
 from acab.abstract.core.contexts import Contexts
 from acab.abstract.core.node import AcabNode
-from acab.abstract.core.core_abstractions import AcabValue
+from acab.abstract.core.values import AcabValue
 from acab.abstract.rule.production_abstractions import ProductionContainer
 
 from acab.abstract.engine.working_memory import WorkingMemory
@@ -89,8 +89,8 @@ class TrieWM(WorkingMemory):
         if isinstance(query, str):
             query = QP.parseString(query, self._query_parser)
         elif isinstance(query, Sentence):
-            query = Query([query])
-        if not isinstance(query, Query):
+            query = ProductionContainer([query])
+        if not isinstance(query, ProductionContainer):
             raise AcabParseException("Unrecognised query target: {}".format(type(query)))
 
         return use_semantics.query(self._internal_trie, query, ctxs=ctxs, engine=engine)
