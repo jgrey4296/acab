@@ -25,7 +25,7 @@ import logging as root_logger
 from acab.error.acab_operator_exception import AcabOperatorException
 from acab.abstract.config.config import AcabConfig
 
-from acab.abstract.core.core_abstractions import AcabValue, AcabStatement, Sentence
+from acab.abstract.core.values import AcabValue, AcabStatement, Sentence
 
 util = AcabConfig.Get()
 
@@ -34,14 +34,18 @@ AT_BIND_S             = util.value("Value.Structure", "AT_BIND")
 CONTAINER_TYPE_PRIM_S = util.value("Type.Primitive", "CONTAINER")
 COMPONENT_TYPE_PRIM_S = util.value("Type.Primitive", "COMPONENT")
 OPERATOR_TYPE_PRIM_S  = util.value("Type.Primitive", "OPERATOR")
+TYPE_INSTANCE    = util.value("Value.Structure", "TYPE_INSTANCE")
 
 logging = root_logger.getLogger(__name__)
 
+@dataclass
 class ProductionOperator(AcabValue):
     """ The Base Operator Class """
 
-    def __init__(self):
-        super().__init__(self.__class__.__name__, data={TYPE_INSTANCE: OPERATOR_TYPE_PRIM_S})
+    def __post_init__(self):
+        super(ProductionOperator, self).__post_init__()
+        object.__setattr__(self, 'name', self.__class__.__name__)
+        self.data[TYPE_INSTANCE] =  Sentence.build([OPERATOR_TYPE_PRIM_S])
 
     def __call__(self, *params, data=None, engine=None):
         raise NotImplementedError()
@@ -52,7 +56,7 @@ class ProductionOperator(AcabValue):
 
 
 
-@dataclass(frozen=True)
+@dataclass
 class ProductionComponent(AcabStatement):
     """ Pairs a an operator with some bindings """
 
@@ -74,52 +78,14 @@ class ProductionComponent(AcabStatement):
     @property
     def var_set(self):
         obj = super(ProductionComponent, self).var_set
-        for p in self._params:
-            tempobj = p.var_set
-            obj['in'].update(tempobj['in'])
-            obj['in'].update(tempobj['out'])
+        obj['in'].update(self.params)
 
-        if self._rebind is not None:
-            obj['out'].add(self._rebind)
+        if self.rebind is not None:
+            obj['out'].add(self.rebind)
         return obj
 
 
-    @property
-    def rebind(self):
-        return self._rebind
-
-    def get_params(self, data):
-        """ Output a list of bindings from this action,
-        Unwraps as necessary
-        """
-        assert(isinstance(data, dict))
-        output = []
-        # TODO: enable currying
-        for x in self._params:
-            if isinstance(x, Sentence):
-                output.append(x.bind(data))
-            elif isinstance(x, list):
-                output.append([y.bind(data) for y in x])
-            elif isinstance(x, AcabValue) and x.is_var:
-                assert(x.value in data)
-                if x.is_at_var:
-                    output.append(data[AT_BIND_S + x.value])
-                elif isinstance(data[x.value], list):
-                    # TODO does this need to unwrap all list values?
-                    output.append(data[x.value])
-                else:
-                    output.append(data[x.value].value)
-            else:
-                output.append(x.value)
-        return output
-
-    def __refine_op_func(self, op_path):
-        """ Replace the current op func set with a specific
-        op func, used for type refinement """
-        raise DeprecationWarning()
-
-
-    def to_abstract_sentences(self, target=None):
+    def to_sentences(self, target=None):
         """
 
         """
@@ -142,12 +108,12 @@ class ProductionComponent(AcabStatement):
 
         # TODO make op cached, rather than this:
         verified = self.copy()
-        verified._value = op
+        verified.value = op
 
         return verified
 
 
-@dataclass(frozen=True)
+@dataclass
 class ProductionContainer(AcabStatement):
     """ Production Container: An applicable statement of multiple component clauses """
     def __post_init__(self):
@@ -178,12 +144,12 @@ class ProductionContainer(AcabStatement):
         return obj
 
 
-    def to_abstract_sentences(self, target=None):
-        return [y for x in self.clauses for y in x.to_abstract_sentences()]
+    def to_sentences(self, target=None):
+        return [y for x in self.clauses for y in x.to_sentences()]
 
 
 
-@dataclass(frozen=True)
+@dataclass
 class ProductionStructure(ProductionContainer):
     """
     A ProductionContainer, supplemented by a dictionary

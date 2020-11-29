@@ -5,19 +5,25 @@ from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic
 
+from copy import deepcopy
+from dataclasses import dataclass, field, InitVar, replace
+from fractions import Fraction
+from re import Pattern
+from uuid import uuid1, UUID
+from weakref import ref
+import logging as root_logger
+
 from acab.abstract.config.config import AcabConfig
-from acab.abstract.core.core_abstractions import AcabValue
+from acab.abstract.core.values import AcabValue, Sentence
 
 util = AcabConfig.Get()
 
 
 # TODO
+@dataclass
 class ProductionSemantics(AcabValue):
     """ Describes how objects are used """
-
-    def __init__(self, mapping: Dict[Sentence, Callable]):
-        self._semantic_mapping = {}
-        self._semantics_mapping.update(mapping)
+    semantic_mapping: Dict[Sentence, Callable] = field(default_factory=dict)
 
     def __call__(self, obj, ctxs, engine, override=None):
         # Get semantic function for object
@@ -26,7 +32,7 @@ class ProductionSemantics(AcabValue):
         pass
 
 
-    def _initial_ctx_construction(self, ctxs: List[Dict, Any, Any]]) -> List[Dict[Any, Any]]:
+    def _initial_ctx_construction(self, ctxs: List[Dict[Any, Any]]) -> List[Dict[Any, Any]]:
         query_result = [{}]
         if ctxs is not None and bool(ctxs):
             query_result = [x.copy() for x in ctxs]
