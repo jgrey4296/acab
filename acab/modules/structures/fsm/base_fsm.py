@@ -17,7 +17,7 @@ end
 (possibly MCTS)
 
 """
-from acab.abstract.core.core_abstractions import AcabValue
+from acab.abstract.core.values import AcabValue
 
 
 class FSMBase(AcabValue):

@@ -1,13 +1,13 @@
 """
  Cycle, expand, map, filter, random, ranking, sandbox
 
- Default Agenda: (::Agenda)
+ Default ProductionStructure: (::ProductionStructure)
     | $proposals |
 
     AgendaReturn $proposals
 
 
- Sort Agenda: (::Agenda)
+ Sort ProductionStructure: (::ProductionStructure)
     | $proposals |
 
     sort.agenda.values.selection.$amnt?
@@ -41,17 +41,15 @@
    loop:
        run layer $layer
 """
-from acab.abstract.rule.action import ActionOp
-from acab.abstract.rule.transform import TransformOp
-from acab.abstract.pipeline.agenda import Agenda
+from acab.abstract.rule.production_abstractions import ProductionOperator, ProductionStructure
 
-class AgendaSelect(TransformOp):
+class AgendaSelect(ProductionOperator):
 
     def __call__(self, amnt, group, data=None, engine=None):
         return group[:amnt]
 
 
-class AgendaSort(TransformOp):
+class AgendaSort(ProductionOperator):
 
     def __call__(self, group, sort_query, data=None, engine=None):
         # map the group to the sort_query value
@@ -63,7 +61,7 @@ class AgendaSort(TransformOp):
         return sorted_group
 
 
-class AgendaReturn(ActionOp):
+class AgendaReturn(ProductionOperator):
 
     def __call__(self, returns, data=None, engine=None):
-        return {Agenda.RETURN_NAME_S : returns}
+        return {ProductionStructure.RETURN_NAME_S : returns}

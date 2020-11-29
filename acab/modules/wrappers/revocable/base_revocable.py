@@ -15,7 +15,7 @@ Give for a time period
 
 """
 
-from acab.abstract.core.core_abstractions import AcabValue
+from acab.abstract.core.values import AcabValue
 
 class RevocationBase(AcabBase):
     """ Base description of revocable permissions """

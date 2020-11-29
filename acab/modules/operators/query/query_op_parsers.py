@@ -3,8 +3,8 @@ import pyparsing as pp
 from acab.abstract.parsing import parsers as PU
 from acab.abstract.config.config import AcabConfig
 
-from acab.abstract.core.core_abstractions import AcabValue
-from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.values import AcabValue
+from acab.abstract.core.values import Sentence
 
 from acab.abstract.rule.production_abstractions import ProductionComponent
 
@@ -21,7 +21,7 @@ def construct_tag_query(toks):
 
     tag_op_path = Sentence.build([QO.HasTag.__name__])
     value_tags = [AcabValue(x) for x in tags]
-    return (CONSTRAINT_S, QueryComponent(tag_op_path, param=value_tags))
+    return (CONSTRAINT_S, ProductionComponent(tag_op_path, value_tags))
 
 
 tagList = PU.N(TAG_S, pp.delimitedList(PU.tagName, delim=","))

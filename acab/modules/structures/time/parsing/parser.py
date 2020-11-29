@@ -11,7 +11,7 @@ from acab.modules.structures.time.pattern_constructor import CTOR_ACT
 from acab.modules.structures.time.pattern_constructor import construct_pattern_simple
 from acab.modules.structures.time.util import BIND_S, TYPE_INSTANCE_S, VALUE_S, NAME_S, OPT_S, PATTERN_S
 
-from acab.abstract.parsing import util as PU
+from acab.abstract.parsing import parsers as PU
 
 logging = root_logger.getLogger(__name__)
 

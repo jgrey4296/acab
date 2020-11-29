@@ -1,11 +1,10 @@
-from acab.abstract.engine.dsl_fragment import DSL_Fragment
+from acab.abstract.interfaces.dsl_interface import DSL_Interface
 
 from . import agenda as AP
 from . import layer as LP
 from . import pipeline as PP
 
-
-class StandardStructures(DSL_Fragment):
+class StandardStructures(DSL_Interface):
     """ The Module Spec for base structures
     ie: Agenda/Layer/Pipeline
     """

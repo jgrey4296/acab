@@ -1,14 +1,13 @@
 import logging as root_logger
 
-from acab.abstract.rule.transform import TransformOp
-from acab.abstract.rule.action import ActionOp
+from acab.abstract.rule.production_abstractions import ProductionOperator
 
 from .unity_server import UnityServer
 from . import util
 
 logging = root_logger.getLogger(__name__)
 
-class IOSend(ActionOp):
+class IOSend(ProductionOperator):
 
     def __call__(self, *params, data=None, engine=None):
         # First param = UnityServer Value
@@ -20,14 +19,14 @@ class IOSend(ActionOp):
         return
 
 
-class IOFlush(ActionOp):
+class IOFlush(ProductionOperator):
 
     def __call__(self, *params, data=None, engine=None):
         # flush the server's messages out
         return
 
 
-class IOListen(ActionOp):
+class IOListen(ProductionOperator):
 
     def __call__(self, *params, data=None, engine=None):
         # Listen then assert responses
@@ -35,14 +34,14 @@ class IOListen(ActionOp):
         return
 
 
-class IOClose(ActionOp):
+class IOClose(ProductionOperator):
 
     def __call__(self, *params, data=None, engine):
         # Close the server
         return
 
 
-class IOBuildServer(TransformOp):
+class IOBuildServer(ProductionOperator):
 
     def __call__(self, *params, data=None, engine=None):
         # Create a UnityServer ready to assert

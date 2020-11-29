@@ -17,10 +17,11 @@ import pyparsing as pp
 from acab.abstract.parsing.consts import ARROW, END, COLON, s
 import acab.abstract.parsing.parsers as PU
 
-from acab.abstract.rule.transform import TransformComponent
+
+from acab.abstract.rule.production_abstractions import ProductionComponent
 
 def build_transform_component(toks):
-    component = TransformComponent
+    component = ProductionComponent
     # TODO construct pattern match component
     # Get head, set rebind
     # get body -> [(pattern, $val/transform)]

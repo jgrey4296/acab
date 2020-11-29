@@ -1,13 +1,12 @@
 
 
-from acab.abstract.core.transform import TransformOp
+from acab.abstract.rule.production_abstractions import ProductionOperator
 
-
-class DFS(TransformOp):
+class DFS(ProductionOperator):
 
     pass
 
-class Leaf(TransformOp):
+class Leaf(ProductionOperator):
 
     pass
 

@@ -1,11 +1,9 @@
-from acab.abstract.rule.query import Query
-from acab.abstract.rule.transform import TransformOp
-from acab.abstract.rule.action import ActionOp
+from acab.abstract.rule.production_abstractions import ProductionOperator
 
 from acab.error.acab_import_exception import AcabImportException
 
 
-class ImportQuery(Query):
+class ImportQuery(ProductionOperator):
     """ Treats clauses as py import statements """
     def __call__(self, ctxs=None, engine=None):
         try:
@@ -14,7 +12,7 @@ class ImportQuery(Query):
             return []
 
 
-class ModuleExtractTransform(TransformOp):
+class ModuleExtractTransform(ProductionOperator):
     """ Extracts values matching a predicate from a module """
     def __call__(self, pred, mod, data=None, engine=None):
         # Filter the module by the predicate,
@@ -22,7 +20,7 @@ class ModuleExtractTransform(TransformOp):
         raise NotImplementedError()
 
 
-class OperatorMassNameSubst(TransformOp):
+class OperatorMassNameSubst(ProductionOperator):
     """
     Take a bag of operators, and apply a regex to their registered names.
     Eg: {ActionAdd, ActionSub, ActionMul} /Action// -> {Add,Sub,Mul}
@@ -31,7 +29,7 @@ class OperatorMassNameSubst(TransformOp):
         raise NotImplementedError()
 
 
-class FlattenTrie(TransformOp):
+class FlattenTrie(ProductionOperator):
     """
     Take a Trie of operators, and flatten it.
     Eg: flatten {mod.actions.add, mod.transforms.flatten} -> {mod.add, mod.flatten}
@@ -40,7 +38,7 @@ class FlattenTrie(TransformOp):
         raise NotImplementedError()
 
 
-class AliasAction(ActionOp):
+class AliasAction(ProductionOperator):
     """ Alias a set of actions into a TagEnv
     Constructs TagEnv if necessary,
     appends if already exists

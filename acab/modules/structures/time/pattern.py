@@ -10,7 +10,6 @@ from acab.modules.structures.time.time_core import TimeContainer, TimeEvent
 
 logging = root_logger.getLogger(__name__)
 
-
 # TODO: binary tree / beachline for finding events?
 class PatternSeq(TimeContainer):
 

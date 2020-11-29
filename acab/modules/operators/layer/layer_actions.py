@@ -1,13 +1,8 @@
-from acab.abstract.data.contexts import Contexts
-from acab.abstract.rule.transform import TransformOp
-from acab.abstract.rule.rule import Rule
-from acab.abstract.rule.action import ActionOp
+from acab.abstract.core.contexts import Contexts
+from acab.abstract.rule.production_abstractions import ProductionOperator
 
 
-class LayerRunRules(TransformOp):
-
-    def __init__(self):
-        super(LayerRunRules, self).__init__()
+class LayerRunRules(ProductionOperator):
 
     def __call__(self, rules, data=None, engine=None):
         if not isinstance(rules, list):
@@ -21,7 +16,7 @@ class LayerRunRules(TransformOp):
         return rule_results
 
 
-class LayerRunAgenda(TransformOp):
+class LayerRunAgenda(ProductionOperator):
 
     def __call__(self, agenda, *params, data=None, engine=None):
         if data is None:
@@ -34,7 +29,7 @@ class LayerRunAgenda(TransformOp):
         return agenda(ctxs=[rebound], engine=engine)
 
 
-class LayerPerform(ActionOp):
+class LayerPerform(ProductionOperator):
 
     def __call__(self, proposals, data=None, engine=None):
         for x,y in proposals:

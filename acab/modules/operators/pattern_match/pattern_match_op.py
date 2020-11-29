@@ -2,12 +2,9 @@
 The actual pattern matcher logic as a transform operator
 
 """
-from acab.abstract.rule.transform import TransformOp
+from acab.abstract.rule.production_abstractions import ProductionOperator
 
-class PatternMatchOp(TransformOp):
-
-    def __init__(self):
-        super(PatternMatchOp, self).__init__()
+class PatternMatchOp(ProductionOperator):
 
     def __call__(self, node, patterns, data=None, engine=None):
         assert(all([isinstance(x, tuple) for x in patterns]))

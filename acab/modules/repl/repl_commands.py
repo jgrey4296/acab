@@ -330,7 +330,7 @@ def engine_stats(engine, data):
     # rules
     if allow_all or "rule" in params:
         result.append("--------------------")
-        result.append("Rule Stats: ")
+        result.append("ProductionStructure Stats: ")
         # TODO rule stats
 
     # modules

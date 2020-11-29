@@ -10,7 +10,7 @@ import timeit
 from acab.abstract.config.config import AcabConfig
 AcabConfig.Get().read("acab/abstract/config")
 
-from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.values import Sentence
 from acab.abstract.rule.production_abstractions import ProductionStructure
 from acab.engines.trie_engine import TrieEngine
 

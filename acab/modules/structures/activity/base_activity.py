@@ -33,7 +33,7 @@ the hierarchy of Activities - Actions - Operations
 
 
 """
-from acab.abstract.core.core_abstractions import AcabValue
+from acab.abstract.core.values import AcabValue
 
 class ActivityField(AcabValue):
     """ Describe an Activity Field """

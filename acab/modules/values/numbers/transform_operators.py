@@ -2,10 +2,10 @@ from random import uniform
 from math import floor
 from re import sub
 
-from acab.abstract.rule.transform import TransformOp
+from acab.abstract.rule.production_abstractions import ProductionOperator
 
 
-class AddOp(TransformOp):
+class AddOp(ProductionOperator):
     def __init__(self):
         super().__init__()
         # type sig: num -> num -> num
@@ -13,7 +13,7 @@ class AddOp(TransformOp):
         return left + right
 
 
-class SubOp(TransformOp):
+class SubOp(ProductionOperator):
     def __init__(self):
         super().__init__()
 
@@ -21,7 +21,7 @@ class SubOp(TransformOp):
         return a - b
 
 
-class MulOp(TransformOp):
+class MulOp(ProductionOperator):
     def __init__(self):
         super().__init__()
 
@@ -29,7 +29,7 @@ class MulOp(TransformOp):
         return a * b
 
 
-class DivOp(TransformOp):
+class DivOp(ProductionOperator):
     def __init__(self):
         super().__init__()
 
@@ -37,7 +37,7 @@ class DivOp(TransformOp):
         return a / b
 
 
-class RandOp(TransformOp):
+class RandOp(ProductionOperator):
     def __init__(self):
         super().__init__()
         # ts: num -> num -> num
@@ -46,7 +46,7 @@ class RandOp(TransformOp):
         return uniform(a, b)
 
 
-class RemainOp(TransformOp):
+class RemainOp(ProductionOperator):
     def __init__(self):
         super().__init__()
 
@@ -55,7 +55,7 @@ class RemainOp(TransformOp):
         raise NotImplementedError()
 
 
-class RoundOp(TransformOp):
+class RoundOp(ProductionOperator):
     def __init__(self):
         super().__init__()
 
@@ -64,7 +64,7 @@ class RoundOp(TransformOp):
         return floor(a)
 
 
-class NegOp(TransformOp):
+class NegOp(ProductionOperator):
     def __init__(self):
         super().__init__()
 

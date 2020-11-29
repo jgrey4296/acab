@@ -1,11 +1,10 @@
-from acab.abstract.rule.action import ActionOp
-from acab.abstract.rule.transform import TransformOp
+from acab.abstract.rule.production_abstractions import ProductionOperator
 
-class PipelineRunLayer(TransformOp):
+class PipelineRunLayer(ProductionOperator):
     pass
 
-class PipelineRunPipeline(TransformOp):
+class PipelineRunPipeline(ProductionOperator):
     pass
 
-class PipelineLoadModule(ActionOp):
+class PipelineLoadModule(ProductionOperator):
     pass

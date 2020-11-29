@@ -1,9 +1,9 @@
-from acab.abstract.engine.dsl_fragment import DSL_Fragment
+from acab.abstract.interfaces.dsl_interface import DSL_Interface
 
 from .query_operators import EQ, NEQ, RegMatch, ELEM, HasTag
 from . import query_op_parsers as QOP
 
-class MODULE(DSL_Fragment):
+class MODULE(DSL_Interface):
     """ The Module Spec for base operators """
 
     def __init__(self):

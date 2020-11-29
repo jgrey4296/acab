@@ -13,7 +13,7 @@ Requirements
 
 
 """
-from acab.abstract.core.core_abstractions import AcabValue
+from acab.abstract.core.values import AcabValue
 
 class GovernanceDescription(AcabValue):
     """ A Description of how a governing organisation operates """

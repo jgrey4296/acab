@@ -5,8 +5,6 @@ from re import sub
 from acab.abstract.rule.production_abstractions import ProductionOperator
 
 class RegexOp(ProductionOperator):
-    def __init__(self):
-        super().__init__()
 
     def __call__(self, value, pattern, replacement, data=None, engine=None):
         """ Substitute value pattern with value value from passed in data
@@ -18,9 +16,7 @@ class RegexOp(ProductionOperator):
         return sub(pattern, replacement, value)
 
 
-class FormatOp(TransformOp):
-    def __init__(self):
-        super().__init__()
+class FormatOp(ProductionOperator):
 
     def __call__(self, value, data=None, engine=None):
         """ Use str.format variant with value data dictionary

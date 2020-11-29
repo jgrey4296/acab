@@ -1,7 +1,7 @@
-from acab.abstract.rule.query import QueryOp
+from acab.abstract.rule.production_abstractions import ProductionOperator
 
 
-class GT(QueryOp):
+class GT(ProductionOperator):
     def __init__(self):
         super().__init__()
 
@@ -9,7 +9,7 @@ class GT(QueryOp):
         return a > b
 
 
-class LT(QueryOp):
+class LT(ProductionOperator):
     def __init__(self):
         super().__init__()
 

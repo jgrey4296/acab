@@ -1,6 +1,6 @@
-from acab.abstract.core.node import AcabNode
+import acab.abstract.interfaces.data_interfaces as DI
 
-class HGNode(AcabNode):
+class HGNode(DI.NodeInterface):
     """ A Node in a HyperGraph """
 
     def __init__(self, value):
