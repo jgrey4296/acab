@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from re import Pattern
 from acab.abstract.config.config import AcabConfig
+from acab.abstract.core.values import Sentence
 
 util = AcabConfig.Get()
 #Static
@@ -33,13 +34,13 @@ REBIND_P         = util.prepare("Symbols", "REBIND")
 SUGAR_P          = util.prepare("Symbols", "SUGAR")
 
 # TODO add an action to build a sentence
-STRING_V           = util.value("Type.Primitive", "STRING")
-REGEX_V            = util.value("Type.Primitive", "REGEX")
+STRING_SEN         = Sentence.build([util.value("Type.Primitive", "STRING")])
+REGEX_SEN          = Sentence.build([util.value("Type.Primitive", "REGEX")])
 
 
 
 def _maybe_wrap_str(PS, value, current):
-    if value.type != STRING_V:
+    if value.type != STRING_SEN:
         return current
 
     # originally "{}"
@@ -47,7 +48,7 @@ def _maybe_wrap_str(PS, value, current):
     return str_wrap.format(current)
 
 def _maybe_wrap_regex(PS, value, current):
-    if not isinstance(value.value, Pattern) or value.type != REGEX_V:
+    if not isinstance(value.value, Pattern) or value.type != REGEX_SEN:
         return current
 
     # originally /{}/
@@ -103,14 +104,14 @@ def _maybe_wrap_rebind(PS, rebind, is_sugar=False):
 
 def _maybe_wrap_question(PS, value, current):
     query_symbol = ""
-    if QUERY_V in value._data and value._data[QUERY_V]:
+    if QUERY_V in value.data and value.data[QUERY_V]:
         query_symbol = PS.ask(QUERY_V)
 
     return "{}{}".format(current, query_symbol)
 
 def _maybe_wrap_negation(PS, value, current):
     neg_symbol = ""
-    if NEGATION_V in value._data and value._data[NEGATION_V]:
+    if NEGATION_V in value.data and value.data[NEGATION_V]:
         neg_symbol = PS.ask(NEGATION_V)
 
     return "{}{}".format(neg_symbol, current)

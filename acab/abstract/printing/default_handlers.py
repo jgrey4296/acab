@@ -72,7 +72,7 @@ def value_sentinel(PS, source_val, processed, acc, params):
     if modal_data_field is not False:
         modal = acc[modal_data_field]
     # TODO this is relevant to statements as leaves/not
-    if PS.ask("drop_modal", for_uuid=source_val._uuid):
+    if PS.ask("drop_modal", for_uuid=source_val.uuid):
         modal = ""
 
     joined_constraints = ""
@@ -96,7 +96,7 @@ def simple_value_sentinel(PS: 'AcabPrintSemantics', value: 'AcabValue', processe
 
 
 def value_uuid_accumulator(PS, value, acc, params):
-    return (PS.accumulate, {'uuid': str(value._uuid)}, None, None)
+    return (PS.accumulate, {'uuid': str(value.uuid)}, None, None)
 
 def value_name_accumulator(PS, value, acc, params):
     base = value.name
@@ -110,8 +110,8 @@ def value_name_accumulator(PS, value, acc, params):
 def modality_accumulator(PS, value, acc, params):
     modal_field = PS.ask('MODAL_FIELD')
     modal_value = None
-    if modal_field in value._data:
-        modal_value = value._data[modal_field]
+    if modal_field in value.data:
+        modal_value = value.data[modal_field]
 
     modal_alias = PS.ask(modal_value)
     if bool(modal_alias):
@@ -144,7 +144,7 @@ def sentence_substruct(PS, value, acc, params):
     logging.info("Sentence Substruct: {}".format(value))
     words = value.words
     # TODO: change this to an Override registration
-    PS.set_for_uuid(words[-1]._uuid, ["drop_modal"])
+    PS.set_for_uuid(words[-1].uuid, ["drop_modal"])
     words = list_to_inst_list(PS, value, [x for x in value.words], acc, "words")
     return (PS.substruct, words, None, None)
 
@@ -172,7 +172,7 @@ def operator_substruct(PS, value, acc, params):
     # Get op
     operator = value.op
     # Get Params
-    the_params = list_to_inst_list(PS, value, [x for x in value._params], acc,"params")
+    the_params = list_to_inst_list(PS, value, [x for x in value.params], acc,"params")
     op_name = list_to_inst_list(PS, value, [operator], acc, "op_name")
     return (PS.substruct, the_params + op_name, operator_sentinel, None)
 

@@ -6,6 +6,7 @@ import pyparsing as pp
 
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.config.modal import MODAL_DEFAULTS
+from acab.abstract.core.values import Sentence
 
 logging = root_logger.getLogger(__name__)
 
@@ -46,9 +47,9 @@ TYPE_INSTANCE_S  = util.value("Parse.Structure", "TYPE_INSTANCE")
 VALUE_S          = util.value("Parse.Structure", "VALUE")
 
 # Primitives
-ATOM_V   = util.value("Data", "TYPE_BOTTOM_NAME")
-STRING_V = util.value("Type.Primitive", "STRING")
-REGEX_V  = util.value("Type.Primitive", "REGEX")
+ATOM_V   = Sentence.build([util.value("Data", "TYPE_BOTTOM_NAME")])
+STRING_V = Sentence.build([util.value("Type.Primitive", "STRING")])
+REGEX_V  = Sentence.build([util.value("Type.Primitive", "REGEX")])
 
 
 s         = pp.Suppress

@@ -10,8 +10,8 @@ import pyparsing as pp
 from acab.abstract.config.config import AcabConfig
 
 from acab.abstract.parsing import consts as PConst
-from acab.abstract.core.core_abstractions import AcabValue
-from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.values import AcabValue
+from acab.abstract.core.values import Sentence
 from acab.abstract.rule.production_abstractions import ProductionContainer, ProductionComponent, ProductionStructure
 
 logging = root_logger.getLogger(__name__)
@@ -55,7 +55,7 @@ def add_annotations(toks):
         update_data[modal_tuple[1][0]] = modal_tuple[1][1]
     if PConst.ANNOTATION_S in toks:
         update_data.update({x: y for x, y in toks[PConst.ANNOTATION_S]})
-    toks[PConst.NODE_S]._data.update(update_data)
+    toks[PConst.NODE_S].data.update(update_data)
     return toks[PConst.NODE_S]
 
 
@@ -70,9 +70,9 @@ def construct_multi_sentences(toks):
     for additional in additional_sentences:
         full_toks = base_sen.words[:] + additional.words[:]
         data = {}
-        data.update(base_sen._data)
-        data.update(additional._data)
-        new_sen = Sentence(full_toks, data=data)
+        data.update(base_sen.data)
+        data.update(additional.data)
+        new_sen = Sentence.build(full_toks, data=data)
         new_sentences.append(new_sen)
 
     return new_sentences
@@ -82,7 +82,7 @@ def construct_sentence(toks):
     data = {PConst.NEGATION_S : False}
     if PConst.NEGATION_S in toks:
         data[PConst.NEGATION_S] = True
-    return Sentence(toks[PConst.SEN_S][:], data=data)
+    return Sentence.build(toks[PConst.SEN_S][:], data=data)
 
 def construct_statement(toks):
     # Take the statement, and add it to the location
@@ -96,15 +96,10 @@ def construct_statement(toks):
     if PConst.TAG_S in toks:
         tags = [x[1] for x in toks[PConst.TAG_S]]
 
-    obj_tuple  = toks[PConst.STATEMENT_S][0]
-    obj_tuple[1].apply_params(targs).apply_tags(tags)
+    type_name, obj = toks[PConst.STATEMENT_S][0]
+    updated_obj = obj.apply_params(targs).apply_tags(tags)
 
-    try:
-        new_sentence = sen.attach_statement(obj_tuple[1]).verify()
-    except AssertionError as err:
-        breakpoint()
-
-        logging.debug("Verification error")
+    new_sentence = sen.attach_statement(updated_obj)
 
     return new_sentence
 
@@ -115,7 +110,7 @@ def build_constraint_list(toks):
 def build_query_component(toks):
     """ Build a comparison """
     op = toks[PConst.OPERATOR_S][0]
-    return (PConst.CONSTRAINT_S, QueryComponent(op, param=toks[PConst.VALUE_S]))
+    return (PConst.CONSTRAINT_S, ProductionComponent(value=op, params=[toks[PConst.VALUE_S]]))
 
 def build_clause(toks):
     # detect negation and annotate the clause with it
@@ -126,11 +121,13 @@ def build_clause(toks):
         # if NEGATION_S in toks:
         #     raise AcabParseException("Negated Fallback clauses don't make sense")
         data[PConst.QUERY_FALLBACK_S] = toks[PConst.QUERY_FALLBACK_S][:]
-    return toks[0].set_data(data)
+
+
+    return toks[0].data.update(data)
 
 def build_query(toks):
-    query = Query(toks[:])
-    return (query.type, query)
+    query = ProductionContainer(value=toks[:])
+    return (PConst.QUERY_S, query)
 
 def build_assignment(toks):
     return (toks[0][1], toks[1])
@@ -143,12 +140,14 @@ def build_action_component(toks):
         params = toks[PConst.RIGHT_S][:]
     op = toks[PConst.OPERATOR_S][0]
     filtered_params = [x[0] if len(x) == 1 else x for x in params]
-    return ActionComponent(op, filtered_params, sugared=PConst.LEFT_S in toks)
+    return ProductionComponent(value=op, params=filtered_params, sugared=PConst.LEFT_S in toks)
+
 
 def build_action(toks):
-    clauses = [x if isinstance(x, ActionComponent)
-               else ActionComponent(Sentence.build([PConst.DEFAULT_ACTION_S]), [x]) for x in toks]
-    act = Action(clauses)
+    # TODO: check this
+    clauses = [x if isinstance(x, ProductionComponent)
+               else ProductionComponent(value=Sentence.build([PConst.DEFAULT_ACTION_S]), params=[x]) for x in toks]
+    act = ProductionContainer(value=clauses)
 
     return (act.type, act)
 
@@ -165,11 +164,11 @@ def build_transform_component(toks):
     rebind = toks[PConst.TARGET_S][0]
     filtered_params = [x[0] if len(x) == 1 else x for x in params]
 
-    return TransformComponent(op, filtered_params, rebind=rebind, sugared=PConst.LEFT_S in toks)
+    return ProductionComponent(value=op, params=filtered_params, rebind=rebind, sugared=PConst.LEFT_S in toks)
 
 def build_transform(toks):
-    trans = Transform(toks[:])
-    return (trans.type, trans)
+    trans = ProductionContainer(value=toks[:])
+    return (PConst.TRANSFORM_S, trans)
 
 def build_rule(toks):
 
@@ -194,84 +193,24 @@ def build_rule(toks):
     else:
         a = None
 
+    structure = {
+        PConst.QUERY_S : c,
+        PConst.TRANSFORM_S : t,
+        PConst.ACTION_S : a
+        }
 
-    rule = Rule(c, action=a, transform=t)
+    rule = ProductionStructure(structure=structure)
     return (rule.type, rule)
 
 def make_agenda(toks):
-    # Get Conditions
-    if PConst.QUERY_S in toks:
-        c = toks[PConst.QUERY_S][0][1]
-        assert(isinstance(c, ProductionContainer))
-    else:
-        c = None
-
-    # Get Transform
-    if PConst.TRANSFORM_S in toks:
-        t = toks[PConst.TRANSFORM_S][0][1]
-        assert(isinstance(t, ProductionContainer))
-    else:
-        t = None
-
-    # Get Action
-    if PConst.ACTION_S in toks:
-        a = toks[PConst.ACTION_S][0][1]
-        assert(isinstance(a, ProductionContainer))
-    else:
-        a = None
-
-    # make the agenda
-    the_agenda = Agenda(query=c, transform=t, action=a)
-
-    return  (the_agenda.type, the_agenda)
+    rule_type_str, as_rule = build_rule(toks)
+    return  (PConst.AGENDA_S, as_rule)
 
 def make_layer(toks):
-    # Get Conditions
-    if PConst.QUERY_S in toks:
-        c = toks[PConst.QUERY_S][0][1]
-        assert(isinstance(c, ProductionContainer))
-    else:
-        c = None
+    rule_type_str, as_rule = build_rule(toks)
+    return  (PConst.LAYER_S, as_rule)
 
-    # Get Transform
-    if PConst.TRANSFORM_S in toks:
-        t = toks[PConst.TRANSFORM_S][0][1]
-        assert(isinstance(t, ProductionContainer))
-    else:
-        t = None
-
-    # Get Action
-    if PConst.ACTION_S in toks:
-        a = toks[PConst.ACTION_S][0][1]
-        assert(isinstance(a, ProductionContainer))
-    else:
-        a = None
-
-    the_layer = Layer(query=c, transform=t, action=a)
-    return (the_layer.type, the_layer)
 
 def make_pipeline(toks):
-    # Get Conditions
-    if PConst.QUERY_S in toks:
-        c = toks[PConst.QUERY_S][0][1]
-        assert(isinstance(c, ProductionContainer))
-    else:
-        c = None
-
-    # Get Transform
-    if PConst.TRANSFORM_S in toks:
-        t = toks[PConst.TRANSFORM_S][0][1]
-        assert(isinstance(t, ProductionContainer))
-    else:
-        t = None
-
-    # Get Action
-    if PConst.ACTION_S in toks:
-        a = toks[PConst.ACTION_S][0][1]
-        assert(isinstance(a, ProductionContainer))
-    else:
-        a = None
-
-    the_pipeline = Pipeline(query=c, transform=t, action=t)
-
-    return (the_pipeline.type, the_pipeline)
+    rule_type_str, as_rule = build_rule(toks)
+    return  (PConst.PIPELINE_S, as_rule)

@@ -14,12 +14,14 @@ from typing import cast, ClassVar, TypeVar
 from collections import defaultdict
 from enum import Enum
 
-from acab.abstract.core.core_abstractions import AcabValue
-from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.values import AcabValue
+from acab.abstract.core.values import Sentence
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.contexts import Contexts
 from acab.abstract.core.structure import DataStructure
 from acab.abstract.core.node_semantics import AcabNodeSemantics
+
+from acab.abstract.interfaces import semantics_interface as SI
 
 from acab.error.acab_semantic_exception import AcabSemanticException
 
@@ -64,7 +66,7 @@ SemBox = Tuple[RET_enum, Printable, Callable]
 StackValue = Tuple[List[SemBox], List[str], Dict[Any, Any]]
 
 
-class AcabPrintSemantics(AcabValue):
+class AcabPrintSemantics(AcabValue, SI.PrintSemanticInterface):
     """ Abstract Class of Print Semantics
     Provides the basic walk through of a value/node/container etc
     to call handlers to produce a re-parseable string
@@ -104,7 +106,7 @@ class AcabPrintSemantics(AcabValue):
         enum_lookup_override: Dict[Enum, Callable] = None,
     ):
 
-        super(AcabPrintSemantics, self).__init__(None)
+        super(AcabPrintSemantics, self).__init__()
 
         self._uuid_board: Dict["UUID", "DefaultDict"] = {}
         self._bottom_semantic = (
