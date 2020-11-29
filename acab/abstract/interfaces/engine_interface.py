@@ -65,3 +65,8 @@ class EngineInterface(metaclass=abc.ABCMeta):
         return a list of dictionaries
         """
         pass
+
+
+    @abc.abstractmethod
+    def _load_file(self, filename) -> Any:
+        pass

@@ -5,26 +5,22 @@ from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic
 
+from dataclasses import dataclass,  field
+
 import abc
 
-
+@dataclass
 class NodeInterface(metaclass=abc.ABCMeta):
     """  """
+
+    value : 'AcabValue'
+    children : Dict[str, 'AcabNode'] = field(default_factory=dict)
 
     @staticmethod
     @abc.abstractmethod
     def Root() -> 'AcabNode':
         pass
 
-    @property
-    @abc.abstractmethod
-    def value(self) -> 'AcabValue':
-        pass
-
-    @property
-    @abc.abstractmethod
-    def children(self) -> Dict[str, 'AcabNode']:
-        pass
 
     @abc.abstractmethod
     def _default_setup(self, path: ['AcabNode'], data: Dict[Any,Any], context: Dict[Any,Any]):
@@ -39,8 +35,11 @@ class NodeInterface(metaclass=abc.ABCMeta):
 
 
 
+
+@dataclass
 class StructureInterface(metaclass=abc.ABCMeta):
       """  """
+      root : 'AcabNode' = field(init=False)
 
       @property
       @abc.abstractmethod
@@ -50,5 +49,5 @@ class StructureInterface(metaclass=abc.ABCMeta):
 
       @property
       @abc.abstractmethod
-      def root(self) -> 'AcabNode':
+      def to_sentences(self) -> List['Sentence']:
           pass

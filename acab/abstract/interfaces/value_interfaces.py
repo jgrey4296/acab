@@ -10,8 +10,6 @@ from typing import cast, ClassVar, TypeVar, Generic
 
 class ValueInterface(metaclass=abc.ABCMeta):
 
-
-
     @property
     @abc.abstractmethod
     def name(self) -> str:
@@ -46,6 +44,9 @@ class SentenceInterface(metaclass=abc.ABCMeta):
     def attach_statement(self, value: 'AcabValue') -> 'Sentence':
         pass
 
+    @abc.abstractmethod
+    def detach_statement(self) -> 'Sentence':
+        pass
 
     @abc.abstractmethod
     def __getitem__(self, i) -> 'AcabValue':

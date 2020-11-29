@@ -11,21 +11,16 @@ from typing import cast, ClassVar, TypeVar, Generic
 class DSL_Interface(metaclass=abc.ABCMeta):
     """ """
 
-    @abc.abstractmethod
     def parse_string(self, string):
         """ Takes a String, parses it into Data format """
-        pass
-
-    @abc.abstractmethod
-    def register_printers(self):
-        pass
+        raise NotImplemented()
 
     def init_strings(self):
         """ Return any strings to parse as
         part of the modules initialisation.
         Defining values etc that can now be parsed by
         the hotloaded value and statement parsers """
-        pass
+        raise NotImplemented()
 
     @abc.abstractmethod
     def assert_parsers(self, parser_trie):
@@ -50,11 +45,4 @@ class DSL_Interface(metaclass=abc.ABCMeta):
 
         """
         pass
-
-
-    @abc.abstractmethod
-    def verify(self):
-        pass
-
-
 
