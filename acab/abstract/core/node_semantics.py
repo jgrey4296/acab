@@ -25,10 +25,11 @@ from typing import Callable, Iterator, Union, Match, TypeVar
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar
 
-from acab.abstract.core.core_abstractions import AcabValue, AcabStatement
-from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.values import AcabValue, AcabStatement
+from acab.abstract.core.values import Sentence
 from acab.abstract.core.node import AcabNode
 
+from acab.abstract.interfaces import semantics_interface as SI
 from acab.abstract.config.config import AcabConfig
 
 util         = AcabConfig.Get()
@@ -36,54 +37,16 @@ NEGATION_S   = util.value("Value.Structure", "NEGATION")
 CONSTRAINT_S = util.value("Value.Structure", "CONSTRAINT")
 AT_BIND_S    = util.value("Value.Structure", "AT_BIND")
 
-class AcabNodeSemantics(AcabStatement):
+class AcabNodeSemantics(AcabStatement, SI.NodeSemantics):
     """ A Single Class to provide
     interchangeable core semantics
     Always handles AcabNodes wrapping AcabValues
 
     """
     def __init__(self):
-        super(AcabNodeSemantics, self).__init__(Sentence.build([self.__class__.__name__]))
+        super(AcabNodeSemantics, self).__init__(name=self.__class__.__name__)
 
-
-    def accessible(self, node: AcabNode,
-                   data: Dict[Any, Any],
-                   term: AcabValue) -> [AcabNode]:
-        """
-        Retrieve a list of all nodes accessible from this node,
-        according to a constraint term
-        """
-        raise NotImplementedError()
-
-    def equal(self, word: AcabNode, word2: AcabNode) -> bool:
-        raise NotImplementedError()
-
-    def lift(self, word: AcabValue, constructor: Callable) -> AcabNode:
-        """ Lifting a node to ensure it has necessary information """
-        # could include vocabulary tracking a la spacy
-        raise NotImplementedError()
-
-
-    def add(self, node: AcabNode, word: AcabValue, node_constructor: Callable) -> Tuple[bool, AcabNode]:
-        raise NotImplementedError()
-
-    def get(self, node: AcabNode, query_term: AcabValue) -> Optional[AcabNode]:
-        """ Getting a node from the data structure """
-        raise NotImplementedError()
-
-    def contain(self, node: AcabNode, query_term: AcabValue) -> bool:
-        """ Getting Node inclusion in a set """
-        raise NotImplementedError()
-
-    def delete(self, node: AcabNode, to_delete: AcabValue) -> Optional[AcabNode]:
-        """ Removing a node from the data structure """
-        raise NotImplementedError()
-
-
-
-
-
-    def test_candidates(self, term, candidate_pairs, tests, engine):
+    def test_candidates(self, term, candidate_triple, tests, engine):
         """ query word, with a sequence of tests,
         in all available bind groups, BFS manner
         """
@@ -91,7 +54,7 @@ class AcabNodeSemantics(AcabStatement):
         # TODO: validate on activate context too
 
         # Get the frontier
-        potentials = [(i, d, passing) for i,d,n in candidate_pairs
+        potentials = [(i, d, passing) for i,d,n in candidate_triple
                       for passing in self.accessible(n, d, term)]
         
         passing = potentials
@@ -123,7 +86,7 @@ class AcabNodeSemantics(AcabStatement):
         result = None
         for subbind in subbind_comps:
             # TODO: expand subbind usng data first
-            result = subbind(node, data=data, engine=engine)
+            result = _compare(subbind, node, data=data, engine=engine)
             if result is None:
                 invalidated = True
                 break
@@ -147,14 +110,14 @@ class AcabNodeSemantics(AcabStatement):
 
     def _test_alphas(self, node, comps, data=None, engine=None):
         """ Run alpha tests against word retrieved value """
-        return all([word(node, data=data, engine=engine) for word in comps])
+        return all([_compare(word, node, data=data, engine=engine) for word in comps])
 
     def _test_betas(self, node, comps, data=None, engine=None):
         """ Run word beta tests against word retrieved value, with supplied bindings """
-        return all([word(node, data=data, engine=engine) for word in comps])
+        return all([_compare(word, node, data=data, engine=engine) for word in comps])
 
     def _test_annotations(self, node, comps, data=None, engine=None):
-        return all([word(node, data=data, engine=engine) for word in comps])
+        return all([_compare(word, node, data=data, engine=engine) for word in comps])
 
     def _prepare_dict(self, data: dict, passing_node: AcabNode, query_term: AcabValue):
         """ Prepare a tuple for adding to the context
@@ -167,3 +130,15 @@ class AcabNodeSemantics(AcabStatement):
             data_copy[AT_BIND_S + query_term.name] = passing_node
 
         return data_copy
+
+
+
+
+def _compare(word, node,  ctxs=None, engine=None):
+    # Get op from engine
+    op = engine.get_operator(query_component.op)
+    # AcabNode -> AcabValue -> Actual Value
+    node_value = node.value.value
+    params = ProdSem.get_params(data)
+
+    return op(node_value, *params, data=data)

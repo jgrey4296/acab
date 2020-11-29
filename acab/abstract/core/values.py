@@ -34,9 +34,8 @@ TYPE_BOTTOM_NAME = util.value("Data", "TYPE_BOTTOM_NAME")
 UUID_CHOP        = bool(int(util.value("Print.Data", "UUID_CHOP")))
 FALLBACK_MODAL   = util.value("Symbols", "FALLBACK_MODAL", actions=[util.actions_e.STRIPQUOTE])
 
-@VI.ValueInterface.register
 @dataclass
-class AcabValue:
+class AcabValue(VI.ValueInterface):
     _value_types: ClassVar[Set[Any]]          = set([str, Pattern, list])
 
     name : str                 = field(default=None)
@@ -248,19 +247,15 @@ class AcabValue:
     def has_tag(self, *tags) -> bool:
         return all([t in self.tags for t in tags])
 
-    def to_simple_value(self) -> 'AcabValue':
+    def to_word(self) -> 'AcabValue':
         new_data = {}
         new_data.update(self.data)
         new_data.update({TYPE_INSTANCE: Sentence.build([TYPE_BOTTOM_NAME])})
-        simple_value = AcabValue.safe_make(self.name, data=new_data)
+        simple_value = Sentence.build([AcabValue.safe_make(self.name, data=new_data)])
         return simple_value
 
-
-
-
-
-
-
+    def to_sentences(self):
+        return [self]
 class AcabStatement(AcabValue):
     """ AcabStatement functions the same as AcabValue,
     but provides specific functionality for converting to a string
@@ -281,7 +276,6 @@ class AcabStatement(AcabValue):
 
 
 
-@VI.SentenceInterface.register
 class Sentence(AcabStatement, VI.SentenceInterface):
     @staticmethod
     def build(words, **kwargs):
@@ -419,7 +413,7 @@ class Sentence(AcabStatement, VI.SentenceInterface):
         """
         The inverse of attach_statement.
         Copy the sentence,
-        Reduce the leaf of a sentence to a simple value
+        Reduce all words down to basic values
         Return modified copy, and the statement
         """
         statements = []
@@ -428,7 +422,7 @@ class Sentence(AcabStatement, VI.SentenceInterface):
         # collect leaf statements
         for word in self.words:
             if isinstance(word, AcabStatement):
-                out_words.append(word.to_simple_value())
+                out_words.append(word.to_word()[0])
                 statements.append(word)
             else:
                 out_words.append(word)
@@ -437,3 +431,6 @@ class Sentence(AcabStatement, VI.SentenceInterface):
         return (sen_copy, statements)
 
 
+
+    def to_sentences(self):
+        return [self]

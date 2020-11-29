@@ -18,32 +18,32 @@ import logging as root_logger
 
 from acab.abstract.config.config import AcabConfig
 
-from acab.abstract.core.core_abstractions import AcabValue, Sentence
+from acab.abstract.core.values import AcabValue, Sentence
+import acab.abstract.interfaces.data_interfaces as DI
 
 logging = root_logger.getLogger(__name__)
 
 util = AcabConfig.Get()
 
-ROOT = util.value("Data", "ROOT")
-BIND = util.value("Value.Structure", "BIND")
+ROOT = AcabValue(name=util.value("Data", "ROOT"))
 
 @dataclass
-class AcabNode:
+class AcabNode(DI.NodeInterface):
     """ The Base Node Class for Tries/Data structures etc
     Not an AcabValue
     """
 
-    value : AcabValue
-    data : Dict[str, Any]          = field(default_factory=dict)
-    path : Sentence                = field(default=None)
+    # value : AcabValue                = field(default=None)
+    data : Dict[str, Any]            = field(default_factory=dict)
+    path : Sentence                  = field(default=None)
     parent : 'AcabNode'              = field(default=None)
     children : Dict[str, 'AcabNode'] = field(default_factory=dict)
-    uuid : UUID                    = field(default_factory=uuid1)
+    uuid : UUID                      = field(default_factory=uuid1)
 
     @staticmethod
     def Root():
         """ Create a new root node """
-        return AcabNode(ROOT)
+        return AcabNode(value=ROOT)
 
 
     def __post_init__(self):
@@ -51,7 +51,6 @@ class AcabNode:
         # TODO should this be the case?
         if isinstance(self.value, AcabNode):
             raise TypeError("Nodes shouldn't have nodes inside them")
-
         assert(isinstance(self.value, AcabValue))
 
 
@@ -173,3 +172,4 @@ class AcabNode:
         pass
     def _update_node(self, path, data, context):
         """ Called by a semantics for passing through a node """
+        pass

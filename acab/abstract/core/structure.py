@@ -6,9 +6,10 @@ from uuid import uuid1, UUID
 from weakref import ref
 import logging as root_logger
 
+from acab.abstract.interfaces import data_interfaces as DI
 
 @dataclass
-class DataStructure:
+class DataStructure(DI.StructureInterface):
     """
     The Abstract DataStructure Class
     Anything that wants to use StructureSemantics has to fulfill this
@@ -21,7 +22,7 @@ class DataStructure:
 
     def __post_init__(self):
         assert(self.semantics is not None)
-        self.root = self.semantics.make_root()
+        self.root = self.semantics.init_struct(self)
 
     def __bool__(self):
         return bool(self.root)

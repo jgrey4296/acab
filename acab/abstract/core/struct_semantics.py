@@ -13,12 +13,14 @@ from weakref import ref
 import logging as root_logger
 
 
-from acab.abstract.core.core_abstractions import AcabValue
-from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.values import AcabValue
+from acab.abstract.core.values import Sentence
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.contexts import Contexts
 from acab.abstract.core.structure import DataStructure
 from acab.abstract.core.node_semantics import AcabNodeSemantics
+
+from acab.abstract.interfaces import semantics_interface as SI
 
 from acab.error.acab_semantic_exception import AcabSemanticException
 
@@ -31,8 +33,8 @@ CONSTRAINT_S = util.value("Value.Structure", "CONSTRAINT")
 AT_BIND_S    = util.value("Value.Structure", "AT_BIND")
 ROOT_S       = util.value("Data", "ROOT")
 
-@dataclass(frozen=True)
-class AcabStructureSemantics(AcabValue):
+@dataclass
+class AcabStructureSemantics(AcabValue, SI.SemanticInterface, SI.StructureSemantics):
     # TODO Locate listeners in semantics not WM
 
     node_semantics: Dict[AcabNode, AcabNodeSemantics] = field(default_factory=dict)
@@ -50,13 +52,13 @@ class AcabStructureSemantics(AcabValue):
 
         # TODO: verify value -> node_c -> semantic chains
 
-    def make_root(self):
+    def init_struct(self, struct):
         """
         Create a basic root node / entry point for a data structure
         """
         constructor, u_data = self.value_pairings[AcabValue]
         node_semantics = self.retrieve_semantics(constructor)
-        return node_semantics.lift(AcabValue(ROOT_S), constructor)
+        return node_semantics.up(AcabValue(ROOT_S), constructor)
 
     def retrieve_semantics(self, node):
         """
@@ -109,49 +111,15 @@ class AcabStructureSemantics(AcabValue):
         return retrieved
 
 
-    def add(self, structure : DataStructure, to_add : List[Sentence], **kwargs) -> List[AcabNode]:
-        """ Inserting a coherent set of sentences into the structure """
-        raise NotImplementedError()
-
-    def get(self, structure : DataStructure, sentence) -> List[AcabNode]:
-        """ Getting a path of nodes corresponding to the sentence """
-        raise NotImplementedError()
-
-    def contain(self, structure, sentence) -> bool:
-        """ Can the sentence be found in the structure """
-        raise NotImplementedError()
 
     def delete(self, structure, sentence) -> List[AcabNode]:
         """ Remove a sentence from the structure """
         raise NotImplementedError()
 
 
-    def query(self, structure, clause : Sentence, ctxs : Contexts, engine : 'Engine') -> Contexts:
-        """ Answer a clause asked of the data structure """
-        # TODO is this part of call semantics?
-        # open / closed world
-        # depth / breath search
-        # match as pattern?
-        # return type
-        raise NotImplementedError()
-
-
-    def down(self, data_structure : DataStructure) -> List[Sentence]:
-        """ Take a complex data structure down to basic sentences """
-        raise NotImplementedError()
-
-    def lift(self, sentences : List[Sentence]) -> DataStructure:
-        """ Raise a set of sentences into a data structure """
-        raise NotImplementedError()
 
     def filter_candidates(self, structure, candidates, match_func):
         raise NotImplementedError()
-
-    def set_node_type(self, node_type : AcabNode):
-        raise DeprecationWarning()
-
-    def set_node_semantics(self, ns : AcabNodeSemantics):
-        raise DeprecationWarning()
 
 
 #--------------------------------------------------
