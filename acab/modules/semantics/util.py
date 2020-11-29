@@ -9,3 +9,4 @@ logging = root_logger.getLogger(__name__)
 
 util = AcabConfig.Get()
 
+# TODO RDFSemantics, ReteSemantics
