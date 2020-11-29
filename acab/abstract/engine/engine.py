@@ -5,20 +5,34 @@ Engine's are the main programming dsl_fragments.
 You create one with a working memory, load some modules,
 and can then parse and run an agent DSL pipeline.
 """
+# https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
+from typing import List, Set, Dict, Tuple, Optional, Any
+from typing import Callable, Iterator, Union, Match
+from typing import Mapping, MutableMapping, Sequence, Iterable
+from typing import cast, ClassVar, TypeVar, Generic
+
 import logging as root_logger
 from os.path import exists, split, expanduser, abspath
 from importlib import import_module
+
+from copy import deepcopy
+from dataclasses import dataclass, field, InitVar, replace
+from fractions import Fraction
+from re import Pattern
+from uuid import uuid1, UUID
+from weakref import ref
 
 from acab.abstract.config.config import AcabConfig
 from acab.error.acab_import_exception import AcabImportException
 from acab.error.acab_base_exception import AcabBaseException
 
-from acab.abstract.core.core_abstractions import AcabValue
-from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.values import AcabValue
+from acab.abstract.core.values import Sentence
 
 from acab.abstract.rule.production_abstractions import ProductionOperator, ProductionContainer
-from acab.abstract.engine.dsl_fragment import DSL_Fragment
 from acab.abstract.engine.working_memory import WorkingMemory
+
+from acab.abstract.interfaces import engine_interface as EI
 
 from acab.modules.structures.trie.trie import Trie
 
@@ -26,27 +40,24 @@ util = AcabConfig.Get()
 
 logging = root_logger.getLogger(__name__)
 
-
-class Engine:
+@dataclass
+class Engine(EI.EngineInterface):
     """ The Abstract class of a production system engine. """
 
-    def __init__(self, wm_constructor, op_constructor=None, modules=None, path=None, init=None):
+    # Blocks engine use until build_DSL has been called
+    __wm_constructor : 'Callable'         = None
+    _loaded_DSL_Fragments: Dict[Any, Any] = field(default_factory=dict)
+    _loaded_modules: Set[Any]             = field(default_factory=set)
+    _working_memory: 'WorkingMemory'      = field(init=False)
+    init_data : Dict[Any, Any]            = field(default_factory=dict)
+    initialised : bool                    = field(init=False, default=False)
+    load_paths : List[str]                = field(default_factory=list)
+    modules : List[str]                   = field(default_factory=list)
+
+    def __post_init__(self, wm_constructor):
         assert(callable(wm_constructor))
-        if op_constructor is None:
-            op_constructor = Trie
 
-        assert(callable(op_constructor))
-
-        # Blocks engine use until build_DSL has been called
-        self._initialised = False
-
-        # TODO: enable separated working memories for separate layers
-        self.__wm_constructor = wm_constructor
-
-        self._working_memory = wm_constructor(init)
-        # modules
-        self._loaded_modules = set()
-        self._loaded_DSL_fragments = {}
+        self._working_memory = self.__wm_constructor(self.init_data)
 
         # TODO  update with reloadable state of working memory
         self._prior_states = []
@@ -63,16 +74,12 @@ class Engine:
         self._current_action = None
 
         # initialise
-        if modules is not None:
+        if bool(self.modules):
             self.load_modules(*modules)
 
-        if path is None:
-            logging.info("Not loading any files for the working memory")
-        elif isinstance(path, list):
-            for x in path:
+        if bool(self.load_paths):
+            for x in self.load_paths:
                 self.load_file(x)
-        else:
-            self.load_file(path)
 
 
     @property
@@ -99,6 +106,7 @@ class Engine:
         # TODO use utility constants for joining and query
         mod_str = module_sen
         if not isinstance(mod_str, str):
+            breakpoint()
             raise Exception("TODO: handle sentence -> module import")
             # mod_str = str(module_sen)
 
@@ -112,6 +120,8 @@ class Engine:
         try:
             the_module = import_module(mod_str)
         except ModuleNotFoundError as e:
+            breakpoint()
+
             raise AcabImportException(module_sen) from None
 
         # Extract
@@ -134,38 +144,21 @@ class Engine:
         """
         self._working_memory.clear_bootstrap()
         self._working_memory.construct_parsers_from_fragments([y for x in self._loaded_DSL_fragments.values() for y in x])
-        self._initialised = True
+        self.initialised = True
 
 
-    def register_ops(self, sentences):
-        """
-        Assert sentences into the operator working memory
-        """
-        raise NotImplementedError()
-
-    def alias_module(self, mod_name, alias_name):
-        """
-        Assert an alias of a module into the operator wm
-        """
-        raise NotImplementedError()
-
-    def get_operator(self, op_name):
-        """ Get an operator from the operator wm """
-        raise NotImplementedError()
 
 
     def load_file(self, filename):
         """ Load a file spec for the facts / rules / layers for this engine """
-        if not self._initialised:
+        if not self.initialised:
             raise AcabBaseException("DSL Not Initialised")
 
         return self._load_file(filename)
 
-    def _load_file(self, filename):
-        raise NotImplementedError("Base Engine Stub")
-
     def save_file(self, filename):
         """ Dump the content of the kb to a file to reload later """
+        # TODO control with print semantics
         assert(exists(split(abspath(expanduser(filename)))[0]))
         with open(abspath(expanduser(filename)), 'w') as f:
             f.write(str(self._working_memory) + "\n")
@@ -173,6 +166,7 @@ class Engine:
     def _save_state(self, data):
         """ Copy the current string representation of the working memory,
         and any associated data """
+        # TODO replace this with a down
         self._prior_states.append((str(self._working_memory), data))
 
 
@@ -180,13 +174,13 @@ class Engine:
     def add(self, s):
         """ Assert a new fact into the engine """
         # pylint: disable=unused-argument,no-self-use
-        if not self._initialised:
+        if not self.initialised:
             raise AcabBaseException("DSL Not Initialised")
         self._working_memory.add(s)
 
     def query(self, s, ctxs=None, cache=True):
         """ Ask a question of the working memory """
-        if not self._initialised:
+        if not self.initialised:
             raise AcabBaseException("DSL Not Initialised")
         result = self._working_memory.query(s, ctxs=ctxs, engine=self)
         if cache:
@@ -220,7 +214,7 @@ class Engine:
         rule/agenda/layer/pipeline,
         action/query/transform
         """
-        if not self._initialised:
+        if not self.initialised:
             raise AcabBaseException("DSL Not Initialised")
         result = False
         # if thing is string, query it
@@ -233,6 +227,7 @@ class Engine:
         else:
             assert(isinstance(thing, ProductionContainer))
             logging.info("Running thing: {}".format(thing))
+            # TODO: this will use a production semantics
             result = thing(ctxs=bindings, engine=self)
 
         if not bool(result):
@@ -249,9 +244,3 @@ class Engine:
         """
         return self._working_memory.to_sentences()
 
-    def extract_from_module(self, module):
-        raise NotImplementedError()
-
-    # Deprecated
-    def reload_all_modules(self):
-        raise DeprecationWarning("Use build_DSL")

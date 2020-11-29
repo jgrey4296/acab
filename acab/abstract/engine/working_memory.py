@@ -21,118 +21,33 @@ from fractions import Fraction
 # https://docs.python.org/3/library/abc.html
 import abc
 
+from copy import deepcopy
+from dataclasses import dataclass, field, InitVar, replace
+from fractions import Fraction
+from re import Pattern
+from uuid import uuid1, UUID
+from weakref import ref
+
 from acab.abstract.core.node import AcabNode
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
-from acab.abstract.engine.dsl_fragment import DSL_Fragment
+from acab.abstract.interfaces.dsl_interface import DSL_Interface
 from acab.abstract.rule.production_abstractions import ProductionOperator
+
+from acab.abstract.interfaces import working_memory_interface as WMI
 
 from acab.modules.semantics.basic_semantics import BasicNodeSemantics
 from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics
 
 logging = root_logger.getLogger(__name__)
 
-
-class WorkingMemory:
+@dataclass
+class WorkingMemory(WMI.WorkingMemoryInterface, WMI.InterruptableWMInterface, WMI.DSLBuilderInterface):
     """ The Abstract Working Memory """
+    _structure : 'AcabStructure' = None
 
-    def __init__(self, init, semantics):
-        self._module_hotload_provision = {}
-
+    # def __init__(self, init, struct=None, semantics=None):
         # Use a Bootstrap DSL for specification
-        self._bootstrap_parser = BootstrapParser()
+        # self._bootstrap_parser = BootstrapParser()
         # Listeners are treated as a query *bag*
-        self._listeners = set()
-        self._listener_threshold = Fraction(1,2)
-        # Default semantics to use for the working memory:
-        self._semantics = semantics
-
-
-    def __str__(self):
-        """ Print the working memory as a reparseable string """
-        raise NotImplementedError()
-
-    def __eq__(self, other):
-        raise NotImplementedError()
-
-
-    def clear_listeners(self):
-        self._listeners = set()
-
-    def register_listeners(self, words):
-        self._listeners.update(words)
-
-    def unregister_listeners(self, words):
-        self._listeners.difference_update(words)
-
-    def set_listener_threshold(self, a, b):
-        self._listener_threshold = Fraction(a,b)
-
-    def score_listener(self, words):
-        simple_words = [str(x) if not x.is_var else "$_" for x in words]
-        num_in_listener_bag = sum([1 if x in self._listeners else 0 for x in simple_words])
-        sentence_fraction = Fraction(num_in_listener_bag, len(simple_words))
-        if sentence_fraction >= self._listener_threshold:
-            return True
-
-        return False
-
-    def breakpoint(self):
-        # TODO: add more listener options: pre, on and post
-        breakpoint()
-
-
-    def to_sentences(self):
-        return NotImplementedError()
-
-
-    def construct_parsers_from_fragments(self, fragments):
-        """ Assemble parsers from the fragments of the wm and loaded modules """
-        assert(all([isinstance(x, DSL_Fragment) for x in fragments]))
-        self.assert_parsers(self._bootstrap_parser)
-        for x in fragments:
-            #Populate the trie
-            x.assert_parsers(self._bootstrap_parser)
-
-        for x in fragments:
-            # Now query and populate the modules
-            x.query_parsers(self._bootstrap_parser)
-
-        self.query_parsers(self._bootstrap_parser)
-
-        for x in fragments:
-            x.verify()
-
-    def clear_bootstrap(self):
-        self._bootstrap_parser = BootstrapParser()
-
-
-    # Methods to implement:
-    def assert_parsers(self, parser_trie):
-        """ Assert base parser fragments of the wm's DSL """
-        raise NotImplementedError()
-
-    def query_parsers(self, parser_trie):
-        """ Retrieve parser fragments to finalize the wm's DSL """
-        raise NotImplementedError()
-
-
-    def add(self, data, leaf=None):
-        """
-        Add a sentence to the working memory.
-        If leaf is specified, it is an AcabValue which will be attached
-        as the leaf, with the sentence's name.
-        eg: add(a.test.sentence.x, leaf=some_value) -> a.test.sentence.x(::some_value)
-        """
-        raise NotImplementedError()
-
-    def query(self, ctxs=None, engine=None):
-        raise NotImplementedError()
-
-
-    # Deprecated
-    def retract(self, data):
-        raise DeprecationWarning()
-
-    def add_modules(self, mods):
-        raise DeprecationWarning("add_modules is deprecated use construct_parsers_from_fragments")
-
+        # self._listeners = set()
+        # self._listener_threshold = Fraction(1,2)

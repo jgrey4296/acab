@@ -18,8 +18,8 @@ values = a.test.location, a.test.location.*
 import logging as root_logger
 import pyparsing as pp
 
-from acab.abstract.core.core_abstractions import Sentence
-from acab.abstract.core.core_abstractions import AcabValue
+from acab.abstract.core.values import Sentence
+from acab.abstract.core.values import AcabValue
 from acab.abstract.core.node import AcabNode
 from acab.abstract.rule.production_abstractions import ProductionOperator
 from acab.abstract.parsing.parsers import OPERATOR_SUGAR
@@ -39,8 +39,6 @@ class BootstrapParser:
                                        value_pairings={AcabValue : (AcabNode, {})},
                                        sentence_sort=lambda x: str(x))
         self._internal_trie = Trie(semantics)
-        if not empty:
-            self.add("operator.sugar", OPERATOR_SUGAR)
 
     def __len__(self):
         return len(self._internal_trie)
@@ -79,7 +77,11 @@ class BootstrapParser:
             if node is None:
                 logging.warning("No parser found in: {}".format(query))
             elif isinstance(node, list):
-                results += [x._data['parser'] for x in node if 'parser' in x._data]
+                try:
+                    results += [x.data['parser'] for x in node if 'parser' in x.data]
+                except AttributeError as err:
+                    breakpoint()
+                    logging.info("blah")
 
         if not bool(results):
             raise Exception("No Parsers found for: {}".format(" | ".join(queries)))
@@ -105,7 +107,7 @@ class BootstrapParser:
             looking_for = remaining_path.pop(0)
 
             if looking_for == "*":
-                queue += [(x, remaining_path[:]) for x in curr_node.children]
+                queue += [(x, remaining_path[:]) for x in curr_node.children.values()]
             elif curr_node.has_child(looking_for):
                 next_node  = curr_node.get_child(looking_for)
                 queue.append((next_node, remaining_path[:]))
@@ -115,4 +117,4 @@ class BootstrapParser:
     def print_trie(self):
         """ Print the trie of parsers, marking nodes that have been used,
         and the queries that are used """
-        return self._internal_trie.print_trie(join_str=".")
+        return self._internal_trie.print_trie()
