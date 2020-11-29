@@ -6,13 +6,15 @@ from typing import Callable, Iterator, Union, Match, TypeVar
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar
 
-from acab.abstract.core.core_abstractions import Sentence
-from acab.abstract.core.core_abstractions import AcabValue
+from acab.abstract.core.values import Sentence
+from acab.abstract.core.values import AcabValue
 from acab.abstract.core.contexts import Contexts, CTX_OP
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.node_semantics import AcabNodeSemantics
 from acab.abstract.core.struct_semantics import AcabStructureSemantics
 from acab.abstract.core.structure import DataStructure
+
+from acab.abstract.interfaces import semantics_interface as SI
 
 import acab.abstract.core.struct_semantics as SSem
 
@@ -22,14 +24,14 @@ logging = root_logger.getLogger(__name__)
 util = AcabConfig.Get()
 
 
-class BasicNodeSemantics(AcabNodeSemantics):
+class BasicNodeSemantics(AcabNodeSemantics, SI.NodeSemantics):
 
     # TODO Needs equal method
     def accessible(self, node, data, term):
         potentials = []
         # Expand if variable -> Grab All
         if term.is_var and term.name not in data:
-            potentials += node.children
+            potentials += node.children.values()
         # Get only matching child if variable is already set
         elif term.is_var:
             assert(term.name in data)
@@ -42,11 +44,10 @@ class BasicNodeSemantics(AcabNodeSemantics):
 
         return potentials
 
-    def lift(self, word: AcabValue, constructor: Callable) -> AcabNode:
+    def up(self, word: AcabValue, constructor: Callable) -> AcabNode:
         """ The Most Basic Lift """
         assert(isinstance(word, AcabValue))
         return constructor(word)
-
 
     def contain(self, node: AcabNode, query_term: AcabValue) -> bool:
         assert(isinstance(node, AcabNode))
@@ -71,7 +72,7 @@ class BasicNodeSemantics(AcabNodeSemantics):
         result = self.get(node, word)
 
         if result is None:
-            result = self.lift(word, node_constructor)
+            result = self.up(word, node_constructor)
             node.add_child(result)
             is_new_node = True
 
@@ -85,6 +86,7 @@ class BasicNodeSemantics(AcabNodeSemantics):
         return removed
 
 
-
-
-
+    def down(self, value):
+        raise NotImplementedError()
+    def equal(self, val1, val2) -> bool:
+        raise NotImplementedError()

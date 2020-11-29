@@ -4,10 +4,12 @@ from typing import Callable, Iterator, Union, Match, TypeVar
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar
 
-from acab.abstract.core.core_abstractions import AcabValue
-from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.values import AcabValue
+from acab.abstract.core.values import Sentence
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.node_semantics import AcabNodeSemantics
+
+from acab.abstract.interfaces import semantics_interface as SI
 
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.config.modal import MODAL_DEFAULTS, MODAL_ENUMS
@@ -23,15 +25,15 @@ EXOP_enum = MODAL_ENUMS[EXOP]
 # TODO move this to exclusion semantics
 # if isinstance(retrieved, Sentence):
 #     output += [y.copy() for y in retrieved]
-#     output[-1]._data[OPERATOR] = word._data[OPERATOR]
+#     output[-1].data[OPERATOR] = word.data[OPERATOR]
 #     continue
 
-class ExclusionNodeSemantics(AcabNodeSemantics):
+class ExclusionNodeSemantics(AcabNodeSemantics, SI.NodeSemantics):
     def accessible(self, node, data, term):
         potentials = []
         # Expand if variable -> Grab All
         if term.is_var and term.name not in data:
-            potentials += node.children
+            potentials += node.children.values()
             # Get only matching child if variable is already set
         elif term.is_var:
             assert(term.name in data)
@@ -42,15 +44,15 @@ class ExclusionNodeSemantics(AcabNodeSemantics):
         elif self.contain(node, term):
             potentials.append(node.get_child(term))
 
-        if EXOP in term._data:
-            potentials = [x for x in potentials if x._data[EXOP] == term._data[EXOP]]
+        if EXOP in term.data:
+            potentials = [x for x in potentials if x.data[EXOP] == term.data[EXOP]]
         return potentials
 
-    def lift(self, word, constructor):
+    def up(self, word, constructor):
         assert(isinstance(word, AcabValue))
         exop_val = DEFAULT_EXOP
-        if EXOP in word._data:
-            exop_val = word._data[EXOP]
+        if EXOP in word.data:
+            exop_val = word.data[EXOP]
 
         word_node = constructor(word, {EXOP: exop_val})
         return word_node
@@ -82,22 +84,28 @@ class ExclusionNodeSemantics(AcabNodeSemantics):
         assert(callable(node_constructor))
 
         is_new_node = False
-        # insert the target and cause changes
+        # get the target if it exists
         result = self.get(node, word)
 
+        # if it doesn't, lift the word itself
         if result is None:
-            result = self.lift(word, node_constructor)
+            result = self.up(word, node_constructor)
             is_new_node = True
 
-        if node._data[EXOP] is EXOP_enum.EX and \
-        len(node.children) >= 1 and result is not None:
-            node.clear_children()
+        # then update the node
+        try:
+            if node.data[EXOP] is EXOP_enum.EX and \
+               len(node.children) >= 1 and result is not None:
+                node.clear_children()
+        except KeyError as err:
+            breakpoint()
+            logging.info("Missing key")
 
         node.add_child(result)
 
         # coerce to exclusive if necessary
-        if EXOP in word._data and word._data[EXOP] is EXOP_enum.EX:
-            result._data[EXOP] = EXOP_enum.EX
+        if EXOP in word.data and word.data[EXOP] is EXOP_enum.EX:
+            result.data[EXOP] = EXOP_enum.EX
 
         return is_new_node, result
 
