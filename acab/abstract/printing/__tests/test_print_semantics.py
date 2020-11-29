@@ -14,8 +14,8 @@ logging = root_logger.getLogger(__name__)
 from acab.abstract.config.config import GET
 util = GET("acab/abstract/config")
 
-from acab.abstract.core.core_abstractions import AcabValue, AcabStatement
-from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.values import AcabValue, AcabStatement
+from acab.abstract.core.values import Sentence
 from acab.abstract.rule.production_abstractions import ProductionContainer, ProductionComponent, ProductionOperator
 
 from acab.abstract.printing.print_semantics import AcabPrintSemantics, RET_enum
@@ -26,41 +26,20 @@ QUERY_S           = util.value("Value.Structure", "QUERY")
 
 NEGATION_SYMBOL_S = util.value("Symbols", "NEGATION")
 ANON_VALUE_S      = util.value("Symbols", "ANON_VALUE")
+FALLBACK_MODAL_S  = util.value("Symbols", "FALLBACK_MODAL", actions=[util.actions_e.STRIPQUOTE])
 QUERY_SYMBOL_S    = util.value("Symbols", "QUERY")
 
 SEN_JOIN_S        = util.prepare("Print.Patterns", "SEN_JOIN")[1]
 
-from acab.abstract.core.value import AcabValue, AcabStatement
-from acab.abstract.core.sentence import Sentence
-from acab.abstract.rule.production_operator import ProductionContainer, ProductionComponent, ProductionOperator
-from acab.abstract.rule.query import Query
-from acab.abstract.rule.transform import Transform
-from acab.abstract.rule.action import Action
-from acab.abstract.rule.rule import Rule
-from acab.abstract.pipeline.layer import Layer
-from acab.abstract.pipeline.agenda import Agenda
-from acab.abstract.pipeline.pipeline import Pipeline
-
-from acab.abstract.printing.print_semantics import AcabPrintSemantics, RET_enum
-
-from acab.abstract.printing import default_handlers as DH
-
-
+STR_PRIM_S       = util.value("Type.Primitive", "STRING")
+TYPE_INSTANCE_S  = util.value("Value.Structure", "TYPE_INSTANCE")
 # Semantic Collections
 # Dict[type, Tuple[List[Callable], Callable, Any]]
 basic = {AcabValue: ([], lambda s, d, c, a, p: (RET_enum.SIMPLE, str(d), None, None))}
 
 basic_plus = {AcabValue: DH.DEF_VALUE_PAIR,
               Sentence: DH.DEF_SEN_PAIR,
-              AcabStatement: ([], None),
               ProductionContainer: DH.DEF_CONTAINER_PAIR,
-              Query: ([], None),
-              Transform: ([], None),
-              Action: ([], None),
-              Rule: ([], None),
-              Agenda: ([], None),
-              Layer: ([], None),
-              Pipeline: ([], None)
               }
 
 basic_uuid = {AcabValue: DH.DEF_UUID_PAIR}
@@ -109,12 +88,19 @@ class PrintSemanticTests(unittest.TestCase):
         self.assertEqual(result, "a -- b -- c")
 
 
+    def test_string_wrap(self):
+        sem = AcabPrintSemantics(basic_plus)
+        test = AcabValue(name="blah", data={TYPE_INSTANCE_S: STR_PRIM_S})
+        result = sem.print(test)
+        self.assertEqual(result, '"blah"')
+
+
     def test_sentence_basic(self):
         sem = AcabPrintSemantics(basic)
         words = ["a", "b", "c", "d"]
         sentence = Sentence.build(words)
         result = sem.print(sentence)
-        self.assertEqual(result, " ".join(words))
+        self.assertEqual(result, "{}:{}".format(ANON_VALUE_S, FALLBACK_MODAL_S.join(words)))
 
     def test_sentence_words(self):
         join_str = "."
@@ -137,7 +123,7 @@ class PrintSemanticTests(unittest.TestCase):
         sem = AcabPrintSemantics(basic_plus,
                                  {SEN_JOIN_S: join_str})
         sentence = Sentence.build(["a","b","c","d"])
-        sentence._data[NEGATION_S] = True
+        sentence.data[NEGATION_S] = True
 
         result = sem.print(sentence)
         self.assertEqual(result, "{}{}".format(NEGATION_SYMBOL_S,
@@ -149,7 +135,7 @@ class PrintSemanticTests(unittest.TestCase):
         sem = AcabPrintSemantics(basic_plus,
                                  {SEN_JOIN_S: join_str})
         sentence = Sentence.build(["a","b","c","d"])
-        sentence._data[QUERY_S] = True
+        sentence.data[QUERY_S] = True
 
         result = sem.print(sentence)
         self.assertEqual(result, "{}{}".format(join_str.join(["a", "b", "c", "d"]),
@@ -160,7 +146,7 @@ class PrintSemanticTests(unittest.TestCase):
         sem = AcabPrintSemantics(basic_plus,
                                  {SEN_JOIN_S: join_str})
         sentence = Sentence.build(["test","one","bumble","foo"])
-        sentence._data[QUERY_S] = True
+        sentence.data[QUERY_S] = True
 
         result = sem.print(sentence)
 
@@ -174,7 +160,7 @@ class PrintSemanticTests(unittest.TestCase):
         val = AcabValue("test")
         sem = AcabPrintSemantics(basic_uuid)
         result = sem.print(val)
-        self.assertEqual(result, "({} : {})".format(val.name, val._uuid))
+        self.assertEqual(result, "({} : {})".format(val.name, val.uuid))
 
     # Type Instance
     def test_type_instance(self):
@@ -192,12 +178,12 @@ class PrintSemanticTests(unittest.TestCase):
         result = sem.print(value, overrides={'MODAL_FIELD': 'MODALITY'})
         self.assertEqual(result, "Test -~- ")
 
-        sem.set_for_uuid(value._uuid, ["drop_modal"])
+        sem.set_for_uuid(value.uuid, ["drop_modal"])
         result2 = sem.print(value)
         self.assertEqual(result2, "Test")
 
     def test_component_simple(self):
-        component = ProductionComponent(Sentence.build(["testop", "blah"]), [])
+        component = ProductionComponent(value=Sentence.build(["testop", "blah"]))
         sem = AcabPrintSemantics({
             ProductionComponent: ([DH.component_substruct], DH.component_sentinel),
             Sentence: DH.DEF_SEN_PAIR,
@@ -236,7 +222,7 @@ class PrintSemanticTests(unittest.TestCase):
     def test_pprint_at_var(self):
         # TODO update this
         value = AcabValue("test")
-        value._data.update({BIND_S: AT_BIND_S})
+        value.data.update({BIND_S: AT_BIND_S})
         self.assertTrue(value.is_at_var)
         self.assertEqual(str(value), "test")
 

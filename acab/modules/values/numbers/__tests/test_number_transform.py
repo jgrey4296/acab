@@ -9,8 +9,8 @@ logging = root_logger.getLogger(__name__)
 from acab.abstract.config.config import AcabConfig
 AcabConfig.Get().read("acab/abstract/config")
 
-from acab.abstract.core.core_abstractions import AcabValue
-from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.values import AcabValue
+from acab.abstract.core.values import Sentence
 from acab.modules.values.numbers.parsing import NumberParser as NP
 from acab.working_memory.trie_wm.parsing import ActionParser as AP
 from acab.working_memory.trie_wm.parsing import TransformParser as TP
@@ -60,18 +60,19 @@ class NumberTransformTests(unittest.TestCase):
     def test_number_parsing(self):
         pass
 
-
     def test_basic_transform_core(self):
-        result = TP.transform_core.parseString('λoperator.transform.add $x 20 -> $y')[0]
+        breakpoint()
+        result = TP.transform_core.parseString(r'λoperator.transform.add $x 20 -> $y')[0]
         self.assertIsInstance(result, transform.TransformComponent)
-        self.assertEqual(result.op.pprint(), "operator.transform.add")
+        self.assertEqual(Printer.print(result.op), "operator.transform.add")
         self.assertEqual(len(result._params), 2)
+
 
 
     def test_basic_transform_core_rebind(self):
         result = TP.transform_core.parseString('λoperator.transform.mul $y 20 -> $z')[0]
         self.assertIsInstance(result, transform.TransformComponent)
-        self.assertEqual(result.op.pprint(), "operator.transform.mul")
+        self.assertEqual(Printer.print(result.op), "operator.transform.mul")
         self.assertEqual(result._params[0]._value, "y")
         self.assertTrue(result._params[0].is_var)
         self.assertEqual(result._params[1]._value, 20)

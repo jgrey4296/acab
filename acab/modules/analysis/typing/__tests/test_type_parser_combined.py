@@ -7,8 +7,8 @@ logging = root_logger.getLogger(__name__)
 from acab.abstract.config.config import AcabConfig
 AcabConfig.Get().read("acab/abstract/config")
 
-from acab.abstract.core.core_abstractions import Sentence
-from acab.abstract.core.core_abstractions import AcabValue
+from acab.abstract.core.values import Sentence
+from acab.abstract.core.values import AcabValue
 
 from acab.abstract.core.node import AcabNode
 from acab.abstract.rule import action
@@ -28,18 +28,22 @@ from acab.working_memory.trie_wm.parsing import TransformParser as TP
 from acab.working_memory.trie_wm.parsing import FactParser as FP
 from acab.working_memory.trie_wm.trie_working_memory import TrieWM
 
-from acab.abstract.core.type_system import build_simple_type_system
 
 def S(*in_string):
-    return Sentence([AcabValue(x) for x in in_string])
-
+    return Sentence.build([AcabValue(x) for x in in_string])
 
 class TypingCombinedTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        # setup class
-        type_sys = build_simple_type_system()
+        LOGLEVEL = root_logger.DEBUG
+        LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
+        root_logger.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
+
+        console = root_logger.StreamHandler()
+        console.setLevel(root_logger.INFO)
+        root_logger.getLogger('').addHandler(console)
+        logging = root_logger.getLogger(__name__)
 
         bp = BootstrapParser()
         twm = TrieWM()
@@ -70,9 +74,10 @@ class TypingCombinedTests(unittest.TestCase):
         self.assertEqual(result[0].type_instance, inst)
 
 
+    @unittest.skip("Need to fix primitive initialisation in type checker")
     def test_add_definition(self):
         """ :: a END """
-        n_primitives = len(Sentence.build.Primitives)
+        n_primitives = 0
         type_def = TD.parseString("a.test.definition.x: (::σ) end")[0]
         self.assertEqual(len(self.tc._definitions), n_primitives)
         self.tc.add_definition(type_def)
@@ -82,9 +87,9 @@ class TypingCombinedTests(unittest.TestCase):
 
     def test_add_assertion(self):
         """ a.b.c.d """
-        self.assertEqual(len(self.tc._declarations), 0)
+        self.assertEqual(len(self.tc._assignments), 0)
         self.tc.add_assertion(FP.parseString("a.b.c.d")[0])
-        self.assertEqual(len(self.tc._declarations), 4)
+        self.assertEqual(len(self.tc._assignments), 4)
 
     def test_add_operation(self):
         """ ::Number end
@@ -103,9 +108,9 @@ class TypingCombinedTests(unittest.TestCase):
         trans_params[1]._data[TU.BIND_S] = True
         rebind = S("z")[0]
         rebind._data[TU.BIND_S] = True
-        transform = TransformComponent("AddOp", trans_params, rebind=rebind)
+        transform = ProductionComponent("AddOp", trans_params, rebind=rebind)
 
-        [self.tc.add_assertion(x) for x in transform.to_abstract_sentences()]
+        [self.tc.add_assertion(x) for x in transform.to_sentences()]
 
         self.tc.validate()
 
@@ -803,10 +808,9 @@ class TypingCombinedTests(unittest.TestCase):
         #Add an operation use
         transform = TP.parseString("λoperator.transform.format $a $b -> $c")
 
-        self.tc.add_assertion(*transform.to_abstract_sentences())
+        self.tc.add_assertion(*transform.to_sentences())
 
         self.tc.validate()
-        breakpoint()
 
         # TODO verify
         print(self.tc)
@@ -826,7 +830,7 @@ class TypingCombinedTests(unittest.TestCase):
         #Add an operation use
         transform = TP.parseString("$a ~= $b -> $c")
 
-        self.tc.add_assertion(*transform.to_abstract_sentences())
+        self.tc.add_assertion(*transform.to_sentences())
 
         self.tc.validate()
 

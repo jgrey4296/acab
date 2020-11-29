@@ -8,7 +8,7 @@ logging = root_logger.getLogger(__name__)
 from acab.abstract.config.config import AcabConfig
 AcabConfig.Get().read("acab/abstract/config")
 
-from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.values import Sentence
 from acab.abstract.rule import action
 from acab.abstract.rule import transform
 from acab.abstract.rule.production_abstractions import ProductionComponent, ProductionOperator, ProductionStructure
@@ -55,7 +55,7 @@ class NumberRuleTests(unittest.TestCase):
     def test_rule_with_transform(self):
         result = RP.parseString("a.rule: (::ρ)\nλoperator.transform.add $x 20 -> $y\n\nend")
         self.assertEqual(len(result), 1)
-        self.assertIsInstance(result[0][-1].value, Rule)
+        self.assertIsInstance(result[0][-1].value, ProductionStructure)
         self.assertIsNone(result[0][-1].value._query)
         self.assertIsNotNone(result[0][-1].value._transform)
 
@@ -63,7 +63,7 @@ class NumberRuleTests(unittest.TestCase):
     def test_rule_with_multiple_transforms(self):
         result = RP.parseString("a.rule: (::ρ)\nλoperator.transform.add $x 30 -> $y\nλoperator.transform.sub $y 20 -> $z\n\nend\n")
         self.assertEqual(len(result), 1)
-        self.assertIsInstance(result[0][-1].value, Rule)
+        self.assertIsInstance(result[0][-1].value, ProductionStructure)
         self.assertIsNone(result[0][-1].value._query)
         self.assertIsNotNone(result[0][-1].value._transform)
 
@@ -71,7 +71,7 @@ class NumberRuleTests(unittest.TestCase):
     def test_rule_with_multiple_transforms_on_single_line(self):
         result = RP.parseString("a.rule: (::ρ)\nλoperator.transform.add 20 -> $y, λoperator.transform.sub $y 20 -> $z\n\nend")
         self.assertEqual(len(result), 1)
-        self.assertIsInstance(result[0][-1].value, Rule)
+        self.assertIsInstance(result[0][-1].value, ProductionStructure)
         self.assertIsNone(result[0][-1].value._query)
         self.assertIsNotNone(result[0][-1].value._transform)
 
@@ -79,7 +79,7 @@ class NumberRuleTests(unittest.TestCase):
     def test_rule_with_query_transform_actions(self):
         result = RP.parseString("a.rule: (::ρ)\na.b.c?\n\nλoperator.transform.add $x 20 -> $y\n\nλoperator.action.add a.b.c\n\nend")
         self.assertEqual(len(result), 1)
-        self.assertIsInstance(result[0][-1].value, Rule)
+        self.assertIsInstance(result[0][-1].value, ProductionStructure)
         self.assertIsNotNone(result[0][-1].value._query)
         self.assertIsNotNone(result[0][-1].value._transform)
         self.assertEqual(len(result[0][-1].value._action), 1)

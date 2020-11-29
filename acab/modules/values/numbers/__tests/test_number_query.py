@@ -9,8 +9,8 @@ from pyparsing import ParseException
 from acab.abstract.config.config import AcabConfig
 AcabConfig.Get().read("acab/abstract/config")
 
-from acab.abstract.core.core_abstractions import AcabValue
-from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.values import AcabValue
+from acab.abstract.core.values import Sentence
 from acab.abstract.rule.production_abstractions import ProductionComponent, ProductionOperator
 
 from acab.modules.values import numbers
@@ -69,14 +69,14 @@ class NumberQueryTests(unittest.TestCase):
     def test_basic_comp_internal(self):
         result = QP.QUERY_OP_Internal.parseString('λoperator.query.lt 20')[0]
         self.assertIsInstance(result, tuple)
-        self.assertIsInstance(result[1], QueryComponent)
+        self.assertIsInstance(result[1], ProductionComponent)
 
 
     def test_basic_comparison(self):
         result = QP.constraints.parseString('λoperator.query.lt 20, λoperator.query.gt 40, λoperator.query.neq $x, λoperator.query.eq $y, λoperator.query.regmatch /blah/')[0]
         self.assertEqual(result[0], CONSTRAINT_S)
         self.assertEqual(len(result[1]), 5)
-        self.assertTrue(all([isinstance(x, QueryComponent) for x in result[1]]))
+        self.assertTrue(all([isinstance(x, ProductionComponent) for x in result[1]]))
         self.assertEqual(Printer.print(result[1][0].op), 'operator.query.lt')
         self.assertEqual(Printer.print(result[1][1].op), 'operator.query.gt')
         self.assertEqual(Printer.print(result[1][2].op), 'operator.query.neq')
@@ -89,13 +89,13 @@ class NumberQueryTests(unittest.TestCase):
         result = QP.QueryCore.parseString('a(λoperator.query.gt 20).')[0]
         self.assertTrue(CONSTRAINT_S in result._data)
         self.assertEqual(len(result._data[CONSTRAINT_S]), 1)
-        self.assertIsInstance(result._data[CONSTRAINT_S][0], QueryComponent)
+        self.assertIsInstance(result._data[CONSTRAINT_S][0], ProductionComponent)
 
     @unittest.skip
     def test_basic_query_core_multi_comparison(self):
         result = QP.QueryCore.parseString('a(λoperator.query.gt 20, λoperator.query.lt 30).')[0]
         self.assertEqual(len(result._data[CONSTRAINT_S]), 2)
-        self.assertTrue(all([isinstance(x, QueryComponent) for x in result._data[CONSTRAINT_S]]))
+        self.assertTrue(all([isinstance(x, ProductionComponent) for x in result._data[CONSTRAINT_S]]))
 
     @unittest.skip
     def test_basic_query_core_with_exclusion(self):

@@ -8,8 +8,8 @@ import re
 from acab.abstract.config.config import AcabConfig
 AcabConfig.Get().read("acab/abstract/config")
 
-from acab.abstract.core.core_abstractions import AcabValue
-from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.values import AcabValue
+from acab.abstract.core.values import Sentence
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
 from acab.abstract.rule.production_abstractions import ProductionOperator, ProductionContainer
 from acab.working_memory.trie_wm import util as KBU
@@ -44,9 +44,9 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
 
         # setup class
         bp = BootstrapParser()
-        TP.HOTLOAD_TRANS_OP << bp.query('operator.transform.*',
+        TP.HOTLOAD_TRANS_OP << bp.query('operator.ProductionContainer.*',
                                         'operator.sugar')
-        TP.HOTLOAD_TRANS_STATEMENTS << bp.query("operator.transform.statements.*",
+        TP.HOTLOAD_TRANS_STATEMENTS << bp.query("operator.ProductionContainer.statements.*",
                                                 "operator.sugar")
 
     def setUp(self):
@@ -58,31 +58,31 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
     #----------
     #use testcase snippets
     def test_ternary_operator(self):
-        result = TP.parseString('λoperator.transform.regex $x /blah/ $a -> $y')
-        self.assertIsInstance(result, transform.Transform)
+        result = TP.parseString('λoperator.ProductionContainer.regex $x /blah/ $a -> $y')
+        self.assertIsInstance(result, ProductionContainer)
         self.assertEqual(len(result.clauses), 1)
-        self.assertEqual(Printer.print(result.clauses[0].op), 'operator.transform.regex')
+        self.assertEqual(Printer.print(result.clauses[0].op), 'operator.ProductionContainer.regex')
         self.assertEqual(result.clauses[0]._params[0].value, 'x')
         self.assertEqual(result.clauses[0]._params[1].value, re.compile('blah'))
         self.assertEqual(result.clauses[0]._params[2].value, 'a')
         self.assertIsNotNone(result.clauses[0]._rebind)
 
     def test_ternary_operator_rebind(self):
-        result = TP.parseString('λoperator.transform.regex $x /blah/ $awef -> $q')
-        self.assertIsInstance(result, transform.Transform)
+        result = TP.parseString('λoperator.ProductionContainer.regex $x /blah/ $awef -> $q')
+        self.assertIsInstance(result, ProductionContainer)
         self.assertEqual(len(result.clauses), 1)
-        self.assertEqual(Printer.print(result.clauses[0].op), 'operator.transform.regex')
+        self.assertEqual(Printer.print(result.clauses[0].op), 'operator.ProductionContainer.regex')
         self.assertEqual(result.clauses[0]._params[0].name, 'x')
         self.assertEqual(result.clauses[0]._params[1].value, re.compile('blah'))
         self.assertEqual(result.clauses[0]._params[2].name, 'awef')
         self.assertEqual(result.clauses[0]._rebind.name, 'q')
 
     def test_unary_format(self):
-        result = TP.parseString('λoperator.transform.format $x blah -> $y')
-        self.assertEqual(Printer.print(result.clauses[0].op), 'operator.transform.format')
+        result = TP.parseString('λoperator.ProductionContainer.format $x blah -> $y')
+        self.assertEqual(Printer.print(result.clauses[0].op), 'operator.ProductionContainer.format')
 
 
-    # TODO test transform sugar, test multi variables, test sentences, test values
+    # TODO test ProductionContainer sugar, test multi variables, test sentences, test values
     @unittest.skip("TODO")
     def test_transform_sugar(self):
         return

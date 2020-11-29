@@ -12,8 +12,8 @@ logging = root_logger.getLogger(__name__)
 from acab.abstract.config.config import AcabConfig
 AcabConfig.Get().read("acab/abstract/config")
 
-from acab.abstract.core.core_abstractions import AcabValue as PV
-from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.values import AcabValue as PV
+from acab.abstract.core.values import Sentence
 from acab.abstract.core.contexts import Contexts
 
 from acab.engines.trie_engine import TrieEngine

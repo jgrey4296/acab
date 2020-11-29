@@ -10,8 +10,8 @@ from acab.abstract.config.config import GET
 GET("acab/abstract/config")
 
 from acab.abstract.parsing import parsers as PU
-from acab.abstract.core.core_abstractions import AcabValue, AcabStatement
-from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.values import AcabValue, AcabStatement
+from acab.abstract.core.values import Sentence
 from acab.abstract.core.node import AcabNode
 
 class StatementTests(unittest.TestCase):
@@ -38,7 +38,7 @@ class StatementTests(unittest.TestCase):
     #use testcase snippets
     def test_basic_tag(self):
         basic_node_parser = pp.Keyword('test')
-        basic_node_parser.setParseAction(lambda toks: Sentence([AcabValue(toks[0])]))
+        basic_node_parser.setParseAction(lambda toks: Sentence.build([AcabValue(toks[0])]))
 
         basic_value_parser = pp.Keyword('value') + pp.lineEnd
         basic_value_parser.setParseAction(lambda toks: ('value', AcabStatement(toks[0])))
@@ -48,12 +48,12 @@ class StatementTests(unittest.TestCase):
                                                basic_value_parser)
 
         result = statement_p.parseString("test: (::blah)\n#test\n\nvalue\nend")[0]
-        tags_str = [x for x in result[-1]._tags]
+        tags_str = [x for x in result[-1].tags]
         self.assertTrue('test' in tags_str)
 
     def test_basic_tag_plural(self):
         basic_node_parser = pp.Keyword('test')
-        basic_node_parser.setParseAction(lambda toks: Sentence([AcabValue(toks[0])]))
+        basic_node_parser.setParseAction(lambda toks: Sentence.build([AcabValue(toks[0])]))
 
         basic_value_parser = pp.Keyword('value') + pp.lineEnd
         basic_value_parser.setParseAction(lambda toks: ('value', AcabStatement(toks[0])))
@@ -65,7 +65,7 @@ class StatementTests(unittest.TestCase):
         result = statement_p.parseString("test: (::blah)\n#abcd, #aaaa, #bbbb\n\nvalue\nend")[0]
         value = result[-1]
 
-        tags_str = [x for x in value._tags]
+        tags_str = [x for x in value.tags]
 
         self.assertTrue('abcd' in tags_str)
         self.assertTrue('aaaa' in tags_str)

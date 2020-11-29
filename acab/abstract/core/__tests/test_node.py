@@ -7,7 +7,7 @@ from acab.abstract.config.config import AcabConfig
 AcabConfig.Get().read("acab/abstract/config")
 
 from acab.abstract.core.node import AcabNode
-from acab.abstract.core.core_abstractions import AcabValue
+from acab.abstract.core.values import AcabValue
 
 BIND_S = AcabConfig.Get().value("Value.Structure", "BIND")
 AV = AcabValue
@@ -63,8 +63,10 @@ class AcabNodeTests(unittest.TestCase):
         self.assertFalse(a_node.has_child('blah'))
 
     def test_add_child(self):
-        a_node = AcabNode(AV('value'))
-        b_node = AcabNode(AV('value2'))
+        a_val = AV(name='value')
+        b_val = AV(name='value2')
+        a_node = AcabNode(value=a_val, data={})
+        b_node = AcabNode(value=b_val)
         self.assertFalse(bool(a_node))
         self.assertEqual(len(a_node), 0)
         a_node.add_child(b_node)

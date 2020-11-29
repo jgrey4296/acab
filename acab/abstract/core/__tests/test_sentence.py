@@ -9,7 +9,7 @@ from acab.abstract.config.config import AcabConfig
 CONFIG = AcabConfig.Get().read("acab/abstract/config")
 
 
-from acab.abstract.core.core_abstractions import AcabValue, Sentence
+from acab.abstract.core.values import AcabValue, Sentence
 
 BIND_S = CONFIG.value("Value.Structure", "BIND")
 
@@ -167,5 +167,3 @@ class SentenceTests(unittest.TestCase):
 
         self.assertEqual(len(statements), 2)
         self.assertEqual(combined_simple, detached)
-
-

@@ -5,7 +5,7 @@ logging = root_logger.getLogger(__name__)
 from acab.abstract.config.config import AcabConfig
 AcabConfig.Get().read("acab/abstract/config")
 
-from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.values import Sentence
 from acab.abstract.parsing import parsers as PU
 from acab.modules.structures.time import util as TU
 from acab.modules.structures.time.parsing import parser as tp

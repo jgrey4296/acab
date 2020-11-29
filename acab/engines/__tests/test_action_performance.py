@@ -10,8 +10,8 @@ AcabConfig.Get().read("acab/abstract/config")
 
 from acab.abstract.parsing import consts as PConst
 
-from acab.abstract.core.core_abstractions import  AcabValue
-from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.values import  AcabValue
+from acab.abstract.core.values import Sentence
 from acab.abstract.rule.production_abstractions import ProductionOperator, ProductionContainer
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
 
@@ -27,13 +27,15 @@ basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], 
 
 Printer = AcabPrintSemantics(basic_plus, default_values={'MODAL_FIELD' : 'exop'})
 
+from acab.abstract.rule.production_semantics import ProductionSemantics
+
+# TODO production semantics
+ProdSem = ProductionSemantics()
+
 def S(*words):
     return Sentence.build(words)
 
-class ActionBlah(action.ActionOp):
-    def __init__(self):
-        super().__init__()
-
+class ActionBlah(ProductionOperator):
     def __call__(self, engine, params):
         logging.info("Blah")
 
@@ -65,7 +67,7 @@ class ActionTests(unittest.TestCase):
     def test_run_assert_action(self):
         actions = AP.parseString("λA.ActionAdd a.b.c")
         self.assertFalse(self.e.query("a.b.c?"))
-        actions({}, self.e)
+        results = ProdSem(actions, {}, self.e)
         self.assertTrue(self.e.query("a.b.c?"))
 
     def test_run_retract_action(self):
@@ -117,11 +119,7 @@ class ActionTests(unittest.TestCase):
     def test_custom_action_parse(self):
         result = AP.parseString(r"λBase.blah a b c")
         self.assertEqual(len(result), 1)
-        self.assertIsInstance(result, action.Action)
+        self.assertIsInstance(result, ProductionContainer)
 
         self.assertEqual(Printer.print(result.clauses[0].op), "Base.blah")
-        self.assertEqual([Printer.print(x) for x in result.clauses[0]._params], ['a.', 'b.', 'c.'])
-
-
-
-
+        self.assertEqual(result.clauses[0].params, ['a', 'b', 'c'])

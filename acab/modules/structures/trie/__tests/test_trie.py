@@ -6,9 +6,9 @@ logging = root_logger.getLogger(__name__)
 from acab.abstract.config.config import AcabConfig
 AcabConfig.Get().read("acab/abstract/config")
 
-from acab.abstract.core.core_abstractions import AcabValue
+from acab.abstract.core.values import AcabValue
 from acab.abstract.core.node import AcabNode
-from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.values import Sentence
 
 from acab.modules.structures.trie.trie import Trie
 
@@ -35,7 +35,7 @@ class TrieTests(unittest.TestCase):
     def test_initial_test(self):
         t = Trie()
         self.assertIsNotNone(t)
-        self.assertIsNotNone(t._root)
+        self.assertIsNotNone(t.root)
 
     def test_empty(self):
         t = Trie()
@@ -50,17 +50,15 @@ class TrieTests(unittest.TestCase):
         t.add(Sentence.build(['b']))
         self.assertEqual(2, len(t))
 
-    @unittest.skip("Separated into semantics")
     def test_trie_query(self):
         t = Trie()
         self.assertEqual(0, len(t))
         t.add(Sentence.build(['a','b','c']))
         self.assertEqual(3, len(t))
-        result = t.query(Sentence.build(['a','b','c']))[0]
-        self.assertIsInstance(result, AcabNode)
-        self.assertEqual(result.name, 'c')
+        result = t.query(Sentence.build(['a','b','c']))
+        self.assertIsInstance(result.nodes[0], AcabNode)
+        self.assertEqual(result.nodes[0].name, 'c')
 
-    @unittest.skip("separated into semantics")
     def test_trie_query_fail(self):
         t = Trie()
         self.assertEqual(0, len(t))

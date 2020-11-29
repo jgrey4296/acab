@@ -7,7 +7,7 @@ logging = root_logger.getLogger(__name__)
 from acab.abstract.config.config import AcabConfig
 AcabConfig.Get().read("acab/abstract/config")
 
-from acab.abstract.core.core_abstractions import AcabValue
+from acab.abstract.core.values import AcabValue
 from acab.abstract.core.node import AcabNode
 
 
@@ -40,9 +40,12 @@ class WorkingMemoryTests(unittest.TestCase):
     #use testcase snippets
     @unittest.skip("TODO")
     def test_working_memory_init(self):
+        # bootstrap parser mock,
+        # listener, structure, semantics check
         pass
 
 
     # TODO listeners
     # TODO to sentences
     # TODO construct parsers from fragments
+    # TODO Score listeners

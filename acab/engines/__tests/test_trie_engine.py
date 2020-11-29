@@ -1,4 +1,5 @@
 import unittest
+import unittest.mock as mock
 from os.path import splitext, split
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
@@ -8,7 +9,7 @@ from math import isclose
 from acab.abstract.config.config import AcabConfig
 AcabConfig.Get().read("acab/abstract/config")
 
-from acab.abstract.core.core_abstractions import AcabValue
+from acab.abstract.core.values import AcabValue
 from acab.abstract.rule.production_abstractions import ProductionStructure
 from acab.abstract.core.contexts import Contexts
 
@@ -96,8 +97,54 @@ class Engine_Tests(unittest.TestCase):
         self.e.add('a.test.rule: (::ρ)\na.b.c?\n\na.b.d\nend')
         results = self.e.query('a.test.$rule?')
         self.assertTrue(results)
-        self.assertIsInstance(results[0]['rule'], Rule)
+        self.assertIsInstance(results[0]['rule'], ProductionStructure)
 
 
     # TODO: in place of action registration, check operators are called appropriately
 
+
+
+    @mock.patch('acab.abstract.engine.working_memory.WorkingMemory', autospec=True)
+    @mock.patch('acab.abstract.core.struct_semantics.AcabStructureSemantics', autospec=True)
+    def test_init(self, wm_mock, sem_mock):
+        engine = Engine(wm_mock)
+        wm_mock.assert_called_once_with(None)
+
+    @unittest.skip("TODO")
+    @mock.patch('acab.abstract.rule.production_abstractions', autospec=True)
+    @mock.patch('acab.abstract.engine.working_memory.WorkingMemory', autospec=True)
+    def test_load_modules(self, wm_mock, op_mock):
+        module_mock = mock.Mock()
+        engine = Engine(wm_mock, modules=[module_mock])
+        op_mock.clear_registrations.assert_called_once()
+        engine._working_memory.add_modules.assert_called_once()
+
+    @mock.patch('acab.abstract.rule.production_abstractions', autospec=True)
+    @mock.patch('acab.abstract.engine.working_memory.WorkingMemory', autospec=True)
+    def test_reload_modules(self, wm_mock, op_mock):
+        engine = Engine(wm_mock)
+        engine.build_DSL()
+        engine._working_memory.construct_parsers_from_fragments.assert_called()
+
+    @unittest.skip("TODO")
+    def test_load_file(self):
+        pass
+
+    @unittest.skip("TODO")
+    def test_save_file(self):
+        pass
+
+    @unittest.skip("TODO")
+    def test_add_two(self):
+        pass
+
+    @unittest.skip("TODO")
+    def test_query(self):
+        pass
+
+    @unittest.skip("TODO")
+    def test_run_thing(self):
+        pass
+
+
+    # TODO to_sentences

@@ -7,8 +7,8 @@ logging = root_logger.getLogger(__name__)
 from acab.abstract.config.config import AcabConfig
 CONFIG = AcabConfig.Get().read("acab/abstract/config")
 
-from acab.abstract.core.core_abstractions import AcabValue, AcabStatement
-from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.values import AcabValue, AcabStatement
+from acab.abstract.core.values import Sentence
 from acab.abstract.core.node import AcabNode
 
 AT_BIND_S = CONFIG.value("Value.Structure", "AT_BIND")
@@ -103,7 +103,7 @@ class AcabValueTests(unittest.TestCase):
     def test_statement_to_simple_value(self):
         value = AcabStatement("test")
         self.assertIsInstance(value, AcabStatement)
-        basic = value.to_simple_value()
+        basic = value.to_word()
         self.assertIsInstance(basic, AcabValue)
 
 

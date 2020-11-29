@@ -9,8 +9,8 @@ logging = root_logger.getLogger(__name__)
 from acab.abstract.config.config import AcabConfig
 AcabConfig.Get("acab")
 
-from acab.abstract.core.core_abstractions import Sentence
-from acab.abstract.core.core_abstractions import AcabValue, AcabStatement
+from acab.abstract.core.values import Sentence
+from acab.abstract.core.values import AcabValue, AcabStatement
 
 from acab.abstract.rule import production_abstractions as PO
 
@@ -46,36 +46,42 @@ class ProductionAbstractionTests(unittest.TestCase):
         self.assertEqual(op.type, Sentence.build([OPERATOR_TYPE_PRIM_S]))
 
     def test_component_init(self):
-        val = PO.ProductionComponent(Sentence.build(["testop"]), [])
+        val = PO.ProductionComponent(value=Sentence.build(["testop"]))
         self.assertIsInstance(val, PO.ProductionComponent)
         self.assertIsInstance(val, AcabValue)
 
     def test_component_with_params(self):
-        val = PO.ProductionComponent(Sentence.build(["testop"]), [AcabValue("a"), AcabValue("b")])
+        val = PO.ProductionComponent(value=Sentence.build(["testop"]), params=[AcabValue("a"), AcabValue("b")])
         self.assertIsInstance(val, PO.ProductionComponent)
-        self.assertEqual(len(val._params), 2)
+        self.assertEqual(len(val.params), 2)
+
+    def test_component_with_str_params(self):
+        val = PO.ProductionComponent(value=Sentence.build(["testop"]), params=["a", "b"])
+        self.assertIsInstance(val, PO.ProductionComponent)
+        self.assertEqual(len(val.params), 2)
+
+    @unittest.skip("TODO")
+    def test_container_init(self):
+        pass
+
+    @unittest.skip("TODO")
+    def test_structure_init(self):
+        pass
+
+
 
     def test_component_op(self):
-        val = PO.ProductionComponent(Sentence.build(["testop"]), [])
+        val = PO.ProductionComponent(value=Sentence.build(["testop"]))
         self.assertEqual(val.op, Sentence.build(["testop"]))
-
-    def test_component_call(self):
-        engine_mock = mock.Mock()
-        engine_mock.get_operator = mock.Mock(return_value=lambda x, y, data=None, engine=None: x + y)
-
-        test_sen = Sentence.build(["testop"])
-        val = PO.ProductionComponent(test_sen, [AcabValue("a"), AcabValue("b")])
-        result = val({}, engine_mock)
-
-        engine_mock.get_operator.assert_called_with(test_sen)
-        self.assertEqual(result, "ab")
 
 
     def test_apply_parameters(self):
-        val = PO.ProductionComponent(Sentence.build(["testop"]), [])
-        self.assertEqual(len(val._params), 0)
-        val.apply_params(["a","test"])
-        self.assertEqual(len(val._params), 2)
+        val = PO.ProductionComponent(value=Sentence.build(["testop"]))
+        self.assertEqual(len(val.params), 0)
+        copied = val.apply_params(["a","test"])
+        self.assertNotEqual(val, copied)
+        self.assertEqual(len(val.params), 0)
+        self.assertEqual(len(copied.params), 2)
 
     def test_component_empty_var_set(self):
         """
@@ -85,7 +91,7 @@ class ProductionAbstractionTests(unittest.TestCase):
         If the component rebinds its completed value, that should be
         reported as an output
         """
-        val = PO.ProductionComponent(Sentence.build(["testop"]), [])
+        val = PO.ProductionComponent(value=Sentence.build(["testop"]))
         var_set = val.var_set
         self.assertIsInstance(var_set, dict)
         self.assertIn("in", var_set)
@@ -101,10 +107,10 @@ class ProductionAbstractionTests(unittest.TestCase):
         If the component rebinds its completed value, that should be
         reported as an output
         """
-        a_var = AcabValue("test")
-        a_var.set_data({BIND_S : True})
-        val = PO.ProductionComponent(Sentence.build(["testop"]), [a_var])
+        a_var = AcabValue("test", data={BIND_S : True})
+        val = PO.ProductionComponent(value=Sentence.build(["testop"]), params=[a_var])
         var_set = val.var_set
+
         self.assertIsInstance(var_set, dict)
         self.assertIn("in", var_set)
         self.assertIn("out", var_set)
@@ -121,12 +127,10 @@ class ProductionAbstractionTests(unittest.TestCase):
         If the component rebinds its completed value, that should be
         reported as an output
         """
-        a_var = AcabValue("test")
-        a_var.set_data({BIND_S : True})
-        b_var = AcabValue("blah")
-        b_var.set_data({BIND_S : True})
+        a_var = AcabValue("test", data={BIND_S : True})
+        b_var = AcabValue("blah", data={BIND_S : True})
 
-        val = PO.ProductionComponent(Sentence.build(["testop"]), [a_var, b_var])
+        val = PO.ProductionComponent(value=Sentence.build(["testop"]), params=[a_var, b_var])
         var_set = val.var_set
         self.assertIsInstance(var_set, dict)
         self.assertIn("in", var_set)
@@ -145,12 +149,11 @@ class ProductionAbstractionTests(unittest.TestCase):
         If the component rebinds its completed value, that should be
         reported as an output
         """
-        a_var = AcabValue("test")
-        a_var.set_data({BIND_S : True})
+        a_var = AcabValue("test", data={BIND_S : True})
 
-        val = PO.ProductionComponent(Sentence.build(["testop"]), [], rebind=a_var)
+        val = PO.ProductionComponent(value=Sentence.build(["testop"]), rebind=a_var)
         var_set = val.var_set
-        self.assertIs(a_var, val._rebind)
+        self.assertIs(a_var, val.rebind)
         self.assertIsInstance(var_set, dict)
         self.assertIn("in", var_set)
         self.assertIn("out", var_set)
@@ -160,80 +163,8 @@ class ProductionAbstractionTests(unittest.TestCase):
         self.assertIn(a_var, var_set['out'])
 
 
-    def test_get_params_empty(self):
-        """
-        Component should take a set of bindings, and return its params with those bindings accounted for.
-        So {x:2} on a Component(param="$x") -> [2]
-        """
-        val = PO.ProductionComponent(Sentence.build(["testop"]), [])
-        params = val.get_params({})
-        self.assertIsInstance(params, list)
-        self.assertFalse(bool(params))
-
-    def test_get_params_basic(self):
-        a_var = AcabValue("test")
-        a_var.set_data({BIND_S : True})
-
-        val = PO.ProductionComponent(Sentence.build(["testop"]), [a_var])
-        params = val.get_params({'test' : AcabValue("blah")})
-        self.assertTrue(bool(params))
-        self.assertEqual(params[0], "blah")
-
-    def test_get_params_missing_binding(self):
-        a_var = AcabValue("test")
-        a_var.set_data({BIND_S : True})
-
-        val = PO.ProductionComponent(Sentence.build(["testop"]), [a_var])
-        with self.assertRaises(AssertionError):
-            val.get_params({'blah' : AcabValue("blah")})
-
-
-    @unittest.skip("TODO")
-    def test_get_params_sentence(self):
-        pass
-
-    @unittest.skip("TODO")
-    def test_get_params_list(self):
-        pass
-
-    @unittest.skip("TODO")
-    def test_get_params_at_bind(self):
-        pass
-
-
-    @unittest.skip("TODO")
-    def test_container_init(self):
-        pass
-
-
-    # TODO no clauses container init
-    # TODO one clause container init
-    # TODO multi clause container init
-    # TODO malformed clause container init
-
-    @unittest.skip("TODO")
-    def test_container_call(self):
-        pass
 
     @unittest.skip("TODO")
     def test_container_var_set(self):
         pass
-
-    @unittest.skip("TODO")
-    def test_get_vars(self):
-        pass
-
-    @unittest.skip("TODO")
-    def test_container_to_sentences(self):
-        pass
-
-
-    # TODO container var set
-    # TODO container verify
-
-    @unittest.skip("TODO")
-    def test_refine_op_func(self):
-        return
-
-
 

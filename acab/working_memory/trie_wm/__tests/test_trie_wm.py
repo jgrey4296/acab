@@ -9,8 +9,8 @@ import unittest.mock as mock
 from acab.abstract.config.config import AcabConfig
 AcabConfig.Get().read("acab/abstract/config")
 
-from acab.abstract.core.core_abstractions import AcabValue
-from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.values import AcabValue
+from acab.abstract.core.values import Sentence
 from acab.abstract.core.contexts import Contexts
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
 from acab.abstract.engine.engine import Engine

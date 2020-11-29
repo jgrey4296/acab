@@ -9,8 +9,8 @@ import pyparsing as pp
 from acab.abstract.config.config import AcabConfig
 AcabConfig.Get().read("acab/abstract/config")
 
-from acab.abstract.core.core_abstractions import Sentence
-from acab.abstract.core.core_abstractions import AcabValue
+from acab.abstract.core.values import Sentence
+from acab.abstract.core.values import AcabValue
 
 from acab.abstract.config.modal import MODAL_ENUMS
 from acab.abstract.parsing.parsers import HOTLOAD_VALUES, VALBIND
@@ -62,7 +62,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertTrue(all([isinstance(x, AcabValue) for x in result]))
 
         self.assertEqual(Printer.print(result), "a.b.c")
-        self.assertTrue(all([x._data['exop'] == MODAL_ENUMS['exop'].DOT for x in result]))
+        self.assertTrue(all([x.data['exop'] == MODAL_ENUMS['exop'].DOT for x in result]))
 
     def test_parseStrings(self):
         result = FP.parseString('a.b.c, b.c.d')
@@ -83,12 +83,12 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
 
     def test_exclusion_operator_parsing(self):
         result = FP.parseString('a!b!c')[0]
-        self.assertTrue(all([x._data['exop'] == MODAL_ENUMS['exop'].EX for x in result[:-1]]))
+        self.assertTrue(all([x.data['exop'] == MODAL_ENUMS['exop'].EX for x in result[:-1]]))
 
     def test_strings(self):
         result = FP.parseString('a.b."This is a test"!c')[0]
         self.assertEqual(len(result), 4)
-        self.assertEqual(result[2]._value, "This is a test")
+        self.assertEqual(result[2].value, 'This is a test')
 
     def test_bind_addition_to_node_recognition(self):
         result = FP.parseString('$a.$b!$c')[0]
@@ -109,7 +109,6 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
                    'a!$x!y']
         parsed = [FP.parseString(x)[0] for x in actions]
         zipped = zip(actions, parsed)
-
         for act,par in zipped:
             self.assertEqual(act,Printer.print(par))
 
@@ -138,18 +137,18 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         HOTLOAD_VALUES << new_parser
 
         a = VALBIND.parseString("¿awef")[0]
-        self.assertEqual(a._value, "¿awef")
-        self.assertEqual(a._data[TYPE_INSTANCE_S], Sentence.build(["awef"]))
+        self.assertEqual(a.value, "¿awef")
+        self.assertEqual(a.type, Sentence.build(["awef"]))
 
     def test_negated_basic_sentence(self):
         result = FP.BASIC_SEN.parseString('~a.test!string')[0]
         self.assertIsInstance(result, Sentence)
-        self.assertTrue(result._data[NEGATION_S])
+        self.assertTrue(result.data[NEGATION_S])
 
     def test_positive_basic_sentence(self):
         result = FP.BASIC_SEN.parseString('a.test!string')[0]
         self.assertIsInstance(result, Sentence)
-        self.assertFalse(result._data[NEGATION_S])
+        self.assertFalse(result.data[NEGATION_S])
 
     def test_sentence_statement(self):
         result = FP.SEN_STATEMENT.parseString("a.test.sentence: (::Σ)\nextension.sentence\nsecond.extension\n end")
