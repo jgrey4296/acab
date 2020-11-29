@@ -18,10 +18,10 @@ import re
 from acab.abstract.config.config import AcabConfig
 from acab.error.acab_parse_exception import AcabParseException
 
-from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.values import Sentence
 
 from acab.abstract.rule.production_abstractions import ProductionOperator
-from acab.abstract.engine.dsl_fragment import DSL_Fragment
+from acab.abstract.interfaces.dsl_interface import DSL_Interface
 from acab.abstract.engine.engine import Engine
 
 from acab.working_memory.trie_wm.trie_working_memory import TrieWM
@@ -142,8 +142,8 @@ class TrieEngine(Engine):
             queue += [(x,y) for x,y in sub_modules if base_path in y.__package__ and "__init__" in y.__file__]
 
             # Get module dsl_fragments
-            dsl_fragments += [y for x,y in mod_contents if isinstance(y, DSL_Fragment)]
-            dsl_fragments += [y() for x,y in mod_contents if (not y == DSL_Fragment) and isinstance(y, type) and issubclass(y, DSL_Fragment)]
+            dsl_fragments += [y for x,y in mod_contents if isinstance(y, DSL_Interface)]
+            dsl_fragments += [y() for x,y in mod_contents if (not y == DSL_Interface) and isinstance(y, type) and issubclass(y, DSL_Interface)]
 
             # Get operators:
             applicable_operator = lambda y: isinstance(y, ProductionOperator) or isinstance(y, type) and issubclass(y, ProductionOperator)
