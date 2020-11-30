@@ -7,11 +7,13 @@ from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar
 
-from acab.abstract.core.core_abstractions import AcabValue
-from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.values import AcabValue
+from acab.abstract.core.values import Sentence
 from acab.abstract.core.node import AcabNode
 
 from acab.modules.semantics.basic_semantics import BasicNodeSemantics
+
+from acab.abstract.interfaces import semantics_interface as SI
 
 from acab.modules.analysis.typing import type_exceptions as te
 
@@ -19,51 +21,27 @@ import logging as root_logger
 
 logging = root_logger.getLogger(__name__)
 
-class TypingVarSemantics(AcabNodeSemantics):
+class TypingVarSemantics(BasicNodeSemantics, SI.NodeSemantics):
 
-    def __init__(self):
-        pass
-    def accessible(self, word : AcabNode, term : AcabValue) -> [AcabNode]:
-        """
-        Retrieve a list of all nodes accessible from this node,
-        according to a constraint term
-        """
-        raise NotImplementedError()
-
-    def equal(self, word : AcabNode, word2 : AcabNode) -> bool:
-        raise NotImplementedError()
-
-    def lift(self, word : AcabValue) -> AcabNode:
+    def up(self, word: AcabValue, constructor: Callable) -> AcabNode:
         """ Lifting a value to a data node """
         # could include vocabulary tracking a la spacy
-        raise NotImplementedError()
+        assert(isinstance(word, AcabValue))
+        # constructor will default to type bottom if word.type is none
+        _type = word.type
+        return constructor(word, _type=_type)
 
 
-    def add(self, node : AcabNode, to_add : AcabValue, node_constructor : Callable) -> AcabNode:
-        raise NotImplementedError()
 
-    def get(self, node : AcabNode, query_term : AcabValue) -> Optional[AcabNode]:
-        """ Getting a node from the data structure """
-        raise NotImplementedError()
 
-    def contain(self, node : AcabNode, query_term : AcabValue) -> bool:
-        """ Getting Node inclusion in a set """
-        raise NotImplementedError()
-
-    def delete(self, node : AcabNode, to_delete : AcabValue) -> Optional[AcabNode]:
-        """ Removing a node from the data structure """
-        raise NotImplementedError()
-
-    
 class VarTypeNode(AcabNode):
     """ Node describing a variable's type """
 
     def __init__(self, value, _type=None):
-        assert(_type is None or isinstance(_type, Sentence.build))
+        assert(_type is None or isinstance(_type, Sentence))
         super().__init__(value)
         # TODO or type_bottom
         self._type_instance = _type
-        self._var_node = None
         self._nodes = set([])
         self._var_names = set([])
 
@@ -89,28 +67,22 @@ class VarTypeNode(AcabNode):
         if self._type_instance < _type:
             self.apply_type_instance(_type)
         elif not _type < self._type_instance:
-            raise te.TypeConflictException(_type.pprint(),
-                                           self.type_instance.pprint(),
+            raise te.TypeConflictException(str(_type),
+                                           str(self.type_instance),
                                            self.name)
 
-        if self._var_node is not None:
-            self._var_node.apply_type_instance(self.type_instance)
 
         return self
 
 
 
-# TODO convert to node semantics
-
-
+    # TODO convert to node semantics
 
     def add_node(self, node):
         assert(isinstance(node, AcabNode))
         self._nodes.add(node)
         if node.is_var:
             self._var_names.add(node.name)
-        # # TODO: make this a weak ref?
-        # node._var_node = self
 
     def propagate(self):
         if self.type_instance is not None:

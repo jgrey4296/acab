@@ -1,4 +1,4 @@
-from acab.config import AcabConfig
+from acab.abstract.config.config import AcabConfig
 
 from acab.modules.analysis.typing import util as TU
 
@@ -21,15 +21,3 @@ class OperatorDefinition(TypeDefinition):
 
     def __hash__(self):
         return hash(str(self))
-
-
-    def pprint(self, opts=None):
-        raise DeprecationWarning("Use Print Semantics")
-        # return "{}: (::λ) {}".format(self._name,
-                                     # self._structure[0].pprint())
-
-    def pprint_body(self, val):
-        raise DeprecationWarning("Use Print Semantics")
-        # assert(len(self.structure) == 1)
-        # body = self.structure[0].pprint()
-        # return PrU._wrap_rebind(val + body, self._func_name, is_sugar=True)

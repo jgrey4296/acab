@@ -1,7 +1,7 @@
 import pyparsing as pp
 import logging as root_logger
 
-from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.values import Sentence
 
 from acab.abstract.parsing import parsers as PU
 from acab.abstract.parsing import funcs as Pfunc
@@ -31,7 +31,7 @@ PARAM_SEN_PLURAL = pp.delimitedList(HOTLOAD_PARAM_SEN, delim=DELIM)
 
 def make_record_def(toks):
     type_def = TypeDefinition(toks[:])
-    return (VALUE_TYPE_S, type_def)
+    return (TYPE_INSTANCE_S, type_def)
 
 def make_op_def(toks):
     syntax_bind = None
@@ -40,11 +40,11 @@ def make_op_def(toks):
 
     op_def = OperatorDefinition(toks[TYU.STRUCT_S][0], sugar_syntax=syntax_bind)
 
-    return (VALUE_TYPE_S, op_def)
+    return (TYPE_INSTANCE_S, op_def)
 
 def make_sum_def(toks):
     sum_def = SumTypeDefinition(toks[:])
-    return (VALUE_TYPE_S, sum_def)
+    return (TYPE_INSTANCE_S, sum_def)
 
 
 # The simplest type, has no body. useful for defining strings and other
@@ -52,27 +52,27 @@ def make_sum_def(toks):
 SIMPLE_BODY = pp.empty
 SIMPLE_BODY.setParseAction(make_record_def)
 
-SIMPLE_DEF = Pfunc.STATEMENT_CONSTRUCTOR(TYU.STRUCT_HEAD,
-                                      HOTLOAD_BASIC_SEN,
-                                      SIMPLE_BODY)
+SIMPLE_DEF = PU.STATEMENT_CONSTRUCTOR(TYU.STRUCT_HEAD,
+                                         HOTLOAD_BASIC_SEN,
+                                         SIMPLE_BODY)
 
 # Record Type definition:
 # a.test.type: (::σ)  a.value.$x(::num) end
 RECORD_DEF_BODY = PARAM_SEN_PLURAL
 RECORD_DEF_BODY.setParseAction(make_record_def)
 
-RECORD_TYPE = Pfunc.STATEMENT_CONSTRUCTOR(TYU.STRUCT_HEAD,
-                                       HOTLOAD_BASIC_SEN,
-                                       RECORD_DEF_BODY + component_gap)
+RECORD_TYPE = PU.STATEMENT_CONSTRUCTOR(TYU.STRUCT_HEAD,
+                                          HOTLOAD_BASIC_SEN,
+                                          RECORD_DEF_BODY + component_gap)
 
 # Sum Type definition
 # ie: first subwords are the subtypes. subtypes are automatic records
 SUM_DEF_BODY = pp.delimitedList(pp.Or([RECORD_TYPE, SIMPLE_DEF]), delim=emptyLine)
 SUM_DEF_BODY.setParseAction(make_sum_def)
 
-SUM_TYPE = Pfunc.STATEMENT_CONSTRUCTOR(TYU.SUM_HEAD,
-                                    HOTLOAD_BASIC_SEN,
-                                    SUM_DEF_BODY + component_gap)
+SUM_TYPE = PU.STATEMENT_CONSTRUCTOR(TYU.SUM_HEAD,
+                                       HOTLOAD_BASIC_SEN,
+                                       SUM_DEF_BODY + component_gap)
 
 
 
@@ -82,18 +82,18 @@ OP_DEF_BODY = NG(TYU.STRUCT_S, HOTLOAD_PARAM_SEN) \
     + op(DBLARROW + N(TYU.SYNTAX_BIND_S, PU.OPERATOR_SUGAR))
 OP_DEF_BODY.setParseAction(make_op_def)
 
-OP_DEF = Pfunc.STATEMENT_CONSTRUCTOR(TYU.FUNC_HEAD,
-                                  HOTLOAD_BASIC_SEN,
-                                  OP_DEF_BODY,
-                                  end=pp.lineEnd,
-                                  single_line=True)
+OP_DEF = PU.STATEMENT_CONSTRUCTOR(TYU.FUNC_HEAD,
+                                     HOTLOAD_BASIC_SEN,
+                                     OP_DEF_BODY,
+                                     end=pp.lineEnd,
+                                     single_line=True)
 
 # Type class constructor:
 TYPE_CLASS_BODY = pp.delimitedList(OP_DEF, delim=emptyLine)
 
-TYPE_CLASS_DEF = Pfunc.STATEMENT_CONSTRUCTOR(TYU.TYPE_CLASS_HEAD,
-                                          HOTLOAD_BASIC_SEN,
-                                          TYPE_CLASS_BODY + component_gap)
+TYPE_CLASS_DEF = PU.STATEMENT_CONSTRUCTOR(TYU.TYPE_CLASS_HEAD,
+                                             HOTLOAD_BASIC_SEN,
+                                             TYPE_CLASS_BODY + component_gap)
 
 
 COMBINED_DEFS = pp.Or([SUM_TYPE, RECORD_TYPE, OP_DEF, SIMPLE_DEF])

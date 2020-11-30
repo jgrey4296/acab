@@ -1,4 +1,6 @@
-class TypingSemantics:
+from acab.abstract.interfaces import semantics_interface as SI
+
+class TypingSemantics(SI.SemanticInterface, SI.StructureSemantics):
     """
     Thoughts:
     1) distinguish between structure preserving/disturbing semantics,
@@ -24,12 +26,12 @@ class TypingSemantics:
 
     """
 
-    def lift(self, sen, constructor, world):
+    def up(self, sen, constructor, world):
         # Lift sentence to correct form
         # assignment: set assigned type, register var
         # definition: prepare definition trie
-
         pass
+
     def check(self, world, sentence=None, contextual=False):
         # Check the entire world, or a specific sentence
         pass

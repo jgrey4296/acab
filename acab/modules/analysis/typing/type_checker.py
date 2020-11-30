@@ -50,8 +50,8 @@ import logging as root_logger
 from functools import partial
 from uuid import uuid1
 
-from acab.abstract.core.core_abstractions import AcabValue, AcabStatement
-from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.values import AcabValue, AcabStatement
+from acab.abstract.core.values import Sentence
 from acab.abstract.core.node import AcabNode
 from acab.abstract.rule.production_abstractions import ProductionOperator
 
@@ -78,48 +78,51 @@ from .values import type_definition as TD
 logging = root_logger.getLogger(__name__)
 
 
-class TypeChecker(ActionOp):
+class TypeChecker(ProductionOperator):
     """ Abstract Class for Type Checking """
     # parse their locations, and add them as definitions
 
-    # TODO Link with type_system
     def __init__(self):
         super(TypeChecker, self).__init__()
-        ass_semantics = BasicTrieSemantics({AcabNode : ()},
-                                           {AcabValue : (TypeAssignmentNode, {}, None)})
+        ass_semantics = BasicTrieSemantics({AcabNode : BasicNodeSemantics()},
+                                           {AcabValue : (TypeAssignmentNode, {})})
 
         var_semantics = BasicTrieSemantics({AcabNode : TypingVarSemantics()},
-                                           {AcabValue : (VarTypeNode, {}, None)})
+                                           {AcabValue : (VarTypeNode, {})})
+
+        sub_context_data = {'assignment': ass_semantics,
+                            'variable'  : var_semantics}
 
         def_semantics = BasicTrieSemantics({AcabNode : TypingDefinitionSemantics()},
                                            {AcabValue : (AcabNode, {}, None),
-                                            TypeDefinition : (TypeDefNode, {"assignment" : ass_semantics}, None),
-                                            SumTypeDefinition : (SumTypeDefNode, {"assignment" : ass_semantics}, None),
-                                            OperatorDefinition : (OperatorDefNode, {"assignment" : ass_semantics}, None)})
+                                            TypeDefinition : (TypeDefNode, sub_context_data),
+                                            SumTypeDefinition : (SumTypeDefNode, sub_context_data),
+                                            OperatorDefinition : (OperatorDefNode, sub_context_data)})
 
         self._definitions = Trie(semantics=def_semantics)
         self._assignments = Trie(semantics=ass_semantics)
         self._variables = Trie(semantics=var_semantics)
 
-        # add basic types
-        self.add_definition(*TD.build_primitive_definitions())
+        # TODO add basic types
+        # self.add_definition(*TD.build_primitive_definitions())
 
     def __str__(self):
         output = []
-        structures = self._definitions.to_sentences(leaf_predicate=lambda x: isinstance(x, TypeDefNode))
-        sum_types = self._definitions.to_sentences(leaf_predicate=lambda x: isinstance(x, SumTypeDefNode))
-        funcs = self._definitions.to_sentences(leaf_predicate=lambda x: isinstance(x, OperatorDefNode))
+        structures = self._definitions.to_sentences(leaf_predicate=lambda x: TypeDefNode.match(x))
+        sum_types = self._definitions.to_sentences(leaf_predicate=lambda x: SumTypeDefNode.match(x))
+        funcs = self._definitions.to_sentences(leaf_predicate=lambda x: OperatorDefNode.match(x))
 
 
+        # TODO use print semantics here
         if bool(structures):
-            output.append("Structures: \n\t{}\n".format("\t".join(sorted([x.pprint() for x in structures]))))
+            output.append("Structures: \n\t{}\n".format("\t".join(sorted([str(x) for x in structures]))))
         if bool(sum_types):
-            output.append("Sum Types: \n\t{}\n".format("\t".join(sorted([x.pprint() for x in sum_types]))))
+            output.append("Sum Types: \n\t{}\n".format("\t".join(sorted([str(x) for x in sum_types]))))
         if bool(funcs):
-            output.append("Operators: \n\t{}\n".format("\t".join(sorted([x.pprint() for x in funcs]))))
+            output.append("Operators: \n\t{}\n".format("\t".join(sorted([str(x) for x in funcs]))))
         # output.append("Defs   : {}".format(str(self._definitions).replace('\n', ' ')))
-        output.append("Decs   : {}".format(self._assignments.print_trie().replace('\n', ' ')))
-        output.append("Vars   : {}".format(str(self._variables).replace('\n', ' ')))
+        # output.append("Decs   : {}".format(self._assignments.print_trie().replace('\n', ' ')))
+        # output.append("Vars   : {}".format(str(self._variables).replace('\n', ' ')))
 
         return "\n".join(output)
 
@@ -155,10 +158,11 @@ class TypeChecker(ActionOp):
     def _get_known_typed_nodes(self):
         # propagate known variable types
         # TODO shift to type bottom
-        dummy = [x.propagate() for x in self._variables.get_nodes(lambda x: x.type_instance != TB.ATOM)]
+        # TODO use config values and build a sentence
+        dummy = [x.propagate() for x in self._variables.get_nodes(lambda x: x.type_instance != "ATOM")]
         # get all known declared types
         # TODO: get references as well
-        val_queue = {y for y in self._assignments.get_nodes(lambda x: x.type_instance != TB.ATOM)}
+        val_queue = {y for y in self._assignments.get_nodes(lambda x: x.type_instance != "ATOM")}
         return val_queue
 
     def _merge_equivalent_nodes(self):
@@ -198,7 +202,15 @@ class TypeChecker(ActionOp):
                 continue
             # Compare a sentence type(instance) to the node's type_instance
             # (as a node can have its own type)
-            types_match = (line[-1].type < queried.type_instance)
+
+            # 1: var, no type:
+            # 2: var, type:
+            # 3: No var, no type:
+            # 4: no var, type:
+
+
+            # TODO type semantics __lt__
+            types_match = (line[-1].type < queried[0][line[-1].name].type)
             if not types_match:
                 raise te.TypeConflictException(line[-1].type,
                                                queried.type_instance,
@@ -263,7 +275,7 @@ class TypeChecker(ActionOp):
         Statements are treated as having their own local context.
         So add it, type check it, and then clear any variable associations
         """
-        sentences = statement.to_abstract_sentences()
+        sentences = statement.to_sentences()
 
         for sen in sentences:
             self.add_assertion(sen)

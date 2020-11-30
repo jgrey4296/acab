@@ -1,4 +1,4 @@
-from acab.abstract.engine.dsl_fragment import DSL_Fragment
+from acab.abstract.interfaces.dsl_interface import DSL_Interface
 
 from .type_checker import TypeChecker
 
@@ -6,7 +6,7 @@ from .parsing import TypeDefParser as TDP
 from .parsing import TypeParser as TP
 
 
-class TypingSpec(DSL_Fragment):
+class TypingSpec(DSL_Interface):
     """ Typing Spec Class, providing entry points
     for an engine and working memory to handle type inference
 

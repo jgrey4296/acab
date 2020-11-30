@@ -6,7 +6,7 @@ import pyparsing as pp
 
 from acab.abstract.parsing.consts import DOUBLEBAR, COLON, COMMA, DBLCOLON, DELIM, component_gap
 from acab.abstract.parsing.consts import N, NG, op, OPAR, CPAR
-from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.values import Sentence
 from acab.abstract.parsing import parsers as PU
 
 from acab.modules.analysis.typing import util as TYU
@@ -25,7 +25,7 @@ def make_type_dec(toks):
     args = []
     if TYU.ARG_S in toks:
         args = [x[1] if isinstance(x, tuple) else x for x in toks[TYU.ARG_S][:]]
-    return (VALUE_TYPE_S, Sentence.build(path, args))
+    return (TYPE_INSTANCE_S, Sentence.build(path, params=args))
 
 # BASIC SENTENCE NEEDS TO BE POPULATED
 # eg: acab.working_memory.trie_wm.parsing.FactParser.basic_fact_string
@@ -42,10 +42,10 @@ TYPE_NAME = pp.Or([HOTLOAD_BASIC_SEN, EXTENDED_ATOM])
 
 TYPEDEC_CORE <<= DBLCOLON + N(TYU.SEN_S, TYPE_NAME) \
     + N(TYU.ARG_S, op(OPAR
-                            + pp.delimitedList(VAR_OR_TYPE_DEC,
-                                               TYU.DELIM_S,
-                                               combine=False)
-                            + CPAR))
+                      + pp.delimitedList(VAR_OR_TYPE_DEC,
+                                         TYU.PARAM_JOIN_S,
+                                         combine=False)
+                      + CPAR))
 
 TYPEDEC_CORE.setParseAction(make_type_dec)
 

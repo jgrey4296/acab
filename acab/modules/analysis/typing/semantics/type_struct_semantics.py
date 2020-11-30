@@ -6,15 +6,17 @@ from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar
 
 from acab.abstract.core.node import AcabNode
-from acab.abstract.core.core_abstractions import AcabValue
+from acab.abstract.core.values import AcabValue
 from acab.abstract.core.structure import DataStructure
-from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.values import Sentence
 from acab.abstract.core.contexts import Contexts
 from acab.abstract.core.node_semantics import AcabNodeSemantics
 
+from acab.abstract.interfaces import semantics_interface as SI
+
 from acab.abstract.core.struct_semantics import AcabStructureSemantics
 
-class TypingStructSemantics(AcabStructureSemantics):
+class TypingStructSemantics(AcabStructureSemantics, SI.SemanticInterface, SI.StructureSemantics):
     # TODO Locate listeners in semantics not WM
 
     def __init__(self, node_semantics : AcabNodeSemantics, node_type=AcabNode):
@@ -54,14 +56,6 @@ class TypingStructSemantics(AcabStructureSemantics):
         # return type
         raise NotImplementedError()
 
-
-    def down(self, data_structure : DataStructure) -> List[Sentence]:
-        """ Take a complex data structure down to basic sentences """
-        raise NotImplementedError()
-
-    def lift(self, sentences : List[Sentence]) -> DataStructure:
-        """ Raise a set of sentences into a data structure """
-        raise NotImplementedError()
 
     def filter_candidates(self, structure, candidates, match_func):
         raise NotImplementedError()

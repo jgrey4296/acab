@@ -9,9 +9,10 @@ from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar
 
+from dataclasses import dataclass, field
 
-from acab.abstract.core.core_abstractions import AcabValue
-from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.values import AcabValue
+from acab.abstract.core.values import Sentence
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.node_semantics import AcabNodeSemantics
 
@@ -24,6 +25,8 @@ from acab.modules.semantics.basic_semantics import BasicNodeSemantics
 
 import acab.modules.analysis.typing.util as util
 
+from acab.abstract.interfaces import semantics_interface as SI
+
 from .type_assignment_semantics import TypeAssignmentNode
 from .type_variable_semantics import VarTypeNode
 
@@ -32,20 +35,20 @@ logging = root_logger.getLogger(__name__)
 
 # Log messages to use, because they are long:
 LOG_MESSAGES = {}
-LOG_MESSAGES['curr_def'] = "Current Definition to Validate: {} : {}"
-LOG_MESSAGES['curr_use_set'] = "Current Usage Set: {}"
+LOG_MESSAGES['curr_def']         = "Current Definition to Validate: {} : {}"
+LOG_MESSAGES['curr_use_set']     = "Current Usage Set: {}"
 LOG_MESSAGES['match_type_usage'] = "Matching Type {} onto usage set"
-LOG_MESSAGES['mult_child'] = "Current Def has multiple children, checking for conflicts in structure"
-LOG_MESSAGES['no_children'] = "Val: No Children, assigning type: {} to {}"
-LOG_MESSAGES['validate_top'] = "Validating: {} on {}"
+LOG_MESSAGES['mult_child']       = "Current Def has multiple children, checking for conflicts in structure"
+LOG_MESSAGES['no_children']      = "Val: No Children, assigning type: {} to {}"
+LOG_MESSAGES['validate_top']     = "Validating: {} on {}"
 
 
-class TypingDefinitionSemantics(BasicNodeSemantics):
-    def lift(self, word : AcabValue, constructor : Callable) -> AcabNode:
+class TypingDefinitionSemantics(BasicNodeSemantics, SI.NodeSemantics, SI.SemanticInterface):
+
+    def up(self, word : AcabValue, constructor : Callable) -> AcabNode:
         """ The Most Basic Lift """
         assert(isinstance(word, AcabValue))
         return constructor(word)
-
 
 
     def add(self, node : AcabNode, word: AcabValue, node_constructor : Callable) -> Tuple[bool, AcabNode]:
@@ -56,7 +59,7 @@ class TypingDefinitionSemantics(BasicNodeSemantics):
         result = self.get(node, word)
 
         if result is None:
-            result = self.lift(word, node_constructor)
+            result = self.up(word, node_constructor)
             node.add_child(result)
             is_new_node = True
         elif (isinstance(word, TypeDefinition)
@@ -68,13 +71,11 @@ class TypingDefinitionSemantics(BasicNodeSemantics):
         return True, result
 
 
+@dataclass
 class TypeDefNode(AcabNode):
     """ A Node describing a type definition """
-
-    def __init__(self, value):
-        logging.debug("TypeDefNode: init: {}".format(value))
-        super().__init__(value)
-        self._typedef_trie = None
+    _typedef_trie : 'DataStructure' = field(init=False)
+    _var_binds : 'DataStructure' = field(init=False)
 
     @property
     def definition(self):
@@ -89,16 +90,18 @@ class TypeDefNode(AcabNode):
         """ Overrides AcabNode.set_data.
         Builds the static assignment expression of a definition, to use to type check against
         """
-
         assignment_semantics = data["assignment"]
+        var_semantics = data["variable"]
+
         logging.debug("TypeDef.set_data: {}".format(data))
         # construct the internal trie
         self._typedef_trie = Trie(semantics=assignment_semantics)
+        self._var_binds = Trie(semantics=var_semantics)
         # TODO May be unnecessary:
         self.trie.root._type_instance = self.definition.build_type_instance()
 
         for x in self.definition.structure:
-            self.trie.add(x)
+            self.trie.add(x, context_data={"var_struct" : self._var_binds})
 
     def validate(self, usage_trie, create_var):
         """ Given an instance trie node, type check / infer it
@@ -198,15 +201,15 @@ class TypeDefNode(AcabNode):
         logging.debug("Curr Def has a single child")
         queue_vals = []
         conflicts = []
-        child = list(curr_def.children)[0]
+        child = list(curr_def.children.values())[0]
 
-        new_usage_set = [y for x in curr_usage_set for y in x.children]
+        new_usage_set = [y for x in curr_usage_set for y in x.children.values()]
 
         if not child.is_var:
             conflicts = [x for x in new_usage_set if not x.is_var and child.name != x.name]
 
         if bool(conflicts):
-            raise te.TypeStructureMismatch(self.definition.path.pprint(),
+            raise te.TypeStructureMismatch(str(self.definition.path),
                                            conflicts)
 
         if bool(new_usage_set):
@@ -224,7 +227,7 @@ class TypeDefNode(AcabNode):
                     in x._children.items() if not n.is_var}
         conflicts = usageset.difference(defset)
         if bool(conflicts):
-            raise te.TypeStructureMismatch(self.definition.path.pprint(),
+            raise te.TypeStructureMismatch(str(self.definition.path),
                                            conflicts)
 
         logging.debug("No Conflicts found, checking children")
@@ -258,9 +261,6 @@ class TypeDefNode(AcabNode):
 class SumTypeDefNode(TypeDefNode):
     """ A Specialised TypeDefNode to validate Sum Types  """
 
-    def __init__(self, value):
-        super(SumTypeDefNode, self).__init__(value)
-
     def validate(self, usage_trie, create_var):
         assert(callable(create_var))
         assert(isinstance(usage_trie, TypeAssignmentNode)), breakpoint()
@@ -273,7 +273,7 @@ class SumTypeDefNode(TypeDefNode):
 
         # usage_trie must be a child of the curr_def
         if usage_trie.name not in self.trie.root:
-            raise te.TypeStructureMismatch(self.definition.path.pprint(),
+            raise te.TypeStructureMismatch(str(self.definition.path),
                                            [usage_trie.name])
 
         # Otherwise match against that specific type
@@ -300,18 +300,18 @@ class SumTypeDefNode(TypeDefNode):
         return newly_typed
 
 
+@dataclass
 class OperatorDefNode(TypeDefNode):
     """ Operator definition nodes are the head to
     a trie of all that operator's type signatures.
     It pattern matches on provided usage, and types nodes if
     there is only one matching pattern """
 
-    def __init__(self, value):
-        super().__init__(value)
-        # This is a set to hold multiple possible operators
-        # eg: AddOp: $x(::Num).$x.$x
-        # and AddOp: $x(::String).$x.$x
-        self._data[util.TYPE_DEF_S] = set()
+    # This is a set to hold multiple possible operators
+    # eg: AddOp: $x(::Num).$x.$x
+    # and AddOp: $x(::String).$x.$x
+    _op_possibilities : Set[Any] = field(init=False)
+    # was: self._data[util.TYPE_DEF_S] = set()
 
 
     def set_data(self, data):

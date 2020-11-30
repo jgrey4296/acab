@@ -1,5 +1,5 @@
-from acab.abstract.core.core_abstractions import AcabValue
-from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.values import AcabValue
+from acab.abstract.core.values import Sentence
 
 from acab.error.acab_parse_exception import AcabParseException
 
@@ -49,7 +49,7 @@ class TypeDefinition(TypeStatement):
 
 
     def set_primitive(self):
-        self.set_data({'primitive_annotation': PRIMITIVE_ANNOTATION_S})
+        self.set_data({PRIMITIVE_S: True})
         return self
 
     @property
@@ -68,29 +68,19 @@ class TypeDefinition(TypeStatement):
         statement = self
 
         if the_dict is None:
-            return AcabValue._type_system.INSTANCE(just_path, params=self.vars)
+            return AcabValue._sentence_constructor(just_path, params=self.vars)
 
         new_args = []
         for x in self.vars:
             if isinstance(x, AcabValue) and x.name in the_dict:
                 new_args.append(the_dict[x.name])
             else:
-                assert(isinstance(x, AcabValue._type_system.INSTANCE))
+                assert(isinstance(x, Sentence))
                 new_args.append(x)
 
-        return AcabValue._type_system.INSTANCE(just_path, params=new_args)
+        return AcabValue._sentence_constructor(just_path, params=new_args)
 
 
-    def verify(self):
-        input_vars = set(self.vars)
-        for s in self.structure:
-            temp = s.var_set
-            input_vars.difference_update(temp['in'])
-            input_vars.difference_update(temp['out'])
-
-        # TODO: FIX THIS: was not using nested polytype vars
-        # if bool(input_vars):
-        #     raise AcabParseException()
 
     def unify_structure_variables(self):
         # unify shared variables across structure sentences to have the same type
@@ -110,8 +100,9 @@ class TypeDefinition(TypeStatement):
         # Then unify all the variables to have the same type
         for the_dict in variables.values():
             types, instances = the_dict.values()
-            if AcabValue._type_system.BOTTOM in types:
-                types.remove(AcabValue._type_system.BOTTOM)
+            # TODO convert this to correct form
+            # if AcabValue._type_system.BOTTOM in types:
+                # types.remove(AcabValue._type_system.BOTTOM)
 
             if len(types) > 1:
                 raise TE.TypeConflictException(types.pop(), types, self)
@@ -120,15 +111,6 @@ class TypeDefinition(TypeStatement):
                 type_instance = types.pop()
                 for word in instances:
                     word._data[TYPE_DEF_S] = type_instance
-
-
-    @property
-    def pprint_has_content(self):
-        head = any([bool(x) for x in [self._params,
-                                      self._tags]])
-        body = bool(self.structure)
-
-        return head, body
 
 
 
@@ -140,9 +122,9 @@ class SumTypeDefinition(TypeDefinition):
         # TODO: improve this
         flat_structure = []
         for sen in structure:
-            prefix = Sentence(sen.words[:-1] + [sen.words[-1].to_simple_value()])
+            prefix = Sentence.build(sen.words[:-1] + [sen.words[-1].to_simple_value()])
             flat_structure.append(prefix)
-            flat_structure += [Sentence(prefix.words + x.words) for x in sen[-1].structure]
+            flat_structure += [Sentence.build(prefix.words + x.words) for x in sen[-1].structure]
 
         if _type is None:
             _type = SUM_DEFINITION
@@ -150,16 +132,3 @@ class SumTypeDefinition(TypeDefinition):
                                                 params=params,
                                                 _type=_type)
         assert(bool(self.structure))
-
-
-
-# Auto Build Primitive Definitions
-def build_primitive_definitions():
-    prim_defs = []
-    for x in AcabValue._type_system.INSTANCE.Primitives:
-        prim_path = Sentence.build([y.name for y in x])
-        primitive = prim_path.attach_statement(TypeDefinition([]).set_primitive())
-
-        prim_defs.append(primitive)
-
-    return prim_defs

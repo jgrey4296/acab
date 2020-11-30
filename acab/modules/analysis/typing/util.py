@@ -3,7 +3,7 @@ import pyparsing as pp
 
 from acab.abstract.config.config import AcabConfig
 
-from acab.abstract.core.core_abstractions import Sentence
+from acab.abstract.core.values import Sentence
 
 from acab.abstract.parsing.consts import s
 
