@@ -4,30 +4,27 @@ from copy import deepcopy
 
 from acab.abstract.config.config import AcabConfig
 
-from acab.abstract.parsing import parsers as PU
-from acab.abstract.core.values import Sentence
-from acab.abstract.core.contexts import Contexts
-from acab.abstract.core.node import AcabNode
-from acab.abstract.core.values import AcabValue
-from acab.abstract.rule.production_abstractions import ProductionContainer
-
-from acab.abstract.engine.working_memory import WorkingMemory
-
-from acab.error.acab_operator_exception import AcabOperatorException
-from acab.error.acab_parse_exception import AcabParseException
-
 from .parsing import ActionParser as AP
 from .parsing import FactParser as FP
 from .parsing import QueryParser as QP
+from .parsing import RuleParser as RP
 from .parsing import TotalParser as TotalP
 from .parsing import TransformParser as TP
-from .parsing import RuleParser as RP
 from .parsing import util as TPU
 
-from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics
-from acab.modules.structures.trie.trie import Trie
-
+from acab.abstract.core.contexts import Contexts
+from acab.abstract.core.node import AcabNode
+from acab.abstract.core.values import AcabValue
+from acab.abstract.core.values import Sentence
+from acab.abstract.engine.bootstrap_parser import BootstrapParser
+from acab.abstract.interfaces.working_memory_interface import WorkingMemoryCore
+from acab.abstract.parsing import parsers as PU
+from acab.abstract.rule.production_abstractions import ProductionContainer
+from acab.error.acab_operator_exception import AcabOperatorException
+from acab.error.acab_parse_exception import AcabParseException
 from acab.modules.semantics import exclusion_semantics as ES
+from acab.modules.structures.trie.trie import Trie
+from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics
 
 logging = root_logger.getLogger(__name__)
 
@@ -36,32 +33,31 @@ util = AcabConfig.Get()
 NEGATION_S       = util.value("Parse.Structure", "NEGATION")
 QUERY_FALLBACK_S = util.value("Parse.Structure", "QUERY_FALLBACK")
 
-class TrieWM(WorkingMemory):
+class TrieWM(WorkingMemoryCore):
     """ A Trie based working memory"""
 
     def __init__(self, init=None):
         """ init is a string of assertions to start the fact base with """
         # TODO enable passing of starting node semantics
+        super().__init__()
         semantics = BasicTrieSemantics({AcabNode : ES.ExclusionNodeSemantics()},
                                        {AcabValue : (AcabNode, {})})
-        super().__init__(init, semantics=semantics)
-        self._internal_trie = Trie(semantics)
-        # parser : PyParsing.ParserElement
-        self._main_parser = TotalP.parse_point
-        self._query_parser = QP.parse_point
-        self._parsers_initialised = False
+        self._structure        = Trie(semantics)
+        self._bootstrap_parser = BootstrapParser()
+        self._main_parser      = TotalP.parse_point
+        self._query_parser     = QP.parse_point
 
         if init is not None:
             self.add(init)
 
     def __str__(self):
-        return str(self._internal_trie)
+        return str(self._structure)
 
     def __eq__(self, other):
         if isinstance(other, TrieWM):
-            return self._internal_trie._root == other._internal_trie._root
+            return self._structure._root == other._structure._root
         elif isinstance(other, Trie):
-            return self._internal_trie._root == other._root
+            return self._structure._root == other._root
         else:
             raise AcabOperatorException("Incorrect Eq arg: {}".format(type(other)))
 
@@ -69,7 +65,7 @@ class TrieWM(WorkingMemory):
     def add(self, data, leaf=None, semantics=None):
         """ Assert multiple facts from a single string """
         assertions = None
-        use_semantics = semantics or self._semantics
+        use_semantics = semantics or self._structure.semantics
         if isinstance(data, str):
             assertions = TotalP.parseString(data, self._main_parser)
         elif isinstance(data, Sentence):
@@ -80,12 +76,12 @@ class TrieWM(WorkingMemory):
         if len(assertions) == 1 and leaf:
             assertions = [assertions[0].attach_statement(leaf)]
 
-        return use_semantics.add(self._internal_trie, assertions)
+        return use_semantics.add(self._structure, assertions)
 
 
     def query(self, query, ctxs=None, engine=None, semantics=None):
         """ Query a string, return a Contexts """
-        use_semantics = semantics or self._semantics
+        use_semantics = semantics or self._structure.semantics
         if isinstance(query, str):
             query = QP.parseString(query, self._query_parser)
         elif isinstance(query, Sentence):
@@ -93,7 +89,7 @@ class TrieWM(WorkingMemory):
         if not isinstance(query, ProductionContainer):
             raise AcabParseException("Unrecognised query target: {}".format(type(query)))
 
-        return use_semantics.query(self._internal_trie, query, ctxs=ctxs, engine=engine)
+        return use_semantics.query(self._structure, query, ctxs=ctxs, engine=engine)
 
 
     def assert_parsers(self, pt):
@@ -158,5 +154,5 @@ class TrieWM(WorkingMemory):
 
 
     def to_sentences(self, semantics=None):
-        use_semantics = semantics or self._semantics
-        return use_semantics.down(self._internal_trie)
+        use_semantics = semantics or self._structure.semantics
+        return use_semantics.down(self._structure)
