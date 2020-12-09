@@ -8,7 +8,9 @@ from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic
 
-class ValueInterface(metaclass=abc.ABCMeta):
+from acab.abstract.interfaces.flatten_interface import FlattenInterface
+
+class ValueInterface(FlattenInterface, metaclass=abc.ABCMeta):
 
     @property
     @abc.abstractmethod
@@ -26,10 +28,6 @@ class ValueInterface(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def to_sentences(self) -> List['Sentence']:
-        pass
-
-    @abc.abstractmethod
     def bind(self, bindings: Dict[Any, Any]) -> 'AcabValue':
         pass
 
@@ -38,7 +36,7 @@ class ValueInterface(metaclass=abc.ABCMeta):
     def copy(self) -> 'AcabValue':
         pass
 
-class SentenceInterface(metaclass=abc.ABCMeta):
+class SentenceInterface(FlattenInterface, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def attach_statement(self, value: 'AcabValue') -> 'Sentence':

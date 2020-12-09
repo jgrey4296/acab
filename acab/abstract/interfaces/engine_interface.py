@@ -6,8 +6,9 @@ from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic
 
+from acab.abstract.interfaces.flatten_interface import FlattenInterface
 
-class EngineInterface(metaclass=abc.ABCMeta):
+class EngineInterface(FlattenInterface, metaclass=abc.ABCMeta):
     """ """
 
     @abc.abstractmethod
@@ -16,11 +17,6 @@ class EngineInterface(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def reload_all_modules(self):
-        pass
-
-
-    @abc.abstractmethod
-    def to_sentences(self) -> List['Sentence']:
         pass
 
 
