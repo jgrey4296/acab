@@ -6,35 +6,29 @@ You create one with a working memory, load some modules,
 and can then parse and run an agent DSL pipeline.
 """
 # https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
-
-import logging as root_logger
-from os.path import exists, split, expanduser, abspath
-from importlib import import_module
+from acab.abstract.config.config import AcabConfig
+from acab.abstract.core.values import AcabValue
+from acab.abstract.core.values import Sentence
+from acab.abstract.interfaces import engine_interface as EI
+from acab.abstract.interfaces.working_memory_interface import WorkingMemoryCore
+from acab.abstract.rule.production_abstractions import ProductionOperator, ProductionContainer
+from acab.error.acab_base_exception import AcabBaseException
+from acab.error.acab_import_exception import AcabImportException
+from acab.modules.structures.trie.trie import Trie
 
 from copy import deepcopy
 from dataclasses import dataclass, field, InitVar, replace
 from fractions import Fraction
+from importlib import import_module
+from os.path import exists, split, expanduser, abspath
 from re import Pattern
+from typing import Callable, Iterator, Union, Match
+from typing import List, Set, Dict, Tuple, Optional, Any
+from typing import Mapping, MutableMapping, Sequence, Iterable
+from typing import cast, ClassVar, TypeVar, Generic
 from uuid import uuid1, UUID
 from weakref import ref
-
-from acab.abstract.config.config import AcabConfig
-from acab.error.acab_import_exception import AcabImportException
-from acab.error.acab_base_exception import AcabBaseException
-
-from acab.abstract.core.values import AcabValue
-from acab.abstract.core.values import Sentence
-
-from acab.abstract.rule.production_abstractions import ProductionOperator, ProductionContainer
-from acab.abstract.engine.working_memory import WorkingMemory
-
-from acab.abstract.interfaces import engine_interface as EI
-
-from acab.modules.structures.trie.trie import Trie
+import logging as root_logger
 
 util = AcabConfig.Get()
 
@@ -45,17 +39,17 @@ class Engine(EI.EngineInterface):
     """ The Abstract class of a production system engine. """
 
     # Blocks engine use until build_DSL has been called
-    __wm_constructor : 'Callable'         = None
+    __wm_constructor : 'Callable'         = field()
     _loaded_DSL_Fragments: Dict[Any, Any] = field(default_factory=dict)
     _loaded_modules: Set[Any]             = field(default_factory=set)
-    _working_memory: 'WorkingMemory'      = field(init=False)
+    _working_memory: WorkingMemoryCore    = field(init=False)
     init_data : Dict[Any, Any]            = field(default_factory=dict)
     initialised : bool                    = field(init=False, default=False)
     load_paths : List[str]                = field(default_factory=list)
     modules : List[str]                   = field(default_factory=list)
 
-    def __post_init__(self, wm_constructor):
-        assert(callable(wm_constructor))
+    def __post_init__(self):
+        assert(callable(self.__wm_constructor))
 
         self._working_memory = self.__wm_constructor(self.init_data)
 
@@ -87,14 +81,19 @@ class Engine(EI.EngineInterface):
         return self._cached_bindings
 
     # Initialisation:
-    def load_modules(self, *modules):
+    def reload_all_modules(self):
+        loaded = list(self._loaded_modules)
+        self._loaded_modules.clear()
+        self._load_modules(loaded)
+
+    def load_modules(self, *modules: List[str]):
         """ Given ModuleInterface objects,
         store them then tell the working memory to load them
         return a list of dictionaries
         """
         return [self.load_module_values(x) for x in modules]
 
-    def load_module_values(self, module_sen):
+    def load_module_values(self, module_str: str):
         """
         Load a module, extract operators and dsl fragments from it,
         put the operators into the operators store,
@@ -104,34 +103,34 @@ class Engine(EI.EngineInterface):
         """
         # Prepare path
         # TODO use utility constants for joining and query
-        mod_str = module_sen
-        if not isinstance(mod_str, str):
+        if not isinstance(module_str, str):
             breakpoint()
-            raise Exception("TODO: handle sentence -> module import")
-            # mod_str = str(module_sen)
+            raise Exception("TODO: handle sentence -> str")
+        # print semantics: basic+word join of "."
+        # mod_str = str(module_sen)
 
         # Return early if already loaded
-        if module_sen in self._loaded_modules:
-            logging.info("Module already loaded: {}".format(module_sen))
+        if module_str in self._loaded_modules:
+            logging.info("Module already loaded: {}".format(module_str))
             # TODO extract node from return context?
-            return self._working_memory.query(module_sen + "?")
+            return self._working_memory.query(module_str + "?")
 
         # Load
         try:
-            the_module = import_module(mod_str)
+            the_module = import_module(module_str)
         except ModuleNotFoundError as e:
             breakpoint()
 
-            raise AcabImportException(module_sen) from None
+            raise AcabImportException(module_str) from None
 
         # Extract
         operator_sentences, dsl_fragments = self.extract_from_module(the_module)
 
         # Register DSL Fragments
-        self._loaded_DSL_fragments[module_sen] = dsl_fragments
+        self._loaded_DSL_fragments[module_str] = dsl_fragments
         self.register_ops(operator_sentences)
 
-        self._loaded_modules.add(module_sen)
+        self._loaded_modules.add(module_str)
         # TODO extract node from return context?
         if isinstance(module_sen, str):
             return self._working_memory.query(module_sen + "?")
