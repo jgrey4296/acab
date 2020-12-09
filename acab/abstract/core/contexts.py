@@ -18,6 +18,7 @@ from acab.abstract.core.node import AcabNode
 from acab.abstract.core.values import AcabValue
 from acab.abstract.config.config import AcabConfig
 
+from acab.abstract.interfaces.context_interface import ContextInterface
 util = AcabConfig.Get()
 
 AT_BIND    = util.value("Value.Structure", "AT_BIND")
@@ -31,7 +32,7 @@ logging = root_logger.getLogger(__name__)
 
 
 
-class Contexts:
+class Contexts(ContextInterface):
     """ Container of available contexts for word match in the trie
     Conceptually a list of tuples: ({}, LastAccessedNode)
     And Stores failure state
