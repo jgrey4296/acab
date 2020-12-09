@@ -16,14 +16,22 @@ TODO add hook functionality
 TODO use acab errors instead
 TODO have default config files
 """
+
 from os.path import join, isfile, exists, abspath
 from os.path import split, isdir, splitext, expanduser
 from os import listdir
 
+from typing import List, Set, Dict, Tuple, Optional, Any
+from typing import Callable, Iterator, Union, Match
+from typing import Mapping, MutableMapping, Sequence, Iterable
+from typing import cast, ClassVar, TypeVar, Generic
+
 from configparser import ConfigParser, ExtendedInterpolation
+from dataclasses import dataclass, field, InitVar
 from enum import Enum
 import pyparsing as pp
 
+from .modal import ModalConfig
 from acab.error.acab_config_exception import AcabConfigException
 
 actions_e = Enum("Config Actions", "STRIPQUOTE KEYWORD LITERAL DICT LIST UNESCAPE SPLIT")
@@ -32,13 +40,17 @@ def GET(*args):
     config = AcabConfig.Get(*args)
     return config
 
-class AcabConfig:
+@dataclass
+class AcabConfig(ModalConfig):
     """ A Singleton class for the active configuration
     Uses ${SectionName:Key} interpolation in values,
     Turns multi-line values into lists
     """
-    actions_e = actions_e
-    actions = {
+    paths : InitVar[List[str]] = field(default_factory=list)
+    files : List[str] = field(default_factory=set)
+    _config : ConfigParser = field(init=False)
+    actions_e : Enum = actions_e
+    actions : Dict[Any, Callable] = {
         actions_e.STRIPQUOTE : lambda x: x.strip("\"'"),
         actions_e.KEYWORD    : lambda x: pp.Keyword(x),
         actions_e.LITERAL    : lambda x: pp.Literal(x),
@@ -46,7 +58,7 @@ class AcabConfig:
         actions_e.UNESCAPE   : lambda x: x.encode().decode("unicode_escape"),
         actions_e.SPLIT      : lambda x: x.split(" ")
         }
-    instance = None
+    instance : ClassVar[AcabConfig]                   = field(init=False, default=None)
 
     @staticmethod
     def Get(*paths):
@@ -56,16 +68,19 @@ class AcabConfig:
 
         return AcabConfig.instance
 
-    def __init__(self, *paths):
+    def __post_init__(self, paths):
         if AcabConfig.instance is not None:
             raise AcabConfigException("AcabConfig Already Exists")
 
         AcabConfig.instance = self
 
         self._config = ConfigParser(interpolation=ExtendedInterpolation(), allow_no_value=True)
-        self._files = set()
 
         self.read(*paths)
+
+        # TODO: use __mro__?
+        super().__post_init__()
+
 
     def read(self, *paths):
         full_paths = []
