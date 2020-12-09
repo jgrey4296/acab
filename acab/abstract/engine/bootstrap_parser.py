@@ -18,6 +18,7 @@ values = a.test.location, a.test.location.*
 import logging as root_logger
 import pyparsing as pp
 
+from acab.abstract.interfaces.working_memory_interface import WorkingMemoryInterface
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.node import AcabNode
@@ -30,20 +31,21 @@ from acab.modules.semantics.basic_semantics import BasicNodeSemantics
 
 logging = root_logger.getLogger(__name__)
 
-class BootstrapParser:
+class BootstrapParser(WorkingMemoryInterface):
     """ Manage parsers and allow queries for hotloading,
     used in working memory and module interfaces """
 
     def __init__(self, empty=False):
+        super().__init__()
         semantics = BasicTrieSemantics(node_semantics={AcabNode : BasicNodeSemantics()},
                                        value_pairings={AcabValue : (AcabNode, {})},
                                        sentence_sort=lambda x: str(x))
-        self._internal_trie = Trie(semantics)
+        self._structure = Trie(semantics)
 
     def __len__(self):
-        return len(self._internal_trie)
+        return len(self._structure)
     def __bool__(self):
-        return bool(self._internal_trie)
+        return bool(self._structure)
 
     
     def add(self, *inputs):
@@ -65,7 +67,7 @@ class BootstrapParser:
                 raise DeprecationWarning("Production Operators shouldn't be being built here any more")
 
             assert(isinstance(parser, pp.ParserElement))
-            self._internal_trie.add(loc_string, data={'parser': parser})
+            self._structure.add(loc_string, data={'parser': parser})
 
     def query(self, *queries):
         """ Given a bunch of query strings, get them and return them """
@@ -97,7 +99,7 @@ class BootstrapParser:
         assert(isinstance(query,str))
 
         results = []
-        queue = [(self._internal_trie.root, query.split("."))]
+        queue = [(self._structure.root, query.split("."))]
         while queue:
             curr_node, remaining_path = queue.pop(0)
             if not bool(remaining_path):
@@ -114,7 +116,3 @@ class BootstrapParser:
 
         return results
 
-    def print_trie(self):
-        """ Print the trie of parsers, marking nodes that have been used,
-        and the queries that are used """
-        return self._internal_trie.print_trie()
