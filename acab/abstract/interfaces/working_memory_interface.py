@@ -1,5 +1,21 @@
 #!/usr/bin/env python3
-#!/usr/bin/env python3
+"""
+The abstract form of a working memory
+
+Working Memory is responsible for the core system capabilities.
+It provides an ontology structure, a base parser for that structure,
+and integrates dsl fragments into that base.
+
+The canonical working memory is the Trie_WM.
+It uses an Exclusion Logic Semantics on a Trie data structure,
+Parsers to define sentences and rules in that data structure,
+and can load modules to extend its capabilities.
+
+The working memory, at core, can Add, Retract, and Query facts.
+
+From a module it loads Value, Statement, and Annotation parsers.
+
+"""
 import abc
 # https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
 from typing import List, Set, Dict, Tuple, Optional, Any
@@ -7,23 +23,21 @@ from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
-class WorkingMemoryInterface(metaclass=abc.ABCMeta):
-    """ """
+from fractions import Fraction
 
-    @abc.abstractmethod
+from acab.abstract.interfaces.flatten_interface import FlattenInterface
+
+@dataclass
+class WorkingMemoryInterface(FlattenInterface, metaclass=abc.ABCMeta):
+    """ The Core Interface. Add/Retract and Query the WM """
+    _structure : 'AcabStructure' = field(init=False)
+
+    @property
     def to_sentences(self) -> List['Sentence']:
-        pass
-
-    @abc.abstractmethod
-    def __str__(self):
-        """ Print the working memory as a reparseable string """
-        pass
-
-    @abc.abstractmethod
-    def __eq__(self, other):
-        pass
+        """ A simple passthrough """
+        return self._structure.to_sentences
 
     @abc.abstractmethod
     def add(self, data, leaf=None):
@@ -45,8 +59,9 @@ class WorkingMemoryInterface(metaclass=abc.ABCMeta):
 
 @dataclass
 class InterruptableWMInterface(metaclass=abc.ABCMeta):
-    _listeners : Set['Any']
-    _listeners_threshold : 'Fraction'
+    """ The core used to *debug* WM action, using listeners """
+    _listeners : Set['Any'] = field(init=False, default_factory=set)
+    _listeners_threshold : 'Fraction' = field(init=False, default=Fraction(1,2))
 
     def clear_listeners(self):
         self._listeners = set()
@@ -76,8 +91,11 @@ class InterruptableWMInterface(metaclass=abc.ABCMeta):
 
 @dataclass
 class DSLBuilderInterface(metaclass=abc.ABCMeta):
-    """ """
-    _bootstrap_parser : 'BootstrapParser'
+    """ Enables the assemblage of a parser from DSL Fragments """
+    _bootstrap_parser : 'BootstrapParser' = field(init=False)
+    _main_parser : 'PyParsing.ParserElement' = field(init=False)
+    _query_parser : 'PyParsing.ParserElement' = field(init=False)
+    _parsers_initialised : bool = False
 
     def construct_parsers_from_fragments(self, fragments):
         """ Assemble parsers from the fragments of the wm and loaded modules """
@@ -98,3 +116,11 @@ class DSLBuilderInterface(metaclass=abc.ABCMeta):
 
     def clear_bootstrap(self):
         self._bootstrap_parser = BootstrapParser()
+
+
+
+class WorkingMemoryCore(WorkingMemoryInterface,
+                        InterruptableWMInterface,
+                        DSLBuilderInterface):
+    """ The Assembled Working Memory Interface waiting for implementation """
+    pass

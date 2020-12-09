@@ -1,4 +1,4 @@
-from acab.abstract.engine.working_memory import WorkingMemory
+from acab.abstract.interfaces.working_memory_interface import WorkingMemory
 
 
 class HyperGraphWM(WorkingMemory):
