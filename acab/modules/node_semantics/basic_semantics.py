@@ -12,7 +12,7 @@ from acab.abstract.core.contexts import Contexts, CTX_OP
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.node_semantics import AcabNodeSemantics
 from acab.abstract.core.struct_semantics import AcabStructureSemantics
-from acab.abstract.core.structure import DataStructure
+from acab.abstract.rule.structure import DataStructure
 
 from acab.abstract.interfaces import semantics_interface as SI
 

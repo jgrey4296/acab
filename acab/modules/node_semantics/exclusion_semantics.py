@@ -115,3 +115,9 @@ class ExclusionNodeSemantics(AcabNodeSemantics, SI.NodeSemantics):
 
         removed = node.remove_child(to_delete)
         return removed
+
+
+    def down(self, node):
+        pass
+    def equal(self, word, word2):
+        pass
