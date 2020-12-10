@@ -46,29 +46,32 @@ class AcabConfig(ModalConfig):
     Uses ${SectionName:Key} interpolation in values,
     Turns multi-line values into lists
     """
-    paths : InitVar[List[str]] = field(default_factory=list)
-    files : List[str] = field(default_factory=set)
+    paths : InitVar[List[str]]
+    _files : List[str] = field(init=False, default_factory=set)
     _config : ConfigParser = field(init=False)
     actions_e : Enum = actions_e
-    actions : Dict[Any, Callable] = {
+    actions : Dict[Any, Callable] = field(init=False, default_factory=lambda: {
         actions_e.STRIPQUOTE : lambda x: x.strip("\"'"),
         actions_e.KEYWORD    : lambda x: pp.Keyword(x),
         actions_e.LITERAL    : lambda x: pp.Literal(x),
         actions_e.LIST       : lambda x: x.split("\n"),
         actions_e.UNESCAPE   : lambda x: x.encode().decode("unicode_escape"),
         actions_e.SPLIT      : lambda x: x.split(" ")
-        }
-    instance : ClassVar[AcabConfig]                   = field(init=False, default=None)
+    })
+    instance : ClassVar['AcabConfig']                   = field(init=False, default=None)
 
     @staticmethod
-    def Get(*paths):
+    def Get(*paths: List[str]):
+        if paths is None:
+            paths = []
         if AcabConfig.instance is None:
-            AcabConfig()
-        AcabConfig.instance.read(*paths)
+            AcabConfig(paths)
+        else:
+            AcabConfig.instance.read(paths)
 
         return AcabConfig.instance
 
-    def __post_init__(self, paths):
+    def __post_init__(self, paths: List[str]):
         if AcabConfig.instance is not None:
             raise AcabConfigException("AcabConfig Already Exists")
 
@@ -76,13 +79,13 @@ class AcabConfig(ModalConfig):
 
         self._config = ConfigParser(interpolation=ExtendedInterpolation(), allow_no_value=True)
 
-        self.read(*paths)
+        self.read(paths)
 
         # TODO: use __mro__?
         super().__post_init__()
 
 
-    def read(self, *paths):
+    def read(self, paths: List[str]):
         full_paths = []
         for path in paths:
             expanded = abspath(expanduser(path))
@@ -127,7 +130,7 @@ class AcabConfig(ModalConfig):
             actions = []
 
         for action in actions:
-            value = AcabConfig.actions[action](value)
+            value = self.actions[action](value)
 
         return value
 
