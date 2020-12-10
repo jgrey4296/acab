@@ -29,9 +29,9 @@ from acab.working_memory.trie_wm.parsing import TotalParser as TotalP
 
 logging = root_logger.getLogger(__name__)
 
-util = AcabConfig.Get()
+config = AcabConfig.Get()
 
-MODULE_SPLIT_REG = re.compile(util.value("Parse.Patterns", "MODULE_SPLIT_REG"))
+MODULE_SPLIT_REG = re.compile(config.value("Parse.Patterns", "MODULE_SPLIT_REG"))
 
 # TODO Deprecate this, move code into abstract.engine, or a working memory instance
 class TrieEngine(Engine):
