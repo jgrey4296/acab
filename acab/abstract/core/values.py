@@ -357,13 +357,16 @@ class Sentence(AcabStatement, VI.SentenceInterface):
 
 
             if isinstance(retrieved, Sentence) and len(retrieved) == 1:
+                # Flatten len1 sentences:
                 copied = retrieved[0].copy()
                 copied.data.update(word.data)
                 copied.data[BIND] = False
                 output.append(copied)
             elif isinstance(retrieved, AcabValue):
+                # Apply the variables data to the retrieval
                 copied = retrieved.copy()
                 copied.data.update(word.data)
+                # Except retrieved isn't a binding
                 copied.data[BIND] = False
                 output.append(retrieved)
             else:
