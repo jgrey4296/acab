@@ -22,6 +22,10 @@ endif
 
 .PHONY: all pylint
 
+top:
+	# Topological Sort test
+	python -m unittest discover -v -f -s ./acab -k Topological -t ./acab -p "test_*.py"
+
 all: verbose long
 
 check:
