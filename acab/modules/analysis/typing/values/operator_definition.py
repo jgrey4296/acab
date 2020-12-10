@@ -4,7 +4,7 @@ from acab.modules.analysis.typing import util as TU
 
 from .type_definition import TypeDefinition
 
-util = AcabConfig.Get()
+config = AcabConfig.Get()
 
 class OperatorDefinition(TypeDefinition):
     """ Defines the type signature of an operator"""

@@ -22,16 +22,16 @@ from acab.abstract.parsing import parsers as PU
 from acab.abstract.rule.production_abstractions import ProductionContainer
 from acab.error.acab_operator_exception import AcabOperatorException
 from acab.error.acab_parse_exception import AcabParseException
-from acab.modules.semantics import exclusion_semantics as ES
+from acab.modules.node_semantics import exclusion_semantics as ES
 from acab.modules.structures.trie.trie import Trie
 from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics
 
 logging = root_logger.getLogger(__name__)
 
-util = AcabConfig.Get()
+config = AcabConfig.Get()
 
-NEGATION_S       = util.value("Parse.Structure", "NEGATION")
-QUERY_FALLBACK_S = util.value("Parse.Structure", "QUERY_FALLBACK")
+NEGATION_S       = config.value("Parse.Structure", "NEGATION")
+QUERY_FALLBACK_S = config.value("Parse.Structure", "QUERY_FALLBACK")
 
 class TrieWM(WorkingMemoryCore):
     """ A Trie based working memory"""

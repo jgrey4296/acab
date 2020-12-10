@@ -14,9 +14,9 @@ from acab.abstract.core.values import AcabValue, AcabStatement
 
 from acab.abstract.rule import production_abstractions as PO
 
-util                 = AcabConfig.Get()
-BIND_S               = util.value("Value.Structure", "BIND")
-OPERATOR_TYPE_PRIM_S = util.value("Type.Primitive", "OPERATOR")
+config               = AcabConfig.Get()
+BIND_S               = config.value("Value.Structure", "BIND")
+OPERATOR_TYPE_PRIM_S = config.value("Type.Primitive", "OPERATOR")
 
 class ProductionAbstractionTests(unittest.TestCase):
     """ Test the construction of production abstractions """

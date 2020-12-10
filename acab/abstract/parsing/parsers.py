@@ -5,7 +5,6 @@ import re
 
 from acab.abstract.config.config import AcabConfig
 
-from acab.abstract.config.modal import SYNTAX_LOOKUP
 from acab.abstract.parsing import funcs as Pfunc
 from acab.abstract.parsing import consts as PConst
 from acab.abstract.parsing.consts import emptyLine, s, op, orm, zrm, N, NG, MODAL_S, NODE_S
@@ -13,7 +12,7 @@ from acab.abstract.parsing.consts import gap, component_gap, OPAR, CPAR, DBLCOLO
 
 logging = root_logger.getLogger(__name__)
 
-util = AcabConfig.Get()
+config = AcabConfig.Get()
 
 Fwd_ArgList = pp.Forward()
 Fwd_TagList = pp.Forward()
@@ -99,8 +98,8 @@ REGEX.setParseAction(lambda t: (PConst.REGEX_V, re.compile(t[0][1:-1])))
 
 
 # Generalised modal operator, which is converted to appropriate data later
-MODAL      = pp.Word("".join(SYNTAX_LOOKUP.keys()))
-MODAL.setParseAction(lambda t: (PConst.MODAL_S, SYNTAX_LOOKUP[t[0]]))
+MODAL      = pp.Word("".join(config.modal_syntax_lookup.keys()))
+MODAL.setParseAction(lambda t: (PConst.MODAL_S, config.modal_syntax_lookup[t[0]]))
 
 BASIC_VALUE = pp.Or([ATOM, STRING, REGEX])
 BIND        = PConst.BIND_SYMBOL + ATOM

@@ -21,7 +21,7 @@ from acab.modules.analysis.typing.values.operator_definition import OperatorDefi
 from acab.modules.analysis.typing.values.type_definition import TypeDefinition, SumTypeDefinition
 from acab.modules.structures.trie.trie import Trie
 from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics
-from acab.modules.semantics.basic_semantics import BasicNodeSemantics
+from acab.modules.node_semantics.basic_semantics import BasicNodeSemantics
 
 import acab.modules.analysis.typing.util as util
 

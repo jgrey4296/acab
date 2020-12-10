@@ -19,11 +19,11 @@ from acab.abstract.core.values import AcabValue
 from acab.abstract.config.config import AcabConfig
 
 from acab.abstract.interfaces.context_interface import ContextInterface
-util = AcabConfig.Get()
+config = AcabConfig.Get()
 
-AT_BIND    = util.value("Value.Structure", "AT_BIND")
-BIND       = util.value("Value.Structure", "BIND")
-CONSTRAINT = util.value("Value.Structure", "CONSTRAINT")
+AT_BIND    = config.value("Value.Structure", "AT_BIND")
+BIND       = config.value("Value.Structure", "BIND")
+CONSTRAINT = config.value("Value.Structure", "CONSTRAINT")
 
 # TODO deprecate this?
 CTX_OP = Enum("ctx", "collapse")

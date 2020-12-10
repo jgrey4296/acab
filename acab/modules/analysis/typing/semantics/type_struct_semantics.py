@@ -14,7 +14,7 @@ from acab.abstract.core.node_semantics import AcabNodeSemantics
 
 from acab.abstract.interfaces import semantics_interface as SI
 
-from acab.abstract.core.struct_semantics import AcabStructureSemantics
+from acab.abstract.rule.struct_semantics import AcabStructureSemantics
 
 class TypingStructSemantics(AcabStructureSemantics, SI.SemanticInterface, SI.StructureSemantics):
     # TODO Locate listeners in semantics not WM

@@ -7,7 +7,7 @@ logging = root_logger.getLogger(__name__)
 from math import isclose
 
 from acab.abstract.config.config import AcabConfig
-AcabConfig.Get().read("acab/abstract/config")
+AcabConfig.Get("acab/abstract/config")
 
 from acab.abstract.core.values import AcabValue
 from acab.abstract.rule.production_abstractions import ProductionStructure
@@ -104,15 +104,15 @@ class Engine_Tests(unittest.TestCase):
 
 
 
-    @mock.patch('acab.abstract.engine.working_memory.WorkingMemory', autospec=True)
-    @mock.patch('acab.abstract.core.struct_semantics.AcabStructureSemantics', autospec=True)
+    @mock.patch('acab.abstract.interfaces.working_memory_interface.WorkingMemory', autospec=True)
+    @mock.patch('acab.abstract.rule.struct_semantics.AcabStructureSemantics', autospec=True)
     def test_init(self, wm_mock, sem_mock):
         engine = Engine(wm_mock)
         wm_mock.assert_called_once_with(None)
 
     @unittest.skip("TODO")
     @mock.patch('acab.abstract.rule.production_abstractions', autospec=True)
-    @mock.patch('acab.abstract.engine.working_memory.WorkingMemory', autospec=True)
+    @mock.patch('acab.abstract.interfaces.working_memory_interface.WorkingMemory', autospec=True)
     def test_load_modules(self, wm_mock, op_mock):
         module_mock = mock.Mock()
         engine = Engine(wm_mock, modules=[module_mock])
@@ -120,7 +120,7 @@ class Engine_Tests(unittest.TestCase):
         engine._working_memory.add_modules.assert_called_once()
 
     @mock.patch('acab.abstract.rule.production_abstractions', autospec=True)
-    @mock.patch('acab.abstract.engine.working_memory.WorkingMemory', autospec=True)
+    @mock.patch('acab.abstract.interfaces.working_memory_interface.WorkingMemory', autospec=True)
     def test_reload_modules(self, wm_mock, op_mock):
         engine = Engine(wm_mock)
         engine.build_DSL()

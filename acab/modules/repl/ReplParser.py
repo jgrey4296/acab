@@ -13,9 +13,9 @@ from .repl_commands import build_command
 
 logging = root_logger.getLogger(__name__)
 HOTLOAD_COMMANDS = pp.Forward()
-util = AcabConfig.Get()
+config = AcabConfig.Get()
 
-MULTI_LINE_REGEX = util("REPL", "MULTI_LINE_REGEX")
+MULTI_LINE_REGEX = config("REPL", "MULTI_LINE_REGEX")
 
 
 def build_slice(toks):

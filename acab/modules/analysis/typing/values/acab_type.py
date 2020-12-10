@@ -2,9 +2,9 @@ from acab.abstract.core.values import AcabStatement
 
 from acab.abstract.config.config import AcabConfig
 
-util = AcabConfig.Get()
+config = AcabConfig.Get()
 
-TAB_S = util.value("Print.Patterns", "TAB", actions=[AcabConfig.actions_e.STRIPQUOTE])
+TAB_S = config.value("Print.Patterns", "TAB", actions=[AcabConfig.actions_e.STRIPQUOTE])
 
 class TypeStatement(AcabStatement):
 

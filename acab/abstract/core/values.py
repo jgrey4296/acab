@@ -22,17 +22,17 @@ from acab.abstract.interfaces import value_interfaces as VI
 
 logging            = root_logger.getLogger(__name__)
 
-util             = AcabConfig.Get("acab/abstract/config")
-TYPE_INSTANCE    = util.value("Value.Structure", "TYPE_INSTANCE")
-BIND             = util.value("Value.Structure", "BIND")
-AT_BIND          = util.value("Value.Structure", "AT_BIND")
-ANON_VALUE       = util.value("Symbols", "ANON_VALUE")
-SENTENCE_TYPE      = util.value("Type.Primitive", "SENTENCE")
-BIND_SYMBOL      = util.value("Symbols", "BIND")
-AT_BIND_SYMBOL   = util.value("Symbols", "AT_BIND")
-TYPE_BOTTOM_NAME = util.value("Data", "TYPE_BOTTOM_NAME")
-UUID_CHOP        = bool(int(util.value("Print.Data", "UUID_CHOP")))
-FALLBACK_MODAL   = util.value("Symbols", "FALLBACK_MODAL", actions=[util.actions_e.STRIPQUOTE])
+config             = AcabConfig.Get("acab/abstract/config")
+TYPE_INSTANCE    = config.value("Value.Structure", "TYPE_INSTANCE")
+BIND             = config.value("Value.Structure", "BIND")
+AT_BIND          = config.value("Value.Structure", "AT_BIND")
+ANON_VALUE       = config.value("Symbols", "ANON_VALUE")
+SENTENCE_TYPE      = config.value("Type.Primitive", "SENTENCE")
+BIND_SYMBOL      = config.value("Symbols", "BIND")
+AT_BIND_SYMBOL   = config.value("Symbols", "AT_BIND")
+TYPE_BOTTOM_NAME = config.value("Data", "TYPE_BOTTOM_NAME")
+UUID_CHOP        = bool(int(config.value("Print.Data", "UUID_CHOP")))
+FALLBACK_MODAL   = config.value("Symbols", "FALLBACK_MODAL", actions=[config.actions_e.STRIPQUOTE])
 
 @dataclass
 class AcabValue(VI.ValueInterface):

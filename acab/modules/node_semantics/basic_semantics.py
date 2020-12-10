@@ -11,17 +11,17 @@ from acab.abstract.core.values import AcabValue
 from acab.abstract.core.contexts import Contexts, CTX_OP
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.node_semantics import AcabNodeSemantics
-from acab.abstract.core.struct_semantics import AcabStructureSemantics
+from acab.abstract.rule.struct_semantics import AcabStructureSemantics
 from acab.abstract.rule.structure import DataStructure
 
 from acab.abstract.interfaces import semantics_interface as SI
 
-import acab.abstract.core.struct_semantics as SSem
+import acab.abstract.rule.struct_semantics as SSem
 
 from acab.abstract.config.config import AcabConfig
 
 logging = root_logger.getLogger(__name__)
-util = AcabConfig.Get()
+config = AcabConfig.Get()
 
 
 class BasicNodeSemantics(AcabNodeSemantics, SI.NodeSemantics):

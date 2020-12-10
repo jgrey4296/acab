@@ -16,7 +16,7 @@ import traceback
 # Quiet hook from https://gist.github.com/jhazelwo/86124774833c6ab8f973323cb9c7e251
 if __name__ == "__main__":
     from acab.abstract.config.config import AcabConfig
-    util = AcabConfig.Get()
+    config = AcabConfig.Get()
 
     #see https://docs.python.org/3/howto/argparse.html
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -38,7 +38,7 @@ if __name__ == "__main__":
     logging = root_logger.getLogger(__name__)
 
     logging.info("Reading Config: {}".format(args.config))
-    util.read_list(args.config)
+    config.read_list(args.config)
 
     # Only after having read in config, import rest of acab
     from acab.repl import ReplParser as ReP
@@ -46,7 +46,7 @@ if __name__ == "__main__":
 
     logging.info("Setting up engine: {}".format(args.engine))
     #import then build engine or default trie engine from args
-    engine = util("REPL", "ENGINE")
+    engine = config("REPL", "ENGINE")
     if args.engine is not None:
         engine = args.engine
 
@@ -55,11 +55,11 @@ if __name__ == "__main__":
     engine, dummy = ReC.get(ReC.ReplE.INIT)(None, {'params': [engine]})
     # TODO Load Standard modules
     load_cmd = ReC.get(ReC.ReplE.MODULE)
-    initial_modules = util("REPL", "MODULES", actions=[AcabConfig.actions_e.LIST])
+    initial_modules = config("REPL", "MODULES", actions=[AcabConfig.actions_e.LIST])
     engine, dummy = load_cmd(engine, {'params': initial_modules})
 
-    data = { 'prompt' : util("REPL", "PROMPT"),
-             'prompt_ml' : util("REPL", "PROMPT_ML"),
+    data = { 'prompt' : config("REPL", "PROMPT"),
+             'prompt_ml' : config("REPL", "PROMPT_ML"),
              'command': ReC.ReplE.NOP,
              'params' : [],
              'result' : None,

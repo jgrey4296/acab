@@ -8,7 +8,7 @@ from os import listdir
 import timeit
 
 from acab.abstract.config.config import AcabConfig
-AcabConfig.Get().read("acab/abstract/config")
+AcabConfig.Get("acab/abstract/config")
 
 from acab.abstract.core.values import Sentence
 from acab.abstract.rule.production_abstractions import ProductionStructure

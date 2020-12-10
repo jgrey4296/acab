@@ -17,8 +17,8 @@ from . import util as TU
 
 logging = root_logger.getLogger(__name__)
 
-util = AcabConfig.Get()
-TYPE_INSTANCE_S = util.value("Parse.Structure", "TYPE_INSTANCE")
+config = AcabConfig.Get()
+TYPE_INSTANCE_S = config.value("Parse.Structure", "TYPE_INSTANCE")
 
 
 #Hotloaded definitions:

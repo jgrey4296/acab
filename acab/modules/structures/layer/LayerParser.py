@@ -35,10 +35,10 @@ from acab.abstract.rule.production_abstractions import ProductionContainer
 
 logging = root_logger.getLogger(__name__)
 
-util        = AcabConfig.Get()
-QUERY_S     = util.value("Parse.Structure", "QUERY")
-TRANSFORM_S = util.value("Parse.Structure", "TRANSFORM")
-ACTION_S    = util.value("Parse.Structure", "ACTION")
+config        = AcabConfig.Get()
+QUERY_S     = config.value("Parse.Structure", "QUERY")
+TRANSFORM_S = config.value("Parse.Structure", "TRANSFORM")
+ACTION_S    = config.value("Parse.Structure", "ACTION")
 
 HOTLOAD_BASIC_SEN = pp.Forward()
 HOTLOAD_QUERY = pp.Forward()

@@ -18,7 +18,7 @@ from acab.abstract.interfaces import semantics_interface as SI
 
 from acab.modules.analysis.typing import type_exceptions as te
 from acab.modules.analysis.typing import util
-from acab.modules.semantics.basic_semantics import BasicNodeSemantics
+from acab.modules.node_semantics.basic_semantics import BasicNodeSemantics
 
 logging = root_logger.getLogger(__name__)
 

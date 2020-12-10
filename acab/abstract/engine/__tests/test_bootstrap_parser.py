@@ -13,7 +13,7 @@ logging = root_logger.getLogger(__name__)
 import pyparsing as pp
 
 from acab.abstract.config.config import AcabConfig
-AcabConfig.Get().read("acab/abstract/config")
+AcabConfig.Get("acab/abstract/config")
 
 from acab.abstract.core.values import AcabValue
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
@@ -104,7 +104,7 @@ class BootstrapParserTests(unittest.TestCase):
         self.assertFalse(bool(self.bp))
         self.bp.add("test.first", "awef",
                     "test.second", "blah")
-        self.bp._internal_trie.to_sentences()
+        self.bp._structure.to_sentences()
         result = self.bp.query("test.*")
         self.assertIsNotNone(result)
         self.assertTrue("awef" in result.exprs)

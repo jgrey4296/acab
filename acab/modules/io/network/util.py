@@ -1,9 +1,9 @@
 from acab.abstract.config.config import AcabConfig
 
-util = AcabConfig.Get()
+config = AcabConfig.Get()
 
-DEFAULT_PORT       = util("Module.Network", "DEFAULT_PORT")
-DEFAULT_BLOCKSIZE  = util("Module.Network", "DEFAULT_BLOCKSIZE")
-DEFAULT_HEADERSIZE = util("Module.Network", "DEFAULT_HEADERSIZE")
-DEFAULT_BACKLOG    = util("Module.Network", "DEFAULT_BACKLOG")
-DEFAULT_HOST       = util("Module.Network", "DEFAULT_HOST")
+DEFAULT_PORT       = config("Module.Network", "DEFAULT_PORT")
+DEFAULT_BLOCKSIZE  = config("Module.Network", "DEFAULT_BLOCKSIZE")
+DEFAULT_HEADERSIZE = config("Module.Network", "DEFAULT_HEADERSIZE")
+DEFAULT_BACKLOG    = config("Module.Network", "DEFAULT_BACKLOG")
+DEFAULT_HOST       = config("Module.Network", "DEFAULT_HOST")

@@ -12,13 +12,12 @@ from acab.abstract.core.node_semantics import AcabNodeSemantics
 from acab.abstract.interfaces import semantics_interface as SI
 
 from acab.abstract.config.config import AcabConfig
-from acab.abstract.config.modal import MODAL_DEFAULTS, MODAL_ENUMS
 
 config = AcabConfig.Get()
 # TODO replace operator with specific modal name
-EXOP = config.value("MODAL", "exop")
-DEFAULT_EXOP = MODAL_DEFAULTS[EXOP]
-EXOP_enum = MODAL_ENUMS[EXOP]
+EXOP         = config.value("MODAL", "exop")
+DEFAULT_EXOP = config.modal_defaults[EXOP]
+EXOP_enum    = config.modal_enums[EXOP]
 
 
 # Fixup the last modal operator if a sentence has been inserted

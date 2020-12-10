@@ -3,39 +3,39 @@ from re import Pattern
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.values import Sentence
 
-util = AcabConfig.Get()
+config = AcabConfig.Get()
 #Static
-TYPE_INSTANCE_V  = util.value("Value.Structure", "TYPE_INSTANCE")
-BIND_V           = util.value("Value.Structure", "BIND")
-CONSTRAINT_V     = util.value("Value.Structure", "CONSTRAINT")
-OPERATOR_V       = util.value("Value.Structure", "OPERATOR")
-NEGATION_V       = util.value("Value.Structure", "NEGATION")
-QUERY_V          = util.value("Value.Structure", "QUERY")
+TYPE_INSTANCE_V  = config.value("Value.Structure", "TYPE_INSTANCE")
+BIND_V           = config.value("Value.Structure", "BIND")
+CONSTRAINT_V     = config.value("Value.Structure", "CONSTRAINT")
+OPERATOR_V       = config.value("Value.Structure", "OPERATOR")
+NEGATION_V       = config.value("Value.Structure", "NEGATION")
+QUERY_V          = config.value("Value.Structure", "QUERY")
 
 # Runtime dynamic
-OBVIOUS_TYPES_P  = util.prepare("Print.Data", "SUPPRESSION_TYPES", actions=[AcabConfig.actions_e.SPLIT])
+OBVIOUS_TYPES_P  = config.prepare("Print.Data", "SUPPRESSION_TYPES", actions=[AcabConfig.actions_e.SPLIT])
 
-TAB_P            = util.prepare("Print.Patterns", "TAB", actions=[AcabConfig.actions_e.STRIPQUOTE])
-WRAP_FORMAT_P    = util.prepare("Print.Patterns", "WRAP_FORMAT")
-PARAM_JOIN_P     = util.prepare("Print.Patterns", "PARAM_JOIN")
-STR_WRAP_P       = util.prepare("Print.Patterns", "STR_WRAP")
-REGEX_WRAP_P     = util.prepare("Print.Patterns", "REGEX_WRAP")
+TAB_P            = config.prepare("Print.Patterns", "TAB", actions=[AcabConfig.actions_e.STRIPQUOTE])
+WRAP_FORMAT_P    = config.prepare("Print.Patterns", "WRAP_FORMAT")
+PARAM_JOIN_P     = config.prepare("Print.Patterns", "PARAM_JOIN")
+STR_WRAP_P       = config.prepare("Print.Patterns", "STR_WRAP")
+REGEX_WRAP_P     = config.prepare("Print.Patterns", "REGEX_WRAP")
 
 
-BIND_P           = util.prepare("Symbols", "BIND")
-AT_BIND_P        = util.prepare("Symbols", "AT_BIND")
-END_P            = util.prepare("Symbols", "END")
-FALLBACK_MODAL_P = util.prepare("Symbols", "FALLBACK_MODAL", actions=[AcabConfig.actions_e.STRIPQUOTE])
-FUNC_P           = util.prepare("Symbols", "FUNC")
-NEGATION_P       = util.prepare("Symbols", "NEGATION")
-QUERY_P          = util.prepare("Symbols", "QUERY")
-TAG_P            = util.prepare("Symbols", "TAG")
-REBIND_P         = util.prepare("Symbols", "REBIND")
-SUGAR_P          = util.prepare("Symbols", "SUGAR")
+BIND_P           = config.prepare("Symbols", "BIND")
+AT_BIND_P        = config.prepare("Symbols", "AT_BIND")
+END_P            = config.prepare("Symbols", "END")
+FALLBACK_MODAL_P = config.prepare("Symbols", "FALLBACK_MODAL", actions=[AcabConfig.actions_e.STRIPQUOTE])
+FUNC_P           = config.prepare("Symbols", "FUNC")
+NEGATION_P       = config.prepare("Symbols", "NEGATION")
+QUERY_P          = config.prepare("Symbols", "QUERY")
+TAG_P            = config.prepare("Symbols", "TAG")
+REBIND_P         = config.prepare("Symbols", "REBIND")
+SUGAR_P          = config.prepare("Symbols", "SUGAR")
 
 # TODO add an action to build a sentence
-STRING_SEN         = Sentence.build([util.value("Type.Primitive", "STRING")])
-REGEX_SEN          = Sentence.build([util.value("Type.Primitive", "REGEX")])
+STRING_SEN         = Sentence.build([config.value("Type.Primitive", "STRING")])
+REGEX_SEN          = Sentence.build([config.value("Type.Primitive", "REGEX")])
 
 
 

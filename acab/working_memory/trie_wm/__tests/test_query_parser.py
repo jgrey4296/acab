@@ -5,9 +5,8 @@ logging = root_logger.getLogger(__name__)
 
 
 from acab.abstract.config.config import AcabConfig
-AcabConfig.Get().read("acab/abstract/config")
+config = AcabConfig.Get("acab/abstract/config")
 
-from acab.abstract.config.modal import MODAL_ENUMS
 from acab.abstract.parsing.parsers import HOTLOAD_VALUES, VALBIND
 
 import acab.working_memory.trie_wm.parsing.FactParser as FP
@@ -81,14 +80,14 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result, Sentence)
         self.assertEqual(len(result), 3)
         self.assertEqual(result[-1].value, 'c')
-        self.assertEqual(result[-1].data['exop'], MODAL_ENUMS['exop'].DOT)
+        self.assertEqual(result[-1].data['exop'], config.modal_enums['exop'].DOT)
 
     def test_basic_clause_with_bind(self):
         result = QP.clause.parseString('a.b.$c?')[0]
         self.assertIsInstance(result, Sentence)
         self.assertEqual(len(result), 3)
         self.assertEqual(result[-1].value, 'c')
-        self.assertEqual(result[-1].data['exop'], MODAL_ENUMS['exop'].DOT)
+        self.assertEqual(result[-1].data['exop'], config.modal_enums['exop'].DOT)
         self.assertTrue(result[-1].is_var)
 
     def test_basic_negated_clause(self):

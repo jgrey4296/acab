@@ -27,14 +27,14 @@ from acab.abstract.config.config import AcabConfig
 
 from acab.abstract.core.values import AcabValue, AcabStatement, Sentence
 
-util = AcabConfig.Get()
+config = AcabConfig.Get()
 
-OPERATOR_S            = util.value("Value.Structure", "OPERATOR")
-AT_BIND_S             = util.value("Value.Structure", "AT_BIND")
-CONTAINER_TYPE_PRIM_S = util.value("Type.Primitive", "CONTAINER")
-COMPONENT_TYPE_PRIM_S = util.value("Type.Primitive", "COMPONENT")
-OPERATOR_TYPE_PRIM_S  = util.value("Type.Primitive", "OPERATOR")
-TYPE_INSTANCE    = util.value("Value.Structure", "TYPE_INSTANCE")
+OPERATOR_S            = config.value("Value.Structure", "OPERATOR")
+AT_BIND_S             = config.value("Value.Structure", "AT_BIND")
+CONTAINER_TYPE_PRIM_S = config.value("Type.Primitive", "CONTAINER")
+COMPONENT_TYPE_PRIM_S = config.value("Type.Primitive", "COMPONENT")
+OPERATOR_TYPE_PRIM_S  = config.value("Type.Primitive", "OPERATOR")
+TYPE_INSTANCE    = config.value("Value.Structure", "TYPE_INSTANCE")
 
 logging = root_logger.getLogger(__name__)
 

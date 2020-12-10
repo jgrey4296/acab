@@ -7,12 +7,11 @@ import random
 import pyparsing as pp
 
 from acab.abstract.config.config import AcabConfig
-AcabConfig.Get().read("acab/abstract/config")
+config = AcabConfig.Get("acab/abstract/config")
 
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.values import AcabValue
 
-from acab.abstract.config.modal import MODAL_ENUMS
 from acab.abstract.parsing.parsers import HOTLOAD_VALUES, VALBIND
 
 from acab.abstract.printing.print_semantics import AcabPrintSemantics
@@ -21,8 +20,8 @@ from acab.working_memory.trie_wm import util as KBU
 import acab.working_memory.trie_wm.parsing.FactParser as FP
 
 
-NEGATION_S      = AcabConfig.Get().value("Parse.Structure", "NEGATION")
-TYPE_INSTANCE_S = AcabConfig.Get().value("Parse.Structure", "TYPE_INSTANCE")
+NEGATION_S      = config.value("Parse.Structure", "NEGATION")
+TYPE_INSTANCE_S = config.value("Parse.Structure", "TYPE_INSTANCE")
 
 basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel),
               Sentence: DH.DEF_SEN_PAIR}
@@ -62,7 +61,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertTrue(all([isinstance(x, AcabValue) for x in result]))
 
         self.assertEqual(Printer.print(result), "a.b.c")
-        self.assertTrue(all([x.data['exop'] == MODAL_ENUMS['exop'].DOT for x in result]))
+        self.assertTrue(all([x.data['exop'] == config.modal_enums['exop'].DOT for x in result]))
 
     def test_parseStrings(self):
         result = FP.parseString('a.b.c, b.c.d')
@@ -83,7 +82,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
 
     def test_exclusion_operator_parsing(self):
         result = FP.parseString('a!b!c')[0]
-        self.assertTrue(all([x.data['exop'] == MODAL_ENUMS['exop'].EX for x in result[:-1]]))
+        self.assertTrue(all([x.data['exop'] == config.modal_enums['exop'].EX for x in result[:-1]]))
 
     def test_strings(self):
         result = FP.parseString('a.b."This is a test"!c')[0]

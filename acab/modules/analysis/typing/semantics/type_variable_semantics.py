@@ -11,7 +11,7 @@ from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.node import AcabNode
 
-from acab.modules.semantics.basic_semantics import BasicNodeSemantics
+from acab.modules.node_semantics.basic_semantics import BasicNodeSemantics
 
 from acab.abstract.interfaces import semantics_interface as SI
 

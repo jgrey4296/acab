@@ -4,7 +4,7 @@ import unittest
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
 from acab.abstract.config.config import AcabConfig
-AcabConfig.Get().read("acab/abstract/config")
+AcabConfig.Get("acab/abstract/config")
 
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.values import AcabValue

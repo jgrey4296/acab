@@ -5,51 +5,50 @@ import logging as root_logger
 import pyparsing as pp
 
 from acab.abstract.config.config import AcabConfig
-from acab.abstract.config.modal import MODAL_DEFAULTS
 from acab.abstract.core.values import Sentence
 
 logging = root_logger.getLogger(__name__)
 
-util = AcabConfig.Get()
+config = AcabConfig.Get()
 
-COMMENT_RE       = util.value("Parse.Patterns", "COMMENT_RE", actions=[AcabConfig.actions_e.UNESCAPE])
-WORD_COMPONENT_S = util.value("Parse.Patterns", "WORD_COMPONENT")
-OPERATOR_SYNTAX  = util.value("Parse.Patterns", "OPERATOR_SYNTAX")
-WHITE_SPACE      = util.value("Parse.Patterns", "WHITE_SPACE", actions=[AcabConfig.actions_e.STRIPQUOTE, AcabConfig.actions_e.UNESCAPE])
+COMMENT_RE       = config.value("Parse.Patterns", "COMMENT_RE", actions=[AcabConfig.actions_e.UNESCAPE])
+WORD_COMPONENT_S = config.value("Parse.Patterns", "WORD_COMPONENT")
+OPERATOR_SYNTAX  = config.value("Parse.Patterns", "OPERATOR_SYNTAX")
+WHITE_SPACE      = config.value("Parse.Patterns", "WHITE_SPACE", actions=[AcabConfig.actions_e.STRIPQUOTE, AcabConfig.actions_e.UNESCAPE])
 pp.ParserElement.setDefaultWhitespaceChars(WHITE_SPACE)
 
 DEFAULT_NODE_DATA = {}
-DEFAULT_NODE_DATA.update(MODAL_DEFAULTS)
+DEFAULT_NODE_DATA.update(config.modal_defaults)
 
 
-ACTION_S         = util.value("Parse.Structure", "ACTION")
-ANNOTATION_S     = util.value("Parse.Structure", "ANNOTATION")
-ARG_S            = util.value("Parse.Structure", "PARAMS")
-AT_BIND_S        = util.value("Value.Structure", "AT_BIND")
-BIND_S           = util.value("Parse.Structure", "BIND")
-CONSTRAINT_S     = util.value("Parse.Structure", "CONSTRAINT")
-DEFAULT_ACTION_S = util.value("Parse.Structure", "DEFAULT_ACTION")
-LEFT_S           = util.value("Parse.Structure", "LEFT")
-MODAL_S          = util.value("Parse.Structure", "MODAL")
-NAME_S           = util.value("Parse.Structure", "NAME")
-NEGATION_S       = util.value("Parse.Structure", "NEGATION")
-NODE_S           = util.value("Parse.Structure", "NODE")
-OPERATOR_S       = util.value("Parse.Structure", "OPERATOR")
-QUERY_FALLBACK_S = util.value("Parse.Structure", "QUERY_FALLBACK")
-QUERY_S          = util.value("Parse.Structure", "QUERY")
-RIGHT_S          = util.value("Parse.Structure", "RIGHT")
-SEN_S            = util.value("Parse.Structure", "SEN")
-STATEMENT_S      = util.value("Parse.Structure", "STATEMENT")
-TAG_S            = util.value("Parse.Structure", "TAG")
-TARGET_S         = util.value("Parse.Structure", "TARGET")
-TRANSFORM_S      = util.value("Parse.Structure", "TRANSFORM")
-TYPE_INSTANCE_S  = util.value("Parse.Structure", "TYPE_INSTANCE")
-VALUE_S          = util.value("Parse.Structure", "VALUE")
+ACTION_S         = config.value("Parse.Structure", "ACTION")
+ANNOTATION_S     = config.value("Parse.Structure", "ANNOTATION")
+ARG_S            = config.value("Parse.Structure", "PARAMS")
+AT_BIND_S        = config.value("Value.Structure", "AT_BIND")
+BIND_S           = config.value("Parse.Structure", "BIND")
+CONSTRAINT_S     = config.value("Parse.Structure", "CONSTRAINT")
+DEFAULT_ACTION_S = config.value("Parse.Structure", "DEFAULT_ACTION")
+LEFT_S           = config.value("Parse.Structure", "LEFT")
+MODAL_S          = config.value("Parse.Structure", "MODAL")
+NAME_S           = config.value("Parse.Structure", "NAME")
+NEGATION_S       = config.value("Parse.Structure", "NEGATION")
+NODE_S           = config.value("Parse.Structure", "NODE")
+OPERATOR_S       = config.value("Parse.Structure", "OPERATOR")
+QUERY_FALLBACK_S = config.value("Parse.Structure", "QUERY_FALLBACK")
+QUERY_S          = config.value("Parse.Structure", "QUERY")
+RIGHT_S          = config.value("Parse.Structure", "RIGHT")
+SEN_S            = config.value("Parse.Structure", "SEN")
+STATEMENT_S      = config.value("Parse.Structure", "STATEMENT")
+TAG_S            = config.value("Parse.Structure", "TAG")
+TARGET_S         = config.value("Parse.Structure", "TARGET")
+TRANSFORM_S      = config.value("Parse.Structure", "TRANSFORM")
+TYPE_INSTANCE_S  = config.value("Parse.Structure", "TYPE_INSTANCE")
+VALUE_S          = config.value("Parse.Structure", "VALUE")
 
 # Primitives
-ATOM_V   = Sentence.build([util.value("Data", "TYPE_BOTTOM_NAME")])
-STRING_V = Sentence.build([util.value("Type.Primitive", "STRING")])
-REGEX_V  = Sentence.build([util.value("Type.Primitive", "REGEX")])
+ATOM_V   = Sentence.build([config.value("Data", "TYPE_BOTTOM_NAME")])
+STRING_V = Sentence.build([config.value("Type.Primitive", "STRING")])
+REGEX_V  = Sentence.build([config.value("Type.Primitive", "REGEX")])
 
 
 s         = pp.Suppress
@@ -59,7 +58,7 @@ zrm       = pp.ZeroOrMore
 
 
 emptyLine         = pp.Suppress(pp.lineEnd + pp.lineEnd)
-END               = s(util.value("Symbols", "END", actions=[AcabConfig.actions_e.LITERAL]))
+END               = s(config.value("Symbols", "END", actions=[AcabConfig.actions_e.LITERAL]))
 VBAR              = s(pp.Literal('|'))
 COMMENT           = pp.Regex(COMMENT_RE)
 COMMA             = s(pp.Literal(','))
@@ -102,26 +101,26 @@ LESS             = s(pp.Literal('<'))
 MORE             = s(pp.Literal('>'))
 DELIM            = pp.Or([COMMA, op(pp.lineEnd)])
 
-RULE_HEAD        = s(util.value("Aliases", "RULE", actions=[AcabConfig.actions_e.KEYWORD]))
-QUERY_HEAD       = s(util.value("Aliases", "QUERY", actions=[AcabConfig.actions_e.KEYWORD]))
-TRANSFORM_HEAD   = s(util.value("Aliases", "TRANSFORM", actions=[AcabConfig.actions_e.KEYWORD]))
-ACTION_HEAD      = s(util.value("Aliases", "ACTION", actions=[AcabConfig.actions_e.KEYWORD]))
-FACT_HEAD        = s(util.value("Aliases", "FACT", actions=[AcabConfig.actions_e.KEYWORD]))
-COLLAPSE_CONTEXT = s(util.value("Aliases", "CTX_COLLAPSE", actions=[AcabConfig.actions_e.LITERAL]))
-AGENDA_HEAD      = s(util.value("Aliases", "AGENDA", actions=[AcabConfig.actions_e.KEYWORD]))
-LAYER_HEAD       = s(util.value("Aliases", "LAYER", actions=[AcabConfig.actions_e.KEYWORD]))
-PIPE_HEAD        = s(util.value("Aliases", "PIPE", actions=[AcabConfig.actions_e.KEYWORD]))
+RULE_HEAD        = s(config.value("Aliases", "RULE", actions=[AcabConfig.actions_e.KEYWORD]))
+QUERY_HEAD       = s(config.value("Aliases", "QUERY", actions=[AcabConfig.actions_e.KEYWORD]))
+TRANSFORM_HEAD   = s(config.value("Aliases", "TRANSFORM", actions=[AcabConfig.actions_e.KEYWORD]))
+ACTION_HEAD      = s(config.value("Aliases", "ACTION", actions=[AcabConfig.actions_e.KEYWORD]))
+FACT_HEAD        = s(config.value("Aliases", "FACT", actions=[AcabConfig.actions_e.KEYWORD]))
+COLLAPSE_CONTEXT = s(config.value("Aliases", "CTX_COLLAPSE", actions=[AcabConfig.actions_e.LITERAL]))
+AGENDA_HEAD      = s(config.value("Aliases", "AGENDA", actions=[AcabConfig.actions_e.KEYWORD]))
+LAYER_HEAD       = s(config.value("Aliases", "LAYER", actions=[AcabConfig.actions_e.KEYWORD]))
+PIPE_HEAD        = s(config.value("Aliases", "PIPE", actions=[AcabConfig.actions_e.KEYWORD]))
 
-FUNC_SYMBOL      = s(pp.Word(util.value("Symbols", "FUNC")))
+FUNC_SYMBOL      = s(pp.Word(config.value("Symbols", "FUNC")))
 
-BIND_SYMBOL      = s(util.value("Symbols", "BIND", actions=[AcabConfig.actions_e.LITERAL]))
-AT_BIND_SYMBOL   = s(util.value("Symbols", "AT_BIND", actions=[AcabConfig.actions_e.LITERAL]))
+BIND_SYMBOL      = s(config.value("Symbols", "BIND", actions=[AcabConfig.actions_e.LITERAL]))
+AT_BIND_SYMBOL   = s(config.value("Symbols", "AT_BIND", actions=[AcabConfig.actions_e.LITERAL]))
 
-QUERY_SYMBOL     = s(util.value("Symbols", "QUERY", actions=[AcabConfig.actions_e.LITERAL]))
-TAG_SYMBOL       = s(util.value("Symbols", "TAG", actions=[AcabConfig.actions_e.LITERAL]))
+QUERY_SYMBOL     = s(config.value("Symbols", "QUERY", actions=[AcabConfig.actions_e.LITERAL]))
+TAG_SYMBOL       = s(config.value("Symbols", "TAG", actions=[AcabConfig.actions_e.LITERAL]))
 
-NEGATION_SYMBOL   = N(util.value("Parse.Structure", "NEGATION"),
-                      util.value("Symbols", "NEGATION", actions=[AcabConfig.actions_e.LITERAL]))
+NEGATION_SYMBOL   = N(config.value("Parse.Structure", "NEGATION"),
+                      config.value("Symbols", "NEGATION", actions=[AcabConfig.actions_e.LITERAL]))
 
 
 END.setName("End")

@@ -27,7 +27,7 @@ from acab.abstract.parsing.parsers import OPERATOR_SUGAR
 
 from acab.modules.structures.trie.trie import Trie
 from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics
-from acab.modules.semantics.basic_semantics import BasicNodeSemantics
+from acab.modules.node_semantics.basic_semantics import BasicNodeSemantics
 
 logging = root_logger.getLogger(__name__)
 

@@ -32,10 +32,10 @@ from acab.abstract.core.node import AcabNode
 from acab.abstract.interfaces import semantics_interface as SI
 from acab.abstract.config.config import AcabConfig
 
-util         = AcabConfig.Get()
-NEGATION_S   = util.value("Value.Structure", "NEGATION")
-CONSTRAINT_S = util.value("Value.Structure", "CONSTRAINT")
-AT_BIND_S    = util.value("Value.Structure", "AT_BIND")
+config         = AcabConfig.Get()
+NEGATION_S   = config.value("Value.Structure", "NEGATION")
+CONSTRAINT_S = config.value("Value.Structure", "CONSTRAINT")
+AT_BIND_S    = config.value("Value.Structure", "AT_BIND")
 
 class AcabNodeSemantics(AcabStatement, SI.NodeSemantics):
     """ A Single Class to provide

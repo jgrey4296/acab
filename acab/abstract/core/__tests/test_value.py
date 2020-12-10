@@ -5,7 +5,7 @@ import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
 from acab.abstract.config.config import AcabConfig
-CONFIG = AcabConfig.Get().read("acab/abstract/config")
+CONFIG = AcabConfig.Get("acab/abstract/config")
 
 from acab.abstract.core.values import AcabValue, AcabStatement
 from acab.abstract.core.values import Sentence

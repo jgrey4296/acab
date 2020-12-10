@@ -12,15 +12,15 @@ from acab.abstract.core.contexts import Contexts, CTX_OP
 from acab.abstract.rule.structure import DataStructure
 
 from acab.error.acab_base_exception import AcabBaseException
-from acab.modules.semantics.basic_semantics import BasicNodeSemantics
+from acab.modules.node_semantics.basic_semantics import BasicNodeSemantics
 
 from .trie_semantics import BasicTrieSemantics
 
 from acab.abstract.config.config import AcabConfig
-util = AcabConfig.Get()
+config = AcabConfig.Get()
 
-CONSTRAINT_S = util.value("Value.Structure", "CONSTRAINT")
-AT_BIND_S    = util.value("Value.Structure", "AT_BIND")
+CONSTRAINT_S = config.value("Value.Structure", "CONSTRAINT")
+AT_BIND_S    = config.value("Value.Structure", "AT_BIND")
 
 logging = root_logger.getLogger(__name__)
 

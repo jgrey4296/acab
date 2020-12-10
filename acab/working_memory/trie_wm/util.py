@@ -5,13 +5,12 @@ from enum import Enum
 
 from acab.abstract.core.node import AcabNode
 from acab.abstract.config.config import AcabConfig
-from acab.modules.semantics import util as SU
+from acab.modules.node_semantics import util as SU
 
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
-util = AcabConfig.Get()
+config = AcabConfig.Get()
 
-OPERATOR_S = util.value("Parse.Structure", "OPERATOR")
-ROOT_S     = util.value("Data", "ROOT")
-
+OPERATOR_S = config.value("Parse.Structure", "OPERATOR")
+ROOT_S     = config.value("Data", "ROOT")

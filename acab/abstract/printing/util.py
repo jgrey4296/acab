@@ -29,7 +29,7 @@ from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.node import AcabNode
 
-util = AcabConfig.Get()
+config = AcabConfig.Get()
 
 # pylint: disable       =line-too-long
 # AcabValue -> Value(Op), Statement(Sentence, Component) Container(Query, Transform, Action), Structured:(Rule, Agenda, Layer, Pipeline)
@@ -43,7 +43,7 @@ SEARCH_enum = Enum("Semantic Searches", "UUID NAME VALUE ACAB_T PY_T THROW")
 
 DEFAULT_SEMANTIC_SEARCH = [
     SEARCH_enum[x]
-    for x in util.value("Print.Data", "DEFAULT_SEMANTIC_SEARCH").split(" ")
+    for x in config.value("Print.Data", "DEFAULT_SEMANTIC_SEARCH").split(" ")
 ]
 
 AccumulationDict = Dict[Any, Any]
@@ -65,47 +65,47 @@ ContextValue = str
 SemBox = Tuple[RET_enum, Printable, Callable]
 StackValue = Tuple[List[SemBox], List[str], Dict[Any, Any]]
 
-util = AcabConfig.Get()
-OBVIOUS_TYPES = util.value("Print.Data", "SUPPRESSION_TYPES").split(" ")
+config = AcabConfig.Get()
+OBVIOUS_TYPES = config.value("Print.Data", "SUPPRESSION_TYPES").split(" ")
 
 # TODO replace this with pulling the dict straight from config
-PARAM_JOIN_V = util.value(
+PARAM_JOIN_V = config.value(
     "Print.Patterns", "PARAM_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE]
 )
-PRINT_SENTINEL_JOIN_P = util.prepare(
+PRINT_SENTINEL_JOIN_P = config.prepare(
     "Print.Patterns", "PRINT_SENTINEL_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE]
 )
-SEN_JOIN_V = util.value(
+SEN_JOIN_V = config.value(
     "Print.Patterns", "SEN_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE]
 )
-TAB_V = util.value("Print.Patterns", "TAB", actions=[AcabConfig.actions_e.STRIPQUOTE])
-WRAP_FORMAT_V = util.value("Print.Patterns", "WRAP_FORMAT")
-CONTAINER_JOIN_V = util.value(
+TAB_V = config.value("Print.Patterns", "TAB", actions=[AcabConfig.actions_e.STRIPQUOTE])
+WRAP_FORMAT_V = config.value("Print.Patterns", "WRAP_FORMAT")
+CONTAINER_JOIN_V = config.value(
     "Print.Patterns", "CONTAINER_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE]
 )
 
-AT_BIND_V = util.value("Value.Structure", "AT_BIND")
-BIND_V = util.value("Value.Structure", "BIND")
-CONSTRAINT_V = util.value("Value.Structure", "CONSTRAINT")
-NEGATION_V = util.value("Value.Structure", "NEGATION")
-OPERATOR_V = util.value("Value.Structure", "OPERATOR")
-QUERY_V = util.value("Value.Structure", "QUERY")
-TAG_V = util.value("Value.Structure", "TAG")
-TYPE_INSTANCE_V = util.value("Value.Structure", "TYPE_INSTANCE")
+AT_BIND_V = config.value("Value.Structure", "AT_BIND")
+BIND_V = config.value("Value.Structure", "BIND")
+CONSTRAINT_V = config.value("Value.Structure", "CONSTRAINT")
+NEGATION_V = config.value("Value.Structure", "NEGATION")
+OPERATOR_V = config.value("Value.Structure", "OPERATOR")
+QUERY_V = config.value("Value.Structure", "QUERY")
+TAG_V = config.value("Value.Structure", "TAG")
+TYPE_INSTANCE_V = config.value("Value.Structure", "TYPE_INSTANCE")
 
-END_V = util.value("Parse.Structure", "END")
-FUNC_V = util.value("Parse.Structure", "FUNC")
+END_V = config.value("Parse.Structure", "END")
+FUNC_V = config.value("Parse.Structure", "FUNC")
 
-AT_BIND_SYMBOL_V = util.value("Symbols", "AT_BIND")
-BIND_SYMBOL_V = util.value("Symbols", "BIND")
-END_SYMBOL_V = util.value("Symbols", "END")
-FALLBACK_MODAL_SYMBOL_V = util.value(
+AT_BIND_SYMBOL_V = config.value("Symbols", "AT_BIND")
+BIND_SYMBOL_V = config.value("Symbols", "BIND")
+END_SYMBOL_V = config.value("Symbols", "END")
+FALLBACK_MODAL_SYMBOL_V = config.value(
     "Symbols", "FALLBACK_MODAL", actions=[AcabConfig.actions_e.STRIPQUOTE]
 )
-FUNC_SYMBOL_V = util.value("Symbols", "FUNC")
-NEGATION_SYMBOL_V = util.value("Symbols", "NEGATION")
-QUERY_SYMBOL_V = util.value("Symbols", "QUERY")
-TAG_SYMBOL_V = util.value("Symbols", "TAG")
+FUNC_SYMBOL_V = config.value("Symbols", "FUNC")
+NEGATION_SYMBOL_V = config.value("Symbols", "NEGATION")
+QUERY_SYMBOL_V = config.value("Symbols", "QUERY")
+TAG_SYMBOL_V = config.value("Symbols", "TAG")
 
 def _get_by_uuid(printer, val: Printable) -> SemanticSpec:
         if val.uuid in printer._type_semantics:
@@ -221,7 +221,7 @@ def default_aliases() -> Dict[Any, str]:
         FUNC_V: FUNC_SYMBOL_V,
         NEGATION_V: NEGATION_SYMBOL_V,
         QUERY_V: QUERY_SYMBOL_V,
-        PRINT_SENTINEL_JOIN_P[1]: util.value(*PRINT_SENTINEL_JOIN_P),
+        PRINT_SENTINEL_JOIN_P[1]: config.value(*PRINT_SENTINEL_JOIN_P),
         SEN_JOIN_V: SEN_JOIN_V,
         TAG_V: TAG_SYMBOL_V,
         FALLBACK_MODAL_SYMBOL_V: FALLBACK_MODAL_SYMBOL_V,

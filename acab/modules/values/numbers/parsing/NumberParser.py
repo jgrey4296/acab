@@ -9,11 +9,11 @@ from acab.abstract.config.config import AcabConfig
 
 logging = root_logger.getLogger(__name__)
 
-util = AcabConfig.Get()
-DECIMAL_SYMBOL_S = util.value("Module.Numbers", "DECIMAL")
+config = AcabConfig.Get()
+DECIMAL_SYMBOL_S = config.value("Module.Numbers", "DECIMAL")
 
-USE_PARSER       = util.value("Module.Numbers", "USE_PARSER")
-ALLOW_NEG        = util.value("Module.Numbers", "ALLOW_NEG")
+USE_PARSER       = config.value("Module.Numbers", "USE_PARSER")
+ALLOW_NEG        = config.value("Module.Numbers", "ALLOW_NEG")
 
 
 def construct_num(toks):

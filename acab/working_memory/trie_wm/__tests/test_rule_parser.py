@@ -5,7 +5,7 @@ logging = root_logger.getLogger(__name__)
 
 
 from acab.abstract.config.config import AcabConfig
-util = AcabConfig.Get().read("acab/abstract/config")
+config = AcabConfig.Get("acab/abstract/config")
 
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
@@ -20,9 +20,9 @@ import acab.working_memory.trie_wm.parsing.QueryParser as QP
 from acab.abstract.printing.print_semantics import AcabPrintSemantics
 from acab.abstract.printing import default_handlers as DH
 
-QUERY_V = util.value("Structure.Components", "QUERY")
-TRANSFORM_V = util.value("Structure.Components", "TRANSFORM")
-ACTION_V = util.value("Structure.Components", "ACTION")
+QUERY_V = config.value("Structure.Components", "QUERY")
+TRANSFORM_V = config.value("Structure.Components", "TRANSFORM")
+ACTION_V = config.value("Structure.Components", "ACTION")
 
 basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel),
               Sentence: DH.DEF_SEN_PAIR,

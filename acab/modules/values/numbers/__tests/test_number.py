@@ -6,7 +6,7 @@ logging = root_logger.getLogger(__name__)
 
 
 from acab.abstract.config.config import AcabConfig
-AcabConfig.Get().read("acab/abstract/config")
+AcabConfig.Get("acab/abstract/config")
 
 from acab.modules.values.numbers.parsing import NumberParser as NP
 

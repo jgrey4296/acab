@@ -16,7 +16,7 @@ import logging as root_logger
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.values import AcabValue, Sentence
 
-util = AcabConfig.Get()
+config = AcabConfig.Get()
 
 
 # TODO

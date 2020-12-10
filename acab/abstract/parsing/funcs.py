@@ -16,7 +16,7 @@ from acab.abstract.rule.production_abstractions import ProductionContainer, Prod
 
 logging = root_logger.getLogger(__name__)
 
-util = AcabConfig.Get()
+config = AcabConfig.Get()
 
 
 def make_value(toks):

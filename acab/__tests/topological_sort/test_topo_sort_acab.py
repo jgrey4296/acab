@@ -8,10 +8,10 @@ from os.path import splitext, split
 import unittest
 import unittest.mock as mock
 
-import logging
+import logging as root_logger
 
 from acab.abstract.config.config import AcabConfig
-AcabConfig.Get().read("acab/abstract/config")
+AcabConfig.Get("acab/abstract/config")
 
 from acab.abstract.core.values import AcabValue, AcabStatement, Sentence
 from acab.abstract.core.node import AcabNode

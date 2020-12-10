@@ -6,14 +6,14 @@ import pyparsing as pp
 
 
 from acab.abstract.config.config import AcabConfig
-util = AcabConfig.Get("acab")
+config = AcabConfig.Get("acab")
 
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
 from acab.modules.structures.time.time_core import BaseTime, TimeEvent, TimeContainer
 from acab.modules.structures.time.pattern import PatternSeq, PatternPar
 from acab.modules.structures.time.parsing import parser as tp
-from acab.modules.structures.time.util import Time as t
+from acab.modules.structures.time.config import Time as t
 from acab.abstract.parsing import parsers as PU
 from acab.abstract.printing.print_semantics import AcabPrintSemantics
 from acab.abstract.printing import default_handlers as DH
@@ -25,7 +25,7 @@ Printer = AcabPrintSemantics(basic_plus, default_values={'MODAL_FIELD' : 'OPERAT
                                                          'EXOP.DOT'    : ".",
                                                          'EXOP.EX'     : "!"})
 
-BIND_S = util.value("Parse.Structure", "BIND")
+BIND_S = config.value("Parse.Structure", "BIND")
 
 class TestTime(unittest.TestCase):
 

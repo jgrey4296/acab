@@ -26,12 +26,12 @@ from acab.error.acab_semantic_exception import AcabSemanticException
 
 from acab.abstract.config.config import AcabConfig
 
-util = AcabConfig.Get()
+config = AcabConfig.Get()
 
-NEGATION_S   = util.value("Value.Structure", "NEGATION")
-CONSTRAINT_S = util.value("Value.Structure", "CONSTRAINT")
-AT_BIND_S    = util.value("Value.Structure", "AT_BIND")
-ROOT_S       = util.value("Data", "ROOT")
+NEGATION_S   = config.value("Value.Structure", "NEGATION")
+CONSTRAINT_S = config.value("Value.Structure", "CONSTRAINT")
+AT_BIND_S    = config.value("Value.Structure", "AT_BIND")
+ROOT_S       = config.value("Data", "ROOT")
 
 @dataclass
 class AcabStructureSemantics(AcabValue, SI.SemanticInterface, SI.StructureSemantics):

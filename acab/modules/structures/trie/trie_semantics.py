@@ -11,7 +11,7 @@ from acab.abstract.core.values import AcabValue, AcabStatement
 from acab.abstract.core.contexts import Contexts, CTX_OP
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.node_semantics import AcabNodeSemantics
-from acab.abstract.core.struct_semantics import AcabStructureSemantics
+from acab.abstract.rule.struct_semantics import AcabStructureSemantics
 from acab.abstract.rule.structure import DataStructure
 from acab.abstract.rule.production_abstractions import ProductionContainer
 
@@ -22,13 +22,13 @@ from acab.error.acab_base_exception import AcabBaseException
 from acab.abstract.config.config import AcabConfig
 
 logging = root_logger.getLogger(__name__)
-util = AcabConfig.Get()
+config = AcabConfig.Get()
 
-CONSTRAINT_S = util.value("Value.Structure", "CONSTRAINT")
-NEGATION_S = util.value("Value.Structure", "NEGATION")
-QUERY_FALLBACK_S = util.value("Value.Structure", "QUERY_FALLBACK")
-DEFAULT_SETUP_S = util.value("Data", "DEFAULT_SETUP_METHOD")
-DEFAULT_UPDATE_S = util.value("Data", "DEFAULT_UPDATE_METHOD")
+CONSTRAINT_S = config.value("Value.Structure", "CONSTRAINT")
+NEGATION_S = config.value("Value.Structure", "NEGATION")
+QUERY_FALLBACK_S = config.value("Value.Structure", "QUERY_FALLBACK")
+DEFAULT_SETUP_S = config.value("Data", "DEFAULT_SETUP_METHOD")
+DEFAULT_UPDATE_S = config.value("Data", "DEFAULT_UPDATE_METHOD")
 
 
 class BasicTrieSemantics(AcabStructureSemantics):

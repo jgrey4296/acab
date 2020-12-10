@@ -12,7 +12,7 @@ logging = root_logger.getLogger(__name__)
 
 
 from acab.abstract.config.config import GET
-util = GET("acab/abstract/config")
+config = GET("acab/abstract/config")
 
 from acab.abstract.core.values import AcabValue, AcabStatement
 from acab.abstract.core.values import Sentence
@@ -21,18 +21,18 @@ from acab.abstract.rule.production_abstractions import ProductionContainer, Prod
 from acab.abstract.printing.print_semantics import AcabPrintSemantics, RET_enum
 from acab.abstract.printing import default_handlers as DH
 
-NEGATION_S        = util.value("Value.Structure", "NEGATION")
-QUERY_S           = util.value("Value.Structure", "QUERY")
+NEGATION_S        = config.value("Value.Structure", "NEGATION")
+QUERY_S           = config.value("Value.Structure", "QUERY")
 
-NEGATION_SYMBOL_S = util.value("Symbols", "NEGATION")
-ANON_VALUE_S      = util.value("Symbols", "ANON_VALUE")
-FALLBACK_MODAL_S  = util.value("Symbols", "FALLBACK_MODAL", actions=[util.actions_e.STRIPQUOTE])
-QUERY_SYMBOL_S    = util.value("Symbols", "QUERY")
+NEGATION_SYMBOL_S = config.value("Symbols", "NEGATION")
+ANON_VALUE_S      = config.value("Symbols", "ANON_VALUE")
+FALLBACK_MODAL_S  = config.value("Symbols", "FALLBACK_MODAL", actions=[config.actions_e.STRIPQUOTE])
+QUERY_SYMBOL_S    = config.value("Symbols", "QUERY")
 
-SEN_JOIN_S        = util.prepare("Print.Patterns", "SEN_JOIN")[1]
+SEN_JOIN_S        = config.prepare("Print.Patterns", "SEN_JOIN")[1]
 
-STR_PRIM_S       = util.value("Type.Primitive", "STRING")
-TYPE_INSTANCE_S  = util.value("Value.Structure", "TYPE_INSTANCE")
+STR_PRIM_S       = config.value("Type.Primitive", "STRING")
+TYPE_INSTANCE_S  = config.value("Value.Structure", "TYPE_INSTANCE")
 # Semantic Collections
 # Dict[type, Tuple[List[Callable], Callable, Any]]
 basic = {AcabValue: ([], lambda s, d, c, a, p: (RET_enum.SIMPLE, str(d), None, None))}

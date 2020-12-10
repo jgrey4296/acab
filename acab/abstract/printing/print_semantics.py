@@ -29,12 +29,12 @@ from acab.abstract.config.config import AcabConfig
 
 from . import util as PUtil
 
-util = AcabConfig.Get()
+config = AcabConfig.Get()
 
-OBVIOUS_TYPES = util.value("Print.Data", "SUPPRESSION_TYPES").split(" ")
+OBVIOUS_TYPES = config.value("Print.Data", "SUPPRESSION_TYPES").split(" ")
 
 # TODO replace this with pulling the dict straight from config
-PRINT_SENTINEL_JOIN_P = util.prepare(
+PRINT_SENTINEL_JOIN_P = config.prepare(
     "Print.Patterns", "PRINT_SENTINEL_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE]
 )
 
@@ -235,7 +235,7 @@ class AcabPrintSemantics(AcabValue, SI.PrintSemanticInterface):
             return result
 
         # then config lookup
-        return util.value(*lookup)
+        return config.value(*lookup)
 
     def set_for_uuid(self, uuid, default_trues, **kwargs):
         if uuid not in self._uuid_board:

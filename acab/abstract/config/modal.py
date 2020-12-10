@@ -17,7 +17,6 @@ import logging as root_logger
 import pyparsing as pp
 from enum import Enum, EnumMeta
 
-from acab.abstract.config.config import AcabConfig
 
 logging = root_logger.getLogger(__name__)
 

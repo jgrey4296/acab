@@ -30,7 +30,7 @@ from uuid import uuid1, UUID
 from weakref import ref
 import logging as root_logger
 
-util = AcabConfig.Get()
+config = AcabConfig.Get()
 
 logging = root_logger.getLogger(__name__)
 

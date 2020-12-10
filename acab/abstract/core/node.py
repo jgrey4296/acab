@@ -23,9 +23,9 @@ import acab.abstract.interfaces.data_interfaces as DI
 
 logging = root_logger.getLogger(__name__)
 
-util = AcabConfig.Get()
+config = AcabConfig.Get()
 
-ROOT = AcabValue(name=util.value("Data", "ROOT"))
+ROOT = AcabValue(name=config.value("Data", "ROOT"))
 
 @dataclass
 class AcabNode(DI.NodeInterface):

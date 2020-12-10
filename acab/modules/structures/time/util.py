@@ -12,21 +12,21 @@ from acab.abstract.config.config import AcabConfig
 
 logging = root_logger.getLogger(__name__)
 
-util = AcabConfig.Get()
+config = AcabConfig.Get()
 
-TIME_FORMAT_S   = util.value("Modules.Time", "TIME_FORMAT")
+TIME_FORMAT_S   = config.value("Modules.Time", "TIME_FORMAT")
 
 #CONSTANTS:
-BIND_S          = util.value("Value.Structure", "BIND")
-NAME_S          = util.value("Value.Structure", "NAME")
-TYPE_INSTANCE_S = util.value("Value.Structure", "TYPE_INSTANCE")
+BIND_S          = config.value("Value.Structure", "BIND")
+NAME_S          = config.value("Value.Structure", "NAME")
+TYPE_INSTANCE_S = config.value("Value.Structure", "TYPE_INSTANCE")
 
 
-VALUE_S         = util.value("Parse.Structure", "VALUE")
-OPT_S           = util.value("Parse.Structure", "OPT")
-PATTERN_S       = util.value("Parse.Structure", "PATTERN")
-TIME_EVENT_S    = util.value("Parse.Structure", "TIME_EVENT")
-TIME_PATTERN_S  = util.value("Parse.Structure", "TIME_PATTERN")
+VALUE_S         = config.value("Parse.Structure", "VALUE")
+OPT_S           = config.value("Parse.Structure", "OPT")
+PATTERN_S       = config.value("Parse.Structure", "PATTERN")
+TIME_EVENT_S    = config.value("Parse.Structure", "TIME_EVENT")
+TIME_PATTERN_S  = config.value("Parse.Structure", "TIME_PATTERN")
 
 PATTERN_T       = Enum("Pattern Type", "DISCRETE ANALOG")
 TIME_T          = Enum("Time Type", "CLOCK EVENT SET SYMBOLIC")

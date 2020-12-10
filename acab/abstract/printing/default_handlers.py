@@ -9,32 +9,31 @@ logging = root_logger.getLogger(__name__)
 
 from . import wrappers
 from acab.abstract.config.config import AcabConfig
-from acab.abstract.config.modal import MODAL_PRINTING
 
-util = AcabConfig.Get()
+config = AcabConfig.Get()
 # These don't vary at run time, so use .value
-QUERY_V          = util.value("Value.Structure", "QUERY")
-AT_BIND_V        = util.value("Value.Structure", "AT_BIND")
-CONSTRAINT_V     = util.value("Value.Structure", "CONSTRAINT")
-NEGATION_V       = util.value("Value.Structure", "NEGATION")
-OPERATOR_V       = util.value("Value.Structure", "OPERATOR")
-TYPE_INSTANCE_V  = util.value("Value.Structure", "TYPE_INSTANCE")
-BIND_V           = util.value("Value.Structure", "BIND")
+QUERY_V          = config.value("Value.Structure", "QUERY")
+AT_BIND_V        = config.value("Value.Structure", "AT_BIND")
+CONSTRAINT_V     = config.value("Value.Structure", "CONSTRAINT")
+NEGATION_V       = config.value("Value.Structure", "NEGATION")
+OPERATOR_V       = config.value("Value.Structure", "OPERATOR")
+TYPE_INSTANCE_V  = config.value("Value.Structure", "TYPE_INSTANCE")
+BIND_V           = config.value("Value.Structure", "BIND")
 
 # These can vary at runtime, so prepare then use with print semantics:
-OBVIOUS_TYPES    = util.prepare("Print.Data", "SUPPRESSION_TYPES", actions=[AcabConfig.actions_e.SPLIT])
+OBVIOUS_TYPES    = config.prepare("Print.Data", "SUPPRESSION_TYPES", actions=[AcabConfig.actions_e.SPLIT])
 
-ANON_VALUE_P     = util.prepare("Symbols", "ANON_VALUE")
-FUNC_P           = util.prepare("Symbols", "FUNC")
-END_P            = util.prepare("Symbols", "END")
-FALLBACK_MODAL_P = util.prepare("Symbols", "FALLBACK_MODAL", actions=[AcabConfig.actions_e.STRIPQUOTE])
-QUERY_SYMBOL_P   = util.prepare("Symbols", "QUERY")
-TAG_P            = util.prepare("Symbols", "TAG")
+ANON_VALUE_P     = config.prepare("Symbols", "ANON_VALUE")
+FUNC_P           = config.prepare("Symbols", "FUNC")
+END_P            = config.prepare("Symbols", "END")
+FALLBACK_MODAL_P = config.prepare("Symbols", "FALLBACK_MODAL", actions=[AcabConfig.actions_e.STRIPQUOTE])
+QUERY_SYMBOL_P   = config.prepare("Symbols", "QUERY")
+TAG_P            = config.prepare("Symbols", "TAG")
 
-SEN_JOIN_P       = util.prepare("Print.Patterns", "SEN_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE])
-CONTAINER_JOIN_P = util.prepare("Print.Patterns", "CONTAINER_JOIN")
-PARAM_JOIN_P     = util.prepare("Print.Patterns", "PARAM_JOIN")
-TAB_P            = util.prepare("Print.Patterns", "TAB", actions=[AcabConfig.actions_e.STRIPQUOTE])
+SEN_JOIN_P       = config.prepare("Print.Patterns", "SEN_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE])
+CONTAINER_JOIN_P = config.prepare("Print.Patterns", "CONTAINER_JOIN")
+PARAM_JOIN_P     = config.prepare("Print.Patterns", "PARAM_JOIN")
+TAB_P            = config.prepare("Print.Patterns", "TAB", actions=[AcabConfig.actions_e.STRIPQUOTE])
 
 
 
@@ -116,8 +115,8 @@ def modality_accumulator(PS, value, acc, params):
     modal_alias = PS.ask(modal_value)
     if bool(modal_alias):
         modal_value = modal_alias
-    elif modal_value in MODAL_PRINTING:
-        modal_value = MODAL_PRINTING[modal_value]
+    elif modal_value in config.modal_printing:
+        modal_value = config.modal_printing[modal_value]
     else:
         # TODO define this in config
         modal_value = PS.use(FALLBACK_MODAL_P)
