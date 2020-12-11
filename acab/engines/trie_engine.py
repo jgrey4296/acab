@@ -20,7 +20,7 @@ from acab.error.acab_parse_exception import AcabParseException
 
 from acab.abstract.core.values import Sentence
 
-from acab.abstract.rule.production_abstractions import ProductionOperator
+from acab.abstract.containers.production_abstractions import ProductionOperator
 from acab.abstract.interfaces.dsl_interface import DSL_Interface
 from acab.abstract.engine.engine import Engine
 
