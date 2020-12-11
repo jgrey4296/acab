@@ -7,14 +7,14 @@ from typing import cast, ClassVar, TypeVar
 
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.values import AcabValue
-from acab.abstract.rule.structure import DataStructure
+from acab.abstract.containers.structure import DataStructure
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.contexts import Contexts
 from acab.abstract.core.node_semantics import AcabNodeSemantics
 
 from acab.abstract.interfaces import semantics_interface as SI
 
-from acab.abstract.rule.struct_semantics import AcabStructureSemantics
+from acab.abstract.containers.struct_semantics import AcabStructureSemantics
 
 class TypingStructSemantics(AcabStructureSemantics, SI.SemanticInterface, SI.StructureSemantics):
     # TODO Locate listeners in semantics not WM

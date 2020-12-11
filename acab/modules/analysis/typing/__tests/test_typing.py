@@ -11,8 +11,8 @@ from acab.abstract.core.values import AcabValue
 from acab.abstract.core.node import AcabNode
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
 
-from acab.abstract.rule import action
-from acab.abstract.rule.production_abstractions import ProductionOperator, ProductionComponent
+from acab.abstract.containers import action
+from acab.abstract.containers.production_abstractions import ProductionOperator, ProductionComponent
 
 from acab.modules.analysis.typing import type_exceptions as te
 from acab.modules.analysis.typing import util as TU

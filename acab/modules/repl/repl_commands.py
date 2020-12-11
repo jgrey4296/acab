@@ -9,7 +9,7 @@ import importlib
 import logging as root_logger
 import re
 
-from acab.abstract.rule.production_abstractions import ProductionOperator, ProductionStructure
+from acab.abstract.containers.production_abstractions import ProductionOperator, ProductionStructure
 
 logging = root_logger.getLogger(__name__)
 

@@ -11,7 +11,7 @@ from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
 from acab.abstract.interfaces import engine_interface as EI
 from acab.abstract.interfaces.working_memory_interface import WorkingMemoryCore
-from acab.abstract.rule.production_abstractions import ProductionOperator, ProductionContainer
+from acab.abstract.containers.production_abstractions import ProductionOperator, ProductionContainer
 from acab.error.acab_base_exception import AcabBaseException
 from acab.error.acab_import_exception import AcabImportException
 from acab.modules.structures.trie.trie import Trie

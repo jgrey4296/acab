@@ -2,7 +2,7 @@
 Defintions for Core Transform Operators
 """
 from re import sub
-from acab.abstract.rule.production_abstractions import ProductionOperator
+from acab.abstract.containers.production_abstractions import ProductionOperator
 
 class RegexOp(ProductionOperator):
 

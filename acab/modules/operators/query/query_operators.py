@@ -3,7 +3,7 @@ Definitions of initial Comparison operators
 """
 import re
 
-from acab.abstract.rule.production_abstractions import ProductionOperator
+from acab.abstract.containers.production_abstractions import ProductionOperator
 
 
 class EQ(ProductionOperator):

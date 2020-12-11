@@ -12,7 +12,7 @@ from acab.abstract.parsing import consts as PConst
 
 from acab.abstract.core.values import  AcabValue
 from acab.abstract.core.values import Sentence
-from acab.abstract.rule.production_abstractions import ProductionOperator, ProductionContainer
+from acab.abstract.containers.production_abstractions import ProductionOperator, ProductionContainer
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
 
 from acab.engines.trie_engine import TrieEngine
@@ -27,7 +27,7 @@ basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], 
 
 Printer = AcabPrintSemantics(basic_plus, default_values={'MODAL_FIELD' : 'exop'})
 
-from acab.abstract.rule.production_semantics import ProductionSemantics
+from acab.abstract.containers.production_semantics import ProductionSemantics
 
 # TODO production semantics
 ProdSem = ProductionSemantics()

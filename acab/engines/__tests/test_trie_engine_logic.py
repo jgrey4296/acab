@@ -11,7 +11,7 @@ from acab.abstract.config.config import AcabConfig
 AcabConfig.Get("acab/abstract/config")
 
 from acab.abstract.core.values import Sentence
-from acab.abstract.rule.production_abstractions import ProductionStructure
+from acab.abstract.containers.production_abstractions import ProductionStructure
 from acab.engines.trie_engine import TrieEngine
 
 def S(*words):

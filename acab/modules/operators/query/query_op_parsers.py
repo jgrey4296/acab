@@ -6,7 +6,7 @@ from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
 
-from acab.abstract.rule.production_abstractions import ProductionComponent
+from acab.abstract.containers.production_abstractions import ProductionComponent
 
 from . import query_operators as QO
 

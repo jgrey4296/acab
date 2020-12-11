@@ -12,7 +12,7 @@ AcabConfig.Get("acab")
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.values import AcabValue, AcabStatement
 
-from acab.abstract.rule import production_abstractions as PO
+from acab.abstract.containers import production_abstractions as PO
 
 config               = AcabConfig.Get()
 BIND_S               = config.value("Value.Structure", "BIND")

@@ -10,7 +10,7 @@ config = AcabConfig.Get("acab/abstract/config")
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
-from acab.abstract.rule.production_abstractions import ProductionOperator, ProductionComponent, ProductionContainer, ProductionStructure
+from acab.abstract.containers.production_abstractions import ProductionOperator, ProductionComponent, ProductionContainer, ProductionStructure
 from acab.modules.operators import query as QOP
 from acab.working_memory.trie_wm import util as KBU
 from acab.working_memory.trie_wm.parsing import ActionParser as AP

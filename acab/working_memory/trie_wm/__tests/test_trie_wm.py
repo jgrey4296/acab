@@ -14,7 +14,7 @@ from acab.abstract.core.values import Sentence
 from acab.abstract.core.contexts import Contexts
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
 from acab.abstract.engine.engine import Engine
-from acab.abstract.rule.production_abstractions import ProductionOperator
+from acab.abstract.containers.production_abstractions import ProductionOperator
 
 from acab.modules.operators.query import RegMatch
 from acab.working_memory.trie_wm.trie_working_memory import TrieWM

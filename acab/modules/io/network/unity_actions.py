@@ -1,6 +1,6 @@
 import logging as root_logger
 
-from acab.abstract.rule.production_abstractions import ProductionOperator
+from acab.abstract.containers.production_abstractions import ProductionOperator
 
 from .unity_server import UnityServer
 from . import util

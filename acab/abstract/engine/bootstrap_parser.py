@@ -22,7 +22,7 @@ from acab.abstract.interfaces.working_memory_interface import WorkingMemoryInter
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.node import AcabNode
-from acab.abstract.rule.production_abstractions import ProductionOperator
+from acab.abstract.containers.production_abstractions import ProductionOperator
 from acab.abstract.parsing.parsers import OPERATOR_SUGAR
 
 from acab.modules.structures.trie.trie import Trie

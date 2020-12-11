@@ -17,7 +17,7 @@ from acab.working_memory.trie_wm.parsing import TransformParser as TP
 from acab.working_memory.trie_wm.parsing import FactParser as FP
 from acab.working_memory.trie_wm.parsing import QueryParser as QP
 
-from acab.abstract.rule.production_abstractions import ProductionComponent, ProductionOperator
+from acab.abstract.containers.production_abstractions import ProductionComponent, ProductionOperator
 from acab.modules.values import numbers
 from acab.working_memory.trie_wm.trie_working_memory import TrieWM
 from acab.working_memory.trie_wm import util as KBU

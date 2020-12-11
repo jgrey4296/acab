@@ -6,7 +6,7 @@ Definition for the Weight Update Delta Operator
 move a delta amount along a derivative
 
 """
-from acab.abstract.rule.production_abstractions import ProductionOperator
+from acab.abstract.containers.production_abstractions import ProductionOperator
 
 class DeltaOperator(ProductionOperator):
     """  """

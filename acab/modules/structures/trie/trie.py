@@ -9,7 +9,7 @@ from acab.abstract.core.values import Sentence
 from acab.abstract.core.values import AcabValue, AcabStatement
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.contexts import Contexts, CTX_OP
-from acab.abstract.rule.structure import DataStructure
+from acab.abstract.containers.structure import DataStructure
 
 from acab.error.acab_base_exception import AcabBaseException
 from acab.modules.node_semantics.basic_semantics import BasicNodeSemantics

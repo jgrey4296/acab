@@ -11,9 +11,9 @@ from acab.abstract.core.values import AcabValue, AcabStatement
 from acab.abstract.core.contexts import Contexts, CTX_OP
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.node_semantics import AcabNodeSemantics
-from acab.abstract.rule.struct_semantics import AcabStructureSemantics
-from acab.abstract.rule.structure import DataStructure
-from acab.abstract.rule.production_abstractions import ProductionContainer
+from acab.abstract.containers.struct_semantics import AcabStructureSemantics
+from acab.abstract.containers.structure import DataStructure
+from acab.abstract.containers.production_abstractions import ProductionContainer
 
 from acab.error.acab_semantic_exception import AcabSemanticException
 

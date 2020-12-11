@@ -11,7 +11,7 @@ AcabConfig.Get("acab/abstract/config")
 
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
-from acab.abstract.rule.production_abstractions import ProductionComponent, ProductionOperator
+from acab.abstract.containers.production_abstractions import ProductionComponent, ProductionOperator
 
 from acab.modules.values import numbers
 from acab.modules.values.numbers.parsing import NumberParser as NP

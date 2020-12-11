@@ -17,7 +17,7 @@ from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.contexts import Contexts
-from acab.abstract.rule.structure import DataStructure
+from acab.abstract.containers.structure import DataStructure
 from acab.abstract.core.node_semantics import AcabNodeSemantics
 
 from acab.abstract.interfaces import semantics_interface as SI

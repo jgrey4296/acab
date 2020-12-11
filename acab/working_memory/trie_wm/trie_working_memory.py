@@ -19,7 +19,7 @@ from acab.abstract.core.values import Sentence
 from acab.abstract.engine.bootstrap_parser import BootstrapParser
 from acab.abstract.interfaces.working_memory_interface import WorkingMemoryCore
 from acab.abstract.parsing import parsers as PU
-from acab.abstract.rule.production_abstractions import ProductionContainer
+from acab.abstract.containers.production_abstractions import ProductionContainer
 from acab.error.acab_operator_exception import AcabOperatorException
 from acab.error.acab_parse_exception import AcabParseException
 from acab.modules.node_semantics import exclusion_semantics as ES
