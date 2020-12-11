@@ -17,8 +17,11 @@ from acab.abstract.core.values import AcabValue, AcabStatement, Sentence
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.contexts import Contexts
 
+from acab.modules.structures.trie.trie import Trie
+from acab.abstract.containers.structure import DataStructure
+from acab.abstract.interfaces.data_interfaces import StructureInterface
 
-
+from acab.abstract.containers import production_abstractions as PA
 
 class TopologicalOrderedAcabTests(unittest.TestCase):
 
@@ -217,23 +220,51 @@ class TopologicalOrderedAcabTests(unittest.TestCase):
 
         self.assertEqual(len(master_sen), len(attached))
         self.assertTrue(to_attach_copy in attached)
+
     def test_node_root(self):
         """ Check a node constructs the most basic root """
         node = AcabNode.Root()
         self.assertIsNotNone(node)
+        self.assertIsInstance(node, AcabNode)
 
 
     def test_node_has(self):
+        node = AcabNode.Root()
+        node2 = AcabNode(AcabValue("test"))
+        node.children["test"] = node2
+        self.assertTrue(node.has_child(node2))
+        self.assertTrue(node2 in node)
+
+
+    def test_node_has_fail(self):
         """ Check node child testing """
-        pass
+        node = AcabNode.Root()
+        self.assertFalse(node.has_child(node))
+        self.assertFalse(node in node)
 
     def test_node_add(self):
         """ Check adding children to nodes """
-        pass
+        node = AcabNode.Root()
+        node2 = AcabNode(AcabValue("test"))
+        node.add_child(node2)
+        self.assertTrue(node.has_child(node2))
+        self.assertTrue(node2 in node)
 
     def test_node_get(self):
         """ Check node child retrieval """
-        pass
+        node = AcabNode.Root()
+        node2 = AcabNode(AcabValue("test"))
+        node.add_child(node2)
+        got_back = node.get_child(AcabValue("test"))
+        self.assertEqual(node2, got_back)
+
+    def test_node_remove(self):
+        node = AcabNode.Root()
+        node2 = AcabNode(AcabValue("test"))
+        node.add_child(node2)
+        self.assertTrue(node2 in node)
+        node.remove_child(AcabValue("test"))
+        self.assertFalse(node2 in node)
 
 
 
@@ -241,39 +272,25 @@ class TopologicalOrderedAcabTests(unittest.TestCase):
     # -> Abstractions[Structures, Rule]
     # creation
     def test_structure_creation(self):
-        """ Check Basic Structure creation """
-        pass
+        """ Check The most Basic Structure: The Trie"""
+        the_trie = Trie()
+        self.assertIsInstance(the_trie, Trie)
+        self.assertIsInstance(the_trie, DataStructure)
+        self.assertIsInstance(the_trie, StructureInterface)
 
-    def test_operator_constructor(self):
+
+    def test_production_abstraction_construction(self):
         """ Check operator construction """
+
+        op        = None
+        comp      = None
+        container = None
+        structure = None
+
         pass
 
-    def test_component_constructor(self):
-        """ Check component construction """
-        pass
-
-    def test_container_constructor(self):
-        """ Check container construction """
-        pass
-
-    def test_structure_constructor(self):
-        """ Check Structure construction """
-        pass
-
-    def test_operator_bind(self):
+    def test_production_abstraction_bind(self):
         """ Check an operator can bind to values """
-        pass
-
-    def test_component_bind(self):
-        """ Check a component can bind to values """
-        pass
-
-    def test_container_bind(self):
-        """ Check container can bind values """
-        pass
-
-    def test_structure_bind(self):
-        """ Check the structure can bind values """
         pass
 
     # -> Semantics[ClosedSet, Abstractions]
@@ -314,9 +331,6 @@ class TopologicalOrderedAcabTests(unittest.TestCase):
         pass
 
     def test_bootstrap_add(self):
-        pass
-
-    def test_bootstrap_query(self):
         pass
 
     def test_wm_construct_parsers(self):
