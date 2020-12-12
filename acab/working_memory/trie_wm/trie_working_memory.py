@@ -2,6 +2,11 @@
 import logging as root_logger
 from copy import deepcopy
 
+from typing import List, Set, Dict, Tuple, Optional, Any
+from typing import Callable, Iterator, Union, Match
+from typing import Mapping, MutableMapping, Sequence, Iterable
+from typing import cast, ClassVar, TypeVar, Generic
+
 from acab.abstract.config.config import AcabConfig
 
 from .parsing import ActionParser as AP
@@ -36,7 +41,7 @@ QUERY_FALLBACK_S = config.value("Parse.Structure", "QUERY_FALLBACK")
 class TrieWM(WorkingMemoryCore):
     """ A Trie based working memory"""
 
-    def __init__(self, init=None):
+    def __init__(self, init: List[str]=None):
         """ init is a string of assertions to start the fact base with """
         # TODO enable passing of starting node semantics
         super().__init__()
@@ -62,14 +67,16 @@ class TrieWM(WorkingMemoryCore):
             raise AcabOperatorException("Incorrect Eq arg: {}".format(type(other)))
 
 
-    def add(self, data, leaf=None, semantics=None):
+    def add(self, data: Union[List[str], Sentence], leaf=None, semantics=None):
         """ Assert multiple facts from a single string """
-        assertions = None
+        assertions: List[Sentence] = None
         use_semantics = semantics or self._structure.semantics
         if isinstance(data, str):
             assertions = TotalP.parseString(data, self._main_parser)
         elif isinstance(data, Sentence):
             assertions = [data]
+        elif isinstance(data, list):
+            assertions = [y for x in data for y in TotalP.parseString(x)]
         else:
             raise AcabParseException("Unrecognised addition target: {}".format(type(data)))
 
@@ -156,3 +163,6 @@ class TrieWM(WorkingMemoryCore):
     def to_sentences(self, semantics=None):
         use_semantics = semantics or self._structure.semantics
         return use_semantics.down(self._structure)
+
+    def clear_bootstrap(self):
+        self._bootstrap_parser = BootstrapParser()

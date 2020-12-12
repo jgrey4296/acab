@@ -39,19 +39,19 @@ class Engine(EI.EngineInterface):
     """ The Abstract class of a production system engine. """
 
     # Blocks engine use until build_DSL has been called
-    __wm_constructor : 'Callable'         = field()
-    _loaded_DSL_Fragments: Dict[Any, Any] = field(default_factory=dict)
-    _loaded_modules: Set[Any]             = field(default_factory=set)
-    _working_memory: WorkingMemoryCore    = field(init=False)
-    init_data : Dict[Any, Any]            = field(default_factory=dict)
-    initialised : bool                    = field(init=False, default=False)
-    load_paths : List[str]                = field(default_factory=list)
-    modules : List[str]                   = field(default_factory=list)
+    __wm_constructor      : 'Callable'        = field()
+    _loaded_DSL_fragments : Dict[Any, Any]    = field(default_factory=dict)
+    _loaded_modules       : Set[Any]          = field(default_factory=set)
+    _working_memory       : WorkingMemoryCore = field(init=False)
+    init_strs             : List[str]         = field(default_factory=list)
+    initialised           : bool              = field(init=False, default=False)
+    load_paths            : List[str]         = field(default_factory=list)
+    modules               : List[str]         = field(default_factory=list)
 
     def __post_init__(self):
         assert(callable(self.__wm_constructor))
 
-        self._working_memory = self.__wm_constructor(self.init_data)
+        self._working_memory = self.__wm_constructor(self.init_strs)
 
         # TODO  update with reloadable state of working memory
         self._prior_states = []
@@ -61,15 +61,15 @@ class Engine(EI.EngineInterface):
         self._cached_bindings = []
 
         # TODO use these to enable breakpoint context:
-        self._current_layer = None
-        self._current_rule = None
-        self._current_query = None
+        self._current_layer     = None
+        self._current_rule      = None
+        self._current_query     = None
         self._current_transform = None
-        self._current_action = None
+        self._current_action    = None
 
         # initialise
         if bool(self.modules):
-            self.load_modules(*modules)
+            self.load_modules(*self.modules)
 
         if bool(self.load_paths):
             for x in self.load_paths:
@@ -132,10 +132,7 @@ class Engine(EI.EngineInterface):
 
         self._loaded_modules.add(module_str)
         # TODO extract node from return context?
-        if isinstance(module_sen, str):
-            return self._working_memory.query(module_sen + "?")
-        else:
-            return self._working_memory.query(module_sen)
+        return self._working_memory.query(module_str+ "?")
 
     def build_DSL(self):
         """
