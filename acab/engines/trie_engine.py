@@ -41,7 +41,7 @@ class TrieEngine(Engine):
     """
 
     def __init__(self, modules=None, init=None):
-        super().__init__(TrieWM, modules=modules)
+        super().__init__(TrieWM, modules=modules, init_strs=init)
 
     def _load_file(self, filename):
         """ Given a filename, read it, and interpret it as an EL DSL string """

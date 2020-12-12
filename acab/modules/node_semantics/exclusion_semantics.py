@@ -47,14 +47,12 @@ class ExclusionNodeSemantics(AcabNodeSemantics, SI.NodeSemantics):
             potentials = [x for x in potentials if x.data[EXOP] == term.data[EXOP]]
         return potentials
 
-    def up(self, word, constructor):
-        assert(isinstance(word, AcabValue))
-        exop_val = DEFAULT_EXOP
-        if EXOP in word.data:
-            exop_val = word.data[EXOP]
+    def up(self, node: AcabNode):
+        # Add an exop if necessary
+        if EXOP not in node.data:
+            node.data[EXOP] = DEFAULT_EXOP
 
-        word_node = constructor(word, {EXOP: exop_val})
-        return word_node
+        return node
 
 
     def contain(self, node, query_term):
@@ -88,7 +86,8 @@ class ExclusionNodeSemantics(AcabNodeSemantics, SI.NodeSemantics):
 
         # if it doesn't, lift the word itself
         if result is None:
-            result = self.up(word, node_constructor)
+            node = node_constructor(word)
+            result = self.up(node)
             is_new_node = True
 
         # then update the node

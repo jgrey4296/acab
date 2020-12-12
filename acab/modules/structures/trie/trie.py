@@ -45,7 +45,7 @@ class Trie(DataStructure):
         return len(self.get_nodes())
 
 
-    def add(self, path, data=None, semantics=None, **kwargs):
+    def add(self, path: Sentence, data=None, semantics=None, **kwargs):
         """ Add the data to the leaf defined by path,
         """
         if semantics is None:

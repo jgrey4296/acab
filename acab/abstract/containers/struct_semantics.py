@@ -58,7 +58,8 @@ class AcabStructureSemantics(AcabValue, SI.SemanticInterface, SI.StructureSemant
         """
         constructor, u_data = self.value_pairings[AcabValue]
         node_semantics = self.retrieve_semantics(constructor)
-        return node_semantics.up(AcabValue(ROOT_S), constructor)
+        node = constructor.Root()
+        return node_semantics.up(node)
 
     def retrieve_semantics(self, node):
         """

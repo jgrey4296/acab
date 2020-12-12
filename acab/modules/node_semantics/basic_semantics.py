@@ -44,10 +44,10 @@ class BasicNodeSemantics(AcabNodeSemantics, SI.NodeSemantics):
 
         return potentials
 
-    def up(self, word: AcabValue, constructor: Callable) -> AcabNode:
-        """ The Most Basic Lift """
-        assert(isinstance(word, AcabValue))
-        return constructor(word)
+    def up(self, word: AcabNode) -> AcabNode:
+        """ The Most Basic Lift, does nothing """
+        return word
+
 
     def contain(self, node: AcabNode, query_term: AcabValue) -> bool:
         assert(isinstance(node, AcabNode))
@@ -72,7 +72,8 @@ class BasicNodeSemantics(AcabNodeSemantics, SI.NodeSemantics):
         result = self.get(node, word)
 
         if result is None:
-            result = self.up(word, node_constructor)
+            new_node = node_constructor(word)
+            result = self.up(new_node)
             node.add_child(result)
             is_new_node = True
 
