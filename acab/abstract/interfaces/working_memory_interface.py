@@ -28,14 +28,22 @@ from dataclasses import dataclass, field
 from fractions import Fraction
 
 from acab.abstract.interfaces.flatten_interface import FlattenInterface
+from acab.abstract.interfaces.dsl_interface import DSL_Interface
+
+Structure       = 'AcabStructure'
+Sentence        = 'Sentence'
+BootstrapParser = 'BootstrapParser'
+Parser          =  'PyParsing.ParserElement'
+
+
 
 @dataclass
 class WorkingMemoryInterface(FlattenInterface, metaclass=abc.ABCMeta):
     """ The Core Interface. Add/Retract and Query the WM """
-    _structure : 'AcabStructure' = field(init=False)
+    _structure : Structure = field(init=False)
 
     @property
-    def to_sentences(self) -> List['Sentence']:
+    def to_sentences(self) -> List[Sentence]:
         """ A simple passthrough """
         return self._structure.to_sentences
 
@@ -60,8 +68,8 @@ class WorkingMemoryInterface(FlattenInterface, metaclass=abc.ABCMeta):
 @dataclass
 class InterruptableWMInterface(metaclass=abc.ABCMeta):
     """ The core used to *debug* WM action, using listeners """
-    _listeners : Set['Any'] = field(init=False, default_factory=set)
-    _listeners_threshold : 'Fraction' = field(init=False, default=Fraction(1,2))
+    _listeners : Set[Any] = field(init=False, default_factory=set)
+    _listeners_threshold : Fraction = field(init=False, default=Fraction(1,2))
 
     def clear_listeners(self):
         self._listeners = set()
@@ -92,10 +100,10 @@ class InterruptableWMInterface(metaclass=abc.ABCMeta):
 @dataclass
 class DSLBuilderInterface(metaclass=abc.ABCMeta):
     """ Enables the assemblage of a parser from DSL Fragments """
-    _bootstrap_parser : 'BootstrapParser' = field(init=False)
-    _main_parser : 'PyParsing.ParserElement' = field(init=False)
-    _query_parser : 'PyParsing.ParserElement' = field(init=False)
-    _parsers_initialised : bool = False
+    _bootstrap_parser    : BootstrapParser = field(init=False)
+    _main_parser         : Parser          = field(init=False)
+    _query_parser        : Parser          = field(init=False)
+    _parsers_initialised : bool            = False
 
     def construct_parsers_from_fragments(self, fragments):
         """ Assemble parsers from the fragments of the wm and loaded modules """
@@ -111,11 +119,8 @@ class DSLBuilderInterface(metaclass=abc.ABCMeta):
 
         self.query_parsers(self._bootstrap_parser)
 
-        for x in fragments:
-            x.verify()
-
     def clear_bootstrap(self):
-        self._bootstrap_parser = BootstrapParser()
+        pass
 
 
 

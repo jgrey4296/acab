@@ -16,7 +16,7 @@ class NodeInterface(metaclass=abc.ABCMeta):
     """  """
 
     value : 'AcabValue'
-    children : Dict[str, 'AcabNode'] = field(default_factory=dict)
+    children : Dict[str, 'AcabNode'] = field(init=False, default_factory=dict)
 
     @staticmethod
     @abc.abstractmethod
