@@ -124,7 +124,7 @@ class ProductionContainer(AcabStatement):
         return len(self.clauses)
 
     def __iter__(self):
-        return self.clauses.iter()
+        return iter(self.clauses)
 
     @property
     def clauses(self):
