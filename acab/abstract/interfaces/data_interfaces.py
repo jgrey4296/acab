@@ -9,7 +9,7 @@ from dataclasses import dataclass,  field
 
 import abc
 
-from acab.abstract.interfaces.flatten_interface import FlattenInterface
+from acab.abstract.interfaces.util_interfaces import FlattenInterface
 
 @dataclass
 class NodeInterface(metaclass=abc.ABCMeta):
