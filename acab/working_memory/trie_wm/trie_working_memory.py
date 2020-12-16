@@ -9,24 +9,13 @@ from typing import cast, ClassVar, TypeVar, Generic
 
 from acab.abstract.config.config import AcabConfig
 
-from .parsing import ActionParser as AP
-from .parsing import FactParser as FP
-from .parsing import QueryParser as QP
-from .parsing import RuleParser as RP
-from .parsing import TotalParser as TotalP
-from .parsing import TransformParser as TP
-from .parsing import util as TPU
-
 from acab.abstract.core.contexts import Contexts
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
-from acab.abstract.engine.bootstrap_parser import BootstrapParser
 from acab.abstract.interfaces.working_memory_interface import WorkingMemoryCore
-from acab.abstract.parsing import parsers as PU
 from acab.abstract.containers.production_abstractions import ProductionContainer
 from acab.error.acab_operator_exception import AcabOperatorException
-from acab.error.acab_parse_exception import AcabParseException
 from acab.modules.node_semantics import exclusion_semantics as ES
 from acab.modules.structures.trie.trie import Trie
 from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics
@@ -48,10 +37,6 @@ class TrieWM(WorkingMemoryCore):
         semantics = BasicTrieSemantics({AcabNode : ES.ExclusionNodeSemantics()},
                                        {AcabValue : (AcabNode, {})})
         self._structure        = Trie(semantics)
-        self._bootstrap_parser = BootstrapParser()
-        self._main_parser      = TotalP.parse_point
-        self._query_parser     = QP.parse_point
-
         if init is not None:
             self.add(init)
 
@@ -67,18 +52,9 @@ class TrieWM(WorkingMemoryCore):
             raise AcabOperatorException("Incorrect Eq arg: {}".format(type(other)))
 
 
-    def add(self, data: Union[List[str], Sentence], leaf=None, semantics=None):
+    def add(self, data: List[Sentence], leaf=None, semantics=None):
         """ Assert multiple facts from a single string """
-        assertions: List[Sentence] = None
         use_semantics = semantics or self._structure.semantics
-        if isinstance(data, str):
-            assertions = TotalP.parseString(data, self._main_parser)
-        elif isinstance(data, Sentence):
-            assertions = [data]
-        elif isinstance(data, list):
-            assertions = [y for x in data for y in TotalP.parseString(x)]
-        else:
-            raise AcabParseException("Unrecognised addition target: {}".format(type(data)))
 
         if len(assertions) == 1 and leaf:
             assertions = [assertions[0].attach_statement(leaf)]
@@ -89,9 +65,7 @@ class TrieWM(WorkingMemoryCore):
     def query(self, query, ctxs=None, engine=None, semantics=None):
         """ Query a string, return a Contexts """
         use_semantics = semantics or self._structure.semantics
-        if isinstance(query, str):
-            query = QP.parseString(query, self._query_parser)
-        elif isinstance(query, Sentence):
+        if isinstance(query, Sentence):
             query = ProductionContainer([query])
         if not isinstance(query, ProductionContainer):
             raise AcabParseException("Unrecognised query target: {}".format(type(query)))
@@ -99,70 +73,8 @@ class TrieWM(WorkingMemoryCore):
         return use_semantics.query(self._structure, query, ctxs=ctxs, engine=engine)
 
 
-    def assert_parsers(self, pt):
-        """ Provide fragments for other parsers """
-        # Core
-        # TODO: Make these configurable?
-        pt.add("valbind", PU.VALBIND,
-               "sentence.basic", FP.BASIC_SEN,
-               "sentence.param", FP.PARAM_SEN,
-               "statement.sentence", FP.SEN_STATEMENT,
-               "operator.sugar", PU.OPERATOR_SUGAR)
-        # Query
-        pt.add("statement.query", QP.query_statement,
-               "query.body", QP.clauses,
-               "query.clause", QP.clause)
-
-        # Transform
-        pt.add("transform.body", TP.transforms,
-               "statement.transform", TP.transform_statement,
-               "transform.rebind", TP.rebind)
-
-        # Action
-        pt.add("action.body", AP.actions,
-               "statement.action", AP.action_definition)
-
-        # Rule
-        pt.add("rule.body", RP.rule_body,
-               "statement.rule", RP.rule)
-
-    def query_parsers(self, pt):
-        """ Load in fragments """
-        try:
-            PU.HOTLOAD_VALUES << pt.query("value.*")
-        except Exception:
-            logging.debug("No values loaded into DSL")
-
-        try:
-            FP.HOTLOAD_ANNOTATIONS << pt.query("annotation.*")
-        except Exception:
-            logging.debug("No annotations loaded into DSL")
-
-        FP.HOTLOAD_QUERY_OP << pt.query("operator.query.*",
-                                        "operator.sugar")
-
-        TP.HOTLOAD_TRANS_OP << pt.query("operator.transform.*",
-                                        "operator.sugar")
-
-        TP.HOTLOAD_TRANS_STATEMENTS << pt.query("operator.transform.statement.*",
-                                                "operator.sugar")
-
-        AP.HOTLOAD_OPERATORS << pt.query("operator.action.*",
-                                         "operator.sugar")
-
-        TotalP.HOTLOAD_STATEMENTS << pt.query("statement.*")
-
-        # At this point, parser is constructed, and will not change again
-        # however, can't deep-copy the parser for multiple versions
-        self._main_parser = TotalP.parse_point
-        self._query_parser = QP.parse_point
-        self._parsers_initialised = True
-
-
 
     def to_sentences(self, semantics=None):
         use_semantics = semantics or self._structure.semantics
         return use_semantics.down(self._structure)
 
-    def clear_bootstrap(self):
-        self._bootstrap_parser = BootstrapParser()

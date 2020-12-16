@@ -14,7 +14,10 @@ from acab.abstract.interfaces.working_memory_interface import WorkingMemoryCore
 from acab.abstract.containers.production_abstractions import ProductionOperator, ProductionContainer
 from acab.error.acab_base_exception import AcabBaseException
 from acab.error.acab_import_exception import AcabImportException
+from acab.error.acab_parse_exception import AcabParseException
 from acab.modules.structures.trie.trie import Trie
+from acab.abstract.interfaces.dsl_interface import DSL_Interface
+from acab.abstract.parsing.bootstrap_parser import BootstrapParser
 
 from copy import deepcopy
 from dataclasses import dataclass, field, InitVar, replace
@@ -30,42 +33,28 @@ from uuid import uuid1, UUID
 from weakref import ref
 import logging as root_logger
 
+logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
 
-logging = root_logger.getLogger(__name__)
+MODULE_SPLIT_REG = re.compile(config.value("Parse.Patterns", "MODULE_SPLIT_REG"))
+
 
 @dataclass
 class Engine(EI.EngineInterface):
     """ The Abstract class of a production system engine. """
 
     # Blocks engine use until build_DSL has been called
-    __wm_constructor      : 'Callable'        = field()
-    _loaded_DSL_fragments : Dict[Any, Any]    = field(default_factory=dict)
-    _loaded_modules       : Set[Any]          = field(default_factory=set)
+    __wm_constructor      : Callable          = field()
     _working_memory       : WorkingMemoryCore = field(init=False)
     init_strs             : List[str]         = field(default_factory=list)
     initialised           : bool              = field(init=False, default=False)
     load_paths            : List[str]         = field(default_factory=list)
-    modules               : List[str]         = field(default_factory=list)
 
     def __post_init__(self):
         assert(callable(self.__wm_constructor))
-
         self._working_memory = self.__wm_constructor(self.init_strs)
-
-        # TODO  update with reloadable state of working memory
-        self._prior_states = []
-        # named recall states of past kb states
-        self._recall_states = {}
         # cached bindings
         self._cached_bindings = []
-
-        # TODO use these to enable breakpoint context:
-        self._current_layer     = None
-        self._current_rule      = None
-        self._current_query     = None
-        self._current_transform = None
-        self._current_action    = None
 
         # initialise
         if bool(self.modules):
@@ -75,75 +64,11 @@ class Engine(EI.EngineInterface):
             for x in self.load_paths:
                 self.load_file(x)
 
-
     @property
     def bindings(self):
         return self._cached_bindings
 
     # Initialisation:
-    def reload_all_modules(self):
-        loaded = list(self._loaded_modules)
-        self._loaded_modules.clear()
-        self._load_modules(loaded)
-
-    def load_modules(self, *modules: List[str]):
-        """ Given ModuleInterface objects,
-        store them then tell the working memory to load them
-        return a list of dictionaries
-        """
-        return [self.load_module_values(x) for x in modules]
-
-    def load_module_values(self, module_str: str):
-        """
-        Load a module, extract operators and dsl fragments from it,
-        put the operators into the operators store,
-        register the dsl fragments for later use
-
-        Returns a working_memory query result of the module
-        """
-        # Prepare path
-        # TODO use utility constants for joining and query
-        if not isinstance(module_str, str):
-            breakpoint()
-            raise Exception("TODO: handle sentence -> str")
-        # print semantics: basic+word join of "."
-        # mod_str = str(module_sen)
-
-        # Return early if already loaded
-        if module_str in self._loaded_modules:
-            logging.info("Module already loaded: {}".format(module_str))
-            # TODO extract node from return context?
-            return self._working_memory.query(module_str + "?")
-
-        # Load
-        try:
-            the_module = import_module(module_str)
-        except ModuleNotFoundError as e:
-            breakpoint()
-
-            raise AcabImportException(module_str) from None
-
-        # Extract
-        operator_sentences, dsl_fragments = self.extract_from_module(the_module)
-
-        # Register DSL Fragments
-        self._loaded_DSL_fragments[module_str] = dsl_fragments
-        self.register_ops(operator_sentences)
-
-        self._loaded_modules.add(module_str)
-        # TODO extract node from return context?
-        return self._working_memory.query(module_str+ "?")
-
-    def build_DSL(self):
-        """
-        Using currently loaded modules, rebuild the usable DSL parser from fragments
-        """
-        self._working_memory.clear_bootstrap()
-        self._working_memory.construct_parsers_from_fragments([y for x in self._loaded_DSL_fragments.values() for y in x])
-        self.initialised = True
-
-
-
 
     def load_file(self, filename):
         """ Load a file spec for the facts / rules / layers for this engine """
@@ -152,59 +77,61 @@ class Engine(EI.EngineInterface):
 
         return self._load_file(filename)
 
-    def save_file(self, filename):
+    def _load_file(self, filename):
+        """ Given a filename, read it, and interpret it as an EL DSL string """
+        assert(isinstance(filename, str))
+        filename = abspath(expanduser(filename))
+        logging.info("Loading: {}".format(filename))
+        assert exists(filename), filename
+        with open(filename) as f:
+            # everything should be an assertion
+            try:
+                assertions = self._main_parser.parseFile(f)
+            except pp.ParseException as exp:
+                print("-----")
+                print(str(exp))
+                print(exp.markInputline())
+                print("File Not Asserted into WM")
+                return False
+
+            # Assert facts:
+            for x in assertions:
+                logging.info("File load assertions: {}".format(x))
+                self.add(x)
+
+        return True
+
+    def save_file(self, filename, printer):
         """ Dump the content of the kb to a file to reload later """
-        # TODO control with print semantics
+        # TODO add default print semantics
         assert(exists(split(abspath(expanduser(filename)))[0]))
+        as_sentences = self._working_memory.to_sentences()
+        as_strings = printer(as_sentences)
         with open(abspath(expanduser(filename)), 'w') as f:
-            f.write(str(self._working_memory) + "\n")
+            f.write(as_strings)
 
-    def _save_state(self, data):
-        """ Copy the current string representation of the working memory,
-        and any associated data """
-        # TODO replace this with a down
-        self._prior_states.append((str(self._working_memory), data))
-
-
-    # Base Actions
-    def add(self, s):
+    def add(self, s: str):
         """ Assert a new fact into the engine """
         # pylint: disable=unused-argument,no-self-use
         if not self.initialised:
             raise AcabBaseException("DSL Not Initialised")
-        self._working_memory.add(s)
 
-    def query(self, s, ctxs=None, cache=True):
+        data = self._main_parser.parseString(s)
+        self._working_memory.add(data)
+
+    def query(self, s: str, ctxs=None, cache=True):
         """ Ask a question of the working memory """
         if not self.initialised:
             raise AcabBaseException("DSL Not Initialised")
-        result = self._working_memory.query(s, ctxs=ctxs, engine=self)
+        data = self._main_parser.parseString(s)
+        result = self._working_memory.query(data, ctxs=ctxs, engine=self)
         if cache:
             self._cached_bindings = result
         return result
 
 
-    def add_listeners(self, *words):
-        """ Add basic data breakpoints """
-        self._working_memory.register_listeners(words)
+    # TODO  rework these
 
-    def remove_listeners(self, *words):
-        """ Remove data breakpoints """
-        self._working_memory.unregister_listeners(words)
-
-    def set_listener_threshold(self, a, b):
-        """ Specify the number of word matches
-        are needed to trigger the breakpoint """
-        self._working_memory.set_listener_threshold(a, b)
-
-    def get_listeners(self):
-        return self._working_memory._listeners
-
-    def get_listener_threshold(self):
-        return self._working_memory._listener_threshold
-
-
-    # Utility
     def __call__(self, thing, bindings=None):
         """ Where a thing could be an:
         rule/agenda/layer/pipeline,
@@ -239,4 +166,5 @@ class Engine(EI.EngineInterface):
         and all paths with non-leaf statements convert to simple formats
         """
         return self._working_memory.to_sentences()
+
 
