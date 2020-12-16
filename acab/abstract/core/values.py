@@ -22,7 +22,7 @@ from acab.abstract.interfaces import value_interfaces as VI
 
 logging            = root_logger.getLogger(__name__)
 
-config             = AcabConfig.Get("acab/abstract/config")
+config             = AcabConfig.Get()
 TYPE_INSTANCE    = config.value("Value.Structure", "TYPE_INSTANCE")
 BIND             = config.value("Value.Structure", "BIND")
 AT_BIND          = config.value("Value.Structure", "AT_BIND")
@@ -34,19 +34,16 @@ TYPE_BOTTOM_NAME = config.value("Data", "TYPE_BOTTOM_NAME")
 UUID_CHOP        = bool(int(config.value("Print.Data", "UUID_CHOP")))
 FALLBACK_MODAL   = config.value("Symbols", "FALLBACK_MODAL", actions=[config.actions_e.STRIPQUOTE])
 
-@dataclass
-class AcabValue(VI.ValueInterface):
-    _value_types: ClassVar[Set[Any]]          = set([str, Pattern, list])
 
-    name : str                 = field(default=None)
-    value : Any                = field(default=None)
-    params : List['AcabValue'] = field(default_factory=list)
-    tags : Set[str]            = field(default_factory=set)
-    data : Dict[str, Any]      = field(default_factory=dict)
-    uuid : UUID                = field(default_factory=uuid1)
+T = TypeVar('T', str, Pattern, list)
+
+@dataclass
+class AcabValue(VI.ValueInterface, Generic[T]):
+    _value_types: ClassVar[Set[Any]]          = set([str, Pattern, list])
+    value : T = field(default=None)
 
     @staticmethod
-    def safe_make(value: Any,
+    def safe_make(value: T,
                   name: str=None,
                   data: Optional[Dict[Any, Any]]=None,
                   _type: Optional['Sentence']=None,
@@ -89,11 +86,10 @@ class AcabValue(VI.ValueInterface):
             name_update = str(self.value)
 
         if name_update is not None:
-            object.__setattr__(self, "name", name_update)
+            self.name = name_update
 
         if self.value is None:
-            object.__setattr__(self, "value", self.name)
-
+            self.value = self.name
 
         if TYPE_INSTANCE not in self.data:
             self.data[TYPE_INSTANCE] = TYPE_BOTTOM_NAME
@@ -148,7 +144,7 @@ class AcabValue(VI.ValueInterface):
 
 
     @property
-    def type(self) -> 'Sentence':
+    def type(self) -> Sentence:
         """ Lazy Type Construction """
         type_matches_t = isinstance(self.data[TYPE_INSTANCE], Sentence)
         if not type_matches_t:
@@ -256,14 +252,11 @@ class AcabValue(VI.ValueInterface):
 
     def to_sentences(self):
         return [self]
-class AcabStatement(AcabValue):
+class AcabStatement(VI.ValueInterface):
     """ AcabStatement functions the same as AcabValue,
     but provides specific functionality for converting to a string
     """
-    def __post_init__(self):
-        super(AcabStatement, self).__post_init__()
-
-    def to_sentences(self) -> List['Sentence']:
+    def to_sentences(self) -> List[Sentence]:
         """
         Represent a Complex Object in the verbose Core Language.
         (ie: just Words, Sentences, Variables, and Types)
@@ -276,11 +269,11 @@ class AcabStatement(AcabValue):
 
 
 
-class Sentence(AcabStatement, VI.SentenceInterface):
+class Sentence(AcabStatement, VI.ValueInterface, VI.SentenceInterface):
     @staticmethod
     def build(words, **kwargs):
         safe_words = [AcabValue.safe_make(x) for x in words]
-        return Sentence(value=safe_words, **kwargs)
+        return Sentence(words=safe_words, **kwargs)
 
 
     def __post_init__(self):
@@ -319,10 +312,6 @@ class Sentence(AcabStatement, VI.SentenceInterface):
             kwargs['value'] = [x.copy() for x in self.value]
 
         return super(Sentence, self).copy(**kwargs)
-
-    @property
-    def words(self):
-        return self.value
 
     def clear(self):
         """
