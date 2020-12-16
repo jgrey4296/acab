@@ -45,15 +45,15 @@ class Engine_Tests(unittest.TestCase):
         self.assertIsNotNone(self.e)
 
     def test_assert(self):
-        self.assertEqual(len(self.e._working_memory._internal_trie._root), 0)
+        self.assertEqual(len(self.e._working_memory._structure.root), 0)
         self.e.add('a.b.c')
-        self.assertEqual(len(self.e._working_memory._internal_trie._root), 1)
+        self.assertEqual(len(self.e._working_memory._structure.root), 1)
 
     def test_retract(self):
         self.e.add('a.b.c')
-        self.assertEqual(len(self.e._working_memory._internal_trie._root), 1)
+        self.assertEqual(len(self.e._working_memory._structure.root), 1)
         self.e.add('~a')
-        self.assertEqual(len(self.e._working_memory._internal_trie._root), 0)
+        self.assertEqual(len(self.e._working_memory._structure.root), 0)
 
     def test_query(self):
         self.e.add('a.b.c')
@@ -78,14 +78,14 @@ class Engine_Tests(unittest.TestCase):
 
     def test_multi_assert(self):
         self.e.add('a.b.c, a.b.d, a.b.e')
-        self.assertEqual(len(self.e._working_memory._internal_trie.get_nodes(pred=lambda x: not bool(x))), 3)
+        self.assertEqual(len(self.e._working_memory._structure.get_nodes(pred=lambda x: not bool(x))), 3)
         self.assertTrue(self.e.query('a.b.c?, a.b.d?, a.b.e?'))
 
     def test_multi_retract(self):
         self.e.add('a.b.c, a.b.d, a.b.e')
-        self.assertEqual(len(self.e._working_memory._internal_trie.get_nodes(pred=lambda x: not bool(x))), 3)
+        self.assertEqual(len(self.e._working_memory._structure.get_nodes(pred=lambda x: not bool(x))), 3)
         self.e.add('~a.b.e, ~a.b.d')
-        self.assertEqual(len(self.e._working_memory._internal_trie.get_nodes(pred=lambda x: not bool(x))), 1)
+        self.assertEqual(len(self.e._working_memory._structure.get_nodes(pred=lambda x: not bool(x))), 1)
 
     def test_multi_clause_query(self):
         self.e.add('a.b.c, a.b.d, a.b.e')
@@ -104,7 +104,7 @@ class Engine_Tests(unittest.TestCase):
 
 
 
-    @mock.patch('acab.abstract.interfaces.working_memory_interface.WorkingMemory', autospec=True)
+    @mock.patch('acab.abstract.interfaces.working_memory_interface.WorkingMemoryCore', autospec=True)
     @mock.patch('acab.abstract.containers.struct_semantics.AcabStructureSemantics', autospec=True)
     def test_init(self, wm_mock, sem_mock):
         engine = Engine(wm_mock)
@@ -112,7 +112,7 @@ class Engine_Tests(unittest.TestCase):
 
     @unittest.skip("TODO")
     @mock.patch('acab.abstract.containers.production_abstractions', autospec=True)
-    @mock.patch('acab.abstract.interfaces.working_memory_interface.WorkingMemory', autospec=True)
+    @mock.patch('acab.abstract.interfaces.working_memory_interface.WorkingMemoryCore', autospec=True)
     def test_load_modules(self, wm_mock, op_mock):
         module_mock = mock.Mock()
         engine = Engine(wm_mock, modules=[module_mock])
@@ -120,7 +120,7 @@ class Engine_Tests(unittest.TestCase):
         engine._working_memory.add_modules.assert_called_once()
 
     @mock.patch('acab.abstract.containers.production_abstractions', autospec=True)
-    @mock.patch('acab.abstract.interfaces.working_memory_interface.WorkingMemory', autospec=True)
+    @mock.patch('acab.abstract.interfaces.working_memory_interface.WorkingMemoryCore', autospec=True)
     def test_reload_modules(self, wm_mock, op_mock):
         engine = Engine(wm_mock)
         engine.build_DSL()

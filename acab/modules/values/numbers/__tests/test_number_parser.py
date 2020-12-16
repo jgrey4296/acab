@@ -66,20 +66,20 @@ class NumberParseTests(unittest.TestCase):
         result = FP.parseString("number.test.20")[0]
         self.assertIsNotNone(result)
         self.assertEqual(result[-1].type, INT_t)
-        self.assertEqual(result[-1]._value, 20)
+        self.assertEqual(result[-1].value, 20)
 
     def test_float_number_parsing(self):
         result = FP.parseString("number.test.20d325")[0]
         self.assertIsNotNone(result)
         self.assertEqual(result[-1].type, FLOAT_t)
-        self.assertEqual(result[-1]._value, 20.325)
+        self.assertEqual(result[-1].value, 20.325)
 
 
     def test_simple_transform_parse(self):
         result = TP.parseString("λoperator.transform.add 20 30 -> $z")
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(Printer.print(result.clauses[0].op), 'operator.transform.add')
-        self.assertEqual([x._value for x in result.clauses[0]._params], [20, 30])
+        self.assertEqual([x.value for x in result.clauses[0].params], [20, 30])
 
 
     def test_transform_parse(self):
@@ -107,7 +107,7 @@ class NumberParseTests(unittest.TestCase):
             mult = 10 ** round(random.random() * 4)
             r = round(random.random() * 1000)
             result = FP.parseString('a.' + str(r))[0]
-            self.assertEqual(result[-1]._value, r)
+            self.assertEqual(result[-1].value, r)
 
 
     def test_negative_number_parsing(self):
@@ -115,7 +115,7 @@ class NumberParseTests(unittest.TestCase):
             mult = 10 ** round(random.random() * 4)
             r = - round(random.random() * mult)
             result = FP.parseString('a.'+str(r))[0]
-            self.assertEqual(result[-1]._value, r)
+            self.assertEqual(result[-1].value, r)
 
 
     def test_floats(self):
@@ -126,7 +126,4 @@ class NumberParseTests(unittest.TestCase):
             float_form = float(str(a) + "." + str(b))
             d_form = str(a) + "d" + str(b)
             result = FP.parseString('a.'+d_form)[0]
-            self.assertEqual(result[-1]._value, float_form)
-
-
-
+            self.assertEqual(result[-1].value, float_form)

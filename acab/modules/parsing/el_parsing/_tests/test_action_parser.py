@@ -62,17 +62,17 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
         self.assertEqual(len(result), 1)
         self.assertIsInstance(result, ProductionContainer)
         self.assertEqual(Printer.print(result.clauses[0].op), "S.ActionAdd")
-        self.assertEqual([x._value for x in result.clauses[0]._params], ["blah bloo","blee","awef"])
+        self.assertEqual([x.value for x in result.clauses[0].params], ["blah bloo","blee","awef"])
 
     def test_actions_fact_str(self):
         result = AP.parseString('λS.ActionAdd a.b.c, λoperator.add ~a!b.d, λoperator.add $x, λoperator.add $x.a.b')
         self.assertIsInstance(result, ProductionContainer)
         self.assertEqual(len(result), 4)
         self.assertTrue(all([isinstance(x, ProductionComponent) for x in result]))
-        self.assertEqual(Printer.print(result.clauses[0]._params[0]), "a.b.c")
-        self.assertEqual(Printer.print(result.clauses[1]._params[0]), "~a!b.d")
-        self.assertEqual(Printer.print(result.clauses[2]._params[0]), "$x.")
-        self.assertEqual(Printer.print(result.clauses[3]._params[0]), "$x.a.b")
+        self.assertEqual(Printer.print(result.clauses[0].params[0]), "a.b.c")
+        self.assertEqual(Printer.print(result.clauses[1].params[0]), "~a!b.d")
+        self.assertEqual(Printer.print(result.clauses[2].params[0]), "$x.")
+        self.assertEqual(Printer.print(result.clauses[3].params[0]), "$x.a.b")
 
     def test_action_binding_expansion(self):
         logging.info("TESTING")

@@ -64,6 +64,11 @@ class ActionTests(unittest.TestCase):
         return 1
 
     #----------
+    def test_add_to_wm(self):
+        self.assertFalse(self.e.query("a.b.c?"))
+        self.e.add("a.b.c")
+        self.assertTrue(self.e.query("a.b.c?"))
+
     def test_run_assert_action(self):
         actions = AP.parseString("λA.ActionAdd a.b.c")
         self.assertFalse(self.e.query("a.b.c?"))
@@ -74,7 +79,7 @@ class ActionTests(unittest.TestCase):
         actions = AP.parseString("λA.ActionAdd ~a.b.c")
         self.e.add("a.b.c")
         self.assertTrue(self.e.query("a.b.c?"))
-        actions({}, self.e)
+        results = ProdSem(actions, {}, self.e)
         self.assertFalse(self.e.query("a.b.c?"))
         self.assertTrue(self.e.query("~a.b.c?"))
 
@@ -82,21 +87,21 @@ class ActionTests(unittest.TestCase):
         actions = AP.parseString("λA.ActionAdd a.b.c,λA.ActionAdd a.b.d")
         self.assertFalse(self.e.query("a.b.c?, a.b.d?"))
         self.assertTrue(self.e.query("~a.b.c?, ~a.b.d?"))
-        actions({}, self.e)
+        results = ProdSem(actions, {}, self.e)
         self.assertTrue(self.e.query("a.b.c?, a.b.d?"))
 
     def test_run_mixed_multi_action(self):
         actions = AP.parseString("λA.ActionAdd a.b.c, λA.ActionAdd ~a.b.d")
         self.e.add("a.b.d")
         self.assertTrue(self.e.query("~a.b.c?, a.b.d?"))
-        actions({}, self.e)
+        results = ProdSem(actions, {}, self.e)
         self.assertTrue(self.e.query("a.b.c?, ~a.b.d?"))
 
     def test_run_bound_assert_action(self):
         data = {"x": "blah"}
         actions = AP.parseString("λA.ActionAdd a.b.$x")
         self.assertTrue(self.e.query("~a.b.blah?"))
-        actions(data, self.e)
+        results = ProdSem(actions, {}, self.e)
         self.assertTrue(self.e.query("a.b.blah?"))
 
 
@@ -105,7 +110,7 @@ class ActionTests(unittest.TestCase):
         actions = AP.parseString("λA.ActionAdd ~a.$blah.c")
         self.e.add("a.bloo.c")
         self.assertTrue(self.e.query("a.bloo.c?"))
-        actions(data, self.e)
+        results = ProdSem(actions, {}, self.e)
         self.assertTrue(self.e.query("~a.bloo.c?, a.bloo?"))
 
     def test_run_mixed_bound_actions(self):
@@ -113,7 +118,7 @@ class ActionTests(unittest.TestCase):
         actions = AP.parseString("λA.ActionAdd a.$blah, λA.ActionAdd ~b.$blah")
         self.e.add("b.bloo")
         self.assertTrue(self.e.query("b.bloo?"))
-        actions(data, self.e)
+        results = ProdSem(actions, {}, self.e)
         self.assertTrue(self.e.query("a.bloo?, ~b.bloo?"))
 
     def test_custom_action_parse(self):

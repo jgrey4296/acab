@@ -51,7 +51,6 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         bp = BootstrapParser()
         qmod = QOP.MODULE()
         qmod.assert_parsers(bp)
-        FP.HOTLOAD_QUERY_OP << bp.query("operator.sugar")
         FP.HOTLOAD_ANNOTATIONS << bp.query("query.annotation.*")
 
 
@@ -172,7 +171,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result[0][1].data[CONSTRAINT_V][0], ProductionComponent)
         self.assertEqual(Printer.print(result[0][1].data[CONSTRAINT_V][0].op), "HasTag")
 
-        tags = [x.name for x in result[0][1].data[CONSTRAINT_V][0]._params]
+        tags = [x.name for x in result[0][1].data[CONSTRAINT_V][0].params]
         self.assertEqual(tags, ["first", "second", "third"])
 
     def test_tag_list_interaction(self):

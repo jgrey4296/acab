@@ -111,7 +111,7 @@ class NumberQueryTests(unittest.TestCase):
         self.assertEqual(len(result._data[QUERY_FALLBACK_S]), 1)
 
         self.assertEqual(result._data[QUERY_FALLBACK_S][0][0], 'x')
-        self.assertEqual(result._data[QUERY_FALLBACK_S][0][1][-1]._value, 2)
+        self.assertEqual(result._data[QUERY_FALLBACK_S][0][1][-1].value, 2)
 
 
     def test_clause_negated_fallback(self):
@@ -125,9 +125,9 @@ class NumberQueryTests(unittest.TestCase):
         self.assertIsNotNone(result._data[QUERY_FALLBACK_S])
         self.assertEqual(len(result._data[QUERY_FALLBACK_S]), 2)
         self.assertEqual(result._data[QUERY_FALLBACK_S][0][0], 'x')
-        self.assertEqual(result._data[QUERY_FALLBACK_S][0][1][-1]._value, 2)
+        self.assertEqual(result._data[QUERY_FALLBACK_S][0][1][-1].value, 2)
         self.assertEqual(result._data[QUERY_FALLBACK_S][1][0], 'y')
-        self.assertEqual(result._data[QUERY_FALLBACK_S][1][1][-1]._value, 5)
+        self.assertEqual(result._data[QUERY_FALLBACK_S][1][1][-1].value, 5)
 
 
     def test_fact_str_equal(self):

@@ -59,34 +59,34 @@ class Trie_WM_Tests(unittest.TestCase):
 
     def test_assert(self):
         """ Check assertions work """
-        self.assertEqual(len(self.trieWM._internal_trie._root), 0)
+        self.assertEqual(len(self.trieWM._structure.root), 0)
         self.trieWM.add('a.b.c')
-        self.assertEqual(len(self.trieWM._internal_trie._root), 1)
+        self.assertEqual(len(self.trieWM._structure.root), 1)
 
     def test_retract(self):
         """ Check retractions work """
         self.trieWM.add('a.b.c')
-        self.assertEqual(len(self.trieWM._internal_trie._root), 1)
+        self.assertEqual(len(self.trieWM._structure.root), 1)
         self.trieWM.add('~a')
-        self.assertEqual(len(self.trieWM._internal_trie._root), 0)
+        self.assertEqual(len(self.trieWM._structure.root), 0)
 
     def test_multi_assert(self):
         """ Check multiple assertions work """
-        self.assertEqual(len(self.trieWM._internal_trie._root), 0)
+        self.assertEqual(len(self.trieWM._structure.root), 0)
         self.trieWM.add('a.b.c')
         self.trieWM.add('q.r.t')
-        self.assertEqual(len(self.trieWM._internal_trie._root), 2)
+        self.assertEqual(len(self.trieWM._structure.root), 2)
 
     def test_multi_retract(self):
         """ Check multiple retractions work """
-        self.assertEqual(len(self.trieWM._internal_trie._root), 0)
+        self.assertEqual(len(self.trieWM._structure.root), 0)
         self.trieWM.add('a.b.c')
         self.trieWM.add('q.r.t')
-        self.assertEqual(len(self.trieWM._internal_trie._root), 2)
+        self.assertEqual(len(self.trieWM._structure.root), 2)
         self.trieWM.add('~a')
-        self.assertEqual(len(self.trieWM._internal_trie._root), 1)
+        self.assertEqual(len(self.trieWM._structure.root), 1)
         self.trieWM.add('~q')
-        self.assertEqual(len(self.trieWM._internal_trie._root), 0)
+        self.assertEqual(len(self.trieWM._structure.root), 0)
 
     def test_simplest_query(self):
         """ Check the simplest query works """
@@ -122,7 +122,7 @@ class Trie_WM_Tests(unittest.TestCase):
     def test_multi_assert_parse(self):
         """ Check multiple facts can be asserted in one call """
         self.trieWM.add('a.b.c, d.e.f, g.e.q')
-        self.assertEqual(len(self.trieWM._internal_trie._root), 3)
+        self.assertEqual(len(self.trieWM._structure.root), 3)
 
     def test_bind_filter(self):
         """ Check that only matching binds pass """
