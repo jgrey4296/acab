@@ -86,8 +86,8 @@ class ExclusionNodeSemantics(AcabNodeSemantics, SI.NodeSemantics):
 
         # if it doesn't, lift the word itself
         if result is None:
-            node = node_constructor(word)
-            result = self.up(node)
+            new_node = node_constructor(word)
+            result = self.up(new_node)
             is_new_node = True
 
         # then update the node
