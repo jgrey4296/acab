@@ -22,6 +22,7 @@ from acab.abstract.containers.structure import DataStructure
 from acab.abstract.core.node_semantics import AcabNodeSemantics
 
 from acab.abstract.interfaces import semantics_interface as SI
+from acab.abstract.interfaces.util_interfaces import ProxyInterface
 
 from acab.error.acab_semantic_exception import AcabSemanticException
 
@@ -66,7 +67,7 @@ SemBox = Tuple[RET_enum, Printable, Callable]
 StackValue = Tuple[List[SemBox], List[str], Dict[Any, Any]]
 
 
-class AcabPrintSemantics(AcabValue, SI.PrintSemanticInterface):
+class AcabPrintSemantics(AcabValue, SI.PrintSemanticInterface, SI.SemanticInterface, ProxyInterface):
     """ Abstract Class of Print Semantics
     Provides the basic walk through of a value/node/container etc
     to call handlers to produce a re-parseable string
@@ -273,29 +274,3 @@ class AcabPrintSemantics(AcabValue, SI.PrintSemanticInterface):
             stack_q, stack_ctx = self._stack.pop()
             self._queue = stack_q
             self._context = stack_ctx
-
-    def _retrieve_semantics(self, current_val: Printable) -> Optional[SemanticSpec]:
-        """
-        use the_type (ie: python type) first, if its necessary, distinguish using type_instance
-
-        Always returns, even if its just lambda x: str(x)
-        """
-        chosen: Callable = self._bottom_semantic
-        # search_order: List[Callable[[AcabPrintSemantics, Printable], Optional[SemanticSpec]]] = []
-        search_order = self._search_order[:]
-
-        for x in search_order:
-            search_f = x
-            if x in self._search_lookup:
-                search_f = self._search_lookup[x]
-
-            result = search_f(self, current_val)
-            if result is not None:
-                chosen = result
-                break
-
-        # TODO update _type_semantics chain with found bindings from hierarchy
-
-        return chosen
-
-

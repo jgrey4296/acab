@@ -37,9 +37,6 @@ ROOT_S       = config.value("Data", "ROOT")
 class AcabStructureSemantics(AcabValue, SI.SemanticInterface, SI.StructureSemantics):
     # TODO Locate listeners in semantics not WM
 
-    node_semantics: Dict[AcabNode, AcabNodeSemantics] = field(default_factory=dict)
-    value_pairings: Dict[AcabValue, Tuple[AcabNode, Dict[Any, Any]]] = field(default_factory=dict)
-
     def __post_init__(self):
         """
         Structure Semantics define the behaviour of a *collection* of nodes,
@@ -60,30 +57,6 @@ class AcabStructureSemantics(AcabValue, SI.SemanticInterface, SI.StructureSemant
         node_semantics = self.retrieve_semantics(constructor)
         node = constructor.Root()
         return node_semantics.up(node)
-
-    def retrieve_semantics(self, node):
-        """
-        Map node -> its semantics
-        """
-        assert(isinstance(node, type))
-        # TODO should I be using my type instances for semantics?
-        curr = node
-        retrieved = None
-        descendents_to_update = []
-        while retrieved is None and curr not in (object, None):
-            if curr in self.node_semantics:
-                retrieved = self.node_semantics[curr]
-            else:
-                curr = curr.__base__
-                descendents_to_update.append(curr)
-
-        if retrieved is None:
-            raise AcabSemanticException("Missing Node Semantic Binding for: {}".format(node), None)
-
-        if len(descendents_to_update) > 1:
-            self.node_semantics.update({x : retrieved for x in descendents_to_update})
-
-        return retrieved
 
     def value_constructor(self, value):
         """

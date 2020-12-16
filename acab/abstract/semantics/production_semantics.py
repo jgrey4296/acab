@@ -14,6 +14,7 @@ from weakref import ref
 import logging as root_logger
 
 from acab.abstract.config.config import AcabConfig
+from acab.abstract.interfaces.semantics_interface import ProductionSemanticInterface
 from acab.abstract.core.values import AcabValue, Sentence
 
 config = AcabConfig.Get()
@@ -21,11 +22,12 @@ config = AcabConfig.Get()
 
 # TODO
 @dataclass
-class ProductionSemantics(AcabValue):
-    """ Describes how objects are used """
+class ProductionSemantics(ProductionSemanticInterface):
+    """ Describes how abstractions are used """
     semantic_mapping: Dict[Sentence, Callable] = field(default_factory=dict)
 
     def __call__(self, obj, ctxs, engine, override=None):
+        raise NotImplementedError()
         # Get semantic function for object
         # run it
         # return result
@@ -55,7 +57,7 @@ class ProductionSemantics(AcabValue):
         assert(isinstance(data, dict))
         output = []
         # TODO: enable currying
-        for x in self._params:
+        for x in self.params:
             if isinstance(x, Sentence):
                 output.append(x.bind(data))
             elif isinstance(x, list):
