@@ -27,7 +27,7 @@ EXOP_enum    = config.modal_enums[EXOP]
 #     output[-1].data[OPERATOR] = word.data[OPERATOR]
 #     continue
 
-class ExclusionNodeSemantics(AcabNodeSemantics, SI.NodeSemantics):
+class ExclusionNodeSemantics(AcabNodeSemantics, SI.IndependentSemantics):
     def accessible(self, node, data, term):
         potentials = []
         # Expand if variable -> Grab All
