@@ -5,7 +5,7 @@ from enum import Enum
 
 from acab.abstract.core.node import AcabNode
 from acab.abstract.config.config import AcabConfig
-from acab.modules.node_semantics import util as SU
+from acab.modules.semantics import util as SU
 
 import logging as root_logger
 logging = root_logger.getLogger(__name__)

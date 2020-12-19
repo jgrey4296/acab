@@ -14,9 +14,9 @@ from acab.abstract.core.node import AcabNode
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
 from acab.abstract.interfaces.working_memory_interface import WorkingMemoryCore
-from acab.abstract.containers.production_abstractions import ProductionContainer
+from acab.abstract.core.production_abstractions import ProductionContainer
 from acab.error.acab_operator_exception import AcabOperatorException
-from acab.modules.node_semantics import exclusion_semantics as ES
+from acab.modules.semantics import exclusion_semantics as ES
 from acab.modules.structures.trie.trie import Trie
 from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics
 
