@@ -9,8 +9,12 @@ from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic
 from dataclasses import dataclass, field
 
+from uuid import uuid1, UUID
+
+
 from acab.abstract.interfaces.util_interfaces import FlattenInterface
 from acab.abstract.config.config import AcabConfig
+import logging as root_logger
 
 logging            = root_logger.getLogger(__name__)
 
@@ -35,7 +39,7 @@ AcabValue     = 'AcabValue'
 AcabStatement = 'AcabStatement'
 
 @dataclass
-class ValueInterface(FlattenInterface, metaclass=abc.ABCMeta):
+class ValueInterface(metaclass=abc.ABCMeta):
 
     name : str               = field(default=None)
     value : Any              = field(default=None)
@@ -43,16 +47,6 @@ class ValueInterface(FlattenInterface, metaclass=abc.ABCMeta):
     tags : Set[str]          = field(default_factory=set)
     data : Dict[str, Any]    = field(default_factory=dict)
     uuid : UUID              = field(default_factory=uuid1)
-
-    @property
-    @abc.abstractmethod
-    def name(self) -> str:
-        pass
-
-    @property
-    @abc.abstractmethod
-    def value(self) -> Any:
-        pass
 
     @property
     @abc.abstractmethod
@@ -70,9 +64,9 @@ class ValueInterface(FlattenInterface, metaclass=abc.ABCMeta):
 
 
 @dataclass
-class SentenceInterface(FlattenInterface, metaclass=abc.ABCMeta):
+class SentenceInterface(metaclass=abc.ABCMeta):
 
-    words : List[ValueInterface]  = field(default_factory=list)
+    words: List[ValueInterface]  = field(default_factory=list)
 
     @abc.abstractmethod
     def build(words, **kwargs):

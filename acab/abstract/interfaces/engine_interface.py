@@ -8,66 +8,13 @@ from typing import cast, ClassVar, TypeVar, Generic
 
 from dataclasses import dataclass, field
 from acab.abstract.interfaces.util_interfaces import FlattenInterface
+from acab.abstract.parsing.bootstrap_parser import BootstrapParser
+from acab.abstract.interfaces.dsl_interface import DSL_Interface
 
-class EngineInterface(FlattenInterface, metaclass=abc.ABCMeta):
-    """ """
-
-    @abc.abstractmethod
-    def extract_from_module(self, module):
-        pass
-
-    @abc.abstractmethod
-    def reload_all_modules(self):
-        pass
-
-
-    @abc.abstractmethod
-    def __call__(self, thing, bindings=None):
-        pass
-
-
-    @abc.abstractmethod
-    def get_operator(self, op_name):
-        """ Get an operator from the operator wm """
-        pass
-
-    @abc.abstractmethod
-    def alias_module(self, mod_name, alias_name):
-        """
-        Assert an alias of a module into the operator wm
-        """
-        pass
-
-
-    @abc.abstractmethod
-    def register_ops(self, sentences):
-        """
-        Assert sentences into the operator working memory
-        """
-        pass
-
-
-    @abc.abstractmethod
-    def build_DSL(self):
-        """
-        Using currently loaded modules, rebuild the usable DSL parser from fragments
-        """
-        pass
-
-
-    @abc.abstractmethod
-    def load_modules(self, *modules):
-        """ Given ModuleInterface objects,
-        store them then tell the working memory to load them
-        return a list of dictionaries
-        """
-        pass
-
-
-    @abc.abstractmethod
-    def _load_file(self, filename) -> Any:
-        pass
-
+ModuleType = 'Module'
+Parser = 'Parser'
+Sentence = 'Sentence'
+DSL_Fragment = 'DSL_Fragment'
 
 @dataclass
 class RewindEngineInterface(metaclass=abc.ABCMeta):
@@ -92,10 +39,9 @@ class RewindEngineInterface(metaclass=abc.ABCMeta):
 
 
 @dataclass
-class ModuleLoaderInterface(metaclass=abc.ABCMetaClass):
+class ModuleLoaderInterface(metaclass=abc.ABCMeta):
     """  """
     _loaded_modules       : Set[Any]          = field(init=False, default_factory=set)
-    load_paths            : List[str]         = field(default_factory=list)
     modules               : List[str]         = field(default_factory=list)
     def reload_all_modules(self):
         loaded = list(self._loaded_modules)
@@ -198,7 +144,7 @@ class ModuleLoaderInterface(metaclass=abc.ABCMetaClass):
         assert(len(alias_sentence) == 1)
         self._working_memory.add(alias_sentence, leaf=sentence)
 
-    def extract_from_module(self, module: ModuleType) -> Tuple[List[Sentence], List['DSL_Fragment']]:
+    def extract_from_module(self, module: ModuleType) -> Tuple[List[Sentence], List[DSL_Fragment]]:
         """
         DFS on a module to retrieve dsl fragments and operators
         Only searches descendents of the original module,
@@ -241,25 +187,30 @@ class ModuleLoaderInterface(metaclass=abc.ABCMetaClass):
 @dataclass
 class DSLBuilderInterface(metaclass=abc.ABCMeta):
     """ Enables the assemblage of a parser from DSL Fragments """
-    _bootstrap_parser    : BootstrapParser = field(init=False)
+    root_fragment: DSL_Interface   = field()
+    _bootstrap_parser    : BootstrapParser = field(init=False, default_factory=BootstrapParser)
     _main_parser         : Parser          = field(init=False)
     _query_parser        : Parser          = field(init=False)
-    _parsers_initialised : bool            = False
-    _loaded_DSL_fragments : Dict[Any, Any]    = field(default_factory=dict)
+    _parsers_initialised : bool            = field(init=False, default=False)
+    _loaded_DSL_fragments : Dict[Any, Any] = field(init=False, default_factory=dict)
+
 
     def build_DSL(self):
         """
         Using currently loaded modules, rebuild the usable DSL parser from fragments
         """
         self.clear_bootstrap()
-        fragments = [y for x in self._loaded_DSL_fragments.values() for y in x]
-        self.construct_parsers_from_fragments(fragments)
+        self.construct_parsers_from_fragments()
         self.initialised = True
 
-    def construct_parsers_from_fragments(self, fragments):
+    def construct_parsers_from_fragments(self):
         """ Assemble parsers from the fragments of the wm and loaded modules """
+        # assert base parser
+        self.root_fragment.assert_parsers(self._bootstrap_parser)
+
+        fragments = [y for x in self._loaded_DSL_fragments.values() for y in x]
         assert(all([isinstance(x, DSL_Interface) for x in fragments]))
-        self.assert_parsers(self._bootstrap_parser)
+
         for x in fragments:
             #Populate the trie
             x.assert_parsers(self._bootstrap_parser)
@@ -268,7 +219,10 @@ class DSLBuilderInterface(metaclass=abc.ABCMeta):
             # Now query and populate the modules
             x.query_parsers(self._bootstrap_parser)
 
-        self.query_parsers(self._bootstrap_parser)
+        # then assign main and query parsers from the base parser
+        main_p, query_p = self.root_fragment.query_parsers(self._bootstrap_parser)
+        self._main_parser = main_p
+        self._query_parser = query_p
 
     def clear_bootstrap(self):
         self._bootstrap_parser = self._bootstrap_parser.__class__()

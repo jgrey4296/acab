@@ -7,8 +7,12 @@ from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic
 
+from dataclasses import dataclass
+
+@dataclass
 class ContextInterface(metaclass=abc.ABCMeta):
     """  """
+
 
     @abc.abstractmethod
     def append(self) -> Any:

@@ -5,7 +5,9 @@ from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic
 import abc
 from dataclasses import dataclass, field
+from fractions import Fraction
 
+import logging as root_logger
 
 class FlattenInterface(metaclass=abc.ABCMeta):
     """ Can Flatten itself into a set of sentences """

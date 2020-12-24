@@ -43,6 +43,27 @@ class NodeInterface(metaclass=abc.ABCMeta):
 @dataclass
 class StructureInterface(FlattenInterface, metaclass=abc.ABCMeta):
       """  """
-      root : 'AcabNode' = field(init=False)
+      root : 'AcabNode'                    = field(init=False)
       semantics : 'AcabStructureSemantics' = field(default=None)
 
+      @abc.abstractmethod
+      def add(self, sen) -> Any:
+          pass
+
+      @abc.abstractmethod
+      def query(self, sen) -> Any:
+          pass
+
+      @abc.abstractmethod
+      def contain(self, sen) -> Any:
+          pass
+
+      def trigger(self, *data) -> Any:
+          """ Not abstract, as not all structures can be triggered """
+          pass
+
+
+      @staticmethod
+      @abc.abstractmethod
+      def build_default(self) -> Any:
+          pass
