@@ -46,3 +46,60 @@ class ConfigTests(unittest.TestCase):
         # directory loading
         # missing sections
         # missing keys
+
+    def test_config_singleton(self):
+        """ Check the config obj is a singleton"""
+        config = AcabConfig.Get()
+        self.assertIsInstance(config, AcabConfig)
+        config2 = AcabConfig.Get()
+        self.assertIs(config, config2)
+
+    def test_config_value(self):
+        """
+        Check values can be retrieved
+        """
+        config = AcabConfig.Get()
+        value = config.value("Data", "ROOT")
+        self.assertEqual(value, "__root")
+
+
+    def test_modal_spec(self):
+        """ Check modal fields exist """
+        config = AcabConfig.Get()
+        self.assertTrue(config.modal_enums)
+        self.assertTrue(config.modal_defaults)
+        self.assertTrue(config.modal_printing)
+        self.assertTrue(config.modal_syntax_lookup)
+        # TODO Check values *in* the modal structures
+
+    def test_config_prepare(self):
+        """ Check values can be prepared """
+        config = AcabConfig.Get()
+        prep_tuple = config.prepare("Data", "ROOT")
+        self.assertIsInstance(prep_tuple, tuple)
+        self.assertEqual(len(prep_tuple), 5)
+
+    def test_config_value_missing(self):
+        """ Check error is thrown for missing value """
+        config = AcabConfig.Get()
+        with self.assertRaises(Exception):
+            config.value("blah", "bloo")
+
+    def test_config_prepare_missing(self):
+        """ Check config errors if you prepare
+        a missing value """
+        config = AcabConfig.Get()
+        with self.assertRaises(Exception):
+            config.prepare("blah", "bloo")
+
+    def test_modal_spec_missing(self):
+        """
+        Check config errors when you try to use missing modal values
+        """
+        config = AcabConfig.Get()
+        with self.assertRaises(Exception):
+            config.modal_enums['blah']
+
+
+    # -> ClosedSet[Values, Node]
+    # Creation,
