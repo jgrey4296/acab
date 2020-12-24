@@ -13,16 +13,27 @@ import logging as root_logger
 from acab.abstract.config.config import AcabConfig
 config = AcabConfig.Get("acab/abstract/config")
 
+
 from acab.abstract.core.values import AcabValue, AcabStatement, Sentence
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.contexts import Contexts
 
 from acab.modules.structures.trie.trie import Trie
-from acab.abstract.containers.structure import DataStructure
+from acab.abstract.core.acab_struct import AcabStruct
 from acab.abstract.interfaces.data_interfaces import StructureInterface
 
-from acab.abstract.containers import production_abstractions as PA
 
+from acab.abstract.core import production_abstractions as PA
+
+from acab.modules.operators.query.query_operators import EQ
+
+
+OPERATOR_TYPE_PRIM_S  = config.value("Type.Primitive", "OPERATOR")
+CONTAINER_TYPE_PRIM_S = config.value("Type.Primitive", "CONTAINER")
+COMPONENT_TYPE_PRIM_S = config.value("Type.Primitive", "COMPONENT")
+ANON_VALUE       = config.value("Symbols", "ANON_VALUE")
+
+# TODO duplicate this, but for failures
 class TopologicalOrderedAcabTests(unittest.TestCase):
 
     @classmethod
@@ -178,10 +189,11 @@ class TopologicalOrderedAcabTests(unittest.TestCase):
 
     def test_value_bind(self):
         """ Check a value binds appropriately """
-        bind_data = {"test" : 2}
+        bind_data = {"test" : "blah"}
         value = AcabValue("test", data={config.value("Value.Structure", "BIND"): True})
         bind_result = value.bind(bind_data)
-        self.assertEqual(bind_result, 2)
+        self.assertIsInstance(bind_result, AcabValue)
+        self.assertEqual(bind_result, "blah")
 
 
     def test_sentence_containment(self):
@@ -215,6 +227,7 @@ class TopologicalOrderedAcabTests(unittest.TestCase):
         to_attach_copy = Sentence.build(["another", "blah"])
 
         attached = master_sen.attach_statement(to_attach)
+
         self.assertNotEqual(master_sen, attached)
         self.assertNotEqual(to_attach, attached)
 
@@ -275,23 +288,87 @@ class TopologicalOrderedAcabTests(unittest.TestCase):
         """ Check The most Basic Structure: The Trie"""
         the_trie = Trie()
         self.assertIsInstance(the_trie, Trie)
-        self.assertIsInstance(the_trie, DataStructure)
         self.assertIsInstance(the_trie, StructureInterface)
 
+    def test_production_abstraction_operator(self):
+        abstract_op = PA.ProductionOperator()
+        self.assertIsInstance(abstract_op, PA.ProductionOperator)
+        self.assertEqual(abstract_op.name, PA.ProductionOperator.__name__)
+        self.assertEqual(abstract_op.type, Sentence.build([OPERATOR_TYPE_PRIM_S]))
 
-    def test_production_abstraction_construction(self):
-        """ Check operator construction """
+    def test_real_operator(self):
+        abstract_op = EQ()
+        self.assertIsInstance(abstract_op, PA.ProductionOperator)
+        self.assertEqual(abstract_op.name, EQ.__name__)
+        self.assertEqual(abstract_op.type, Sentence.build([OPERATOR_TYPE_PRIM_S]))
 
-        op        = None
-        comp      = None
-        container = None
-        structure = None
+    def test_production_component_construction(self):
+        component = PA.ProductionComponent(value=Sentence.build(["test"]))
+        self.assertIsInstance(component, PA.ProductionComponent)
+        self.assertEqual(component.name, ANON_VALUE)
+        self.assertEqual(component.value, Sentence.build(["test"]))
+        self.assertEqual(component.type, Sentence.build([COMPONENT_TYPE_PRIM_S]))
 
-        pass
+    def test_production_component_construction_params(self):
+        # TODO add sugared and rebind checks
+        component = PA.ProductionComponent(value=Sentence.build(["test"]), params=[Sentence.build(["a", "b", "c"])])
+        self.assertIsInstance(component, PA.ProductionComponent)
+        self.assertEqual(component.name, ANON_VALUE)
+        self.assertEqual(component.value, Sentence.build(["test"]))
+        self.assertEqual(len(component.params), 1)
+        self.assertEqual(component.params[0], Sentence.build(["a", "b", "c"]))
 
-    def test_production_abstraction_bind(self):
-        """ Check an operator can bind to values """
-        pass
+    def test_production_container_construction(self):
+        container = PA.ProductionContainer(value=[])
+        self.assertIsInstance(container, PA.ProductionContainer)
+        self.assertEqual(container.name, ANON_VALUE)
+        self.assertIsInstance(container.value, list)
+        self.assertEqual(len(container.value), 0)
+        self.assertEqual(container.type, Sentence.build([CONTAINER_TYPE_PRIM_S]))
+
+
+    def test_production_structure_construction(self):
+        structure = PA.ProductionStructure(structure={})
+        self.assertIsInstance(structure, PA.ProductionContainer)
+        self.assertEqual(structure.name, ANON_VALUE)
+        self.assertIsInstance(structure.value, list)
+        self.assertEqual(len(structure.value), 0)
+        self.assertEqual(structure.type, Sentence.build([CONTAINER_TYPE_PRIM_S]))
+
+
+    def test_production_component_bind(self):
+        value = AcabValue("test", data={config.value("Value.Structure", "BIND"): True})
+        component = PA.ProductionComponent(value=Sentence.build(["test"]), params=[value])
+        bind_data = {"test" : "blah"}
+        bind_result = component.bind(bind_data)
+        self.assertNotEqual(component, bind_result)
+        self.assertIsInstance(bind_result, PA.ProductionComponent)
+        self.assertEqual(bind_result.params[0], "blah")
+
+
+    def test_production_container_bind(self):
+        value = AcabValue("test", data={config.value("Value.Structure", "BIND"): True})
+        container = PA.ProductionContainer(value=[], params=[value])
+        bind_data = {"test" : "blah"}
+        bind_result = container.bind(bind_data)
+        self.assertNotEqual(container, bind_result)
+        self.assertIsInstance(bind_result, PA.ProductionContainer)
+        self.assertEqual(bind_result.params[0], "blah")
+
+
+
+    def test_production_structure_bind(self):
+        value = AcabValue("test", data={config.value("Value.Structure", "BIND"): True})
+        structure = PA.ProductionStructure(structure={}, params=[value])
+        bind_data = {"test" : "blah"}
+        bind_result = structure.bind(bind_data)
+        self.assertNotEqual(structure, bind_result)
+        self.assertIsInstance(bind_result, PA.ProductionStructure)
+        self.assertEqual(bind_result.params[0], "blah")
+
+
+
+
 
     # -> Semantics[ClosedSet, Abstractions]
     def test_node_semantics(self):
