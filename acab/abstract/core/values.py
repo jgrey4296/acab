@@ -3,10 +3,11 @@ The Core Value Class
 """
 # pylint: disable=bad-whitespace
 # https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
+# https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
 from typing import List, Set, Dict, Tuple, Optional, Any
 from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar
+from typing import cast, ClassVar, TypeVar, Generic
 
 from dataclasses import dataclass, field, InitVar, replace
 
@@ -37,6 +38,9 @@ FALLBACK_MODAL   = config.value("Symbols", "FALLBACK_MODAL", actions=[config.act
 
 T = TypeVar('T', str, Pattern, list)
 
+Value = 'AcabValue'
+Sen   = 'Sentence'
+
 @dataclass
 class AcabValue(VI.ValueInterface, Generic[T]):
     _value_types: ClassVar[Set[Any]]          = set([str, Pattern, list])
@@ -46,8 +50,8 @@ class AcabValue(VI.ValueInterface, Generic[T]):
     def safe_make(value: T,
                   name: str=None,
                   data: Optional[Dict[Any, Any]]=None,
-                  _type: Optional['Sentence']=None,
-                  **kwargs) -> 'AcabValue':
+                  _type: Optional[Sen]=None,
+                  **kwargs) -> Value:
         """ Wrap the provided value in an AcabValue,
         but only if it isn't an AcabValue already """
         _data = {}
@@ -68,7 +72,7 @@ class AcabValue(VI.ValueInterface, Generic[T]):
         # Applicable values: Self + any registered
         value_type_tuple = tuple([AcabValue] + list(AcabValue._value_types))
 
-        assert (self.value is None or isinstance(self.value, value_type_tuple))
+        assert(self.value is None or isinstance(self.value, value_type_tuple))
 
         # NOTE: use of setattr to override frozen temporarily to update name
         #
@@ -109,9 +113,9 @@ class AcabValue(VI.ValueInterface, Generic[T]):
         For reparseable output, use a PrintSemantics
         """
         if self.is_at_var:
-            return AT_BIND_SYMBOL + ANON_VALUE
+            return AT_BIND_SYMBOL + self.name
         elif self.is_var:
-            return BIND_SYMBOL + ANON_VALUE
+            return BIND_SYMBOL + self.name
         else:
             return self.name
 
@@ -144,7 +148,7 @@ class AcabValue(VI.ValueInterface, Generic[T]):
 
 
     @property
-    def type(self) -> Sentence:
+    def type(self) -> Sen:
         """ Lazy Type Construction """
         type_matches_t = isinstance(self.data[TYPE_INSTANCE], Sentence)
         if not type_matches_t:
@@ -190,7 +194,7 @@ class AcabValue(VI.ValueInterface, Generic[T]):
         """
         raise NotImplementedError()
 
-    def copy(self, **kwargs) -> 'AcabValue':
+    def copy(self, **kwargs) -> Value:
         """ copy the object, but give it a new uuid """
         if 'params' not in kwargs:
             kwargs['params'] = self.params[:]
@@ -199,27 +203,26 @@ class AcabValue(VI.ValueInterface, Generic[T]):
         if 'data' not in kwargs:
             kwargs['data'] = self.data.copy()
 
-        try:
-            return replace(self, uuid=uuid1(), **kwargs)
-        except TypeError as err:
-            breakpoint()
-            logging.info("blah")
+        return replace(self, uuid=uuid1(), **kwargs)
 
 
-    def bind(self, bindings) -> 'AcabValue':
+    def bind(self, bindings) -> Value:
         """ Data needs to be able to bind a dictionary
         of values to internal variables
         return modified copy
         """
-        # TODO recurse this
         if self.is_var and self.value in bindings:
-            return bindings[self.value]
-        else:
+            assert(not self.params)
+            return AcabValue.safe_make(bindings[self.value])
+
+        if not any([x.is_var for x in self.params]):
             return self
 
+        bound_params = [x.bind(bindings) for x in self.params]
+        return self.copy(params=bound_params)
 
 
-    def apply_params(self, params, data=None) -> 'AcabValue':
+    def apply_params(self, params, data=None) -> Value:
         """
         return modified copy
         """
@@ -230,7 +233,7 @@ class AcabValue(VI.ValueInterface, Generic[T]):
         safe_params = [x if isinstance(x, AcabValue) else AcabValue(x) for x in params]
         return self.copy(params=safe_params)
 
-    def apply_tags(self, tags) -> 'AcabValue':
+    def apply_tags(self, tags) -> Value:
         """
         return modified copy
         """
@@ -243,7 +246,7 @@ class AcabValue(VI.ValueInterface, Generic[T]):
     def has_tag(self, *tags) -> bool:
         return all([t in self.tags for t in tags])
 
-    def to_word(self) -> 'AcabValue':
+    def to_word(self) -> Value:
         new_data = {}
         new_data.update(self.data)
         new_data.update({TYPE_INSTANCE: Sentence.build([TYPE_BOTTOM_NAME])})
@@ -252,11 +255,11 @@ class AcabValue(VI.ValueInterface, Generic[T]):
 
     def to_sentences(self):
         return [self]
-class AcabStatement(VI.ValueInterface):
+class AcabStatement(AcabValue):
     """ AcabStatement functions the same as AcabValue,
     but provides specific functionality for converting to a string
     """
-    def to_sentences(self) -> List[Sentence]:
+    def to_sentences(self) -> List[Sen]:
         """
         Represent a Complex Object in the verbose Core Language.
         (ie: just Words, Sentences, Variables, and Types)
@@ -268,16 +271,20 @@ class AcabStatement(VI.ValueInterface):
 
 
 
+@dataclass
+class Sentence(AcabStatement, VI.SentenceInterface):
 
-class Sentence(AcabStatement, VI.ValueInterface, VI.SentenceInterface):
+
     @staticmethod
     def build(words, **kwargs):
         safe_words = [AcabValue.safe_make(x) for x in words]
-        return Sentence(words=safe_words, **kwargs)
+        sen = Sentence(words=safe_words, **kwargs)
+        return sen
 
 
     def __post_init__(self):
-        super(Sentence, self).__post_init__()
+        self.value = self.words
+        AcabValue.__post_init__(self)
         self.data[TYPE_INSTANCE] = SENTENCE_TYPE
 
     def __eq__(self, other):
@@ -306,6 +313,15 @@ class Sentence(AcabStatement, VI.ValueInterface, VI.SentenceInterface):
         if isinstance(i, slice):
             return Sentence.build(self.words.__getitem__(i), data=self.data)
         return self.words.__getitem__(i)
+
+    @property
+    def type(self) -> 'Sentence':
+        """ Lazy Type Construction """
+        type_matches_t = isinstance(self.data[TYPE_INSTANCE], Sentence)
+        if not type_matches_t:
+            self.data[TYPE_INSTANCE] = Sentence.build([self.data[TYPE_INSTANCE]])
+
+        return self.data[TYPE_INSTANCE]
 
     def copy(self, **kwargs):
         if 'value' not in kwargs:
@@ -398,7 +414,8 @@ class Sentence(AcabStatement, VI.ValueInterface, VI.SentenceInterface):
         value_copy = value.copy(name=last.name, data=combined_data)
 
         new_words = self.words[:-1] + [value_copy]
-        sen_copy = self.copy(value=new_words)
+        sen_copy = self.copy(words=new_words)
+
         return sen_copy
 
     def detach_statement(self):
@@ -426,3 +443,4 @@ class Sentence(AcabStatement, VI.ValueInterface, VI.SentenceInterface):
 
     def to_sentences(self):
         return [self]
+

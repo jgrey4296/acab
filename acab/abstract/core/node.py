@@ -30,7 +30,7 @@ ROOT = AcabValue(name=config.value("Data", "ROOT"))
 @dataclass
 class AcabNode(DI.NodeInterface):
     """ The Base Node Class for Tries/Data structures etc
-    Not an AcabValue
+    Not an AcabValue, Uses the most basic semantics possible
     """
 
     # value : AcabValue                = field(default=None)

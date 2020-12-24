@@ -38,9 +38,17 @@ TYPE_INSTANCE    = config.value("Value.Structure", "TYPE_INSTANCE")
 
 logging = root_logger.getLogger(__name__)
 
+Operator  = 'ProductionOperator'
+Component = 'ProductionComponent'
+Container = 'ProductionContainer'
+Structure = 'ProductionStructure'
+
+
 @dataclass
 class ProductionOperator(AcabValue):
-    """ The Base Operator Class """
+    """ The Base Operator Class,
+    Provides the way to use other systems and code in Acab
+    """
 
     def __post_init__(self):
         super(ProductionOperator, self).__post_init__()
@@ -113,11 +121,23 @@ class ProductionComponent(AcabStatement):
         return verified
 
 
+    def bind(self, data) -> Component:
+        # Bind params / operator
+        if self.op.is_var and self.op.value in data:
+            bound_op = data[self.op.value]
+        else:
+            bound_op = self.op.copy()
+
+        bound_params = [x.bind(data) for x in self.params]
+
+        return self.copy(value=bound_op, params=bound_params)
+
 @dataclass
 class ProductionContainer(AcabStatement):
     """ Production Container: An applicable statement of multiple component clauses """
     def __post_init__(self):
         super(ProductionContainer, self).__post_init__()
+        assert(isinstance(self.value, list))
         self.data[TYPE_INSTANCE] = CONTAINER_TYPE_PRIM_S
 
     def __len__(self):
@@ -149,6 +169,14 @@ class ProductionContainer(AcabStatement):
 
 
 
+    def bind(self, data) -> Container:
+        # Bind params,
+        # then Bind each clause separately,
+        bound_clauses = [x.bind(data) for x in self.value]
+        bound_params = [x.bind(data) for x in self.params]
+        return self.copy(value=bound_clauses, params=bound_params)
+
+
 @dataclass
 class ProductionStructure(ProductionContainer):
     """
@@ -158,12 +186,12 @@ class ProductionStructure(ProductionContainer):
     structure: Dict[str, ProductionContainer] = field(default_factory=dict)
 
     def __post_init__(self):
-        super(ProductionComponent, self).__post_init__()
+        self.value = []
+        super(ProductionContainer, self).__post_init__()
         self.data[TYPE_INSTANCE] = CONTAINER_TYPE_PRIM_S
-        assert(not bool(self.clauses))
 
         clauses = list(self.structure.values())
-        self.clauses += clauses
+        self.value += clauses
 
     @property
     def keys(self):
@@ -171,3 +199,13 @@ class ProductionStructure(ProductionContainer):
 
     def __getitem__(self, key):
         return self.structure[key]
+
+    def bind(self, data) -> Structure:
+        # Bind params,
+        bound_params = [x.bind(data) for x in self.params]
+        # Bind clauses
+        bound_clauses = [x.bind(data) for x in self.clauses]
+        # Bind sub containers
+        bound_struct = {x: y.bind(data) for x,y in self.structure.items()}
+
+        return self.copy(value=bound_clauses, params=bound_params, structure=bound_struct)

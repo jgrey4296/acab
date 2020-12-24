@@ -13,6 +13,7 @@ from uuid import uuid1
 import itertools as it
 from enum import Enum
 import logging as root_logger
+from dataclasses import dataclass, field
 
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.values import AcabValue
@@ -30,13 +31,26 @@ CTX_OP = Enum("ctx", "collapse")
 
 logging = root_logger.getLogger(__name__)
 
+Sentence = 'Sentence'
+Node     = 'Node'
+Engine   = 'Engine'
 
-
+@dataclass
 class Contexts(ContextInterface):
     """ Container of available contexts for word match in the trie
     Conceptually a list of tuples: ({}, LastAccessedNode)
     And Stores failure state
     """
+    query_history: List[Sentence]         = field(init=False, default_factory=list)
+    query_remainder: List[Sentence]       = field(init=False, default_factory=list)
+    bind_groups: List[Dict[str, Any]]     = field(init=False, default_factory=list)
+    nodes: List[Node]                     = field(init=False, default_factory=list)
+    failures : List[Dict[str, Any]]       = field(init=False, default_factory=list)
+    queued_failures: List[Dict[str, Any]] = field(init=False, default_factory=list)
+    engine : Engine                       = field(init=False, default_factory=list)
+    query_fail_clause: Optional[Sentence] = field(init=False, default=None)
+
+
     @staticmethod
     def rebind_across_contexts(names, values, base):
         """ Utility method to perform alpha conversion """
@@ -49,37 +63,6 @@ class Contexts(ContextInterface):
             new_base[x.name] = AcabValue.safe_make(y)
 
         return new_base
-
-
-    def __init__(self, start_node=None, bindings=None, engine=None):
-        """
-        Setup the initial context of no bindings
-        """
-        # Link the context with what asked it:
-        self._uuid = uuid1()
-        self._query_history = []
-        self._query_fail_clause = None
-        self._query_remainder = []
-        # Bind Groups
-        self._bind_groups: List[Dict] = []
-        # Nodes
-        self._nodes: List[AcabNode] = []
-        # Failures: Records true failures
-        self._failures: List[Dict] = []
-        # Queued Failures: Records failures that may potentially have fallback values
-        self._queued_failures: List[Dict] = []
-
-        # The Engine used for operator retrieval
-        self._engine = engine
-
-        if bindings is not None:
-            if not isinstance(bindings, list):
-                bindings = [bindings]
-
-            self._bind_groups += bindings
-
-        if start_node is not None:
-            self._nodes.append(start_node)
 
 
     def __len__(self):
@@ -104,10 +87,6 @@ class Contexts(ContextInterface):
     def __bool__(self):
         return bool(self._bind_groups)
 
-
-    @property
-    def nodes(self):
-        return self._nodes
 
     def append(self, data, fail_dict=None):
         """
