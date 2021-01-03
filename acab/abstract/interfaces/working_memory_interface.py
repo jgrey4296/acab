@@ -27,7 +27,6 @@ from dataclasses import dataclass, field
 
 from fractions import Fraction
 
-from acab.abstract.interfaces.util_interfaces import FlattenInterface
 from acab.abstract.interfaces.dsl_interface import DSL_Interface
 
 Structure       = 'AcabStructure'
@@ -38,14 +37,9 @@ Parser          =  'PyParsing.ParserElement'
 
 
 @dataclass
-class WorkingMemoryInterface(FlattenInterface, metaclass=abc.ABCMeta):
+class WorkingMemoryInterface(metaclass=abc.ABCMeta):
     """ The Core Interface. Add/Retract and Query the WM """
     _structure : Structure = field(init=False)
-
-    @property
-    def to_sentences(self) -> List[Sentence]:
-        """ A simple passthrough """
-        return self._structure.to_sentences
 
     @abc.abstractmethod
     def add(self, data, leaf=None):

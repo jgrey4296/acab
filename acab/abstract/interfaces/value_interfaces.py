@@ -11,8 +11,6 @@ from dataclasses import dataclass, field
 
 from uuid import uuid1, UUID
 
-
-from acab.abstract.interfaces.util_interfaces import FlattenInterface
 from acab.abstract.config.config import AcabConfig
 import logging as root_logger
 

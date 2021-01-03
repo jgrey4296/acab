@@ -7,7 +7,6 @@ from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic
 
 from dataclasses import dataclass, field
-from acab.abstract.interfaces.util_interfaces import FlattenInterface
 from acab.abstract.parsing.bootstrap_parser import BootstrapParser
 from acab.abstract.interfaces.dsl_interface import DSL_Interface
 

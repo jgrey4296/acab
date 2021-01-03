@@ -9,8 +9,6 @@ from dataclasses import dataclass,  field
 
 import abc
 
-from acab.abstract.interfaces.util_interfaces import FlattenInterface
-
 @dataclass
 class NodeInterface(metaclass=abc.ABCMeta):
     """  """
@@ -41,7 +39,7 @@ class NodeInterface(metaclass=abc.ABCMeta):
 
 
 @dataclass
-class StructureInterface(FlattenInterface, metaclass=abc.ABCMeta):
+class StructureInterface(metaclass=abc.ABCMeta):
       """  """
       root : 'AcabNode'                    = field(init=False)
       semantics : 'AcabStructureSemantics' = field(default=None)
