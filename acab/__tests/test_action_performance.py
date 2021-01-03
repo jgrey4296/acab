@@ -12,14 +12,14 @@ from acab.abstract.parsing import consts as PConst
 
 from acab.abstract.core.values import  AcabValue
 from acab.abstract.core.values import Sentence
-from acab.abstract.containers.production_abstractions import ProductionOperator, ProductionContainer
-from acab.abstract.engine.bootstrap_parser import BootstrapParser
+from acab.abstract.core.production_abstractions import ProductionOperator, ProductionContainer
+from acab.abstract.parsing.bootstrap_parser import BootstrapParser
 
-from acab.engines.trie_engine import TrieEngine
-from acab.working_memory.trie_wm.parsing import ActionParser as AP
+from acab.abstract.engine.engine import Engine
+from acab.modules.parsing.el_parsing import ActionParser as AP
 from acab.modules.operators.action import action_operators as act_ops
 
-from acab.abstract.printing.print_semantics import AcabPrintSemantics
+from acab.abstract.semantics.print_semantics import AcabPrintSemantics
 from acab.abstract.printing import default_handlers as DH
 
 basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel),
@@ -27,7 +27,7 @@ basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], 
 
 Printer = AcabPrintSemantics(basic_plus, default_values={'MODAL_FIELD' : 'exop'})
 
-from acab.abstract.containers.production_semantics import ProductionSemantics
+from acab.abstract.semantics.production_semantics import ProductionSemantics
 
 # TODO production semantics
 ProdSem = ProductionSemantics()
@@ -55,7 +55,7 @@ class ActionTests(unittest.TestCase):
 
 
     def setUp(self):
-        self.e = TrieEngine(modules=["acab.modules.operators.standard_operators"])
+        self.e = Engine(modules=["acab.modules.operators.standard_operators"])
         self.e.alias_module(S("acab","modules","operators", "standard", "operators"), S("A"))
         self.e.register_ops([S("Blah").attach_statement(ActionBlah())])
         self.e.build_DSL()

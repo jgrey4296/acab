@@ -14,12 +14,11 @@ AcabConfig.Get("acab/abstract/config")
 
 from acab.abstract.core.values import AcabValue as PV
 from acab.abstract.core.values import Sentence
-from acab.abstract.core.contexts import Contexts
 
-from acab.engines.trie_engine import TrieEngine
+from acab.abstract.engine.engine import Engine
 
-from acab.working_memory.trie_wm.parsing import TransformParser as TP
-from acab.working_memory.trie_wm.parsing import FactParser as FP
+from acab.modules.parsing.el_parsing import TransformParser as TP
+from acab.modules.parsing.el_parsing import FactParser as FP
 
 from acab.modules.values import numbers as NS
 
@@ -41,7 +40,7 @@ class TransformTests(unittest.TestCase):
         logging = root_logger.getLogger(__name__)
 
     def setUp(self):
-        self.e = TrieEngine(modules=["acab.modules.values.numbers",
+        self.e = Engine(modules=["acab.modules.values.numbers",
                                      "acab.modules.operators.standard_operators"])
         self.e.alias_module(S("acab", "modules", "values", "numbers"), S("N"))
         self.e.alias_module(S("acab", "modules", "operators", "standard", "operators"), S("S"))

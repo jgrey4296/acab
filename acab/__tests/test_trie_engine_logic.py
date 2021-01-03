@@ -11,8 +11,8 @@ from acab.abstract.config.config import AcabConfig
 AcabConfig.Get("acab/abstract/config")
 
 from acab.abstract.core.values import Sentence
-from acab.abstract.containers.production_abstractions import ProductionStructure
-from acab.engines.trie_engine import TrieEngine
+from acab.abstract.core.production_abstractions import ProductionStructure
+from acab.abstract.engine.engine import Engine
 
 def S(*words):
     return Sentence.build(words)
@@ -36,7 +36,7 @@ class Engine_Logic_Tests(unittest.TestCase):
         return abspath(join("testfiles", filename))
 
     def setUp(self):
-        self.e = TrieEngine(modules=["acab.modules.operators.standard_operators"])
+        self.e = Engine(modules=["acab.modules.operators.standard_operators"])
         self.e.alias_module(S("acab", "modules", "operators", "standard", "operators"), S("S"))
         self.e.build_DSL()
 

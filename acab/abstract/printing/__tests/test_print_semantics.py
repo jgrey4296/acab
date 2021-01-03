@@ -16,9 +16,10 @@ config = GET("acab/abstract/config")
 
 from acab.abstract.core.values import AcabValue, AcabStatement
 from acab.abstract.core.values import Sentence
-from acab.abstract.containers.production_abstractions import ProductionContainer, ProductionComponent, ProductionOperator
+from acab.abstract.core.production_abstractions import ProductionContainer, ProductionComponent, ProductionOperator
 
-from acab.abstract.printing.print_semantics import AcabPrintSemantics, RET_enum
+from acab.abstract.semantics.print_semantics import AcabPrintSemantics
+from acab.abstract.semantics.util import RET_enum
 from acab.abstract.printing import default_handlers as DH
 
 NEGATION_S        = config.value("Value.Structure", "NEGATION")

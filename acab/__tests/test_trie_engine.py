@@ -10,13 +10,11 @@ from acab.abstract.config.config import AcabConfig
 AcabConfig.Get("acab/abstract/config")
 
 from acab.abstract.core.values import AcabValue
-from acab.abstract.containers.production_abstractions import ProductionStructure
-from acab.abstract.core.contexts import Contexts
+from acab.abstract.core.production_abstractions import ProductionStructure
 
-import acab.engines.trie_engine as T
-
-import acab.working_memory.trie_wm.parsing.TransformParser as TP
-import acab.working_memory.trie_wm.parsing.ActionParser as AP
+from acab.abstract.engine.engine import Engine
+import acab.modules.parsing.el_parsing.TransformParser as TP
+import acab.modules.parsing.el_parsing.ActionParser as AP
 
 
 class Engine_Tests(unittest.TestCase):
@@ -33,7 +31,7 @@ class Engine_Tests(unittest.TestCase):
         logging = root_logger.getLogger(__name__)
 
     def setUp(self):
-        self.e = T.TrieEngine()
+        self.e = Engine()
         self.e.build_DSL()
 
     def tearDown(self):
@@ -105,13 +103,13 @@ class Engine_Tests(unittest.TestCase):
 
 
     @mock.patch('acab.abstract.interfaces.working_memory_interface.WorkingMemoryCore', autospec=True)
-    @mock.patch('acab.abstract.containers.struct_semantics.AcabStructureSemantics', autospec=True)
+    @mock.patch('acab.abstract.semantics.struct_semantics.AcabStructureSemantics', autospec=True)
     def test_init(self, wm_mock, sem_mock):
         engine = Engine(wm_mock)
         wm_mock.assert_called_once_with(None)
 
     @unittest.skip("TODO")
-    @mock.patch('acab.abstract.containers.production_abstractions', autospec=True)
+    @mock.patch('acab.abstract.core.production_abstractions', autospec=True)
     @mock.patch('acab.abstract.interfaces.working_memory_interface.WorkingMemoryCore', autospec=True)
     def test_load_modules(self, wm_mock, op_mock):
         module_mock = mock.Mock()
@@ -119,7 +117,7 @@ class Engine_Tests(unittest.TestCase):
         op_mock.clear_registrations.assert_called_once()
         engine._working_memory.add_modules.assert_called_once()
 
-    @mock.patch('acab.abstract.containers.production_abstractions', autospec=True)
+    @mock.patch('acab.abstract.core.production_abstractions', autospec=True)
     @mock.patch('acab.abstract.interfaces.working_memory_interface.WorkingMemoryCore', autospec=True)
     def test_reload_modules(self, wm_mock, op_mock):
         engine = Engine(wm_mock)

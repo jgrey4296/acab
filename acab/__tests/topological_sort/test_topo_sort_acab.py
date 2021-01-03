@@ -16,12 +16,12 @@ config = AcabConfig.Get("acab/abstract/config")
 
 from acab.abstract.core.values import AcabValue, AcabStatement, Sentence
 from acab.abstract.core.node import AcabNode
-from acab.abstract.core.contexts import Contexts
 
 from acab.modules.structures.trie.trie import Trie
 from acab.abstract.core.acab_struct import AcabStruct
 from acab.abstract.interfaces.data_interfaces import StructureInterface
-
+from acab.abstract.interfaces.semantic_interfaces import IndependentSemantics
+from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
 
 from acab.abstract.core import production_abstractions as PA
 
@@ -67,6 +67,7 @@ class TopologicalOrderedAcabTests(unittest.TestCase):
 
 
     # Configuration
+# Config
     def test_config_singleton(self):
         """ Check the config obj is a singleton"""
         config = AcabConfig.Get()
@@ -119,6 +120,7 @@ class TopologicalOrderedAcabTests(unittest.TestCase):
         with self.assertRaises(Exception):
             config.modal_enums['blah']
 
+# Data
 
     # -> ClosedSet[Values, Node]
     # Creation,
@@ -162,12 +164,6 @@ class TopologicalOrderedAcabTests(unittest.TestCase):
         self.assertFalse(node.children)
 
 
-    def test_context_creation(self):
-        """ Check Contexts create to hold bindings """
-        ctxs = Contexts()
-        self.assertIsInstance(ctxs, Contexts)
-
-
     # node root, containment, core add, get, remove, has etc
     def test_value_equality(self):
         """ Check two values can equal each other in simple cases """
@@ -202,6 +198,19 @@ class TopologicalOrderedAcabTests(unittest.TestCase):
         value = AcabValue("test")
         self.assertTrue(value in sen)
 
+    def test_sentence_squared(self):
+        """ Check a sentence *in* a sentence """
+        sen1 = Sentence.build(["a", "test", "sentence"])
+        sen2 = Sentence.build(["a", "further", sen1])
+        self.assertIn(sen1, sen2)
+
+    def test_sentence_squared_fail(self):
+        """ Check a sentence *in* a sentence doesn't always pass """
+        sen1 = Sentence.build(["a", "test", "sentence"])
+        sen2 = Sentence.build(["a", "different", "sentence"])
+        sen3 = Sentence.build(["a", "further", sen1])
+        self.assertNotIn(sen2, sen3)
+
     def test_sentence_containment_fail(self):
         sen = Sentence.build(["a", "test", "sentence"])
         value = AcabValue("blah")
@@ -215,7 +224,7 @@ class TopologicalOrderedAcabTests(unittest.TestCase):
         self.assertIsInstance(sen_copy, Sentence)
         self.assertNotEqual(sen, sen_copy)
 
-        self.assertFalse("aewf" in sen)
+        self.assertFalse("aweg" in sen)
         self.assertTrue("aweg" in sen_copy)
 
 
@@ -290,6 +299,7 @@ class TopologicalOrderedAcabTests(unittest.TestCase):
         self.assertIsInstance(the_trie, Trie)
         self.assertIsInstance(the_trie, StructureInterface)
 
+# Productions
     def test_production_abstraction_operator(self):
         abstract_op = PA.ProductionOperator()
         self.assertIsInstance(abstract_op, PA.ProductionOperator)
@@ -366,38 +376,41 @@ class TopologicalOrderedAcabTests(unittest.TestCase):
         self.assertIsInstance(bind_result, PA.ProductionStructure)
         self.assertEqual(bind_result.params[0], "blah")
 
-
-
-
-
     # -> Semantics[ClosedSet, Abstractions]
-    def test_node_semantics(self):
+# Semantics
+    def test_node_semantic_creation(self):
         """ Test basic node semantic actions """
+        node_sem = BasicNodeSemantics()
+        self.assertIsInstance(node_sem, IndependentSemantics)
+
+
+    def test_basic_node(self):
         pass
 
-    def test_context_semantics(self):
-        """ Check basic context semantics """
-        pass
-
-    def test_structure_semantics(self):
-        """ Check basic trie structure semantics """
-        pass
-
-    def test_struct_semantics_retrieval(self):
-        """ Check node semantics can be retrieved for a value """
-        pass
-
-    def test_basic_node_semantics(self):
-        """ Check basic node semantic actions """
-        pass
-
-    # Trie *Implementation*
     def test_trie(self):
-        # construction
+        pass
+
+    def test_exclusion_trie(self):
+        pass
+
+    def test_query(self):
+        pass
+
+    def test_transform(self):
+        pass
+
+    def test_action(self):
+        pass
+
+    def test_productions(self):
+        pass
+
+    def test_printing(self):
         pass
 
     # -> Bootstrap, Working Memory, Engine
     # uses trie
+# Engine
     def test_bootstrap_constructor(self):
         pass
 
