@@ -12,9 +12,6 @@ from acab.abstract.parsing.consts import NEGATION_SYMBOL, END, opLn, FACT_HEAD, 
 from acab.abstract.parsing.consts import COLLAPSE_CONTEXT, COMMA, DELIM
 from acab.abstract.parsing.consts import BIND_S, AT_BIND_S, VALUE_S, OPERATOR_S
 
-from acab.abstract.core.contexts import CTX_OP
-
-from acab.working_memory.trie_wm import util as WMU
 
 logging = root_logger.getLogger(__name__)
 # Hotload insertion points:
@@ -31,6 +28,7 @@ func_headed_sen = pp.Suppress(pp.Literal('λ')) + BASIC_SEN
 # Build After comparison operators have been constructed:
 op_path = pp.Or([HOTLOAD_QUERY_OP, func_headed_sen])
 
+# TODO should this be a list of params?
 QUERY_OP_Internal = N(OPERATOR_S, op_path) \
     + N(VALUE_S, PU.PARAM_CORE(end=True))
 

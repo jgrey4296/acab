@@ -9,8 +9,7 @@ from acab.abstract.parsing.consts import N, NG, zrm, TRANSFORM_HEAD
 from acab.abstract.parsing.consts import RIGHT_S, OPERATOR_S, TARGET_S, LEFT_S
 from acab.abstract.parsing.funcs import build_transform_component, build_transform
 
-from acab.working_memory.trie_wm import util as WMU
-from acab.working_memory.trie_wm.parsing.FactParser import BASIC_SEN, PARAM_SEN, op_path
+from .FactParser import BASIC_SEN, PARAM_SEN, op_path
 
 from acab.abstract.config.config import AcabConfig
 

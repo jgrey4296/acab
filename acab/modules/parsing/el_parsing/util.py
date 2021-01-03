@@ -15,10 +15,9 @@ from acab.abstract.parsing import funcs as Pfunc
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
 
-from acab.abstract.containers.production_abstractions import ProductionContainer
+from acab.abstract.core.production_abstractions import ProductionContainer
 
 from acab.error.acab_parse_exception import AcabParseException
-from acab.working_memory.trie_wm import util as WMU
 
 config = AcabConfig.Get()
 

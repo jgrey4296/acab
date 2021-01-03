@@ -14,7 +14,7 @@ from acab.abstract.core.values import AcabValue
 
 from acab.abstract.parsing.parsers import HOTLOAD_VALUES, VALBIND
 
-from acab.abstract.printing.print_semantics import AcabPrintSemantics
+from acab.abstract.semantics.print_semantics import AcabPrintSemantics
 from acab.abstract.printing import default_handlers as DH
 from acab.working_memory.trie_wm import util as KBU
 import acab.working_memory.trie_wm.parsing.FactParser as FP

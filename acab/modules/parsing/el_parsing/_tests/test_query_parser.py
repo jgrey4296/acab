@@ -14,13 +14,13 @@ import acab.working_memory.trie_wm.parsing.QueryParser as QP
 
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
-from acab.abstract.engine.bootstrap_parser import BootstrapParser
-from acab.abstract.containers.production_abstractions import ProductionOperator, ProductionContainer, ProductionComponent
+from acab.abstract.parsing.bootstrap_parser import BootstrapParser
+from acab.abstract.core.production_abstractions import ProductionOperator, ProductionContainer, ProductionComponent
 
 from acab.modules.operators import query as QOP
 from acab.working_memory.trie_wm import util as KBU
 
-from acab.abstract.printing.print_semantics import AcabPrintSemantics
+from acab.abstract.semantics.print_semantics import AcabPrintSemantics
 from acab.abstract.printing import default_handlers as DH
 
 basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel),

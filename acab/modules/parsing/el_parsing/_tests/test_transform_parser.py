@@ -10,15 +10,15 @@ AcabConfig.Get("acab/abstract/config")
 
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
-from acab.abstract.engine.bootstrap_parser import BootstrapParser
-from acab.abstract.containers.production_abstractions import ProductionOperator, ProductionContainer
+from acab.abstract.parsing.bootstrap_parser import BootstrapParser
+from acab.abstract.core.production_abstractions import ProductionOperator, ProductionContainer
 from acab.working_memory.trie_wm import util as KBU
-from acab.working_memory.trie_wm.parsing import TransformParser as TP
+from acab.modules.parsing.el_parsing TransformParser as TP
 
-from acab.working_memory.trie_wm.parsing import ActionParser as AP
-from acab.working_memory.trie_wm.parsing import FactParser as FP
+from acab.modules.parsing.el_parsing ActionParser as AP
+from acab.modules.parsing.el_parsing FactParser as FP
 
-from acab.abstract.printing.print_semantics import AcabPrintSemantics
+from acab.abstract.semantics.print_semantics import AcabPrintSemantics
 from acab.abstract.printing import default_handlers as DH
 
 basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel),

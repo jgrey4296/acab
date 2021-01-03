@@ -16,7 +16,7 @@ from acab.abstract.config.config import AcabConfig
 AcabConfig.Get("acab/abstract/config")
 
 from acab.abstract.core.values import AcabValue
-from acab.abstract.engine.bootstrap_parser import BootstrapParser
+from acab.abstract.parsing.bootstrap_parser import BootstrapParser
 
 class BootstrapParserTests(unittest.TestCase):
 
