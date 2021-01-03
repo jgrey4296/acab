@@ -11,9 +11,9 @@ from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.node import AcabNode
 
-from acab.modules.node_semantics.basic_semantics import BasicNodeSemantics
+from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
 
-from acab.abstract.interfaces import semantics_interface as SI
+from acab.abstract.interfaces import semantic_interfaces as SI
 
 from acab.modules.analysis.typing import type_exceptions as te
 
@@ -21,7 +21,7 @@ import logging as root_logger
 
 logging = root_logger.getLogger(__name__)
 
-class TypingVarSemantics(BasicNodeSemantics, SI.NodeSemantics):
+class TypingVarSemantics(BasicNodeSemantics, SI.IndependentSemantics):
 
     def up(self, word: AcabValue, constructor: Callable) -> AcabNode:
         """ Lifting a value to a data node """

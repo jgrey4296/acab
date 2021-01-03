@@ -9,10 +9,10 @@ AcabConfig.Get("acab/abstract/config")
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.node import AcabNode
-from acab.abstract.engine.bootstrap_parser import BootstrapParser
+from acab.abstract.parsing.bootstrap_parser import BootstrapParser
 
 from acab.abstract.containers import action
-from acab.abstract.containers.production_abstractions import ProductionOperator, ProductionComponent
+from acab.abstract.core.production_abstractions import ProductionOperator, ProductionComponent
 
 from acab.modules.analysis.typing import type_exceptions as te
 from acab.modules.analysis.typing import util as TU
@@ -20,8 +20,8 @@ from acab.modules.analysis.typing.type_checker import TypeChecker
 from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition
 from acab.modules.analysis.typing.values.type_definition import TypeDefinition
 
-from acab.working_memory.trie_wm.parsing import ActionParser as AP
-from acab.working_memory.trie_wm.parsing import FactParser as FP
+from acab.modules.parsing.el_parsing ActionParser as AP
+from acab.modules.parsing.el_parsing FactParser as FP
 
 def S(*in_string):
     return Sentence([AcabValue(x) for x in in_string])

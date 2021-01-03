@@ -14,18 +14,18 @@ from dataclasses import dataclass, field
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.node import AcabNode
-from acab.abstract.core.node_semantics import AcabNodeSemantics
+from acab.modules.semantics.node_testing import AcabNodeTestSemantics
 
 from acab.modules.analysis.typing import type_exceptions as te
 from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition
 from acab.modules.analysis.typing.values.type_definition import TypeDefinition, SumTypeDefinition
 from acab.modules.structures.trie.trie import Trie
 from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics
-from acab.modules.node_semantics.basic_semantics import BasicNodeSemantics
+from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
 
 import acab.modules.analysis.typing.util as util
 
-from acab.abstract.interfaces import semantics_interface as SI
+from acab.abstract.interfaces import semantic_interfaces as SI
 
 from .type_assignment_semantics import TypeAssignmentNode
 from .type_variable_semantics import VarTypeNode
@@ -43,7 +43,7 @@ LOG_MESSAGES['no_children']      = "Val: No Children, assigning type: {} to {}"
 LOG_MESSAGES['validate_top']     = "Validating: {} on {}"
 
 
-class TypingDefinitionSemantics(BasicNodeSemantics, SI.NodeSemantics, SI.SemanticInterface):
+class TypingDefinitionSemantics(BasicNodeSemantics, SI.IndependentSemantics, SI.SemanticLifter):
 
     def up(self, word : AcabValue, constructor : Callable) -> AcabNode:
         """ The Most Basic Lift """
@@ -74,8 +74,8 @@ class TypingDefinitionSemantics(BasicNodeSemantics, SI.NodeSemantics, SI.Semanti
 @dataclass
 class TypeDefNode(AcabNode):
     """ A Node describing a type definition """
-    _typedef_trie : 'DataStructure' = field(init=False)
-    _var_binds : 'DataStructure' = field(init=False)
+    _typedef_trie : 'AcabStruct' = field(init=False)
+    _var_binds : 'AcabStruct' = field(init=False)
 
     @property
     def definition(self):
@@ -148,7 +148,7 @@ class TypeDefNode(AcabNode):
         definition_bindings = [lookup_dict[x.name] for x in self.definition.vars]
         definition_instances = [x if isinstance(x, Sentence.build) else x.type_instance for x in definition_bindings]
 
-        usage_trie.type_instance._params = definition_instances
+        usage_trie.type_instance.params = definition_instances
 
     def _generate_polytype_bindings(self, usage_trie, create_var):
         """ Generate a temporary binding environment for the definition's

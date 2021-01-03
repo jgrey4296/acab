@@ -2,7 +2,7 @@ from acab.abstract.config.config import AcabConfig
 
 from acab.modules.analysis.typing import util as TU
 
-from .type_definition import TypeDefinition
+from .type_definition import TypeDefinition, TYPE_INSTANCE_S
 
 config = AcabConfig.Get()
 
@@ -16,7 +16,7 @@ class OperatorDefinition(TypeDefinition):
         # eg: operator.+.$x(::num).$y(::num).$z(::num).num_plus
         if not isinstance(structure, list):
             structure = [structure]
-        super().__init__(structure, params=params, _type=TU.OPERATOR_DEFINITION)
+        super().__init__(structure, params=params, data={TYPE_INSTANCE_S: TU.OPERATOR_DEFINITION})
         self._func_name = sugar_syntax
 
     def __hash__(self):

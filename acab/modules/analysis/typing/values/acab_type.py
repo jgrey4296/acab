@@ -19,7 +19,7 @@ class TypeStatement(AcabStatement):
         return self.path[-1]
     @property
     def vars(self):
-        return self._params
+        return self.params
 
     @property
     def structure(self):

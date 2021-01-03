@@ -53,12 +53,12 @@ from uuid import uuid1
 from acab.abstract.core.values import AcabValue, AcabStatement
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.node import AcabNode
-from acab.abstract.containers.production_abstractions import ProductionOperator
+from acab.abstract.core.production_abstractions import ProductionOperator
 
 from acab.modules.structures.trie.trie import Trie
 from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics
 
-from acab.modules.node_semantics.basic_semantics import BasicNodeSemantics
+from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
 
 from . import type_exceptions as te
 

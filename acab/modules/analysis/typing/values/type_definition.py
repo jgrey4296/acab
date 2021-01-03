@@ -22,7 +22,7 @@ NAME_S          = util.value("Parse.Structure", "NAME")
 class TypeDefinition(TypeStatement):
     """ Defines the Structure of a Product type """
 
-    def __init__(self, structure, params=None, _type=None):
+    def __init__(self, structure, params=None, data=None):
         """ Structure creates the dict of locations.
         Only leaves get type anotations. Thus:
         { .a.$x :: String, .b.$c :: Num, .d!$e::Location }
@@ -30,10 +30,12 @@ class TypeDefinition(TypeStatement):
         # The name is the location. eg: .types.person
         assert isinstance(structure, list)
         assert all([isinstance(x, Sentence) for x in structure])
-        if _type is None:
-            _type = TYPE_DEFINITION
+        if data is None:
+            data = {}
+        if TYPE_INSTANCE_S not in data:
+            data[TYPE_INSTANCE_S] = TYPE_DEFINITION
 
-        super().__init__(None, params=params, _type=_type)
+        super().__init__(None, params=params, data=data)
 
         if bool(structure):
             self._structure += structure
@@ -117,7 +119,7 @@ class TypeDefinition(TypeStatement):
 class SumTypeDefinition(TypeDefinition):
     """ Defines a Sum Type  """
 
-    def __init__(self, structure, params=None, _type=None):
+    def __init__(self, structure, params=None):
         # Flatten Product Types out of Structure:
         # TODO: improve this
         flat_structure = []
@@ -130,5 +132,5 @@ class SumTypeDefinition(TypeDefinition):
             _type = SUM_DEFINITION
         super(SumTypeDefinition, self).__init__(flat_structure,
                                                 params=params,
-                                                _type=_type)
+                                                data={TYPE_INSTANCE_S: _type})
         assert(bool(self.structure))

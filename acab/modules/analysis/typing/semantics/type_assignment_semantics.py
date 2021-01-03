@@ -10,21 +10,21 @@ from typing import cast, ClassVar, TypeVar
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
-from acab.abstract.core.node_semantics import AcabNodeSemantics
+from acab.modules.semantics.node_testing import AcabNodeTestSemantics
 
 from acab.abstract.parsing.consts import ATOM_V
 
-from acab.abstract.interfaces import semantics_interface as SI
+from acab.abstract.interfaces import semantic_interfaces as SI
 
 from acab.modules.analysis.typing import type_exceptions as te
 from acab.modules.analysis.typing import util
-from acab.modules.node_semantics.basic_semantics import BasicNodeSemantics
+from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
 
 logging = root_logger.getLogger(__name__)
 
 
 
-class TypingAssignmentSemantics(BasicNodeSemantics, SI.NodeSemantics, SI.SemanticInterface):
+class TypingAssignmentSemantics(BasicNodeSemantics, SI.IndependentSemantics, SI.SemanticLifter):
 
     def word(self, word: AcabValue, constructor: Callable) -> AcabNode:
         """ The Most Basic Lift """
@@ -69,7 +69,7 @@ class TypeAssignmentNode(AcabNode):
 
         if self.is_var and self._var_node is None and var_struct is not None:
             # if var, connect to var type struct
-            result = var_struct.add([self._value])
+            result = var_struct.add([self.value])
             self._var_node = result[0][0]
             self._var_node.add_node(self)
 

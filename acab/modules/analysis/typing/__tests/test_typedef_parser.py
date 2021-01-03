@@ -20,8 +20,8 @@ from acab.error.acab_parse_exception import AcabParseException
 from acab.modules.analysis.typing import util as TU
 from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition
 from acab.modules.analysis.typing.values.type_definition import TypeDefinition
-from acab.working_memory.trie_wm.parsing import FactParser as FP
-from acab.abstract.printing.print_semantics import AcabPrintSemantics
+from acab.modules.parsing.el_parsing FactParser as FP
+from acab.abstract.semantics.print_semantics import AcabPrintSemantics
 from acab.abstract.printing import default_handlers as DH
 
 basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel),
