@@ -10,8 +10,8 @@ from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
 from acab.abstract.interfaces import engine_interface as EI
-from acab.abstract.interfaces.working_memory_interface import WorkingMemoryCore
-from acab.abstract.containers.production_abstractions import ProductionOperator, ProductionContainer
+from acab.abstract.interfaces.working_memory_interface import WorkingMemoryInterface
+from acab.abstract.core.production_abstractions import ProductionOperator, ProductionContainer
 from acab.error.acab_base_exception import AcabBaseException
 from acab.error.acab_import_exception import AcabImportException
 from acab.error.acab_parse_exception import AcabParseException
@@ -24,7 +24,7 @@ from dataclasses import dataclass, field, InitVar, replace
 from fractions import Fraction
 from importlib import import_module
 from os.path import exists, split, expanduser, abspath
-from re import Pattern
+from re import Pattern, compile
 from typing import Callable, Iterator, Union, Match
 from typing import List, Set, Dict, Tuple, Optional, Any
 from typing import Mapping, MutableMapping, Sequence, Iterable
@@ -36,16 +36,16 @@ import logging as root_logger
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
 
-MODULE_SPLIT_REG = re.compile(config.value("Parse.Patterns", "MODULE_SPLIT_REG"))
+MODULE_SPLIT_REG = compile(config.value("Parse.Patterns", "MODULE_SPLIT_REG"))
 
 
 @dataclass
-class Engine(EI.EngineInterface):
+class Engine(EI.RewindEngineInterface, EI.ModuleLoaderInterface, EI.DSLBuilderInterface):
     """ The Abstract class of a production system engine. """
 
     # Blocks engine use until build_DSL has been called
-    __wm_constructor      : Callable          = field()
-    _working_memory       : WorkingMemoryCore = field(init=False)
+    _wm_constructor      : Callable          = field(init=False)
+    _working_memory       : WorkingMemoryInterface = field(init=False)
     init_strs             : List[str]         = field(default_factory=list)
     initialised           : bool              = field(init=False, default=False)
     load_paths            : List[str]         = field(default_factory=list)
@@ -56,13 +56,19 @@ class Engine(EI.EngineInterface):
         # cached bindings
         self._cached_bindings = []
 
-        # initialise
+        # initialise modules
         if bool(self.modules):
             self.load_modules(*self.modules)
 
+        # Initialise DSL
+        self.build_DSL()
+
+        # Now Load Text files:
         if bool(self.load_paths):
             for x in self.load_paths:
                 self.load_file(x)
+
+
 
     @property
     def bindings(self):
@@ -123,7 +129,7 @@ class Engine(EI.EngineInterface):
         """ Ask a question of the working memory """
         if not self.initialised:
             raise AcabBaseException("DSL Not Initialised")
-        data = self._main_parser.parseString(s)
+        data = self._query_parser.parseString(s)
         result = self._working_memory.query(data, ctxs=ctxs, engine=self)
         if cache:
             self._cached_bindings = result
@@ -165,6 +171,7 @@ class Engine(EI.EngineInterface):
         All statements are output as leaves,
         and all paths with non-leaf statements convert to simple formats
         """
+        # TODO use a semantics + down
         return self._working_memory.to_sentences()
 
 

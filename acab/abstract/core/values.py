@@ -253,23 +253,11 @@ class AcabValue(VI.ValueInterface, Generic[T]):
         simple_value = Sentence.build([AcabValue.safe_make(self.name, data=new_data)])
         return simple_value
 
-    def to_sentences(self):
-        return [self]
 class AcabStatement(AcabValue):
     """ AcabStatement functions the same as AcabValue,
     but provides specific functionality for converting to a string
     """
-    def to_sentences(self) -> List[Sen]:
-        """
-        Represent a Complex Object in the verbose Core Language.
-        (ie: just Words, Sentences, Variables, and Types)
-        eg: Convert a Query "a.b(>20).c?" into a set of explicit sentences:
-        query.[a.b.c]
-        operator(λgreaterThan).[a.b].20.Bool
-        """
-        raise NotImplementedError()
-
-
+    pass
 
 @dataclass
 class Sentence(AcabStatement, VI.SentenceInterface):
@@ -439,8 +427,4 @@ class Sentence(AcabStatement, VI.SentenceInterface):
         sen_copy = self.copy(value=out_words)
         return (sen_copy, statements)
 
-
-
-    def to_sentences(self):
-        return [self]
 

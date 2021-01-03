@@ -22,12 +22,12 @@ from acab.abstract.interfaces.working_memory_interface import WorkingMemoryInter
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.node import AcabNode
-from acab.abstract.containers.production_abstractions import ProductionOperator
+from acab.abstract.core.production_abstractions import ProductionOperator
 from acab.abstract.parsing.parsers import OPERATOR_SUGAR
 
 from acab.modules.structures.trie.trie import Trie
 from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics
-from acab.modules.node_semantics.basic_semantics import BasicNodeSemantics
+from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
 
 logging = root_logger.getLogger(__name__)
 

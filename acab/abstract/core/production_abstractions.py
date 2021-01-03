@@ -92,13 +92,6 @@ class ProductionComponent(AcabStatement):
             obj['out'].add(self.rebind)
         return obj
 
-
-    def to_sentences(self, target=None):
-        """
-
-        """
-        raise NotImplementedError()
-
     def verify(self, ctx=None, engine=None):
         """ Verify the Component, retrieving the operator from the engine
         if necessary """
@@ -162,11 +155,6 @@ class ProductionContainer(AcabStatement):
                 obj['in'].update(tempobj['in'])
                 obj['out'].update(tempobj['out'])
         return obj
-
-
-    def to_sentences(self, target=None):
-        return [y for x in self.clauses for y in x.to_sentences()]
-
 
 
     def bind(self, data) -> Container:

@@ -27,18 +27,20 @@ config = AcabConfig.Get()
 
 ROOT = AcabValue(name=config.value("Data", "ROOT"))
 
+Node = 'AcabNode'
+
 @dataclass
 class AcabNode(DI.NodeInterface):
     """ The Base Node Class for Tries/Data structures etc
     Not an AcabValue, Uses the most basic semantics possible
     """
 
-    # value : AcabValue                = field(default=None)
-    data : Dict[str, Any]            = field(default_factory=dict)
-    path : Sentence                  = field(default=None)
-    parent : 'AcabNode'              = field(default=None)
-    children : Dict[str, 'AcabNode'] = field(default_factory=dict)
-    uuid : UUID                      = field(default_factory=uuid1)
+    # value  : AcabValue       = field(default=None)
+    data     : Dict[str, Any]  = field(default_factory=dict)
+    path     : Sentence        = field(default=None)
+    parent   : Node            = field(default=None)
+    children : Dict[str, Node] = field(default_factory=dict)
+    uuid     : UUID            = field(default_factory=uuid1)
 
     @staticmethod
     def Root():
