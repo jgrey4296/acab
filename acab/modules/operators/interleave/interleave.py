@@ -7,7 +7,7 @@ and interleave them while respecting order
 
 
 """
-from acab.abstract.containers.production_abstractions import ProductionOperator
+from acab.abstract.core.production_abstractions import ProductionOperator
 
 class InterleaveOperator(ProductionOperator):
     """  """

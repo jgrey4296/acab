@@ -4,7 +4,7 @@ Definitions of the Core Performance Operators
 import logging as root_logger
 from enum import Enum
 
-from acab.abstract.containers.production_abstractions import ProductionOperator
+from acab.abstract.core.production_abstractions import ProductionOperator
 
 logging = root_logger.getLogger(__name__)
 

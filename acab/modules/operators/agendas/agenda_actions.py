@@ -41,7 +41,7 @@
    loop:
        run layer $layer
 """
-from acab.abstract.containers.production_abstractions import ProductionOperator, ProductionStructure
+from acab.abstract.core.production_abstractions import ProductionOperator, ProductionStructure
 
 class AgendaSelect(ProductionOperator):
 

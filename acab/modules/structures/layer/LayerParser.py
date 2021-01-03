@@ -31,7 +31,7 @@ from acab.abstract.config.config import AcabConfig
 from acab.abstract.parsing import parsers as PU
 from acab.abstract.parsing.consts import LAYER_HEAD
 from acab.abstract.parsing.funcs import make_layer
-from acab.abstract.containers.production_abstractions import ProductionContainer
+from acab.abstract.core.production_abstractions import ProductionContainer
 
 logging = root_logger.getLogger(__name__)
 

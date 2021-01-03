@@ -13,16 +13,16 @@ from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
 from acab.abstract.containers import action
 from acab.abstract.containers import transform
-from acab.abstract.containers.production_abstractions import ProductionComponent, ProductionContainer
+from acab.abstract.core.production_abstractions import ProductionComponent, ProductionContainer
 
 from acab.modules.values import numbers
 from acab.modules.values.numbers.parsing import NumberParser as NP
 from acab.modules.values.numbers.util import FLOAT_t, INT_t
-from acab.working_memory.trie_wm.parsing import ActionParser as AP
-from acab.working_memory.trie_wm.parsing import FactParser as FP
-from acab.working_memory.trie_wm.parsing import TransformParser as TP
+from acab.modules.parsing.el_parsing ActionParser as AP
+from acab.modules.parsing.el_parsing FactParser as FP
+from acab.modules.parsing.el_parsing TransformParser as TP
 from acab.working_memory.trie_wm.trie_working_memory import TrieWM
-from acab.abstract.printing.print_semantics import AcabPrintSemantics
+from acab.abstract.semantics.print_semantics import AcabPrintSemantics
 from acab.abstract.printing import default_handlers as DH
 
 basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel),

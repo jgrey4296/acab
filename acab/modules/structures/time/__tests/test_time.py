@@ -15,7 +15,7 @@ from acab.modules.structures.time.pattern import PatternSeq, PatternPar
 from acab.modules.structures.time.parsing import parser as tp
 from acab.modules.structures.time.config import Time as t
 from acab.abstract.parsing import parsers as PU
-from acab.abstract.printing.print_semantics import AcabPrintSemantics
+from acab.abstract.semantics.print_semantics import AcabPrintSemantics
 from acab.abstract.printing import default_handlers as DH
 
 basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel),

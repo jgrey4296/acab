@@ -2,7 +2,7 @@ from random import uniform
 from math import floor
 from re import sub
 
-from acab.abstract.containers.production_abstractions import ProductionOperator
+from acab.abstract.core.production_abstractions import ProductionOperator
 
 
 class AddOp(ProductionOperator):

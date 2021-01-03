@@ -6,7 +6,7 @@ from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
 
-from acab.abstract.containers.production_abstractions import ProductionComponent
+from acab.abstract.core.production_abstractions import ProductionComponent
 
 from . import query_operators as QO
 
@@ -21,7 +21,7 @@ def construct_tag_query(toks):
 
     tag_op_path = Sentence.build([QO.HasTag.__name__])
     value_tags = [AcabValue(x) for x in tags]
-    return (CONSTRAINT_S, ProductionComponent(tag_op_path, value_tags))
+    return (CONSTRAINT_S, ProductionComponent(value=tag_op_path, params=value_tags))
 
 
 tagList = PU.N(TAG_S, pp.delimitedList(PU.tagName, delim=","))

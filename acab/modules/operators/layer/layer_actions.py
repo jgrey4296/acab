@@ -1,5 +1,4 @@
-from acab.abstract.core.contexts import Contexts
-from acab.abstract.containers.production_abstractions import ProductionOperator
+from acab.abstract.core.production_abstractions import ProductionOperator
 
 
 class LayerRunRules(ProductionOperator):
@@ -23,7 +22,7 @@ class LayerRunAgenda(ProductionOperator):
             data = {}
         # rebind passed in parameters from the caller (ie: layer),
         # to the agenda's parameters
-        rebound = Contexts.rebind_across_contexts(agenda._params,
+        rebound = Contexts.rebind_across_contexts(agenda.params,
                                                   params, data)
 
         return agenda(ctxs=[rebound], engine=engine)

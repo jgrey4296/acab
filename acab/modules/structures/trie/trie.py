@@ -4,15 +4,17 @@ A Trie Structure, using AcabNodes
 import logging as root_logger
 from weakref import WeakValueDictionary, ref, proxy
 from re import search
+from dataclasses import dataclass, field
 
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.values import AcabValue, AcabStatement
 from acab.abstract.core.node import AcabNode
-from acab.abstract.core.contexts import Contexts, CTX_OP
-from acab.abstract.containers.structure import DataStructure
+from acab.abstract.core.acab_struct import AcabStruct
 
 from acab.error.acab_base_exception import AcabBaseException
-from acab.modules.node_semantics.basic_semantics import BasicNodeSemantics
+from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
+from acab.abstract.interfaces.semantic_interfaces import SemanticLifter
+from acab.abstract.interfaces.data_interfaces import StructureInterface
 
 from .trie_semantics import BasicTrieSemantics
 
@@ -24,16 +26,16 @@ AT_BIND_S    = config.value("Value.Structure", "AT_BIND")
 
 logging = root_logger.getLogger(__name__)
 
-class Trie(DataStructure):
+@dataclass
+class Trie(StructureInterface):
+    all_nodes : WeakValueDictionary = field(init=False, default_factory=WeakValueDictionary)
 
-    def __init__(self, semantics=None):
-        if semantics is None:
-            semantics = BasicTrieSemantics({AcabNode : BasicNodeSemantics()},
-                                           {AcabValue : (AcabNode, {})})
-        super(Trie, self).__init__(semantics)
+    @staticmethod
+    def build_default():
+        semantics = BasicTrieSemantics({AcabNode  : BasicNodeSemantics()},
+                                       {AcabValue : AcabNode})
 
-        # Stores UUIDs -> Nodes
-        self._all_nodes = WeakValueDictionary()
+        return Trie(semantics=semantics)
 
     def __str__(self):
         return self.print_trie()
@@ -45,24 +47,8 @@ class Trie(DataStructure):
         return len(self.get_nodes())
 
 
-    def add(self, path: Sentence, data=None, semantics=None, **kwargs):
-        """ Add the data to the leaf defined by path,
-        """
-        if semantics is None:
-            semantics = self.semantics
 
-        return semantics.add(self, [path], leaf_data=data, **kwargs)
 
-    def remove(self, path, semantics=None):
-        if semantics is None:
-            semantics = self.semantics
-
-        return semantics.delete(self, path)
-
-    def query(self, query, ctxs=None, engine=None, semantics=None):
-        use_semantics = semantics or self.semantics
-
-        return use_semantics.query(self, query, ctxs=ctxs, engine=engine)
 
     def get_nodes(self, pred=None, explore=None):
         """ Get nodes passing a predicate function,
@@ -93,25 +79,29 @@ class Trie(DataStructure):
 
         return nodes
 
-    def filter_candidates(self, candidates, match_func, semantics=None):
-        if semantics is None:
-            semantics = self.semantics
-
-        return semantics.filter_candidates(self, candidates, match_func)
 
     def to_sentences(self, leaf_predicate=None):
-        output = []
-        queue = [([], x) for x in self.root]
+        raise DeprecationWarning("This should be in a semantics")
+        # output = []
+        # queue = [([], x) for x in self.root]
 
-        while bool(queue):
-            curr_path, current_node = queue.pop(0)
-            total_path = curr_path + [current_node.value]
-            if not bool(current_node) or isinstance(current_node.value, AcabStatement):
-                if leaf_predicate is None or leaf_predicate(current_node):
-                    as_sentence = Sentence.build(total_path)
-                    output.append(as_sentence)
+        # while bool(queue):
+        #     curr_path, current_node = queue.pop(0)
+        #     total_path = curr_path + [current_node.value]
+        #     if not bool(current_node) or isinstance(current_node.value, AcabStatement):
+        #         if leaf_predicate is None or leaf_predicate(current_node):
+        #             as_sentence = Sentence.build(total_path)
+        #             output.append(as_sentence)
 
-            if bool(current_node):
-                queue += [(total_path, x) for x in current_node]
+        #     if bool(current_node):
+        #         queue += [(total_path, x) for x in current_node]
 
-        return output
+        # return output
+
+
+    def add(self, sen):
+        pass
+    def query(self, sen):
+        pass
+    def contain(self, sen):
+        pass

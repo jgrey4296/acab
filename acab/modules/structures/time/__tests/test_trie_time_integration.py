@@ -11,7 +11,7 @@ from acab.modules.structures.time import util as TU
 from acab.modules.structures.time.parsing import parser as tp
 from acab.modules.structures.time.parsing import parser as tp
 from acab.modules.structures.time.time_core import TimeContainer
-from acab.working_memory.trie_wm.parsing import FactParser as fp
+from acab.modules.parsing.el_parsing FactParser as fp
 
 TYPE_INSTANCE_S = AcabConfig.Get().value("Value.Structure", "TYPE_INSTANCE")
 
