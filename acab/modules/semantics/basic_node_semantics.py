@@ -8,15 +8,11 @@ from typing import cast, ClassVar
 
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.values import AcabValue
-from acab.abstract.core.contexts import Contexts, CTX_OP
 from acab.abstract.core.node import AcabNode
-from acab.abstract.semantics.node_semantics import AcabNodeSemantics
-from acab.abstract.semantics.struct_semantics import AcabStructureSemantics
-from acab.abstract.core.structure import DataStructure
+from acab.modules.semantics.query_semantic_mixin import QuerySemanticMixin
+from acab.abstract.core.acab_struct import AcabStruct
 
-from acab.abstract.interfaces import semantics_interface as SI
-
-import acab.abstract.semantics.struct_semantics as SSem
+from acab.abstract.interfaces import semantic_interfaces as SI
 
 from acab.abstract.config.config import AcabConfig
 
@@ -24,7 +20,7 @@ logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
 
 
-class BasicNodeSemantics(AcabNodeSemantics, SI.IndependentSemantics):
+class BasicNodeSemantics(QuerySemanticMixin, SI.IndependentSemantics):
 
     # TODO Needs equal method
     def accessible(self, node, data, term):
@@ -90,4 +86,7 @@ class BasicNodeSemantics(AcabNodeSemantics, SI.IndependentSemantics):
     def down(self, value):
         raise NotImplementedError()
     def equal(self, val1, val2) -> bool:
+        raise NotImplementedError()
+
+    def make(self, val):
         raise NotImplementedError()

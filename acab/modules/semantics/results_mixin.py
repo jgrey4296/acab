@@ -19,7 +19,7 @@ from acab.abstract.core.node import AcabNode
 from acab.abstract.core.values import AcabValue
 from acab.abstract.config.config import AcabConfig
 
-from acab.abstract.interfaces.context_interface import ContextInterface
+import acab.abstract.interfaces.semantic_interfaces as SI
 config = AcabConfig.Get()
 
 AT_BIND    = config.value("Value.Structure", "AT_BIND")
@@ -36,35 +36,11 @@ Node     = 'Node'
 Engine   = 'Engine'
 
 @dataclass
-class Contexts(ContextInterface):
+class ResultsMixin(SI.SemanticMixin):
     """ Container of available contexts for word match in the trie
     Conceptually a list of tuples: ({}, LastAccessedNode)
     And Stores failure state
     """
-    query_history: List[Sentence]         = field(init=False, default_factory=list)
-    query_remainder: List[Sentence]       = field(init=False, default_factory=list)
-    bind_groups: List[Dict[str, Any]]     = field(init=False, default_factory=list)
-    nodes: List[Node]                     = field(init=False, default_factory=list)
-    failures : List[Dict[str, Any]]       = field(init=False, default_factory=list)
-    queued_failures: List[Dict[str, Any]] = field(init=False, default_factory=list)
-    engine : Engine                       = field(init=False, default_factory=list)
-    query_fail_clause: Optional[Sentence] = field(init=False, default=None)
-
-
-    @staticmethod
-    def rebind_across_contexts(names, values, base):
-        """ Utility method to perform alpha conversion """
-        assert(isinstance(base, dict))
-        assert(isinstance(names, list))
-        assert(isinstance(values, tuple))
-        new_base = {}
-        new_base.update(base)
-        for x, y in zip(names, values):
-            new_base[x.name] = AcabValue.safe_make(y)
-
-        return new_base
-
-
     def __len__(self):
         return len(self._bind_groups)
 
@@ -217,3 +193,15 @@ class Contexts(ContextInterface):
             groups[the_type].append((i, xy[0], xy[1]))
             ancestor_tracker[i] = xy
         return groups, ancestor_tracker
+
+    def _param_ctx_filter(self, params, ctxs):
+        """ Return only contexts which have all the needed parameters """
+        # verify params -> ctxs fit
+        result = []
+        param_set = params
+        for ctx_singular in ctxs:
+            ctx_set = ctx_singular
+            if param_set in ctx_set:
+                result.append(ctx_singular)
+
+        return result

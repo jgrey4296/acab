@@ -7,9 +7,9 @@ from typing import cast, ClassVar
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.node import AcabNode
-from acab.abstract.semantics.node_semantics import AcabNodeSemantics
+from acab.modules.semantics.query_semantic_mixin import QuerySemanticMixin
 
-from acab.abstract.interfaces import semantics_interface as SI
+from acab.abstract.interfaces import semantic_interfaces as SI
 
 from acab.abstract.config.config import AcabConfig
 
@@ -27,7 +27,7 @@ EXOP_enum    = config.modal_enums[EXOP]
 #     output[-1].data[OPERATOR] = word.data[OPERATOR]
 #     continue
 
-class ExclusionNodeSemantics(AcabNodeSemantics, SI.IndependentSemantics):
+class ExclusionNodeSemantics(QuerySemanticMixin, SI.IndependentSemantics):
     def accessible(self, node, data, term):
         potentials = []
         # Expand if variable -> Grab All

@@ -29,23 +29,20 @@ from acab.abstract.core.values import AcabValue, AcabStatement
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.node import AcabNode
 
-from acab.abstract.interfaces import semantics_interface as SI
+from acab.abstract.interfaces import semantic_interfaces as SI
 from acab.abstract.config.config import AcabConfig
+
+from . import util as SemUtil
 
 config         = AcabConfig.Get()
 NEGATION_S   = config.value("Value.Structure", "NEGATION")
 CONSTRAINT_S = config.value("Value.Structure", "CONSTRAINT")
 AT_BIND_S    = config.value("Value.Structure", "AT_BIND")
 
-class AcabNodeSemantics(AcabStatement, SI.NodeSemantics):
-    """ A Single Class to provide
-    interchangeable core semantics
-    Always handles AcabNodes wrapping AcabValues
+class QuerySemanticMixin(SI.SemanticMixin):
+    """ Provides Semantics to test a node
 
     """
-    def __init__(self):
-        super(AcabNodeSemantics, self).__init__(name=self.__class__.__name__)
-
     def test_candidates(self, term, candidate_triple, tests, engine):
         """ query word, with a sequence of tests,
         in all available bind groups, BFS manner
@@ -86,7 +83,7 @@ class AcabNodeSemantics(AcabStatement, SI.NodeSemantics):
         result = None
         for subbind in subbind_comps:
             # TODO: expand subbind usng data first
-            result = _compare(subbind, node, data=data, engine=engine)
+            result = SemUtil._compare(subbind, node, data=data, engine=engine)
             if result is None:
                 invalidated = True
                 break
@@ -110,14 +107,14 @@ class AcabNodeSemantics(AcabStatement, SI.NodeSemantics):
 
     def _test_alphas(self, node, comps, data=None, engine=None):
         """ Run alpha tests against word retrieved value """
-        return all([_compare(word, node, data=data, engine=engine) for word in comps])
+        return all([SemUtil._compare(word, node, data=data, engine=engine) for word in comps])
 
     def _test_betas(self, node, comps, data=None, engine=None):
         """ Run word beta tests against word retrieved value, with supplied bindings """
-        return all([_compare(word, node, data=data, engine=engine) for word in comps])
+        return all([SemUtil._compare(word, node, data=data, engine=engine) for word in comps])
 
     def _test_annotations(self, node, comps, data=None, engine=None):
-        return all([_compare(word, node, data=data, engine=engine) for word in comps])
+        return all([SemUtil._compare(word, node, data=data, engine=engine) for word in comps])
 
     def _prepare_dict(self, data: dict, passing_node: AcabNode, query_term: AcabValue):
         """ Prepare a tuple for adding to the context
@@ -134,11 +131,3 @@ class AcabNodeSemantics(AcabStatement, SI.NodeSemantics):
 
 
 
-def _compare(word, node,  ctxs=None, engine=None):
-    # Get op from engine
-    op = engine.get_operator(query_component.op)
-    # AcabNode -> AcabValue -> Actual Value
-    node_value = node.value.value
-    params = ProdSem.get_params(data)
-
-    return op(node_value, *params, data=data)

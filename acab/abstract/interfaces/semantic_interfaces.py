@@ -30,13 +30,29 @@ Value         = 'AcabValue'
 Structure     = 'AcabStruct'
 Engine        = 'Engine'
 Contexts      = 'Contexts'
+Handler       = 'SemanticHandler'
 SemanticUnion = Union['IndependentSemantics', 'DependentSemantics']
 
-T = TypeVar('T')
+T  = TypeVar('T')
 T2 = TypeVar('T2')
 
-class SemanticLifter(Generic[T], metaclass=abc.ABCMeta):
-    """  """
+class SemanticHandler(metaclass=abc.ABCMeta):
+    """ Limited Purpose object to provide python-defined functionality.
+    Bound by a semantics *map* or used as the handler for a *listener*
+    """
+
+    def __call__(self):
+        pass
+
+class SemanticMixin(metaclass=abc.ABCMeta):
+    """ A Collection of functionality which is meaningless when separated,
+    but can not, on its own, sufficient to be a semantics """
+    pass
+
+
+#
+class SemanticSystem(Generic[T], metaclass=abc.ABCMeta):
+    """ A Complete semantic system """
 
     @abc.abstractmethod
     def up(self, sens: List[Sentence]) -> T:
@@ -46,27 +62,64 @@ class SemanticLifter(Generic[T], metaclass=abc.ABCMeta):
     def down(self, value: T) -> List[Sentence]:
         pass
 
+    @abc.abstractmethod
+    def ask(self, sentence) -> Any:
+        """ Is this sentence meaningful wrt self"""
+        # Think Smalltalk
+        pass
+
+    @abc.abstractmethod
+    def do(self, sentence) -> Any:
+        pass
 
 
 
 
+#
 @dataclass
-class SemanticsMap(Generic[T], metaclass=abc.ABCMeta):
+class SemanticsMap(SemanticSystem):
+    """ Maps values/nodes to semantics,
+    using a specified lookup ordering.
+    handles contexts.
 
-    # TODO:
-    _search_order: List[Callable]   = field(default_factory=list)
-    mapping: Dict[T, SemanticUnion] = field(default_factory=dict)
-    lifting: Dict[Value, T]         = field(default_factory=dict)
-    bottom_semantic: Callable       = field(init=False, default=None)
+    expectations and guarantees are downstream
+    """
 
-    def retrieve_semantics(self, T) -> SemanticUnion:
-        """
-        use the_type (ie: python type) first, if its necessary, distinguish using type_instance
+    mapping          : Dict[T, SemanticUnion]                       = field(default_factory=dict)
+    search_order     : List[Callable[[T], Optional[SemanticUnion]]] = field(default_factory=list)
+    # Downward guarantees of what semantics may contextually rely upon
+    guarantees      : List[Handler]          = field(default_factory=list)
+    # Downward expectations of what semantics must publicly provide
+    expectations    : List[SemanticUnion]    = field(init=False, default_factory=list)
 
-        Always returns, even if its just lambda x: str(x)
-        """
-        # TODO type this
-        chosen: Callable = self.bottom_semantic
+    # The collected interface of all public facing semantics
+    # used for getattr?
+    _interface_union : Set[str]               = field(init=False, default_factory=set)
+    # The collected interface of all contextual semantics
+    # used for a ctx_getattr
+    _contextual_union : Set[str]              = field(init=False, default_factory=set)
+
+    def __post_init__(self):
+        # assert a DEFAULT is in mapping
+
+        # set a default search order if empty
+
+        # interface union and contextual union
+
+        # verify all mappings handle required interface
+        for semantics in self.mapping.values():
+            # TODO and check guarantees satisfy semantics' expectations
+            # assert(not difference(semantics.expectations, self.guarantees))
+            assert(all([isinstance(semantics, x) for x in self.expectations]))
+
+
+
+    def setup_guarantees(self):
+        # TODO specify when to setup these
+        pass
+    def get(self, T) -> SemanticUnion:
+        """ Get a mapped semantics, using the search order """
+        chosen: SemanticUnion = self.bottom_semantic
         descendents_to_update = []
         # search_order: List[Callable[[AcabPrintSemantics, Printable], Optional[SemanticSpec]]] = []
         search_order = self._search_order[:]
@@ -85,112 +138,26 @@ class SemanticsMap(Generic[T], metaclass=abc.ABCMeta):
         # TODO update _type_semantics chain with found bindings from hierarchy
         #
         if len(descendents_to_update) > 1:
-            self.node_semantics.update({x : retrieved for x in descendents_to_update})
+            self.mapping.update({x : retrieved for x in descendents_to_update})
 
         return chosen
 
-    @abc.abstractmethod
-    def value_constructor(self, value: Value) -> T:
+
+
+    def run(self, T) -> Any:
         pass
-
-
-
-
+#
+class IndependentSemantics(SemanticSystem):
+    """ Semantics which do *not* have any contextual requirements. """
+    pass
 
 
 @dataclass
-class ContextualSemantics(metaclass=abc.ABCMeta):
-    context: List[SemUtil.ContextValue] = field(init=False, default_factory=list)
-    stack: List[SemUtil.StackValue]     = field(init=False, default_factory=list)
-    queue: List[SemUtil.SemBox]         = field(init=False, default_factory=list)
-    accumulation: Dict[str, Any]        = field(init=False, default_factory=dict)
+class DependentSemantics(SemanticSystem):
+    """ Semantics with contextual expectations """
+    expectations: Set[Handler] = field(default_factory=set)
 
-    def _add_to_context(self, value):
-        if isinstance(value, str):
-            self._context.append(value)
-        elif isinstance(value, list):
-            self._context += value
-        else:
-            raise Exception("Expected a str or a list")
-
-    def _add_to_accumulation(self, value):
-        assert isinstance(value, dict)
-        self._accumulation.update(value)
-
-    def _push_stack(self, data, sentinel, params):
-        assert isinstance(data, list)
-        self._stack.append((self._queue, self._context))
-
-        if sentinel is not None:
-            data.append((SemUtil.RET_enum.SENTINEL, data, sentinel, params))
-
-        self._queue = data
-        self._context = []
-
-    def _pop_stack(self):
-        if not bool(self._queue) and bool(self._stack):
-            stack_q, stack_ctx = self._stack.pop()
-            self._queue = stack_q
-            self._context = stack_ctx
-
-class IndependentSemantics(Generic[T], metaclass=abc.ABCMeta):
-    """ """
-
-    @abc.abstractmethod
-    def accessible(self, node: T,
-                   data: Dict[Any, Any],
-                   term: Value) -> List[T]:
-        """
-        Retrieve a list of all nodes accessible from this node,
-        according to a constraint term
-        """
-        pass
-
-    @abc.abstractmethod
-    def equal(self, word: T, word2: T) -> bool:
-        pass
-
-    @abc.abstractmethod
-    def add(self, node: T, word: List[Value]) -> Tuple[bool, T]:
-        pass
-
-    @abc.abstractmethod
-    def get(self, node: T, query_term: Value) -> Optional[T]:
-        """ Getting a node from the data structure """
-        pass
-
-    @abc.abstractmethod
-    def contain(self, node: T, query_term: Value) -> bool:
-        """ Getting Node inclusion in a set """
-        pass
-
-    @abc.abstractmethod
-    def delete(self, node: T, to_delete: Value) -> Optional[T]:
-        """ Removing a node from the data structure """
-        pass
+    pass
 
 
-    @abc.abstractmethod
-    def make(self, val: T):
-        pass
-
-
-
-class DependentSemantics(Generic[T, T2], metaclass=abc.ABCMeta):
-    """ """
-
-    @abc.abstractmethod
-    def test_candidates(self, term, candidate_triple, tests, engine: T2) -> List[Any]:
-        pass
-
-    @abc.abstractmethod
-    def __call__(self, clause: Sentence, obj: T, ctxs: Contexts, engine: T2, override: Dict[Any, Any]) -> Contexts:
-        pass
-
-
-
-
-
-
-
-
+#

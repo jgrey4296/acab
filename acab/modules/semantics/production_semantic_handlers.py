@@ -6,30 +6,26 @@ from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic
 
 CTXS = List[Dict[Any, Any]]
-
-def __default_production_call(ProdSem: 'ProductionSemantics',
+# TODO translate to SemanticHandlers
+def _default_production_call(ProdSem: 'ProductionSemantics',
                               prodution: 'AcabValue',
                               ctxs: CTXS,
                               engine: 'Engine') -> CTXS:
     pass
 
-def rule__call__(ProdSem, rule, ctxs: List[Dict[Any, Any]]=None, engine: 'Engine'=None) -> List[Dict[Any, Any]]:
+def rule_call_(ProdSem, rule) -> List[Dict[Any, Any]]:
     """ Rule Logic, returns action proposals """
-    query_result = ProdSem._initial_ctx_construction(ctxs)
-
     # Run the query
-    if ProdSem._query is not None:
-        query_result = ProdSem.run(rule[PConst.QUERY_V], ctxs, engine)
-        if not bool(query_result):
-            logging.info("Rule {} Failed".format(rule.name))
-            return []
+    if PConst.QUERY_V in rule:
+        ProdSem.run(rule[PConst.QUERY_V])
 
     # Run any transforms
-    # This is *not* an unnecessary comprehension
-    # because of how query results work
-    transformed = query_result[:]
+    transformed = ProdSem.get_results()
+    if not bool(transformed):
+        return
+
     if PConst.TRANSFORM_V in rule:
-        transformed = ProdSem.run(rule[PConst.TRANSFORM_V], ctxs=transformed, engine=engine)
+        transformed = ProdSem.run(rule[PConst.TRANSFORM_V])
 
     # *DELAYED* action results
     # return final passing dictionaries
@@ -37,9 +33,9 @@ def rule__call__(ProdSem, rule, ctxs: List[Dict[Any, Any]]=None, engine: 'Engine
     for data in transformed:
         results.append((data, rule))
 
-    return results
+    ProdSem.record_results(results)
 
-def layer__call__(ProdSem, layer, ctxs=None, engine=None):
+def layer_call_(ProdSem, layer, ctxs=None, engine=None):
     """ Run a layer, returning actions to perform """
     # rule returns [(data,ProdSem)]
     results = ProdSem.run(layer, ctxs=ctxs, engine=engine, override=PConst.RULE_V)
@@ -53,7 +49,7 @@ def layer__call__(ProdSem, layer, ctxs=None, engine=None):
     action_results = ProdSem.run(layer[PConst.ACTION_V], ctxs=contexts, engine=engine)
     return action_results
 
-def pipeline__call__(ProdSem, pipeline, ctxs=None, engine=None):
+def pipeline_call_(ProdSem, pipeline, ctxs=None, engine=None):
     """ Run this pipeline on the given engine for a tick """
     results = ProdSem.run(pipeline, engine=engine, override=PConst.RULE_V)
     # TODO extract semantics
@@ -62,7 +58,7 @@ def pipeline__call__(ProdSem, pipeline, ctxs=None, engine=None):
 
     return output
 
-def agenda__call__(ProdSem, agenda, ctxs=None, engine=None):
+def agenda_call_(ProdSem, agenda, ctxs=None, engine=None):
     """ Runs an agenda rule on activated rules """
     assert(isinstance(ctxs, list))
     agenda_settings = ProdSem.run(agenda, ctxs=ctxs, engine=engine, override=PConst.RULE_V)
