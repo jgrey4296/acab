@@ -10,7 +10,7 @@ from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
 from acab.abstract.interfaces import engine_interface as EI
-from acab.abstract.interfaces.working_memory_interface import WorkingMemoryInterface
+from acab.abstract.interfaces.data_interfaces import StructureInterface
 from acab.abstract.core.production_abstractions import ProductionOperator, ProductionContainer
 from acab.error.acab_base_exception import AcabBaseException
 from acab.error.acab_import_exception import AcabImportException
@@ -44,11 +44,11 @@ class Engine(EI.RewindEngineInterface, EI.ModuleLoaderInterface, EI.DSLBuilderIn
     """ The Abstract class of a production system engine. """
 
     # Blocks engine use until build_DSL has been called
-    _wm_constructor      : Callable          = field(init=False)
-    _working_memory       : WorkingMemoryInterface = field(init=False)
-    init_strs             : List[str]         = field(default_factory=list)
-    initialised           : bool              = field(init=False, default=False)
-    load_paths            : List[str]         = field(default_factory=list)
+    _wm_constructor : Callable           = field(init=False)
+    _working_memory : StructureInterface = field(init=False)
+    init_strs       : List[str]          = field(default_factory=list)
+    initialised     : bool               = field(init=False, default=False)
+    load_paths      : List[str]          = field(default_factory=list)
 
     def __post_init__(self):
         assert(callable(self.__wm_constructor))

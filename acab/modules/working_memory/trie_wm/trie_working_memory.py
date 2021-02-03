@@ -12,7 +12,7 @@ from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
-from acab.abstract.interfaces.working_memory_interface import WorkingMemoryInterface
+from acab.abstract.interfaces.data_interfaces import StructureInterface
 from acab.abstract.core.production_abstractions import ProductionContainer
 from acab.error.acab_operator_exception import AcabOperatorException
 from acab.modules.semantics import exclusion_node_semantics as ES
@@ -26,8 +26,8 @@ config = AcabConfig.Get()
 NEGATION_S       = config.value("Parse.Structure", "NEGATION")
 QUERY_FALLBACK_S = config.value("Parse.Structure", "QUERY_FALLBACK")
 
-class TrieWM(WorkingMemoryInterface):
-    """ A Trie based working memory"""
+class TrieWM(StructureInterface):
+    """ A Trie based structure """
 
     def __init__(self, init: List[str]=None):
         """ init is a string of assertions to start the fact base with """

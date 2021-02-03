@@ -18,7 +18,7 @@ values = a.test.location, a.test.location.*
 import logging as root_logger
 import pyparsing as pp
 
-from acab.abstract.interfaces.working_memory_interface import WorkingMemoryInterface
+from acab.abstract.interfaces.data_interfaces import StructureInterface
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.node import AcabNode
@@ -31,7 +31,7 @@ from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
 
 logging = root_logger.getLogger(__name__)
 
-class BootstrapParser(WorkingMemoryInterface):
+class BootstrapParser(StructureInterface):
     """ Manage parsers and allow queries for hotloading,
     used in working memory and module interfaces """
 
