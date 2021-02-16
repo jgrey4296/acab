@@ -7,3 +7,4 @@ log.*
 GPATH
 GRTAGS
 GTAGS
+.dir-locals.el
