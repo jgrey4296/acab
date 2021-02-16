@@ -1,0 +1,1063 @@
+#+TITLE: Main Acab Reference Document
+
+
+#+NAME: Misc Notes
+#+begin_src acab :results value
+a.test.rule:
+a.b.c?
+
+a.b.d
+end
+
+a.meta.rule:
+;; DFS queries:
+∃a.test.$x(::rule, λnode.down)?
+;; Exhaustive then group:
+∀a.b.$c? -> βx
+
+a.$c?
+        @x.[a.b.$x?](::query)?
+        @x.[#blah](::tag)?
+a.pattern.[[a b c | d e, g,h]]?
+
+λapply $x on e
+
+$x.[λ+ a.b.d?]
+end
+
+
+action.on:
+  | λapply $a on $b |
+
+end
+
+picker:
+a.b.$xs?
+
+λpick $xs -> $y $xs'
+λpick $xs' -> $z $_
+
+end
+#+end_src
+
+#+NAME: Institution Trie Idea
+#+begin_src acab :results value
+	 //An Institution
+$x <- .institution.nightWatch
+//Name
+$x.name."The Night Watch"
+
+//Physical imports
+
+//Concepts
+$x.concepts.justice.served
+$x.concepts.justice.lacking
+
+$x.concepts.freeStatus.free
+$x.concepts.freeStatus.jailed
+
+$x.concepts.knowStatus.knows
+$x.concepts.knowStatus.doesntKnow
+
+//Roles
+$x.roles.watch
+$x.roles.watch.commander
+$x.roles.watch.captain
+$x.roles.watch.sergeant
+$x.roles.watch.private
+
+$x.roles.criminal
+
+$x.roles.civilians
+
+$x.roles.patrician
+$x.roles.judge
+$x.roles.jury
+
+//Role Groupings
+$x.roleGroups.incumbents.patrician
+$x.roleGroups.incumbents.judge
+$x.roleGroups.challengers
+$x.roleGroups.enforcers.watch
+
+//Rankings
+
+
+
+//Sequences
+$x.activities.theft
+$x.activities.murder
+$x.activities.mugging
+$x.activities.chase
+$x.activities.investigate
+$x.activities.alert
+$x.activities.execution
+$x.activities.incarceration
+
+//Choices
+
+
+//Games
+$x.games.trial
+$x.games.arrest
+
+
+//Sanctions
+$x.sanctions.execution
+$x.sanctions.incarceration
+
+
+//Rules
+////what makes a watchman
+////what makes a criminal
+
+
+#+end_src
+
+#+NAME: Import Idea
+#+begin_src acab :results value
+an.import: (::import)
+acab.modules.operators.$transform?
+
+λget (::λ) $transform -> $ops
+
+λalias $ops into λTransform λT
+
+T.RegexOp: (::λ) $x(::String).$x.$x => ~=
+end
+
+an.action: (::action)
+   | $x(::λ) |
+
+   λ$x blah
+end
+
+a.rule: (::ρ)
+    a.test.$x?
+
+    λT.RegexOp $x /blah/bloo -> $y
+    $x ~= /blah/bloo -> $y
+
+    λAssert $y
+    λan.action $y
+end
+
+Todo:
+ImportQuery     : Use Sentence for py import
+FindTransform   : Extract Particulars from module/set/trie
+AliasIntoAction : Set TagEnv to set
+TagEnvironment  : Load TagEnv in this closure
+#+end_src
+
+#+NAME: File Structure
+#+begin_src acab :results value
+//The Structure of an Institution Specification
+
+//All Institutions have input senses across the memory levels
+
+//Objective Input senses : [bodyPosition, bodyPose, bodyAdornment, speechAct,
+// adjoiningRooms, roomAdornment,
+
+// facing information, bodyItems, roomItems,
+// soundVolume, soundBalance, temperature, bodySize...]
+
+//Memory Levels: [ now, justNow (now-1), encounter, recently, regularly,
+// currently, ever ]
+
+//And Output actions to modify those physical facts
+//Constraints on unmodifiable physical postulates
+
+//Innate Agent [values, variance, restingState, envelope, ordering]
+
+//Required Tags to be used
+
+//Layers with [protocols, rules]
+
+//Social Institutional Interface
+
+//Initial generation requirements
+
+//Actions to change components
+
+//variables / core + penumbra of rules  + constraints of modification
+//
+
+//Check that there are all memory levels utilized,
+//Check that all actions have a physical component
+//Check all layers are populated, all have the correct type,
+//check layers topolgically sort
+//
+
+#+end_src
+
+#+NAME: Agent DSL Idea
+#+begin_src acab :results value
+
+//A DSL to spec an agent's cognitive architecture
+
+//A Simple BDI agent
+Input (.worldState, .agent)
+EvalRules(.agent.rules.belief_gen) on .worldState -> .agent.beliefs
+EvalRules(.agent.rules.desires) on .agent.beliefs, .agent.desires:
+    -> .agent.active.desires
+end
+
+RankBy(.agent.hierarchy.desires) on .agent.active.desires
+SelectFrom(best, 0.1, .agent.active.desires) -> .agent.selected.desire
+EvalRules(.agent.rules.action_gen) on .worldState, .agent.selected.desire:
+    -> .agent.applicable.actions
+end
+selectFrom(best, 0.1, .agent.applicable.actions) -> .agent.selected.action
+perform(.agent.selected.action)
+output (Action)
+
+
+
+
+//Simple CiF agent
+Input (.worldState, .agent)
+EvalRules(.agent.rules.volition) on .worldState -> .agent.activations.volition
+Aggregate(.agent.activations.volition) -> .agent.activations.aggregate.volition
+selectFrom(best, 0.1, .agent.activations.aggregate.volition) -> .agent.selected.volition
+
+EvalRules(.agent.rules.intention) on .worldState, .agent.selected.volition -> .agent.activations.intention
+Aggregate(.agent.activations.intention) -> .agent.activations.aggregate.intention
+selectFrom(best, 0.1, .agent.activations.aggregate.intention) -> .agent.selected.intention
+
+perform(.agent.selected.intention)
+EvalRules(.agent.rules.trigger) on .worldState, .agent.selected.intention) -> .worldState
+output (Action)
+
+
+
+
+//A simple versu agent
+Input (.worldState, .agent)
+EvalRules(.agent.rules.social_practice_activation) on .worldState -> .agent.activations.social_practices
+EvalRules(.agent.rules.social_practices) on .agent.activations.social_practices:
+    -> .agent.state.social_practices
+end
+Extract(.actions, .agent.state.social_practices) -> .agent.potential_actions
+RankBy(.agent.desires) on .agent.potential_actions.$x.consequences
+selectFrom(best, 0.1, .agent.potential_actions) -> .agent.selected_action
+perform(.agent.selected_action)
+output (Action)
+#+end_src
+
+
+
+
+
+* Acab
+** Useful Conceptual Tools
+*** 1: Layers
+*** 2: Activity Diagrams
+*** 3: The Effect Monad
+** What is Acab?
+*** 1: The approach
+*** 2: The computational model
+**** 1: The core Intuition
+**** 2: Formal Definition using IO Logics
+**** 3: Expansion
+*** 3: The authoring tool: Emacs AcabIDE
+**** 1: Graph Navigation
+**** 2: Context Management
+**** 3: Discoverability
+** Why is it?
+*** 1: Politically: Aspirational Criticism
+*** 2: Politically 2 Panopticon Boogaloo: Youtube, Twitch and Human Narration
+*** 3: Complex System creation
+** What can it do?
+*** 1: Vault, Newspaper, Soundscape, City
+*** 2: Comparison to other systems
+*** 3:
+** What does it learn from?
+*** 1: The World
+**** 1: History
+**** 2: Post-2016
+**** 3: Infinite Voices: Twitter and Academia
+*** 2: Deep Learning
+**** 1: Wider Context: Bitcoin, timescales, ethics
+**** 2: The API design/Layers
+**** 3: Metrics
+*** 3: Games
+**** 1: Cif
+**** 2: Versu
+**** 3: Prison Architect
+** Formal Argument
+Questions:
+Answer:
+Because:
+
+could have been:
+except for:
+
+and Not:
+Because:
+
+* Todos
+(abstract, mathmatical) tensors as a data structure
+anaconda-mode
+window-ring go vertical
+scrap leaderless "w" for window-ring movement
+shift python-specific folding into folding module?
+TODO add a shortcut to snippets directory
+
+* DSL
+
+#+NAME: Acab idea notes
+#+begin_src  :results value
+
+a.meta.rule:
+;; DFS queries:
+∃a.test.$x(::rule, λnode.down)?
+;; Exhaustive then group:
+∀a.b.$c? -> βx
+
+a.$c?
+;; Auto align with $x above:
+        @x.[a.b.$x?](::query)?
+        @x.[#blah](::tag)?
+a.pattern.[[a b c | d e, g,h]]?
+
+λapply $x on e
+
+$x.[λ+ a.b.d?]
+end
+
+;; Simple parser spec:
+action.on:
+  | ψ apply $a on $b |
+
+end
+
+;; Selection and modification:
+picker:
+a.b.$xs?
+
+λpick $xs -> $y $xs'
+λpick $xs' -> $z $_
+
+end
+
+#+end_src
+
+* Typing Ideas
+
+#+NAME: Typing Ideas
+#+begin_src acab :results value
+
+
+σ::a.test.record:
+  #record
+
+  an.internal.field.$x(::Number)
+  second.field.$y(::String)
+end
+
+σ::a.maybe.sum:
+  #sum
+
+  just!$x
+  nothing
+end
+
+σ::a.different.sum:
+  #sum
+
+  head!$x(::Number)!$y(::String)
+  tail!$z
+end
+
+σ::another:
+  #sum
+
+  head:
+    $x(::Number)
+    $y(::String)
+  end
+  tail!$z
+end
+
+σ::coin:
+  #sum
+
+  head
+  tails
+end
+
+a.test.sentence(::a.maybe.sum.just)!$x
+a.test.sentence(::a.maybe.sum.nothing)
+
+
+a.test.flip.$x(::coin)
+
+
+a.test.rule:
+  #rule
+
+  a.test.query.$x(::coin)?
+
+  match @x       -> $y(::Number) on:
+        head     -> 2
+        tails    -> 4
+        head!$z? -> $z
+        _        -> 8
+  end
+
+  ActionAdd($y)
+
+end
+
+
+
+a.test.rule:
+  | $x, $y |
+
+  #tags
+
+  a.query.$x?
+
+  $x + 2 -> $y
+
+  ActionAdd($y)
+end
+
+
+#+end_src
+
+** Pathways
+Tramp uses:  /method:user%domain@host#port:/path/to/file
+
+#+NAME: Misc Ideas
+#+begin_src acab :results value
+
+a.test.sentence!blah □ something?
+(? (□ (! (. (. a test) sentence) blah) something))
+?□!.. a test sentence blah something
+
+?□!. | a test sentence blah something
+
+Startup:
+Init + Load Config
+Init Engine + Bootstrap Parser
+Construct Parsers
+
+Use:
+text -> parser -> Sentences[Words[Values]]
+Sentences -> Engine -> Structure + Semantics
+
+
+
+--------------------
+Semantics:
+System
+Mixins
+Handlers
+
+
+Wrapper : Cleanup
+History : Track actions
+Listener: Respond to specifics
+Printer : Convert to strings
+Sequence
+Waveform: Track possible contexts
+
+#+end_src
+
+* Agent architecture
+  "Words are ephemeral,
+  Nodes fade away,
+  Actions are forever"
+
+** Sense: inputs:
+ 1) data assertions from the world
+ 2) data assertions from the last act if a closed model
+** Reason: select next action
+   run rules,
+   propose actions
+   score actions
+   select action
+** Act:
+ 1) output instructions to world
+ 2) assert new facts if closed model
+** Thoughts:
+   Rules -> alpha network
+   Construct a condition trie, as a second dimension of the fact trie
+   hash exit points, create tokens, then run beta on demand?
+* Norms, expression, and NetLogo
+  Even in a simple simulation, where the only output variable for
+  an agent is color, Sequences, Context, Call/Response can all be encoded.
+  So create a number of parameterizable instances of each,
+  weight them using:
+  hand weight,
+  random-weight,
+  bayes-weight,
+  agent-context weight,
+  location-context weight,
+
+  would have:
+  agents [ direction, color, position, interacting_with]
+
+  rule-definitions [
+  value-definitions,
+  rule-weights,
+  value-weight,
+  rule-comparison,
+  value-comparison ]
+
+* Exclusion logic for Sets/Tags:
+  .x.y.z     :    x.intersection(y, z)
+  .x!y       :    x.difference(y)
+  .x!y.z     :    x.difference(y).intersection(z)
+  x|y.z      :    x.union(y).intersection(z)
+  .x.y -> $z : selectFrom
+  .y.y ->(2) $z
+
+  flatten($x) -> $z  : Convert the trie in $x to a flat set of tags
+  flatten(.a.b.c) -> $z : Convert the trie location to a flat set of tags
+  tag(.a.b.c, $z)    : tag the location with all variants in $z
+
+  .a.b.c.d
+  .a.b.c.$x  : Get the value, path, and meta_id from the trie. (Path from ancestor with an id node?)
+  .a.b..$x   : expands to .a.b.c.d
+  .a.b.$x    :  expands to .a.b.d
+  .a.b.[$x]  :  expands to .a.b.ejgi3i2ogjeiw  (or other hashed id value)
+
+  be able to set a tag to indicate to include the node in its parent's hash calculation
+  separate hash calculations into compileTime/Type hashes, and runtime value hashes
+  Where types can be defined as templates
+  and type locations are paths in the trie themselves.
+
+  statically check for replacement calls to match bindings
+
+  rules have binding meta access:
+  -- :results output/value
+  #+begin_src trie
+    a.test.rule:
+        #rule, #numeric
+        a.b!$x(<20)?
+
+        $x + 2 -> $y
+
+        +(.a.b!$y)
+    end
+
+    a.test.meta.rule:
+        #meta, #rule
+
+        a.test.$X?
+        $X^#rule.numeric?
+        ~$X^#meta?
+        $X:["$x"]?
+
+        replace(..$X:["$x"], "a.b!$x(<40)?" )
+    end
+
+  #+end_src
+
+* Module Design
+
+
+Modules:
+
+  Analysis: flow, transforms, smells, typing
+
+  io: network
+
+  methods: contract, governance, law, lifting, protest,
+           protocol, reputation, ritual, sanction,
+           search, supervision, voting
+
+  operators: action, causal, comparison, conflict,
+             defeasibility, delta, interleave,
+             list, set, pattern_match, transform
+
+  structures: activity, agenda, artifact, fsm,
+              lattice, layer, pipeline,
+              social_game, space, theoretic_game,
+              time
+
+  types: rule_types
+
+  values: non_parse_numbers, numbers, probability
+
+  wrappers: delegation, failure, indeterminacy,
+            interruption, observable, revocable
+
+
+
+  agendas: reduce, cycle, map, random, ranking, expander,
+           sandbox, default, selector
+
+  |              | Instance       | Query                   | Transform                         | Action          | Structure | Notes        |
+  |--------------+----------------+-------------------------+-----------------------------------+-----------------+-----------+--------------|
+  | Analysis     | Typing         | X                       |                                   | X               |           | Atomic       |
+  |              | Flow           |                         |                                   | X               | X         |              |
+  |              | Transform      |                         |                                   | X               |           |              |
+  |              | Smells         |                         |                                   | X               |           |              |
+  |--------------+----------------+-------------------------+-----------------------------------+-----------------+-----------+--------------|
+  | IO           | Network        |                         | Build                             | Message/Listen  |           | Atomic       |
+  |              | Printing       |                         |                                   |                 |           |              |
+  |              | Cairo          |                         |                                   |                 |           |              |
+  |              | Twitter        |                         |                                   |                 |           |              |
+  |--------------+----------------+-------------------------+-----------------------------------+-----------------+-----------+--------------|
+  | Structures   | Pipeline       |                         |                                   |                 |           |              |
+  |              | Layer          | Rule Selection          |                                   |                 |           |              |
+  |              | Agenda         |                         |                                   |                 |           |              |
+  |              | Rule           | Components?             | Modify                            | Assert/Retract? |           |              |
+  |              |                |                         |                                   |                 |           |              |
+  |              | Activity       |                         |                                   |                 |           |              |
+  |              | Artifact       |                         |                                   |                 |           |              |
+  |              |                |                         |                                   |                 |           |              |
+  |              | FSM            |                         |                                   |                 |           |              |
+  |              | FSM-State      |                         |                                   |                 |           |              |
+  |              | FSM-Event      |                         |                                   |                 |           |              |
+  |              |                |                         |                                   |                 |           |              |
+  |              | Lattice        |                         |                                   |                 |           |              |
+  |              | Social Game    |                         |                                   |                 |           |              |
+  |              | Theory Game    |                         |                                   |                 |           |              |
+  |              | Space          |                         |                                   |                 |           |              |
+  |              | Time           |                         |                                   |                 |           |              |
+  |--------------+----------------+-------------------------+-----------------------------------+-----------------+-----------+--------------|
+  | Values       | Names          | RegexMatch              |                                   |                 |           |              |
+  |              | Strings        |                         |                                   |                 |           |              |
+  |              | Format Strings | Has open variable       |                                   |                 |           |              |
+  |              |                |                         |                                   |                 |           |              |
+  |              | Sum Types      |                         | Pattern Match                     |                 |           |              |
+  |              |                |                         | Distribute                        |                 |           |              |
+  |              |                |                         |                                   |                 |           |              |
+  |              | Patterns       | At time has X           | Combine                           |                 |           |              |
+  |              |                |                         | Interleave                        |                 |           |              |
+  |              |                |                         | Append                            |                 |           |              |
+  |              |                |                         | Step                              |                 |           |              |
+  |              |                |                         |                                   |                 |           |              |
+  |              | Numbers        | GT, LT, EQ, NEQ         | Add, Sub, Mul, Div, Rem, Mod, Pow |                 |           | Fractional   |
+  |              | Parseable Nums |                         |                                   |                 |           |              |
+  |              | Probability    |                         |                                   |                 |           |              |
+  |              |                |                         |                                   |                 |           |              |
+  |              | Fuzzy          |                         |                                   |                 |           |              |
+  |              | t1             |                         |                                   |                 |           |              |
+  |              | t2 Interval    |                         |                                   |                 |           |              |
+  |--------------+----------------+-------------------------+-----------------------------------+-----------------+-----------+--------------|
+  | Referents    | SpaceTime      |                         |                                   |                 |           |              |
+  |              | Organisation   |                         |                                   |                 |           |              |
+  |              | Law            |                         |                                   |                 |           |              |
+  |              |                |                         |                                   |                 |           |              |
+  |              | Protocol       |                         |                                   |                 |           |              |
+  |              | Contract       |                         |                                   |                 |           |              |
+  |              | Ritual         |                         |                                   |                 |           |              |
+  |              |                |                         |                                   |                 |           |              |
+  |              | Reputation     |                         |                                   |                 |           |              |
+  |              | Artifact       |                         |                                   |                 |           |              |
+  |              | Game           |                         |                                   |                 |           |              |
+  |              | Agent          |                         |                                   |                 |           |              |
+  |--------------+----------------+-------------------------+-----------------------------------+-----------------+-----------+--------------|
+  | Wrappers     | Delegation     | x                       | x                                 |                 |           | Wrap *what*? |
+  |              | Failure        | x                       | x                                 |                 |           |              |
+  |              | Indeterminacy  | x                       | x                                 |                 |           |              |
+  |              | Interruption   | x                       | x                                 |                 |           |              |
+  |              | Observable     | x                       | x                                 |                 |           |              |
+  |              | Revocable      | x                       | x                                 |                 |           |              |
+  |              |                |                         |                                   |                 |           |              |
+  |              | Sequence       |                         | x                                 |                 |           |              |
+  |              | Concurrent     |                         | x                                 |                 |           |              |
+  |              | Dependent      | x                       | x                                 |                 |           |              |
+  |              | Equivalent     | x                       | x                                 |                 |           |              |
+  |              | Distribution   | x                       | x                                 |                 |           |              |
+  |--------------+----------------+-------------------------+-----------------------------------+-----------------+-----------+--------------|
+  | Modification | Protest        |                         |                                   | x               |           |              |
+  |              | Sanction       |                         |                                   | x               |           |              |
+  |              | Voting         |                         |                                   | x               |           |              |
+  |              | Search         |                         |                                   | x               |           |              |
+  |              | Governance     |                         |                                   | x               |           |              |
+  |              |                |                         |                                   |                 |           |              |
+  |--------------+----------------+-------------------------+-----------------------------------+-----------------+-----------+--------------|
+  | Going Along  | Lifting        |                         |                                   | x               |           |              |
+  |              | Imitation      |                         |                                   | x               |           |              |
+  |              | Supervision    |                         |                                   | x               |           |              |
+  |              | Leading        |                         |                                   | x               |           |              |
+  |--------------+----------------+-------------------------+-----------------------------------+-----------------+-----------+--------------|
+  | Operators    | Pipeline       |                         | Run Layer                         |                 |           |              |
+  |              |                |                         |                                   |                 |           |              |
+  |              | Layer          |                         | Run Rules/Agenda                  |                 |           |              |
+  |              |                |                         |                                   |                 |           |              |
+  |              | Agenda         |                         | Run Selections                    | Perform Actions |           |              |
+  |              |                |                         |                                   |                 |           |              |
+  |              | Import         | module import           | extraction                        | alias           |           |              |
+  |--------------+----------------+-------------------------+-----------------------------------+-----------------+-----------+--------------|
+  |              | Rule           |                         |                                   | Propose Actions |           |              |
+  |              |                |                         |                                   |                 |           |              |
+  |--------------+----------------+-------------------------+-----------------------------------+-----------------+-----------+--------------|
+  |              | List           | Len, Has, Tail, Head... | Append, Pop, Build...             |                 |           |              |
+  |              | Set            |                         |                                   |                 |           |              |
+  |              |                |                         |                                   |                 |           |              |
+  |              | Pattern        |                         |                                   |                 |           |              |
+  |              |                |                         |                                   |                 |           |              |
+  |              | PatternMatch   |                         | Handle Sum Types                  |                 |           |              |
+  |--------------+----------------+-------------------------+-----------------------------------+-----------------+-----------+--------------|
+  |              | Causal         | x                       | x                                 |                 |           |              |
+  |              |                |                         |                                   |                 |           |              |
+  |              | Conflict       | x                       | x                                 |                 |           |              |
+  |              |                |                         |                                   |                 |           |              |
+  |              | Defeasibility  | x                       | x                                 |                 |           |              |
+  |              |                |                         |                                   |                 |           |              |
+  |              | Delta          |                         | x                                 |                 |           |              |
+  |              |                |                         |                                   |                 |           |              |
+  |              | Search         |                         | x                                 |                 |           |              |
+  |              |                |                         |                                   |                 |           |              |
+  |              | Interleave     |                         | x                                 |                 |           |              |
+  |              |                |                         |                                   |                 |           |              |
+
+* TODO Acab Architecture notes
+** Top Level
+*** Actions.py
+    *Defines*: ACTS enum, ACTMACRONAME, Core Engine actions (E_ADD, E_RETRACT, E_PRINT),
+    Action, ActionMacro, ActionMacroUse class.
+
+    Defines the core action templates of E_ADD, E_RETRACT, E_PRINT, which link with the ACTS enum.
+    These functions take two parameters, the engine, and a list of parameters passed in.
+    So +(.a.b.c) => E_ADD(engine, [.a.b.c])
+
+    These core acts link with the symbols +,-, and @.
+
+    The Action class is the AST representation of an action. Holds an operator, and values.
+    ActionMacro defines a sequence of actions, with a set of bindings.
+    ActionMacroUse defines a AST representation of where to expand out action macros.
+
+*** Clause.py
+    *Defines*: Clause.
+
+    Clause is an implementation agnostic representation of a query clause.
+    A clause is negatable, holds a set of components, and can have bindings applied to variables.
+
+*** Comparisons.py
+    *Defines*: Core Comparison functions (EQ, GT, LT, NEQ, REGMATCH), Comparison class.
+
+    The main comparison functions link with < > != == ~=.
+    Comparison is the AST representation. It holds the operator, the value(s) or the binding(s).
+
+*** Contexts.py
+    *Defines*: Contexts.
+
+    Contexts is the engine data structure that holds the tree of possible matches.
+    As the engine progresses through a query, it tracks (bindings, lastNode).
+    Lastnode allows the engine to reset the query point as necessary.
+
+*** EngineBase.py
+    *Defines*: EngineBase.
+
+    EngineBase is the abstract class that defines common functionality between trie and
+    wme based knowledge engines. Specifies that an engine can load a file, register actions and rules,
+    add/assert, retract, run rules, transform data.
+
+    Can perform all available actions, or select by a policy.
+    The policy is a passed in function, that takes the list of all proposed actions and selects by some criteria.
+    Policy operates on (dict, Rule).
+    A value to sort on can come about through 2 means:
+    1) It is static to the rule, thus a #tag, the name, condition size etc.
+    2) It is dynamic based on data, in which case it is a $binding, either pure from data,
+       or transformed.
+
+    These two types should cover most eventualities. Specificity can be measured with a dynamic policy
+    of len(rule._query). Priority can be a tag. Dynamic priority can be a binding. Policies to apply
+    one rule per actor can be achieved with a dictionary to track the selected actions in the policy, etc etc.
+
+*** Query.py
+    *Defines*: Query.
+
+    The Query class is implementation agnostic. Holds an ordered list of clauses, which supports
+    expanding bindings and division into positive and negative clauses.
+
+*** Rule.py
+    *Defines*: Rule.
+
+    The rule class is the abstract definition of a rule. It holds a query, transform, and a list of actions.
+    It has a name, and set of tags.
+
+*** Transforms.py
+    *Defines*: TROP enum and functions (add, sub, mul, div, rand, remain, round, neg, regex, format),
+    TransformComponent, SelectionTransform, OperatorTransform, Transform.
+
+    TROP (Transform operator) functions link to + - * / <-> % _ - ~= ~{} select.
+
+    TransformComponent is the superclass of SelectionTransform and OperatorTransform.
+    They define how to either transform a binding, such as with addition,
+    or how to select a number of possible bindings.
+    Selection transforms trigger the Context.select method.
+    *This could expand to select by more than numeric count, getting towards something like
+    policies*.
+
+*** utils.py
+    *Defines*: EXOP and META_OP enums, Bind, expandFact, build_rebind_dict, and default_action_policy.
+
+    EXOP (Exclusion Operator) defines the type of node in a trie, either non-exclusive or exclusive.
+    META_OP defines the additional annotation of a trie node, either a binding, a comparison, or a rule.
+
+    The Bind class is a simple holder for a variable name.
+
+    expandFact takes a fact and a dictionary of bindings, and converts all bindings that are in the dict.
+    So .a.b.$x!$y + {x:"blah", y:"bloo"} -> .a.b.blah!bloo
+
+    build_rebind_dict enables internal bindings of an action macro to be rebound to align with
+    the passed in bindings of its usage.
+
+    default_action_policy is the simplest policy, it selects a single random (bindings, rule) pairing to enact.
+
+** DataStructures
+*** Cycle.py
+    *Defines*: Cycle.
+
+    The Cycle is a simple means of looping through a list. To be integrated with the language.
+
+*** Game.py
+    *Defines*: Game.
+
+    The Game works as a means to represent a Game Theory / CiF style game.
+    It describes an J player, K move, L turn game.
+    The game can have an entry condition (intended to be a simple EL String.
+    Designed to play atomicly, either randomly (play_random),
+    or with assessments/queries from the knowledgebase (play_with_assessments).
+
+    Both forms of play take a *data* parameter, a dictionary of variables to substitute into the outputs.
+    Play_with_assessments also takes a knowledgebase to query.
+
+*** TimeSpaceTree.py
+    *Defines*: TimeSpaceTree.
+
+    Currently unimplemented. Meant to be an implementation of giddens concept.
+    A Mapping of place to time.
+
+*** WeightBalance.py
+    *Defines*: WeightBalance.
+
+    A usage of a balanced tree to allow loose collections of pairings (a < b) (b < c)
+    to be auto balanced. Avoids the use of having to specify actual weights.
+
+    *TODO*: Add a distribution to apply the ordering to.
+
+** Trie
+*** ActionParser.py
+    Defines the parser combinator for parsing Actions.
+    ie: +(.a.b.c)
+
+    Enables assertion, retraction, and printing, using + - and @.
+    Also custom registered actions that are anything else.
+    ie: blah(.a.b.c)
+
+    Multiple values can be passed in:
+    @(.a.b.c, .d.e.f)
+
+    Multiple values can only be passed to print(@), and custom actions.
+
+    Also defines action macros, and their use:
+    ie: #blah($x, "blah", .a.b.d)
+
+    An Action macro is defined similar to a rule:
+    #blah($x, $y, $z):
+    	+(.a.$x.$y.$z)
+        +(.b.$z)
+    end
+
+    Action macros expand out in actions at parse time.
+
+*** FactParser.py
+    Defines the parser combinator for the core fact definition.
+    ie: .a.b!c
+    .a.b.$x
+
+    Covers basic names, numbers, bindings, and double quoted strings.
+    String can be combinations of the above, always starting with a .
+    and with exclusion op (!)  where necessary.
+
+*** FileParser.py
+    Defines the parser combinator that reads a file of assertions and rules.
+    Allows file level bindings:
+    ie: $x <- .a.b.c
+    .a.b.$x
+    clear
+
+    will result in .a.b.a.b.c
+
+    *TODO*: When are file bindings expanded again?
+
+*** Matching.py
+    Defines the means of running tests. Modelled on rete net distinction of
+    alpha and beta tests.
+    Defines the means of comparing two nodes exclusion status.
+
+    *Unfinished*: match_rule.
+
+*** Node.py
+    *Defines*: Node.
+
+    Node is the atomic element of a fact. .a.b!$x => (.a) (.b) (! $x)
+    Nodes can hold meta values, such as bindings, comparisons, and rules.
+
+*** QueryParser.py
+    Defines the parser combinator for queries. Combines FactParser with ?
+
+    Allows factstrings to hold comparisons.
+    ie: .a.$x(>20)?
+
+*** RuleParser.py
+    Defines the parser combinator for rules.
+    Rules have a name, then tags, clauses, transforms, and actions/actionmacros.
+
+*** RuleQueryParser.py
+    *Unfinished*
+
+*** TransformParser.py
+    Defines the parser combinator for transforms.
+    ie: $x + 2 -> $y
+
+    Makes use of defined bindings, and modifies them.
+    "-> $y" rebinds without modifying the original, but is optional.
+
+    There are unary, binary, and ternary transforms.
+
+    Unary: round (_), negate (-), and format (~{}).
+    Format uses python format syntax, and auto uses anything bound.
+    So .a.b.blah,  .a.b.$x? then ~{} "hello ${x}" -> $y
+    will result in y = "hello blah"
+
+    Binary: + - * / %, along with rand (<->), and regex substitution (~=)
+    Regex substitution uses re.sub, and auto-uses bound variables.
+
+    Transforms can also be the keyword "select" for selection of a limited number of matches
+    (check this):
+    ie: select 2 - 4
+
+*** Trie.py
+    *Defines*: Trie.
+
+    Trie is the core of the data representation. Supports assertion and retraction, exclusion semantics,
+    querying and matching.
+
+*** TrieEngine.py
+    *Defines*: TrieEngine
+
+    Defines the implementation of the BaseEngine, for a trie backing.
+
+** Institutions
+   If institutions are a module/file level construct, that would mean
+   that files define:
+   1) Basic concepts
+   2) Roles and Role Groups (Incumbents / Challengers / Enforcers )
+   3) Rules
+      1) Constitutive rules
+      2) Regulative rules
+      3) Distributive rules
+
+   4) Inputs and Outputs
+   5) Value and Sanction Rankings
+   6) Games
+   7) Actions
+   8) Activities
+   9) Sanctions
+   10) IGU definition (imports?)
+   11) Time limits
+   12) Physical limitations
+   13) Physical artifacts
+   14) Institution change rules`
+
+
+   So a file parser should be able to verify features.
+   Only defined roles should exist, same with concepts.
+   Rule conditions should test for inputs, or internal concepts.
+   Values should be able to rank.
+   Values should match defined concepts.
+   Games should verify.
+   Sanctions should rank.
+
+** Norms in the engine
+   The engine needs bayesian weighting of norm obedience, and underlying
+   processes of internalization. Explicit linkings of norm deviance with
+
+
+
+
+
+
+
+* Module Notes
+
+** Activity
+   Activity Theory Module.
+   Should be able to describe an activity pyramid,
+   involving actor, tool, object, objective,
+   community, rules, division of labour
+** Artifact
+   Encode the construction of artifacts,
+   variation of quality, and how it can be used
+** Curves
+   Encode various easing and compression curves
+** Delegation
+   Encode a logic of delegation of actions
+** Failure
+   Describe how actions can fail and be recovered
+** Flow
+   Describe a graph and run a flow analyis on it
+   applicable for system flows
+** FSM
+   Finite State Machine
+** Governance
+   A Module to describe governance structures,
+   organisation, permissions, and IGU behaviour
+   (admin, gatekeeping, certification, education etc)
+** Indeterminacy
+   A Module to provide random number generators of different distrbutions
+** Lattice
+   a module to describe lattices and movement on them
+** Observable
+   a module to encode observability of actions, who can know what etc
+** Probability
+   a module to provide bayesian understanding of events
+** Protocol
+   a module to describe and perform multi party interaction protocols
+** Revocable
+   a module to describe revocation of permissions
+** Ritual
+   a module to describe either purely symbolic actions,
+   or the annotation of activities into activities with symbolic components
+** Social_Game
+   a module for kosters multiplayer games
+** Space
+   a module for holding description of space, and pathfind around it
+** Standard Operators
+   the core operators of acab. assertion, retraction, etc
+** Theoretic Game
+   A module to build game theory forms of games
+** Time
+   a module to describe rational time and patterns
+** Voting
+   a module to provide different forms of multi party voting decision procedures
+** Weights
+   a module to weight different values and ensure partial orders
+
+
+* Languages and Transformation
+  The architecture creates a superset language of all layers,
+  and uses only subsets for individual layers.
+
+  To use the typechecking layer, it reduces the language down to a typing Language
+
+  To use the FSM module, it will reduce down to the FSM spec and manipulation language.
+
+  Queries asked of the global state, are then transformed down, and expanded out again with
+  actions.
+
+
+  Base Abstract Language:
+  Words
+  Variables
+  Sentences
+
+  Rule Language:
+  Base + Query, Transform, Action, Rule
+
+  Pipeline Language:
+  Base, Rule + Agenda, Layer, Pipeline
+
+  Typing Language
+  Base + Syntax Context, TypeDef, OpDef, SumDef, TypeDec
