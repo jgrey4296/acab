@@ -1,0 +1,307 @@
+#!/usr/bin/env python3
+import logging as root_logger
+
+from typing import List, Set, Dict, Tuple, Optional, Any
+from typing import Callable, Iterator, Union, Match, TypeVar
+from typing import Mapping, MutableMapping, Sequence, Iterable
+from typing import cast, ClassVar
+
+from acab.abstract.core.values import Sentence
+from acab.abstract.core.values import AcabValue, AcabStatement
+from acab.abstract.core.node import AcabNode
+from acab.modules.semantics.query_semantic_mixin import QuerySemanticMixin
+from acab.abstract.core.acab_struct import AcabStruct
+from acab.abstract.core.production_abstractions import ProductionContainer
+
+from acab.error.acab_semantic_exception import AcabSemanticException
+
+from acab.error.acab_base_exception import AcabBaseException
+
+from acab.abstract.config.config import AcabConfig
+import acab.abstract.interfaces.semantic_interfaces as SI
+from acab.abstract.interfaces.data_interfaces import StructureInterface
+
+from .util import split_clauses
+
+logging = root_logger.getLogger(__name__)
+config = AcabConfig.Get()
+
+CONSTRAINT_S = config.value("Value.Structure", "CONSTRAINT")
+NEGATION_S = config.value("Value.Structure", "NEGATION")
+QUERY_FALLBACK_S = config.value("Value.Structure", "QUERY_FALLBACK")
+DEFAULT_SETUP_S = config.value("Data", "DEFAULT_SETUP_METHOD")
+DEFAULT_UPDATE_S = config.value("Data", "DEFAULT_UPDATE_METHOD")
+
+T = TypeVar('T')
+T2 = TypeVar('T2')
+
+Node          = 'AcabNode'
+Sentence      = 'Sentence'
+Printable     = 'Printable'
+Value         = 'AcabValue'
+Structure     = 'AcabStruct'
+Engine        = 'Engine'
+Contexts      = 'Contexts'
+SemanticUnion = Union['IndependentSemantics', 'DependentSemantics']
+
+@dataclass
+class ContextContainer():
+
+    operators : Dict[str, Callable]   = field(default_factory=dict)
+    ctxs      : List[ContextInstance] = field(default_factory=list)
+    purgatory : List[ContextInstance] = field(default_factory=list)
+    failed    : List[ContextInstance] = field(default_factory=list)
+
+    def set(self, node, start_word):
+        pass
+    def fail(self, instance: ContextInstance):
+        pass
+
+    def test(self, word: AcabValue, ctx: ContextInstance, possible: List[Node]):
+        pass
+
+    def grow(self, ctx, the_list):
+        pass
+
+    def collapse(self, ctx, var):
+        pass
+
+@dataclass
+class ContextInstance():
+
+    current : Node           = field()
+    data    : Dict[Any, Any] = field(default_factory=dict)
+
+# Dependent Semantics
+class BasicTrieSemantics(SI.DependentSemantics):
+    """
+    Trie Semantics which map values -> Nodes
+    """
+
+    def _insert(self, struct, sen, data=None):
+        if data is None:
+            data = {}
+
+        if NEGATION_S in sen.data and sen.data[NEGATION_S]:
+            return self._delete(struct, sen, data, engine)
+
+        # Get the root
+        current = struct.root
+        for word in sen:
+            semantics = self.retrieve(current)
+            if semantics.accessible(current, word, data):
+                current = semantics.get(current, word, data)
+            else:
+                next_semantics = self.retrieve(word)
+                new_node = next_semantics.up(word, data)
+                current = semantics.add(current, new_node, data)
+
+        return current
+
+    def _query(self, struct, sen, data=None, ctxs=None):
+        # Query from start to finish
+
+        # TODO Handle context loc init
+        ctxs.set(struct.root, sen[0])
+        for word in sen:
+            for ctx in ctxs[:]:
+                indep = self.retrieve(ctx.current)
+                results = indep.access(word)
+                if not bool(results):
+                    ctxs.fail(ctx)
+                else:
+                    ctxs.test(word, ctx, results)
+
+    def _delete(self, struct, sen, data=None):
+        parent = struct.root
+        current = struct.root
+        for word in sen:
+            # Get independent semantics for current
+            semantics = self.retrieve(current.value)
+            if semantics.accessible(current, word, data):
+                parent = current
+                current = semantics.get(current, word, data)
+            else:
+                return None
+
+        # At leaf:
+        # remove current from parent
+        semantics = self.retrieve(parent.value)
+        semantics.delete(parent, current, data)
+
+        return current
+
+
+    def _filter_candidates(self, target_pattern, candidates, match_func):
+        """ Filter candidates using match_func to compare
+        against this data_structure
+
+        Where a Match = [(PatternNode, MatchNode)]
+        Return [Match]
+
+        match_func : Node -> [Node] -> [Node]
+        """
+        # TODO check this
+        assert(isinstance(target_pattern, AcabStruct))
+
+        if isinstance(candidates, AcabStruct):
+            candidates = candidates.root
+
+        if not isinstance(candidates, AcabNode):
+            raise AcabBaseException()
+
+        final_matches = []
+        pattern_nodes = list(candidates.children.values())
+        # (current pattern position, available choices, match state)
+        queue = [(word, pattern_nodes, []) for word in target_pattern.root.children.values()]
+
+        while bool(queue):
+            current, available_nodes, match_state = queue.pop(0)
+
+            matching_nodes = match_func(current, available_nodes)
+            for node in matching_nodes:
+                next_match_state = match_state + [(current, node)]
+
+                if bool(current):
+                    next_available = list(node.children.values())
+                    next_patterns = list(current.children.values())
+                    queue += [
+                        (word, next_available, next_match_state)
+                        for word in next_patterns
+                    ]
+                else:
+                    final_matches.append(next_match_state)
+
+        return final_matches
+
+
+
+
+
+
+class FSMSemantics(SI.DependentSemantics):
+
+    def _insert(self, struct, sen, data=None):
+        """
+        In the FSM, everything is accessible from the root,
+        there is a defined start node,
+        sentences define sequences of connections
+
+        eg:
+        a.b.c.a : defines a circular path
+
+        a.b.d   : defines a split
+        a.c.d
+
+        -a.b.c  : disconnects a from b, and b from c
+        """
+        if data is None:
+            data = {}
+
+        if NEGATION_S in sen.data and sen.data[NEGATION_S]:
+            return self._delete(struct, sen, data, engine)
+
+        # Get the root
+        root = struct.root
+        current = root
+        root_semantics = self.retrieve(root.value)
+        for word in sen:
+            new_node = None
+            if not semantics.accessible(root, word, data):
+                next_semantics = self.retrieve(word)
+                new_node = next_semantics.up(word, data)
+                root_semantics.add(root, word, data)
+            else:
+                new_node = root_semantics.get(root, word, data)
+
+            current_semantics = self.retrieve(current)
+            if not current_semantics.accessible(current, new_node, data):
+                current = semantics.add(current, new_node, data)
+            else:
+                current = new_node
+
+        return current
+
+    def _query(self, struct, query, data=None, ctxs=None):
+        """
+        Test that all states exist, and connections line up:
+        a.b.c.d?
+
+        Or that connections are *not* there:
+        ~a.b.c?
+
+        Use a node test to check state?:
+        a(λactive).b.c.d?
+
+        Or Get the active state:
+        $x(λactive)?
+
+        """
+        if ctxs is None:
+            self.run_handler("results.init",
+                             data=data,
+                             engine=engine,
+                             start_node=structure.root)
+
+        pos, neg = query.clauses
+
+        for clause in pos:
+            self._test_clause(clause)
+
+        with self.run_handler("results.ctx_invert"):
+            for clause in neg:
+                self._test_clause(clause)
+
+        return self.run_handler("results.finish")
+
+
+    def _delete(self, struct, sen, data=None):
+        """
+        remove each word in the sentence from its prior
+        """
+        root = struct.root
+        root_sem = self.retrieve(root.value)
+        current = None
+        for head,succ in zip(sen[:-1], sen[1:]):
+            if root_sem.accessible(root, head, data):
+                head_node = root_sem.get(root, head, data)
+                head_sem = self.retrieve(head_node.value)
+                head_sem.delete(head_node, succ, data)
+                current = head_node
+
+        return current
+
+    def _trigger(self, sen, data, engine):
+        """
+        Trigger the FSM.
+        ie:
+        [empty sentence] : Use any available transition
+        a.b              : Use the defined transition
+        """
+        raise NotImplementedError()
+
+
+class ASPSemantics(SI.DependentSemantics):
+    """
+    Stub for passing assertions and queries into an ASP program
+    """
+
+    def _insert(self, struct, sen):
+        """
+        construct the ASP program
+        """
+        pass
+
+
+    def _query(self, struct, query):
+        """
+        pass the cached asp program to a solver,
+        retrieve results, extract what is needed,
+        and return as sentences
+        """
+        pass
+
+
+
+# nx graph
+# numpy array
