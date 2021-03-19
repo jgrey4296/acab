@@ -1,7 +1,8 @@
 """
 Semantics:
+Subdivides into *Complete Systems*, *Incomplete Mixins* and *Handlers*
 
-All semantics should be able to lift basic sentences up to their preferred internal data format.
+All semantic systems should be able to lift basic sentences up to their preferred internal data format.
 And reduce those internal formats back down to basic sentences.
 
 SemanticMap also provide the ability to map a value or node to particular semantics,
@@ -36,68 +37,42 @@ SemanticUnion = Union['IndependentSemantics', 'DependentSemantics']
 T  = TypeVar('T')
 T2 = TypeVar('T2')
 
-class SemanticHandler(metaclass=abc.ABCMeta):
-    """ Limited Purpose object to provide python-defined functionality.
-    Bound by a semantics *map* or used as the handler for a *listener*
-    """
+SemSearchF = Callable[[T], Optional[SemanticUnion]]
+SemSearch = List[SemSearchF]
 
-    def __call__(self):
-        pass
+def default_key(node:Node, data:Dict[Any,Any]=None) -> str:
+    return node.name
 
-class SemanticMixin(metaclass=abc.ABCMeta):
-    """ A Collection of functionality which is meaningless when separated,
-    but can not, on its own, sufficient to be a semantics """
+def default_failure(struct, sen, data, err):
+    pass
+
+def example_hook(struct: Structure, sen: Sentence, data=None, *args):
     pass
 
 
-#
+# Main System
+@dataclass
 class SemanticSystem(Generic[T], metaclass=abc.ABCMeta):
     """ A Complete semantic system """
 
-    @abc.abstractmethod
-    def up(self, sens: List[Sentence]) -> T:
-        pass
-
-    @abc.abstractmethod
-    def down(self, value: T) -> List[Sentence]:
-        pass
-
-    @abc.abstractmethod
-    def ask(self, sentence) -> Any:
-        """ Is this sentence meaningful wrt self"""
-        # Think Smalltalk
-        pass
-
-    @abc.abstractmethod
-    def do(self, sentence) -> Any:
-        pass
-
-
-
-
-#
-@dataclass
-class SemanticsMap(SemanticSystem):
-    """ Maps values/nodes to semantics,
-    using a specified lookup ordering.
-    handles contexts.
-
-    expectations and guarantees are downstream
-    """
-
-    mapping          : Dict[T, SemanticUnion]                       = field(default_factory=dict)
-    search_order     : List[Callable[[T], Optional[SemanticUnion]]] = field(default_factory=list)
     # Downward guarantees of what semantics may contextually rely upon
-    guarantees      : List[Handler]          = field(default_factory=list)
+    guarantees        : Set[Handler]               = field(default_factory=list)
     # Downward expectations of what semantics must publicly provide
-    expectations    : List[SemanticUnion]    = field(init=False, default_factory=list)
+    expectations      : Set[SemanticUnion]         = field(init=False, default_factory=list)
+    # Map a value to a semantics
+    mapping           : Dict[T, SemanticUnion]     = field(default_factory=dict)
+    search_order      : SemSearch                  = field(default_factory=list)
+    # Handler registration
+    handlers          : Dict[str, Handler] = field(default_factory=dict)
 
     # The collected interface of all public facing semantics
     # used for getattr?
-    _interface_union : Set[str]               = field(init=False, default_factory=set)
+    _interface_union  : Set[str]                   = field(init=False, default_factory=set)
     # The collected interface of all contextual semantics
     # used for a ctx_getattr
-    _contextual_union : Set[str]              = field(init=False, default_factory=set)
+    _contextual_union : Set[str]                   = field(init=False, default_factory=set)
+
+    _context_stack : List[Dict[Any,Any]] = field(init=False, default_factory=list)
 
     def __post_init__(self):
         # assert a DEFAULT is in mapping
@@ -114,10 +89,18 @@ class SemanticsMap(SemanticSystem):
 
 
 
-    def setup_guarantees(self):
-        # TODO specify when to setup these
+    def __call__(self, instruction) -> Any:
+        # push to context stack
+        # Run entry hooks, add result to context stack
+        # try:
+        ## Get semantic instance from mapping
+        ## perform instruction
+        # run exit hooks
+        # pop context stack
         pass
-    def get(self, T) -> SemanticUnion:
+
+
+    def retrieve(self, T) -> SemanticUnion:
         """ Get a mapped semantics, using the search order """
         chosen: SemanticUnion = self.bottom_semantic
         descendents_to_update = []
@@ -144,20 +127,134 @@ class SemanticsMap(SemanticSystem):
 
 
 
-    def run(self, T) -> Any:
+    def initialize(self):
+        """ Setup any guarantees of the system """
+        # TODO specify when to setup these
         pass
-#
-class IndependentSemantics(SemanticSystem):
-    """ Semantics which do *not* have any contextual requirements. """
-    pass
+
+    def run_handler(self, h_type: Sentence, *args, **kwargs):
+        """ Call a registered handler """
+        pass
+
+# Components
+class AbstractionSemantics(metaclass=abc.ABCMeta):
+    """
+    Semantics of Higher level abstractions
+    eg: Rules, Layers, Pipelines...
+    """
+
+    def run(self, abstraction, engine, *args, **kwargs):
+        pass
 
 
-@dataclass
-class DependentSemantics(SemanticSystem):
-    """ Semantics with contextual expectations """
-    expectations: Set[Handler] = field(default_factory=set)
 
-    pass
+class DependentSemantics(metaclass=abc.ABCMeta):
+    """
+    Dependent Semantics rely on external context like the engine
+    """
+    # str/iden -> IndependentSemantics
+    mapping        : Dict[str, 'IndependentSemantics']    = field(default_factory=dict)
+    # node -> iden func to determin indep semantics
+    key            : Callable[[Node, Dict[Any,Any]], Str] = field(default=default_key)
+    # If no applicable semantics found, use default
+    default        : 'IndependentSemantics'               = field()
+    #
+    failure        : Callable                             = field(default=default_failure)
+    # Dep Sem Entry/Exit Hooks
+    hooks          : Tuple[List[Handler], List[Handler]]  = field(default_factory=tuple)
+    # Query Behaviour
+
+    def _run_entry_hooks(self, struct, sen, data):
+        for hook in self.hooks[0]:
+            hook(struct, sen, data)
+
+    def _run_exit_hooks(self, struct, sen, data):
+        for hook in self.hooks[1]:
+            hook(struct, sen, data)
+
+    def retrieve(node: Node, data=None) -> 'IndependentSemantics':
+        lookup_key = self.key(node, data)
+        if lookup_key in self.mapping:
+            return self.mapping[lookup_key]
+
+        return self.default
 
 
-#
+    def insert(self, struct: Structure, sen: Sentence, data:Dict[Any,Any]=None) -> Optional[Node]:
+        try:
+            self._run_entry_hooks(struct, sen, data)
+            # perform
+            self._insert(struct, sen, data)
+        except AcabSemanticException as err:
+            self.failure(struct, sen, data, err)
+        finally:
+            self._run_exit_hooks(struct, sen, data)
+
+    def query(self, struct: Structure, sen: Sentence, data:Dict[Any,Any]=None, ctxs:Contexts=None) -> Contexts:
+        try:
+            # If no ctx, create it
+            self._run_entry_hooks(struct, sen, data)
+            self._query(struct, sen, data, ctxs)
+        except AcabSemanticException as err:
+            self.failure(struct, sen, data, err)
+        finally:
+            self._run_exit_hooks(struct, sen, data)
+            return ctxs
+
+    def trigger(self, struct: Structure, sen: Sentence, data:Dict[Any,Any]=None) -> Any:
+        try:
+            self._run_entry_hooks(struct, sen, data)
+            self._trigger(struct, sen, data)
+        except AcabSemanticException as err:
+            self.failure(struct, sen, data, err)
+        finally:
+            self._run_exit_hooks(struct, sen, data)
+
+
+
+    @abstractmethod
+    def _insert(self, struct, sen, data):
+        pass
+
+    @abstractmethod
+    def _query(self, struct, sen, data):
+        pass
+
+    @abstractmethod
+    def _trigger(self, struct, sen, data):
+        pass
+
+class IndependentSemantics(metaclass=abc.ABCMeta):
+    """
+    Independent Semantics which operate on values and nodes, without
+    requiring access to larger context, or engine access
+    """
+    def make(self, val: Value, data:Dict[Any,Any]=None) -> Node:
+        pass
+
+    def up(self, word: Value, data=None) -> Node:
+        pass
+
+    def down(self, node: Node) -> Value:
+        pass
+
+    def access(self, node: Node, term: Value, data:Dict[Any,Any]=None) -> List[Node]:
+        """ Can node A reach the given term """
+        pass
+
+    def insert(self, node: Node, new_node: Node, data:Dict[Any,Any]=None) -> Node:
+        pass
+
+    def remove(self, node: Node, term: Value, data:Dict[Any,Any]=None) -> Optional[Node]:
+        pass
+
+
+    def equal(self, val1:Node, val2:Node, data:Dict[Any,Any]=None) -> bool:
+        pass
+
+
+
+
+
+
+

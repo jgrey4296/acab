@@ -9,22 +9,25 @@ from dataclasses import dataclass,  field
 
 import abc
 
+Node = 'NodeInterface'
+Value = 'AcabValue'
+
 @dataclass
 class NodeInterface(metaclass=abc.ABCMeta):
     """  """
 
-    value : 'AcabValue'
-    children : Dict[str, 'AcabNode'] = field(init=False, default_factory=dict)
+    value : Value
+    children : Dict[str, Node] = field(init=False, default_factory=dict)
 
     @staticmethod
     @abc.abstractmethod
-    def Root() -> 'AcabNode':
+    def Root() -> Node:
         """ Construct a root node for a data structure """
         pass
 
 
     @abc.abstractmethod
-    def _default_setup(self, path: ['AcabNode'], data: Dict[Any,Any], context: Dict[Any,Any]):
+    def _default_setup(self, path: [Node], data: Dict[Any,Any], context: Dict[Any,Any]):
         """ Called by a Semantics upon creation of a new node """
         pass
 
@@ -38,30 +41,30 @@ class NodeInterface(metaclass=abc.ABCMeta):
 
 
 
+    @abc.abstractmethod
+    def add_child(self, node) -> Node:
+        pass
+    @abc.abstractmethod
+    def get_child(self, node) -> Node:
+        pass
+    @abc.abstractmethod
+    def has_child(self, node) -> bool:
+        pass
+    @abc.abstractmethod
+    def remove_child(self, node) -> Node:
+        pass
+    @abc.abstractmethod
+    def clear_children(self):
+        pass
+
+
 @dataclass
 class StructureInterface(metaclass=abc.ABCMeta):
       """  """
-      root : 'AcabNode'                    = field(init=False)
+      root      : 'AcabNode'               = field(init=False)
       semantics : 'AcabStructureSemantics' = field(default=None)
-
-      @abc.abstractmethod
-      def add(self, sen) -> Any:
-          pass
-
-      @abc.abstractmethod
-      def query(self, sen) -> Any:
-          pass
-
-      @abc.abstractmethod
-      def contain(self, sen) -> Any:
-          pass
-
-      def trigger(self, *data) -> Any:
-          """ Not abstract, as not all structures can be triggered """
-          pass
-
 
       @staticmethod
       @abc.abstractmethod
-      def build_default(self) -> Any:
+      def build_default() -> Any:
           pass

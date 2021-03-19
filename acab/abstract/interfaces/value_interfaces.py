@@ -39,12 +39,12 @@ AcabStatement = 'AcabStatement'
 @dataclass
 class ValueInterface(metaclass=abc.ABCMeta):
 
-    name : str               = field(default=None)
-    value : Any              = field(default=None)
+    name   : str             = field(default=None)
+    value  : Any             = field(default=None)
     params : List[AcabValue] = field(default_factory=list)
-    tags : Set[str]          = field(default_factory=set)
-    data : Dict[str, Any]    = field(default_factory=dict)
-    uuid : UUID              = field(default_factory=uuid1)
+    tags   : Set[str]        = field(default_factory=set)
+    data   : Dict[str, Any]  = field(default_factory=dict)
+    uuid   : UUID            = field(default_factory=uuid1)
 
     @property
     @abc.abstractmethod
