@@ -44,33 +44,6 @@ Engine        = 'Engine'
 Contexts      = 'Contexts'
 SemanticUnion = Union['IndependentSemantics', 'DependentSemantics']
 
-@dataclass
-class ContextContainer():
-
-    operators : Dict[str, Callable]   = field(default_factory=dict)
-    ctxs      : List[ContextInstance] = field(default_factory=list)
-    purgatory : List[ContextInstance] = field(default_factory=list)
-    failed    : List[ContextInstance] = field(default_factory=list)
-
-    def set(self, node, start_word):
-        pass
-    def fail(self, instance: ContextInstance):
-        pass
-
-    def test(self, word: AcabValue, ctx: ContextInstance, possible: List[Node]):
-        pass
-
-    def grow(self, ctx, the_list):
-        pass
-
-    def collapse(self, ctx, var):
-        pass
-
-@dataclass
-class ContextInstance():
-
-    current : Node           = field()
-    data    : Dict[Any, Any] = field(default_factory=dict)
 
 # Dependent Semantics
 class BasicTrieSemantics(SI.DependentSemantics):
@@ -98,26 +71,13 @@ class BasicTrieSemantics(SI.DependentSemantics):
 
         return current
 
-    def _query(self, struct, sen, data=None, ctxs=None):
-        # Query from start to finish
-
-        # TODO Handle context loc init
-        ctxs.set(struct.root, sen[0])
-        for word in sen:
-            for ctx in ctxs[:]:
-                indep = self.retrieve(ctx.current)
-                results = indep.access(word)
-                if not bool(results):
-                    ctxs.fail(ctx)
-                else:
-                    ctxs.test(word, ctx, results)
 
     def _delete(self, struct, sen, data=None):
         parent = struct.root
         current = struct.root
         for word in sen:
             # Get independent semantics for current
-            semantics = self.retrieve(current.value)
+            semantics = self.retrieve(current)
             if semantics.accessible(current, word, data):
                 parent = current
                 current = semantics.get(current, word, data)
@@ -126,57 +86,34 @@ class BasicTrieSemantics(SI.DependentSemantics):
 
         # At leaf:
         # remove current from parent
-        semantics = self.retrieve(parent.value)
+        semantics = self.retrieve(parent)
         semantics.delete(parent, current, data)
 
         return current
 
 
-    def _filter_candidates(self, target_pattern, candidates, match_func):
-        """ Filter candidates using match_func to compare
-        against this data_structure
+    def _query(self, struct, sen, data=None, ctxs=None):
+        # Query from start to finish
+        if ctxs is None:
+            raise AcabSemanticException()
 
-        Where a Match = [(PatternNode, MatchNode)]
-        Return [Match]
+        negated_query = False
+        if NEGATION_S in sen.data and sen.data[NEGATION_S]:
+            negated_query = True
 
-        match_func : Node -> [Node] -> [Node]
-        """
-        # TODO check this
-        assert(isinstance(target_pattern, AcabStruct))
+        # TODO get collapse vars
+        collapse_vars = []
+        with ctxs(struct.root, sen[0], data, collapse_vars, negated_query):
+            for word in sen:
+                for ctx in ctxs.active():
+                    indep = self.retrieve(ctx.current)
+                    results = indep.access(ctx.current, word, data)
+                    if not bool(results):
+                        ctxs.fail(ctx)
+                    else:
+                        ctxs.test(word, ctx, results)
 
-        if isinstance(candidates, AcabStruct):
-            candidates = candidates.root
-
-        if not isinstance(candidates, AcabNode):
-            raise AcabBaseException()
-
-        final_matches = []
-        pattern_nodes = list(candidates.children.values())
-        # (current pattern position, available choices, match state)
-        queue = [(word, pattern_nodes, []) for word in target_pattern.root.children.values()]
-
-        while bool(queue):
-            current, available_nodes, match_state = queue.pop(0)
-
-            matching_nodes = match_func(current, available_nodes)
-            for node in matching_nodes:
-                next_match_state = match_state + [(current, node)]
-
-                if bool(current):
-                    next_available = list(node.children.values())
-                    next_patterns = list(current.children.values())
-                    queue += [
-                        (word, next_available, next_match_state)
-                        for word in next_patterns
-                    ]
-                else:
-                    final_matches.append(next_match_state)
-
-        return final_matches
-
-
-
-
+        return ctxs
 
 
 class FSMSemantics(SI.DependentSemantics):
@@ -303,5 +240,3 @@ class ASPSemantics(SI.DependentSemantics):
 
 
 
-# nx graph
-# numpy array
