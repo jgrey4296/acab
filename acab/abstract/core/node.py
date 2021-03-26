@@ -34,7 +34,7 @@ class AcabNode(DI.NodeInterface):
     """ The Base Node Class for Tries/Data structures etc
     Not an AcabValue, Uses the most basic semantics possible
     """
-
+    # TODO make children a dict of dicts
     # value  : AcabValue       = field(default=None)
     data     : Dict[str, Any]  = field(default_factory=dict)
     path     : Sentence        = field(default=None)
@@ -89,7 +89,7 @@ class AcabNode(DI.NodeInterface):
     def var_set(self):
         return self.value.var_set
 
-    def add_child(self, node):
+    def add_child(self, node) -> 'AcabNode':
         """ Add a node as a child of this node
         mutate object
         """
@@ -97,14 +97,14 @@ class AcabNode(DI.NodeInterface):
         self.children[node.name] = node
         return node
 
-    def get_child(self, node):
+    def get_child(self, node) -> 'AcabNode':
         """ Get a node using a string, or a node itself """
         if isinstance(node, str):
             return self.children[node]
 
         return self.children[node.name]
 
-    def has_child(self, node):
+    def has_child(self, node) -> bool:
         """ Question if this node has a particular child """
         # TODO handle if looking for a variable
         if isinstance(node, str):
@@ -118,7 +118,7 @@ class AcabNode(DI.NodeInterface):
         else:
             return False
 
-    def remove_child(self, node):
+    def remove_child(self, node) -> Optional['AcabNode']:
         """ Delete a child from this node, return success state
         mutate object
         """
@@ -146,7 +146,7 @@ class AcabNode(DI.NodeInterface):
         assert(isinstance(parent, AcabNode))
         self.parent = ref(parent)
 
-    def parentage(self):
+    def parentage(self) -> List['AcabNode']:
         """ Get the full path from the root to this node """
         path = []
         current = self
