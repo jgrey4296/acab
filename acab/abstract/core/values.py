@@ -1,34 +1,28 @@
 """
 The Core Value Class
 """
-# pylint: disable=bad-whitespace
-# https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
-# https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
-
-from dataclasses import dataclass, field, InitVar, replace
-
-from weakref import ref
 import logging as root_logger
-from uuid import uuid1, UUID
+from copy import deepcopy
+from dataclasses import InitVar, dataclass, field, replace
 from fractions import Fraction
 from re import Pattern
-from copy import deepcopy
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
+from uuid import UUID, uuid1
+from weakref import ref
 
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.interfaces import value_interfaces as VI
 
-logging            = root_logger.getLogger(__name__)
+logging          = root_logger.getLogger(__name__)
 
-config             = AcabConfig.Get()
+config           = AcabConfig.Get()
 TYPE_INSTANCE    = config.value("Value.Structure", "TYPE_INSTANCE")
 BIND             = config.value("Value.Structure", "BIND")
 AT_BIND          = config.value("Value.Structure", "AT_BIND")
 ANON_VALUE       = config.value("Symbols", "ANON_VALUE")
-SENTENCE_TYPE      = config.value("Type.Primitive", "SENTENCE")
+SENTENCE_TYPE    = config.value("Type.Primitive", "SENTENCE")
 BIND_SYMBOL      = config.value("Symbols", "BIND")
 AT_BIND_SYMBOL   = config.value("Symbols", "AT_BIND")
 TYPE_BOTTOM_NAME = config.value("Data", "TYPE_BOTTOM_NAME")
@@ -426,5 +420,3 @@ class Sentence(AcabStatement, VI.SentenceInterface):
 
         sen_copy = self.copy(value=out_words)
         return (sen_copy, statements)
-
-

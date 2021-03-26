@@ -17,22 +17,21 @@ TODO use acab errors instead
 TODO have default config files
 """
 
-from os.path import join, isfile, exists, abspath
-from os.path import split, isdir, splitext, expanduser
-from os import listdir
-
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
-
 from configparser import ConfigParser, ExtendedInterpolation
-from dataclasses import dataclass, field, InitVar
+from dataclasses import InitVar, dataclass, field
 from enum import Enum
+from os import listdir
+from os.path import (abspath, exists, expanduser, isdir, isfile, join, split,
+                     splitext)
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
+
 import pyparsing as pp
 
-from .modal import ModalConfig
 from acab.error.acab_config_exception import AcabConfigException
+
+from .modal import ModalConfig
 
 actions_e = Enum("Config Actions", "STRIPQUOTE KEYWORD LITERAL DICT LIST UNESCAPE SPLIT")
 
@@ -58,7 +57,7 @@ class AcabConfig(ModalConfig):
         actions_e.UNESCAPE   : lambda x: x.encode().decode("unicode_escape"),
         actions_e.SPLIT      : lambda x: x.split(" ")
     })
-    instance : ClassVar['AcabConfig']                   = field(init=False, default=None)
+    instance : ClassVar['AcabConfig'] = field(init=False, default=None)
 
     @staticmethod
     def Get(*paths: List[str]):
