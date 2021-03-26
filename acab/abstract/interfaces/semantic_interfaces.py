@@ -20,6 +20,7 @@ from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic
 
 from acab.abstract.semantics import util as SemUtil
+from acab.error.acab_semantic_exception import AcabSemanticException
 
 import abc
 from dataclasses import dataclass, field
@@ -87,8 +88,6 @@ class SemanticSystem(Generic[T], metaclass=abc.ABCMeta):
             # assert(not difference(semantics.expectations, self.guarantees))
             assert(all([isinstance(semantics, x) for x in self.expectations]))
 
-
-
     def __call__(self, instruction) -> Any:
         # push to context stack
         # Run entry hooks, add result to context stack
@@ -98,7 +97,6 @@ class SemanticSystem(Generic[T], metaclass=abc.ABCMeta):
         # run exit hooks
         # pop context stack
         pass
-
 
     def retrieve(self, T) -> SemanticUnion:
         """ Get a mapped semantics, using the search order """
@@ -125,8 +123,6 @@ class SemanticSystem(Generic[T], metaclass=abc.ABCMeta):
 
         return chosen
 
-
-
     def initialize(self):
         """ Setup any guarantees of the system """
         # TODO specify when to setup these
@@ -147,22 +143,26 @@ class AbstractionSemantics(metaclass=abc.ABCMeta):
         pass
 
 
-
+@dataclass
 class DependentSemantics(metaclass=abc.ABCMeta):
     """
     Dependent Semantics rely on external context like the engine
     """
+    # If no applicable semantics found, use default
+    base : 'IndependentSemantics'                         = field()
     # str/iden -> IndependentSemantics
     mapping        : Dict[str, 'IndependentSemantics']    = field(default_factory=dict)
     # node -> iden func to determin indep semantics
-    key            : Callable[[Node, Dict[Any,Any]], Str] = field(default=default_key)
-    # If no applicable semantics found, use default
-    default        : 'IndependentSemantics'               = field()
+    key            : Callable[[Node, Dict[Any,Any]], str] = field(default=default_key)
     #
     failure        : Callable                             = field(default=default_failure)
     # Dep Sem Entry/Exit Hooks
     hooks          : Tuple[List[Handler], List[Handler]]  = field(default_factory=tuple)
     # Query Behaviour
+
+    def __post_init__(self):
+        if not bool(self.hooks):
+            self.hooks = ([], [])
 
     def _run_entry_hooks(self, struct, sen, data):
         for hook in self.hooks[0]:
@@ -172,12 +172,12 @@ class DependentSemantics(metaclass=abc.ABCMeta):
         for hook in self.hooks[1]:
             hook(struct, sen, data)
 
-    def retrieve(node: Node, data=None) -> 'IndependentSemantics':
+    def retrieve(self, node: Node, data=None) -> 'IndependentSemantics':
         lookup_key = self.key(node, data)
         if lookup_key in self.mapping:
             return self.mapping[lookup_key]
 
-        return self.default
+        return self.base
 
 
     def insert(self, struct: Structure, sen: Sentence, data:Dict[Any,Any]=None) -> Optional[Node]:
@@ -212,15 +212,15 @@ class DependentSemantics(metaclass=abc.ABCMeta):
 
 
 
-    @abstractmethod
+    @abc.abstractmethod
     def _insert(self, struct, sen, data):
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def _query(self, struct, sen, data):
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def _trigger(self, struct, sen, data):
         pass
 

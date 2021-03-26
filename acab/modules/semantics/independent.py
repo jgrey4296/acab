@@ -53,9 +53,9 @@ class BasicNodeSemantics(SI.IndependentSemantics):
         """ The Most Basic Lift, does nothing """
         return AcabNode(word)
 
-
     def down(self, value):
         raise NotImplementedError()
+
     def access(self, node, term, data=None):
         potentials = []
         value = None
@@ -91,7 +91,6 @@ class BasicNodeSemantics(SI.IndependentSemantics):
 
         return node.remove_child(to_delete)
 
-
     def equal(self, val1, val2) -> bool:
         raise NotImplementedError()
 
@@ -108,9 +107,9 @@ class ExclusionNodeSemantics(SI.IndependentSemantics):
 
         return node
 
-
     def down(self, node):
         pass
+
     def access(self, node, data, term):
         potentials = []
         value = None
@@ -151,7 +150,6 @@ class ExclusionNodeSemantics(SI.IndependentSemantics):
             raise AcabSemanticException("Value not in node", (node, to_delete))
 
         return node.remove_child(to_delete)
-
 
 
     def equal(self, word, word2):

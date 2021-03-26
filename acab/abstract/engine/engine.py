@@ -116,7 +116,7 @@ class Engine(EI.RewindEngineInterface, EI.ModuleLoaderInterface, EI.DSLBuilderIn
         with open(abspath(expanduser(filename)), 'w') as f:
             f.write(as_strings)
 
-    def add(self, s: str):
+    def insert(self, s: str):
         """ Assert a new fact into the engine """
         # pylint: disable=unused-argument,no-self-use
         if not self.initialised:

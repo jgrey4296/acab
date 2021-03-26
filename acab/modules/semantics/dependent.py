@@ -9,7 +9,6 @@ from typing import cast, ClassVar
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.values import AcabValue, AcabStatement
 from acab.abstract.core.node import AcabNode
-from acab.modules.semantics.query_semantic_mixin import QuerySemanticMixin
 from acab.abstract.core.acab_struct import AcabStruct
 from acab.abstract.core.production_abstractions import ProductionContainer
 
@@ -21,7 +20,7 @@ from acab.abstract.config.config import AcabConfig
 import acab.abstract.interfaces.semantic_interfaces as SI
 from acab.abstract.interfaces.data_interfaces import StructureInterface
 
-from .util import split_clauses
+from acab.modules.structures.trie.util import split_clauses
 
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
@@ -62,12 +61,12 @@ class BasicTrieSemantics(SI.DependentSemantics):
         current = struct.root
         for word in sen:
             semantics = self.retrieve(current)
-            if semantics.accessible(current, word, data):
+            if semantics.access(current, word, data):
                 current = semantics.get(current, word, data)
             else:
                 next_semantics = self.retrieve(word)
                 new_node = next_semantics.up(word, data)
-                current = semantics.add(current, new_node, data)
+                current = semantics.insert(current, new_node, data)
 
         return current
 
@@ -78,7 +77,7 @@ class BasicTrieSemantics(SI.DependentSemantics):
         for word in sen:
             # Get independent semantics for current
             semantics = self.retrieve(current)
-            if semantics.accessible(current, word, data):
+            if semantics.access(current, word, data):
                 parent = current
                 current = semantics.get(current, word, data)
             else:
@@ -116,11 +115,14 @@ class BasicTrieSemantics(SI.DependentSemantics):
         return ctxs
 
 
+    def _trigger(self, struct, sen, data):
+        pass
+
 class FSMSemantics(SI.DependentSemantics):
 
     def _insert(self, struct, sen, data=None):
         """
-        In the FSM, everything is accessible from the root,
+        In the FSM, everything is access from the root,
         there is a defined start node,
         sentences define sequences of connections
 
@@ -144,16 +146,16 @@ class FSMSemantics(SI.DependentSemantics):
         root_semantics = self.retrieve(root.value)
         for word in sen:
             new_node = None
-            if not semantics.accessible(root, word, data):
+            if not semantics.access(root, word, data):
                 next_semantics = self.retrieve(word)
                 new_node = next_semantics.up(word, data)
-                root_semantics.add(root, word, data)
+                root_semantics.insert(root, word, data)
             else:
                 new_node = root_semantics.get(root, word, data)
 
             current_semantics = self.retrieve(current)
-            if not current_semantics.accessible(current, new_node, data):
-                current = semantics.add(current, new_node, data)
+            if not current_semantics.access(current, new_node, data):
+                current = semantics.insert(current, new_node, data)
             else:
                 current = new_node
 
@@ -200,7 +202,7 @@ class FSMSemantics(SI.DependentSemantics):
         root_sem = self.retrieve(root.value)
         current = None
         for head,succ in zip(sen[:-1], sen[1:]):
-            if root_sem.accessible(root, head, data):
+            if root_sem.access(root, head, data):
                 head_node = root_sem.get(root, head, data)
                 head_sem = self.retrieve(head_node.value)
                 head_sem.delete(head_node, succ, data)
@@ -237,6 +239,3 @@ class ASPSemantics(SI.DependentSemantics):
         and return as sentences
         """
         pass
-
-
-
