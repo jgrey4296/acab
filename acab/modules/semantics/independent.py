@@ -46,15 +46,12 @@ Engine   = 'Engine'
 # Independent Semantics
 class BasicNodeSemantics(SI.IndependentSemantics):
 
-    def make(self, val):
-        raise NotImplementedError()
+    def make(self, val, data=None) -> AcabNode:
+        return self.up(AcabNode(val), data)
 
-    def up(self, word: AcabValue, data=None) -> AcabNode:
+    def up(self, node: AcabNode, data=None) -> AcabNode:
         """ The Most Basic Lift, does nothing """
-        return AcabNode(word)
-
-    def down(self, value):
-        raise NotImplementedError()
+        return node
 
     def access(self, node, term, data=None):
         potentials = []
@@ -95,33 +92,35 @@ class BasicNodeSemantics(SI.IndependentSemantics):
         raise NotImplementedError()
 
 class ExclusionNodeSemantics(SI.IndependentSemantics):
-    def make(self, val):
-        pass
+    def make(self, val, data=None) -> AcabNode:
+        return self.up(AcabNode(val), data)
 
-    def up(self, word: Value, data) -> Node:
+    def up(self, node: Node, data=None) -> Node:
         # Add an exop if necessary
-        node = AcabNode(word)
+        if EXOP in node.data:
+            return node
+
+        word = node.value
         node.data[EXOP] = DEFAULT_EXOP
         if EXOP in word.data:
             node.data[EXOP] = word.data[EXOP]
 
         return node
 
-    def down(self, node):
-        pass
-
-    def access(self, node, data, term):
+    def access(self, node, term, data):
         potentials = []
         value = None
         # Expand if variable -> Grab All
-        if term.is_var and term.name not in data:
+        if term is None or (term.is_var and term.name not in data):
             potentials += node.children.values()
         # Get only matching child if variable is already set
         elif term.is_var:
             assert(term.name in data)
             value = data[term.name]
+        else:
+            value = term
 
-        if self.contain(node, value):
+        if node.has_child(value):
             potentials.append(node.get_child(value))
 
         if EXOP in term.data:
@@ -151,20 +150,5 @@ class ExclusionNodeSemantics(SI.IndependentSemantics):
 
         return node.remove_child(to_delete)
 
-
     def equal(self, word, word2):
         pass
-
-    def _contain(self, node, query_term):
-        assert(isinstance(node, AcabNode))
-        assert(isinstance(query_term, AcabValue))
-
-        if not query_term in node:
-            return False
-
-        return True
-
-
-
-
-

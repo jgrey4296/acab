@@ -230,13 +230,16 @@ class IndependentSemantics(metaclass=abc.ABCMeta):
     requiring access to larger context, or engine access
     """
     def make(self, val: Value, data:Dict[Any,Any]=None) -> Node:
+        """ Take a value, and return a node, which has been up'd """
         pass
 
-    def up(self, word: Value, data=None) -> Node:
+    def up(self, node: Node, data=None) -> Node:
+        """ Take ANY node, and add what is needed
+        to use for this semantics """
         pass
 
-    def down(self, node: Node) -> Value:
-        pass
+    def down(self, node: Node, data=None) -> Value:
+        return node.value
 
     def access(self, node: Node, term: Value, data:Dict[Any,Any]=None) -> List[Node]:
         """ Can node A reach the given term """
@@ -247,7 +250,6 @@ class IndependentSemantics(metaclass=abc.ABCMeta):
 
     def remove(self, node: Node, term: Value, data:Dict[Any,Any]=None) -> Optional[Node]:
         pass
-
 
     def equal(self, val1:Node, val2:Node, data:Dict[Any,Any]=None) -> bool:
         pass

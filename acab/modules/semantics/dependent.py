@@ -58,14 +58,16 @@ class BasicTrieSemantics(SI.DependentSemantics):
             return self._delete(struct, sen, data, engine)
 
         # Get the root
-        current = struct.root
+        # TODO: Ensure the struct is appropriate
+        current = self.base.up(struct.root)
         for word in sen:
             semantics = self.retrieve(current)
-            if semantics.access(current, word, data):
-                current = semantics.get(current, word, data)
+            accessible = semantics.access(current, word, data)
+            if bool(accessible):
+                current = accessible[0]
             else:
                 next_semantics = self.retrieve(word)
-                new_node = next_semantics.up(word, data)
+                new_node = next_semantics.make(word, data)
                 current = semantics.insert(current, new_node, data)
 
         return current
@@ -118,6 +120,7 @@ class BasicTrieSemantics(SI.DependentSemantics):
     def _trigger(self, struct, sen, data):
         pass
 
+
 class FSMSemantics(SI.DependentSemantics):
 
     def _insert(self, struct, sen, data=None):
@@ -141,21 +144,23 @@ class FSMSemantics(SI.DependentSemantics):
             return self._delete(struct, sen, data, engine)
 
         # Get the root
-        root = struct.root
+        root = self.base.up(struct.root)
         current = root
         root_semantics = self.retrieve(root.value)
         for word in sen:
             new_node = None
-            if not semantics.access(root, word, data):
+            root_accessible = root_semantics.access(root, word, data)
+            if not bool(root_accessible):
                 next_semantics = self.retrieve(word)
-                new_node = next_semantics.up(word, data)
+                new_node = next_semantics.make(word, data)
                 root_semantics.insert(root, word, data)
             else:
-                new_node = root_semantics.get(root, word, data)
+                new_node = root_accessible[0]
 
             current_semantics = self.retrieve(current)
-            if not current_semantics.access(current, new_node, data):
-                current = semantics.insert(current, new_node, data)
+            current_accessible = current_semantics.access(current, new_node, data)
+            if not bool(current_accessible):
+                current = current_semantics.insert(current, new_node, data)
             else:
                 current = new_node
 

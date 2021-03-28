@@ -153,40 +153,125 @@ class BasicSemanticTests(unittest.TestCase):
         sen = Sentence.build(["a", "test", "sentence"])
         # insert into trie
         trie_sem.insert(trie_struct, sen)
-        # check
-        breakpoint()
+        # check nodes are in
+        self.assertTrue("a" in trie_struct.root)
+        self.assertTrue("test" in trie_struct.root.children["a"])
+        self.assertTrue("sentence" in trie_struct.root.children["a"].children["test"])
 
-
+    def test_trie_insert_non_exclusion(self):
+        node_sem = BasicNodeSemantics()
+        trie_sem = BasicTrieSemantics(base=node_sem)
+        trie_struct = BasicNodeStruct.build_default()
+        # Create sentence
+        sen = Sentence.build(["a", "test", "sentence"])
+        sen2 = Sentence.build(["a", "test", "other"])
+        # insert into trie
+        trie_sem.insert(trie_struct, sen)
+        trie_sem.insert(trie_struct, sen2)
+        # check nodes are in
+        self.assertTrue("a" in trie_struct.root)
+        self.assertTrue("test" in trie_struct.root.children["a"])
+        self.assertTrue("sentence" in trie_struct.root.children["a"].children["test"])
+        self.assertTrue("other" in trie_struct.root.children["a"].children["test"])
 
     def test_trie_insert_exclusion(self):
+        node_sem = ExclusionNodeSemantics()
+        trie_sem = BasicTrieSemantics(base=node_sem)
+        trie_struct = BasicNodeStruct.build_default()
         # Create sentence
+        sen = Sentence.build(["a", "test", "sentence"])
+        sen2 = Sentence.build(["a", "test", "other"])
+        # Set test to be exclusive
+        sen[1].data[EXOP] = EXOP_enum.EX
+        # insert into trie
+        trie_sem.insert(trie_struct, sen)
+        trie_sem.insert(trie_struct, sen2)
+        # check nodes are in
+        self.assertTrue("a" in trie_struct.root)
+        self.assertTrue("test" in trie_struct.root.children["a"])
+        self.assertFalse("sentence" in trie_struct.root.children["a"].children["test"])
+        self.assertTrue("other" in trie_struct.root.children["a"].children["test"])
 
-        # insert
 
-        # verify
-        pass
+    def test_trie_remove_basic(self):
+        node_sem = BasicNodeSemantics()
+        trie_sem = BasicTrieSemantics(base=node_sem)
+        trie_struct = BasicNodeStruct.build_default()
+        # Create sentence
+        sen = Sentence.build(["a", "test", "sentence"])
+        # Negate
+        neg_sen = Sentence.build(["a", "test"])
 
-    def test_trie_remove(self):
-        # create sentence
-
-        # insert
-
+        # insert into trie
+        trie_sem.insert(trie_struct, sen)
+        # check nodes are in
+        self.assertTrue("a" in trie_struct.root)
+        self.assertTrue("test" in trie_struct.root.children["a"])
+        self.assertTrue("sentence" in trie_struct.root.children["a"].children["test"])
         # remove
-
+        trie_sem.insert(trie_struct, neg_sen)
         # verify
         pass
 
-    def test_trie_query_basic(self):
-        # create sentence
 
-        # insert
-
+    def test_trie_query_exact(self):
+        node_sem = BasicNodeSemantics()
+        trie_sem = BasicTrieSemantics(base=node_sem)
+        trie_struct = BasicNodeStruct.build_default()
+        # Create sentence
+        sen = Sentence.build(["a", "test", "sentence"])
+        sen2 = Sentence.build(["a", "test", "other"])
+        # insert into trie
+        trie_sem.insert(trie_struct, sen)
+        trie_sem.insert(trie_struct, sen2)
         # query
+        #
 
-        # Verify
         pass
 
     def test_trie_query_var(self):
+        node_sem = BasicNodeSemantics()
+        trie_sem = BasicTrieSemantics(base=node_sem)
+        trie_struct = BasicNodeStruct.build_default()
+        # Create sentence
+        sen = Sentence.build(["a", "test", "sentence"])
+        sen2 = Sentence.build(["a", "test", "other"])
+        # insert into trie
+        trie_sem.insert(trie_struct, sen)
+        trie_sem.insert(trie_struct, sen2)
+        # query
+        #
+
+        pass
+
+    def test_trie_query_with_tests(self):
+        node_sem = BasicNodeSemantics()
+        trie_sem = BasicTrieSemantics(base=node_sem)
+        trie_struct = BasicNodeStruct.build_default()
+        # Create sentence
+        sen = Sentence.build(["a", "test", "sentence"])
+        sen2 = Sentence.build(["a", "test", "other"])
+        # insert into trie
+        trie_sem.insert(trie_struct, sen)
+        trie_sem.insert(trie_struct, sen2)
+        # query
+        #
+
+        pass
+
+    def test_trie_query_with_bind_constraints(self):
+        node_sem = BasicNodeSemantics()
+        trie_sem = BasicTrieSemantics(base=node_sem)
+        trie_struct = BasicNodeStruct.build_default()
+        # Create sentence
+        sen = Sentence.build(["a", "test", "sentence"])
+        sen2 = Sentence.build(["a", "test", "other"])
+        # insert into trie
+        trie_sem.insert(trie_struct, sen)
+        trie_sem.insert(trie_struct, sen2)
+        # query
+        #
+
         pass
 
     def test_fsm_insert(self):
@@ -197,6 +282,13 @@ class BasicSemanticTests(unittest.TestCase):
 
     # Abstraction: Rule/Agenda/Layer/Pipeline/Printer
     def test_rule_trigger(self):
+        # Construct
+
+        # Set up struct
+
+        # run
+
+        # test
         pass
 
     def test_agenda_trigger(self):
@@ -216,3 +308,6 @@ class BasicSemanticTests(unittest.TestCase):
         pass
 
     # Component: Listener/Logger/Failure/Query
+
+    # TODO mid-sentence semantics switch for dependent (trie -> FSM)
+    # Or can semantics only switch between sentences?
