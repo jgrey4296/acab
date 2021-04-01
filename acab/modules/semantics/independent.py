@@ -79,7 +79,7 @@ class BasicNodeSemantics(SI.IndependentSemantics):
 
         return node.add_child(new_node)
 
-    def remove(self, node, to_delete: AcabValue) -> Node:
+    def remove(self, node, to_delete: AcabValue, data=None) -> Node:
         assert(isinstance(node, AcabNode))
         assert(isinstance(to_delete, AcabValue))
 

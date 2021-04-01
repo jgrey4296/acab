@@ -55,7 +55,7 @@ class BasicTrieSemantics(SI.DependentSemantics):
             data = {}
 
         if NEGATION_S in sen.data and sen.data[NEGATION_S]:
-            return self._delete(struct, sen, data, engine)
+            return self._delete(struct, sen, data)
 
         # Get the root
         # TODO: Ensure the struct is appropriate
@@ -76,19 +76,21 @@ class BasicTrieSemantics(SI.DependentSemantics):
     def _delete(self, struct, sen, data=None):
         parent = struct.root
         current = struct.root
+
         for word in sen:
             # Get independent semantics for current
             semantics = self.retrieve(current)
-            if semantics.access(current, word, data):
+            accessed = semantics.access(current, word, data)
+            if bool(accessed):
                 parent = current
-                current = semantics.get(current, word, data)
+                current = accessed[0]
             else:
                 return None
 
         # At leaf:
         # remove current from parent
         semantics = self.retrieve(parent)
-        semantics.delete(parent, current, data)
+        semantics.remove(parent, current.value, data)
 
         return current
 

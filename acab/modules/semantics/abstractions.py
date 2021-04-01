@@ -6,7 +6,7 @@ from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic
 
 class RuleAbstraction(SI.AbstractionSemantics):
-    def run(ProdSem, rule) -> List[Dict[Any, Any]]:
+    def __call__(ProdSem, rule) -> List[Dict[Any, Any]]:
         """ Rule Logic, returns action proposals """
         # Run the query
         if PConst.QUERY_V in rule:
@@ -30,7 +30,7 @@ class RuleAbstraction(SI.AbstractionSemantics):
 
 
 class LayerAbstraction(SI.AbstractionSemantics):
-    def run(ProdSem, layer, ctxs=None):
+    def __call__(ProdSem, layer, ctxs=None):
         """ Run a layer, returning actions to perform """
         # rule returns [(data,ProdSem)]
         results = ProdSem.run(layer, ctxs=ctxs, override=PConst.RULE_V)
@@ -46,7 +46,7 @@ class LayerAbstraction(SI.AbstractionSemantics):
 
 
 class PipelineAbstraction(SI.AbstractionSemantics):
-    def run(ProdSem, pipeline, ctxs=None):
+    def __call__(ProdSem, pipeline, ctxs=None):
         """ Run this pipeline on the given engine for a tick """
         results = ProdSem.run(pipeline, override=PConst.RULE_V)
         # TODO extract semantics
@@ -57,7 +57,7 @@ class PipelineAbstraction(SI.AbstractionSemantics):
 
 
 class AgendaAbstraction(SI.AbstractionSemantics):
-    def run(ProdSem, agenda, ctxs=None):
+    def __call__(ProdSem, agenda, ctxs=None):
         """ Runs an agenda rule on activated rules """
         assert(isinstance(ctxs, list))
         agenda_settings = ProdSem.run(agenda, ctxs=ctxs, override=PConst.RULE_V)
@@ -72,7 +72,7 @@ class AgendaAbstraction(SI.AbstractionSemantics):
 
 
 class ComponentAbstraction(SI.AbstractionSemantics):
-    def run(ProdSem, component, ctxs=None):
+    def __call__(ProdSem, component, ctxs=None):
         """ Verify the Component, retrieving the operator from the engine
         if necessary """
         ctxs = ProdSem._param_ctx_filter(component, ctxs)
@@ -99,10 +99,8 @@ class ComponentAbstraction(SI.AbstractionSemantics):
             ctx_singular[x._rebind.value] = AcabValue.safe_make(result)
 
 
-
-
 class ContainerAbstraction(SI.AbstractionSemantics):
-    def run(ProdSem, container, ctxs=None):
+    def __call__(ProdSem, container, ctxs=None):
         """ Apply the clauses in one move """
         ctxs = ProdSem._initial_ctx_construction(ctxs)
 
@@ -110,3 +108,12 @@ class ContainerAbstraction(SI.AbstractionSemantics):
             ctxs = ProdSem.run(x, ctxs)
 
         return ctxs
+
+
+class TransformAbstraction(SI.AbstractionSemantics):
+    """ Takes a context, returns a changed context """
+    pass
+
+class ActionAbstraction(SI.AbstractionSemantics):
+    """ Takes a context, and the Semantic System / structs  """
+    pass
