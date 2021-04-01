@@ -1,6 +1,6 @@
 from acab.abstract.interfaces import semantic_interfaces as SI
 
-class TypingSemantics(SI.SemanticLifter, SI.StructureSemantics):
+class TypingSemantics(SI.SemanticSystem, SI.StructureSemantics):
     """
     Thoughts:
     1) distinguish between structure preserving/disturbing semantics,

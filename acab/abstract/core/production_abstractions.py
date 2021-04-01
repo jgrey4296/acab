@@ -55,7 +55,7 @@ class ProductionOperator(AcabValue):
         object.__setattr__(self, 'name', self.__class__.__name__)
         self.data[TYPE_INSTANCE] =  Sentence.build([OPERATOR_TYPE_PRIM_S])
 
-    def __call__(self, *params, data=None, engine=None):
+    def __call__(self, *params: List[AcabValue], data=None):
         raise NotImplementedError()
 
     @property

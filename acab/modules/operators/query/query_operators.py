@@ -7,7 +7,7 @@ from acab.abstract.core.production_abstractions import ProductionOperator
 
 
 class EQ(ProductionOperator):
-    def __call__(self, a, b, data=None, engine=None):
+    def __call__(self, a, b, data=None):
         return a == b
 
 

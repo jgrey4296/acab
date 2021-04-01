@@ -17,10 +17,11 @@ logging = root_logger.getLogger(__name__)
 # insert/remove penumbral action from sequence
 # modify hierarchy
 
-
+# TODO action operators joots
+# and/or return instructions for the semantic system
 class ActionAdd(ProductionOperator):
 
-    def __call__(self, *params, data=None, engine=None):
+    def __call__(self, struct, sem, *params, data=None):
         """ Assert the params into the engine """
         # assert(all([isinstance(x, Node) for x in params[0]]))
         engine.add(params[0])

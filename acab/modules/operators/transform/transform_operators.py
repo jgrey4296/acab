@@ -6,7 +6,7 @@ from acab.abstract.core.production_abstractions import ProductionOperator
 
 class RegexOp(ProductionOperator):
 
-    def __call__(self, value, pattern, replacement, data=None, engine=None):
+    def __call__(self, value, pattern, replacement, data=None):
         """ Substitute value pattern with value value from passed in data
         value : the replacement
         pattern: the pattern

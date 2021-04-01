@@ -13,7 +13,7 @@ from acab.abstract.core.acab_struct import AcabStruct
 
 from acab.error.acab_base_exception import AcabBaseException
 from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
-from acab.abstract.interfaces.semantic_interfaces import SemanticLifter
+from acab.abstract.interfaces.semantic_interfaces import SemanticSystem
 from acab.abstract.interfaces.data_interfaces import StructureInterface
 
 from .trie_semantics import BasicTrieSemantics

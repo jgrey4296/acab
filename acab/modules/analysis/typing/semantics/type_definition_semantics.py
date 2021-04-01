@@ -14,7 +14,7 @@ from dataclasses import dataclass, field
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.node import AcabNode
-from acab.modules.semantics.node_testing import AcabNodeTestSemantics
+from acab.modules.semantics.query_semantic_mixin import QuerySemanticMixin
 
 from acab.modules.analysis.typing import type_exceptions as te
 from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition
@@ -43,7 +43,7 @@ LOG_MESSAGES['no_children']      = "Val: No Children, assigning type: {} to {}"
 LOG_MESSAGES['validate_top']     = "Validating: {} on {}"
 
 
-class TypingDefinitionSemantics(BasicNodeSemantics, SI.IndependentSemantics, SI.SemanticLifter):
+class TypingDefinitionSemantics(BasicNodeSemantics, SI.IndependentSemantics, SI.SemanticSystem):
 
     def up(self, word : AcabValue, constructor : Callable) -> AcabNode:
         """ The Most Basic Lift """

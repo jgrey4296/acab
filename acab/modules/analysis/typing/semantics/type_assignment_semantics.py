@@ -10,7 +10,7 @@ from typing import cast, ClassVar, TypeVar
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
-from acab.modules.semantics.node_testing import AcabNodeTestSemantics
+from acab.modules.semantics.query_semantic_mixin import QuerySemanticMixin
 
 from acab.abstract.parsing.consts import ATOM_V
 
@@ -24,7 +24,7 @@ logging = root_logger.getLogger(__name__)
 
 
 
-class TypingAssignmentSemantics(BasicNodeSemantics, SI.IndependentSemantics, SI.SemanticLifter):
+class TypingAssignmentSemantics(BasicNodeSemantics, SI.IndependentSemantics, SI.SemanticSystem):
 
     def word(self, word: AcabValue, constructor: Callable) -> AcabNode:
         """ The Most Basic Lift """

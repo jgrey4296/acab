@@ -9,23 +9,23 @@ from acab.abstract.core.node import AcabNode
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.acab_struct import AcabStruct
 from acab.abstract.core.values import Sentence
-from acab.abstract.semantics.node_testing import AcabNodeTestSemantics
+from acab.abstract.semantics.query_semantic_mixin import QuerySemanticMixin
 
 from acab.abstract.interfaces import semantic_interfaces as SI
 
 from acab.abstract.semantics.struct_semantics import AcabStructureSemantics
 
-class TypingStructSemantics(AcabStructureSemantics, SI.SemanticLifter, SI.StructureSemantics):
+class TypingStructSemantics(AcabStructureSemantics, SI.SemanticSystem, SI.StructureSemantics):
     # TODO Locate listeners in semantics not WM
 
-    def __init__(self, node_semantics : AcabNodeTestSemantics, node_type=AcabNode):
+    def __init__(self, node_semantics : QuerySemanticMixin, node_type=AcabNode):
         self._ns = node_semantics
         self._node_type = node_type
 
     def set_node_type(self, node_type : AcabNode):
         self._node_type = node_type
 
-    def set_node_semantics(self, ns : AcabNodeTestSemantics):
+    def set_node_semantics(self, ns : QuerySemanticMixin):
         self._ns = ns
 
 

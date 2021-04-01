@@ -19,6 +19,8 @@ ifneq (${fpat}, )
 	FILE_PAT := ${fpat}
 endif
 
+sem:
+	python -m unittest /Volumes/documents/github/acab/acab/__tests/test_basic_semantics.py
 
 .PHONY: all pylint
 
