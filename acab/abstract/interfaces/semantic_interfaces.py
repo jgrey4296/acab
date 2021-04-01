@@ -139,7 +139,7 @@ class AbstractionSemantics(metaclass=abc.ABCMeta):
     eg: Rules, Layers, Pipelines...
     """
 
-    def run(self, abstraction, engine, *args, **kwargs):
+    def __call__(self, instruction, ctxCon):
         pass
 
 
@@ -149,15 +149,15 @@ class DependentSemantics(metaclass=abc.ABCMeta):
     Dependent Semantics rely on external context like the engine
     """
     # If no applicable semantics found, use default
-    base : 'IndependentSemantics'                         = field()
+    base    : 'IndependentSemantics'               = field()
     # str/iden -> IndependentSemantics
-    mapping        : Dict[str, 'IndependentSemantics']    = field(default_factory=dict)
+    mapping : Dict[str, 'IndependentSemantics']    = field(default_factory=dict)
     # node -> iden func to determin indep semantics
-    key            : Callable[[Node, Dict[Any,Any]], str] = field(default=default_key)
+    key     : Callable[[Node, Dict[Any,Any]], str] = field(default=default_key)
     #
-    failure        : Callable                             = field(default=default_failure)
+    failure : Callable                             = field(default=default_failure)
     # Dep Sem Entry/Exit Hooks
-    hooks          : Tuple[List[Handler], List[Handler]]  = field(default_factory=tuple)
+    hooks   : Tuple[List[Handler], List[Handler]]  = field(default_factory=tuple)
     # Query Behaviour
 
     def __post_init__(self):
