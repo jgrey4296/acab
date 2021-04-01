@@ -29,7 +29,6 @@ It boil's down to passing a continuation of the rest of the computation to a han
 will perform effects before using the continuation. The complexity comes from describing a union type
 of effects to handle.
 
-
 ** What is Acab?
 *** 1: The approach
 Acab is designed to be an agnostic architecture for Agent DSLs.
@@ -81,7 +80,6 @@ TODO: specifics
 
 It should be able to easily add new features,
 and track usage of them, ensuring elements interface.
-
 
 
 ** What can it do?
@@ -195,6 +193,9 @@ Construct Parsers
 Use:
 text -> parser -> Sentences[Words[Values]]
 Sentences -> Engine -> Structure + Semantics
+
+construct a semantic system using AST to check
+that interfaces match.
 
 * Agent architecture
   "Words are ephemeral,
@@ -480,9 +481,6 @@ Sentences -> Engine -> Structure + Semantics
 ** Norms in the engine
    The engine needs bayesian weighting of norm obedience, and underlying
    processes of internalization. Explicit linkings of norm deviance with
-
-
-
 
 * DSL
 #+NAME: Meta Rules
@@ -1071,13 +1069,12 @@ end
 
 ** Module Notes
 *** Activity
-   Activity Theory Module.
-   Should be able to describe an activity pyramid,
-   involving actor, tool, object, objective,
-   community, rules, division of labour
+   Activity Theory Module.  Should be able to describe an activity pyramid,
+   involving actor, tool, object, objective, community, rules, division of
+   labour
 *** Artifact
-   Encode the construction of artifacts,
-   variation of quality, and how it can be used
+   Encode the construction of artifacts, variation of quality, and how it can be
+   used
 *** Curves
    Encode various easing and compression curves
 *** Delegation
@@ -1085,14 +1082,12 @@ end
 *** Failure
    Describe how actions can fail and be recovered
 *** Flow
-   Describe a graph and run a flow analyis on it
-   applicable for system flows
+   Describe a graph and run a flow analyis on it applicable for system flows
 *** FSM
    Finite State Machine
 *** Governance
-   A Module to describe governance structures,
-   organisation, permissions, and IGU behaviour
-   (admin, gatekeeping, certification, education etc)
+   A Module to describe governance structures, organisation, permissions, and
+   IGU behaviour (admin, gatekeeping, certification, education etc)
 *** Indeterminacy
    A Module to provide random number generators of different distrbutions
 *** Lattice
@@ -1106,8 +1101,8 @@ end
 *** Revocable
    a module to describe revocation of permissions
 *** Ritual
-   a module to describe either purely symbolic actions,
-   or the annotation of activities into activities with symbolic components
+   a module to describe either purely symbolic actions, or the annotation of
+   activities into activities with symbolic components
 *** Social_Game
    a module for kosters multiplayer games
 *** Space
