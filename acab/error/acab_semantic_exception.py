@@ -9,3 +9,12 @@ class AcabSemanticException(AcabBaseException):
 
     def __str__(self):
         return "Semantic Failure: {} at: {}".format(self._info, str(self._data))
+
+class AcabOperatorMissingException(AcabSemanticException):
+    """ Raised when an operator can't be found when running semantics """
+    def __init__(self, info, fail_clause):
+        self._info = info
+        self._data = fail_clause
+
+    def __str__(self):
+        return "Semantic Failure: {} at: {}".format(self._info, str(self._data))
