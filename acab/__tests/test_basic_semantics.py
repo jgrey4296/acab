@@ -29,8 +29,9 @@ from acab.modules.semantics.dependent import BasicTrieSemantics
 
 
 
-EXOP         = config.value("MODAL", "exop")
-EXOP_enum    = config.modal_enums[EXOP]
+EXOP       = config.value("MODAL", "exop")
+EXOP_enum  = config.modal_enums[EXOP]
+NEGATION_V = config.value("Value.Structure", "NEGATION")
 
 class BasicSemanticTests(unittest.TestCase):
 
@@ -201,6 +202,7 @@ class BasicSemanticTests(unittest.TestCase):
         sen = Sentence.build(["a", "test", "sentence"])
         # Negate
         neg_sen = Sentence.build(["a", "test"])
+        neg_sen.data[NEGATION_V] = True
 
         # insert into trie
         trie_sem.insert(trie_struct, sen)
@@ -211,7 +213,8 @@ class BasicSemanticTests(unittest.TestCase):
         # remove
         trie_sem.insert(trie_struct, neg_sen)
         # verify
-        pass
+        self.assertTrue("a" in trie_struct.root)
+        self.assertFalse("test" in trie_struct.root.children["a"])
 
 
     def test_trie_query_exact(self):
@@ -224,10 +227,14 @@ class BasicSemanticTests(unittest.TestCase):
         # insert into trie
         trie_sem.insert(trie_struct, sen)
         trie_sem.insert(trie_struct, sen2)
-        # query
-        #
+        # Construct context container
+        ctx_container = ContextContainer()
+        # Construct query sentence
+        query_sen = Sentence.build(["a", "test", "sentence"])
+        # Run query
+        result = trie_sem.query(trie_struct, query_sen, ctxs=ctx_container)
 
-        pass
+
 
     def test_trie_query_var(self):
         node_sem = BasicNodeSemantics()
@@ -311,3 +318,5 @@ class BasicSemanticTests(unittest.TestCase):
 
     # TODO mid-sentence semantics switch for dependent (trie -> FSM)
     # Or can semantics only switch between sentences?
+
+    # TODO test entry/exit hooks
