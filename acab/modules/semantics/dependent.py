@@ -104,17 +104,17 @@ class BasicTrieSemantics(SI.DependentSemantics):
         if NEGATION_S in sen.data and sen.data[NEGATION_S]:
             negated_query = True
 
-        # TODO get collapse vars
+        # TODO get collapse vars from the sentence
         collapse_vars = []
-        with ctxs(struct.root, sen[0], data, collapse_vars, negated_query):
+        with ctxs(struct.root, sen, data, collapse_vars, negated_query):
             for word in sen:
-                for ctx in ctxs.active():
-                    indep = self.retrieve(ctx.current)
-                    results = indep.access(ctx.current, word, data)
+                for ctxInst in ctxs.active():
+                    indep = self.retrieve(ctxInst.current)
+                    results = indep.access(ctxInst.current, word, data)
                     if not bool(results):
-                        ctxs.fail(ctx)
+                        ctxs.fail(ctxInst, word)
                     else:
-                        ctxs.test(word, ctx, results)
+                        ctxs.test(ctxInst, results, word)
 
         return ctxs
 
@@ -178,27 +178,38 @@ class FSMSemantics(SI.DependentSemantics):
 
         Use a node test to check state?:
         a(λactive).b.c.d?
+        a.b(λactive).c.d? etc
 
         Or Get the active state:
         $x(λactive)?
 
+        Test for loops:
+        a.b.a?
+
+        Test for available movements:
+        $x(λactive).$y?
         """
+        # Query from start to finish
         if ctxs is None:
-            self.run_handler("results.init",
-                             data=data,
-                             engine=engine,
-                             start_node=structure.root)
+            raise AcabSemanticException()
 
-        pos, neg = query.clauses
+        negated_query = False
+        if NEGATION_S in sen.data and sen.data[NEGATION_S]:
+            negated_query = True
 
-        for clause in pos:
-            self._test_clause(clause)
+        # TODO get collapse vars from the sentence
+        collapse_vars = []
+        with ctxs(struct.root, sen[0], data, collapse_vars, negated_query):
+            for word in sen:
+                for ctxInst in ctxs.active():
+                    indep = self.retrieve(ctxInst.current)
+                    results = indep.access(ctxInst.current, word, data)
+                    if not bool(results):
+                        ctxs.fail(ctxInst)
+                    else:
+                        ctxs.test(word, ctxInst, results)
 
-        with self.run_handler("results.ctx_invert"):
-            for clause in neg:
-                self._test_clause(clause)
-
-        return self.run_handler("results.finish")
+        return ctxs
 
 
     def _delete(self, struct, sen, data=None):
