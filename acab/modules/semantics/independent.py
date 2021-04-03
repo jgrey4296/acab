@@ -53,21 +53,13 @@ class BasicNodeSemantics(SI.IndependentSemantics):
         """ The Most Basic Lift, does nothing """
         return node
 
-    def access(self, node, term, data=None):
+    def access(self, node, term, data=None, get_all=False):
+        # TODO possible shift get_all into data
         potentials = []
-        value = None
-        # if looking for unbound variable -> Grab All
-        if term is None or (term.is_var and term.name not in data):
+        if get_all:
             potentials += node.children.values()
-        # Get only matching child if variable is already set
-        elif term.is_var:
-            assert(term.name in data)
-            value = data[term.name]
-        else:
-            value = term
-
-        if value and node.has_child(value):
-            potentials.append(node.get_child(value))
+        elif node.has_child(term):
+            potentials.append(node.get_child(term))
 
         return potentials
 
@@ -107,21 +99,14 @@ class ExclusionNodeSemantics(SI.IndependentSemantics):
 
         return node
 
-    def access(self, node, term, data):
+    def access(self, node, term, data=None, get_all=False):
         potentials = []
         value = None
         # Expand if variable -> Grab All
-        if term is None or (term.is_var and term.name not in data):
+        if get_all:
             potentials += node.children.values()
-        # Get only matching child if variable is already set
-        elif term.is_var:
-            assert(term.name in data)
-            value = data[term.name]
-        else:
-            value = term
-
-        if node.has_child(value):
-            potentials.append(node.get_child(value))
+        elif node.has_child(term):
+            potentials.append(node.get_child(term))
 
         if EXOP in term.data:
             potentials = [x for x in potentials if x.data[EXOP] == term.data[EXOP]]
