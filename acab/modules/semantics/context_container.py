@@ -5,41 +5,59 @@ from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic
 
+import logging as root_logger
+logging = root_logger.getLogger(__name__)
+
+from dataclasses import InitVar, dataclass, field, replace
 from uuid import uuid1, UUID
 
-CtxIns = 'ContextInstance'
+from acab.abstract.config import GET
+
+config = GET()
+CONSTRAINT_S = config.value("Parse.Structure", "CONSTRAINT")
+
+
+CtxIns      = 'ContextInstance'
+Constraints = 'ConstraintCollection'
+ProdComp    = 'ProductionComponent'
+Operator    = 'ProductionOperator'
+Value       = 'AcabValue'
+Statement   = 'AcabStatement'
+Sentence    = 'Sentence'
+Node        = 'AcabNode'
 
 @dataclass
 class ConstraintCollection():
     """ Simple container of all ProductionComponent constraints a word possesses,
     separated into subtypes """
 
-    _alphas               = field(default_factory=list)
-    _betas                = field(default_factory=list)
-    _bind                 = field(default=None)
-    _annotations          = field(default_factory=list)
-    _callables            = field(default_factory=list)
-    _variables            = field(default_factory=list)
-    _operators            = field(default_factory=dict)
+    _alphas      : List[ProdComp]      = field(default_factory=list)
+    _betas       : List[ProdComp]      = field(default_factory=list)
+    _bind        : Value               = field(default=None)
+    _annotations : List[ProdComp]      = field(default_factory=list)
+    _callables   : List[ProdComp]      = field(default_factory=list)
+    _variables   : List[Value]         = field(default_factory=list)
+    _operators   : CtxIns              = field(default=None)
 
     @staticmethod
-    def build(word, operators) -> ConstraintCollection:
+    def build(word, operators) -> Constraints:
         """ Split tests into (alphas, betas, sub_binds),
         Also connect Components to actual _operators
         """
+        bind                 = None
+        if word.is_var:
+            bind = word
+
         if CONSTRAINT_S not in word.data:
-            return ConstraintCollection()
+            return ConstraintCollection(_bind=bind)
 
         constraints          = word.data[CONSTRAINT_S]
         annotations          = set()
         callable_annotations = []
         alphas               = []
         betas                = []
-        bind                 = None
         variable_ops         = []
 
-        if word.is_var:
-            bind = word
 
         for c in constraints:
             if not isinstance(c, ProductionComponent) and hasattr(c, "__call__"):
@@ -50,7 +68,7 @@ class ConstraintCollection():
             # intentionally elifs:
             elif c.is_var:
                 variable_ops.append(c)
-            elif any[p.is_var for p in c.params]):
+            elif any([p.is_var for p in c.params]):
                 betas.append(c)
             else:
                 alphas.append(c)
@@ -92,7 +110,6 @@ class ConstraintCollection():
         if self._bind not in ctxInst:
             return
 
-        bind_val = ctxInst.get_params([self._bind])[0]
         if node.value != ctxInst[self._bind]:
             raise AcabSemanticException()
 
@@ -102,9 +119,9 @@ class ConstraintCollection():
         if not all(results):
             raise AcabSemanticException()
 
-    def extend(self, node, ctxInst) -> ContextInstance:
+    def extend(self, node, ctxInst) -> CtxIns:
         if self._bind is None:
-            return self
+            return ctxInst
 
         return ctxInst.bind(self._bind, node)
 
@@ -113,54 +130,68 @@ class ConstraintCollection():
 class ContextContainer():
 
     # Operators could be a pair: (semantics, struct) to query
-    _operators     : Dict[str, Callable] = field(default_factory=dict)
+    # TODO operators is just the results of a prior query
+    _operators     : CtxIns              = field(default=None)
     # TODO should this be a dict:?
     _ctxs          : List[CtxIns]        = field(default_factory=list)
-    _purgatory     : List[CtxIns]        = field(default_factory=list)
-    _failed        : List[CtxIns]        = field(default_factory=list)
 
-    _negated       : Bool                = field(init=False, default=False)
-    _collapse_vars : Set[str]            = field(init=False, default_factory=set)
+    _purgatory     : List[CtxIns]        = field(init=False, default_factory=list)
+    _failed        : List[CtxIns]        = field(init=False, default_factory=list)
+    _total         : Set[CtxIns]         = field(init=False, default_factory=set)
+
+    _negated       : bool                = field(init=False, default=False)
     _query_clause  : Sentence            = field(init=False, default=None)
+    _root_node     : Node                = field(init=False, default=None)
+    _collapse_vars : Set[str]            = field(init=False, default_factory=set)
 
     @staticmethod
-    def build():
+    def build(ops:CtxIns=None):
         """ Create the empty context instance """
-        pass
+        return ContextContainer(_operators=ops,
+                                _ctxs=[ContextInstance()])
 
     def active(self):
         """ Get a copy of the active contexts,
         so ctxs can be modified as semantics go
         """
-        return self._ctxs.copy()
+        self._total.update(self._ctxs)
+        active = self._ctxs
+        self._ctxs = []
+        return active
 
-    def __enter__(self, root_node, query_sen, data, collapse_vars, is_negated=False):
-        # set all instances to start at node, unless start_word is an at_binding,
-        # in which case get the bound node
-        # handle negated behaviour
+
+    def __call__(self, root_node, query_sen, data, collapse_vars, is_negated=False):
+        """ Prefaces __enter__, storing the relevant values """
         self._negated = is_negated
         self._collapse_vars.update(collapse_vars)
         self._query_clause = query_sen
+        self._root_node = root_node
+        return self
 
-        root_word = query_sen[0]
+    def __enter__(self):
+        # set all instances to start at node, unless start_word is an at_binding,
+        # in which case get the bound node
+        # handle negated behaviour
+        root_word = self._query_clause[0]
         if root_word.is_at_var:
             self._ctxs = [x.set_current_binding(root_word) for x in self.active()]
         else:
-            self._ctxs = [x.set_current_node(root_node) for x in self.active()]
+            self._ctxs = [x.set_current_node(self._root_node) for x in self.active()]
 
-
+        return self
 
 
     def __exit__(self, exc_type, exc_value, traceback):
-        # Handle instances in _purgatory
+        # TODO Handle instances in _purgatory
         # collapse bindings as necessary
-        self._collapse_on()
-        self._negated = False
+        self._collapse()
+        self._negated       = False
         self._collapse_vars = set()
+        self._root_node     = None
 
         # TODO handle exception
 
-    def fail(self, instance: CtxIns, word: AcabValue):
+    def fail(self, instance: CtxIns, word: Value):
         """ Record a failure, the query sentence that failed,
         and the word that it failed on """
         # add failure details to the instance, of word and query clause
@@ -168,10 +199,12 @@ class ContextContainer():
         # remove from _ctxs
 
         # add to _purgatory
+        breakpoint()
 
+        instance._failure_word = word
         self._purgatory.append(instance)
 
-    def test(self, ctx: CtxIns, possible: List['AcabNode'], word: 'AcabValue'):
+    def test(self, ctx: CtxIns, possible: List[Node], word: Value):
         """
         run a word's tests on available nodes, with an instance
         """
@@ -190,8 +223,7 @@ class ContextContainer():
                 maybe_new_instance = constraints.extend(node, ctx)
                 # Add to contextcontainer
                 maybe_new_instance.set_current_node(node)
-                if maybe_new_instance not in self._ctxs:
-                    self._ctxs.append(maybe_new_instance)
+                self._ctxs.append(maybe_new_instance)
 
             except AcabSemanticException as err:
                 logging.exception("Test _failed")
@@ -199,7 +231,7 @@ class ContextContainer():
 
 
 
-    def _collapse_on(self):
+    def _collapse(self):
         """
         Context collapse on specific vars.
         Flattens many contexts into one, with specified variables
@@ -218,17 +250,25 @@ class ContextContainer():
         # replace
         pass
 
+    def __len__(self):
+        return len(self._ctxs)
+
+    def __getitem__(self, index):
+        return self._ctxs[index]
 @dataclass
 class ContextInstance():
 
-    data         : Dict[Any, Any]        = field(default_factory=dict)
-    nodes        : Dict[Any, 'AcabNode'] = field(default_factory=dict)
-    uuid         : UUID                  = field(default_factory=uuid1)
+    data         : Dict[Any, Any]  = field(default_factory=dict)
+    nodes        : Dict[Any, Node] = field(default_factory=dict)
+    uuid         : UUID            = field(default_factory=uuid1)
 
-    _continuation : 'AcabStatement'      = field(init=False, default=None)
-    _current      : 'AcabNode'           = field(init=False, default=None)
-    _failure_sentence : Sen              = field(init=False, default=None)
-    _failure_word : 'AcabValue'          = field(init=False, default=None)
+    _continuation     : Statement = field(init=False, default=None)
+    _current          : Node      = field(init=False, default=None)
+    _failure_sentence : Sentence  = field(init=False, default=None)
+    _failure_word     : Value     = field(init=False, default=None)
+
+    def __hash__(self):
+        return hash(self.uuid)
 
     def copy(self):
         return replace(self,
@@ -237,16 +277,16 @@ class ContextInstance():
                        nodes=self.nodes.copy()
                        )
 
-    def bind(self, word, node) -> ContextInstance:
+    def bind(self, word, node) -> CtxIns:
         extension = self.copy()
         assert(self.uuid != extension.uuid)
         assert(id(self.data) != id(extension.data))
-        extension[word] = node.value
+        extension.data[word.name] = node.value
 
         return extension
 
     def set_current_node(self, node):
-        self.current = node
+        self._current = node
         return self
 
     def set_current_binding(self, word):
@@ -267,9 +307,9 @@ class ContextInstance():
         # Run the continuation (eg: run the transform and action of a rule)
         pass
 
-    def get_params(self, params: List[AcabValue]):
+    def get_params(self, params: List[Value]):
         """ Retrieve a value's parameters from a context dict """
-        assert(isinstance(bound_context, dict))
+        raise NotImplementedError()
         output = []
         # TODO: enable currying?
         for x in params:
@@ -291,5 +331,7 @@ class ContextInstance():
         return output
 
 
-    def __contains__(self, value: AcabValue):
-        return value.value in self.data
+    def __contains__(self, value: Value):
+        return value.name in self.data
+    def __getitem__(self, value: Value):
+        return self.data[value.name]
