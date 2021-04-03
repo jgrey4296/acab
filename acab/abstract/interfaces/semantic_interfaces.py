@@ -45,7 +45,7 @@ def default_key(node:Node, data:Dict[Any,Any]=None) -> str:
     return node.name
 
 def default_failure(struct, sen, data, err):
-    pass
+    logging.warning("Default Failure: {}".format(err))
 
 def example_hook(struct: Structure, sen: Sentence, data=None, *args):
     pass
@@ -139,6 +139,8 @@ class AbstractionSemantics(metaclass=abc.ABCMeta):
     eg: Rules, Layers, Pipelines...
     """
 
+    def verify(self, instruction):
+        pass
     def __call__(self, instruction, ctxCon):
         pass
 
@@ -224,6 +226,8 @@ class DependentSemantics(metaclass=abc.ABCMeta):
     def _trigger(self, struct, sen, data):
         pass
 
+    def verify(self, instruction):
+        pass
 class IndependentSemantics(metaclass=abc.ABCMeta):
     """
     Independent Semantics which operate on values and nodes, without
