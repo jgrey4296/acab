@@ -25,13 +25,13 @@ from acab.modules.structures.trie.util import split_clauses
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
 
-CONSTRAINT_S = config.value("Value.Structure", "CONSTRAINT")
-NEGATION_S = config.value("Value.Structure", "NEGATION")
+CONSTRAINT_S     = config.value("Value.Structure", "CONSTRAINT")
+NEGATION_S       = config.value("Value.Structure", "NEGATION")
 QUERY_FALLBACK_S = config.value("Value.Structure", "QUERY_FALLBACK")
-DEFAULT_SETUP_S = config.value("Data", "DEFAULT_SETUP_METHOD")
+DEFAULT_SETUP_S  = config.value("Data", "DEFAULT_SETUP_METHOD")
 DEFAULT_UPDATE_S = config.value("Data", "DEFAULT_UPDATE_METHOD")
 
-T = TypeVar('T')
+T  = TypeVar('T')
 T2 = TypeVar('T2')
 
 Node          = 'AcabNode'
@@ -41,7 +41,6 @@ Value         = 'AcabValue'
 Structure     = 'AcabStruct'
 Engine        = 'Engine'
 Contexts      = 'Contexts'
-SemanticUnion = Union['IndependentSemantics', 'DependentSemantics']
 
 
 # Dependent Semantics
@@ -109,8 +108,19 @@ class BasicTrieSemantics(SI.DependentSemantics):
         with ctxs(struct.root, sen, data, collapse_vars, negated_query):
             for word in sen:
                 for ctxInst in ctxs.active():
-                    indep = self.retrieve(ctxInst.current)
-                    results = indep.access(ctxInst.current, word, data)
+                    indep = self.retrieve(ctxInst._current)
+                    search_word = word
+                    get_all = False
+                    if word.is_var and word not in ctxInst:
+                        get_all = True
+                    elif word.is_var and word in ctxInst:
+                        search_word = ctxInst[word]
+
+
+                    results = indep.access(ctxInst._current,
+                                           search_word,
+                                           data,
+                                           get_all=get_all)
                     if not bool(results):
                         ctxs.fail(ctxInst, word)
                     else:
