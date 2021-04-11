@@ -316,7 +316,40 @@ class BasicSemanticTests(unittest.TestCase):
         self.assertEqual(result[0].data['$x'].name, 'blah')
 
     def test_trie_query_with_beta_tests(self):
-        pass
+        node_sem = BasicNodeSemantics()
+        trie_sem = BasicTrieSemantics(base=node_sem)
+        trie_struct = BasicNodeStruct.build_default()
+        # Create sentence
+        sen = Sentence.build(["a", "test", "blah"])
+        sen2 = Sentence.build(["a", "different", "blah"])
+        # insert into trie
+        trie_sem.insert(trie_struct, sen)
+        trie_sem.insert(trie_struct, sen2)
+        # Construct context container for operators
+        op_loc_path = Sentence.build(["EQ"])
+        operator_instance = EQ()
+        op_ctx        = ContextInstance(data={str(op_loc_path): operator_instance})
+        ctx_container = ContextContainer.build(op_ctx)
+        # Construct query sentence
+        query_sen = Sentence.build(["a", "test", "x"])
+        query_sen[-1].data[BIND] = True
+
+        query_sen2 = Sentence.build(["a", "different", "y"])
+        query_sen2[-1].data[BIND] = True
+        # Test for equality to "sentence"
+        test_var = AcabValue.safe_make("x",
+                                       data={BIND: True})
+        the_test = ProductionComponent("beta test",
+                                       op_loc_path,
+                                       [test_var])
+        query_sen2[-1].data[CONSTRAINT_V] = [the_test]
+        # Run query
+        initial_result = trie_sem.query(trie_struct, query_sen, ctxs=ctx_container)
+        breakpoint()
+        second_result = trie_sem.query(trie_struct, query_sen2, ctxs=initial_result)
+        self.assertIsInstance(second_result, ContextContainer)
+        self.assertEqual(len(second_result), 1)
+        self.assertEqual(second_result[0].data['$y'].name, 'blah')
 
     def test_trie_query_with_callable_tests(self):
         pass

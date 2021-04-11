@@ -96,9 +96,13 @@ class ConstraintCollection():
 
     def betas(self, node, ctxInst):
         """ Run Beta Tests on a node and context isntance """
-        test_trios = [(self._operators[x.op],
-                       ctxInst.get(x.params),
-                       x.data) for x in self._betas]
+        test_trios = []
+        for test in self._betas:
+            op     = self._operators[test.op]
+            params = [ctxInst[x] for x in test.params]
+            trio   = (op, params, test.data)
+            test_trios.append(trio)
+
         results = [op(node.value, *pars, data=data) for op,pars,data in test_trios]
         if not all(results):
             raise AcabSemanticException()
@@ -336,4 +340,7 @@ class ContextInstance():
         return str(value) in self.data
     def __getitem__(self, value: Value):
         # TODO handle Value *and* sentence
-        return self.data[str(value)]
+        if value in self:
+            return self.data[str(value)]
+        else:
+            return value
