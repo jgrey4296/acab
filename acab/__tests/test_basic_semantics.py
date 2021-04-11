@@ -24,9 +24,11 @@ from acab.error.acab_semantic_exception import AcabSemanticException
 from acab.abstract.core.values import AcabValue, Sentence
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.acab_struct import BasicNodeStruct
+from acab.abstract.core.production_abstractions import ProductionComponent
 from acab.modules.semantics.independent import BasicNodeSemantics, ExclusionNodeSemantics
 from acab.modules.semantics.dependent import BasicTrieSemantics
-from acab.modules.semantics.context_container import ContextContainer, ContextInstance
+from acab.modules.semantics.context_container import ContextContainer, ContextInstance, ConstraintCollection
+from acab.modules.operators.query.query_operators import EQ, NEQ, HasTag
 
 EXOP         = config.value("MODAL", "exop")
 EXOP_enum    = config.modal_enums[EXOP]
@@ -294,21 +296,23 @@ class BasicSemanticTests(unittest.TestCase):
         # insert into trie
         trie_sem.insert(trie_struct, sen)
         trie_sem.insert(trie_struct, sen2)
-        # Construct context container
-        # TODO add operator to context container
-        op_ctx        = ContextInstance(data={})
-        ctx_container = ContextContainer.build()
+        # Construct context container for operators
+        op_ctx        = ContextInstance(data={"EQ": EQ})
+        ctx_container = ContextContainer.build(op_ctx)
         # Construct query sentence
         query_sen = Sentence.build(["a", "test", "x"])
         query_sen[-1].data[BIND] = True
-        # TODO add a test to $x
-        query_sen[-1].data[CONSTRAINT_V] = []
+        # Test for equality to "sentence"
+        the_test = ProductionComponent("alpha test",
+                                       Sentence.build(["EQ"]),
+                                       [AcabValue.safe_make("sentence")])
+        query_sen[-1].data[CONSTRAINT_V] = [the_test]
         # Run query
+        breakpoint()
         result = trie_sem.query(trie_struct, query_sen, ctxs=ctx_container)
         self.assertIsInstance(result, ContextContainer)
-        self.assertEqual(len(result), 2)
-        result_set = {ctxInst.data['x'] for ctxInst in result}
-        self.assertEqual(result_set, {'sentence', 'other'})
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0].data['x'], 'sentence')
 
     def test_trie_query_with_beta_tests(self):
         pass
