@@ -117,9 +117,9 @@ class AcabValue(VI.ValueInterface, Generic[T]):
     def __repr__(self):
         val_str = ""
         if self.value is not self.name:
-            val_str = "..."
+            val_str = ":..."
 
-        return "({}:{}:{})".format(self.__class__.__name__,
+        return "({}:{}{})".format(self.__class__.__name__,
                                      str(self),
                                      val_str)
 
