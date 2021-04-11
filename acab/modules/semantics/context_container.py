@@ -12,6 +12,7 @@ from dataclasses import InitVar, dataclass, field, replace
 from uuid import uuid1, UUID
 
 from acab.abstract.config import GET
+from acab.abstract.core.production_abstractions import ProductionComponent
 
 config = GET()
 CONSTRAINT_S = config.value("Parse.Structure", "CONSTRAINT")
@@ -281,8 +282,8 @@ class ContextInstance():
         extension = self.copy()
         assert(self.uuid != extension.uuid)
         assert(id(self.data) != id(extension.data))
-        extension.data[word.name] = node.value
-
+        extension.data[str(word)] = node.value
+        extension.nodes[str(word)] = node
         return extension
 
     def set_current_node(self, node):
@@ -332,6 +333,7 @@ class ContextInstance():
 
 
     def __contains__(self, value: Value):
-        return value.name in self.data
+        return str(value) in self.data
     def __getitem__(self, value: Value):
-        return self.data[value.name]
+        # TODO handle Value *and* sentence
+        return self.data[str(value)]

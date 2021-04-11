@@ -261,7 +261,7 @@ class BasicSemanticTests(unittest.TestCase):
         result = trie_sem.query(trie_struct, query_sen, ctxs=ctx_container)
         self.assertIsInstance(result, ContextContainer)
         self.assertEqual(len(result), 2)
-        result_set = {ctxInst.data['x'] for ctxInst in result}
+        result_set = {ctxInst.data['$x'] for ctxInst in result}
         self.assertEqual(result_set, {'sentence', 'other'})
 
     def test_trie_query_with_bind_constraints(self):
@@ -284,35 +284,36 @@ class BasicSemanticTests(unittest.TestCase):
         result = trie_sem.query(trie_struct, query_sen, ctxs=ctx_container)
         self.assertIsInstance(result, ContextContainer)
         self.assertEqual(len(result), 1)
-        self.assertEqual(result[0].data['x'], 'test')
+        self.assertEqual(result[0].data['$x'], 'test')
 
     def test_trie_query_with_alpha_tests(self):
         node_sem = BasicNodeSemantics()
         trie_sem = BasicTrieSemantics(base=node_sem)
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
-        sen = Sentence.build(["a", "test", "sentence"])
+        sen = Sentence.build(["a", "test", "blah"])
         sen2 = Sentence.build(["a", "test", "other"])
         # insert into trie
         trie_sem.insert(trie_struct, sen)
         trie_sem.insert(trie_struct, sen2)
         # Construct context container for operators
-        op_ctx        = ContextInstance(data={"EQ": EQ})
+        op_loc_path = Sentence.build(["EQ"])
+        operator_instance = EQ()
+        op_ctx        = ContextInstance(data={str(op_loc_path): operator_instance})
         ctx_container = ContextContainer.build(op_ctx)
         # Construct query sentence
         query_sen = Sentence.build(["a", "test", "x"])
         query_sen[-1].data[BIND] = True
         # Test for equality to "sentence"
         the_test = ProductionComponent("alpha test",
-                                       Sentence.build(["EQ"]),
-                                       [AcabValue.safe_make("sentence")])
+                                       op_loc_path,
+                                       [AcabValue.safe_make("blah")])
         query_sen[-1].data[CONSTRAINT_V] = [the_test]
         # Run query
-        breakpoint()
         result = trie_sem.query(trie_struct, query_sen, ctxs=ctx_container)
         self.assertIsInstance(result, ContextContainer)
         self.assertEqual(len(result), 1)
-        self.assertEqual(result[0].data['x'], 'sentence')
+        self.assertEqual(result[0].data['$x'].name, 'blah')
 
     def test_trie_query_with_beta_tests(self):
         pass
