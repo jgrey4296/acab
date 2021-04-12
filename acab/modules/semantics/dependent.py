@@ -44,7 +44,7 @@ Contexts      = 'Contexts'
 
 
 # Dependent Semantics
-class BasicTrieSemantics(SI.DependentSemantics):
+class TrieSemantics(SI.DependentSemantics):
     """
     Trie Semantics which map values -> Nodes
     """
@@ -97,7 +97,7 @@ class BasicTrieSemantics(SI.DependentSemantics):
     def _query(self, struct, sen, data=None, ctxs=None):
         # Query from start to finish
         if ctxs is None:
-            raise AcabSemanticException()
+            raise AcabSemanticException("Ctxs is none to TrieSemantics.query", sen)
 
         negated_query = False
         if NEGATION_S in sen.data and sen.data[NEGATION_S]:
@@ -201,7 +201,7 @@ class FSMSemantics(SI.DependentSemantics):
         """
         # Query from start to finish
         if ctxs is None:
-            raise AcabSemanticException()
+            raise AcabSemanticException("Ctxs is None to fsm query", query)
 
         negated_query = False
         if NEGATION_S in sen.data and sen.data[NEGATION_S]:
@@ -238,7 +238,7 @@ class FSMSemantics(SI.DependentSemantics):
 
         return current
 
-    def _trigger(self, sen, data, engine):
+    def _trigger(self, struct, sen, data=None):
         """
         Trigger the FSM.
         ie:
@@ -260,10 +260,13 @@ class ASPSemantics(SI.DependentSemantics):
         pass
 
 
-    def _query(self, struct, query):
+    def _query(self, struct, query, data=None, ctxs=None):
         """
         pass the cached asp program to a solver,
         retrieve results, extract what is needed,
         and return as sentences
         """
+        pass
+
+    def _trigger(self, struct, sen, data):
         pass

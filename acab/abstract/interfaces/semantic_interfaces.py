@@ -189,6 +189,9 @@ class DependentSemantics(metaclass=abc.ABCMeta):
             self._insert(struct, sen, data)
         except AcabSemanticException as err:
             self.failure(struct, sen, data, err)
+        except Exception as err:
+            breakpoint()
+            logging.error("Error: {}".format(str(err)))
         finally:
             self._run_exit_hooks(struct, sen, data)
 
@@ -199,6 +202,9 @@ class DependentSemantics(metaclass=abc.ABCMeta):
             self._query(struct, sen, data, ctxs)
         except AcabSemanticException as err:
             self.failure(struct, sen, data, err)
+        except Exception as err:
+            breakpoint()
+            logging.error("Error: {}".format(str(err)))
         finally:
             self._run_exit_hooks(struct, sen, data)
             return ctxs
@@ -209,6 +215,9 @@ class DependentSemantics(metaclass=abc.ABCMeta):
             self._trigger(struct, sen, data)
         except AcabSemanticException as err:
             self.failure(struct, sen, data, err)
+        except Exception as err:
+            breakpoint()
+            logging.error("Error: {}".format(str(err)))
         finally:
             self._run_exit_hooks(struct, sen, data)
 

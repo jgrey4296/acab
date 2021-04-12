@@ -13,6 +13,7 @@ from uuid import uuid1, UUID
 
 from acab.abstract.config import GET
 from acab.abstract.core.production_abstractions import ProductionComponent
+from acab.error.acab_semantic_exception import AcabSemanticException
 
 config = GET()
 CONSTRAINT_S = config.value("Parse.Structure", "CONSTRAINT")
@@ -92,7 +93,7 @@ class ConstraintCollection():
         # Perform the tests:
         results = [op(node.value, *pars, data=data) for op,pars,data in test_trios]
         if not all(results):
-            raise AcabSemanticException()
+            raise AcabSemanticException("Alphas Failed", (node, self))
 
     def betas(self, node, ctxInst):
         """ Run Beta Tests on a node and context isntance """
@@ -105,7 +106,7 @@ class ConstraintCollection():
 
         results = [op(node.value, *pars, data=data) for op,pars,data in test_trios]
         if not all(results):
-            raise AcabSemanticException()
+            raise AcabSemanticException("Betas Failed", (node, self))
 
     def binds(self, node, ctxInst):
         """ Check node against prior binding """
@@ -116,13 +117,19 @@ class ConstraintCollection():
             return
 
         if node.value != ctxInst[self._bind]:
-            raise AcabSemanticException()
+            raise AcabSemanticException("Binds Failed", (node, self))
 
-    def callable_annotations(self, node, ctxInst):
-        test_trios = [(x.op, ctxInst.get(x.params), x.data) for x in self._callables]
+    def callables(self, node, ctxInst):
+        test_trios = []
+        for test in self._callables:
+            op     = self._operators[test.op]
+            params = [ctxInst[x] for x in test.params]
+            trio   = (op, params, test.data)
+            test_trios.append(trio)
+
         results = [op(node.value, *pars, data=data) for op,pars,data in test_trios]
         if not all(results):
-            raise AcabSemanticException()
+            raise AcabSemanticException("Callables failed", (node, self))
 
     def extend(self, node, ctxInst) -> CtxIns:
         if self._bind is None:
@@ -204,8 +211,6 @@ class ContextContainer():
         # remove from _ctxs
 
         # add to _purgatory
-        breakpoint()
-
         instance._failure_word = word
         self._purgatory.append(instance)
 
@@ -224,6 +229,8 @@ class ContextContainer():
                 constraints.betas(node, ctx)
                 # run bind test
                 constraints.binds(node, ctx)
+                # run callable tests
+                constraints.callables(node, ctx)
                 # success, so copy and extend ctx instance
                 maybe_new_instance = constraints.extend(node, ctx)
                 # Add to contextcontainer
@@ -231,7 +238,6 @@ class ContextContainer():
                 self._ctxs.append(maybe_new_instance)
 
             except AcabSemanticException as err:
-                logging.exception("Test _failed")
                 self.fail(ctx, word)
 
 
