@@ -12,7 +12,7 @@ from acab.abstract.core.node import AcabNode
 from acab.abstract.core.acab_struct import AcabStruct
 from acab.abstract.core.production_abstractions import ProductionContainer
 
-from acab.error.acab_semantic_exception import AcabSemanticException
+import acab.error.acab_semantic_exception as ASErr
 
 from acab.error.acab_base_exception import AcabBaseException
 
@@ -44,9 +44,10 @@ Contexts      = 'Contexts'
 
 
 # Dependent Semantics
-class TrieSemantics(SI.DependentSemantics):
+class BreadthTrieSemantics(SI.DependentSemantics):
     """
     Trie Semantics which map values -> Nodes
+    Searches *Breadth First*
     """
 
     def _insert(self, struct, sen, data=None):
@@ -95,9 +96,9 @@ class TrieSemantics(SI.DependentSemantics):
 
 
     def _query(self, struct, sen, data=None, ctxs=None):
-        # Query from start to finish
+        """ Breadth First Search Query """
         if ctxs is None:
-            raise AcabSemanticException("Ctxs is none to TrieSemantics.query", sen)
+            raise ASErr.AcabSemanticException("Ctxs is none to TrieSemantics.query", sen)
 
         negated_query = False
         if NEGATION_S in sen.data and sen.data[NEGATION_S]:
@@ -107,15 +108,16 @@ class TrieSemantics(SI.DependentSemantics):
         collapse_vars = []
         with ctxs(struct.root, sen, data, collapse_vars, negated_query):
             for word in sen:
-                for ctxInst in ctxs.active():
+                for ctxInst in ctxs.active_list(clear=True):
                     indep = self.retrieve(ctxInst._current)
                     search_word = word
                     get_all = False
+                    # Handle variable:
                     if word.is_var and word not in ctxInst:
                         get_all = True
                     elif word.is_var and word in ctxInst:
+                        # Word is var, but bound, so look for that instead
                         search_word = ctxInst[word]
-
 
                     results = indep.access(ctxInst._current,
                                            search_word,
@@ -201,7 +203,7 @@ class FSMSemantics(SI.DependentSemantics):
         """
         # Query from start to finish
         if ctxs is None:
-            raise AcabSemanticException("Ctxs is None to fsm query", query)
+            raise ASErr.AcabSemanticException("Ctxs is None to fsm query", query)
 
         negated_query = False
         if NEGATION_S in sen.data and sen.data[NEGATION_S]:
@@ -267,6 +269,120 @@ class ASPSemantics(SI.DependentSemantics):
         and return as sentences
         """
         pass
+
+    def _trigger(self, struct, sen, data):
+        pass
+
+
+
+class DepthTrieSemantics(SI.DependentSemantics):
+    """
+    Trie Semantics which map values -> Nodes
+    Searches *Depth First*
+    """
+
+    def _insert(self, struct, sen, data=None):
+        if data is None:
+            data = {}
+
+        if NEGATION_S in sen.data and sen.data[NEGATION_S]:
+            return self._delete(struct, sen, data)
+
+        # Get the root
+        # TODO: Ensure the struct is appropriate
+        current = self.base.up(struct.root)
+        for word in sen:
+            semantics = self.retrieve(current)
+            accessible = semantics.access(current, word, data)
+            if bool(accessible):
+                current = accessible[0]
+            else:
+                next_semantics = self.retrieve(word)
+                new_node = next_semantics.make(word, data)
+                current = semantics.insert(current, new_node, data)
+
+        return current
+
+
+    def _delete(self, struct, sen, data=None):
+        parent = struct.root
+        current = struct.root
+
+        for word in sen:
+            # Get independent semantics for current
+            semantics = self.retrieve(current)
+            accessed = semantics.access(current, word, data)
+            if bool(accessed):
+                parent = current
+                current = accessed[0]
+            else:
+                return None
+
+        # At leaf:
+        # remove current from parent
+        semantics = self.retrieve(parent)
+        semantics.remove(parent, current.value, data)
+
+        return current
+
+
+    def _query(self, struct, sen, data=None, ctxs=None):
+        """ Depth First Search Query """
+        if ctxs is None:
+            raise ASErr.AcabSemanticException("Ctxs is none to TrieSemantics.query", sen)
+
+        negated_query = False
+        if NEGATION_S in sen.data and sen.data[NEGATION_S]:
+            negated_query = True
+
+        # TODO get collapse vars from the sentence
+        collapse_vars = []
+        with ctxs(struct.root, sen, data, collapse_vars, negated_query):
+            while ctxs.active:
+                currentInst = ctxs.pop_active(top=True)
+                try:
+                    remaining_sen = sen.words[:]
+                    if currentInst._remaining_query is not None:
+                        remaining_sen = currentInst._remaining_query
+
+                    while bool(remaining_sen):
+                        word = remaining_sen.pop(0)
+                        indep = self.retrieve(currentInst._current)
+                        search_word = word
+                        get_all = False
+                        # Handle variable:
+                        if word.is_var and word not in ctxInst:
+                            get_all = True
+                        elif word.is_var and word in ctxInst:
+                            # Word is var, but bound, so look for that instead
+                            search_word = currentInst[word]
+
+
+                        results = indep.access(currentInst._current,
+                                               search_word,
+                                               data,
+                                               get_all=get_all)
+
+                        # TODO to make this depth first,
+                        # the current ctxInst needs to be updated
+                        # as the search progresses
+                        if not bool(results):
+                            ctxs.fail(currentInst, word)
+                            raise ASErr.AcabSemanticQueryContextDepletionFailure("Ctx has failed, going to next", None)
+                        else:
+                            new_active_ctxs = ctxs.test(currentInst, results, word)
+                            if not bool(new_active_ctxs):
+                                raise ASErr.AcabSemanticQueryContextDepletionFailure("No Successes, switch to next context", None)
+                            for ctxInst in new_active_ctxs:
+                                ctx_inst._remaining_query = remaining_sen[:]
+
+                            currentInst = new_active_ctxs.pop(0)
+
+                except ASErr.AcabSemanticQueryContextDepletionFailure as err:
+                    continue
+
+        return ctxs
+
 
     def _trigger(self, struct, sen, data):
         pass

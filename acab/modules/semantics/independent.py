@@ -11,7 +11,7 @@ import logging as root_logger
 from dataclasses import dataclass, field
 from fractions import Fraction
 
-from acab.error.acab_semantic_exception import AcabSemanticException
+import acab.error.acab_semantic_exception as ASErr
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.values import AcabValue, AcabStatement
 from acab.abstract.core.values import Sentence
@@ -67,7 +67,7 @@ class BasicNodeSemantics(SI.IndependentSemantics):
         assert(isinstance(node, AcabNode))
         assert(isinstance(new_node, AcabNode))
         if new_node in node:
-            raise AcabSemanticException("Node is already child", (node, new_node))
+            raise ASErr.AcabSemanticIndependentFailure("Node is already child", (node, new_node))
 
         return node.add_child(new_node)
 
@@ -76,7 +76,7 @@ class BasicNodeSemantics(SI.IndependentSemantics):
         assert(isinstance(to_delete, AcabValue))
 
         if to_delete not in node:
-            raise AcabSemanticException("Value not in node", (node, to_delete))
+            raise ASErr.AcabSemanticIndependentFailure("Value not in node", (node, to_delete))
 
         return node.remove_child(to_delete)
 
@@ -92,17 +92,19 @@ class ExclusionNodeSemantics(SI.IndependentSemantics):
         if EXOP in node.data:
             return node
 
-        word = node.value
         node.data[EXOP] = DEFAULT_EXOP
+        word = node.value
         if EXOP in word.data:
             node.data[EXOP] = word.data[EXOP]
+
+        if bool(data) and EXOP in data:
+            node.data[EXOP] = data[EXOP]
 
         return node
 
     def access(self, node, term, data=None, get_all=False):
         potentials = []
         value = None
-        # Expand if variable -> Grab All
         if get_all:
             potentials += node.children.values()
         elif node.has_child(term):
@@ -118,7 +120,7 @@ class ExclusionNodeSemantics(SI.IndependentSemantics):
         assert(isinstance(new_node, AcabNode))
 
         if new_node in node:
-            raise AcabSemanticException("Node is already child", (node, new_node))
+            raise ASErr.AcabSemanticIndependentFailure("Node is already child", (node, new_node))
 
         if node.data[EXOP] is EXOP_enum.EX and len(node.children) >= 1:
             node.clear_children()
@@ -131,7 +133,7 @@ class ExclusionNodeSemantics(SI.IndependentSemantics):
         assert(isinstance(to_delete, AcabValue))
 
         if to_delete not in node:
-            raise AcabSemanticException("Value not in node", (node, to_delete))
+            raise ASErr.AcabSemanticIndependentFailure("Value not in node", (node, to_delete))
 
         return node.remove_child(to_delete)
 
