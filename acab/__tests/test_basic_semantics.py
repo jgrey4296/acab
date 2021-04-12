@@ -26,7 +26,7 @@ from acab.abstract.core.node import AcabNode
 from acab.abstract.core.acab_struct import BasicNodeStruct
 from acab.abstract.core.production_abstractions import ProductionComponent
 from acab.modules.semantics.independent import BasicNodeSemantics, ExclusionNodeSemantics
-from acab.modules.semantics.dependent import TrieSemantics
+from acab.modules.semantics.dependent import BreadthTrieSemantics
 from acab.modules.semantics.context_container import ContextContainer, ContextInstance, ConstraintCollection
 from acab.modules.operators.query.query_operators import EQ, NEQ, HasTag
 
@@ -37,18 +37,18 @@ NEGATION_V   = config.value("Value.Structure", "NEGATION")
 BIND         = config.value("Value.Structure", "BIND")
 CONSTRAINT_V = config.value("Value.Structure", "CONSTRAINT")
 
-class BasicSemanticTests(unittest.TestCase):
+class IndependentSemanticTests(unittest.TestCase):
 
     # InDependent: Node/Exclusion
     # Insert/Remove/Accessible/Get/Up/Down
     ## everything equal except insert for basic v exclusion
     def test_basic_node_insert(self):
-        # create two nodes
-        first = AcabNode(AcabValue("first"))
-        second = AcabNode(AcabValue("second"))
-        third = AcabNode(AcabValue("third"))
-        # insert one into the other
         sem = BasicNodeSemantics()
+        # create two nodes
+        first = sem.make(AcabValue("first"))
+        second = sem.make(AcabValue("second"))
+        third = sem.make(AcabValue("third"))
+        # insert one into the other
         sem.insert(first, second)
         sem.insert(first, third)
         # Verify
@@ -56,12 +56,12 @@ class BasicSemanticTests(unittest.TestCase):
         self.assertTrue(third in first)
 
     def test_exclusion_node_insert(self):
-        # create two nodes
-        first = AcabNode(AcabValue("first"), data={EXOP: EXOP_enum.EX})
-        second = AcabNode(AcabValue("second"))
-        third = AcabNode(AcabValue("third"))
-        # insert one into the other
         sem = ExclusionNodeSemantics()
+        # create two sub nodes
+        first = sem.make(AcabValue("first"), data={EXOP: EXOP_enum.EX})
+        second = sem.make(AcabValue("second"))
+        third = sem.make(AcabValue("third"))
+        # insert one into the other
         sem.insert(first, second)
         sem.insert(first, third)
         # Verify
@@ -69,11 +69,11 @@ class BasicSemanticTests(unittest.TestCase):
         self.assertTrue(third in first)
 
     def test_basic_node_insert_fail(self):
-        # create two nodes
-        first = AcabNode(AcabValue("first"))
-        second = AcabNode(AcabValue("second"))
-        # insert one into the other
         sem = BasicNodeSemantics()
+        # create two nodes
+        first = sem.make(AcabValue("first"))
+        second = sem.make(AcabValue("second"))
+        # insert one into the other
         sem.insert(first, second)
         with self.assertRaises(AcabSemanticException):
             sem.insert(first, second)
@@ -81,12 +81,12 @@ class BasicSemanticTests(unittest.TestCase):
 
 
     def test_basic_access_all(self):
-        # create two nodes
-        first = AcabNode(AcabValue("first"))
-        second = AcabNode(AcabValue("second"))
-        third = AcabNode(AcabValue("third"))
-        # insert one into the other
         sem = BasicNodeSemantics()
+        # create two nodes
+        first  = sem.make(AcabValue("first"))
+        second = sem.make(AcabValue("second"))
+        third  = sem.make(AcabValue("third"))
+        # insert one into the other
         sem.insert(first, second)
         sem.insert(first, third)
 
@@ -94,12 +94,12 @@ class BasicSemanticTests(unittest.TestCase):
         self.assertEqual(len(accessed), 2)
 
     def test_basic_access_specific(self):
-        # create two nodes
-        first = AcabNode(AcabValue("first"))
-        second = AcabNode(AcabValue("second"))
-        third = AcabNode(AcabValue("third"))
-        # insert one into the other
         sem = BasicNodeSemantics()
+        # create two nodes
+        first  = sem.make(AcabValue("first"))
+        second = sem.make(AcabValue("second"))
+        third  = sem.make(AcabValue("third"))
+        # insert one into the other
         sem.insert(first, second)
         sem.insert(first, third)
 
@@ -107,13 +107,34 @@ class BasicSemanticTests(unittest.TestCase):
         self.assertEqual(len(accessed), 1)
         self.assertEqual(accessed[0].value, "second")
 
-    def test_basic_access_fail(self):
+    def test_exclusion_access(self):
+        sem = ExclusionNodeSemantics()
         # create two nodes
-        first = AcabNode(AcabValue("first"))
-        second = AcabNode(AcabValue("second"))
-        third = AcabNode(AcabValue("third"))
+        first = sem.make(AcabValue("first"))
+        second = sem.make(AcabValue("second"), data={EXOP: EXOP_enum.EX})
         # insert one into the other
+        sem.insert(first, second)
+        accessed = sem.access(first, AcabValue("second", data={EXOP: EXOP_enum.EX}))
+        self.assertEqual(len(accessed), 1)
+        self.assertEqual(accessed[0].value, "second")
+    def test_exclusion_access_fail(self):
+        sem = ExclusionNodeSemantics()
+        # create two nodes
+        first = sem.make(AcabValue("first"))
+        second = sem.make(AcabValue("second"), data={EXOP: EXOP_enum.DOT})
+        # insert one into the other
+        sem.insert(first, second)
+        accessed = sem.access(first, AcabValue("second", data={EXOP: EXOP_enum.EX}))
+        self.assertEqual(len(accessed), 0)
+
+
+    def test_basic_access_fail(self):
         sem = BasicNodeSemantics()
+        # create two nodes
+        first  = sem.make(AcabValue("first"))
+        second = sem.make(AcabValue("second"))
+        third  = sem.make(AcabValue("third"))
+        # insert one into the other
         sem.insert(first, second)
         sem.insert(first, third)
 
@@ -121,12 +142,12 @@ class BasicSemanticTests(unittest.TestCase):
         self.assertEqual(len(accessed), 0)
 
     def test_basic_remove(self):
-        # create two nodes
-        first = AcabNode(AcabValue("first"))
-        second = AcabNode(AcabValue("second"))
-        third = AcabNode(AcabValue("third"))
-        # insert one into the other
         sem = BasicNodeSemantics()
+        # create two nodes
+        first  = sem.make(AcabValue("first"))
+        second = sem.make(AcabValue("second"))
+        third  = sem.make(AcabValue("third"))
+        # insert one into the other
         sem.insert(first, second)
         sem.insert(first, third)
 
@@ -135,12 +156,12 @@ class BasicSemanticTests(unittest.TestCase):
         self.assertFalse(second in first)
 
     def test_basic_remove_fail(self):
-        # create two nodes
-        first = AcabNode(AcabValue("first"))
-        second = AcabNode(AcabValue("second"))
-        third = AcabNode(AcabValue("third"))
-        # insert one into the other
         sem = BasicNodeSemantics()
+        # create two nodes
+        first  = sem.make(AcabValue("first"))
+        second = sem.make(AcabValue("second"))
+        third  = sem.make(AcabValue("third"))
+        # insert one into the other
         sem.insert(first, second)
         sem.insert(first, third)
 
@@ -150,9 +171,11 @@ class BasicSemanticTests(unittest.TestCase):
 
     # Dependent  : Trie/FSM/ASP
     # Insert/Remove/Query/Trigger
+
+class TrieSemanticTests(unittest.TestCase):
     def test_trie_insert_basic(self):
         node_sem = BasicNodeSemantics()
-        trie_sem = TrieSemantics(base=node_sem)
+        trie_sem = BreadthTrieSemantics(base=node_sem)
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "sentence"])
@@ -165,7 +188,7 @@ class BasicSemanticTests(unittest.TestCase):
 
     def test_trie_insert_non_exclusion(self):
         node_sem = BasicNodeSemantics()
-        trie_sem = TrieSemantics(base=node_sem)
+        trie_sem = BreadthTrieSemantics(base=node_sem)
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "sentence"])
@@ -180,11 +203,11 @@ class BasicSemanticTests(unittest.TestCase):
         self.assertTrue("other" in trie_struct.root.children["a"].children["test"])
 
     def test_trie_insert_exclusion(self):
-        node_sem = ExclusionNodeSemantics()
-        trie_sem = TrieSemantics(base=node_sem)
+        node_sem    = ExclusionNodeSemantics()
+        trie_sem    = BreadthTrieSemantics(base=node_sem)
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
-        sen = Sentence.build(["a", "test", "sentence"])
+        sen  = Sentence.build(["a", "test", "sentence"])
         sen2 = Sentence.build(["a", "test", "other"])
         # Set test to be exclusive
         sen[1].data[EXOP] = EXOP_enum.EX
@@ -200,7 +223,7 @@ class BasicSemanticTests(unittest.TestCase):
 
     def test_trie_remove_basic(self):
         node_sem = BasicNodeSemantics()
-        trie_sem = TrieSemantics(base=node_sem)
+        trie_sem = BreadthTrieSemantics(base=node_sem)
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "sentence"])
@@ -223,7 +246,7 @@ class BasicSemanticTests(unittest.TestCase):
 
     def test_trie_query_exact(self):
         node_sem = BasicNodeSemantics()
-        trie_sem = TrieSemantics(base=node_sem)
+        trie_sem = BreadthTrieSemantics(base=node_sem)
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "sentence"])
@@ -244,7 +267,7 @@ class BasicSemanticTests(unittest.TestCase):
 
     def test_trie_query_var(self):
         node_sem = BasicNodeSemantics()
-        trie_sem = TrieSemantics(base=node_sem)
+        trie_sem = BreadthTrieSemantics(base=node_sem)
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "sentence"])
@@ -266,7 +289,7 @@ class BasicSemanticTests(unittest.TestCase):
 
     def test_trie_query_with_bind_constraints(self):
         node_sem = BasicNodeSemantics()
-        trie_sem = TrieSemantics(base=node_sem)
+        trie_sem = BreadthTrieSemantics(base=node_sem)
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "sentence"])
@@ -288,7 +311,7 @@ class BasicSemanticTests(unittest.TestCase):
 
     def test_trie_query_with_alpha_tests(self):
         node_sem = BasicNodeSemantics()
-        trie_sem = TrieSemantics(base=node_sem)
+        trie_sem = BreadthTrieSemantics(base=node_sem)
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "blah"])
@@ -317,7 +340,7 @@ class BasicSemanticTests(unittest.TestCase):
 
     def test_trie_query_with_beta_tests(self):
         node_sem = BasicNodeSemantics()
-        trie_sem = TrieSemantics(base=node_sem)
+        trie_sem = BreadthTrieSemantics(base=node_sem)
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "blah"])
@@ -353,7 +376,7 @@ class BasicSemanticTests(unittest.TestCase):
 
     def test_trie_query_with_callable_tests(self):
         node_sem = BasicNodeSemantics()
-        trie_sem = TrieSemantics(base=node_sem)
+        trie_sem = BreadthTrieSemantics(base=node_sem)
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "blah"])
@@ -388,13 +411,9 @@ class BasicSemanticTests(unittest.TestCase):
 
 
     # -------
-    def test_fsm_insert(self):
-        pass
 
-    def test_fsm_trigger(self):
-        pass
 
-    # Abstraction: Rule/Agenda/Layer/Pipeline/Printer
+class AbstractionSemanticTests(unittest.TestCase):
     def test_rule_trigger(self):
         # Construct
 
@@ -427,3 +446,18 @@ class BasicSemanticTests(unittest.TestCase):
     # Or can semantics only switch between sentences?
 
     # TODO test entry/exit hooks
+
+class SemanticHookTests(unittest.TestCase):
+    pass
+
+class FSMSemanticTests(unittest.TestCase):
+    def test_fsm_insert(self):
+        pass
+
+    def test_fsm_trigger(self):
+        pass
+
+
+
+class ASPSemanticTests(unittest.TestCase):
+    pass
