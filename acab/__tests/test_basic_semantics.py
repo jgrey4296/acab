@@ -26,7 +26,7 @@ from acab.abstract.core.node import AcabNode
 from acab.abstract.core.acab_struct import BasicNodeStruct
 from acab.abstract.core.production_abstractions import ProductionComponent
 from acab.modules.semantics.independent import BasicNodeSemantics, ExclusionNodeSemantics
-from acab.modules.semantics.dependent import BasicTrieSemantics
+from acab.modules.semantics.dependent import TrieSemantics
 from acab.modules.semantics.context_container import ContextContainer, ContextInstance, ConstraintCollection
 from acab.modules.operators.query.query_operators import EQ, NEQ, HasTag
 
@@ -152,7 +152,7 @@ class BasicSemanticTests(unittest.TestCase):
     # Insert/Remove/Query/Trigger
     def test_trie_insert_basic(self):
         node_sem = BasicNodeSemantics()
-        trie_sem = BasicTrieSemantics(base=node_sem)
+        trie_sem = TrieSemantics(base=node_sem)
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "sentence"])
@@ -165,7 +165,7 @@ class BasicSemanticTests(unittest.TestCase):
 
     def test_trie_insert_non_exclusion(self):
         node_sem = BasicNodeSemantics()
-        trie_sem = BasicTrieSemantics(base=node_sem)
+        trie_sem = TrieSemantics(base=node_sem)
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "sentence"])
@@ -181,7 +181,7 @@ class BasicSemanticTests(unittest.TestCase):
 
     def test_trie_insert_exclusion(self):
         node_sem = ExclusionNodeSemantics()
-        trie_sem = BasicTrieSemantics(base=node_sem)
+        trie_sem = TrieSemantics(base=node_sem)
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "sentence"])
@@ -200,7 +200,7 @@ class BasicSemanticTests(unittest.TestCase):
 
     def test_trie_remove_basic(self):
         node_sem = BasicNodeSemantics()
-        trie_sem = BasicTrieSemantics(base=node_sem)
+        trie_sem = TrieSemantics(base=node_sem)
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "sentence"])
@@ -223,7 +223,7 @@ class BasicSemanticTests(unittest.TestCase):
 
     def test_trie_query_exact(self):
         node_sem = BasicNodeSemantics()
-        trie_sem = BasicTrieSemantics(base=node_sem)
+        trie_sem = TrieSemantics(base=node_sem)
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "sentence"])
@@ -244,7 +244,7 @@ class BasicSemanticTests(unittest.TestCase):
 
     def test_trie_query_var(self):
         node_sem = BasicNodeSemantics()
-        trie_sem = BasicTrieSemantics(base=node_sem)
+        trie_sem = TrieSemantics(base=node_sem)
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "sentence"])
@@ -266,7 +266,7 @@ class BasicSemanticTests(unittest.TestCase):
 
     def test_trie_query_with_bind_constraints(self):
         node_sem = BasicNodeSemantics()
-        trie_sem = BasicTrieSemantics(base=node_sem)
+        trie_sem = TrieSemantics(base=node_sem)
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "sentence"])
@@ -288,7 +288,7 @@ class BasicSemanticTests(unittest.TestCase):
 
     def test_trie_query_with_alpha_tests(self):
         node_sem = BasicNodeSemantics()
-        trie_sem = BasicTrieSemantics(base=node_sem)
+        trie_sem = TrieSemantics(base=node_sem)
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "blah"])
@@ -317,7 +317,7 @@ class BasicSemanticTests(unittest.TestCase):
 
     def test_trie_query_with_beta_tests(self):
         node_sem = BasicNodeSemantics()
-        trie_sem = BasicTrieSemantics(base=node_sem)
+        trie_sem = TrieSemantics(base=node_sem)
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "blah"])
@@ -333,7 +333,7 @@ class BasicSemanticTests(unittest.TestCase):
         # Construct query sentence
         query_sen = Sentence.build(["a", "test", "x"])
         query_sen[-1].data[BIND] = True
-
+        # Second Query sentence
         query_sen2 = Sentence.build(["a", "different", "y"])
         query_sen2[-1].data[BIND] = True
         # Test for equality to "sentence"
@@ -345,15 +345,49 @@ class BasicSemanticTests(unittest.TestCase):
         query_sen2[-1].data[CONSTRAINT_V] = [the_test]
         # Run query
         initial_result = trie_sem.query(trie_struct, query_sen, ctxs=ctx_container)
-        breakpoint()
         second_result = trie_sem.query(trie_struct, query_sen2, ctxs=initial_result)
         self.assertIsInstance(second_result, ContextContainer)
         self.assertEqual(len(second_result), 1)
         self.assertEqual(second_result[0].data['$y'].name, 'blah')
 
-    def test_trie_query_with_callable_tests(self):
-        pass
 
+    def test_trie_query_with_callable_tests(self):
+        node_sem = BasicNodeSemantics()
+        trie_sem = TrieSemantics(base=node_sem)
+        trie_struct = BasicNodeStruct.build_default()
+        # Create sentence
+        sen = Sentence.build(["a", "test", "blah"])
+        sen2 = Sentence.build(["a", "different", "blah"])
+        # insert into trie
+        trie_sem.insert(trie_struct, sen)
+        trie_sem.insert(trie_struct, sen2)
+        # Construct context container for operators
+        op_loc_path = Sentence.build(["EQ"])
+        operator_instance = lambda a,b,data=None: a == b
+        op_ctx        = ContextInstance(data={str(op_loc_path): operator_instance})
+        ctx_container = ContextContainer.build(op_ctx)
+        # Construct query sentence
+        query_sen = Sentence.build(["a", "test", "x"])
+        query_sen[-1].data[BIND] = True
+        # Second Query sentence
+        query_sen2 = Sentence.build(["a", "different", "y"])
+        query_sen2[-1].data[BIND] = True
+        # Test for equality to "sentence"
+        test_var = AcabValue.safe_make("x",
+                                       data={BIND: True})
+        the_test = ProductionComponent("callable test",
+                                       op_loc_path,
+                                       [test_var])
+        query_sen2[-1].data[CONSTRAINT_V] = [the_test]
+        # Run query
+        initial_result = trie_sem.query(trie_struct, query_sen, ctxs=ctx_container)
+        second_result = trie_sem.query(trie_struct, query_sen2, ctxs=initial_result)
+        self.assertIsInstance(second_result, ContextContainer)
+        self.assertEqual(len(second_result), 1)
+        self.assertEqual(second_result[0].data['$y'].name, 'blah')
+
+
+    # -------
     def test_fsm_insert(self):
         pass
 
