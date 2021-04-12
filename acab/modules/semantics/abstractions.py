@@ -10,7 +10,7 @@ class RuleAbstraction(SI.AbstractionSemantics):
         """ Rule Logic, returns action proposals """
         # Run the query
         if PConst.QUERY_V in rule:
-        ProdSem.run(rule[PConst.QUERY_V])
+            ProdSem.run(rule[PConst.QUERY_V])
 
         # Run any transforms
         transformed = ProdSem.get_results()
