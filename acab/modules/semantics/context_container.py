@@ -13,7 +13,7 @@ from uuid import uuid1, UUID
 
 from acab.abstract.config import GET
 from acab.abstract.core.production_abstractions import ProductionComponent
-from acab.error.acab_semantic_exception import AcabSemanticException
+import acab.error.acab_semantic_exception as ASErr
 
 config = GET()
 CONSTRAINT_S = config.value("Parse.Structure", "CONSTRAINT")
@@ -92,7 +92,7 @@ class ConstraintCollection():
         # Perform the tests:
         results = [op(node.value, *pars, data=data) for op,pars,data in test_trios]
         if not all(results):
-            raise AcabSemanticException("Alphas Failed", (node, self))
+            raise ASErr.AcabSemanticTestFailure("Alphas Failed", (node, self))
 
     def betas(self, node, ctxInst):
         """ Run Beta Tests on a node and context isntance """
@@ -105,7 +105,7 @@ class ConstraintCollection():
 
         results = [op(node.value, *pars, data=data) for op,pars,data in test_trios]
         if not all(results):
-            raise AcabSemanticException("Betas Failed", (node, self))
+            raise ASErr.AcabSemanticTestFailure("Betas Failed", (node, self))
 
     def binds(self, node, ctxInst):
         """ Check node against prior binding """
@@ -116,7 +116,7 @@ class ConstraintCollection():
             return
 
         if node.value != ctxInst[self._bind]:
-            raise AcabSemanticException("Binds Failed", (node, self))
+            raise ASErr.AcabSemanticTestFailure("Binds Failed", (node, self))
 
     def callables(self, node, ctxInst):
         test_trios = []
@@ -128,13 +128,7 @@ class ConstraintCollection():
 
         results = [op(node.value, *pars, data=data) for op,pars,data in test_trios]
         if not all(results):
-            raise AcabSemanticException("Callables failed", (node, self))
-
-    def extend(self, node, ctxInst) -> CtxIns:
-        if self._bind is None:
-            return ctxInst
-
-        return ctxInst.bind(self._bind, node)
+            raise ASErr.AcabSemanticTestFailure("Callables failed", (node, self))
 
 
 @dataclass
@@ -142,33 +136,27 @@ class ContextContainer():
 
     # Operators could be a pair: (semantics, struct) to query
     # TODO operators is just the results of a prior query
-    _operators     : CtxIns              = field(default=None)
-    # TODO should this be a dict:?
-    _ctxs          : List[CtxIns]        = field(default_factory=list)
+    _operators     : CtxIns            = field(default=None)
 
-    _purgatory     : List[CtxIns]        = field(init=False, default_factory=list)
-    _failed        : List[CtxIns]        = field(init=False, default_factory=list)
-    _total         : Set[CtxIns]         = field(init=False, default_factory=set)
+    _active        : List[UUID]         = field(init=False, default_factory=list)
+    _purgatory     : List[UUID]         = field(init=False, default_factory=list)
+    _failed        : List[UUID]         = field(init=False, default_factory=list)
+    _total         : Dict[UUID, CtxIns] = field(init=False, default_factory=dict)
 
-    _negated       : bool                = field(init=False, default=False)
-    _query_clause  : Sentence            = field(init=False, default=None)
-    _root_node     : Node                = field(init=False, default=None)
-    _collapse_vars : Set[str]            = field(init=False, default_factory=set)
+    _negated       : bool              = field(init=False, default=False)
+    _query_clause  : Sentence          = field(init=False, default=None)
+    _root_node     : Node              = field(init=False, default=None)
+    _collapse_vars : Set[str]          = field(init=False, default_factory=set)
 
     @staticmethod
     def build(ops:CtxIns=None):
         """ Create the empty context instance """
-        return ContextContainer(_operators=ops,
-                                _ctxs=[ContextInstance()])
+        return ContextContainer(_operators=ops)
 
-    def active(self):
-        """ Get a copy of the active contexts,
-        so ctxs can be modified as semantics go
-        """
-        self._total.update(self._ctxs)
-        active = self._ctxs
-        self._ctxs = []
-        return active
+    def __post_init__(self):
+        initial = ContextInstance()
+        self._total[initial.uuid] = initial
+        self._active.append(initial.uuid)
 
 
     def __call__(self, root_node, query_sen, data, collapse_vars, is_negated=False):
@@ -184,10 +172,11 @@ class ContextContainer():
         # in which case get the bound node
         # handle negated behaviour
         root_word = self._query_clause[0]
+        active_list = self.active_list()
         if root_word.is_at_var:
-            self._ctxs = [x.set_current_binding(root_word) for x in self.active()]
+            self._ctxs = [x.set_current_binding(root_word) for x in active_list]
         else:
-            self._ctxs = [x.set_current_node(self._root_node) for x in self.active()]
+            self._ctxs = [x.set_current_node(self._root_node) for x in active_list]
 
         return self
 
@@ -202,16 +191,24 @@ class ContextContainer():
 
         # TODO handle exception
 
+    def __len__(self):
+        return len(self._active)
+
+    def __getitem__(self, index):
+        if isinstance(index, int):
+            ctx_uuid = self._active[index]
+        else:
+            ctx_uuid = index
+        return self._total[ctx_uuid]
+
     def fail(self, instance: CtxIns, word: Value):
         """ Record a failure, the query sentence that failed,
         and the word that it failed on """
         # add failure details to the instance, of word and query clause
 
-        # remove from _ctxs
-
         # add to _purgatory
         instance._failure_word = word
-        self._purgatory.append(instance)
+        self._purgatory.append(instance.uuid)
 
     def test(self, ctx: CtxIns, possible: List[Node], word: Value):
         """
@@ -219,6 +216,7 @@ class ContextContainer():
         """
         constraints : ConstraintCollection = ConstraintCollection.build(word, self._operators)
         assert(len(possible) == 1 or constraints._bind)
+        successes = []
 
         for node in possible:
             try:
@@ -230,16 +228,42 @@ class ContextContainer():
                 constraints.binds(node, ctx)
                 # run callable tests
                 constraints.callables(node, ctx)
-                # success, so copy and extend ctx instance
-                maybe_new_instance = constraints.extend(node, ctx)
-                # Add to contextcontainer
-                maybe_new_instance.set_current_node(node)
-                self._ctxs.append(maybe_new_instance)
-
-            except AcabSemanticException as err:
+                # record success:
+                successes.append(node)
+            except ASErr.AcabSemanticTestFailure as err:
                 self.fail(ctx, word)
 
+        # Handle successes
+        # success, so copy and extend ctx instance
+        bound_ctxs = ctx.bind(word, successes)
+        # Add to contextcontainer
+        assert(not any([x.uuid in self._total for x in bound_ctxs]))
+        self._total.update({x.uuid: x for x in bound_ctxs})
+        self._active += [x.uuid for x in bound_ctxs]
 
+        return bound_ctxs
+
+
+    @property
+    def active(self):
+        return bool(self._active)
+
+    def pop_active(self, top=False) -> CtxIns:
+        """ Get a copy of the active contexts,
+        so ctxs can be modified as semantics go
+        """
+        if top:
+            return self._total[self._active.pop()]
+        else:
+            return self._total[self._active.pop(0)]
+
+
+    def active_list(self, clear=False):
+        the_list = [self._total[x] for x in self._active]
+        if clear:
+            self._active = []
+
+        return the_list
 
     def _collapse(self):
         """
@@ -260,11 +284,7 @@ class ContextContainer():
         # replace
         pass
 
-    def __len__(self):
-        return len(self._ctxs)
 
-    def __getitem__(self, index):
-        return self._ctxs[index]
 @dataclass
 class ContextInstance():
 
@@ -272,28 +292,48 @@ class ContextInstance():
     nodes        : Dict[Any, Node] = field(default_factory=dict)
     uuid         : UUID            = field(default_factory=uuid1)
 
-    _continuation     : Statement = field(init=False, default=None)
-    _current          : Node      = field(init=False, default=None)
-    _failure_sentence : Sentence  = field(init=False, default=None)
-    _failure_word     : Value     = field(init=False, default=None)
+    _remaining_query  : List[Value]       = field(init=False, default=None)
+    _parent_ctx       : CtxIns            = field(init=False, default=None)
+    _continuation     : Statement         = field(init=False, default=None)
+    _current          : Node              = field(init=False, default=None)
+    _failure_sentence : Sentence          = field(init=False, default=None)
+    _failure_word     : Value             = field(init=False, default=None)
 
     def __hash__(self):
         return hash(self.uuid)
 
-    def copy(self):
-        return replace(self,
-                       uuid=uuid1(),
-                       data=self.data.copy(),
-                       nodes=self.nodes.copy()
-                       )
+    def __contains__(self, value: Value):
+        return str(value) in self.data
+    def __getitem__(self, value: Value):
+        # TODO handle Value *and* sentence
+        if value in self:
+            return self.data[str(value)]
+        else:
+            return value
 
-    def bind(self, word, node) -> CtxIns:
-        extension = self.copy()
-        assert(self.uuid != extension.uuid)
-        assert(id(self.data) != id(extension.data))
-        extension.data[str(word)] = node.value
-        extension.nodes[str(word)] = node
-        return extension
+    def copy(self):
+        copied = replace(self,
+                         uuid=uuid1(),
+                         data=self.data.copy(),
+                         nodes=self.nodes.copy(),
+                         )
+        copied._parent_ctx = self.uuid
+
+        assert(self.uuid != copied.uuid)
+        assert(id(self.data) != id(copied.data))
+        return copied
+
+    def bind(self, word, nodes) -> [CtxIns]:
+        extensions = [(self.copy(), x) for x in nodes]
+        word_str = str(word)
+        for ctxInst, node in extensions:
+            ctxInst.set_current_node(node)
+
+            if word.is_var:
+                ctxInst.data[word_str]  = node.value
+                ctxInst.nodes[word_str] = node
+
+        return [x[0] for x in extensions]
 
     def set_current_node(self, node):
         self._current = node
@@ -316,36 +356,3 @@ class ContextInstance():
     def continuation(self):
         # Run the continuation (eg: run the transform and action of a rule)
         pass
-
-    def get_params(self, params: List[Value]):
-        """ Retrieve a value's parameters from a context dict """
-        raise NotImplementedError()
-        output = []
-        # TODO: enable currying?
-        for x in params:
-            if isinstance(x, Sentence):
-                output.append(x.bind(bound_context))
-            elif isinstance(x, list):
-                output.append([y.bind(bound_context) for y in x])
-            elif isinstance(x, AcabValue) and x.is_var:
-                assert(x.value in bound_context)
-                if x.is_at_var:
-                    output.append(bound_context[AT_BIND_S + x.value])
-                elif isinstance(bound_context[x.value], list):
-                    # TODO does this need to unwrap all list values?
-                    output.append(bound_context[x.value])
-                else:
-                    output.append(bound_context[x.value].value)
-            else:
-                output.append(x.value)
-        return output
-
-
-    def __contains__(self, value: Value):
-        return str(value) in self.data
-    def __getitem__(self, value: Value):
-        # TODO handle Value *and* sentence
-        if value in self:
-            return self.data[str(value)]
-        else:
-            return value
