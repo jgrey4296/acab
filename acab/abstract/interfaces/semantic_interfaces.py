@@ -42,7 +42,7 @@ SemSearchF = Callable[[T], Optional[SemanticUnion]]
 SemSearch = List[SemSearchF]
 
 def default_key(node:Node, data:Dict[Any,Any]=None) -> str:
-    return node.name
+    return str(node.value)
 
 def default_failure(struct, sen, data, err):
     logging.warning("Default Failure: {}".format(err))
