@@ -60,20 +60,19 @@ class ConstraintCollection():
         betas                = []
         variable_ops         = []
 
-
         for c in constraints:
-            if not isinstance(c, ProductionComponent) and hasattr(c, "__call__"):
-                callable_annotations.append(c)
-            # intentionally not elif:
-            if not isinstance(c, ProductionComponent):
-                annotations.add(c)
-            # intentionally elifs:
-            elif c.is_var:
+            is_prod_comp = isinstance(c, ProductionComponent)
+            if c.is_var:
                 variable_ops.append(c)
-            elif any([p.is_var for p in c.params]):
+            elif is_prod_comp and any([p.is_var for p in c.params]):
                 betas.append(c)
-            else:
+            elif is_prod_comp:
                 alphas.append(c)
+            elif isinstance(c, Callable):
+                callable_annotations.append(c)
+            else:
+                annotations.add(c)
+
 
         return ConstraintCollection(alphas,
                                     betas,
