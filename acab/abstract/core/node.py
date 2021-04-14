@@ -84,7 +84,7 @@ class AcabNode(DI.NodeInterface):
 
     @property
     def name(self):
-        return self.value.name
+        return str(self.value)
     @property
     def var_set(self):
         return self.value.var_set
@@ -94,7 +94,7 @@ class AcabNode(DI.NodeInterface):
         mutate object
         """
         assert(isinstance(node, AcabNode))
-        self.children[node.name] = node
+        self.children[str(node)] = node
         return node
 
     def get_child(self, node) -> 'AcabNode':
@@ -102,19 +102,19 @@ class AcabNode(DI.NodeInterface):
         if isinstance(node, str):
             return self.children[node]
 
-        return self.children[node.name]
+        return self.children[str(node)]
 
-    def has_child(self, node) -> bool:
-        """ Question if this node has a particular child """
+    def has_child(self, term) -> bool:
+        """ Question if this term has a particular child """
         # TODO handle if looking for a variable
-        if isinstance(node, str):
-            return node in self.children
-        elif isinstance(node, AcabNode):
-            return node.name in self.children
-        elif isinstance(node, AcabValue) and node.is_var:
-            return node.name in self.children
-        elif isinstance(node, AcabValue):
-            return node.name in self.children
+        if isinstance(term, str):
+            return term in self.children
+        elif isinstance(term, AcabNode):
+            return term.name in self.children
+        # elif isinstance(term, AcabValue) and term.is_var:
+        #     return term.name in self.children
+        elif isinstance(term, AcabValue):
+            return str(term) in self.children
         else:
             return False
 
@@ -128,7 +128,7 @@ class AcabNode(DI.NodeInterface):
             if isinstance(node, str):
                 del self.children[node]
             else:
-                del self.children[node.name]
+                del self.children[str(node)]
 
 
         return result
