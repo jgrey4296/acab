@@ -236,12 +236,18 @@ class ContextContainer():
         # Handle successes
         # success, so copy and extend ctx instance
         bound_ctxs = ctx.bind(word, successes)
-        # Add to contextcontainer
-        assert(not any([x.uuid in self._total for x in bound_ctxs]))
-        self._total.update({x.uuid: x for x in bound_ctxs})
-        self._active += [x.uuid for x in bound_ctxs]
-
+        self.add_ctxs(bound_ctxs)
         return bound_ctxs
+
+    def add_ctxs(self, ctxs):
+        if not isinstance(ctxs, list):
+            ctxs = [ctxs]
+
+        # Add to contextcontainer
+        assert(not any([x.uuid in self._total for x in ctxs]))
+        self._total.update({x.uuid: x for x in ctxs})
+        self._active += [x.uuid for x in ctxs]
+
 
 
     @property
@@ -305,7 +311,6 @@ class ContextInstance():
     def __contains__(self, value: Value):
         return str(value) in self.data
     def __getitem__(self, value: Value):
-        # TODO handle Value *and* sentence
         if value in self:
             return self.data[str(value)]
         else:
@@ -328,12 +333,17 @@ class ContextInstance():
         word_str = str(word)
         for ctxInst, node in extensions:
             ctxInst.set_current_node(node)
-
             if word.is_var:
                 ctxInst.data[word_str]  = node.value
                 ctxInst.nodes[word_str] = node
 
         return [x[0] for x in extensions]
+
+    def bind_dict(self, the_dict):
+        copied = self.copy()
+        copied.data.update(the_dict)
+        return copied
+
 
     def set_current_node(self, node):
         self._current = node
@@ -356,3 +366,35 @@ class ContextInstance():
     def continuation(self):
         # Run the continuation (eg: run the transform and action of a rule)
         pass
+
+
+
+@dataclass
+class MutableContextInstance():
+
+    base         : CtxIns          = field()
+    data         : Dict[Any, Any]  = field(default_factory=dict)
+    uuid         : UUID            = field(default_factory=uuid1)
+
+    @staticmethod
+    def build(ctx: ContextInstance):
+        return MutableContextInstance(base=ctx)
+
+    def finish(self):
+        return self.base.bind_dict(self.data)
+
+    def __contains__(self, value: Value):
+        key = str(value)
+        return key in self.data or key in self.base
+
+    def __getitem__(self, value: Value):
+        key = str(value)
+        if key in self.data:
+            return self.data[key]
+        elif key in self.base:
+            return self.base[key]
+        else:
+            return value
+
+    def __setitem__(self, key: Value, value: Value):
+        self.data[str(key)] = value
