@@ -43,15 +43,16 @@
 """
 from acab.abstract.core.production_abstractions import ProductionOperator, ProductionStructure
 
+# TODO do these need a wrapping decorator?
 class AgendaSelect(ProductionOperator):
 
-    def __call__(self, amnt, group, data=None, engine=None):
+    def __call__(self, amnt, group, data=None):
         return group[:amnt]
 
 
 class AgendaSort(ProductionOperator):
 
-    def __call__(self, group, sort_query, data=None, engine=None):
+    def __call__(self, group, sort_query, data=None):
         # map the group to the sort_query value
         pairs = []
 
@@ -63,5 +64,5 @@ class AgendaSort(ProductionOperator):
 
 class AgendaReturn(ProductionOperator):
 
-    def __call__(self, returns, data=None, engine=None):
+    def __call__(self, returns, data=None):
         return {ProductionStructure.RETURN_NAME_S : returns}

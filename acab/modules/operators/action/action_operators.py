@@ -5,6 +5,7 @@ import logging as root_logger
 from enum import Enum
 
 from acab.abstract.core.production_abstractions import ProductionOperator
+from acab.modules.semantics.util import SemanticOperatorWrapDecorator
 
 logging = root_logger.getLogger(__name__)
 
@@ -21,6 +22,7 @@ logging = root_logger.getLogger(__name__)
 # and/or return instructions for the semantic system
 class ActionAdd(ProductionOperator):
 
+    @SemanticOperatorWrapDecorator
     def __call__(self, struct, sem, *params, data=None):
         """ Assert the params into the engine """
         # assert(all([isinstance(x, Node) for x in params[0]]))
@@ -28,7 +30,8 @@ class ActionAdd(ProductionOperator):
 
 class ActionPrint(ProductionOperator):
 
-    def __call__(self, *params, data=None, engine=None):
+    @SemanticOperatorWrapDecorator
+    def __call__(self, *params, data=None):
         """ Trigger a logging statement """
         for x in params:
             print(x)

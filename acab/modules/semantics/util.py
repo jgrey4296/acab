@@ -3,11 +3,43 @@
 from enum import Enum
 
 from acab.abstract.config.config import AcabConfig
+from acab.abstract.core.values import AcabValue
 
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
 config = AcabConfig.Get()
+
+def SemanticOperatorWrapDecorator(f):
+    """ Use to simplify extracting raw values for use in operators,
+    and wrapping the results into AcabValues """
+    def wrapped(self, *the_args, **the_kwargs):
+        unwrapped_args = [x.value for x in the_args]
+        result = f(self, *unwrapped_args, **the_kwargs)
+        return AcabValue.safe_make(result)
+
+    return wrapped
+
+def SemanticUnWrapData(f):
+    """ Use to simplify extracting raw values for use in operators,
+    and wrapping the results into AcabValues """
+    def wrapped(self, *the_args, **the_kwargs):
+        if 'data' in the_kwargs:
+            unwrapped_data = {x: y.value for x,y in the_kwargs['data'].items()}
+            the_kwargs['data'] = unwrapped_data
+        return f(self, *the_args, **the_kwargs)
+
+    return wrapped
+
+
+def SemanticTestWrapDecorator(f):
+    """ Use to simplify extracting raw values for use in operators,
+    and wrapping the results into AcabValues """
+    def wrapped(self, *the_args, **the_kwargs):
+        unwrapped_args = [x.value for x in the_args]
+        return f(self, *unwrapped_args, **the_kwargs)
+
+    return wrapped
 
 # TODO RDFSemantics, ReteSemantics
 def _get_params(self, params, bound_context):
