@@ -80,9 +80,6 @@ class BasicNodeSemantics(SI.IndependentSemantics):
 
         return node.remove_child(to_delete)
 
-    def equal(self, val1, val2) -> bool:
-        raise NotImplementedError()
-
 class ExclusionNodeSemantics(SI.IndependentSemantics):
     def make(self, val, data=None) -> AcabNode:
         return self.up(AcabNode(val), data)
@@ -137,5 +134,3 @@ class ExclusionNodeSemantics(SI.IndependentSemantics):
 
         return node.remove_child(to_delete)
 
-    def equal(self, word, word2):
-        pass
