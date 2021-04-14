@@ -80,7 +80,8 @@ class DependentSemantics(metaclass=abc.ABCMeta):
     failure : Callable                             = field(default=default_failure)
     # Dep Sem Entry/Exit Hooks
     hooks   : Tuple[List[Handler], List[Handler]]  = field(default_factory=tuple)
-    # Query Behaviour
+
+    # TODO add to_sentences / flatten
 
     def __post_init__(self):
         if not bool(self.hooks):
@@ -151,12 +152,16 @@ class DependentSemantics(metaclass=abc.ABCMeta):
     def _query(self, struct, sen, data):
         pass
 
-    @abc.abstractmethod
     def _trigger(self, struct, sen, data):
-        pass
+        raise NotImplemented()
 
     def verify(self, instruction):
-        pass
+        raise NotImplemented()
+
+    def to_sentences(self, struct):
+        """ Reduce a struct down to sentences, for printing """
+        raise NotImplemented()
+
 class IndependentSemantics(metaclass=abc.ABCMeta):
     """
     Independent Semantics which operate on values and nodes, without
@@ -183,13 +188,4 @@ class IndependentSemantics(metaclass=abc.ABCMeta):
 
     def remove(self, node: Node, term: Value, data:Dict[Any,Any]=None) -> Optional[Node]:
         pass
-
-    def equal(self, val1:Node, val2:Node, data:Dict[Any,Any]=None) -> bool:
-        pass
-
-
-
-
-
-
 
