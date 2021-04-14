@@ -131,9 +131,26 @@ class BreadthTrieSemantics(SI.DependentSemantics):
         return ctxs
 
 
-    def _trigger(self, struct, sen, data):
-        pass
+    def _to_sentences(self, struct, data=None):
+        """ Convert a trie to a list of sentences
+        essentially a dfs of the structure
+        """
+        result_list = []
+        # Queue: List[Tuple[List[Value], Node]]
+        queue = [([], struct.root)]
+        while bool(queue):
+            path, current = queue.pop(0)
+            updated_path = path + [current.value]
+            semantics = self.retrieve(current)
+            accessible = semantics.access(current, None, data, get_all=True)
+            if bool(accessible):
+                # branch
+                queue += [(updated_path, x) for x in accessible]
+            else:
+                # leaf
+                result_list.append(Sentence.build(updated_path))
 
+        return result_list
 
 class FSMSemantics(SI.DependentSemantics):
 
