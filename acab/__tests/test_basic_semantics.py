@@ -11,6 +11,13 @@ Component
 # https://docs.python.org/3/library/unittest.html
 # https://docs.python.org/3/library/unittest.mock.html
 
+# Component: Listener/Logger/Failure/Query
+
+# TODO mid-sentence semantics switch for dependent (trie -> FSM)
+# Or can semantics only switch between sentences?
+
+# TODO test entry/exit hooks
+
 from os.path import splitext, split
 
 import unittest
@@ -24,11 +31,14 @@ from acab.error.acab_semantic_exception import AcabSemanticException
 from acab.abstract.core.values import AcabValue, Sentence
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.acab_struct import BasicNodeStruct
-from acab.abstract.core.production_abstractions import ProductionComponent
+from acab.abstract.core.production_abstractions import ProductionComponent, ProductionContainer
 from acab.modules.semantics.independent import BasicNodeSemantics, ExclusionNodeSemantics
 from acab.modules.semantics.dependent import BreadthTrieSemantics
 from acab.modules.semantics.context_container import ContextContainer, ContextInstance, ConstraintCollection
 from acab.modules.operators.query.query_operators import EQ, NEQ, HasTag
+from acab.modules.operators.transform.transform_operators import RegexOp
+
+import acab.modules.semantics.abstractions as ASem
 
 EXOP         = config.value("MODAL", "exop")
 EXOP_enum    = config.modal_enums[EXOP]
@@ -36,6 +46,8 @@ EXOP_enum    = config.modal_enums[EXOP]
 NEGATION_V   = config.value("Value.Structure", "NEGATION")
 BIND         = config.value("Value.Structure", "BIND")
 CONSTRAINT_V = config.value("Value.Structure", "CONSTRAINT")
+
+# TODO test verify
 
 class IndependentSemanticTests(unittest.TestCase):
 
@@ -386,7 +398,8 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem.insert(trie_struct, sen2)
         # Construct context container for operators
         op_loc_path = Sentence.build(["EQ"])
-        operator_instance = lambda a,b,data=None: a == b
+        # Note the .value's, because the operator doesn't have the unwrap decorator
+        operator_instance = lambda a,b,data=None: a.value == b.value
         op_ctx        = ContextInstance(data={str(op_loc_path): operator_instance})
         ctx_container = ContextContainer.build(op_ctx)
         # Construct query sentence
@@ -413,39 +426,151 @@ class TrieSemanticTests(unittest.TestCase):
     # -------
 
 
+    def test_trie_to_sentences(self):
+        # Create sem
+
+        # create struct
+
+        # call to_sentences
+
+        # check
+        pass
+
 class AbstractionSemanticTests(unittest.TestCase):
-    def test_rule_trigger(self):
-        # Construct
+    def test_transform(self):
+        sem         = ASem.TransformAbstraction()
+        # Construct context container for operators
+        op_loc_path       = Sentence.build(["Regex"])
+        operator_instance = RegexOp()
+        op_ctx            = ContextInstance(data={str(op_loc_path): operator_instance})
+        ctx_container     = ContextContainer.build(op_ctx)
+        # Add a ContextInst
+        init_ctx = ctx_container.pop_active()
+        updated_ctx = init_ctx.bind_dict({
+            "$x" : AcabValue.safe_make("test")
+        })
+        ctx_container.add_ctxs(updated_ctx)
+        # Build Transform
+        rebind_target = AcabValue.safe_make("y", data={BIND: True})
+        clause = ProductionComponent("transform test",
+                                     op_loc_path,
+                                     ["$x", "es", "ES"],
+                                     rebind=rebind_target)
+
+        transform = ProductionContainer("Test Transform Clause", [])
+        transform.clauses.append(clause)
+        # Run Transform on context
+        result = sem(transform, ctx_container[0], ctx_container._operators)
+        # Check result
+        self.assertEqual(result['$y'], "tESt")
+
+
+    def test_action(self):
+        # Build Semantics
+
+        # Build Struct
+
+        # Build Context
+
+        # Build Action
+
+        # Run action on context with semantics
+
+        # Check side effects
+
+        pass
+
+
+    def test_container(self):
+        # Build Semantics
+
+        # Build Container
+
+        # run each element of container with semantics
+
+        # check result
+
+        pass
+
+    def test_rule(self):
+        node_sem = BasicNodeSemantics()
+        trie_sem = BreadthTrieSemantics(base=node_sem)
+        # rule_sem = RuleAbstraction()
+        trie_struct = BasicNodeStruct.build_default()
+
+        # Construct Rule
+        the_rule = None
 
         # Set up struct
+        sen = None
+        # trie_sem.insert(trie_struct, sen)
+        # run
+        # result = rule_sem(trie_struct, trie_sem, the_rule)
+
+        # Check the result for bindings, and the continuation
+
+    def test_atomic_rule(self):
+        # build semantics
+
+        # construct rule
+
+        # set up struct
 
         # run
 
-        # test
+        # check consequences
         pass
 
-    def test_agenda_trigger(self):
+    def test_agenda(self):
+        # Build Semantics
+
+        # Build Contexts
+
+        # Build Agenda
+
+        # Run contexts through agenda
+
+        # check successful contexts
         pass
 
-    def test_layer_trigger(self):
+
+    def test_layer(self):
+        # Build semantics
+
+        # Build Struct
+
+        # Build layer
+
+        # Run Layer on struct
+
+        # Check results
         pass
 
-    def test_pipeline_trigger(self):
+    def test_pipeline(self):
+        # build semantics
+
+        # build struct
+
+        # build pipeline
+
+        # run pipeline
+
+        # Check results
         pass
 
-    def test_print_trigger(self):
+
+    def test_print(self):
+        # Build semantics
+
+        # Build sentences
+
+        # Print sentences
+
+        # verify
         pass
 
     # System
-    def test_system_trigger(self):
-        pass
 
-    # Component: Listener/Logger/Failure/Query
-
-    # TODO mid-sentence semantics switch for dependent (trie -> FSM)
-    # Or can semantics only switch between sentences?
-
-    # TODO test entry/exit hooks
 
 class SemanticHookTests(unittest.TestCase):
     pass
