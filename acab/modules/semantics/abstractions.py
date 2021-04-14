@@ -5,12 +5,21 @@ from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic
 
+from acab.abstract.interfaces import semantic_interfaces as SI
+from acab.modules.semantics.context_container import MutableContextInstance
+
+CtxIns = 'ContextInstance'
+
 class RuleAbstraction(SI.AbstractionSemantics):
-    def __call__(ProdSem, rule) -> List[Dict[Any, Any]]:
+    def __call__(self, struct, ProdSem, rule) -> List[Dict[Any, Any]]:
         """ Rule Logic, returns action proposals """
+        # TODO init ctx container
+
         # Run the query
         if PConst.QUERY_V in rule:
             ProdSem.run(rule[PConst.QUERY_V])
+
+        # TODO bind transform and actions to instances
 
         # Run any transforms
         transformed = ProdSem.get_results()
@@ -75,6 +84,9 @@ class ComponentAbstraction(SI.AbstractionSemantics):
     def __call__(ProdSem, component, ctxs=None):
         """ Verify the Component, retrieving the operator from the engine
         if necessary """
+        # DEPRECATED
+        #
+
         ctxs = ProdSem._param_ctx_filter(component, ctxs)
 
         # for each context:
@@ -84,7 +96,7 @@ class ComponentAbstraction(SI.AbstractionSemantics):
         if len(op) == 1 and op[0].is_var and ctx is not None:
             op = ctx[op.value]
 
-        if isinstance(op, Sentence)::
+        if isinstance(op, Sentence):
             op = self.get_operator(op)
 
         # get values from data
@@ -112,8 +124,26 @@ class ContainerAbstraction(SI.AbstractionSemantics):
 
 class TransformAbstraction(SI.AbstractionSemantics):
     """ Takes a context, returns a changed context """
-    pass
+    def __call__(self, transform, ctx:CtxIns, operators:CtxIns):
+        # Note: run *all* the transforms at once,
+        # To minimise redundent new ctxs
+        mutable_ctx = MutableContextInstance.build(ctx)
+        for clause in transform.clauses:
+            op     = operators[clause.op]
+            params = [mutable_ctx[x] for x in clause.params]
+            result = op(*params, data=clause.data)
+            mutable_ctx[clause.rebind] = result
+
+        # bind ctx with results
+        return mutable_ctx.finish()
 
 class ActionAbstraction(SI.AbstractionSemantics):
     """ Takes a context, and the Semantic System / structs  """
-    pass
+    def __call__(action, engine=None, ctxs=None):
+        # Get operators
+
+        # get params
+
+        # run operations
+
+        return
