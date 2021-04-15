@@ -83,6 +83,16 @@ class ConstraintCollection():
                                     operators)
 
 
+    def test_all(self, node, ctx):
+        # run alpha tests
+        self.alphas(node)
+        # run beta tests
+        self.betas(node, ctx)
+        # run bind test
+        self.binds(node, ctx)
+        # run callable tests
+        self.callables(node, ctx)
+
     def alphas(self, node):
         """ Run alpha tests on a node """
         # Get the (operator, params, data) trio:
@@ -109,7 +119,6 @@ class ConstraintCollection():
 
     def binds(self, node, ctxInst):
         """ Check node against prior binding """
-        # TODO use independent semantic equality?
         if self._bind is None:
             return
         if self._bind not in ctxInst:
@@ -201,7 +210,7 @@ class ContextContainer():
             ctx_uuid = index
         return self._total[ctx_uuid]
 
-    def fail(self, instance: CtxIns, word: Value):
+    def fail(self, instance: CtxIns, word: Value, node: Node):
         """ Record a failure, the query sentence that failed,
         and the word that it failed on """
         # add failure details to the instance, of word and query clause
@@ -220,18 +229,10 @@ class ContextContainer():
 
         for node in possible:
             try:
-                # run alpha tests
-                constraints.alphas(node)
-                # run beta tests
-                constraints.betas(node, ctx)
-                # run bind test
-                constraints.binds(node, ctx)
-                # run callable tests
-                constraints.callables(node, ctx)
-                # record success:
+                constraints.test_all(node, ctx)
                 successes.append(node)
             except ASErr.AcabSemanticTestFailure as err:
-                self.fail(ctx, word)
+                self.fail(ctx, word, node)
 
         # Handle successes
         # success, so copy and extend ctx instance
