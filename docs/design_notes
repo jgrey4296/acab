@@ -1,0 +1,29 @@
+
+Instructions:
+@trie:assert.[a.b!c].[q.e.f]
+@fsm:query.[a.b!$x].[q.e.$x]
+
+Abstractions:
+rule.[@trie:query.[a.b!$x]].[transform.[λadd.$x.2]].[action.[q.e.$x]]
+layer.[query.[rule.$x]].[agenda.[λdefault]].[action.[λenact]]
+
+
+SemanticSystem:
+    [Sentence] -> Struct -> Result(Bindings, Struct')
+
+instr -> system -> (abs)? -> dep -> indep
+                -> [ ctx       ]
+                -> [ history   ]
+                -> [ fails     ]
+                -> [ listeners ]
+                -> [           ]
+
+Listener : match on sentence patterns, activate debugger
+History  : write incoming sentence instructions to a log
+
+Ctx      : Store parallel data possibilities
+Fails    : How an instruction / semantic fails
+
+Abstraction Semantics : Passed the system
+Dependent Semantics   : *Not* passed the system, only components
+Independent Semantics : *Not* passed *Anything* external

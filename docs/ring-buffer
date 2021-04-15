@@ -1,0 +1,48 @@
+
+* Semantic Interface
+System
+** Abstraction
+*Populates context operators*
+
+[Rule Layer Pipeline]
+Agenda
+Component
+Container
+Transform Action
+
+Failure?
+
+TypeCheck
+
+** Dependent
+Trie
+FSM
+Pattern?
+Game?
+
+StringTemplate
+Print
+Activity
+
+** Independent
+BasicNode
+ExclusionNode
+
+* Context
+ConstraintCollection
+
+* Production Abstractions
+** Operator
+*** Query
+Eq, Neq, RegMatch, ELEM, HasTag
+>, <...
+*** Transform
+Regex Sub
+Format
+
+*** Action
+Add / Delete
+Print
+
+
+** Component
