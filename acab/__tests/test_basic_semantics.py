@@ -271,10 +271,9 @@ class TrieSemanticTests(unittest.TestCase):
         # Construct query sentence
         query_sen = Sentence.build(["a", "test", "sentence"])
         # Run query
-        result = trie_sem.query(trie_struct, query_sen, ctxs=ctx_container)
-        self.assertIsInstance(result, ContextContainer)
-        self.assertEqual(len(result), 1)
-        self.assertIsNotNone(result[0]._current)
+        trie_sem.query(trie_struct, query_sen, ctxs=ctx_container)
+        self.assertEqual(len(ctx_container), 1)
+        self.assertIsNotNone(ctx_container[0]._current)
 
 
     def test_trie_query_var(self):
@@ -293,10 +292,9 @@ class TrieSemanticTests(unittest.TestCase):
         query_sen = Sentence.build(["a", "test", "x"])
         query_sen[-1].data[BIND] = True
         # Run query
-        result = trie_sem.query(trie_struct, query_sen, ctxs=ctx_container)
-        self.assertIsInstance(result, ContextContainer)
-        self.assertEqual(len(result), 2)
-        result_set = {ctxInst.data['$x'] for ctxInst in result}
+        trie_sem.query(trie_struct, query_sen, ctxs=ctx_container)
+        self.assertEqual(len(ctx_container), 2)
+        result_set = {ctxInst.data['$x'] for ctxInst in ctx_container}
         self.assertEqual(result_set, {'sentence', 'other'})
 
     def test_trie_query_with_bind_constraints(self):
@@ -316,10 +314,9 @@ class TrieSemanticTests(unittest.TestCase):
         query_sen[-2].data[BIND] = True
         query_sen[-1].data[BIND] = True
         # Run query
-        result = trie_sem.query(trie_struct, query_sen, ctxs=ctx_container)
-        self.assertIsInstance(result, ContextContainer)
-        self.assertEqual(len(result), 1)
-        self.assertEqual(result[0].data['$x'], 'test')
+        trie_sem.query(trie_struct, query_sen, ctxs=ctx_container)
+        self.assertEqual(len(ctx_container), 1)
+        self.assertEqual(ctx_container[0].data['$x'], 'test')
 
     def test_trie_query_with_alpha_tests(self):
         node_sem = BasicNodeSemantics()
@@ -345,10 +342,9 @@ class TrieSemanticTests(unittest.TestCase):
                                        [AcabValue.safe_make("blah")])
         query_sen[-1].data[CONSTRAINT_V] = [the_test]
         # Run query
-        result = trie_sem.query(trie_struct, query_sen, ctxs=ctx_container)
-        self.assertIsInstance(result, ContextContainer)
-        self.assertEqual(len(result), 1)
-        self.assertEqual(result[0].data['$x'].name, 'blah')
+        trie_sem.query(trie_struct, query_sen, ctxs=ctx_container)
+        self.assertEqual(len(ctx_container), 1)
+        self.assertEqual(ctx_container[0].data['$x'].name, 'blah')
 
     def test_trie_query_with_beta_tests(self):
         node_sem = BasicNodeSemantics()
@@ -379,11 +375,12 @@ class TrieSemanticTests(unittest.TestCase):
                                        [test_var])
         query_sen2[-1].data[CONSTRAINT_V] = [the_test]
         # Run query
-        initial_result = trie_sem.query(trie_struct, query_sen, ctxs=ctx_container)
-        second_result = trie_sem.query(trie_struct, query_sen2, ctxs=initial_result)
-        self.assertIsInstance(second_result, ContextContainer)
-        self.assertEqual(len(second_result), 1)
-        self.assertEqual(second_result[0].data['$y'].name, 'blah')
+        trie_sem.query(trie_struct, query_sen, ctxs=ctx_container)
+        trie_sem.query(trie_struct, query_sen2, ctxs=ctx_container)
+        self.assertEqual(len(ctx_container), 1)
+        end_result = ctx_container.pop_active()
+        self.assertIsInstance(end_result, ContextInstance)
+        self.assertEqual(end_result.data['$y'].name, 'blah')
 
 
     def test_trie_query_with_callable_tests(self):
@@ -416,11 +413,11 @@ class TrieSemanticTests(unittest.TestCase):
                                        [test_var])
         query_sen2[-1].data[CONSTRAINT_V] = [the_test]
         # Run query
-        initial_result = trie_sem.query(trie_struct, query_sen, ctxs=ctx_container)
-        second_result = trie_sem.query(trie_struct, query_sen2, ctxs=initial_result)
-        self.assertIsInstance(second_result, ContextContainer)
-        self.assertEqual(len(second_result), 1)
-        self.assertEqual(second_result[0].data['$y'].name, 'blah')
+        trie_sem.query(trie_struct, query_sen, ctxs=ctx_container)
+        trie_sem.query(trie_struct, query_sen2, ctxs=ctx_container)
+        self.assertEqual(len(ctx_container), 1)
+        end_result = ctx_container.pop_active()
+        self.assertEqual(end_result.data['$y'].name, 'blah')
 
 
     # -------

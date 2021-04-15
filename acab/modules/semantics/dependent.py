@@ -67,8 +67,6 @@ class BreadthTrieSemantics(SI.DependentSemantics):
                 new_node = next_semantics.make(word, data)
                 current = semantics.insert(current, new_node, data)
 
-        return current
-
 
     def _delete(self, struct, sen, data=None):
         parent = struct.root
@@ -88,8 +86,6 @@ class BreadthTrieSemantics(SI.DependentSemantics):
         # remove current from parent
         semantics = self.retrieve(parent)
         semantics.remove(parent, current.value, data)
-
-        return current
 
 
     def query(self, struct, sen, data=None, ctxs=None):
@@ -125,8 +121,6 @@ class BreadthTrieSemantics(SI.DependentSemantics):
                     else:
                         ctxs.test(ctxInst, results, word)
 
-        return ctxs
-
 
     def to_sentences(self, struct, data=None, ctxs=None):
         """ Convert a trie to a list of sentences
@@ -147,7 +141,8 @@ class BreadthTrieSemantics(SI.DependentSemantics):
                 # leaf
                 result_list.append(Sentence.build(updated_path))
 
-        return result_list
+        # TODO insert result as a ctx?
+        raise NotImplementedError()
 
 class FSMSemantics(SI.DependentSemantics):
 
