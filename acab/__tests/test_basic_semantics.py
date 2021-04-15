@@ -460,8 +460,9 @@ class AbstractionSemanticTests(unittest.TestCase):
         transform = ProductionContainer("Test Transform Clause", [])
         transform.clauses.append(clause)
         # Run Transform on context
-        result = sem(transform, ctx_container[0], ctx_container._operators)
+        sem(transform, ctx_container, None)
         # Check result
+        result = ctx_container.pop_active()
         self.assertEqual(result['$y'].value, "tESt")
 
 
@@ -572,17 +573,15 @@ class AbstractionSemanticTests(unittest.TestCase):
     # System
 
 
-class SemanticHookTests(unittest.TestCase):
-    pass
 
-class FSMSemanticTests(unittest.TestCase):
-    def test_fsm_insert(self):
+
+
+class SemanticSystemTests(unittest.TestCase):
+
+    def test_construction(self):
         pass
 
-    def test_fsm_trigger(self):
-        pass
-
-
-
-class ASPSemanticTests(unittest.TestCase):
-    pass
+    # setup base
+    # setup mapping and structs
+    # test retrieve
+    # test call with different instructions
