@@ -31,9 +31,6 @@ QUERY_FALLBACK_S = config.value("Value.Structure", "QUERY_FALLBACK")
 DEFAULT_SETUP_S  = config.value("Data", "DEFAULT_SETUP_METHOD")
 DEFAULT_UPDATE_S = config.value("Data", "DEFAULT_UPDATE_METHOD")
 
-T  = TypeVar('T')
-T2 = TypeVar('T2')
-
 Node          = 'AcabNode'
 Sentence      = 'Sentence'
 Printable     = 'Printable'
@@ -50,7 +47,7 @@ class BreadthTrieSemantics(SI.DependentSemantics):
     Searches *Breadth First*
     """
 
-    def _insert(self, struct, sen, data=None):
+    def insert(self, struct, sen, data=None, ctxs=None):
         if data is None:
             data = {}
 
@@ -95,7 +92,7 @@ class BreadthTrieSemantics(SI.DependentSemantics):
         return current
 
 
-    def _query(self, struct, sen, data=None, ctxs=None):
+    def query(self, struct, sen, data=None, ctxs=None):
         """ Breadth First Search Query """
         if ctxs is None:
             raise ASErr.AcabSemanticException("Ctxs is none to TrieSemantics.query", sen)
@@ -124,14 +121,14 @@ class BreadthTrieSemantics(SI.DependentSemantics):
                                            data,
                                            get_all=get_all)
                     if not bool(results):
-                        ctxs.fail(ctxInst, word)
+                        ctxs.fail(ctxInst, word, None)
                     else:
                         ctxs.test(ctxInst, results, word)
 
         return ctxs
 
 
-    def _to_sentences(self, struct, data=None):
+    def to_sentences(self, struct, data=None, ctxs=None):
         """ Convert a trie to a list of sentences
         essentially a dfs of the structure
         """
@@ -154,7 +151,7 @@ class BreadthTrieSemantics(SI.DependentSemantics):
 
 class FSMSemantics(SI.DependentSemantics):
 
-    def _insert(self, struct, sen, data=None):
+    def insert(self, struct, sen, data=None):
         """
         In the FSM, everything is access from the root,
         there is a defined start node,
@@ -197,7 +194,7 @@ class FSMSemantics(SI.DependentSemantics):
 
         return current
 
-    def _query(self, struct, query, data=None, ctxs=None):
+    def query(self, struct, query, data=None, ctxs=None):
         """
         Test that all states exist, and connections line up:
         a.b.c.d?
@@ -234,7 +231,7 @@ class FSMSemantics(SI.DependentSemantics):
                     indep = self.retrieve(ctxInst.current)
                     results = indep.access(ctxInst.current, word, data)
                     if not bool(results):
-                        ctxs.fail(ctxInst)
+                        ctxs.fail(ctxInst, word, None)
                     else:
                         ctxs.test(word, ctxInst, results)
 
@@ -257,7 +254,7 @@ class FSMSemantics(SI.DependentSemantics):
 
         return current
 
-    def _trigger(self, struct, sen, data=None):
+    def trigger(self, struct, sen, data=None):
         """
         Trigger the FSM.
         ie:
@@ -272,14 +269,14 @@ class ASPSemantics(SI.DependentSemantics):
     Stub for passing assertions and queries into an ASP program
     """
 
-    def _insert(self, struct, sen):
+    def insert(self, struct, sen):
         """
         construct the ASP program
         """
         pass
 
 
-    def _query(self, struct, query, data=None, ctxs=None):
+    def query(self, struct, query, data=None, ctxs=None):
         """
         pass the cached asp program to a solver,
         retrieve results, extract what is needed,
@@ -287,7 +284,7 @@ class ASPSemantics(SI.DependentSemantics):
         """
         pass
 
-    def _trigger(self, struct, sen, data):
+    def trigger(self, struct, sen, data):
         pass
 
 
@@ -298,7 +295,7 @@ class DepthTrieSemantics(SI.DependentSemantics):
     Searches *Depth First*
     """
 
-    def _insert(self, struct, sen, data=None):
+    def insert(self, struct, sen, data=None):
         if data is None:
             data = {}
 
@@ -343,7 +340,7 @@ class DepthTrieSemantics(SI.DependentSemantics):
         return current
 
 
-    def _query(self, struct, sen, data=None, ctxs=None):
+    def query(self, struct, sen, data=None, ctxs=None):
         """ Depth First Search Query """
         if ctxs is None:
             raise ASErr.AcabSemanticException("Ctxs is none to TrieSemantics.query", sen)
@@ -384,7 +381,7 @@ class DepthTrieSemantics(SI.DependentSemantics):
                         # the current ctxInst needs to be updated
                         # as the search progresses
                         if not bool(results):
-                            ctxs.fail(currentInst, word)
+                            ctxs.fail(currentInst, word, None)
                             raise ASErr.AcabSemanticQueryContextDepletionFailure("Ctx has failed, going to next", None)
                         else:
                             new_active_ctxs = ctxs.test(currentInst, results, word)
@@ -401,5 +398,5 @@ class DepthTrieSemantics(SI.DependentSemantics):
         return ctxs
 
 
-    def _trigger(self, struct, sen, data):
+    def trigger(self, struct, sen, data):
         pass
