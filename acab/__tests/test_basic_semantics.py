@@ -462,7 +462,7 @@ class AbstractionSemanticTests(unittest.TestCase):
         # Run Transform on context
         result = sem(transform, ctx_container[0], ctx_container._operators)
         # Check result
-        self.assertEqual(result['$y'], "tESt")
+        self.assertEqual(result['$y'].value, "tESt")
 
 
     def test_action(self):
