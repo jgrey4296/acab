@@ -13,10 +13,10 @@ CtxIns = 'ContextInstance'
 # Primary Abstractions:
 class TransformAbstraction(SI.AbstractionSemantics):
     """ Takes a context, returns a changed context """
-    #def __call__(self, transform, ctx:CtxIns, operators:CtxIns):
     def __call__(self, instruction, ctxCon, semMap, data=None):
-        # Note: run *all* the transforms at once,
+        # Note: run *all* the transform clauses at once,
         # To minimise redundent new ctxs
+        # runs on a single active ctx
         operators = ctxCon._operators
         transform = instruction
         ctx = ctxCon.pop_active()

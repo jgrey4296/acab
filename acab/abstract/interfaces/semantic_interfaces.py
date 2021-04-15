@@ -143,10 +143,10 @@ class DependentSemantics(metaclass=abc.ABCMeta):
 
     def to_sentences(self, struct, data=None, ctxs=None):
         """ Reduce a struct down to sentences, for printing """
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def verify(self, instruction, data=None, ctxs=None):
-        raise NotImplemented()
+        raise NotImplementedError()
     @abc.abstractmethod
     def insert(self, struct, sen, data):
         pass
