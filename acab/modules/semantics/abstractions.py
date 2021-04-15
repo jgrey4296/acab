@@ -80,37 +80,6 @@ class AgendaAbstraction(SI.AbstractionSemantics):
         return resulting_ctxs[0][Agenda.RETURN_NAME_S]
 
 
-class ComponentAbstraction(SI.AbstractionSemantics):
-    def __call__(ProdSem, component, ctxs=None):
-        """ Verify the Component, retrieving the operator from the engine
-        if necessary """
-        # DEPRECATED
-        #
-
-        ctxs = ProdSem._param_ctx_filter(component, ctxs)
-
-        # for each context:
-
-        # $op -> retrieve from ctx
-        op = component.op
-        if len(op) == 1 and op[0].is_var and ctx is not None:
-            op = ctx[op.value]
-
-        if isinstance(op, Sentence):
-            op = self.get_operator(op)
-
-        # get values from data
-        values = ProdSem._get_params(component, ctx)
-        # TODO: op's should be able to be Components and Containers as well?
-        assert(isinstance(op, (ProductionOperator, ProductionComponent, ProducionContainer, ProductionStructure)))
-        result = ProdSem.run(op, [ctx])
-
-        if x._rebind is None and isinstance(result, dict):
-            ctx_singular.update(result)
-        if x._rebind is not None:
-            ctx_singular[x._rebind.value] = AcabValue.safe_make(result)
-
-
 class ContainerAbstraction(SI.AbstractionSemantics):
     def __call__(ProdSem, container, ctxs=None):
         """ Apply the clauses in one move """
