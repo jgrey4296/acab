@@ -146,7 +146,7 @@ class BreadthTrieSemantics(SI.DependentSemantics):
 
 class FSMSemantics(SI.DependentSemantics):
 
-    def insert(self, struct, sen, data=None):
+    def insert(self, struct, sen, data=None, ctxs=None):
         """
         In the FSM, everything is access from the root,
         there is a defined start node,
@@ -222,7 +222,7 @@ class FSMSemantics(SI.DependentSemantics):
         collapse_vars = []
         with ctxs(struct.root, sen[0], data, collapse_vars, negated_query):
             for word in sen:
-                for ctxInst in ctxs.active():
+                for ctxInst in ctxs.active_list():
                     indep = self.retrieve(ctxInst.current)
                     results = indep.access(ctxInst.current, word, data)
                     if not bool(results):
@@ -233,7 +233,7 @@ class FSMSemantics(SI.DependentSemantics):
         return ctxs
 
 
-    def _delete(self, struct, sen, data=None):
+    def _delete(self, struct, sen, data=None, ctxs=None):
         """
         remove each word in the sentence from its prior
         """
@@ -249,7 +249,7 @@ class FSMSemantics(SI.DependentSemantics):
 
         return current
 
-    def trigger(self, struct, sen, data=None):
+    def trigger(self, struct, sen, data=None, ctxs=None):
         """
         Trigger the FSM.
         ie:
@@ -264,7 +264,7 @@ class ASPSemantics(SI.DependentSemantics):
     Stub for passing assertions and queries into an ASP program
     """
 
-    def insert(self, struct, sen):
+    def insert(self, struct, sen, data=None, ctxs=None):
         """
         construct the ASP program
         """
@@ -279,7 +279,7 @@ class ASPSemantics(SI.DependentSemantics):
         """
         pass
 
-    def trigger(self, struct, sen, data):
+    def trigger(self, struct, sen, data=None, ctxs=None):
         pass
 
 
@@ -290,7 +290,7 @@ class DepthTrieSemantics(SI.DependentSemantics):
     Searches *Depth First*
     """
 
-    def insert(self, struct, sen, data=None):
+    def insert(self, struct, sen, data=None, ctxs=None):
         if data is None:
             data = {}
 
@@ -313,7 +313,7 @@ class DepthTrieSemantics(SI.DependentSemantics):
         return current
 
 
-    def _delete(self, struct, sen, data=None):
+    def _delete(self, struct, sen, data=None, ctxs=None):
         parent = struct.root
         current = struct.root
 
@@ -348,7 +348,7 @@ class DepthTrieSemantics(SI.DependentSemantics):
         collapse_vars = []
         with ctxs(struct.root, sen, data, collapse_vars, negated_query):
             while ctxs.active:
-                currentInst = ctxs.pop_active(top=True)
+                currentInst = ctxs.pop(top=True)
                 try:
                     remaining_sen = sen.words[:]
                     if currentInst._remaining_query is not None:
@@ -393,5 +393,5 @@ class DepthTrieSemantics(SI.DependentSemantics):
         return ctxs
 
 
-    def trigger(self, struct, sen, data):
+    def trigger(self, struct, sen, data=None, ctxs=None):
         pass
