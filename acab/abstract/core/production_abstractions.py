@@ -62,6 +62,12 @@ class ProductionOperator(AcabValue):
     def op_path(self):
         return self.value
 
+class ActionOperator(ProductionOperator):
+    """ Special Operator type which gets passed the semantic system,
+    so it can trigger instructions """
+
+    def __call__(self, *params: List[AcabValue], data=None, semSystem=None):
+        raise NotImplementedError()
 
 
 @dataclass
