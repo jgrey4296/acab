@@ -4,7 +4,7 @@ Definitions of the Core Performance Operators
 import logging as root_logger
 from enum import Enum
 
-from acab.abstract.core.production_abstractions import ProductionOperator
+from acab.abstract.core.production_abstractions import ActionOperator
 from acab.modules.semantics.util import SemanticOperatorWrapDecorator
 
 logging = root_logger.getLogger(__name__)
@@ -20,18 +20,18 @@ logging = root_logger.getLogger(__name__)
 
 # TODO action operators joots
 # and/or return instructions for the semantic system
-class ActionAdd(ProductionOperator):
+class ActionAdd(ActionOperator):
 
     @SemanticOperatorWrapDecorator
-    def __call__(self, struct, sem, *params, data=None):
-        """ Assert the params into the engine """
-        # assert(all([isinstance(x, Node) for x in params[0]]))
-        engine.add(params[0])
+    def __call__(self, struct, sem, *params, data=None, semSystem=None):
+        """ Assert the params (ie: sentences) """
+        # TODO use override?
+        semSystem(params[0])
 
-class ActionPrint(ProductionOperator):
+class ActionPrint(ActionOperator):
 
     @SemanticOperatorWrapDecorator
-    def __call__(self, *params, data=None):
+    def __call__(self, *params, data=None, semSystem=None):
         """ Trigger a logging statement """
         for x in params:
             print(x)
