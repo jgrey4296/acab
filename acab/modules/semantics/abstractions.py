@@ -17,9 +17,9 @@ class TransformAbstraction(SI.AbstractionSemantics):
         # Note: run *all* the transform clauses at once,
         # To minimise redundent new ctxs
         # runs on a single active ctx
-        operators = ctxCon._operators
-        transform = instruction
-        ctx = ctxCon.pop_active()
+        operators   = ctxCon._operators
+        transform   = instruction
+        ctx         = ctxCon.pop()
         mutable_ctx = MutableContextInstance.build(ctx)
         for clause in transform.clauses:
             op     = operators[clause.op]
@@ -28,89 +28,143 @@ class TransformAbstraction(SI.AbstractionSemantics):
             mutable_ctx[clause.rebind] = result
 
         # bind ctx with results
-        ctxCon.add_ctxs(mutable_ctx.finish())
+        ctxCon.push(mutable_ctx.finish())
 
 class ActionAbstraction(SI.AbstractionSemantics):
-    """ Takes a context, and the Semantic System / structs  """
+    """ *Consumes* a context, performing all actions in it """
     def __call__(self, instruction, ctxCon, semMap, data=None):
-        # Get operators
+        operators = ctxCon.operators
+        # TODO instruction might actually be ctx._continuation
+        action    = instruction
+        ctx       = ctxCon.pop()
 
-        # get params
+        for clause in action.clauses:
+            op     = operators[clause.op]
+            params = [mutable_ctx[x] for x in clause.params]
+            result = op(*params, data=clause.data)
 
-        # run operations
 
-        return
 
-class RuleAbstraction(SI.AbstractionSemantics):
+
+class AtomicRuleAbstraction(SI.AbstractionSemantics):
+    """ Run a rule in a single semantic call """
+
     def __call__(self, instruction, ctxCon, semMap, data=None):
         """ Rule Logic, returns action proposals """
-        # TODO init ctx container
+        # TODO Possibly setup a temp ctxCon
+
+        rule = instruction
+        # Run the query
+        if PConst.QUERY_V in rule:
+            semMap(rule[PConst.QUERY_V], data=data, ctxs=ctxCon)
+
+        if not bool(ctxCon):
+            return
+
+        # TODO needs to be applied to all actives
+        if PConst.TRANSFORM_V in rule:
+            semMap.run(rule[PConst.TRANSFORM_V], data=data, ctxs=ctxCon)
+
+        if PConst.ACTION_V in rule:
+            semMap.run(rule[PConst.ACTION_V], data=data, ctxs=ctxCon)
+
+class SteppedRuleAbstraction(SI.AbstractionSemantics):
+    """ Run a rules queries, then return ctxs bound
+    with transform+action continuation """
+
+    def __call__(self, instruction, ctxCon, semMap, data=None):
+        """ Rule Logic, returns action proposals """
+        # TODO Possibly setup a temp ctxCon
 
         # Run the query
         if PConst.QUERY_V in rule:
-            ProdSem.run(rule[PConst.QUERY_V])
+            semMap(rule[PConst.QUERY_V], data=data, ctxs=ctxCon)
+
+        if not bool(ctxCon):
+            return
 
         # TODO bind transform and actions to instances
 
-        # Run any transforms
-        transformed = ProdSem.get_results()
-        if not bool(transformed):
-            return
+        raise NotImplemented()
 
+    def run_continuation(self, instruction, ctxCon, semMap, data=None):
+        # TODO this might be _continuation of each ctx
+        rule = instruction
+
+        # TODO will need to handle each individual ctx
         if PConst.TRANSFORM_V in rule:
-            transformed = ProdSem.run(rule[PConst.TRANSFORM_V])
+            transformed = semMap(rule[PConst.TRANSFORM_V], data=data, ctxs=ctxCon)
 
-        # *DELAYED* action results
-        # return final passing dictionaries
-        results = []
-        for data in transformed:
-            results.append((data, rule))
-
-        ProdSem.record_results(results)
+        if PConst.ACTION_V in rule:
+            semMap.run(rule[PConst.ACTION_V], data=data, ctxs=ctxCon)
 
 
 # Secondary Abstractions:
 class LayerAbstraction(SI.AbstractionSemantics):
+    """ A Layer of rules.
+    ie: Query for rules.
+    Select rules to run.
+    run selection of rules.
+    select passing rules to complete.
+    run passing selection.
+    """
     def __call__(self, instruction, ctxCon, semMap, data=None):
         """ Run a layer, returning actions to perform """
-        # rule returns [(data,ProdSem)]
-        results = ProdSem.run(layer, ctxs=ctxs, override=PConst.RULE_V)
+        layer = instruction
 
-        logging.warning("Layer results: {}".format(len(results) < 1))
-        # Run layer actions
-        contexts = []
-        if bool(results):
-            contexts.append(results[0][0])
+        if PConst.QUERY_V in layer:
+            semMap(layer[PConst.QUERY_V], data=data, ctxs=ctxCon)
 
-        action_results = ProdSem.run(layer[PConst.ACTION_V], ctxs=contexts)
-        return action_results
+        if not bool(ctxCon):
+            return
 
+        # TODO needs to be applied to all actives
+        if PConst.TRANSFORM_V in layer:
+            semMap.run(layer[PConst.TRANSFORM_V], data=data, ctxs=ctxCon)
 
-class PipelineAbstraction(SI.AbstractionSemantics):
-    def __call__(self, instruction, ctxCon, semMap, data=None):
-        """ Run this pipeline on the given engine for a tick """
-        results = ProdSem.run(pipeline, override=PConst.RULE_V)
-        # TODO extract semantics
-        # Run pipeline actions
-        output = []
-
-        return output
-
+        if PConst.ACTION_V in layer:
+            semMap.run(layer[PConst.ACTION_V], data=data, ctxs=ctxCon)
 
 class AgendaAbstraction(SI.AbstractionSemantics):
+    """ A Layer-specific transform, to run operators on ctxs """
     def __call__(self, instruction, ctxCon, semMap, data=None):
         """ Runs an agenda rule on activated rules """
-        assert(isinstance(ctxs, list))
-        agenda_settings = ProdSem.run(agenda, ctxs=ctxs, override=PConst.RULE_V)
+        # setup
 
-        # TODO extract semantics
-        assert(len(agenda_settings) == 1)
-        settings = agenda_settings[0][0]
+        # run limited query
 
-        # Enact agenda
-        resulting_ctxs = ProdSem.run(agenda[PConst.ACTION_V], ctxs=ctxs)
-        return resulting_ctxs[0][Agenda.RETURN_NAME_S]
+        # run transform on ctxCon
+        #
+        raise NotImplementedError()
 
+
+
+class AtomicPipelineAbstraction(SI.AbstractionSemantics):
+    """ A Means of sequencing layers, run all layers per tick """
+
+    def __call__(self, instruction, ctxCon, semMap, data=None):
+        """ Run this pipeline on the given engine for a tick """
+        # Setup
+        pipeline = instruction
+
+        for layer in pipeline:
+            # Run the layer
+            continue
+
+        raise NotImplementedError()
+
+class TemporalPipelineAbstraction(SI.AbstractionSemantics):
+    """ A Means of sequencing layers, one layer per tick """
+
+    def __call__(self, instruction, ctxCon, semMap, data=None):
+        """ Run this pipeline on the given engine for a tick """
+        # Setup
+        pipeline = instruction
+        # Determine layer to run
+        layer = None
+        # run it
+
+        raise NotImplementedError()
 
 class ContainerAbstraction(SI.AbstractionSemantics):
     def __call__(self, instruction, ctxCon, semMap, data=None):
