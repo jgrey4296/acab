@@ -378,7 +378,7 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem.query(trie_struct, query_sen, ctxs=ctx_container)
         trie_sem.query(trie_struct, query_sen2, ctxs=ctx_container)
         self.assertEqual(len(ctx_container), 1)
-        end_result = ctx_container.pop_active()
+        end_result = ctx_container.pop()
         self.assertIsInstance(end_result, ContextInstance)
         self.assertEqual(end_result.data['$y'].name, 'blah')
 
@@ -416,7 +416,7 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem.query(trie_struct, query_sen, ctxs=ctx_container)
         trie_sem.query(trie_struct, query_sen2, ctxs=ctx_container)
         self.assertEqual(len(ctx_container), 1)
-        end_result = ctx_container.pop_active()
+        end_result = ctx_container.pop()
         self.assertEqual(end_result.data['$y'].name, 'blah')
 
 
@@ -442,11 +442,11 @@ class AbstractionSemanticTests(unittest.TestCase):
         op_ctx            = ContextInstance(data={str(op_loc_path): operator_instance})
         ctx_container     = ContextContainer.build(op_ctx)
         # Add a ContextInst
-        init_ctx = ctx_container.pop_active()
+        init_ctx = ctx_container.pop()
         updated_ctx = init_ctx.bind_dict({
             "$x" : AcabValue.safe_make("test")
         })
-        ctx_container.add_ctxs(updated_ctx)
+        ctx_container.push(updated_ctx)
         # Build Transform
         rebind_target = AcabValue.safe_make("y", data={BIND: True})
         clause = ProductionComponent("transform test",
@@ -459,7 +459,7 @@ class AbstractionSemanticTests(unittest.TestCase):
         # Run Transform on context
         sem(transform, ctx_container, None)
         # Check result
-        result = ctx_container.pop_active()
+        result = ctx_container.pop()
         self.assertEqual(result['$y'].value, "tESt")
 
 
