@@ -210,6 +210,9 @@ class ContextContainer():
             ctx_uuid = index
         return self._total[ctx_uuid]
 
+    def __bool__(self):
+        return bool(self._active)
+
     def fail(self, instance: CtxIns, word: Value, node: Node):
         """ Record a failure, the query sentence that failed,
         and the word that it failed on """
@@ -237,10 +240,10 @@ class ContextContainer():
         # Handle successes
         # success, so copy and extend ctx instance
         bound_ctxs = ctx.bind(word, successes)
-        self.add_ctxs(bound_ctxs)
+        self.push(bound_ctxs)
         return bound_ctxs
 
-    def add_ctxs(self, ctxs):
+    def push(self, ctxs):
         if not isinstance(ctxs, list):
             ctxs = [ctxs]
 
@@ -251,11 +254,7 @@ class ContextContainer():
 
 
 
-    @property
-    def active(self):
-        return bool(self._active)
-
-    def pop_active(self, top=False) -> CtxIns:
+    def pop(self, top=False) -> CtxIns:
         """ Get a copy of the active contexts,
         so ctxs can be modified as semantics go
         """
@@ -289,7 +288,7 @@ class ContextContainer():
         # select instances with bindings
         # Merge into single new instance
         # replace
-        pass
+        raise NotImplementedError()
 
 
 @dataclass
