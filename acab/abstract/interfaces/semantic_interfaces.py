@@ -21,6 +21,7 @@ from typing import cast, ClassVar, TypeVar, Generic
 
 from acab.abstract.semantics import util as SemUtil
 from acab.error.acab_semantic_exception import AcabSemanticException
+from acab.modules.semantics.context_container import ContextContainer
 
 import abc
 from dataclasses import dataclass, field
