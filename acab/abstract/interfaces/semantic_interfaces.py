@@ -59,20 +59,24 @@ class SemanticSystem(metaclass=abc.ABCMeta):
     """
 
     # If no applicable semantics found, use default
-    base    : AbsDepSemantics                          = field()
+    base        : AbsDepSemantics                      = field()
+    base_struct : Structure                            = field()
+    base_hooks  : Tuple[List[Handler], List[Handler]] = field(default_factory=tuple)
     # str/iden -> Semantics
-    mapping : Dict[str, AbsDepSemantics]               = field(default_factory=dict)
-    structs : Dict[str, Structure]                     = field(default_factory=dict)
+    mapping : Dict[str, AbsDepSemantics]                     = field(default_factory=dict)
+    structs : Dict[str, Structure]                           = field(default_factory=dict)
+    hooks   : Dict[str, Tuple[List[Handler], List[Handler]]] = field(default_factory=dict)
     # sentence -> iden func to determine appropriate semantics
-    key     : Callable[[T, Dict[Any,Any]], str]        = field(default=default_key)
+    key     : Callable[[T, Dict[Any,Any]], str]   = field(default=default_key)
     #
-    failure : Callable                                 = field(default=default_failure)
-    # Dep Sem Entry/Exit Hooks
-    hooks   : Tuple[List[Handler], List[Handler]]      = field(default_factory=tuple)
+    failure : Callable                            = field(default=default_failure)
+
 
     def __post_init__(self):
         if not bool(self.hooks):
             self.hooks = ([], [])
+
+        # TODO init any semantics or structs passed in as Class's
 
     def _run_entry_hooks(self, semantics, struct, instruction, ctxs, data):
         for hook in self.hooks[0]:
@@ -99,25 +103,31 @@ class SemanticSystem(metaclass=abc.ABCMeta):
 
     def __call__(self, instruction, data=None, override=None, ctxs=None):
         """ Perform an instruction by mapping it to a semantics """
-        result = None
         if ctxs is None:
             # TODO: finish this
             ctxs = ContextContainer.build()
         try:
             semantics, struct = self.retrieve(instruction, data=data, override=override)
+            assert(semantics is not None)
+            # TODO use lookup hooks
             self._run_entry_hooks(semantics, struct, instruction, ctxs, data)
             # run the semantics
+            # Abstractions don't necessarily need a struct
             if isinstance(semantics, AbstractionSemantics):
-                assert(struct is None)
                 semantics(instruction, ctxs, self, data=data)
             else:
+                # but dependent semantics do
                 assert(struct is not None)
                 semantics(struct, instruction, data=data, ctxs=ctxs)
         except AcabSemanticException as err:
+            # Semantic exceptions can be handled,
+            # but others continue upwards
             self.failure(semantics, struct, instruction, ctxs, data, err)
         finally:
+            # Always run exit hooks
             self._run_exit_hooks(semantics, struct, instruction, ctxs, data)
-            return ctxs
+
+        return ctxs
 
 @dataclass
 class DependentSemantics(metaclass=abc.ABCMeta):
@@ -196,5 +206,5 @@ class AbstractionSemantics(metaclass=abc.ABCMeta):
     def verify(self, instruction):
         pass
     @abc.abstractmethod
-    def __call__(self, instruction, ctxCon, semMap, data=None):
+    def __call__(self, instruction, ctxCon, semSys, data=None):
         pass
