@@ -11,9 +11,19 @@ from acab.modules.semantics.context_container import MutableContextInstance
 CtxIns = 'ContextInstance'
 
 # Primary Abstractions:
+class QueryAbstraction(SI.AbstractionSemantics):
+    """
+    Very simply accumulate results of multiple sentences of queries
+    """
+    def __call__(self, instruction, ctxCon, semSys, data=None):
+        query = instruction
+        for clause in query.clauses:
+            semSys(clause, data=data, ctxs=ctxCon)
+
+
 class TransformAbstraction(SI.AbstractionSemantics):
     """ Takes a context, returns a changed context """
-    def __call__(self, instruction, ctxCon, semMap, data=None):
+    def __call__(self, instruction, ctxCon, semSys, data=None):
         # Note: run *all* the transform clauses at once,
         # To minimise redundent new ctxs
         # runs on a single active ctx
@@ -32,16 +42,15 @@ class TransformAbstraction(SI.AbstractionSemantics):
 
 class ActionAbstraction(SI.AbstractionSemantics):
     """ *Consumes* a context, performing all actions in it """
-    def __call__(self, instruction, ctxCon, semMap, data=None):
-        operators = ctxCon.operators
-        # TODO instruction might actually be ctx._continuation
+    def __call__(self, instruction, ctxCon, semSys, data=None):
+        operators = ctxCon._operators
         action    = instruction
         ctx       = ctxCon.pop()
 
         for clause in action.clauses:
             op     = operators[clause.op]
-            params = [mutable_ctx[x] for x in clause.params]
-            result = op(*params, data=clause.data)
+            params = [ctx[x] for x in clause.params]
+            result = op(*params, data=clause.data, semSystem=semSys)
 
 
 
@@ -74,6 +83,7 @@ class SteppedRuleAbstraction(SI.AbstractionSemantics):
 
     def __call__(self, instruction, ctxCon, semMap, data=None):
         """ Rule Logic, returns action proposals """
+        rule = instruction
         # TODO Possibly setup a temp ctxCon
 
         # Run the query
@@ -84,19 +94,31 @@ class SteppedRuleAbstraction(SI.AbstractionSemantics):
             return
 
         # TODO bind transform and actions to instances
+        for ctx in ctxCon.active_list:
+            ctx.set_continuation(instruction)
 
-        raise NotImplemented()
 
     def run_continuation(self, instruction, ctxCon, semMap, data=None):
         # TODO this might be _continuation of each ctx
-        rule = instruction
+        limited_container = ContextContainer.build()
+        limited_container.pop()
+        for ctx in ctxCon.active_list():
+            limited_container.push(ctx)
+            cont = ctx.continuation
 
-        # TODO will need to handle each individual ctx
-        if PConst.TRANSFORM_V in rule:
-            transformed = semMap(rule[PConst.TRANSFORM_V], data=data, ctxs=ctxCon)
+            # TODO will need to handle each individual ctx
+            if PConst.TRANSFORM_V in cont:
+                transformed = semMap(cont[PConst.TRANSFORM_V],
+                                     data=data,
+                                     ctxs=limited_container)
 
-        if PConst.ACTION_V in rule:
-            semMap.run(rule[PConst.ACTION_V], data=data, ctxs=ctxCon)
+            if PConst.ACTION_V in rule:
+                semMap.run(cont[PConst.ACTION_V],
+                           data=data,
+                           ctxs=limited_container)
+
+            ctxCon.merge(limited_container)
+            ctxCon.clear()
 
 
 # Secondary Abstractions:
@@ -169,9 +191,7 @@ class TemporalPipelineAbstraction(SI.AbstractionSemantics):
 class ContainerAbstraction(SI.AbstractionSemantics):
     def __call__(self, instruction, ctxCon, semMap, data=None):
         """ Apply the clauses in one move """
-        ctxs = ProdSem._initial_ctx_construction(ctxs)
-
-        for x in container.clauses:
-            ctxs = ProdSem.run(x, ctxs)
+        for x in instruction.clauses:
+            ctxs = semMap(x, ctxs=ctxCon, data=data)
 
         return ctxs
