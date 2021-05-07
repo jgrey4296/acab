@@ -27,11 +27,13 @@ import logging
 import acab
 config       = acab.setup()
 
+from acab.error.acab_base_exception import AcabBaseException
 from acab.error.acab_semantic_exception import AcabSemanticException
 from acab.abstract.core.values import AcabValue, Sentence
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.acab_struct import BasicNodeStruct
-from acab.abstract.core.production_abstractions import ProductionComponent, ProductionContainer
+from acab.abstract.core.production_abstractions import ProductionComponent, ProductionContainer, ActionOperator
+from acab.abstract.interfaces.semantic_interfaces import SemanticSystem, AbstractionSemantics
 from acab.modules.semantics.independent import BasicNodeSemantics, ExclusionNodeSemantics
 from acab.modules.semantics.dependent import BreadthTrieSemantics
 from acab.modules.semantics.context_container import ContextContainer, ContextInstance, ConstraintCollection
