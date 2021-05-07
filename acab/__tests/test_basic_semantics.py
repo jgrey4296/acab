@@ -465,32 +465,83 @@ class AbstractionSemanticTests(unittest.TestCase):
         self.assertEqual(result['$y'].value, "tESt")
 
 
-    def test_action(self):
+    def test_action_simple(self):
+        """
+        Test a simple action with simple side effect
+        test sem_system use later
+        """
+        side_effect_obj = {"a" : 1}
+
+        class TestAction(ActionOperator):
+            def __call__(self, *params, data=None, semSystem=None):
+                side_effect_obj['a'] = 2
+
+
         # Build Semantics
-
-        # Build Struct
-
-        # Build Context
-
+        sem = ASem.ActionAbstraction()
+        # Context Container for operators
+        op_loc_path   = Sentence.build(["action"])
+        operator_instance   = TestAction()
+        op_ctx        = ContextInstance(data={str(op_loc_path): operator_instance})
+        ctx_container = ContextContainer.build(op_ctx)
         # Build Action
-
+        clause = ProductionComponent("Test Action Clause",
+                                     op_loc_path,
+                                     [])
+        action = ProductionContainer("TestAction", [])
+        action.clauses.append(clause)
         # Run action on context with semantics
-
+        sem(action, ctx_container, None)
         # Check side effects
+        self.assertEqual(side_effect_obj['a'], 2)
 
-        pass
+    def test_action_with_params(self):
+        """
+        Test a simple action with simple side effect
+        test sem_system use later
+        """
+        side_effect_obj = {"a" : 1}
+
+        class TestAction(ActionOperator):
+            def __call__(self, *params, data=None, semSystem=None):
+                side_effect_obj['a'] = params[0]
 
 
-    def test_container(self):
         # Build Semantics
+        sem = ASem.ActionAbstraction()
+        # Context Container for operators
+        op_loc_path   = Sentence.build(["action"])
+        operator_instance   = TestAction()
+        op_ctx        = ContextInstance(data={str(op_loc_path): operator_instance})
+        ctx_container = ContextContainer.build(op_ctx)
+        # Build Action
+        clause = ProductionComponent("Test Action Clause",
+                                     op_loc_path,
+                                     [AcabValue.safe_make("awef")])
+        action = ProductionContainer("TestAction", [])
+        action.clauses.append(clause)
+        # Run action on context with semantics
+        sem(action, ctx_container, None)
+        # Check side effects
+        self.assertEqual(side_effect_obj['a'], "awef")
 
+
+    @unittest.skip
+    def test_container(self):
+        # TODO create a stub abssem for the system
+        # Build Semantics
+        semSys = SemanticSystem(None, None)
+        consem = ContainerAbstraction()
+        ctx_container = ContextContainer.build()
         # Build Container
+        container = ProductionContainer()
 
         # run each element of container with semantics
+        consem(container, ctx_container, semSys)
 
         # check result
 
-        pass
+
 
     def test_rule(self):
         node_sem = BasicNodeSemantics()
