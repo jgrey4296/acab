@@ -577,10 +577,31 @@ class AbstractionSemanticTests(unittest.TestCase):
 
 class SemanticSystemTests(unittest.TestCase):
 
+    class StubAbsSemantic(AbstractionSemantics):
+        def __call__(self, ins, ctxCon, semSys, data=None):
+            raise AcabBaseException("TestAbsSem called")
+
     def test_construction(self):
+        semsys = SemanticSystem(SemanticSystemTests.StubAbsSemantic(), None)
+        self.assertIsInstance(semsys, SemanticSystem)
+        self.assertIsInstance(semsys.base, AbstractionSemantics)
+        self.assertFalse(semsys.mapping)
+        self.assertFalse(semsys.structs)
+
+    def test_default_call(self):
+        semsys = SemanticSystem(SemanticSystemTests.StubAbsSemantic(), None)
+        with self.assertRaises(AcabBaseException) as cm:
+            semsys(Sentence.build(["test"]))
+
+        self.assertEqual(cm.exception._str, "TestAbsSem called")
+
+    def test_retrieval(self):
+        # put some semantics in semsys.mapping
         pass
 
-    # setup base
-    # setup mapping and structs
-    # test retrieve
-    # test call with different instructions
+    def test_failure(self):
+        # put a callable in failure
+        pass
+
+    def test_hooks(self):
+        pass
