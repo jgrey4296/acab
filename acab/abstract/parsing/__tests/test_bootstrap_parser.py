@@ -12,8 +12,8 @@ logging = root_logger.getLogger(__name__)
 
 import pyparsing as pp
 
-from acab.abstract.config.config import AcabConfig
-AcabConfig.Get("acab/abstract/config")
+import acab
+acab.setup()
 
 from acab.abstract.core.values import AcabValue
 from acab.abstract.parsing.bootstrap_parser import BootstrapParser

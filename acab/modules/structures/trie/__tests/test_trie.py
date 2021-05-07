@@ -3,8 +3,8 @@ from os.path import splitext, split
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
-from acab.abstract.config.config import AcabConfig
-AcabConfig.Get("acab/abstract/config")
+import acab
+acab.setup()
 
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.node import AcabNode

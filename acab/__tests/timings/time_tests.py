@@ -7,8 +7,8 @@ from os.path import split, splitext, expanduser, abspath
 from os import listdir
 import timeit
 
-from acab.abstract.config.config import AcabConfig
-AcabConfig.Get("acab/abstract/config")
+import acab
+acab.setup()
 
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.production_abstractions import ProductionStructure

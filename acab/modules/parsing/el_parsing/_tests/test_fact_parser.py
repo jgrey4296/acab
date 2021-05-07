@@ -6,8 +6,8 @@ logging = root_logger.getLogger(__name__)
 import random
 import pyparsing as pp
 
-from acab.abstract.config.config import AcabConfig
-config = AcabConfig.Get("acab/abstract/config")
+import acab
+config = acab.setup()
 
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.values import AcabValue

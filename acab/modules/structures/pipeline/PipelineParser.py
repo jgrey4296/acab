@@ -41,8 +41,8 @@ Where to specify api connections?
 import logging as root_logger
 import pyparsing as pp
 
-from acab.abstract.config.config import AcabConfig
-AcabConfig.Get("acab/abstract/config")
+import acab
+acab.setup()
 
 from acab.abstract.parsing import parsers as PU
 from acab.abstract.parsing.consts import PIPE_HEAD

@@ -4,8 +4,8 @@ import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
 
-from acab.abstract.config.config import AcabConfig
-config = AcabConfig.Get("acab/abstract/config")
+import acab
+config = acab.setup()
 
 from acab.abstract.parsing.parsers import HOTLOAD_VALUES, VALBIND
 

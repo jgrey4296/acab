@@ -10,9 +10,8 @@ import logging as root_logger
 logging = root_logger.getLogger(__name__)
 ##############################
 
-
-from acab.abstract.config.config import GET
-config = GET("acab/abstract/config")
+import acab
+config = acab.setup()
 
 from acab.abstract.core.values import AcabValue, AcabStatement
 from acab.abstract.core.values import Sentence

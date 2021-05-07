@@ -5,13 +5,13 @@ import unittest
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
-from acab.abstract.config.config import AcabConfig
-CONFIG = AcabConfig.Get("acab/abstract/config")
+import acab
+config = acab.setup()
 
 
 from acab.abstract.core.values import AcabValue, Sentence
 
-BIND_S = CONFIG.value("Value.Structure", "BIND")
+BIND_S = config.value("Value.Structure", "BIND")
 
 def S(*values):
     return Sentence.build(values)

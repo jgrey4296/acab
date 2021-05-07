@@ -6,8 +6,9 @@ import unittest
 import unittest.mock as mock
 
 import logging
-from acab.abstract.config.config import AcabConfig
-config       = AcabConfig.Get("acab/abstract/config")
+
+import acab
+config = acab.setup()
 
 from acab.error.acab_semantic_exception import AcabSemanticException
 from acab.abstract.core.values import AcabValue, Sentence

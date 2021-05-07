@@ -4,15 +4,15 @@ import unittest
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
-from acab.abstract.config.config import AcabConfig
-CONFIG = AcabConfig.Get("acab/abstract/config")
+import acab
+config = acab.setup()
 
 from acab.abstract.core.values import AcabValue, AcabStatement
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.node import AcabNode
 
-AT_BIND_S = CONFIG.value("Value.Structure", "AT_BIND")
-BIND_S    = CONFIG.value("Value.Structure", "BIND")
+AT_BIND_S = config.value("Value.Structure", "AT_BIND")
+BIND_S    = config.value("Value.Structure", "BIND")
 
 class AcabValueTests(unittest.TestCase):
 

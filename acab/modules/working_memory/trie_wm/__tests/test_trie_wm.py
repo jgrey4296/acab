@@ -6,8 +6,8 @@ logging = root_logger.getLogger(__name__)
 # https://docs.python.org/3/library/unittest.mock.html
 import unittest.mock as mock
 
-from acab.abstract.config.config import AcabConfig
-AcabConfig.Get("acab/abstract/config")
+import acab
+acab.setup()
 
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
