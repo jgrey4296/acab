@@ -458,7 +458,7 @@ class AbstractionSemanticTests(unittest.TestCase):
 
         transform = ProductionContainer("Test Transform Clause", [])
         transform.clauses.append(clause)
-        # Run Transform on context
+        # Run Transform on context, don't need a semantic system yet, thus None
         sem(transform, ctx_container, None)
         # Check result
         result = ctx_container.pop()
