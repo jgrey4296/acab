@@ -7,40 +7,36 @@ Abstraction
 System
 Component
 """
-
-# https://docs.python.org/3/library/unittest.html
-# https://docs.python.org/3/library/unittest.mock.html
-
-# Component: Listener/Logger/Failure/Query
-
-# TODO mid-sentence semantics switch for dependent (trie -> FSM)
-# Or can semantics only switch between sentences?
-
-# TODO test entry/exit hooks
-
-from os.path import splitext, split
-
+import logging
 import unittest
 import unittest.mock as mock
+from os.path import split, splitext
 
-import logging
 import acab
 config       = acab.setup()
 
+import acab.modules.semantics.abstractions as ASem
+from acab.abstract.core.acab_struct import BasicNodeStruct
+from acab.abstract.core.node import AcabNode
+from acab.abstract.core.production_abstractions import (ProductionOperator,
+                                                        ActionOperator,
+                                                        ProductionComponent,
+                                                        ProductionContainer)
+from acab.abstract.core.values import AcabValue, Sentence
+from acab.abstract.interfaces.semantic_interfaces import (AbstractionSemantics,
+                                                          SemanticSystem)
 from acab.error.acab_base_exception import AcabBaseException
 from acab.error.acab_semantic_exception import AcabSemanticException
-from acab.abstract.core.values import AcabValue, Sentence
-from acab.abstract.core.node import AcabNode
-from acab.abstract.core.acab_struct import BasicNodeStruct
-from acab.abstract.core.production_abstractions import ProductionComponent, ProductionContainer, ActionOperator
-from acab.abstract.interfaces.semantic_interfaces import SemanticSystem, AbstractionSemantics
-from acab.modules.semantics.independent import BasicNodeSemantics, ExclusionNodeSemantics
-from acab.modules.semantics.dependent import BreadthTrieSemantics
-from acab.modules.semantics.context_container import ContextContainer, ContextInstance, ConstraintCollection
 from acab.modules.operators.query.query_operators import EQ, NEQ, HasTag
 from acab.modules.operators.transform.transform_operators import RegexOp
-
-import acab.modules.semantics.abstractions as ASem
+from acab.modules.semantics.context_container import (ConstraintCollection,
+                                                      ContextContainer,
+                                                      ContextInstance)
+from acab.modules.semantics.system import BasicSemanticSystem
+from acab.modules.semantics.dependent import BreadthTrieSemantics
+from acab.modules.semantics.independent import (BasicNodeSemantics,
+                                                ExclusionNodeSemantics)
+from acab.modules.semantics.util import SemanticOperatorWrapDecorator
 
 EXOP         = config.value("MODAL", "exop")
 EXOP_enum    = config.modal_enums[EXOP]
@@ -49,6 +45,7 @@ NEGATION_V   = config.value("Value.Structure", "NEGATION")
 BIND         = config.value("Value.Structure", "BIND")
 CONSTRAINT_V = config.value("Value.Structure", "CONSTRAINT")
 
+SEMANTIC_HINT_V = config.value("Value.Structure", "SEMANTIC_HINT")
 # TODO test verify
 
 class IndependentSemanticTests(unittest.TestCase):
@@ -456,8 +453,7 @@ class AbstractionSemanticTests(unittest.TestCase):
                                      ["$x", "es", "ES"],
                                      rebind=rebind_target)
 
-        transform = ProductionContainer("Test Transform Clause", [])
-        transform.clauses.append(clause)
+        transform = ProductionContainer("Test Transform Clause", [clause])
         # Run Transform on context, don't need a semantic system yet, thus None
         sem(transform, ctx_container, None)
         # Check result
@@ -488,8 +484,7 @@ class AbstractionSemanticTests(unittest.TestCase):
         clause = ProductionComponent("Test Action Clause",
                                      op_loc_path,
                                      [])
-        action = ProductionContainer("TestAction", [])
-        action.clauses.append(clause)
+        action = ProductionContainer("TestAction", [clause])
         # Run action on context with semantics
         sem(action, ctx_container, None)
         # Check side effects
@@ -526,21 +521,70 @@ class AbstractionSemanticTests(unittest.TestCase):
         self.assertEqual(side_effect_obj['a'], "awef")
 
 
-    @unittest.skip
     def test_container(self):
-        # TODO create a stub abssem for the system
-        # Build Semantics
-        semSys = SemanticSystem(None, None)
-        consem = ContainerAbstraction()
-        ctx_container = ContextContainer.build()
+        side_effect_obj = {"a" : 1}
+
+        class TestTransform(ProductionOperator):
+            @SemanticOperatorWrapDecorator
+            def __call__(self, *params, data=None):
+                return params[0] + "_blah"
+
+        class TestAction(ActionOperator):
+            def __call__(self, *params, data=None, semSystem=None):
+                side_effect_obj['a'] = params[0]
+
+        class StubAbsSemantic(AbstractionSemantics):
+            def __call__(self, ins, ctxCon, semSys, data=None):
+                raise AcabBaseException("TestAbsSem called")
+
+        def SemHintKey(val, data=None):
+            if SEMANTIC_HINT_V in val.data:
+                return val.data[SEMANTIC_HINT_V]
+
+            return str(val.value)
+
+        transform_sem = ASem.TransformAbstraction()
+        action_sem    = ASem.ActionAbstraction()
+        semSys        = BasicSemanticSystem(StubAbsSemantic(), None,
+                                            mapping={"_:transform" : transform_sem,
+                                                     "_:action"    : action_sem},
+                                            key=SemHintKey)
+
+        consem        = ASem.ContainerAbstraction()
+
+        trans_op_loc_path  = Sentence.build(["transform"])
+        action_op_loc_path = Sentence.build(["action"])
+        op_ctx             = ContextInstance(data={str(trans_op_loc_path): TestTransform(),
+                                                  str(action_op_loc_path): TestAction()})
+        ctx_container      = ContextContainer.build(op_ctx)
+
+        init_ctx = ctx_container.pop()
+        updated_ctx = init_ctx.bind_dict({
+            "$x" : AcabValue.safe_make("test")
+        })
+        ctx_container.push(updated_ctx)
         # Build Container
-        container = ProductionContainer()
+        rebind_target    = AcabValue.safe_make("y", data={BIND: True})
+        transform_clause = ProductionComponent("transform test",
+                                               trans_op_loc_path,
+                                               ["$x"],
+                                               rebind=rebind_target)
+        action_clause    = ProductionComponent("Test Action Clause",
+                                               action_op_loc_path,
+                                               ["$y"])
+        container        = ProductionContainer("mixed_container",
+                                               [ProductionContainer("transform", [transform_clause],
+                                                                    data={SEMANTIC_HINT_V: "_:transform"}),
+                                                ProductionContainer("action", [action_clause],
+                                                                    data={SEMANTIC_HINT_V: "_:action"})])
+
 
         # run each element of container with semantics
         consem(container, ctx_container, semSys)
 
         # check result
-
+        # orig val "test" + transform "_blah" into side effect obj "a"
+        self.assertEqual(side_effect_obj["a"], "test_blah")
 
 
     def test_rule(self):
@@ -633,16 +677,17 @@ class SemanticSystemTests(unittest.TestCase):
             raise AcabBaseException("TestAbsSem called")
 
     def test_construction(self):
-        semsys = SemanticSystem(SemanticSystemTests.StubAbsSemantic(), None)
+        semsys = BasicSemanticSystem(SemanticSystemTests.StubAbsSemantic(), None)
         self.assertIsInstance(semsys, SemanticSystem)
         self.assertIsInstance(semsys.base, AbstractionSemantics)
         self.assertFalse(semsys.mapping)
         self.assertFalse(semsys.structs)
 
     def test_default_call(self):
-        semsys = SemanticSystem(SemanticSystemTests.StubAbsSemantic(), None)
+        semsys = BasicSemanticSystem(SemanticSystemTests.StubAbsSemantic(), None)
+        test_sen = Sentence.build(["test"])
         with self.assertRaises(AcabBaseException) as cm:
-            semsys(Sentence.build(["test"]))
+            semsys(test_sen)
 
         self.assertEqual(cm.exception._str, "TestAbsSem called")
 
