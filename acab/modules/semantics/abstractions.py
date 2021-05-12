@@ -72,10 +72,10 @@ class AtomicRuleAbstraction(SI.AbstractionSemantics):
 
         # TODO needs to be applied to all actives
         if PConst.TRANSFORM_V in rule:
-            semMap.run(rule[PConst.TRANSFORM_V], data=data, ctxs=ctxCon)
+            semMap(rule[PConst.TRANSFORM_V], data=data, ctxs=ctxCon)
 
         if PConst.ACTION_V in rule:
-            semMap.run(rule[PConst.ACTION_V], data=data, ctxs=ctxCon)
+            semMap(rule[PConst.ACTION_V], data=data, ctxs=ctxCon)
 
 class SteppedRuleAbstraction(SI.AbstractionSemantics):
     """ Run a rules queries, then return ctxs bound
