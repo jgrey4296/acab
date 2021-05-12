@@ -1,82 +1,79 @@
 #!/usr/bin/env python3
 # Main System
+from typing import List, Set, Dict, Tuple, Optional, Any
+from typing import Callable, Iterator, Union, Match
+from typing import Mapping, MutableMapping, Sequence, Iterable
+from typing import cast, ClassVar, TypeVar, Generic
+
+from dataclasses import dataclass, field, InitVar
+
+from acab.abstract.config.config import AcabConfig
+from acab.abstract.interfaces.semantic_interfaces import (SemanticSystem,
+                                                          SemanticRetrievedPair,
+                                                          AbstractionSemantics)
+from acab.error.acab_semantic_exception import AcabSemanticException
+from acab.modules.semantics.context_container import ContextContainer
+
+Sentence = 'Sentence'
+
+
+config  = AcabConfig.Get()
+# VAL   = config.value("SECTION", "NAME")
+# PROXY = config.prepare("SECTION", "NAME")
 
 @dataclass
-class SemanticSystem(Generic[T], metaclass=abc.ABCMeta):
+class BasicSemanticSystem(SemanticSystem):
     """ A Complete semantic system """
 
+    def __call__(self, instruction, data=None, override=None, ctxs=None) -> Any:
+        """ Perform an instruction by mapping it to a semantics """
+        if ctxs is None: # TODO: finish this
+            ctxs = ContextContainer.build()
+
+        semantics, struct = None, None
+        try:
+            semantics, struct = self.retrieve(instruction, data=data, override=override)
+            assert(semantics is not None)
+            self._run_entry_hooks(semantics, struct, instruction, ctxs, data)
+            # run the semantics
+            # Abstractions don't use structs
+            if isinstance(semantics, AbstractionSemantics):
+                semantics(instruction, ctxs, self, data=data)
+            else:
+                # but dependent semantics do
+                assert(struct is not None)
+                semantics(struct, instruction, data=data, ctxs=ctxs)
+        except AcabSemanticException as err:
+            # Semantic exceptions can be handled,
+            # but others continue upwards
+            self.failure(semantics, struct, instruction, ctxs, data, err)
+        finally: # Always run exit hooks
+            self._run_exit_hooks(semantics, struct, instruction, ctxs, data)
+
+        return ctxs
+
+    def retrieve(self, target: Sentence, data=None, override=None) -> SemanticRetrievedPair:
+        if override is not None: # TODO
+            lookup_key = override
+        else:
+            lookup_key = self.key(target, data=data)
+        semantics  = self.base
+        struct     = None
+        if lookup_key in self.mapping:
+            semantics = self.mapping[lookup_key]
+        if lookup_key in self.structs:
+            struct = self.structs[lookup_key]
+
+        return (semantics, struct)
+
+
+@dataclass
+class GuaranteeSemanticSystem(SemanticSystem):
+    """  """
     # Downward guarantees of what semantics may contextually rely upon
-    guarantees        : Set[Handler]               = field(default_factory=list)
+    guarantees        : Set['Handler']               = field(default_factory=list)
     # Downward expectations of what semantics must publicly provide
-    expectations      : Set[SemanticUnion]         = field(init=False, default_factory=list)
-    # Map a value to a semantics
-    mapping           : Dict[T, SemanticUnion]     = field(default_factory=dict)
-    search_order      : SemSearch                  = field(default_factory=list)
-    # Handler registration
-    handlers          : Dict[str, Handler] = field(default_factory=dict)
+    expectations      : Set['SemanticUnion']         = field(init=False, default_factory=list)
 
-    # The collected interface of all public facing semantics
-    # used for getattr?
-    _interface_union  : Set[str]                   = field(init=False, default_factory=set)
-    # The collected interface of all contextual semantics
-    # used for a ctx_getattr
-    _contextual_union : Set[str]                   = field(init=False, default_factory=set)
-
-    _context_stack : List[Dict[Any,Any]] = field(init=False, default_factory=list)
-
-    def __post_init__(self):
-        # assert a DEFAULT is in mapping
-
-        # set a default search order if empty
-
-        # interface union and contextual union
-
-        # verify all mappings handle required interface
-        for semantics in self.mapping.values():
-            # TODO and check guarantees satisfy semantics' expectations
-            # assert(not difference(semantics.expectations, self.guarantees))
-            assert(all([isinstance(semantics, x) for x in self.expectations]))
-
-    def __call__(self, instruction) -> Any:
-        # push to context stack
-        # Run entry hooks, add result to context stack
-        # try:
-        ## Get semantic instance from mapping
-        ## perform instruction
-        # run exit hooks
-        # pop context stack
-        pass
-
-    def retrieve(self, T) -> SemanticUnion:
-        """ Get a mapped semantics, using the search order """
-        chosen: SemanticUnion = self.bottom_semantic
-        descendents_to_update = []
-        # search_order: List[Callable[[AcabPrintSemantics, Printable], Optional[SemanticSpec]]] = []
-        search_order = self._search_order[:]
-
-        for x in search_order:
-            search_f = x
-            if x in self._search_lookup:
-                search_f = self._search_lookup[x]
-
-            assert(callable(search_f))
-            result = search_f(self, current_val)
-            if result is not None:
-                chosen = result
-                break
-
-        # TODO update _type_semantics chain with found bindings from hierarchy
-        #
-        if len(descendents_to_update) > 1:
-            self.mapping.update({x : retrieved for x in descendents_to_update})
-
-        return chosen
-
-    def initialize(self):
-        """ Setup any guarantees of the system """
-        # TODO specify when to setup these
-        pass
-
-    def run_handler(self, h_type: Sentence, *args, **kwargs):
-        """ Call a registered handler """
-        pass
+    def __init__(self):
+        raise NotImplementedError()

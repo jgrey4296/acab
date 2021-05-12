@@ -14,11 +14,14 @@ Meanwhile IndependentSemantics are concerned only with the values and structures
 
 
 """
+
+
 from typing import List, Set, Dict, Tuple, Optional, Any
 from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic
 
+from acab.abstract.config.config import AcabConfig
 from acab.abstract.semantics import util as SemUtil
 from acab.error.acab_semantic_exception import AcabSemanticException
 from acab.modules.semantics.context_container import ContextContainer
@@ -26,29 +29,29 @@ from acab.modules.semantics.context_container import ContextContainer
 import abc
 from dataclasses import dataclass, field
 
-Node          = 'AcabNode'
-Sentence      = 'Sentence'
-Printable     = 'Printable'
-Value         = 'AcabValue'
-Structure     = 'AcabStruct'
-Engine        = 'Engine'
-Contexts      = 'Contexts'
-Handler       = 'SemanticHandler'
-AbsDepSemantics = Tuple['AbstractionSemantics', 'DependentSemantics']
-InDepSemantics = 'IndependentSemantics'
+Node            = 'AcabNode'
+Sentence        = 'Sentence'
+Printable       = 'Printable'
+Value           = 'AcabValue'
+Structure       = 'AcabStruct'
+Engine          = 'Engine'
+Contexts        = 'Contexts'
+Handler         = 'SemanticHandler'
+AbsDepSemantics = Union['AbstractionSemantics', 'DependentSemantics']
+InDepSemantics  = 'IndependentSemantics'
 
-T  = TypeVar('T')
+SemanticRetrievedPair   = Tuple[AbsDepSemantics, Structure]
 
-def default_key(node:Node, data:Dict[Any,Any]=None) -> str:
+# Note: for dependent and indep, you retrieve semantics of a node,
+# for *abstractions*, you're getting the semantics of a *sentence*
+def default_key(node:Any, data:Dict[Any,Any]=None) -> str:
     return str(node.value)
 
 def default_failure(semantics, struct, instruction, ctxs, data, err):
     logging.warning("Default Failure: {}".format(err))
 
-def example_hook(semantics, struct: Structure, instruction: Sentence, ctxs, data=None):
+def example_hook(semSystem, semantics, struct: Structure, instruction: Sentence, ctxs, data=None):
     pass
-
-
 
 
 
@@ -61,73 +64,46 @@ class SemanticSystem(metaclass=abc.ABCMeta):
     # If no applicable semantics found, use default
     base        : AbsDepSemantics                      = field()
     base_struct : Structure                            = field()
-    base_hooks  : Tuple[List[Handler], List[Handler]] = field(default_factory=tuple)
+    base_hooks  : Tuple[List[Handler], List[Handler]]  = field(default_factory=tuple)
     # str/iden -> Semantics
     mapping : Dict[str, AbsDepSemantics]                     = field(default_factory=dict)
     structs : Dict[str, Structure]                           = field(default_factory=dict)
     hooks   : Dict[str, Tuple[List[Handler], List[Handler]]] = field(default_factory=dict)
     # sentence -> iden func to determine appropriate semantics
-    key     : Callable[[T, Dict[Any,Any]], str]   = field(default=default_key)
+    key     : Callable[[Any, Dict[Any,Any]], str]   = field(default=default_key)
     #
     failure : Callable                            = field(default=default_failure)
 
-
     def __post_init__(self):
-        if not bool(self.hooks):
-            self.hooks = ([], [])
-
         # TODO init any semantics or structs passed in as Class's
+        pass
 
     def _run_entry_hooks(self, semantics, struct, instruction, ctxs, data):
-        for hook in self.hooks[0]:
-            hook(semantics, struct, instruction, ctxs, data)
+        the_key = self.key(instruction, data=data)
+        if the_key not in self.hooks:
+            return
+
+        hooks = self.hooks[the_key][0]
+        for hook in hooks:
+            hook(self, semantics, struct, instruction, ctxs, data)
 
     def _run_exit_hooks(self, semantics, struct, instruction, ctxs, data):
-        for hook in self.hooks[1]:
-            hook(semantics, struct, instruction, ctxs, data)
+        the_key = self.key(instruction, data=data)
+        if the_key not in self.hooks:
+            return
 
+        hooks = self.hooks[the_key][1]
+        for hook in hooks:
+            hook(self, semantics, struct, instruction, ctxs, data)
 
-    def retrieve(self, target: Sentence, data=None, override=None):
-        lookup_key = self.key(target, data=data)
-        if override is not None:
-            # TODO
-            lookup_key = override
-        semantics  = self.base
-        struct     = None
-        if lookup_key in self.mapping:
-            semantics = self.mapping[lookup_key]
-        if lookup_key in self.structs:
-            struct = self.structs[lookup_key]
+    @abc.abstractmethod
+    def retrieve(self, target: Sentence, data=None, override=None) -> SemanticRetrievedPair:
+        pass
 
-        return (semantics, struct)
+    @abc.abstractmethod
+    def __call__(self, instruction, data=None, override=None, ctxs=None) -> Contexts:
+        pass
 
-    def __call__(self, instruction, data=None, override=None, ctxs=None):
-        """ Perform an instruction by mapping it to a semantics """
-        if ctxs is None:
-            # TODO: finish this
-            ctxs = ContextContainer.build()
-        try:
-            semantics, struct = self.retrieve(instruction, data=data, override=override)
-            assert(semantics is not None)
-            # TODO use lookup hooks
-            self._run_entry_hooks(semantics, struct, instruction, ctxs, data)
-            # run the semantics
-            # Abstractions don't necessarily need a struct
-            if isinstance(semantics, AbstractionSemantics):
-                semantics(instruction, ctxs, self, data=data)
-            else:
-                # but dependent semantics do
-                assert(struct is not None)
-                semantics(struct, instruction, data=data, ctxs=ctxs)
-        except AcabSemanticException as err:
-            # Semantic exceptions can be handled,
-            # but others continue upwards
-            self.failure(semantics, struct, instruction, ctxs, data, err)
-        finally:
-            # Always run exit hooks
-            self._run_exit_hooks(semantics, struct, instruction, ctxs, data)
-
-        return ctxs
 
 @dataclass
 class DependentSemantics(metaclass=abc.ABCMeta):
@@ -171,10 +147,11 @@ class IndependentSemantics(metaclass=abc.ABCMeta):
     Independent Semantics which operate on values and nodes, without
     requiring access to larger context, or engine access
     """
+    @abc.abstractmethod
     def make(self, val: Value, data:Dict[Any,Any]=None) -> Node:
         """ Take a value, and return a node, which has been up'd """
         pass
-
+    @abc.abstractmethod
     def up(self, node: Node, data=None) -> Node:
         """ Take ANY node, and add what is needed
         to use for this semantics """
@@ -183,13 +160,16 @@ class IndependentSemantics(metaclass=abc.ABCMeta):
     def down(self, node: Node, data=None) -> Value:
         return node.value
 
+    @abc.abstractmethod
     def access(self, node: Node, term: Value, data:Dict[Any,Any]=None) -> List[Node]:
         """ Can node A reach the given term """
         pass
 
+    @abc.abstractmethod
     def insert(self, node: Node, new_node: Node, data:Dict[Any,Any]=None) -> Node:
         pass
 
+    @abc.abstractmethod
     def remove(self, node: Node, term: Value, data:Dict[Any,Any]=None) -> Optional[Node]:
         pass
 
