@@ -124,7 +124,8 @@ def build_clause(toks):
         data[PConst.QUERY_FALLBACK_S] = toks[PConst.QUERY_FALLBACK_S][:]
 
 
-    return toks[0].data.update(data)
+    toks[0].data.update(data)
+    return toks
 
 def build_query(toks):
     query = ProductionContainer(value=toks[:],
