@@ -4,6 +4,8 @@ from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic
 
+from dataclasses import dataclass, field, InitVar
+
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
