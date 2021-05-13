@@ -36,11 +36,6 @@ class NodeInterface(metaclass=abc.ABCMeta):
         """ Called by a semantics for passing through a node """
         pass
 
-
-
-
-
-
     @abc.abstractmethod
     def add_child(self, node) -> Node:
         pass

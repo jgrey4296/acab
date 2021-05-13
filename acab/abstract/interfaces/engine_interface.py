@@ -10,9 +10,9 @@ from dataclasses import dataclass, field
 from acab.abstract.parsing.bootstrap_parser import BootstrapParser
 from acab.abstract.interfaces.dsl_interface import DSL_Interface
 
-ModuleType = 'Module'
-Parser = 'Parser'
-Sentence = 'Sentence'
+ModuleType   = 'Module'
+Parser       = 'Parser'
+Sentence     = 'Sentence'
 DSL_Fragment = 'DSL_Fragment'
 
 @dataclass
