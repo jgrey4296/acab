@@ -27,30 +27,34 @@ class TransformAbstraction(SI.AbstractionSemantics):
         # Note: run *all* the transform clauses at once,
         # To minimise redundent new ctxs
         # runs on a single active ctx
+
+        # TODO: operators might actually come from semSys
         operators   = ctxCon._operators
         transform   = instruction
-        ctx         = ctxCon.pop()
-        mutable_ctx = MutableContextInstance.build(ctx)
-        for clause in transform.clauses:
-            op     = operators[clause.op]
-            params = [mutable_ctx[x] for x in clause.params]
-            result = op(*params, data=clause.data)
-            mutable_ctx[clause.rebind] = result
+        for ctxIns in ctxCon.active_list(clear=True):
+            # TODO make this a context manager?
+            mutx = MutableContextInstance.build(ctxIns)
+            for clause in transform.clauses:
+                op     = operators[clause.op]
+                params = [mutx[x] for x in clause.params]
+                result = op(*params, data=clause.data)
+                mutx[clause.rebind] = result
 
-        # bind ctx with results
-        ctxCon.push(mutable_ctx.finish())
+            # bind ctx with results
+            # TODO move this inside mutablecontextinstance
+            ctxCon.push(mutx.finish())
 
 class ActionAbstraction(SI.AbstractionSemantics):
     """ *Consumes* a context, performing all actions in it """
     def __call__(self, instruction, ctxCon, semSys, data=None):
         operators = ctxCon._operators
         action    = instruction
-        ctx       = ctxCon.pop()
 
-        for clause in action.clauses:
-            op     = operators[clause.op]
-            params = [ctx[x] for x in clause.params]
-            result = op(*params, data=clause.data, semSystem=semSys)
+        for ctx in ctxCon.active_list(clear=True):
+            for clause in action.clauses:
+                op     = operators[clause.op]
+                params = [ctx[x] for x in clause.params]
+                result = op(*params, data=clause.data, semSystem=semSys)
 
 
 
