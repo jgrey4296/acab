@@ -12,12 +12,13 @@ from dataclasses import InitVar, dataclass, field, replace
 from uuid import uuid1, UUID
 
 from acab.abstract.config import GET
+import acab.abstract.interfaces.context_interface as CtxInt
 from acab.abstract.core.production_abstractions import ProductionComponent
+from acab.modules.semantics.constraints import ConstraintCollection
 import acab.error.acab_semantic_exception as ASErr
 
 config = GET()
 CONSTRAINT_S = config.value("Parse.Structure", "CONSTRAINT")
-
 
 CtxIns      = 'ContextInstance'
 Constraints = 'ConstraintCollection'
@@ -226,7 +227,7 @@ class ContextContainer():
         """
         run a word's tests on available nodes, with an instance
         """
-        constraints : ConstraintCollection = ConstraintCollection.build(word, self._operators)
+        constraints : Constraints = ConstraintCollection.build(word, self._operators)
         assert(len(possible) == 1 or constraints._bind)
         successes = []
 
@@ -291,8 +292,10 @@ class ContextContainer():
         raise NotImplementedError()
 
 
+    def merge(self, ctxCon):
+        raise NotImplementedError()
 @dataclass
-class ContextInstance():
+class ContextInstance(CtxInt.ContextInstance):
 
     data         : Dict[Any, Any]  = field(default_factory=dict)
     nodes        : Dict[Any, Node] = field(default_factory=dict)
@@ -362,6 +365,9 @@ class ContextInstance():
 
 
         return merged_instance
+
+    def set_continuation(self, instruction):
+        self._continuation = instruction
 
     def continuation(self):
         # Run the continuation (eg: run the transform and action of a rule)
