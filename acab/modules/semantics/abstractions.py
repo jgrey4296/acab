@@ -18,6 +18,7 @@ class QueryAbstraction(SI.AbstractionSemantics):
     def __call__(self, instruction, ctxCon, semSys, data=None):
         query = instruction
         for clause in query.clauses:
+            # TODO ensure system selects the dep sems and struct
             semSys(clause, data=data, ctxs=ctxCon)
 
 

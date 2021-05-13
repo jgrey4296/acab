@@ -43,6 +43,8 @@ MODULE_SPLIT_REG = compile(config.value("Parse.Patterns", "MODULE_SPLIT_REG"))
 class Engine(EI.RewindEngineInterface, EI.ModuleLoaderInterface, EI.DSLBuilderInterface):
     """ The Abstract class of a production system engine. """
 
+    # TODO: add *parser* entry and *semantic* entry
+
     # Blocks engine use until build_DSL has been called
     _wm_constructor : Callable           = field(init=False)
     _working_memory : StructureInterface = field(init=False)
