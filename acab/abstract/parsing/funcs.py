@@ -17,8 +17,15 @@ from acab.abstract.core.production_abstractions import ProductionContainer, Prod
 logging = root_logger.getLogger(__name__)
 
 config = AcabConfig.Get()
-SEMANTIC_HINT_V = config.value("Value.Structure", "SEMANTIC_HINT")
+SEMANTIC_HINT_V    = config.value("Value.Structure", "SEMANTIC_HINT")
 
+QUERY_SEM_HINT     = Sentence.build([config.value("SEMANTICS", "QUERY")])
+ACTION_SEM_HINT    = Sentence.build([config.value("SEMANTICS", "ACTION")])
+TRANSFORM_SEM_HINT = Sentence.build([config.value("SEMANTICS", "TRANSFORM")])
+RULE_SEM_HINT      = Sentence.build([config.value("SEMANTICS", "RULE")])
+AGENDA_SEM_HINT    = Sentence.build([config.value("SEMANTICS", "AGENDA")])
+LAYER_SEM_HINT     = Sentence.build([config.value("SEMANTICS", "LAYER")])
+PIPELINE_SEM_HINT  = Sentence.build([config.value("SEMANTICS", "PIPELINE")])
 
 def make_value(toks):
     """ Make a value coupled with additional data """
@@ -129,7 +136,7 @@ def build_clause(toks):
 
 def build_query(toks):
     query = ProductionContainer(value=toks[:],
-                                data={SEMANTIC_HINT_V: "_:query"})
+                                data={SEMANTIC_HINT_V: QUERY_SEM_HINT})
     return (PConst.QUERY_S, query)
 
 def build_assignment(toks):
@@ -152,7 +159,7 @@ def build_action(toks):
                else ProductionComponent(value=Sentence.build([PConst.DEFAULT_ACTION_S]), params=[x]) for x in toks]
 
     act = ProductionContainer(value=clauses,
-                              data={SEMANTIC_HINT_V : "_:action"})
+                              data={SEMANTIC_HINT_V : ACTION_SEM_HINT})
 
     return (act.type, act)
 
@@ -176,10 +183,10 @@ def build_transform_component(toks):
 
 def build_transform(toks):
     trans = ProductionContainer(value=toks[:],
-                                data={SEMANTIC_HINT_V : "_:transform"})
+                                data={SEMANTIC_HINT_V : TRANSFORM_SEM_HINT})
     return (PConst.TRANSFORM_S, trans)
 
-def build_rule(toks):
+def build_rule(toks, sem_hint=None):
 
     # Get Conditions
     if PConst.QUERY_S in toks:
@@ -208,22 +215,23 @@ def build_rule(toks):
         PConst.ACTION_S : a
         }
 
-    # TODO add semantic hint
-    rule = ProductionStructure(structure=structure)
+    if sem_hint is None:
+        sem_hint = RULE_SEM_HINT
+
+
+    rule = ProductionStructure(structure=structure,
+                               data={SEMANTIC_HINT_V: sem_hint})
     return (rule.type, rule)
 
 def make_agenda(toks):
-    # TODO set semantic hint
-    rule_type_str, as_rule = build_rule(toks)
+    rule_type_str, as_rule = build_rule(toks, sem_hint=AGENDA_SEM_HINT)
     return  (PConst.AGENDA_S, as_rule)
 
 def make_layer(toks):
-    # TODO set semantic hint
-    rule_type_str, as_rule = build_rule(toks)
+    rule_type_str, as_rule = build_rule(toks, sem_hint=LAYER_SEM_HINT)
     return  (PConst.LAYER_S, as_rule)
 
 
 def make_pipeline(toks):
-    # TODO set semantic hint
-    rule_type_str, as_rule = build_rule(toks)
+    rule_type_str, as_rule = build_rule(toks, sem_hint=PIPELINE_SEM_HINT)
     return  (PConst.PIPELINE_S, as_rule)
