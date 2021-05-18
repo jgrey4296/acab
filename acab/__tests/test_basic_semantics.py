@@ -48,14 +48,3 @@ CONSTRAINT_V = config.value("Value.Structure", "CONSTRAINT")
 QUERY_V      = config.value("Parse.Structure", "QUERY")
 TRANSFORM_V  = config.value("Parse.Structure", "TRANSFORM")
 ACTION_V     = config.value("Parse.Structure", "ACTION")
-
-SEMANTIC_HINT_V = config.value("Value.Structure", "SEMANTIC_HINT")
-
-QUERY_SEM_HINT     = Sentence.build([config.value("SEMANTICS", "QUERY")])
-ACTION_SEM_HINT    = Sentence.build([config.value("SEMANTICS", "ACTION")])
-TRANSFORM_SEM_HINT = Sentence.build([config.value("SEMANTICS", "TRANSFORM")])
-RULE_SEM_HINT      = Sentence.build([config.value("SEMANTICS", "RULE")])
-AGENDA_SEM_HINT    = Sentence.build([config.value("SEMANTICS", "AGENDA")])
-LAYER_SEM_HINT     = Sentence.build([config.value("SEMANTICS", "LAYER")])
-PIPELINE_SEM_HINT  = Sentence.build([config.value("SEMANTICS", "PIPELINE")])
-
