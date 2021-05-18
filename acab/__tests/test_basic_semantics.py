@@ -600,24 +600,81 @@ class AbstractionSemanticTests(unittest.TestCase):
         self.assertEqual(side_effect_obj["a"], "test_blah")
 
 
-    def test_rule(self):
-        node_sem = BasicNodeSemantics()
-        trie_sem = BreadthTrieSemantics(base=node_sem)
-        # rule_sem = RuleAbstraction()
+    def test_atomic_rule(self):
+        side_effect_obj = {"a" : 1}
+
+        class TestAction(ActionOperator):
+            @SemanticOperatorWrapDecorator
+            def __call__(self, *params, data=None, semSystem=None):
+                side_effect_obj['a'] = params[0]
+
+        class StubAbsSemantic(AbstractionSemantics):
+            def __call__(self, ins, ctxCon, semSys, data=None):
+                raise AcabBaseException("TestAbsSem called", str(ins), data)
+
+        def SemHintKey(val, data=None):
+            if SEMANTIC_HINT_V in val.data:
+                return val.data[SEMANTIC_HINT_V]
+
+            return None
+
+        node_sem    = BasicNodeSemantics()
+        trie_sem    = BreadthTrieSemantics(base=node_sem)
+
+        query_sem   = ASem.QueryAbstraction()
+        action_sem  = ASem.ActionAbstraction()
+        rule_sem    = ASem.AtomicRuleAbstraction()
+        trans_sem   = ASem.TransformAbstraction()
+
         trie_struct = BasicNodeStruct.build_default()
+        semSys      = BasicSemanticSystem(trie_sem.query, trie_struct,
+                                          mapping={QUERY_SEM_HINT  : query_sem,
+                                                   ACTION_SEM_HINT : action_sem,
+                                                   TRANSFORM_SEM_HINT: trans_sem,
+                                                   RULE_SEM_HINT   : rule_sem},
+                                          key=SemHintKey)
+
+        action_op_loc_path = Sentence.build(["action"])
+        trans_op_loc_path  = Sentence.build(["regex"])
+        trans_instance     = RegexOp()
+        op_ctx             = ContextInstance(data={str(action_op_loc_path): TestAction(),
+                                                   str(trans_op_loc_path): trans_instance})
+        ctx_container      = ContextContainer.build(op_ctx)
 
         # Construct Rule
-        the_rule = None
+        query_sen = Sentence.build(["a", "test", "x"], data={QUERY_V : True})
+        query_sen[-1].data[BIND_V] = True
 
-        # Set up struct
-        sen = None
-        # trie_sem.insert(trie_struct, sen)
-        # run
-        # result = rule_sem(trie_struct, trie_sem, the_rule)
+        transform_sen = ProductionComponent("transform_test",
+                                            trans_op_loc_path,
+                                            ["$x", "sen", "SEN"],
+                                            rebind=AcabValue.safe_make("y", data={BIND_V: True}))
+        action_sen    = ProductionComponent("Test Action Clause",
+                                            action_op_loc_path,
+                                            ['$y'])
 
-        # Check the result for bindings, and the continuation
+        query     = ProductionContainer("test query", [query_sen], data={SEMANTIC_HINT_V: QUERY_SEM_HINT})
+        transform = ProductionContainer("test transform", [transform_sen], data={SEMANTIC_HINT_V: TRANSFORM_SEM_HINT})
+        action    = ProductionContainer("test action", [action_sen], data={SEMANTIC_HINT_V: ACTION_SEM_HINT})
 
-    def test_atomic_rule(self):
+        the_rule  = ProductionStructure("test rule",
+                                        structure={
+                                            QUERY_V     : query,
+                                            TRANSFORM_V : transform,
+                                            ACTION_V    : action
+                                        },
+                                        data={SEMANTIC_HINT_V: RULE_SEM_HINT})
+
+        # insert a sentence into the struct
+        sen = Sentence.build(["a", "test", "sentence"])
+        trie_sem.insert(trie_struct, sen)
+        # run the rule
+        result = semSys(the_rule, ctxs=ctx_container)
+
+        # Check the result for bindings
+        self.assertEqual(side_effect_obj["a"], "SENtence")
+
+    def test_proxy_rule(self):
         # build semantics
 
         # construct rule
