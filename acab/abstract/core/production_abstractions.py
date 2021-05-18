@@ -203,3 +203,6 @@ class ProductionStructure(ProductionContainer):
         bound_struct = {x: y.bind(data) for x,y in self.structure.items()}
 
         return self.copy(value=bound_clauses, params=bound_params, structure=bound_struct)
+
+    def __contains__(self, key):
+        return key in self.structure
