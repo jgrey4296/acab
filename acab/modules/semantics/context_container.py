@@ -243,7 +243,7 @@ class ContextInstance(CtxInt.ContextInstance):
 
     def set_current_binding(self, word):
         if word.name not in self.nodes:
-            raise AcabSemanticException("No Recognised binding")
+            raise ASErr.AcabSemanticException("No Recognised binding", word)
 
         self.set_current_node(self.nodes[word.name])
         return self
