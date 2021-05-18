@@ -58,7 +58,7 @@ class BasicSemanticSystem(SemanticSystem):
         else:
             lookup_key = self.key(target, data=data)
         semantics  = self.base
-        struct     = None
+        struct     = self.base_struct
         if lookup_key in self.mapping:
             semantics = self.mapping[lookup_key]
         if lookup_key in self.structs:
