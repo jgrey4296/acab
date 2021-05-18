@@ -1,12 +1,4 @@
 #!/usr/bin/env python3
-"""
-Test the basic stack of semantics:
-Independent
-Dependent
-Abstraction
-System
-Component
-"""
 import logging
 import unittest
 import unittest.mock as mock
@@ -59,3 +51,36 @@ AGENDA_SEM_HINT    = Sentence.build([config.value("SEMANTICS", "AGENDA")])
 LAYER_SEM_HINT     = Sentence.build([config.value("SEMANTICS", "LAYER")])
 PIPELINE_SEM_HINT  = Sentence.build([config.value("SEMANTICS", "PIPELINE")])
 
+# TODO test verify
+
+class SemanticSystemTests(unittest.TestCase):
+
+    class StubAbsSemantic(AbstractionSemantics):
+        def __call__(self, ins, ctxCon, semSys, data=None):
+            raise AcabBaseException("TestAbsSem called")
+
+    def test_construction(self):
+        semsys = BasicSemanticSystem(SemanticSystemTests.StubAbsSemantic(), None)
+        self.assertIsInstance(semsys, SemanticSystem)
+        self.assertIsInstance(semsys.base, AbstractionSemantics)
+        self.assertFalse(semsys.mapping)
+        self.assertFalse(semsys.structs)
+
+    def test_default_call(self):
+        semsys = BasicSemanticSystem(SemanticSystemTests.StubAbsSemantic(), None)
+        test_sen = Sentence.build(["test"])
+        with self.assertRaises(AcabBaseException) as cm:
+            semsys(test_sen)
+
+        self.assertEqual(cm.exception._str, "TestAbsSem called")
+
+    def test_retrieval(self):
+        # put some semantics in semsys.mapping
+        pass
+
+    def test_failure(self):
+        # put a callable in failure
+        pass
+
+    def test_hooks(self):
+        pass
