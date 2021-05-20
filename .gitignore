@@ -1,10 +1,2 @@
-*/__pycache__
-flycheck_*
-*.pyc
 log.*
 .log
-.DS_Store
-GPATH
-GRTAGS
-GTAGS
-.dir-locals.el
