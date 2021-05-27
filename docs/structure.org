@@ -1,0 +1,171 @@
+#+TITLE: Structure
+* Acab Initialisation
+#+NAME: Initialisation
+#+begin_src plantuml :results value verbatim :preview t
+python -> acab : import acab
+python -> acab : acab.setup()
+acab -> config : load config files
+config -> ModalConfig : load file modal config
+config -> acab : return singleton
+acab -> python : return singleton
+python ->[ : ready to use acab
+#+end_src
+
+#+RESULTS: Initialisation
+#+begin_example
+               ┌──────┐           ┌────┐            ┌──────┐             ┌───────────┐
+               │python│           │acab│            │config│             │ModalConfig│
+               └──┬───┘           └─┬──┘            └──┬───┘             └─────┬─────┘
+                  │   import acab   │                  │                       │
+                  │ ────────────────>                  │                       │
+                  │                 │                  │                       │
+                  │   acab.setup()  │                  │                       │
+                  │ ────────────────>                  │                       │
+                  │                 │                  │                       │
+                  │                 │ load config files│                       │
+                  │                 │ ─────────────────>                       │
+                  │                 │                  │                       │
+                  │                 │                  │ load file modal config│
+                  │                 │                  │ ──────────────────────>
+                  │                 │                  │                       │
+                  │                 │ return singleton │                       │
+                  │                 │ <─────────────────                       │
+                  │                 │                  │                       │
+                  │ return singleton│                  │                       │
+                  │ <────────────────                  │                       │
+                  │                 │                  │                       │
+ ready to use acab│                 │                  │                       │
+ <─────────────────                 │                  │                       │
+               ┌──┴───┐           ┌─┴──┐            ┌──┴───┐             ┌─────┴─────┐
+               │python│           │acab│            │config│             │ModalConfig│
+               └──────┘           └────┘            └──────┘             └───────────┘
+#+end_example
+* Engine Construction
+#+NAME: Engine Construction
+#+begin_src plantuml :results value verbatim :preview t
+[-> python : Acab Initialised
+python -> acab : import [modules]
+python -> python : customize [modules]
+python -> acab.abstract.engine : init with [modules]
+acab.abstract.engine -> python : return engine instance
+python ->[ : ready for use
+#+end_src
+
+#+RESULTS: Engine Construction
+#+begin_example
+              ┌──────┐                  ┌────┐          ┌────────────────────┐
+              │python│                  │acab│          │acab.abstract.engine│
+              └──┬───┘                  └─┬──┘          └─────────┬──────────┘
+ Acab Initialised│                        │                       │
+ ────────────────>                        │                       │
+                 │                        │                       │
+                 │    import [modules]    │                       │
+                 │ ───────────────────────>                       │
+                 │                        │                       │
+                 │────┐                                           │
+                 │    │ customize [modules]                       │
+                 │<───┘                                           │
+                 │                        │                       │
+                 │               init with [modules]              │
+                 │ ───────────────────────────────────────────────>
+                 │                        │                       │
+                 │             return engine instance             │
+                 │ <───────────────────────────────────────────────
+                 │                        │                       │
+  ready for use  │                        │                       │
+ <────────────────                        │                       │
+              ┌──┴───┐                  ┌─┴──┐          ┌─────────┴──────────┐
+              │python│                  │acab│          │acab.abstract.engine│
+              └──────┘                  └────┘          └────────────────────┘
+#+end_example
+
+* Parser Construction
+#+NAME: Parser Construction
+#+begin_src plantuml :results value verbatim :preview t
+[-> python : Acab Initialised
+python -> acab : import BootStrapParser
+python -> python : build [DSL_Interface] compliant classes: DSLs
+python -> DSLs : ∀dsl ∈ DSLs: dsl.assert_parsers(BootstrapParser)
+note right: register subparsers for other DSLs to use
+python -> DSLs : ∀dsl ∈ DSLs : dsl.query_parsers(BootstrapParser)
+note right: now connect DSLs together
+python ->[ : DSLs ready to use
+note left : typically there will be a root DSL
+#+end_src
+
+#+RESULTS: Parser Construction
+#+begin_example
+               ┌──────┐                                            ┌────┐          ┌────┐
+               │python│                                            │acab│          │DSLs│
+               └──┬───┘                                            └─┬──┘          └─┬──┘
+ Acab Initialised │                                                  │               │
+ ─────────────────>                                                  │               │
+                  │                                                  │               │
+                  │              import BootStrapParser              │               │
+                  │ ─────────────────────────────────────────────────>               │
+                  │                                                  │               │
+                  │────┐                                                             │
+                  │    │ build [DSL_Interface] compliant classes: DSLs               │
+                  │<───┘                                                             │
+                  │                                                  │               │
+                  │         ∀dsl ∈ DSLs: dsl.assert_parsers(BootstrapParser)         │  ╔═══════════════════════════════════════════╗
+                  │ ─────────────────────────────────────────────────────────────────>  ║register subparsers for other DSLs to use ░║
+                  │                                                  │               │  ╚═══════════════════════════════════════════╝
+                  │         ∀dsl ∈ DSLs : dsl.query_parsers(BootstrapParser)         │  ╔═══════════════════════════╗
+                  │ ─────────────────────────────────────────────────────────────────>  ║now connect DSLs together ░║
+                  │                                                  │               │  ╚═══════════════════════════╝
+ DSLs ready to use│  ╔════════════════════════════════════╗          │               │
+ <─────────────────  ║typically there will be a root DSL ░║          │               │
+               ┌──┴──╚════════════════════════════════════╝        ┌─┴──┐          ┌─┴──┐
+               │python│                                            │acab│          │DSLs│
+               └──────┘                                            └────┘          └────┘
+#+end_example
+
+* Engine Use
+#+NAME: Engine Use
+#+begin_src plantuml :results value verbatim :preview t
+[-> user : Acab Initialised\nEngine Constructed\nParsers Built
+user -> engine : load files
+engine -> files : load files
+files -> engine : text
+engine -> parser : pass text
+parser -> parser : convert into sentences
+parser -> engine : return sentences
+engine ->[ : ready to use text
+#+end_src
+
+#+RESULTS: Engine Use
+#+begin_example
+                 ┌────┐          ┌──────┐          ┌─────┐          ┌──────┐                        
+                 │user│          │engine│          │files│          │parser│                        
+                 └─┬──┘          └──┬───┘          └──┬──┘          └──┬───┘                        
+ Acab Initialised  │                │                 │                │                            
+ Engine Constructed│                │                 │                │
+ Parsers Built     │                │                 │                │
+ ──────────────────>                │                 │                │
+                   │                │                 │                │
+                   │   load files   │                 │                │
+                   │ ───────────────>                 │                │
+                   │                │                 │                │
+                   │                │   load files    │                │
+                   │                │ ───────────────>│                │
+                   │                │                 │                │
+                   │                │      text       │                │
+                   │                │ <───────────────│                │
+                   │                │                 │                │
+                   │                │             pass text            │
+                   │                │ ─────────────────────────────────>
+                   │                │                 │                │
+                   │                │                 │                │────┐
+                   │                │                 │                │    │ convert into sentences
+                   │                │                 │                │<───┘
+                   │                │                 │                │
+                   │                │         return sentences         │
+                   │                │ <─────────────────────────────────
+                   │                │                 │                │
+          ready to use text         │                 │                │
+ <───────────────────────────────────                 │                │
+                 ┌─┴──┐          ┌──┴───┐          ┌──┴──┐          ┌──┴───┐
+                 │user│          │engine│          │files│          │parser│
+                 └────┘          └──────┘          └─────┘          └──────┘
+#+end_example
