@@ -1,10 +1,15 @@
-#!/usr/bin/env python3
+#!/opt/anaconda3/envs/acab/bin/python
+import sys
+from os.path import abspath, expanduser
+
+sys.path.append(abspath(expanduser("~/github/acab")))
 import logging
 import unittest
 import unittest.mock as mock
 from os.path import split, splitext
 
 import acab
+
 config = acab.setup()
 
 from acab.abstract.core.acab_struct import BasicNodeStruct
@@ -275,3 +280,7 @@ class TrieSemanticTests(unittest.TestCase):
 
         # check
         pass
+
+
+if __name__ == '__main__':
+    unittest.main()

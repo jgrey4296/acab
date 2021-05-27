@@ -1,10 +1,16 @@
-#!/usr/bin/env python3
+#!/opt/anaconda3/envs/acab/bin/python
+import sys
+from os.path import abspath, expanduser
+
+sys.path.append(abspath(expanduser("~/github/acab")))
+
 import logging
 import unittest
 import unittest.mock as mock
 from os.path import split, splitext
 
 import acab
+
 config = acab.setup()
 
 import acab.modules.semantics.abstractions as ASem
@@ -341,3 +347,7 @@ class AbstractionSemanticTests(unittest.TestCase):
 
         # verify
         pass
+
+
+if __name__ == '__main__':
+    unittest.main()

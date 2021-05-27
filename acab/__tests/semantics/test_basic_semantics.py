@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/opt/anaconda3/envs/acab/bin/python
 """
 Test the basic stack of semantics:
 Independent
@@ -7,6 +7,9 @@ Abstraction
 System
 Component
 """
+from os.path import expanduser, abspath
+import sys
+sys.path.append(abspath(expanduser("~/github/acab")))
 import logging
 import unittest
 import unittest.mock as mock

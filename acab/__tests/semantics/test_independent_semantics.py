@@ -1,4 +1,8 @@
-#!/usr/bin/env python3
+#!/opt/anaconda3/envs/acab/bin/python
+from os.path import expanduser, abspath
+import sys
+sys.path.append(abspath(expanduser("~/github/acab")))
+
 import logging
 import unittest
 import unittest.mock as mock
@@ -154,3 +158,8 @@ class IndependentSemanticTests(unittest.TestCase):
 
     # Dependent  : Trie/FSM/ASP
     # Insert/Remove/Query/Trigger
+
+
+
+if __name__ == '__main__':
+    unittest.main()
