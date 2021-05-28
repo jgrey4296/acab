@@ -34,8 +34,8 @@ TYPE_CLASS_HEAD = s(config.value("Symbols", "TYPE_CLASS", actions=[AcabConfig.ac
 FUNC_HEAD       = s(pp.Word(config.value("Symbols", "FUNC")))
 
 # TODO make these registrations
-TYPE_DEFINITION = Sentence.build([TYPE_DEF_S])
-SUM_DEFINITION = Sentence.build([SUM_DEF_S])
+TYPE_DEFINITION     = Sentence.build([TYPE_DEF_S])
+SUM_DEFINITION      = Sentence.build([SUM_DEF_S])
 OPERATOR_DEFINITION = Sentence.build([OP_DEF_S])
 # TODO TYPE CLASS
 

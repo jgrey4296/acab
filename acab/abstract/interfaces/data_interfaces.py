@@ -9,7 +9,7 @@ from dataclasses import dataclass,  field
 
 import abc
 
-Node = 'NodeInterface'
+Node  = 'NodeInterface'
 Value = 'AcabValue'
 
 @dataclass
