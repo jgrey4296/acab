@@ -20,13 +20,17 @@ SPLIT_RE = re.compile("[ .!?/]")
 repl_commands = {}
 
 # utility functions
-def register(cmd, fn, override=False):
-    """
-    Register a function with its ReplE, so the repl parser can find it
-    """
-    assert(isinstance(cmd, ReplE))
-    assert(override or cmd not in repl_commands)
-    repl_commands[cmd] = fn
+def register(e_type):
+    """ Register a function into repl_commands under the provided enum """
+    def curried_register(fn):
+        if e_type in repl_commands:
+            logging.warning(f"Overrideing Repl Registration: {e_type} : {repl_commands[e_type]} : {fn}")
+
+        repl_commands[e_type] = fn
+
+        return fn
+    return my_register
+
 
 def get(cmd):
     """
@@ -48,6 +52,7 @@ def build_command(cmd_e, **kwargs):
 
 #--------------------
 
+@register(ReplE.INIT)
 def engine_init(engine, data):
     """
     Specify the Engine to initialise.
@@ -65,8 +70,8 @@ def engine_init(engine, data):
     engine.build_DSL()
     return engine, None
 
-register(ReplE.INIT, engine_init)
 
+@register(ReplE.MODULE)
 def engine_module(engine, data):
     """
     Load an acab compliant python module into the engine
@@ -78,8 +83,8 @@ def engine_module(engine, data):
     engine.build_DSL()
     return engine, None
 
-register(ReplE.MODULE, engine_module)
 
+@register(ReplE.LOAD)
 def engine_load(engine, data):
     """
     Load a dsl file into the engine
@@ -91,8 +96,8 @@ def engine_load(engine, data):
     engine.load_file(filename)
     return engine, None
 
-register(ReplE.LOAD, engine_load)
 
+@register(ReplE.SAVE)
 def engine_save(engine, data):
     """
     Save the state of the working memory into a file
@@ -106,6 +111,7 @@ def engine_save(engine, data):
 
 register(ReplE.SAVE, engine_save)
 
+@register(ReplE.PRINT)
 def engine_print(engine, data):
     """
     Print out information
@@ -147,8 +153,8 @@ def engine_print(engine, data):
 
     return engine, data
 
-register(ReplE.PRINT, engine_print)
 
+@register(ReplE.RUN)
 def engine_run(engine, data):
     """
     Take a binding from a query, and run it.
@@ -174,8 +180,8 @@ def engine_run(engine, data):
     data['result'] = result
     return engine, data
 
-register(ReplE.RUN, engine_run)
 
+@register(ReplE.PASS)
 def engine_pass(engine, data):
     """
     Pass strings through to the engine/working memory
@@ -194,8 +200,8 @@ def engine_pass(engine, data):
     data['result'] = result
     return engine, data
 
-register(ReplE.PASS, engine_pass)
 
+@register(ReplE.DECOMPOSE)
 def engine_decompose(engine, data):
     """
     Decompose an object into a trie of its components.
@@ -207,8 +213,8 @@ def engine_decompose(engine, data):
     # split result into bindings
     return engine, None
 
-register(ReplE.DECOMPOSE, engine_decompose)
 
+@register(ReplE.STEP)
 def engine_step(engine, data):
     """
     Control the engine state,
@@ -231,8 +237,8 @@ def engine_step(engine, data):
     data['result'] = "\n".join(result)
     return engine, data
 
-register(ReplE.STEP, engine_step)
 
+@register(ReplE.ACT)
 def engine_act(engine, data):
     """
     Manually perform an output action
@@ -250,8 +256,8 @@ def engine_act(engine, data):
     data['result'] = "\n".join(result)
     return engine, data
 
-register(ReplE.ACT, engine_act)
 
+@register(ReplE.LISTEN)
 def engine_listen(engine, data):
     """ Listeners:
     Listen for specific assertions / rule firings / queries,
@@ -275,8 +281,8 @@ def engine_listen(engine, data):
 
     return engine, data
 
-register(ReplE.LISTEN, engine_listen)
 
+@register(ReplE.CHECK)
 def engine_type_check(engine, data):
     """
     Trigger the type checking of the working memory state
@@ -292,8 +298,8 @@ def engine_type_check(engine, data):
 
     return engine, None
 
-register(ReplE.CHECK, engine_type_check)
 
+@register(ReplE.STATS)
 def engine_stats(engine, data):
     """
     Print Stats about the engine.
@@ -368,8 +374,8 @@ def engine_stats(engine, data):
     data['result'] = "\n".join(result)
     return engine, data
 
-register(ReplE.STATS, engine_stats)
 
+@register(ReplE.HELP)
 def engine_help(engine, data):
     """
     Get reminders of use
@@ -412,8 +418,8 @@ def engine_help(engine, data):
     data['result'] = "\n".join(result)
     return engine, data
 
-register(ReplE.HELP, engine_help)
 
+@register(ReplE.PROMPT)
 def engine_prompt(engine, data):
     """
     Change the prompt of the repl
@@ -422,8 +428,8 @@ def engine_prompt(engine, data):
 
     return engine, data
 
-register(ReplE.PROMPT, engine_prompt)
 
+@register(ReplE.EXIT)
 def engine_exit(engine, data):
     """
     Exit the repl, automatically saving the engine state
@@ -434,8 +440,8 @@ def engine_exit(engine, data):
     engine.save_file(filename)
     return engine, None
 
-register(ReplE.EXIT, engine_exit)
 
+@register(ReplE.MULTILINE)
 def engine_multi(engine, data):
     """
     Activate multi-line collation
@@ -457,8 +463,8 @@ def engine_multi(engine, data):
         data['prompt'] = data['prompt_bkup']
         return engine_pass(engine, data)
 
-register(ReplE.MULTILINE, engine_multi)
 
+@register(ReplE.POP)
 def engine_multi_pop(engine, data):
     """
     Pop off the last string added in multi-line mode,
@@ -467,8 +473,8 @@ def engine_multi_pop(engine, data):
     data['collect_str'].pop()
     return engine, data
 
-register(ReplE.POP, engine_multi_pop)
 
+@register(ReplE.NOP)
 def engine_nop(engine, data):
     """
     A null command used to collect strings in multi-line mode
@@ -480,8 +486,8 @@ def engine_nop(engine, data):
 
     return engine, data
 
-register(ReplE.NOP, engine_nop)
 
+@register(ReplE.ECHO)
 def engine_echo(engine, data):
     """
     Toggle echoing of working memory state
@@ -492,8 +498,8 @@ def engine_echo(engine, data):
         data['echo'] = True
     return engine, data
 
-register(ReplE.ECHO, engine_echo)
 
+@register(ReplE.BREAK)
 def engine_break(engine, data):
     """
     Manually switch to PDB for debugging
@@ -505,6 +511,4 @@ def engine_break(engine, data):
     return engine, data
 
 
-register(ReplE.BREAK, engine_break)
 
-#---------------------
