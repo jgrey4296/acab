@@ -26,7 +26,7 @@ class DSL_Interface(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def assert_parsers(self, parser_trie):
+    def assert_parsers(self, bootstrapper):
         """
         Assert parsers from this module for integration later
         ie: values.number <= number_parser
@@ -37,7 +37,7 @@ class DSL_Interface(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def query_parsers(self, parser_trie):
+    def query_parsers(self, bootstrapper):
         """
         Query the now complete parser trie for hotloads
         values.$xs?

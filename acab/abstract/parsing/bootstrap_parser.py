@@ -62,7 +62,7 @@ class BootstrapParser():
             parser = input_list.pop(0)
 
             if parser is None:
-                logging.warning("Loc given None: {}".format(loc_string))
+                logging.warning("Parse Point mentioned, given None: {}".format(loc_string))
                 continue
             elif isinstance(parser, str):
                 parser = pp.Literal(parser)
@@ -75,26 +75,25 @@ class BootstrapParser():
     def query(self, *queries):
         """ Given a bunch of query strings, get them and return them """
         # TODO: cache the queries for debugging
-        results = []
+        result_nodes = []
         # Run queries
         for query in queries:
             ctxs = ContextContainer.build()
-            self._semantics.query(self._structure, query, ctxs=ctxs)
+            # TODO add BIND
+            q_sentence = Sentence.build(current.split('.'))
+            self._semantics.query(self._structure, q_sentence, ctxs=ctxs)
             if not bool(ctxs):
                 logging.warning("No parser found in: {}".format(query))
             elif isinstance(node, list):
-                try:
-                    results += [x.data['parser'] for x in node if 'parser' in x.data]
-                except AttributeError as err:
-                    breakpoint()
-                    logging.info("blah")
+                result_nodes += [x._current for x in ctxs.active_list()]
 
-        if not bool(results):
+        # Having found all parsers for the queries, join them and return
+        if not bool(result_nodes) or not all(['parser' in x.data for x in result_nodes]:
             raise Exception("No Parsers found for: {}".format(" | ".join(queries)))
         elif len(results) == 1:
-            final_parser = results[0]
+            final_parser = result_nodes[0].data['parser']
         else:
-            final_parser = pp.Or(results)
+            final_parser = pp.Or([x.data['parser'] for x in result_nodes])
 
         return final_parser
 

@@ -17,55 +17,55 @@ from acab.error.acab_parse_exception import AcabParseException
 class EL_Parser(DSL_Interface):
     """  """
 
-    def assert_parsers(self, pt):
+    def assert_parsers(self, bootstrapper):
         """ Provide fragments for other parsers """
         # Core
         # TODO: Make these configurable?
-        pt.add("valbind"             , PU.VALBIND,
-               "sentence.basic"      , FP.BASIC_SEN,
-               "sentence.param"      , FP.PARAM_SEN,
-               "statement.sentence"  , FP.SEN_STATEMENT,
-               "operator.sugar"      , PU.OPERATOR_SUGAR)
+        bootstrapper.add("valbind"             , PU.VALBIND,
+                         "sentence.basic"      , FP.BASIC_SEN,
+                         "sentence.param"      , FP.PARAM_SEN,
+                         "statement.sentence"  , FP.SEN_STATEMENT,
+                         "operator.sugar"      , PU.OPERATOR_SUGAR)
         # Query
-        pt.add("statement.query"     , QP.query_statement,
-               "query.body"          , QP.clauses,
-               "query.clause"        , QP.clause)
+        bootstrapper.add("statement.query"     , QP.query_statement,
+                         "query.body"          , QP.clauses,
+                         "query.clause"        , QP.clause)
 
         # Transform
-        pt.add("transform.body"      , TP.transforms,
-               "statement.transform" , TP.transform_statement,
-               "transform.rebind"    , TP.rebind)
+        bootstrapper.add("transform.body"      , TP.transforms,
+                         "statement.transform" , TP.transform_statement,
+                         "transform.rebind"    , TP.rebind)
 
         # Action
-        pt.add("action.body"         , AP.actions,
-               "statement.action"    , AP.action_definition)
+        bootstrapper.add("action.body"         , AP.actions,
+                         "statement.action"    , AP.action_definition)
 
         # Rule
-        pt.add("rule.body"           , RP.rule_body,
-               "statement.rule"      , RP.rule)
+        bootstrapper.add("rule.body"           , RP.rule_body,
+                         "statement.rule"      , RP.rule)
 
 
-    def query_parsers(self, pt):
+    def query_parsers(self, bootstrapper):
         """ Load in fragments """
         try:
-            PU.HOTLOAD_VALUES << pt.query("value.*")
+            PU.HOTLOAD_VALUES << bootstrapper.query("value.*")
         except Exception:
             logging.debug("No values loaded into DSL")
 
         try:
-            FP.HOTLOAD_ANNOTATIONS << pt.query("annotation.*")
+            FP.HOTLOAD_ANNOTATIONS << bootstrapper.query("annotation.*")
         except Exception:
             logging.debug("No annotations loaded into DSL")
 
-        FP.HOTLOAD_QUERY_OP << pt.query("operator.query.*")
+        FP.HOTLOAD_QUERY_OP << bootstrapper.query("operator.query.*")
 
-        TP.HOTLOAD_TRANS_OP << pt.query("operator.transform.*")
+        TP.HOTLOAD_TRANS_OP << bootstrapper.query("operator.transform.*")
 
-        TP.HOTLOAD_TRANS_STATEMENTS << pt.query("operator.transform.statement.*")
+        TP.HOTLOAD_TRANS_STATEMENTS << bootstrapper.query("operator.transform.statement.*")
 
-        AP.HOTLOAD_OPERATORS << pt.query("operator.action.*")
+        AP.HOTLOAD_OPERATORS << bootstrapper.query("operator.action.*")
 
-        TotalP.HOTLOAD_STATEMENTS << pt.query("statement.*")
+        TotalP.HOTLOAD_STATEMENTS << bootstrapper.query("statement.*")
 
         # At this point, parser is constructed, and will not change again
         # however, can't deep-copy the parser for multiple versions

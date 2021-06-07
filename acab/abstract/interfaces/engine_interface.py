@@ -186,7 +186,7 @@ class ModuleLoaderInterface(metaclass=abc.ABCMeta):
 @dataclass
 class DSLBuilderInterface(metaclass=abc.ABCMeta):
     """ Enables the assemblage of a parser from DSL Fragments """
-    root_fragment: DSL_Interface   = field()
+    root_fragment        : DSL_Interface   = field()
     _bootstrap_parser    : BootstrapParser = field(init=False, default_factory=BootstrapParser)
     _main_parser         : Parser          = field(init=False)
     _query_parser        : Parser          = field(init=False)
