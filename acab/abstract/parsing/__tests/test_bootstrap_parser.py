@@ -32,7 +32,7 @@ class BootstrapParserTests(unittest.TestCase):
         logging = root_logger.getLogger(__name__)
 
     def setUp(self):
-        self.bp = BootstrapParser(empty=True)
+        self.bp = BootstrapParser()
 
     def tearDown(self):
         return 1

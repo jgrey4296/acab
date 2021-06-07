@@ -26,21 +26,24 @@ from acab.abstract.core.production_abstractions import ProductionOperator
 from acab.abstract.parsing.parsers import OPERATOR_SUGAR
 
 from acab.modules.structures.trie.trie import Trie
-from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics
-from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
+from acab.modules.semantics.dependent import BreadthTrieSemantics
+from acab.modules.semantics.independent import BasicNodeSemantics
+from acab.modules.semantics.context_container import ContextContainer
 
 logging = root_logger.getLogger(__name__)
 
-class BootstrapParser(StructureInterface):
+class BootstrapParser():
     """ Manage parsers and allow queries for hotloading,
     used in working memory and module interfaces """
 
-    def __init__(self, empty=False):
+    @staticmethod
+    def build_default():
+        return BootstrapParser()
+
+    def __init__(self):
         super().__init__()
-        semantics = BasicTrieSemantics(node_semantics={AcabNode : BasicNodeSemantics()},
-                                       value_pairings={AcabValue : (AcabNode, {})},
-                                       sentence_sort=lambda x: str(x))
-        self._structure = Trie(semantics)
+        self._semantics = BreadthTrieSemantics(BasicNodeSemantics())
+        self._structure = Trie.build_default()
 
     def __len__(self):
         return len(self._structure)
@@ -67,7 +70,7 @@ class BootstrapParser(StructureInterface):
                 raise DeprecationWarning("Production Operators shouldn't be being built here any more")
 
             assert(isinstance(parser, pp.ParserElement))
-            self._structure.add(loc_string, data={'parser': parser})
+            self._semantics.insert(self._structure, loc_string, data={'parser': parser})
 
     def query(self, *queries):
         """ Given a bunch of query strings, get them and return them """
@@ -75,8 +78,9 @@ class BootstrapParser(StructureInterface):
         results = []
         # Run queries
         for query in queries:
-            node = self._query(query)
-            if node is None:
+            ctxs = ContextContainer.build()
+            self._semantics.query(self._structure, query, ctxs=ctxs)
+            if not bool(ctxs):
                 logging.warning("No parser found in: {}".format(query))
             elif isinstance(node, list):
                 try:
@@ -93,26 +97,4 @@ class BootstrapParser(StructureInterface):
             final_parser = pp.Or(results)
 
         return final_parser
-
-    def _query(self, query):
-        # TODO convert this to semantics
-        assert(isinstance(query,str))
-
-        results = []
-        queue = [(self._structure.root, query.split("."))]
-        while queue:
-            curr_node, remaining_path = queue.pop(0)
-            if not bool(remaining_path):
-                results.append(curr_node)
-                continue
-
-            looking_for = remaining_path.pop(0)
-
-            if looking_for == "*":
-                queue += [(x, remaining_path[:]) for x in curr_node.children.values()]
-            elif curr_node.has_child(looking_for):
-                next_node  = curr_node.get_child(looking_for)
-                queue.append((next_node, remaining_path[:]))
-
-        return results
 
