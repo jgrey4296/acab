@@ -24,14 +24,7 @@ QUERY_V = config.value("Structure.Components", "QUERY")
 TRANSFORM_V = config.value("Structure.Components", "TRANSFORM")
 ACTION_V = config.value("Structure.Components", "ACTION")
 
-basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel),
-              Sentence: DH.DEF_SEN_PAIR,
-              ProductionStructure: ([], None)}
 # TODO rule:
-
-Printer = AcabPrintSemantics(basic_plus, default_values={'MODAL_FIELD' : 'OPERATOR',
-                                                         'EXOP.DOT'    : ".",
-                                                         'EXOP.EX'     : "!"})
 
 class Trie_Rule_Parser_Tests(unittest.TestCase):
 
@@ -130,29 +123,3 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
         self.assertIsNone(result[0][-1][QUERY_V])
         self.assertIsNone(result[0][-1][TRANSFORM_V])
         self.assertEqual(len(result[0][-1][ACTION_V]), 2)
-
-    @unittest.skip("awaiting printer")
-    def test_name_empty_rule_print(self):
-        result = RP.parseString("a.rule.x: (::ρ) end")
-        self.assertEqual(len(result), 1)
-        self.assertIsInstance(result[0][-1], ProductionStructure)
-        self.assertEqual(Printer.print(result[0][-1]).strip(), "x: (::ρ) end")
-
-    @unittest.skip("awaiting printer")
-    def test_rule_simple_binding_expansion(self):
-        bindings = { "x" : FP.parseString('a.b.c')[0] }
-        result = RP.parseString("a.rule.x: (::ρ)\n\n$x?\n\nend")[0]
-        expanded = result[-1].bind(bindings)
-        self.assertEqual(Printer.print(expanded).strip(),
-                         "AnonRule: (::ρ)\n    a.b.c?\nend")
-
-    @unittest.skip("awaiting printer")
-    def test_rule_tags(self):
-        the_str = 'a.test.rule.x: (::ρ)\n    #blah, #blee, #bloo\n\n    a.b.c?\n\n    λoperator.action.add a.b.c\nend'
-        result = RP.parseString(the_str)[0]
-        self.assertIsInstance(result[-1], ProductionStructure)
-        self.assertEqual(Printer.print(result).strip(), the_str)
-        tags = [x for x in result[-1]._tags]
-        self.assertTrue(all(x in tags for x in ["blah","bloo","blee"]))
-
-

@@ -9,8 +9,8 @@ config = acab.setup()
 
 from acab.abstract.parsing.parsers import HOTLOAD_VALUES, VALBIND
 
-import acab.working_memory.trie_wm.parsing.FactParser as FP
-import acab.working_memory.trie_wm.parsing.QueryParser as QP
+import acab.modules.parsing.el_parsing.FactParser as FP
+import acab.modules.parsing.el_parsing.QueryParser as QP
 
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
@@ -18,22 +18,13 @@ from acab.abstract.parsing.bootstrap_parser import BootstrapParser
 from acab.abstract.core.production_abstractions import ProductionOperator, ProductionContainer, ProductionComponent
 
 from acab.modules.operators import query as QOP
-from acab.working_memory.trie_wm import util as KBU
 
-from acab.abstract.semantics.print_semantics import AcabPrintSemantics
 from acab.abstract.printing import default_handlers as DH
 
-basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel),
-              Sentence: DH.DEF_SEN_PAIR}
-
-Printer = AcabPrintSemantics(basic_plus, default_values={'MODAL_FIELD' : 'exop',
-                                                         'EXOP.DOT'    : ".",
-                                                         'EXOP.EX'     : "!"})
-
-NEGATION_V       = AcabConfig.Get().value("Parse.Structure", "NEGATION")
-QUERY_FALLBACK_V = AcabConfig.Get().value("Parse.Structure", "QUERY_FALLBACK")
-CONSTRAINT_V     = AcabConfig.Get().value("Parse.Structure", "CONSTRAINT")
-REGEX_PRIM       = AcabConfig.Get().value("Type.Primitive", "REGEX")
+NEGATION_V       = config.Get().value("Parse.Structure", "NEGATION")
+QUERY_FALLBACK_V = config.Get().value("Parse.Structure", "QUERY_FALLBACK")
+CONSTRAINT_V     = config.Get().value("Parse.Structure", "CONSTRAINT")
+REGEX_PRIM       = config.Get().value("Type.Primitive", "REGEX")
 
 class Trie_Query_Parser_Tests(unittest.TestCase):
 
@@ -62,17 +53,6 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
 
     #----------
     #use testcase snippets
-
-    def test_basic_regex_comparison(self):
-        result = FP.QUERY_OP_Internal.parseString(r'λoperator.query.regmatch /blah/')[0]
-        self.assertIsInstance(result, tuple)
-        qc = result[1]
-        self.assertIsInstance(qc, ProductionComponent)
-        self.assertEqual(Printer.print(qc.op), 'operator.query.regmatch')
-        # Note the end modal '.'
-        self.assertEqual(Printer.print(qc.params[0]), '/blah/.')
-        # TODO convert this to a type system lookup
-        self.assertEqual(qc.params[0].type, Sentence.build([REGEX_PRIM]))
 
     def test_basic_clause(self):
         result = QP.clause.parseString('a.b.c?')[0]
@@ -127,71 +107,3 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertEqual(result.data[QUERY_FALLBACK_V][1][0], 'y')
         self.assertEqual(result.data[QUERY_FALLBACK_V][1][1][-1].value, 'e')
 
-    def test_comparison_parse(self):
-        result = FP.PARAM_BINDING_END.parseString("testing(λoperator.query.regmatch /test/)")
-        self.assertEqual(len(result), 1)
-        self.assertEqual(len(result[0].data[CONSTRAINT_V]), 1)
-        self.assertIsInstance(result[0].data[CONSTRAINT_V][0], ProductionComponent)
-        self.assertEqual(Printer.print(result[0].data[CONSTRAINT_V][0].op), "operator.query.regmatch")
-
-    def test_comparison_parse_2(self):
-        result = FP.PARAM_BINDING_CORE.parseString("testing(λoperator.query.regmatch /test/).")
-        self.assertEqual(len(result), 1)
-        self.assertEqual(len(result[0].data[CONSTRAINT_V]), 1)
-        self.assertIsInstance(result[0].data[CONSTRAINT_V][0], ProductionComponent)
-        self.assertEqual(Printer.print(result[0].data[CONSTRAINT_V][0].op), "operator.query.regmatch")
-
-    def test_comparison_parse_variable(self):
-        result = FP.PARAM_BINDING_CORE.parseString("$x(λoperator.query.regmatch /test/).")
-        self.assertEqual(len(result), 1)
-        self.assertEqual(len(result[0].data[CONSTRAINT_V]), 1)
-        self.assertIsInstance(result[0].data[CONSTRAINT_V][0], ProductionComponent)
-        self.assertEqual(Printer.print(result[0].data[CONSTRAINT_V][0].op), "operator.query.regmatch")
-
-
-    def test_comparison_in_clause(self):
-        result = QP.clause.parseString("a.testing(λoperator.query.regmatch /test/).clause?")
-        self.assertEqual(len(result), 1)
-        self.assertEqual(len(result[0][1].data[CONSTRAINT_V]), 1)
-        self.assertIsInstance(result[0][1].data[CONSTRAINT_V][0], ProductionComponent)
-        self.assertEqual(Printer.print(result[0][1].data[CONSTRAINT_V][0].op), "operator.query.regmatch")
-
-
-    def test_tag_query(self):
-        result = QP.clause.parseString("a.testing(#testTag)?")
-        self.assertEqual(len(result), 1)
-        self.assertEqual(len(result[0][1].data[CONSTRAINT_V]), 1)
-        self.assertIsInstance(result[0][1].data[CONSTRAINT_V][0], ProductionComponent)
-        self.assertEqual(Printer.print(result[0][1].data[CONSTRAINT_V][0].op), "HasTag")
-
-    def test_tag_list_query(self):
-        result = QP.clause.parseString("a.testing(#first, #second, #third)?")
-        self.assertEqual(len(result), 1)
-        self.assertEqual(len(result[0][1].data[CONSTRAINT_V]), 1)
-        self.assertIsInstance(result[0][1].data[CONSTRAINT_V][0], ProductionComponent)
-        self.assertEqual(Printer.print(result[0][1].data[CONSTRAINT_V][0].op), "HasTag")
-
-        tags = [x.name for x in result[0][1].data[CONSTRAINT_V][0].params]
-        self.assertEqual(tags, ["first", "second", "third"])
-
-    def test_tag_list_interaction(self):
-        result = QP.clause.parseString("a.testing(#first, #second, λoperator.query.regmatch /Test/)?")
-        self.assertEqual(len(result), 1)
-        self.assertEqual(len(result[0][1].data[CONSTRAINT_V]), 2)
-        self.assertEqual(Printer.print(result[0][1].data[CONSTRAINT_V][0].op), "HasTag")
-        self.assertEqual(Printer.print(result[0][1].data[CONSTRAINT_V][1].op), "operator.query.regmatch")
-
-    def test_tag_list_interaction_2(self):
-        result = QP.clause.parseString("a.testing(λoperator.query.regmatch /Test/, #test, #second)?")
-        self.assertEqual(len(result), 1)
-        self.assertEqual(len(result[0][1].data[CONSTRAINT_V]), 2)
-        self.assertEqual(Printer.print(result[0][1].data[CONSTRAINT_V][1].op), "HasTag")
-        self.assertEqual(Printer.print(result[0][1].data[CONSTRAINT_V][0].op), "operator.query.regmatch")
-
-    def test_tag_list_interaction_3(self):
-        result = QP.clause.parseString("a.testing(#aTag, λoperator.query.regmatch /Test/, #test, #second)?")
-        self.assertEqual(len(result), 1)
-        self.assertEqual(len(result[0][1].data[CONSTRAINT_V]), 3)
-        self.assertEqual(Printer.print(result[0][1].data[CONSTRAINT_V][0].op), "HasTag")
-        self.assertEqual(Printer.print(result[0][1].data[CONSTRAINT_V][1].op), "operator.query.regmatch")
-        self.assertEqual(Printer.print(result[0][1].data[CONSTRAINT_V][2].op), "HasTag")

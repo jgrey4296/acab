@@ -21,14 +21,6 @@ from acab.modules.parsing.el_parsing FactParser as FP
 from acab.abstract.semantics.print_semantics import AcabPrintSemantics
 from acab.abstract.printing import default_handlers as DH
 
-basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel),
-              Sentence: DH.DEF_SEN_PAIR,
-              }
-
-Printer = AcabPrintSemantics(basic_plus, default_values={'MODAL_FIELD' : 'OPERATOR',
-                                                         'EXOP.DOT'    : ".",
-                                                         'EXOP.EX'     : "!"})
-
 class Trie_Transform_Parser_Tests(unittest.TestCase):
 
     @classmethod
@@ -57,30 +49,6 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
 
     #----------
     #use testcase snippets
-    def test_ternary_operator(self):
-        result = TP.parseString('λoperator.ProductionContainer.regex $x /blah/ $a -> $y')
-        self.assertIsInstance(result, ProductionContainer)
-        self.assertEqual(len(result.clauses), 1)
-        self.assertEqual(Printer.print(result.clauses[0].op), 'operator.ProductionContainer.regex')
-        self.assertEqual(result.clauses[0].params[0].value, 'x')
-        self.assertEqual(result.clauses[0].params[1].value, re.compile('blah'))
-        self.assertEqual(result.clauses[0].params[2].value, 'a')
-        self.assertIsNotNone(result.clauses[0]._rebind)
-
-    def test_ternary_operator_rebind(self):
-        result = TP.parseString('λoperator.ProductionContainer.regex $x /blah/ $awef -> $q')
-        self.assertIsInstance(result, ProductionContainer)
-        self.assertEqual(len(result.clauses), 1)
-        self.assertEqual(Printer.print(result.clauses[0].op), 'operator.ProductionContainer.regex')
-        self.assertEqual(result.clauses[0].params[0].name, 'x')
-        self.assertEqual(result.clauses[0].params[1].value, re.compile('blah'))
-        self.assertEqual(result.clauses[0].params[2].name, 'awef')
-        self.assertEqual(result.clauses[0]._rebind.name, 'q')
-
-    def test_unary_format(self):
-        result = TP.parseString('λoperator.ProductionContainer.format $x blah -> $y')
-        self.assertEqual(Printer.print(result.clauses[0].op), 'operator.ProductionContainer.format')
-
 
     # TODO test ProductionContainer sugar, test multi variables, test sentences, test values
     @unittest.skip("TODO")
