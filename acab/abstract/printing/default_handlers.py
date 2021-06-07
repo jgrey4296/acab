@@ -115,8 +115,8 @@ def modality_accumulator(PS, value, acc, params):
     modal_alias = PS.ask(modal_value)
     if bool(modal_alias):
         modal_value = modal_alias
-    elif modal_value in config.modal_printing:
-        modal_value = config.modal_printing[modal_value]
+    elif modal_value in config.printing_extension:
+        modal_value = config.printing_extension[modal_value]
     else:
         # TODO define this in config
         modal_value = PS.use(FALLBACK_MODAL_P)

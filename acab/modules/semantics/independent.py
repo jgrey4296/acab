@@ -25,17 +25,17 @@ Value = AcabValue
 Node  = AcabNode
 T     = TypeVar('T')
 
-config         = AcabConfig.Get()
+config       = AcabConfig.Get()
 NEGATION_S   = config.value("Value.Structure", "NEGATION")
 CONSTRAINT_S = config.value("Value.Structure", "CONSTRAINT")
 AT_BIND_S    = config.value("Value.Structure", "AT_BIND")
-BIND       = config.value("Value.Structure", "BIND")
+BIND         = config.value("Value.Structure", "BIND")
 
 CTX_OP = Enum("ctx", "collapse")
 # TODO replace operator with specific modal name
 EXOP         = config.value("MODAL", "exop")
-DEFAULT_EXOP = config.modal_defaults[EXOP]
-EXOP_enum    = config.modal_enums[EXOP]
+DEFAULT_EXOP = config.defaults[EXOP]
+EXOP_enum    = config.enums[EXOP]
 
 logging = root_logger.getLogger(__name__)
 

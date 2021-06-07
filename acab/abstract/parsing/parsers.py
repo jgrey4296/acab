@@ -98,8 +98,8 @@ REGEX.setParseAction(lambda t: (PConst.REGEX_V, re.compile(t[0][1:-1])))
 
 
 # Generalised modal operator, which is converted to appropriate data later
-MODAL      = pp.Word("".join(config.modal_syntax_lookup.keys()))
-MODAL.setParseAction(lambda t: (PConst.MODAL_S, config.modal_syntax_lookup[t[0]]))
+MODAL      = pp.Word("".join(config.syntax_extension.keys()))
+MODAL.setParseAction(lambda t: (PConst.MODAL_S, config.syntax_extension[t[0]]))
 
 BASIC_VALUE = pp.Or([ATOM, STRING, REGEX])
 BIND        = PConst.BIND_SYMBOL + ATOM

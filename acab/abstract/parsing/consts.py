@@ -18,7 +18,7 @@ WHITE_SPACE      = config.value("Parse.Patterns", "WHITE_SPACE", actions=[AcabCo
 pp.ParserElement.setDefaultWhitespaceChars(WHITE_SPACE)
 
 DEFAULT_NODE_DATA = {}
-DEFAULT_NODE_DATA.update(config.modal_defaults)
+DEFAULT_NODE_DATA.update(config.defaults)
 
 
 ACTION_S         = config.value("Parse.Structure", "ACTION")
