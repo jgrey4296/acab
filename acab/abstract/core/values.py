@@ -256,16 +256,14 @@ class AcabStatement(AcabValue):
 @dataclass
 class Sentence(AcabStatement, VI.SentenceInterface):
 
-
     @staticmethod
     def build(words, **kwargs):
         safe_words = [AcabValue.safe_make(x) for x in words]
-        sen = Sentence(words=safe_words, **kwargs)
+        sen = Sentence(safe_words, **kwargs)
         return sen
 
 
     def __post_init__(self):
-        self.value = self.words
         AcabValue.__post_init__(self)
         self.data[TYPE_INSTANCE] = SENTENCE_TYPE
 
@@ -396,7 +394,7 @@ class Sentence(AcabStatement, VI.SentenceInterface):
         value_copy = value.copy(name=last.name, data=combined_data)
 
         new_words = self.words[:-1] + [value_copy]
-        sen_copy = self.copy(words=new_words)
+        sen_copy = self.copy(value=new_words)
 
         return sen_copy
 

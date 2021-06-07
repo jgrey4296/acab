@@ -64,7 +64,7 @@ class ValueInterface(metaclass=abc.ABCMeta):
 @dataclass
 class SentenceInterface(metaclass=abc.ABCMeta):
 
-    words: List[ValueInterface]  = field(default_factory=list)
+    value: List[ValueInterface]  = field(default_factory=list)
 
     @abc.abstractmethod
     def build(words, **kwargs):
@@ -87,3 +87,7 @@ class SentenceInterface(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def __getitem__(self, i):
         pass
+
+    @property
+    def words(self):
+        return self.value

@@ -56,10 +56,11 @@ class NodeInterface(metaclass=abc.ABCMeta):
 @dataclass
 class StructureInterface(metaclass=abc.ABCMeta):
       """  """
-      root      : 'AcabNode'               = field(init=False)
+      root      : Node                     = field(init=False)
+      # TODO remove this?
       semantics : 'AcabStructureSemantics' = field(default=None)
 
       @staticmethod
       @abc.abstractmethod
-      def build_default() -> Any:
+      def build_default() -> 'Structure':
           pass

@@ -8,7 +8,6 @@ logging = root_logger.getLogger(__name__)
 import acab
 config = acab.setup()
 
-
 from acab.abstract.core.values import AcabValue, Sentence
 
 BIND_S = config.value("Value.Structure", "BIND")

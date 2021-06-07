@@ -89,7 +89,7 @@ class AcabNode(DI.NodeInterface):
     def var_set(self):
         return self.value.var_set
 
-    def add_child(self, node) -> 'AcabNode':
+    def add_child(self, node) -> Node:
         """ Add a node as a child of this node
         mutate object
         """
@@ -97,7 +97,7 @@ class AcabNode(DI.NodeInterface):
         self.children[str(node)] = node
         return node
 
-    def get_child(self, node) -> 'AcabNode':
+    def get_child(self, node) -> Node:
         """ Get a node using a string, or a node itself """
         if isinstance(node, str):
             return self.children[node]
@@ -118,7 +118,7 @@ class AcabNode(DI.NodeInterface):
         else:
             return False
 
-    def remove_child(self, node) -> Optional['AcabNode']:
+    def remove_child(self, node) -> Optional[Node]:
         """ Delete a child from this node, return success state
         mutate object
         """
@@ -146,7 +146,7 @@ class AcabNode(DI.NodeInterface):
         assert(isinstance(parent, AcabNode))
         self.parent = ref(parent)
 
-    def parentage(self) -> List['AcabNode']:
+    def parentage(self) -> List[Node]:
         """ Get the full path from the root to this node """
         path = []
         current = self
@@ -169,7 +169,7 @@ class AcabNode(DI.NodeInterface):
         raise NotImplementedError()
 
 
-    def _default_setup(self, path: ['AcabNode'], data: Dict[Any,Any], context: Dict[Any,Any]):
+    def _default_setup(self, path: [Node], data: Dict[Any,Any], context: Dict[Any,Any]):
         """ Called by a Semantics upon creation of a new node """
         pass
     def _update_node(self, path, data, context):

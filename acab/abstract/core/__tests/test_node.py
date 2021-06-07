@@ -5,12 +5,12 @@ import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
 import acab
-acab.setup()
+config = acab.setup()
 
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.values import AcabValue
 
-BIND_S = AcabConfig.Get().value("Value.Structure", "BIND")
+BIND_S = config.value("Value.Structure", "BIND")
 AV = AcabValue
 
 class AcabNodeTests(unittest.TestCase):

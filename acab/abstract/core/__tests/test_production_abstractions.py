@@ -5,16 +5,14 @@ import unittest.mock as mock
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
-
-from acab.abstract.config.config import AcabConfig
-AcabConfig.Get("acab")
+from acab import setup
+config = setup()
 
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.values import AcabValue, AcabStatement
 
 from acab.abstract.core import production_abstractions as PO
 
-config               = AcabConfig.Get()
 BIND_S               = config.value("Value.Structure", "BIND")
 OPERATOR_TYPE_PRIM_S = config.value("Type.Primitive", "OPERATOR")
 
