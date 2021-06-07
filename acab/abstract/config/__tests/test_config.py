@@ -3,13 +3,14 @@
 #https://docs.python.org/3/library/unittest.html
 # https://docs.python.org/3/library/unittest.mock.html
 
-from os.path import splitext, split
-
+import logging as root_logger
 import unittest
 import unittest.mock as mock
+from os.path import split, splitext
 
-import logging
+from acab import setup
 
+from acab.abstract.config.config import AcabConfig
 
 class ConfigTests(unittest.TestCase):
 
@@ -29,6 +30,8 @@ class ConfigTests(unittest.TestCase):
         logging.addHandler(console)
         logging.addHandler(file_h)
 
+        # Setup default config with default files
+        cls.config = setup()
 
         def setUp(self):
             return 1
@@ -66,10 +69,10 @@ class ConfigTests(unittest.TestCase):
     def test_modal_spec(self):
         """ Check modal fields exist """
         config = AcabConfig.Get()
-        self.assertTrue(config.modal_enums)
-        self.assertTrue(config.modal_defaults)
-        self.assertTrue(config.modal_printing)
-        self.assertTrue(config.modal_syntax_lookup)
+        self.assertTrue(config.enums)
+        self.assertTrue(config.defaults)
+        self.assertTrue(config.printing_extension)
+        self.assertTrue(config.syntax_extension)
         # TODO Check values *in* the modal structures
 
     def test_config_prepare(self):

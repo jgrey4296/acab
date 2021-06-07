@@ -27,34 +27,26 @@ logging = root_logger.getLogger(__name__)
 # Get the Symbol collection:
 # MODAL_LANGUAGE = "".join(MODAL_PREP.values()).replace(" ","")
 
-@dataclass
-class ModalConfig:
-    modal_enums : Dict[str, EnumMeta]                 = field(init=False, default_factory=dict)
-    modal_defaults : Dict[str, Enum]                  = field(init=False, default_factory=dict)
-    modal_printing : Dict[Enum, str]                  = field(init=False, default_factory=dict)
-    modal_syntax_lookup : Dict[str, Tuple[str, Enum]] = field(init=False, default_factory=dict)
-
-    # Generate enums for each modality:
-    def __post_init__(self):
-        try:
-            modal_names   = self.value("MODAL", as_list=True)
-            logging.info("Initialising Modalities: {}".format(" ".join(modal_names)))
-            for name in modal_names:
-                new_enum           = Enum(name, self.value("Modal.{}".format(name), "ENUM_VALUES"))
-                default            = self.value("Modal.{}".format(name), "DEFAULT")
-                symbol_dict        = self.value("Modal.{}.Symbols".format(name), as_dict=True)
-                symbol_enum_lookup = {syntax: (name, new_enum[val.upper()]) for val, syntax in symbol_dict.items()}
-
+def ModalConfig(self):
+    try:
+        modal_names   = self.value("MODAL", as_list=True)
+        logging.info("Initialising Modalities: {}".format(" ".join(modal_names)))
+        for name in modal_names:
+            new_enum           = Enum(name, self.value(f"Modal.{name}", "ENUM_VALUES"))
+            default            = self.value(f"Modal.{name}", "DEFAULT")
+            symbol_dict        = self.value(f"Modal.{name}.Symbols", as_dict=True)
+            symbol_enum_lookup = {syntax: (name, new_enum[val.upper()]) for val, syntax in symbol_dict.items()}
+            print_lookup       = {e_val[1]: syntax for syntax, e_val in symbol_enum_lookup.items()}
 
             # Ensure consistent and distinct modal sets
-            assert(not any([x in self.modal_syntax_lookup for x in symbol_enum_lookup.keys()]))
+            assert(not any([x in self.syntax_extension for x in symbol_enum_lookup.keys()]))
             assert(len(new_enum) == len(symbol_enum_lookup))
 
             # Update the modal consts
-            self.modal_enums[name]    = new_enum
-            self.modal_defaults[name] = new_enum[default.upper()]
-            self.modal_syntax_lookup.update(symbol_enum_lookup)
-            self.modal_printing.update({e_val[1]: syntax for syntax, e_val in symbol_enum_lookup.items()})
+            self.enums[name]    = new_enum
+            self.defaults[name] = new_enum[default.upper()]
+            self.syntax_extension.update(symbol_enum_lookup)
+            self.printing_extension.update(print_lookup)
 
-        except AssertionError as err:
-            logging.exception("Inconsistent Modality defined: {}".format(name))
+    except AssertionError as err:
+        logging.exception("Inconsistent Modality defined: {}".format(name))
