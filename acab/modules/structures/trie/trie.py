@@ -12,11 +12,12 @@ from acab.abstract.core.node import AcabNode
 from acab.abstract.core.acab_struct import AcabStruct
 
 from acab.error.acab_base_exception import AcabBaseException
-from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
+from acab.modules.semantics.independent import BasicNodeSemantics
 from acab.abstract.interfaces.semantic_interfaces import SemanticSystem
 from acab.abstract.interfaces.data_interfaces import StructureInterface
+from acab.abstract.core.acab_struct import BasicNodeStruct
 
-from .trie_semantics import BasicTrieSemantics
+from acab.modules.semantics.dependent import BreadthTrieSemantics
 
 from acab.abstract.config.config import AcabConfig
 config = AcabConfig.Get()
@@ -27,15 +28,9 @@ AT_BIND_S    = config.value("Value.Structure", "AT_BIND")
 logging = root_logger.getLogger(__name__)
 
 @dataclass
-class Trie(StructureInterface):
+class Trie(BasicNodeStruct):
     all_nodes : WeakValueDictionary = field(init=False, default_factory=WeakValueDictionary)
 
-    @staticmethod
-    def build_default():
-        semantics = BasicTrieSemantics({AcabNode  : BasicNodeSemantics()},
-                                       {AcabValue : AcabNode})
-
-        return Trie(semantics=semantics)
 
     def __str__(self):
         return self.print_trie()
