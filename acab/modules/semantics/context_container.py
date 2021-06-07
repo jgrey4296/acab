@@ -60,17 +60,18 @@ class ContextContainer(CtxInt.ContextContainer):
 
     def __call__(self, root_node, query_sen, data, collapse_vars, is_negated=False):
         """ Prefaces __enter__, storing the relevant values """
-        self._negated = is_negated
-        self._collapse_vars.update(collapse_vars)
+        self._negated      = is_negated
         self._query_clause = query_sen
-        self._root_node = root_node
+        self._root_node    = root_node
+        self._collapse_vars.update(collapse_vars)
+
         return self
 
     def __enter__(self):
         # set all instances to start at node, unless start_word is an at_binding,
         # in which case get the bound node
         # handle negated behaviour
-        root_word = self._query_clause[0]
+        root_word   = self._query_clause[0]
         active_list = self.active_list()
         if root_word.is_at_var:
             self._ctxs = [x.set_current_binding(root_word) for x in active_list]
@@ -266,6 +267,9 @@ class ContextInstance(CtxInt.ContextInstance):
 
 @dataclass
 class MutableContextInstance():
+    """ Wrap A Context Instance with an smart dictionary.
+    Changes are inserted into the dictionary, until finish is called.
+    Finish creates a new CtxIns, integrating changes """
 
     base         : CtxIns          = field()
     data         : Dict[Any, Any]  = field(default_factory=dict)
