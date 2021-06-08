@@ -5,33 +5,21 @@ Engine's are the main programming dsl_fragments.
 You create one with a working memory, load some modules,
 and can then parse and run an agent DSL pipeline.
 """
-# https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
+import logging as root_logger
+from dataclasses import dataclass, field
+from os.path import abspath, exists, expanduser, split
+from re import compile
+from typing import (Callable, List, Mapping, Match, MutableMapping, Optional,
+                    Sequence, Set, Tuple, TypeVar, Union, cast)
+
 from acab.abstract.config.config import AcabConfig
-from acab.abstract.core.values import AcabValue
-from acab.abstract.core.values import Sentence
+from acab.abstract.core.production_abstractions import (ProductionContainer,
+                                                        ProductionOperator)
 from acab.abstract.interfaces import engine_interface as EI
 from acab.abstract.interfaces.data_interfaces import StructureInterface
-from acab.abstract.core.production_abstractions import ProductionOperator, ProductionContainer
+from acab.abstract.interfaces.semantic_interfaces import SemanticSystem
 from acab.error.acab_base_exception import AcabBaseException
-from acab.error.acab_import_exception import AcabImportException
-from acab.error.acab_parse_exception import AcabParseException
-from acab.modules.structures.trie.trie import Trie
-from acab.abstract.interfaces.dsl_interface import DSL_Interface
-from acab.abstract.parsing.bootstrap_parser import BootstrapParser
-
-from copy import deepcopy
-from dataclasses import dataclass, field, InitVar, replace
-from fractions import Fraction
-from importlib import import_module
-from os.path import exists, split, expanduser, abspath
-from re import Pattern, compile
-from typing import Callable, Iterator, Union, Match
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
-from uuid import uuid1, UUID
-from weakref import ref
-import logging as root_logger
+from weak import ref
 
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 from acab.abstract.interfaces.dsl_interface import DSL_Interface
+from acab.abstract.parsing import parsers as PU
+from acab.error.acab_parse_exception import AcabParseException
 
 from . import ActionParser as AP
 from . import FactParser as FP
@@ -10,10 +12,6 @@ from . import TransformParser as TP
 from . import util as TPU
 
 
-from acab.abstract.parsing import parsers as PU
-
-
-from acab.error.acab_parse_exception import AcabParseException
 class EL_Parser(DSL_Interface):
     """  """
 

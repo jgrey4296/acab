@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import logging as root_logger
 import pyparsing as pp
 import re

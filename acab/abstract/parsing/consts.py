@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # pylint: disable=bad-whitespace,invalid-name,line-too-long
 #
 import logging as root_logger

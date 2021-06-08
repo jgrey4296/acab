@@ -1,18 +1,15 @@
-#!/usr/bin/env python3
-# https://docs.python.org/3/library/abc.html
-# from https://realpython.com/python-interface/
+"""
+Interfaces for the use of actual information, both individual,
+and formed into sentences
+"""
 import abc
-# https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
+import logging as root_logger
 from dataclasses import dataclass, field
-
-from uuid import uuid1, UUID
+from typing import (Any, Dict, List, Mapping, Match, MutableMapping, Optional,
+                    Sequence, Set, Tuple, TypeVar, Union, cast)
+from uuid import UUID, uuid1
 
 from acab.abstract.config.config import AcabConfig
-import logging as root_logger
 
 logging            = root_logger.getLogger(__name__)
 

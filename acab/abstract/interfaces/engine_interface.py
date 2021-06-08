@@ -1,14 +1,14 @@
-#!/usr/bin/env python3
+"""
+Provide a number of individual interfaces for top level Engine functionality
+"""
 import abc
-# https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
-
 from dataclasses import dataclass, field
-from acab.abstract.parsing.bootstrap_parser import BootstrapParser
-from acab.abstract.interfaces.dsl_interface import DSL_Interface
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
+
+from acab.abstract.interfaces.dsl_interface import DSL_Interface, Bootstrapper
+from acab.abstract.parsing.TrieBootstrapper import TrieBootstrapper
 
 ModuleType   = 'Module'
 Parser       = 'Parser'

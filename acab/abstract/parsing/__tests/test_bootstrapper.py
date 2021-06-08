@@ -1,22 +1,18 @@
-#https://docs.python.org/3/library/unittest.html
-from os.path import splitext, split
-#https://docs.python.org/3/library/unittest.html
-# https://docs.python.org/3/library/unittest.mock.html
-
-from os.path import splitext, split
-
-import unittest.mock as mock
-import unittest
 import logging as root_logger
-logging = root_logger.getLogger(__name__)
+import unittest
+import unittest.mock as mock
+from os.path import split, splitext
 
 import pyparsing as pp
 
+logging = root_logger.getLogger(__name__)
+
 import acab
+
 acab.setup()
 
 from acab.abstract.core.values import AcabValue
-from acab.abstract.parsing.bootstrap_parser import BootstrapParser
+from acab.abstract.parsing.TrieBootstrapper import TrieBootstrapper
 
 class BootstrapParserTests(unittest.TestCase):
 

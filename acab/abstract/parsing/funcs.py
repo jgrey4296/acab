@@ -1,18 +1,17 @@
-#!/usr/bin/env python
 # pylint: disable=bad-whitespace
 """
 Defines functions for parsers and parse -> data transform
 
 """
 import logging as root_logger
+
 import pyparsing as pp
-
 from acab.abstract.config.config import AcabConfig
-
+from acab.abstract.core.production_abstractions import (ProductionComponent,
+                                                        ProductionContainer,
+                                                        ProductionStructure)
+from acab.abstract.core.values import AcabValue, Sentence
 from acab.abstract.parsing import consts as PConst
-from acab.abstract.core.values import AcabValue
-from acab.abstract.core.values import Sentence
-from acab.abstract.core.production_abstractions import ProductionContainer, ProductionComponent, ProductionStructure
 
 logging = root_logger.getLogger(__name__)
 
