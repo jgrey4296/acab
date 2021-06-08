@@ -25,7 +25,7 @@ from acab.modules.semantics.independent import (BasicNodeSemantics,
                                                 ExclusionNodeSemantics)
 
 EXOP         = config.value("MODAL", "exop")
-EXOP_enum    = config.modal_enums[EXOP]
+EXOP_enum    = config.enums[EXOP]
 
 NEGATION_V   = config.value("Value.Structure", "NEGATION")
 BIND_V       = config.value("Value.Structure", "BIND")

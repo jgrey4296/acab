@@ -1,43 +1,29 @@
 #!/opt/anaconda3/envs/acab/bin/python
 import sys
 from os.path import abspath, expanduser
+import unittest
 
 sys.path.append(abspath(expanduser("~/github/acab")))
-import logging
-import unittest
-import unittest.mock as mock
-from os.path import split, splitext
 
 import acab
 
 config = acab.setup()
 
-import acab.modules.semantics.abstractions as ASem
-from acab.abstract.core.acab_struct import BasicNodeStruct
-from acab.abstract.core.node import AcabNode
-from acab.abstract.core.production_abstractions import (ActionOperator,
-                                                        ProductionComponent,
+from acab.abstract.core.production_abstractions import (ProductionComponent,
                                                         ProductionContainer,
                                                         ProductionOperator,
                                                         ProductionStructure)
-from acab.abstract.core.values import AcabValue, Sentence
+from acab.abstract.core.values import Sentence
 from acab.abstract.interfaces.semantic_interfaces import (AbstractionSemantics,
                                                           SemanticSystem)
 from acab.error.acab_base_exception import AcabBaseException
-from acab.error.acab_semantic_exception import AcabSemanticException
-from acab.modules.operators.query.query_operators import EQ, NEQ, HasTag
-from acab.modules.operators.transform.transform_operators import RegexOp
-from acab.modules.semantics.context_container import (ConstraintCollection,
-                                                      ContextContainer,
+from acab.modules.semantics.context_container import (ContextContainer,
                                                       ContextInstance)
-from acab.modules.semantics.dependent import BreadthTrieSemantics
-from acab.modules.semantics.independent import (BasicNodeSemantics,
-                                                ExclusionNodeSemantics)
+from acab.modules.semantics.independent import ExclusionNodeSemantics
 from acab.modules.semantics.system import BasicSemanticSystem
-from acab.modules.semantics.util import SemanticOperatorWrapDecorator
 
 EXOP         = config.value("MODAL", "exop")
-EXOP_enum    = config.modal_enums[EXOP]
+EXOP_enum    = config.enums[EXOP]
 
 NEGATION_V   = config.value("Value.Structure", "NEGATION")
 BIND_V       = config.value("Value.Structure", "BIND")
@@ -81,7 +67,9 @@ class SemanticSystemTests(unittest.TestCase):
 
     def test_retrieval(self):
         # put some semantics in semsys.mapping
-        pass
+        semsys = BasicSemanticSystem(SemanticSystemTests.StubAbsSemantic(), None)
+
+
 
     def test_failure(self):
         # put a callable in failure

@@ -43,7 +43,7 @@ from acab.modules.semantics.system import BasicSemanticSystem
 from acab.modules.semantics.util import SemanticOperatorWrapDecorator
 
 EXOP         = config.value("MODAL", "exop")
-EXOP_enum    = config.modal_enums[EXOP]
+EXOP_enum    = config.enums[EXOP]
 
 NEGATION_V   = config.value("Value.Structure", "NEGATION")
 BIND_V       = config.value("Value.Structure", "BIND")
