@@ -53,8 +53,6 @@ def default_failure(semantics, struct, instruction, ctxs, data, err):
 def example_hook(semSystem, semantics, struct: Structure, instruction: Sentence, ctxs, data=None):
     pass
 
-
-
 @dataclass
 class SemanticSystem(metaclass=abc.ABCMeta):
     """

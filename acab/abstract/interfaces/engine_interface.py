@@ -17,6 +17,9 @@ DSL_Fragment = 'DSL_Fragment'
 
 @dataclass
 class RewindEngineInterface(metaclass=abc.ABCMeta):
+    """
+    Describes how an engine can be reverted to a previous state
+    """
     # TODO  update with reloadable state of working memory
     prior_states : List[List['Sentence']] = field(default_factory=list)
     # named recall states of past kb states
@@ -39,7 +42,7 @@ class RewindEngineInterface(metaclass=abc.ABCMeta):
 
 @dataclass
 class ModuleLoaderInterface(metaclass=abc.ABCMeta):
-    """  """
+    """ Describes how an engine loads ACAB/py modules """
     _loaded_modules       : Set[Any]          = field(init=False, default_factory=set)
     modules               : List[str]         = field(default_factory=list)
     def reload_all_modules(self):
@@ -185,9 +188,10 @@ class ModuleLoaderInterface(metaclass=abc.ABCMeta):
 
 @dataclass
 class DSLBuilderInterface(metaclass=abc.ABCMeta):
-    """ Enables the assemblage of a parser from DSL Fragments """
+    """ describes engine assembly of a parser from DSL Fragments """
     root_fragment        : DSL_Interface   = field()
-    _bootstrap_parser    : BootstrapParser = field(init=False, default_factory=BootstrapParser)
+
+    _bootstrap_parser    : Bootstrapper    = field(init=False, default_factory=TrieBootstrapper)
     _main_parser         : Parser          = field(init=False)
     _query_parser        : Parser          = field(init=False)
     _parsers_initialised : bool            = field(init=False, default=False)

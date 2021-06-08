@@ -1,4 +1,7 @@
-#!/usr/bin/env python3
+"""
+A Collection of interfaces describing how information in context is collected, constrained,
+and grouped for communication between system components
+"""
 
 from typing import List, Set, Dict, Tuple, Optional, Any
 from typing import Callable, Iterator, Union, Match

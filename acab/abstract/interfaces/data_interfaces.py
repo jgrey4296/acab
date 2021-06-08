@@ -1,5 +1,8 @@
-#!/usr/bin/env python3
-# https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
+"""
+A Collection of interfaces describing how data is used in the system.
+Here, 'Data' means something analogous to ADTs
+"""
+
 from typing import List, Set, Dict, Tuple, Optional, Any
 from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
