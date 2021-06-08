@@ -99,8 +99,7 @@ class BootstrapParserTests(unittest.TestCase):
     def test_multi_add(self):
         self.assertFalse(bool(self.bp))
         self.bp.add("test.first", "awef",
-                    "test.second", "blah")
-        self.bp._structure.to_sentences()
+                 "test.second", "blah")
         result = self.bp.query("test.*")
         self.assertIsNotNone(result)
         self.assertTrue("awef" in result.exprs)

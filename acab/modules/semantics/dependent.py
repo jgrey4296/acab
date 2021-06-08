@@ -1,26 +1,11 @@
 #!/usr/bin/env python3
 import logging as root_logger
 
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match, TypeVar
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar
-
-from acab.abstract.core.values import Sentence
-from acab.abstract.core.values import AcabValue, AcabStatement
-from acab.abstract.core.node import AcabNode
-from acab.abstract.core.acab_struct import AcabStruct
-from acab.abstract.core.production_abstractions import ProductionContainer
-
-import acab.error.acab_semantic_exception as ASErr
-
-from acab.error.acab_base_exception import AcabBaseException
-
-from acab.abstract.config.config import AcabConfig
 import acab.abstract.interfaces.semantic_interfaces as SI
-from acab.abstract.interfaces.data_interfaces import StructureInterface
-
-from acab.modules.structures.trie.util import split_clauses
+import acab.error.acab_semantic_exception as ASErr
+from acab.abstract.config.config import AcabConfig
+from acab.abstract.core.values import Sentence
+from acab.abstract.core.acab_struct import BasicNodeStruct
 
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
@@ -46,6 +31,10 @@ class BreadthTrieSemantics(SI.DependentSemantics):
     Trie Semantics which map values -> Nodes
     Searches *Breadth First*
     """
+    def compatible(self, struct):
+        is_bns = isinstance(struct, BasicNodeStruct)
+        has_all_node_comp = "all_nodes" in struct.components
+        return is_bns or has_all_node_comp
 
     def insert(self, struct, sen, data=None, ctxs=None):
         if data is None:
@@ -55,7 +44,6 @@ class BreadthTrieSemantics(SI.DependentSemantics):
             return self._delete(struct, sen, data)
 
         # Get the root
-        # TODO: Ensure the struct is appropriate
         current = self.base.up(struct.root)
         for word in sen:
             semantics = self.retrieve(current)
@@ -65,8 +53,10 @@ class BreadthTrieSemantics(SI.DependentSemantics):
             else:
                 next_semantics = self.retrieve(word)
                 new_node = next_semantics.make(word, data)
+                struct.components['all_nodes'][new_node.uuid] = new_node
                 current = semantics.insert(current, new_node, data)
 
+        return current
 
     def _delete(self, struct, sen, data=None):
         parent = struct.root

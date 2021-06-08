@@ -2,18 +2,13 @@
 A Collection of interfaces describing how data is used in the system.
 Here, 'Data' means something analogous to ADTs
 """
-
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
-
-from dataclasses import dataclass,  field
-
 import abc
+from dataclasses import dataclass, field
+from typing import Any, Dict
 
-Node  = 'NodeInterface'
-Value = 'AcabValue'
+Value              = 'AcabValue'
+Node               = 'NodeInterface'
+DependentSemantics = 'DependentSemantics'
 
 @dataclass
 class NodeInterface(metaclass=abc.ABCMeta):
@@ -42,15 +37,19 @@ class NodeInterface(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def add_child(self, node) -> Node:
         pass
+
     @abc.abstractmethod
     def get_child(self, node) -> Node:
         pass
+
     @abc.abstractmethod
     def has_child(self, node) -> bool:
         pass
+
     @abc.abstractmethod
     def remove_child(self, node) -> Node:
         pass
+
     @abc.abstractmethod
     def clear_children(self):
         pass
@@ -58,12 +57,16 @@ class NodeInterface(metaclass=abc.ABCMeta):
 
 @dataclass
 class StructureInterface(metaclass=abc.ABCMeta):
-      """  """
-      root      : Node                     = field(init=False)
-      # TODO remove this?
-      semantics : 'AcabStructureSemantics' = field(default=None)
+    """ The structures which semantics operate on """
+    root  : Node                = field()
+    components : Dict[str, Any] = field(init=False, default_factory=dict)
 
-      @staticmethod
-      @abc.abstractmethod
-      def build_default() -> 'Structure':
-          pass
+    @staticmethod
+    @abc.abstractmethod
+    def build_default() -> 'Structure':
+        pass
+
+    @abc.abstractmethod
+    def __bool__(self) -> bool:
+        """ Is the Structure Empty? """
+        pass

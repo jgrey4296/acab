@@ -1,25 +1,31 @@
+from dataclasses import dataclass, field
+from weakref import WeakValueDictionary
+import logging as root_logger
+
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.interfaces.data_interfaces import StructureInterface
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.values import AcabValue
 
+logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
-ROOT = AcabValue(name=config.value("Data", "ROOT"))
 
 class AcabStruct(StructureInterface):
     """ A collection of nodes """
-
-    def __init__(self):
-        pass
+    pass
 
 class BasicNodeStruct(AcabStruct):
 
-    @staticmethod
     def build_default():
-        return BasicNodeStruct(AcabNode.Root())
+        struct = BasicNodeStruct(AcabNode.Root())
+        struct.components['all_nodes'] = WeakValueDictionary()
+        return struct
 
-    def __init__(self, root):
-        self.root = root
+    def __bool__(self):
+        return bool(self.root)
+
+    def __len__(self):
+        return len(self.components['all_nodes'])
 
 class NPArrayStruct(AcabStruct):
     pass
