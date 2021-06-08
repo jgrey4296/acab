@@ -1,7 +1,7 @@
 SHELL   := /usr/local/bin/bash
 PYS		:= $(shell find ./acab -name '*.py' -not -name '*context.py' -not -name '__init__.py')
 LOGS	:= $(shell find ./acab -name '*log.*')
-CACHES	:= $(shell find ./acab/ -regextype posix-egrep -regex .*\(.mypy_cache\|__pycache__\)$ -prune)
+CACHES	:= $(shell find ./acab/ -regextype posix-egrep -regex .*\(.mypy_cache\|__pycache__\)$)
 TOP     := ./acab
 START   := ./acab
 PAT     :=
@@ -20,15 +20,15 @@ ifneq (${fpat}, )
 	FILE_PAT := ${fpat}
 endif
 
-.PHONY: all pylint
+.PHONY: all pylint clean
 
 ## Temp targets:
 sem:
 	python -m unittest /Volumes/documents/github/acab/acab/__tests/semantics/*.py -v
 
 
+## Topological Sort test
 top:
-		# Topological Sort test
 	python -m unittest discover -v -f -s ./acab/__tests/topological_sort/ -k Topological -t ./acab -p "test_*.py"
 
 ## --
