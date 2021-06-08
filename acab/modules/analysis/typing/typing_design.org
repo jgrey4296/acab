@@ -85,3 +85,61 @@ typing -> assignments : insert sentences
      │acab│                 │typing│          │assignments│          │definitions│          │variables│
      └────┘                 └──────┘          └───────────┘          └───────────┘          └─────────┘
 #+end_example
+
+#+NAME: Checking
+#+begin_src plantuml :results value verbatim :preview t
+[-> typing : start
+assignments -> typing : Get Known Type
+typing -> variables : init new variables
+typing -> definitions : get definition
+definitions ->] : error if missing
+definitions -> typing : type prototype
+typing -> typing : check known type and use against prototype
+typing -> variables : assign variables that are discovered
+typing ->] : error if conflict
+typing -> assignments : assign discovered types
+typing -> variables : clear variables
+#+end_src
+
+#+RESULTS: Checking
+#+begin_example
+     ┌──────┐                                     ┌───────────┐          ┌─────────┐          ┌───────────┐
+     │typing│                                     │assignments│          │variables│          │definitions│
+     └──┬───┘                                     └─────┬─────┘          └────┬────┘          └─────┬─────┘
+  start │                                               │                     │                     │
+ ───────>                                               │                     │                     │
+        │                                               │                     │                     │
+        │                 Get Known Type                │                     │                     │
+        │ <──────────────────────────────────────────────                     │                     │
+        │                                               │                     │                     │
+        │                          init new variables   │                     │                     │
+        │ ────────────────────────────────────────────────────────────────────>                     │
+        │                                               │                     │                     │
+        │                                       get definition                │                     │
+        │ ──────────────────────────────────────────────────────────────────────────────────────────>
+        │                                               │                     │                     │
+        │                                               │                     │                     │ error if missing
+        │                                               │                     │                     │ ────────────────>
+        │                                               │                     │                     │
+        │                                       type prototype                │                     │
+        │ <──────────────────────────────────────────────────────────────────────────────────────────
+        │                                               │                     │                     │
+        │────┐                                                                │                     │
+        │    │ check known type and use against prototype                     │                     │
+        │<───┘                                                                │                     │
+        │                                               │                     │                     │
+        │                 assign variables that are discovered                │                     │
+        │ ────────────────────────────────────────────────────────────────────>                     │
+        │                                               │                     │                     │
+        │                                              error if conflict      │                     │
+        │ ────────────────────────────────────────────────────────────────────────────────────────────────────────────>
+        │                                               │                     │                     │
+        │            assign discovered types            │                     │                     │
+        │ ──────────────────────────────────────────────>                     │                     │
+        │                                               │                     │                     │
+        │                           clear variables     │                     │                     │
+        │ ────────────────────────────────────────────────────────────────────>                     │
+     ┌──┴───┐                                     ┌─────┴─────┐          ┌────┴────┐          ┌─────┴─────┐
+     │typing│                                     │assignments│          │variables│          │definitions│
+     └──────┘                                     └───────────┘          └─────────┘          └───────────┘
+#+end_example
