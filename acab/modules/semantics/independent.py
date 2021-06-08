@@ -1,25 +1,13 @@
-#!/usr/bin/env python3
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match, TypeVar
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, Generic
-
-from uuid import uuid1
-import itertools as it
-from enum import Enum
 import logging as root_logger
-from dataclasses import dataclass, field
-from fractions import Fraction
+from enum import Enum
+from typing import TypeVar
 
 import acab.error.acab_semantic_exception as ASErr
 from acab.abstract.config.config import AcabConfig
-from acab.abstract.core.values import AcabValue, AcabStatement
-from acab.abstract.core.values import Sentence
 from acab.abstract.core.node import AcabNode
-
+from acab.abstract.core.values import AcabValue, Sentence
 from acab.abstract.interfaces import semantic_interfaces as SI
-
-from . import util as SemUtil
+from dataclasses import dataclass
 
 Value = AcabValue
 Node  = AcabNode

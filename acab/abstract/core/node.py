@@ -2,24 +2,15 @@
 AcabNode: The internal type which knowledge base data structures use.
 
 """
-# https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar
-
-from copy import deepcopy
-from dataclasses import dataclass, field, InitVar, replace
-from fractions import Fraction
-from re import Pattern, search
-from uuid import uuid1, UUID
-from weakref import ref, WeakValueDictionary, proxy
 import logging as root_logger
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
+from uuid import UUID, uuid1
+from weakref import ref
 
-from acab.abstract.config.config import AcabConfig
-
-from acab.abstract.core.values import AcabValue, Sentence
 import acab.abstract.interfaces.data_interfaces as DI
+from acab.abstract.config.config import AcabConfig
+from acab.abstract.core.values import AcabValue, Sentence
 
 logging = root_logger.getLogger(__name__)
 

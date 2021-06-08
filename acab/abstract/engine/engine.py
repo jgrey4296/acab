@@ -9,17 +9,16 @@ import logging as root_logger
 from dataclasses import dataclass, field
 from os.path import abspath, exists, expanduser, split
 from re import compile
-from typing import (Callable, List, Mapping, Match, MutableMapping, Optional,
-                    Sequence, Set, Tuple, TypeVar, Union, cast)
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
 
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.production_abstractions import (ProductionContainer,
                                                         ProductionOperator)
 from acab.abstract.interfaces import engine_interface as EI
-from acab.abstract.interfaces.data_interfaces import StructureInterface
 from acab.abstract.interfaces.semantic_interfaces import SemanticSystem
 from acab.error.acab_base_exception import AcabBaseException
-from weak import ref
 
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
