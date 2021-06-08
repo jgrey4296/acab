@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
-#https://docs.python.org/3/library/unittest.html
-# https://docs.python.org/3/library/unittest.mock.html
+from typing import List, Set, Dict, Tuple, Optional, Any
+from typing import Callable, Iterator, Union, Match
+from typing import Mapping, MutableMapping, Sequence, Iterable
+from typing import cast, ClassVar, TypeVar, Generic
 
 import logging as root_logger
 import unittest
