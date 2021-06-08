@@ -33,22 +33,11 @@ class ConfigTests(unittest.TestCase):
         # Setup default config with default files
         cls.config = setup()
 
-        def setUp(self):
-            return 1
+    def setUp(self):
+        return 1
 
-        def tearDown(self):
-            return 1
-
-        #----------
-        # use testcase snippet
-        # mock.Mock / MagicMock
-        # create_autospec
-        # @patch(' ') / with patch.object(...)
-
-        # Test loading, getting,
-        # directory loading
-        # missing sections
-        # missing keys
+    def tearDown(self):
+        return 1
 
     def test_config_singleton(self):
         """ Check the config obj is a singleton"""
