@@ -10,33 +10,6 @@ logging = root_logger.getLogger(__name__)
 from . import wrappers
 from acab.abstract.config.config import AcabConfig
 
-config = AcabConfig.Get()
-# These don't vary at run time, so use .value
-QUERY_V          = config.value("Value.Structure", "QUERY")
-AT_BIND_V        = config.value("Value.Structure", "AT_BIND")
-CONSTRAINT_V     = config.value("Value.Structure", "CONSTRAINT")
-NEGATION_V       = config.value("Value.Structure", "NEGATION")
-OPERATOR_V       = config.value("Value.Structure", "OPERATOR")
-TYPE_INSTANCE_V  = config.value("Value.Structure", "TYPE_INSTANCE")
-BIND_V           = config.value("Value.Structure", "BIND")
-
-# These can vary at runtime, so prepare then use with print semantics:
-OBVIOUS_TYPES    = config.prepare("Print.Data", "SUPPRESSION_TYPES", actions=[AcabConfig.actions_e.SPLIT])
-
-ANON_VALUE_P     = config.prepare("Symbols", "ANON_VALUE")
-FUNC_P           = config.prepare("Symbols", "FUNC")
-END_P            = config.prepare("Symbols", "END")
-FALLBACK_MODAL_P = config.prepare("Symbols", "FALLBACK_MODAL", actions=[AcabConfig.actions_e.STRIPQUOTE])
-QUERY_SYMBOL_P   = config.prepare("Symbols", "QUERY")
-TAG_P            = config.prepare("Symbols", "TAG")
-
-SEN_JOIN_P       = config.prepare("Print.Patterns", "SEN_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE])
-CONTAINER_JOIN_P = config.prepare("Print.Patterns", "CONTAINER_JOIN")
-PARAM_JOIN_P     = config.prepare("Print.Patterns", "PARAM_JOIN")
-TAB_P            = config.prepare("Print.Patterns", "TAB", actions=[AcabConfig.actions_e.STRIPQUOTE])
-
-
-
 # Handler Types: Simple, Record, Destruct, Sentinel, Override
 def regroup_sentinel(PS, source_val, processed, acc, params):
     """

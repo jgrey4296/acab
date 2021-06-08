@@ -4,39 +4,6 @@ from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.values import Sentence
 
 config = AcabConfig.Get()
-#Static
-TYPE_INSTANCE_V  = config.value("Value.Structure", "TYPE_INSTANCE")
-BIND_V           = config.value("Value.Structure", "BIND")
-CONSTRAINT_V     = config.value("Value.Structure", "CONSTRAINT")
-OPERATOR_V       = config.value("Value.Structure", "OPERATOR")
-NEGATION_V       = config.value("Value.Structure", "NEGATION")
-QUERY_V          = config.value("Value.Structure", "QUERY")
-
-# Runtime dynamic
-OBVIOUS_TYPES_P  = config.prepare("Print.Data", "SUPPRESSION_TYPES", actions=[AcabConfig.actions_e.SPLIT])
-
-TAB_P            = config.prepare("Print.Patterns", "TAB", actions=[AcabConfig.actions_e.STRIPQUOTE])
-WRAP_FORMAT_P    = config.prepare("Print.Patterns", "WRAP_FORMAT")
-PARAM_JOIN_P     = config.prepare("Print.Patterns", "PARAM_JOIN")
-STR_WRAP_P       = config.prepare("Print.Patterns", "STR_WRAP")
-REGEX_WRAP_P     = config.prepare("Print.Patterns", "REGEX_WRAP")
-
-
-BIND_P           = config.prepare("Symbols", "BIND")
-AT_BIND_P        = config.prepare("Symbols", "AT_BIND")
-END_P            = config.prepare("Symbols", "END")
-FALLBACK_MODAL_P = config.prepare("Symbols", "FALLBACK_MODAL", actions=[AcabConfig.actions_e.STRIPQUOTE])
-FUNC_P           = config.prepare("Symbols", "FUNC")
-NEGATION_P       = config.prepare("Symbols", "NEGATION")
-QUERY_P          = config.prepare("Symbols", "QUERY")
-TAG_P            = config.prepare("Symbols", "TAG")
-REBIND_P         = config.prepare("Symbols", "REBIND")
-SUGAR_P          = config.prepare("Symbols", "SUGAR")
-
-# TODO add an action to build a sentence
-STRING_SEN         = Sentence.build([config.value("Type.Primitive", "STRING")])
-REGEX_SEN          = Sentence.build([config.value("Type.Primitive", "REGEX")])
-
 
 
 def _maybe_wrap_str(PS, value, current):

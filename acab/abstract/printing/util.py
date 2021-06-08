@@ -25,51 +25,6 @@ from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.node import AcabNode
 
-
-config        = AcabConfig.Get()
-OBVIOUS_TYPES = config.value("Print.Data", "SUPPRESSION_TYPES").split(" ")
-
-
-# TODO replace this with pulling the dict straight from config
-PARAM_JOIN_V                                         = config.value(
-    "Print.Patterns", "PARAM_JOIN", actions          =[AcabConfig.actions_e.STRIPQUOTE]
-)
-PRINT_SENTINEL_JOIN_P                                = config.prepare(
-    "Print.Patterns", "PRINT_SENTINEL_JOIN", actions =[AcabConfig.actions_e.STRIPQUOTE]
-)
-SEN_JOIN_V                                           = config.value(
-    "Print.Patterns", "SEN_JOIN", actions            =[AcabConfig.actions_e.STRIPQUOTE]
-)
-TAB_V                                                = config.value("Print.Patterns", "TAB", actions=[AcabConfig.actions_e.STRIPQUOTE])
-WRAP_FORMAT_V                                        = config.value("Print.Patterns", "WRAP_FORMAT")
-CONTAINER_JOIN_V                                     = config.value(
-    "Print.Patterns", "CONTAINER_JOIN", actions      =[AcabConfig.actions_e.STRIPQUOTE]
-)
-
-AT_BIND_V                                = config.value("Value.Structure", "AT_BIND")
-BIND_V                                   = config.value("Value.Structure", "BIND")
-CONSTRAINT_V                             = config.value("Value.Structure", "CONSTRAINT")
-NEGATION_V                               = config.value("Value.Structure", "NEGATION")
-OPERATOR_V                               = config.value("Value.Structure", "OPERATOR")
-QUERY_V                                  = config.value("Value.Structure", "QUERY")
-TAG_V                                    = config.value("Value.Structure", "TAG")
-TYPE_INSTANCE_V                          = config.value("Value.Structure", "TYPE_INSTANCE")
-
-END_V                                    = config.value("Parse.Structure", "END")
-FUNC_V                                   = config.value("Parse.Structure", "FUNC")
-
-AT_BIND_SYMBOL_V                         = config.value("Symbols", "AT_BIND")
-BIND_SYMBOL_V                            = config.value("Symbols", "BIND")
-END_SYMBOL_V                             = config.value("Symbols", "END")
-FALLBACK_MODAL_SYMBOL_V                  = config.value(
-    "Symbols", "FALLBACK_MODAL", actions =[AcabConfig.actions_e.STRIPQUOTE]
-)
-FUNC_SYMBOL_V                            = config.value("Symbols", "FUNC")
-NEGATION_SYMBOL_V                        = config.value("Symbols", "NEGATION")
-QUERY_SYMBOL_V                           = config.value("Symbols", "QUERY")
-TAG_SYMBOL_V                             = config.value("Symbols", "TAG")
-
-
 def _handle_printable(printer, data, func, params):
         # A Printable value to find instructions for
         assert func is None
