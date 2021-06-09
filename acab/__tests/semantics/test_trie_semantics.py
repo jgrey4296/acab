@@ -270,16 +270,75 @@ class TrieSemanticTests(unittest.TestCase):
     # -------
 
 
-    def test_trie_to_sentences(self):
-        # TODO
+    def test_trie_to_sentences_simple(self):
         # Create sem
-
-        # create struct
-
+        node_sem = BasicNodeSemantics()
+        trie_sem = BreadthTrieSemantics(base=node_sem)
+        trie_struct = BasicNodeStruct.build_default()
+        # Create sentence
+        sen = Sentence.build(["a", "test", "sentence"])
+        trie_sem.insert(trie_struct, sen)
         # call to_sentences
-
+        results = trie_sem.to_sentences(trie_struct)
         # check
-        pass
+        self.assertEqual(len(results), 1)
+        self.assertEqual(len(results[0]), 3)
+
+    def test_trie_to_sentences_multi(self):
+        # Create sem
+        node_sem = BasicNodeSemantics()
+        trie_sem = BreadthTrieSemantics(base=node_sem)
+        trie_struct = BasicNodeStruct.build_default()
+        # Create sentence
+        sen = Sentence.build(["a", "test", "sentence"])
+        trie_sem.insert(trie_struct, sen)
+        sen2 = Sentence.build(["a", "different", "sentence", "length"])
+        trie_sem.insert(trie_struct, sen2)
+        # call to_sentences
+        results = trie_sem.to_sentences(trie_struct)
+        # check
+        self.assertEqual(len(results), 2)
+        self.assertEqual(len(results[0]), 3)
+        self.assertEqual(len(results[1]), 4)
+
+    def test_trie_to_sentences_duplicates(self):
+        # Create sem
+        node_sem = BasicNodeSemantics()
+        trie_sem = BreadthTrieSemantics(base=node_sem)
+        trie_struct = BasicNodeStruct.build_default()
+        # Create sentence
+        sen = Sentence.build(["a", "test", "sentence"])
+        trie_sem.insert(trie_struct, sen)
+        sen2 = Sentence.build(["a", "test", "sentence"])
+        trie_sem.insert(trie_struct, sen2)
+        # call to_sentences
+        results = trie_sem.to_sentences(trie_struct)
+        # check
+        self.assertEqual(len(results), 1)
+        self.assertEqual(len(results[0]), 3)
+
+    def test_trie_to_sentences_statements(self):
+        # Create sem
+        node_sem = BasicNodeSemantics()
+        trie_sem = BreadthTrieSemantics(base=node_sem)
+        trie_struct = BasicNodeStruct.build_default()
+        # Create sentence
+        sen = Sentence.build(["a", "test", "sentence"])
+        trie_sem.insert(trie_struct, sen)
+        sen2 = Sentence.build(["a", "different", "sentence"])
+        sen3 = Sentence.build(["a", "statement"])
+        total_sen = sen3.attach_statement(sen2)
+        trie_sem.insert(trie_struct, total_sen)
+        # call to_sentences
+        results = trie_sem.to_sentences(trie_struct)
+        # check
+        self.assertEqual(len(results), 2)
+        self.assertEqual(len(results[0]), 2)
+        self.assertIsInstance(results[0][-1], Sentence)
+
+
+
+
 
 
 if __name__ == '__main__':
