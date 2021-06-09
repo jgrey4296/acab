@@ -10,13 +10,12 @@ acab.setup()
 
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
-from acab.abstract.parsing.bootstrap_parser import BootstrapParser
+from acab.abstract.parsing.TrieBootstrapper import TrieBootstrapper
 from acab.abstract.core.production_abstractions import ProductionOperator, ProductionContainer
-from acab.working_memory.trie_wm import util as KBU
-from acab.modules.parsing.el_parsing TransformParser as TP
 
-from acab.modules.parsing.el_parsing ActionParser as AP
-from acab.modules.parsing.el_parsing FactParser as FP
+from acab.modules.parsing.el_parsing import TransformParser as TP
+from acab.modules.parsing.el_parsing import ActionParser as AP
+from acab.modules.parsing.el_parsing import FactParser as FP
 
 from acab.abstract.semantics.print_semantics import AcabPrintSemantics
 from acab.abstract.printing import default_handlers as DH
@@ -35,7 +34,7 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
         logging = root_logger.getLogger(__name__)
 
         # setup class
-        bp = BootstrapParser()
+        bp = TrieBootstrapper()
         TP.HOTLOAD_TRANS_OP << bp.query('operator.ProductionContainer.*',
                                         'operator.sugar')
         TP.HOTLOAD_TRANS_STATEMENTS << bp.query("operator.ProductionContainer.statements.*",

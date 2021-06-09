@@ -11,7 +11,7 @@ acab.setup()
 
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
-from acab.abstract.parsing.bootstrap_parser import BootstrapParser
+from acab.abstract.parsing.TrieBootstrapper_parser import TrieBootstrapper
 from acab.abstract.engine.engine import Engine
 from acab.abstract.core.production_abstractions import ProductionOperator
 
@@ -42,7 +42,7 @@ class Trie_WM_Tests(unittest.TestCase):
         logging = root_logger.getLogger(__name__)
 
     def setUp(self):
-        bp = BootstrapParser()
+        bp = TrieBootstrapper()
         self.trieWM = TrieWM()
         self.trieWM.assert_parsers(bp)
         self.trieWM.query_parsers(bp)

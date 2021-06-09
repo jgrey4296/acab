@@ -14,13 +14,11 @@ from acab.abstract.core.production_abstractions import ProductionComponent, Prod
 
 from acab.modules.values import numbers
 from acab.modules.values.numbers.parsing import NumberParser as NP
-from acab.working_memory.trie_wm import util as KBU
 from acab.modules.parsing.el_parsing ActionParser as AP
 from acab.modules.parsing.el_parsing FactParser as FP
 from acab.modules.parsing.el_parsing QueryParser as QP
 from acab.modules.parsing.el_parsing RuleParser as RP
 from acab.modules.parsing.el_parsing TransformParser as TP
-from acab.working_memory.trie_wm.trie_working_memory import TrieWM
 
 class NumberRuleTests(unittest.TestCase):
     ns = None

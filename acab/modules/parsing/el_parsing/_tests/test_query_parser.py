@@ -14,7 +14,7 @@ import acab.modules.parsing.el_parsing.QueryParser as QP
 
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
-from acab.abstract.parsing.bootstrap_parser import BootstrapParser
+from acab.abstract.parsing.TrieBootstrapper import TrieBootstrapper
 from acab.abstract.core.production_abstractions import ProductionOperator, ProductionContainer, ProductionComponent
 
 from acab.modules.operators import query as QOP
@@ -39,7 +39,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         root_logger.getLogger('').addHandler(console)
         logging = root_logger.getLogger(__name__)
 
-        bp = BootstrapParser()
+        bp = TrieBootstrapper()
         qmod = QOP.MODULE()
         qmod.assert_parsers(bp)
         FP.HOTLOAD_ANNOTATIONS << bp.query("query.annotation.*")

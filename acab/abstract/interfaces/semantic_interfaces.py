@@ -22,7 +22,6 @@ from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic
 
 from acab.abstract.config.config import AcabConfig
-from acab.abstract.semantics import util as SemUtil
 from acab.error.acab_semantic_exception import AcabSemanticException
 from acab.modules.semantics.context_container import ContextContainer
 

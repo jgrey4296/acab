@@ -13,7 +13,7 @@ from acab.abstract.core.values import AcabValue
 from acab.abstract.core.node import AcabNode
 from acab.abstract.containers import action
 from acab.abstract.core.production_abstractions import ProductionOperator, ProductionComponent
-from acab.abstract.parsing.bootstrap_parser import BootstrapParser
+from acab.abstract.parsing.TrieBootstrapper import TrieBootstrapper
 
 from acab.modules.analysis.typing import type_exceptions as te
 from acab.modules.analysis.typing import util as TU
@@ -45,7 +45,7 @@ class TypingCombinedTests(unittest.TestCase):
         root_logger.getLogger('').addHandler(console)
         logging = root_logger.getLogger(__name__)
 
-        bp = BootstrapParser()
+        bp = TrieBootstrapper()
         twm = TrieWM()
         ts = TypingSpec()
         twm.assert_parsers(bp)

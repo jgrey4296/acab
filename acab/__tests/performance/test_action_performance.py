@@ -13,7 +13,7 @@ from acab.abstract.parsing import consts as PConst
 from acab.abstract.core.values import  AcabValue
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.production_abstractions import ProductionOperator, ProductionContainer
-from acab.abstract.parsing.bootstrap_parser import BootstrapParser
+from acab.abstract.parsing.TrieBootstrapper import TrieBootstrapper
 
 from acab.abstract.engine.engine import Engine
 from acab.modules.parsing.el_parsing import ActionParser as AP
