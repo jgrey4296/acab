@@ -37,6 +37,9 @@ class TrieBootstrapper(Bootstrapper):
     """ Manage parsers and allow queries for hotloading,
     used in working memory and module interfaces """
 
+
+    WILDCARD_STR = "*"
+
     def __init__(self):
         super().__init__()
         self._semantics = BreadthTrieSemantics(BasicNodeSemantics())
@@ -77,15 +80,13 @@ class TrieBootstrapper(Bootstrapper):
         # Run queries
         for query in queries:
             ctxs = ContextContainer.build()
-            # TODO add BIND
             q_sentence = Sentence.build(query.split('.'))
-            for word in q_sentence:
-                if word.value == "*":
-                    word.data[BIND_S] = True
+            if q_sentence[-1].name == TrieBootstrapper.WILDCARD_STR:
+                    q_sentence[-1].data[BIND_S] = True
 
             self._semantics.query(self._structure, q_sentence, ctxs=ctxs)
             if not bool(ctxs):
-                logging.warning(f"No parser found in: {query}")
+                logging.warning(f"Parser Query Empty: {query}")
             else:
                 nodes = [x._current for x in ctxs.active_list()]
                 parsers = [x.data['parser'] for x in nodes if 'parser' in x.data]
@@ -93,7 +94,8 @@ class TrieBootstrapper(Bootstrapper):
 
         # Having found all parsers for the queries, join them and return
         if not bool(results):
-            raise Exception("No Parsers found for: {}".format(" | ".join(queries)))
+            logging.warning("Total Parser Query Empty: {}".format(" | ".join(queries)))
+            return pp.Empty()
         elif len(results) == 1:
             final_parser = results[0]
         else:
