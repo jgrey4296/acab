@@ -63,7 +63,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
 
     def test_exclusion_operator_parsing(self):
         result = FP.parseString('a!b!c')[0]
-        self.assertTrue(all([x.data['exop'] == config.modal_enums['exop'].EX for x in result[:-1]]))
+        self.assertTrue(all([x.data['exop'] == config.enums['exop'].EX for x in result[:-1]]))
 
     def test_strings(self):
         result = FP.parseString('a.b."This is a test"!c')[0]

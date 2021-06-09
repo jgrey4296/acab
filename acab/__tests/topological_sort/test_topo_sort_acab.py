@@ -93,10 +93,11 @@ class TopologicalOrderedAcabTests(unittest.TestCase):
     def test_modal_spec(self):
         """ Check modal fields exist """
         config = AcabConfig.Get()
-        self.assertTrue(config.modal_enums)
-        self.assertTrue(config.modal_defaults)
-        self.assertTrue(config.modal_printing)
-        self.assertTrue(config.modal_syntax_lookup)
+        # TODO update these
+        self.assertTrue(config.enums)
+        self.assertTrue(config.defaults)
+        self.assertTrue(config.printing_extension)
+        self.assertTrue(config.syntax_extension)
         # TODO Check values *in* the modal structures
 
     def test_config_value_missing(self):
