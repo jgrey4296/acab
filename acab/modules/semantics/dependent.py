@@ -4,7 +4,7 @@ import logging as root_logger
 import acab.abstract.interfaces.semantic_interfaces as SI
 import acab.error.acab_semantic_exception as ASErr
 from acab.abstract.config.config import AcabConfig
-from acab.abstract.core.values import Sentence
+from acab.abstract.core.values import Sentence, AcabStatement
 from acab.abstract.core.acab_struct import BasicNodeStruct
 
 logging = root_logger.getLogger(__name__)
@@ -17,7 +17,6 @@ DEFAULT_SETUP_S  = config.value("Data", "DEFAULT_SETUP_METHOD")
 DEFAULT_UPDATE_S = config.value("Data", "DEFAULT_UPDATE_METHOD")
 
 Node          = 'AcabNode'
-Sentence      = 'Sentence'
 Printable     = 'Printable'
 Value         = 'AcabValue'
 Structure     = 'AcabStruct'
@@ -127,12 +126,13 @@ class BreadthTrieSemantics(SI.DependentSemantics):
             if bool(accessible):
                 # branch
                 queue += [(updated_path, x) for x in accessible]
-            else:
-                # leaf
-                result_list.append(Sentence.build(updated_path))
 
-        # TODO insert result as a ctx?
-        raise NotImplementedError()
+            if not bool(accessible) or isinstance(current.value, AcabStatement):
+                # Leaves and Statements
+                # Always ignore the root node
+                result_list.append(Sentence.build(updated_path[1:]))
+
+        return result_list
 
 class FSMSemantics(SI.DependentSemantics):
 
