@@ -26,7 +26,7 @@ AGENDA_SEM_HINT    = Sentence.build([config.value("SEMANTICS", "AGENDA")])
 LAYER_SEM_HINT     = Sentence.build([config.value("SEMANTICS", "LAYER")])
 PIPELINE_SEM_HINT  = Sentence.build([config.value("SEMANTICS", "PIPELINE")])
 
-def make_value(toks):
+def make_value(s, loc, toks):
     """ Make a value coupled with additional data """
     value = None
     _type = PConst.ATOM_V
@@ -54,7 +54,7 @@ def make_value(toks):
     new_val = AcabValue.safe_make(value, data=data, _type=_type)
     return new_val
 
-def add_annotations(toks):
+def add_annotations(s, loc, toks):
     """ Add additional data to a node """
     update_data = {}
     if PConst.MODAL_S in toks:
@@ -67,7 +67,7 @@ def add_annotations(toks):
 
 
 
-def construct_multi_sentences(toks):
+def construct_multi_sentences(s, loc, toks):
     # TODO use sentence.build
     base_sen = toks[PConst.NAME_S][0]
     additional_sentences = toks[PConst.STATEMENT_S]
@@ -84,14 +84,14 @@ def construct_multi_sentences(toks):
 
     return new_sentences
 
-def construct_sentence(toks):
+def construct_sentence(s, loc, toks):
     assert(PConst.SEN_S in toks)
     data = {PConst.NEGATION_S : False}
     if PConst.NEGATION_S in toks:
         data[PConst.NEGATION_S] = True
     return Sentence.build(toks[PConst.SEN_S][:], data=data)
 
-def construct_statement(toks):
+def construct_statement(s, loc, toks):
     # Take the statement, and add it to the location
     sen   = toks[PConst.NAME_S][0]
     targs = []
@@ -110,16 +110,16 @@ def construct_statement(toks):
 
     return new_sentence
 
-def build_constraint_list(toks):
+def build_constraint_list(s, loc, toks):
     """ Build a constraint list """
     return (PConst.CONSTRAINT_S, [x[1] for x in toks[:]])
 
-def build_query_component(toks):
+def build_query_component(s, loc, toks):
     """ Build a comparison """
     op = toks[PConst.OPERATOR_S][0]
     return (PConst.CONSTRAINT_S, ProductionComponent(value=op, params=[toks[PConst.VALUE_S]]))
 
-def build_clause(toks):
+def build_clause(s, loc, toks):
     # detect negation and annotate the clause with it
     data = { PConst.QUERY_S : True,
              PConst.QUERY_FALLBACK_S : None }
@@ -133,15 +133,15 @@ def build_clause(toks):
     toks[0].data.update(data)
     return toks
 
-def build_query(toks):
+def build_query(s, loc, toks):
     query = ProductionContainer(value=toks[:],
                                 data={SEMANTIC_HINT_V: QUERY_SEM_HINT})
     return (PConst.QUERY_S, query)
 
-def build_assignment(toks):
+def build_assignment(s, loc, toks):
     return (toks[0][1], toks[1])
 
-def build_action_component(toks):
+def build_action_component(s, loc, toks):
     params = []
     if PConst.LEFT_S in toks:
         params.append(toks[PConst.LEFT_S])
@@ -152,7 +152,7 @@ def build_action_component(toks):
     return ProductionComponent(value=op, params=filtered_params, sugared=PConst.LEFT_S in toks)
 
 
-def build_action(toks):
+def build_action(s, loc, toks):
     # TODO: check this
     clauses = [x if isinstance(x, ProductionComponent)
                else ProductionComponent(value=Sentence.build([PConst.DEFAULT_ACTION_S]), params=[x]) for x in toks]
@@ -160,9 +160,9 @@ def build_action(toks):
     act = ProductionContainer(value=clauses,
                               data={SEMANTIC_HINT_V : ACTION_SEM_HINT})
 
-    return (act.type, act)
+    return (PConst.ACTION_S, act)
 
-def build_transform_component(toks):
+def build_transform_component(s, loc, toks):
     params = []
     if PConst.LEFT_S in toks:
         params.append(toks[PConst.LEFT_S][0])
@@ -180,13 +180,12 @@ def build_transform_component(toks):
                                rebind=rebind,
                                sugared=PConst.LEFT_S in toks)
 
-def build_transform(toks):
+def build_transform(s, loc, toks):
     trans = ProductionContainer(value=toks[:],
                                 data={SEMANTIC_HINT_V : TRANSFORM_SEM_HINT})
     return (PConst.TRANSFORM_S, trans)
 
-def build_rule(toks, sem_hint=None):
-
+def build_rule(s, loc, toks, sem_hint=None):
     # Get Conditions
     if PConst.QUERY_S in toks:
         c = toks[PConst.QUERY_S][0][1]
@@ -209,9 +208,9 @@ def build_rule(toks, sem_hint=None):
         a = None
 
     structure = {
-        PConst.QUERY_S : c,
+        PConst.QUERY_S     : c,
         PConst.TRANSFORM_S : t,
-        PConst.ACTION_S : a
+        PConst.ACTION_S    : a
         }
 
     if sem_hint is None:
@@ -222,15 +221,15 @@ def build_rule(toks, sem_hint=None):
                                data={SEMANTIC_HINT_V: sem_hint})
     return (rule.type, rule)
 
-def make_agenda(toks):
+def make_agenda(s, loc, toks):
     rule_type_str, as_rule = build_rule(toks, sem_hint=AGENDA_SEM_HINT)
     return  (PConst.AGENDA_S, as_rule)
 
-def make_layer(toks):
+def make_layer(s, loc, toks):
     rule_type_str, as_rule = build_rule(toks, sem_hint=LAYER_SEM_HINT)
     return  (PConst.LAYER_S, as_rule)
 
 
-def make_pipeline(toks):
+def make_pipeline(s, loc, toks):
     rule_type_str, as_rule = build_rule(toks, sem_hint=PIPELINE_SEM_HINT)
     return  (PConst.PIPELINE_S, as_rule)

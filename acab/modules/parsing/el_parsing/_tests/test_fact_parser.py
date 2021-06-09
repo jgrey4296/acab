@@ -82,7 +82,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
     def test_valbind_expansion(self):
         """ Test added new parsers to the valbind parser """
         new_parser = pp.Word("¿awef")
-        new_parser.setParseAction(lambda t: ("awef", t[0]))
+        new_parser.setParseAction(lambda s, l, t: ("awef", t[0]))
 
         HOTLOAD_VALUES << new_parser
 

@@ -16,7 +16,7 @@ from acab.abstract.parsing import parsers as PU
 logging = root_logger.getLogger(__name__)
 
 
-def make_valbind(tokens):
+def make_valbind(s, loc, tokens):
     # TODO: replace this with an acab value
     data = {BIND_S: False,
             OPT_S: False,
@@ -66,7 +66,7 @@ main_pattern = PU.s(OBRACKET) + pattern + PU.s(CBRACKET)
 # Actions
 Time_VALBIND.setParseAction(make_valbind)
 pattern.setParseAction(construct_pattern_simple)
-main_pattern.setParseAction(lambda x: (PATTERN_S, x[0][0]))
+main_pattern.setParseAction(lambda s, l, t: (PATTERN_S, t[0][0]))
 OBRACKET.setParseAction(lambda x: CTOR_ACT.PSTART)
 CBRACKET.setParseAction(lambda x: CTOR_ACT.PEND)
 COMMA.setParseAction(lambda x: CTOR_ACT.PDUAL)

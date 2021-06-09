@@ -38,10 +38,10 @@ class StatementTests(unittest.TestCase):
     #use testcase snippets
     def test_basic_tag(self):
         basic_node_parser = pp.Keyword('test')
-        basic_node_parser.setParseAction(lambda toks: Sentence.build([AcabValue(toks[0])]))
+        basic_node_parser.setParseAction(lambda s, l, toks: Sentence.build([AcabValue(toks[0])]))
 
         basic_value_parser = pp.Keyword('value') + pp.lineEnd
-        basic_value_parser.setParseAction(lambda toks: ('value', AcabStatement(toks[0])))
+        basic_value_parser.setParseAction(lambda s, l, toks: ('value', AcabStatement(toks[0])))
 
         statement_p = PU.STATEMENT_CONSTRUCTOR(pp.Keyword('blah'),
                                                basic_node_parser,
@@ -53,10 +53,10 @@ class StatementTests(unittest.TestCase):
 
     def test_basic_tag_plural(self):
         basic_node_parser = pp.Keyword('test')
-        basic_node_parser.setParseAction(lambda toks: Sentence.build([AcabValue(toks[0])]))
+        basic_node_parser.setParseAction(lambda s, l, toks: Sentence.build([AcabValue(toks[0])]))
 
         basic_value_parser = pp.Keyword('value') + pp.lineEnd
-        basic_value_parser.setParseAction(lambda toks: ('value', AcabStatement(toks[0])))
+        basic_value_parser.setParseAction(lambda s, l, toks: ('value', AcabStatement(toks[0])))
 
         statement_p = PU.STATEMENT_CONSTRUCTOR(pp.Keyword('blah'),
                                                basic_node_parser,

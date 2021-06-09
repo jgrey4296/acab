@@ -19,9 +19,9 @@ from . import ActionParser as AP
 
 logging = root_logger.getLogger(__name__)
 
-conditions = N(QUERY_S, QP.clauses + gap)
+conditions = N(QUERY_S,     QP.clauses + gap)
 transforms = N(TRANSFORM_S, TP.transforms + gap)
-actions    = NG(ACTION_S, AP.actions + component_gap)
+actions    = N(ACTION_S,    AP.actions + component_gap)
 
 rule_body = op(conditions) + op(transforms) + op(actions)
 
@@ -31,6 +31,7 @@ rule = PU.STATEMENT_CONSTRUCTOR(RULE_HEAD,
                                 args=False)
 
 rules = pp.delimitedList(rule, delim=emptyLine)
+
 
 # Actions:
 rule_body.setParseAction(build_rule)

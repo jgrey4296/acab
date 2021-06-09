@@ -17,9 +17,6 @@ from acab.modules.parsing.el_parsing import TransformParser as TP
 from acab.modules.parsing.el_parsing import ActionParser as AP
 from acab.modules.parsing.el_parsing import FactParser as FP
 
-from acab.abstract.semantics.print_semantics import AcabPrintSemantics
-from acab.abstract.printing import default_handlers as DH
-
 class Trie_Transform_Parser_Tests(unittest.TestCase):
 
     @classmethod

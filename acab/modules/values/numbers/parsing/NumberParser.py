@@ -36,14 +36,14 @@ FRACT = INT + SLASH + INT
 OCT = pp.empty
 HEX = pp.empty
 
-def build_int(toks):
+def build_int(s, loc, toks):
     return (NU.INT_t, int(toks[0]))
 
-def build_decimal(toks):
+def build_decimal(s, loc, toks):
     the_num = float("{}.{}".format(toks[0][1],toks[1][1]))
     return (NU.FLOAT_t, the_num)
 
-def build_fraction(toks):
+def build_fraction(s, loc, toks):
     the_num = Fraction(toks[0][1], toks[1][1])
     return (NU.FRACT_t, the_num)
 
