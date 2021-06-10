@@ -12,9 +12,6 @@ Value gets the value at call time.
 
 Actions are available for preprocessing the value
 
-TODO add hook functionality
-TODO use acab errors instead
-TODO have default config files
 """
 
 from configparser import ConfigParser, ExtendedInterpolation
@@ -135,7 +132,7 @@ class AcabConfig():
         if in_section:
             value = self._config[section][key]
         else:
-            raise Exception(f"missing util value: {section} {key}")
+            raise AcabConfigException(f"missing util value: {section} {key}")
 
         if value is None:
             value = key
@@ -163,7 +160,7 @@ class AcabConfig():
         if in_section:
             return (section, key, actions, as_list, as_dict)
 
-        raise Exception("missing util value: {} {}".format(section, key))
+        raise AcabConfigException("missing util value: {} {}".format(section, key))
 
     @property
     def loaded(self):

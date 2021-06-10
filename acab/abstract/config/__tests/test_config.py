@@ -13,6 +13,7 @@ from os.path import split, splitext
 from acab import setup
 
 from acab.abstract.config.config import AcabConfig
+from acab.error.acab_config_exception import AcabConfigException
 
 class ConfigTests(unittest.TestCase):
 
@@ -76,14 +77,14 @@ class ConfigTests(unittest.TestCase):
     def test_config_value_missing(self):
         """ Check error is thrown for missing value """
         config = AcabConfig.Get()
-        with self.assertRaises(Exception):
+        with self.assertRaises(AcabConfigException):
             config.value("blah", "bloo")
 
     def test_config_prepare_missing(self):
         """ Check config errors if you prepare
         a missing value """
         config = AcabConfig.Get()
-        with self.assertRaises(Exception):
+        with self.assertRaises(AcabConfigException):
             config.prepare("blah", "bloo")
 
     def test_modal_spec_missing(self):
@@ -92,7 +93,7 @@ class ConfigTests(unittest.TestCase):
         """
         config = AcabConfig.Get()
         with self.assertRaises(Exception):
-            config.modal_enums['blah']
+            config.enums['blah']
 
 
     # -> ClosedSet[Values, Node]
