@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
 from typing import List, Set, Dict, Tuple, Optional, Any
 from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
@@ -244,7 +242,7 @@ class ContextInstance(CtxInt.ContextInstance):
 
     def set_current_binding(self, word):
         if word.name not in self.nodes:
-            raise ASErr.AcabSemanticException("No Recognised binding", word)
+            raise ASErr.AcabSemanticException("No Recognised binding", (word, self.nodes))
 
         self.set_current_node(self.nodes[word.name])
         return self

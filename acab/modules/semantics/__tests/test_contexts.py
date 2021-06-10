@@ -1,4 +1,3 @@
-#https://docs.python.org/3/library/unittest.html
 from os.path import splitext, split
 import unittest
 import logging as root_logger
@@ -8,8 +7,8 @@ import acab
 config = acab.setup()
 
 from acab.abstract.core.values import AcabValue
-
-AT_BIND_S = config.value("Value.Structure", "AT_BIND")
+from acab.modules.semantics.context_container import ContextContainer, ContextInstance
+from acab.error.acab_semantic_exception import AcabSemanticException
 
 class ContextsTests(unittest.TestCase):
 
@@ -24,92 +23,120 @@ class ContextsTests(unittest.TestCase):
         root_logger.getLogger('').addHandler(console)
         logging = root_logger.getLogger(__name__)
 
-    def setUp(self):
-        return 1
-
-    def tearDown(self):
-        return 1
-
     #----------
-    def test_basic(self):
-        ctx = Contexts()
+    def test_container_basic(self):
+        ctx = ContextContainer()
         self.assertIsNotNone(ctx)
-        self.assertFalse(bool(ctx))
-        self.assertEqual(len(ctx), 0)
-
-    def test_static_initial(self):
-        ctx = Contexts(start_node="test")
-        self.assertIsNotNone(ctx)
-        self.assertFalse(bool(ctx))
-        self.assertEqual(len(ctx), 0)
-
-    def test_append(self):
-        ctx = Contexts()
-        self.assertFalse(bool(ctx))
-        self.assertEqual(len(ctx), 0)
-        ctx.append([({}, "test")])
         self.assertTrue(bool(ctx))
         self.assertEqual(len(ctx), 1)
-        ctx.append([({}, "test2")])
-        self.assertEqual(len(ctx), 2)
 
-    def test_append_2(self):
-        ctx = Contexts()
+    def test_instance_basic(self):
+        inst = ContextInstance()
+        self.assertEqual(inst.data, {})
+        self.assertEqual(inst.nodes, {})
+
+    def test_instance_bindings(self):
+        inst = ContextInstance(data={"a" : 2, "b" : 3})
+        self.assertEqual(inst.data['a'], 2)
+        self.assertEqual(inst.data['b'], 3)
+
+    def test_instance_nodes(self):
+        inst = ContextInstance(nodes={"a": 2, "b": 3})
+        self.assertEqual(inst.nodes["a"], 2)
+        self.assertEqual(inst.nodes["b"], 3)
+
+    def test_instance_copy(self):
+        inst = ContextInstance(data={"a": 2, "b": 3})
+        inst2 = inst.copy()
+        inst2.data["a"] = 5
+        self.assertNotEqual(id(inst), id(inst2))
+        self.assertNotEqual(inst.uuid, inst2.uuid)
+        self.assertEqual(inst.data["a"], 2)
+        self.assertEqual(inst2.data["a"], 5)
+
+    def test_container_append(self):
+        ctx = ContextContainer()
+        self.assertTrue(bool(ctx))
+        ctx.pop()
         self.assertFalse(bool(ctx))
         self.assertEqual(len(ctx), 0)
-        ctx.append([({}, "test"),
-                   ({}, "test2"),
-                   ({}, "test3")])
+        ctx.push(ContextInstance())
+        self.assertTrue(bool(ctx))
+        self.assertEqual(len(ctx), 1)
+        ctx.push(ContextInstance())
+        self.assertEqual(len(ctx), 2)
+
+    def test_container_append_2(self):
+        ctx = ContextContainer()
+        ctx.pop()
+        self.assertFalse(bool(ctx))
+        ctx.push([ContextInstance(),
+                  ContextInstance(),
+                  ContextInstance()])
         self.assertTrue(bool(ctx))
         self.assertEqual(len(ctx), 3)
 
-    def test_invert(self):
-        ctx = Contexts()
-        ctx.force_node_position(target="blah")
-        self.assertTrue(bool(ctx))
-        ctx.fail()
+    def test_container_fail(self):
+        ctx = ContextContainer()
+        inst = ctx.pop()
         self.assertFalse(bool(ctx))
+        ctx.fail(inst, "fail word", "fail_node")
+        self.assertFalse(bool(ctx))
+        self.assertEqual(inst._failure_word, "fail word")
+        self.assertContains(inst.uuid, ctx._purgatory)
 
-    def test_iteration(self):
-        ctx = Contexts()
-        ctx.append([({'a': True}, "test")])
-        ctx.append([({'b': True}, "test2")])
-        ctx.append([({'c': True}, "test3")])
+    def test_container_iteration(self):
+        ctx = ContextContainer()
+        ctx.pop()
+        ctx.push([ContextInstance({"a" : 1}),
+                  ContextInstance({"b" : 2}),
+                  ContextInstance({"c" : 3})])
 
         for x,y in zip(ctx, ['a','b','c']):
-            self.assertTrue(y in x.keys())
+            self.assertTrue(y in x.data)
 
-    def test_force_node_position_target(self):
-        ctx = Contexts()
-        ctx.append([({'a': True}, "test")])
-        ctx.append([({'b': True}, "test2")])
-        ctx.append([({'c': True}, "test3")])
-        ctx.force_node_position(target="blah")
-        self.assertEqual(3, len(ctx))
-        for x,y in ctx.pairs():
-            self.assertEqual(y, "blah")
 
-    def test_all_alts_binding(self):
-        ctx = Contexts()
-        ctx.append([({AT_BIND_S + 'a': "blah"}, "test")])
-        ctx.append([({AT_BIND_S + 'a': "bloo"}, "test2")])
-        ctx.append([({AT_BIND_S + 'a': "blee"}, "test3")])
-        ctx.force_node_position(binding="a")
-        self.assertEqual(len(ctx), 3)
-        for x,y in zip(ctx, ["blah","bloo","blee"]):
-            self.assertEqual(y, x[AT_BIND_S + 'a'])
+    def test_container_alts_binding(self):
+        ctx = ContextContainer()
+        ctx.pop()
+        ctx.push([ContextInstance(nodes={'a': "blah"}),
+                  ContextInstance(nodes={'a': "bloo"}),
+                  ContextInstance(nodes={'a': "blee"})])
 
-    def test_all_alts_invalidate_binding(self):
-        ctx = Contexts()
-        ctx.append([({AT_BIND_S + 'a': "blah"}, "test")])
-        ctx.append([({AT_BIND_S + 'b': "bloo"}, "test2")])
-        ctx.append([({AT_BIND_S + 'a': "blee"}, "test3")])
-        ctx.append([({'a' : "awef"}, "test4")])
-        ctx.force_node_position(binding="a")
-        self.assertEqual(len(ctx), 2)
-        for x,y in zip(ctx.pairs(), ["blah", "blee"]):
-            self.assertEqual(x[1], y)
+        [x.set_current_binding(AcabValue("a")) for x in ctx.active_list()]
+        self.assertEqual(len(ctx.active_list()), 3)
+        for x,y in zip(ctx.active_list(), ["blah","bloo","blee"]):
+            self.assertEqual(x._current, y)
 
+    def test_container_alts_invalid_binding(self):
+        ctx = ContextContainer()
+        ctx.pop()
+        ctx.push([ContextInstance(nodes={'a': "blah"}),
+                  ContextInstance(nodes={'b': "bloo"}),
+                  ContextInstance(nodes={'a': "blee"})])
+        with self.assertRaises(AcabSemanticException):
+            [x.set_current_binding(AcabValue("a")) for x in ctx.active_list()]
+
+    def test_container_enter_exit(self):
+        pass
+
+    def test_container_fail(self):
+        pass
+
+    def test_container_pop(self):
+        pass
+
+    def test_container_test(self):
+        pass
+
+    def test_instance_bind(self):
+        pass
+
+    def test_instance_contains(self):
+        pass
+
+    def test_instance_getitem(self):
+        pass
 
 
 
