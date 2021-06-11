@@ -12,10 +12,10 @@ from acab.abstract.core.values import Sentence
 from acab.abstract.parsing.TrieBootstrapper import TrieBootstrapper
 from acab.abstract.core.production_abstractions import ProductionOperator, ProductionComponent, ProductionContainer, ProductionStructure
 from acab.modules.operators import query as QOP
-from acab.modules.parsing.el_parsing import ActionParser as AP
-from acab.modules.parsing.el_parsing import FactParser as FP
-from acab.modules.parsing.el_parsing import RuleParser as RP
-from acab.modules.parsing.el_parsing import QueryParser as QP
+from acab.modules.parsing.exlo import ActionParser as AP
+from acab.modules.parsing.exlo import FactParser as FP
+from acab.modules.parsing.exlo import RuleParser as RP
+from acab.modules.parsing.exlo import QueryParser as QP
 from acab.abstract.printing import default_handlers as DH
 
 QUERY_V     = config.value("Structure.Components", "QUERY")

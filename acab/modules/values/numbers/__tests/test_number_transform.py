@@ -11,10 +11,10 @@ acab.setup()
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
 from acab.modules.values.numbers.parsing import NumberParser as NP
-from acab.modules.parsing.el_parsing import ActionParser as AP
-from acab.modules.parsing.el_parsing import TransformParser as TP
-from acab.modules.parsing.el_parsing import FactParser as FP
-from acab.modules.parsing.el_parsing import QueryParser as QP
+from acab.modules.parsing.exlo import ActionParser as AP
+from acab.modules.parsing.exlo import TransformParser as TP
+from acab.modules.parsing.exlo import FactParser as FP
+from acab.modules.parsing.exlo import QueryParser as QP
 
 from acab.abstract.core.production_abstractions import ProductionComponent, ProductionOperator
 from acab.modules.values import numbers

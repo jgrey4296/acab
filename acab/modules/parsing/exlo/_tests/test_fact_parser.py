@@ -14,7 +14,7 @@ from acab.abstract.core.values import AcabValue
 
 from acab.abstract.parsing.parsers import HOTLOAD_VALUES, VALBIND
 
-import acab.modules.parsing.el_parsing.FactParser as FP
+import acab.modules.parsing.exlo.FactParser as FP
 
 NEGATION_S      = config.value("Parse.Structure", "NEGATION")
 TYPE_INSTANCE_S = config.value("Parse.Structure", "TYPE_INSTANCE")

@@ -13,9 +13,9 @@ from acab.abstract.core.values import Sentence
 from acab.abstract.parsing.TrieBootstrapper import TrieBootstrapper
 from acab.abstract.core.production_abstractions import ProductionOperator, ProductionContainer
 
-from acab.modules.parsing.el_parsing import TransformParser as TP
-from acab.modules.parsing.el_parsing import ActionParser as AP
-from acab.modules.parsing.el_parsing import FactParser as FP
+from acab.modules.parsing.exlo import TransformParser as TP
+from acab.modules.parsing.exlo import ActionParser as AP
+from acab.modules.parsing.exlo import FactParser as FP
 
 class Trie_Transform_Parser_Tests(unittest.TestCase):
 

@@ -14,11 +14,11 @@ from acab.abstract.core.production_abstractions import ProductionComponent, Prod
 
 from acab.modules.values import numbers
 from acab.modules.values.numbers.parsing import NumberParser as NP
-from acab.modules.parsing.el_parsing ActionParser as AP
-from acab.modules.parsing.el_parsing FactParser as FP
-from acab.modules.parsing.el_parsing QueryParser as QP
-from acab.modules.parsing.el_parsing RuleParser as RP
-from acab.modules.parsing.el_parsing TransformParser as TP
+from acab.modules.parsing.exlo ActionParser as AP
+from acab.modules.parsing.exlo FactParser as FP
+from acab.modules.parsing.exlo QueryParser as QP
+from acab.modules.parsing.exlo RuleParser as RP
+from acab.modules.parsing.exlo TransformParser as TP
 
 class NumberRuleTests(unittest.TestCase):
     ns = None

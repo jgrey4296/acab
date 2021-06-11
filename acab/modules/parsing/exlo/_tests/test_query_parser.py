@@ -9,8 +9,8 @@ config = acab.setup()
 
 from acab.abstract.parsing.parsers import HOTLOAD_VALUES, VALBIND
 
-import acab.modules.parsing.el_parsing.FactParser as FP
-import acab.modules.parsing.el_parsing.QueryParser as QP
+import acab.modules.parsing.exlo.FactParser as FP
+import acab.modules.parsing.exlo.QueryParser as QP
 
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence

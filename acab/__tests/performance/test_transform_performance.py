@@ -17,8 +17,8 @@ from acab.abstract.core.values import Sentence
 
 from acab.abstract.engine.engine import Engine
 
-from acab.modules.parsing.el_parsing import TransformParser as TP
-from acab.modules.parsing.el_parsing import FactParser as FP
+from acab.modules.parsing.exlo import TransformParser as TP
+from acab.modules.parsing.exlo import FactParser as FP
 
 from acab.modules.values import numbers as NS
 

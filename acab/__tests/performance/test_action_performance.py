@@ -16,7 +16,7 @@ from acab.abstract.core.production_abstractions import ProductionOperator, Produ
 from acab.abstract.parsing.TrieBootstrapper import TrieBootstrapper
 
 from acab.abstract.engine.engine import Engine
-from acab.modules.parsing.el_parsing import ActionParser as AP
+from acab.modules.parsing.exlo import ActionParser as AP
 from acab.modules.operators.action import action_operators as act_ops
 
 from acab.abstract.semantics.print_semantics import AcabPrintSemantics

@@ -20,8 +20,8 @@ from acab.modules.analysis.typing.type_checker import TypeChecker
 from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition
 from acab.modules.analysis.typing.values.type_definition import TypeDefinition
 
-from acab.modules.parsing.el_parsing ActionParser as AP
-from acab.modules.parsing.el_parsing FactParser as FP
+from acab.modules.parsing.exlo ActionParser as AP
+from acab.modules.parsing.exlo FactParser as FP
 
 def S(*in_string):
     return Sentence([AcabValue(x) for x in in_string])

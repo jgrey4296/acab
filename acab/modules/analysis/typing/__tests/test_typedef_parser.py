@@ -20,7 +20,7 @@ from acab.error.acab_parse_exception import AcabParseException
 from acab.modules.analysis.typing import util as TU
 from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition
 from acab.modules.analysis.typing.values.type_definition import TypeDefinition
-from acab.modules.parsing.el_parsing FactParser as FP
+from acab.modules.parsing.exlo FactParser as FP
 from acab.abstract.semantics.print_semantics import AcabPrintSemantics
 from acab.abstract.printing import default_handlers as DH
 

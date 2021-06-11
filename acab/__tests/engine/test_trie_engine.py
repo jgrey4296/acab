@@ -13,8 +13,8 @@ from acab.abstract.core.values import AcabValue
 from acab.abstract.core.production_abstractions import ProductionStructure
 
 from acab.abstract.engine.engine import Engine
-import acab.modules.parsing.el_parsing.TransformParser as TP
-import acab.modules.parsing.el_parsing.ActionParser as AP
+import acab.modules.parsing.exlo.TransformParser as TP
+import acab.modules.parsing.exlo.ActionParser as AP
 
 
 class Engine_Tests(unittest.TestCase):
