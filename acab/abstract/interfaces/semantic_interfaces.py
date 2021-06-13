@@ -185,3 +185,51 @@ class AbstractionSemantics(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def __call__(self, instruction, ctxCon, semSys, data=None):
         pass
+
+
+@dataclass
+class PrintSemantics(metaclass=abc.ABCMeta):
+    """ Handles how to convert values and sentences into strings,
+    does not rely on any underlying data structures
+    """
+
+    # An override map of symbols
+    symbol_map      : Dict[Tuple[str, str], str] = field(default_factory=dict)
+    sub_map         : Dict[Any, Any]             = field(default_factory=dict)
+    settings        : Dict[str, str]             = field(default_factory=dict)
+    transforms      : List[Callable]             = field(default_factory=list)
+
+    _config    : AcabConfig     = field(init=False, default_factory=AcabConfig.Get)
+
+    def __post_init__(self):
+        self.transforms += self.add_transforms()
+
+    def add_transforms(self) -> List[Callable]:
+        """ Override to add custom transforms in a class """
+        pass
+
+    def run_transforms(self, value: ValueInterface, curr_str: str) -> str:
+        curr = curr_str
+        for trans in self.transforms:
+            curr = trans(self, value, curr_str)
+
+        return curr
+
+    @abc.abstractmethod
+    def __call__(self, to_print: ValueInterface) -> str:
+        pass
+
+    @SU.JoinFinalResults
+    def print(self, *args) -> str:
+        return [self(x) for x in args]
+
+    @abc.abstractmethod
+    def check(self, val) -> str:
+        pass
+
+    def use(self, spec: Tuple[str, str]) -> str:
+        # TODO override from symbol map if necessary
+        if (spec[0], spec[1]) in self.symbol_map:
+            return self.symbol_map[(spec[0], spec[1])]
+
+        return self._config(spec)
