@@ -18,6 +18,7 @@ def SemanticOperatorWrapDecorator(f):
         result = f(self, *unwrapped_args, **the_kwargs)
         return AcabValue.safe_make(result)
 
+    wrapped.__name__ = f"SOWD({f})"
     return wrapped
 
 def SemanticUnWrapData(f):
@@ -29,6 +30,7 @@ def SemanticUnWrapData(f):
             the_kwargs['data'] = unwrapped_data
         return f(self, *the_args, **the_kwargs)
 
+    wrapped.__name__ = f"SUWD({f})"
     return wrapped
 
 
@@ -39,6 +41,7 @@ def SemanticTestWrapDecorator(f):
         unwrapped_args = [x.value for x in the_args]
         return f(self, *unwrapped_args, **the_kwargs)
 
+    wrapped.__name__ = f"STWD({f})"
     return wrapped
 
 # TODO RDFSemantics, ReteSemantics
