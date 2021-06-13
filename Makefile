@@ -65,9 +65,13 @@ vrepl:
 re: repl
 vr: vrepl
 
-count:
+line_report:
 	@echo "Counting Lines into linecounts.stats"
-	find . -name "*.py" -not -path "./.git/*" -not -name "test_*.py" -not -name "*__init__.py" -print0 | xargs -0 wc -l | sort > linecounts.stats
+	find . -name "*.py" -not -path "./.git/*" -not -name "test_*.py" -not -name "*__init__.py" -print0 | xargs -0 wc -l | sort > linecounts.report
+
+class_report:
+	@echo "Getting Class Relations"
+	find ./acab -name "*.py" -not -name "flycheck*" | xargs awk '/^class/ {print $0}' > class.report
 
 pylint:
 	@echo "Linting"
