@@ -5,25 +5,15 @@ print_semantics.py
 wrappers.py
 default_handlers.py
 """
-# https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
-
-from re import Pattern
-
-from collections import defaultdict
 from enum import Enum
+# https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
+from typing import Any, Callable, Dict, List
 
-from acab.abstract.core.values import AcabValue
-from acab.abstract.core.values import Sentence
 from acab.abstract.core.node import AcabNode
-from acab.abstract.core.struct import AcabStruct
+from acab.abstract.core.values import AcabValue
+from acab.abstract.interfaces.semantic_interfaces import PrintSemantics
+from .print_types import HandlerReturnUnion, Printable, ContextValue
 
-from acab.abstract.config.config import AcabConfig
-from acab.abstract.core.values import AcabValue
-from acab.abstract.core.node import AcabNode
 
 def _handle_printable(printer, data, func, params):
         # A Printable value to find instructions for
@@ -66,14 +56,14 @@ def _handle_substruct(printer, data, sentinel, params):
 
 
 
-def default_handler(print_semantics: 'AcabPrintSemantics', value: 'Printable', accum, params) -> HandlerReturnUnion:
+def default_handler(print_semantics: PrintSemantics, value: Printable, accum, params) -> HandlerReturnUnion:
     """
     The simplest print handler.
     """
     return RET_enum.SIMPLE, str(value), None, None
 
 
-def default_sentinel(print_semantics: 'AcabPrintSemantics',
+def default_sentinel(print_semantics: PrintSemantics,
                      value: Printable,
                      ctx: List[ContextValue],
                      accumulator: Dict[Any, Any],

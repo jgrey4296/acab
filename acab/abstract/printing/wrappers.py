@@ -2,33 +2,33 @@
 from re import Pattern
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.values import Sentence
+from acab.abstract.printing import consts as PC
 
 config = AcabConfig.Get()
 
 
 def _maybe_wrap_str(PS, value, current):
-    if value.type != STRING_SEN:
+    if value.type != PC.STRING_SEN:
         return current
 
     # originally "{}"
-    str_wrap = PS.use(STR_WRAP_P)
+    str_wrap = PS.use(PC.STR_WRAP_P)
     return str_wrap.format(current)
 
 def _maybe_wrap_regex(PS, value, current):
-    if not isinstance(value.value, Pattern) or value.type != REGEX_SEN:
+    if not isinstance(value.value, Pattern) or value.type != PC.REGEX_SEN:
         return current
 
     # originally /{}/
-    reg_wrap = PS.use(REGEX_WRAP_P)
-    val = reg_wrap.format(value.name)
-    return val
+    reg_wrap = PS.use(PC.REGEX_WRAP_P)
+    return reg_wrap.format(value.name)
 
 
 def _maybe_wrap_var(PS, value, current):
     assert(isinstance(current, str))
-    sym = PS.use(BIND_P)
+    sym = PS.use(PC.BIND_P)
     if value.is_at_var:
-        sym = PS.use(AT_BIND_P)
+        sym = PS.use(PC.AT_BIND_P)
     if value.is_var:
         return sym + current
     else:
@@ -41,8 +41,8 @@ def _wrap_constraints(PS, value, data):
 
     constraints = []
 
-    if data[TYPE_INSTANCE_V] not in OBVIOUS_TYPES_P:
-        constraints.append(data[TYPE_INSTANCE_V])
+    if data[PC.TYPE_INSTANCE_V] not in PC.OBVIOUS_TYPES_P:
+        constraints.append(data[PC.TYPE_INSTANCE_V])
 
     # # Get registered data annotations:
     # for x in REGISTERED_CONSTRAINTS:
@@ -63,23 +63,23 @@ def _maybe_wrap_rebind(PS, rebind, is_sugar=False):
     if rebind is None:
         return ""
 
-    arrow = PS.use(REBIND_P)
+    arrow = PS.use(PC.REBIND_P)
     if is_sugar:
-        arrow = PS.use(SUGAR_P)
+        arrow = PS.use(PC.SUGAR_P)
 
     return " {} {}".format(arrow, str(rebind))
 
 def _maybe_wrap_question(PS, value, current):
     query_symbol = ""
-    if QUERY_V in value.data and value.data[QUERY_V]:
-        query_symbol = PS.ask(QUERY_V)
+    if PC.QUERY_V in value.data and value.data[PC.QUERY_V]:
+        query_symbol = PS.ask(PC.QUERY_V)
 
     return "{}{}".format(current, query_symbol)
 
 def _maybe_wrap_negation(PS, value, current):
     neg_symbol = ""
-    if NEGATION_V in value.data and value.data[NEGATION_V]:
-        neg_symbol = PS.ask(NEGATION_V)
+    if PC.NEGATION_V in value.data and value.data[PC.NEGATION_V]:
+        neg_symbol = PS.ask(PC.NEGATION_V)
 
     return "{}{}".format(neg_symbol, current)
 
@@ -97,9 +97,9 @@ def _wrap_fallback(PS, the_list):
 
 def _wrap_tags(PS, value, tags, sep=None):
     if sep is None:
-        sep = PS.use(TAB_P)
+        sep = PS.use(PC.TAB_P)
     tags_s = [str(x) for x in tags]
-    tag_symbol = PS.use(TAG_P)
+    tag_symbol = PS.use(PC.TAG_P)
     return "{}{}{}\n\n".format(value, sep, ", ".join(sorted([tag_symbol + x for x in tags_s])))
 
 def _wrap_colon(PS, value, newline=False):
@@ -110,7 +110,7 @@ def _wrap_colon(PS, value, newline=False):
     return "{}:{}".format(value, tail)
 
 def _wrap_end(PS, value, newline=False):
-    end_symbol = PS.use(END_P)
+    end_symbol = PS.use(PC.END_P)
     if newline:
         return "{}\n{}\n".format(value, end_symbol)
     else:
@@ -128,8 +128,8 @@ def _maybe_wrap_list(PS, maybe_list, wrap=None, join=None):
     if not bool(maybe_list):
         return ""
 
-    wrap_fmt = PS.use(WRAP_FORMAT_P)
-    join_fmt = PS.use(PARAM_JOIN_P)
+    wrap_fmt = PS.use(PC.WRAP_FORMAT_P)
+    join_fmt = PS.use(PC.PARAM_JOIN_P)
 
     if wrap is not None:
         wrap_fmt = wrap
