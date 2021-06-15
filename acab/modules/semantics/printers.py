@@ -1,10 +1,7 @@
 
 from acab.abstract.config.config import GET
 from acab.abstract.interfaces.semantic_interfaces import PrintSemantics
-
 from acab.abstract.printing import consts as PC
-from acab.abstract.printing import default_handlers as DH
-from acab.abstract.printing import util as PU
 from acab.abstract.printing import wrappers as PW
 
 config = GET()
@@ -38,7 +35,11 @@ class ModalAwarePrinter(PrintSemantics):
         transformed = self.run_transforms(to_print, curr_str)
 
         # Lookup modal
-        # if no modal, use fallback modal
+        focus_modal = self.check("FOCUS_MODAL")
+        if focus_modal and focus_modal in to_print.data:
+            # convert modal enum to symbol
+            # format transformed accordingly
+            pass
 
         return transformed
 
@@ -47,7 +48,7 @@ class BasicSentenceAwarePrinter(PrintSemantics):
 
     def __call__(self, to_print):
         assert(to_print.type == PC.SEN_SEN)
-        results = [self.sub_map['DEFAULT'](x) for x in to_print.words]
+        results = [self.lookup(x)(x) for x in to_print.words]
 
         # TODO use fallback modal?
         return self.use(PC.SEN_JOIN_P).join(results)
