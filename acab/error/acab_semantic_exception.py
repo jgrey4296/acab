@@ -1,54 +1,38 @@
+from typing import List, Set, Dict, Tuple, Optional, Any
+from typing import Callable, Iterator, Union, Match
+from typing import Mapping, MutableMapping, Sequence, Iterable
+from typing import cast, ClassVar, TypeVar, Generic
+
+from dataclasses import dataclass, field, InitVar
+
 from .acab_base_exception import AcabBaseException
 
+@dataclass
 class AcabSemanticException(AcabBaseException):
     """ The Core exception report of semantic operations  """
 
-    def __init__(self, info, fail_clause):
-        self._info = info
-        self._data = fail_clause
+    msg         : str = field(init=False, default="Semantic Failure: {} at: {}")
+    info        : Any = field()
+    fail_clause : Any = field()
 
     def __str__(self):
-        return "Semantic Failure: {} at: {}".format(self._info, str(self._data))
+        return self.msg.format(self.info, self.fail_clause)
 
 class AcabOperatorMissingException(AcabSemanticException):
     """ Raised when an operator can't be found when running semantics """
-    def __init__(self, info, fail_clause):
-        self._info = info
-        self._data = fail_clause
-
-    def __str__(self):
-        return "Semantic Failure: {} at: {}".format(self._info, str(self._data))
+    pass
 
 class AcabSemanticTestFailure(AcabSemanticException):
     """ Raised by ConstraintCollection when a test fails,
     for ContextContainer to handle
     """
-
-    def __init__(self, info, fail_clause):
-        self._info = info
-        self._data = fail_clause
-
-    def __str__(self):
-        return "Semantic Failure: {} at: {}".format(self._info, str(self._data))
+    pass
 
 class AcabSemanticQueryContextDepletionFailure(AcabSemanticException):
     """ Raised by Dependent Semantics to signal the current
     ContextInstance can't progress any further """
-
-    def __init__(self, info, fail_clause):
-        self._info = info
-        self._data = fail_clause
-
-    def __str__(self):
-        return "Semantic Failure: {} at: {}".format(self._info, str(self._data))
-
+    pass
 
 class AcabSemanticIndependentFailure(AcabSemanticException):
     """ Signals failures in the node semantics """
-
-    def __init__(self, info, fail_clause):
-        self._info = info
-        self._data = fail_clause
-
-    def __str__(self):
-        return "Semantic Failure: {} at: {}".format(self._info, str(self._data))
+    pass
