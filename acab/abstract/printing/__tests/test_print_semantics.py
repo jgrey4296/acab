@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-#https://docs.python.org/3/library/unittest.html
-# https://docs.python.org/3/library/unittest.mock.html
 
 from os.path import splitext, split
 import unittest
@@ -19,7 +17,7 @@ from acab.abstract.core.values import AcabValue, AcabStatement, Sentence
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.production_abstractions import ProductionContainer, ProductionComponent, ProductionOperator
 
-from acab.modules.semantics.printing import BasicPrinter, PrimitiveTypeAwarePrinter, SentenceAwarePrinter
+import acab.modules.semantics.printers as Printers
 from acab.abstract.printing.print_types import RET_enum
 from acab.abstract.printing import default_handlers as DH
 
@@ -37,16 +35,6 @@ SEN_JOIN_S       = config.value("Print.Patterns", "SEN_JOIN", actions=[AcabConfi
 STR_PRIM_S       = Sentence.build([config.value("Type.Primitive", "STRING")])
 REGEX_PRIM_S     = Sentence.build([config.value("Type.Primitive", "REGEX")])
 TYPE_INSTANCE_S  = config.value("Value.Structure", "TYPE_INSTANCE")
-# Semantic Collections
-# Dict[type, Tuple[List[Callable], Callable, Any]]
-basic = {AcabValue: ([], lambda s, d, c, a, p: (RET_enum.SIMPLE, str(d), None, None))}
-
-basic_plus = {AcabValue: DH.DEF_VALUE_PAIR,
-              Sentence: DH.DEF_SEN_PAIR,
-              ProductionContainer: DH.DEF_CONTAINER_PAIR,
-              }
-
-basic_uuid = {AcabValue: DH.DEF_UUID_PAIR}
 
 
 class PrintSemanticTests(unittest.TestCase):
