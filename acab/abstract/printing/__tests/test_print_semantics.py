@@ -52,50 +52,52 @@ class PrintSemanticTests(unittest.TestCase):
         logging = root_logger.getLogger(__name__)
 
     def test_initial(self):
-        sem = BasicPrinter()
+        sem = Printers.BasicPrinter()
         result = sem.print(AcabValue("Test"))
         self.assertEqual(result, "Test")
 
     def test_multiple(self):
-        sem = BasicPrinter()
+        sem = Printers.BasicPrinter()
         result = sem.print(AcabValue("a"), AcabValue("b"), AcabValue("c"))
         self.assertEqual(result, r"a\nb\nc")
 
 
     def test_string_wrap(self):
-        sem = PrimitiveTypeAwarePrinter()
+        sem = Printers.PrimitiveTypeAwarePrinter()
         test = AcabValue(name="blah", data={TYPE_INSTANCE_S: STR_PRIM_S})
         result = sem.print(test)
         self.assertEqual(result, '"blah"')
 
     def test_regex_wrap(self):
-        sem = PrimitiveTypeAwarePrinter()
+        sem = Printers.PrimitiveTypeAwarePrinter()
         test = AcabValue(value=re.compile("blah"), data={TYPE_INSTANCE_S: REGEX_PRIM_S})
         result = sem.print(test)
         self.assertEqual(result, r'/blah/')
 
     def test_var_wrap(self):
-        sem = PrimitiveTypeAwarePrinter()
+        sem = Printers.PrimitiveTypeAwarePrinter()
         test = AcabValue(value=re.compile("blah"), data={BIND_S : True})
         result = sem.print(test)
         self.assertEqual(result, r'$blah')
+
+    @unittest.skip
     def test_modal_print(self):
-        sem = PrimitiveTypeAwarePrinter()
+        sem = Printers.PrimitiveTypeAwarePrinter()
         test = AcabValue(value=re.compile("blah"), data={BIND_S : True})
         result = sem.print(test)
         self.assertEqual(result, r'$blah')
 
 
     def test_symbol_override(self):
-        sem = PrimitiveTypeAwarePrinter({("Symbols", "BIND"): "%"})
+        sem = Printers.PrimitiveTypeAwarePrinter(symbol_map={("Symbols", "BIND"): "%"})
         test = AcabValue(value=re.compile("blah"), data={BIND_S : True})
         result = sem.print(test)
         self.assertEqual(result, r'%blah')
 
 
-
+    @unittest.skip
     def test_sentence_basic(self):
-        sem = SentenceAwarePrinter(sub_map={'DEFAULT' : PrimitiveTypeAwarePrinter()})
+        sem = Printers.BasicSentenceAwarePrinter(sub_map={'DEFAULT' : Printers.PrimitiveTypeAwarePrinter()})
         words = ["a", "b", "c", "d"]
         sentence = Sentence.build(words)
         result = sem.print(sentence)
@@ -104,8 +106,7 @@ class PrintSemanticTests(unittest.TestCase):
     @unittest.skip
     def test_sentence_words(self):
         join_str = "."
-        sem = BasicPrinter(basic_plus,
-                                 {SEN_JOIN_S : join_str})
+        sem = Printers.BasicPrinter(basic_plus, {SEN_JOIN_S : join_str})
         sentence = Sentence.build(["a", "b", "c", "d"])
         result = sem.print(sentence)
         self.assertEqual(result, join_str.join(["a", "b", "c", "d"]))
@@ -113,8 +114,7 @@ class PrintSemanticTests(unittest.TestCase):
     @unittest.skip
     def test_sentence_words2(self):
         join_str = "-"
-        sem = BasicPrinter(basic_plus,
-                                 {SEN_JOIN_S : join_str})
+        sem = BasicPrinter(basic_plus, {SEN_JOIN_S : join_str})
         sentence = Sentence.build(["a", "b", "c", "d"])
         result = sem.print(sentence)
         self.assertEqual(result, join_str.join(["a", "b", "c", "d"]))
@@ -122,8 +122,7 @@ class PrintSemanticTests(unittest.TestCase):
     @unittest.skip
     def test_sentence_negated(self):
         join_str = "."
-        sem = BasicPrinter(basic_plus,
-                                 {SEN_JOIN_S: join_str})
+        sem = BasicPrinter(basic_plus, {SEN_JOIN_S: join_str})
         sentence = Sentence.build(["a","b","c","d"])
         sentence.data[NEGATION_S] = True
 
@@ -135,8 +134,7 @@ class PrintSemanticTests(unittest.TestCase):
     @unittest.skip
     def test_sentence_query(self):
         join_str = "."
-        sem = BasicPrinter(basic_plus,
-                                 {SEN_JOIN_S: join_str})
+        sem = BasicPrinter(basic_plus, {SEN_JOIN_S: join_str})
         sentence = Sentence.build(["a","b","c","d"])
         sentence.data[QUERY_S] = True
 
@@ -147,8 +145,7 @@ class PrintSemanticTests(unittest.TestCase):
     @unittest.skip
     def test_sentence_words3(self):
         join_str = "."
-        sem = BasicPrinter(basic_plus,
-                                 {SEN_JOIN_S: join_str})
+        sem = BasicPrinter(basic_plus, {SEN_JOIN_S: join_str})
         sentence = Sentence.build(["test","one","bumble","foo"])
         sentence.data[QUERY_S] = True
 
@@ -178,9 +175,7 @@ class PrintSemanticTests(unittest.TestCase):
     # drop end op, constraints
     @unittest.skip
     def test_value_drop_terminal_modality(self):
-        sem = BasicPrinter({
-            AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel)
-        }, default_values={"BLAH" : " -~- "})
+        sem = BasicPrinter({AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel)}, default_values={"BLAH" : " -~- "})
         value = AcabValue("Test", data={'MODALITY': "BLAH"})
         result = sem.print(value, overrides={'MODAL_FIELD': 'MODALITY'})
         self.assertEqual(result, "Test -~- ")
