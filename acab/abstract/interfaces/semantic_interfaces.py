@@ -194,10 +194,12 @@ class PrintSemantics(metaclass=abc.ABCMeta):
     """
 
     # An override map of symbols
+    default_sub     : 'PrintSemantics'           = field(default=None)
     symbol_map      : Dict[Tuple[str, str], str] = field(default_factory=dict)
     sub_map         : Dict[Any, Any]             = field(default_factory=dict)
     settings        : Dict[str, str]             = field(default_factory=dict)
     transforms      : List[Callable]             = field(default_factory=list)
+    lookup_key      : Callable                   = field(default=default_key)
 
     _config    : AcabConfig     = field(init=False, default_factory=AcabConfig.Get)
 
@@ -206,30 +208,50 @@ class PrintSemantics(metaclass=abc.ABCMeta):
 
     def add_transforms(self) -> List[Callable]:
         """ Override to add custom transforms in a class """
-        pass
+        return []
 
     def run_transforms(self, value: ValueInterface, curr_str: str) -> str:
         curr = curr_str
         for trans in self.transforms:
-            curr = trans(self, value, curr_str)
+            curr = trans(self, value, curr)
 
         return curr
 
-    @abc.abstractmethod
-    def __call__(self, to_print: ValueInterface) -> str:
-        pass
+    def lookup(self, value: ValueInterface) -> 'PrintSemantics':
+        # try
+
+
+        # Failure:
+        if self.default_sub is None:
+            raise AcabPrintException("PrintSemantics Requires at least a default")
+
+        return self.default_sub
+
+    def check(self, val) -> Optional[str]:
+        """ Check a value to toggle variations/get defaults"""
+        if val in self.settings:
+            return self.settings
+
+        return None
+
+    def use(self, spec: Tuple[str, str]) -> str:
+        # override from symbol map if necessary
+        if (spec[0], spec[1]) in self.symbol_map:
+            return self.symbol_map[(spec[0], spec[1])]
+
+        if spec[0] in self._config.enums:
+            as_enum = self._config.enums[spec[0]][spec[1]]
+            return self._config.printing_extension[as_enum]
+
+        return self._config(spec)
+
 
     @SU.JoinFinalResults
     def print(self, *args) -> str:
         return [self(x) for x in args]
 
+
     @abc.abstractmethod
-    def check(self, val) -> str:
+    def __call__(self, to_print: ValueInterface) -> str:
         pass
 
-    def use(self, spec: Tuple[str, str]) -> str:
-        # TODO override from symbol map if necessary
-        if (spec[0], spec[1]) in self.symbol_map:
-            return self.symbol_map[(spec[0], spec[1])]
-
-        return self._config(spec)

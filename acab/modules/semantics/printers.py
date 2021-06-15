@@ -36,13 +36,6 @@ class ModalAwarePrinter(PrintSemantics):
         curr_str = str(to_print.name)
         transformed = self.run_transforms(to_print, curr_str)
 
-        # Lookup modal
-        focus_modal = self.check("FOCUS_MODAL")
-        if focus_modal and focus_modal in to_print.data:
-            # convert modal enum to symbol
-            # format transformed accordingly
-            pass
-
         return transformed
 
 

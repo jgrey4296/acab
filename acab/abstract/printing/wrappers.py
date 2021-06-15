@@ -37,14 +37,27 @@ def _maybe_wrap_var(PS, value, current):
 
 def _maybe_wrap_modal(PS, value, current):
     """ Add any defined modalities to the end of the string """
+    # TODO switch this to a prepare
     modals = config.value("MODAL", as_list=True)
     curr = current
     for modal in modals:
         if modal in value.data:
-            symbol = config.printing_extension[value.data[modal]]
+            symbol = PS.use((modal, value.data[modal].name))
             curr += symbol
 
     return curr
+
+def _focus_wrap_modal(PS, value, current):
+    """ Add a *specific* modality to the string, or its default """
+    use_modal = PS.check("MODAL")
+    if not use_modal:
+        return current
+
+    if use_modal in value.data:
+        symbol = PS.use((use_modal, value.data[use_modal].name))
+
+    return current + symbol
+
 
 def _wrap_constraints(PS, value, data):
     assert(isinstance(value, str))

@@ -94,6 +94,14 @@ class PrintSemanticTests(unittest.TestCase):
         result = sem.print(test)
         self.assertEqual(result, r'blah!')
 
+    def test_modal_print_override(self):
+        sem = Printers.ModalAwarePrinter(symbol_map={("exop", "DOT") : "^"})
+        test = AcabValue(value=re.compile("blah"),
+                         data={'exop': config.enums['exop'].DOT})
+        result = sem.print(test)
+        self.assertEqual(result, r'blah^')
+
+
 
 
     def test_symbol_override(self):
