@@ -30,12 +30,6 @@ class ProductionAbstractionTests(unittest.TestCase):
         root_logger.getLogger('').addHandler(console)
         logging = root_logger.getLogger(__name__)
 
-    def setUp(self):
-        return 1
-
-    def tearDown(self):
-        return 1
-
     #----------
     def test_init_operator(self):
         op = PO.ProductionOperator()
@@ -58,15 +52,11 @@ class ProductionAbstractionTests(unittest.TestCase):
         self.assertIsInstance(val, PO.ProductionComponent)
         self.assertEqual(len(val.params), 2)
 
-    @unittest.skip("TODO")
     def test_container_init(self):
         pass
 
-    @unittest.skip("TODO")
     def test_structure_init(self):
         pass
-
-
 
     def test_component_op(self):
         val = PO.ProductionComponent(value=Sentence.build(["testop"]))
@@ -162,7 +152,6 @@ class ProductionAbstractionTests(unittest.TestCase):
 
 
 
-    @unittest.skip("TODO")
     def test_container_var_set(self):
         pass
 

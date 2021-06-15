@@ -27,12 +27,6 @@ class AcabValueTests(unittest.TestCase):
         root_logger.getLogger('').addHandler(console)
         logging = root_logger.getLogger(__name__)
 
-    def setUp(self):
-        return 1
-
-    def tearDown(self):
-        return 1
-
     #----------
     #use testcase snippets
     def test_construction(self):

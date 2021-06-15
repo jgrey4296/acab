@@ -28,13 +28,6 @@ class StructureTests(unittest.TestCase):
         logging.addHandler(console)
         logging.addHandler(file_h)
 
-
-        def setUp(self):
-            return 1
-
-        def tearDown(self):
-            return 1
-
         #----------
         # use testcase snippet
         # mock.Mock / MagicMock

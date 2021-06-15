@@ -26,13 +26,6 @@ class AcabNodeTests(unittest.TestCase):
         root_logger.getLogger('').addHandler(console)
         logging = root_logger.getLogger(__name__)
 
-
-    def setUp(self):
-        return 1
-
-    def tearDown(self):
-        return 1
-
     #----------
     def test_basic_creation(self):
         a_node = AcabNode(AV("test"))
