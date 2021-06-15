@@ -11,7 +11,6 @@ from .acab_base_exception import AcabBaseException
 class AcabOperatorException(AcabBaseException):
 
     msg : str = field(init=False, default="Invalid Operator Specified: {}")
-    op  : str = field()
 
     def __str__(self):
-        return self.msg.format(self.op)
+        return self.msg.format(self.detail)

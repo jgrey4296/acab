@@ -11,12 +11,10 @@ from .acab_base_exception import AcabBaseException
 class AcabSemanticException(AcabBaseException):
     """ The Core exception report of semantic operations  """
 
-    msg         : str = field(init=False, default="Semantic Failure: {} at: {}")
-    info        : Any = field()
-    fail_clause : Any = field()
+    msg : str = field(init=False, default="Semantic Failure: {} at: {}")
 
     def __str__(self):
-        return self.msg.format(self.info, self.fail_clause)
+        return self.msg.format(self.detail, self.context)
 
 class AcabOperatorMissingException(AcabSemanticException):
     """ Raised when an operator can't be found when running semantics """

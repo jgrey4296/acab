@@ -9,8 +9,8 @@ from .acab_base_exception import AcabBaseException
 @dataclass
 class AcabImportException(AcabBaseException):
     """  """
+
     msg : str = field(init=False, default="Import Failed: {}")
-    name : str = field()
 
     def __str__(self):
-        return self.msg.format(self.name)
+        return self.msg.format(self.detail)

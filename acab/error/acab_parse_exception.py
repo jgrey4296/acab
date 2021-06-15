@@ -9,4 +9,6 @@ from .acab_base_exception import AcabBaseException
 
 class AcabParseException(AcabBaseException):
     """ The base exception for parsing errors """
+    msg : str = field(init=False, default="Parse Failure: {}")
+
     pass
