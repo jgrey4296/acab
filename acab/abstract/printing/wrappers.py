@@ -35,6 +35,17 @@ def _maybe_wrap_var(PS, value, current):
         return current
 
 
+def _maybe_wrap_modal(PS, value, current):
+    """ Add any defined modalities to the end of the string """
+    modals = config.value("MODAL", as_list=True)
+    curr = current
+    for modal in modals:
+        if modal in value.data:
+            symbol = config.printing_extension[value.data[modal]]
+            curr += symbol
+
+    return curr
+
 def _wrap_constraints(PS, value, data):
     assert(isinstance(value, str))
     assert(isinstance(data, dict))

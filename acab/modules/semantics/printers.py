@@ -6,6 +6,7 @@ from acab.abstract.printing import wrappers as PW
 
 config = GET()
 
+# Independent
 class BasicPrinter(PrintSemantics):
     """ Simply print the str of anything passed in """
 
@@ -28,7 +29,8 @@ class ModalAwarePrinter(PrintSemantics):
     def add_transforms(self):
         return [PW._maybe_wrap_str,
                 PW._maybe_wrap_regex,
-                PW._maybe_wrap_var]
+                PW._maybe_wrap_var,
+                PW._maybe_wrap_modal]
 
     def __call__(self, to_print):
         curr_str = str(to_print.name)
@@ -43,6 +45,8 @@ class ModalAwarePrinter(PrintSemantics):
 
         return transformed
 
+
+# Dependent
 class BasicSentenceAwarePrinter(PrintSemantics):
 
 
@@ -69,6 +73,8 @@ class UUIDAwarePrinter(PrintSemantics):
     def __call__(self, to_print):
         pass
 
+
+# Abstraction
 class ContainerAwarePrinter(PrintSemantics):
     """ Production Containers """
 

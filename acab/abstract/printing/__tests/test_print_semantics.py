@@ -80,12 +80,20 @@ class PrintSemanticTests(unittest.TestCase):
         result = sem.print(test)
         self.assertEqual(result, r'$blah')
 
-    @unittest.skip
     def test_modal_print(self):
-        sem = Printers.PrimitiveTypeAwarePrinter()
-        test = AcabValue(value=re.compile("blah"), data={BIND_S : True})
+        sem = Printers.ModalAwarePrinter()
+        test = AcabValue(value=re.compile("blah"),
+                         data={'exop': config.defaults['exop']})
         result = sem.print(test)
-        self.assertEqual(result, r'$blah')
+        self.assertEqual(result, r'blah.')
+
+    def test_modal_print2(self):
+        sem = Printers.ModalAwarePrinter()
+        test = AcabValue(value=re.compile("blah"),
+                         data={'exop': config.enums['exop'].EX})
+        result = sem.print(test)
+        self.assertEqual(result, r'blah!')
+
 
 
     def test_symbol_override(self):
