@@ -37,8 +37,8 @@ Sen   = 'Sentence'
 
 @dataclass
 class AcabValue(VI.ValueInterface, Generic[T]):
-    _value_types: ClassVar[Set[Any]]          = set([str, Pattern, list])
-    value : T = field(default=None)
+    _value_types : ClassVar[Set[Any]] = set([str, Pattern, list])
+    value        : T                  = field(default=None)
 
     @staticmethod
     def safe_make(value: T,

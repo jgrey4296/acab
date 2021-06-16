@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from dataclasses import dataclass, field, InitVar
 from typing import List, Set, Dict, Tuple, Optional, Any
 from typing import Callable, Iterator, Union, Match
