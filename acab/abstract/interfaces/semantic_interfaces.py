@@ -20,13 +20,16 @@ from typing import List, Set, Dict, Tuple, Optional, Any
 from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic
+import abc
+from dataclasses import dataclass, field
 
 from acab.abstract.config.config import AcabConfig
 from acab.error.acab_semantic_exception import AcabSemanticException
+from acab.error.acab_print_exception import AcabPrintException
 from acab.modules.semantics.context_container import ContextContainer
+from acab.abstract.interfaces.value_interfaces import ValueInterface
+import acab.abstract.interfaces.util as SU
 
-import abc
-from dataclasses import dataclass, field
 
 Node            = 'AcabNode'
 Sentence        = 'Sentence'
@@ -73,6 +76,10 @@ class SemanticSystem(metaclass=abc.ABCMeta):
 
     def __post_init__(self):
         # TODO init any semantics or structs passed in as Class's
+
+        # TODO check depsem -> struct compabilities
+        # by running dependent.compatible(struct)
+
         pass
 
     def _run_entry_hooks(self, semantics, struct, instruction, ctxs, data):
@@ -138,6 +145,12 @@ class DependentSemantics(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def query(self, struct, sen, data):
         pass
+
+    @abc.abstractmethod
+    def compatible(self, struct: Structure) -> bool:
+        """ Called to check the semantics can handle the suggested struct """
+        pass
+
 
 class IndependentSemantics(metaclass=abc.ABCMeta):
     """
