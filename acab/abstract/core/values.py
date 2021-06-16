@@ -294,15 +294,6 @@ class Sentence(AcabStatement, VI.SentenceInterface):
             return Sentence.build(self.words.__getitem__(i), data=self.data)
         return self.words.__getitem__(i)
 
-    @property
-    def type(self) -> 'Sentence':
-        """ Lazy Type Construction """
-        type_matches_t = isinstance(self.data[TYPE_INSTANCE], Sentence)
-        if not type_matches_t:
-            self.data[TYPE_INSTANCE] = Sentence.build([self.data[TYPE_INSTANCE]])
-
-        return self.data[TYPE_INSTANCE]
-
     def copy(self, **kwargs):
         if 'value' not in kwargs:
             kwargs['value'] = [x.copy() for x in self.value]
