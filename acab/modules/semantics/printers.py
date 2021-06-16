@@ -39,6 +39,20 @@ class ModalAwarePrinter(PrintSemantics):
         return transformed
 
 
+class UUIDAwarePrinter(PrintSemantics):
+    def add_transforms(self):
+        return [PW._maybe_wrap_str,
+                PW._maybe_wrap_regex,
+                PW._maybe_wrap_var,
+                PW._maybe_wrap_modals]
+
+    def __call__(self, to_print):
+        curr_str = str(to_print.name)
+        transformed = self.run_transforms(to_print, curr_str)
+
+        return f"({transformed} : {to_print.uuid})"
+
+
 # Dependent
 class BasicSentenceAwarePrinter(PrintSemantics):
 
@@ -62,10 +76,6 @@ class ConstraintSentenceAwarePrinter(PrintSemantics):
 
 class TransformAwarePrinter(PrintSemantics):
 
-    def __call__(self, to_print):
-        pass
-
-class UUIDAwarePrinter(PrintSemantics):
     def __call__(self, to_print):
         pass
 

@@ -126,33 +126,12 @@ class PrintValueSemanticTests(unittest.TestCase):
 
 
 
-    @unittest.skip
     def test_value_uuid(self):
         val = AcabValue("test")
-        sem = BasicPrinter(basic_uuid)
+        sem = Printers.UUIDAwarePrinter()
         result = sem.print(val)
         self.assertEqual(result, "({} : {})".format(val.name, val.uuid))
 
-
-    @unittest.skip
-    def test_value_drop_terminal_modality(self):
-        sem = BasicPrinter({AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel)}, default_values={"BLAH" : " -~- "})
-        value = AcabValue("Test", data={'MODALITY': "BLAH"})
-        result = sem.print(value, overrides={'MODAL_FIELD': 'MODALITY'})
-        self.assertEqual(result, "Test -~- ")
-
-        sem.set_for_uuid(value.uuid, ["drop_modal"])
-        result2 = sem.print(value)
-        self.assertEqual(result2, "Test")
-
-
-    @unittest.skip
-    def test_pprint_at_var(self):
-        # TODO update this
-        value = AcabValue("test")
-        value.data.update({BIND_S: AT_BIND_S})
-        self.assertTrue(value.is_at_var)
-        self.assertEqual(str(value), "test")
 
 class PrintBasicSentenceSemanticTests(unittest.TestCase):
     def test_sentence_basic(self):
