@@ -21,6 +21,8 @@ import acab.modules.semantics.printers as Printers
 from acab.abstract.printing.print_types import RET_enum
 from acab.abstract.printing import default_handlers as DH
 
+import acab.modules.parsing.exlo.FactParser as FP
+
 NEGATION_S        = config.value("Value.Structure", "NEGATION")
 QUERY_S           = config.value("Value.Structure", "QUERY")
 BIND_S            = config.value("Value.Structure", "BIND")
@@ -37,7 +39,11 @@ REGEX_PRIM_S     = Sentence.build([config.value("Type.Primitive", "REGEX")])
 TYPE_INSTANCE_S  = config.value("Value.Structure", "TYPE_INSTANCE")
 
 
-class PrintSemanticTests(unittest.TestCase):
+
+
+# value : show_uuid, not, variable, at var
+#
+class PrintValueSemanticTests(unittest.TestCase):
     """ Test the basic Print Semantics using default settings """
 
     @classmethod
@@ -111,30 +117,52 @@ class PrintSemanticTests(unittest.TestCase):
         self.assertEqual(result, r'%blah')
 
 
+
     @unittest.skip
+    def test_value_uuid(self):
+        val = AcabValue("test")
+        sem = BasicPrinter(basic_uuid)
+        result = sem.print(val)
+        self.assertEqual(result, "({} : {})".format(val.name, val.uuid))
+
+
+    @unittest.skip
+    def test_value_drop_terminal_modality(self):
+        sem = BasicPrinter({AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel)}, default_values={"BLAH" : " -~- "})
+        value = AcabValue("Test", data={'MODALITY': "BLAH"})
+        result = sem.print(value, overrides={'MODAL_FIELD': 'MODALITY'})
+        self.assertEqual(result, "Test -~- ")
+
+        sem.set_for_uuid(value.uuid, ["drop_modal"])
+        result2 = sem.print(value)
+        self.assertEqual(result2, "Test")
+
+
+    @unittest.skip
+    def test_pprint_at_var(self):
+        # TODO update this
+        value = AcabValue("test")
+        value.data.update({BIND_S: AT_BIND_S})
+        self.assertTrue(value.is_at_var)
+        self.assertEqual(str(value), "test")
+
+class PrintBasicSentenceSemanticTests(unittest.TestCase):
     def test_sentence_basic(self):
-        sem = Printers.BasicSentenceAwarePrinter(sub_map={'DEFAULT' : Printers.PrimitiveTypeAwarePrinter()})
+        sem = Printers.BasicSentenceAwarePrinter(Printers.ModalAwarePrinter())
         words = ["a", "b", "c", "d"]
         sentence = Sentence.build(words)
         result = sem.print(sentence)
         self.assertEqual(result, SEN_JOIN_S.join(words))
 
-    @unittest.skip
-    def test_sentence_words(self):
-        join_str = "."
-        sem = Printers.BasicPrinter(basic_plus, {SEN_JOIN_S : join_str})
-        sentence = Sentence.build(["a", "b", "c", "d"])
+    def test_sentence_modal(self):
+        sem = Printers.BasicSentenceAwarePrinter(Printers.ModalAwarePrinter())
+        sentence = FP.parseString("a.test.sen")[0]
         result = sem.print(sentence)
-        self.assertEqual(result, join_str.join(["a", "b", "c", "d"]))
+        self.assertEqual(result, "a.test.sen")
 
-    @unittest.skip
-    def test_sentence_words2(self):
-        join_str = "-"
-        sem = BasicPrinter(basic_plus, {SEN_JOIN_S : join_str})
-        sentence = Sentence.build(["a", "b", "c", "d"])
-        result = sem.print(sentence)
-        self.assertEqual(result, join_str.join(["a", "b", "c", "d"]))
 
+
+class PrintComplexSentenceSemanticTests(unittest.TestCase):
     @unittest.skip
     def test_sentence_negated(self):
         join_str = "."
@@ -146,7 +174,6 @@ class PrintSemanticTests(unittest.TestCase):
         self.assertEqual(result, "{}{}".format(NEGATION_SYMBOL_S,
                                                join_str.join(["a", "b", "c", "d"])))
 
-    # query, different join strs
     @unittest.skip
     def test_sentence_query(self):
         join_str = "."
@@ -159,29 +186,6 @@ class PrintSemanticTests(unittest.TestCase):
                                                QUERY_SYMBOL_S))
 
     @unittest.skip
-    def test_sentence_words3(self):
-        join_str = "."
-        sem = BasicPrinter(basic_plus, {SEN_JOIN_S: join_str})
-        sentence = Sentence.build(["test","one","bumble","foo"])
-        sentence.data[QUERY_S] = True
-
-        result = sem.print(sentence)
-
-        self.assertEqual(result, "{}{}".format(join_str.join(["test","one","bumble","foo"]),
-                                               QUERY_SYMBOL_S))
-
-
-
-    # value : show_uuid, not, variable, at var
-    @unittest.skip
-    def test_value_uuid(self):
-        val = AcabValue("test")
-        sem = BasicPrinter(basic_uuid)
-        result = sem.print(val)
-        self.assertEqual(result, "({} : {})".format(val.name, val.uuid))
-
-    # Type Instance
-    @unittest.skip
     def test_type_instance(self):
         instance = Sentence.build(["a","b","c"])
         sem = BasicPrinter(basic_plus)
@@ -189,17 +193,14 @@ class PrintSemanticTests(unittest.TestCase):
         # TODO test type instance
 
     # drop end op, constraints
-    @unittest.skip
-    def test_value_drop_terminal_modality(self):
-        sem = BasicPrinter({AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel)}, default_values={"BLAH" : " -~- "})
-        value = AcabValue("Test", data={'MODALITY': "BLAH"})
-        result = sem.print(value, overrides={'MODAL_FIELD': 'MODALITY'})
-        self.assertEqual(result, "Test -~- ")
 
-        sem.set_for_uuid(value.uuid, ["drop_modal"])
-        result2 = sem.print(value)
-        self.assertEqual(result2, "Test")
+    def test_transform(self):
+        pass
 
+    def test_operator_path(self):
+        pass
+
+class PrintStructureSemanticTests(unittest.TestCase):
     @unittest.skip
     def test_component_simple(self):
         component = ProductionComponent(value=Sentence.build(["testop", "blah"]))
@@ -213,40 +214,9 @@ class PrintSemanticTests(unittest.TestCase):
         result = sem.print(component)
         self.assertEqual(result, "λtestop.blah")
 
-    # test component params
 
-    # test component rebind
+    def test_container(self):
+        pass
 
-    # test component sugar
-
-
-    # AcabValue(Op)
-    # TODO wrap specific types: int, str, regex
-
-    # name, path, alias, tags,
-
-    # Statement(Sentence, Component)
-    # rebind, surgared, params, type print, path
-
-
-    # Container(Query, Transform, Action)
-    # clauses
-
-    # Structured:(Rule, Agenda, Layer, Pipeline)
-
-
-
-
-    @unittest.skip
-    def test_pprint_at_var(self):
-        # TODO update this
-        value = AcabValue("test")
-        value.data.update({BIND_S: AT_BIND_S})
-        self.assertTrue(value.is_at_var)
-        self.assertEqual(str(value), "test")
-
-
-
-    # TODO ask, use, set_for_uuid, set_overrides
-    # TODO Push and pop stack
-    # TODO retrieve semantics
+    def test_rule(self):
+        pass
