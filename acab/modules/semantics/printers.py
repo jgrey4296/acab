@@ -30,7 +30,7 @@ class ModalAwarePrinter(PrintSemantics):
         return [PW._maybe_wrap_str,
                 PW._maybe_wrap_regex,
                 PW._maybe_wrap_var,
-                PW._maybe_wrap_modal]
+                PW._maybe_wrap_modals]
 
     def __call__(self, to_print):
         curr_str = str(to_print.name)
@@ -42,13 +42,16 @@ class ModalAwarePrinter(PrintSemantics):
 # Dependent
 class BasicSentenceAwarePrinter(PrintSemantics):
 
+    def add_transforms(self):
+        return [PW._remove_trailing_modal]
 
     def __call__(self, to_print):
         assert(to_print.type == PC.SEN_SEN)
         results = [self.lookup(x)(x) for x in to_print.words]
+        joined  = self.use(PC.SEN_JOIN_P).join(results)
+        transformed = self.run_transforms(to_print, joined)
 
-        # TODO use fallback modal?
-        return self.use(PC.SEN_JOIN_P).join(results)
+        return transformed
 
 
 class ConstraintSentenceAwarePrinter(PrintSemantics):

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import re
 from re import Pattern
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.values import Sentence
@@ -35,7 +36,7 @@ def _maybe_wrap_var(PS, value, current):
         return current
 
 
-def _maybe_wrap_modal(PS, value, current):
+def _maybe_wrap_modals(PS, value, current):
     """ Add any defined modalities to the end of the string """
     # TODO switch this to a prepare
     modals = config.value("MODAL", as_list=True)
@@ -161,3 +162,10 @@ def _maybe_wrap_list(PS, maybe_list, wrap=None, join=None):
         join_fmt = join
 
     return " " + wrap_fmt.format(join_fmt.join(maybe_list))
+
+
+def _remove_trailing_modal(PS, value, current):
+    """ For use in printing sentences """
+    symbols = "".join(config.printing_extension.values()).replace(".", "\.")
+    symbol_re = re.compile("[{}]+$".format(symbols))
+    return symbol_re.sub("", current)
