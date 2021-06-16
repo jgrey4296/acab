@@ -26,6 +26,7 @@ import acab.modules.parsing.exlo.FactParser as FP
 NEGATION_S        = config.value("Value.Structure", "NEGATION")
 QUERY_S           = config.value("Value.Structure", "QUERY")
 BIND_S            = config.value("Value.Structure", "BIND")
+AT_BIND_S           = config.value("Value.Structure", "AT_BIND")
 
 NEGATION_SYMBOL_S = config.value("Symbols", "NEGATION")
 ANON_VALUE_S      = config.value("Symbols", "ANON_VALUE")
@@ -82,9 +83,16 @@ class PrintValueSemanticTests(unittest.TestCase):
 
     def test_var_wrap(self):
         sem = Printers.PrimitiveTypeAwarePrinter()
-        test = AcabValue(value=re.compile("blah"), data={BIND_S : True})
+        test = AcabValue("blah", data={BIND_S : True})
         result = sem.print(test)
         self.assertEqual(result, r'$blah')
+
+    def test_pprint_at_var(self):
+        value = AcabValue("test")
+        value.data.update({BIND_S: AT_BIND_S})
+        sem = Printers.PrimitiveTypeAwarePrinter()
+        result = sem.print(value)
+        self.assertEqual(result, r'@test')
 
     def test_modal_print(self):
         sem = Printers.ModalAwarePrinter()
