@@ -143,10 +143,13 @@ class AcabValue(VI.ValueInterface, Generic[T]):
 
     @property
     def type(self) -> Sen:
-        """ Lazy Type Construction """
+        """ Lazy Type Coercion to Sentence """
         type_matches_t = isinstance(self.data[TYPE_INSTANCE], Sentence)
         if not type_matches_t:
-            self.data[TYPE_INSTANCE] = Sentence.build([self.data[TYPE_INSTANCE]])
+            type_words = self.data[TYPE_INSTANCE]
+            if not isinstance(type_words, list):
+                type_words = [type_words]
+            self.data[TYPE_INSTANCE] = Sentence.build(type_words)
 
         return self.data[TYPE_INSTANCE]
 
