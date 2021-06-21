@@ -15,13 +15,12 @@ Meanwhile IndependentSemantics are concerned only with the values and structures
 
 """
 
-
 from typing import List, Set, Dict, Tuple, Optional, Any
 from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic
 import abc
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, InitVar
 
 from acab.abstract.config.config import AcabConfig
 from acab.error.acab_semantic_exception import AcabSemanticException
@@ -55,6 +54,8 @@ def default_failure(semantics, struct, instruction, ctxs, data, err):
 def example_hook(semSystem, semantics, struct: Structure, instruction: Sentence, ctxs, data=None):
     pass
 
+
+#--------------------------------------------------
 @dataclass
 class SemanticSystem(metaclass=abc.ABCMeta):
     """
@@ -62,17 +63,17 @@ class SemanticSystem(metaclass=abc.ABCMeta):
     """
 
     # If no applicable semantics found, use default
-    base        : AbsDepSemantics                      = field()
-    base_struct : Structure                            = field()
-    base_hooks  : Tuple[List[Handler], List[Handler]]  = field(default_factory=tuple)
+    base        : AbsDepSemantics                            = field()
+    base_struct : Structure                                  = field()
+    base_hooks  : Tuple[List[Handler], List[Handler]]        = field(default_factory=tuple)
     # str/iden -> Semantics
     mapping : Dict[str, AbsDepSemantics]                     = field(default_factory=dict)
     structs : Dict[str, Structure]                           = field(default_factory=dict)
     hooks   : Dict[str, Tuple[List[Handler], List[Handler]]] = field(default_factory=dict)
     # sentence -> iden func to determine appropriate semantics
-    key     : Callable[[Any, Dict[Any,Any]], str]   = field(default=default_key)
+    key     : Callable[[Any, Dict[Any,Any]], str]            = field(default=default_key)
     #
-    failure : Callable                            = field(default=default_failure)
+    failure : Callable                                       = field(default=default_failure)
 
     def __post_init__(self):
         # TODO init any semantics or structs passed in as Class's
@@ -200,45 +201,76 @@ class AbstractionSemantics(metaclass=abc.ABCMeta):
         pass
 
 
+#--------------------------------------------------
 @dataclass
-class PrintSemantics(metaclass=abc.ABCMeta):
+class PrintSemanticSystem(metaclass=abc.ABCMeta):
     """ Handles how to convert values and sentences into strings,
-    does not rely on any underlying data structures
+    does not rely on the underlying data structures
     """
 
-    # An override map of symbols
-    default_sub     : 'PrintSemantics'           = field(default=None)
-    symbol_map      : Dict[Tuple[str, str], str] = field(default_factory=dict)
-    sub_map         : Dict[Any, Any]             = field(default_factory=dict)
+    # Handlers: fn val -> [Val|str]
+    handlers        : InitVar[List[Callable]]    = field()
+    # Ordered Sieve for lookup of handlers. Most -> least specific
+    # fn x -> str
+    sieve           : List[Callable]             = field(default_factory=list)
     settings        : Dict[str, str]             = field(default_factory=dict)
-    transforms      : List[Callable]             = field(default_factory=list)
-    lookup_key      : Callable                   = field(default=default_key)
 
-    _config    : AcabConfig     = field(init=False, default_factory=AcabConfig.Get)
+    _config    : AcabConfig                      = field(init=False, default_factory=AcabConfig.Get)
+    registered_handlers : Dict[str, Callable]    = field(init=False, default_factory=dict)
 
-    def __post_init__(self):
-        self.transforms += self.add_transforms()
+    _default_sieve : ClassVar[List[Callable]] = [
+        # override tuple : 1 -> 1 : any
+        lambda x: x.override if isinstance(x, PrintSemanticSystem.PrintOverride) else None,
+        # symbol         : m -> m : any
+        lambda x: "_:SYMBOL" if isinstance(x, tuple) else None,
+        # enum
+        lambda x: "_:SYMBOL" if isinstance(x, enum) else None,
+        # exact type     : 1 -> 1 : any / leaf
+        lambda x: str(x.type),
+        # gen type       : m -> 1 : any / leaf
+        # structure      : m -> m : leaf
+        # container      : m -> m : leaf
+        # component      : m -> m : leaf
+        # sentence       : m -> 1 : any / leaf
+        lambda x: "_:SENTENCE" if isinstance(x, VI.SentenceInterface) else None,
+        # value          : m -> 1 : any
+        lambda x: "_:ATOM" if isinstance(x, VI.ValueInterface) else None
+    ]
 
-    def add_transforms(self) -> List[Callable]:
-        """ Override to add custom transforms in a class """
-        return []
 
-    def run_transforms(self, value: ValueInterface, curr_str: str) -> str:
-        curr = curr_str
-        for trans in self.transforms:
-            curr = trans(self, value, curr)
+    @dataclass
+    class PrintOverride:
+        """ Simple Wrapped for forced semantic use """
+        override : str              = field()
+        data     : 'ValueInterface' = field()
+    #----------------------------------------
 
-        return curr
+
+    def __post_init__(self, handlers):
+        # use default sieve if sieve is empty
+        if not bool(self.sieve):
+            self.sieve += PrintSemanticSystem._default_sieve
+        # register provided handlers
+        for handler in handlers:
+            self._register_handler(handler)
+
+    def _register_handler(self, handler):
+        # TODO maybe handle tuples later
+        pair_str = handler.paired_with
+        assert(pair_str not in self.registered_handlers)
+        self.registered_handlers[pair_str] = handler
+
 
     def lookup(self, value: ValueInterface) -> 'PrintSemantics':
-        # try
+        # sieve from most to least specific
 
+        for sieve_fn in self.sieve:
+            key = sieve_fn(value)
+            if bool(key) and key in self.registered_handlers:
+                return self.registered_handlers[key]
 
-        # Failure:
-        if self.default_sub is None:
-            raise AcabPrintException("PrintSemantics Requires at least a default")
-
-        return self.default_sub
+        # Final resort
+        return lambda x: str(x)
 
     def check(self, val) -> Optional[str]:
         """ Check a value to toggle variations/get defaults"""
@@ -247,24 +279,63 @@ class PrintSemantics(metaclass=abc.ABCMeta):
 
         return None
 
-    def use(self, spec: Tuple[str, str]) -> str:
-        # override from symbol map if necessary
-        if (spec[0], spec[1]) in self.symbol_map:
-            return self.symbol_map[(spec[0], spec[1])]
+    def override(new_target: str, value) -> 'PrintOverride':
+        if new_target not in self._registered_handlers:
+            raise AcabPrintException(f"Undefined override handler: {new_target}")
 
-        if spec[0] in self._config.enums:
-            as_enum = self._config.enums[spec[0]][spec[1]]
-            return self._config.printing_extension[as_enum]
-
-        return self._config(spec)
+        return PrintSemanticSystem.PrintOverride(new_target, value)
 
 
-    @SU.JoinFinalResults
-    def print(self, *args) -> str:
-        return [self(x) for x in args]
+    def pprint(self, *args) -> str:
+        # TODO add default join symbol
+        remaining = list(args[:])
+        result = ""
+        while bool(remaining):
+            current = remaining.pop(0)
+            # TODO handle specs that can be transformed to strings
+            if isinstance(current, str):
+                result += current
+            else:
+                assert(isinstance(current, ValueInterface))
+                #handle
+                handler = self.lookup(current)
+                if isinstance(handler, PrintSemantics):
+                    handled = handler(current, top=self)
+                else:
+                    handled = handler(current)
 
+                # Add the results of a handler to the head
+                if isinstance(handled, list):
+                    remaining = handled + remaining
+                else:
+                    remaining = [handled] + remaining
+
+
+        return result
+
+
+    def __call__(self, *args) -> str:
+        return self.pprint(*args)
+@dataclass
+class PrintSemantics(metaclass=abc.ABCMeta):
+
+    paired_with : Sentence       = field()
+    transforms  : List[Callable] = field(init=False, default_factory=list)
+
+    def __post_init__(self):
+        self.transforms += self.add_str_transforms()
+
+    def add_transforms(self) -> List[Callable]:
+        """ Override to add custom transforms in a class """
+        return []
+
+    def run_transforms(self, value: ValueInterface, curr_str: List[Any]) -> List[Any]:
+        curr = curr_str
+        for trans in self.transforms:
+            curr = trans(self, value, curr)
+
+        return curr
 
     @abc.abstractmethod
-    def __call__(self, to_print: ValueInterface) -> str:
+    def __call__(self, to_print: ValueInterface, top:'PrintSemanticSystem'=None) -> List[Tuple[str,ValueInterface]]:
         pass
-
