@@ -1,41 +1,28 @@
-import unittest
-from os.path import splitext, split
 import logging as root_logger
-logging = root_logger.getLogger(__name__)
-
-import random
-import pyparsing as pp
+import unittest
 
 import acab
+
 config = acab.setup()
 
-from acab.abstract.core.values import Sentence
-from acab.abstract.core.values import AcabValue
-
-from acab.abstract.parsing.parsers import HOTLOAD_VALUES, VALBIND
-
+import acab.modules.parsing.exlo.FactParser as FP
+from acab.abstract.core.values import AcabValue, Sentence
 from acab.abstract.printing import default_handlers as DH
-from acab.working_memory.trie_wm import util as KBU
-import acab.working_memory.trie_wm.parsing.FactParser as FP
+from acab.abstract.interfaces.semantic_interfaces import PrintSemantics
 
 NEGATION_S      = config.value("Parse.Structure", "NEGATION")
 TYPE_INSTANCE_S = config.value("Parse.Structure", "TYPE_INSTANCE")
-
-from acab.abstract.semantics.print_semantics import AcabPrintSemantics
-from acab.abstract.printing import default_handlers as DH
 
 basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel),
               Sentence: DH.DEF_SEN_PAIR,
               ProductionComponent: ([DH.component_substruct], DH.component_sentinel)
               }
 
-
-
 Printer = AcabPrintSemantics(basic_plus, default_values={'MODAL_FIELD' : 'exop',
                                                          'EXOP.DOT'    : ".",
                                                          'EXOP.EX'     : "!"})
 
-
+logging = root_logger.getLogger(__name__)
 
 class TestPrintSemantics(unittest.TestCase):
 
@@ -215,14 +202,12 @@ class TestPrintSemantics(unittest.TestCase):
         result = Printer.print(bound_action.clauses[0])
         self.assertEqual(result, r"λoperator.add (a.b.c)")
 
-    @unittest.skip("awaiting printer")
     def test_name_empty_rule_print(self):
         result = RP.parseString("a.rule.x: (::ρ) end")
         self.assertEqual(len(result), 1)
         self.assertIsInstance(result[0][-1], ProductionStructure)
         self.assertEqual(Printer.print(result[0][-1]).strip(), "x: (::ρ) end")
 
-    @unittest.skip("awaiting printer")
     def test_rule_simple_binding_expansion(self):
         bindings = { "x" : FP.parseString('a.b.c')[0] }
         result = RP.parseString("a.rule.x: (::ρ)\n\n$x?\n\nend")[0]
@@ -230,7 +215,6 @@ class TestPrintSemantics(unittest.TestCase):
         self.assertEqual(Printer.print(expanded).strip(),
                          "AnonRule: (::ρ)\n    a.b.c?\nend")
 
-    @unittest.skip("awaiting printer")
     def test_rule_tags(self):
         the_str = 'a.test.rule.x: (::ρ)\n    #blah, #blee, #bloo\n\n    a.b.c?\n\n    λoperator.action.add a.b.c\nend'
         result = RP.parseString(the_str)[0]
