@@ -17,34 +17,31 @@ from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.production_abstractions import (ProductionContainer,
                                                         ProductionOperator)
 from acab.abstract.interfaces import engine_interface as EI
-from acab.abstract.interfaces.semantic_interfaces import SemanticSystem
+from acab.abstract.interfaces.semantic_interfaces import SemanticSystem, PrintSemanticSystem
 from acab.error.acab_base_exception import AcabBaseException
+
+from acab.abstract.engine.util import EnsureDSLInitialised
 
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
 
 MODULE_SPLIT_REG = compile(config.value("Parse.Patterns", "MODULE_SPLIT_REG"))
 
-
 @dataclass
 class Engine(EI.RewindEngineInterface, EI.ModuleLoaderInterface, EI.DSLBuilderInterface):
     """ The Abstract class of a production system engine. """
 
-    # TODO: add *parser* entry and *semantic* entry
-
-    # Blocks engine use until build_DSL has been called
-    _wm_constructor : Callable           = field(init=False)
-    _working_memory : StructureInterface = field(init=False)
+    # TODO add initialisation control of sem system
+    _working_memory : SemanticSystem     = field()
+    _printer        : PrintSemanticSystem= field()
     init_strs       : List[str]          = field(default_factory=list)
-    initialised     : bool               = field(init=False, default=False)
     load_paths      : List[str]          = field(default_factory=list)
 
-    def __post_init__(self):
-        assert(callable(self.__wm_constructor))
-        self._working_memory = self.__wm_constructor(self.init_strs)
-        # cached bindings
-        self._cached_bindings = []
+    # Blocks engine use until build_DSL has been called:
+    initialised     : bool               = field(init=False, default=False)
+    _cached_bindings : List[Any]         = field(init=False, default_factory=list)
 
+    def __post_init__(self):
         # initialise modules
         if bool(self.modules):
             self.load_modules(*self.modules)
@@ -63,13 +60,10 @@ class Engine(EI.RewindEngineInterface, EI.ModuleLoaderInterface, EI.DSLBuilderIn
     def bindings(self):
         return self._cached_bindings
 
-    # Initialisation:
 
+    @EnsureDSLInitialised
     def load_file(self, filename):
         """ Load a file spec for the facts / rules / layers for this engine """
-        if not self.initialised:
-            raise AcabBaseException("DSL Not Initialised")
-
         return self._load_file(filename)
 
     def _load_file(self, filename):
@@ -98,42 +92,37 @@ class Engine(EI.RewindEngineInterface, EI.ModuleLoaderInterface, EI.DSLBuilderIn
 
     def save_file(self, filename, printer):
         """ Dump the content of the kb to a file to reload later """
-        # TODO add default print semantics
+        # TODO update this to use the print sem system
         assert(exists(split(abspath(expanduser(filename)))[0]))
         as_sentences = self._working_memory.to_sentences()
-        as_strings = printer(as_sentences)
+        as_strings = self._printer.pprint(*as_sentences)
         with open(abspath(expanduser(filename)), 'w') as f:
             f.write(as_strings)
 
+    @EnsureDSLInitialised
     def insert(self, s: str):
         """ Assert a new fact into the engine """
-        # pylint: disable=unused-argument,no-self-use
-        if not self.initialised:
-            raise AcabBaseException("DSL Not Initialised")
-
         data = self._main_parser.parseString(s)
+        # TODO replace this with an instruction call
         self._working_memory.add(data)
 
+
+    @EnsureDSLInitialised
     def query(self, s: str, ctxs=None, cache=True):
         """ Ask a question of the working memory """
-        if not self.initialised:
-            raise AcabBaseException("DSL Not Initialised")
         data = self._query_parser.parseString(s)
+        # TODO replace this with an instruction call
         result = self._working_memory.query(data, ctxs=ctxs, engine=self)
         if cache:
             self._cached_bindings = result
         return result
 
-
-    # TODO  rework these
-
+    @EnsureDSLInitialised
     def __call__(self, thing, bindings=None):
         """ Where a thing could be an:
         rule/agenda/layer/pipeline,
         action/query/transform
         """
-        if not self.initialised:
-            raise AcabBaseException("DSL Not Initialised")
         result = False
         # if thing is string, query it
         if isinstance(thing, str):
@@ -141,11 +130,10 @@ class Engine(EI.RewindEngineInterface, EI.ModuleLoaderInterface, EI.DSLBuilderIn
 
         if isinstance(thing, list) and all([isinstance(x, str) for x in thing]):
             result = [self._working_memory(x) for x in thing]
-
         else:
             assert(isinstance(thing, ProductionContainer))
             logging.info("Running thing: {}".format(thing))
-            # TODO: this will use a production semantics
+            # TODO pass instruction to sem system
             result = thing(ctxs=bindings, engine=self)
 
         if not bool(result):
@@ -161,6 +149,4 @@ class Engine(EI.RewindEngineInterface, EI.ModuleLoaderInterface, EI.DSLBuilderIn
         and all paths with non-leaf statements convert to simple formats
         """
         # TODO use a semantics + down
-        return self._working_memory.to_sentences()
-
-
+        raise NotImplementedError()
