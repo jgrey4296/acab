@@ -85,12 +85,16 @@ class AtomicRuleAbstraction(SI.AbstractionSemantics):
         if PConst.ACTION_S in rule:
             semMap(rule[PConst.ACTION_S], data=data, ctxs=ctxCon)
 
-class SteppedRuleAbstraction(SI.AbstractionSemantics):
+class ProxyRuleAbstraction(SI.AbstractionSemantics):
     """ Run a rules queries, then return ctxs bound
     with transform+action continuation """
 
     def __call__(self, instruction, ctxCon, semMap, data=None):
         """ Rule Logic, returns action proposals """
+        # TODO: if all contexts in ctxCon have a continuation,
+        # self.run_continuations
+
+        # else:
         rule = instruction
         # TODO Possibly setup a temp ctxCon
 
@@ -102,11 +106,11 @@ class SteppedRuleAbstraction(SI.AbstractionSemantics):
             return
 
         # TODO bind transform and actions to instances
-        for ctx in ctxCon.active_list:
+        for ctx in ctxCon.active_list():
             ctx.set_continuation(instruction)
 
 
-    def run_continuation(self, instruction, ctxCon, semMap, data=None):
+    def run_continuations(self, instruction, ctxCon, semMap, data=None):
         # TODO this might be _continuation of each ctx
         limited_container = ContextContainer.build()
         limited_container.pop()

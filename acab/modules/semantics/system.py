@@ -53,6 +53,7 @@ class BasicSemanticSystem(SemanticSystem):
         return ctxs
 
     def retrieve(self, target: Sentence, data=None, override=None) -> SemanticRetrievedPair:
+        # Todo replace this with sieve similar to print semantics
         if override is not None: # TODO
             lookup_key = override
         else:

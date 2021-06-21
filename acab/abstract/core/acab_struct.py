@@ -28,7 +28,9 @@ class BasicNodeStruct(AcabStruct):
         return len(self.components['all_nodes'])
 
 class NPArrayStruct(AcabStruct):
+    """ A numpy based data structure """
     pass
 
 class NXGraphStruct(AcabStruct):
+    """ A networkX graph based structure """
     pass

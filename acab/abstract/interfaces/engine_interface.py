@@ -25,9 +25,8 @@ class RewindEngineInterface(metaclass=abc.ABCMeta):
     # named recall states of past kb states
     recall_states : Dict[str, List['Sentence']]= field(default_factory=dict)
 
-    @abc.abstractmethod
     def rewind(self, val:Optional[Union[int, str]]) -> None:
-            pass
+        raise NotImplementedError()
 
 
 
