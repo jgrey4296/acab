@@ -12,9 +12,9 @@ def _maybe_wrap_str(PS, value, current):
     if value.type != PC.STRING_SEN:
         return current
 
-    # originally "{}"
-    str_wrap = PS.use(PC.STR_WRAP_P)
-    return str_wrap.format(current)
+    output = [PC.STR_WRAP_P] + current + [PC.STR_WRAP_P]
+    return output
+
 
 def _maybe_wrap_regex(PS, value, current):
     if not isinstance(value.value, Pattern) or value.type != PC.REGEX_SEN:

@@ -1,8 +1,16 @@
+from typing import List, Set, Dict, Tuple, Optional, Any
+from typing import Callable, Iterator, Union, Match
+from typing import Mapping, MutableMapping, Sequence, Iterable
+from typing import cast, ClassVar, TypeVar, Generic
 
-from acab.abstract.config.config import GET
+from dataclasses import dataclass, field
+
+from acab.abstract.config.config import GET, AcabConfig
 from acab.abstract.interfaces.semantic_interfaces import PrintSemantics
 from acab.abstract.printing import consts as PC
 from acab.abstract.printing import wrappers as PW
+
+import acab.abstract.interfaces.value_interfaces as VI
 
 config = GET()
 
@@ -10,7 +18,7 @@ config = GET()
 class BasicPrinter(PrintSemantics):
     """ Simply print the str of anything passed in """
 
-    def __call__(self, to_print):
+    def __call__(self, to_print, top=None):
         return str(to_print.name)
 
 class PrimitiveTypeAwarePrinter(PrintSemantics):
@@ -20,8 +28,8 @@ class PrimitiveTypeAwarePrinter(PrintSemantics):
                 PW._maybe_wrap_regex,
                 PW._maybe_wrap_var]
 
-    def __call__(self, to_print):
-        curr_str = str(to_print.name)
+    def __call__(self, to_print, top=None):
+        curr_str = [str(to_print.name)]
         return self.run_transforms(to_print, curr_str)
 
 class ModalAwarePrinter(PrintSemantics):
@@ -29,12 +37,18 @@ class ModalAwarePrinter(PrintSemantics):
     def add_transforms(self):
         return [PW._maybe_wrap_str,
                 PW._maybe_wrap_regex,
-                PW._maybe_wrap_var,
-                PW._maybe_wrap_modals]
+                PW._maybe_wrap_var]
 
-    def __call__(self, to_print):
-        curr_str = str(to_print.name)
+
+    def __call__(self, to_print, top=None):
+        curr_str = [str(to_print.name)]
         transformed = self.run_transforms(to_print, curr_str)
+        # lookup modal to care about from top.
+        # TODO handle multi-modals
+        modal = top.check('MODAL')
+        if modal in to_print.data:
+            # TODO wrap enum for printing
+            transformed += to_print.data[modal]
 
         return transformed
 
@@ -43,59 +57,109 @@ class UUIDAwarePrinter(PrintSemantics):
     def add_transforms(self):
         return [PW._maybe_wrap_str,
                 PW._maybe_wrap_regex,
-                PW._maybe_wrap_var,
-                PW._maybe_wrap_modals]
+                PW._maybe_wrap_var]
 
-    def __call__(self, to_print):
-        curr_str = str(to_print.name)
+
+    def __call__(self, to_print, top=None):
+        curr_str = [str(to_print.name)]
         transformed = self.run_transforms(to_print, curr_str)
 
-        return f"({transformed} : {to_print.uuid})"
+        final = ["(", str(to_print.uuid), ":"] + transformed + [")"]
+        return transformed
+
+
+class ConstraintAwareValuePrinter(PrintSemantics):
+    def add_transforms(self):
+        return [PW._maybe_wrap_str,
+                PW._maybe_wrap_regex,
+                PW._maybe_wrap_var]
+
+    def __call__(self, to_print, top=None):
+        return_list = []
+        curr_str = str(to_print.name)
+        return_list.append(self.run_transforms(to_print, curr_str))
+        if self.use(("Value.Structure", "CONSTRAINT")) in to_print.data:
+            # TODO write a list_wrap func
+            return_list += ["("] +  to_print.data['CONSTRAINT'] + [")"]
+
+        # TODO get modal
+        modal = "."
+        return [transformed, modal]
 
 
 # Dependent
 class BasicSentenceAwarePrinter(PrintSemantics):
 
-    def add_transforms(self):
-        return [PW._remove_trailing_modal]
-
-    def __call__(self, to_print):
+    def __call__(self, to_print, top=None):
         assert(to_print.type == PC.SEN_SEN)
-        results = [self.lookup(x)(x) for x in to_print.words]
-        joined  = self.use(PC.SEN_JOIN_P).join(results)
-        transformed = self.run_transforms(to_print, joined)
+        # TODO add head λ
+        words = to_print.words[:-1]
+        # TODO use top.override instead here:
+        last_word = to_print.words[-1].copy()
+        # TODO detect modals
+        del last_word.data['exop']
 
-        return transformed
+        # TODO add tail ?
+        if to_print.data['QUERY']:
+            words.append("?")
+
+        return words
 
 
-class ConstraintSentenceAwarePrinter(PrintSemantics):
-    """ Queries and constraints """
+class ProductionComponentPrinter(PrintSemantics):
 
-    def __call__(self, to_print):
-        pass
+    def __call__(self, to_print, top=None):
+        result = []
+        # if sugared,
 
-class TransformAwarePrinter(PrintSemantics):
+        # else
+        result += to_print.value
+        result += to_print.params
+        # TODO lookup arrow
+        result += " -> "
+        result += to_print.rebind
 
-    def __call__(self, to_print):
-        pass
+        return result
 
 
 # Abstraction
-class ContainerAwarePrinter(PrintSemantics):
+class ContainerPrinter(PrintSemantics):
     """ Production Containers """
 
-    def __call__(self, to_print):
-        pass
+    def __call__(self, to_print, top=None):
+        # TODO add newlines, and END statement
+        return to_print.clauses
 
-class StructureAwarePrinter(PrintSemantics):
+class StructurePrinter(PrintSemantics):
     """ Ordered structures """
 
-    def __call__(self, to_print):
+    def __call__(self, to_print, top=None):
+        # TODO define order, add newlines
+        return to_print.structure["query"] \
+            + to_print.structure['transform'] \
+            + to_print.structure['action']
+
+
+class ComplexTypePrinter(PrintSemantics):
+    """ A Top Level Orhcestrator """
+
+    def __call__(self, to_print, top=None):
         pass
 
 
-class ComplexTypeAwarePrinter(PrintSemantics):
-    """ A Top Level Orhcestrator """
+@dataclass
+class ConfigBackedSymbolPrinter(PrintSemantics):
+    """ Use an AcabConfig for lookup of provided
+    symbol tuples.
+    """
+    overrides : Dict[Any, str] = field(default_factory=dict)
 
-    def __call__(self, to_print):
+    _config   : AcabConfig     = field(default_factory=GET)
+
+    def __call__(self, value):
+        # Look the value up in overrides
+
+        # then in config
+
+        # return
         pass
