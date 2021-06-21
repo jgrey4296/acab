@@ -30,7 +30,7 @@ from acab.error.acab_config_exception import AcabConfigException
 
 from .modal import ModalConfig
 
-actions_e = Enum("Config Actions", "STRIPQUOTE KEYWORD LITERAL DICT LIST UNESCAPE SPLIT")
+actions_e = Enum("Config Actions", "STRIPQUOTE KEYWORD LITERAL DICT LIST UNESCAPE SPLIT PSEUDOSEN")
 
 def GET(*args, hooks=None):
     config = AcabConfig.Get(*args, hooks=hooks)
@@ -41,7 +41,8 @@ DEFAULT_ACTIONS = {actions_e.STRIPQUOTE : lambda x: x.strip("\"'"),
                    actions_e.LITERAL    : lambda x: pp.Literal(x),
                    actions_e.LIST       : lambda x: x.split("\n"),
                    actions_e.UNESCAPE   : lambda x: x.encode().decode("unicode_escape"),
-                   actions_e.SPLIT      : lambda x: x.split(" ")
+                   actions_e.SPLIT      : lambda x: x.split(" "),
+                   actions_e.PSEUDOSEN  : lambda x: f"_:{x}"
                    }
 @dataclass
 class AcabConfig():
@@ -117,17 +118,20 @@ class AcabConfig():
 
     def value(self, section, key=None, actions=None, as_list=None, as_dict=None):
         """
-        Get use a lookup tuple at run time
+        Get a lookup tuple at run time
         """
-        if as_list and key is None:
+        in_file = section in self._config
+
+        if in_file and as_list and key is None:
             return list(self._config[section].keys())
-        elif as_dict and key is None:
+        elif in_file and as_dict and key is None:
             return dict(self._config[section].items())
+        elif not in_file:
+            raise AcabConfigException(f"missing util value: {section} {key}")
 
         # try:
         value = None
-        in_file = section in self._config
-        in_section = in_file and (key is None or key in self._config[section])
+        in_section = key is None or key in self._config[section]
 
         if in_section:
             value = self._config[section][key]
@@ -152,7 +156,7 @@ class AcabConfig():
         Returns an accessor tuple for later,
         while guaranteeing the section:key:value does exist
 
-        This lets AcabPrintSemantics be a proxy with AcabPrintSemantics.use
+        This lets AcabPrintSemantics be a proxy with AcabPrintSemantics.value
         """
         in_file = section in self._config
         in_section = in_file and (key is None or key in self._config[section])
