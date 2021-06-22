@@ -44,6 +44,20 @@ DEFAULT_ACTIONS = {actions_e.STRIPQUOTE : lambda x: x.strip("\"'"),
                    actions_e.SPLIT      : lambda x: x.split(" "),
                    actions_e.PSEUDOSEN  : lambda x: f"_:{x}"
                    }
+
+@dataclass
+class ConfigSpec():
+
+    section : str             = field()
+    key     : str             = field(default=None)
+    actions : List[actions_e] = field(default_factory=list)
+    as_list : bool            = field(default=False)
+    as_dict : bool            = field(default=False)
+
+    def __call__(self):
+        inst = AcabConfig.Get()
+        return inst(self)
+
 @dataclass
 class AcabConfig():
     """ A Singleton class for the active configuration
@@ -93,28 +107,11 @@ class AcabConfig():
         self._config = ConfigParser(interpolation=ExtendedInterpolation(), allow_no_value=True)
         self.read(paths)
 
-    def read(self, paths: List[str]):
-        full_paths = []
-        # DFS over provided paths, finding .config files:
-        for path in paths:
-            expanded = abspath(expanduser(path))
-            if isfile(expanded):
-                full_paths.append(expanded)
-                continue
-
-            assert(isdir(expanded)), breakpoint()
-            found = [join(expanded, x) for x in listdir(expanded)]
-            full_paths += [x for x in found if splitext(x)[1] == ".config"]
-
-        new_paths = [x for x in full_paths if x not in self._files]
-        if bool(new_paths):
-            self._config.read(new_paths)
-            self._files.update(new_paths)
-            self._run_hooks()
-        return self
-
     def __call__(self, lookup):
-        return self.value(*lookup)
+        return self.value(lookup)
+
+    def __contains__(self, key):
+        return key in self._config
 
     def value(self, section, key=None, actions=None, as_list=None, as_dict=None):
         """
@@ -152,17 +149,22 @@ class AcabConfig():
 
 
     def prepare(self, section, key=None, actions=None, as_list=False, as_dict=False):
+        spec = ConfigSpec(section, key, actions, as_list, as_dict)
+        return self.check(spec)
+
+    def check(self, spec: ConfigSpec):
         """
         Returns an accessor tuple for later,
         while guaranteeing the section:key:value does exist
 
         This lets AcabPrintSemantics be a proxy with AcabPrintSemantics.value
         """
+        assert(isinstance(spec, AcabConfigSpec))
         in_file = section in self._config
         in_section = in_file and (key is None or key in self._config[section])
 
         if in_section:
-            return (section, key, actions, as_list, as_dict)
+            return spec
 
         raise AcabConfigException("missing util value: {} {}".format(section, key))
 
@@ -170,10 +172,27 @@ class AcabConfig():
     def loaded(self):
         return bool(self._files)
 
+    def read(self, paths: List[str]):
+        full_paths = []
+        # DFS over provided paths, finding .config files:
+        for path in paths:
+            expanded = abspath(expanduser(path))
+            if isfile(expanded):
+                full_paths.append(expanded)
+                continue
 
-    def __contains__(self, key):
-        return key in self._config
+            assert(isdir(expanded)), breakpoint()
+            found = [join(expanded, x) for x in listdir(expanded)]
+            full_paths += [x for x in found if splitext(x)[1] == ".config"]
 
-    def _run_hooks(self):
+        new_paths = [x for x in full_paths if x not in self._files]
+        if bool(new_paths):
+            self._config.read(new_paths)
+            self._files.update(new_paths)
+            self._run_hooks()
+        return self
+
+
+        def _run_hooks(self):
         for hook in self.hooks:
             hook(self)
