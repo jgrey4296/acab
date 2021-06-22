@@ -5,7 +5,7 @@ from typing import cast, ClassVar, TypeVar, Generic
 
 from dataclasses import dataclass, field
 
-from acab.abstract.config.config import GET, AcabConfig
+from acab.abstract.config.config import GET, AcabConfig, ConfigSpec
 from acab.abstract.interfaces.semantic_interfaces import PrintSemantics
 from acab.abstract.printing import consts as PC
 from acab.abstract.printing import wrappers as PW
@@ -153,13 +153,13 @@ class ConfigBackedSymbolPrinter(PrintSemantics):
     symbol tuples.
     """
     overrides : Dict[Any, str] = field(default_factory=dict)
-
     _config   : AcabConfig     = field(default_factory=GET)
 
     def __call__(self, value):
+        assert(isinstance(value, ConfigSpec))
         # Look the value up in overrides
+        if value in self.overrides:
+            return self.overrides[value]
 
-        # then in config
-
-        # return
-        pass
+        # or just value()
+        return self._config.value(value)

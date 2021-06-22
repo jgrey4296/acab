@@ -22,7 +22,7 @@ from typing import cast, ClassVar, TypeVar, Generic
 import abc
 from dataclasses import dataclass, field, InitVar
 
-from acab.abstract.config.config import AcabConfig
+from acab.abstract.config.config import AcabConfig, ConfigSpec
 from acab.error.acab_semantic_exception import AcabSemanticException
 from acab.error.acab_print_exception import AcabPrintException
 from acab.modules.semantics.context_container import ContextContainer
@@ -222,7 +222,7 @@ class PrintSemanticSystem(metaclass=abc.ABCMeta):
         # override tuple : 1 -> 1 : any
         lambda x: x.override if isinstance(x, PrintSemanticSystem.PrintOverride) else None,
         # symbol         : m -> m : any
-        lambda x: "_:SYMBOL" if isinstance(x, tuple) else None,
+        lambda x: "_:SYMBOL" if isinstance(x, ConfigSpec) else None,
         # enum
         lambda x: "_:SYMBOL" if isinstance(x, enum) else None,
         # exact type     : 1 -> 1 : any / leaf
