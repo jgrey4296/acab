@@ -12,18 +12,18 @@ import logging as root_logger
 import traceback
 
 ##############################
+#see https://docs.python.org/3/howto/argparse.html
+parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
+                                 epilog = "\n".join([""]))
+parser.add_argument('--config', action="append")
+parser.add_argument('--engine', action="append")
+parser.add_argument('-v', '--verbose', default="WARNING")
+
 
 # Quiet hook from https://gist.github.com/jhazelwo/86124774833c6ab8f973323cb9c7e251
 if __name__ == "__main__":
     from acab.abstract.config.config import AcabConfig
     config = AcabConfig.Get()
-
-    #see https://docs.python.org/3/howto/argparse.html
-    parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
-                                     epilog = "\n".join([""]))
-    parser.add_argument('--config', action="append")
-    parser.add_argument('--engine', action="append")
-    parser.add_argument('-v', '--verbose', default="WARNING")
 
     args = parser.parse_args()
     args.config = [abspath(expanduser(x)) for x in args.config]
