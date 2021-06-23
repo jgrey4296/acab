@@ -16,30 +16,6 @@ Sentence     = 'Sentence'
 DSL_Fragment = 'DSL_Fragment'
 
 @dataclass
-class RewindEngineInterface(metaclass=abc.ABCMeta):
-    """
-    Describes how an engine can be reverted to a previous state
-    """
-    # TODO  update with reloadable state of working memory
-    prior_states : List[List['Sentence']] = field(default_factory=list)
-    # named recall states of past kb states
-    recall_states : Dict[str, List['Sentence']]= field(default_factory=dict)
-
-    def rewind(self, val:Optional[Union[int, str]]) -> None:
-        raise NotImplementedError()
-
-
-
-    def save_state(self, name: Optional[str]=None):
-        """ Copy the current string representation of the working memory,
-        and any associated data """
-        # TODO replace this with a down
-        self.prior_states.append(self._working_memory.to_sentences())
-        if name is not None:
-            self.recall_state[name] = self._working_memory.to_sentences()
-
-
-@dataclass
 class ModuleLoaderInterface(metaclass=abc.ABCMeta):
     """ Describes how an engine loads ACAB/py modules """
     _loaded_modules       : Set[Any]          = field(init=False, default_factory=set)
@@ -183,48 +159,3 @@ class ModuleLoaderInterface(metaclass=abc.ABCMeta):
         # TODO: load any values needed for the operators?
 
         return components, dsl_fragments
-
-
-@dataclass
-class DSLBuilderInterface(metaclass=abc.ABCMeta):
-    """ describes engine assembly of a parser from DSL Fragments """
-    root_fragment        : DSL_Interface   = field()
-
-    _bootstrap_parser    : Bootstrapper    = field(init=False, default_factory=TrieBootstrapper)
-    _main_parser         : Parser          = field(init=False)
-    _query_parser        : Parser          = field(init=False)
-    _parsers_initialised : bool            = field(init=False, default=False)
-    _loaded_DSL_fragments : Dict[Any, Any] = field(init=False, default_factory=dict)
-
-
-    def build_DSL(self):
-        """
-        Using currently loaded modules, rebuild the usable DSL parser from fragments
-        """
-        self.clear_bootstrap()
-        self.construct_parsers_from_fragments()
-        self.initialised = True
-
-    def construct_parsers_from_fragments(self):
-        """ Assemble parsers from the fragments of the wm and loaded modules """
-        # assert base parser
-        self.root_fragment.assert_parsers(self._bootstrap_parser)
-
-        fragments = [y for x in self._loaded_DSL_fragments.values() for y in x]
-        assert(all([isinstance(x, DSL_Interface) for x in fragments]))
-
-        for x in fragments:
-            #Populate the trie
-            x.assert_parsers(self._bootstrap_parser)
-
-        for x in fragments:
-            # Now query and populate the modules
-            x.query_parsers(self._bootstrap_parser)
-
-        # then assign main and query parsers from the base parser
-        main_p, query_p = self.root_fragment.query_parsers(self._bootstrap_parser)
-        self._main_parser = main_p
-        self._query_parser = query_p
-
-    def clear_bootstrap(self):
-        self._bootstrap_parser = self._bootstrap_parser.__class__()

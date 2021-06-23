@@ -16,11 +16,13 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.production_abstractions import (ProductionContainer,
                                                         ProductionOperator)
-from acab.abstract.interfaces import engine_interface as EI
 from acab.abstract.interfaces.semantic_interfaces import SemanticSystem, PrintSemanticSystem
+from acab.abstract.interfaces.dsl_interface import DSLBuilderInterface
 from acab.error.acab_base_exception import AcabBaseException
-
 from acab.abstract.engine.util import EnsureDSLInitialised
+from acab.abstract.engine.rewind_interface import RewindEngineInterface
+from acab.abstract.engine.module_load_interface import ModuleLoaderInterface
+
 
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
@@ -28,7 +30,7 @@ config = AcabConfig.Get()
 MODULE_SPLIT_REG = compile(config.value("Parse.Patterns", "MODULE_SPLIT_REG"))
 
 @dataclass
-class Engine(EI.RewindEngineInterface, EI.ModuleLoaderInterface, EI.DSLBuilderInterface):
+class Engine(RewindEngineInterface, ModuleLoaderInterface, DSLBuilderInterface):
     """ The Abstract class of a production system engine. """
 
     # TODO add initialisation control of sem system
