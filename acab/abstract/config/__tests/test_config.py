@@ -12,7 +12,7 @@ from os.path import split, splitext
 
 from acab import setup
 
-from acab.abstract.config.config import AcabConfig
+from acab.abstract.config.config import AcabConfig, ConfigSpec
 from acab.error.acab_config_exception import AcabConfigException
 
 class ConfigTests(unittest.TestCase):
@@ -71,8 +71,7 @@ class ConfigTests(unittest.TestCase):
         """ Check values can be prepared """
         config = AcabConfig.Get()
         prep_tuple = config.prepare("Data", "ROOT")
-        self.assertIsInstance(prep_tuple, tuple)
-        self.assertEqual(len(prep_tuple), 5)
+        self.assertIsInstance(prep_tuple, ConfigSpec)
 
     def test_config_value_missing(self):
         """ Check error is thrown for missing value """

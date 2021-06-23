@@ -32,10 +32,6 @@ from .modal import ModalConfig
 
 actions_e = Enum("Config Actions", "STRIPQUOTE KEYWORD LITERAL DICT LIST UNESCAPE SPLIT PSEUDOSEN")
 
-def GET(*args, hooks=None):
-    config = AcabConfig.Get(*args, hooks=hooks)
-    return config
-
 DEFAULT_ACTIONS = {actions_e.STRIPQUOTE : lambda x: x.strip("\"'"),
                    actions_e.KEYWORD    : lambda x: pp.Keyword(x),
                    actions_e.LITERAL    : lambda x: pp.Literal(x),
@@ -44,7 +40,11 @@ DEFAULT_ACTIONS = {actions_e.STRIPQUOTE : lambda x: x.strip("\"'"),
                    actions_e.SPLIT      : lambda x: x.split(" "),
                    actions_e.PSEUDOSEN  : lambda x: f"_:{x}"
                    }
-
+#--------------------------------------------------
+def GET(*args, hooks=None):
+    config = AcabConfig.Get(*args, hooks=hooks)
+    return config
+#--------------------------------------------------
 @dataclass
 class ConfigSpec():
 
@@ -58,6 +58,7 @@ class ConfigSpec():
         inst = AcabConfig.Get()
         return inst(self)
 
+#--------------------------------------------------
 @dataclass
 class AcabConfig():
     """ A Singleton class for the active configuration
@@ -159,14 +160,14 @@ class AcabConfig():
 
         This lets AcabPrintSemantics be a proxy with AcabPrintSemantics.value
         """
-        assert(isinstance(spec, AcabConfigSpec))
-        in_file = section in self._config
-        in_section = in_file and (key is None or key in self._config[section])
+        assert(isinstance(spec, ConfigSpec))
+        in_file = spec.section in self._config
+        in_section = in_file and (spec.key is None or spec.key in self._config[spec.section])
 
         if in_section:
             return spec
 
-        raise AcabConfigException("missing util value: {} {}".format(section, key))
+        raise AcabConfigException(f"missing util value: {spec.section} {spec.key}")
 
     @property
     def loaded(self):
@@ -193,6 +194,6 @@ class AcabConfig():
         return self
 
 
-        def _run_hooks(self):
+    def _run_hooks(self):
         for hook in self.hooks:
             hook(self)

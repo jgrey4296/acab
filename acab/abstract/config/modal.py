@@ -20,14 +20,12 @@ from enum import Enum, EnumMeta
 
 logging = root_logger.getLogger(__name__)
 
-# Merging modalities
-# TODO make this a hook for the config class itself
-
-# Get the modalities
-# Get the Symbol collection:
-# MODAL_LANGUAGE = "".join(MODAL_PREP.values()).replace(" ","")
-
 def ModalConfig(self):
+    """ Load and create MODAL section enums/defaults/symbols
+    Any value in MODAL will cause to be processed:
+    Modal.{value} [ENUM_VALUES, DEFAULT]
+    Modal.{value}.Symbols
+    """
     try:
         modal_names   = self.value("MODAL", as_list=True)
         logging.info("Initialising Modalities: {}".format(" ".join(modal_names)))
