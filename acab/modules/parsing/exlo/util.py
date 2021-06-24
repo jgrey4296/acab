@@ -21,8 +21,6 @@ from acab.error.acab_parse_exception import AcabParseException
 
 config = AcabConfig.Get()
 
-
-AT_BIND_S         = config.value("Value.Structure", "BIND")
 ACTION_S          = config.value("Parse.Structure", "ACTION")
 ANNOTATION_S      = config.value("Parse.Structure", "ANNOTATION")
 BIND_S            = config.value("Parse.Structure", "BIND")

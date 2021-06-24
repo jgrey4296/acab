@@ -27,8 +27,6 @@ from acab.abstract.engine.module_load_interface import ModuleLoaderInterface
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
 
-MODULE_SPLIT_REG = compile(config.value("Parse.Patterns", "MODULE_SPLIT_REG"))
-
 @dataclass
 class Engine(RewindEngineInterface, ModuleLoaderInterface, DSLBuilderInterface):
     """ The Abstract class of a production system engine. """

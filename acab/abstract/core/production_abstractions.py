@@ -26,15 +26,9 @@ from acab.error.acab_operator_exception import AcabOperatorException
 from acab.abstract.config.config import AcabConfig
 
 from acab.abstract.core.values import AcabValue, AcabStatement, Sentence
+import acab.abstract.core.default_structure as DS
 
 config = AcabConfig.Get()
-
-OPERATOR_S            = config.value("Value.Structure", "OPERATOR")
-AT_BIND_S             = config.value("Value.Structure", "AT_BIND")
-CONTAINER_TYPE_PRIM_S = config.value("Type.Primitive", "CONTAINER")
-COMPONENT_TYPE_PRIM_S = config.value("Type.Primitive", "COMPONENT")
-OPERATOR_TYPE_PRIM_S  = config.value("Type.Primitive", "OPERATOR")
-TYPE_INSTANCE         = config.value("Value.Structure", "TYPE_INSTANCE")
 
 logging = root_logger.getLogger(__name__)
 
@@ -53,7 +47,7 @@ class ProductionOperator(AcabValue):
     def __post_init__(self):
         super(ProductionOperator, self).__post_init__()
         object.__setattr__(self, 'name', self.__class__.__name__)
-        self.data[TYPE_INSTANCE] =  Sentence.build([OPERATOR_TYPE_PRIM_S])
+        self.data[DS.TYPE_INSTANCE] =  DS.OPERATOR_PRIM
 
     def __call__(self, *params: List[AcabValue], data=None):
         raise NotImplementedError()
@@ -82,7 +76,7 @@ class ProductionComponent(AcabStatement):
     def __post_init__(self):
         super(ProductionComponent, self).__post_init__()
         assert(isinstance(self.value, Sentence))
-        self.data[TYPE_INSTANCE] = Sentence.build([COMPONENT_TYPE_PRIM_S])
+        self.data[DS.TYPE_INSTANCE] = DS.COMPONENT_PRIM
 
 
     @property
@@ -137,7 +131,7 @@ class ProductionContainer(AcabStatement):
     def __post_init__(self):
         super(ProductionContainer, self).__post_init__()
         assert(isinstance(self.value, list))
-        self.data[TYPE_INSTANCE] = CONTAINER_TYPE_PRIM_S
+        self.data[DS.TYPE_INSTANCE] = DS.CONTAINER_PRIM
 
     def __len__(self):
         return len(self.clauses)
@@ -182,7 +176,8 @@ class ProductionStructure(ProductionContainer):
     def __post_init__(self):
         self.value = []
         super(ProductionContainer, self).__post_init__()
-        self.data[TYPE_INSTANCE] = CONTAINER_TYPE_PRIM_S
+        # TODO make this a structure prim?
+        self.data[DS.TYPE_INSTANCE] = DS.CONTAINER_PRIM
 
         clauses = list(self.structure.values())
         self.value += clauses

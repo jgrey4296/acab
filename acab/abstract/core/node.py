@@ -12,11 +12,10 @@ import acab.abstract.interfaces.data_interfaces as DI
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.values import AcabValue, Sentence
 
+from acab.abstract.core.default_structure import ROOT
 logging = root_logger.getLogger(__name__)
 
 config = AcabConfig.Get()
-
-ROOT = AcabValue(name=config.value("Data", "ROOT"))
 
 Node = 'AcabNode'
 
@@ -36,7 +35,7 @@ class AcabNode(DI.NodeInterface):
     @staticmethod
     def Root():
         """ Create a new root node """
-        return AcabNode(value=ROOT)
+        return AcabNode(value=AcabValue.safe_make(ROOT))
 
 
     def __post_init__(self):

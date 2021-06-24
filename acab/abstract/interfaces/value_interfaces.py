@@ -14,20 +14,6 @@ from acab.abstract.config.config import AcabConfig
 logging            = root_logger.getLogger(__name__)
 
 config           = AcabConfig.Get()
-TYPE_INSTANCE    = config.value("Value.Structure", "TYPE_INSTANCE")
-BIND             = config.value("Value.Structure", "BIND")
-AT_BIND          = config.value("Value.Structure", "AT_BIND")
-ANON_VALUE       = config.value("Symbols", "ANON_VALUE")
-SENTENCE_TYPE      = config.value("Type.Primitive", "SENTENCE")
-BIND_SYMBOL      = config.value("Symbols", "BIND")
-AT_BIND_SYMBOL   = config.value("Symbols", "AT_BIND")
-TYPE_BOTTOM_NAME = config.value("Data", "TYPE_BOTTOM_NAME")
-UUID_CHOP        = bool(int(config.value("Print.Data", "UUID_CHOP")))
-FALLBACK_MODAL   = config.value("Symbols", "FALLBACK_MODAL", actions=[config.actions_e.STRIPQUOTE])
-
-
-SENTENCE_TYPE      = config.value("Type.Primitive", "SENTENCE")
-
 
 Sentence      = 'Sentence'
 AcabValue     = 'AcabValue'

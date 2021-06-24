@@ -5,6 +5,8 @@ import pyparsing as pp
 
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.values import Sentence
+import acab.abstract.parsing.default_structure as DS
+import acab.abstract.parsing.default_symbols as DSYM
 
 logging = root_logger.getLogger(__name__)
 
@@ -20,36 +22,6 @@ DEFAULT_NODE_DATA = {}
 DEFAULT_NODE_DATA.update(config.defaults)
 
 
-ACTION_S         : str = config.value("Parse.Structure", "ACTION")
-ANNOTATION_S     : str = config.value("Parse.Structure", "ANNOTATION")
-ARG_S            : str = config.value("Parse.Structure", "PARAMS")
-AT_BIND_S        : str = config.value("Value.Structure", "AT_BIND")
-BIND_S           : str = config.value("Parse.Structure", "BIND")
-CONSTRAINT_S     : str = config.value("Parse.Structure", "CONSTRAINT")
-DEFAULT_ACTION_S : str = config.value("Parse.Structure", "DEFAULT_ACTION")
-LEFT_S           : str = config.value("Parse.Structure", "LEFT")
-MODAL_S          : str = config.value("Parse.Structure", "MODAL")
-NAME_S           : str = config.value("Parse.Structure", "NAME")
-NEGATION_S       : str = config.value("Parse.Structure", "NEGATION")
-NODE_S           : str = config.value("Parse.Structure", "NODE")
-OPERATOR_S       : str = config.value("Parse.Structure", "OPERATOR")
-QUERY_FALLBACK_S : str = config.value("Parse.Structure", "QUERY_FALLBACK")
-QUERY_S          : str = config.value("Parse.Structure", "QUERY")
-RIGHT_S          : str = config.value("Parse.Structure", "RIGHT")
-SEN_S            : str = config.value("Parse.Structure", "SEN")
-STATEMENT_S      : str = config.value("Parse.Structure", "STATEMENT")
-TAG_S            : str = config.value("Parse.Structure", "TAG")
-TARGET_S         : str = config.value("Parse.Structure", "TARGET")
-TRANSFORM_S      : str = config.value("Parse.Structure", "TRANSFORM")
-TYPE_INSTANCE_S  : str = config.value("Parse.Structure", "TYPE_INSTANCE")
-VALUE_S          : str = config.value("Parse.Structure", "VALUE")
-
-# Primitives
-ATOM_V   = Sentence.build([config.value("Data", "TYPE_BOTTOM_NAME")])
-STRING_V = Sentence.build([config.value("Type.Primitive", "STRING")])
-REGEX_V  = Sentence.build([config.value("Type.Primitive", "REGEX")])
-
-
 s         = pp.Suppress
 op        = pp.Optional
 orm       = pp.OneOrMore
@@ -57,7 +29,7 @@ zrm       = pp.ZeroOrMore
 
 
 emptyLine         = pp.Suppress(pp.lineEnd + pp.lineEnd)
-END               = s(config.value("Symbols", "END", actions=[AcabConfig.actions_e.LITERAL]))
+END               = s(DSYM.END)
 VBAR              = s(pp.Literal('|'))
 COMMENT           = pp.Regex(COMMENT_RE)
 COMMA             = s(pp.Literal(','))
@@ -100,26 +72,26 @@ LESS             = s(pp.Literal('<'))
 MORE             = s(pp.Literal('>'))
 DELIM            = pp.Or([COMMA, op(pp.lineEnd)])
 
-RULE_HEAD        = s(config.value("Aliases", "RULE", actions=[AcabConfig.actions_e.KEYWORD]))
-QUERY_HEAD       = s(config.value("Aliases", "QUERY", actions=[AcabConfig.actions_e.KEYWORD]))
-TRANSFORM_HEAD   = s(config.value("Aliases", "TRANSFORM", actions=[AcabConfig.actions_e.KEYWORD]))
-ACTION_HEAD      = s(config.value("Aliases", "ACTION", actions=[AcabConfig.actions_e.KEYWORD]))
-FACT_HEAD        = s(config.value("Aliases", "FACT", actions=[AcabConfig.actions_e.KEYWORD]))
-COLLAPSE_CONTEXT = s(config.value("Aliases", "CTX_COLLAPSE", actions=[AcabConfig.actions_e.LITERAL]))
-AGENDA_HEAD      = s(config.value("Aliases", "AGENDA", actions=[AcabConfig.actions_e.KEYWORD]))
-LAYER_HEAD       = s(config.value("Aliases", "LAYER", actions=[AcabConfig.actions_e.KEYWORD]))
-PIPE_HEAD        = s(config.value("Aliases", "PIPE", actions=[AcabConfig.actions_e.KEYWORD]))
+RULE_HEAD        = s(DSYM.RULE_HEAD)
+QUERY_HEAD       = s(DSYM.QUERY_HEAD)
+TRANSFORM_HEAD   = s(DSYM.TRANSFORM_HEAD)
+ACTION_HEAD      = s(DSYM.ACTION_HEAD)
+FACT_HEAD        = s(DSYM.FACT_HEAD)
+COLLAPSE_CONTEXT = s(DSYM.COLLAPSE_CONTEXT)
+AGENDA_HEAD      = s(DSYM.AGENDA_HEAD)
+LAYER_HEAD       = s(DSYM.LAYER_HEAD)
+PIPE_HEAD        = s(DSYM.PIPE_HEAD)
 
-FUNC_SYMBOL      = s(pp.Word(config.value("Symbols", "FUNC")))
+FUNC_SYMBOL      = s(pp.Word(DSYM.FUNC))
 
-BIND_SYMBOL      = s(config.value("Symbols", "BIND", actions=[AcabConfig.actions_e.LITERAL]))
-AT_BIND_SYMBOL   = s(config.value("Symbols", "AT_BIND", actions=[AcabConfig.actions_e.LITERAL]))
+BIND      = s(DSYM.BIND)
+AT_BIND   = s(DSYM.AT_BIND)
 
-QUERY_SYMBOL     = s(config.value("Symbols", "QUERY", actions=[AcabConfig.actions_e.LITERAL]))
-TAG_SYMBOL       = s(config.value("Symbols", "TAG", actions=[AcabConfig.actions_e.LITERAL]))
+QUERY     = s(DSYM.QUERY)
+TAG       = s(DSYM.TAG)
 
-NEGATION_SYMBOL   = N(config.value("Parse.Structure", "NEGATION"),
-                      config.value("Symbols", "NEGATION", actions=[AcabConfig.actions_e.LITERAL]))
+NEGATION   = N(config.value("Parse.Structure", "NEGATION"),
+               DSYM.NEGATION)
 
 
 END.setName("End")

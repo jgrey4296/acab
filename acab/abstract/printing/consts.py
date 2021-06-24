@@ -5,21 +5,6 @@ from  acab.abstract.core.values import Sentence
 
 config = AcabConfig.Get()
 
-# Primitive Types
-STRING_SEN              = Sentence.build([config.value("Type.Primitive", "STRING")])
-REGEX_SEN               = Sentence.build([config.value("Type.Primitive", "REGEX")])
-SEN_SEN                 = Sentence.build([config.value("Type.Primitive", "SENTENCE")])
-
-# Data Access
-TYPE_INSTANCE_V         = config.value("Value.Structure", "TYPE_INSTANCE")
-QUERY_V                 = config.value("Value.Structure", "QUERY")
-BIND_V                  = config.value("Value.Structure", "BIND")
-CONSTRAINT_V            = config.value("Value.Structure", "CONSTRAINT")
-AT_BIND_V               = config.value("Value.Structure", "AT_BIND")
-NEGATION_V              = config.value("Value.Structure", "NEGATION")
-OPERATOR_V              = config.value("Value.Structure", "OPERATOR")
-TAG_V                   = config.value("Value.Structure", "TAG")
-
 # Non-printing types
 OBVIOUS_TYPES           = config.prepare("Print.Data", "SUPPRESSION_TYPES", actions=[AcabConfig.actions_e.SPLIT])
 
@@ -36,6 +21,8 @@ REBIND_SYM         = config.prepare("Symbols", "REBIND")
 SUGAR_SYM          = config.prepare("Symbols", "SUGAR")
 TAG_SYM            = config.prepare("Symbols", "TAG")
 
+
+
 # Wrapping
 CONTAINER_JOIN_P        = config.prepare("Print.Patterns", "CONTAINER_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE])
 PARAM_JOIN_P            = config.prepare("Print.Patterns", "PARAM_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE])
@@ -45,3 +32,4 @@ SEN_JOIN_P              = config.prepare("Print.Patterns", "SEN_JOIN", actions=[
 STR_WRAP_P              = config.prepare("Print.Patterns", "STR_WRAP")
 TAB_P                   = config.prepare("Print.Patterns", "TAB", actions=[AcabConfig.actions_e.STRIPQUOTE])
 WRAP_FORMAT_P           = config.prepare("Print.Patterns", "WRAP_FORMAT")
+PARAM_WRAP              = config.prepare("Print.Patterns", "PARAM_WRAP")

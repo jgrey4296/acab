@@ -14,20 +14,17 @@ from weakref import ref
 
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.interfaces import value_interfaces as VI
+import acab.abstract.core.default_structure as DS
 
 logging          = root_logger.getLogger(__name__)
 
 config           = AcabConfig.Get()
-TYPE_INSTANCE    = config.value("Value.Structure", "TYPE_INSTANCE")
-BIND             = config.value("Value.Structure", "BIND")
-AT_BIND          = config.value("Value.Structure", "AT_BIND")
 ANON_VALUE       = config.value("Symbols", "ANON_VALUE")
-SENTENCE_TYPE    = config.value("Type.Primitive", "SENTENCE")
 BIND_SYMBOL      = config.value("Symbols", "BIND")
 AT_BIND_SYMBOL   = config.value("Symbols", "AT_BIND")
-TYPE_BOTTOM_NAME = config.value("Data", "TYPE_BOTTOM_NAME")
-UUID_CHOP        = bool(int(config.value("Print.Data", "UUID_CHOP")))
 FALLBACK_MODAL   = config.value("Symbols", "FALLBACK_MODAL", actions=[config.actions_e.STRIPQUOTE])
+
+UUID_CHOP        = bool(int(config.value("Print.Data", "UUID_CHOP")))
 
 
 T = TypeVar('T', str, Pattern, list)
@@ -52,7 +49,7 @@ class AcabValue(VI.ValueInterface, Generic[T]):
         if data is not None:
             _data.update(data)
         if _type is not None:
-            _data.update({TYPE_INSTANCE: _type})
+            _data.update({DS.TYPE_INSTANCE: _type})
 
         if isinstance(value, AcabValue):
             assert(_type is None)
@@ -89,11 +86,11 @@ class AcabValue(VI.ValueInterface, Generic[T]):
         if self.value is None:
             self.value = self.name
 
-        if TYPE_INSTANCE not in self.data:
-            self.data[TYPE_INSTANCE] = TYPE_BOTTOM_NAME
+        if DS.TYPE_INSTANCE not in self.data:
+            self.data[DS.TYPE_INSTANCE] = DS.TYPE_BOTTOM_NAME
 
-        if BIND not in self.data:
-            self.data[BIND] = False
+        if DS.BIND not in self.data:
+            self.data[DS.BIND] = False
 
         if any([not isinstance(x, AcabValue) for x in self.params]):
             original_params = self.params[:]
@@ -144,23 +141,23 @@ class AcabValue(VI.ValueInterface, Generic[T]):
     @property
     def type(self) -> Sen:
         """ Lazy Type Coercion to Sentence """
-        type_matches_t = isinstance(self.data[TYPE_INSTANCE], Sentence)
+        type_matches_t = isinstance(self.data[DS.TYPE_INSTANCE], Sentence)
         if not type_matches_t:
-            type_words = self.data[TYPE_INSTANCE]
+            type_words = self.data[DS.TYPE_INSTANCE]
             if not isinstance(type_words, list):
                 type_words = [type_words]
-            self.data[TYPE_INSTANCE] = Sentence.build(type_words)
+            self.data[DS.TYPE_INSTANCE] = Sentence.build(type_words)
 
-        return self.data[TYPE_INSTANCE]
+        return self.data[DS.TYPE_INSTANCE]
 
 
     @property
     def is_var(self) -> bool:
-        return self.data[BIND] is not False
+        return self.data[DS.BIND] is not False
 
     @property
     def is_at_var(self) -> bool:
-        return self.data[BIND] == AT_BIND
+        return self.data[DS.BIND] == DS.AT_BIND
 
     @property
     def var_set(self) -> Dict[str, Set[Any]]:
@@ -246,7 +243,7 @@ class AcabValue(VI.ValueInterface, Generic[T]):
     def to_word(self) -> Value:
         new_data = {}
         new_data.update(self.data)
-        new_data.update({TYPE_INSTANCE: Sentence.build([TYPE_BOTTOM_NAME])})
+        new_data.update({DS.TYPE_INSTANCE: Sentence.build([DS.TYPE_BOTTOM_NAME])})
         simple_value = Sentence.build([AcabValue.safe_make(self.name, data=new_data)])
         return simple_value
 
@@ -268,7 +265,7 @@ class Sentence(AcabStatement, VI.SentenceInterface):
 
     def __post_init__(self):
         AcabValue.__post_init__(self)
-        self.data[TYPE_INSTANCE] = SENTENCE_TYPE
+        self.data[DS.TYPE_INSTANCE] = DS.SENTENCE_PRIM
 
     def __eq__(self, other):
         if isinstance(other, str):
@@ -330,7 +327,7 @@ class Sentence(AcabStatement, VI.SentenceInterface):
 
             # Sentence invariant: only word[0] can have an at_bind
             if word.is_at_var:
-                retrieved = bindings[AT_BIND + word.value]
+                retrieved = bindings[DS.AT_BIND + word.value]
             else:
                 retrieved = bindings[word.value]
 
@@ -339,21 +336,21 @@ class Sentence(AcabStatement, VI.SentenceInterface):
                 # Flatten len1 sentences:
                 copied = retrieved[0].copy()
                 copied.data.update(word.data)
-                copied.data[BIND] = False
+                copied.data[DS.BIND] = False
                 output.append(copied)
             elif isinstance(retrieved, AcabValue):
                 # Apply the variables data to the retrieval
                 copied = retrieved.copy()
                 copied.data.update(word.data)
                 # Except retrieved isn't a binding
-                copied.data[BIND] = False
+                copied.data[DS.BIND] = False
                 output.append(retrieved)
             else:
                 # TODO how often should this actually happen?
                 # won't most things be values already?
                 # TODO get a type for basic values
                 new_word = AcabValue(retrieved, data=word.data)
-                new_word.data[BIND] = False
+                new_word.data[DS.BIND] = False
                 output.append(new_word)
 
         return Sentence.build(output,

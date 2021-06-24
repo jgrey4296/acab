@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from acab.error.acab_base_exception import AcabBaseException
 
 def EnsureDSLInitialised(method):
