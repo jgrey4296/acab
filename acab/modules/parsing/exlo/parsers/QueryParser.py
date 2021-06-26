@@ -1,16 +1,18 @@
 """ Trie-based parser for constructing queries """
 import logging as root_logger
+
 import pyparsing as pp
-
-from acab.abstract.parsing import parsers as PU
-from acab.abstract.parsing import funcs as Pfunc
-from acab.abstract.parsing.consts import QUERY_SYMBOL, DOUBLEBAR, COLON, COMMA, COLON, DELIM, component_gap
-from acab.abstract.parsing.consts import op, N, NG, QUERY_HEAD, QUERY_FALLBACK_S
-from acab.abstract.parsing.funcs import build_clause, build_query, build_assignment
-
 from acab.abstract.config.config import AcabConfig
+from acab.abstract.core.default_structure import QUERY_FALLBACK
+from acab.abstract.parsing import funcs as Pfunc
+from acab.abstract.parsing import parsers as PU
+from acab.abstract.parsing.consts import (COLON, COMMA, DELIM, DOUBLEBAR, NG,
+                                          N, component_gap, op)
+from acab.abstract.parsing.default_symbols import QUERY, QUERY_HEAD
+from acab.abstract.parsing.funcs import build_assignment, build_clause
+from acab.modules.parsing.exlo.constructors import build_query
 
-from .FactParser import PARAM_SEN, BASIC_SEN
+from .FactParser import BASIC_SEN, PARAM_SEN
 
 logging = root_logger.getLogger(__name__)
 
@@ -24,8 +26,8 @@ fallback = DOUBLEBAR + assignmentList
 # a.test.query..<$x(::Rule)?
 # Core Query Chain
 # TODO this can simplify down to a param sen + extra
-clause = PARAM_SEN + QUERY_SYMBOL \
-    + N(QUERY_FALLBACK_S, op(fallback))
+clause = PARAM_SEN + QUERY \
+    + N(QUERY_FALLBACK, op(fallback))
 
 clauses = pp.delimitedList(clause, delim=DELIM)
 

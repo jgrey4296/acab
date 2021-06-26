@@ -3,10 +3,14 @@ import logging as root_logger
 import pyparsing as pp
 
 from acab.abstract.parsing import parsers as PU
-from acab.abstract.parsing.consts import N, NG, zrm, orm, ACTION_HEAD, DELIM, component_gap
-from acab.abstract.parsing.consts import RIGHT_S, LEFT_S, OPERATOR_S
+from acab.abstract.parsing.default_structure import OPERATOR
+from acab.abstract.parsing.default_symbols import ACTION_HEAD
+from acab.abstract.parsing.consts import N, NG, zrm, orm, DELIM, component_gap
+from acab.modules.parsing.exlo.util import RIGHT_S, LEFT_S
 from acab.abstract.parsing.parsers import VALBIND
 from acab.abstract.parsing import funcs as Pfunc
+from acab.modulies.parsing.exlo import constructors as PConst
+
 
 from acab.abstract.config.config import AcabConfig
 
@@ -21,10 +25,10 @@ HOTLOAD_OPERATORS = pp.Forward()
 vals = N(RIGHT_S, PU.zrm(PARAM_SEN))
 
 # action: [op](values)
-action_component = N(OPERATOR_S, op_path) + vals
+action_component = N(OPERATOR, op_path) + vals
 
 action_sugar = N(LEFT_S, VALBIND) \
-    + N(OPERATOR_S, HOTLOAD_OPERATORS) \
+    + N(OPERATOR, HOTLOAD_OPERATORS) \
     + vals
 
 # Sentences are asserted by default
@@ -35,8 +39,8 @@ action_definition = PU.STATEMENT_CONSTRUCTOR(ACTION_HEAD,
                                              actions + component_gap)
 
 # parse action
-action_component.setParseAction(Pfunc.build_action_component)
-actions.setParseAction(Pfunc.build_action)
+action_component.setParseAction(PConst.build_action_component)
+actions.setParseAction(PConst.build_action)
 
 # NAMING
 vals.setName("ActionValueList")

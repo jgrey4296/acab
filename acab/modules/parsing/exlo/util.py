@@ -4,19 +4,12 @@ capable of parsing  multiple facts
 """
 # pylint: disable=bad-whitespace,unnecessary-comprehension
 import pyparsing as pp
-
 from acab.abstract.config.config import AcabConfig
-from acab.abstract.parsing import parsers as PU
-from acab.abstract.parsing.consts import N, NG
-from acab.abstract.parsing.consts import OPAR, CPAR, ATOM_V
-from acab.abstract.parsing.parsers import MODAL
-from acab.abstract.parsing import funcs as Pfunc
-
-from acab.abstract.core.values import AcabValue
-from acab.abstract.core.values import Sentence
-
+from acab.abstract.core.default_structure import TYPE_BOTTOM_NAME as ATOM_V
 from acab.abstract.core.production_abstractions import ProductionContainer
-
+from acab.abstract.core.values import AcabValue, Sentence
+from acab.abstract.parsing.consts import CPAR, NG, OPAR, N
+from acab.abstract.parsing.parsers import MODAL
 from acab.error.acab_parse_exception import AcabParseException
 
 config = AcabConfig.Get()
@@ -38,3 +31,8 @@ TARGET_S          = config.value("Parse.Structure", "TARGET")
 TRANSFORM_S       = config.value("Parse.Structure", "TRANSFORM")
 VALUE_S           = config.value("Parse.Structure", "VALUE")
 TYPE_INSTANCE_S   = config.value("Parse.Structure", "TYPE_INSTANCE")
+
+QUERY_SEM_HINT     = Sentence.build([config.value("SEMANTICS", "QUERY")])
+ACTION_SEM_HINT    = Sentence.build([config.value("SEMANTICS", "ACTION")])
+TRANSFORM_SEM_HINT = Sentence.build([config.value("SEMANTICS", "TRANSFORM")])
+RULE_SEM_HINT      = Sentence.build([config.value("SEMANTICS", "RULE")])

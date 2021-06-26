@@ -115,15 +115,6 @@ def construct_statement(s, loc, toks):
 
     return new_sentence
 
-def build_constraint_list(s, loc, toks):
-    """ Build a constraint list """
-    return (PDS.CONSTRAINT, [x[1] for x in toks[:]])
-
-def build_query_component(s, loc, toks):
-    """ Build a comparison """
-    op = toks[PDS.OPERATOR][0]
-    return (PDS.CONSTRAINT, ProductionComponent(value=op, params=[toks[PDS.VALUE]]))
-
 def build_clause(s, loc, toks):
     # detect negation and annotate the clause with it
     data = { PDS.QUERY : True,

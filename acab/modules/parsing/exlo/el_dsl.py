@@ -2,14 +2,13 @@
 from acab.abstract.interfaces.dsl_interface import DSL_Interface
 from acab.abstract.parsing import parsers as PU
 from acab.error.acab_parse_exception import AcabParseException
-
-from . import ActionParser as AP
-from . import FactParser as FP
-from . import QueryParser as QP
-from . import RuleParser as RP
-from . import TotalParser as TotalP
-from . import TransformParser as TP
-from . import util as TPU
+from acab.modules.parsing.exlo import util as TPU
+from acab.modules.parsing.exlo.parsers import ActionParser as AP
+from acab.modules.parsing.exlo.parsers import FactParser as FP
+from acab.modules.parsing.exlo.parsers import QueryParser as QP
+from acab.modules.parsing.exlo.parsers import RuleParser as RP
+from acab.modules.parsing.exlo.parsers import TotalParser as TotalP
+from acab.modules.parsing.exlo.parsers import TransformParser as TP
 
 
 class EL_Parser(DSL_Interface):

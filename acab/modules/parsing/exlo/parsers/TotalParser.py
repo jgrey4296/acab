@@ -3,15 +3,14 @@ A Combined parser to parse rules and facts to assert
 Handles files, and comments
 """
 import pyparsing as pp
+from acab.abstract.parsing.consts import (ARROW, COLON, COMMA, COMMENT, DELIM,
+                                          DOUBLEBAR, NG, N, component_gap,
+                                          file_cruft)
 from pyparsing import pyparsing_common as ppc
 
-from acab.abstract.parsing import parsers as PU
-from acab.abstract.parsing.consts import ARROW, DOUBLEBAR, COLON, COMMA, COLON, DELIM, component_gap
-from acab.abstract.parsing.consts import file_cruft, N, NG, COMMENT
-
+from . import ActionParser as AP
 from . import FactParser as FP
 from . import RuleParser as RP
-from . import ActionParser as AP
 
 HOTLOAD_STATEMENTS = pp.Forward()
 

@@ -1,27 +1,27 @@
 """ Trie-based parser to construct rules """
 # pylint: disable=bad-whitespace
 import logging as root_logger
+
 import pyparsing as pp
-
-from acab.abstract.parsing import parsers as PU
-from acab.abstract.parsing import funcs as Pfunc
-from acab.abstract.parsing.consts import ARROW, DOUBLEBAR, COLON, COMMA, COLON, DELIM, component_gap
-from acab.abstract.parsing.consts import RULE_HEAD, N, NG, orm, op, gap, component_gap, emptyLine
-from acab.abstract.parsing.consts import QUERY_S, TRANSFORM_S, ACTION_S
-from acab.abstract.parsing.funcs import build_rule
-
 from acab.abstract.config.config import AcabConfig
+from acab.abstract.parsing import parsers as PU
+from acab.abstract.parsing.consts import (ARROW, COLON, COMMA, DELIM,
+                                          DOUBLEBAR, NG, RULE_HEAD, N,
+                                          component_gap, emptyLine, gap, op,
+                                          orm)
+from acab.abstract.parsing.default_structure import ACTION, QUERY, TRANSFORM
+from acab.modules.parsing.exlo.constructors import build_rule
 
+from . import ActionParser as AP
 from . import FactParser as FP
 from . import QueryParser as QP
 from . import TransformParser as TP
-from . import ActionParser as AP
 
 logging = root_logger.getLogger(__name__)
 
-conditions = N(QUERY_S,     QP.clauses + gap)
-transforms = N(TRANSFORM_S, TP.transforms + gap)
-actions    = N(ACTION_S,    AP.actions + component_gap)
+conditions = N(QUERY,     QP.clauses + gap)
+transforms = N(TRANSFORM, TP.transforms + gap)
+actions    = N(ACTION,    AP.actions + component_gap)
 
 rule_body = op(conditions) + op(transforms) + op(actions)
 

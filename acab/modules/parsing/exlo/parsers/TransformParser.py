@@ -1,17 +1,18 @@
 """ Trie-based parser for the transform component of rules """
 import logging as root_logger
-import pyparsing as pp
 
+import pyparsing as pp
+from acab.abstract.config.config import AcabConfig
 from acab.abstract.parsing import parsers as PU
-from acab.abstract.parsing import funcs as Pfunc
-from acab.abstract.parsing.consts import ARROW, DOUBLEBAR, COLON, COMMA, COLON, DELIM, component_gap
-from acab.abstract.parsing.consts import N, NG, zrm, TRANSFORM_HEAD
-from acab.abstract.parsing.consts import RIGHT_S, OPERATOR_S, TARGET_S, LEFT_S
-from acab.abstract.parsing.funcs import build_transform_component, build_transform
+from acab.abstract.parsing.consts import (ARROW, COLON, COMMA, DELIM,
+                                          DOUBLEBAR, NG, N, component_gap, zrm)
+from acab.abstract.parsing.default_symbols import TRANSFORM_HEAD
+from acab.modules.parsing.exlo.constructors import (build_transform,
+                                                    build_transform_component)
+from acab.modules.parsing.exlo.util import (LEFT_S, OPERATOR_S, RIGHT_S,
+                                            TARGET_S)
 
 from .FactParser import BASIC_SEN, PARAM_SEN, op_path
-
-from acab.abstract.config.config import AcabConfig
 
 logging = root_logger.getLogger(__name__)
 

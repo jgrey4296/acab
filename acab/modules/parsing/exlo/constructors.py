@@ -1,84 +1,102 @@
+from acab.abstract.core.default_structure import SEMANTIC_HINT
+from acab.abstract.core.production_abstractions import (ProductionComponent,
+                                                        ProductionContainer,
+                                                        ProductionStructure)
+from acab.abstract.core.values import Sentence
+from acab.abstract.parsing import default_structure as PDS
+from acab.modules.parsing.exlo import util as EXu
+
+
 def build_query(s, loc, toks):
     query = ProductionContainer(value=toks[:],
-                                data={SEMANTIC_HINT_V: QUERY_SEM_HINT})
+                                data={SEMANTIC_HINT: EXu.QUERY_SEM_HINT})
     return (PDS.QUERY, query)
 
 def build_action_component(s, loc, toks):
     params = []
     if PDS.LEFT in toks:
-        params.append(toks[PDS.LEFT])
+        params.append(toks[EXu.LEFT_S])
     if PDS.RIGHT in toks:
-        params = toks[PDS.RIGHT][:]
-    op = toks[PDS.OPERATOR][0]
+        params = toks[EXu.RIGHT_S][:]
+    op = toks[EXu.OPERATOR_S][0]
     filtered_params = [x[0] if len(x) == 1 else x for x in params]
-    return ProductionComponent(value=op, params=filtered_params, sugared=PDS.LEFT in toks)
+    return ProductionComponent(value=op, params=filtered_params, sugared=EXu.LEFT_S in toks)
 
 
 def build_action(s, loc, toks):
     # TODO: check this
     clauses = [x if isinstance(x, ProductionComponent)
-               else ProductionComponent(value=Sentence.build([PDS.DEFAULT_ACTION]), params=[x]) for x in toks]
+               else ProductionComponent(value=Sentence.build([EXu.DEFAULT_ACTION_S]), params=[x]) for x in toks]
 
     act = ProductionContainer(value=clauses,
-                              data={SEMANTIC_HINT_V : ACTION_SEM_HINT})
+                              data={SEMANTIC_HINT : EXu.ACTION_SEM_HINT})
 
-    return (PDS.ACTION, act)
+    return (EXu.ACTION_S, act)
 
 def build_transform_component(s, loc, toks):
     params = []
-    if PDS.LEFT in toks:
-        params.append(toks[PDS.LEFT][0])
-    params += toks[PDS.RIGHT][:]
+    if EXu.LEFT_S in toks:
+        params.append(toks[EXu.LEFT_S][0])
+    params += toks[EXu.RIGHT_S][:]
 
-    op = toks[PDS.OPERATOR][0]
+    op = toks[EXu.OPERATOR_S][0]
     if isinstance(op, str):
         op = Sentence.build([op])
 
-    rebind = toks[PDS.TARGET][0]
+    rebind = toks[EXu.TARGET_S][0]
     filtered_params = [x[0] if len(x) == 1 else x for x in params]
 
     return ProductionComponent(value=op,
                                params=filtered_params,
                                rebind=rebind,
-                               sugared=PDS.LEFT in toks)
+                               sugared=EXu.LEFT_S in toks)
 
 def build_transform(s, loc, toks):
     trans = ProductionContainer(value=toks[:],
-                                data={SEMANTIC_HINT_V : TRANSFORM_SEM_HINT})
-    return (PDS.TRANSFORM, trans)
+                                data={SEMANTIC_HINT : EXu.TRANSFORM_SEM_HINT})
+    return (EXu.TRANSFORM_S, trans)
 
 def build_rule(s, loc, toks, sem_hint=None):
     # Get Conditions
-    if PDS.QUERY in toks:
-        c = toks[PDS.QUERY][0][1]
+    if EXu.QUERY_S in toks:
+        c = toks[EXu.QUERY_S][0][1]
         assert(isinstance(c, ProductionContainer))
     else:
         c = None
 
     # Get Transform
-    if PDS.TRANSFORM in toks:
-        t = toks[PDS.TRANSFORM][0][1]
+    if EXu.TRANSFORM_S in toks:
+        t = toks[EXu.TRANSFORM_S][0][1]
         assert(isinstance(t, ProductionContainer))
     else:
         t = None
 
     # Get Action
-    if PDS.ACTION in toks:
-        a = toks[PDS.ACTION][0][1]
+    if EXu.ACTION_S in toks:
+        a = toks[EXu.ACTION_S][0][1]
         assert(isinstance(a, ProductionContainer))
     else:
         a = None
 
     structure = {
-        PDS.QUERY     : c,
-        PDS.TRANSFORM : t,
-        PDS.ACTION    : a
+        EXu.QUERY_S     : c,
+        EXu.TRANSFORM_S : t,
+        EXu.ACTION_S    : a
         }
 
     if sem_hint is None:
-        sem_hint = RULE_SEM_HINT
+        sem_hint = EXu.RULE_SEM_HINT
 
 
     rule = ProductionStructure(structure=structure,
-                               data={SEMANTIC_HINT_V: sem_hint})
+                               data={SEMANTIC_HINT: sem_hint})
     return (rule.type, rule)
+
+def build_query_component(s, loc, toks):
+    """ Build a comparison """
+    op = toks[EXu.OPERATOR_S][0]
+    return (EXu.CONSTRAINT_S, ProductionComponent(value=op, params=[toks[EXu.VALUE_S]]))
+
+def build_constraint_list(s, loc, toks):
+    """ Build a constraint list """
+    return (EXu.CONSTRAINT_S, [x[1] for x in toks[:]])
