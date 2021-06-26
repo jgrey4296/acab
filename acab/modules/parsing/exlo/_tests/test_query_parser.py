@@ -3,14 +3,13 @@ from os.path import splitext, split
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
-
 import acab
 config = acab.setup()
 
 from acab.abstract.parsing.parsers import HOTLOAD_VALUES, VALBIND
 
-import acab.modules.parsing.exlo.FactParser as FP
-import acab.modules.parsing.exlo.QueryParser as QP
+import acab.modules.parsing.exlo.parsers.FactParser as FP
+import acab.modules.parsing.exlo.parsers.QueryParser as QP
 
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
@@ -19,12 +18,10 @@ from acab.abstract.core.production_abstractions import ProductionOperator, Produ
 
 from acab.modules.operators import query as QOP
 
-from acab.abstract.printing import default_handlers as DH
-
-NEGATION_V       = config.Get().value("Parse.Structure", "NEGATION")
-QUERY_FALLBACK_V = config.Get().value("Parse.Structure", "QUERY_FALLBACK")
-CONSTRAINT_V     = config.Get().value("Parse.Structure", "CONSTRAINT")
-REGEX_PRIM       = config.Get().value("Type.Primitive", "REGEX")
+NEGATION_V       = config.value("Parse.Structure", "NEGATION")
+QUERY_FALLBACK_V = config.value("Parse.Structure", "QUERY_FALLBACK")
+CONSTRAINT_V     = config.value("Parse.Structure", "CONSTRAINT")
+REGEX_PRIM       = config.value("Type.Primitive", "REGEX")
 
 class Trie_Query_Parser_Tests(unittest.TestCase):
 

@@ -13,10 +13,9 @@ from acab.abstract.core.values import Sentence
 from acab.abstract.parsing.TrieBootstrapper import TrieBootstrapper
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.production_abstractions import ProductionOperator, ProductionComponent, ProductionContainer
-from acab.abstract.printing import default_handlers as DH
 
-from acab.modules.parsing.exlo import ActionParser as AP
-from acab.modules.parsing.exlo import FactParser as FP
+from acab.modules.parsing.exlo.parsers import ActionParser as AP
+from acab.modules.parsing.exlo.parsers import FactParser as FP
 
 def S(*words):
     return Sentence.build(words)

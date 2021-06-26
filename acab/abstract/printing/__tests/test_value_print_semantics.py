@@ -19,10 +19,7 @@ from acab.abstract.core.production_abstractions import ProductionContainer, Prod
 from acab.abstract.interfaces.semantic_interfaces import PrintSemanticSystem
 
 import acab.modules.semantics.printers as Printers
-from acab.abstract.printing.print_types import RET_enum
-from acab.abstract.printing import default_handlers as DH
-
-import acab.modules.parsing.exlo.FactParser as FP
+import acab.modules.parsing.exlo.parsers.FactParser as FP
 
 NEGATION_S        = config.value("Value.Structure", "NEGATION")
 QUERY_S           = config.value("Value.Structure", "QUERY")

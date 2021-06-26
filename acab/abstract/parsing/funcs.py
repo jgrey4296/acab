@@ -39,7 +39,7 @@ def make_value(s, loc, toks):
     # TODO: link type primitives with type system
     if PDS.BIND in toks:
         # is variable
-        assert(isinstance(toks[PDS.PDS.BIND][0], tuple))
+        assert(isinstance(toks[PDS.BIND][0], tuple))
         value = toks[PDS.BIND][0][1]
         data[PDS.BIND] = True
     elif PDS.AT_BIND in toks:

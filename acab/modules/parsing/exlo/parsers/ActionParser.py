@@ -1,20 +1,18 @@
 """ A Trie based Parser module for the creation of action """
 import logging as root_logger
-import pyparsing as pp
 
+import pyparsing as pp
+from acab.abstract.config.config import AcabConfig
+from acab.abstract.parsing import funcs as Pfunc
 from acab.abstract.parsing import parsers as PU
+from acab.abstract.parsing.consts import DELIM, NG, N, component_gap, orm, zrm
 from acab.abstract.parsing.default_structure import OPERATOR
 from acab.abstract.parsing.default_symbols import ACTION_HEAD
-from acab.abstract.parsing.consts import N, NG, zrm, orm, DELIM, component_gap
-from acab.modules.parsing.exlo.util import RIGHT_S, LEFT_S
 from acab.abstract.parsing.parsers import VALBIND
-from acab.abstract.parsing import funcs as Pfunc
-from acab.modulies.parsing.exlo import constructors as PConst
+from acab.modules.parsing.exlo import constructors as PConst
+from acab.modules.parsing.exlo.util import LEFT_S, RIGHT_S
 
-
-from acab.abstract.config.config import AcabConfig
-
-from .FactParser import PARAM_SEN, BASIC_SEN, PARAM_SEN, op_path
+from .FactParser import BASIC_SEN, PARAM_SEN, op_path
 
 logging = root_logger.getLogger(__name__)
 

@@ -323,7 +323,7 @@ class PrintSemantics(metaclass=abc.ABCMeta):
     transforms  : List[Callable] = field(init=False, default_factory=list)
 
     def __post_init__(self):
-        self.transforms += self.add_str_transforms()
+        self.transforms += self.add_transforms()
 
     def add_transforms(self) -> List[Callable]:
         """ Override to add custom transforms in a class """

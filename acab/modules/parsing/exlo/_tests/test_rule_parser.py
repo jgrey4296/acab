@@ -3,7 +3,6 @@ from os.path import splitext, split
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
-
 import acab
 config = acab.setup()
 
@@ -12,11 +11,10 @@ from acab.abstract.core.values import Sentence
 from acab.abstract.parsing.TrieBootstrapper import TrieBootstrapper
 from acab.abstract.core.production_abstractions import ProductionOperator, ProductionComponent, ProductionContainer, ProductionStructure
 from acab.modules.operators import query as QOP
-from acab.modules.parsing.exlo import ActionParser as AP
-from acab.modules.parsing.exlo import FactParser as FP
-from acab.modules.parsing.exlo import RuleParser as RP
-from acab.modules.parsing.exlo import QueryParser as QP
-from acab.abstract.printing import default_handlers as DH
+from acab.modules.parsing.exlo.parsers import ActionParser as AP
+from acab.modules.parsing.exlo.parsers import FactParser as FP
+from acab.modules.parsing.exlo.parsers import RuleParser as RP
+from acab.modules.parsing.exlo.parsers import QueryParser as QP
 
 QUERY_V     = config.value("Structure.Components", "QUERY")
 TRANSFORM_V = config.value("Structure.Components", "TRANSFORM")
