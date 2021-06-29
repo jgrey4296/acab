@@ -12,6 +12,7 @@ from acab.abstract.parsing.consts import gap, component_gap, OPAR, CPAR, DBLCOLO
 from acab.abstract.core import default_structure as CDS
 from acab.abstract.parsing import default_structure as PDS
 from acab.abstract.parsing import default_symbols as PDSYM
+from acab.abstract.parsing.consts import TAG
 
 logging = root_logger.getLogger(__name__)
 
@@ -110,7 +111,7 @@ VALBIND.setParseAction(Pfunc.make_value)
 
 Fwd_ArgList <<= PConst.VBAR + pp.delimitedList(BIND, delim=PConst.COMMA) + PConst.VBAR
 
-tagName = s_lit(PDSYM.TAG) + ATOM
+tagName = TAG + ATOM
 
 Fwd_TagList <<= op(N(PDS.TAG,
                      pp.delimitedList(tagName, delim=PConst.DELIM)

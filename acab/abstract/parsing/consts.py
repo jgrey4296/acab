@@ -87,8 +87,8 @@ FUNC_SYMBOL      = s(pp.Word(DSYM.FUNC))
 BIND      = s_lit(DSYM.BIND)
 AT_BIND   = s_lit(DSYM.AT_BIND)
 
-QUERY     = pp.Literal(DSYM.QUERY)
-TAG       = pp.Literal(DSYM.TAG)
+QUERY     = s_lit(DSYM.QUERY)
+TAG       = s_lit(DSYM.TAG)
 
 NEGATION   = N(DS.NEGATION, pp.Literal(DSYM.NEGATION))
 

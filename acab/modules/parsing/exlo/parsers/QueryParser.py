@@ -8,7 +8,8 @@ from acab.abstract.parsing import funcs as Pfunc
 from acab.abstract.parsing import parsers as PU
 from acab.abstract.parsing.consts import (COLON, COMMA, DELIM, DOUBLEBAR, NG,
                                           N, component_gap, op)
-from acab.abstract.parsing.default_symbols import QUERY, QUERY_HEAD
+from acab.abstract.parsing.default_symbols import QUERY_HEAD
+from acab.abstract.parsing.consts import QUERY
 from acab.abstract.parsing.funcs import build_assignment, build_clause
 from acab.modules.parsing.exlo.constructors import build_query
 
