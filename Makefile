@@ -45,7 +45,7 @@ long:
 	python -m unittest discover -s ${START} -p "*_tests.py"
 
 test:
-	python -m unittest discover -v -s ${START} -p ${FILE_PAT} -t ${TOP} ${PAT} -v
+	python -m unittest discover -v -s ${START} -p ${FILE_PAT} -t ${TOP} ${PAT}
 
 faily:
 	@echo "Testing with early fail"
