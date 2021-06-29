@@ -9,10 +9,15 @@ from acab.abstract.config.config import GET, AcabConfig, ConfigSpec
 from acab.abstract.interfaces.semantic_interfaces import PrintSemantics
 from acab.abstract.printing import consts as PC
 from acab.abstract.printing import wrappers as PW
-
+import acab.abstract.core.default_structure as DS
 import acab.abstract.interfaces.value_interfaces as VI
+from acab.abstract.core.values import Sentence
+from acab.abstract.printing import consts as DSYM
+
 
 config = GET()
+
+SEN_SEN = Sentence.build([DS.SENTENCE_PRIM])
 
 # Independent
 class BasicPrinter(PrintSemantics):
