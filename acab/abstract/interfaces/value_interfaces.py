@@ -40,7 +40,7 @@ class ValueInterface(metaclass=abc.ABCMeta):
 
 
     @abc.abstractmethod
-    def copy(self) -> AcabValue:
+    def copy(self, **kwargs) -> AcabValue:
         pass
 
 

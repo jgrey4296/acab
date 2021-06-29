@@ -21,12 +21,13 @@ from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic
 import abc
 from dataclasses import dataclass, field, InitVar
+from enum import Enum
 
 from acab.abstract.config.config import AcabConfig, ConfigSpec
 from acab.error.acab_semantic_exception import AcabSemanticException
 from acab.error.acab_print_exception import AcabPrintException
 from acab.modules.semantics.context_container import ContextContainer
-from acab.abstract.interfaces.value_interfaces import ValueInterface
+from acab.abstract.interfaces.value_interfaces import ValueInterface, SentenceInterface
 import acab.abstract.interfaces.util as SU
 
 
@@ -224,7 +225,7 @@ class PrintSemanticSystem(metaclass=abc.ABCMeta):
         # symbol         : m -> m : any
         lambda x: "_:SYMBOL" if isinstance(x, ConfigSpec) else None,
         # enum
-        lambda x: "_:SYMBOL" if isinstance(x, enum) else None,
+        lambda x: "_:SYMBOL" if isinstance(x, Enum) else None,
         # exact type     : 1 -> 1 : any / leaf
         lambda x: str(x.type),
         # gen type       : m -> 1 : any / leaf
@@ -232,9 +233,9 @@ class PrintSemanticSystem(metaclass=abc.ABCMeta):
         # container      : m -> m : leaf
         # component      : m -> m : leaf
         # sentence       : m -> 1 : any / leaf
-        lambda x: "_:SENTENCE" if isinstance(x, VI.SentenceInterface) else None,
+        lambda x: "_:SENTENCE" if isinstance(x, SentenceInterface) else None,
         # value          : m -> 1 : any
-        lambda x: "_:ATOM" if isinstance(x, VI.ValueInterface) else None
+        lambda x: "_:ATOM" if isinstance(x, ValueInterface) else None
     ]
 
 
@@ -270,17 +271,18 @@ class PrintSemanticSystem(metaclass=abc.ABCMeta):
                 return self.registered_handlers[key]
 
         # Final resort
+        logging.warning(f"Resorting to str handler for: {value}")
         return lambda x: str(x)
 
     def check(self, val) -> Optional[str]:
         """ Check a value to toggle variations/get defaults"""
         if val in self.settings:
-            return self.settings
+            return self.settings[val]
 
         return None
 
-    def override(new_target: str, value) -> 'PrintOverride':
-        if new_target not in self._registered_handlers:
+    def override(self, new_target: str, value) -> 'PrintOverride':
+        if new_target not in self.registered_handlers:
             raise AcabPrintException(f"Undefined override handler: {new_target}")
 
         return PrintSemanticSystem.PrintOverride(new_target, value)
@@ -292,23 +294,30 @@ class PrintSemanticSystem(metaclass=abc.ABCMeta):
         result = ""
         while bool(remaining):
             current = remaining.pop(0)
-            # TODO handle specs that can be transformed to strings
+            handler = None
             if isinstance(current, str):
                 result += current
+            elif isinstance(current, list):
+                remaining = current + remaining
+            elif isinstance(current, PrintSemanticSystem.PrintOverride):
+                handler = self.registered_handlers[current.override]
+                current = current.data
             else:
-                assert(isinstance(current, ValueInterface))
-                #handle
                 handler = self.lookup(current)
-                if isinstance(handler, PrintSemantics):
-                    handled = handler(current, top=self)
-                else:
-                    handled = handler(current)
 
-                # Add the results of a handler to the head
-                if isinstance(handled, list):
-                    remaining = handled + remaining
-                else:
-                    remaining = [handled] + remaining
+            if handler is None:
+                continue
+
+            if isinstance(handler, PrintSemantics):
+                handled = handler(current, top=self)
+            else:
+                handled = handler(current)
+
+            # Add the results of a handler to the head
+            if isinstance(handled, list):
+                remaining = handled + remaining
+            else:
+                remaining = [handled] + remaining
 
 
         return result
