@@ -23,21 +23,21 @@ from acab.abstract.printing import default_handlers as DH
 
 import acab.modules.parsing.exlo.FactParser as FP
 
-NEGATION_S        = config.value("Value.Structure", "NEGATION")
-QUERY_S           = config.value("Value.Structure", "QUERY")
-BIND_S            = config.value("Value.Structure", "BIND")
-AT_BIND_S           = config.value("Value.Structure", "AT_BIND")
+NEGATION_S        = config.prepare("Value.Structure", "NEGATION")()
+QUERY_S           = config.prepare("Value.Structure", "QUERY")()
+BIND_S            = config.prepare("Value.Structure", "BIND")()
+AT_BIND_S         = config.prepare("Value.Structure", "AT_BIND")()
 
-NEGATION_SYMBOL_S = config.value("Symbols", "NEGATION")
-ANON_VALUE_S      = config.value("Symbols", "ANON_VALUE")
-FALLBACK_MODAL_S  = config.value("Symbols", "FALLBACK_MODAL", actions=[config.actions_e.STRIPQUOTE])
-QUERY_SYMBOL_S    = config.value("Symbols", "QUERY")
+NEGATION_SYMBOL_S = config.prepare("Symbols", "NEGATION")()
+ANON_VALUE_S      = config.prepare("Symbols", "ANON_VALUE")()
+FALLBACK_MODAL_S  = config.prepare("Symbols", "FALLBACK_MODAL", actions=[config.actions_e.STRIPQUOTE])()
+QUERY_SYMBOL_S    = config.prepare("Symbols", "QUERY")()
 
-SEN_JOIN_S       = config.value("Print.Patterns", "SEN_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE])
+SEN_JOIN_S        = config.prepare("Print.Patterns", "SEN_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE])()
 
-STR_PRIM_S       = Sentence.build([config.value("Type.Primitive", "STRING")])
-REGEX_PRIM_S     = Sentence.build([config.value("Type.Primitive", "REGEX")])
-TYPE_INSTANCE_S  = config.value("Value.Structure", "TYPE_INSTANCE")
+STR_PRIM_S        = Sentence.build([config.prepare("Type.Primitive", "STRING")()])
+REGEX_PRIM_S      = Sentence.build([config.prepare("Type.Primitive", "REGEX")()])
+TYPE_INSTANCE_S   = config.prepare("Value.Structure", "TYPE_INSTANCE")()
 
 # value : show_uuid, not, variable, at var
 #

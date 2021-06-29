@@ -15,12 +15,12 @@ from acab.modules.semantics.context_container import (ContextContainer,
                                                       ContextInstance)
 from acab.modules.semantics.independent import ExclusionNodeSemantics
 
-EXOP         = config.value("MODAL", "exop")
-EXOP_enum    = config.enums[EXOP]
+EXOP         = config.prepare("MODAL", "exop")()
+EXOP_enum    = config.prepare(EXOP, as_enum=True)()
 
-NEGATION_V   = config.value("Value.Structure", "NEGATION")
-BIND         = config.value("Value.Structure", "BIND")
-CONSTRAINT_V = config.value("Value.Structure", "CONSTRAINT")
+NEGATION_V   = config.prepare("Value.Structure", "NEGATION")()
+BIND         = config.prepare("Value.Structure", "BIND")()
+CONSTRAINT_V = config.prepare("Value.Structure", "CONSTRAINT")()
 
 class FSMSemanticTests(unittest.TestCase):
     def test_fsm_insert(self):

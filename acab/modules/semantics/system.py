@@ -15,11 +15,7 @@ from acab.error.acab_semantic_exception import AcabSemanticException
 from acab.modules.semantics.context_container import ContextContainer
 
 Sentence = 'Sentence'
-
-
 config  = AcabConfig.Get()
-# VAL   = config.value("SECTION", "NAME")
-# PROXY = config.prepare("SECTION", "NAME")
 
 @dataclass
 class BasicSemanticSystem(SemanticSystem):

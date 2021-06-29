@@ -23,6 +23,7 @@ from os.path import (abspath, exists, expanduser, isdir, isfile, join, split,
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
+from enum import Enum
 
 import pyparsing as pp
 
@@ -33,8 +34,6 @@ from .modal import ModalConfig
 actions_e = Enum("Config Actions", "STRIPQUOTE KEYWORD LITERAL DICT LIST UNESCAPE SPLIT PSEUDOSEN")
 
 DEFAULT_ACTIONS = {actions_e.STRIPQUOTE : lambda x: x.strip("\"'"),
-                   actions_e.KEYWORD    : lambda x: pp.Keyword(x),
-                   actions_e.LITERAL    : lambda x: pp.Literal(x),
                    actions_e.LIST       : lambda x: x.split("\n"),
                    actions_e.UNESCAPE   : lambda x: x.encode().decode("unicode_escape"),
                    actions_e.SPLIT      : lambda x: x.split(" "),
@@ -53,10 +52,14 @@ class ConfigSpec():
     actions : List[actions_e] = field(default_factory=list)
     as_list : bool            = field(default=False)
     as_dict : bool            = field(default=False)
+    as_enum : bool            = field(default=False)
 
     def __call__(self):
         inst = AcabConfig.Get()
         return inst(self)
+
+    def __hash__(self):
+        return hash(f"{self.section}:{self.key}")
 
 #--------------------------------------------------
 @dataclass
@@ -112,9 +115,41 @@ class AcabConfig():
         return self.value(lookup)
 
     def __contains__(self, key):
-        return key in self._config
+        in_print = key in self.printing_extension
+        in_base = key in self._config
+        in_enums = key in self.enums
+        in_defaults = key in defaults
+        return any([in_print, in_base, in_enums, in_defaults])
 
-    def value(self, section, key=None, actions=None, as_list=None, as_dict=None):
+    def value(self, val: Union[Enum, ConfigSpec]):
+        """ Unified value retrieval """
+        if isinstance(val, Enum):
+            return self.enum_value(val)
+
+        assert(isinstance(val, ConfigSpec))
+        spec    = val
+        section = spec.section
+        key     = spec.key
+        actions = spec.actions
+        as_list = spec.as_list
+        as_dict = spec.as_dict
+        as_enum = spec.as_enum
+
+        if as_enum and section in self.enums:
+            return self.enums[section]
+
+        return self.spec_value(section, key, actions, as_list, as_dict)
+
+
+    def enum_value(self, val):
+        """ Lookup the print representation of an enum value """
+        if val not in self.printing_extension:
+            raise AcabConfigException("Unrecognised Enum request: {val}")
+
+        return self.printing_extension[val]
+
+
+    def spec_value(self, section, key=None, actions=None, as_list=None, as_dict=None):
         """
         Get a lookup tuple at run time
         """
@@ -131,11 +166,10 @@ class AcabConfig():
         value = None
         in_section = key is None or key in self._config[section]
 
-        if in_section:
-            value = self._config[section][key]
-        else:
+        if not in_section:
             raise AcabConfigException(f"missing util value: {section} {key}")
 
+        value = self._config[section][key]
         if value is None:
             value = key
 
@@ -149,9 +183,15 @@ class AcabConfig():
 
 
 
-    def prepare(self, section, key=None, actions=None, as_list=False, as_dict=False):
-        spec = ConfigSpec(section, key, actions, as_list, as_dict)
+    def prepare(self, *args, **kwargs):
+        spec = ConfigSpec(*args, **kwargs)
         return self.check(spec)
+    def default(self, entry):
+        """ Get the default value for an enum entry """
+        if entry not in self.defaults:
+            raise AcabConfigException(f"Unrecognised default request: {entry}")
+
+        return self.defaults[entry]
 
     def check(self, spec: ConfigSpec):
         """
@@ -161,6 +201,9 @@ class AcabConfig():
         This lets AcabPrintSemantics be a proxy with AcabPrintSemantics.value
         """
         assert(isinstance(spec, ConfigSpec))
+        if spec.as_enum and spec.section in self.enums:
+            return spec
+
         in_file = spec.section in self._config
         in_section = in_file and (spec.key is None or spec.key in self._config[spec.section])
 

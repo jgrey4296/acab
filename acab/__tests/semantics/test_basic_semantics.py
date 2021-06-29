@@ -42,12 +42,12 @@ from acab.modules.semantics.independent import (BasicNodeSemantics,
 from acab.modules.semantics.system import BasicSemanticSystem
 from acab.modules.semantics.util import SemanticOperatorWrapDecorator
 
-EXOP         = config.value("MODAL", "exop")
-EXOP_enum    = config.enums[EXOP]
+EXOP         = config.prepare("MODAL", "exop")()
+EXOP_enum    = config.prepare(EXOP, as_enum=True)()
 
-NEGATION_V   = config.value("Value.Structure", "NEGATION")
-BIND_V       = config.value("Value.Structure", "BIND")
-CONSTRAINT_V = config.value("Value.Structure", "CONSTRAINT")
-QUERY_V      = config.value("Parse.Structure", "QUERY")
-TRANSFORM_V  = config.value("Parse.Structure", "TRANSFORM")
-ACTION_V     = config.value("Parse.Structure", "ACTION")
+NEGATION_V   = config.prepare("Value.Structure", "NEGATION")()
+BIND_V       = config.prepare("Value.Structure", "BIND")()
+CONSTRAINT_V = config.prepare("Value.Structure", "CONSTRAINT")()
+QUERY_V      = config.prepare("Parse.Structure", "QUERY")()
+TRANSFORM_V  = config.prepare("Parse.Structure", "TRANSFORM")()
+ACTION_V     = config.prepare("Parse.Structure", "ACTION")()

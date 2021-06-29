@@ -11,8 +11,8 @@ from acab.abstract.core.values import AcabValue, AcabStatement
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.node import AcabNode
 
-AT_BIND_S = config.value("Value.Structure", "AT_BIND")
-BIND_S    = config.value("Value.Structure", "BIND")
+AT_BIND_S = config.prepare("Value.Structure", "AT_BIND")()
+BIND_S    = config.prepare("Value.Structure", "BIND")()
 
 class AcabValueTests(unittest.TestCase):
 

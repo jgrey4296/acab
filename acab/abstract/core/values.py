@@ -19,12 +19,12 @@ import acab.abstract.core.default_structure as DS
 logging          = root_logger.getLogger(__name__)
 
 config           = AcabConfig.Get()
-ANON_VALUE       = config.value("Symbols", "ANON_VALUE")
-BIND_SYMBOL      = config.value("Symbols", "BIND")
-AT_BIND_SYMBOL   = config.value("Symbols", "AT_BIND")
-FALLBACK_MODAL   = config.value("Symbols", "FALLBACK_MODAL", actions=[config.actions_e.STRIPQUOTE])
+ANON_VALUE       = config.prepare("Symbols", "ANON_VALUE")()
+BIND_SYMBOL      = config.prepare("Symbols", "BIND")()
+AT_BIND_SYMBOL   = config.prepare("Symbols", "AT_BIND")()
+FALLBACK_MODAL   = config.prepare("Symbols", "FALLBACK_MODAL", actions=[config.actions_e.STRIPQUOTE])()
 
-UUID_CHOP        = bool(int(config.value("Print.Data", "UUID_CHOP")))
+UUID_CHOP        = bool(int(config.prepare("Print.Data", "UUID_CHOP")()))
 
 
 T = TypeVar('T', str, Pattern, list)

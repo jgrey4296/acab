@@ -24,12 +24,12 @@ from acab.modules.semantics.dependent import BreadthTrieSemantics
 from acab.modules.semantics.independent import (BasicNodeSemantics,
                                                 ExclusionNodeSemantics)
 
-EXOP         = config.value("MODAL", "exop")
-EXOP_enum    = config.enums[EXOP]
+EXOP         = config.prepare("MODAL", "exop")()
+EXOP_enum    = config.prepare(EXOP, as_enum=True)()
 
-NEGATION_V   = config.value("Value.Structure", "NEGATION")
-BIND_V       = config.value("Value.Structure", "BIND")
-CONSTRAINT_V = config.value("Value.Structure", "CONSTRAINT")
+NEGATION_V   = config.prepare("Value.Structure", "NEGATION")()
+BIND_V       = config.prepare("Value.Structure", "BIND")()
+CONSTRAINT_V = config.prepare("Value.Structure", "CONSTRAINT")()
 
 class TrieSemanticTests(unittest.TestCase):
     def test_trie_insert_basic(self):

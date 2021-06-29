@@ -15,7 +15,7 @@ from acab.abstract.core.production_abstractions import ProductionComponent
 import acab.error.acab_semantic_exception as ASErr
 
 config = GET()
-CONSTRAINT_S = config.value("Parse.Structure", "CONSTRAINT")
+CONSTRAINT_S = config.prepare("Parse.Structure", "CONSTRAINT")()
 
 CtxIns      = 'ContextInstance'
 Constraints = 'ConstraintCollection'

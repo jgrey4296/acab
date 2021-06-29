@@ -11,8 +11,8 @@ from acab.abstract.core.production_abstractions import ProductionComponent
 from . import query_operators as QO
 
 config         = AcabConfig.Get()
-TAG_S        = config.value("Value.Structure", "TAG")
-CONSTRAINT_S = config.value("Value.Structure", "CONSTRAINT")
+TAG_S        = config.prepare("Value.Structure", "TAG")()
+CONSTRAINT_S = config.prepare("Value.Structure", "CONSTRAINT")()
 
 
 def construct_tag_query(toks):

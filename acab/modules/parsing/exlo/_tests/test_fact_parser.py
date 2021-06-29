@@ -16,8 +16,8 @@ from acab.abstract.parsing.parsers import HOTLOAD_VALUES, VALBIND
 
 import acab.modules.parsing.exlo.parsers.FactParser as FP
 
-NEGATION_S      = config.value("Parse.Structure", "NEGATION")
-TYPE_INSTANCE_S = config.value("Parse.Structure", "TYPE_INSTANCE")
+NEGATION_S      = config.prepare("Parse.Structure", "NEGATION")()
+TYPE_INSTANCE_S = config.prepare("Parse.Structure", "TYPE_INSTANCE")()
 
 class Trie_Fact_Parser_Tests(unittest.TestCase):
 

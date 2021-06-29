@@ -18,10 +18,10 @@ from acab.abstract.core.production_abstractions import ProductionOperator, Produ
 
 from acab.modules.operators import query as QOP
 
-NEGATION_V       = config.value("Parse.Structure", "NEGATION")
-QUERY_FALLBACK_V = config.value("Parse.Structure", "QUERY_FALLBACK")
-CONSTRAINT_V     = config.value("Parse.Structure", "CONSTRAINT")
-REGEX_PRIM       = config.value("Type.Primitive", "REGEX")
+NEGATION_V       = config.prepare("Parse.Structure", "NEGATION")()
+QUERY_FALLBACK_V = config.prepare("Parse.Structure", "QUERY_FALLBACK")()
+CONSTRAINT_V     = config.prepare("Parse.Structure", "CONSTRAINT")()
+REGEX_PRIM       = config.prepare("Type.Primitive", "REGEX")()
 
 class Trie_Query_Parser_Tests(unittest.TestCase):
 

@@ -5,33 +5,33 @@ from acab.abstract.config.config import AcabConfig
 
 from acab.abstract.core.values import Sentence
 
-from acab.abstract.parsing.consts import s
+from acab.abstract.parsing.consts import s, s_list, s_key
 
 logging = root_logger.getLogger(__name__)
 
 config = AcabConfig.Get()
 
-ROOT_S          = config.value("Data", "ROOT")
+ROOT_S          = config.prepare("Data", "ROOT")()
 
-BIND_S          = config.value("Value.Structure", "BIND")
-TYPE_INSTANCE_S = config.value("Value.Structure", "TYPE_INSTANCE")
-ARG_S           = config.value("Value.Structure", "PARAMS")
-OPERATOR_S      = config.value("Value.Structure", "OPERATOR")
-SEN_S           = config.value("Value.Structure", "SEN")
+BIND_S          = config.prepare("Value.Structure", "BIND")()
+TYPE_INSTANCE_S = config.prepare("Value.Structure", "TYPE_INSTANCE")()
+ARG_S           = config.prepare("Value.Structure", "PARAMS")()
+OPERATOR_S      = config.prepare("Value.Structure", "OPERATOR")()
+SEN_S           = config.prepare("Value.Structure", "SEN")()
 
-TYPE_DEF_S      = config.value("Typing.Primitives", "TYPE_DEF")
-OP_DEF_S        = config.value("Typing.Primitives", "OP_DEF")
-SUM_DEF_S       = config.value("Typing.Primitives", "SUM_DEF")
-STRUCT_S        = config.value("Typing.Primitives", "STRUCT")
-TVAR_S          = config.value("Typing.Primitives", "TVAR")
-SYNTAX_BIND_S   = config.value("Typing.Primitives", "SYNTAX_BIND")
+TYPE_DEF_S      = config.prepare("Typing.Primitives", "TYPE_DEF")()
+OP_DEF_S        = config.prepare("Typing.Primitives", "OP_DEF")()
+SUM_DEF_S       = config.prepare("Typing.Primitives", "SUM_DEF")()
+STRUCT_S        = config.prepare("Typing.Primitives", "STRUCT")()
+TVAR_S          = config.prepare("Typing.Primitives", "TVAR")()
+SYNTAX_BIND_S   = config.prepare("Typing.Primitives", "SYNTAX_BIND")()
 
-PARAM_JOIN_S    = config.value("Print.Patterns", "PARAM_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE])
+PARAM_JOIN_S    = config.prepare("Print.Patterns", "PARAM_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE])()
 
-SUM_HEAD        = s(config.value("Symbols", "SUM", actions=[AcabConfig.actions_e.KEYWORD]))
-STRUCT_HEAD     = s(config.value("Symbols", "STRUCTURE", actions=[AcabConfig.actions_e.KEYWORD]))
-TYPE_CLASS_HEAD = s(config.value("Symbols", "TYPE_CLASS", actions=[AcabConfig.actions_e.KEYWORD]))
-FUNC_HEAD       = s(pp.Word(config.value("Symbols", "FUNC")))
+SUM_HEAD        = s_key(config.prepare("Symbols", "SUM")())
+STRUCT_HEAD     = s_key(config.prepare("Symbols", "STRUCTURE")())
+TYPE_CLASS_HEAD = s_key(config.prepare("Symbols", "TYPE_CLASS")())
+FUNC_HEAD       = s(pp.Word(config.prepare("Symbols", "FUNC")()))
 
 # TODO make these registrations
 TYPE_DEFINITION     = Sentence.build([TYPE_DEF_S])

@@ -20,6 +20,7 @@ from enum import Enum, EnumMeta
 
 logging = root_logger.getLogger(__name__)
 
+
 def ModalConfig(self):
     """ Load and create MODAL section enums/defaults/symbols
     Any value in MODAL will cause to be processed:
@@ -27,12 +28,16 @@ def ModalConfig(self):
     Modal.{value}.Symbols
     """
     try:
-        modal_names   = self.value("MODAL", as_list=True)
+        modal_spec  = self.prepare("MODAL", as_list=True)
+        modal_names = self.value(modal_spec)
         logging.info("Initialising Modalities: {}".format(" ".join(modal_names)))
         for name in modal_names:
-            new_enum           = Enum(name, self.value(f"Modal.{name}", "ENUM_VALUES"))
-            default            = self.value(f"Modal.{name}", "DEFAULT")
-            symbol_dict        = self.value(f"Modal.{name}.Symbols", as_dict=True)
+            new_spec = self.prepare(f"Modal.{name}", "ENUM_VALUES")
+            default_spec = self.prepare(f"Modal.{name}", "DEFAULT")
+            symbol_spec = self.prepare(f"Modal.{name}.Symbols", as_dict=True)
+            new_enum           = Enum(name, self.value(new_spec))
+            default            = self.value(default_spec)
+            symbol_dict        = self.value(symbol_spec)
             symbol_enum_lookup = {syntax: (name, new_enum[val.upper()]) for val, syntax in symbol_dict.items()}
             print_lookup       = {e_val[1]: syntax for syntax, e_val in symbol_enum_lookup.items()}
 

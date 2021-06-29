@@ -29,7 +29,7 @@ PARAM_JOIN_P            = config.prepare("Print.Patterns", "PARAM_JOIN", actions
 PRINT_SENTINEL_JOIN_P   = config.prepare("Print.Patterns", "PRINT_SENTINEL_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE])
 REGEX_WRAP_P            = config.prepare("Print.Patterns", "REGEX_WRAP")
 SEN_JOIN_P              = config.prepare("Print.Patterns", "SEN_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE])
-STR_WRAP_P              = config.prepare("Print.Patterns", "STR_WRAP")
+STR_WRAP_P              = config.prepare("Print.Patterns", "STR_WRAP", actions=[AcabConfig.actions_e.UNESCAPE])
 TAB_P                   = config.prepare("Print.Patterns", "TAB", actions=[AcabConfig.actions_e.STRIPQUOTE])
 WRAP_FORMAT_P           = config.prepare("Print.Patterns", "WRAP_FORMAT")
 PARAM_WRAP              = config.prepare("Print.Patterns", "PARAM_WRAP")

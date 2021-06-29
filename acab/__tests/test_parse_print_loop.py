@@ -10,8 +10,8 @@ from acab.abstract.core.values import AcabValue, Sentence
 from acab.abstract.printing import default_handlers as DH
 from acab.abstract.interfaces.semantic_interfaces import PrintSemantics
 
-NEGATION_S      = config.value("Parse.Structure", "NEGATION")
-TYPE_INSTANCE_S = config.value("Parse.Structure", "TYPE_INSTANCE")
+NEGATION_S      = config.prepare("Parse.Structure", "NEGATION")()
+TYPE_INSTANCE_S = config.prepare("Parse.Structure", "TYPE_INSTANCE")()
 
 basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel),
               Sentence: DH.DEF_SEN_PAIR,

@@ -54,7 +54,8 @@ class ConfigTests(unittest.TestCase):
         Check values can be retrieved
         """
         config = AcabConfig.Get()
-        value = config.value("Data", "ROOT")
+        spec = config.prepare("Data", "ROOT")
+        value = config.value(spec)
         self.assertEqual(value, "__root")
 
 
@@ -77,7 +78,7 @@ class ConfigTests(unittest.TestCase):
         """ Check error is thrown for missing value """
         config = AcabConfig.Get()
         with self.assertRaises(AcabConfigException):
-            config.value("blah", "bloo")
+            config.prepare("blah", "bloo")
 
     def test_config_prepare_missing(self):
         """ Check config errors if you prepare

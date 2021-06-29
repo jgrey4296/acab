@@ -13,8 +13,8 @@ from acab.abstract.core.values import AcabValue, AcabStatement
 
 from acab.abstract.core import production_abstractions as PO
 
-BIND_S               = config.value("Value.Structure", "BIND")
-OPERATOR_TYPE_PRIM_S = config.value("Type.Primitive", "OPERATOR")
+BIND_S               = config.prepare("Value.Structure", "BIND")()
+OPERATOR_TYPE_PRIM_S = config.prepare("Type.Primitive", "OPERATOR")()
 
 class ProductionAbstractionTests(unittest.TestCase):
     """ Test the construction of production abstractions """

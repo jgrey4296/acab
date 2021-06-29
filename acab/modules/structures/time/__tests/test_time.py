@@ -25,7 +25,7 @@ Printer = AcabPrintSemantics(basic_plus, default_values={'MODAL_FIELD' : 'OPERAT
                                                          'EXOP.DOT'    : ".",
                                                          'EXOP.EX'     : "!"})
 
-BIND_S = config.value("Parse.Structure", "BIND")
+BIND_S = config.prepare("Parse.Structure", "BIND")()
 
 class TestTime(unittest.TestCase):
 

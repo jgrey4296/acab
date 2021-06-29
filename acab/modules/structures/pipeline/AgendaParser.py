@@ -41,9 +41,9 @@ from acab.abstract.parsing.funcs import make_agenda
 logging = root_logger.getLogger(__name__)
 
 config        = AcabConfig.Get()
-QUERY_S     = config.value("Parse.Structure", "QUERY")
-TRANSFORM_S = config.value("Parse.Structure", "TRANSFORM")
-ACTION_S    = config.value("Parse.Structure", "ACTION")
+QUERY_S     = config.prepare("Parse.Structure", "QUERY")()
+TRANSFORM_S = config.prepare("Parse.Structure", "TRANSFORM")()
+ACTION_S    = config.prepare("Parse.Structure", "ACTION")()
 
 
 HOTLOAD_BASIC_SEN = pp.Forward()

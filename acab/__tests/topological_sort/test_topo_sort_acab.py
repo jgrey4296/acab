@@ -28,10 +28,10 @@ from acab.abstract.core import production_abstractions as PA
 from acab.modules.operators.query.query_operators import EQ
 
 
-OPERATOR_TYPE_PRIM_S  = config.value("Type.Primitive", "OPERATOR")
-CONTAINER_TYPE_PRIM_S = config.value("Type.Primitive", "CONTAINER")
-COMPONENT_TYPE_PRIM_S = config.value("Type.Primitive", "COMPONENT")
-ANON_VALUE       = config.value("Symbols", "ANON_VALUE")
+OPERATOR_TYPE_PRIM_S  = config.prepare("Type.Primitive", "OPERATOR")()
+CONTAINER_TYPE_PRIM_S = config.prepare("Type.Primitive", "CONTAINER")()
+COMPONENT_TYPE_PRIM_S = config.prepare("Type.Primitive", "COMPONENT")()
+ANON_VALUE            = config.prepare("Symbols", "ANON_VALUE")()
 
 # TODO duplicate this, but for failures
 class TopologicalOrderedAcabTests(unittest.TestCase):

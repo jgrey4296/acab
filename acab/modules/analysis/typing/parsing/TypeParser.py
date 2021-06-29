@@ -14,8 +14,8 @@ from acab.modules.analysis.typing import util as TYU
 from acab.abstract.config.config import AcabConfig
 
 config = AcabConfig.Get()
-TYPE_INSTANCE_S            = config.value("Value.Structure", "TYPE_INSTANCE")
-EXTENDED_LANGUAGE_SYNTAX_S = config.value("Parse.Patterns", "EXTENDED_LANGUAGE_SYNTAX")
+TYPE_INSTANCE_S            = config.prepare("Value.Structure", "TYPE_INSTANCE")()
+EXTENDED_LANGUAGE_SYNTAX_S = config.prepare("Parse.Patterns", "EXTENDED_LANGUAGE_SYNTAX")()
 
 def make_type_dec(toks):
     """ Construct a type declaration / annotation

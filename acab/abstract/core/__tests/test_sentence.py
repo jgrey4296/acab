@@ -10,7 +10,7 @@ config = acab.setup()
 
 from acab.abstract.core.values import AcabValue, Sentence
 
-BIND_S = config.value("Value.Structure", "BIND")
+BIND_S = config.prepare("Value.Structure", "BIND")()
 
 def S(*values):
     return Sentence.build(values)

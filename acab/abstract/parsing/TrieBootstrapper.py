@@ -31,7 +31,7 @@ from acab.abstract.core.acab_struct import BasicNodeStruct
 logging = root_logger.getLogger(__name__)
 config = GET()
 
-BIND_S    = config.value("Value.Structure", "BIND")
+BIND_S    = config.prepare("Value.Structure", "BIND")()
 
 class TrieBootstrapper(Bootstrapper):
     """ Manage parsers and allow queries for hotloading,

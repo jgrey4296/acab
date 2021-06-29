@@ -16,9 +16,9 @@ from acab.modules.parsing.exlo.parsers import FactParser as FP
 from acab.modules.parsing.exlo.parsers import RuleParser as RP
 from acab.modules.parsing.exlo.parsers import QueryParser as QP
 
-QUERY_V     = config.value("Structure.Components", "QUERY")
-TRANSFORM_V = config.value("Structure.Components", "TRANSFORM")
-ACTION_V    = config.value("Structure.Components", "ACTION")
+QUERY_V     = config.prepare("Structure.Components", "QUERY")()
+TRANSFORM_V = config.prepare("Structure.Components", "TRANSFORM")()
+ACTION_V    = config.prepare("Structure.Components", "ACTION")()
 
 # TODO rule:
 

@@ -22,25 +22,25 @@ from acab.modules.semantics.context_container import (ContextContainer,
 from acab.modules.semantics.independent import ExclusionNodeSemantics
 from acab.modules.semantics.system import BasicSemanticSystem
 
-EXOP         = config.value("MODAL", "exop")
-EXOP_enum    = config.enums[EXOP]
+EXOP         = config.prepare("MODAL", "exop")()
+EXOP_enum    = config.prepare(EXOP, as_enum=True)()
 
-NEGATION_V   = config.value("Value.Structure", "NEGATION")
-BIND_V       = config.value("Value.Structure", "BIND")
-CONSTRAINT_V = config.value("Value.Structure", "CONSTRAINT")
-QUERY_V      = config.value("Parse.Structure", "QUERY")
-TRANSFORM_V  = config.value("Parse.Structure", "TRANSFORM")
-ACTION_V     = config.value("Parse.Structure", "ACTION")
+NEGATION_V   = config.prepare("Value.Structure", "NEGATION")()
+BIND_V       = config.prepare("Value.Structure", "BIND")()
+CONSTRAINT_V = config.prepare("Value.Structure", "CONSTRAINT")()
+QUERY_V      = config.prepare("Parse.Structure", "QUERY")()
+TRANSFORM_V  = config.prepare("Parse.Structure", "TRANSFORM")()
+ACTION_V     = config.prepare("Parse.Structure", "ACTION")()
 
-SEMANTIC_HINT_V = config.value("Value.Structure", "SEMANTIC_HINT")
+SEMANTIC_HINT_V = config.prepare("Value.Structure", "SEMANTIC_HINT")()
 
-QUERY_SEM_HINT     = Sentence.build([config.value("SEMANTICS", "QUERY")])
-ACTION_SEM_HINT    = Sentence.build([config.value("SEMANTICS", "ACTION")])
-TRANSFORM_SEM_HINT = Sentence.build([config.value("SEMANTICS", "TRANSFORM")])
-RULE_SEM_HINT      = Sentence.build([config.value("SEMANTICS", "RULE")])
-AGENDA_SEM_HINT    = Sentence.build([config.value("SEMANTICS", "AGENDA")])
-LAYER_SEM_HINT     = Sentence.build([config.value("SEMANTICS", "LAYER")])
-PIPELINE_SEM_HINT  = Sentence.build([config.value("SEMANTICS", "PIPELINE")])
+QUERY_SEM_HINT     = Sentence.build([config.prepare("SEMANTICS", "QUERY")()])
+ACTION_SEM_HINT    = Sentence.build([config.prepare("SEMANTICS", "ACTION")()])
+TRANSFORM_SEM_HINT = Sentence.build([config.prepare("SEMANTICS", "TRANSFORM")()])
+RULE_SEM_HINT      = Sentence.build([config.prepare("SEMANTICS", "RULE")()])
+AGENDA_SEM_HINT    = Sentence.build([config.prepare("SEMANTICS", "AGENDA")()])
+LAYER_SEM_HINT     = Sentence.build([config.prepare("SEMANTICS", "LAYER")()])
+PIPELINE_SEM_HINT  = Sentence.build([config.prepare("SEMANTICS", "PIPELINE")()])
 
 # TODO test verify
 

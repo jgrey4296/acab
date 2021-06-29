@@ -18,44 +18,62 @@ from acab.abstract.core.values import AcabValue, AcabStatement, Sentence
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.production_abstractions import ProductionContainer, ProductionComponent, ProductionOperator
 
+from acab.abstract.interfaces.semantic_interfaces import PrintSemanticSystem
 import acab.modules.semantics.printers as Printers
-from acab.abstract.printing.print_types import RET_enum
-from acab.abstract.printing import default_handlers as DH
+from acab.abstract.core import default_structure as DS
 
-import acab.modules.parsing.exlo.FactParser as FP
+import acab.modules.parsing.exlo.parsers.FactParser as FP
 
-NEGATION_S        = config.value("Value.Structure", "NEGATION")
-QUERY_S           = config.value("Value.Structure", "QUERY")
-BIND_S            = config.value("Value.Structure", "BIND")
-AT_BIND_S           = config.value("Value.Structure", "AT_BIND")
+NEGATION_S        = config.prepare("Value.Structure", "NEGATION")()
+QUERY_S           = config.prepare("Value.Structure", "QUERY")()
+BIND_S            = config.prepare("Value.Structure", "BIND")()
+AT_BIND_S         = config.prepare("Value.Structure", "AT_BIND")()
 
-NEGATION_SYMBOL_S = config.value("Symbols", "NEGATION")
-ANON_VALUE_S      = config.value("Symbols", "ANON_VALUE")
-FALLBACK_MODAL_S  = config.value("Symbols", "FALLBACK_MODAL", actions=[config.actions_e.STRIPQUOTE])
-QUERY_SYMBOL_S    = config.value("Symbols", "QUERY")
+NEGATION_SYMBOL_S = config.prepare("Symbols", "NEGATION")()
+ANON_VALUE_S      = config.prepare("Symbols", "ANON_VALUE")()
+FALLBACK_MODAL_S  = config.prepare("Symbols", "FALLBACK_MODAL", actions=[config.actions_e.STRIPQUOTE])()
+QUERY_SYMBOL_S    = config.prepare("Symbols", "QUERY")()
 
-SEN_JOIN_S       = config.value("Print.Patterns", "SEN_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE])
+SEN_JOIN_S        = config.prepare("Print.Patterns", "SEN_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE])()
 
-STR_PRIM_S       = Sentence.build([config.value("Type.Primitive", "STRING")])
-REGEX_PRIM_S     = Sentence.build([config.value("Type.Primitive", "REGEX")])
-TYPE_INSTANCE_S  = config.value("Value.Structure", "TYPE_INSTANCE")
+STR_PRIM_S        = Sentence.build([config.prepare("Type.Primitive", "STRING")()])
+REGEX_PRIM_S      = Sentence.build([config.prepare("Type.Primitive", "REGEX")()])
+TYPE_INSTANCE_S   = config.prepare("Value.Structure", "TYPE_INSTANCE")()
 
 class PrintBasicSentenceSemanticTests(unittest.TestCase):
     def test_sentence_basic(self):
-        sem = Printers.BasicSentenceAwarePrinter(Printers.ModalAwarePrinter())
+        sem = PrintSemanticSystem(handlers=[Printers.ModalAwarePrinter("_:ATOM"),
+                                            Printers.BasicSentenceAwarePrinter("_:SENTENCE")])
         words = ["a", "b", "c", "d"]
         sentence = Sentence.build(words)
+
         result = sem.pprint(sentence)
         self.assertEqual(result, SEN_JOIN_S.join(words))
 
     def test_sentence_modal(self):
-        sem = Printers.BasicSentenceAwarePrinter(Printers.ModalAwarePrinter())
+        sem = PrintSemanticSystem(handlers=[Printers.ModalAwarePrinter("_:ATOM"),
+                                            Printers.BasicSentenceAwarePrinter("_:SENTENCE"),
+                                            Printers.ConfigBackedSymbolPrinter("_:SYMBOL")],
+                                  settings={"MODAL" : "exop"})
         sentence = FP.parseString("a.test.sen")[0]
         result = sem.pprint(sentence)
         self.assertEqual(result, "a.test.sen")
 
     def test_sentence_modal_2(self):
-        sem = Printers.BasicSentenceAwarePrinter(Printers.ModalAwarePrinter())
+        sem = PrintSemanticSystem(handlers=[Printers.ModalAwarePrinter("_:ATOM"),
+                                            Printers.BasicSentenceAwarePrinter("_:SENTENCE"),
+                                            Printers.ConfigBackedSymbolPrinter("_:SYMBOL")],
+                                            settings={"MODAL": "exop"})
         sentence = FP.parseString("a.test!sen")[0]
         result = sem.pprint(sentence)
         self.assertEqual(result, "a.test!sen")
+
+    def test_sentence_query(self):
+        sem = PrintSemanticSystem(handlers=[Printers.ModalAwarePrinter("_:ATOM"),
+                                            Printers.BasicSentenceAwarePrinter("_:SENTENCE"),
+                                            Printers.ConfigBackedSymbolPrinter("_:SYMBOL")],
+                                            settings={"MODAL": "exop"})
+        sentence = FP.parseString("a.test!sen")[0]
+        sentence.data[DS.QUERY] = True
+        result = sem.pprint(sentence)
+        self.assertEqual(result, "a.test!sen?")

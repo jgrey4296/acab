@@ -10,11 +10,11 @@ from acab.abstract.core.acab_struct import BasicNodeStruct
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
 
-CONSTRAINT_S     = config.value("Value.Structure", "CONSTRAINT")
-NEGATION_S       = config.value("Value.Structure", "NEGATION")
-QUERY_FALLBACK_S = config.value("Value.Structure", "QUERY_FALLBACK")
-DEFAULT_SETUP_S  = config.value("Data", "DEFAULT_SETUP_METHOD")
-DEFAULT_UPDATE_S = config.value("Data", "DEFAULT_UPDATE_METHOD")
+CONSTRAINT_S     = config.prepare("Value.Structure", "CONSTRAINT")()
+NEGATION_S       = config.prepare("Value.Structure", "NEGATION")()
+QUERY_FALLBACK_S = config.prepare("Value.Structure", "QUERY_FALLBACK")()
+DEFAULT_SETUP_S  = config.prepare("Data", "DEFAULT_SETUP_METHOD")()
+DEFAULT_UPDATE_S = config.prepare("Data", "DEFAULT_UPDATE_METHOD")()
 
 Node          = 'AcabNode'
 Printable     = 'Printable'

@@ -4,7 +4,7 @@ from acab.abstract.config.config import AcabConfig
 
 config = AcabConfig.Get()
 
-TAB_S = config.value("Print.Patterns", "TAB", actions=[AcabConfig.actions_e.STRIPQUOTE])
+TAB_S = config.prepare("Print.Patterns", "TAB", actions=[AcabConfig.actions_e.STRIPQUOTE])()
 
 class TypeStatement(AcabStatement):
 

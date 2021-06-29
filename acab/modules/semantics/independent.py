@@ -14,16 +14,16 @@ Node  = AcabNode
 T     = TypeVar('T')
 
 config       = AcabConfig.Get()
-NEGATION_S   = config.value("Value.Structure", "NEGATION")
-CONSTRAINT_S = config.value("Value.Structure", "CONSTRAINT")
-AT_BIND_S    = config.value("Value.Structure", "AT_BIND")
-BIND         = config.value("Value.Structure", "BIND")
+NEGATION_S   = config.prepare("Value.Structure", "NEGATION")()
+CONSTRAINT_S = config.prepare("Value.Structure", "CONSTRAINT")()
+AT_BIND_S    = config.prepare("Value.Structure", "AT_BIND")()
+BIND         = config.prepare("Value.Structure", "BIND")()
 
 CTX_OP = Enum("ctx", "collapse")
 # TODO replace operator with specific modal name
-EXOP         = config.value("MODAL", "exop")
-DEFAULT_EXOP = config.defaults[EXOP]
-EXOP_enum    = config.enums[EXOP]
+EXOP         = config.prepare("MODAL", "exop")()
+DEFAULT_EXOP = config.default(EXOP)
+EXOP_enum    = config.prepare(EXOP, as_enum=True)()
 
 logging = root_logger.getLogger(__name__)
 
