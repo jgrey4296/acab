@@ -108,7 +108,9 @@ class BasicSentenceAwarePrinter(PrintSemantics):
         assert(to_print.type == SEN_SEN)
         return_list = []
 
-        # TODO add head λ
+        if DS.NEGATION in to_print.data and to_print.data[DS.NEGATION]:
+            return_list.append(DSYM.NEGATION_SYM)
+
         return_list += to_print.words[:-1]
         # TODO use top.override instead here:
         # TODO preserve the uuid

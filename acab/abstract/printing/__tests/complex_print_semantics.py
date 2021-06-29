@@ -41,17 +41,6 @@ TYPE_INSTANCE_S   = config.prepare("Value.Structure", "TYPE_INSTANCE")()
 
 class PrintComplexSentenceSemanticTests(unittest.TestCase):
     @unittest.skip
-    def test_sentence_negated(self):
-        join_str = "."
-        sem = BasicPrinter(basic_plus, {SEN_JOIN_S: join_str})
-        sentence = Sentence.build(["a","b","c","d"])
-        sentence.data[NEGATION_S] = True
-
-        result = sem.pprint(sentence)
-        self.assertEqual(result, "{}{}".format(NEGATION_SYMBOL_S,
-                                               join_str.join(["a", "b", "c", "d"])))
-
-    @unittest.skip
     def test_sentence_query(self):
         join_str = "."
         sem = BasicPrinter(basic_plus, {SEN_JOIN_S: join_str})

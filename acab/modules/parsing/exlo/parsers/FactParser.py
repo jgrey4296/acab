@@ -10,7 +10,7 @@ from acab.abstract.parsing import parsers as PU
 from acab.abstract.parsing.consts import (COLLAPSE_CONTEXT, COMMA, DELIM, NG,
                                           N, opLn)
 from acab.abstract.parsing.default_structure import OPERATOR, SEN, VALUE
-from acab.abstract.parsing.default_symbols import END, FACT_HEAD, NEGATION
+from acab.abstract.parsing.consts import NEGATION, END, FACT_HEAD
 from acab.modules.parsing.exlo import constructors as PConst
 
 logging = root_logger.getLogger(__name__)

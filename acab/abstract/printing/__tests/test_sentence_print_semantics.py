@@ -77,3 +77,12 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
         sentence.data[DS.QUERY] = True
         result = sem.pprint(sentence)
         self.assertEqual(result, "a.test!sen?")
+
+    def test_sentence_negated(self):
+        sem = PrintSemanticSystem(handlers=[Printers.ModalAwarePrinter("_:ATOM"),
+                                            Printers.BasicSentenceAwarePrinter("_:SENTENCE"),
+                                            Printers.ConfigBackedSymbolPrinter("_:SYMBOL")],
+                                  settings={"MODAL" : "exop"})
+        sentence = FP.parseString("~a.test.sen")[0]
+        result = sem.pprint(sentence)
+        self.assertEqual(result, "~a.test.sen")
