@@ -47,8 +47,7 @@ class ModalAwarePrinter(PrintSemantics):
         # TODO handle multi-modals
         modal = top.check('MODAL')
         if modal in to_print.data:
-            # TODO wrap enum for printing
-            transformed += to_print.data[modal]
+            transformed.append(to_print.data[modal])
 
         return transformed
 
@@ -64,8 +63,8 @@ class UUIDAwarePrinter(PrintSemantics):
         curr_str = [str(to_print.name)]
         transformed = self.run_transforms(to_print, curr_str)
 
-        final = ["(", str(to_print.uuid), ":"] + transformed + [")"]
-        return transformed
+        final = ["(", str(to_print.uuid), " : "] + transformed + [")"]
+        return final
 
 
 class ConstraintAwareValuePrinter(PrintSemantics):
@@ -76,34 +75,51 @@ class ConstraintAwareValuePrinter(PrintSemantics):
 
     def __call__(self, to_print, top=None):
         return_list = []
-        curr_str = str(to_print.name)
+        curr_str = [str(to_print.name)]
         return_list.append(self.run_transforms(to_print, curr_str))
-        if self.use(("Value.Structure", "CONSTRAINT")) in to_print.data:
-            # TODO write a list_wrap func
-            return_list += ["("] +  to_print.data['CONSTRAINT'] + [")"]
 
-        # TODO get modal
-        modal = "."
-        return [transformed, modal]
+        if DS.CONSTRAINT in to_print.data:
+            # TODO write a list_wrap func
+            return_list.append("(")
+            for constraint in to_print.data[DS.CONSTRAINT][:-1]:
+                return_list.append(constraint)
+                return_list.append(", ")
+
+            return_list.append(to_print.data[DS.CONSTRAINT][-1])
+            return_list.append(")")
+
+        modal = top.check('MODAL')
+        if modal in to_print.data:
+            return_list.append(to_print.data[modal])
+
+
+        return return_list
 
 
 # Dependent
 class BasicSentenceAwarePrinter(PrintSemantics):
 
     def __call__(self, to_print, top=None):
-        assert(to_print.type == PC.SEN_SEN)
+        assert(to_print.type == SEN_SEN)
+        return_list = []
+
         # TODO add head λ
-        words = to_print.words[:-1]
+        return_list += to_print.words[:-1]
         # TODO use top.override instead here:
+        # TODO preserve the uuid
         last_word = to_print.words[-1].copy()
+
         # TODO detect modals
-        del last_word.data['exop']
+        modal = top.check('MODAL')
+        if modal in last_word.data:
+            del last_word.data[modal]
+        return_list.append(last_word)
 
-        # TODO add tail ?
-        if to_print.data['QUERY']:
-            words.append("?")
+        # Handle query
+        if DS.QUERY in to_print.data and to_print.data[DS.QUERY]:
+            return_list.append(DSYM.QUERY_SYM)
 
-        return words
+        return return_list
 
 
 class ProductionComponentPrinter(PrintSemantics):
@@ -111,13 +127,24 @@ class ProductionComponentPrinter(PrintSemantics):
     def __call__(self, to_print, top=None):
         result = []
         # if sugared,
+        # if to_print.sugared:
+        #     pass
 
         # else
-        result += to_print.value
-        result += to_print.params
+        result.append(DSYM.FUNC_SYM)
+        result.append(to_print.value)
+        result.append(" ")
+        overriden = [top.override("_:OVERRIDE_VAR", x) for x in to_print.params]
+        result += PW._sep_list(self, to_print, overriden, sep=" ")
         # TODO lookup arrow
-        result += " -> "
-        result += to_print.rebind
+        if bool(to_print.rebind):
+            result.append(DSYM.REBIND_SYM)
+            rebind_copy = to_print.rebind.copy()
+            modal = top.check('MODAL')
+            if modal in last_word.data:
+                del rebind_copy.data[modal]
+
+            result.append(rebind_copy)
 
         return result
 
@@ -155,11 +182,9 @@ class ConfigBackedSymbolPrinter(PrintSemantics):
     overrides : Dict[Any, str] = field(default_factory=dict)
     _config   : AcabConfig     = field(default_factory=GET)
 
-    def __call__(self, value):
-        assert(isinstance(value, ConfigSpec))
+    def __call__(self, value, top=None):
         # Look the value up in overrides
         if value in self.overrides:
             return self.overrides[value]
 
-        # or just value()
         return self._config.value(value)

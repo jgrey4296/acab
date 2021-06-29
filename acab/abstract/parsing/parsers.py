@@ -6,7 +6,7 @@ from acab.abstract.config.config import AcabConfig
 
 from acab.abstract.parsing import funcs as Pfunc
 from acab.abstract.parsing import consts as PConst
-from acab.abstract.parsing.consts import emptyLine, s, op, orm, zrm, N, NG
+from acab.abstract.parsing.consts import emptyLine, s, op, orm, zrm, N, NG, s_lit, s_key
 from acab.abstract.parsing.consts import gap, component_gap, OPAR, CPAR, DBLCOLON
 
 from acab.abstract.core import default_structure as CDS
@@ -19,6 +19,7 @@ config = AcabConfig.Get()
 
 Fwd_ArgList = pp.Forward()
 Fwd_TagList = pp.Forward()
+
 
 def PARAM_CORE(mid=None, end=None):
     """ Construct a parameterised core parser
@@ -73,12 +74,6 @@ def STATEMENT_CONSTRUCTOR(head_p,
     return parser
 
 
-
-def OP_PATH_C(sen):
-    op_path = PDSYM.FUNC + sen
-    # op_path.setName("Operator_Path")
-    return op_path
-
 HOTLOAD_VALUES = pp.Forward()
 HOTLOAD_VALUES.setName("HotloadValues")
 
@@ -105,8 +100,8 @@ MODAL      = pp.Word("".join(config.syntax_extension.keys()))
 MODAL.setParseAction(lambda s, l, t: (PDS.MODAL, config.syntax_extension[t[0]]))
 
 BASIC_VALUE = pp.Or([ATOM, STRING, REGEX])
-BIND        = PDSYM.BIND + ATOM
-AT_BIND     = PDSYM.AT_BIND + ATOM
+BIND        = s_lit(PDSYM.BIND) + ATOM
+AT_BIND     = s_lit(PDSYM.AT_BIND) + ATOM
 
 VALBIND = pp.Or([N(PDS.BIND, BIND),
                  N(PDS.AT_BIND, AT_BIND),
@@ -115,7 +110,7 @@ VALBIND.setParseAction(Pfunc.make_value)
 
 Fwd_ArgList <<= PConst.VBAR + pp.delimitedList(BIND, delim=PConst.COMMA) + PConst.VBAR
 
-tagName = s(PDSYM.TAG) + ATOM
+tagName = s_lit(PDSYM.TAG) + ATOM
 
 Fwd_TagList <<= op(N(PDS.TAG,
                      pp.delimitedList(tagName, delim=PConst.DELIM)
