@@ -13,7 +13,7 @@ import logging as root_logger
 import acab
 config = acab.setup()
 
-
+from acab.abstract.config.config import ConfigSpec
 from acab.abstract.core.values import AcabValue, AcabStatement, Sentence
 from acab.abstract.core.node import AcabNode
 
@@ -75,20 +75,19 @@ class TopologicalOrderedAcabTests(unittest.TestCase):
         config2 = AcabConfig.Get()
         self.assertIs(config, config2)
 
-    def test_config_value(self):
+    def test_config_prepare(self):
         """
         Check values can be retrieved
         """
         config = AcabConfig.Get()
-        value = config.value("Data", "ROOT")
+        value = config.prepare("Data", "ROOT")()
         self.assertEqual(value, "__root")
 
     def test_config_prepare(self):
         """ Check values can be prepared """
         config = AcabConfig.Get()
         prep_tuple = config.prepare("Data", "ROOT")
-        self.assertIsInstance(prep_tuple, tuple)
-        self.assertEqual(len(prep_tuple), 5)
+        self.assertIsInstance(prep_tuple, ConfigSpec)
 
     def test_modal_spec(self):
         """ Check modal fields exist """
@@ -100,11 +99,11 @@ class TopologicalOrderedAcabTests(unittest.TestCase):
         self.assertTrue(config.syntax_extension)
         # TODO Check values *in* the modal structures
 
-    def test_config_value_missing(self):
+    def test_config_prepare_missing(self):
         """ Check error is thrown for missing value """
         config = AcabConfig.Get()
         with self.assertRaises(Exception):
-            config.value("blah", "bloo")
+            config.prepare("blah", "bloo")
 
     def test_config_prepare_missing(self):
         """ Check config errors if you prepare
@@ -131,7 +130,7 @@ class TopologicalOrderedAcabTests(unittest.TestCase):
         self.assertIsInstance(value, AcabValue)
         self.assertEqual(value.name, "test")
         self.assertEqual(value.value, "test")
-        self.assertEqual(value.type, Sentence.build([config.value("Data", "TYPE_BOTTOM_NAME")]))
+        self.assertEqual(value.type, Sentence.build([config.prepare("Data", "TYPE_BOTTOM_NAME")]))
 
 
     def test_value_safe_make(self):
@@ -187,7 +186,7 @@ class TopologicalOrderedAcabTests(unittest.TestCase):
     def test_value_bind(self):
         """ Check a value binds appropriately """
         bind_data = {"test" : "blah"}
-        value = AcabValue("test", data={config.value("Value.Structure", "BIND"): True})
+        value = AcabValue("test", data={config.prepare("Value.Structure", "BIND"): True})
         bind_result = value.bind(bind_data)
         self.assertIsInstance(bind_result, AcabValue)
         self.assertEqual(bind_result, "blah")
@@ -220,7 +219,7 @@ class TopologicalOrderedAcabTests(unittest.TestCase):
     def test_sentence_bind(self):
         """ Check sentences can bind sub words to values"""
         bind_data = {"test": "aweg"}
-        sen = Sentence.build(["a", AcabValue("test", data={config.value("Value.Structure", "BIND"): True}), "sentence"])
+        sen = Sentence.build(["a", AcabValue("test", data={config.prepare("Value.Structure", "BIND"): True}), "sentence"])
         sen_copy = sen.bind(bind_data)
         self.assertIsInstance(sen_copy, Sentence)
         self.assertNotEqual(sen, sen_copy)
@@ -348,7 +347,7 @@ class TopologicalOrderedAcabTests(unittest.TestCase):
 
 
     def test_production_component_bind(self):
-        value = AcabValue("test", data={config.value("Value.Structure", "BIND"): True})
+        value = AcabValue("test", data={config.prepare("Value.Structure", "BIND"): True})
         component = PA.ProductionComponent(value=Sentence.build(["test"]), params=[value])
         bind_data = {"test" : "blah"}
         bind_result = component.bind(bind_data)
@@ -358,7 +357,7 @@ class TopologicalOrderedAcabTests(unittest.TestCase):
 
 
     def test_production_container_bind(self):
-        value = AcabValue("test", data={config.value("Value.Structure", "BIND"): True})
+        value = AcabValue("test", data={config.prepare("Value.Structure", "BIND"): True})
         container = PA.ProductionContainer(value=[], params=[value])
         bind_data = {"test" : "blah"}
         bind_result = container.bind(bind_data)
@@ -369,7 +368,7 @@ class TopologicalOrderedAcabTests(unittest.TestCase):
 
 
     def test_production_structure_bind(self):
-        value = AcabValue("test", data={config.value("Value.Structure", "BIND"): True})
+        value = AcabValue("test", data={config.prepare("Value.Structure", "BIND"): True})
         structure = PA.ProductionStructure(structure={}, params=[value])
         bind_data = {"test" : "blah"}
         bind_result = structure.bind(bind_data)
