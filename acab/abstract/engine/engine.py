@@ -16,13 +16,13 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.production_abstractions import (ProductionContainer,
                                                         ProductionOperator)
-from acab.abstract.interfaces.semantic_interfaces import SemanticSystem, PrintSemanticSystem
-from acab.abstract.interfaces.dsl_interface import DSLBuilderInterface
-from acab.error.acab_base_exception import AcabBaseException
-from acab.abstract.engine.util import EnsureDSLInitialised
-from acab.abstract.engine.rewind_interface import RewindEngineInterface
 from acab.abstract.engine.module_load_interface import ModuleLoaderInterface
-
+from acab.abstract.engine.rewind_interface import RewindEngineInterface
+from acab.abstract.engine.util import EnsureDSLInitialised
+from acab.abstract.interfaces.dsl_interface import DSLBuilderInterface
+from acab.abstract.interfaces.printing_interfaces import PrintSemanticSystem
+from acab.abstract.interfaces.semantic_interfaces import SemanticSystem
+from acab.error.acab_base_exception import AcabBaseException
 
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
@@ -32,10 +32,10 @@ class Engine(RewindEngineInterface, ModuleLoaderInterface, DSLBuilderInterface):
     """ The Abstract class of a production system engine. """
 
     # TODO add initialisation control of sem system
-    _working_memory : SemanticSystem     = field()
-    _printer        : PrintSemanticSystem= field()
-    init_strs       : List[str]          = field(default_factory=list)
-    load_paths      : List[str]          = field(default_factory=list)
+    _working_memory : SemanticSystem      = field()
+    _printer        : PrintSemanticSystem = field()
+    init_strs       : List[str]           = field(default_factory=list)
+    load_paths      : List[str]           = field(default_factory=list)
 
     # Blocks engine use until build_DSL has been called:
     initialised     : bool               = field(init=False, default=False)
@@ -90,12 +90,14 @@ class Engine(RewindEngineInterface, ModuleLoaderInterface, DSLBuilderInterface):
 
         return True
 
-    def save_file(self, filename, printer):
+    def save_file(self, filename:str, printer:PrintSemanticSystem=None):
         """ Dump the content of the kb to a file to reload later """
-        # TODO update this to use the print sem system
         assert(exists(split(abspath(expanduser(filename)))[0]))
+        if printer is None:
+            printer = self._printer
+
         as_sentences = self._working_memory.to_sentences()
-        as_strings = self._printer.pprint(*as_sentences)
+        as_strings = printer.pprint(*as_sentences)
         with open(abspath(expanduser(filename)), 'w') as f:
             f.write(as_strings)
 
@@ -103,16 +105,15 @@ class Engine(RewindEngineInterface, ModuleLoaderInterface, DSLBuilderInterface):
     def insert(self, s: str):
         """ Assert a new fact into the engine """
         data = self._main_parser.parseString(s)
-        # TODO replace this with an instruction call
-        self._working_memory.add(data)
+        self._working_memory(data)
 
 
     @EnsureDSLInitialised
     def query(self, s: str, ctxs=None, cache=True):
         """ Ask a question of the working memory """
         data = self._query_parser.parseString(s)
-        # TODO replace this with an instruction call
-        result = self._working_memory.query(data, ctxs=ctxs, engine=self)
+        # TODO ensure instruction is a query?
+        result = self._working_memory(data, ctxs=ctxs)
         if cache:
             self._cached_bindings = result
         return result
@@ -134,7 +135,7 @@ class Engine(RewindEngineInterface, ModuleLoaderInterface, DSLBuilderInterface):
             assert(isinstance(thing, ProductionContainer))
             logging.info("Running thing: {}".format(thing))
             # TODO pass instruction to sem system
-            result = thing(ctxs=bindings, engine=self)
+            result = self._working_memory(thing, ctxs=bindings)
 
         if not bool(result):
             logging.info("Thing Failed")
@@ -148,5 +149,4 @@ class Engine(RewindEngineInterface, ModuleLoaderInterface, DSLBuilderInterface):
         All statements are output as leaves,
         and all paths with non-leaf statements convert to simple formats
         """
-        # TODO use a semantics + down
-        raise NotImplementedError()
+        return self._working_memory.to_sentences()

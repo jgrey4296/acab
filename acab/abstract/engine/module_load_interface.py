@@ -52,7 +52,7 @@ class ModuleLoaderInterface(metaclass=abc.ABCMeta):
         if module_str in self._loaded_modules:
             logging.info("Module already loaded: {}".format(module_str))
             # TODO extract node from return context?
-            return self._working_memory.query(module_str + "?")
+            return self._working_memory(module_str + "?")
 
         # Load
         try:
@@ -69,7 +69,7 @@ class ModuleLoaderInterface(metaclass=abc.ABCMeta):
 
         self._loaded_modules.add(module_str)
         # TODO extract node from return context?
-        return self._working_memory.query(module_str+ "?")
+        return self._working_memory(module_str + "?")
 
     def register_ops(self, sentences: List[Sentence]):
         """
@@ -82,7 +82,7 @@ class ModuleLoaderInterface(metaclass=abc.ABCMeta):
 
         # TODO: error on duplication
         for x in sentences:
-            self._working_memory.add(x)
+            self._working_memory(x)
 
     def get_operator(self, op_sen):
         """
@@ -104,7 +104,7 @@ class ModuleLoaderInterface(metaclass=abc.ABCMeta):
             op_sen = Sentence.build(alias_words + op_sen[1:].words)
 
         # extract operator from return context
-        op_result = self._working_memory.query(op_sen)
+        op_result = self._working_memory(op_sen)
         if bool(op_result):
             op = op_result.nodes[0].value
             assert(isinstance(op, ProductionOperator))
@@ -119,7 +119,7 @@ class ModuleLoaderInterface(metaclass=abc.ABCMeta):
         assert(isinstance(sentence, Sentence))
         assert(isinstance(alias_sentence, Sentence))
         assert(len(alias_sentence) == 1)
-        self._working_memory.add(alias_sentence, leaf=sentence)
+        self._working_memory(alias_sentence, leaf=sentence)
 
     def extract_from_module(self, module: ModuleType) -> Tuple[List[Sentence], List[DSL_Fragment]]:
         """
