@@ -14,7 +14,7 @@ import acab
 config = acab.setup()
 
 import acab.modules.parsing.exlo.parsers.FactParser as FP
-import acab.modules.semantics.printers as Printers
+import acab.modules.printing.printers as Printers
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.production_abstractions import (ProductionComponent,
                                                         ProductionContainer,
