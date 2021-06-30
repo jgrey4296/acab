@@ -1,19 +1,15 @@
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
-
 from dataclasses import dataclass, field
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
 
-from acab.abstract.config.config import GET, AcabConfig, ConfigSpec
-from acab.abstract.interfaces.semantic_interfaces import PrintSemantics
-from acab.abstract.printing import consts as PC
-from acab.abstract.printing import wrappers as PW
 import acab.abstract.core.default_structure as DS
 import acab.abstract.interfaces.value_interfaces as VI
+from acab.abstract.config.config import GET, AcabConfig, ConfigSpec
 from acab.abstract.core.values import Sentence
+from acab.abstract.interfaces.printing_interfaces import PrintSemantics
 from acab.abstract.printing import consts as DSYM
-
+from acab.abstract.printing import wrappers as PW
 
 config = GET()
 
@@ -168,14 +164,14 @@ class StructurePrinter(PrintSemantics):
     """ Ordered structures """
 
     def __call__(self, to_print, top=None):
-        # TODO define order, add newlines
+        # TODO define order, add newlines, tags
         return to_print.structure["query"] \
             + to_print.structure['transform'] \
             + to_print.structure['action']
 
 
 class ComplexTypePrinter(PrintSemantics):
-    """ A Top Level Orhcestrator """
+    """ A Top Level orchestrator """
 
     def __call__(self, to_print, top=None):
         pass
