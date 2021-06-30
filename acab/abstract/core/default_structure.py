@@ -16,6 +16,11 @@ SEN            : str = config.prepare("Value.Structure", "SEN")()
 TAG            : str = config.prepare("Value.Structure", "TAG")()
 TYPE_INSTANCE  : str = config.prepare("Value.Structure", "TYPE_INSTANCE")()
 
+# Core Components
+QUERY_COMPONENT     : str = config.prepare("Structure.Components", "QUERY")()
+TRANSFORM_COMPONENT : str = config.prepare("Structure.Components", "TRANSFORM")()
+ACTION_COMPONENT    : str = config.prepare("Structure.Components", "ACTION")()
+
 # Core data defaults
 ROOT             = config.prepare("Data", "ROOT")()
 TYPE_BOTTOM_NAME = config.prepare("Data", "TYPE_BOTTOM_NAME")()

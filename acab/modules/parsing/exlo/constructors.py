@@ -79,9 +79,9 @@ def build_rule(s, loc, toks, sem_hint=None):
         a = None
 
     structure = {
-        EXu.QUERY_S     : c,
-        EXu.TRANSFORM_S : t,
-        EXu.ACTION_S    : a
+        EXu.QUERY_COMPONENT     : c,
+        EXu.TRANSFORM_COMPONENT : t,
+        EXu.ACTION_COMPONENT    : a
         }
 
     if sem_hint is None:

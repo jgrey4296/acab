@@ -40,14 +40,16 @@ from acab.modules.semantics.util import SemanticOperatorWrapDecorator
 EXOP         = config.prepare("MODAL", "exop")()
 EXOP_enum    = config.prepare(EXOP, as_enum=True)()
 
-NEGATION_V   = config.prepare("Value.Structure", "NEGATION")()
-BIND_V       = config.prepare("Value.Structure", "BIND")()
-CONSTRAINT_V = config.prepare("Value.Structure", "CONSTRAINT")()
-QUERY_V      = config.prepare("Parse.Structure", "QUERY")()
-TRANSFORM_V  = config.prepare("Parse.Structure", "TRANSFORM")()
-ACTION_V     = config.prepare("Parse.Structure", "ACTION")()
-
+NEGATION_V      = config.prepare("Value.Structure", "NEGATION")()
+BIND_V          = config.prepare("Value.Structure", "BIND")()
+CONSTRAINT_V    = config.prepare("Value.Structure", "CONSTRAINT")()
 SEMANTIC_HINT_V = config.prepare("Value.Structure", "SEMANTIC_HINT")()
+QUERY_V         = config.prepare("Value.Structure", "QUERY")()
+
+QUERY_C      = config.prepare("Structure.Components", "QUERY")()
+TRANSFORM_C  = config.prepare("Structure.Components", "TRANSFORM")()
+ACTION_C     = config.prepare("Structure.Components", "ACTION")()
+
 
 QUERY_SEM_HINT     = Sentence.build([config.prepare("SEMANTICS", "QUERY")()])
 ACTION_SEM_HINT    = Sentence.build([config.prepare("SEMANTICS", "ACTION")()])
@@ -275,9 +277,9 @@ class AbstractionSemanticTests(unittest.TestCase):
 
         the_rule  = ProductionStructure("test rule",
                                         structure={
-                                            QUERY_V     : query,
-                                            TRANSFORM_V : transform,
-                                            ACTION_V    : action
+                                            QUERY_C     : query,
+                                            TRANSFORM_C : transform,
+                                            ACTION_C    : action
                                         },
                                         data={SEMANTIC_HINT_V: RULE_SEM_HINT})
 
@@ -352,9 +354,9 @@ class AbstractionSemanticTests(unittest.TestCase):
 
         the_rule  = ProductionStructure("test rule",
                                         structure={
-                                            QUERY_V     : query,
-                                            TRANSFORM_V : transform,
-                                            ACTION_V    : action
+                                            QUERY_C     : query,
+                                            TRANSFORM_C : transform,
+                                            ACTION_C    : action
                                         },
                                         data={SEMANTIC_HINT_V: RULE_SEM_HINT})
 

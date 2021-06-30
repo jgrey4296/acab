@@ -8,7 +8,7 @@ logging = root_logger.getLogger(__name__)
 
 
 from acab.abstract.interfaces import semantic_interfaces as SI
-from acab.abstract.parsing import consts as PConst
+from acab.abstract.core import default_structure as DS
 from acab.modules.semantics.context_container import MutableContextInstance
 
 CtxIns = 'ContextInstance'
@@ -72,18 +72,18 @@ class AtomicRuleAbstraction(SI.AbstractionSemantics):
 
         rule = instruction
         # Run the query
-        if PConst.QUERY_S in rule:
-            semMap(rule[PConst.QUERY_S], data=data, ctxs=ctxCon)
+        if DS.QUERY_COMPONENT in rule:
+            semMap(rule[DS.QUERY_COMPONENT], data=data, ctxs=ctxCon)
 
         if not bool(ctxCon):
             return
 
         # TODO needs to be applied to all actives
-        if PConst.TRANSFORM_S in rule:
-            semMap(rule[PConst.TRANSFORM_S], data=data, ctxs=ctxCon)
+        if DS.TRANSFORM_COMPONENT in rule:
+            semMap(rule[DS.TRANSFORM_COMPONENT], data=data, ctxs=ctxCon)
 
-        if PConst.ACTION_S in rule:
-            semMap(rule[PConst.ACTION_S], data=data, ctxs=ctxCon)
+        if DS.ACTION_COMPONENT in rule:
+            semMap(rule[DS.ACTION_COMPONENT], data=data, ctxs=ctxCon)
 
 class ProxyRuleAbstraction(SI.AbstractionSemantics):
     """ Run a rules queries, then return ctxs bound
@@ -99,8 +99,8 @@ class ProxyRuleAbstraction(SI.AbstractionSemantics):
         # TODO Possibly setup a temp ctxCon
 
         # Run the query
-        if PConst.QUERY_S in rule:
-            semMap(rule[PConst.QUERY_S], data=data, ctxs=ctxCon)
+        if DS.QUERY_COMPONENT in rule:
+            semMap(rule[DS.QUERY_COMPONENT], data=data, ctxs=ctxCon)
 
         if not bool(ctxCon):
             return
@@ -119,13 +119,13 @@ class ProxyRuleAbstraction(SI.AbstractionSemantics):
             cont = ctx.continuation
 
             # TODO will need to handle each individual ctx
-            if PConst.TRANSFORM_S in cont:
-                transformed = semMap(cont[PConst.TRANSFORM_S],
+            if DS.TRANSFORM_COMPONENT in cont:
+                transformed = semMap(cont[DS.TRANSFORM_COMPONENT],
                                      data=data,
                                      ctxs=limited_container)
 
-            if PConst.ACTION_S in rule:
-                semMap.run(cont[PConst.ACTION_S],
+            if DS.ACTION_COMPONENT in rule:
+                semMap.run(cont[DS.ACTION_COMPONENT],
                            data=data,
                            ctxs=limited_container)
 
@@ -146,18 +146,18 @@ class LayerAbstraction(SI.AbstractionSemantics):
         """ Run a layer, returning actions to perform """
         layer = instruction
 
-        if PConst.QUERY_S in layer:
-            semMap(layer[PConst.QUERY_S], data=data, ctxs=ctxCon)
+        if DS.QUERY_COMPONENT in layer:
+            semMap(layer[DS.QUERY_COMPONENT], data=data, ctxs=ctxCon)
 
         if not bool(ctxCon):
             return
 
         # TODO needs to be applied to all actives
-        if PConst.TRANSFORM_S in layer:
-            semMap.run(layer[PConst.TRANSFORM_S], data=data, ctxs=ctxCon)
+        if DS.TRANSFORM_COMPONENT in layer:
+            semMap.run(layer[DS.TRANSFORM_COMPONENT], data=data, ctxs=ctxCon)
 
-        if PConst.ACTION_S in layer:
-            semMap.run(layer[PConst.ACTION_S], data=data, ctxs=ctxCon)
+        if DS.ACTION_COMPONENT in layer:
+            semMap.run(layer[DS.ACTION_COMPONENT], data=data, ctxs=ctxCon)
 
 class AgendaAbstraction(SI.AbstractionSemantics):
     """ A Layer-specific transform, to run operators on ctxs """

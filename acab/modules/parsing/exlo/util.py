@@ -32,6 +32,12 @@ TRANSFORM_S       = config.prepare("Parse.Structure", "TRANSFORM")()
 VALUE_S           = config.prepare("Parse.Structure", "VALUE")()
 TYPE_INSTANCE_S   = config.prepare("Parse.Structure", "TYPE_INSTANCE")()
 
+# Core Components
+QUERY_COMPONENT     : str = config.prepare("Structure.Components", "QUERY")()
+TRANSFORM_COMPONENT : str = config.prepare("Structure.Components", "TRANSFORM")()
+ACTION_COMPONENT    : str = config.prepare("Structure.Components", "ACTION")()
+
+
 QUERY_SEM_HINT     = Sentence.build([config.prepare("SEMANTICS", "QUERY")()])
 ACTION_SEM_HINT    = Sentence.build([config.prepare("SEMANTICS", "ACTION")()])
 TRANSFORM_SEM_HINT = Sentence.build([config.prepare("SEMANTICS", "TRANSFORM")()])
