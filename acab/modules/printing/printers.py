@@ -136,15 +136,18 @@ class ProductionComponentPrinter(PrintSemantics):
         # else
         result.append(DSYM.FUNC_SYM)
         result.append(to_print.value)
-        result.append(" ")
-        overriden = [top.override("_:OVERRIDE_VAR", x) for x in to_print.params]
-        result += PW._sep_list(self, to_print, overriden, sep=" ")
-        # TODO lookup arrow
+        if bool(to_print.params):
+            result.append(DSYM.SPACE)
+            overriden = [top.override("_:OVERRIDE_VAR", x) for x in to_print.params]
+            result += PW._sep_list(self, to_print, overriden, sep=DSYM.SPACE)
+
         if bool(to_print.rebind):
+            result.append(DSYM.SPACE)
             result.append(DSYM.REBIND_SYM)
+            result.append(DSYM.SPACE)
             rebind_copy = to_print.rebind.copy()
             modal = top.check('MODAL')
-            if modal in last_word.data:
+            if modal in rebind_copy.data:
                 del rebind_copy.data[modal]
 
             result.append(rebind_copy)
@@ -165,17 +168,18 @@ class StructurePrinter(PrintSemantics):
 
     def __call__(self, to_print, top=None):
         # TODO define order, add newlines, tags
-        return to_print.structure["query"] \
-            + to_print.structure['transform'] \
-            + to_print.structure['action']
+        result = []
+        # print the name
+        result += top.override("_:ATOM", to_print)
+        result.append(":")
+        result.append("ρ")
 
+        result += to_print.structure[DS.QUERY_COMPONENT]
+        result += to_print.structure[DS.TRANSFORM_COMPONENT]
+        result += to_print.structure[DS.ACTION_COMPONENT]
 
-class ComplexTypePrinter(PrintSemantics):
-    """ A Top Level orchestrator """
-
-    def __call__(self, to_print, top=None):
-        pass
-
+        result.append("end")
+        return result
 
 @dataclass
 class ConfigBackedSymbolPrinter(PrintSemantics):

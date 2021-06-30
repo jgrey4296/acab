@@ -26,6 +26,7 @@ NEGATION_S        = config.prepare("Value.Structure", "NEGATION")()
 QUERY_S           = config.prepare("Value.Structure", "QUERY")()
 BIND_S            = config.prepare("Value.Structure", "BIND")()
 AT_BIND_S         = config.prepare("Value.Structure", "AT_BIND")()
+TYPE_INSTANCE_S   = config.prepare("Value.Structure", "TYPE_INSTANCE")()
 
 NEGATION_SYMBOL_S = config.prepare("Symbols", "NEGATION")()
 ANON_VALUE_S      = config.prepare("Symbols", "ANON_VALUE")()
@@ -36,8 +37,6 @@ SEN_JOIN_S        = config.prepare("Print.Patterns", "SEN_JOIN", actions=[AcabCo
 
 STR_PRIM_S        = Sentence.build([config.prepare("Type.Primitive", "STRING")()])
 REGEX_PRIM_S      = Sentence.build([config.prepare("Type.Primitive", "REGEX")()])
-TYPE_INSTANCE_S   = config.prepare("Value.Structure", "TYPE_INSTANCE")()
-
 
 EXOP              = config.prepare("exop", as_enum=True)()
 DOT_E             = EXOP.DOT
@@ -153,6 +152,5 @@ class PrintValueSemanticTests(unittest.TestCase):
                                                 Printers.PrimitiveTypeAwarePrinter("_:OVERRIDE_VAR")],
                                       settings={"MODAL": "exop"})
         value = FP.parseString("con.test(λa.test.op $x)")[0][-1]
-
         result = sem_sys.pprint(value)
         self.assertEqual(result, "test(λa.test.op $x).")

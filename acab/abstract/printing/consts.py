@@ -33,3 +33,6 @@ STR_WRAP_P              = config.prepare("Print.Patterns", "STR_WRAP", actions=[
 TAB_P                   = config.prepare("Print.Patterns", "TAB", actions=[AcabConfig.actions_e.STRIPQUOTE])
 WRAP_FORMAT_P           = config.prepare("Print.Patterns", "WRAP_FORMAT")
 PARAM_WRAP              = config.prepare("Print.Patterns", "PARAM_WRAP")
+
+SPACE            = config.prepare("Print.Patterns", "SPACE", actions=[config.actions_e.STRIPQUOTE])()
+INDENT           = config.prepare("Print.Patterns", "INDENT", actions=[config.actions_e.STRIPQUOTE])()

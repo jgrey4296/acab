@@ -128,11 +128,12 @@ def _wrap_var_list(PS, value, current):
 def _sep_list(PS, value, current, sep=" "):
     """ given a list, add separators """
     ret_list = []
-    for x in current[:-1]:
-        ret_list.append(x)
-        ret_list.append(sep)
+    if bool(current):
+        for x in current[:-1]:
+            ret_list.append(x)
+            ret_list.append(sep)
 
-    ret_list.append(current[-1])
+        ret_list.append(current[-1])
     return ret_list
 
 def _suppress_modal(PS, value, current):
