@@ -63,7 +63,7 @@ class SemanticSystemTests(unittest.TestCase):
         with self.assertRaises(AcabBaseException) as cm:
             semsys(test_sen)
 
-        self.assertEqual(cm.exception._str, "TestAbsSem called")
+        self.assertEqual(cm.exception.detail, "TestAbsSem called")
 
     def test_retrieval(self):
         # put some semantics in semsys.mapping
