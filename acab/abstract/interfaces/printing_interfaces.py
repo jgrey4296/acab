@@ -9,9 +9,15 @@ import acab.abstract.interfaces.util as SU
 from acab.abstract.config.config import AcabConfig, ConfigSpec
 from acab.abstract.interfaces.value_interfaces import (SentenceInterface,
                                                        ValueInterface)
+from acab.abstract.core import production_abstractions as PA
+from acab.abstract.core.values import AcabStatement
 from acab.error.acab_print_exception import AcabPrintException
 from acab.error.acab_semantic_exception import AcabSemanticException
 from acab.modules.semantics.context_container import ContextContainer
+
+import logging as root_logger
+logging = root_logger.getLogger(__name__)
+
 
 Sentence        = 'Sentence'
 @dataclass
@@ -38,11 +44,16 @@ class PrintSemanticSystem(metaclass=abc.ABCMeta):
         # enum
         lambda x: "_:SYMBOL" if isinstance(x, Enum) else None,
         # exact type     : 1 -> 1 : any / leaf
-        lambda x: str(x.type),
+        lambda x: str(x.type) if isinstance(x, ValueInterface) else None,
         # gen type       : m -> 1 : any / leaf
         # structure      : m -> m : leaf
+        lambda x: "_:STRUCTURE" if isinstance(x, PA.ProductionStructure) else None,
         # container      : m -> m : leaf
+        lambda x: "_:CONTAINER" if isinstance(x, PA.ProductionContainer) else None,
         # component      : m -> m : leaf
+        lambda x: "_:COMPONENT" if isinstance(x, PA.ProductionComponent) else None,
+        # Statement
+        lambda x: "_:STATEMENT" if isinstance(x, AcabStatement) else None,
         # sentence       : m -> 1 : any / leaf
         lambda x: "_:SENTENCE" if isinstance(x, SentenceInterface) else None,
         # value          : m -> 1 : any
