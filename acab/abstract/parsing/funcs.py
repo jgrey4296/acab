@@ -14,6 +14,7 @@ from acab.abstract.core.values import AcabValue, Sentence
 from acab.abstract.parsing import consts as PConst
 from acab.abstract.core.default_structure import TYPE_BOTTOM_NAME
 
+import acab.abstract.core.default_structure as DS
 import acab.abstract.parsing.default_structure as PDS
 
 logging = root_logger.getLogger(__name__)
@@ -41,13 +42,13 @@ def make_value(s, loc, toks):
         # is variable
         assert(isinstance(toks[PDS.BIND][0], tuple))
         value = toks[PDS.BIND][0][1]
-        data[PDS.BIND] = True
+        data[DS.BIND] = True
     elif PDS.AT_BIND in toks:
         # is a reference
         # (can only be at head of a sentence)
         assert(isinstance(toks[PDS.AT_BIND][0], tuple))
         value = toks[PDS.AT_BIND][0][1]
-        data[PDS.BIND] = PDS.AT_BIND
+        data[DS.BIND] = DS.AT_BIND
     elif PDS.VALUE in toks:
         # is an actual value
         assert(isinstance(toks[PDS.VALUE], tuple))
@@ -91,9 +92,9 @@ def construct_multi_sentences(s, loc, toks):
 
 def construct_sentence(s, loc, toks):
     assert(PDS.SEN in toks)
-    data = {PDS.NEGATION : False}
+    data = {DS.NEGATION : False}
     if PDS.NEGATION in toks:
-        data[PDS.NEGATION] = True
+        data[DS.NEGATION] = True
     return Sentence.build(toks[PDS.SEN][:], data=data)
 
 def construct_statement(s, loc, toks):
@@ -117,13 +118,13 @@ def construct_statement(s, loc, toks):
 
 def build_clause(s, loc, toks):
     # detect negation and annotate the clause with it
-    data = { PDS.QUERY : True,
-             PDS.QUERY_FALLBACK : None }
+    data = { DS.QUERY : True,
+             DS.QUERY_FALLBACK : None }
     if PDS.QUERY_FALLBACK in toks:
         # TODO move this into verify
         # if PDS.NEGATION in toks:
         #     raise AcabParseException("Negated Fallback clauses don't make sense")
-        data[PDS.QUERY_FALLBACK] = toks[PDS.QUERY_FALLBACK][:]
+        data[DS.QUERY_FALLBACK] = toks[PDS.QUERY_FALLBACK][:]
 
 
     toks[0].data.update(data)
