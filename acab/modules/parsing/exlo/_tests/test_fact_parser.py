@@ -9,6 +9,7 @@ import pyparsing as pp
 import acab
 config = acab.setup()
 
+from acab.abstract.core import default_structure as DS
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.values import AcabValue
 
@@ -108,3 +109,21 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0], sen1)
         self.assertEqual(result[1], sen2)
+
+    def test_constraint(self):
+        result = FP.PARAM_BINDING_END.parseString("test(λa.b.c $x)")[0]
+        self.assertIsInstance(result, AcabValue)
+        self.assertTrue(DS.CONSTRAINT in result.data)
+        self.assertEqual(len(result.data[DS.CONSTRAINT][0].params), 1)
+
+    def test_constraint_no_var(self):
+        result = FP.PARAM_BINDING_END.parseString("test(λa.b.c)")[0]
+        self.assertIsInstance(result, AcabValue)
+        self.assertTrue(DS.CONSTRAINT in result.data)
+        self.assertEqual(len(result.data[DS.CONSTRAINT][0].params), 0)
+
+    def test_constraint_multi_var(self):
+        result = FP.PARAM_BINDING_END.parseString("test(λa.b.c $x.$y.$z)")[0]
+        self.assertIsInstance(result, AcabValue)
+        self.assertTrue(DS.CONSTRAINT in result.data)
+        self.assertEqual(len(result.data[DS.CONSTRAINT][0].params), 3)
