@@ -177,7 +177,7 @@ class ProductionStructure(ProductionContainer):
         self.value = []
         super(ProductionContainer, self).__post_init__()
         # TODO make this a structure prim?
-        self.data[DS.TYPE_INSTANCE] = DS.CONTAINER_PRIM
+        self.data[DS.TYPE_INSTANCE] = DS.STRUCT_PRIM
 
         clauses = list(self.structure.values())
         self.value += clauses
