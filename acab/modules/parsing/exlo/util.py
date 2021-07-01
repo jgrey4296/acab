@@ -37,6 +37,7 @@ QUERY_COMPONENT     : str = config.prepare("Structure.Components", "QUERY")()
 TRANSFORM_COMPONENT : str = config.prepare("Structure.Components", "TRANSFORM")()
 ACTION_COMPONENT    : str = config.prepare("Structure.Components", "ACTION")()
 
+RULE_PRIM           : str = config.prepare("Type.Primitive", "RULE")()
 
 QUERY_SEM_HINT     = Sentence.build([config.prepare("SEMANTICS", "QUERY")()])
 ACTION_SEM_HINT    = Sentence.build([config.prepare("SEMANTICS", "ACTION")()])

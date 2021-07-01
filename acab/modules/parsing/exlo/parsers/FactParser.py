@@ -7,10 +7,9 @@ import logging as root_logger
 import pyparsing as pp
 from acab.abstract.parsing import funcs as Pfunc
 from acab.abstract.parsing import parsers as PU
-from acab.abstract.parsing.consts import (COLLAPSE_CONTEXT, COMMA, DELIM, NG,
-                                          N, opLn)
+from acab.abstract.parsing.consts import (COLLAPSE_CONTEXT, COMMA, DELIM, END,
+                                          FACT_HEAD, NEGATION, NG, N, op, opLn)
 from acab.abstract.parsing.default_structure import OPERATOR, SEN, VALUE
-from acab.abstract.parsing.consts import NEGATION, END, FACT_HEAD
 from acab.modules.parsing.exlo import constructors as PConst
 
 logging = root_logger.getLogger(__name__)
@@ -28,9 +27,8 @@ func_headed_sen = pp.Suppress(pp.Literal('λ')) + BASIC_SEN
 # Build After comparison operators have been constructed:
 op_path = pp.Or([HOTLOAD_QUERY_OP, func_headed_sen])
 
-# TODO should this be a list of params?
 QUERY_OP_Internal = N(OPERATOR, op_path) \
-    + N(VALUE, PU.PARAM_CORE(end=True))
+    + N(VALUE, op(BASIC_SEN))
 
 QUERY_OP_Internal.setParseAction(PConst.build_query_component)
 
