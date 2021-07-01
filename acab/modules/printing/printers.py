@@ -6,7 +6,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 import acab.abstract.core.default_structure as DS
 import acab.abstract.interfaces.value_interfaces as VI
 from acab.abstract.config.config import GET, AcabConfig, ConfigSpec
-from acab.abstract.core.values import Sentence
+from acab.abstract.core.values import Sentence, AcabStatement
 from acab.abstract.interfaces.printing_interfaces import PrintSemantics
 from acab.abstract.printing import consts as DSYM
 from acab.abstract.printing import wrappers as PW
@@ -108,15 +108,10 @@ class BasicSentenceAwarePrinter(PrintSemantics):
             return_list.append(DSYM.NEGATION_SYM)
 
         return_list += to_print.words[:-1]
-        # TODO use top.override instead here:
-        # TODO preserve the uuid
-        last_word = to_print.words[-1].copy()
-
-        # TODO detect modals
-        modal = top.check('MODAL')
-        if modal in last_word.data:
-            del last_word.data[modal]
-        return_list.append(last_word)
+        if not isinstance(to_print.words[-1], AcabStatement):
+            return_list.append(PW._suppress_modal(top, to_print.words[-1]))
+        else:
+            return_list.append(to_print.words[-1])
 
         # Handle query
         if DS.QUERY in to_print.data and to_print.data[DS.QUERY]:
@@ -138,19 +133,14 @@ class ProductionComponentPrinter(PrintSemantics):
         result.append(to_print.value)
         if bool(to_print.params):
             result.append(DSYM.SPACE)
-            overriden = [top.override("_:OVERRIDE_VAR", x) for x in to_print.params]
-            result += PW._sep_list(self, to_print, overriden, sep=DSYM.SPACE)
+            overriden = [PW._suppress_modal(top, x) for x in to_print.params]
+            result += PW._sep_list(self, to_print, overriden, sep=".")
 
         if bool(to_print.rebind):
             result.append(DSYM.SPACE)
             result.append(DSYM.REBIND_SYM)
             result.append(DSYM.SPACE)
-            rebind_copy = to_print.rebind.copy()
-            modal = top.check('MODAL')
-            if modal in rebind_copy.data:
-                del rebind_copy.data[modal]
-
-            result.append(rebind_copy)
+            result.append(PW._suppress_modal(top, to_print.rebind))
 
         return result
 
@@ -160,8 +150,7 @@ class ContainerPrinter(PrintSemantics):
     """ Production Containers """
 
     def __call__(self, to_print, top=None):
-        # TODO add newlines, and END statement
-        return to_print.clauses
+        return PW._sep_list(self, to_print, to_print.clauses, sep="\n")
 
 class StructurePrinter(PrintSemantics):
     """ Ordered structures """
@@ -170,15 +159,32 @@ class StructurePrinter(PrintSemantics):
         # TODO define order, add newlines, tags
         result = []
         # print the name
-        result += top.override("_:ATOM", to_print)
+        result.append(top.override("_:NO_MODAL", to_print))
         result.append(":")
-        result.append("ρ")
+        result += ["(", "::", "ρ", ")"]
+        result.append(DSYM.CONTAINER_JOIN_P)
+        for tag in to_print.tags:
+            result.append(DSYM.TAG_SYM)
+            result.append(tag)
+            result.append(DSYM.CONTAINER_JOIN_P)
 
-        result += to_print.structure[DS.QUERY_COMPONENT]
-        result += to_print.structure[DS.TRANSFORM_COMPONENT]
-        result += to_print.structure[DS.ACTION_COMPONENT]
+        if bool(to_print.tags):
+            result.append(DSYM.CONTAINER_JOIN_P)
 
-        result.append("end")
+        if bool(to_print.structure[DS.QUERY_COMPONENT]):
+            result += to_print.structure[DS.QUERY_COMPONENT]
+            result.append(DSYM.CONTAINER_JOIN_P)
+            result.append(DSYM.CONTAINER_JOIN_P)
+        if bool(to_print.structure[DS.TRANSFORM_COMPONENT]):
+            result += to_print.structure[DS.TRANSFORM_COMPONENT]
+            result.append(DSYM.CONTAINER_JOIN_P)
+            result.append(DSYM.CONTAINER_JOIN_P)
+        if bool(to_print.structure[DS.ACTION_COMPONENT]):
+            result += to_print.structure[DS.ACTION_COMPONENT]
+            result.append(DSYM.CONTAINER_JOIN_P)
+            result.append(DSYM.CONTAINER_JOIN_P)
+
+        result.append(DSYM.END_SYM)
         return result
 
 @dataclass

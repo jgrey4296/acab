@@ -149,8 +149,19 @@ class PrintValueSemanticTests(unittest.TestCase):
                                                 Printers.ConstraintAwareValuePrinter("_:ATOM"),
                                                 Printers.ProductionComponentPrinter("_:COMPONENT"),
                                                 Printers.ConfigBackedSymbolPrinter("_:SYMBOL"),
-                                                Printers.PrimitiveTypeAwarePrinter("_:OVERRIDE_VAR")],
+                                                Printers.PrimitiveTypeAwarePrinter("_:NO_MODAL")],
                                       settings={"MODAL": "exop"})
         value = FP.parseString("con.test(λa.test.op $x)")[0][-1]
         result = sem_sys.pprint(value)
         self.assertEqual(result, "test(λa.test.op $x).")
+
+    def test_constraints_multi_var(self):
+        sem_sys = PrintSemanticSystem(handlers=[Printers.BasicSentenceAwarePrinter("_:SENTENCE"),
+                                                Printers.ConstraintAwareValuePrinter("_:ATOM"),
+                                                Printers.ProductionComponentPrinter("_:COMPONENT"),
+                                                Printers.ConfigBackedSymbolPrinter("_:SYMBOL"),
+                                                Printers.PrimitiveTypeAwarePrinter("_:NO_MODAL")],
+                                      settings={"MODAL": "exop"})
+        value = FP.parseString("con.test(λa.test.op $x.$y)")[0][-1]
+        result = sem_sys.pprint(value)
+        self.assertEqual(result, "test(λa.test.op $x.$y).")
