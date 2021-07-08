@@ -61,6 +61,7 @@ def _focus_wrap_modal(PS, value, current):
     return current + [symbol]
 
 
+
 def _wrap_annotations(PS, value, current):
     annotations = []
 
@@ -110,13 +111,14 @@ def _wrap_fallback(PS, value, current):
     return current + [PC.FALLBACK_SYM] + value.data[DS.QUERY_FALLBACK]
 
 def _wrap_tags(PS, value, current):
-    if DS.TAG not in value.data:
+    if not bool(value.tags):
         return current
 
-    tags = zip([PC.TAG_SYM] * len(value.data[DS.TAG]),
-               value.data[DS.TAG])
+    tags = zip([PC.TAG_SYM] * len(value.tags),
+               value.tags)
 
-    return current + tags
+    return current + list(tags)
+
 
 def _wrap_var_list(PS, value, current):
     if DS.PARAMS not in value:
@@ -136,8 +138,6 @@ def _sep_list(PS, value, current, sep=" "):
         ret_list.append(current[-1])
     return ret_list
 
-def _suppress_modal(PS, value, current):
+def _suppress_modal(PS, value):
     """ Wrap the list with a meta instruction to ignore modals"""
-
-
-    return ret_list
+    return PS.override("_:NO_MODAL", value)

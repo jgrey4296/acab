@@ -24,7 +24,7 @@ TAG_SYM            = config.prepare("Symbols", "TAG")
 
 
 # Wrapping
-CONTAINER_JOIN_P        = config.prepare("Print.Patterns", "CONTAINER_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE])
+CONTAINER_JOIN_P        = config.prepare("Print.Patterns", "CONTAINER_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE, AcabConfig.actions_e.UNESCAPE])
 PARAM_JOIN_P            = config.prepare("Print.Patterns", "PARAM_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE])
 PRINT_SENTINEL_JOIN_P   = config.prepare("Print.Patterns", "PRINT_SENTINEL_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE])
 REGEX_WRAP_P            = config.prepare("Print.Patterns", "REGEX_WRAP")
