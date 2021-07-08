@@ -35,7 +35,6 @@ class TestPrintSemantics(unittest.TestCase):
         self.assertTrue(all([x.data['exop'] == config.modal_enums['exop'].DOT for x in result]))
 
     def test_fact_str_equal(self):
-        # TODO needs str type wrapping
         actions = ["a.b.c",
                    "a.b!c",
                    'a.b."a string".c',
@@ -48,7 +47,6 @@ class TestPrintSemantics(unittest.TestCase):
             self.assertEqual(act,Printer.print(par))
 
     def test_leading_bind_str_equal(self):
-        # TODO needs var type wrapping
         actions = ['$x.a.b.c', '$y!b.c', '$x.$y!$z']
         parsed = [FP.parseString(x)[0] for x in actions]
         zipped = zip(actions, parsed)

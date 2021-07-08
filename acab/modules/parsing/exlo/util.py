@@ -1,6 +1,6 @@
 """
-Pyparsing based parser to turn strings into [FactNode],
-capable of parsing  multiple facts
+
+
 """
 # pylint: disable=bad-whitespace,unnecessary-comprehension
 import pyparsing as pp

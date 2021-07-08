@@ -1,3 +1,6 @@
+"""
+Constructors for converting parse results -> Acab data
+"""
 from acab.abstract.core.default_structure import SEMANTIC_HINT
 from acab.abstract.core.production_abstractions import (ProductionComponent,
                                                         ProductionContainer,

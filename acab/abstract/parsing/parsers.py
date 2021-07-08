@@ -47,7 +47,7 @@ def STATEMENT_CONSTRUCTOR(head_p,
                           args=True,
                           single_line=False,
                           parse_fn=None):
-    """ Construct statements of the form:
+    """ Construct a parser for statements of the form:
     a.location: (::λ) |args| components end
     """
     line_p = PConst.emptyLine

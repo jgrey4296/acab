@@ -1,4 +1,6 @@
-#!/usr/bin/env python3
+"""
+DSL Interface for exclusion logic, to connect it into Acab
+"""
 from acab.abstract.interfaces.dsl_interface import DSL_Interface
 from acab.abstract.parsing import parsers as PU
 from acab.error.acab_parse_exception import AcabParseException
@@ -65,6 +67,6 @@ class EL_Parser(DSL_Interface):
         TotalP.HOTLOAD_STATEMENTS << bootstrapper.query("statement.*")
 
         # At this point, parser is constructed, and will not change again
-        # however, can't deep-copy the parser for multiple versions
+        # however, *can not* deep-copy the parser for multiple versions
 
         return (TotalP.parse_point, QP.parse_point)

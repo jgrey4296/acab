@@ -18,7 +18,6 @@ logging = root_logger.getLogger(__name__)
 
 HOTLOAD_OPERATORS = pp.Forward()
 
-
 # fact string with the option of binds
 vals = N(RIGHT_S, PU.zrm(PARAM_SEN))
 
