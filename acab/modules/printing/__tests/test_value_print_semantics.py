@@ -162,6 +162,6 @@ class PrintValueSemanticTests(unittest.TestCase):
                                                 Printers.ConfigBackedSymbolPrinter("_:SYMBOL"),
                                                 Printers.PrimitiveTypeAwarePrinter("_:NO_MODAL")],
                                       settings={"MODAL": "exop"})
-        value = FP.parseString("con.test(λa.test.op $x.$y)")[0][-1]
+        value = FP.parseString("con.test(λa.test.op $x $y)")[0][-1]
         result = sem_sys.pprint(value)
-        self.assertEqual(result, "test(λa.test.op $x.$y).")
+        self.assertEqual(result, "test(λa.test.op $x $y).")

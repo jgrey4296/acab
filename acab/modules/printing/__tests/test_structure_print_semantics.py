@@ -17,6 +17,8 @@ config = acab.setup()
 import acab.modules.parsing.exlo.parsers.FactParser as FP
 import acab.modules.parsing.exlo.parsers.QueryParser as QP
 import acab.modules.parsing.exlo.parsers.RuleParser as RP
+import acab.modules.parsing.exlo.parsers.TransformParser as TP
+import acab.modules.parsing.exlo.parsers.ActionParser as AP
 import acab.modules.printing.printers as Printers
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.production_abstractions import (ProductionComponent,
@@ -135,7 +137,14 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                       settings={"MODAL": "exop"})
 
         # parse a rule
-        rule = RP.parseString("a.test.rule:(::ρ)\n#test\n#tag\n\na.b.c?\n\nλa.b.c\n\nend")[0]
+        rule = RP.parseString("""a.test.rule:(::ρ)
+        #test
+        #tag
+
+        a.b.c?
+
+        λa.b.c
+        end""")[0]
         self.assertIsInstance(rule, Sentence)
         self.assertIsInstance(rule[-1], ProductionStructure)
         # print
@@ -144,10 +153,76 @@ class PrintStructureSemanticTests(unittest.TestCase):
 
 
     def test_query_statement(self):
-        pass
+        sem_sys = PrintSemanticSystem(handlers=[
+            Printers.BasicSentenceAwarePrinter("_:SENTENCE"),
+            Printers.ConstraintAwareValuePrinter("_:ATOM"),
+            Printers.ProductionComponentPrinter("_:COMPONENT"),
+            # Printers.ContainerPrinter("_:CONTAINER"),
+            Printers.StructurePrinter("_:STRUCTURE"),
+            Printers.ConfigBackedSymbolPrinter("_:SYMBOL"),
+            Printers.PrimitiveTypeAwarePrinter("_:NO_MODAL"),
+            Printers.StatementPrinter("_:STATEMENT")
+            ],
+                                      settings={"MODAL": "exop"})
+
+        query = QP.query_statement.parseString("""test.statement: (::γ)
+        a.b.c?
+        d.e.f?
+        g.h.e?
+
+        end
+        """)[0]
+
+        self.assertIsInstance(query[-1], ProductionContainer)
+        result = sem_sys.pprint(query)
+        self.assertEqual(result, """test.statement: (::γ)\n a.b.c?\nd.e.f?\ng.h.e?\n\nend""")
 
     def test_transform_statement(self):
-        pass
+        sem_sys = PrintSemanticSystem(handlers=[
+            Printers.BasicSentenceAwarePrinter("_:SENTENCE"),
+            Printers.ConstraintAwareValuePrinter("_:ATOM"),
+            Printers.ProductionComponentPrinter("_:COMPONENT"),
+            # Printers.ContainerPrinter("_:CONTAINER"),
+            Printers.StructurePrinter("_:STRUCTURE"),
+            Printers.ConfigBackedSymbolPrinter("_:SYMBOL"),
+            Printers.PrimitiveTypeAwarePrinter("_:NO_MODAL"),
+            Printers.StatementPrinter("_:STATEMENT")
+            ],
+                                      settings={"MODAL": "exop"})
+
+        query = TP.transform_statement.parseString("""test.statement: (::τ)
+        λa.b.c $x $y -> $z
+        λq.c.d $z $x -> $a
+        λa.b.c $a $y -> $c
+
+        end
+        """)[0]
+
+        self.assertIsInstance(query[-1], ProductionContainer)
+        result = sem_sys.pprint(query)
+        self.assertEqual(result, """test.statement: (::τ)\nλa.b.c $x $y -> $z\nλq.c.d $z $x -> $a\nλa.b.c $a $y -> $c\n\nend""")
 
     def test_action_statement(self):
-        pass
+        sem_sys = PrintSemanticSystem(handlers=[
+            Printers.BasicSentenceAwarePrinter("_:SENTENCE"),
+            Printers.ConstraintAwareValuePrinter("_:ATOM"),
+            Printers.ProductionComponentPrinter("_:COMPONENT"),
+            # Printers.ContainerPrinter("_:CONTAINER"),
+            Printers.StructurePrinter("_:STRUCTURE"),
+            Printers.ConfigBackedSymbolPrinter("_:SYMBOL"),
+            Printers.PrimitiveTypeAwarePrinter("_:NO_MODAL"),
+            Printers.StatementPrinter("_:STATEMENT")
+            ],
+                                      settings={"MODAL": "exop"})
+
+        query = AP.action_definition.parseString("""test.statement: (::α)
+        λa.b.c $x
+        λa.b.c.d $x $y
+        λa.b.c.d.e $x $y $z
+
+        end
+        """)[0]
+
+        self.assertIsInstance(query[-1], ProductionContainer)
+        result = sem_sys.pprint(query)
+        self.assertEqual(result, """test.statement: (::α)\nλa.b.c $x\nλa.b.c.d $x $y\nλa.b.c.d.e $x $y $z\n\nend""")

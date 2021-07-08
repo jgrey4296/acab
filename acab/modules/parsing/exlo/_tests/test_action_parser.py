@@ -13,7 +13,7 @@ from acab.abstract.core.values import Sentence
 from acab.abstract.parsing.TrieBootstrapper import TrieBootstrapper
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.production_abstractions import ProductionOperator, ProductionComponent, ProductionContainer
-
+from acab.abstract.core import default_structure as DS
 from acab.modules.parsing.exlo.parsers import ActionParser as AP
 from acab.modules.parsing.exlo.parsers import FactParser as FP
 
@@ -56,6 +56,13 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
 
         result = AP.action_component.parseString(test_str)[0]
         self.assertIsInstance(result, ProductionComponent)
+
+    def test_multi_var_action(self):
+        result = AP.action_component.parseString("λa.b.c $x $y $z")[0]
+        self.assertIsInstance(result, ProductionComponent)
+        self.assertEqual(len(result.params), 3)
+        self.assertTrue(all([isinstance(x, AcabValue) for x in result.params]))
+
 
     # TODO test  sugar, test sentences, test values, test multi params
     @unittest.skip("TODO")

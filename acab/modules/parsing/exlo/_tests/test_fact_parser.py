@@ -123,7 +123,8 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertEqual(len(result.data[DS.CONSTRAINT][0].params), 0)
 
     def test_constraint_multi_var(self):
-        result = FP.PARAM_BINDING_END.parseString("test(λa.b.c $x.$y.$z)")[0]
+        result = FP.PARAM_BINDING_END.parseString("test(λa.b.c $x $y $z)")[0]
         self.assertIsInstance(result, AcabValue)
         self.assertTrue(DS.CONSTRAINT in result.data)
         self.assertEqual(len(result.data[DS.CONSTRAINT][0].params), 3)
+        self.assertTrue(all([isinstance(x, AcabValue) for x in result.data[DS.CONSTRAINT][0].params]))
