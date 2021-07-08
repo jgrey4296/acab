@@ -23,13 +23,10 @@ from os.path import (abspath, exists, expanduser, isdir, isfile, join, split,
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
-from enum import Enum
 
 import pyparsing as pp
-
+from acab.abstract.config.modal import ModalConfig
 from acab.error.acab_config_exception import AcabConfigException
-
-from .modal import ModalConfig
 
 actions_e = Enum("Config Actions", "STRIPQUOTE KEYWORD LITERAL DICT LIST UNESCAPE SPLIT PSEUDOSEN")
 
@@ -37,8 +34,7 @@ DEFAULT_ACTIONS = {actions_e.STRIPQUOTE : lambda x: x.strip("\"'"),
                    actions_e.LIST       : lambda x: x.split("\n"),
                    actions_e.UNESCAPE   : lambda x: x.encode().decode("unicode_escape"),
                    actions_e.SPLIT      : lambda x: x.split(" "),
-                   actions_e.PSEUDOSEN  : lambda x: f"_:{x}"
-                   }
+                   actions_e.PSEUDOSEN  : lambda x: "_:{}".format(x)}
 #--------------------------------------------------
 def GET(*args, hooks=None):
     config = AcabConfig.Get(*args, hooks=hooks)
@@ -91,7 +87,7 @@ class AcabConfig():
             paths = []
         if hooks is not None and isinstance(hooks, list):
             _hooks.update(hooks)
-        elif hooks is not None and isisntance(hooks, callable):
+        elif hooks is not None and isinstance(hooks, callable):
             _hooks.add(hooks)
 
 
@@ -118,7 +114,7 @@ class AcabConfig():
         in_print = key in self.printing_extension
         in_base = key in self._config
         in_enums = key in self.enums
-        in_defaults = key in defaults
+        in_defaults = key in self.defaults
         return any([in_print, in_base, in_enums, in_defaults])
 
     def value(self, val: Union[Enum, ConfigSpec]):
