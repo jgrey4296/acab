@@ -151,7 +151,7 @@ class ModuleLoaderInterface(metaclass=abc.ABCMeta):
             op_needs_instantiation = lambda y: (not y == ProductionOperator) and isinstance(y, type) and issubclass(y, ProductionOperator)
 
             loc_op_pairs = [(reference_path + MODULE_SPLIT_REG.split(x), y) for x,y in mod_contents if applicable_operator(y)]
-            instanced_operators = [(xs, y() if op_needs_instantiation else y) for xs, y in loc_op_pairs]
+            instanced_operators = [(xs, y() if op_needs_instantiation(y) else y) for xs, y in loc_op_pairs]
 
             sentences = [Sentence.build(xs).attach_statement(y) for xs, y in instanced_operators]
             components += sentences
