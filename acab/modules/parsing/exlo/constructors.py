@@ -16,8 +16,9 @@ def build_query_component(s, loc, toks):
     op = toks[EXu.OPERATOR_S][0]
     params = []
     if EXu.VALUE_S in toks:
-        params = toks[EXu.VALUE_S][0].words
+        params = toks[EXu.VALUE_S][:]
 
+    params = [x[0] if len(x) == 1 else x for x in params]
 
     return (EXu.CONSTRAINT_S, ProductionComponent(value=op, params=params))
 
@@ -32,10 +33,10 @@ def build_transform_component(s, loc, toks):
         op = Sentence.build([op])
 
     rebind = toks[EXu.TARGET_S][0]
-    filtered_params = [x[0] if len(x) == 1 else x for x in params]
+    params = [x[0] if len(x) == 1 else x for x in params]
 
     return ProductionComponent(value=op,
-                               params=filtered_params,
+                               params=params,
                                rebind=rebind,
                                sugared=EXu.LEFT_S in toks)
 
@@ -46,8 +47,10 @@ def build_action_component(s, loc, toks):
     if PDS.RIGHT in toks:
         params = toks[EXu.RIGHT_S][:]
     op = toks[EXu.OPERATOR_S][0]
-    filtered_params = [x[0] if len(x) == 1 else x for x in params]
-    return ProductionComponent(value=op, params=filtered_params, sugared=EXu.LEFT_S in toks)
+    params = [x[0] if len(x) == 1 else x for x in params]
+    return ProductionComponent(value=op,
+                               params=params,
+                               sugared=EXu.LEFT_S in toks)
 
 
 

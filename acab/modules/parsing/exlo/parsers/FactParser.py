@@ -8,7 +8,7 @@ import pyparsing as pp
 from acab.abstract.parsing import funcs as Pfunc
 from acab.abstract.parsing import parsers as PU
 from acab.abstract.parsing.consts import (COLLAPSE_CONTEXT, COMMA, DELIM, END,
-                                          FACT_HEAD, NEGATION, NG, N, op, opLn)
+                                          FACT_HEAD, NEGATION, NG, N, op, opLn, zrm)
 from acab.abstract.parsing.default_structure import OPERATOR, SEN, VALUE
 from acab.modules.parsing.exlo import constructors as PConst
 
@@ -28,7 +28,7 @@ func_headed_sen = pp.Suppress(pp.Literal('λ')) + BASIC_SEN
 op_path = pp.Or([HOTLOAD_QUERY_OP, func_headed_sen])
 
 QUERY_OP_Internal = N(OPERATOR, op_path) \
-    + N(VALUE, op(BASIC_SEN))
+    + N(VALUE, zrm(BASIC_SEN))
 
 QUERY_OP_Internal.setParseAction(PConst.build_query_component)
 
