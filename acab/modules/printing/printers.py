@@ -19,8 +19,8 @@ SEN_SEN = Sentence.build([DS.SENTENCE_PRIM])
 class BasicPrinter(PrintSemantics):
     """ Simply print the str of anything passed in """
 
-    def __call__(self, to_print, top=None):
-        return str(to_print.name)
+    def __call__(self, value, top=None):
+        return str(value.name)
 
 class PrimitiveTypeAwarePrinter(PrintSemantics):
 
@@ -29,9 +29,9 @@ class PrimitiveTypeAwarePrinter(PrintSemantics):
                 PW._maybe_wrap_regex,
                 PW._maybe_wrap_var]
 
-    def __call__(self, to_print, top=None):
-        curr_str = [str(to_print.name)]
-        return self.run_transforms(to_print, curr_str)
+    def __call__(self, value, top=None):
+        curr_str = [str(value.name)]
+        return self.run_transforms(value, curr_str)
 
 class ModalAwarePrinter(PrintSemantics):
 
@@ -41,14 +41,14 @@ class ModalAwarePrinter(PrintSemantics):
                 PW._maybe_wrap_var]
 
 
-    def __call__(self, to_print, top=None):
-        curr_str = [str(to_print.name)]
-        transformed = self.run_transforms(to_print, curr_str)
+    def __call__(self, value, top=None):
+        curr_str = [str(value.name)]
+        transformed = self.run_transforms(value, curr_str)
         # lookup modal to care about from top.
         # TODO handle multi-modals
         modal = top.check('MODAL')
-        if modal in to_print.data:
-            transformed.append(to_print.data[modal])
+        if modal in value.data:
+            transformed.append(value.data[modal])
 
         return transformed
 
@@ -60,11 +60,11 @@ class UUIDAwarePrinter(PrintSemantics):
                 PW._maybe_wrap_var]
 
 
-    def __call__(self, to_print, top=None):
-        curr_str = [str(to_print.name)]
-        transformed = self.run_transforms(to_print, curr_str)
+    def __call__(self, value, top=None):
+        curr_str = [str(value.name)]
+        transformed = self.run_transforms(value, curr_str)
 
-        final = ["(", str(to_print.uuid), " : "] + transformed + [")"]
+        final = ["(", str(value.uuid), " : "] + transformed + [")"]
         return final
 
 
@@ -74,24 +74,24 @@ class ConstraintAwareValuePrinter(PrintSemantics):
                 PW._maybe_wrap_regex,
                 PW._maybe_wrap_var]
 
-    def __call__(self, to_print, top=None):
+    def __call__(self, value, top=None):
         return_list = []
-        curr_str = [str(to_print.name)]
-        return_list.append(self.run_transforms(to_print, curr_str))
+        curr_str = [str(value.name)]
+        return_list.append(self.run_transforms(value, curr_str))
 
-        if DS.CONSTRAINT in to_print.data:
+        if DS.CONSTRAINT in value.data:
             # TODO write a list_wrap func
             return_list.append("(")
-            for constraint in to_print.data[DS.CONSTRAINT][:-1]:
+            for constraint in value.data[DS.CONSTRAINT][:-1]:
                 return_list.append(constraint)
                 return_list.append(", ")
 
-            return_list.append(to_print.data[DS.CONSTRAINT][-1])
+            return_list.append(value.data[DS.CONSTRAINT][-1])
             return_list.append(")")
 
         modal = top.check('MODAL')
-        if modal in to_print.data:
-            return_list.append(to_print.data[modal])
+        if modal in value.data:
+            return_list.append(value.data[modal])
 
 
         return return_list
@@ -100,21 +100,21 @@ class ConstraintAwareValuePrinter(PrintSemantics):
 # Dependent
 class BasicSentenceAwarePrinter(PrintSemantics):
 
-    def __call__(self, to_print, top=None):
-        assert(to_print.type == SEN_SEN)
+    def __call__(self, value, top=None):
+        assert(value.type == SEN_SEN)
         return_list = []
 
-        if DS.NEGATION in to_print.data and to_print.data[DS.NEGATION]:
+        if DS.NEGATION in value.data and value.data[DS.NEGATION]:
             return_list.append(DSYM.NEGATION_SYM)
 
-        return_list += to_print.words[:-1]
-        if not isinstance(to_print.words[-1], AcabStatement):
-            return_list.append(PW._suppress_modal(top, to_print.words[-1]))
+        return_list += value.words[:-1]
+        if not isinstance(value.words[-1], AcabStatement):
+            return_list.append(PW._suppress_modal(top, value.words[-1]))
         else:
-            return_list.append(to_print.words[-1])
+            return_list.append(value.words[-1])
 
         # Handle query
-        if DS.QUERY in to_print.data and to_print.data[DS.QUERY]:
+        if DS.QUERY in value.data and value.data[DS.QUERY]:
             return_list.append(DSYM.QUERY_SYM)
 
         return return_list
@@ -122,25 +122,25 @@ class BasicSentenceAwarePrinter(PrintSemantics):
 
 class ProductionComponentPrinter(PrintSemantics):
 
-    def __call__(self, to_print, top=None):
+    def __call__(self, value, top=None):
         result = []
         # if sugared,
-        # if to_print.sugared:
+        # if value.sugared:
         #     pass
 
         # else
         result.append(DSYM.FUNC_SYM)
-        result.append(to_print.value)
-        if bool(to_print.params):
+        result.append(value.value)
+        if bool(value.params):
             result.append(DSYM.SPACE)
-            overriden = [PW._suppress_modal(top, x) for x in to_print.params]
-            result += PW._sep_list(self, to_print, overriden, sep=".")
+            overriden = [PW._suppress_modal(top, x) if not isinstance(x, Sentence) else x for x in value.params]
+            result += PW._sep_list(self, value, overriden, sep=" ")
 
-        if bool(to_print.rebind):
+        if bool(value.rebind):
             result.append(DSYM.SPACE)
             result.append(DSYM.REBIND_SYM)
             result.append(DSYM.SPACE)
-            result.append(PW._suppress_modal(top, to_print.rebind))
+            result.append(PW._suppress_modal(top, value.rebind))
 
         return result
 
@@ -149,38 +149,51 @@ class ProductionComponentPrinter(PrintSemantics):
 class ContainerPrinter(PrintSemantics):
     """ Production Containers """
 
-    def __call__(self, to_print, top=None):
-        return PW._sep_list(self, to_print, to_print.clauses, sep="\n")
+    def __call__(self, value, top=None):
+        return PW._sep_list(self, value, value.clauses, sep="\n")
+class StatementPrinter(PrintSemantics):
+
+    def __call__(self, value, top=None):
+        result = []
+        result.append(value.name)
+        result.append(":")
+        result.append(PW._wrap_var_list(self, value.type, []))
+        result.append([[x, DSYM.CONTAINER_JOIN_P] for x in  value.value])
+        result.append(DSYM.END_SYM)
+
+        return result
 
 class StructurePrinter(PrintSemantics):
     """ Ordered structures """
 
-    def __call__(self, to_print, top=None):
+    def __call__(self, value, top=None):
         # TODO define order, add newlines, tags
         result = []
         # print the name
-        result.append(top.override("_:NO_MODAL", to_print))
+        result.append(top.override("_:NO_MODAL", value))
         result.append(":")
         result += ["(", "::", "ρ", ")"]
         result.append(DSYM.CONTAINER_JOIN_P)
-        for tag in to_print.tags:
+        for tag in value.tags:
             result.append(DSYM.TAG_SYM)
             result.append(tag)
             result.append(DSYM.CONTAINER_JOIN_P)
 
-        if bool(to_print.tags):
+        if bool(value.tags):
             result.append(DSYM.CONTAINER_JOIN_P)
 
-        if bool(to_print.structure[DS.QUERY_COMPONENT]):
-            result += to_print.structure[DS.QUERY_COMPONENT]
+        if bool(value.structure[DS.QUERY_COMPONENT]):
+            result += value.structure[DS.QUERY_COMPONENT]
             result.append(DSYM.CONTAINER_JOIN_P)
             result.append(DSYM.CONTAINER_JOIN_P)
-        if bool(to_print.structure[DS.TRANSFORM_COMPONENT]):
-            result += to_print.structure[DS.TRANSFORM_COMPONENT]
+
+        if bool(value.structure[DS.TRANSFORM_COMPONENT]):
+            result += value.structure[DS.TRANSFORM_COMPONENT]
             result.append(DSYM.CONTAINER_JOIN_P)
             result.append(DSYM.CONTAINER_JOIN_P)
-        if bool(to_print.structure[DS.ACTION_COMPONENT]):
-            result += to_print.structure[DS.ACTION_COMPONENT]
+
+        if bool(value.structure[DS.ACTION_COMPONENT]):
+            result += value.structure[DS.ACTION_COMPONENT]
             result.append(DSYM.CONTAINER_JOIN_P)
             result.append(DSYM.CONTAINER_JOIN_P)
 
