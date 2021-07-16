@@ -8,7 +8,7 @@ import acab.abstract.interfaces.value_interfaces as VI
 from acab.abstract.config.config import GET, AcabConfig, ConfigSpec
 from acab.abstract.core.values import Sentence, AcabStatement
 from acab.abstract.interfaces.printing_interfaces import PrintSemantics
-from acab.abstract.printing import consts as DSYM
+from acab.abstract.printing import default_symbols as DSYM
 from acab.abstract.printing import wrappers as PW
 
 config = GET()
@@ -157,8 +157,15 @@ class StatementPrinter(PrintSemantics):
         result = []
         result.append(value.name)
         result.append(":")
+        result += ["(", "::"]
+        if DS.SEMANTIC_HINT in value.data:
+            result += [value.data[DS.SEMANTIC_HINT], ")"]
+        else:
+            result += [value.type, ")"]
+        result.append(DSYM.CONTAINER_JOIN_P)
         result.append(PW._wrap_var_list(self, value.type, []))
         result.append([[x, DSYM.CONTAINER_JOIN_P] for x in  value.value])
+        result.append(DSYM.CONTAINER_JOIN_P)
         result.append(DSYM.END_SYM)
 
         return result
