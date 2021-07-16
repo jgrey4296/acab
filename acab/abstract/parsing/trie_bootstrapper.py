@@ -19,6 +19,7 @@ import logging as root_logger
 
 import pyparsing as pp
 from acab.abstract.config.config import GET
+from acab.abstract.core.acab_struct import BasicNodeStruct
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.production_abstractions import ProductionOperator
 from acab.abstract.core.values import AcabValue, Sentence
@@ -26,7 +27,6 @@ from acab.abstract.interfaces.dsl_interface import Bootstrapper
 from acab.modules.semantics.context_container import ContextContainer
 from acab.modules.semantics.dependent import BreadthTrieSemantics
 from acab.modules.semantics.independent import BasicNodeSemantics
-from acab.abstract.core.acab_struct import BasicNodeStruct
 
 logging = root_logger.getLogger(__name__)
 config = GET()
@@ -42,8 +42,10 @@ class TrieBootstrapper(Bootstrapper):
 
     def __init__(self):
         super().__init__()
-        self._semantics = BreadthTrieSemantics(BasicNodeSemantics())
-        self._structure = BasicNodeStruct.build_default()
+        self._semantics = BreadthTrieSemantics("BreadthTrie", [], [],
+                                            default=(BasicNodeSemantics("_:Node"),None))
+
+        self._structure = BasicNodeStruct.build_default("_:Node")
 
     def __len__(self):
         return len(self._structure)
