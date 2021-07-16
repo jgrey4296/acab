@@ -11,13 +11,16 @@ logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
 
 class AcabStruct(StructureInterface):
-    """ A collection of nodes """
+    """ A structure in ACAB,
+    which is registered into the semantic system for use """
     pass
 
 class BasicNodeStruct(AcabStruct):
+    """ A Node based struct """
 
-    def build_default():
-        struct = BasicNodeStruct(AcabNode.Root())
+    @staticmethod
+    def build_default(name="_:Node"):
+        struct = BasicNodeStruct(name, AcabNode.Root())
         struct.components['all_nodes'] = WeakValueDictionary()
         return struct
 
