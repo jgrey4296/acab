@@ -8,7 +8,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 from acab.abstract.interfaces.dsl_interface import DSL_Interface, Bootstrapper
-from acab.abstract.parsing.TrieBootstrapper import TrieBootstrapper
+from acab.abstract.parsing.trie_bootstrapper import TrieBootstrapper
 
 ModuleType   = 'Module'
 Parser       = 'Parser'
@@ -21,9 +21,9 @@ class RewindEngineInterface(metaclass=abc.ABCMeta):
     Describes how an engine can be reverted to a previous state
     """
     # TODO  update with reloadable state of working memory
-    prior_states : List[List[Sentence]] = field(default_factory=list)
+    prior_states : List[List[Sentence]]       = field(default_factory=list)
     # named recall states of past kb states
-    recall_states : Dict[str, List[Sentence]]= field(default_factory=dict)
+    recall_states : Dict[str, List[Sentence]] = field(default_factory=dict)
 
     def rewind(self, val:Optional[Union[int, str]]) -> None:
         raise NotImplementedError()
