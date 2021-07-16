@@ -11,7 +11,7 @@ acab.setup()
 
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
-from acab.abstract.parsing.TrieBootstrapper_parser import TrieBootstrapper
+from acab.abstract.parsing.trie_bootstrapper import TrieBootstrapper
 from acab.abstract.engine.engine import Engine
 from acab.abstract.core.production_abstractions import ProductionOperator
 

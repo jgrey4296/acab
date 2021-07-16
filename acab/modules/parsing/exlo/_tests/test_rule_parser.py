@@ -8,7 +8,7 @@ config = acab.setup()
 
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
-from acab.abstract.parsing.TrieBootstrapper import TrieBootstrapper
+from acab.abstract.parsing.trie_bootstrapper import TrieBootstrapper
 from acab.abstract.core.production_abstractions import ProductionOperator, ProductionComponent, ProductionContainer, ProductionStructure
 from acab.modules.operators import query as QOP
 from acab.modules.parsing.exlo.parsers import ActionParser as AP

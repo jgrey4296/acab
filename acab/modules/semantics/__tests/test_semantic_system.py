@@ -43,6 +43,26 @@ LAYER_SEM_HINT     = Sentence.build([config.prepare("SEMANTICS", "LAYER")()])
 PIPELINE_SEM_HINT  = Sentence.build([config.prepare("SEMANTICS", "PIPELINE")()])
 
 # TODO test verify
+# semSys      = BasicSemanticSystem(trie_sem.query, trie_struct,
+#                                   mapping={QUERY_SEM_HINT  : query_sem,
+#                                            ACTION_SEM_HINT : action_sem,
+#                                            TRANSFORM_SEM_HINT: trans_sem,
+#                                            RULE_SEM_HINT   : rule_sem},
+#                                   key=SemHintKey)
+# sem_sys = PrintSystem(handlers=[
+#     Printers.BasicSentenceAwarePrinter("_:SENTENCE"),
+#     Printers.ConstraintAwareValuePrinter("_:ATOM"),
+#     Printers.ProductionComponentPrinter("_:COMPONENT"),
+#     # Printers.ContainerPrinter("_:CONTAINER"),
+#     Printers.StructurePrinter("_:STRUCTURE"),
+#     Printers.ConfigBackedSymbolPrinter("_:SYMBOL"),
+#     Printers.PrimitiveTypeAwarePrinter("_:NO_MODAL"),
+#     Printers.StatementPrinter("_:STATEMENT")
+# ],
+#                       settings={"MODAL": "exop"})
+
+
+
 
 class SemanticSystemTests(unittest.TestCase):
 
@@ -51,14 +71,16 @@ class SemanticSystemTests(unittest.TestCase):
             raise AcabBaseException("TestAbsSem called")
 
     def test_construction(self):
-        semsys = BasicSemanticSystem(SemanticSystemTests.StubAbsSemantic(), None)
+        semsys = BasicSemanticSystem(default=(SemanticSystemTests.StubAbsSemantic("_stub"), None),
+                                     handlers=[], structs=[])
         self.assertIsInstance(semsys, SemanticSystem)
-        self.assertIsInstance(semsys.base, AbstractionSemantics)
-        self.assertFalse(semsys.mapping)
-        self.assertFalse(semsys.structs)
+        self.assertIsInstance(semsys.default[0], AbstractionSemantics)
+        self.assertFalse(semsys.registered_handlers)
+        self.assertFalse(semsys.registered_structs)
 
     def test_default_call(self):
-        semsys = BasicSemanticSystem(SemanticSystemTests.StubAbsSemantic(), None)
+        semsys = BasicSemanticSystem(default=(SemanticSystemTests.StubAbsSemantic("_:stub"), None),
+                                     handlers=[], structs=[])
         test_sen = Sentence.build(["test"])
         with self.assertRaises(AcabBaseException) as cm:
             semsys(test_sen)
@@ -67,7 +89,8 @@ class SemanticSystemTests(unittest.TestCase):
 
     def test_retrieval(self):
         # put some semantics in semsys.mapping
-        semsys = BasicSemanticSystem(SemanticSystemTests.StubAbsSemantic(), None)
+        semsys = BasicSemanticSystem(default=(SemanticSystemTests.StubAbsSemantic("_:stub"), None),
+                                     handlers=[], structs=[])
 
 
 

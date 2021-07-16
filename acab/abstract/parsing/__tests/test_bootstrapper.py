@@ -12,7 +12,7 @@ import acab
 acab.setup()
 
 from acab.abstract.core.values import AcabValue
-from acab.abstract.parsing.TrieBootstrapper import TrieBootstrapper
+from acab.abstract.parsing.trie_bootstrapper import TrieBootstrapper
 
 class BootstrapParserTests(unittest.TestCase):
 

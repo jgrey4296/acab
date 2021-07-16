@@ -63,7 +63,7 @@ PIPELINE_SEM_HINT  = Sentence.build([config.prepare("SEMANTICS", "PIPELINE")()])
 
 class AbstractionSemanticTests(unittest.TestCase):
     def test_transform(self):
-        sem         = ASem.TransformAbstraction()
+        sem         = ASem.TransformAbstraction("_:Transform")
         # Construct context container for operators
         op_loc_path       = Sentence.build(["Regex"])
         operator_instance = RegexOp()
@@ -103,7 +103,7 @@ class AbstractionSemanticTests(unittest.TestCase):
 
 
         # Build Semantics
-        sem = ASem.ActionAbstraction()
+        sem = ASem.ActionAbstraction("_:Action")
         # Context Container for operators
         op_loc_path   = Sentence.build(["action"])
         operator_instance   = TestAction()
@@ -132,7 +132,7 @@ class AbstractionSemanticTests(unittest.TestCase):
 
 
         # Build Semantics
-        sem = ASem.ActionAbstraction()
+        sem = ASem.ActionAbstraction("_:Action")
         # Context Container for operators
         op_loc_path   = Sentence.build(["action"])
         operator_instance   = TestAction()
@@ -172,14 +172,13 @@ class AbstractionSemanticTests(unittest.TestCase):
 
             return str(val.value)
 
-        transform_sem = ASem.TransformAbstraction()
-        action_sem    = ASem.ActionAbstraction()
-        semSys        = BasicSemanticSystem(StubAbsSemantic(), None,
-                                            mapping={"_:transform" : transform_sem,
-                                                     "_:action"    : action_sem},
-                                            key=SemHintKey)
+        transform_sem = ASem.TransformAbstraction("_:transform")
+        action_sem    = ASem.ActionAbstraction("_:action")
+        semSys        = BasicSemanticSystem(default=(StubAbsSemantic("_:stub"), None),
+                                            handlers=[transform_sem, action_sem],
+                                            structs=[])
 
-        consem        = ASem.ContainerAbstraction()
+        consem        = ASem.ContainerAbstraction("_:container")
 
         trans_op_loc_path  = Sentence.build(["transform"])
         action_op_loc_path = Sentence.build(["action"])
@@ -235,21 +234,19 @@ class AbstractionSemanticTests(unittest.TestCase):
             return None
 
         # Build Semantics
-        node_sem    = BasicNodeSemantics()
-        trie_sem    = BreadthTrieSemantics(base=node_sem)
+        node_sem    = BasicNodeSemantics("_:node")
+        trie_sem    = BreadthTrieSemantics("_:trie", default=(node_sem, None),
+                                           handlers=[], structs=[])
 
-        query_sem   = ASem.QueryAbstraction()
-        action_sem  = ASem.ActionAbstraction()
-        rule_sem    = ASem.AtomicRuleAbstraction()
-        trans_sem   = ASem.TransformAbstraction()
+        query_sem   = ASem.QueryAbstraction(QUERY_SEM_HINT)
+        action_sem  = ASem.ActionAbstraction(ACTION_SEM_HINT)
+        rule_sem    = ASem.AtomicRuleAbstraction(TRANSFORM_SEM_HINT)
+        trans_sem   = ASem.TransformAbstraction(RULE_SEM_HINT)
 
-        trie_struct = BasicNodeStruct.build_default()
-        semSys      = BasicSemanticSystem(trie_sem.query, trie_struct,
-                                          mapping={QUERY_SEM_HINT  : query_sem,
-                                                   ACTION_SEM_HINT : action_sem,
-                                                   TRANSFORM_SEM_HINT: trans_sem,
-                                                   RULE_SEM_HINT   : rule_sem},
-                                          key=SemHintKey)
+        trie_struct = BasicNodeStruct.build_default("_:node")
+        semSys      = BasicSemanticSystem(handlers=[query_sem, action_sem, rule_sem, trans_sem],
+                                          structs=[],
+                                          default=(trie_sem, trie_struct))
 
         # Setup operators in context
         action_op_loc_path = Sentence.build(["action"])
@@ -311,22 +308,19 @@ class AbstractionSemanticTests(unittest.TestCase):
             return None
         #
         # Build Semantics
-        node_sem    = BasicNodeSemantics()
-        trie_sem    = BreadthTrieSemantics(base=node_sem)
+        node_sem    = BasicNodeSemantics("_:node")
+        trie_sem    = BreadthTrieSemantics("_:trie", default=(node_sem, None), handlers=[], structs=[])
 
-        query_sem   = ASem.QueryAbstraction()
-        action_sem  = ASem.ActionAbstraction()
-        trans_sem   = ASem.TransformAbstraction()
+        query_sem   = ASem.QueryAbstraction(QUERY_SEM_HINT)
+        action_sem  = ASem.ActionAbstraction(ACTION_SEM_HINT)
+        trans_sem   = ASem.TransformAbstraction(TRANSFORM_SEM_HINT)
         # THIS IS THE MAJOR CHANGE OF THIS TEST:
-        rule_sem    = ASem.ProxyRuleAbstraction()
+        rule_sem    = ASem.ProxyRuleAbstraction(RULE_SEM_HINT)
 
-        trie_struct = BasicNodeStruct.build_default()
-        semSys      = BasicSemanticSystem(trie_sem.query, trie_struct,
-                                          mapping={QUERY_SEM_HINT     : query_sem,
-                                                   ACTION_SEM_HINT    : action_sem,
-                                                   TRANSFORM_SEM_HINT : trans_sem,
-                                                   RULE_SEM_HINT      : rule_sem},
-                                          key=SemHintKey)
+        trie_struct = BasicNodeStruct.build_default("_:node")
+        semSys      = BasicSemanticSystem(handlers=[query_sem,action_sem,trans_sem,rule_sem],
+                                          structs=[],
+                                          default=(trie_sem, trie_struct))
 
         # Setup operators in context
         action_op_loc_path = Sentence.build(["action"])

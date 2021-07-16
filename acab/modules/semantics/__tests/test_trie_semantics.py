@@ -33,8 +33,8 @@ CONSTRAINT_V = config.prepare("Value.Structure", "CONSTRAINT")()
 
 class TrieSemanticTests(unittest.TestCase):
     def test_trie_insert_basic(self):
-        node_sem = BasicNodeSemantics()
-        trie_sem = BreadthTrieSemantics(base=node_sem)
+        node_sem = BasicNodeSemantics("_:node")
+        trie_sem = BreadthTrieSemantics("_:Trie", default=(node_sem, None), handlers=[], structs=[])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "sentence"])
@@ -46,8 +46,8 @@ class TrieSemanticTests(unittest.TestCase):
         self.assertTrue("sentence" in trie_struct.root.children["a"].children["test"])
 
     def test_trie_insert_non_exclusion(self):
-        node_sem = BasicNodeSemantics()
-        trie_sem = BreadthTrieSemantics(base=node_sem)
+        node_sem = BasicNodeSemantics("_:node")
+        trie_sem = BreadthTrieSemantics("_:Trie", default=(node_sem, None), handlers=[], structs=[])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "sentence"])
@@ -62,8 +62,8 @@ class TrieSemanticTests(unittest.TestCase):
         self.assertTrue("other" in trie_struct.root.children["a"].children["test"])
 
     def test_trie_insert_exclusion(self):
-        node_sem    = ExclusionNodeSemantics()
-        trie_sem    = BreadthTrieSemantics(base=node_sem)
+        node_sem    = ExclusionNodeSemantics("_:node")
+        trie_sem    = BreadthTrieSemantics("_:Trie", default=(node_sem, None), handlers=[], structs=[])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen  = Sentence.build(["a", "test", "sentence"])
@@ -81,8 +81,8 @@ class TrieSemanticTests(unittest.TestCase):
 
 
     def test_trie_remove_basic(self):
-        node_sem = BasicNodeSemantics()
-        trie_sem = BreadthTrieSemantics(base=node_sem)
+        node_sem    = BasicNodeSemantics("_:node")
+        trie_sem    = BreadthTrieSemantics("_:Trie", default=(node_sem, None), handlers=[], structs=[])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "sentence"])
@@ -104,8 +104,8 @@ class TrieSemanticTests(unittest.TestCase):
 
 
     def test_trie_query_exact(self):
-        node_sem = BasicNodeSemantics()
-        trie_sem = BreadthTrieSemantics(base=node_sem)
+        node_sem = BasicNodeSemantics("_:node")
+        trie_sem    = BreadthTrieSemantics("_:Trie", default=(node_sem, None), handlers=[], structs=[])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "sentence"])
@@ -124,8 +124,8 @@ class TrieSemanticTests(unittest.TestCase):
 
 
     def test_trie_query_var(self):
-        node_sem = BasicNodeSemantics()
-        trie_sem = BreadthTrieSemantics(base=node_sem)
+        node_sem = BasicNodeSemantics("_:node")
+        trie_sem    = BreadthTrieSemantics("_:Trie", default=(node_sem, None), handlers=[], structs=[])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "sentence"])
@@ -145,8 +145,8 @@ class TrieSemanticTests(unittest.TestCase):
         self.assertEqual(result_set, {'sentence', 'other'})
 
     def test_trie_query_with_bind_constraints(self):
-        node_sem = BasicNodeSemantics()
-        trie_sem = BreadthTrieSemantics(base=node_sem)
+        node_sem = BasicNodeSemantics("_:node")
+        trie_sem    = BreadthTrieSemantics("_:Trie", default=(node_sem, None), handlers=[], structs=[])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "sentence"])
@@ -166,8 +166,8 @@ class TrieSemanticTests(unittest.TestCase):
         self.assertEqual(ctx_container[0].data['$x'], 'test')
 
     def test_trie_query_with_alpha_tests(self):
-        node_sem = BasicNodeSemantics()
-        trie_sem = BreadthTrieSemantics(base=node_sem)
+        node_sem = BasicNodeSemantics("_:node")
+        trie_sem    = BreadthTrieSemantics("_:Trie", default=(node_sem, None), handlers=[], structs=[])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "blah"])
@@ -194,8 +194,8 @@ class TrieSemanticTests(unittest.TestCase):
         self.assertEqual(ctx_container[0].data['$x'].name, 'blah')
 
     def test_trie_query_with_beta_tests(self):
-        node_sem = BasicNodeSemantics()
-        trie_sem = BreadthTrieSemantics(base=node_sem)
+        node_sem    = BasicNodeSemantics("_:node")
+        trie_sem    = BreadthTrieSemantics("_:Trie", default=(node_sem, None), handlers=[], structs=[])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "blah"])
@@ -231,8 +231,8 @@ class TrieSemanticTests(unittest.TestCase):
 
 
     def test_trie_query_with_callable_tests(self):
-        node_sem = BasicNodeSemantics()
-        trie_sem = BreadthTrieSemantics(base=node_sem)
+        node_sem    = BasicNodeSemantics("_:node")
+        trie_sem    = BreadthTrieSemantics("_:Trie", default=(node_sem, None), handlers=[], structs=[])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "blah"])
@@ -272,8 +272,8 @@ class TrieSemanticTests(unittest.TestCase):
 
     def test_trie_to_sentences_simple(self):
         # Create sem
-        node_sem = BasicNodeSemantics()
-        trie_sem = BreadthTrieSemantics(base=node_sem)
+        node_sem    = BasicNodeSemantics("_:node")
+        trie_sem    = BreadthTrieSemantics("_:Trie", default=(node_sem, None), handlers=[], structs=[])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "sentence"])
@@ -286,8 +286,8 @@ class TrieSemanticTests(unittest.TestCase):
 
     def test_trie_to_sentences_multi(self):
         # Create sem
-        node_sem = BasicNodeSemantics()
-        trie_sem = BreadthTrieSemantics(base=node_sem)
+        node_sem    = BasicNodeSemantics("_:node")
+        trie_sem    = BreadthTrieSemantics("_:Trie", default=(node_sem, None), handlers=[], structs=[])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "sentence"])
@@ -303,8 +303,8 @@ class TrieSemanticTests(unittest.TestCase):
 
     def test_trie_to_sentences_duplicates(self):
         # Create sem
-        node_sem = BasicNodeSemantics()
-        trie_sem = BreadthTrieSemantics(base=node_sem)
+        node_sem    = BasicNodeSemantics("_:node")
+        trie_sem    = BreadthTrieSemantics("_:Trie", default=(node_sem, None), handlers=[], structs=[])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "sentence"])
@@ -319,8 +319,8 @@ class TrieSemanticTests(unittest.TestCase):
 
     def test_trie_to_sentences_statements(self):
         # Create sem
-        node_sem = BasicNodeSemantics()
-        trie_sem = BreadthTrieSemantics(base=node_sem)
+        node_sem    = BasicNodeSemantics("_:node")
+        trie_sem    = BreadthTrieSemantics("_:Trie", default=(node_sem, None), handlers=[], structs=[])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "sentence"])

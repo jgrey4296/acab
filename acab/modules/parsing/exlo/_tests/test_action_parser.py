@@ -10,7 +10,7 @@ acab.setup()
 
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
-from acab.abstract.parsing.TrieBootstrapper import TrieBootstrapper
+from acab.abstract.parsing.trie_bootstrapper import TrieBootstrapper
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.production_abstractions import ProductionOperator, ProductionComponent, ProductionContainer
 from acab.abstract.core import default_structure as DS
