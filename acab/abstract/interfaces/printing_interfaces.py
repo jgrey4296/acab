@@ -1,4 +1,5 @@
 import abc
+import logging as root_logger
 from dataclasses import InitVar, dataclass, field
 from enum import Enum
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
@@ -7,59 +8,51 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 import acab.abstract.interfaces.util as SU
 from acab.abstract.config.config import AcabConfig, ConfigSpec
-from acab.abstract.interfaces.value_interfaces import (SentenceInterface,
-                                                       ValueInterface)
 from acab.abstract.core import production_abstractions as PA
 from acab.abstract.core.values import AcabStatement
+from acab.abstract.interfaces.handler_system_interface import (
+    HandlerComponent, HandlerSystemInterface)
+from acab.abstract.interfaces.value_interfaces import (SentenceInterface,
+                                                       ValueInterface)
 from acab.error.acab_print_exception import AcabPrintException
 from acab.error.acab_semantic_exception import AcabSemanticException
 from acab.modules.semantics.context_container import ContextContainer
 
-import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
 
 Sentence        = 'Sentence'
 @dataclass
-class PrintSemanticSystem(metaclass=abc.ABCMeta):
+class PrintSystem(HandlerSystemInterface):
     """ Handles how to convert values and sentences into strings,
     does not rely on the underlying data structures
     """
+    settings             : Dict[str, str]           = field(default_factory=dict)
+    _config              : AcabConfig               = field(init=False, default_factory=AcabConfig.Get)
 
-    # Handlers: fn val -> [Val|str]
-    handlers        : InitVar[List[Callable]]    = field()
-    # Ordered Sieve for lookup of handlers. Most -> least specific
-    # fn x -> str
-    sieve           : List[Callable]             = field(default_factory=list)
-    settings        : Dict[str, str]             = field(default_factory=dict)
-
-    _config    : AcabConfig                      = field(init=False, default_factory=AcabConfig.Get)
-    registered_handlers : Dict[str, Callable]    = field(init=False, default_factory=dict)
-
-    _default_sieve : ClassVar[List[Callable]] = [
+    _default_sieve       : ClassVar[List[Callable]] = [
         # override tuple : 1 -> 1 : any
-        lambda x: x.override if isinstance(x, PrintSemanticSystem.PrintOverride) else None,
+        lambda x              : x.override if isinstance(x, PrintSystem.PrintOverride) else None,
         # symbol         : m -> m : any
-        lambda x: "_:SYMBOL" if isinstance(x, ConfigSpec) else None,
+        lambda x              : "_:SYMBOL" if isinstance(x, ConfigSpec) else None,
         # enum
-        lambda x: "_:SYMBOL" if isinstance(x, Enum) else None,
+        lambda x              : "_:SYMBOL" if isinstance(x, Enum) else None,
         # exact type     : 1 -> 1 : any / leaf
-        lambda x: str(x.type) if isinstance(x, ValueInterface) else None,
+        lambda x              : str(x.type) if isinstance(x, ValueInterface) else None,
         # gen type       : m -> 1 : any / leaf
         # structure      : m -> m : leaf
-        lambda x: "_:STRUCTURE" if isinstance(x, PA.ProductionStructure) else None,
+        lambda x              : "_:STRUCTURE" if isinstance(x, PA.ProductionStructure) else None,
         # container      : m -> m : leaf
-        lambda x: "_:CONTAINER" if isinstance(x, PA.ProductionContainer) else None,
+        lambda x              : "_:CONTAINER" if isinstance(x, PA.ProductionContainer) else None,
         # component      : m -> m : leaf
-        lambda x: "_:COMPONENT" if isinstance(x, PA.ProductionComponent) else None,
+        lambda x              : "_:COMPONENT" if isinstance(x, PA.ProductionComponent) else None,
         # Statement
-        lambda x: "_:STATEMENT" if isinstance(x, AcabStatement) else None,
+        lambda x              : "_:STATEMENT" if isinstance(x, AcabStatement) else None,
         # sentence       : m -> 1 : any / leaf
-        lambda x: "_:SENTENCE" if isinstance(x, SentenceInterface) else None,
+        lambda x              : "_:SENTENCE" if isinstance(x, SentenceInterface) else None,
         # value          : m -> 1 : any
-        lambda x: "_:ATOM" if isinstance(x, ValueInterface) else None
+        lambda x              : "_:ATOM" if isinstance(x, ValueInterface) else None
     ]
-
 
     @dataclass
     class PrintOverride:
@@ -69,32 +62,11 @@ class PrintSemanticSystem(metaclass=abc.ABCMeta):
     #----------------------------------------
 
 
-    def __post_init__(self, handlers):
-        # use default sieve if sieve is empty
-        if not bool(self.sieve):
-            self.sieve += PrintSemanticSystem._default_sieve
-        # register provided handlers
-        for handler in handlers:
-            self._register_handler(handler)
 
-    def _register_handler(self, handler):
-        # TODO maybe handle tuples later
-        pair_str = handler.paired_with
-        assert(pair_str not in self.registered_handlers)
-        self.registered_handlers[pair_str] = handler
-
-
-    def lookup(self, value: ValueInterface) -> 'PrintSemantics':
-        # sieve from most to least specific
-
-        for sieve_fn in self.sieve:
-            key = sieve_fn(value)
-            if bool(key) and key in self.registered_handlers:
-                return self.registered_handlers[key]
-
-        # Final resort
-        logging.warning(f"Resorting to str handler for: {value}")
-        return lambda x: str(x)
+    def __post_init__(self, handlers, structs):
+        super().__post_init__(handlers, structs)
+        if self.default[0] is None:
+            self.default = (lambda x: str(x), None)
 
     def check(self, val) -> Optional[str]:
         """ Check a value to toggle variations/get defaults"""
@@ -107,7 +79,7 @@ class PrintSemanticSystem(metaclass=abc.ABCMeta):
         if new_target not in self.registered_handlers:
             raise AcabPrintException(f"Undefined override handler: {new_target}")
 
-        return PrintSemanticSystem.PrintOverride(new_target, value)
+        return PrintSystem.PrintOverride(new_target, value)
 
 
     def pprint(self, *args) -> str:
@@ -121,11 +93,11 @@ class PrintSemanticSystem(metaclass=abc.ABCMeta):
                 result += current
             elif isinstance(current, list):
                 remaining = current + remaining
-            elif isinstance(current, PrintSemanticSystem.PrintOverride):
+            elif isinstance(current, PrintSystem.PrintOverride):
                 handler = self.registered_handlers[current.override]
                 current = current.data
             else:
-                handler = self.lookup(current)
+                handler, _ = self.lookup(current)
 
             if handler is None:
                 continue
@@ -147,10 +119,10 @@ class PrintSemanticSystem(metaclass=abc.ABCMeta):
 
     def __call__(self, *args) -> str:
         return self.pprint(*args)
+#--------------------
 @dataclass
-class PrintSemantics(metaclass=abc.ABCMeta):
+class PrintSemantics(HandlerComponent):
 
-    paired_with : Sentence       = field()
     transforms  : List[Callable] = field(init=False, default_factory=list)
 
     def __post_init__(self):
@@ -168,5 +140,5 @@ class PrintSemantics(metaclass=abc.ABCMeta):
         return curr
 
     @abc.abstractmethod
-    def __call__(self, to_print: ValueInterface, top:'PrintSemanticSystem'=None) -> List[Tuple[str,ValueInterface]]:
+    def __call__(self, to_print: ValueInterface, top:'PrintSystem'=None) -> List[Tuple[str,ValueInterface]]:
         pass

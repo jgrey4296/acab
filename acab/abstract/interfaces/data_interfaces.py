@@ -5,6 +5,7 @@ Here, 'Data' means something analogous to ADTs
 import abc
 from dataclasses import dataclass, field
 from typing import Any, Dict
+from acab.abstract.interfaces.handler_system_interface import HandlerComponent
 
 Value              = 'AcabValue'
 Node               = 'NodeInterface'
@@ -56,9 +57,9 @@ class NodeInterface(metaclass=abc.ABCMeta):
 
 
 @dataclass
-class StructureInterface(metaclass=abc.ABCMeta):
+class StructureInterface(HandlerComponent):
     """ The structures which semantics operate on """
-    root  : Node                = field()
+    root       : Node           = field()
     components : Dict[str, Any] = field(init=False, default_factory=dict)
 
     @staticmethod

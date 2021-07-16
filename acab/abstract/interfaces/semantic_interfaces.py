@@ -15,21 +15,22 @@ Meanwhile IndependentSemantics are concerned only with the values and structures
 
 """
 
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
 import abc
-from dataclasses import dataclass, field, InitVar
+from dataclasses import InitVar, dataclass, field
 from enum import Enum
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
 
-from acab.abstract.config.config import AcabConfig, ConfigSpec
-from acab.error.acab_semantic_exception import AcabSemanticException
-from acab.error.acab_print_exception import AcabPrintException
-from acab.modules.semantics.context_container import ContextContainer
-from acab.abstract.interfaces.value_interfaces import ValueInterface, SentenceInterface
 import acab.abstract.interfaces.util as SU
-
+from acab.abstract.config.config import AcabConfig, ConfigSpec
+from acab.abstract.interfaces.handler_system_interface import (
+    HandlerComponent, HandlerSystemInterface)
+from acab.abstract.interfaces.value_interfaces import (SentenceInterface,
+                                                       ValueInterface)
+from acab.error.acab_print_exception import AcabPrintException
+from acab.error.acab_semantic_exception import AcabSemanticException
+from acab.modules.semantics.context_container import ContextContainer
 
 Node            = 'AcabNode'
 Sentence        = 'Sentence'
@@ -38,101 +39,29 @@ Value           = 'AcabValue'
 Structure       = 'AcabStruct'
 Engine          = 'Engine'
 Contexts        = 'Contexts'
-Handler         = 'SemanticHandler'
+Handler         = 'SemanticHandler' # Callable
 AbsDepSemantics = Union['AbstractionSemantics', 'DependentSemantics']
 InDepSemantics  = 'IndependentSemantics'
 
-SemanticRetrievedPair   = Tuple[AbsDepSemantics, Structure]
-
 # Note: for dependent and indep, you retrieve semantics of a node,
 # for *abstractions*, you're getting the semantics of a *sentence*
-def default_key(node:Any, data:Dict[Any,Any]=None) -> str:
-    return str(node.value)
-
-def default_failure(semantics, struct, instruction, ctxs, data, err):
-    logging.warning("Default Failure: {}".format(err))
-
-def example_hook(semSystem, semantics, struct: Structure, instruction: Sentence, ctxs, data=None):
-    pass
-
-
 #--------------------------------------------------
 @dataclass
-class SemanticSystem(metaclass=abc.ABCMeta):
+class SemanticSystem(HandlerSystemInterface):
     """
     Map Instructions to Abstraction/Dependent Semantics
     """
-
-    # If no applicable semantics found, use default
-    base        : AbsDepSemantics                            = field()
-    base_struct : Structure                                  = field()
-    base_hooks  : Tuple[List[Handler], List[Handler]]        = field(default_factory=tuple)
-    # str/iden -> Semantics
-    mapping : Dict[str, AbsDepSemantics]                     = field(default_factory=dict)
-    structs : Dict[str, Structure]                           = field(default_factory=dict)
-    hooks   : Dict[str, Tuple[List[Handler], List[Handler]]] = field(default_factory=dict)
-    # sentence -> iden func to determine appropriate semantics
-    key     : Callable[[Any, Dict[Any,Any]], str]            = field(default=default_key)
-    #
-    failure : Callable                                       = field(default=default_failure)
-
-    def __post_init__(self):
-        # TODO init any semantics or structs passed in as Class's
-
-        # TODO check depsem -> struct compabilities
-        # by running dependent.compatible(struct)
-
-        pass
-
-    def _run_entry_hooks(self, semantics, struct, instruction, ctxs, data):
-        the_key = self.key(instruction, data=data)
-        if the_key not in self.hooks:
-            return
-
-        hooks = self.hooks[the_key][0]
-        for hook in hooks:
-            hook(self, semantics, struct, instruction, ctxs, data)
-
-    def _run_exit_hooks(self, semantics, struct, instruction, ctxs, data):
-        the_key = self.key(instruction, data=data)
-        if the_key not in self.hooks:
-            return
-
-        hooks = self.hooks[the_key][1]
-        for hook in hooks:
-            hook(self, semantics, struct, instruction, ctxs, data)
-
-    @abc.abstractmethod
-    def retrieve(self, target: Sentence, data=None, override=None) -> SemanticRetrievedPair:
-        pass
-
-    @abc.abstractmethod
-    def __call__(self, instruction, data=None, override=None, ctxs=None) -> Contexts:
-        pass
-
+    # TODO possibly re-add hooks / failure handling
 
 @dataclass
-class DependentSemantics(metaclass=abc.ABCMeta):
+class DependentSemantics(SemanticSystem, HandlerComponent):
     """
     Dependent Semantics rely on the context they are called in to function
     and are built with specific mappings to independent semantics
     """
 
-    # If no applicable semantics found, use default
-    base    : InDepSemantics                       = field()
-    # str/iden -> Semantics
-    mapping : Dict[str, InDepSemantics]            = field(default_factory=dict)
-    # node -> iden func to determine appropriate semantics
-    key     : Callable[[Node, Dict[Any,Any]], str] = field(default=default_key)
-
-    def retrieve(self, target: None, data=None):
-        lookup_key = self.key(target, data)
-        semantics = self.base
-        if lookup_key in self.mapping:
-            semantics = self.mapping[lookup_key]
-
-        return self.base
-
+    def __call__(self):
+        pass
 
     def to_sentences(self, struct, data=None, ctxs=None):
         """ Reduce a struct down to sentences, for printing """
@@ -154,7 +83,7 @@ class DependentSemantics(metaclass=abc.ABCMeta):
         pass
 
 
-class IndependentSemantics(metaclass=abc.ABCMeta):
+class IndependentSemantics(HandlerComponent):
     """
     Independent Semantics which operate on values and nodes, without
     requiring access to larger context, or engine access
@@ -186,7 +115,7 @@ class IndependentSemantics(metaclass=abc.ABCMeta):
         pass
 
 
-class AbstractionSemantics(metaclass=abc.ABCMeta):
+class AbstractionSemantics(HandlerComponent):
     """
     Semantics of Higher level abstractions
     eg: Rules, Layers, Pipelines...
