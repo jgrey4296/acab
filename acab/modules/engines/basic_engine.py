@@ -16,45 +16,48 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.production_abstractions import (ProductionContainer,
                                                         ProductionOperator)
-from acab.abstract.engine.module_load_interface import ModuleLoaderInterface
+from acab.abstract.interfaces.dsl_interface import DSL_Interface
+from acab.abstract.parsing.dsl_builder import DSLBuilder
+from acab.abstract.interfaces.engine_interface import AcabEngine_Interface
+from acab.abstract.engine.module_loader import ModuleLoader
 from acab.abstract.engine.rewind_interface import RewindEngineInterface
-from acab.abstract.engine.util import EnsureDSLInitialised
-from acab.abstract.interfaces.dsl_interface import DSLBuilderInterface
-from acab.abstract.interfaces.printing_interfaces import PrintSemanticSystem
+from acab.abstract.interfaces.printing_interfaces import PrintSystem
 from acab.abstract.interfaces.semantic_interfaces import SemanticSystem
 from acab.error.acab_base_exception import AcabBaseException
 
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
 
+# Decorator for Engine:
+def EnsureDSLInitialised(method):
+    def fn(self, *args, **kwargs):
+        if not self.initialised:
+            raise AcabBaseException("DSL Not Initialised")
+
+        return method(self, *args, **kwargs)
+
+    fn.__name__ = method.__name__
+    return fn
+
 @dataclass
-class Engine(RewindEngineInterface, ModuleLoaderInterface, DSLBuilderInterface):
+class AcabBasicEngine(AcabEngine_Interface):
     """ The Abstract class of a production system engine. """
-
-    # TODO add initialisation control of sem system
-    _working_memory : SemanticSystem      = field()
-    _printer        : PrintSemanticSystem = field()
-    init_strs       : List[str]           = field(default_factory=list)
-    load_paths      : List[str]           = field(default_factory=list)
-
     # Blocks engine use until build_DSL has been called:
-    initialised     : bool               = field(init=False, default=False)
-    _cached_bindings : List[Any]         = field(init=False, default_factory=list)
+    _cached_bindings : List[Any]    = field(init=False, default_factory=list)
 
     def __post_init__(self):
         # initialise modules
+        self._module_loader = ModuleLoader()
         if bool(self.modules):
-            self.load_modules(*self.modules)
+            self._module_loader.load_modules(*self.modules)
 
         # Initialise DSL
-        self.build_DSL()
+        self._dsl_builder = DSLBuilder(self.parser)
+        self._dsl_builder.build_DSL(self._module_loader.loaded_modules.values())
 
         # Now Load Text files:
-        if bool(self.load_paths):
-            for x in self.load_paths:
-                self.load_file(x)
-
-
+        for x in self.load_paths:
+            self.load_file(x)
 
     @property
     def bindings(self):
@@ -90,13 +93,13 @@ class Engine(RewindEngineInterface, ModuleLoaderInterface, DSLBuilderInterface):
 
         return True
 
-    def save_file(self, filename:str, printer:PrintSemanticSystem=None):
+    def save_file(self, filename:str, printer:PrintSystem=None):
         """ Dump the content of the kb to a file to reload later """
         assert(exists(split(abspath(expanduser(filename)))[0]))
         if printer is None:
-            printer = self._printer
+            printer = self.printer
 
-        as_sentences = self._working_memory.to_sentences()
+        as_sentences = self.semantics.to_sentences()
         as_strings = printer.pprint(*as_sentences)
         with open(abspath(expanduser(filename)), 'w') as f:
             f.write(as_strings)
@@ -105,7 +108,7 @@ class Engine(RewindEngineInterface, ModuleLoaderInterface, DSLBuilderInterface):
     def insert(self, s: str):
         """ Assert a new fact into the engine """
         data = self._main_parser.parseString(s)
-        self._working_memory(data)
+        self.semantics(data)
 
 
     @EnsureDSLInitialised
@@ -113,7 +116,7 @@ class Engine(RewindEngineInterface, ModuleLoaderInterface, DSLBuilderInterface):
         """ Ask a question of the working memory """
         data = self._query_parser.parseString(s)
         # TODO ensure instruction is a query?
-        result = self._working_memory(data, ctxs=ctxs)
+        result = self.semantics(data, ctxs=ctxs)
         if cache:
             self._cached_bindings = result
         return result
@@ -130,12 +133,12 @@ class Engine(RewindEngineInterface, ModuleLoaderInterface, DSLBuilderInterface):
             thing = [thing]
 
         if isinstance(thing, list) and all([isinstance(x, str) for x in thing]):
-            result = [self._working_memory(x) for x in thing]
+            result = [self.semantics(x) for x in thing]
         else:
             assert(isinstance(thing, ProductionContainer))
             logging.info("Running thing: {}".format(thing))
             # TODO pass instruction to sem system
-            result = self._working_memory(thing, ctxs=bindings)
+            result = self.semantics(thing, ctxs=bindings)
 
         if not bool(result):
             logging.info("Thing Failed")
@@ -149,4 +152,4 @@ class Engine(RewindEngineInterface, ModuleLoaderInterface, DSLBuilderInterface):
         All statements are output as leaves,
         and all paths with non-leaf statements convert to simple formats
         """
-        return self._working_memory.to_sentences()
+        return self.semantics.to_sentences()
