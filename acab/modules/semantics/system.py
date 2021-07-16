@@ -9,7 +9,6 @@ from dataclasses import dataclass, field, InitVar
 
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.interfaces.semantic_interfaces import (SemanticSystem,
-                                                          SemanticRetrievedPair,
                                                           AbstractionSemantics)
 from acab.error.acab_semantic_exception import AcabSemanticException
 from acab.modules.semantics.context_container import ContextContainer
@@ -28,7 +27,7 @@ class BasicSemanticSystem(SemanticSystem):
 
         semantics, struct = None, None
         try:
-            semantics, struct = self.retrieve(instruction, data=data, override=override)
+            semantics, struct = self.lookup(instruction, data=data, override=override)
             assert(semantics is not None)
             self._run_entry_hooks(semantics, struct, instruction, ctxs, data)
             # run the semantics
@@ -47,21 +46,6 @@ class BasicSemanticSystem(SemanticSystem):
             self._run_exit_hooks(semantics, struct, instruction, ctxs, data)
 
         return ctxs
-
-    def retrieve(self, target: Sentence, data=None, override=None) -> SemanticRetrievedPair:
-        # Todo replace this with sieve similar to print semantics
-        if override is not None: # TODO
-            lookup_key = override
-        else:
-            lookup_key = self.key(target, data=data)
-        semantics  = self.base
-        struct     = self.base_struct
-        if lookup_key in self.mapping:
-            semantics = self.mapping[lookup_key]
-        if lookup_key in self.structs:
-            struct = self.structs[lookup_key]
-
-        return (semantics, struct)
 
 
 @dataclass

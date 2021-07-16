@@ -43,14 +43,14 @@ class BreadthTrieSemantics(SI.DependentSemantics):
             return self._delete(struct, sen, data)
 
         # Get the root
-        current = self.base.up(struct.root)
+        current = self.default[0].up(struct.root)
         for word in sen:
-            semantics = self.retrieve(current)
+            semantics, _ = self.lookup(current)
             accessible = semantics.access(current, word, data)
             if bool(accessible):
                 current = accessible[0]
             else:
-                next_semantics = self.retrieve(word)
+                next_semantics, _ = self.lookup(word)
                 new_node = next_semantics.make(word, data)
                 struct.components['all_nodes'][new_node.uuid] = new_node
                 current = semantics.insert(current, new_node, data)
@@ -63,7 +63,7 @@ class BreadthTrieSemantics(SI.DependentSemantics):
 
         for word in sen:
             # Get independent semantics for current
-            semantics = self.retrieve(current)
+            semantics, _ = self.lookup(current)
             accessed = semantics.access(current, word, data)
             if bool(accessed):
                 parent = current
@@ -73,7 +73,7 @@ class BreadthTrieSemantics(SI.DependentSemantics):
 
         # At leaf:
         # remove current from parent
-        semantics = self.retrieve(parent)
+        semantics, _ = self.lookup(parent)
         semantics.remove(parent, current.value, data)
 
 
@@ -91,7 +91,7 @@ class BreadthTrieSemantics(SI.DependentSemantics):
         with ctxs(struct.root, sen, data, collapse_vars, negated_query):
             for word in sen:
                 for ctxInst in ctxs.active_list(clear=True):
-                    indep = self.retrieve(ctxInst._current)
+                    indep, _ = self.lookup(ctxInst._current)
                     search_word = word
                     get_all = False
                     # Handle variable:
@@ -121,7 +121,7 @@ class BreadthTrieSemantics(SI.DependentSemantics):
         while bool(queue):
             path, current = queue.pop(0)
             updated_path = path + [current.value]
-            semantics = self.retrieve(current)
+            semantics, _ = self.lookup(current)
             accessible = semantics.access(current, None, data, get_all=True)
             if bool(accessible):
                 # branch
@@ -157,20 +157,20 @@ class FSMSemantics(SI.DependentSemantics):
             return self._delete(struct, sen, data, engine)
 
         # Get the root
-        root = self.base.up(struct.root)
+        root = self.default[0].up(struct.root)
         current = root
-        root_semantics = self.retrieve(root.value)
+        root_semantics, _ = self.lookup(root.value)
         for word in sen:
             new_node = None
             root_accessible = root_semantics.access(root, word, data)
             if not bool(root_accessible):
-                next_semantics = self.retrieve(word)
+                next_semantics, _ = self.lookup(word)
                 new_node = next_semantics.make(word, data)
                 root_semantics.insert(root, word, data)
             else:
                 new_node = root_accessible[0]
 
-            current_semantics = self.retrieve(current)
+            current_semantics, _ = self.lookup(current)
             current_accessible = current_semantics.access(current, new_node, data)
             if not bool(current_accessible):
                 current = current_semantics.insert(current, new_node, data)
@@ -213,7 +213,7 @@ class FSMSemantics(SI.DependentSemantics):
         with ctxs(struct.root, sen[0], data, collapse_vars, negated_query):
             for word in sen:
                 for ctxInst in ctxs.active_list():
-                    indep = self.retrieve(ctxInst.current)
+                    indep, _ = self.lookup(ctxInst.current)
                     results = indep.access(ctxInst.current, word, data)
                     if not bool(results):
                         ctxs.fail(ctxInst, word, None)
@@ -228,12 +228,12 @@ class FSMSemantics(SI.DependentSemantics):
         remove each word in the sentence from its prior
         """
         root = struct.root
-        root_sem = self.retrieve(root.value)
+        root_sem, _ = self.lookup(root.value)
         current = None
         for head,succ in zip(sen[:-1], sen[1:]):
             if root_sem.access(root, head, data):
                 head_node = root_sem.get(root, head, data)
-                head_sem = self.retrieve(head_node.value)
+                head_sem, _ = self.lookup(head_node.value)
                 head_sem.delete(head_node, succ, data)
                 current = head_node
 
@@ -289,14 +289,14 @@ class DepthTrieSemantics(SI.DependentSemantics):
 
         # Get the root
         # TODO: Ensure the struct is appropriate
-        current = self.base.up(struct.root)
+        current = self.default[0].up(struct.root)
         for word in sen:
-            semantics = self.retrieve(current)
+            semantics, _ = self.lookup(current)
             accessible = semantics.access(current, word, data)
             if bool(accessible):
                 current = accessible[0]
             else:
-                next_semantics = self.retrieve(word)
+                next_semantics, _ = self.lookup(word)
                 new_node = next_semantics.make(word, data)
                 current = semantics.insert(current, new_node, data)
 
@@ -309,7 +309,7 @@ class DepthTrieSemantics(SI.DependentSemantics):
 
         for word in sen:
             # Get independent semantics for current
-            semantics = self.retrieve(current)
+            semantics, _ = self.lookup(current)
             accessed = semantics.access(current, word, data)
             if bool(accessed):
                 parent = current
@@ -319,7 +319,7 @@ class DepthTrieSemantics(SI.DependentSemantics):
 
         # At leaf:
         # remove current from parent
-        semantics = self.retrieve(parent)
+        semantics, _ = self.lookup(parent)
         semantics.remove(parent, current.value, data)
 
         return current
@@ -346,7 +346,7 @@ class DepthTrieSemantics(SI.DependentSemantics):
 
                     while bool(remaining_sen):
                         word = remaining_sen.pop(0)
-                        indep = self.retrieve(currentInst._current)
+                        indep, _ = self.lookup(currentInst._current)
                         search_word = word
                         get_all = False
                         # Handle variable:
