@@ -95,7 +95,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                                 Printers.ConstraintAwareValuePrinter("_:ATOM"),
                                                 Printers.ProductionComponentPrinter("_:COMPONENT"),
                                                 Printers.ConfigBackedSymbolPrinter("_:SYMBOL"),
-                                                Printers.ContainerPrinter("_:CONTAINER"),
+                                                Printers.ImplicitContainerPrinter("_:CONTAINER"),
                                                 Printers.PrimitiveTypeAwarePrinter("_:NO_MODAL")],
                               structs=[],
                               settings={"MODAL": "exop"})
@@ -112,7 +112,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
         sem_sys = PrintSystem(handlers=[Printers.BasicSentenceAwarePrinter("_:SENTENCE"),
                                         Printers.ConstraintAwareValuePrinter("_:ATOM"),
                                         Printers.ProductionComponentPrinter("_:COMPONENT"),
-                                        Printers.ContainerPrinter("_:CONTAINER"),
+                                        Printers.ImplicitContainerPrinter("_:IMPLICIT_CONTAINER"),
                                         Printers.StructurePrinter("_:STRUCTURE"),
                                         Printers.ConfigBackedSymbolPrinter("_:SYMBOL"),
                                         Printers.PrimitiveTypeAwarePrinter("_:NO_MODAL")],
@@ -131,7 +131,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
         sem_sys = PrintSystem(handlers=[Printers.BasicSentenceAwarePrinter("_:SENTENCE"),
                                         Printers.ConstraintAwareValuePrinter("_:ATOM"),
                                         Printers.ProductionComponentPrinter("_:COMPONENT"),
-                                        Printers.ContainerPrinter("_:CONTAINER"),
+                                        Printers.ImplicitContainerPrinter("_:IMPLICIT_CONTAINER"),
                                         Printers.StructurePrinter("_:STRUCTURE"),
                                         Printers.ConfigBackedSymbolPrinter("_:SYMBOL"),
                                         Printers.PrimitiveTypeAwarePrinter("_:NO_MODAL")
@@ -159,11 +159,10 @@ class PrintStructureSemanticTests(unittest.TestCase):
         sem_sys = PrintSystem(handlers=[Printers.BasicSentenceAwarePrinter("_:SENTENCE"),
                                         Printers.ConstraintAwareValuePrinter("_:ATOM"),
                                         Printers.ProductionComponentPrinter("_:COMPONENT"),
-                                        # Printers.ContainerPrinter("_:CONTAINER"),
+                                        Printers.ExplicitContainerPrinter("_:CONTAINER"),
                                         Printers.StructurePrinter("_:STRUCTURE"),
                                         Printers.ConfigBackedSymbolPrinter("_:SYMBOL"),
                                         Printers.PrimitiveTypeAwarePrinter("_:NO_MODAL"),
-                                        Printers.StatementPrinter("_:STATEMENT")
                                         ],
                               structs=[],
                               settings={"MODAL": "exop"})
@@ -178,17 +177,16 @@ class PrintStructureSemanticTests(unittest.TestCase):
 
         self.assertIsInstance(query[-1], ProductionContainer)
         result = sem_sys.pprint(query)
-        self.assertEqual(result, """test.statement: (::γ)\n a.b.c?\nd.e.f?\ng.h.e?\n\nend""")
+        self.assertEqual(result, """test.statement: (::query)\na.b.c?\nd.e.f?\ng.h.e?\n\nend""")
 
     def test_transform_statement(self):
         sem_sys = PrintSystem(handlers=[Printers.BasicSentenceAwarePrinter("_:SENTENCE"),
                                         Printers.ConstraintAwareValuePrinter("_:ATOM"),
                                         Printers.ProductionComponentPrinter("_:COMPONENT"),
-                                        # Printers.ContainerPrinter("_:CONTAINER"),
+                                        Printers.ExplicitContainerPrinter("_:CONTAINER"),
                                         Printers.StructurePrinter("_:STRUCTURE"),
                                         Printers.ConfigBackedSymbolPrinter("_:SYMBOL"),
                                         Printers.PrimitiveTypeAwarePrinter("_:NO_MODAL"),
-                                        Printers.StatementPrinter("_:STATEMENT")
                                         ],
                               structs=[],
                               settings={"MODAL": "exop"})
@@ -203,17 +201,17 @@ class PrintStructureSemanticTests(unittest.TestCase):
 
         self.assertIsInstance(query[-1], ProductionContainer)
         result = sem_sys.pprint(query)
-        self.assertEqual(result, """test.statement: (::τ)\nλa.b.c $x $y -> $z\nλq.c.d $z $x -> $a\nλa.b.c $a $y -> $c\n\nend""")
+        self.assertEqual(result, """test.statement: (::transform)\nλa.b.c $x $y -> $z\nλq.c.d $z $x -> $a\nλa.b.c $a $y -> $c\n\nend""")
 
     def test_action_statement(self):
         sem_sys = PrintSystem(handlers=[Printers.BasicSentenceAwarePrinter("_:SENTENCE"),
                                         Printers.ConstraintAwareValuePrinter("_:ATOM"),
                                         Printers.ProductionComponentPrinter("_:COMPONENT"),
-                                        #Printers.ContainerPrinter("_:CONTAINER"),
+                                        Printers.ExplicitContainerPrinter("_:CONTAINER"),
+                                        Printers.ImplicitContainerPrinter("_:IMPLICIT_CONTAINER"),
                                         Printers.StructurePrinter("_:STRUCTURE"),
                                         Printers.ConfigBackedSymbolPrinter("_:SYMBOL"),
                                         Printers.PrimitiveTypeAwarePrinter("_:NO_MODAL"),
-                                        Printers.StatementPrinter("_:STATEMENT")
                                         ],
                               structs=[],
                               settings={"MODAL": "exop"})
@@ -229,4 +227,4 @@ class PrintStructureSemanticTests(unittest.TestCase):
         self.assertIsInstance(query[-1], ProductionContainer)
 
         result = sem_sys.pprint(query)
-        self.assertEqual(result, """test.statement: (::α)\nλa.b.c $x\nλa.b.c.d $x $y\nλa.b.c.d.e $x $y $z\n\nend""")
+        self.assertEqual(result, """test.statement: (::action)\nλa.b.c $x\nλa.b.c.d $x $y\nλa.b.c.d.e $x $y $z\n\nend""")

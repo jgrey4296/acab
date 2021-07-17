@@ -146,18 +146,19 @@ class ProductionComponentPrinter(PrintSemantics):
 
 
 # Abstraction
-class ContainerPrinter(PrintSemantics):
+class ImplicitContainerPrinter(PrintSemantics):
     """ Production Containers """
 
     def __call__(self, value, top=None):
         return PW._sep_list(self, value, value.clauses, sep="\n")
-class StatementPrinter(PrintSemantics):
+class ExplicitContainerPrinter(PrintSemantics):
+    """ Production Containers """
 
     def __call__(self, value, top=None):
         result = []
         result.append(value.name)
         result.append(":")
-        result += ["(", "::"]
+        result += [" ", "(", "::"]
         if DS.SEMANTIC_HINT in value.data:
             result += [value.data[DS.SEMANTIC_HINT], ")"]
         else:
@@ -179,6 +180,7 @@ class StructurePrinter(PrintSemantics):
         # print the name
         result.append(top.override("_:NO_MODAL", value))
         result.append(":")
+        # TODO parameterise this
         result += ["(", "::", "ρ", ")"]
         result.append(DSYM.CONTAINER_JOIN_P)
         for tag in value.tags:
@@ -190,17 +192,17 @@ class StructurePrinter(PrintSemantics):
             result.append(DSYM.CONTAINER_JOIN_P)
 
         if bool(value.structure[DS.QUERY_COMPONENT]):
-            result += value.structure[DS.QUERY_COMPONENT]
+            result.append(top.override("_:IMPLICIT_CONTAINER", value.structure[DS.QUERY_COMPONENT]))
             result.append(DSYM.CONTAINER_JOIN_P)
             result.append(DSYM.CONTAINER_JOIN_P)
 
         if bool(value.structure[DS.TRANSFORM_COMPONENT]):
-            result += value.structure[DS.TRANSFORM_COMPONENT]
+            result.append(top.override("_:IMPLICIT_CONTAINER", value.structure[DS.TRANSFORM_COMPONENT]))
             result.append(DSYM.CONTAINER_JOIN_P)
             result.append(DSYM.CONTAINER_JOIN_P)
 
         if bool(value.structure[DS.ACTION_COMPONENT]):
-            result += value.structure[DS.ACTION_COMPONENT]
+            result.append(top.override("_:IMPLICIT_CONTAINER", value.structure[DS.ACTION_COMPONENT]))
             result.append(DSYM.CONTAINER_JOIN_P)
             result.append(DSYM.CONTAINER_JOIN_P)
 
