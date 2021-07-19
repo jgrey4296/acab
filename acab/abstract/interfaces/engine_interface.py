@@ -3,6 +3,7 @@ from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic
 
+from os.path import abspath, exists, expanduser, split
 import abc
 from dataclasses import dataclass, field
 
@@ -10,6 +11,18 @@ from acab.abstract.interfaces.dsl_interface import DSL_Interface, DSLBuilder_Int
 from acab.abstract.interfaces.semantic_interfaces import SemanticSystem
 from acab.abstract.interfaces.printing_interfaces import PrintSystem
 from acab.abstract.interfaces.module_loader_interface import ModuleLoader_Interface
+
+
+# Decorator for Engine:
+def EnsureInitialised(method):
+    def fn(self, *args, **kwargs):
+        if not self.initialised:
+            raise AcabBaseException("DSL Not Initialised")
+
+        return method(self, *args, **kwargs)
+
+    fn.__name__ = method.__name__
+    return fn
 
 @dataclass
 class AcabEngine_Interface(metaclass=abc.ABCMeta):
@@ -30,16 +43,53 @@ class AcabEngine_Interface(metaclass=abc.ABCMeta):
     _dsl_builder   : DSLBuilder_Interface   = field(init=False)
     _module_loader : ModuleLoader_Interface = field(init=False)
 
-    @abc.abstractmethod
-    def load_file(self, filename):
-        # TODO doesn't need to be abstract?
-        pass
+    @EnsureInitialised
+    def load_file(self, filename) -> bool:
+        """ Given a filename, read it, and interpret it as an EL DSL string """
+        assert(isinstance(filename, str))
+        filename = abspath(expanduser(filename))
+        logging.info("Loading: {}".format(filename))
+        assert exists(filename), filename
+        with open(filename) as f:
+            # everything should be an assertion
+            try:
+                assertions = self._dsl_builder.parseFile(f)
+            except pp.ParseException as exp:
+                print("-----")
+                print(str(exp))
+                print(exp.markInputline())
+                print("File Not Asserted into WM")
+                return False
 
-    @abc.abstractmethod
-    def save_file(self, filename: str, printer=None):
-        # TODO doesn't need to be abstract?
-        pass
+            # Assert facts:
+            for x in assertions:
+                logging.info("File load assertions: {}".format(x))
+                self.add(x)
 
+        return True
+
+    def save_file(self, filename:str, printer:PrintSystem=None):
+        """ Dump the content of the kb to a file to reload later """
+        assert(exists(split(abspath(expanduser(filename)))[0]))
+        if printer is None:
+            printer = self.printer
+
+        as_sentences = self.semantics.to_sentences()
+        as_strings = printer.pprint(*as_sentences)
+
+        with open(abspath(expanduser(filename)), 'w') as f:
+            f.write(as_strings)
+
+
+
+    def to_sentences(self):
+        """
+        Triggers the working memory to produce a full accounting,
+        in canonical style (able to be used by typechecker)
+        All statements are output as leaves,
+        and all paths with non-leaf statements convert to simple formats
+        """
+        return self.semantics.to_sentences()
     @abc.abstractmethod
     def __call__(self, thing, bindings=None):
         pass
