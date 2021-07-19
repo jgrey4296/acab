@@ -93,7 +93,7 @@ class HandlerSystemInterface(metaclass=abc.ABCMeta):
         if new_target not in self.registered_handlers:
             raise AcabBaseException(f"Undefined override handler: {new_target}")
 
-        return HandlerSystemInterface.PrintOverride(new_target, value)
+        return HandlerSystemInterface.HandlerOverride(new_target, value)
     @abc.abstractmethod
     def __call__(self, *args):
         pass
