@@ -32,7 +32,7 @@ class PrintSystem(HandlerSystemInterface):
 
     _default_sieve       : ClassVar[List[Callable]] = [
         # override tuple : 1 -> 1 : any
-        lambda x              : x.override if isinstance(x, PrintSystem.PrintOverride) else None,
+        lambda x              : x.override if isinstance(x, PrintSystem.HandlerOverride) else None,
         # symbol         : m -> m : any
         lambda x              : "_:SYMBOL" if isinstance(x, ConfigSpec) else None,
         # enum
@@ -54,14 +54,6 @@ class PrintSystem(HandlerSystemInterface):
         lambda x              : "_:ATOM" if isinstance(x, ValueInterface) else None
     ]
 
-    @dataclass
-    class PrintOverride:
-        """ Simple Wrapped for forced semantic use """
-        override : str              = field()
-        data     : 'ValueInterface' = field()
-    #----------------------------------------
-
-
 
     def __post_init__(self, handlers, structs):
         super().__post_init__(handlers, structs)
@@ -75,13 +67,6 @@ class PrintSystem(HandlerSystemInterface):
 
         return None
 
-    def override(self, new_target: str, value) -> 'PrintOverride':
-        if new_target not in self.registered_handlers:
-            raise AcabPrintException(f"Undefined override handler: {new_target}")
-
-        return PrintSystem.PrintOverride(new_target, value)
-
-
     def pprint(self, *args) -> str:
         # TODO add default join symbol
         remaining = list(args[:])
@@ -93,7 +78,7 @@ class PrintSystem(HandlerSystemInterface):
                 result += current
             elif isinstance(current, list):
                 remaining = current + remaining
-            elif isinstance(current, PrintSystem.PrintOverride):
+            elif isinstance(current, HandlerSystemInterface.HandlerOverride):
                 handler = self.registered_handlers[current.override]
                 current = current.data
             else:

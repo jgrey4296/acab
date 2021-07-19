@@ -6,6 +6,8 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
+from acab.error.acab_base_exception import AcabBaseException
+
 logging = root_logger.getLogger(__name__)
 
 Structure      = 'AcabStruct'
@@ -13,6 +15,7 @@ Handler        = 'HandlerComponent'
 ValueInterface = 'ValueInterface'
 Sentence       = 'Sentence'
 HandlerTuple   = Tuple[Handler, Optional[Structure]]
+Overrider      = 'HandlerOverride'
 
 @dataclass
 class HandlerSystemInterface(metaclass=abc.ABCMeta):
@@ -27,6 +30,13 @@ class HandlerSystemInterface(metaclass=abc.ABCMeta):
 
     # TODO Make this a classvar
     _default_sieve : ClassVar[List[Callable]] = []
+
+    @dataclass
+    class HandlerOverride:
+        """ Simple Wrapped for forced semantic use """
+        override : str              = field()
+        data     : ValueInterface   = field()
+
 
     def __post_init__(self, handlers, structs):
         # TODO init any semantics or structs passed in as Class's
@@ -76,9 +86,14 @@ class HandlerSystemInterface(metaclass=abc.ABCMeta):
             return (handler, struct)
 
         # Final resort
-        logging.warning(f"Resorting to default handler for: {value}")
+        logging.debug(f"Resorting to default handler for: {value}")
         return self.default
 
+    def override(self, new_target: str, value) -> Overrider:
+        if new_target not in self.registered_handlers:
+            raise AcabBaseException(f"Undefined override handler: {new_target}")
+
+        return HandlerSystemInterface.PrintOverride(new_target, value)
     @abc.abstractmethod
     def __call__(self, *args):
         pass

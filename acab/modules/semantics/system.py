@@ -1,52 +1,70 @@
 #!/usr/bin/env python3
 # Main System
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
-
-from dataclasses import dataclass, field, InitVar
+import logging as root_logger
+from dataclasses import InitVar, dataclass, field
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
 
 from acab.abstract.config.config import AcabConfig
-from acab.abstract.interfaces.semantic_interfaces import (SemanticSystem,
-                                                          AbstractionSemantics)
+from acab.abstract.interfaces.semantic_interfaces import (AbstractionSemantics,
+                                                          SemanticSystem)
 from acab.error.acab_semantic_exception import AcabSemanticException
 from acab.modules.semantics.context_container import ContextContainer
 
+
+logging = root_logger.getLogger(__name__)
+
+
 Sentence = 'Sentence'
 config  = AcabConfig.Get()
+
+SEM_HINT = config.prepare("Value.Structure", "SEMANTIC_HINT")()
 
 @dataclass
 class BasicSemanticSystem(SemanticSystem):
     """ A Complete semantic system """
 
-    def __call__(self, instruction, data=None, override=None, ctxs=None) -> Any:
+    _default_sieve : ClassVar[List[Callable]] = [
+        lambda x: x.override if isinstance(x, SemanticSystem.HandlerOverride) else None,
+        lambda x: x.data[SEM_HINT] if SEM_HINT in x.data else None,
+        lambda x: x.type
+    ]
+
+    def __call__(self, instruction, ctxs=None) -> Any:
         """ Perform an instruction by mapping it to a semantics """
         if ctxs is None: # TODO: finish this
             ctxs = ContextContainer.build()
 
         semantics, struct = None, None
         try:
-            semantics, struct = self.lookup(instruction, data=data, override=override)
+            semantics, struct = self.lookup(instruction)
             assert(semantics is not None)
-            self._run_entry_hooks(semantics, struct, instruction, ctxs, data)
             # run the semantics
             # Abstractions don't use structs
+            # TODO entry hooks would go here.
             if isinstance(semantics, AbstractionSemantics):
-                semantics(instruction, ctxs, self, data=data)
+                assert(struct is None)
+                semantics(instruction, ctxs, self)
             else:
                 # but dependent semantics do
                 assert(struct is not None)
-                semantics(struct, instruction, data=data, ctxs=ctxs)
+
+                breakpoint()
+                semantics(struct, instruction, ctxs=ctxs)
         except AcabSemanticException as err:
             # Semantic exceptions can be handled,
             # but others continue upwards
-            self.failure(semantics, struct, instruction, ctxs, data, err)
+            # self.failure(semantics, struct, instruction, ctxs, err)
+            logging.warning("Semantic Failure: {}".format(err))
         finally: # Always run exit hooks
-            self._run_exit_hooks(semantics, struct, instruction, ctxs, data)
+            # TODO exit hooks would go here
+            pass
 
         return ctxs
 
+    def to_sentences(self) -> List[Sentence]:
+        return []
 
 @dataclass
 class GuaranteeSemanticSystem(SemanticSystem):
