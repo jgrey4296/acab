@@ -35,7 +35,6 @@ class DSL_Fragment_Tests(unittest.TestCase):
     def test_dsl_fragment_init(self):
         pass
 
-    # parse string
-    # register_printers
-    # init strings
     # assert/query parsers
+    # parse
+    # test dsl_builder

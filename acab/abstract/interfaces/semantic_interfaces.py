@@ -52,6 +52,9 @@ class SemanticSystem(HandlerSystemInterface):
     Map Instructions to Abstraction/Dependent Semantics
     """
     # TODO possibly re-add hooks / failure handling
+    @abc.abstractmethod
+    def to_sentences(self) -> List[Sentence]:
+        pass
 
 @dataclass
 class DependentSemantics(SemanticSystem, HandlerComponent):

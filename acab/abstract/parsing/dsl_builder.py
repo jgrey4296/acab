@@ -7,8 +7,9 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
+from acab.abstract.interfaces.dsl_interface import (DSL_Interface,
+                                                    DSLBuilder_Interface)
 from acab.abstract.parsing.trie_bootstrapper import TrieBootstrapper
-from acab.abstract.interfaces.dsl_interface import DSLBuilder_Interface
 
 Bootstrapper = 'Bootstrapper'
 
@@ -29,7 +30,7 @@ class DSLBuilder(DSLBuilder_Interface):
 
     _bootstrap_parser: Bootstrapper = field(default_factory=TrieBootstrapper)
 
-    def construct_parsers_from_fragments(self, fragments):
+    def construct_parsers_from_fragments(self, fragments:List[DSL_Interface]):
         """ Assemble parsers from the fragments of the wm and loaded modules """
         assert(all([isinstance(x, DSL_Interface) for x in fragments]))
 

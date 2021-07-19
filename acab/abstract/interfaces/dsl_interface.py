@@ -13,6 +13,7 @@ from acab.error.acab_base_exception import AcabBaseException
 Parser           = "Parser"
 Sentence         = 'Sentence'
 ModuleComponents = "ModuleComponents"
+File             = 'FileObj'
 
 #--------------------
 class Bootstrapper(metaclass=abc.ABCMeta):
@@ -79,7 +80,7 @@ class DSL_Interface(metaclass=abc.ABCMeta):
 #--------------------------------------------------
 @dataclass
 class DSLBuilder_Interface(metaclass=abc.ABCMeta):
-    root_fragment        : DSL_Interface   = field(default=None)
+    root_fragment        : DSL_Interface   = field()
 
     _bootstrap_parser    : Bootstrapper     = field(init=False)
     _main_parser         : Parser           = field(init=False)
@@ -102,6 +103,11 @@ class DSLBuilder_Interface(metaclass=abc.ABCMeta):
     def parse(self, s:str) -> List[Sentence]:
         return self._main_parser.parseString(s)
 
+    def parseFile(self, f:File) -> List[Sentence]:
+        return self._main_parser.parseFile(f)
+
+    def query_parse(self, s:str) -> List[Sentence]:
+        return self._query_parser.parseString(s)
     @abc.abstractmethod
     def construct_parsers_from_fragments(self, fragments: List[DSL_Interface]):
         """ Assemble parsers from the fragments of the wm and loaded modules """
