@@ -158,11 +158,6 @@ class ExplicitContainerPrinter(PrintSemantics):
         result = []
         result.append(value.name)
         result.append(":")
-        result += [" ", "(", "::"]
-        if DS.SEMANTIC_HINT in value.data:
-            result += [value.data[DS.SEMANTIC_HINT], ")"]
-        else:
-            result += [value.type, ")"]
         result.append(DSYM.CONTAINER_JOIN_P)
         result.append(PW._wrap_var_list(self, value.type, []))
         result.append([[x, DSYM.CONTAINER_JOIN_P] for x in  value.value])
