@@ -6,119 +6,146 @@ python -> acab : import acab
 python -> acab : acab.setup()
 acab -> config : load config files
 config -> ModalConfig : load file modal config
-config -> acab : return singleton
-acab -> python : return singleton
+config -> python: return singleton
 python ->[ : ready to use acab
 #+end_src
 
 #+RESULTS: Initialisation
 #+begin_example
-               ┌──────┐           ┌────┐            ┌──────┐             ┌───────────┐
-               │python│           │acab│            │config│             │ModalConfig│
-               └──┬───┘           └─┬──┘            └──┬───┘             └─────┬─────┘
-                  │   import acab   │                  │                       │
-                  │ ────────────────>                  │                       │
-                  │                 │                  │                       │
-                  │   acab.setup()  │                  │                       │
-                  │ ────────────────>                  │                       │
-                  │                 │                  │                       │
-                  │                 │ load config files│                       │
-                  │                 │ ─────────────────>                       │
-                  │                 │                  │                       │
-                  │                 │                  │ load file modal config│
-                  │                 │                  │ ──────────────────────>
-                  │                 │                  │                       │
-                  │                 │ return singleton │                       │
-                  │                 │ <─────────────────                       │
-                  │                 │                  │                       │
-                  │ return singleton│                  │                       │
-                  │ <────────────────                  │                       │
-                  │                 │                  │                       │
- ready to use acab│                 │                  │                       │
- <─────────────────                 │                  │                       │
-               ┌──┴───┐           ┌─┴──┐            ┌──┴───┐             ┌─────┴─────┐
-               │python│           │acab│            │config│             │ModalConfig│
-               └──────┘           └────┘            └──────┘             └───────────┘
+               ┌──────┐          ┌────┐            ┌──────┐             ┌───────────┐
+               │python│          │acab│            │config│             │ModalConfig│
+               └──┬───┘          └─┬──┘            └──┬───┘             └─────┬─────┘
+                  │   import acab  │                  │                       │
+                  │ ───────────────>                  │                       │
+                  │                │                  │                       │
+                  │  acab.setup()  │                  │                       │
+                  │ ───────────────>                  │                       │
+                  │                │                  │                       │
+                  │                │ load config files│                       │
+                  │                │ ─────────────────>                       │
+                  │                │                  │                       │
+                  │                │                  │ load file modal config│
+                  │                │                  │ ──────────────────────>
+                  │                │                  │                       │
+                  │          return singleton         │                       │
+                  │ <──────────────────────────────────                       │
+                  │                │                  │                       │
+ ready to use acab│                │                  │                       │
+ <─────────────────                │                  │                       │
+               ┌──┴───┐          ┌─┴──┐            ┌──┴───┐             ┌─────┴─────┐
+               │python│          │acab│            │config│             │ModalConfig│
+               └──────┘          └────┘            └──────┘             └───────────┘
 #+end_example
 * Engine Construction
 #+NAME: Engine Construction
 #+begin_src plantuml :results value verbatim :preview t
-[-> python : Acab Initialised
-python -> acab : import [modules]
-python -> python : customize [modules]
-python -> acab.abstract.engine : init with [modules]
-acab.abstract.engine -> python : return engine instance
-python ->[ : ready for use
+[-> python                  : Acab Initialised
+python -> acab              : import [DSL/Semantics/Printer]
+python -> python            : customize [DSL/Semantics/Printer]
+python -> AcabEngine        : init with [RootDSL,RootSemantics,RootPrinter,modules]
+AcabEngine -> AcabEngine    : Import modules
+AcabEngine -> DSLBuilder    : Extend RootDSL
+AcabEngine -> RootSemantics : Extend Semantics+Operators
+AcabEngine -> RootPrinter   : Extend Semantics+Operators
+AcabEngine -> python        : return engine instance
+python ->[                  : ready for use
 #+end_src
 
 #+RESULTS: Engine Construction
 #+begin_example
-              ┌──────┐                  ┌────┐          ┌────────────────────┐
-              │python│                  │acab│          │acab.abstract.engine│
-              └──┬───┘                  └─┬──┘          └─────────┬──────────┘
- Acab Initialised│                        │                       │
- ────────────────>                        │                       │
-                 │                        │                       │
-                 │    import [modules]    │                       │
-                 │ ───────────────────────>                       │
-                 │                        │                       │
-                 │────┐                                           │
-                 │    │ customize [modules]                       │
-                 │<───┘                                           │
-                 │                        │                       │
-                 │               init with [modules]              │
-                 │ ───────────────────────────────────────────────>
-                 │                        │                       │
-                 │             return engine instance             │
-                 │ <───────────────────────────────────────────────
-                 │                        │                       │
-  ready for use  │                        │                       │
- <────────────────                        │                       │
-              ┌──┴───┐                  ┌─┴──┐          ┌─────────┴──────────┐
-              │python│                  │acab│          │acab.abstract.engine│
-              └──────┘                  └────┘          └────────────────────┘
+              ┌──────┐                                ┌────┐          ┌──────────┐          ┌──────────┐          ┌─────────────┐          ┌───────────┐
+              │python│                                │acab│          │AcabEngine│          │DSLBuilder│          │RootSemantics│          │RootPrinter│
+              └──┬───┘                                └─┬──┘          └────┬─────┘          └────┬─────┘          └──────┬──────┘          └─────┬─────┘
+ Acab Initialised│                                      │                  │                     │                       │                       │
+ ────────────────>                                      │                  │                     │                       │                       │
+                 │                                      │                  │                     │                       │                       │
+                 │    import [DSL/Semantics/Printer]    │                  │                     │                       │                       │
+                 │ ─────────────────────────────────────>                  │                     │                       │                       │
+                 │                                      │                  │                     │                       │                       │
+                 │────┐                                                    │                     │                       │                       │
+                 │    │ customize [DSL/Semantics/Printer]                  │                     │                       │                       │
+                 │<───┘                                                    │                     │                       │                       │
+                 │                                      │                  │                     │                       │                       │
+                 │  init with [RootDSL,RootSemantics,RootPrinter,modules]  │                     │                       │                       │
+                 │ ────────────────────────────────────────────────────────>                     │                       │                       │
+                 │                                      │                  │                     │                       │                       │
+                 │                                      │                  │────┐                │                       │                       │
+                 │                                      │                  │    │ Import modules │                       │                       │
+                 │                                      │                  │<───┘                │                       │                       │
+                 │                                      │                  │                     │                       │                       │
+                 │                                      │                  │    Extend RootDSL   │                       │                       │
+                 │                                      │                  │ ────────────────────>                       │                       │
+                 │                                      │                  │                     │                       │                       │
+                 │                                      │                  │         Extend Semantics+Operators          │                       │
+                 │                                      │                  │ ───────────────────────────────────────────>│                       │
+                 │                                      │                  │                     │                       │                       │
+                 │                                      │                  │                     Extend Semantics+Operators                      │
+                 │                                      │                  │ ───────────────────────────────────────────────────────────────────>│
+                 │                                      │                  │                     │                       │                       │
+                 │                  return engine instance                 │                     │                       │                       │
+                 │ <────────────────────────────────────────────────────────                     │                       │                       │
+                 │                                      │                  │                     │                       │                       │
+  ready for use  │                                      │                  │                     │                       │                       │
+ <────────────────                                      │                  │                     │                       │                       │
+              ┌──┴───┐                                ┌─┴──┐          ┌────┴─────┐          ┌────┴─────┐          ┌──────┴──────┐          ┌─────┴─────┐
+              │python│                                │acab│          │AcabEngine│          │DSLBuilder│          │RootSemantics│          │RootPrinter│
+              └──────┘                                └────┘          └──────────┘          └──────────┘          └─────────────┘          └───────────┘
 #+end_example
 
 * Parser Construction
 #+NAME: Parser Construction
 #+begin_src plantuml :results value verbatim :preview t
-[-> python : Acab Initialised
-python -> acab : import BootStrapParser
-python -> python : build [DSL_Interface] compliant classes: DSLs
-python -> DSLs : ∀dsl ∈ DSLs: dsl.assert_parsers(BootstrapParser)
-note right: register subparsers for other DSLs to use
-python -> DSLs : ∀dsl ∈ DSLs : dsl.query_parsers(BootstrapParser)
-note right: now connect DSLs together
-python ->[ : DSLs ready to use
-note left : typically there will be a root DSL
+[-> python               : Acab Initialised
+python -> python         : build root [DSL_Interface] compliant class
+python -> acab           : init DSLBuilder with rootDSL
+python -> python         : import DSLs
+python -> DSLBuilder     : build with [DSLs]
+DSLBuilder -> DSLBuilder : ∀dsl ∈ DSLs: dsl.assert_parsers(BootstrapParser)
+note left: register subparsers for other DSLs to use
+DSLBuilder -> DSLBuilder : ∀dsl ∈ DSLs : dsl.query_parsers(BootstrapParser)
+note left: now connect DSLs together
+DSLBuilder -> python     : return [ParserEntryPoint]
+python->[                : DSLs ready to use
 #+end_src
 
 #+RESULTS: Parser Construction
 #+begin_example
-               ┌──────┐                                            ┌────┐          ┌────┐
-               │python│                                            │acab│          │DSLs│
-               └──┬───┘                                            └─┬──┘          └─┬──┘
- Acab Initialised │                                                  │               │
- ─────────────────>                                                  │               │
-                  │                                                  │               │
-                  │              import BootStrapParser              │               │
-                  │ ─────────────────────────────────────────────────>               │
-                  │                                                  │               │
+               ┌──────┐                                         ┌────┐          ┌──────────┐
+               │python│                                         │acab│          │DSLBuilder│
+               └──┬───┘                                         └─┬──┘          └────┬─────┘
+ Acab Initialised │                                               │                  │
+ ─────────────────>                                               │                  │
+                  │                                               │                  │
                   │────┐                                                             │
-                  │    │ build [DSL_Interface] compliant classes: DSLs               │
+                  │    │ build root [DSL_Interface] compliant class                  │
                   │<───┘                                                             │
-                  │                                                  │               │
-                  │         ∀dsl ∈ DSLs: dsl.assert_parsers(BootstrapParser)         │  ╔═══════════════════════════════════════════╗
-                  │ ─────────────────────────────────────────────────────────────────>  ║register subparsers for other DSLs to use ░║
-                  │                                                  │               │  ╚═══════════════════════════════════════════╝
-                  │         ∀dsl ∈ DSLs : dsl.query_parsers(BootstrapParser)         │  ╔═══════════════════════════╗
-                  │ ─────────────────────────────────────────────────────────────────>  ║now connect DSLs together ░║
-                  │                                                  │               │  ╚═══════════════════════════╝
- DSLs ready to use│  ╔════════════════════════════════════╗          │               │
- <─────────────────  ║typically there will be a root DSL ░║          │               │
-               ┌──┴──╚════════════════════════════════════╝        ┌─┴──┐          ┌─┴──┐
-               │python│                                            │acab│          │DSLs│
-               └──────┘                                            └────┘          └────┘
+                  │                                               │                  │
+                  │          init DSLBuilder with rootDSL         │                  │
+                  │ ──────────────────────────────────────────────>                  │
+                  │                                               │                  │
+                  │────┐                                          │                  │
+                  │    │ import DSLs                              │                  │
+                  │<───┘                                          │                  │
+                  │                                               │                  │
+                  │                         build with [DSLs]     │                  │
+                  │ ─────────────────────────────────────────────────────────────────>
+                  │                                               │                  │
+                  │                     ╔═════════════════════════╧═════════════════╗│────┐
+                  │                     ║register subparsers for other DSLs to use ░║│    │ ∀dsl ∈ DSLs: dsl.assert_parsers(BootstrapParser)
+                  │                     ╚═════════════════════════╤═════════════════╝│<───┘
+                  │                                               │                  │
+                  │                                     ╔═════════╧═════════════════╗│────┐
+                  │                                     ║now connect DSLs together ░║│    │ ∀dsl ∈ DSLs : dsl.query_parsers(BootstrapParser)
+                  │                                     ╚═════════╤═════════════════╝│<───┘
+                  │                                               │                  │
+                  │                     return [ParserEntryPoint] │                  │
+                  │ <─────────────────────────────────────────────────────────────────
+                  │                                               │                  │
+ DSLs ready to use│                                               │                  │
+ <─────────────────                                               │                  │
+               ┌──┴───┐                                         ┌─┴──┐          ┌────┴─────┐
+               │python│                                         │acab│          │DSLBuilder│
+               └──────┘                                         └────┘          └──────────┘
 #+end_example
 
 * Engine Use
