@@ -88,7 +88,7 @@ class TrieBootstrapper(Bootstrapper):
 
             self._semantics.query(self._structure, q_sentence, ctxs=ctxs)
             if not bool(ctxs):
-                logging.warning(f"Parser Query Empty: {query}")
+                logging.debug(f"Parser Query Empty: {query}")
             else:
                 nodes = [x._current for x in ctxs.active_list()]
                 parsers = [x.data['parser'] for x in nodes if 'parser' in x.data]
@@ -96,7 +96,7 @@ class TrieBootstrapper(Bootstrapper):
 
         # Having found all parsers for the queries, join them and return
         if not bool(results):
-            logging.warning("Total Parser Query Empty: {}".format(" | ".join(queries)))
+            logging.debug("Total Parser Query Empty: {}".format(" | ".join(queries)))
             return pp.Empty()
         elif len(results) == 1:
             final_parser = results[0]
