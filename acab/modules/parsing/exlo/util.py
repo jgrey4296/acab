@@ -39,6 +39,16 @@ ACTION_COMPONENT    : str = config.prepare("Structure.Components", "ACTION")()
 
 RULE_PRIM           : str = config.prepare("Type.Primitive", "RULE")()
 
+RULE_HEAD        = config.prepare("Aliases", "RULE")()
+QUERY_HEAD       = config.prepare("Aliases", "QUERY")()
+TRANSFORM_HEAD   = config.prepare("Aliases", "TRANSFORM")()
+ACTION_HEAD      = config.prepare("Aliases", "ACTION")()
+FACT_HEAD        = config.prepare("Aliases", "FACT")()
+AGENDA_HEAD      = config.prepare("Aliases", "AGENDA")()
+LAYER_HEAD       = config.prepare("Aliases", "LAYER")()
+PIPE_HEAD        = config.prepare("Aliases", "PIPE")()
+COLLAPSE_CONTEXT = config.prepare("Aliases", "CTX_COLLAPSE")()
+
 QUERY_SEM_HINT     = Sentence.build([config.prepare("SEMANTICS", "QUERY")()])
 ACTION_SEM_HINT    = Sentence.build([config.prepare("SEMANTICS", "ACTION")()])
 TRANSFORM_SEM_HINT = Sentence.build([config.prepare("SEMANTICS", "TRANSFORM")()])
