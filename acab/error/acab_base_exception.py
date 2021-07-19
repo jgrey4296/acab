@@ -15,7 +15,4 @@ class AcabBaseException(Exception):
     rest    : List[Any] = field(default_factory=list)
 
     def __str__(self):
-        if bool(self.rest):
-            return f"{self.descr} : {self.detail} : {self.rest}"
-
-        return f"{self.descr} : {self.detail}"
+        return f"{self.detail} : {self.msg}"
