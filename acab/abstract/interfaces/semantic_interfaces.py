@@ -63,7 +63,7 @@ class DependentSemantics(SemanticSystem, HandlerComponent):
     and are built with specific mappings to independent semantics
     """
 
-    def __call__(self):
+    def __call__(self, struct, sen, ctxs=None, data=None):
         pass
 
     def to_sentences(self, struct, data=None, ctxs=None):
@@ -130,7 +130,7 @@ class AbstractionSemantics(HandlerComponent):
     def verify(self, instruction):
         pass
     @abc.abstractmethod
-    def __call__(self, instruction, ctxCon, semSys, data=None):
+    def __call__(self, instruction, semSys, ctxs=None, data=None):
         pass
 
 

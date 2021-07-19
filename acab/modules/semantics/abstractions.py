@@ -18,24 +18,26 @@ class QueryAbstraction(SI.AbstractionSemantics):
     """
     Very simply accumulate results of multiple sentences of queries
     """
-    def __call__(self, instruction, ctxCon, semSys, data=None):
+    def __call__(self, instruction, semSys, ctxs=None, data=None):
         query = instruction
+        # Get the default dependent semantics
+        sem, struct = semSys.lookup(None)
         for clause in query.clauses:
             # TODO ensure system selects the dep sems and struct
-            semSys(clause, data=data, ctxs=ctxCon)
+            sem.query(struct, clause, data=data, ctxs=ctxs)
 
 
 class TransformAbstraction(SI.AbstractionSemantics):
     """ Takes a context, returns a changed context """
-    def __call__(self, instruction, ctxCon, semSys, data=None):
+    def __call__(self, instruction, semSys, ctxs=None, data=None):
         # Note: run *all* the transform clauses at once,
         # To minimise redundent new ctxs
         # runs on a single active ctx
 
         # TODO: operators might actually come from semSys
-        operators   = ctxCon._operators
+        operators   = ctxs._operators
         transform   = instruction
-        for ctxIns in ctxCon.active_list(clear=True):
+        for ctxIns in ctxs.active_list(clear=True):
             # TODO make this a context manager?
             mutx = MutableContextInstance.build(ctxIns)
             for clause in transform.clauses:
@@ -46,15 +48,15 @@ class TransformAbstraction(SI.AbstractionSemantics):
 
             # bind ctx with results
             # TODO move this inside mutablecontextinstance
-            ctxCon.push(mutx.finish())
+            ctxs.push(mutx.finish())
 
 class ActionAbstraction(SI.AbstractionSemantics):
     """ *Consumes* a context, performing all actions in it """
-    def __call__(self, instruction, ctxCon, semSys, data=None):
-        operators = ctxCon._operators
+    def __call__(self, instruction, semSys, ctxs=None, data=None):
+        operators = ctxs._operators
         action    = instruction
 
-        for ctx in ctxCon.active_list(clear=True):
+        for ctx in ctxs.active_list(clear=True):
             for clause in action.clauses:
                 op     = operators[clause.op]
                 params = [ctx[x] for x in clause.params]
@@ -66,71 +68,71 @@ class ActionAbstraction(SI.AbstractionSemantics):
 class AtomicRuleAbstraction(SI.AbstractionSemantics):
     """ Run a rule in a single semantic call """
 
-    def __call__(self, instruction, ctxCon, semMap, data=None):
+    def __call__(self, instruction, semsys, ctxs=None, data=None):
         """ Rule Logic, returns action proposals """
-        # TODO Possibly setup a temp ctxCon
+        # TODO Possibly setup a temp ctxs
 
         rule = instruction
         # Run the query
         if DS.QUERY_COMPONENT in rule:
-            semMap(rule[DS.QUERY_COMPONENT], data=data, ctxs=ctxCon)
+            semsys(rule[DS.QUERY_COMPONENT], ctxs=ctxs)
 
-        if not bool(ctxCon):
+        if not bool(ctxs):
             return
 
         # TODO needs to be applied to all actives
         if DS.TRANSFORM_COMPONENT in rule:
-            semMap(rule[DS.TRANSFORM_COMPONENT], data=data, ctxs=ctxCon)
+            semsys(rule[DS.TRANSFORM_COMPONENT], data=data, ctxs=ctxs)
 
         if DS.ACTION_COMPONENT in rule:
-            semMap(rule[DS.ACTION_COMPONENT], data=data, ctxs=ctxCon)
+            semsys(rule[DS.ACTION_COMPONENT], data=data, ctxs=ctxs)
 
 class ProxyRuleAbstraction(SI.AbstractionSemantics):
     """ Run a rules queries, then return ctxs bound
     with transform+action continuation """
 
-    def __call__(self, instruction, ctxCon, semMap, data=None):
+    def __call__(self, instruction, semsys, ctxs=None, data=None):
         """ Rule Logic, returns action proposals """
-        # TODO: if all contexts in ctxCon have a continuation,
+        # TODO: if all contexts in ctxs have a continuation,
         # self.run_continuations
 
         # else:
         rule = instruction
-        # TODO Possibly setup a temp ctxCon
+        # TODO Possibly setup a temp ctxs
 
         # Run the query
         if DS.QUERY_COMPONENT in rule:
-            semMap(rule[DS.QUERY_COMPONENT], data=data, ctxs=ctxCon)
+            semsys(rule[DS.QUERY_COMPONENT], data=data, ctxs=ctxs)
 
-        if not bool(ctxCon):
+        if not bool(ctxs):
             return
 
         # TODO bind transform and actions to instances
-        for ctx in ctxCon.active_list():
+        for ctx in ctxs.active_list():
             ctx.set_continuation(instruction)
 
 
-    def run_continuations(self, instruction, ctxCon, semMap, data=None):
+    def run_continuations(self, instruction, ctxs, semsys, data=None):
         # TODO this might be _continuation of each ctx
         limited_container = ContextContainer.build()
         limited_container.pop()
-        for ctx in ctxCon.active_list():
+        for ctx in ctxs.active_list():
             limited_container.push(ctx)
             cont = ctx.continuation
 
             # TODO will need to handle each individual ctx
             if DS.TRANSFORM_COMPONENT in cont:
-                transformed = semMap(cont[DS.TRANSFORM_COMPONENT],
+                transformed = semsys(cont[DS.TRANSFORM_COMPONENT],
                                      data=data,
                                      ctxs=limited_container)
 
             if DS.ACTION_COMPONENT in rule:
-                semMap.run(cont[DS.ACTION_COMPONENT],
+                semsys.run(cont[DS.ACTION_COMPONENT],
                            data=data,
                            ctxs=limited_container)
 
-            ctxCon.merge(limited_container)
-            ctxCon.clear()
+            ctxs.merge(limited_container)
+            ctxs.clear()
 
 
 # Secondary Abstractions:
@@ -142,32 +144,32 @@ class LayerAbstraction(SI.AbstractionSemantics):
     select passing rules to complete.
     run passing selection.
     """
-    def __call__(self, instruction, ctxCon, semMap, data=None):
+    def __call__(self, instruction, semsys, ctxs=None, data=None):
         """ Run a layer, returning actions to perform """
         layer = instruction
 
         if DS.QUERY_COMPONENT in layer:
-            semMap(layer[DS.QUERY_COMPONENT], data=data, ctxs=ctxCon)
+            semsys(layer[DS.QUERY_COMPONENT], data=data, ctxs=ctxs)
 
-        if not bool(ctxCon):
+        if not bool(ctxs):
             return
 
         # TODO needs to be applied to all actives
         if DS.TRANSFORM_COMPONENT in layer:
-            semMap.run(layer[DS.TRANSFORM_COMPONENT], data=data, ctxs=ctxCon)
+            semsys.run(layer[DS.TRANSFORM_COMPONENT], data=data, ctxs=ctxs)
 
         if DS.ACTION_COMPONENT in layer:
-            semMap.run(layer[DS.ACTION_COMPONENT], data=data, ctxs=ctxCon)
+            semsys.run(layer[DS.ACTION_COMPONENT], data=data, ctxs=ctxs)
 
 class AgendaAbstraction(SI.AbstractionSemantics):
     """ A Layer-specific transform, to run operators on ctxs """
-    def __call__(self, instruction, ctxCon, semMap, data=None):
+    def __call__(self, instruction, semsys, ctxs=None, data=None):
         """ Runs an agenda rule on activated rules """
         # setup
 
         # run limited query
 
-        # run transform on ctxCon
+        # run transform on ctxs
         #
         raise NotImplementedError()
 
@@ -176,7 +178,7 @@ class AgendaAbstraction(SI.AbstractionSemantics):
 class AtomicPipelineAbstraction(SI.AbstractionSemantics):
     """ A Means of sequencing layers, run all layers per tick """
 
-    def __call__(self, instruction, ctxCon, semMap, data=None):
+    def __call__(self, instruction, semsys, ctxs=None, data=None):
         """ Run this pipeline on the given engine for a tick """
         # Setup
         pipeline = instruction
@@ -190,7 +192,7 @@ class AtomicPipelineAbstraction(SI.AbstractionSemantics):
 class TemporalPipelineAbstraction(SI.AbstractionSemantics):
     """ A Means of sequencing layers, one layer per tick """
 
-    def __call__(self, instruction, ctxCon, semMap, data=None):
+    def __call__(self, instruction, semsys, ctxs=None, data=None):
         """ Run this pipeline on the given engine for a tick """
         # Setup
         pipeline = instruction
@@ -201,9 +203,9 @@ class TemporalPipelineAbstraction(SI.AbstractionSemantics):
         raise NotImplementedError()
 
 class ContainerAbstraction(SI.AbstractionSemantics):
-    def __call__(self, instruction, ctxCon, semMap, data=None):
+    def __call__(self, instruction, semsys, ctxs=None, data=None):
         """ Apply the clauses in one move """
         for x in instruction.clauses:
-            ctxs = semMap(x, ctxs=ctxCon, data=data)
+            ctxs = semsys(x, ctxs=ctxs)
 
         return ctxs

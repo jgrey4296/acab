@@ -67,7 +67,9 @@ class HandlerSystemInterface(metaclass=abc.ABCMeta):
 
     def lookup(self, value: ValueInterface) -> HandlerTuple:
         # sieve from most to least specific
-        # TODO lookup struct as well
+        if value is None:
+            return self.default
+
         for sieve_fn in self.sieve:
             key = sieve_fn(value)
             handler = None
@@ -95,7 +97,7 @@ class HandlerSystemInterface(metaclass=abc.ABCMeta):
 
         return HandlerSystemInterface.HandlerOverride(new_target, value)
     @abc.abstractmethod
-    def __call__(self, *args):
+    def __call__(self, *args, **kwargs):
         pass
 
 #--------------------

@@ -26,12 +26,13 @@ class BasicSemanticSystem(SemanticSystem):
     """ A Complete semantic system """
 
     _default_sieve : ClassVar[List[Callable]] = [
+        lambda x: x if isinstance(x, str) else None,
         lambda x: x.override if isinstance(x, SemanticSystem.HandlerOverride) else None,
         lambda x: x.data[SEM_HINT] if SEM_HINT in x.data else None,
         lambda x: x.type
     ]
 
-    def __call__(self, instruction, ctxs=None) -> Any:
+    def __call__(self, instruction, ctxs=None, data=None) -> Any:
         """ Perform an instruction by mapping it to a semantics """
         if ctxs is None: # TODO: finish this
             ctxs = ContextContainer.build()
@@ -45,13 +46,11 @@ class BasicSemanticSystem(SemanticSystem):
             # TODO entry hooks would go here.
             if isinstance(semantics, AbstractionSemantics):
                 assert(struct is None)
-                semantics(instruction, ctxs, self)
+                semantics(instruction, self, ctxs=ctxs, data=data)
             else:
                 # but dependent semantics do
                 assert(struct is not None)
-
-                breakpoint()
-                semantics(struct, instruction, ctxs=ctxs)
+                semantics(struct, instruction, ctxs=ctxs, data=data)
         except AcabSemanticException as err:
             # Semantic exceptions can be handled,
             # but others continue upwards

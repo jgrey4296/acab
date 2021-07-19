@@ -84,7 +84,7 @@ class AbstractionSemanticTests(unittest.TestCase):
 
         transform = ProductionContainer("Test Transform Clause", [clause])
         # Run Transform on context, don't need a semantic system yet, thus None
-        sem(transform, ctx_container, None)
+        sem(transform, None, ctxs=ctx_container)
         # Check result
         result = ctx_container.pop()
         self.assertEqual(result['$y'].value, "tESt")
@@ -115,7 +115,7 @@ class AbstractionSemanticTests(unittest.TestCase):
                                      [])
         action = ProductionContainer("TestAction", [clause])
         # Run action on context with semantics
-        sem(action, ctx_container, None)
+        sem(action, None, ctxs=ctx_container)
         # Check side effects
         self.assertEqual(side_effect_obj['a'], 2)
 
@@ -145,7 +145,7 @@ class AbstractionSemanticTests(unittest.TestCase):
         action = ProductionContainer("TestAction", [])
         action.clauses.append(clause)
         # Run action on context with semantics
-        sem(action, ctx_container, None)
+        sem(action, None, ctxs=ctx_container)
         # Check side effects
         self.assertEqual(side_effect_obj['a'], "awef")
 
@@ -163,7 +163,7 @@ class AbstractionSemanticTests(unittest.TestCase):
                 side_effect_obj['a'] = params[0]
 
         class StubAbsSemantic(AbstractionSemantics):
-            def __call__(self, ins, ctxCon, semSys, data=None):
+            def __call__(self, ins, semSys, ctxs=None, data=None):
                 raise AcabBaseException("TestAbsSem called")
 
         def SemHintKey(val, data=None):
@@ -208,7 +208,7 @@ class AbstractionSemanticTests(unittest.TestCase):
 
 
         # run each element of container with semantics
-        consem(container, ctx_container, semSys)
+        consem(container, semSys, ctxs=ctx_container)
 
         # check result
         # orig val "test" + transform "_blah" into side effect obj "a"
@@ -224,7 +224,7 @@ class AbstractionSemanticTests(unittest.TestCase):
                 side_effect_obj['a'] = params[0]
 
         class StubAbsSemantic(AbstractionSemantics):
-            def __call__(self, ins, ctxCon, semSys, data=None):
+            def __call__(self, ins, semSys, ctxs=None, data=None):
                 raise AcabBaseException("TestAbsSem called", rest=[str(ins), data])
 
         def SemHintKey(val, data=None):
@@ -240,11 +240,16 @@ class AbstractionSemanticTests(unittest.TestCase):
 
         query_sem   = ASem.QueryAbstraction(QUERY_SEM_HINT)
         action_sem  = ASem.ActionAbstraction(ACTION_SEM_HINT)
-        rule_sem    = ASem.AtomicRuleAbstraction(TRANSFORM_SEM_HINT)
-        trans_sem   = ASem.TransformAbstraction(RULE_SEM_HINT)
+        rule_sem    = ASem.AtomicRuleAbstraction(RULE_SEM_HINT)
+        trans_sem   = ASem.TransformAbstraction(TRANSFORM_SEM_HINT)
+        cont_sem    = ASem.ContainerAbstraction("_:CONTAINER")
 
-        trie_struct = BasicNodeStruct.build_default("_:node")
-        semSys      = BasicSemanticSystem(handlers=[query_sem, action_sem, rule_sem, trans_sem],
+        trie_struct = BasicNodeStruct.build_default("_:trie")
+        semSys      = BasicSemanticSystem(handlers=[cont_sem,
+                                                    query_sem,
+                                                    action_sem,
+                                                    rule_sem,
+                                                    trans_sem],
                                           structs=[],
                                           default=(trie_sem, trie_struct))
 
@@ -298,7 +303,7 @@ class AbstractionSemanticTests(unittest.TestCase):
                 side_effect_obj['a'] = params[0]
 
         class StubAbsSemantic(AbstractionSemantics):
-            def __call__(self, ins, ctxCon, semSys, data=None):
+            def __call__(self, ins, semSys, ctxs=None, data=None):
                 raise AcabBaseException("TestAbsSem called", rest=[str(ins), data])
 
         def SemHintKey(val, data=None):
@@ -317,8 +322,11 @@ class AbstractionSemanticTests(unittest.TestCase):
         # THIS IS THE MAJOR CHANGE OF THIS TEST:
         rule_sem    = ASem.ProxyRuleAbstraction(RULE_SEM_HINT)
 
-        trie_struct = BasicNodeStruct.build_default("_:node")
-        semSys      = BasicSemanticSystem(handlers=[query_sem,action_sem,trans_sem,rule_sem],
+        trie_struct = BasicNodeStruct.build_default("_:trie")
+        semSys      = BasicSemanticSystem(handlers=[query_sem,
+                                                    action_sem,
+                                                    trans_sem,
+                                                    rule_sem],
                                           structs=[],
                                           default=(trie_sem, trie_struct))
 

@@ -67,7 +67,7 @@ PIPELINE_SEM_HINT  = Sentence.build([config.prepare("SEMANTICS", "PIPELINE")()])
 class SemanticSystemTests(unittest.TestCase):
 
     class StubAbsSemantic(AbstractionSemantics):
-        def __call__(self, ins, ctxCon, semSys, data=None):
+        def __call__(self, ins, semSys, ctxs=None, data=None):
             raise AcabBaseException("TestAbsSem called")
 
     def test_construction(self):
