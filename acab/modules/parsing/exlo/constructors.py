@@ -38,7 +38,8 @@ def build_transform_component(s, loc, toks):
     return ProductionComponent(value=op,
                                params=params,
                                rebind=rebind,
-                               sugared=EXu.LEFT_S in toks)
+                               sugared=EXu.LEFT_S in toks,
+                               data={SEMANTIC_HINT: EXu.TRANSFORM_SEM_HINT})
 
 def build_action_component(s, loc, toks):
     params = []
@@ -50,7 +51,8 @@ def build_action_component(s, loc, toks):
     params = [x[0] if len(x) == 1 else x for x in params]
     return ProductionComponent(value=op,
                                params=params,
-                               sugared=EXu.LEFT_S in toks)
+                               sugared=EXu.LEFT_S in toks,
+                               data={SEMANTIC_HINT: EXu.ACTION_SEM_HINT})
 
 
 
@@ -61,8 +63,7 @@ def build_query(s, loc, toks):
     return (PDS.QUERY, query)
 
 def build_transform(s, loc, toks):
-    trans = ProductionContainer(value=toks[:],
-                                data={SEMANTIC_HINT : EXu.TRANSFORM_SEM_HINT})
+    trans = ProductionContainer(value=toks[:])
     return (EXu.TRANSFORM_S, trans)
 
 def build_action(s, loc, toks):
@@ -70,8 +71,7 @@ def build_action(s, loc, toks):
     clauses = [x if isinstance(x, ProductionComponent)
                else ProductionComponent(value=Sentence.build([EXu.DEFAULT_ACTION_S]), params=[x]) for x in toks]
 
-    act = ProductionContainer(value=clauses,
-                              data={SEMANTIC_HINT : EXu.ACTION_SEM_HINT})
+    act = ProductionContainer(value=clauses)
 
     return (EXu.ACTION_S, act)
 
@@ -110,8 +110,8 @@ def build_rule(s, loc, toks, sem_hint=None):
 
 
     rule = ProductionStructure(structure=structure,
-                               data={SEMANTIC_HINT: sem_hint})
-    rule.data[DS.TYPE_INSTANCE] = EXu.RULE_PRIM
+                               data={SEMANTIC_HINT: sem_hint,
+                                     DS.TYPE_INSTANCE: EXu.RULE_PRIM})
     return (rule.type, rule)
 
 def build_constraint_list(s, loc, toks):
