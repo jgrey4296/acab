@@ -54,25 +54,25 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
         self.assertIsNotNone(RP)
 
     def test_name_empty_rule_parse(self):
-        result = RP.parseString("a.rule.x: (::ρ) end")
+        result = RP.parseString("a.rule.x: end")
         self.assertEqual(len(result), 1)
         self.assertIsInstance(result[0][-1], ProductionStructure)
         self.assertEqual(result[0][-1].name, "x")
 
     def test_multi_empty_rules(self):
-        result = RP.parseString("a.rule.x: (::ρ) end\n\na.second.rule: (::ρ) end")
+        result = RP.parseString("a.rule.x: end\n\na.second.rule: end")
         self.assertEqual(len(result),2)
         self.assertTrue(all([isinstance(x[-1], ProductionStructure) for x in result]))
 
     def test_rule_with_query(self):
-        result = RP.parseString("a.rule.x: (::ρ)\na.b.c?\n\nend")
+        result = RP.parseString("a.rule.x:\na.b.c?\n\nend")
         self.assertEqual(len(result),1)
         self.assertIsInstance(result[0][-1], ProductionStructure)
         self.assertIsNotNone(result[0][-1][QUERY_V])
         self.assertIsInstance(result[0][-1][QUERY_V], ProductionContainer)
 
     def test_rule_with_multi_clause_query(self):
-        result = RP.parseString("a.rule.x: (::ρ)\na.b.c?\na.b.d?\n\nend")
+        result = RP.parseString("a.rule.x:\na.b.c?\na.b.d?\n\nend")
         self.assertEqual(len(result),1)
         self.assertIsInstance(result[0][-1], ProductionStructure)
         self.assertIsNotNone(result[0][-1][QUERY_V])
@@ -80,7 +80,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
         self.assertEqual(len(result[0][-1][QUERY_V]), 2)
 
     def test_rule_with_multi_clauses_in_one_line(self):
-        result = RP.parseString("a.rule.x: (::ρ)\na.b.c?, a.b.d?\n\nend")
+        result = RP.parseString("a.rule.x:\na.b.c?, a.b.d?\n\nend")
         self.assertEqual(len(result),1)
         self.assertIsInstance(result[0][-1], ProductionStructure)
         self.assertIsNotNone(result[0][-1][QUERY_V])
@@ -88,7 +88,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
         self.assertEqual(len(result[0][-1][QUERY_V]), 2)
 
     def test_rule_with_binding_query(self):
-        result = RP.parseString("a.rule.x: (::ρ)\na.b.$x?\n\nend")
+        result = RP.parseString("a.rule.x:\na.b.$x?\n\nend")
         self.assertEqual(len(result),1)
         self.assertIsInstance(result[0][-1], ProductionStructure)
         self.assertIsNotNone(result[0][-1][QUERY_V])
@@ -96,7 +96,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
         self.assertEqual(len(result[0][-1][QUERY_V]), 1)
 
     def test_rule_with_actions(self):
-        result = RP.parseString("a.rule.x: (::ρ)\nλoperator.action.add a.b.c\nend")
+        result = RP.parseString("a.rule.x:\nλoperator.action.add a.b.c\nend")
         self.assertEqual(len(result), 1)
         self.assertIsInstance(result[0][-1], ProductionStructure)
         self.assertIsNone(result[0][-1][QUERY_V])
@@ -104,7 +104,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
         self.assertEqual(len(result[0][-1][ACTION_V]), 1)
 
     def test_multi_action_rule(self):
-        result = RP.parseString("a.rule.x: (::ρ)\nλoperator.action.add a.b.c\nλoperator.action.add ~a.b.d\nend")
+        result = RP.parseString("a.rule.x:\nλoperator.action.add a.b.c\nλoperator.action.add ~a.b.d\nend")
         self.assertEqual(len(result[0]), 3)
         self.assertIsInstance(result[0], Sentence)
         self.assertIsInstance(result[0][-1], ProductionStructure)
@@ -113,7 +113,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
         self.assertEqual(len(result[0][-1][ACTION_V]), 2)
 
     def test_multi_action_single_line_rule(self):
-        result = RP.parseString("a.rule.x: (::ρ)\n\nλoperator.action.add a.b.c, λoperator.action.add ~a.b.d\nend")
+        result = RP.parseString("a.rule.x:\n\nλoperator.action.add a.b.c, λoperator.action.add ~a.b.d\nend")
         self.assertEqual(len(result), 1)
         self.assertIsInstance(result[0][-1], ProductionStructure)
         self.assertIsNone(result[0][-1][QUERY_V])

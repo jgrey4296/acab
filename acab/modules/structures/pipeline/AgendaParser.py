@@ -59,8 +59,7 @@ var_setting = NG(ACTION_S   , HOTLOAD_ACTION    + PU.component_gap)
 
 agenda_body = PU.op(conditions) + PU.op(transforms) + PU.op(var_setting)
 
-agenda_stmt = PU.STATEMENT_CONSTRUCTOR(AGENDA_HEAD,
-                                       HOTLOAD_BASIC_SEN,
+agenda_stmt = PU.STATEMENT_CONSTRUCTOR(HOTLOAD_BASIC_SEN,
                                        agenda_body)
 
 agenda_body.setParseAction(make_agenda)

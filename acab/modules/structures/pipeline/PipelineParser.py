@@ -67,8 +67,7 @@ var_setting = PU.NG(ACTION_S   , HOTLOAD_ACTION    + PU.component_gap)
 
 pipeline_body = PU.op(conditions) + PU.op(transforms) + PU.op(var_setting)
 
-pipeline_stmt = PU.STATEMENT_CONSTRUCTOR(PIPE_HEAD,
-                                         HOTLOAD_BASIC_SEN,
+pipeline_stmt = PU.STATEMENT_CONSTRUCTOR(HOTLOAD_BASIC_SEN,
                                          pipeline_body)
 
 pipeline_body.setParseAction(make_pipeline)

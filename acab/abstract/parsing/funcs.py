@@ -74,7 +74,6 @@ def add_annotations(s, loc, toks):
 
 
 def construct_multi_sentences(s, loc, toks):
-    # TODO use sentence.build
     base_sen = toks[PDS.NAME][0]
     additional_sentences = toks[PDS.STATEMENT]
 

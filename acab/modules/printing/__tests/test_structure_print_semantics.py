@@ -51,10 +51,10 @@ class PrintStructureSemanticTests(unittest.TestCase):
     def test_component_simple(self):
         component = ProductionComponent(value=FP.parseString("testop.blah")[0])
         sem_sys = PrintSystem(handlers=[Printers.BasicSentenceAwarePrinter("_:SENTENCE"),
-                                                Printers.ConstraintAwareValuePrinter("_:ATOM"),
-                                                Printers.ProductionComponentPrinter("_:COMPONENT"),
-                                                Printers.ConfigBackedSymbolPrinter("_:SYMBOL"),
-                                                Printers.PrimitiveTypeAwarePrinter("_:NO_MODAL")],
+                                        Printers.ConstraintAwareValuePrinter("_:ATOM"),
+                                        Printers.ProductionComponentPrinter("_:COMPONENT"),
+                                        Printers.ConfigBackedSymbolPrinter("_:SYMBOL"),
+                                        Printers.PrimitiveTypeAwarePrinter("_:NO_MODAL")],
                               structs=[],
                               settings={"MODAL": "exop"})
 
@@ -65,10 +65,10 @@ class PrintStructureSemanticTests(unittest.TestCase):
         component = ProductionComponent(value=FP.parseString("testop.blah")[0],
                                         params=[FP.parseString("$x")[0][0]])
         sem_sys = PrintSystem(handlers=[Printers.BasicSentenceAwarePrinter("_:SENTENCE"),
-                                                Printers.ConstraintAwareValuePrinter("_:ATOM"),
-                                                Printers.ProductionComponentPrinter("_:COMPONENT"),
-                                                Printers.ConfigBackedSymbolPrinter("_:SYMBOL"),
-                                                Printers.PrimitiveTypeAwarePrinter("_:NO_MODAL")],
+                                        Printers.ConstraintAwareValuePrinter("_:ATOM"),
+                                        Printers.ProductionComponentPrinter("_:COMPONENT"),
+                                        Printers.ConfigBackedSymbolPrinter("_:SYMBOL"),
+                                        Printers.PrimitiveTypeAwarePrinter("_:NO_MODAL")],
                               structs=[],
                               settings={"MODAL": "exop"})
 
@@ -80,10 +80,10 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                         params=[FP.parseString("$x")[0][0]],
                                         rebind=FP.parseString("$y")[0][0])
         sem_sys = PrintSystem(handlers=[Printers.BasicSentenceAwarePrinter("_:SENTENCE"),
-                                                Printers.ConstraintAwareValuePrinter("_:ATOM"),
-                                                Printers.ProductionComponentPrinter("_:COMPONENT"),
-                                                Printers.ConfigBackedSymbolPrinter("_:SYMBOL"),
-                                                Printers.PrimitiveTypeAwarePrinter("_:NO_MODAL")],
+                                        Printers.ConstraintAwareValuePrinter("_:ATOM"),
+                                        Printers.ProductionComponentPrinter("_:COMPONENT"),
+                                        Printers.ConfigBackedSymbolPrinter("_:SYMBOL"),
+                                        Printers.PrimitiveTypeAwarePrinter("_:NO_MODAL")],
                               structs=[],
                               settings={"MODAL": "exop"})
 
@@ -92,11 +92,11 @@ class PrintStructureSemanticTests(unittest.TestCase):
 
     def test_container(self):
         sem_sys = PrintSystem(handlers=[Printers.BasicSentenceAwarePrinter("_:SENTENCE"),
-                                                Printers.ConstraintAwareValuePrinter("_:ATOM"),
-                                                Printers.ProductionComponentPrinter("_:COMPONENT"),
-                                                Printers.ConfigBackedSymbolPrinter("_:SYMBOL"),
-                                                Printers.ImplicitContainerPrinter("_:CONTAINER"),
-                                                Printers.PrimitiveTypeAwarePrinter("_:NO_MODAL")],
+                                        Printers.ConstraintAwareValuePrinter("_:ATOM"),
+                                        Printers.ProductionComponentPrinter("_:COMPONENT"),
+                                        Printers.ConfigBackedSymbolPrinter("_:SYMBOL"),
+                                        Printers.ImplicitContainerPrinter("_:CONTAINER"),
+                                        Printers.PrimitiveTypeAwarePrinter("_:NO_MODAL")],
                               structs=[],
                               settings={"MODAL": "exop"})
 
@@ -120,7 +120,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                               settings={"MODAL": "exop"})
 
         # parse a rule
-        rule = RP.parseString("a.test.rule:(::ρ)\na.b.c?\n\nλa.b.c\n\nend")[0]
+        rule = RP.parseString("a.test.rule:\na.b.c?\n\nλa.b.c\n\nend")[0]
         self.assertIsInstance(rule, Sentence)
         self.assertIsInstance(rule[-1], ProductionStructure)
         # print
@@ -140,7 +140,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                               settings={"MODAL": "exop"})
 
         # parse a rule
-        rule = RP.parseString("""a.test.rule:(::ρ)
+        rule = RP.parseString("""a.test.rule:
         #test
         #tag
 
@@ -167,7 +167,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                               structs=[],
                               settings={"MODAL": "exop"})
 
-        query = QP.query_statement.parseString("""test.statement: (::γ)
+        query = QP.query_statement.parseString("""test.statement:
         a.b.c?
         d.e.f?
         g.h.e?
@@ -191,7 +191,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                               structs=[],
                               settings={"MODAL": "exop"})
 
-        query = TP.transform_statement.parseString("""test.statement: (::τ)
+        query = TP.transform_statement.parseString("""test.statement:
         λa.b.c $x $y -> $z
         λq.c.d $z $x -> $a
         λa.b.c $a $y -> $c
@@ -216,7 +216,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                               structs=[],
                               settings={"MODAL": "exop"})
 
-        query = AP.action_definition.parseString("""test.statement: (::α)
+        query = AP.action_definition.parseString("""test.statement:
         λa.b.c $x
         λa.b.c.d $x $y
         λa.b.c.d.e $x $y $z

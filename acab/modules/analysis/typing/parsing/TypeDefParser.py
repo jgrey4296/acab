@@ -52,27 +52,24 @@ def make_sum_def(toks):
 SIMPLE_BODY = pp.empty
 SIMPLE_BODY.setParseAction(make_record_def)
 
-SIMPLE_DEF = PU.STATEMENT_CONSTRUCTOR(TYU.STRUCT_HEAD,
-                                         HOTLOAD_BASIC_SEN,
-                                         SIMPLE_BODY)
+SIMPLE_DEF = PU.STATEMENT_CONSTRUCTOR(HOTLOAD_BASIC_SEN,
+                                      SIMPLE_BODY)
 
 # Record Type definition:
 # a.test.type: (::σ)  a.value.$x(::num) end
 RECORD_DEF_BODY = PARAM_SEN_PLURAL
 RECORD_DEF_BODY.setParseAction(make_record_def)
 
-RECORD_TYPE = PU.STATEMENT_CONSTRUCTOR(TYU.STRUCT_HEAD,
-                                          HOTLOAD_BASIC_SEN,
-                                          RECORD_DEF_BODY + component_gap)
+RECORD_TYPE = PU.STATEMENT_CONSTRUCTOR(HOTLOAD_BASIC_SEN,
+                                       RECORD_DEF_BODY + component_gap)
 
 # Sum Type definition
 # ie: first subwords are the subtypes. subtypes are automatic records
 SUM_DEF_BODY = pp.delimitedList(pp.Or([RECORD_TYPE, SIMPLE_DEF]), delim=emptyLine)
 SUM_DEF_BODY.setParseAction(make_sum_def)
 
-SUM_TYPE = PU.STATEMENT_CONSTRUCTOR(TYU.SUM_HEAD,
-                                       HOTLOAD_BASIC_SEN,
-                                       SUM_DEF_BODY + component_gap)
+SUM_TYPE = PU.STATEMENT_CONSTRUCTOR(HOTLOAD_BASIC_SEN,
+                                    SUM_DEF_BODY + component_gap)
 
 
 
@@ -82,18 +79,16 @@ OP_DEF_BODY = NG(TYU.STRUCT_S, HOTLOAD_PARAM_SEN) \
     + op(DBLARROW + N(TYU.SYNTAX_BIND_S, PU.OPERATOR_SUGAR))
 OP_DEF_BODY.setParseAction(make_op_def)
 
-OP_DEF = PU.STATEMENT_CONSTRUCTOR(TYU.FUNC_HEAD,
-                                     HOTLOAD_BASIC_SEN,
-                                     OP_DEF_BODY,
-                                     end=pp.lineEnd,
-                                     single_line=True)
+OP_DEF = PU.STATEMENT_CONSTRUCTOR(HOTLOAD_BASIC_SEN,
+                                  OP_DEF_BODY,
+                                  end=pp.lineEnd,
+                                  single_line=True)
 
 # Type class constructor:
 TYPE_CLASS_BODY = pp.delimitedList(OP_DEF, delim=emptyLine)
 
-TYPE_CLASS_DEF = PU.STATEMENT_CONSTRUCTOR(TYU.TYPE_CLASS_HEAD,
-                                             HOTLOAD_BASIC_SEN,
-                                             TYPE_CLASS_BODY + component_gap)
+TYPE_CLASS_DEF = PU.STATEMENT_CONSTRUCTOR(HOTLOAD_BASIC_SEN,
+                                          TYPE_CLASS_BODY + component_gap)
 
 
 COMBINED_DEFS = pp.Or([SUM_TYPE, RECORD_TYPE, OP_DEF, SIMPLE_DEF])

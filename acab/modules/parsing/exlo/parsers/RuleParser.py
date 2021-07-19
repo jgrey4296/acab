@@ -25,8 +25,7 @@ actions    = N(ACTION,    AP.actions + component_gap)
 
 rule_body = op(conditions) + op(transforms) + op(actions)
 
-rule = PU.STATEMENT_CONSTRUCTOR(RULE_HEAD,
-                                FP.BASIC_SEN,
+rule = PU.STATEMENT_CONSTRUCTOR(FP.BASIC_SEN,
                                 rule_body,
                                 args=False)
 

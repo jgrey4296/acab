@@ -31,8 +31,7 @@ action_sugar = N(LEFT_S, VALBIND) \
 # Sentences are asserted by default
 actions = pp.delimitedList(pp.Or([action_component, PARAM_SEN]), delim=DELIM)
 
-action_definition = PU.STATEMENT_CONSTRUCTOR(ACTION_HEAD,
-                                             BASIC_SEN,
+action_definition = PU.STATEMENT_CONSTRUCTOR(BASIC_SEN,
                                              actions + component_gap)
 
 # parse action

@@ -55,8 +55,7 @@ PARAM_SEN.setParseAction(Pfunc.construct_sentence)
 
 SEN_STATEMENT_BODY = pp.OneOrMore(pp.Or([SEN_STATEMENT, PARAM_SEN_PLURAL]) + opLn)
 # Statement to specify multiple sub sentences
-SEN_STATEMENT << PU.STATEMENT_CONSTRUCTOR(FACT_HEAD,
-                                          PARAM_SEN,
+SEN_STATEMENT << PU.STATEMENT_CONSTRUCTOR(PARAM_SEN,
                                           SEN_STATEMENT_BODY,
                                           parse_fn=Pfunc.construct_multi_sentences)
 

@@ -40,8 +40,7 @@ def PARAM_CORE(mid=None, end=None):
 
 
 
-def STATEMENT_CONSTRUCTOR(head_p,
-                          name_p,
+def STATEMENT_CONSTRUCTOR(name_p,
                           body_p,
                           end=None,
                           args=True,
@@ -63,9 +62,7 @@ def STATEMENT_CONSTRUCTOR(head_p,
     if args:
         arg_p = op(NG(PDS.ARG, Fwd_ArgList + line_p))
 
-    head_hint = OPAR + DBLCOLON + head_p + CPAR
-
-    parser = NG(PDS.NAME, name_p) + PConst.COLON + s(head_hint) + op(pp.lineEnd) \
+    parser = NG(PDS.NAME, name_p) + PConst.COLON + op(pp.lineEnd) \
         + arg_p + Fwd_TagList + NG(PDS.STATEMENT, body_p) + end_p
 
     if parse_fn is not None:

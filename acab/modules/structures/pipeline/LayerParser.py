@@ -52,8 +52,7 @@ var_setting = PU.NG(ACTION_S   , HOTLOAD_ACTION    + PU.component_gap)
 
 layer_body = PU.op(conditions) + PU.op(transforms) + PU.op(var_setting)
 
-layer_stmt = PU.STATEMENT_CONSTRUCTOR(LAYER_HEAD,
-                                      HOTLOAD_BASIC_SEN,
+layer_stmt = PU.STATEMENT_CONSTRUCTOR(HOTLOAD_BASIC_SEN,
                                       layer_body)
 
 layer_body.setParseAction(make_layer)

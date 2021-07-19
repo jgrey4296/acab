@@ -44,8 +44,7 @@ transform_combined = pp.Or([transform_core, HOTLOAD_TRANS_STATEMENTS, transform_
 
 transforms = pp.delimitedList(transform_combined, delim=DELIM)
 
-transform_statement = PU.STATEMENT_CONSTRUCTOR(TRANSFORM_HEAD,
-                                               BASIC_SEN,
+transform_statement = PU.STATEMENT_CONSTRUCTOR(BASIC_SEN,
                                                transforms + component_gap)
 
 # Actions
