@@ -32,6 +32,8 @@ from acab.error.acab_print_exception import AcabPrintException
 from acab.error.acab_semantic_exception import AcabSemanticException
 from acab.modules.semantics.context_container import ContextContainer
 
+from acab.abstract.core.default_structure import QUERY
+
 Node            = 'AcabNode'
 Sentence        = 'Sentence'
 Printable       = 'Printable'
@@ -64,7 +66,10 @@ class DependentSemantics(SemanticSystem, HandlerComponent):
     """
 
     def __call__(self, struct, sen, ctxs=None, data=None):
-        pass
+        if QUERY in sen.data and bool(sen.data[QUERY]):
+            return self.query(struct, sen, ctxs=ctxs, data=data)
+
+        return self.insert(struct, sen, ctxs=ctxs, data=data)
 
     def to_sentences(self, struct, data=None, ctxs=None):
         """ Reduce a struct down to sentences, for printing """
