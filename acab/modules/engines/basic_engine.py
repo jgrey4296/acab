@@ -16,7 +16,6 @@ from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.production_abstractions import (ProductionContainer,
                                                         ProductionOperator)
 from acab.abstract.engine.module_loader import ModuleLoader
-from acab.abstract.engine.rewind_interface import RewindEngineInterface
 from acab.abstract.interfaces.dsl_interface import DSL_Interface
 from acab.abstract.interfaces.engine_interface import AcabEngine_Interface, EnsureInitialised
 from acab.abstract.interfaces.printing_interfaces import PrintSystem
