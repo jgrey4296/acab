@@ -26,13 +26,16 @@ from acab.error.acab_base_exception import AcabBaseException
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
 
+CtxCon = 'CtxContainer'
 
 @dataclass
 class AcabBasicEngine(AcabEngine_Interface):
     """ The Abstract class of a production system engine. """
     # Blocks engine use until build_DSL has been called:
     _module_loader   : ModuleLoader = field(init=False, default_factory=ModuleLoader)
+    # LIFO size limited cache:
     _cached_bindings : List[Any]    = field(init=False, default_factory=list)
+    _cache_size      : int          = field(default=10)
 
     def __post_init__(self):
         # initialise modules
@@ -83,18 +86,23 @@ class AcabBasicEngine(AcabEngine_Interface):
 
 
     @EnsureInitialised
-    def insert(self, s: str):
+    def insert(self, s: str, ctxs=None):
         """ Assert a new fact into the engine """
         data = self._dsl_builder.parse(s)
-        self.semantics(data)
+        return self.semantics(*data, ctxs=ctxs)
 
     @EnsureInitialised
     def query(self, s: str, ctxs=None, cache=True):
         """ Ask a question of the working memory """
-        data = self._dsl_build.query_parse(s)
+        instruction = self._dsl_builder.query_parse(s)
         # TODO ensure instruction is a query?
-        result = self.semantics(data, ctxs=ctxs)
+        result = self.semantics(instruction, ctxs=ctxs)
         if cache:
-            self._cached_bindings = result
+            self.add_to_cache(result)
         return result
 
+
+    def add_to_cache(self, result: CtxCon):
+        self._cached_bindings.append(result)
+        if len(self._cached_bindings) > self._cache_size:
+            self._cached_bindings.pop(0)
