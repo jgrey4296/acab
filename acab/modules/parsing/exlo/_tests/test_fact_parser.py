@@ -33,12 +33,6 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         root_logger.getLogger('').addHandler(console)
         logging = root_logger.getLogger(__name__)
 
-    def setUp(self):
-        return 1
-
-    def tearDown(self):
-        return 1
-
     #----------
     def test_trivial(self):
         self.assertIsNotNone(FP.parseString)

@@ -36,17 +36,10 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         root_logger.getLogger('').addHandler(console)
         logging = root_logger.getLogger(__name__)
 
-        bp = TrieBootstrapper()
-        qmod = QOP.MODULE()
-        qmod.assert_parsers(bp)
-        FP.HOTLOAD_ANNOTATIONS << bp.query("query.annotation.*")
-
-
-    def setUp(self):
-        return 1
-
-    def tearDown(self):
-        return 1
+        # bp = TrieBootstrapper()
+        # qmod = QOP.MODULE()
+        # qmod.assert_parsers(bp)
+        # FP.HOTLOAD_ANNOTATIONS << bp.query("query.annotation.*")
 
     #----------
     #use testcase snippets
