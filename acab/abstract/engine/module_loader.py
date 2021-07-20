@@ -15,11 +15,16 @@ from acab.abstract.interfaces.printing_interfaces import PrintSemantics
 from acab.abstract.interfaces.semantic_interfaces import (AbstractionSemantics,
                                                           DependentSemantics,
                                                           IndependentSemantics)
+from acab.abstract.core.production_abstractions import ProductionOperator
+from acab.abstract.config.config import GET
+from types import ModuleType
 
-ModuleType   = 'Module'
 Sentence     = 'Sentence'
 DSL_Fragment = DSL_Interface
 
+config = GET()
+
+MODULE_SPLIT_REG = config.prepare("Parse.Patterns", "MODULE_SPLIT_REG")()
 
 #--------------------
 class ModuleLoader(ModuleLoader_Interface):

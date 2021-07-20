@@ -8,8 +8,8 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 from acab.abstract.engine.util import ModuleComponents
+from types import ModuleType
 
-ModuleType   = 'Module'
 Sentence     = 'Sentence'
 
 #--------------------
@@ -30,7 +30,7 @@ class ModuleLoader_Interface(metaclass=abc.ABCMeta):
         """
         return [self.load_module(x) for x in modules]
 
-    def load_module(self, module_str: str) -> ModuleComponents:
+    def load_module(self, maybe_module: Union[ModuleType, str]) -> ModuleComponents:
         """
         Load a module, extract operators and dsl fragments from it,
         put the operators into the operators store,
@@ -40,28 +40,31 @@ class ModuleLoader_Interface(metaclass=abc.ABCMeta):
         """
         # Prepare path
         # TODO use utility constants for joining and query
-        if not isinstance(module_str, str):
+        if not isinstance(maybe_module, (ModuleType, str)):
             breakpoint()
             raise Exception("TODO: handle sentence -> str")
-        # print semantics: basic+word join of "."
-        # mod_str = str(module_sen)
 
-        # Return early if already loaded
-        if module_str in self.loaded_modules:
-            logging.info("Module already loaded: {}".format(module_str))
-            # TODO extract node from return context?
-            return self.loaded_modules[module_str]
-
-        # Load
         try:
-            the_module = import_module(module_str)
+            # print semantics: basic+word join of "."
+            # mod_str = str(module_sen)
+
+            # Return early if already loaded
+            if str(maybe_module) in self.loaded_modules:
+                logging.info("Module already loaded: {}".format(maybe_module))
+                # TODO extract node from return context?
+                return self.loaded_modules[maybe_module]
+
+            if isinstance(maybe_module, str):
+                the_module = import_module(maybe_module)
+            else:
+                the_module = maybe_module
             # Extract
             components = self.extract_from_module(the_module)
-            self.loaded_modules[module_str] = components
+            self.loaded_modules[maybe_module] = components
             return the_module
 
         except ModuleNotFoundError as e:
-            raise AcabImportException(module_str) from None
+            raise AcabImportException(maybe_module) from None
 
     @abc.abstractmethod
     def extract_from_module(self, module: ModuleType) -> ModuleComponents:
