@@ -103,7 +103,8 @@ AT_BIND     = s_lit(PDSYM.AT_BIND) + ATOM
 
 VALBIND = pp.Or([N(PDS.BIND, BIND),
                  N(PDS.AT_BIND, AT_BIND),
-                 N(PDS.VALUE, pp.Or([BASIC_VALUE, HOTLOAD_VALUES]))])
+                 N(PDS.VALUE, BASIC_VALUE),
+                 N(PDS.VALUE, HOTLOAD_VALUES)])
 VALBIND.setParseAction(Pfunc.make_value)
 
 Fwd_ArgList <<= PConst.VBAR + pp.delimitedList(BIND, delim=PConst.COMMA) + PConst.VBAR

@@ -37,15 +37,18 @@ class TrieBootstrapper(Bootstrapper):
     """ Manage parsers and allow queries for hotloading,
     used in working memory and module interfaces """
 
-
     WILDCARD_STR = "*"
 
     def __init__(self):
         super().__init__()
-        self._semantics = BreadthTrieSemantics("BreadthTrie", [], [],
+        # Trie Semantics, using basic nodes
+        self._semantics = BreadthTrieSemantics("_:Trie",
+                                            handlers=[],
+                                            structs=[],
                                             default=(BasicNodeSemantics("_:Node"),None))
 
-        self._structure = BasicNodeStruct.build_default("_:Node")
+        # And using a standard node struct
+        self._structure = BasicNodeStruct.build_default("_:Trie")
 
     def __len__(self):
         return len(self._structure)
@@ -97,7 +100,7 @@ class TrieBootstrapper(Bootstrapper):
         # Having found all parsers for the queries, join them and return
         if not bool(results):
             logging.debug("Total Parser Query Empty: {}".format(" | ".join(queries)))
-            return pp.Empty()
+            return pp.NoMatch()
         elif len(results) == 1:
             final_parser = results[0]
         else:
