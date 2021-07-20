@@ -5,6 +5,7 @@ from dataclasses import InitVar, dataclass, field
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
+from types import MethodType
 
 from acab.error.acab_base_exception import AcabBaseException
 
@@ -55,12 +56,21 @@ class HandlerSystemInterface(metaclass=abc.ABCMeta):
 
     def _register_handler(self, handler):
         # TODO maybe handle tuples later
-        pair_str = handler.mapped_to
+        if isinstance(handler, HandlerComponent):
+            pair_str = handler.mapped_to
+        elif isinstance(handler, HandlerType) and isinstance(handler.__self.__, HandlerComponent):
+            pair_str = handler.__self__.mapped_to
+        else:
+            raise AcabBaseException("Handler Not Compliant", handler)
+
         assert(pair_str not in self.registered_handlers)
         self.registered_handlers[pair_str] = handler
 
     def _register_struct(self, struct):
         # TODO maybe handle tuples later
+        if not isinstance(struct, HandlerComponent):
+            raise AcabBaseException("Struct Not Compliant", struct)
+
         pair_str = struct.mapped_to
         assert(pair_str not in self.registered_structs)
         self.registered_structs[pair_str] = struct
