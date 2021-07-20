@@ -55,7 +55,7 @@ class BootstrapParserTests(unittest.TestCase):
     def test_query_empty(self):
         self.assertFalse(bool(self.bp))
         result = self.bp.query("*")
-        self.assertEqual(result, pp.Empty())
+        self.assertEqual(result, pp.NoMatch())
 
     def test_add_two(self):
         self.assertFalse(bool(self.bp))
