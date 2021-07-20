@@ -69,7 +69,7 @@ QMARK     = s_lit('?')
 SLASH     = s_lit('/')
 TILDE     = s_lit('~')
 VBAR      = s_lit('|')
-DELIM            = pp.Or([COMMA, op(pp.lineEnd)])
+DELIM     = pp.Or([COMMA, op(pp.lineEnd)])
 
 RULE_HEAD        = s_key(DSYM.RULE_HEAD)
 QUERY_HEAD       = s_key(DSYM.QUERY_HEAD)
