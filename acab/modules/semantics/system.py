@@ -65,13 +65,3 @@ class BasicSemanticSystem(SemanticSystem):
     def to_sentences(self) -> List[Sentence]:
         return []
 
-@dataclass
-class GuaranteeSemanticSystem(SemanticSystem):
-    """  """
-    # Downward guarantees of what semantics may contextually rely upon
-    guarantees        : Set['Handler']               = field(default_factory=list)
-    # Downward expectations of what semantics must publicly provide
-    expectations      : Set['SemanticUnion']         = field(init=False, default_factory=list)
-
-    def __init__(self):
-        raise NotImplementedError()
