@@ -116,7 +116,7 @@ class AcabValue(VI.ValueInterface, Generic[T]):
         if self.value is not self.name:
             val_str = ":..."
 
-        return "({}:{}{})".format(self.__class__.__name__,
+        return "({}:{}:{})".format(self.__class__.__name__,
                                      str(self),
                                      val_str)
 
@@ -284,6 +284,8 @@ class Sentence(AcabStatement, VI.SentenceInterface):
         words = FALLBACK_MODAL.join([str(x) for x in self.words])
         return "{}:{}".format(self.name, words)
 
+    def __repr__(self):
+        return super().__repr__()
     def __len__(self):
         return len(self.words)
     def __iter__(self):
