@@ -12,9 +12,20 @@ from acab.error.acab_base_exception import AcabBaseException
 
 Parser           = "Parser"
 Sentence         = 'Sentence'
+Query            = 'ProductionContainer'
 ModuleComponents = "ModuleComponents"
 File             = 'FileObj'
 
+# Decorator for DSL Builder:
+def EnsureInitialised(method):
+    def fn(self, *args, **kwargs):
+        if not self._parsers_initialised:
+            raise AcabBaseException("DSL Not Initialised")
+
+        return method(self, *args, **kwargs)
+
+    fn.__name__ = method.__name__
+    return fn
 #--------------------
 class Bootstrapper(metaclass=abc.ABCMeta):
     """ A Utility class for registering and retrieving
@@ -100,14 +111,17 @@ class DSLBuilder_Interface(metaclass=abc.ABCMeta):
     def clear_bootstrap(self):
         self._bootstrap_parser = self._bootstrap_parser.__class__()
 
+    @EnsureInitialised
     def parse(self, s:str) -> List[Sentence]:
-        return self._main_parser.parseString(s)
+        return self._main_parser.parseString(s)[:]
 
+    @EnsureInitialised
     def parseFile(self, f:File) -> List[Sentence]:
-        return self._main_parser.parseFile(f)
+        return self._main_parser.parseFile(f)[:]
 
-    def query_parse(self, s:str) -> List[Sentence]:
-        return self._query_parser.parseString(s)
+    @EnsureInitialised
+    def query_parse(self, s:str) -> Query:
+        return self._query_parser.parseString(s)[0][1]
     @abc.abstractmethod
     def construct_parsers_from_fragments(self, fragments: List[DSL_Interface]):
         """ Assemble parsers from the fragments of the wm and loaded modules """
