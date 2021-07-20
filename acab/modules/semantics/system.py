@@ -15,8 +15,9 @@ from acab.modules.semantics.context_container import ContextContainer
 
 logging = root_logger.getLogger(__name__)
 
-
 Sentence = 'Sentence'
+CtxCon   = 'ContextContainer'
+
 config  = AcabConfig.Get()
 
 SEM_HINT = config.prepare("Value.Structure", "SEMANTIC_HINT")()
@@ -32,11 +33,17 @@ class BasicSemanticSystem(SemanticSystem):
         lambda x: x.type
     ]
 
-    def __call__(self, instruction, ctxs=None, data=None) -> Any:
+    def __call__(self, *instructions, ctxs=None, data=None) -> CtxCon:
         """ Perform an instruction by mapping it to a semantics """
         if ctxs is None: # TODO: finish this
             ctxs = ContextContainer.build()
 
+        for instruction in instructions:
+            ctxs = self.run_instruction(instruction, ctxs=ctxs, data=data)
+
+        return ctxs
+
+    def run_instruction(self, instruction, ctxs=None, data=None) -> Any:
         semantics, struct = None, None
         try:
             semantics, struct = self.lookup(instruction)
@@ -63,5 +70,4 @@ class BasicSemanticSystem(SemanticSystem):
         return ctxs
 
     def to_sentences(self) -> List[Sentence]:
-        return []
-
+        return self.default[0].to_sentences(self.default[1])
