@@ -174,9 +174,9 @@ class StructurePrinter(PrintSemantics):
         result = []
         # print the name
         result.append(top.override("_:NO_MODAL", value))
-        result.append(":")
         # TODO parameterise this
-        result += ["(", "::", "ρ", ")"]
+        #result += ["(", "::", "ρ", ")"]
+        result.append(":")
         result.append(DSYM.CONTAINER_JOIN_P)
         for tag in value.tags:
             result.append(DSYM.TAG_SYM)

@@ -125,7 +125,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
         self.assertIsInstance(rule[-1], ProductionStructure)
         # print
         result = sem_sys.pprint(rule)
-        self.assertEqual(result, "a.test.rule:(::ρ)\na.b.c?\n\nλa.b.c\n\nend")
+        self.assertEqual(result, "a.test.rule:\na.b.c?\n\nλa.b.c\n\nend")
 
     def test_rule_with_tags(self):
         sem_sys = PrintSystem(handlers=[Printers.BasicSentenceAwarePrinter("_:SENTENCE"),
@@ -152,7 +152,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
         self.assertIsInstance(rule[-1], ProductionStructure)
         # print
         result = sem_sys.pprint(rule)
-        self.assertEqual(result, "a.test.rule:(::ρ)\n#test\n#tag\n\na.b.c?\n\nλa.b.c\n\nend")
+        self.assertEqual(result, "a.test.rule:\n#test\n#tag\n\na.b.c?\n\nλa.b.c\n\nend")
 
 
     def test_query_statement(self):
