@@ -12,12 +12,11 @@ import logging as root_logger
 import traceback
 
 ##############################
-#see https://docs.python.org/3/howto/argparse.html
 parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                  epilog = "\n".join([""]))
 parser.add_argument('--config', action="append")
 parser.add_argument('--engine', action="append")
-parser.add_argument('-v', '--verbose', default="WARNING")
+parser.add_argument('-v', '--verbosity', default="WARNING")
 
 
 # Quiet hook from https://gist.github.com/jhazelwo/86124774833c6ab8f973323cb9c7e251
