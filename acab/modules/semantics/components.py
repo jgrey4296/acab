@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 
 # Components
 class DebugListenerComponent():
@@ -179,7 +178,7 @@ class PrinterComponent():
             assert isinstance(final_val, str)
         else:
             # Filter out info tuples if necessary for default:
-            default_join = self.use(PRINT_SENTINEL_JOIN_P)
+            default_join = self.use(PRINT_SEPARATOR_P)
             final_val = default_join.join(
                 [x for x in self._context if isinstance(x, str)]
             )

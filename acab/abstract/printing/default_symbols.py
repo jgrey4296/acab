@@ -22,11 +22,10 @@ SUGAR_SYM          = config.prepare("Symbols", "SUGAR")
 TAG_SYM            = config.prepare("Symbols", "TAG")
 
 
-
 # Wrapping
 CONTAINER_JOIN_P        = config.prepare("Print.Patterns", "CONTAINER_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE, AcabConfig.actions_e.UNESCAPE])
 PARAM_JOIN_P            = config.prepare("Print.Patterns", "PARAM_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE])
-PRINT_SENTINEL_JOIN_P   = config.prepare("Print.Patterns", "PRINT_SENTINEL_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE])
+PRINT_SEPARATOR_P       = config.prepare("Print.Patterns", "PRINT_SEPARATOR", actions=[AcabConfig.actions_e.STRIPQUOTE, AcabConfig.actions_e.UNESCAPE])
 REGEX_WRAP_P            = config.prepare("Print.Patterns", "REGEX_WRAP")
 SEN_JOIN_P              = config.prepare("Print.Patterns", "SEN_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE])
 STR_WRAP_P              = config.prepare("Print.Patterns", "STR_WRAP", actions=[AcabConfig.actions_e.UNESCAPE])
