@@ -23,7 +23,7 @@ parser.add_argument('-v', '--verbosity', default="WARNING")
 if __name__ == "__main__":
     from acab.abstract.config.config import AcabConfig
     config = AcabConfig.Get()
-
+    #====================
     args = parser.parse_args()
     args.config = [abspath(expanduser(x)) for x in args.config]
 
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     console.setLevel(max(0, LOGLEVEL))
     root_logger.getLogger('').addHandler(console)
     logging = root_logger.getLogger(__name__)
-
+    #====================
     logging.info("Reading Config: {}".format(args.config))
     config.read_list(args.config)
 
@@ -57,6 +57,8 @@ if __name__ == "__main__":
     initial_modules = config("REPL", "MODULES", actions=[AcabConfig.actions_e.LIST])
     engine, dummy   = load_cmd(engine, {'params': initial_modules})
 
+    #--------------------
+    # MAIN REPL LOGIC:
     from acab.modules.repl.repl_state import ReplState
     data = ReplState()
     while data.command != ReC.ReplE.EXIT:
@@ -94,5 +96,6 @@ if __name__ == "__main__":
         if bool(data.result):
             print(data.result)
             data.result = None
-
+    #--------------------
+    # REPL loop over
     logging.info("Shutting down engine: {}".format(args.engine))
