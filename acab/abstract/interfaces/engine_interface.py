@@ -90,6 +90,11 @@ class AcabEngine_Interface(metaclass=abc.ABCMeta):
         and all paths with non-leaf statements convert to simple formats
         """
         return self.semantics.to_sentences()
+
+    def pprint(self) -> str:
+        sens = self.to_sentences()
+        return self.printer.pprint(*sens)
+
     @abc.abstractmethod
     def __call__(self, thing, bindings=None):
         pass
