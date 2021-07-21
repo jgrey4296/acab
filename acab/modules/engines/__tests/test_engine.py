@@ -55,10 +55,10 @@ class TestEngine(unittest.TestCase):
         parser.assert_parsers.assert_called_once()
         parser.query_parsers.assert_called_once()
 
-    def test_parser_setup(self):
+    def test_parser_into_semantics(self):
         # Create the engine
         basic     = AcabBasicEngine(parser=EL_Parser(),
-                                    semantics=DEFAULT_SEMANTICS,
+                                    semantics=DEFAULT_SEMANTICS(),
                                     printer=DEFAULT_PRINTER,
                                     modules=[])
 
@@ -68,10 +68,26 @@ class TestEngine(unittest.TestCase):
         result = basic.query("a.test.sentence?")
         self.assertTrue(bool(result))
 
+    def test_query(self):
+        basic = AcabBasicEngine(parser=EL_Parser(),
+                                semantics=DEFAULT_SEMANTICS(),
+                                printer=DEFAULT_PRINTER,
+                                modules=[])
+
+        query = basic.query("a.test.$x?")
+        self.assertFalse(bool(query))
+        basic.insert("a.test.sentence")
+        result = basic.query("a.test.$x?")
+        self.assertTrue(bool(result))
+        self.assertEqual(result[0]['$x'].value, 'sentence')
+
+
+
+
     def test_printer_setup(self):
         # Create the engine
         basic     = AcabBasicEngine(parser=EL_Parser(),
-                                    semantics=DEFAULT_SEMANTICS,
+                                    semantics=DEFAULT_SEMANTICS(),
                                     printer=DEFAULT_PRINTER,
                                     modules=[])
 
