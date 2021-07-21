@@ -14,6 +14,7 @@ from acab.abstract.interfaces.handler_system_interface import (
     HandlerComponent, HandlerSystemInterface)
 from acab.abstract.interfaces.value_interfaces import (SentenceInterface,
                                                        ValueInterface)
+from acab.abstract.printing.default_symbols import PRINT_SEPARATOR_P
 from acab.error.acab_print_exception import AcabPrintException
 from acab.error.acab_semantic_exception import AcabSemanticException
 from acab.modules.semantics.context_container import ContextContainer
@@ -22,38 +23,15 @@ logging = root_logger.getLogger(__name__)
 
 
 Sentence        = 'Sentence'
+
 @dataclass
 class PrintSystem(HandlerSystemInterface):
     """ Handles how to convert values and sentences into strings,
     does not rely on the underlying data structures
     """
-    settings             : Dict[str, str]           = field(default_factory=dict)
-    _config              : AcabConfig               = field(init=False, default_factory=AcabConfig.Get)
-
-    _default_sieve       : ClassVar[List[Callable]] = [
-        # override tuple : 1 -> 1 : any
-        lambda x              : x.override if isinstance(x, PrintSystem.HandlerOverride) else None,
-        # symbol         : m -> m : any
-        lambda x              : "_:SYMBOL" if isinstance(x, ConfigSpec) else None,
-        # enum
-        lambda x              : "_:SYMBOL" if isinstance(x, Enum) else None,
-        # exact type     : 1 -> 1 : any / leaf
-        lambda x              : str(x.type) if isinstance(x, ValueInterface) else None,
-        # gen type       : m -> 1 : any / leaf
-        # structure      : m -> m : leaf
-        lambda x              : "_:STRUCTURE" if isinstance(x, PA.ProductionStructure) else None,
-        # container      : m -> m : leaf
-        lambda x              : "_:CONTAINER" if isinstance(x, PA.ProductionContainer) else None,
-        # component      : m -> m : leaf
-        lambda x              : "_:COMPONENT" if isinstance(x, PA.ProductionComponent) else None,
-        # Statement
-        lambda x              : "_:STATEMENT" if isinstance(x, AcabStatement) else None,
-        # sentence       : m -> 1 : any / leaf
-        lambda x              : "_:SENTENCE" if isinstance(x, SentenceInterface) else None,
-        # value          : m -> 1 : any
-        lambda x              : "_:ATOM" if isinstance(x, ValueInterface) else None
-    ]
-
+    separator : ConfigSpec     = field(default=PRINT_SEPARATOR_P)
+    settings  : Dict[str, str] = field(default_factory=dict)
+    _config   : AcabConfig     = field(init=False, default_factory=AcabConfig.Get)
 
     def __post_init__(self, handlers, structs):
         super().__post_init__(handlers, structs)
@@ -68,24 +46,22 @@ class PrintSystem(HandlerSystemInterface):
         return None
 
     def pprint(self, *args) -> str:
-        # TODO add default join symbol
-        remaining = list(args[:])
+        remaining = [[x, self.separator] for x in args[:-1]] + [args[-1]]
         result = ""
         while bool(remaining):
             current = remaining.pop(0)
             handler = None
             if isinstance(current, str):
                 result += current
+                continue
             elif isinstance(current, list):
                 remaining = current + remaining
-            elif isinstance(current, HandlerSystemInterface.HandlerOverride):
-                handler = self.registered_handlers[current.override]
-                current = current.data
+                continue
             else:
                 handler, _ = self.lookup(current)
 
-            if handler is None:
-                continue
+            if isinstance(current, PrintSystem.HandlerOverride):
+                current = current.data
 
             if isinstance(handler, PrintSemantics):
                 handled = handler(current, top=self)
