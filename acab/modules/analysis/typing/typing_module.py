@@ -1,4 +1,4 @@
-from acab.abstract.interfaces.dsl_interface import DSL_Fragment_i
+from acab.abstract.interfaces.dsl import DSL_Fragment_i
 
 from .type_checker import TypeChecker
 

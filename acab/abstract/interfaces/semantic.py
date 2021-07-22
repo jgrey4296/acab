@@ -24,9 +24,9 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 import acab.abstract.interfaces.util as SU
 from acab.abstract.config.config import AcabConfig, ConfigSpec
-from acab.abstract.interfaces.handler_system_interface import (
+from acab.abstract.interfaces.handler_system import (
     HandlerComponent_i, HandlerSystem_i)
-from acab.abstract.interfaces.value_interfaces import (Sentence_i,
+from acab.abstract.interfaces.value import (Sentence_i,
                                                        Value_i)
 from acab.error.acab_print_exception import AcabPrintException
 from acab.error.acab_semantic_exception import AcabSemanticException
@@ -34,16 +34,17 @@ from acab.modules.semantics.context_container import ContextContainer
 
 from acab.abstract.core.default_structure import QUERY
 
-Node            = 'AcabNode'
-Sentence        = 'Sentence'
-Printable       = 'Printable'
-Value           = 'AcabValue'
-Structure       = 'AcabStruct'
-Engine          = 'Engine'
-Contexts        = 'Contexts'
-Handler         = 'SemanticHandler' # Callable
-AbsDepSemantics = Union['AbstractionSemantics_i', 'DependentSemantics_i']
-InDepSemantics  = 'IndependentSemantics_i'
+Node               = 'AcabNode'
+Sentence           = 'Sentence'
+Printable          = 'Printable'
+Value              = 'AcabValue'
+Structure          = 'AcabStruct'
+Engine             = 'Engine'
+Contexts           = 'Contexts'
+Handler            = 'SemanticHandler' # Callable
+AbsDepSemantics    = Union['AbstractionSemantics_i', 'DependentSemantics_i']
+InDepSemantics     = 'IndependentSemantics_i'
+ProductionOperator = 'ProductionOperator'
 
 # Note: for dependent and indep, you retrieve semantics of a node,
 # for *abstractions*, you're getting the semantics of a *sentence*
@@ -53,6 +54,7 @@ class Semantic_Fragment_i(metaclass=abc.ABCMeta):
     dependent   : List[HandlerComponent_i] = field(default_factory=list)
     independent : List[HandlerComponent_i] = field(default_factory=list)
     abstraction : List[HandlerComponent_i] = field(default_factory=list)
+    operators   : List[ProductionOperator] = field(default_factory=list)
 
 #----------------------------------------
 @dataclass

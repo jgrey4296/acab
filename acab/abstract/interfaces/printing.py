@@ -10,9 +10,9 @@ import acab.abstract.interfaces.util as SU
 from acab.abstract.config.config import AcabConfig, ConfigSpec
 from acab.abstract.core import production_abstractions as PA
 from acab.abstract.core.values import AcabStatement
-from acab.abstract.interfaces.handler_system_interface import (
+from acab.abstract.interfaces.handler_system import (
     HandlerComponent_i, HandlerSystem_i)
-from acab.abstract.interfaces.value_interfaces import (Sentence_i,
+from acab.abstract.interfaces.value import (Sentence_i,
                                                        Value_i)
 from acab.abstract.printing.default_symbols import PRINT_SEPARATOR_P
 from acab.error.acab_print_exception import AcabPrintException

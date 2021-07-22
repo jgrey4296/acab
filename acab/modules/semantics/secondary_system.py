@@ -6,8 +6,8 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 from acab.abstract.config.config import AcabConfig
-from acab.abstract.interfaces.semantic_interfaces import (AbstractionSemantics_i,
-                                                          SemanticSystem_i)
+from acab.abstract.interfaces.semantic import (AbstractionSemantics_i,
+                                               SemanticSystem_i)
 from acab.error.acab_semantic_exception import AcabSemanticException
 from acab.modules.semantics.context_container import ContextContainer
 

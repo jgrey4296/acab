@@ -25,7 +25,7 @@ from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
 
 import acab.modules.analysis.typing.util as util
 
-from acab.abstract.interfaces import semantic_interfaces as SI
+from acab.abstract.interfaces import semantic as SI
 
 from .type_assignment_semantics import TypeAssignmentNode
 from .type_variable_semantics import VarTypeNode

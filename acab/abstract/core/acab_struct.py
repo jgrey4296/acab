@@ -3,7 +3,7 @@ from weakref import WeakValueDictionary
 import logging as root_logger
 
 from acab.abstract.config.config import AcabConfig
-from acab.abstract.interfaces.data_interfaces import Structure_i
+from acab.abstract.interfaces.data import Structure_i
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.values import AcabValue
 

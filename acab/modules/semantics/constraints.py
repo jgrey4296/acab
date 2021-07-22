@@ -10,7 +10,7 @@ import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
 from acab.abstract.config import GET
-import acab.abstract.interfaces.context_interface as CtxInt
+import acab.abstract.interfaces.context as CtxInt
 from acab.abstract.core.production_abstractions import ProductionComponent
 import acab.error.acab_semantic_exception as ASErr
 

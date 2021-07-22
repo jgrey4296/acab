@@ -22,7 +22,7 @@ from acab.abstract.core.production_abstractions import (ActionOperator,
                                                         ProductionOperator,
                                                         ProductionStructure)
 from acab.abstract.core.values import AcabValue, Sentence
-from acab.abstract.interfaces.semantic_interfaces import (AbstractionSemantics_i,
+from acab.abstract.interfaces.semantic import (AbstractionSemantics_i,
                                                           SemanticSystem_i)
 from acab.error.acab_base_exception import AcabBaseException
 from acab.error.acab_semantic_exception import AcabSemanticException

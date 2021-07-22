@@ -13,7 +13,7 @@ from uuid import UUID, uuid1
 from weakref import ref
 
 from acab.abstract.config.config import AcabConfig
-from acab.abstract.interfaces import value_interfaces as VI
+from acab.abstract.interfaces import value as VI
 import acab.abstract.core.default_structure as DS
 
 logging          = root_logger.getLogger(__name__)

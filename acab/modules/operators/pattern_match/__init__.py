@@ -1,4 +1,4 @@
-from acab.abstract.interfaces.dsl_interface import DSL_Fragment_i
+from acab.abstract.interfaces.dsl import DSL_Fragment_i
 
 from .pattern_match_op import PatternMatchOp
 from . import pattern_match_parser as PMP

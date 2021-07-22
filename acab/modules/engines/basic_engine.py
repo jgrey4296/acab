@@ -16,10 +16,10 @@ from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.production_abstractions import (ProductionContainer,
                                                         ProductionOperator)
 from acab.abstract.engine.module_loader import ModuleLoader
-from acab.abstract.interfaces.dsl_interface import DSL_Interface
-from acab.abstract.interfaces.engine_interface import AcabEngine_i, EnsureInitialised
-from acab.abstract.interfaces.printing_interfaces import PrintSystem_i
-from acab.abstract.interfaces.semantic_interfaces import SemanticSystem_i
+from acab.abstract.interfaces.dsl import DSL_Interface
+from acab.abstract.interfaces.engine import AcabEngine_i, EnsureInitialised
+from acab.abstract.interfaces.printing import PrintSystem_i
+from acab.abstract.interfaces.semantic import SemanticSystem_i
 from acab.abstract.parsing.dsl_builder import DSLBuilder
 from acab.error.acab_base_exception import AcabBaseException
 

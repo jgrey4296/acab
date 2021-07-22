@@ -7,7 +7,7 @@ import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
 
-from acab.abstract.interfaces import semantic_interfaces as SI
+from acab.abstract.interfaces import semantic as SI
 from acab.abstract.core import default_structure as DS
 from acab.modules.semantics.context_container import MutableContextInstance
 

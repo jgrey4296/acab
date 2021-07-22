@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import logging as root_logger
 
-import acab.abstract.interfaces.semantic_interfaces as SI
+import acab.abstract.interfaces.semantic as SI
 import acab.error.acab_semantic_exception as ASErr
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.values import Sentence, AcabStatement

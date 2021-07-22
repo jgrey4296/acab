@@ -1,4 +1,4 @@
-from acab.abstract.interfaces import semantic_interfaces as SI
+from acab.abstract.interfaces import semantic as SI
 
 class TypingSemantics(SI.SemanticSystem_i, SI.StructureSemantics_i):
     """

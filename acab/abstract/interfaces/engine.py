@@ -7,10 +7,10 @@ from os.path import abspath, exists, expanduser, split
 import abc
 from dataclasses import dataclass, field
 
-from acab.abstract.interfaces.dsl_interface import DSL_Fragment_i, DSLBuilder_i
-from acab.abstract.interfaces.semantic_interfaces import SemanticSystem_i
-from acab.abstract.interfaces.printing_interfaces import PrintSystem_i
-from acab.abstract.interfaces.module_loader_interface import ModuleLoader_i
+from acab.abstract.interfaces.dsl import DSL_Fragment_i, DSLBuilder_i
+from acab.abstract.interfaces.semantic import SemanticSystem_i
+from acab.abstract.interfaces.printing import PrintSystem_i
+from acab.abstract.interfaces.module_loader import ModuleLoader_i
 
 
 # Decorator for Engine:

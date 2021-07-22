@@ -1,5 +1,5 @@
-from acab.abstract.interfaces.dsl_interface import DSL_Fragment_i
-from acab.abstract.interfaces.semantic_interfaces import Semantic_Fragment_i
+from acab.abstract.interfaces.dsl import DSL_Fragment_i
+from acab.abstract.interfaces.semantic import Semantic_Fragment_i
 
 from .query_operators import EQ, NEQ, RegMatch, ELEM, HasTag
 from . import query_op_parsers as QOP

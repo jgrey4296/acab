@@ -13,7 +13,7 @@ from acab.abstract.core.node import AcabNode
 
 from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
 
-from acab.abstract.interfaces import semantic_interfaces as SI
+from acab.abstract.interfaces import semantic as SI
 
 from acab.modules.analysis.typing import type_exceptions as te
 

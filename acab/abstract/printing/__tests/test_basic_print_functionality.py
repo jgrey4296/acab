@@ -20,7 +20,7 @@ from acab.abstract.core.production_abstractions import (ProductionComponent,
                                                         ProductionContainer,
                                                         ProductionOperator)
 from acab.abstract.core.values import AcabStatement, AcabValue, Sentence
-from acab.abstract.interfaces.printing_interfaces import PrintSystem_i
+from acab.abstract.interfaces.printing import PrintSystem_i
 from acab.abstract.printing import wrappers as PW
 
 class BasicPrintFunctionalityTests(unittest.TestCase):

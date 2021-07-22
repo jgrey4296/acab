@@ -8,7 +8,7 @@ config = acab.setup()
 import acab.modules.parsing.exlo.FactParser as FP
 from acab.abstract.core.values import AcabValue, Sentence
 from acab.abstract.printing import default_handlers as DH
-from acab.abstract.interfaces.semantic_interfaces import PrintSemantics_i
+from acab.abstract.interfaces.semantic import PrintSemantics_i
 
 NEGATION_S      = config.prepare("Parse.Structure", "NEGATION")()
 TYPE_INSTANCE_S = config.prepare("Parse.Structure", "TYPE_INSTANCE")()

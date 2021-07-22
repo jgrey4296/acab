@@ -6,7 +6,7 @@ import acab.error.acab_semantic_exception as ASErr
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.values import AcabValue, Sentence
-from acab.abstract.interfaces import semantic_interfaces as SI
+from acab.abstract.interfaces import semantic as SI
 from dataclasses import dataclass
 
 Value = AcabValue

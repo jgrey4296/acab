@@ -14,7 +14,7 @@ from acab.modules.semantics.query_semantic_mixin import QuerySemanticMixin
 
 from acab.abstract.parsing.consts import ATOM_V
 
-from acab.abstract.interfaces import semantic_interfaces as SI
+from acab.abstract.interfaces import semantic as SI
 
 from acab.modules.analysis.typing import type_exceptions as te
 from acab.modules.analysis.typing import util

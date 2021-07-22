@@ -4,10 +4,10 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 import acab.abstract.core.default_structure as DS
-import acab.abstract.interfaces.value_interfaces as VI
+import acab.abstract.interfaces.value as VI
 from acab.abstract.config.config import GET, AcabConfig, ConfigSpec
 from acab.abstract.core.values import Sentence, AcabStatement
-from acab.abstract.interfaces.printing_interfaces import PrintSemantics_i
+from acab.abstract.interfaces.printing import PrintSemantics_i
 from acab.abstract.printing import default_symbols as DSYM
 from acab.abstract.printing import wrappers as PW
 

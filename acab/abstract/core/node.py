@@ -8,7 +8,7 @@ from typing import Any, Dict, List, Optional
 from uuid import UUID, uuid1
 from weakref import ref
 
-import acab.abstract.interfaces.data_interfaces as DI
+import acab.abstract.interfaces.data as DI
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.values import AcabValue, Sentence
 

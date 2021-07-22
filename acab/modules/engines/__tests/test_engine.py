@@ -16,7 +16,7 @@ import acab
 
 config = acab.setup()
 
-from acab.abstract.interfaces.engine_interface import AcabEngine_i
+from acab.abstract.interfaces.engine import AcabEngine_i
 from acab.modules.engines.basic_engine import AcabBasicEngine
 from acab.modules.parsing.exlo.el_dsl import EL_Parser
 from acab.modules.printing.basic_printer import BasicPrinter

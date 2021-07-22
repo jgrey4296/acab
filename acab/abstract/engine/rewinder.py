@@ -7,7 +7,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-from acab.abstract.interfaces.dsl_interface import DSL_Interface, Bootstrapper
+from acab.abstract.interfaces.dsl import DSL_Fragment_i, Bootstrapper_i
 from acab.abstract.parsing.trie_bootstrapper import TrieBootstrapper
 
 ModuleType   = 'Module'

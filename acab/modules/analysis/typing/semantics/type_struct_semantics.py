@@ -11,7 +11,7 @@ from acab.abstract.core.acab_struct import AcabStruct
 from acab.abstract.core.values import Sentence
 from acab.abstract.semantics.query_semantic_mixin import QuerySemanticMixin
 
-from acab.abstract.interfaces import semantic_interfaces as SI
+from acab.abstract.interfaces import semantic as SI
 
 from acab.abstract.semantics.struct_semantics import AcabStructureSemantics
 

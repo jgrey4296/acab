@@ -102,7 +102,7 @@ class Engine_Tests(unittest.TestCase):
 
 
 
-    @mock.patch('acab.abstract.interfaces.working_memory_interface.WorkingMemoryCore', autospec=True)
+    @mock.patch('acab.abstract.interfaces.working_memory.WorkingMemoryCore', autospec=True)
     @mock.patch('acab.abstract.semantics.struct_semantics.AcabStructureSemantics', autospec=True)
     def test_init(self, wm_mock, sem_mock):
         engine = Engine(wm_mock)
@@ -110,7 +110,7 @@ class Engine_Tests(unittest.TestCase):
 
     @unittest.skip("TODO")
     @mock.patch('acab.abstract.core.production_abstractions', autospec=True)
-    @mock.patch('acab.abstract.interfaces.working_memory_interface.WorkingMemoryCore', autospec=True)
+    @mock.patch('acab.abstract.interfaces.working_memory.WorkingMemoryCore', autospec=True)
     def test_load_modules(self, wm_mock, op_mock):
         module_mock = mock.Mock()
         engine = Engine(wm_mock, modules=[module_mock])
@@ -118,7 +118,7 @@ class Engine_Tests(unittest.TestCase):
         engine._working_memory.add_modules.assert_called_once()
 
     @mock.patch('acab.abstract.core.production_abstractions', autospec=True)
-    @mock.patch('acab.abstract.interfaces.working_memory_interface.WorkingMemoryCore', autospec=True)
+    @mock.patch('acab.abstract.interfaces.working_memory.WorkingMemoryCore', autospec=True)
     def test_reload_modules(self, wm_mock, op_mock):
         engine = Engine(wm_mock)
         engine.build_DSL()
