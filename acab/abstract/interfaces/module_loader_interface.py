@@ -9,9 +9,11 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-from acab.abstract.engine.util import ModuleComponents
-
-Sentence     = 'Sentence'
+Sentence            = 'Sentence'
+DSL_Fragment_i      = 'DSL_Fragment_i'
+Semantic_Fragment_i = 'Semantic_Fragment_i'
+ProductionOperator  = 'ProductionOperator'
+PrintSemantics_i    = 'PrintSemantics_i'
 
 #--------------------
 @dataclass
@@ -79,3 +81,14 @@ class ModuleLoader_i(metaclass=abc.ABCMeta):
         and only those descendents' __init__ files.
         """
         pass
+
+
+#----------------------------------------
+@dataclass
+class ModuleComponents():
+    """ Simple holder for extracted module components """
+
+    dsl_fragments : List[DSL_Fragment_i]      = field()
+    semantics     : List[Semantic_Fragment_i] = field()
+    operators     : List[ProductionOperator]  = field()
+    printers      : List[PrintSemantics_i]    = field()

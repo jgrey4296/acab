@@ -3,21 +3,21 @@ Provide a number of individual interfaces for top level Engine functionality
 """
 import abc
 from dataclasses import dataclass, field
+from types import ModuleType
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-from acab.abstract.engine.util import (ModuleComponents, applicable_comp,
+from acab.abstract.config.config import GET
+from acab.abstract.core.production_abstractions import ProductionOperator
+from acab.abstract.engine.util import (applicable_comp,
                                        comp_needs_instantiation, usable_comp)
 from acab.abstract.interfaces.dsl_interface import DSL_Fragment_i
-from acab.abstract.interfaces.module_loader_interface import ModuleLoader_i
+from acab.abstract.interfaces.module_loader_interface import (ModuleComponents,
+                                                              ModuleLoader_i)
 from acab.abstract.interfaces.printing_interfaces import PrintSemantics_i
-from acab.abstract.interfaces.semantic_interfaces import (AbstractionSemantics_i,
-                                                          DependentSemantics_i,
-                                                          IndependentSemantics_i)
-from acab.abstract.core.production_abstractions import ProductionOperator
-from acab.abstract.config.config import GET
-from types import ModuleType
+from acab.abstract.interfaces.semantic_interfaces import (
+    AbstractionSemantics_i, DependentSemantics_i, IndependentSemantics_i)
 
 Sentence     = 'Sentence'
 DSL_Fragment = DSL_Fragment_i
