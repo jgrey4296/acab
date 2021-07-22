@@ -7,8 +7,8 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 from acab.abstract.config.config import AcabConfig
-from acab.abstract.interfaces.semantic_interfaces import (AbstractionSemantics,
-                                                          SemanticSystem)
+from acab.abstract.interfaces.semantic_interfaces import (AbstractionSemantics_i,
+                                                          SemanticSystem_i)
 from acab.error.acab_semantic_exception import AcabSemanticException
 from acab.modules.semantics.context_container import ContextContainer
 
@@ -23,12 +23,12 @@ config  = AcabConfig.Get()
 SEM_HINT = config.prepare("Value.Structure", "SEMANTIC_HINT")()
 
 @dataclass
-class BasicSemanticSystem(SemanticSystem):
+class BasicSemanticSystem(SemanticSystem_i):
     """ A Complete semantic system """
 
     _default_sieve : ClassVar[List[Callable]] = [
         lambda x: x if isinstance(x, str) else None,
-        lambda x: x.override if isinstance(x, SemanticSystem.HandlerOverride) else None,
+        lambda x: x.override if isinstance(x, SemanticSystem_i.HandlerOverride) else None,
         lambda x: x.data[SEM_HINT] if SEM_HINT in x.data else None,
         lambda x: x.type
     ]
@@ -51,7 +51,7 @@ class BasicSemanticSystem(SemanticSystem):
             # run the semantics
             # Abstractions don't use structs
             # TODO entry hooks would go here.
-            if isinstance(semantics, AbstractionSemantics):
+            if isinstance(semantics, AbstractionSemantics_i):
                 assert(struct is None)
                 semantics(instruction, self, ctxs=ctxs, data=data)
             else:

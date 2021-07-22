@@ -7,7 +7,7 @@ from acab.abstract.core.acab_struct import BasicNodeStruct
 from acab.modules.semantics.dependent import BreadthTrieSemantics
 from acab.modules.semantics.independent import (BasicNodeSemantics,
                                                 ExclusionNodeSemantics)
-from acab.modules.semantics.system import BasicSemanticSystem
+from acab.modules.semantics.basic_system import BasicSemanticSystem
 from acab.abstract.core.values import Sentence
 from acab.abstract.config.config import GET
 

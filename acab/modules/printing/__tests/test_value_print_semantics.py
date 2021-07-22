@@ -20,7 +20,7 @@ from acab.abstract.core.production_abstractions import (ProductionComponent,
                                                         ProductionContainer,
                                                         ProductionOperator)
 from acab.abstract.core.values import AcabStatement, AcabValue, Sentence
-from acab.abstract.interfaces.printing_interfaces import PrintSystem
+from acab.modules.printing.basic_printer import BasicPrinter
 
 NEGATION_S        = config.prepare("Value.Structure", "NEGATION")()
 QUERY_S           = config.prepare("Value.Structure", "QUERY")()
@@ -57,19 +57,23 @@ class PrintValueSemanticTests(unittest.TestCase):
         logging = root_logger.getLogger(__name__)
 
     def test_initial(self):
-        sem_sys = PrintSystem(handlers=[Printers.BasicPrinter("_:ATOM")], structs=[])
+        sem_sys = BasicPrinter(handlers=[Printers.AtomicPrinter("_:ATOM"),
+                                         Printers.ConfigBackedSymbolPrinter("_:SYMBOL")],
+                               structs=[])
         result = sem_sys.pprint(AcabValue("Test"))
         self.assertEqual(result, "Test")
 
     def test_multiple(self):
-        sem_sys = PrintSystem(handlers=[Printers.BasicPrinter("_:ATOM")], structs=[])
+        sem_sys = BasicPrinter(handlers=[Printers.AtomicPrinter("_:ATOM"),
+                                         Printers.ConfigBackedSymbolPrinter("_:SYMBOL")],
+                               structs=[])
         result = sem_sys.pprint(AcabValue("a"), AcabValue("b"), AcabValue("c"))
-        self.assertEqual(result, r"abc")
+        self.assertEqual(result, "a\nb\nc")
 
 
     def test_string_wrap(self):
-        sem_sys = PrintSystem(handlers=[Printers.PrimitiveTypeAwarePrinter("_:ATOM"),
-                                        Printers.ConfigBackedSymbolPrinter("_:SYMBOL")],
+        sem_sys = BasicPrinter(handlers=[Printers.PrimitiveTypeAwarePrinter("_:ATOM"),
+                                         Printers.ConfigBackedSymbolPrinter("_:SYMBOL")],
                               structs=[])
 
         test = AcabValue(name="blah", data={TYPE_INSTANCE_S: STR_PRIM_S})
@@ -77,15 +81,15 @@ class PrintValueSemanticTests(unittest.TestCase):
         self.assertEqual(result, '"blah"')
 
     def test_regex_wrap(self):
-        sem_sys = PrintSystem(handlers=[Printers.PrimitiveTypeAwarePrinter("_:ATOM"),
-                                        Printers.ConfigBackedSymbolPrinter("_:SYMBOL")],
+        sem_sys = BasicPrinter(handlers=[Printers.PrimitiveTypeAwarePrinter("_:ATOM"),
+                                         Printers.ConfigBackedSymbolPrinter("_:SYMBOL")],
                               structs=[])
         test = AcabValue(value=re.compile("blah"), data={TYPE_INSTANCE_S: REGEX_PRIM_S})
         result = sem_sys.pprint(test)
         self.assertEqual(result, r'/blah/')
 
     def test_var_wrap(self):
-        sem_sys = PrintSystem(handlers=[Printers.PrimitiveTypeAwarePrinter("_:ATOM"),
+        sem_sys = BasicPrinter(handlers=[Printers.PrimitiveTypeAwarePrinter("_:ATOM"),
                                         Printers.ConfigBackedSymbolPrinter("_:SYMBOL")],
                               structs=[])
         test = AcabValue("blah", data={BIND_S : True})
@@ -93,7 +97,7 @@ class PrintValueSemanticTests(unittest.TestCase):
         self.assertEqual(result, r'$blah')
 
     def test_pprint_at_var(self):
-        sem_sys = PrintSystem(handlers=[Printers.PrimitiveTypeAwarePrinter("_:ATOM"),
+        sem_sys = BasicPrinter(handlers=[Printers.PrimitiveTypeAwarePrinter("_:ATOM"),
                                         Printers.ConfigBackedSymbolPrinter("_:SYMBOL")],
                               structs=[])
         value = AcabValue("test")
@@ -102,7 +106,7 @@ class PrintValueSemanticTests(unittest.TestCase):
         self.assertEqual(result, r'@test')
 
     def test_modal_print(self):
-        sem_sys = PrintSystem(handlers=[Printers.ModalAwarePrinter("_:ATOM"),
+        sem_sys = BasicPrinter(handlers=[Printers.ModalAwarePrinter("_:ATOM"),
                                         Printers.ConfigBackedSymbolPrinter("_:SYMBOL")],
                               structs=[],
                               settings={"MODAL" : "exop"})
@@ -112,7 +116,7 @@ class PrintValueSemanticTests(unittest.TestCase):
         self.assertEqual(result, r'blah.')
 
     def test_modal_print2(self):
-        sem_sys = PrintSystem(handlers=[Printers.ModalAwarePrinter("_:ATOM"),
+        sem_sys = BasicPrinter(handlers=[Printers.ModalAwarePrinter("_:ATOM"),
                                         Printers.ConfigBackedSymbolPrinter("_:SYMBOL")],
                               structs=[],
                               settings={"MODAL" : "exop"})
@@ -123,7 +127,7 @@ class PrintValueSemanticTests(unittest.TestCase):
         self.assertEqual(result, r'blah!')
 
     def test_modal_print_override(self):
-        sem_sys = PrintSystem(handlers=[Printers.ModalAwarePrinter("_:ATOM"),
+        sem_sys = BasicPrinter(handlers=[Printers.ModalAwarePrinter("_:ATOM"),
                                         Printers.ConfigBackedSymbolPrinter("_:SYMBOL",
                                                                            overrides={DOT_E : "^"})],
                               structs=[],
@@ -134,7 +138,7 @@ class PrintValueSemanticTests(unittest.TestCase):
         self.assertEqual(result, r'blah^')
 
     def test_symbol_override(self):
-        sem_sys = PrintSystem(handlers=[Printers.ModalAwarePrinter("_:ATOM"),
+        sem_sys = BasicPrinter(handlers=[Printers.ModalAwarePrinter("_:ATOM"),
                                         Printers.ConfigBackedSymbolPrinter("_:SYMBOL",
                                                                            overrides={config.prepare("Symbols", "BIND") : "%"})],
                               structs=[])
@@ -145,14 +149,14 @@ class PrintValueSemanticTests(unittest.TestCase):
 
     def test_value_uuid(self):
         val = AcabValue("test")
-        sem_sys = PrintSystem(handlers=[Printers.UUIDAwarePrinter("_:ATOM")],
+        sem_sys = BasicPrinter(handlers=[Printers.UUIDAwarePrinter("_:ATOM")],
                               structs=[])
         result = sem_sys.pprint(val)
         self.assertEqual(result, "({} : {})".format(val.uuid, val.name))
 
 
     def test_constraints(self):
-        sem_sys = PrintSystem(handlers=[Printers.BasicSentenceAwarePrinter("_:SENTENCE"),
+        sem_sys = BasicPrinter(handlers=[Printers.BasicSentenceAwarePrinter("_:SENTENCE"),
                                         Printers.ConstraintAwareValuePrinter("_:ATOM"),
                                         Printers.ProductionComponentPrinter("_:COMPONENT"),
                                         Printers.ConfigBackedSymbolPrinter("_:SYMBOL"),
@@ -164,7 +168,7 @@ class PrintValueSemanticTests(unittest.TestCase):
         self.assertEqual(result, "test(λa.test.op $x).")
 
     def test_constraints_multi_var(self):
-        sem_sys = PrintSystem(handlers=[Printers.BasicSentenceAwarePrinter("_:SENTENCE"),
+        sem_sys = BasicPrinter(handlers=[Printers.BasicSentenceAwarePrinter("_:SENTENCE"),
                                         Printers.ConstraintAwareValuePrinter("_:ATOM"),
                                         Printers.ProductionComponentPrinter("_:COMPONENT"),
                                         Printers.ConfigBackedSymbolPrinter("_:SYMBOL"),
