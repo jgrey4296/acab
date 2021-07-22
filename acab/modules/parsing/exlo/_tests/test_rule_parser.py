@@ -10,7 +10,6 @@ from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
 from acab.abstract.parsing.trie_bootstrapper import TrieBootstrapper
 from acab.abstract.core.production_abstractions import ProductionOperator, ProductionComponent, ProductionContainer, ProductionStructure
-from acab.modules.operators import query as QOP
 from acab.modules.parsing.exlo.parsers import ActionParser as AP
 from acab.modules.parsing.exlo.parsers import FactParser as FP
 from acab.modules.parsing.exlo.parsers import RuleParser as RP
@@ -34,13 +33,6 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
         console.setLevel(root_logger.INFO)
         root_logger.getLogger('').addHandler(console)
         logging = root_logger.getLogger(__name__)
-
-        # setup class
-        bp = TrieBootstrapper()
-        qmod = QOP.MODULE()
-        qmod.assert_parsers(bp)
-        FP.HOTLOAD_QUERY_OP << bp.query("operator.sugar")
-        FP.HOTLOAD_ANNOTATIONS << bp.query("query.annotation.*")
 
     def setUp(self):
             return 1
