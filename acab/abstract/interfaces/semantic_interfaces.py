@@ -8,7 +8,7 @@ And reduce those internal formats back down to basic sentences.
 SemanticMap also provide the ability to map a value or node to particular semantics,
 and specifies *how* to search for the correct mapping.
 
-Meanwhile IndependentSemantics are concerned only with the values and structures they have control over.
+Meanwhile IndependentSemantics_i are concerned only with the values and structures they have control over.
 
 *Dependent* Semantics factor in contexts and a reference to the engine.
 
@@ -25,9 +25,9 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 import acab.abstract.interfaces.util as SU
 from acab.abstract.config.config import AcabConfig, ConfigSpec
 from acab.abstract.interfaces.handler_system_interface import (
-    HandlerComponent, HandlerSystemInterface)
-from acab.abstract.interfaces.value_interfaces import (SentenceInterface,
-                                                       ValueInterface)
+    HandlerComponent_i, HandlerSystem_i)
+from acab.abstract.interfaces.value_interfaces import (Sentence_i,
+                                                       Value_i)
 from acab.error.acab_print_exception import AcabPrintException
 from acab.error.acab_semantic_exception import AcabSemanticException
 from acab.modules.semantics.context_container import ContextContainer
@@ -42,14 +42,21 @@ Structure       = 'AcabStruct'
 Engine          = 'Engine'
 Contexts        = 'Contexts'
 Handler         = 'SemanticHandler' # Callable
-AbsDepSemantics = Union['AbstractionSemantics', 'DependentSemantics']
-InDepSemantics  = 'IndependentSemantics'
+AbsDepSemantics = Union['AbstractionSemantics_i', 'DependentSemantics_i']
+InDepSemantics  = 'IndependentSemantics_i'
 
 # Note: for dependent and indep, you retrieve semantics of a node,
 # for *abstractions*, you're getting the semantics of a *sentence*
 #--------------------------------------------------
 @dataclass
-class SemanticSystem(HandlerSystemInterface):
+class Semantic_Fragment_i(metaclass=abc.ABCMeta):
+    dependent   : List[HandlerComponent_i] = field(default_factory=list)
+    independent : List[HandlerComponent_i] = field(default_factory=list)
+    abstraction : List[HandlerComponent_i] = field(default_factory=list)
+
+#----------------------------------------
+@dataclass
+class SemanticSystem_i(HandlerSystem_i):
     """
     Map Instructions to Abstraction/Dependent Semantics
     """
@@ -59,7 +66,7 @@ class SemanticSystem(HandlerSystemInterface):
         pass
 
 @dataclass
-class DependentSemantics(SemanticSystem, HandlerComponent):
+class DependentSemantics_i(SemanticSystem_i, HandlerComponent_i):
     """
     Dependent Semantics rely on the context they are called in to function
     and are built with specific mappings to independent semantics
@@ -91,7 +98,7 @@ class DependentSemantics(SemanticSystem, HandlerComponent):
         pass
 
 
-class IndependentSemantics(HandlerComponent):
+class IndependentSemantics_i(HandlerComponent_i):
     """
     Independent Semantics which operate on values and nodes, without
     requiring access to larger context, or engine access
@@ -123,7 +130,7 @@ class IndependentSemantics(HandlerComponent):
         pass
 
 
-class AbstractionSemantics(HandlerComponent):
+class AbstractionSemantics_i(HandlerComponent_i):
     """
     Semantics of Higher level abstractions
     eg: Rules, Layers, Pipelines...

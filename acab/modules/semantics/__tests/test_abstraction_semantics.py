@@ -22,8 +22,8 @@ from acab.abstract.core.production_abstractions import (ActionOperator,
                                                         ProductionOperator,
                                                         ProductionStructure)
 from acab.abstract.core.values import AcabValue, Sentence
-from acab.abstract.interfaces.semantic_interfaces import (AbstractionSemantics,
-                                                          SemanticSystem)
+from acab.abstract.interfaces.semantic_interfaces import (AbstractionSemantics_i,
+                                                          SemanticSystem_i)
 from acab.error.acab_base_exception import AcabBaseException
 from acab.error.acab_semantic_exception import AcabSemanticException
 from acab.modules.operators.query.query_operators import EQ, NEQ, HasTag
@@ -34,7 +34,7 @@ from acab.modules.semantics.context_container import (ConstraintCollection,
 from acab.modules.semantics.dependent import BreadthTrieSemantics
 from acab.modules.semantics.independent import (BasicNodeSemantics,
                                                 ExclusionNodeSemantics)
-from acab.modules.semantics.system import BasicSemanticSystem
+from acab.modules.semantics.basic_system import BasicSemanticSystem
 from acab.modules.semantics.util import SemanticOperatorWrapDecorator
 
 EXOP         = config.prepare("MODAL", "exop")()
@@ -162,7 +162,7 @@ class AbstractionSemanticTests(unittest.TestCase):
             def __call__(self, *params, data=None, semSystem=None):
                 side_effect_obj['a'] = params[0]
 
-        class StubAbsSemantic(AbstractionSemantics):
+        class StubAbsSemantic(AbstractionSemantics_i):
             def __call__(self, ins, semSys, ctxs=None, data=None):
                 raise AcabBaseException("TestAbsSem called")
 
@@ -223,7 +223,7 @@ class AbstractionSemanticTests(unittest.TestCase):
             def __call__(self, *params, data=None, semSystem=None):
                 side_effect_obj['a'] = params[0]
 
-        class StubAbsSemantic(AbstractionSemantics):
+        class StubAbsSemantic(AbstractionSemantics_i):
             def __call__(self, ins, semSys, ctxs=None, data=None):
                 raise AcabBaseException("TestAbsSem called", rest=[str(ins), data])
 
@@ -302,7 +302,7 @@ class AbstractionSemanticTests(unittest.TestCase):
             def __call__(self, *params, data=None, semSystem=None):
                 side_effect_obj['a'] = params[0]
 
-        class StubAbsSemantic(AbstractionSemantics):
+        class StubAbsSemantic(AbstractionSemantics_i):
             def __call__(self, ins, semSys, ctxs=None, data=None):
                 raise AcabBaseException("TestAbsSem called", rest=[str(ins), data])
 

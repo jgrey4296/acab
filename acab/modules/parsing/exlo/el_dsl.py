@@ -1,7 +1,7 @@
 """
 DSL Interface for exclusion logic, to connect it into Acab
 """
-from acab.abstract.interfaces.dsl_interface import DSL_Interface
+from acab.abstract.interfaces.dsl_interface import DSL_Fragment_i
 from acab.abstract.parsing import parsers as PU
 from acab.error.acab_parse_exception import AcabParseException
 from acab.modules.parsing.exlo import util as TPU
@@ -13,7 +13,7 @@ from acab.modules.parsing.exlo.parsers import TotalParser as TotalP
 from acab.modules.parsing.exlo.parsers import TransformParser as TP
 
 
-class EL_Parser(DSL_Interface):
+class EL_Parser(DSL_Fragment_i):
     """  """
 
     def assert_parsers(self, bootstrapper):

@@ -25,7 +25,7 @@ Contexts      = 'Contexts'
 
 
 # Dependent Semantics
-class BreadthTrieSemantics(SI.DependentSemantics):
+class BreadthTrieSemantics(SI.DependentSemantics_i):
     """
     Trie Semantics which map values -> Nodes
     Searches *Breadth First*

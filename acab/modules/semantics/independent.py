@@ -32,7 +32,7 @@ Node     = 'Node'
 Engine   = 'Engine'
 
 # Independent Semantics
-class BasicNodeSemantics(SI.IndependentSemantics):
+class BasicNodeSemantics(SI.IndependentSemantics_i):
 
     def make(self, val, data=None) -> AcabNode:
         return self.up(AcabNode(val), data)
@@ -68,7 +68,7 @@ class BasicNodeSemantics(SI.IndependentSemantics):
 
         return node.remove_child(to_delete)
 
-class ExclusionNodeSemantics(SI.IndependentSemantics):
+class ExclusionNodeSemantics(SI.IndependentSemantics_i):
     def make(self, val, data=None) -> AcabNode:
         return self.up(AcabNode(val), data)
 

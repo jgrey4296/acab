@@ -16,13 +16,13 @@ import acab
 
 config = acab.setup()
 
-from acab.abstract.interfaces.engine_interface import AcabEngine_Interface
+from acab.abstract.interfaces.engine_interface import AcabEngine_i
 from acab.modules.engines.basic_engine import AcabBasicEngine
 from acab.modules.parsing.exlo.el_dsl import EL_Parser
 from acab.modules.printing.basic_printer import BasicPrinter
 from acab.modules.printing.default import DEFAULT_PRINTER
 from acab.modules.semantics.default import DEFAULT_SEMANTICS
-from acab.modules.semantics.system import BasicSemanticSystem
+from acab.modules.semantics.basic_system import BasicSemanticSystem
 
 
 class TestEngine(unittest.TestCase):
@@ -49,7 +49,7 @@ class TestEngine(unittest.TestCase):
                                     printer=printer,
                                     modules=[])
 
-        self.assertIsInstance(basic, AcabEngine_Interface)
+        self.assertIsInstance(basic, AcabEngine_i)
         self.assertTrue(basic.initialised)
 
         parser.assert_parsers.assert_called_once()
@@ -99,4 +99,13 @@ class TestEngine(unittest.TestCase):
         self.assertEqual(result, "a.test.sentence\na.test.blah")
 
     def test_module_setup(self):
-        pass
+        breakpoint()
+        basic     = AcabBasicEngine(parser=EL_Parser(),
+                                    semantics=DEFAULT_SEMANTICS(),
+                                    printer=DEFAULT_PRINTER,
+                                    modules=["acab.modules.operators.query"])
+        self.assertTrue("acab.modules.operators.query" in basic._module_loader)
+
+        basic.insert("a.test.sentence")
+        result = basic.query("a.test.sentence(#test)?")
+        self.assertTrue(bool(result))

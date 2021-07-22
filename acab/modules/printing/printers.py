@@ -7,7 +7,7 @@ import acab.abstract.core.default_structure as DS
 import acab.abstract.interfaces.value_interfaces as VI
 from acab.abstract.config.config import GET, AcabConfig, ConfigSpec
 from acab.abstract.core.values import Sentence, AcabStatement
-from acab.abstract.interfaces.printing_interfaces import PrintSemantics
+from acab.abstract.interfaces.printing_interfaces import PrintSemantics_i
 from acab.abstract.printing import default_symbols as DSYM
 from acab.abstract.printing import wrappers as PW
 
@@ -16,13 +16,13 @@ config = GET()
 SEN_SEN = Sentence.build([DS.SENTENCE_PRIM])
 
 # Independent
-class BasicPrinter(PrintSemantics):
+class AtomicPrinter(PrintSemantics_i):
     """ Simply print the str of anything passed in """
 
     def __call__(self, value, top=None):
         return str(value.name)
 
-class PrimitiveTypeAwarePrinter(PrintSemantics):
+class PrimitiveTypeAwarePrinter(PrintSemantics_i):
 
     def add_transforms(self):
         return [PW._maybe_wrap_str,
@@ -33,7 +33,7 @@ class PrimitiveTypeAwarePrinter(PrintSemantics):
         curr_str = [str(value.name)]
         return self.run_transforms(value, curr_str)
 
-class ModalAwarePrinter(PrintSemantics):
+class ModalAwarePrinter(PrintSemantics_i):
 
     def add_transforms(self):
         return [PW._maybe_wrap_str,
@@ -53,7 +53,7 @@ class ModalAwarePrinter(PrintSemantics):
         return transformed
 
 
-class UUIDAwarePrinter(PrintSemantics):
+class UUIDAwarePrinter(PrintSemantics_i):
     def add_transforms(self):
         return [PW._maybe_wrap_str,
                 PW._maybe_wrap_regex,
@@ -68,7 +68,7 @@ class UUIDAwarePrinter(PrintSemantics):
         return final
 
 
-class ConstraintAwareValuePrinter(PrintSemantics):
+class ConstraintAwareValuePrinter(PrintSemantics_i):
     def add_transforms(self):
         return [PW._maybe_wrap_str,
                 PW._maybe_wrap_regex,
@@ -98,7 +98,7 @@ class ConstraintAwareValuePrinter(PrintSemantics):
 
 
 # Dependent
-class BasicSentenceAwarePrinter(PrintSemantics):
+class BasicSentenceAwarePrinter(PrintSemantics_i):
 
     def __call__(self, value, top=None):
         assert(value.type == SEN_SEN)
@@ -120,7 +120,7 @@ class BasicSentenceAwarePrinter(PrintSemantics):
         return return_list
 
 
-class ProductionComponentPrinter(PrintSemantics):
+class ProductionComponentPrinter(PrintSemantics_i):
 
     def __call__(self, value, top=None):
         result = []
@@ -146,12 +146,12 @@ class ProductionComponentPrinter(PrintSemantics):
 
 
 # Abstraction
-class ImplicitContainerPrinter(PrintSemantics):
+class ImplicitContainerPrinter(PrintSemantics_i):
     """ Production Containers """
 
     def __call__(self, value, top=None):
         return PW._sep_list(self, value, value.clauses, sep="\n")
-class ExplicitContainerPrinter(PrintSemantics):
+class ExplicitContainerPrinter(PrintSemantics_i):
     """ Production Containers """
 
     def __call__(self, value, top=None):
@@ -166,7 +166,7 @@ class ExplicitContainerPrinter(PrintSemantics):
 
         return result
 
-class StructurePrinter(PrintSemantics):
+class StructurePrinter(PrintSemantics_i):
     """ Ordered structures """
 
     def __call__(self, value, top=None):
@@ -205,7 +205,7 @@ class StructurePrinter(PrintSemantics):
         return result
 
 @dataclass
-class ConfigBackedSymbolPrinter(PrintSemantics):
+class ConfigBackedSymbolPrinter(PrintSemantics_i):
     """ Use an AcabConfig for lookup of provided
     symbol tuples.
     """

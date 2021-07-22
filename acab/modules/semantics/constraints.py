@@ -27,7 +27,7 @@ Sentence    = 'Sentence'
 Node        = 'AcabNode'
 
 @dataclass
-class ConstraintCollection(CtxInt.ConstraintInterface):
+class ConstraintCollection(CtxInt.Constraint_i):
     """ Simple container of all ProductionComponent constraints a word possesses,
     separated into subtypes """
 

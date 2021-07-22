@@ -19,7 +19,7 @@ from acab.abstract.core.node import AcabNode
 
 from acab.modules.structures.trie.trie import Trie
 from acab.abstract.core.acab_struct import AcabStruct
-from acab.abstract.interfaces.data_interfaces import StructureInterface
+from acab.abstract.interfaces.data_interfaces import Structure_i
 from acab.abstract.interfaces.semantic_interfaces import IndependentSemantics
 from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
 
@@ -297,7 +297,7 @@ class TopologicalOrderedAcabTests(unittest.TestCase):
         """ Check The most Basic Structure: The Trie"""
         the_trie = Trie()
         self.assertIsInstance(the_trie, Trie)
-        self.assertIsInstance(the_trie, StructureInterface)
+        self.assertIsInstance(the_trie, Structure_i)
 
 # Productions
     def test_production_abstraction_operator(self):

@@ -23,7 +23,7 @@ from acab.abstract.core.acab_struct import BasicNodeStruct
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.production_abstractions import ProductionOperator
 from acab.abstract.core.values import AcabValue, Sentence
-from acab.abstract.interfaces.dsl_interface import Bootstrapper
+from acab.abstract.interfaces.dsl_interface import Bootstrapper_i
 from acab.modules.semantics.context_container import ContextContainer
 from acab.modules.semantics.dependent import BreadthTrieSemantics
 from acab.modules.semantics.independent import BasicNodeSemantics
@@ -33,7 +33,7 @@ config = GET()
 
 BIND_S    = config.prepare("Value.Structure", "BIND")()
 
-class TrieBootstrapper(Bootstrapper):
+class TrieBootstrapper(Bootstrapper_i):
     """ Manage parsers and allow queries for hotloading,
     used in working memory and module interfaces """
 

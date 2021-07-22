@@ -12,14 +12,14 @@ from acab.error.acab_base_exception import AcabBaseException
 logging = root_logger.getLogger(__name__)
 
 Structure      = 'AcabStruct'
-Handler        = 'HandlerComponent'
-ValueInterface = 'ValueInterface'
+Handler        = 'HandlerComponent_i'
+Value_i        = 'Value_i'
 Sentence       = 'Sentence'
 HandlerTuple   = Tuple[Handler, Optional[Structure]]
 Overrider      = 'HandlerOverride'
 
 @dataclass
-class HandlerSystemInterface(metaclass=abc.ABCMeta):
+class HandlerSystem_i(metaclass=abc.ABCMeta):
 
     handlers : InitVar[List[Callable]]    = field()
     structs  : InitVar[List[Structure]]   = field()
@@ -36,7 +36,7 @@ class HandlerSystemInterface(metaclass=abc.ABCMeta):
     class HandlerOverride:
         """ Simple Wrapped for forced semantic use """
         override : str              = field()
-        data     : ValueInterface   = field()
+        data     : Value_i   = field()
 
 
     def __post_init__(self, handlers, structs):
@@ -56,9 +56,9 @@ class HandlerSystemInterface(metaclass=abc.ABCMeta):
 
     def _register_handler(self, handler):
         # TODO maybe handle tuples later
-        if isinstance(handler, HandlerComponent):
+        if isinstance(handler, HandlerComponent_i):
             pair_str = handler.mapped_to
-        elif isinstance(handler, HandlerType) and isinstance(handler.__self.__, HandlerComponent):
+        elif isinstance(handler, HandlerType) and isinstance(handler.__self.__, HandlerComponent_i):
             pair_str = handler.__self__.mapped_to
         else:
             raise AcabBaseException("Handler Not Compliant", handler)
@@ -68,14 +68,14 @@ class HandlerSystemInterface(metaclass=abc.ABCMeta):
 
     def _register_struct(self, struct):
         # TODO maybe handle tuples later
-        if not isinstance(struct, HandlerComponent):
+        if not isinstance(struct, HandlerComponent_i):
             raise AcabBaseException("Struct Not Compliant", struct)
 
         pair_str = struct.mapped_to
         assert(pair_str not in self.registered_structs)
         self.registered_structs[pair_str] = struct
 
-    def lookup(self, value: ValueInterface) -> HandlerTuple:
+    def lookup(self, value: Value_i) -> HandlerTuple:
         # sieve from most to least specific
         if value is None:
             return self.default
@@ -105,12 +105,12 @@ class HandlerSystemInterface(metaclass=abc.ABCMeta):
         if new_target not in self.registered_handlers:
             raise AcabBaseException(f"Undefined override handler: {new_target}")
 
-        return HandlerSystemInterface.HandlerOverride(new_target, value)
+        return HandlerSystem_i.HandlerOverride(new_target, value)
     @abc.abstractmethod
     def __call__(self, *args, **kwargs):
         pass
 
 #--------------------
 @dataclass
-class HandlerComponent(metaclass=abc.ABCMeta):
+class HandlerComponent_i(metaclass=abc.ABCMeta):
     mapped_to : Sentence = field()

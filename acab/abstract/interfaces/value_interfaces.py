@@ -20,7 +20,7 @@ AcabValue     = 'AcabValue'
 AcabStatement = 'AcabStatement'
 
 @dataclass
-class ValueInterface(metaclass=abc.ABCMeta):
+class Value_i(metaclass=abc.ABCMeta):
 
     name   : str             = field(default=None)
     value  : Any             = field(default=None)
@@ -45,9 +45,9 @@ class ValueInterface(metaclass=abc.ABCMeta):
 
 
 @dataclass
-class SentenceInterface(metaclass=abc.ABCMeta):
+class Sentence_i(metaclass=abc.ABCMeta):
 
-    value: List[ValueInterface]  = field(default_factory=list)
+    value: List[Value_i]  = field(default_factory=list)
 
     @abc.abstractmethod
     def build(words, **kwargs):

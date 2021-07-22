@@ -15,7 +15,7 @@ from dataclasses import dataclass, field, InitVar
 
 # Interfaces:
 @dataclass
-class ConstraintInterface(metaclass=abc.ABCMeta):
+class Constraint_i(metaclass=abc.ABCMeta):
     @staticmethod
     def build(word, operators):
         pass
@@ -25,7 +25,7 @@ class ConstraintInterface(metaclass=abc.ABCMeta):
         pass
 
 @dataclass
-class ContextContainer(metaclass=abc.ABCMeta):
+class ContextContainer_i(metaclass=abc.ABCMeta):
 
     @staticmethod
     def build(ops):
@@ -60,7 +60,7 @@ class ContextContainer(metaclass=abc.ABCMeta):
         pass
 
 @dataclass
-class ContextInstance(metaclass=abc.ABCMeta):
+class ContextInstance_i(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def bind(self, word, nodes):

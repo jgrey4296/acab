@@ -33,7 +33,7 @@ Value = 'AcabValue'
 Sen   = 'Sentence'
 
 @dataclass
-class AcabValue(VI.ValueInterface, Generic[T]):
+class AcabValue(VI.Value_i, Generic[T]):
     _value_types : ClassVar[Set[Any]] = set([str, Pattern, list])
     value        : T                  = field(default=None)
 
@@ -254,7 +254,7 @@ class AcabStatement(AcabValue):
     pass
 
 @dataclass
-class Sentence(AcabStatement, VI.SentenceInterface):
+class Sentence(AcabStatement, VI.Sentence_i):
 
     @staticmethod
     def build(words, **kwargs):

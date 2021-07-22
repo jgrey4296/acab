@@ -29,7 +29,7 @@ Node        = 'AcabNode'
 
 
 @dataclass
-class ContextContainer(CtxInt.ContextContainer):
+class ContextContainer(CtxInt.ContextContainer_i):
 
     # Operators could be a pair: (semantics, struct) to query
     # TODO operators is just the results of a prior query
@@ -183,7 +183,7 @@ class ContextContainer(CtxInt.ContextContainer):
     def merge(self, ctxCon):
         raise NotImplementedError()
 @dataclass
-class ContextInstance(CtxInt.ContextInstance):
+class ContextInstance(CtxInt.ContextInstance_i):
 
     data         : Dict[Any, Any]  = field(default_factory=dict)
     nodes        : Dict[Any, Node] = field(default_factory=dict)

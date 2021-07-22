@@ -24,7 +24,7 @@ Contexts      = 'Contexts'
 
 
 # Dependent Semantics
-class FSMSemantics(SI.DependentSemantics):
+class FSMSemantics(SI.DependentSemantics_i):
 
     def insert(self, struct, sen, data=None, ctxs=None):
         """
@@ -139,7 +139,7 @@ class FSMSemantics(SI.DependentSemantics):
         raise NotImplementedError()
 
 
-class ASPSemantics(SI.DependentSemantics):
+class ASPSemantics(SI.DependentSemantics_i):
     """
     Stub for passing assertions and queries into an ASP program
     """
@@ -164,7 +164,7 @@ class ASPSemantics(SI.DependentSemantics):
 
 
 
-class DepthTrieSemantics(SI.DependentSemantics):
+class DepthTrieSemantics(SI.DependentSemantics_i):
     """
     Trie Semantics which map values -> Nodes
     Searches *Depth First*

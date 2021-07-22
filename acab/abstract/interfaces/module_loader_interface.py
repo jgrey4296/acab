@@ -3,18 +3,19 @@ Provide a number of individual interfaces for top level Engine functionality
 """
 import abc
 from dataclasses import dataclass, field
+from importlib import import_module
+from types import ModuleType
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
 from acab.abstract.engine.util import ModuleComponents
-from types import ModuleType
 
 Sentence     = 'Sentence'
 
 #--------------------
 @dataclass
-class ModuleLoader_Interface(metaclass=abc.ABCMeta):
+class ModuleLoader_i(metaclass=abc.ABCMeta):
     """ Describes how an engine loads ACAB/py modules """
     loaded_modules       : Dict[str, ModuleComponents]  = field(init=False, default_factory=dict)
 
@@ -65,6 +66,9 @@ class ModuleLoader_Interface(metaclass=abc.ABCMeta):
 
         except ModuleNotFoundError as e:
             raise AcabImportException(maybe_module) from None
+
+    def __contains__(self, other: Union[ModuleType, str]):
+        return str(other) in self.loaded_modules
 
     @abc.abstractmethod
     def extract_from_module(self, module: ModuleType) -> ModuleComponents:

@@ -26,8 +26,8 @@ def EnsureInitialised(method):
 
     fn.__name__ = method.__name__
     return fn
-#--------------------
-class Bootstrapper(metaclass=abc.ABCMeta):
+#----------------------------------------
+class Bootstrapper_i(metaclass=abc.ABCMeta):
     """ A Utility class for registering and retrieving
     interacting parsers """
 
@@ -45,7 +45,9 @@ class Bootstrapper(metaclass=abc.ABCMeta):
         """
         pass
 
-class DSL_Interface(metaclass=abc.ABCMeta):
+#----------------------------------------
+# TODO refactor to DSL_Fragment_i
+class DSL_Fragment_i(metaclass=abc.ABCMeta):
     """ """
 
     def parse_string(self, string):
@@ -63,7 +65,7 @@ class DSL_Interface(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def assert_parsers(self, bootstrapper: Bootstrapper):
+    def assert_parsers(self, bootstrapper: Bootstrapper_i):
         """
         Assert parsers from this module for integration later
         ie: values.number <= number_parser
@@ -74,7 +76,7 @@ class DSL_Interface(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def query_parsers(self, bootstrapper: Bootstrapper):
+    def query_parsers(self, bootstrapper: Bootstrapper_i):
         """
         Query the now complete parser trie for hotloads
         values.$xs?
@@ -88,12 +90,13 @@ class DSL_Interface(metaclass=abc.ABCMeta):
 
 
 
-#--------------------------------------------------
+#----------------------------------------
+# TODO refactor to DSL_Builder_i
 @dataclass
-class DSLBuilder_Interface(metaclass=abc.ABCMeta):
-    root_fragment        : DSL_Interface   = field()
+class DSLBuilder_i(metaclass=abc.ABCMeta):
+    root_fragment        : DSL_Fragment_i   = field()
 
-    _bootstrap_parser    : Bootstrapper     = field(init=False)
+    _bootstrap_parser    : Bootstrapper_i     = field(init=False)
     _main_parser         : Parser           = field(init=False)
     _query_parser        : Parser           = field(init=False)
     _parsers_initialised : bool             = field(init=False, default=False)
@@ -123,6 +126,6 @@ class DSLBuilder_Interface(metaclass=abc.ABCMeta):
     def query_parse(self, s:str) -> Query:
         return self._query_parser.parseString(s)[0][1]
     @abc.abstractmethod
-    def construct_parsers_from_fragments(self, fragments: List[DSL_Interface]):
+    def construct_parsers_from_fragments(self, fragments: List[DSL_Fragment_i]):
         """ Assemble parsers from the fragments of the wm and loaded modules """
         pass

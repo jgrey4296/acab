@@ -1,10 +1,10 @@
-from acab.abstract.interfaces.dsl_interface import DSL_Interface
+from acab.abstract.interfaces.dsl_interface import DSL_Fragment_i
 from . import AgendaParser as AP
 from . import LayerParser as LP
 from . import PipelineParser as PP
 
 
-class AgendaMODULE(DSL_Interface):
+class AgendaMODULE(DSL_Fragment_i):
     """ The Module Spec for base structures
     ie: Agenda/Layer/Pipeline
     """
@@ -31,7 +31,7 @@ class AgendaMODULE(DSL_Interface):
         PP.HOTLOAD_ACTION << action
 
 
-class LayerMODULE(DSL_Interface):
+class LayerMODULE(DSL_Fragment_i):
     """ The Module Spec for base structures
     ie: Agenda/Layer/Pipeline
     """
@@ -61,7 +61,7 @@ class LayerMODULE(DSL_Interface):
 
 
 
-class PipelineMODULE(DSL_Interface):
+class PipelineMODULE(DSL_Fragment_i):
     """ The Module Spec for base structures
     ie: Agenda/Layer/Pipeline
     """

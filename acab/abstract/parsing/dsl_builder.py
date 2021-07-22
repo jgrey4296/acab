@@ -7,8 +7,8 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-from acab.abstract.interfaces.dsl_interface import (DSL_Interface,
-                                                    DSLBuilder_Interface)
+from acab.abstract.interfaces.dsl_interface import (DSL_Fragment_i,
+                                                    DSLBuilder_i)
 from acab.abstract.parsing.trie_bootstrapper import TrieBootstrapper
 
 Bootstrapper = 'Bootstrapper'
@@ -25,14 +25,14 @@ def EnsureDSLInitialised(method):
     return fn
 #--------------------
 @dataclass
-class DSLBuilder(DSLBuilder_Interface):
+class DSLBuilder(DSLBuilder_i):
     """ describes engine assembly of a parser from DSL Fragments """
 
     _bootstrap_parser: Bootstrapper = field(default_factory=TrieBootstrapper)
 
-    def construct_parsers_from_fragments(self, fragments:List[DSL_Interface]):
+    def construct_parsers_from_fragments(self, fragments:List[DSL_Fragment_i]):
         """ Assemble parsers from the fragments of the wm and loaded modules """
-        assert(all([isinstance(x, DSL_Interface) for x in fragments]))
+        assert(all([isinstance(x, DSL_Fragment_i) for x in fragments]))
 
         # assert base parser
         self.root_fragment.assert_parsers(self._bootstrap_parser)
@@ -51,4 +51,4 @@ class DSLBuilder(DSLBuilder_Interface):
         self._query_parser = query_p
 
         # TODO: register the loaded fragments
-        # fragments = [y for x in self._loaded_DSL_fragments.values() for y in x]
+        #fragments = [y for x in self._loaded_DSL_fragments.values() for y in x]

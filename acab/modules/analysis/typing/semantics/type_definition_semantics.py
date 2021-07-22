@@ -43,7 +43,7 @@ LOG_MESSAGES['no_children']      = "Val: No Children, assigning type: {} to {}"
 LOG_MESSAGES['validate_top']     = "Validating: {} on {}"
 
 
-class TypingDefinitionSemantics(BasicNodeSemantics, SI.IndependentSemantics, SI.SemanticSystem):
+class TypingDefinitionSemantics(BasicNodeSemantics, SI.IndependentSemantics_i, SI.SemanticSystem_i):
 
     def up(self, word : AcabValue, constructor : Callable) -> AcabNode:
         """ The Most Basic Lift """

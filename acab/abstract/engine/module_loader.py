@@ -9,25 +9,25 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 from acab.abstract.engine.util import (ModuleComponents, applicable_comp,
                                        comp_needs_instantiation, usable_comp)
-from acab.abstract.interfaces.dsl_interface import DSL_Interface
-from acab.abstract.interfaces.module_loader_interface import ModuleLoader_Interface
-from acab.abstract.interfaces.printing_interfaces import PrintSemantics
-from acab.abstract.interfaces.semantic_interfaces import (AbstractionSemantics,
-                                                          DependentSemantics,
-                                                          IndependentSemantics)
+from acab.abstract.interfaces.dsl_interface import DSL_Fragment_i
+from acab.abstract.interfaces.module_loader_interface import ModuleLoader_i
+from acab.abstract.interfaces.printing_interfaces import PrintSemantics_i
+from acab.abstract.interfaces.semantic_interfaces import (AbstractionSemantics_i,
+                                                          DependentSemantics_i,
+                                                          IndependentSemantics_i)
 from acab.abstract.core.production_abstractions import ProductionOperator
 from acab.abstract.config.config import GET
 from types import ModuleType
 
 Sentence     = 'Sentence'
-DSL_Fragment = DSL_Interface
+DSL_Fragment = DSL_Fragment_i
 
 config = GET()
 
 MODULE_SPLIT_REG = config.prepare("Parse.Patterns", "MODULE_SPLIT_REG")()
 
 #--------------------
-class ModuleLoader(ModuleLoader_Interface):
+class ModuleLoader(ModuleLoader_i):
     """ Describes how an engine loads ACAB/py modules """
 
     def extract_from_module(self, module: ModuleType) -> ModuleComponents:
@@ -49,29 +49,31 @@ class ModuleLoader(ModuleLoader_Interface):
             curr_path, curr_mod = queue.pop(0)
 
             # Ignore dunders
-            mod_contents = [(x, getattr(curr_mod, x)) for x in dir(curr_mod) if "__" not in x]
+            mod_contents        =  [(x, getattr(curr_mod, x)) for x in dir(curr_mod) if "__" not in x]
 
             # queue submodules
-            sub_modules = [(y.__package__, y) for x,y in mod_contents if isinstance(y, ModuleType)]
-            queue += [(x,y) for x,y in sub_modules if base_path in y.__package__ and "__init__" in y.__file__]
+            sub_modules         =  [(y.__package__, y) for x,y in mod_contents if isinstance(y, ModuleType)]
+            queue               += [(x,y) for x,y in sub_modules if base_path in y.__package__ and "__init__" in y.__file__]
 
             # Get module dsl_fragments
-            dsl_fragments += [y for x,y in mod_contents if usable_comp(y, DSL_Interface)]
-            dsl_fragments += [y() for x,y in mod_contents if comp_needs_instantiation(y, DSL_Interface)]
+            available_dsls      =  [y for x,y in mod_contents if applicable_comp(y, DSL_Fragment_i)]
+            dsl_fragments       += [y() if comp_needs_instantiation(y) else y for y in available_dsls]
 
             # Get Semantics
-            semantics     += [y for x,y in mod_contents if usable_comp(y, (DependentSemantics, IndependentSemantics, AbstractionSemantics))]
-            semantics     += [y() for x,y in mod_contents if comp_needs_instantiation(y, (DependentSemantics, IndependentSemantics, AbstractionSemantics))]
+            # TODO shift to a semantic fragment system like dsls
+            # TODO only let abstraction and independent semantics be built
+            available_semantics =  [y for x,y in mod_contents if applicable_comp(y, (DependentSemantics_i, IndependentSemantics_i, AbstractionSemantics_i))]
+            semantics           += [y() if comp_needs_instantiation(y) else y for y in available_semantics]
 
             # Get Ops
-            loc_op_pairs = [(reference_path + MODULE_SPLIT_REG.split(x), y) for x,y in mod_contents if applicable_comp(y, ProductionOperator)]
-            instanced_operators = [(xs, y() if comp_needs_instantiation(y, ProductionOperator) else y) for xs, y in loc_op_pairs]
-            sentences = [Sentence.build(xs).attach_statement(y) for xs, y in instanced_operators]
-            operators += sentences
+            loc_op_pairs        =  [(reference_path + MODULE_SPLIT_REG.split(x), y) for x,y in mod_contents if applicable_comp(y, ProductionOperator)]
+            instanced_operators =  [(xs, y() if comp_needs_instantiation(y, ProductionOperator) else y) for xs, y in loc_op_pairs]
+            sentences           =  [Sentence.build(xs).attach_statement(y) for xs, y in instanced_operators]
+            operators           += sentences
 
             # Get printers
-            printers     += [y for x,y in mod_contents if usable_comp(y, PrintSemantics)]
-            printers     += [y() for x,y in mod_contents if comp_needs_instantiation(y, PrintSemantics)]
+            available_printers  =  [y for x,y in mod_contents if usable_comp(y, PrintSemantics_i)]
+            printers            += [y() if comp_needs_instantiation(y) else y for y in mod_contents]
 
 
 

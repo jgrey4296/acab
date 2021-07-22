@@ -20,7 +20,7 @@ config = AcabConfig.Get()
 Node = 'AcabNode'
 
 @dataclass
-class AcabNode(DI.NodeInterface):
+class AcabNode(DI.Node_i):
     """ The Base Node Class for Tries/Data structures etc
     Not an AcabValue, Uses the most basic semantics possible
     """

@@ -24,7 +24,7 @@ logging = root_logger.getLogger(__name__)
 
 
 
-class TypingAssignmentSemantics(BasicNodeSemantics, SI.IndependentSemantics, SI.SemanticSystem):
+class TypingAssignmentSemantics(BasicNodeSemantics, SI.IndependentSemantics_i, SI.SemanticSystem_i):
 
     def word(self, word: AcabValue, constructor: Callable) -> AcabNode:
         """ The Most Basic Lift """

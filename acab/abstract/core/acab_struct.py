@@ -3,14 +3,14 @@ from weakref import WeakValueDictionary
 import logging as root_logger
 
 from acab.abstract.config.config import AcabConfig
-from acab.abstract.interfaces.data_interfaces import StructureInterface
+from acab.abstract.interfaces.data_interfaces import Structure_i
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.values import AcabValue
 
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
 
-class AcabStruct(StructureInterface):
+class AcabStruct(Structure_i):
     """ A structure in ACAB,
     which is registered into the semantic system for use """
     pass

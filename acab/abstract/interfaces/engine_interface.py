@@ -7,10 +7,10 @@ from os.path import abspath, exists, expanduser, split
 import abc
 from dataclasses import dataclass, field
 
-from acab.abstract.interfaces.dsl_interface import DSL_Interface, DSLBuilder_Interface
-from acab.abstract.interfaces.semantic_interfaces import SemanticSystem
-from acab.abstract.interfaces.printing_interfaces import PrintSystem
-from acab.abstract.interfaces.module_loader_interface import ModuleLoader_Interface
+from acab.abstract.interfaces.dsl_interface import DSL_Fragment_i, DSLBuilder_i
+from acab.abstract.interfaces.semantic_interfaces import SemanticSystem_i
+from acab.abstract.interfaces.printing_interfaces import PrintSystem_i
+from acab.abstract.interfaces.module_loader_interface import ModuleLoader_i
 
 
 # Decorator for Engine:
@@ -25,12 +25,12 @@ def EnsureInitialised(method):
     return fn
 
 @dataclass
-class AcabEngine_Interface(metaclass=abc.ABCMeta):
+class AcabEngine_i(metaclass=abc.ABCMeta):
 
     # Root components to extend
-    parser         : DSL_Interface          = field()
-    semantics      : SemanticSystem         = field()
-    printer        : PrintSystem            = field()
+    parser         : DSL_Fragment_i          = field()
+    semantics      : SemanticSystem_i         = field()
+    printer        : PrintSystem_i            = field()
 
     # Modules to load
     modules        : List[str]              = field(default_factory=list)
@@ -40,8 +40,8 @@ class AcabEngine_Interface(metaclass=abc.ABCMeta):
 
     initialised    : bool                   = field(init=False, default=False)
     # Abstract fields, need to be instantiated:
-    _dsl_builder   : DSLBuilder_Interface   = field(init=False)
-    _module_loader : ModuleLoader_Interface = field(init=False)
+    _dsl_builder   : DSLBuilder_i   = field(init=False)
+    _module_loader : ModuleLoader_i = field(init=False)
 
     @EnsureInitialised
     def load_file(self, filename) -> bool:
@@ -68,7 +68,7 @@ class AcabEngine_Interface(metaclass=abc.ABCMeta):
 
         return True
 
-    def save_file(self, filename:str, printer:PrintSystem=None):
+    def save_file(self, filename:str, printer:PrintSystem_i=None):
         """ Dump the content of the kb to a file to reload later """
         assert(exists(split(abspath(expanduser(filename)))[0]))
         if printer is None:

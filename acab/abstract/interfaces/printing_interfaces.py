@@ -11,9 +11,9 @@ from acab.abstract.config.config import AcabConfig, ConfigSpec
 from acab.abstract.core import production_abstractions as PA
 from acab.abstract.core.values import AcabStatement
 from acab.abstract.interfaces.handler_system_interface import (
-    HandlerComponent, HandlerSystemInterface)
-from acab.abstract.interfaces.value_interfaces import (SentenceInterface,
-                                                       ValueInterface)
+    HandlerComponent_i, HandlerSystem_i)
+from acab.abstract.interfaces.value_interfaces import (Sentence_i,
+                                                       Value_i)
 from acab.abstract.printing.default_symbols import PRINT_SEPARATOR_P
 from acab.error.acab_print_exception import AcabPrintException
 from acab.error.acab_semantic_exception import AcabSemanticException
@@ -25,7 +25,7 @@ logging = root_logger.getLogger(__name__)
 Sentence        = 'Sentence'
 
 @dataclass
-class PrintSystem(HandlerSystemInterface):
+class PrintSystem_i(HandlerSystem_i):
     """ Handles how to convert values and sentences into strings,
     does not rely on the underlying data structures
     """
@@ -60,10 +60,10 @@ class PrintSystem(HandlerSystemInterface):
             else:
                 handler, _ = self.lookup(current)
 
-            if isinstance(current, PrintSystem.HandlerOverride):
+            if isinstance(current, PrintSystem_i.HandlerOverride):
                 current = current.data
 
-            if isinstance(handler, PrintSemantics):
+            if isinstance(handler, PrintSemantics_i):
                 handled = handler(current, top=self)
             else:
                 handled = handler(current)
@@ -82,7 +82,7 @@ class PrintSystem(HandlerSystemInterface):
         return self.pprint(*args)
 #--------------------
 @dataclass
-class PrintSemantics(HandlerComponent):
+class PrintSemantics_i(HandlerComponent_i):
 
     transforms  : List[Callable] = field(init=False, default_factory=list)
 
@@ -93,7 +93,7 @@ class PrintSemantics(HandlerComponent):
         """ Override to add custom transforms in a class """
         return []
 
-    def run_transforms(self, value: ValueInterface, curr_str: List[Any]) -> List[Any]:
+    def run_transforms(self, value: Value_i, curr_str: List[Any]) -> List[Any]:
         curr = curr_str
         for trans in self.transforms:
             curr = trans(self, value, curr)
@@ -101,5 +101,5 @@ class PrintSemantics(HandlerComponent):
         return curr
 
     @abc.abstractmethod
-    def __call__(self, to_print: ValueInterface, top:'PrintSystem'=None) -> List[Tuple[str,ValueInterface]]:
+    def __call__(self, to_print: Value_i, top:'PrintSystem_i'=None) -> List[Tuple[str,Value_i]]:
         pass
