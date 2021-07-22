@@ -5,9 +5,6 @@ from .layer_actions import LayerRunAgenda, LayerRunRules, LayerPerform
 class MODULE(DSL_Fragment_i):
     """ The Module Spec for base operators """
 
-    def __init__(self):
-        super().__init__()
-
     def assert_parsers(self, pt):
         # pt.add("operator.transform.run_agenda", LA.LayerRunAgenda,
         #        "operator.transform.run_rules", LA.LayerRunRules,
@@ -17,5 +14,3 @@ class MODULE(DSL_Fragment_i):
     def query_parsers(self, pt):
         pass
 
-    def init_strings(self):
-        return []

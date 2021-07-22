@@ -4,6 +4,7 @@ from . import agenda as AP
 from . import layer as LP
 from . import pipeline as PP
 
+# TODO is this needed if the modules are imported above?
 class StandardStructures(DSL_Fragment_i):
     """ The Module Spec for base structures
     ie: Agenda/Layer/Pipeline
@@ -12,11 +13,8 @@ class StandardStructures(DSL_Fragment_i):
     def __init__(self):
         super().__init__()
         self._modules = [AP.MODULE(),
-                         LP.MODULE(),
-                         PP.MODULE()]
-
-    def init_strings(self):
-        return []
+                      LP.MODULE(),
+                      PP.MODULE()]
 
     def assert_parsers(self, pt):
         dummy = [x.assert_parsers(pt) for x in self._modules]

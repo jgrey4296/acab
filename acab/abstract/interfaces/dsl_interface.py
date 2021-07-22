@@ -57,13 +57,6 @@ class DSL_Fragment_i(metaclass=abc.ABCMeta):
     def parse_file(self, file):
         pass
 
-    def init_strings(self):
-        """ Return any strings to parse as
-        part of the modules initialisation.
-        Defining values etc that can now be parsed by
-        the hotloaded value and statement parsers """
-        pass
-
     @abc.abstractmethod
     def assert_parsers(self, bootstrapper: Bootstrapper_i):
         """

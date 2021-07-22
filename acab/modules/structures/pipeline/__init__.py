@@ -9,12 +9,6 @@ class AgendaMODULE(DSL_Fragment_i):
     ie: Agenda/Layer/Pipeline
     """
 
-    def __init__(self):
-        super().__init__()
-
-    def init_strings(self):
-        return []
-
     def assert_parsers(self, pt):
         pt.add("pipeline.body", PP.pipeline_body,
                "statment.pipeline", PP.pipeline_stmt)
@@ -35,12 +29,6 @@ class LayerMODULE(DSL_Fragment_i):
     """ The Module Spec for base structures
     ie: Agenda/Layer/Pipeline
     """
-
-    def __init__(self):
-        super().__init__()
-
-    def init_strings(self):
-        return []
 
     def assert_parsers(self, pt):
         pt.add("layer.body", LP.layer_body,
@@ -65,12 +53,6 @@ class PipelineMODULE(DSL_Fragment_i):
     """ The Module Spec for base structures
     ie: Agenda/Layer/Pipeline
     """
-
-    def __init__(self):
-        super().__init__()
-
-    def init_strings(self):
-        return []
 
     def assert_parsers(self, pt):
         pt.add("agenda.body", AP.agenda_body,

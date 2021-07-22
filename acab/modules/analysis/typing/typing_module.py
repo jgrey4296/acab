@@ -18,7 +18,6 @@ class TypingSpec(DSL_Fragment_i):
 
     Implement:
     parse_string,
-    init_strings
     """
 
     def __init__(self):
@@ -26,9 +25,6 @@ class TypingSpec(DSL_Fragment_i):
 
     def parse_string(self, s):
         return TP.parseString(s)
-
-    def init_strings(self):
-        return ""
 
     def assert_parsers(self, pt):
         pt.add("statement.typing", TDP.COMBINED_DEFS)
