@@ -21,8 +21,8 @@ from acab.modules.engines.basic_engine import AcabBasicEngine
 from acab.modules.parsing.exlo.el_dsl import EL_Parser
 from acab.modules.printing.basic_printer import BasicPrinter
 from acab.modules.printing.default import DEFAULT_PRINTER
-from acab.modules.semantics.default import DEFAULT_SEMANTICS
 from acab.modules.semantics.basic_system import BasicSemanticSystem
+from acab.modules.semantics.default import DEFAULT_SEMANTICS
 
 
 class TestEngine(unittest.TestCase):
