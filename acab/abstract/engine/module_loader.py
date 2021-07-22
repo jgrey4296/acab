@@ -10,21 +10,20 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 from acab.abstract.config.config import GET
 from acab.abstract.core.production_abstractions import ProductionOperator
-from acab.abstract.engine.util import (applicable_comp,
-                                       comp_needs_instantiation, usable_comp)
+from acab.abstract.engine.util import applicable, needs_init, usable
 from acab.abstract.interfaces.dsl import DSL_Fragment_i
 from acab.abstract.interfaces.module_loader import (ModuleComponents,
-                                                              ModuleLoader_i)
+                                                    ModuleLoader_i)
 from acab.abstract.interfaces.printing import PrintSemantics_i
-from acab.abstract.interfaces.semantic import (
-    AbstractionSemantics_i, DependentSemantics_i, IndependentSemantics_i)
-
-Sentence     = 'Sentence'
-DSL_Fragment = DSL_Fragment_i
+from acab.abstract.interfaces.semantic import (AbstractionSemantics_i,
+                                               DependentSemantics_i,
+                                               IndependentSemantics_i)
+from acab.abstract.core.values import Sentence
+import re
 
 config = GET()
 
-MODULE_SPLIT_REG = config.prepare("Parse.Patterns", "MODULE_SPLIT_REG")()
+MODULE_SPLIT_REG = re.compile(config.prepare("Parse.Patterns", "MODULE_SPLIT_REG")())
 
 #--------------------
 class ModuleLoader(ModuleLoader_i):
