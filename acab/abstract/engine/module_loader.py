@@ -56,24 +56,26 @@ class ModuleLoader(ModuleLoader_i):
             queue               += [(x,y) for x,y in sub_modules if base_path in y.__package__ and "__init__" in y.__file__]
 
             # Get module dsl_fragments
-            available_dsls      =  [y for x,y in mod_contents if applicable_comp(y, DSL_Fragment_i)]
-            dsl_fragments       += [y() if comp_needs_instantiation(y) else y for y in available_dsls]
+            available_dsls      =  [y for x,y in mod_contents if applicable(y, DSL_Fragment_i)]
+            dsl_fragments       += [y() if needs_init(y) else y for y in available_dsls]
 
             # Get Semantics
             # TODO shift to a semantic fragment system like dsls
             # TODO only let abstraction and independent semantics be built
-            available_semantics =  [y for x,y in mod_contents if applicable_comp(y, (DependentSemantics_i, IndependentSemantics_i, AbstractionSemantics_i))]
-            semantics           += [y() if comp_needs_instantiation(y) else y for y in available_semantics]
+            available_semantics =  [y for x,y in mod_contents if applicable(y, (DependentSemantics_i,
+                                                                                IndependentSemantics_i,
+                                                                                AbstractionSemantics_i))]
+            semantics           += [y() if needs_init(y) else y for y in available_semantics]
 
             # Get Ops
-            loc_op_pairs        =  [(reference_path + MODULE_SPLIT_REG.split(x), y) for x,y in mod_contents if applicable_comp(y, ProductionOperator)]
-            instanced_operators =  [(xs, y() if comp_needs_instantiation(y, ProductionOperator) else y) for xs, y in loc_op_pairs]
+            loc_op_pairs        =  [(reference_path + MODULE_SPLIT_REG.split(x), y) for x,y in mod_contents if applicable(y, ProductionOperator)]
+            instanced_operators =  [(xs, y() if needs_init(y, ProductionOperator) else y) for xs, y in loc_op_pairs]
             sentences           =  [Sentence.build(xs).attach_statement(y) for xs, y in instanced_operators]
             operators           += sentences
 
             # Get printers
-            available_printers  =  [y for x,y in mod_contents if usable_comp(y, PrintSemantics_i)]
-            printers            += [y() if comp_needs_instantiation(y) else y for y in mod_contents]
+            available_printers  =  [y for x,y in mod_contents if usable(y, PrintSemantics_i)]
+            printers            += [y() if needs_init(y) else y for y in mod_contents]
 
 
 

@@ -6,13 +6,21 @@ from typing import cast, ClassVar, TypeVar, Generic
 from dataclasses import dataclass, field
 
 
-def usable_comp(val, base_type):
+def usable(val, base_type):
     return isinstance(val, base_type)
 
-def applicable_comp(val, base_type):
-    return (val is not base_type) and isinstance(val, base_type) or (isinstance(val, type) and issubclass(val, base_type))
+def applicable(val, base_type):
+    not_base    = val is not base_type
+    if isinstance(base_type, tuple):
+        not_base    = all([val is not x for x in base_type])
 
-def comp_needs_instantiation(val, base_types=None):
+    is_type     = isinstance(val, type)
+    is_subclass = is_type and issubclass(val, base_type)
+    is_instance = not is_type and isinstance(val, base_type)
+
+    return not_base and (is_subclass or is_instance)
+
+def needs_init(val, base_types=None):
     return isinstance(val, type)
 
 

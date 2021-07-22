@@ -15,6 +15,16 @@ Semantic_Fragment_i = 'Semantic_Fragment_i'
 ProductionOperator  = 'ProductionOperator'
 PrintSemantics_i    = 'PrintSemantics_i'
 
+#----------------------------------------
+@dataclass
+class ModuleComponents():
+    """ Simple holder for extracted module components """
+
+    dsl_fragments : List[DSL_Fragment_i]      = field()
+    semantics     : List[Semantic_Fragment_i] = field()
+    operators     : List[ProductionOperator]  = field()
+    printers      : List[PrintSemantics_i]    = field()
+
 #--------------------
 @dataclass
 class ModuleLoader_i(metaclass=abc.ABCMeta):
@@ -83,12 +93,3 @@ class ModuleLoader_i(metaclass=abc.ABCMeta):
         pass
 
 
-#----------------------------------------
-@dataclass
-class ModuleComponents():
-    """ Simple holder for extracted module components """
-
-    dsl_fragments : List[DSL_Fragment_i]      = field()
-    semantics     : List[Semantic_Fragment_i] = field()
-    operators     : List[ProductionOperator]  = field()
-    printers      : List[PrintSemantics_i]    = field()
