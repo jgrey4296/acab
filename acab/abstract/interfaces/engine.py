@@ -28,20 +28,20 @@ def EnsureInitialised(method):
 class AcabEngine_i(metaclass=abc.ABCMeta):
 
     # Root components to extend
-    parser         : DSL_Fragment_i          = field()
-    semantics      : SemanticSystem_i         = field()
-    printer        : PrintSystem_i            = field()
+    parser         : DSL_Fragment_i   = field()
+    semantics      : SemanticSystem_i = field()
+    printer        : PrintSystem_i    = field()
 
     # Modules to load
-    modules        : List[str]              = field(default_factory=list)
+    modules        : List[str]        = field(default_factory=list)
     # Files to load
-    load_paths     : List[str]              = field(default_factory=list)
-    init_strs      : List[str]              = field(default_factory=list)
+    load_paths     : List[str]        = field(default_factory=list)
+    init_strs      : List[str]        = field(default_factory=list)
 
-    initialised    : bool                   = field(init=False, default=False)
+    initialised    : bool             = field(init=False, default=False)
     # Abstract fields, need to be instantiated:
-    _dsl_builder   : DSLBuilder_i   = field(init=False)
-    _module_loader : ModuleLoader_i = field(init=False)
+    _dsl_builder   : DSLBuilder_i     = field(init=False)
+    _module_loader : ModuleLoader_i   = field(init=False)
 
     @EnsureInitialised
     def load_file(self, filename) -> bool:

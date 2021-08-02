@@ -11,12 +11,13 @@ from acab.error.acab_base_exception import AcabBaseException
 
 logging = root_logger.getLogger(__name__)
 
-Structure      = 'AcabStruct'
-Handler        = 'HandlerComponent_i'
-Value_i        = 'Value_i'
-Sentence       = 'Sentence'
-HandlerTuple   = Tuple[Handler, Optional[Structure]]
-Overrider      = 'HandlerOverride'
+Handler          = 'HandlerComponent_i'
+ModuleComponents = 'ModuleComponents'
+Overrider        = 'HandlerOverride'
+Sentence         = 'Sentence'
+Structure        = 'AcabStruct'
+Value_i          = 'Value_i'
+HandlerTuple     = Tuple[Handler, Optional[Structure]]
 
 @dataclass
 class HandlerSystem_i(metaclass=abc.ABCMeta):

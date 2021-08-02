@@ -96,7 +96,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertFalse(result.data[NEGATION_S])
 
     def test_sentence_statement(self):
-        result = FP.SEN_STATEMENT.parseString("a.test.sentence:\nextension.sentence\nsecond.extension\n end")
+        result = FP.SEN_STATEMENT.parseString("a.test.sentence:\nextension.sentence\nsecond.extension\nend")
         sen1 = FP.BASIC_SEN.parseString('a.test.sentence.extension.sentence')[0]
         sen2 = FP.BASIC_SEN.parseString('a.test.sentence.second.extension')[0]
 
