@@ -14,6 +14,15 @@ config = acab.GET()
 from acab.abstract.interfaces.engine import AcabEngine_i
 from acab.modules.repl import ReplParser as ReP
 
+def register(fn):
+    """ Decorator for registering a function into the repl """
+    assert("do_" in fn.__name__)
+    assert(fn.__name__ not in AcabREPL)
+    setattr(AcabREPL, fn.__name__, fn)
+    # Don't return fn as its only used in the class
+
+#--------------------
+
 @dataclass
 class ReplState:
     """ Data used for control of the repl """
