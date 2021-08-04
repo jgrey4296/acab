@@ -40,10 +40,21 @@ class AcabBasicEngine(AcabEngine_i):
     def __post_init__(self):
         # initialise modules
         self._module_loader.load_modules(*self.modules)
+        loaded_mods = self._module_loader.loaded_modules.values()
 
         # Initialise DSL
         self._dsl_builder = DSLBuilder(self.parser)
-        self._dsl_builder.build_DSL(self._module_loader.loaded_modules.values())
+        self._dsl_builder.build_DSL(loaded_mods)
+
+        # extend semantics
+        self.semantics.extend(loaded_mods)
+
+        # extend printer
+        self.printer.extend(loaded_mods)
+
+        # insert operator sentences / Create root operator context
+        ops = [y for x in loaded_mods for y in x.operators]
+        self.semantics(*ops)
 
         # Now Load Text files:
         for x in self.load_paths:
@@ -95,7 +106,6 @@ class AcabBasicEngine(AcabEngine_i):
     def query(self, s: str, ctxs=None, cache=True):
         """ Ask a question of the working memory """
         instruction = self._dsl_builder.query_parse(s)
-        # TODO ensure instruction is a query?
         result = self.semantics(instruction, ctxs=ctxs)
         if cache:
             self.add_to_cache(result)
