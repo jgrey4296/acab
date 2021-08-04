@@ -45,16 +45,19 @@ Handler            = 'SemanticHandler' # Callable
 AbsDepSemantics    = Union['AbstractionSemantics_i', 'DependentSemantics_i']
 InDepSemantics     = 'IndependentSemantics_i'
 ProductionOperator = 'ProductionOperator'
+ModuleComponents   = 'ModuleComponents'
 
 # Note: for dependent and indep, you retrieve semantics of a node,
 # for *abstractions*, you're getting the semantics of a *sentence*
 #--------------------------------------------------
 @dataclass
-class Semantic_Fragment_i(metaclass=abc.ABCMeta):
+class Semantic_Fragment(metaclass=abc.ABCMeta):
+    """ Dataclass of Semantic Handlers to be added to the system,
+and any structs they require """
     dependent   : List[HandlerComponent_i] = field(default_factory=list)
     independent : List[HandlerComponent_i] = field(default_factory=list)
     abstraction : List[HandlerComponent_i] = field(default_factory=list)
-    operators   : List[ProductionOperator] = field(default_factory=list)
+    structs     : List[Structure]          = field(default_factory=list)
 
 #----------------------------------------
 @dataclass
@@ -66,6 +69,14 @@ class SemanticSystem_i(HandlerSystem_i):
     @abc.abstractmethod
     def to_sentences(self) -> List[Sentence]:
         pass
+
+    def extend(mods:List[ModuleComponents]):
+        semantics = [y for x in mods for y in x.semantics]
+        for sem in semantics:
+            [self._register_handler(x) for x in sem.dependent]
+            [self._register_handler(x) for x in sem.independent]
+            [self._register_handler(x) for x in sem.abstraction]
+            [self._register_struct(x) for x in sem.structs]
 
 @dataclass
 class DependentSemantics_i(SemanticSystem_i, HandlerComponent_i):

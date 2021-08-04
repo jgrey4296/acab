@@ -11,7 +11,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 Sentence            = 'Sentence'
 DSL_Fragment_i      = 'DSL_Fragment_i'
-Semantic_Fragment_i = 'Semantic_Fragment_i'
+Semantic_Fragment   = 'Semantic_Fragment'
 ProductionOperator  = 'ProductionOperator'
 PrintSemantics_i    = 'PrintSemantics_i'
 
@@ -20,11 +20,10 @@ PrintSemantics_i    = 'PrintSemantics_i'
 class ModuleComponents():
     """ Simple holder for extracted module components """
 
-    dsl_fragments : List[DSL_Fragment_i]      = field()
-    semantics     : List[Semantic_Fragment_i] = field()
-    operators     : List[ProductionOperator]  = field()
-    printers      : List[PrintSemantics_i]    = field()
-
+    dsl_fragments : List[DSL_Fragment_i]    = field()
+    semantics     : List[Semantic_Fragment] = field()
+    printers      : List[PrintSemantics_i]  = field()
+    operators     : List[Sentence]          = field()
 #--------------------
 @dataclass
 class ModuleLoader_i(metaclass=abc.ABCMeta):

@@ -15,9 +15,7 @@ from acab.abstract.interfaces.dsl import DSL_Fragment_i
 from acab.abstract.interfaces.module_loader import (ModuleComponents,
                                                     ModuleLoader_i)
 from acab.abstract.interfaces.printing import PrintSemantics_i
-from acab.abstract.interfaces.semantic import (AbstractionSemantics_i,
-                                               DependentSemantics_i,
-                                               IndependentSemantics_i)
+from acab.abstract.interfaces.semantic import Semantic_Fragment
 from acab.abstract.core.values import Sentence
 import re
 
@@ -40,9 +38,9 @@ class ModuleLoader(ModuleLoader_i):
         reference_path = MODULE_SPLIT_REG.split(module.__name__)
         queue          = [(base_path, module)]
         dsl_fragments  = []
-        semantics      = []
-        operators      = []
+        semantic_frags = []
         printers       = []
+        operators      = []
 
         while bool(queue):
             curr_path, curr_mod = queue.pop(0)
@@ -59,12 +57,8 @@ class ModuleLoader(ModuleLoader_i):
             dsl_fragments       += [y() if needs_init(y) else y for y in available_dsls]
 
             # Get Semantics
-            # TODO shift to a semantic fragment system like dsls
-            # TODO only let abstraction and independent semantics be built
-            available_semantics =  [y for x,y in mod_contents if applicable(y, (DependentSemantics_i,
-                                                                                IndependentSemantics_i,
-                                                                                AbstractionSemantics_i))]
-            semantics           += [y() if needs_init(y) else y for y in available_semantics]
+            available_semantics =  [y for x,y in mod_contents if applicable(y, Semantic_Fragment)]
+            semantic_frags      += [y() if needs_init(y) else y for y in available_semantics]
 
             # Get Ops
             loc_op_pairs        =  [(reference_path + MODULE_SPLIT_REG.split(x), y) for x,y in mod_contents if applicable(y, ProductionOperator)]
@@ -78,11 +72,7 @@ class ModuleLoader(ModuleLoader_i):
 
 
 
-        # TODO: load any values needed for the operators?
-
         return ModuleComponents(dsl_fragments,
-                                semantics,
-                                operators,
-                                printers)
-
-
+                                semantic_frags,
+                                printers,
+                                operators)
