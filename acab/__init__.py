@@ -11,13 +11,13 @@ util provides standard enums, strings and some utility functions
 
 def setup(location=None):
     from acab.abstract.config.config import AcabConfig
-    from acab.abstract.config.modal import ModalConfig
+    from acab.abstract.config.modal import modal_config
     from os.path import split, join
 
     if location is None:
         base = split(__file__)[0]
         location = join(base, "__configs", "default")
-    return AcabConfig.Get(location, hooks=[ModalConfig])
+    return AcabConfig.Get(location, hooks=[modal_config])
 
 # TODO provide an easy selection of interfaces
 # So... Sentence, parser, engine

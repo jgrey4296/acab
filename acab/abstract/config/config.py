@@ -25,7 +25,6 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 import pyparsing as pp
-from acab.abstract.config.modal import ModalConfig
 from acab.error.acab_config_exception import AcabConfigException
 
 actions_e = Enum("Config Actions", "STRIPQUOTE KEYWORD LITERAL DICT LIST UNESCAPE SPLIT PSEUDOSEN")
@@ -42,9 +41,11 @@ def GET(*args, hooks=None):
 #--------------------------------------------------
 @dataclass
 class ConfigSpec():
+    """ Dataclass to describe a config file value,
+    and any transforms it needs prior to use """
 
     section : str             = field()
-    key     : str             = field(default=None)
+    key     : Optional[str]   = field(default=None)
     actions : List[actions_e] = field(default_factory=list)
     as_list : bool            = field(default=False)
     as_dict : bool            = field(default=False)
@@ -58,6 +59,7 @@ class ConfigSpec():
         return hash(f"{self.section}:{self.key}")
 
 #--------------------------------------------------
+# pylint: disable=too-many-instance-attributes
 @dataclass
 class AcabConfig():
     """ A Singleton class for the active configuration
@@ -67,7 +69,7 @@ class AcabConfig():
     paths     : InitVar[List[str]] = field()
     hooks     : Set[Callable]      = field(default_factory=set)
 
-    _files    : List[str]              = field(init=False, default_factory=set)
+    _files    : Set[str]              = field(init=False, default_factory=set)
     _config   : ConfigParser           = field(init=False)
 
     # Populated by hooks:
@@ -81,7 +83,8 @@ class AcabConfig():
     actions_e : Enum                   = field(init=False, default=actions_e)
 
     @staticmethod
-    def Get(*paths: List[str], hooks=None):
+    def Get(*paths: str, hooks=None):
+        """ Get the AcabConfig Singleton. optionally load paths of config files """
         _hooks = set()
         if paths is None:
             paths = []
@@ -95,7 +98,7 @@ class AcabConfig():
             AcabConfig(paths, _hooks)
         else:
             AcabConfig.instance.hooks.update(_hooks)
-            AcabConfig.instance.read(paths)
+            AcabConfig.instance.read(list(paths))
 
         return AcabConfig.instance
 

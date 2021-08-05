@@ -5,23 +5,19 @@ Takes Modalities defined in config files using the sections:
 [Modal.{}]         - Defines Modal Enums and Default value
 [Modal.{}.Symbols] - Defines Symbols for parsing and printing
 """
-# https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
-
-from dataclasses import dataclass, field
-
 import logging as root_logger
-import pyparsing as pp
+from dataclasses import dataclass, field
 from enum import Enum, EnumMeta
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
 
+import pyparsing as pp
 
 logging = root_logger.getLogger(__name__)
 
 
-def ModalConfig(self):
+def modal_config(self):
     """ Load and create MODAL section enums/defaults/symbols
     Any value in MODAL will cause to be processed:
     Modal.{value} [ENUM_VALUES, DEFAULT]
@@ -51,5 +47,6 @@ def ModalConfig(self):
             self.syntax_extension.update(symbol_enum_lookup)
             self.printing_extension.update(print_lookup)
 
+    # pylint: disable=unused-variable
     except AssertionError as err:
         logging.exception("Inconsistent Modality defined: {}".format(name))
