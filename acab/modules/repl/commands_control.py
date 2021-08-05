@@ -10,9 +10,9 @@ import logging as root_logger
 import re
 
 import acab
-config = acab.GET()
+config = acab.setup()
 
-from repl_cmd import register
+from acab.modules.repl.repl_cmd import register
 from acab.abstract.core.production_abstractions import ProductionOperator, ProductionStructure
 
 logging = root_logger.getLogger(__name__)
@@ -22,16 +22,13 @@ def do_prompt(self, line):
     """
     Change the prompt of the repl
     """
-    self.prompt = line
-
-
+    self.prompt = line.strip() + " "
 
 @register
 def do_multi(self, line):
     """
     Activate multi-line collation
     """
-    param = line
     if not self.state.in_multi_line:
         # Start
         logging.info("Activating multi line")
@@ -45,7 +42,7 @@ def do_multi(self, line):
         self.state.collect_str = []
         self.state.current_str = ""
         self.prompt = self.state.prompt_bkup
-
+        # TODO onecmd
 
 
 @register
@@ -55,17 +52,3 @@ def do_multi_pop(self, line):
     for when an error was made
     """
     self.state.collect_str.pop()
-
-
-@register
-def do_nop(self, line):
-    """
-    A null command used to collect strings in multi-line mode
-    without making any changes to the self state
-    """
-    if self.state.in_multi_line:
-        self.state.collect_str.append(line)
-        logging.info("Collecting: {}".format(self.state.collect_str))
-
-
-

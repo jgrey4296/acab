@@ -6,9 +6,9 @@ import logging as root_logger
 import re
 
 import acab
-config = acab.GET()
+config = acab.setup()
 
-from repl_cmd import register
+from acab.modules.repl.repl_cmd import register
 from acab.abstract.core.production_abstractions import ProductionOperator, ProductionStructure
 
 logging = root_logger.getLogger(__name__)
@@ -20,7 +20,6 @@ def do_init(self, line):
     Imports the module, and uses the final component as the Engine Class.
     eg: acab.engines.trie_engine.TrieEngine -> TrieEngine
     """
-    # TODO parse this
     params = line
     logging.info("Initialising: {}".format(params))
     if not bool(params) or params[0] == "":
@@ -28,6 +27,7 @@ def do_init(self, line):
         params = [config.prepare("REPL", "ENGINE")()]
 
     init_module = importlib.import_module(splitext(params[0])[0])
+    # TODO ask for confirmation
     # build engine
     engine = eval('init_module{}'.format(splitext(params[0])[1]))()
     engine.build_DSL()

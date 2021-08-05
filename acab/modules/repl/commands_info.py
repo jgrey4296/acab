@@ -6,9 +6,9 @@ import logging as root_logger
 import re
 
 import acab
-config = acab.GET()
+config = acab.setup()
 
-from repl_cmd import register
+from acab.modules.repl.repl_cmd import register
 from acab.abstract.core.production_abstractions import ProductionOperator, ProductionStructure
 
 logging = root_logger.getLogger(__name__)
