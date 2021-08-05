@@ -107,7 +107,7 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
             raise AcabBaseException(f"Undefined override handler: {new_target}")
 
         return HandlerSystem_i.HandlerOverride(new_target, value)
-    @abc.abstracmethod
+    @abc.abstractmethod
     def extend(self, modules:List[ModuleComponents]):
         """ Abstract because different handlers use different module components """
         pass
