@@ -46,9 +46,24 @@ def do_multi(self, line):
 
 
 @register
-def do_multi_pop(self, line):
+def do_pop(self, line):
     """
     Pop off the last string added in multi-line mode,
     for when an error was made
     """
     self.state.collect_str.pop()
+
+@register
+def do_echo(self, line):
+    """
+    Toggle echoing of working memory state
+    """
+    self.state.echo = not self.state.echo
+
+
+@register
+def do_break(self, line):
+    """
+    Manually switch to PDB for debugging
+    """
+    breakpoint()

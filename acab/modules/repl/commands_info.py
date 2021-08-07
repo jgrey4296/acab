@@ -9,9 +9,12 @@ import acab
 config = acab.setup()
 
 from acab.modules.repl.repl_cmd import register
+from acab.modules.repl import ReplParser as RP
 from acab.abstract.core.production_abstractions import ProductionOperator, ProductionStructure
 
 logging = root_logger.getLogger(__name__)
+
+# TODO add help flag for print/listen/stats
 
 # TODO shift this into config
 SPLIT_RE = re.compile("[ .!?/]")
@@ -21,8 +24,8 @@ def do_print(self, line):
     """
     Print out information
     """
-    params = line
-    logging.info("Printing: {}".format(params))
+    params = RP.printer_parser.parseString(line)[:]
+    logging.info(f"Printing: {line}")
     result = []
     if "wm" in params[0]:
         result.append("WM:")
@@ -61,8 +64,8 @@ def do_print(self, line):
 @register
 def do_decompose(self, line):
     """
-    Decompose an object into a trie of its components.
-    Useful for decomposing rules
+    Decompose binding into components.
+    eg: rules -> queries, transforms, actions
     """
     params = line
     # TODO : split objects into tries
@@ -76,8 +79,8 @@ def do_listen(self, line):
     Listen for specific assertions / rule firings / queries,
     and pause on them
     """
-    params = line
-    logging.info("Listener ({}): {}".format(params["type"], params))
+    logging.info(f"Listening: {line}")
+    params = RP.listen_parser.parseString(line)[:]
     words = [y for x in params for y in SPLIT_RE.split(x)]
     if params['type'] == "add":
         self.state.engine.add_listeners(*words)
@@ -95,16 +98,16 @@ def do_listen(self, line):
 
 
 @register
-def do_type_check(self, line):
+def do_check(self, line):
     """
-    Trigger the type checking of the working memory state
+    Trigger an analysis action.
+    eg: type checking
     """
     params = line
-    logging.info("Type Checking: {}".format(params))
+    logging.info(f"Checking: {line}")
     # TODO
-    # If single statement, run analysis layer with statement inserted, return types
-
-
+    # If single statement, run analysis layer with statement inserted,
+    # return types
 
     # else everything: run analysis layer
 
@@ -116,8 +119,8 @@ def do_stats(self, line):
     Print Stats about the self.
     ie: Modules/Operators/Pipelines/Layers/Rules....
     """
-    params = line
-    logging.info("Getting Stats: {}".format(params))
+    logging.info(f"Getting Stats: {line}")
+    params = RP.stats_parser.parseString(line)[:]
     allow_all = not bool(params)
     result = []
     # Operators
@@ -181,21 +184,6 @@ def do_stats(self, line):
                                                          "layer", "module", "wm", "binding", "keywords"])))
 
 
-    result.append("")
-    self.state.result = "\n".join(result)
+    logging.info("\n".join(result))
 
 
-@register
-def do_echo(self, line):
-    """
-    Toggle echoing of working memory state
-    """
-    self.state.echo = not self.state.echo
-
-
-@register
-def do_break(self, line):
-    """
-    Manually switch to PDB for debugging
-    """
-    debug()
