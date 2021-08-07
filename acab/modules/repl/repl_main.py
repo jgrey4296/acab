@@ -2,15 +2,12 @@
 """
 An Acab REPL, using default of TrieWM
 """
-# Setup root_logger:
-from pyparsing import ParseException
-from os.path import expanduser, abspath
-from os.path import splitext, split
-import sys
 import argparse
 import importlib
 import logging as root_logger
+import sys
 import traceback
+from os.path import abspath, expanduser, split, splitext
 
 ##############################
 parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -40,22 +37,17 @@ if __name__ == "__main__":
     args.config = [abspath(expanduser(x)) for x in args.config]
     config.read(args.config)
 
-    logging.info("Setting up engine: {}".format(args.engine))
     #import then build engine or default trie engine from args
-    if args.engine == "":
-        args.engine = config.prepare("Module.REPL", "ENGINE")()
     initial_modules = config.prepare("Module.REPL", "MODULES")().replace("\n", " ")
-    if args.engine is not None:
-        engine = args.engine
 
     #--------------------
     # MAIN REPL LOGIC:
-    from acab.modules.repl.repl_cmd import AcabREPL
-    import acab.modules.repl.commands_core
     import acab.modules.repl.commands_control
+    import acab.modules.repl.commands_core
     import acab.modules.repl.commands_info
+    from acab.modules.repl.repl_cmd import AcabREPL
     repl = AcabREPL()
-    # repl.onecmd(f"init {args.engine}")
+    repl.onecmd(f"init {args.engine}")
     # repl.onecmd(f"module {initial_modules}")
     repl.cmdloop()
     # REPL loop over
