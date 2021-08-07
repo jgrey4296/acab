@@ -69,7 +69,9 @@ disable=logging-format-interpolation,
         unnecessary-lambda,
         too-many-instance-attributes
         too-many-arguments,
-        no-else-return
+        no-else-return,
+        wrong-import-position,
+        logging-fstring-interpolation
         # too-many-instance-attributes,
         # print-statement,
         # parameter-unpacking,
