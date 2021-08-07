@@ -1,17 +1,21 @@
 # https://docs.python.org/3/library/cmd.html
-from dataclasses import dataclass, field, InitVar
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
-import cmd, sys
+import cmd
 import logging as root_logger
+import sys
+from dataclasses import InitVar, dataclass, field
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
+
 logging = root_logger.getLogger(__name__)
 
 import acab
+
 config = acab.setup()
 
 from acab.abstract.interfaces.engine import AcabEngine_i
+from acab.modules.repl import ReplParser as RP
+
 
 def register(fn):
     """ Decorator for registering a function into the repl """
@@ -23,6 +27,7 @@ def register(fn):
 
 #--------------------
 initial_prompt = config.prepare("Module.REPL", "PROMPT", actions=[config.actions_e.STRIPQUOTE])()
+initial_engine = config.prepare("Module.REPL", "ENGINE")()
 
 @dataclass
 class ReplState:
@@ -30,15 +35,18 @@ class ReplState:
     prompt        : str                    =  field(default=initial_prompt)
     prompt_ml     : str                    =  field(default=config.prepare("Module.REPL", "PROMPT_ML", actions=[config.actions_e.STRIPQUOTE])())
     params        : List[str]              =  field(default_factory=list)
-    result        : Any                    =  field(default=None)
+    result        : ContextContainer_i     =  field(default=None)
     current_str   : str                    =  field(default=None)
     collect_str   : List[str]              =  field(default_factory=list)
     echo          : bool                   =  field(default=False)
     stack         : bool                   =  field(default=False)
     in_multi_line : bool                   =  field(default=False)
     engine        : Optional[AcabEngine_i] =  field(init=None)
+    engine_str    : str                    =  field(init=initial_engine)
+
 
 class AcabREPL(cmd.Cmd):
+    """ Implementation of cmd.Cmd to provide an extensible ACAB REPL"""
     intro  = "Welcome to ACAB. Type help to list commands.\n"
     prompt = initial_prompt
 
@@ -46,24 +54,26 @@ class AcabREPL(cmd.Cmd):
 
     def default(self, line):
         """ Called when no other command matches """
-        logging.warning(f"No recognised command: {line}")
         if self.state.in_multi_line:
             self.state.collect_str.append(line)
             logging.info("Collecting: {}".format(self.state.collect_str))
         else:
-            # TODO default to assertion / query
-            # self.state.engine(line)
-            pass
-
+            # default to assertion / query
+            self.state.result = self.state.engine(line)
 
 
 
     def precmd(self, line):
         """ For massaging the input command """
-        # TODO convert symbols -> cmd names.
+        # convert symbols -> cmd names.
         # eg: ':{' -> multi
+        line = RP.precmd_parser.parseString(line)[0]
 
+        # Intercept if in multi line state
         if self.state.in_multi_line and not line == "multi":
-            return f"nop {line}"
+            line = f"nop {line}"
+
+        if bool(self.state.echo):
+            logging.info(f"{line}")
 
         return line
