@@ -6,27 +6,27 @@ import pyparsing as pp
 from acab.abstract.parsing.consts import (ARROW, COLON, COMMA, COMMENT, DELIM,
                                           DOUBLEBAR, NG, N, component_gap,
                                           file_cruft)
+from acab.abstract.parsing.funcs import strip_parse_type
 from pyparsing import pyparsing_common as ppc
 
-from . import ActionParser as AP
 from . import FactParser as FP
+from . import QueryParser as QP
+from . import ActionParser as AP
 from . import RuleParser as RP
 
 HOTLOAD_STATEMENTS = pp.Forward()
 
-statements = pp.Or([RP.rule,
-                    AP.action_definition,
-                    FP.SEN_STATEMENT,
-                    HOTLOAD_STATEMENTS])
+query_group = pp.Group(QP.clauses)
+query_group.setParseAction(strip_parse_type)
 
-file_component = pp.Or([statements, FP.PARAM_SEN])
+file_component = pp.Or([HOTLOAD_STATEMENTS, query_group, FP.PARAM_SEN])
 
 file_total = pp.delimitedList(file_component, delim=component_gap)
 
 # NAMING
 HOTLOAD_STATEMENTS.setName("HotloadStatement")
-statements.setName("StatementCollection")
 file_component.setName("FileComponent")
+query_group.setName("CleanQuery")
 
 parse_point = file_cruft +  file_total.ignore(COMMENT) + file_cruft
 # parse_point = file_cruft +  file_total + file_cruft
