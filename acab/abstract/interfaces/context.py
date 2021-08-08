@@ -77,3 +77,8 @@ class ContextInstance_i(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def __getitem__(self, value):
         pass
+
+    @abc.abstractmethod
+    def to_sentences(self):
+        """ Convert to sentences for printing """
+        pass

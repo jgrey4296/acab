@@ -263,6 +263,9 @@ class ContextInstance(CtxInt.ContextInstance_i):
 
 
 
+
+    def to_sentences(self):
+        raise NotImplementedError()
 @dataclass
 class MutableContextInstance():
     """ Wrap A Context Instance with an smart dictionary.
