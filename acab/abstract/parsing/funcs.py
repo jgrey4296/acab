@@ -132,3 +132,14 @@ def build_clause(s, loc, toks):
 def build_assignment(s, loc, toks):
     return (toks[0][1], toks[1])
 
+
+
+def strip_parse_type(s, loc, toks):
+    """ Utility function to strip out parse data from return tuples,
+    useful for:
+    [("QUERY", actual_query)] -> [actual_query]
+
+    NOTE: expects to be called from a group wrapping the actual parser
+    """
+    assert(all([isinstance(x, tuple) for x in toks[0]]))
+    return [x[1] for x in toks[0]]
