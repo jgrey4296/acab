@@ -1,17 +1,21 @@
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
-
-from os.path import abspath, exists, expanduser, split
 import abc
+import logging as root_logger
 from dataclasses import dataclass, field
+from os.path import abspath, exists, expanduser, split
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
 
+logging = root_logger.getLogger(__name__)
+
+from acab.abstract.interfaces.context import ContextContainer_i
 from acab.abstract.interfaces.dsl import DSL_Fragment_i, DSLBuilder_i
-from acab.abstract.interfaces.semantic import SemanticSystem_i
-from acab.abstract.interfaces.printing import PrintSystem_i
 from acab.abstract.interfaces.module_loader import ModuleLoader_i
+from acab.abstract.interfaces.printing import PrintSystem_i
+from acab.abstract.interfaces.semantic import SemanticSystem_i
 
+# TODO add 'Tick' functionality
+ModuleComponents = "ModuleComponents"
 
 # Decorator for Engine:
 def EnsureInitialised(method):
@@ -99,6 +103,8 @@ class AcabEngine_i(metaclass=abc.ABCMeta):
         sens = self.to_sentences()
         return self.printer.pprint(*sens)
 
+    def load_modules(self, *modules: List[str]) -> List[ModuleComponents]:
+        return self._module_loader.load_modules(*modules)
     @abc.abstractmethod
     def __call__(self, thing, bindings=None) -> ContextContainer_i:
         pass
