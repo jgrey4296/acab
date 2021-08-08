@@ -100,5 +100,5 @@ class AcabEngine_i(metaclass=abc.ABCMeta):
         return self.printer.pprint(*sens)
 
     @abc.abstractmethod
-    def __call__(self, thing, bindings=None):
+    def __call__(self, thing, bindings=None) -> ContextContainer_i:
         pass

@@ -26,7 +26,8 @@ from acab.error.acab_base_exception import AcabBaseException
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
 
-CtxCon = 'CtxContainer'
+CtxCon      = 'ContextContainer_i'
+Instruction = Union[str, 'Sentence', 'AcabStatement']
 
 @dataclass
 class AcabBasicEngine(AcabEngine_i):
@@ -63,30 +64,25 @@ class AcabBasicEngine(AcabEngine_i):
         self.initialised = True
 
     @EnsureInitialised
-    def __call__(self, thing, bindings=None):
-        """ Where a thing could be a:
+    def __call__(self, inst:Instruction, bindings=None) -> CtxCon:
+        """ Where a inst could be a:
         str to parse then,
-        sentence to assert, query to ask,
-        or abstraction to run
+        sentence to assert, query, or run
         """
-        result = False
-        # TODO if thing is string, parse it
-        if not isinstance(thing, list):
-            thing = [thing]
+        if not isinstance(inst, list):
+            inst = [inst]
 
-        if isinstance(thing, list) and all([isinstance(x, str) for x in thing]):
-            # TODO parse
-            thing = [self.dsl_builder.parse(x) for x in thing]
+        if isinstance(inst, list) and all([isinstance(x, str) for x in inst]):
+            inst = [y for x in inst for y in self._dsl_builder.parse(x)[:]]
 
-        assert(isinstance(thing, ProductionContainer))
-        logging.info("Running thing: {}".format(thing))
-        # TODO pass instruction to sem system
-        result = None
-        for elem in thing:
+        logging.info(f"Running: {inst}")
+        # pass inst to sem system
+        result = bindings
+        for elem in inst:
             result = self.semantics(elem, ctxs=result)
 
             if not bool(result):
-                logging.info("Thing Failed")
+                logging.info("Attempt Failed")
                 break
 
         return result
