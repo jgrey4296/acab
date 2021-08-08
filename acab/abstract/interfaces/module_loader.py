@@ -9,6 +9,8 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
+from acab.error.acab_import_exception import AcabImportException
+
 Sentence            = 'Sentence'
 DSL_Fragment_i      = 'DSL_Fragment_i'
 Semantic_Fragment   = 'Semantic_Fragment'
@@ -53,8 +55,7 @@ class ModuleLoader_i(metaclass=abc.ABCMeta):
         # Prepare path
         # TODO use utility constants for joining and query
         if not isinstance(maybe_module, (ModuleType, str)):
-            breakpoint()
-            raise Exception("TODO: handle sentence -> str")
+            raise AcabImportException(f"Bad Module Load Type: {maybe_module}")
 
         try:
             # print semantics: basic+word join of "."
@@ -73,10 +74,10 @@ class ModuleLoader_i(metaclass=abc.ABCMeta):
             # Extract
             components = self.extract_from_module(the_module)
             self.loaded_modules[maybe_module] = components
-            return the_module
+            return components
 
-        except ModuleNotFoundError as e:
-            raise AcabImportException(maybe_module) from None
+        except ModuleNotFoundError as err:
+            raise AcabImportException("Error attempting to import: {maybe_module}: {err}") from None
 
     def __contains__(self, other: Union[ModuleType, str]):
         return str(other) in self.loaded_modules
