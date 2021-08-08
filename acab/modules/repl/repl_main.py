@@ -31,11 +31,12 @@ if __name__ == "__main__":
     logging = root_logger.getLogger(__name__)
     #====================
     from acab.abstract.config.config import AcabConfig
+    from acab.abstract.config.modal import modal_config
     config = AcabConfig.Get()
     #====================
     logging.info("Reading Config: {}".format(args.config))
     args.config = [abspath(expanduser(x)) for x in args.config]
-    config.read(args.config)
+    config.Get(*args.config, hooks=[modal_config])
 
     #import then build engine or default trie engine from args
     initial_modules = config.prepare("Module.REPL", "MODULES")().replace("\n", " ")
@@ -49,6 +50,7 @@ if __name__ == "__main__":
     repl = AcabREPL()
     repl.onecmd(f"init {args.engine}")
     # repl.onecmd(f"module {initial_modules}")
+    print("\n--------------------------------------------------")
     repl.cmdloop()
     # REPL loop over
     logging.info("Shutting down engine: {}".format(args.engine))
