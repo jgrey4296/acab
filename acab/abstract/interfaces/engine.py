@@ -75,6 +75,10 @@ class AcabEngine_i(metaclass=abc.ABCMeta):
             printer = self.printer
 
         as_sentences = self.semantics.to_sentences()
+        if not bool(as_sentences[0]):
+            logging.info("Nothing to print")
+            return
+
         as_strings = printer.pprint(*as_sentences)
 
         with open(abspath(expanduser(filename)), 'w') as f:
