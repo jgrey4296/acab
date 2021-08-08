@@ -57,10 +57,10 @@ init:
 	find ${TOP} -type d -print0 | xargs -0 -I {} touch "{}/__init__.py"
 
 repl:
-	python acab/modules/repl/repl.py --config ./acab
+	python acab/modules/repl/repl_main.py --config ./acab/__configs/default -v INFO
 
 vrepl:
-	python acab/modules/repl/repl.py --verbose DEBUG
+	python acab/modules/repl/repl_main.py --config ./acab/__configs/default -v DEBUG
 
 re: repl
 vr: vrepl
@@ -80,7 +80,6 @@ pylint:
 elint:
 	@echo "Linting -E"
 	pylint --rcfile=./.pylintrc ${TOP} --ignore=${ig} --ignore-patterns=${igpat} -E
-
 
 clean:
 	@echo "Cleaning"
