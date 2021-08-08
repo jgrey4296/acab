@@ -187,3 +187,17 @@ def do_stats(self, line):
     logging.info("\n".join(result))
 
 
+
+
+@register
+def do_result(self, line):
+    """
+    Inspect a result from a query.
+    result  -> False or len(ctxs)
+    result.SLICE -> Print binding groups for each context in the slice
+    result.SLICE.$x -> Print variable $x for each context in slice
+
+    (SLICE == python slice. ie: [:-1], [2:4], [4])
+    """
+    # params = RP.result_parser...
+    raise NotImplementedError()

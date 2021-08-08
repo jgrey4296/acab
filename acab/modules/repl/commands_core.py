@@ -8,9 +8,11 @@ import re
 import acab
 config = acab.setup()
 
+from acab.abstract.interfaces.engine import AcabEngine_i
+from acab.error.acab_config_exception import AcabConfigException
 from acab.modules.repl.repl_cmd import register
 from acab.modules.repl import ReplParser as RP
-from acab.abstract.core.production_abstractions import ProductionOperator, ProductionStructure
+
 
 logging = root_logger.getLogger(__name__)
 
@@ -26,14 +28,26 @@ def do_init(self, line):
         line = self.state.engine_str
 
     try:
-        mod = importlib.import_module(splitext(line[0])[0])
+        mod_str = splitext(line)[0]
+        mod = importlib.import_module(mod_str)
         # TODO ask for confirmation?
         # Note: not init_module.{} because of split*ext*
         # build engine. needs to be a 0 arg constructor
-        engine_constructor = getattr(mod, line.split(".")[-1])
-        self.state.engine = engine_constructor()
+        spec = getattr(mod, line.split(".")[-1])
+        is_type = isinstance(spec, type)
+        is_sub  = is_type and issubclass(spec, AcabEngine_i)
+        is_callable = callable(spec)
+        if (not is_type) and isinstance(spec, AcabEngine_i):
+            self.state.engine = spec
+        elif (is_type and is_sub) or callable(spec):
+            self.state.engine = spec()
+        else:
+            raise AcabConfigException(f"Unknown Engine Spec Form: {spec}")
+
+        logging.info("Engine Initialisation Complete")
     except Exception as err:
         logging.error(f"Failed to initialise engine: {line}", exc_info=err)
+
 
 
 @register
@@ -75,7 +89,7 @@ def do_save(self, line):
     try:
         assert(exists(split(filename)[0]))
         self.state.engine.save_file(filename)
-     except Exception as err:
+    except Exception as err:
         logging.error(f"Failed to save: {line}")
         logging.error(f"{err}")
 

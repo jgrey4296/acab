@@ -37,12 +37,10 @@ def do_multi(self, line):
         self.prompt = self.state.prompt_ml
     else:
         logging.info("Deactivating multi line")
+        collected = "\n".join(self.state.collect_str)
         self.state.in_multi_line = False
-        self.state.params = ["\n".join(self.state.collect_str)]
-        self.state.collect_str = []
-        self.state.current_str = ""
         self.prompt = self.state.prompt_bkup
-        # TODO onecmd
+        self.onecmd(collected)
 
 
 @register
@@ -52,6 +50,13 @@ def do_pop(self, line):
     for when an error was made
     """
     self.state.collect_str.pop()
+    logging.info(f"Collecting: {self.state.collect_str}")
+
+@register
+def do_collect(self, line):
+    assert(self.state.in_multi_line)
+    self.state.collect_str.append(line)
+    logging.info("Collecting: {}".format(self.state.collect_str))
 
 @register
 def do_echo(self, line):
@@ -66,4 +71,11 @@ def do_break(self, line):
     """
     Manually switch to PDB for debugging
     """
+    print("""
+    Shunting to Python.
+    Explore using: self.state, self.state.engine
+    self is the repl,
+    self.state is data the repl tracks,
+    self.state.engine is the active ACAB engine
+    """)
     breakpoint()
