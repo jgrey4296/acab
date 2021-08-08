@@ -22,12 +22,14 @@ from acab.modules.semantics.context_container import ContextContainer
 logging = root_logger.getLogger(__name__)
 
 
-Sentence        = 'Sentence'
+Sentence         = 'Sentence'
+ModuleComponents = "ModuleComponents"
 
 @dataclass
 class PrintSystem_i(HandlerSystem_i):
     """ Handles how to convert values and sentences into strings,
-    does not rely on the underlying data structures
+    does not rely on the underlying data structures,
+    just consumes Sentences
     """
     separator : ConfigSpec     = field(default=PRINT_SEPARATOR_P)
     settings  : Dict[str, str] = field(default_factory=dict)

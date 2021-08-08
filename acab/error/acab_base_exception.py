@@ -9,10 +9,10 @@ from dataclasses import dataclass, field, InitVar
 class AcabBaseException(Exception):
     """ The base exception class for the Acab package """
 
-    detail  : str = field()
-    context : str = field(default=None)
-    msg     : str = field(default="Non-specific Acab Error Raised")
-    rest    : List[Any] = field(default_factory=list)
+    detail  : str           = field()
+    context : Optional[str] = field(default=None)
+    msg     : str           = field(default="Non-specific Acab Error Raised")
+    rest    : List[Any]     = field(default_factory=list)
 
     def __str__(self):
         return f"{self.detail} : {self.msg}"

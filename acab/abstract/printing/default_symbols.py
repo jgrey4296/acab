@@ -1,12 +1,11 @@
-#!/usr/bin/env python3
-
 from acab.abstract.config.config import AcabConfig
 from  acab.abstract.core.values import Sentence
 
 config = AcabConfig.Get()
 
 # Non-printing types
-OBVIOUS_TYPES           = config.prepare("Print.Data", "SUPPRESSION_TYPES", actions=[AcabConfig.actions_e.SPLIT])
+OBVIOUS_TYPES           = config.prepare("Print.Data", "SUPPRESSION_TYPES",
+                                         actions=[AcabConfig.actions_e.SPLIT])
 
 # Symbols
 ANON_VALUE_SYM     = config.prepare("Symbols", "ANON_VALUE")

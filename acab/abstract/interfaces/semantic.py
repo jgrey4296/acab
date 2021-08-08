@@ -40,7 +40,7 @@ Printable          = 'Printable'
 Value              = 'AcabValue'
 Structure          = 'AcabStruct'
 Engine             = 'Engine'
-Contexts           = 'Contexts'
+CtxCon             = 'ContextContainer'
 Handler            = 'SemanticHandler' # Callable
 AbsDepSemantics    = Union['AbstractionSemantics_i', 'DependentSemantics_i']
 InDepSemantics     = 'IndependentSemantics_i'
@@ -66,6 +66,10 @@ class SemanticSystem_i(HandlerSystem_i):
     Map Instructions to Abstraction/Dependent Semantics
     """
     # TODO possibly re-add hooks / failure handling
+    @abc.abstractmethod
+    def __call__(self, *instructions, ctxs=None, data=None) -> CtxCon:
+        pass
+
     @abc.abstractmethod
     def to_sentences(self) -> List[Sentence]:
         pass

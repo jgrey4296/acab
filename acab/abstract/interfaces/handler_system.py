@@ -30,7 +30,6 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
     registered_handlers : Dict[str, Callable]  = field(init=False, default_factory=dict)
     registered_structs  : Dict[str, Structure] = field(init=False, default_factory=dict)
 
-    # TODO Make this a classvar
     _default_sieve : ClassVar[List[Callable]] = []
 
     @dataclass
@@ -56,7 +55,6 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
 
 
     def _register_handler(self, handler):
-        # TODO maybe handle tuples later
         if isinstance(handler, HandlerComponent_i):
             pair_str = handler.mapped_to
         elif isinstance(handler, HandlerType) and isinstance(handler.__self.__, HandlerComponent_i):
@@ -64,11 +62,11 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
         else:
             raise AcabBaseException("Handler Not Compliant", handler)
 
+        # TODO handle overriding
         assert(pair_str not in self.registered_handlers)
         self.registered_handlers[pair_str] = handler
 
     def _register_struct(self, struct):
-        # TODO maybe handle tuples later
         if not isinstance(struct, HandlerComponent_i):
             raise AcabBaseException("Struct Not Compliant", struct)
 
@@ -99,7 +97,6 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
             return (handler, struct)
 
         # Final resort
-        logging.debug(f"Resorting to default handler for: {value}")
         return self.default
 
     def override(self, new_target: str, value) -> Overrider:
@@ -109,7 +106,8 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
         return HandlerSystem_i.HandlerOverride(new_target, value)
     @abc.abstractmethod
     def extend(self, modules:List[ModuleComponents]):
-        """ Abstract because different handlers use different module components """
+        """ Abstract because different handlers use
+        different module components """
         pass
     @abc.abstractmethod
     def __call__(self, *args, **kwargs):

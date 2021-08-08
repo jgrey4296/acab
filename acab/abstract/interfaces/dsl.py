@@ -46,7 +46,6 @@ class Bootstrapper_i(metaclass=abc.ABCMeta):
         pass
 
 #----------------------------------------
-# TODO refactor to DSL_Fragment_i
 class DSL_Fragment_i(metaclass=abc.ABCMeta):
     """ """
 
@@ -84,16 +83,15 @@ class DSL_Fragment_i(metaclass=abc.ABCMeta):
 
 
 #----------------------------------------
-# TODO refactor to DSL_Builder_i
 @dataclass
 class DSLBuilder_i(metaclass=abc.ABCMeta):
-    root_fragment        : DSL_Fragment_i   = field()
+    root_fragment         : DSL_Fragment_i = field()
 
-    _bootstrap_parser    : Bootstrapper_i     = field(init=False)
-    _main_parser         : Parser           = field(init=False)
-    _query_parser        : Parser           = field(init=False)
-    _parsers_initialised : bool             = field(init=False, default=False)
-    _loaded_DSL_fragments : Dict[Any, Any]  = field(init=False, default_factory=dict)
+    _bootstrap_parser     : Bootstrapper_i = field(init=False)
+    _main_parser          : Parser         = field(init=False)
+    _query_parser         : Parser         = field(init=False)
+    _parsers_initialised  : bool           = field(init=False, default=False)
+    _loaded_DSL_fragments : Dict[Any, Any] = field(init=False, default_factory=dict)
 
     def build_DSL(self, modules: List[ModuleComponents]):
         """

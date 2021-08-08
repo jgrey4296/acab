@@ -48,6 +48,7 @@ class BasicSemanticSystem(SemanticSystem_i):
         try:
             semantics, struct = self.lookup(instruction)
             assert(semantics is not None)
+            logging.debug(f"Running Semantics: {semantics}")
             # run the semantics
             # Abstractions don't use structs
             # TODO entry hooks would go here.

@@ -64,7 +64,6 @@ class ModuleLoader_i(metaclass=abc.ABCMeta):
             # Return early if already loaded
             if str(maybe_module) in self.loaded_modules:
                 logging.info("Module already loaded: {}".format(maybe_module))
-                # TODO extract node from return context?
                 return self.loaded_modules[maybe_module]
 
             if isinstance(maybe_module, str):

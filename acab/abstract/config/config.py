@@ -216,8 +216,9 @@ class AcabConfig():
         return bool(self._files)
 
     def read(self, paths: List[str]):
+        """ DFS over provided paths, finding .config files """
         full_paths = []
-        # DFS over provided paths, finding .config files:
+
         for path in paths:
             expanded = abspath(expanduser(path))
             if isfile(expanded):

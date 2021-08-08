@@ -38,6 +38,7 @@ Container = 'ProductionContainer'
 Structure = 'ProductionStructure'
 
 
+# TODO should this be an interface?
 @dataclass
 class ProductionOperator(AcabValue):
     """ The Base Operator Class,

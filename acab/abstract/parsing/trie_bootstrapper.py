@@ -91,7 +91,7 @@ class TrieBootstrapper(Bootstrapper_i):
 
             self._semantics.query(self._structure, q_sentence, ctxs=ctxs)
             if not bool(ctxs):
-                logging.debug(f"Parser Query Empty: {query}")
+                logging.debug(f"Bootstrap Query Empty: {query}")
             else:
                 nodes = [x._current for x in ctxs.active_list()]
                 parsers = [x.data['parser'] for x in nodes if 'parser' in x.data]
