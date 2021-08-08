@@ -24,8 +24,39 @@ multi_line_start.setParseAction(lambda s,l,t: "multi")
 multi_line_end.setParseAction(lambda s,l,t: "multi")
 # ##############################################################
 # ie: sugar parser:
+
+# TODO put sugar in config?
+short_exit = pp.Keyword("q")
+short_exit.setParseAction(lambda s,l,t: "exit")
+
+short_break = pp.Keyword("b")
+short_break.setParseAction(lambda s,l,t: "break")
+
+short_echo = pp.Keyword("e")
+short_echo.setParseAction(lambda s,l,t: "echo")
+
+short_save = pp.Keyword("s")
+short_save.setParseAction(lambda s,l,t: "save")
+
+short_load = pp.Keyword("l")
+short_load.setParseAction(lambda s,l,t: "load")
+
+# "tick"
+short_step = pp.Keyword("t")
+short_step.setParseAction(lambda s,l,t: "step")
+
+
+sugared = pp.LineStart() + pp.Suppress(pp.Literal(":")) + pp.Or([short_exit,
+                                                                 short_break,
+                                                                 short_echo,
+                                                                 short_save,
+                                                                 short_load,
+                                                                 short_step
+                                                                 ]) + rst
+
 precmd_parser = pp.Suppress(pp.LineStart()) + pp.Or([multi_line_start,
                                                      multi_line_end,
+                                                     sugared,
                                                      rst])
 
 # step kws ####################################################################
