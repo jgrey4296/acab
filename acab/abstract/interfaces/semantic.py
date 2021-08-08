@@ -70,7 +70,7 @@ class SemanticSystem_i(HandlerSystem_i):
     def to_sentences(self) -> List[Sentence]:
         pass
 
-    def extend(mods:List[ModuleComponents]):
+    def extend(self, mods:List[ModuleComponents]):
         semantics = [y for x in mods for y in x.semantics]
         for sem in semantics:
             [self._register_handler(x) for x in sem.dependent]
