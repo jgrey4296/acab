@@ -108,3 +108,7 @@ class TrieBootstrapper(Bootstrapper_i):
 
         return final_parser
 
+
+
+    def report(self):
+        return self._semantics.to_sentences()

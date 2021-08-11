@@ -45,6 +45,10 @@ class Bootstrapper_i(metaclass=abc.ABCMeta):
         """
         pass
 
+    def report(self) -> Any:
+        """ Return a report on the bootstrap registrations """
+        pass
+
 #----------------------------------------
 class DSL_Fragment_i(metaclass=abc.ABCMeta):
     """ """
