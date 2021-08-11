@@ -76,7 +76,7 @@ class ModuleLoader_i(metaclass=abc.ABCMeta):
             return components
 
         except ModuleNotFoundError as err:
-            raise AcabImportException("Error attempting to import: {maybe_module}: {err}") from None
+            raise AcabImportException(f"Error attempting to import: {maybe_module}: {err}") from None
 
     def __contains__(self, other: Union[ModuleType, str]):
         return str(other) in self.loaded_modules
