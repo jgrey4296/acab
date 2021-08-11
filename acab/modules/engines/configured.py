@@ -12,9 +12,15 @@ from acab.modules.parsing.exlo.el_dsl import EL_Parser
 from acab.modules.printing.basic_printer import BasicPrinter
 from acab.modules.printing.default import DEFAULT_PRINTER
 from acab.modules.semantics.basic_system import BasicSemanticSystem
-from acab.modules.semantics.default import DEFAULT_SEMANTICS
+from acab.modules.semantics.default import DEFAULT_SEMANTICS, EXLO_SEMANTICS
 
 
-basic = AcabBasicEngine(parser=EL_Parser(),
-                        semantics=DEFAULT_SEMANTICS(),
-                        printer=DEFAULT_PRINTER)
+def basic():
+    return AcabBasicEngine(parser=EL_Parser(),
+                           semantics=DEFAULT_SEMANTICS(),
+                           printer=DEFAULT_PRINTER())
+
+def exlo():
+    return AcabBasicEngine(parser=EL_Parser(),
+                           semantics=EXLO_SEMANTICS(),
+                           printer=DEFAULT_PRINTER())
