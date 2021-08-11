@@ -59,7 +59,7 @@ class TestEngine(unittest.TestCase):
         # Create the engine
         basic     = AcabBasicEngine(parser=EL_Parser(),
                                     semantics=DEFAULT_SEMANTICS(),
-                                    printer=DEFAULT_PRINTER,
+                                    printer=DEFAULT_PRINTER(),
                                     modules=[])
 
         query = basic.query("a.test.sentence?")
@@ -71,7 +71,7 @@ class TestEngine(unittest.TestCase):
     def test_query(self):
         basic = AcabBasicEngine(parser=EL_Parser(),
                                 semantics=DEFAULT_SEMANTICS(),
-                                printer=DEFAULT_PRINTER,
+                                printer=DEFAULT_PRINTER(),
                                 modules=[])
 
         query = basic.query("a.test.$x?")
@@ -88,7 +88,7 @@ class TestEngine(unittest.TestCase):
         # Create the engine
         basic     = AcabBasicEngine(parser=EL_Parser(),
                                     semantics=DEFAULT_SEMANTICS(),
-                                    printer=DEFAULT_PRINTER,
+                                    printer=DEFAULT_PRINTER(),
                                     modules=[])
 
         basic.insert("a.test.sentence")
@@ -98,11 +98,28 @@ class TestEngine(unittest.TestCase):
         result = basic.pprint()
         self.assertEqual(result, "a.test.sentence\na.test.blah")
 
-    def test_module_setup(self):
-        breakpoint()
+    @unittest.skip("need to change total parser priorities?")
+    def test_multi_sentence_statement(self):
+        # Create the engine
         basic     = AcabBasicEngine(parser=EL_Parser(),
                                     semantics=DEFAULT_SEMANTICS(),
-                                    printer=DEFAULT_PRINTER,
+                                    printer=DEFAULT_PRINTER(),
+                                    modules=[])
+
+
+        basic.insert("a.test.sentence:\nblah\nbloo\nblee\nend")
+
+        sentences = basic.to_sentences()
+        self.assertEqual(len(sentences), 3)
+        result = basic.pprint()
+        self.assertEqual(result, "a.test.sentence.blah\na.test.sentence.bloo\na.test.sentence.blee")
+
+
+
+    def test_module_setup(self):
+        basic     = AcabBasicEngine(parser=EL_Parser(),
+                                    semantics=DEFAULT_SEMANTICS(),
+                                    printer=DEFAULT_PRINTER(),
                                     modules=["acab.modules.operators.query"])
         self.assertTrue("acab.modules.operators.query" in basic._module_loader)
 
