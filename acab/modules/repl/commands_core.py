@@ -70,7 +70,7 @@ def do_load(self, line):
     Load a dsl file into the self
     """
     logging.info(f"Loading: {line}")
-    filename = abspath(expanduser(params[0])).strip()
+    filename = abspath(expanduser(line)).strip()
     try:
         assert(exists(filename)), filename
         self.state.engine.load_file(filename)
@@ -85,7 +85,7 @@ def do_save(self, line):
     Save the state of the working memory into a file
     """
     logging.info(f"Saving State to: {line}")
-    filename = abspath(expanduser(params[0]))
+    filename = abspath(expanduser(line))
     try:
         assert(exists(split(filename)[0]))
         self.state.engine.save_file(filename)
@@ -100,6 +100,7 @@ def do_run(self, line):
     Take a binding from a query, and run it.
     Used for running rules, queries, actions, layers, pipelines...
     """
+    # TODO
     result = None
     # query
     if not bool(line.strip()):
