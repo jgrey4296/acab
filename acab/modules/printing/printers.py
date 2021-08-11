@@ -92,7 +92,8 @@ class ConstraintAwareValuePrinter(PrintSemantics_i):
         modal = top.check('MODAL')
         if modal in value.data:
             return_list.append(value.data[modal])
-
+        else:
+            return_list.append(DSYM.FALLBACK_MODAL_SYM)
 
         return return_list
 
