@@ -1,3 +1,6 @@
+"""
+Default elements found in values, loaded from config
+"""
 from acab.abstract.config.config import GET
 
 config = GET()

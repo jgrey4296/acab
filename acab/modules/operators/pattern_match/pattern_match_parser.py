@@ -31,9 +31,9 @@ def build_transform_component(toks):
 
 
 HOTLOAD_VALBIND = pp.Forward()
-HOTLOAD_VAR = pp.Forward()
-HOTLOAD_SEN = pp.Forward()
-HOTLOAD_QUERY = pp.Forward()
+HOTLOAD_VAR     = pp.Forward()
+HOTLOAD_SEN     = pp.Forward()
+HOTLOAD_QUERY   = pp.Forward()
 
 MATCH_KW = s(pp.Keyword("match"))
 

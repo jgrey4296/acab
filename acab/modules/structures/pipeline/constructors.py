@@ -1,3 +1,4 @@
+# TODO factor out build_rule
 
 def make_agenda(s, loc, toks):
     rule_type_str, as_rule = build_rule(toks, sem_hint=AGENDA_SEM_HINT)

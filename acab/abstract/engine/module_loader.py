@@ -37,10 +37,10 @@ class ModuleLoader(ModuleLoader_i):
         base_path      = module.__package__
         reference_path = MODULE_SPLIT_REG.split(module.__name__)
         queue          = [(base_path, module)]
-        dsl_fragments  = []
-        semantic_frags = []
-        printers       = []
-        operators      = []
+        dsl_fragments  : List[DSL_Fragment_i]     = []
+        semantic_frags : List[Semantic_Fragment]  = []
+        printers       : List[PrintSemantics_i]   = []
+        operators      : List[ProductionOperator] = []
 
         while bool(queue):
             curr_path, curr_mod = queue.pop(0)

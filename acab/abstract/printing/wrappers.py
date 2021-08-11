@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import re
 from re import Pattern
 from acab.abstract.config.config import AcabConfig

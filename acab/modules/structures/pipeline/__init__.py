@@ -4,7 +4,7 @@ from . import LayerParser as LP
 from . import PipelineParser as PP
 
 
-class AgendaMODULE(DSL_Fragment_i):
+class AgendaFrag(DSL_Fragment_i):
     """ The Module Spec for base structures
     ie: Agenda/Layer/Pipeline
     """
@@ -15,17 +15,17 @@ class AgendaMODULE(DSL_Fragment_i):
 
     def query_parsers(self, pt):
         basic_sen = pt.query("sentence.basic")
-        query = pt.query("query.body")
+        query     = pt.query("query.body")
         transform = pt.query("transform.body")
-        action = pt.query("action.body")
+        action    = pt.query("action.body")
 
         PP.HOTLOAD_BASIC_SEN << basic_sen
-        PP.HOTLOAD_QUERY << query
+        PP.HOTLOAD_QUERY     << query
         PP.HOTLOAD_TRANSFORM << transform
-        PP.HOTLOAD_ACTION << action
+        PP.HOTLOAD_ACTION    << action
 
 
-class LayerMODULE(DSL_Fragment_i):
+class LayerFrag(DSL_Fragment_i):
     """ The Module Spec for base structures
     ie: Agenda/Layer/Pipeline
     """
@@ -36,20 +36,20 @@ class LayerMODULE(DSL_Fragment_i):
 
     def query_parsers(self, pt):
         basic_sen = pt.query("sentence.basic")
-        query = pt.query("query.body")
+        query     = pt.query("query.body")
         transform = pt.query("transform.body")
-        action = pt.query("action.body")
+        action    = pt.query("action.body")
 
         LP.HOTLOAD_BASIC_SEN << basic_sen
-        LP.HOTLOAD_QUERY << query
+        LP.HOTLOAD_QUERY     << query
         LP.HOTLOAD_TRANSFORM << transform
-        LP.HOTLOAD_ACTION << action
+        LP.HOTLOAD_ACTION    << action
 
 
 
 
 
-class PipelineMODULE(DSL_Fragment_i):
+class PipelineFrag(DSL_Fragment_i):
     """ The Module Spec for base structures
     ie: Agenda/Layer/Pipeline
     """
@@ -60,11 +60,11 @@ class PipelineMODULE(DSL_Fragment_i):
 
     def query_parsers(self, pt):
         basic_sen = pt.query("sentence.basic")
-        query = pt.query("query.body")
+        query     = pt.query("query.body")
         transform = pt.query("transform.body")
-        action = pt.query("action.body")
+        action    = pt.query("action.body")
 
         AP.HOTLOAD_BASIC_SEN << basic_sen
-        AP.HOTLOAD_QUERY << query
+        AP.HOTLOAD_QUERY     << query
         AP.HOTLOAD_TRANSFORM << transform
-        AP.HOTLOAD_ACTION << action
+        AP.HOTLOAD_ACTION    << action
