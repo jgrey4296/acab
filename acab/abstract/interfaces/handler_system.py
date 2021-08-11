@@ -57,10 +57,10 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
     def _register_handler(self, handler):
         if isinstance(handler, HandlerComponent_i):
             pair_str = handler.mapped_to
-        elif isinstance(handler, HandlerType) and isinstance(handler.__self.__, HandlerComponent_i):
+        elif isinstance(handler, type) and isinstance(handler.__self.__, HandlerComponent_i):
             pair_str = handler.__self__.mapped_to
         else:
-            raise AcabBaseException("Handler Not Compliant", handler)
+            raise AcabBaseException(f"Handler Not Compliant: {handler}", handler)
 
         # TODO handle overriding
         assert(pair_str not in self.registered_handlers)
