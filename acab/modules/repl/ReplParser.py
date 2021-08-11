@@ -7,6 +7,7 @@ import logging as root_logger
 import pyparsing as pp
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.parsing import consts as PU
+from acab.modules.repl.util import build_slice
 
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
@@ -75,18 +76,14 @@ step_parser = pp.Or([back_kw,
 wm_kw        = pp.Keyword("wm")
 bootstrap_kw = pp.Keyword("bootstrap")
 module_kw    = pp.Keyword("module")
-bind_kw      = pp.Keyword("binding")
 
 # TODO also handle bind without kw?
 printer_parser = pp.Or([wm_kw,
-                        bootstrap_kw,
                         module_kw + rst,
-                        layer_kw + rst,
-                        pipe_kw,
-                        pipeline_kw,
-                        bind_kw + rst])
+                        rst])
 # stat kws ####################################################################
 agenda_kw = pp.Keyword("agenda")
+bind_kw   = pp.Keyword("binding")
 
 stats_parser = pp.Or([wm_kw,
                       pipe_kw,
@@ -104,14 +101,17 @@ stats_parser = pp.Or([wm_kw,
 listen_parser = pp.Or([])
 
 
-# misc ########################################################################
-# number = pp.Word(pp.nums)
-# slice_p = PU.s(pp.Literal('[')) + \
-#     PU.op(number).setResultsName('first') + \
-#     PU.op(PU.s(pp.Literal(':')) + number).setResultsName('second') + \
-#     PU.s(pp.Literal(']'))
+# result ########################################################################
+number = pp.Word(pp.nums)
+slice_p = PU.s(pp.Literal('[')) + \
+    PU.op(number).setResultsName('first') + \
+    PU.op(PU.s(pp.Literal(':')) + number).setResultsName('second') + \
+    PU.s(pp.Literal(']'))
 
-# param_p = pp.Or([number, slice_p])
+slice_p.setParseAction(build_slice)
 
-# # print trie / query results / selected type
-# print_alts = pp.Or([wm_kw, bootstrap_kw, layer_kw, module_kw, pipeline_kw, binding_kw])
+# $x, @x
+binding = None
+
+# ctx ([2:])? $x?
+result_parser = pp.Or([])
