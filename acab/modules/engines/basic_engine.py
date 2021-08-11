@@ -20,7 +20,6 @@ from acab.abstract.interfaces.dsl import DSL_Fragment_i
 from acab.abstract.interfaces.engine import AcabEngine_i, EnsureInitialised
 from acab.abstract.interfaces.printing import PrintSystem_i
 from acab.abstract.interfaces.semantic import SemanticSystem_i
-from acab.abstract.parsing.dsl_builder import DSLBuilder
 from acab.error.acab_base_exception import AcabBaseException
 
 logging = root_logger.getLogger(__name__)
@@ -40,27 +39,7 @@ class AcabBasicEngine(AcabEngine_i):
 
     def __post_init__(self):
         # initialise modules
-        self._module_loader.load_modules(*self.modules)
-        loaded_mods = self._module_loader.loaded_modules.values()
-
-        # Initialise DSL
-        self._dsl_builder = DSLBuilder(self.parser)
-        self._dsl_builder.build_DSL(loaded_mods)
-
-        # extend semantics
-        self.semantics.extend(loaded_mods)
-
-        # extend printer
-        self.printer.extend(loaded_mods)
-
-        # insert operator sentences / Create root operator context
-        ops = [y for x in loaded_mods for y in x.operators]
-        self.semantics(*ops)
-
-        # Now Load Text files:
-        for x in self.load_paths:
-            self.load_file(x)
-
+        self.load_modules(*self.modules)
         self.initialised = True
 
     @EnsureInitialised
@@ -75,7 +54,7 @@ class AcabBasicEngine(AcabEngine_i):
         if isinstance(inst, list) and all([isinstance(x, str) for x in inst]):
             inst = [y for x in inst for y in self._dsl_builder.parse(x)[:]]
 
-        logging.info(f"Running: {inst}")
+        logging.debug(f"Running: {inst}")
         # pass inst to sem system
         result = bindings
         for elem in inst:

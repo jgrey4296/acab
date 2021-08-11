@@ -13,6 +13,7 @@ from acab.abstract.interfaces.dsl import DSL_Fragment_i, DSLBuilder_i
 from acab.abstract.interfaces.module_loader import ModuleLoader_i
 from acab.abstract.interfaces.printing import PrintSystem_i
 from acab.abstract.interfaces.semantic import SemanticSystem_i
+from acab.abstract.parsing.dsl_builder import DSLBuilder
 
 # TODO add 'Tick' functionality
 ModuleComponents = "ModuleComponents"
@@ -53,6 +54,7 @@ class AcabEngine_i(metaclass=abc.ABCMeta):
         assert(isinstance(filename, str))
         filename = abspath(expanduser(filename))
         logging.info("Loading: {}".format(filename))
+        assertions = []
         assert exists(filename), filename
         with open(filename) as f:
             # everything should be an assertion
@@ -65,10 +67,13 @@ class AcabEngine_i(metaclass=abc.ABCMeta):
                 print("File Not Asserted into WM")
                 return False
 
+        try:
             # Assert facts:
             for x in assertions:
-                logging.info("File load assertions: {}".format(x))
-                self.add(x)
+                logging.info(f"File load assertion: {x}")
+                self(x)
+        except Exception as err:
+            logging.warning(f"Assertion Failed: {x}")
 
         return True
 
@@ -85,6 +90,7 @@ class AcabEngine_i(metaclass=abc.ABCMeta):
 
         as_strings = printer.pprint(*as_sentences)
 
+        # TODO add modeline
         with open(abspath(expanduser(filename)), 'w') as f:
             f.write(as_strings)
 
@@ -101,10 +107,41 @@ class AcabEngine_i(metaclass=abc.ABCMeta):
 
     def pprint(self) -> str:
         sens = self.to_sentences()
+        if not bool(sens) or not bool(sens[0]):
+            return ""
+
         return self.printer.pprint(*sens)
 
     def load_modules(self, *modules: List[str]) -> List[ModuleComponents]:
-        return self._module_loader.load_modules(*modules)
+        self._module_loader.load_modules(*modules)
+        loaded_mods = self._module_loader.loaded_modules.values()
+        logging.info("Modules Loaded, integrating")
+        logging.info("Building DSL")
+        # Initialise DSL
+        self._dsl_builder = DSLBuilder(self.parser)
+        # Extend the parser
+        self._dsl_builder.build_DSL(loaded_mods)
+
+        # extend semantics
+        logging.info("Extending Semantics")
+        self.semantics.extend(loaded_mods)
+
+        # extend printer
+        logging.info("Extending Printer")
+        self.printer.extend(loaded_mods)
+
+        # insert operator sentences / Create root operator context
+        logging.info("Asserting operators")
+        ops = [y for x in loaded_mods for y in x.operators]
+        self.semantics(*ops)
+
+        # Now Load Text files:
+        logging.info("Loading paths")
+        for x in self.load_paths:
+            self.load_file(x)
+
+
+
     @abc.abstractmethod
     def __call__(self, thing, bindings=None) -> ContextContainer_i:
         pass
