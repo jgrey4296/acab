@@ -95,7 +95,7 @@ class ExclusionNodeSemantics(SI.IndependentSemantics_i):
         elif node.has_child(term):
             potentials.append(node.get_child(term))
 
-        if EXOP in term.data:
+        if bool(term) and EXOP in term.data:
             potentials = [x for x in potentials if x.data[EXOP] == term.data[EXOP]]
 
         return potentials
