@@ -28,49 +28,15 @@ def do_print(self, line):
     logging.info(f"Printing: {line}")
     result = []
     if "wm" in params[0]:
-        result.append("WM:")
-        result.append(str(self.state.engine._working_memory))
-    elif "bootstrap" in params[0]:
-        result.append("Bootstrap Parser:")
-        result.append(self.state.engine._working_memory._bootstrap_parser.print_trie())
-
+        print(self.state.engine.pprint())
     elif "module" in params[0]:
-        result.append("Module: {}".format(params[1]))
-        result.append(str(self.state.engine._loaded_modules[params[1]]))
-    elif "layer" in params[0]:
-        result.append("Layer: {}".format(params[1]))
-        result.append(str(self.state.engine._pipeline[params[1]]))
-    elif "pipeline" in params[0]:
-        result.append("Pipeline: {}".format(params[1]))
-        result.append(str(self.state.engine._pipeline))
-    elif "binding" in params[0]:
-        if len(params) > 1:
-            if isinstance(params[1], int) and len(self.state.engine._cached_bindings) <= params[1]:
-                result.append("Bindings: {} Out of Bounds".format(params[1]))
-            else:
-                result.append("Bindings: {}".format(params[1]))
-                result.append(str(self._cached_bindings[params[1]]))
-        else:
-            result.append("Bindings: ")
-            result.append("\n".join([str(x) for x in self.state.engine._cached_bindings]))
+        # TODO print a specific module, or all
+        print("Modules: ")
+        print("\n".join(self.state.engine._module_loader.loaded_modules.keys()))
     else:
-        result.append("Querying: {}")
-
-    self.state.result = "\n".join(result)
-    # TODO print keywords if passed nothing
-
-
-
-@register
-def do_decompose(self, line):
-    """
-    Decompose binding into components.
-    eg: rules -> queries, transforms, actions
-    """
-    params = line
-    # TODO : split objects into tries
-    # run query
-    # split result into bindings
+        # TODO print keywords if passed nothing
+        # TODO if theres a query, print the value at the end of that query
+        print(f"Print Keywords: {RP.printer_parser}")
 
 
 @register
@@ -126,6 +92,7 @@ def do_stats(self, line):
     # Operators
     if allow_all or "operator" in params:
         result.append("Operator Stats: ")
+        # TODO use engine._module_loader.loaded_modules[:].operators
         result.append(str(self.state.engine._operators))
 
     # pipeline
@@ -199,5 +166,44 @@ def do_result(self, line):
 
     (SLICE == python slice. ie: [:-1], [2:4], [4])
     """
-    # params = RP.result_parser...
+    params = RP.result_parser.parseString(line)[:]
+    if "binding" in params[0]:
+        # print a specific binding in all contexts
+        pass
+    elif "bind_slice" in params[0]:
+        # print a binding across selected contexts
+        pass
+    elif "context" in params[0]:
+        # print a context
+        pass
+    elif "context_slice" in params[0]:
+        # print a slice of contexts
+        pass
+    else:
+        # complain
+        pass
     raise NotImplementedError()
+
+
+@register
+def do_decompose(self, line):
+    """
+    Decompose binding into components.
+    eg: rule -> queries, transforms, actions
+    """
+    params = line
+    # TODO : split objects into tries
+    # run query
+    # split result into bindings
+
+@register
+def do_parser(self, line):
+    """ Print a parser report """
+    # TODO improve
+    if "bootstrap" in line:
+        print("Bootstrap Parser:")
+        print(self.state.engine._dsl_builder._bootstrap_parser.report())
+    elif "sugar" in line:
+        print(f"Repl Sugar: {RP.sugared}")
+    else:
+        print(self.state.engine._dsl_builder._main_parser)
