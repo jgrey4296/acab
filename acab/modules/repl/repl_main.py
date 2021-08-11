@@ -1,6 +1,6 @@
 #!/opt/anaconda3/envs/acab/bin/python3
 """
-An Acab REPL, using default of TrieWM
+An Acab REPL
 """
 import argparse
 import importlib
@@ -14,14 +14,14 @@ parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpForm
                                  epilog = "\n".join([""]))
 parser.add_argument('--config', action="append", default=["/Volumes/documents/github/acab/acab/__configs/default"])
 parser.add_argument('--engine', default="")
-parser.add_argument('-v', '--verbosity', default="WARNING")
+parser.add_argument('-v', '--verbosity', default="WARNING", help="The logging level to use, defaults to WARNING")
 
 
 # Quiet hook from https://gist.github.com/jhazelwo/86124774833c6ab8f973323cb9c7e251
 if __name__ == "__main__":
     args = parser.parse_args()
 
-    LOGLEVEL = root_logger._nameToLevel[args.verbosity]
+    LOGLEVEL = root_logger._nameToLevel[args.verbosity.upper()]
     LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
     root_logger.basicConfig(filename=LOG_FILE_NAME, level=max(0, LOGLEVEL - 10), filemode='w')
 
@@ -52,5 +52,3 @@ if __name__ == "__main__":
     # repl.onecmd(f"module {initial_modules}")
     print("\n--------------------------------------------------")
     repl.cmdloop()
-    # REPL loop over
-    logging.info("Shutting down engine: {}".format(args.engine))
