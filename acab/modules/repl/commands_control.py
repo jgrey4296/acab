@@ -54,6 +54,8 @@ def do_pop(self, line):
 
 @register
 def do_collect(self, line):
+    """ Add a line to the multi line collection,
+    ready to be used as one statement when multi line is closed """
     assert(self.state.in_multi_line)
     self.state.collect_str.append(line)
     logging.info("Collecting: {}".format(self.state.collect_str))

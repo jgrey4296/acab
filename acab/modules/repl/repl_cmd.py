@@ -2,6 +2,7 @@
 import cmd
 import logging as root_logger
 import sys
+import pyparsing as pp
 from dataclasses import InitVar, dataclass, field
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
@@ -45,17 +46,19 @@ class ReplState:
 
 class AcabREPL(cmd.Cmd):
     """ Implementation of cmd.Cmd to provide an extensible ACAB REPL"""
-    intro  = "Welcome to ACAB. Type help to list commands.\n"
+    intro  = "Welcome to ACAB. Type 'help' or '?' to list commands.\n"
     prompt = initial_prompt
 
     state  : ReplState = ReplState()
 
     def default(self, line):
         """ Called when no other command matches """
-        # default to assertion / query
         try:
+            # default to assertion / query / run
             self.state.result = self.state.engine(line)
-            logging.info(f"Result length: {len(self.state.result)}")
+            logging.info(f"Contexts: {len(self.state.result)}")
+        except pp.ParseException as err:
+            logging.warning(f"Parse Failure: {err.markInputline()}")
         except Exception as err:
             logging.warning(f"Failure in Default: {err}")
 
