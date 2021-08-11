@@ -68,7 +68,7 @@ class ModuleLoader(ModuleLoader_i):
 
             # Get printers
             available_printers  =  [y for x,y in mod_contents if usable(y, PrintSemantics_i)]
-            printers            += [y() if needs_init(y) else y for y in mod_contents]
+            printers            += [y() if needs_init(y) else y for y in available_printers]
 
 
 
