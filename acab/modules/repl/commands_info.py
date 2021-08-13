@@ -3,6 +3,7 @@ from enum import Enum
 from os.path import split, splitext, exists, expanduser, abspath
 import importlib
 import logging as root_logger
+import pyparsing as pp
 import re
 
 import acab
@@ -166,23 +167,41 @@ def do_result(self, line):
 
     (SLICE == python slice. ie: [:-1], [2:4], [4])
     """
-    params = RP.result_parser.parseString(line)[:]
-    if "binding" in params[0]:
-        # print a specific binding in all contexts
-        pass
-    elif "bind_slice" in params[0]:
-        # print a binding across selected contexts
-        pass
-    elif "context" in params[0]:
-        # print a context
-        pass
-    elif "context_slice" in params[0]:
-        # print a slice of contexts
-        pass
+    try:
+        params = RP.result_parser.parseString(line)
+    except pp.ParseException as err:
+        logging.warning("Bad Results Command:")
+        logging.warning(err.markInputline())
+        return
+
+    ctxs_to_print     = []
+    bindings_to_print = []
+    logging.info("Params: {}".format(params))
+    if "context" in params:
+        ctxs_to_print.append(self.state.result[params['context'][0]])
+    elif "context_slice" in params:
+        ctxs_to_print += self.state.result[params['context_slice']]
     else:
-        # complain
-        pass
-    raise NotImplementedError()
+        ctxs_to_print.append(self.state.result[0])
+
+
+    if "bindings" in params:
+        bindings_to_print += params.bindings[:]
+
+    logging.info("Printing Result:")
+    logging.info("Ctxs: {}".format(ctxs_to_print))
+    logging.info("Bindings: {}".format(bindings_to_print))
+
+    # now print them
+    for ctx in ctxs_to_print:
+        if bool(bindings_to_print):
+            for x in bindings_to_print:
+                print("{} : {}".format(x, self.state.engine.pprint([ctx[x]])))
+        else:
+            for x,y in ctx.data.items():
+                print("{} : {}".format(x, self.state.engine.pprint([y])))
+
+        print("--------------------")
 
 
 @register

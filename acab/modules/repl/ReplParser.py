@@ -7,6 +7,7 @@ import logging as root_logger
 import pyparsing as pp
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.parsing import consts as PU
+from acab.abstract.parsing import parsers as AP
 from acab.modules.repl.util import build_slice
 
 logging = root_logger.getLogger(__name__)
@@ -102,16 +103,24 @@ listen_parser = pp.Or([])
 
 
 # result ########################################################################
-number = pp.Word(pp.nums)
+number = pp.Optional(pp.Literal('-')("minus")) + pp.Word(pp.nums)
+number.setParseAction(lambda s, l, t: int(t[-1]) if 'minus' not in t else -1 * int(t[-1]))
+
 slice_p = PU.s(pp.Literal('[')) + \
-    PU.op(number).setResultsName('first') + \
-    PU.op(PU.s(pp.Literal(':')) + number).setResultsName('second') + \
+    PU.op(number)('first') + \
+    PU.op(PU.s(pp.Literal(':')) + \
+          PU.op(number)("second")) + \
     PU.s(pp.Literal(']'))
 
 slice_p.setParseAction(build_slice)
 
 # $x, @x
-binding = None
+ctx = number("context")
+ctx_slice = slice_p("context_slice")
+binding = AP.VALBIND
+
 
 # ctx ([2:])? $x?
-result_parser = pp.Or([])
+result_parser = pp.Optional(pp.Or([ctx,
+                                   ctx_slice])) \
+    + pp.ZeroOrMore(binding)("bindings")
