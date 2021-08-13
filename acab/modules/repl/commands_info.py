@@ -5,7 +5,7 @@ import importlib
 import logging as root_logger
 import pyparsing as pp
 import re
-
+from collections import defaultdict
 import acab
 config = acab.setup()
 
@@ -19,6 +19,7 @@ logging = root_logger.getLogger(__name__)
 
 # TODO shift this into config
 SPLIT_RE = re.compile("[ .!?/]")
+ModuleComponents = "ModuleComponents"
 
 @register
 def do_print(self, line):
@@ -28,140 +29,90 @@ def do_print(self, line):
     params = RP.printer_parser.parseString(line)[:]
     logging.info(f"Printing: {line}")
     result = []
-    if "wm" in params[0]:
+    if "wm" in params:
         print(self.state.engine.pprint())
-    elif "module" in params[0]:
-        # TODO print a specific module, or all
+    elif "module" in params:
         print("Modules: ")
-        print("\n".join(self.state.engine._module_loader.loaded_modules.keys()))
+        modules: ModuleComponents = self.state.engine._module_loader.loaded_modules.values()
+        if 'mod_target' in params:
+            # TODO print module doc
+            modules = [x for x in modules if x.source in params['mod_target']]
+
+        print("\n".join([x.source for x in modules]))
     else:
-        # TODO print keywords if passed nothing
-        # TODO if theres a query, print the value at the end of that query
         print(f"Print Keywords: {RP.printer_parser}")
 
 
 @register
-def do_listen(self, line):
-    """ Listeners:
-    Listen for specific assertions / rule firings / queries,
-    and pause on them
-    """
-    logging.info(f"Listening: {line}")
-    params = RP.listen_parser.parseString(line)[:]
-    words = [y for x in params for y in SPLIT_RE.split(x)]
-    if params['type'] == "add":
-        self.state.engine.add_listeners(*words)
-    elif params['type'] == "remove":
-        self.state.engine.remove_listeners(*words)
-    elif params['type'] == "list":
-        result = []
-        result.append(" ".join(self.state.engine.get_listeners()))
-        result.append("Threshold: {}".format(self.state.engine.get_listener_threshold()))
-        params["result"] = "\n".join(result)
-    elif params['type'] == "threshold":
-        params = SPLIT_RE.split((params[0]))
-        self.state.engine.set_listener_threshold(int(params[0]), int(params[1]))
-
-
-
-@register
-def do_check(self, line):
-    """
-    Trigger an analysis action.
-    eg: type checking
-    """
-    params = line
-    logging.info(f"Checking: {line}")
-    # TODO
-    # If single statement, run analysis layer with statement inserted,
-    # return types
-
-    # else everything: run analysis layer
-
-
-
-@register
-def do_stats(self, line):
+def do_stat(self, line):
     """
     Print Stats about the self.
     ie: Modules/Operators/Pipelines/Layers/Rules....
     """
     logging.info(f"Getting Stats: {line}")
-    params = RP.stats_parser.parseString(line)[:]
+    params = RP.stats_parser.parseString(line)
     allow_all = not bool(params)
-    result = []
+    modules: ModuleComponents = self.state.engine._module_loader.loaded_modules.values()
     # Operators
     if allow_all or "operator" in params:
-        result.append("Operator Stats: ")
-        # TODO use engine._module_loader.loaded_modules[:].operators
-        result.append(str(self.state.engine._operators))
+        print("--------------------")
+        print("Operators: ")
+        count = 0
+        for mod in modules:
+            count += len(mod.operators)
+            for op in mod.operators:
+                print("\t", self.state.engine.pprint([op]))
 
-    # pipeline
-    if allow_all or "pipeline" in params:
-        result.append("--------------------")
-        result.append("Pipeline Stats: ")
-        # TODO pipeline stats
-
-    # layers
-    if (allow_all or "layer" in params):
-        result.append("--------------------")
-        result.append("Layer Stats: ")
-        # result.append("\t{}".format("\n\t".join([str(x) for x in self.state.engine._pipeline._layers])))
-        # TODO layer stats
-
-    # agendas
-    if allow_all or "agenda" in params:
-        result.append("--------------------")
-        result.append("Agenda Stats: ")
-        # TODO: need to query for agendas
-
-    # rules
-    if allow_all or "rule" in params:
-        result.append("--------------------")
-        result.append("ProductionStructure Stats: ")
-        # TODO rule stats
+        print("--")
+        print("Loaded Operators: {}".format(count))
 
     # modules
     if allow_all or "module" in params:
-        result.append("--------------------")
-        result.append("Module Stats: ")
-        result.append("\t{}".format("\n\t".join([x for x in self.state.engine._loaded_modules])))
+        print("--------------------")
+        print("Modules: ")
+        mod_target = modules
+        if 'mod_target' in params:
+            mod_target = [x for x in modules if x.source in params['mod_target']]
 
-    # WM stats
-    if allow_all or "wm" in params:
-        result.append("--------------------")
-        result.append("WM Stats: ")
-        # TODO
-        result.append(str(self.state.engine._working_memory))
+        for mod in mod_target:
+            print("\t{}".format(mod.source))
+        print("--")
+        print("Loaded Modules: {}".format(len(modules)))
 
-    # Bindings
-    if allow_all or "binding" in params:
-        result.append("--------------------")
-        result.append("Binding Stats: ")
-        # TODO pretty print bindings
-        bind_groups = self.state.engine._cached_bindings[:]
-        result.append("\t{}".format("\n\t".join([str(x) for x in bind_groups])))
+    if allow_all or "semantic" in params:
+        print("--------------------")
+        print("Base Semantics:")
+        semantic = self.state.engine.semantics
+        print("{} : {}".format(semantic.__module__, semantic.__class__.__name__))
+        print("\n", semantic.__doc__, "\n")
+        print("Handlers: {}".format(len(semantic.registered_handlers)))
+        print("Structs:  {}".format(len(semantic.registered_structs)))
 
-    # TODO add parser stats
+        print("Handler Keys:")
+        print("\t{}".format("\n\t".join([str(x) for x in semantic.registered_handlers.keys()])))
 
-    # Print Keywords
-    if allow_all or "keywords" in params:
-        result.append("--------------------")
-        result.append("Keywords: ")
-        result.append("\t{}".format(" ".join(x for x in ["operator", "agenda", "rule", "pipeline",
-                                                         "layer", "module", "wm", "binding", "keywords"])))
+        print("----------")
+        print("Module Semantics: ")
+        count = defaultdict(lambda: 0)
+        for mod in modules:
+            print("Module: {} : Fragments: {}".format(mod.source, len(mod.semantics)))
+            for frag in mod.semantics:
+                count['dependent']   += len(frag.dependent)
+                count['independent'] += len(frag.independent)
+                count['abstraction'] += len(frag.abstraction)
+                count['structs']     += len(frag.structs)
 
-
-    logging.info("\n".join(result))
-
-
+        if bool(count):
+            print("--")
+            print("Semantic Counts:")
+            print("\n\t".join(["{} : {}".format(x,y) for x,y in count.items()]))
 
 
 @register
 def do_result(self, line):
     """
     Inspect active contexts from a query.
-    result SLICE? var*
+    result (index|SLICE)? var*
 
     """
     try:
@@ -206,6 +157,64 @@ def do_result(self, line):
 
 
 @register
+def do_parser(self, line):
+    """ Print a parser report """
+    params = RP.parse_info_parser.parseString(line)
+
+    if "bootstrap" in line:
+        print("Bootstrap Parser:")
+        bootstrap_desc = self.state.engine._dsl_builder._bootstrap_parser.report()
+        for sen in bootstrap_desc:
+            print("\t", self.state.engine.pprint([sen]))
+    elif "sugar" in line:
+        print(f"Repl Sugar: {RP.sugared}")
+    else:
+        print(self.state.engine._dsl_builder._main_parser)
+
+
+
+@register
+def do_listen(self, line):
+    """ Listeners:
+    Listen for specific assertions / rule firings / queries,
+    and pause on them
+    """
+    logging.info(f"Listening: {line}")
+    params = RP.listen_parser.parseString(line)[:]
+    words = [y for x in params for y in SPLIT_RE.split(x)]
+    if params['type'] == "add":
+        self.state.engine.add_listeners(*words)
+    elif params['type'] == "remove":
+        self.state.engine.remove_listeners(*words)
+    elif params['type'] == "list":
+        result = []
+        result.append(" ".join(self.state.engine.get_listeners()))
+        result.append("Threshold: {}".format(self.state.engine.get_listener_threshold()))
+        params["result"] = "\n".join(result)
+    elif params['type'] == "threshold":
+        params = SPLIT_RE.split((params[0]))
+        self.state.engine.set_listener_threshold(int(params[0]), int(params[1]))
+
+
+
+@register
+def do_check(self, line):
+    """
+    Trigger an analysis action.
+    eg: type checking
+    """
+    params = line
+    logging.info(f"Checking: {line}")
+    # TODO
+    # If single statement, run analysis layer with statement inserted,
+    # return types
+
+    # else everything: run analysis layer
+
+
+
+
+@register
 def do_decompose(self, line):
     """
     Decompose binding into components.
@@ -215,15 +224,3 @@ def do_decompose(self, line):
     # TODO : split objects into tries
     # run query
     # split result into bindings
-
-@register
-def do_parser(self, line):
-    """ Print a parser report """
-    # TODO improve
-    if "bootstrap" in line:
-        print("Bootstrap Parser:")
-        print(self.state.engine._dsl_builder._bootstrap_parser.report())
-    elif "sugar" in line:
-        print(f"Repl Sugar: {RP.sugared}")
-    else:
-        print(self.state.engine._dsl_builder._main_parser)

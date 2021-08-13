@@ -111,4 +111,4 @@ class TrieBootstrapper(Bootstrapper_i):
 
 
     def report(self):
-        return self._semantics.to_sentences()
+        return self._semantics.to_sentences(self._structure)

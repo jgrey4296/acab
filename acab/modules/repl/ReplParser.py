@@ -74,33 +74,40 @@ step_parser = pp.Or([back_kw,
                      pipeline_kw])
 
 # print kws ###################################################################
-wm_kw        = pp.Keyword("wm")
-bootstrap_kw = pp.Keyword("bootstrap")
-module_kw    = pp.Keyword("module")
+wm_kw        = pp.Keyword("wm")("wm")
+module_kw    = pp.Keyword("module") + pp.Optional(pp.Word(pp.alphas)("mod_target"))
+semantic_kw  = pp.Keyword("semantic")("semantic")
 
 # TODO also handle bind without kw?
 printer_parser = pp.Or([wm_kw,
-                        module_kw + rst,
+                        module_kw,
+                        semantic_kw,
                         rst])
-# stat kws ####################################################################
-agenda_kw = pp.Keyword("agenda")
-bind_kw   = pp.Keyword("binding")
 
-stats_parser = pp.Or([wm_kw,
-                      pipe_kw,
-                      pipeline_kw,
-                      layer_kw,
-                      agenda_kw,
-                      rule_kw,
-                      module_kw,
-                      bind_kw])
+# stat kws ####################################################################
+operator_kw  = pp.Or(pp.Keyword("ops"),
+                     pp.Keyword("operator"))("operator")
+
+stats_parser = pp.ZeroOrMore(pp.Or([operator_kw,
+                                    module_kw,
+                                    semantic_kw]))
 
 # listener ####################################################################
 
 # add/remove/list/threshold
 
+add_kw        = None
+remove_kw     = None
+list_kw       = None
+
 listen_parser = pp.Or([])
 
+
+# parser exploration ##########################################################
+bootstrap_kw      = pp.Keyword("bootstrap")("bootstrap")
+sugar_kw          = pp.Keyword("sugar")("sugar")
+
+parse_info_parser = pp.Or([bootstrap_kw, sugar_kw])
 
 # result ########################################################################
 number = pp.Optional(pp.Literal('-')("minus")) + pp.Word(pp.nums)
