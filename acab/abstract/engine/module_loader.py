@@ -72,7 +72,8 @@ class ModuleLoader(ModuleLoader_i):
 
 
 
-        return ModuleComponents(dsl_fragments,
+        return ModuleComponents(str(module.__package__),
+                                dsl_fragments,
                                 semantic_frags,
                                 printers,
                                 operators)

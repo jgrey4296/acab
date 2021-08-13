@@ -22,6 +22,7 @@ PrintSemantics_i    = 'PrintSemantics_i'
 class ModuleComponents():
     """ Simple holder for extracted module components """
 
+    source        : str                     = field()
     dsl_fragments : List[DSL_Fragment_i]    = field()
     semantics     : List[Semantic_Fragment] = field()
     printers      : List[PrintSemantics_i]  = field()
