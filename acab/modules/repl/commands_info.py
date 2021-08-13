@@ -160,12 +160,9 @@ def do_stats(self, line):
 @register
 def do_result(self, line):
     """
-    Inspect a result from a query.
-    result  -> False or len(ctxs)
-    result.SLICE -> Print binding groups for each context in the slice
-    result.SLICE.$x -> Print variable $x for each context in slice
+    Inspect active contexts from a query.
+    result SLICE? var*
 
-    (SLICE == python slice. ie: [:-1], [2:4], [4])
     """
     try:
         params = RP.result_parser.parseString(line)
@@ -178,17 +175,21 @@ def do_result(self, line):
     bindings_to_print = []
     logging.info("Params: {}".format(params))
     if "context" in params:
-        ctxs_to_print.append(self.state.result[params['context'][0]])
+        try:
+            ctxs_to_print.append(self.state.result[params['context']])
+        except IndexError as err:
+            print(f"Selected bad ctx instance. Try 0 <= x < {len(self.state.result)}.")
     elif "context_slice" in params:
         ctxs_to_print += self.state.result[params['context_slice']]
-    else:
+    elif bool(self.state.result):
         ctxs_to_print.append(self.state.result[0])
-
+    else:
+        print("No Results Exist. Perform a Query.")
+        return
 
     if "bindings" in params:
         bindings_to_print += params.bindings[:]
 
-    logging.info("Printing Result:")
     logging.info("Ctxs: {}".format(ctxs_to_print))
     logging.info("Bindings: {}".format(bindings_to_print))
 

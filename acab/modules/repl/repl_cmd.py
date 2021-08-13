@@ -56,7 +56,8 @@ class AcabREPL(cmd.Cmd):
         try:
             # default to assertion / query / run
             self.state.result = self.state.engine(line)
-            logging.info(f"Contexts: {len(self.state.result)}")
+            if bool(self.state.result) and bool(self.state.result[0]):
+                print(f"Contexts: {len(self.state.result)}")
         except pp.ParseException as err:
             logging.warning(f"Parse Failure: {err.markInputline()}")
         except Exception as err:

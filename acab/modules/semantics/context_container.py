@@ -209,6 +209,9 @@ class ContextInstance(CtxInt.ContextInstance_i):
         else:
             return value
 
+    def __bool__(self):
+        return bool(self.data)
+
     def copy(self):
         copied = replace(self,
                          uuid=uuid1(),
