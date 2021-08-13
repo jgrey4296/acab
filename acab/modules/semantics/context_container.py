@@ -95,9 +95,11 @@ class ContextContainer(CtxInt.ContextContainer_i):
     def __getitem__(self, index):
         if isinstance(index, int):
             ctx_uuid = self._active[index]
-        else:
-            ctx_uuid = index
-        return self._total[ctx_uuid]
+            return self._total[ctx_uuid]
+
+        if isinstance(index, slice):
+            ctx_uuids = self._active[index]
+            return [self._total[x] for x in ctx_uuids]
 
     def __bool__(self):
         return bool(self._active)
