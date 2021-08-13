@@ -6,6 +6,7 @@ TOP     := ./acab
 START   := ./acab
 PAT     :=
 FILE_PAT := "test_*.py"
+LOGLEVEL := WARNING
 
 # If defined, use these overrides
 ifneq (${dir}, )
@@ -57,7 +58,7 @@ init:
 	find ${TOP} -type d -print0 | xargs -0 -I {} touch "{}/__init__.py"
 
 repl:
-	python acab/modules/repl/repl_main.py --config ./acab/__configs/default -v INFO
+	python acab/modules/repl/repl_main.py --config ./acab/__configs/default -v ${LOGLEVEL}
 
 vrepl:
 	python acab/modules/repl/repl_main.py --config ./acab/__configs/default -v DEBUG
