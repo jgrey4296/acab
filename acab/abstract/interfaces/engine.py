@@ -105,8 +105,12 @@ class AcabEngine_i(metaclass=abc.ABCMeta):
         """
         return self.semantics.to_sentences()
 
-    def pprint(self) -> str:
-        sens = self.to_sentences()
+    def pprint(self, target=None) -> str:
+        """ Pass a value to the engine's printer """
+        sens = target
+        if sens is None:
+            sens = self.to_sentences()
+
         if not bool(sens) or not bool(sens[0]):
             return ""
 
