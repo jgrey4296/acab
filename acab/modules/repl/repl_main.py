@@ -7,9 +7,10 @@ import importlib
 import logging as root_logger
 import sys
 import traceback
-from os.path import abspath, expanduser, split, splitext
+from os.path import abspath, expanduser, split, splitext, join
 
 ##############################
+# TODO default config file to data dir for distribution
 parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                  epilog = "\n".join([""]))
 parser.add_argument('--config', action="append", default=["/Volumes/documents/github/acab/acab/__configs/default"])
@@ -18,7 +19,15 @@ parser.add_argument('-v', '--verbosity', default="WARNING", help="The logging le
 
 
 # Quiet hook from https://gist.github.com/jhazelwo/86124774833c6ab8f973323cb9c7e251
-if __name__ == "__main__":
+def main():
+    """ Top level entry point for ACAB repl.
+    Can be used as setuptools entry_point
+
+    Defaults to standard config if not overriden
+    """
+    # Add acab into the path:
+    sys.path.append(abspath(join(split(__file__)[0], "../../..")))
+
     args = parser.parse_args()
 
     LOGLEVEL = root_logger._nameToLevel[args.verbosity.upper()]
@@ -52,3 +61,6 @@ if __name__ == "__main__":
     # repl.onecmd(f"module {initial_modules}")
     print("\n--------------------------------------------------")
     repl.cmdloop()
+
+if __name__ == "__main__":
+    main_repl()

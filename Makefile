@@ -23,25 +23,14 @@ endif
 
 .PHONY: all pylint clean
 
-## Temp targets:
-sem:
-	python -m unittest /Volumes/documents/github/acab/acab/__tests/semantics/*.py -v
-
-
-## Topological Sort test
-top:
-	python -m unittest discover -v -f -s ./acab/__tests/topological_sort/ -k Topological -t ./acab -p "test_*.py"
-
-## --
-
 all: verbose long
 
-check:
-	@echo "Shell	= " ${SHELL}
-	@echo "Top		= " ${TOP}
-	@echo "Search	= " ${START}
-	@echo "Pattern	= " ${PAT}
+# Building ####################################################################
+build:
+	python -m build
+	pip install -e .
 
+# Testing #####################################################################
 long:
 	python -m unittest discover -s ${START} -p "*_tests.py"
 
@@ -53,9 +42,7 @@ faily:
 	python -m unittest discover -v -f -s ${START} ${PAT} -t ${TOP} -p ${FILE_PAT}
 
 
-init:
-	@echo "Auto-creating empty __init__.py's"
-	find ${TOP} -type d -print0 | xargs -0 -I {} touch "{}/__init__.py"
+# Repls #######################################################################
 
 repl:
 	python acab/modules/repl/repl_main.py --config ./acab/__configs/default -v ${LOGLEVEL}
@@ -66,6 +53,14 @@ vrepl:
 re: repl
 vr: vrepl
 
+# Reports #####################################################################
+check:
+	@echo "Shell	= " ${SHELL}
+	@echo "Top		= " ${TOP}
+	@echo "Search	= " ${START}
+	@echo "Pattern	= " ${PAT}
+
+
 line_report:
 	@echo "Counting Lines into linecounts.stats"
 	find . -name "*.py" -not -path "./.git/*" -not -name "test_*.py" -not -name "*__init__.py" -print0 | xargs -0 wc -l | sort > linecounts.report
@@ -74,6 +69,7 @@ class_report:
 	@echo "Getting Class Relations"
 	find ./acab -name "*.py" -not -name "flycheck*" | xargs awk '/^class/ {print $0}' > class.report
 
+# Linting #####################################################################
 pylint:
 	@echo "Linting"
 	pylint --rcfile=./.pylintrc ${TOP} --ignore=${ig} --ignore-patterns=${igpat}
@@ -81,6 +77,11 @@ pylint:
 elint:
 	@echo "Linting -E"
 	pylint --rcfile=./.pylintrc ${TOP} --ignore=${ig} --ignore-patterns=${igpat} -E
+
+# Cleaning ####################################################################
+init:
+	@echo "Auto-creating empty __init__.py's"
+	find ${TOP} -type d -print0 | xargs -0 -I {} touch "{}/__init__.py"
 
 clean:
 	@echo "Cleaning"
@@ -94,3 +95,4 @@ ifeq (${CACHES}, )
 else
 	-rm -r ${CACHES}
 endif
+	-rm -rf dist
