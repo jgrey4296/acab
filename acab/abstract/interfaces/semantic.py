@@ -72,6 +72,7 @@ class SemanticSystem_i(HandlerSystem_i):
 
     @abc.abstractmethod
     def to_sentences(self) -> List[Sentence]:
+        # TODO run the dep_sem.to_sentences for each struct with a matching registration
         pass
 
     def extend(self, mods:List[ModuleComponents]):

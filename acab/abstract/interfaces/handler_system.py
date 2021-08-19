@@ -24,6 +24,7 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
 
     handlers : InitVar[List[Callable]]    = field()
     structs  : InitVar[List[Structure]]   = field()
+    # TODO make default: Tuple[str, str], and lookup
     default  : Tuple[Callable, Structure] = field(default=(None,None))
     sieve    : List[Callable]             = field(default_factory=list)
 

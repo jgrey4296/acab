@@ -22,6 +22,7 @@ BASIC_SEN = PU.op(NEGATION) + pp.NotAny(END) \
     + NG(SEN, pp.ZeroOrMore(PU.PARAM_CORE()) + PU.PARAM_CORE(end=True))
 BASIC_SEN.setParseAction(Pfunc.construct_sentence)
 
+# TODO shift this to config
 func_headed_sen = pp.Suppress(pp.Literal('λ')) + BASIC_SEN
 
 # Build After comparison operators have been constructed:
