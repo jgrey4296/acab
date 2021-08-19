@@ -19,6 +19,7 @@ config = GET()
 CONSTRAINT_S = config.prepare("Parse.Structure", "CONSTRAINT")()
 
 CtxIns      = 'ContextInstance'
+CtxCon      = 'ContextContainer'
 Constraints = 'ConstraintCollection'
 ProdComp    = 'ProductionComponent'
 Operator    = 'ProductionOperator'
@@ -32,7 +33,7 @@ Node        = 'AcabNode'
 class ContextContainer(CtxInt.ContextContainer_i):
 
     # Operators could be a pair: (semantics, struct) to query
-    # TODO operators is just the results of a prior query
+    # TODO operators is just the results of a prior query, bindings are sugar
     _operators     : CtxIns            = field(default=None)
 
     _active        : List[UUID]         = field(init=False, default_factory=list)
@@ -92,14 +93,25 @@ class ContextContainer(CtxInt.ContextContainer_i):
     def __len__(self):
         return len(self._active)
 
-    def __getitem__(self, index):
+    def __getitem__(self, index, wrap=False) -> Union[CtxIns, List[CtxIns], CtxCon]:
+        result = None
         if isinstance(index, int):
             ctx_uuid = self._active[index]
-            return self._total[ctx_uuid]
-
-        if isinstance(index, slice):
+            result = self._total[ctx_uuid]
+        elif isinstance(index, slice):
             ctx_uuids = self._active[index]
-            return [self._total[x] for x in ctx_uuids]
+            result = [self._total[x] for x in ctx_uuids]
+        else:
+            raise Exception(f"Unrecognised arg to getitem: {index}")
+
+        if not wrap:
+            return result
+
+        container = ContextContainer.build(self._operators)
+        container.pop()
+        container.push(result)
+
+        return container
 
     def __bool__(self):
         return bool(self._active)
