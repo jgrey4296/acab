@@ -34,20 +34,21 @@ initial_engine = config.prepare("Module.REPL", "ENGINE")()
 @dataclass
 class ReplState:
     """ Data used for control of the repl """
-    prompt        : str                    =  field(default=initial_prompt)
-    prompt_ml     : str                    =  field(default=config.prepare("Module.REPL", "PROMPT_ML", actions=[config.actions_e.STRIPQUOTE])())
-    result        : ContextContainer_i     =  field(default=None)
-    collect_str   : List[str]              =  field(default_factory=list)
-    echo          : bool                   =  field(default=False)
-    in_multi_line : bool                   =  field(default=False)
-    engine        : Optional[AcabEngine_i] =  field(default=None)
-    engine_str    : str                    =  field(default=initial_engine)
+    prompt           : str                    =  field(default=initial_prompt)
+    prompt_ml        : str                    =  field(default=config.prepare("Module.REPL", "PROMPT_ML", actions=[config.actions_e.STRIPQUOTE])())
+    prompt_bkup      : str                    =  field(default="")
+    result           : ContextContainer_i     =  field(default=None)
+    collect_str      : List[str]              =  field(default_factory=list)
+    echo             : bool                   =  field(default=False)
+    in_multi_line    : bool                   =  field(default=False)
+    engine           : Optional[AcabEngine_i] =  field(default=None)
+    engine_str       : str                    =  field(default=initial_engine)
 
 
 class AcabREPL(cmd.Cmd):
     """ Implementation of cmd.Cmd to provide an extensible ACAB REPL"""
     intro  = "Welcome to ACAB. Type 'help' or '?' to list commands.\n"
-    prompt = initial_prompt
+    prompt = initial_prompt + ": "
 
     state  : ReplState = ReplState()
 
@@ -55,9 +56,9 @@ class AcabREPL(cmd.Cmd):
         """ Called when no other command matches """
         try:
             # default to assertion / query / run
-            self.state.result = self.state.engine(line)
-            if bool(self.state.result) and bool(self.state.result[0]):
-                print(f"Contexts: {len(self.state.result)}")
+            self.state.result = self.state.engine(line,
+                                            bindings=self.state.result)
+
         except pp.ParseException as err:
             logging.warning(f"Parse Failure: {err.markInputline()}")
         except Exception as err:
@@ -68,13 +69,23 @@ class AcabREPL(cmd.Cmd):
         """ For massaging the input command """
         # convert symbols -> cmd names.
         # eg: ':{' -> multi
-        line = RP.precmd_parser.parseString(line)[0]
+        line = RP.precmd_parser.parseString(line)[:]
 
         # Intercept if in multi line state
-        if self.state.in_multi_line and not line in ["multi", "pop"]:
-            line = f"collect {line}"
+        if self.state.in_multi_line and not line[0] in ["multi", "pop"]:
+            logging.info("In Multi")
+            line = ["collect"] + line
 
         if bool(self.state.echo):
-            logging.info(f"{line}")
+            print(f"{line}")
 
-        return line
+        return " ".join(line)
+
+    def postcmd(self, stop, line):
+        count = "0"
+        if self.state.result is not None:
+            count = len(self.state.result)
+        insert = f"(Γ: {count})"
+
+        self.prompt = self.state.prompt + " " + insert + ": "
+        return stop

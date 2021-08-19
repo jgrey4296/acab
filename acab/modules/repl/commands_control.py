@@ -8,12 +8,15 @@ from os.path import split, splitext, exists, expanduser, abspath
 import importlib
 import logging as root_logger
 import re
+import pyparsing as pp
+import traceback
 
 import acab
 config = acab.setup()
 
 from acab.modules.repl.repl_cmd import register
 from acab.abstract.core.production_abstractions import ProductionOperator, ProductionStructure
+from acab.modules.repl import ReplParser as RP
 
 logging = root_logger.getLogger(__name__)
 
@@ -22,7 +25,7 @@ def do_prompt(self, line):
     """
     Change the prompt of the repl
     """
-    self.prompt = line.strip() + " "
+    self.state.prompt = line.strip()
 
 @register
 def do_multi(self, line):
@@ -33,13 +36,15 @@ def do_multi(self, line):
         # Start
         logging.info("Activating multi line")
         self.state.in_multi_line = True
-        self.state.prompt_bkup = self.prompt
-        self.prompt = self.state.prompt_ml
+        self.state.collect_str = []
+        self.state.prompt_bkup = self.state.prompt
+        self.state.prompt = self.state.prompt_ml
     else:
         logging.info("Deactivating multi line")
         collected = "\n".join(self.state.collect_str)
         self.state.in_multi_line = False
-        self.prompt = self.state.prompt_bkup
+        self.state.prompt = self.state.prompt_bkup
+        logging.info(f"Collected: {collected}")
         self.onecmd(collected)
 
 

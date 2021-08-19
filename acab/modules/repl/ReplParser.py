@@ -28,33 +28,40 @@ multi_line_end.setParseAction(lambda s,l,t: "multi")
 # ie: sugar parser:
 
 # TODO put sugar in config?
-short_exit = pp.Keyword("q")
+short_exit = pp.Keyword("q")("quit")
 short_exit.setParseAction(lambda s,l,t: "exit")
 
-short_break = pp.Keyword("b")
+short_break = pp.Keyword("b")("break")
 short_break.setParseAction(lambda s,l,t: "break")
 
-short_echo = pp.Keyword("e")
+short_echo = pp.Keyword("e")("echo")
 short_echo.setParseAction(lambda s,l,t: "echo")
 
-short_save = pp.Keyword("s")
+short_save = pp.Keyword("s")("save")
 short_save.setParseAction(lambda s,l,t: "save")
 
-short_load = pp.Keyword("l")
+short_load = pp.Keyword("l")("load")
 short_load.setParseAction(lambda s,l,t: "load")
 
 # "tick"
-short_step = pp.Keyword("t")
+short_step = pp.Keyword("t")("step")
 short_step.setParseAction(lambda s,l,t: "step")
 
+short_context = pp.Keyword("c")("context")
+short_context.setParseAction(lambda s,l,t: "ctx")
 
-sugared = pp.LineStart() + pp.Suppress(pp.Literal(":")) + pp.Or([short_exit,
-                                                                 short_break,
-                                                                 short_echo,
-                                                                 short_save,
-                                                                 short_load,
-                                                                 short_step
-                                                                 ]) + rst
+short_print_context = pp.Keyword("pc")("print_ctx")
+short_print_context.setParseAction(lambda s,l,t: "print_ctx")
+
+sugared = pp.Suppress(pp.Literal(":")) + pp.Or([short_exit,
+                                                short_break,
+                                                short_echo,
+                                                short_save,
+                                                short_load,
+                                                short_step,
+                                                short_context,
+                                                short_print_context,
+                                                ]) + rst
 
 precmd_parser = pp.Suppress(pp.LineStart()) + pp.Or([multi_line_start,
                                                      multi_line_end,
@@ -107,7 +114,7 @@ listen_parser = pp.Or([])
 bootstrap_kw      = pp.Keyword("bootstrap")("bootstrap")
 sugar_kw          = pp.Keyword("sugar")("sugar")
 
-parse_info_parser = pp.Or([bootstrap_kw, sugar_kw])
+parse_info_parser = pp.Or([bootstrap_kw, sugar_kw, rst])
 
 # result ########################################################################
 number = pp.Optional(pp.Literal('-')("minus")) + pp.Word(pp.nums)
@@ -115,14 +122,14 @@ number.setParseAction(lambda s, l, t: int(t[-1]) if 'minus' not in t else -1 * i
 
 slice_p = PU.s(pp.Literal('[')) + \
     PU.op(number)('first') + \
-    PU.op(PU.s(pp.Literal(':')) + \
+    PU.op(pp.Literal(':')("mid") + \
           PU.op(number)("second")) + \
     PU.s(pp.Literal(']'))
 
 slice_p.setParseAction(build_slice)
 
 # $x, @x
-ctx = number("context")
+ctx = number("short_context")
 ctx_slice = slice_p("context_slice")
 binding = AP.VALBIND
 

@@ -15,8 +15,6 @@ from acab.abstract.core.production_abstractions import ProductionOperator, Produ
 
 logging = root_logger.getLogger(__name__)
 
-# TODO add help flag for print/listen/stats
-
 # TODO shift this into config
 SPLIT_RE = re.compile("[ .!?/]")
 ModuleComponents = "ModuleComponents"
@@ -26,7 +24,14 @@ def do_print(self, line):
     """
     Print out information
     """
-    params = RP.printer_parser.parseString(line)[:]
+    try:
+        params = RP.printer_parser.parseString(line)[:]
+    except pp.ParseException as err:
+        logging.warning("Bad Print Command")
+        logging.warning(err.markInputline())
+        logging.warning("Use: {RP.printer_parser}")
+        return
+
     logging.info(f"Printing: {line}")
     result = []
     if "wm" in params:
@@ -109,7 +114,7 @@ def do_stat(self, line):
 
 
 @register
-def do_result(self, line):
+def do_print_ctx(self, line):
     """
     Inspect active contexts from a query.
     result (index|SLICE)? var*
@@ -169,6 +174,7 @@ def do_parser(self, line):
     elif "sugar" in line:
         print(f"Repl Sugar: {RP.sugared}")
     else:
+        print("Top Level ACAB Parser:")
         print(self.state.engine._dsl_builder._main_parser)
 
 
