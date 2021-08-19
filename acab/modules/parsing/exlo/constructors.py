@@ -38,8 +38,7 @@ def build_transform_component(s, loc, toks):
     return ProductionComponent(value=op,
                                params=params,
                                rebind=rebind,
-                               sugared=EXu.LEFT_S in toks,
-                               data={SEMANTIC_HINT: EXu.TRANSFORM_SEM_HINT})
+                               sugared=EXu.LEFT_S in toks)
 
 def build_action_component(s, loc, toks):
     params = []
@@ -51,8 +50,7 @@ def build_action_component(s, loc, toks):
     params = [x[0] if len(x) == 1 else x for x in params]
     return ProductionComponent(value=op,
                                params=params,
-                               sugared=EXu.LEFT_S in toks,
-                               data={SEMANTIC_HINT: EXu.ACTION_SEM_HINT})
+                               sugared=EXu.LEFT_S in toks)
 
 
 
@@ -63,15 +61,18 @@ def build_query(s, loc, toks):
     return (PDS.QUERY, query)
 
 def build_transform(s, loc, toks):
-    trans = ProductionContainer(value=toks[:])
+    trans = ProductionContainer(value=toks[:],
+                               data={SEMANTIC_HINT: EXu.TRANSFORM_SEM_HINT})
     return (EXu.TRANSFORM_S, trans)
 
 def build_action(s, loc, toks):
     # TODO: check this
     clauses = [x if isinstance(x, ProductionComponent)
-               else ProductionComponent(value=Sentence.build([EXu.DEFAULT_ACTION_S]), params=[x]) for x in toks]
+               else ProductionComponent(value=Sentence.build([EXu.DEFAULT_ACTION_S]),
+                                        params=[x]) for x in toks]
 
-    act = ProductionContainer(value=clauses)
+    act = ProductionContainer(value=clauses,
+                              data={SEMANTIC_HINT: EXu.ACTION_SEM_HINT})
 
     return (EXu.ACTION_S, act)
 
