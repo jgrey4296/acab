@@ -105,8 +105,7 @@ def do_run(self, line):
     # query
     if not bool(line.strip()):
         logging.info("TODO Ticking Engine")
-        # result = self.state.engine.tick()
-        # self.state.result = result
+        self.state.result = self.state.engine.tick()
         return
 
     logging.info("Running: {line}")
@@ -182,3 +181,5 @@ def do_exit(self, line):
                                    datetime.now().strftime("%Y_%m-%d_%H_%M"))
     self.state.engine.save_file(filename)
     return True
+
+

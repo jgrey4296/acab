@@ -138,3 +138,23 @@ binding = AP.VALBIND
 result_parser = pp.Optional(pp.Or([ctx,
                                    ctx_slice])) \
     + pp.ZeroOrMore(binding)("bindings")
+
+# ctx select ##################################################################
+ctx_index  = number("subset")
+ctx_subset = slice_p("subset")
+clear_kw   = pp.Keyword("clear")("clear")
+minus_kw   = pp.Keyword("-")("clear")
+
+
+ctx_select_parser = pp.Or([ctx_subset,
+                           ctx_index,
+                           clear_kw,
+                           minus_kw,
+                           rst])
+
+# force parser ################################################################
+query = pp.Word(pp.alphas + ".")("query") + pp.Suppress(pp.Literal("?"))
+send_to_parser = rst("send")
+
+
+force_parser = query + send_to_parser

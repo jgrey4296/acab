@@ -86,3 +86,55 @@ def do_break(self, line):
     self.state.engine is the active ACAB engine
     """)
     breakpoint()
+
+
+@register
+def do_ctx(self, line):
+    """ Control context selection """
+    try:
+        params = RP.ctx_select_parser.parseString(line)
+
+        if "subset" in params:
+            self.state.result = self.state.result.__getitem__(params.subset, wrap=True)
+        elif "clear" in params:
+            print("Clearing Context")
+            self.state.result = None
+        else:
+            self.onecmd("print_ctx")
+
+    except pp.ParseException as err:
+        logging.error(f"Failed to select context: {err.markInputline()}")
+
+
+@register
+def do_forcep(self, line):
+    """ Force Parser:
+    Override built dsl, and call a parser from the boostrapper directly
+    """
+    try:
+        # parse the line
+        params = RP.force_parser.parseString(line)
+        # query the bootstrapper for the parser
+        parser = self.state.engine._dsl_builder._bootstrap_parser.query(params.query)
+        print(f"Retrieved: {parser}")
+        if not bool(params.send):
+            print("Nothing sent to parser")
+            return
+
+        # if exists, parse, then call engine on it
+        forced_result = parser.parseString(params.send)[0]
+        print(f"Forced Parse: {forced_result}")
+
+        if isinstance(forced_result, tuple):
+            forced_result = forced_result[1]
+
+        self.state.result = self.state.engine(forced_result,
+                                        bindings=self.state.result)
+
+    except pp.ParseException as err:
+        logging.warning(f"Parse Failure: {err.markInputline()}")
+    except Exception as err:
+        print("\n")
+        traceback.print_tb(err.__traceback__)
+        print("\n")
+        logging.warning(f"Force Failure: {err}")

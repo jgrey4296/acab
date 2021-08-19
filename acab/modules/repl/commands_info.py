@@ -163,7 +163,11 @@ def do_print_ctx(self, line):
 
 @register
 def do_parser(self, line):
-    """ Print a parser report """
+    """ Print a parser report.
+    Defaults to primary, can take:
+    bootstrap,
+    sugar
+    """
     params = RP.parse_info_parser.parseString(line)
 
     if "bootstrap" in line:
