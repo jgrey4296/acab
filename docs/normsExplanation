@@ -1,0 +1,28 @@
+The probabilities of interest:
+P(x_conformsTo_i | pop_conformsTo_i) -> determines an individual action
+P(pop_conformsTo_i | x_conformsTo_i) -> determines perception of norms
+
+let P(x_conformsTo_i) = f(x,i) * P(pop_conformsTo_i) + f(x,i) * P(~pop_conformsTo_i)
+
+where f(x,i) is a function for character x and norm i, based on individual preferences
+
+let P(pop_conformsTo_i) = P(empiricalExpectation_i) 
+							* ( P(normativeExpectation_i) + P(sanctionExpectation_i) )
+
+ie: the expectations of a norm being performed, preference, and sanctioned
+so... the averages of someone performing an action that expresses a norm, 
+expressing a preference for a norm, and sanctioning an action that expresses a norm?
+
+
+so:
+
+P(pop_conformsTo_i | x_conformsTo_i) = P(x_conformsTo_i | pop_conformsTo_i) * P(pop_conformsTo_i)
+													/ P(x_conformsTo_i)
+
+and:
+
+P(x_conformsTo_i | pop_conformsTo_i) = P(pop_conformsTo_i | x_conformsTo_i) * P(x_conformsTo_i)
+													/ P(pop_conformsTo_i)
+
+
+

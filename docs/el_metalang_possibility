@@ -1,0 +1,27 @@
+.rule.to.break:
+  actor.$x.items.$y(::tool).can.break?
+  environment.obj.$z(::breakable)?
+
+  performance($x,$y,$z) -> $action  
+  do($y,$action)
+
+  + $..z.broken
+end
+
+.meta.rule:
+  //inline set query
+  actor.$x.{observed,informed_of}.action.$y?
+  active.insts.$z?
+
+  //Call crosscut to calc sanction
+  prohibits($z, $y) -> $sanction
+
+  //Do Operator like causality
+  //Suggests action, casual effects are known,
+  //Choose by supplied values in Agent/Layer/Inst Strategy
+  do($x, $sanction, $z)
+
+  //Update weights like backprop 
+  //if action is taken
+  % actor.$x.investment.$z
+end

@@ -1,0 +1,53 @@
+
+Straight pattern:
+[ a b c d ]
+
+Sub Pattern:
+[ a [b c] d ]
+[ a [b b] ]
+[ [a a] [b b] ]
+
+Layered Patterns:
+[ a b , c d ]
+
+Layered Alt:
+[ [a, c] [b, d] ]
+
+One Step per cycle:
+[ a < b c d > ]
+
+attributes:
+[ a:1 b:2 c:3 ]
+[ a:test:2 b:blah:5 ]
+
+repetition:
+[ a b c ] * 2
+
+speed:
+[a b c] / 2
+
+Application:
+[a b c d] # q
+[a b c d] # [q r]
+
+time shifting:
+[a b c] <- 1
+
+random degradations:
+[ a b? c]
+[ a [b c]? ]
+
+silence:
+[ a ~ ~ b ]
+
+insertion:
+[ a b * c ] + d
+[ a * b * ] + [ c d ]
+
+
+
+parameterizations:
+[a b c:$x] + { x : var : val }
+[ a b c:$x] + (x, var, val)
+[a b c:$x ] + { x : var } + { x : val }
+[ a $x c ] + { x : [d e f] }

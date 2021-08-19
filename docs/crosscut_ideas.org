@@ -1,0 +1,89 @@
+* Crosscuts:
+  Crosscuts are self contained abstract modules the rule system can call
+  from multiple different layers.
+  They are a combination of a data structure with a DSL for authoring them.
+  They can be stateful, act as types and provide an interface for the rule system.
+  They can persist across cycles.
+  The interface they provide can include sanctioned modifications.
+  They can provide information back to the rule that called them
+  Crosscuts can be located on the trie, while being manipulated and queried
+  in ways EL DSLs make cumbersome.
+** FSM:
+   #+NAME: FSM DSL Example
+   #+begin_src  :results value
+	 States:
+   a
+   b
+   c
+
+   Links
+   a: b, c
+   b: c
+   c: a
+
+   Link Data:
+   [a,b]:
+
+   [a,c]:
+
+   [b,c]:
+
+   [c,a]:
+
+   #+end_src
+*** Petri Net (::FSM)
+    An FSM, but with counts for each state
+** General Structures
+*** Sets
+*** Stack
+*** Queue
+** Scales of Measurement
+** Packaged Algorithms
+*** Wave Function Collapse
+*** Simulated Annealing
+*** Path Finding
+*** Text Generation
+** Indeterminacy
+** Game Theoretic Game
+** Balanced Values
+** Location Pyramids
+** Org Structure
+** Koster Games
+*** Base Game
+    Position
+    Demarcation
+    Decision making
+    Choice
+    Information
+    payoff
+    Scope
+
+*** Parallel (A)Symmetric
+    mediating status,
+    ordering, leaderboards
+*** Direct Opposition
+    Resource consumption
+    Tug of War
+    handicaps
+*** Multifront opposition
+    last man standing 
+    Bidding
+*** Information games
+    deception, bluffing
+    3rd party/meta betting
+*** Games masters
+*** Roles and Teams
+    Ritual, gifts,
+    reciprocity, mentoring
+    identity, ostracism
+*** Networks
+    trust, guilds
+    exclusivity, contract
+    election, reputation,
+    influence
+    public goods, commons
+    services
+** Cycle
+** Lattice
+** Database
+** Delegation?

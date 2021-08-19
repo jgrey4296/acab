@@ -1,0 +1,79 @@
+* #+TITLE: Mental Models
+** 1: Queue
+** 2: Mapping                                                                  :structure:
+** 3: Tree                                                                     :structure:
+** 4: Transform                                                                :function:
+** 5: Finite State Machine                                                     :structure:
+** 6: Abstraction                                                              :mapping:
+** 7: Lattice                                                                  :structure:
+
+** 8: governance
+*** protocol
+*** ritual
+*** voting
+*** contract
+*** law
+*** protest
+*** reputation
+*** sanction
+*** search
+*** supervision
+*** education/lifting
+
+** lifting
+
+** Parsing
+
+** Structures
+*** time
+*** trie
+*** space
+*** theoretic_game
+*** activity
+*** agenda
+*** artifact
+*** fsm
+*** lattice
+*** layer
+*** pipeline
+*** social_game
+** Types
+** Numbers
+** Probability
+** Symbolic Numbers
+** Wrappers
+*** delegation
+*** failure
+*** indeterminacy
+*** observable
+*** revocable
+*** interruption
+** Signal Flow
+** Model Transformation
+ Transformation Definition
+ Transform Rule
+ Multi Source/Target Transforms
+ Technical Space
+ Endogenous transforms
+ Exogenous transforms
+ Horizontal transforms
+ Vertical transforms
+ Syntactic transforms
+ Semantic transforms
+ Preservation / Refactoring
+ Refinements
+ Composability
+ Genericity
+ Bidirectionality
+ Traceability/ Change Propagation
+ Verbosity / Conciseness
+ Extensibility
+ Interoperability
+ Acceptability by user community
+ Standardization
+** Social Action
+ Non-Social Action
+ Weak Social Action
+ Delegation
+ Strong Social Action
+ Social Goal Adoption

@@ -1,0 +1,362 @@
+* Real time, Functional AI authoring pipeline.
+  *Modal Behaviour* for definition and authoring, while a group of
+  agents run in configurations to observe.e
+  Recurse | Iterate | Categorise | Map | Reduce | Guard | PCM on Behaviours.
+  All while viewing Behaviours as a map / simulation , a tree, AND a... managed garden of behaviours?
+  This is looking like realtime functional AI Programming of an exclusion logic language.
+  Similar to Supercollider's patterns for music, but for ai behaviour? Live-coded.
+*** TODO talk to richard evans about AI editing/authoring cycle for Sims/Versu.
+** Authoring Modalities
+*** Recurse
+    Connect behaviours to each other logically, defining ever increasingly higher or lower conceptually.
+*** Iterate
+    Repeatedly define a behaviour's components with increasing detail.
+*** Map
+    Combine multiple existing behaviours into a related concept categories/types
+    ie: Homomorphic transform between types
+*** Apply
+    Iterate on selected behaviours, transforming in some way
+*** Reduce
+    Combine multiple existing behaviours into a single conceptual category/type
+*** Guard
+    Disallow or sub-type combinations of types
+*** Chain / Sequence
+    Either Monadically, or otherwise
+*** Exclude
+    Mark exclusion operators (.!)
+*** Protect
+    Set behaviours to error / escalate to real time if they occur / don't occur under conditions
+*** PCM
+    Partial Comparison Matrix of selections of concepts, adding up to a PCM of every concept
+    or every level of the concept tree at least
+*** Suggestive
+    Proposes concepts to refine, look at, expand.
+    Old behaviours, over or under-defined behaviours, behaviours effected by the very last change?
+*** Type-checking / Inference / Learning
+    Define a common type between a selection, then infer the common
+    structure of the group
+
+    A Type can have preconditions, or postconditions for a behaviour.
+
+    A Type could say :
+    1) "For all Concepts of type  X, there must be an applicable
+       condition from c,c',c''... available".
+    2) "For all concepts of type X, the set of bindings B must be
+       filled"
+    3) "For all concepts of type X, and *then* type Y, that forms a concept of
+       type Z"
+    4) "For all concepts of type X, (and | then | or) type Y, type Z
+       must come next"
+    5) "For all concepts of type X, it's physical primitives are the
+       set Y, and social set Y'  "
+
+**** TODO Possibly email that twitter AI/lang person?
+     Relatedly, below makes me think of computational semiotics and
+     guaranteed
+*** Primitives
+    Types of Primitives: Model Based (physical/time), API
+    (outgoing communication/control protocols), sensor (incoming
+    communication protocols)
+    Actions and Events, no concepts.
+***** The distinction between actions, events, and concepts
+      Actions are sequences of physical control protocols over time.
+      Events are sequences of input communication protocols over time,
+      concepts are sequences of non-actions/events over time
+
+**** Social Constructs
+     Social constructions are anything that only has a conceptual
+     relation and existence. Anything that is not causally related to
+     the physical primitives.
+
+     If you change the wrong physical primitive, things don't make
+     sense at all, you end up trying to change a tire with a fish.
+
+     Social constructs can be changed while retaining meaning. It
+     doesnt matter if you bow or shake hands, they surve the same
+     purpose, which is entirely socially.
+
+     But there is a hierarchy here. While I can't change physical
+     primitives, but can change a 'first-order?' related symbolic
+     action, what about other orders of symbolic actions.
+
+     'First-order symbolic actions and constructs' : Ones that are
+     themselves symbolic, but whose dependencies include primitives.
+
+     'Second-order' social constructs: Without relying on primitive
+
+     Reciprocal-order? symbolic actions and constructs': where only particular
+     combinations of actions nad concepts make sense. Being Hostile
+     means you'll be Rude, being Rude will come across as
+     hostile. Changing these alters balance and needs to be adjusted
+     mroe carefully.
+
+
+
+
+**** Link to computational semiotics and the reliableness of language generation
+     Given a limited system of signs, humans will construct additional
+     levels of meaning around those signs.
+
+** Observational Modalities
+   Observational modalities are ways of viewing the behaviours in
+   play. This can include mosh pit, situations, sequences, tree, rete
+   tree based, dilemmas, guards, and alerts
+
+*** Mosh pit
+    Put a collection of agents together, and let them run, for random
+    exploration of behaviours, to trigger guards and see overall dynamics.
+*** Situations
+    Sketch specific scenes/characters to see how characters act in
+    particular instances. TTD behaviours
+*** Dilemmas
+    Similar to Situations, but describable crisis points that have
+    larger consequences, on norms etc. eg: The 'good' and 'bad'
+    choices in Fable that modified the world around you in a good or
+    bad way.
+*** Sequences
+    Similar to situations, but checking a sequence of situtations for
+    particular characteristics
+*** Guards
+    Behaviour Situations / Sequences that should never happen, or
+    should only ever progress to a certain point before other options
+    are taken
+*** Exclusion Tree
+    A Tree exploration of the exclusion logic describing the AI.
+*** Rete Tree
+    A Tree exploration of the rete network alpha and beta networks for
+    the AI
+*** Suggestive
+    Where the interface suggests behaviours to focus on. Uses a number
+    of heuristics:
+**** Historical
+     Suggest entries that have not been modified recently
+**** Reactive
+     Suggest entries that a recent/selected/proposed change can
+     influence to a certain (limited?) depth
+**** Under-developed
+     Behaviours that do not have a controllable number of components,
+     to a certain level
+**** Over-developed
+     Behaviours that have a certain number of components, to a certain level
+**** Alerts
+     Pop-up alerts of guards triggering in the background.
+* Editor thoughts                                                               :authoring:architecture:design:
+  The CLI shell could be similar to an adaptive text editor, using EL more.
+  Black on White, continuing sentence, showing parent options, giving the
+  breadth of options at each selected node.
+
+  this.is.an.example         //EL description
+  .other.example   //python style indentation
+  .(an >> a).test  //ability to transform the previous entry for printing?
+  .not.difficult      //(a parameterless bind ie: Monads and Haskell)
+  .could.be.different
+  The Above could be the entire tree. Transformed to:
+
+  this.is.an.example  //current node
+  .other    //other option at the branch from current parent
+  ..test    //indicate when there is a transform, that can be expanded
+  .not         //parent->parent options etc
+  .could          //consider an emacs mode to align tabs internal to
+  //a sentence together
+
+  Even consider cross-edges with another syntax:
+  this.is.an.example.book
+  .not >>= (this.is).an... //parameter based bind,
+  //with a ... based rest cross edge
+
+  *this* as a placeholder for calling object?
+
+  place.people.bob
+  .bill
+
+  place.people::Person //dataType for all child nodes
+
+  Person.states //dataType requirements
+  Person.functions
+  Person.functions.example1
+  Person::(Alive,Physical) //Typeclass requirements
+
+  //A Rule / function definition
+
+  function->F     //bind a value till empty line?
+  F.example1(A,B) // passed in from calling function
+  F.example1.A::Person // specify a datatype/typeclass for the binding
+  F.example1?     // Fact base queries and bindings
+  F.example1?A.something //tests the bound A
+  F.example1?places.X //bind a value from a query
+  F.example1?places.X::Location //enforce a datatype/typeclass for the subbinding
+  F.example1 >> F.exampleB  // monadic sequence, parameterless
+  F.example1 >>= function.example3(A,X) //pass params, concat precons, not bindings
+  F.example1 >> function.example2 //run priority is based on position/lineNum
+  F.example1 >< function.example3 //parallelize
+  F.example1.A <- function.example4 // bind return values
+  F.example1.(B,C,_) <- function.example5 // return patterns
+  F.example1.B <-< function.example6  //first past the post paral
+  F.example1.B <-< function.example7
+  F.example1 +     // Assertions on true
+  F.example1 -     // Retractions on true
+  F.example1 !     // when false
+  F.example1 !>    // eg: when false, run function
+  F.example1 := (A,B,C)  // return a value or pattern of bindings
+
+
+* Speech Act Reference                                                          :speechActs:
+
+** representative
+   inform, deny, affirm, confirm.
+   a truth statement
+** directive
+   command, invite, ask, beg
+   influence the intention and behaviour of other
+** commissive
+   promise, commit
+   self commitment to future action or state
+** expressive
+   description of self psychological state
+** declarative
+   statement of redefinition
+
+* Speech act example                                                            :exclusionLogic:example:speechActs:
+  "Hello {T.name}, how are you?"
+  .id.greet1
+  .greet
+  .request!{T}.status
+  conversation.stack.push.{T}
+
+
+  "Why hello {T.name}, ${quip.sayStatus}"
+  "${quip.sayStatus}"
+  .responseTo.greet1
+
+  "I am {Self.status}"
+  .provide:Self.status
+  .expressive
+  .sayStatus
+
+  "I couldn't be better"
+  .precondition:Self.status.happy
+  .provide:Self.status
+  .expressive
+  .sayStatus
+
+  "I am angry at ${X}"
+  .precondition:Self.status.angry.at.X
+  .provide:Self.status
+  .expressive
+  .sayStatus
+
+  self.status = happy | sad | angry | bored
+* Trie-layer
+  [[file:~/github/writing/orgfiles/institution_pipeline.org::*Institution%20Pipeline%20Concept][Institution Pipeline Concept]]
+** Components
+*** Emacs Components
+**** Pipelang Mode
+     For Writing Institutions.
+     Can trigger [[file:base_agenda.org::*Rule%20Writing%20Mode%20(RWM)][RWM]] and [[file:base_agenda.org::*Explore%20Mode%20(EM)][EM]]
+     Based on Org Mode, embeds elements in src blocks using ob-DSLs.
+     Has tests and auto-verification.
+     Compiles to a specification to load into [[file:base_agenda.org::*Python%20Pipeline%20Trie%20Architecture%20(PPTA)][PPTA]].
+     Can provide statistics on tags, rules etc.
+     Provides helms for selecting typologies (Curves, enums, languages)
+     Connects with [[file:base_agenda.org::*Python%20Pipeline%20Trie%20Architecture%20(PPTA)][PPTA]] to run (Unit/Situation/Sandbox) tests. ([[file:~/github/writing/orgfiles/threeIdeas.org::*Observational%20Modalities][Observational Modalities]])
+     Look at [[file:~/github/writing/orgfiles/threeIdeas.org::*Authoring%20Modalities][Authoring Modalities]] especially *Guard*
+**** Rule Writing Mode (RWM)
+     For writing rules.
+     Keeps track of All/Institution rule groups.
+     Triggers [[file:base_agenda.org::*Trie%20Mode%20(TM)][TM]] when writing sentences
+     Triggers [[file:base_agenda.org::*Sequence%20Mode%20(SM)][SM]] for rule relations and patterns
+***** Trie Mode (TM)
+      For writing trie sentences.
+      should provide helms for global/local completion. (capable of handling variables)
+***** Sequence Mode (SM)
+      To Help write sequences of related rule facts, and patterns.
+      Also defines sources and sinks.
+      | [a b] c | d, e | etc
+**** Input/Output Mode
+     Link Sequence mode, but focusing on a single node
+     at a time. For Rules, layers, languages(+artifacts) and institutions.
+**** Explore Mode (EM)
+     To Explore the Trie graphically
+     Add DFS count of leaves at each depth
+***** Tag Worker (TW)
+      For working with groups of items sharing a tag.
+      As everything will be described as Tries, should be able to show shared
+      elements.
+**** Activity Editor
+     to connect tools/artifacts and tasks?
+     Assign different [[file:~/github/cairo_pipeline/institution.org::*Action%20Notations][Action Notations]] and indeterminacy
+
+***** IGU Transforms definiitons                                                :META:
+      Specify how to transform actions / activities
+      for IGU [[file:~/github/cairo_pipeline/institution.org::*Governance%20Specifics][Division Of Labour]], [[file:~/github/cairo_pipeline/institution.org::*Delegational%20/%20Division%20of%20Labour][Delegational / Division of Labour]]
+      *These Transforms are Key*. They
+
+**** Timing Comparison
+*** Secondary
+**** Logic Layer (Prolog, Clingo, CCalc... InstAL?)
+     For calculating / verifying elements
+**** Music Layer (SCLang, Tidal)
+     For producing performances
+**** jg_twitter
+     For producing performances
+**** org_unit
+     For Testing specifications
+*** Non-Emacs Components
+**** Python Pipeline Trie Architecture (PPTA)
+     Where the specified institutions run.
+**** Supercollider Sampler instrument with auto-wget
+     For Soundscapes
+**** Cairo Images
+***** City Plan
+**** Street
+**** Unity-Vault
+**** Organisation games (Shadow of Mordor-a-like)
+**** Newspaper
+** Design
+*** Vignettes
+*** Architecture
+** Layouts
+*** Pipeline
+*** Flattened Trie Location
+*** Rule
+*** Time Cycle
+*** Carriers
+**** Activity
+**** Tool
+**** Values
+**** Role
+**** Sanctions
+** Keybindings
+*** Insertion
+*** Deletion
+** Transient States
+*** Component Adding
+**** Institution
+**** Activity
+**** Meta Rules
+*** Component Navigation
+** Layer elements
+*** Configuration
+** Mode Elements
+*** font locking?
+    Possibly do manually?
+*** Keywords
+** Functions
+*** Helms
+**** Factbase Helm
+**** Tagging Helm
+**** Rule Helm
+**** Curve Selection
+*** Expand-Region implementation
+*** connection to runtime
+*** Parsec implementation
+*** working directory loading
+*** Use checking
+*** Type Checking
+*** Source / Sink Checking
+** Snippets
+*** Rule
+*** Activity Pyramid
+*** Layer
+*** Cycle
+** Questions Options Criteria

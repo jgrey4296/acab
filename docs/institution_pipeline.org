@@ -1,0 +1,314 @@
+* Institution Pipeline Concept
+** Imports                                                                      :python:
+   Imports to use in the Institution.
+   Sets up any data structure/action/strategy imports and registration,
+   Eg: Time Patterns, AStar crosscuts, OSC output messaging
+   #+NAME: Initialisation
+   #+begin_src python :results value
+   #Language Constructs:
+   import py_rule.modules.time as time
+   #Crosscuts:
+   import py_rule.modules.fsm as fsm
+   #+end_src
+
+*** Params                                                                      :python:
+    Sets any Non-EL based variables, and registers parsers
+    #+NAME: Parameterisation
+    #+begin_src python :results value
+    fp.OTHER_VALS << time.parsing.main_pattern
+    #+end_src
+
+** -----------------------------------------------------------------------------
+** Dialects                                                                     :macros:base_definitions:
+   Define any DSL Syntax of the Institution on top of EL
+   EL consists of: atoms."strings"!$variables
+   Patterns are registered to double brackets.
+   Additional modules can be registered to other bracket enclosed constructs
+
+   Here would be where to define syntactic sugar for additional operators.
+   Such as modal logic operators: ◇, □ and ⚬.  
+   #+NAME: DSL_Specifications
+   #+begin_src EL :results value
+   macros.operators.sugar:
+       □!box 
+       ◇!diamond 
+       ⚬!circle
+   end
+   #+end_src
+*** Types
+    Define the types and typeclasses for any DSL and overall EL
+    EL's base types are atoms, strings, numbers.
+    Use here to define structures and typeclasses of how they behave.
+    #+NAME: Type_Spec
+    #+begin_src EL :results value
+    ::types.examples.Act:
+    #act // <- typeclass assignment
+    name(::string)!$x
+    time(::number)!$y
+    end
+    #+end_src
+*** Terminal Language                                                           :dsl:
+    The DSL used for output to performances
+    Specifies the messages sent to any program that will create performances.
+    So (OSC) messages to Unity and supercollider,
+    text to insert into newspaper LaTeX formats etc
+    #+NAME: IO_Spec
+    #+begin_src EL :results value
+
+    #+end_src
+
+*** Institution Interface                                                       :dsl:
+    Entry and Exit points for other institutions to interact with this one
+    ie: If Something registers a connection between these that fit the typeclass,
+    other institutions can trigger consequences
+    #+NAME: API_Spec
+    #+begin_src EL :results value
+
+    #+end_src
+
+** Components                                                                   :dsl:
+*** Rule Layers
+    Define layers and groups of rules to fill
+    Tag based with associated strategies
+    Singlular / Random subgroup eval, ranking and selection of output etc
+    #+NAME: RuleTag_Spec
+    #+begin_src EL.Layer :results value
+    pipeline.layers:
+    #input : all
+    #output : all
+    #reasoning : rank
+    #interference : random
+    end
+    #+end_src
+
+*** Crosscuts
+    Specify Crosscuts using imported Data structures
+    Eg: FSMs, Queues
+    #+NAME: Crosscut_Spec
+    #+begin_src EL.fsm :results value
+    crosscuts.physical_state(::fsm):
+    states.[solid, liquid, gas]
+    transitions.solid.liquid
+    transitions.liquid.solid
+    transitions.liquid.gas
+    transitions.gas.liquid
+    end
+    #+end_src
+
+*** Carriers
+    Base Component Specification of the institution
+**** Activities
+     Activity Groups central to the institution
+     #+NAME: Activity_Spec
+     #+begin_src EL.fsm :results value
+
+     #+end_src
+
+***** Action Notations
+      Notation of how activities and their actions can be manipulated
+****** Instrumental
+       Anchor points of the institution
+       Where order and meaning needs to be preserved
+       #+NAME: Instrumental_Spec
+       #+begin_src  :results value
+
+       #+end_src
+
+****** Ritual / Symbolic
+       Where order and meaning is fluid
+       #+NAME: Ritual_Spec
+       #+begin_src  :results value
+
+       #+end_src
+
+****** Delegational / Division of Labour
+       How core components can be distributed across agents
+       #+NAME: Delegational_Spec
+       #+begin_src  :results value
+
+       #+end_src
+
+****** Erroneous Actions
+       Where actions can fail, their likelihood, and how to recover
+       #+NAME: Failure_Spec
+       #+begin_src  :results value
+
+       #+end_src
+
+****** Observability
+       How much can be perceived and hidden from agents
+       #+NAME: Observable_Spec
+       #+begin_src  :results value
+
+       #+end_src
+
+****** Irrevocability
+       Which actions can be nullified, or are permanent
+       #+NAME: Revocation_Spec
+       #+begin_src  :results value
+
+       #+end_src
+
+****** Probability
+       Likelihoods of Actions, distribution groups, priors
+       #+NAME: Probability_Spec
+       #+begin_src  :results value
+
+       #+end_src
+
+**** Artifacts
+     Physical components of the world with instrumental and symbolic values.
+     Tools that enable actions, and items to encode and pass information through.
+     #+NAME: Artifact_Spec
+     #+begin_src  :results value
+
+     #+end_src
+
+**** Sanctions
+     Ways in which individuals can be rewarded and punished in the institution.
+     Irrespective of progression and hierarchy, which is generated and manipulated
+     by agents
+     Automatic/Manual
+     Transparent/Secret
+     Ex Ante / Ex Post
+     Centralized / Decentralized
+     Escalation of Violence
+     #+NAME: Sanction_Spec
+     #+begin_src  :results value
+
+     #+end_src
+
+**** Values
+     Information and preferences that form the core of the institution
+     Also assign growth curves
+     #+NAME: Value_Spec
+     #+begin_src  :results value
+
+     #+end_src
+
+**** Organization Prototypes
+     Base Structural Components of the institution.
+     Describes whether the institution is singular, or instantiates organizations.
+     #+NAME: Org_Spec
+     #+begin_src  :results value
+
+     #+end_src
+
+** -----------------------------------------------------------------------------
+** Timings                                                                      :dsl:
+   Core Patterns of action and timing for the Institution.
+   How different cycles interact, interleave, nest etc.
+*** Layer
+    Patterns for the firing of rule groups and layers
+    #+NAME: RuleGroup_Pattern_Spec
+    #+begin_src  :results value
+
+    #+end_src
+
+*** Activity
+    Patterns and timings of Activity / Performance
+    #+NAME: ActivityPattern_Spec
+    #+begin_src  :results value
+
+    #+end_src
+
+**** Ritual
+     The extent of symbolic timings, and what actions
+     are clock/event/set/symbolic time
+     #+NAME: RitualPattern_Spc
+     #+begin_src  :results value
+
+     #+end_src
+
+** Data Flow
+   Patterns/timing of Production/Consumption/Transfer
+   Includes delay, repetition, oscillation, defeasibility/blocking, routing
+   #+NAME: DataFlow_Spec
+   #+begin_src  :results value
+
+   #+end_src
+
+** Channels                                                                     :dsl:
+   Connections between rule layers,
+   and between rule layers and crosscuts
+   #+NAME: Channel_Spec
+   #+begin_src  :results value
+
+   #+end_src
+
+*** Mappings                                                                    :dsl:
+    Data transforms between layers, shifting DSL languages
+    #+NAME: Mapping_Spec
+    #+begin_src  :results value
+
+    #+end_src
+
+** -----------------------------------------------------------------------------
+** Rules
+   Where Rules actually reside textually.
+   But are manipulated through the rule mode
+** -----------------------------------------------------------------------------
+** Testing
+   [[file:~/github/writing/orgfiles/threeIdeas.org::*Observational%20Modalities][Observational Modalities]]
+   Specifications of constraints the institution checks while authoring,
+   in order of specificity and freedom, low to high.
+*** Unit
+    Tests of Individual Rules
+    #+NAME: UnitTests
+    #+begin_src  :results value
+
+    #+end_src
+*** Layer
+    Tests of Layers and their interaction
+    #+NAME: LayerTests
+    #+begin_src  :results value
+
+    #+end_src
+
+*** Situational
+    Tests of specific circumstances to let agents act in
+    #+NAME: SituationTests
+    #+begin_src  :results value
+
+    #+end_src
+
+*** Sandbox
+    Sandbox constraints agents must abide by
+    #+NAME: SandboxConstraints
+    #+begin_src  :results value
+
+    #+end_src
+
+** -----------------------------------------------------------------------------
+** -----------------------------------------------------------------------------
+** Non-Authored/Generated Elements                                              :generated:
+*** Group Organization
+    Descriptions of the Organizations the Institution has generated.
+    For Each Org:
+**** Roles
+**** Division of Labour
+**** Values
+**** Sanctions
+**** Management structure
+*** Non-instrumental action patterns
+    Descriptions of action sequences generated from constraints plus
+    symbolic interleavings.
+*** Value and Sanction Hierarchy
+    Automatic/Manual
+    Transparent/Secret
+    Ex Ante / Ex Post
+    Centralized / Decentralized
+    Escalation of Violence
+*** Governance Structure
+**** Admin
+**** Regulation
+**** Certification
+**** Information Dispersal
+**** Gatekeeping
+**** Enforcement
+*** Non-instrumental artifact usage
+    eg: Money
+*** Kosters Games
+** -----------------------------------------------------------------------------
+** Performative Outputs
+   Map from Terminal Outputs -> performances

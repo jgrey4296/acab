@@ -1,0 +1,23 @@
+* Artifact Examples                                                             :workedExample:theory:formal:
+** Definitions
+   => : Non-consuming implication
+   -=> : consume implication
+   =(X)> : Implication with Action Name X
+** Physicals
+   Hand + Tree -=(pickup)> Sticks
+   Hand + Rock -=(pickup)> Stone
+   Hand + Bush -=(pickup)> Berries
+   Sticks + Rock -=(build)> Pick | Axe | Hammer | Spear | Scythe | Plough | Firepit
+   Axe + Tree -=(chop)> Wood
+   Wood + Wood -=(craft)> Boards
+   Boards + Edge -=(build)> Wood Wall
+   Boards + Ground -=(build)> Wood Floor
+   Spear + animal -=(hunt)> meat
+   Firepit + wood -=(light)> Fire
+   Fire + meat -=(cook)> cooked meat
+** Internal Agent States
+   Fire + Hands -=> Heat++
+   cooked meat + mouth -=> hunger--
+   water + mouth -=> thirst--
+** Social States
+** Institutional States

@@ -1,0 +1,11 @@
+a.test.semantic.spec(::BasicSemanticSystem):
+    trie.struct (::struct)               -> BasicNodeStruct
+    trie.node   (::semantic.independent) -> BasicNodeSemantics
+    trie        (::semantic.dependent)   -> BreadthTrieSemantics.default.[trie.node]
+
+    query       (::semantic.abstraction) -> ASem.QueryAbstraction
+    action      (::semantic.abstraction) -> ASem.ActionAbstraction
+    rule        (::semantic.abstraction) -> ASem.AtomicRuleAbstraction
+
+
+end

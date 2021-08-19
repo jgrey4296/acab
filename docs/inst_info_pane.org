@@ -1,0 +1,43 @@
+* Defeaters:
+** Donec at pede.
+** Proin quam nisl, tincidunt et, mattis eget, convallis nec, purus.  
+** Aliquam erat volutpat.  
+** Donec vitae dolor.  
+** Fusce commodo.  
+** Proin quam nisl, tincidunt et, mattis eget, convallis nec, purus.  
+** Sed diam.  
+* Interferers:
+** Donec at pede.
+** Proin quam nisl, tincidunt et, mattis eget, convallis nec, purus.  
+** Aliquam erat volutpat.  
+** Donec vitae dolor.  
+** Fusce commodo.  
+** Proin quam nisl, tincidunt et, mattis eget, convallis nec, purus.  
+** Sed diam.  
+* Same Layer Depth:
+** Donec at pede.
+** Proin quam nisl, tincidunt et, mattis eget, convallis nec, purus.  
+** Aliquam erat volutpat.  
+** Donec vitae dolor.  
+** Fusce commodo.  
+** Proin quam nisl, tincidunt et, mattis eget, convallis nec, purus.  
+** Sed diam.  
+* Relevant Types
+* Meta Rules
+* Alternatives:
+** Donec at pede.
+** Proin quam nisl, tincidunt et, mattis eget, convallis nec, purus.  
+** Aliquam erat volutpat.  
+** Donec vitae dolor.  
+** Fusce commodo.  
+** Proin quam nisl, tincidunt et, mattis eget, convallis nec, purus.  
+** Sed diam.  
+* Layer Statistics:
+** Donec at pede.
+** Proin quam nisl, tincidunt et, mattis eget, convallis nec, purus.  
+** Aliquam erat volutpat.  
+** Donec vitae dolor.  
+** Fusce commodo.  
+** Proin quam nisl, tincidunt et, mattis eget, convallis nec, purus.  
+** Sed diam.  
+* Tests

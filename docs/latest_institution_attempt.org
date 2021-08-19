@@ -1,0 +1,52 @@
+.the.worlds.physical.items.$name::id.[position, room, name, appearance, characteristics,#TAGS]
+.the.worlds.physical.people.$name::id.[position.x/y, name, items, appearance, graphSearchDepth,#TAGS]
+
+.the.worlds.institutions.$name::id.[rules,facts,actions,sanctions,layers,inputs,outputs,encounters,orgs, educationPath, #TAGS]
+.the.worlds.organisations.$name::id.[rules,facts,actions,sanctions,layers,inputs,outputs,encounters,orgs,educationPath, #TAGS]
+.the.worlds.encounters.$name::id.[$characters,facts]
+.the.worlds.performances.$name::id.[$roles,data,performancePattern]
+
+.the.worlds.rules.$name::id.[conditions,transforms,actions,#TAGS]
+
+.the.worlds.conditions.$name::id.[$variable::position[#TAGS]]
+.the.worlds.transforms.$name::id.[$variable,amounts,#TAGS]
+.the.worlds.actions.$name::id.[$variable,$operators,#TAGS]
+
+.the.worlds.encounters.$name::id.[(type:gathering,occasion,unfocused,focused]]
+
+
+.a.rule:
+	#q,y,z
+
+	.a.b.$x?
+    $x.#q
+    $x.#[y,z]
+
+    +(.a.b.$x.j)
+end
+
+.a.meta.rule:
+	#u,i,p
+
+	//Either search for a specific id, or lookup from that node down
+    .a.rule.in.particular!$id?
+    .a.rule=>$id?
+    //Check a condition has a particular tag
+    $id.conditions.$x(#tag)?
+    //inline query rebind
+    .physical.people=>$id(#tag).name.$x? -> $q
+
+    //or as a transform:
+    //query(".physical.people.$id") -> $q    
+    //Tag modify the created query
+    tag($q, #modified)
+    //newId() -> $t
+
+    //swap in $q for $x, preserving id.
+    presID($id.conddition.$x,$q)
+    //add a tag to the parent
+    htag($q, #parentModified)
+    //expand a macro
+    #createCharacter($x)
+        
+end
