@@ -18,16 +18,16 @@ import acab.error.acab_semantic_exception as ASErr
 config = GET()
 CONSTRAINT_S = config.prepare("Parse.Structure", "CONSTRAINT")()
 
-CtxIns      = 'ContextInstance'
-CtxCon      = 'ContextContainer'
-Constraints = 'ConstraintCollection'
-ProdComp    = 'ProductionComponent'
-Operator    = 'ProductionOperator'
-Value       = 'AcabValue'
-Statement   = 'AcabStatement'
-Sentence    = 'Sentence'
-Node        = 'AcabNode'
-
+CtxIns           = 'ContextInstance'
+CtxCon           = 'ContextContainer'
+Constraints      = 'ConstraintCollection'
+ProdComp         = 'ProductionComponent'
+Operator         = 'ProductionOperator'
+Value            = 'AcabValue'
+Statement        = 'AcabStatement'
+Sentence         = 'Sentence'
+Node             = 'AcabNode'
+ModuleComponents = "ModuleComponents"
 
 @dataclass
 class ContextContainer(CtxInt.ContextContainer_i):
@@ -199,8 +199,8 @@ class ContextContainer(CtxInt.ContextContainer_i):
 @dataclass
 class ContextInstance(CtxInt.ContextInstance_i):
 
-    data         : Dict[Any, Any]  = field(default_factory=dict)
-    nodes        : Dict[Any, Node] = field(default_factory=dict)
+    data         : Dict[str, Any]  = field(default_factory=dict)
+    nodes        : Dict[str, Node] = field(default_factory=dict)
     uuid         : UUID            = field(default_factory=uuid1)
 
     _remaining_query  : List[Value]       = field(init=False, default=None)
@@ -216,7 +216,7 @@ class ContextInstance(CtxInt.ContextInstance_i):
     def __contains__(self, value: Value):
         return str(value) in self.data
     def __getitem__(self, value: Value):
-        if value in self:
+        if str(value) in self:
             return self.data[str(value)]
         else:
             return value
@@ -237,8 +237,11 @@ class ContextInstance(CtxInt.ContextInstance_i):
         return copied
 
     def bind(self, word, nodes) -> [CtxIns]:
+        # Make len(nodes) new ctxins for the new bindings
         extensions = [(self.copy(), x) for x in nodes]
+        # Get the binding name. ie: $x
         word_str = str(word)
+        # Now bind
         for ctxInst, node in extensions:
             ctxInst.set_current_node(node)
             if word.is_var:
