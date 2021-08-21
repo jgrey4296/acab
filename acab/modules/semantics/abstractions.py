@@ -43,15 +43,17 @@ class TransformAbstraction(SI.AbstractionSemantics_i):
             for clause in transform.clauses:
                 op     = operators[clause.op]
                 params = [mutx[x] for x in clause.params]
-                result = op(*params, data=clause.data)
+                result = op(*params, data=ctxIns.data)
                 mutx[clause.rebind] = result
 
             # bind ctx with results
             # TODO move this inside mutablecontextinstance
             ctxs.push(mutx.finish())
 
+
 class ActionAbstraction(SI.AbstractionSemantics_i):
     """ *Consumes* a context, performing all actions in it """
+
     def __call__(self, instruction, semSys, ctxs=None, data=None):
         operators = ctxs._operators
         action    = instruction
