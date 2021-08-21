@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 # https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
+import logging as root_logger
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
-import logging as root_logger
+
 logging = root_logger.getLogger(__name__)
 
 
-from acab.abstract.interfaces import semantic as SI
 from acab.abstract.core import default_structure as DS
+from acab.abstract.interfaces import semantic as SI
 from acab.modules.semantics.context_container import MutableContextInstance
 
 CtxIns = 'ContextInstance'
@@ -63,7 +64,6 @@ class ActionAbstraction(SI.AbstractionSemantics_i):
                 op     = operators[clause.op]
                 params = [ctx[x] for x in clause.params]
                 result = op(*params, data=clause.data, semSystem=semSys)
-
 
 
 
