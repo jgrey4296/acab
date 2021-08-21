@@ -7,6 +7,7 @@ from dataclasses import InitVar, dataclass, field
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
+import traceback
 
 logging = root_logger.getLogger(__name__)
 
@@ -43,6 +44,7 @@ class ReplState:
     in_multi_line    : bool                   =  field(default=False)
     engine           : Optional[AcabEngine_i] =  field(default=None)
     engine_str       : str                    =  field(default=initial_engine)
+    debug_data       : Any                    =  field(default=None)
 
 
 class AcabREPL(cmd.Cmd):
@@ -62,6 +64,7 @@ class AcabREPL(cmd.Cmd):
         except pp.ParseException as err:
             logging.warning(f"Parse Failure: {err.markInputline()}")
         except Exception as err:
+            traceback.print_tb(err.__traceback__)
             logging.warning(f"Failure in Default: {err}")
 
 
@@ -69,17 +72,22 @@ class AcabREPL(cmd.Cmd):
         """ For massaging the input command """
         # convert symbols -> cmd names.
         # eg: ':{' -> multi
-        line = RP.precmd_parser.parseString(line)[:]
+        try:
+            line = RP.precmd_parser.parseString(line)[:]
 
-        # Intercept if in multi line state
-        if self.state.in_multi_line and not line[0] in ["multi", "pop"]:
-            logging.info("In Multi")
-            line = ["collect"] + line
+            # Intercept if in multi line state
+            if self.state.in_multi_line and not line[0] in ["multi", "pop"]:
+                logging.info("In Multi")
+                line = ["collect"] + line
 
-        if bool(self.state.echo):
-            print(f"{line}")
+            if bool(self.state.echo):
+                print(f"{line}")
 
-        return " ".join(line)
+            return " ".join(line)
+
+        except pp.ParseException as err:
+            traceback.print_tb(err.__traceback__)
+            logging.warning(f"Parse Failure: {err.markInputline()}")
 
     def postcmd(self, stop, line):
         count = "0"
