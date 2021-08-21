@@ -137,7 +137,7 @@ def do_print_ctx(self, line):
             print(f"Selected bad ctx instance. Try 0 <= x < {len(self.state.result)}.")
     elif "context_slice" in params:
         ctxs_to_print += self.state.result[params['context_slice']]
-    elif bool(self.state.result):
+    elif bool(self.state.result) and len(self.state.result) > 0:
         ctxs_to_print.append(self.state.result[0])
     else:
         print("No Results Exist. Perform a Query.")
