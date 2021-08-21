@@ -28,9 +28,9 @@ from acab.abstract.interfaces.handler_system import (
     HandlerComponent_i, HandlerSystem_i)
 from acab.abstract.interfaces.value import (Sentence_i,
                                                        Value_i)
+from acab.abstract.interfaces.context import ContextContainer_i
 from acab.error.acab_print_exception import AcabPrintException
 from acab.error.acab_semantic_exception import AcabSemanticException
-from acab.modules.semantics.context_container import ContextContainer
 
 from acab.abstract.core.default_structure import QUERY
 
@@ -40,7 +40,7 @@ Printable          = 'Printable'
 Value              = 'AcabValue'
 Structure          = 'AcabStruct'
 Engine             = 'Engine'
-CtxCon             = 'ContextContainer'
+CtxCon             = ContextContainer_i
 Handler            = 'SemanticHandler' # Callable
 AbsDepSemantics    = Union['AbstractionSemantics_i', 'DependentSemantics_i']
 InDepSemantics     = 'IndependentSemantics_i'

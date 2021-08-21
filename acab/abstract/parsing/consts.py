@@ -14,7 +14,6 @@ config = AcabConfig.Get()
 
 COMMENT_RE       = config.prepare("Parse.Patterns", "COMMENT_RE", actions=[AcabConfig.actions_e.UNESCAPE])()
 WORD_COMPONENT_S = config.prepare("Parse.Patterns", "WORD_COMPONENT")()
-OPERATOR_SYNTAX  = config.prepare("Parse.Patterns", "OPERATOR_SYNTAX")()
 WHITE_SPACE      = config.prepare("Parse.Patterns", "WHITE_SPACE", actions=[AcabConfig.actions_e.STRIPQUOTE, AcabConfig.actions_e.UNESCAPE])()
 pp.ParserElement.setDefaultWhitespaceChars(WHITE_SPACE)
 

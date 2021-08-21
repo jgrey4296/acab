@@ -24,14 +24,15 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
 
     handlers : InitVar[List[Callable]]    = field()
     structs  : InitVar[List[Structure]]   = field()
-    # TODO make default: Tuple[str, str], and lookup
+    # TODO make default: Tuple[str, str], and lookup?
     default  : Tuple[Callable, Structure] = field(default=(None,None))
     sieve    : List[Callable]             = field(default_factory=list)
 
-    registered_handlers : Dict[str, Callable]  = field(init=False, default_factory=dict)
-    registered_structs  : Dict[str, Structure] = field(init=False, default_factory=dict)
+    registered_handlers : Dict[str, Callable]      = field(init=False, default_factory=dict)
+    registered_structs  : Dict[str, Structure]     = field(init=False, default_factory=dict)
+    _data               : Dict[str, Any]           = field(init=False, default_factory=dict)
 
-    _default_sieve : ClassVar[List[Callable]] = []
+    _default_sieve      : ClassVar[List[Callable]] = []
 
     @dataclass
     class HandlerOverride:
@@ -105,6 +106,12 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
             raise AcabBaseException(f"Undefined override handler: {new_target}")
 
         return HandlerSystem_i.HandlerOverride(new_target, value)
+    def register_data(self, data: Dict[str, Any]):
+        """
+        Register additional data that abstractions may access
+        """
+        self._data.update(data)
+
     @abc.abstractmethod
     def extend(self, modules:List[ModuleComponents]):
         """ Abstract because different handlers use

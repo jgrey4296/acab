@@ -17,7 +17,6 @@ from acab.abstract.interfaces.value import (Sentence_i,
 from acab.abstract.printing.default_symbols import PRINT_SEPARATOR_P
 from acab.error.acab_print_exception import AcabPrintException
 from acab.error.acab_semantic_exception import AcabSemanticException
-from acab.modules.semantics.context_container import ContextContainer
 
 logging = root_logger.getLogger(__name__)
 

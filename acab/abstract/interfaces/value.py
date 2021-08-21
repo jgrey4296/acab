@@ -11,23 +11,23 @@ from uuid import UUID, uuid1
 
 from acab.abstract.config.config import AcabConfig
 
-logging            = root_logger.getLogger(__name__)
+logging       = root_logger.getLogger(__name__)
 
-config           = AcabConfig.Get()
+config        = AcabConfig.Get()
 
 Sentence      = 'Sentence'
-AcabValue     = 'AcabValue'
+Value_i       = 'Value_i'
 AcabStatement = 'AcabStatement'
 
 @dataclass
 class Value_i(metaclass=abc.ABCMeta):
 
-    name   : str             = field(default=None)
-    value  : Any             = field(default=None)
-    params : List[AcabValue] = field(default_factory=list)
-    tags   : Set[str]        = field(default_factory=set)
-    data   : Dict[str, Any]  = field(default_factory=dict)
-    uuid   : UUID            = field(default_factory=uuid1)
+    name   : str            = field(default=None)
+    value  : Any            = field(default=None)
+    params : List[Value_i]  = field(default_factory=list)
+    tags   : Set[Value_i]   = field(default_factory=set)
+    data   : Dict[str, Any] = field(default_factory=dict)
+    uuid   : UUID           = field(default_factory=uuid1)
 
     @property
     @abc.abstractmethod
@@ -35,12 +35,12 @@ class Value_i(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def bind(self, bindings: Dict[Any, Any]) -> AcabValue:
+    def bind(self, bindings: Dict[Any, Any]) -> Value_i:
         pass
 
 
     @abc.abstractmethod
-    def copy(self, **kwargs) -> AcabValue:
+    def copy(self, **kwargs) -> Value_i:
         pass
 
 
@@ -54,7 +54,7 @@ class Sentence_i(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def attach_statement(self, value: AcabValue) -> Sentence:
+    def attach_statement(self, value: Value_i) -> Sentence:
         pass
 
     @abc.abstractmethod
