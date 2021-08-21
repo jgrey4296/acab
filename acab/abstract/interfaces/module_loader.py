@@ -2,6 +2,7 @@
 Provide a number of individual interfaces for top level Engine functionality
 """
 import abc
+import logging as root_logger
 from dataclasses import dataclass, field
 from importlib import import_module
 from types import ModuleType
@@ -10,6 +11,8 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 from acab.error.acab_import_exception import AcabImportException
+
+logging = root_logger.getLogger(__name__)
 
 Sentence            = 'Sentence'
 DSL_Fragment_i      = 'DSL_Fragment_i'
@@ -64,7 +67,7 @@ class ModuleLoader_i(metaclass=abc.ABCMeta):
 
             # Return early if already loaded
             if str(maybe_module) in self.loaded_modules:
-                logging.info("Module already loaded: {}".format(maybe_module))
+                logging.warning("Module already loaded: {}".format(maybe_module))
                 return self.loaded_modules[maybe_module]
 
             if isinstance(maybe_module, str):
