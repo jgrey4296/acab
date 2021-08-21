@@ -20,7 +20,9 @@ from acab.abstract.interfaces.dsl import DSL_Fragment_i
 from acab.abstract.interfaces.engine import AcabEngine_i, EnsureInitialised
 from acab.abstract.interfaces.printing import PrintSystem_i
 from acab.abstract.interfaces.semantic import SemanticSystem_i
+from acab.abstract.interfaces.value import Value_i
 from acab.error.acab_base_exception import AcabBaseException
+from acab.modules.engines.util import MaybeBuildOperatorCtx
 
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
@@ -40,9 +42,11 @@ class AcabBasicEngine(AcabEngine_i):
     def __post_init__(self):
         # initialise modules
         self.load_modules(*self.modules)
+        self.semantics.register_data({"printer": self.printer})
         self.initialised = True
 
     @EnsureInitialised
+    @MaybeBuildOperatorCtx
     def __call__(self, inst:Instruction, bindings=None) -> CtxCon:
         """ Where a inst could be a:
         str to parse then,
@@ -54,11 +58,12 @@ class AcabBasicEngine(AcabEngine_i):
         if isinstance(inst, list) and all([isinstance(x, str) for x in inst]):
             inst = [y for x in inst for y in self._dsl_builder.parse(x)[:]]
 
+        assert(all([isinstance(x, Value_i) for x in inst]))
         logging.debug(f"Running: {inst}")
         # pass inst to sem system
         result = bindings
-        for elem in inst:
-            result = self.semantics(elem, ctxs=result)
+        for clause in inst:
+            result = self.semantics(clause, ctxs=result)
 
             if not bool(result):
                 logging.info("Attempt Failed")
@@ -72,16 +77,21 @@ class AcabBasicEngine(AcabEngine_i):
 
 
     @EnsureInitialised
+    @MaybeBuildOperatorCtx
     def insert(self, s: str, ctxs=None):
         """ Assert a new fact into the engine """
         data = self._dsl_builder.parse(s)
-        return self.semantics(*data, ctxs=ctxs)
+        return self.semantics(*data,
+                           ctxs=ctxs)
 
     @EnsureInitialised
+    @MaybeBuildOperatorCtx
     def query(self, s: str, ctxs=None, cache=True):
         """ Ask a question of the working memory """
         instruction = self._dsl_builder.query_parse(s)
-        result = self.semantics(instruction, ctxs=ctxs)
+        result = self.semantics(instruction,
+                             ctxs=ctxs)
+
         if cache:
             self.add_to_cache(result)
         return result
