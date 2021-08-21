@@ -116,14 +116,15 @@ def do_forcep(self, line):
         params = RP.force_parser.parseString(line)
         # query the bootstrapper for the parser
         parser = self.state.engine._dsl_builder._bootstrap_parser.query(params.query)
-        print(f"Retrieved: {parser}")
+        print(f"Retrieved: {parser}\n")
         if not bool(params.send):
             print("Nothing sent to parser")
             return
 
         # if exists, parse, then call engine on it
         forced_result = parser.parseString(params.send)[0]
-        print(f"Forced Parse: {forced_result}")
+        self.state.debug_data = forced_result
+        print(f"Forced Parse: {forced_result}\n")
 
         if isinstance(forced_result, tuple):
             forced_result = forced_result[1]
