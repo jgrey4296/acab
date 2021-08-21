@@ -15,10 +15,10 @@ from acab.modules.semantics.context_container import ContextContainer
 
 logging = root_logger.getLogger(__name__)
 
-Sentence = 'Sentence'
-CtxCon   = 'ContextContainer'
-
-config  = AcabConfig.Get()
+Sentence         = 'Sentence'
+CtxCon           = 'ContextContainer'
+ModuleComponents = 'ModuleComponents'
+config           = AcabConfig.Get()
 
 SEM_HINT = config.prepare("Value.Structure", "SEMANTIC_HINT")()
 
@@ -33,9 +33,12 @@ class BasicSemanticSystem(SemanticSystem_i):
         lambda x: x.type
     ]
 
-    def __call__(self, *instructions, ctxs=None, data=None) -> CtxCon:
+    def __call__(self, *instructions:List[Sentence],
+                 ctxs:Optional[CtxCon]=None,
+                 data:Optional[dict]=None) -> CtxCon:
         """ Perform an instruction by mapping it to a semantics """
-        if ctxs is None: # TODO: finish this
+        if ctxs is None:
+            # Default, doesn't include operators
             ctxs = ContextContainer.build()
 
         for instruction in instructions:
