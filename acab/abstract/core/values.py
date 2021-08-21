@@ -27,10 +27,10 @@ FALLBACK_MODAL   = config.prepare("Symbols", "FALLBACK_MODAL", actions=[config.a
 UUID_CHOP        = bool(int(config.prepare("Print.Data", "UUID_CHOP")()))
 
 
-T = TypeVar('T', str, Pattern, list)
+T     = TypeVar('T', str, Pattern, list)
 
-Value = 'AcabValue'
-Sen   = 'Sentence'
+Value = VI.Value_i
+Sen   = VI.Sentence_i
 
 @dataclass
 class AcabValue(VI.Value_i, Generic[T]):
@@ -103,6 +103,7 @@ class AcabValue(VI.Value_i, Generic[T]):
         for internal use.
         For reparseable output, use a PrintSemantics
         """
+        # TODO possibly don't add bind symbols here
         if self.is_at_var:
             return AT_BIND_SYMBOL + self.name
         elif self.is_var:
@@ -227,17 +228,18 @@ class AcabValue(VI.Value_i, Generic[T]):
         safe_params = [x if isinstance(x, AcabValue) else AcabValue(x) for x in params]
         return self.copy(params=safe_params)
 
-    def apply_tags(self, tags) -> Value:
+    def apply_tags(self, tags:List[Value]) -> Value:
         """
         return modified copy
         """
         if not bool(tags):
             return self
 
-        safe_tags = [x.name if isinstance(x, AcabValue) else x for x in tags]
+        safe_tags  = [x for x in self.tags]
+        safe_tags += [x.name if isinstance(x, AcabValue) else x for x in tags]
         return self.copy(tags=safe_tags)
 
-    def has_tag(self, *tags) -> bool:
+    def has_tag(self, *tags:List[Value]) -> bool:
         return all([t in self.tags for t in tags])
 
     def to_word(self) -> Value:
