@@ -116,7 +116,7 @@ class ProxyRuleAbstraction(SI.AbstractionSemantics_i):
 
     def run_continuations(self, instruction, ctxs, semsys, data=None):
         # TODO this might be _continuation of each ctx
-        limited_container = ContextContainer.build()
+        limited_container = ContextContainer.build(ctxs._operators)
         limited_container.pop()
         for ctx in ctxs.active_list():
             limited_container.push(ctx)
