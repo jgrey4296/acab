@@ -22,8 +22,8 @@ class FormatOp(ProductionOperator):
 
     @SemanticUnWrapData
     @SemanticOperatorWrapDecorator
-    def __call__(self, value, data=None):
+    def __call__(self, value:str, data=None):
         """ Use str.format variant with value data dictionary
         Replaces variables in the string with bound values
         """
-        return value.format(**data)
+        return value.format_map(data)

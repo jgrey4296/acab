@@ -1,6 +1,8 @@
 """
 DSL Interface for exclusion logic, to connect it into Acab
 """
+import logging as root_logger
+
 from acab.abstract.interfaces.dsl import DSL_Fragment_i
 from acab.abstract.parsing import parsers as PU
 from acab.error.acab_parse_exception import AcabParseException
@@ -11,6 +13,8 @@ from acab.modules.parsing.exlo.parsers import QueryParser as QP
 from acab.modules.parsing.exlo.parsers import RuleParser as RP
 from acab.modules.parsing.exlo.parsers import TotalParser as TotalP
 from acab.modules.parsing.exlo.parsers import TransformParser as TP
+
+logging = root_logger.getLogger(__name__)
 
 
 class EL_Parser(DSL_Fragment_i):

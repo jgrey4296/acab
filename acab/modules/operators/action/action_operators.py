@@ -26,6 +26,7 @@ class ActionAdd(ActionOperator):
     def __call__(self, struct, sem, *params, data=None, semSystem=None):
         """ Assert the params (ie: sentences) """
         # TODO use override?
+        # TODO enable queing?
         semSystem(params[0])
 
 class ActionPrint(ActionOperator):
@@ -33,6 +34,8 @@ class ActionPrint(ActionOperator):
     @SemanticOperatorWrapDecorator
     def __call__(self, *params, data=None, semSystem=None):
         """ Trigger a logging statement """
+        printer = semSystem._data['printer']
         for x in params:
-            print(x)
+            pretty = printer.pprint(x)
+            print(f"Testing: {pretty}")
             logging.info("Engine Output: {}".format(x))

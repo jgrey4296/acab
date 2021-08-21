@@ -19,12 +19,15 @@ class NEQ(ProductionOperator):
 
 
 class RegMatch(ProductionOperator):
-    # TODO re-implement sub-binds
+    # TODO implement sub-binds
+    # currently they are ignored
     @SemanticTestWrapDecorator
     def __call__(self, a, b, data=None):
         result = re.search(b, a)
         if result is not None:
             result = result.groupdict()
+        if result is not None and not bool(result):
+            result = True
         return result
 
 
@@ -35,6 +38,6 @@ class ELEM(ProductionOperator):
 
 
 class HasTag(ProductionOperator):
-    @SemanticTestWrapDecorator
+    # Don't unwrap args, as you need the value data to test
     def __call__(self, value, *tags, data=None):
         return value.has_tag(*tags)
