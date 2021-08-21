@@ -48,6 +48,7 @@ class ProductionOperator(AcabValue):
     def __post_init__(self):
         super(ProductionOperator, self).__post_init__()
         object.__setattr__(self, 'name', self.__class__.__name__)
+        object.__setattr__(self, 'value', self.name)
         self.data[DS.TYPE_INSTANCE] =  DS.OPERATOR_PRIM
 
     def __call__(self, *params: List[AcabValue], data=None):
