@@ -58,7 +58,7 @@ def main():
     from acab.modules.repl.repl_cmd import AcabREPL
     repl = AcabREPL()
     repl.onecmd(f"init {args.engine}")
-    # repl.onecmd(f"module {initial_modules}")
+    repl.onecmd(f"module {initial_modules}")
     print("\n--------------------------------------------------")
     repl.cmdloop()
 
