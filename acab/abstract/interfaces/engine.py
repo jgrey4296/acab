@@ -117,24 +117,18 @@ class AcabEngine_i(metaclass=abc.ABCMeta):
         return self.printer.pprint(*sens)
 
     def load_modules(self, *modules: List[str]) -> List[ModuleComponents]:
+        logging.info("Loading Modules")
         self._module_loader.load_modules(*modules)
         loaded_mods = self._module_loader.loaded_modules.values()
-        logging.info("Modules Loaded, integrating")
-        logging.info("Building DSL")
         # Initialise DSL
         self._dsl_builder = DSLBuilder(self.parser)
-        # Extend the parser
         self._dsl_builder.build_DSL(loaded_mods)
 
-        # extend semantics
-        logging.info("Extending Semantics")
         self.semantics.extend(loaded_mods)
 
-        # extend printer
-        logging.info("Extending Printer")
         self.printer.extend(loaded_mods)
 
-        # insert operator sentences / Create root operator context
+        # insert operator sentences
         logging.info("Asserting operators")
         ops = [y for x in loaded_mods for y in x.operators]
         self.semantics(*ops)

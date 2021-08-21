@@ -40,6 +40,7 @@ class TrieBootstrapper(Bootstrapper_i):
     WILDCARD_STR = "*"
 
     def __init__(self):
+        logging.info("Parse Bootstrapper Initializing")
         super().__init__()
         # Trie Semantics, using basic nodes
         self._semantics = BreadthTrieSemantics("_:Trie",

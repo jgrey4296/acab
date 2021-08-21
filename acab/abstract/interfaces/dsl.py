@@ -3,11 +3,14 @@ A DSL interface for the system, which
 
 """
 import abc
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
+import logging as root_logger
 from dataclasses import dataclass, field
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
+
+logging = root_logger.getLogger(__name__)
+
 from acab.error.acab_base_exception import AcabBaseException
 
 Parser           = "Parser"
@@ -101,6 +104,7 @@ class DSLBuilder_i(metaclass=abc.ABCMeta):
         """
         Using currently loaded modules, rebuild the usable DSL parser from fragments
         """
+        logging.info("Building DSL")
         self.clear_bootstrap()
         fragments = [y for x in modules for y in x.dsl_fragments]
         self.construct_parsers_from_fragments(fragments)

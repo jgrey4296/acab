@@ -2,12 +2,15 @@
 Provide a number of individual interfaces for top level Engine functionality
 """
 import abc
+import logging as root_logger
 import re
 from dataclasses import dataclass, field
 from types import ModuleType
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
+
+logging = root_logger.getLogger(__name__)
 
 from acab.abstract.config.config import GET
 from acab.abstract.core.production_abstractions import ProductionOperator
@@ -35,6 +38,7 @@ class ModuleLoader(ModuleLoader_i):
         Only searches descendents of the original module,
         and only those descendents' __init__ files.
         """
+        logging.debug(f"Extracting module: {module}")
         base_path      = module.__package__
         # reference_path = MODULE_SPLIT_REG.split(module.__name__)
         queue          = [(base_path, module)]

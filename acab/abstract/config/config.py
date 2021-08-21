@@ -13,7 +13,7 @@ Value gets the value at call time.
 Actions are available for preprocessing the value
 
 """
-
+import logging as root_logger
 from configparser import ConfigParser, ExtendedInterpolation
 from dataclasses import InitVar, dataclass, field
 from enum import Enum, EnumMeta
@@ -26,6 +26,8 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 import pyparsing as pp
 from acab.error.acab_config_exception import AcabConfigException
+
+logging = root_logger.getLogger(__name__)
 
 actions_e = Enum("Config Actions", "STRIPQUOTE KEYWORD LITERAL DICT LIST UNESCAPE SPLIT PSEUDOSEN")
 
@@ -95,6 +97,7 @@ class AcabConfig():
 
 
         if AcabConfig.instance is None:
+            logging.info("Building AcabConfig Singleton")
             AcabConfig(paths, _hooks)
         else:
             AcabConfig.instance.hooks.update(_hooks)

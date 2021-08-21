@@ -46,6 +46,7 @@ class ProductionOperator(AcabValue):
     """
 
     def __post_init__(self):
+        logging.info(f"Building Operator: {self.__class__.__name__}")
         super(ProductionOperator, self).__post_init__()
         object.__setattr__(self, 'name', self.__class__.__name__)
         object.__setattr__(self, 'value', self.name)

@@ -17,7 +17,7 @@ logging = root_logger.getLogger(__name__)
 
 config = AcabConfig.Get()
 
-Node = 'AcabNode'
+Node = DI.Node_i
 
 @dataclass
 class AcabNode(DI.Node_i):

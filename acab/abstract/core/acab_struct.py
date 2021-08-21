@@ -20,6 +20,7 @@ class BasicNodeStruct(AcabStruct):
 
     @staticmethod
     def build_default(name="_:Node"):
+        logging.info(f"Building Node Struct: {name}")
         struct = BasicNodeStruct(name, AcabNode.Root())
         struct.components['all_nodes'] = WeakValueDictionary()
         return struct

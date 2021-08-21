@@ -16,23 +16,23 @@ Meanwhile IndependentSemantics_i are concerned only with the values and structur
 """
 
 import abc
+import logging as root_logger
 from dataclasses import InitVar, dataclass, field
 from enum import Enum
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
+logging = root_logger.getLogger(__name__)
 import acab.abstract.interfaces.util as SU
 from acab.abstract.config.config import AcabConfig, ConfigSpec
-from acab.abstract.interfaces.handler_system import (
-    HandlerComponent_i, HandlerSystem_i)
-from acab.abstract.interfaces.value import (Sentence_i,
-                                                       Value_i)
+from acab.abstract.core.default_structure import QUERY
 from acab.abstract.interfaces.context import ContextContainer_i
+from acab.abstract.interfaces.handler_system import (HandlerComponent_i,
+                                                     HandlerSystem_i)
+from acab.abstract.interfaces.value import Sentence_i, Value_i
 from acab.error.acab_print_exception import AcabPrintException
 from acab.error.acab_semantic_exception import AcabSemanticException
-
-from acab.abstract.core.default_structure import QUERY
 
 Node               = 'AcabNode'
 Sentence           = 'Sentence'
@@ -76,6 +76,7 @@ class SemanticSystem_i(HandlerSystem_i):
         pass
 
     def extend(self, mods:List[ModuleComponents]):
+        logging.info("Extending Semantics")
         semantics = [y for x in mods for y in x.semantics]
         for sem in semantics:
             [self._register_handler(x) for x in sem.dependent]

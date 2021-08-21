@@ -28,8 +28,6 @@ def needs_init(val, base_types=None):
     return isinstance(val, type)
 
 
-
-
 def prep_op_path(package:str, operator_name:str) -> List[str]:
     """
     Canonical conversion of module paths to words for full operator location sentences

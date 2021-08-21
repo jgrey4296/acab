@@ -23,9 +23,9 @@ def do_init(self, line):
     Imports the module, and uses the final component as the Engine Class.
     eg: acab.engines.trie_engine.TrieEngine -> TrieEngine
     """
-    logging.info("Initialising Engine: {}".format(line))
     if not bool(line.strip()):
         line = self.state.engine_str
+    logging.info("Initialising Engine: {}".format(line))
 
     try:
         mod_str = splitext(line)[0]

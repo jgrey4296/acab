@@ -11,6 +11,7 @@ def MaybeBuildOperatorCtx(method):
     """
     def fn(self, *args, **kwargs):
         if 'bindings' not in kwargs or kwargs['bindings'] is None:
+            logging.info("Building CtxContainer with operators")
             mods = list(self._module_loader.loaded_modules.values())
             kwargs['bindings'] = ContextContainer.build(mods)
 
