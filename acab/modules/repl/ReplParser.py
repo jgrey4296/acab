@@ -157,4 +157,4 @@ query = pp.Word(pp.alphas + ".")("query") + pp.Suppress(pp.Literal("?"))
 send_to_parser = rst("send")
 
 
-force_parser = query + send_to_parser
+force_parser = query + pp.Optional(send_to_parser)
