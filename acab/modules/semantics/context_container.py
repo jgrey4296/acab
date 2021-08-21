@@ -47,9 +47,22 @@ class ContextContainer(CtxInt.ContextContainer_i):
     _collapse_vars : Set[str]          = field(init=False, default_factory=set)
 
     @staticmethod
-    def build(ops:CtxIns=None):
+    def build(ops:Union[None, CtxIns, List[ModuleComponents]]=None):
         """ Create the empty context instance """
-        return ContextContainer(_operators=ops)
+        if ops is None:
+            return ContextContainer()
+
+        if isinstance(ops, ContextInstance):
+            return ContextContainer(_operators=ops)
+
+        assert(isinstance(ops, list)), ops
+        # Get Flat List of Operator Sentences:
+        operators = [y for x in ops for y in x.operators]
+        # Build the CtxInst data dict:
+        op_dict = {str(x) : x[-1] for x in operators}
+        instance = ContextInstance(op_dict)
+        # TODO add sugar names
+        return ContextContainer(_operators=instance)
 
     def __post_init__(self):
         initial = ContextInstance()
