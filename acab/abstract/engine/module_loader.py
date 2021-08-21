@@ -2,6 +2,7 @@
 Provide a number of individual interfaces for top level Engine functionality
 """
 import abc
+import re
 from dataclasses import dataclass, field
 from types import ModuleType
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
@@ -10,14 +11,14 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 from acab.abstract.config.config import GET
 from acab.abstract.core.production_abstractions import ProductionOperator
-from acab.abstract.engine.util import applicable, needs_init, usable
+from acab.abstract.core.values import Sentence
+from acab.abstract.engine.util import (applicable, needs_init, prep_op_path,
+                                       usable)
 from acab.abstract.interfaces.dsl import DSL_Fragment_i
 from acab.abstract.interfaces.module_loader import (ModuleComponents,
                                                     ModuleLoader_i)
 from acab.abstract.interfaces.printing import PrintSemantics_i
 from acab.abstract.interfaces.semantic import Semantic_Fragment
-from acab.abstract.core.values import Sentence
-import re
 
 config = GET()
 
@@ -35,7 +36,7 @@ class ModuleLoader(ModuleLoader_i):
         and only those descendents' __init__ files.
         """
         base_path      = module.__package__
-        reference_path = MODULE_SPLIT_REG.split(module.__name__)
+        # reference_path = MODULE_SPLIT_REG.split(module.__name__)
         queue          = [(base_path, module)]
         dsl_fragments  : List[DSL_Fragment_i]     = []
         semantic_frags : List[Semantic_Fragment]  = []
@@ -61,9 +62,10 @@ class ModuleLoader(ModuleLoader_i):
             semantic_frags      += [y() if needs_init(y) else y for y in available_semantics]
 
             # Get Ops
-            loc_op_pairs        =  [(reference_path + MODULE_SPLIT_REG.split(x), y) for x,y in mod_contents if applicable(y, ProductionOperator)]
-            instanced_operators =  [(xs, y() if needs_init(y, ProductionOperator) else y) for xs, y in loc_op_pairs]
-            sentences           =  [Sentence.build(xs).attach_statement(y) for xs, y in instanced_operators]
+            loc_op_triple       =  [(base_path, x, y) for x,y in mod_contents if applicable(y, ProductionOperator)]
+            instanced_operators =  [(mod, name, y() if needs_init(y, ProductionOperator) else y) for mod, name, y in loc_op_triple]
+            words_op            =  [(prep_op_path(mod, name), y) for mod, name, y in instanced_operators]
+            sentences           =  [Sentence.build(xs).attach_statement(y) for xs, y in words_op]
             operators           += sentences
 
             # Get printers

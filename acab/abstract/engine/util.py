@@ -1,10 +1,14 @@
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
-
+import re
 from dataclasses import dataclass, field
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
 
+from acab.abstract.config.config import GET
+
+config = GET()
+
+MODULE_SPLIT_REG = re.compile(config.prepare("Parse.Patterns", "MODULE_SPLIT_REG")())
 
 def usable(val, base_type):
     return isinstance(val, base_type)
@@ -24,3 +28,12 @@ def needs_init(val, base_types=None):
     return isinstance(val, type)
 
 
+
+
+def prep_op_path(package:str, operator_name:str) -> List[str]:
+    """
+    Canonical conversion of module paths to words for full operator location sentences
+    """
+    words = MODULE_SPLIT_REG.split(package)
+    words += [operator_name]
+    return words
