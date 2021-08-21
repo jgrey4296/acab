@@ -151,6 +151,7 @@ class ContextContainer(CtxInt.ContextContainer_i):
                 constraints.test_all(node, ctx)
                 successes.append(node)
             except ASErr.AcabSemanticTestFailure as err:
+                logging.debug(f"Tests failed on {node.value}:\n\t{err}")
                 self.fail(ctx, word, node)
 
         # Handle successes
