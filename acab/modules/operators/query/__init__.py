@@ -3,8 +3,6 @@ from acab.abstract.interfaces.dsl import DSL_Fragment_i
 from .query_operators import EQ, NEQ, RegMatch, ELEM, HasTag
 from . import query_op_parsers as QOP
 
-
-
 class QueryDSL(DSL_Fragment_i):
     """ The Module Spec for base operators """
 

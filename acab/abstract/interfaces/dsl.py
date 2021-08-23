@@ -58,10 +58,10 @@ class DSL_Fragment_i(metaclass=abc.ABCMeta):
 
     def parse_string(self, string):
         """ Takes a String, parses it into Data format """
-        pass
+        raise NotImplementedError()
 
     def parse_file(self, file):
-        pass
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def assert_parsers(self, bootstrapper: Bootstrapper_i):
