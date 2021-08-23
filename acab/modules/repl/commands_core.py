@@ -10,7 +10,7 @@ config = acab.setup()
 
 from acab.abstract.interfaces.engine import AcabEngine_i
 from acab.error.acab_config_exception import AcabConfigException
-from acab.modules.repl.repl_cmd import register
+from acab.modules.repl.repl_commander import register
 from acab.modules.repl import ReplParser as RP
 
 

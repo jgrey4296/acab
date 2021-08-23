@@ -9,7 +9,7 @@ from collections import defaultdict
 import acab
 config = acab.setup()
 
-from acab.modules.repl.repl_cmd import register
+from acab.modules.repl.repl_commander import register
 from acab.modules.repl import ReplParser as RP
 from acab.abstract.core.production_abstractions import ProductionOperator, ProductionStructure
 

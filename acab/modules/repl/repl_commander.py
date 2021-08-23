@@ -47,7 +47,7 @@ class ReplState:
     debug_data       : Any                    =  field(default=None)
 
 
-class AcabREPL(cmd.Cmd):
+class AcabREPLCommander(cmd.Cmd):
     """ Implementation of cmd.Cmd to provide an extensible ACAB REPL"""
     intro  = "Welcome to ACAB. Type 'help' or '?' to list commands.\n"
     prompt = initial_prompt + ": "
