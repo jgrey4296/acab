@@ -12,6 +12,7 @@ config = acab.setup()
 from acab.modules.repl.repl_commander import register
 from acab.modules.repl import ReplParser as RP
 from acab.abstract.core.production_abstractions import ProductionOperator, ProductionStructure
+from acab.modules.repl.util import print_contexts
 
 logging = root_logger.getLogger(__name__)
 
@@ -44,9 +45,17 @@ def do_print(self, line):
             modules = [x for x in modules if x.source in params['mod_target']]
 
         print("\n".join([x.source for x in modules]))
+    elif "context" in params or "context_slice" in params:
+        try:
+            params = RP.result_parser.parseString(line)
+        except pp.ParseException as err:
+            logging.warning("Bad Results Command:")
+            logging.warning(err.markInputline())
+            return
+
+        print_contexts(self, params)
     else:
         print(f"Print Keywords: {RP.printer_parser}")
-
 
 @register
 def do_stat(self, line):
@@ -112,53 +121,6 @@ def do_stat(self, line):
             print("Semantic Counts:")
             print("\n\t".join(["{} : {}".format(x,y) for x,y in count.items()]))
 
-
-@register
-def do_print_ctx(self, line):
-    """
-    Inspect active contexts from a query.
-    result (index|SLICE)? var*
-
-    """
-    try:
-        params = RP.result_parser.parseString(line)
-    except pp.ParseException as err:
-        logging.warning("Bad Results Command:")
-        logging.warning(err.markInputline())
-        return
-
-    ctxs_to_print     = []
-    bindings_to_print = []
-    logging.info("Params: {}".format(params))
-    if "context" in params:
-        try:
-            ctxs_to_print.append(self.state.result[params['context']])
-        except IndexError as err:
-            print(f"Selected bad ctx instance. Try 0 <= x < {len(self.state.result)}.")
-    elif "context_slice" in params:
-        ctxs_to_print += self.state.result[params['context_slice']]
-    elif bool(self.state.result) and len(self.state.result) > 0:
-        ctxs_to_print.append(self.state.result[0])
-    else:
-        print("No Results Exist. Perform a Query.")
-        return
-
-    if "bindings" in params:
-        bindings_to_print += params.bindings[:]
-
-    logging.info("Ctxs: {}".format(ctxs_to_print))
-    logging.info("Bindings: {}".format(bindings_to_print))
-
-    # now print them
-    for ctx in ctxs_to_print:
-        if bool(bindings_to_print):
-            for x in bindings_to_print:
-                print("{} : {}".format(x, self.state.engine.pprint([ctx[x]])))
-        else:
-            for x,y in ctx.data.items():
-                print("{} : {}".format(x, self.state.engine.pprint([y])))
-
-        print("--------------------")
 
 
 @register
