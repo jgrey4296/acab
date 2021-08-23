@@ -163,8 +163,8 @@ def do_act(self, line):
         # combine with a binding?
 
         # call act
+        pass
 
-        self.state.result = "\n".join(result)
     except Exception as err:
         logging.error(f"Failed to load: {line}")
         logging.error(f"{err}")

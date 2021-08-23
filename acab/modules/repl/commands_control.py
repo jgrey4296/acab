@@ -79,18 +79,22 @@ def do_break(self, line):
     Manually switch to PDB for debugging
     """
     print("""
-    Shunting to Python.
+    Shunting to Python debugger.
     Explore using: self.state, self.state.engine
     self is the repl,
     self.state is data the repl tracks,
-    self.state.engine is the active ACAB engine
+    self.state.engine is the active ACAB engine,
+    self.state.result is the current context container
     """)
     breakpoint()
 
 
 @register
 def do_ctx(self, line):
-    """ Control context selection """
+    """ Control contexts.
+    Select a subset using a slice '[1:-2]'
+    Clear the context with '-'
+    """
     try:
         params = RP.ctx_select_parser.parseString(line)
 
@@ -109,7 +113,8 @@ def do_ctx(self, line):
 @register
 def do_forcep(self, line):
     """ Force Parser:
-    Override built dsl, and call a parser from the boostrapper directly
+    Query the bootstrap parser,
+    and if supplied text, parse it and try to run it
     """
     try:
         # parse the line

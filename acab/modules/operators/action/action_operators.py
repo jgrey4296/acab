@@ -38,4 +38,3 @@ class ActionPrint(ActionOperator):
         for x in params:
             pretty = printer.pprint(x)
             print(f"Testing: {pretty}")
-            logging.info("Engine Output: {}".format(x))

@@ -22,7 +22,7 @@ ModuleComponents = "ModuleComponents"
 @register
 def do_print(self, line):
     """
-    Print out information
+    Print out information on the wm, or a module
     """
     try:
         params = RP.printer_parser.parseString(line)[:]
