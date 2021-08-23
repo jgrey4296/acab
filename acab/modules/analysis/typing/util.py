@@ -52,3 +52,16 @@ def has_equivalent_vars_pred(node):
     var_children = [x for x in node._children.values() if x.is_var]
 
     return len(var_children) > 1
+
+def create_type_var(tc, base_name):
+    # Create a new var name
+    assert(isinstance(base_name, str))
+    var_name = str(uuid1())
+    return tc._variables.add([base_name, var_name], [])
+
+def pattern_match_type_signature(head, available):
+    if head.type is None:
+        return available
+
+    return [x for x in available if x.type_instance is None
+            or head.type_instance == x.type_instance]

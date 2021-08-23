@@ -1,37 +1,21 @@
 #!/usr/bin/env python3
+"""
+Node for tracking uses of:
+$var :: type
+
+"""
 import logging as root_logger
+from typing import (Any, Callable, ClassVar, Dict, Iterable, Iterator, List,
+                    Mapping, Match, MutableMapping, Optional, Sequence, Set,
+                    Tuple, TypeVar, Union, cast)
 
-# https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar
-
-from acab.abstract.core.values import AcabValue
-from acab.abstract.core.values import Sentence
 from acab.abstract.core.node import AcabNode
-
+from acab.abstract.core.values import AcabValue, Sentence
+from acab.abstract.interfaces import semantic as SI
+from acab.modules.analysis.typing import type_exceptions as te
 from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
 
-from acab.abstract.interfaces import semantic as SI
-
-from acab.modules.analysis.typing import type_exceptions as te
-
-import logging as root_logger
-
 logging = root_logger.getLogger(__name__)
-
-class TypingVarSemantics(BasicNodeSemantics, SI.IndependentSemantics):
-
-    def up(self, word: AcabValue, constructor: Callable) -> AcabNode:
-        """ Lifting a value to a data node """
-        # could include vocabulary tracking a la spacy
-        assert(isinstance(word, AcabValue))
-        # constructor will default to type bottom if word.type is none
-        _type = word.type
-        return constructor(word, _type=_type)
-
-
 
 
 class VarTypeNode(AcabNode):
@@ -103,7 +87,3 @@ class VarTypeNode(AcabNode):
             node.clear_var_node()
         self._nodes = set([])
         self._type_instance = None
-
-
-
-

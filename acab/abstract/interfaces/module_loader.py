@@ -77,8 +77,6 @@ class ModuleLoader_i(metaclass=abc.ABCMeta):
         Load a module, extract operators and dsl fragments from it,
         put the operators into the operators store,
         register the dsl fragments for later use
-
-        Returns a working_memory query result of the module
         """
         # Prepare path
         if not isinstance(maybe_module, (ModuleType, str)):

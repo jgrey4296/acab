@@ -1,40 +1,40 @@
 """
 
 """
-
 import logging as root_logger
 from functools import partial
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
 from uuid import uuid1
 
-from acab.abstract.core.values import AcabValue, AcabStatement
-from acab.abstract.core.values import Sentence
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.production_abstractions import ProductionOperator
-
-from acab.modules.structures.trie.trie import Trie
-from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics
-
-from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
-
-from . import type_exceptions as te
-
+from acab.abstract.core.values import AcabStatement, AcabValue, Sentence
+#
 # MUST BE FULL PATH otherwise type instances are built twice for some reason
 # NOT : from . import util as TU
 # from . import util as TU
 from acab.modules.analysis.typing import util as TU
+from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
+from acab.modules.structures.trie.trie import Trie
+from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics
 
-from .semantics.type_assignment_semantics import TypingAssignmentSemantics, TypeAssignmentNode
-from .semantics.type_definition_semantics import TypingDefinitionSemantics, TypeDefNode, SumTypeDefNode, OperatorDefNode
+from . import type_exceptions as te
+from .semantics.type_assignment_semantics import (TypeAssignmentNode,
+                                                  TypingAssignmentSemantics)
+from .semantics.type_definition_semantics import (OperatorDefNode,
+                                                  SumTypeDefNode, TypeDefNode,
+                                                  TypingDefinitionSemantics)
 from .semantics.type_variable_semantics import TypingVarSemantics, VarTypeNode
-
-from .values.operator_definition import OperatorDefinition
-from .values.type_definition import TypeDefinition, SumTypeDefinition
 from .values import type_definition as TD
+from .values.operator_definition import OperatorDefinition
+from .values.type_definition import SumTypeDefinition, TypeDefinition
 
 logging = root_logger.getLogger(__name__)
 
 
-class TypeChecker(ProductionOperator):
+class TypeChecker:
     """ Abstract Class for Type Checking """
     # parse their locations, and add them as definitions
 
@@ -57,33 +57,10 @@ class TypeChecker(ProductionOperator):
 
         self._definitions = Trie(semantics=def_semantics)
         self._assignments = Trie(semantics=ass_semantics)
-        self._variables = Trie(semantics=var_semantics)
+        self._variables   = Trie(semantics=var_semantics)
 
         # TODO add basic types
         # self.add_definition(*TD.build_primitive_definitions())
-
-    def __str__(self):
-        output = []
-        structures = self._definitions.to_sentences(leaf_predicate=lambda x: TypeDefNode.match(x))
-        sum_types = self._definitions.to_sentences(leaf_predicate=lambda x: SumTypeDefNode.match(x))
-        funcs = self._definitions.to_sentences(leaf_predicate=lambda x: OperatorDefNode.match(x))
-
-
-        # TODO use print semantics here
-        if bool(structures):
-            output.append("Structures: \n\t{}\n".format("\t".join(sorted([str(x) for x in structures]))))
-        if bool(sum_types):
-            output.append("Sum Types: \n\t{}\n".format("\t".join(sorted([str(x) for x in sum_types]))))
-        if bool(funcs):
-            output.append("Operators: \n\t{}\n".format("\t".join(sorted([str(x) for x in funcs]))))
-        # output.append("Defs   : {}".format(str(self._definitions).replace('\n', ' ')))
-        # output.append("Decs   : {}".format(self._assignments.print_trie().replace('\n', ' ')))
-        # output.append("Vars   : {}".format(str(self._variables).replace('\n', ' ')))
-
-        return "\n".join(output)
-
-    def __repr__(self):
-        return "TypeChecker: \n{}".format(str(self))
 
 
     def __call__(self, data=None, engine=None):
@@ -180,7 +157,7 @@ class TypeChecker(ProductionOperator):
         typed_queue = self._get_known_typed_nodes()
 
         # Use known types to infer unknown types
-        create_var = partial(util_create_type_var, self)
+        create_var = partial(TU.create_type_var, self)
         dealt_with = set()
         while bool(typed_queue):
             head = typed_queue.pop()
@@ -241,8 +218,3 @@ class TypeChecker(ProductionOperator):
 
 
 
-def util_create_type_var(tc, base_name):
-    # Create a new var name
-    assert(isinstance(base_name, str))
-    var_name = str(uuid1())
-    return tc._variables.add([base_name, var_name], [])

@@ -1,8 +1,14 @@
-from acab.abstract.config.config import AcabConfig
+"""
+Class for defining operators
+"""
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
 
+from acab.abstract.config.config import AcabConfig
 from acab.modules.analysis.typing import util as TU
 
-from .type_definition import TypeDefinition, TYPE_INSTANCE_S
+from .type_definition import TYPE_INSTANCE_S, TypeDefinition
 
 config = AcabConfig.Get()
 

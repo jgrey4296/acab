@@ -1,16 +1,22 @@
-from acab.abstract.core.values import AcabValue
-from acab.abstract.core.values import Sentence
-
-from acab.error.acab_parse_exception import AcabParseException
-
-from acab.modules.analysis.typing.util import TYPE_DEFINITION, SUM_DEFINITION, TYPE_DEF_S
-from acab.modules.analysis.typing import type_exceptions as TE
+"""
+Classes for defining types
+"""
+import logging as root_logger
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
 
 from acab.abstract.config.config import AcabConfig
+from acab.abstract.core.values import AcabValue, Sentence
+from acab.error.acab_parse_exception import AcabParseException
+from acab.modules.analysis.typing import type_exceptions as TE
+from acab.modules.analysis.typing.util import (SUM_DEFINITION, TYPE_DEF_S,
+                                               TYPE_DEFINITION)
 
 from .acab_type import TypeStatement
 
-util = AcabConfig.Get()
+logging = root_logger.getLogger(__name__)
+util    = AcabConfig.Get()
 
 PRIMITIVE_S     = util.value("Typing.Primitives", "PRIMITIVE")
 TYPE_INSTANCE_S = util.value("Parse.Structure", "TYPE_INSTANCE")
@@ -25,7 +31,7 @@ class TypeDefinition(TypeStatement):
     def __init__(self, structure, params=None, data=None):
         """ Structure creates the dict of locations.
         Only leaves get type anotations. Thus:
-        { .a.$x :: String, .b.$c :: Num, .d!$e::Location }
+        { .a.$x ::String, .b.$c ::Num, .d!$e ::Location }
         """
         # The name is the location. eg: .types.person
         assert isinstance(structure, list)
@@ -59,7 +65,7 @@ class TypeDefinition(TypeStatement):
         statement = self
 
         if the_dict is None:
-            return AcabValue._sentence_constructor(just_path, params=self.vars)
+            return Sentence.build(just_path, params=self.vars)
 
         new_args = []
         for x in self.vars:
@@ -69,7 +75,7 @@ class TypeDefinition(TypeStatement):
                 assert(isinstance(x, Sentence))
                 new_args.append(x)
 
-        return AcabValue._sentence_constructor(just_path, params=new_args)
+        return Sentence.build(just_path, params=new_args)
 
 
 
@@ -119,7 +125,8 @@ class SumTypeDefinition(TypeDefinition):
 
         if _type is None:
             _type = SUM_DEFINITION
+
         super(SumTypeDefinition, self).__init__(flat_structure,
-                                                params=params,
-                                                data={TYPE_INSTANCE_S: _type})
+                                             params=params,
+                                             data={TYPE_INSTANCE_S: _type})
         assert(bool(self.structure))

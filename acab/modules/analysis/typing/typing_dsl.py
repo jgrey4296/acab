@@ -1,12 +1,10 @@
 from acab.abstract.interfaces.dsl import DSL_Fragment_i
 
-from .type_checker import TypeChecker
-
 from .parsing import TypeDefParser as TDP
 from .parsing import TypeParser as TP
 
 
-class TypingSpec(DSL_Fragment_i):
+class TypingDSL(DSL_Fragment_i):
     """ Typing Spec Class, providing entry points
     for an engine and working memory to handle type inference
 
@@ -19,10 +17,6 @@ class TypingSpec(DSL_Fragment_i):
     Implement:
     parse_string,
     """
-
-    def __init__(self):
-        super().__init__()
-
     def parse_string(self, s):
         return TP.parseString(s)
 
@@ -35,4 +29,4 @@ class TypingSpec(DSL_Fragment_i):
     def query_parsers(self, pt):
         TDP.HOTLOAD_BASIC_SEN << pt.query("sentence.basic")
         TDP.HOTLOAD_PARAM_SEN << pt.query("sentence.param")
-        TP.HOTLOAD_BASIC_SEN << pt.query("sentence.basic")
+        TP.HOTLOAD_BASIC_SEN  << pt.query("sentence.basic")
