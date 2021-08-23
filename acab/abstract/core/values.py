@@ -34,7 +34,7 @@ Sen   = VI.Sentence_i
 
 @dataclass
 class AcabValue(VI.Value_i, Generic[T]):
-    _value_types : ClassVar[Set[Any]] = set([str, Pattern, list])
+    _value_types : ClassVar[Set[Any]] = set([VI.Value_i, str, Pattern, list])
     value        : T                  = field(default=None)
 
     @staticmethod
@@ -61,7 +61,7 @@ class AcabValue(VI.Value_i, Generic[T]):
 
     def __post_init__(self):
         # Applicable values: Self + any registered
-        value_type_tuple = tuple([AcabValue] + list(AcabValue._value_types))
+        value_type_tuple = tuple(list(AcabValue._value_types))
 
         assert(self.value is None or isinstance(self.value, value_type_tuple))
 
