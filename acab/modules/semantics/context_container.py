@@ -127,7 +127,7 @@ class ContextContainer(CtxInt.ContextContainer_i):
         return container
 
     def __bool__(self):
-        return not bool(self._failed)
+        return not bool(self._failed) and bool(self._active)
 
     def fail(self, instance: CtxIns, word: Value, node: Node):
         """ Record a failure, the query sentence that failed,
