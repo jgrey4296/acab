@@ -56,7 +56,7 @@ def main():
     import acab.modules.repl.commands_core
     import acab.modules.repl.commands_info
     from acab.modules.repl.repl_commander import AcabREPLCommander
-    repl = AcabREPL()
+    repl = AcabREPLCommander()
     repl.onecmd(f"init {args.engine}")
     repl.onecmd(f"module {initial_modules}")
     print("\n--------------------------------------------------")

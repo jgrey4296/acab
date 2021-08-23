@@ -24,8 +24,8 @@ def register(fn):
     """ Decorator for registering a function into the repl """
     logging.info(f"Repl Registration: {fn.__name__}")
     assert("do_" in fn.__name__)
-    assert(fn.__name__ not in dir(AcabREPL))
-    setattr(AcabREPL, fn.__name__, fn)
+    assert(fn.__name__ not in dir(AcabREPLCommander))
+    setattr(AcabREPLCommander, fn.__name__, fn)
     # Don't return fn as its only used in the class
 
 #--------------------
