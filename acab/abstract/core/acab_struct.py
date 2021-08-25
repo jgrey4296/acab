@@ -8,7 +8,7 @@ from acab.abstract.core.node import AcabNode
 from acab.abstract.core.values import AcabValue
 
 logging = root_logger.getLogger(__name__)
-config = AcabConfig.Get()
+config  = AcabConfig.Get()
 
 class AcabStruct(Structure_i):
     """ A structure in ACAB,

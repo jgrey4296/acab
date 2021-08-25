@@ -115,6 +115,7 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
         """ Convert a trie to a list of sentences
         essentially a dfs of the structure
         """
+        # TODO if passed a node, use that in place of root
         result_list = []
         # Queue: List[Tuple[List[Value], Node]]
         queue = [([], struct.root)]

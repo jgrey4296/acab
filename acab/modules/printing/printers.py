@@ -161,6 +161,8 @@ class ExplicitContainerPrinter(PrintSemantics_i):
         result.append(":")
         result.append(DSYM.CONTAINER_JOIN_P)
         result.append(PW._wrap_var_list(self, value.type, []))
+        # TODO add tags
+        # TODO Add tab insert
         result.append([[x, DSYM.CONTAINER_JOIN_P] for x in  value.value])
         result.append(DSYM.CONTAINER_JOIN_P)
         result.append(DSYM.END_SYM)

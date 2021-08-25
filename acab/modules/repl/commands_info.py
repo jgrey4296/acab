@@ -36,6 +36,7 @@ def do_print(self, line):
     logging.info(f"Printing: {line}")
     result = []
     if "wm" in params:
+        # TODO print everything from a query down
         print(self.state.engine.pprint())
     elif "module" in params:
         print("Modules: ")

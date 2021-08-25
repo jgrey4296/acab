@@ -56,6 +56,7 @@ class Node_i(metaclass=abc.ABCMeta):
         pass
 
 
+# TODO factor 'root' out into AcabNodeStruct
 @dataclass
 class Structure_i(HandlerComponent_i):
     """ The structures which semantics operate on """

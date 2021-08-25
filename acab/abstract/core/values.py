@@ -26,7 +26,6 @@ FALLBACK_MODAL   = config.prepare("Symbols", "FALLBACK_MODAL", actions=[config.a
 
 UUID_CHOP        = bool(int(config.prepare("Print.Data", "UUID_CHOP")()))
 
-
 T     = TypeVar('T', str, Pattern, list)
 
 Value = VI.Value_i

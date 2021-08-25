@@ -8,25 +8,21 @@ ProductionComponent : Pairs the Operator with bindings
 ProductionContainer : Groups Components together
 
 """
-# https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
-
+import logging as root_logger
 from copy import deepcopy
-from dataclasses import dataclass, field, InitVar, replace
+from dataclasses import InitVar, dataclass, field, replace
 from fractions import Fraction
 from re import Pattern
-from uuid import uuid1, UUID
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
+from uuid import UUID, uuid1
 from weakref import ref
-import logging as root_logger
 
-from acab.error.acab_operator_exception import AcabOperatorException
-from acab.abstract.config.config import AcabConfig
-
-from acab.abstract.core.values import AcabValue, AcabStatement, Sentence
 import acab.abstract.core.default_structure as DS
+from acab.abstract.config.config import AcabConfig
+from acab.abstract.core.values import AcabStatement, AcabValue, Sentence
+from acab.error.acab_operator_exception import AcabOperatorException
 
 config = AcabConfig.Get()
 
