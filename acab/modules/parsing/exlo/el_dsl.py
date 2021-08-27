@@ -74,8 +74,8 @@ class EL_Parser(DSL_Fragment_i):
         # At this point, parser is constructed, and will not change again
         # however, *can not* deep-copy the parser for multiple versions
         deep_update_names(TotalP.parse_point)
-        if hasattr(TotalP.parse_point.exprs[1], "name"):
-            delattr(TotalP.parse_point.exprs[1], "name")
+        if hasattr(TotalP.parse_point.exprs[0].exprs[1], "name"):
+            delattr(TotalP.parse_point.exprs[0].exprs[1], "name")
         TotalP.parse_point.strRepr = None
 
         return (TotalP.parse_point, QP.parse_point)

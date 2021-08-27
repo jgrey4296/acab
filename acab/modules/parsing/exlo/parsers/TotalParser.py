@@ -25,7 +25,7 @@ file_total = pp.delimitedList(file_component, delim=component_gap)
 # HOTLOAD_STATEMENTS.setName("HotloadStatement")
 # file_component.setName("FileComponent")
 
-parse_point = file_cruft + file_total.ignore(COMMENT) + file_cruft
+parse_point = (file_cruft + file_total+ file_cruft).ignore(COMMENT)
 # parse_point.setName("Total Parser")
 # parse_point = file_cruft +  file_total + file_cruft
 
