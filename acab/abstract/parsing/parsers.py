@@ -29,7 +29,7 @@ def PARAM_CORE(mid=None, end=None):
     if mid is None:
         mid = pp.Empty()
     if end is None:
-        end = NG(PDS.MODAL, MODAL)
+        end = MODAL(PDS.MODAL)
     else:
         end = pp.Empty()
     parser = N(PDS.NODE, VALBIND) \
@@ -95,7 +95,7 @@ REGEX.setParseAction(lambda s, l, t: (CDS.REGEX_PRIM, re.compile(t[0][1:-1])))
 
 # Generalised modal operator, which is converted to appropriate data later
 MODAL      = pp.Word("".join(config.syntax_extension.keys()))
-MODAL.setParseAction(lambda s, l, t: (PDS.MODAL, config.syntax_extension[t[0]]))
+MODAL.setParseAction(lambda s, l, t: config.syntax_extension[t[0]])
 
 BASIC_VALUE = pp.Or([ATOM, STRING, REGEX])
 BIND        = s_lit(PDSYM.BIND) + ATOM

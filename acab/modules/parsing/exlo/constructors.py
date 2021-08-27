@@ -20,7 +20,7 @@ def build_query_component(s, loc, toks):
 
     params = [x[0] if len(x) == 1 else x for x in params]
 
-    return (EXu.CONSTRAINT_S, ProductionComponent(value=op, params=params))
+    return ProductionComponent(value=op, params=params)
 
 def build_transform_component(s, loc, toks):
     params = []
@@ -58,12 +58,12 @@ def build_action_component(s, loc, toks):
 def build_query(s, loc, toks):
     query = ProductionContainer(value=toks[:],
                                 data={SEMANTIC_HINT: EXu.QUERY_SEM_HINT})
-    return (PDS.QUERY, query)
+    return query
 
 def build_transform(s, loc, toks):
     trans = ProductionContainer(value=toks[:],
                                data={SEMANTIC_HINT: EXu.TRANSFORM_SEM_HINT})
-    return (EXu.TRANSFORM_S, trans)
+    return trans
 
 def build_action(s, loc, toks):
     # TODO: check this
@@ -74,7 +74,7 @@ def build_action(s, loc, toks):
     act = ProductionContainer(value=clauses,
                               data={SEMANTIC_HINT: EXu.ACTION_SEM_HINT})
 
-    return (EXu.ACTION_S, act)
+    return act
 
 
 #--------------------
@@ -113,8 +113,8 @@ def build_rule(s, loc, toks, sem_hint=None):
     rule = ProductionStructure(structure=structure,
                                data={SEMANTIC_HINT: sem_hint,
                                      DS.TYPE_INSTANCE: EXu.RULE_PRIM})
-    return (rule.type, rule)
+    return rule
 
 def build_constraint_list(s, loc, toks):
     """ Build a constraint list """
-    return (EXu.CONSTRAINT_S, [x[1] for x in toks[:]])
+    return (EXu.CONSTRAINT_S, [x for x in toks[:]])

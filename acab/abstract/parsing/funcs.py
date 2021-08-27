@@ -103,12 +103,12 @@ def construct_statement(s, loc, toks):
     tags  = []
     if PDS.ARG in toks:
         # PDS.BIND's ATOM returns a tuple of ('name', VARNAME)
-        targs = [y for x,y in toks[PDS.ARG][:]]
+        targs = [x[1] for x in toks[PDS.ARG]]
     # Get Tags
     if PDS.TAG in toks:
         tags = [x[1] for x in toks[PDS.TAG]]
 
-    type_name, obj = toks[PDS.STATEMENT][0]
+    obj = toks[PDS.STATEMENT][0]
     updated_obj = obj.apply_params(targs).apply_tags(tags)
 
     new_sentence = sen.attach_statement(updated_obj)

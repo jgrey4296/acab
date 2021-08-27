@@ -34,7 +34,7 @@ QUERY_OP_Internal = N(OPERATOR, op_path) \
 QUERY_OP_Internal.setParseAction(PConst.build_query_component)
 
 COLLAPSE_CONTEXT = COLLAPSE_CONTEXT.copy()
-COLLAPSE_CONTEXT.setParseAction(lambda x: (None, CTX_OP.collapse))
+COLLAPSE_CONTEXT.setParseAction(lambda x: CTX_OP.collapse)
 
 query_or_annotation = pp.Or([QUERY_OP_Internal, COLLAPSE_CONTEXT, HOTLOAD_ANNOTATIONS])
 constraints = pp.delimitedList(query_or_annotation, delim=COMMA)
