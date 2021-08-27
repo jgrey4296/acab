@@ -105,7 +105,7 @@ class TrieBootstrapper(Bootstrapper_i):
         elif len(results) == 1:
             final_parser = results[0]
         else:
-            final_parser = pp.Or(results)
+            final_parser = pp.MatchFirst(results)
 
         return final_parser
 

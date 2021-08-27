@@ -9,7 +9,7 @@ from acab.abstract.parsing.consts import (ARROW, COLON, COMMA, DELIM,
                                           DOUBLEBAR, NG, RULE_HEAD, N,
                                           component_gap, emptyLine, gap, op,
                                           orm)
-from acab.abstract.parsing.default_structure import ACTION, QUERY, TRANSFORM
+from acab.modules.parsing.exlo.util import ACTION_S, QUERY_S, TRANSFORM_S
 from acab.modules.parsing.exlo.constructors import build_rule
 
 from . import ActionParser as AP
@@ -19,9 +19,9 @@ from . import TransformParser as TP
 
 logging = root_logger.getLogger(__name__)
 
-conditions = N(QUERY,     QP.clauses + gap)
-transforms = N(TRANSFORM, TP.transforms + gap)
-actions    = N(ACTION,    AP.actions + component_gap)
+conditions = N(QUERY_S,     QP.clauses)
+transforms = N(TRANSFORM_S, TP.transforms)
+actions    = N(ACTION_S,    AP.actions)
 
 rule_body = op(conditions) + op(transforms) + op(actions)
 

@@ -50,23 +50,23 @@ short_step.setParseAction(lambda s,l,t: "step")
 short_context = pp.Keyword("c")("context")
 short_context.setParseAction(lambda s,l,t: "ctx")
 
-short_print_context = pp.Keyword("pc")("print_ctx")
-short_print_context.setParseAction(lambda s,l,t: "print_ctx")
+sugared = pp.Suppress(pp.Literal(":")) + pp.MatchFirst([short_exit,
+                                                        short_break,
+                                                        short_echo,
+                                                        short_save,
+                                                        short_load,
+                                                        short_step,
+                                                        short_context,
+                                                        ]) + rst
 
-sugared = pp.Suppress(pp.Literal(":")) + pp.Or([short_exit,
-                                                short_break,
-                                                short_echo,
-                                                short_save,
-                                                short_load,
-                                                short_step,
-                                                short_context,
-                                                short_print_context,
-                                                ]) + rst
+pwm = pp.Keyword("pwm")("Print Working Memory")
+pwm.setParseAction(lambda s,l,t: "print wm")
 
-precmd_parser = pp.Suppress(pp.LineStart()) + pp.Or([multi_line_start,
-                                                     multi_line_end,
-                                                     sugared,
-                                                     rst])
+precmd_parser = pp.MatchFirst([multi_line_start,
+                               multi_line_end + rst,
+                               pwm,
+                               sugared,
+                               rst]).leaveWhitespace()
 
 # step kws ####################################################################
 back_kw     = pp.Keyword("back")
@@ -74,30 +74,22 @@ rule_kw     = pp.Keyword("rule")
 layer_kw    = pp.Keyword("layer")
 pipe_kw     = pp.Keyword("pipe")
 pipeline_kw = pp.Keyword("pipeline")
-step_parser = pp.Or([back_kw,
-                     rule_kw + rst,
-                     layer_kw,
-                     pipe_kw,
-                     pipeline_kw])
-
-# print kws ###################################################################
-wm_kw        = pp.Keyword("wm")("wm")
-module_kw    = pp.Keyword("module") + pp.Optional(pp.Word(pp.alphas)("mod_target"))
-semantic_kw  = pp.Keyword("semantic")("semantic")
-
-# TODO also handle bind without kw?
-printer_parser = pp.Or([wm_kw,
-                        module_kw,
-                        semantic_kw,
-                        rst])
+step_parser = pp.MatchFirst([back_kw,
+                             rule_kw + rst,
+                             layer_kw,
+                             pipe_kw,
+                             pipeline_kw])
 
 # stat kws ####################################################################
-operator_kw  = pp.Or(pp.Keyword("ops"),
-                     pp.Keyword("operator"))("operator")
+operator_kw  = pp.MatchFirst(pp.Keyword("ops"),
+                             pp.Keyword("operator"))("operator")
+module_kw    = pp.MatchFirst([pp.Keyword("mod"),
+                              pp.Keyword("module")])("module")
+semantic_kw  = pp.Keyword("semantics")("semantics")
 
-stats_parser = pp.ZeroOrMore(pp.Or([operator_kw,
-                                    module_kw,
-                                    semantic_kw]))
+stats_parser = pp.ZeroOrMore(pp.MatchFirst([operator_kw,
+                                            module_kw,
+                                            semantic_kw]))
 
 # listener ####################################################################
 
@@ -128,16 +120,29 @@ slice_p = PU.s(pp.Literal('[')) + \
 
 slice_p.setParseAction(build_slice)
 
-# $x, @x
+ctx_kw = pp.MatchFirst([pp.Keyword("ctx"),
+                        pp.Keyword("c")])("context")
 ctx = number("short_context")
 ctx_slice = slice_p("context_slice")
+
+# $x, @x
 binding = AP.VALBIND
 
-
 # ctx ([2:])? $x?
-result_parser = pp.Optional(pp.Or([ctx,
-                                   ctx_slice])) \
-    + pp.ZeroOrMore(binding)("bindings")
+ctx_parser = ctx_kw + pp.Optional(ctx | ctx_slice) \
+            + pp.ZeroOrMore(binding)("bindings")
+
+# print kws ###################################################################
+wm_kw        = pp.Keyword("wm")("wm")
+mod_target   = pp.Optional(pp.Word(pp.alphas + ".")("mod_target"))
+
+# TODO also handle bind without kw?
+printer_parser = pp.MatchFirst([wm_kw,
+                                module_kw + mod_target,
+                                semantic_kw,
+                                ctx_parser,
+                                rst])
+
 
 # ctx select ##################################################################
 ctx_index  = number("subset")
@@ -146,11 +151,11 @@ clear_kw   = pp.Keyword("clear")("clear")
 minus_kw   = pp.Keyword("-")("clear")
 
 
-ctx_select_parser = pp.Or([ctx_subset,
-                           ctx_index,
-                           clear_kw,
-                           minus_kw,
-                           rst])
+ctx_select_parser = pp.MatchFirst([ctx_subset,
+                                   ctx_index,
+                                   clear_kw,
+                                   minus_kw,
+                                   rst])
 
 # force parser ################################################################
 query = pp.Word(pp.alphas + ".")("query") + pp.Suppress(pp.Literal("?"))

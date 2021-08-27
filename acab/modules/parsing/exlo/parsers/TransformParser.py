@@ -38,7 +38,9 @@ transform_sugar = NG(LEFT_S, PARAM_SEN) \
     + vals \
     + N(TARGET_S, rebind)
 
-transform_combined = pp.Or([transform_core, HOTLOAD_TRANS_STATEMENTS, transform_sugar])
+transform_combined = pp.MatchFirst([transform_core,
+                                    HOTLOAD_TRANS_STATEMENTS,
+                                    transform_sugar])
 
 transforms = pp.delimitedList(transform_combined, delim=DELIM)
 

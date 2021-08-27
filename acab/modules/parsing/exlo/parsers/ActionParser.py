@@ -19,7 +19,7 @@ logging = root_logger.getLogger(__name__)
 HOTLOAD_OPERATORS = pp.Forward()
 
 # fact string with the option of binds
-vals = N(RIGHT_S, PU.zrm(PARAM_SEN))
+vals = PU.zrm(PARAM_SEN)(RIGHT_S)
 
 # action: [op](values)
 action_component = N(OPERATOR, op_path) + vals
@@ -29,14 +29,14 @@ action_sugar = N(LEFT_S, VALBIND) \
     + vals
 
 # Sentences are asserted by default
-actions = pp.delimitedList(pp.Or([action_component, PARAM_SEN]), delim=DELIM)
+actions = pp.delimitedList(action_component | PARAM_SEN | action_sugar, delim=DELIM)
+action_component.setParseAction(PConst.build_action_component)
+actions.setParseAction(PConst.build_action)
 
 action_definition = PU.STATEMENT_CONSTRUCTOR(BASIC_SEN,
                                              actions + component_gap)
 
 # parse action
-action_component.setParseAction(PConst.build_action_component)
-actions.setParseAction(PConst.build_action)
 
 # NAMING
 # vals.setName("ActionValueList")

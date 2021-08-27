@@ -17,10 +17,7 @@ from . import RuleParser as RP
 HOTLOAD_STATEMENTS = pp.Forward()
 # HOTLOAD_STATEMENTS.setName("Statements")
 
-query_group = pp.Group(QP.clauses)
-query_group.setParseAction(strip_parse_type)
-
-file_component = pp.Or([HOTLOAD_STATEMENTS, query_group, FP.PARAM_SEN])
+file_component = HOTLOAD_STATEMENTS ^ QP.clauses ^ FP.PARAM_SEN_PLURAL ^ file_cruft
 
 file_total = pp.delimitedList(file_component, delim=component_gap)
 
@@ -28,7 +25,8 @@ file_total = pp.delimitedList(file_component, delim=component_gap)
 # HOTLOAD_STATEMENTS.setName("HotloadStatement")
 # file_component.setName("FileComponent")
 
-parse_point = file_cruft +  file_total.ignore(COMMENT) + file_cruft
+parse_point = file_cruft + file_total.ignore(COMMENT)
+# parse_point.setName("Total Parser")
 # parse_point = file_cruft +  file_total + file_cruft
 
 def parseString(in_string, parse_point=parse_point):
