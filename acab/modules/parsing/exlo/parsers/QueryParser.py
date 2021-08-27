@@ -41,12 +41,12 @@ clauses.setParseAction(build_query)
 assignment.setParseAction(build_assignment)
 
 # NAMING
-assignment.setName("FallbackAssignment")
-assignmentList.setName("FallbackAssignmentList")
-fallback.setName("QueryFallbackStatement")
-clause.setName("QueryComponent")
-clauses.setName("QueryComponentContainer")
-query_statement.setName("QueryDefinition")
+# assignment.setName("FallbackAssignment")
+# assignmentList.setName("FallbackAssignmentList")
+# fallback.setName("QueryFallbackStatement")
+clause.setName("QueryClause")
+clauses.setName("Query")
+query_statement.setName("QueryStatement")
 
 
 # parse_point = clauses.ignore(PU.COMMENT)

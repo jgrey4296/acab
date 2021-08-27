@@ -15,6 +15,7 @@ from . import ActionParser as AP
 from . import RuleParser as RP
 
 HOTLOAD_STATEMENTS = pp.Forward()
+# HOTLOAD_STATEMENTS.setName("Statements")
 
 query_group = pp.Group(QP.clauses)
 query_group.setParseAction(strip_parse_type)
@@ -24,9 +25,8 @@ file_component = pp.Or([HOTLOAD_STATEMENTS, query_group, FP.PARAM_SEN])
 file_total = pp.delimitedList(file_component, delim=component_gap)
 
 # NAMING
-HOTLOAD_STATEMENTS.setName("HotloadStatement")
-file_component.setName("FileComponent")
-query_group.setName("CleanQuery")
+# HOTLOAD_STATEMENTS.setName("HotloadStatement")
+# file_component.setName("FileComponent")
 
 parse_point = file_cruft +  file_total.ignore(COMMENT) + file_cruft
 # parse_point = file_cruft +  file_total + file_cruft

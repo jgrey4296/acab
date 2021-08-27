@@ -39,10 +39,10 @@ action_component.setParseAction(PConst.build_action_component)
 actions.setParseAction(PConst.build_action)
 
 # NAMING
-vals.setName("ActionValueList")
-action_component.setName("ActionComponent")
-actions.setName("ActionsContainer")
-action_definition.setName("ActionDefinition")
+# vals.setName("ActionValueList")
+# action_component.setName("ActionComponent")
+actions.setName("Action")
+action_definition.setName("ActionStatement")
 
 # parse_point = actions.ignore(PU.COMMENT)
 parse_point = actions

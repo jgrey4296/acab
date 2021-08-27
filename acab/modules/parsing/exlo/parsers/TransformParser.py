@@ -19,11 +19,9 @@ logging = root_logger.getLogger(__name__)
 # Hotloaded Transform Operators
 HOTLOAD_TRANS_OP = pp.Forward()
 HOTLOAD_TRANS_STATEMENTS = pp.Forward()
-HOTLOAD_TRANS_OP.setName("Transform_Op")
-HOTLOAD_TRANS_STATEMENTS.setName("Transform_Statement")
 
 rebind = ARROW + PU.VALBIND
-rebind.setName("Rebind")
+
 
 # TODO: extend transform to take partial transforms?
 # transform: ( bind op val|bind -> bind)
@@ -53,9 +51,12 @@ transform_sugar.addParseAction(build_transform_component)
 transforms.setParseAction(build_transform)
 
 # NAMING
-transform_core.setName("Transform_CORE")
-transforms.setName("TransformPlural")
-transform_statement.setName("TransformDefinition")
+# transform_core.setName("Transform_CORE")
+transforms.setName("Transform")
+transform_statement.setName("TransformStatement")
+# HOTLOAD_TRANS_OP.setName("Transform_Op")
+# HOTLOAD_TRANS_STATEMENTS.setName("Transform_Statement")
+# rebind.setName("Rebind")
 
 parse_point = transforms
 

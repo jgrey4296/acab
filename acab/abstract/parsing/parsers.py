@@ -77,7 +77,6 @@ def STATEMENT_CONSTRUCTOR(name_p,
 
 
 HOTLOAD_VALUES = pp.Forward()
-HOTLOAD_VALUES.setName("HotloadValues")
 
 
 # Basic Parsers
@@ -120,13 +119,14 @@ Fwd_TagList <<= op(N(PDS.TAG,
                      + emptyLine))
 
 # NAMING
+# HOTLOAD_VALUES.setName("HotloadValues")
 VALBIND.setName("ValBind")
-ATOM.setName("NameWord")
-STRING.setName("StringWord")
-REGEX.setName("RegexWord")
-BASIC_VALUE.setName("BasicValue")
-BIND.setName("Binding")
-AT_BIND.setName("AtBinding")
-tagName.setName("TagName")
-Fwd_TagList.setName("StatementTagList")
-Fwd_ArgList.setName("StatementArgumentList")
+# ATOM.setName("NameWord")
+# STRING.setName("StringWord")
+# REGEX.setName("RegexWord")
+# BASIC_VALUE.setName("BasicValue")
+# BIND.setName("Binding")
+# AT_BIND.setName("AtBinding")
+# tagName.setName("TagName")
+# Fwd_TagList.setName("StatementTagList")
+# Fwd_ArgList.setName("StatementArgumentList")

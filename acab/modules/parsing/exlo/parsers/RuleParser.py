@@ -36,12 +36,12 @@ rules = pp.delimitedList(rule, delim=emptyLine)
 rule_body.setParseAction(build_rule)
 
 # NAMING
-conditions.setName("RuleConditions")
-transforms.setName("RuleTransforms")
-actions.setName("RuleActions")
-rule_body.setName("RuleBody")
+# conditions.setName("RuleConditions")
+# transforms.setName("RuleTransforms")
+# actions.setName("RuleActions")
+# rule_body.setName("RuleBody")
 rule.setName("RuleDefinition")
-rules.setName("RulePlural")
+# rules.setName("RulePlural")
 
 
 # parse_point = rules.ignore(PU.COMMENT)

@@ -21,6 +21,7 @@ HOTLOAD_QUERY_OP = pp.Forward()
 BASIC_SEN = PU.op(NEGATION) + pp.NotAny(END) \
     + NG(SEN, pp.ZeroOrMore(PU.PARAM_CORE()) + PU.PARAM_CORE(end=True))
 BASIC_SEN.setParseAction(Pfunc.construct_sentence)
+BASIC_SEN.setName("BasicSentence")
 
 # TODO shift this to config
 func_headed_sen = pp.Suppress(pp.Literal('λ')) + BASIC_SEN
@@ -39,6 +40,7 @@ COLLAPSE_CONTEXT.setParseAction(lambda x: CTX_OP.collapse)
 query_or_annotation = pp.Or([QUERY_OP_Internal, COLLAPSE_CONTEXT, HOTLOAD_ANNOTATIONS])
 constraints = pp.delimitedList(query_or_annotation, delim=COMMA)
 constraints.setParseAction(PConst.build_constraint_list)
+constraints.setName("ConstraintList")
 
 # Core = a. | b! | $a. | $b!....
 PARAM_BINDING_CORE = PU.PARAM_CORE(constraints)
@@ -52,7 +54,9 @@ PARAM_SEN = PU.op(NEGATION) + pp.NotAny(END) \
     + NG(SEN, pp.ZeroOrMore(PARAM_BINDING_CORE) + PARAM_BINDING_END)
 PARAM_SEN_PLURAL = pp.delimitedList(PARAM_SEN, delim=DELIM)
 PARAM_SEN.setParseAction(Pfunc.construct_sentence)
+PARAM_SEN.setName("ParameterisedSentence")
 
+PARAM_SEN_PLURAL.setName("Sentences")
 
 SEN_STATEMENT_BODY = pp.OneOrMore(pp.Or([SEN_STATEMENT, PARAM_SEN_PLURAL]) + opLn)
 # Statement to specify multiple sub sentences
@@ -62,17 +66,14 @@ SEN_STATEMENT << PU.STATEMENT_CONSTRUCTOR(PARAM_SEN,
 
 
 # Naming
-PARAM_BINDING_CORE.setName("ParamBindCore")
-PARAM_BINDING_END.setName("ParamBindEnd")
-BASIC_SEN.setName("BasicSentence")
-PARAM_SEN.setName("ParameterisedSentence")
-PARAM_SEN_PLURAL.setName("ParamSentencePlural")
-HOTLOAD_ANNOTATIONS.setName("Annotations")
+# PARAM_BINDING_CORE.setName("ParamBindCore")
+# PARAM_BINDING_END.setName("ParamBindEnd")
+# PARAM_SEN_PLURAL.setName("ParamSentencePlural")
+# HOTLOAD_ANNOTATIONS.setName("Annotations")
 SEN_STATEMENT.setName("SentenceStatement")
-HOTLOAD_QUERY_OP.setName("QueryOperators")
-QUERY_OP_Internal.setName("Query_Statements")
-query_or_annotation.setName("QueryOrAnnotation")
-constraints.setName("ConstraintList")
+# HOTLOAD_QUERY_OP.setName("QueryOperators")
+# QUERY_OP_Internal.setName("Query_Statements")
+# query_or_annotation.setName("QueryOrAnnotation")
 
 parse_point = PARAM_SEN_PLURAL
 
