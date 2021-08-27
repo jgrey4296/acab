@@ -49,6 +49,3 @@ class DSLBuilder(DSLBuilder_i):
         main_p, query_p = self.root_fragment.query_parsers(self._bootstrap_parser)
         self._main_parser = main_p
         self._query_parser = query_p
-
-        # TODO: register the loaded fragments
-        #fragments = [y for x in self._loaded_DSL_fragments.values() for y in x]

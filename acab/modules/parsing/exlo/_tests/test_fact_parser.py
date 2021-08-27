@@ -45,8 +45,14 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertEqual(len(result), 2)
         self.assertTrue(all([isinstance(x, Sentence) for x in result]))
 
-    def test_parse_strings_multiline(self):
-        result = FP.parseString('a.b.c\n b.c.d')
+    def test_parse_strings_multi_with_comma(self):
+        result = FP.parseString('a.b.c, b.c.d')
+        self.assertIsInstance(result, list)
+        self.assertEqual(len(result), 2)
+        self.assertTrue(all([isinstance(x, Sentence) for x in result]))
+
+    def test_parse_strings_multi_line(self):
+        result = FP.parseString('a.b.c\nb.c.d')
         self.assertIsInstance(result, list)
         self.assertEqual(len(result), 2)
         self.assertTrue(all([isinstance(x, Sentence) for x in result]))

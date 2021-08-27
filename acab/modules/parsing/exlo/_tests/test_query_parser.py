@@ -65,7 +65,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertTrue(result.data[NEGATION_V])
 
     def test_basic_multi_clause(self):
-        result = QP.clauses.parseString('a.b.c?, a.b.d?, a.b.e?')[0][1]
+        result = QP.clauses.parseString('a.b.c?, a.b.d?, a.b.e?')[0]
         self.assertIsInstance(result, ProductionContainer)
         self.assertEqual(len(result.clauses), 3)
         self.assertTrue(all([isinstance(x, Sentence) for x in result.clauses]))
@@ -74,7 +74,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertEqual(result.clauses[2][-1].value, 'e')
 
     def test_basic_multi_clause_mixed_negation(self):
-        result = QP.clauses.parseString('a.b.c?, ~a.b.d?, a.b.e?, ~a.b.f?')[0][1]
+        result = QP.clauses.parseString('a.b.c?, ~a.b.d?, a.b.e?, ~a.b.f?')[0]
         self.assertIsInstance(result, ProductionContainer)
         self.assertTrue(all([isinstance(x, Sentence) for x in result.clauses]))
         self.assertFalse(result.clauses[0].data[NEGATION_V])

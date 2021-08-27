@@ -1,3 +1,7 @@
+"""
+Enforce a default set of symbols to be retrieved
+from config files
+"""
 from acab.abstract.config.config import AcabConfig
 config = AcabConfig.Get()
 

@@ -120,7 +120,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                               settings={"MODAL": "exop"})
 
         # parse a rule
-        rule = RP.parseString("a.test.rule:\na.b.c?\n\nλa.b.c\n\nend")[0]
+        rule = RP.parseString("a.test.rule:\na.b.c?\n\nλa.b.c\nend")[0]
         self.assertIsInstance(rule, Sentence)
         self.assertIsInstance(rule[-1], ProductionStructure)
         # print

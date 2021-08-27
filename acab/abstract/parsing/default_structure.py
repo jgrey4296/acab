@@ -1,3 +1,7 @@
+"""
+Enforce a default set of parse structure entries to be
+retrieved from config files
+"""
 from acab.abstract.config.config import GET
 
 config = GET()

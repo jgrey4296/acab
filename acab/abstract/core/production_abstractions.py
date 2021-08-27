@@ -132,6 +132,10 @@ class ProductionContainer(AcabStatement):
         assert(isinstance(self.value, list))
         self.data[DS.TYPE_INSTANCE] = DS.CONTAINER_PRIM
 
+    def __repr__(self):
+        clauses = ";".join([repr(x) for x in self.clauses])
+        return "(ProductionContainer:{}:{})".format(self.name,
+                                                    clauses)
     def __len__(self):
         return len(self.clauses)
 
@@ -181,6 +185,14 @@ class ProductionStructure(ProductionContainer):
         clauses = list(self.structure.values())
         self.value += clauses
 
+    def __repr__(self):
+        actual = [x for x in self.keys if x in self]
+        clauses = ";".join(["({}:{})".format(x,
+                                             [str(z) for z in self[x].clauses])
+                            for x in actual])
+
+        return "(ProductionStructure:{}:{})".format(self.name, clauses)
+
     @property
     def keys(self):
         return self.structure.keys()
@@ -199,4 +211,4 @@ class ProductionStructure(ProductionContainer):
         return self.copy(value=bound_clauses, params=bound_params, structure=bound_struct)
 
     def __contains__(self, key):
-        return key in self.structure
+        return key in self.structure and bool(self.structure[key])
