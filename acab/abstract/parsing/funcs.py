@@ -143,3 +143,23 @@ def strip_parse_type(s, loc, toks):
     """
     assert(all([isinstance(x, tuple) for x in toks[0]]))
     return [x[1] for x in toks[0]]
+
+
+
+def deep_update_names(parser):
+    queue = [parser]
+    processed = set()
+
+    while bool(queue):
+        current = queue.pop(0)
+        if current in processed:
+            continue
+        processed.add(current)
+
+        if hasattr(current, "strRepr"):
+            setattr(current, "strRepr", None)
+
+        if hasattr(current, "expr"):
+            queue.append(current.expr)
+        elif hasattr(current, "exprs"):
+            queue += current.exprs

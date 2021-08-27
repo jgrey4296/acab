@@ -13,6 +13,7 @@ from acab.modules.parsing.exlo.parsers import QueryParser as QP
 from acab.modules.parsing.exlo.parsers import RuleParser as RP
 from acab.modules.parsing.exlo.parsers import TotalParser as TotalP
 from acab.modules.parsing.exlo.parsers import TransformParser as TP
+from acab.abstract.parsing.funcs import deep_update_names
 
 logging = root_logger.getLogger(__name__)
 
@@ -28,7 +29,8 @@ class EL_Parser(DSL_Fragment_i):
                          "sentence.basic"      , FP.BASIC_SEN,
                          "sentence.param"      , FP.PARAM_SEN,
                          "statement.sentence"  , FP.SEN_STATEMENT,
-                         "operator.sugar"      , PU.OPERATOR_SUGAR)
+                         "operator.sugar"      , PU.OPERATOR_SUGAR,
+                         "sentence.plural"     , FP.PARAM_SEN_PLURAL)
         # Query
         bootstrapper.add("statement.query"     , QP.query_statement,
                          "query.body"          , QP.clauses,
@@ -69,8 +71,11 @@ class EL_Parser(DSL_Fragment_i):
         AP.HOTLOAD_OPERATORS << bootstrapper.query("operator.action.*")
 
         TotalP.HOTLOAD_STATEMENTS << bootstrapper.query("statement.*")
-
         # At this point, parser is constructed, and will not change again
         # however, *can not* deep-copy the parser for multiple versions
+        deep_update_names(TotalP.parse_point)
+        if hasattr(TotalP.parse_point.exprs[1], "name"):
+            delattr(TotalP.parse_point.exprs[1], "name")
+        TotalP.parse_point.strRepr = None
 
         return (TotalP.parse_point, QP.parse_point)
