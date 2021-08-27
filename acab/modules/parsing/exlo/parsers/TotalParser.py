@@ -17,7 +17,7 @@ from . import RuleParser as RP
 HOTLOAD_STATEMENTS = pp.Forward()
 # HOTLOAD_STATEMENTS.setName("Statements")
 
-file_component = HOTLOAD_STATEMENTS ^ QP.clauses ^ FP.PARAM_SEN_PLURAL ^ file_cruft
+file_component = HOTLOAD_STATEMENTS ^ QP.clauses ^ FP.PARAM_SEN_PLURAL
 
 file_total = pp.delimitedList(file_component, delim=component_gap)
 
@@ -25,7 +25,7 @@ file_total = pp.delimitedList(file_component, delim=component_gap)
 # HOTLOAD_STATEMENTS.setName("HotloadStatement")
 # file_component.setName("FileComponent")
 
-parse_point = file_cruft + file_total.ignore(COMMENT)
+parse_point = file_cruft + file_total.ignore(COMMENT) + file_cruft
 # parse_point.setName("Total Parser")
 # parse_point = file_cruft +  file_total + file_cruft
 

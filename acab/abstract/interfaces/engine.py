@@ -5,6 +5,7 @@ from os.path import abspath, exists, expanduser, split
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
+import pyparsing as pp
 
 logging = root_logger.getLogger(__name__)
 
@@ -56,16 +57,16 @@ class AcabEngine_i(metaclass=abc.ABCMeta):
         logging.info("Loading: {}".format(filename))
         assertions = []
         assert exists(filename), filename
-        with open(filename) as f:
-            # everything should be an assertion
-            try:
-                assertions = self._dsl_builder.parseFile(f)
-            except pp.ParseException as exp:
-                print("-----")
-                print(str(exp))
-                print(exp.markInputline())
-                print("File Not Asserted into WM")
-                return False
+        # with open(filename) as f:
+        # everything should be an assertion
+        try:
+            assertions = self._dsl_builder.parseFile(filename)
+        except pp.ParseException as exp:
+            print("-----")
+            print(str(exp))
+            print(exp.markInputline())
+            print("File Not Asserted into WM")
+            return False
 
         try:
             # Assert facts:

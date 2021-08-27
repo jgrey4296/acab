@@ -34,9 +34,9 @@ COMMENT           = pp.Regex(COMMENT_RE)
 END               = s_key(DSYM.END)
 
 emptyLine         = s(pp.White("\r\n", min=2))("emptyline")
-ln                = s(pp.White("\n"))("newline")
+ln                = s(pp.White("\n", max=1))("newline")
 opLn              = op(ln)("optional newline")
-tab               = pp.White(TAB_S, min=len(TAB_S), exact=len(TAB_S))
+tab               = pp.White(TAB_S, min=2)
 
 def NG(name, grp):
     """ Name and Group """
@@ -96,7 +96,7 @@ NEGATION   = N(DS.NEGATION, pp.Literal(DSYM.NEGATION))
 
 gap               = emptyLine #.setFailAction(gap_fail_action)
 component_gap     = s(orm(emptyLine))
-file_cruft        = pp.ZeroOrMore(emptyLine)
+file_cruft        = pp.ZeroOrMore(ln)
 
 # END.setName("End")
 file_cruft.setName("EmptyLines")

@@ -119,7 +119,13 @@ class DSLBuilder_i(metaclass=abc.ABCMeta):
 
     @EnsureInitialised
     def parseFile(self, f:File) -> List[Sentence]:
-        return self._main_parser.parseFile(f)[:]
+        logging.debug(f"Loading File: {f}")
+        text = ""
+        with open(f, "r") as the_file:
+            text = the_file.read()
+
+        print(f"Loading File Text: {text}")
+        return self._main_parser.parseString(text, parseAll=True)[:]
 
     @EnsureInitialised
     def query_parse(self, s:str) -> Query:
