@@ -32,8 +32,7 @@ clause = PARAM_SEN + QUERY \
 
 clauses = pp.delimitedList(clause, delim=DELIM)
 
-query_statement = PU.STATEMENT_CONSTRUCTOR(BASIC_SEN,
-                                           clauses + component_gap)
+query_statement = PU.STATEMENT_CONSTRUCTOR(BASIC_SEN, clauses)
 
 # Actions
 clause.setParseAction(build_clause)

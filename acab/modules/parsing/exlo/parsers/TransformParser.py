@@ -44,8 +44,7 @@ transform_combined = pp.MatchFirst([transform_core,
 
 transforms = pp.delimitedList(transform_combined, delim=DELIM)
 
-transform_statement = PU.STATEMENT_CONSTRUCTOR(BASIC_SEN,
-                                               transforms + component_gap)
+transform_statement = PU.STATEMENT_CONSTRUCTOR(BASIC_SEN, transforms)
 
 # Actions
 transform_core.setParseAction(build_transform_component)

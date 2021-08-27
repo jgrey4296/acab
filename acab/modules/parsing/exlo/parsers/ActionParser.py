@@ -33,8 +33,7 @@ actions = pp.delimitedList(action_component | PARAM_SEN | action_sugar, delim=DE
 action_component.setParseAction(PConst.build_action_component)
 actions.setParseAction(PConst.build_action)
 
-action_definition = PU.STATEMENT_CONSTRUCTOR(BASIC_SEN,
-                                             actions + component_gap)
+action_definition = PU.STATEMENT_CONSTRUCTOR(BASIC_SEN, actions)
 
 # parse action
 
