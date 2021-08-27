@@ -13,7 +13,7 @@ from acab.modules.repl.util import build_slice
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
 
-rst = pp.restOfLine()
+rst = pp.delimitedList(pp.restOfLine, delim=pp.White("\n\r"), combine=True).leaveWhitespace()
 
 # multi line ##################################################################
 MULTI_LINE_START = config.prepare("Module.REPL", "MULTI_LINE_START")()
@@ -105,10 +105,10 @@ listen_parser = pp.Or([])
 # parser exploration ##########################################################
 bootstrap_kw      = pp.Keyword("bootstrap")("bootstrap")
 sugar_kw          = pp.Keyword("sugar")("sugar")
+parse_info_parser = bootstrap_kw | sugar_kw | rst
 
-parse_info_parser = pp.Or([bootstrap_kw, sugar_kw, rst])
 
-# result ########################################################################
+# context ########################################################################
 number = pp.Optional(pp.Literal('-')("minus")) + pp.Word(pp.nums)
 number.setParseAction(lambda s, l, t: int(t[-1]) if 'minus' not in t else -1 * int(t[-1]))
 
