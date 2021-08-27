@@ -45,7 +45,10 @@ def do_multi(self, line):
         self.state.in_multi_line = False
         self.state.prompt = self.state.prompt_bkup
         logging.info(f"Collected: {collected}")
-        self.onecmd(collected)
+        if bool(line):
+            self.onecmd(line + " " + collected)
+        else:
+            self.onecmd(collected)
 
 
 @register
@@ -126,8 +129,11 @@ def do_forcep(self, line):
             print("Nothing sent to parser")
             return
 
+        print(f"Trying Parser on: {params.send}")
         # if exists, parse, then call engine on it
-        forced_result = parser.parseString(params.send)[0]
+        parser.setDebug(True)
+        forced_result = parser.parseString(params.send.strip(), parseAll=True)[:]
+        parser.setDebug(False)
         self.state.debug_data = forced_result
         print(f"Forced Parse: {forced_result}\n")
 
@@ -138,7 +144,9 @@ def do_forcep(self, line):
                                         bindings=self.state.result)
 
     except pp.ParseException as err:
+        traceback.print_tb(err.__traceback__)
         logging.warning(f"Parse Failure: {err.markInputline()}")
+        logging.warning(err)
     except Exception as err:
         print("\n")
         traceback.print_tb(err.__traceback__)
