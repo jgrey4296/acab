@@ -123,7 +123,7 @@ def _wrap_var_list(PS, value, current):
     if DS.PARAMS not in value:
         return current
 
-    return current + [DSYM.PARAM_WRAP] + value.data[DS.PARAMS] + [DSYM.PARAM_WRAP]
+    return current + [DSYM.PARAM_WRAP] + value.data[DS.PARAMS] + [DSYM.PARAM_WRAP, DSYM.CONTAINER_JOIN_P]
 
 
 def _sep_list(PS, value, current, sep=" "):

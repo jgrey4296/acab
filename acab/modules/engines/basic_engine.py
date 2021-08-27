@@ -20,7 +20,7 @@ from acab.abstract.interfaces.dsl import DSL_Fragment_i
 from acab.abstract.interfaces.engine import AcabEngine_i, EnsureInitialised
 from acab.abstract.interfaces.printing import PrintSystem_i
 from acab.abstract.interfaces.semantic import SemanticSystem_i
-from acab.abstract.interfaces.value import Value_i
+from acab.abstract.interfaces.value import Value_i, Sentence_i
 from acab.error.acab_base_exception import AcabBaseException
 from acab.modules.engines.util import MaybeBuildOperatorCtx
 
@@ -52,13 +52,14 @@ class AcabBasicEngine(AcabEngine_i):
         str to parse then,
         sentence to assert, query, or run
         """
+        logging.debug(f"Engine Call on: {inst}")
         if not isinstance(inst, list):
             inst = [inst]
 
         if isinstance(inst, list) and all([isinstance(x, str) for x in inst]):
             inst = [y for x in inst for y in self._dsl_builder.parse(x)[:]]
 
-        assert(all([isinstance(x, Value_i) for x in inst]))
+        assert(all([isinstance(x, (Value_i, Sentence_i)) for x in inst])), inst
         logging.debug(f"Running: {inst}")
         # pass inst to sem system
         result = bindings
