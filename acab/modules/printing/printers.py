@@ -138,6 +138,7 @@ class ProductionComponentPrinter(PrintSemantics_i):
             result += PW._sep_list(self, value, overriden, sep=" ")
 
         if bool(value.rebind):
+            # TODO align these
             result.append(DSYM.SPACE)
             result.append(DSYM.REBIND_SYM)
             result.append(DSYM.SPACE)
@@ -151,20 +152,20 @@ class ImplicitContainerPrinter(PrintSemantics_i):
     """ Production Containers """
 
     def __call__(self, value, top=None):
-        return PW._sep_list(self, value, value.clauses, sep="\n")
+        result = [[DSYM.INDENT, x, DSYM.CONTAINER_JOIN_P] for x in  value.clauses]
+        return result
+
 class ExplicitContainerPrinter(PrintSemantics_i):
     """ Production Containers """
 
     def __call__(self, value, top=None):
         result = []
         result.append(value.name)
-        result.append(":")
+        result.append("(::container):")
         result.append(DSYM.CONTAINER_JOIN_P)
         result.append(PW._wrap_var_list(self, value.type, []))
         # TODO add tags
-        # TODO Add tab insert
-        result.append([[x, DSYM.CONTAINER_JOIN_P] for x in  value.value])
-        result.append(DSYM.CONTAINER_JOIN_P)
+        result.append([[DSYM.INDENT, x, DSYM.CONTAINER_JOIN_P] for x in  value.value])
         result.append(DSYM.END_SYM)
 
         return result
@@ -173,15 +174,16 @@ class StructurePrinter(PrintSemantics_i):
     """ Ordered structures """
 
     def __call__(self, value, top=None):
-        # TODO define order, add newlines, tags
+        # TODO define order, add newlines
         result = []
         # print the name
         result.append(top.override("_:NO_MODAL", value))
         # TODO parameterise this
-        #result += ["(", "::", "ρ", ")"]
+        result += ["(", "::", "structure", ")"]
         result.append(":")
         result.append(DSYM.CONTAINER_JOIN_P)
         for tag in value.tags:
+            result.append(DSYM.INDENT)
             result.append(DSYM.TAG_SYM)
             result.append(tag)
             result.append(DSYM.CONTAINER_JOIN_P)
@@ -192,17 +194,13 @@ class StructurePrinter(PrintSemantics_i):
         if bool(value.structure[DS.QUERY_COMPONENT]):
             result.append(top.override("_:IMPLICIT_CONTAINER", value.structure[DS.QUERY_COMPONENT]))
             result.append(DSYM.CONTAINER_JOIN_P)
-            result.append(DSYM.CONTAINER_JOIN_P)
 
         if bool(value.structure[DS.TRANSFORM_COMPONENT]):
             result.append(top.override("_:IMPLICIT_CONTAINER", value.structure[DS.TRANSFORM_COMPONENT]))
             result.append(DSYM.CONTAINER_JOIN_P)
-            result.append(DSYM.CONTAINER_JOIN_P)
 
         if bool(value.structure[DS.ACTION_COMPONENT]):
             result.append(top.override("_:IMPLICIT_CONTAINER", value.structure[DS.ACTION_COMPONENT]))
-            result.append(DSYM.CONTAINER_JOIN_P)
-            result.append(DSYM.CONTAINER_JOIN_P)
 
         result.append(DSYM.END_SYM)
         return result
