@@ -64,8 +64,8 @@ def add_annotations(s, loc, toks):
     """ Add additional data to a node """
     update_data = {}
     if PDS.MODAL in toks:
-        modal_tuple = toks[PDS.MODAL][0]
-        update_data[modal_tuple[1][0]] = modal_tuple[1][1]
+        modal_value = toks[PDS.MODAL]
+        update_data[modal_value.__class__.__name__] = modal_value
     if PDS.ANNOTATION in toks:
         update_data.update({x: y for x, y in toks[PDS.ANNOTATION]})
     toks[PDS.NODE].data.update(update_data)

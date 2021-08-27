@@ -34,8 +34,8 @@ def modal_config(self):
             new_enum           = Enum(name, self.value(new_spec))
             default            = self.value(default_spec)
             symbol_dict        = self.value(symbol_spec)
-            symbol_enum_lookup = {syntax: (name, new_enum[val.upper()]) for val, syntax in symbol_dict.items()}
-            print_lookup       = {e_val[1]: syntax for syntax, e_val in symbol_enum_lookup.items()}
+            symbol_enum_lookup = {syntax: new_enum[val.upper()] for val, syntax in symbol_dict.items()}
+            print_lookup       = {e_val: syntax for syntax, e_val in symbol_enum_lookup.items()}
 
             # Ensure consistent and distinct modal sets
             assert(not any([x in self.syntax_extension for x in symbol_enum_lookup.keys()]))
