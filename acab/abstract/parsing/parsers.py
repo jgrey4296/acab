@@ -7,7 +7,7 @@ from acab.abstract.config.config import AcabConfig
 from acab.abstract.parsing import funcs as Pfunc
 from acab.abstract.parsing import consts as PConst
 from acab.abstract.parsing.consts import emptyLine, s, op, orm, zrm, N, NG, s_lit, s_key
-from acab.abstract.parsing.consts import gap, component_gap, OPAR, CPAR, DBLCOLON
+from acab.abstract.parsing.consts import gap, component_gap, OPAR, CPAR, DBLCOLON, opLn, ln
 
 from acab.abstract.core import default_structure as CDS
 from acab.abstract.parsing import default_structure as PDS
@@ -47,23 +47,27 @@ def STATEMENT_CONSTRUCTOR(name_p,
                           single_line=False,
                           parse_fn=None):
     """ Construct a parser for statements of the form:
-    a.location: (::λ) |args| components end
+    a.location: |args| components end
     """
-    line_p = PConst.emptyLine
-    end_p  = PConst.END
-    arg_p  = pp.empty
+    line_p     = PConst.emptyLine
+    line_end_p = PConst.opLn
+    end_p      = PConst.END
+    arg_p      = pp.empty
 
     if single_line:
-        line_p = pp.empty
-        end_p = pp.lineEnd
+        line_p     = pp.empty
+        line_end_p = pp.empty
+        end_p      = pp.lineEnd
     elif end is not None:
         end_p = end
 
     if args:
-        arg_p = op(NG(PDS.ARG, Fwd_ArgList + line_p))
+        arg_p = Fwd_ArgList(PDS.ARG)
 
-    parser = NG(PDS.NAME, name_p) + PConst.COLON + op(pp.lineEnd) \
-        + arg_p + Fwd_TagList + NG(PDS.STATEMENT, body_p) + end_p
+    parser = NG(PDS.NAME, name_p) + PConst.COLON + line_end_p \
+        + op(arg_p + emptyLine ) \
+        + op(Fwd_TagList + emptyLine) \
+        + NG(PDS.STATEMENT, body_p) + ln + end_p
 
     if parse_fn is not None:
         parser.addParseAction(parse_fn)

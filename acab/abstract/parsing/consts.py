@@ -12,9 +12,10 @@ logging = root_logger.getLogger(__name__)
 
 config = AcabConfig.Get()
 
-COMMENT_RE       = config.prepare("Parse.Patterns", "COMMENT_RE", actions=[AcabConfig.actions_e.UNESCAPE])()
+COMMENT_RE       = config.prepare("Parse.Patterns", "COMMENT_RE", actions=[AcabConfig.actions_e.STRIPQUOTE, AcabConfig.actions_e.UNESCAPE])()
 WORD_COMPONENT_S = config.prepare("Parse.Patterns", "WORD_COMPONENT")()
 WHITE_SPACE      = config.prepare("Parse.Patterns", "WHITE_SPACE", actions=[AcabConfig.actions_e.STRIPQUOTE, AcabConfig.actions_e.UNESCAPE])()
+TAB_S            = config.prepare("Parse.Patterns", "TAB", actions=[AcabConfig.actions_e.STRIPQUOTE])()
 pp.ParserElement.setDefaultWhitespaceChars(WHITE_SPACE)
 
 DEFAULT_NODE_DATA = {}
@@ -29,11 +30,13 @@ zrm       = pp.ZeroOrMore
 s_lit = lambda x: s(pp.Literal(x))
 s_key = lambda x: s(pp.Keyword(x))
 
-emptyLine         = s(pp.lineEnd + pp.lineEnd)
+COMMENT           = pp.Regex(COMMENT_RE)
 END               = s_key(DSYM.END)
 
-COMMENT           = pp.Regex(COMMENT_RE)
-opLn              = s(op(pp.lineEnd))
+emptyLine         = s(pp.White("\r\n", min=2))("emptyline")
+ln                = s(pp.White("\n"))("newline")
+opLn              = op(ln)("optional newline")
+tab               = pp.White(TAB_S, min=len(TAB_S), exact=len(TAB_S))
 
 def NG(name, grp):
     """ Name and Group """
@@ -68,7 +71,7 @@ QMARK     = s_lit('?')
 SLASH     = s_lit('/')
 TILDE     = s_lit('~')
 VBAR      = s_lit('|')
-DELIM     = pp.Or([COMMA, op(pp.lineEnd)])
+DELIM     = COMMA | (ln + tab)
 
 RULE_HEAD        = s_key(DSYM.RULE_HEAD)
 QUERY_HEAD       = s_key(DSYM.QUERY_HEAD)
@@ -91,14 +94,14 @@ TAG       = s_lit(DSYM.TAG)
 
 NEGATION   = N(DS.NEGATION, pp.Literal(DSYM.NEGATION))
 
-gap               = s(pp.OneOrMore(emptyLine)).setFailAction(gap_fail_action)
-component_gap     = s(orm(pp.Or([pp.lineEnd, COMMA])))
-file_cruft        = s(pp.ZeroOrMore(pp.Or([pp.lineEnd])))
+gap               = emptyLine #.setFailAction(gap_fail_action)
+component_gap     = s(orm(emptyLine))
+file_cruft        = pp.ZeroOrMore(emptyLine)
 
-END.setName("End")
-file_cruft.setName("FileCruft")
-gap.setName("RuleGap")
-RULE_HEAD.setName("RuleHead")
-QUERY_HEAD.setName("QueryHead")
-TRANSFORM_HEAD.setName("TransformHead")
-ACTION_HEAD.setName("ActionHead")
+# END.setName("End")
+file_cruft.setName("EmptyLines")
+gap.setName("EmptyLine")
+# RULE_HEAD.setName("RuleHead")
+# QUERY_HEAD.setName("QueryHead")
+# TRANSFORM_HEAD.setName("TransformHead")
+# ACTION_HEAD.setName("ActionHead")
