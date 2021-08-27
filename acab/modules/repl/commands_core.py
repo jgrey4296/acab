@@ -94,9 +94,23 @@ def do_save(self, line):
         logging.error(f"{err}")
 
 
+
+@register
+def do_exit(self, line):
+    """
+    Exit the repl, automatically saving the self state
+    """
+    logging.info("Quitting")
+    filename = "{}_{}.auto".format(self.__class__.__name__,
+                                   datetime.now().strftime("%Y_%m-%d_%H_%M"))
+    self.state.engine.save_file(filename)
+    return True
+
+
 @register
 def do_run(self, line):
     """
+    Run an action/transform or binding.
     Take a binding from a query, and run it.
     Used for running rules, queries, actions, layers, pipelines...
     """

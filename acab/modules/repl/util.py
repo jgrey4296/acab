@@ -16,9 +16,9 @@ def build_slice(s, l, toks):
 def print_contexts(self, params):
     ctxs_to_print     = []
     bindings_to_print = []
-    if "context" in params:
+    if "short_context" in params:
         try:
-            ctxs_to_print.append(self.state.result[params['context']])
+            ctxs_to_print.append(self.state.result[params['short_context']])
         except IndexError as err:
             print(f"Selected bad ctx instance. Try 0 <= x < {len(self.state.result)}.")
 
@@ -26,6 +26,8 @@ def print_contexts(self, params):
         ctxs_to_print += self.state.result[params['context_slice']]
     elif bool(self.state.result) and len(self.state.result) > 0:
         ctxs_to_print.append(self.state.result[0])
+    else:
+        print(f"No applicable contexts to print")
 
     if "bindings" in params:
         bindings_to_print += params.bindings[:]

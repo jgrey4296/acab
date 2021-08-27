@@ -26,7 +26,7 @@ def do_print(self, line):
     Print out information on the wm, or a module
     """
     try:
-        params = RP.printer_parser.parseString(line)[:]
+        params = RP.printer_parser.parseString(line)
     except pp.ParseException as err:
         logging.warning("Bad Print Command")
         logging.warning(err.markInputline())
@@ -38,23 +38,21 @@ def do_print(self, line):
     if "wm" in params:
         # TODO print everything from a query down
         print(self.state.engine.pprint())
+    elif "mod_target" in params:
+        print("Modules: ")
+        # TODO print module doc
+        modules: ModuleComponents = self.state.engine._module_loader.loaded_modules.values()
+        modules = [x for x in modules if params['mod_target'] in x.source]
+        print("\n".join([x.source for x in modules]))
     elif "module" in params:
         print("Modules: ")
         modules: ModuleComponents = self.state.engine._module_loader.loaded_modules.values()
-        if 'mod_target' in params:
-            # TODO print module doc
-            modules = [x for x in modules if x.source in params['mod_target']]
-
         print("\n".join([x.source for x in modules]))
-    elif "context" in params or "context_slice" in params:
-        try:
-            params = RP.result_parser.parseString(line)
-        except pp.ParseException as err:
-            logging.warning("Bad Results Command:")
-            logging.warning(err.markInputline())
-            return
-
+    elif "context" in params or "short_context" in params or "context_slice" in params:
         print_contexts(self, params)
+    elif "semantics" in params:
+        print("Semantic Printing not implemented yet")
+        raise NotImplementedError()
     else:
         print(f"Print Keywords: {RP.printer_parser}")
 
@@ -94,7 +92,7 @@ def do_stat(self, line):
         print("--")
         print("Loaded Modules: {}".format(len(modules)))
 
-    if allow_all or "semantic" in params:
+    if allow_all or "semantics" in params:
         print("--------------------")
         print("Base Semantics:")
         semantic = self.state.engine.semantics
@@ -144,7 +142,17 @@ def do_parser(self, line):
         print("Top Level ACAB Parser:")
         print(self.state.engine._dsl_builder._main_parser)
 
-
+@register
+def do_debug(self, line):
+    if bool(line):
+        parser = self.state.engine._dsl_builder._bootstrap_parser.query(line)
+        if bool(parser):
+            parser.setDebug(not parser.debug)
+            print(f"Debug {parser.debug} : {parser}")
+    else:
+        curr = self.state.engine._dsl_builder._main_parser.debug
+        self.state.engine._dsl_builder._main_parser.setDebug(not curr)
+        print(f"Parser Debug: {not curr}")
 
 @register
 def do_listen(self, line):
