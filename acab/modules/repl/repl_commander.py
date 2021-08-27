@@ -73,10 +73,11 @@ class AcabREPLCommander(cmd.Cmd):
         # convert symbols -> cmd names.
         # eg: ':{' -> multi
         try:
+            logging.debug("PreCmd Parsing:{}".format(line))
             line = RP.precmd_parser.parseString(line)[:]
-
+            logging.debug("PreCmd Result:{}".format(line))
             # Intercept if in multi line state
-            if self.state.in_multi_line and not line[0] in ["multi", "pop"]:
+            if self.state.in_multi_line and not line[0] in ["multi", "pop", "exit", "echo"]:
                 logging.info("In Multi")
                 line = ["collect"] + line
 
@@ -97,3 +98,29 @@ class AcabREPLCommander(cmd.Cmd):
 
         self.prompt = self.state.prompt + " " + insert + ": "
         return stop
+
+    def parseline(self, line):
+        """Parse the line into a command name and a string containing
+        the arguments.  Returns a tuple containing (command, args, line).
+        'command' and 'args' may be None if the line couldn't be parsed.
+        """
+        if not self.state.in_multi_line:
+            line = line.strip()
+
+        if not line:
+            return None, None, line
+        elif line[0] == '?':
+            line = 'help ' + line[1:]
+        elif line[0] == '!':
+            if hasattr(self, 'do_shell'):
+                line = 'shell ' + line[1:]
+            else:
+                return None, None, line
+        i, n = 0, len(line)
+        while i < n and line[i] in self.identchars: i = i+1
+        cmd, arg = line[:i], line[i:]
+
+        if not self.state.in_multi_line:
+            arg = arg.strip()
+
+        return cmd, arg, line
