@@ -163,3 +163,12 @@ def deep_update_names(parser):
             queue.append(current.expr)
         elif hasattr(current, "exprs"):
             queue += current.exprs
+
+
+def clear_parser_names(*parsers):
+    for parser in parsers:
+        if hasattr(parser, "name"):
+            delattr(parser, "name")
+
+        if parser.strRepr is not None:
+            parser.strRepr = None

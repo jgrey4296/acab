@@ -13,7 +13,7 @@ from acab.modules.parsing.exlo.parsers import QueryParser as QP
 from acab.modules.parsing.exlo.parsers import RuleParser as RP
 from acab.modules.parsing.exlo.parsers import TotalParser as TotalP
 from acab.modules.parsing.exlo.parsers import TransformParser as TP
-from acab.abstract.parsing.funcs import deep_update_names
+from acab.abstract.parsing.funcs import deep_update_names, clear_parser_names
 
 logging = root_logger.getLogger(__name__)
 
@@ -74,8 +74,9 @@ class EL_Parser(DSL_Fragment_i):
         # At this point, parser is constructed, and will not change again
         # however, *can not* deep-copy the parser for multiple versions
         deep_update_names(TotalP.parse_point)
-        if hasattr(TotalP.parse_point.exprs[0].exprs[1], "name"):
-            delattr(TotalP.parse_point.exprs[0].exprs[1], "name")
-        TotalP.parse_point.strRepr = None
+
+        clear_parser_names(TotalP.parse_point,
+                           TotalP.file_total,
+                           TotalP.file_component)
 
         return (TotalP.parse_point, QP.parse_point)
