@@ -209,10 +209,14 @@ class AcabConfig():
         in_file = spec.section in self._config
         in_section = in_file and (spec.key is None or spec.key in self._config[spec.section])
 
-        if in_section:
-            return spec
+        if not in_file:
+            raise AcabConfigException(f"Bad Section Specified: {spec.section}! {spec.key}")
 
-        raise AcabConfigException(f"missing util value: {spec.section} {spec.key}")
+        if not in_section:
+            raise AcabConfigException(f"Bad Key Specified: {spec.section} {spec.key}!")
+
+        return spec
+
 
     @property
     def loaded(self):

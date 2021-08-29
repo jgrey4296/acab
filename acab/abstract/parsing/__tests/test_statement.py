@@ -61,7 +61,6 @@ class StatementTests(unittest.TestCase):
         statement_p = PU.STATEMENT_CONSTRUCTOR(basic_node_parser,
                                                basic_value_parser)
 
-        statement_p.setDebug()
         result = statement_p.parseString("test:\n#abcd, #aaaa, #bbbb\n\nvalue\nend")[0]
         value = result[-1]
 

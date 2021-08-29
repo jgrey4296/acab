@@ -17,6 +17,11 @@ WORD_COMPONENT_S = config.prepare("Parse.Patterns", "WORD_COMPONENT")()
 WHITE_SPACE      = config.prepare("Parse.Patterns", "WHITE_SPACE", actions=[AcabConfig.actions_e.STRIPQUOTE, AcabConfig.actions_e.UNESCAPE])()
 TAB_S            = config.prepare("Parse.Patterns", "TAB", actions=[AcabConfig.actions_e.STRIPQUOTE])()
 pp.ParserElement.setDefaultWhitespaceChars(WHITE_SPACE)
+if config.prepare("Parse", "DEBUG_PARSERS")():
+    logging.info("Enabling Debug on Named Parsers")
+    pp.__diag__.enable_debug_on_named_expressions = True
+    pp._defaultExceptionDebugAction = lambda i,l,e,c: print(f"Bad {e}: {c}")
+
 
 DEFAULT_NODE_DATA = {}
 DEFAULT_NODE_DATA.update(config.defaults)
