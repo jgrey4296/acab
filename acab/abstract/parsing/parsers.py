@@ -21,6 +21,10 @@ config = AcabConfig.Get()
 Fwd_ArgList = pp.Forward()
 Fwd_TagList = pp.Forward()
 
+def DELIMIST(expr, delim=None, stopOn=None):
+    dlName = f"[{expr} {delim}...]"
+    return (expr + pp.ZeroOrMore(delim + expr,
+                                 stopOn=stopOn)).setName(dlName)
 
 def PARAM_CORE(mid=None, end=None):
     """ Construct a parameterised core parser
@@ -110,11 +114,11 @@ VALBIND = pp.MatchFirst([N(PDS.BIND, BIND),
                          N(PDS.VALUE, HOTLOAD_VALUES)])
 VALBIND.setParseAction(Pfunc.make_value)
 
-Fwd_ArgList <<= PConst.VBAR + pp.delimitedList(BIND, delim=PConst.COMMA) + PConst.VBAR
+Fwd_ArgList <<= PConst.VBAR + DELIMIST(BIND, delim=PConst.COMMA) + PConst.VBAR
 
 tagName = TAG + ATOM
 
-Fwd_TagList <<= pp.delimitedList(tagName, delim=PConst.DELIM)(PDS.TAG)
+Fwd_TagList <<= DELIMIST(tagName, delim=PConst.DELIM)(PDS.TAG)
 
 # NAMING
 # HOTLOAD_VALUES.setName("HotloadValues")

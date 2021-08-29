@@ -29,7 +29,7 @@ action_sugar = N(LEFT_S, VALBIND) \
     + vals
 
 # Sentences are asserted by default
-actions = pp.delimitedList(action_component | PARAM_SEN | action_sugar, delim=DELIM)
+actions = PU.DELIMIST(action_component | PARAM_SEN | action_sugar, delim=DELIM)
 action_component.setParseAction(PConst.build_action_component)
 actions.setParseAction(PConst.build_action)
 

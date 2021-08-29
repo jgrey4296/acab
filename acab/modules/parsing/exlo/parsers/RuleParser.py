@@ -29,7 +29,7 @@ rule = PU.STATEMENT_CONSTRUCTOR(FP.BASIC_SEN,
                                 rule_body,
                                 args=False)
 
-rules = pp.delimitedList(rule, delim=emptyLine)
+rules = PU.DELIMIST(rule, delim=emptyLine)
 
 
 # Actions:

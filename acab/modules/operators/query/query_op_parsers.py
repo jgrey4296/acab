@@ -26,6 +26,6 @@ def construct_tag_query(toks):
     return (CONSTRAINT_S, ProductionComponent(value=tag_op_path, params=value_tags))
 
 
-tagList = PU.N(TAG_S, pp.delimitedList(PU.tagName, delim=","))
+tagList = PU.N(TAG_S, PU.DELIMIST(PU.tagName, delim=","))
 
 tagList.setParseAction(construct_tag_query)

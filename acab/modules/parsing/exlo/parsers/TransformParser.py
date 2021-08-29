@@ -42,7 +42,7 @@ transform_combined = pp.MatchFirst([transform_core,
                                     HOTLOAD_TRANS_STATEMENTS,
                                     transform_sugar])
 
-transforms = pp.delimitedList(transform_combined, delim=DELIM)
+transforms = PU.DELIMIST(transform_combined, delim=DELIM)
 
 transform_statement = PU.STATEMENT_CONSTRUCTOR(BASIC_SEN, transforms)
 

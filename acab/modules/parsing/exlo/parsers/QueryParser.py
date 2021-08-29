@@ -19,7 +19,7 @@ logging = root_logger.getLogger(__name__)
 
 
 assignment = PU.BIND + COLON + PARAM_SEN
-assignmentList = pp.delimitedList(assignment, delim=COMMA)
+assignmentList = PU.DELIMIST(assignment, delim=COMMA)
 fallback = DOUBLEBAR + assignmentList
 
 # TODO add syntax for binding a sentence
@@ -30,7 +30,7 @@ fallback = DOUBLEBAR + assignmentList
 clause = PARAM_SEN + QUERY \
     + N(QUERY_FALLBACK, op(fallback))
 
-clauses = pp.delimitedList(clause, delim=DELIM)
+clauses = PU.DELIMIST(clause, delim=DELIM)
 
 query_statement = PU.STATEMENT_CONSTRUCTOR(BASIC_SEN, clauses)
 

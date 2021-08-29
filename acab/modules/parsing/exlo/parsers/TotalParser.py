@@ -6,12 +6,13 @@ import pyparsing as pp
 from acab.abstract.parsing.consts import (ARROW, COLON, COMMA, COMMENT, DELIM,
                                           DOUBLEBAR, NG, N, component_gap,
                                           file_cruft)
+import acab.abstract.parsing.parsers as PU
 from acab.abstract.parsing.funcs import strip_parse_type
 from pyparsing import pyparsing_common as ppc
 
+from . import ActionParser as AP
 from . import FactParser as FP
 from . import QueryParser as QP
-from . import ActionParser as AP
 from . import RuleParser as RP
 
 HOTLOAD_STATEMENTS = pp.Forward()
@@ -19,7 +20,7 @@ HOTLOAD_STATEMENTS = pp.Forward()
 
 file_component = HOTLOAD_STATEMENTS ^ QP.clauses ^ FP.PARAM_SEN_PLURAL
 
-file_total = pp.delimitedList(file_component, delim=component_gap)
+file_total = PU.DELIMIST(file_component, delim=component_gap)
 
 # NAMING
 # HOTLOAD_STATEMENTS.setName("HotloadStatement")

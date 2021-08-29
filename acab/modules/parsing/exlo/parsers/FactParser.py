@@ -40,7 +40,7 @@ COLLAPSE_CONTEXT.setParseAction(lambda x: CTX_OP.collapse)
 query_or_annotation = pp.MatchFirst([QUERY_OP_Internal,
                                      COLLAPSE_CONTEXT,
                                      HOTLOAD_ANNOTATIONS])
-constraints = pp.delimitedList(query_or_annotation, delim=COMMA)
+constraints = PU.DELIMIST(query_or_annotation, delim=COMMA)
 constraints.setParseAction(PConst.build_constraint_list)
 constraints.setName("ConstraintList")
 
@@ -57,10 +57,10 @@ PARAM_SEN = ~END + PU.op(NEGATION) \
 PARAM_SEN.setParseAction(Pfunc.construct_sentence)
 PARAM_SEN.setName("ParameterisedSentence")
 
-PARAM_SEN_PLURAL = pp.delimitedList(PARAM_SEN, delim=ln)
+PARAM_SEN_PLURAL = PU.DELIMIST(PARAM_SEN, delim=DELIM)
 PARAM_SEN_PLURAL.setName("Sentences")
 
-SEN_STATEMENT_BODY = pp.OneOrMore(SEN_STATEMENT | PARAM_SEN_PLURAL)
+SEN_STATEMENT_BODY = PARAM_SEN_PLURAL | SEN_STATEMENT
 # Statement to specify multiple sub sentences
 SEN_STATEMENT << PU.STATEMENT_CONSTRUCTOR(PARAM_SEN,
                                           SEN_STATEMENT_BODY,
