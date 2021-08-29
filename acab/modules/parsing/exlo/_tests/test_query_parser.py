@@ -65,7 +65,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertTrue(result.data[NEGATION_V])
 
     def test_basic_multi_clause(self):
-        result = QP.clauses.parseString('a.b.c?, a.b.d?, a.b.e?')[0]
+        result = QP.clauses.parseString('  a.b.c?\n  a.b.d?\n  a.b.e?')[0]
         self.assertIsInstance(result, ProductionContainer)
         self.assertEqual(len(result.clauses), 3)
         self.assertTrue(all([isinstance(x, Sentence) for x in result.clauses]))
@@ -74,7 +74,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertEqual(result.clauses[2][-1].value, 'e')
 
     def test_basic_multi_clause_mixed_negation(self):
-        result = QP.clauses.parseString('a.b.c?, ~a.b.d?, a.b.e?, ~a.b.f?')[0]
+        result = QP.clauses.parseString(' a.b.c?\n ~a.b.d?\n a.b.e?\n ~a.b.f?')[0]
         self.assertIsInstance(result, ProductionContainer)
         self.assertTrue(all([isinstance(x, Sentence) for x in result.clauses]))
         self.assertFalse(result.clauses[0].data[NEGATION_V])
@@ -83,7 +83,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertTrue(result.clauses[3].data[NEGATION_V])
 
     def test_basic_query_construction(self):
-        result = QP.parseString('a.b.c?, a.b.d?, a.b.e?')
+        result = QP.parseString(' a.b.c?\n a.b.d?\n a.b.e?')
         self.assertIsInstance(result, ProductionContainer)
         self.assertEqual(len(result.clauses), 3)
 
@@ -97,3 +97,9 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertEqual(result.data[QUERY_FALLBACK_V][1][0], 'y')
         self.assertEqual(result.data[QUERY_FALLBACK_V][1][1][-1].value, 'e')
 
+
+    def test_query_statement(self):
+        result = QP.query_statement.parseString("a.test.query:\n  a.b.c?\n  d.e.f?\n  a.b.$x?\nend")[0]
+        self.assertIsInstance(result, Sentence)
+        self.assertIsInstance(result[-1], ProductionContainer)
+        self.assertEqual(len(result[-1].clauses), 3)

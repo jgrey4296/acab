@@ -52,7 +52,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertTrue(all([isinstance(x, Sentence) for x in result]))
 
     def test_parse_strings_multi_line(self):
-        result = FP.parseString('a.b.c\nb.c.d')
+        result = FP.PARAM_SEN_PLURAL.parseString('a.b.c\nb.c.d')[:]
         self.assertIsInstance(result, list)
         self.assertEqual(len(result), 2)
         self.assertTrue(all([isinstance(x, Sentence) for x in result]))
@@ -102,9 +102,12 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertFalse(result.data[NEGATION_S])
 
     def test_sentence_statement(self):
-        result = FP.SEN_STATEMENT.parseString("a.test.sentence:\nextension.sentence\nsecond.extension\nend")
+
+        result = FP.SEN_STATEMENT.parseString("a.test.sentence:\n  extension.sentence\n  second.extension\nend")
+
         sen1 = FP.BASIC_SEN.parseString('a.test.sentence.extension.sentence')[0]
         sen2 = FP.BASIC_SEN.parseString('a.test.sentence.second.extension')[0]
+
 
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0], sen1)

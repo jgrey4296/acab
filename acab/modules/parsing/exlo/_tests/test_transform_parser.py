@@ -11,7 +11,7 @@ config = acab.setup()
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.values import Sentence
 from acab.abstract.parsing.trie_bootstrapper import TrieBootstrapper
-from acab.abstract.core.production_abstractions import ProductionOperator, ProductionContainer
+from acab.abstract.core.production_abstractions import ProductionOperator, ProductionContainer, ProductionComponent
 
 from acab.modules.parsing.exlo.parsers import TransformParser as TP
 from acab.modules.parsing.exlo.parsers import ActionParser as AP
@@ -37,17 +37,13 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
         TP.HOTLOAD_TRANS_STATEMENTS << bp.query("operator.ProductionContainer.statements.*",
                                                 "operator.sugar")
 
-    def setUp(self):
-        return 1
-
-    def tearDown(self):
-        return 1
-
     #----------
-    #use testcase snippets
+    def test_transform_core(self):
+        result = TP.transform_core.parseString("λa.b.c $x $y -> $z")[0]
+        self.assertIsInstance(result, ProductionComponent)
+        self.assertEqual(result.rebind.name, "z")
 
-    # TODO test ProductionContainer sugar, test multi variables, test sentences, test values
-    @unittest.skip("TODO")
-    def test_transform_sugar(self):
-        return
-
+    def test_transforms(self):
+        result = TP.transforms.parseString("  λa.b.c $x -> $y\n  λa.b.d $x -> $z")[0]
+        self.assertIsInstance(result, ProductionContainer)
+        self.assertEqual(len(result.clauses), 2)
