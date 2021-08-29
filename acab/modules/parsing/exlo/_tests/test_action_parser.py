@@ -37,17 +37,10 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
         logging.root.addHandler(console)
         logging.root.addHandler(file_h)
 
-
-    def setUp(self):
-        return 1
-
-    def tearDown(self):
-        return 1
-
     #----------
     #use testcase snippets
     def test_action_definition(self):
-        test_str = "test:\nλoperator.add a.b.c\nend"
+        test_str = "test:\n  λoperator.add a.b.c\nend"
         definition = AP.action_definition.parseString(test_str)
         self.assertEqual(definition[0][-1].name, "test")
 
@@ -63,6 +56,10 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
         self.assertEqual(len(result.params), 3)
         self.assertTrue(all([isinstance(x, AcabValue) for x in result.params]))
 
+    def test_actions(self):
+        result = AP.actions.parseString("  λa.b.c\n  a.b.d\n  λa.b.c blah bloo")[0]
+        self.assertIsInstance(result, ProductionContainer)
+        self.assertEqual(len(result.clauses), 3)
 
     # TODO test  sugar, test sentences, test values, test multi params
     @unittest.skip("TODO")
