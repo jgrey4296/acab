@@ -47,7 +47,8 @@ constraints.setName("ConstraintList")
 # Core = a. | b! | $a. | $b!....
 PARAM_BINDING_CORE = PU.PARAM_CORE(constraints)
 PARAM_BINDING_END = PU.PARAM_CORE(constraints, end=True)
-
+PARAM_BINDING_CORE.setName("PBCore")
+PARAM_BINDING_END.setName("PBEnd")
 
 SEN_STATEMENT = pp.Forward()
 
