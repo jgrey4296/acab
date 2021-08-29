@@ -11,6 +11,7 @@ from acab.modules.parsing.exlo.constructors import (build_transform,
                                                     build_transform_component)
 from acab.modules.parsing.exlo.util import (LEFT_S, OPERATOR_S, RIGHT_S,
                                             TARGET_S)
+from acab.abstract.parsing.indented_block import IndentedBlock
 
 from .FactParser import BASIC_SEN, PARAM_SEN, op_path
 
@@ -21,7 +22,7 @@ HOTLOAD_TRANS_OP = pp.Forward()
 HOTLOAD_TRANS_STATEMENTS = pp.Forward()
 
 rebind = ARROW + PU.VALBIND
-
+rebind.setName("rebind")
 
 # TODO: extend transform to take partial transforms?
 # transform: ( bind op val|bind -> bind)
@@ -42,7 +43,8 @@ transform_combined = pp.MatchFirst([transform_core,
                                     HOTLOAD_TRANS_STATEMENTS,
                                     transform_sugar])
 
-transforms = PU.DELIMIST(transform_combined, delim=DELIM)
+
+transforms = IndentedBlock(transform_combined)
 
 transform_statement = PU.STATEMENT_CONSTRUCTOR(BASIC_SEN, transforms)
 

@@ -11,6 +11,7 @@ from acab.abstract.parsing.default_symbols import ACTION_HEAD
 from acab.abstract.parsing.parsers import VALBIND
 from acab.modules.parsing.exlo import constructors as PConst
 from acab.modules.parsing.exlo.util import LEFT_S, RIGHT_S
+from acab.abstract.parsing.indented_block import IndentedBlock
 
 from .FactParser import BASIC_SEN, PARAM_SEN, op_path
 
@@ -23,14 +24,16 @@ vals = PU.zrm(PARAM_SEN)(RIGHT_S)
 
 # action: [op](values)
 action_component = N(OPERATOR, op_path) + vals
+action_component.setParseAction(PConst.build_action_component)
 
 action_sugar = N(LEFT_S, VALBIND) \
     + N(OPERATOR, HOTLOAD_OPERATORS) \
     + vals
 
+action_exprs = action_component | PARAM_SEN | action_sugar
 # Sentences are asserted by default
-actions = PU.DELIMIST(action_component | PARAM_SEN | action_sugar, delim=DELIM)
-action_component.setParseAction(PConst.build_action_component)
+# TODO replace delimist with indentedblock
+actions = IndentedBlock(action_exprs)
 actions.setParseAction(PConst.build_action)
 
 action_definition = PU.STATEMENT_CONSTRUCTOR(BASIC_SEN, actions)

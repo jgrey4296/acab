@@ -56,20 +56,22 @@ def build_action_component(s, loc, toks):
 
 #--------------------
 def build_query(s, loc, toks):
-    query = ProductionContainer(value=toks[:],
+    clauses = toks[:]
+    query = ProductionContainer(value=clauses,
                                 data={SEMANTIC_HINT: EXu.QUERY_SEM_HINT})
     return query
 
 def build_transform(s, loc, toks):
-    trans = ProductionContainer(value=toks[:],
+    clauses = toks[:]
+    trans = ProductionContainer(value=clauses,
                                data={SEMANTIC_HINT: EXu.TRANSFORM_SEM_HINT})
     return trans
 
 def build_action(s, loc, toks):
-    # TODO: check this
+    clauses = toks[:]
     clauses = [x if isinstance(x, ProductionComponent)
                else ProductionComponent(value=Sentence.build([EXu.DEFAULT_ACTION_S]),
-                                        params=[x]) for x in toks]
+                                        params=[x]) for x in clauses]
 
     act = ProductionContainer(value=clauses,
                               data={SEMANTIC_HINT: EXu.ACTION_SEM_HINT})

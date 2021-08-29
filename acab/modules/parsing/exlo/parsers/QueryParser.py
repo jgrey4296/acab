@@ -7,11 +7,13 @@ from acab.abstract.core.default_structure import QUERY_FALLBACK
 from acab.abstract.parsing import funcs as Pfunc
 from acab.abstract.parsing import parsers as PU
 from acab.abstract.parsing.consts import (COLON, COMMA, DELIM, DOUBLEBAR, NG,
-                                          N, component_gap, op)
+                                          N, component_gap, op, END)
 from acab.abstract.parsing.default_symbols import QUERY_HEAD
 from acab.abstract.parsing.consts import QUERY
 from acab.abstract.parsing.funcs import build_assignment, build_clause
 from acab.modules.parsing.exlo.constructors import build_query
+from acab.abstract.parsing.indented_block import IndentedBlock
+
 
 from .FactParser import BASIC_SEN, PARAM_SEN
 
@@ -30,7 +32,7 @@ fallback = DOUBLEBAR + assignmentList
 clause = PARAM_SEN + QUERY \
     + N(QUERY_FALLBACK, op(fallback))
 
-clauses = PU.DELIMIST(clause, delim=DELIM)
+clauses = IndentedBlock(clause)
 
 query_statement = PU.STATEMENT_CONSTRUCTOR(BASIC_SEN, clauses)
 

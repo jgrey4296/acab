@@ -13,6 +13,7 @@ from acab.abstract.core import default_structure as CDS
 from acab.abstract.parsing import default_structure as PDS
 from acab.abstract.parsing import default_symbols as PDSYM
 from acab.abstract.parsing.consts import TAG
+from acab.abstract.parsing.indented_block import IndentedBlock
 
 logging = root_logger.getLogger(__name__)
 
@@ -54,7 +55,7 @@ def STATEMENT_CONSTRUCTOR(name_p,
     a.location: |args| components end
     """
     line_p     = PConst.emptyLine
-    line_end_p = PConst.opLn
+    line_end_p = PConst.ln
     end_p      = PConst.END
     arg_p      = pp.empty
 
@@ -69,9 +70,10 @@ def STATEMENT_CONSTRUCTOR(name_p,
         arg_p = Fwd_ArgList(PDS.ARG)
 
     parser = NG(PDS.NAME, name_p) + PConst.COLON + line_end_p \
-        + op(arg_p + emptyLine ) \
+        + op(arg_p + emptyLine) \
         + op(Fwd_TagList + emptyLine) \
-        + NG(PDS.STATEMENT, body_p) + ln + end_p
+        + NG(PDS.STATEMENT, body_p) + end_p
+
 
     if parse_fn is not None:
         parser.addParseAction(parse_fn)
@@ -118,7 +120,7 @@ Fwd_ArgList <<= PConst.VBAR + DELIMIST(BIND, delim=PConst.COMMA) + PConst.VBAR
 
 tagName = TAG + ATOM
 
-Fwd_TagList <<= DELIMIST(tagName, delim=PConst.DELIM)(PDS.TAG)
+Fwd_TagList <<= IndentedBlock(tagName)(PDS.TAG)
 
 # NAMING
 # HOTLOAD_VALUES.setName("HotloadValues")
@@ -129,6 +131,6 @@ VALBIND.setName("ValBind")
 # BASIC_VALUE.setName("BasicValue")
 # BIND.setName("Binding")
 # AT_BIND.setName("AtBinding")
-# tagName.setName("TagName")
-# Fwd_TagList.setName("StatementTagList")
-# Fwd_ArgList.setName("StatementArgumentList")
+tagName.setName("Tag")
+Fwd_TagList.setName("TagList")
+Fwd_ArgList.setName("ArgList")

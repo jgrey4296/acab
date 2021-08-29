@@ -8,7 +8,7 @@ from acab.abstract.parsing import parsers as PU
 from acab.abstract.parsing.consts import (ARROW, COLON, COMMA, DELIM,
                                           DOUBLEBAR, NG, RULE_HEAD, N,
                                           component_gap, emptyLine, gap, op,
-                                          orm)
+                                          orm, END)
 from acab.modules.parsing.exlo.util import ACTION_S, QUERY_S, TRANSFORM_S
 from acab.modules.parsing.exlo.constructors import build_rule
 
@@ -19,11 +19,15 @@ from . import TransformParser as TP
 
 logging = root_logger.getLogger(__name__)
 
+# TODO all of these should be indented blocks
 conditions = N(QUERY_S,     QP.clauses)
 transforms = N(TRANSFORM_S, TP.transforms)
 actions    = N(ACTION_S,    AP.actions)
 
-rule_body = op(conditions) + op(transforms) + op(actions)
+endOrLine  = pp.FollowedBy(END) | emptyLine | pp.stringEnd
+# endOrLine.leaveWhitespace()
+
+rule_body = op(conditions + endOrLine) + op(transforms + endOrLine) + op(actions + endOrLine)
 
 rule = PU.STATEMENT_CONSTRUCTOR(FP.BASIC_SEN,
                                 rule_body,
@@ -39,8 +43,9 @@ rule_body.setParseAction(build_rule)
 # conditions.setName("RuleConditions")
 # transforms.setName("RuleTransforms")
 # actions.setName("RuleActions")
-# rule_body.setName("RuleBody")
+rule_body.setName("RuleBody")
 rule.setName("RuleDefinition")
+endOrLine.setName("endOrLine")
 # rules.setName("RulePlural")
 
 

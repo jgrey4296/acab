@@ -11,6 +11,7 @@ from acab.abstract.parsing.consts import (COLLAPSE_CONTEXT, COMMA, DELIM, END, e
                                           FACT_HEAD, NEGATION, NG, N, op, opLn, zrm, ln)
 from acab.abstract.parsing.default_structure import OPERATOR, SEN, VALUE
 from acab.modules.parsing.exlo import constructors as PConst
+from acab.abstract.parsing.indented_block import IndentedBlock
 
 logging = root_logger.getLogger(__name__)
 # Hotload insertion points:
@@ -53,7 +54,10 @@ PARAM_BINDING_END.setName("PBEnd")
 SEN_STATEMENT = pp.Forward()
 
 # Sentences with basic sentences as annotations
-PARAM_SEN = ~END + PU.op(NEGATION) \
+silent_end = END.copy()
+silent_end.setDebug(False)
+
+PARAM_SEN = ~silent_end + PU.op(NEGATION) \
     + NG(SEN, pp.ZeroOrMore(PARAM_BINDING_CORE) + PARAM_BINDING_END)
 PARAM_SEN.setParseAction(Pfunc.construct_sentence)
 PARAM_SEN.setName("ParameterisedSentence")
@@ -61,12 +65,11 @@ PARAM_SEN.setName("ParameterisedSentence")
 PARAM_SEN_PLURAL = PU.DELIMIST(PARAM_SEN, delim=DELIM)
 PARAM_SEN_PLURAL.setName("Sentences")
 
-SEN_STATEMENT_BODY = PARAM_SEN_PLURAL | SEN_STATEMENT
+SEN_STATEMENT_BODY = IndentedBlock(PARAM_SEN | SEN_STATEMENT)
 # Statement to specify multiple sub sentences
 SEN_STATEMENT << PU.STATEMENT_CONSTRUCTOR(PARAM_SEN,
                                           SEN_STATEMENT_BODY,
                                           parse_fn=Pfunc.construct_multi_sentences)
-
 
 # Naming
 # PARAM_BINDING_CORE.setName("ParamBindCore")
