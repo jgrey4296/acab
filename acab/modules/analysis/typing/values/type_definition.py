@@ -15,12 +15,12 @@ from acab.modules.analysis.typing.util import (SUM_DEFINITION, TYPE_DEF_S,
 
 from .acab_type import TypeStatement
 
-logging = root_logger.getLogger(__name__)
-util    = AcabConfig.Get()
+logging         = root_logger.getLogger(__name__)
+config          = AcabConfig.Get()
 
-PRIMITIVE_S     = util.value("Typing.Primitives", "PRIMITIVE")
-TYPE_INSTANCE_S = util.value("Parse.Structure", "TYPE_INSTANCE")
-NAME_S          = util.value("Parse.Structure", "NAME")
+PRIMITIVE_S     = config.prepare("Typing.Primitives", "PRIMITIVE")()
+TYPE_INSTANCE_S = config.prepare("Parse.Structure", "TYPE_INSTANCE")()
+NAME_S          = config.prepare("Parse.Structure", "NAME")()
 
 
 # TODO register class

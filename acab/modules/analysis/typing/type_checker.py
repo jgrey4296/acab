@@ -16,7 +16,7 @@ from acab.abstract.core.values import AcabStatement, AcabValue, Sentence
 # NOT : from . import util as TU
 # from . import util as TU
 from acab.modules.analysis.typing import util as TU
-from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
+from acab.modules.semantics.independent import BasicNodeSemantics
 from acab.modules.structures.trie.trie import Trie
 from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics
 
@@ -63,11 +63,10 @@ class TypeChecker:
         # self.add_definition(*TD.build_primitive_definitions())
 
 
-    def __call__(self, data=None, engine=None):
+    def __call__(self, sentences: List[Sentence]):
         """ Pass in data to type check """
         # Gets all leaf sentences and statements
         logging.info("Running Type Checker")
-        sentences = engine.to_sentences()
         logging.info("Checking {} sentences".format(len(sentences)))
 
         local_contexts_to_check = []

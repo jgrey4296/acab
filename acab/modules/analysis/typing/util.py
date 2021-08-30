@@ -5,7 +5,7 @@ from acab.abstract.config.config import AcabConfig
 
 from acab.abstract.core.values import Sentence
 
-from acab.abstract.parsing.consts import s, s_list, s_key
+from acab.abstract.parsing.consts import s, s_key
 
 logging = root_logger.getLogger(__name__)
 
@@ -41,8 +41,6 @@ OPERATOR_DEFINITION = Sentence.build([OP_DEF_S])
 
 STRUCT_HEAD.setName("StructHead")
 FUNC_HEAD.setName("FuncHead")
-
-
 
 def has_equivalent_vars_pred(node):
     """ A Predicate to use with Trie.get_nodes
