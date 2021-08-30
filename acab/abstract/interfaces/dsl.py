@@ -115,7 +115,7 @@ class DSLBuilder_i(metaclass=abc.ABCMeta):
 
     @EnsureInitialised
     def parse(self, s:str) -> List[Sentence]:
-        return self._main_parser.parseString(s)[:]
+        return self._main_parser.parseString(s, parseAll=True)[:]
 
     @EnsureInitialised
     def parseFile(self, f:File) -> List[Sentence]:

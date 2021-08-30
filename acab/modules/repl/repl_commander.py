@@ -62,7 +62,7 @@ class AcabREPLCommander(cmd.Cmd):
                                             bindings=self.state.result)
 
         except pp.ParseException as err:
-            logging.warning(f"Parse Failure: {err.markInputline()}")
+            logging.warning(f"Parse Failure: {err.msg} : {err.markInputline()}")
         except Exception as err:
             traceback.print_tb(err.__traceback__)
             logging.warning(f"Failure in Default: {err}")
