@@ -13,6 +13,7 @@ from acab.modules.repl.repl_commander import register
 from acab.modules.repl import ReplParser as RP
 from acab.abstract.core.production_abstractions import ProductionOperator, ProductionStructure
 from acab.modules.repl.util import print_contexts
+from acab.abstract.parsing import debug_funcs as DBF
 
 logging = root_logger.getLogger(__name__)
 
@@ -144,15 +145,14 @@ def do_parser(self, line):
 
 @register
 def do_debug(self, line):
+    """ Toggle Debugging of pyparsing """
     if bool(line):
         parser = self.state.engine._dsl_builder._bootstrap_parser.query(line)
         if bool(parser):
             parser.setDebug(not parser.debug)
             print(f"Debug {parser.debug} : {parser}")
     else:
-        curr = self.state.engine._dsl_builder._main_parser.debug
-        self.state.engine._dsl_builder._main_parser.setDebug(not curr)
-        print(f"Parser Debug: {not curr}")
+        DBF.debug_pyparsing()
 
 @register
 def do_listen(self, line):

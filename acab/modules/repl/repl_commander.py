@@ -45,6 +45,7 @@ class ReplState:
     engine           : Optional[AcabEngine_i] =  field(default=None)
     engine_str       : str                    =  field(default=initial_engine)
     debug_data       : Any                    =  field(default=None)
+    debugger         : Any                    =  field(default=None)
 
 
 class AcabREPLCommander(cmd.Cmd):
