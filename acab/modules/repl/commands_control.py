@@ -10,13 +10,14 @@ import logging as root_logger
 import re
 import pyparsing as pp
 import traceback
-
+import pdb
 import acab
 config = acab.setup()
 
 from acab.modules.repl.repl_commander import register
 from acab.abstract.core.production_abstractions import ProductionOperator, ProductionStructure
 from acab.modules.repl import ReplParser as RP
+from acab.modules.repl.running_debugger import RunningDebugger
 
 logging = root_logger.getLogger(__name__)
 
@@ -80,16 +81,36 @@ def do_echo(self, line):
 def do_break(self, line):
     """
     Manually switch to PDB for debugging
+
+    Using bdb:
+    break file line maybe_funcname
+
+    break delete num
+    break list
+
+    # To break on semantic execution:
+    break rule.name?
+
     """
-    print("""
-    Shunting to Python debugger.
-    Explore using: self.state, self.state.engine
-    self is the repl,
-    self.state is data the repl tracks,
-    self.state.engine is the active ACAB engine,
-    self.state.result is the current context container
-    """)
-    breakpoint()
+    if self.state.debugger is None:
+        self.state.debugger = RunningDebugger()
+        self.state.debugger.set_running_trace()
+
+    result = RP.break_parser.parseString(line)
+    if "basic" in result:
+        self.state.debugger.set_break(result.file, result.line)
+    if "semantic" in result:
+        pass
+    else:
+        print("""
+        Shunting to Python debugger.
+        Explore using: self.state, self.state.engine
+        self is the repl,
+        self.state is data the repl tracks,
+        self.state.engine is the active ACAB engine,
+        self.state.result is the current context container
+        """)
+        self.state.debugger.set_trace()
 
 
 @register
