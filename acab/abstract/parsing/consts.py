@@ -9,22 +9,19 @@ import acab.abstract.parsing.default_structure as DS
 import acab.abstract.parsing.default_symbols as DSYM
 import acab.abstract.parsing.debug_funcs as DBF
 
+
 logging = root_logger.getLogger(__name__)
 
 config = AcabConfig.Get()
 
-COMMENT_RE       = config.prepare("Parse.Patterns", "COMMENT_RE", actions=[AcabConfig.actions_e.STRIPQUOTE, AcabConfig.actions_e.UNESCAPE])()
+COMMENT_RE       = config.prepare("Parse.Patterns", "COMMENT_RE", actions=[config.actions_e.STRIPQUOTE, AcabConfig.actions_e.UNESCAPE])()
 WORD_COMPONENT_S = config.prepare("Parse.Patterns", "WORD_COMPONENT")()
-WHITE_SPACE      = config.prepare("Parse.Patterns", "WHITE_SPACE", actions=[AcabConfig.actions_e.STRIPQUOTE, AcabConfig.actions_e.UNESCAPE])()
-TAB_S            = config.prepare("Parse.Patterns", "TAB", actions=[AcabConfig.actions_e.STRIPQUOTE])()
+WHITE_SPACE      = config.prepare("Parse.Patterns", "WHITE_SPACE", actions=[config.actions_e.STRIPQUOTE, AcabConfig.actions_e.UNESCAPE])()
+TAB_S            = config.prepare("Parse.Patterns", "TAB", actions=[config.actions_e.STRIPQUOTE])()
 pp.ParserElement.setDefaultWhitespaceChars(WHITE_SPACE)
 
-if config.prepare("Parse", "DEBUG_PARSERS")() == "True":
-    logging.info("Enabling Debug on Named Parsers")
-    pp.__diag__.enable_debug_on_named_expressions = True
-    pp._defaultSuccessDebugAction   = DBF.debug_success_action
-    pp._defaultStartDebugAction     = DBF.debug_start_action
-    pp._defaultExceptionDebugAction = DBF.debug_fail_action
+if config.prepare("Parse", "DEBUG_PARSERS", actions=[config.actions_e.BOOL])():
+    DBF.debug_pyparsing()
 
 DEFAULT_NODE_DATA = {}
 DEFAULT_NODE_DATA.update(config.defaults)

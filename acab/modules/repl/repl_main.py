@@ -16,6 +16,7 @@ parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpForm
 parser.add_argument('--config', action="append", default=["/Volumes/documents/github/acab/acab/__configs/default"])
 parser.add_argument('--engine', default="")
 parser.add_argument('-v', '--verbosity', default="WARNING", help="The logging level to use, defaults to WARNING")
+parser.add_argument('-d', '--debug', action="store_true", help="CLI control of parser debugging")
 
 
 # Quiet hook from https://gist.github.com/jhazelwo/86124774833c6ab8f973323cb9c7e251
@@ -46,6 +47,10 @@ def main():
     logging.info("Reading Config: {}".format(args.config))
     args.config = [abspath(expanduser(x)) for x in args.config]
     config.Get(*args.config, hooks=[modal_config])
+
+    if args.debug:
+        parse_debug_spec = config.prepare("Parse", "DEBUG_PARSERS")
+        config.override(parse_debug_spec, "True")
 
     #import then build engine or default trie engine from args
     initial_modules = config.prepare("Module.REPL", "MODULES")().replace("\n", " ")
