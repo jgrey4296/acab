@@ -125,7 +125,7 @@ class DSLBuilder_i(metaclass=abc.ABCMeta):
             text = the_file.read()
 
         print(f"Loading File Text: {text}")
-        return self._main_parser.parseString(text, parseAll=True)[:]
+        return self.parse(text)
 
     @EnsureInitialised
     def query_parse(self, s:str) -> Query:

@@ -101,8 +101,6 @@ class AcabNode(DI.Node_i):
             return term in self.children
         elif isinstance(term, AcabNode):
             return term.name in self.children
-        # elif isinstance(term, AcabValue) and term.is_var:
-        #     return term.name in self.children
         elif isinstance(term, AcabValue):
             return str(term) in self.children
         else:
@@ -144,19 +142,6 @@ class AcabNode(DI.Node_i):
             path.insert(0, current)
             current = current.parent
         return path
-
-
-    def unify(self, node):
-        """
-        TODO Unify a pair of tries together
-        """
-        raise NotImplementedError()
-
-    def diff(self, node):
-        """
-        TODO compare two tries
-        """
-        raise NotImplementedError()
 
 
     def _default_setup(self, path: [Node], data: Dict[Any,Any], context: Dict[Any,Any]):
