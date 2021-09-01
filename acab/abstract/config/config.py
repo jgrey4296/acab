@@ -23,19 +23,23 @@ from os.path import (abspath, exists, expanduser, isdir, isfile, join, split,
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
+from collections import defaultdict
 
 import pyparsing as pp
 from acab.error.acab_config_exception import AcabConfigException
 
 logging = root_logger.getLogger(__name__)
 
-actions_e = Enum("Config Actions", "STRIPQUOTE KEYWORD LITERAL DICT LIST UNESCAPE SPLIT PSEUDOSEN")
+actions_e = Enum("Config Actions", "STRIPQUOTE KEYWORD LITERAL DICT LIST UNESCAPE SPLIT PSEUDOSEN BOOL")
 
 DEFAULT_ACTIONS = {actions_e.STRIPQUOTE : lambda x: x.strip("\"'"),
                    actions_e.LIST       : lambda x: x.split("\n"),
                    actions_e.UNESCAPE   : lambda x: x.encode().decode("unicode_escape"),
                    actions_e.SPLIT      : lambda x: x.split(" "),
-                   actions_e.PSEUDOSEN  : lambda x: "_:{}".format(x)}
+                   actions_e.PSEUDOSEN  : lambda x: "_:{}".format(x),
+                   actions_e.BOOL       : lambda x: True if x == "True" else False}
+
+override_constructor = lambda: defaultdict(lambda: {})
 #--------------------------------------------------
 def GET(*args, hooks=None):
     config = AcabConfig.Get(*args, hooks=hooks)
@@ -72,7 +76,8 @@ class AcabConfig():
     hooks     : Set[Callable]      = field(default_factory=set)
 
     _files    : Set[str]              = field(init=False, default_factory=set)
-    _config   : ConfigParser           = field(init=False)
+    _config   : ConfigParser          = field(init=False)
+    _overrides: Dict[str, str]        = field(init=False, default_factory=override_constructor)
 
     # Populated by hooks:
     enums              : Dict[str, EnumMeta] = field(init=False, default_factory=dict)
@@ -130,17 +135,11 @@ class AcabConfig():
 
         assert(isinstance(val, ConfigSpec))
         spec    = val
-        section = spec.section
-        key     = spec.key
-        actions = spec.actions
-        as_list = spec.as_list
-        as_dict = spec.as_dict
-        as_enum = spec.as_enum
 
-        if as_enum and section in self.enums:
-            return self.enums[section]
+        if spec.as_enum and spec.section in self.enums:
+            return self.enums[spec.section]
 
-        return self.spec_value(section, key, actions, as_list, as_dict)
+        return self.spec_value(spec)
 
 
     def enum_value(self, val):
@@ -151,34 +150,37 @@ class AcabConfig():
         return self.printing_extension[val]
 
 
-    def spec_value(self, section, key=None, actions=None, as_list=None, as_dict=None):
+    def spec_value(self, spec: ConfigSpec):
         """
         Get a lookup tuple at run time
         """
-        in_file = section in self._config
+        in_file = spec.section in self._config
 
-        if in_file and as_list and key is None:
-            return list(self._config[section].keys())
-        elif in_file and as_dict and key is None:
-            return dict(self._config[section].items())
+        if in_file and spec.as_list and spec.key is None:
+            return list(self._config[spec.section].keys())
+        elif in_file and spec.as_dict and spec.key is None:
+            return dict(self._config[spec.section].items())
         elif not in_file:
-            raise AcabConfigException(f"missing util value: {section} {key}")
+            raise AcabConfigException(f"missing util value: {spec.section} {spec.key}")
 
         # try:
         value = None
-        in_section = key is None or key in self._config[section]
+        in_override= spec.key is None or spec.key in self._overrides[spec.section]
+        in_section = spec.key is None or spec.key in self._config[spec.section]
 
-        if not in_section:
+        if in_override:
+            value = self._overrides[spec.section][spec.key]
+        elif in_section:
+            value = self._config[spec.section][spec.key]
+        elif not in_section:
             raise AcabConfigException(f"missing util value: {section} {key}")
 
-        value = self._config[section][key]
         if value is None:
-            value = key
+            value = spec.key
 
-        if actions is None:
-            actions = []
+        actions = spec.actions or []
 
-        for action in actions:
+        for action in spec.actions:
             value = self.actions[action](value)
 
         return value
@@ -247,3 +249,9 @@ class AcabConfig():
     def _run_hooks(self):
         for hook in self.hooks:
             hook(self)
+
+    def override(self, spec: ConfigSpec, value):
+        assert(isinstance(spec, ConfigSpec))
+        section = spec.section
+        key     = spec.key
+        self._overrides[section][key] = value
