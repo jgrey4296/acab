@@ -24,20 +24,22 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 from collections import defaultdict
+import importlib
 
 import pyparsing as pp
 from acab.error.acab_config_exception import AcabConfigException
 
 logging = root_logger.getLogger(__name__)
 
-actions_e = Enum("Config Actions", "STRIPQUOTE KEYWORD LITERAL DICT LIST UNESCAPE SPLIT PSEUDOSEN BOOL")
+actions_e = Enum("Config Actions", "STRIPQUOTE KEYWORD LITERAL DICT LIST UNESCAPE SPLIT PSEUDOSEN BOOL IMPORT")
 
 DEFAULT_ACTIONS = {actions_e.STRIPQUOTE : lambda x: x.strip("\"'"),
                    actions_e.LIST       : lambda x: x.split("\n"),
                    actions_e.UNESCAPE   : lambda x: x.encode().decode("unicode_escape"),
                    actions_e.SPLIT      : lambda x: x.split(" "),
                    actions_e.PSEUDOSEN  : lambda x: "_:{}".format(x),
-                   actions_e.BOOL       : lambda x: True if x == "True" else False}
+                   actions_e.BOOL       : lambda x: True if x == "True" else False,
+                   actions_e.IMPORT     : lambda x: importlib.import_module(x)}
 
 override_constructor = lambda: defaultdict(lambda: {})
 #--------------------------------------------------

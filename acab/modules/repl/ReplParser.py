@@ -173,9 +173,9 @@ linenum.setParseAction(lambda s,l,t: int(t.line))
 
 basic_bp = filename("file") + pp.Suppress(pp.Keyword(":")) + linenum("line")
 
-semantic_bp = pp.Empty()
+semantic_bp = pp.Regex(".+?\?")
 
 
 break_parser = pp.Or([basic_bp("basic"),
-                      semantic_bp("semantic")
+                      semantic_bp("semantic"),
                       rst])
