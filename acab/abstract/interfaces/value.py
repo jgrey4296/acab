@@ -29,6 +29,11 @@ class Value_i(metaclass=abc.ABCMeta):
     data   : Dict[str, Any] = field(default_factory=dict)
     uuid   : UUID           = field(default_factory=uuid1)
 
+    @staticmethod
+    @abc.abstractmethod
+    def safe_make(value, name, data, _type, **kwargs) -> Value_i:
+        pass
+
     @property
     @abc.abstractmethod
     def type(self) -> Sentence:
@@ -43,6 +48,33 @@ class Value_i(metaclass=abc.ABCMeta):
     def copy(self, **kwargs) -> Value_i:
         pass
 
+
+
+    @abc.abstractmethod
+    def apply_params(self, params, data=None) -> Value_i:
+        pass
+
+    @abc.abstractmethod
+    def apply_tags(self, tags, data=None) -> Value_i:
+        pass
+
+
+    @property
+    @abc.abstractmethod
+    def is_var(self) -> bool:
+        pass
+
+    @property
+    @abc.abstractmethod
+    def is_at_var(self) -> bool:
+        pass
+
+
+class Statement_i(metaclass=abc.ABCMeta):
+
+    @abc.abstractmethod
+    def to_word(self) -> Value_i:
+        pass
 
 @dataclass
 class Sentence_i(metaclass=abc.ABCMeta):

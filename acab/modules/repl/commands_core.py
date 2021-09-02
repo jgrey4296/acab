@@ -4,15 +4,17 @@ from os.path import split, splitext, exists, expanduser, abspath
 import importlib
 import logging as root_logger
 import re
+import traceback
 
 import acab
 config = acab.setup()
 
 from acab.abstract.interfaces.engine import AcabEngine_i
+from acab.abstract.interfaces.value import Statement_i
 from acab.error.acab_config_exception import AcabConfigException
 from acab.modules.repl.repl_commander import register
 from acab.modules.repl import ReplParser as RP
-
+from acab.abstract.core.production_abstractions import ProductionContainer
 
 logging = root_logger.getLogger(__name__)
 
@@ -113,23 +115,34 @@ def do_run(self, line):
     Run an action/transform or binding.
     Take a binding from a query, and run it.
     Used for running rules, queries, actions, layers, pipelines...
+
+    run               : tick the engine
+    run a.rule?       : runs a unique rule
+    run a.rule.$x?    : runs all matching rules
     """
     # TODO
-    result = None
-    # query
-    if not bool(line.strip()):
-        logging.info("TODO Ticking Engine")
-        self.state.result = self.state.engine.tick()
-        return
-
-    logging.info("Running: {line}")
     try:
-        query_result = self.state.engine.query(params[-1])
-        assert(len(query_result) == 1)
+        # query
+        if not bool(line.strip()):
+            logging.info("TODO Ticking Engine")
+            self.state.result = self.state.engine.tick()
+            return
 
-        # Get var
-        value = query_result[0][params[-2][1]]
-        self.state.result = self.state.engine(value)
+        self.state.result = self.state.engine(line)
+
+        bindings = [y for x in self.state.result.active_list()
+                    for y in x if isinstance(y, ProductionContainer)]
+
+        if not bool(bindings) and bool(self.state.result) and isinstance(self.state.result[0]._current.value, Statement_i):
+            bindings = [self.state.result[0]._current.value]
+
+        if bool(self.state.result):
+            # Run the bindings
+            self.state.result = self.state.engine(bindings)
+        else:
+            print("No Match to Run")
+
     except Exception as err:
+        traceback.print_tb(err.__traceback__)
         logging.error(f"Failed to run: {line}")
         logging.error(f"{err}")

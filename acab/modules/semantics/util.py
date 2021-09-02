@@ -109,3 +109,15 @@ def _filter_candidates(self, target_pattern, candidates, match_func):
                 final_matches.append(next_match_state)
 
     return final_matches
+
+
+
+
+
+# Stub decorator to override
+SemanticBreakpointDecorator = lambda f: f
+
+if "Module.Debug" in config:
+    mod = config.prepare("Module.Debug", "IMPORT", actions=[config.actions_e.IMPORT])()
+    decorator_name = config.prepare("Module.Debug", "BREAK_DECORATOR")()
+    SemanticBreakpointDecorator = getattr(mod, decorator_name)

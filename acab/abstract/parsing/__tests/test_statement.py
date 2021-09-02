@@ -47,7 +47,7 @@ class StatementTests(unittest.TestCase):
                                                basic_value_parser)
 
 
-        result = statement_p.parseString("test: #test\n\nvalue\nend")[0]
+        result = statement_p.parseString("test:\n#test\n\nvalue\nend")[0]
         tags_str = [x for x in result[-1].tags]
         self.assertTrue('test' in tags_str)
 
@@ -61,7 +61,7 @@ class StatementTests(unittest.TestCase):
         statement_p = PU.STATEMENT_CONSTRUCTOR(basic_node_parser,
                                                basic_value_parser)
 
-        result = statement_p.parseString("test:\n#abcd, #aaaa, #bbbb\n\nvalue\nend")[0]
+        result = statement_p.parseString("test:\n#abcd\n#aaaa\n#bbbb\n\nvalue\nend")[0]
         value = result[-1]
 
         tags_str = [x for x in value.tags]

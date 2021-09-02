@@ -131,7 +131,7 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
             if not bool(accessible) or isinstance(current.value, AcabStatement):
                 # Leaves and Statements
                 # Always ignore the root node
-                words = [x.to_word()[0] for x in updated_path[1:-1]]
+                words = [x.to_word() if isinstance(x, AcabStatement) else x for x in updated_path[1:-1]]
                 words.append(updated_path[-1])
                 result_list.append(Sentence.build(words))
 

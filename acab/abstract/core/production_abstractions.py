@@ -51,6 +51,10 @@ class ProductionOperator(AcabValue):
     def __call__(self, *params: List[AcabValue], data=None):
         raise NotImplementedError()
 
+    def copy(self, **kwargs):
+        """ Operators by default are immutable, and don't need to duplicate """
+        return self
+
     @property
     def op_path(self):
         return self.value

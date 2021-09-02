@@ -105,7 +105,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
         self.assertIsInstance(queries, ProductionContainer)
 
         result = sem_sys.pprint(queries)
-        self.assertEqual(result, "a.b.c?\nd.e(λa.b.q $y).f?\ng.h.i?")
+        self.assertEqual(result, "    a.b.c?\n    d.e(λa.b.q $y).f?\n    g.h.i?\n")
 
 
     def test_rule(self):
@@ -125,7 +125,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
         self.assertIsInstance(rule[-1], ProductionStructure)
         # print
         result = sem_sys.pprint(rule)
-        self.assertEqual(result, "a.test.rule:\na.b.c?\n\nλa.b.c\n\nend")
+        self.assertEqual(result, "a.test.rule(::structure):\n    a.b.c?\n\n    λa.b.c\nend")
 
     def test_rule_with_tags(self):
         sem_sys = BasicPrinter(handlers=[Printers.BasicSentenceAwarePrinter("_:SENTENCE"),
@@ -152,7 +152,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
         self.assertIsInstance(rule[-1], ProductionStructure)
         # print
         result = sem_sys.pprint(rule)
-        self.assertEqual(result, "a.test.rule:\n#test\n#tag\n\na.b.c?\n\nλa.b.c\n\nend")
+        self.assertEqual(result, "a.test.rule(::structure):\n    #test\n    #tag\n\n    a.b.c?\n\n    λa.b.c\nend")
 
 
     def test_query_statement(self):
@@ -177,7 +177,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
 
         self.assertIsInstance(query[-1], ProductionContainer)
         result = sem_sys.pprint(query)
-        self.assertEqual(result, """test.statement:\na.b.c?\nd.e.f?\ng.h.e?\n\nend""")
+        self.assertEqual(result, """test.statement(::container):\n    a.b.c?\n    d.e.f?\n    g.h.e?\nend""")
 
     def test_transform_statement(self):
         sem_sys = BasicPrinter(handlers=[Printers.BasicSentenceAwarePrinter("_:SENTENCE"),
@@ -201,7 +201,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
 
         self.assertIsInstance(query[-1], ProductionContainer)
         result = sem_sys.pprint(query)
-        self.assertEqual(result, """test.statement:\nλa.b.c $x $y -> $z\nλq.c.d $z $x -> $a\nλa.b.c $a $y -> $c\n\nend""")
+        self.assertEqual(result, """test.statement(::container):\n    λa.b.c $x $y -> $z\n    λq.c.d $z $x -> $a\n    λa.b.c $a $y -> $c\nend""")
 
     def test_action_statement(self):
         sem_sys = BasicPrinter(handlers=[Printers.BasicSentenceAwarePrinter("_:SENTENCE"),
@@ -220,11 +220,10 @@ class PrintStructureSemanticTests(unittest.TestCase):
         λa.b.c $x
         λa.b.c.d $x $y
         λa.b.c.d.e $x $y $z
-
         end
         """)[0]
 
         self.assertIsInstance(query[-1], ProductionContainer)
 
         result = sem_sys.pprint(query)
-        self.assertEqual(result, """test.statement:\nλa.b.c $x\nλa.b.c.d $x $y\nλa.b.c.d.e $x $y $z\n\nend""")
+        self.assertEqual(result, """test.statement(::container):\n    λa.b.c $x\n    λa.b.c.d $x $y\n    λa.b.c.d.e $x $y $z\nend""")

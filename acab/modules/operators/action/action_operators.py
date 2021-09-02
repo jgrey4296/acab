@@ -22,8 +22,7 @@ logging = root_logger.getLogger(__name__)
 # and/or return instructions for the semantic system
 class ActionAdd(ActionOperator):
 
-    @SemanticOperatorWrapDecorator
-    def __call__(self, struct, sem, *params, data=None, semSystem=None):
+    def __call__(self, *params, data=None, semSystem=None):
         """ Assert the params (ie: sentences) """
         # TODO use override?
         # TODO enable queing?

@@ -1,5 +1,11 @@
 import logging as root_logger
+
 logging = root_logger.getLogger(__name__)
+
+import acab
+from acab.abstract.interfaces.debugger import AcabDebugger_i
+
+config = acab.setup()
 
 
 def build_slice(s, l, toks):
@@ -45,3 +51,28 @@ def print_contexts(self, params):
                 print("{} : {}".format(x, self.state.engine.pprint([y])))
 
         print("--------------------")
+
+
+def ConfigBasedLoad(f):
+    """ A Decorator to load the config specified debugger module
+    and wrap a repl command with an instruction to get and start the
+    debugger if necessary """
+    if "Module.Debug" in config:
+        logging.debug("Loading Debugger")
+        mod = config.prepare("Module.Debug", "IMPORT", actions=[config.actions_e.IMPORT])()
+        name = config.prepare("Module.Debug", "DEBUGGER")()
+        debugger = getattr(mod, name)
+        assert(issubclass(debugger, AcabDebugger_i)), debugger
+
+
+    def wrapper(self, line):
+        if self.state.debugger is None:
+            logging.debug(f"Starting Debugger: {debugger.__name__}")
+            self.state.debugger = debugger.Get()
+            self.state.debugger.set_running_trace()
+
+        return f(self, line)
+
+    wrapper.__name__ = f.__name__
+
+    return wrapper

@@ -181,13 +181,6 @@ class AcabValue(VI.Value_i, Generic[T]):
         return {'in': in_set, 'out': out_set}
 
 
-    def alpha_rename(self):
-        """
-        TODO should variables be de bruijn indexed instead?
-        return modified copy
-        """
-        raise NotImplementedError()
-
     def copy(self, **kwargs) -> Value:
         """ copy the object, but give it a new uuid """
         if 'params' not in kwargs:
@@ -241,18 +234,18 @@ class AcabValue(VI.Value_i, Generic[T]):
     def has_tag(self, *tags:List[Value]) -> bool:
         return all([t in self.tags for t in tags])
 
-    def to_word(self) -> Value:
-        new_data = {}
-        new_data.update(self.data)
-        new_data.update({DS.TYPE_INSTANCE: Sentence.build([DS.TYPE_BOTTOM_NAME])})
-        simple_value = Sentence.build([AcabValue.safe_make(self.name, data=new_data)])
-        return simple_value
 
 class AcabStatement(AcabValue):
     """ AcabStatement functions the same as AcabValue,
     but provides specific functionality for converting to a string
     """
-    pass
+
+    def to_word(self) -> Value:
+        new_data = {}
+        new_data.update(self.data)
+        new_data.update({DS.TYPE_INSTANCE: Sentence.build([DS.TYPE_BOTTOM_NAME])})
+        simple_value = AcabValue.safe_make(self.name, data=new_data)
+        return simple_value
 
 @dataclass
 class Sentence(AcabStatement, VI.Sentence_i):

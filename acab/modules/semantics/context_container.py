@@ -129,6 +129,9 @@ class ContextContainer(CtxInt.ContextContainer_i):
     def __bool__(self):
         return not bool(self._failed) and bool(self._active)
 
+    def __repr__(self):
+        return f"(CtxCon: Active:{len(self._active)} Failed:{len(self._failed)} Total:{len(self._total)})"
+
     def fail(self, instance: CtxIns, word: Value, node: Node):
         """ Record a failure, the query sentence that failed,
         and the word that it failed on """
@@ -238,6 +241,14 @@ class ContextInstance(CtxInt.ContextInstance_i):
     def __bool__(self):
         return bool(self.data)
 
+    def __iter__(self):
+        return iter(self.data.values())
+
+    def __repr__(self):
+        binds  = ", ".join([x for x in self.data.keys()])
+        remain = len(self._remaining_query) if self._remaining_query is not None else 0
+        return f"(CtxInst: Bindings: {binds}. QRemain: {remain})"
+
     def copy(self):
         copied = replace(self,
                          uuid=uuid1(),
@@ -283,6 +294,7 @@ class ContextInstance(CtxInt.ContextInstance_i):
 
     def merge_with(self, var, instance_list):
         # TODO
+        raise NotImplementedError()
         merged_instance = ContextInstance()
 
 

@@ -11,6 +11,7 @@ logging = root_logger.getLogger(__name__)
 from acab.abstract.core import default_structure as DS
 from acab.abstract.interfaces import semantic as SI
 from acab.modules.semantics.context_container import MutableContextInstance
+from acab.modules.semantics.util import SemanticBreakpointDecorator
 
 CtxIns = 'ContextInstance'
 
@@ -19,6 +20,7 @@ class QueryAbstraction(SI.AbstractionSemantics_i):
     """
     Very simply accumulate results of multiple sentences of queries
     """
+    @SemanticBreakpointDecorator
     def __call__(self, instruction, semSys, ctxs=None, data=None):
         query = instruction
         # Get the default dependent semantics
@@ -30,6 +32,7 @@ class QueryAbstraction(SI.AbstractionSemantics_i):
 
 class TransformAbstraction(SI.AbstractionSemantics_i):
     """ Takes a context, returns a changed context """
+    @SemanticBreakpointDecorator
     def __call__(self, instruction, semSys, ctxs=None, data=None):
         # Note: run *all* the transform clauses at once,
         # To minimise redundent new ctxs
@@ -55,6 +58,7 @@ class TransformAbstraction(SI.AbstractionSemantics_i):
 class ActionAbstraction(SI.AbstractionSemantics_i):
     """ *Consumes* a context, performing all actions in it """
 
+    @SemanticBreakpointDecorator
     def __call__(self, instruction, semSys, ctxs=None, data=None):
         operators = ctxs._operators
         action    = instruction
@@ -70,6 +74,7 @@ class ActionAbstraction(SI.AbstractionSemantics_i):
 class AtomicRuleAbstraction(SI.AbstractionSemantics_i):
     """ Run a rule in a single semantic call """
 
+    @SemanticBreakpointDecorator
     def __call__(self, instruction, semsys, ctxs=None, data=None):
         """ Rule Logic, returns action proposals """
         # TODO Possibly setup a temp ctxs
@@ -93,6 +98,7 @@ class ProxyRuleAbstraction(SI.AbstractionSemantics_i):
     """ Run a rules queries, then return ctxs bound
     with transform+action continuation """
 
+    @SemanticBreakpointDecorator
     def __call__(self, instruction, semsys, ctxs=None, data=None):
         """ Rule Logic, returns action proposals """
         # TODO: if all contexts in ctxs have a continuation,

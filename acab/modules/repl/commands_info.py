@@ -13,6 +13,7 @@ from acab.modules.repl.repl_commander import register
 from acab.modules.repl import ReplParser as RP
 from acab.abstract.core.production_abstractions import ProductionOperator, ProductionStructure
 from acab.modules.repl.util import print_contexts
+from acab.abstract.parsing import debug_funcs as DBF
 
 logging = root_logger.getLogger(__name__)
 
@@ -144,15 +145,14 @@ def do_parser(self, line):
 
 @register
 def do_debug(self, line):
+    """ Toggle Debugging of pyparsing """
     if bool(line):
         parser = self.state.engine._dsl_builder._bootstrap_parser.query(line)
         if bool(parser):
             parser.setDebug(not parser.debug)
             print(f"Debug {parser.debug} : {parser}")
     else:
-        curr = self.state.engine._dsl_builder._main_parser.debug
-        self.state.engine._dsl_builder._main_parser.setDebug(not curr)
-        print(f"Parser Debug: {not curr}")
+        DBF.debug_pyparsing()
 
 @register
 def do_listen(self, line):
@@ -205,3 +205,51 @@ def do_decompose(self, line):
     # TODO : split objects into tries
     # run query
     # split result into bindings
+
+
+@register
+def do_log(self, line):
+    """ Change the logging level """
+    try:
+        root = root_logger.getLogger('')
+        handler = root.handlers[1]
+        if bool(line):
+            level = root_logger._nameToLevel[line.upper()]
+            root.setLevel(level)
+            handler.setLevel(level)
+            print(f"Set Console Log level to: {line.upper()} : {level}")
+        else:
+            level = handler.level
+            if handler.level in root_logger._levelToName:
+                level = root_logger._levelToName[handler.level]
+            print(f"Console Log Level: {level}")
+
+    except KeyError as err:
+        print(f"Unrecognised Log Level: {line.upper()}")
+
+@register
+def do_fmt(self, line):
+    """ Change the Log format """
+    root = root_logger.getLogger('')
+    handler = root.handlers[1]
+    if bool(line):
+        handler.setFormatter(root_logger.Formatter(line))
+        print(f"Set Console Log Format to: {line}")
+    else:
+        fmt = handler.formatter._fmt
+        print(f"Console Log Level: {fmt}")
+        print(f"See https://docs.python.org/3/library/logging.html#logrecord-attributes")
+
+@register
+def do_filter(self, line):
+    """ Add or remove a logging filter """
+    root = root_logger.getLogger('')
+    handler = root.handlers[1]
+    if bool(line):
+        handler.addFilter(root_logger.Filter(line))
+        print(f"Set Console Log Format to: {line}")
+    elif bool(handler.filters):
+        handler.removeFilter(handler.filters[-1])
+        print(f"Removing Last Console Log Filter")
+    else:
+        print("No filters set")

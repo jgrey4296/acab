@@ -10,15 +10,17 @@ import logging as root_logger
 import re
 import pyparsing as pp
 import traceback
-
 import acab
 config = acab.setup()
 
 from acab.modules.repl.repl_commander import register
 from acab.abstract.core.production_abstractions import ProductionOperator, ProductionStructure
 from acab.modules.repl import ReplParser as RP
+from acab.abstract.interfaces.value import Statement_i
+from acab.modules.repl.util import ConfigBasedLoad
 
 logging = root_logger.getLogger(__name__)
+
 
 @register
 def do_prompt(self, line):
@@ -76,20 +78,64 @@ def do_echo(self, line):
     self.state.echo = not self.state.echo
 
 
+
+
 @register
+@ConfigBasedLoad
 def do_break(self, line):
     """
-    Manually switch to PDB for debugging
+    Control a bdb customization.
+    Specified in Config [Module.Debug].
+
+    break file line maybe_funcname
+    break rule.name?
+
+    break delete num
+    break list
+
+    # To break on semantic execution:
+
     """
-    print("""
-    Shunting to Python debugger.
-    Explore using: self.state, self.state.engine
-    self is the repl,
-    self.state is data the repl tracks,
-    self.state.engine is the active ACAB engine,
-    self.state.result is the current context container
-    """)
-    breakpoint()
+    result = RP.break_parser.parseString(line)
+    # TODO refactor the basic/semantic logic into the debugger
+    if "basic" in result:
+        bp_result = self.state.debugger.set_break(result.file, result.line)
+        if bp_result is None:
+            print(f"Breakpoint Set: {result.file} : {result.line}")
+        else:
+            print(f"Breakpoint NOT Set: {bp_result}")
+
+    elif "semantic" in result:
+        # run query
+        self.state.result = self.state.engine(result.semantic)
+        # attach semantic breakpoints to each prod_abstraction
+        if len(self.state.result) == 1 and isinstance(self.state.result[0]._current.value, Statement_i):
+            curr = self.state.result[0]._current.value
+            curr.do_break()
+            if curr.should_break:
+                print(f"Breakpoint Set: {repr(curr)} : {curr.uuid}")
+            else:
+                print(f"Breakpoint Unset: {repr(curr)} : {curr.uuid}")
+        elif bool(self.state.result):
+            count = 0
+            for inst in self.state.result:
+                for bind in inst.data.items():
+                    if isinstance(bind, Statement_i):
+                        bind.do_break()
+                        count += 1
+
+            print(f"{count} Breakpoints Set: {result.semantic}")
+
+    else:
+        print("""
+        Shunting to Python debugger.
+        Explore using: self.state, self.state.engine
+        self is the repl,
+        self.state is data the repl tracks,
+        self.state.engine is the active ACAB engine,
+        self.state.result is the current context container
+        """)
+        self.state.debugger.set_trace()
 
 
 @register

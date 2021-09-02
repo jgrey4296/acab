@@ -130,8 +130,8 @@ def build_clause(s, loc, toks):
     return toks
 
 def build_assignment(s, loc, toks):
+    # TODO remove this
     return (toks[0][1], toks[1])
-
 
 
 def strip_parse_type(s, loc, toks):

@@ -163,3 +163,19 @@ send_to_parser = rst("send")
 
 
 force_parser = query + pp.Optional(send_to_parser)
+
+# break parser ################################################################
+filename = pp.Word(pp.alphas + "/_") + pp.Literal(".py")
+filename.setParseAction(lambda s,l,t: "".join(t[:]))
+
+linenum  = pp.Word(pp.nums)
+linenum.setParseAction(lambda s,l,t: int(t.line))
+
+basic_bp = filename("file") + pp.Suppress(pp.Keyword(":")) + linenum("line")
+
+semantic_bp = pp.Regex(".+?\?")
+
+
+break_parser = pp.Or([basic_bp("basic"),
+                      semantic_bp("semantic"),
+                      rst])
