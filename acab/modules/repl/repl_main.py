@@ -37,6 +37,7 @@ def main():
 
     console = root_logger.StreamHandler()
     console.setLevel(max(0, LOGLEVEL))
+    console.setFormatter(root_logger.Formatter())
     root_logger.getLogger('').addHandler(console)
     logging = root_logger.getLogger(__name__)
     #====================
@@ -47,6 +48,8 @@ def main():
     logging.info("Reading Config: {}".format(args.config))
     args.config = [abspath(expanduser(x)) for x in args.config]
     config.Get(*args.config, hooks=[modal_config])
+
+    # TODO change config details here
 
     if args.debug:
         parse_debug_spec = config.prepare("Parse", "DEBUG_PARSERS")
