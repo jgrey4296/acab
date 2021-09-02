@@ -10,6 +10,7 @@ import acab
 config = acab.setup()
 
 from acab.abstract.interfaces.engine import AcabEngine_i
+from acab.abstract.interfaces.value import Statement_i
 from acab.error.acab_config_exception import AcabConfigException
 from acab.modules.repl.repl_commander import register
 from acab.modules.repl import ReplParser as RP
@@ -128,11 +129,18 @@ def do_run(self, line):
             return
 
         self.state.result = self.state.engine(line)
+
         bindings = [y for x in self.state.result.active_list()
                     for y in x if isinstance(y, ProductionContainer)]
 
-        # Run the bindings
-        self.state.result = self.state.engine(bindings)
+        if not bool(bindings) and bool(self.state.result) and isinstance(self.state.result[0]._current.value, Statement_i):
+            bindings = [self.state.result[0]._current.value]
+
+        if bool(self.state.result):
+            # Run the bindings
+            self.state.result = self.state.engine(bindings)
+        else:
+            print("No Match to Run")
 
     except Exception as err:
         traceback.print_tb(err.__traceback__)
