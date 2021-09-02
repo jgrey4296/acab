@@ -235,7 +235,7 @@ class AcabValue(VI.Value_i, Generic[T]):
         return all([t in self.tags for t in tags])
 
 
-class AcabStatement(AcabValue):
+class AcabStatement(AcabValue, VI.Statement_i):
     """ AcabStatement functions the same as AcabValue,
     but provides specific functionality for converting to a string
     """
