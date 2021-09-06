@@ -32,7 +32,6 @@ action_sugar = N(LEFT_S, VALBIND) \
 
 action_exprs = action_component | PARAM_SEN | action_sugar
 # Sentences are asserted by default
-# TODO replace delimist with indentedblock
 actions = IndentedBlock(action_exprs)
 actions.setParseAction(PConst.build_action)
 

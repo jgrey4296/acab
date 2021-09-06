@@ -102,22 +102,22 @@ class AcabValue(VI.Value_i, Generic[T]):
         for internal use.
         For reparseable output, use a PrintSemantics
         """
-        # TODO possibly don't add bind symbols here
-        if self.is_at_var:
-            return AT_BIND_SYMBOL + self.name
-        elif self.is_var:
-            return BIND_SYMBOL + self.name
-        else:
-            return self.name
+        return self.name
 
 
     def __repr__(self):
         val_str = ""
+        name_str = str(self)
         if self.value is not self.name:
             val_str = ":..."
 
+        if self.is_at_var:
+            name_str = BIND_SYMBOL + name_str
+        elif self.is_var:
+            name_str = BIND_SYMBOL + name_str
+
         return "({}:{}:{})".format(self.__class__.__name__,
-                                     str(self),
+                                     name_str,
                                      val_str)
 
     def __hash__(self):
@@ -194,7 +194,6 @@ class AcabValue(VI.Value_i, Generic[T]):
         if not bool(params):
             return self
 
-        # TODO should these be just strings?
         safe_params = [x if isinstance(x, AcabValue) else AcabValue(x) for x in params]
         return self.copy(params=safe_params)
 

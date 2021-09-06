@@ -57,7 +57,6 @@ class ModuleLoader_i(metaclass=abc.ABCMeta):
         Returns a working_memory query result of the module
         """
         # Prepare path
-        # TODO use utility constants for joining and query
         if not isinstance(maybe_module, (ModuleType, str)):
             raise AcabImportException(f"Bad Module Load Type: {maybe_module}")
 

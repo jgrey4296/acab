@@ -19,7 +19,7 @@ from . import TransformParser as TP
 
 logging = root_logger.getLogger(__name__)
 
-# TODO all of these should be indented blocks
+# all of these should be indented blocks
 conditions = N(QUERY_S,     QP.clauses)
 transforms = N(TRANSFORM_S, TP.transforms)
 actions    = N(ACTION_S,    AP.actions)
