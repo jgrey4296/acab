@@ -71,13 +71,9 @@ class AcabNode(DI.Node_i):
     def __hash__(self):
         return hash(self.uuid)
 
-
     @property
     def name(self):
         return str(self.value)
-    @property
-    def var_set(self):
-        return self.value.var_set
 
     def add_child(self, node) -> Node:
         """ Add a node as a child of this node

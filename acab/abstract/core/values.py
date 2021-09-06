@@ -159,28 +159,6 @@ class AcabValue(VI.Value_i, Generic[T]):
     def is_at_var(self) -> bool:
         return self.data[DS.BIND] == DS.AT_BIND
 
-    @property
-    def var_set(self) -> Dict[str, Set[Any]]:
-        """ Return a dict of sets of all bindings this value utilizes
-        returns { 'in' : set(), 'out' : set() }
-        """
-        # ie: Query(a.b.$x? a.q.$w?).get_bindings() -> {'in': [], 'out': [x,w]}
-        # Action(+(a.b.$x), -(a.b.$w)).get_bindings() -> {'in': [x,w], 'out': []}
-        # a.b.$x -> {'in': [x], 'out' : [x]}
-
-        # logging.debug("{} is using default var_set method".format(self.__class__))
-
-        # TODO: get var_set of value if its an acab_value?
-        out_set = set()
-        in_set = set(self.params)
-        if self.is_var:
-            in_set.add(self)
-            # TODO why in the out_set as well?
-            out_set.add(self)
-
-        return {'in': in_set, 'out': out_set}
-
-
     def copy(self, **kwargs) -> Value:
         """ copy the object, but give it a new uuid """
         if 'params' not in kwargs:

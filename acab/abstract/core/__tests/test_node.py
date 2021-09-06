@@ -117,22 +117,3 @@ class AcabNodeTests(unittest.TestCase):
         a_node.clear_children()
         self.assertEqual(len(a_node),0)
         self.assertFalse(bool(a_node))
-
-
-    def test_var_set(self):
-        node = AcabNode(AV("test", data={BIND_S: True}))
-        var_set = node.var_set
-        var_set_str = [x.name for x in var_set['out']]
-        self.assertTrue("test" in var_set_str)
-
-    def test_nested_var_set(self):
-        node = AcabNode(AV("inner", data={BIND_S: True}))
-        var_set = node.var_set
-        var_set_str = [x.name for x in var_set['in']]
-        self.assertTrue('inner' in var_set_str)
-
-
-
-
-    # root, str, iter,
-    # set_parent, parentage,

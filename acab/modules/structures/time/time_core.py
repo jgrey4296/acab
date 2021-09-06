@@ -110,19 +110,6 @@ class TimeEvent(BaseTime):
     def event(self):
         return self._event
 
-    @property
-    def var_set(self):
-        var_set = {'in' : set(), 'out': set()}
-        if self.is_var:
-            var_set['in'].add(self.event)
-        elif isinstance(self.event, AcabValue):
-            update_set = self.event.var_set
-            var_set['in'].update(update_set['in'])
-            var_set['out'].update(update_set['out'])
-
-        return var_set
-
-
     def pprint(self, opts=None, **kwargs):
         raise DeprecationWarning("Use Print Semantics")
         #value = str(self._event)
@@ -218,17 +205,6 @@ class TimeContainer(BaseTime):
             time_list.update([(y * size) - self.start for y in x_base])
 
         return set(time_list)
-
-    @property
-    def var_set(self):
-        var_set = {'in': set(), 'out' : set()}
-        for x in self.events:
-            temp_set = x.var_set
-            var_set['in'].update(temp_set['in'])
-            var_set['out'].update(temp_set['out'])
-
-        return var_set
-
 
     def is_pure(self):
         """ Where purity is defined as being a simple

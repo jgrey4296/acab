@@ -86,37 +86,6 @@ class ProductionComponent(AcabStatement):
     def op(self):
         return self.value
 
-    @property
-    def var_set(self):
-        obj = super(ProductionComponent, self).var_set
-        obj['in'].update(self.params)
-
-        if self.rebind is not None:
-            obj['out'].add(self.rebind)
-        return obj
-
-    def verify(self, ctx=None, engine=None):
-        """ Verify the Component, retrieving the operator from the engine
-        if necessary """
-        # $op -> retrieve from ctx
-        op = self.op
-        if len(op) == 1 and op[0].is_var and ctx is not None:
-            op = ctx[op.value]
-
-        if not isinstance(op, ProductionOperator) and engine is not None:
-            op = engine.get_operator(op)
-
-        # TODO: op's should be able to be Components and Containers as well?
-        if not isinstance(op, ProductionOperator) and engine is not None:
-            raise AcabOperatorException(op)
-
-        # TODO make op cached, rather than this:
-        verified = self.copy()
-        verified.value = op
-
-        return verified
-
-
     def bind(self, data) -> Component:
         # Bind params / operator
         if self.op.is_var and self.op.value in data:
@@ -149,20 +118,6 @@ class ProductionContainer(AcabStatement):
     @property
     def clauses(self):
         return self.value
-
-    @property
-    def var_set(self):
-        """ Return a set of all bindings this container utilizes """
-        # ie: Query(a.b.$x? a.q.$w?).var_set -> {'in': [], 'out': [x,w]}
-        # Action(+(a.b.$x), -(a.b.$w)).var_set -> {'in': [x,w], 'out': []}
-        obj = super(ProductionContainer, self).var_set
-        for p in self.clauses:
-            if isinstance(p, AcabValue):
-                tempobj = p.var_set
-                obj['in'].update(tempobj['in'])
-                obj['out'].update(tempobj['out'])
-        return obj
-
 
     def bind(self, data) -> Container:
         # Bind params,
