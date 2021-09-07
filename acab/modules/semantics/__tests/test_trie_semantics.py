@@ -141,7 +141,7 @@ class TrieSemanticTests(unittest.TestCase):
         # Run query
         trie_sem.query(trie_struct, query_sen, ctxs=ctx_container)
         self.assertEqual(len(ctx_container), 2)
-        result_set = {ctxInst.data['$x'] for ctxInst in ctx_container}
+        result_set = {ctxInst.data['x'] for ctxInst in ctx_container}
         self.assertEqual(result_set, {'sentence', 'other'})
 
     def test_trie_query_with_bind_constraints(self):
@@ -163,7 +163,7 @@ class TrieSemanticTests(unittest.TestCase):
         # Run query
         trie_sem.query(trie_struct, query_sen, ctxs=ctx_container)
         self.assertEqual(len(ctx_container), 1)
-        self.assertEqual(ctx_container[0].data['$x'], 'test')
+        self.assertEqual(ctx_container[0].data['x'], 'test')
 
     def test_trie_query_with_alpha_tests(self):
         node_sem = BasicNodeSemantics("_:node")
@@ -191,7 +191,7 @@ class TrieSemanticTests(unittest.TestCase):
         # Run query
         trie_sem.query(trie_struct, query_sen, ctxs=ctx_container)
         self.assertEqual(len(ctx_container), 1)
-        self.assertEqual(ctx_container[0].data['$x'].name, 'blah')
+        self.assertEqual(ctx_container[0].data['x'].name, 'blah')
 
     def test_trie_query_with_beta_tests(self):
         node_sem    = BasicNodeSemantics("_:node")
@@ -227,7 +227,7 @@ class TrieSemanticTests(unittest.TestCase):
         self.assertEqual(len(ctx_container), 1)
         end_result = ctx_container.pop()
         self.assertIsInstance(end_result, ContextInstance)
-        self.assertEqual(end_result.data['$y'].name, 'blah')
+        self.assertEqual(end_result.data['y'].name, 'blah')
 
 
     def test_trie_query_with_callable_tests(self):
@@ -264,7 +264,7 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem.query(trie_struct, query_sen2, ctxs=ctx_container)
         self.assertEqual(len(ctx_container), 1)
         end_result = ctx_container.pop()
-        self.assertEqual(end_result.data['$y'].name, 'blah')
+        self.assertEqual(end_result.data['y'].name, 'blah')
 
 
     # -------

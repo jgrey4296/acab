@@ -375,7 +375,7 @@ class Sentence(AcabStatement, VI.Sentence_i):
         # collect leaf statements
         for word in self.words:
             if isinstance(word, AcabStatement):
-                out_words.append(word.to_word()[0])
+                out_words.append(word.to_word())
                 statements.append(word)
             else:
                 out_words.append(word)
