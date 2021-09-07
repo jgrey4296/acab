@@ -10,6 +10,23 @@ logging = root_logger.getLogger(__name__)
 
 config = AcabConfig.Get()
 
+# TODO RDFSemantics, ReteSemantics
+#
+def SemanticSubCtxBuildDecorator(f):
+    """ Used to easily wrap around rules, to provide
+    an isolated contex container for execution
+    """
+    def wrapped(self, *the_args, **the_kwargs):
+        semSys = the_args[1]
+        ctxs   = the_kwargs['ctxs']
+        temp_container = semSys.build_ctxcon()
+        temp_container._operators = ctxs._operators
+        kwargs = {x:y for x,y in the_kwargs.items() if x != "ctxs"}
+        return f(self, *the_args, ctxs=temp_container, **kwargs)
+
+    wrapped.__name__ = f.__name__
+    return wrapped
+
 def SemanticOperatorWrapDecorator(f):
     """ Use to simplify extracting raw values for use in operators,
     and wrapping the results into AcabValues """
@@ -44,7 +61,7 @@ def SemanticTestWrapDecorator(f):
     wrapped.__name__ = f"STWD({f})"
     return wrapped
 
-# TODO RDFSemantics, ReteSemantics
+
 def _get_params(self, params, bound_context):
     """ Retrieve a value's parameters from a context dict """
     assert(isinstance(bound_context, dict))
