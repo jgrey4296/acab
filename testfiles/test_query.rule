@@ -1,0 +1,7 @@
+~acab
+a.b.c
+a.b.d
+
+a.test.query:
+    a.b.$x?
+end

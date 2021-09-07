@@ -54,17 +54,6 @@ class TypeDefinition(TypeStatement):
         self.set_data({PRIMITIVE_S: True})
         return self
 
-    @property
-    def var_set(self):
-        obj = super(TypeDefinition, self).var_set
-        for s in self.structure:
-            temp = s.var_set
-            obj['in'].update(temp['in'])
-            obj['out'].update(temp['out'])
-
-        return obj
-
-
     def build_type_instance(self, the_dict=None):
         just_path = self.path
         statement = self

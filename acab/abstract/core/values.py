@@ -102,22 +102,22 @@ class AcabValue(VI.Value_i, Generic[T]):
         for internal use.
         For reparseable output, use a PrintSemantics
         """
-        # TODO possibly don't add bind symbols here
-        if self.is_at_var:
-            return AT_BIND_SYMBOL + self.name
-        elif self.is_var:
-            return BIND_SYMBOL + self.name
-        else:
-            return self.name
+        return self.name
 
 
     def __repr__(self):
         val_str = ""
+        name_str = str(self)
         if self.value is not self.name:
             val_str = ":..."
 
+        if self.is_at_var:
+            name_str = BIND_SYMBOL + name_str
+        elif self.is_var:
+            name_str = BIND_SYMBOL + name_str
+
         return "({}:{}:{})".format(self.__class__.__name__,
-                                     str(self),
+                                     name_str,
                                      val_str)
 
     def __hash__(self):
@@ -159,28 +159,6 @@ class AcabValue(VI.Value_i, Generic[T]):
     def is_at_var(self) -> bool:
         return self.data[DS.BIND] == DS.AT_BIND
 
-    @property
-    def var_set(self) -> Dict[str, Set[Any]]:
-        """ Return a dict of sets of all bindings this value utilizes
-        returns { 'in' : set(), 'out' : set() }
-        """
-        # ie: Query(a.b.$x? a.q.$w?).get_bindings() -> {'in': [], 'out': [x,w]}
-        # Action(+(a.b.$x), -(a.b.$w)).get_bindings() -> {'in': [x,w], 'out': []}
-        # a.b.$x -> {'in': [x], 'out' : [x]}
-
-        # logging.debug("{} is using default var_set method".format(self.__class__))
-
-        # TODO: get var_set of value if its an acab_value?
-        out_set = set()
-        in_set = set(self.params)
-        if self.is_var:
-            in_set.add(self)
-            # TODO why in the out_set as well?
-            out_set.add(self)
-
-        return {'in': in_set, 'out': out_set}
-
-
     def copy(self, **kwargs) -> Value:
         """ copy the object, but give it a new uuid """
         if 'params' not in kwargs:
@@ -216,7 +194,6 @@ class AcabValue(VI.Value_i, Generic[T]):
         if not bool(params):
             return self
 
-        # TODO should these be just strings?
         safe_params = [x if isinstance(x, AcabValue) else AcabValue(x) for x in params]
         return self.copy(params=safe_params)
 
@@ -235,7 +212,7 @@ class AcabValue(VI.Value_i, Generic[T]):
         return all([t in self.tags for t in tags])
 
 
-class AcabStatement(AcabValue):
+class AcabStatement(AcabValue, VI.Statement_i):
     """ AcabStatement functions the same as AcabValue,
     but provides specific functionality for converting to a string
     """
@@ -398,7 +375,7 @@ class Sentence(AcabStatement, VI.Sentence_i):
         # collect leaf statements
         for word in self.words:
             if isinstance(word, AcabStatement):
-                out_words.append(word.to_word()[0])
+                out_words.append(word.to_word())
                 statements.append(word)
             else:
                 out_words.append(word)

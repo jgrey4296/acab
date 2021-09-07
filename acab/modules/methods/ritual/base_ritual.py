@@ -22,12 +22,6 @@ class RitualBase(AcabValue):
         output that can be re-parsed """
         raise NotImplementedError()
 
-    @property
-    def var_set(self):
-        """ Data needs to be able to report internal variables """
-        raise NotImplementedError()
-
-
     def bind(self, bindings):
         """ Data needs to be able to bind a dictionary
         of values to internal variables """

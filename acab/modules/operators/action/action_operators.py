@@ -33,7 +33,10 @@ class ActionPrint(ActionOperator):
     @SemanticOperatorWrapDecorator
     def __call__(self, *params, data=None, semSystem=None):
         """ Trigger a logging statement """
+        # TODO bind the string
         printer = semSystem._data['printer']
+        total = ""
         for x in params:
-            pretty = printer.pprint(x)
-            print(f"Testing: {pretty}")
+            total += printer.pprint(x)
+
+        print(total)

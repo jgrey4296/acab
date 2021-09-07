@@ -33,18 +33,6 @@ class AcabValueTests(unittest.TestCase):
         value = AcabValue("test")
         self.assertIsInstance(value, AcabValue)
 
-    def test_var_set(self):
-        value = AcabValue("test")
-        var_set = value.var_set
-        self.assertIsInstance(var_set, dict)
-        self.assertTrue("in" in var_set)
-        self.assertTrue("out" in var_set)
-
-    def test_var_set_with_vars(self):
-        value = AcabValue("test", params=["a","b","c"])
-        var_set = value.var_set
-        self.assertTrue(all([x in var_set['in'] for x in ["a","b","c"]]))
-
     def test_attach_statement(self):
         value = AcabStatement(value="test")
         sen = Sentence.build(["a", "b", "c", "d", "e"])

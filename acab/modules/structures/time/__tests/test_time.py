@@ -409,22 +409,6 @@ class TestTime(unittest.TestCase):
                              "c d c d".split(" ")[i])
 
 
-    def test_pattern_var_set_basic(self):
-        result = tp.parseString("[[a $b c $d]]")
-        var_set = result.var_set
-        self.assertEqual(var_set['in'], set(["b", "d"]))
-
-    def test_pattern_var_set_nested(self):
-        pattern = tp.parseString("[[a $b <$c d>, $e f [g $h]]]")
-        var_set = pattern.var_set
-        self.assertEqual(var_set['in'], set(["b", "c", "e", "h"]))
-
-    def test_pattern_empty_var_set(self):
-        pattern = tp.parseString("[[a b <c d>, e f [g h]]]")
-        var_set = pattern.var_set
-        self.assertFalse(var_set['in'])
-        self.assertFalse(var_set['out'])
-
     def test_pattern_bind(self):
         pattern = tp.parseString("[[a $b c $b]]")
         bound = pattern.bind({"a": "e", "b": "g"})

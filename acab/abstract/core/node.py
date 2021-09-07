@@ -39,13 +39,9 @@ class AcabNode(DI.Node_i):
 
 
     def __post_init__(self):
-        # Unwrap Nodes to avoid nesting
-        # TODO should this be the case?
         if isinstance(self.value, AcabNode):
             raise TypeError("Nodes shouldn't have nodes inside them")
         assert(isinstance(self.value, AcabValue))
-
-
 
     def __str__(self):
         """ Data needs to implement a str method that produces
@@ -71,13 +67,9 @@ class AcabNode(DI.Node_i):
     def __hash__(self):
         return hash(self.uuid)
 
-
     @property
     def name(self):
         return str(self.value)
-    @property
-    def var_set(self):
-        return self.value.var_set
 
     def add_child(self, node) -> Node:
         """ Add a node as a child of this node
@@ -96,7 +88,6 @@ class AcabNode(DI.Node_i):
 
     def has_child(self, term) -> bool:
         """ Question if this term has a particular child """
-        # TODO handle if looking for a variable
         if isinstance(term, str):
             return term in self.children
         elif isinstance(term, AcabNode):

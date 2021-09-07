@@ -88,9 +88,6 @@ class TypeDef_ParserTests(unittest.TestCase):
         result = TD.parseString('blah.x: (::σ)\n | $x, $y |\n\na.b.$x, a.b.$y\n\nend')[0]
         self.assertIsInstance(result[-1], TypeDefinition)
         self.assertEqual(len(result[-1].params), 2)
-        var_set = set([x.value for x in result[-1].params])
-        match_set = set(["x", "y"])
-        self.assertEqual(var_set, match_set)
 
     def test_typedef_with_structure_types(self):
         result = TD.parseString('blah.x: (::σ)\na.b.c(::bloo)\n\nend')[0]

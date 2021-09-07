@@ -72,14 +72,14 @@ class AbstractionSemanticTests(unittest.TestCase):
         # Add a ContextInst
         init_ctx = ctx_container.pop()
         updated_ctx = init_ctx.bind_dict({
-            "$x" : AcabValue.safe_make("test")
+            "x" : AcabValue.safe_make("test")
         })
         ctx_container.push(updated_ctx)
         # Build Transform
         rebind_target = AcabValue.safe_make("y", data={BIND_V: True})
         clause = ProductionComponent("transform test",
                                      op_loc_path,
-                                     ["$x", "es", "ES"],
+                                     ["x", "es", "ES"],
                                      rebind=rebind_target)
 
         transform = ProductionContainer("Test Transform Clause", [clause])
@@ -87,7 +87,7 @@ class AbstractionSemanticTests(unittest.TestCase):
         sem(transform, None, ctxs=ctx_container)
         # Check result
         result = ctx_container.pop()
-        self.assertEqual(result['$y'].value, "tESt")
+        self.assertEqual(result['y'].value, "tESt")
 
 
     def test_action_simple(self):
@@ -188,18 +188,18 @@ class AbstractionSemanticTests(unittest.TestCase):
 
         init_ctx = ctx_container.pop()
         updated_ctx = init_ctx.bind_dict({
-            "$x" : AcabValue.safe_make("test")
+            "x" : AcabValue.safe_make("test")
         })
         ctx_container.push(updated_ctx)
         # Build Container
         rebind_target    = AcabValue.safe_make("y", data={BIND_V: True})
         transform_clause = ProductionComponent("transform test",
                                                trans_op_loc_path,
-                                               ["$x"],
+                                               ["x"],
                                                rebind=rebind_target)
         action_clause    = ProductionComponent("Test Action Clause",
                                                action_op_loc_path,
-                                               ["$y"])
+                                               ["y"])
         container        = ProductionContainer("mixed_container",
                                                [ProductionContainer("transform", [transform_clause],
                                                                     data={SEMANTIC_HINT_V: "_:transform"}),
@@ -267,11 +267,11 @@ class AbstractionSemanticTests(unittest.TestCase):
 
         transform_sen = ProductionComponent("transform_test",
                                             trans_op_loc_path,
-                                            ["$x", "sen", "SEN"],
+                                            ["x", "sen", "SEN"],
                                             rebind=AcabValue.safe_make("y", data={BIND_V: True}))
         action_sen    = ProductionComponent("Test Action Clause",
                                             action_op_loc_path,
-                                            ['$y'])
+                                            ['y'])
 
         query     = ProductionContainer("test query", [query_sen], data={SEMANTIC_HINT_V: QUERY_SEM_HINT})
         transform = ProductionContainer("test transform", [transform_sen], data={SEMANTIC_HINT_V: TRANSFORM_SEM_HINT})
@@ -344,11 +344,11 @@ class AbstractionSemanticTests(unittest.TestCase):
 
         transform_sen = ProductionComponent("transform_test",
                                             trans_op_loc_path,
-                                            ["$x", "sen", "SEN"],
+                                            ["x", "sen", "SEN"],
                                             rebind=AcabValue.safe_make("y", data={BIND_V: True}))
         action_sen    = ProductionComponent("Test Action Clause",
                                             action_op_loc_path,
-                                            ['$y'])
+                                            ['y'])
 
         query     = ProductionContainer("test query", [query_sen], data={SEMANTIC_HINT_V: QUERY_SEM_HINT})
         transform = ProductionContainer("test transform", [transform_sen], data={SEMANTIC_HINT_V: TRANSFORM_SEM_HINT})

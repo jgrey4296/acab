@@ -66,6 +66,12 @@ class SemanticSystem_i(HandlerSystem_i):
     Map Instructions to Abstraction/Dependent Semantics
     """
     # TODO possibly re-add hooks / failure handling
+    # TODO add a system specific logging handler
+    container_constructor : ContextContainer_i = field(default=None)
+
+    def build_ctxcon(self):
+        return self.container_constructor.build()
+
     @abc.abstractmethod
     def __call__(self, *instructions, ctxs=None, data=None) -> CtxCon:
         pass
@@ -103,6 +109,7 @@ class DependentSemantics_i(SemanticSystem_i, HandlerComponent_i):
 
     def verify(self, instruction, data=None, ctxs=None):
         raise NotImplementedError()
+
     @abc.abstractmethod
     def insert(self, struct, sen, data):
         pass

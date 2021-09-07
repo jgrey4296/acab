@@ -154,59 +154,8 @@ def do_debug(self, line):
     else:
         DBF.debug_pyparsing()
 
-@register
-def do_listen(self, line):
-    """ Listeners:
-    Listen for specific assertions / rule firings / queries,
-    and pause on them
-    """
-    logging.info(f"Listening: {line}")
-    params = RP.listen_parser.parseString(line)[:]
-    words = [y for x in params for y in SPLIT_RE.split(x)]
-    if params['type'] == "add":
-        self.state.engine.add_listeners(*words)
-    elif params['type'] == "remove":
-        self.state.engine.remove_listeners(*words)
-    elif params['type'] == "list":
-        result = []
-        result.append(" ".join(self.state.engine.get_listeners()))
-        result.append("Threshold: {}".format(self.state.engine.get_listener_threshold()))
-        params["result"] = "\n".join(result)
-    elif params['type'] == "threshold":
-        params = SPLIT_RE.split((params[0]))
-        self.state.engine.set_listener_threshold(int(params[0]), int(params[1]))
 
-
-
-@register
-def do_check(self, line):
-    """
-    Trigger an analysis action.
-    eg: type checking
-    """
-    params = line
-    logging.info(f"Checking: {line}")
-    # TODO
-    # If single statement, run analysis layer with statement inserted,
-    # return types
-
-    # else everything: run analysis layer
-
-
-
-
-@register
-def do_decompose(self, line):
-    """
-    Decompose binding into components.
-    eg: rule -> queries, transforms, actions
-    """
-    params = line
-    # TODO : split objects into tries
-    # run query
-    # split result into bindings
-
-
+# Logging Control###############################################################
 @register
 def do_log(self, line):
     """ Change the logging level """

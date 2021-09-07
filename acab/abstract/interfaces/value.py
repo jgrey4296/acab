@@ -70,11 +70,22 @@ class Value_i(metaclass=abc.ABCMeta):
         pass
 
 
+@dataclass
 class Statement_i(metaclass=abc.ABCMeta):
+
+    breakpoint : bool = field(init=False, default=False)
+    # TODO add listener field for similar to breakpoint
 
     @abc.abstractmethod
     def to_word(self) -> Value_i:
         pass
+
+    def do_break(self):
+        self.breakpoint = not self.breakpoint
+
+    @property
+    def should_break(self) -> bool:
+        return self.breakpoint
 
 @dataclass
 class Sentence_i(metaclass=abc.ABCMeta):

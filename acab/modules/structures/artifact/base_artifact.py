@@ -40,7 +40,3 @@ class Artifact(AcabValue):
         """ Data needs to be able to bind a dictionary
         of values to internal variables """
         raise NotImplementedError()
-
-    def var_set(self):
-        """ Data needs to be able to report internal variables """
-        raise NotImplementedError()

@@ -106,6 +106,11 @@ def do_break(self, line):
             print(f"Breakpoint NOT Set: {bp_result}")
 
     elif "semantic" in result:
+        # TODO breakpoint a semantic handler by name,
+        # TODO breakpoint (in)dependent semantic function
+        # TODO breakpoint a node by sentence path
+        # TODO breakpoint an operator/action
+        # TODO breakpoint a variable
         # run query
         self.state.result = self.state.engine(result.semantic)
         # attach semantic breakpoints to each prod_abstraction
@@ -126,6 +131,9 @@ def do_break(self, line):
 
             print(f"{count} Breakpoints Set: {result.semantic}")
 
+    elif "parser" in result:
+        # TODO add debug breakpoint to a parser
+        pass
     else:
         print("""
         Shunting to Python debugger.

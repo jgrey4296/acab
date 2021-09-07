@@ -10,8 +10,10 @@ logging = root_logger.getLogger(__name__)
 
 from acab.abstract.core import default_structure as DS
 from acab.abstract.interfaces import semantic as SI
-from acab.modules.semantics.context_container import MutableContextInstance
-from acab.modules.semantics.util import SemanticBreakpointDecorator
+from acab.modules.semantics.context_container import (ContextContainer,
+                                                      MutableContextInstance)
+from acab.modules.semantics.util import (SemanticBreakpointDecorator,
+                                         SemanticSubCtxBuildDecorator)
 
 CtxIns = 'ContextInstance'
 
@@ -74,30 +76,33 @@ class ActionAbstraction(SI.AbstractionSemantics_i):
 class AtomicRuleAbstraction(SI.AbstractionSemantics_i):
     """ Run a rule in a single semantic call """
 
+    @SemanticSubCtxBuildDecorator
     @SemanticBreakpointDecorator
     def __call__(self, instruction, semsys, ctxs=None, data=None):
         """ Rule Logic, returns action proposals """
         # TODO Possibly setup a temp ctxs
+        temp_ctxs = ContextContainer.build(ctxs._operators)
 
         rule = instruction
         # Run the query
         if DS.QUERY_COMPONENT in rule:
-            semsys(rule[DS.QUERY_COMPONENT], ctxs=ctxs)
+            semsys(rule[DS.QUERY_COMPONENT], ctxs=temp_ctxs)
 
-        if not bool(ctxs):
+        if not bool(temp_ctxs):
             return
 
         # TODO needs to be applied to all actives
         if DS.TRANSFORM_COMPONENT in rule:
-            semsys(rule[DS.TRANSFORM_COMPONENT], data=data, ctxs=ctxs)
+            semsys(rule[DS.TRANSFORM_COMPONENT], data=data, ctxs=temp_ctxs)
 
         if DS.ACTION_COMPONENT in rule:
-            semsys(rule[DS.ACTION_COMPONENT], data=data, ctxs=ctxs)
+            semsys(rule[DS.ACTION_COMPONENT], data=data, ctxs=temp_ctxs)
 
 class ProxyRuleAbstraction(SI.AbstractionSemantics_i):
     """ Run a rules queries, then return ctxs bound
     with transform+action continuation """
 
+    @SemanticSubCtxBuildDecorator
     @SemanticBreakpointDecorator
     def __call__(self, instruction, semsys, ctxs=None, data=None):
         """ Rule Logic, returns action proposals """
