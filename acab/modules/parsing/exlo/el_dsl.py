@@ -24,7 +24,7 @@ class EL_Parser(DSL_Fragment_i):
     def assert_parsers(self, bootstrapper):
         """ Provide fragments for other parsers """
         # Core
-        # TODO: Make these configurable?
+        # TODO: make this declarative in EL_parser *init*
         bootstrapper.add("valbind"             , PU.VALBIND,
                          "sentence.basic"      , FP.BASIC_SEN,
                          "sentence.param"      , FP.PARAM_SEN,

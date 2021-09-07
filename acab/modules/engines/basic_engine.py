@@ -82,16 +82,14 @@ class AcabBasicEngine(AcabEngine_i):
     def insert(self, s: str, ctxs=None):
         """ Assert a new fact into the engine """
         data = self._dsl_builder.parse(s)
-        return self.semantics(*data,
-                           ctxs=ctxs)
+        return self.semantics(*data, ctxs=ctxs)
 
     @EnsureInitialised
     @MaybeBuildOperatorCtx
     def query(self, s: str, ctxs=None, cache=True):
         """ Ask a question of the working memory """
         instruction = self._dsl_builder.query_parse(s)
-        result = self.semantics(instruction,
-                             ctxs=ctxs)
+        result      = self.semantics(instruction, ctxs=ctxs)
 
         if cache:
             self.add_to_cache(result)

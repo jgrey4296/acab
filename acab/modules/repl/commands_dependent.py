@@ -23,6 +23,7 @@ def do_listen(self, line):
     Listen for specific assertions / rule firings / queries,
     and pause on them
     """
+    # TODO use the same strategy as semantic breakpoints
     logging.info(f"Listening: {line}")
     params = RP.listen_parser.parseString(line)[:]
     words = [y for x in params for y in SPLIT_RE.split(x)]

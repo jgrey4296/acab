@@ -138,6 +138,7 @@ def do_run(self, line):
 
         if bool(self.state.result):
             # Run the bindings
+            print(f"Running {len(bindings)} Statements")
             self.state.result = self.state.engine(bindings)
         else:
             print("No Match to Run")

@@ -109,6 +109,7 @@ class DependentSemantics_i(SemanticSystem_i, HandlerComponent_i):
 
     def verify(self, instruction, data=None, ctxs=None):
         raise NotImplementedError()
+
     @abc.abstractmethod
     def insert(self, struct, sen, data):
         pass

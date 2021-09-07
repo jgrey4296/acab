@@ -74,6 +74,7 @@ class Value_i(metaclass=abc.ABCMeta):
 class Statement_i(metaclass=abc.ABCMeta):
 
     breakpoint : bool = field(init=False, default=False)
+    # TODO add listener field for similar to breakpoint
 
     @abc.abstractmethod
     def to_word(self) -> Value_i:
