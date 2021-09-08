@@ -73,7 +73,7 @@ class ProductionComponent(AcabStatement):
 
     # Sugared: Denotes whether the parse originated from a sugared operator
     # eg: $x ~= /blah/ -> $x
-    sugared : bool      = False
+    sugared : bool      = field(default=False)
     rebind  : AcabValue = field(default=None)
 
     def __post_init__(self):

@@ -67,11 +67,12 @@ class AcabValue(VI.Value_i, Generic[T]):
         # NOTE: use of setattr to override frozen temporarily to update name
         #
         # TODO: this could be a sieve?
+        # name update #########################################################
         name_update = None
         if self.name is None and self.value is None:
             name_update = self.__class__.__name__
         if self.name is not None:
-            assert(isinstance(self.name, str)), breakpoint()
+            assert(isinstance(self.name, str)), self.name
         elif isinstance(self.value, Pattern):
             name_update = self.value.pattern
         elif isinstance(self.value, (list, AcabStatement)):
@@ -81,6 +82,7 @@ class AcabValue(VI.Value_i, Generic[T]):
 
         if name_update is not None:
             self.name = name_update
+        # end of name update ##################################################
 
         if self.value is None:
             self.value = self.name
@@ -91,7 +93,9 @@ class AcabValue(VI.Value_i, Generic[T]):
         if DS.BIND not in self.data:
             self.data[DS.BIND] = False
 
-        if any([not isinstance(x, AcabValue) for x in self.params]):
+        if self.params is None:
+            self.params = []
+        elif any([not isinstance(x, AcabValue) for x in self.params]):
             original_params = self.params[:]
             self.params.clear()
             self.params.extend([AcabValue.safe_make(x) for x in original_params])
