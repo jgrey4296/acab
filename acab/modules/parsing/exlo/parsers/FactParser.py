@@ -12,6 +12,7 @@ from acab.abstract.parsing.consts import (COLLAPSE_CONTEXT, COMMA, DELIM, END, e
 from acab.abstract.parsing.default_structure import OPERATOR, SEN, VALUE
 from acab.modules.parsing.exlo import constructors as PConst
 from acab.abstract.parsing.indented_block import IndentedBlock
+from acab.abstract.parsing.annotation import ValueRepeatAnnotation
 
 logging = root_logger.getLogger(__name__)
 # Hotload insertion points:
@@ -36,7 +37,7 @@ QUERY_OP_Internal = N(OPERATOR, op_path) \
 QUERY_OP_Internal.setParseAction(PConst.build_query_component)
 
 COLLAPSE_CONTEXT = COLLAPSE_CONTEXT.copy()
-COLLAPSE_CONTEXT.setParseAction(lambda x: CTX_OP.collapse)
+COLLAPSE_CONTEXT.setParseAction(lambda x: ValueRepeatAnnotation("constraint", CTX_OP.collapse))
 
 query_or_annotation = pp.MatchFirst([QUERY_OP_Internal,
                                      COLLAPSE_CONTEXT,

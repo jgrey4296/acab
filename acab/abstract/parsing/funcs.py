@@ -13,7 +13,7 @@ from acab.abstract.core.production_abstractions import (ProductionComponent,
 from acab.abstract.core.values import AcabValue, Sentence
 from acab.abstract.parsing import consts as PConst
 from acab.abstract.core.default_structure import TYPE_BOTTOM_NAME
-
+from acab.abstract.parsing.annotation import ValueAnnotation
 import acab.abstract.core.default_structure as DS
 import acab.abstract.parsing.default_structure as PDS
 
@@ -62,13 +62,14 @@ def make_value(s, loc, toks):
 
 def add_annotations(s, loc, toks):
     """ Add additional data to a node """
-    update_data = {}
     if PDS.MODAL in toks:
         modal_value = toks[PDS.MODAL]
-        update_data[modal_value.__class__.__name__] = modal_value
+        toks[PDS.NODE].data[modal_value.__class__.__name__] = modal_value
     if PDS.ANNOTATION in toks:
-        update_data.update({x: y for x, y in toks[PDS.ANNOTATION]})
-    toks[PDS.NODE].data.update(update_data)
+        for anno in toks[PDS.ANNOTATION]:
+            assert(isinstance(anno, ValueAnnotation))
+            anno(toks[PDS.NODE])
+
     return toks[PDS.NODE]
 
 
@@ -130,7 +131,7 @@ def build_clause(s, loc, toks):
     return toks
 
 def build_assignment(s, loc, toks):
-    # TODO remove this
+    # TODO refactor this into a valueannotation?
     return (toks[0][1], toks[1])
 
 
