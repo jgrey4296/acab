@@ -41,10 +41,9 @@ class BasicNodeSemantics(SI.IndependentSemantics_i):
         """ The Most Basic Lift, does nothing """
         return node
 
-    def access(self, node, term, data=None, get_all=False):
-        # TODO possible shift get_all into data
+    def access(self, node, term, data=None):
         potentials = []
-        if get_all:
+        if term is None:
             potentials += node.children.values()
         elif node.has_child(term):
             potentials.append(node.get_child(term))
@@ -87,13 +86,15 @@ class ExclusionNodeSemantics(SI.IndependentSemantics_i):
 
         return node
 
-    def access(self, node, term, data=None, get_all=False):
+    def access(self, node, term, data=None):
+        logging.debug("Semantics: Access")
         potentials = []
         value = None
-        if get_all:
+        if term is None:
             potentials += node.children.values()
         elif node.has_child(term):
             potentials.append(node.get_child(term))
+
 
         if bool(term) and EXOP in term.data and any([x.data[EXOP] != term.data[EXOP] for x in potentials]):
             raise ASErr.AcabSemanticIndependentFailure(f"EXOP MisMatch, expected {term.data[EXOP]}",
@@ -103,6 +104,7 @@ class ExclusionNodeSemantics(SI.IndependentSemantics_i):
         return potentials
 
     def insert(self, node, new_node, data=None) -> Node:
+        logging.debug("Semantics: Insert")
         assert(isinstance(node, AcabNode))
         assert(isinstance(new_node, AcabNode))
 
@@ -116,6 +118,7 @@ class ExclusionNodeSemantics(SI.IndependentSemantics_i):
         return result
 
     def remove(self, node, to_delete, data=None):
+        logging.debug("Semantics: remove")
         assert(isinstance(node, AcabNode))
         assert(isinstance(to_delete, AcabValue))
 

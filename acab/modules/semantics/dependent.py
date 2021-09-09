@@ -36,6 +36,7 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
         return is_bns or has_all_node_comp
 
     def insert(self, struct, sen, data=None, ctxs=None):
+        logging.debug("Semantics: Insert")
         if data is None:
             data = {}
 
@@ -43,14 +44,14 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
             return self._delete(struct, sen, data)
 
         # Get the root
-        current = self.default[0].up(struct.root)
+        current = self.default.func.up(struct.root)
         for word in sen:
-            semantics, _ = self.lookup(current)
+            semantics, _ = self.lookup(current).to_pair()
             accessible = semantics.access(current, word, data)
             if bool(accessible):
                 current = accessible[0]
             else:
-                next_semantics, _ = self.lookup(word)
+                next_semantics, _ = self.lookup(word).to_pair()
                 new_node = next_semantics.make(word, data)
                 struct.components['all_nodes'][new_node.uuid] = new_node
                 current = semantics.insert(current, new_node, data)
@@ -58,12 +59,13 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
         return current
 
     def _delete(self, struct, sen, data=None):
+        logging.debug("Semantics: Delete")
         parent = struct.root
         current = struct.root
 
         for word in sen:
             # Get independent semantics for current
-            semantics, _ = self.lookup(current)
+            semantics, _ = self.lookup(current).to_pair()
             accessed = semantics.access(current, word, data)
             if bool(accessed):
                 parent = current
@@ -73,12 +75,13 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
 
         # At leaf:
         # remove current from parent
-        semantics, _ = self.lookup(parent)
+        semantics, _ = self.lookup(parent).to_pair()
         semantics.remove(parent, current.value, data)
 
 
     def query(self, struct, sen, data=None, ctxs=None):
         """ Breadth First Search Query """
+        logging.debug("Semantics: Query")
         if ctxs is None:
             raise ASErr.AcabSemanticException("Ctxs is none to TrieSemantics.query", sen)
 
@@ -91,20 +94,19 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
         with ctxs(struct.root, sen, data, collapse_vars, negated_query):
             for word in sen:
                 for ctxInst in ctxs.active_list(clear=True):
-                    indep, _ = self.lookup(ctxInst._current)
+                    indep, _ = self.lookup(ctxInst._current).to_pair()
                     search_word = word
-                    get_all = False
                     # Handle variable:
                     if word.is_var and word not in ctxInst:
-                        get_all = True
+                        search_word = None
                     elif word.is_var and word in ctxInst:
                         # Word is var, but bound, so look for that instead
                         search_word = ctxInst[word]
 
                     results = indep.access(ctxInst._current,
                                            search_word,
-                                           data,
-                                           get_all=get_all)
+                                           data)
+
                     if not bool(results):
                         ctxs.fail(ctxInst, word, None)
                     else:
@@ -115,6 +117,7 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
         """ Convert a trie to a list of sentences
         essentially a dfs of the structure
         """
+        logging.debug("Semantics: to_sentences")
         # TODO if passed a node, use that in place of root
         result_list = []
         # Queue: List[Tuple[List[Value], Node]]
@@ -122,8 +125,8 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
         while bool(queue):
             path, current = queue.pop(0)
             updated_path = path + [current.value]
-            semantics, _ = self.lookup(current)
-            accessible = semantics.access(current, None, data, get_all=True)
+            semantics, _ = self.lookup(current).to_pair()
+            accessible = semantics.access(current, None, data)
             if bool(accessible):
                 # branch
                 queue += [(updated_path, x) for x in accessible]

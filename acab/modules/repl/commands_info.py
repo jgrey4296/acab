@@ -99,11 +99,11 @@ def do_stat(self, line):
         semantic = self.state.engine.semantics
         print("{} : {}".format(semantic.__module__, semantic.__class__.__name__))
         print("\n", semantic.__doc__, "\n")
-        print("Handlers: {}".format(len(semantic.registered_handlers)))
-        print("Structs:  {}".format(len(semantic.registered_structs)))
+        print("Handlers: {}".format(len(semantic.handlers)))
+        print("Structs:  {}".format(len(semantic.structs)))
 
         print("Handler Keys:")
-        print("\t{}".format("\n\t".join([str(x) for x in semantic.registered_handlers.keys()])))
+        print("\t{}".format("\n\t".join([str(x) for x in semantic.handlers.keys()])))
 
         print("----------")
         print("Module Semantics: ")

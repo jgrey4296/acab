@@ -136,7 +136,7 @@ class ContextContainer(CtxInt.ContextContainer_i):
         """ Record a failure, the query sentence that failed,
         and the word that it failed on """
         # add failure details to the instance, of word and query clause
-
+        logging.debug("ContextContainer: Failing")
         # add to _purgatory
         instance._failure_word = word
         self._purgatory.append(instance.uuid)
@@ -145,6 +145,7 @@ class ContextContainer(CtxInt.ContextContainer_i):
         """
         run a word's tests on available nodes, with an instance
         """
+        logging.debug("ContextContainer: Testing/Extending")
         constraints : Constraints = ConstraintCollection.build(word, self._operators)
         assert(len(possible) == 1 or constraints._bind)
         successes = []

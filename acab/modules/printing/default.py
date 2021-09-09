@@ -5,15 +5,17 @@ from typing import cast, ClassVar, TypeVar, Generic
 
 from acab.modules.printing.basic_printer import BasicPrinter
 import acab.modules.printing.printers as Printers
+from acab.abstract.interfaces.handler_system import Handler
 
 def DEFAULT_PRINTER():
-    return BasicPrinter(handlers=[Printers.BasicSentenceAwarePrinter("_:SENTENCE"),
-                                  Printers.ConstraintAwareValuePrinter("_:ATOM"),
-                                  Printers.ProductionComponentPrinter("_:COMPONENT"),
-                                  Printers.ExplicitContainerPrinter("_:CONTAINER"),
-                                  Printers.ImplicitContainerPrinter("_:IMPLICIT_CONTAINER"),
-                                  Printers.StructurePrinter("_:STRUCTURE"),
-                                  Printers.ConfigBackedSymbolPrinter("_:SYMBOL"),
-                                  Printers.PrimitiveTypeAwarePrinter("_:NO_MODAL")],
-                        structs=[],
+    return BasicPrinter(in_handlers=[
+        Handler("_:SENTENCE",           Printers.BasicSentenceAwarePrinter),
+        Handler("_:ATOM",               Printers.ConstraintAwareValuePrinter),
+        Handler("_:COMPONENT",          Printers.ProductionComponentPrinter),
+        Handler("_:CONTAINER",          Printers.ExplicitContainerPrinter),
+        Handler("_:IMPLICIT_CONTAINER", Printers.ImplicitContainerPrinter),
+        Handler("_:STRUCTURE",          Printers.StructurePrinter),
+        Handler("_:SYMBOL",             Printers.ConfigBackedSymbolPrinter),
+        Handler("_:NO_MODAL",           Printers.PrimitiveTypeAwarePrinter),
+    ],
                         settings={"MODAL": "exop"})

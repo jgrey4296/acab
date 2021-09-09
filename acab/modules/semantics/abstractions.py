@@ -26,7 +26,7 @@ class QueryAbstraction(SI.AbstractionSemantics_i):
     def __call__(self, instruction, semSys, ctxs=None, data=None):
         query = instruction
         # Get the default dependent semantics
-        sem, struct = semSys.lookup(None)
+        sem, struct = semSys.lookup(None).to_pair()
         for clause in query.clauses:
             # TODO ensure system selects the dep sems and struct
             sem.query(struct, clause, data=data, ctxs=ctxs)

@@ -27,6 +27,7 @@ from acab.abstract.interfaces.dsl import Bootstrapper_i
 from acab.modules.semantics.context_container import ContextContainer
 from acab.modules.semantics.dependent import BreadthTrieSemantics
 from acab.modules.semantics.independent import BasicNodeSemantics
+from acab.abstract.interfaces.handler_system import Handler
 
 logging = root_logger.getLogger(__name__)
 config = GET()
@@ -43,13 +44,11 @@ class TrieBootstrapper(Bootstrapper_i):
         logging.info("Parse Bootstrapper Initializing")
         super().__init__()
         # Trie Semantics, using basic nodes
-        self._semantics = BreadthTrieSemantics("_:Trie",
-                                            handlers=[],
-                                            structs=[],
-                                            default=(BasicNodeSemantics("_:Node"),None))
+        self._semantics = BreadthTrieSemantics(default=Handler("_:node",
+                                                            BasicNodeSemantics()))
 
         # And using a standard node struct
-        self._structure = BasicNodeStruct.build_default("_:Trie")
+        self._structure = BasicNodeStruct.build_default()
 
     def __len__(self):
         return len(self._structure)

@@ -51,15 +51,15 @@ class SemanticSystemTests(unittest.TestCase):
 
     def test_construction(self):
         semsys = BasicSemanticSystem(default=(SemanticSystemTests.StubAbsSemantic("_stub"), None),
-                                     handlers=[], structs=[])
+                                     handlers=[])
         self.assertIsInstance(semsys, SemanticSystem_i)
         self.assertIsInstance(semsys.default[0], AbstractionSemantics_i)
-        self.assertFalse(semsys.registered_handlers)
-        self.assertFalse(semsys.registered_structs)
+        self.assertFalse(semsys.handlers)
+        self.assertFalse(semsys.structs)
 
     def test_default_call(self):
         semsys = BasicSemanticSystem(default=(SemanticSystemTests.StubAbsSemantic("_:stub"), None),
-                                     handlers=[], structs=[])
+                                     handlers=[])
         test_sen = Sentence.build(["test"])
         with self.assertRaises(AcabBaseException) as cm:
             semsys(test_sen)
@@ -69,7 +69,7 @@ class SemanticSystemTests(unittest.TestCase):
     def test_retrieval(self):
         # put some semantics in semsys.mapping
         semsys = BasicSemanticSystem(default=(SemanticSystemTests.StubAbsSemantic("_:stub"), None),
-                                     handlers=[], structs=[])
+                                     handlers=[])
 
 
 

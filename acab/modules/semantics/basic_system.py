@@ -52,7 +52,7 @@ class BasicSemanticSystem(SemanticSystem_i):
     def run_instruction(self, instruction, ctxs=None, data=None) -> Any:
         semantics, struct = None, None
         try:
-            semantics, struct = self.lookup(instruction)
+            semantics, struct = self.lookup(instruction).to_pair()
             assert(semantics is not None)
             logging.debug(f"Running Semantics: {semantics}")
             # run the semantics
@@ -77,4 +77,8 @@ class BasicSemanticSystem(SemanticSystem_i):
         return ctxs
 
     def to_sentences(self) -> List[Sentence]:
-        return self.default[0].to_sentences(self.default[1])
+        return self.default.func.to_sentences(self.default.struct)
+
+
+    def __repr__(self):
+        return f"({self.__class__.__name__}: {len(self.handlers)})"

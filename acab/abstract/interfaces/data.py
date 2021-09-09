@@ -5,7 +5,6 @@ Here, 'Data' means something analogous to ADTs
 import abc
 from dataclasses import dataclass, field
 from typing import Any, Dict
-from acab.abstract.interfaces.handler_system import HandlerComponent_i
 
 Value              = 'AcabValue'
 Node               = 'Node_i'
@@ -58,7 +57,7 @@ class Node_i(metaclass=abc.ABCMeta):
 
 # TODO factor 'root' out into AcabNodeStruct
 @dataclass
-class Structure_i(HandlerComponent_i):
+class Structure_i:
     """ The structures which semantics operate on """
     root       : Node           = field()
     components : Dict[str, Any] = field(init=False, default_factory=dict)

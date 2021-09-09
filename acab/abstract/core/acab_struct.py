@@ -19,9 +19,9 @@ class BasicNodeStruct(AcabStruct):
     """ A Node based struct """
 
     @staticmethod
-    def build_default(name="_:Node"):
-        logging.info(f"Building Node Struct: {name}")
-        struct = BasicNodeStruct(name, AcabNode.Root())
+    def build_default():
+        logging.info(f"Building Node Struct")
+        struct = BasicNodeStruct(AcabNode.Root())
         # all_nodes : WeakDict[UUID, Node]
         struct.components['all_nodes'] = WeakValueDictionary()
         return struct

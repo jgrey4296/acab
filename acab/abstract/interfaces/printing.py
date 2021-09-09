@@ -10,13 +10,13 @@ import acab.abstract.interfaces.util as SU
 from acab.abstract.config.config import AcabConfig, ConfigSpec
 from acab.abstract.core import production_abstractions as PA
 from acab.abstract.core.values import AcabStatement
-from acab.abstract.interfaces.handler_system import (
-    HandlerComponent_i, HandlerSystem_i)
+from acab.abstract.interfaces.handler_system import HandlerSystem_i
 from acab.abstract.interfaces.value import (Sentence_i,
                                                        Value_i)
 from acab.abstract.printing.default_symbols import PRINT_SEPARATOR_P
 from acab.error.acab_print_exception import AcabPrintException
 from acab.error.acab_semantic_exception import AcabSemanticException
+from acab.abstract.interfaces.handler_system import Handler
 
 logging = root_logger.getLogger(__name__)
 
@@ -34,10 +34,10 @@ class PrintSystem_i(HandlerSystem_i):
     settings  : Dict[str, str] = field(default_factory=dict)
     _config   : AcabConfig     = field(init=False, default_factory=AcabConfig.Get)
 
-    def __post_init__(self, handlers, structs):
-        super().__post_init__(handlers, structs)
-        if self.default[0] is None:
-            self.default = (lambda x: str(x), None)
+    def __post_init__(self, handlers):
+        super().__post_init__(handlers)
+        if self.default is None:
+            self.default = Handler("_:default", lambda x: str(x))
 
     def check(self, val) -> Optional[str]:
         """ Check a value to toggle variations/get defaults"""
@@ -59,7 +59,7 @@ class PrintSystem_i(HandlerSystem_i):
                 remaining = current + remaining
                 continue
             else:
-                handler, _ = self.lookup(current)
+                handler, _ = self.lookup(current).to_pair()
 
             if isinstance(current, PrintSystem_i.HandlerOverride):
                 current = current.data
@@ -90,7 +90,7 @@ class PrintSystem_i(HandlerSystem_i):
 
 #--------------------
 @dataclass
-class PrintSemantics_i(HandlerComponent_i):
+class PrintSemantics_i:
 
     transforms  : List[Callable] = field(init=False, default_factory=list)
 

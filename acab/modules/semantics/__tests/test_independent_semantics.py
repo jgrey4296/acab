@@ -77,7 +77,7 @@ class IndependentSemanticTests(unittest.TestCase):
         sem.insert(first, second)
         sem.insert(first, third)
 
-        accessed = sem.access(first, None, get_all=True)
+        accessed = sem.access(first, None)
         self.assertEqual(len(accessed), 2)
 
     def test_basic_access_specific(self):
