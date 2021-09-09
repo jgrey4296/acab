@@ -32,11 +32,14 @@ PIPELINE_SEM_HINT  = Sentence.build([config.prepare("SEMANTICS", "PIPELINE")()])
 
 ATOM = TYPE_BOTTOM_NAME
 
+DEFAULT_NODE_DATA = {}
+DEFAULT_NODE_DATA.update(config.defaults)
+
 def make_value(s, loc, toks):
     """ Make a value coupled with additional data """
     value = None
     _type = ATOM
-    data = PConst.DEFAULT_NODE_DATA.copy()
+    data = DEFAULT_NODE_DATA.copy()
     # TODO: link type primitives with type system
     if PDS.BIND in toks:
         # is variable

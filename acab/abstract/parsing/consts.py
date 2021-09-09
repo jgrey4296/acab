@@ -23,8 +23,6 @@ pp.ParserElement.setDefaultWhitespaceChars(WHITE_SPACE)
 if config.prepare("Parse", "DEBUG_PARSERS", actions=[config.actions_e.BOOL])():
     DBF.debug_pyparsing()
 
-DEFAULT_NODE_DATA = {}
-DEFAULT_NODE_DATA.update(config.defaults)
 
 
 s         = pp.Suppress
