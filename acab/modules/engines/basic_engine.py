@@ -22,7 +22,7 @@ from acab.abstract.interfaces.printing import PrintSystem_i
 from acab.abstract.interfaces.semantic import SemanticSystem_i
 from acab.abstract.interfaces.value import Value_i, Sentence_i
 from acab.error.acab_base_exception import AcabBaseException
-from acab.modules.engines.util import MaybeBuildOperatorCtx
+from acab.modules.engines.util import MaybeBuildOperatorCtxDecorator
 
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
@@ -46,7 +46,7 @@ class AcabBasicEngine(AcabEngine_i):
         self.initialised = True
 
     @EnsureInitialised
-    @MaybeBuildOperatorCtx
+    @MaybeBuildOperatorCtxDecorator
     def __call__(self, inst:Instruction, bindings=None) -> CtxCon:
         """ Where a inst could be a:
         str to parse then,
@@ -78,24 +78,6 @@ class AcabBasicEngine(AcabEngine_i):
 
 
     @EnsureInitialised
-    @MaybeBuildOperatorCtx
-    def insert(self, s: str, ctxs=None):
-        """ Assert a new fact into the engine """
-        data = self._dsl_builder.parse(s)
-        return self.semantics(*data, ctxs=ctxs)
-
-    @EnsureInitialised
-    @MaybeBuildOperatorCtx
-    def query(self, s: str, ctxs=None, cache=True):
-        """ Ask a question of the working memory """
-        instruction = self._dsl_builder.query_parse(s)
-        result      = self.semantics(instruction, ctxs=ctxs)
-
-        if cache:
-            self.add_to_cache(result)
-        return result
-
-
     def add_to_cache(self, result: CtxCon):
         self._cached_bindings.append(result)
         if len(self._cached_bindings) > self._cache_size:
