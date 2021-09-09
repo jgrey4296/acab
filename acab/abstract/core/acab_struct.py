@@ -22,6 +22,7 @@ class BasicNodeStruct(AcabStruct):
     def build_default(name="_:Node"):
         logging.info(f"Building Node Struct: {name}")
         struct = BasicNodeStruct(name, AcabNode.Root())
+        # all_nodes : WeakDict[UUID, Node]
         struct.components['all_nodes'] = WeakValueDictionary()
         return struct
 
@@ -30,6 +31,13 @@ class BasicNodeStruct(AcabStruct):
 
     def __len__(self):
         return len(self.components['all_nodes'])
+
+    def __repr__(self):
+        val = f"BasicNodeStruct(k:{self.mapped_to}, nodes:"
+        val += ";".join([x.name for x in self.components['all_nodes'].values()][:5])
+        val += "..."
+        val += ")"
+        return val
 
 class NPArrayStruct(AcabStruct):
     """ A numpy based data structure """
