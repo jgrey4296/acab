@@ -33,7 +33,7 @@ class BasicNodeStruct(AcabStruct):
         return len(self.components['all_nodes'])
 
     def __repr__(self):
-        val = f"BasicNodeStruct(k:{self.mapped_to}, nodes:"
+        val = f"BasicNodeStruct("
         val += ";".join([x.name for x in self.components['all_nodes'].values()][:5])
         val += "..."
         val += ")"

@@ -36,7 +36,6 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
         return is_bns or has_all_node_comp
 
     def insert(self, struct, sen, data=None, ctxs=None):
-        logging.debug("Semantics: Insert")
         if data is None:
             data = {}
 
@@ -59,7 +58,6 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
         return current
 
     def _delete(self, struct, sen, data=None):
-        logging.debug("Semantics: Delete")
         parent = struct.root
         current = struct.root
 
@@ -81,7 +79,6 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
 
     def query(self, struct, sen, data=None, ctxs=None):
         """ Breadth First Search Query """
-        logging.debug("Semantics: Query")
         if ctxs is None:
             raise ASErr.AcabSemanticException("Ctxs is none to TrieSemantics.query", sen)
 
@@ -117,7 +114,6 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
         """ Convert a trie to a list of sentences
         essentially a dfs of the structure
         """
-        logging.debug("Semantics: to_sentences")
         # TODO if passed a node, use that in place of root
         result_list = []
         # Queue: List[Tuple[List[Value], Node]]

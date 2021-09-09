@@ -77,7 +77,6 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
         if provides_struct and pair_needs_struct:
             self.handlers[handler.signal].add_struct(handler.struct)
 
-    #@LogDecorator("Using Semantics: ")
     def lookup(self, value: Value_i) -> Handler:
         # sieve from most to least specific
         if value is None:

@@ -87,7 +87,6 @@ class ExclusionNodeSemantics(SI.IndependentSemantics_i):
         return node
 
     def access(self, node, term, data=None):
-        logging.debug("Semantics: Access")
         potentials = []
         value = None
         if term is None:
@@ -104,7 +103,6 @@ class ExclusionNodeSemantics(SI.IndependentSemantics_i):
         return potentials
 
     def insert(self, node, new_node, data=None) -> Node:
-        logging.debug("Semantics: Insert")
         assert(isinstance(node, AcabNode))
         assert(isinstance(new_node, AcabNode))
 
@@ -118,7 +116,6 @@ class ExclusionNodeSemantics(SI.IndependentSemantics_i):
         return result
 
     def remove(self, node, to_delete, data=None):
-        logging.debug("Semantics: remove")
         assert(isinstance(node, AcabNode))
         assert(isinstance(to_delete, AcabValue))
 
