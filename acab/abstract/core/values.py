@@ -146,10 +146,15 @@ class AcabValue(VI.Value_i, Generic[T]):
     def type(self) -> Sen:
         """ Lazy Type Coercion to Sentence """
         type_matches_t = isinstance(self.data[DS.TYPE_INSTANCE], Sentence)
-        if not type_matches_t:
-            type_words = self.data[DS.TYPE_INSTANCE]
-            if not isinstance(type_words, list):
-                type_words = [type_words]
+        if type_matches_t:
+            return self.data[DS.TYPE_INSTANCE]
+
+        if DS.SEMANTIC_HINT in self.data:
+            self.data[DS.TYPE_INSTANCE] = self.data[DS.SEMANTIC_HINT]
+
+        type_words = self.data[DS.TYPE_INSTANCE]
+        if not isinstance(type_words, list):
+            type_words = [type_words]
             self.data[DS.TYPE_INSTANCE] = Sentence.build(type_words)
 
         return self.data[DS.TYPE_INSTANCE]

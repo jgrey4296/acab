@@ -161,7 +161,7 @@ class ExplicitContainerPrinter(PrintSemantics_i):
     def __call__(self, value, top=None):
         result = []
         result.append(value.name)
-        result.append("(::container):")
+        result += ["(::", value.type, ")"]
         result.append(DSYM.CONTAINER_JOIN_P)
         result.append(PW._wrap_var_list(self, value.type, []))
         # TODO add tags
@@ -179,7 +179,7 @@ class StructurePrinter(PrintSemantics_i):
         # print the name
         result.append(top.override("_:NO_MODAL", value))
         # TODO parameterise this
-        result += ["(", "::", "structure", ")"]
+        result += ["(::", value.type, ")"]
         result.append(":")
         result.append(DSYM.CONTAINER_JOIN_P)
         for tag in value.tags:
