@@ -95,8 +95,10 @@ class ExclusionNodeSemantics(SI.IndependentSemantics_i):
         elif node.has_child(term):
             potentials.append(node.get_child(term))
 
-        if bool(term) and EXOP in term.data:
-            potentials = [x for x in potentials if x.data[EXOP] == term.data[EXOP]]
+        if bool(term) and EXOP in term.data and any([x.data[EXOP] != term.data[EXOP] for x in potentials]):
+            raise ASErr.AcabSemanticIndependentFailure(f"EXOP MisMatch, expected {term.data[EXOP]}",
+                                                       term)
+
 
         return potentials
 
