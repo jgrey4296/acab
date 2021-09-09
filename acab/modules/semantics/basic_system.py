@@ -69,7 +69,7 @@ class BasicSemanticSystem(SemanticSystem_i):
             # Semantic exceptions can be handled,
             # but others continue upwards
             # self.failure(semantics, struct, instruction, ctxs, err)
-            logging.warning("Semantic Failure: {}".format(err))
+            logging.warning(err)
         finally: # Always run exit hooks
             # TODO exit hooks would go here
             pass
