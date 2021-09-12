@@ -28,7 +28,7 @@ import acab.abstract.interfaces.util as SU
 from acab.abstract.config.config import AcabConfig, ConfigSpec
 from acab.abstract.core.default_structure import QUERY
 from acab.abstract.interfaces.context import ContextSet_i
-from acab.abstract.interfaces.handler_system import HandlerSystem_i
+from acab.abstract.interfaces.handler_system import HandlerSystem_i, Handler, HandlerComponent_i
 from acab.abstract.interfaces.value import Sentence_i, Value_i
 from acab.error.acab_print_exception import AcabPrintException
 from acab.error.acab_semantic_exception import AcabSemanticException
@@ -105,8 +105,10 @@ class SemanticSystem_i(HandlerSystem_i):
             [self._register_handler(x) for x in sem.abstraction]
             [self._register_struct(x) for x in sem.structs]
 
+
+
 @dataclass
-class DependentSemantics_i(SemanticSystem_i):
+class DependentSemantics_i(HandlerComponent_i, SemanticSystem_i):
     """
     Dependent Semantics rely on the context they are called in to function
     and are built with specific mappings to independent semantics
@@ -142,7 +144,7 @@ class DependentSemantics_i(SemanticSystem_i):
         pass
 
 
-class IndependentSemantics_i:
+class IndependentSemantics_i(HandlerComponent_i):
     """
     Independent Semantics which operate on values and nodes, without
     requiring access to larger context, or engine access
@@ -178,7 +180,7 @@ class IndependentSemantics_i:
         pass
 
 
-class AbstractionSemantics_i:
+class AbstractionSemantics_i(HandlerComponent_i):
     """
     Semantics of Higher level abstractions
     eg: Rules, Layers, Pipelines...

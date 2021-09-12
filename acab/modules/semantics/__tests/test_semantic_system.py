@@ -20,6 +20,7 @@ from acab.error.acab_base_exception import AcabBaseException
 from acab.modules.semantics.context_set import (ContextSet, ContextInstance)
 from acab.modules.semantics.independent import ExclusionNodeSemantics
 from acab.modules.semantics.basic_system import BasicSemanticSystem
+from acab.abstract.interfaces.handler_system import Handler
 
 EXOP         = config.prepare("MODAL", "exop")()
 EXOP_enum    = config.prepare(EXOP, as_enum=True)()
@@ -49,16 +50,13 @@ class SemanticSystemTests(unittest.TestCase):
             raise AcabBaseException("TestAbsSem called")
 
     def test_construction(self):
-        semsys = BasicSemanticSystem(default=(SemanticSystemTests.StubAbsSemantic("_stub"), None),
-                                     handlers=[])
+        semsys = BasicSemanticSystem(default=SemanticSystemTests.StubAbsSemantic()
         self.assertIsInstance(semsys, SemanticSystem_i)
-        self.assertIsInstance(semsys.default[0], AbstractionSemantics_i)
+        self.assertIsInstance(semsys.default.func, AbstractionSemantics_i)
         self.assertFalse(semsys.handlers)
-        self.assertFalse(semsys.structs)
 
     def test_default_call(self):
-        semsys = BasicSemanticSystem(default=(SemanticSystemTests.StubAbsSemantic("_:stub"), None),
-                                     handlers=[])
+        semsys = BasicSemanticSystem(default=SemanticSystemTests.StubAbsSemantic()
         test_sen = Sentence.build(["test"])
         with self.assertRaises(AcabBaseException) as cm:
             semsys(test_sen)
@@ -67,9 +65,7 @@ class SemanticSystemTests(unittest.TestCase):
 
     def test_retrieval(self):
         # put some semantics in semsys.mapping
-        semsys = BasicSemanticSystem(default=(SemanticSystemTests.StubAbsSemantic("_:stub"), None),
-                                     handlers=[])
-
+        semsys = BasicSemanticSystem(default=SemanticSystemTests.StubAbsSemantic()
 
 
     def test_failure(self):

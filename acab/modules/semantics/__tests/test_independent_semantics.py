@@ -30,7 +30,7 @@ class IndependentSemanticTests(unittest.TestCase):
     # Insert/Remove/Accessible/Get/Up/Down
     ## everything equal except insert for basic v exclusion
     def test_basic_node_insert(self):
-        sem = BasicNodeSemantics("_:node")
+        sem = BasicNodeSemantics()
         # create two nodes
         first = sem.make(AcabValue("first"))
         second = sem.make(AcabValue("second"))
@@ -43,7 +43,7 @@ class IndependentSemanticTests(unittest.TestCase):
         self.assertTrue(third in first)
 
     def test_exclusion_node_insert(self):
-        sem = ExclusionNodeSemantics("_:node")
+        sem = ExclusionNodeSemantics()
         # create two sub nodes
         first = sem.make(AcabValue("first"), data={EXOP: EXOP_enum.EX})
         second = sem.make(AcabValue("second"))
@@ -56,7 +56,7 @@ class IndependentSemanticTests(unittest.TestCase):
         self.assertTrue(third in first)
 
     def test_basic_node_insert_fail(self):
-        sem = BasicNodeSemantics("_:node")
+        sem = BasicNodeSemantics()
         # create two nodes
         first = sem.make(AcabValue("first"))
         second = sem.make(AcabValue("second"))
@@ -68,7 +68,7 @@ class IndependentSemanticTests(unittest.TestCase):
 
 
     def test_basic_access_all(self):
-        sem = BasicNodeSemantics("_:node")
+        sem = BasicNodeSemantics()
         # create two nodes
         first  = sem.make(AcabValue("first"))
         second = sem.make(AcabValue("second"))
@@ -81,7 +81,7 @@ class IndependentSemanticTests(unittest.TestCase):
         self.assertEqual(len(accessed), 2)
 
     def test_basic_access_specific(self):
-        sem = BasicNodeSemantics("_:node")
+        sem = BasicNodeSemantics()
         # create two nodes
         first  = sem.make(AcabValue("first"))
         second = sem.make(AcabValue("second"))
@@ -95,7 +95,7 @@ class IndependentSemanticTests(unittest.TestCase):
         self.assertEqual(accessed[0].value, "second")
 
     def test_exclusion_access(self):
-        sem = ExclusionNodeSemantics("_:node")
+        sem = ExclusionNodeSemantics()
         # create two nodes
         first = sem.make(AcabValue("first"))
         second = sem.make(AcabValue("second"), data={EXOP: EXOP_enum.EX})
@@ -104,19 +104,20 @@ class IndependentSemanticTests(unittest.TestCase):
         accessed = sem.access(first, AcabValue("second", data={EXOP: EXOP_enum.EX}))
         self.assertEqual(len(accessed), 1)
         self.assertEqual(accessed[0].value, "second")
+
     def test_exclusion_access_fail(self):
-        sem = ExclusionNodeSemantics("_:node")
+        sem = ExclusionNodeSemantics()
         # create two nodes
         first = sem.make(AcabValue("first"))
         second = sem.make(AcabValue("second"), data={EXOP: EXOP_enum.DOT})
         # insert one into the other
         sem.insert(first, second)
-        accessed = sem.access(first, AcabValue("second", data={EXOP: EXOP_enum.EX}))
-        self.assertEqual(len(accessed), 0)
+        with self.assertRaises(AcabSemanticException):
+            sem.access(first, AcabValue("second", data={EXOP: EXOP_enum.EX}))
 
 
     def test_basic_access_fail(self):
-        sem = BasicNodeSemantics("_:node")
+        sem = BasicNodeSemantics()
         # create two nodes
         first  = sem.make(AcabValue("first"))
         second = sem.make(AcabValue("second"))
@@ -129,7 +130,7 @@ class IndependentSemanticTests(unittest.TestCase):
         self.assertEqual(len(accessed), 0)
 
     def test_basic_remove(self):
-        sem = BasicNodeSemantics("_:node")
+        sem = BasicNodeSemantics()
         # create two nodes
         first  = sem.make(AcabValue("first"))
         second = sem.make(AcabValue("second"))
@@ -143,7 +144,7 @@ class IndependentSemanticTests(unittest.TestCase):
         self.assertFalse(second in first)
 
     def test_basic_remove_fail(self):
-        sem = BasicNodeSemantics("_:node")
+        sem = BasicNodeSemantics()
         # create two nodes
         first  = sem.make(AcabValue("first"))
         second = sem.make(AcabValue("second"))

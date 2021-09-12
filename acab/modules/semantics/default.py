@@ -24,42 +24,36 @@ PIPELINE_SEM_HINT  = Sentence.build([config.prepare("SEMANTICS", "PIPELINE")()])
 
 # Build the default semantics
 def DEFAULT_SEMANTICS():
-    node_sem    = Handler("_:node", func=BaiscNodeSemantics)
-    trie_sem    = Handler("_:trie",
-                          func=BreadthTrieSemantics(in_handlers=[], default=node_sem),
-                          struct=BasicNodeStruct)
+    node_sem    = BasicNodeSemantics().as_handler("_:node")
+    trie_sem    = BreadthTrieSemantics(default_sem).as_handler("_:trie",
+                                                               struct=BasicNodeStruct.build_default())
 
-    query_sem   = Handler(QUERY_SEM_HINT, ASem.QueryAbstraction)
-    action_sem  = Handler(ACTION_SEM_HINT, ASem.ActionAbstraction)
-    rule_sem    = Handler(RULE_SEM_HINT, ASem.AtomicRuleAbstraction)
-    trans_sem   = Handler(TRANSFORM_SEM_HINT, ASem.TransformAbstraction)
-    cont_sem    = Handler("_:CONTAINER", ASem.ContainerAbstraction)
-
-
+    query_sem   = ASem.QueryAbstraction().as_handler(QUERY_SEM_HINT)
+    action_sem  = ASem.ActionAbstraction().as_handler(ACTION_SEM_HINT)
+    rule_sem    = ASem.AtomicRuleAbstraction().as_handler(RULE_SEM_HINT)
+    trans_sem   = ASem.TransformAbstraction().as_handler(TRANSFORM_SEM_HINT)
+    cont_sem    = ASem.ContainerAbstraction().as_handler("_:CONTAINER")
 
     return BasicSemanticSystem(in_handlers=[cont_sem,
-                                         query_sem,
-                                         action_sem,
-                                         rule_sem,
-                                         trans_sem,
-                                         trie_sem],
+                                            query_sem,
+                                            action_sem,
+                                            rule_sem,
+                                            trans_sem,
+                                            trie_sem],
                                default=trie_sem)
 
 def EXLO_SEMANTICS():
-    node_sem    = Handler("_:node", func=ExclusionNodeSemantics)
-    trie_sem    = Handler("_:trie",
-                          func=BreadthTrieSemantics(in_handlers=[], default=node_sem),
-                          struct=BasicNodeStruct)
+    node_sem    = ExclusionNodeSemantics().as_handler("_:node")
+    trie_sem    = BreadthTrieSemantics(default=node_sem).as_handler("_:trie",
+                                                                    struct=BasicNodeStruct.build_default())
 
-    query_sem   = Handler(QUERY_SEM_HINT, ASem.QueryAbstraction)
-    action_sem  = Handler(ACTION_SEM_HINT, ASem.ActionAbstraction)
-    rule_sem    = Handler(RULE_SEM_HINT, ASem.AtomicRuleAbstraction)
-    trans_sem   = Handler(TRANSFORM_SEM_HINT, ASem.TransformAbstraction)
-    cont_sem    = Handler("_:CONTAINER", ASem.ContainerAbstraction)
+    query_sem   = ASem.QueryAbstraction().as_handler(QUERY_SEM_HINT)
+    action_sem  = ASem.ActionAbstraction().as_handler(ACTION_SEM_HINT)
+    rule_sem    = ASem.AtomicRuleAbstraction().as_handler(RULE_SEM_HINT)
+    trans_sem   = ASem.TransformAbstraction().as_handler(TRANSFORM_SEM_HINT)
+    cont_sem    = ASem.ContainerAbstraction().as_handler("_:CONTAINER")
 
-
-
-    return BasicSemanticSystem(in_handlers=[cont_sem,
+    return BasicSemanticSystem(handlers=[cont_sem,
                                          query_sem,
                                          action_sem,
                                          rule_sem,
@@ -68,20 +62,18 @@ def EXLO_SEMANTICS():
                                default=trie_sem)
 
 def EXLO_PROXY_SEMANTICS():
-    node_sem    = Handler("_:node", func=ExclusionNodeSemantics)
-    trie_sem    = Handler("_:trie",
-                          func=BreadthTrieSemantics(in_handlers=[], default=node_sem),
-                          struct=BasicNodeStruct)
+    node_sem    = ExclusionNodeSemantics().as_handler("_:node")
+    trie_sem    = BreadthTrieSemantics(default=node_sem).as_handler("_:trie",
+                                                                    struct=BasicNodeStruct.build_default())
 
-    query_sem   = Handler(QUERY_SEM_HINT, ASem.QueryAbstraction)
-    action_sem  = Handler(ACTION_SEM_HINT, ASem.ActionAbstraction)
-    rule_sem    = Handler(RULE_SEM_HINT, ASem.ProxyRuleAbstraction)
-    trans_sem   = Handler(TRANSFORM_SEM_HINT, ASem.TransformAbstraction)
-    cont_sem    = Handler("_:CONTAINER", ASem.ContainerAbstraction)
+    query_sem   = ASem.QueryAbstraction().as_handler(QUERY_SEM_HINT)
+    action_sem  = ASem.ActionAbstraction().as_handler(ACTION_SEM_HINT)
+    trans_sem   = ASem.TransformAbstraction().as_handler(TRANSFORM_SEM_HINT)
+    cont_sem    = ASem.ContainerAbstraction().as_handler("_:CONTAINER")
 
+    rule_sem    = ASem.ProxyRuleAbstraction().as_handler(RULE_SEM_HINT)
 
-
-    return BasicSemanticSystem(in_handlers=[cont_sem,
+    return BasicSemanticSystem(handlers=[cont_sem,
                                          query_sem,
                                          action_sem,
                                          rule_sem,

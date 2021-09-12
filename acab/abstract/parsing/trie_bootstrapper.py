@@ -44,8 +44,7 @@ class TrieBootstrapper(Bootstrapper_i):
         logging.info("Parse Bootstrapper Initializing")
         super().__init__()
         # Trie Semantics, using basic nodes
-        self._semantics = BreadthTrieSemantics(default=Handler("_:node",
-                                                            BasicNodeSemantics()))
+        self._semantics = BreadthTrieSemantics(default=BasicNodeSemantics().as_handler("_:node"))
 
         # And using a standard node struct
         self._structure = BasicNodeStruct.build_default()

@@ -36,6 +36,7 @@ from acab.modules.semantics.independent import (BasicNodeSemantics,
                                                 ExclusionNodeSemantics)
 from acab.modules.semantics.basic_system import BasicSemanticSystem
 from acab.modules.semantics.util import SemanticOperatorWrapDecorator
+from acab.abstract.interfaces.handler_system import Handler
 
 EXOP         = config.prepare("MODAL", "exop")()
 EXOP_enum    = config.prepare(EXOP, as_enum=True)()
@@ -63,26 +64,26 @@ PIPELINE_SEM_HINT  = Sentence.build([config.prepare("SEMANTICS", "PIPELINE")()])
 
 class AbstractionSemanticTests(unittest.TestCase):
     def test_transform(self):
-        sem         = ASem.TransformAbstraction("_:Transform")
+        sem                                 = ASem.TransformAbstraction()
         # Construct context set for operators
-        op_loc_path       = Sentence.build(["Regex"])
-        operator_instance = RegexOp()
-        op_ctx            = ContextInstance(data={str(op_loc_path): operator_instance})
-        ctx_set     = ContextSet.build(op_ctx)
+        op_loc_path                         = Sentence.build(["Regex"])
+        operator_instance                   = RegexOp()
+        op_ctx                              = ContextInstance(data={str(op_loc_path): operator_instance})
+        ctx_set                             = ContextSet.build(op_ctx)
         # Add a ContextInst
-        init_ctx = ctx_set.pop()
-        updated_ctx = init_ctx.bind_dict({
+        init_ctx                            = ctx_set.pop()
+        updated_ctx                         = init_ctx.bind_dict({
             "x" : AcabValue.safe_make("test")
         })
         ctx_set.push(updated_ctx)
         # Build Transform
-        rebind_target = AcabValue.safe_make("y", data={BIND_V: True})
-        clause = ProductionComponent("transform test",
-                                     op_loc_path,
-                                     ["x", "es", "ES"],
-                                     rebind=rebind_target)
+        rebind_target                       = AcabValue.safe_make("y", data={BIND_V: True})
+        clause                              = ProductionComponent("transform test",
+                                                                  op_loc_path,
+                                                                  ["x", "es", "ES"],
+                                                                  rebind =rebind_target)
 
-        transform = ProductionContainer("Test Transform Clause", [clause])
+        transform                           = ProductionContainer("Test Transform Clause", [clause])
         # Run Transform on context, don't need a semantic system yet, thus None
         sem(transform, None, ctxs=ctx_set)
         # Check result
@@ -103,12 +104,12 @@ class AbstractionSemanticTests(unittest.TestCase):
 
 
         # Build Semantics
-        sem = ASem.ActionAbstraction("_:Action")
+        sem = ASem.ActionAbstraction()
         # Context Set for operators
-        op_loc_path   = Sentence.build(["action"])
-        operator_instance   = TestAction()
-        op_ctx        = ContextInstance(data={str(op_loc_path): operator_instance})
-        ctx_set = ContextSet.build(op_ctx)
+        op_loc_path       = Sentence.build(["action"])
+        operator_instance = TestAction()
+        op_ctx            = ContextInstance(data={str(op_loc_path): operator_instance})
+        ctx_set           = ContextSet.build(op_ctx)
         # Build Action
         clause = ProductionComponent("Test Action Clause",
                                      op_loc_path,
@@ -132,12 +133,12 @@ class AbstractionSemanticTests(unittest.TestCase):
 
 
         # Build Semantics
-        sem = ASem.ActionAbstraction("_:Action")
+        sem = ASem.ActionAbstraction()
         # Context Set for operators
-        op_loc_path   = Sentence.build(["action"])
-        operator_instance   = TestAction()
-        op_ctx        = ContextInstance(data={str(op_loc_path): operator_instance})
-        ctx_set = ContextSet.build(op_ctx)
+        op_loc_path       = Sentence.build(["action"])
+        operator_instance = TestAction()
+        op_ctx            = ContextInstance(data={str(op_loc_path): operator_instance})
+        ctx_set           = ContextSet.build(op_ctx)
         # Build Action
         clause = ProductionComponent("Test Action Clause",
                                      op_loc_path,
@@ -172,13 +173,12 @@ class AbstractionSemanticTests(unittest.TestCase):
 
             return str(val.value)
 
-        transform_sem = ASem.TransformAbstraction("_:transform")
-        action_sem    = ASem.ActionAbstraction("_:action")
-        semSys        = BasicSemanticSystem(default=(StubAbsSemantic("_:stub"), None),
-                                            handlers=[transform_sem, action_sem],
-                                            structs=[])
+        transform_sem = ASem.TransformAbstraction().as_handler(":_transform")
+        action_sem    = ASem.ActionAbstraction().as_handler(":_action")
+        semSys        = BasicSemanticSystem(default=StubAbsSemantic().as_handler("_:stub"),
+                                            in_handlers=[transform_sem, action_sem])
 
-        consem        = ASem.ContainerAbstraction("_:container")
+        consem        = ASem.ContainerAbstraction()
 
         trans_op_loc_path  = Sentence.build(["transform"])
         action_op_loc_path = Sentence.build(["action"])
@@ -234,24 +234,22 @@ class AbstractionSemanticTests(unittest.TestCase):
             return None
 
         # Build Semantics
-        node_sem    = BasicNodeSemantics("_:node")
-        trie_sem    = BreadthTrieSemantics("_:trie", default=(node_sem, None),
-                                           handlers=[], structs=[])
+        node_sem    = BasicNodeSemantics().as_handler("_:node")
+        trie_sem    = BreadthTrieSemantics(default=node_sem
+                                           struct=BasicNodeStruct.build_default())
 
-        query_sem   = ASem.QueryAbstraction(QUERY_SEM_HINT)
-        action_sem  = ASem.ActionAbstraction(ACTION_SEM_HINT)
-        rule_sem    = ASem.AtomicRuleAbstraction(RULE_SEM_HINT)
-        trans_sem   = ASem.TransformAbstraction(TRANSFORM_SEM_HINT)
-        cont_sem    = ASem.ContainerAbstraction("_:CONTAINER")
+        query_sem   = ASem.QueryAbstraction().as_handler(QUERY_SEM_HINT)
+        action_sem  = ASem.ActionAbstraction().as_handler(ACTION_SEM_HINT)
+        rule_sem    = ASem.AtomicRuleAbstraction().as_handler(RULE_SEM_HINT)
+        trans_sem   = ASem.TransformAbstraction().as_handler(TRANSFORM_SEM_HINT)
+        cont_sem    = ASem.ContainerAbstraction().as_handler("_:CONTAINER")
 
-        trie_struct = BasicNodeStruct.build_default("_:trie")
-        semSys      = BasicSemanticSystem(handlers=[cont_sem,
-                                                    query_sem,
-                                                    action_sem,
-                                                    rule_sem,
-                                                    trans_sem],
-                                          structs=[],
-                                          default=(trie_sem, trie_struct))
+        semSys      = BasicSemanticSystem(in_handlers=[cont_sem,
+                                                       query_sem,
+                                                       action_sem,
+                                                       rule_sem,
+                                                       trans_sem],
+                                          default=trie_sem)
 
         # Setup operators in context
         action_op_loc_path = Sentence.build(["action"])
@@ -259,7 +257,7 @@ class AbstractionSemanticTests(unittest.TestCase):
         trans_instance     = RegexOp()
         op_ctx             = ContextInstance(data={str(action_op_loc_path): TestAction(),
                                                    str(trans_op_loc_path): trans_instance})
-        ctx_set      = ContextSet.build(op_ctx)
+        ctx_set            = ContextSet.build(op_ctx)
 
         # Construct Rule
         query_sen = Sentence.build(["a", "test", "x"], data={QUERY_V : True})
@@ -287,7 +285,7 @@ class AbstractionSemanticTests(unittest.TestCase):
 
         # insert a sentence into the struct
         sen = Sentence.build(["a", "test", "sentence"])
-        trie_sem.insert(trie_struct, sen)
+        trie_sem.func.insert(sen, trie_sem.struct)
         # run the rule
         result = semSys(the_rule, ctxs=ctx_set)
 
@@ -313,22 +311,17 @@ class AbstractionSemanticTests(unittest.TestCase):
             return None
         #
         # Build Semantics
-        node_sem    = BasicNodeSemantics("_:node")
-        trie_sem    = BreadthTrieSemantics("_:trie", default=(node_sem, None), handlers=[], structs=[])
+        node_sem    = BasicNodeSemantics().as_handler("_:node")
+        trie_sem    = BreadthTrieSemantics(default=node_sem)
 
-        query_sem   = ASem.QueryAbstraction(QUERY_SEM_HINT)
-        action_sem  = ASem.ActionAbstraction(ACTION_SEM_HINT)
-        trans_sem   = ASem.TransformAbstraction(TRANSFORM_SEM_HINT)
+        query_sem   = ASem.QueryAbstraction().as_handler(QUERY_SEM_HINT)
+        action_sem  = ASem.ActionAbstraction().as_handler(ACTION_SEM_HINT)
+        trans_sem   = ASem.TransformAbstraction().as_handler(TRANSFORM_SEM_HINT)
         # THIS IS THE MAJOR CHANGE OF THIS TEST:
         rule_sem    = ASem.ProxyRuleAbstraction(RULE_SEM_HINT)
 
-        trie_struct = BasicNodeStruct.build_default("_:trie")
-        semSys      = BasicSemanticSystem(handlers=[query_sem,
-                                                    action_sem,
-                                                    trans_sem,
-                                                    rule_sem],
-                                          structs=[],
-                                          default=(trie_sem, trie_struct))
+        semSys      = BasicSemanticSystem(in_handlers=[query_sem, action_sem, trans_sem, rule_sem],
+                                          default=trie_sem)
 
         # Setup operators in context
         action_op_loc_path = Sentence.build(["action"])
@@ -336,7 +329,7 @@ class AbstractionSemanticTests(unittest.TestCase):
         trans_instance     = RegexOp()
         op_ctx             = ContextInstance(data={str(action_op_loc_path): TestAction(),
                                                    str(trans_op_loc_path): trans_instance})
-        ctx_set      = ContextSet.build(op_ctx)
+        ctx_set            = ContextSet.build(op_ctx)
 
         # Construct Rule
         query_sen = Sentence.build(["a", "test", "x"], data={QUERY_V : True})
@@ -364,7 +357,7 @@ class AbstractionSemanticTests(unittest.TestCase):
 
         # insert a sentence into the struct
         sen = Sentence.build(["a", "test", "sentence"])
-        trie_sem.insert(trie_struct, sen)
+        trie_sem.func.insert(sen, trie_sem.struct)
         # run the rule
         result = semSys(the_rule, ctxs=ctx_set)
 

@@ -163,3 +163,11 @@ class Handler:
 
     def to_pair(self):
         return (self.func, self.struct)
+
+
+
+class HandlerComponent_i:
+    """ Utility Class Component for easy creation of a handler """
+
+    def as_handler(self, key, struct=None):
+        return Handler(key, func=self, struct=struct)
