@@ -28,9 +28,9 @@ from acab.error.acab_base_exception import AcabBaseException
 from acab.error.acab_semantic_exception import AcabSemanticException
 from acab.modules.operators.query.query_operators import EQ, NEQ, HasTag
 from acab.modules.operators.transform.transform_operators import RegexOp
-from acab.modules.semantics.context_container import (ConstraintCollection,
-                                                      ContextContainer,
-                                                      ContextInstance)
+from acab.modules.semantics.context_set import (ConstraintCollection,
+                                                ContextSet,
+                                                ContextInstance)
 from acab.modules.semantics.dependent import BreadthTrieSemantics
 from acab.modules.semantics.independent import (BasicNodeSemantics,
                                                 ExclusionNodeSemantics)
@@ -64,17 +64,17 @@ PIPELINE_SEM_HINT  = Sentence.build([config.prepare("SEMANTICS", "PIPELINE")()])
 class AbstractionSemanticTests(unittest.TestCase):
     def test_transform(self):
         sem         = ASem.TransformAbstraction("_:Transform")
-        # Construct context container for operators
+        # Construct context set for operators
         op_loc_path       = Sentence.build(["Regex"])
         operator_instance = RegexOp()
         op_ctx            = ContextInstance(data={str(op_loc_path): operator_instance})
-        ctx_container     = ContextContainer.build(op_ctx)
+        ctx_set     = ContextSet.build(op_ctx)
         # Add a ContextInst
-        init_ctx = ctx_container.pop()
+        init_ctx = ctx_set.pop()
         updated_ctx = init_ctx.bind_dict({
             "x" : AcabValue.safe_make("test")
         })
-        ctx_container.push(updated_ctx)
+        ctx_set.push(updated_ctx)
         # Build Transform
         rebind_target = AcabValue.safe_make("y", data={BIND_V: True})
         clause = ProductionComponent("transform test",
@@ -84,9 +84,9 @@ class AbstractionSemanticTests(unittest.TestCase):
 
         transform = ProductionContainer("Test Transform Clause", [clause])
         # Run Transform on context, don't need a semantic system yet, thus None
-        sem(transform, None, ctxs=ctx_container)
+        sem(transform, None, ctxs=ctx_set)
         # Check result
-        result = ctx_container.pop()
+        result = ctx_set.pop()
         self.assertEqual(result['y'].value, "tESt")
 
 
@@ -104,18 +104,18 @@ class AbstractionSemanticTests(unittest.TestCase):
 
         # Build Semantics
         sem = ASem.ActionAbstraction("_:Action")
-        # Context Container for operators
+        # Context Set for operators
         op_loc_path   = Sentence.build(["action"])
         operator_instance   = TestAction()
         op_ctx        = ContextInstance(data={str(op_loc_path): operator_instance})
-        ctx_container = ContextContainer.build(op_ctx)
+        ctx_set = ContextSet.build(op_ctx)
         # Build Action
         clause = ProductionComponent("Test Action Clause",
                                      op_loc_path,
                                      [])
         action = ProductionContainer("TestAction", [clause])
         # Run action on context with semantics
-        sem(action, None, ctxs=ctx_container)
+        sem(action, None, ctxs=ctx_set)
         # Check side effects
         self.assertEqual(side_effect_obj['a'], 2)
 
@@ -133,11 +133,11 @@ class AbstractionSemanticTests(unittest.TestCase):
 
         # Build Semantics
         sem = ASem.ActionAbstraction("_:Action")
-        # Context Container for operators
+        # Context Set for operators
         op_loc_path   = Sentence.build(["action"])
         operator_instance   = TestAction()
         op_ctx        = ContextInstance(data={str(op_loc_path): operator_instance})
-        ctx_container = ContextContainer.build(op_ctx)
+        ctx_set = ContextSet.build(op_ctx)
         # Build Action
         clause = ProductionComponent("Test Action Clause",
                                      op_loc_path,
@@ -145,7 +145,7 @@ class AbstractionSemanticTests(unittest.TestCase):
         action = ProductionContainer("TestAction", [])
         action.clauses.append(clause)
         # Run action on context with semantics
-        sem(action, None, ctxs=ctx_container)
+        sem(action, None, ctxs=ctx_set)
         # Check side effects
         self.assertEqual(side_effect_obj['a'], "awef")
 
@@ -184,13 +184,13 @@ class AbstractionSemanticTests(unittest.TestCase):
         action_op_loc_path = Sentence.build(["action"])
         op_ctx             = ContextInstance(data={str(trans_op_loc_path): TestTransform(),
                                                   str(action_op_loc_path): TestAction()})
-        ctx_container      = ContextContainer.build(op_ctx)
+        ctx_set      = ContextSet.build(op_ctx)
 
-        init_ctx = ctx_container.pop()
+        init_ctx = ctx_set.pop()
         updated_ctx = init_ctx.bind_dict({
             "x" : AcabValue.safe_make("test")
         })
-        ctx_container.push(updated_ctx)
+        ctx_set.push(updated_ctx)
         # Build Container
         rebind_target    = AcabValue.safe_make("y", data={BIND_V: True})
         transform_clause = ProductionComponent("transform test",
@@ -208,7 +208,7 @@ class AbstractionSemanticTests(unittest.TestCase):
 
 
         # run each element of container with semantics
-        consem(container, semSys, ctxs=ctx_container)
+        consem(container, semSys, ctxs=ctx_set)
 
         # check result
         # orig val "test" + transform "_blah" into side effect obj "a"
@@ -259,7 +259,7 @@ class AbstractionSemanticTests(unittest.TestCase):
         trans_instance     = RegexOp()
         op_ctx             = ContextInstance(data={str(action_op_loc_path): TestAction(),
                                                    str(trans_op_loc_path): trans_instance})
-        ctx_container      = ContextContainer.build(op_ctx)
+        ctx_set      = ContextSet.build(op_ctx)
 
         # Construct Rule
         query_sen = Sentence.build(["a", "test", "x"], data={QUERY_V : True})
@@ -289,7 +289,7 @@ class AbstractionSemanticTests(unittest.TestCase):
         sen = Sentence.build(["a", "test", "sentence"])
         trie_sem.insert(trie_struct, sen)
         # run the rule
-        result = semSys(the_rule, ctxs=ctx_container)
+        result = semSys(the_rule, ctxs=ctx_set)
 
         # Check the result for bindings
         self.assertEqual(side_effect_obj["a"], "SENtence")
@@ -336,7 +336,7 @@ class AbstractionSemanticTests(unittest.TestCase):
         trans_instance     = RegexOp()
         op_ctx             = ContextInstance(data={str(action_op_loc_path): TestAction(),
                                                    str(trans_op_loc_path): trans_instance})
-        ctx_container      = ContextContainer.build(op_ctx)
+        ctx_set      = ContextSet.build(op_ctx)
 
         # Construct Rule
         query_sen = Sentence.build(["a", "test", "x"], data={QUERY_V : True})
@@ -366,7 +366,7 @@ class AbstractionSemanticTests(unittest.TestCase):
         sen = Sentence.build(["a", "test", "sentence"])
         trie_sem.insert(trie_struct, sen)
         # run the rule
-        result = semSys(the_rule, ctxs=ctx_container)
+        result = semSys(the_rule, ctxs=ctx_set)
 
         # Check the struct doesn't change
         # check no action side effects occurred

@@ -27,7 +27,7 @@ from acab.modules.engines.util import MaybeBuildOperatorCtxDecorator
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
 
-CtxCon      = 'ContextContainer_i'
+CtxSet      = 'ContextSet_i'
 Instruction = Union[str, 'Sentence', 'AcabStatement']
 
 @dataclass
@@ -47,7 +47,7 @@ class AcabBasicEngine(AcabEngine_i):
 
     @EnsureInitialised
     @MaybeBuildOperatorCtxDecorator
-    def __call__(self, inst:Instruction, bindings=None) -> CtxCon:
+    def __call__(self, inst:Instruction, bindings=None) -> CtxSet:
         """ Where a inst could be a:
         str to parse then,
         sentence to assert, query, or run
@@ -60,7 +60,7 @@ class AcabBasicEngine(AcabEngine_i):
             inst = [y for x in inst for y in self._dsl_builder.parse(x)[:]]
 
         assert(all([isinstance(x, (Value_i, Sentence_i)) for x in inst])), inst
-        logging.debug(f"Running: {inst}")
+        logging.debug(f"Running: {str(inst)}")
         # pass inst to sem system
         result = bindings
         for clause in inst:
@@ -78,7 +78,7 @@ class AcabBasicEngine(AcabEngine_i):
 
 
     @EnsureInitialised
-    def add_to_cache(self, result: CtxCon):
+    def add_to_cache(self, result: CtxSet):
         self._cached_bindings.append(result)
         if len(self._cached_bindings) > self._cache_size:
             self._cached_bindings.pop(0)

@@ -10,8 +10,8 @@ logging = root_logger.getLogger(__name__)
 
 from acab.abstract.core import default_structure as DS
 from acab.abstract.interfaces import semantic as SI
-from acab.modules.semantics.context_container import (ContextContainer,
-                                                      MutableContextInstance)
+from acab.modules.semantics.context_set import (ContextSet,
+                                                MutableContextInstance)
 from acab.modules.semantics.util import (SemanticBreakpointDecorator,
                                          SemanticSubCtxBuildDecorator)
 

@@ -17,9 +17,9 @@ from acab.abstract.core.node import AcabNode
 from acab.abstract.core.production_abstractions import ProductionComponent
 from acab.abstract.core.values import AcabValue, Sentence
 from acab.modules.operators.query.query_operators import EQ
-from acab.modules.semantics.context_container import (ConstraintCollection,
-                                                      ContextContainer,
-                                                      ContextInstance)
+from acab.modules.semantics.context_set import (ConstraintCollection,
+                                                ContextSet,
+                                                ContextInstance)
 from acab.modules.semantics.dependent import BreadthTrieSemantics
 from acab.modules.semantics.independent import (BasicNodeSemantics,
                                                 ExclusionNodeSemantics)
@@ -113,14 +113,14 @@ class TrieSemanticTests(unittest.TestCase):
         # insert into trie
         trie_sem.insert(trie_struct, sen)
         trie_sem.insert(trie_struct, sen2)
-        # Construct context container
-        ctx_container = ContextContainer.build()
+        # Construct context set
+        ctx_set = ContextSet.build()
         # Construct query sentence
         query_sen = Sentence.build(["a", "test", "sentence"])
         # Run query
-        trie_sem.query(trie_struct, query_sen, ctxs=ctx_container)
-        self.assertEqual(len(ctx_container), 1)
-        self.assertIsNotNone(ctx_container[0]._current)
+        trie_sem.query(trie_struct, query_sen, ctxs=ctx_set)
+        self.assertEqual(len(ctx_set), 1)
+        self.assertIsNotNone(ctx_set[0]._current)
 
 
     def test_trie_query_var(self):
@@ -133,15 +133,15 @@ class TrieSemanticTests(unittest.TestCase):
         # insert into trie
         trie_sem.insert(trie_struct, sen)
         trie_sem.insert(trie_struct, sen2)
-        # Construct context container
-        ctx_container = ContextContainer.build()
+        # Construct context set
+        ctx_set = ContextSet.build()
         # Construct query sentence
         query_sen = Sentence.build(["a", "test", "x"])
         query_sen[-1].data[BIND_V] = True
         # Run query
-        trie_sem.query(trie_struct, query_sen, ctxs=ctx_container)
-        self.assertEqual(len(ctx_container), 2)
-        result_set = {ctxInst.data['x'] for ctxInst in ctx_container}
+        trie_sem.query(trie_struct, query_sen, ctxs=ctx_set)
+        self.assertEqual(len(ctx_set), 2)
+        result_set = {ctxInst.data['x'] for ctxInst in ctx_set}
         self.assertEqual(result_set, {'sentence', 'other'})
 
     def test_trie_query_with_bind_constraints(self):
@@ -154,16 +154,16 @@ class TrieSemanticTests(unittest.TestCase):
         # insert into trie
         trie_sem.insert(trie_struct, sen)
         trie_sem.insert(trie_struct, sen2)
-        # Construct context container
-        ctx_container = ContextContainer.build()
+        # Construct context set
+        ctx_set = ContextSet.build()
         # Construct query sentence
         query_sen = Sentence.build(["a", "x", "x"])
         query_sen[-2].data[BIND_V] = True
         query_sen[-1].data[BIND_V] = True
         # Run query
-        trie_sem.query(trie_struct, query_sen, ctxs=ctx_container)
-        self.assertEqual(len(ctx_container), 1)
-        self.assertEqual(ctx_container[0].data['x'], 'test')
+        trie_sem.query(trie_struct, query_sen, ctxs=ctx_set)
+        self.assertEqual(len(ctx_set), 1)
+        self.assertEqual(ctx_set[0].data['x'], 'test')
 
     def test_trie_query_with_alpha_tests(self):
         node_sem = BasicNodeSemantics("_:node")
@@ -175,11 +175,11 @@ class TrieSemanticTests(unittest.TestCase):
         # insert into trie
         trie_sem.insert(trie_struct, sen)
         trie_sem.insert(trie_struct, sen2)
-        # Construct context container for operators
+        # Construct context set for operators
         op_loc_path = Sentence.build(["EQ"])
         operator_instance = EQ()
         op_ctx        = ContextInstance(data={str(op_loc_path): operator_instance})
-        ctx_container = ContextContainer.build(op_ctx)
+        ctx_set = ContextSet.build(op_ctx)
         # Construct query sentence
         query_sen = Sentence.build(["a", "test", "x"])
         query_sen[-1].data[BIND_V] = True
@@ -189,9 +189,9 @@ class TrieSemanticTests(unittest.TestCase):
                                        [AcabValue.safe_make("blah")])
         query_sen[-1].data[CONSTRAINT_V] = [the_test]
         # Run query
-        trie_sem.query(trie_struct, query_sen, ctxs=ctx_container)
-        self.assertEqual(len(ctx_container), 1)
-        self.assertEqual(ctx_container[0].data['x'].name, 'blah')
+        trie_sem.query(trie_struct, query_sen, ctxs=ctx_set)
+        self.assertEqual(len(ctx_set), 1)
+        self.assertEqual(ctx_set[0].data['x'].name, 'blah')
 
     def test_trie_query_with_beta_tests(self):
         node_sem    = BasicNodeSemantics("_:node")
@@ -203,11 +203,11 @@ class TrieSemanticTests(unittest.TestCase):
         # insert into trie
         trie_sem.insert(trie_struct, sen)
         trie_sem.insert(trie_struct, sen2)
-        # Construct context container for operators
+        # Construct context set for operators
         op_loc_path = Sentence.build(["EQ"])
         operator_instance = EQ()
         op_ctx        = ContextInstance(data={str(op_loc_path): operator_instance})
-        ctx_container = ContextContainer.build(op_ctx)
+        ctx_set = ContextSet.build(op_ctx)
         # Construct query sentence
         query_sen = Sentence.build(["a", "test", "x"])
         query_sen[-1].data[BIND_V] = True
@@ -222,10 +222,10 @@ class TrieSemanticTests(unittest.TestCase):
                                        [test_var])
         query_sen2[-1].data[CONSTRAINT_V] = [the_test]
         # Run query
-        trie_sem.query(trie_struct, query_sen, ctxs=ctx_container)
-        trie_sem.query(trie_struct, query_sen2, ctxs=ctx_container)
-        self.assertEqual(len(ctx_container), 1)
-        end_result = ctx_container.pop()
+        trie_sem.query(trie_struct, query_sen, ctxs=ctx_set)
+        trie_sem.query(trie_struct, query_sen2, ctxs=ctx_set)
+        self.assertEqual(len(ctx_set), 1)
+        end_result = ctx_set.pop()
         self.assertIsInstance(end_result, ContextInstance)
         self.assertEqual(end_result.data['y'].name, 'blah')
 
@@ -240,12 +240,12 @@ class TrieSemanticTests(unittest.TestCase):
         # insert into trie
         trie_sem.insert(trie_struct, sen)
         trie_sem.insert(trie_struct, sen2)
-        # Construct context container for operators
+        # Construct context set for operators
         op_loc_path = Sentence.build(["EQ"])
         # Note the .value's, because the operator doesn't have the unwrap decorator
         operator_instance = lambda a,b,data=None: a.value == b.value
         op_ctx        = ContextInstance(data={str(op_loc_path): operator_instance})
-        ctx_container = ContextContainer.build(op_ctx)
+        ctx_set = ContextSet.build(op_ctx)
         # Construct query sentence
         query_sen = Sentence.build(["a", "test", "x"])
         query_sen[-1].data[BIND_V] = True
@@ -260,10 +260,10 @@ class TrieSemanticTests(unittest.TestCase):
                                        [test_var])
         query_sen2[-1].data[CONSTRAINT_V] = [the_test]
         # Run query
-        trie_sem.query(trie_struct, query_sen, ctxs=ctx_container)
-        trie_sem.query(trie_struct, query_sen2, ctxs=ctx_container)
-        self.assertEqual(len(ctx_container), 1)
-        end_result = ctx_container.pop()
+        trie_sem.query(trie_struct, query_sen, ctxs=ctx_set)
+        trie_sem.query(trie_struct, query_sen2, ctxs=ctx_set)
+        self.assertEqual(len(ctx_set), 1)
+        end_result = ctx_set.pop()
         self.assertEqual(end_result.data['y'].name, 'blah')
 
 

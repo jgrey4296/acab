@@ -24,7 +24,7 @@ from acab.abstract.core.node import AcabNode
 from acab.abstract.core.production_abstractions import ProductionOperator
 from acab.abstract.core.values import AcabValue, Sentence
 from acab.abstract.interfaces.dsl import Bootstrapper_i
-from acab.modules.semantics.context_container import ContextContainer
+from acab.modules.semantics.context_set import ContextSet
 from acab.modules.semantics.dependent import BreadthTrieSemantics
 from acab.modules.semantics.independent import BasicNodeSemantics
 from acab.abstract.interfaces.handler_system import Handler
@@ -84,7 +84,7 @@ class TrieBootstrapper(Bootstrapper_i):
         results = []
         # Run queries
         for query in queries:
-            ctxs = ContextContainer.build()
+            ctxs = ContextSet.build()
             q_sentence = Sentence.build(query.split('.'))
             if q_sentence[-1].name == TrieBootstrapper.WILDCARD_STR:
                     q_sentence[-1].data[BIND_S] = True

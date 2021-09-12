@@ -17,8 +17,7 @@ from acab.abstract.core.values import Sentence
 from acab.abstract.interfaces.semantic import (AbstractionSemantics_i,
                                                SemanticSystem_i)
 from acab.error.acab_base_exception import AcabBaseException
-from acab.modules.semantics.context_container import (ContextContainer,
-                                                      ContextInstance)
+from acab.modules.semantics.context_set import (ContextSet, ContextInstance)
 from acab.modules.semantics.independent import ExclusionNodeSemantics
 from acab.modules.semantics.basic_system import BasicSemanticSystem
 

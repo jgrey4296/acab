@@ -10,14 +10,14 @@ from acab.abstract.config.config import AcabConfig
 from acab.abstract.interfaces.semantic import (AbstractionSemantics_i,
                                                           SemanticSystem_i)
 from acab.error.acab_semantic_exception import AcabSemanticException
-from acab.modules.semantics.context_container import ContextContainer
-from acab.abstract.interfaces.context import ContextContainer_i
+from acab.modules.semantics.context_set import ContextSet
+from acab.abstract.interfaces.context import ContextSet_i
 
 
 logging = root_logger.getLogger(__name__)
 
 Sentence         = 'Sentence'
-CtxCon           = 'ContextContainer'
+CtxSet           = 'ContextSet'
 ModuleComponents = 'ModuleComponents'
 config           = AcabConfig.Get()
 
@@ -34,15 +34,15 @@ class BasicSemanticSystem(SemanticSystem_i):
         lambda x: x.type
     ]
 
-    container_constructor : ContextContainer_i = field(default=ContextContainer)
+    container_constructor : ContextSet_i = field(default=ContextSet)
 
     def __call__(self, *instructions:List[Sentence],
-                 ctxs:Optional[CtxCon]=None,
-                 data:Optional[dict]=None) -> CtxCon:
+                 ctxs:Optional[CtxSet]=None,
+                 data:Optional[dict]=None) -> CtxSet:
         """ Perform an instruction by mapping it to a semantics """
         if ctxs is None:
             # Default, doesn't include operators
-            ctxs = self.build_ctxcon()
+            ctxs = self.build_ctxset()
 
         for instruction in instructions:
             ctxs = self.run_instruction(instruction, ctxs=ctxs, data=data)

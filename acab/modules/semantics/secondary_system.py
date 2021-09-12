@@ -9,13 +9,13 @@ from acab.abstract.config.config import AcabConfig
 from acab.abstract.interfaces.semantic import (AbstractionSemantics_i,
                                                SemanticSystem_i)
 from acab.error.acab_semantic_exception import AcabSemanticException
-from acab.modules.semantics.context_container import ContextContainer
+from acab.modules.semantics.context_set import ContextSet
 
 
 logging = root_logger.getLogger(__name__)
 
 Sentence = 'Sentence'
-CtxCon   = 'ContextContainer'
+CtxSet   = 'ContextSet'
 
 config  = AcabConfig.Get()
 

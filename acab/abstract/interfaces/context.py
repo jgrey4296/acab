@@ -25,7 +25,7 @@ class Constraint_i(metaclass=abc.ABCMeta):
         pass
 
 @dataclass
-class ContextContainer_i(metaclass=abc.ABCMeta):
+class ContextSet_i(metaclass=abc.ABCMeta):
 
     @staticmethod
     def build(ops):

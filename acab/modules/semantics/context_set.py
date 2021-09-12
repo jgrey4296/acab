@@ -19,7 +19,7 @@ config = GET()
 CONSTRAINT_S = config.prepare("Parse.Structure", "CONSTRAINT")()
 
 CtxIns           = 'ContextInstance'
-CtxCon           = 'ContextContainer'
+CtxSet           = 'ContextSet'
 Constraints      = 'ConstraintCollection'
 ProdComp         = 'ProductionComponent'
 Operator         = 'ProductionOperator'
@@ -30,39 +30,41 @@ Node             = 'AcabNode'
 ModuleComponents = "ModuleComponents"
 
 @dataclass
-class ContextContainer(CtxInt.ContextContainer_i):
+class ContextSet(CtxInt.ContextSet_i):
 
-    # Operators could be a pair: (semantics, struct) to query
-    # TODO operators is just the results of a prior query, bindings are sugar
-    _operators     : CtxIns            = field(default=None)
+    # operators are just the results of a prior query
+    _operators     : CtxIns             = field(default=None)
+
+    _parent        : Optional[CtxSet]   = field(init=False, default=None)
 
     _active        : List[UUID]         = field(init=False, default_factory=list)
     _purgatory     : List[UUID]         = field(init=False, default_factory=list)
     _failed        : List[UUID]         = field(init=False, default_factory=list)
     _total         : Dict[UUID, CtxIns] = field(init=False, default_factory=dict)
 
-    _negated       : bool              = field(init=False, default=False)
-    _query_clause  : Sentence          = field(init=False, default=None)
-    _root_node     : Node              = field(init=False, default=None)
-    _collapse_vars : Set[str]          = field(init=False, default_factory=set)
+    _negated       : bool               = field(init=False, default=False)
+    _query_clause  : Sentence           = field(init=False, default=None)
+    _root_node     : Node               = field(init=False, default=None)
+    _collapse_vars : Set[str]           = field(init=False, default_factory=set)
 
     @staticmethod
     def build(ops:Union[None, CtxIns, List[ModuleComponents]]=None):
         """ Create the empty context instance """
         if ops is None:
-            return ContextContainer()
+            return ContextSet()
 
-        if isinstance(ops, ContextInstance):
-            return ContextContainer(_operators=ops)
+        if isinstance(ops, CtxInt.ContextInstance_i):
+            return ContextSet(_operators=ops)
 
         assert(isinstance(ops, list)), ops
         # Get Flat List of Operator Sentences:
         operators = [y for x in ops for y in x.operators]
         # Build the CtxInst data dict:
         op_dict = {str(x) : x[-1] for x in operators}
+        # TODO abstract building ctxinst's to the set
         instance = ContextInstance(op_dict)
         # TODO add sugar names
-        return ContextContainer(_operators=instance)
+        return ContextSet(_operators=instance)
 
     def __post_init__(self):
         initial = ContextInstance()
@@ -106,7 +108,8 @@ class ContextContainer(CtxInt.ContextContainer_i):
     def __len__(self):
         return len(self._active)
 
-    def __getitem__(self, index, wrap=False) -> Union[CtxIns, List[CtxIns], CtxCon]:
+    def __getitem__(self, index, wrap=False) -> Union[CtxIns, List[CtxIns], CtxSet]:
+        """ Get a Context Instance by index, possibly wrapping into a separate CtxSet """
         result = None
         if isinstance(index, int):
             ctx_uuid = self._active[index]
@@ -120,23 +123,23 @@ class ContextContainer(CtxInt.ContextContainer_i):
         if not wrap:
             return result
 
-        container = ContextContainer.build(self._operators)
-        container.pop()
-        container.push(result)
+        ctxs = ContextSet.build(self._operators)
+        ctxs.pop()
+        ctxs.push(result)
 
-        return container
+        return ctxs
 
     def __bool__(self):
         return not bool(self._failed) and bool(self._active)
 
     def __repr__(self):
-        return f"(CtxCon: Active:{len(self._active)} Failed:{len(self._failed)} Total:{len(self._total)})"
+        return f"(CtxSet: Active:{len(self._active)} Failed:{len(self._failed)} Total:{len(self._total)})"
 
     def fail(self, instance: CtxIns, word: Value, node: Node):
         """ Record a failure, the query sentence that failed,
         and the word that it failed on """
         # add failure details to the instance, of word and query clause
-        logging.debug("ContextContainer: Failing")
+        logging.debug("ContextSet: Failing")
         # add to _purgatory
         instance._failure_word = word
         self._purgatory.append(instance.uuid)
@@ -145,7 +148,7 @@ class ContextContainer(CtxInt.ContextContainer_i):
         """
         run a word's tests on available nodes, with an instance
         """
-        logging.debug("ContextContainer: Testing/Extending")
+        logging.debug("ContextSet: Testing/Extending")
         constraints : Constraints = ConstraintCollection.build(word, self._operators)
         assert(len(possible) == 1 or constraints._bind)
         successes = []
@@ -164,11 +167,11 @@ class ContextContainer(CtxInt.ContextContainer_i):
         self.push(bound_ctxs)
         return bound_ctxs
 
-    def push(self, ctxs):
+    def push(self, ctxs:Union[CtxIns, List[CtxIns]]):
         if not isinstance(ctxs, list):
             ctxs = [ctxs]
 
-        # Add to contextcontainer
+        # Add to set
         assert(not any([x.uuid in self._total for x in ctxs]))
         self._total.update({x.uuid: x for x in ctxs})
         self._active += [x.uuid for x in ctxs]
@@ -212,8 +215,14 @@ class ContextContainer(CtxInt.ContextContainer_i):
         raise NotImplementedError()
 
 
-    def merge(self, ctxCon):
-        raise NotImplementedError()
+    def set_parent(self, parent:CtxSet):
+        self._parent = parent
+
+    def merge_into_parent(self):
+        assert(self._parent is not None)
+        self._parent.push(self.active_list())
+
+
 @dataclass
 class ContextInstance(CtxInt.ContextInstance_i):
 
@@ -238,6 +247,9 @@ class ContextInstance(CtxInt.ContextInstance_i):
             return self.data[str(value)]
         else:
             return value
+
+    def __setitem(self, key: Any, value: Any):
+        raise ASErr.AcabSemanticException("Context Instances can't directly set a value, use MutableContextInstance")
 
     def __bool__(self):
         return bool(self.data)
@@ -304,31 +316,25 @@ class ContextInstance(CtxInt.ContextInstance_i):
     def set_continuation(self, instruction):
         self._continuation = instruction
 
+    @property
     def continuation(self):
         # Run the continuation (eg: run the transform and action of a rule)
-        pass
-
-
-
+        return self._continuation
 
     def to_sentences(self):
         raise NotImplementedError()
+
+
 @dataclass
 class MutableContextInstance():
     """ Wrap A Context Instance with an smart dictionary.
     Changes are inserted into the dictionary, until finish is called.
     Finish creates a new CtxIns, integrating changes """
 
+    parent       : CtxSet          = field()
     base         : CtxIns          = field()
     data         : Dict[Any, Any]  = field(default_factory=dict)
     uuid         : UUID            = field(default_factory=uuid1)
-
-    @staticmethod
-    def build(ctx: ContextInstance):
-        return MutableContextInstance(base=ctx)
-
-    def finish(self):
-        return self.base.bind_dict(self.data)
 
     def __contains__(self, value: Value):
         key = str(value)
@@ -345,3 +351,9 @@ class MutableContextInstance():
 
     def __setitem__(self, key: Value, value: Value):
         self.data[str(key)] = value
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        self.parent.push(self.base.bind_dict(self.data))

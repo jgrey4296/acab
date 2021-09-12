@@ -27,7 +27,7 @@ logging = root_logger.getLogger(__name__)
 import acab.abstract.interfaces.util as SU
 from acab.abstract.config.config import AcabConfig, ConfigSpec
 from acab.abstract.core.default_structure import QUERY
-from acab.abstract.interfaces.context import ContextContainer_i
+from acab.abstract.interfaces.context import ContextSet_i
 from acab.abstract.interfaces.handler_system import HandlerSystem_i
 from acab.abstract.interfaces.value import Sentence_i, Value_i
 from acab.error.acab_print_exception import AcabPrintException
@@ -39,7 +39,7 @@ Printable              = 'Printable'
 Value                  = 'AcabValue'
 Structure              = 'AcabStruct'
 Engine                 = 'Engine'
-CtxCon                 = ContextContainer_i
+CtxSet                 = ContextSet_i
 CtxIns                 = "ContextInstance"
 Handler                = 'SemanticHandler' # Callable
 AbsDepSemantics        = Union['AbstractionSemantics_i', 'DependentSemantics_i']
@@ -69,26 +69,26 @@ class SemanticSystem_i(HandlerSystem_i):
     """
     # TODO possibly re-add hooks / failure handling
     # TODO add a system specific logging handler
-    container_constructor : ContextContainer_i = field(default=None)
+    ctx_set : ContextSet_i = field(default=None)
 
     _operator_cache : Optional[CtxIns] = field(init=False, default=None)
 
-    def build_ctxcon(self, operators=None, cache=False):
+    def build_ctxset(self, ops=None, cache=False):
         if cache or self._operator_cache is None:
-            ctxcon = self.container_constructor.build(operators)
-            if ctxcon._operators is not None:
-                self._operator_cache = ctxcon._operators.copy()
+            ctxset = self.ctx_set.build(ops)
+            if ctxset._operators is not None:
+                self._operator_cache = ctxset._operators.copy()
         else:
-            ctxcon = self.container_constructor.build(self._operator_cache)
+            ctxset = self.ctx_set.build(self._operator_cache)
 
-        return ctxcon
+        return ctxset
 
     @property
     def has_op_cache(self) -> bool:
         return self._operator_cache is not None
 
     @abc.abstractmethod
-    def __call__(self, *instructions, ctxs=None, data=None) -> CtxCon:
+    def __call__(self, *instructions, ctxs=None, data=None) -> CtxSet:
         pass
 
     @abc.abstractmethod

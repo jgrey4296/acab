@@ -9,7 +9,7 @@ import pyparsing as pp
 
 logging = root_logger.getLogger(__name__)
 
-from acab.abstract.interfaces.context import ContextContainer_i
+from acab.abstract.interfaces.context import ContextSet_i
 from acab.abstract.interfaces.dsl import DSL_Fragment_i, DSLBuilder_i
 from acab.abstract.interfaces.module_loader import ModuleLoader_i
 from acab.abstract.interfaces.printing import PrintSystem_i
@@ -142,5 +142,5 @@ class AcabEngine_i(metaclass=abc.ABCMeta):
 
 
     @abc.abstractmethod
-    def __call__(self, thing, bindings=None) -> ContextContainer_i:
+    def __call__(self, thing, bindings=None) -> ContextSet_i:
         pass

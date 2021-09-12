@@ -14,15 +14,15 @@ config = AcabConfig.Get()
 #
 def SemanticSubCtxBuildDecorator(f):
     """ Used to easily wrap around rules, to provide
-    an isolated contex container for execution
+    an isolated context set for execution
     """
     def wrapped(self, *the_args, **the_kwargs):
         semSys = the_args[1]
         ctxs   = the_kwargs['ctxs']
-        temp_container = semSys.build_ctxcon()
-        temp_container._operators = ctxs._operators
-        kwargs = {x:y for x,y in the_kwargs.items() if x != "ctxs"}
-        return f(self, *the_args, ctxs=temp_container, **kwargs)
+        temp_container = semSys.build_ctxset(ops=ctxs._operators)
+        temp_container.set_parent(ctxs)
+        the_kwargs['ctxs'] = temp_container
+        return f(self, *the_args, **the_kwargs)
 
     wrapped.__name__ = f.__name__
     return wrapped
