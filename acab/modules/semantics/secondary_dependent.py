@@ -49,18 +49,18 @@ class FSMSemantics(SI.DependentSemantics_i):
         # Get the root
         root = self.default[0].up(struct.root)
         current = root
-        root_semantics, _ = self.lookup(root.value).to_pair()
+        root_semantics, _ = self.lookup(root.value)
         for word in sen:
             new_node = None
             root_accessible = root_semantics.access(root, word, data)
             if not bool(root_accessible):
-                next_semantics, _ = self.lookup(word).to_pair()
+                next_semantics, _ = self.lookup(word)
                 new_node = next_semantics.make(word, data)
                 root_semantics.insert(root, word, data)
             else:
                 new_node = root_accessible[0]
 
-            current_semantics, _ = self.lookup(current).to_pair()
+            current_semantics, _ = self.lookup(current)
             current_accessible = current_semantics.access(current, new_node, data)
             if not bool(current_accessible):
                 current = current_semantics.insert(current, new_node, data)
@@ -103,7 +103,7 @@ class FSMSemantics(SI.DependentSemantics_i):
         with ctxs(struct.root, sen[0], data, collapse_vars, negated_query):
             for word in sen:
                 for ctxInst in ctxs.active_list():
-                    indep, _ = self.lookup(ctxInst.current).to_pair()
+                    indep, _ = self.lookup(ctxInst.current)
                     results = indep.access(ctxInst.current, word, data)
                     if not bool(results):
                         ctxs.fail(ctxInst, word, None)
@@ -118,12 +118,12 @@ class FSMSemantics(SI.DependentSemantics_i):
         remove each word in the sentence from its prior
         """
         root = struct.root
-        root_sem, _ = self.lookup(root.value).to_pair()
+        root_sem, _ = self.lookup(root.value)
         current = None
         for head,succ in zip(sen[:-1], sen[1:]):
             if root_sem.access(root, head, data):
                 head_node = root_sem.get(root, head, data)
-                head_sem, _ = self.lookup(head_node.value).to_pair()
+                head_sem, _ = self.lookup(head_node.value)
                 head_sem.delete(head_node, succ, data)
                 current = head_node
 
@@ -181,12 +181,12 @@ class DepthTrieSemantics(SI.DependentSemantics_i):
         # TODO: Ensure the struct is appropriate
         current = self.default[0].up(struct.root)
         for word in sen:
-            semantics, _ = self.lookup(current).to_pair()
+            semantics, _ = self.lookup(current)
             accessible = semantics.access(current, word, data)
             if bool(accessible):
                 current = accessible[0]
             else:
-                next_semantics, _ = self.lookup(word).to_pair()
+                next_semantics, _ = self.lookup(word)
                 new_node = next_semantics.make(word, data)
                 current = semantics.insert(current, new_node, data)
 
@@ -199,7 +199,7 @@ class DepthTrieSemantics(SI.DependentSemantics_i):
 
         for word in sen:
             # Get independent semantics for current
-            semantics, _ = self.lookup(current).to_pair()
+            semantics, _ = self.lookup(current)
             accessed = semantics.access(current, word, data)
             if bool(accessed):
                 parent = current
@@ -209,7 +209,7 @@ class DepthTrieSemantics(SI.DependentSemantics_i):
 
         # At leaf:
         # remove current from parent
-        semantics, _ = self.lookup(parent).to_pair()
+        semantics, _ = self.lookup(parent)
         semantics.remove(parent, current.value, data)
 
         return current
@@ -236,7 +236,7 @@ class DepthTrieSemantics(SI.DependentSemantics_i):
 
                     while bool(remaining_sen):
                         word = remaining_sen.pop(0)
-                        indep, _ = self.lookup(currentInst._current).to_pair()
+                        indep, _ = self.lookup(currentInst._current)
                         search_word = word
                         # Handle variable:
                         if word.is_var and word not in ctxInst:

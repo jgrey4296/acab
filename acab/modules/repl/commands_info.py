@@ -100,7 +100,6 @@ def do_stat(self, line):
         print("{} : {}".format(semantic.__module__, semantic.__class__.__name__))
         print("\n", semantic.__doc__, "\n")
         print("Handlers: {}".format(len(semantic.handlers)))
-        print("Structs:  {}".format(len(semantic.structs)))
 
         print("Handler Keys:")
         print("\t{}".format("\n\t".join([str(x) for x in semantic.handlers.keys()])))

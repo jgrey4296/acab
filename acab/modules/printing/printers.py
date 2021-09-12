@@ -161,13 +161,13 @@ class ExplicitContainerPrinter(PrintSemantics_i):
     def __call__(self, value, top=None):
         result = []
         result.append(value.name)
-        result += ["(::", value.type, ")"]
+        result += ["(::", value.type, ")", ":"]
         result.append(DSYM.CONTAINER_JOIN_P)
         result.append(PW._wrap_var_list(self, value.type, []))
         # TODO add tags
         result.append([[DSYM.INDENT, x, DSYM.CONTAINER_JOIN_P] for x in  value.value])
         result.append(DSYM.END_SYM)
-
+        result.append(DSYM.PRINT_SEPARATOR_P)
         return result
 
 class StructurePrinter(PrintSemantics_i):
@@ -203,6 +203,7 @@ class StructurePrinter(PrintSemantics_i):
             result.append(top.override("_:IMPLICIT_CONTAINER", value.structure[DS.ACTION_COMPONENT]))
 
         result.append(DSYM.END_SYM)
+        result.append(DSYM.PRINT_SEPARATOR_P)
         return result
 
 @dataclass

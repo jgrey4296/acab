@@ -16,7 +16,7 @@ from acab.abstract.interfaces.value import (Sentence_i,
 from acab.abstract.printing.default_symbols import PRINT_SEPARATOR_P
 from acab.error.acab_print_exception import AcabPrintException
 from acab.error.acab_semantic_exception import AcabSemanticException
-from acab.abstract.interfaces.handler_system import HandlerComponent_i
+from acab.abstract.interfaces.handler_system import Handler, HandlerComponent_i
 
 logging = root_logger.getLogger(__name__)
 
@@ -59,7 +59,7 @@ class PrintSystem_i(HandlerSystem_i):
                 remaining = current + remaining
                 continue
             else:
-                handler, _ = self.lookup(current).to_pair()
+                handler, _ = self.lookup(current)
 
             if isinstance(current, PrintSystem_i.HandlerOverride):
                 current = current.data

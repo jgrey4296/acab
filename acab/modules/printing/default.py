@@ -7,7 +7,7 @@ from acab.modules.printing.basic_printer import BasicPrinter
 import acab.modules.printing.printers as Printers
 
 def DEFAULT_PRINTER():
-    return BasicPrinter(handlers=[
+    return BasicPrinter(init_handlers=[
         Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
         Printers.ConstraintAwareValuePrinter().as_handler("_:ATOM"),
         Printers.ProductionComponentPrinter().as_handler("_:COMPONENT"),

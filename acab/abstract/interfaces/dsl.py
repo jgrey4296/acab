@@ -124,7 +124,7 @@ class DSLBuilder_i(metaclass=abc.ABCMeta):
         with open(f, "r") as the_file:
             text = the_file.read()
 
-        print(f"Loading File Text: {text}")
+        print(f"Loading File Text:\n{text}")
         return self.parse(text)
 
     @EnsureInitialised

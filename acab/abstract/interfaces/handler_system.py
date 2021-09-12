@@ -26,7 +26,7 @@ Value_i          = 'Value_i'
 @dataclass
 class HandlerSystem_i(metaclass=abc.ABCMeta):
 
-    in_handlers    : InitVar[List[Handler]]   = field(default=None)
+    init_handlers  : InitVar[List[Handler]]   = field(default=None)
     # TODO make default  Tuple[str, str], and lookup?
     default        : Handler                  = field(default=None)
     sieve          : List[Callable]           = field(default_factory=list)
@@ -43,7 +43,7 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
         data     : Value_i   = field()
 
 
-    def __post_init__(self, in_handlers):
+    def __post_init__(self, init_handlers):
         # TODO handle overriding
         # TODO init any semantics or structs passed in as Class's
         # TODO check depsem -> struct compabilities
@@ -52,14 +52,14 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
         if not bool(self.sieve):
             self.sieve += self._default_sieve
 
-        if in_handlers is None:
-            in_handlers = []
+        if init_handlers is None:
+            init_handlers = []
 
-        if any([not isinstance(x, Handler) for x in in_handlers]):
-            raise AcabBaseException(f"Bad Handler in:", in_handlers)
+        if any([not isinstance(x, Handler) for x in init_handlers]):
+            raise AcabBaseException(f"Bad Handler in:", init_handlers)
 
         # add handlers with funcs before structs
-        for handler in sorted(in_handlers, key=lambda x: not x.func):
+        for handler in sorted(init_handlers, key=lambda x: not x.func):
             self._register_handler(handler)
 
     def _register_handler(self, handler):
@@ -128,8 +128,10 @@ class Handler:
         if isinstance(self.func, type):
             self.func = self.func()
 
-        if isinstance(self.struct, type):
+        if isinstance(self.struct, type) and hasattr(self.struct, "build_default"):
             self.struct = self.struct.build_default()
+        elif isinstance(self.struct, type):
+            self.struct = self.struct()
 
 
     def __call__(self, *args, **kwargs):
@@ -153,21 +155,25 @@ class Handler:
         return wrapper
 
     @staticmethod
-    def from_method(func, signal=None, struct=None):
-        assert(isinstance(func, MethodType))
+    def from_method(method, signal=None, struct=None):
+        """ A utility function to wrap a single method of a class as a handler.
+        Uses passed in signal, otherwise looks for method.__self__.signal
+        """
+        assert(isinstance(method, MethodType))
         return HandlerFunction(signal or func.__self__.signal,
-                               func=func,
+                               func=method,
                                struct=struct)
 
 
 
-    def to_pair(self):
-        return (self.func, self.struct)
+    def __iter__(self):
+        """ unpack the handler"""
+        return (self.func, self.struct).__iter__()
 
 
 
 class HandlerComponent_i:
     """ Utility Class Component for easy creation of a handler """
 
-    def as_handler(self, key, struct=None):
-        return Handler(key, func=self, struct=struct)
+    def as_handler(self, signal, struct=None):
+        return Handler(signal, func=self, struct=struct)

@@ -74,7 +74,7 @@ class TrieBootstrapper(Bootstrapper_i):
                 raise DeprecationWarning("Production Operators shouldn't be being built here any more")
 
             assert(isinstance(parser, pp.ParserElement))
-            new_node = self._semantics.insert(self._structure, loc_string)
+            new_node = self._semantics.insert(loc_string, self._structure)
             new_node.data.update({'parser': parser})
 
     def query(self, *queries):
@@ -88,7 +88,7 @@ class TrieBootstrapper(Bootstrapper_i):
             if q_sentence[-1].name == TrieBootstrapper.WILDCARD_STR:
                     q_sentence[-1].data[BIND_S] = True
 
-            self._semantics.query(self._structure, q_sentence, ctxs=ctxs)
+            self._semantics.query(q_sentence, self._structure, ctxs=ctxs)
             if not bool(ctxs):
                 logging.debug(f"Bootstrap Query Empty: {query}")
             else:

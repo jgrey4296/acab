@@ -34,7 +34,7 @@ def DEFAULT_SEMANTICS():
     trans_sem   = ASem.TransformAbstraction().as_handler(TRANSFORM_SEM_HINT)
     cont_sem    = ASem.ContainerAbstraction().as_handler("_:CONTAINER")
 
-    return BasicSemanticSystem(in_handlers=[cont_sem,
+    return BasicSemanticSystem(init_handlers=[cont_sem,
                                             query_sem,
                                             action_sem,
                                             rule_sem,
@@ -53,12 +53,12 @@ def EXLO_SEMANTICS():
     trans_sem   = ASem.TransformAbstraction().as_handler(TRANSFORM_SEM_HINT)
     cont_sem    = ASem.ContainerAbstraction().as_handler("_:CONTAINER")
 
-    return BasicSemanticSystem(handlers=[cont_sem,
-                                         query_sem,
-                                         action_sem,
-                                         rule_sem,
-                                         trans_sem,
-                                         trie_sem],
+    return BasicSemanticSystem(init_handlers=[cont_sem,
+                                              query_sem,
+                                              action_sem,
+                                              rule_sem,
+                                              trans_sem,
+                                              trie_sem],
                                default=trie_sem)
 
 def EXLO_PROXY_SEMANTICS():
@@ -73,10 +73,10 @@ def EXLO_PROXY_SEMANTICS():
 
     rule_sem    = ASem.ProxyRuleAbstraction().as_handler(RULE_SEM_HINT)
 
-    return BasicSemanticSystem(handlers=[cont_sem,
-                                         query_sem,
-                                         action_sem,
-                                         rule_sem,
-                                         trans_sem,
-                                         trie_sem],
+    return BasicSemanticSystem(init_handlers=[cont_sem,
+                                              query_sem,
+                                              action_sem,
+                                              rule_sem,
+                                              trans_sem,
+                                              trie_sem],
                                default=trie_sem)

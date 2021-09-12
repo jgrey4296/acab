@@ -1,18 +1,19 @@
 #!/opts/anaconda3/envs/ENV/python
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
-from os.path import join, isfile, exists, abspath
-from os.path import split, isdir, splitext, expanduser
 from os import listdir
+from os.path import (abspath, exists, expanduser, isdir, isfile, join, split,
+                     splitext)
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
 
 from acab.modules.engines.basic_engine import AcabBasicEngine
 from acab.modules.parsing.exlo.el_dsl import EL_Parser
 from acab.modules.printing.basic_printer import BasicPrinter
 from acab.modules.printing.default import DEFAULT_PRINTER
 from acab.modules.semantics.basic_system import BasicSemanticSystem
-from acab.modules.semantics.default import DEFAULT_SEMANTICS, EXLO_SEMANTICS
+from acab.modules.semantics.default import (DEFAULT_SEMANTICS,
+                                            EXLO_PROXY_SEMANTICS,
+                                            EXLO_SEMANTICS)
 
 
 def basic():
@@ -23,4 +24,9 @@ def basic():
 def exlo():
     return AcabBasicEngine(parser=EL_Parser(),
                            semantics=EXLO_SEMANTICS(),
+                           printer=DEFAULT_PRINTER())
+
+def exlo_proxy():
+    return AcabBasicEngine(parser=EL_Parser(),
+                           semantics=EXLO_PROXY_SEMANTICS(),
                            printer=DEFAULT_PRINTER())

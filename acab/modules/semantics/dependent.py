@@ -45,25 +45,25 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
         # Get the root
         current = self.default.func.up(struct.root)
         for word in sen:
-            semantics, _ = self.lookup(current).to_pair()
+            semantics, _ = self.lookup(current)
             accessible = semantics.access(current, word, data)
             if bool(accessible):
                 current = accessible[0]
             else:
-                next_semantics, _ = self.lookup(word).to_pair()
+                next_semantics, _ = self.lookup(word)
                 new_node = next_semantics.make(word, data)
                 struct.components['all_nodes'][new_node.uuid] = new_node
                 current = semantics.insert(current, new_node, data)
 
         return current
 
-    def _delete(self, sen, struct data=None):
+    def _delete(self, sen, struct, data=None):
         parent = struct.root
         current = struct.root
 
         for word in sen:
             # Get independent semantics for current
-            semantics, _ = self.lookup(current).to_pair()
+            semantics, _ = self.lookup(current)
             accessed = semantics.access(current, word, data)
             if bool(accessed):
                 parent = current
@@ -73,7 +73,7 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
 
         # At leaf:
         # remove current from parent
-        semantics, _ = self.lookup(parent).to_pair()
+        semantics, _ = self.lookup(parent)
         semantics.remove(parent, current.value, data)
 
 
@@ -91,7 +91,7 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
         with ctxs(struct.root, sen, data, collapse_vars, negated_query):
             for word in sen:
                 for ctxInst in ctxs.active_list(clear=True):
-                    indep, _ = self.lookup(ctxInst._current).to_pair()
+                    indep, _ = self.lookup(ctxInst._current)
                     search_word = word
                     # Handle variable:
                     if word.is_var and word not in ctxInst:
@@ -121,7 +121,7 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
         while bool(queue):
             path, current = queue.pop(0)
             updated_path = path + [current.value]
-            semantics, _ = self.lookup(current).to_pair()
+            semantics, _ = self.lookup(current)
             accessible = semantics.access(current, None, data)
             if bool(accessible):
                 # branch

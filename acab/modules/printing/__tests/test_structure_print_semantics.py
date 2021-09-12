@@ -51,7 +51,7 @@ DOT_E             = EXOP.DOT
 class PrintStructureSemanticTests(unittest.TestCase):
     def test_component_simple(self):
         component = ProductionComponent(value=FP.parseString("testop.blah")[0])
-        sem_sys = BasicPrinter(handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
+        sem_sys = BasicPrinter(init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
                                         Printers.ConstraintAwareValuePrinter().as_handler("_:ATOM"),
                                         Printers.ProductionComponentPrinter().as_handler("_:COMPONENT"),
                                         Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
@@ -64,7 +64,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
     def test_component_simple2(self):
         component = ProductionComponent(value=FP.parseString("testop.blah")[0],
                                         params=[FP.parseString("$x")[0][0]])
-        sem_sys = BasicPrinter(handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
+        sem_sys = BasicPrinter(init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
                                         Printers.ConstraintAwareValuePrinter().as_handler("_:ATOM"),
                                         Printers.ProductionComponentPrinter().as_handler("_:COMPONENT"),
                                         Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
@@ -78,7 +78,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
         component = ProductionComponent(value=FP.parseString("testop.blah")[0],
                                         params=[FP.parseString("$x")[0][0]],
                                         rebind=FP.parseString("$y")[0][0])
-        sem_sys = BasicPrinter(handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
+        sem_sys = BasicPrinter(init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
                                         Printers.ConstraintAwareValuePrinter().as_handler("_:ATOM"),
                                         Printers.ProductionComponentPrinter().as_handler("_:COMPONENT"),
                                         Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
@@ -89,7 +89,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
         self.assertEqual(result, "λtestop.blah $x -> $y")
 
     def test_container(self):
-        sem_sys = BasicPrinter(handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
+        sem_sys = BasicPrinter(init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
                                         Printers.ConstraintAwareValuePrinter().as_handler("_:ATOM"),
                                         Printers.ProductionComponentPrinter().as_handler("_:COMPONENT"),
                                         Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
@@ -106,7 +106,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
 
 
     def test_rule(self):
-        sem_sys = BasicPrinter(handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
+        sem_sys = BasicPrinter(init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
                                         Printers.ConstraintAwareValuePrinter().as_handler("_:ATOM"),
                                         Printers.ProductionComponentPrinter().as_handler("_:COMPONENT"),
                                         Printers.ImplicitContainerPrinter().as_handler("_:IMPLICIT_CONTAINER"),
@@ -124,7 +124,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
         self.assertEqual(result, "a.test.rule(::RULE):\n    a.b.c?\n\n    λa.b.c\nend\n")
 
     def test_rule_with_tags(self):
-        sem_sys = BasicPrinter(handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
+        sem_sys = BasicPrinter(init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
                                         Printers.ConstraintAwareValuePrinter().as_handler("_:ATOM"),
                                         Printers.ProductionComponentPrinter().as_handler("_:COMPONENT"),
                                         Printers.ImplicitContainerPrinter().as_handler("_:IMPLICIT_CONTAINER"),
@@ -151,7 +151,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
 
 
     def test_query_statement(self):
-        sem_sys = BasicPrinter(handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
+        sem_sys = BasicPrinter(init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
                                         Printers.ConstraintAwareValuePrinter().as_handler("_:ATOM"),
                                         Printers.ProductionComponentPrinter().as_handler("_:COMPONENT"),
                                         Printers.ExplicitContainerPrinter().as_handler("_:CONTAINER"),
@@ -174,7 +174,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
         self.assertEqual(result, """test.statement(::QUERY):\n    a.b.c?\n    d.e.f?\n    g.h.e?\nend\n""")
 
     def test_transform_statement(self):
-        sem_sys = BasicPrinter(handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
+        sem_sys = BasicPrinter(init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
                                         Printers.ConstraintAwareValuePrinter().as_handler("_:ATOM"),
                                         Printers.ProductionComponentPrinter().as_handler("_:COMPONENT"),
                                         Printers.ExplicitContainerPrinter().as_handler("_:CONTAINER"),
@@ -197,16 +197,16 @@ class PrintStructureSemanticTests(unittest.TestCase):
         self.assertEqual(result, """test.statement(::TRANSFORM):\n    λa.b.c $x $y -> $z\n    λq.c.d $z $x -> $a\n    λa.b.c $a $y -> $c\nend\n""")
 
     def test_action_statement(self):
-        sem_sys = BasicPrinter(handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
-                                        Printers.ConstraintAwareValuePrinter().as_handler("_:ATOM"),
-                                        Printers.ProductionComponentPrinter().as_handler("_:COMPONENT"),
-                                        Printers.ExplicitContainerPrinter().as_handler("_:CONTAINER"),
-                                        Printers.ImplicitContainerPrinter().as_handler("_:IMPLICIT_CONTAINER"),
-                                        Printers.StructurePrinter().as_handler("_:STRUCTURE"),
-                                        Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
-                                        Printers.PrimitiveTypeAwarePrinter().as_handler("_:NO_MODAL"),
-                                        ],
-                              settings={"MODAL": "exop"})
+        sem_sys = BasicPrinter(init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
+                                              Printers.ConstraintAwareValuePrinter().as_handler("_:ATOM"),
+                                              Printers.ProductionComponentPrinter().as_handler("_:COMPONENT"),
+                                              Printers.ExplicitContainerPrinter().as_handler("_:CONTAINER"),
+                                              Printers.ImplicitContainerPrinter().as_handler("_:IMPLICIT_CONTAINER"),
+                                              Printers.StructurePrinter().as_handler("_:STRUCTURE"),
+                                              Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
+                                              Printers.PrimitiveTypeAwarePrinter().as_handler("_:NO_MODAL"),
+                                              ],
+                               settings={"MODAL": "exop"})
 
         query = AP.action_definition.parseString("""test.statement:
         λa.b.c $x

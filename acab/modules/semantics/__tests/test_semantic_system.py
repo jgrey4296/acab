@@ -50,13 +50,13 @@ class SemanticSystemTests(unittest.TestCase):
             raise AcabBaseException("TestAbsSem called")
 
     def test_construction(self):
-        semsys = BasicSemanticSystem(default=SemanticSystemTests.StubAbsSemantic()
+        semsys = BasicSemanticSystem(default=SemanticSystemTests.StubAbsSemantic().as_handler("_:stub"))
         self.assertIsInstance(semsys, SemanticSystem_i)
         self.assertIsInstance(semsys.default.func, AbstractionSemantics_i)
         self.assertFalse(semsys.handlers)
 
     def test_default_call(self):
-        semsys = BasicSemanticSystem(default=SemanticSystemTests.StubAbsSemantic()
+        semsys = BasicSemanticSystem(default=SemanticSystemTests.StubAbsSemantic().as_handler("_:stub"))
         test_sen = Sentence.build(["test"])
         with self.assertRaises(AcabBaseException) as cm:
             semsys(test_sen)
@@ -65,7 +65,7 @@ class SemanticSystemTests(unittest.TestCase):
 
     def test_retrieval(self):
         # put some semantics in semsys.mapping
-        semsys = BasicSemanticSystem(default=SemanticSystemTests.StubAbsSemantic()
+        semsys = BasicSemanticSystem(default=SemanticSystemTests.StubAbsSemantic().as_handler("_:stub"))
 
 
     def test_failure(self):

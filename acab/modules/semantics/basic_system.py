@@ -34,7 +34,7 @@ class BasicSemanticSystem(SemanticSystem_i):
         lambda x: x.type
     ]
 
-    container_constructor : ContextSet_i = field(default=ContextSet)
+    ctx_set : ContextSet_i = field(default=ContextSet)
 
     def __call__(self, *instructions:List[Sentence],
                  ctxs:Optional[CtxSet]=None,
@@ -52,7 +52,7 @@ class BasicSemanticSystem(SemanticSystem_i):
     def run_instruction(self, instruction, ctxs=None, data=None) -> Any:
         semantics, struct = None, None
         try:
-            semantics, struct = self.lookup(instruction).to_pair()
+            semantics, struct = self.lookup(instruction)
             assert(semantics is not None)
             logging.debug(f"Running Semantics: {semantics}")
             # run the semantics

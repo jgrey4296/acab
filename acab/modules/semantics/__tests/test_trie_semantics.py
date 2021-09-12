@@ -34,8 +34,8 @@ CONSTRAINT_V = config.prepare("Value.Structure", "CONSTRAINT")()
 
 class TrieSemanticTests(unittest.TestCase):
     def test_trie_insert_basic(self):
-        node_sem = BasicNodeSemantics("_:node")
-        trie_sem = BreadthTrieSemantics("_:Trie", default=(node_sem, None), handlers=[], structs=[])
+        node_sem = BasicNodeSemantics().as_handler("_:node")
+        trie_sem = BreadthTrieSemantics(default=node_sem)
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = Sentence.build(["a", "test", "sentence"])
@@ -47,8 +47,8 @@ class TrieSemanticTests(unittest.TestCase):
         self.assertTrue("sentence" in trie_struct.root.children["a"].children["test"])
 
     def test_trie_insert_non_exclusion(self):
-        node_sem = BasicNodeSemantics("_:node")
-        trie_sem = BreadthTrieSemantics("_:Trie", default=(node_sem, None), handlers=[], structs=[])
+        node_sem = BasicNodeSemantics().as_handler("_:node")
+        trie_sem = BreadthTrieSemantics(default=node_sem)
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen  = Sentence.build(["a", "test", "sentence"])

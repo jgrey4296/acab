@@ -173,10 +173,10 @@ class AbstractionSemanticTests(unittest.TestCase):
 
             return str(val.value)
 
-        transform_sem = ASem.TransformAbstraction().as_handler(":_transform")
-        action_sem    = ASem.ActionAbstraction().as_handler(":_action")
+        transform_sem = ASem.TransformAbstraction().as_handler("_:transform")
+        action_sem    = ASem.ActionAbstraction().as_handler("_:action")
         semSys        = BasicSemanticSystem(default=StubAbsSemantic().as_handler("_:stub"),
-                                            in_handlers=[transform_sem, action_sem])
+                                            init_handlers=[transform_sem, action_sem])
 
         consem        = ASem.ContainerAbstraction()
 
@@ -235,8 +235,8 @@ class AbstractionSemanticTests(unittest.TestCase):
 
         # Build Semantics
         node_sem    = BasicNodeSemantics().as_handler("_:node")
-        trie_sem    = BreadthTrieSemantics(default=node_sem
-                                           struct=BasicNodeStruct.build_default())
+        trie_sem    = BreadthTrieSemantics(default=node_sem).as_handler("_:trie",
+                                                                        struct=BasicNodeStruct.build_default())
 
         query_sem   = ASem.QueryAbstraction().as_handler(QUERY_SEM_HINT)
         action_sem  = ASem.ActionAbstraction().as_handler(ACTION_SEM_HINT)
@@ -244,11 +244,11 @@ class AbstractionSemanticTests(unittest.TestCase):
         trans_sem   = ASem.TransformAbstraction().as_handler(TRANSFORM_SEM_HINT)
         cont_sem    = ASem.ContainerAbstraction().as_handler("_:CONTAINER")
 
-        semSys      = BasicSemanticSystem(in_handlers=[cont_sem,
-                                                       query_sem,
-                                                       action_sem,
-                                                       rule_sem,
-                                                       trans_sem],
+        semSys      = BasicSemanticSystem(init_handlers=[cont_sem,
+                                                         query_sem,
+                                                         action_sem,
+                                                         rule_sem,
+                                                         trans_sem],
                                           default=trie_sem)
 
         # Setup operators in context
@@ -312,15 +312,16 @@ class AbstractionSemanticTests(unittest.TestCase):
         #
         # Build Semantics
         node_sem    = BasicNodeSemantics().as_handler("_:node")
-        trie_sem    = BreadthTrieSemantics(default=node_sem)
+        trie_sem    = BreadthTrieSemantics(default=node_sem).as_handler("_:trie",
+                                                                        struct=BasicNodeStruct.build_default())
 
         query_sem   = ASem.QueryAbstraction().as_handler(QUERY_SEM_HINT)
         action_sem  = ASem.ActionAbstraction().as_handler(ACTION_SEM_HINT)
         trans_sem   = ASem.TransformAbstraction().as_handler(TRANSFORM_SEM_HINT)
         # THIS IS THE MAJOR CHANGE OF THIS TEST:
-        rule_sem    = ASem.ProxyRuleAbstraction(RULE_SEM_HINT)
+        rule_sem    = ASem.ProxyRuleAbstraction().as_handler(RULE_SEM_HINT)
 
-        semSys      = BasicSemanticSystem(in_handlers=[query_sem, action_sem, trans_sem, rule_sem],
+        semSys      = BasicSemanticSystem(init_handlers=[query_sem, action_sem, trans_sem, rule_sem],
                                           default=trie_sem)
 
         # Setup operators in context
