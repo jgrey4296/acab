@@ -121,7 +121,7 @@ class DependentSemantics_i(HandlerComponent_i, SemanticSystem_i):
         if QUERY in sen.data and bool(sen.data[QUERY]):
             return self.query(struct, sen, ctxs=ctxs, data=data)
 
-        return self.insert(struct, sen, ctxs=ctxs, data=data)
+        return self.insert(sen, struct, ctxs=ctxs, data=data)
 
     def to_sentences(self, struct, data=None, ctxs=None):
         """ Reduce a struct down to sentences, for printing """
