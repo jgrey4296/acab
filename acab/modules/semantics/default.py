@@ -66,3 +66,25 @@ def EXLO_SEMANTICS():
                                          trans_sem,
                                          trie_sem],
                                default=trie_sem)
+
+def EXLO_PROXY_SEMANTICS():
+    node_sem    = Handler("_:node", func=ExclusionNodeSemantics)
+    trie_sem    = Handler("_:trie",
+                          func=BreadthTrieSemantics(in_handlers=[], default=node_sem),
+                          struct=BasicNodeStruct)
+
+    query_sem   = Handler(QUERY_SEM_HINT, ASem.QueryAbstraction)
+    action_sem  = Handler(ACTION_SEM_HINT, ASem.ActionAbstraction)
+    rule_sem    = Handler(RULE_SEM_HINT, ASem.ProxyRuleAbstraction)
+    trans_sem   = Handler(TRANSFORM_SEM_HINT, ASem.TransformAbstraction)
+    cont_sem    = Handler("_:CONTAINER", ASem.ContainerAbstraction)
+
+
+
+    return BasicSemanticSystem(in_handlers=[cont_sem,
+                                         query_sem,
+                                         action_sem,
+                                         rule_sem,
+                                         trans_sem,
+                                         trie_sem],
+                               default=trie_sem)
