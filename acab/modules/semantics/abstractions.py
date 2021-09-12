@@ -39,23 +39,15 @@ class TransformAbstraction(SI.AbstractionSemantics_i):
         # Note: run *all* the transform clauses at once,
         # To minimise redundent new ctxs
         # runs on a single active ctx
-
-        # TODO: operators might actually come from semSys
         operators   = ctxs._operators
-        transform   = instruction
         for ctxIns in ctxs.active_list(clear=True):
-            # TODO make this a context manager?
-            mutx = MutableContextInstance.build(ctxIns)
-            for clause in transform.clauses:
-                op     = operators[clause.op]
-                params = [mutx[x] for x in clause.params]
-                result = op(*params, data=ctxIns.data)
-                mutx[clause.rebind] = result
-
-            # bind ctx with results
-            # TODO move this inside mutablecontextinstance
-            ctxs.push(mutx.finish())
-
+            transform   = ctxIns.continuation or instruction
+            with MutableContextInstance(ctxs, ctxIns) as mutx:
+                for clause in transform.clauses:
+                    op                  = operators[clause.op]
+                    params              = [mutx[x] for x in clause.params]
+                    result              = op(*params, data=mutx.data)
+                    mutx[clause.rebind] = result
 
 class ActionAbstraction(SI.AbstractionSemantics_i):
     """ *Consumes* a context, performing all actions in it """
