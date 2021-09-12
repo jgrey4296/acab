@@ -125,21 +125,21 @@ def do_run(self, line):
         # query
         if not bool(line.strip()):
             logging.info("TODO Ticking Engine")
-            self.state.result = self.state.engine.tick()
+            self.state.ctxs = self.state.engine.tick()
             return
 
-        self.state.result = self.state.engine(line)
+        self.state.ctxs = self.state.engine(line)
 
-        bindings = [y for x in self.state.result.active_list()
+        bindings = [y for x in self.state.ctxs.active_list()
                     for y in x if isinstance(y, ProductionContainer)]
 
-        if not bool(bindings) and bool(self.state.result) and isinstance(self.state.result[0]._current.value, Statement_i):
-            bindings = [self.state.result[0]._current.value]
+        if not bool(bindings) and bool(self.state.ctxs) and isinstance(self.state.ctxs[0]._current.value, Statement_i):
+            bindings = [self.state.ctxs[0]._current.value]
 
-        if bool(self.state.result):
+        if bool(self.state.ctxs):
             # Run the bindings
             print(f"Running {len(bindings)} Statements")
-            self.state.result = self.state.engine(bindings)
+            self.state.ctxs = self.state.engine(bindings)
         else:
             print("No Match to Run")
 

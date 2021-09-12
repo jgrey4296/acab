@@ -15,7 +15,7 @@ import acab
 
 config = acab.setup()
 
-from acab.abstract.interfaces.context import ContextContainer_i
+from acab.abstract.interfaces.context import ContextSet_i
 from acab.abstract.interfaces.engine import AcabEngine_i
 from acab.modules.repl import ReplParser as RP
 
@@ -38,7 +38,7 @@ class ReplState:
     prompt           : str                    =  field(default=initial_prompt)
     prompt_ml        : str                    =  field(default=config.prepare("Module.REPL", "PROMPT_ML", actions=[config.actions_e.STRIPQUOTE])())
     prompt_bkup      : str                    =  field(default="")
-    result           : ContextContainer_i     =  field(default=None)
+    ctxs             : ContextSet_i           =  field(default=None)
     collect_str      : List[str]              =  field(default_factory=list)
     echo             : bool                   =  field(default=False)
     in_multi_line    : bool                   =  field(default=False)
@@ -59,8 +59,8 @@ class AcabREPLCommander(cmd.Cmd):
         """ Called when no other command matches """
         try:
             # default to assertion / query / run
-            self.state.result = self.state.engine(line,
-                                            bindings=self.state.result)
+            self.state.ctxs = self.state.engine(line,
+                                          bindings=self.state.ctxs)
 
         except pp.ParseException as err:
             logging.warning(f"Parse Failure: {err.msg} : {err.markInputline()}")
@@ -93,8 +93,8 @@ class AcabREPLCommander(cmd.Cmd):
 
     def postcmd(self, stop, line):
         count = "0"
-        if self.state.result is not None:
-            count = len(self.state.result)
+        if self.state.ctxs is not None:
+            count = len(self.state.ctxs)
         insert = f"(Γ: {count})"
 
         self.prompt = self.state.prompt + " " + insert + ": "

@@ -96,42 +96,42 @@ def do_break(self, line):
     # To break on semantic execution:
 
     """
-    result = RP.break_parser.parseString(line)
+    ctxs = RP.break_parser.parseString(line)
     # TODO refactor the basic/semantic logic into the debugger
-    if "basic" in result:
-        bp_result = self.state.debugger.set_break(result.file, result.line)
+    if "basic" in ctxs:
+        bp_result = self.state.debugger.set_break(ctxs.file, ctxs.line)
         if bp_result is None:
-            print(f"Breakpoint Set: {result.file} : {result.line}")
+            print(f"Breakpoint Set: {ctxs.file} : {ctxs.line}")
         else:
             print(f"Breakpoint NOT Set: {bp_result}")
 
-    elif "semantic" in result:
+    elif "semantic" in ctxs:
         # TODO breakpoint a semantic handler by name,
         # TODO breakpoint (in)dependent semantic function
         # TODO breakpoint a node by sentence path
         # TODO breakpoint an operator/action
         # TODO breakpoint a variable
         # run query
-        self.state.result = self.state.engine(result.semantic)
+        self.state.ctxs = self.state.engine(ctxs.semantic)
         # attach semantic breakpoints to each prod_abstraction
-        if len(self.state.result) == 1 and isinstance(self.state.result[0]._current.value, Statement_i):
-            curr = self.state.result[0]._current.value
+        if len(self.state.ctxs) == 1 and isinstance(self.state.ctxs[0]._current.value, Statement_i):
+            curr = self.state.ctxs[0]._current.value
             curr.do_break()
             if curr.should_break:
                 print(f"Breakpoint Set: {repr(curr)} : {curr.uuid}")
             else:
                 print(f"Breakpoint Unset: {repr(curr)} : {curr.uuid}")
-        elif bool(self.state.result):
+        elif bool(self.state.ctxs):
             count = 0
-            for inst in self.state.result:
+            for inst in self.state.ctxs:
                 for bind in inst.data.items():
                     if isinstance(bind, Statement_i):
                         bind.do_break()
                         count += 1
 
-            print(f"{count} Breakpoints Set: {result.semantic}")
+            print(f"{count} Breakpoints Set: {ctxs.semantic}")
 
-    elif "parser" in result:
+    elif "parser" in ctxs:
         # TODO add debug breakpoint to a parser
         pass
     else:
@@ -141,7 +141,7 @@ def do_break(self, line):
         self is the repl,
         self.state is data the repl tracks,
         self.state.engine is the active ACAB engine,
-        self.state.result is the current context container
+        self.state.ctxs is the current context set
         """)
         self.state.debugger.set_trace()
 
@@ -156,10 +156,10 @@ def do_ctx(self, line):
         params = RP.ctx_select_parser.parseString(line)
 
         if "subset" in params:
-            self.state.result = self.state.result.__getitem__(params.subset, wrap=True)
+            self.state.ctxs = self.state.ctxs.__getitem__(params.subset, wrap=True)
         elif "clear" in params:
             print("Clearing Context")
-            self.state.result = None
+            self.state.ctxs = None
         else:
             self.onecmd("print_ctx")
 
@@ -194,8 +194,8 @@ def do_forcep(self, line):
         if isinstance(forced_result, tuple):
             forced_result = forced_result[1]
 
-        self.state.result = self.state.engine(forced_result,
-                                        bindings=self.state.result)
+        self.state.ctxs = self.state.engine(forced_result,
+                                        bindings=self.state.ctxs)
 
     except pp.ParseException as err:
         traceback.print_tb(err.__traceback__)

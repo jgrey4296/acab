@@ -24,14 +24,14 @@ def print_contexts(self, params):
     bindings_to_print = []
     if "short_context" in params:
         try:
-            ctxs_to_print.append(self.state.result[params['short_context']])
+            ctxs_to_print.append(self.state.ctxs[params['short_context']])
         except IndexError as err:
-            print(f"Selected bad ctx instance. Try 0 <= x < {len(self.state.result)}.")
+            print(f"Selected bad ctx instance. Try 0 <= x < {len(self.state.ctxs)}.")
 
     elif "context_slice" in params:
-        ctxs_to_print += self.state.result[params['context_slice']]
-    elif bool(self.state.result) and len(self.state.result) > 0:
-        ctxs_to_print.append(self.state.result[0])
+        ctxs_to_print += self.state.ctxs[params['context_slice']]
+    elif bool(self.state.ctxs) and len(self.state.ctxs) > 0:
+        ctxs_to_print.append(self.state.ctxs[0])
     else:
         print(f"No applicable contexts to print")
 

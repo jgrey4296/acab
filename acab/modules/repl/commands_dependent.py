@@ -32,10 +32,10 @@ def do_listen(self, line):
     elif params['type'] == "remove":
         self.state.engine.remove_listeners(*words)
     elif params['type'] == "list":
-        result = []
-        result.append(" ".join(self.state.engine.get_listeners()))
-        result.append("Threshold: {}".format(self.state.engine.get_listener_threshold()))
-        params["result"] = "\n".join(result)
+        ctxs = []
+        ctxs.append(" ".join(self.state.engine.get_listeners()))
+        ctxs.append("Threshold: {}".format(self.state.engine.get_listener_threshold()))
+        params["ctxs"] = "\n".join(ctxs)
     elif params['type'] == "threshold":
         params = SPLIT_RE.split((params[0]))
         self.state.engine.set_listener_threshold(int(params[0]), int(params[1]))
@@ -68,7 +68,7 @@ def do_decompose(self, line):
     params = line
     # TODO : split objects into tries
     # run query
-    # split result into bindings
+    # split ctxs into bindings
 
 
 
@@ -83,7 +83,7 @@ def do_step(self, line):
     params = RP.step_parser.parseString(line)[:]
     # TODO
     try:
-        result = []
+        ctxs = []
         if "back" in params[0]:
             print("back")
         elif "rule" in params[0]:
@@ -93,7 +93,7 @@ def do_step(self, line):
         elif "pipeline" in params[0]:
             print("pipeline")
 
-        self.state.result = "\n".join(result)
+        self.state.ctxs = "\n".join(ctxs)
     except Exception as err:
         logging.error(f"Failed to step: {line}")
         logging.error(f"{err}")
