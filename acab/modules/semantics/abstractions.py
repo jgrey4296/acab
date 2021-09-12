@@ -29,7 +29,7 @@ class QueryAbstraction(SI.AbstractionSemantics_i):
         sem, struct = semSys.lookup(None).to_pair()
         for clause in query.clauses:
             # TODO ensure system selects the dep sems and struct
-            sem.query(struct, clause, data=data, ctxs=ctxs)
+            sem.query(clause, struct, data=data, ctxs=ctxs)
 
 
 class TransformAbstraction(SI.AbstractionSemantics_i):

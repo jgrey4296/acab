@@ -115,7 +115,7 @@ class DependentSemantics_i(SemanticSystem_i):
     def __repr__(self):
         return f"{self.__class__.__name__}"
 
-    def __call__(self, struct, sen, ctxs=None, data=None):
+    def __call__(self, sen, struct, ctxs=None, data=None):
         if QUERY in sen.data and bool(sen.data[QUERY]):
             return self.query(struct, sen, ctxs=ctxs, data=data)
 

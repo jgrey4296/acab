@@ -35,12 +35,12 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
         has_all_node_comp = "all_nodes" in struct.components
         return is_bns or has_all_node_comp
 
-    def insert(self, struct, sen, data=None, ctxs=None):
+    def insert(self, sen, struct, data=None, ctxs=None):
         if data is None:
             data = {}
 
         if NEGATION_S in sen.data and sen.data[NEGATION_S]:
-            return self._delete(struct, sen, data)
+            return self._delete(sen, struct, data)
 
         # Get the root
         current = self.default.func.up(struct.root)
@@ -57,7 +57,7 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
 
         return current
 
-    def _delete(self, struct, sen, data=None):
+    def _delete(self, sen, struct data=None):
         parent = struct.root
         current = struct.root
 
@@ -77,7 +77,7 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
         semantics.remove(parent, current.value, data)
 
 
-    def query(self, struct, sen, data=None, ctxs=None):
+    def query(self, sen, struct, data=None, ctxs=None):
         """ Breadth First Search Query """
         if ctxs is None:
             raise ASErr.AcabSemanticException("Ctxs is none to TrieSemantics.query", sen)

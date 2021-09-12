@@ -64,7 +64,7 @@ class BasicSemanticSystem(SemanticSystem_i):
             else:
                 # but dependent semantics do
                 assert(struct is not None)
-                semantics(struct, instruction, ctxs=ctxs, data=data)
+                semantics(instruction, struct, ctxs=ctxs, data=data)
         except AcabSemanticException as err:
             # Semantic exceptions can be handled,
             # but others continue upwards
