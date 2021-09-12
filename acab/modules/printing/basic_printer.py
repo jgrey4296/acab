@@ -39,3 +39,6 @@ class BasicPrinter(PrintSystem_i):
         # value          : m -> 1 : any
         lambda x              : "_:ATOM" if isinstance(x, Value_i) else None
     ]
+
+    def __repr__(self):
+        return f"({self.__class__.__name__}: {len(self.handlers)} handlers, {len(self.sieve)} sieves)"
