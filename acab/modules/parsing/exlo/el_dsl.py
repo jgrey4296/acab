@@ -70,6 +70,8 @@ class EL_Parser(DSL_Fragment_i):
 
         FP.HOTLOAD_QUERY_OP << bootstrapper.query("operator.query.*")
 
+        QP.HOTLOAD_QUERY_SEN << bootstrapper.query("query.sentences.*")
+
         TP.HOTLOAD_TRANS_OP << bootstrapper.query("operator.transform.*")
 
         TP.HOTLOAD_TRANS_STATEMENTS << bootstrapper.query("operator.transform.statement.*")
