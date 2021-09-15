@@ -61,6 +61,22 @@ and any structs they require """
     abstraction : List[AbstractionSemantics_i] = field(default_factory=list)
     structs     : List[Structure]          = field(default_factory=list)
 
+    def __len__(self):
+        counts = 0
+        counts += len(self.dependent)
+        counts += len(self.independent)
+        counts += len(self.abstraction)
+        counts += len(self.structs)
+        return counts
+
+    def __repr__(self):
+        dep     = len(self.dependent)
+        indep   = len(self.independent)
+        abstr   = len(self.abstraction)
+        structs = len(self.structs)
+
+        return f"(Semantic Fragment: {dep} Dependent, {indep} Independent, {abstr} Abstractions, {structs} Structures)"
+
 #----------------------------------------
 @dataclass
 class SemanticSystem_i(HandlerSystem_i):

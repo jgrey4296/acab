@@ -30,11 +30,32 @@ class ModuleComponents():
     semantics     : List[Semantic_Fragment] = field()
     printers      : List[PrintSemantics_i]  = field()
     operators     : List[Sentence]          = field()
+
+    def report(self):
+        frags     = f"{ len(self.dsl_fragments) } DSL Fragments"
+        semantics = f"{ len(self.semantics) } Semantic Components"
+        printers  = f"{ len(self.printers) } Printers"
+        operators = f"{ len(self.operators) } Operators"
+
+        return f"Module {self.source}:\n- {frags}\n- {semantics}\n- {operators}\n- {printers}"
+
+    def __repr__(self):
+        frags     = f"{ len(self.dsl_fragments) } DSL"
+        semantics = f"{ len(self.semantics) } Sem"
+        printers  = f"{ len(self.printers) } Pr"
+        operators = f"{ len(self.operators) } Op"
+
+        return f"({frags} | {semantics} | {operators} | {printers} : {self.source})"
+
+
 #--------------------
 @dataclass
 class ModuleLoader_i(metaclass=abc.ABCMeta):
     """ Describes how an engine loads ACAB/py modules """
     loaded_modules       : Dict[str, ModuleComponents]  = field(init=False, default_factory=dict)
+
+    def __getitem__(self, key):
+        return self.loaded_modules[key]
 
     def reload_all_modules(self):
         loaded = list(self.loaded_modules.keys())
@@ -95,3 +116,8 @@ class ModuleLoader_i(metaclass=abc.ABCMeta):
         pass
 
 
+
+
+    def __repr__(self):
+        loaded_modules = ", ".join([x for x in self.loaded_modules.keys()])
+        return f"ModuleLoader({loaded_modules})"

@@ -24,7 +24,6 @@ class IndentedBlock(ParseElementEnhance):
         # see if self.expr matches at the current location - if not it will raise an exception
         # and no further work is necessary
         indent_col        = col(loc, instring)
-        logging.debug(f"Indent column: {indent_col}")
         peer_parse_action = matchOnlyAtCol(indent_col)
 
         self.expr.parseImpl(instring, loc, doActions=False)

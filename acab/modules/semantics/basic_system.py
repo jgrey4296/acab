@@ -81,4 +81,8 @@ class BasicSemanticSystem(SemanticSystem_i):
 
 
     def __repr__(self):
-        return f"({self.__class__.__name__}: {len(self.handlers)} handlers, {len(self.sieve)} sieves)"
+        ops = ""
+        if bool(self._operator_cache):
+            ops = f", {len(self._operator_cache)} operators"
+
+        return f"({self.__class__.__name__}: {len(self.handlers)} handlers, {len(self.sieve)} sieves{ops})"
