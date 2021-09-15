@@ -15,6 +15,7 @@ from acab.error.acab_config_exception import AcabConfigException
 from acab.modules.repl.repl_commander import register
 from acab.modules.repl import ReplParser as RP
 from acab.abstract.core.production_abstractions import ProductionContainer
+from acab.modules.repl.util import init_inspect
 
 logging = root_logger.getLogger(__name__)
 
@@ -23,10 +24,20 @@ def do_init(self, line):
     """
     Specify the Engine to initialise.
     Imports the module, and uses the final component as the Engine Class.
-    eg: acab.engines.trie_engine.TrieEngine -> TrieEngine
+    eg: acab.modules.engines.trie_engine.TrieEngine -> TrieEngine
+
+    A Question mark at the end of the line signals to inspect the module
+    for potential constructors:
+    eg: acab.modules.engines.configured?
     """
     if not bool(line.strip()):
         line = self.state.engine_str
+
+    # if:  "init line?", then return applicable functions
+    if line[-1] == "?":
+        return init_inspect(line[:-1])
+
+
     logging.info("Initialising Engine: {}".format(line))
 
     try:
@@ -61,7 +72,11 @@ def do_module(self, line):
     params = line.split(" ")
     logging.info(f"Loading Modules: {params}")
     try:
-        self.state.engine.load_modules(*params)
+        loaded = self.state.engine.load_modules(*params)
+        print(f"Loaded {len(loaded)} modules")
+        for x in loaded:
+            print(x)
+
     except Exception as err:
         logging.error(f"{err}")
         logging.error(f"Failed to load modules: {line}")
@@ -73,13 +88,7 @@ def do_load(self, line):
     """
     logging.info(f"Loading: {line}")
     filename = abspath(expanduser(line)).strip()
-    try:
-        assert(exists(filename)), filename
-        self.state.engine.load_file(filename)
-    except Exception as err:
-        logging.error(f"Failed to load: {line}")
-        logging.error(f"{err}")
-
+    self.state.engine.load_file(filename)
 
 @register
 def do_save(self, line):
@@ -120,7 +129,6 @@ def do_run(self, line):
     run a.rule?       : runs a unique rule
     run a.rule.$x?    : runs all matching rules
     """
-    # TODO
     try:
         # query
         if not bool(line.strip()):
