@@ -5,7 +5,6 @@ from os.path import abspath, exists, expanduser, split
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
-import pyparsing as pp
 
 logging = root_logger.getLogger(__name__)
 
@@ -50,21 +49,14 @@ class AcabEngine_i(metaclass=abc.ABCMeta):
         assert exists(filename), filename
         # with open(filename) as f:
         # everything should be an assertion
-        try:
-            assertions = self._dsl_builder.parseFile(filename)
-        except pp.ParseException as exp:
-            print("-----")
-            print(str(exp))
-            print(exp.markInputline())
-            print("File Not Asserted into WM")
-            return False
+        assertions = self._dsl_builder.parseFile(filename)
 
         try:
             # Assert facts:
             for x in assertions:
                 logging.info(f"File load assertion: {x}")
                 self(x)
-        except Exception as err:
+        except AcabSemanticException as err:
             logging.warning(f"Assertion Failed: {x}")
 
         return True
@@ -130,7 +122,7 @@ class AcabEngine_i(metaclass=abc.ABCMeta):
         for x in self.load_paths:
             self.load_file(x)
 
-
+        return [self._module_loader[x] for x in modules]
 
     @abc.abstractmethod
     def __call__(self, thing, ctxset=None) -> ContextSet_i:

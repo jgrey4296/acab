@@ -17,7 +17,7 @@ from acab.abstract.core.production_abstractions import (ProductionContainer,
                                                         ProductionOperator)
 from acab.abstract.engine.module_loader import ModuleLoader
 from acab.abstract.interfaces.dsl import DSL_Fragment_i
-from acab.abstract.interfaces.engine import AcabEngine_i, EnsureInitialised
+from acab.abstract.interfaces.engine import AcabEngine_i
 from acab.abstract.interfaces.printing import PrintSystem_i
 from acab.abstract.interfaces.semantic import SemanticSystem_i
 from acab.abstract.interfaces.value import Value_i, Sentence_i
@@ -73,3 +73,12 @@ class AcabBasicEngine(AcabEngine_i):
         self._cached_bindings.append(result)
         if len(self._cached_bindings) > self._cache_size:
             self._cached_bindings.pop(0)
+
+
+    def __repr__(self):
+        clsname = self.__class__.__name__
+        parser_base = self.parser.__class__.__name__
+        semantics = repr(self.semantics)
+        printer = repr(self.printer)
+        modules = repr(self._module_loader)
+        return f"{clsname}(\n-- ({parser_base})\n-- {semantics}\n-- {printer}\n-- {modules}\n)"
