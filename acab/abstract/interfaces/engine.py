@@ -46,16 +46,16 @@ class AcabEngine_i(metaclass=abc.ABCMeta):
         filename = abspath(expanduser(filename))
         logging.info("Loading: {}".format(filename))
         assertions = []
-        assert exists(filename), filename
         # with open(filename) as f:
         # everything should be an assertion
-        assertions = self._dsl_builder.parseFile(filename)
-
         try:
+            assertions = self._dsl_builder.parseFile(filename)
             # Assert facts:
             for x in assertions:
                 logging.info(f"File load assertion: {x}")
                 self(x)
+        except FileNotFoundError as err:
+            logging.warning(f"{err}")
         except AcabSemanticException as err:
             logging.warning(f"Assertion Failed: {x}")
 
