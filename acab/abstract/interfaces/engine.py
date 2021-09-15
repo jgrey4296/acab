@@ -133,5 +133,5 @@ class AcabEngine_i(metaclass=abc.ABCMeta):
 
 
     @abc.abstractmethod
-    def __call__(self, thing, bindings=None) -> ContextSet_i:
+    def __call__(self, thing, ctxset=None) -> ContextSet_i:
         pass

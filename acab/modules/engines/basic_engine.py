@@ -61,16 +61,7 @@ class AcabBasicEngine(AcabEngine_i):
 
         assert(all([isinstance(x, (Value_i, Sentence_i)) for x in inst])), inst
         logging.debug(f"Running: {str(inst)}")
-        # pass inst to sem system
-        result = bindings
-        for clause in inst:
-            result = self.semantics(clause, ctxs=result)
-
-            if not bool(result):
-                logging.info("Attempt Failed")
-                break
-
-        return result
+        return self.semantics(*inst, ctxs=ctxset)
 
     @property
     def bindings(self):

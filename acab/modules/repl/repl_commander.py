@@ -50,23 +50,19 @@ class ReplState:
 
 class AcabREPLCommander(cmd.Cmd):
     """ Implementation of cmd.Cmd to provide an extensible ACAB REPL"""
-    intro  = "Welcome to ACAB. Type 'help' or '?' to list commands.\n"
+    intro  = "Welcome to ACAB.\nType 'help' or '?' to list commands.\nType 'tutorial' for a tutorial.\nType ':q' to quit."
     prompt = initial_prompt + ": "
 
     state  : ReplState = ReplState()
 
     def default(self, line):
         """ Called when no other command matches """
-        try:
-            # default to assertion / query / run
-            self.state.ctxs = self.state.engine(line,
-                                          bindings=self.state.ctxs)
-
-        except pp.ParseException as err:
-            logging.warning(f"Parse Failure: {err.msg} : {err.markInputline()}")
-        except Exception as err:
-            traceback.print_tb(err.__traceback__)
-            logging.warning(f"Failure in Default: {err}")
+        # default to assertion / query / run
+        self.state.ctxs = self.state.engine(line,
+                                            ctxset=self.state.ctxs)
+        # except Exception as err:
+        #     traceback.print_tb(err.__traceback__)
+        #     logging.warning(f"Failure in Default: {err}")
 
 
     def precmd(self, line):

@@ -195,7 +195,7 @@ def do_forcep(self, line):
             forced_result = forced_result[1]
 
         self.state.ctxs = self.state.engine(forced_result,
-                                        bindings=self.state.ctxs)
+                                            ctxset=self.state.ctxs)
 
     except pp.ParseException as err:
         traceback.print_tb(err.__traceback__)
