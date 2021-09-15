@@ -5,7 +5,7 @@ import logging as root_logger
 from enum import Enum
 
 from acab.abstract.core.production_abstractions import ActionOperator
-from acab.modules.semantics.util import SemanticOperatorWrapDecorator
+from acab.abstract.decorators.semantic import OperatorArgUnWrap, OperatorResultWrap
 
 logging = root_logger.getLogger(__name__)
 
@@ -30,7 +30,7 @@ class ActionAdd(ActionOperator):
 
 class ActionPrint(ActionOperator):
 
-    @SemanticOperatorWrapDecorator
+    @OperatorArgUnWrap
     def __call__(self, *params, data=None, semSystem=None):
         """ Trigger a logging statement """
         # TODO bind the string

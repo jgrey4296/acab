@@ -22,7 +22,7 @@ from acab.abstract.interfaces.printing import PrintSystem_i
 from acab.abstract.interfaces.semantic import SemanticSystem_i
 from acab.abstract.interfaces.value import Value_i, Sentence_i
 from acab.error.acab_base_exception import AcabBaseException
-from acab.modules.engines.util import MaybeBuildOperatorCtxDecorator
+from acab.abstract.decorators.engines import MaybeBuildOperatorCtxDecorator, EnsureEngineInitialised
 
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
@@ -45,9 +45,9 @@ class AcabBasicEngine(AcabEngine_i):
         self.semantics.register_data({"printer": self.printer})
         self.initialised = True
 
-    @EnsureInitialised
-    @MaybeBuildOperatorCtxDecorator
-    def __call__(self, inst:Instruction, bindings=None) -> CtxSet:
+    @EnsureEngineInitialised
+    @MaybeBuildOperatorCtx
+    def __call__(self, inst:Instruction, ctxset=None) -> CtxSet:
         """ Where a inst could be a:
         str to parse then,
         sentence to assert, query, or run
@@ -77,7 +77,7 @@ class AcabBasicEngine(AcabEngine_i):
         return self._cached_bindings
 
 
-    @EnsureInitialised
+    @EnsureEngineInitialised
     def add_to_cache(self, result: CtxSet):
         self._cached_bindings.append(result)
         if len(self._cached_bindings) > self._cache_size:

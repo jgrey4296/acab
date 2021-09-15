@@ -9,11 +9,11 @@ logging = root_logger.getLogger(__name__)
 
 
 from acab.abstract.core import default_structure as DS
+from acab.abstract.decorators.semantic import RunInSubCtxSet
 from acab.abstract.interfaces import semantic as SI
 from acab.modules.semantics.context_set import (ContextSet,
                                                 MutableContextInstance)
-from acab.modules.semantics.util import (SemanticBreakpointDecorator,
-                                         SemanticSubCtxBuildDecorator)
+from acab.modules.semantics.util import SemanticBreakpointDecorator
 
 CtxIns = 'ContextInstance'
 
@@ -68,7 +68,7 @@ class ActionAbstraction(SI.AbstractionSemantics_i):
 class AtomicRuleAbstraction(SI.AbstractionSemantics_i):
     """ Run a rule in a single semantic call """
 
-    @SemanticSubCtxBuildDecorator
+    @RunInSubCtxSet
     @SemanticBreakpointDecorator
     def __call__(self, instruction, semsys, ctxs=None, data=None):
         """ Rule Logic, returns action proposals """

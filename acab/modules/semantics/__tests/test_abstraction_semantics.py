@@ -22,6 +22,7 @@ from acab.abstract.core.production_abstractions import (ActionOperator,
                                                         ProductionOperator,
                                                         ProductionStructure)
 from acab.abstract.core.values import AcabValue, Sentence
+from acab.abstract.decorators.semantic import OperatorArgUnWrap, OperatorResultWrap
 from acab.abstract.interfaces.semantic import (AbstractionSemantics_i,
                                                           SemanticSystem_i)
 from acab.error.acab_base_exception import AcabBaseException
@@ -35,7 +36,6 @@ from acab.modules.semantics.dependent import BreadthTrieSemantics
 from acab.modules.semantics.independent import (BasicNodeSemantics,
                                                 ExclusionNodeSemantics)
 from acab.modules.semantics.basic_system import BasicSemanticSystem
-from acab.modules.semantics.util import SemanticOperatorWrapDecorator
 from acab.abstract.interfaces.handler_system import Handler
 
 EXOP         = config.prepare("MODAL", "exop")()
@@ -155,7 +155,8 @@ class AbstractionSemanticTests(unittest.TestCase):
         side_effect_obj = {"a" : 1}
 
         class TestTransform(ProductionOperator):
-            @SemanticOperatorWrapDecorator
+            @OperatorArgUnWrap
+            @OperatorResultWrap
             def __call__(self, *params, data=None):
                 return params[0] + "_blah"
 
@@ -219,7 +220,8 @@ class AbstractionSemanticTests(unittest.TestCase):
         side_effect_obj = {"a" : 1}
 
         class TestAction(ActionOperator):
-            @SemanticOperatorWrapDecorator
+            @OperatorArgUnWrap
+            @OperatorResultWrap
             def __call__(self, *params, data=None, semSystem=None):
                 side_effect_obj['a'] = params[0]
 
@@ -296,7 +298,7 @@ class AbstractionSemanticTests(unittest.TestCase):
         side_effect_obj = {"a" : 1}
 
         class TestAction(ActionOperator):
-            @SemanticOperatorWrapDecorator
+            @OperatorArgUnWrap
             def __call__(self, *params, data=None, semSystem=None):
                 side_effect_obj['a'] = params[0]
 

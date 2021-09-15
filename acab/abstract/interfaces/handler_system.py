@@ -9,7 +9,6 @@ from types import MethodType
 
 from acab.abstract.interfaces.data import Structure_i
 from acab.error.acab_base_exception import AcabBaseException
-from acab.abstract.interfaces.util import LogDecorator
 
 logging = root_logger.getLogger(__name__)
 

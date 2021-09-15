@@ -1,14 +1,16 @@
 from acab.abstract.core.production_abstractions import ProductionOperator
-from acab.modules.semantics.util import SemanticOperatorWrapDecorator
+from acab.abstract.decorators.semantics import OperatorArgUnWrap, OperatorResultWrap
 
 
 class GT(ProductionOperator):
-    @SemanticOperatorWrapDecorator
+    @OperatorArgUnWrap
+    @OperatorResultWrap
     def __call__(self, a, b, data=None):
         return a > b
 
 
 class LT(ProductionOperator):
-    @SemanticOperatorWrapDecorator
+    @OperatorArgUnWrap
+    @OperatorResultWrap
     def __call__(self, a, b, data=None):
         return a < b

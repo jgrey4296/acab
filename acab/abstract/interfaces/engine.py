@@ -15,20 +15,11 @@ from acab.abstract.interfaces.module_loader import ModuleLoader_i
 from acab.abstract.interfaces.printing import PrintSystem_i
 from acab.abstract.interfaces.semantic import SemanticSystem_i
 from acab.abstract.parsing.dsl_builder import DSLBuilder
+from acab.error.acab_semantic_exception import AcabSemanticException
+from acab.abstract.decorators.engine import EnsureEngineInitialised
 
 # TODO add 'Tick' functionality
 ModuleComponents = "ModuleComponents"
-
-# Decorator for Engine:
-def EnsureInitialised(method):
-    def fn(self, *args, **kwargs):
-        if not self.initialised:
-            raise AcabBaseException("DSL Not Initialised")
-
-        return method(self, *args, **kwargs)
-
-    fn.__name__ = method.__name__
-    return fn
 
 @dataclass
 class AcabEngine_i(metaclass=abc.ABCMeta):
@@ -49,7 +40,7 @@ class AcabEngine_i(metaclass=abc.ABCMeta):
     _dsl_builder   : DSLBuilder_i     = field(init=False)
     _module_loader : ModuleLoader_i   = field(init=False)
 
-    @EnsureInitialised
+    @EnsureEngineInitialised
     def load_file(self, filename) -> bool:
         """ Given a filename, read it, and interpret it as an EL DSL string """
         assert(isinstance(filename, str))
