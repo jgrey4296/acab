@@ -29,8 +29,10 @@ Sentence         = 'Sentence'
 Node             = 'AcabNode'
 ModuleComponents = "ModuleComponents"
 
+DELAYED_E = Enum("Delayed Instruction Set", "ACTIVE FAIL DEACTIVATE CLEAR MERGE")
+
 @dataclass
-class ContextSet(CtxInt.ContextSet_i):
+class ContextSet(CtxInt.ContextSet_i, CtxInt.DelayedCommands_i):
 
     # operators are just the results of a prior query
     _operators     : CtxIns             = field(default=None)
@@ -38,14 +40,16 @@ class ContextSet(CtxInt.ContextSet_i):
     _parent        : Optional[CtxSet]   = field(init=False, default=None)
 
     _active        : List[UUID]         = field(init=False, default_factory=list)
-    _purgatory     : List[UUID]         = field(init=False, default_factory=list)
     _failed        : List[UUID]         = field(init=False, default_factory=list)
     _total         : Dict[UUID, CtxIns] = field(init=False, default_factory=dict)
 
     _negated       : bool               = field(init=False, default=False)
     _query_clause  : Sentence           = field(init=False, default=None)
     _root_node     : Node               = field(init=False, default=None)
-    _collapse_vars : Set[str]           = field(init=False, default_factory=set)
+    _collect_vars  : Set[str]           = field(init=False, default_factory=set)
+    _uuid          : UUID               = field(init=False, default_factory=uuid1)
+
+    delayed_e      : Enum               = field(init=False, default=DELAYED_E)
 
     @staticmethod
     def build(ops:Union[None, CtxIns, List[ModuleComponents]]=None):
@@ -67,17 +71,20 @@ class ContextSet(CtxInt.ContextSet_i):
         return ContextSet(_operators=instance)
 
     def __post_init__(self):
+        logging.debug("ContextSet Created")
         initial = ContextInstance()
         self._total[initial.uuid] = initial
         self._active.append(initial.uuid)
 
 
-    def __call__(self, root_node, query_sen, data, collapse_vars, is_negated=False):
+    def __hash__(self):
+        return hash(self._uuid)
+    def __call__(self, root_node, query_sen, data, collect_vars, is_negated=False):
         """ Prefaces __enter__, storing the relevant values """
         self._negated      = is_negated
         self._query_clause = query_sen
         self._root_node    = root_node
-        self._collapse_vars.update(collapse_vars)
+        self._collect_vars.update(collect_vars)
 
         return self
 
@@ -96,12 +103,11 @@ class ContextSet(CtxInt.ContextSet_i):
 
 
     def __exit__(self, exc_type, exc_value, traceback):
-        # TODO Handle instances in _purgatory
-        # collapse bindings as necessary
-        self._collapse()
-        self._negated       = False
-        self._collapse_vars = set()
-        self._root_node     = None
+        # collect bindings as necessary
+        self._collect()
+        self._negated      = False
+        self._collect_vars = set()
+        self._root_node    = None
 
         # TODO handle exception
 
@@ -130,7 +136,7 @@ class ContextSet(CtxInt.ContextSet_i):
         return ctxs
 
     def __bool__(self):
-        return not bool(self._failed) and bool(self._active)
+        return bool(self._active)
 
     def __repr__(self):
         return f"(CtxSet: Active:{len(self._active)} Failed:{len(self._failed)} Total:{len(self._total)})"
@@ -139,16 +145,15 @@ class ContextSet(CtxInt.ContextSet_i):
         """ Record a failure, the query sentence that failed,
         and the word that it failed on """
         # add failure details to the instance, of word and query clause
-        logging.debug("ContextSet: Failing")
-        # add to _purgatory
+        logging.debug(f"{repr(self)}: Failing: {node}")
         instance._failure_word = word
-        self._purgatory.append(instance.uuid)
+        self._failed.append(instance.uuid)
 
     def test(self, ctx: CtxIns, possible: List[Node], word: Value):
         """
         run a word's tests on available nodes, with an instance
         """
-        logging.debug("ContextSet: Testing/Extending")
+        logging.debug(f"{repr(self)}: Testing/Extending on {len(possible)} : {possible}")
         constraints : Constraints = ConstraintCollection.build(word, self._operators)
         assert(len(possible) == 1 or constraints._bind)
         successes = []
@@ -195,18 +200,25 @@ class ContextSet(CtxInt.ContextSet_i):
 
         return the_list
 
-    def _collapse(self):
+    def failed_list(self):
+        return [self._total[x] for x in self._failed]
+
+    def _collect(self):
         """
-        Context collapse on specific vars.
+        Context collecton specific vars.
         Flattens many contexts into one, with specified variables
         now as lists accumulated from across the contexts.
 
-        Semantics of collapse:
-        1[ctx]n -> 1[c:ctx]1
+        Semantics of collect:
+        0[ctxs]0 -> fail
+        1[ctxs]n -> 1[α]1
         where
-        c = a_ctx = { on_var: [x[on_var] for x in _ctxs] }
+        α : ctx = ctxs[0] ∪ { β : ctx[β] for ctx in ctxs[1:] }
+        β : var to collect
+
+
         """
-        if not bool(self._collapse_vars):
+        if not bool(self._collect_vars):
             return
 
         # select instances with bindings
@@ -218,9 +230,27 @@ class ContextSet(CtxInt.ContextSet_i):
     def set_parent(self, parent:CtxSet):
         self._parent = parent
 
-    def merge_into_parent(self):
-        assert(self._parent is not None)
-        self._parent.push(self.active_list())
+    # delayed Methods:
+    def do_active(self, uuids:List[UUID]):
+        self._active += [x for x in uuids if x not in self._active]
+
+    def do_fail(self, uuids:List[UUID]):
+        self._failed += [x for x in uuids if x not in self._failed]
+
+    def do_deactivate(self, uuids:List[UUID]):
+        self._active = [x for x in self._active if x not in uuids]
+        self._failed = [x for x in self._failed if x not in uuids]
+
+    def do_default(self, instr, uuids:List[UUID]):
+        """ Default Action if the instruction has no method """
+        logging.warning(f"ContextSet bad instruction: {instr} : {uuids}")
+
+
+    def do_merge(self, ctxSets):
+        for ctxs in ctxSets:
+            self._total.update(ctxs._total)
+            self.do_active(ctxs._active)
+            self.do_fail(ctxs._failed)
 
 
 @dataclass

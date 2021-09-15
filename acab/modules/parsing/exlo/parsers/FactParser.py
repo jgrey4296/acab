@@ -41,7 +41,7 @@ QUERY_OP_Internal = N(OPERATOR, op_path) \
 QUERY_OP_Internal.setParseAction(PConst.build_query_component)
 
 COLLAPSE_CONTEXT = COLLAPSE_CONTEXT.copy()
-COLLAPSE_CONTEXT.setParseAction(lambda x: ValueRepeatAnnotation("constraint", CTX_OP.collapse))
+COLLAPSE_CONTEXT.setParseAction(lambda x: ValueRepeatAnnotation("constraint", CTX_OP.collect_var))
 
 query_or_annotation = pp.MatchFirst([QUERY_OP_Internal,
                                      COLLAPSE_CONTEXT,

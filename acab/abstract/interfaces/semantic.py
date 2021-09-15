@@ -96,6 +96,9 @@ class SemanticSystem_i(HandlerSystem_i):
         else:
             ctxset = self.ctx_set.build(self._operator_cache)
 
+        # Auto remove the empty context:
+        ctxset.delay(ctxset.delayed_e.DEACTIVATE, ctxset[0])
+
         return ctxset
 
     @property

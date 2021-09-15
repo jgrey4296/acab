@@ -3,15 +3,22 @@ A Collection of interfaces describing how information in context is collected, c
 and grouped for communication between system components
 """
 
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
-
 import abc
-from dataclasses import dataclass, field, InitVar
+import logging as root_logger
+from dataclasses import InitVar, dataclass, field
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
+from enum import Enum
+from uuid import UUID
+
+logging = root_logger.getLogger(__name__)
 
 # Type declarations:
+CtxSet      = "ContextSet_i"
+CtxIns      = "ContextInstance_i"
+DelayValue  = Union[UUID, CtxIns, CtxSet, None]
+
 
 # Interfaces:
 @dataclass
@@ -59,6 +66,21 @@ class ContextSet_i(metaclass=abc.ABCMeta):
     def pop(self, top=False):
         pass
 
+    @abc.abstractmethod
+    def __len__(self):
+        pass
+    @abc.abstractmethod
+    def __hash__(self):
+        pass
+    @abc.abstractmethod
+    def active_list(self, clear=False):
+        pass
+    @abc.abstractmethod
+    def failed_list(self):
+        pass
+    @abc.abstractmethod
+    def __getitem__(self, index):
+        pass
 @dataclass
 class ContextInstance_i(metaclass=abc.ABCMeta):
 
@@ -86,3 +108,42 @@ class ContextInstance_i(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def __len__(self):
         pass
+
+
+@dataclass
+class DelayedCommands_i(metaclass=abc.ABCMeta):
+
+    delayed_e: Enum                    = field()
+    _purgatory : Dict[Enum, Set[UUID]] = field(init=False, default_factory=dict)
+    _priority : List[Enum]             = field(init=False, default_factory=list)
+
+    def delay(self, instr:Enum, ctxIns:DelayValue):
+        """
+        Register an action for later.
+        Useful for adding ctxins results without interfering with current operations,
+        """
+        assert(isinstance(instr, self.delayed_e))
+        if instr not in self._purgatory:
+            self._purgatory[instr] = set()
+
+        if ctxIns is None:
+            return
+
+        self._purgatory[instr].add(ctxIns)
+
+    def run_delayed(self):
+        """ Similar to Cmd implementation, each instr should have a do_{x} method """
+        logging.debug("Running Delayed Instructions")
+        # run priority enums
+        # if self.delayed_e.CLEAR in self._purgatory:
+        #     self._active = []
+        #     del self._purgatory[self.delayed_e.CLEAR]
+
+        for instr in self._purgatory.keys():
+            method_name = f"do_{instr.name.lower()}"
+            if hasattr(self, method_name):
+                getattr(self, method_name)(self._purgatory[instr])
+            else:
+                self.do_default(instr, self._purgatory[instr])
+
+        self._purgatory = {}

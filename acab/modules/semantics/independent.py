@@ -19,7 +19,7 @@ CONSTRAINT_S = config.prepare("Value.Structure", "CONSTRAINT")()
 AT_BIND_S    = config.prepare("Value.Structure", "AT_BIND")()
 BIND         = config.prepare("Value.Structure", "BIND")()
 
-CTX_OP = Enum("ctx", "collapse")
+CTX_OP = Enum("ctx", "collect_var")
 # TODO replace operator with specific modal name
 EXOP         = config.prepare("MODAL", "exop")()
 DEFAULT_EXOP = config.default(EXOP)

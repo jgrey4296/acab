@@ -44,9 +44,17 @@ class BasicSemanticSystem(SemanticSystem_i):
             # Default, doesn't include operators
             ctxs = self.build_ctxset()
 
+        # Instructions passed in
         for instruction in instructions:
+            if not bool(ctxs):
+                logging.warning("Empty ContextSet, cannot continue received instructions")
+                break
+
             ctxs = self.run_instruction(instruction, ctxs=ctxs, data=data)
 
+        # TODO otherwise run contextset continuations
+
+        ctxs.run_delayed()
         return ctxs
 
     def run_instruction(self, instruction, ctxs=None, data=None) -> Any:
