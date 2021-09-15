@@ -22,7 +22,7 @@ from acab.abstract.interfaces.printing import PrintSystem_i
 from acab.abstract.interfaces.semantic import SemanticSystem_i
 from acab.abstract.interfaces.value import Value_i, Sentence_i
 from acab.error.acab_base_exception import AcabBaseException
-from acab.abstract.decorators.engines import MaybeBuildOperatorCtxDecorator, EnsureEngineInitialised
+from acab.abstract.decorators.engine import MaybeBuildOperatorCtx, EnsureEngineInitialised
 
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()

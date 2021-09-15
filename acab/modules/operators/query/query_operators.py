@@ -4,18 +4,18 @@ Definitions of initial Comparison operators
 import re
 
 from acab.abstract.core.production_abstractions import ProductionOperator
-from acab.abstract.decorators.semantic import OperatorArgUnwrap, OperatorResultWrap
+from acab.abstract.decorators.semantic import OperatorArgUnWrap, OperatorResultWrap
 
 
 class EQ(ProductionOperator):
-    @OperatorArgUnwrap
+    @OperatorArgUnWrap
     @OperatorResultWrap
     def __call__(self, a, b, data=None):
         return a == b
 
 
 class NEQ(ProductionOperator):
-    @OperatorArgUnwrap
+    @OperatorArgUnWrap
     @OperatorResultWrap
     def __call__(self, a, b, data=None):
         return a != b
@@ -24,7 +24,7 @@ class NEQ(ProductionOperator):
 class RegMatch(ProductionOperator):
     # TODO implement sub-binds
     # currently they are ignored
-    @OperatorArgUnwrap
+    @OperatorArgUnWrap
     @OperatorResultWrap
     def __call__(self, a, b, data=None):
         result = re.search(b, a)
@@ -36,7 +36,7 @@ class RegMatch(ProductionOperator):
 
 
 class ELEM(ProductionOperator):
-    @OperatorArgUnwrap
+    @OperatorArgUnWrap
     @OperatorResultWrap
     def __call__(self, a, b, data=None):
         return a in b
