@@ -3,6 +3,8 @@ A DSL interface for the system, which
 
 """
 import abc
+import pyparsing as pp
+import traceback
 import logging as root_logger
 from dataclasses import dataclass, field
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
@@ -46,6 +48,9 @@ class Bootstrapper_i(metaclass=abc.ABCMeta):
 #----------------------------------------
 class DSL_Fragment_i(metaclass=abc.ABCMeta):
     """ """
+
+    def set_bad_words(self, *words):
+        pass
 
     def parse_string(self, string):
         """ Takes a String, parses it into Data format """
@@ -91,6 +96,7 @@ class DSLBuilder_i(metaclass=abc.ABCMeta):
     _parsers_initialised  : bool           = field(init=False, default=False)
     _loaded_DSL_fragments : Dict[Any, Any] = field(init=False, default_factory=dict)
 
+
     def build_DSL(self, modules: List[ModuleComponents]):
         """
         Using currently loaded modules, rebuild the usable DSL parser from fragments
@@ -106,7 +112,15 @@ class DSLBuilder_i(metaclass=abc.ABCMeta):
 
     @EnsureDSLInitialised
     def parse(self, s:str) -> List[Sentence]:
-        return self._main_parser.parseString(s, parseAll=True)[:]
+        try:
+            return self._main_parser.parseString(s, parseAll=True)[:]
+        except pp.ParseException as exp:
+            logging.warning("--------------------\nParse Failure:\n")
+            traceback.print_tb(exp.__traceback__)
+            logging.warning(f"\n{exp.args[-1]}\n")
+            logging.warning(f"Parser: {exp.parserElement}\n")
+            logging.warning("Line: {}, Col: {} : {}".format(exp.lineno, exp.col, exp.markInputline()))
+            return []
 
     @EnsureDSLInitialised
     def parseFile(self, f:File) -> List[Sentence]:

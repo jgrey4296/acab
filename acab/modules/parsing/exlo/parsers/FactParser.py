@@ -18,9 +18,13 @@ logging = root_logger.getLogger(__name__)
 # Hotload insertion points:
 HOTLOAD_ANNOTATIONS = pp.Forward()
 HOTLOAD_QUERY_OP    = pp.Forward()
+HOTLOAD_BAD_HEADS   = pp.Forward()
+
+BAD_HEADS = ~(END | HOTLOAD_BAD_HEADS)("Bad Words")
+BAD_HEADS.errmsg = "Bad Head Word Found"
 
 # Basic Sentences without Annotations:
-BASIC_SEN = ~END + PU.op(NEGATION) \
+BASIC_SEN = BAD_HEADS + PU.op(NEGATION) \
     + NG(SEN, pp.ZeroOrMore(PU.PARAM_CORE()) + PU.PARAM_CORE(end=True))
 BASIC_SEN.setParseAction(Pfunc.construct_sentence)
 BASIC_SEN.setName("BasicSentence")
@@ -55,10 +59,7 @@ PARAM_BINDING_END.setName("PBEnd")
 SEN_STATEMENT = pp.Forward()
 
 # Sentences with basic sentences as annotations
-silent_end = END.copy()
-silent_end.setDebug(False)
-
-PARAM_SEN = ~silent_end + PU.op(NEGATION) \
+PARAM_SEN = BAD_HEADS + PU.op(NEGATION) \
     + NG(SEN, pp.ZeroOrMore(PARAM_BINDING_CORE) + PARAM_BINDING_END)
 PARAM_SEN.setParseAction(Pfunc.construct_sentence)
 PARAM_SEN.setName("ParameterisedSentence")
