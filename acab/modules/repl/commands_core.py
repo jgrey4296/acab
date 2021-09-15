@@ -57,6 +57,9 @@ def do_init(self, line):
         else:
             raise AcabConfigException(f"Unknown Engine Spec Form: {spec}")
 
+        # TODO add bad words from repl:
+        # self.state.engine.parser.set_bad_words(self.completenames(""))
+
         logging.info("Engine Initialisation Complete")
     except Exception as err:
         logging.error(f"Failed to initialise engine: {line}", exc_info=err)

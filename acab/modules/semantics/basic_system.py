@@ -23,6 +23,9 @@ config           = AcabConfig.Get()
 
 SEM_HINT = config.prepare("Value.Structure", "SEMANTIC_HINT")()
 
+# TODO make a queue structured system, where semantics return a list of
+# instructions to add to the list, like printer
+
 @dataclass
 class BasicSemanticSystem(SemanticSystem_i):
     """ A Complete semantic system """
