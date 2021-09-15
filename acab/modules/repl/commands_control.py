@@ -2,21 +2,24 @@
 Commands for the REPL
 
 """
-from datetime import datetime
-from enum import Enum
-from os.path import split, splitext, exists, expanduser, abspath
 import importlib
 import logging as root_logger
 import re
-import pyparsing as pp
 import traceback
+from datetime import datetime
+from enum import Enum
+from os.path import abspath, exists, expanduser, split, splitext
+
 import acab
+import pyparsing as pp
+
 config = acab.setup()
 
-from acab.modules.repl.repl_commander import register
-from acab.abstract.core.production_abstractions import ProductionOperator, ProductionStructure
-from acab.modules.repl import ReplParser as RP
+from acab.abstract.core.production_abstractions import (ProductionOperator,
+                                                        ProductionStructure)
 from acab.abstract.interfaces.value import Statement_i
+from acab.modules.repl import ReplParser as RP
+from acab.modules.repl.repl_commander import register
 from acab.modules.repl.util import ConfigBasedLoad
 
 logging = root_logger.getLogger(__name__)
@@ -76,9 +79,6 @@ def do_echo(self, line):
     Toggle echoing of working memory state
     """
     self.state.echo = not self.state.echo
-
-
-
 
 @register
 @ConfigBasedLoad

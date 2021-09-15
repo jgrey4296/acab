@@ -24,7 +24,6 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 logging = root_logger.getLogger(__name__)
-import acab.abstract.interfaces.util as SU
 from acab.abstract.config.config import AcabConfig, ConfigSpec
 from acab.abstract.core.default_structure import QUERY
 from acab.abstract.interfaces.context import ContextSet_i

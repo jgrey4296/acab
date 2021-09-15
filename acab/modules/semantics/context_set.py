@@ -1,19 +1,19 @@
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
-
 import logging as root_logger
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
+
 logging = root_logger.getLogger(__name__)
 
 from dataclasses import InitVar, dataclass, field, replace
-from uuid import uuid1, UUID
+from enum import Enum
+from uuid import UUID, uuid1
 
-from acab.abstract.config import GET
 import acab.abstract.interfaces.context as CtxInt
+import acab.error.acab_semantic_exception as ASErr
+from acab.abstract.config import GET
 from acab.abstract.core.production_abstractions import ProductionComponent
 from acab.modules.semantics.constraints import ConstraintCollection
-import acab.error.acab_semantic_exception as ASErr
 
 config = GET()
 CONSTRAINT_S = config.prepare("Parse.Structure", "CONSTRAINT")()

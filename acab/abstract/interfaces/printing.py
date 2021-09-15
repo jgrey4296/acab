@@ -6,17 +6,16 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-import acab.abstract.interfaces.util as SU
 from acab.abstract.config.config import AcabConfig, ConfigSpec
 from acab.abstract.core import production_abstractions as PA
 from acab.abstract.core.values import AcabStatement
-from acab.abstract.interfaces.handler_system import HandlerSystem_i
-from acab.abstract.interfaces.value import (Sentence_i,
-                                                       Value_i)
+from acab.abstract.interfaces.handler_system import (Handler,
+                                                     HandlerComponent_i,
+                                                     HandlerSystem_i)
+from acab.abstract.interfaces.value import Sentence_i, Value_i
 from acab.abstract.printing.default_symbols import PRINT_SEPARATOR_P
 from acab.error.acab_print_exception import AcabPrintException
 from acab.error.acab_semantic_exception import AcabSemanticException
-from acab.abstract.interfaces.handler_system import Handler, HandlerComponent_i
 
 logging = root_logger.getLogger(__name__)
 
