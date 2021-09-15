@@ -25,8 +25,8 @@ PIPELINE_SEM_HINT  = Sentence.build([config.prepare("SEMANTICS", "PIPELINE")()])
 # Build the default semantics
 def DEFAULT_SEMANTICS():
     node_sem    = BasicNodeSemantics().as_handler("_:node")
-    trie_sem    = BreadthTrieSemantics(default_sem).as_handler("_:trie",
-                                                               struct=BasicNodeStruct.build_default())
+    trie_sem    = BreadthTrieSemantics(default=node_sem).as_handler("_:trie",
+                                                                    struct=BasicNodeStruct.build_default())
 
     query_sem   = ASem.QueryAbstraction().as_handler(QUERY_SEM_HINT)
     action_sem  = ASem.ActionAbstraction().as_handler(ACTION_SEM_HINT)
