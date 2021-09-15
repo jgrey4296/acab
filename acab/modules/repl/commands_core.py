@@ -46,9 +46,9 @@ def do_init(self, line):
         # TODO ask for confirmation?
         # Note: not init_module.{} because of split*ext*
         # build engine. needs to be a 0 arg constructor
-        spec = getattr(mod, line.split(".")[-1])
-        is_type = isinstance(spec, type)
-        is_sub  = is_type and issubclass(spec, AcabEngine_i)
+        spec        = getattr(mod, line.split(".")[-1])
+        is_type     = isinstance(spec, type)
+        is_sub      = is_type and issubclass(spec, AcabEngine_i)
         is_callable = callable(spec)
         if (not is_type) and isinstance(spec, AcabEngine_i):
             self.state.engine = spec

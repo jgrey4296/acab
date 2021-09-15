@@ -133,7 +133,35 @@ def do_break(self, line):
 
     elif "parser" in ctxs:
         # TODO add debug breakpoint to a parser
-        pass
+        # Either import and inspect, print all parser elements, if query
+        if ctxs['parser'][-1] == "?":
+            module = importlib.import_module(ctxs['parser'].strip()[:-1])
+            parsers = [x for x in dir(module) if isinstance(getattr(module, x), pp.ParserElement)]
+
+            if not bool(parsers):
+                return print("No Available Parsers to Breakpoint on.")
+
+            print(f"Available Parsers in {ctxs['parser'][:-1]}")
+            for x in parsers:
+                print(f"-- {x}")
+            return
+
+        # When specific, flip flop:
+        mod_str, p_str = splitext(ctxs['parser'].strip())
+        module = importlib.import_module(mod_str)
+        if not hasattr(module, p_str[1:]) or not isinstance(getattr(module, p_str[1:]), pp.ParserElement):
+            print(f"No parser named {p_str[1:]} in {mod_str}.")
+            print("Try quering the  with a trailing '?'")
+            return
+
+        parser : pp.ParserElement = getattr(module, p_str[1:])
+        turn_off = hasattr(parser._parse, "_originalParseMethod")
+        if turn_off:
+            print(f"Turning Breakpoint off for: {ctxs['parser']}")
+            parser.setBreak(False)
+        else:
+            print(f"Turning Breakpoint on for: {ctxs['parser']}")
+            parser.setBreak(True)
     else:
         print("""
         Shunting to Python debugger.

@@ -194,3 +194,19 @@ def do_filter(self, line):
         print(f"Removing Last Console Log Filter")
     else:
         print("No filters set")
+
+
+# Tutorial ####################################################################
+@register
+def do_tutorial(self, line):
+    """
+    Print out a basic tutorial of Acab and this Repl
+    """
+    # Print a section, return to main loop,
+    # if tutorial is called again, continue
+    # if restart is passed in, restart the tutorial
+    return
+
+@register
+def do_acab(self, line):
+    print("All Cops Are Bastards")

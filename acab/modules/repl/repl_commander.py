@@ -26,7 +26,7 @@ def register(fn):
     assert("do_" in fn.__name__)
     assert(fn.__name__ not in dir(AcabREPLCommander))
     setattr(AcabREPLCommander, fn.__name__, fn)
-    # Don't return fn as its only used in the class
+    return fn
 
 #--------------------
 initial_prompt = config.prepare("Module.REPL", "PROMPT", actions=[config.actions_e.STRIPQUOTE])()
@@ -70,7 +70,7 @@ class AcabREPLCommander(cmd.Cmd):
         # convert symbols -> cmd names.
         # eg: ':{' -> multi
         try:
-            logging.debug("PreCmd Parsing:{}".format(line))
+            logging.debug("PreCmd Parsing: {}".format(line))
             line = RP.precmd_parser.parseString(line)[:]
             logging.debug("PreCmd Result:{}".format(line))
             # Intercept if in multi line state
