@@ -253,7 +253,8 @@ class ContextInstance(CtxInt.ContextInstance_i):
 
     def __bool__(self):
         return bool(self.data)
-
+    def __len__(self):
+        return len(self.data)
     def __iter__(self):
         return iter(self.data.values())
 

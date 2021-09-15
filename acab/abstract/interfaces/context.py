@@ -82,3 +82,7 @@ class ContextInstance_i(metaclass=abc.ABCMeta):
     def to_sentences(self):
         """ Convert to sentences for printing """
         pass
+
+    @abc.abstractmethod
+    def __len__(self):
+        pass
