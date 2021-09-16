@@ -4,11 +4,37 @@ from enum import Enum
 
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.values import AcabValue
+from acab.abstract.interfaces.context import DelayedCommands_i
 
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
 config = AcabConfig.Get()
+
+def BuildCtxSetIfMissing(f):
+    """ Utility to Build a default CtxSet if one isnt provided """
+    def wrapped(self, *the_args, **the_kwargs):
+        if 'ctxs' not in the_kwargs or the_kwargs['ctxs'] is None:
+            the_kwargs['ctxs'] = self.build_ctxset()
+
+        return f(self, *the_args, **the_kwargs)
+
+    wrapped.__name__ = f.__name__
+    return wrapped
+
+def RunDelayedCtxSetActions(f):
+    """ Utility to run delayed ContextSet update actions """
+    def wrapped(self, *the_args, **the_kwargs):
+        result = f(self, *the_args, **the_kwargs)
+        if isinstance(result, DelayedCommands_i):
+            result.run_delayed()
+
+        logging.debug(f"Returning CtxSet: {repr(ctxs)}")
+        return result
+
+    wrapped.__name__ = f.__name__
+    return wrapped
+
 
 def RunInSubCtxSet(f):
     """ Used to easily wrap around rules, to provide

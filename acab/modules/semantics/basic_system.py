@@ -12,7 +12,7 @@ from acab.abstract.interfaces.semantic import (AbstractionSemantics_i,
 from acab.error.acab_semantic_exception import AcabSemanticException
 from acab.modules.semantics.context_set import ContextSet
 from acab.abstract.interfaces.context import ContextSet_i
-
+from acab.abstract.decorators.semantic import BuildCtxSetIfMissing, RunDelayedCtxSetActions
 
 logging = root_logger.getLogger(__name__)
 
@@ -39,13 +39,13 @@ class BasicSemanticSystem(SemanticSystem_i):
 
     ctx_set : ContextSet_i = field(default=ContextSet)
 
+
+    @BuildCtxIfMissing
+    @RunDelayedCtxSetActions
     def __call__(self, *instructions:List[Sentence],
                  ctxs:Optional[CtxSet]=None,
                  data:Optional[dict]=None) -> CtxSet:
         """ Perform an instruction by mapping it to a semantics """
-        if ctxs is None:
-            # Default, doesn't include operators
-            ctxs = self.build_ctxset()
 
         # Instructions passed in
         for instruction in instructions:
@@ -55,13 +55,9 @@ class BasicSemanticSystem(SemanticSystem_i):
 
             ctxs = self.run_instruction(instruction, ctxs=ctxs, data=data)
 
-        # TODO otherwise run contextset continuations
-
-        ctxs.run_delayed()
         return ctxs
 
     def run_instruction(self, instruction, ctxs=None, data=None) -> Any:
-        semantics, struct = None, None
         try:
             semantics, struct = self.lookup(instruction)
             assert(semantics is not None)
