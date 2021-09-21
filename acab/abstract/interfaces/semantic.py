@@ -53,8 +53,9 @@ AbstractionSemantics_i = "AbstractionSemantics_i"
 #--------------------------------------------------
 @dataclass
 class Semantic_Fragment(metaclass=abc.ABCMeta):
-    """ Dataclass of Semantic Handlers to be added to the system,
-and any structs they require """
+    """ Dataclass of Semantic Handlers to be added to the system, and any
+    structs they require
+    """
     dependent   : List[DependentSemantics_i] = field(default_factory=list)
     independent : List[IndependentSemantics_i] = field(default_factory=list)
     abstraction : List[AbstractionSemantics_i] = field(default_factory=list)
@@ -84,7 +85,7 @@ class SemanticSystem_i(HandlerSystem_i):
     """
     # TODO possibly re-add hooks / failure handling
     # TODO add a system specific logging handler
-    ctx_set : ContextSet_i = field(default=None)
+    ctx_set         : ContextSet_i     = field(default=None)
 
     _operator_cache : Optional[CtxIns] = field(init=False, default=None)
 

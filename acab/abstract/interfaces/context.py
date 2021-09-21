@@ -39,18 +39,6 @@ class ContextSet_i(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def __call__(self, root_node, query_sen, data, collapse_vars, is_negated):
-        pass
-
-    @abc.abstractmethod
-    def __enter__(self):
-        pass
-
-    @abc.abstractmethod
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        pass
-
-    @abc.abstractmethod
     def fail(self, instance, word, node):
         pass
 

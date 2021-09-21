@@ -30,7 +30,7 @@ def registerOn(cls:type):
     """ Decorator for registering a function onto a class as a method """
 
     def wrapper(fn):
-        logging.info(f"Method Registration: {cls.__name__) . {fn.__name__}")
+        logging.info(f"Method Registration: {cls.__name__} . {fn.__name__}")
         assert(fn.__name__ not in dir(cls))
         setattr(cls, fn.__name__, fn)
         return fn

@@ -40,7 +40,7 @@ class BasicSemanticSystem(SemanticSystem_i):
     ctx_set : ContextSet_i = field(default=ContextSet)
 
 
-    @BuildCtxIfMissing
+    @BuildCtxSetIfMissing
     @RunDelayedCtxSetActions
     def __call__(self, *instructions:List[Sentence],
                  ctxs:Optional[CtxSet]=None,
@@ -62,16 +62,15 @@ class BasicSemanticSystem(SemanticSystem_i):
             semantics, struct = self.lookup(instruction)
             assert(semantics is not None)
             logging.debug(f"Running Semantics: {semantics}")
-            # run the semantics
-            # Abstractions don't use structs
             # TODO entry hooks would go here.
-            if isinstance(semantics, AbstractionSemantics_i):
-                assert(struct is None)
-                semantics(instruction, self, ctxs=ctxs, data=data)
-            else:
-                # but dependent semantics do
-                assert(struct is not None)
-                semantics(instruction, struct, ctxs=ctxs, data=data)
+
+            # Abstractions use a reference to the sem system in place of a struct
+            # Dependent's use a reference to a struct
+            if struct is None:
+                struct = self
+
+            semantics(instruction, struct, ctxs=ctxs, data=data)
+
         except AcabSemanticException as err:
             # Semantic exceptions can be handled,
             # but others continue upwards
