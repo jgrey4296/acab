@@ -4,6 +4,7 @@ import logging as root_logger
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
+from collections import defaultdict
 
 logging = root_logger.getLogger(__name__)
 
@@ -39,9 +40,9 @@ class TransformAbstraction(SI.AbstractionSemantics_i):
         # Note: run *all* the transform clauses at once,
         # To minimise redundent new ctxs
         # runs on a single active ctx
-        operators   = ctxs._operators
+        operators = ctxs._operators
+        transform =  instruction
         for ctxIns in ctxs.active_list(clear=True):
-            transform   = ctxIns.continuation or instruction
             with MutableContextInstance(ctxs, ctxIns) as mutx:
                 for clause in transform.clauses:
                     op                  = operators[clause.op]
@@ -72,38 +73,38 @@ class AtomicRuleAbstraction(SI.AbstractionSemantics_i):
     @SemanticBreakpointDecorator
     def __call__(self, instruction, semsys, ctxs=None, data=None):
         """ Rule Logic, returns action proposals """
-        # TODO Possibly setup a temp ctxs
-        temp_ctxs = ContextContainer.build(ctxs._operators)
-
         rule = instruction
         # Run the query
         if DS.QUERY_COMPONENT in rule:
-            semsys(rule[DS.QUERY_COMPONENT], ctxs=temp_ctxs)
+            semsys(rule[DS.QUERY_COMPONENT], ctxs=ctxs)
 
-        if not bool(temp_ctxs):
+        if not bool(ctxs):
             return
 
-        # TODO needs to be applied to all actives
         if DS.TRANSFORM_COMPONENT in rule:
-            semsys(rule[DS.TRANSFORM_COMPONENT], data=data, ctxs=temp_ctxs)
+            semsys(rule[DS.TRANSFORM_COMPONENT], data=data, ctxs=ctxs)
 
         if DS.ACTION_COMPONENT in rule:
-            semsys(rule[DS.ACTION_COMPONENT], data=data, ctxs=temp_ctxs)
+            semsys(rule[DS.ACTION_COMPONENT], data=data, ctxs=ctxs)
 
 class ProxyRuleAbstraction(SI.AbstractionSemantics_i):
     """ Run a rules queries, then return ctxs bound
     with transform+action continuation """
 
-    @SemanticSubCtxBuildDecorator
     @SemanticBreakpointDecorator
     def __call__(self, instruction, semsys, ctxs=None, data=None):
-        """ Rule Logic, returns action proposals """
-        # TODO: if all contexts in ctxs have a continuation,
-        # self.run_continuations
+        if instruction in ctxs._named_sets:
+            subctx = ctxs[instruction]
+            self.run_continuations(instruction, semsys, ctxs=subctx)
+        else:
+            self.run_query(instruction, semsys, ctxs=ctxs)
 
-        # else:
+
+
+    @RunInSubCtxSet
+    def run_query(self, instruction, semsys, ctxs=None, data=None):
+        logging.debug("Running Proxy Rule Queries")
         rule = instruction
-        # TODO Possibly setup a temp ctxs
 
         # Run the query
         if DS.QUERY_COMPONENT in rule:
@@ -112,32 +113,20 @@ class ProxyRuleAbstraction(SI.AbstractionSemantics_i):
         if not bool(ctxs):
             return
 
-        # TODO bind transform and actions to instances
-        for ctx in ctxs.active_list():
-            ctx.set_continuation(instruction)
+        ctxs.build_named_set(instruction, [x.uuid for x in ctxs.active_list()])
 
+    def run_continuations(self, instruction, semsys, ctxs=None, data=None):
+        logging.debug("Running Proxy Rule Continuations")
 
-    def run_continuations(self, instruction, ctxs, semsys, data=None):
-        # TODO this might be _continuation of each ctx
-        limited_container = ContextContainer.build(ctxs._operators)
-        limited_container.pop()
-        for ctx in ctxs.active_list():
-            limited_container.push(ctx)
-            cont = ctx.continuation
+        if DS.TRANSFORM_COMPONENT in instruction:
+            semsys(instruction[DS.TRANSFORM_COMPONENT],
+                   data=data,
+                   ctxs=ctxs)
 
-            # TODO will need to handle each individual ctx
-            if DS.TRANSFORM_COMPONENT in cont:
-                transformed = semsys(cont[DS.TRANSFORM_COMPONENT],
-                                     data=data,
-                                     ctxs=limited_container)
-
-            if DS.ACTION_COMPONENT in rule:
-                semsys.run(cont[DS.ACTION_COMPONENT],
-                           data=data,
-                           ctxs=limited_container)
-
-            ctxs.merge(limited_container)
-            ctxs.clear()
+        if DS.ACTION_COMPONENT in instruction:
+            semsys(instruction[DS.ACTION_COMPONENT],
+                   data=data,
+                   ctxs=ctxs)
 
 
 # Secondary Abstractions:
