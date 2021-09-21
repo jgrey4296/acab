@@ -21,7 +21,7 @@ ProductionOperator  = 'ProductionOperator'
 PrintSemantics_i    = 'PrintSemantics_i'
 
 #----------------------------------------
-@dataclass
+@dataclass(frozen=True)
 class ModuleComponents():
     """ Simple holder for extracted module components """
 

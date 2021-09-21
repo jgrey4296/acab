@@ -31,7 +31,7 @@ T     = TypeVar('T', str, Pattern, list)
 Value = VI.Value_i
 Sen   = VI.Sentence_i
 
-@dataclass
+@dataclass(frozen=True)
 class AcabValue(VI.Value_i, Generic[T]):
     _value_types : ClassVar[Set[Any]] = set([VI.Value_i, str, Pattern, list])
     value        : T                  = field(default=None)
@@ -51,12 +51,13 @@ class AcabValue(VI.Value_i, Generic[T]):
             _data.update({DS.TYPE_INSTANCE: _type})
 
         if isinstance(value, AcabValue):
-            assert(_type is None)
-            new_val = value.copy()
-            new_val.data.update(_data)
-            return new_val
-        else:
-            return AcabValue(value=value, data=_data, **kwargs)
+            new_data = {}
+            new_data.update(value.data)
+            new_data.update(_data)
+            return value.copy(data=new_data)
+
+
+        return AcabValue(value=value, data=_data, **kwargs)
 
     def __post_init__(self):
         # Applicable values: Self + any registered
@@ -67,6 +68,7 @@ class AcabValue(VI.Value_i, Generic[T]):
         # NOTE: use of setattr to override frozen temporarily to update name
         #
         # TODO: this could be a sieve?
+        # TODO or move into safe_make
         # name update #########################################################
         name_update = None
         if self.name is None and self.value is None:
@@ -81,11 +83,13 @@ class AcabValue(VI.Value_i, Generic[T]):
             name_update = str(self.value)
 
         if name_update is not None:
-            self.name = name_update
+            object.__setattr__(self, "name", name_update)
+            # self.name = name_update
         # end of name update ##################################################
 
         if self.value is None:
-            self.value = self.name
+            object.__setattr__(self, "value", self.name)
+            # self.value = self.name
 
         if DS.TYPE_INSTANCE not in self.data:
             self.data[DS.TYPE_INSTANCE] = DS.TYPE_BOTTOM_NAME
@@ -93,9 +97,7 @@ class AcabValue(VI.Value_i, Generic[T]):
         if DS.BIND not in self.data:
             self.data[DS.BIND] = False
 
-        if self.params is None:
-            self.params = []
-        elif any([not isinstance(x, AcabValue) for x in self.params]):
+        if any([not isinstance(x, AcabValue) for x in self.params]):
             original_params = self.params[:]
             self.params.clear()
             self.params.extend([AcabValue.safe_make(x) for x in original_params])
@@ -125,7 +127,7 @@ class AcabValue(VI.Value_i, Generic[T]):
                                      val_str)
 
     def __hash__(self):
-        return hash(str(self))
+        return hash(repr(self))
 
     def __eq__(self, other):
         """ Base eq: compare hashes  """
@@ -233,7 +235,7 @@ class AcabStatement(AcabValue, VI.Statement_i):
         simple_value = AcabValue.safe_make(self.name, data=new_data)
         return simple_value
 
-@dataclass
+@dataclass(frozen=True)
 class Sentence(AcabStatement, VI.Sentence_i):
 
     @staticmethod
