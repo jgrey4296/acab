@@ -12,6 +12,9 @@ from acab.abstract.core.values import Sentence
 from acab.abstract.config.config import GET
 from acab.abstract.interfaces.handler_system import Handler
 
+from acab.modules.semantics.context_set import ContextSet
+from acab.modules.semantics import context_delayed_actions
+
 config = GET()
 
 QUERY_SEM_HINT     = Sentence.build([config.prepare("SEMANTICS", "QUERY")()])

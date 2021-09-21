@@ -184,7 +184,7 @@ def do_ctx(self, line):
         params = RP.ctx_select_parser.parseString(line)
 
         if "subset" in params:
-            self.state.ctxs = self.state.ctxs.__getitem__(params.subset, wrap=True)
+            self.state.ctxs = self.state.ctxs[params.subset]
         elif "clear" in params:
             print("Clearing Context")
             self.state.ctxs = None

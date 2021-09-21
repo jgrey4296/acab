@@ -29,7 +29,7 @@ def RunDelayedCtxSetActions(f):
         if isinstance(result, DelayedCommands_i):
             result.run_delayed()
 
-        logging.debug(f"Returning CtxSet: {repr(ctxs)}")
+        logging.debug(f"Returning CtxSet: {repr(the_kwargs['ctxs'])}")
         return result
 
     wrapped.__name__ = f.__name__
@@ -43,11 +43,10 @@ def RunInSubCtxSet(f):
     def wrapped(self, *the_args, **the_kwargs):
         semSys = the_args[1]
         ctxs   = the_kwargs['ctxs']
-        temp_container = semSys.build_ctxset(ops=ctxs._operators)
-        temp_container.set_parent(ctxs)
+        subctx = ctxs.subctx()
         # register the subctx for merging:
-        ctxs.delay(ctxs.delayed_e.MERGE, temp_container)
-        the_kwargs['ctxs'] = temp_container
+        ctxs.delay(ctxs.delayed_e.MERGE, subctx)
+        the_kwargs['ctxs'] = subctx
         return f(self, *the_args, **the_kwargs)
 
     wrapped.__name__ = f.__name__
