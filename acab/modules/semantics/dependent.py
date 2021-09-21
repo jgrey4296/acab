@@ -6,6 +6,7 @@ import acab.error.acab_semantic_exception as ASErr
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.values import Sentence, AcabStatement
 from acab.abstract.core.acab_struct import BasicNodeStruct
+from acab.modules.semantics.context_set import ContextQueryState
 
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
@@ -82,13 +83,11 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
         if ctxs is None:
             raise ASErr.AcabSemanticException("Ctxs is none to TrieSemantics.query", sen)
 
-        negated_query = False
-        if NEGATION_S in sen.data and sen.data[NEGATION_S]:
-            negated_query = True
+        negated = NEGATION_S in sen.data and sen.data[NEGATION_S]
 
         # TODO get collapse vars from the sentence
         collapse_vars = []
-        with ctxs(struct.root, sen, data, collapse_vars, negated_query):
+        with ContextQueryState(negated, sen, struct.root, collapse_vars, ctxs):
             for word in sen:
                 for ctxInst in ctxs.active_list(clear=True):
                     indep, _ = self.lookup(ctxInst._current)

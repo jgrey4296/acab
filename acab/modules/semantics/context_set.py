@@ -388,3 +388,60 @@ class MutableContextInstance():
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
         self.parent.push(self.base.bind_dict(self.data))
+
+@dataclass(frozen=True)
+class ContextQueryState:
+    """ State of the current query """
+
+    negated       : bool               = field()
+    query_clause  : Sentence           = field()
+    root_node     : Node               = field()
+    collect_vars  : Set[str]           = field()
+    ctxs          : CtxSet             = field()
+
+    def __enter__(self):
+        # set all instances to start at node, unless start_word is an at_binding,
+        # in which case get the bound node
+        # handle negated behaviour
+        root_word : Value          = self.query_clause[0]
+        active_list : List[CtxIns] = self.ctxs.active_list()
+        if root_word.is_at_var:
+            [x.set_current_binding(root_word) for x in active_list]
+        else:
+            [x.set_current_node(self.root_node) for x in active_list]
+
+        return self
+
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        # collect bindings as necessary
+        self.collect()
+        # self.negated      = False
+        # self.collect_vars = set()
+        # self.root_node    = None
+
+        # TODO handle exception
+
+
+    def collect(self):
+        """
+        Context collecton specific vars.
+        Flattens many contexts into one, with specified variables
+        now as lists accumulated from across the contexts.
+
+        Semantics of collect:
+        0[ctxs]0 -> fail
+        1[ctxs]n -> 1[α]1
+        where
+        α : ctx = ctxs[0] ∪ { β : ctx[β] for ctx in ctxs[1:] }
+        β : var to collect
+
+
+        """
+        if not bool(self.collect_vars):
+            return
+
+        # select instances with bindings
+        # Merge into single new instance
+        # replace
+        raise NotImplementedError()
