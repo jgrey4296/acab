@@ -31,9 +31,10 @@ def print_contexts(self, params):
             print(f"Selected bad ctx instance. Try 0 <= x < {len(self.state.ctxs)}.")
 
     elif "context_slice" in params:
-        ctxs_to_print += self.state.ctxs[params['context_slice']]
+        ctx_slice = self.state.ctxs[params['context_slice']].active_list()
+        ctxs_to_print += ctx_slice
     elif bool(self.state.ctxs) and len(self.state.ctxs) > 0:
-        ctxs_to_print += self.state.ctxs[:]
+        ctxs_to_print += self.state.ctxs.active_list()
     else:
         print(f"No applicable contexts to print")
 
@@ -46,8 +47,8 @@ def print_contexts(self, params):
     # now print them
     for i,ctx in enumerate(ctxs_to_print):
         print(f"Context: {i}")
-        if bool(ctx.continuation):
-            print(f"Continuation: {ctx.continuation}")
+        # if bool(ctx.continuation):
+        #     print(f"Continuation: {ctx.continuation}")
         if bool(bindings_to_print):
             for x in bindings_to_print:
                 print("{} : {}".format(x, self.state.engine.pprint([ctx[x]])))
@@ -57,6 +58,8 @@ def print_contexts(self, params):
 
         print("--------------------")
 
+    print("Named (continuation) Sets:")
+    print(self.state.engine.pprint(list(self.state.ctxs._named_sets.keys())))
 
 def init_inspect(mod_str):
     """

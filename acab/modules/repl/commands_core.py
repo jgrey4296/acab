@@ -60,6 +60,7 @@ def do_init(self, line):
         # TODO add bad words from repl:
         # self.state.engine.parser.set_bad_words(self.completenames(""))
 
+        self.state.ctxs = None
         logging.info("Engine Initialisation Complete")
     except Exception as err:
         logging.error(f"Failed to initialise engine: {line}", exc_info=err)
@@ -128,9 +129,11 @@ def do_run(self, line):
     Take a binding from a query, and run it.
     Used for running rules, queries, actions, layers, pipelines...
 
-    run               : tick the engine
-    run a.rule?       : runs a unique rule
-    run a.rule.$x?    : runs all matching rules
+    run                : tick the engine
+    run a.rule?        : runs a unique runnable at position
+    run a.rule.$x?     : runs all matching runnables bound to $x
+    run $x?            : run $x from active ctxs
+    run override X SEN : run SEN with override semantics X
     """
     try:
         # query
@@ -139,18 +142,20 @@ def do_run(self, line):
             self.state.ctxs = self.state.engine.tick()
             return
 
-        self.state.ctxs = self.state.engine(line)
+        logging.info("------ Run Query:")
+        query_results = self.state.engine(line)
 
-        bindings = [y for x in self.state.ctxs.active_list()
+        bindings = [y for x in query_results.active_list()
                     for y in x if isinstance(y, ProductionContainer)]
 
-        if not bool(bindings) and bool(self.state.ctxs) and isinstance(self.state.ctxs[0]._current.value, Statement_i):
-            bindings = [self.state.ctxs[0]._current.value]
+        if not bool(bindings) and bool(query_results) and isinstance(query_results[0]._current.value, Statement_i):
+            bindings = [query_results[0]._current.value]
+        logging.info("------ Run Query End")
 
-        if bool(self.state.ctxs):
+        if bool(bindings):
             # Run the bindings
             print(f"Running {len(bindings)} Statements")
-            self.state.ctxs = self.state.engine(bindings)
+            self.state.ctxs = self.state.engine(bindings, ctxset=self.state.ctxs)
         else:
             print("No Match to Run")
 

@@ -121,3 +121,9 @@ class AcabREPLCommander(cmd.Cmd):
             arg = arg.strip()
 
         return cmd, arg, line
+
+    def emptyline(self):
+        """ Overrides default of 'repeat last command',
+        and prints the working memory
+        """
+        return self.onecmd("print wm")
