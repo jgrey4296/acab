@@ -9,14 +9,12 @@ from acab.abstract.decorators.semantic import OperatorArgUnWrap, OperatorResultW
 
 class EQ(ProductionOperator):
     @OperatorArgUnWrap
-    @OperatorResultWrap
     def __call__(self, a, b, data=None):
         return a == b
 
 
 class NEQ(ProductionOperator):
     @OperatorArgUnWrap
-    @OperatorResultWrap
     def __call__(self, a, b, data=None):
         return a != b
 
@@ -25,7 +23,6 @@ class RegMatch(ProductionOperator):
     # TODO implement sub-binds
     # currently they are ignored
     @OperatorArgUnWrap
-    @OperatorResultWrap
     def __call__(self, a, b, data=None):
         result = re.search(b, a)
         if result is not None:
@@ -37,7 +34,6 @@ class RegMatch(ProductionOperator):
 
 class ELEM(ProductionOperator):
     @OperatorArgUnWrap
-    @OperatorResultWrap
     def __call__(self, a, b, data=None):
         return a in b
 

@@ -81,6 +81,7 @@ def OperatorDataUnWrap(f):
 
 def OperatorResultWrap(f):
     def wrapped(self, *the_args, **the_kwargs):
-        return AcabValue.safe_make(result)
+        return AcabValue.safe_make(f(self, *the_args, **the_kwargs))
 
     wrapped.__name__ = f"ResultWrap({f})"
+    return wrapped

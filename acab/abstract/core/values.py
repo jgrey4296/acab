@@ -63,7 +63,7 @@ class AcabValue(VI.Value_i, Generic[T]):
         # Applicable values: Self + any registered
         value_type_tuple = tuple(list(AcabValue._value_types))
 
-        assert(self.value is None or isinstance(self.value, value_type_tuple))
+        assert(self.value is None or isinstance(self.value, value_type_tuple)), self.value
 
         # NOTE: use of setattr to override frozen temporarily to update name
         #

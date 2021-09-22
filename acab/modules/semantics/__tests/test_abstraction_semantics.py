@@ -33,6 +33,7 @@ from acab.modules.operators.transform.transform_operators import RegexOp
 from acab.modules.semantics.basic_system import BasicSemanticSystem
 from acab.modules.semantics.context_set import (ConstraintCollection,
                                                 ContextInstance, ContextSet)
+from acab.modules.semantics import context_delayed_actions
 from acab.modules.semantics.dependent import BreadthTrieSemantics
 from acab.modules.semantics.independent import (BasicNodeSemantics,
                                                 ExclusionNodeSemantics)

@@ -142,7 +142,7 @@ class TrieSemanticTests(unittest.TestCase):
         # Run query
         trie_sem.query(query_sen, trie_struct, ctxs=ctx_set)
         self.assertEqual(len(ctx_set), 2)
-        result_set = {ctxInst.data['x'] for ctxInst in ctx_set}
+        result_set = {str(ctxInst.data['x']) for ctxInst in ctx_set}
         self.assertEqual(result_set, {'sentence', 'other'})
 
     def test_trie_query_with_bind_constraints(self):
