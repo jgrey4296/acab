@@ -115,5 +115,5 @@ class Sentence_i(metaclass=abc.ABCMeta):
         pass
 
     @property
-    def words(self):
+    def words(self) -> List[Value_i]:
         return self.value

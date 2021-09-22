@@ -17,7 +17,7 @@ class ValueAnnotation:
     Result of parsing, which will be applied onto an AcabValue's data dict
     """
 
-    key : str = field()
+    key   : str = field()
     value : Any = field()
 
     def __call__(self, val:Value) -> Value:
