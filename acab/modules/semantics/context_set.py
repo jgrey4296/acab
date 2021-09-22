@@ -82,11 +82,14 @@ class ContextInstance(CtxInt.ContextInstance_i):
         remain = len(self._remaining_query) if self._remaining_query is not None else 0
         return f"(CtxInst: Bindings: {binds}. QRemain: {remain})"
 
-    def copy(self):
+    def copy(self, **kwargs):
         logging.debug("Copied Ctx Instance")
+        if 'data' not in kwargs:
+            kwargs['data'] = self.data.copy()
+
         copied = replace(self,
                          uuid=uuid1(),
-                         data=self.data.copy(),
+                         data=kwargs['data'],
                          nodes=self.nodes.copy(),
                          _parent_ctx=self,
                          )
@@ -110,10 +113,9 @@ class ContextInstance(CtxInt.ContextInstance_i):
         return [x[0] for x in extensions]
 
     def bind_dict(self, the_dict):
-        copied = self.copy()
-        copied.data.update(the_dict)
-        return copied
-
+        data_copy = self.data.copy()
+        data_copy.update(the_dict)
+        return self.copy(data=data_copy)
 
     def set_current_node(self, node):
         object.__setattr__(self, "_current", node)
@@ -325,7 +327,7 @@ class ContextSet(CtxInt.ContextSet_i, CtxInt.DelayedCommands_i):
 
 
 @dataclass
-class MutableContextInstance():
+class MutableContextInstance:
     """ Wrap A Context Instance with an smart dictionary.
     Changes are inserted into the dictionary, until finish is called.
     Finish creates a new CtxIns, integrating changes """

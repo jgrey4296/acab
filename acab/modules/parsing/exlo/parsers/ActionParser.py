@@ -26,11 +26,13 @@ vals = PU.zrm(PARAM_SEN)(RIGHT_S)
 action_component = N(OPERATOR, op_path) + vals
 action_component.setParseAction(PConst.build_action_component)
 
-action_sugar = N(LEFT_S, VALBIND) \
+action_sugar_binary = N(LEFT_S, VALBIND) \
     + N(OPERATOR, HOTLOAD_OPERATORS) \
     + vals
 
-action_exprs = action_component | PARAM_SEN | action_sugar
+action_sugar_unary = N(OPERATOR, HOTLOAD_OPERATORS) +  vals
+
+action_exprs = action_component | PARAM_SEN | action_sugar_binary | action_sugar_unary
 # Sentences are asserted by default
 actions = IndentedBlock(action_exprs)
 actions.setParseAction(PConst.build_action)

@@ -68,15 +68,18 @@ class EL_Parser(DSL_Fragment_i):
         except Exception:
             logging.debug("No annotations loaded into DSL")
 
-        FP.HOTLOAD_QUERY_OP << bootstrapper.query("operator.query.*")
+        FP.HOTLOAD_QUERY_OP << bootstrapper.query("operator.query.*",
+                                                  "operator.sugar")
 
         QP.HOTLOAD_QUERY_SEN << bootstrapper.query("query.sentences.*")
 
-        TP.HOTLOAD_TRANS_OP << bootstrapper.query("operator.transform.*")
+        TP.HOTLOAD_TRANS_OP << bootstrapper.query("operator.transform.*",
+                                                  "operator.sugar")
 
         TP.HOTLOAD_TRANS_STATEMENTS << bootstrapper.query("operator.transform.statement.*")
 
-        AP.HOTLOAD_OPERATORS << bootstrapper.query("operator.action.*")
+        AP.HOTLOAD_OPERATORS << bootstrapper.query("operator.action.*",
+                                                   "operator.sugar")
 
         TotalP.HOTLOAD_STATEMENTS << bootstrapper.query("statement.*")
         # At this point, parser is constructed, and will not change again

@@ -89,13 +89,17 @@ class SemanticSystem_i(HandlerSystem_i):
 
     _operator_cache : Optional[CtxIns] = field(init=False, default=None)
 
-    def build_ctxset(self, ops=None, cache=False):
-        if cache or self._operator_cache is None:
+    def build_ctxset(self, ops=None):
+        """ Build a context set. Use passed in operators if provided.
+        Cache operators if flag is true
+        """
+        if bool(ops) or self._operator_cache is None:
             ctxset = self.ctx_set.build(ops)
-            if ctxset._operators is not None:
-                self._operator_cache = ctxset._operators.copy()
         else:
             ctxset = self.ctx_set.build(self._operator_cache)
+
+        if ctxset._operators is not None:
+            self._operator_cache = ctxset._operators.copy()
 
         # Auto remove the empty context:
         ctxset.delay(ctxset.delayed_e.DEACTIVATE, ctxset[0].uuid)

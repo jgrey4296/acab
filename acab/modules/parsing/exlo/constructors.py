@@ -48,7 +48,9 @@ def build_action_component(s, loc, toks):
     if PDS.RIGHT in toks:
         params = toks[EXu.RIGHT_S][:]
     op = toks[EXu.OPERATOR_S][0]
-    params = [x[0] if len(x) == 1 else x for x in params]
+    if not isinstance(op, Sentence):
+        op = Sentence.build([op])
+    # params = [x[0] if len(x) == 1 else x for x in params]
     return ProductionComponent(value=op,
                                params=params,
                                sugared=EXu.LEFT_S in toks)
