@@ -19,7 +19,7 @@ Sentence      = 'Sentence'
 Value_i       = 'Value_i'
 AcabStatement = 'AcabStatement'
 
-@dataclass
+@dataclass(frozen=True)
 class Value_i(metaclass=abc.ABCMeta):
 
     name   : str            = field(default=None)
@@ -70,7 +70,7 @@ class Value_i(metaclass=abc.ABCMeta):
         pass
 
 
-@dataclass
+@dataclass(frozen=True)
 class Statement_i(metaclass=abc.ABCMeta):
 
     breakpoint : bool = field(init=False, default=False)
@@ -87,7 +87,7 @@ class Statement_i(metaclass=abc.ABCMeta):
     def should_break(self) -> bool:
         return self.breakpoint
 
-@dataclass
+@dataclass(frozen=True)
 class Sentence_i(metaclass=abc.ABCMeta):
 
     value: List[Value_i]  = field(default_factory=list)
@@ -115,5 +115,5 @@ class Sentence_i(metaclass=abc.ABCMeta):
         pass
 
     @property
-    def words(self):
+    def words(self) -> List[Value_i]:
         return self.value

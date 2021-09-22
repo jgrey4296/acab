@@ -23,6 +23,7 @@ Engine        = 'Engine'
 Contexts      = 'Contexts'
 
 
+# TODO RDFSemantics, ReteSemantics
 # Dependent Semantics
 class FSMSemantics(SI.DependentSemantics_i):
 
@@ -238,10 +239,9 @@ class DepthTrieSemantics(SI.DependentSemantics_i):
                         word = remaining_sen.pop(0)
                         indep, _ = self.lookup(currentInst._current)
                         search_word = word
-                        get_all = False
                         # Handle variable:
                         if word.is_var and word not in ctxInst:
-                            get_all = True
+                            search_word = None
                         elif word.is_var and word in ctxInst:
                             # Word is var, but bound, so look for that instead
                             search_word = currentInst[word]
@@ -249,8 +249,7 @@ class DepthTrieSemantics(SI.DependentSemantics_i):
 
                         results = indep.access(currentInst._current,
                                                search_word,
-                                               data,
-                                               get_all=get_all)
+                                               datac)
 
                         # TODO to make this depth first,
                         # the current ctxInst needs to be updated

@@ -15,7 +15,7 @@ import acab
 
 config = acab.setup()
 
-from acab.abstract.interfaces.context import ContextContainer_i
+from acab.abstract.interfaces.context import ContextSet_i
 from acab.abstract.interfaces.engine import AcabEngine_i
 from acab.modules.repl import ReplParser as RP
 
@@ -26,7 +26,7 @@ def register(fn):
     assert("do_" in fn.__name__)
     assert(fn.__name__ not in dir(AcabREPLCommander))
     setattr(AcabREPLCommander, fn.__name__, fn)
-    # Don't return fn as its only used in the class
+    return fn
 
 #--------------------
 initial_prompt = config.prepare("Module.REPL", "PROMPT", actions=[config.actions_e.STRIPQUOTE])()
@@ -38,7 +38,7 @@ class ReplState:
     prompt           : str                    =  field(default=initial_prompt)
     prompt_ml        : str                    =  field(default=config.prepare("Module.REPL", "PROMPT_ML", actions=[config.actions_e.STRIPQUOTE])())
     prompt_bkup      : str                    =  field(default="")
-    result           : ContextContainer_i     =  field(default=None)
+    ctxs             : ContextSet_i           =  field(default=None)
     collect_str      : List[str]              =  field(default_factory=list)
     echo             : bool                   =  field(default=False)
     in_multi_line    : bool                   =  field(default=False)
@@ -50,23 +50,19 @@ class ReplState:
 
 class AcabREPLCommander(cmd.Cmd):
     """ Implementation of cmd.Cmd to provide an extensible ACAB REPL"""
-    intro  = "Welcome to ACAB. Type 'help' or '?' to list commands.\n"
+    intro  = "Welcome to ACAB.\nType 'help' or '?' to list commands.\nType 'tutorial' for a tutorial.\nType ':q' to quit."
     prompt = initial_prompt + ": "
 
     state  : ReplState = ReplState()
 
     def default(self, line):
         """ Called when no other command matches """
-        try:
-            # default to assertion / query / run
-            self.state.result = self.state.engine(line,
-                                            bindings=self.state.result)
-
-        except pp.ParseException as err:
-            logging.warning(f"Parse Failure: {err.msg} : {err.markInputline()}")
-        except Exception as err:
-            traceback.print_tb(err.__traceback__)
-            logging.warning(f"Failure in Default: {err}")
+        # default to assertion / query / run
+        self.state.ctxs = self.state.engine(line,
+                                            ctxset=self.state.ctxs)
+        # except Exception as err:
+        #     traceback.print_tb(err.__traceback__)
+        #     logging.warning(f"Failure in Default: {err}")
 
 
     def precmd(self, line):
@@ -74,7 +70,7 @@ class AcabREPLCommander(cmd.Cmd):
         # convert symbols -> cmd names.
         # eg: ':{' -> multi
         try:
-            logging.debug("PreCmd Parsing:{}".format(line))
+            logging.debug("PreCmd Parsing: {}".format(line))
             line = RP.precmd_parser.parseString(line)[:]
             logging.debug("PreCmd Result:{}".format(line))
             # Intercept if in multi line state
@@ -93,8 +89,8 @@ class AcabREPLCommander(cmd.Cmd):
 
     def postcmd(self, stop, line):
         count = "0"
-        if self.state.result is not None:
-            count = len(self.state.result)
+        if self.state.ctxs is not None:
+            count = len(self.state.ctxs)
         insert = f"(Γ: {count})"
 
         self.prompt = self.state.prompt + " " + insert + ": "
@@ -125,3 +121,9 @@ class AcabREPLCommander(cmd.Cmd):
             arg = arg.strip()
 
         return cmd, arg, line
+
+    def emptyline(self):
+        """ Overrides default of 'repeat last command',
+        and prints the working memory
+        """
+        return self.onecmd("print wm")

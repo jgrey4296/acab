@@ -19,6 +19,10 @@ from .FactParser import BASIC_SEN, PARAM_SEN
 
 logging = root_logger.getLogger(__name__)
 
+# For Custom non-standard form queries
+# eg: 1[a.b.$x]3?
+# to capture a condition of how many $x's are permissible
+HOTLOAD_QUERY_SEN = pp.Forward()
 
 assignment = PU.BIND + COLON + PARAM_SEN
 assignmentList = PU.DELIMIST(assignment, delim=COMMA)
@@ -32,7 +36,7 @@ fallback = DOUBLEBAR + assignmentList
 clause = PARAM_SEN + QUERY \
     + N(QUERY_FALLBACK, op(fallback))
 
-clauses = IndentedBlock(clause)
+clauses = IndentedBlock(clause | HOTLOAD_QUERY_SEN)
 
 query_statement = PU.STATEMENT_CONSTRUCTOR(BASIC_SEN, clauses)
 

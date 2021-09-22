@@ -7,13 +7,15 @@ from acab.modules.printing.basic_printer import BasicPrinter
 import acab.modules.printing.printers as Printers
 
 def DEFAULT_PRINTER():
-    return BasicPrinter(handlers=[Printers.BasicSentenceAwarePrinter("_:SENTENCE"),
-                                  Printers.ConstraintAwareValuePrinter("_:ATOM"),
-                                  Printers.ProductionComponentPrinter("_:COMPONENT"),
-                                  Printers.ExplicitContainerPrinter("_:CONTAINER"),
-                                  Printers.ImplicitContainerPrinter("_:IMPLICIT_CONTAINER"),
-                                  Printers.StructurePrinter("_:STRUCTURE"),
-                                  Printers.ConfigBackedSymbolPrinter("_:SYMBOL"),
-                                  Printers.PrimitiveTypeAwarePrinter("_:NO_MODAL")],
-                        structs=[],
+    return BasicPrinter(init_handlers=[
+        Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
+        Printers.ConstraintAwareValuePrinter().as_handler("_:ATOM"),
+        Printers.ProductionComponentPrinter().as_handler("_:COMPONENT"),
+        Printers.ExplicitContainerPrinter().as_handler("_:CONTAINER"),
+        Printers.ImplicitContainerPrinter().as_handler("_:IMPLICIT_CONTAINER"),
+        Printers.StructurePrinter().as_handler("_:STRUCTURE"),
+        Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
+        Printers.PrimitiveTypeAwarePrinter().as_handler("_:NO_MODAL"),
+        Printers.TagPrinter().as_handler("_:TAGS")
+    ],
                         settings={"MODAL": "exop"})

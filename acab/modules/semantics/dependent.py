@@ -6,6 +6,7 @@ import acab.error.acab_semantic_exception as ASErr
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.values import Sentence, AcabStatement
 from acab.abstract.core.acab_struct import BasicNodeStruct
+from acab.modules.semantics.context_set import ContextQueryState
 
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
@@ -35,15 +36,15 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
         has_all_node_comp = "all_nodes" in struct.components
         return is_bns or has_all_node_comp
 
-    def insert(self, struct, sen, data=None, ctxs=None):
+    def insert(self, sen, struct, data=None, ctxs=None):
         if data is None:
             data = {}
 
         if NEGATION_S in sen.data and sen.data[NEGATION_S]:
-            return self._delete(struct, sen, data)
+            return self._delete(sen, struct, data)
 
         # Get the root
-        current = self.default[0].up(struct.root)
+        current = self.default.func.up(struct.root)
         for word in sen:
             semantics, _ = self.lookup(current)
             accessible = semantics.access(current, word, data)
@@ -57,7 +58,7 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
 
         return current
 
-    def _delete(self, struct, sen, data=None):
+    def _delete(self, sen, struct, data=None):
         parent = struct.root
         current = struct.root
 
@@ -77,34 +78,31 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
         semantics.remove(parent, current.value, data)
 
 
-    def query(self, struct, sen, data=None, ctxs=None):
+    def query(self, sen, struct, data=None, ctxs=None):
         """ Breadth First Search Query """
         if ctxs is None:
             raise ASErr.AcabSemanticException("Ctxs is none to TrieSemantics.query", sen)
 
-        negated_query = False
-        if NEGATION_S in sen.data and sen.data[NEGATION_S]:
-            negated_query = True
+        negated = NEGATION_S in sen.data and sen.data[NEGATION_S]
 
         # TODO get collapse vars from the sentence
         collapse_vars = []
-        with ctxs(struct.root, sen, data, collapse_vars, negated_query):
+        with ContextQueryState(negated, sen, struct.root, collapse_vars, ctxs):
             for word in sen:
                 for ctxInst in ctxs.active_list(clear=True):
                     indep, _ = self.lookup(ctxInst._current)
                     search_word = word
-                    get_all = False
                     # Handle variable:
                     if word.is_var and word not in ctxInst:
-                        get_all = True
+                        search_word = None
                     elif word.is_var and word in ctxInst:
                         # Word is var, but bound, so look for that instead
                         search_word = ctxInst[word]
 
                     results = indep.access(ctxInst._current,
                                            search_word,
-                                           data,
-                                           get_all=get_all)
+                                           data)
+
                     if not bool(results):
                         ctxs.fail(ctxInst, word, None)
                     else:
@@ -123,7 +121,7 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
             path, current = queue.pop(0)
             updated_path = path + [current.value]
             semantics, _ = self.lookup(current)
-            accessible = semantics.access(current, None, data, get_all=True)
+            accessible = semantics.access(current, None, data)
             if bool(accessible):
                 # branch
                 queue += [(updated_path, x) for x in accessible]

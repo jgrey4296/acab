@@ -25,6 +25,7 @@ ModuleComponents = "ModuleComponents"
 def do_print(self, line):
     """
     Print out information on the wm, or a module
+    [wm, module, semantics]
     """
     try:
         params = RP.printer_parser.parseString(line)
@@ -40,7 +41,7 @@ def do_print(self, line):
         # TODO print everything from a query down
         print(self.state.engine.pprint())
     elif "mod_target" in params:
-        print("Modules: ")
+        print("TODO Specific Module Info: ")
         # TODO print module doc
         modules: ModuleComponents = self.state.engine._module_loader.loaded_modules.values()
         modules = [x for x in modules if params['mod_target'] in x.source]
@@ -89,7 +90,7 @@ def do_stat(self, line):
             mod_target = [x for x in modules if x.source in params['mod_target']]
 
         for mod in mod_target:
-            print("\t{}".format(mod.source))
+            print("\t{}".format(mod))
         print("--")
         print("Loaded Modules: {}".format(len(modules)))
 
@@ -99,29 +100,20 @@ def do_stat(self, line):
         semantic = self.state.engine.semantics
         print("{} : {}".format(semantic.__module__, semantic.__class__.__name__))
         print("\n", semantic.__doc__, "\n")
-        print("Handlers: {}".format(len(semantic.registered_handlers)))
-        print("Structs:  {}".format(len(semantic.registered_structs)))
-
+        print(f"{repr(semantic)}\n")
+        print("Handlers: {}".format(len(semantic.handlers)))
         print("Handler Keys:")
-        print("\t{}".format("\n\t".join([str(x) for x in semantic.registered_handlers.keys()])))
+        print("\t{}".format("\n\t".join([str(x) for x in semantic.handlers.keys()])))
 
         print("----------")
-        print("Module Semantics: ")
-        count = defaultdict(lambda: 0)
-        for mod in modules:
-            print("Module: {} : Fragments: {}".format(mod.source, len(mod.semantics)))
-            for frag in mod.semantics:
-                count['dependent']   += len(frag.dependent)
-                count['independent'] += len(frag.independent)
-                count['abstraction'] += len(frag.abstraction)
-                count['structs']     += len(frag.structs)
-
-        if bool(count):
-            print("--")
-            print("Semantic Counts:")
-            print("\n\t".join(["{} : {}".format(x,y) for x,y in count.items()]))
-
-
+        mods_with_semantics = [x for x in modules if len(x.semantics) > 0]
+        if bool(mods_with_semantics):
+            print("Module Semantics: ")
+            count = defaultdict(lambda: 0)
+            for mod in mods_with_semantics:
+                print(f"Module: {mod.source}")
+                for frag in mod.semantics:
+                    print(f"{frag}")
 
 @register
 def do_parser(self, line):
@@ -202,3 +194,19 @@ def do_filter(self, line):
         print(f"Removing Last Console Log Filter")
     else:
         print("No filters set")
+
+
+# Tutorial ####################################################################
+@register
+def do_tutorial(self, line):
+    """
+    Print out a basic tutorial of Acab and this Repl
+    """
+    # Print a section, return to main loop,
+    # if tutorial is called again, continue
+    # if restart is passed in, restart the tutorial
+    return
+
+@register
+def do_acab(self, line):
+    print("All Cops Are Bastards")

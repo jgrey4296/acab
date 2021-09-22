@@ -92,3 +92,14 @@ class AcabValueTests(unittest.TestCase):
 
 
     # set_data, apply_patams/tags,
+
+
+    def test_value_copy(self):
+        value = AcabValue("test")
+        value.tags.update(["a"])
+        copied = value.copy()
+        copied.tags.update(["b"])
+        self.assertEqual(value, copied)
+        self.assertNotEqual(value.uuid, copied.uuid)
+        self.assertTrue("a" in copied.tags)
+        self.assertFalse("b" in value.tags)

@@ -15,6 +15,7 @@ from acab.error.acab_config_exception import AcabConfigException
 from acab.modules.repl.repl_commander import register
 from acab.modules.repl import ReplParser as RP
 from acab.abstract.core.production_abstractions import ProductionContainer
+from acab.modules.repl.util import init_inspect
 
 logging = root_logger.getLogger(__name__)
 
@@ -23,10 +24,20 @@ def do_init(self, line):
     """
     Specify the Engine to initialise.
     Imports the module, and uses the final component as the Engine Class.
-    eg: acab.engines.trie_engine.TrieEngine -> TrieEngine
+    eg: acab.modules.engines.trie_engine.TrieEngine -> TrieEngine
+
+    A Question mark at the end of the line signals to inspect the module
+    for potential constructors:
+    eg: acab.modules.engines.configured?
     """
     if not bool(line.strip()):
         line = self.state.engine_str
+
+    # if:  "init line?", then return applicable functions
+    if line[-1] == "?":
+        return init_inspect(line[:-1])
+
+
     logging.info("Initialising Engine: {}".format(line))
 
     try:
@@ -35,9 +46,9 @@ def do_init(self, line):
         # TODO ask for confirmation?
         # Note: not init_module.{} because of split*ext*
         # build engine. needs to be a 0 arg constructor
-        spec = getattr(mod, line.split(".")[-1])
-        is_type = isinstance(spec, type)
-        is_sub  = is_type and issubclass(spec, AcabEngine_i)
+        spec        = getattr(mod, line.split(".")[-1])
+        is_type     = isinstance(spec, type)
+        is_sub      = is_type and issubclass(spec, AcabEngine_i)
         is_callable = callable(spec)
         if (not is_type) and isinstance(spec, AcabEngine_i):
             self.state.engine = spec
@@ -46,6 +57,10 @@ def do_init(self, line):
         else:
             raise AcabConfigException(f"Unknown Engine Spec Form: {spec}")
 
+        # TODO add bad words from repl:
+        # self.state.engine.parser.set_bad_words(self.completenames(""))
+
+        self.state.ctxs = None
         logging.info("Engine Initialisation Complete")
     except Exception as err:
         logging.error(f"Failed to initialise engine: {line}", exc_info=err)
@@ -61,7 +76,11 @@ def do_module(self, line):
     params = line.split(" ")
     logging.info(f"Loading Modules: {params}")
     try:
-        self.state.engine.load_modules(*params)
+        loaded = self.state.engine.load_modules(*params)
+        print(f"Loaded {len(loaded)} modules")
+        for x in loaded:
+            print(x)
+
     except Exception as err:
         logging.error(f"{err}")
         logging.error(f"Failed to load modules: {line}")
@@ -73,13 +92,7 @@ def do_load(self, line):
     """
     logging.info(f"Loading: {line}")
     filename = abspath(expanduser(line)).strip()
-    try:
-        assert(exists(filename)), filename
-        self.state.engine.load_file(filename)
-    except Exception as err:
-        logging.error(f"Failed to load: {line}")
-        logging.error(f"{err}")
-
+    self.state.engine.load_file(filename)
 
 @register
 def do_save(self, line):
@@ -116,30 +129,33 @@ def do_run(self, line):
     Take a binding from a query, and run it.
     Used for running rules, queries, actions, layers, pipelines...
 
-    run               : tick the engine
-    run a.rule?       : runs a unique rule
-    run a.rule.$x?    : runs all matching rules
+    run                : tick the engine
+    run a.rule?        : runs a unique runnable at position
+    run a.rule.$x?     : runs all matching runnables bound to $x
+    run $x?            : run $x from active ctxs
+    run override X SEN : run SEN with override semantics X
     """
-    # TODO
     try:
         # query
         if not bool(line.strip()):
             logging.info("TODO Ticking Engine")
-            self.state.result = self.state.engine.tick()
+            self.state.ctxs = self.state.engine.tick()
             return
 
-        self.state.result = self.state.engine(line)
+        logging.info("------ Run Query:")
+        query_results = self.state.engine(line)
 
-        bindings = [y for x in self.state.result.active_list()
+        bindings = [y for x in query_results.active_list()
                     for y in x if isinstance(y, ProductionContainer)]
 
-        if not bool(bindings) and bool(self.state.result) and isinstance(self.state.result[0]._current.value, Statement_i):
-            bindings = [self.state.result[0]._current.value]
+        if not bool(bindings) and bool(query_results) and isinstance(query_results[0]._current.value, Statement_i):
+            bindings = [query_results[0]._current.value]
+        logging.info("------ Run Query End")
 
-        if bool(self.state.result):
+        if bool(bindings):
             # Run the bindings
             print(f"Running {len(bindings)} Statements")
-            self.state.result = self.state.engine(bindings)
+            self.state.ctxs = self.state.engine(bindings, ctxset=self.state.ctxs)
         else:
             print("No Match to Run")
 

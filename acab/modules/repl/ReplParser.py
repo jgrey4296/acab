@@ -50,6 +50,13 @@ short_step.setParseAction(lambda s,l,t: "step")
 short_context = pp.Keyword("c")("context")
 short_context.setParseAction(lambda s,l,t: "ctx")
 
+short_print_context = pp.Keyword("pc")("print context")
+short_print_context.setParseAction(lambda s,l,t: "print ctx")
+
+pwm = pp.Keyword("pwm")("Print Working Memory")
+pwm.setParseAction(lambda s,l,t: "print wm")
+
+
 sugared = pp.Suppress(pp.Literal(":")) + pp.MatchFirst([short_exit,
                                                         short_break,
                                                         short_echo,
@@ -57,14 +64,12 @@ sugared = pp.Suppress(pp.Literal(":")) + pp.MatchFirst([short_exit,
                                                         short_load,
                                                         short_step,
                                                         short_context,
+                                                        short_print_context,
+                                                        pwm,
                                                         ]) + rst
-
-pwm = pp.Keyword("pwm")("Print Working Memory")
-pwm.setParseAction(lambda s,l,t: "print wm")
 
 precmd_parser = pp.MatchFirst([multi_line_start,
                                multi_line_end + rst,
-                               pwm,
                                sugared,
                                rst]).leaveWhitespace()
 
@@ -173,9 +178,11 @@ linenum.setParseAction(lambda s,l,t: int(t.line))
 
 basic_bp = filename("file") + pp.Suppress(pp.Keyword(":")) + linenum("line")
 
-semantic_bp = pp.Regex(".+?\?")
+semantic_bp = pp.Keyword("semantic") + pp.Regex(".+?\?")("semantic")
 
+parser_bp = pp.Keyword("parser") + rst("parser")
 
-break_parser = pp.Or([basic_bp("basic"),
+break_parser = pp.Or([parser_bp,
                       semantic_bp("semantic"),
+                      basic_bp("basic"),
                       rst])

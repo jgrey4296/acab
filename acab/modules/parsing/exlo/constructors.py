@@ -9,7 +9,7 @@ from acab.abstract.core.values import Sentence
 from acab.abstract.core import default_structure as DS
 from acab.abstract.parsing import default_structure as PDS
 from acab.modules.parsing.exlo import util as EXu
-
+from acab.abstract.parsing.annotation import ValueAnnotation, ValueRepeatAnnotation
 
 def build_query_component(s, loc, toks):
     """ Build a comparison """
@@ -20,7 +20,8 @@ def build_query_component(s, loc, toks):
 
     params = [x[0] if len(x) == 1 else x for x in params]
 
-    return ProductionComponent(value=op, params=params)
+    return ValueRepeatAnnotation(DS.CONSTRAINT,
+                                 ProductionComponent(value=op, params=params))
 
 def build_transform_component(s, loc, toks):
     params = []
@@ -47,7 +48,9 @@ def build_action_component(s, loc, toks):
     if PDS.RIGHT in toks:
         params = toks[EXu.RIGHT_S][:]
     op = toks[EXu.OPERATOR_S][0]
-    params = [x[0] if len(x) == 1 else x for x in params]
+    if not isinstance(op, Sentence):
+        op = Sentence.build([op])
+    # params = [x[0] if len(x) == 1 else x for x in params]
     return ProductionComponent(value=op,
                                params=params,
                                sugared=EXu.LEFT_S in toks)
@@ -64,7 +67,7 @@ def build_query(s, loc, toks):
 def build_transform(s, loc, toks):
     clauses = toks[:]
     trans = ProductionContainer(value=clauses,
-                               data={SEMANTIC_HINT: EXu.TRANSFORM_SEM_HINT})
+                                data={SEMANTIC_HINT: EXu.TRANSFORM_SEM_HINT})
     return trans
 
 def build_action(s, loc, toks):
@@ -119,4 +122,4 @@ def build_rule(s, loc, toks, sem_hint=None):
 
 def build_constraint_list(s, loc, toks):
     """ Build a constraint list """
-    return (EXu.CONSTRAINT_S, [x for x in toks[:]])
+    return [x for x in toks[:]]

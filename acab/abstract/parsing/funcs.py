@@ -13,7 +13,7 @@ from acab.abstract.core.production_abstractions import (ProductionComponent,
 from acab.abstract.core.values import AcabValue, Sentence
 from acab.abstract.parsing import consts as PConst
 from acab.abstract.core.default_structure import TYPE_BOTTOM_NAME
-
+from acab.abstract.parsing.annotation import ValueAnnotation
 import acab.abstract.core.default_structure as DS
 import acab.abstract.parsing.default_structure as PDS
 
@@ -32,11 +32,14 @@ PIPELINE_SEM_HINT  = Sentence.build([config.prepare("SEMANTICS", "PIPELINE")()])
 
 ATOM = TYPE_BOTTOM_NAME
 
+DEFAULT_NODE_DATA = {}
+DEFAULT_NODE_DATA.update(config.defaults)
+
 def make_value(s, loc, toks):
     """ Make a value coupled with additional data """
     value = None
     _type = ATOM
-    data = PConst.DEFAULT_NODE_DATA.copy()
+    data = DEFAULT_NODE_DATA.copy()
     # TODO: link type primitives with type system
     if PDS.BIND in toks:
         # is variable
@@ -62,13 +65,14 @@ def make_value(s, loc, toks):
 
 def add_annotations(s, loc, toks):
     """ Add additional data to a node """
-    update_data = {}
     if PDS.MODAL in toks:
         modal_value = toks[PDS.MODAL]
-        update_data[modal_value.__class__.__name__] = modal_value
+        toks[PDS.NODE].data[modal_value.__class__.__name__] = modal_value
     if PDS.ANNOTATION in toks:
-        update_data.update({x: y for x, y in toks[PDS.ANNOTATION]})
-    toks[PDS.NODE].data.update(update_data)
+        for anno in toks[PDS.ANNOTATION]:
+            assert(isinstance(anno, ValueAnnotation))
+            anno(toks[PDS.NODE])
+
     return toks[PDS.NODE]
 
 
@@ -106,7 +110,7 @@ def construct_statement(s, loc, toks):
         targs = [x[1] for x in toks[PDS.ARG]]
     # Get Tags
     if PDS.TAG in toks:
-        tags = [x[1] for x in toks[PDS.TAG]]
+        tags = [y for x in toks[PDS.TAG] for y in x]
 
     obj = toks[PDS.STATEMENT][0]
     updated_obj = obj.apply_params(targs).apply_tags(tags)
@@ -130,7 +134,7 @@ def build_clause(s, loc, toks):
     return toks
 
 def build_assignment(s, loc, toks):
-    # TODO remove this
+    # TODO refactor this into a valueannotation?
     return (toks[0][1], toks[1])
 
 

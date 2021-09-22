@@ -17,17 +17,17 @@ from acab.abstract.core.production_abstractions import (ProductionContainer,
                                                         ProductionOperator)
 from acab.abstract.engine.module_loader import ModuleLoader
 from acab.abstract.interfaces.dsl import DSL_Fragment_i
-from acab.abstract.interfaces.engine import AcabEngine_i, EnsureInitialised
+from acab.abstract.interfaces.engine import AcabEngine_i
 from acab.abstract.interfaces.printing import PrintSystem_i
 from acab.abstract.interfaces.semantic import SemanticSystem_i
 from acab.abstract.interfaces.value import Value_i, Sentence_i
 from acab.error.acab_base_exception import AcabBaseException
-from acab.modules.engines.util import MaybeBuildOperatorCtx
+from acab.abstract.decorators.engine import MaybeBuildOperatorCtx, EnsureEngineInitialised
 
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
 
-CtxCon      = 'ContextContainer_i'
+CtxSet      = 'ContextSet_i'
 Instruction = Union[str, 'Sentence', 'AcabStatement']
 
 @dataclass
@@ -45,9 +45,9 @@ class AcabBasicEngine(AcabEngine_i):
         self.semantics.register_data({"printer": self.printer})
         self.initialised = True
 
-    @EnsureInitialised
+    @EnsureEngineInitialised
     @MaybeBuildOperatorCtx
-    def __call__(self, inst:Instruction, bindings=None) -> CtxCon:
+    def __call__(self, inst:Instruction, ctxset=None) -> CtxSet:
         """ Where a inst could be a:
         str to parse then,
         sentence to assert, query, or run
@@ -60,43 +60,25 @@ class AcabBasicEngine(AcabEngine_i):
             inst = [y for x in inst for y in self._dsl_builder.parse(x)[:]]
 
         assert(all([isinstance(x, (Value_i, Sentence_i)) for x in inst])), inst
-        logging.debug(f"Running: {inst}")
-        # pass inst to sem system
-        result = bindings
-        for clause in inst:
-            result = self.semantics(clause, ctxs=result)
-
-            if not bool(result):
-                logging.info("Attempt Failed")
-                break
-
-        return result
+        logging.debug(f"Running: {str(inst)}")
+        return self.semantics(*inst, ctxs=ctxset)
 
     @property
     def bindings(self):
         return self._cached_bindings
 
 
-    @EnsureInitialised
-    @MaybeBuildOperatorCtx
-    def insert(self, s: str, ctxs=None):
-        """ Assert a new fact into the engine """
-        data = self._dsl_builder.parse(s)
-        return self.semantics(*data, ctxs=ctxs)
-
-    @EnsureInitialised
-    @MaybeBuildOperatorCtx
-    def query(self, s: str, ctxs=None, cache=True):
-        """ Ask a question of the working memory """
-        instruction = self._dsl_builder.query_parse(s)
-        result      = self.semantics(instruction, ctxs=ctxs)
-
-        if cache:
-            self.add_to_cache(result)
-        return result
-
-
-    def add_to_cache(self, result: CtxCon):
+    @EnsureEngineInitialised
+    def add_to_cache(self, result: CtxSet):
         self._cached_bindings.append(result)
         if len(self._cached_bindings) > self._cache_size:
             self._cached_bindings.pop(0)
+
+
+    def __repr__(self):
+        clsname = self.__class__.__name__
+        parser_base = self.parser.__class__.__name__
+        semantics = repr(self.semantics)
+        printer = repr(self.printer)
+        modules = repr(self._module_loader)
+        return f"{clsname}(\n-- ({parser_base})\n-- {semantics}\n-- {printer}\n-- {modules}\n)"

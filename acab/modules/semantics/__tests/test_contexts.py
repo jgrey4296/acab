@@ -7,7 +7,7 @@ import acab
 config = acab.setup()
 
 from acab.abstract.core.values import AcabValue
-from acab.modules.semantics.context_container import ContextContainer, ContextInstance
+from acab.modules.semantics.context_set import ContextSet, ContextInstance
 from acab.error.acab_semantic_exception import AcabSemanticException
 
 class ContextsTests(unittest.TestCase):
@@ -24,8 +24,8 @@ class ContextsTests(unittest.TestCase):
         logging = root_logger.getLogger(__name__)
 
     #----------
-    def test_container_basic(self):
-        ctx = ContextContainer()
+    def test_set_basic(self):
+        ctx = ContextSet()
         self.assertIsNotNone(ctx)
         self.assertTrue(bool(ctx))
         self.assertEqual(len(ctx), 1)
@@ -54,8 +54,8 @@ class ContextsTests(unittest.TestCase):
         self.assertEqual(inst.data["a"], 2)
         self.assertEqual(inst2.data["a"], 5)
 
-    def test_container_append(self):
-        ctx = ContextContainer()
+    def test_set_append(self):
+        ctx = ContextSet()
         self.assertTrue(bool(ctx))
         ctx.pop()
         self.assertFalse(bool(ctx))
@@ -66,8 +66,8 @@ class ContextsTests(unittest.TestCase):
         ctx.push(ContextInstance())
         self.assertEqual(len(ctx), 2)
 
-    def test_container_append_2(self):
-        ctx = ContextContainer()
+    def test_set_append_2(self):
+        ctx = ContextSet()
         ctx.pop()
         self.assertFalse(bool(ctx))
         ctx.push([ContextInstance(),
@@ -76,8 +76,8 @@ class ContextsTests(unittest.TestCase):
         self.assertTrue(bool(ctx))
         self.assertEqual(len(ctx), 3)
 
-    def test_container_fail(self):
-        ctx = ContextContainer()
+    def test_set_fail(self):
+        ctx = ContextSet()
         inst = ctx.pop()
         self.assertFalse(bool(ctx))
         ctx.fail(inst, "fail word", "fail_node")
@@ -85,8 +85,8 @@ class ContextsTests(unittest.TestCase):
         self.assertEqual(inst._failure_word, "fail word")
         self.assertContains(inst.uuid, ctx._purgatory)
 
-    def test_container_iteration(self):
-        ctx = ContextContainer()
+    def test_set_iteration(self):
+        ctx = ContextSet()
         ctx.pop()
         ctx.push([ContextInstance({"a" : 1}),
                   ContextInstance({"b" : 2}),
@@ -96,8 +96,8 @@ class ContextsTests(unittest.TestCase):
             self.assertTrue(y in x.data)
 
 
-    def test_container_alts_binding(self):
-        ctx = ContextContainer()
+    def test_set_alts_binding(self):
+        ctx = ContextSet()
         ctx.pop()
         ctx.push([ContextInstance(nodes={'a': "blah"}),
                   ContextInstance(nodes={'a': "bloo"}),
@@ -108,8 +108,8 @@ class ContextsTests(unittest.TestCase):
         for x,y in zip(ctx.active_list(), ["blah","bloo","blee"]):
             self.assertEqual(x._current, y)
 
-    def test_container_alts_invalid_binding(self):
-        ctx = ContextContainer()
+    def test_set_alts_invalid_binding(self):
+        ctx = ContextSet()
         ctx.pop()
         ctx.push([ContextInstance(nodes={'a': "blah"}),
                   ContextInstance(nodes={'b': "bloo"}),
@@ -117,16 +117,16 @@ class ContextsTests(unittest.TestCase):
         with self.assertRaises(AcabSemanticException):
             [x.set_current_binding(AcabValue("a")) for x in ctx.active_list()]
 
-    def test_container_enter_exit(self):
+    def test_set_enter_exit(self):
         pass
 
-    def test_container_fail(self):
+    def test_set_fail(self):
         pass
 
-    def test_container_pop(self):
+    def test_set_pop(self):
         pass
 
-    def test_container_test(self):
+    def test_set_test(self):
         pass
 
     def test_instance_bind(self):

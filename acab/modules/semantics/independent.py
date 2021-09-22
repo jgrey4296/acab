@@ -19,7 +19,7 @@ CONSTRAINT_S = config.prepare("Value.Structure", "CONSTRAINT")()
 AT_BIND_S    = config.prepare("Value.Structure", "AT_BIND")()
 BIND         = config.prepare("Value.Structure", "BIND")()
 
-CTX_OP = Enum("ctx", "collapse")
+CTX_OP = Enum("ctx", "collect_var")
 # TODO replace operator with specific modal name
 EXOP         = config.prepare("MODAL", "exop")()
 DEFAULT_EXOP = config.default(EXOP)
@@ -41,10 +41,9 @@ class BasicNodeSemantics(SI.IndependentSemantics_i):
         """ The Most Basic Lift, does nothing """
         return node
 
-    def access(self, node, term, data=None, get_all=False):
-        # TODO possible shift get_all into data
+    def access(self, node, term, data=None):
         potentials = []
-        if get_all:
+        if term is None:
             potentials += node.children.values()
         elif node.has_child(term):
             potentials.append(node.get_child(term))
@@ -87,16 +86,19 @@ class ExclusionNodeSemantics(SI.IndependentSemantics_i):
 
         return node
 
-    def access(self, node, term, data=None, get_all=False):
+    def access(self, node, term, data=None):
         potentials = []
         value = None
-        if get_all:
+        if term is None:
             potentials += node.children.values()
         elif node.has_child(term):
             potentials.append(node.get_child(term))
 
-        if bool(term) and EXOP in term.data:
-            potentials = [x for x in potentials if x.data[EXOP] == term.data[EXOP]]
+
+        if bool(term) and EXOP in term.data and any([x.data[EXOP] != term.data[EXOP] for x in potentials]):
+            raise ASErr.AcabSemanticIndependentFailure(f"EXOP MisMatch, expected {term.data[EXOP]}",
+                                                       term)
+
 
         return potentials
 

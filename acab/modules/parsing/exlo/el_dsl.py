@@ -1,7 +1,13 @@
 """
 DSL Interface for exclusion logic, to connect it into Acab
 """
+from typing import List, Set, Dict, Tuple, Optional, Any
+from typing import Callable, Iterator, Union, Match
+from typing import Mapping, MutableMapping, Sequence, Iterable
+from typing import cast, ClassVar, TypeVar, Generic
+
 import logging as root_logger
+import pyparsing as pp
 
 from acab.abstract.interfaces.dsl import DSL_Fragment_i
 from acab.abstract.parsing import parsers as PU
@@ -62,13 +68,18 @@ class EL_Parser(DSL_Fragment_i):
         except Exception:
             logging.debug("No annotations loaded into DSL")
 
-        FP.HOTLOAD_QUERY_OP << bootstrapper.query("operator.query.*")
+        FP.HOTLOAD_QUERY_OP << bootstrapper.query("operator.query.*",
+                                                  "operator.sugar")
 
-        TP.HOTLOAD_TRANS_OP << bootstrapper.query("operator.transform.*")
+        QP.HOTLOAD_QUERY_SEN << bootstrapper.query("query.sentences.*")
+
+        TP.HOTLOAD_TRANS_OP << bootstrapper.query("operator.transform.*",
+                                                  "operator.sugar")
 
         TP.HOTLOAD_TRANS_STATEMENTS << bootstrapper.query("operator.transform.statement.*")
 
-        AP.HOTLOAD_OPERATORS << bootstrapper.query("operator.action.*")
+        AP.HOTLOAD_OPERATORS << bootstrapper.query("operator.action.*",
+                                                   "operator.sugar")
 
         TotalP.HOTLOAD_STATEMENTS << bootstrapper.query("statement.*")
         # At this point, parser is constructed, and will not change again
@@ -80,3 +91,13 @@ class EL_Parser(DSL_Fragment_i):
                            TotalP.file_component)
 
         return (TotalP.parse_point, QP.parse_point)
+
+
+    def set_bad_words(self, words:List[str]):
+        """
+        Utility for setting words that should error if used in particular places.
+        ie: repl commands shouldn't try to be used as sentence heads
+        """
+        if bool(words):
+            logging.debug(f"Setting Bad Head Words: {words}")
+            FP.HOTLOAD_BAD_HEADS << pp.MatchFirst(words)

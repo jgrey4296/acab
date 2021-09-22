@@ -3,6 +3,8 @@ A DSL interface for the system, which
 
 """
 import abc
+import pyparsing as pp
+import traceback
 import logging as root_logger
 from dataclasses import dataclass, field
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
@@ -11,24 +13,15 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 logging = root_logger.getLogger(__name__)
 
+from acab.abstract.decorators.dsl import EnsureDSLInitialised
 from acab.error.acab_base_exception import AcabBaseException
 
-Parser           = "Parser"
+Parser           = "pp.ParserElement"
 Sentence         = 'Sentence'
 Query            = 'ProductionContainer'
 ModuleComponents = "ModuleComponents"
 File             = 'FileObj'
 
-# Decorator for DSL Builder:
-def EnsureInitialised(method):
-    def fn(self, *args, **kwargs):
-        if not self._parsers_initialised:
-            raise AcabBaseException("DSL Not Initialised")
-
-        return method(self, *args, **kwargs)
-
-    fn.__name__ = method.__name__
-    return fn
 #----------------------------------------
 class Bootstrapper_i(metaclass=abc.ABCMeta):
     """ A Utility class for registering and retrieving
@@ -55,6 +48,9 @@ class Bootstrapper_i(metaclass=abc.ABCMeta):
 #----------------------------------------
 class DSL_Fragment_i(metaclass=abc.ABCMeta):
     """ """
+
+    def set_bad_words(self, *words):
+        pass
 
     def parse_string(self, string):
         """ Takes a String, parses it into Data format """
@@ -100,6 +96,7 @@ class DSLBuilder_i(metaclass=abc.ABCMeta):
     _parsers_initialised  : bool           = field(init=False, default=False)
     _loaded_DSL_fragments : Dict[Any, Any] = field(init=False, default_factory=dict)
 
+
     def build_DSL(self, modules: List[ModuleComponents]):
         """
         Using currently loaded modules, rebuild the usable DSL parser from fragments
@@ -113,23 +110,32 @@ class DSLBuilder_i(metaclass=abc.ABCMeta):
     def clear_bootstrap(self):
         self._bootstrap_parser = self._bootstrap_parser.__class__()
 
-    @EnsureInitialised
+    @EnsureDSLInitialised
     def parse(self, s:str) -> List[Sentence]:
-        return self._main_parser.parseString(s, parseAll=True)[:]
+        try:
+            return self._main_parser.parseString(s, parseAll=True)[:]
+        except pp.ParseException as exp:
+            logging.warning("--------------------\nParse Failure:\n")
+            traceback.print_tb(exp.__traceback__)
+            logging.warning(f"\n{exp.args[-1]}\n")
+            logging.warning(f"Parser: {exp.parserElement}\n")
+            logging.warning("Line: {}, Col: {} : {}".format(exp.lineno, exp.col, exp.markInputline()))
+            return []
 
-    @EnsureInitialised
+    @EnsureDSLInitialised
     def parseFile(self, f:File) -> List[Sentence]:
         logging.debug(f"Loading File: {f}")
         text = ""
         with open(f, "r") as the_file:
             text = the_file.read()
 
-        print(f"Loading File Text: {text}")
+        print(f"Loading File Text:\n{text}")
         return self.parse(text)
 
-    @EnsureInitialised
+    @EnsureDSLInitialised
     def query_parse(self, s:str) -> Query:
         return self._query_parser.parseString(s)[0][1]
+
     @abc.abstractmethod
     def construct_parsers_from_fragments(self, fragments: List[DSL_Fragment_i]):
         """ Assemble parsers from the fragments of the wm and loaded modules """

@@ -22,7 +22,7 @@ class AcabOperatorMissingException(AcabSemanticException):
 
 class AcabSemanticTestFailure(AcabSemanticException):
     """ Raised by ConstraintCollection when a test fails,
-    for ContextContainer to handle
+    for ContextSet to handle
     """
     pass
 

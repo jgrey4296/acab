@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
+from itertools import zip_longest, filterfalse, starmap
 
 import acab.abstract.core.default_structure as DS
 import acab.abstract.interfaces.value as VI
@@ -14,6 +15,14 @@ from acab.abstract.printing import wrappers as PW
 config = GET()
 
 SEN_SEN = Sentence.build([DS.SENTENCE_PRIM])
+
+def grouper(iterable, n, fillvalue=None):
+    """ Collect data into fixed-length chunks or blocks
+    from https://docs.python.org/3/library/itertools.html
+    """
+    # grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx"
+    args = [iter(iterable)] * n
+    return zip_longest(*args, fillvalue=fillvalue)
 
 # Independent
 class AtomicPrinter(PrintSemantics_i):
@@ -161,13 +170,19 @@ class ExplicitContainerPrinter(PrintSemantics_i):
     def __call__(self, value, top=None):
         result = []
         result.append(value.name)
-        result.append("(::container):")
+        result += ["(::", value.type, ")", ":"]
         result.append(DSYM.CONTAINER_JOIN_P)
-        result.append(PW._wrap_var_list(self, value.type, []))
-        # TODO add tags
+        if bool(value.params):
+            result.append(PW._wrap_var_list(self, value.type, []))
+            result.append(DSYM.CONTAINER_JOIN_P)
+
+        if bool(value.tags):
+            result.append(top.override("_:TAGS", value.tags))
+            result.append(DSYM.CONTAINER_JOIN_P)
+
         result.append([[DSYM.INDENT, x, DSYM.CONTAINER_JOIN_P] for x in  value.value])
         result.append(DSYM.END_SYM)
-
+        result.append(DSYM.PRINT_SEPARATOR_P)
         return result
 
 class StructurePrinter(PrintSemantics_i):
@@ -179,16 +194,11 @@ class StructurePrinter(PrintSemantics_i):
         # print the name
         result.append(top.override("_:NO_MODAL", value))
         # TODO parameterise this
-        result += ["(", "::", "structure", ")"]
+        result += ["(::", value.type, ")"]
         result.append(":")
         result.append(DSYM.CONTAINER_JOIN_P)
-        for tag in value.tags:
-            result.append(DSYM.INDENT)
-            result.append(DSYM.TAG_SYM)
-            result.append(tag)
-            result.append(DSYM.CONTAINER_JOIN_P)
-
         if bool(value.tags):
+            result.append(top.override("_:TAGS", value.tags))
             result.append(DSYM.CONTAINER_JOIN_P)
 
         if bool(value.structure[DS.QUERY_COMPONENT]):
@@ -203,8 +213,10 @@ class StructurePrinter(PrintSemantics_i):
             result.append(top.override("_:IMPLICIT_CONTAINER", value.structure[DS.ACTION_COMPONENT]))
 
         result.append(DSYM.END_SYM)
+        result.append(DSYM.PRINT_SEPARATOR_P)
         return result
 
+# Utility
 @dataclass
 class ConfigBackedSymbolPrinter(PrintSemantics_i):
     """ Use an AcabConfig for lookup of provided
@@ -219,3 +231,20 @@ class ConfigBackedSymbolPrinter(PrintSemantics_i):
             return self.overrides[value]
 
         return self._config.value(value)
+
+
+class TagPrinter(PrintSemantics_i):
+    """ Prints a set of tags, indented, as sentences
+    prepended with the tag symbol, in strides of 4 """
+
+    def __call__(self, value, top=None):
+        assert(isinstance(value, (set, list))), value
+        result = []
+        # TODO: customize stride in config?
+        for tags in grouper(value, 4):
+            result.append(DSYM.INDENT)
+            result.append(DSYM.TAG_SYM)
+            result.append(Sentence.build([x for x in tags if x is not None]))
+            result.append(DSYM.CONTAINER_JOIN_P)
+
+        return result

@@ -10,7 +10,7 @@ ProductionContainer : Groups Components together
 """
 import logging as root_logger
 from copy import deepcopy
-from dataclasses import InitVar, dataclass, field, replace
+from dataclasses import InitVar, dataclass, field, replace, FrozenInstanceError
 from fractions import Fraction
 from re import Pattern
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
@@ -35,7 +35,7 @@ Structure = 'ProductionStructure'
 
 
 # TODO should this be an interface?
-@dataclass
+@dataclass(frozen=True)
 class ProductionOperator(AcabValue):
     """ The Base Operator Class,
     Provides the way to use other systems and code in Acab
@@ -67,13 +67,13 @@ class ActionOperator(ProductionOperator):
         raise NotImplementedError()
 
 
-@dataclass
+@dataclass(frozen=True)
 class ProductionComponent(AcabStatement):
     """ Pairs a an operator with some bindings """
 
     # Sugared: Denotes whether the parse originated from a sugared operator
     # eg: $x ~= /blah/ -> $x
-    sugared : bool      = False
+    sugared : bool      = field(default=False)
     rebind  : AcabValue = field(default=None)
 
     def __post_init__(self):
@@ -97,9 +97,12 @@ class ProductionComponent(AcabStatement):
 
         return self.copy(value=bound_op, params=bound_params)
 
-@dataclass
+@dataclass(frozen=True)
 class ProductionContainer(AcabStatement):
     """ Production Container: An applicable statement of multiple component clauses """
+
+    value : List = field(default_factory=list)
+
     def __post_init__(self):
         super(ProductionContainer, self).__post_init__()
         assert(isinstance(self.value, list))
@@ -127,7 +130,7 @@ class ProductionContainer(AcabStatement):
         return self.copy(value=bound_clauses, params=bound_params)
 
 
-@dataclass
+@dataclass(frozen=True)
 class ProductionStructure(ProductionContainer):
     """
     A ProductionContainer, supplemented by a dictionary
@@ -136,12 +139,16 @@ class ProductionStructure(ProductionContainer):
     structure: Dict[str, ProductionContainer] = field(default_factory=dict)
 
     def __post_init__(self):
-        self.value = []
+        # self.value = []
         super(ProductionContainer, self).__post_init__()
         self.data[DS.TYPE_INSTANCE] = DS.STRUCT_PRIM
 
         clauses = list(self.structure.values())
-        self.value += clauses
+        try:
+            self.value += clauses
+        except FrozenInstanceError as err:
+            # Expected
+            pass
 
     def __repr__(self):
         actual = [x for x in self.keys if x in self]
@@ -150,6 +157,9 @@ class ProductionStructure(ProductionContainer):
                             for x in actual])
 
         return "(ProductionStructure:{}:{})".format(self.name, clauses)
+
+    def __hash__(self):
+        return hash(repr(self))
 
     @property
     def keys(self):

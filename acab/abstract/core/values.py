@@ -31,7 +31,7 @@ T     = TypeVar('T', str, Pattern, list)
 Value = VI.Value_i
 Sen   = VI.Sentence_i
 
-@dataclass
+@dataclass(frozen=True)
 class AcabValue(VI.Value_i, Generic[T]):
     _value_types : ClassVar[Set[Any]] = set([VI.Value_i, str, Pattern, list])
     value        : T                  = field(default=None)
@@ -51,27 +51,30 @@ class AcabValue(VI.Value_i, Generic[T]):
             _data.update({DS.TYPE_INSTANCE: _type})
 
         if isinstance(value, AcabValue):
-            assert(_type is None)
-            new_val = value.copy()
-            new_val.data.update(_data)
-            return new_val
-        else:
-            return AcabValue(value=value, data=_data, **kwargs)
+            new_data = {}
+            new_data.update(value.data)
+            new_data.update(_data)
+            return value.copy(data=new_data)
+
+
+        return AcabValue(value=value, data=_data, **kwargs)
 
     def __post_init__(self):
         # Applicable values: Self + any registered
         value_type_tuple = tuple(list(AcabValue._value_types))
 
-        assert(self.value is None or isinstance(self.value, value_type_tuple))
+        assert(self.value is None or isinstance(self.value, value_type_tuple)), self.value
 
         # NOTE: use of setattr to override frozen temporarily to update name
         #
         # TODO: this could be a sieve?
+        # TODO or move into safe_make
+        # name update #########################################################
         name_update = None
         if self.name is None and self.value is None:
             name_update = self.__class__.__name__
         if self.name is not None:
-            assert(isinstance(self.name, str)), breakpoint()
+            assert(isinstance(self.name, str)), self.name
         elif isinstance(self.value, Pattern):
             name_update = self.value.pattern
         elif isinstance(self.value, (list, AcabStatement)):
@@ -80,10 +83,13 @@ class AcabValue(VI.Value_i, Generic[T]):
             name_update = str(self.value)
 
         if name_update is not None:
-            self.name = name_update
+            object.__setattr__(self, "name", name_update)
+            # self.name = name_update
+        # end of name update ##################################################
 
         if self.value is None:
-            self.value = self.name
+            object.__setattr__(self, "value", self.name)
+            # self.value = self.name
 
         if DS.TYPE_INSTANCE not in self.data:
             self.data[DS.TYPE_INSTANCE] = DS.TYPE_BOTTOM_NAME
@@ -121,7 +127,7 @@ class AcabValue(VI.Value_i, Generic[T]):
                                      val_str)
 
     def __hash__(self):
-        return hash(str(self))
+        return hash(repr(self))
 
     def __eq__(self, other):
         """ Base eq: compare hashes  """
@@ -142,10 +148,15 @@ class AcabValue(VI.Value_i, Generic[T]):
     def type(self) -> Sen:
         """ Lazy Type Coercion to Sentence """
         type_matches_t = isinstance(self.data[DS.TYPE_INSTANCE], Sentence)
-        if not type_matches_t:
-            type_words = self.data[DS.TYPE_INSTANCE]
-            if not isinstance(type_words, list):
-                type_words = [type_words]
+        if type_matches_t:
+            return self.data[DS.TYPE_INSTANCE]
+
+        if DS.SEMANTIC_HINT in self.data:
+            self.data[DS.TYPE_INSTANCE] = self.data[DS.SEMANTIC_HINT]
+
+        type_words = self.data[DS.TYPE_INSTANCE]
+        if not isinstance(type_words, list):
+            type_words = [type_words]
             self.data[DS.TYPE_INSTANCE] = Sentence.build(type_words)
 
         return self.data[DS.TYPE_INSTANCE]
@@ -201,12 +212,13 @@ class AcabValue(VI.Value_i, Generic[T]):
         """
         return modified copy
         """
+        assert(all([isinstance(x, Value) for x in tags]))
         if not bool(tags):
             return self
 
-        safe_tags  = [x for x in self.tags]
-        safe_tags += [x.name if isinstance(x, AcabValue) else x for x in tags]
-        return self.copy(tags=safe_tags)
+        tag_extension  = {x for x in self.tags}
+        tag_extension.update(tags)
+        return self.copy(tags=tag_extension)
 
     def has_tag(self, *tags:List[Value]) -> bool:
         return all([t in self.tags for t in tags])
@@ -224,7 +236,7 @@ class AcabStatement(AcabValue, VI.Statement_i):
         simple_value = AcabValue.safe_make(self.name, data=new_data)
         return simple_value
 
-@dataclass
+@dataclass(frozen=True)
 class Sentence(AcabStatement, VI.Sentence_i):
 
     @staticmethod

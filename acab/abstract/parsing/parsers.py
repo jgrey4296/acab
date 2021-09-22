@@ -3,7 +3,7 @@ import pyparsing as pp
 import re
 
 from acab.abstract.config.config import AcabConfig
-
+from acab.abstract.core.values import Sentence
 from acab.abstract.parsing import funcs as Pfunc
 from acab.abstract.parsing import consts as PConst
 from acab.abstract.parsing.consts import emptyLine, s, op, orm, zrm, N, NG, s_lit, s_key
@@ -118,9 +118,10 @@ VALBIND.setParseAction(Pfunc.make_value)
 
 Fwd_ArgList <<= PConst.VBAR + DELIMIST(BIND, delim=PConst.COMMA) + PConst.VBAR
 
-tagName = TAG + ATOM
+tagSen = TAG + pp.delimitedList(ATOM, delim=".")
+tagSen.setParseAction(lambda s, l, t: (Sentence.build([x[1] for x in t[:]])))
 
-Fwd_TagList <<= IndentedBlock(tagName)(PDS.TAG)
+Fwd_TagList <<= IndentedBlock(tagSen)(PDS.TAG)
 
 # NAMING
 # HOTLOAD_VALUES.setName("HotloadValues")
@@ -131,6 +132,6 @@ VALBIND.setName("ValBind")
 # BASIC_VALUE.setName("BasicValue")
 # BIND.setName("Binding")
 # AT_BIND.setName("AtBinding")
-tagName.setName("Tag")
+tagSen.setName("TagSentence")
 Fwd_TagList.setName("TagList")
 Fwd_ArgList.setName("ArgList")

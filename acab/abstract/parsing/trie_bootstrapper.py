@@ -24,9 +24,10 @@ from acab.abstract.core.node import AcabNode
 from acab.abstract.core.production_abstractions import ProductionOperator
 from acab.abstract.core.values import AcabValue, Sentence
 from acab.abstract.interfaces.dsl import Bootstrapper_i
-from acab.modules.semantics.context_container import ContextContainer
+from acab.modules.semantics.context_set import ContextSet
 from acab.modules.semantics.dependent import BreadthTrieSemantics
 from acab.modules.semantics.independent import BasicNodeSemantics
+from acab.abstract.interfaces.handler_system import Handler
 
 logging = root_logger.getLogger(__name__)
 config = GET()
@@ -43,13 +44,10 @@ class TrieBootstrapper(Bootstrapper_i):
         logging.info("Parse Bootstrapper Initializing")
         super().__init__()
         # Trie Semantics, using basic nodes
-        self._semantics = BreadthTrieSemantics("_:Trie",
-                                            handlers=[],
-                                            structs=[],
-                                            default=(BasicNodeSemantics("_:Node"),None))
+        self._semantics = BreadthTrieSemantics(default=BasicNodeSemantics().as_handler("_:node"))
 
         # And using a standard node struct
-        self._structure = BasicNodeStruct.build_default("_:Trie")
+        self._structure = BasicNodeStruct.build_default()
 
     def __len__(self):
         return len(self._structure)
@@ -76,7 +74,7 @@ class TrieBootstrapper(Bootstrapper_i):
                 raise DeprecationWarning("Production Operators shouldn't be being built here any more")
 
             assert(isinstance(parser, pp.ParserElement))
-            new_node = self._semantics.insert(self._structure, loc_string)
+            new_node = self._semantics.insert(loc_string, self._structure)
             new_node.data.update({'parser': parser})
 
     def query(self, *queries):
@@ -85,12 +83,12 @@ class TrieBootstrapper(Bootstrapper_i):
         results = []
         # Run queries
         for query in queries:
-            ctxs = ContextContainer.build()
+            ctxs = ContextSet.build()
             q_sentence = Sentence.build(query.split('.'))
             if q_sentence[-1].name == TrieBootstrapper.WILDCARD_STR:
                     q_sentence[-1].data[BIND_S] = True
 
-            self._semantics.query(self._structure, q_sentence, ctxs=ctxs)
+            self._semantics.query(q_sentence, self._structure, ctxs=ctxs)
             if not bool(ctxs):
                 logging.debug(f"Bootstrap Query Empty: {query}")
             else:
