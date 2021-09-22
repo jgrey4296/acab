@@ -110,7 +110,7 @@ def construct_statement(s, loc, toks):
         targs = [x[1] for x in toks[PDS.ARG]]
     # Get Tags
     if PDS.TAG in toks:
-        tags = [x[1] for x in toks[PDS.TAG]]
+        tags = [y for x in toks[PDS.TAG] for y in x]
 
     obj = toks[PDS.STATEMENT][0]
     updated_obj = obj.apply_params(targs).apply_tags(tags)

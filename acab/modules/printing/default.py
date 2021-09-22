@@ -15,6 +15,7 @@ def DEFAULT_PRINTER():
         Printers.ImplicitContainerPrinter().as_handler("_:IMPLICIT_CONTAINER"),
         Printers.StructurePrinter().as_handler("_:STRUCTURE"),
         Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
-        Printers.PrimitiveTypeAwarePrinter().as_handler("_:NO_MODAL")
+        Printers.PrimitiveTypeAwarePrinter().as_handler("_:NO_MODAL"),
+        Printers.TagPrinter().as_handler("_:TAGS")
     ],
                         settings={"MODAL": "exop"})

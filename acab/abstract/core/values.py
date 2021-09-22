@@ -212,12 +212,13 @@ class AcabValue(VI.Value_i, Generic[T]):
         """
         return modified copy
         """
+        assert(all([isinstance(x, Value) for x in tags]))
         if not bool(tags):
             return self
 
-        safe_tags  = [x for x in self.tags]
-        safe_tags += [x.name if isinstance(x, AcabValue) else x for x in tags]
-        return self.copy(tags=safe_tags)
+        tag_extension  = {x for x in self.tags}
+        tag_extension.update(tags)
+        return self.copy(tags=tag_extension)
 
     def has_tag(self, *tags:List[Value]) -> bool:
         return all([t in self.tags for t in tags])
