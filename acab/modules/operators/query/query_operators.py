@@ -6,6 +6,8 @@ import re
 from acab.abstract.core.production_abstractions import ProductionOperator
 from acab.abstract.decorators.semantic import OperatorArgUnWrap, OperatorResultWrap
 
+Value    = "AcabValue_i"
+Sentence = "Sentence_i"
 
 class EQ(ProductionOperator):
     @OperatorArgUnWrap
@@ -34,7 +36,7 @@ class RegMatch(ProductionOperator):
 
 class ELEM(ProductionOperator):
     @OperatorArgUnWrap
-    def __call__(self, a, b, data=None):
+    def __call__(self, a:Value, b:Sentence, data=None):
         return a in b
 
 
