@@ -11,7 +11,7 @@ logging = root_logger.getLogger(__name__)
 
 from acab.abstract.config import GET
 import acab.abstract.interfaces.context as CtxInt
-from acab.abstract.core.production_abstractions import ProductionComponent
+from acab.abstract.core.production_abstractions import ProductionComponent, ProductionOperator
 import acab.error.acab_semantic_exception as ASErr
 
 config = GET()
@@ -64,6 +64,8 @@ class ConstraintCollection(CtxInt.Constraint_i):
                 variable_ops.append(c)
             elif is_prod_comp and any([p.is_var for p in c.params]):
                 betas.append(c)
+            elif is_prod_comp and c.op.is_var:
+                betas.append(c)
             elif is_prod_comp:
                 alphas.append(c)
             elif isinstance(c, Callable):
@@ -106,7 +108,12 @@ class ConstraintCollection(CtxInt.Constraint_i):
         """ Run Beta Tests on a node and context isntance """
         test_trios = []
         for test in self._betas:
-            op     = self._operators[test.op]
+            if test.op in ctxInst:
+                op = ctxInst[test.op]
+            elif isinstance(test.op, ProductionOperator):
+                op = test.op
+            else:
+                op     = self._operators[test.op]
             params = [ctxInst[x] for x in test.params]
             trio   = (op, params, test.data)
             test_trios.append(trio)
