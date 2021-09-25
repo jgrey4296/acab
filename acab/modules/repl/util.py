@@ -40,6 +40,7 @@ def print_contexts(self, params):
         ctxs_to_print += self.state.ctxs.active_list()
     else:
         print(f"No applicable contexts to print")
+        return
 
     if "bindings" in params:
         bindings_to_print += params.bindings[:]
