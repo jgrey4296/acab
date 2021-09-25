@@ -3,11 +3,19 @@ Definitions of the Core Performance Operators
 """
 import logging as root_logger
 from enum import Enum
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
 
-from acab.abstract.core.production_abstractions import ActionOperator, ProductionOperator
-from acab.abstract.decorators.semantic import OperatorArgUnWrap, OperatorResultWrap
+from acab.abstract.core.production_abstractions import (ActionOperator,
+                                                        ProductionOperator)
+from acab.abstract.decorators.semantic import (OperatorArgUnWrap,
+                                               OperatorResultWrap)
+from acab.error.acab_semantic_exception import AcabSemanticException
 
 logging = root_logger.getLogger(__name__)
+
+Sentence = "Sentence"
 
 # Action operators:
 
@@ -20,7 +28,7 @@ logging = root_logger.getLogger(__name__)
 
 # TODO action operators joots
 # and/or return instructions for the semantic system
-class ActionAdd(ActionOperator):
+class AcabAssert(ActionOperator):
 
     def __call__(self, *params, data=None, semSystem=None):
         """ Assert the params (ie: sentences) """
@@ -28,7 +36,7 @@ class ActionAdd(ActionOperator):
         # TODO enable queing?
         semSystem(params[0])
 
-class ActionPrint(ActionOperator):
+class AcabPrint(ActionOperator):
 
     @OperatorArgUnWrap
     def __call__(self, *params, data=None, semSystem=None):
@@ -41,14 +49,22 @@ class ActionPrint(ActionOperator):
 
         print(total)
 
-class ActionUpdateOperators(ActionOperator):
+class RebindOperator(ActionOperator):
+    """ Special Operator to modify the semantic's Operator Cache,
+    allowing more concise names of operators
+    """
 
-    def __call__(self, *params, data=None, semSystem=None):
+    def __call__(self, target:Union[Sentence, str], op:Union[ProductionOperator, Sentence, str], data=None, semSystem=None):
         """ λUpdateOps "+" $x
         Updates the Sem System's Operator cache
         """
         logging.info("Updating Operator Cache")
         cache = semSystem._operator_cache
-        operator = cache[params[1]]
-        new_cache = cache.bind_dict({str(params[0]) : operator})
+        if op in cache:
+            operator = cache[op]
+        elif isinstance(op, ProductionOperator):
+            operator = op
+        else:
+            raise AcabSemanticException("Bad Target Specified for Operator Rebind", op)
+        new_cache = cache.bind_dict({str(target) : operator})
         semSystem._operator_cache = new_cache

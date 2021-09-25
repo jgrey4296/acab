@@ -21,6 +21,7 @@ from acab.abstract.interfaces.value import Statement_i
 from acab.modules.repl import ReplParser as RP
 from acab.modules.repl.repl_commander import register
 from acab.modules.repl.util import ConfigBasedLoad
+from acab.modules.semantics.context_set import ContextSet
 
 logging = root_logger.getLogger(__name__)
 
@@ -184,7 +185,10 @@ def do_ctx(self, line):
         params = RP.ctx_select_parser.parseString(line)
 
         if "subset" in params:
-            self.state.ctxs = self.state.ctxs[params.subset]
+            result = self.state.ctxs[params.subset]
+            if not isinstance(result, ContextSet):
+                self.state.ctxs = self.state.ctxs.subctx([result])
+
         elif "clear" in params:
             print("Clearing Context")
             self.state.ctxs = None

@@ -15,6 +15,7 @@ from acab.abstract.config import GET
 from acab.abstract.core.production_abstractions import ProductionComponent, ProductionContainer
 from acab.modules.semantics.constraints import ConstraintCollection
 from acab.abstract.interfaces.value import Sentence_i
+from acab.error.acab_semantic_exception import AcabSemanticException
 
 config = GET()
 CONSTRAINT_S = config.prepare("Parse.Structure", "CONSTRAINT")()
@@ -41,6 +42,7 @@ class ContextInstance(CtxInt.ContextInstance_i):
     nodes             : Dict[str, Node] = field(default_factory=dict)
     uuid              : UUID            = field(default_factory=uuid1)
     _parent_ctx       : CtxIns          = field(default=None)
+    exact             : bool            = field(default=False)
 
     # TODO These need custom setters
     _remaining_query  : List[Value]     = field(init=False, default=None)
@@ -60,9 +62,18 @@ class ContextInstance(CtxInt.ContextInstance_i):
         return hash(self.uuid)
 
     def __contains__(self, value: Value):
+        if isinstance(value, Sentence_i) and value.is_var and value[0] in self:
+            return self.data[str(value[0])]
+
         return str(value) in self.data
+
     def __getitem__(self, value: Value):
-        if str(value) in self:
+        if self.exact and value not in self:
+            raise AcabSemanticException("Not Found in Context", value)
+
+        if isinstance(value, Sentence_i) and value.is_var and value[0] in self:
+            return self.data[str(value[0])]
+        elif str(value) in self:
             return self.data[str(value)]
         else:
             return value
@@ -140,6 +151,7 @@ class ContextInstance(CtxInt.ContextInstance_i):
         raise NotImplementedError()
 
 
+
 @dataclass
 class ContextSet(CtxInt.ContextSet_i, CtxInt.DelayedCommands_i):
 
@@ -176,8 +188,8 @@ class ContextSet(CtxInt.ContextSet_i, CtxInt.DelayedCommands_i):
         # Build the CtxInst data dict:
         op_dict = {str(x) : x[-1] for x in operators}
         # TODO abstract building ctxinst's to the set
-        instance = ContextInstance(op_dict)
-        # TODO add sugar names
+        instance = ContextInstance(op_dict, exact=True)
+        # TODO add sugar names from config
         return ContextSet(_operators=instance)
 
     def subctx(self, selection:List[Union[CtxIns, UUID]]=None):

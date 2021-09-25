@@ -12,10 +12,12 @@ config = acab.setup()
 from acab.abstract.interfaces.engine import AcabEngine_i
 from acab.abstract.interfaces.value import Statement_i
 from acab.error.acab_config_exception import AcabConfigException
+from acab.error.acab_import_exception import AcabImportException
 from acab.modules.repl.repl_commander import register
 from acab.modules.repl import ReplParser as RP
 from acab.abstract.core.production_abstractions import ProductionContainer
 from acab.modules.repl.util import init_inspect
+from acab.error.acab_semantic_exception import AcabSemanticException
 
 logging = root_logger.getLogger(__name__)
 
@@ -81,9 +83,10 @@ def do_module(self, line):
         for x in loaded:
             print(x)
 
-    except Exception as err:
-        logging.error(f"{err}")
-        logging.error(f"Failed to load modules: {line}")
+    except AcabImportException as err:
+        traceback.print_tb(err.__traceback__, limit=-4)
+        logging.error(f"Module Load: {err}")
+        self.state.last_err = err
 
 @register
 def do_load(self, line):
@@ -159,7 +162,12 @@ def do_run(self, line):
         else:
             print("No Match to Run")
 
+    except AcabSemanticException as err:
+        traceback.print_tb(err.__traceback__)
+        logging.error(f"\nFailed to run: {line}")
+        logging.error(f"{err}")
+
     except Exception as err:
         traceback.print_tb(err.__traceback__)
-        logging.error(f"Failed to run: {line}")
+        logging.error(f"\nFailed to run: {line}")
         logging.error(f"{err}")

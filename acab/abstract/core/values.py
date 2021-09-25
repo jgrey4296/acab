@@ -279,6 +279,9 @@ class Sentence(AcabStatement, VI.Sentence_i):
             return Sentence.build(self.words.__getitem__(i), data=self.data)
         return self.words.__getitem__(i)
 
+    def __contains__(self, value):
+        return value in self.words
+
     def copy(self, **kwargs):
         if 'value' not in kwargs:
             kwargs['value'] = [x.copy() for x in self.value]
@@ -394,3 +397,18 @@ class Sentence(AcabStatement, VI.Sentence_i):
 
         sen_copy = self.copy(value=out_words)
         return (sen_copy, statements)
+
+
+    @property
+    def is_var(self) -> bool:
+        if len(self) > 1:
+            return False
+
+        return self[0].data[DS.BIND] is not False
+
+    @property
+    def is_at_var(self) -> bool:
+        if len(self) > 1:
+            return False
+
+        return self[0].data[DS.BIND] == DS.AT_BIND

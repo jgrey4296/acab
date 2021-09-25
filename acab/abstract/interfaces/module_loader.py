@@ -3,6 +3,9 @@ Provide a number of individual interfaces for top level Engine functionality
 """
 import abc
 import logging as root_logger
+import traceback
+import sys
+from types import TracebackType
 from dataclasses import dataclass, field
 from importlib import import_module
 from types import ModuleType
@@ -100,7 +103,10 @@ class ModuleLoader_i(metaclass=abc.ABCMeta):
             return components
 
         except ModuleNotFoundError as err:
-            raise AcabImportException(f"Error attempting to import: {maybe_module}: {err}") from None
+            raise AcabImportException(f"Module Not Found: {maybe_module}").with_traceback(err.__traceback__) from err
+        except NameError as err:
+            new_err = AcabImportException(f"{maybe_module} : {err}").with_traceback(err.__traceback__)
+            raise new_err from err
 
     def __contains__(self, other: Union[ModuleType, str]):
         return str(other) in self.loaded_modules

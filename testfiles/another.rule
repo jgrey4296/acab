@@ -1,0 +1,14 @@
+test.first:
+    a.b.$x?
+
+    λacab.modules.operators.action.ActionPrint "First: " $x
+end
+
+test.second:
+    a.b.$x?
+
+    λacab.modules.operators.action.ActionPrint "Second: " $x
+end
+
+a.b.c
+a.b.d

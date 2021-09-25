@@ -1,6 +1,9 @@
-import logging as root_logger
 import importlib
+import logging as root_logger
 from types import FunctionType, ModuleType
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
 
 logging = root_logger.getLogger(__name__)
 import acab
@@ -37,6 +40,7 @@ def print_contexts(self, params):
         ctxs_to_print += self.state.ctxs.active_list()
     else:
         print(f"No applicable contexts to print")
+        return
 
     if "bindings" in params:
         bindings_to_print += params.bindings[:]
@@ -107,3 +111,21 @@ def ConfigBasedLoad(f):
     wrapper.__name__ = f.__name__
 
     return wrapper
+
+
+def build_rebind_instruction(value:str):
+    """ Manually construct a startup rebind instruction """
+    from acab.abstract.core.production_abstractions import ProductionComponent, ProductionContainer
+    from acab.abstract.core.values import Sentence
+
+    action_sem_hint = Sentence.build([config.prepare("SEMANTICS", "ACTION")()])
+
+    inst = ProductionComponent(value=Sentence.build([ "acab.modules.operators.action.RebindOperator" ]),
+                               params=[Sentence.build([ "§" ]),
+                                       Sentence.build([ "acab.modules.operators.action.RebindOperator" ])])
+
+    act = ProductionContainer(value=[inst],
+                              data={config.prepare("Value.Structure",
+                                                   "SEMANTIC_HINT")(): action_sem_hint})
+
+    return act

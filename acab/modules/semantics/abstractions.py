@@ -15,6 +15,8 @@ from acab.abstract.interfaces import semantic as SI
 from acab.modules.semantics.context_set import (ContextSet,
                                                 MutableContextInstance)
 from acab.modules.semantics.util import SemanticBreakpointDecorator
+from acab.error.acab_semantic_exception import AcabSemanticException
+from acab.abstract.core.production_abstractions import ProductionOperator
 
 CtxIns = 'ContextInstance'
 
@@ -29,7 +31,6 @@ class QueryAbstraction(SI.AbstractionSemantics_i):
         # Get the default dependent semantics
         sem, struct = semSys.lookup(None)
         for clause in query.clauses:
-            # TODO ensure system selects the dep sems and struct
             sem.query(clause, struct, data=data, ctxs=ctxs)
 
 
@@ -45,7 +46,12 @@ class TransformAbstraction(SI.AbstractionSemantics_i):
         for ctxIns in ctxs.active_list(clear=True):
             with MutableContextInstance(ctxs, ctxIns) as mutx:
                 for clause in transform.clauses:
-                    op                  = operators[clause.op]
+                    if clause.op in ctx:
+                        op = ctx[clause.op]
+                    elif isinstance(clause.op, ProductionOperator):
+                        op = clause.op
+                    else:
+                        op     = operators[clause.op]
                     params              = [mutx[x] for x in clause.params]
                     result              = op(*params, data=mutx.data)
                     mutx[clause.rebind] = result
@@ -60,7 +66,13 @@ class ActionAbstraction(SI.AbstractionSemantics_i):
 
         for ctx in ctxs.active_list(clear=True):
             for clause in action.clauses:
-                op     = operators[clause.op]
+                if clause.op in ctx:
+                    op = ctx[clause.op]
+                elif isinstance(clause.op, ProductionOperator):
+                    op = clause.op
+                else:
+                    op     = operators[clause.op]
+
                 params = [ctx[x] for x in clause.params]
                 result = op(*params, data=clause.data, semSystem=semSys)
 

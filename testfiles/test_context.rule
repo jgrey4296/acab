@@ -1,0 +1,15 @@
+setup.context.two:
+    // Use §
+    § acab.print acab.modules.operators.action.AcabPrint
+    § "==" acab.modules.operators.query.EQ
+    § "∈"  acab.modules.operators.query.ELEM
+end
+
+a.b.c
+a.b.d
+
+test.rule:
+    a.b.$x(== c)?
+
+    λacab.print "testing: " $x
+end

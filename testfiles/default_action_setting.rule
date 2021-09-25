@@ -1,0 +1,23 @@
+test.update(::ACTION):
+    λacab.modules.operators.action.ActionUpdateOperators DEFAULT_ACTION acab.modules.operators.action.ActionAdd
+end
+
+test.rule(::RULE):
+    a.b.c?
+
+    λDEFAULT_ACTION d.e.f
+end
+
+a.b.c
+d.e.f
+acab.modules.operators.query.ELEM
+acab.modules.operators.query.EQ
+acab.modules.operators.query.HasTag
+acab.modules.operators.query.NEQ
+acab.modules.operators.query.RegMatch
+acab.modules.operators.transform.FormatOp
+acab.modules.operators.transform.RegexOp
+acab.modules.operators.action.ActionAdd
+acab.modules.operators.action.ActionOperator
+acab.modules.operators.action.ActionPrint
+acab.modules.operators.action.ActionUpdateOperators

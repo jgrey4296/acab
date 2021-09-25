@@ -79,7 +79,8 @@ def STATEMENT_CONSTRUCTOR(name_p,
         parser.addParseAction(parse_fn)
     else:
         parser.addParseAction(Pfunc.construct_statement)
-    return parser
+
+    return parser.ignore(PConst.COMMENT)
 
 
 HOTLOAD_VALUES = pp.Forward()
@@ -87,6 +88,7 @@ HOTLOAD_VALUES = pp.Forward()
 
 # Basic Parsers
 OPERATOR_SUGAR = pp.Word(PDSYM.OPERATOR_SYNTAX)
+OPERATOR_SUGAR.setParseAction(lambda s, l, t: Sentence.build([t[0]]))
 
 # TODO use config for type sentences
 ATOM           = pp.Word(PDSYM.WORD_COMPONENT)

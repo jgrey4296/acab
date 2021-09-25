@@ -46,6 +46,7 @@ class ReplState:
     engine_str       : str                    =  field(default=initial_engine)
     debug_data       : Any                    =  field(default=None)
     debugger         : Any                    =  field(default=None)
+    last_err         : Any                    =  field(default=None)
 
 
 class AcabREPLCommander(cmd.Cmd):
