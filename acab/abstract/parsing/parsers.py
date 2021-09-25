@@ -79,7 +79,8 @@ def STATEMENT_CONSTRUCTOR(name_p,
         parser.addParseAction(parse_fn)
     else:
         parser.addParseAction(Pfunc.construct_statement)
-    return parser
+
+    return parser.ignore(PConst.COMMENT)
 
 
 HOTLOAD_VALUES = pp.Forward()
