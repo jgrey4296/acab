@@ -88,6 +88,7 @@ HOTLOAD_VALUES = pp.Forward()
 
 # Basic Parsers
 OPERATOR_SUGAR = pp.Word(PDSYM.OPERATOR_SYNTAX)
+OPERATOR_SUGAR.setParseAction(lambda s, l, t: Sentence.build([t[0]]))
 
 # TODO use config for type sentences
 ATOM           = pp.Word(PDSYM.WORD_COMPONENT)
