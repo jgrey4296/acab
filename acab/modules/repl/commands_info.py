@@ -115,6 +115,27 @@ def do_stat(self, line):
                 for frag in mod.semantics:
                     print(f"{frag}")
 
+    if allow_all or "printers" in params:
+        print("--------------------")
+        print("Base Printers:")
+        printer = self.state.engine.printer
+        print("{} : {}".format(printer.__module__, printer.__class__.__name__))
+        print("\n", printer.__doc__, "\n")
+        print(f"{repr(printer)}\n")
+        print("Handlers: {}".format(len(printer.handlers)))
+        print("Handler Keys:")
+        print("\t{}".format("\n\t".join([str(x) for x in printer.handlers.keys()])))
+
+        print("----------")
+        mods_with_printers = [x for x in modules if len(x.printers) > 0]
+        if bool(mods_with_printers):
+            print("Module Printers: ")
+            count = defaultdict(lambda: 0)
+            for mod in mods_with_printers:
+                print(f"Module: {mod.source}")
+                for frag in mod.printers:
+                    print(f"{frag}")
+
 @register
 def do_parser(self, line):
     """ Print a parser report.
