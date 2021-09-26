@@ -23,7 +23,7 @@ PRIMITIVE_S     = config.prepare("Typing.Primitives", "PRIMITIVE")()
 TYPE_INSTANCE_S = config.prepare("Parse.Structure", "TYPE_INSTANCE")()
 NAME_S          = config.prepare("Parse.Structure", "NAME")()
 
-@dataclass
+@dataclass(frozen=True)
 class TypeDefinition(TypeStatement):
     """ Defines the Structure of a Product type """
 
@@ -112,7 +112,7 @@ class TypeDefinition(TypeStatement):
 
 
 # TODO Factor these into typedef: ###############################################
-@dataclass
+@dataclass(frozen=True)
 class SumTypeDefinition(TypeDefinition):
     """ Defines a Sum Type  """
 
@@ -131,7 +131,7 @@ class SumTypeDefinition(TypeDefinition):
 
         self.data[TYPE_INSTANCE_S] = SUM_DEFINITION
 
-@dataclass
+@dataclass(frozen=True)
 class OperatorDefinition(TypeDefinition):
     """ Defines the type signature of an operator"""
 
@@ -148,7 +148,7 @@ class OperatorDefinition(TypeDefinition):
     def __hash__(self):
         return hash(str(self))
 
-@dataclass
+@dataclass(frozen=True)
 class TypeClass(TypeDefinition):
     """ Definition of a coherent collection of functions """
 
