@@ -14,6 +14,8 @@ from acab.abstract.printing import wrappers as PW
 
 config = GET()
 
+ANNOTATIONS = [x.upper() for x in config.prepare("Print.Annotations", as_list=True)()]
+
 SEN_SEN = Sentence.build([DS.SENTENCE_PRIM])
 
 def grouper(iterable, n, fillvalue=None):
@@ -75,7 +77,9 @@ class UUIDAwarePrinter(PrintSemantics_i):
         return final
 
 
-class ConstraintAwareValuePrinter(PrintSemantics_i):
+
+class AnnotationAwareValuePrinter(PrintSemantics_i):
+
     def add_transforms(self):
         return [PW._maybe_wrap_str,
                 PW._maybe_wrap_regex,
@@ -83,20 +87,18 @@ class ConstraintAwareValuePrinter(PrintSemantics_i):
 
     def __call__(self, value, top=None, data=None):
         return_list = []
-        curr_str = [str(value.name)]
-        return_list.append(self.run_transforms(value, curr_str))
 
-        if DS.CONSTRAINT in value.data:
-            # TODO write a list_wrap func
-            return_list.append("(")
-            for constraint in value.data[DS.CONSTRAINT][:-1]:
-                return_list.append(constraint)
-                return_list.append(", ")
+        try:
+            curr_str = [str(value.name)]
+        except AttributeError as err:
+            breakpoint()
+        return_list.append(self.run_transforms(value, curr_str))
+        return_list.append(top.override("_:ANNOTATIONS", value, data=data))
+
         # Pass data through to modal:
         return_list.append(top.override("_:MODAL", value, data=data))
 
-            return_list.append(value.data[DS.CONSTRAINT][-1])
-            return_list.append(")")
+        return return_list
 
 class ModalPrinter(PrintSemantics_i):
 
@@ -113,11 +115,55 @@ class ModalPrinter(PrintSemantics_i):
 
         return return_list
 
+class AnnotationPrinter(PrintSemantics_i):
+
+    def __call__(self, value, top=None, data=None):
+        return_list = []
+        # Add all annotations to the stack as necessary
+        annotations_in_value = [x for x in ANNOTATIONS if x in value.data]
+        if not bool(annotations_in_value):
+            return []
+
+        annotations_list = []
+        for annotation in annotations_in_value:
+            signal = f"_:{annotation}"
+            to_print = value.data[annotation]
+            if signal in top.handlers:
+                annotations_list.append(top.override(signal, to_print))
+            else:
+                annotations_list.append(to_print)
+
+            annotations_list.append(", ")
+
+        # Pop off last comma:
+        annotations_list.pop()
+
+        # Pretty print as here
+        annotations_pp = top.pprint(annotations_list)
+        # To decide whether to add anything to main return here:
+        if annotations_pp != "":
+            return_list.append("(")
+            return_list += annotations_pp
+            return_list.append(")")
+
+        return return_list
+
+class ConstraintPrinter(PrintSemantics_i):
+
+    def __call__(self, value, top=None, data=None):
+        return_list = []
+        for constraint in value.data[DS.CONSTRAINT][:-1]:
+            return_list.append(constraint)
+            return_list.append(", ")
+
+        return_list.append(value.data[DS.CONSTRAINT][-1])
+
+        return return_list
 
 # Dependent
 class BasicSentenceAwarePrinter(PrintSemantics_i):
 
-    def __call__(self, value, top=None):
+    def __call__(self, value, top=None, data=None):
         assert(value.type == SEN_SEN)
         return_list = []
 
@@ -202,7 +248,7 @@ class StructurePrinter(PrintSemantics_i):
         # print the name
         result.append(top.override("_:ATOM", value, data={"no_modal": True}))
         # TODO parameterise this
-        result += ["(::", value.type, ")"]
+        # result += ["(::", value.type, ")"]
         result.append(":")
         result.append(DSYM.CONTAINER_JOIN_P)
         if bool(value.tags):
@@ -256,3 +302,21 @@ class TagPrinter(PrintSemantics_i):
             result.append(DSYM.CONTAINER_JOIN_P)
 
         return result
+
+
+class NoOpPrinter(PrintSemantics_i):
+
+    def __call__(self, value, top):
+        return []
+
+
+class SimpleTypePrinter(PrintSemantics_i):
+
+    def __call__(self, value, top=None, data=None):
+        return_list = []
+        type_str = str(value)
+        if type_str == "_:ATOM":
+            return []
+        return_list.append("::")
+        return_list.append(str(value))
+        return return_list

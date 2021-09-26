@@ -15,6 +15,8 @@ Value = "AcabValue"
 class ValueAnnotation:
     """
     Result of parsing, which will be applied onto an AcabValue's data dict
+
+    ValueAnnotation(x) + AcabValue -> AcabValue'[x]
     """
 
     key   : str = field()
@@ -29,6 +31,9 @@ class ValueRepeatAnnotation(ValueAnnotation):
     """
     Version of ValueAnnotation which handles multiple separate annotations of the
     same key, packaging them into a list
+
+    ValueRepeatAnnotation(x) + AcabValue -> AcabValue'[x]
+    ValueRepeatAnnotation(y) + AcabValue'[x] -> AcabValue'[x, y]
     """
 
     def __call__(self, val:Value) -> Value:
