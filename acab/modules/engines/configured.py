@@ -7,7 +7,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 from acab.modules.engines.basic_engine import AcabBasicEngine
-from acab.modules.parsing.exlo.el_dsl import EL_Parser
+from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 from acab.modules.printing.basic_printer import BasicPrinter
 from acab.modules.printing.default import DEFAULT_PRINTER
 from acab.modules.semantics.basic_system import BasicSemanticSystem
@@ -17,16 +17,16 @@ from acab.modules.semantics.default import (DEFAULT_SEMANTICS,
 
 
 def basic():
-    return AcabBasicEngine(parser=EL_Parser(),
+    return AcabBasicEngine(parser=EXLO_Parser(),
                            semantics=DEFAULT_SEMANTICS(),
                            printer=DEFAULT_PRINTER())
 
 def exlo():
-    return AcabBasicEngine(parser=EL_Parser(),
+    return AcabBasicEngine(parser=EXLO_Parser(),
                            semantics=EXLO_SEMANTICS(),
                            printer=DEFAULT_PRINTER())
 
 def exlo_proxy():
-    return AcabBasicEngine(parser=EL_Parser(),
+    return AcabBasicEngine(parser=EXLO_Parser(),
                            semantics=EXLO_PROXY_SEMANTICS(),
                            printer=DEFAULT_PRINTER())
