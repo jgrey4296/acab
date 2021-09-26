@@ -55,9 +55,7 @@ class ModalAwarePrinter(PrintSemantics_i):
         transformed = self.run_transforms(value, curr_str)
         # lookup modal to care about from top.
         # TODO handle multi-modals
-        modal = top.check('MODAL')
-        if modal in value.data:
-            transformed.append(value.data[modal])
+        transformed.append(top.override("_:MODAL", value, data=data))
 
         return transformed
 
@@ -94,9 +92,18 @@ class ConstraintAwareValuePrinter(PrintSemantics_i):
             for constraint in value.data[DS.CONSTRAINT][:-1]:
                 return_list.append(constraint)
                 return_list.append(", ")
+        # Pass data through to modal:
+        return_list.append(top.override("_:MODAL", value, data=data))
 
             return_list.append(value.data[DS.CONSTRAINT][-1])
             return_list.append(")")
+
+class ModalPrinter(PrintSemantics_i):
+
+    def __call__(self, value, top=None, data=None):
+        return_list = []
+        if bool(data) and "no_modal" in data and bool(data['no_modal']):
+            return return_list
 
         modal = top.check('MODAL')
         if modal in value.data:
@@ -193,7 +200,7 @@ class StructurePrinter(PrintSemantics_i):
         # TODO define order, add newlines
         result = []
         # print the name
-        result.append(top.override("_:NO_MODAL", value))
+        result.append(top.override("_:ATOM", value, data={"no_modal": True}))
         # TODO parameterise this
         result += ["(::", value.type, ")"]
         result.append(":")
