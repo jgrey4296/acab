@@ -11,6 +11,8 @@ from acab.abstract.decorators.semantic import (OperatorArgUnWrap,
 
 class RegexOp(ProductionOperator):
 
+    sugar = "_:~:"
+
     @OperatorArgUnWrap
     @OperatorResultWrap
     def __call__(self, value, pattern, replacement, data=None):
@@ -24,6 +26,8 @@ class RegexOp(ProductionOperator):
 
 
 class FormatOp(ProductionOperator):
+
+    sugar = "_:%:"
 
     @OperatorDataUnWrap
     @OperatorArgUnWrap

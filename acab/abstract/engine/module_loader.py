@@ -15,8 +15,7 @@ logging = root_logger.getLogger(__name__)
 from acab.abstract.config.config import GET
 from acab.abstract.core.production_abstractions import ProductionOperator
 from acab.abstract.core.values import Sentence
-from acab.abstract.engine.util import (applicable, needs_init, prep_op_path,
-                                       usable)
+from acab.abstract.engine.util import applicable, needs_init, prep_op_path, ensure_handler
 from acab.abstract.interfaces.dsl import DSL_Fragment_i
 from acab.abstract.interfaces.module_loader import (ModuleComponents,
                                                     ModuleLoader_i)
@@ -47,6 +46,7 @@ class ModuleLoader(ModuleLoader_i):
         printers       : List[PrintSemantics_i]   = []
         operators      : List[ProductionOperator] = []
 
+        # TODO extract *handlers* not semantics
         while bool(queue):
             curr_path, curr_mod = queue.pop(0)
 
@@ -62,24 +62,28 @@ class ModuleLoader(ModuleLoader_i):
             dsl_fragments       += [y() if needs_init(y) else y for y in available_dsls]
 
             # Get Semantics
-            available_semantics =  [y for x,y in mod_contents if applicable(y, Semantic_Fragment)]
-            semantic_frags      += [y() if needs_init(y) else y for y in available_semantics]
+            available_semantics =  [y for x,y in mod_contents if applicable(y, Semantic_Fragment, as_handler=True)]
+            semantic_frags      += [ensure_handler(y) for y in available_semantics]
 
             # Get Ops
             loc_op_triple       =  [(base_path, x, y) for x,y in mod_contents if applicable(y, ProductionOperator)]
-            instanced_operators =  [(mod, name, y() if needs_init(y, ProductionOperator) else y) for mod, name, y in loc_op_triple]
+            instanced_operators =  [(mod, name, y() if needs_init(y) else y) for mod, name, y in loc_op_triple]
             words_op            =  [(prep_op_path(mod, name), y) for mod, name, y in instanced_operators]
             sentences           =  [Sentence.build(xs).attach_statement(y) for xs, y in words_op]
             operators           += sentences
 
             # Get printers
-            available_printers  =  [y for x,y in mod_contents if usable(y, PrintSemantics_i)]
-            printers            += [y() if needs_init(y) else y for y in available_printers]
+            available_printers  =  [y for x,y in mod_contents if applicable(y, PrintSemantics_i, as_handler=True)]
+            printers            += [ensure_handler(y) for y in available_printers]
 
 
 
-        return ModuleComponents(str(module.__package__),
-                                dsl_fragments,
-                                semantic_frags,
-                                printers,
-                                operators)
+            result = ModuleComponents(str(module.__package__),
+                                      dsl_fragments,
+                                      semantic_frags,
+                                      printers,
+                                      operators)
+
+            logging.debug(f"Extracted: {result}")
+
+            return result

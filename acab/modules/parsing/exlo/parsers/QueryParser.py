@@ -38,7 +38,7 @@ clause = PARAM_SEN + QUERY \
 
 clauses = IndentedBlock(clause | HOTLOAD_QUERY_SEN)
 
-query_statement = PU.STATEMENT_CONSTRUCTOR(BASIC_SEN, clauses)
+query_statement = PU.STATEMENT_CONSTRUCTOR(PARAM_SEN, clauses)
 
 # Actions
 clause.setParseAction(build_clause)

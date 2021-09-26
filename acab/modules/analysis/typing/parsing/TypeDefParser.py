@@ -1,25 +1,21 @@
-import pyparsing as pp
 import logging as root_logger
 
+import pyparsing as pp
+from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.values import Sentence
-
-from acab.abstract.parsing import parsers as PU
 from acab.abstract.parsing import funcs as Pfunc
-from acab.abstract.parsing.consts import DELIM, op, N, NG, component_gap, emptyLine, DBLARROW
-
-from acab.modules.analysis.typing.values.type_definition import TypeDefinition, SumTypeDefinition
-from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition
+from acab.abstract.parsing import parsers as PU
+from acab.abstract.parsing.consts import (DBLARROW, DELIM, NG, N,
+                                          component_gap, emptyLine, op)
 from acab.modules.analysis.typing import util as TYU
 
-from acab.abstract.config.config import AcabConfig
+from acab.abstract.parsing.indented_block import IndentedBlock
 
 from . import util as TU
 
 logging = root_logger.getLogger(__name__)
 
 config = AcabConfig.Get()
-TYPE_INSTANCE_S = config.prepare("Parse.Structure", "TYPE_INSTANCE")()
-
 
 #Hotloaded definitions:
 ## Basic sentence (unable to parse annotations)
@@ -27,69 +23,37 @@ HOTLOAD_BASIC_SEN = pp.Forward()
 ## Param sentence (able to parse annotations)
 HOTLOAD_PARAM_SEN = pp.Forward()
 
-PARAM_SEN_PLURAL = pp.delimitedList(HOTLOAD_PARAM_SEN, delim=DELIM)
-
-def make_record_def(toks):
-    type_def = TypeDefinition(toks[:])
-    return (TYPE_INSTANCE_S, type_def)
-
-def make_op_def(toks):
-    syntax_bind = None
-    if TYU.SYNTAX_BIND_S in toks:
-        syntax_bind = toks[TYU.SYNTAX_BIND_S][0]
-
-    op_def = OperatorDefinition(toks[TYU.STRUCT_S][0], sugar_syntax=syntax_bind)
-
-    return (TYPE_INSTANCE_S, op_def)
-
-def make_sum_def(toks):
-    sum_def = SumTypeDefinition(toks[:])
-    return (TYPE_INSTANCE_S, sum_def)
-
-
-# The simplest type, has no body. useful for defining strings and other
-# primitives
-SIMPLE_BODY = pp.empty
-SIMPLE_BODY.setParseAction(make_record_def)
-
-SIMPLE_DEF = PU.STATEMENT_CONSTRUCTOR(HOTLOAD_BASIC_SEN,
-                                      SIMPLE_BODY)
+# the simplest type
+SIMPLE_DEF = pp.Literal("τ::").suppress() + HOTLOAD_BASIC_SEN("type_sen")
+SIMPLE_DEF.setParseAction(TU.make_simple_def)
 
 # Record Type definition:
 # a.test.type: (::σ)  a.value.$x(::num) end
-RECORD_DEF_BODY = PARAM_SEN_PLURAL
-RECORD_DEF_BODY.setParseAction(make_record_def)
+RECORD_DEF_BODY = IndentedBlock(HOTLOAD_PARAM_SEN)
+RECORD_DEF_BODY.setParseAction(TU.make_record_def)
 
-RECORD_TYPE = PU.STATEMENT_CONSTRUCTOR(HOTLOAD_BASIC_SEN,
-                                       RECORD_DEF_BODY + component_gap)
+RECORD_TYPE = pp.Literal("τ::").suppress() + PU.STATEMENT_CONSTRUCTOR(HOTLOAD_BASIC_SEN, RECORD_DEF_BODY)
 
 # Sum Type definition
 # ie: first subwords are the subtypes. subtypes are automatic records
-SUM_DEF_BODY = pp.delimitedList(pp.Or([RECORD_TYPE, SIMPLE_DEF]), delim=emptyLine)
-SUM_DEF_BODY.setParseAction(make_sum_def)
+SUM_DEF_BODY = IndentedBlock(pp.Or([RECORD_TYPE, SIMPLE_DEF]))
+SUM_DEF_BODY.setParseAction(TU.make_sum_def)
 
-SUM_TYPE = PU.STATEMENT_CONSTRUCTOR(HOTLOAD_BASIC_SEN,
-                                    SUM_DEF_BODY + component_gap)
-
-
+SUM_TYPE = pp.Literal("Σ::").suppress() + PU.STATEMENT_CONSTRUCTOR(HOTLOAD_BASIC_SEN, SUM_DEF_BODY )
 
 # numAdd: (::λ) $x(::num).$y(::num).$z(::num) => +
 # TODO: enable alias paths, not just sugar
 OP_DEF_BODY = NG(TYU.STRUCT_S, HOTLOAD_PARAM_SEN) \
     + op(DBLARROW + N(TYU.SYNTAX_BIND_S, PU.OPERATOR_SUGAR))
-OP_DEF_BODY.setParseAction(make_op_def)
+OP_DEF_BODY.setParseAction(TU.make_op_def)
 
-OP_DEF = PU.STATEMENT_CONSTRUCTOR(HOTLOAD_BASIC_SEN,
-                                  OP_DEF_BODY,
-                                  end=pp.lineEnd,
-                                  single_line=True)
+OP_DEF = pp.Literal("λ::").suppress() + PU.STATEMENT_CONSTRUCTOR(HOTLOAD_BASIC_SEN, OP_DEF_BODY, end=pp.lineEnd, single_line=True)
 
 # Type class constructor:
-TYPE_CLASS_BODY = pp.delimitedList(OP_DEF, delim=emptyLine)
+TYPE_CLASS_BODY = IndentedBlock(OP_DEF)
+TYPE_CLASS_BODY.setParseAction(TU.make_type_class)
 
-TYPE_CLASS_DEF = PU.STATEMENT_CONSTRUCTOR(HOTLOAD_BASIC_SEN,
-                                          TYPE_CLASS_BODY + component_gap)
-
+TYPE_CLASS_DEF = pp.Literal("γ::").suppress() + PU.STATEMENT_CONSTRUCTOR(HOTLOAD_BASIC_SEN, TYPE_CLASS_BODY)
 
 COMBINED_DEFS = pp.Or([SUM_TYPE, RECORD_TYPE, OP_DEF, SIMPLE_DEF])
 

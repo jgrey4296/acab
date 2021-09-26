@@ -11,7 +11,6 @@ from acab.abstract.core.values import Sentence
 from acab.abstract.core.values import AcabValue
 
 from acab.abstract.core.node import AcabNode
-from acab.abstract.containers import action
 from acab.abstract.core.production_abstractions import ProductionOperator, ProductionComponent
 from acab.abstract.parsing.trie_bootstrapper import TrieBootstrapper
 
@@ -23,9 +22,9 @@ from acab.modules.analysis.typing.typing_module import TypingSpec
 from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition
 from acab.modules.analysis.typing.values.type_definition import TypeDefinition
 
-from acab.modules.parsing.exlo ActionParser as AP
-from acab.modules.parsing.exlo TransformParser as TP
-from acab.modules.parsing.exlo FactParser as FP
+from acab.modules.parsing.exlo.parsers import ActionParser as AP
+from acab.modules.parsing.exlo.parsers import TransformParser as TP
+from acab.modules.parsing.exlo.parsers import FactParser as FP
 from acab.working_memory.trie_wm.trie_working_memory import TrieWM
 
 

@@ -1,46 +1,50 @@
-from acab.abstract.core.values import AcabValue
-from acab.abstract.core.values import Sentence
-
-from acab.error.acab_parse_exception import AcabParseException
-
-from acab.modules.analysis.typing.util import TYPE_DEFINITION, SUM_DEFINITION, TYPE_DEF_S
-from acab.modules.analysis.typing import type_exceptions as TE
+"""
+Classes for defining types
+"""
+import logging as root_logger
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
+from dataclasses import dataclass, field, InitVar
 
 from acab.abstract.config.config import AcabConfig
+from acab.abstract.core.values import AcabValue, Sentence
+from acab.error.acab_parse_exception import AcabParseException
+from acab.modules.analysis.typing import type_exceptions as TE
+from acab.modules.analysis.typing.util import (SUM_DEFINITION, TYPE_DEF_S,
+                                               TYPE_DEFINITION, OPERATOR_DEFINITION)
 
 from .acab_type import TypeStatement
 
-util = AcabConfig.Get()
+logging         = root_logger.getLogger(__name__)
+config          = AcabConfig.Get()
 
-PRIMITIVE_S     = util.value("Typing.Primitives", "PRIMITIVE")
-TYPE_INSTANCE_S = util.value("Parse.Structure", "TYPE_INSTANCE")
-NAME_S          = util.value("Parse.Structure", "NAME")
+PRIMITIVE_S     = config.prepare("Typing.Primitives", "PRIMITIVE")()
+TYPE_INSTANCE_S = config.prepare("Parse.Structure", "TYPE_INSTANCE")()
+NAME_S          = config.prepare("Parse.Structure", "NAME")()
 
-
-# TODO register class
-
+@dataclass(frozen=True)
 class TypeDefinition(TypeStatement):
     """ Defines the Structure of a Product type """
 
-    def __init__(self, structure, params=None, data=None):
+
+    def __post_init__(self):
         """ Structure creates the dict of locations.
         Only leaves get type anotations. Thus:
-        { .a.$x :: String, .b.$c :: Num, .d!$e::Location }
+        { .a.$x ::String, .b.$c ::Num, .d!$e ::Location }
         """
+        super(TypeDefinition, self).__post_init__()
         # The name is the location. eg: .types.person
-        assert isinstance(structure, list)
-        assert all([isinstance(x, Sentence) for x in structure])
-        if data is None:
-            data = {}
-        if TYPE_INSTANCE_S not in data:
-            data[TYPE_INSTANCE_S] = TYPE_DEFINITION
+        assert isinstance(self.structure, list)
+        assert all([isinstance(x, Sentence) for x in self.structure])
 
-        super().__init__(None, params=params, data=data)
-
-        if bool(structure):
-            self._structure += structure
+        self.data[TYPE_INSTANCE_S] = TYPE_DEFINITION
 
         self.unify_structure_variables()
+
+    @property
+    def structure(self):
+        return self.value
 
     def __eq__(self, other):
         path_eq = self.path == other.path
@@ -59,7 +63,7 @@ class TypeDefinition(TypeStatement):
         statement = self
 
         if the_dict is None:
-            return AcabValue._sentence_constructor(just_path, params=self.vars)
+            return Sentence.build(just_path, params=self.vars)
 
         new_args = []
         for x in self.vars:
@@ -69,7 +73,7 @@ class TypeDefinition(TypeStatement):
                 assert(isinstance(x, Sentence))
                 new_args.append(x)
 
-        return AcabValue._sentence_constructor(just_path, params=new_args)
+        return Sentence.build(just_path, params=new_args)
 
 
 
@@ -105,21 +109,48 @@ class TypeDefinition(TypeStatement):
 
 
 
+
+
+# TODO Factor these into typedef: ###############################################
+@dataclass(frozen=True)
 class SumTypeDefinition(TypeDefinition):
     """ Defines a Sum Type  """
 
-    def __init__(self, structure, params=None):
+
+    def __post_init__(self):
         # Flatten Product Types out of Structure:
         # TODO: improve this
-        flat_structure = []
-        for sen in structure:
-            prefix = Sentence.build(sen.words[:-1] + [sen.words[-1].to_simple_value()])
-            flat_structure.append(prefix)
-            flat_structure += [Sentence.build(prefix.words + x.words) for x in sen[-1].structure]
+        super(SumTypeDefinition, self).__post_init__()
+        # flat_structure = []
+        # for sen in self.structure:
+        #     prefix = Sentence.build(sen.words[:-1] + [sen.words[-1].to_word()])
+        #     flat_structure.append(prefix)
+        #     flat_structure += [Sentence.build(prefix.words + x.words) for x in sen[-1].structure]
 
-        if _type is None:
-            _type = SUM_DEFINITION
-        super(SumTypeDefinition, self).__init__(flat_structure,
-                                                params=params,
-                                                data={TYPE_INSTANCE_S: _type})
-        assert(bool(self.structure))
+        # self.value = flat_structure
+
+        self.data[TYPE_INSTANCE_S] = SUM_DEFINITION
+
+@dataclass(frozen=True)
+class OperatorDefinition(TypeDefinition):
+    """ Defines the type signature of an operator"""
+
+    sugar_syntax : str = field(init=True, default=None)
+
+    def __post_init__(self, sugar_syntax=None):
+        """ The name of an operator and its type signature,
+        with the binding to a ProductionOperator that is
+        syntax sugared, and its inline place"""
+        # eg: operator.+.$x(::num).$y(::num).$z(::num).num_plus
+        super(OperatorDefinition, self).__post_init__()
+        self._func_name = sugar_syntax
+
+    def __hash__(self):
+        return hash(str(self))
+
+@dataclass(frozen=True)
+class TypeClass(TypeDefinition):
+    """ Definition of a coherent collection of functions """
+
+    def __post_init__(self):
+        super(TypeClass, self).__post_init__()

@@ -68,23 +68,11 @@ def do_stat(self, line):
     params = RP.stats_parser.parseString(line)
     allow_all = not bool(params)
     modules: ModuleComponents = self.state.engine._module_loader.loaded_modules.values()
-    # Operators
-    if allow_all or "operator" in params:
-        print("--------------------")
-        print("Operators: ")
-        count = 0
-        for mod in modules:
-            count += len(mod.operators)
-            for op in mod.operators:
-                print("\t", self.state.engine.pprint([op]))
-
-        print("--")
-        print("Loaded Operators: {}".format(count))
-
     # modules
     if allow_all or "module" in params:
+        print("\n--------------------")
+        print("MODULES: ")
         print("--------------------")
-        print("Modules: ")
         mod_target = modules
         if 'mod_target' in params:
             mod_target = [x for x in modules if x.source in params['mod_target']]
@@ -95,8 +83,9 @@ def do_stat(self, line):
         print("Loaded Modules: {}".format(len(modules)))
 
     if allow_all or "semantics" in params:
+        print("\n--------------------")
+        print("SEMANTICS:")
         print("--------------------")
-        print("Base Semantics:")
         semantic = self.state.engine.semantics
         print("{} : {}".format(semantic.__module__, semantic.__class__.__name__))
         print("\n", semantic.__doc__, "\n")
@@ -114,6 +103,44 @@ def do_stat(self, line):
                 print(f"Module: {mod.source}")
                 for frag in mod.semantics:
                     print(f"{frag}")
+
+    # Operators
+    if allow_all or "operator" in params:
+        print("\n--------------------")
+        print("OPERATORS: ")
+        print("--------------------")
+        count = 0
+        for mod in modules:
+            count += len(mod.operators)
+            for op in mod.operators:
+                print("\t", self.state.engine.pprint([op]))
+
+        print("--")
+        print("Loaded Operators: {}".format(count))
+
+    if allow_all or "printers" in params:
+        print("\n--------------------")
+        print("PRINTERS:")
+        print("--------------------")
+        printer = self.state.engine.printer
+        print("{} : {}".format(printer.__module__, printer.__class__.__name__))
+        print("\n", printer.__doc__, "\n")
+        print(f"{repr(printer)}\n")
+        print("Handlers: {}".format(len(printer.handlers)))
+        print("Handler Keys:")
+        print("\t{}".format("\n\t".join([str(x) for x in printer.handlers.keys()])))
+
+        print("----------")
+        mods_with_printers = [x for x in modules if len(x.printers) > 0]
+        if bool(mods_with_printers):
+            print("Module Printers: ")
+            count = defaultdict(lambda: 0)
+            for mod in mods_with_printers:
+                print(f"Module: {mod.source}")
+                for frag in mod.printers:
+                    print(f"{frag}")
+
+    # TODO Working memory / structures / memory load
 
 @register
 def do_parser(self, line):

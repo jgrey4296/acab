@@ -89,7 +89,7 @@ class SemanticSystem_i(HandlerSystem_i):
 
     _operator_cache : Optional[CtxIns] = field(init=False, default=None)
 
-    def build_ctxset(self, ops=None):
+    def build_ctxset(self, ops:List[ModuleComponents]=None):
         """ Build a context set. Use passed in operators if provided.
         Cache operators if flag is true
         """

@@ -12,6 +12,7 @@ REGEX_SEN  = Sentence.build([DS.REGEX_PRIM])
 
 all_modals = config.prepare("MODAL", as_list=True)
 
+
 def _maybe_wrap_str(PS, value, current):
     if value.type != STRING_SEN:
         return current
@@ -139,4 +140,4 @@ def _sep_list(PS, value, current, sep=" "):
 
 def _suppress_modal(PS, value):
     """ Wrap the list with a meta instruction to ignore modals"""
-    return PS.override("_:NO_MODAL", value)
+    return PS.override(False, value, data={"no_modal": True})

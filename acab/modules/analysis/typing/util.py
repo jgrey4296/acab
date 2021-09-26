@@ -5,7 +5,7 @@ from acab.abstract.config.config import AcabConfig
 
 from acab.abstract.core.values import Sentence
 
-from acab.abstract.parsing.consts import s, s_list, s_key
+from acab.abstract.parsing.consts import s, s_key
 
 logging = root_logger.getLogger(__name__)
 
@@ -42,8 +42,6 @@ OPERATOR_DEFINITION = Sentence.build([OP_DEF_S])
 STRUCT_HEAD.setName("StructHead")
 FUNC_HEAD.setName("FuncHead")
 
-
-
 def has_equivalent_vars_pred(node):
     """ A Predicate to use with Trie.get_nodes
     Finds nodes with multiple vars as children that can be merged """
@@ -52,3 +50,16 @@ def has_equivalent_vars_pred(node):
     var_children = [x for x in node._children.values() if x.is_var]
 
     return len(var_children) > 1
+
+def create_type_var(tc, base_name):
+    # Create a new var name
+    assert(isinstance(base_name, str))
+    var_name = str(uuid1())
+    return tc._variables.add([base_name, var_name], [])
+
+def pattern_match_type_signature(head, available):
+    if head.type is None:
+        return available
+
+    return [x for x in available if x.type_instance is None
+            or head.type_instance == x.type_instance]

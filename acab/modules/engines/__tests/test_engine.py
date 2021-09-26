@@ -18,7 +18,7 @@ config = acab.setup()
 
 from acab.abstract.interfaces.engine import AcabEngine_i
 from acab.modules.engines.basic_engine import AcabBasicEngine
-from acab.modules.parsing.exlo.el_dsl import EL_Parser
+from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 from acab.modules.printing.basic_printer import BasicPrinter
 from acab.modules.printing.default import DEFAULT_PRINTER
 from acab.modules.semantics.basic_system import BasicSemanticSystem
@@ -40,7 +40,7 @@ class TestEngine(unittest.TestCase):
 
     def test_basic(self):
         """ Test the engine can be created in the most basic way"""
-        parser    = create_autospec(EL_Parser)
+        parser    = create_autospec(EXLO_Parser)
         parser.query_parsers = mock.Mock(return_value=(1,2))
         semantics = create_autospec(BasicSemanticSystem)
         printer   = create_autospec(BasicPrinter)
@@ -57,7 +57,7 @@ class TestEngine(unittest.TestCase):
 
     def test_parser_into_semantics(self):
         # Create the engine
-        basic     = AcabBasicEngine(parser=EL_Parser(),
+        basic     = AcabBasicEngine(parser=EXLO_Parser(),
                                     semantics=DEFAULT_SEMANTICS(),
                                     printer=DEFAULT_PRINTER(),
                                     modules=[])
@@ -69,7 +69,7 @@ class TestEngine(unittest.TestCase):
         self.assertTrue(bool(result))
 
     def test_query(self):
-        basic = AcabBasicEngine(parser=EL_Parser(),
+        basic = AcabBasicEngine(parser=EXLO_Parser(),
                                 semantics=DEFAULT_SEMANTICS(),
                                 printer=DEFAULT_PRINTER(),
                                 modules=[])
@@ -86,7 +86,7 @@ class TestEngine(unittest.TestCase):
 
     def test_printer_setup(self):
         # Create the engine
-        basic     = AcabBasicEngine(parser=EL_Parser(),
+        basic     = AcabBasicEngine(parser=EXLO_Parser(),
                                     semantics=DEFAULT_SEMANTICS(),
                                     printer=DEFAULT_PRINTER(),
                                     modules=[])
@@ -101,7 +101,7 @@ class TestEngine(unittest.TestCase):
     @unittest.skip("need to change total parser priorities?")
     def test_multi_sentence_statement(self):
         # Create the engine
-        basic     = AcabBasicEngine(parser=EL_Parser(),
+        basic     = AcabBasicEngine(parser=EXLO_Parser(),
                                     semantics=DEFAULT_SEMANTICS(),
                                     printer=DEFAULT_PRINTER(),
                                     modules=[])
@@ -117,7 +117,7 @@ class TestEngine(unittest.TestCase):
 
 
     def test_module_setup(self):
-        basic     = AcabBasicEngine(parser=EL_Parser(),
+        basic     = AcabBasicEngine(parser=EXLO_Parser(),
                                     semantics=DEFAULT_SEMANTICS(),
                                     printer=DEFAULT_PRINTER(),
                                     modules=["acab.modules.operators.query"])

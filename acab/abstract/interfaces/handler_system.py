@@ -8,7 +8,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 from types import MethodType
 
 from acab.abstract.interfaces.data import Structure_i
-from acab.error.acab_base_exception import AcabBaseException
+from acab.error.acab_handler_exception import AcabHandlerException
 
 logging = root_logger.getLogger(__name__)
 
@@ -19,6 +19,7 @@ Sentence         = 'Sentence'
 Structure        = Structure_i
 Value_i          = 'Value_i'
 
+PASSTHROUGH      = "_"
 # TODO refactor handler -> responder?
 # TODO active and passive handlers?,
 # with ability to have multiples for each signal?
@@ -38,8 +39,9 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
     @dataclass
     class HandlerOverride:
         """ Simple Wrapped for forced semantic use """
-        override : str              = field()
-        data     : Value_i   = field()
+        signal   : str              = field()
+        value    : Value_i          = field()
+        data     : Dict[Any, Any]   = field(default_factory=dict)
 
 
     def __post_init__(self, init_handlers):
@@ -55,7 +57,7 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
             init_handlers = []
 
         if any([not isinstance(x, Handler) for x in init_handlers]):
-            raise AcabBaseException(f"Bad Handler in:", init_handlers)
+            raise AcabHandlerException(f"Bad Handler in:", init_handlers)
 
         # add handlers with funcs before structs
         for handler in sorted(init_handlers, key=lambda x: not x.func):
@@ -63,7 +65,7 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
 
     def _register_handler(self, handler):
         if not isinstance(handler, Handler):
-            raise AcabBaseException(f"Handler Not Compliant: {handler}", handler)
+            raise AcabHandlerException(f"Handler Not Compliant: {handler}", handler)
 
         if handler.func is not None:
             self.handlers[handler.signal] = handler
@@ -81,22 +83,40 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
         if value is None:
             return self.default
 
+        is_override = isinstance(value, HandlerSystem_i.HandlerOverride)
+        is_passthrough = is_override and value.signal == PASSTHROUGH
+        # For using an override to carry data, without an override signal
+        if is_passthrough:
+            value = value.value
+
         for sieve_fn in self.sieve:
             key = sieve_fn(value)
+
             if not bool(key):
                 continue
 
-            if key in self.handlers:
+            key_match   = key in self.handlers
+
+            if is_override and not is_passthrough and not key_match:
+                logging.warning(f"Missing Override Handler: {self.__class__} : {key}")
+                return self.default
+            elif key_match:
                 return self.handlers[key]
 
         # Final resort
         return self.default
 
-    def override(self, new_target: str, value) -> Overrider:
-        if new_target not in self.handlers:
-            raise AcabBaseException(f"Undefined override handler: {new_target}")
+    def override(self, new_signal: Union[bool, str], value, data=None) -> Overrider:
+        if bool(new_signal) and new_signal not in self.handlers:
+            raise AcabHandlerException(f"Undefined override handler: {new_signal}")
 
-        return HandlerSystem_i.HandlerOverride(new_target, value)
+        if not bool(new_signal):
+            new_signal = PASSTHROUGH
+
+        if bool(data):
+            return HandlerSystem_i.HandlerOverride(new_signal, value, data=data)
+
+        return HandlerSystem_i.HandlerOverride(new_signal, value)
 
     def register_data(self, data: Dict[str, Any]):
         """
@@ -135,7 +155,7 @@ class Handler:
 
     def __call__(self, *args, **kwargs):
         if self.func is None:
-            raise AcabBaseException(f"Attempt to Call Struct Handler", self)
+            raise AcabHandlerException(f"Attempt to Call Struct Handler", self)
         return self.func(*args, **kwargs)
 
     def add_struct(self, struct:Structure):
@@ -151,6 +171,7 @@ class Handler:
                                    func=func,
                                    struct=struct)
 
+
         return wrapper
 
     @staticmethod
@@ -165,14 +186,19 @@ class Handler:
 
 
 
+
     def __iter__(self):
         """ unpack the handler"""
         return (self.func, self.struct).__iter__()
 
 
 
+@dataclass
 class HandlerComponent_i:
     """ Utility Class Component for easy creation of a handler """
 
-    def as_handler(self, signal, struct=None):
-        return Handler(signal, func=self, struct=struct)
+    signal : Optional[str] = field(default=None)
+
+    def as_handler(self, signal=None, struct=None):
+        assert(signal or self.signal)
+        return Handler(signal or self.signal, func=self, struct=struct)

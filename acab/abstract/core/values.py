@@ -146,7 +146,9 @@ class AcabValue(VI.Value_i, Generic[T]):
 
     @property
     def type(self) -> Sen:
-        """ Lazy Type Coercion to Sentence """
+        """ Lazily coerces description to Sentence """
+        # TODO ensure this type sentence is of type... "sentence.type"?
+        # to enable printing
         type_matches_t = isinstance(self.data[DS.TYPE_INSTANCE], Sentence)
         if type_matches_t:
             return self.data[DS.TYPE_INSTANCE]

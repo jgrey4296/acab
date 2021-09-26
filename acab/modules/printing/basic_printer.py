@@ -18,7 +18,7 @@ class BasicPrinter(PrintSystem_i):
     """
     _default_sieve       : ClassVar[List[Callable]] = [
         # override tuple : 1 -> 1 : any
-        lambda x              : x.override if isinstance(x, PrintSystem_i.HandlerOverride) else None,
+        lambda x              : x.signal if isinstance(x, PrintSystem_i.HandlerOverride) else None,
         # symbol         : m -> m : any
         lambda x              : "_:SYMBOL" if isinstance(x, ConfigSpec) else None,
         # enum

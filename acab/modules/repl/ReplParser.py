@@ -91,10 +91,12 @@ operator_kw  = pp.MatchFirst(pp.Keyword("ops"),
 module_kw    = pp.MatchFirst([pp.Keyword("mod"),
                               pp.Keyword("module")])("module")
 semantic_kw  = pp.Keyword("semantics")("semantics")
+printer_kw   = pp.Keyword("printers")("printers")
 
 stats_parser = pp.ZeroOrMore(pp.MatchFirst([operator_kw,
                                             module_kw,
-                                            semantic_kw]))
+                                            semantic_kw,
+                                            printer_kw]))
 
 # listener ####################################################################
 

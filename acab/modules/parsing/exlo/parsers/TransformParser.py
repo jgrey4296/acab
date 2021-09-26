@@ -46,7 +46,7 @@ transform_combined = pp.MatchFirst([transform_core,
 
 transforms = IndentedBlock(transform_combined)
 
-transform_statement = PU.STATEMENT_CONSTRUCTOR(BASIC_SEN, transforms)
+transform_statement = PU.STATEMENT_CONSTRUCTOR(PARAM_SEN, transforms)
 
 # Actions
 transform_core.setParseAction(build_transform_component)

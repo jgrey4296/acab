@@ -1,36 +1,34 @@
 #!/usr/bin/env python3
-
 """
-Node description of a basic type definition node
+Node for holding definitions of types
+type.name:
+   a.b.$x::type
+   a.c.$y::type
+end
 """
-# https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar
-
+import logging as root_logger
 from dataclasses import dataclass, field
-
-from acab.abstract.core.values import AcabValue
-from acab.abstract.core.values import Sentence
-from acab.abstract.core.node import AcabNode
-from acab.modules.semantics.query_semantic_mixin import QuerySemanticMixin
-
-from acab.modules.analysis.typing import type_exceptions as te
-from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition
-from acab.modules.analysis.typing.values.type_definition import TypeDefinition, SumTypeDefinition
-from acab.modules.structures.trie.trie import Trie
-from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics
-from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
+from typing import (Any, Callable, ClassVar, Dict, Iterable, Iterator, List,
+                    Mapping, Match, MutableMapping, Optional, Sequence, Set,
+                    Tuple, TypeVar, Union, cast)
 
 import acab.modules.analysis.typing.util as util
-
+from acab.abstract.core.node import AcabNode
+from acab.abstract.core.values import AcabValue, Sentence
 from acab.abstract.interfaces import semantic as SI
+from acab.modules.analysis.typing import type_exceptions as te
+from acab.modules.analysis.typing.values.operator_definition import \
+    OperatorDefinition
+from acab.modules.analysis.typing.values.type_definition import (
+    SumTypeDefinition, TypeDefinition)
+from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
+from acab.modules.semantics.query_semantic_mixin import QuerySemanticMixin
+from acab.modules.structures.trie.trie import Trie
+from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics
 
 from .type_assignment_semantics import TypeAssignmentNode
 from .type_variable_semantics import VarTypeNode
 
-import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
 # Log messages to use, because they are long:
@@ -43,39 +41,11 @@ LOG_MESSAGES['no_children']      = "Val: No Children, assigning type: {} to {}"
 LOG_MESSAGES['validate_top']     = "Validating: {} on {}"
 
 
-class TypingDefinitionSemantics(BasicNodeSemantics, SI.IndependentSemantics_i, SI.SemanticSystem_i):
-
-    def up(self, word : AcabValue, constructor : Callable) -> AcabNode:
-        """ The Most Basic Lift """
-        assert(isinstance(word, AcabValue))
-        return constructor(word)
-
-
-    def add(self, node : AcabNode, word: AcabValue, node_constructor : Callable) -> Tuple[bool, AcabNode]:
-        assert(isinstance(node, AcabNode))
-        assert(isinstance(word, AcabValue))
-
-        is_new_node = False
-        result = self.get(node, word)
-
-        if result is None:
-            result = self.up(word, node_constructor)
-            node.add_child(result)
-            is_new_node = True
-        elif (isinstance(word, TypeDefinition)
-              and result.definition is not None
-              and result.definition.structure != word.structure):
-            raise te.TypeRedefinitionException(result.definition)
-
-
-        return True, result
-
-
 @dataclass
 class TypeDefNode(AcabNode):
     """ A Node describing a type definition """
     _typedef_trie : 'AcabStruct' = field(init=False)
-    _var_binds : 'AcabStruct' = field(init=False)
+    _var_binds    : 'AcabStruct' = field(init=False)
 
     @property
     def definition(self):
@@ -368,11 +338,3 @@ class OperatorDefNode(TypeDefNode):
                 continue
 
         return [x for x in newly_typed if x is not None]
-
-
-def pattern_match_type_signature(head, available):
-    if head.type is None:
-        return available
-
-    return [x for x in available if x.type_instance is None
-            or head.type_instance == x.type_instance]

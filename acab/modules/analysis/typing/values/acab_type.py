@@ -1,22 +1,28 @@
-from acab.abstract.core.values import AcabStatement
+"""
+Base Class for typing module values.
+Adds utility methods
+"""
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
 
 from acab.abstract.config.config import AcabConfig
+from acab.abstract.core.values import AcabStatement
 
 config = AcabConfig.Get()
 
-TAB_S = config.prepare("Print.Patterns", "TAB", actions=[AcabConfig.actions_e.STRIPQUOTE])()
-
 class TypeStatement(AcabStatement):
-
+    # TODO: change value to a config value
     def __init__(self, value="|∀σ|", **kwargs):
         super().__init__(value, **kwargs)
-        self._path = None
-        self._structure = []
+        self._path : 'Sentence'            = None
+        self._structure : List['Sentence'] = []
 
 
     @property
     def head(self):
         return self.path[-1]
+
     @property
     def vars(self):
         return self.params

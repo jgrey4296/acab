@@ -24,13 +24,13 @@ from acab.abstract.parsing.funcs import deep_update_names, clear_parser_names
 logging = root_logger.getLogger(__name__)
 
 
-class EL_Parser(DSL_Fragment_i):
+class EXLO_Parser(DSL_Fragment_i):
     """  """
 
     def assert_parsers(self, bootstrapper):
         """ Provide fragments for other parsers """
         # Core
-        # TODO: make this declarative in EL_parser *init*
+        # TODO: make this declarative in EXLO_parser *init*
         bootstrapper.add("valbind"             , PU.VALBIND,
                          "sentence.basic"      , FP.BASIC_SEN,
                          "sentence.param"      , FP.PARAM_SEN,

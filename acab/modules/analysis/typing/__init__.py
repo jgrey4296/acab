@@ -2,5 +2,5 @@
 The Typing Submodule Provides a TypeChecker,
 
 """
-from .typing_module import TypingSpec
-from .type_checker import TypeChecker
+from .type_printer import *
+from .typing_dsl import *

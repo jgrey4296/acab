@@ -81,6 +81,14 @@ class ContextInstance(CtxInt.ContextInstance_i):
     # def __setitem(self, key: Any, value: Any):
     #     raise ASErr.AcabSemanticException("Context Instances can't directly set a value, use MutableContextInstance")
 
+    def __getattribute__(self, value):
+        try:
+            return object.__getattribute__(self, value)
+        except AttributeError as err:
+            if not value in self:
+                raise err
+            return self.__getitem__(value)
+
     def __bool__(self):
         return bool(self.data)
     def __len__(self):
@@ -187,6 +195,9 @@ class ContextSet(CtxInt.ContextSet_i, CtxInt.DelayedCommands_i):
         operators = [y for x in ops for y in x.operators]
         # Build the CtxInst data dict:
         op_dict = {str(x) : x[-1] for x in operators}
+        # Add any sugar forms:
+        op_dict.update({x[-1].__class__.sugar : x[-1] for x in operators if hasattr(x[-1].__class__, "sugar")})
+
         # TODO abstract building ctxinst's to the set
         instance = ContextInstance(op_dict, exact=True)
         # TODO add sugar names from config

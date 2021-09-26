@@ -37,7 +37,7 @@ action_exprs = action_component | PARAM_SEN | action_sugar_binary | action_sugar
 actions = IndentedBlock(action_exprs)
 actions.setParseAction(PConst.build_action)
 
-action_definition = PU.STATEMENT_CONSTRUCTOR(BASIC_SEN, actions)
+action_definition = PU.STATEMENT_CONSTRUCTOR(PARAM_SEN, actions)
 
 # parse action
 

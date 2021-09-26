@@ -29,7 +29,7 @@ endOrLine  = pp.FollowedBy(END) | emptyLine | pp.stringEnd
 
 rule_body = op(conditions + endOrLine) + op(transforms + endOrLine) + op(actions + endOrLine)
 
-rule = PU.STATEMENT_CONSTRUCTOR(FP.BASIC_SEN,
+rule = PU.STATEMENT_CONSTRUCTOR(FP.PARAM_SEN,
                                 rule_body,
                                 args=False)
 
