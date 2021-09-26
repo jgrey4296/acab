@@ -28,7 +28,7 @@ def grouper(iterable, n, fillvalue=None):
 class AtomicPrinter(PrintSemantics_i):
     """ Simply print the str of anything passed in """
 
-    def __call__(self, value, top=None):
+    def __call__(self, value, top=None, data=None):
         return str(value.name)
 
 class PrimitiveTypeAwarePrinter(PrintSemantics_i):
@@ -38,7 +38,7 @@ class PrimitiveTypeAwarePrinter(PrintSemantics_i):
                 PW._maybe_wrap_regex,
                 PW._maybe_wrap_var]
 
-    def __call__(self, value, top=None):
+    def __call__(self, value, top=None, data=None):
         curr_str = [str(value.name)]
         return self.run_transforms(value, curr_str)
 
@@ -50,7 +50,7 @@ class ModalAwarePrinter(PrintSemantics_i):
                 PW._maybe_wrap_var]
 
 
-    def __call__(self, value, top=None):
+    def __call__(self, value, top=None, data=None):
         curr_str = [str(value.name)]
         transformed = self.run_transforms(value, curr_str)
         # lookup modal to care about from top.
@@ -69,7 +69,7 @@ class UUIDAwarePrinter(PrintSemantics_i):
                 PW._maybe_wrap_var]
 
 
-    def __call__(self, value, top=None):
+    def __call__(self, value, top=None, data=None):
         curr_str = [str(value.name)]
         transformed = self.run_transforms(value, curr_str)
 
@@ -83,7 +83,7 @@ class ConstraintAwareValuePrinter(PrintSemantics_i):
                 PW._maybe_wrap_regex,
                 PW._maybe_wrap_var]
 
-    def __call__(self, value, top=None):
+    def __call__(self, value, top=None, data=None):
         return_list = []
         curr_str = [str(value.name)]
         return_list.append(self.run_transforms(value, curr_str))
@@ -132,7 +132,7 @@ class BasicSentenceAwarePrinter(PrintSemantics_i):
 
 class ProductionComponentPrinter(PrintSemantics_i):
 
-    def __call__(self, value, top=None):
+    def __call__(self, value, top=None, data=None):
         result = []
         # if sugared,
         # if value.sugared:
@@ -160,18 +160,19 @@ class ProductionComponentPrinter(PrintSemantics_i):
 class ImplicitContainerPrinter(PrintSemantics_i):
     """ Production Containers """
 
-    def __call__(self, value, top=None):
+    def __call__(self, value, top=None, data=None):
         result = [[DSYM.INDENT, x, DSYM.CONTAINER_JOIN_P] for x in  value.clauses]
         return result
 
 class ExplicitContainerPrinter(PrintSemantics_i):
     """ Production Containers """
 
-    def __call__(self, value, top=None):
+    def __call__(self, value, top=None, data=None):
         result = []
-        result.append(value.name)
-        result += ["(::", value.type, ")", ":"]
-        result.append(DSYM.CONTAINER_JOIN_P)
+
+        result.append(top.override("_:ATOM", value, data={"no_modal": True}))
+        # result += ["(::", value.type, ")", ":"]
+        result += [":", DSYM.CONTAINER_JOIN_P]
         if bool(value.params):
             result.append(PW._wrap_var_list(self, value.type, []))
             result.append(DSYM.CONTAINER_JOIN_P)
@@ -188,7 +189,7 @@ class ExplicitContainerPrinter(PrintSemantics_i):
 class StructurePrinter(PrintSemantics_i):
     """ Ordered structures """
 
-    def __call__(self, value, top=None):
+    def __call__(self, value, top=None, data=None):
         # TODO define order, add newlines
         result = []
         # print the name
@@ -225,7 +226,7 @@ class ConfigBackedSymbolPrinter(PrintSemantics_i):
     overrides : Dict[Any, str] = field(default_factory=dict)
     _config   : AcabConfig     = field(default_factory=GET)
 
-    def __call__(self, value, top=None):
+    def __call__(self, value, top=None, data=None):
         # Look the value up in overrides
         if value in self.overrides:
             return self.overrides[value]
@@ -237,7 +238,7 @@ class TagPrinter(PrintSemantics_i):
     """ Prints a set of tags, indented, as sentences
     prepended with the tag symbol, in strides of 4 """
 
-    def __call__(self, value, top=None):
+    def __call__(self, value, top=None, data=None):
         assert(isinstance(value, (set, list))), value
         result = []
         # TODO: customize stride in config?

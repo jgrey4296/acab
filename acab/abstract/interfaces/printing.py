@@ -36,7 +36,7 @@ class PrintSystem_i(HandlerSystem_i):
     def __post_init__(self, handlers):
         super().__post_init__(handlers)
         if self.default is None:
-            self.default = Handler("_:default", lambda x: str(x))
+            self.default = Handler("_:default", lambda x, data=None: str(x))
 
     def check(self, val) -> Optional[str]:
         """ Check a value to toggle variations/get defaults"""
@@ -46,11 +46,19 @@ class PrintSystem_i(HandlerSystem_i):
         return None
 
     def pprint(self, *args) -> str:
+        """
+        The Core Pretty Printer.
+        Process a Stack, looking up specific handlers for the top,
+        building up a final string
+
+        Handler's return a list of values to go onto stack.
+        """
         remaining = [[x, self.separator] for x in args[:-1]] + [args[-1]]
         result = ""
         while bool(remaining):
             current = remaining.pop(0)
             handler = None
+            data    = {}
             if isinstance(current, str):
                 result += current
                 continue
@@ -61,12 +69,13 @@ class PrintSystem_i(HandlerSystem_i):
                 handler, _ = self.lookup(current)
 
             if isinstance(current, PrintSystem_i.HandlerOverride):
-                current = current.data
+                data.update(current.data)
+                current = current.value
 
             if isinstance(handler, PrintSemantics_i):
-                handled = handler(current, top=self)
+                handled = handler(current, top=self, data=data)
             else:
-                handled = handler(current)
+                handled = handler(current, data=data)
 
             # Add the results of a handler to the head
             if isinstance(handled, list):
@@ -108,5 +117,5 @@ class PrintSemantics_i(HandlerComponent_i):
         return curr
 
     @abc.abstractmethod
-    def __call__(self, to_print: Value_i, top:'PrintSystem_i'=None) -> List[Tuple[str,Value_i]]:
+    def __call__(self, to_print: Value_i, top:'PrintSystem_i'=None, data=None) -> List[Tuple[str,Value_i]]:
         pass
