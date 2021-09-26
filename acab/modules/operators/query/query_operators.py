@@ -10,18 +10,27 @@ Value    = "AcabValue_i"
 Sentence = "Sentence_i"
 
 class EQ(ProductionOperator):
+
+    sugar = "_:=="
+
     @OperatorArgUnWrap
     def __call__(self, a, b, data=None):
         return a == b
 
 
 class NEQ(ProductionOperator):
+
+    sugar = "_:!="
+
     @OperatorArgUnWrap
     def __call__(self, a, b, data=None):
         return a != b
 
 
 class RegMatch(ProductionOperator):
+
+    sugar = "_:~="
+
     # TODO implement sub-binds
     # currently they are ignored
     @OperatorArgUnWrap
@@ -35,12 +44,16 @@ class RegMatch(ProductionOperator):
 
 
 class ELEM(ProductionOperator):
+
+    sugar = "_:∈"
+
     @OperatorArgUnWrap
     def __call__(self, a:Value, b:Sentence, data=None):
         return a in b
 
 
 class HasTag(ProductionOperator):
+
     # Don't unwrap args, as you need the value data to test
     def __call__(self, value, *tags, data=None):
         return value.has_tag(*tags)

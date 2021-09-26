@@ -38,6 +38,8 @@ class AcabAssert(ActionOperator):
 
 class AcabPrint(ActionOperator):
 
+    sugar: str = "_:%"
+
     @OperatorArgUnWrap
     def __call__(self, *params, data=None, semSystem=None):
         """ Trigger a logging statement """
