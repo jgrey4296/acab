@@ -127,11 +127,10 @@ class AnnotationPrinter(PrintSemantics_i):
         annotations_list = []
         for annotation in annotations_in_value:
             signal = f"_:{annotation}"
-            to_print = value.data[annotation]
             if signal in top.handlers:
-                annotations_list.append(top.override(signal, to_print))
+                annotations_list.append(top.override(signal, value))
             else:
-                annotations_list.append(to_print)
+                annotations_list.append(value.data[annotation])
 
             annotations_list.append(", ")
 
@@ -152,11 +151,11 @@ class ConstraintPrinter(PrintSemantics_i):
 
     def __call__(self, value, top=None, data=None):
         return_list = []
-        for constraint in value.data[DS.CONSTRAINT][:-1]:
+        for constraint in value.data[DS.CONSTRAINT]:
             return_list.append(constraint)
             return_list.append(", ")
 
-        return_list.append(value.data[DS.CONSTRAINT][-1])
+        return_list.pop()
 
         return return_list
 
@@ -314,9 +313,9 @@ class SimpleTypePrinter(PrintSemantics_i):
 
     def __call__(self, value, top=None, data=None):
         return_list = []
-        type_str = str(value)
+        type_str = str(value.data[DS.TYPE_INSTANCE])
         if type_str == "_:ATOM":
             return []
         return_list.append("::")
-        return_list.append(str(value))
+        return_list.append(type_str)
         return return_list

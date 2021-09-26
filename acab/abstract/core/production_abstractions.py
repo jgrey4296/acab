@@ -39,6 +39,10 @@ Structure = 'ProductionStructure'
 class ProductionOperator(AcabValue):
     """ The Base Operator Class,
     Provides the way to use other systems and code in Acab
+
+    ContextSet.build uses a class attribute named "sugar" to register a syntax
+    sugar for the operator. The string is a pseudo sentence,
+    ie: _:==, _:!=, ..
     """
 
     def __post_init__(self):

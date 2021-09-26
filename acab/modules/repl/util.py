@@ -62,8 +62,9 @@ def print_contexts(self, params):
 
         print("--------------------")
 
-    print("Named (continuation) Sets:")
-    print(self.state.engine.pprint(list(self.state.ctxs._named_sets.keys())))
+    if bool(self.state.ctxs._named_sets):
+        print("Named (continuation) Sets:")
+        print(self.state.engine.pprint(list(self.state.ctxs._named_sets.keys())))
 
 def init_inspect(mod_str):
     """
