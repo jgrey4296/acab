@@ -88,10 +88,7 @@ class AnnotationAwareValuePrinter(PrintSemantics_i):
     def __call__(self, value, top=None, data=None):
         return_list = []
 
-        try:
-            curr_str = [str(value.name)]
-        except AttributeError as err:
-            breakpoint()
+        curr_str = [str(value.name)]
         return_list.append(self.run_transforms(value, curr_str))
         return_list.append(top.override("_:ANNOTATIONS", value, data=data))
 
@@ -124,25 +121,22 @@ class AnnotationPrinter(PrintSemantics_i):
         if not bool(annotations_in_value):
             return []
 
-        annotations_list = []
+        # Pretty Print annotations
+        annotations_pp = []
         for annotation in annotations_in_value:
             signal = f"_:{annotation}"
             if signal in top.handlers:
-                annotations_list.append(top.override(signal, value))
+                annotations_pp.append(top.pprint(top.override(signal, value)))
             else:
-                annotations_list.append(value.data[annotation])
+                annotations_pp.append(top.pprint(value.data[annotation]))
 
-            annotations_list.append(", ")
+        # Then Join:
+        annotations_pp = [x for x in annotations_pp if bool(x)]
 
-        # Pop off last comma:
-        annotations_list.pop()
-
-        # Pretty print as here
-        annotations_pp = top.pprint(annotations_list)
         # To decide whether to add anything to main return here:
-        if annotations_pp != "":
+        if bool(annotations_pp):
             return_list.append("(")
-            return_list += annotations_pp
+            return_list += ", ".join(annotations_pp)
             return_list.append(")")
 
         return return_list
@@ -156,7 +150,6 @@ class ConstraintPrinter(PrintSemantics_i):
             return_list.append(", ")
 
         return_list.pop()
-
         return return_list
 
 # Dependent
@@ -294,7 +287,7 @@ class TagPrinter(PrintSemantics_i):
         assert(isinstance(value, (set, list))), value
         result = []
         # TODO: customize stride in config?
-        for tags in grouper(value, 4):
+        for tags in grouper(sorted(value), 4):
             result.append(DSYM.INDENT)
             result.append(DSYM.TAG_SYM)
             result.append(Sentence.build([x for x in tags if x is not None]))
@@ -305,7 +298,7 @@ class TagPrinter(PrintSemantics_i):
 
 class NoOpPrinter(PrintSemantics_i):
 
-    def __call__(self, value, top):
+    def __call__(self, value, top=None, data=None):
         return []
 
 

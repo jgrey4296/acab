@@ -131,11 +131,11 @@ def _sep_list(PS, value, current, sep=" "):
     """ given a list, add separators """
     ret_list = []
     if bool(current):
-        for x in current[:-1]:
+        for x in current:
             ret_list.append(x)
             ret_list.append(sep)
 
-        ret_list.append(current[-1])
+        ret_list.pop()
     return ret_list
 
 def _suppress_modal(PS, value):
