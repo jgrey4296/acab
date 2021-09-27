@@ -8,7 +8,7 @@ from collections import defaultdict
 
 logging = root_logger.getLogger(__name__)
 
-
+from acab import types as AT
 from acab.abstract.core import default_structure as DS
 from acab.abstract.decorators.semantic import RunInSubCtxSet
 from acab.abstract.interfaces import semantic as SI
@@ -18,7 +18,7 @@ from acab.modules.semantics.util import SemanticBreakpointDecorator
 from acab.error.acab_semantic_exception import AcabSemanticException
 from acab.abstract.core.production_abstractions import ProductionOperator
 
-CtxIns = 'ContextInstance'
+CtxIns = AT.CtxIns
 
 # Primary Abstractions:
 class QueryAbstraction(SI.AbstractionSemantics_i):

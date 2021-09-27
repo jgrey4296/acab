@@ -7,13 +7,14 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
+from acab import types as AT
 from acab.abstract.interfaces.dsl import DSL_Fragment_i, Bootstrapper_i
 from acab.abstract.parsing.trie_bootstrapper import TrieBootstrapper
 
 ModuleType   = 'Module'
 Parser       = 'Parser'
-Sentence     = 'Sentence'
-DSL_Fragment = 'DSL_Fragment'
+Sentence     = AT.Sentence
+DSL_Fragment = AT.DSL_Fragment
 
 @dataclass
 class RewindEngineInterface(metaclass=abc.ABCMeta):

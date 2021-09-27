@@ -13,6 +13,7 @@ from acab.error.acab_handler_exception import AcabHandlerException
 
 logging = root_logger.getLogger(__name__)
 
+pseudo           = AT.pseudo
 Handler          = AT.Handler
 ModuleComponents = AT.ModuleComponents
 Overrider        = AT.HandlerOverride
@@ -21,6 +22,12 @@ Structure        = AT.DataStructure
 Value            = AT.Value
 
 PASSTHROUGH      = "_"
+def ensure_pseudo(s):
+    s_str = str(s)
+    if s_str[:2] == "_:":
+        return s_str
+    return f"_:{s_str}"
+
 # TODO refactor handler -> responder?
 # TODO active and passive handlers?,
 # with ability to have multiples for each signal?
@@ -32,7 +39,7 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
     default        : Handler                  = field(default=None)
     sieve          : List[Callable]           = field(default_factory=list)
 
-    handlers       : Dict[str, Callable]      = field(init=False, default_factory=dict)
+    handlers       : Dict[AT.pseudo, Callable]      = field(init=False, default_factory=dict)
     _data          : Dict[str, Any]           = field(init=False, default_factory=dict)
 
     _default_sieve : ClassVar[List[Callable]] = []

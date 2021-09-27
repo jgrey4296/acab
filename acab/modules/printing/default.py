@@ -16,7 +16,7 @@ def DEFAULT_PRINTER():
         Printers.ConstraintPrinter().as_handler("_:CONSTRAINT"),
         Printers.ExplicitContainerPrinter().as_handler("_:CONTAINER"),
         Printers.ImplicitContainerPrinter().as_handler("_:IMPLICIT_CONTAINER"),
-        Printers.ModalPrinter().as_handler("_:MODAL")
+        Printers.ModalPrinter().as_handler("_:MODAL"),
         Printers.ProductionComponentPrinter().as_handler("_:COMPONENT"),
         Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
         Printers.StructurePrinter().as_handler("_:STRUCTURE"),
