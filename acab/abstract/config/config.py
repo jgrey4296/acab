@@ -28,18 +28,9 @@ import importlib
 
 import pyparsing as pp
 from acab.error.acab_config_exception import AcabConfigException
+from acab.abstract.config import actions as CA
 
 logging = root_logger.getLogger(__name__)
-
-actions_e = Enum("Config Actions", "STRIPQUOTE KEYWORD LITERAL DICT LIST UNESCAPE SPLIT PSEUDOSEN BOOL IMPORT")
-
-DEFAULT_ACTIONS = {actions_e.STRIPQUOTE : lambda x: x.strip("\"'"),
-                   actions_e.LIST       : lambda x: x.split("\n"),
-                   actions_e.UNESCAPE   : lambda x: x.encode().decode("unicode_escape"),
-                   actions_e.SPLIT      : lambda x: x.split(" "),
-                   actions_e.PSEUDOSEN  : lambda x: "_:{}".format(x),
-                   actions_e.BOOL       : lambda x: True if x == "True" else False,
-                   actions_e.IMPORT     : lambda x: importlib.import_module(x)}
 
 override_constructor = lambda: defaultdict(lambda: {})
 #--------------------------------------------------
@@ -52,12 +43,12 @@ class ConfigSpec():
     """ Dataclass to describe a config file value,
     and any transforms it needs prior to use """
 
-    section : str             = field()
-    key     : Optional[str]   = field(default=None)
-    actions : List[actions_e] = field(default_factory=list)
-    as_list : bool            = field(default=False)
-    as_dict : bool            = field(default=False)
-    as_enum : bool            = field(default=False)
+    section : str                = field()
+    key     : Optional[str]      = field(default=None)
+    actions : List[CA.actions_e] = field(default_factory=list)
+    as_list : bool               = field(default=False)
+    as_dict : bool               = field(default=False)
+    as_enum : bool               = field(default=False)
 
     def __call__(self):
         inst = AcabConfig.Get()
@@ -87,9 +78,9 @@ class AcabConfig():
     syntax_extension   : Dict[str, Enum]     = field(init=False, default_factory=dict)
     printing_extension : Dict[Enum, str]     = field(init=False, default_factory=dict)
 
-    actions   : Dict[Any, Callable]    = field(init=False, default_factory=lambda: DEFAULT_ACTIONS)
+    actions   : Dict[Any, Callable]    = field(init=False, default_factory=lambda: CA.DEFAULT_ACTIONS)
     instance  : ClassVar['AcabConfig'] = field(init=False, default=None)
-    actions_e : Enum                   = field(init=False, default=actions_e)
+    actions_e : Enum                   = field(init=False, default=CA.actions_e)
 
     @staticmethod
     def Get(*paths: str, hooks=None):
