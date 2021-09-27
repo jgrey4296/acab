@@ -85,3 +85,22 @@ def OperatorResultWrap(f):
 
     wrapped.__name__ = f"ResultWrap({f})"
     return wrapped
+
+
+def OperatorSugar(sugar:str, prefix=None):
+    """
+    Decorates a ProductionOperator to carry a syntactic sugar annotation
+    for semantic recognition.
+    Stores in pseudo-sentence form: _:{sugar}
+    """
+    def wrapped(cls:ProductionOperator):
+        psugar : AT.pseudo = "_:"
+        if prefix is not None:
+            psugar += prefix
+            psugar += "."
+        psugar += sugar
+
+        cls.__acab_operator_sugar = psugar
+        return cls
+
+    return wrapped

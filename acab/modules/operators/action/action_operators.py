@@ -7,15 +7,21 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
+from acab import types as AT
+from acab.abstract.config.config import GET
 from acab.abstract.core.production_abstractions import (ActionOperator,
                                                         ProductionOperator)
 from acab.abstract.decorators.semantic import (OperatorArgUnWrap,
-                                               OperatorResultWrap)
+                                               OperatorResultWrap,
+                                               OperatorSugar)
 from acab.error.acab_semantic_exception import AcabSemanticException
 
 logging = root_logger.getLogger(__name__)
 
-Sentence = "Sentence"
+config = GET()
+
+Sentence = AT.Sentence
+Operator = AT.Operator
 
 # Action operators:
 
@@ -28,6 +34,7 @@ Sentence = "Sentence"
 
 # TODO action operators joots
 # and/or return instructions for the semantic system
+@OperatorSugar("!!", "action")
 class AcabAssert(ActionOperator):
 
     def __call__(self, *params, data=None, semSystem=None):
@@ -36,9 +43,8 @@ class AcabAssert(ActionOperator):
         # TODO enable queing?
         semSystem(params[0])
 
+@OperatorSugar("%", "action")
 class AcabPrint(ActionOperator):
-
-    sugar: str = "_:%"
 
     @OperatorArgUnWrap
     def __call__(self, *params, data=None, semSystem=None):
@@ -51,12 +57,13 @@ class AcabPrint(ActionOperator):
 
         print(total)
 
+@OperatorSugar(config.prepare("Parse", "REBIND_SUGAR")())
 class RebindOperator(ActionOperator):
     """ Special Operator to modify the semantic's Operator Cache,
     allowing more concise names of operators
     """
 
-    def __call__(self, target:Union[Sentence, str], op:Union[ProductionOperator, Sentence, str], data=None, semSystem=None):
+    def __call__(self, target:Union[Sentence, str], op:Union[Operator, Sentence, str], data=None, semSystem=None):
         """ λUpdateOps "+" $x
         Updates the Sem System's Operator cache
         """
