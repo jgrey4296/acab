@@ -261,8 +261,10 @@ class Sentence(AcabStatement, VI.Sentence_i):
         self.data[DS.TYPE_INSTANCE] = DS.SENTENCE_PRIM
 
     def __eq__(self, other):
-        if isinstance(other, str):
+        if isinstance(other, str) and other[:2] == "_:":
             return str(self) == other
+        elif isinstance(other, str):
+            return str(self) == f"_:{other}"
         elif not isinstance(other, VI.Sentence_i):
             return False
         elif len(self) != len(other):
