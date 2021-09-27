@@ -7,17 +7,18 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 from types import MethodType
 
+from acab import types as AT
 from acab.abstract.interfaces.data import Structure_i
 from acab.error.acab_handler_exception import AcabHandlerException
 
 logging = root_logger.getLogger(__name__)
 
-Handler          = 'HandlerComponent_i'
-ModuleComponents = 'ModuleComponents'
-Overrider        = 'HandlerOverride'
-Sentence         = 'Sentence'
-Structure        = Structure_i
-Value_i          = 'Value_i'
+Handler          = AT.Handler
+ModuleComponents = AT.ModuleComponents
+Overrider        = AT.HandlerOverride
+Sentence         = AT.Sentence
+Structure        = AT.DataStructure
+Value            = AT.Value
 
 PASSTHROUGH      = "_"
 # TODO refactor handler -> responder?
@@ -40,7 +41,7 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
     class HandlerOverride:
         """ Simple Wrapped for forced semantic use """
         signal   : str              = field()
-        value    : Value_i          = field()
+        value    : Value            = field()
         data     : Dict[Any, Any]   = field(default_factory=dict)
 
 
@@ -78,7 +79,7 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
         if provides_struct and pair_needs_struct:
             self.handlers[handler.signal].add_struct(handler.struct)
 
-    def lookup(self, value: Value_i) -> Handler:
+    def lookup(self, value: Value) -> Handler:
         # sieve from most to least specific
         if value is None:
             return self.default

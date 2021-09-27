@@ -8,6 +8,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 logging = root_logger.getLogger(__name__)
 
+from acab import types as AT
 from acab.abstract.interfaces.context import ContextSet_i
 from acab.abstract.interfaces.dsl import DSL_Fragment_i, DSLBuilder_i
 from acab.abstract.interfaces.module_loader import ModuleLoader_i
@@ -18,7 +19,7 @@ from acab.error.acab_semantic_exception import AcabSemanticException
 from acab.abstract.decorators.engine import EnsureEngineInitialised
 
 # TODO add 'Tick' functionality
-ModuleComponents = "ModuleComponents"
+ModuleComponents = AT.ModuleComponents
 
 @dataclass
 class AcabEngine_i(metaclass=abc.ABCMeta):

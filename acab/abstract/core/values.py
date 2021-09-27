@@ -12,8 +12,9 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 from uuid import UUID, uuid1
 from weakref import ref
 
+from acab import types as AT
+import acab.abstract.interfaces.value as VI
 from acab.abstract.config.config import AcabConfig
-from acab.abstract.interfaces import value as VI
 import acab.abstract.core.default_structure as DS
 
 logging          = root_logger.getLogger(__name__)
@@ -28,8 +29,9 @@ UUID_CHOP        = bool(int(config.prepare("Print.Data", "UUID_CHOP")()))
 
 T     = TypeVar('T', str, Pattern, list)
 
-Value = VI.Value_i
-Sen   = VI.Sentence_i
+Value     = AT.Value
+Sen       = AT.Sentence
+Statement = AT.Statement
 
 @dataclass(frozen=True)
 class AcabValue(VI.Value_i, Generic[T]):
@@ -50,7 +52,7 @@ class AcabValue(VI.Value_i, Generic[T]):
         if _type is not None:
             _data.update({DS.TYPE_INSTANCE: _type})
 
-        if isinstance(value, AcabValue):
+        if isinstance(value, VI.Value_i):
             new_data = {}
             new_data.update(value.data)
             new_data.update(_data)
@@ -77,7 +79,7 @@ class AcabValue(VI.Value_i, Generic[T]):
             assert(isinstance(self.name, str)), self.name
         elif isinstance(self.value, Pattern):
             name_update = self.value.pattern
-        elif isinstance(self.value, (list, AcabStatement)):
+        elif isinstance(self.value, (list, VI.Statement_i)):
             name_update = ANON_VALUE
         else:
             name_update = str(self.value)
@@ -97,7 +99,7 @@ class AcabValue(VI.Value_i, Generic[T]):
         if DS.BIND not in self.data:
             self.data[DS.BIND] = False
 
-        if any([not isinstance(x, AcabValue) for x in self.params]):
+        if any([not isinstance(x, VI.Value_i) for x in self.params]):
             original_params = self.params[:]
             self.params.clear()
             self.params.extend([AcabValue.safe_make(x) for x in original_params])
@@ -135,7 +137,7 @@ class AcabValue(VI.Value_i, Generic[T]):
             return True
         elif isinstance(other, str):
             return str(self) == other
-        elif not isinstance(other, AcabValue):
+        elif not isinstance(other, VI.Value_i):
             return False
         elif self.uuid == other.uuid:
             return True
@@ -207,14 +209,14 @@ class AcabValue(VI.Value_i, Generic[T]):
         if not bool(params):
             return self
 
-        safe_params = [x if isinstance(x, AcabValue) else AcabValue(x) for x in params]
+        safe_params = [x if isinstance(x, VI.Value_i) else AcabValue(x) for x in params]
         return self.copy(params=safe_params)
 
     def apply_tags(self, tags:List[Value]) -> Value:
         """
         return modified copy
         """
-        assert(all([isinstance(x, Value) for x in tags]))
+        assert(all([isinstance(x, VI.Value_i) for x in tags]))
         if not bool(tags):
             return self
 
@@ -232,6 +234,7 @@ class AcabStatement(AcabValue, VI.Statement_i):
     """
 
     def to_word(self) -> Value:
+        """ Convert a Statement to just an AcabValue, of it's name """
         new_data = {}
         new_data.update(self.data)
         new_data.update({DS.TYPE_INSTANCE: Sentence.build([DS.TYPE_BOTTOM_NAME])})
@@ -244,7 +247,7 @@ class Sentence(AcabStatement, VI.Sentence_i):
     @staticmethod
     def build(words, **kwargs):
         safe_words = [AcabValue.safe_make(x) for x in words]
-        sen = Sentence(safe_words, **kwargs)
+        sen = Sentence(value=safe_words, **kwargs)
         return sen
 
 
@@ -255,7 +258,7 @@ class Sentence(AcabStatement, VI.Sentence_i):
     def __eq__(self, other):
         if isinstance(other, str):
             return str(self) == other
-        elif not isinstance(other, Sentence):
+        elif not isinstance(other, VI.Sentence_i):
             return False
         elif len(self) != len(other):
             return False
@@ -281,25 +284,25 @@ class Sentence(AcabStatement, VI.Sentence_i):
             return Sentence.build(self.words.__getitem__(i), data=self.data)
         return self.words.__getitem__(i)
 
-    def __contains__(self, value):
+    def __contains__(self, value:Union[str, Value]):
         return value in self.words
 
-    def copy(self, **kwargs):
+    def copy(self, **kwargs) -> Sen:
         if 'value' not in kwargs:
             kwargs['value'] = [x.copy() for x in self.value]
 
         return super(Sentence, self).copy(**kwargs)
 
-    def clear(self):
+    def clear(self) -> Sen:
         """
         return modified copy
         """
         return self.copy(value=[])
 
-    def bind(self, bindings):
+    def bind(self, bindings) -> Sen:
         """ Given a dictionary of bindings, reify the sentence,
         using those bindings.
-        ie: .a.b.$x with {x: blah} => .a.b.blah
+        ie: a.b.$x with {x: blah} => a.b.blah
         return modified copy
         """
         assert(isinstance(bindings, dict))
@@ -322,13 +325,13 @@ class Sentence(AcabStatement, VI.Sentence_i):
                 retrieved = bindings[word.value]
 
 
-            if isinstance(retrieved, Sentence) and len(retrieved) == 1:
+            if isinstance(retrieved, VI.Sentence_i) and len(retrieved) == 1:
                 # Flatten len1 sentences:
                 copied = retrieved[0].copy()
                 copied.data.update(word.data)
                 copied.data[DS.BIND] = False
                 output.append(copied)
-            elif isinstance(retrieved, AcabValue):
+            elif isinstance(retrieved, VI.Value_i):
                 # Apply the variables data to the retrieval
                 copied = retrieved.copy()
                 copied.data.update(word.data)
@@ -348,27 +351,27 @@ class Sentence(AcabStatement, VI.Sentence_i):
                               params=self.params,
                               tags=self.tags)
 
-    def add(self, *other):
+    def add(self, *other) -> Sen:
         """ Return a copy of the sentence, with words added to the end.
         This can flatten entire sentences onto the end
         return modified copy
         """
         words = self.words
         for sen in other:
-            assert(isinstance(sen, (list, Sentence)))
+            assert(isinstance(sen, (list, VI.Sentence_i)))
             words += [x for x in sen]
 
         new_sen = replace(self, value=words)
         return new_sen
 
-    def attach_statement(self, value):
+    def attach_statement(self, value) -> Sen:
         """
         Copy the sentence,
         Replace the leaf with the provided statement,
         Name the statement to the name of the former leaf
         return modified copy
         """
-        assert(isinstance(value, AcabValue))
+        assert(isinstance(value, VI.Value_i))
         last = self.words[-1]
         combined_data = last.data.copy()
         combined_data.update(value.data)
@@ -379,7 +382,7 @@ class Sentence(AcabStatement, VI.Sentence_i):
 
         return sen_copy
 
-    def detach_statement(self):
+    def detach_statement(self) -> Tuple[Sen, List[Statement]]:
         """
         The inverse of attach_statement.
         Copy the sentence,
@@ -391,7 +394,7 @@ class Sentence(AcabStatement, VI.Sentence_i):
 
         # collect leaf statements
         for word in self.words:
-            if isinstance(word, AcabStatement):
+            if isinstance(word, VI.Statement_i):
                 out_words.append(word.to_word())
                 statements.append(word)
             else:
@@ -406,11 +409,11 @@ class Sentence(AcabStatement, VI.Sentence_i):
         if len(self) > 1:
             return False
 
-        return self[0].data[DS.BIND] is not False
+        return self[0].is_var
 
     @property
     def is_at_var(self) -> bool:
         if len(self) > 1:
             return False
 
-        return self[0].data[DS.BIND] == DS.AT_BIND
+        return self[0].is_var

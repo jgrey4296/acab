@@ -6,15 +6,17 @@ import abc
 from dataclasses import dataclass, field
 from typing import Any, Dict
 
-Value              = 'AcabValue'
-Node               = 'Node_i'
-DependentSemantics = 'DependentSemantics'
+from acab import types as AT
+Value              = AT.Value
+Node               = AT.Node
+Structure          = AT.DataStructure
+DependentSemantics = AT.DependentSemantics
 
 @dataclass
 class Node_i(metaclass=abc.ABCMeta):
     """  """
 
-    value : Value
+    value    : Value
     children : Dict[str, Node] = field(init=False, default_factory=dict)
 
     @staticmethod
@@ -57,14 +59,14 @@ class Node_i(metaclass=abc.ABCMeta):
 
 # TODO factor 'root' out into AcabNodeStruct
 @dataclass
-class Structure_i:
+class Structure_i(metaclass=abc.ABCMeta):
     """ The structures which semantics operate on """
     root       : Node           = field()
     components : Dict[str, Any] = field(init=False, default_factory=dict)
 
     @staticmethod
     @abc.abstractmethod
-    def build_default() -> 'Structure':
+    def build_default() -> Structure:
         pass
 
     @abc.abstractmethod

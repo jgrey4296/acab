@@ -8,8 +8,10 @@ from typing import cast, ClassVar, TypeVar, Generic
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
-Structure= 'AcabStructure'
-Sentence = 'Sentence'
+from acab import types as AT
+
+Structure = AT.DataStructure
+Sentence  = AT.Sentence
 
 def ForceListArgDecorator(f):
     """ Force the first arg to be a list """

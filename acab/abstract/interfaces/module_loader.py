@@ -13,15 +13,16 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
+from acab import types as AT
 from acab.error.acab_import_exception import AcabImportException
 
 logging = root_logger.getLogger(__name__)
 
-Sentence            = 'Sentence'
-DSL_Fragment_i      = 'DSL_Fragment_i'
-Semantic_Fragment   = 'Semantic_Fragment'
-ProductionOperator  = 'ProductionOperator'
-PrintSemantics_i    = 'PrintSemantics_i'
+Sentence            = AT.Sentence
+DSL_Fragment_i      = AT.DSL_Fragment
+Semantic_Fragment   = AT.Semantic_Fragment
+ProductionOperator  = AT.Operator
+PrintSemantics_i    = AT.PrintSemantics
 
 #----------------------------------------
 @dataclass(frozen=True)

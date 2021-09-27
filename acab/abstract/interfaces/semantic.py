@@ -24,30 +24,28 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 logging = root_logger.getLogger(__name__)
-from acab.abstract.config.config import AcabConfig, ConfigSpec
+from acab import types as AT
 from acab.abstract.core.default_structure import QUERY
-from acab.abstract.interfaces.context import ContextSet_i
 from acab.abstract.interfaces.handler_system import HandlerSystem_i, Handler, HandlerComponent_i
 from acab.abstract.interfaces.value import Sentence_i, Value_i
 from acab.error.acab_print_exception import AcabPrintException
 from acab.error.acab_semantic_exception import AcabSemanticException
 
-Node                   = 'AcabNode'
-Sentence               = 'Sentence'
-Printable              = 'Printable'
-Value                  = 'AcabValue'
-Structure              = 'AcabStruct'
-Engine                 = 'Engine'
-CtxSet                 = ContextSet_i
-CtxIns                 = "ContextInstance"
-Handler                = 'SemanticHandler' # Callable
-AbsDepSemantics        = Union['AbstractionSemantics_i', 'DependentSemantics_i']
-InDepSemantics         = 'IndependentSemantics_i'
-ProductionOperator     = 'ProductionOperator'
-ModuleComponents       = 'ModuleComponents'
-DependentSemantics_i   = "DependentSemantics_i"
-IndependentSemantics_i = "IndependentSemantics_i"
-AbstractionSemantics_i = "AbstractionSemantics_i"
+Node                   = AT.Node
+Sentence               = AT.Sentence
+Value                  = AT.Value
+Structure              = AT.DataStructure
+Engine                 = AT.Engine
+CtxSet                 = AT.CtxSet
+CtxIns                 = AT.CtxIns
+Handler                = AT.Handler
+ProductionOperator     = AT.Operator
+ModuleComponents       = AT.ModuleComponents
+DependentSemantics     = AT.DependentSemantics
+IndependentSemantics   = AT.IndependentSemantics
+AbstractionSemantics   = AT.AbstractionSemantics
+InDepSemantics         = AT.IndependentSemantics
+AbsDepSemantics        = Union[AbstractionSemantics, DependentSemantics]
 # Note: for dependent and indep, you retrieve semantics of a node,
 # for *abstractions*, you're getting the semantics of a *sentence*
 #--------------------------------------------------
@@ -56,10 +54,10 @@ class Semantic_Fragment(metaclass=abc.ABCMeta):
     """ Dataclass of Semantic Handlers to be added to the system, and any
     structs they require
     """
-    dependent   : List[DependentSemantics_i] = field(default_factory=list)
-    independent : List[IndependentSemantics_i] = field(default_factory=list)
-    abstraction : List[AbstractionSemantics_i] = field(default_factory=list)
-    structs     : List[Structure]          = field(default_factory=list)
+    dependent   : List[DependentSemantics]   = field(default_factory=list)
+    independent : List[IndependentSemantics] = field(default_factory=list)
+    abstraction : List[AbstractionSemantics] = field(default_factory=list)
+    structs     : List[Structure]            = field(default_factory=list)
 
     def __len__(self):
         counts = 0
@@ -85,7 +83,7 @@ class SemanticSystem_i(HandlerSystem_i):
     """
     # TODO possibly re-add hooks / failure handling
     # TODO add a system specific logging handler
-    ctx_set         : ContextSet_i     = field(default=None)
+    ctx_set         : CtxSet           = field(default=None)
 
     _operator_cache : Optional[CtxIns] = field(init=False, default=None)
 

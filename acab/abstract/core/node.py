@@ -6,9 +6,11 @@ import logging as root_logger
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 from uuid import UUID, uuid1
-from weakref import ref
+from weakref import ref, ReferenceType
 
+from acab import types as AT
 import acab.abstract.interfaces.data as DI
+import acab.abstract.interfaces.value as VI
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.values import AcabValue, Sentence
 
@@ -17,7 +19,7 @@ logging = root_logger.getLogger(__name__)
 
 config = AcabConfig.Get()
 
-Node = DI.Node_i
+Node = AT.Node
 
 @dataclass
 class AcabNode(DI.Node_i):
@@ -26,11 +28,11 @@ class AcabNode(DI.Node_i):
     """
     # TODO make children a dict of dicts
     # value  : AcabValue       = field(default=None)
-    data     : Dict[str, Any]  = field(default_factory=dict)
-    path     : Sentence        = field(default=None)
-    parent   : Node            = field(default=None)
-    children : Dict[str, Node] = field(default_factory=dict)
-    uuid     : UUID            = field(default_factory=uuid1)
+    data     : Dict[str, Any]                = field(default_factory=dict)
+    path     : Sentence                      = field(default=None)
+    parent   : Optional[ReferenceType]       = field(default=None)
+    children : Dict[str, Node]               = field(default_factory=dict)
+    uuid     : UUID                          = field(default_factory=uuid1)
 
     @staticmethod
     def Root():
@@ -39,9 +41,10 @@ class AcabNode(DI.Node_i):
 
 
     def __post_init__(self):
-        if isinstance(self.value, AcabNode):
+        if isinstance(self.value, DI.Node_i):
             raise TypeError("Nodes shouldn't have nodes inside them")
-        assert(isinstance(self.value, AcabValue))
+        if not isinstance(self.value, VI.Value_i):
+            raise TypeError("Nodes Must have Values inside them")
 
     def __str__(self):
         """ Data needs to implement a str method that produces
@@ -77,6 +80,7 @@ class AcabNode(DI.Node_i):
         """
         assert(isinstance(node, AcabNode))
         self.children[str(node)] = node
+        node.set_parent(self)
         return node
 
     def get_child(self, node) -> Node:
@@ -118,21 +122,24 @@ class AcabNode(DI.Node_i):
         """
         self.children = {}
 
-    def set_parent(self, parent):
+    def set_parent(self, parent: Node):
         """ Set the parent node to this node
         mutate object
         """
         assert(isinstance(parent, AcabNode))
         self.parent = ref(parent)
 
-    def parentage(self) -> List[Node]:
+    @property
+    def parentage(self) -> Sentence:
         """ Get the full path from the root to this node """
-        path = []
-        current = self
-        while current is not None:
-            path.insert(0, current)
-            current = current.parent
-        return path
+        path = [self.value]
+        current = self.parent
+        while current is not None and current() is not None:
+            path.append(current().value)
+            current = current().parent
+
+        path.reverse()
+        return Sentence.build(path)
 
 
     def _default_setup(self, path: [Node], data: Dict[Any,Any], context: Dict[Any,Any]):

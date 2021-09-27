@@ -8,6 +8,8 @@ communicate with unity.
 
 util provides standard enums, strings and some utility functions
 """
+import acab.abstract.interfaces.types as types
+
 
 def setup(location=None):
     from acab.abstract.config.config import AcabConfig
