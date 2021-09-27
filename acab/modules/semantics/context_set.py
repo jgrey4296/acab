@@ -196,7 +196,7 @@ class ContextSet(CtxInt.ContextSet_i, CtxInt.DelayedCommands_i):
         # Build the CtxInst data dict:
         op_dict = {str(x) : x[-1] for x in operators}
         # Add any sugar forms:
-        op_dict.update({x[-1].__class__.sugar : x[-1] for x in operators if hasattr(x[-1].__class__, "sugar")})
+        op_dict.update({x[-1]._acab_operator_sugar : x[-1] for x in operators if hasattr(x[-1], "_acab_operator_sugar")})
 
         # TODO abstract building ctxinst's to the set
         instance = ContextInstance(op_dict, exact=True)

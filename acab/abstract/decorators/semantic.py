@@ -102,7 +102,7 @@ def OperatorSugar(sugar:str, prefix=None):
             psugar += "."
         psugar += sugar
 
-        cls.__acab_operator_sugar = psugar
+        cls._acab_operator_sugar = psugar
         return cls
 
     return wrapped
