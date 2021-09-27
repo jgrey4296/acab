@@ -66,7 +66,7 @@ class ModuleLoader(ModuleLoader_i):
             semantic_frags      += [ensure_handler(y) for y in available_semantics]
 
             # Get Ops
-            loc_op_triple       =  [(base_path, x, y) for x,y in mod_contents if applicable(y, ProductionOperator)]
+            loc_op_triple       =  [(base_path, x, y) for x,y in mod_contents if applicable(y, (ProductionOperator, ActionOperator))]
             instanced_operators =  [(mod, name, y() if needs_init(y) else y) for mod, name, y in loc_op_triple]
             words_op            =  [(prep_op_path(mod, name), y) for mod, name, y in instanced_operators]
             sentences           =  [Sentence.build(xs).attach_statement(y) for xs, y in words_op]
