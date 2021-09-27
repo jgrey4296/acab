@@ -164,14 +164,10 @@ class AcabValue(VI.Value_i, Generic[T]):
         if type_matches_t:
             return self.data[DS.TYPE_INSTANCE]
 
-        if DS.SEMANTIC_HINT in self.data:
+        if DS.SEMANTIC_HINT in self.data and isinstance(self.data[DS.SEMANTIC_HINT], Sentence):
             self.data[DS.TYPE_INSTANCE] = self.data[DS.SEMANTIC_HINT]
-
-        type_words = self.data[DS.TYPE_INSTANCE]
-        if not isinstance(type_words, list):
-            type_words = [type_words]
-            self.data[DS.TYPE_INSTANCE] = Sentence.build(type_words)
-
+        else:
+            self.data[DS.TYPE_INSTANCE] = Sentence.build([self.data[DS.TYPE_INSTANCE]])
         return self.data[DS.TYPE_INSTANCE]
 
 
