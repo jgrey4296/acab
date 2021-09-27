@@ -7,6 +7,7 @@ logging = root_logger.getLogger(__name__)
 import acab
 config = acab.setup()
 
+from acab.abstract.interfaces.value import Sentence_i
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.values import AcabValue
 
@@ -27,9 +28,22 @@ class AcabNodeTests(unittest.TestCase):
         logging = root_logger.getLogger(__name__)
 
     #----------
+    def test_root_class_method(self):
+        root = AcabNode.Root()
+        self.assertIsInstance(root, AcabNode)
+
     def test_basic_creation(self):
         a_node = AcabNode(AV("test"))
         self.assertIsNotNone(a_node)
+
+    def test_creation_fail_no_value(self):
+        with self.assertRaises(TypeError):
+            AcabNode("blah")
+
+    def test_creation_fail_internal_node(self):
+        node = AcabNode(AV("test"))
+        with self.assertRaises(TypeError):
+            AcabNode(node)
 
     def test_length(self):
         a_node = AcabNode(AV("test"))
@@ -117,3 +131,40 @@ class AcabNodeTests(unittest.TestCase):
         a_node.clear_children()
         self.assertEqual(len(a_node),0)
         self.assertFalse(bool(a_node))
+
+
+    def test_iter(self):
+        node = AcabNode(AV("blah"))
+        node.add_child(AcabNode(AV("bloo")))
+        node.add_child(AcabNode(AV("blee")))
+
+        for x,y in zip(node, ["bloo", "blee"]):
+            self.assertEqual(x.value, y)
+
+    def test_eq_fail(self):
+        node1 = AcabNode(AV("blah"))
+        node2 = AcabNode(AV("blah"))
+        self.assertFalse(node1, node2)
+
+    def test_eq(self):
+        node1 = AcabNode(AV("blah"))
+        self.assertFalse(node1, node1)
+
+    def test_name(self):
+        node = AcabNode(AV("blah"))
+        self.assertEqual(node.name, "blah")
+
+    def test_parentage(self):
+        node1 = AcabNode(AV("first"))
+        node2 = AcabNode(AV("second"))
+        node3 = AcabNode(AV("third"))
+        node4 = AcabNode(AV("fourth"))
+
+        node1.add_child(node2).add_child(node3).add_child(node4)
+
+        parentage = node4.parentage
+        self.assertIsInstance(parentage, Sentence_i)
+        self.assertEqual(parentage[0], "first")
+        self.assertEqual(parentage[1], "second")
+        self.assertEqual(parentage[2], "third")
+        self.assertEqual(parentage[3], "fourth")

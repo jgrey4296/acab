@@ -43,6 +43,12 @@ class SentenceTests(unittest.TestCase):
         self.assertEqual(val, val2)
         self.assertEqual(val, val)
 
+    def test_eq_fail(self):
+        val = S("a", "test", "value")
+        val2 = S("a", "test", "difference")
+        self.assertNotEqual(val, val2)
+
+
     def test_build(self):
         val = S("a","test","value")
         val2 = Sentence.build(["a", "test","value"])
@@ -60,7 +66,6 @@ class SentenceTests(unittest.TestCase):
         self.assertEqual(val[0].value, "a")
         self.assertEqual(val[1].value, "test")
         self.assertEqual(val[2].value, "value")
-
 
     def test_copy(self):
         val = Sentence.build(["a","test","value"])
@@ -119,7 +124,7 @@ class SentenceTests(unittest.TestCase):
 
 
 
-    def test_slice(self):
+    def test_get_item_slice(self):
         val = Sentence.build(["a","test","value"])
         self.assertIsInstance(val[1:], Sentence)
         for x,y in zip(val[1:], ["test", "value"]):
@@ -166,3 +171,35 @@ class SentenceTests(unittest.TestCase):
 
         self.assertEqual(len(statements), 2)
         self.assertEqual(combined_simple, detached)
+
+
+    def test_contains(self):
+        sen = S("a", "test", "sentence")
+        self.assertIn("test", sen)
+
+    def test_contains_fail(self):
+        sen = S("a", "test", "sentence")
+        self.assertNotIn("blah", sen)
+
+    def test_clear(self):
+        sen = S("a", "test", "sentence")
+        sen.data["test data"] = True
+        sen_cleared = sen.clear()
+        self.assertEqual(len(sen_cleared), 0)
+        self.assertNotEqual(sen_cleared, sen)
+        self.assertIn("test data", sen_cleared.data)
+
+    def test_is_var_fail(self):
+        sen = S("a", "test", "sentence")
+        self.assertFalse(sen.is_var)
+
+    def test_is_var_fail_2(self):
+        sen = S("a", "test", "sentence")
+        sen[-1].data.update({BIND_S: True})
+        self.assertTrue(sen[-1].is_var)
+        self.assertFalse(sen.is_var)
+
+    def test_is_var_pass(self):
+        sen = S("single word")
+        sen[0].data.update({BIND_S: True})
+        self.assertTrue(sen.is_var)

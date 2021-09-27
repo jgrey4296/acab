@@ -6,8 +6,14 @@ from os.path import splitext, split
 import unittest
 import unittest.mock as mock
 
-import logging
+import logging as root_logger
+logging = root_logger.getLogger(__name__)
 
+import acab
+config = acab.setup()
+
+from acab.abstract.interfaces.data import Structure_i, Node_i
+from acab.abstract.core.acab_struct import BasicNodeStruct
 
 # TODO
 class StructureTests(unittest.TestCase):
@@ -28,8 +34,13 @@ class StructureTests(unittest.TestCase):
         logging.addHandler(console)
         logging.addHandler(file_h)
 
-        #----------
-        # use testcase snippet
-        # mock.Mock / MagicMock
-        # create_autospec
-        # @patch(' ') / with patch.object(...)
+
+    def test_creation(self):
+        struct = BasicNodeStruct.build_default()
+        self.assertIsInstance(struct, Structure_i)
+        self.assertIsInstance(struct.root, Node_i)
+        self.assertIsInstance(struct.components, dict)
+        # Empty except for root:
+        self.assertFalse(bool(struct))
+        # Root isn't counted
+        self.assertEqual(len(struct), 0)
