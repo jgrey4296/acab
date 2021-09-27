@@ -33,11 +33,11 @@ class ConstraintCollection(CtxInt.Constraint_i):
 
     _alphas      : List[ProdComp]      = field(default_factory=list)
     _betas       : List[ProdComp]      = field(default_factory=list)
-    _bind        : Value               = field(default=None)
+    _bind        : Optional[Value]     = field(default=None)
     _annotations : List[ProdComp]      = field(default_factory=list)
     _callables   : List[ProdComp]      = field(default_factory=list)
     _variables   : List[Value]         = field(default_factory=list)
-    _operators   : CtxIns              = field(default=None)
+    _operators   : Optional[CtxIns]    = field(default=None)
 
     @staticmethod
     def build(word, operators) -> Constraints:

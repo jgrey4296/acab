@@ -29,6 +29,15 @@ class AcabValueTests(unittest.TestCase):
 
     #----------
     #use testcase snippets
+    def test_safe_make(self):
+        value = AcabValue.safe_make("test",
+                                    name="test value",
+                                    data={"test data" : True})
+        self.assertIsInstance(value, AcabValue)
+        self.assertEqual(value.value, "test")
+        self.assertEqual(value.name, "test_value")
+        self.assertTrue("test data" in value.data)
+
     def test_construction(self):
         value = AcabValue("test")
         self.assertIsInstance(value, AcabValue)
@@ -103,3 +112,22 @@ class AcabValueTests(unittest.TestCase):
         self.assertNotEqual(value.uuid, copied.uuid)
         self.assertTrue("a" in copied.tags)
         self.assertFalse("b" in value.tags)
+
+
+    def test_eq(self):
+        val1 = AcabValue("test")
+        val2 = AcabValue("test")
+        self.assertEqual(val1, val2)
+
+    def test_eq_by_id(self):
+        val1 = AcabValue("test")
+        self.assertEqual(val1, val1)
+
+    def test_eq_by_str(self):
+        val1 = AcabValue("test")
+        self.assertEqual(val1, "test")
+
+    def test_eq_fail(self):
+        val1 = AcabValue("test")
+        val2 = AcabValue("blah")
+        self.assertNotEqual(val1, val2)

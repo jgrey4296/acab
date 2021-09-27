@@ -9,7 +9,9 @@ from typing import cast, ClassVar, TypeVar, Generic
 
 from dataclasses import dataclass, field, InitVar
 
-Value = "AcabValue"
+from acab import types as AT
+
+Value = AT.Value
 
 @dataclass
 class ValueAnnotation:

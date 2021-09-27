@@ -7,30 +7,21 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
+from acab import types as AT
 from acab.abstract.interfaces.dsl import (DSL_Fragment_i,
                                                     DSLBuilder_i)
 from acab.abstract.parsing.trie_bootstrapper import TrieBootstrapper
 
-Bootstrapper = 'Bootstrapper'
+Bootstrapper = AT.Bootstrapper
+DSL_Fragment = AT.DSL_Fragment
 
-# Decorator for Engine:
-def EnsureDSLInitialised(method):
-    def fn(self, *args, **kwargs):
-        if not self.initialised:
-            raise AcabBaseException("DSL Not Initialised")
-
-        return method(self, *args, **kwargs)
-
-    fn.__name__ = method.__name__
-    return fn
-#--------------------
 @dataclass
 class DSLBuilder(DSLBuilder_i):
     """ describes engine assembly of a parser from DSL Fragments """
 
     _bootstrap_parser: Bootstrapper = field(default_factory=TrieBootstrapper)
 
-    def construct_parsers_from_fragments(self, fragments:List[DSL_Fragment_i]):
+    def construct_parsers_from_fragments(self, fragments:List[DSL_Fragment]):
         """ Assemble parsers from the fragments of the wm and loaded modules """
         assert(all([isinstance(x, DSL_Fragment_i) for x in fragments]))
 

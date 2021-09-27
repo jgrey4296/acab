@@ -8,8 +8,10 @@ from typing import cast, ClassVar, TypeVar, Generic
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
-Structure= 'AcabStructure'
-Sentence = 'Sentence'
+from acab import types as AT
+
+Structure = AT.Structure
+Sentence  = AT.Sentence
 
 def LogHelper(prefix, level=root_logger.DEBUG):
     """

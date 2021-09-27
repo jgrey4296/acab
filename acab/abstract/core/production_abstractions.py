@@ -19,6 +19,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 from uuid import UUID, uuid1
 from weakref import ref
 
+from acab import types as AT
 import acab.abstract.core.default_structure as DS
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.values import AcabStatement, AcabValue, Sentence
@@ -28,10 +29,11 @@ config = AcabConfig.Get()
 
 logging = root_logger.getLogger(__name__)
 
-Operator  = 'ProductionOperator'
-Component = 'ProductionComponent'
-Container = 'ProductionContainer'
-Structure = 'ProductionStructure'
+Value      = AT.Value
+Operator   = AT.Operator
+Component  = AT.Component
+Container  = AT.Container
+PStructure = AT.ProductionStructure
 
 
 # TODO should this be an interface?
@@ -52,7 +54,7 @@ class ProductionOperator(AcabValue):
         object.__setattr__(self, 'value', self.name)
         self.data[DS.TYPE_INSTANCE] =  DS.OPERATOR_PRIM
 
-    def __call__(self, *params: List[AcabValue], data=None):
+    def __call__(self, *params: List[Value], data=None):
         raise NotImplementedError()
 
     def copy(self, **kwargs):
@@ -67,7 +69,7 @@ class ActionOperator(ProductionOperator):
     """ Special Operator type which gets passed the semantic system,
     so it can trigger instructions """
 
-    def __call__(self, *params: List[AcabValue], data=None, semSystem=None):
+    def __call__(self, *params: List[Value], data=None, semSystem=None):
         raise NotImplementedError()
 
 
@@ -78,7 +80,7 @@ class ProductionComponent(AcabStatement):
     # Sugared: Denotes whether the parse originated from a sugared operator
     # eg: $x ~= /blah/ -> $x
     sugared : bool      = field(default=False)
-    rebind  : AcabValue = field(default=None)
+    rebind  : Value     = field(default=None)
 
     def __post_init__(self):
         super(ProductionComponent, self).__post_init__()
@@ -130,7 +132,7 @@ class ProductionContainer(AcabStatement):
         # Bind params,
         # then Bind each clause separately,
         bound_clauses = [x.bind(data) for x in self.value]
-        bound_params = [x.bind(data) for x in self.params]
+        bound_params  = [x.bind(data) for x in self.params]
         return self.copy(value=bound_clauses, params=bound_params)
 
 
@@ -140,7 +142,7 @@ class ProductionStructure(ProductionContainer):
     A ProductionContainer, supplemented by a dictionary
     to group the clauses
     """
-    structure: Dict[str, ProductionContainer] = field(default_factory=dict)
+    structure: Dict[str, Container] = field(default_factory=dict)
 
     def __post_init__(self):
         # self.value = []
@@ -155,7 +157,7 @@ class ProductionStructure(ProductionContainer):
             pass
 
     def __repr__(self):
-        actual = [x for x in self.keys if x in self]
+        actual  = [x for x in self.keys if x in self]
         clauses = ";".join(["({}:{})".format(x,
                                              [str(z) for z in self[x].clauses])
                             for x in actual])
@@ -172,13 +174,13 @@ class ProductionStructure(ProductionContainer):
     def __getitem__(self, key):
         return self.structure[key]
 
-    def bind(self, data) -> Structure:
+    def bind(self, data) -> PStructure:
         # Bind params,
-        bound_params = [x.bind(data) for x in self.params]
+        bound_params  = [x.bind(data) for x in self.params]
         # Bind clauses
         bound_clauses = [x.bind(data) for x in self.clauses]
         # Bind sub containers
-        bound_struct = {x: y.bind(data) for x,y in self.structure.items()}
+        bound_struct  = {x: y.bind(data) for x,y in self.structure.items()}
 
         return self.copy(value=bound_clauses, params=bound_params, structure=bound_struct)
 

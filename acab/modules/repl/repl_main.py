@@ -58,7 +58,6 @@ def main():
 
     #import then build engine or default trie engine from args
     initial_modules = config.prepare("Module.REPL", "MODULES")().replace("\n", " ")
-    rebinder = config.prepare("Module.REPL", "REBIND")()
 
     #--------------------
     # MAIN REPL LOGIC:
@@ -66,13 +65,10 @@ def main():
     import acab.modules.repl.commands_core
     import acab.modules.repl.commands_info
     from acab.modules.repl.repl_commander import AcabREPLCommander
-    from acab.modules.repl.util import build_rebind_instruction
 
     repl = AcabREPLCommander()
     repl.onecmd(f"init {args.engine}")
     repl.onecmd(f"module {initial_modules}")
-    repl.state.engine(build_rebind_instruction(rebinder))
-
 
     print("\n--------------------------------------------------")
     repl.cmdloop()

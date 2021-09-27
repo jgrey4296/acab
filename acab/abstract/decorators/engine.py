@@ -2,6 +2,8 @@
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
+from acab.error.acab_parse_exception import AcabParseException
+
 def MaybeBuildOperatorCtx(method):
     """ Wrap an Engine method to:
     Force a ContextSet be passed to semantics,
@@ -32,7 +34,7 @@ def EnsureEngineInitialised(method):
     """ Utility Decorator to raise an error if the DSL hasn't been initialised """
     def fn(self, *args, **kwargs):
         if not self.initialised:
-            raise AcabBaseException("DSL Not Initialised")
+            raise AcabParseException("DSL Not Initialised")
 
         return method(self, *args, **kwargs)
 

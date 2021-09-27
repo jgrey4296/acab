@@ -13,13 +13,14 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 logging = root_logger.getLogger(__name__)
 
+from acab import types as AT
 from acab.abstract.decorators.dsl import EnsureDSLInitialised
 from acab.error.acab_base_exception import AcabBaseException
 
 Parser           = "pp.ParserElement"
-Sentence         = 'Sentence'
-Query            = 'ProductionContainer'
-ModuleComponents = "ModuleComponents"
+Sentence         = AT.Sentence
+Query            = AT.Container
+ModuleComponents = AT.ModuleComponents
 File             = 'FileObj'
 
 #----------------------------------------

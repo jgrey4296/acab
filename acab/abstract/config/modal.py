@@ -28,9 +28,9 @@ def modal_config(self):
         modal_names = self.value(modal_spec)
         logging.info("Initialising Modalities: {}".format(" ".join(modal_names)))
         for name in modal_names:
-            new_spec = self.prepare(f"Modal.{name}", "ENUM_VALUES")
-            default_spec = self.prepare(f"Modal.{name}", "DEFAULT")
-            symbol_spec = self.prepare(f"Modal.{name}.Symbols", as_dict=True)
+            new_spec           = self.prepare(f"Modal.{name}", "ENUM_VALUES")
+            default_spec       = self.prepare(f"Modal.{name}", "DEFAULT")
+            symbol_spec        = self.prepare(f"Modal.{name}.Symbols", as_dict=True)
             new_enum           = Enum(name, self.value(new_spec))
             default            = self.value(default_spec)
             symbol_dict        = self.value(symbol_spec)
@@ -50,3 +50,5 @@ def modal_config(self):
     # pylint: disable=unused-variable
     except AssertionError as err:
         logging.exception("Inconsistent Modality defined: {}".format(name))
+    except KeyError as err:
+        logging.exception("Missing Key found")

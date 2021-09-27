@@ -6,7 +6,8 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-from acab.abstract.config.config import AcabConfig, ConfigSpec
+from acab import types as AT
+from acab.abstract.config.config import AcabConfig
 from acab.abstract.core import production_abstractions as PA
 from acab.abstract.core.values import AcabStatement
 from acab.abstract.interfaces.handler_system import (Handler,
@@ -20,8 +21,9 @@ from acab.error.acab_semantic_exception import AcabSemanticException
 logging = root_logger.getLogger(__name__)
 
 
-Sentence         = 'Sentence'
-ModuleComponents = "ModuleComponents"
+Sentence         = AT.Sentence
+ModuleComponents = AT.ModuleComponents
+ConfigSpec       = AT.ConfigSpec
 
 @dataclass
 class PrintSystem_i(HandlerSystem_i):

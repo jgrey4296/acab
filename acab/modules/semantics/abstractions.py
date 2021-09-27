@@ -46,12 +46,12 @@ class TransformAbstraction(SI.AbstractionSemantics_i):
         for ctxIns in ctxs.active_list(clear=True):
             with MutableContextInstance(ctxs, ctxIns) as mutx:
                 for clause in transform.clauses:
-                    if clause.op in ctx:
-                        op = ctx[clause.op]
+                    if clause.op in mutx:
+                        op = mutx[clause.op]
                     elif isinstance(clause.op, ProductionOperator):
                         op = clause.op
                     else:
-                        op     = operators[clause.op]
+                        op = operators[clause.op]
                     params              = [mutx[x] for x in clause.params]
                     result              = op(*params, data=mutx.data)
                     mutx[clause.rebind] = result
@@ -94,10 +94,10 @@ class AtomicRuleAbstraction(SI.AbstractionSemantics_i):
             return
 
         if DS.TRANSFORM_COMPONENT in rule:
-            semsys(rule[DS.TRANSFORM_COMPONENT], data=data, ctxs=ctxs)
+            semsys(rule[DS.TRANSFORM_COMPONENT], ctxs=ctxs)
 
         if DS.ACTION_COMPONENT in rule:
-            semsys(rule[DS.ACTION_COMPONENT], data=data, ctxs=ctxs)
+            semsys(rule[DS.ACTION_COMPONENT], ctxs=ctxs)
 
 class ProxyRuleAbstraction(SI.AbstractionSemantics_i):
     """ Run a rules queries, then return ctxs bound
@@ -109,7 +109,7 @@ class ProxyRuleAbstraction(SI.AbstractionSemantics_i):
             subctx = ctxs[instruction]
             self.run_continuations(instruction, semsys, ctxs=subctx)
         else:
-            self.run_query(instruction, semsys, ctxs=ctxs)
+            self.run_query(instruction, semsys, ctxs=ctxs, data=data)
 
 
 
@@ -120,7 +120,7 @@ class ProxyRuleAbstraction(SI.AbstractionSemantics_i):
 
         # Run the query
         if DS.QUERY_COMPONENT in rule:
-            semsys(rule[DS.QUERY_COMPONENT], data=data, ctxs=ctxs)
+            semsys(rule[DS.QUERY_COMPONENT], ctxs=ctxs)
 
         if not bool(ctxs):
             return
@@ -132,12 +132,10 @@ class ProxyRuleAbstraction(SI.AbstractionSemantics_i):
 
         if DS.TRANSFORM_COMPONENT in instruction:
             semsys(instruction[DS.TRANSFORM_COMPONENT],
-                   data=data,
                    ctxs=ctxs)
 
         if DS.ACTION_COMPONENT in instruction:
             semsys(instruction[DS.ACTION_COMPONENT],
-                   data=data,
                    ctxs=ctxs)
 
 
@@ -155,17 +153,17 @@ class LayerAbstraction(SI.AbstractionSemantics_i):
         layer = instruction
 
         if DS.QUERY_COMPONENT in layer:
-            semsys(layer[DS.QUERY_COMPONENT], data=data, ctxs=ctxs)
+            semsys(layer[DS.QUERY_COMPONENT], ctxs=ctxs)
 
         if not bool(ctxs):
             return
 
         # TODO needs to be applied to all actives
         if DS.TRANSFORM_COMPONENT in layer:
-            semsys.run(layer[DS.TRANSFORM_COMPONENT], data=data, ctxs=ctxs)
+            semsys.run(layer[DS.TRANSFORM_COMPONENT], ctxs=ctxs)
 
         if DS.ACTION_COMPONENT in layer:
-            semsys.run(layer[DS.ACTION_COMPONENT], data=data, ctxs=ctxs)
+            semsys.run(layer[DS.ACTION_COMPONENT], ctxs=ctxs)
 
 class AgendaAbstraction(SI.AbstractionSemantics_i):
     """ A Layer-specific transform, to run operators on ctxs """

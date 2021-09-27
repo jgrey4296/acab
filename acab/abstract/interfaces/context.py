@@ -14,9 +14,11 @@ from uuid import UUID
 
 logging = root_logger.getLogger(__name__)
 
+from acab import types as AT
+
 # Type declarations:
-CtxSet      = "ContextSet_i"
-CtxIns      = "ContextInstance_i"
+CtxSet      = AT.CtxSet
+CtxIns      = AT.CtxIns
 DelayValue  = Union[UUID, CtxIns, CtxSet, None]
 
 

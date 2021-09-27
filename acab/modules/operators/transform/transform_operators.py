@@ -6,12 +6,11 @@ from re import sub
 from acab.abstract.core.production_abstractions import ProductionOperator
 from acab.abstract.decorators.semantic import (OperatorArgUnWrap,
                                                OperatorDataUnWrap,
-                                               OperatorResultWrap)
+                                               OperatorResultWrap,
+                                               OperatorSugar)
 
-
+@OperatorSugar("~:")
 class RegexOp(ProductionOperator):
-
-    sugar = "_:~:"
 
     @OperatorArgUnWrap
     @OperatorResultWrap
@@ -24,10 +23,8 @@ class RegexOp(ProductionOperator):
         """
         return sub(pattern, replacement, value)
 
-
+@OperatorSugar("%:")
 class FormatOp(ProductionOperator):
-
-    sugar = "_:%:"
 
     @OperatorDataUnWrap
     @OperatorArgUnWrap
