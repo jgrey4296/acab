@@ -146,6 +146,15 @@ class AcabValue(VI.Value_i, Generic[T]):
 
 
 
+    def __lt__(self, other):
+        if isinstance(other, AcabValue):
+            return self.name < other.name
+        elif isinstance(other, str):
+            return self.name < str
+
+        return TypeError("AcabValues can only be __lt__'d with AcabValues and Strings")
+
+
     @property
     def type(self) -> Sen:
         """ Lazily coerces description to Sentence """
