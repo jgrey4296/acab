@@ -44,19 +44,23 @@ TYPE_INSTANCE_S   = config.prepare("Value.Structure", "TYPE_INSTANCE")()
 class PrintBasicSentenceSemanticTests(unittest.TestCase):
     def test_sentence_basic(self):
         sem = BasicPrinter(init_handlers=[Printers.ModalAwarePrinter().as_handler("_:ATOM"),
+                                          Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
                                           Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
-                                          Printers.PrimitiveTypeAwarePrinter().as_handler("_:NO_MODAL")])
+                                          Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
+                                          Printers.ModalPrinter().as_handler("_:MODAL")],
+                           settings={"MODAL" : ""})
         words = ["a", "b", "c", "d"]
         sentence = Sentence.build(words)
 
         result = sem.pprint(sentence)
-        self.assertEqual(result, SEN_JOIN_S.join(words))
+        self.assertEqual(result, FALLBACK_MODAL_S.join(words))
 
     def test_sentence_modal(self):
         sem = BasicPrinter(init_handlers=[Printers.ModalAwarePrinter().as_handler("_:ATOM"),
                                           Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
+                                          Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
                                           Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
-                                          Printers.PrimitiveTypeAwarePrinter().as_handler("_:NO_MODAL")],
+                                          Printers.ModalPrinter().as_handler("_:MODAL")],
                           settings={"MODAL" : "exop"})
         sentence = FP.parseString("a.test.sen")[0]
         result = sem.pprint(sentence)
@@ -64,9 +68,10 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
 
     def test_sentence_modal_2(self):
         sem = BasicPrinter(init_handlers=[Printers.ModalAwarePrinter().as_handler("_:ATOM"),
+                                          Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
                                           Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
                                           Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
-                                          Printers.PrimitiveTypeAwarePrinter().as_handler("_:NO_MODAL")],
+                                          Printers.ModalPrinter().as_handler("_:MODAL")],
                           settings={"MODAL": "exop"})
         sentence = FP.parseString("a.test!sen")[0]
         result = sem.pprint(sentence)
@@ -74,9 +79,10 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
 
     def test_sentence_query(self):
         sem = BasicPrinter(init_handlers=[Printers.ModalAwarePrinter().as_handler("_:ATOM"),
+                                          Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
                                           Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
                                           Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
-                                          Printers.PrimitiveTypeAwarePrinter().as_handler("_:NO_MODAL")],
+                                          Printers.ModalPrinter().as_handler("_:MODAL")],
                           settings={"MODAL": "exop"})
         sentence = FP.parseString("a.test!sen")[0]
         sentence.data[DS.QUERY] = True
@@ -86,8 +92,9 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
     def test_sentence_negated(self):
         sem = BasicPrinter(init_handlers=[Printers.ModalAwarePrinter().as_handler("_:ATOM"),
                                           Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
+                                          Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
                                           Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
-                                          Printers.PrimitiveTypeAwarePrinter().as_handler("_:NO_MODAL")],
+                                          Printers.ModalPrinter().as_handler("_:MODAL")],
                           settings={"MODAL" : "exop"})
         sentence = FP.parseString("~a.test.sen")[0]
         result = sem.pprint(sentence)
