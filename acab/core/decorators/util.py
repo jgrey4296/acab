@@ -41,9 +41,23 @@ def registerOn(cls:type):
     return wrapper
 
 
+<<<<<<< HEAD:acab/core/decorators/util.py
 def mapToEnum(the_dict:Dict[Enum, Any], enum_v:Enum):
     def wrapper(fn):
         the_dict[enum_v] = fn
         return fn
 
     return wrapper
+=======
+def cache(f):
+    cache_key = f"{f.__name__}__cached_val"
+    def wrapped(self, *args):
+        if hasattr(self, cache_key):
+            return getattr(self, cache_key)
+
+        object.__setattr__(self, cache_key, f(self, *args))
+        return getattr(self, cache_key)
+
+    wrapped.__name__ = f"Cached({f.__name__})"
+    return wrapped
+>>>>>>> 57fd09ba ([decorator] add @cache decorator):acab/abstract/decorators/util.py

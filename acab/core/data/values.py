@@ -105,6 +105,7 @@ class AcabValue(VI.Value_i, Generic[T]):
             self.params.extend([AcabValue.safe_make(x) for x in original_params])
 
 
+    @cache
     def __str__(self):
         """ the simplest representation of the value,
         for internal use.
@@ -113,6 +114,7 @@ class AcabValue(VI.Value_i, Generic[T]):
         return self.name
 
 
+    @cache
     def __repr__(self):
         val_str = ""
         name_str = str(self)
@@ -128,6 +130,7 @@ class AcabValue(VI.Value_i, Generic[T]):
                                      name_str,
                                      val_str)
 
+    @cache
     def __hash__(self):
         return hash(repr(self))
 
@@ -155,7 +158,12 @@ class AcabValue(VI.Value_i, Generic[T]):
         return TypeError("AcabValues can only be __lt__'d with AcabValues and Strings")
 
 
+    @cache
+    def key(self):
+        """ Default Key Value->str for node mapping """
+        return repr(self)
     @property
+    @cache
     def type(self) -> Sen:
         """ Lazily coerces description to Sentence """
         # TODO ensure this type sentence is of type... "sentence.type"?
@@ -172,10 +180,12 @@ class AcabValue(VI.Value_i, Generic[T]):
 
 
     @property
+    @cache
     def is_var(self) -> bool:
         return self.data[DS.BIND] is not False
 
     @property
+    @cache
     def is_at_var(self) -> bool:
         return self.data[DS.BIND] == DS.AT_BIND
 
@@ -301,14 +311,18 @@ class Sentence(AcabStatement, VI.Sentence_i):
             return all([x == y for x,y in zip(self.words, other.words)])
 
 
+    @cache
     def __hash__(self):
         return hash(str(self))
+    @cache
     def __str__(self):
         words = FALLBACK_MODAL.join([str(x) for x in self.words])
         return "{}:{}".format(self.name, words)
 
+    @cache
     def __repr__(self):
         return super().__repr__()
+    @cache
     def __len__(self):
         return len(self.words)
     def __iter__(self):
@@ -449,6 +463,7 @@ class Sentence(AcabStatement, VI.Sentence_i):
 
 
     @property
+    @cache
     def is_var(self) -> bool:
         if len(self) > 1:
             return False
@@ -456,6 +471,7 @@ class Sentence(AcabStatement, VI.Sentence_i):
         return self[0].is_var
 
     @property
+    @cache
     def is_at_var(self) -> bool:
         if len(self) > 1:
             return False

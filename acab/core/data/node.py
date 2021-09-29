@@ -4,9 +4,11 @@ AcabNode: The internal type which knowledge base data structures use.
 """
 import logging as root_logger
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
 from uuid import UUID, uuid1
-from weakref import ref, ReferenceType
+from weakref import ReferenceType, ref
 
 from acab import types as AT
 import acab.interfaces.data as DI
@@ -19,7 +21,8 @@ logging = root_logger.getLogger(__name__)
 
 config = AcabConfig.Get()
 
-Node = AT.Node
+Node  = AT.Node
+Value = AT.Value
 
 @dataclass
 class AcabNode(DI.Node_i):
@@ -46,11 +49,11 @@ class AcabNode(DI.Node_i):
         if not isinstance(self.value, VI.Value_i):
             raise TypeError("Nodes Must have Values inside them")
 
+    @cache
     def __str__(self):
-        """ Data needs to implement a str method that produces
-        output that can be re-parsed """
         return self.value.name
 
+    @cache
     def __repr__(self):
         return "{}({})".format(self.__class__.__name__,
                                str(self))
@@ -67,9 +70,17 @@ class AcabNode(DI.Node_i):
     def __iter__(self):
         return iter(self.children.values())
 
+    @cache
     def __hash__(self):
         return hash(self.uuid)
 
+    @cache
+    def key(self):
+        """ Default Node->str key for child mapping """
+        return self.value.key()
+
+    def keys(self):
+        return self.children.keys()
     @property
     def name(self):
         return str(self.value)

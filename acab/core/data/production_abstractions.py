@@ -62,6 +62,7 @@ class ProductionOperator(AcabValue):
         return self
 
     @property
+    @cache
     def op_path(self):
         return self.value
 
@@ -89,6 +90,7 @@ class ProductionComponent(AcabStatement):
 
 
     @property
+    @cache
     def op(self):
         return self.value
 
@@ -129,6 +131,7 @@ class ProductionContainer(AcabStatement):
         clauses = ";".join([repr(x) for x in self.clauses])
         return "(ProductionContainer:{}:{})".format(self.name,
                                                     clauses)
+    @cache
     def __len__(self):
         return len(self.clauses)
 
@@ -167,6 +170,7 @@ class ProductionStructure(ProductionContainer):
             # Expected
             pass
 
+    @cache
     def __repr__(self):
         actual  = [x for x in self.keys if x in self]
         clauses = ";".join(["({}:{})".format(x,
@@ -175,6 +179,7 @@ class ProductionStructure(ProductionContainer):
 
         return "(ProductionStructure:{}:{})".format(self.name, clauses)
 
+    @cache
     def __hash__(self):
         return hash(repr(self))
 
