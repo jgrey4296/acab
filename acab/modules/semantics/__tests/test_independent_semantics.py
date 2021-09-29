@@ -30,11 +30,12 @@ class IndependentSemanticTests(unittest.TestCase):
     # Insert/Remove/Accessible/Get/Up/Down
     ## everything equal except insert for basic v exclusion
     def test_basic_node_insert(self):
+        """ Check basic node insertion using semantics """
         sem = BasicNodeSemantics()
         # create two nodes
-        first = sem.make(AcabValue("first"))
+        first  = sem.make(AcabValue("first"))
         second = sem.make(AcabValue("second"))
-        third = sem.make(AcabValue("third"))
+        third  = sem.make(AcabValue("third"))
         # insert one into the other
         sem.insert(first, second)
         sem.insert(first, third)
@@ -43,6 +44,7 @@ class IndependentSemanticTests(unittest.TestCase):
         self.assertTrue(third in first)
 
     def test_exclusion_node_insert(self):
+        """ Check basic exclusion semantic insertion """
         sem = ExclusionNodeSemantics()
         # create two sub nodes
         first = sem.make(AcabValue("first"), data={EXOP: EXOP_enum.EX})
@@ -56,6 +58,7 @@ class IndependentSemanticTests(unittest.TestCase):
         self.assertTrue(third in first)
 
     def test_basic_node_insert_fail(self):
+        """ Check repeated insertion fails """
         sem = BasicNodeSemantics()
         # create two nodes
         first = sem.make(AcabValue("first"))
@@ -68,6 +71,7 @@ class IndependentSemanticTests(unittest.TestCase):
 
 
     def test_basic_access_all(self):
+        """ Check semantics provides access to all child nodes """
         sem = BasicNodeSemantics()
         # create two nodes
         first  = sem.make(AcabValue("first"))
@@ -81,6 +85,7 @@ class IndependentSemanticTests(unittest.TestCase):
         self.assertEqual(len(accessed), 2)
 
     def test_basic_access_specific(self):
+        """ Check semantics provide access to specific children """
         sem = BasicNodeSemantics()
         # create two nodes
         first  = sem.make(AcabValue("first"))
@@ -95,6 +100,7 @@ class IndependentSemanticTests(unittest.TestCase):
         self.assertEqual(accessed[0].value, "second")
 
     def test_exclusion_access(self):
+        """ Check exclusion semantics provides access to specific children """
         sem = ExclusionNodeSemantics()
         # create two nodes
         first = sem.make(AcabValue("first"))
@@ -106,6 +112,7 @@ class IndependentSemanticTests(unittest.TestCase):
         self.assertEqual(accessed[0].value, "second")
 
     def test_exclusion_access_fail(self):
+        """ Check exclusion semantics enforces correct modality on access of children """
         sem = ExclusionNodeSemantics()
         # create two nodes
         first = sem.make(AcabValue("first"))
@@ -117,6 +124,7 @@ class IndependentSemanticTests(unittest.TestCase):
 
 
     def test_basic_access_fail(self):
+        """ Check access of non existent children fails """
         sem = BasicNodeSemantics()
         # create two nodes
         first  = sem.make(AcabValue("first"))
@@ -130,6 +138,7 @@ class IndependentSemanticTests(unittest.TestCase):
         self.assertEqual(len(accessed), 0)
 
     def test_basic_remove(self):
+        """ Check removing nodes via semantics works """
         sem = BasicNodeSemantics()
         # create two nodes
         first  = sem.make(AcabValue("first"))
@@ -144,6 +153,7 @@ class IndependentSemanticTests(unittest.TestCase):
         self.assertFalse(second in first)
 
     def test_basic_remove_fail(self):
+        """ Check removing non existent children fails """
         sem = BasicNodeSemantics()
         # create two nodes
         first  = sem.make(AcabValue("first"))
@@ -157,9 +167,28 @@ class IndependentSemanticTests(unittest.TestCase):
         with self.assertRaises(AcabSemanticException):
             sem.remove(first, AcabValue("fourth"))
 
-    # Dependent  : Trie/FSM/ASP
-    # Insert/Remove/Query/Trigger
+    def test_node_access_str_vs_atom(self):
+        """ Check accessing a str vs an atom is differentiated """
+        sem        = BasicNodeSemantics()
+        root       = sem.make(AcabValue.safe_make("root"))
+        atom_value = sem.make(AcabValue.safe_make("value"))
+        str_value  = sem.make(AcabValue.safe_make(atom_value.value, data={DS.TYPE_INSTANCE : "string"}))
+        self.assertNotEqual(atom_value.value.type, str_value.value.type)
+        sem.insert(root, atom_value)
+        result = sem.access(root, str_value.value)
+        self.assertFalse(result)
 
+    def test_node_insert_str_vs_atom(self):
+        """ Check inserting a str vs an atom is differentiated """
+        sem        = BasicNodeSemantics()
+        root       = sem.make(AcabValue.safe_make("root"))
+        atom_value = sem.make(AcabValue.safe_make("value"))
+        str_value  = sem.make(AcabValue.safe_make(atom_value.value, data={DS.TYPE_INSTANCE : "string"}))
+        self.assertNotEqual(atom_value.value.type, str_value.value.type)
+        sem.insert(root, atom_value)
+        self.assertEqual(len(root), 1)
+        sem.insert(root, str_value)
+        self.assertEqual(len(root), 2)
 
 
 if __name__ == '__main__':

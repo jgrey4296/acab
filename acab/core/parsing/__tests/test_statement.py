@@ -37,6 +37,7 @@ class StatementTests(unittest.TestCase):
     #----------
     #use testcase snippets
     def test_basic_tag(self):
+        """ Check a constructed statement can have tags """
         basic_node_parser = pp.Keyword('test')
         basic_node_parser.setParseAction(lambda s, l, toks: Sentence.build([AcabValue(toks[0])]))
 
@@ -52,6 +53,7 @@ class StatementTests(unittest.TestCase):
         self.assertTrue('test' in tags_str)
 
     def test_basic_tag_plural(self):
+        """ Check a constructed statement can have multiple tags """
         basic_node_parser = pp.Keyword('test')
         basic_node_parser.setParseAction(lambda s, l, toks: Sentence.build([AcabValue(toks[0])]))
 

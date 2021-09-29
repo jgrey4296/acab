@@ -36,6 +36,7 @@ class StructureTests(unittest.TestCase):
 
 
     def test_creation(self):
+        """ Check a structure can be created using the "build_default" method """
         struct = BasicNodeStruct.build_default()
         self.assertIsInstance(struct, Structure_i)
         self.assertIsInstance(struct.root, Node_i)

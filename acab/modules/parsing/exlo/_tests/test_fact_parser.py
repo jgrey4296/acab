@@ -35,17 +35,20 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
 
     #----------
     def test_trivial(self):
+        """ Check basic elements of the parser exist """
         self.assertIsNotNone(FP.parseString)
         self.assertIsNotNone(FP.SENTENCE)
         self.assertIsNotNone(FP.SEN_PLURAL)
 
     def test_parseStrings(self):
-        result = FP.parseString('a.b.c, b.c.d')
+        """ Check multiple sentences can be parsed on separate lines"""
+        result = FP.parseString('a.b.c\nb.c.d')
         self.assertIsInstance(result, list)
         self.assertEqual(len(result), 2)
         self.assertTrue(all([isinstance(x, Sentence) for x in result]))
 
     def test_parse_strings_multi_with_comma(self):
+        """ Check multiple strings can be parsed on one line """
         result = FP.parseString('a.b.c, b.c.d')
         self.assertIsInstance(result, list)
         self.assertEqual(len(result), 2)
@@ -63,20 +66,24 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertTrue(result[-1].is_var)
 
     def test_exclusion_operator_parsing(self):
+        """ Check exclusion operators can be parsed """
         result = FP.parseString('a!b!c')[0]
         self.assertTrue(all([x.data['exop'] == config.enums['exop'].EX for x in result[:-1]]))
 
     def test_strings(self):
+        """ Check strings can be parsed """
         result = FP.parseString('a.b."This is a test"!c')[0]
         self.assertEqual(len(result), 4)
         self.assertEqual(result[2].value, 'This is a test')
 
     def test_bind_addition_to_node_recognition(self):
+        """ Check variables can be parsed with exclusion operators """
         result = FP.parseString('$a.$b!$c')[0]
         for x in result:
             self.assertTrue(x.is_var)
 
     def test_fact_leading_bind(self):
+        """ Check a sentence with a variable at the head can be parsed """
         result = FP.parseString('$x.a.b.c')[0]
         self.assertTrue(result[0].is_var)
 

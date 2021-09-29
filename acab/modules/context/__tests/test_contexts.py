@@ -25,27 +25,39 @@ class ContextsTests(unittest.TestCase):
 
     #----------
     def test_set_basic(self):
+        """ Check a ContextSet can be created """
         ctx = ContextSet()
         self.assertIsNotNone(ctx)
         self.assertTrue(bool(ctx))
         self.assertEqual(len(ctx), 1)
 
     def test_instance_basic(self):
+        """ Check a ContextInstance can be created """
         inst = ContextInstance()
         self.assertEqual(inst.data, {})
         self.assertEqual(inst.nodes, {})
 
     def test_instance_bindings(self):
+        """ Check a context instance can be created with bindings """
         inst = ContextInstance(data={"a" : 2, "b" : 3})
         self.assertEqual(inst.data['a'], 2)
         self.assertEqual(inst.data['b'], 3)
 
     def test_instance_nodes(self):
+        """ Check a context instance can be created with node bindings """
         inst = ContextInstance(nodes={"a": 2, "b": 3})
         self.assertEqual(inst.nodes["a"], 2)
         self.assertEqual(inst.nodes["b"], 3)
 
     def test_instance_copy(self):
+        """ Check a context instance can be copied """
+        inst = ContextInstance(data={"a": 2, "b": 3})
+        inst2 = inst.copy()
+        self.assertNotEqual(id(inst), id(inst2))
+        self.assertNotEqual(inst.uuid, inst2.uuid)
+
+    def test_instance_copy_independence(self):
+        """ Check a context instance can be copied """
         inst = ContextInstance(data={"a": 2, "b": 3})
         inst2 = inst.copy()
         inst2.data["a"] = 5
@@ -55,6 +67,7 @@ class ContextsTests(unittest.TestCase):
         self.assertEqual(inst2.data["a"], 5)
 
     def test_set_append(self):
+        """ Check a context set can manipulate its contents """
         ctx = ContextSet()
         self.assertTrue(bool(ctx))
         ctx.pop()
@@ -67,6 +80,7 @@ class ContextsTests(unittest.TestCase):
         self.assertEqual(len(ctx), 2)
 
     def test_set_append_2(self):
+        """ Check multiple context instances can be pushed onto a context set """
         ctx = ContextSet()
         ctx.pop()
         self.assertFalse(bool(ctx))
@@ -77,6 +91,7 @@ class ContextsTests(unittest.TestCase):
         self.assertEqual(len(ctx), 3)
 
     def test_set_fail(self):
+        """ Check context instances can be marked failed in the context set """
         ctx = ContextSet()
         inst = ctx.pop()
         self.assertFalse(bool(ctx))
@@ -86,6 +101,7 @@ class ContextsTests(unittest.TestCase):
         self.assertContains(inst.uuid, ctx._purgatory)
 
     def test_set_iteration(self):
+        """ Check context instances can be iterated via the context set """
         ctx = ContextSet()
         ctx.pop()
         ctx.push([ContextInstance({"a" : 1}),
@@ -97,6 +113,7 @@ class ContextsTests(unittest.TestCase):
 
 
     def test_set_alts_binding(self):
+        """ Check context instances can set their current focus node """
         ctx = ContextSet()
         ctx.pop()
         ctx.push([ContextInstance(nodes={'a': "blah"}),
@@ -109,6 +126,7 @@ class ContextsTests(unittest.TestCase):
             self.assertEqual(x._current, y)
 
     def test_set_alts_invalid_binding(self):
+        """ Check context instances can't focus on non-existent nodes """
         ctx = ContextSet()
         ctx.pop()
         ctx.push([ContextInstance(nodes={'a': "blah"}),

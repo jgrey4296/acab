@@ -71,6 +71,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
 
 
     def test_component_simple(self):
+        """ Check production components can be printed """
         component = ProductionComponent(value=FP.parseString("testop.blah")[0])
         sem_sys = BasicPrinter(init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
                                               Printers.AnnotationAwareValuePrinter().as_handler("_:ATOM"),
@@ -85,6 +86,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
         self.assertEqual(result, "λtestop.blah")
 
     def test_component_simple2(self):
+        """ Check production components with variables can be printed """
         component = ProductionComponent(value=FP.parseString("testop.blah")[0],
                                         params=[FP.parseString("$x")[0][0]])
         sem_sys = BasicPrinter(init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
@@ -100,6 +102,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
         self.assertEqual(result, "λtestop.blah $x")
 
     def test_transform_simple(self):
+        """ Check transforms print the rebind variable """
         component = ProductionComponent(value=FP.parseString("testop.blah")[0],
                                         params=[FP.parseString("$x")[0][0]],
                                         rebind=FP.parseString("$y")[0][0])
@@ -116,6 +119,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
         self.assertEqual(result, "λtestop.blah $x -> $y")
 
     def test_container(self):
+        """ Check containers print all their clauses """
         sem_sys = BasicPrinter(init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
                                               Printers.AnnotationAwareValuePrinter().as_handler("_:ATOM"),
                                               Printers.ProductionComponentPrinter().as_handler("_:COMPONENT"),
@@ -136,6 +140,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
 
 
     def test_rule(self):
+        """ Check a rule can be printed """
         sem_sys = BasicPrinter(init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
                                               Printers.AnnotationAwareValuePrinter().as_handler("_:ATOM"),
                                               Printers.ProductionComponentPrinter().as_handler("_:COMPONENT"),
@@ -156,6 +161,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
         self.assertEqual(result, "rule(::_:RULE):\n    a.b.c?\n\n    λa.b.c\nend\n")
 
     def test_rule_with_tags(self):
+        """ Check a rule prints its tags """
         sem_sys = BasicPrinter(init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
                                               Printers.AnnotationAwareValuePrinter().as_handler("_:ATOM"),
                                               Printers.ProductionComponentPrinter().as_handler("_:COMPONENT"),
@@ -184,6 +190,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
 
 
     def test_query_statement(self):
+        """ Check a query statement prints its clauses """
         sem_sys = BasicPrinter(init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
                                               Printers.AnnotationAwareValuePrinter().as_handler("_:ATOM"),
                                               Printers.ProductionComponentPrinter().as_handler("_:COMPONENT"),
@@ -209,6 +216,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
         self.assertEqual(result, """statement(::_:QUERY):\n    a.b.c?\n    d.e.f?\n    g.h.e?\nend\n""")
 
     def test_transform_statement(self):
+        """ Check a transform statement prints its clauses """
         sem_sys = BasicPrinter(init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
                                               Printers.AnnotationAwareValuePrinter().as_handler("_:ATOM"),
                                               Printers.ProductionComponentPrinter().as_handler("_:COMPONENT"),
@@ -234,6 +242,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
         self.assertEqual(result, """statement(::_:TRANSFORM):\n    λa.b.c $x $y -> $z\n    λq.c.d $z $x -> $a\n    λa.b.c $a $y -> $c\nend\n""")
 
     def test_action_statement(self):
+        """ Check an action statement prints its clauses """
         sem_sys = BasicPrinter(init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
                                               Printers.AnnotationAwareValuePrinter().as_handler("_:ATOM"),
                                               Printers.ProductionComponentPrinter().as_handler("_:COMPONENT"),

@@ -65,6 +65,7 @@ PIPELINE_SEM_HINT  = Sentence.build([config.prepare("SEMANTICS", "PIPELINE")()])
 
 class AbstractionSemanticTests(unittest.TestCase):
     def test_transform(self):
+        """ Check transforms semantics work """
         sem                                 = ASem.TransformAbstraction()
         # Construct context set for operators
         op_loc_path                         = Sentence.build(["Regex"])
@@ -153,6 +154,7 @@ class AbstractionSemanticTests(unittest.TestCase):
 
 
     def test_container(self):
+        """ check container semantics applies all clauses """
         side_effect_obj = {"a" : 1}
 
         class TestTransform(ProductionOperator):
@@ -218,6 +220,7 @@ class AbstractionSemanticTests(unittest.TestCase):
 
 
     def test_atomic_rule(self):
+        """ Check a rule can be applied in an atomic step """
         side_effect_obj = {"a" : 1}
 
         class TestAction(ActionOperator):
@@ -296,6 +299,7 @@ class AbstractionSemanticTests(unittest.TestCase):
         self.assertEqual(side_effect_obj["a"], "SENtence")
 
     def test_proxy_rule(self):
+        """ Check a rule can be applied in a two stage, non-atomic fashion """
         side_effect_obj = {"a" : 1}
 
         class TestAction(ActionOperator):

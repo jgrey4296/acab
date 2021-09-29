@@ -33,6 +33,7 @@ CONSTRAINT_V = config.prepare("Value.Structure", "CONSTRAINT")()
 
 class TrieSemanticTests(unittest.TestCase):
     def test_trie_insert_basic(self):
+        """ Check trie semantics inserts nodes in the correct places """
         node_sem = BasicNodeSemantics().as_handler("_:node")
         trie_sem = BreadthTrieSemantics(default=node_sem)
         trie_struct = BasicNodeStruct.build_default()
@@ -42,10 +43,13 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem.insert(sen, trie_struct)
         # check nodes are in
         self.assertTrue("a" in trie_struct.root)
-        self.assertTrue("test" in trie_struct.root.children["a"])
-        self.assertTrue("sentence" in trie_struct.root.children["a"].children["test"])
+        self.assertTrue("test" in trie_struct.root[sen[0]])
+        self.assertTrue("sentence" in trie_struct.root[sen[:2]])
 
+        self.assertFalse("test" in trie_struct.root)
+        self.assertFalse("sentence" in trie_struct.root)
     def test_trie_insert_non_exclusion(self):
+        """ Check trie insertion works without exclusion when using BasicNodeSemantics """
         node_sem = BasicNodeSemantics().as_handler("_:node")
         trie_sem = BreadthTrieSemantics(default=node_sem)
         trie_struct = BasicNodeStruct.build_default()
@@ -57,11 +61,12 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem.insert(sen2, trie_struct)
         # check nodes are in
         self.assertTrue("a" in trie_struct.root)
-        self.assertTrue("test" in trie_struct.root.children["a"])
-        self.assertTrue("sentence" in trie_struct.root.children["a"].children["test"])
-        self.assertTrue("other" in trie_struct.root.children["a"].children["test"])
+        self.assertTrue("test" in trie_struct.root[sen[0]])
+        self.assertTrue("sentence" in trie_struct.root[sen[:2]])
+        self.assertTrue("other" in trie_struct.root[sen[:2]])
 
     def test_trie_insert_exclusion(self):
+        """ Check Trie insertion uses exclusion when using ExclusionNodeSemantics """
         node_sem    = ExclusionNodeSemantics().as_handler("_:node")
         trie_sem    = BreadthTrieSemantics(default=node_sem)
         trie_struct = BasicNodeStruct.build_default()
@@ -75,12 +80,13 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem.insert(sen2, trie_struct)
         # check nodes are in
         self.assertTrue("a" in trie_struct.root)
-        self.assertTrue("test" in trie_struct.root.children["a"])
-        self.assertFalse("sentence" in trie_struct.root.children["a"].children["test"])
-        self.assertTrue("other" in trie_struct.root.children["a"].children["test"])
+        self.assertTrue("test" in trie_struct.root[sen[0]])
+        self.assertFalse("sentence" in trie_struct.root[sen[:2]])
+        self.assertTrue("other" in trie_struct.root[sen[:2]])
 
 
     def test_trie_remove_basic(self):
+        """ Check trie removal of nodes """
         node_sem    = BasicNodeSemantics().as_handler("_:node")
         trie_sem    = BreadthTrieSemantics(default=node_sem)
         trie_struct = BasicNodeStruct.build_default()
@@ -94,16 +100,18 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem.insert(sen, trie_struct)
         # check nodes are in
         self.assertTrue("a" in trie_struct.root)
-        self.assertTrue("test" in trie_struct.root.children["a"])
-        self.assertTrue("sentence" in trie_struct.root.children["a"].children["test"])
+        self.assertTrue("test" in trie_struct.root[sen[0]])
+
+        self.assertTrue("sentence" in trie_struct.root[sen[:2]])
         # remove
         trie_sem.insert(neg_sen, trie_struct)
         # verify
         self.assertTrue("a" in trie_struct.root)
-        self.assertFalse("test" in trie_struct.root.children["a"])
-
+        self.assertFalse("test" in trie_struct.root[sen[0]])
+        self.assertFalse("sentence" not in trie_struct.root)
 
     def test_trie_query_exact(self):
+        """ Check trie querying of an exact path works """
         node_sem    = BasicNodeSemantics().as_handler("_:node")
         trie_sem    = BreadthTrieSemantics(default=node_sem)
         trie_struct = BasicNodeStruct.build_default()
@@ -121,9 +129,10 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem.query(query_sen, trie_struct, ctxs=ctx_set)
         self.assertEqual(len(ctx_set), 1)
         self.assertIsNotNone(ctx_set[0]._current)
-
+        self.assertEqual(ctx_set[0]._current.value, "sentence")
 
     def test_trie_query_var(self):
+        """ Check trie querying of a variable provides all applicable nodes """
         node_sem    = BasicNodeSemantics().as_handler("_:node")
         trie_sem    = BreadthTrieSemantics(default=node_sem)
         trie_struct = BasicNodeStruct.build_default()
@@ -145,6 +154,7 @@ class TrieSemanticTests(unittest.TestCase):
         self.assertEqual(result_set, {'sentence', 'other'})
 
     def test_trie_query_with_bind_constraints(self):
+        """ Check trie querying respects binding constraints """
         node_sem    = BasicNodeSemantics().as_handler("_:node")
         trie_sem    = BreadthTrieSemantics(default=node_sem)
         trie_struct = BasicNodeStruct.build_default()
@@ -166,6 +176,7 @@ class TrieSemanticTests(unittest.TestCase):
         self.assertEqual(ctx_set[0].data['x'], 'test')
 
     def test_trie_query_with_alpha_tests(self):
+        """ Check trie quering respects alpha tests """
         node_sem    = BasicNodeSemantics().as_handler("_:node")
         trie_sem    = BreadthTrieSemantics(default=node_sem)
         trie_struct = BasicNodeStruct.build_default()
@@ -195,6 +206,7 @@ class TrieSemanticTests(unittest.TestCase):
         self.assertEqual(ctx_set[0].data['x'].name, 'blah')
 
     def test_trie_query_with_beta_tests(self):
+        """ Check trie querying respects beta tests """
         node_sem    = BasicNodeSemantics().as_handler("_:node")
         trie_sem    = BreadthTrieSemantics(default=node_sem)
         trie_struct = BasicNodeStruct.build_default()
@@ -232,6 +244,7 @@ class TrieSemanticTests(unittest.TestCase):
 
 
     def test_trie_query_with_callable_tests(self):
+        """ Check trie querying respects custom callable tests """
         node_sem    = BasicNodeSemantics().as_handler("_:node")
         trie_sem    = BreadthTrieSemantics(default=node_sem)
         trie_struct = BasicNodeStruct.build_default()
@@ -312,6 +325,7 @@ class TrieSemanticTests(unittest.TestCase):
 
 
     def test_trie_to_sentences_simple(self):
+        """ Check trie semantics can reduce a structure to a list of sentences """
         # Create sem
         node_sem    = BasicNodeSemantics().as_handler("_:node")
         trie_sem    = BreadthTrieSemantics(default=node_sem)
@@ -326,6 +340,7 @@ class TrieSemanticTests(unittest.TestCase):
         self.assertEqual(len(results[0]), 3)
 
     def test_trie_to_sentences_multi(self):
+        """ Check trie semantics can reduce a structure completely """
         # Create sem
         node_sem    = BasicNodeSemantics().as_handler("_:node")
         trie_sem    = BreadthTrieSemantics(default=node_sem)
@@ -343,6 +358,7 @@ class TrieSemanticTests(unittest.TestCase):
         self.assertEqual(len(results[1]), 4)
 
     def test_trie_to_sentences_duplicates(self):
+        """ Check trie semantics does not duplicate on reduction to sentences """
         # Create sem
         node_sem    = BasicNodeSemantics().as_handler("_:node")
         trie_sem    = BreadthTrieSemantics(default=node_sem)
@@ -359,6 +375,7 @@ class TrieSemanticTests(unittest.TestCase):
         self.assertEqual(len(results[0]), 3)
 
     def test_trie_to_sentences_statements(self):
+        """ Check trie semantics only puts statements as leaves in reduction """
         # Create sem
         node_sem    = BasicNodeSemantics().as_handler("_:node")
         trie_sem    = BreadthTrieSemantics(default=node_sem)

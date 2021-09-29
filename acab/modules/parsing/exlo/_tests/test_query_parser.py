@@ -79,6 +79,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertTrue(result.data[NEGATION_V])
 
     def test_basic_multi_clause(self):
+        """ Check multiple query clauses can be parsed """
         result = QP.clauses.parseString('  a.b.c?\n  a.b.d?\n  a.b.e?')[0]
         self.assertIsInstance(result, ProductionContainer)
         self.assertEqual(len(result.clauses), 3)
@@ -88,6 +89,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertEqual(result.clauses[2][-1].value, 'e')
 
     def test_basic_multi_clause_mixed_negation(self):
+        """ Check multiple queries of mixed positive and negative type can be parsed """
         result = QP.clauses.parseString(' a.b.c?\n ~a.b.d?\n a.b.e?\n ~a.b.f?')[0]
         self.assertIsInstance(result, ProductionContainer)
         self.assertTrue(all([isinstance(x, Sentence) for x in result.clauses]))

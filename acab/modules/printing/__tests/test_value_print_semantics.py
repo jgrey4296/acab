@@ -72,6 +72,7 @@ class PrintValueSemanticTests(unittest.TestCase):
                                               AP.action_definition])
 
     def test_initial(self):
+        """ Check a basic value can be printed """
         sem_sys = BasicPrinter(init_handlers=[Printers.AtomicPrinter().as_handler("_:ATOM"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
                                               Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
@@ -80,6 +81,7 @@ class PrintValueSemanticTests(unittest.TestCase):
         self.assertEqual(result, "Test")
 
     def test_multiple(self):
+        """ Check multiple values can be printed """
         sem_sys = BasicPrinter(init_handlers=[Printers.AtomicPrinter().as_handler("_:ATOM"),
                                               Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
@@ -89,6 +91,7 @@ class PrintValueSemanticTests(unittest.TestCase):
 
 
     def test_string_wrap(self):
+        """ Check a string type value can be printed """
         sem_sys = BasicPrinter(init_handlers=[Printers.PrimitiveTypeAwarePrinter().as_handler("_:ATOM"),
                                               Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
@@ -99,6 +102,7 @@ class PrintValueSemanticTests(unittest.TestCase):
         self.assertEqual(result, '"blah"')
 
     def test_regex_wrap(self):
+        """ Check a regex type value can be printed """
         sem_sys = BasicPrinter(init_handlers=[Printers.PrimitiveTypeAwarePrinter().as_handler("_:ATOM"),
                                               Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
@@ -108,6 +112,7 @@ class PrintValueSemanticTests(unittest.TestCase):
         self.assertEqual(result, r'/blah/')
 
     def test_var_wrap(self):
+        """ Check a variable type value can be printed """
         sem_sys = BasicPrinter(init_handlers=[Printers.PrimitiveTypeAwarePrinter().as_handler("_:ATOM"),
                                               Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
@@ -117,6 +122,7 @@ class PrintValueSemanticTests(unittest.TestCase):
         self.assertEqual(result, r'$blah')
 
     def test_pprint_at_var(self):
+        """ Check an @ variable can be printed """
         sem_sys = BasicPrinter(init_handlers=[Printers.PrimitiveTypeAwarePrinter().as_handler("_:ATOM"),
                                               Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
@@ -127,6 +133,7 @@ class PrintValueSemanticTests(unittest.TestCase):
         self.assertEqual(result, r'@test')
 
     def test_modal_print(self):
+        """ Check a modal can be printed """
         sem_sys = BasicPrinter(init_handlers=[Printers.ModalAwarePrinter().as_handler("_:ATOM"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
                                               Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
@@ -139,6 +146,7 @@ class PrintValueSemanticTests(unittest.TestCase):
         self.assertEqual(result, r'blah.')
 
     def test_modal_print2(self):
+        """ Check the other modal can be printed """
         sem_sys = BasicPrinter(init_handlers=[Printers.ModalAwarePrinter().as_handler("_:ATOM"),
                                               Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
@@ -152,6 +160,7 @@ class PrintValueSemanticTests(unittest.TestCase):
         self.assertEqual(result, r'blah!')
 
     def test_modal_print_override(self):
+        """ Check modal symbols can be overriden for printing """
         sem_sys = BasicPrinter(init_handlers=[Printers.ModalAwarePrinter().as_handler("_:ATOM"),
                                               Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
                                               Printers.ConfigBackedSymbolPrinter(overrides={DOT_E : "^"}).as_handler("_:SYMBOL"),
@@ -164,6 +173,7 @@ class PrintValueSemanticTests(unittest.TestCase):
         self.assertEqual(result, r'blah^')
 
     def test_symbol_override(self):
+        """ Check bind symbols can be overriden for printing """
         sem_sys = BasicPrinter(init_handlers=[Printers.ModalAwarePrinter().as_handler("_:ATOM"),
                                               Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
                                               Printers.ConfigBackedSymbolPrinter(overrides={config.prepare("Symbols", "BIND") : "%"}).as_handler("_:SYMBOL"),
@@ -176,6 +186,7 @@ class PrintValueSemanticTests(unittest.TestCase):
         self.assertEqual(result, r'%blah')
 
     def test_value_uuid(self):
+        """ Check the uuid of a value can be printed """
         val = AcabValue("test")
         sem_sys = BasicPrinter(init_handlers=[Printers.UUIDAwarePrinter().as_handler("_:ATOM")])
         result = sem_sys.pprint(val)
@@ -183,6 +194,7 @@ class PrintValueSemanticTests(unittest.TestCase):
 
 
     def test_constraints(self):
+        """ Check constraints of values can be printed """
         sem_sys = BasicPrinter(init_handlers=[
             Printers.AnnotationAwareValuePrinter().as_handler("_:ATOM"),
             Printers.AnnotationPrinter().as_handler("_:ANNOTATIONS"),
@@ -199,6 +211,7 @@ class PrintValueSemanticTests(unittest.TestCase):
         self.assertEqual(result, "test(λa.test.op $x).")
 
     def test_constraints_multi_var(self):
+        """ Check constraints with multiple variables can be printed """
         sem_sys = BasicPrinter(init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
                                               Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
                                               Printers.AnnotationAwareValuePrinter().as_handler("_:ATOM"),

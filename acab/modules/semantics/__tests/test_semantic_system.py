@@ -50,12 +50,14 @@ class SemanticSystemTests(unittest.TestCase):
             raise AcabException("TestAbsSem called")
 
     def test_construction(self):
+        """ Check context systems can be created """
         semsys = BasicSemanticSystem(default=SemanticSystemTests.StubAbsSemantic().as_handler("_:stub"))
         self.assertIsInstance(semsys, SemanticSystem_i)
         self.assertIsInstance(semsys.default.func, AbstractionSemantics_i)
         self.assertFalse(semsys.handlers)
 
     def test_default_call(self):
+        """ Check context systems can be called """
         semsys = BasicSemanticSystem(default=SemanticSystemTests.StubAbsSemantic().as_handler("_:stub"))
         test_sen = Sentence.build(["test"])
         with self.assertRaises(AcabException) as cm:
@@ -64,6 +66,7 @@ class SemanticSystemTests(unittest.TestCase):
         self.assertEqual(cm.exception.detail, "TestAbsSem called")
 
     def test_retrieval(self):
+        """ Check context systems can lookup the correct semantics for an input """
         # put some semantics in semsys.mapping
         semsys = BasicSemanticSystem(default=SemanticSystemTests.StubAbsSemantic().as_handler("_:stub"))
 

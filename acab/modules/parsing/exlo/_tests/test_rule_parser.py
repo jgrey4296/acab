@@ -45,9 +45,11 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
     #----------
     #use testcase snippets
     def test_init(self):
+        """ Check the basic rule parser exists """
         self.assertIsNotNone(RP)
 
     def test_empty_rule_body(self):
+        """ Check a rule can be empty """
         result = RP.rule_body.parseString("")[0]
         self.assertIsInstance(result, ProductionStructure)
 

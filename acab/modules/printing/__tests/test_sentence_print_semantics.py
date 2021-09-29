@@ -70,12 +70,13 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
 
 
     def test_sentence_basic(self):
+        """ Check a sentence can be printed """
         sem = BasicPrinter(init_handlers=[Printers.ModalAwarePrinter().as_handler("_:ATOM"),
                                           Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
                                           Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
                                           Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
-                                          Printers.ModalPrinter().as_handler("_:MODAL")],
-                           settings={"MODAL" : ""})
+                                          Printers.ModalPrinter().as_handler("_:MODAL")])
+
         words = ["a", "b", "c", "d"]
         sentence = Sentence.build(words)
 
@@ -83,6 +84,7 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
         self.assertEqual(result, FALLBACK_MODAL_S.join(words))
 
     def test_sentence_modal(self):
+        """ Check a modal sentence can be printed """
         sem = BasicPrinter(init_handlers=[Printers.ModalAwarePrinter().as_handler("_:ATOM"),
                                           Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
                                           Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
@@ -94,6 +96,7 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
         self.assertEqual(result, "a.test.sen")
 
     def test_sentence_modal_2(self):
+        """ Check a sentence with different modal values can be printed """
         sem = BasicPrinter(init_handlers=[Printers.ModalAwarePrinter().as_handler("_:ATOM"),
                                           Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
                                           Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
@@ -118,6 +121,7 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
         self.assertEqual(result, "a.test!sen?")
 
     def test_sentence_negated(self):
+        """ Check a negated sentence can be printed """
         sem = BasicPrinter(init_handlers=[Printers.ModalAwarePrinter().as_handler("_:ATOM"),
                                           Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
                                           Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),

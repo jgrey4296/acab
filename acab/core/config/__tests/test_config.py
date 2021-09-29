@@ -36,12 +36,6 @@ class ConfigTests(unittest.TestCase):
         # Setup default config with default files
         cls.config = setup()
 
-    def setUp(self):
-        return 1
-
-    def tearDown(self):
-        return 1
-
     def test_config_singleton(self):
         """ Check the config obj is a singleton"""
         config = AcabConfig.Get()
