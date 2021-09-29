@@ -105,7 +105,7 @@ class TypeDefinition(TypeStatement):
             if bool(types):
                 type_instance = types.pop()
                 for word in instances:
-                    word._data[TYPE_DEF_S] = type_instance
+                    word.data[TYPE_DEF_S] = type_instance
 
 
 
@@ -135,15 +135,14 @@ class SumTypeDefinition(TypeDefinition):
 class OperatorDefinition(TypeDefinition):
     """ Defines the type signature of an operator"""
 
-    sugar_syntax : str = field(init=True, default=None)
+    sugar_syntax : str = field(default=None)
 
-    def __post_init__(self, sugar_syntax=None):
+    def __post_init__(self):
         """ The name of an operator and its type signature,
         with the binding to a ProductionOperator that is
         syntax sugared, and its inline place"""
         # eg: operator.+.$x(::num).$y(::num).$z(::num).num_plus
         super(OperatorDefinition, self).__post_init__()
-        self._func_name = sugar_syntax
 
     def __hash__(self):
         return hash(str(self))

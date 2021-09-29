@@ -30,7 +30,7 @@ class TypeAssignmentNode(AcabNode):
         assert(var_node is None or isinstance(var_node, AcabNode))
         super().__init__(value)
         self._type_instance = _type or ATOM_V
-        self._var_node = var_node
+        self._var_node      = var_node
 
 
     def _default_setup(self, path: [AcabNode], data: Dict[Any,Any], context: Dict[Any,Any]):
@@ -41,7 +41,7 @@ class TypeAssignmentNode(AcabNode):
             # add the var to the var struct
             # TODO shift this to config
             var_struct = context["var_struct"]
-            result = var_struct.add(Sentence.build([self.name]))
+            result     = var_struct.add(Sentence.build([self.name]))
 
         if bool(result) and bool(result[0]):
             reference_var_node = result[0][0]
@@ -53,7 +53,7 @@ class TypeAssignmentNode(AcabNode):
 
         if self.is_var and self._var_node is None and var_struct is not None:
             # if var, connect to var type struct
-            result = var_struct.add([self.value])
+            result         = var_struct.add([self.value])
             self._var_node = result[0][0]
             self._var_node.add_node(self)
 
