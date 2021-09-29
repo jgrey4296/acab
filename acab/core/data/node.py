@@ -67,6 +67,15 @@ class AcabNode(DI.Node_i):
     def __contains__(self, v):
         return self.has_child(v)
 
+    def __getitem__(self, v):
+        if isinstance(v, Sentence):
+            current = self
+            for x in v.words:
+                current = current.get_child(x)
+            return current
+        else:
+            return self.get_child(v)
+
     def __iter__(self):
         return iter(self.children.values())
 
@@ -85,53 +94,64 @@ class AcabNode(DI.Node_i):
     def name(self):
         return str(self.value)
 
-    def add_child(self, node) -> Node:
+    def add_child(self, node:Node, key:str=None) -> Node:
         """ Add a node as a child of this node
         mutate object
         """
         assert(isinstance(node, AcabNode))
-        self.children[str(node)] = node
+        if key is None:
+            key = node.key()
+        self.children[key] = node
         node.set_parent(self)
         return node
 
-    def get_child(self, node) -> Node:
+    def get_child(self, key:Union[str, Value, Node]) -> Node:
         """ Get a node using a string, or a node itself """
-        if isinstance(node, str):
-            return self.children[node]
+        if isinstance(key, str) and key in self.children:
+            return self.children[key]
+        elif isinstance(key, str):
+            matches = [x for x in self.keys() if key in x]
+            return self.children[matches[0]]
 
-        return self.children[str(node)]
+        return self.children[key.key()]
 
-    def has_child(self, term) -> bool:
-        """ Question if this term has a particular child """
-        if isinstance(term, str):
-            return term in self.children
-        elif isinstance(term, AcabNode):
-            return term.name in self.children
-        elif isinstance(term, AcabValue):
-            return str(term) in self.children
-        else:
-            return False
+    def has_child(self, key:Tuple[str, Value, None]) -> bool:
+        """ Question if this term has a particular child,
+        by the simplest condition of whether there is a simple string
+        mapping.
+        """
+        if key is None:
+            return bool(self)
+        if isinstance(key, str):
+            keys = self.keys()
+            return any([key in x for x in keys])
+        if isinstance(key, (AcabNode, AcabValue)):
+            return key.key() in self.children
 
-    def remove_child(self, node) -> Optional[Node]:
+        return False
+
+    def remove_child(self, key:Tuple[str, Node]) -> Optional[Node]:
         """ Delete a child from this node, return success state
         mutate object
         """
         result = None
-        if self.has_child(node):
-            result = self.get_child(node)
-            if isinstance(node, str):
-                del self.children[node]
+        if self.has_child(key):
+            result = self.get_child(key)
+            if isinstance(key, str):
+                del self.children[key]
             else:
-                del self.children[str(node)]
+                del self.children[key.key()]
 
 
         return result
 
-    def clear_children(self):
+    def clear_children(self) -> List[Node]:
         """ Remove all children from this node
         mutate object
         """
+        children = list(self.children.values())
         self.children = {}
+        return self.children
 
     def set_parent(self, parent: Node):
         """ Set the parent node to this node

@@ -31,10 +31,12 @@ from acab.interfaces.value import Sentence_i, Value_i
 from acab.error.print_exception import AcabPrintException
 from acab.error.semantic_exception import AcabSemanticException
 
-Node                   = AT.Node
-Sentence               = AT.Sentence
+
 Value                  = AT.Value
+Sentence               = AT.Sentence
+Statement              = AT.Statement
 Structure              = AT.DataStructure
+Node                   = AT.Node
 Engine                 = AT.Engine
 CtxSet                 = AT.CtxSet
 CtxIns                 = AT.CtxIns
@@ -46,6 +48,7 @@ IndependentSemantics   = AT.IndependentSemantics
 AbstractionSemantics   = AT.AbstractionSemantics
 InDepSemantics         = AT.IndependentSemantics
 AbsDepSemantics        = Union[AbstractionSemantics, DependentSemantics]
+SemanticSystem         = AT.SemanticSystem
 # Note: for dependent and indep, you retrieve semantics of a node,
 # for *abstractions*, you're getting the semantics of a *sentence*
 #--------------------------------------------------
@@ -109,7 +112,7 @@ class SemanticSystem_i(HandlerSystem_i):
         return self._operator_cache is not None
 
     @abc.abstractmethod
-    def __call__(self, *instructions, ctxs=None, data=None) -> CtxSet:
+    def __call__(self, *instructions:Tuple[Statement], ctxs=None, data=None) -> CtxSet:
         pass
 
     @abc.abstractmethod
@@ -146,19 +149,19 @@ class DependentSemantics_i(HandlerComponent_i, SemanticSystem_i):
 
         return self.insert(sen, struct, ctxs=ctxs, data=data)
 
-    def to_sentences(self, struct, data=None, ctxs=None):
+    def to_sentences(self, struct:Structure, data=None, ctxs=None):
         """ Reduce a struct down to sentences, for printing """
         raise NotImplementedError()
 
-    def verify(self, instruction, data=None, ctxs=None):
+    def verify(self, instruction:Statement, data=None, ctxs=None):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def insert(self, struct, sen, data):
+    def insert(self, struct:Structure, sen:Sentence, data):
         pass
 
     @abc.abstractmethod
-    def query(self, struct, sen, data):
+    def query(self, struct:Structure, sen:Sentence, data):
         pass
 
     @abc.abstractmethod
@@ -177,29 +180,29 @@ class IndependentSemantics_i(HandlerComponent_i):
         return f"{self.__class__.__name__}"
 
     @abc.abstractmethod
-    def make(self, val: Value, data:Dict[Any,Any]=None) -> Node:
+    def make(self, val:Value, data:Dict[Any,Any]=None) -> Node:
         """ Take a value, and return a node, which has been up'd """
         pass
     @abc.abstractmethod
-    def up(self, node: Node, data=None) -> Node:
+    def up(self, node:Node, data=None) -> Node:
         """ Take ANY node, and add what is needed
         to use for this semantics """
         pass
 
-    def down(self, node: Node, data=None) -> Value:
+    def down(self, node:Node, data=None) -> Value:
         return node.value
 
     @abc.abstractmethod
-    def access(self, node: Node, term: Value, data:Dict[Any,Any]=None) -> List[Node]:
+    def access(self, node:Node, term:Value, data:Dict[Any,Any]=None) -> List[Node]:
         """ Can node A reach the given term """
         pass
 
     @abc.abstractmethod
-    def insert(self, node: Node, new_node: Node, data:Dict[Any,Any]=None) -> Node:
+    def insert(self, node:Node, new_node:Node, data:Dict[Any,Any]=None) -> Node:
         pass
 
     @abc.abstractmethod
-    def remove(self, node: Node, term: Value, data:Dict[Any,Any]=None) -> Optional[Node]:
+    def remove(self, node:Node, term:Value, data:Dict[Any,Any]=None) -> Node:
         pass
 
 
@@ -215,7 +218,7 @@ class AbstractionSemantics_i(HandlerComponent_i):
     def __repr__(self):
         return f"{self.__class__.__name__}"
 
-    def verify(self, instruction):
+    def verify(self, instruction:Statement):
         pass
     @abc.abstractmethod
     def __call__(self, instruction, semSys, ctxs=None, data=None) -> CtxSet:

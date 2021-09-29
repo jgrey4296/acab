@@ -4,9 +4,12 @@ Here, 'Data' means something analogous to ADTs
 """
 import abc
 from dataclasses import dataclass, field
-from typing import Any, Dict
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
 
 from acab import types as AT
+
 Value              = AT.Value
 Node               = AT.Node
 Structure          = AT.DataStructure
@@ -53,10 +56,13 @@ class Node_i(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def clear_children(self):
+    def clear_children(self) -> List[Node]:
         pass
 
 
+    @abc.abstractmethod
+    def key(self) -> str:
+        pass
 # TODO factor 'root' out into AcabNodeStruct
 @dataclass
 class Structure_i(metaclass=abc.ABCMeta):

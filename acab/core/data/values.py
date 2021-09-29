@@ -35,7 +35,7 @@ Statement = AT.Statement
 
 @dataclass(frozen=True)
 class AcabValue(VI.Value_i, Generic[T]):
-    _value_types : ClassVar[Set[Any]] = set([VI.Value_i, str, Pattern, list])
+    _value_types : ClassVar[Set[Any]] = set([VI.Value_i, str, Pattern, list, type(None)])
     value        : T                  = field(default=None)
 
     @staticmethod
@@ -65,7 +65,8 @@ class AcabValue(VI.Value_i, Generic[T]):
         # Applicable values: Self + any registered
         value_type_tuple = tuple(list(AcabValue._value_types))
 
-        assert(self.value is None or isinstance(self.value, value_type_tuple)), self.value
+        if not isinstance(self.value, value_type_tuple):
+            raise TypeError("AcabValue must wrap a valid type", self.value)
 
         # NOTE: use of setattr to override frozen temporarily to update name
         #
@@ -126,9 +127,12 @@ class AcabValue(VI.Value_i, Generic[T]):
         elif self.is_var:
             name_str = BIND_SYMBOL + name_str
 
-        return "({}:{}:{})".format(self.__class__.__name__,
-                                     name_str,
-                                     val_str)
+        type_str = str(self.type)
+
+        return "({}:{}:{}:{})".format(self.__class__.__name__,
+                                      name_str,
+                                      val_str,
+                                      type_str)
 
     @cache
     def __hash__(self):

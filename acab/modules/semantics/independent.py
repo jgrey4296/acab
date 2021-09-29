@@ -1,7 +1,9 @@
 import logging as root_logger
 from dataclasses import dataclass
 from enum import Enum
-from typing import TypeVar
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
 
 import acab.error.semantic_exception as ASErr
 from acab.core.config.config import AcabConfig
@@ -27,38 +29,42 @@ EXOP_enum    = config.prepare(EXOP, as_enum=True)()
 
 logging = root_logger.getLogger(__name__)
 
-Sentence = 'Sentence'
-Node     = 'Node'
-Engine   = 'Engine'
+Sentence = AT.Sentence
+Node     = AT.Node
+Engine   = AT.Engine
+Value    = AT.Value
+T        = TypeVar('T')
 
 # Independent Semantics
 class BasicNodeSemantics(SI.IndependentSemantics_i):
 
-    def make(self, val, data=None) -> AcabNode:
+    def make(self, val, data=None) -> Node:
         return self.up(AcabNode(val), data)
 
-    def up(self, node: AcabNode, data=None) -> AcabNode:
+    def up(self, node:Node, data=None) -> Node:
         """ The Most Basic Lift, does nothing """
         return node
 
-    def access(self, node, term, data=None):
-        potentials = []
+    def access(self, node:Node, term:Value, data=None) -> List[Node]:
         if term is None:
-            potentials += node.children.values()
-        elif node.has_child(term):
-            potentials.append(node.get_child(term))
+            return list(iter(node))
 
-        return potentials
+        term_key = term.key()
+        if node.has_child(term_key):
+            return [node.get_child(term_key)]
 
-    def insert(self, node, new_node, data=None) -> Node:
+        return []
+
+    def insert(self, node:Node, new_node:Node, data=None) -> Node:
         assert(isinstance(node, AcabNode))
         assert(isinstance(new_node, AcabNode))
         if new_node in node:
             raise ASErr.AcabSemanticIndependentFailure("Node is already child", (node, new_node))
 
-        return node.add_child(new_node)
+        key = new_node.value.key()
+        return node.add_child(new_node, key)
 
-    def remove(self, node, to_delete: AcabValue, data=None) -> Node:
+    def remove(self, node:Node, to_delete:Value, data=None) -> Node:
         assert(isinstance(node, AcabNode))
         assert(isinstance(to_delete, AcabValue))
 
@@ -71,7 +77,7 @@ class ExclusionNodeSemantics(SI.IndependentSemantics_i):
     def make(self, val, data=None) -> AcabNode:
         return self.up(AcabNode(val), data)
 
-    def up(self, node: Node, data=None) -> Node:
+    def up(self, node:Node, data=None) -> Node:
         # Add an exop if necessary
         if EXOP in node.data:
             return node
@@ -86,7 +92,7 @@ class ExclusionNodeSemantics(SI.IndependentSemantics_i):
 
         return node
 
-    def access(self, node, term, data=None):
+    def access(self, node:Node, term:Value, data=None) -> List[Node]:
         potentials = []
         value = None
         if term is None:
@@ -104,7 +110,7 @@ class ExclusionNodeSemantics(SI.IndependentSemantics_i):
 
         return potentials
 
-    def insert(self, node, new_node, data=None) -> Node:
+    def insert(self, node:Node, new_node:Node, data=None) -> Node:
         assert(isinstance(node, AcabNode))
         assert(isinstance(new_node, AcabNode))
 
@@ -117,7 +123,7 @@ class ExclusionNodeSemantics(SI.IndependentSemantics_i):
         result = node.add_child(new_node)
         return result
 
-    def remove(self, node, to_delete, data=None):
+    def remove(self, node:Node, to_delete:Value, data=None) -> Node:
         assert(isinstance(node, AcabNode))
         assert(isinstance(to_delete, AcabValue))
 
