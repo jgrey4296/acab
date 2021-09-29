@@ -10,12 +10,6 @@ class AcabDebugger_i(pdb.Pdb, metaclass=abc.ABCMeta):
 
     singleton = None
 
-    @staticmethod
-    @abc.abstractmethod
-    def Get():
-        """ Singleton access method """
-        pass
-
     @abc.abstractmethod
     def set_running_trace(self, frame=None):
         """ Start a trace going, without stopping execution """

@@ -41,14 +41,13 @@ def registerOn(cls:type):
     return wrapper
 
 
-<<<<<<< HEAD:acab/core/decorators/util.py
 def mapToEnum(the_dict:Dict[Enum, Any], enum_v:Enum):
     def wrapper(fn):
         the_dict[enum_v] = fn
         return fn
 
     return wrapper
-=======
+
 def cache(f):
     cache_key = f"{f.__name__}__cached_val"
     def wrapped(self, *args):
@@ -60,4 +59,20 @@ def cache(f):
 
     wrapped.__name__ = f"Cached({f.__name__})"
     return wrapped
->>>>>>> 57fd09ba ([decorator] add @cache decorator):acab/abstract/decorators/util.py
+
+def singleton(orig_cls):
+    """ From:
+    https://igeorgiev.eu/python/design-patterns/python-singleton-pattern-decorator/
+    """
+    orig_new = orig_cls.__new__
+    instance = None
+
+    @wraps(orig_cls.__new__)
+    def __new__(cls, *args, **kwargs):
+        nonlocal instance
+        if instance is None:
+            instance = orig_new(cls, *args, **kwargs)
+        return instance
+
+    orig_cls.__new__ = __new__
+    return orig_cls

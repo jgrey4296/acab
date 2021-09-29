@@ -99,12 +99,14 @@ def ConfigBasedLoad(f):
         name = config.prepare("Module.Debug", "DEBUGGER")()
         debugger = getattr(mod, name)
         assert(issubclass(debugger, AcabDebugger_i)), debugger
+    else:
+        return f
 
 
     def wrapper(self, line):
         if self.state.debugger is None:
             logging.debug(f"Starting Debugger: {debugger.__name__}")
-            self.state.debugger = debugger.Get()
+            self.state.debugger = debugger()
             self.state.debugger.set_running_trace()
 
         return f(self, line)
