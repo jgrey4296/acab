@@ -115,7 +115,7 @@ class DSLBuilder_i(metaclass=abc.ABCMeta):
         try:
             return self._main_parser.parseString(s, parseAll=True)[:]
         except pp.ParseException as exp:
-            logging.warning("--------------------\nParse Failure:\n")
+            logging.warning("\n--------------------\nParse Failure:\n")
             traceback.print_tb(exp.__traceback__)
             logging.warning(f"\n{exp.args[-1]}\n")
             logging.warning(f"Parser: {exp.parserElement}\n")
@@ -129,7 +129,7 @@ class DSLBuilder_i(metaclass=abc.ABCMeta):
         with open(f, "r") as the_file:
             text = the_file.read()
 
-        print(f"Loading File Text:\n{text}")
+        logging.info(f"Loading File Text:\n{text}")
         return self.parse(text)
 
     @abc.abstractmethod
