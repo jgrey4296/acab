@@ -1,0 +1,24 @@
+// Something tagged with #setup gets run first
+a.setup.action:
+    #setup
+
+    a.b.c
+    a.b.d
+end
+
+// Then anything tagged with #test
+a.rule:
+    #test
+
+    a.b.c?
+    a.b.d?
+
+    an.action
+end
+
+// Expect any query tagged with #result to pass
+must.pass:
+    #result
+
+    an.action?
+end

@@ -3,7 +3,7 @@ test.update(::ACTION):
 end
 
 my.action(::ACTION):
-    λ+ "testing blah"
+    + "testing blah"
 end
 
 test.update.two(::ACTION):
