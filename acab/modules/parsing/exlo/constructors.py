@@ -122,4 +122,4 @@ def build_rule(s, loc, toks, sem_hint=None):
 
 def build_constraint_list(s, loc, toks):
     """ Build a constraint list """
-    return [x for x in toks[:]]
+    return [x for x in toks[:] if isinstance(x, ValueAnnotation)]

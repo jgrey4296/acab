@@ -13,40 +13,40 @@ from acab.modules.parsing.exlo.util import (LEFT_S, OPERATOR_S, RIGHT_S,
                                             TARGET_S)
 from acab.abstract.parsing.indented_block import IndentedBlock
 
-from .FactParser import BASIC_SEN, PARAM_SEN, op_path
+from .FactParser import SENTENCE, op_sentence
 
 logging = root_logger.getLogger(__name__)
 
 # Hotloaded Transform Operators
-HOTLOAD_TRANS_OP = pp.Forward()
+HOTLOAD_TRANS_OP         = pp.Forward()
 HOTLOAD_TRANS_STATEMENTS = pp.Forward()
 
-rebind = ARROW + PU.VALBIND
+rebind                   = ARROW + PU.VALBIND
 rebind.setName("rebind")
 
 # TODO: extend transform to take partial transforms?
 # transform: ( bind op val|bind -> bind)
 
-vals = N(RIGHT_S, zrm(PARAM_SEN))
+vals = N(RIGHT_S, zrm(SENTENCE))
 # vals.addCondition(lambda toks: all([isinstance(x, Sentence) for x in toks]))
 
-transform_core = N(OPERATOR_S, op_path) \
+transform_core = N(OPERATOR_S, op_sentence) \
     + vals \
     + N(TARGET_S, rebind)
 
-transform_sugar = NG(LEFT_S, PARAM_SEN) \
+transform_sugar = NG(LEFT_S, SENTENCE) \
     + N(OPERATOR_S, HOTLOAD_TRANS_OP) \
     + vals \
     + N(TARGET_S, rebind)
 
-transform_combined = pp.MatchFirst([transform_core,
-                                    HOTLOAD_TRANS_STATEMENTS,
+transform_combined = pp.MatchFirst([HOTLOAD_TRANS_STATEMENTS,
+                                    transform_core,
                                     transform_sugar])
-
 
 transforms = IndentedBlock(transform_combined)
 
-transform_statement = PU.STATEMENT_CONSTRUCTOR(PARAM_SEN, transforms)
+transform_statement = PU.STATEMENT_CONSTRUCTOR(pp.Literal("::χ"),
+                                               transforms)
 
 # Actions
 transform_core.setParseAction(build_transform_component)

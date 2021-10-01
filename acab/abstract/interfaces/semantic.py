@@ -139,8 +139,8 @@ class DependentSemantics_i(HandlerComponent_i, SemanticSystem_i):
         return f"{self.__class__.__name__}"
 
     def __call__(self, sen, struct, ctxs=None, data=None):
-        if QUERY in sen.data and bool(sen.data[QUERY]):
-            return self.query(struct, sen, ctxs=ctxs, data=data)
+        if QUERY in sen[-1].data and bool(sen[-1].data[QUERY]):
+            return self.query(sen, struct, ctxs=ctxs, data=data)
 
         return self.insert(sen, struct, ctxs=ctxs, data=data)
 

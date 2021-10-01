@@ -18,9 +18,9 @@ from . import RuleParser as RP
 HOTLOAD_STATEMENTS = pp.Forward()
 # HOTLOAD_STATEMENTS.setName("Statements")
 
-file_component = HOTLOAD_STATEMENTS ^ QP.clauses ^ FP.PARAM_SEN_PLURAL
+file_component = HOTLOAD_STATEMENTS | FP.SEN_PLURAL
 
-file_total = PU.DELIMIST(file_component, delim=component_gap)
+file_total     = PU.DELIMIST(file_component, delim=component_gap)
 
 # NAMING
 # HOTLOAD_STATEMENTS.setName("HotloadStatement")
