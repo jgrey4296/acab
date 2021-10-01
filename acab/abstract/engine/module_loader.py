@@ -13,7 +13,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 logging = root_logger.getLogger(__name__)
 
 from acab.abstract.config.config import GET
-from acab.abstract.core.production_abstractions import ProductionOperator
+from acab.abstract.core.production_abstractions import ProductionOperator, ActionOperator
 from acab.abstract.core.values import Sentence
 from acab.abstract.engine.util import applicable, needs_init, prep_op_path, ensure_handler
 from acab.abstract.interfaces.dsl import DSL_Fragment_i
