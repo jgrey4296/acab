@@ -8,11 +8,10 @@ class MODULE(DSL_Fragment_i):
     """ The Module Spec for base operators """
 
     def assert_parsers(self, pt):
-        pt.add("operator.transform.statement.pattern_match", PMP.parse_point)
+        pt.add("transform.statement.pattern_match", PMP.parse_point)
 
     def query_parsers(self, pt):
-        PMP.HOTLOAD_VALBIND << pt.query("valbind")
-        PMP.HOTLOAD_VAR << pt.query("valbind")
-        PMP.HOTLOAD_SEN << pt.query("sentence.param")
-        PMP.HOTLOAD_QUERY << pt.query("query.clause")
-
+        PMP.HOTLOAD_VALBIND << pt.query("word.valbind")
+        PMP.HOTLOAD_VAR     << pt.query("word.valbind")
+        PMP.HOTLOAD_SEN     << pt.query("sentence")
+        PMP.HOTLOAD_QUERY   << pt.query("sentence")
