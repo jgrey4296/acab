@@ -41,8 +41,8 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
     #use testcase snippets
     def test_action_definition(self):
         test_str = "test:\n  λoperator.add a.b.c\nend"
-        definition = AP.action_definition.parseString(test_str)
-        self.assertEqual(definition[0][-1].name, "test")
+        definition = AP.action_definition.parseString(test_str)[0]
+        self.assertEqual(definition.name, "test")
 
     def test_parse_action_no_params(self):
         test_str = "λoperator.add"
