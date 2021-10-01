@@ -95,6 +95,11 @@ class AnnotationAwareValuePrinter(PrintSemantics_i):
         # Pass data through to modal:
         return_list.append(top.override("_:MODAL", value, data=data))
 
+        # Handle query
+        if DS.QUERY in value.data and value.data[DS.QUERY]:
+            return_list.append(DSYM.QUERY_SYM)
+
+
         return return_list
 
 class ModalPrinter(PrintSemantics_i):
@@ -167,10 +172,6 @@ class BasicSentenceAwarePrinter(PrintSemantics_i):
             return_list.append(PW._suppress_modal(top, value.words[-1]))
         else:
             return_list.append(value.words[-1])
-
-        # Handle query
-        if DS.QUERY in value.data and value.data[DS.QUERY]:
-            return_list.append(DSYM.QUERY_SYM)
 
         return return_list
 
