@@ -7,7 +7,7 @@ class QueryDSL(DSL_Fragment_i):
     """ The Module Spec for base operators """
 
     def assert_parsers(self, pt):
-        pt.add("annotation.hastag", QOP.tagList)
+        pt.add("word.annotation.hastag", QOP.tagList)
         #        "operator.query.eq", QO.EQ,
         #        "operator.query.neq", QO.NEQ,
         #        "operator.query.regmatch", QO.RegMatch,
