@@ -93,7 +93,6 @@ class DSLBuilder_i(metaclass=abc.ABCMeta):
 
     _bootstrap_parser     : Bootstrapper_i = field(init=False)
     _main_parser          : Parser         = field(init=False)
-    _query_parser         : Parser         = field(init=False)
     _parsers_initialised  : bool           = field(init=False, default=False)
     _loaded_DSL_fragments : Dict[Any, Any] = field(init=False, default_factory=dict)
 
@@ -132,10 +131,6 @@ class DSLBuilder_i(metaclass=abc.ABCMeta):
 
         print(f"Loading File Text:\n{text}")
         return self.parse(text)
-
-    @EnsureDSLInitialised
-    def query_parse(self, s:str) -> Query:
-        return self._query_parser.parseString(s)[0][1]
 
     @abc.abstractmethod
     def construct_parsers_from_fragments(self, fragments: List[DSL_Fragment_i]):

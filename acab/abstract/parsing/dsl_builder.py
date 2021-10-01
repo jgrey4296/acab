@@ -37,6 +37,5 @@ class DSLBuilder(DSLBuilder_i):
             x.query_parsers(self._bootstrap_parser)
 
         # then assign main and query parsers from the base parser
-        main_p, query_p = self.root_fragment.query_parsers(self._bootstrap_parser)
+        main_p = self.root_fragment.query_parsers(self._bootstrap_parser)
         self._main_parser = main_p
-        self._query_parser = query_p

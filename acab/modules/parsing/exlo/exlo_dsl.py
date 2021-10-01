@@ -90,7 +90,7 @@ class EXLO_Parser(DSL_Fragment_i):
                            TotalP.file_total,
                            TotalP.file_component)
 
-        return (TotalP.parse_point, QP.parse_point)
+        return TotalP.parse_point
 
 
     def set_bad_words(self, words:List[str]):
