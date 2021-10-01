@@ -1,5 +1,5 @@
 """
-The Core Value Class
+The Core Value Classes: AcabValue, AcabStatement, Sentence
 """
 import logging as root_logger
 from copy import deepcopy
