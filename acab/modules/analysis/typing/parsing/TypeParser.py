@@ -20,8 +20,8 @@ EXTENDED_LANGUAGE_SYNTAX_S = config.prepare("Parse.Patterns", "EXTENDED_LANGUAGE
 
 # BASIC SENTENCE NEEDS TO BE POPULATED
 # eg: acab.modules.parsing.exlo.parsers.FactParser.BASIC_SEN
-HOTLOAD_BASIC_SEN = pp.Forward()
-TYPEDEC_CORE      = pp.Forward()
+HOTLOAD_SEN  = pp.Forward()
+TYPEDEC_CORE = pp.Forward()
 
 EXTENDED_ATOM = pp.Word(EXTENDED_LANGUAGE_SYNTAX_S)
 EXTENDED_ATOM.setParseAction(lambda s, l, t: Sentence.build(t[0]))
@@ -30,7 +30,7 @@ EXTENDED_ATOM.setParseAction(lambda s, l, t: Sentence.build(t[0]))
 VAR_OR_TYPE_DEC = pp.Or([PU.BIND, TYPEDEC_CORE])
 
 # a.type | α
-TYPE_NAME = pp.Or([HOTLOAD_BASIC_SEN, EXTENDED_ATOM])
+TYPE_NAME = pp.Or([HOTLOAD_SEN, EXTENDED_ATOM])
 
 # ::a.type($x, a.different.type)
 TYPEDEC_CORE <<= DBLCOLON + N(TYU.SEN_S, TYPE_NAME) \

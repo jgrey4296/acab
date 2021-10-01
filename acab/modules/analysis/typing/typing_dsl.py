@@ -21,12 +21,10 @@ class TypingDSL(DSL_Fragment_i):
         return TP.parseString(s)
 
     def assert_parsers(self, pt):
-        pt.add("statement.typing", TDP.COMBINED_DEFS)
-        pt.add("annotation.typing", TP.TYPEDEC_CORE)
-        pt.add("query.annotation.typing", TP.TYPEDEC_CORE)
+        pt.add("sentence.ends.statement.typing" , TDP.COMBINED_DEFS)
+        pt.add("word.annotation.typing"         , TP.TYPEDEC_CORE)
         # pt.add("operator.action.typecheck", TypeChecker)
 
     def query_parsers(self, pt):
-        TDP.HOTLOAD_BASIC_SEN << pt.query("sentence.basic")
-        TDP.HOTLOAD_PARAM_SEN << pt.query("sentence.param")
-        TP.HOTLOAD_BASIC_SEN  << pt.query("sentence.basic")
+        TDP.HOTLOAD_SEN << pt.query("sentence")
+        TP.HOTLOAD_SEN  << pt.query("sentence")
