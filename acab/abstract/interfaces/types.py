@@ -60,3 +60,5 @@ Config               = "acab.abstract.config.config.AcabConfig"
 
 Annotation           = "acab.abstract.parsing.annotation.ValueAnnotation"
 RepeatAnnotation     = "acab.abstract.parsing.annotation.RepeatAnnotation"
+
+Parser               = "pp.ParserElement"

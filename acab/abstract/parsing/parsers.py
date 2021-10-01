@@ -1,21 +1,27 @@
 import logging as root_logger
-import pyparsing as pp
 import re
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
 
+import pyparsing as pp
+from acab import types as AT
 from acab.abstract.config.config import AcabConfig
-from acab.abstract.core.values import Sentence
-from acab.abstract.parsing import funcs as Pfunc
-from acab.abstract.parsing import consts as PConst
-from acab.abstract.parsing.consts import emptyLine, s, op, orm, zrm, N, NG, s_lit, s_key
-from acab.abstract.parsing.consts import gap, component_gap, OPAR, CPAR, DBLCOLON, opLn, ln
-
+from acab.abstract.parsing.annotation import ModalAnnotation
 from acab.abstract.core import default_structure as CDS
+from acab.abstract.core.values import Sentence
+from acab.abstract.parsing import consts as PConst
 from acab.abstract.parsing import default_structure as PDS
 from acab.abstract.parsing import default_symbols as PDSYM
-from acab.abstract.parsing.consts import TAG
+from acab.abstract.parsing import funcs as Pfunc
+from acab.abstract.parsing.consts import (CPAR, DBLCOLON, NG, OPAR, TAG, N,
+                                          component_gap, emptyLine, gap, ln,
+                                          op, opLn, orm, s, s_key, s_lit, zrm)
 from acab.abstract.parsing.indented_block import IndentedBlock
 
 logging = root_logger.getLogger(__name__)
+
+ParserElement = AT.Parser
 
 config = AcabConfig.Get()
 
@@ -27,30 +33,33 @@ def DELIMIST(expr, delim=None, stopOn=None):
     return (expr + pp.ZeroOrMore(delim + expr,
                                  stopOn=stopOn)).setName(dlName)
 
-def PARAM_CORE(mid=None, end=None):
+def PARAM_CORE(mid:Optional[ParserElement]=None,
+               end:Optional[ParserElement]=None):
     """ Construct a parameterised core parser
     Can handle wrapped annotations, and a modality as suffix
     """
     if mid is None:
         mid = pp.Empty()
+
     if end is None:
         end = MODAL(PDS.MODAL)
-    else:
+    elif not isinstance(end, pp.ParserElement):
         end = pp.Empty()
+
     parser = N(PDS.NODE, VALBIND) \
-        + op(OPAR + NG(PDS.ANNOTATION, mid) + CPAR) + end
+        + op(OPAR + mid + CPAR) + end
     parser.setParseAction(Pfunc.add_annotations)
     return parser
 
 
 
 
-def STATEMENT_CONSTRUCTOR(name_p,
-                          body_p,
-                          end=None,
-                          args=True,
-                          single_line=False,
-                          parse_fn=None):
+def STATEMENT_CONSTRUCTOR(annotation_p:ParserElement,
+                          body_p:ParserElement,
+                          end:Tuple[None,bool,ParserElement]=None,
+                          args:bool=True,
+                          single_line:bool=False,
+                          parse_fn:Optional[Callable]=None):
     """ Construct a parser for statements of the form:
     a.location: |args| components end
     """
@@ -69,7 +78,9 @@ def STATEMENT_CONSTRUCTOR(name_p,
     if args:
         arg_p = Fwd_ArgList(PDS.ARG)
 
-    parser = NG(PDS.NAME, name_p) + PConst.COLON + line_end_p \
+    head = PARAM_CORE(annotation_p, end=PConst.COLON)
+
+    parser = NG(PDS.NAME, head) + line_end_p \
         + op(arg_p + emptyLine) \
         + op(Fwd_TagList + emptyLine) \
         + NG(PDS.STATEMENT, body_p) + end_p
@@ -105,9 +116,11 @@ REGEX.setParseAction(lambda s, l, t: (CDS.REGEX_PRIM, re.compile(t[0][1:-1])))
 
 
 # Generalised modal operator, which is converted to appropriate data later
+# TODO refactor to be a ValueAnnotation
 MODAL      = pp.Word("".join(config.syntax_extension.keys()))
-MODAL.setParseAction(lambda s, l, t: config.syntax_extension[t[0]])
+MODAL.setParseAction(lambda s, l, t: ModalAnnotation(t[0]))
 
+# TODO use valueannotations for this too
 BASIC_VALUE = ATOM | STRING | REGEX
 BIND        = s_lit(PDSYM.BIND) + ATOM
 AT_BIND     = s_lit(PDSYM.AT_BIND) + ATOM

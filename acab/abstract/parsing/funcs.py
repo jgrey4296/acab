@@ -65,15 +65,13 @@ def make_value(s, loc, toks):
 
 def add_annotations(s, loc, toks):
     """ Add additional data to a node """
-    if PDS.MODAL in toks:
-        modal_value = toks[PDS.MODAL]
-        toks[PDS.NODE].data[modal_value.__class__.__name__] = modal_value
-    if PDS.ANNOTATION in toks:
-        for anno in toks[PDS.ANNOTATION]:
-            assert(isinstance(anno, ValueAnnotation))
-            anno(toks[PDS.NODE])
+    word = toks[PDS.NODE]
+    for anno in toks:
+        if not isinstance(anno, ValueAnnotation):
+            continue
+        anno(word)
 
-    return toks[PDS.NODE]
+    return word
 
 
 
@@ -96,13 +94,17 @@ def construct_multi_sentences(s, loc, toks):
 def construct_sentence(s, loc, toks):
     assert(PDS.SEN in toks)
     data = {DS.NEGATION : False}
-    if PDS.NEGATION in toks:
-        data[DS.NEGATION] = True
-    return Sentence.build(toks[PDS.SEN][:], data=data)
+    sentence = Sentence.build(toks[PDS.SEN][:], data=data)
+    for x in toks:
+        if not isinstance(x, ValueAnnotation):
+            continue
+        x(sentence)
+
+    return sentence
 
 def construct_statement(s, loc, toks):
-    # Take the statement, and add it to the location
-    sen   = toks[PDS.NAME][0]
+    # Take the statement, and name it
+    iden   = toks[PDS.NAME][0]
     targs = []
     tags  = []
     if PDS.ARG in toks:
@@ -115,23 +117,9 @@ def construct_statement(s, loc, toks):
     obj = toks[PDS.STATEMENT][0]
     updated_obj = obj.apply_params(targs).apply_tags(tags)
 
-    new_sentence = sen.attach_statement(updated_obj)
+    named_statement = iden.attach_statement(updated_obj)
 
-    return new_sentence
-
-def build_clause(s, loc, toks):
-    # detect negation and annotate the clause with it
-    data = { DS.QUERY : True,
-             DS.QUERY_FALLBACK : None }
-    if PDS.QUERY_FALLBACK in toks:
-        # TODO move this into verify
-        # if PDS.NEGATION in toks:
-        #     raise AcabParseException("Negated Fallback clauses don't make sense")
-        data[DS.QUERY_FALLBACK] = toks[PDS.QUERY_FALLBACK][:]
-
-
-    toks[0].data.update(data)
-    return toks
+    return named_statement
 
 def build_assignment(s, loc, toks):
     # TODO refactor this into a valueannotation?

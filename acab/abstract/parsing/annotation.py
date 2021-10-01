@@ -10,6 +10,9 @@ from typing import cast, ClassVar, TypeVar, Generic
 from dataclasses import dataclass, field, InitVar
 
 from acab import types as AT
+from acab.abstract.config.config import GET
+
+config = GET()
 
 Value = AT.Value
 
@@ -22,7 +25,7 @@ class ValueAnnotation:
     """
 
     key   : str = field()
-    value : Any = field()
+    value : Any = field(default=None)
 
     def __call__(self, val:Value) -> Value:
         """ Apply the annotation """
@@ -42,4 +45,13 @@ class ValueRepeatAnnotation(ValueAnnotation):
         if self.key not in val.data:
             val.data[self.key] = []
         val.data[self.key].append(self.value)
+        return val
+
+
+
+class ModalAnnotation(ValueAnnotation):
+
+    def __call__(self, val:Value) -> Value:
+        modal_value = config.syntax_extension[self.key]
+        val.data[modal_value.__class__.__name__] = modal_value
         return val
