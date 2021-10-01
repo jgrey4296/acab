@@ -233,6 +233,19 @@ class AcabValue(VI.Value_i, Generic[T]):
         return all([t in self.tags for t in tags])
 
 
+    def attach_statement(self, value) -> Statement:
+        """
+        Attach an unnamed statement to this value.
+        Name the statement to the name of the former leaf
+        return modified copy
+        """
+        assert(isinstance(value, VI.Value_i))
+        combined_data = self.data.copy()
+        combined_data.update(value.data)
+        value_copy = value.copy(name=self.name, data=combined_data)
+        return value_copy
+
+
 class AcabStatement(AcabValue, VI.Statement_i):
     """ AcabStatement functions the same as AcabValue,
     but provides specific functionality for converting to a string
