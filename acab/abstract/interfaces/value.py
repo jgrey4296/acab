@@ -71,6 +71,11 @@ class Value_i(metaclass=abc.ABCMeta):
         pass
 
 
+    @property
+    @abc.abstractmethod
+    def has_var(self) -> bool:
+        pass
+
 @dataclass(frozen=True)
 class Statement_i(Value_i):
 

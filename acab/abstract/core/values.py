@@ -246,6 +246,17 @@ class AcabValue(VI.Value_i, Generic[T]):
         return value_copy
 
 
+
+    @property
+    def has_var(self) -> bool:
+        if self.is_var:
+            return True
+        if any([x.has_var for x in self.params]):
+            return True
+        if any([x.has_var for x in self.tags]):
+            return True
+        return False
+
 class AcabStatement(AcabValue, VI.Statement_i):
     """ AcabStatement functions the same as AcabValue,
     but provides specific functionality for converting to a string
@@ -384,6 +395,15 @@ class Sentence(AcabStatement, VI.Sentence_i):
         new_sen = replace(self, value=words)
         return new_sen
 
+    def prefix(self, prefix:Union[Value, Sen]) -> Sen:
+        if isinstance(prefix, list):
+            prefix = Sentence.build(prefix)
+        elif not isinstance(self, Sentence):
+            prefix = Sentence.build([prefix])
+
+        return prefix.add(self)
+
+
     def attach_statement(self, value) -> Sen:
         """
         Copy the sentence,
@@ -437,3 +457,22 @@ class Sentence(AcabStatement, VI.Sentence_i):
             return False
 
         return self[0].is_var
+
+    @property
+    def has_var(self) -> bool:
+        if self.is_var:
+            return True
+        return any([x.is_var for x in self.words])
+
+
+    def match(self, sen:Sen) -> List[Tuple[Value, Value]]:
+        """ Match a sentence's variables to a target
+
+        eg: _:$x.b.$y match _:a.b.c -> [(x, a), (y, c)]
+        """
+        results = []
+        for x,y in zip(self.words, sen.words):
+            if x.is_var:
+                results.append((x,y))
+
+        return results
