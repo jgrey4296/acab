@@ -13,7 +13,7 @@ from acab.abstract.config import GET
 from acab.abstract.core.values import Sentence
 from acab.abstract.core.production_abstractions import (ProductionComponent,
                                                         ProductionOperator)
-import acab.types as AT
+from acab import types as AT
 config = GET()
 CONSTRAINT    = config.prepare("Value.Structure", "CONSTRAINT")()
 TYPE_INSTANCE = config.prepare("Value.Structure", "TYPE_INSTANCE")()

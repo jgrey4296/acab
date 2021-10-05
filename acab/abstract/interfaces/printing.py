@@ -35,8 +35,8 @@ class PrintSystem_i(HandlerSystem_i):
     settings  : Dict[str, str] = field(default_factory=dict)
     _config   : AcabConfig     = field(init=False, default_factory=AcabConfig.Get)
 
-    def __post_init__(self, handlers):
-        super().__post_init__(handlers)
+    def __post_init__(self, handlers, sieve_fns):
+        super().__post_init__(handlers, sieve_fns)
         if self.default is None:
             self.default = Handler("_:default", lambda x, data=None: str(x))
 

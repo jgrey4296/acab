@@ -14,6 +14,7 @@ from acab.abstract.core.production_abstractions import (ProductionComponent,
                                                         ProductionOperator)
 from acab.abstract.core.values import Sentence
 from acab.modules.context.constraint_sieve import default_sieve
+from acab.abstract.interfaces.sieve import AcabSieve
 
 config = GET()
 CONSTRAINT    = config.prepare("Value.Structure", "CONSTRAINT")
@@ -37,24 +38,22 @@ class ConstraintCollection(CtxInt.Constraint_i):
 
     _test_mappings : Dict[str, List[Callable]] = field()
 
-    sieve           : ClassVar[List[Callable]] = default_sieve[:]
-    operators       : ClassVar[CtxIns]        = None
+    sieve           : ClassVar[List[Callable]] = AcabSieve(default_sieve)
+    operators       : ClassVar[CtxIns]         = None
 
     @staticmethod
-    def build(word, operators=None, sieve:List[Callable]=None):
+    def build(word, operators=None, sieve_fns:List[Callable]=None):
         """ Run the sieve on a word to generate the test set groupings """
         if operators is not None:
             ConstraintCollection.operators = operators
 
-        if sieve is None:
+        if sieve_fns is None:
             sieve = ConstraintCollection.sieve
+        else:
+            sieve = AcabSieve(seive_fns)
 
         tests = {}
-        for fn in sieve:
-            result = fn(word)
-            if result is None:
-                continue
-
+        for result in sieve.fifo_collect(word):
             stop, x, y = result
             if x not in tests:
                 tests[x] = []

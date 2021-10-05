@@ -10,6 +10,7 @@ from types import MethodType
 from acab import types as AT
 from acab.abstract.interfaces.data import Structure_i
 from acab.error.acab_handler_exception import AcabHandlerException
+from acab.abstract.interfaces.sieve import AcabSieve
 
 logging = root_logger.getLogger(__name__)
 
@@ -37,9 +38,10 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
     init_handlers  : InitVar[List[Handler]]   = field(default=None)
     # TODO make default  Tuple[str, str], and lookup?
     default        : Handler                  = field(default=None)
-    sieve          : List[Callable]           = field(default_factory=list)
+    sieve_fns      : InitVar[List[Callable]]  = field(default=None)
 
-    handlers       : Dict[AT.pseudo, Callable]      = field(init=False, default_factory=dict)
+    sieve          : AcabSieve                = field(init=False, default=None)
+    handlers       : Dict[AT.pseudo, Callable]= field(init=False, default_factory=dict)
     _data          : Dict[str, Any]           = field(init=False, default_factory=dict)
 
     _default_sieve : ClassVar[List[Callable]] = []
@@ -52,14 +54,16 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
         data     : Dict[Any, Any]   = field(default_factory=dict)
 
 
-    def __post_init__(self, init_handlers):
+    def __post_init__(self, init_handlers, sieve_fns):
         # TODO handle overriding
         # TODO init any semantics or structs passed in as Class's
         # TODO check depsem -> struct compabilities
         # by running dependent.compatible(struct)
         # use default sieve if sieve is empty
-        if not bool(self.sieve):
-            self.sieve += self._default_sieve
+        if not bool(sieve_fns):
+            self.sieve = AcabSieve(self._default_sieve)
+        else:
+            self.sieve = AcabSieve(sieve_fns)
 
         if init_handlers is None:
             init_handlers = []
@@ -97,17 +101,11 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
         if is_passthrough:
             value = value.value
 
-        for sieve_fn in self.sieve:
-            key = sieve_fn(value)
-
-            if not bool(key):
-                continue
-
+        for key in self.sieve.fifo_collect(value):
             key_match   = key in self.handlers
 
             if is_override and not is_passthrough and not key_match:
                 logging.warning(f"Missing Override Handler: {self.__class__} : {key}")
-                return self.default
             elif key_match:
                 return self.handlers[key]
 
