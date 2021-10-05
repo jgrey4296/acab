@@ -112,7 +112,7 @@ class ConstraintCollection(CtxInt.Constraint_i):
         test_trios = []
         ctx_stack = [ctxInst]
         for test in self._test_mappings["beta"]:
-            op = self._get(op, ctx_stack)
+            op = self._get(test.op, ctx_stack)
             params = [self._get(x, ctx_stack) for x in test.params]
             trio   = (op, params, test.data)
             test_trios.append(trio)

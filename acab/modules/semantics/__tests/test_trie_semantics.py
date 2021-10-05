@@ -190,6 +190,7 @@ class TrieSemanticTests(unittest.TestCase):
         query_sen[-1].data[CONSTRAINT_V] = [the_test]
         # Run query
         trie_sem.query(query_sen, trie_struct, ctxs=ctx_set)
+
         self.assertEqual(len(ctx_set), 1)
         self.assertEqual(ctx_set[0].data['x'].name, 'blah')
 

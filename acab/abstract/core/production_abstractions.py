@@ -103,6 +103,17 @@ class ProductionComponent(AcabStatement):
 
         return self.copy(value=bound_op, params=bound_params)
 
+    @property
+    def has_var(self):
+        if self.op.is_var:
+            return True
+        if any([x.has_var for x in self.params]):
+            return True
+        if self.type.has_var:
+            return True
+
+        return False
+
 @dataclass(frozen=True)
 class ProductionContainer(AcabStatement):
     """ Production Container: An applicable statement of multiple component clauses """
