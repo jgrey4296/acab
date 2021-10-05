@@ -34,7 +34,7 @@ Operator = AT.Operator
 
 # TODO action operators joots
 # and/or return instructions for the semantic system
-@OperatorSugar("!!", "action")
+@OperatorSugar("!!")
 class AcabAssert(ActionOperator):
 
     def __call__(self, *params, data=None, semSystem=None):

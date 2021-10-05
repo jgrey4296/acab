@@ -67,8 +67,9 @@ class EXLO_Parser(DSL_Fragment_i):
 
         # TODO FP.HOTLOAD_SEN_HEADS
 
+
         FP.HOTLOAD_SEN_ENDS << bootstrapper.query("sentence.ends.statement.*",
-                                                     "sentence.ends.word.*")
+                                                  "sentence.ends.word.*")
 
         QP.HOTLOAD_QUERY_OP << bootstrapper.query("operator.query.*",
                                                   "operator.sugar")

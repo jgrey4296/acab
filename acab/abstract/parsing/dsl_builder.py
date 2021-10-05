@@ -9,7 +9,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 from acab import types as AT
 from acab.abstract.interfaces.dsl import (DSL_Fragment_i,
-                                                    DSLBuilder_i)
+                                          DSLBuilder_i)
 from acab.abstract.parsing.trie_bootstrapper import TrieBootstrapper
 
 Bootstrapper = AT.Bootstrapper

@@ -24,8 +24,8 @@ HOTLOAD_SEN = pp.Forward()
 
 # the simplest type
 # a.simple.type(::τ)
-SIMPLE_DEF = PU.PARAM_CORE(end=pp.Literal("::τ"))
-SIMPLE_DEF.setParseAction(TU.make_simple_def)
+SIMPLE_DEF = PU.PARAM_CORE(mid=pp.Literal("::τ"))
+SIMPLE_DEF.addParseAction(TU.make_simple_def)
 
 # Record Type definition:
 # a.test.type(::σ):  a.value.$x(::num) end

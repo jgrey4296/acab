@@ -117,6 +117,8 @@ def do_stat(self, line):
 
         print("--")
         print("Loaded Operators: {}".format(count))
+        # TODO print Context Operator Bindings
+
 
     if allow_all or "printers" in params:
         print("\n--------------------")

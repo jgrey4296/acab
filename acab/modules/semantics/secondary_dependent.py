@@ -3,8 +3,8 @@ import logging as root_logger
 import acab.abstract.interfaces.semantic as SI
 import acab.error.acab_semantic_exception as ASErr
 from acab.abstract.config.config import AcabConfig
-from acab.abstract.core.values import Sentence, AcabStatement
 from acab.abstract.core.acab_struct import BasicNodeStruct
+from acab.abstract.core.values import AcabStatement, Sentence
 
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()

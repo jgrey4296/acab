@@ -9,8 +9,7 @@ from acab.abstract.config.config import AcabConfig
 from acab.abstract.interfaces.semantic import (AbstractionSemantics_i,
                                                SemanticSystem_i)
 from acab.error.acab_semantic_exception import AcabSemanticException
-from acab.modules.semantics.context_set import ContextSet
-
+from acab.modules.context.context_set import ContextSet
 
 logging = root_logger.getLogger(__name__)
 

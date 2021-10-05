@@ -1,7 +1,7 @@
 #!/opt/anaconda3/envs/acab/bin/python
 import sys
-from os.path import abspath, expanduser
 import unittest
+from os.path import abspath, expanduser
 
 sys.path.append(abspath(expanduser("~/github/acab")))
 
@@ -14,13 +14,13 @@ from acab.abstract.core.production_abstractions import (ProductionComponent,
                                                         ProductionOperator,
                                                         ProductionStructure)
 from acab.abstract.core.values import Sentence
+from acab.abstract.interfaces.handler_system import Handler
 from acab.abstract.interfaces.semantic import (AbstractionSemantics_i,
                                                SemanticSystem_i)
 from acab.error.acab_base_exception import AcabBaseException
-from acab.modules.semantics.context_set import (ContextSet, ContextInstance)
-from acab.modules.semantics.independent import ExclusionNodeSemantics
 from acab.modules.semantics.basic_system import BasicSemanticSystem
-from acab.abstract.interfaces.handler_system import Handler
+from acab.modules.context.context_set import ContextInstance, ContextSet
+from acab.modules.semantics.independent import ExclusionNodeSemantics
 
 EXOP         = config.prepare("MODAL", "exop")()
 EXOP_enum    = config.prepare(EXOP, as_enum=True)()

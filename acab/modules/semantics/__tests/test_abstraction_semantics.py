@@ -22,18 +22,19 @@ from acab.abstract.core.production_abstractions import (ActionOperator,
                                                         ProductionOperator,
                                                         ProductionStructure)
 from acab.abstract.core.values import AcabValue, Sentence
-from acab.abstract.decorators.semantic import OperatorArgUnWrap, OperatorResultWrap
+from acab.abstract.decorators.semantic import (OperatorArgUnWrap,
+                                               OperatorResultWrap)
 from acab.abstract.interfaces.handler_system import Handler
 from acab.abstract.interfaces.semantic import (AbstractionSemantics_i,
                                                SemanticSystem_i)
 from acab.error.acab_base_exception import AcabBaseException
 from acab.error.acab_semantic_exception import AcabSemanticException
+from acab.modules.context import context_delayed_actions
+from acab.modules.context.context_set import (ConstraintCollection,
+                                              ContextInstance, ContextSet)
 from acab.modules.operators.query.query_operators import EQ, NEQ, HasTag
 from acab.modules.operators.transform.transform_operators import RegexOp
 from acab.modules.semantics.basic_system import BasicSemanticSystem
-from acab.modules.semantics.context_set import (ConstraintCollection,
-                                                ContextInstance, ContextSet)
-from acab.modules.semantics import context_delayed_actions
 from acab.modules.semantics.dependent import BreadthTrieSemantics
 from acab.modules.semantics.independent import (BasicNodeSemantics,
                                                 ExclusionNodeSemantics)

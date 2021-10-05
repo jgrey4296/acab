@@ -60,7 +60,7 @@ class AcabBasicEngine(AcabEngine_i):
             inst = [y for x in inst for y in self._dsl_builder.parse(x)[:]]
 
         assert(all([isinstance(x, (Value_i, Sentence_i)) for x in inst])), inst
-        logging.debug(f"Running: {str(inst)}")
+        logging.debug(f"Enacting Instruction: {str(inst)}")
         return self.semantics(*inst, ctxs=ctxset)
 
     @property

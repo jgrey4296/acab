@@ -62,7 +62,7 @@ class BasicSemanticSystem(SemanticSystem_i):
             data = {}
             semantics, struct = self.lookup(instruction)
             assert(semantics is not None)
-            logging.debug(f"Running Semantics: {semantics}")
+            logging.debug(f"Firing Semantics: {semantics}")
             # TODO entry hooks would go here.
 
             # Abstractions use a reference to the sem system in place of a struct

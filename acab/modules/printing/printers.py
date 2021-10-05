@@ -138,6 +138,10 @@ class AnnotationPrinter(PrintSemantics_i):
         # Then Join:
         annotations_pp = [x for x in annotations_pp if bool(x)]
 
+        if hasattr(value, "_acab_operator_sugar"):
+            # TODO refine this
+            annotations_pp.append(value._acab_operator_sugar)
+
         # To decide whether to add anything to main return here:
         if bool(annotations_pp):
             return_list.append("(")

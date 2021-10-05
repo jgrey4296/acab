@@ -43,6 +43,7 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
         if NEGATION_S in sen.data and sen.data[NEGATION_S]:
             return self._delete(sen, struct, data)
 
+        logging.debug(f"Inserting: {sen} into {struct}")
         # Get the root
         current = self.default.func.up(struct.root)
         for word in sen:
@@ -59,6 +60,7 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
         return current
 
     def _delete(self, sen, struct, data=None):
+        logging.debug(f"Removing: {sen} from {struct}")
         parent = struct.root
         current = struct.root
 

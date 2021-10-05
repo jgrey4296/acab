@@ -1,6 +1,7 @@
 #!/opt/anaconda3/envs/acab/bin/python
-from os.path import expanduser, abspath
 import sys
+from os.path import abspath, expanduser
+
 sys.path.append(abspath(expanduser("~/github/acab")))
 
 import logging
@@ -17,7 +18,6 @@ from acab.abstract.core.node import AcabNode
 from acab.abstract.core.values import AcabValue, Sentence
 from acab.error.acab_base_exception import AcabBaseException
 from acab.error.acab_semantic_exception import AcabSemanticException
-
 from acab.modules.semantics.independent import (BasicNodeSemantics,
                                                 ExclusionNodeSemantics)
 

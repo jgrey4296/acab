@@ -92,6 +92,7 @@ def do_module(self, line):
 def do_load(self, line):
     """
     Load a dsl file into the self
+    TODO specify a prefix for everything from loaded
     """
     logging.info(f"Loading: {line}")
     filename = abspath(expanduser(line)).strip()
@@ -139,13 +140,7 @@ def do_run(self, line):
     run override X SEN : run SEN with override semantics X
     """
     try:
-        # query
-        if not bool(line.strip()):
-            logging.info("TODO Ticking Engine")
-            self.state.ctxs = self.state.engine.tick()
-            return
-
-        logging.info("------ Run Query:")
+        logging.info("------ Run Setup:")
         query_results = self.state.engine(line)
 
         bindings = [y for x in query_results.active_list()
@@ -153,7 +148,7 @@ def do_run(self, line):
 
         if not bool(bindings) and bool(query_results) and isinstance(query_results[0]._current.value, Statement_i):
             bindings = [query_results[0]._current.value]
-        logging.info("------ Run Query End")
+        logging.info("------ Run Setup End")
 
         if bool(bindings):
             # Run the bindings

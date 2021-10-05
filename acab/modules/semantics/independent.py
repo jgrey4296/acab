@@ -1,4 +1,5 @@
 import logging as root_logger
+from dataclasses import dataclass
 from enum import Enum
 from typing import TypeVar
 
@@ -7,7 +8,6 @@ from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.values import AcabValue, Sentence
 from acab.abstract.interfaces import semantic as SI
-from dataclasses import dataclass
 
 Value = AcabValue
 Node  = AcabNode

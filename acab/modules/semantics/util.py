@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
+import logging as root_logger
 from enum import Enum
 
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.values import AcabValue
 
-import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
 config = AcabConfig.Get()

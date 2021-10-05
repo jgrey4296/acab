@@ -18,10 +18,10 @@ config = acab.setup()
 from acab.abstract.core.production_abstractions import (ProductionOperator,
                                                         ProductionStructure)
 from acab.abstract.interfaces.value import Statement_i
+from acab.abstract.interfaces.context import ContextSet_i
 from acab.modules.repl import ReplParser as RP
 from acab.modules.repl.repl_commander import register
 from acab.modules.repl.util import ConfigBasedLoad
-from acab.modules.semantics.context_set import ContextSet
 
 logging = root_logger.getLogger(__name__)
 
@@ -186,7 +186,7 @@ def do_ctx(self, line):
 
         if "subset" in params:
             result = self.state.ctxs[params.subset]
-            if not isinstance(result, ContextSet):
+            if not isinstance(result, ContextSet_i):
                 self.state.ctxs = self.state.ctxs.subctx([result])
 
         elif "clear" in params:

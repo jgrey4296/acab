@@ -17,10 +17,9 @@ config          = AcabConfig.Get()
 TYPE_INSTANCE_S = config.prepare("Value.Structure", "TYPE_INSTANCE")()
 
 def make_simple_def(toks):
+    value= toks[0]
     type_def = TypeDefinition(None, [])
-    type_sen = toks['type_sen'].attach_statement(type_def)
-
-    return type_sen
+    return ealue.attach_statement(type_def)
 
 def make_record_def(toks):
     type_def = TypeDefinition(None, toks[:])
@@ -50,7 +49,8 @@ def make_type_dec(toks):
         args = [x[1] if isinstance(x, tuple) else x for x in toks[TYU.ARG_S][:]]
 
     return ValueAnnotation(TYU.TYPE_INSTANCE_S,
-                           Sentence.build(path, params=args))
+                           Sentence.build(path, params=args,
+                                          data={TYPE_INSTANCE_S: "_:type.declaration"}))
 
 def make_type_class(toks):
     return TypeClass(None, toks[:])

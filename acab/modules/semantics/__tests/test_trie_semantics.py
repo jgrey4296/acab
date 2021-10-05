@@ -16,14 +16,13 @@ from acab.abstract.core.acab_struct import BasicNodeStruct
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.production_abstractions import ProductionComponent
 from acab.abstract.core.values import AcabValue, Sentence
+from acab.abstract.interfaces.handler_system import Handler
 from acab.modules.operators.query.query_operators import EQ
-from acab.modules.semantics.context_set import (ConstraintCollection,
-                                                ContextSet,
-                                                ContextInstance)
+from acab.modules.context.context_set import (ConstraintCollection,
+                                              ContextInstance, ContextSet)
 from acab.modules.semantics.dependent import BreadthTrieSemantics
 from acab.modules.semantics.independent import (BasicNodeSemantics,
                                                 ExclusionNodeSemantics)
-from acab.abstract.interfaces.handler_system import Handler
 
 EXOP         = config.prepare("MODAL", "exop")()
 EXOP_enum    = config.prepare(EXOP, as_enum=True)()

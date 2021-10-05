@@ -188,7 +188,7 @@ class Handler:
         Uses passed in signal, otherwise looks for method.__self__.signal
         """
         assert(isinstance(method, MethodType))
-        return HandlerFunction(signal or func.__self__.signal,
+        return HandlerFunction(signal or method.__self__.signal,
                                func=method,
                                struct=struct)
 

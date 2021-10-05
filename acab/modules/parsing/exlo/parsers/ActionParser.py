@@ -24,23 +24,25 @@ HOTLOAD_ACTION_STATEMENTS = pp.Forward()
 vals = PU.zrm(SENTENCE)(RIGHT_S)
 
 # action: [op](values)
-action_component = N(OPERATOR, op_sentence) + vals
+action_component    = N(OPERATOR, op_sentence) + vals
 action_component.setParseAction(PConst.build_action_component)
 
 action_sugar_binary = N(LEFT_S, VALBIND) \
     + N(OPERATOR, HOTLOAD_OPERATORS) \
     + vals
+action_sugar_binary.setParseAction(PConst.build_action_component)
 
-action_sugar_unary = N(OPERATOR, HOTLOAD_OPERATORS) + vals
+action_sugar_unary  = N(OPERATOR, HOTLOAD_OPERATORS) + vals
+action_sugar_unary.setParseAction(PConst.build_action_component)
 
-basic_actions =  action_component | action_sugar_unary | action_sugar_binary
+basic_actions       =  action_component | action_sugar_unary | action_sugar_binary
 
 # Sentences are hinted as using DEFAULT_ACTION, usually assert
-action_exprs = HOTLOAD_ACTION_STATEMENTS | basic_actions | SENTENCE
-actions = IndentedBlock(action_exprs)
+action_exprs        = HOTLOAD_ACTION_STATEMENTS | basic_actions | SENTENCE
+actions             = IndentedBlock(action_exprs)
 actions.setParseAction(PConst.build_action)
 
-action_definition = PU.STATEMENT_CONSTRUCTOR(pp.Literal("::α"), actions)
+action_definition   = PU.STATEMENT_CONSTRUCTOR(pp.Literal("::α"), actions)
 
 # parse action
 
