@@ -6,7 +6,7 @@ from typing import cast, ClassVar, TypeVar, Generic
 from uuid import UUID
 
 from acab.abstract.decorators.util import registerOn
-from acab.modules.semantics.context_set import ContextSet
+from acab.modules.context.context_set import ContextSet
 
 @registerOn(ContextSet)
 def do_active(self, uuids:List[UUID]):

@@ -3,17 +3,16 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 import acab.modules.semantics.abstractions as ASem
+from acab.abstract.config.config import GET
 from acab.abstract.core.acab_struct import BasicNodeStruct
+from acab.abstract.core.values import Sentence
+from acab.abstract.interfaces.handler_system import Handler
+from acab.modules.context import context_delayed_actions
+from acab.modules.context.context_set import ContextSet
+from acab.modules.semantics.basic_system import BasicSemanticSystem
 from acab.modules.semantics.dependent import BreadthTrieSemantics
 from acab.modules.semantics.independent import (BasicNodeSemantics,
                                                 ExclusionNodeSemantics)
-from acab.modules.semantics.basic_system import BasicSemanticSystem
-from acab.abstract.core.values import Sentence
-from acab.abstract.config.config import GET
-from acab.abstract.interfaces.handler_system import Handler
-
-from acab.modules.semantics.context_set import ContextSet
-from acab.modules.semantics import context_delayed_actions
 
 config = GET()
 

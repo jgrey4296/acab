@@ -1,22 +1,21 @@
 #!/usr/bin/env python3
 # https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
 import logging as root_logger
+from collections import defaultdict
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
-from collections import defaultdict
 
 logging = root_logger.getLogger(__name__)
 
 from acab import types as AT
 from acab.abstract.core import default_structure as DS
+from acab.abstract.core.production_abstractions import ProductionOperator
 from acab.abstract.decorators.semantic import RunInSubCtxSet
 from acab.abstract.interfaces import semantic as SI
-from acab.modules.semantics.context_set import (ContextSet,
-                                                MutableContextInstance)
-from acab.modules.semantics.util import SemanticBreakpointDecorator
 from acab.error.acab_semantic_exception import AcabSemanticException
-from acab.abstract.core.production_abstractions import ProductionOperator
+from acab.modules.context.context_set import ContextSet, MutableContextInstance
+from acab.modules.semantics.util import SemanticBreakpointDecorator
 
 CtxIns = AT.CtxIns
 

@@ -5,17 +5,18 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 logging = root_logger.getLogger(__name__)
 
-from dataclasses import InitVar, dataclass, field, replace, FrozenInstanceError
+from dataclasses import FrozenInstanceError, InitVar, dataclass, field, replace
 from enum import Enum
 from uuid import UUID, uuid1
 
 import acab.abstract.interfaces.context as CtxInt
 import acab.error.acab_semantic_exception as ASErr
 from acab.abstract.config import GET
-from acab.abstract.core.production_abstractions import ProductionComponent, ProductionContainer
-from acab.modules.semantics.constraints import ConstraintCollection
+from acab.abstract.core.production_abstractions import (ProductionComponent,
+                                                        ProductionContainer)
 from acab.abstract.interfaces.value import Sentence_i
 from acab.error.acab_semantic_exception import AcabSemanticException
+from acab.modules.context.constraints import ConstraintCollection
 
 config = GET()
 CONSTRAINT_S = config.prepare("Parse.Structure", "CONSTRAINT")()
@@ -28,7 +29,7 @@ ProdCon          = ProductionContainer
 Operator         = 'ProductionOperator'
 Value            = 'AcabValue'
 Statement        = 'AcabStatement'
-Sentence         = Sentence_i
+Sen              = Sentence_i
 Node             = 'AcabNode'
 ModuleComponents = "ModuleComponents"
 NamedCtxSet      = "NamedCtxSet"
@@ -47,7 +48,7 @@ class ContextInstance(CtxInt.ContextInstance_i):
     # TODO These need custom setters
     _remaining_query  : List[Value]     = field(init=False, default=None)
     _current          : Node            = field(init=False, default=None)
-    _failure_sentence : Sentence        = field(init=False, default=None)
+    _failure_sentence : Sen             = field(init=False, default=None)
     _failure_word     : Value           = field(init=False, default=None)
     _depth            : int             = field(init=False, default=0)
     _lineage          : set             = field(init=False, default_factory=set)
@@ -117,7 +118,9 @@ class ContextInstance(CtxInt.ContextInstance_i):
         assert(id(self.data) != id(copied.data))
         return copied
 
-    def bind(self, word, nodes) -> [CtxIns]:
+    def bind(self, word, nodes, sub_binds=None) -> [CtxIns]:
+        if sub_binds is None:
+            sub_binds = []
         # Make len(nodes) new ctxins for the new bindings
         extensions = [(self.copy(), x) for x in nodes]
         # Get the binding name. ie: $x
@@ -128,6 +131,21 @@ class ContextInstance(CtxInt.ContextInstance_i):
             if word.is_var:
                 ctxInst.data[word_str]  = node.value
                 ctxInst.nodes[word_str] = node
+
+            matches = []
+            for key, bind in sub_binds:
+                if key in node.value.data:
+                    val = node.value.data
+                elif hasattr(node.value, key):
+                    val = getattr(node.value, key)
+                else:
+                    raise ASErr.AcabSemanticException("Bad SubBind", key, bind)
+
+                matches += bind.match(val)
+
+            for x,y in matches:
+                if x not in ctxInst.data:
+                    ctxInst.data[str(x)] = y
 
         return [x[0] for x in extensions]
 
@@ -257,7 +275,7 @@ class ContextSet(CtxInt.ContextSet_i, CtxInt.DelayedCommands_i):
             result = self._active[index]
         elif isinstance(index, list):
             result = [self._active[x] for x in index]
-        elif isinstance(index, (Sentence, ProductionContainer)) and index in self._named_sets:
+        elif isinstance(index, (Sentence_i, ProductionContainer)) and index in self._named_sets:
             result = self._named_sets[index].uuids
         else:
             raise Exception(f"Unrecognised arg to getitem: {index}")
@@ -288,12 +306,12 @@ class ContextSet(CtxInt.ContextSet_i, CtxInt.DelayedCommands_i):
         """
         logging.debug(f"{repr(self)}: Testing/Extending on {len(possible)} : {possible}")
         constraints : Constraints = ConstraintCollection.build(word, self._operators)
-        assert(len(possible) == 1 or constraints._bind)
+        assert(len(possible) == 1 or bool(constraints._test_mappings))
         successes = []
 
         for node in possible:
             try:
-                constraints.test_all(node, ctx)
+                constraints.test(node, ctx)
                 successes.append(node)
             except ASErr.AcabSemanticTestFailure as err:
                 logging.debug(f"Tests failed on {node.value}:\n\t{err}")
@@ -301,7 +319,11 @@ class ContextSet(CtxInt.ContextSet_i, CtxInt.DelayedCommands_i):
 
         # Handle successes
         # success, so copy and extend ctx instance
-        bound_ctxs = ctx.bind(word, successes)
+        sub_binds = []
+        if "sub_struct_binds" in constraints._test_mappings:
+            sub_binds = constraints._test_mappings["sub_struct_binds"]
+
+        bound_ctxs = ctx.bind(word, successes, sub_binds=sub_binds)
         self.push(bound_ctxs)
         return bound_ctxs
 
@@ -397,7 +419,7 @@ class ContextQueryState:
     """ State of the current query """
 
     negated       : bool               = field()
-    query_clause  : Sentence           = field()
+    query_clause  : Sen                = field()
     root_node     : Node               = field()
     collect_vars  : Set[str]           = field()
     ctxs          : CtxSet             = field()

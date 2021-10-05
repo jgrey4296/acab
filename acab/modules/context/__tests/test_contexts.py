@@ -7,7 +7,7 @@ import acab
 config = acab.setup()
 
 from acab.abstract.core.values import AcabValue
-from acab.modules.semantics.context_set import ContextSet, ContextInstance
+from acab.modules.context.context_set import ContextSet, ContextInstance
 from acab.error.acab_semantic_exception import AcabSemanticException
 
 class ContextsTests(unittest.TestCase):

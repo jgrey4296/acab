@@ -17,20 +17,28 @@ logging = root_logger.getLogger(__name__)
 from acab import types as AT
 
 # Type declarations:
-CtxSet      = AT.CtxSet
-CtxIns      = AT.CtxIns
-DelayValue  = Union[UUID, CtxIns, CtxSet, None]
+CtxSet     = AT.CtxSet
+CtxIns     = AT.CtxIns
+Value      = AT.Value
+ProdComp   = AT.Component
+DelayValue = Union[UUID, CtxIns, CtxSet, None]
 
 
 # Interfaces:
-@dataclass
+@dataclass(frozen=True)
 class Constraint_i(metaclass=abc.ABCMeta):
+
+    _test_mappings : Dict[str, List[Callable]] = field()
+
+    # Value -> (key, List[Constraint])
+    sieve         : ClassVar[List[Callable]]
+
     @staticmethod
-    def build(word, operators):
+    def build(word, operators, sieve=None):
         pass
 
     @abc.abstractmethod
-    def test_all(self, node, ctx):
+    def test(self, node, ctx):
         pass
 
 @dataclass
@@ -123,7 +131,7 @@ class DelayedCommands_i(metaclass=abc.ABCMeta):
 
     def run_delayed(self):
         """ Similar to Cmd implementation, each instr should have a do_{x} method """
-        logging.debug("Running Delayed Instructions")
+        logging.debug(f"Performing {len(self._purgatory)} Delayed Instructions")
         # run priority enums
         # if self.delayed_e.CLEAR in self._purgatory:
         #     self._active = []
