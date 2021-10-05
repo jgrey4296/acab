@@ -49,6 +49,7 @@ class ConfigSpec():
     as_list : bool               = field(default=False)
     as_dict : bool               = field(default=False)
     as_enum : bool               = field(default=False)
+    as_bool : bool               = field(default=False)
 
     def __call__(self):
         inst = AcabConfig.Get()
@@ -108,8 +109,16 @@ class AcabConfig():
             raise AcabConfigException("AcabConfig Already Exists")
 
         AcabConfig.instance = self
-        self._config = ConfigParser(interpolation=ExtendedInterpolation(), allow_no_value=True)
+        self._config = ConfigParser(interpolation=ExtendedInterpolation(),
+                                    allow_no_value=True)
+        self._config.optionxform = lambda x: x
         self.read(paths)
+
+        if hasattr(self, "check_structure"):
+            self.check_structure()
+        else:
+
+            breakpoint()
 
     def __call__(self, lookup):
         return self.value(lookup)

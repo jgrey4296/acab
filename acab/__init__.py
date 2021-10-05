@@ -14,6 +14,7 @@ import acab.abstract.interfaces.types as types
 def setup(location=None):
     from acab.abstract.config.config import AcabConfig
     from acab.abstract.config.modal import modal_config
+    import acab.abstract.config.structure
     from os.path import split, join
 
     if location is None:

@@ -10,7 +10,4 @@ from .acab_base_exception import AcabBaseException
 class AcabConfigException(AcabBaseException):
     """ Exceptions relating to configuration"""
 
-    msg : str = field(init=False, default="Configuration Failure: {}")
-
-    def __str__(self):
-        return self.msg.format(self.detail)
+    msg : str = field(init=False, default="Configuration Failure")

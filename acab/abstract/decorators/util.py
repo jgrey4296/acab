@@ -6,6 +6,7 @@ from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic
 import logging as root_logger
+from enum import Enum
 logging = root_logger.getLogger(__name__)
 
 from acab import types as AT
@@ -35,6 +36,14 @@ def registerOn(cls:type):
         logging.info(f"Method Registration: {cls.__name__} . {fn.__name__}")
         assert(fn.__name__ not in dir(cls))
         setattr(cls, fn.__name__, fn)
+        return fn
+
+    return wrapper
+
+
+def mapToEnum(the_dict:Dict[Enum, Any], enum_v:Enum):
+    def wrapper(fn):
+        the_dict[enum_v] = fn
         return fn
 
     return wrapper

@@ -42,18 +42,19 @@ def main():
     root_logger.getLogger('').addHandler(console)
     logging = root_logger.getLogger(__name__)
     #====================
-    from acab.abstract.config.config import AcabConfig
-    from acab.abstract.config.modal import modal_config
-    config = AcabConfig.Get()
-    #====================
     logging.info("Reading Config: {}".format(args.config))
     args.config = [abspath(expanduser(x)) for x in args.config]
-    config.Get(*args.config, hooks=[modal_config])
+
+    from acab.abstract.config.config import AcabConfig
+    from acab.abstract.config.modal import modal_config
+    import acab.abstract.config.structure
+    config = AcabConfig.Get(*args.config, hooks=[modal_config])
+    #====================
 
     # TODO change config details here
 
     if args.debug:
-        parse_debug_spec = config.prepare("Parse", "DEBUG_PARSERS")
+        parse_debug_spec = config.prepare("Parse", "DEBUG_PARSERS", actions=[config.actions_e.BOOL])
         config.override(parse_debug_spec, "True")
 
     #import then build engine or default trie engine from args
