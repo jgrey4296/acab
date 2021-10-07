@@ -62,8 +62,8 @@ class ModuleLoader(ModuleLoader_i):
             dsl_fragments       += [y() if needs_init(y) else y for y in available_dsls]
 
             # Get Semantics
-            available_semantics =  [y for x,y in mod_contents if applicable(y, Semantic_Fragment, as_handler=True)]
-            semantic_frags      += [ensure_handler(y) for y in available_semantics]
+            available_sem_frags =  [y for x,y in mod_contents if applicable(y, Semantic_Fragment)]
+            semantic_frags      =  [y() if needs_init(y) else y for y in available_sem_frags]
 
             # Get Ops
             loc_op_triple       =  [(base_path, x, y) for x,y in mod_contents if applicable(y, (ProductionOperator, ActionOperator))]
