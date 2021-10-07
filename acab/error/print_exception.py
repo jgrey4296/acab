@@ -5,10 +5,10 @@ from typing import cast, ClassVar, TypeVar, Generic
 
 from dataclasses import dataclass, field, InitVar
 
-from .acab_base_exception import AcabBaseException
+from .acab_exception import AcabException
 
 @dataclass
-class AcabPrintException(AcabBaseException):
+class AcabPrintException(AcabException):
 
     msg : str = field(init=False, default="Print Failure: {}")
 

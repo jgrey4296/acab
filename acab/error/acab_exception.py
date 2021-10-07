@@ -6,7 +6,7 @@ from typing import cast, ClassVar, TypeVar, Generic
 from dataclasses import dataclass, field, InitVar
 
 @dataclass
-class AcabBaseException(Exception):
+class AcabException(Exception):
     """ The base exception class for the Acab package """
 
     detail  : str           = field()

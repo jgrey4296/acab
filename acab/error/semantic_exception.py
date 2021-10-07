@@ -5,10 +5,10 @@ from typing import cast, ClassVar, TypeVar, Generic
 
 from dataclasses import dataclass, field, InitVar
 
-from .acab_base_exception import AcabBaseException
+from .acab_exception import AcabException
 
 @dataclass
-class AcabSemanticException(AcabBaseException):
+class AcabSemanticException(AcabException):
     """ The Core exception report of semantic operations  """
 
     msg : str = field(init=False, default="Semantic Failure:\n\t\t{}\n\t\tat: {}")
