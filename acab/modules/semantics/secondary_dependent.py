@@ -1,6 +1,6 @@
 import logging as root_logger
 
-import acab.abstract.interfaces.semantic as SI
+import acab.interfaces.semantic as SI
 import acab.error.acab_semantic_exception as ASErr
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.acab_struct import BasicNodeStruct

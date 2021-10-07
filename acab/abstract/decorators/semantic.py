@@ -6,7 +6,7 @@ from acab import types as AT
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.values import AcabValue
 from acab.abstract.core.production_abstractions import ProductionOperator
-from acab.abstract.interfaces.context import DelayedCommands_i
+from acab.interfaces.context import DelayedCommands_i
 
 import logging as root_logger
 logging = root_logger.getLogger(__name__)

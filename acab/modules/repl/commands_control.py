@@ -17,8 +17,8 @@ config = acab.setup()
 
 from acab.abstract.core.production_abstractions import (ProductionOperator,
                                                         ProductionStructure)
-from acab.abstract.interfaces.value import Statement_i
-from acab.abstract.interfaces.context import ContextSet_i
+from acab.interfaces.value import Statement_i
+from acab.interfaces.context import ContextSet_i
 from acab.modules.repl import ReplParser as RP
 from acab.modules.repl.repl_commander import register
 from acab.modules.repl.util import ConfigBasedLoad

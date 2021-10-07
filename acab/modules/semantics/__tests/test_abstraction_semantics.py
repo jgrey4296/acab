@@ -24,8 +24,8 @@ from acab.abstract.core.production_abstractions import (ActionOperator,
 from acab.abstract.core.values import AcabValue, Sentence
 from acab.abstract.decorators.semantic import (OperatorArgUnWrap,
                                                OperatorResultWrap)
-from acab.abstract.interfaces.handler_system import Handler
-from acab.abstract.interfaces.semantic import (AbstractionSemantics_i,
+from acab.interfaces.handler_system import Handler
+from acab.interfaces.semantic import (AbstractionSemantics_i,
                                                SemanticSystem_i)
 from acab.error.acab_base_exception import AcabBaseException
 from acab.error.acab_semantic_exception import AcabSemanticException

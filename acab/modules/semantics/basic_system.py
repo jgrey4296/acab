@@ -10,7 +10,7 @@ from acab import types as AT
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.decorators.semantic import (BuildCtxSetIfMissing,
                                                RunDelayedCtxSetActions)
-from acab.abstract.interfaces.semantic import (AbstractionSemantics_i,
+from acab.interfaces.semantic import (AbstractionSemantics_i,
                                                SemanticSystem_i)
 from acab.error.acab_semantic_exception import AcabSemanticException
 from acab.modules.context.context_set import ContextSet

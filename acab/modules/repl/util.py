@@ -7,8 +7,8 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 logging = root_logger.getLogger(__name__)
 import acab
-from acab.abstract.interfaces.debugger import AcabDebugger_i
-from acab.abstract.interfaces.engine import AcabEngine_i
+from acab.interfaces.debugger import AcabDebugger_i
+from acab.interfaces.engine import AcabEngine_i
 
 config = acab.setup()
 

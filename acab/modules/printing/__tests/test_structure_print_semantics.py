@@ -26,7 +26,7 @@ from acab.abstract.core.production_abstractions import (ProductionComponent,
                                                         ProductionOperator,
                                                         ProductionStructure)
 from acab.abstract.core.values import AcabStatement, AcabValue, Sentence
-from acab.abstract.interfaces.handler_system import Handler
+from acab.interfaces.handler_system import Handler
 from acab.modules.printing.basic_printer import BasicPrinter
 
 NEGATION_S        = config.prepare("Value.Structure", "NEGATION")()

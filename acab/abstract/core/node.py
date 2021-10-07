@@ -9,8 +9,8 @@ from uuid import UUID, uuid1
 from weakref import ref, ReferenceType
 
 from acab import types as AT
-import acab.abstract.interfaces.data as DI
-import acab.abstract.interfaces.value as VI
+import acab.interfaces.data as DI
+import acab.interfaces.value as VI
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.values import AcabValue, Sentence
 

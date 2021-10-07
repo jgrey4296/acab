@@ -12,7 +12,7 @@ from acab import types as AT
 from acab.abstract.core import default_structure as DS
 from acab.abstract.core.production_abstractions import ProductionOperator
 from acab.abstract.decorators.semantic import RunInSubCtxSet
-from acab.abstract.interfaces import semantic as SI
+from acab.interfaces import semantic as SI
 from acab.error.acab_semantic_exception import AcabSemanticException
 from acab.modules.context.context_set import ContextSet, MutableContextInstance
 from acab.modules.semantics.util import SemanticBreakpointDecorator

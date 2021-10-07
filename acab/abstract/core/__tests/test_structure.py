@@ -12,7 +12,7 @@ logging = root_logger.getLogger(__name__)
 import acab
 config = acab.setup()
 
-from acab.abstract.interfaces.data import Structure_i, Node_i
+from acab.interfaces.data import Structure_i, Node_i
 from acab.abstract.core.acab_struct import BasicNodeStruct
 
 # TODO

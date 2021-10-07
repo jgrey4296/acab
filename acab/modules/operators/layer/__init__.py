@@ -1,4 +1,4 @@
-from acab.abstract.interfaces.dsl import DSL_Fragment_i
+from acab.interfaces.dsl import DSL_Fragment_i
 
 from .layer_actions import LayerRunAgenda, LayerRunRules, LayerPerform
 

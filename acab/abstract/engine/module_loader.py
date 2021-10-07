@@ -16,11 +16,11 @@ from acab.abstract.config.config import GET
 from acab.abstract.core.production_abstractions import ProductionOperator, ActionOperator
 from acab.abstract.core.values import Sentence
 from acab.abstract.engine.util import applicable, needs_init, prep_op_path, ensure_handler
-from acab.abstract.interfaces.dsl import DSL_Fragment_i
-from acab.abstract.interfaces.module_loader import (ModuleComponents,
+from acab.interfaces.dsl import DSL_Fragment_i
+from acab.interfaces.module_loader import (ModuleComponents,
                                                     ModuleLoader_i)
-from acab.abstract.interfaces.printing import PrintSemantics_i
-from acab.abstract.interfaces.semantic import Semantic_Fragment
+from acab.interfaces.printing import PrintSemantics_i
+from acab.interfaces.semantic import Semantic_Fragment
 
 config = GET()
 

@@ -5,11 +5,13 @@ from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic
 
+from dataclasses import dataclass, field, InitVar
+
 import logging as root_logger
 from uuid import UUID
 
 from acab import types as AT
-import acab.abstract.interfaces.semantic as SI
+import acab.interfaces.semantic as SI
 import acab.error.acab_semantic_exception as ASErr
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.acab_struct import BasicNodeStruct

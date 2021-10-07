@@ -7,7 +7,7 @@ logging = root_logger.getLogger(__name__)
 import acab
 config = acab.setup()
 
-from acab.abstract.interfaces.value import Sentence_i
+from acab.interfaces.value import Sentence_i
 from acab.abstract.core.node import AcabNode
 from acab.abstract.core.values import AcabValue
 

@@ -19,8 +19,8 @@ from acab.abstract.core.node import AcabNode
 
 from acab.modules.structures.trie.trie import Trie
 from acab.abstract.core.acab_struct import AcabStruct
-from acab.abstract.interfaces.data import Structure_i
-from acab.abstract.interfaces.semantic import IndependentSemantics
+from acab.interfaces.data import Structure_i
+from acab.interfaces.semantic import IndependentSemantics
 from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
 
 from acab.abstract.core import production_abstractions as PA

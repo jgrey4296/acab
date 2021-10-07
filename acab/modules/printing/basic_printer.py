@@ -6,8 +6,8 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 from acab.abstract.config.config import ConfigSpec
 from acab.abstract.core import production_abstractions as PA
-from acab.abstract.interfaces.printing import PrintSystem_i
-from acab.abstract.interfaces.value import (Sentence_i,
+from acab.interfaces.printing import PrintSystem_i
+from acab.interfaces.value import (Sentence_i,
                                                        Value_i)
 from acab.abstract.core.values import AcabStatement
 

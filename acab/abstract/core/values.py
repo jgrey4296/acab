@@ -13,7 +13,7 @@ from uuid import UUID, uuid1
 from weakref import ref
 
 from acab import types as AT
-import acab.abstract.interfaces.value as VI
+import acab.interfaces.value as VI
 from acab.abstract.config.config import AcabConfig
 import acab.abstract.core.default_structure as DS
 

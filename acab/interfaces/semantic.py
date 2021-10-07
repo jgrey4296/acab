@@ -26,8 +26,9 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 logging = root_logger.getLogger(__name__)
 from acab import types as AT
 from acab.abstract.core.default_structure import QUERY
-from acab.abstract.interfaces.handler_system import HandlerSystem_i, Handler, HandlerComponent_i
-from acab.abstract.interfaces.value import Sentence_i, Value_i
+from acab.interfaces.handler_system import HandlerSystem_i, Handler, HandlerComponent_i
+from acab.interfaces.semantic import Semantic_Fragment
+from acab.interfaces.value import Sentence_i, Value_i
 from acab.error.acab_print_exception import AcabPrintException
 from acab.error.acab_semantic_exception import AcabSemanticException
 
@@ -120,6 +121,7 @@ class SemanticSystem_i(HandlerSystem_i):
     def extend(self, mods:List[ModuleComponents]):
         logging.info("Extending Semantics")
         semantics = [y for x in mods for y in x.semantics]
+        assert(all([isinstance(x, Semantic_Fragment) for x in semantics]))
         for sem in semantics:
             [self._register_handler(x) for x in sem.dependent]
             [self._register_handler(x) for x in sem.independent]

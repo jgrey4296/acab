@@ -15,8 +15,8 @@ import acab
 
 config = acab.setup()
 
-from acab.abstract.interfaces.context import ContextSet_i
-from acab.abstract.interfaces.engine import AcabEngine_i
+from acab.interfaces.context import ContextSet_i
+from acab.interfaces.engine import AcabEngine_i
 from acab.modules.repl import ReplParser as RP
 
 

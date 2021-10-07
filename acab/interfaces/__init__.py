@@ -1,5 +1,5 @@
 """
-acab.abstract.interfaces
+acab.interfaces
 
 This Submodule defines the interfaces acab requires.
 From Values, to Data Structures,

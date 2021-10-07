@@ -5,7 +5,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 from acab.abstract.config.config import GET
-from acab.abstract.interfaces.handler_system import Handler
+from acab.interfaces.handler_system import Handler
 
 config = GET()
 

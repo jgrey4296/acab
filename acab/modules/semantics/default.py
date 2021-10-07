@@ -6,7 +6,7 @@ import acab.modules.semantics.abstractions as ASem
 from acab.abstract.config.config import GET
 from acab.abstract.core.acab_struct import BasicNodeStruct
 from acab.abstract.core.values import Sentence
-from acab.abstract.interfaces.handler_system import Handler
+from acab.interfaces.handler_system import Handler
 from acab.modules.context import context_delayed_actions
 from acab.modules.context.context_set import ContextSet
 from acab.modules.semantics.basic_system import BasicSemanticSystem
@@ -58,7 +58,7 @@ def EXLO_SEMANTICS():
     trie_sem    = BreadthTrieSemantics(default=node_sem).as_handler("_:trie",
                                                                     struct=BasicNodeStruct.build_default())
 
-    query_sem   = ASem.QueryAbstraction().as_handler(QUERY_SEM_HINT)
+    query_sem   = ASem.QueryPlusAbstraction().as_handler(QUERY_SEM_HINT)
     action_sem  = ASem.ActionAbstraction().as_handler(ACTION_SEM_HINT)
     rule_sem    = ASem.AtomicRuleAbstraction().as_handler(RULE_SEM_HINT)
     trans_sem   = ASem.TransformAbstraction().as_handler(TRANSFORM_SEM_HINT)

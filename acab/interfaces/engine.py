@@ -9,11 +9,11 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 logging = root_logger.getLogger(__name__)
 
 from acab import types as AT
-from acab.abstract.interfaces.context import ContextSet_i
-from acab.abstract.interfaces.dsl import DSL_Fragment_i, DSLBuilder_i
-from acab.abstract.interfaces.module_loader import ModuleLoader_i
-from acab.abstract.interfaces.printing import PrintSystem_i
-from acab.abstract.interfaces.semantic import SemanticSystem_i
+from acab.interfaces.context import ContextSet_i
+from acab.interfaces.dsl import DSL_Fragment_i, DSLBuilder_i
+from acab.interfaces.module_loader import ModuleLoader_i
+from acab.interfaces.printing import PrintSystem_i
+from acab.interfaces.semantic import SemanticSystem_i
 from acab.abstract.parsing.dsl_builder import DSLBuilder
 from acab.error.acab_semantic_exception import AcabSemanticException
 from acab.abstract.decorators.engine import EnsureEngineInitialised

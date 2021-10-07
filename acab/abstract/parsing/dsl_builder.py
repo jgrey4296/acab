@@ -8,7 +8,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 from acab import types as AT
-from acab.abstract.interfaces.dsl import (DSL_Fragment_i,
+from acab.interfaces.dsl import (DSL_Fragment_i,
                                           DSLBuilder_i)
 from acab.abstract.parsing.trie_bootstrapper import TrieBootstrapper
 

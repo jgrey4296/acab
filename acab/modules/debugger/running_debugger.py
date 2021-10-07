@@ -9,7 +9,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 logging = root_logger.getLogger(__name__)
 
 
-from acab.abstract.interfaces.debugger import AcabDebugger_i
+from acab.interfaces.debugger import AcabDebugger_i
 
 # TODO track semantic debugging in RunningDebugger
 

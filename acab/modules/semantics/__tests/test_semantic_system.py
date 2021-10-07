@@ -14,8 +14,8 @@ from acab.abstract.core.production_abstractions import (ProductionComponent,
                                                         ProductionOperator,
                                                         ProductionStructure)
 from acab.abstract.core.values import Sentence
-from acab.abstract.interfaces.handler_system import Handler
-from acab.abstract.interfaces.semantic import (AbstractionSemantics_i,
+from acab.interfaces.handler_system import Handler
+from acab.interfaces.semantic import (AbstractionSemantics_i,
                                                SemanticSystem_i)
 from acab.error.acab_base_exception import AcabBaseException
 from acab.modules.semantics.basic_system import BasicSemanticSystem

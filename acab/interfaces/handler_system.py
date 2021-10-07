@@ -8,9 +8,9 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 from types import MethodType
 
 from acab import types as AT
-from acab.abstract.interfaces.data import Structure_i
+from acab.interfaces.data import Structure_i
 from acab.error.acab_handler_exception import AcabHandlerException
-from acab.abstract.interfaces.sieve import AcabSieve
+from acab.interfaces.sieve import AcabSieve
 from acab.abstract.config.config import GET
 
 logging = root_logger.getLogger(__name__)
@@ -80,21 +80,6 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
         for handler in sorted(init_handlers, key=lambda x: not x.func):
             self._register_handler(handler)
 
-    def _register_handler(self, handler):
-        if not isinstance(handler, Handler):
-            raise AcabHandlerException(f"Handler Not Compliant: {handler}", handler)
-
-        if handler.func is not None:
-            self.handlers[handler.signal] = handler
-
-
-        provides_struct = handler.struct is not None
-        has_pair = handler.signal in self.handlers
-        pair_needs_struct = has_pair and self.handlers[handler.signal].struct is None
-
-        if provides_struct and pair_needs_struct:
-            self.handlers[handler.signal].add_struct(handler.struct)
-
     def lookup(self, value:Optional[Value]=None) -> Handler:
         # sieve from most to least specific
         if value is None:
@@ -134,6 +119,22 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
         Register additional data that abstractions may access
         """
         self._data.update(data)
+
+
+    def _register_handler(self, handler):
+        if not isinstance(handler, Handler):
+            raise AcabHandlerException(f"Handler Not Compliant: {handler}", handler)
+
+        if handler.func is not None:
+            self.handlers[handler.signal] = handler
+
+
+        provides_struct = handler.struct is not None
+        has_pair = handler.signal in self.handlers
+        pair_needs_struct = has_pair and self.handlers[handler.signal].struct is None
+
+        if provides_struct and pair_needs_struct:
+            self.handlers[handler.signal].add_struct(handler.struct)
 
     @abc.abstractmethod
     def extend(self, modules:List[ModuleComponents]):

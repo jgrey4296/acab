@@ -9,7 +9,7 @@ from typing import cast, ClassVar, TypeVar, Generic
 import logging as root_logger
 import pyparsing as pp
 
-from acab.abstract.interfaces.dsl import DSL_Fragment_i
+from acab.interfaces.dsl import DSL_Fragment_i
 from acab.abstract.parsing import parsers as PU
 from acab.error.acab_parse_exception import AcabParseException
 from acab.modules.parsing.exlo import util as TPU
@@ -32,7 +32,7 @@ class EXLO_Parser(DSL_Fragment_i):
         # Core
         # TODO: make this declarative in EXLO_parser *init*
         bootstrapper.add("word.valbind"                  , PU.VALBIND,
-                         "solo.var"                      , FP.SEN_NO_MODAL,
+                         "word.constrained"              , FP.SEN_NO_MODAL,
                          "sentence"                      , FP.SENTENCE,
                          "sentence.ends.statement.macro" , FP.SEN_MACRO,
                          "sentence.operator"             , FP.op_sentence,
@@ -56,7 +56,7 @@ class EXLO_Parser(DSL_Fragment_i):
     def query_parsers(self, bootstrapper):
         """ Load in fragments """
         try:
-            PU.HOTLOAD_VALUES << bootstrapper.query("value.*")
+            PU.HOTLOAD_VALUES << bootstrapper.query("word.value.*")
         except Exception:
             logging.debug("No values loaded into DSL")
 

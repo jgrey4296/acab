@@ -9,8 +9,8 @@ import traceback
 import acab
 config = acab.setup()
 
-from acab.abstract.interfaces.engine import AcabEngine_i
-from acab.abstract.interfaces.value import Statement_i
+from acab.interfaces.engine import AcabEngine_i
+from acab.interfaces.value import Statement_i
 from acab.error.acab_config_exception import AcabConfigException
 from acab.error.acab_import_exception import AcabImportException
 from acab.modules.repl.repl_commander import register

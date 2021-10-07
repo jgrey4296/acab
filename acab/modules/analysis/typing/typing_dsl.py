@@ -1,4 +1,4 @@
-from acab.abstract.interfaces.dsl import DSL_Fragment_i
+from acab.interfaces.dsl import DSL_Fragment_i
 
 from .parsing import TypeDefParser as TDP
 from .parsing import TypeParser as TP
