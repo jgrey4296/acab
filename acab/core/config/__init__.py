@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Acab.abstract.config
+Acab.core.config
 
 Configuration *must* be loaded before the rest of acab.
 It loads defaults from config files, sets up, and verifies modalities

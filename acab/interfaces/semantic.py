@@ -27,7 +27,6 @@ logging = root_logger.getLogger(__name__)
 from acab import types as AT
 from acab.core.data.default_structure import QUERY
 from acab.interfaces.handler_system import HandlerSystem_i, Handler, HandlerComponent_i
-from acab.interfaces.semantic import Semantic_Fragment
 from acab.interfaces.value import Sentence_i, Value_i
 from acab.error.print_exception import AcabPrintException
 from acab.error.semantic_exception import AcabSemanticException
