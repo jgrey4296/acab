@@ -28,6 +28,7 @@ DelayValue = Union[UUID, CtxIns, CtxSet, None]
 @dataclass(frozen=True)
 class Constraint_i(metaclass=abc.ABCMeta):
 
+    source         : Value                     = field()
     _test_mappings : Dict[str, List[Callable]] = field()
 
     # Value -> (key, List[Constraint])
@@ -50,10 +51,6 @@ class ContextSet_i(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def fail(self, instance, word, node):
-        pass
-
-    @abc.abstractmethod
-    def test(self, ctx, possible, word):
         pass
 
     @abc.abstractmethod

@@ -19,7 +19,9 @@ from acab.error.acab_semantic_exception import AcabSemanticException
 from acab.modules.context.constraints import ConstraintCollection
 
 config = GET()
-CONSTRAINT_S = config.prepare("Parse.Structure", "CONSTRAINT")()
+
+CONSTRAINT_S     = config.prepare("Value.Structure", "CONSTRAINT")()
+NEGATION_S       = config.prepare("Value.Structure", "NEGATION")()
 
 CtxIns           = CtxInt.ContextInstance_i
 CtxSet           = CtxInt.ContextSet_i
@@ -37,6 +39,17 @@ NamedCtxSet      = "NamedCtxSet"
 DELAYED_E = Enum("Delayed Instruction Set", "ACTIVE FAIL DEACTIVATE CLEAR MERGE")
 
 @dataclass(frozen=True)
+class ContextFailState:
+    """
+    Utility dataclass for holding a ctx with information about where it failed
+    """
+    ctx       : CtxIns         = field()
+    query     : Sen            = field()
+    failed_on : Value          = field()
+    node      : Optional[Node] = field()
+
+
+@dataclass(frozen=True)
 class ContextInstance(CtxInt.ContextInstance_i):
 
     data              : Dict[str, Any]  = field(default_factory=dict)
@@ -45,11 +58,7 @@ class ContextInstance(CtxInt.ContextInstance_i):
     _parent_ctx       : CtxIns          = field(default=None)
     exact             : bool            = field(default=False)
 
-    # TODO These need custom setters
-    _remaining_query  : List[Value]     = field(init=False, default=None)
     _current          : Node            = field(init=False, default=None)
-    _failure_sentence : Sen             = field(init=False, default=None)
-    _failure_word     : Value           = field(init=False, default=None)
     _depth            : int             = field(init=False, default=0)
     _lineage          : set             = field(init=False, default_factory=set)
 
@@ -99,8 +108,7 @@ class ContextInstance(CtxInt.ContextInstance_i):
 
     def __repr__(self):
         binds  = ", ".join([x for x in self.data.keys()])
-        remain = len(self._remaining_query) if self._remaining_query is not None else 0
-        return f"(CtxInst: Bindings: {binds}. QRemain: {remain})"
+        return f"(CtxInst: Bindings: {binds}.)"
 
     def copy(self, **kwargs):
         logging.debug("Copied Ctx Instance")
@@ -185,12 +193,13 @@ class ContextSet(CtxInt.ContextSet_i, CtxInt.DelayedCommands_i):
     # operators are just the results of a prior query
     _operators           : CtxIns                 = field(default=None)
 
+    # For nesting ctxsets
     _parent              : Optional[CtxSet]       = field(default=None)
 
     _total               : Dict[UUID, CtxIns]     = field(default_factory=dict)
     _active              : List[UUID]             = field(default_factory=list)
 
-    _failed              : List[UUID]             = field(init=False, default_factory=list)
+    _failed              : List[ContextFailState] = field(init=False, default_factory=list)
     _named_sets          : Dict[Any, NamedCtxSet] = field(init=False, default_factory=dict)
     _uuid                : UUID                   = field(init=False, default_factory=uuid1)
 
@@ -291,50 +300,31 @@ class ContextSet(CtxInt.ContextSet_i, CtxInt.DelayedCommands_i):
     def __repr__(self):
         return f"(CtxSet: Active:{len(self._active)} Failed:{len(self._failed)} Total:{len(self._total)})"
 
-    def fail(self, instance: CtxIns, word: Value, node: Node):
+    def fail(self, instance: CtxIns, word: Value, node: Node, query:Sen):
         """ Record a failure, the query sentence that failed,
         and the word that it failed on """
         # add failure details to the instance, of word and query clause
         logging.debug(f"{repr(self)}: Failing: {node}")
-        object.__setattr__(instance, "_failure_word", word)
-        # instance._failure_word = word
-        self._failed.append(instance.uuid)
 
-    def test(self, ctx: CtxIns, possible: List[Node], word: Value):
-        """
-        run a word's tests on available nodes, with an instance
-        """
-        logging.debug(f"{repr(self)}: Testing/Extending on {len(possible)} : {possible}")
-        constraints : Constraints = ConstraintCollection.build(word, self._operators)
-        assert(len(possible) == 1 or bool(constraints._test_mappings))
-        successes = []
+        fail_state = ContextFailState(instance,
+                                      query,
+                                      word,
+                                      node)
+        self._failed.append(fail_state)
 
-        for node in possible:
-            try:
-                constraints.test(node, ctx)
-                successes.append(node)
-            except ASErr.AcabSemanticTestFailure as err:
-                logging.debug(f"Tests failed on {node.value}:\n\t{err}")
-                self.fail(ctx, word, node)
-
-        # Handle successes
-        # success, so copy and extend ctx instance
-        sub_binds = []
-        if "sub_struct_binds" in constraints._test_mappings:
-            sub_binds = constraints._test_mappings["sub_struct_binds"]
-
-        bound_ctxs = ctx.bind(word, successes, sub_binds=sub_binds)
-        self.push(bound_ctxs)
-        return bound_ctxs
-
-    def push(self, ctxs:Union[CtxIns, List[CtxIns]]):
+    def push(self, ctxs:Union[CtxIns, List[CtxIns], UUID, List[UUID]]):
         if not isinstance(ctxs, list):
             ctxs = [ctxs]
 
-        # Add to set
-        assert(not any([x.uuid in self._total for x in ctxs]))
-        self._total.update({x.uuid: x for x in ctxs})
-        self._active += [x.uuid for x in ctxs]
+        if all([isinstance(x, UUID) for x in ctxs]):
+            assert(all([x in self._total for x in ctxs]))
+            self._active += ctxs
+
+        else:
+            # Add to set
+            assert(not any([x.uuid in self._total for x in ctxs]))
+            self._total.update({x.uuid: x for x in ctxs})
+            self._active += [x.uuid for x in ctxs]
 
 
 
@@ -356,8 +346,7 @@ class ContextSet(CtxInt.ContextSet_i, CtxInt.DelayedCommands_i):
         return the_list
 
     def failed_list(self):
-        return [self._total[x] for x in self._failed]
-
+        return self._failed
 
 
     def set_parent(self, parent:CtxSet):
@@ -414,59 +403,4 @@ class NamedCtxSet:
     # TODO instruction state
 
 
-@dataclass(frozen=True)
-class ContextQueryState:
-    """ State of the current query """
 
-    negated       : bool               = field()
-    query_clause  : Sen                = field()
-    root_node     : Node               = field()
-    collect_vars  : Set[str]           = field()
-    ctxs          : CtxSet             = field()
-
-    def __enter__(self):
-        # set all instances to start at node, unless start_word is an at_binding,
-        # in which case get the bound node
-        # handle negated behaviour
-        root_word : Value          = self.query_clause[0]
-        active_list : List[CtxIns] = self.ctxs.active_list()
-        if root_word.is_at_var:
-            [x.set_current_binding(root_word) for x in active_list]
-        else:
-            [x.set_current_node(self.root_node) for x in active_list]
-
-        return self
-
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        # collect bindings as necessary
-        self.collect()
-        # self.negated      = False
-        # self.collect_vars = set()
-        # self.root_node    = None
-
-        # TODO handle exception
-
-
-    def collect(self):
-        """
-        Context collecton specific vars.
-        Flattens many contexts into one, with specified variables
-        now as lists accumulated from across the contexts.
-
-        Semantics of collect:
-        0[ctxs]0 -> fail
-        1[ctxs]n -> 1[α]1
-        where
-        α : ctx = ctxs[0] ∪ { β : ctx[β] for ctx in ctxs[1:] }
-        β : var to collect
-
-
-        """
-        if not bool(self.collect_vars):
-            return
-
-        # select instances with bindings
-        # Merge into single new instance
-        # replace
-        raise NotImplementedError()

@@ -22,6 +22,13 @@ class AcabSieve(metaclass=abc.ABCMeta):
     funcs    : List[Callable]     = field(default_factory=list)
     break_fn : Optional[Callable] = field(default=None)
 
+    def fifo(self, *args, **kwargs) -> Any:
+        for sieve_fn in self.funcs:
+            result = sieve_fn(*args, **kwargs)
+            if result is None:
+                continue
+            yield result
+
     def fifo_collect(self, *args, **kwargs) -> List[Any]:
         # sieve from most to least specific
         results = []
@@ -70,3 +77,7 @@ class AcabSieve(metaclass=abc.ABCMeta):
             return result
 
         return None
+
+
+    def __len__(self):
+        return len(self.funcs)

@@ -36,6 +36,7 @@ class ConstraintCollection(CtxInt.Constraint_i):
     """ Simple container of all ProductionComponent constraints a word possesses,
     separated into subtypes """
 
+    source         : Value                     = field()
     _test_mappings : Dict[str, List[Callable]] = field()
 
     sieve           : ClassVar[List[Callable]] = AcabSieve(default_sieve)
@@ -63,7 +64,7 @@ class ConstraintCollection(CtxInt.Constraint_i):
                 break
 
 
-        return ConstraintCollection(tests)
+        return ConstraintCollection(word, tests)
 
 
     def test(self, node, ctx):
@@ -81,9 +82,13 @@ class ConstraintCollection(CtxInt.Constraint_i):
             self.__run_name(node, ctx)
 
     def _get(self, val, stack=None):
+        """
+        Retrieve a value from a stack of a context instance.
+        stack auto-includes CC's operators ctx inst.
+        """
         if stack is None:
             stack = []
-
+        # TODO separate this into sieve, then move to contextset?
         stack.append(self.operators)
 
         for ctx in stack:
@@ -139,3 +144,13 @@ class ConstraintCollection(CtxInt.Constraint_i):
                 continue
             if b_val != ctxInst[bind]:
                 raise ASErr.AcabSemanticTestFailure("Binds Failed", (node, self))
+
+
+    def __bool__(self):
+        return bool(self._test_mappings)
+
+    def __getitem__(self, key) -> []:
+        if key not in self._test_mappings:
+            return []
+
+        return self._test_mappings[key]

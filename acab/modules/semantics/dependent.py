@@ -1,28 +1,24 @@
 #!/usr/bin/env python3
 import logging as root_logger
 
+from acab import types as AT
 import acab.abstract.interfaces.semantic as SI
 import acab.error.acab_semantic_exception as ASErr
 from acab.abstract.config.config import AcabConfig
 from acab.abstract.core.acab_struct import BasicNodeStruct
 from acab.abstract.core.values import AcabStatement, Sentence
-from acab.modules.context.context_set import ContextQueryState
+from acab.modules.context.context_query_manager import ContextQueryManager
 
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
 
-CONSTRAINT_S     = config.prepare("Value.Structure", "CONSTRAINT")()
 NEGATION_S       = config.prepare("Value.Structure", "NEGATION")()
-QUERY_FALLBACK_S = config.prepare("Value.Structure", "QUERY_FALLBACK")()
-DEFAULT_SETUP_S  = config.prepare("Data", "DEFAULT_SETUP_METHOD")()
-DEFAULT_UPDATE_S = config.prepare("Data", "DEFAULT_UPDATE_METHOD")()
 
-Node          = 'AcabNode'
-Printable     = 'Printable'
-Value         = 'AcabValue'
-Structure     = 'AcabStruct'
-Engine        = 'Engine'
-Contexts      = 'Contexts'
+Node          = AT.Node
+Value         = AT.Value
+Structure     = AT.DataStructure
+Engine        = AT.Engine
+Contexts      = AT.CtxSet
 
 
 # Dependent Semantics
@@ -41,7 +37,8 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
             data = {}
 
         if NEGATION_S in sen.data and sen.data[NEGATION_S]:
-            return self._delete(sen, struct, data)
+            self._delete(sen, struct, data)
+            return ctxs
 
         logging.debug(f"Inserting: {sen} into {struct}")
         # Get the root
@@ -79,41 +76,29 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
         semantics, _ = self.lookup(parent)
         semantics.remove(parent, current.value, data)
 
-
     def query(self, sen, struct, data=None, ctxs=None):
         """ Breadth First Search Query """
         if ctxs is None:
             raise ASErr.AcabSemanticException("Ctxs is none to TrieSemantics.query", sen)
 
-        negated = NEGATION_S in sen.data and sen.data[NEGATION_S]
-
-        # TODO get collapse vars from the sentence
-        collapse_vars = []
-        with ContextQueryState(negated, sen, struct.root, collapse_vars, ctxs):
-            for word in sen:
-                for ctxInst in ctxs.active_list(clear=True):
-                    indep, _ = self.lookup(ctxInst._current)
-                    search_word = word
-                    # Handle variable:
-                    if word.is_var and word not in ctxInst:
-                        search_word = None
-                    elif word.is_var and word in ctxInst:
-                        # Word is var, but bound, so look for that instead
-                        search_word = ctxInst[word]
-
-                    results = indep.access(ctxInst._current,
-                                           search_word,
+        with ContextQueryManager(sen, struct.root, ctxs) as cqm:
+            for source_word in cqm.query:
+                for bound_word, ctxInst, current_node in cqm.active:
+                    indep, _ = self.lookup(current_node)
+                    results = indep.access(current_node,
+                                           bound_word,
                                            data)
 
-                    if not bool(results):
-                        ctxs.fail(ctxInst, word, None)
-                    else:
-                        ctxs.test(ctxInst, results, word)
+                    cqm.test_and_update(results)
 
+        return ctxs
 
     def to_sentences(self, struct, data=None, ctxs=None):
         """ Convert a trie to a list of sentences
-        essentially a dfs of the structure
+        essentially a dfs of the structure,
+        ensuring only leaves are complex structures.
+
+        structures are converted to words for use within sentences
         """
         # TODO if passed a node, use that in place of root
         result_list = []
