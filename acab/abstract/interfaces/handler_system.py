@@ -90,7 +90,7 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
         if provides_struct and pair_needs_struct:
             self.handlers[handler.signal].add_struct(handler.struct)
 
-    def lookup(self, value: Value) -> Handler:
+    def lookup(self, value:Optional[Value]=None) -> Handler:
         # sieve from most to least specific
         if value is None:
             return self.default
@@ -101,7 +101,7 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
         if is_passthrough:
             value = value.value
 
-        for key in self.sieve.fifo_collect(value):
+        for key in self.sieve.fifo(value):
             key_match   = key in self.handlers
 
             if is_override and not is_passthrough and not key_match:

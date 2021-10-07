@@ -45,11 +45,12 @@ def DEFAULT_SEMANTICS():
     cont_sem    = ASem.ContainerAbstraction().as_handler("_:CONTAINER")
 
     return BasicSemanticSystem(init_handlers=[cont_sem,
-                                            query_sem,
-                                            action_sem,
-                                            rule_sem,
-                                            trans_sem,
-                                            trie_sem],
+                                              query_sem,
+                                              action_sem,
+                                              rule_sem,
+                                              trans_sem,
+                                              node_sem,
+                                              trie_sem],
                                default=trie_sem)
 
 def EXLO_SEMANTICS():
@@ -68,6 +69,7 @@ def EXLO_SEMANTICS():
                                               action_sem,
                                               rule_sem,
                                               trans_sem,
+                                              node_sem,
                                               trie_sem],
                                default=trie_sem)
 
@@ -87,6 +89,7 @@ def EXLO_PROXY_SEMANTICS():
                                               query_sem,
                                               action_sem,
                                               rule_sem,
+                                              node_sem,
                                               trans_sem,
                                               trie_sem],
                                default=trie_sem)

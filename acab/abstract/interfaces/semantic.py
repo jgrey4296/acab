@@ -138,7 +138,8 @@ class DependentSemantics_i(HandlerComponent_i, SemanticSystem_i):
     def __repr__(self):
         return f"{self.__class__.__name__}"
 
-    def __call__(self, sen, struct, ctxs=None, data=None):
+    def __call__(self, sen, struct, ctxs=None, data=None) -> CtxSet:
+        assert(isinstance(sen, Sentence_i))
         if QUERY in sen[-1].data and bool(sen[-1].data[QUERY]):
             return self.query(sen, struct, ctxs=ctxs, data=data)
 
@@ -216,7 +217,7 @@ class AbstractionSemantics_i(HandlerComponent_i):
     def verify(self, instruction):
         pass
     @abc.abstractmethod
-    def __call__(self, instruction, semSys, ctxs=None, data=None):
+    def __call__(self, instruction, semSys, ctxs=None, data=None) -> CtxSet:
         pass
 
 
