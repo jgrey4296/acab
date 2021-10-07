@@ -269,6 +269,46 @@ class TrieSemanticTests(unittest.TestCase):
 
 
     # -------
+    def test_trie_negated_query(self):
+        """
+        a.b.c
+        ~a.b.c?
+        """
+        ctx_set     = ContextSet.build()
+        node_sem    = BasicNodeSemantics().as_handler("_:node")
+        trie_sem    = BreadthTrieSemantics(default=node_sem)
+        trie_struct = BasicNodeStruct.build_default()
+        # Create sentence
+        sen = Sentence.build(["a", "test", "blah"])
+        # insert into trie
+        trie_sem.insert(sen, trie_struct)
+        # Construct query sentence
+        query_sen = sen[:]
+        query_sen.data[NEGATION_V] = True
+        # Run query
+        result = trie_sem.query(query_sen, trie_struct, ctxs=ctx_set)
+        self.assertEqual(len(result), 0)
+
+    def test_trie_negated_query2(self):
+        """
+        a.b
+        ~a.b.c?
+        """
+        ctx_set     = ContextSet.build()
+        node_sem    = BasicNodeSemantics().as_handler("_:node")
+        trie_sem    = BreadthTrieSemantics(default=node_sem)
+        trie_struct = BasicNodeStruct.build_default()
+        # Create sentence
+        sen = Sentence.build(["a", "b"])
+        # insert into trie
+        trie_sem.insert(sen, trie_struct)
+        # Construct query sentence
+        query_sen = Sentence.build(["a", "b", "c"])
+        query_sen.data[NEGATION_V] = True
+        # Run query
+
+        result = trie_sem.query(query_sen, trie_struct, ctxs=ctx_set)
+        self.assertEqual(len(result), 1)
 
 
     def test_trie_to_sentences_simple(self):
