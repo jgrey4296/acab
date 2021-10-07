@@ -4,13 +4,13 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 from itertools import zip_longest, filterfalse, starmap
 
-import acab.abstract.core.default_structure as DS
+import acab.core.data.default_structure as DS
 import acab.interfaces.value as VI
-from acab.abstract.config.config import GET, AcabConfig, ConfigSpec
-from acab.abstract.core.values import Sentence, AcabStatement
+from acab.core.config.config import GET, AcabConfig, ConfigSpec
+from acab.core.data.values import Sentence, AcabStatement
 from acab.interfaces.printing import PrintSemantics_i
-from acab.abstract.printing import default_symbols as DSYM
-from acab.abstract.printing import wrappers as PW
+from acab.core.printing import default_symbols as DSYM
+from acab.core.printing import wrappers as PW
 
 config = GET()
 

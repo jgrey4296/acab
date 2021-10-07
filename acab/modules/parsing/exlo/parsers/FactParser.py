@@ -5,15 +5,15 @@ capable of parsing  multiple facts
 import logging as root_logger
 
 import pyparsing as pp
-from acab.abstract.parsing import funcs as Pfunc
-from acab.abstract.parsing import parsers as PU
-from acab.abstract.parsing.consts import (COMMA, DELIM, END, emptyLine,
+from acab.core.parsing import funcs as Pfunc
+from acab.core.parsing import parsers as PU
+from acab.core.parsing.consts import (COMMA, DELIM, END, emptyLine,
                                           FACT_HEAD, NEGATION, NG, N, op, opLn, zrm, ln)
-from acab.abstract.parsing.default_structure import OPERATOR, SEN, VALUE
-from acab.abstract.core import default_structure as CDS
+from acab.core.parsing.default_structure import OPERATOR, SEN, VALUE
+from acab.core.data import default_structure as CDS
 from acab.modules.parsing.exlo import constructors as PConst
-from acab.abstract.parsing.indented_block import IndentedBlock
-from acab.abstract.parsing.annotation import ValueRepeatAnnotation, ValueAnnotation
+from acab.core.parsing.indented_block import IndentedBlock
+from acab.core.parsing.annotation import ValueRepeatAnnotation, ValueAnnotation
 
 logging             = root_logger.getLogger(__name__)
 # Hotload insertion points:

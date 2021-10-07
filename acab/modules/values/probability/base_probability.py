@@ -7,7 +7,7 @@ Distribution
 
 
 """
-from acab.abstract.core.values import AcabValue
+from acab.core.data.values import AcabValue
 
 class ProbabilityBase(AcabValue):
     """ Base Class for Probabilistic programming and calculations """

@@ -4,14 +4,14 @@ Pyparsing based parser for types
 import logging as root_logger
 import pyparsing as pp
 
-from acab.abstract.parsing.consts import DOUBLEBAR, COLON, COMMA, DBLCOLON, DELIM, component_gap
-from acab.abstract.parsing.consts import N, NG, op, OPAR, CPAR
-from acab.abstract.core.values import Sentence
-from acab.abstract.parsing import parsers as PU
+from acab.core.parsing.consts import DOUBLEBAR, COLON, COMMA, DBLCOLON, DELIM, component_gap
+from acab.core.parsing.consts import N, NG, op, OPAR, CPAR
+from acab.core.data.values import Sentence
+from acab.core.parsing import parsers as PU
 
 from acab.modules.analysis.typing import util as TYU
 
-from acab.abstract.config.config import AcabConfig
+from acab.core.config.config import AcabConfig
 
 from . import util as TU
 

@@ -11,13 +11,13 @@ config = acab.setup()
 
 from acab.interfaces.engine import AcabEngine_i
 from acab.interfaces.value import Statement_i
-from acab.error.acab_config_exception import AcabConfigException
-from acab.error.acab_import_exception import AcabImportException
+from acab.error.config_exception import AcabConfigException
+from acab.error.import_exception import AcabImportException
 from acab.modules.repl.repl_commander import register
 from acab.modules.repl import ReplParser as RP
-from acab.abstract.core.production_abstractions import ProductionContainer
+from acab.core.data.production_abstractions import ProductionContainer
 from acab.modules.repl.util import init_inspect
-from acab.error.acab_semantic_exception import AcabSemanticException
+from acab.error.semantic_exception import AcabSemanticException
 
 logging = root_logger.getLogger(__name__)
 

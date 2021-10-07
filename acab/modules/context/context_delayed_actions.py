@@ -5,7 +5,7 @@ from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic
 from uuid import UUID
 
-from acab.abstract.decorators.util import registerOn
+from acab.core.decorators.util import registerOn
 from acab.modules.context.context_set import ContextSet
 
 @registerOn(ContextSet)

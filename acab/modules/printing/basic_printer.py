@@ -4,12 +4,12 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-from acab.abstract.config.config import ConfigSpec
-from acab.abstract.core import production_abstractions as PA
+from acab.core.config.config import ConfigSpec
+from acab.core.data import production_abstractions as PA
 from acab.interfaces.printing import PrintSystem_i
 from acab.interfaces.value import (Sentence_i,
                                                        Value_i)
-from acab.abstract.core.values import AcabStatement
+from acab.core.data.values import AcabStatement
 
 
 class BasicPrinter(PrintSystem_i):

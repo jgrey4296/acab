@@ -1,11 +1,11 @@
 import logging as root_logger
 import pyparsing as pp
 
-from acab.abstract.config.config import AcabConfig
+from acab.core.config.config import AcabConfig
 
-from acab.abstract.core.values import Sentence
+from acab.core.data.values import Sentence
 
-from acab.abstract.parsing.consts import s, s_key
+from acab.core.parsing.consts import s, s_key
 
 logging = root_logger.getLogger(__name__)
 

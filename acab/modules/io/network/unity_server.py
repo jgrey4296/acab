@@ -5,7 +5,7 @@ import json
 import logging as root_logger
 import socket
 
-from acab.abstract.core.values import AcabValue
+from acab.core.data.values import AcabValue
 
 from . import util
 

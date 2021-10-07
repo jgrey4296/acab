@@ -10,7 +10,7 @@ from typing import (Any, Dict, List, Mapping, Match, MutableMapping, Optional,
 from uuid import UUID, uuid1
 
 from acab import types as AT
-from acab.abstract.config.config import AcabConfig
+from acab.core.config.config import AcabConfig
 
 logging       = root_logger.getLogger(__name__)
 

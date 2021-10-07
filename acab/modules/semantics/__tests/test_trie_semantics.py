@@ -12,10 +12,10 @@ import acab
 
 config = acab.setup()
 
-from acab.abstract.core.acab_struct import BasicNodeStruct
-from acab.abstract.core.node import AcabNode
-from acab.abstract.core.production_abstractions import ProductionComponent
-from acab.abstract.core.values import AcabValue, Sentence
+from acab.core.data.acab_struct import BasicNodeStruct
+from acab.core.data.node import AcabNode
+from acab.core.data.production_abstractions import ProductionComponent
+from acab.core.data.values import AcabValue, Sentence
 from acab.interfaces.handler_system import Handler
 from acab.modules.operators.query.query_operators import EQ
 from acab.modules.context.context_set import (ConstraintCollection,

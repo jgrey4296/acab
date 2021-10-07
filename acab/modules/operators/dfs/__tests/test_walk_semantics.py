@@ -18,8 +18,8 @@ from acab.modules.semantics.basic_system import BasicSemanticSystem
 from acab.modules.semantics.independent import ExclusionNodeSemantics
 from acab.modules.semantics.abstractions import QueryPlusAbstraction
 from acab.modules.engines.configured import exlo
-from acab.abstract.core.production_abstractions import ProductionComponent, ProductionContainer
-from acab.abstract.core.values import Sentence, AcabValue
+from acab.core.data.production_abstractions import ProductionComponent, ProductionContainer
+from acab.core.data.values import Sentence, AcabValue
 
 BIND          = config.prepare("Value.Structure", "BIND")()
 QUERY         = config.prepare("Value.Structure", "QUERY")()

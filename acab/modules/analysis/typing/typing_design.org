@@ -12,7 +12,7 @@ Variables connect variables in the assignments to definitions.
 The Tries use nodes of TypeDefTrieNode,
 TypeAssignmentTrieNode, and VarTypeTrieNode.
 
-The values of the trie nodes are acab.abstract.values, subclassed as Types.
+The values of the trie nodes are acab.core.values, subclassed as Types.
 They are TypeDefinitions, and TypeInstantiations.
 
 

@@ -25,12 +25,12 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 logging = root_logger.getLogger(__name__)
 from acab import types as AT
-from acab.abstract.core.default_structure import QUERY
+from acab.core.data.default_structure import QUERY
 from acab.interfaces.handler_system import HandlerSystem_i, Handler, HandlerComponent_i
 from acab.interfaces.semantic import Semantic_Fragment
 from acab.interfaces.value import Sentence_i, Value_i
-from acab.error.acab_print_exception import AcabPrintException
-from acab.error.acab_semantic_exception import AcabSemanticException
+from acab.error.print_exception import AcabPrintException
+from acab.error.semantic_exception import AcabSemanticException
 
 Node                   = AT.Node
 Sentence               = AT.Sentence

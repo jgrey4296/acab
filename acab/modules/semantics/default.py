@@ -3,9 +3,9 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 import acab.modules.semantics.abstractions as ASem
-from acab.abstract.config.config import GET
-from acab.abstract.core.acab_struct import BasicNodeStruct
-from acab.abstract.core.values import Sentence
+from acab.core.config.config import GET
+from acab.core.data.acab_struct import BasicNodeStruct
+from acab.core.data.values import Sentence
 from acab.interfaces.handler_system import Handler
 from acab.modules.context import context_delayed_actions
 from acab.modules.context.context_set import ContextSet

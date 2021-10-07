@@ -3,8 +3,8 @@
 import logging as root_logger
 from enum import Enum
 
-from acab.abstract.config.config import AcabConfig
-from acab.abstract.core.values import AcabValue
+from acab.core.config.config import AcabConfig
+from acab.core.data.values import AcabValue
 
 logging = root_logger.getLogger(__name__)
 
@@ -26,7 +26,7 @@ def _filter_candidates(self, target_pattern, candidates, match_func):
         candidates = candidates.root
 
     if not isinstance(candidates, AcabNode):
-        raise AcabBaseException()
+        raise AcabException()
 
     final_matches = []
     pattern_nodes = list(candidates.children.values())

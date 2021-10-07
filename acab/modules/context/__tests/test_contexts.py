@@ -6,9 +6,9 @@ logging = root_logger.getLogger(__name__)
 import acab
 config = acab.setup()
 
-from acab.abstract.core.values import AcabValue
+from acab.core.data.values import AcabValue
 from acab.modules.context.context_set import ContextSet, ContextInstance
-from acab.error.acab_semantic_exception import AcabSemanticException
+from acab.error.semantic_exception import AcabSemanticException
 
 class ContextsTests(unittest.TestCase):
 

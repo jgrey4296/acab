@@ -2,18 +2,18 @@
 import logging as root_logger
 
 import pyparsing as pp
-from acab.abstract.config.config import AcabConfig
-import acab.abstract.core.default_structure as CDS
-import acab.abstract.parsing.default_structure as PDS
-from acab.abstract.parsing import funcs as Pfunc
-from acab.abstract.parsing import parsers as PU
-from acab.abstract.parsing.consts import (COLLAPSE_CONTEXT, COLON, COMMA, DELIM, DOUBLEBAR, END,
+from acab.core.config.config import AcabConfig
+import acab.core.data.default_structure as CDS
+import acab.core.parsing.default_structure as PDS
+from acab.core.parsing import funcs as Pfunc
+from acab.core.parsing import parsers as PU
+from acab.core.parsing.consts import (COLLAPSE_CONTEXT, COLON, COMMA, DELIM, DOUBLEBAR, END,
                                           NG, QUERY, N, component_gap, op, zrm)
-from acab.abstract.parsing.default_structure import OPERATOR, SEN, VALUE
-from acab.abstract.parsing.annotation import ValueAnnotation
-from acab.abstract.parsing.default_symbols import QUERY_HEAD
-from acab.abstract.parsing.funcs import build_assignment
-from acab.abstract.parsing.indented_block import IndentedBlock
+from acab.core.parsing.default_structure import OPERATOR, SEN, VALUE
+from acab.core.parsing.annotation import ValueAnnotation
+from acab.core.parsing.default_symbols import QUERY_HEAD
+from acab.core.parsing.funcs import build_assignment
+from acab.core.parsing.indented_block import IndentedBlock
 from acab.modules.parsing.exlo import constructors as PConst
 from acab.modules.parsing.exlo.constructors import build_query
 

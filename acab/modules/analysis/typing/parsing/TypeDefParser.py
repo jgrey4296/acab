@@ -1,15 +1,15 @@
 import logging as root_logger
 
 import pyparsing as pp
-from acab.abstract.config.config import AcabConfig
-from acab.abstract.core.values import Sentence
-from acab.abstract.parsing import funcs as Pfunc
-from acab.abstract.parsing import parsers as PU
-from acab.abstract.parsing.consts import (DBLARROW, DELIM, NG, N,
+from acab.core.config.config import AcabConfig
+from acab.core.data.values import Sentence
+from acab.core.parsing import funcs as Pfunc
+from acab.core.parsing import parsers as PU
+from acab.core.parsing.consts import (DBLARROW, DELIM, NG, N,
                                           component_gap, emptyLine, op)
 from acab.modules.analysis.typing import util as TYU
 
-from acab.abstract.parsing.indented_block import IndentedBlock
+from acab.core.parsing.indented_block import IndentedBlock
 
 from . import util as TU
 

@@ -9,9 +9,9 @@ from types import MethodType
 
 from acab import types as AT
 from acab.interfaces.data import Structure_i
-from acab.error.acab_handler_exception import AcabHandlerException
+from acab.error.handler_exception import AcabHandlerException
 from acab.interfaces.sieve import AcabSieve
-from acab.abstract.config.config import GET
+from acab.core.config.config import GET
 
 logging = root_logger.getLogger(__name__)
 

@@ -18,12 +18,12 @@ Sentence             = "acab.interfaces.value.Sentence_i"
 Node                 = "acab.interfaces.data.Node_i"
 DataStructure        = "acab.interfaces.Structure_i"
 
-Operator             = "acab.abstract.core.production_abstractions.ProductionOperator"
-Component            = "acab.abstract.core.production_abstractions.ProductionComponent"
-Container            = "acab.abstract.core.production_abstractions.ProductionContainer"
-ProductionStructure  = "acab.abstract.core.production_abstractions.ProductionStructure"
+Operator             = "acab.core.data.production_abstractions.ProductionOperator"
+Component            = "acab.core.data.production_abstractions.ProductionComponent"
+Container            = "acab.core.data.production_abstractions.ProductionContainer"
+ProductionStructure  = "acab.core.data.production_abstractions.ProductionStructure"
 
-ModuleComponents     = "acab.abstract.core.interfaces.module_loader.ModuleComponents"
+ModuleComponents     = "acab.core.data.interfaces.module_loader.ModuleComponents"
 
 # Semantics
 Semantic_Fragment    = "acab.interfaces.semantic.Semantic_Fragment"
@@ -55,10 +55,10 @@ HandlerSystem        = "acab.interfaces.handler_system.HandlerSystem_i"
 HandlerOverride      = "acab.interfaces.handler_system.HandlerSystem_i.HandlerOverrider"
 
 
-ConfigSpec           = "acab.abstract.config.config.ConfigSpec"
-Config               = "acab.abstract.config.config.AcabConfig"
+ConfigSpec           = "acab.core.config.config.ConfigSpec"
+Config               = "acab.core.config.config.AcabConfig"
 
-Annotation           = "acab.abstract.parsing.annotation.ValueAnnotation"
-RepeatAnnotation     = "acab.abstract.parsing.annotation.RepeatAnnotation"
+Annotation           = "acab.core.parsing.annotation.ValueAnnotation"
+RepeatAnnotation     = "acab.core.parsing.annotation.RepeatAnnotation"
 
 Parser               = "pp.ParserElement"

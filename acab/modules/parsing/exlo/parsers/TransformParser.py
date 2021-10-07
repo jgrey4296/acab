@@ -2,16 +2,16 @@
 import logging as root_logger
 
 import pyparsing as pp
-from acab.abstract.config.config import AcabConfig
-from acab.abstract.parsing import parsers as PU
-from acab.abstract.parsing.consts import (ARROW, COLON, COMMA, DELIM,
+from acab.core.config.config import AcabConfig
+from acab.core.parsing import parsers as PU
+from acab.core.parsing.consts import (ARROW, COLON, COMMA, DELIM,
                                           DOUBLEBAR, NG, N, component_gap, zrm)
-from acab.abstract.parsing.default_symbols import TRANSFORM_HEAD
+from acab.core.parsing.default_symbols import TRANSFORM_HEAD
 from acab.modules.parsing.exlo.constructors import (build_transform,
                                                     build_transform_component)
 from acab.modules.parsing.exlo.util import (LEFT_S, OPERATOR_S, RIGHT_S,
                                             TARGET_S)
-from acab.abstract.parsing.indented_block import IndentedBlock
+from acab.core.parsing.indented_block import IndentedBlock
 
 from .FactParser import SENTENCE, op_sentence
 

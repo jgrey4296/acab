@@ -8,12 +8,12 @@ from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar
 
 
-from acab.abstract.core.node import AcabNode
-from acab.abstract.core.values import AcabValue
-from acab.abstract.core.values import Sentence
+from acab.core.data.node import AcabNode
+from acab.core.data.values import AcabValue
+from acab.core.data.values import Sentence
 from acab.modules.semantics.query_semantic_mixin import QuerySemanticMixin
 
-from acab.abstract.parsing.consts import ATOM_V
+from acab.core.parsing.consts import ATOM_V
 
 from acab.interfaces import semantic as SI
 

@@ -7,16 +7,16 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 from acab import types as AT
-from acab.abstract.config.config import AcabConfig
-from acab.abstract.core import production_abstractions as PA
-from acab.abstract.core.values import AcabStatement
+from acab.core.config.config import AcabConfig
+from acab.core.data import production_abstractions as PA
+from acab.core.data.values import AcabStatement
 from acab.interfaces.handler_system import (Handler,
                                                      HandlerComponent_i,
                                                      HandlerSystem_i)
 from acab.interfaces.value import Sentence_i, Value_i
-from acab.abstract.printing.default_symbols import PRINT_SEPARATOR_P
-from acab.error.acab_print_exception import AcabPrintException
-from acab.error.acab_semantic_exception import AcabSemanticException
+from acab.core.printing.default_symbols import PRINT_SEPARATOR_P
+from acab.error.print_exception import AcabPrintException
+from acab.error.semantic_exception import AcabSemanticException
 
 logging = root_logger.getLogger(__name__)
 

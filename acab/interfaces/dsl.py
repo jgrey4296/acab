@@ -14,8 +14,8 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 logging = root_logger.getLogger(__name__)
 
 from acab import types as AT
-from acab.abstract.decorators.dsl import EnsureDSLInitialised
-from acab.error.acab_base_exception import AcabBaseException
+from acab.core.decorators.dsl import EnsureDSLInitialised
+from acab.error.acab_exception import AcabException
 
 Parser           = "pp.ParserElement"
 Sentence         = AT.Sentence

@@ -13,17 +13,17 @@ import logging as root_logger
 import acab
 config = acab.setup()
 
-from acab.abstract.config.config import ConfigSpec
-from acab.abstract.core.values import AcabValue, AcabStatement, Sentence
-from acab.abstract.core.node import AcabNode
+from acab.core.config.config import ConfigSpec
+from acab.core.data.values import AcabValue, AcabStatement, Sentence
+from acab.core.data.node import AcabNode
 
 from acab.modules.structures.trie.trie import Trie
-from acab.abstract.core.acab_struct import AcabStruct
+from acab.core.data.acab_struct import AcabStruct
 from acab.interfaces.data import Structure_i
 from acab.interfaces.semantic import IndependentSemantics
 from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
 
-from acab.abstract.core import production_abstractions as PA
+from acab.core.data import production_abstractions as PA
 
 from acab.modules.operators.query.query_operators import EQ
 

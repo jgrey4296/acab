@@ -8,13 +8,13 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 from acab import types as AT
-from acab.abstract.config.config import GET
-from acab.abstract.core.production_abstractions import (ActionOperator,
+from acab.core.config.config import GET
+from acab.core.data.production_abstractions import (ActionOperator,
                                                         ProductionOperator)
-from acab.abstract.decorators.semantic import (OperatorArgUnWrap,
+from acab.core.decorators.semantic import (OperatorArgUnWrap,
                                                OperatorResultWrap,
                                                OperatorSugar)
-from acab.error.acab_semantic_exception import AcabSemanticException
+from acab.error.semantic_exception import AcabSemanticException
 
 logging = root_logger.getLogger(__name__)
 

@@ -5,9 +5,9 @@ from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic
 import pyparsing as pp
 
-from acab.abstract.config.config import GET
-from  acab.abstract.parsing.consts import orm, QUERY, op, s_lit
-from acab.abstract.core.values import Sentence
+from acab.core.config.config import GET
+from  acab.core.parsing.consts import orm, QUERY, op, s_lit
+from acab.core.data.values import Sentence
 config        = GET()
 
 QUERY         = s_lit(config.prepare("Symbols", "QUERY")())

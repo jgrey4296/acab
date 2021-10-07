@@ -1,15 +1,15 @@
 """
 Constructors for converting parse results -> Acab data
 """
-from acab.abstract.core.default_structure import SEMANTIC_HINT
-from acab.abstract.core.production_abstractions import (ProductionComponent,
+from acab.core.data.default_structure import SEMANTIC_HINT
+from acab.core.data.production_abstractions import (ProductionComponent,
                                                         ProductionContainer,
                                                         ProductionStructure)
-from acab.abstract.core.values import Sentence
-from acab.abstract.core import default_structure as DS
-from acab.abstract.parsing import default_structure as PDS
+from acab.core.data.values import Sentence
+from acab.core.data import default_structure as DS
+from acab.core.parsing import default_structure as PDS
 from acab.modules.parsing.exlo import util as EXu
-from acab.abstract.parsing.annotation import ValueAnnotation, ValueRepeatAnnotation
+from acab.core.parsing.annotation import ValueAnnotation, ValueRepeatAnnotation
 
 def build_query_component(s, loc, toks):
     """ Build a comparison """

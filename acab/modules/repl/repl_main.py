@@ -45,9 +45,9 @@ def main():
     logging.info("Reading Config: {}".format(args.config))
     args.config = [abspath(expanduser(x)) for x in args.config]
 
-    from acab.abstract.config.config import AcabConfig
-    from acab.abstract.config.modal import modal_config
-    import acab.abstract.config.structure
+    from acab.core.config.config import AcabConfig
+    from acab.core.config.modal import modal_config
+    import acab.core.config.structure
     config = AcabConfig.Get(*args.config, hooks=[modal_config])
     #====================
 

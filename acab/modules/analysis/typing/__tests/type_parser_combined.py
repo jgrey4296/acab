@@ -7,12 +7,12 @@ logging = root_logger.getLogger(__name__)
 import acab
 acab.setup()
 
-from acab.abstract.core.values import Sentence
-from acab.abstract.core.values import AcabValue
+from acab.core.data.values import Sentence
+from acab.core.data.values import AcabValue
 
-from acab.abstract.core.node import AcabNode
-from acab.abstract.core.production_abstractions import ProductionOperator, ProductionComponent
-from acab.abstract.parsing.trie_bootstrapper import TrieBootstrapper
+from acab.core.data.node import AcabNode
+from acab.core.data.production_abstractions import ProductionOperator, ProductionComponent
+from acab.core.parsing.trie_bootstrapper import TrieBootstrapper
 
 from acab.modules.analysis.typing import type_exceptions as te
 from acab.modules.analysis.typing import util as TU

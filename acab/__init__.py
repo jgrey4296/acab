@@ -9,12 +9,12 @@ communicate with unity.
 util provides standard enums, strings and some utility functions
 """
 import acab.interfaces.types as types
-from acab.abstract.config.config import GET
+from acab.core.config.config import GET
 
 def setup(location=None):
-    from acab.abstract.config.config import AcabConfig
-    from acab.abstract.config.modal import modal_config
-    import acab.abstract.config.structure
+    from acab.core.config.config import AcabConfig
+    from acab.core.config.modal import modal_config
+    import acab.core.config.structure
     from os.path import split, join
 
     if location is None:

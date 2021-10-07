@@ -9,11 +9,11 @@ import pyparsing as pp
 import acab
 config = acab.setup()
 
-from acab.abstract.core import default_structure as DS
-from acab.abstract.core.values import Sentence
-from acab.abstract.core.values import AcabValue
-from acab.abstract.parsing.annotation import ValueAnnotation
-from acab.abstract.parsing.parsers import HOTLOAD_VALUES, VALBIND
+from acab.core.data import default_structure as DS
+from acab.core.data.values import Sentence
+from acab.core.data.values import AcabValue
+from acab.core.parsing.annotation import ValueAnnotation
+from acab.core.parsing.parsers import HOTLOAD_VALUES, VALBIND
 
 import acab.modules.parsing.exlo.parsers.FactParser as FP
 

@@ -14,9 +14,9 @@ from acab.interfaces.dsl import DSL_Fragment_i, DSLBuilder_i
 from acab.interfaces.module_loader import ModuleLoader_i
 from acab.interfaces.printing import PrintSystem_i
 from acab.interfaces.semantic import SemanticSystem_i
-from acab.abstract.parsing.dsl_builder import DSLBuilder
-from acab.error.acab_semantic_exception import AcabSemanticException
-from acab.abstract.decorators.engine import EnsureEngineInitialised
+from acab.core.parsing.dsl_builder import DSLBuilder
+from acab.error.semantic_exception import AcabSemanticException
+from acab.core.decorators.engine import EnsureEngineInitialised
 
 # TODO add 'Tick' functionality
 ModuleComponents = AT.ModuleComponents

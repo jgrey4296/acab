@@ -8,11 +8,11 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 logging = root_logger.getLogger(__name__)
 
 import acab.interfaces.context as CtxInt
-import acab.error.acab_semantic_exception as ASErr
-from acab.abstract.config import GET
-from acab.abstract.core.production_abstractions import (ProductionComponent,
+import acab.error.semantic_exception as ASErr
+from acab.core.config import GET
+from acab.core.data.production_abstractions import (ProductionComponent,
                                                         ProductionOperator)
-from acab.abstract.core.values import Sentence
+from acab.core.data.values import Sentence
 from acab.modules.context.constraint_sieve import default_sieve
 from acab.interfaces.sieve import AcabSieve
 

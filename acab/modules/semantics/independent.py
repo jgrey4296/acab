@@ -3,10 +3,10 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import TypeVar
 
-import acab.error.acab_semantic_exception as ASErr
-from acab.abstract.config.config import AcabConfig
-from acab.abstract.core.node import AcabNode
-from acab.abstract.core.values import AcabValue, Sentence
+import acab.error.semantic_exception as ASErr
+from acab.core.config.config import AcabConfig
+from acab.core.data.node import AcabNode
+from acab.core.data.values import AcabValue, Sentence
 from acab.interfaces import semantic as SI
 
 Value = AcabValue

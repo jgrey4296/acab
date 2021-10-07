@@ -6,14 +6,14 @@ logging = root_logger.getLogger(__name__)
 import acab
 config = acab.setup()
 
-from acab.abstract.parsing.parsers import HOTLOAD_VALUES, VALBIND
+from acab.core.parsing.parsers import HOTLOAD_VALUES, VALBIND
 
 import acab.modules.parsing.exlo.parsers.FactParser as FP
 import acab.modules.parsing.exlo.parsers.QueryParser as QP
 
-from acab.abstract.core.values import AcabValue, Sentence, AcabStatement
-from acab.abstract.parsing.trie_bootstrapper import TrieBootstrapper
-from acab.abstract.core.production_abstractions import ProductionOperator, ProductionContainer, ProductionComponent
+from acab.core.data.values import AcabValue, Sentence, AcabStatement
+from acab.core.parsing.trie_bootstrapper import TrieBootstrapper
+from acab.core.data.production_abstractions import ProductionOperator, ProductionContainer, ProductionComponent
 
 from acab.modules.operators import query as QOP
 

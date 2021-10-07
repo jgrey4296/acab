@@ -7,12 +7,12 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 from acab import types as AT
-from acab.abstract.config.config import AcabConfig
-from acab.abstract.decorators.semantic import (BuildCtxSetIfMissing,
+from acab.core.config.config import AcabConfig
+from acab.core.decorators.semantic import (BuildCtxSetIfMissing,
                                                RunDelayedCtxSetActions)
 from acab.interfaces.semantic import (AbstractionSemantics_i,
                                                SemanticSystem_i)
-from acab.error.acab_semantic_exception import AcabSemanticException
+from acab.error.semantic_exception import AcabSemanticException
 from acab.modules.context.context_set import ContextSet
 
 logging = root_logger.getLogger(__name__)

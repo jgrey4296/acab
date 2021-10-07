@@ -10,8 +10,8 @@ import logging as root_logger
 import pyparsing as pp
 
 from acab.interfaces.dsl import DSL_Fragment_i
-from acab.abstract.parsing import parsers as PU
-from acab.error.acab_parse_exception import AcabParseException
+from acab.core.parsing import parsers as PU
+from acab.error.parse_exception import AcabParseException
 from acab.modules.parsing.exlo import util as TPU
 from acab.modules.parsing.exlo.parsers import ActionParser as AP
 from acab.modules.parsing.exlo.parsers import FactParser as FP
@@ -19,7 +19,7 @@ from acab.modules.parsing.exlo.parsers import QueryParser as QP
 from acab.modules.parsing.exlo.parsers import RuleParser as RP
 from acab.modules.parsing.exlo.parsers import TotalParser as TotalP
 from acab.modules.parsing.exlo.parsers import TransformParser as TP
-from acab.abstract.parsing.funcs import deep_update_names, clear_parser_names
+from acab.core.parsing.funcs import deep_update_names, clear_parser_names
 
 logging = root_logger.getLogger(__name__)
 

@@ -3,10 +3,10 @@ import logging as root_logger
 
 from acab import types as AT
 import acab.interfaces.semantic as SI
-import acab.error.acab_semantic_exception as ASErr
-from acab.abstract.config.config import AcabConfig
-from acab.abstract.core.acab_struct import BasicNodeStruct
-from acab.abstract.core.values import AcabStatement, Sentence
+import acab.error.semantic_exception as ASErr
+from acab.core.config.config import AcabConfig
+from acab.core.data.acab_struct import BasicNodeStruct
+from acab.core.data.values import AcabStatement, Sentence
 from acab.modules.context.context_query_manager import ContextQueryManager
 
 logging = root_logger.getLogger(__name__)

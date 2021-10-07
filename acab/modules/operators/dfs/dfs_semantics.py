@@ -8,14 +8,14 @@ from collections import defaultdict
 logging = root_logger.getLogger(__name__)
 
 from acab import types as AT
-from acab.abstract.core import default_structure as DS
-from acab.abstract.decorators.semantic import RunInSubCtxSet
+from acab.core.data import default_structure as DS
+from acab.core.decorators.semantic import RunInSubCtxSet
 from acab.interfaces import semantic as SI
 from acab.modules.context.context_set import (ContextSet,
                                                 MutableContextInstance)
 from acab.modules.semantics.util import SemanticBreakpointDecorator
-from acab.error.acab_semantic_exception import AcabSemanticException
-from acab.abstract.core.production_abstractions import ProductionOperator
+from acab.error.semantic_exception import AcabSemanticException
+from acab.core.data.production_abstractions import ProductionOperator
 
 CtxIns = AT.CtxIns
 

@@ -14,12 +14,12 @@ from enum import Enum
 from uuid import UUID, uuid1
 
 import acab.interfaces.context as CtxInt
-import acab.error.acab_semantic_exception as ASErr
-from acab.abstract.config import GET
-from acab.abstract.core.production_abstractions import (ProductionComponent,
+import acab.error.semantic_exception as ASErr
+from acab.core.config import GET
+from acab.core.data.production_abstractions import (ProductionComponent,
                                                         ProductionContainer)
 from acab.interfaces.value import Sentence_i
-from acab.error.acab_semantic_exception import AcabSemanticException
+from acab.error.semantic_exception import AcabSemanticException
 from acab.modules.context.constraints import ConstraintCollection
 
 config = GET()

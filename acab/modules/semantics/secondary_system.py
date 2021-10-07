@@ -5,10 +5,10 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-from acab.abstract.config.config import AcabConfig
+from acab.core.config.config import AcabConfig
 from acab.interfaces.semantic import (AbstractionSemantics_i,
                                                SemanticSystem_i)
-from acab.error.acab_semantic_exception import AcabSemanticException
+from acab.error.semantic_exception import AcabSemanticException
 from acab.modules.context.context_set import ContextSet
 
 logging = root_logger.getLogger(__name__)

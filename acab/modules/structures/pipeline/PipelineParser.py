@@ -41,11 +41,11 @@ Where to specify api connections?
 import logging as root_logger
 import pyparsing as pp
 
-from acab.abstract.config.config import AcabConfig
-from acab.abstract.parsing import parsers as PU
-from acab.abstract.parsing.consts import PIPE_HEAD
-from acab.abstract.parsing.funcs import make_pipeline
-from acab.abstract.core.production_abstractions import ProductionContainer
+from acab.core.config.config import AcabConfig
+from acab.core.parsing import parsers as PU
+from acab.core.parsing.consts import PIPE_HEAD
+from acab.core.parsing.funcs import make_pipeline
+from acab.core.data.production_abstractions import ProductionContainer
 
 logging = root_logger.getLogger(__name__)
 

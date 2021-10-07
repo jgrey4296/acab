@@ -14,7 +14,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 from acab import types as AT
-from acab.error.acab_import_exception import AcabImportException
+from acab.error.import_exception import AcabImportException
 
 logging = root_logger.getLogger(__name__)
 

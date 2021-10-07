@@ -15,7 +15,7 @@ import pyparsing as pp
 
 config = acab.setup()
 
-from acab.abstract.core.production_abstractions import (ProductionOperator,
+from acab.core.data.production_abstractions import (ProductionOperator,
                                                         ProductionStructure)
 from acab.interfaces.value import Statement_i
 from acab.interfaces.context import ContextSet_i

@@ -1,6 +1,6 @@
-from acab.abstract.core.production_abstractions import ProductionOperator
+from acab.core.data.production_abstractions import ProductionOperator
 
-from acab.error.acab_import_exception import AcabImportException
+from acab.error.import_exception import AcabImportException
 
 
 class ImportQuery(ProductionOperator):

@@ -2,16 +2,16 @@
 import logging as root_logger
 
 import pyparsing as pp
-from acab.abstract.config.config import AcabConfig
-from acab.abstract.parsing import funcs as Pfunc
-from acab.abstract.parsing import parsers as PU
-from acab.abstract.parsing.consts import DELIM, NG, N, component_gap, orm, zrm
-from acab.abstract.parsing.default_structure import OPERATOR
-from acab.abstract.parsing.default_symbols import ACTION_HEAD
-from acab.abstract.parsing.parsers import VALBIND
+from acab.core.config.config import AcabConfig
+from acab.core.parsing import funcs as Pfunc
+from acab.core.parsing import parsers as PU
+from acab.core.parsing.consts import DELIM, NG, N, component_gap, orm, zrm
+from acab.core.parsing.default_structure import OPERATOR
+from acab.core.parsing.default_symbols import ACTION_HEAD
+from acab.core.parsing.parsers import VALBIND
 from acab.modules.parsing.exlo import constructors as PConst
 from acab.modules.parsing.exlo.util import LEFT_S, RIGHT_S
-from acab.abstract.parsing.indented_block import IndentedBlock
+from acab.core.parsing.indented_block import IndentedBlock
 
 from .FactParser import SENTENCE, op_sentence
 

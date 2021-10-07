@@ -22,11 +22,11 @@ import acab.modules.parsing.exlo.parsers.QueryParser as QP
 import acab.modules.parsing.exlo.parsers.RuleParser as RP
 import acab.modules.parsing.exlo.parsers.TransformParser as TP
 import acab.modules.printing.printers as Printers
-from acab.abstract.config.config import AcabConfig
-from acab.abstract.core.production_abstractions import (ProductionComponent,
+from acab.core.config.config import AcabConfig
+from acab.core.data.production_abstractions import (ProductionComponent,
                                                         ProductionContainer,
                                                         ProductionOperator)
-from acab.abstract.core.values import AcabStatement, AcabValue, Sentence
+from acab.core.data.values import AcabStatement, AcabValue, Sentence
 from acab.interfaces.handler_system import Handler
 from acab.modules.printing.basic_printer import BasicPrinter
 
