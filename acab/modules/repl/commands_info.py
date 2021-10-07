@@ -91,8 +91,7 @@ def do_stat(self, line):
         print("\n", semantic.__doc__, "\n")
         print(f"{repr(semantic)}\n")
         print("Handlers: {}".format(len(semantic.handlers)))
-        print("Handler Keys:")
-        print("\t{}".format("\n\t".join([str(x) for x in semantic.handlers.keys()])))
+        print("\t{}".format("\n\t".join([str(x) for x in semantic.handlers.values()])))
 
         print("----------")
         mods_with_semantics = [x for x in modules if len(x.semantics) > 0]
@@ -129,8 +128,7 @@ def do_stat(self, line):
         print("\n", printer.__doc__, "\n")
         print(f"{repr(printer)}\n")
         print("Handlers: {}".format(len(printer.handlers)))
-        print("Handler Keys:")
-        print("\t{}".format("\n\t".join([str(x) for x in printer.handlers.keys()])))
+        print("\t{}".format("\n\t".join([str(x) for x in printer.handlers.values()])))
 
         print("----------")
         mods_with_printers = [x for x in modules if len(x.printers) > 0]

@@ -11,8 +11,13 @@ from acab import types as AT
 from acab.abstract.interfaces.data import Structure_i
 from acab.error.acab_handler_exception import AcabHandlerException
 from acab.abstract.interfaces.sieve import AcabSieve
+from acab.abstract.config.config import GET
 
 logging = root_logger.getLogger(__name__)
+
+
+config = GET()
+SPACER = int(config.prepare("Print.Data", "SPACER_SIZE")())
 
 pseudo           = AT.pseudo
 Handler          = AT.Handler
@@ -68,7 +73,7 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
         if init_handlers is None:
             init_handlers = []
 
-        if any([not isinstance(x, Handler) for x in init_handlers]):
+        if any([not isinstance(x, (Handler, HandlerComponent_i)) for x in init_handlers]):
             raise AcabHandlerException(f"Bad Handler in:", init_handlers)
 
         # add handlers with funcs before structs
@@ -198,6 +203,20 @@ class Handler:
         return (self.func, self.struct).__iter__()
 
 
+
+    def __str__(self):
+        sig_s       = str(self.signal)
+        func_name   = ""
+        struct_name = ""
+        if self.func is not None:
+            func_name = str(self.func.__class__.__name__)
+        if self.struct is not None:
+            struct_name = str(self.struct.__class__.__name__)
+
+        spacer = " " * max(0, (SPACER - len(sig_s)))
+        second_spacer = " " * max(0, (SPACER * 2) - (len(spacer) + len(sig_s) + len(func_name)))
+
+        return f"{sig_s}{spacer}{func_name}{second_spacer}{struct_name}"
 
 @dataclass
 class HandlerComponent_i:
