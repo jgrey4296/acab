@@ -28,9 +28,23 @@ class QueryAbstraction(SI.AbstractionSemantics_i):
     def __call__(self, instruction, semSys, ctxs=None, data=None):
         query = instruction
         # Get the default dependent semantics
-        sem, struct = semSys.lookup(None)
+        sem, struct = semSys.lookup()
         for clause in query.clauses:
             sem.query(clause, struct, data=data, ctxs=ctxs)
+
+class QueryPlusAbstraction(SI.AbstractionSemantics_i):
+    """ A Query abstraction that can handle expanded query semantics.
+    Eg: Walkers
+    """
+    @SemanticBreakpointDecorator
+    def __call__(self, instruction, semSys, ctxs=None, data=None):
+        query = instruction
+        for clause in query.clauses:
+            sem, struct = semSys.lookup(clause)
+            if struct is None:
+                struct = semSys
+
+            sem(clause, struct, data=data, ctxs=ctxs)
 
 
 class TransformAbstraction(SI.AbstractionSemantics_i):
