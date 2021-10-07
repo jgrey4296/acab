@@ -117,7 +117,6 @@ class AcabConfig():
         if hasattr(self, "check_structure"):
             self.check_structure()
         else:
-
             breakpoint()
 
     def __call__(self, lookup):
