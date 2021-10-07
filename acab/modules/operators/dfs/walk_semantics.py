@@ -27,6 +27,7 @@ QUERY_FALLBACK_S = config.prepare("Value.Structure", "QUERY_FALLBACK")()
 DEFAULT_SETUP_S  = config.prepare("Data", "DEFAULT_SETUP_METHOD")()
 DEFAULT_UPDATE_S = config.prepare("Data", "DEFAULT_UPDATE_METHOD")()
 QUERY            = config.prepare("Value.Structure", "QUERY")()
+WALK_SEM_HINT    = Sentence.build([config.prepare("Module.DFSWalk", "WALK_QUERY_HINT")()])
 
 Node          = AT.Node
 Value         = AT.Value
@@ -38,6 +39,7 @@ Dep           = AT.DependentSemantics
 Handler       = AT.Handler
 
 # Dependent Semantics
+@dataclass
 class WalkTrieSemantics(SI.AbstractionSemantics_i):
     """
     Instruction for walking all nodes in a struct,
@@ -56,6 +58,8 @@ class WalkTrieSemantics(SI.AbstractionSemantics_i):
     @x ᛦ $y : $rule
 
     """
+
+    signal : str = field(default=WALK_SEM_HINT)
 
     def __call__(self, instruction, semsys, ctxs=None, data=None):
         if QUERY in instruction[-1].data and bool(instruction[-1].data[QUERY]):
