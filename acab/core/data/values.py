@@ -257,6 +257,10 @@ class AcabValue(VI.Value_i, Generic[T]):
             return True
         return False
 
+    def to_word(self) -> Value:
+        return self
+
+
 class AcabStatement(AcabValue, VI.Statement_i):
     """ AcabStatement functions the same as AcabValue,
     but provides specific functionality for converting to a string

@@ -61,14 +61,15 @@ def make_value(s, loc, toks):
         raise SyntaxError("Unplanned parse type")
 
     new_val = AcabValue.safe_make(value, data=data, _type=_type)
-    return new_val
+    return [new_val]
 
 def add_annotations(s, loc, toks):
     """ Add additional data to a node """
-    word = toks[PDS.NODE]
+    word = toks[PDS.NODE][0]
     for anno in toks:
         if not isinstance(anno, ValueAnnotation):
             continue
+
         anno(word)
 
     return word
