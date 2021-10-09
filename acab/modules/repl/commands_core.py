@@ -60,7 +60,7 @@ def do_init(self, line):
             raise AcabConfigException(f"Unknown Engine Spec Form: {spec}")
 
         # TODO add bad words from repl:
-        # self.state.engine.parser.set_bad_words(self.completenames(""))
+        # self.state.engine.parser.set_word_exclusions(self.completenames(""))
 
         self.state.ctxs = None
         logging.info("Engine Initialisation Complete")

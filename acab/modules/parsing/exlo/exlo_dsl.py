@@ -101,7 +101,7 @@ class EXLO_Parser(DSL_Fragment_i):
         return TotalP.parse_point
 
 
-    def set_bad_words(self, words:List[str]):
+    def set_word_exclusions(self, words:List[str]):
         """
         Utility for setting words that should error if used in particular places.
         ie: repl commands shouldn't try to be used as sentence heads

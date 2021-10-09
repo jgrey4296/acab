@@ -50,7 +50,7 @@ class Bootstrapper_i(metaclass=abc.ABCMeta):
 class DSL_Fragment_i(metaclass=abc.ABCMeta):
     """ """
 
-    def set_bad_words(self, *words):
+    def set_word_exclusions(self, *words):
         pass
 
     def parse_string(self, string):
