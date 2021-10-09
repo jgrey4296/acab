@@ -7,8 +7,8 @@ import logging as root_logger
 import pyparsing as pp
 from acab.core.parsing import funcs as Pfunc
 from acab.core.parsing import parsers as PU
-from acab.core.parsing.consts import (COMMA, DELIM, END, emptyLine,
-                                          FACT_HEAD, NEGATION, NG, N, op, opLn, zrm, ln)
+from acab.core.parsing.consts import (COMMA, DELIM, END, emptyLine, COLON,
+                                      FACT_HEAD, NEGATION, NG, N, op, opLn, zrm, ln)
 from acab.core.parsing.default_structure import OPERATOR, SEN, VALUE
 from acab.core.data import default_structure as CDS
 from acab.modules.parsing.exlo import constructors as PConst
@@ -38,7 +38,7 @@ sen_head_negation.setParseAction(lambda x: ValueAnnotation(CDS.NEGATION, True))
 SEN_MACRO             = pp.Forward()
 SEN_HEAD              = BAD_HEADS + (PU.op(sen_head_negation) | HOTLOAD_SEN_HEADS)
 SEN_WORD              = PU.PARAM_CORE(annotations)
-SEN_NO_MODAL          = PU.PARAM_CORE(annotations, end=True)
+SEN_NO_MODAL          = PU.PARAM_CORE(annotations, end=True) + ~COLON
 SEN_END               = HOTLOAD_SEN_ENDS | SEN_NO_MODAL
 SEN_WORD.setName("PBCore")
 SEN_NO_MODAL.setName("PBEnd")
