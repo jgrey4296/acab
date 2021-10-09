@@ -9,13 +9,14 @@ from dataclasses import FrozenInstanceError, InitVar, dataclass, field, replace
 from enum import Enum
 from uuid import UUID, uuid1
 
-import acab.interfaces.context as CtxInt
 import acab.error.semantic_exception as ASErr
+import acab.interfaces.context as CtxInt
 from acab.core.config import GET
 from acab.core.data.production_abstractions import (ProductionComponent,
-                                                        ProductionContainer)
-from acab.interfaces.value import Sentence_i
+                                                    ProductionContainer)
+from acab.core.util.delayed_commands import DelayedCommands_i
 from acab.error.semantic_exception import AcabSemanticException
+from acab.interfaces.value import Sentence_i
 from acab.modules.context.constraints import ConstraintCollection
 
 config = GET()
@@ -187,7 +188,7 @@ class ContextInstance(CtxInt.ContextInstance_i):
 
 
 @dataclass
-class ContextSet(CtxInt.ContextSet_i, CtxInt.DelayedCommands_i):
+class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i):
 
     # TODO make as a stack?
     # operators are just the results of a prior query

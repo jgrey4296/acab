@@ -39,7 +39,7 @@ PrintSystem          = "acab.interfaces.printing.PrintSystem_i"
 CtxSet               = "acab.interfaces.context.ContextSet_i"
 CtxIns               = "acab.interfaces.context.ContextInstance_i"
 Constraint           = "acab.interfaces.context.Constraint_i"
-DelayedCommands      = "acab.interfaces.context.DelayedCommands_i"
+DelayedCommands      = "acab.core.util.DelayedCommands_i"
 
 Debugger             = "acab.interfaces.debugger.AcabDebugger_i"
 

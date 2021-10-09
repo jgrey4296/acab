@@ -89,7 +89,7 @@ class SemanticSystem_i(HandlerSystem_i):
 
     def build_ctxset(self, ops:List[ModuleComponents]=None):
         """ Build a context set. Use passed in operators if provided.
-        Cache operators if flag is true
+        Caches operators
         """
         if bool(ops) or self._operator_cache is None:
             ctxset = self.ctx_set.build(ops)

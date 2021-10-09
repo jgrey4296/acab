@@ -22,7 +22,7 @@ class AcabSieve(metaclass=abc.ABCMeta):
     funcs    : List[Callable]     = field(default_factory=list)
     break_fn : Optional[Callable] = field(default=None)
 
-    def fifo(self, *args, **kwargs) -> Any:
+    def fifo(self, *args, **kwargs) -> Iterator[Any]:
         for sieve_fn in self.funcs:
             result = sieve_fn(*args, **kwargs)
             if result is None:

@@ -184,7 +184,4 @@ semantic_bp = pp.Keyword("semantic") + pp.Regex(".+?\?")("semantic")
 
 parser_bp = pp.Keyword("parser") + rst("parser")
 
-break_parser = pp.Or([parser_bp,
-                      semantic_bp("semantic"),
-                      basic_bp("basic"),
-                      rst])
+break_parser = parser_bp | semantic_bp("semantic") | basic_bp("basic") | rst

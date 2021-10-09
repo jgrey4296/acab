@@ -54,17 +54,17 @@ FRACT.setParseAction(build_fraction)
 # INT.addCondition(lambda toks: isinstance(toks[0], tuple))
 # DEC.addCondition(lambda toks: isinstance(toks[0], tuple))
 # FRACT.addCondition(lambda toks: isinstance(toks[0], tuple))
-# NUM = pp.Or([FRACT, DEC, INT]).setResultsName("num")
+# NUM = (FRACT | DEC | INT)("num")
 # NEG_NUM = op(NEG) + NUM
 INT.setName("int")
 DEC.setName("decimal")
 FRACT.setName("fraction")
 
 parsers = {
-    'int' : INT,
-    'decimal' : DEC,
+    'int'      : INT,
+    'decimal'  : DEC,
     'fraction' : FRACT,
-    'all' : pp.Or([FRACT, DEC, INT])
+    'all'      : FRACT | DEC | INT
     }
 
 chosen_parser = parsers[USE_PARSER]

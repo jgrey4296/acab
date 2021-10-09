@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+"""
+Standardized Actions for use in Config.prepare
+
+"""
 import importlib
 from enum import Enum
 from acab.core.decorators.util import mapToEnum

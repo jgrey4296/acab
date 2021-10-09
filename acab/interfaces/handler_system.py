@@ -28,11 +28,6 @@ Structure        = AT.DataStructure
 Value            = AT.Value
 
 PASSTHROUGH      = "_"
-def ensure_pseudo(s):
-    s_str = str(s)
-    if s_str[:2] == "_:":
-        return s_str
-    return f"_:{s_str}"
 
 # TODO refactor handler -> responder?
 # TODO active and passive handlers?,
@@ -81,7 +76,7 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
             self._register_handler(handler)
 
     def lookup(self, value:Optional[Value]=None) -> Handler:
-        # sieve from most to least specific
+        """ run the sieve on the value to get a handler """
         if value is None:
             return self.default
 
@@ -103,11 +98,14 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
         return self.default
 
     def override(self, new_signal: Union[bool, str], value, data=None) -> Overrider:
+        """ wrap a value to pass data along with it, or explicitly control the signal it produces for handlers """
+        # TODO override on an override
         if bool(new_signal) and new_signal not in self.handlers:
             raise AcabHandlerException(f"Undefined override handler: {new_signal}")
 
         if not bool(new_signal):
             new_signal = PASSTHROUGH
+
 
         if bool(data):
             return HandlerSystem_i.HandlerOverride(new_signal, value, data=data)
@@ -122,6 +120,9 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
 
 
     def _register_handler(self, handler):
+        """
+        insert a handler into the system, bound to the signal that it listens for
+        """
         if not isinstance(handler, Handler):
             raise AcabHandlerException(f"Handler Not Compliant: {handler}", handler)
 
@@ -155,6 +156,30 @@ class Handler:
     func   : Optional[Callable]   = field(default=None)
     struct : Optional[Callable]   = field(default=None)
 
+
+    @staticmethod
+    def decorate(signal_name:str, struct=None):
+        """ Utility decorator to turn any function into a handler """
+        def wrapper(func):
+            return HandlerFunction(signal_name,
+                                   func=func,
+                                   struct=struct)
+
+
+        return wrapper
+
+
+    @staticmethod
+    def from_method(method, signal=None, struct=None):
+        """ A utility function to wrap a single method of a class as a handler.
+        Uses passed in signal, otherwise looks for method.__self__.signal
+        """
+        assert(isinstance(method, MethodType))
+        return HandlerFunction(signal or method.__self__.signal,
+                               func=method,
+                               struct=struct)
+
+
     def __post_init__(self):
         if isinstance(self.func, type):
             self.func = self.func()
@@ -169,35 +194,6 @@ class Handler:
         if self.func is None:
             raise AcabHandlerException(f"Attempt to Call Struct Handler", self)
         return self.func(*args, **kwargs)
-
-    def add_struct(self, struct:Structure):
-        if isinstance(struct, type) and isinstance(struct, AcabStructure):
-            struct = struct.build_default()
-
-        self.struct = struct
-
-    @staticmethod
-    def decorate(signal_name:str, struct=None):
-        def wrapper(func):
-            return HandlerFunction(signal_name,
-                                   func=func,
-                                   struct=struct)
-
-
-        return wrapper
-
-    @staticmethod
-    def from_method(method, signal=None, struct=None):
-        """ A utility function to wrap a single method of a class as a handler.
-        Uses passed in signal, otherwise looks for method.__self__.signal
-        """
-        assert(isinstance(method, MethodType))
-        return HandlerFunction(signal or method.__self__.signal,
-                               func=method,
-                               struct=struct)
-
-
-
 
     def __iter__(self):
         """ unpack the handler"""
@@ -218,6 +214,12 @@ class Handler:
         second_spacer = " " * max(0, (SPACER * 2) - (len(spacer) + len(sig_s) + len(func_name)))
 
         return f"{sig_s}{spacer}{func_name}{second_spacer}{struct_name}"
+
+    def add_struct(self, struct:Structure):
+        if isinstance(struct, type) and isinstance(struct, AcabStructure):
+            struct = struct.build_default()
+
+        self.struct = struct
 
 @dataclass
 class HandlerComponent_i:

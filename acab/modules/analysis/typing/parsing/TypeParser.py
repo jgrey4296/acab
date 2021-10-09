@@ -27,10 +27,10 @@ EXTENDED_ATOM = pp.Word(EXTENDED_LANGUAGE_SYNTAX_S)
 EXTENDED_ATOM.setParseAction(lambda s, l, t: Sentence.build(t[0]))
 
 
-VAR_OR_TYPE_DEC = pp.Or([PU.BIND, TYPEDEC_CORE])
+VAR_OR_TYPE_DEC = PU.BIND | TYPEDEC_CORE
 
 # a.type | α
-TYPE_NAME = pp.Or([HOTLOAD_SEN, EXTENDED_ATOM])
+TYPE_NAME       = HOTLOAD_SEN | EXTENDED_ATOM
 
 # ::a.type($x, a.different.type)
 TYPEDEC_CORE <<= DBLCOLON + N(TYU.SEN_S, TYPE_NAME) \

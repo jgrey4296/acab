@@ -102,13 +102,13 @@ class ContextQueryManager:
 
 
     @property
-    def query(self):
+    def query(self) -> Iterator[Value]:
         for constraints in self.constraints:
             self._current_constraint = constraints
             yield constraints.source
 
     @property
-    def active(self):
+    def active(self) -> Iterator[Tuple[Value, CtxIns, Node]]:
         active_ctxs = self.ctxs.active_list(clear=True)
         # TODO make this return a the current word, bound
         for ctx in active_ctxs:

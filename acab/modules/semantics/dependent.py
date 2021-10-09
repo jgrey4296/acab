@@ -7,6 +7,7 @@ import acab.error.semantic_exception as ASErr
 from acab.core.config.config import AcabConfig
 from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.data.values import AcabStatement, Sentence
+from acab.interfaces.value import Sentence_i
 from acab.modules.context.context_query_manager import ContextQueryManager
 
 logging = root_logger.getLogger(__name__)
@@ -115,8 +116,8 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
 
             if not bool(accessible) or isinstance(current.value, AcabStatement):
                 # Leaves and Statements
-                # Always ignore the root node
-                words = [x.to_word() if isinstance(x, AcabStatement) else x for x in updated_path[1:-1]]
+                # Always ignore the root node, so starting index is 1
+                words = [x.to_word() if not isinstance(x, Sentence_i) else x for x in updated_path[1:-1]]
                 words.append(updated_path[-1])
                 result_list.append(Sentence.build(words))
 
