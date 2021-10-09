@@ -126,6 +126,10 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
         if not isinstance(handler, Handler):
             raise AcabHandlerException(f"Handler Not Compliant: {handler}", handler)
 
+        if handler.signal in self.handlers:
+            old = self.handlers[handler.signal]
+            logging.warning(f"Overriding Handler for Signal {handler.signal}: {old.func.__class__.__qualname__} -> {handler.func.__class__.__qualname__}")
+
         if handler.func is not None:
             self.handlers[handler.signal] = handler
 
