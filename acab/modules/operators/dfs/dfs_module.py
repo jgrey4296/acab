@@ -5,6 +5,7 @@ from acab.interfaces.semantic import Semantic_Fragment
 
 from . import dfs_op_parser as DOP
 from .walk_semantics import WalkTrieSemantics
+from .dfs_printer import DFSSenPrinter
 
 DFS_Sem_Frag = Semantic_Fragment(abstraction=[WalkTrieSemantics().as_handler()])
 

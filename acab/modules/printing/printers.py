@@ -1,16 +1,16 @@
 from dataclasses import dataclass, field
+from itertools import filterfalse, starmap, zip_longest
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
-from itertools import zip_longest, filterfalse, starmap
 
 import acab.core.data.default_structure as DS
 import acab.interfaces.value as VI
 from acab.core.config.config import GET, AcabConfig, ConfigSpec
-from acab.core.data.values import Sentence, AcabStatement
-from acab.interfaces.printing import PrintSemantics_i
+from acab.core.data.values import AcabStatement, Sentence
 from acab.core.printing import default_symbols as DSYM
 from acab.core.printing import wrappers as PW
+from acab.interfaces.printing import PrintSemantics_i
 
 config = GET()
 
@@ -165,7 +165,7 @@ class ConstraintPrinter(PrintSemantics_i):
 class BasicSentenceAwarePrinter(PrintSemantics_i):
 
     def __call__(self, value, top=None, data=None):
-        assert(value.type == SEN_SEN)
+        assert(isinstance(value, VI.Sentence_i))
         return_list = []
 
         if DS.NEGATION in value.data and value.data[DS.NEGATION]:
