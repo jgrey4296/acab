@@ -1,16 +1,16 @@
 from dataclasses import dataclass, field
+from itertools import filterfalse, starmap, zip_longest
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
-from itertools import zip_longest, filterfalse, starmap
 
-import acab.abstract.core.default_structure as DS
-import acab.abstract.interfaces.value as VI
-from acab.abstract.config.config import GET, AcabConfig, ConfigSpec
-from acab.abstract.core.values import Sentence, AcabStatement
-from acab.abstract.interfaces.printing import PrintSemantics_i
-from acab.abstract.printing import default_symbols as DSYM
-from acab.abstract.printing import wrappers as PW
+import acab.core.data.default_structure as DS
+import acab.interfaces.value as VI
+from acab.core.config.config import GET, AcabConfig, ConfigSpec
+from acab.core.data.values import AcabStatement, Sentence
+from acab.core.printing import default_symbols as DSYM
+from acab.core.printing import wrappers as PW
+from acab.interfaces.printing import PrintSemantics_i
 
 config = GET()
 
@@ -95,6 +95,11 @@ class AnnotationAwareValuePrinter(PrintSemantics_i):
         # Pass data through to modal:
         return_list.append(top.override("_:MODAL", value, data=data))
 
+        # Handle query
+        if DS.QUERY in value.data and value.data[DS.QUERY]:
+            return_list.append(DSYM.QUERY_SYM)
+
+
         return return_list
 
 class ModalPrinter(PrintSemantics_i):
@@ -133,6 +138,10 @@ class AnnotationPrinter(PrintSemantics_i):
         # Then Join:
         annotations_pp = [x for x in annotations_pp if bool(x)]
 
+        if hasattr(value, "_acab_operator_sugar"):
+            # TODO refine this
+            annotations_pp.append(value._acab_operator_sugar)
+
         # To decide whether to add anything to main return here:
         if bool(annotations_pp):
             return_list.append("(")
@@ -156,7 +165,7 @@ class ConstraintPrinter(PrintSemantics_i):
 class BasicSentenceAwarePrinter(PrintSemantics_i):
 
     def __call__(self, value, top=None, data=None):
-        assert(value.type == SEN_SEN)
+        assert(isinstance(value, VI.Sentence_i))
         return_list = []
 
         if DS.NEGATION in value.data and value.data[DS.NEGATION]:
@@ -167,10 +176,6 @@ class BasicSentenceAwarePrinter(PrintSemantics_i):
             return_list.append(PW._suppress_modal(top, value.words[-1]))
         else:
             return_list.append(value.words[-1])
-
-        # Handle query
-        if DS.QUERY in value.data and value.data[DS.QUERY]:
-            return_list.append(DSYM.QUERY_SYM)
 
         return return_list
 

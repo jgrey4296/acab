@@ -8,9 +8,9 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 from uuid import uuid1
 
-from acab.abstract.core.node import AcabNode
-from acab.abstract.core.production_abstractions import ProductionOperator
-from acab.abstract.core.values import AcabStatement, AcabValue, Sentence
+from acab.core.data.node import AcabNode
+from acab.core.data.production_abstractions import ProductionOperator
+from acab.core.data.values import AcabStatement, AcabValue, Sentence
 #
 # MUST BE FULL PATH otherwise type instances are built twice for some reason
 # NOT : from . import util as TU

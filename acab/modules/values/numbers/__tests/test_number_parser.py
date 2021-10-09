@@ -9,11 +9,11 @@ import random
 import acab
 acab.setup()
 
-from acab.abstract.core.values import AcabValue
-from acab.abstract.core.values import Sentence
-from acab.abstract.containers import action
-from acab.abstract.containers import transform
-from acab.abstract.core.production_abstractions import ProductionComponent, ProductionContainer
+from acab.core.data.values import AcabValue
+from acab.core.data.values import Sentence
+from acab.core.containers import action
+from acab.core.containers import transform
+from acab.core.data.production_abstractions import ProductionComponent, ProductionContainer
 
 from acab.modules.values import numbers
 from acab.modules.values.numbers.parsing import NumberParser as NP
@@ -22,8 +22,8 @@ from acab.modules.parsing.exlo ActionParser as AP
 from acab.modules.parsing.exlo FactParser as FP
 from acab.modules.parsing.exlo TransformParser as TP
 from acab.working_memory.trie_wm.trie_working_memory import TrieWM
-from acab.abstract.semantics.print_semantics import AcabPrintSemantics
-from acab.abstract.printing import default_handlers as DH
+from acab.core.semantics.print_semantics import AcabPrintSemantics
+from acab.core.printing import default_handlers as DH
 
 basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel),
               Sentence: DH.DEF_SEN_PAIR,

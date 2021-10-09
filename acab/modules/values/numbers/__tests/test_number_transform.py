@@ -8,17 +8,17 @@ logging = root_logger.getLogger(__name__)
 import acab
 acab.setup()
 
-from acab.abstract.core.values import AcabValue
-from acab.abstract.core.values import Sentence
+from acab.core.data.values import AcabValue
+from acab.core.data.values import Sentence
 from acab.modules.values.numbers.parsing import NumberParser as NP
 from acab.modules.parsing.exlo import ActionParser as AP
 from acab.modules.parsing.exlo import TransformParser as TP
 from acab.modules.parsing.exlo import FactParser as FP
 from acab.modules.parsing.exlo import QueryParser as QP
 
-from acab.abstract.core.production_abstractions import ProductionComponent, ProductionOperator
+from acab.core.data.production_abstractions import ProductionComponent, ProductionOperator
 from acab.modules.values import numbers
-from acab.abstract.printing import default_handlers as DH
+from acab.core.printing import default_handlers as DH
 
 basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel),
               Sentence: DH.DEF_SEN_PAIR}

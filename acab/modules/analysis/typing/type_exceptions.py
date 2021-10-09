@@ -1,9 +1,9 @@
 """
 Exception types raised by type checking
 """
-from acab.error.acab_base_exception import AcabBaseException
+from acab.error.acab_exception import AcabException
 
-class AcabTypingException(AcabBaseException):
+class AcabTypingException(AcabException):
 
     def __init__(self):
         return

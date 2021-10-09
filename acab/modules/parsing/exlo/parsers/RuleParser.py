@@ -3,9 +3,9 @@
 import logging as root_logger
 
 import pyparsing as pp
-from acab.abstract.config.config import AcabConfig
-from acab.abstract.parsing import parsers as PU
-from acab.abstract.parsing.consts import (ARROW, COLON, COMMA, DELIM,
+from acab.core.config.config import AcabConfig
+from acab.core.parsing import parsers as PU
+from acab.core.parsing.consts import (ARROW, COLON, COMMA, DELIM,
                                           DOUBLEBAR, NG, RULE_HEAD, N,
                                           component_gap, emptyLine, gap, op,
                                           orm, END)
@@ -29,11 +29,10 @@ endOrLine  = pp.FollowedBy(END) | emptyLine | pp.stringEnd
 
 rule_body = op(conditions + endOrLine) + op(transforms + endOrLine) + op(actions + endOrLine)
 
-rule = PU.STATEMENT_CONSTRUCTOR(FP.PARAM_SEN,
+rule = PU.STATEMENT_CONSTRUCTOR(pp.Literal("::ρ"),
                                 rule_body,
                                 args=False)
 
-rules = PU.DELIMIST(rule, delim=emptyLine)
 
 
 # Actions:
@@ -52,7 +51,7 @@ endOrLine.setName("endOrLine")
 # parse_point = rules.ignore(PU.COMMENT)
 
 # Main Parser
-parse_point = rules
+parse_point = rule
 
 # Main Parser
 def parseString(in_string):

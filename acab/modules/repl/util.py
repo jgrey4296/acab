@@ -7,8 +7,8 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 logging = root_logger.getLogger(__name__)
 import acab
-from acab.abstract.interfaces.debugger import AcabDebugger_i
-from acab.abstract.interfaces.engine import AcabEngine_i
+from acab.interfaces.debugger import AcabDebugger_i
+from acab.interfaces.engine import AcabEngine_i
 
 config = acab.setup()
 
@@ -116,8 +116,8 @@ def ConfigBasedLoad(f):
 
 def build_rebind_instruction(value:str):
     """ Manually construct a startup rebind instruction """
-    from acab.abstract.core.production_abstractions import ProductionComponent, ProductionContainer
-    from acab.abstract.core.values import Sentence
+    from acab.core.data.production_abstractions import ProductionComponent, ProductionContainer
+    from acab.core.data.values import Sentence
 
     action_sem_hint = Sentence.build([config.prepare("SEMANTICS", "ACTION")()])
 

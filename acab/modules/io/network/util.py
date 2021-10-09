@@ -1,4 +1,4 @@
-from acab.abstract.config.config import AcabConfig
+from acab.core.config.config import AcabConfig
 
 config = AcabConfig.Get()
 

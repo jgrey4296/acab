@@ -1,6 +1,6 @@
 
 
-from acab.abstract.core.production_abstractions import ProductionOperator
+from acab.core.data.production_abstractions import ProductionOperator
 
 # TODO implement, and wrap?
 class DFS(ProductionOperator):

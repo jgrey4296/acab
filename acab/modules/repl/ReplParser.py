@@ -5,9 +5,9 @@ The parser for the REPL
 import logging as root_logger
 
 import pyparsing as pp
-from acab.abstract.config.config import AcabConfig
-from acab.abstract.parsing import consts as PU
-from acab.abstract.parsing import parsers as AP
+from acab.core.config.config import AcabConfig
+from acab.core.parsing import consts as PU
+from acab.core.parsing import parsers as AP
 from acab.modules.repl.util import build_slice
 
 logging = root_logger.getLogger(__name__)
@@ -184,7 +184,4 @@ semantic_bp = pp.Keyword("semantic") + pp.Regex(".+?\?")("semantic")
 
 parser_bp = pp.Keyword("parser") + rst("parser")
 
-break_parser = pp.Or([parser_bp,
-                      semantic_bp("semantic"),
-                      basic_bp("basic"),
-                      rst])
+break_parser = parser_bp | semantic_bp("semantic") | basic_bp("basic") | rst

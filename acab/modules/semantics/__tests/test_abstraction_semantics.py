@@ -14,26 +14,27 @@ import acab
 config = acab.setup()
 
 import acab.modules.semantics.abstractions as ASem
-from acab.abstract.core.acab_struct import BasicNodeStruct
-from acab.abstract.core.node import AcabNode
-from acab.abstract.core.production_abstractions import (ActionOperator,
+from acab.core.data.acab_struct import BasicNodeStruct
+from acab.core.data.node import AcabNode
+from acab.core.data.production_abstractions import (ActionOperator,
                                                         ProductionComponent,
                                                         ProductionContainer,
                                                         ProductionOperator,
                                                         ProductionStructure)
-from acab.abstract.core.values import AcabValue, Sentence
-from acab.abstract.decorators.semantic import OperatorArgUnWrap, OperatorResultWrap
-from acab.abstract.interfaces.handler_system import Handler
-from acab.abstract.interfaces.semantic import (AbstractionSemantics_i,
+from acab.core.data.values import AcabValue, Sentence
+from acab.core.decorators.semantic import (OperatorArgUnWrap,
+                                               OperatorResultWrap)
+from acab.interfaces.handler_system import Handler
+from acab.interfaces.semantic import (AbstractionSemantics_i,
                                                SemanticSystem_i)
-from acab.error.acab_base_exception import AcabBaseException
-from acab.error.acab_semantic_exception import AcabSemanticException
+from acab.error.acab_exception import AcabException
+from acab.error.semantic_exception import AcabSemanticException
+from acab.modules.context import context_delayed_actions
+from acab.modules.context.context_set import (ConstraintCollection,
+                                              ContextInstance, ContextSet)
 from acab.modules.operators.query.query_operators import EQ, NEQ, HasTag
 from acab.modules.operators.transform.transform_operators import RegexOp
 from acab.modules.semantics.basic_system import BasicSemanticSystem
-from acab.modules.semantics.context_set import (ConstraintCollection,
-                                                ContextInstance, ContextSet)
-from acab.modules.semantics import context_delayed_actions
 from acab.modules.semantics.dependent import BreadthTrieSemantics
 from acab.modules.semantics.independent import (BasicNodeSemantics,
                                                 ExclusionNodeSemantics)
@@ -166,7 +167,7 @@ class AbstractionSemanticTests(unittest.TestCase):
 
         class StubAbsSemantic(AbstractionSemantics_i):
             def __call__(self, ins, semSys, ctxs=None, data=None):
-                raise AcabBaseException("TestAbsSem called")
+                raise AcabException("TestAbsSem called")
 
         def SemHintKey(val, data=None):
             if SEMANTIC_HINT_V in val.data:
@@ -227,7 +228,7 @@ class AbstractionSemanticTests(unittest.TestCase):
 
         class StubAbsSemantic(AbstractionSemantics_i):
             def __call__(self, ins, semSys, ctxs=None, data=None):
-                raise AcabBaseException("TestAbsSem called", rest=[str(ins), data])
+                raise AcabException("TestAbsSem called", rest=[str(ins), data])
 
         def SemHintKey(val, data=None):
             if SEMANTIC_HINT_V in val.data:
@@ -304,7 +305,7 @@ class AbstractionSemanticTests(unittest.TestCase):
 
         class StubAbsSemantic(AbstractionSemantics_i):
             def __call__(self, ins, semSys, ctxs=None, data=None):
-                raise AcabBaseException("TestAbsSem called", rest=[str(ins), data])
+                raise AcabException("TestAbsSem called", rest=[str(ins), data])
 
         def SemHintKey(val, data=None):
             if SEMANTIC_HINT_V in val.data:

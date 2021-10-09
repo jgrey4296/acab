@@ -11,9 +11,9 @@ config = acab.setup()
 
 from acab.modules.repl.repl_commander import register
 from acab.modules.repl import ReplParser as RP
-from acab.abstract.core.production_abstractions import ProductionOperator, ProductionStructure
+from acab.core.data.production_abstractions import ProductionOperator, ProductionStructure
 from acab.modules.repl.util import print_contexts
-from acab.abstract.parsing import debug_funcs as DBF
+from acab.core.parsing import debug_funcs as DBF
 
 logging = root_logger.getLogger(__name__)
 
@@ -91,8 +91,7 @@ def do_stat(self, line):
         print("\n", semantic.__doc__, "\n")
         print(f"{repr(semantic)}\n")
         print("Handlers: {}".format(len(semantic.handlers)))
-        print("Handler Keys:")
-        print("\t{}".format("\n\t".join([str(x) for x in semantic.handlers.keys()])))
+        print("\t{}".format("\n\t".join([str(x) for x in semantic.handlers.values()])))
 
         print("----------")
         mods_with_semantics = [x for x in modules if len(x.semantics) > 0]
@@ -117,6 +116,8 @@ def do_stat(self, line):
 
         print("--")
         print("Loaded Operators: {}".format(count))
+        # TODO print Context Operator Bindings
+
 
     if allow_all or "printers" in params:
         print("\n--------------------")
@@ -127,8 +128,7 @@ def do_stat(self, line):
         print("\n", printer.__doc__, "\n")
         print(f"{repr(printer)}\n")
         print("Handlers: {}".format(len(printer.handlers)))
-        print("Handler Keys:")
-        print("\t{}".format("\n\t".join([str(x) for x in printer.handlers.keys()])))
+        print("\t{}".format("\n\t".join([str(x) for x in printer.handlers.values()])))
 
         print("----------")
         mods_with_printers = [x for x in modules if len(x.printers) > 0]

@@ -2,10 +2,10 @@ from fractions import Fraction
 import logging as root_logger
 import pyparsing as pp
 
-from acab.abstract.parsing import parsers as PU
-from acab.abstract.parsing.consts import SLASH, op, s
+from acab.core.parsing import parsers as PU
+from acab.core.parsing.consts import SLASH, op, s
 from acab.modules.values.numbers import util as NU
-from acab.abstract.config.config import AcabConfig
+from acab.core.config.config import AcabConfig
 
 logging = root_logger.getLogger(__name__)
 
@@ -54,17 +54,17 @@ FRACT.setParseAction(build_fraction)
 # INT.addCondition(lambda toks: isinstance(toks[0], tuple))
 # DEC.addCondition(lambda toks: isinstance(toks[0], tuple))
 # FRACT.addCondition(lambda toks: isinstance(toks[0], tuple))
-# NUM = pp.Or([FRACT, DEC, INT]).setResultsName("num")
+# NUM = (FRACT | DEC | INT)("num")
 # NEG_NUM = op(NEG) + NUM
 INT.setName("int")
 DEC.setName("decimal")
 FRACT.setName("fraction")
 
 parsers = {
-    'int' : INT,
-    'decimal' : DEC,
+    'int'      : INT,
+    'decimal'  : DEC,
     'fraction' : FRACT,
-    'all' : pp.Or([FRACT, DEC, INT])
+    'all'      : FRACT | DEC | INT
     }
 
 chosen_parser = parsers[USE_PARSER]

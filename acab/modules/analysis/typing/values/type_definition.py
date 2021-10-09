@@ -7,9 +7,9 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 from dataclasses import dataclass, field, InitVar
 
-from acab.abstract.config.config import AcabConfig
-from acab.abstract.core.values import AcabValue, Sentence
-from acab.error.acab_parse_exception import AcabParseException
+from acab.core.config.config import AcabConfig
+from acab.core.data.values import AcabValue, Sentence
+from acab.error.parse_exception import AcabParseException
 from acab.modules.analysis.typing import type_exceptions as TE
 from acab.modules.analysis.typing.util import (SUM_DEFINITION, TYPE_DEF_S,
                                                TYPE_DEFINITION, OPERATOR_DEFINITION)

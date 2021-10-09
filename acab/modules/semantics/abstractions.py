@@ -1,24 +1,23 @@
 #!/usr/bin/env python3
 # https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
 import logging as root_logger
+from collections import defaultdict
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
-from collections import defaultdict
 
 logging = root_logger.getLogger(__name__)
 
-
-from acab.abstract.core import default_structure as DS
-from acab.abstract.decorators.semantic import RunInSubCtxSet
-from acab.abstract.interfaces import semantic as SI
-from acab.modules.semantics.context_set import (ContextSet,
-                                                MutableContextInstance)
+from acab import types as AT
+from acab.core.data import default_structure as DS
+from acab.core.data.production_abstractions import ProductionOperator
+from acab.core.decorators.semantic import RunInSubCtxSet
+from acab.interfaces import semantic as SI
+from acab.error.semantic_exception import AcabSemanticException
+from acab.modules.context.context_set import ContextSet, MutableContextInstance
 from acab.modules.semantics.util import SemanticBreakpointDecorator
-from acab.error.acab_semantic_exception import AcabSemanticException
-from acab.abstract.core.production_abstractions import ProductionOperator
 
-CtxIns = 'ContextInstance'
+CtxIns = AT.CtxIns
 
 # Primary Abstractions:
 class QueryAbstraction(SI.AbstractionSemantics_i):
@@ -29,9 +28,23 @@ class QueryAbstraction(SI.AbstractionSemantics_i):
     def __call__(self, instruction, semSys, ctxs=None, data=None):
         query = instruction
         # Get the default dependent semantics
-        sem, struct = semSys.lookup(None)
+        sem, struct = semSys.lookup()
         for clause in query.clauses:
             sem.query(clause, struct, data=data, ctxs=ctxs)
+
+class QueryPlusAbstraction(SI.AbstractionSemantics_i):
+    """ A Query abstraction that can handle expanded query semantics.
+    Eg: Walkers
+    """
+    @SemanticBreakpointDecorator
+    def __call__(self, instruction, semSys, ctxs=None, data=None):
+        query = instruction
+        for clause in query.clauses:
+            sem, struct = semSys.lookup(clause)
+            if struct is None:
+                struct = semSys
+
+            sem(clause, struct, data=data, ctxs=ctxs)
 
 
 class TransformAbstraction(SI.AbstractionSemantics_i):

@@ -9,15 +9,15 @@ import traceback
 import acab
 config = acab.setup()
 
-from acab.abstract.interfaces.engine import AcabEngine_i
-from acab.abstract.interfaces.value import Statement_i
-from acab.error.acab_config_exception import AcabConfigException
-from acab.error.acab_import_exception import AcabImportException
+from acab.interfaces.engine import AcabEngine_i
+from acab.interfaces.value import Statement_i
+from acab.error.config_exception import AcabConfigException
+from acab.error.import_exception import AcabImportException
 from acab.modules.repl.repl_commander import register
 from acab.modules.repl import ReplParser as RP
-from acab.abstract.core.production_abstractions import ProductionContainer
+from acab.core.data.production_abstractions import ProductionContainer
 from acab.modules.repl.util import init_inspect
-from acab.error.acab_semantic_exception import AcabSemanticException
+from acab.error.semantic_exception import AcabSemanticException
 
 logging = root_logger.getLogger(__name__)
 
@@ -60,7 +60,7 @@ def do_init(self, line):
             raise AcabConfigException(f"Unknown Engine Spec Form: {spec}")
 
         # TODO add bad words from repl:
-        # self.state.engine.parser.set_bad_words(self.completenames(""))
+        # self.state.engine.parser.set_word_exclusions(self.completenames(""))
 
         self.state.ctxs = None
         logging.info("Engine Initialisation Complete")
@@ -92,6 +92,7 @@ def do_module(self, line):
 def do_load(self, line):
     """
     Load a dsl file into the self
+    TODO specify a prefix for everything from loaded
     """
     logging.info(f"Loading: {line}")
     filename = abspath(expanduser(line)).strip()
@@ -139,13 +140,7 @@ def do_run(self, line):
     run override X SEN : run SEN with override semantics X
     """
     try:
-        # query
-        if not bool(line.strip()):
-            logging.info("TODO Ticking Engine")
-            self.state.ctxs = self.state.engine.tick()
-            return
-
-        logging.info("------ Run Query:")
+        logging.info("------ Run Setup:")
         query_results = self.state.engine(line)
 
         bindings = [y for x in query_results.active_list()
@@ -153,7 +148,7 @@ def do_run(self, line):
 
         if not bool(bindings) and bool(query_results) and isinstance(query_results[0]._current.value, Statement_i):
             bindings = [query_results[0]._current.value]
-        logging.info("------ Run Query End")
+        logging.info("------ Run Setup End")
 
         if bool(bindings):
             # Run the bindings

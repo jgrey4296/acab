@@ -13,9 +13,9 @@ from typing import (Any, Callable, ClassVar, Dict, Iterable, Iterator, List,
                     Tuple, TypeVar, Union, cast)
 
 import acab.modules.analysis.typing.util as util
-from acab.abstract.core.node import AcabNode
-from acab.abstract.core.values import AcabValue, Sentence
-from acab.abstract.interfaces import semantic as SI
+from acab.core.data.node import AcabNode
+from acab.core.data.values import AcabValue, Sentence
+from acab.interfaces import semantic as SI
 from acab.modules.analysis.typing import type_exceptions as te
 from acab.modules.analysis.typing.values.operator_definition import \
     OperatorDefinition

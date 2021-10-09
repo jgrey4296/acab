@@ -4,13 +4,13 @@
 """
 # pylint: disable=bad-whitespace,unnecessary-comprehension
 import pyparsing as pp
-from acab.abstract.config.config import AcabConfig
-from acab.abstract.core.default_structure import TYPE_BOTTOM_NAME as ATOM_V
-from acab.abstract.core.production_abstractions import ProductionContainer
-from acab.abstract.core.values import AcabValue, Sentence
-from acab.abstract.parsing.consts import CPAR, NG, OPAR, N
-from acab.abstract.parsing.parsers import MODAL
-from acab.error.acab_parse_exception import AcabParseException
+from acab.core.config.config import AcabConfig
+from acab.core.data.default_structure import TYPE_BOTTOM_NAME as ATOM_V
+from acab.core.data.production_abstractions import ProductionContainer
+from acab.core.data.values import AcabValue, Sentence
+from acab.core.parsing.consts import CPAR, NG, OPAR, N
+from acab.core.parsing.parsers import MODAL
+from acab.error.parse_exception import AcabParseException
 
 config = AcabConfig.Get()
 

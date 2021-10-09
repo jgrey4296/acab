@@ -8,26 +8,26 @@ logging = root_logger.getLogger(__name__)
 import acab
 acab.setup()
 
-from acab.abstract.parsing import consts as PConst
+from acab.core.parsing import consts as PConst
 
-from acab.abstract.core.values import  AcabValue
-from acab.abstract.core.values import Sentence
-from acab.abstract.core.production_abstractions import ProductionOperator, ProductionContainer
-from acab.abstract.parsing.trie_bootstrapper import TrieBootstrapper
+from acab.core.data.values import  AcabValue
+from acab.core.data.values import Sentence
+from acab.core.data.production_abstractions import ProductionOperator, ProductionContainer
+from acab.core.parsing.trie_bootstrapper import TrieBootstrapper
 
-from acab.abstract.engine.engine import Engine
+from acab.core.engine.engine import Engine
 from acab.modules.parsing.exlo import ActionParser as AP
 from acab.modules.operators.action import action_operators as act_ops
 
-from acab.abstract.semantics.print_semantics import AcabPrintSemantics
-from acab.abstract.printing import default_handlers as DH
+from acab.core.semantics.print_semantics import AcabPrintSemantics
+from acab.core.printing import default_handlers as DH
 
 basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel),
               Sentence: DH.DEF_SEN_PAIR}
 
 Printer = AcabPrintSemantics(basic_plus, default_values={'MODAL_FIELD' : 'exop'})
 
-from acab.abstract.semantics.production_semantics import ProductionSemantics
+from acab.core.semantics.production_semantics import ProductionSemantics
 
 # TODO production semantics
 ProdSem = ProductionSemantics()

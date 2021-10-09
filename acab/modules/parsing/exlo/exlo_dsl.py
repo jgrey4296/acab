@@ -9,9 +9,9 @@ from typing import cast, ClassVar, TypeVar, Generic
 import logging as root_logger
 import pyparsing as pp
 
-from acab.abstract.interfaces.dsl import DSL_Fragment_i
-from acab.abstract.parsing import parsers as PU
-from acab.error.acab_parse_exception import AcabParseException
+from acab.interfaces.dsl import DSL_Fragment_i
+from acab.core.parsing import parsers as PU
+from acab.error.parse_exception import AcabParseException
 from acab.modules.parsing.exlo import util as TPU
 from acab.modules.parsing.exlo.parsers import ActionParser as AP
 from acab.modules.parsing.exlo.parsers import FactParser as FP
@@ -19,7 +19,7 @@ from acab.modules.parsing.exlo.parsers import QueryParser as QP
 from acab.modules.parsing.exlo.parsers import RuleParser as RP
 from acab.modules.parsing.exlo.parsers import TotalParser as TotalP
 from acab.modules.parsing.exlo.parsers import TransformParser as TP
-from acab.abstract.parsing.funcs import deep_update_names, clear_parser_names
+from acab.core.parsing.funcs import deep_update_names, clear_parser_names
 
 logging = root_logger.getLogger(__name__)
 
@@ -31,69 +31,77 @@ class EXLO_Parser(DSL_Fragment_i):
         """ Provide fragments for other parsers """
         # Core
         # TODO: make this declarative in EXLO_parser *init*
-        bootstrapper.add("valbind"             , PU.VALBIND,
-                         "sentence.basic"      , FP.BASIC_SEN,
-                         "sentence.param"      , FP.PARAM_SEN,
-                         "statement.sentence"  , FP.SEN_STATEMENT,
-                         "operator.sugar"      , PU.OPERATOR_SUGAR,
-                         "sentence.plural"     , FP.PARAM_SEN_PLURAL)
+        bootstrapper.add("word.valbind"                  , PU.VALBIND,
+                         "word.constrained"              , FP.SEN_NO_MODAL,
+                         "sentence"                      , FP.SENTENCE,
+                         "sentence.ends.statement.macro" , FP.SEN_MACRO,
+                         "sentence.operator"             , FP.op_sentence,
+                         "operator.sugar"                , PU.OPERATOR_SUGAR,
+                         "sentence.plural"               , FP.SEN_PLURAL)
         # Query
-        bootstrapper.add("statement.query"     , QP.query_statement,
-                         "query.body"          , QP.clauses,
-                         "query.clause"        , QP.clause)
+        bootstrapper.add("sentence.ends.statement.query" , QP.query_statement,
+                         "sentence.ends.word.query"      , QP.query_sen_end,
+                         "word.annotation.query"         , QP.word_query_constraint)
 
         # Transform
-        bootstrapper.add("transform.body"      , TP.transforms,
-                         "statement.transform" , TP.transform_statement,
-                         "transform.rebind"    , TP.rebind)
+        bootstrapper.add("sentence.ends.statement.transform" , TP.transform_statement)
 
         # Action
-        bootstrapper.add("action.body"         , AP.actions,
-                         "statement.action"    , AP.action_definition)
+        bootstrapper.add("sentence.ends.statement.action"    , AP.action_definition)
 
         # Rule
-        bootstrapper.add("rule.body"           , RP.rule_body,
-                         "statement.rule"      , RP.rule)
+        bootstrapper.add("sentence.ends.statement.rule"      , RP.rule)
 
 
     def query_parsers(self, bootstrapper):
         """ Load in fragments """
         try:
-            PU.HOTLOAD_VALUES << bootstrapper.query("value.*")
+            PU.HOTLOAD_VALUES << bootstrapper.query("word.value.*")
         except Exception:
             logging.debug("No values loaded into DSL")
 
         try:
-            FP.HOTLOAD_ANNOTATIONS << bootstrapper.query("annotation.*")
+            FP.HOTLOAD_ANNOTATIONS << bootstrapper.query("word.annotation.*")
         except Exception:
             logging.debug("No annotations loaded into DSL")
 
-        FP.HOTLOAD_QUERY_OP << bootstrapper.query("operator.query.*",
+        # TODO FP.HOTLOAD_SEN_HEADS
+
+
+        FP.HOTLOAD_SEN_ENDS << bootstrapper.query("sentence.ends.statement.*",
+                                                  "sentence.ends.word.*")
+
+        QP.HOTLOAD_QUERY_OP << bootstrapper.query("operator.query.*",
                                                   "operator.sugar")
 
-        QP.HOTLOAD_QUERY_SEN << bootstrapper.query("query.sentences.*")
+        QP.HOTLOAD_QUERY_SEN << bootstrapper.query("query.statement.*")
 
         TP.HOTLOAD_TRANS_OP << bootstrapper.query("operator.transform.*",
                                                   "operator.sugar")
 
-        TP.HOTLOAD_TRANS_STATEMENTS << bootstrapper.query("operator.transform.statement.*")
+        TP.HOTLOAD_TRANS_STATEMENTS << bootstrapper.query("transform.statement.*")
 
         AP.HOTLOAD_OPERATORS << bootstrapper.query("operator.action.*",
                                                    "operator.sugar")
 
-        TotalP.HOTLOAD_STATEMENTS << bootstrapper.query("statement.*")
-        # At this point, parser is constructed, and will not change again
-        # however, *can not* deep-copy the parser for multiple versions
-        deep_update_names(TotalP.parse_point)
+        AP.HOTLOAD_ACTION_STATEMENTS << bootstrapper.query("action.statement.*")
 
+        TotalP.HOTLOAD_STATEMENTS << bootstrapper.query("statement.*")
+
+        # At this point, parser is constructed, and will not change again
+        # however, *can not* deep-copy the parser for multiple versions.
+        #
+        # Propagate parser names, even through Forwards
+        deep_update_names(TotalP.parse_point)
+        # Then for next use of parsers to generate their own name again
         clear_parser_names(TotalP.parse_point,
                            TotalP.file_total,
                            TotalP.file_component)
 
-        return (TotalP.parse_point, QP.parse_point)
+        return TotalP.parse_point
 
 
-    def set_bad_words(self, words:List[str]):
+    def set_word_exclusions(self, words:List[str]):
         """
         Utility for setting words that should error if used in particular places.
         ie: repl commands shouldn't try to be used as sentence heads

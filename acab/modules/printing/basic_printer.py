@@ -4,12 +4,12 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-from acab.abstract.config.config import ConfigSpec
-from acab.abstract.core import production_abstractions as PA
-from acab.abstract.interfaces.printing import PrintSystem_i
-from acab.abstract.interfaces.value import (Sentence_i,
-                                                       Value_i)
-from acab.abstract.core.values import AcabStatement
+from acab.core.config.config import ConfigSpec
+from acab.core.data import production_abstractions as PA
+from acab.interfaces.printing import PrintSystem_i
+from acab.interfaces.value import (Sentence_i, Value_i)
+from acab.core.data.values import AcabStatement
+from acab.core.data.default_structure import SEMANTIC_HINT
 
 
 class BasicPrinter(PrintSystem_i):
@@ -23,6 +23,8 @@ class BasicPrinter(PrintSystem_i):
         lambda x              : "_:SYMBOL" if isinstance(x, ConfigSpec) else None,
         # enum
         lambda x              : "_:SYMBOL" if isinstance(x, Enum) else None,
+        # SEM HINT Handler
+        lambda x              : x.data[SEMANTIC_HINT] if isinstance(x, Value_i) and SEMANTIC_HINT in x.data else None,
         # exact type     : 1 -> 1 : any / leaf
         lambda x              : str(x.type) if isinstance(x, Value_i) else None,
         # gen type       : m -> 1 : any / leaf

@@ -10,19 +10,19 @@ acab.setup()
 import acab.modules.analysis.typing.parsing.TypeDefParser as TD
 import acab.modules.analysis.typing.parsing.TypeParser as TP
 
-from acab.abstract.core.values import AcabValue
-from acab.abstract.core.values import Sentence
-from acab.abstract.core.node import AcabNode
-from acab.abstract.parsing import parsers as PU
+from acab.core.data.values import AcabValue
+from acab.core.data.values import Sentence
+from acab.core.data.node import AcabNode
+from acab.core.parsing import parsers as PU
 
-from acab.error.acab_parse_exception import AcabParseException
+from acab.error.parse_exception import AcabParseException
 
 from acab.modules.analysis.typing import util as TU
 from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition
 from acab.modules.analysis.typing.values.type_definition import TypeDefinition
 from acab.modules.parsing.exlo FactParser as FP
-from acab.abstract.semantics.print_semantics import AcabPrintSemantics
-from acab.abstract.printing import default_handlers as DH
+from acab.core.semantics.print_semantics import AcabPrintSemantics
+from acab.core.printing import default_handlers as DH
 
 basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel),
               Sentence: DH.DEF_SEN_PAIR}

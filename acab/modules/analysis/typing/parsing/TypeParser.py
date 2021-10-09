@@ -4,14 +4,14 @@ Pyparsing based parser for types
 import logging as root_logger
 import pyparsing as pp
 
-from acab.abstract.parsing.consts import DOUBLEBAR, COLON, COMMA, DBLCOLON, DELIM, component_gap
-from acab.abstract.parsing.consts import N, NG, op, OPAR, CPAR
-from acab.abstract.core.values import Sentence
-from acab.abstract.parsing import parsers as PU
+from acab.core.parsing.consts import DOUBLEBAR, COLON, COMMA, DBLCOLON, DELIM, component_gap
+from acab.core.parsing.consts import N, NG, op, OPAR, CPAR
+from acab.core.data.values import Sentence
+from acab.core.parsing import parsers as PU
 
 from acab.modules.analysis.typing import util as TYU
 
-from acab.abstract.config.config import AcabConfig
+from acab.core.config.config import AcabConfig
 
 from . import util as TU
 
@@ -20,17 +20,17 @@ EXTENDED_LANGUAGE_SYNTAX_S = config.prepare("Parse.Patterns", "EXTENDED_LANGUAGE
 
 # BASIC SENTENCE NEEDS TO BE POPULATED
 # eg: acab.modules.parsing.exlo.parsers.FactParser.BASIC_SEN
-HOTLOAD_BASIC_SEN = pp.Forward()
-TYPEDEC_CORE      = pp.Forward()
+HOTLOAD_SEN  = pp.Forward()
+TYPEDEC_CORE = pp.Forward()
 
 EXTENDED_ATOM = pp.Word(EXTENDED_LANGUAGE_SYNTAX_S)
 EXTENDED_ATOM.setParseAction(lambda s, l, t: Sentence.build(t[0]))
 
 
-VAR_OR_TYPE_DEC = pp.Or([PU.BIND, TYPEDEC_CORE])
+VAR_OR_TYPE_DEC = PU.BIND | TYPEDEC_CORE
 
 # a.type | α
-TYPE_NAME = pp.Or([HOTLOAD_BASIC_SEN, EXTENDED_ATOM])
+TYPE_NAME       = HOTLOAD_SEN | EXTENDED_ATOM
 
 # ::a.type($x, a.different.type)
 TYPEDEC_CORE <<= DBLCOLON + N(TYU.SEN_S, TYPE_NAME) \

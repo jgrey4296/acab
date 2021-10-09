@@ -6,15 +6,14 @@ logging = root_logger.getLogger(__name__)
 import acab
 config = acab.setup()
 
-from acab.abstract.parsing.parsers import HOTLOAD_VALUES, VALBIND
+from acab.core.parsing.parsers import HOTLOAD_VALUES, VALBIND
 
 import acab.modules.parsing.exlo.parsers.FactParser as FP
 import acab.modules.parsing.exlo.parsers.QueryParser as QP
 
-from acab.abstract.core.values import AcabValue
-from acab.abstract.core.values import Sentence
-from acab.abstract.parsing.trie_bootstrapper import TrieBootstrapper
-from acab.abstract.core.production_abstractions import ProductionOperator, ProductionContainer, ProductionComponent
+from acab.core.data.values import AcabValue, Sentence, AcabStatement
+from acab.core.parsing.trie_bootstrapper import TrieBootstrapper
+from acab.core.data.production_abstractions import ProductionOperator, ProductionContainer, ProductionComponent
 
 from acab.modules.operators import query as QOP
 
@@ -40,19 +39,20 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         # qmod = QOP.MODULE()
         # qmod.assert_parsers(bp)
         # FP.HOTLOAD_ANNOTATIONS << bp.query("query.annotation.*")
+        FP.HOTLOAD_SEN_ENDS << QP.query_sen_end
 
     #----------
     #use testcase snippets
 
     def test_basic_clause(self):
-        result = QP.clause.parseString('a.b.c?')[0]
+        result = QP.SENTENCE.parseString('a.b.c?')[0]
         self.assertIsInstance(result, Sentence)
         self.assertEqual(len(result), 3)
         self.assertEqual(result[-1].value, 'c')
         self.assertEqual(result[-1].data['exop'], config.enums['exop'].DOT)
 
     def test_basic_clause_with_bind(self):
-        result = QP.clause.parseString('a.b.$c?')[0]
+        result = QP.SENTENCE.parseString('a.b.$c?')[0]
         self.assertIsInstance(result, Sentence)
         self.assertEqual(len(result), 3)
         self.assertEqual(result[-1].value, 'c')
@@ -60,7 +60,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertTrue(result[-1].is_var)
 
     def test_basic_negated_clause(self):
-        result = QP.clause.parseString('~a.b.c?')[0]
+        result = QP.SENTENCE.parseString('~a.b.c?')[0]
         self.assertIsInstance(result, Sentence)
         self.assertTrue(result.data[NEGATION_V])
 
@@ -83,23 +83,23 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertTrue(result.clauses[3].data[NEGATION_V])
 
     def test_basic_query_construction(self):
-        result = QP.parseString(' a.b.c?\n a.b.d?\n a.b.e?')
+        result = QP.clauses.parseString(' a.b.c?\n a.b.d?\n a.b.e?')[0]
         self.assertIsInstance(result, ProductionContainer)
         self.assertEqual(len(result.clauses), 3)
 
     def test_clause_fallback_strings(self):
-        result = QP.clause.parseString('a.b.c? || $x:a.b!c, $y:b.d.e')[0]
-        self.assertIsInstance(result, Sentence)
-        self.assertIsNotNone(result.data[QUERY_FALLBACK_V])
-        self.assertEqual(len(result.data[QUERY_FALLBACK_V]), 2)
-        self.assertEqual(result.data[QUERY_FALLBACK_V][0][0], 'x')
-        self.assertEqual(result.data[QUERY_FALLBACK_V][0][1][-1].value, 'c')
-        self.assertEqual(result.data[QUERY_FALLBACK_V][1][0], 'y')
-        self.assertEqual(result.data[QUERY_FALLBACK_V][1][1][-1].value, 'e')
+        result = QP.clauses.parseString('a.b.c? || $x:a.b!c, $y:b.d.e')[0]
+        self.assertIsInstance(result, ProductionContainer)
+        r_clause = result.clauses[0]
+        self.assertIsNotNone(r_clause[-1].data[QUERY_FALLBACK_V])
+        self.assertEqual(len(r_clause[-1].data[QUERY_FALLBACK_V]), 2)
+        self.assertEqual(r_clause[-1].data[QUERY_FALLBACK_V][0][0], 'x')
+        self.assertEqual(r_clause[-1].data[QUERY_FALLBACK_V][0][1][-1].value, 'c')
+        self.assertEqual(r_clause[-1].data[QUERY_FALLBACK_V][1][0], 'y')
+        self.assertEqual(r_clause[-1].data[QUERY_FALLBACK_V][1][1][-1].value, 'e')
 
 
     def test_query_statement(self):
-        result = QP.query_statement.parseString("a.test.query:\n  a.b.c?\n  d.e.f?\n  a.b.$x?\nend")[0]
-        self.assertIsInstance(result, Sentence)
-        self.assertIsInstance(result[-1], ProductionContainer)
-        self.assertEqual(len(result[-1].clauses), 3)
+        result = QP.query_statement.parseString("query:\n  a.b.c?\n  d.e.f?\n  a.b.$x?\nend")[0]
+        self.assertIsInstance(result, ProductionContainer)
+        self.assertEqual(len(result.clauses), 3)

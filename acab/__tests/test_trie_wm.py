@@ -9,17 +9,17 @@ import unittest.mock as mock
 import acab
 acab.setup()
 
-from acab.abstract.core.values import AcabValue
-from acab.abstract.core.values import Sentence
-from acab.abstract.parsing.trie_bootstrapper import TrieBootstrapper
-from acab.abstract.engine.engine import Engine
-from acab.abstract.core.production_abstractions import ProductionOperator
+from acab.core.data.values import AcabValue
+from acab.core.data.values import Sentence
+from acab.core.parsing.trie_bootstrapper import TrieBootstrapper
+from acab.core.engine.engine import Engine
+from acab.core.data.production_abstractions import ProductionOperator
 
 from acab.modules.operators.query import RegMatch
 from acab.modules.working_memory.trie_wm.trie_working_memory import TrieWM
 
-from acab.abstract.semantics.print_semantics import AcabPrintSemantics
-from acab.abstract.printing import default_handlers as DH
+from acab.core.semantics.print_semantics import AcabPrintSemantics
+from acab.core.printing import default_handlers as DH
 
 basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel),
               Sentence: DH.DEF_SEN_PAIR}

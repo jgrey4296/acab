@@ -12,10 +12,10 @@ logging = root_logger.getLogger(__name__)
 import acab
 acab.setup()
 
-from acab.abstract.core.values import AcabValue as PV
-from acab.abstract.core.values import Sentence
+from acab.core.data.values import AcabValue as PV
+from acab.core.data.values import Sentence
 
-from acab.abstract.engine.engine import Engine
+from acab.core.engine.engine import Engine
 
 from acab.modules.parsing.exlo import TransformParser as TP
 from acab.modules.parsing.exlo import FactParser as FP

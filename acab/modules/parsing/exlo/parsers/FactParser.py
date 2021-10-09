@@ -5,85 +5,71 @@ capable of parsing  multiple facts
 import logging as root_logger
 
 import pyparsing as pp
-from acab.abstract.parsing import funcs as Pfunc
-from acab.abstract.parsing import parsers as PU
-from acab.abstract.parsing.consts import (COLLAPSE_CONTEXT, COMMA, DELIM, END, emptyLine,
-                                          FACT_HEAD, NEGATION, NG, N, op, opLn, zrm, ln)
-from acab.abstract.parsing.default_structure import OPERATOR, SEN, VALUE
+from acab.core.parsing import funcs as Pfunc
+from acab.core.parsing import parsers as PU
+from acab.core.parsing.consts import (COMMA, DELIM, END, emptyLine, COLON,
+                                      FACT_HEAD, NEGATION, NG, N, op, opLn, zrm, ln)
+from acab.core.parsing.default_structure import OPERATOR, SEN, VALUE
+from acab.core.data import default_structure as CDS
 from acab.modules.parsing.exlo import constructors as PConst
-from acab.abstract.parsing.indented_block import IndentedBlock
-from acab.abstract.parsing.annotation import ValueRepeatAnnotation
+from acab.core.parsing.indented_block import IndentedBlock
+from acab.core.parsing.annotation import ValueRepeatAnnotation, ValueAnnotation
 
-logging = root_logger.getLogger(__name__)
+logging             = root_logger.getLogger(__name__)
 # Hotload insertion points:
-HOTLOAD_ANNOTATIONS = pp.Forward()
-HOTLOAD_QUERY_OP    = pp.Forward()
-HOTLOAD_BAD_HEADS   = pp.Forward()
+HOTLOAD_ANNOTATIONS   = pp.Forward()
+HOTLOAD_BAD_HEADS     = pp.Forward()
+HOTLOAD_SEN_ENDS      = pp.Forward()
+HOTLOAD_SEN_HEADS     = pp.Forward()
 
-BAD_HEADS = ~(END | HOTLOAD_BAD_HEADS)("Bad Words")
-BAD_HEADS.errmsg = "Bad Head Word Found"
 
-# Basic Sentences without Annotations:
-BASIC_SEN = BAD_HEADS + PU.op(NEGATION) \
-    + NG(SEN, pp.ZeroOrMore(PU.PARAM_CORE()) + PU.PARAM_CORE(end=True))
-BASIC_SEN.setParseAction(Pfunc.construct_sentence)
-BASIC_SEN.setName("BasicSentence")
+BAD_HEADS           = ~(END | HOTLOAD_BAD_HEADS)("Bad Words")
+BAD_HEADS.errmsg    = "Bad Head Word Found"
 
-# TODO shift this to config
-func_headed_sen = pp.Suppress(pp.Literal('λ')) + BASIC_SEN
+annotations = PU.DELIMIST(HOTLOAD_ANNOTATIONS, delim=COMMA)
+annotations.setParseAction(PConst.build_constraint_list)
+annotations.setName("Annotations")
 
-# Build After comparison operators have been constructed:
-op_path = HOTLOAD_QUERY_OP | func_headed_sen
-
-QUERY_OP_Internal = N(OPERATOR, op_path) \
-    + N(VALUE, zrm(BASIC_SEN))
-
-QUERY_OP_Internal.setParseAction(PConst.build_query_component)
-
-COLLAPSE_CONTEXT = COLLAPSE_CONTEXT.copy()
-COLLAPSE_CONTEXT.setParseAction(lambda x: ValueRepeatAnnotation("constraint", CTX_OP.collect_var))
-
-query_or_annotation = pp.MatchFirst([QUERY_OP_Internal,
-                                     COLLAPSE_CONTEXT,
-                                     HOTLOAD_ANNOTATIONS])
-constraints = PU.DELIMIST(query_or_annotation, delim=COMMA)
-constraints.setParseAction(PConst.build_constraint_list)
-constraints.setName("ConstraintList")
+sen_head_negation = NEGATION("SenNeg")
+sen_head_negation.setParseAction(lambda x: ValueAnnotation(CDS.NEGATION, True))
 
 # Core = a. | b! | $a. | $b!....
-PARAM_BINDING_CORE = PU.PARAM_CORE(constraints)
-PARAM_BINDING_END = PU.PARAM_CORE(constraints, end=True)
-PARAM_BINDING_CORE.setName("PBCore")
-PARAM_BINDING_END.setName("PBEnd")
+# Sentences are /SEN_WORD* (SEN_END | SEN_STATEMENT)/
+SEN_MACRO             = pp.Forward()
+SEN_HEAD              = BAD_HEADS + (PU.op(sen_head_negation) | HOTLOAD_SEN_HEADS)
+SEN_WORD              = PU.PARAM_CORE(annotations)
+SEN_NO_MODAL          = PU.PARAM_CORE(annotations, end=True) + ~COLON
+SEN_END               = HOTLOAD_SEN_ENDS | SEN_NO_MODAL
+SEN_WORD.setName("PBCore")
+SEN_NO_MODAL.setName("PBEnd")
 
-SEN_STATEMENT = pp.Forward()
+# The Prime Sentence definition:
+SENTENCE = SEN_HEAD + NG(SEN, pp.ZeroOrMore(SEN_WORD) + SEN_END)
+SENTENCE.setParseAction(Pfunc.construct_sentence)
+SENTENCE.setName("Sentence")
 
-# Sentences with basic sentences as annotations
-PARAM_SEN = BAD_HEADS + PU.op(NEGATION) \
-    + NG(SEN, pp.ZeroOrMore(PARAM_BINDING_CORE) + PARAM_BINDING_END)
-PARAM_SEN.setParseAction(Pfunc.construct_sentence)
-PARAM_SEN.setName("ParameterisedSentence")
+SEN_PLURAL = PU.DELIMIST(SENTENCE, delim=DELIM)
+SEN_PLURAL.setName("Sentence Plural")
 
-PARAM_SEN_PLURAL = PU.DELIMIST(PARAM_SEN, delim=DELIM)
-PARAM_SEN_PLURAL.setName("Sentences")
+# FIXME
+# SEN_MACRO_BODY     = IndentedBlock(SENTENCE)
+# # Statement to specify multiple sub sentences
+# SEN_MACRO        <<= PU.STATEMENT_CONSTRUCTOR(pp.Literal("::ζ"),
+#                                               SEN_MACRO_BODY,
+#                                               parse_fn=Pfunc.construct_multi_sentences)
 
-SEN_STATEMENT_BODY = IndentedBlock(PARAM_SEN | SEN_STATEMENT)
-# Statement to specify multiple sub sentences
-SEN_STATEMENT << PU.STATEMENT_CONSTRUCTOR(PARAM_SEN,
-                                          SEN_STATEMENT_BODY,
-                                          parse_fn=Pfunc.construct_multi_sentences)
+op_sentence = pp.Suppress(pp.Literal('λ')) + SENTENCE
 
 # Naming
-# PARAM_BINDING_CORE.setName("ParamBindCore")
-# PARAM_BINDING_END.setName("ParamBindEnd")
-# PARAM_SEN_PLURAL.setName("ParamSentencePlural")
+# BINDING_CORE.setName("BindCore")
+# BINDING_END.setName("BindEnd")
+# SEN_PLURAL.setName("SentencePlural")
 # HOTLOAD_ANNOTATIONS.setName("Annotations")
-SEN_STATEMENT.setName("SentenceStatement")
-# HOTLOAD_QUERY_OP.setName("QueryOperators")
+# SEN_STATEMENT.setName("SentenceStatement")
 # QUERY_OP_Internal.setName("Query_Statements")
 # query_or_annotation.setName("QueryOrAnnotation")
 
-parse_point = PARAM_SEN_PLURAL
+parse_point = SEN_PLURAL
 
 # MAIN PARSER:
 def parseString(in_string):

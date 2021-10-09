@@ -12,18 +12,17 @@ import acab
 
 config = acab.setup()
 
-from acab.abstract.core.acab_struct import BasicNodeStruct
-from acab.abstract.core.node import AcabNode
-from acab.abstract.core.production_abstractions import ProductionComponent
-from acab.abstract.core.values import AcabValue, Sentence
+from acab.core.data.acab_struct import BasicNodeStruct
+from acab.core.data.node import AcabNode
+from acab.core.data.production_abstractions import ProductionComponent
+from acab.core.data.values import AcabValue, Sentence
+from acab.interfaces.handler_system import Handler
 from acab.modules.operators.query.query_operators import EQ
-from acab.modules.semantics.context_set import (ConstraintCollection,
-                                                ContextSet,
-                                                ContextInstance)
+from acab.modules.context.context_set import (ConstraintCollection,
+                                              ContextInstance, ContextSet)
 from acab.modules.semantics.dependent import BreadthTrieSemantics
 from acab.modules.semantics.independent import (BasicNodeSemantics,
                                                 ExclusionNodeSemantics)
-from acab.abstract.interfaces.handler_system import Handler
 
 EXOP         = config.prepare("MODAL", "exop")()
 EXOP_enum    = config.prepare(EXOP, as_enum=True)()
@@ -191,6 +190,7 @@ class TrieSemanticTests(unittest.TestCase):
         query_sen[-1].data[CONSTRAINT_V] = [the_test]
         # Run query
         trie_sem.query(query_sen, trie_struct, ctxs=ctx_set)
+
         self.assertEqual(len(ctx_set), 1)
         self.assertEqual(ctx_set[0].data['x'].name, 'blah')
 
@@ -269,6 +269,46 @@ class TrieSemanticTests(unittest.TestCase):
 
 
     # -------
+    def test_trie_negated_query(self):
+        """
+        a.b.c
+        ~a.b.c?
+        """
+        ctx_set     = ContextSet.build()
+        node_sem    = BasicNodeSemantics().as_handler("_:node")
+        trie_sem    = BreadthTrieSemantics(default=node_sem)
+        trie_struct = BasicNodeStruct.build_default()
+        # Create sentence
+        sen = Sentence.build(["a", "test", "blah"])
+        # insert into trie
+        trie_sem.insert(sen, trie_struct)
+        # Construct query sentence
+        query_sen = sen[:]
+        query_sen.data[NEGATION_V] = True
+        # Run query
+        result = trie_sem.query(query_sen, trie_struct, ctxs=ctx_set)
+        self.assertEqual(len(result), 0)
+
+    def test_trie_negated_query2(self):
+        """
+        a.b
+        ~a.b.c?
+        """
+        ctx_set     = ContextSet.build()
+        node_sem    = BasicNodeSemantics().as_handler("_:node")
+        trie_sem    = BreadthTrieSemantics(default=node_sem)
+        trie_struct = BasicNodeStruct.build_default()
+        # Create sentence
+        sen = Sentence.build(["a", "b"])
+        # insert into trie
+        trie_sem.insert(sen, trie_struct)
+        # Construct query sentence
+        query_sen = Sentence.build(["a", "b", "c"])
+        query_sen.data[NEGATION_V] = True
+        # Run query
+
+        result = trie_sem.query(query_sen, trie_struct, ctxs=ctx_set)
+        self.assertEqual(len(result), 1)
 
 
     def test_trie_to_sentences_simple(self):

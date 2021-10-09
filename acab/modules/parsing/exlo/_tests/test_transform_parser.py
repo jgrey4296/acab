@@ -8,10 +8,10 @@ import re
 import acab
 config = acab.setup()
 
-from acab.abstract.core.values import AcabValue
-from acab.abstract.core.values import Sentence
-from acab.abstract.parsing.trie_bootstrapper import TrieBootstrapper
-from acab.abstract.core.production_abstractions import ProductionOperator, ProductionContainer, ProductionComponent
+from acab.core.data.values import AcabValue
+from acab.core.data.values import Sentence
+from acab.core.parsing.trie_bootstrapper import TrieBootstrapper
+from acab.core.data.production_abstractions import ProductionOperator, ProductionContainer, ProductionComponent
 
 from acab.modules.parsing.exlo.parsers import TransformParser as TP
 from acab.modules.parsing.exlo.parsers import ActionParser as AP

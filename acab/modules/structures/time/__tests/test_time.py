@@ -5,18 +5,18 @@ logging = root_logger.getLogger(__name__)
 import pyparsing as pp
 
 
-from acab.abstract.config.config import AcabConfig
+from acab.core.config.config import AcabConfig
 config = AcabConfig.Get("acab")
 
-from acab.abstract.core.values import AcabValue
-from acab.abstract.core.values import Sentence
+from acab.core.data.values import AcabValue
+from acab.core.data.values import Sentence
 from acab.modules.structures.time.time_core import BaseTime, TimeEvent, TimeContainer
 from acab.modules.structures.time.pattern import PatternSeq, PatternPar
 from acab.modules.structures.time.parsing import parser as tp
 from acab.modules.structures.time.config import Time as t
-from acab.abstract.parsing import parsers as PU
-from acab.abstract.semantics.print_semantics import AcabPrintSemantics
-from acab.abstract.printing import default_handlers as DH
+from acab.core.parsing import parsers as PU
+from acab.core.semantics.print_semantics import AcabPrintSemantics
+from acab.core.printing import default_handlers as DH
 
 basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel),
               Sentence: DH.DEF_SEN_PAIR}

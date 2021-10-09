@@ -9,9 +9,9 @@ from pyparsing import ParseException
 import acab
 acab.setup()
 
-from acab.abstract.core.values import AcabValue
-from acab.abstract.core.values import Sentence
-from acab.abstract.core.production_abstractions import ProductionComponent, ProductionOperator
+from acab.core.data.values import AcabValue
+from acab.core.data.values import Sentence
+from acab.core.data.production_abstractions import ProductionComponent, ProductionOperator
 
 from acab.modules.values import numbers
 from acab.modules.values.numbers.parsing import NumberParser as NP
@@ -21,7 +21,7 @@ from acab.modules.parsing.exlo import FactParser as FP
 from acab.modules.parsing.exlo import QueryParser as QP
 from acab.modules.parsing.exlo import RuleParser as RP
 from acab.modules.parsing.exlo import TransformParser as TP
-from acab.abstract.printing import default_handlers as DH
+from acab.core.printing import default_handlers as DH
 
 basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel),
               Sentence: DH.DEF_SEN_PAIR}

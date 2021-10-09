@@ -4,12 +4,13 @@ Definitions of initial Comparison operators
 import re
 
 from acab import types as AT
-from acab.abstract.core.production_abstractions import ProductionOperator
-from acab.abstract.decorators.semantic import OperatorArgUnWrap, OperatorResultWrap
-from acab.abstract.decorators.semantic import OperatorSugar
+from acab.core.data.production_abstractions import ProductionOperator
+from acab.core.decorators.semantic import OperatorArgUnWrap, OperatorResultWrap
+from acab.core.decorators.semantic import OperatorSugar
 
 Value    = AT.Value
 Sentence = AT.Sentence
+CtxIns   = AT.CtxIns
 
 @OperatorSugar("==")
 class EQ(ProductionOperator):
@@ -53,3 +54,28 @@ class HasTag(ProductionOperator):
     # Don't unwrap args, as you need the value data to test
     def __call__(self, value, *tags, data=None):
         return value.has_tag(*tags)
+
+
+@OperatorSugar("τ=")
+class TypeMatch(ProductionOperator):
+    """ Match a value's type to a passed in sentence """
+
+    def __call__(self, a:Value, ctx:CtxIns, b:Sentence, data=None):
+        a_type = a.type
+        if a == b:
+            return True
+
+        for ax, bx in zip(a.type.words, b.words):
+            if ax.is_var:
+                ax = ctx[ax]
+            if bx.is_var:
+                bx = ctx[bx]
+
+            if ax == bx:
+                continue
+            if ax.is_var or bx.is_var:
+                continue
+
+            return False
+
+        return True

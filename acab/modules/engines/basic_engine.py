@@ -12,17 +12,17 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-from acab.abstract.config.config import AcabConfig
-from acab.abstract.core.production_abstractions import (ProductionContainer,
+from acab.core.config.config import AcabConfig
+from acab.core.data.production_abstractions import (ProductionContainer,
                                                         ProductionOperator)
-from acab.abstract.engine.module_loader import ModuleLoader
-from acab.abstract.interfaces.dsl import DSL_Fragment_i
-from acab.abstract.interfaces.engine import AcabEngine_i
-from acab.abstract.interfaces.printing import PrintSystem_i
-from acab.abstract.interfaces.semantic import SemanticSystem_i
-from acab.abstract.interfaces.value import Value_i, Sentence_i
-from acab.error.acab_base_exception import AcabBaseException
-from acab.abstract.decorators.engine import MaybeBuildOperatorCtx, EnsureEngineInitialised
+from acab.core.engine.module_loader import ModuleLoader
+from acab.interfaces.dsl import DSL_Fragment_i
+from acab.interfaces.engine import AcabEngine_i
+from acab.interfaces.printing import PrintSystem_i
+from acab.interfaces.semantic import SemanticSystem_i
+from acab.interfaces.value import Value_i, Sentence_i
+from acab.error.acab_exception import AcabException
+from acab.core.decorators.engine import MaybeBuildOperatorCtx, EnsureEngineInitialised
 
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
@@ -60,7 +60,7 @@ class AcabBasicEngine(AcabEngine_i):
             inst = [y for x in inst for y in self._dsl_builder.parse(x)[:]]
 
         assert(all([isinstance(x, (Value_i, Sentence_i)) for x in inst])), inst
-        logging.debug(f"Running: {str(inst)}")
+        logging.debug(f"Enacting Instruction: {str(inst)}")
         return self.semantics(*inst, ctxs=ctxset)
 
     @property

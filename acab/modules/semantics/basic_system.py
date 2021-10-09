@@ -6,19 +6,20 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-from acab.abstract.config.config import AcabConfig
-from acab.abstract.interfaces.semantic import (AbstractionSemantics_i,
-                                                          SemanticSystem_i)
-from acab.error.acab_semantic_exception import AcabSemanticException
-from acab.modules.semantics.context_set import ContextSet
-from acab.abstract.interfaces.context import ContextSet_i
-from acab.abstract.decorators.semantic import BuildCtxSetIfMissing, RunDelayedCtxSetActions
+from acab import types as AT
+from acab.core.config.config import AcabConfig
+from acab.core.decorators.semantic import (BuildCtxSetIfMissing,
+                                               RunDelayedCtxSetActions)
+from acab.interfaces.semantic import (AbstractionSemantics_i,
+                                               SemanticSystem_i)
+from acab.error.semantic_exception import AcabSemanticException
+from acab.modules.context.context_set import ContextSet
 
 logging = root_logger.getLogger(__name__)
 
-Sentence         = 'Sentence'
-CtxSet           = 'ContextSet'
-ModuleComponents = 'ModuleComponents'
+Sentence         = AT.Sentence
+CtxSet           = AT.CtxSet
+ModuleComponents = AT.ModuleComponents
 config           = AcabConfig.Get()
 
 SEM_HINT = config.prepare("Value.Structure", "SEMANTIC_HINT")()
@@ -37,7 +38,7 @@ class BasicSemanticSystem(SemanticSystem_i):
         lambda x: x.type
     ]
 
-    ctx_set : ContextSet_i = field(default=ContextSet)
+    ctx_set : CtxSet = field(default=ContextSet)
 
 
     @BuildCtxSetIfMissing
@@ -61,7 +62,7 @@ class BasicSemanticSystem(SemanticSystem_i):
             data = {}
             semantics, struct = self.lookup(instruction)
             assert(semantics is not None)
-            logging.debug(f"Running Semantics: {semantics}")
+            logging.debug(f"Firing Semantics: {semantics}")
             # TODO entry hooks would go here.
 
             # Abstractions use a reference to the sem system in place of a struct

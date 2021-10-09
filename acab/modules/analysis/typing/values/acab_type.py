@@ -6,8 +6,8 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-from acab.abstract.config.config import AcabConfig
-from acab.abstract.core.values import AcabStatement
+from acab.core.config.config import AcabConfig
+from acab.core.data.values import AcabStatement
 
 config = AcabConfig.Get()
 

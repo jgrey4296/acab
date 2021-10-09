@@ -5,8 +5,8 @@ logging = root_logger.getLogger(__name__)
 import acab
 acab.setup()
 
-from acab.abstract.core.values import Sentence
-from acab.abstract.parsing import parsers as PU
+from acab.core.data.values import Sentence
+from acab.core.parsing import parsers as PU
 from acab.modules.structures.time import util as TU
 from acab.modules.structures.time.parsing import parser as tp
 from acab.modules.structures.time.parsing import parser as tp

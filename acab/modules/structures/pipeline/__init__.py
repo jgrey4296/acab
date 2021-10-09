@@ -1,4 +1,4 @@
-from acab.abstract.interfaces.dsl import DSL_Fragment_i
+from acab.interfaces.dsl import DSL_Fragment_i
 from . import AgendaParser as AP
 from . import LayerParser as LP
 from . import PipelineParser as PP

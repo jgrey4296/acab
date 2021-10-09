@@ -3,8 +3,8 @@ Defintions for Core Transform Operators
 """
 from re import sub
 
-from acab.abstract.core.production_abstractions import ProductionOperator
-from acab.abstract.decorators.semantic import (OperatorArgUnWrap,
+from acab.core.data.production_abstractions import ProductionOperator
+from acab.core.decorators.semantic import (OperatorArgUnWrap,
                                                OperatorDataUnWrap,
                                                OperatorResultWrap,
                                                OperatorSugar)

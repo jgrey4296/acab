@@ -5,13 +5,13 @@ from fractions import Fraction
 import pyparsing as pp
 import logging as root_logger
 
-from acab.abstract.parsing import consts as PC
-from acab.abstract.parsing.consts import QUERY_SYMBOL, N, NG, OPAR, CPAR
+from acab.core.parsing import consts as PC
+from acab.core.parsing.consts import QUERY_SYMBOL, N, NG, OPAR, CPAR
 from acab.modules.structures.time.pattern_constructor import CTOR_ACT
 from acab.modules.structures.time.pattern_constructor import construct_pattern_simple
 from acab.modules.structures.time.util import BIND_S, TYPE_INSTANCE_S, VALUE_S, NAME_S, OPT_S, PATTERN_S
 
-from acab.abstract.parsing import parsers as PU
+from acab.core.parsing import parsers as PU
 
 logging = root_logger.getLogger(__name__)
 
@@ -43,20 +43,19 @@ CBRACKET = PC.CBRACKET
 LESS = PC.LESS
 MORE = PC.MORE
 
-acts = pp.Or([COMMA, PC.COLON, TILDE])
+acts = COMMA | PC.COLON | TILDE
 
 # TO BE HOT LOADED:
 HOTLOAD_VALUE = pp.Forward()
 HOTLOAD_BIND = pp.Forward()
 
-Time_VALBIND = pp.Or([N(VALUE_S, HOTLOAD_VALUE),
-                      PU.N(BIND_S, HOTLOAD_BIND)]) + PU.op(QUESTION)
+Time_VALBIND = (HOTLOAD_VALUE(VALUE_S) | HOTLOAD_BIND(BIND_S)) + PU.op(QUESTION)
 
-pattern_contents = pp.OneOrMore(pp.Or([Time_VALBIND, acts]))
+pattern_contents = pp.OneOrMore(Time_VALBIND | acts)
 
 pattern = pp.Forward()
-openers = pp.Or([OPAR, OBRACKET, LESS])
-closers = pp.Or([CPAR, CBRACKET, MORE])
+openers = OPAR |  OBRACKET |  LESS
+closers = CPAR |  CBRACKET |  MORE
 
 pattern <<= pp.Group(openers + pp.ZeroOrMore(pattern_contents | pattern)
                      + closers + PU.op(QUESTION))

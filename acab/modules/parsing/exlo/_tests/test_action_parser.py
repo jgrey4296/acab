@@ -8,12 +8,12 @@ logging = root_logger.getLogger(__name__)
 import acab
 acab.setup()
 
-from acab.abstract.core.values import AcabValue
-from acab.abstract.core.values import Sentence
-from acab.abstract.parsing.trie_bootstrapper import TrieBootstrapper
-from acab.abstract.core.values import Sentence
-from acab.abstract.core.production_abstractions import ProductionOperator, ProductionComponent, ProductionContainer
-from acab.abstract.core import default_structure as DS
+from acab.core.data.values import AcabValue
+from acab.core.data.values import Sentence
+from acab.core.parsing.trie_bootstrapper import TrieBootstrapper
+from acab.core.data.values import Sentence
+from acab.core.data.production_abstractions import ProductionOperator, ProductionComponent, ProductionContainer
+from acab.core.data import default_structure as DS
 from acab.modules.parsing.exlo.parsers import ActionParser as AP
 from acab.modules.parsing.exlo.parsers import FactParser as FP
 
@@ -41,8 +41,8 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
     #use testcase snippets
     def test_action_definition(self):
         test_str = "test:\n  λoperator.add a.b.c\nend"
-        definition = AP.action_definition.parseString(test_str)
-        self.assertEqual(definition[0][-1].name, "test")
+        definition = AP.action_definition.parseString(test_str)[0]
+        self.assertEqual(definition.name, "test")
 
     def test_parse_action_no_params(self):
         test_str = "λoperator.add"

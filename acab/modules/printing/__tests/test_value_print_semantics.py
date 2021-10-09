@@ -6,6 +6,8 @@ import unittest
 import unittest.mock as mock
 from os.path import split, splitext
 
+import pyparsing as pp
+
 logging = root_logger.getLogger(__name__)
 ##############################
 
@@ -13,15 +15,20 @@ import acab
 
 config = acab.setup()
 
+
+import acab.modules.parsing.exlo.parsers.ActionParser as AP
 import acab.modules.parsing.exlo.parsers.FactParser as FP
+import acab.modules.parsing.exlo.parsers.QueryParser as QP
+import acab.modules.parsing.exlo.parsers.RuleParser as RP
+import acab.modules.parsing.exlo.parsers.TransformParser as TP
 import acab.modules.printing.printers as Printers
-from acab.abstract.config.config import AcabConfig
-from acab.abstract.core.production_abstractions import (ProductionComponent,
+from acab.core.config.config import AcabConfig
+from acab.core.data.production_abstractions import (ProductionComponent,
                                                         ProductionContainer,
                                                         ProductionOperator)
-from acab.abstract.core.values import AcabStatement, AcabValue, Sentence
+from acab.core.data.values import AcabStatement, AcabValue, Sentence
+from acab.interfaces.handler_system import Handler
 from acab.modules.printing.basic_printer import BasicPrinter
-from acab.abstract.interfaces.handler_system import Handler
 
 NEGATION_S        = config.prepare("Value.Structure", "NEGATION")()
 QUERY_S           = config.prepare("Value.Structure", "QUERY")()
@@ -56,6 +63,13 @@ class PrintValueSemanticTests(unittest.TestCase):
         console.setLevel(root_logger.INFO)
         root_logger.getLogger('').addHandler(console)
         logging = root_logger.getLogger(__name__)
+
+        FP.HOTLOAD_ANNOTATIONS << pp.MatchFirst([QP.word_query_constraint])
+
+        FP.HOTLOAD_SEN_ENDS << pp.MatchFirst([QP.query_sen_end,
+                                              QP.query_statement,
+                                              TP.transform_statement,
+                                              AP.action_definition])
 
     def test_initial(self):
         sem_sys = BasicPrinter(init_handlers=[Printers.AtomicPrinter().as_handler("_:ATOM"),

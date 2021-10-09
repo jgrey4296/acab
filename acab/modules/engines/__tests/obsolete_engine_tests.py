@@ -9,10 +9,10 @@ from math import isclose
 import acab
 acab.setup()
 
-from acab.abstract.core.values import AcabValue
-from acab.abstract.core.production_abstractions import ProductionStructure
+from acab.core.data.values import AcabValue
+from acab.core.data.production_abstractions import ProductionStructure
 
-from acab.abstract.engine.engine import Engine
+from acab.core.engine.engine import Engine
 import acab.modules.parsing.exlo.TransformParser as TP
 import acab.modules.parsing.exlo.ActionParser as AP
 
@@ -102,23 +102,23 @@ class Engine_Tests(unittest.TestCase):
 
 
 
-    @mock.patch('acab.abstract.interfaces.working_memory.WorkingMemoryCore', autospec=True)
-    @mock.patch('acab.abstract.semantics.struct_semantics.AcabStructureSemantics', autospec=True)
+    @mock.patch('acab.interfaces.working_memory.WorkingMemoryCore', autospec=True)
+    @mock.patch('acab.core.semantics.struct_semantics.AcabStructureSemantics', autospec=True)
     def test_init(self, wm_mock, sem_mock):
         engine = Engine(wm_mock)
         wm_mock.assert_called_once_with(None)
 
     @unittest.skip("TODO")
-    @mock.patch('acab.abstract.core.production_abstractions', autospec=True)
-    @mock.patch('acab.abstract.interfaces.working_memory.WorkingMemoryCore', autospec=True)
+    @mock.patch('acab.core.data.production_abstractions', autospec=True)
+    @mock.patch('acab.interfaces.working_memory.WorkingMemoryCore', autospec=True)
     def test_load_modules(self, wm_mock, op_mock):
         module_mock = mock.Mock()
         engine = Engine(wm_mock, modules=[module_mock])
         op_mock.clear_registrations.assert_called_once()
         engine._working_memory.add_modules.assert_called_once()
 
-    @mock.patch('acab.abstract.core.production_abstractions', autospec=True)
-    @mock.patch('acab.abstract.interfaces.working_memory.WorkingMemoryCore', autospec=True)
+    @mock.patch('acab.core.data.production_abstractions', autospec=True)
+    @mock.patch('acab.interfaces.working_memory.WorkingMemoryCore', autospec=True)
     def test_reload_modules(self, wm_mock, op_mock):
         engine = Engine(wm_mock)
         engine.build_DSL()

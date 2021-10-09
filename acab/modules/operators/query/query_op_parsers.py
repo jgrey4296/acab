@@ -1,14 +1,14 @@
 import pyparsing as pp
 import re
 
-from acab.abstract.parsing import parsers as PU
-from acab.abstract.config.config import AcabConfig
+from acab.core.parsing import parsers as PU
+from acab.core.config.config import AcabConfig
 
-from acab.abstract.core.values import AcabValue
-from acab.abstract.core.values import Sentence
-from acab.abstract.parsing.annotation import ValueRepeatAnnotation
-from acab.abstract.core.production_abstractions import ProductionComponent
-from acab.abstract.engine.util import prep_op_path
+from acab.core.data.values import AcabValue
+from acab.core.data.values import Sentence
+from acab.core.parsing.annotation import ValueRepeatAnnotation
+from acab.core.data.production_abstractions import ProductionComponent
+from acab.core.engine.util import prep_op_path
 
 from . import query_operators as QO
 
