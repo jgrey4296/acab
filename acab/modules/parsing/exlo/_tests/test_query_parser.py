@@ -1,19 +1,20 @@
 import unittest
 from os.path import splitext, split
 import logging as root_logger
+import pyparsing as pp
 logging = root_logger.getLogger(__name__)
 
 import acab
 config = acab.setup()
 
-from acab.core.parsing.parsers import HOTLOAD_VALUES, VALBIND
-
+from acab.core.parsing import parsers as PU
 import acab.modules.parsing.exlo.parsers.FactParser as FP
 import acab.modules.parsing.exlo.parsers.QueryParser as QP
 
 from acab.core.data.values import AcabValue, Sentence, AcabStatement
 from acab.core.parsing.trie_bootstrapper import TrieBootstrapper
 from acab.core.data.production_abstractions import ProductionOperator, ProductionContainer, ProductionComponent
+from acab.core.parsing.funcs import deep_update_names, clear_parser_names
 
 from acab.modules.operators import query as QOP
 
@@ -39,10 +40,23 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         # qmod = QOP.MODULE()
         # qmod.assert_parsers(bp)
         # FP.HOTLOAD_ANNOTATIONS << bp.query("query.annotation.*")
-        FP.HOTLOAD_SEN_ENDS << QP.query_sen_end
+        # FP.HOTLOAD_SEN_ENDS <<=  QP.query_sen_end | pp.NoMatch()
 
     #----------
     #use testcase snippets
+    def setUp(self):
+        PU.HOTLOAD_VALUES << pp.NoMatch()
+        FP.HOTLOAD_SEN_ENDS <<=  QP.query_sen_end | pp.NoMatch()
+
+    def tearDown(self):
+        FP.HOTLOAD_SEN_ENDS <<= pp.NoMatch()
+
+    def test_query_tail(self):
+        result = QP.query_sen_end.parseString("test?")[0]
+        self.assertIsInstance(result, AcabValue)
+        self.assertEqual(result, "test")
+        self.assertIn("BIND", result.data)
+
 
     def test_basic_clause(self):
         result = QP.SENTENCE.parseString('a.b.c?')[0]

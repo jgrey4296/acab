@@ -1,21 +1,22 @@
+import logging as root_logger
 import unittest
 # Setup root_logger:
-from os.path import splitext, split
-import logging as root_logger
+from os.path import split, splitext
+
 logging = root_logger.getLogger(__name__)
 ##############################
 
 import acab
+
 acab.setup()
 
-from acab.core.data.values import AcabValue
-from acab.core.data.values import Sentence
-from acab.core.parsing.trie_bootstrapper import TrieBootstrapper
-from acab.core.data.values import Sentence
-from acab.core.data.production_abstractions import ProductionOperator, ProductionComponent, ProductionContainer
 from acab.core.data import default_structure as DS
+from acab.core.data.production_abstractions import (ProductionComponent,
+                                                    ProductionContainer,
+                                                    ProductionOperator)
+from acab.core.data.values import AcabValue, Sentence
 from acab.modules.parsing.exlo.parsers import ActionParser as AP
-from acab.modules.parsing.exlo.parsers import FactParser as FP
+
 
 def S(*words):
     return Sentence.build(words)

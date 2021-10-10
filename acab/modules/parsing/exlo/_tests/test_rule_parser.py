@@ -1,6 +1,7 @@
 import unittest
 from os.path import splitext, split
 import logging as root_logger
+import pyparsing as pp
 logging = root_logger.getLogger(__name__)
 
 import acab
@@ -34,13 +35,12 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
         root_logger.getLogger('').addHandler(console)
         logging = root_logger.getLogger(__name__)
 
-        FP.HOTLOAD_SEN_ENDS << QP.query_sen_end
 
     def setUp(self):
-            return 1
+        FP.HOTLOAD_SEN_ENDS <<= QP.query_sen_end | pp.NoMatch()
 
     def tearDown(self):
-            return 1
+        FP.HOTLOAD_SEN_ENDS <<= pp.NoMatch()
 
     #----------
     #use testcase snippets

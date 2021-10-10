@@ -13,7 +13,7 @@ from acab.core.data import default_structure as DS
 from acab.core.data.values import Sentence
 from acab.core.data.values import AcabValue
 from acab.core.parsing.annotation import ValueAnnotation
-from acab.core.parsing.parsers import HOTLOAD_VALUES, VALBIND
+from acab.core.parsing import parsers as PU
 
 import acab.modules.parsing.exlo.parsers.FactParser as FP
 
@@ -85,9 +85,9 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         new_parser = pp.Word("¿awef")
         new_parser.setParseAction(lambda s, l, t: ("awef", t[0]))
 
-        HOTLOAD_VALUES << new_parser
+        PU.HOTLOAD_VALUES << new_parser
 
-        a = VALBIND.parseString("¿awef")[0]
+        a = PU.VALBIND.parseString("¿awef")[0]
         self.assertEqual(a.value, "¿awef")
         self.assertEqual(a.type, Sentence.build(["awef"]))
 
