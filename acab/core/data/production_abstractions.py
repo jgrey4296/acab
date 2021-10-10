@@ -24,6 +24,7 @@ import acab.core.data.default_structure as DS
 from acab.core.config.config import AcabConfig
 from acab.core.data.values import AcabStatement, AcabValue, Sentence
 from acab.error.operator_exception import AcabOperatorException
+from acab.core.decorators.util import cache
 
 config = AcabConfig.Get()
 

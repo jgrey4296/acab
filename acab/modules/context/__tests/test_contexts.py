@@ -98,7 +98,7 @@ class ContextsTests(unittest.TestCase):
         ctx.fail(inst, "fail word", "fail_node")
         self.assertFalse(bool(ctx))
         self.assertEqual(inst._failure_word, "fail word")
-        self.assertContains(inst.uuid, ctx._purgatory)
+        self.assertIn(inst.uuid, ctx._purgatory)
 
     def test_set_iteration(self):
         """ Check context instances can be iterated via the context set """

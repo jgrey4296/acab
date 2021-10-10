@@ -98,12 +98,12 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertEqual(a.value, "¿awef")
         self.assertEqual(a.type, Sentence.build(["awef"]))
 
-    def test_negated_sentencetence(self):
+    def test_negated_sentence(self):
         result = FP.SENTENCE.parseString('~a.test!string')[0]
         self.assertIsInstance(result, Sentence)
         self.assertTrue(result.data[NEGATION_S])
 
-    def test_positive_sentencetence(self):
+    def test_positive_sentence(self):
         result = FP.SENTENCE.parseString('a.test!string')[0]
         self.assertIsInstance(result, Sentence)
         self.assertFalse(result.data[NEGATION_S])

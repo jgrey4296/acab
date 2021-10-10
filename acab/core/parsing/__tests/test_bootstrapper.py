@@ -38,7 +38,7 @@ class BootstrapParserTests(unittest.TestCase):
     def test_init(self):
         """ Check the bootstrapped can be created """
         bp = TrieBootstrapper()
-        self.assertNotNone(bp)
+        self.assertIsNotNone(self.bp)
 
 
     def test_add(self):

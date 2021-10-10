@@ -7,6 +7,8 @@ from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic
 import logging as root_logger
 from enum import Enum
+from functools import wraps
+
 logging = root_logger.getLogger(__name__)
 
 from acab import types as AT

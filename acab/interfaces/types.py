@@ -32,6 +32,7 @@ AbstractionSemantics = "acab.interfaces.semantic.AbstractionSemantics_i"
 IndependentSemantics = "acab.interfaces.semantic.IndependentSemantics_i"
 PrintSemantics       = "acab.interfaces.printing.PrintSemantics_i"
 
+SemanticSystem       = "acab.interfaces.semantic.SemanticSystem_i"
 PrintSystem          = "acab.interfaces.printing.PrintSystem_i"
 
 

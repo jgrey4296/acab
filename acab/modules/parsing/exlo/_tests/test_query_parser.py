@@ -12,9 +12,7 @@ import acab.modules.parsing.exlo.parsers.FactParser as FP
 import acab.modules.parsing.exlo.parsers.QueryParser as QP
 
 from acab.core.data.values import AcabValue, Sentence, AcabStatement
-from acab.core.parsing.trie_bootstrapper import TrieBootstrapper
 from acab.core.data.production_abstractions import ProductionOperator, ProductionContainer, ProductionComponent
-from acab.core.parsing.funcs import deep_update_names, clear_parser_names
 
 from acab.modules.operators import query as QOP
 
@@ -36,11 +34,11 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         root_logger.getLogger('').addHandler(console)
         logging = root_logger.getLogger(__name__)
 
-        # bp = TrieBootstrapper()
-        # qmod = QOP.MODULE()
-        # qmod.assert_parsers(bp)
-        # FP.HOTLOAD_ANNOTATIONS << bp.query("query.annotation.*")
-        # FP.HOTLOAD_SEN_ENDS <<=  QP.query_sen_end | pp.NoMatch()
+        FP.HOTLOAD_SEN_ENDS << QP.query_sen_end
+
+    @classmethod
+    def tearDownClass(cls):
+        FP.HOTLOAD_SEN_ENDS << pp.NoMatch()
 
     #----------
     #use testcase snippets

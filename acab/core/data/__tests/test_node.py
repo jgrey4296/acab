@@ -160,8 +160,8 @@ class AcabNodeTests(unittest.TestCase):
         self.assertEqual(len(a_node),0)
         self.assertFalse(bool(a_node))
         self.assertEqual(len(removed), 2)
-        self.assertContains(b_node, removed)
-        self.assertContains(c_node, removed)
+        self.assertIn(b_node, removed)
+        self.assertIn(c_node, removed)
 
 
     def test_iter(self):

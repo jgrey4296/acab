@@ -15,6 +15,7 @@ import acab.interfaces.data as DI
 import acab.interfaces.value as VI
 from acab.core.config.config import AcabConfig
 from acab.core.data.values import AcabValue, Sentence
+from  acab.core.decorators.util import cache
 
 from acab.core.data.default_structure import ROOT
 logging = root_logger.getLogger(__name__)
@@ -151,7 +152,7 @@ class AcabNode(DI.Node_i):
         """
         children = list(self.children.values())
         self.children = {}
-        return self.children
+        return children
 
     def set_parent(self, parent: Node):
         """ Set the parent node to this node
