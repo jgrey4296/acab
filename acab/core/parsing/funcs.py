@@ -54,9 +54,9 @@ def make_value(s, loc, toks):
         data[DS.BIND] = DS.AT_BIND
     elif PDS.VALUE in toks:
         # is an actual value
-        assert(isinstance(toks[PDS.VALUE], tuple))
-        value = toks[PDS.VALUE][1]
-        _type = toks[PDS.VALUE][0]
+        assert(isinstance(toks[PDS.VALUE][0], tuple))
+        value = toks[PDS.VALUE][0][1]
+        _type = toks[PDS.VALUE][0][0]
     else:
         raise SyntaxError("Unplanned parse type")
 
@@ -65,14 +65,15 @@ def make_value(s, loc, toks):
 
 def add_annotations(s, loc, toks):
     """ Add additional data to a node """
-    word = toks[PDS.NODE][0]
-    for anno in toks:
+    word = toks[0][0]
+    assert(isinstance(word, AcabValue))
+    for anno in toks[0]:
         if not isinstance(anno, ValueAnnotation):
             continue
 
         anno(word)
 
-    return word
+    return [word]
 
 
 

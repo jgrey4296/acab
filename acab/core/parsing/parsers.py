@@ -42,12 +42,11 @@ def PARAM_CORE(mid:Optional[ParserElement]=None,
         mid = pp.Empty()
 
     if end is None:
-        end = MODAL(PDS.MODAL)
+        end = MODAL
     elif not isinstance(end, pp.ParserElement):
         end = pp.Empty()
 
-    parser = N(PDS.NODE, VALBIND) \
-        + op(OPAR + mid + CPAR) + end
+    parser = pp.Group( VALBIND + op(OPAR + mid + CPAR) + end )
     parser.setParseAction(Pfunc.add_annotations)
     return parser
 
@@ -127,8 +126,8 @@ AT_BIND     = s_lit(PDSYM.AT_BIND) + ATOM
 
 VALBIND = pp.MatchFirst([N(PDS.BIND, BIND),
                          N(PDS.AT_BIND, AT_BIND),
-                         N(PDS.VALUE, BASIC_VALUE),
-                         N(PDS.VALUE, HOTLOAD_VALUES)])
+                         NG(PDS.VALUE, BASIC_VALUE),
+                         NG(PDS.VALUE, HOTLOAD_VALUES)])
 VALBIND.setParseAction(Pfunc.make_value)
 
 Fwd_ArgList <<= PConst.VBAR + DELIMIST(BIND, delim=PConst.COMMA) + PConst.VBAR
