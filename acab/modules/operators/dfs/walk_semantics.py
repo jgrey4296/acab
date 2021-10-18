@@ -45,18 +45,18 @@ class WalkTrieSemantics(SI.AbstractionSemantics_i):
     Instruction for walking all nodes in a struct,
     instruction specifies rules to run on each node
 
+    AS QUERY:
     a.b.$x?
     // From a node
     @x ᛦ $y(::constraint)?
     // from Root
     ᛦ $y(::constraint)?
 
-    or:
+    AS ACTION:
     a.b.$x?
-    a.$rule?
+    a.$rules(λcollect)?
 
-    @x ᛦ $y : $rule
-
+    @x ᛦ $rule
     """
 
     signal : str = field(default=WALK_SEM_HINT)
@@ -94,4 +94,11 @@ class WalkTrieSemantics(SI.AbstractionSemantics_i):
 
 
     def _act(self, instruction, semsys, ctxs=None, data=None):
+        """
+        instruction : Sentence(@target, $ruleset)
+
+        from @target, dfs the trie below, running $ruleset on each node
+
+        """
+
         pass
