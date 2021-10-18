@@ -12,14 +12,13 @@ from acab.core.data.values import Sentence, AcabStatement
 from acab.interfaces.printing import PrintSemantics_i
 from acab.core.printing import default_symbols as DSYM
 from acab.core.printing import wrappers as PW
+from acab.core.decorators.util import HandleSignal
 
 
 config = GET()
 
-@dataclass
+@HandleSignal("_:TYPE_INSTANCE")
 class TypeAwareValuePrinter(PrintSemantics_i):
-
-    signal : str = field(default="_:TYPE_INSTANCE")
 
     def __call__(self, value, top=None, data=None):
         return_list = []
@@ -31,3 +30,46 @@ class TypeAwareValuePrinter(PrintSemantics_i):
         return_list.append(value.data[DS.TYPE_INSTANCE])
 
         return return_list
+
+
+@HandleSignal("_:TYPE_DEF")
+class TypeRecordPrinter(PrintSemantics_i):
+
+    def __call__(self, value, top=None, data=None):
+        ret_list = []
+        ret_list.append(top.override("_:ATOM", value, data={"no_modal" : True}))
+        ret_list.append(":")
+        ret_list.append(DSYM.PRINT_SEPARATOR_P)
+
+        clauses = value.value
+        if not bool(clauses):
+            # Simple Typedef, end line
+            return ret_list + [DSYM.PRINT_SEPARATOR_P]
+        elif len(clauses) == 1:
+            # Has one structure inside, do it all on one line
+            ret_list += clauses
+            ret_list.append(DSYM.END_SYM)
+            return ret_list
+
+        # Complex structure, clauses on sep lines
+        for clause in clauses:
+            ret_list.append("   ")
+            ret_list.append(clause)
+            ret_list.append(DSYM.PRINT_SEPARATOR_P)
+
+        ret_list.append(DSYM.END_SYM)
+        ret_list.append(DSYM.PRINT_SEPARATOR_P)
+
+        return ret_list
+
+@HandleSignal("_:SUM_TYPE")
+class SumTypePrinter(PrintSemantics_i):
+    pass
+
+@HandleSignal("_:OP_DEF")
+class OperatorTypePrinter(PrintSemantics_i):
+    pass
+
+@HandleSignal("_:TYPE_CLASS")
+class TypeClassPrinter(PrintSemantics_i):
+    pass

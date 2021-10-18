@@ -78,3 +78,21 @@ def singleton(orig_cls):
 
     orig_cls.__new__ = __new__
     return orig_cls
+
+
+def HandleSignal(sig : str):
+    """
+    Utility to easily add a signal to classes for use in the handler system
+    """
+    def wrapper(cls):
+        cls.__init__ = __add_sig(sig, cls.__init__)
+        return cls
+
+    return wrapper
+
+def __add_sig(sig, method):
+    """ used to add 'signal' as an argument to a class' init method """
+    def wrapper(self, *args, **kwargs):
+        return method(self, *args, **kwargs, signal=sig)
+
+    return wrapper
