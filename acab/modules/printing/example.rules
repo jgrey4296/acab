@@ -1,0 +1,28 @@
+example.printer:
+    | $signal $value |
+    #printer
+
+    signal!$x(= ATOM)?
+    $value(::test).sub.$val?
+    $value.${name}?
+
+    λprint $val -> $val'(::str)
+    λprint $name signal!str-> $name'
+
+    result:
+        $name [ $val'  ] " -> " blah
+    end
+end
+
+example.print.system:
+    | $value |
+    #printer.system
+
+    default.printer!$default?
+    example.${printer}?
+
+    sieve:
+        signal!blah : $printer
+        signal!ATOM : $default
+    end
+end

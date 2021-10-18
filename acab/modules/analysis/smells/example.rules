@@ -1,0 +1,18 @@
+example.rule:
+    // warn on duplication
+    a.b.c?
+    a.b.c?
+    a.b.c?
+    // warn on excessive queries/transforms/actions/conditions
+    a.b.d?
+    a.b.e?
+    a.b.f?
+    a.b.g?
+    ...
+
+    // declared variables
+    $x + $y -> $z
+
+    // Undelcared operators
+    λnot.loaded $z
+end

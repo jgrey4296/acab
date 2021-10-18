@@ -1,0 +1,17 @@
+ostrom.rule.components:
+    position
+    demarcation
+    decision_making
+    choice
+    information
+    payoff
+    scope
+end
+
+ostrom.adico:
+    attributes
+    deontic
+    aim
+    conditions
+    or_else
+end

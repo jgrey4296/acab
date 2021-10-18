@@ -1,0 +1,59 @@
+// TODO bind value sugar/macro of x!$x == $!x
+// TODO curry operators by either a curried op value, or copying+modifying params
+// TODO access to loaded config defaults
+connection.setup.rule:
+    #unity
+    ~connection.socket?
+    defaults.${port}(::int)
+
+    λconnection.setup $port -> $socket
+
+    + connection.${socket}
+    // curried send?
+    ctx.tag.bind #unity λunity.send [λmodule.unity.send $socket]
+end
+
+
+message.types(::τ.Σ):
+    hello:
+        $msg(::str)
+    end
+    close
+    print:
+        $msg(::str)
+    end
+    ``ack``nowledge
+    fail
+end
+
+message.responses(::protocol[message.types]):
+    a.${rule}?
+
+    ack   -> $rule
+
+    hello -> ack, fail
+    print -> ack, fail
+    fail  -> close
+end
+
+a.rule:
+    #unity
+    a.b.$c(::str)?
+    response.${rule}?
+    message.types.hello
+
+    λunity.send hello $c
+    λunity.listen $rule hello
+end
+
+response.rule:
+    | $response $sent |
+    #unity
+    $response(::message.types)?
+    mesaage.$protocol(::protcol[messsage.types], == responses)?
+
+    λprotocol.match $protocol $sent $response -> $next
+
+    λlog "Got Msg: " $response
+    λlog "Next Msg: " $next
+end

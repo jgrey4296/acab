@@ -1,0 +1,23 @@
+layer.first:
+    // collected rules have in lang A, out lang B
+    ᛦ some.$rule(::ρ)
+end
+
+layer.second:
+    // collected rules have in lang B, out lang C
+    // lang B ⊂ lang C
+    ᛦ other.$rule(::ρ)
+
+end
+
+pipeline.correct:
+    layer.first
+    layer.second
+end
+
+
+// Mismatched languages
+pipeline.error:
+    layer.second
+    layer.first
+end
