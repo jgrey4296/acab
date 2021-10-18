@@ -75,15 +75,16 @@ class PrintSystem_i(HandlerSystem_i):
                 current = current.value
 
             if isinstance(handler, PrintSemantics_i):
+                logging.debug(f"(Remain:{len(remaining):2}) Calling: {handler.__class__.__name__:40} : {current}")
                 handled = handler(current, top=self, data=data)
             else:
                 handled = handler(current, data=data)
 
+            if not isinstance(handled, list):
+                handled = [handled]
+
             # Add the results of a handler to the head
-            if isinstance(handled, list):
-                remaining = handled + remaining
-            else:
-                remaining = [handled] + remaining
+            remaining = handled + remaining
 
 
         return result

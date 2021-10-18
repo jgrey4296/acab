@@ -214,10 +214,7 @@ class Handler:
         if self.struct is not None:
             struct_name = str(self.struct.__class__.__name__)
 
-        spacer = " " * max(0, (SPACER - len(sig_s)))
-        second_spacer = " " * max(0, (SPACER * 2) - (len(spacer) + len(sig_s) + len(func_name)))
-
-        return f"{sig_s}{spacer}{func_name}{second_spacer}{struct_name}"
+        return f"{sig_s:{SPACER}}{func_name:{SPACER}}{struct_name}"
 
     def add_struct(self, struct:Structure):
         if isinstance(struct, type) and isinstance(struct, AcabStructure):
@@ -232,5 +229,5 @@ class HandlerComponent_i:
     signal : Optional[str] = field(default=None)
 
     def as_handler(self, signal=None, struct=None):
-        assert(signal or self.signal)
+        assert(signal or self.signal), breakpoint()
         return Handler(signal or self.signal, func=self, struct=struct)
