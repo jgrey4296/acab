@@ -34,19 +34,35 @@ def DELIMIST(expr, delim=None, stopOn=None):
                                  stopOn=stopOn)).setName(dlName)
 
 def PARAM_CORE(mid:Optional[ParserElement]=None,
-               end:Optional[ParserElement]=None):
+               end:Optional[ParserElement]=None,
+               req_mid:Optional[ParserElement]=None):
     """ Construct a parameterised core parser
     Can handle wrapped annotations, and a modality as suffix
+
+    Params:
+    mid - standard optional params
+    end - the way the param core ends. usually a modal or eol.
+    req_mid - required paramsthat have to occur for this to match
+
+
     """
-    if mid is None:
-        mid = pp.Empty()
+    if mid is None and req_mid is None:
+        mid_p = pp.Empty()
+
+    elif mid is not None:
+        mid_p = op(OPAR + mid + CPAR)
+
+    else:
+        assert(mid is None)
+        mid_p = OPAR + req_mid + CPAR
+
 
     if end is None:
         end = MODAL
     elif not isinstance(end, pp.ParserElement):
         end = pp.Empty()
 
-    parser = pp.Group( VALBIND + op(OPAR + mid + CPAR) + end )
+    parser = pp.Group( VALBIND + mid_p + end )
     parser.setParseAction(Pfunc.add_annotations)
     return parser
 
@@ -77,7 +93,7 @@ def STATEMENT_CONSTRUCTOR(annotation_p:ParserElement,
     if args:
         arg_p = Fwd_ArgList(PDS.ARG)
 
-    head = PARAM_CORE(annotation_p, end=PConst.COLON)
+    head = PARAM_CORE(req_mid=annotation_p, end=PConst.COLON)
 
     parser = NG(PDS.NAME, head) + line_end_p \
         + op(arg_p + emptyLine) \
@@ -115,15 +131,15 @@ REGEX.setParseAction(lambda s, l, t: (CDS.REGEX_PRIM, re.compile(t[0][1:-1])))
 
 
 # Generalised modal operator, which is converted to appropriate data later
-# TODO refactor to be a ValueAnnotation
 MODAL      = pp.Word("".join(config.syntax_extension.keys()))
 MODAL.setParseAction(lambda s, l, t: ModalAnnotation(t[0]))
 
-# TODO use valueannotations for this too
+# TODO use valueannotations for this too?
 BASIC_VALUE = ATOM | STRING | REGEX
 BIND        = s_lit(PDSYM.BIND) + ATOM
 AT_BIND     = s_lit(PDSYM.AT_BIND) + ATOM
 
+# TODO refactor to [pre_annotations] BASIC_VALUE [post_annotations]
 VALBIND = pp.MatchFirst([N(PDS.BIND, BIND),
                          N(PDS.AT_BIND, AT_BIND),
                          NG(PDS.VALUE, BASIC_VALUE),
