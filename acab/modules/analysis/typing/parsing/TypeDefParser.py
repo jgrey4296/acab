@@ -1,3 +1,11 @@
+"""
+DSL Fragment describing:
+a simple type description
+sum and product type descriptions, as statement blocks
+operator type description
+type class description
+
+"""
 import logging as root_logger
 
 import pyparsing as pp
@@ -24,29 +32,32 @@ HOTLOAD_SEN = pp.Forward()
 
 # the simplest type
 # a.simple.type(::τ)
-SIMPLE_DEF = PU.PARAM_CORE(mid=pp.Literal("::τ"))
+SIMPLE_DEF = PU.PARAM_CORE(req_mid=pp.Literal("::τ"), end=True)
 SIMPLE_DEF.addParseAction(TU.make_simple_def)
 
 # Record Type definition:
+# a block of sentences, describing structure
 # a.test.type(::σ):  a.value.$x(::num) end
 RECORD_DEF_BODY = IndentedBlock(HOTLOAD_SEN)
 RECORD_DEF_BODY.setParseAction(TU.make_record_def)
 
-RECORD_TYPE = PU.STATEMENT_CONSTRUCTOR(pp.Literal("::τ"), RECORD_DEF_BODY)
+RECORD_TYPE = PU.STATEMENT_CONSTRUCTOR(pp.Literal("::τ").suppress(),
+                                       RECORD_DEF_BODY)
 
 # Sum Type definition
 # ie: first subwords are the subtypes. subtypes are automatically records
 SUM_DEF_BODY = IndentedBlock(RECORD_TYPE | SIMPLE_DEF)
 SUM_DEF_BODY.setParseAction(TU.make_sum_def)
 
-SUM_TYPE = PU.STATEMENT_CONSTRUCTOR(pp.Literal("::Σ"), SUM_DEF_BODY )
+SUM_TYPE = PU.STATEMENT_CONSTRUCTOR(pp.Literal("::Σ").suppress(),
+                                    SUM_DEF_BODY )
 
 # numAdd(::λ): $x(::num).$y(::num).$z(::num) => +
 # TODO: enable alias paths, not just sugar
 OP_DEF_BODY = PU.PARAM_CORE(end=op(DBLARROW + N(TYU.SYNTAX_BIND_S, PU.OPERATOR_SUGAR)))
 OP_DEF_BODY.setParseAction(TU.make_op_def)
 
-OP_DEF = PU.STATEMENT_CONSTRUCTOR(pp.Literal("::λ"),
+OP_DEF = PU.STATEMENT_CONSTRUCTOR(pp.Literal("::λ").suppress(),
                                   OP_DEF_BODY,
                                   end=pp.lineEnd,
                                   single_line=True)
@@ -55,7 +66,8 @@ OP_DEF = PU.STATEMENT_CONSTRUCTOR(pp.Literal("::λ"),
 TYPE_CLASS_BODY = IndentedBlock(HOTLOAD_SEN)
 TYPE_CLASS_BODY.setParseAction(TU.make_type_class)
 
-TYPE_CLASS_DEF = PU.STATEMENT_CONSTRUCTOR(pp.Literal("::ι"), TYPE_CLASS_BODY)
+TYPE_CLASS_DEF = PU.STATEMENT_CONSTRUCTOR(pp.Literal("::ι").suppress(),
+                                          TYPE_CLASS_BODY)
 
 COMBINED_DEFS = SUM_TYPE | RECORD_TYPE | OP_DEF | SIMPLE_DEF
 

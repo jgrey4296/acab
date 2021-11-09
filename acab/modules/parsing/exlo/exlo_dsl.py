@@ -100,6 +100,8 @@ class EXLO_Parser(DSL_Fragment_i):
 
         return TotalP.parse_point
 
+    def parse_string(self, s):
+        return TotalP.parse_point.parseString(s)[:]
 
     def set_word_exclusions(self, words:List[str]):
         """

@@ -35,6 +35,7 @@ sen_head_negation.setParseAction(lambda x: ValueAnnotation(CDS.NEGATION, True))
 
 # Core = a. | b! | $a. | $b!....
 # Sentences are /SEN_WORD* (SEN_END | SEN_STATEMENT)/
+# TODO Semantic Hint operator
 SEN_MACRO             = pp.Forward()
 SEN_HEAD              = BAD_HEADS + (PU.op(sen_head_negation) | HOTLOAD_SEN_HEADS)
 SEN_WORD              = PU.PARAM_CORE(annotations)

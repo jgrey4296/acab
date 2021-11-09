@@ -17,9 +17,9 @@ config          = AcabConfig.Get()
 TYPE_INSTANCE_S = config.prepare("Value.Structure", "TYPE_INSTANCE")()
 
 def make_simple_def(toks):
-    value= toks[0]
-    type_def = TypeDefinition(None, [])
-    return ealue.attach_statement(type_def)
+    value    = toks[0]
+    type_def = TypeDefinition(name=value.name, value=[], params=[], data=value.data)
+    return type_def
 
 def make_record_def(toks):
     type_def = TypeDefinition(None, toks[:])

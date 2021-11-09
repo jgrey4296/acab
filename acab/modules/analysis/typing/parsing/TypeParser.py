@@ -1,5 +1,5 @@
 """
-Pyparsing based parser for types
+Pyparsing based DSL Fragment for types annotation
 """
 import logging as root_logger
 import pyparsing as pp
@@ -43,7 +43,7 @@ TYPEDEC_CORE <<= DBLCOLON + N(TYU.SEN_S, TYPE_NAME) \
 TYPEDEC_CORE.setParseAction(TU.make_type_dec)
 
 # NAMING
-TYPEDEC_CORE.setName("TypeDeclarationStatement")
+TYPEDEC_CORE.setName("TypeDeclaration")
 
 parse_point = TYPEDEC_CORE
 
