@@ -21,7 +21,7 @@ parser.add_argument('-d', '--debug', action="store_true", help="CLI control of p
 
 
 # Quiet hook from https://gist.github.com/jhazelwo/86124774833c6ab8f973323cb9c7e251
-def main():
+def main_repl():
     """ Top level entry point for ACAB repl.
     Can be used as setuptools entry_point
 
