@@ -62,10 +62,12 @@ class TypeMatch(ProductionOperator):
 
     def __call__(self, a:Value, ctx:CtxIns, b:Sentence, data=None):
         a_type = a.type
-        if a == b:
+
+        # TODO this will eventually be some sort of unify
+        if a_type == b:
             return True
 
-        for ax, bx in zip(a.type.words, b.words):
+        for ax, bx in zip(a_type.words, b.words):
             if ax.is_var:
                 ax = ctx[ax]
             if bx.is_var:
