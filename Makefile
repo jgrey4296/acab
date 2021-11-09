@@ -69,6 +69,10 @@ class_report:
 	@echo "Getting Class Relations"
 	find ./acab -name "*.py" -not -name "flycheck*" | xargs awk '/^class/ {print $0}' > class.report
 
+
+export_env:
+	conda env export --from-history > acab.yaml
+
 # Linting #####################################################################
 pylint:
 	@echo "Linting"
