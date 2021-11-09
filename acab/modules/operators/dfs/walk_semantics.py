@@ -93,12 +93,32 @@ class WalkTrieSemantics(SI.AbstractionSemantics_i):
                     cwm.test_and_update(accessible)
 
 
-    def _act(self, instruction, semsys, ctxs=None, data=None):
+    def _act(self, walk_spec, semsys, ctxs=None, data=None):
         """
         instruction : Sentence(@target, $ruleset)
 
         from @target, dfs the trie below, running $ruleset on each node
 
         """
+        default : Handler[Dep] = semsys.lookup()
+        nodesem : InDep        = default.func.lookup().func
+        found   : Set[UUID]    = set()
 
-        pass
+        with ContextWalkManager(walk_spec, default.struct.root, ctxs) as cwm:
+            for queue in cwm.active:
+                actions    : List['Rule'] = cwm._current_inst[walk_spec[-1].params[1]]
+
+                while bool(queue):
+                    current      = queue.pop(0)
+                    if current.uuid in found:
+                        continue
+
+                    found.add(current.uuid)
+                    # TODO use specified run form (all, sieve, etc)
+                    for action in actions:
+                        # potentially override to force atomic rule
+                        sem, _ = semsys.lookup(action)
+                        sem(action, semsys, params=[current])
+
+                    accessible   = nodesem.access(current, None, data)
+                    queue       += accessible
