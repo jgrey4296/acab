@@ -134,7 +134,8 @@ class ConstraintCollection(CtxInt.Constraint_i):
             results.append(op(val, ctxInst, *test.params))
 
         if not all(results):
-            raise ASErr.AcabSemanticTestFailure("Sub Structural Binds Failed", (node, self, ctxInst))
+            # binds can't succeed if tests fail
+            raise ASErr.AcabSemanticTestFailure("Sub Structural Tests Failed", (node, self, ctxInst))
 
     def __run_name(self, node, ctxInst):
         """ Check node against prior binding """

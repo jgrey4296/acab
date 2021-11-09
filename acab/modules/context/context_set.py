@@ -148,7 +148,7 @@ class ContextInstance(CtxInt.ContextInstance_i):
                 elif hasattr(node.value, key):
                     val = getattr(node.value, key)
                 else:
-                    raise ASErr.AcabSemanticException("Bad SubBind", key, bind)
+                    raise ASErr.AcabSemanticException("Bad SubBind, no value to bind", key, bind)
 
                 matches += bind.match(val)
 
