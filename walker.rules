@@ -19,7 +19,7 @@ test.other.walk(::ρ):
     $x match $s($z)
 end
 
-#### rete ####################
+// rete --------------------
 
 data:
     a.b.c

@@ -96,12 +96,14 @@ class ExclusionNodeSemantics(SI.IndependentSemantics_i):
     def access(self, node:Node, term:Value, data=None) -> List[Node]:
         potentials = []
         value = None
+
         if term is None:
             potentials += node.children.values()
         elif node.has_child(term):
             potentials.append(node.get_child(term))
 
         # TODO add hook for additional test fragments here?
+        # TODO check type of term v potentials
 
 
         if bool(term) and EXOP in term.data and any([x.data[EXOP] != term.data[EXOP] for x in potentials]):

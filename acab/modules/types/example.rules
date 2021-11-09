@@ -15,3 +15,5 @@ ostrom.adico:
     conditions
     or_else
 end
+
+// FIPA ACL / KQML performatives...

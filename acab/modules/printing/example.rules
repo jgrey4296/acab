@@ -2,12 +2,13 @@ example.printer:
     | $signal $value |
     #printer
 
-    signal!$x(= ATOM)?
+    signal!$x(::protocol.a)?
     $value(::test).sub.$val?
     $value.${name}?
 
     λprint $val -> $val'(::str)
-    λprint $name signal!str-> $name'
+    // An override
+    λprint $name signal!str -> $name'
 
     result:
         $name [ $val'  ] " -> " blah
@@ -15,13 +16,16 @@ example.printer:
 end
 
 example.print.system:
-    | $value |
+    | $value(::SignalWrapper) |
     #printer.system
 
     default.printer!$default?
     example.${printer}?
 
-    sieve:
+    // Or Match
+    // Match goes for first,
+    // sieve goes for first that has a valid response
+    sieve on $value:
         signal!blah : $printer
         signal!ATOM : $default
     end

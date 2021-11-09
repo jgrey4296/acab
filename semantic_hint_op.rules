@@ -1,0 +1,21 @@
+semantic.hint.op.example:
+    // Each Clause has a semantics
+    // Shift default(assertion) to query semantics
+    a.b.c?
+
+    // Shift to transform semantics
+    $x + $y -> $z
+
+    // DFS Semantics, with a query or assert semantics on the internal clause
+    ᛦ $x(..)?
+
+    ᛦ $y(λsomething)
+
+    // Explicit Semantic Signals too?
+    <signal.sentence>:
+        // Everything in here uses an override of signal.sentence
+        <other.query> a.b.c // or a clause level override
+
+    end
+
+end

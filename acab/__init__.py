@@ -12,6 +12,11 @@ import acab.interfaces.type_strings as types
 from acab.core.config.config import GET
 
 def setup(location=None):
+    """
+    A Utility to easily setup the config system,
+    allowing the rest to load.
+    """
+    #pylint: disable=import-outside-toplevel
     from acab.core.config.config import AcabConfig
     from acab.core.config.modal import modal_config
     import acab.core.config.structure

@@ -92,3 +92,21 @@ operators:
     transform:
         $x + $y -> $z
     end
+    TAG:
+        // Note: TAGS as descriptions of failable rituals?
+        // foot carries the main consequences, has to complete to count,
+        // while other nodes are decorating that foot
+
+        // internal terms, frontier non-terms
+        a(::TAG.tree.initial)?
+        // initial + foot node
+        a.b.$x(::TAG.tree.aux)?
+        a.c.$y(::TAG.tree)?
+
+
+        // Sub just asserts a.b.$y, adjoin transforms first
+        λadjoin $x for $y -> $z
+
+        + a.b.$z
+    end
+end

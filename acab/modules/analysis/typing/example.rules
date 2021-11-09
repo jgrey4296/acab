@@ -8,7 +8,6 @@ module.typing:
             instance
         end
     end
-
     operators:
         ᛦ
         type.check
@@ -20,11 +19,11 @@ module.typing:
     semantics:
         dfs.walk
         lattice
-        record|sum|operator|class independent semantics
+        record | sum |operator | class independent semantics
     end
 
     printers:
-        record|sum|operator|class
+        record | sum | operator|class
     end
 end
 
@@ -75,7 +74,6 @@ type.class(::τ.γ, $a):
     func(::τ.λ, "+").$a.$a.$z(::int)
     diff(::τ.λ, "tc.-").$a.$a.$x(::bool)
     final(::τ.λ).$a.$b(::str)
-
 end
 
 // Type class member
@@ -98,13 +96,17 @@ operator.example(::τ.λ): $x(::int).$y(::int).$bool -> a.module.operator.blah
 acab.operator(::τ.λ):
     | $x(::int) $y(::int) |
 
+    a.b.c(::blah)?
+
     $x < $y -> $z
 
-    return(::production.action) $z
+    λreturn(::production.action) $z
 end
 
 // generics
 generic.type.record.container(::τ.φ($x)):
+    a.b.c?
+
     a.field.$x
     other.$y(::int)
 end
@@ -120,8 +122,6 @@ a.rule(::ρ):
 
     $x λan.op $y -> $z
     λdiff.op $a $b -> $c(::bool)
-
-
 end
 
 // Type Checking

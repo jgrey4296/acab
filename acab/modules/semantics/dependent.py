@@ -66,6 +66,7 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
             # Get independent semantics for current
             semantics, _ = self.lookup(current)
             accessed = semantics.access(current, word, data)
+
             if bool(accessed):
                 parent = current
                 current = accessed[0]
@@ -122,4 +123,8 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
                 result_list.append(Sentence.build(words))
 
         return result_list
+
+
+
+
 

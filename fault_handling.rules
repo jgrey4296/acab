@@ -1,0 +1,13 @@
+fault.handling:
+    // retry
+    a.b.c? | retry $x times
+    a.b.d? | retry a.condition?
+    // circuit break (is default)
+    a.b.d?
+    // timeout - what sort of time?
+    a.b.e? | time < 500ms, time < 1 cycle
+    // bulkhead
+    // cache
+    // fallback
+    // wrap
+end

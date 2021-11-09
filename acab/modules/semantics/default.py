@@ -34,6 +34,7 @@ def DEFAULT_TRIE(name="_:trie"):
 
 # Build the default semantics
 def DEFAULT_SEMANTICS():
+    # FIXME: Should "_:node" and "_:trie" actually be "_:atom" and "_:sentence"?
     node_sem    = BasicNodeSemantics().as_handler("_:node")
     trie_sem    = BreadthTrieSemantics(default=node_sem).as_handler("_:trie",
                                                                     struct=BasicNodeStruct.build_default())

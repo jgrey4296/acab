@@ -1,0 +1,115 @@
+// Generates
+// a.b.c hello
+// blah bloo hello
+// test bloo hello
+// 1 of : test (a | b | c) hello
+a.base.grammar:
+    #grammar
+
+
+    start ->  λa.b.c "hello"
+    blah  ->  test
+    bloo  ->  a, b, c // [q.w.a].[j.k.b].[x.y.c]
+
+end
+
+a.b.c(::sentence):
+    | $x |
+    blah bloo $x
+end
+
+a.grammar.rule:
+    | $x |
+    #grammar
+
+    a.b.$x?
+    a.c.$y?
+
+    // create alternatives of all $y's in the expansion
+    + $y "postfix"
+    + "post-post-fix"
+end
+
+//-------------------------
+example.printer:
+    | $signal $value |
+    #printer
+
+    signal!$x(::protocol.a)?
+    $value(::test).sub.$val?
+    $value.${name}?
+
+    λprint $val -> $val'(::str)
+    // An override
+    λprint $name signal!str -> $name'
+
+    result:
+        $name [ $val'  ] " -> " blah
+    end
+end
+
+example.print.system:
+    | $value(::SignalWrapper) |
+    #printer.system
+
+    default.printer!$default?
+    example.${printer}?
+
+    // Or Match
+    // Match goes for first,
+    // sieve goes for first that has a valid response
+    sieve on $value:
+        signal!blah : $printer
+        signal!ATOM : $default
+    end
+end
+
+// ------------------------- Possible
+
+a.grammar:
+    | $start |
+    #grammar
+
+    start               -> applicable.$x?
+    bloo(::initial)     -> "test"
+    // Use tidal cycle dsl?
+    applicable.a(::aux) -> [a.b.%bloo, c.d.%blah? "test"]
+    // Multiple expansions in a single line or multiple rules
+    applicable.a        -> "other"
+    applicable.b        -> "awgg"
+    applicable.c(::ρ):
+        a.b.c?
+
+        λrun "test" -> $z
+
+        + "blah" bloo $z
+    end
+end
+
+// -------------------------
+a.prolog.ruleset:
+    | $database(::Structure)  |
+    #prolog
+
+    a.b.c?
+    d.e.$x?
+
+    example($x $y) :- a($x), b($y).
+    other($x)      :- c.
+end
+
+
+run.prolog:
+    a.prolog.$ruleset?
+
+    λprolog.set.database $ruleset a.b.c d.e.f -> $prolog(::Callable)
+    match λprolog.query $prolog a.b.c? -> $result(::Atom):
+        | $a |
+        $a(< 20) -> λrand.select $a
+        t -> yes
+        -> fail
+    end
+
+    + $result
+
+end

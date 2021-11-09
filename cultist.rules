@@ -1,0 +1,24 @@
+// Considerations on Cultist Simulator
+the.board(::space):
+    deck.$x(::ATOM).$y(::type.card)
+    table.$y(::type.card)
+    timer!$y(::type.timer)
+end
+
+type.card(::τ):
+    fulfills.type.$x
+    verb.$y(::ATOM).response!$z(::type.card.action)
+end
+
+type.timer(::τ):
+    step!$x(::int)
+    length!$y(::int)
+    current!$z(::int)
+    pattern.$p(::Pattern)
+end
+
+type.resource(::τ):
+    count.$x(::unsigned.int)
+end
+
+type.card.action(::rule)
