@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
 import logging as root_logger
 from collections import defaultdict
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
@@ -51,14 +50,13 @@ class TransformAbstraction(SI.AbstractionSemantics_i):
     """ Takes a context, returns a changed context """
     @SemanticBreakpointDecorator
     def __call__(self, instruction, semSys, ctxs=None, data=None):
-        # Note: run *all* the transform clauses at once,
-        # To minimise redundent new ctxs
-        # runs on a single active ctx
+        # Note: run *all* the transform clauses at once
         operators = ctxs._operators
         transform =  instruction
         for ctxIns in ctxs.active_list(clear=True):
             with MutableContextInstance(ctxs, ctxIns) as mutx:
                 for clause in transform.clauses:
+                    # this should all be replaceable with just: op = mutx[clause.op]
                     if clause.op in mutx:
                         op = mutx[clause.op]
                     elif isinstance(clause.op, ProductionOperator):
@@ -98,6 +96,7 @@ class AtomicRuleAbstraction(SI.AbstractionSemantics_i):
     @SemanticBreakpointDecorator
     def __call__(self, instruction, semsys, ctxs=None, data=None):
         """ Rule Logic, returns action proposals """
+        # TODO handle rule arguments
         rule = instruction
         # Run the query
         if DS.QUERY_COMPONENT in rule:

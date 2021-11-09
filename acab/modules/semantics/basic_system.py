@@ -65,8 +65,8 @@ class BasicSemanticSystem(SemanticSystem_i):
             logging.debug(f"Firing Semantics: {semantics}")
             # TODO entry hooks would go here.
 
-            # Abstractions use a reference to the sem system in place of a struct
             # Dependent's use a reference to a struct
+            # Abstractions use a reference to the sem system in place of a struct
             if struct is None:
                 struct = self
 
