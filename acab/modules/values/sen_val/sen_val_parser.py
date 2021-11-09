@@ -14,6 +14,6 @@ from acab.core.config.config import AcabConfig
 
 HOTLOAD_SENTENCE = pp.Forward()
 
-sen_value = pp.Literal("[[").suppress() + HOTLOAD_SENTENCE("blah") + pp.Literal("]]").suppress()
+sen_value = pp.Literal("[[").suppress() + HOTLOAD_SENTENCE("internal_sentence") + pp.Literal("]]").suppress()
 
-sen_value.setParseAction(lambda s, l, t: (t["blah"].type, t["blah"]))
+sen_value.setParseAction(lambda s, l, t: (t["internal_sentence"].type, t["internal_sentence"]))

@@ -12,6 +12,7 @@ import acab.interfaces.value as VI
 from acab.core.config.config import GET, AcabConfig, ConfigSpec
 from acab.interfaces.dsl import DSL_Fragment_i
 from acab.interfaces.printing import PrintSemantics_i
+from acab.interfaces.semantic import Semantic_Fragment
 from acab.core.printing import default_symbols as DSYM
 from acab.core.data.values import AcabStatement, Sentence
 from acab.core.printing import wrappers as PW
@@ -22,6 +23,8 @@ logging = root_logger.getLogger(__name__)
 
 config = GET()
 WALK_SEM_HINT    = Sentence.build([config.prepare("Module.DFSWalk", "WALK_QUERY_HINT")()])
+
+Sen_Val_Frag = Semantic_Fragment(abstraction=[SenQuerySemantics().as_handler(WALK_SEM_HINT)])
 
 class SenVal_Parser(DSL_Fragment_i):
     """  """
