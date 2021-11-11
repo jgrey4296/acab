@@ -5,10 +5,10 @@ from typing import cast, ClassVar, TypeVar, Generic
 
 from dataclasses import dataclass, field, InitVar
 
-from .acab_exception import AcabException
+from .acab_exception import AcabBasicException
 
 @dataclass
-class AcabOperatorException(AcabException):
+class AcabOperatorException(AcabBasicException):
 
     msg : str = field(init=False, default="Invalid Operator Specified: {}")
 

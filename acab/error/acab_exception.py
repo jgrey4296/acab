@@ -8,7 +8,10 @@ from dataclasses import dataclass, field, InitVar
 @dataclass
 class AcabException(Exception):
     """ The base exception class for the Acab package """
+    pass
 
+@dataclass
+class AcabBasicException(AcabException):
     detail  : str           = field()
     context : Optional[str] = field(default=None)
     msg     : str           = field(default="Non-specific Acab Error Raised")
