@@ -362,15 +362,15 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i):
 
 
 @dataclass
-class MutableContextInstance:
+class MutableContextInstance(CtxInt.ContextInstance_i):
     """ Wrap A Context Instance with an smart dictionary.
-    Changes are inserted into the dictionary, until finish is called.
-    Finish creates a new CtxIns, integrating changes """
+    Changes are inserted into the dictionary, until context is exited
+    exit creates a new CtxIns, integrating changes """
 
-    parent       : CtxSet          = field()
-    base         : CtxIns          = field()
-    data         : Dict[Any, Any]  = field(default_factory=dict)
-    uuid         : UUID            = field(default_factory=uuid1)
+    parent       : Optional[CtxSet] = field()
+    base         : CtxIns           = field()
+    data         : Dict[Any, Any]   = field(default_factory=dict)
+    uuid         : UUID             = field(default_factory=uuid1)
 
     def __contains__(self, value: Value):
         key = str(value)
@@ -392,7 +392,31 @@ class MutableContextInstance:
         return self
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
-        self.parent.push(self.base.bind_dict(self.data))
+        if exc_type is None and self.parent is not None:
+            self.parent.push(self.finish())
+
+        # Re-raise any errors
+        return False
+
+    def finish(self):
+        return self.base.bind_dict(self.data)
+
+
+    def bind(self, word, nodes):
+        raise NotImplementedError()
+
+    def bind_dict(self, the_dict):
+        assert(not any([x in self.data for x in the_dict]))
+        assert(not any([x in self.base for x in the_dict]))
+
+        self.data.update(the_dict)
+        return self
+
+    def to_sentences(self):
+        raise NotImplementedError()
+
+    def __len__(self):
+        return len(self.data) + len(self.base)
 
 
 @dataclass(frozen=True)
