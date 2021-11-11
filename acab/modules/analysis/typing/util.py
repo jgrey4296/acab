@@ -1,18 +1,16 @@
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
-
 import logging as root_logger
-import pyparsing as pp
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
 from uuid import uuid1
 
-from acab.core.config.config import AcabConfig
+import pyparsing as pp
 from acab import types as AT
-
-from acab.core.data.values import Sentence
-
+from acab.core.config.config import AcabConfig
+from acab.core.data.values import Sentence, AcabValue
 from acab.core.parsing.consts import s, s_key
+from acab.modules.context.context_set import ContextInstance, MutableContextInstance
+from . import type_exceptions as TE
 
 logging = root_logger.getLogger(__name__)
 
@@ -75,8 +73,18 @@ def pattern_match_type_signature(head, available):
 
 from acab.error.semantic_exception import AcabSemanticException
 
-UnifyResult = Dict[str, AT.Value]
-def unify_sentences(first: AT.Sentence, second: AT.Sentence) -> UnifyResult:
+def gen_var() -> Callable[[], AT.Value]:
+    """ A Simple Generator of guaranteed new Variables """
+    counter = 0
+    def wrapped() -> AT.Value:
+        nonlocal counter
+        new_name = "GenVar_{}".format(counter)
+        return Sentence.build([AcabValue.safe_make(new_name, data={"BIND":True})])
+
+    return wrapped
+
+LaxUnifyResult = Tuple[AT.CtxIns, AT.Sentence, AT.Sentence]
+def unify_sentences(first: AT.Sentence, second: AT.Sentence, gamma:AT.CtxIns=None) -> AT.CtxIns:
     """
     Strict Unify two sentences, returning a dictionary of substitutions
 
@@ -90,64 +98,54 @@ def unify_sentences(first: AT.Sentence, second: AT.Sentence) -> UnifyResult:
     a.b.c   ∪ a.b.c.d.e -> {tail: d.e}
 
     """
-    result : Dict[Any, Any] = {}
     if len(first) != len(second):
-        raise AcabSemanticException("Unify Failure: Length Mismatch")
+        raise TE.AcabTypingException()
 
-    for a,b in zip(first.words, second.words):
-        if a.is_var and a.key() in result and result[a.key()] != b:
-            raise AcabSemanticException("Unify Failure: Key Mismatch")
-        elif b.is_var and b.key() in result and result[b.key()] != a:
-            raise AcabSemanticException("Unify Failure: Key Mismatch")
-        elif a.is_var:
-            result[a.key()] = b
-        elif b.is_var:
-            result[b.key()] = a
-        elif a == b:
-            continue
-        else:
-            raise AcabSemanticException("Unify Failure: No Applicable Match")
+    if gamma is None:
+        gamma = ContextInstance()
 
-    return result
+    # Gamma'
+    gp = MutableContextInstance(None, gamma)
+    with gp:
+        for a,b in zip(first.words, second.words):
+
+            a_p = gp[a]
+            b_p = gp[b]
+
+            if a_p.is_var:
+                gp[a_p.key()] = b_p
+            elif b_p.is_var:
+                gp[b_p.key()] = a_p
+            elif a_p == b_p:
+                # TODO handle var args in the type constructors,
+                # so recursively unify
+                continue
+            elif a == a_p:
+                raise TE.TypeUnifyException(first, second, (a, (b, b_p)), gp)
+            else:
+                raise TE.TypeUnifyException(first, second, (b, (a, a_p)), gp)
+
+    return gp.finish()
 
 
-LaxUnifyResult = Tuple[UnifyResult, AT.Sentence, AT.Sentence]
-def lax_unify_sentences(first: AT.Sentence, second: AT.Sentence) -> LaxUnifyResult:
+def lax_unify(first: AT.Sentence, second: AT.Sentence, gamma:AT.CtxIns=None) -> AT.CtxIns:
     """
-
+    unify, but also return how much of the sentences remain
     """
+    # handle unify([$x], [a.b.c])
+    if first.is_var and gamma is None:
+        return ContextInstance({first[0].key(): second})
+    elif first.is_var and gamma is not None:
+        return gamma.bind_dict({first[0].key(): second})
+
+
     min_len = min(len(first), len(second))
-    subs = unify_sentences(first[:min_len], second[:min_len])
-    remL = first[min_len:]
-    remR = second[min_len:]
+    gammap = unify_sentences(first[:min_len], second[:min_len], gamma=gamma)
 
-    assert(len(remL) == 0 or len(remR) == 0)
-    return (subs, remL, remR)
-
-def subtype_relation(sen1: AT.Sentence, sen2: AT.Sentence) -> bool:
-    """
-    sub( a.b.c, ATOM)   -> False
-    sub( a.b.c, a.d)    -> False
-    sub( a.b.c, a.b)    -> True
-    sub( a.b.c, a.b.$x) -> True
-    sub( a.b.$x, a.b)   -> True
-    sub( a.$x.c, a.b)   -> True?
-
-    """
-    if sen2 == "_:ATOM":
-        return False
-    if sen1 == "_:ATOM":
-        return True
-
-    try:
-        lax_unify_sentences(sen1, sen2)
-    except AcabSemanticException:
-        return False
-
-    return True
+    return gammap
 
 
-def apply_sentence_types(first: AT.Sentence, second: AT.Sentence) -> AT.Sentence:
+def unify_types(first: AT.Sentence, second: AT.Sentence, gamma:AT.CtxIns=None) -> Tuple[AT.Sentence, AT.CtxIns]:
     """
     given two sentences, apply latter types to former
     a.b.d
@@ -167,13 +165,44 @@ def apply_sentence_types(first: AT.Sentence, second: AT.Sentence) -> AT.Sentence
     else error
 
     """
-    result = []
 
-    for a,b in zip(first.words, second.words):
-        is_subtype = subtype_relation(a.type, b.type)
-        if (a.is_var or b.is_var or a.name == b.name) and is_subtype:
-            result.append(a.copy(data={'TYPE_INSTANCE': b.type.copy()}))
-        else:
+    if gamma is None:
+        gamma = ContextInstance()
+
+    gp     = MutableContextInstance(None, gamma)
+    gen_f  = gen_var()
+    result = []
+    with gp:
+        for a,b in zip(first.words, second.words):
+
+            if b.type == "_:ATOM" and not b.is_var:
+                result.append(a)
+                continue
+
+            l_type = a.type
+            if not l_type.is_var and l_type == "_:ATOM":
+                l_type = gen_f()
+                a = a.copy(data={'TYPE_INSTANCE': l_type})
+
+            # Unify types / check l < r
+            lax_unify(l_type, b.type, gamma=gp)
+
+            if a.is_var:
+                gp[a] = a
+
             result.append(a)
 
-    return first.copy(value=result)
+
+    # Add anything not touched
+    gp_f = gp.finish()
+
+    if len(second) < len(first):
+        # check remainder against gamma
+        for word in first[len(second):]:
+            reified = gp_f[gp_f[word].type]
+            current = gp_f[word.type]
+            if reified != current and word.type != "_:ATOM":
+                raise TE.TypeConflictException(first, second, (reified, word.type), gp_f)
+            result.append(word)
+
+    return first.copy(value=result), gp.finish()
