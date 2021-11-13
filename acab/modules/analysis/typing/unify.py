@@ -75,7 +75,7 @@ def basic_unify_transform(a, b, gamma_p):
     else:
         raise TE.TypeUnifyException(a, b, (b, (a, a_p)), gamma_p)
 
-    return None
+    return a
 
 gen_f  = gen_var()
 def type_unify_transform(a, b, gamma_p):
@@ -89,21 +89,42 @@ def type_unify_transform(a, b, gamma_p):
         gamma_p[a] = a
 
     # Unify types / check l < r
-    #
-    sen_r, ctx_r = unify_sentence_pair(l_type, b.type,
-                                 transform=basic_unify_transform,
-                                 gamma=gamma_p)
+    truncated, ctx_r = unify_sentence_pair(l_type, b.type,
+                                           transform=basic_unify_transform,
+                                           remainder_op=sen_truncate,
+                                           gamma=gamma_p)
 
     # TODO: should mod_a be inserted into a somewhere
+    if not l_type.is_var and len(l_type) > truncated:
+        a = a.copy(data={'TYPE_INSTANCE': truncated})
 
     return a
 
-def type_remainder_transform(a, gp_f):
-    reified = gp_f[gp_f[a].type]
-    current = gp_f[a.type]
-    if reified != current and a.type != "_:ATOM":
-        raise TE.TypeConflictException(a, a, (reified, a.type), gp_f)
-    return a
+def type_remainder_transform(first, second, gp_f):
+    # check remainder against gamma
+    result = []
+    for word in first[len(second):]:
+        reified = gp_f[gp_f[word].type]
+        current = gp_f[word.type]
+
+        if reified != current and word.type != "_:ATOM":
+            raise TE.TypeConflictException(word, word, (reified, word.type), gp_f)
+        result.append(word)
+    return result
+
+
+def sen_truncate(first, second, gp_f):
+    # check remainder against gamma
+    for word in first[len(second):]:
+        reified = gp_f[gp_f[word].type]
+        current = gp_f[word.type]
+
+        if reified != current and a.type != "_:ATOM":
+            raise TE.TypeConflictException(a, a, (reified, a.type), gp_f)
+
+    return []
+
+
 
 
 def unify_sentence_pair(first: AT.Sentence,
@@ -145,10 +166,8 @@ def unify_sentence_pair(first: AT.Sentence,
     # Add anything not touched
     gp_f = gamma_p.finish()
 
-    if len(second) < len(first) and remainder_op:
-        # check remainder against gamma
-        for word in first[len(second):]:
-            collect.append(remainder_op(word, gp_f))
+    if len(second) != len(first) and remainder_op:
+        collect += remainder_op(first, second, gp_f)
 
     if bool(collect):
         return first.copy(value=[x for x in collect if bool(x)]), gp_f

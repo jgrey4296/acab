@@ -304,33 +304,30 @@ class SentenceUnifyTests(unittest.TestCase):
 
 
 
-    @unittest.skip
     def test_apply_types_generalise(self):
         sen1 = dsl.parse_string("a.test(::blah.bloo).sentence(::a.b.c)")[0]
         sen2 = dsl.parse_string("a.test(::blah).sentence(::a.b)")[0]
 
-        ctx_r, gamma = unify.unify_sentence_pair(sen1, sen2, transform=unify.type_unify_transform,
+        sen_r, ctx_r = unify.unify_sentence_pair(sen1, sen2, transform=unify.type_unify_transform,
                                                  remainder_op=unify.type_remainder_transform)
 
-        breakpoint()
-        self.assertIsInstance(ctx_r, Sentence)
-        self.assertEqual(len(sen1), len(ctx_r))
-        self.assertEqual(ctx_r[-2].type, "_:blah")
-        self.assertEqual(ctx_r[-1].type, "_:a.b")
+        self.assertIsInstance(sen_r, Sentence)
+        self.assertEqual(len(sen1), len(sen_r))
+        self.assertEqual(sen_r[-2].type, "_:blah")
+        self.assertEqual(sen_r[-1].type, "_:a.b")
 
-    @unittest.skip
     def test_apply_types_with_vars(self):
         sen1 = dsl.parse_string("a.test.sentence")[0]
         sen2 = dsl.parse_string("a.test.$x(::blah!$y)")[0]
 
-        ctx_r, gamma = unify.unify_sentence_pair(sen1, sen2, transform=unify.type_unify_transform,
+        sen_r, gamma = unify.unify_sentence_pair(sen1, sen2, transform=unify.type_unify_transform,
                                                  remainder_op=unify.type_remainder_transform)
 
-        self.assertIsInstance(ctx_r, Sentence)
-        self.assertEqual(len(sen1), len(ctx_r))
+        self.assertIsInstance(sen_r, Sentence)
+        self.assertEqual(len(sen1), len(sen_r))
 
-        self.assertEqual(gamma[ctx_r[-1].type], "_:blah.y")
-        self.assertTrue(gamma[ctx_r[-1].type][-1].is_var)
+        self.assertEqual(gamma[sen_r[-1].type], "_:blah.y")
+        self.assertTrue(gamma[sen_r[-1].type][-1].is_var)
 
 
     @unittest.skip
