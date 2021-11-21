@@ -41,15 +41,8 @@ class Value_i(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def bind(self, bindings: Dict[Any, Any]) -> Value:
-        pass
-
-
-    @abc.abstractmethod
     def copy(self, **kwargs) -> Value:
         pass
-
-
 
     @abc.abstractmethod
     def apply_params(self, params, data=None) -> Value:

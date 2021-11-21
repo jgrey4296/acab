@@ -208,20 +208,7 @@ class AcabValue(VI.Value_i, Generic[T]):
 
 
     def bind(self, bindings) -> Value:
-        """ Data needs to be able to bind a dictionary
-        of values to internal variables
-        return modified copy
-        """
-        if self.is_var and self.value in bindings:
-            assert(not self.params)
-            return AcabValue.safe_make(bindings[self.value])
-
-        if not any([x.is_var for x in self.params]):
-            return self
-
-        bound_params = [x.bind(bindings) for x in self.params]
-        return self.copy(params=bound_params)
-
+        raise Exception("Deprecated: use acab.modules.values.binding")
 
     def apply_params(self, params, data=None) -> Value:
         """
@@ -358,57 +345,8 @@ class Sentence(AcabStatement, VI.Sentence_i):
         """
         return self.copy(value=[])
 
-    def bind(self, bindings) -> Sen:
-        """ Given a dictionary of bindings, reify the sentence,
-        using those bindings.
-        ie: a.b.$x with {x: blah} => a.b.blah
-        return modified copy
-        """
-        assert(isinstance(bindings, dict))
-        output = []
-
-        for word in self:
-            # early expand if a plain node
-            if not word.is_var:
-                output.append(word)
-                continue
-
-            if not word.value in bindings:
-                output.append(word)
-                continue
-
-            # Sentence invariant: only word[0] can have an at_bind
-            if word.is_at_var:
-                retrieved = bindings[DS.AT_BIND + word.value]
-            else:
-                retrieved = bindings[word.value]
-
-
-            if isinstance(retrieved, VI.Sentence_i) and len(retrieved) == 1:
-                # Flatten len1 sentences:
-                copied = retrieved[0].copy()
-                copied.data.update(word.data)
-                copied.data[DS.BIND] = False
-                output.append(copied)
-            elif isinstance(retrieved, VI.Value_i):
-                # Apply the variables data to the retrieval
-                copied = retrieved.copy()
-                copied.data.update(word.data)
-                # Except retrieved isn't a binding
-                copied.data[DS.BIND] = False
-                output.append(retrieved)
-            else:
-                # TODO how often should this actually happen?
-                # won't most things be values already?
-                # TODO get a type for basic values
-                new_word = AcabValue(retrieved, data=word.data)
-                new_word.data[DS.BIND] = False
-                output.append(new_word)
-
-        return Sentence.build(output,
-                              data=self.data,
-                              params=self.params,
-                              tags=self.tags)
+    def bind(self, bindings:Dict[Any, Any]) -> Sen:
+        raise Exception("Deprecated: use acab.modules.values.binding")
 
     def add(self, *other) -> Sen:
         """ Return a copy of the sentence, with words added to the end.

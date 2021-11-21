@@ -96,15 +96,7 @@ class ProductionComponent(AcabStatement):
         return self.value
 
     def bind(self, data) -> Component:
-        # Bind params / operator
-        if self.op.is_var and self.op.value in data:
-            bound_op = data[self.op.value]
-        else:
-            bound_op = self.op.copy()
-
-        bound_params = [x.bind(data) for x in self.params]
-
-        return self.copy(value=bound_op, params=bound_params)
+        raise Exception("Deprecated: use acab.modules.values.binding")
 
     @property
     def has_var(self):
@@ -144,12 +136,7 @@ class ProductionContainer(AcabStatement):
         return self.value
 
     def bind(self, data) -> Container:
-        # Bind params,
-        # then Bind each clause separately,
-        bound_clauses = [x.bind(data) for x in self.value]
-        bound_params  = [x.bind(data) for x in self.params]
-        return self.copy(value=bound_clauses, params=bound_params)
-
+        raise Exception("Deprecated: use acab.modules.values.binding")
 
 @dataclass(frozen=True)
 class ProductionStructure(ProductionContainer):
@@ -192,14 +179,7 @@ class ProductionStructure(ProductionContainer):
         return self.structure[key]
 
     def bind(self, data) -> PStructure:
-        # Bind params,
-        bound_params  = [x.bind(data) for x in self.params]
-        # Bind clauses
-        bound_clauses = [x.bind(data) for x in self.clauses]
-        # Bind sub containers
-        bound_struct  = {x: y.bind(data) for x,y in self.structure.items()}
-
-        return self.copy(value=bound_clauses, params=bound_params, structure=bound_struct)
+        raise Exception("Deprecated: use acab.modules.values.binding")
 
     def __contains__(self, key):
         return key in self.structure and bool(self.structure[key])
