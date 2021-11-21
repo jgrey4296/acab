@@ -96,3 +96,15 @@ def __add_sig(sig, method):
         return method(self, *args, **kwargs, signal=sig)
 
     return wrapper
+
+
+def factory(f):
+    def awaiting_arg(first_arg):
+        def ready_to_apply(*args, **kwargs):
+            return f(first_arg, *args, **kwargs)
+
+        ready_to_apply.__name__ = f"{f.__name__} partial"
+        return ready_to_apply
+
+    awaiting_arg.__name__ = f"{f.__name__} factory"
+    return awaiting_arg
