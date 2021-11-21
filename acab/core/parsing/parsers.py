@@ -76,7 +76,7 @@ def STATEMENT_CONSTRUCTOR(annotation_p:ParserElement,
                           single_line:bool=False,
                           parse_fn:Optional[Callable]=None):
     """ Construct a parser for statements of the form:
-    a.location: |args| components end
+    a.location(annotation_p): |args| components end
     """
     line_p     = PConst.emptyLine
     line_end_p = PConst.ln

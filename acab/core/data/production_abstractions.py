@@ -77,7 +77,11 @@ class ActionOperator(ProductionOperator):
 
 @dataclass(frozen=True)
 class ProductionComponent(AcabStatement):
-    """ Pairs a an operator with some bindings """
+    """ Pairs a an operator with some bindings
+    equivalent to a sentence of:
+    pc(::production.component).op.$x(::sen).args.[$y.$z].return.$a
+
+    """
 
     # Sugared: Denotes whether the parse originated from a sugared operator
     # eg: $x ~= /blah/ -> $x
@@ -89,6 +93,11 @@ class ProductionComponent(AcabStatement):
         assert(isinstance(self.value, Sentence))
         self.data[DS.TYPE_INSTANCE] = DS.COMPONENT_PRIM
 
+    def to_sentences(self):
+        """
+        Sentence([op_path].[param1.param2.param3...].result)
+        """
+        raise NotImplementedError()
 
     @property
     @cache
@@ -124,6 +133,10 @@ class ProductionContainer(AcabStatement):
         clauses = ";".join([repr(x) for x in self.clauses])
         return "(ProductionContainer:{}:{})".format(self.name,
                                                     clauses)
+    def to_sentences(self):
+        """ [ClauseA, ClauseB, ClauseC...] """
+        raise NotImplementedError()
+
     @cache
     def __len__(self):
         return len(self.clauses)
@@ -157,6 +170,18 @@ class ProductionStructure(ProductionContainer):
         except FrozenInstanceError as err:
             # Expected
             pass
+
+
+    def to_sentences(self):
+        """
+        [prefix.[ClauseA],
+         prefix.[ClauseB..],
+         prefixB.[ClauseX],
+         prefixB.[Clause,Y],
+         prefixC.[..]
+        ..]
+        """
+        raise NotImplementedError()
 
     @cache
     def __repr__(self):

@@ -103,3 +103,10 @@ class ContextInstance_i(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def __len__(self):
         pass
+
+    @abc.abstractmethod
+    def finish(self) -> CtxIns:
+        """
+        # TODO rename this
+        """
+        pass

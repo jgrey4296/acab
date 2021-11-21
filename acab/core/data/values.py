@@ -17,6 +17,7 @@ import acab.interfaces.value as VI
 from acab.core.config.config import AcabConfig
 import acab.core.data.default_structure as DS
 from acab.core.decorators.util import cache
+from acab.error.acab_exception import AcabBasicException
 
 logging          = root_logger.getLogger(__name__)
 
@@ -130,10 +131,9 @@ class AcabValue(VI.Value_i, Generic[T]):
 
         type_str = str(self.type)
 
-        return "({}:{}:{}:{})".format(self.__class__.__name__,
-                                      name_str,
-                                      val_str,
-                                      type_str)
+        return "({}:{}:{})".format(name_str,
+                                   val_str,
+                                   type_str)
 
     @cache
     def __hash__(self):
@@ -201,8 +201,13 @@ class AcabValue(VI.Value_i, Generic[T]):
             kwargs['params'] = self.params[:]
         if 'tags' not in kwargs:
             kwargs['tags'] = self.tags.copy()
+
         if 'data' not in kwargs:
             kwargs['data'] = self.data.copy()
+        else:
+            temp = self.data.copy()
+            temp.update(kwargs['data'])
+            kwargs['data'] = temp
 
         return replace(self, uuid=uuid1(), **kwargs)
 
@@ -276,6 +281,10 @@ class AcabStatement(AcabValue, VI.Statement_i):
         new_data.update({DS.TYPE_INSTANCE: Sentence.build([DS.TYPE_BOTTOM_NAME])})
         simple_value = AcabValue.safe_make(self.name, data=new_data)
         return simple_value
+
+    def to_sentences(self) -> List[VI.Sentence_i]:
+        pass
+
 
 @dataclass(frozen=True)
 class Sentence(AcabStatement, VI.Sentence_i):
@@ -434,13 +443,29 @@ class Sentence(AcabStatement, VI.Sentence_i):
 
 
     def match(self, sen:Sen) -> List[Tuple[Value, Value]]:
-        """ Match a sentence's variables to a target
+        """ Match a target sentence's variables to self's target
+        as tuples of (bind_name, value)
 
         eg: _:$x.b.$y match _:a.b.c -> [(x, a), (y, c)]
         """
         results = []
+        if self.is_var:
+            results.append((self[0], sen))
+            return results
+
         for x,y in zip(self.words, sen.words):
             if x.is_var:
                 results.append((x,y))
 
         return results
+
+
+    def to_sentences(self) -> List[VI.Sentence_i]:
+        simple_sen, statements = self.detach_statement()
+        return [simple_sen]
+
+
+    @property
+    @cache
+    def vars(self) -> List[Value]:
+        return [x for x in self.words if x.is_var]

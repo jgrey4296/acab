@@ -10,6 +10,7 @@ from enum import Enum
 from uuid import UUID, uuid1
 
 import acab.error.semantic_exception as ASErr
+import acab.interfaces.value as VI
 import acab.interfaces.context as CtxInt
 from acab.core.config import GET
 from acab.core.data.production_abstractions import (ProductionComponent,
@@ -112,7 +113,7 @@ class ContextInstance(CtxInt.ContextInstance_i):
 
     def __repr__(self):
         binds  = ", ".join([x for x in self.data.keys()])
-        return f"(CtxInst: Bindings: {binds}.)"
+        return f"(CtxInst: Bindings: {binds})"
 
     def copy(self, **kwargs):
         logging.debug("Copied Ctx Instance")
@@ -189,6 +190,9 @@ class ContextInstance(CtxInt.ContextInstance_i):
         raise NotImplementedError()
 
 
+
+    def finish(self):
+        return self
 
 @dataclass
 class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i):

@@ -16,9 +16,9 @@ logging       = root_logger.getLogger(__name__)
 
 config        = AcabConfig.Get()
 
-Sentence      = AT.Sentence
-Value         = AT.Value
-AcabStatement = AT.Statement
+Sentence      : str = AT.Sentence
+Value         : str = AT.Value
+AcabStatement : str = AT.Statement
 
 @dataclass(frozen=True)
 class Value_i(metaclass=abc.ABCMeta):
@@ -82,6 +82,10 @@ class Statement_i(Value_i):
 
     @abc.abstractmethod
     def to_word(self) -> Value:
+        pass
+
+    @abc.abstractmethod
+    def to_sentences(self) -> List[Sentence]:
         pass
 
     def do_break(self):
