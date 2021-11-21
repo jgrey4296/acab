@@ -72,22 +72,25 @@ class ContextInstance(CtxInt.ContextInstance_i):
     def __hash__(self):
         return hash(self.uuid)
 
-    def __contains__(self, value: Value):
-        if isinstance(value, Sentence_i) and value.is_var and value[0] in self:
-            return self.data[str(value[0])]
+    def __contains__(self, value: Union[int, str, Value]):
+        key = value
+        if isinstance(value, VI.Value_i):
+            key = value.key()
 
-        return str(value) in self.data
+        return str(key) in self.data
 
     def __getitem__(self, value: Value):
         if self.exact and value not in self:
             raise AcabSemanticException("Not Found in Context", value)
 
-        if isinstance(value, Sentence_i) and value.is_var and value[0] in self:
-            return self.data[str(value[0])]
-        elif str(value) in self:
-            return self.data[str(value)]
-        else:
-            return value
+        key = value
+        if isinstance(value, VI.Value_i):
+            key = value.key()
+
+        if str(key) in self.data:
+            return self.data[str(key)]
+
+        return value
 
     # def __setitem(self, key: Any, value: Any):
     #     raise ASErr.AcabSemanticException("Context Instances can't directly set a value, use MutableContextInstance")
@@ -372,21 +375,42 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
     data         : Dict[Any, Any]   = field(default_factory=dict)
     uuid         : UUID             = field(default_factory=uuid1)
 
-    def __contains__(self, value: Value):
-        key = str(value)
-        return key in self.data or key in self.base
+    def __contains__(self, value: Union[int, str, Value]):
+        key = value
+        if isinstance(value, VI.Value_i):
+            key = value.key()
+
+        direct = str(key) in self.data
+        indirect = value in self.base
+        return direct or indirect
 
     def __getitem__(self, value: Value):
-        key = str(value)
-        if key in self.data:
-            return self.data[key]
-        elif key in self.base:
-            return self.base[key]
-        else:
-            return value
+        if self.base.exact and value not in self:
+            raise AcabSemanticException("Not Found in Context", value)
+
+        key = value
+        if isinstance(value, VI.Value_i):
+            key = value.key()
+
+        if str(key) in self.data:
+            return self.data[str(key)]
+
+        return self.base[value]
 
     def __setitem__(self, key: Value, value: Value):
+        if isinstance(key, VI.Value_i):
+            key = key.key()
+
         self.data[str(key)] = value
+
+
+    def __getattribute__(self, value):
+        try:
+            return object.__getattribute__(self, value)
+        except AttributeError as err:
+            if not value in self:
+                raise err
+            return self.__getitem__(value)
 
     def __enter__(self):
         return self

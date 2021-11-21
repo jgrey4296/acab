@@ -91,6 +91,7 @@ class AcabNode(DI.Node_i):
 
     def keys(self):
         return self.children.keys()
+
     @property
     def name(self):
         return str(self.value)
@@ -113,23 +114,27 @@ class AcabNode(DI.Node_i):
         elif isinstance(key, str):
             matches = [x for x in self.keys() if key in x]
             return self.children[matches[0]]
+        else:
+            return self.children[key.key()]
 
-        return self.children[key.key()]
-
-    def has_child(self, key:Tuple[str, Value, None]) -> bool:
+    def has_child(self, key:Tuple[str, Value, None]=None) -> bool:
         """ Question if this term has a particular child,
         by the simplest condition of whether there is a simple string
         mapping.
         """
-        if key is None:
-            return bool(self)
-        if isinstance(key, str):
-            keys = self.keys()
-            return any([key in x for x in keys])
-        if isinstance(key, (AcabNode, AcabValue)):
-            return key.key() in self.children
+        result = False
+        is_str = isinstance(key, str)
+        is_val = isinstance(key, (AcabNode, AcabValue))
 
-        return False
+        if key is None:
+            result = bool(self)
+        elif is_str:
+            keys = self.keys()
+            result = any([key in x for x in keys])
+        elif is_val:
+            result = key.key() in self.children
+
+        return result
 
     def remove_child(self, key:Tuple[str, Node]) -> Optional[Node]:
         """ Delete a child from this node, return success state

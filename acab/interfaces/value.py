@@ -76,6 +76,11 @@ class Value_i(metaclass=abc.ABCMeta):
     def has_var(self) -> bool:
         pass
 
+    @abc.abstractmethod
+    def key(self) -> str:
+        pass
+
+
 @dataclass(frozen=True)
 class Statement_i(Value_i):
 

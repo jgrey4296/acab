@@ -166,7 +166,8 @@ class AcabValue(VI.Value_i, Generic[T]):
     @cache
     def key(self):
         """ Default Key Value->str for node mapping """
-        return repr(self)
+        return str(self.name)
+
     @property
     @cache
     def type(self) -> Sen:
@@ -340,6 +341,10 @@ class Sentence(AcabStatement, VI.Sentence_i):
 
     def __contains__(self, value:Union[str, Value]):
         return value in self.words
+
+    @cache
+    def key(self):
+        return str(self)
 
     def copy(self, **kwargs) -> Sen:
         if 'value' not in kwargs:
