@@ -238,3 +238,13 @@ def do_forcep(self, line):
         traceback.print_tb(err.__traceback__)
         print("\n")
         logging.warning(f"Force Failure: {err}")
+
+
+@register
+def do_suppress(self, line):
+    """
+    Repl Command to suppress all repl commands
+    (except itself and `exit`.)
+    """
+    # TODO
+    return
