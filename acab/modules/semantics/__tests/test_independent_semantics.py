@@ -20,6 +20,7 @@ from acab.error.acab_exception import AcabException
 from acab.error.semantic_exception import AcabSemanticException
 from acab.modules.semantics.independent import (BasicNodeSemantics,
                                                 ExclusionNodeSemantics)
+from acab.core.data import default_structure as DS
 
 EXOP         = config.prepare("MODAL", "exop")()
 EXOP_enum    = config.enums[EXOP]
@@ -176,6 +177,7 @@ class IndependentSemanticTests(unittest.TestCase):
         self.assertNotEqual(atom_value.value.type, str_value.value.type)
         sem.insert(root, atom_value)
         result = sem.access(root, str_value.value)
+
         self.assertFalse(result)
 
     def test_node_insert_str_vs_atom(self):

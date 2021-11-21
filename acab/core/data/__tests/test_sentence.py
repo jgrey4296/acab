@@ -112,6 +112,7 @@ class SentenceTests(unittest.TestCase):
         for x,y in zip(val3, ["a","test","value","additional","sentence"]):
             self.assertEqual(x.value, y)
 
+    @unittest.skip
     def test_bind(self):
         """ Check variables can be bound in a sentence, building a new sentence """
         val = Sentence.build(["a","test","value"])
@@ -125,6 +126,7 @@ class SentenceTests(unittest.TestCase):
         self.assertFalse(bound[-1].is_var)
         self.assertEqual(bound[-1].value, "blah")
 
+    @unittest.skip
     def test_bind_nop(self):
         """ Check a sentence binding doesn't create a new sentence unless it has to """
         val = Sentence.build(["a","test","value"])

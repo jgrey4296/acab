@@ -61,14 +61,12 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result, Sentence)
         self.assertEqual(len(result), 3)
         self.assertEqual(result[-1].value, 'c')
-        self.assertEqual(result[-1].data['exop'], config.enums['exop'].DOT)
 
     def test_basic_clause_with_bind(self):
         result = QP.SENTENCE.parseString('a.b.$c?')[0]
         self.assertIsInstance(result, Sentence)
         self.assertEqual(len(result), 3)
         self.assertEqual(result[-1].value, 'c')
-        self.assertEqual(result[-1].data['exop'], config.enums['exop'].DOT)
         self.assertTrue(result[-1].is_var)
 
     def test_basic_negated_clause(self):
@@ -114,6 +112,6 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
 
 
     def test_query_statement(self):
-        result = QP.query_statement.parseString("query:\n  a.b.c?\n  d.e.f?\n  a.b.$x?\nend")[0]
+        result = QP.query_statement.parseString("query(::γ):\n  a.b.c?\n  d.e.f?\n  a.b.$x?\nend")[0]
         self.assertIsInstance(result, ProductionContainer)
         self.assertEqual(len(result.clauses), 3)

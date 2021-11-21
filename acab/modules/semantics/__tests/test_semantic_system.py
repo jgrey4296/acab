@@ -17,7 +17,7 @@ from acab.core.data.values import Sentence
 from acab.interfaces.handler_system import Handler
 from acab.interfaces.semantic import (AbstractionSemantics_i,
                                                SemanticSystem_i)
-from acab.error.acab_exception import AcabException
+import acab.error.acab_exception as AE
 from acab.modules.semantics.basic_system import BasicSemanticSystem
 from acab.modules.context.context_set import ContextInstance, ContextSet
 from acab.modules.semantics.independent import ExclusionNodeSemantics
@@ -47,7 +47,7 @@ class SemanticSystemTests(unittest.TestCase):
 
     class StubAbsSemantic(AbstractionSemantics_i):
         def __call__(self, ins, semSys, ctxs=None, data=None):
-            raise AcabException("TestAbsSem called")
+            raise AE.AcabBasicException("TestAbsSem called")
 
     def test_construction(self):
         """ Check context systems can be created """
@@ -60,7 +60,7 @@ class SemanticSystemTests(unittest.TestCase):
         """ Check context systems can be called """
         semsys = BasicSemanticSystem(default=SemanticSystemTests.StubAbsSemantic().as_handler("_:stub"))
         test_sen = Sentence.build(["test"])
-        with self.assertRaises(AcabException) as cm:
+        with self.assertRaises(AE.AcabException) as cm:
             semsys(test_sen)
 
         self.assertEqual(cm.exception.detail, "TestAbsSem called")

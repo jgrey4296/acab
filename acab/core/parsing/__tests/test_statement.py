@@ -38,7 +38,7 @@ class StatementTests(unittest.TestCase):
     #use testcase snippets
     def test_basic_tag(self):
         """ Check a constructed statement can have tags """
-        basic_node_parser = pp.Keyword('test')
+        basic_node_parser = pp.Keyword('::test')
         basic_node_parser.setParseAction(lambda s, l, toks: Sentence.build([AcabValue(toks[0])]))
 
         basic_value_parser = pp.Keyword('value')
@@ -48,13 +48,13 @@ class StatementTests(unittest.TestCase):
                                                basic_value_parser)
 
 
-        result = statement_p.parseString("test:\n#test\n\nvalue\nend")[0]
+        result = statement_p.parseString("a_statement(::test):\n#test\n\nvalue\nend")[0]
         tags_str = [x for x in result.tags]
         self.assertTrue('test' in tags_str)
 
     def test_basic_tag_plural(self):
         """ Check a constructed statement can have multiple tags """
-        basic_node_parser = pp.Keyword('test')
+        basic_node_parser = pp.Keyword('::test')
         basic_node_parser.setParseAction(lambda s, l, toks: Sentence.build([AcabValue(toks[0])]))
 
         basic_value_parser = pp.Keyword('value')
@@ -63,7 +63,7 @@ class StatementTests(unittest.TestCase):
         statement_p = PU.STATEMENT_CONSTRUCTOR(basic_node_parser,
                                                basic_value_parser)
 
-        result = statement_p.parseString("test:\n#abcd\n#aaaa\n#bbbb\n\nvalue\nend")[0]
+        result = statement_p.parseString("a_statement(::test):\n#abcd\n#aaaa\n#bbbb\n\nvalue\nend")[0]
         value = result
 
         tags_str = [x for x in value.tags]

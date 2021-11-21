@@ -108,7 +108,7 @@ class TrieSemanticTests(unittest.TestCase):
         # verify
         self.assertTrue("a" in trie_struct.root)
         self.assertFalse("test" in trie_struct.root[sen[0]])
-        self.assertFalse("sentence" not in trie_struct.root)
+        self.assertTrue("sentence" not in trie_struct.root[sen[:1]])
 
     def test_trie_query_exact(self):
         """ Check trie querying of an exact path works """

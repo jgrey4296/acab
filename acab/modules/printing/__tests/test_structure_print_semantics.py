@@ -154,7 +154,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                settings={"MODAL": "exop"})
 
         # parse a rule
-        rule = RP.parseString("rule:\na.b.c?\n\nλa.b.c\nend")[0]
+        rule = RP.parseString("rule(::ρ):\na.b.c?\n\nλa.b.c\nend")[0]
         self.assertIsInstance(rule, ProductionStructure)
         # print
         result = sem_sys.pprint(rule)
@@ -176,7 +176,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                               settings={"MODAL": "exop"})
 
         # parse a rule
-        rule = RP.parseString("""rule:
+        rule = RP.parseString("""rule(::ρ):
         #test.tag
 
         a.b.c?
@@ -203,7 +203,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               ],
                               settings={"MODAL": "exop"})
 
-        query = QP.query_statement.parseString("""statement:
+        query = QP.query_statement.parseString("""statement(::γ):
         a.b.c?
         d.e.f?
         g.h.e?
@@ -229,7 +229,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               ],
                                settings={"MODAL": "exop"})
 
-        query = TP.transform_statement.parseString("""statement:
+        query = TP.transform_statement.parseString("""statement(::χ):
         λa.b.c $x $y -> $z
         λq.c.d $z $x -> $a
         λa.b.c $a $y -> $c
@@ -256,7 +256,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               ],
                                settings={"MODAL": "exop"})
 
-        action = AP.action_definition.parseString("""statement:
+        action = AP.action_definition.parseString("""statement(::α):
         λa.b.c $x
         λa.b.c.d $x $y
         λa.b.c.d.e $x $y $z

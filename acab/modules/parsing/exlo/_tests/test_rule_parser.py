@@ -61,12 +61,12 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
 
     @unittest.skip
     def test_multi_empty_rules(self):
-        result = RP.parseString("x:\n\nend\n\na.second.rule:\n\nend")
+        result = RP.parseString("x(::ρ):\n\nend\n\na.second.rule:\n\nend")
         self.assertEqual(len(result),2)
         self.assertTrue(all([isinstance(x[-1], ProductionStructure) for x in result]))
 
     def test_rule_with_query(self):
-        result = RP.rule.parseString("x:\n a.b.c?\nend")[0]
+        result = RP.rule.parseString("x(::ρ):\n a.b.c?\nend")[0]
         self.assertEqual(result.name, "x")
         self.assertIsInstance(result, ProductionStructure)
         self.assertIsNotNone(result[QUERY_V])
@@ -74,7 +74,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
 
 
     def test_rule_with_multi_clause_query(self):
-        result = RP.parseString("x:\n  a.b.c?\n  a.b.d?\nend")[0]
+        result = RP.parseString("x(::ρ):\n  a.b.c?\n  a.b.d?\nend")[0]
         self.assertIsInstance(result, ProductionStructure)
         self.assertIsNotNone(result[QUERY_V])
         self.assertIsInstance(result[QUERY_V], ProductionContainer)
@@ -91,7 +91,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
 
 
     def test_rule_with_binding_query(self):
-        result = RP.parseString("x:\na.b.$x?\nend")[0]
+        result = RP.parseString("x(::ρ):\na.b.$x?\nend")[0]
         self.assertIsInstance(result, ProductionStructure)
         self.assertIsNotNone(result[QUERY_V])
         self.assertIsInstance(result[QUERY_V], ProductionContainer)
@@ -99,7 +99,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
 
 
     def test_rule_with_actions(self):
-        result = RP.parseString("x:\nλoperator.action.add a.b.c\nend")[0]
+        result = RP.parseString("x(::ρ):\nλoperator.action.add a.b.c\nend")[0]
         self.assertIsInstance(result, ProductionStructure)
         self.assertIsNone(result[QUERY_V])
         self.assertIsNone(result[TRANSFORM_V])
@@ -107,7 +107,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
 
 
     def test_multi_action_rule(self):
-        result = RP.parseString("x:\n  λoperator.action.add a.b.c\n  λoperator.action.add ~a.b.d\nend")[0]
+        result = RP.parseString("x(::ρ):\n  λoperator.action.add a.b.c\n  λoperator.action.add ~a.b.d\nend")[0]
         self.assertIsInstance(result, ProductionStructure)
         self.assertIsNone(result.structure[QUERY_V])
         self.assertIsNone(result.structure[TRANSFORM_V])
@@ -115,7 +115,7 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
 
     @unittest.skip("one liners need work")
     def test_multi_action_single_line_rule(self):
-        result = RP.parseString("x:\n λoperator.action.add a.b.c, λoperator.action.add ~a.b.d\nend")
+        result = RP.parseString("x(::ρ):\n λoperator.action.add a.b.c, λoperator.action.add ~a.b.d\nend")
         self.assertEqual(len(result), 1)
         self.assertIsInstance(result[0][-1], ProductionStructure)
         self.assertIsNone(result[0][-1][QUERY_V])
@@ -123,9 +123,9 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
         self.assertEqual(len(result[0][-1][ACTION_V]), 2)
 
     def test_query_and_transform_rule(self):
-        result = RP.rule.parseString("x:\n  a.b.c?\n  d.e.f?\n\n  λa.b.c $x -> $y\nend")[0]
+        result = RP.rule.parseString("x(::ρ):\n  a.b.c?\n  d.e.f?\n\n  λa.b.c $x -> $y\nend")[0]
         self.assertIsInstance(result, ProductionStructure)
 
     def test_query_and_transform_and_action_rule(self):
-        result = RP.rule.parseString("rule:\n  a.b.c?\n  d.e.f?\n\n  λa.b.c $x -> $y\n\n a.b.c\nend")[0]
+        result = RP.rule.parseString("rule(::ρ):\n  a.b.c?\n  d.e.f?\n\n  λa.b.c $x -> $y\n\n a.b.c\nend")[0]
         self.assertIsInstance(result, ProductionStructure)

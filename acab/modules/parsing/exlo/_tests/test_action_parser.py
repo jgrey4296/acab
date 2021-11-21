@@ -42,7 +42,7 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
     #use testcase snippets
     def test_action_definition(self):
         """ Check an action definition can be parsed without error """
-        test_str = "test:\n  λoperator.add a.b.c\nend"
+        test_str = "test(::α):\n  λoperator.add a.b.c\nend"
         definition = AP.action_definition.parseString(test_str)[0]
         self.assertEqual(definition.name, "test")
 
