@@ -38,10 +38,6 @@ class TypeUnifyException(AcabTypingException):
     words : Tuple[AT.Value] = field()
     gamma : AT.CtxIns       = field()
 
-    def __str__(self):
-        return f"Unification Failure: {self.words[0]} doesn't unify with {self.words[1]} in ({self.left} __:__ {self.right})"
-
-
 @dataclass
 class TypeConflictException(AcabTypingException):
 
