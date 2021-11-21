@@ -22,21 +22,28 @@ def make_simple_def(toks):
     return type_def
 
 def make_record_def(toks):
+    # TODO check only atoms and typedefs are in body
+    assert(all([isinstance(x, Sentence) for x in toks[:]]))
     type_def = TypeDefinition(None, toks[:])
     return type_def
 
-def make_op_def(toks):
-    syntax_bind = None
-    if TYU.SYNTAX_BIND_S in toks:
-        syntax_bind = toks[TYU.SYNTAX_BIND_S][0]
-
-    op_def = OperatorDefinition(None, [toks[TYU.STRUCT_S][0]], sugar_syntax=syntax_bind)
-
-    return op_def
-
 def make_sum_def(toks):
+    # TODO assert all toks are sentences of atoms or type defs
+    assert(all([isinstance(x, (Sentence, TypeDefinition)) for x in toks[:]]))
     sum_def = SumTypeDefinition(None, toks[:])
     return sum_def
+
+def make_op_def(toks):
+    syntax_bind = None
+    op_params = toks["params"]
+    assert(all([x.is_var for x in op_params]))
+
+    if TYU.SYNTAX_BIND_S in toks:
+        syntax_bind = toks[TYU.SYNTAX_BIND_S]
+
+    op_def = OperatorDefinition(None, [op_params], sugar_syntax=syntax_bind)
+
+    return op_def
 
 
 def make_type_dec(toks):
@@ -53,4 +60,5 @@ def make_type_dec(toks):
                                           data={TYPE_INSTANCE_S: "_:type.declaration"}))
 
 def make_type_class(toks):
+    # TODO assert all toks are operator definitions
     return TypeClass(None, toks[:])

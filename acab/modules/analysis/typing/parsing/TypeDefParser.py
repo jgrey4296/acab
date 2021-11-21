@@ -32,8 +32,8 @@ HOTLOAD_SEN = pp.Forward()
 
 # the simplest type
 # a.simple.type(::τ)
-SIMPLE_DEF = PU.PARAM_CORE(req_mid=pp.Literal("::τ"), end=True)
-SIMPLE_DEF.addParseAction(TU.make_simple_def)
+NOMINAL_DEF = PU.PARAM_CORE(req_mid=pp.Literal("::τ"), end=True)
+NOMINAL_DEF.addParseAction(TU.make_simple_def)
 
 # Record Type definition:
 # a block of sentences, describing structure
@@ -46,7 +46,7 @@ RECORD_TYPE = PU.STATEMENT_CONSTRUCTOR(pp.Literal("::τ").suppress(),
 
 # Sum Type definition
 # ie: first subwords are the subtypes. subtypes are automatically records
-SUM_DEF_BODY = IndentedBlock(RECORD_TYPE | SIMPLE_DEF)
+SUM_DEF_BODY = IndentedBlock(HOTLOAD_SEN)
 SUM_DEF_BODY.setParseAction(TU.make_sum_def)
 
 SUM_TYPE = PU.STATEMENT_CONSTRUCTOR(pp.Literal("::Σ").suppress(),
@@ -54,7 +54,8 @@ SUM_TYPE = PU.STATEMENT_CONSTRUCTOR(pp.Literal("::Σ").suppress(),
 
 # numAdd(::λ): $x(::num).$y(::num).$z(::num) => +
 # TODO: enable alias paths, not just sugar
-OP_DEF_BODY = PU.PARAM_CORE(end=op(DBLARROW + N(TYU.SYNTAX_BIND_S, PU.OPERATOR_SUGAR)))
+OP_SUGAR = DBLARROW + PU.OPERATOR_SUGAR(TYU.SYNTAX_BIND_S)
+OP_DEF_BODY = HOTLOAD_SEN("params") + op(OP_SUGAR)
 OP_DEF_BODY.setParseAction(TU.make_op_def)
 
 OP_DEF = PU.STATEMENT_CONSTRUCTOR(pp.Literal("::λ").suppress(),
@@ -69,7 +70,7 @@ TYPE_CLASS_BODY.setParseAction(TU.make_type_class)
 TYPE_CLASS_DEF = PU.STATEMENT_CONSTRUCTOR(pp.Literal("::ι").suppress(),
                                           TYPE_CLASS_BODY)
 
-COMBINED_DEFS = SUM_TYPE | RECORD_TYPE | OP_DEF | SIMPLE_DEF
+COMBINED_DEFS = SUM_TYPE | RECORD_TYPE | OP_DEF | NOMINAL_DEF
 
 # NAMING
 RECORD_DEF_BODY.setName("TypeDefinitionBody")
