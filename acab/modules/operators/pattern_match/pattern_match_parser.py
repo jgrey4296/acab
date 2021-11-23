@@ -21,7 +21,7 @@ import acab.core.parsing.parsers as PU
 from acab.core.data.production_abstractions import ProductionComponent
 
 def build_transform_component(toks):
-    component = ProductionComponent
+    component = ProductionComponent()
     # TODO construct pattern match component
     # Get head, set rebind
     # get body -> [(pattern, $val/transform)]
@@ -37,6 +37,7 @@ HOTLOAD_QUERY   = pp.Forward()
 
 MATCH_KW = s(pp.Keyword("match"))
 
+# TODO use indented block
 # Parser
 # TODO: catch module alias (eg: λPM.match $x -> ...)?
 head = MATCH_KW + HOTLOAD_VAR + ARROW + HOTLOAD_VAR + COLON + s(pp.lineEnd)

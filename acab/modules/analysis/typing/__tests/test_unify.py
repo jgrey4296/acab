@@ -189,15 +189,12 @@ class BasicUnifyTests(unittest.TestCase):
         self.assertEqual(ctx_r.y, "bloo")
 
 
-        # TODO test more
-
     def test_unify_fail(self):
         sen1 = dsl.parse_string("a.b.c")[0]
         sen2 = dsl.parse_string("d.b.c")[0]
 
         with self.assertRaises(TE.TypeUnifyException):
             ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
-
 
 
     def test_len_diff_true_sub(self):

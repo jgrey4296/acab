@@ -56,13 +56,14 @@ class TransformAbstraction(SI.AbstractionSemantics_i):
         for ctxIns in ctxs.active_list(clear=True):
             with MutableContextInstance(ctxs, ctxIns) as mutx:
                 for clause in transform.clauses:
-                    # this should all be replaceable with just: op = mutx[clause.op]
+                    # TODO this should all be replaceable with just: op = mutx[clause.op]
                     if clause.op in mutx:
                         op = mutx[clause.op]
                     elif isinstance(clause.op, ProductionOperator):
                         op = clause.op
                     else:
                         op = operators[clause.op]
+
                     params              = [mutx[x] for x in clause.params]
                     result              = op(*params, data=mutx.data)
                     mutx[clause.rebind] = result

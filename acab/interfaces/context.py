@@ -107,6 +107,8 @@ class ContextInstance_i(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def finish(self) -> CtxIns:
         """
-        # TODO rename this
+        TODO rename this
+        serves to return a new ctxins with a
+        mutable's bindings incorporated
         """
         pass

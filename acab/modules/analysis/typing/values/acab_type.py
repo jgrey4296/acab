@@ -13,6 +13,7 @@ config = AcabConfig.Get()
 
 class TypeStatement(AcabStatement):
     # TODO: change value to a config value
+
     def __init__(self, value="|∀σ|", **kwargs):
         super().__init__(value, **kwargs)
         self._path : 'Sentence'            = None

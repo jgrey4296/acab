@@ -37,7 +37,7 @@ Container  = AT.Container
 PStructure = AT.ProductionStructure
 
 
-# TODO should this be an interface?
+# FIXME this should be an interface
 @dataclass(frozen=True)
 class ProductionOperator(AcabValue):
     """ The Base Operator Class,

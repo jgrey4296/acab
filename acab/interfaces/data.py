@@ -63,6 +63,7 @@ class Node_i(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def key(self) -> str:
         pass
+
 # TODO factor 'root' out into AcabNodeStruct
 @dataclass
 class Structure_i(metaclass=abc.ABCMeta):

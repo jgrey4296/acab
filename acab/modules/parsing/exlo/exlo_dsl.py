@@ -30,7 +30,6 @@ class EXLO_Parser(DSL_Fragment_i):
     def assert_parsers(self, bootstrapper):
         """ Provide fragments for other parsers """
         # Core
-        # TODO: make this declarative in EXLO_parser *init*
         bootstrapper.add("word.valbind"                  , PU.VALBIND,
                          "word.constrained"              , FP.SEN_NO_MODAL,
                          "sentence"                      , FP.SENTENCE,

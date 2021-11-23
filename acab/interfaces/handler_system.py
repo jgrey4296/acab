@@ -29,7 +29,6 @@ Value            = AT.Value
 
 PASSTHROUGH      = "_"
 
-# TODO refactor handler -> responder?
 # TODO active and passive handlers?,
 # with ability to have multiples for each signal?
 @dataclass

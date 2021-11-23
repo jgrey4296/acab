@@ -20,8 +20,6 @@ QUERY_V     = config.prepare("Structure.Components", "QUERY")()
 TRANSFORM_V = config.prepare("Structure.Components", "TRANSFORM")()
 ACTION_V    = config.prepare("Structure.Components", "ACTION")()
 
-# TODO rule:
-
 class Trie_Rule_Parser_Tests(unittest.TestCase):
 
     @classmethod

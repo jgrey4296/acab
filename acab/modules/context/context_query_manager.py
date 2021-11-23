@@ -95,6 +95,7 @@ class ContextQueryManager:
         # collect bindings as necessary
         self.collect()
         # TODO handle exception
+        return False
 
 
     def __iter__(self):
@@ -113,7 +114,6 @@ class ContextQueryManager:
     @property
     def active(self) -> Iterator[Tuple[Value, CtxIns, Node]]:
         active_ctxs = self.ctxs.active_list(clear=True)
-        # TODO make this return the current word, bound
         for ctx in active_ctxs:
             self._current_inst = ctx
             bound_word = ctx[self._current_constraint.source]

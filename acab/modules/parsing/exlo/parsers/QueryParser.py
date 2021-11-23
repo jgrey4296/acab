@@ -24,8 +24,6 @@ logging = root_logger.getLogger(__name__)
 # TODO add syntax for binding a sentence
 # a.test.query..<$x?
 # a.test.query..<$x(::Rule)?
-# Core Query Chain
-# TODO this can simplify down to a param sen + extra
 #
 # For Custom non-standard form queries
 # eg: 1[a.b.$x]3?
@@ -36,8 +34,6 @@ HOTLOAD_QUERY_OP  = pp.Forward()
 assignment        = PU.BIND + COLON + SENTENCE
 assignmentList    = PU.DELIMIST(assignment, delim=COMMA)
 fallback          = DOUBLEBAR + assignmentList
-
-# TODO shift this to config
 
 # Build After comparison operators have been constructed:
 op_path = HOTLOAD_QUERY_OP | op_sentence

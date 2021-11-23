@@ -35,7 +35,7 @@ sen_head_negation.setParseAction(lambda x: ValueAnnotation(CDS.NEGATION, True))
 
 # Core = a. | b! | $a. | $b!....
 # Sentences are /SEN_WORD* (SEN_END | SEN_STATEMENT)/
-# TODO Semantic Hint operator
+# TODO explicit Semantic Hint operator?
 SEN_MACRO             = pp.Forward()
 SEN_HEAD              = BAD_HEADS + (PU.op(sen_head_negation) | HOTLOAD_SEN_HEADS)
 SEN_WORD              = PU.PARAM_CORE(annotations)
@@ -52,7 +52,7 @@ SENTENCE.setName("Sentence")
 SEN_PLURAL = PU.DELIMIST(SENTENCE, delim=DELIM)
 SEN_PLURAL.setName("Sentence Plural")
 
-# FIXME
+# FIXME sentence plural macro
 # SEN_MACRO_BODY     = IndentedBlock(SENTENCE)
 # # Statement to specify multiple sub sentences
 # SEN_MACRO        <<= PU.STATEMENT_CONSTRUCTOR(pp.Literal("::ζ"),

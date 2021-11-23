@@ -207,17 +207,3 @@ class TypeUnifyTests(unittest.TestCase):
         self.assertNotEqual(sen1c[-2].type, "_:blah.y")
 
 
-    @unittest.skip
-    def test_typing(self):
-        """
-        Typing:
-        Generate constraints
-        solve constraints with unification
-        """
-        # gamma = CtxIns({ 'x' : dsl.parse_string("blah")[0]})
-        gamma = CtxIns()
-        sen1 = dsl.parse_string("a.test(::$y).$x(::$y)")[0]
-        sen2 = dsl.parse_string("a.test(::bloo.blah).sentence(::bloo).other(::awef)")[0]
-
-        ctx_r = tuf.type_unify(sen1, sen2, CtxIns())
-        sen1c = tuf.typed_sen_logic.apply(sen1, ctx_r)

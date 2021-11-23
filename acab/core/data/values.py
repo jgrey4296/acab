@@ -171,9 +171,7 @@ class AcabValue(VI.Value_i, Generic[T]):
     @property
     @cache
     def type(self) -> Sen:
-        """ Lazily coerces description to Sentence """
-        # TODO ensure this type sentence is of type... "sentence.type"?
-        # to enable printing
+        """ Lazily coerces type description to Sentence """
         type_matches_t = isinstance(self.data[DS.TYPE_INSTANCE], Sentence)
         if type_matches_t:
             return self.data[DS.TYPE_INSTANCE]
@@ -182,6 +180,7 @@ class AcabValue(VI.Value_i, Generic[T]):
             self.data[DS.TYPE_INSTANCE] = self.data[DS.SEMANTIC_HINT]
         else:
             self.data[DS.TYPE_INSTANCE] = Sentence.build([self.data[DS.TYPE_INSTANCE]])
+
         return self.data[DS.TYPE_INSTANCE]
 
 

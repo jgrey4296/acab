@@ -94,7 +94,7 @@ class ContextSenBindQueryManager:
 
         # collect bindings as necessary
         self.collect()
-        # TODO handle exception
+        return False
 
 
     def __iter__(self):

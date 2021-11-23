@@ -60,32 +60,6 @@ def _focus_wrap_modal(PS, value, current):
 
     return current + [symbol]
 
-
-
-def _wrap_annotations(PS, value, current):
-    annotations = []
-
-    if value.data[DS.TYPE_INSTANCE] not in DSYM.OBVIOUS_TYPES_P:
-        # TODO lookup this:
-        # constraints.append("::")
-        constraints.append(value.data[DS.TYPE_INSTANCE])
-
-    # Get registered data annotations:
-    for x in REGISTERED_CONSTRAINTS:
-        if x in value.data:
-            if isinstance(value.data[x], list):
-                constraints += value.data[x]
-            else:
-                constraints.append(value.data[x])
-
-    # Print the constraints
-    if bool(constraints):
-        # TODO lookup this
-        # annotations = ["("] + annotations + [")"]
-        pass
-
-    return current + annotations
-
 def _maybe_wrap_rebind(PS, value, current):
     if value.rebind is None:
         return current
@@ -124,7 +98,10 @@ def _wrap_var_list(PS, value, current):
     if DS.PARAMS not in value:
         return current
 
-    return current + [DSYM.PARAM_WRAP] + value.data[DS.PARAMS] + [DSYM.PARAM_WRAP, DSYM.CONTAINER_JOIN_P]
+    return (current
+            + [DSYM.PARAM_WRAP]
+            + value.data[DS.PARAMS]
+            + [DSYM.PARAM_WRAP, DSYM.CONTAINER_JOIN_P])
 
 
 def _sep_list(PS, value, current, sep=" "):

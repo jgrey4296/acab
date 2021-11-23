@@ -178,8 +178,10 @@ class ContextInstance(CtxInt.ContextInstance_i):
         self.set_current_node(self.nodes[word.name])
         return self
 
-    def merge_with(self, var, instance_list):
-        # TODO
+    def merge_with(self, var, instance_list) -> CtxIns:
+        """
+        TODO Combine two CtxIns
+        """
         raise NotImplementedError()
         merged_instance = ContextInstance()
 
@@ -187,9 +189,10 @@ class ContextInstance(CtxInt.ContextInstance_i):
         return merged_instance
 
     def to_sentences(self):
+        """
+        TODO ctxins -> sentences
+        """
         raise NotImplementedError()
-
-
 
     def finish(self):
         return self
@@ -197,7 +200,7 @@ class ContextInstance(CtxInt.ContextInstance_i):
 @dataclass
 class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i):
 
-    # TODO make as a stack?
+    # TODO make operators a stack
     # operators are just the results of a prior query
     _operators           : CtxIns                 = field(default=None)
 
@@ -449,7 +452,9 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
 
 @dataclass(frozen=True)
 class NamedCtxSet:
-    """ A CtxInst for packaging continuations """
+    """ A Set for storing UUIDs of ctxinsts,
+    paired with some data about them
+    """
 
     instruction : ProductionContainer = field()
     uuids       : List[UUID]          = field()

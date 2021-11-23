@@ -123,7 +123,7 @@ ATOM.setParseAction(lambda s, l, t: (CDS.TYPE_BOTTOM_NAME, t[0]))
 STRING      = pp.dblQuotedString
 # Remove quotes from around strings:
 STRING.setParseAction(pp.removeQuotes)
-STRING.addParseAction(lambda toks: (CDS.STRING_PRIM, toks[0]))
+STRING.addParseAction(lambda s, l, t: (CDS.STRING_PRIM, t[0]))
 
 # TODO add re.RegexFlag 's to parser: g and i
 REGEX       = pp.Regex(r'/.+?/')

@@ -18,7 +18,7 @@ from acab.core.parsing import debug_funcs as DBF
 logging = root_logger.getLogger(__name__)
 
 # TODO shift this into config
-SPLIT_RE = re.compile("[ .!?/]")
+SPLIT_RE         = re.compile("[ .!?/]")
 ModuleComponents = "ModuleComponents"
 
 @register

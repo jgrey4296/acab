@@ -68,6 +68,7 @@ class ConstraintCollection(CtxInt.Constraint_i):
 
 
     def test(self, node, ctx):
+        # TODO for key in self._test_order:...
         # run alpha tests
         if "alpha" in self._test_mappings:
             self.__run_alphas(node)
