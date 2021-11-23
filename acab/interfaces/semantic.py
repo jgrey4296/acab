@@ -8,7 +8,7 @@ And reduce those internal formats back down to basic sentences.
 SemanticMap also provide the ability to map a value or node to particular semantics,
 and specifies *how* to search for the correct mapping.
 
-Meanwhile IndependentSemantics_i are concerned only with the values and structures they have control over.
+Meanwhile ValueSemantics_i are concerned only with the values and structures they have control over.
 
 *Dependent* Semantics factor in contexts and a reference to the engine.
 
@@ -32,57 +32,57 @@ from acab.error.print_exception import AcabPrintException
 from acab.error.semantic_exception import AcabSemanticException
 
 
-Value                  = AT.Value
-Sentence               = AT.Sentence
-Statement              = AT.Statement
-Structure              = AT.DataStructure
-Node                   = AT.Node
-Engine                 = AT.Engine
-CtxSet                 = AT.CtxSet
-CtxIns                 = AT.CtxIns
-Handler                = AT.Handler
-ProductionOperator     = AT.Operator
-ModuleComponents       = AT.ModuleComponents
-DependentSemantics     = AT.DependentSemantics
-IndependentSemantics   = AT.IndependentSemantics
-AbstractionSemantics   = AT.AbstractionSemantics
-InDepSemantics         = AT.IndependentSemantics
-AbsDepSemantics        = Union[AbstractionSemantics, DependentSemantics]
-SemanticSystem         = AT.SemanticSystem
-# Note: for dependent and indep, you retrieve semantics of a node,
-# for *abstractions*, you're getting the semantics of a *sentence*
+Value                = AT.Value
+Sentence             = AT.Sentence
+Statement            = AT.Statement
+Structure            = AT.DataStructure
+Node                 = AT.Node
+Engine               = AT.Engine
+CtxSet               = AT.CtxSet
+CtxIns               = AT.CtxIns
+Handler              = AT.Handler
+ProductionOperator   = AT.Operator
+ModuleComponents     = AT.ModuleComponents
+StructureSemantics   = AT.StructureSemantics
+ValueSemantics       = AT.ValueSemantics
+StatementSemantics   = AT.StatementSemantics
+AbsDepSemantics      = Union[StatementSemantics, StructureSemantics]
+SemanticSystem       = AT.SemanticSystem
+
+# Note: for struct and value, you handle nodes,
+# for *abstractions*, you're handle *sentence*s
 #--------------------------------------------------
 @dataclass
 class Semantic_Fragment(metaclass=abc.ABCMeta):
     """ Dataclass of Semantic Handlers to be added to the system, and any
-    structs they require
+    data they require
     """
-    dependent   : List[DependentSemantics]   = field(default_factory=list)
-    independent : List[IndependentSemantics] = field(default_factory=list)
-    abstraction : List[AbstractionSemantics] = field(default_factory=list)
-    structs     : List[Structure]            = field(default_factory=list)
+    structure   : List[StructureSemantics]   = field(default_factory=list)
+    value       : List[ValueSemantics] = field(default_factory=list)
+    statement   : List[StatementSemantics] = field(default_factory=list)
+    data        : List[Structure]            = field(default_factory=list)
 
     def __len__(self):
         counts = 0
-        counts += len(self.dependent)
-        counts += len(self.independent)
-        counts += len(self.abstraction)
-        counts += len(self.structs)
+        counts += len(self.structure)
+        counts += len(self.value)
+        counts += len(self.statement)
+        counts += len(self.data)
         return counts
 
     def __repr__(self):
-        dep     = len(self.dependent)
-        indep   = len(self.independent)
-        abstr   = len(self.abstraction)
-        structs = len(self.structs)
+        struct    = len(self.structure)
+        value     = len(self.value)
+        statement = len(self.statement)
+        data      = len(self.data)
 
-        return f"(Semantic Fragment: {dep} Dependent, {indep} Independent, {abstr} Abstractions, {structs} Structures)"
+        return f"(Semantic Fragment: {struct} Structure, {value} Value, {statement} Statement Semantics, {data} Data Structures)"
 
 #----------------------------------------
 @dataclass
 class SemanticSystem_i(HandlerSystem_i):
     """
-    Map Instructions to Abstraction/Dependent Semantics
+    Map Instructions to Statement/Structure Semantics
     """
     # TODO possibly re-add hooks / failure handling
     # TODO add a system specific logging handler
@@ -125,18 +125,18 @@ class SemanticSystem_i(HandlerSystem_i):
         semantics = [y for x in mods for y in x.semantics]
         assert(all([isinstance(x, Semantic_Fragment) for x in semantics]))
         for sem in semantics:
-            [self._register_handler(x) for x in sem.dependent]
-            [self._register_handler(x) for x in sem.independent]
-            [self._register_handler(x) for x in sem.abstraction]
-            [self._register_struct(x) for x in sem.structs]
+            [self._register_handler(x) for x in sem.structure]
+            [self._register_handler(x) for x in sem.value]
+            [self._register_handler(x) for x in sem.statement]
+            [self._register_struct(x) for x in sem.data]
 
 
 
 @dataclass
-class DependentSemantics_i(HandlerComponent_i, SemanticSystem_i):
+class StructureSemantics_i(HandlerComponent_i, SemanticSystem_i):
     """
     Dependent Semantics rely on the context they are called in to function
-    and are built with specific mappings to independent semantics
+    and are built with specific mappings to value semantics
     """
 
     def __repr__(self):
@@ -170,7 +170,7 @@ class DependentSemantics_i(HandlerComponent_i, SemanticSystem_i):
         pass
 
 
-class IndependentSemantics_i(HandlerComponent_i):
+class ValueSemantics_i(HandlerComponent_i):
     """
     Independent Semantics which operate on values and nodes, without
     requiring access to larger context, or engine access
@@ -206,7 +206,7 @@ class IndependentSemantics_i(HandlerComponent_i):
         pass
 
 
-class AbstractionSemantics_i(HandlerComponent_i):
+class StatementSemantics_i(HandlerComponent_i):
     """
     Semantics of Higher level abstractions
     eg: Rules, Layers, Pipelines...

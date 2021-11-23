@@ -21,7 +21,7 @@ CtxIns = AT.CtxIns
 
 
 
-class SenQuerySemantics(SI.AbstractionSemantics_i):
+class SenQuerySemantics(SI.StatementSemantics_i):
     """
     For When querying:
     a.b.$x(::$y)?

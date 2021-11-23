@@ -34,13 +34,13 @@ Value         = AT.Value
 Structure     = AT.DataStructure
 Engine        = AT.Engine
 CtxSet        = AT.CtxSet
-InDep         = AT.IndependentSemantics
-Dep           = AT.DependentSemantics
+ValSem        = AT.ValueSemantics
+StructSem     = AT.StructureSemantics
 Handler       = AT.Handler
 
 # Dependent Semantics
 @dataclass
-class WalkTrieSemantics(SI.AbstractionSemantics_i):
+class WalkTrieSemantics(SI.StatementSemantics_i):
     """
     Instruction for walking all nodes in a struct,
     instruction specifies rules to run on each node
@@ -75,8 +75,8 @@ class WalkTrieSemantics(SI.AbstractionSemantics_i):
         with an optional @var at the head, rest are constraints
 
         """
-        default: Handler[Dep] = semsys.lookup()
-        nodesem: InDep        = default.func.lookup().func
+        default: Handler[StructSem] = semsys.lookup()
+        nodesem: ValSem             = default.func.lookup().func
 
         with ContextWalkManager(walk_spec, default.struct.root, ctxs) as cwm:
             for queue in cwm.active:
@@ -100,9 +100,9 @@ class WalkTrieSemantics(SI.AbstractionSemantics_i):
         from @target, dfs the trie below, running $ruleset on each node
 
         """
-        default : Handler[Dep] = semsys.lookup()
-        nodesem : InDep        = default.func.lookup().func
-        found   : Set[UUID]    = set()
+        default : Handler[StructSem] = semsys.lookup()
+        nodesem : ValSem             = default.func.lookup().func
+        found   : Set[UUID]          = set()
 
         with ContextWalkManager(walk_spec, default.struct.root, ctxs) as cwm:
             for queue in cwm.active:

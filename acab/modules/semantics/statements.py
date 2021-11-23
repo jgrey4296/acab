@@ -19,7 +19,7 @@ from acab.modules.semantics.util import SemanticBreakpointDecorator
 CtxIns = AT.CtxIns
 
 # Primary Abstractions:
-class QueryAbstraction(SI.AbstractionSemantics_i):
+class QueryAbstraction(SI.StatementSemantics_i):
     """
     Very simply accumulate results of multiple sentences of queries
     """
@@ -31,7 +31,7 @@ class QueryAbstraction(SI.AbstractionSemantics_i):
         for clause in query.clauses:
             sem.query(clause, struct, data=data, ctxs=ctxs)
 
-class QueryPlusAbstraction(SI.AbstractionSemantics_i):
+class QueryPlusAbstraction(SI.StatementSemantics_i):
     """ A Query abstraction that can handle expanded query semantics.
     Eg: Walkers
     """
@@ -46,7 +46,7 @@ class QueryPlusAbstraction(SI.AbstractionSemantics_i):
             sem(clause, struct, data=data, ctxs=ctxs)
 
 
-class TransformAbstraction(SI.AbstractionSemantics_i):
+class TransformAbstraction(SI.StatementSemantics_i):
     """ Takes a context, returns a changed context """
     @SemanticBreakpointDecorator
     def __call__(self, instruction, semSys, ctxs=None, data=None):
@@ -68,7 +68,7 @@ class TransformAbstraction(SI.AbstractionSemantics_i):
                     result              = op(*params, data=mutx.data)
                     mutx[clause.rebind] = result
 
-class ActionAbstraction(SI.AbstractionSemantics_i):
+class ActionAbstraction(SI.StatementSemantics_i):
     """ *Consumes* a context, performing all actions in it """
 
     @SemanticBreakpointDecorator
@@ -90,7 +90,7 @@ class ActionAbstraction(SI.AbstractionSemantics_i):
 
 
 
-class AtomicRuleAbstraction(SI.AbstractionSemantics_i):
+class AtomicRuleAbstraction(SI.StatementSemantics_i):
     """ Run a rule in a single semantic call """
 
     @RunInSubCtxSet
@@ -112,7 +112,7 @@ class AtomicRuleAbstraction(SI.AbstractionSemantics_i):
         if DS.ACTION_COMPONENT in rule:
             semsys(rule[DS.ACTION_COMPONENT], ctxs=ctxs)
 
-class ProxyRuleAbstraction(SI.AbstractionSemantics_i):
+class ProxyRuleAbstraction(SI.StatementSemantics_i):
     """ Run a rules queries, then return ctxs bound
     with transform+action continuation """
 
@@ -153,7 +153,7 @@ class ProxyRuleAbstraction(SI.AbstractionSemantics_i):
 
 
 # Secondary Abstractions:
-class LayerAbstraction(SI.AbstractionSemantics_i):
+class LayerAbstraction(SI.StatementSemantics_i):
     """ A Layer of rules.
     ie: Query for rules.
     Select rules to run.
@@ -178,7 +178,7 @@ class LayerAbstraction(SI.AbstractionSemantics_i):
         if DS.ACTION_COMPONENT in layer:
             semsys.run(layer[DS.ACTION_COMPONENT], ctxs=ctxs)
 
-class AgendaAbstraction(SI.AbstractionSemantics_i):
+class AgendaAbstraction(SI.StatementSemantics_i):
     """ A Layer-specific transform, to run operators on ctxs """
     def __call__(self, instruction, semsys, ctxs=None, data=None):
         """ Runs an agenda rule on activated rules """
@@ -192,7 +192,7 @@ class AgendaAbstraction(SI.AbstractionSemantics_i):
 
 
 
-class AtomicPipelineAbstraction(SI.AbstractionSemantics_i):
+class AtomicPipelineAbstraction(SI.StatementSemantics_i):
     """ A Means of sequencing layers, run all layers per tick """
 
     def __call__(self, instruction, semsys, ctxs=None, data=None):
@@ -206,7 +206,7 @@ class AtomicPipelineAbstraction(SI.AbstractionSemantics_i):
 
         raise NotImplementedError()
 
-class TemporalPipelineAbstraction(SI.AbstractionSemantics_i):
+class TemporalPipelineAbstraction(SI.StatementSemantics_i):
     """ A Means of sequencing layers, one layer per tick """
 
     def __call__(self, instruction, semsys, ctxs=None, data=None):
@@ -219,7 +219,7 @@ class TemporalPipelineAbstraction(SI.AbstractionSemantics_i):
 
         raise NotImplementedError()
 
-class ContainerAbstraction(SI.AbstractionSemantics_i):
+class ContainerAbstraction(SI.StatementSemantics_i):
     def __call__(self, instruction, semsys, ctxs=None, data=None):
         """ Apply the clauses in one move """
         for x in instruction.clauses:

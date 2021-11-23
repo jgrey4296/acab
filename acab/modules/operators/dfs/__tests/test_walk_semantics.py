@@ -15,8 +15,8 @@ config = acab.setup()
 
 from acab.modules.operators.dfs.walk_semantics import WalkTrieSemantics
 from acab.modules.semantics.basic_system import BasicSemanticSystem
-from acab.modules.semantics.independent import ExclusionNodeSemantics
-from acab.modules.semantics.abstractions import QueryPlusAbstraction
+from acab.modules.semantics.values import ExclusionNodeSemantics
+from acab.modules.semantics.statements import QueryPlusAbstraction
 from acab.modules.engines.configured import exlo
 from acab.core.data.production_abstractions import ProductionComponent, ProductionContainer
 from acab.core.data.values import Sentence, AcabValue

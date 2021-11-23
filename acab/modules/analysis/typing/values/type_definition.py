@@ -40,8 +40,6 @@ class TypeDefinition(TypeStatement):
 
         self.data[TYPE_INSTANCE_S] = TYPE_DEFINITION
 
-        self.unify_structure_variables()
-
     @property
     def structure(self):
         return self.value

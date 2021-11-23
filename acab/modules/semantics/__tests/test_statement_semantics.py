@@ -13,7 +13,7 @@ import acab
 
 config = acab.setup()
 
-import acab.modules.semantics.abstractions as ASem
+import acab.modules.semantics.statements as ASem
 from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.data.node import AcabNode
 from acab.core.data.production_abstractions import (ActionOperator,
@@ -25,8 +25,8 @@ from acab.core.data.values import AcabValue, Sentence
 from acab.core.decorators.semantic import (OperatorArgUnWrap,
                                                OperatorResultWrap)
 from acab.interfaces.handler_system import Handler
-from acab.interfaces.semantic import (AbstractionSemantics_i,
-                                               SemanticSystem_i)
+from acab.interfaces.semantic import (StatementSemantics_i,
+                                      SemanticSystem_i)
 from acab.error.acab_exception import AcabException
 from acab.error.semantic_exception import AcabSemanticException
 from acab.modules.context import context_delayed_actions
@@ -36,8 +36,8 @@ from acab.modules.operators.query.query_operators import EQ, NEQ, HasTag
 from acab.modules.operators.transform.transform_operators import RegexOp
 from acab.modules.semantics.basic_system import BasicSemanticSystem
 from acab.modules.structures.trie.trie_semantics import BreadthTrieSemantics
-from acab.modules.semantics.independent import (BasicNodeSemantics,
-                                                ExclusionNodeSemantics)
+from acab.modules.semantics.values import (BasicNodeSemantics,
+                                           ExclusionNodeSemantics)
 
 EXOP         = config.prepare("MODAL", "exop")()
 EXOP_enum    = config.prepare(EXOP, as_enum=True)()
@@ -63,7 +63,7 @@ PIPELINE_SEM_HINT  = Sentence.build([config.prepare("SEMANTICS", "PIPELINE")()])
 
 # TODO test verify
 
-class AbstractionSemanticTests(unittest.TestCase):
+class StatementSemanticTests(unittest.TestCase):
     def test_transform(self):
         """ Check transforms semantics work """
         sem                                 = ASem.TransformAbstraction()
@@ -167,7 +167,7 @@ class AbstractionSemanticTests(unittest.TestCase):
             def __call__(self, *params, data=None, semSystem=None):
                 side_effect_obj['a'] = params[0]
 
-        class StubAbsSemantic(AbstractionSemantics_i):
+        class StubAbsSemantic(StatementSemantics_i):
             def __call__(self, ins, semSys, ctxs=None, data=None):
                 raise AcabException("TestAbsSem called")
 
@@ -229,7 +229,7 @@ class AbstractionSemanticTests(unittest.TestCase):
             def __call__(self, *params, data=None, semSystem=None):
                 side_effect_obj['a'] = params[0]
 
-        class StubAbsSemantic(AbstractionSemantics_i):
+        class StubAbsSemantic(StatementSemantics_i):
             def __call__(self, ins, semSys, ctxs=None, data=None):
                 raise AcabException("TestAbsSem called", rest=[str(ins), data])
 
@@ -307,7 +307,7 @@ class AbstractionSemanticTests(unittest.TestCase):
             def __call__(self, *params, data=None, semSystem=None):
                 side_effect_obj['a'] = params[0]
 
-        class StubAbsSemantic(AbstractionSemantics_i):
+        class StubAbsSemantic(StatementSemantics_i):
             def __call__(self, ins, semSys, ctxs=None, data=None):
                 raise AcabException("TestAbsSem called", rest=[str(ins), data])
 

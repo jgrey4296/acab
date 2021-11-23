@@ -27,7 +27,7 @@ from acab.interfaces.dsl import Bootstrapper_i
 from acab.interfaces.handler_system import Handler
 from acab.modules.context.context_set import ContextSet
 from acab.modules.structures.trie.trie_semantics import BreadthTrieSemantics
-from acab.modules.semantics.independent import BasicNodeSemantics
+from acab.modules.semantics.values import BasicNodeSemantics
 
 logging = root_logger.getLogger(__name__)
 config = GET()

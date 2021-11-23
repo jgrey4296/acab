@@ -23,9 +23,7 @@ Engine        = 'Engine'
 Contexts      = 'Contexts'
 
 
-# TODO RDFSemantics, ReteSemantics
-# Dependent Semantics
-class FSMSemantics(SI.DependentSemantics_i):
+class FSMSemantics(SI.StructureSemantics_i):
 
     def insert(self, struct, sen, data=None, ctxs=None):
         """
@@ -140,7 +138,7 @@ class FSMSemantics(SI.DependentSemantics_i):
         raise NotImplementedError()
 
 
-class ASPSemantics(SI.DependentSemantics_i):
+class ASPSemantics(SI.StructureSemantics_i):
     """
     Stub for passing assertions and queries into an ASP program
     """
@@ -165,7 +163,7 @@ class ASPSemantics(SI.DependentSemantics_i):
 
 
 
-class DepthTrieSemantics(SI.DependentSemantics_i):
+class DepthTrieSemantics(SI.StructureSemantics_i):
     """
     Trie Semantics which map values -> Nodes
     Searches *Depth First*
@@ -199,7 +197,7 @@ class DepthTrieSemantics(SI.DependentSemantics_i):
         current = struct.root
 
         for word in sen:
-            # Get independent semantics for current
+            # Get value semantics for current
             semantics, _ = self.lookup(current)
             accessed = semantics.access(current, word, data)
             if bool(accessed):

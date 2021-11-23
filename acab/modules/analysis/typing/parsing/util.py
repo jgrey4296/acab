@@ -22,14 +22,15 @@ def make_simple_def(toks):
     return type_def
 
 def make_record_def(toks):
-    # TODO check only atoms and typedefs are in body
+    # check only atoms and typedefs are in body
     assert(all([isinstance(x, Sentence) for x in toks[:]]))
     type_def = TypeDefinition(None, toks[:])
     return type_def
 
 def make_sum_def(toks):
-    # TODO assert all toks are sentences of atoms or type defs
-    assert(all([isinstance(x, (Sentence, TypeDefinition)) for x in toks[:]]))
+    # assert all toks are sentences of atoms or type defs
+    assert(all([isinstance(x, Sentence) for x in toks[:]]))
+    assert(all([isinstance(x[-1], TypeDefinition) for x in toks[:]]))
     sum_def = SumTypeDefinition(None, toks[:])
     return sum_def
 

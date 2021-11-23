@@ -11,7 +11,7 @@ from acab.core.config.config import AcabConfig
 from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.data.values import AcabStatement, Sentence
 from acab.core.decorators.util import HandleSignal
-from acab.interfaces.semantic import AbstractionSemantics_i
+from acab.interfaces.semantic import StatementSemantics_i
 from acab.interfaces.value import Sentence_i
 from acab.modules.analysis.type_cqm import TypeContextQueryManager
 
@@ -26,7 +26,7 @@ Engine        = AT.Engine
 Contexts      = AT.CtxSet
 
 @HandleSignal("_:TYPE_CHECK")
-class TypeSemantics(AbstractionSemantics_i):
+class TypeSemantics(StatementSemantics_i):
     """
     Abstract Semantics for typechecking
 

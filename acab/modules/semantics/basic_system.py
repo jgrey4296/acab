@@ -10,8 +10,8 @@ from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.core.decorators.semantic import (BuildCtxSetIfMissing,
                                                RunDelayedCtxSetActions)
-from acab.interfaces.semantic import (AbstractionSemantics_i,
-                                               SemanticSystem_i)
+from acab.interfaces.semantic import (StatementSemantics_i,
+                                      SemanticSystem_i)
 from acab.error.semantic_exception import AcabSemanticException
 from acab.modules.context.context_set import ContextSet
 
@@ -65,8 +65,8 @@ class BasicSemanticSystem(SemanticSystem_i):
             logging.debug(f"Firing Semantics: {semantics}")
             # TODO entry hooks would go here.
 
-            # Dependent's use a reference to a struct
-            # Abstractions use a reference to the sem system in place of a struct
+            # StructSems's use a reference to a struct
+            # StatementSems use a reference to the sem system in place of a struct
             if struct is None:
                 struct = self
 

@@ -36,7 +36,7 @@ from acab.core.config.config import AcabConfig
 
 from acab.core.parsing import parsers as PU
 from acab.core.parsing.consts import N, NG, AGENDA_HEAD
-from acab.core.parsing.funcs import make_agenda
+from acab.modules.structures.pipline.constructors import make_agenda
 
 logging = root_logger.getLogger(__name__)
 

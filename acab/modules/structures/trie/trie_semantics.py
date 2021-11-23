@@ -22,8 +22,7 @@ Engine        = AT.Engine
 Contexts      = AT.CtxSet
 
 
-# Dependent Semantics
-class BreadthTrieSemantics(SI.DependentSemantics_i):
+class BreadthTrieSemantics(SI.StructureSemantics_i):
     """
     Trie Semantics which map values -> Nodes
     Searches *Breadth First*

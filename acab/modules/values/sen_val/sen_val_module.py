@@ -24,7 +24,7 @@ logging = root_logger.getLogger(__name__)
 config = GET()
 WALK_SEM_HINT    = Sentence.build([config.prepare("Module.DFSWalk", "WALK_QUERY_HINT")()])
 
-Sen_Val_Frag = Semantic_Fragment(abstraction=[SenQuerySemantics().as_handler(WALK_SEM_HINT)])
+Sen_Val_Frag = Semantic_Fragment(statement=[SenQuerySemantics().as_handler(WALK_SEM_HINT)])
 
 class SenVal_Parser(DSL_Fragment_i):
     """  """

@@ -20,7 +20,7 @@ from acab.core.data.node import AcabNode
 from acab.modules.structures.trie.trie import Trie
 from acab.core.data.acab_struct import AcabStruct
 from acab.interfaces.data import Structure_i
-from acab.interfaces.semantic import IndependentSemantics
+from acab.interfaces.semantic import ValueSemantics
 from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
 
 from acab.core.data import production_abstractions as PA
@@ -381,7 +381,7 @@ class TopologicalOrderedAcabTests(unittest.TestCase):
     def test_node_semantic_creation(self):
         """ Test basic node semantic actions """
         node_sem = BasicNodeSemantics()
-        self.assertIsInstance(node_sem, IndependentSemantics)
+        self.assertIsInstance(node_sem, ValueSemantics)
 
 
     def test_basic_node(self):

@@ -37,7 +37,7 @@ Value    = AT.Value
 T        = TypeVar('T')
 
 # Independent Semantics
-class BasicNodeSemantics(SI.IndependentSemantics_i):
+class BasicNodeSemantics(SI.ValueSemantics_i):
 
     def make(self, val, data=None) -> Node:
         return self.up(AcabNode(val), data)
@@ -74,7 +74,7 @@ class BasicNodeSemantics(SI.IndependentSemantics_i):
 
         return node.remove_child(to_delete)
 
-class ExclusionNodeSemantics(SI.IndependentSemantics_i):
+class ExclusionNodeSemantics(SI.ValueSemantics_i):
     def make(self, val, data=None) -> AcabNode:
         return self.up(AcabNode(val), data)
 

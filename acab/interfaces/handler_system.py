@@ -56,7 +56,7 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
     def __post_init__(self, init_handlers, sieve_fns):
         # TODO handle overriding
         # TODO init any semantics or structs passed in as Class's
-        # TODO check depsem -> struct compabilities
+        # TODO check struct sem -> struct compabilities
         # by running dependent.compatible(struct)
         # use default sieve if sieve is empty
         if not bool(sieve_fns):

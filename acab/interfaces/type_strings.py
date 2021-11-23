@@ -26,13 +26,10 @@ ProductionStructure  = "acab.core.data.production_abstractions.ProductionStructu
 ModuleComponents     = "acab.core.data.interfaces.module_loader.ModuleComponents"
 
 # Semantics
-# TODO abstraction sem -> statement sem
-# TODO dependent sem   -> structure sem
-# TODO independent sem -> value sem
 Semantic_Fragment    = "acab.interfaces.semantic.Semantic_Fragment"
-DependentSemantics   = "acab.interfaces.semantic.DependentSemantics_i"
-AbstractionSemantics = "acab.interfaces.semantic.AbstractionSemantics_i"
-IndependentSemantics = "acab.interfaces.semantic.IndependentSemantics_i"
+StructureSemantics   = "acab.interfaces.semantic.StructureSemantics_i"
+StatementSemantics   = "acab.interfaces.semantic.StatementSemantics_i"
+ValueSemantics       = "acab.interfaces.semantic.ValueSemantics_i"
 PrintSemantics       = "acab.interfaces.printing.PrintSemantics_i"
 
 SemanticSystem       = "acab.interfaces.semantic.SemanticSystem_i"

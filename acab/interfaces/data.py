@@ -13,7 +13,6 @@ from acab import types as AT
 Value              = AT.Value
 Node               = AT.Node
 Structure          = AT.DataStructure
-DependentSemantics = AT.DependentSemantics
 
 @dataclass
 class Node_i(metaclass=abc.ABCMeta):
