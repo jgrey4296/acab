@@ -123,8 +123,3 @@ class BreadthTrieSemantics(SI.DependentSemantics_i):
                 result_list.append(Sentence.build(words))
 
         return result_list
-
-
-
-
-

@@ -20,7 +20,7 @@ from acab.interfaces.handler_system import Handler
 from acab.modules.operators.query.query_operators import EQ
 from acab.modules.context.context_set import (ConstraintCollection,
                                               ContextInstance, ContextSet)
-from acab.modules.semantics.dependent import BreadthTrieSemantics
+from acab.modules.structures.trie.trie_semantics import BreadthTrieSemantics
 from acab.modules.semantics.independent import (BasicNodeSemantics,
                                                 ExclusionNodeSemantics)
 
