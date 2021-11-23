@@ -145,6 +145,8 @@ class AcabValue(VI.Value_i, Generic[T]):
             return True
         elif isinstance(other, str):
             return str(self) == other
+        elif isinstance(other, UUID):
+            return self.uuid == other
         elif not isinstance(other, VI.Value_i):
             return False
         elif self.uuid == other.uuid:
