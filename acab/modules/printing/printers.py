@@ -130,7 +130,7 @@ class AnnotationPrinter(PrintSemantics_i):
         annotations_pp = []
         for annotation in annotations_in_value:
             signal = f"_:{annotation}"
-            if signal in top.handlers:
+            if signal in top:
                 annotations_pp.append(top.pprint(top.override(signal, value)))
             else:
                 annotations_pp.append(top.pprint(value.data[annotation]))

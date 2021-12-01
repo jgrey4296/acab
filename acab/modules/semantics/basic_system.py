@@ -40,7 +40,6 @@ class BasicSemanticSystem(SemanticSystem_i):
 
     ctx_set : CtxSet = field(default=ContextSet)
 
-
     @BuildCtxSetIfMissing
     @RunDelayedCtxSetActions
     def __call__(self, *instructions:List[Sentence],
@@ -59,10 +58,11 @@ class BasicSemanticSystem(SemanticSystem_i):
 
     def run_instruction(self, instruction, ctxs=None) -> Any:
         try:
-            data = {}
-            semantics, struct = self.lookup(instruction)
-            assert(semantics is not None)
-            logging.debug(f"Firing Semantics: {semantics}")
+            data   = {}
+            spec   = self.lookup(instruction)
+            struct = spec.registered_struct
+            assert(spec is not None)
+            logging.debug(f"Firing Semantics: {spec}")
             # TODO entry hooks would go here.
 
             # StructSems's use a reference to a struct
@@ -74,7 +74,7 @@ class BasicSemanticSystem(SemanticSystem_i):
                 data.update(instruction.data)
                 instruction = instruction.value
 
-            semantics(instruction, struct, ctxs=ctxs, data=data)
+            spec[0](instruction, struct, ctxs=ctxs, data=data)
 
         except AcabSemanticException as err:
             # Semantic exceptions can be handled,
@@ -94,6 +94,6 @@ class BasicSemanticSystem(SemanticSystem_i):
     def __repr__(self):
         ops = ""
         if bool(self._operator_cache):
-            ops = f", {len(self._operator_cache)} operators"
+            ops = f", operators={len(self._operator_cache)}"
 
-        return f"({self.__class__.__name__}: {len(self.handlers)} handlers, {len(self.sieve)} sieves{ops})"
+        return f"{self.__class__.__name__}(handlers={len(self.handler_specs)}, sieve={len(self.sieve)}{ops})"

@@ -15,6 +15,7 @@ from acab.modules.semantics.basic_system import BasicSemanticSystem
 from acab.modules.structures.trie.trie_semantics import BreadthTrieSemantics
 from acab.modules.semantics.values import (BasicNodeSemantics,
                                                 ExclusionNodeSemantics)
+from acab.interfaces import semantic as SI
 
 config = GET()
 
@@ -26,10 +27,16 @@ AGENDA_SEM_HINT    = Sentence.build([config.prepare("SEMANTICS", "AGENDA")()])
 LAYER_SEM_HINT     = Sentence.build([config.prepare("SEMANTICS", "LAYER")()])
 PIPELINE_SEM_HINT  = Sentence.build([config.prepare("SEMANTICS", "PIPELINE")()])
 
+def DEFAULT_TRIE_SPEC(name="_:trie"):
+    node_spec   = BasicSemanticSystem.Spec("_:atom").spec_from(SI.ValueSemantics_i)
+    trie_spec   = BasicSemanticSystem.Spec(name).spec_from(SI.StructureSemantics_i)
+
+    return node_spec, trie_spec
+
 def DEFAULT_TRIE(name="_:trie"):
-    node_sem    = BasicNodeSemantics("_:node")
-    trie_sem    = BreadthTrieSemantics(name, default=(node_sem, None),
-                                       handlers=[], structs=[])
+    node_sem    = BasicNodeSemantics("_:atom")
+    trie_sem    = BreadthTrieSemantics(name,
+                                       init_handlers=[node_sem.as_handler("_:_default")])
 
     trie_struct = BasicNodeStruct.build_default(name)
-    return (trie_sem, trie_struct)
+    return (node_sem, trie_sem, trie_struct)

@@ -27,9 +27,10 @@ class QueryAbstraction(SI.StatementSemantics_i):
     def __call__(self, instruction, semSys, ctxs=None, data=None):
         query = instruction
         # Get the default dependent semantics
-        sem, struct = semSys.lookup()
+        spec = semSys.lookup()
+        struct = spec.registered_struct
         for clause in query.clauses:
-            sem.query(clause, struct, data=data, ctxs=ctxs)
+            spec[0].query(clause, struct, data=data, ctxs=ctxs)
 
 class QueryPlusAbstraction(SI.StatementSemantics_i):
     """ A Query abstraction that can handle expanded query semantics.
@@ -39,11 +40,12 @@ class QueryPlusAbstraction(SI.StatementSemantics_i):
     def __call__(self, instruction, semSys, ctxs=None, data=None):
         query = instruction
         for clause in query.clauses:
-            sem, struct = semSys.lookup(clause)
+            spec = semSys.lookup(clause)
+            struct = spec.registered_struct
             if struct is None:
                 struct = semSys
 
-            sem(clause, struct, data=data, ctxs=ctxs)
+            spec[0](clause, struct, data=data, ctxs=ctxs)
 
 
 class TransformAbstraction(SI.StatementSemantics_i):

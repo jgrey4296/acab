@@ -28,8 +28,7 @@ PIPELINE_SEM_HINT  = Sentence.build([config.prepare("SEMANTICS", "PIPELINE")()])
 
 def DEFAULT_TRIE(name="_:trie"):
     node_sem    = BasicNodeSemantics("_:node")
-    trie_sem    = BreadthTrieSemantics(name, default=(node_sem, None),
-                                       handlers=[], structs=[])
+    trie_sem    = BreadthTrieSemantics(name, init_handlers=[node_sem.as_handler("_:_default")])
 
     trie_struct = BasicNodeStruct.build_default(name)
     return (trie_sem, trie_struct)

@@ -43,4 +43,4 @@ class BasicPrinter(PrintSystem_i):
     ]
 
     def __repr__(self):
-        return f"({self.__class__.__name__}: {len(self.handlers)} handlers, {len(self.sieve)} sieves)"
+        return f"({self.__class__.__name__}: {len(self.handler_specs)} handlers, {len(self.sieve)} sieves)"

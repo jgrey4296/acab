@@ -7,7 +7,8 @@ from . import dfs_op_parser as DOP
 from .walk_semantics import WalkTrieSemantics
 from .dfs_printer import DFSSenPrinter
 
-DFS_Sem_Frag = Semantic_Fragment(statement=[WalkTrieSemantics().as_handler()])
+# TODO dfs spec
+DFS_Sem_Frag = Semantic_Fragment(specs=[], statement=[WalkTrieSemantics().as_handler()])
 
 
 class DFSQueryDSL(DSL_Fragment_i):

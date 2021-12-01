@@ -26,7 +26,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 logging = root_logger.getLogger(__name__)
 from acab import types as AT
 from acab.core.data.default_structure import QUERY
-from acab.interfaces.handler_system import HandlerSystem_i, Handler, HandlerComponent_i
+from acab.interfaces.handler_system import HandlerSystem_i, Handler, HandlerComponent_i, HandlerSpec
 from acab.interfaces.value import Sentence_i, Value_i
 from acab.error.print_exception import AcabPrintException
 from acab.error.semantic_exception import AcabSemanticException
@@ -52,15 +52,17 @@ SemanticSystem       = AT.SemanticSystem
 # Note: for struct and value, you handle nodes,
 # for *abstractions*, you're handle *sentence*s
 #--------------------------------------------------
+# TODO convert this to a spec?
 @dataclass
 class Semantic_Fragment(metaclass=abc.ABCMeta):
     """ Dataclass of Semantic Handlers to be added to the system, and any
     data they require
     """
-    structure   : List[StructureSemantics]   = field(default_factory=list)
-    value       : List[ValueSemantics] = field(default_factory=list)
+    specs       : List[HandlerSpec]        = field(default_factory=list)
+    structure   : List[StructureSemantics] = field(default_factory=list)
+    value       : List[ValueSemantics]     = field(default_factory=list)
     statement   : List[StatementSemantics] = field(default_factory=list)
-    data        : List[Structure]            = field(default_factory=list)
+    data        : List[Structure]          = field(default_factory=list)
 
     def __len__(self):
         counts = 0
@@ -128,7 +130,8 @@ class SemanticSystem_i(HandlerSystem_i):
             [self._register_handler(x) for x in sem.structure]
             [self._register_handler(x) for x in sem.value]
             [self._register_handler(x) for x in sem.statement]
-            [self._register_struct(x) for x in sem.data]
+            [self._register_handler(x) for x in sem.data]
+
 
 
 

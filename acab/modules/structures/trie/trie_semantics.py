@@ -42,29 +42,29 @@ class BreadthTrieSemantics(SI.StructureSemantics_i):
 
         logging.debug(f"Inserting: {sen} into {struct}")
         # Get the root
-        current = self.default.func.up(struct.root)
+        current = self.lookup()[0].up(struct.root)
         for word in sen:
-            semantics, _ = self.lookup(current)
-            accessible = semantics.access(current, word, data)
+            spec = self.lookup(current)
+            accessible = spec[0].access(current, word, data)
             if bool(accessible):
                 current = accessible[0]
             else:
-                next_semantics, _ = self.lookup(word)
-                new_node = next_semantics.make(word, data)
+                next_spec = self.lookup(word)
+                new_node = next_spec[0].make(word, data)
                 struct.components['all_nodes'][new_node.uuid] = new_node
-                current = semantics.insert(current, new_node, data)
+                current = spec[0].insert(current, new_node, data)
 
         return current
 
     def _delete(self, sen, struct, data=None):
         logging.debug(f"Removing: {sen} from {struct}")
-        parent = struct.root
+        parent  = struct.root
         current = struct.root
 
         for word in sen:
             # Get independent semantics for current
-            semantics, _ = self.lookup(current)
-            accessed = semantics.access(current, word, data)
+            spec = self.lookup(current)
+            accessed = spec[0].access(current, word, data)
 
             if bool(accessed):
                 parent = current
@@ -74,8 +74,8 @@ class BreadthTrieSemantics(SI.StructureSemantics_i):
 
         # At leaf:
         # remove current from parent
-        semantics, _ = self.lookup(parent)
-        semantics.remove(parent, current.value, data)
+        spec = self.lookup(parent)
+        spec[0].remove(parent, current.value, data)
 
     def query(self, sen, struct, data=None, ctxs=None):
         """ Breadth First Search Query """
@@ -85,10 +85,10 @@ class BreadthTrieSemantics(SI.StructureSemantics_i):
         with ContextQueryManager(sen, struct.root, ctxs) as cqm:
             for source_word in cqm.query:
                 for bound_word, ctxInst, current_node in cqm.active:
-                    indep, _ = self.lookup(current_node)
-                    results = indep.access(current_node,
-                                           bound_word,
-                                           data)
+                    spec = self.lookup(current_node)
+                    results = spec[0].access(current_node,
+                                             bound_word,
+                                             data)
 
                     cqm.test_and_update(results)
 
@@ -107,9 +107,9 @@ class BreadthTrieSemantics(SI.StructureSemantics_i):
         queue = [([], struct.root)]
         while bool(queue):
             path, current = queue.pop(0)
-            updated_path = path + [current.value]
-            semantics, _ = self.lookup(current)
-            accessible = semantics.access(current, None, data)
+            updated_path  = path + [current.value]
+            spec          = self.lookup(current)
+            accessible    = spec[0].access(current, None, data)
             if bool(accessible):
                 # branch
                 queue += [(updated_path, x) for x in accessible]
@@ -143,14 +143,14 @@ class DepthTrieSemantics(SI.StructureSemantics_i):
         # TODO: Ensure the struct is appropriate
         current = self.default[0].up(struct.root)
         for word in sen:
-            semantics, _ = self.lookup(current)
-            accessible = semantics.access(current, word, data)
+            spec = self.lookup(current)
+            accessible = spec[0].access(current, word, data)
             if bool(accessible):
                 current = accessible[0]
             else:
-                next_semantics, _ = self.lookup(word)
-                new_node = next_semantics.make(word, data)
-                current = semantics.insert(current, new_node, data)
+                next_spec = self.lookup(word)
+                new_node = next_spec[0].make(word, data)
+                current = spec[0].insert(current, new_node, data)
 
         return current
 
@@ -161,8 +161,8 @@ class DepthTrieSemantics(SI.StructureSemantics_i):
 
         for word in sen:
             # Get value semantics for current
-            semantics, _ = self.lookup(current)
-            accessed = semantics.access(current, word, data)
+            spec = self.lookup(current)
+            accessed = spec[0].access(current, word, data)
             if bool(accessed):
                 parent = current
                 current = accessed[0]
@@ -171,8 +171,8 @@ class DepthTrieSemantics(SI.StructureSemantics_i):
 
         # At leaf:
         # remove current from parent
-        semantics, _ = self.lookup(parent)
-        semantics.remove(parent, current.value, data)
+        spec = self.lookup(parent)
+        spec[0].remove(parent, current.value, data)
 
         return current
 
@@ -198,7 +198,7 @@ class DepthTrieSemantics(SI.StructureSemantics_i):
 
                     while bool(remaining_sen):
                         word = remaining_sen.pop(0)
-                        indep, _ = self.lookup(currentInst._current)
+                        spec = self.lookup(currentInst._current)
                         search_word = word
                         # Handle variable:
                         if word.is_var and word not in ctxInst:
@@ -208,9 +208,9 @@ class DepthTrieSemantics(SI.StructureSemantics_i):
                             search_word = currentInst[word]
 
 
-                        results = indep.access(currentInst._current,
-                                               search_word,
-                                               datac)
+                        results = spec[0].access(currentInst._current,
+                                                 search_word,
+                                                 datac)
 
                         # TODO to make this depth first,
                         # the current ctxInst needs to be updated

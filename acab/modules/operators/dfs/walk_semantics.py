@@ -75,8 +75,8 @@ class WalkTrieSemantics(SI.StatementSemantics_i):
         with an optional @var at the head, rest are constraints
 
         """
-        default: Handler[StructSem] = semsys.lookup()
-        nodesem: ValSem             = default.func.lookup().func
+        default: HandlerSpec[StructSem] = semsys.lookup()
+        nodesem: HandlerSpec[ValSem]    = default[0].lookup()
 
         with ContextWalkManager(walk_spec, default.struct.root, ctxs) as cwm:
             for queue in cwm.active:
@@ -88,7 +88,7 @@ class WalkTrieSemantics(SI.StatementSemantics_i):
                         continue
 
                     found.add(current.uuid)
-                    accessible   = nodesem.access(current, None, data)
+                    accessible   = nodesem[0].access(current, None, data)
                     queue       += accessible
                     cwm.test_and_update(accessible)
 
@@ -96,13 +96,14 @@ class WalkTrieSemantics(SI.StatementSemantics_i):
     def _act(self, walk_spec, semsys, ctxs=None, data=None):
         """
         instruction : Sentence(@target, $ruleset)
-
         from @target, dfs the trie below, running $ruleset on each node
 
         """
-        default : Handler[StructSem] = semsys.lookup()
-        nodesem : ValSem             = default.func.lookup().func
-        found   : Set[UUID]          = set()
+        default : HandlerSpec[StructSem] = semsys.lookup()
+        nodesem : HandlerSpec[ValSem]    = default[0].lookup()
+        found   : Set[UUID]              = set()
+
+        # TODO: if walk_spec is a sentence, query for it and temp_bind for it
 
         with ContextWalkManager(walk_spec, default.struct.root, ctxs) as cwm:
             for queue in cwm.active:
@@ -117,8 +118,8 @@ class WalkTrieSemantics(SI.StatementSemantics_i):
                     # TODO use specified run form (all, sieve, etc)
                     for action in actions:
                         # potentially override to force atomic rule
-                        sem, _ = semsys.lookup(action)
-                        sem(action, semsys, params=[current])
+                        spec = semsys.lookup(action)
+                        spec[0](action, semsys, params=[current])
 
-                    accessible   = nodesem.access(current, None, data)
+                    accessible   = nodesem[0].access(current, None, data)
                     queue       += accessible

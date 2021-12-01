@@ -35,10 +35,11 @@ class PrintSystem_i(HandlerSystem_i):
     settings  : Dict[str, str] = field(default_factory=dict)
     _config   : AcabConfig     = field(init=False, default_factory=AcabConfig.Get)
 
-    def __post_init__(self, handlers, sieve_fns):
-        super().__post_init__(handlers, sieve_fns)
-        if self.default is None:
-            self.default = Handler("_:default", lambda x, data=None: str(x))
+    def __post_init__(self, specs, handlers, sieve_fns):
+        super().__post_init__(specs, handlers, sieve_fns)
+        if not bool(self.handler_specs["_:_default"]):
+            default = Handler("_:_default", lambda x, data=None: str(x))
+            self.register_handler(default)
 
     def check(self, val) -> Optional[str]:
         """ Check a value to toggle variations/get defaults"""
@@ -59,7 +60,7 @@ class PrintSystem_i(HandlerSystem_i):
         result = ""
         while bool(remaining):
             current = remaining.pop(0)
-            handler = None
+            spec    = None
             data    = {}
             if isinstance(current, str):
                 result += current
@@ -68,17 +69,17 @@ class PrintSystem_i(HandlerSystem_i):
                 remaining = current + remaining
                 continue
             else:
-                handler, _ = self.lookup(current)
+                spec = self.lookup(current)
 
             if isinstance(current, PrintSystem_i.HandlerOverride):
                 data.update(current.data)
                 current = current.value
 
-            if isinstance(handler, PrintSemantics_i):
-                logging.debug(f"(Remain:{len(remaining):2}) Calling: {handler.__class__.__name__:40} : {current}")
-                handled = handler(current, top=self, data=data)
+            if spec.check_api(PrintSemantics_i):
+                logging.debug(f"(Remain:{len(remaining):2}) Calling: {spec} : {current}")
+                handled = spec[0](current, top=self, data=data)
             else:
-                handled = handler(current, data=data)
+                handled = spec[0](current, data=data)
 
             if not isinstance(handled, list):
                 handled = [handled]
@@ -120,5 +121,5 @@ class PrintSemantics_i(HandlerComponent_i):
         return curr
 
     @abc.abstractmethod
-    def __call__(self, to_print: Value_i, top:'PrintSystem_i'=None, data=None) -> List[Tuple[str,Value_i]]:
+    def __call__(self, to_print: Value_i, top:'PrintSystem_i'=None, data=None) -> List[Union[str,Value_i]]:
         pass

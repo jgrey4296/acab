@@ -47,23 +47,23 @@ class FSMSemantics(SI.StructureSemantics_i):
             return self._delete(struct, sen, data, engine)
 
         # Get the root
-        root = self.default[0].up(struct.root)
-        current = root
-        root_semantics, _ = self.lookup(root.value)
+        root      = self.default[0].up(struct.root)
+        current   = root
+        root_spec = self.lookup(root.value)
         for word in sen:
             new_node = None
-            root_accessible = root_semantics.access(root, word, data)
+            root_accessible = root_spec[0].access(root, word, data)
             if not bool(root_accessible):
-                next_semantics, _ = self.lookup(word)
-                new_node = next_semantics.make(word, data)
-                root_semantics.insert(root, word, data)
+                next_spec = self.lookup(word)
+                new_node = next_spec[0].make(word, data)
+                root_spec[0].insert(root, word, data)
             else:
                 new_node = root_accessible[0]
 
-            current_semantics, _ = self.lookup(current)
-            current_accessible = current_semantics.access(current, new_node, data)
+            current_spec       = self.lookup(current)
+            current_accessible = current_spec[0].access(current, new_node, data)
             if not bool(current_accessible):
-                current = current_semantics.insert(current, new_node, data)
+                current = current_spec[0].insert(current, new_node, data)
             else:
                 current = new_node
 
@@ -103,8 +103,8 @@ class FSMSemantics(SI.StructureSemantics_i):
         with ctxs(struct.root, sen[0], data, collapse_vars, negated_query):
             for word in sen:
                 for ctxInst in ctxs.active_list():
-                    indep, _ = self.lookup(ctxInst.current)
-                    results = indep.access(ctxInst.current, word, data)
+                    spec = self.lookup(ctxInst.current)
+                    results = spec[0].access(ctxInst.current, word, data)
                     if not bool(results):
                         ctxs.fail(ctxInst, word, None)
                     else:
@@ -118,13 +118,13 @@ class FSMSemantics(SI.StructureSemantics_i):
         remove each word in the sentence from its prior
         """
         root = struct.root
-        root_sem, _ = self.lookup(root.value)
+        root_spec = self.lookup(root.value)
         current = None
         for head,succ in zip(sen[:-1], sen[1:]):
-            if root_sem.access(root, head, data):
+            if root_spec[0].access(root, head, data):
                 head_node = root_sem.get(root, head, data)
-                head_sem, _ = self.lookup(head_node.value)
-                head_sem.delete(head_node, succ, data)
+                head_spec = self.lookup(head_node.value)
+                head_spec[0].delete(head_node, succ, data)
                 current = head_node
 
         return current
