@@ -15,7 +15,7 @@ from acab.core.printing import wrappers as PW
 
 
 config = GET()
-WALK_SEM_HINT    = Sentence.build([config.prepare("Module.DFSWalk", "WALK_QUERY_HINT")()])
+WALK_SEM_HINT    = Sentence.build([config.prepare("Module.DFSWalk", "WALK_SEM_HINT")()])
 
 @dataclass
 class DFSSenPrinter(PrintSemantics_i):

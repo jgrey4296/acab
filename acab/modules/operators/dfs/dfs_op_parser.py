@@ -11,8 +11,9 @@ from acab.core.data.values import Sentence
 config        = GET()
 
 QUERY         = s_lit(config.prepare("Symbols", "QUERY")())
+QUERY_HINT    = config.prepare("Value.Structure", "QUERY")()
 SEM_HINT      = config.prepare("Value.Structure", "SEMANTIC_HINT")()
-WALK_SEM_HINT = Sentence.build([config.prepare("Module.DFSWalk", "WALK_QUERY_HINT")()])
+WALK_SEM_HINT = Sentence.build([config.prepare("Module.DFSWalk", "WALK_SEM_HINT")()])
 
 def build_dfs_query(s, l, toks):
     words = []

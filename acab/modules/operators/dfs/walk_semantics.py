@@ -27,7 +27,7 @@ QUERY_FALLBACK_S = config.prepare("Value.Structure", "QUERY_FALLBACK")()
 DEFAULT_SETUP_S  = config.prepare("Data", "DEFAULT_SETUP_METHOD")()
 DEFAULT_UPDATE_S = config.prepare("Data", "DEFAULT_UPDATE_METHOD")()
 QUERY            = config.prepare("Value.Structure", "QUERY")()
-WALK_SEM_HINT    = Sentence.build([config.prepare("Module.DFSWalk", "WALK_QUERY_HINT")()])
+WALK_SEM_HINT    = Sentence.build([config.prepare("Module.DFSWalk", "WALK_SEM_HINT")()])
 
 Node          = AT.Node
 Value         = AT.Value

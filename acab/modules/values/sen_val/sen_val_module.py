@@ -22,7 +22,7 @@ from . import sen_val_parser as SVP
 logging = root_logger.getLogger(__name__)
 
 config = GET()
-WALK_SEM_HINT    = Sentence.build([config.prepare("Module.DFSWalk", "WALK_QUERY_HINT")()])
+WALK_SEM_HINT    = Sentence.build([config.prepare("Module.DFSWalk", "WALK_SEM_HINT")()])
 
 Sen_Val_Frag = Semantic_Fragment(statement=[SenQuerySemantics().as_handler(WALK_SEM_HINT)])
 
