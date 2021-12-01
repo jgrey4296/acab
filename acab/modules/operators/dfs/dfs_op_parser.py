@@ -25,18 +25,44 @@ def build_dfs_query(s, l, toks):
     assert(all([x.is_var for x in rest]))
     words += rest
 
-    query = Sentence.build(words,
+    instruction = Sentence.build(words,
                            data={SEM_HINT: WALK_SEM_HINT})
-    query[-1].data[QUERY] = True
+    instruction[-1].data[QUERY_HINT] = True
 
-    return query
+    return instruction
+
+def build_dfs_action(s, l, toks):
+    words = []
+    if 'root' in toks:
+        assert(toks['root'].is_at_var)
+        words.append(toks['root'])
+
+    assert(isinstance(toks['action'], Sentence))
+    words.append(toks['action'])
+
+    instruction = Sentence.build(words,
+                                 data={SEM_HINT: WALK_SEM_HINT})
+    return instruction
+
 
 # Parser: #####################################################################
-HOTLOAD_VAR   = pp.Forward()
+HOTLOAD_VAR    = pp.Forward()
+HOTLOAD_SEN_OP = pp.Forward()
 
 dfs_operator  = pp.Literal("ᛦ").suppress()
+dfs_head      = op(HOTLOAD_VAR("root")) + dfs_operator
 
-dfs_query     = op(HOTLOAD_VAR("root")) + dfs_operator + orm(HOTLOAD_VAR)("constraints") + QUERY
+
+dfs_query     = dfs_head + orm(HOTLOAD_VAR)("constraints") + QUERY
+# TODO a dfs query with a subsentence query
+# @a ᛦ $x.d.f?
+
 # will build a sentence with a dfs semantic hint
 dfs_query.setParseAction(build_dfs_query)
 
+# Build a dfs action sentence:
+# ᛦ λarity.one.action.or.rule
+# which will be applied to every node:
+# λarity.one.action.or.rule $x
+dfs_action    = dfs_head + HOTLOAD_SEN_OP('action')
+dfs_action.setParseAction(build_dfs_action)

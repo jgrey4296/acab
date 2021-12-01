@@ -19,3 +19,4 @@ class DFSQueryDSL(DSL_Fragment_i):
 
     def query_parsers(self, pt):
         DOP.HOTLOAD_VAR << pt.query("word.constrained")
+        DOP.HOTLOAD_SEN_OP << pt.query("sentence.operator")
