@@ -20,6 +20,7 @@ from acab.modules.semantics.statements import QueryPlusAbstraction
 from acab.modules.engines.configured import exlo
 from acab.core.data.production_abstractions import ProductionComponent, ProductionContainer
 from acab.core.data.values import Sentence, AcabValue
+from acab.modules.operators.dfs import dfs_op_parser as DOP
 
 BIND          = config.prepare("Value.Structure", "BIND")()
 QUERY         = config.prepare("Value.Structure", "QUERY")()
@@ -47,7 +48,7 @@ class TestWalkSemantics(unittest.TestCase):
         logging.addHandler(file_h)
 
         cls.eng = exlo()
-        cls.eng.load_modules(*default_modules)
+        cls.eng.load_modules(*default_modules, "acab.modules.operators.dfs.dfs_module")
         query_plus = QueryPlusAbstraction().as_handler("_:QUERY")
         cls.eng.semantics._register_handler(query_plus)
         walker = WalkTrieSemantics().as_handler("_:WALK")
@@ -64,7 +65,7 @@ class TestWalkSemantics(unittest.TestCase):
         self.eng("a.b.d")
         self.eng("a.b.e.something(::target)")
 
-        # Setup a ctx bonud to 'c'
+        # Setup a ctx bound to 'c'
         ctxs       = self.eng("a.b.$x.test?")
 
         # build a walk instruction
@@ -93,7 +94,7 @@ class TestWalkSemantics(unittest.TestCase):
         self.eng("a.b.d")
         self.eng("a.b.e.test.something(::target)")
 
-        # Setup a ctx bonud to 'c'
+        # Setup a ctx bound to 'c' and 'e'
         ctxs       = self.eng("a.b.$x.test?")
 
         # build a walk instruction
@@ -192,3 +193,39 @@ class TestWalkSemantics(unittest.TestCase):
         result = self.eng(query, ctxset=ctxs)
         # check results
         self.assertEqual(len(result), 2)
+
+
+    def test_parse_walk_query_instruction(self):
+        result = DOP.dfs_query.parseString("ᛦ $x(::blah)?")[0]
+
+        self.assertTrue(result)
+        self.assertIsInstance(result, Sentence)
+        self.assertEqual(result.data['SEMANTIC_HINT'], 'WALK')
+        self.assertTrue(result[-1].data['QUERY'])
+
+    def test_parse_walk_action_instruction(self):
+        result = DOP.dfs_action.parseString("ᛦ λa.test.op")[0]
+
+        self.assertTrue(result)
+        self.assertIsInstance(result, Sentence)
+        self.assertEqual(result.data['SEMANTIC_HINT'], 'WALK')
+        self.assertNotIn('QUERY', result[-1].data)
+
+        self.assertEqual(result[0], "_:a.test.op")
+
+    def test_act(self):
+        # Setup
+        self.eng("a.b.c.test")
+        self.eng("a.b.d")
+        self.eng("a.b.e.test")
+
+        # Action to run
+        self.eng("the.rule(::ρ):\n | $x |\n\n @x.test?\n\n !! found.$x\nend")
+
+        # dfs instruction
+        inst = DOP.dfs_action.parseString("ᛦ λthe.rule")[0]
+        self.eng(inst)
+
+        breakpoint()
+        self.assertTrue(self.eng("found.c?"))
+        self.assertTrue(self.eng("found.e?"))

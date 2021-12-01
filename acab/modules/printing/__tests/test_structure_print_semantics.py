@@ -28,6 +28,7 @@ from acab.core.data.production_abstractions import (ProductionComponent,
 from acab.core.data.values import AcabStatement, AcabValue, Sentence
 from acab.interfaces.handler_system import Handler
 from acab.modules.printing.basic_printer import BasicPrinter
+from acab.modules.printing import default
 
 NEGATION_S        = config.prepare("Value.Structure", "NEGATION")()
 QUERY_S           = config.prepare("Value.Structure", "QUERY")()
@@ -73,7 +74,8 @@ class PrintStructureSemanticTests(unittest.TestCase):
     def test_component_simple(self):
         """ Check production components can be printed """
         component = ProductionComponent(value=FP.parseString("testop.blah")[0])
-        sem_sys = BasicPrinter(init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
+        sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
+                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
                                               Printers.AnnotationAwareValuePrinter().as_handler("_:ATOM"),
                                               Printers.ProductionComponentPrinter().as_handler("_:COMPONENT"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
@@ -89,7 +91,8 @@ class PrintStructureSemanticTests(unittest.TestCase):
         """ Check production components with variables can be printed """
         component = ProductionComponent(value=FP.parseString("testop.blah")[0],
                                         params=[FP.parseString("$x")[0][0]])
-        sem_sys = BasicPrinter(init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
+        sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
+                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
                                               Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
                                               Printers.AnnotationAwareValuePrinter().as_handler("_:ATOM"),
                                               Printers.ProductionComponentPrinter().as_handler("_:COMPONENT"),
@@ -106,7 +109,8 @@ class PrintStructureSemanticTests(unittest.TestCase):
         component = ProductionComponent(value=FP.parseString("testop.blah")[0],
                                         params=[FP.parseString("$x")[0][0]],
                                         rebind=FP.parseString("$y")[0][0])
-        sem_sys = BasicPrinter(init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
+        sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
+                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
                                               Printers.AnnotationAwareValuePrinter().as_handler("_:ATOM"),
                                               Printers.ProductionComponentPrinter().as_handler("_:COMPONENT"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
@@ -120,10 +124,12 @@ class PrintStructureSemanticTests(unittest.TestCase):
 
     def test_container(self):
         """ Check containers print all their clauses """
-        sem_sys = BasicPrinter(init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
+        sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
+                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
                                               Printers.AnnotationAwareValuePrinter().as_handler("_:ATOM"),
                                               Printers.ProductionComponentPrinter().as_handler("_:COMPONENT"),
                                               Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
+                                              Printers.ConstraintPrinter().as_handler("_:CONSTRAINT"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
                                               Printers.ImplicitContainerPrinter().as_handler("_:CONTAINER"),
                                               Printers.AnnotationPrinter().as_handler("_:ANNOTATIONS"),
@@ -141,7 +147,8 @@ class PrintStructureSemanticTests(unittest.TestCase):
 
     def test_rule(self):
         """ Check a rule can be printed """
-        sem_sys = BasicPrinter(init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
+        sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
+                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
                                               Printers.AnnotationAwareValuePrinter().as_handler("_:ATOM"),
                                               Printers.ProductionComponentPrinter().as_handler("_:COMPONENT"),
                                               Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
@@ -162,7 +169,8 @@ class PrintStructureSemanticTests(unittest.TestCase):
 
     def test_rule_with_tags(self):
         """ Check a rule prints its tags """
-        sem_sys = BasicPrinter(init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
+        sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
+                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
                                               Printers.AnnotationAwareValuePrinter().as_handler("_:ATOM"),
                                               Printers.ProductionComponentPrinter().as_handler("_:COMPONENT"),
                                               Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
@@ -191,7 +199,8 @@ class PrintStructureSemanticTests(unittest.TestCase):
 
     def test_query_statement(self):
         """ Check a query statement prints its clauses """
-        sem_sys = BasicPrinter(init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
+        sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
+                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
                                               Printers.AnnotationAwareValuePrinter().as_handler("_:ATOM"),
                                               Printers.ProductionComponentPrinter().as_handler("_:COMPONENT"),
                                               Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
@@ -217,7 +226,8 @@ class PrintStructureSemanticTests(unittest.TestCase):
 
     def test_transform_statement(self):
         """ Check a transform statement prints its clauses """
-        sem_sys = BasicPrinter(init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
+        sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
+                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
                                               Printers.AnnotationAwareValuePrinter().as_handler("_:ATOM"),
                                               Printers.ProductionComponentPrinter().as_handler("_:COMPONENT"),
                                               Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
@@ -243,7 +253,8 @@ class PrintStructureSemanticTests(unittest.TestCase):
 
     def test_action_statement(self):
         """ Check an action statement prints its clauses """
-        sem_sys = BasicPrinter(init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
+        sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
+                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
                                               Printers.AnnotationAwareValuePrinter().as_handler("_:ATOM"),
                                               Printers.ProductionComponentPrinter().as_handler("_:COMPONENT"),
                                               Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),

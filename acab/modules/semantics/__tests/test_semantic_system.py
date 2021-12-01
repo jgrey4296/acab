@@ -51,30 +51,33 @@ class SemanticSystemTests(unittest.TestCase):
 
     def test_construction(self):
         """ Check context systems can be created """
-        semsys = BasicSemanticSystem(default=SemanticSystemTests.StubAbsSemantic().as_handler("_:stub"))
+        semsys = BasicSemanticSystem(init_handlers=[SemanticSystemTests.StubAbsSemantic().as_handler("_:_default")])
         self.assertIsInstance(semsys, SemanticSystem_i)
-        self.assertIsInstance(semsys.default.func, StatementSemantics_i)
-        self.assertFalse(semsys.handlers)
+        self.assertIsInstance(semsys.lookup()[0], StatementSemantics_i)
+        self.assertTrue(semsys.handler_specs)
 
     def test_default_call(self):
         """ Check context systems can be called """
-        semsys = BasicSemanticSystem(default=SemanticSystemTests.StubAbsSemantic().as_handler("_:stub"))
+        semsys = BasicSemanticSystem(init_handlers=[SemanticSystemTests.StubAbsSemantic().as_handler("_:_default")])
         test_sen = Sentence.build(["test"])
         with self.assertRaises(AE.AcabException) as cm:
             semsys(test_sen)
 
         self.assertEqual(cm.exception.detail, "TestAbsSem called")
 
+    @unittest.skip("Not Implemented")
     def test_retrieval(self):
         """ Check context systems can lookup the correct semantics for an input """
         # put some semantics in semsys.mapping
-        semsys = BasicSemanticSystem(default=SemanticSystemTests.StubAbsSemantic().as_handler("_:stub"))
+        semsys = BasicSemanticSystem(init_handlers=[SemanticSystemTests.StubAbsSemantic().as_handler("_:_default")])
 
 
+    @unittest.skip("not implemented")
     def test_failure(self):
         # put a callable in failure
         pass
 
+    @unittest.skip("not implemented")
     def test_hooks(self):
         pass
 

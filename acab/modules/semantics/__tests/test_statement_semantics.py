@@ -27,7 +27,7 @@ from acab.core.decorators.semantic import (OperatorArgUnWrap,
 from acab.interfaces.handler_system import Handler
 from acab.interfaces.semantic import (StatementSemantics_i,
                                       SemanticSystem_i)
-from acab.error.acab_exception import AcabException
+from acab.error.acab_exception import AcabBasicException
 from acab.error.semantic_exception import AcabSemanticException
 from acab.modules.context import context_delayed_actions
 from acab.modules.context.context_set import (ConstraintCollection,
@@ -38,6 +38,7 @@ from acab.modules.semantics.basic_system import BasicSemanticSystem
 from acab.modules.structures.trie.trie_semantics import BreadthTrieSemantics
 from acab.modules.semantics.values import (BasicNodeSemantics,
                                            ExclusionNodeSemantics)
+from acab.modules.semantics import default
 
 EXOP         = config.prepare("MODAL", "exop")()
 EXOP_enum    = config.prepare(EXOP, as_enum=True)()
@@ -169,7 +170,8 @@ class StatementSemanticTests(unittest.TestCase):
 
         class StubAbsSemantic(StatementSemantics_i):
             def __call__(self, ins, semSys, ctxs=None, data=None):
-                raise AcabException("TestAbsSem called")
+                breakpoint()
+                raise AcabBasicException("TestAbsSem called")
 
         def SemHintKey(val, data=None):
             if SEMANTIC_HINT_V in val.data:
@@ -177,42 +179,50 @@ class StatementSemanticTests(unittest.TestCase):
 
             return str(val.value)
 
-        transform_sem = ASem.TransformAbstraction().as_handler("_:transform")
-        action_sem    = ASem.ActionAbstraction().as_handler("_:action")
-        semSys        = BasicSemanticSystem(default=StubAbsSemantic().as_handler("_:stub"),
-                                            init_handlers=[transform_sem, action_sem])
+        # Specs
+        default_spec  = BasicSemanticSystem.Spec("_:_default").spec_from(StatementSemantics_i)
+        all_specs     = default.DEFAULT_HANDLER_SPECS() + [default_spec]
+        # Semantics
+        transform_sem = ASem.TransformAbstraction().as_handler(TRANSFORM_SEM_HINT)
+        action_sem    = ASem.ActionAbstraction().as_handler(ACTION_SEM_HINT)
+        stub_sem      = StubAbsSemantic().as_handler("_:_default")
+        consem        = ASem.ContainerAbstraction().as_handler("_:CONTAINER")
 
-        consem        = ASem.ContainerAbstraction()
+        semSys        = BasicSemanticSystem(init_specs=all_specs,
+                                            init_handlers=[transform_sem,
+                                                           action_sem,
+                                                           stub_sem,
+                                                           consem])
 
-        trans_op_loc_path  = Sentence.build(["transform"])
-        action_op_loc_path = Sentence.build(["action"])
-        op_ctx             = ContextInstance(data={str(trans_op_loc_path): TestTransform(),
-                                                  str(action_op_loc_path): TestAction()})
-        ctx_set      = ContextSet.build(op_ctx)
+        # Operator Context
+        op_ctx             = ContextInstance(data={"_:transform" : TestTransform(),
+                                                   "_:action"    : TestAction()})
 
-        init_ctx = ctx_set.pop()
+        # Add data to eval context
+        ctx_set     = ContextSet.build(op_ctx)
+        init_ctx    = ctx_set.pop()
         updated_ctx = init_ctx.bind_dict({
             "x" : AcabValue.safe_make("test")
         })
         ctx_set.push(updated_ctx)
-        # Build Container
-        rebind_target    = AcabValue.safe_make("y", data={BIND_V: True})
-        transform_clause = ProductionComponent("transform test",
-                                               trans_op_loc_path,
-                                               ["x"],
-                                               rebind=rebind_target)
-        action_clause    = ProductionComponent("Test Action Clause",
-                                               action_op_loc_path,
-                                               ["y"])
-        container        = ProductionContainer("mixed_container",
-                                               [ProductionContainer("transform", [transform_clause],
-                                                                    data={SEMANTIC_HINT_V: "_:transform"}),
-                                                ProductionContainer("action", [action_clause],
-                                                                    data={SEMANTIC_HINT_V: "_:action"})])
 
+        # Build Instruction to run
+        rebind_target          = AcabValue.safe_make("y", data={BIND_V: True})
+        transform_clause       = ProductionComponent("transform test",
+                                                     Sentence.build(["transform"]),
+                                                     ["x"],
+                                                     rebind=rebind_target)
+        action_clause          = ProductionComponent("Test Action Clause",
+                                                     Sentence.build(["action"]),
+                                                     ["y"])
+        container_instruction  = ProductionContainer("mixed_container",
+                                                     [ProductionContainer("transform", [transform_clause],
+                                                                          data={SEMANTIC_HINT_V: TRANSFORM_SEM_HINT}),
+                                                      ProductionContainer("action", [action_clause],
+                                                                          data={SEMANTIC_HINT_V: ACTION_SEM_HINT})])
 
         # run each element of container with semantics
-        consem(container, semSys, ctxs=ctx_set)
+        semSys(container_instruction, ctxs=ctx_set)
 
         # check result
         # orig val "test" + transform "_blah" into side effect obj "a"
@@ -240,9 +250,10 @@ class StatementSemanticTests(unittest.TestCase):
             return None
 
         # Build Semantics
-        node_sem    = BasicNodeSemantics().as_handler("_:node")
-        trie_sem    = BreadthTrieSemantics(default=node_sem).as_handler("_:trie",
-                                                                        struct=BasicNodeStruct.build_default())
+        node_sem     = BasicNodeSemantics().as_handler("_:atom")
+        trie_sem     = BreadthTrieSemantics(init_handlers=[node_sem.as_handler("_:_default")])
+        trie_handler = trie_sem.as_handler("_:trie", struct=BasicNodeStruct.build_default())
+
 
         query_sem   = ASem.QueryAbstraction().as_handler(QUERY_SEM_HINT)
         action_sem  = ASem.ActionAbstraction().as_handler(ACTION_SEM_HINT)
@@ -250,31 +261,34 @@ class StatementSemanticTests(unittest.TestCase):
         trans_sem   = ASem.TransformAbstraction().as_handler(TRANSFORM_SEM_HINT)
         cont_sem    = ASem.ContainerAbstraction().as_handler("_:CONTAINER")
 
-        semSys      = BasicSemanticSystem(init_handlers=[cont_sem,
+        semSys      = BasicSemanticSystem(init_specs=default.DEFAULT_HANDLER_SPECS(),
+                                          init_handlers=[cont_sem,
                                                          query_sem,
                                                          action_sem,
                                                          rule_sem,
-                                                         trans_sem],
-                                          default=trie_sem)
+                                                         trans_sem,
+                                                         node_sem,
+                                                         trie_handler,
+                                                         trie_handler.as_handler("_:_default")
+                                                         ])
 
         # Setup operators in context
-        action_op_loc_path = Sentence.build(["action"])
-        trans_op_loc_path  = Sentence.build(["regex"])
         trans_instance     = RegexOp()
-        op_ctx             = ContextInstance(data={str(action_op_loc_path): TestAction(),
-                                                   str(trans_op_loc_path): trans_instance})
+        op_ctx             = ContextInstance(data={"_:action": TestAction(),
+                                                   "_:regex" : trans_instance})
         ctx_set            = ContextSet.build(op_ctx)
 
         # Construct Rule
-        query_sen = Sentence.build(["a", "test", "x"], data={QUERY_V : True})
-        query_sen[-1].data[BIND_V] = True
+        query_sen = Sentence.build(["a", "test", "x"])
+        query_sen[-1].data[BIND_V]  = True
+        query_sen[-1].data[QUERY_V] = True
 
         transform_sen = ProductionComponent("transform_test",
-                                            trans_op_loc_path,
+                                            Sentence.build(["regex"]),
                                             ["x", "sen", "SEN"],
                                             rebind=AcabValue.safe_make("y", data={BIND_V: True}))
         action_sen    = ProductionComponent("Test Action Clause",
-                                            action_op_loc_path,
+                                            Sentence.build([ "action" ]),
                                             ['y'])
 
         query     = ProductionContainer("test query", [query_sen], data={SEMANTIC_HINT_V: QUERY_SEM_HINT})
@@ -291,7 +305,7 @@ class StatementSemanticTests(unittest.TestCase):
 
         # insert a sentence into the struct
         sen = Sentence.build(["a", "test", "sentence"])
-        trie_sem.func.insert(sen, trie_sem.struct)
+        trie_handler.func.insert(sen, trie_handler.struct)
         # run the rule
         result = semSys(the_rule, ctxs=ctx_set)
 
@@ -318,9 +332,10 @@ class StatementSemanticTests(unittest.TestCase):
             return None
         #
         # Build Semantics
-        node_sem    = BasicNodeSemantics().as_handler("_:node")
-        trie_sem    = BreadthTrieSemantics(default=node_sem).as_handler("_:trie",
-                                                                        struct=BasicNodeStruct.build_default())
+        node_sem    = BasicNodeSemantics().as_handler("_:atom")
+        trie_sem    = BreadthTrieSemantics(init_handlers=[node_sem.as_handler("_:_default")])
+        trie_handler= trie_sem.as_handler("_:trie",
+                                          struct=BasicNodeStruct.build_default())
 
         query_sem   = ASem.QueryAbstraction().as_handler(QUERY_SEM_HINT)
         action_sem  = ASem.ActionAbstraction().as_handler(ACTION_SEM_HINT)
@@ -328,27 +343,33 @@ class StatementSemanticTests(unittest.TestCase):
         # THIS IS THE MAJOR CHANGE OF THIS TEST:
         rule_sem    = ASem.ProxyRuleAbstraction().as_handler(RULE_SEM_HINT)
 
-        semSys      = BasicSemanticSystem(init_handlers=[query_sem, action_sem, trans_sem, rule_sem],
-                                          default=trie_sem)
+        semSys      = BasicSemanticSystem(init_specs=default.DEFAULT_HANDLER_SPECS(),
+                                          init_handlers=[query_sem,
+                                                         action_sem,
+                                                         trans_sem,
+                                                         rule_sem,
+                                                         node_sem,
+                                                         trie_handler,
+                                                         trie_handler.as_handler("_:_default")
+                                                         ])
 
         # Setup operators in context
-        action_op_loc_path = Sentence.build(["action"])
-        trans_op_loc_path  = Sentence.build(["regex"])
         trans_instance     = RegexOp()
-        op_ctx             = ContextInstance(data={str(action_op_loc_path): TestAction(),
-                                                   str(trans_op_loc_path): trans_instance})
+        op_ctx             = ContextInstance(data={"_:action" : TestAction(),
+                                                   "_:regex"  : trans_instance})
         ctx_set            = ContextSet.build(op_ctx)
 
         # Construct Rule
-        query_sen = Sentence.build(["a", "test", "x"], data={QUERY_V : True})
-        query_sen[-1].data[BIND_V] = True
+        query_sen = Sentence.build(["a", "test", "x"])
+        query_sen[-1].data[BIND_V]  = True
+        query_sen[-1].data[QUERY_V] = True
 
         transform_sen = ProductionComponent("transform_test",
-                                            trans_op_loc_path,
+                                            Sentence.build("_:regex"),
                                             ["x", "sen", "SEN"],
                                             rebind=AcabValue.safe_make("y", data={BIND_V: True}))
         action_sen    = ProductionComponent("Test Action Clause",
-                                            action_op_loc_path,
+                                            Sentence.build("_:action"),
                                             ['y'])
 
         query     = ProductionContainer("test query", [query_sen], data={SEMANTIC_HINT_V: QUERY_SEM_HINT})
@@ -365,7 +386,7 @@ class StatementSemanticTests(unittest.TestCase):
 
         # insert a sentence into the struct
         sen = Sentence.build(["a", "test", "sentence"])
-        trie_sem.func.insert(sen, trie_sem.struct)
+        trie_handler.func.insert(sen, trie_handler.struct)
         # run the rule
         result = semSys(the_rule, ctxs=ctx_set)
 
@@ -388,6 +409,7 @@ class StatementSemanticTests(unittest.TestCase):
         pass
 
 
+    @unittest.skip("Not Implemented")
     def test_layer(self):
         # Build semantics
 
@@ -400,6 +422,7 @@ class StatementSemanticTests(unittest.TestCase):
         # Check results
         pass
 
+    @unittest.skip("Not Implemented")
     def test_pipeline(self):
         # build semantics
 
@@ -413,15 +436,6 @@ class StatementSemanticTests(unittest.TestCase):
         pass
 
 
-    def test_print(self):
-        # Build semantics
-
-        # Build sentences
-
-        # Print sentences
-
-        # verify
-        pass
 
 
 if __name__ == '__main__':
