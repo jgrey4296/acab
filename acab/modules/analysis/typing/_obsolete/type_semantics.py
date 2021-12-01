@@ -49,10 +49,10 @@ class TypeSemantics(StatementSemantics_i):
         with TypeContextQueryManager(typedef, ctxs) as cqm:
             for source_word in cqm.query:
                 for bound_word, ctxInst, current_node in cqm.active:
-                    indep, _ = self.lookup(current_node)
-                    results = indep.access(current_node,
-                                           bound_word,
-                                           data)
+                    spec    = self.lookup(current_node)
+                    results = spec[0].access(current_node,
+                                             bound_word,
+                                             data)
 
                     cqm.test_and_update(results)
                     # if source_word.type != ATOM:
