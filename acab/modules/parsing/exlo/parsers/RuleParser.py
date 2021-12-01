@@ -30,9 +30,7 @@ endOrLine  = pp.FollowedBy(END) | emptyLine | pp.stringEnd
 rule_body = op(conditions + endOrLine) + op(transforms + endOrLine) + op(actions + endOrLine)
 
 rule = PU.STATEMENT_CONSTRUCTOR(pp.Literal("::ρ"),
-                                rule_body,
-                                args=False)
-
+                                rule_body)
 
 
 # Actions:
