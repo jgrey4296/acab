@@ -127,10 +127,10 @@ class SemanticSystem_i(HandlerSystem_i):
         semantics = [y for x in mods for y in x.semantics]
         assert(all([isinstance(x, Semantic_Fragment) for x in semantics]))
         for sem in semantics:
-            [self._register_handler(x) for x in sem.structure]
-            [self._register_handler(x) for x in sem.value]
-            [self._register_handler(x) for x in sem.statement]
-            [self._register_handler(x) for x in sem.data]
+            [self.register_handler(x) for x in sem.structure]
+            [self.register_handler(x) for x in sem.value]
+            [self.register_handler(x) for x in sem.statement]
+            [self.register_handler(x) for x in sem.data]
 
 
 
