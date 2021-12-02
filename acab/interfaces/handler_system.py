@@ -48,11 +48,13 @@ class HandlerSystem_i(metaclass=abc.ABCMeta, cABC.MutableMapping, cABC.Callable)
     loose_handlers : List[Handler]              = field(init=False, default_factory=list)
     _data          : Dict[str, Any]             = field(init=False, default_factory=dict)
 
-    _default_sieve : ClassVar[List[Callable]]   = []
+    _default_sieve : ClassVar[List[Callable]]   = [str]
 
     @dataclass
     class HandlerOverride:
-        """ Simple Wrapped for forced semantic use """
+        """ Simple Wrapper for forced semantic use
+        ie: a continuation
+        """
         signal   : str              = field()
         value    : Value            = field()
         data     : Dict[Any, Any]   = field(default_factory=dict)
@@ -62,6 +64,21 @@ class HandlerSystem_i(metaclass=abc.ABCMeta, cABC.MutableMapping, cABC.Callable)
     def Spec(name):
         return HandlerSpec(name)
 
+    def __post_init__(self, init_specs, init_handlers, sieve_fns):
+        sieve_fns     = sieve_fns     or self._default_sieve[:]
+        init_specs    = init_specs    or list()
+        init_handlers = init_handlers or list()
+
+        try:
+            self.sieve = AcabSieve(sieve_fns)
+            self._register_spec(*init_specs)
+            self._register_default()
+            # add handlers with funcs before structs
+            self._register_handler(*sorted(init_handlers, key=lambda x: not x.func))
+        except AttributeError as err:
+            raise AcabHandlerException(f"Bad Handler in:", init_handlers) from err
+
+
     def __contains__(self, signal: Union[str, Sentence_i, Handler, HandlerSpec]) -> bool:
         if isinstance(signal, str):
             return signal in self.handler_specs
@@ -70,38 +87,21 @@ class HandlerSystem_i(metaclass=abc.ABCMeta, cABC.MutableMapping, cABC.Callable)
 
         return signal.signal in self.handler_specs
 
-    def __post_init__(self, init_specs, init_handlers, sieve_fns):
-        # TODO handle overriding
-        # TODO init any semantics or structs passed in as Class's
-        # TODO check struct sem -> struct compabilities
-        # by running dependent.compatible(struct)
-        # use default sieve if sieve is empty
+    def __bool__(self):
+        return 1 < len(self.handler_specs)
 
-        if not bool(sieve_fns):
-            self.sieve = AcabSieve(self._default_sieve)
-        else:
-            self.sieve = AcabSieve(sieve_fns)
+    def __len__(self):
+        return len(self.handler_specs)
 
-        if init_specs is None:
-            init_specs = []
-        if init_handlers is None:
-            init_handlers = []
-
-        try:
-            self.register_spec(*init_specs)
-            self.register_default()
-            # add handlers with funcs before structs
-            self.register_handler(*sorted(init_handlers, key=lambda x: not x.func))
-        except AttributeError as err:
-            raise AcabHandlerException(f"Bad Handler in:", init_handlers) from err
-
+    def __getitem__(self, other):
+        return self.handler_specs[str(other)]
 
     def lookup(self, value:Optional[Value]=None) -> HandlerSpec:
         """ run the sieve on the value to get a handler """
         if value is None:
             return self.handler_specs['_:_default']
 
-        is_override = isinstance(value, HandlerSystem_i.HandlerOverride)
+        is_override    = isinstance(value, HandlerSystem_i.HandlerOverride)
         is_passthrough = is_override and value.signal == PASSTHROUGH
         # For using an override to carry data, without an override signal
         if is_passthrough:
@@ -133,32 +133,44 @@ class HandlerSystem_i(metaclass=abc.ABCMeta, cABC.MutableMapping, cABC.Callable)
 
         return HandlerSystem_i.HandlerOverride(new_signal, value)
 
-    def register_default(self):
+    def register(self, other):
+        if isinstance(other, HandlerSpec):
+            self._register_spec(other)
+        elif isinstance(other, Handler):
+            self._register_handler(other)
+        elif isinstance(other, HandlerOverride):
+            raise AcabHandlerException("Attempt to register a HandlerOverride, it should be __call__ed instead")
+        elif isinstance(other, dict):
+            self._register_data(other)
+
+    def _register_default(self):
         if "_:_default" in self and bool(self.handler_specs["_:_default"]):
             return
 
-        self.register_spec(HandlerSpec("_:_default"))
+        self._register_spec(HandlerSpec("_:_default"))
 
 
 
-    def register_spec(self, *specs: HandlerSpec):
+    def _register_spec(self, *specs: HandlerSpec):
         for spec in specs:
-            if spec in self and spec != self.handler_specs[spec.signal]:
+            if spec in self and spec != self.handler_specs[str(spec.signal)]:
                 raise AcabHandlerException(f"Signal Conflict: {spec.signal}")
-            elif spec.signal not in self:
-                self.handler_specs[spec.signal] = spec.copy()
+            elif spec not in self:
+                self.handler_specs[str(spec.signal)] = spec.copy()
 
         # TODO: Then try to register any loose handlers
 
-    def register_data(self, signal, data: Dict[str, Any]):
+    def _register_data(self, data: Dict[str, Any], signal:str=None):
         """
         Register additional data that abstractions may access
         """
-        assert(signal in self)
-        self.handler_specs[signal].register_data(data)
+        if signal is not None:
+            self.handler_specs[signal]._register_data(data)
+        else:
+            self._data.update(data)
 
 
-    def register_handler(self, *handlers: Handler):
+    def _register_handler(self, *handlers: Handler):
         """
         insert a handler into the system, bound to the signal that it listens for
         """
@@ -166,11 +178,12 @@ class HandlerSystem_i(metaclass=abc.ABCMeta, cABC.MutableMapping, cABC.Callable)
             if not isinstance(handler, Handler):
                 raise AcabHandlerException(f"Handler Not Compliant: {handler}", handler)
 
-            if handler.signal not in self:
+            if handler not in self:
                 logging.warning(f"Unexpected handler in register area. Please check {handler.signal}")
+                breakpoint()
                 self.loose_handlers.append(handler)
             else:
-                self.handler_specs[handler.signal]._register(handler)
+                self.handler_specs[str(handler.signal)].register(handler)
 
     def verify(self):
         pass
@@ -188,22 +201,26 @@ class HandlerSystem_i(metaclass=abc.ABCMeta, cABC.MutableMapping, cABC.Callable)
 @dataclass
 class HandlerSpec(cABC.MutableSequence, cABC.Callable):
 
+    signal        : Union[str, Sentence_i]
+    flags         : List[Enum]                    = field(default_factory=list)
+    func_api      : Union[Type[Any], Callable]    = field(default=None)
+    struct_api    : Union[Type[Any], Structure_i] = field(default=None)
+    data_api      : List[str]                     = field(default_factory=list)
+    handler_limit : slice                         = field(default=None)
 
-    signal              : Union[str, Sentence_i]
-    flags               : List[Enum]                    = field(default_factory=list)
-    func_api            : Union[Type[Any], Callable]    = field(default=None)
-    struct_api          : Union[Type[Any], Structure_i] = field(default=None)
-    data_api            : List[str]                     = field(default_factory=list)
+    data            : Dict[str, Any]     = field(init=False, default_factory=dict)
+    handlers        : List[Handler]      = field(init=False, default_factory=list)
+    struct          : Optional[Callable] = field(init=False, default=None)
+    h_limit_history : bool               = field(init=False, default=False)
 
-    registered_data     : Dict[str, Any]                = field(init=False, default_factory=dict)
-    registered_handlers : List[Handler]                 = field(init=False, default_factory=list)
-    registered_struct   : Optional[Callable]            = field(init=False, default=None)
+    flag_e              : Enum = Enum("HandlerFlags", "OVERRIDE MERGE APPEND PREPEND COLLECT REDUCE")
 
     def __repr__(self):
-        return f"HandlerSpec({self.signal}, flags={self.flags}, func_api={self.func_api}, handlers={len(self.registered_handlers)})"
+        return f"HandlerSpec({self.signal}, flags={self.flags}, func_api={self.func_api}, handlers={len(self.handlers)})"
 
     def __bool__(self):
-        return bool(self.registered_handlers)
+        return bool(self.handlers)
+
     def __eq__(self, other: HandlerSpec):
         # TODO handle structs
         # TODO api must be equal
@@ -211,8 +228,32 @@ class HandlerSpec(cABC.MutableSequence, cABC.Callable):
         return self.signal == other.signal
 
     def __getitem__(self, i):
-        return self.registered_handlers[i].func
+        return self.handlers[i].func
 
+    def __len__(self):
+        return len(self.handlers)
+
+    def copy(self, **kwargs) -> HandlerSpec:
+        return replace(self,
+                       func_api=self.func_api,
+                       struct_api=self.struct_api,
+                       data_api=self.data_api)
+
+    def __call__(self, *args, **kwargs):
+        # TODO more advanced logic
+        if self.struct is not None and 'struct' not in kwargs:
+            kwargs['struct'] = self.struct
+
+        for handler in self.handlers:
+            result = handler(*args, **kwargs)
+            if result is not None:
+                return result
+
+    def call_all(self, *args, **kwargs):
+        return [x(*args, **kwargs) for x in self.handlers]
+
+
+    # Set APIs ################################################################
     def spec_from(self, target):
         """
         Decorator to use as the spec's interface.
@@ -239,7 +280,8 @@ class HandlerSpec(cABC.MutableSequence, cABC.Callable):
         self.struct_api = struct
         return self
 
-    def on(self, target, *args, **kwargs) -> Handler:
+    # Create Handler ##########################################################
+    def on(self, target=None, **kwargs) -> Handler:
         """
         basicly create a Handler.
         The inverse decorator of `from`.
@@ -254,27 +296,47 @@ class HandlerSpec(cABC.MutableSequence, cABC.Callable):
         # TODO check target against spec
         return Handler(self.signal, target, **kwargs)
 
-    def _register(self, handler: Handler):
+    # Register Handler ########################################################
+    def register(self, handler: Handler):
         """ Add a handler into the current, according to the spec instructions
         and handler's flags """
         # And check types
-        provides_struct = handler.struct is not None
-        needs_struct    = self.registered_struct is None
+        if handler.struct is not None:
+            self.add_struct(handler)
 
-        if provides_struct and needs_struct:
-            self.add_struct(handler.struct)
-        elif provides_struct and not needs_struct:
-            raise AcabHandlerException(f"{self.signal} struct conflict")
+        if self.flag_e.OVERRIDE in handler.flags and handler.func is not None:
+            self.handlers = [handler]
+        elif handler.func is not None:
+            self.check_api(handler.func)
+            self.handlers.append(handler)
 
-        if handler.func is not None:
-            self.registered_handlers.append(handler)
+        if self.handler_limit is None:
+            return
 
-    def add_struct(self, struct:Structure):
+        # once you hit the minimum number of handlers, you can't go lower
+        if not self.h_limit_history and self.handler_limit.start <= len(self.handlers):
+            self.h_limit_history = True
+
+        if self.h_limit_history and len(self.handlers) < self.handler_limit.start:
+            raise AcabHandlerException("Handlers Lower Limit Failure")
+        elif self.handler_limit.stop < len(self.handlers):
+            raise AcabHandlerException("Handlers Upper Limit Failure")
+
+
+
+    def add_struct(self, handler):
+        struct = handler.struct
         if isinstance(struct, type) and isinstance(struct, AcabStructure):
             struct = struct.build_default()
 
-        self.registered_struct = struct
+        if self.struct is None or self.flag_e.OVERRIDE in handler.flags:
+            self.check_api(struct=struct)
+            self.struct = struct
+        elif self.struct is not None:
+            raise AcabHandlerException(f"{self.signal} struct conflict")
 
+
+    # Check ###################################################################
     def verify(self):
         """
         Check all registered handlers against the api
@@ -285,60 +347,52 @@ class HandlerSpec(cABC.MutableSequence, cABC.Callable):
         pass
     def check_api(self, func=None, data=None, struct=None):
         if func and self.func_api:
-            is_sub = issubclass(self.func_api, func)
-            is_ins = isinstance(self.func_api, func)
-            is_eq  = self.func_api == func
-            return is_sub or is_ins or is_eq
-        elif data and self.data_api:
-            return all([x in self.data_api for x in data])
-        elif struct and self.struct_api:
-            is_sub = issubclass(self.struct_api, struct)
-            is_ins = isinstance(self.struct_api, struct)
-            is_eq  = self.struct_api == struct
-            return is_sub or is_ins or is_eq
-        else:
-            return False
+            self.check_func_api(func)
+        elif data and self.data_api and any([x not in self.data_api for x in data]):
+            raise AcabHandlerException("Data api mismatch: {data} against {self.data_api}")
+        elif struct is not None and self.struct_api is not None:
+            self.check_struct_api(struct)
 
-    def run(self, *args, **kwargs):
-        return self.registered_handlers
+    def check_func_api(self, func):
+        if isinstance(self.func_api, Type):
+            if any([x not in dir(func) for x in dir(self.func_api)]):
+                raise AcabHandlerException(f"Handler Functional API Mismatch: {self.func_api} against {func}")
 
-    def copy(self, **kwargs) -> HandlerSpec:
-        return replace(self,
-                       func_api=self.func_api,
-                       struct_api=self.struct_api,
-                       data_api=self.data_api)
+        elif isinstance(self.func_api, Callable) and not (func.__code__.co_argcount == self.func_api.__code__.co_argcount):
+            raise AcabHandlerException(f"Handler Functional Args API Mismatch: {self.func_api} against {func}")
+
+
+    def check_struct_api(self, struct):
+        is_sub = isinstance(struct, Type) and issubclass(struct, self.struct_api)
+        is_ins = isinstance(struct, self.struct_api)
+        is_eq  = self.struct_api == struct
+
+        if not any([is_sub or is_ins or is_eq]):
+            raise AcabHandlerException("Struct api mismatch: {struct} against {self.struct_api}")
+
 
 @dataclass
-class Handler:
+class HandlerComponent_i:
+    """ Utility Class Component for easy creation of a handler """
+
+    signal : Optional[str] = field(default=None)
+
+    def as_handler(self, signal=None, struct=None, flags=None):
+        assert(signal or self.signal), breakpoint()
+        return Handler(signal or self.signal,
+                       func=self,
+                       struct=struct,
+                       flags=flags or list())
+
+@dataclass
+class Handler(HandlerComponent_i, cABC.Callable):
     """ A Handler implementation for registering
     individual functions or methods """
 
     signal : Union[Sentence, str] = field()
     func   : Optional[Callable]   = field(default=None)
     struct : Optional[Callable]   = field(default=None)
-
-    @staticmethod
-    def decorate(signal_name:str, struct=None):
-        """ Utility decorator to turn any function into a handler """
-        def wrapper(func):
-            return Handler(signal_name,
-                           func=func,
-                           struct=struct)
-
-
-        return wrapper
-
-
-    @staticmethod
-    def from_method(method, signal=None, struct=None):
-        """ A utility function to wrap a single method of a class as a handler.
-        Uses passed in signal, otherwise looks for method.__self__.signal
-        """
-        assert(isinstance(method, MethodType))
-        return Handler(signal or method.__self__.signal,
-                       func=method,
-                       struct=struct)
-
+    flags  : Set[Enum]            = field(default_factory=list)
 
     def __post_init__(self):
         if isinstance(self.func, type):
@@ -373,14 +427,8 @@ class Handler:
         return f"Handler({sig_s:{SPACER}}{func_name:{SPACER}}{struct_name})"
 
 
-    def as_handler(self, signal=None, struct=None):
-        return Handler(signal or self.signal, func=self.func, struct=struct or self.struct)
-@dataclass
-class HandlerComponent_i:
-    """ Utility Class Component for easy creation of a handler """
-
-    signal : Optional[str] = field(default=None)
-
-    def as_handler(self, signal=None, struct=None):
-        assert(signal or self.signal), breakpoint()
-        return Handler(signal or self.signal, func=self, struct=struct)
+    def as_handler(self, signal=None, struct=None, flags=None):
+        return Handler(signal or self.signal,
+                       func=self.func,
+                       struct=struct or self.struct,
+                       flags=flags or self.flags)
