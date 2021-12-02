@@ -13,7 +13,9 @@ Value gets the value at call time.
 Actions are available for preprocessing the value
 
 """
+import importlib
 import logging as root_logger
+from collections import defaultdict
 from configparser import ConfigParser, ExtendedInterpolation
 from dataclasses import InitVar, dataclass, field
 from enum import Enum, EnumMeta
@@ -23,12 +25,11 @@ from os.path import (abspath, exists, expanduser, isdir, isfile, join, split,
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
-from collections import defaultdict
-import importlib
 
 import pyparsing as pp
-from acab.error.config_exception import AcabConfigException
 from acab.core.config import actions as CA
+from acab.error.config_exception import AcabConfigException
+from acab.interfaces.config import ConfigSpec
 
 logging = root_logger.getLogger(__name__)
 
@@ -37,27 +38,6 @@ override_constructor = lambda: defaultdict(lambda: {})
 def GET(*args, hooks=None):
     config = AcabConfig.Get(*args, hooks=hooks)
     return config
-#--------------------------------------------------
-@dataclass
-class ConfigSpec():
-    """ Dataclass to describe a config file value,
-    and any transforms it needs prior to use """
-
-    section : str                = field()
-    key     : Optional[str]      = field(default=None)
-    actions : List[CA.actions_e] = field(default_factory=list)
-    as_list : bool               = field(default=False)
-    as_dict : bool               = field(default=False)
-    as_enum : bool               = field(default=False)
-    as_bool : bool               = field(default=False)
-
-    def __call__(self):
-        inst = AcabConfig.Get()
-        return inst(self)
-
-    def __hash__(self):
-        return hash(f"{self.section}:{self.key}")
-
 #--------------------------------------------------
 # pylint: disable=too-many-instance-attributes
 @dataclass
