@@ -97,7 +97,7 @@ class PrintSystem_i(HandlerSystem_i):
     def extend(self, mods:List[ModuleComponents]):
         logging.info("Extending Printer")
         for printer in [y for x in mods for y in x.printers]:
-            self._register_handler(printer)
+            self.register_handler(printer)
 
 
 #--------------------

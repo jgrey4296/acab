@@ -3,6 +3,7 @@ Interfaces for the use of actual information, both individual,
 and formed into sentences
 """
 import abc
+import collections.abc as cABC
 import logging as root_logger
 from dataclasses import dataclass, field
 from typing import (Any, Dict, List, Mapping, Match, MutableMapping, Optional,
@@ -21,7 +22,7 @@ Value         : str = AT.Value
 AcabStatement : str = AT.Statement
 
 @dataclass(frozen=True)
-class Value_i(metaclass=abc.ABCMeta):
+class Value_i(metaclass=abc.ABCMeta, cABC.Hashable):
 
     name   : str            = field(default=None)
     value  : Any            = field(default=None)
@@ -75,7 +76,7 @@ class Value_i(metaclass=abc.ABCMeta):
 
 
 @dataclass(frozen=True)
-class Statement_i(Value_i):
+class Statement_i(Value_i, cABC.Sized, cABC.Container):
 
     breakpoint : bool = field(init=False, default=False)
     # TODO add listener field for similar to breakpoint
@@ -96,7 +97,7 @@ class Statement_i(Value_i):
         return self.breakpoint
 
 @dataclass(frozen=True)
-class Sentence_i(Statement_i):
+class Sentence_i(Statement_i, cABC.Sequence):
 
     value: List[Value]  = field(default_factory=list)
 

@@ -3,6 +3,7 @@ A DSL interface for the system, which
 
 """
 import abc
+import collections.abc as cABC
 import pyparsing as pp
 import traceback
 import logging as root_logger
@@ -24,7 +25,7 @@ ModuleComponents = AT.ModuleComponents
 File             = 'FileObj'
 
 #----------------------------------------
-class Bootstrapper_i(metaclass=abc.ABCMeta):
+class Bootstrapper_i(metaclass=abc.ABCMeta, cABC.MutableMapping):
     """ A Utility class for registering and retrieving
     interacting parsers """
 
@@ -47,7 +48,7 @@ class Bootstrapper_i(metaclass=abc.ABCMeta):
         pass
 
 #----------------------------------------
-class DSL_Fragment_i(metaclass=abc.ABCMeta):
+class DSL_Fragment_i(metaclass=abc.ABCMeta, cABC.MutableMapping):
     """ """
 
     def set_word_exclusions(self, *words):

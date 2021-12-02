@@ -3,6 +3,7 @@ A Collection of interfaces describing how data is used in the system.
 Here, 'Data' means something analogous to ADTs
 """
 import abc
+import collections.abc as cABC
 from dataclasses import dataclass, field
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
@@ -65,7 +66,7 @@ class Node_i(metaclass=abc.ABCMeta):
 
 # TODO factor 'root' out into AcabNodeStruct
 @dataclass
-class Structure_i(metaclass=abc.ABCMeta):
+class Structure_i(metaclass=abc.ABCMeta, cABC.MutableMapping):
     """ The structures which semantics operate on """
     root       : Node           = field()
     components : Dict[str, Any] = field(init=False, default_factory=dict)

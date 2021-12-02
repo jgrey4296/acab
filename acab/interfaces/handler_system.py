@@ -1,5 +1,6 @@
 #!/opts/anaconda3/envs/ENV/python
 import abc
+import collections.abc as cABC
 import logging as root_logger
 from dataclasses import InitVar, dataclass, field, replace
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
@@ -32,11 +33,10 @@ HandlerSpec        = "HandlerSpec"
 HandlerComponent_i = 'HandlerComponent_i'
 PASSTHROUGH        = "_"
 
-# TODO look at how `pluggy` does it
 # TODO active and passive handlers?,
 # with ability to have multiples for each signal?
 @dataclass
-class HandlerSystem_i(metaclass=abc.ABCMeta):
+class HandlerSystem_i(metaclass=abc.ABCMeta, cABC.MutableMapping, cABC.Callable):
 
     init_specs     : InitVar[List[HandlerSpec]] = field(default=None)
     init_handlers  : InitVar[List[Handler]]     = field(default=None)
@@ -186,7 +186,8 @@ class HandlerSystem_i(metaclass=abc.ABCMeta):
 
 #--------------------
 @dataclass
-class HandlerSpec:
+class HandlerSpec(cABC.MutableSequence, cABC.Callable):
+
 
     signal              : Union[str, Sentence_i]
     flags               : List[Enum]                    = field(default_factory=list)

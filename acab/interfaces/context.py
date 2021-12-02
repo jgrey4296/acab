@@ -4,6 +4,7 @@ and grouped for communication between system components
 """
 
 import abc
+import collections.abc as cABC
 import logging as root_logger
 from dataclasses import InitVar, dataclass, field
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
@@ -43,7 +44,7 @@ class Constraint_i(metaclass=abc.ABCMeta):
         pass
 
 @dataclass
-class ContextSet_i(metaclass=abc.ABCMeta):
+class ContextSet_i(metaclass=abc.ABCMeta, cABC.Set):
 
     @staticmethod
     def build(ops):
@@ -77,7 +78,7 @@ class ContextSet_i(metaclass=abc.ABCMeta):
     def __getitem__(self, index):
         pass
 @dataclass
-class ContextInstance_i(metaclass=abc.ABCMeta):
+class ContextInstance_i(metaclass=abc.ABCMeta, cABC.Mapping):
 
     @abc.abstractmethod
     def bind(self, word, nodes):

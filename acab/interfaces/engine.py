@@ -1,4 +1,5 @@
 import abc
+import collections.abc as cABC
 import logging as root_logger
 from dataclasses import dataclass, field
 from os.path import abspath, exists, expanduser, split
@@ -22,7 +23,7 @@ from acab.core.decorators.engine import EnsureEngineInitialised
 ModuleComponents = AT.ModuleComponents
 
 @dataclass
-class AcabEngine_i(metaclass=abc.ABCMeta):
+class AcabEngine_i(metaclass=abc.ABCMeta, cABC.Sequence):
 
     # Root components to extend
     parser         : DSL_Fragment_i   = field()

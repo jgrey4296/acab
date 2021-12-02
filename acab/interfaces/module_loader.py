@@ -2,6 +2,7 @@
 Provide a number of individual interfaces for top level Engine functionality
 """
 import abc
+import collections.abc as cABC
 import logging as root_logger
 import traceback
 import sys
@@ -54,7 +55,7 @@ class ModuleComponents():
 
 #--------------------
 @dataclass
-class ModuleLoader_i(metaclass=abc.ABCMeta):
+class ModuleLoader_i(metaclass=abc.ABCMeta, cABC.Mapping):
     """ Describes how an engine loads ACAB/py modules """
     loaded_modules       : Dict[str, ModuleComponents]  = field(init=False, default_factory=dict)
 
