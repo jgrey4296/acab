@@ -8,7 +8,7 @@ from typing import cast, ClassVar, TypeVar, Generic
 # Default Highest Priority Sieve tests
 default_sieve_top       : List[Callable] = [
     # override tuple : 1 -> 1 : any
-    lambda x              : x.signalif isinstance(x, PrintSystem_i.HandlerOverride) else None,
+    lambda x              : x.signal if isinstance(x, PrintSystem_i.HandlerOverride) else None,
     # symbol         : m -> m : any
     lambda x              : "SYMBOL" if isinstance(x, ConfigSpec) else None,
     # enum
