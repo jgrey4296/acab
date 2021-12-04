@@ -39,6 +39,19 @@ class BasicNodeStruct(AcabStruct):
         val += ")"
         return val
 
+    def __delitem__(self, key):
+        pass
+
+    def __getitem__(self, key):
+        pass
+
+    def __setitem__(self, key, value):
+        pass
+
+    def __iter__(self):
+        pass
+
+
 class NPArrayStruct(AcabStruct):
     """ A numpy based data structure """
     pass

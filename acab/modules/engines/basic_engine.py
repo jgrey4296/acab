@@ -42,7 +42,7 @@ class AcabBasicEngine(AcabEngine_i):
     def __post_init__(self):
         # initialise modules
         self.load_modules(*self.modules)
-        self.semantics.register_data({"printer": self.printer})
+        self.semantics.register({"printer": self.printer})
         self.initialised = True
 
     @EnsureEngineInitialised

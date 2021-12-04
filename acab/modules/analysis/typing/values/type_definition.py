@@ -27,7 +27,6 @@ NAME_S          = config.prepare("Parse.Structure", "NAME")()
 class TypeDefinition(TypeStatement):
     """ Defines the Structure of a Product type """
 
-
     def __post_init__(self):
         """ Structure creates the dict of locations.
         Only leaves get type anotations. Thus:
@@ -51,6 +50,13 @@ class TypeDefinition(TypeStatement):
 
         return path_eq and structure_len and structure_eq
 
+
+    def __contains__(self, key):
+
+        return key in self.structure
+
+    def __len__(self):
+        return len(self.structure)
 
 # TODO Factor these into typedef: ###############################################
 @dataclass(frozen=True)

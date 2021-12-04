@@ -28,7 +28,7 @@ class QueryAbstraction(SI.StatementSemantics_i):
         query = instruction
         # Get the default dependent semantics
         spec = semSys.lookup()
-        struct = spec.registered_struct
+        struct = spec.struct
         for clause in query.clauses:
             spec[0].query(clause, struct, data=data, ctxs=ctxs)
 
@@ -41,7 +41,7 @@ class QueryPlusAbstraction(SI.StatementSemantics_i):
         query = instruction
         for clause in query.clauses:
             spec = semSys.lookup(clause)
-            struct = spec.registered_struct
+            struct = spec.struct
             if struct is None:
                 struct = semSys
 

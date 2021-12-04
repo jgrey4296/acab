@@ -109,7 +109,7 @@ class ContextInstance(CtxInt.ContextInstance_i):
     def __len__(self):
         return len(self.data)
     def __iter__(self):
-        return iter(self.data.values())
+        raise NotImplementedError("Iteration on a ContextInstance is nonsensical")
 
     def __repr__(self):
         binds  = ", ".join([x for x in self.data.keys()])
@@ -311,6 +311,16 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i):
     def __repr__(self):
         return f"(CtxSet: Active:{len(self._active)} Failed:{len(self._failed)} Total:{len(self._total)})"
 
+    def __contains__(self, key: Union[CtxIns, UUID]):
+        if isinstance(key, CtxIns):
+            key = key.uuid
+
+        return key in self._active
+
+    def __iter__(self):
+        for uuid in self._active:
+            yield self._total[uuid]
+
     def fail(self, instance: CtxIns, word: Value, node: Node, query:Sen):
         """ Record a failure, the query sentence that failed,
         and the word that it failed on """
@@ -428,6 +438,9 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
 
         # Re-raise any errors
         return False
+
+    def __iter__(self):
+        raise NotImplementedError("Iteration on a MutableContextInstance is nonsensical")
 
     def finish(self):
         return self.base.bind_dict(self.data)

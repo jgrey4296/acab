@@ -93,6 +93,11 @@ class ProductionComponent(AcabStatement):
         assert(isinstance(self.value, Sentence))
         self.data[DS.TYPE_INSTANCE] = DS.COMPONENT_PRIM
 
+    def __len__(self):
+        return 1
+    def __contains__(self, value):
+        return value in self.value or value == rebind
+
     def to_sentences(self):
         """
         Sentence([op_path].[param1.param2.param3...].result)
@@ -122,7 +127,7 @@ class ProductionComponent(AcabStatement):
 class ProductionContainer(AcabStatement):
     """ Production Container: An applicable statement of multiple component clauses """
 
-    value : List = field(default_factory=list)
+    value : List[Sentence] = field(default_factory=list)
 
     def __post_init__(self):
         super(ProductionContainer, self).__post_init__()
@@ -133,10 +138,6 @@ class ProductionContainer(AcabStatement):
         clauses = ";".join([repr(x) for x in self.clauses])
         return "(ProductionContainer:{}:{})".format(self.name,
                                                     clauses)
-    def to_sentences(self):
-        """ [ClauseA, ClauseB, ClauseC...] """
-        raise NotImplementedError()
-
     @cache
     def __len__(self):
         return len(self.clauses)
@@ -144,12 +145,19 @@ class ProductionContainer(AcabStatement):
     def __iter__(self):
         return iter(self.clauses)
 
+    def __contains__(self, key):
+        return key in self.value
+
     @property
     def clauses(self):
         return self.value
 
     def bind(self, data) -> Container:
         raise Exception("Deprecated: use acab.modules.values.binding")
+
+    def to_sentences(self):
+        """ [ClauseA, ClauseB, ClauseC...] """
+        raise NotImplementedError()
 
 @dataclass(frozen=True)
 class ProductionStructure(ProductionContainer):
@@ -172,17 +180,6 @@ class ProductionStructure(ProductionContainer):
             pass
 
 
-    def to_sentences(self):
-        """
-        [prefix.[ClauseA],
-         prefix.[ClauseB..],
-         prefixB.[ClauseX],
-         prefixB.[Clause,Y],
-         prefixC.[..]
-        ..]
-        """
-        raise NotImplementedError()
-
     @cache
     def __repr__(self):
         actual  = [x for x in self.keys if x in self]
@@ -196,15 +193,27 @@ class ProductionStructure(ProductionContainer):
     def __hash__(self):
         return hash(repr(self))
 
+    def __getitem__(self, key):
+        return self.structure[key]
+
+
+    def __contains__(self, key):
+        return key in self.structure and bool(self.structure[key])
     @property
     def keys(self):
         return self.structure.keys()
 
-    def __getitem__(self, key):
-        return self.structure[key]
-
     def bind(self, data) -> PStructure:
         raise Exception("Deprecated: use acab.modules.values.binding")
 
-    def __contains__(self, key):
-        return key in self.structure and bool(self.structure[key])
+
+    def to_sentences(self):
+        """
+        [prefix.[ClauseA],
+         prefix.[ClauseB..],
+         prefixB.[ClauseX],
+         prefixB.[Clause,Y],
+         prefixC.[..]
+        ..]
+        """
+        raise NotImplementedError()

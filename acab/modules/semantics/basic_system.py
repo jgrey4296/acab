@@ -60,7 +60,7 @@ class BasicSemanticSystem(SemanticSystem_i):
         try:
             data   = {}
             spec   = self.lookup(instruction)
-            struct = spec.registered_struct
+            struct = spec.struct
             assert(spec is not None)
             logging.debug(f"Firing Semantics: {spec}")
             # TODO entry hooks would go here.
@@ -88,7 +88,8 @@ class BasicSemanticSystem(SemanticSystem_i):
         return ctxs
 
     def to_sentences(self) -> List[Sentence]:
-        return self.default.func.to_sentences(self.default.struct)
+        default = self.lookup()
+        return default[0].to_sentences(default.struct)
 
 
     def __repr__(self):
