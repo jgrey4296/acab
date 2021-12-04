@@ -14,6 +14,14 @@ from acab.core.data.values import AcabValue, AcabStatement
 from acab.core.data.values import Sentence
 from acab.core.data.node import AcabNode
 
+class BasicStatement(AcabStatement):
+
+    def __contains__(self, val):
+        return False
+
+    def __len__(self):
+        return 0
+
 class StatementTests(unittest.TestCase):
 
     @classmethod
@@ -42,7 +50,7 @@ class StatementTests(unittest.TestCase):
         basic_node_parser.setParseAction(lambda s, l, toks: Sentence.build([AcabValue(toks[0])]))
 
         basic_value_parser = pp.Keyword('value')
-        basic_value_parser.setParseAction(lambda s, l, toks: AcabStatement(toks[0]))
+        basic_value_parser.setParseAction(lambda s, l, toks: BasicStatement(toks[0]))
 
         statement_p = PU.STATEMENT_CONSTRUCTOR(basic_node_parser,
                                                basic_value_parser)
@@ -58,7 +66,7 @@ class StatementTests(unittest.TestCase):
         basic_node_parser.setParseAction(lambda s, l, toks: Sentence.build([AcabValue(toks[0])]))
 
         basic_value_parser = pp.Keyword('value')
-        basic_value_parser.setParseAction(lambda s, l, toks: AcabStatement(toks[0]))
+        basic_value_parser.setParseAction(lambda s, l, toks: BasicStatement(toks[0]))
 
         statement_p = PU.STATEMENT_CONSTRUCTOR(basic_node_parser,
                                                basic_value_parser)

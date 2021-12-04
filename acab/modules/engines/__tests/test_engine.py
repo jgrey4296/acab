@@ -62,10 +62,10 @@ class TestEngine(unittest.TestCase):
                                     printer=DEFAULT_PRINTER(),
                                     modules=[])
 
-        query = basic.query("a.test.sentence?")
+        query = basic("a.test.sentence?")
         self.assertFalse(bool(query))
-        basic.insert("a.test.sentence")
-        result = basic.query("a.test.sentence?")
+        basic("a.test.sentence")
+        result = basic("a.test.sentence?")
         self.assertTrue(bool(result))
 
     def test_query(self):
@@ -74,15 +74,12 @@ class TestEngine(unittest.TestCase):
                                 printer=DEFAULT_PRINTER(),
                                 modules=[])
 
-        query = basic.query("a.test.$x?")
+        query = basic("a.test.$x?")
         self.assertFalse(bool(query))
-        basic.insert("a.test.sentence")
-        result = basic.query("a.test.$x?")
+        basic("a.test.sentence")
+        result = basic("a.test.$x?")
         self.assertTrue(bool(result))
-        self.assertEqual(result[0]['$x'].value, 'sentence')
-
-
-
+        self.assertEqual(result[0]['x'].value, 'sentence')
 
     def test_printer_setup(self):
         # Create the engine
@@ -91,9 +88,9 @@ class TestEngine(unittest.TestCase):
                                     printer=DEFAULT_PRINTER(),
                                     modules=[])
 
-        basic.insert("a.test.sentence")
-        basic.insert("a.test.blah")
-        sentences = basic.to_sentences()
+        basic("a.test.sentence")
+        basic("a.test.blah")
+        sentences = basic.semantics.to_sentences()
         self.assertEqual(len(sentences), 2)
         result = basic.pprint()
         self.assertEqual(result, "a.test.sentence\na.test.blah")
@@ -107,15 +104,16 @@ class TestEngine(unittest.TestCase):
                                     modules=[])
 
 
-        basic.insert("a.test.sentence:\nblah\nbloo\nblee\nend")
+        basic("a.test.sentence:\nblah\nbloo\nblee\nend")
 
-        sentences = basic.to_sentences()
+        sentences = basic.semantics.to_sentences()
         self.assertEqual(len(sentences), 3)
         result = basic.pprint()
         self.assertEqual(result, "a.test.sentence.blah\na.test.sentence.bloo\na.test.sentence.blee")
 
 
 
+    @unittest.skip("need to finish this")
     def test_module_setup(self):
         basic     = AcabBasicEngine(parser=EXLO_Parser(),
                                     semantics=DEFAULT_SEMANTICS(),
@@ -123,6 +121,8 @@ class TestEngine(unittest.TestCase):
                                     modules=["acab.modules.operators.query"])
         self.assertTrue("acab.modules.operators.query" in basic._module_loader)
 
-        basic.insert("a.test.sentence")
-        result = basic.query("a.test.sentence(#test)?")
+        basic("a.test.sentence")
+        result = basic("a.test.sentence(#test)?")
+
+        breakpoint()
         self.assertTrue(bool(result))

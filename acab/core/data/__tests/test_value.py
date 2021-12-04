@@ -14,6 +14,14 @@ from acab.core.data.node import AcabNode
 AT_BIND_S = config.prepare("Value.Structure", "AT_BIND")()
 BIND_S    = config.prepare("Value.Structure", "BIND")()
 
+class BasicStatement(AcabStatement):
+
+    def __contains__(self, val):
+        return False
+
+    def __len__(self):
+        return 0
+
 class AcabValueTests(unittest.TestCase):
 
     @classmethod
@@ -46,7 +54,7 @@ class AcabValueTests(unittest.TestCase):
 
     def test_attach_statement(self):
         # TODO this is duplicated from test sentence
-        value = AcabStatement(value="test")
+        value = BasicStatement(value="test")
         sen = Sentence.build(["a", "b", "c", "d", "e"])
         self.assertEqual(sen[-1].value, "e")
         self.assertIsInstance(sen[-1].value, str)
@@ -57,7 +65,7 @@ class AcabValueTests(unittest.TestCase):
 
     def test_attach_statement_with_tags(self):
         # TODO move to test sentence
-        value = AcabStatement("test")
+        value = BasicStatement("test")
         value.tags.add('testval')
         sen = Sentence.build(["a", "b", "c", "d", "e"])
         self.assertEqual(sen[-1].value, "e")
@@ -102,7 +110,7 @@ class AcabValueTests(unittest.TestCase):
 
     def test_statement_to_simple_value(self):
         """ Check a statement can be downgraded to a value """
-        value = AcabStatement("test")
+        value = BasicStatement("test")
         self.assertIsInstance(value, AcabStatement)
         basic = value.to_word()
         self.assertIsInstance(basic, AcabValue)

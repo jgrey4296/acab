@@ -181,7 +181,7 @@ class StatementSemanticTests(unittest.TestCase):
 
         # Specs
         default_spec  = BasicSemanticSystem.Spec("_:_default").spec_from(StatementSemantics_i)
-        all_specs     = default.DEFAULT_HANDLER_SPECS() + [default_spec]
+        all_specs     = default.DEFAULT_SPECS() + [default_spec]
         # Semantics
         transform_sem = ASem.TransformAbstraction().as_handler(TRANSFORM_SEM_HINT)
         action_sem    = ASem.ActionAbstraction().as_handler(ACTION_SEM_HINT)
@@ -261,7 +261,7 @@ class StatementSemanticTests(unittest.TestCase):
         trans_sem   = ASem.TransformAbstraction().as_handler(TRANSFORM_SEM_HINT)
         cont_sem    = ASem.ContainerAbstraction().as_handler("_:CONTAINER")
 
-        semSys      = BasicSemanticSystem(init_specs=default.DEFAULT_HANDLER_SPECS(),
+        semSys      = BasicSemanticSystem(init_specs=default.DEFAULT_SPECS(),
                                           init_handlers=[cont_sem,
                                                          query_sem,
                                                          action_sem,
@@ -343,7 +343,7 @@ class StatementSemanticTests(unittest.TestCase):
         # THIS IS THE MAJOR CHANGE OF THIS TEST:
         rule_sem    = ASem.ProxyRuleAbstraction().as_handler(RULE_SEM_HINT)
 
-        semSys      = BasicSemanticSystem(init_specs=default.DEFAULT_HANDLER_SPECS(),
+        semSys      = BasicSemanticSystem(init_specs=default.DEFAULT_SPECS(),
                                           init_handlers=[query_sem,
                                                          action_sem,
                                                          trans_sem,
