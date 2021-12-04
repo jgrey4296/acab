@@ -16,7 +16,7 @@ Node               = AT.Node
 Structure          = AT.DataStructure
 
 @dataclass
-class Node_i(metaclass=abc.ABCMeta):
+class Node_i(cABC.MutableMapping):
     """  """
 
     value    : Value
@@ -64,9 +64,21 @@ class Node_i(metaclass=abc.ABCMeta):
     def key(self) -> str:
         pass
 
+    def __getitem__(self, key):
+        return self.get_child(key)
+
+    def __setitem__(self, key, value):
+        raise NotImplementedError("Nodes don't directly set a key's value, use add_child")
+
+    def __delitem__(self, key):
+        return self.remove_child(key)
+
+    def __iter__(self):
+        return iter(self.children)
+
 # TODO factor 'root' out into AcabNodeStruct
 @dataclass
-class Structure_i(metaclass=abc.ABCMeta, cABC.MutableMapping):
+class Structure_i(cABC.MutableMapping):
     """ The structures which semantics operate on """
     root       : Node           = field()
     components : Dict[str, Any] = field(init=False, default_factory=dict)

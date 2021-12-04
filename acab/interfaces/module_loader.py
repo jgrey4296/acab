@@ -55,7 +55,7 @@ class ModuleComponents():
 
 #--------------------
 @dataclass
-class ModuleLoader_i(metaclass=abc.ABCMeta, cABC.Mapping):
+class ModuleLoader_i(cABC.Mapping):
     """ Describes how an engine loads ACAB/py modules """
     loaded_modules       : Dict[str, ModuleComponents]  = field(init=False, default_factory=dict)
 
@@ -124,3 +124,8 @@ class ModuleLoader_i(metaclass=abc.ABCMeta, cABC.Mapping):
     def __repr__(self):
         loaded_modules = ", ".join([x for x in self.loaded_modules.keys()])
         return f"ModuleLoader({loaded_modules})"
+
+    def __iter__(self):
+        return self.loaded_modules.values()
+    def __len__(self):
+        return len(self.loaded_modules)

@@ -25,7 +25,7 @@ ModuleComponents = AT.ModuleComponents
 File             = 'FileObj'
 
 #----------------------------------------
-class Bootstrapper_i(metaclass=abc.ABCMeta, cABC.MutableMapping):
+class Bootstrapper_i(cABC.MutableMapping):
     """ A Utility class for registering and retrieving
     interacting parsers """
 
@@ -47,8 +47,20 @@ class Bootstrapper_i(metaclass=abc.ABCMeta, cABC.MutableMapping):
         """ Return a report on the bootstrap registrations """
         pass
 
+    def __getitem__(self, key):
+        return self.query(key)
+
+    def __delitem__(self, key):
+        raise NotImplementedError("Bootstrapper's for DSLs should not be able to remove data")
+
+    def __setitem__(self, key, value):
+        self.add(key, value)
+
+    def __iter__(self):
+        raise NotImplementedError("Iterating through a DSL Bootstrapper doesn't make sense")
+
 #----------------------------------------
-class DSL_Fragment_i(metaclass=abc.ABCMeta, cABC.MutableMapping):
+class DSL_Fragment_i(cABC.MutableMapping):
     """ """
 
     def set_word_exclusions(self, *words):
@@ -86,6 +98,21 @@ class DSL_Fragment_i(metaclass=abc.ABCMeta, cABC.MutableMapping):
         pass
 
 
+
+    def __delitem__(self, key):
+        raise NotImplementedError("DSL Fragment's shouldn't delete parsers")
+
+    def __getitem__(self, key):
+        raise NotImplementedError("DSL Fragment's should get parsers using `query_parsers`")
+
+    def __setitem__(self, key, value):
+        raise NotImplementedError("DSL Fragment's should add parsers using `assert_parsers`")
+
+    def __iter__(self):
+        raise NotImplementedError("Iteration through DSL Fragment's is nonsensical")
+
+    def __len__(self):
+        raise NotImplementedError("Length of a DSL Fragment is nonsensical")
 
 #----------------------------------------
 @dataclass

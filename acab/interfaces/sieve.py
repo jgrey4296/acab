@@ -14,7 +14,7 @@ import acab
 config = acab.GET()
 
 @dataclass
-class AcabSieve(metaclass=abc.ABCMeta, cABC.Container, cABC.Sized):
+class AcabSieve(cABC.Container, cABC.Sized):
     """ A Generalisation of a list of functions, applied
     to a set of args, which might return results
     """
@@ -81,3 +81,6 @@ class AcabSieve(metaclass=abc.ABCMeta, cABC.Container, cABC.Sized):
 
     def __len__(self):
         return len(self.funcs)
+
+    def __contains__(self, value):
+        return value in self.funcs

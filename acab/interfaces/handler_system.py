@@ -36,7 +36,7 @@ PASSTHROUGH        = "_"
 # TODO active and passive handlers?,
 # with ability to have multiples for each signal?
 @dataclass
-class HandlerSystem_i(metaclass=abc.ABCMeta, cABC.MutableMapping, cABC.Callable):
+class HandlerSystem_i(cABC.MutableMapping, cABC.Callable):
 
     init_specs     : InitVar[List[HandlerSpec]] = field(default=None)
     init_handlers  : InitVar[List[Handler]]     = field(default=None)
@@ -96,6 +96,18 @@ class HandlerSystem_i(metaclass=abc.ABCMeta, cABC.MutableMapping, cABC.Callable)
     def __getitem__(self, other):
         return self.handler_specs[str(other)]
 
+    def __delitem__(self, key):
+        raise NotImplementedError("HandlerSystems should be monotonoic")
+
+    def __setitem__(self, key, value):
+        raise NotImplementedError("HandlerSystems should modify through `register` and `extend`")
+
+    def __iter__(self):
+
+
+
+        raise NotImplementedError("HandlerSystems should access using `lookup` and `__getitem__`")
+
     def lookup(self, value:Optional[Value]=None) -> HandlerSpec:
         """ run the sieve on the value to get a handler """
         if value is None:
@@ -138,7 +150,7 @@ class HandlerSystem_i(metaclass=abc.ABCMeta, cABC.MutableMapping, cABC.Callable)
             self._register_spec(other)
         elif isinstance(other, Handler):
             self._register_handler(other)
-        elif isinstance(other, HandlerOverride):
+        elif isinstance(other, HandlerSystem_i.HandlerOverride):
             raise AcabHandlerException("Attempt to register a HandlerOverride, it should be __call__ed instead")
         elif isinstance(other, dict):
             self._register_data(other)
@@ -227,17 +239,17 @@ class HandlerSpec(cABC.MutableSequence, cABC.Callable):
         # TODO data and struct api's must be equal
         return self.signal == other.signal
 
-    def __getitem__(self, i):
-        return self.handlers[i].func
-
     def __len__(self):
         return len(self.handlers)
 
-    def copy(self, **kwargs) -> HandlerSpec:
-        return replace(self,
-                       func_api=self.func_api,
-                       struct_api=self.struct_api,
-                       data_api=self.data_api)
+    def __getitem__(self, i):
+        return self.handlers[i].func
+
+    def __delitem__(self, key):
+        raise NotImplementedError("Handler Spec's should not delete items")
+
+    def __setitem__(self, key, val):
+        raise NotImplementedError("Handler Spec's should not set items")
 
     def __call__(self, *args, **kwargs):
         # TODO more advanced logic
@@ -248,6 +260,15 @@ class HandlerSpec(cABC.MutableSequence, cABC.Callable):
             result = handler(*args, **kwargs)
             if result is not None:
                 return result
+
+    def insert(self, item):
+        raise NotImplementedError("Handler Spec's should `register` handlers through a HandlerSystem")
+
+    def copy(self, **kwargs) -> HandlerSpec:
+        return replace(self,
+                       func_api=self.func_api,
+                       struct_api=self.struct_api,
+                       data_api=self.data_api)
 
     def call_all(self, *args, **kwargs):
         return [x(*args, **kwargs) for x in self.handlers]
@@ -352,6 +373,8 @@ class HandlerSpec(cABC.MutableSequence, cABC.Callable):
             raise AcabHandlerException("Data api mismatch: {data} against {self.data_api}")
         elif struct is not None and self.struct_api is not None:
             self.check_struct_api(struct)
+
+        return True
 
     def check_func_api(self, func):
         if isinstance(self.func_api, Type):

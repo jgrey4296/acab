@@ -23,7 +23,7 @@ from acab.core.decorators.engine import EnsureEngineInitialised
 ModuleComponents = AT.ModuleComponents
 
 @dataclass
-class AcabEngine_i(metaclass=abc.ABCMeta, cABC.Sequence):
+class AcabEngine_i(cABC.Sequence):
 
     # Root components to extend
     parser         : DSL_Fragment_i   = field()
@@ -129,3 +129,9 @@ class AcabEngine_i(metaclass=abc.ABCMeta, cABC.Sequence):
     @abc.abstractmethod
     def __call__(self, thing, ctxset=None) -> ContextSet_i:
         pass
+
+    def __getitem__(self, key):
+        raise NotImplementedError()
+
+    def __len__(self):
+        raise NotImplementedError()

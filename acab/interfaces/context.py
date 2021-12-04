@@ -44,7 +44,7 @@ class Constraint_i(metaclass=abc.ABCMeta):
         pass
 
 @dataclass
-class ContextSet_i(metaclass=abc.ABCMeta, cABC.Set):
+class ContextSet_i(cABC.Hashable, cABC.Set):
 
     @staticmethod
     def build(ops):
@@ -63,22 +63,14 @@ class ContextSet_i(metaclass=abc.ABCMeta, cABC.Set):
         pass
 
     @abc.abstractmethod
-    def __len__(self):
-        pass
-    @abc.abstractmethod
-    def __hash__(self):
-        pass
-    @abc.abstractmethod
     def active_list(self, clear=False):
         pass
     @abc.abstractmethod
     def failed_list(self):
         pass
-    @abc.abstractmethod
-    def __getitem__(self, index):
-        pass
+
 @dataclass
-class ContextInstance_i(metaclass=abc.ABCMeta, cABC.Mapping):
+class ContextInstance_i(cABC.Mapping):
 
     @abc.abstractmethod
     def bind(self, word, nodes):

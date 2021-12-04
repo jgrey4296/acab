@@ -209,6 +209,9 @@ class ValueSemantics_i(HandlerComponent_i):
         pass
 
 
+    def update(self, node:Node, term:Value, data:Dict[Any, Any]=None):
+        # TODO
+        pass
 class StatementSemantics_i(HandlerComponent_i):
     """
     Semantics of Higher level abstractions

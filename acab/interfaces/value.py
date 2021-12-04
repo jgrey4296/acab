@@ -22,7 +22,7 @@ Value         : str = AT.Value
 AcabStatement : str = AT.Statement
 
 @dataclass(frozen=True)
-class Value_i(metaclass=abc.ABCMeta, cABC.Hashable):
+class Value_i(cABC.Hashable):
 
     name   : str            = field(default=None)
     value  : Any            = field(default=None)
@@ -95,6 +95,7 @@ class Statement_i(Value_i, cABC.Sized, cABC.Container):
     @property
     def should_break(self) -> bool:
         return self.breakpoint
+
 
 @dataclass(frozen=True)
 class Sentence_i(Statement_i, cABC.Sequence):

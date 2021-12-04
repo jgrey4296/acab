@@ -39,7 +39,10 @@ class PrintSystem_i(HandlerSystem_i):
         super().__post_init__(specs, handlers, sieve_fns)
         if not bool(self.handler_specs["_:_default"]):
             default = Handler("_:_default", lambda x, data=None: str(x))
-            self.register_handler(default)
+            self.register(default)
+
+    def __call__(self, *args) -> str:
+        return self.pprint(*args)
 
     def check(self, val) -> Optional[str]:
         """ Check a value to toggle variations/get defaults"""
@@ -91,13 +94,10 @@ class PrintSystem_i(HandlerSystem_i):
         return result
 
 
-    def __call__(self, *args) -> str:
-        return self.pprint(*args)
-
     def extend(self, mods:List[ModuleComponents]):
         logging.info("Extending Printer")
         for printer in [y for x in mods for y in x.printers]:
-            self.register_handler(printer)
+            self.register(printer)
 
 
 #--------------------
