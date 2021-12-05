@@ -103,10 +103,8 @@ class HandlerSystem_i(cABC.MutableMapping, cABC.Callable):
         raise NotImplementedError("HandlerSystems should modify through `register` and `extend`")
 
     def __iter__(self):
-
-
-
-        raise NotImplementedError("HandlerSystems should access using `lookup` and `__getitem__`")
+        for spec in self.handler_specs.values():
+            yield spec
 
     def lookup(self, value:Optional[Value]=None) -> HandlerSpec:
         """ run the sieve on the value to get a handler """
@@ -145,15 +143,21 @@ class HandlerSystem_i(cABC.MutableMapping, cABC.Callable):
 
         return HandlerSystem_i.HandlerOverride(new_signal, value)
 
-    def register(self, other):
-        if isinstance(other, HandlerSpec):
-            self._register_spec(other)
-        elif isinstance(other, Handler):
-            self._register_handler(other)
-        elif isinstance(other, HandlerSystem_i.HandlerOverride):
-            raise AcabHandlerException("Attempt to register a HandlerOverride, it should be __call__ed instead")
-        elif isinstance(other, dict):
-            self._register_data(other)
+    def register(self, *others):
+        for other in others:
+            if isinstance(other, Handler_Fragment):
+                for item in other:
+                    self.register(item)
+            elif isinstance(other, HandlerSpec):
+                self._register_spec(other)
+            elif isinstance(other, Handler):
+                self._register_handler(other)
+            elif isinstance(other, HandlerSystem_i.HandlerOverride):
+                raise AcabHandlerException("Attempt to register a HandlerOverride, it should be __call__ed instead")
+            elif isinstance(other, dict):
+                self._register_data(other)
+
+        return self
 
     def _register_default(self):
         if "_:_default" in self and bool(self.handler_specs["_:_default"]):
@@ -192,7 +196,6 @@ class HandlerSystem_i(cABC.MutableMapping, cABC.Callable):
 
             if handler not in self:
                 logging.warning(f"Unexpected handler in register area. Please check {handler.signal}")
-                breakpoint()
                 self.loose_handlers.append(handler)
             else:
                 self.handler_specs[str(handler.signal)].register(handler)
@@ -412,19 +415,21 @@ class Handler(HandlerComponent_i, cABC.Callable):
     """ A Handler implementation for registering
     individual functions or methods """
 
-    signal : Union[Sentence, str] = field()
-    func   : Optional[Callable]   = field(default=None)
-    struct : Optional[Callable]   = field(default=None)
-    flags  : Set[Enum]            = field(default_factory=list)
+    signal   : Union[Sentence, str] = field()
+    func     : Optional[Callable]   = field(default=None)
+    struct_i : Optional[Callable]   = field(default=None)
+    flags    : Set[Enum]            = field(default_factory=list)
+
+    struct   : Optional[Structure]  = field(default=None)
 
     def __post_init__(self):
         if isinstance(self.func, type):
             self.func = self.func()
 
-        if isinstance(self.struct, type) and hasattr(self.struct, "build_default"):
-            self.struct = self.struct.build_default()
+        if isinstance(self.struct_i, type) and hasattr(self.struct_i, "build_default"):
+            self.struct = self.struct_i.build_default()
         elif isinstance(self.struct, type):
-            self.struct = self.struct()
+            self.struct = self.struct_i()
 
 
     def __call__(self, *args, **kwargs):
@@ -447,7 +452,7 @@ class Handler(HandlerComponent_i, cABC.Callable):
         if self.struct is not None:
             struct_name = str(self.struct.__class__.__name__)
 
-        return f"Handler({sig_s:{SPACER}}{func_name:{SPACER}}{struct_name})"
+        return f"Handler({sig_s}: {func_name}: {struct_name})"
 
 
     def as_handler(self, signal=None, struct=None, flags=None):
@@ -455,3 +460,28 @@ class Handler(HandlerComponent_i, cABC.Callable):
                        func=self.func,
                        struct=struct or self.struct,
                        flags=flags or self.flags)
+
+
+# Modules #####################################################################
+@dataclass
+class Handler_Fragment(metaclass=abc.ABCMeta):
+    """ Structure of Handlers to be added to a system, and any
+    data they require
+    """
+    specs       : List[HandlerSpec]        = field(default_factory=list)
+    handlers    : List[Handler]            = field(default_factory=list)
+    target_i    : HandlerSystem_i          = field(default=HandlerSystem_i)
+
+
+    def __len__(self):
+        return len(self.handlers)
+
+    def __repr__(self):
+        return f"(Handler Fragment for {self.target_i}: {len(self.specs)} Specs, {len(self.handlers)} Handlers)"
+
+    def __iter__(self):
+        for x in self.specs:
+            yield x
+
+        for y in self.handlers:
+            yield y
