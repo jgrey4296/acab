@@ -34,9 +34,10 @@ def DEFAULT_TRIE_SPEC(name="_:trie"):
     return node_spec, trie_spec
 
 def DEFAULT_TRIE(name="_:trie"):
-    node_sem    = BasicNodeSemantics("_:atom")
-    trie_sem    = BreadthTrieSemantics(name,
-                                       init_handlers=[node_sem.as_handler("_:_default")])
+    node_handler = BasicNodeSemantics("_:atom").as_handler()
+    trie_sem     = BreadthTrieSemantics(signal=name,
+                                        init_handlers=[node_handler.as_handler("_:_default")])
 
-    trie_struct = BasicNodeStruct.build_default(name)
-    return (node_sem, trie_sem, trie_struct)
+    trie_handler = trie_sem.as_handler(struct=BasicNodeStruct.build_default())
+
+    return (node_handler, trie_handler)

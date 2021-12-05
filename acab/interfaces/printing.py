@@ -11,8 +11,9 @@ from acab.core.config.config import AcabConfig
 from acab.core.data import production_abstractions as PA
 from acab.core.data.values import AcabStatement
 from acab.interfaces.handler_system import (Handler,
-                                                     HandlerComponent_i,
-                                                     HandlerSystem_i)
+                                            HandlerComponent_i,
+                                            HandlerSystem_i,
+                                            Handler_Fragment)
 from acab.interfaces.value import Sentence_i, Value_i
 from acab.core.printing.default_symbols import PRINT_SEPARATOR_P
 from acab.error.print_exception import AcabPrintException
@@ -96,8 +97,13 @@ class PrintSystem_i(HandlerSystem_i):
 
     def extend(self, mods:List[ModuleComponents]):
         logging.info("Extending Printer")
-        for printer in [y for x in mods for y in x.printers]:
-            self.register(printer)
+        logging.info("Extending Semantics")
+        printers = [y for x in mods for y in x.printers]
+        assert(all([isinstance(x, Printer_Fragment) for x in printers]))
+        for print_fragment in printers:
+            assert(isinstance(print_fragment.target_i, PrintSystem_i))
+            for val in print_fragment:
+                self.register(val)
 
 
 #--------------------
@@ -123,3 +129,9 @@ class PrintSemantics_i(HandlerComponent_i):
     @abc.abstractmethod
     def __call__(self, to_print: Value_i, top:'PrintSystem_i'=None, data=None) -> List[Union[str,Value_i]]:
         pass
+
+# For Modules #################################################################
+@dataclass
+class Printer_Fragment(Handler_Fragment):
+
+    target_i : HandlerSystem_i = field(default=PrintSystem_i)

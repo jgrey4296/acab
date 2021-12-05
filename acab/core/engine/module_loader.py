@@ -16,10 +16,10 @@ from acab.core.config.config import GET
 from acab.core.data.production_abstractions import ProductionOperator, ActionOperator
 from acab.core.data.values import Sentence
 from acab.core.engine.util import applicable, needs_init, prep_op_path, ensure_handler
-from acab.interfaces.dsl import DSL_Fragment_i
+from acab.interfaces.dsl import DSL_Fragment
 from acab.interfaces.module_loader import (ModuleComponents,
-                                                    ModuleLoader_i)
-from acab.interfaces.printing import PrintSemantics_i
+                                           ModuleLoader_i)
+from acab.interfaces.printing import Printer_Fragment
 from acab.interfaces.semantic import Semantic_Fragment
 
 config = GET()
@@ -41,9 +41,9 @@ class ModuleLoader(ModuleLoader_i):
         base_path      = module.__package__
         # reference_path = MODULE_SPLIT_REG.split(module.__name__)
         queue          = [(base_path, module)]
-        dsl_fragments  : List[DSL_Fragment_i]     = []
+        dsl_fragments  : List[DSL_Fragment]     = []
         semantic_frags : List[Semantic_Fragment]  = []
-        printers       : List[PrintSemantics_i]   = []
+        printers       : List[Printer_Fragment]   = []
         operators      : List[ProductionOperator] = []
 
         # TODO extract *handlers* not semantics
@@ -58,7 +58,7 @@ class ModuleLoader(ModuleLoader_i):
             queue               += [(x,y) for x,y in sub_modules if base_path in y.__package__ and "__init__" in y.__file__]
 
             # Get module dsl_fragments
-            available_dsls      =  [y for x,y in mod_contents if applicable(y, DSL_Fragment_i)]
+            available_dsls      =  [y for x,y in mod_contents if applicable(y, DSL_Fragment)]
             dsl_fragments       += [y() if needs_init(y) else y for y in available_dsls]
 
             # Get Semantics
@@ -73,17 +73,17 @@ class ModuleLoader(ModuleLoader_i):
             operators           += sentences
 
             # Get printers
-            available_printers  =  [y for x,y in mod_contents if applicable(y, PrintSemantics_i, as_handler=True)]
-            printers            += [ensure_handler(y) for y in available_printers]
+            available_printers  =  [y for x,y in mod_contents if applicable(y, Printer_Fragment)]
+            printers            +=  available_printers
 
 
+        # End of while
+        result = ModuleComponents(str(module.__package__),
+                                    dsl_fragments,
+                                    semantic_frags,
+                                    printers,
+                                    operators)
 
-            result = ModuleComponents(str(module.__package__),
-                                      dsl_fragments,
-                                      semantic_frags,
-                                      printers,
-                                      operators)
+        logging.debug(f"Extracted: {result}")
 
-            logging.debug(f"Extracted: {result}")
-
-            return result
+        return result

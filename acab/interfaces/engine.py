@@ -11,7 +11,7 @@ logging = root_logger.getLogger(__name__)
 
 from acab import types as AT
 from acab.interfaces.context import ContextSet_i
-from acab.interfaces.dsl import DSL_Fragment_i, DSLBuilder_i
+from acab.interfaces.dsl import DSL_Fragment, DSLBuilder
 from acab.interfaces.module_loader import ModuleLoader_i
 from acab.interfaces.printing import PrintSystem_i
 from acab.interfaces.semantic import SemanticSystem_i
@@ -26,7 +26,7 @@ ModuleComponents = AT.ModuleComponents
 class AcabEngine_i(cABC.Sequence):
 
     # Root components to extend
-    parser         : DSL_Fragment_i   = field()
+    parser         : DSL_Builder      = field()
     semantics      : SemanticSystem_i = field()
     printer        : PrintSystem_i    = field()
 
@@ -38,7 +38,7 @@ class AcabEngine_i(cABC.Sequence):
 
     initialised    : bool             = field(init=False, default=False)
     # Abstract fields, need to be instantiated:
-    _dsl_builder   : DSLBuilder_i     = field(init=False)
+    _dsl_builder   : DSLBuilder     = field(init=False)
     _module_loader : ModuleLoader_i   = field(init=False)
 
     @EnsureEngineInitialised

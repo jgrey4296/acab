@@ -25,8 +25,13 @@ ProductionStructure  = "acab.core.data.production_abstractions.ProductionStructu
 
 ModuleComponents     = "acab.core.data.interfaces.module_loader.ModuleComponents"
 
+Handler              = "acab.interfaces.handler_system.Handler"
+HandlerComponent     = "acab.interfaces.handler_system.HandlerComponent_i"
+HandlerSystem        = "acab.interfaces.handler_system.HandlerSystem_i"
+HandlerOverride      = "acab.interfaces.handler_system.HandlerSystem_i.HandlerOverrider"
+Handler_Fragment     = "acab.interfaces.semantic.Handler_Fragment"
+
 # Semantics
-Semantic_Fragment    = "acab.interfaces.semantic.Semantic_Fragment"
 StructureSemantics   = "acab.interfaces.semantic.StructureSemantics_i"
 StatementSemantics   = "acab.interfaces.semantic.StatementSemantics_i"
 ValueSemantics       = "acab.interfaces.semantic.ValueSemantics_i"
@@ -49,10 +54,6 @@ DSL_Builder          = "acab.interfaces.dsl.DSL_Builder_i"
 
 Engine               = "acab.interfaces.engine.AcabEngine_i"
 
-Handler              = "acab.interfaces.handler_system.Handler"
-HandlerComponent     = "acab.interfaces.handler_system.HandlerComponent_i"
-HandlerSystem        = "acab.interfaces.handler_system.HandlerSystem_i"
-HandlerOverride      = "acab.interfaces.handler_system.HandlerSystem_i.HandlerOverrider"
 
 
 ConfigSpec           = "acab.core.config.config.ConfigSpec"

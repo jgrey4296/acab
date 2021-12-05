@@ -93,7 +93,9 @@ def HandleSignal(sig : str):
 def __add_sig(sig, method):
     """ used to add 'signal' as an argument to a class' init method """
     def wrapper(self, *args, **kwargs):
-        return method(self, *args, **kwargs, signal=sig)
+        if 'signal' not in kwargs:
+            kwargs['signal'] = sig
+        return method(self, *args, **kwargs)
 
     return wrapper
 

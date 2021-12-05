@@ -50,9 +50,9 @@ class TestWalkSemantics(unittest.TestCase):
         cls.eng = exlo()
         cls.eng.load_modules(*default_modules, "acab.modules.operators.dfs.dfs_module")
         query_plus = QueryPlusAbstraction().as_handler("_:QUERY")
-        cls.eng.semantics.register_handler(query_plus)
+        cls.eng.semantics.register(query_plus)
         walker = WalkTrieSemantics().as_handler("_:WALK")
-        cls.eng.semantics.register_handler(walker)
+        cls.eng.semantics.register(walker)
 
     def tearDown(self):
         self.eng("~a")

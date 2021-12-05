@@ -20,21 +20,19 @@ from acab.error.import_exception import AcabImportException
 logging = root_logger.getLogger(__name__)
 
 Sentence            = AT.Sentence
-DSL_Fragment_i      = AT.DSL_Fragment
-Semantic_Fragment   = AT.Semantic_Fragment
+Handler_Fragment    = AT.Handler_Fragment
 ProductionOperator  = AT.Operator
-PrintSemantics_i    = AT.PrintSemantics
 
 #----------------------------------------
 @dataclass(frozen=True)
 class ModuleComponents():
     """ Simple holder for extracted module components """
 
-    source        : str                     = field()
-    dsl_fragments : List[DSL_Fragment_i]    = field()
-    semantics     : List[Semantic_Fragment] = field()
-    printers      : List[PrintSemantics_i]  = field()
-    operators     : List[Sentence]          = field()
+    source        : str                    = field()
+    dsl_fragments : List[Handler_Fragment] = field()
+    semantics     : List[Handler_Fragment] = field()
+    printers      : List[Handler_Fragment] = field()
+    operators     : List[Sentence]         = field()
 
     def report(self):
         frags     = f"{ len(self.dsl_fragments) } DSL Fragments"
