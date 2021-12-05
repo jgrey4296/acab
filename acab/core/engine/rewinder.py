@@ -8,8 +8,6 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 from acab import types as AT
-from acab.interfaces.dsl import DSL_Fragment_i, Bootstrapper_i
-from acab.core.parsing.trie_bootstrapper import TrieBootstrapper
 
 ModuleType   = 'Module'
 Parser       = 'Parser'

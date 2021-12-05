@@ -44,8 +44,7 @@ DelayedCommands      = "acab.core.util.DelayedCommands_i"
 
 Debugger             = "acab.interfaces.debugger.AcabDebugger_i"
 
-Bootstrapper         = "acab.interfaces.dsl.Bootstrapper_i"
-DSL_Fragment         = "acab.interfaces.dsl.DSL_Fragment_i"
+DSL_Fragment         = "acab.interfaces.dsl.DSL_Fragment"
 DSL_Builder          = "acab.interfaces.dsl.DSL_Builder_i"
 
 Engine               = "acab.interfaces.engine.AcabEngine_i"

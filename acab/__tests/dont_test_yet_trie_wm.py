@@ -11,7 +11,6 @@ acab.setup()
 
 from acab.core.data.values import AcabValue
 from acab.core.data.values import Sentence
-from acab.core.parsing.trie_bootstrapper import TrieBootstrapper
 from acab.core.engine.engine import Engine
 from acab.core.data.production_abstractions import ProductionOperator
 
@@ -42,10 +41,8 @@ class Trie_WM_Tests(unittest.TestCase):
         logging = root_logger.getLogger(__name__)
 
     def setUp(self):
-        bp = TrieBootstrapper()
         self.trieWM = TrieWM()
-        self.trieWM.assert_parsers(bp)
-        self.trieWM.query_parsers(bp)
+        # TODO build dsl
 
     def tearDown(self):
         self.trieWM = None

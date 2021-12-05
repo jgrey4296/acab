@@ -9,7 +9,6 @@ config = acab.setup()
 
 from acab.core.data.values import AcabValue
 from acab.core.data.values import Sentence
-from acab.core.parsing.trie_bootstrapper import TrieBootstrapper
 from acab.core.data.production_abstractions import ProductionOperator, ProductionComponent, ProductionContainer, ProductionStructure
 from acab.modules.parsing.exlo.parsers import ActionParser as AP
 from acab.modules.parsing.exlo.parsers import FactParser as FP

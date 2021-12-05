@@ -27,16 +27,8 @@ WALK_SEM_HINT    = Sentence.build([config.prepare("Module.DFSWalk", "WALK_SEM_HI
 # TODO sen value spec
 Sen_Val_Frag = Semantic_Fragment(specs=[], statement=[SenQuerySemantics().as_handler(WALK_SEM_HINT)])
 
-class SenVal_Parser(DSL_Fragment_i):
-    """  """
-
-    def assert_parsers(self, bootstrapper):
-        """ Provide fragments for other parsers """
-        bootstrapper.add("word.value.sen", SVP.sen_value)
-
-    def query_parsers(self, bootstrapper):
-        """ Load in fragments """
-        SVP.HOTLOAD_SENTENCE << bootstrapper.query("sentence")
+SenVal_Parser = DSL_Fragment(specs=[DSL_Spec("sentence", SVP.HOTLOAD_SENTENCE)],
+                             handlers=[DSL_Handler("word.value", SVP.sen_value)])
 
 
 @dataclass

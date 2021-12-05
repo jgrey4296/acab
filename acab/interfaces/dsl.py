@@ -25,42 +25,6 @@ ModuleComponents = AT.ModuleComponents
 File             = 'FileObj'
 
 #----------------------------------------
-class Bootstrapper_i(cABC.MutableMapping):
-    """ A Utility class for registering and retrieving
-    interacting parsers """
-
-    @abc.abstractmethod
-    def add(self, *inputs: List[Union[str, Parser]]):
-        """ for each pair in inputs (a,b):
-        register parser b at location a
-        """
-        pass
-
-    @abc.abstractmethod
-    def query(self, *queries: List[str]) -> Parser:
-        """ Get all parsers registered at the string locations
-        and return an aggregate parser of them
-        """
-        pass
-
-    def report(self) -> Any:
-        """ Return a report on the bootstrap registrations """
-        pass
-
-    def __getitem__(self, key):
-        return self.query(key)
-
-    def __delitem__(self, key):
-        raise NotImplementedError("Bootstrapper's for DSLs should not be able to remove data")
-
-    def __setitem__(self, key, value):
-        self.add(key, value)
-
-    def __iter__(self):
-        raise NotImplementedError("Iterating through a DSL Bootstrapper doesn't make sense")
-
-#----------------------------------------
-class DSL_Fragment_i(cABC.MutableMapping):
     """ """
 
     def set_word_exclusions(self, *words):
@@ -73,23 +37,7 @@ class DSL_Fragment_i(cABC.MutableMapping):
     def parse_file(self, file):
         raise NotImplementedError()
 
-    @abc.abstractmethod
-    def assert_parsers(self, bootstrapper: Bootstrapper_i):
-        """
-        Assert parsers from this module for integration later
-        ie: values.number <= number_parser
-        values.time      <= time_parser
-        operators.set.add <=  set_add_op
-        hotloads.value    <= HOTLOAD_VALUES
-        """
-        pass
 
-    @abc.abstractmethod
-    def query_parsers(self, bootstrapper: Bootstrapper_i):
-        """
-        Query the now complete parser trie for hotloads
-        values.$xs?
-        hotloads.values!$p(~= /values/)?
 
         parser.or($xs) -> $y
         parser.assign $p $y
@@ -119,8 +67,6 @@ class DSL_Fragment_i(cABC.MutableMapping):
 class DSLBuilder_i(metaclass=abc.ABCMeta):
     root_fragment         : DSL_Fragment_i = field()
 
-    _bootstrap_parser     : Bootstrapper_i = field(init=False)
-    _main_parser          : Parser         = field(init=False)
     _parsers_initialised  : bool           = field(init=False, default=False)
     _loaded_DSL_fragments : Dict[Any, Any] = field(init=False, default_factory=dict)
 
@@ -130,13 +76,10 @@ class DSLBuilder_i(metaclass=abc.ABCMeta):
         Using currently loaded modules, rebuild the usable DSL parser from fragments
         """
         logging.info("Building DSL")
-        self.clear_bootstrap()
         fragments = [y for x in modules for y in x.dsl_fragments]
         self.construct_parsers_from_fragments(fragments)
         self._parsers_initialised = True
 
-    def clear_bootstrap(self):
-        self._bootstrap_parser = self._bootstrap_parser.__class__()
 
     @EnsureDSLInitialised
     def parse(self, s:str) -> List[Sentence]:

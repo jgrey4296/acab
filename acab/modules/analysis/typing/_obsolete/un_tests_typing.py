@@ -9,7 +9,6 @@ acab.setup()
 from acab.core.data.values import Sentence
 from acab.core.data.values import AcabValue
 from acab.core.data.node import AcabNode
-from acab.core.parsing.trie_bootstrapper import TrieBootstrapper
 
 from acab.core.containers import action
 from acab.core.data.production_abstractions import ProductionOperator, ProductionComponent

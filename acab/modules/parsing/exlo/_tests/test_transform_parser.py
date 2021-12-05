@@ -10,7 +10,6 @@ config = acab.setup()
 
 from acab.core.data.values import AcabValue
 from acab.core.data.values import Sentence
-from acab.core.parsing.trie_bootstrapper import TrieBootstrapper
 from acab.core.data.production_abstractions import ProductionOperator, ProductionContainer, ProductionComponent
 
 from acab.modules.parsing.exlo.parsers import TransformParser as TP
@@ -30,12 +29,6 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
         root_logger.getLogger('').addHandler(console)
         logging = root_logger.getLogger(__name__)
 
-        # setup class
-        bp = TrieBootstrapper()
-        TP.HOTLOAD_TRANS_OP << bp.query('operator.ProductionContainer.*',
-                                        'operator.sugar')
-        TP.HOTLOAD_TRANS_STATEMENTS << bp.query("operator.ProductionContainer.statements.*",
-                                                "operator.sugar")
 
     #----------
     def test_transform_core(self):

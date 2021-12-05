@@ -13,8 +13,8 @@ import acab.modules.analysis.typing.simple_unify_fns as suf
 import acab.modules.analysis.typing.type_unify_fns as tuf
 from acab.core.data.acab_struct import AcabNode
 from acab.core.data.default_structure import BIND
+from acab.interfaces.dsl import DSLBuilder
 from acab.core.data.values import AcabValue, Sentence
-from acab.core.parsing.trie_bootstrapper import TrieBootstrapper
 from acab.modules.analysis.typing import type_exceptions as TE
 from acab.modules.analysis.typing import unify
 from acab.modules.analysis.typing.typing_dsl import TypingDSL
@@ -23,13 +23,9 @@ from acab.modules.context.context_set import MutableContextInstance
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 
 # Set up the parser to ease test setup
-bootstrapper = TrieBootstrapper()
-dsl = EXLO_Parser()
-t_dsl = TypingDSL()
-dsl.assert_parsers(bootstrapper)
-t_dsl.assert_parsers(bootstrapper)
-dsl.query_parsers(bootstrapper)
-t_dsl.query_parsers(bootstrapper)
+dsl   = DSLBuilder()
+dsl.register(EXLO_Parser).register(TypingDSL)
+dsl.build_DSL()
 
 class TypeUnifyTests(unittest.TestCase):
 
