@@ -9,7 +9,7 @@ from typing import cast, ClassVar, TypeVar, Generic
 import logging as root_logger
 import pyparsing as pp
 
-from acab.interfaces.dsl import DSL_Fragment_i
+from acab.interfaces.dsl import DSL_Fragment, DSL_Spec, DSL_Handler
 from acab.core.parsing import parsers as PU
 from acab.error.parse_exception import AcabParseException
 from acab.modules.parsing.exlo import util as TPU

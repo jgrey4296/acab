@@ -10,7 +10,7 @@ import pyparsing as pp
 import acab.core.data.default_structure as DS
 import acab.interfaces.value as VI
 from acab.core.config.config import GET, AcabConfig, ConfigSpec
-from acab.interfaces.dsl import DSL_Fragment_i
+from acab.interfaces.dsl import DSL_Fragment, DSL_Spec, DSL_Handler, DSLBuilder
 from acab.interfaces.printing import PrintSemantics_i
 from acab.interfaces.semantic import Semantic_Fragment
 from acab.core.printing import default_symbols as DSYM
