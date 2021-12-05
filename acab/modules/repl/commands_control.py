@@ -217,15 +217,17 @@ def do_forcep(self, line):
 
         print(f"Trying Parser on: {params.send}")
         # if exists, parse, then call engine on it
-        parser.setDebug(True)
-        forced_result = parser.parseString(params.send.strip(), parseAll=True)[:]
-        parser.setDebug(False)
+        built = parser.build()
+        built.setDebug(True)
+        forced_result = built.parseString(params.send.strip(), parseAll=True)[:]
+        built.setDebug(False)
         self.state.debug_data = forced_result
-        print(f"Forced Parse: {forced_result}\n")
+        print(f"----- Forced Parse Result: {forced_result}\n")
 
         if isinstance(forced_result, tuple):
             forced_result = forced_result[1]
 
+        print("Attempting to execute result:")
         self.state.ctxs = self.state.engine(forced_result,
                                             ctxset=self.state.ctxs)
 

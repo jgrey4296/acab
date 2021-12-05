@@ -82,7 +82,7 @@ class DSL_Spec(HandlerSpec):
 
     def extend(self, spec:DSL_Spec):
         if not isinstance(spec, DSL_Spec):
-            raise AcabParseException("Tried to extend a DSL_Spec with {spec}")
+            raise AcabParseException(f"Tried to extend a DSL_Spec with {spec}")
 
         self.struct.update(spec.struct)
 
@@ -96,8 +96,7 @@ class DSL_Spec(HandlerSpec):
 
     def __call__(self, *args, **kwargs):
         """
-        DSL spec call logic is different.
-        spec.struct << pp.Or([x.struct for x in self.handlers])
+        DSL spec call logic is different from handler system
         """
         # TODO improve logic with flags
         #
@@ -127,6 +126,9 @@ class DSL_Spec(HandlerSpec):
         combined = pp.MatchFirst([x.func for x in self.handlers if x.func is not None])
         return combined.parseString(*args, **kwargs)
 
+    def build(self):
+        return pp.MatchFirst([x.func for x in self.handlers if x.func is not None])
+
 #----------------------------------------
 @dataclass
 class DSLBuilder(HandlerSystem_i):
@@ -153,7 +155,6 @@ class DSLBuilder(HandlerSystem_i):
         """
         Using currently loaded modules, rebuild the usable DSL parser from fragments
         """
-        logging.info("Building DSL")
         if bool(self.loose_handlers):
             loose_handlers      = self.loose_handlers[:]
             self.loose_handlers = []
@@ -161,9 +162,10 @@ class DSLBuilder(HandlerSystem_i):
                 self.register(loose)
 
         if bool(self.loose_handlers):
-            logging.warning(f"DSL Has {len(self.loose_handlers)} Loose Handlers")
-            loose_signals = " ".join(set([x.signal for x in self.loose_handlers]))
-            logging.warning(f"Loose Signals: {loose_signals}")
+            loose_signals = ", ".join(set([x.signal for x in self.loose_handlers]))
+            logging.warning(f"Building DSL with {len(self.loose_handlers)} Loose Handlers: {loose_signals}")
+        else:
+            logging.info("Building DSL")
 
         for spec in self:
             try:

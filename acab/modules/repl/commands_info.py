@@ -90,8 +90,8 @@ def do_stat(self, line):
         print("{} : {}".format(semantic.__module__, semantic.__class__.__name__))
         print("\n", semantic.__doc__, "\n")
         print(f"{repr(semantic)}\n")
-        print("Handlers: {}".format(len(semantic.handlers)))
-        print("\t{}".format("\n\t".join([str(x) for x in semantic.handlers.values()])))
+        print("Handlers: {}".format(len(semantic.handler_specs)))
+        print("\t{}".format("\n\t".join([str(x) for x in semantic.handler_specs.values()])))
 
         print("----------")
         mods_with_semantics = [x for x in modules if len(x.semantics) > 0]
@@ -127,8 +127,8 @@ def do_stat(self, line):
         print("{} : {}".format(printer.__module__, printer.__class__.__name__))
         print("\n", printer.__doc__, "\n")
         print(f"{repr(printer)}\n")
-        print("Handlers: {}".format(len(printer.handlers)))
-        print("\t{}".format("\n\t".join([str(x) for x in printer.handlers.values()])))
+        print("Handlers: {}".format(len(printer.handler_specs)))
+        print("\t{}".format("\n\t".join([str(x) for x in printer.handler_specs.values()])))
 
         print("----------")
         mods_with_printers = [x for x in modules if len(x.printers) > 0]
@@ -146,27 +146,27 @@ def do_stat(self, line):
 def do_parser(self, line):
     """ Print a parser report.
     Defaults to primary, can take:
-    bootstrap,
+    handlers,
     sugar
     """
     params = RP.parse_info_parser.parseString(line)
 
-    if "bootstrap" in line:
-        print("Bootstrap Parser:")
-        bootstrap_desc = self.state.engine._dsl_builder._bootstrap_parser.report()
+    if "handlers" in line:
+        print("DSL Handlers:")
+        bootstrap_desc = self.state.engine._dsl_builder.handler_specs.keys()
         for sen in bootstrap_desc:
             print("\t", self.state.engine.pprint([sen]))
     elif "sugar" in line:
         print(f"Repl Sugar: {RP.sugared}")
     else:
         print("Top Level ACAB Parser:")
-        print(self.state.engine._dsl_builder._main_parser)
+        print(self.state.engine._dsl_builder.lookup())
 
 @register
 def do_debug(self, line):
     """ Toggle Debugging of pyparsing """
     if bool(line):
-        parser = self.state.engine._dsl_builder._bootstrap_parser.query(line)
+        parser = self.state.engine._dsl_builder[line]
         if bool(parser):
             parser.setDebug(not parser.debug)
             print(f"Debug {parser.debug} : {parser}")

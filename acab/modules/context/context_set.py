@@ -109,7 +109,7 @@ class ContextInstance(CtxInt.ContextInstance_i):
     def __len__(self):
         return len(self.data)
     def __iter__(self):
-        raise NotImplementedError("Iteration on a ContextInstance is nonsensical")
+        return iter(self.data.values())
 
     def __repr__(self):
         binds  = ", ".join([x for x in self.data.keys()])

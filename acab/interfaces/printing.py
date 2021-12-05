@@ -101,7 +101,7 @@ class PrintSystem_i(HandlerSystem_i):
         printers = [y for x in mods for y in x.printers]
         assert(all([isinstance(x, Printer_Fragment) for x in printers]))
         for print_fragment in printers:
-            assert(isinstance(print_fragment.target_i, PrintSystem_i))
+            assert(issubclass(print_fragment.target_i, PrintSystem_i))
             for val in print_fragment:
                 self.register(val)
 

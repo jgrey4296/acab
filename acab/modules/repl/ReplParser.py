@@ -110,9 +110,9 @@ listen_parser = pp.Or([])
 
 
 # parser exploration ##########################################################
-bootstrap_kw      = pp.Keyword("bootstrap")("bootstrap")
+handlers_kw      = pp.Keyword("handlers")("handlers")
 sugar_kw          = pp.Keyword("sugar")("sugar")
-parse_info_parser = bootstrap_kw | sugar_kw | rst
+parse_info_parser = handlers_kw | sugar_kw | rst
 
 
 # context ########################################################################

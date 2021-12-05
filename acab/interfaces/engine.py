@@ -15,7 +15,7 @@ from acab.interfaces.dsl import DSL_Fragment, DSLBuilder
 from acab.interfaces.module_loader import ModuleLoader_i
 from acab.interfaces.printing import PrintSystem_i
 from acab.interfaces.semantic import SemanticSystem_i
-from acab.core.parsing.dsl_builder import DSLBuilder
+from acab.interfaces.dsl import DSLBuilder
 from acab.error.semantic_exception import AcabSemanticException
 from acab.core.decorators.engine import EnsureEngineInitialised
 
@@ -26,7 +26,7 @@ ModuleComponents = AT.ModuleComponents
 class AcabEngine_i(cABC.Sequence):
 
     # Root components to extend
-    parser         : DSL_Builder      = field()
+    parser         : DSL_Fragment     = field()
     semantics      : SemanticSystem_i = field()
     printer        : PrintSystem_i    = field()
 
@@ -39,7 +39,7 @@ class AcabEngine_i(cABC.Sequence):
     initialised    : bool             = field(init=False, default=False)
     # Abstract fields, need to be instantiated:
     _dsl_builder   : DSLBuilder     = field(init=False)
-    _module_loader : ModuleLoader_i   = field(init=False)
+    _module_loader : ModuleLoader_i = field(init=False)
 
     @EnsureEngineInitialised
     def load_file(self, filename) -> bool:
@@ -107,8 +107,10 @@ class AcabEngine_i(cABC.Sequence):
         self._module_loader.load_modules(*modules)
         loaded_mods = self._module_loader.loaded_modules.values()
         # Initialise DSL
-        self._dsl_builder = DSLBuilder(self.parser)
-        self._dsl_builder.build_DSL(loaded_mods)
+        self._dsl_builder = DSLBuilder()
+        self._dsl_builder.register(self.parser)
+        self._dsl_builder.extend(loaded_mods)
+        self._dsl_builder.build_DSL()
 
         self.semantics.extend(loaded_mods)
 

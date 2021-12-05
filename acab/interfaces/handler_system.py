@@ -195,7 +195,6 @@ class HandlerSystem_i(cABC.MutableMapping, cABC.Callable):
                 raise AcabHandlerException(f"Handler Not Compliant: {handler}", handler)
 
             if handler not in self:
-                logging.warning(f"Unexpected handler in register area. Please check {handler.signal}")
                 self.loose_handlers.append(handler)
             else:
                 self.handler_specs[str(handler.signal)].register(handler)

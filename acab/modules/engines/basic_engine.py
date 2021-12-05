@@ -16,7 +16,7 @@ from acab.core.config.config import AcabConfig
 from acab.core.data.production_abstractions import (ProductionContainer,
                                                         ProductionOperator)
 from acab.core.engine.module_loader import ModuleLoader
-from acab.interfaces.dsl import DSL_Fragment_i
+from acab.interfaces.dsl import DSL_Fragment
 from acab.interfaces.engine import AcabEngine_i
 from acab.interfaces.printing import PrintSystem_i
 from acab.interfaces.semantic import SemanticSystem_i
