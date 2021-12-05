@@ -24,35 +24,36 @@ from acab.core.parsing.funcs import deep_update_names, clear_parser_names
 logging = root_logger.getLogger(__name__)
 
 
-EXLO_Parser = DSL_Fragment(specs=[DSL_Spec("word.value"          , struct=PU.HOTLOAD_VALUES,            flags=[DSL_Spec.flag_e.COLLECT]),
-                                  DSL_Spec("word.annotation"     , struct=FP.HOTLOAD_ANNOTATIONS,       flags=[DSL_Spec.flag_e.COLLECT]),
+EXLO_Parser = DSL_Fragment(specs=[DSL_Spec("word.annotation"     , struct=FP.HOTLOAD_ANNOTATIONS,       flags=[DSL_Spec.flag_e.COLLECT]),
                                   # DSL_Spec(TODO FP.HOTLOAD_SEN_HEADS
-                                  DSL_Spec("sentence.ends"       , struct=FP.HOTLOAD_SEN_ENDS,          flags=[DSL_Spec.flag_e.COLLECT]),
-                                  DSL_Spec("operator.query"      , struct=QP.HOTLOAD_QUERY_OP,          flags=[DSL_Spec.flag_e.COLLECT]),
-                                  DSL_Spec("query.statement"     , struct=QP.HOTLOAD_QUERY_SEN,         flags=[DSL_Spec.flag_e.COLLECT]),
-                                  DSL_Spec("operators.transform" , struct=TP.HOTLOAD_TRANS_OP,          flags=[DSL_Spec.flag_e.COLLECT]),
-                                  DSL_Spec("transform.statement" , struct=TP.HOTLOAD_TRANS_STATEMENTS,  flags=[DSL_Spec.flag_e.COLLECT]),
-                                  DSL_Spec("operators.action"    , struct=AP.HOTLOAD_OPERATORS,         flags=[DSL_Spec.flag_e.COLLECT]),
                                   DSL_Spec("action.statement"    , struct=AP.HOTLOAD_ACTION_STATEMENTS, flags=[DSL_Spec.flag_e.COLLECT]),
-                                  DSL_Spec("statement"           , struct=TotalP.HOTLOAD_STATEMENTS,    flags=[DSL_Spec.flag_e.COLLECT]),
                                   DSL_Spec("disallowed.words"    , struct=FP.HOTLOAD_BAD_HEADS,         flags=[DSL_Spec.flag_e.COLLECT])],
-                           handlers=[DSL_Handler("word.valbind"      , PU.VALBIND),
-                                     DSL_Handler("word.constrained"  , FP.SEN_NO_MODAL),
-                                     DSL_Handler("sentence"          , FP.SENTENCE),
-                                     DSL_Handler("sentence.ends"     , FP.SEN_MACRO),
-                                     DSL_Handler("sentence.operator" , FP.op_sentence),
-                                     DSL_Handler("operator.sugar"    , PU.OPERATOR_SUGAR),
-                                     DSL_Handler("sentence.plural"   , FP.SEN_PLURAL),
+                                  DSL_Spec("operators.action"    , struct=AP.HOTLOAD_OPERATORS,         flags=[DSL_Spec.flag_e.COLLECT]),
+                                  DSL_Spec("operators.query"     , struct=QP.HOTLOAD_QUERY_OP,          flags=[DSL_Spec.flag_e.COLLECT]),
+                                  DSL_Spec("operators.transform" , struct=TP.HOTLOAD_TRANS_OP,          flags=[DSL_Spec.flag_e.COLLECT]),
+                                  DSL_Spec("query.statement"     , struct=QP.HOTLOAD_QUERY_SEN,         flags=[DSL_Spec.flag_e.COLLECT]),
+                                  DSL_Spec("sentence.ends"       , struct=FP.HOTLOAD_SEN_ENDS,          flags=[DSL_Spec.flag_e.COLLECT]),
+                                  DSL_Spec("statement"           , struct=TotalP.HOTLOAD_STATEMENTS,    flags=[DSL_Spec.flag_e.COLLECT]),
+                                  DSL_Spec("transform.statement" , struct=TP.HOTLOAD_TRANS_STATEMENTS,  flags=[DSL_Spec.flag_e.COLLECT]),
+                           handlers=[
+                                     DSL_Handler("sentence"            , FP.SENTENCE),
+                                     DSL_Handler("sentence.ends"       , FP.SEN_MACRO),
+                                     DSL_Handler("sentence.operator"   , FP.op_sentence),
+                                     DSL_Handler("sentence.plural"     , FP.SEN_PLURAL),
+                                     DSL_Handler("word.constrained"    , FP.SEN_NO_MODAL),
                                      # Query
-                                     DSL_Handler("sentence.ends"     , QP.query_statement),
-                                     DSL_Handler("sentence.ends"     , QP.query_sen_end),
-                                     DSL_Handler("word.annotation"   , QP.word_query_constraint),
+                                     DSL_Handler("operators.query"     , PU.OPERATOR_SUGAR),
+                                     DSL_Handler("sentence.ends"       , QP.query_sen_end),
+                                     DSL_Handler("sentence.ends"       , QP.query_statement),
+                                     DSL_Handler("word.annotation"     , QP.word_query_constraint),
                                      # Transform
-                                     DSL_Handler("sentence.ends"     , TP.transform_statement),
+                                     DSL_Handler("operators.transform" , PU.OPERATOR_SUGAR),
+                                     DSL_Handler("sentence.ends"       , TP.transform_statement),
                                      # Action
-                                     DSL_Handler("sentence.ends"     , AP.action_definition),
+                                     DSL_Handler("operators.action"    , PU.OPERATOR_SUGAR),
+                                     DSL_Handler("sentence.ends"       , AP.action_definition),
                                      # Rule
-                                     DSL_Handler("sentence.ends"     , RP.rule),
+                                     DSL_Handler("sentence.ends"       , RP.rule),
                                      # Total
-                                     DSL_Handler("_:_default"        , TotalP.parse_point)]
+                                     DSL_Handler("_:_default"          , TotalP.parse_point)]
                            )

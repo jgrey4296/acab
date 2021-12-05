@@ -13,9 +13,8 @@ from acab.error.parse_exception import AcabParseException
 
 logging = root_logger.getLogger(__name__)
 
-Component_DSL = DSL_Fragment(specs=[]
-                             handlers=[
-                                 DSL_Handler("operator", PU.OPERATOR_SUGAR),
-                                 DSL_Handler("word.valbind", PU.VALBIND),
-                                 DSL_Handler("tag.sentence", PU.tagSen),
-                                 DSL_Handler("operator.modal", PU.MODAL)])
+Component_DSL = DSL_Fragment(specs=[DSL_Spec("word.value", struct=PU.HOTLOAD_VALUES, flags=[DSL_Spec.flag_e.COLLECT])],
+                             handlers=[DSL_Handler("operators"       , PU.OPERATOR_SUGAR),
+                                       DSL_Handler("word.valbind"    , PU.VALBIND),
+                                       DSL_Handler("tag.sentence"    , PU.tagSen),
+                                       DSL_Handler("operators.modal" , PU.MODAL)])
