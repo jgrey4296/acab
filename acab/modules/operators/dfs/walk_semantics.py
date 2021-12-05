@@ -22,12 +22,12 @@ logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
 
 CONSTRAINT_S     = config.prepare("Value.Structure", "CONSTRAINT")()
-NEGATION_S       = config.prepare("Value.Structure", "NEGATION")()
-QUERY_FALLBACK_S = config.prepare("Value.Structure", "QUERY_FALLBACK")()
 DEFAULT_SETUP_S  = config.prepare("Data", "DEFAULT_SETUP_METHOD")()
 DEFAULT_UPDATE_S = config.prepare("Data", "DEFAULT_UPDATE_METHOD")()
+NEGATION_S       = config.prepare("Value.Structure", "NEGATION")()
 QUERY            = config.prepare("Value.Structure", "QUERY")()
-WALK_SEM_HINT    = Sentence.build([config.prepare("Module.DFSWalk", "WALK_SEM_HINT")()])
+QUERY_FALLBACK_S = config.prepare("Value.Structure", "QUERY_FALLBACK")()
+WALK_SEM_HINT    = config.prepare("Module.DFSWalk", "WALK_SEM_HINT")()
 
 Node          = AT.Node
 Value         = AT.Value
