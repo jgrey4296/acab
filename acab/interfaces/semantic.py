@@ -26,11 +26,12 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 logging = root_logger.getLogger(__name__)
 from acab import types as AT
 from acab.core.data.default_structure import QUERY
-from acab.interfaces.handler_system import HandlerSystem_i, Handler, HandlerComponent_i, HandlerSpec
-from acab.interfaces.value import Sentence_i, Value_i
 from acab.error.print_exception import AcabPrintException
 from acab.error.semantic_exception import AcabSemanticException
-
+from acab.interfaces.handler_system import (Handler, Handler_Fragment,
+                                            HandlerComponent_i, HandlerSpec,
+                                            HandlerSystem_i)
+from acab.interfaces.value import Sentence_i, Value_i
 
 Value                = AT.Value
 Sentence             = AT.Sentence
@@ -54,31 +55,12 @@ SemanticSystem       = AT.SemanticSystem
 #--------------------------------------------------
 # TODO convert this to a spec?
 @dataclass
-class Semantic_Fragment(metaclass=abc.ABCMeta):
+class Semantic_Fragment(Handler_Fragment):
     """ Dataclass of Semantic Handlers to be added to the system, and any
     data they require
     """
-    specs       : List[HandlerSpec]        = field(default_factory=list)
-    structure   : List[StructureSemantics] = field(default_factory=list)
-    value       : List[ValueSemantics]     = field(default_factory=list)
-    statement   : List[StatementSemantics] = field(default_factory=list)
-    data        : List[Structure]          = field(default_factory=list)
+    target_i : HandlerSystem_i = field(default=SemanticSystem)
 
-    def __len__(self):
-        counts = 0
-        counts += len(self.structure)
-        counts += len(self.value)
-        counts += len(self.statement)
-        counts += len(self.data)
-        return counts
-
-    def __repr__(self):
-        struct    = len(self.structure)
-        value     = len(self.value)
-        statement = len(self.statement)
-        data      = len(self.data)
-
-        return f"(Semantic Fragment: {struct} Structure, {value} Value, {statement} Statement Semantics, {data} Data Structures)"
 
 #----------------------------------------
 @dataclass
@@ -126,11 +108,10 @@ class SemanticSystem_i(HandlerSystem_i):
         logging.info("Extending Semantics")
         semantics = [y for x in mods for y in x.semantics]
         assert(all([isinstance(x, Semantic_Fragment) for x in semantics]))
-        for sem in semantics:
-            [self.register_handler(x) for x in sem.structure]
-            [self.register_handler(x) for x in sem.value]
-            [self.register_handler(x) for x in sem.statement]
-            [self.register_handler(x) for x in sem.data]
+        for sem_fragment in semantics:
+            assert(isinstance(sem_fragment.target_i, SemanticSystem_i))
+            for val in sem_fragment:
+                self.register(val)
 
 
 
