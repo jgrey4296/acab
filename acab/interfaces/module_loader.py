@@ -60,6 +60,19 @@ class ModuleLoader_i(cABC.Mapping):
     def __getitem__(self, key):
         return self.loaded_modules[key]
 
+    def __repr__(self):
+        loaded_modules = ", ".join([x for x in self.loaded_modules.keys()])
+        return f"ModuleLoader({loaded_modules})"
+
+    def __iter__(self):
+        return self.loaded_modules.values()
+
+    def __len__(self):
+        return len(self.loaded_modules)
+
+    def __contains__(self, other: Union[ModuleType, str]):
+        return str(other) in self.loaded_modules
+
     def reload_all_modules(self):
         loaded = list(self.loaded_modules.keys())
         self.loaded_modules.clear()
@@ -106,9 +119,6 @@ class ModuleLoader_i(cABC.Mapping):
             new_err = AcabImportException(f"{maybe_module} : {err}").with_traceback(err.__traceback__)
             raise new_err from err
 
-    def __contains__(self, other: Union[ModuleType, str]):
-        return str(other) in self.loaded_modules
-
     @abc.abstractmethod
     def extract_from_module(self, module: ModuleType) -> ModuleComponents:
         """
@@ -119,11 +129,3 @@ class ModuleLoader_i(cABC.Mapping):
         """
         pass
 
-    def __repr__(self):
-        loaded_modules = ", ".join([x for x in self.loaded_modules.keys()])
-        return f"ModuleLoader({loaded_modules})"
-
-    def __iter__(self):
-        return self.loaded_modules.values()
-    def __len__(self):
-        return len(self.loaded_modules)

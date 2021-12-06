@@ -13,7 +13,7 @@ from acab import types as AT
 from acab.core.decorators.engine import EnsureEngineInitialised
 from acab.error.semantic_exception import AcabSemanticException
 from acab.interfaces.context import ContextSet_i
-from acab.interfaces.dsl import DSL_Fragment, DSLBuilder_i
+from acab.interfaces.dsl import DSL_Fragment, DSL_Builder_i
 from acab.interfaces.module_loader import ModuleLoader_i
 from acab.interfaces.printing import PrintSystem_i
 from acab.interfaces.semantic import SemanticSystem_i
@@ -22,12 +22,13 @@ from acab.interfaces.semantic import SemanticSystem_i
 ModuleComponents = AT.ModuleComponents
 
 @dataclass
-class AcabEngine_i(cABC.Sequence):
+class AcabEngine_i(cABC.Callable, cABC.Sequence):
 
     # Root components to extend
     parser         : DSL_Fragment     = field()
     semantics      : SemanticSystem_i = field()
     printer        : PrintSystem_i    = field()
+    dsl_builder    : DSL_Builder_i    = field()
 
     # Modules to load
     modules        : List[str]        = field(default_factory=list)
@@ -37,8 +38,8 @@ class AcabEngine_i(cABC.Sequence):
 
     initialised    : bool             = field(init=False, default=False)
     # Abstract fields, need to be instantiated
-    _dsl           : DSLBuilder_i     = field(init=False)
-    _module_loader : ModuleLoader_i = field(init=False)
+    _dsl           : DSL_Builder_i    = field(init=False)
+    _module_loader : ModuleLoader_i   = field(init=False)
 
     @EnsureEngineInitialised
     def load_file(self, filename) -> bool:
@@ -106,7 +107,7 @@ class AcabEngine_i(cABC.Sequence):
         self._module_loader.load_modules(*modules)
         loaded_mods = self._module_loader.loaded_modules.values()
         # Initialise DSL
-        self._dsl = DSLBuilder_i()
+        self._dsl = self.dsl_builder()
         self._dsl.register(self.parser)
         self._dsl.extend(loaded_mods)
         self._dsl.build()
@@ -126,10 +127,6 @@ class AcabEngine_i(cABC.Sequence):
             self.load_file(x)
 
         return [self._module_loader[x] for x in modules]
-
-    @abc.abstractmethod
-    def __call__(self, thing, ctxset=None) -> ContextSet_i:
-        pass
 
     def __getitem__(self, key):
         raise NotImplementedError()

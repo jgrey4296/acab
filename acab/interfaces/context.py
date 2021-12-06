@@ -28,7 +28,6 @@ DelayValue = Union[UUID, CtxIns, CtxSet, None]
 # Interfaces:
 @dataclass(frozen=True)
 class Constraint_i(metaclass=abc.ABCMeta):
-
     source         : Value                     = field()
     _test_mappings : Dict[str, List[Callable]] = field()
 
@@ -70,7 +69,7 @@ class ContextSet_i(cABC.Hashable, cABC.Set):
         pass
 
 @dataclass
-class ContextInstance_i(cABC.Mapping):
+class ContextInstance_i(cABC.Mapping, cABC.Hashable):
 
     @abc.abstractmethod
     def bind(self, word, nodes):
@@ -80,21 +79,10 @@ class ContextInstance_i(cABC.Mapping):
     def bind_dict(self, the_dict):
         pass
 
-    @abc.abstractmethod
-    def __contains__(self, value):
-        pass
-
-    @abc.abstractmethod
-    def __getitem__(self, value):
-        pass
 
     @abc.abstractmethod
     def to_sentences(self):
         """ Convert to sentences for printing """
-        pass
-
-    @abc.abstractmethod
-    def __len__(self):
         pass
 
     @abc.abstractmethod

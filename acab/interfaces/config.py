@@ -12,7 +12,7 @@ from enum import Enum
 
 
 @dataclass
-class ConfigSpec_i(cABC.Hashable):
+class ConfigSpec_i(cABC.Hashable, cABC.Callable):
     """ Dataclass to describe a config file value,
     and any transforms it needs prior to use """
 
@@ -27,11 +27,20 @@ class ConfigSpec_i(cABC.Hashable):
     def __hash__(self):
         return hash(f"{self.section}:{self.key}")
 
-    @abc.abstractmethod
-    def __call__(self):
+
+class Config_i(cABC.Callable, cABC.Collection):
+    @abc.abstractstaticmethod
+    def Get(*paths: str, hooks=None):
         pass
 
+    @abc.abstractmethod
+    def prepare(self, *args, **kwargs):
+        pass
 
+    @abc.abstractmethod
+    def read(self, paths: List[str]):
+        pass
 
-class Config_i(metaclass=abc.ABCMeta):
-    pass
+    @abc.abstractmethod
+    def override(self, spec: ConfigSpec_i, value):
+        pass

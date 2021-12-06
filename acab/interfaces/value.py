@@ -127,3 +127,11 @@ class Sentence_i(Statement_i, cABC.Sequence):
     @property
     def words(self) -> List[Value]:
         return self.value
+
+
+@dataclass(frozen=True)
+class Operator_i(Value_i, cABC.Callable):
+    pass
+
+class ActionOperator(Operator_i):
+    pass

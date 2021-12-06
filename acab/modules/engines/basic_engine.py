@@ -14,15 +14,17 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 from acab.core.config.config import AcabConfig
 from acab.core.data.production_abstractions import (ProductionContainer,
-                                                        ProductionOperator)
+                                                    ProductionOperator)
+from acab.core.decorators.engine import (EnsureEngineInitialised,
+                                         MaybeBuildOperatorCtx)
 from acab.core.engine.module_loader import ModuleLoader
-from acab.interfaces.dsl import DSL_Fragment
+from acab.core.parsing.pyparse_dsl import PyParseDSL
+from acab.error.acab_exception import AcabException
+from acab.interfaces.dsl import DSL_Fragment, DSL_Builder_i
 from acab.interfaces.engine import AcabEngine_i
 from acab.interfaces.printing import PrintSystem_i
 from acab.interfaces.semantic import SemanticSystem_i
-from acab.interfaces.value import Value_i, Sentence_i
-from acab.error.acab_exception import AcabException
-from acab.core.decorators.engine import MaybeBuildOperatorCtx, EnsureEngineInitialised
+from acab.interfaces.value import Sentence_i, Value_i
 
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
@@ -34,6 +36,7 @@ Instruction = Union[str, 'Sentence', 'AcabStatement']
 class AcabBasicEngine(AcabEngine_i):
     """ The Abstract class of a production system engine. """
     # Blocks engine use until build has been called:
+    dsl_builder      : DSL_Builder_i = field(init=False, default=PyParseDSL)
     _module_loader   : ModuleLoader = field(init=False, default_factory=ModuleLoader)
     # LIFO size limited cache:
     _cached_bindings : List[Any]    = field(init=False, default_factory=list)
@@ -57,7 +60,7 @@ class AcabBasicEngine(AcabEngine_i):
             inst = [inst]
 
         if isinstance(inst, list) and all([isinstance(x, str) for x in inst]):
-            inst = [y for x in inst for y in self._dsl_builder.parse(x)[:]]
+            inst = [y for x in inst for y in self._dsl.parse(x)[:]]
 
         assert(all([isinstance(x, (Value_i, Sentence_i)) for x in inst])), inst
         logging.debug(f"Enacting Instruction: {str(inst)}")

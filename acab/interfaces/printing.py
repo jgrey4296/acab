@@ -97,7 +97,6 @@ class PrintSystem_i(HandlerSystem_i):
 
     def extend(self, mods:List[ModuleComponents]):
         logging.info("Extending Printer")
-        logging.info("Extending Semantics")
         printers = [y for x in mods for y in x.printers]
         assert(all([isinstance(x, Printer_Fragment) for x in printers]))
         for print_fragment in printers:

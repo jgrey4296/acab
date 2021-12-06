@@ -33,8 +33,6 @@ HandlerSpec        = "HandlerSpec"
 HandlerComponent_i = 'HandlerComponent_i'
 PASSTHROUGH        = "_"
 
-# TODO active and passive handlers?,
-# with ability to have multiples for each signal?
 @dataclass
 class HandlerSystem_i(cABC.MutableMapping, cABC.Callable):
 
@@ -410,7 +408,7 @@ class HandlerComponent_i:
                        flags=flags or list())
 
 @dataclass
-class Handler(HandlerComponent_i, cABC.Callable):
+class Handler(HandlerComponent_i, cABC.Callable, cABC.Iterable):
     """ A Handler implementation for registering
     individual functions or methods """
 
@@ -463,7 +461,7 @@ class Handler(HandlerComponent_i, cABC.Callable):
 
 # Modules #####################################################################
 @dataclass
-class Handler_Fragment(metaclass=abc.ABCMeta):
+class Handler_Fragment(cABC.Sized, cABC.Iterable):
     """ Structure of Handlers to be added to a system, and any
     data they require
     """
@@ -473,7 +471,7 @@ class Handler_Fragment(metaclass=abc.ABCMeta):
 
 
     def __len__(self):
-        return len(self.handlers)
+        return len(self.handlers) + len(self.specs)
 
     def __repr__(self):
         return f"(Handler Fragment for {self.target_i}: {len(self.specs)} Specs, {len(self.handlers)} Handlers)"

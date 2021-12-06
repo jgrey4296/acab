@@ -29,7 +29,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 import pyparsing as pp
 from acab.core.config import actions as CA
 from acab.error.config_exception import AcabConfigException
-from acab.interfaces.config import ConfigSpec
+from acab.interfaces.config import ConfigSpec_i, Config_i
 
 logging = root_logger.getLogger(__name__)
 
@@ -40,8 +40,17 @@ def GET(*args, hooks=None):
     return config
 #--------------------------------------------------
 # pylint: disable=too-many-instance-attributes
+class ConfigSpec(ConfigSpec_i):
+    """ Dataclass to describe a config file value,
+    and any transforms it needs prior to use """
+
+    def __call__(self):
+        inst = AcabConfig.Get()
+        return inst(self)
+
+
 @dataclass
-class AcabConfig():
+class AcabConfig(Config_i):
     """ A Singleton class for the active configuration
     Uses ${SectionName:Key} interpolation in values,
     Turns multi-line values into lists
@@ -103,9 +112,9 @@ class AcabConfig():
         return self.value(lookup)
 
     def __contains__(self, key):
-        in_print = key in self.printing_extension
-        in_base = key in self._config
-        in_enums = key in self.enums
+        in_print    = key in self.printing_extension
+        in_base     = key in self._config
+        in_enums    = key in self.enums
         in_defaults = key in self.defaults
         return any([in_print, in_base, in_enums, in_defaults])
 
@@ -236,3 +245,8 @@ class AcabConfig():
         section = spec.section
         key     = spec.key
         self._overrides[section][key] = value
+
+    def __iter__(self):
+        raise NotImplementedError()
+    def __len__(self):
+        raise NotImplementedError()

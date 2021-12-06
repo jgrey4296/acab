@@ -16,7 +16,7 @@ Node               = AT.Node
 Structure          = AT.DataStructure
 
 @dataclass
-class Node_i(cABC.MutableMapping):
+class Node_i(cABC.MutableMapping, cABC.Hashable):
     """  """
 
     value    : Value
