@@ -1,15 +1,16 @@
 import unittest
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
 from unittest import mock
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
 
 from acab import setup
+
 config = setup()
 
 import acab.interfaces.handler_system as HS
 from acab.error.handler_exception import AcabHandlerException
+
 
 class BasicHandlerSystem(HS.HandlerSystem_i):
 
@@ -265,5 +266,8 @@ class TestHandlerSystem(unittest.TestCase):
     def test_verify(self):
         pass
 
+    @unittest.skip("todo")
+    def test_register_fragment(self):
+        pass
 if __name__ == '__main__':
     unittest.main()
