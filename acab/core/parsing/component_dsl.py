@@ -7,11 +7,14 @@ from typing import cast, ClassVar, TypeVar, Generic
 import logging as root_logger
 import pyparsing as pp
 
-from acab.interfaces.dsl import DSL_Fragment, DSL_Spec, DSL_Handler
 from acab.core.parsing import parsers as PU
 from acab.error.parse_exception import AcabParseException
-
+from acab.core.parsing import pyparse_dsl as ppDSL
 logging = root_logger.getLogger(__name__)
+
+DSL_Fragment = ppDSL.DSL_Fragment
+DSL_Spec     = ppDSL.PyParse_Spec
+DSL_Handler  = ppDSL.PyParse_Handler
 
 Component_DSL = DSL_Fragment(specs=[DSL_Spec("word.value", struct=PU.HOTLOAD_VALUES, flags=[DSL_Spec.flag_e.COLLECT])],
                              handlers=[DSL_Handler("operators"       , PU.OPERATOR_SUGAR),

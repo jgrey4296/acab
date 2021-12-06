@@ -32,7 +32,7 @@ class Engine_Tests(unittest.TestCase):
 
     def setUp(self):
         self.e = Engine()
-        self.e.build_DSL()
+        self.e.build()
 
     def tearDown(self):
         self.e = None
@@ -121,7 +121,7 @@ class Engine_Tests(unittest.TestCase):
     @mock.patch('acab.interfaces.working_memory.WorkingMemoryCore', autospec=True)
     def test_reload_modules(self, wm_mock, op_mock):
         engine = Engine(wm_mock)
-        engine.build_DSL()
+        engine.build()
         engine._working_memory.construct_parsers_from_fragments.assert_called()
 
     @unittest.skip("TODO")

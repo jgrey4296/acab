@@ -44,7 +44,7 @@ class TransformTests(unittest.TestCase):
                                      "acab.modules.operators.standard_operators"])
         self.e.alias_module(S("acab", "modules", "values", "numbers"), S("N"))
         self.e.alias_module(S("acab", "modules", "operators", "standard", "operators"), S("S"))
-        self.e.build_DSL()
+        self.e.build()
 
     def tearDown(self):
         return 1

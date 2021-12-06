@@ -13,7 +13,7 @@ import acab.modules.analysis.typing.type_unify_fns as tuf
 from acab.core.data.acab_struct import AcabNode
 from acab.core.data.default_structure import BIND
 from acab.core.data.values import AcabValue, Sentence
-from acab.interfaces.dsl import DSLBuilder
+from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.modules.analysis.typing import type_exceptions as TE
 from acab.modules.analysis.typing import unify
 from acab.modules.analysis.typing.typing_dsl import TypingDSL
@@ -22,9 +22,9 @@ from acab.modules.context.context_set import MutableContextInstance
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 
 # Set up the parser to ease test setup
-dsl   = DSLBuilder()
+dsl   = ppDSL.PyParseDSL()
 dsl.register(EXLO_Parser).register(TypingDSL)
-dsl.build_DSL()
+dsl.build()
 
 class BasicUnifyTests(unittest.TestCase):
 

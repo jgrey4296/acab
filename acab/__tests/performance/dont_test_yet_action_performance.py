@@ -57,7 +57,7 @@ class ActionTests(unittest.TestCase):
         self.e = Engine(modules=["acab.modules.operators.standard_operators"])
         self.e.alias_module(S("acab","modules","operators", "standard", "operators"), S("A"))
         self.e.register_ops([S("Blah").attach_statement(ActionBlah())])
-        self.e.build_DSL()
+        self.e.build()
 
     def tearDown(self):
         return 1

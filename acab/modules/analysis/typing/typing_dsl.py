@@ -1,8 +1,11 @@
-from acab.interfaces.dsl import DSL_Fragment, DSL_Spec, DSL_Handler
+from acab.core.parsing import pyparse_dsl as ppDSL
 
 from .parsing import TypeDefParser as TDP
 from .parsing import TypeParser as TP
 
+DSL_Fragment = ppDSL.DSL_Fragment
+DSL_Spec     = ppDSL.PyParse_Spec
+DSL_Handler  = ppDSL.PyParse_Handler
 
 TypingDSL = DSL_Fragment(specs=[DSL_Spec("sentence", struct=TDP.HOTLOAD_SEN, flags=[DSL_Spec.flag_e.COLLECT]),
                                 DSL_Spec("sentence", struct=TP.HOTLOAD_SEN, flags=[DSL_Spec.flag_e.COLLECT])],

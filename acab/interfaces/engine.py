@@ -10,14 +10,13 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 logging = root_logger.getLogger(__name__)
 
 from acab import types as AT
+from acab.core.decorators.engine import EnsureEngineInitialised
+from acab.error.semantic_exception import AcabSemanticException
 from acab.interfaces.context import ContextSet_i
-from acab.interfaces.dsl import DSL_Fragment, DSLBuilder
+from acab.interfaces.dsl import DSL_Fragment, DSLBuilder_i
 from acab.interfaces.module_loader import ModuleLoader_i
 from acab.interfaces.printing import PrintSystem_i
 from acab.interfaces.semantic import SemanticSystem_i
-from acab.interfaces.dsl import DSLBuilder
-from acab.error.semantic_exception import AcabSemanticException
-from acab.core.decorators.engine import EnsureEngineInitialised
 
 # TODO add 'Tick' functionality
 ModuleComponents = AT.ModuleComponents
@@ -37,8 +36,8 @@ class AcabEngine_i(cABC.Sequence):
     init_strs      : List[str]        = field(default_factory=list)
 
     initialised    : bool             = field(init=False, default=False)
-    # Abstract fields, need to be instantiated:
-    _dsl_builder   : DSLBuilder     = field(init=False)
+    # Abstract fields, need to be instantiated
+    _dsl           : DSLBuilder_i     = field(init=False)
     _module_loader : ModuleLoader_i = field(init=False)
 
     @EnsureEngineInitialised
@@ -51,7 +50,7 @@ class AcabEngine_i(cABC.Sequence):
         # with open(filename) as f:
         # everything should be an assertion
         try:
-            assertions = self._dsl_builder.parseFile(filename)
+            assertions = self._dsl.parseFile(filename)
             # Assert facts:
             for x in assertions:
                 logging.info(f"File load assertion: {x}")
@@ -107,10 +106,10 @@ class AcabEngine_i(cABC.Sequence):
         self._module_loader.load_modules(*modules)
         loaded_mods = self._module_loader.loaded_modules.values()
         # Initialise DSL
-        self._dsl_builder = DSLBuilder()
-        self._dsl_builder.register(self.parser)
-        self._dsl_builder.extend(loaded_mods)
-        self._dsl_builder.build_DSL()
+        self._dsl = DSLBuilder_i()
+        self._dsl.register(self.parser)
+        self._dsl.extend(loaded_mods)
+        self._dsl.build()
 
         self.semantics.extend(loaded_mods)
 

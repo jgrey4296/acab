@@ -33,7 +33,7 @@ Instruction = Union[str, 'Sentence', 'AcabStatement']
 @dataclass
 class AcabBasicEngine(AcabEngine_i):
     """ The Abstract class of a production system engine. """
-    # Blocks engine use until build_DSL has been called:
+    # Blocks engine use until build has been called:
     _module_loader   : ModuleLoader = field(init=False, default_factory=ModuleLoader)
     # LIFO size limited cache:
     _cached_bindings : List[Any]    = field(init=False, default_factory=list)
