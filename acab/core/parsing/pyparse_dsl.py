@@ -48,6 +48,7 @@ class PyParse_Handler(DSL_Handler_i):
             func_expr = self.func.exprs
 
         return f"DSL_Handler({self.signal}, {self.func}, {func_expr})"
+
     def __call__(self, the_str):
         """ A DSL Handler parses an input string when called """
         return self.func.parseString(the_str)[:]

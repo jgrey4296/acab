@@ -49,10 +49,6 @@ class TestWalkSemantics(unittest.TestCase):
 
         cls.eng = exlo()
         cls.eng.load_modules(*default_modules, "acab.modules.operators.dfs.dfs_module")
-        query_plus = QueryPlusAbstraction().as_handler("_:QUERY")
-        cls.eng.semantics.register(query_plus)
-        walker = WalkTrieSemantics().as_handler("_:WALK")
-        cls.eng.semantics.register(walker)
 
     def tearDown(self):
         self.eng("~a")
@@ -62,7 +58,6 @@ class TestWalkSemantics(unittest.TestCase):
         @x ᛦ $y(::target)?
         """
 
-        breakpoint()
         self.eng("a.b.c.test.sub.blah(::target)")
         self.eng("a.b.d")
         self.eng("a.b.e.something(::target)")

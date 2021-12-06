@@ -12,7 +12,7 @@ from acab.core.decorators.util import singleton
 from acab.interfaces.debugger import AcabDebugger_i
 
 # TODO track semantic debugging in RunningDebugger
-
+# TODO refactor this to be a handler registration
 def SemanticBreakpointDecorator(f):
 
     def wrapped(self, *args, **kwargs):

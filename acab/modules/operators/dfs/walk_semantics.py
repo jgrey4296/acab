@@ -27,7 +27,7 @@ DEFAULT_UPDATE_S = config.prepare("Data", "DEFAULT_UPDATE_METHOD")()
 NEGATION_S       = config.prepare("Value.Structure", "NEGATION")()
 QUERY            = config.prepare("Value.Structure", "QUERY")()
 QUERY_FALLBACK_S = config.prepare("Value.Structure", "QUERY_FALLBACK")()
-WALK_SEM_HINT    = config.prepare("Module.DFSWalk", "WALK_SEM_HINT")()
+WALK_SEM_HINT    = Sentence.build([config.prepare("Module.DFSWalk", "WALK_SEM_HINT")()])
 
 Node          = AT.Node
 Value         = AT.Value
@@ -60,6 +60,9 @@ class WalkTrieSemantics(SI.StatementSemantics_i):
     """
 
     signal : str = field(default=WALK_SEM_HINT)
+
+    def verify(self, instruction):
+        pass
 
     def __call__(self, instruction, semsys, ctxs=None, data=None):
         if QUERY in instruction[-1].data and bool(instruction[-1].data[QUERY]):

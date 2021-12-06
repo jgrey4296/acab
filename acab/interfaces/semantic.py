@@ -50,17 +50,6 @@ StatementSemantics   = AT.StatementSemantics
 AbsDepSemantics      = Union[StatementSemantics, StructureSemantics]
 SemanticSystem       = AT.SemanticSystem
 
-# Note: for struct and value, you handle nodes,
-# for *abstractions*, you're handle *sentence*s
-#--------------------------------------------------
-# TODO convert this to a spec?
-@dataclass
-class Semantic_Fragment(Handler_Fragment):
-    """ Dataclass of Semantic Handlers to be added to the system, and any
-    data they require
-    """
-    target_i : HandlerSystem_i = field(default=SemanticSystem)
-
 
 #----------------------------------------
 @dataclass
@@ -109,11 +98,9 @@ class SemanticSystem_i(HandlerSystem_i):
         semantics = [y for x in mods for y in x.semantics]
         assert(all([isinstance(x, Semantic_Fragment) for x in semantics]))
         for sem_fragment in semantics:
-            assert(isinstance(sem_fragment.target_i, SemanticSystem_i))
+            assert(issubclass(sem_fragment.target_i, SemanticSystem_i)), breakpoint()
             for val in sem_fragment:
                 self.register(val)
-
-
 
 
 @dataclass
@@ -152,6 +139,7 @@ class StructureSemantics_i(HandlerComponent_i, SemanticSystem_i):
     def compatible(self, struct: Structure) -> bool:
         """ Called to check the semantics can handle the suggested struct """
         pass
+
 
 
 class ValueSemantics_i(HandlerComponent_i):
@@ -193,6 +181,7 @@ class ValueSemantics_i(HandlerComponent_i):
     def update(self, node:Node, term:Value, data:Dict[Any, Any]=None):
         # TODO
         pass
+
 class StatementSemantics_i(HandlerComponent_i):
     """
     Semantics of Higher level abstractions
@@ -207,9 +196,16 @@ class StatementSemantics_i(HandlerComponent_i):
 
     def verify(self, instruction:Statement):
         pass
+
     @abc.abstractmethod
     def __call__(self, instruction, semSys, ctxs=None, data=None) -> CtxSet:
         pass
 
 
 #--------------------------------------------------
+@dataclass
+class Semantic_Fragment(Handler_Fragment):
+    """ Dataclass of Semantic Handlers to be added to the system, and any
+    data they require
+    """
+    target_i : HandlerSystem_i = field(default=SemanticSystem_i)

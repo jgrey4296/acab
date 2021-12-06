@@ -60,11 +60,9 @@ class BasicSemanticSystem(SemanticSystem_i):
         try:
             data   = {}
             spec   = self.lookup(instruction)
-            struct = spec.struct
             assert(spec is not None)
+            struct = spec.struct
             logging.debug(f"Firing Semantics: {spec}")
-            # TODO entry hooks would go here.
-
             # StructSems's use a reference to a struct
             # StatementSems use a reference to the sem system in place of a struct
             if struct is None:
@@ -88,6 +86,7 @@ class BasicSemanticSystem(SemanticSystem_i):
         return ctxs
 
     def to_sentences(self) -> List[Sentence]:
+        # TODO run to_sentences for *all* registered structure semantic specs?
         default = self.lookup()
         return default[0].to_sentences(default.struct)
 

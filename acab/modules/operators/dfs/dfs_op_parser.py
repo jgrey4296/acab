@@ -53,7 +53,7 @@ dfs_operator  = pp.Literal("ᛦ").suppress()
 dfs_head      = op(HOTLOAD_VAR("root")) + dfs_operator
 
 
-dfs_query     = dfs_head + orm(HOTLOAD_VAR)("constraints") + QUERY
+dfs_query     = dfs_head + orm(HOTLOAD_VAR)("constraints")
 # TODO a dfs query with a subsentence query
 # @a ᛦ $x.d.f?
 

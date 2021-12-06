@@ -1,17 +1,14 @@
-from acab.interfaces.dsl import DSL_Fragment_i
-
+from acab.core.parsing import pyparse_dsl as ppDSL
 from .pattern_match_op import PatternMatchOp
 from . import pattern_match_parser as PMP
 
 
-class MODULE(DSL_Fragment_i):
-    """ The Module Spec for base operators """
+DSL_Fragment = ppDSL.DSL_Fragment
+DSL_Spec     = ppDSL.PyParse_Spec
+DSL_Handler  = ppDSL.PyParse_Handler
 
-    def assert_parsers(self, pt):
-        pt.add("transform.statement.pattern_match", PMP.parse_point)
-
-    def query_parsers(self, pt):
-        PMP.HOTLOAD_VALBIND << pt.query("word.valbind")
-        PMP.HOTLOAD_VAR     << pt.query("word.valbind")
-        PMP.HOTLOAD_SEN     << pt.query("sentence")
-        PMP.HOTLOAD_QUERY   << pt.query("sentence")
+parse_fragment = DSL_Fragment(specs=[DSL_Spec("word.valbind", struct=PMP.HOTLOAD_VALBIND),
+                                     DSL_Spec("word.valbind", struct=PMP.HOTLOAD_VAR),
+                                     DSL_Spec("sentence",     struct=PMP.HOTLOAD_SEN),
+                                     DSL_Spec("sentence",     struct=PMP.HOTLOAD_QUERY)],
+                              handlers=[DSL_Handler("transform.statement.pattern_match", PMP.parse_point)])
