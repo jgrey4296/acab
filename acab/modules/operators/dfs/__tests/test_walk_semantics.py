@@ -53,6 +53,37 @@ class TestWalkSemantics(unittest.TestCase):
     def tearDown(self):
         self.eng("~a")
 
+
+    def test_parse_walk_query_instruction(self):
+        result = DOP.dfs_query.parseString("ᛦ $x(::blah)?")[0]
+
+        self.assertTrue(result)
+        self.assertIsInstance(result, Sentence)
+        self.assertEqual(result.data['SEMANTIC_HINT'], 'WALK')
+        self.assertTrue(result[-1].data['QUERY'])
+
+    def test_parse_walk_action_instruction(self):
+        result = DOP.dfs_action.parseString("ᛦ λa.test.op")[0]
+
+        self.assertTrue(result)
+        self.assertIsInstance(result, Sentence)
+        self.assertEqual(result.data['SEMANTIC_HINT'], 'WALK')
+        self.assertNotIn('QUERY', result[-1].data)
+
+        self.assertEqual(result[0], "_:a.test.op")
+
+    def test_parsed_walk_query(self):
+        query = DOP.dfs_query.parseString("ᛦ $x(::blah)?")[0]
+
+        self.eng("a.b.c(::blah)")
+        self.eng("a.b.d(::blah)")
+
+        result = self.eng(query)
+        self.assertTrue(result)
+        self.assertEqual(len(result), 2)
+        bound = {ctx.x.name for ctx in result}
+        self.assertEqual(bound, {"c", "d"})
+
     def test_query_walk_only_below_start(self):
         """
         @x ᛦ $y(::target)?
@@ -191,38 +222,29 @@ class TestWalkSemantics(unittest.TestCase):
         self.assertEqual(len(result), 2)
 
 
-    def test_parse_walk_query_instruction(self):
-        result = DOP.dfs_query.parseString("ᛦ $x(::blah)?")[0]
-
-        self.assertTrue(result)
-        self.assertIsInstance(result, Sentence)
-        self.assertEqual(result.data['SEMANTIC_HINT'], 'WALK')
-        self.assertTrue(result[-1].data['QUERY'])
-
-    def test_parse_walk_action_instruction(self):
-        result = DOP.dfs_action.parseString("ᛦ λa.test.op")[0]
-
-        self.assertTrue(result)
-        self.assertIsInstance(result, Sentence)
-        self.assertEqual(result.data['SEMANTIC_HINT'], 'WALK')
-        self.assertNotIn('QUERY', result[-1].data)
-
-        self.assertEqual(result[0], "_:a.test.op")
-
-    @unittest.skip("")
-    def test_act(self):
+    def test_parsed_act(self):
         # Setup
         self.eng("a.b.c.test")
         self.eng("a.b.d")
         self.eng("a.b.e.test")
+        self.eng("~acab")
 
         # Action to run
-        self.eng("the.rule(::ρ):\n | $x |\n\n @x.test?\n\n !! found.$x\nend")
+        self.eng("""
+the.rule(::ρ):
+        | $x |
+
+        @x.test?
+
+        !! found.$x
+end""".strip())
 
         # dfs instruction
-        inst = DOP.dfs_action.parseString("ᛦ λthe.rule")[0]
-        self.eng(inst)
+        ctxs = self.eng("the.$rule?")
+        # TODO handle ᛦ λ$rule $y $z
+        # rule would be: | @x(::node) $a $b |
+        inst = DOP.dfs_action.parseString("ᛦ λ$rule")[0]
+        self.eng(inst, ctxset=ctxs)
 
-        breakpoint()
         self.assertTrue(self.eng("found.c?"))
         self.assertTrue(self.eng("found.e?"))

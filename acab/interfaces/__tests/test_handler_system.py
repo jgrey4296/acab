@@ -173,29 +173,28 @@ class TestHandlerSystem(unittest.TestCase):
 
 
     def test_handler_call(self):
-        handler = HS.Handler("a_signal", lambda: 2)
+        handler = HS.Handler("a_signal", lambda *a, **k: 2)
         self.assertEqual(handler(), 2)
 
     def test_spec_call(self):
         spec = HS.HandlerSpec("a_signal")
-        handler = spec.on(lambda: 2)
+        handler = spec.on(lambda *args, **kwargs: 2)
         spec.register(handler)
 
         self.assertEqual(spec(), 2)
 
     def test_spec_call_multi(self):
         spec = HS.HandlerSpec("a_signal")
-        handler = spec.on(lambda: 2)
-        handler2 = spec.on(lambda: 4)
+        handler = spec.on(lambda *a, **k: 2)
+        handler2 = spec.on(lambda *a, **k: 4)
         spec.register(handler)
         spec.register(handler2)
 
-        self.assertEqual(spec(), 2)
-        self.assertEqual(spec.call_all(), [2, 4])
+        self.assertEqual(spec(), 4)
 
     def test_system_call_explicit(self):
         basic   = BasicHandlerSystem(init_specs=[HS.HandlerSpec("a_signal")])
-        handler = basic['a_signal'].on(lambda: 2)
+        handler = basic['a_signal'].on(lambda *a, **k: 2)
         basic.register(handler)
 
         self.assertEqual(basic['a_signal'](), 2)
@@ -225,7 +224,7 @@ class TestHandlerSystem(unittest.TestCase):
     def test_call_with_struct(self):
         spec = HS.HandlerSpec("a_signal")
         handler = spec.on(struct={})
-        handler2 = spec.on(lambda struct: struct.update({'a': 5}))
+        handler2 = spec.on(lambda *a, **k: a[0].update({'a': 5}))
 
         spec.register(handler)
         spec.register(handler2)
