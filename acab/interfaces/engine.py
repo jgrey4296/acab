@@ -17,12 +17,13 @@ from acab.interfaces.dsl import DSL_Fragment, DSL_Builder_i
 from acab.interfaces.module_loader import ModuleLoader_i
 from acab.interfaces.printing import PrintSystem_i
 from acab.interfaces.semantic import SemanticSystem_i
+from acab.interfaces.util import AcabReducible
 
 # TODO add 'Tick' functionality
 ModuleComponents = AT.ModuleComponents
 
 @dataclass
-class AcabEngine_i(cABC.Callable, cABC.Sequence):
+class AcabEngine_i(cABC.Callable, cABC.Sequence, AcabReducible):
 
     # Root components to extend
     parser         : DSL_Fragment     = field()

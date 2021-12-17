@@ -32,6 +32,7 @@ from acab.interfaces.handler_system import (Handler, Handler_Fragment,
                                             HandlerComponent_i, HandlerSpec,
                                             HandlerSystem_i)
 from acab.interfaces.value import Sentence_i, Value_i
+from acab.interfaces.util import AcabReducible
 
 Value                = AT.Value
 Sentence             = AT.Sentence
@@ -53,7 +54,7 @@ SemanticSystem       = AT.SemanticSystem
 
 #----------------------------------------
 @dataclass
-class SemanticSystem_i(HandlerSystem_i):
+class SemanticSystem_i(HandlerSystem_i, AcabReducible):
     """
     Map Instructions to Statement/Structure Semantics
     """
@@ -88,11 +89,6 @@ class SemanticSystem_i(HandlerSystem_i):
     def __call__(self, *instructions:Tuple[Statement], ctxs=None, data=None) -> CtxSet:
         pass
 
-    @abc.abstractmethod
-    def to_sentences(self) -> List[Sentence]:
-        # TODO run the dep_sem.to_sentences for each struct with a matching registration
-        pass
-
     def extend(self, mods:List[ModuleComponents]):
         logging.info("Extending Semantics")
         semantics = [y for x in mods for y in x.semantics]
@@ -119,10 +115,6 @@ class StructureSemantics_i(HandlerComponent_i, SemanticSystem_i):
             return self.query(sen, struct, ctxs=ctxs, data=data)
 
         return self.insert(sen, struct, ctxs=ctxs, data=data)
-
-    def to_sentences(self, struct:Structure, data=None, ctxs=None):
-        """ Reduce a struct down to sentences, for printing """
-        raise NotImplementedError()
 
     def verify(self, instruction:Statement, data=None, ctxs=None):
         raise NotImplementedError()

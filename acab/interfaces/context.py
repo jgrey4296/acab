@@ -16,6 +16,8 @@ from uuid import UUID
 logging = root_logger.getLogger(__name__)
 
 from acab import types as AT
+from acab.interfaces.util import AcabReducible
+
 
 # Type declarations:
 CtxSet     = AT.CtxSet
@@ -69,7 +71,7 @@ class ContextSet_i(cABC.Hashable, cABC.Set):
         pass
 
 @dataclass
-class ContextInstance_i(cABC.Mapping, cABC.Hashable):
+class ContextInstance_i(cABC.Mapping, cABC.Hashable, AcabReducible):
 
     @abc.abstractmethod
     def bind(self, word, nodes):
@@ -79,11 +81,6 @@ class ContextInstance_i(cABC.Mapping, cABC.Hashable):
     def bind_dict(self, the_dict):
         pass
 
-
-    @abc.abstractmethod
-    def to_sentences(self):
-        """ Convert to sentences for printing """
-        pass
 
     @abc.abstractmethod
     def finish(self) -> CtxIns:

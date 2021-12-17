@@ -12,6 +12,7 @@ from uuid import UUID, uuid1
 
 from acab import types as AT
 from acab.core.config.config import AcabConfig
+from acab.interfaces.util import AcabReducible
 
 logging       = root_logger.getLogger(__name__)
 
@@ -76,17 +77,13 @@ class Value_i(cABC.Hashable):
 
 
 @dataclass(frozen=True)
-class Statement_i(Value_i, cABC.Sized, cABC.Container):
+class Statement_i(Value_i, cABC.Sized, cABC.Container, AcabReducible):
 
     breakpoint : bool = field(init=False, default=False)
     # TODO add listener field for similar to breakpoint
 
     @abc.abstractmethod
     def to_word(self) -> Value:
-        pass
-
-    @abc.abstractmethod
-    def to_sentences(self) -> List[Sentence]:
         pass
 
     def do_break(self):
