@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import logging as root_logger
+from functools import wraps
 logging = root_logger.getLogger(__name__)
 
 from acab.error.parse_exception import AcabParseException
@@ -9,6 +10,7 @@ def MaybeBuildOperatorCtx(method):
     Force a ContextSet be passed to semantics,
     and ensure that container is loaded with operators from loaded modules
     """
+    @wraps(method)
     def fn(self, *args, **kwargs):
         no_ctxset = 'ctxset' not in kwargs or kwargs['ctxset'] is None or not bool(kwargs['ctxset'])
         cached_ops  = self.semantics.has_op_cache
@@ -26,17 +28,16 @@ def MaybeBuildOperatorCtx(method):
 
         return method(self, *args, **kwargs)
 
-    fn.__name__ = method.__name__
     return fn
 
 
 def EnsureEngineInitialised(method):
     """ Utility Decorator to raise an error if the DSL hasn't been initialised """
+    @wraps(method)
     def fn(self, *args, **kwargs):
         if not self.initialised:
             raise AcabParseException("DSL Not Initialised")
 
         return method(self, *args, **kwargs)
 
-    fn.__name__ = method.__name__
     return fn

@@ -18,6 +18,7 @@ Sentence  = AT.Sentence
 
 def ForceListArgDecorator(f):
     """ Force the first arg to be a list """
+    @wraps(f)
     def wrapped(self, *the_args, **the_kwargs):
         forced = []
         if isinstance(the_args[0], list):
@@ -28,12 +29,10 @@ def ForceListArgDecorator(f):
 
         return f(self, *forced, **the_kwargs)
 
-    wrapped.__name__ = f"FLA({f})"
     return wrapped
 
 def registerOn(cls:type):
     """ Decorator for registering a function onto a class as a method """
-
     def wrapper(fn):
         logging.info(f"Method Registration: {cls.__name__} . {fn.__name__}")
         assert(fn.__name__ not in dir(cls))
@@ -101,6 +100,7 @@ def __add_sig(sig, method):
 
 
 def factory(f):
+    @wraps(f)
     def awaiting_arg(first_arg):
         def ready_to_apply(*args, **kwargs):
             return f(first_arg, *args, **kwargs)
@@ -108,5 +108,4 @@ def factory(f):
         ready_to_apply.__name__ = f"{f.__name__} partial"
         return ready_to_apply
 
-    awaiting_arg.__name__ = f"{f.__name__} factory"
     return awaiting_arg
