@@ -1,0 +1,9 @@
+could allow for file pragmas so:
+#Pragma: prefix.blackbox
+could set all sentences to be prefixed with a UUID to blackbox the file
+
+#Pragma: prefix.blackbox.directory
+could set all files in the directory to the same UUID prefix
+
+#Pragma: prefix.directory
+could set file to shared the directory's name as the prefix
