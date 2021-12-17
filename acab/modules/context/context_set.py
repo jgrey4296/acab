@@ -62,13 +62,13 @@ class ContextInstance(CtxInt.ContextInstance_i):
 
     _current          : Node            = field(init=False, default=None)
     _depth            : int             = field(init=False, default=0)
-    _lineage          : set             = field(init=False, default_factory=set)
+    _lineage          : Set[UUID]       = field(init=False, default_factory=set)
 
     def __post_init__(self):
+        self._lineage.add(self.uuid)
         if self._parent_ctx is not None:
             object.__setattr__(self, "_depth", self._parent_ctx._depth + 1)
-            lineage = set([self._parent_ctx.uuid, self.uuid]).union(self._parent_ctx._lineage)
-            object.__setattr__(self, "_lineage", lineage)
+            self._lineage.update(self._parent_ctx._lineage)
 
     def __hash__(self):
         return hash(self.uuid)
@@ -85,16 +85,15 @@ class ContextInstance(CtxInt.ContextInstance_i):
             raise AcabSemanticException("Not Found in Context", value)
 
         key = value
-        if isinstance(value, VI.Value_i):
+        if isinstance(value, VI.Sentence_i) and value.is_var:
+            key = value[0].key()
+        elif isinstance(value, VI.Value_i):
             key = value.key()
 
         if str(key) in self.data:
             return self.data[str(key)]
 
         return value
-
-    # def __setitem(self, key: Any, value: Any):
-    #     raise ASErr.AcabSemanticException("Context Instances can't directly set a value, use MutableContextInstance")
 
     def __getattribute__(self, value):
         try:
@@ -119,16 +118,18 @@ class ContextInstance(CtxInt.ContextInstance_i):
         logging.debug("Copied Ctx Instance")
         if 'data' not in kwargs:
             kwargs['data'] = self.data.copy()
+        if 'nodes' not in kwargs:
+            kwargs['nodes'] = self.nodes.copy()
 
         copied = replace(self,
                          uuid=uuid1(),
                          data=kwargs['data'],
-                         nodes=self.nodes.copy(),
-                         _parent_ctx=self,
-                         )
+                         nodes=kwargs['nodes'],
+                         _parent_ctx=self)
 
         assert(self.uuid != copied.uuid)
         assert(id(self.data) != id(copied.data))
+        assert(self.uuid in copied._lineage)
         return copied
 
     def bind(self, word, nodes, sub_binds=None) -> [CtxIns]:
@@ -162,31 +163,26 @@ class ContextInstance(CtxInt.ContextInstance_i):
 
         return [x[0] for x in extensions]
 
-    def bind_dict(self, the_dict):
+    def bind_dict(self, val_binds:Dict[str, Any]=None, node_binds:Dict[str,Node]=None) -> CtxIns:
         data_copy = self.data.copy()
-        data_copy.update(the_dict)
-        return self.copy(data=data_copy)
+        nodes_copy = self.nodes.copy()
+
+        if val_binds is not None:
+            data_copy.update(val_binds)
+        if node_binds is not None:
+            nodes_copy.update(node_binds)
+        return self.copy(data=data_copy, nodes=nodes_copy)
 
     def set_current_node(self, node):
         object.__setattr__(self, "_current", node)
         return self
 
     def set_current_binding(self, word):
-        if word.name not in self.nodes:
+        if word.key() not in self.nodes:
             raise ASErr.AcabSemanticException("No Recognised binding", (word, self.nodes))
 
-        self.set_current_node(self.nodes[word.name])
+        self.set_current_node(self.nodes[word.key()])
         return self
-
-    def merge_with(self, var, instance_list) -> CtxIns:
-        """
-        TODO Combine two CtxIns
-        """
-        raise NotImplementedError()
-        merged_instance = ContextInstance()
-
-
-        return merged_instance
 
     def to_sentences(self):
         """
@@ -241,20 +237,31 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i):
         # TODO add sugar names from config
         return ContextSet(_operators=instance)
 
-    def subctx(self, selection:List[Union[CtxIns, UUID]]=None):
+    def subctx(self, selection:Union[int, List[Union[CtxIns, UUID]]]=None, val_binds:Dict[str,Value]=None, node_binds:Dict[str, Node]=None) -> CtxSet:
         """
-        Build a subset of this ctxset.,
-        either with reified instances, or their UUIDs
+        Subctx the given instances,
+        *and* bind the given data as part of that subctx.
+        (Intended to avoid manual mutx creation, etc)
         """
+        # TODO if selection == root? then use empty root context
+        # TODO selection:Union[slice, List[CtxIns], List[UUIDs], bool, None]
         if selection is None:
             selection     = self._active
         elif all([isinstance(x, ContextInstance) for x in selection]):
             selection     = [x.uuid for x in selection]
 
-        # active_lineage = {y for x in self.active_list() for y in x._lineage}
+        # Get anything based on specified selection
         selection = [x.uuid for x in self.active_list() if x._lineage.intersection(selection)]
-        # selection     = [x for x in selection if x in active_lineage]
-        obj_selection = {x : self._total[x] for x in selection}
+        # Construct the mapping for the subctx, while binding
+        if not bool(selection):
+            initial       = ContextInstance().bind_dict(val_binds, node_binds)
+            selection     = [initial.uuid]
+            obj_selection = {x.uuid : x for x in [initial]}
+        else:
+            rebound = [self._total[x].bind_dict(val_binds, node_binds) for x in selection]
+            selection = [x.uuid for x in rebound]
+            obj_selection = {x.uuid : x for x in rebound}
+
 
         assert(all([isinstance(x, ContextInstance) for x in obj_selection.values()]))
         assert(all([isinstance(x, UUID) for x in selection]))
@@ -263,7 +270,8 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i):
                             _total=obj_selection,
                             _active=selection)
 
-
+        # register merge of subctx into self (controllable param)
+        self.delay(self.delayed_e.MERGE, subctx)
         return subctx
 
     def __post_init__(self):
@@ -294,7 +302,7 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i):
         elif isinstance(index, slice):
             result = self._active[index]
         elif isinstance(index, list):
-            result = [self._active[x] for x in index]
+            result = [self.__getitem__(x) for x in index]
         elif isinstance(index, (Sentence_i, ProductionContainer)) and index in self._named_sets:
             result = self._named_sets[index].uuids
         else:
@@ -359,7 +367,7 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i):
             return self._total[self._active.pop(0)]
 
 
-    def active_list(self, clear=False):
+    def active_list(self, clear=False) -> List[CtxIns]:
         the_list = [self._total[x] for x in self._active]
         if clear:
             self._active = []
