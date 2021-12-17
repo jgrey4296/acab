@@ -27,8 +27,8 @@ class Value_i(cABC.Hashable):
 
     name   : str            = field(default=None)
     value  : Any            = field(default=None)
-    params : List[Value]  = field(default_factory=list)
-    tags   : Set[Value]   = field(default_factory=set)
+    params : List[Value]    = field(default_factory=list)
+    tags   : Set[Value]     = field(default_factory=set)
     data   : Dict[str, Any] = field(default_factory=dict)
     uuid   : UUID           = field(default_factory=uuid1)
 

@@ -19,7 +19,6 @@ DSL_Handler  = ppDSL.PyParse_Handler
 
 WALK_SEM_HINT    = Sentence.build([config.prepare("Module.DFSWalk", "WALK_SEM_HINT")()])
 
-# TODO dfs spec
 DFS_Sem_Frag = Semantic_Fragment(specs=[HandlerSpec(WALK_SEM_HINT)],
                                  handlers=[WalkTrieSemantics().as_handler(),
                                            QueryPlusAbstraction().as_handler("_:QUERY", flags=[DSL_Spec.flag_e.OVERRIDE])])

@@ -270,10 +270,6 @@ class HandlerSpec(cABC.MutableSequence, cABC.Callable):
                        struct_api=self.struct_api,
                        data_api=self.data_api)
 
-    def call_all(self, *args, **kwargs):
-        return [x(*args, **kwargs) for x in self.handlers]
-
-
     # Set APIs ################################################################
     def spec_from(self, target):
         """

@@ -60,6 +60,7 @@ class BasicSemanticSystem(SemanticSystem_i):
         try:
             data   = {}
             spec   = self.lookup(instruction)
+            # TODO verify instruction against semantics
             assert(spec is not None)
             struct = spec.struct
             logging.debug(f"Firing Semantics: {spec}")
