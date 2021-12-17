@@ -253,13 +253,15 @@ class HandlerSpec(cABC.MutableSequence, cABC.Callable):
 
     def __call__(self, *args, **kwargs):
         # TODO more advanced logic
-        if self.struct is not None and 'struct' not in kwargs:
-            kwargs['struct'] = self.struct
+        if len(args) < 2:
+            args = list(args) + [self.struct]
 
         for handler in self.handlers:
             result = handler(*args, **kwargs)
-            if result is not None:
-                return result
+
+
+        if result is not None:
+            return result
 
     def insert(self, item):
         raise NotImplementedError("Handler Spec's should `register` handlers through a HandlerSystem")

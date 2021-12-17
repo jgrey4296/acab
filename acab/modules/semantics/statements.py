@@ -12,8 +12,11 @@ from acab.core.data import default_structure as DS
 from acab.core.data.production_abstractions import ProductionOperator
 from acab.core.decorators.semantic import RunInSubCtxSet
 from acab.interfaces import semantic as SI
+from acab.interfaces import value as VI
 from acab.error.semantic_exception import AcabSemanticException
 from acab.modules.context.context_set import ContextSet, MutableContextInstance
+from acab.modules.values.binding.binding import bind
+
 
 CtxIns = AT.CtxIns
 
@@ -26,9 +29,8 @@ class QueryAbstraction(SI.StatementSemantics_i):
         query = instruction
         # Get the default dependent semantics
         spec = semSys.lookup()
-        struct = spec.struct
         for clause in query.clauses:
-            spec[0].query(clause, struct, data=data, ctxs=ctxs)
+            spec(clause, data=data, ctxs=ctxs)
 
 class QueryPlusAbstraction(SI.StatementSemantics_i):
     """ A Query abstraction that can handle expanded query semantics.
@@ -38,11 +40,10 @@ class QueryPlusAbstraction(SI.StatementSemantics_i):
         query = instruction
         for clause in query.clauses:
             spec = semSys.lookup(clause)
-            struct = spec.struct
             if struct is None:
                 struct = semSys
 
-            spec[0](clause, struct, data=data, ctxs=ctxs)
+            spec(clause, struct, data=data, ctxs=ctxs)
 
 
 class TransformAbstraction(SI.StatementSemantics_i):
@@ -62,7 +63,7 @@ class TransformAbstraction(SI.StatementSemantics_i):
                     else:
                         op = operators[clause.op]
 
-                    params              = [mutx[x] for x in clause.params]
+                    params              = [bind(x, mutx) for x in clause.params]
                     result              = op(*params, data=mutx.data)
                     mutx[clause.rebind] = result
 
@@ -82,7 +83,8 @@ class ActionAbstraction(SI.StatementSemantics_i):
                 else:
                     op     = operators[clause.op]
 
-                params = [ctx[x] for x in clause.params]
+
+                params = [bind(x, ctx) for x in clause.params]
                 result = op(*params, data=clause.data, semSystem=semSys)
 
 
@@ -145,7 +147,6 @@ class ProxyRuleAbstraction(SI.StatementSemantics_i):
         if DS.ACTION_COMPONENT in instruction:
             semsys(instruction[DS.ACTION_COMPONENT],
                    ctxs=ctxs)
-
 
 
 class ContainerAbstraction(SI.StatementSemantics_i):
