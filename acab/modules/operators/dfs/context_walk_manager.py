@@ -89,7 +89,11 @@ class ContextWalkManager:
 
 
     @property
-    def active(self) -> Iterator[Node]:
+    def current(self):
+        return self._current_inst
+
+    @property
+    def active(self) -> Iterator[List[Node]]:
         active_ctxs = self.ctxs.active_list(clear=True)
         for ctx in active_ctxs:
             self._current_inst = ctx

@@ -105,11 +105,14 @@ class WalkTrieSemantics(SI.StatementSemantics_i):
         nodesem : HandlerSpec[ValSem]    = default[0].lookup()
         found   : Set[UUID]              = set()
 
-        # TODO: if walk_spec is a sentence, query for it and temp_bind for it
 
         with ContextWalkManager(walk_spec, default.struct.root, ctxs) as cwm:
+            # for queue in cwm.active(mutable=True) ?
+            # queue::List[Node]
             for queue in cwm.active:
-                actions    : List['Rule'] = cwm._current_inst[walk_spec[-1].params[1]]
+                action : Union['Value', 'Sentence'] = cwm.current[walk_spec[-1]]
+                if isinstance(action, Sentence):
+                    raise NotImplementedError()
 
                 while bool(queue):
                     current      = queue.pop(0)
@@ -118,10 +121,21 @@ class WalkTrieSemantics(SI.StatementSemantics_i):
 
                     found.add(current.uuid)
                     # TODO use specified run form (all, sieve, etc)
-                    for action in actions:
-                        # potentially override to force atomic rule
-                        spec = semsys.lookup(action)
-                        spec[0](action, semsys, params=[current])
+                    # potentially override to force atomic rule
+                    spec = semsys.lookup(action)
+                    # bind current to the param in action.params
+                    params : List[Value] = action.params
+                    args   : List[Value] = [current.value] + walk_spec[-1].params
+                    bind_dict = {x.key() : cwm._current_inst[y] for x,y in zip(params, args)}
+                    node_dict = {params[0].key() : current}
 
+                    working_ctx = ctxs.subctx(None,
+                                              val_binds=bind_dict,
+                                              node_binds=node_dict)
+                    # try to do the action rule
+                    spec(action, semsys, ctxs=working_ctx)
+                    working_ctx.run_delayed()
+                    # TODO controllable entrance into subtrie
+                    # using if bool(working_ctx):..
                     accessible   = nodesem[0].access(current, None, data)
                     queue       += accessible
