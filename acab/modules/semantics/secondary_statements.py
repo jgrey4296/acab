@@ -14,7 +14,6 @@ from acab.core.decorators.semantic import RunInSubCtxSet
 from acab.interfaces import semantic as SI
 from acab.error.semantic_exception import AcabSemanticException
 from acab.modules.context.context_set import ContextSet, MutableContextInstance
-from acab.modules.semantics.util import SemanticBreakpointDecorator
 
 CtxIns = AT.CtxIns
 

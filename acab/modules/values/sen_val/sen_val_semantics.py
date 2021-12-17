@@ -15,7 +15,6 @@ from acab.error.semantic_exception import AcabSemanticException
 from acab.interfaces import semantic as SI
 from acab.modules.values.sen_val.context_sen_bind_query_manager import ContextSenBindQueryManager
 from acab.modules.context.context_set import ContextSet, MutableContextInstance
-from acab.modules.semantics.util import SemanticBreakpointDecorator
 
 CtxIns = AT.CtxIns
 

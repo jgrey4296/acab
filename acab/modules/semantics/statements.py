@@ -14,7 +14,6 @@ from acab.core.decorators.semantic import RunInSubCtxSet
 from acab.interfaces import semantic as SI
 from acab.error.semantic_exception import AcabSemanticException
 from acab.modules.context.context_set import ContextSet, MutableContextInstance
-from acab.modules.semantics.util import SemanticBreakpointDecorator
 
 CtxIns = AT.CtxIns
 
@@ -23,7 +22,6 @@ class QueryAbstraction(SI.StatementSemantics_i):
     """
     Very simply accumulate results of multiple sentences of queries
     """
-    @SemanticBreakpointDecorator
     def __call__(self, instruction, semSys, ctxs=None, data=None):
         query = instruction
         # Get the default dependent semantics
@@ -36,7 +34,6 @@ class QueryPlusAbstraction(SI.StatementSemantics_i):
     """ A Query abstraction that can handle expanded query semantics.
     Eg: Walkers
     """
-    @SemanticBreakpointDecorator
     def __call__(self, instruction, semSys, ctxs=None, data=None):
         query = instruction
         for clause in query.clauses:
@@ -50,7 +47,6 @@ class QueryPlusAbstraction(SI.StatementSemantics_i):
 
 class TransformAbstraction(SI.StatementSemantics_i):
     """ Takes a context, returns a changed context """
-    @SemanticBreakpointDecorator
     def __call__(self, instruction, semSys, ctxs=None, data=None):
         # Note: run *all* the transform clauses at once
         operators = ctxs._operators
@@ -73,7 +69,6 @@ class TransformAbstraction(SI.StatementSemantics_i):
 class ActionAbstraction(SI.StatementSemantics_i):
     """ *Consumes* a context, performing all actions in it """
 
-    @SemanticBreakpointDecorator
     def __call__(self, instruction, semSys, ctxs=None, data=None):
         operators = ctxs._operators
         action    = instruction
@@ -96,7 +91,6 @@ class AtomicRuleAbstraction(SI.StatementSemantics_i):
     """ Run a rule in a single semantic call """
 
     @RunInSubCtxSet
-    @SemanticBreakpointDecorator
     def __call__(self, instruction, semsys, ctxs=None, data=None):
         """ Rule Logic, returns action proposals """
         # TODO handle rule arguments
@@ -118,7 +112,6 @@ class ProxyRuleAbstraction(SI.StatementSemantics_i):
     """ Run a rules queries, then return ctxs bound
     with transform+action continuation """
 
-    @SemanticBreakpointDecorator
     def __call__(self, instruction, semsys, ctxs=None, data=None):
         if instruction in ctxs._named_sets:
             subctx = ctxs[instruction]
