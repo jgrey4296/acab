@@ -105,7 +105,7 @@ class AcabValue(VI.Value_i, Generic[T]):
         if any([not isinstance(x, VI.Value_i) for x in self.params]):
             original_params = self.params[:]
             self.params.clear()
-            self.params.extend([AcabValue.safe_make(x) for x in original_params])
+            self.params.extend([AcabValue.safe_make(x, data={DS.BIND: True}) for x in original_params])
 
 
     @cache
@@ -126,6 +126,7 @@ class AcabValue(VI.Value_i, Generic[T]):
 
         if self.is_at_var:
             name_str = BIND_SYMBOL + name_str
+
         elif self.is_var:
             name_str = BIND_SYMBOL + name_str
 
@@ -223,6 +224,7 @@ class AcabValue(VI.Value_i, Generic[T]):
         if not bool(params):
             return self
 
+        # TODO check params against self.params
         safe_params = [x if isinstance(x, VI.Value_i) else AcabValue(x) for x in params]
         return self.copy(params=safe_params)
 
@@ -284,7 +286,7 @@ class AcabStatement(AcabValue, VI.Statement_i):
         return simple_value
 
     def to_sentences(self) -> List[VI.Sentence_i]:
-        pass
+        return []
 
 
 @dataclass(frozen=True)
