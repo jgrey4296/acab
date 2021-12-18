@@ -10,7 +10,7 @@ from uuid import uuid1
 import pyparsing as pp
 from acab import types as AT
 from acab.core.config.config import AcabConfig
-from acab.core.data.values import AcabValue, Sentence
+from acab.core.data.value import AcabValue, Sentence
 from acab.core.parsing.consts import s, s_key
 from acab.error.semantic_exception import AcabSemanticException
 from acab.modules.context.context_set import (ContextInstance,

@@ -11,8 +11,8 @@ from acab.core.parsing import parsers as PU
 import acab.modules.parsing.exlo.parsers.FactParser as FP
 import acab.modules.parsing.exlo.parsers.QueryParser as QP
 
-from acab.core.data.values import AcabValue, Sentence, AcabStatement
-from acab.core.data.production_abstractions import ProductionOperator, ProductionContainer, ProductionComponent
+from acab.core.data.value import AcabValue, Sentence, Instruction
+from acab.core.data.instruction import ProductionOperator, ProductionContainer, ProductionComponent
 
 from acab.modules.operators import query as QOP
 

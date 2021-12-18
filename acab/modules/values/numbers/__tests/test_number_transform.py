@@ -8,15 +8,15 @@ logging = root_logger.getLogger(__name__)
 import acab
 acab.setup()
 
-from acab.core.data.values import AcabValue
-from acab.core.data.values import Sentence
+from acab.core.data.value import AcabValue
+from acab.core.data.value import Sentence
 from acab.modules.values.numbers.parsing import NumberParser as NP
 from acab.modules.parsing.exlo import ActionParser as AP
 from acab.modules.parsing.exlo import TransformParser as TP
 from acab.modules.parsing.exlo import FactParser as FP
 from acab.modules.parsing.exlo import QueryParser as QP
 
-from acab.core.data.production_abstractions import ProductionComponent, ProductionOperator
+from acab.core.data.instruction import ProductionComponent, ProductionOperator
 from acab.modules.values import numbers
 from acab.core.printing import default_handlers as DH
 

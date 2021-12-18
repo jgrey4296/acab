@@ -10,11 +10,11 @@ import acab
 acab.setup()
 
 from acab.core.parsing import parsers as PU
-from acab.core.data.values import AcabValue, AcabStatement
-from acab.core.data.values import Sentence
+from acab.core.data.value import AcabValue, Instruction
+from acab.core.data.value import Sentence
 from acab.core.data.node import AcabNode
 
-class BasicStatement(AcabStatement):
+class BasicStatement(Instruction):
 
     def __contains__(self, val):
         return False

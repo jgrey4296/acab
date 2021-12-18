@@ -6,7 +6,7 @@ import acab.interfaces.semantic as SI
 import acab.error.semantic_exception as ASErr
 from acab.core.config.config import AcabConfig
 from acab.core.data.acab_struct import BasicNodeStruct
-from acab.core.data.values import AcabStatement, Sentence
+from acab.core.data.value import Instruction, Sentence
 from acab.interfaces.value import Sentence_i
 from acab.modules.context.context_query_manager import ContextQueryManager
 
@@ -116,7 +116,7 @@ class BreadthTrieSemantics(SI.StructureSemantics_i):
                 # branch
                 queue += [(updated_path, x) for x in accessible]
 
-            if not bool(accessible) or isinstance(current.value, AcabStatement):
+            if not bool(accessible) or isinstance(current.value, Instruction):
                 # Leaves and Statements
                 # Always ignore the root node, so starting index is 1
                 words = [x.to_word() if not isinstance(x, Sentence_i) else x for x in updated_path[1:-1]]

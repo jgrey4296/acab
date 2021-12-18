@@ -9,7 +9,7 @@ from acab.interfaces import value as VI
 from acab.interfaces import context as CI
 from acab.error.semantic_exception import AcabSemanticException
 from acab.core.data import default_structure as DS
-from acab.core.data.values import Sentence, AcabValue
+from acab.core.data.value import Sentence, AcabValue
 
 def bind(val, bindings):
     if isinstance(val, VI.Sentence_i):

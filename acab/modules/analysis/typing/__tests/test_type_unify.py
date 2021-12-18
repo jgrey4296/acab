@@ -14,7 +14,7 @@ import acab.modules.analysis.typing.type_unify_fns as tuf
 from acab.core.data.acab_struct import AcabNode
 from acab.core.data.default_structure import BIND
 from acab.core.parsing import pyparse_dsl as ppDSL
-from acab.core.data.values import AcabValue, Sentence
+from acab.core.data.value import AcabValue, Sentence
 from acab.modules.analysis.typing import type_exceptions as TE
 from acab.modules.analysis.typing import unify
 from acab.modules.analysis.typing.typing_dsl import TypingDSL

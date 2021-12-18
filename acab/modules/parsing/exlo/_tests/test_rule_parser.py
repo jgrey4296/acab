@@ -7,9 +7,9 @@ logging = root_logger.getLogger(__name__)
 import acab
 config = acab.setup()
 
-from acab.core.data.values import AcabValue
-from acab.core.data.values import Sentence
-from acab.core.data.production_abstractions import ProductionOperator, ProductionComponent, ProductionContainer, ProductionStructure
+from acab.core.data.value import AcabValue
+from acab.core.data.value import Sentence
+from acab.core.data.instruction import ProductionOperator, ProductionComponent, ProductionContainer, ProductionStructure
 from acab.modules.parsing.exlo.parsers import ActionParser as AP
 from acab.modules.parsing.exlo.parsers import FactParser as FP
 from acab.modules.parsing.exlo.parsers import RuleParser as RP

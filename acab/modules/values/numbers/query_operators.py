@@ -1,4 +1,4 @@
-from acab.core.data.production_abstractions import ProductionOperator
+from acab.core.data.instruction import ProductionOperator
 from acab.core.decorators.semantics import OperatorArgUnWrap, OperatorResultWrap
 
 

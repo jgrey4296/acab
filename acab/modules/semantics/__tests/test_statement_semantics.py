@@ -16,12 +16,12 @@ config = acab.setup()
 import acab.modules.semantics.statements as ASem
 from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.data.node import AcabNode
-from acab.core.data.production_abstractions import (ActionOperator,
+from acab.core.data.instruction import (ActionOperator,
                                                         ProductionComponent,
                                                         ProductionContainer,
                                                         ProductionOperator,
                                                         ProductionStructure)
-from acab.core.data.values import AcabValue, Sentence
+from acab.core.data.value import AcabValue, Sentence
 from acab.core.decorators.semantic import (OperatorArgUnWrap,
                                                OperatorResultWrap)
 from acab.interfaces.handler_system import Handler

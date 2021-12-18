@@ -12,8 +12,8 @@ logging = root_logger.getLogger(__name__)
 import acab
 acab.setup()
 
-from acab.core.data.values import AcabValue as PV
-from acab.core.data.values import Sentence
+from acab.core.data.value import AcabValue as PV
+from acab.core.data.value import Sentence
 
 from acab.core.engine.engine import Engine
 

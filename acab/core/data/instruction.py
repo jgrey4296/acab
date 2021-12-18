@@ -22,7 +22,7 @@ from weakref import ref
 from acab import types as AT
 import acab.core.data.default_structure as DS
 from acab.core.config.config import AcabConfig
-from acab.core.data.values import AcabStatement, AcabValue, Sentence
+from acab.core.data.value import Instruction, AcabValue, Sentence
 from acab.error.operator_exception import AcabOperatorException
 from acab.core.decorators.util import cache
 
@@ -76,7 +76,7 @@ class ActionOperator(ProductionOperator):
 
 
 @dataclass(frozen=True)
-class ProductionComponent(AcabStatement):
+class ProductionComponent(Instruction):
     """ Pairs a an operator with some bindings
     equivalent to a sentence of:
     pc(::production.component).op.$x(::sen).args.[$y.$z].return.$a
@@ -124,7 +124,7 @@ class ProductionComponent(AcabStatement):
         return False
 
 @dataclass(frozen=True)
-class ProductionContainer(AcabStatement):
+class ProductionContainer(Instruction):
     """ Production Container: An applicable statement of multiple component clauses """
 
     value : List[Sentence] = field(default_factory=list)

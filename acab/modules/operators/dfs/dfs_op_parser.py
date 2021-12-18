@@ -7,7 +7,7 @@ import pyparsing as pp
 
 from acab.core.config.config import GET
 from  acab.core.parsing.consts import orm, QUERY, op, s_lit
-from acab.core.data.values import Sentence
+from acab.core.data.value import Sentence
 config        = GET()
 
 QUERY         = s_lit(config.prepare("Symbols", "QUERY")())

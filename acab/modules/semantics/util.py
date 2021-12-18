@@ -4,7 +4,7 @@ import logging as root_logger
 from enum import Enum
 
 from acab.core.config.config import AcabConfig
-from acab.core.data.values import AcabValue
+from acab.core.data.value import AcabValue
 
 logging = root_logger.getLogger(__name__)
 

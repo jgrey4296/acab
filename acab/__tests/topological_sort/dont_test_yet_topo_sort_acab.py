@@ -14,7 +14,7 @@ import acab
 config = acab.setup()
 
 from acab.core.config.config import ConfigSpec
-from acab.core.data.values import AcabValue, AcabStatement, Sentence
+from acab.core.data.value import AcabValue, Instruction, Sentence
 from acab.core.data.node import AcabNode
 
 from acab.modules.structures.trie.trie import Trie
@@ -23,7 +23,7 @@ from acab.interfaces.data import Structure_i
 from acab.interfaces.semantic import ValueSemantics
 from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
 
-from acab.core.data import production_abstractions as PA
+from acab.core.data import instruction as PA
 
 from acab.modules.operators.query.query_operators import EQ
 

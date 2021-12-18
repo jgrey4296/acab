@@ -13,7 +13,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 from acab.core.config.config import AcabConfig
-from acab.core.data.production_abstractions import (ProductionContainer,
+from acab.core.data.instruction import (ProductionContainer,
                                                     ProductionOperator)
 from acab.core.decorators.engine import (EnsureEngineInitialised,
                                          MaybeBuildOperatorCtx)
@@ -30,7 +30,7 @@ logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
 
 CtxSet      = 'ContextSet_i'
-Instruction = Union[str, 'Sentence', 'AcabStatement']
+Instruction = Union[str, 'Sentence', 'Instruction']
 
 @dataclass
 class AcabBasicEngine(AcabEngine_i):

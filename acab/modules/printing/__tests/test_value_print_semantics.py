@@ -24,10 +24,10 @@ import acab.modules.parsing.exlo.parsers.TransformParser as TP
 import acab.modules.printing.printers as Printers
 from acab.modules.printing import default
 from acab.core.config.config import AcabConfig
-from acab.core.data.production_abstractions import (ProductionComponent,
+from acab.core.data.instruction import (ProductionComponent,
                                                         ProductionContainer,
                                                         ProductionOperator)
-from acab.core.data.values import AcabStatement, AcabValue, Sentence
+from acab.core.data.value import Instruction, AcabValue, Sentence
 from acab.interfaces.handler_system import Handler
 from acab.modules.printing.basic_printer import BasicPrinter
 

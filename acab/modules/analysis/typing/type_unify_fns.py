@@ -8,7 +8,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 import acab.modules.analysis.typing.simple_unify_fns as suf
 from acab import types as AT
-from acab.core.data.values import AcabValue, Sentence
+from acab.core.data.value import AcabValue, Sentence
 from acab.core.decorators.util import factory
 from acab.error.semantic_exception import AcabSemanticException
 from acab.modules.analysis.typing import unify

@@ -26,7 +26,7 @@ default_sieve_bottom   : List[Callable] = [
     # component      : m -> m : leaf
     lambda x              : "COMPONENT" if isinstance(x, PA.ProductionComponent) else None,
     # Statement
-    lambda x              : "STATEMENT" if isinstance(x, AcabStatement) else None,
+    lambda x              : "STATEMENT" if isinstance(x, Instruction) else None,
     # sentence       : m -> 1 : any / leaf
     lambda x              : "SENTENCE" if isinstance(x, Sentence_i) else None,
     # value          : m -> 1 : any

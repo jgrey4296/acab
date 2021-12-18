@@ -7,7 +7,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 import acab.core.data.default_structure as DS
 import acab.interfaces.value as VI
 from acab.core.config.config import GET, AcabConfig, ConfigSpec
-from acab.core.data.values import AcabStatement, Sentence
+from acab.core.data.value import Instruction, Sentence
 from acab.core.printing import default_symbols as DSYM
 from acab.core.printing import wrappers as PW
 from acab.interfaces.printing import PrintSemantics_i
@@ -172,7 +172,7 @@ class BasicSentenceAwarePrinter(PrintSemantics_i):
             return_list.append(DSYM.NEGATION_SYM)
 
         return_list += value.words[:-1]
-        if not isinstance(value.words[-1], AcabStatement):
+        if not isinstance(value.words[-1], Instruction):
             return_list.append(PW._suppress_modal(top, value.words[-1]))
         else:
             return_list.append(value.words[-1])

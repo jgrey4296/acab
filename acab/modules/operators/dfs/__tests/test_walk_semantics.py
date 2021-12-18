@@ -18,8 +18,8 @@ from acab.modules.semantics.basic_system import BasicSemanticSystem
 from acab.modules.semantics.values import ExclusionNodeSemantics
 from acab.modules.semantics.statements import QueryPlusAbstraction
 from acab.modules.engines.configured import exlo
-from acab.core.data.production_abstractions import ProductionComponent, ProductionContainer
-from acab.core.data.values import Sentence, AcabValue
+from acab.core.data.instruction import ProductionComponent, ProductionContainer
+from acab.core.data.value import Sentence, AcabValue
 from acab.modules.operators.dfs import dfs_op_parser as DOP
 
 BIND          = config.prepare("Value.Structure", "BIND")()
@@ -241,9 +241,12 @@ end""".strip())
 
         # dfs instruction
         ctxs = self.eng("the.$rule?")
+        self.eng("a.$x?", ctxset=ctxs)
+        # TODO handle without @head
         # TODO handle ᛦ λ$rule $y $z
         # rule would be: | @x(::node) $a $b |
-        inst = DOP.dfs_action.parseString("ᛦ λ$rule")[0]
+        inst = DOP.dfs_action.parseString("@x ᛦ λ$rule")[0]
+
         self.eng(inst, ctxset=ctxs)
 
         self.assertTrue(self.eng("found.c?"))

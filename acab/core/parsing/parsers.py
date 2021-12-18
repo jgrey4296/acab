@@ -9,7 +9,7 @@ from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.core.parsing.annotation import ModalAnnotation
 from acab.core.data import default_structure as CDS
-from acab.core.data.values import Sentence
+from acab.core.data.value import Sentence
 from acab.core.parsing import consts as PConst
 from acab.core.parsing import default_structure as PDS
 from acab.core.parsing import default_symbols as PDSYM

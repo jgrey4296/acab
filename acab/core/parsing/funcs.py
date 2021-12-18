@@ -7,10 +7,10 @@ import logging as root_logger
 
 import pyparsing as pp
 from acab.core.config.config import AcabConfig
-from acab.core.data.production_abstractions import (ProductionComponent,
-                                                        ProductionContainer,
-                                                        ProductionStructure)
-from acab.core.data.values import AcabValue, Sentence
+from acab.core.data.instruction import (ProductionComponent,
+                                       ProductionContainer,
+                                       ProductionStructure)
+from acab.core.data.value import AcabValue, Sentence
 from acab.core.parsing import consts as PConst
 from acab.core.data.default_structure import TYPE_BOTTOM_NAME
 from acab.core.parsing.annotation import ValueAnnotation

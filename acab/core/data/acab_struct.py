@@ -5,7 +5,7 @@ import logging as root_logger
 from acab.core.config.config import AcabConfig
 from acab.interfaces.data import Structure_i
 from acab.core.data.node import AcabNode
-from acab.core.data.values import AcabValue
+from acab.core.data.value import AcabValue
 
 logging = root_logger.getLogger(__name__)
 config  = AcabConfig.Get()

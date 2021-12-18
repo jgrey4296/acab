@@ -36,7 +36,7 @@ from acab.interfaces.util import AcabReducible
 
 Value                = AT.Value
 Sentence             = AT.Sentence
-Statement            = AT.Statement
+Instruction          = AT.Instruction
 Structure            = AT.DataStructure
 Node                 = AT.Node
 Engine               = AT.Engine
@@ -56,7 +56,7 @@ SemanticSystem       = AT.SemanticSystem
 @dataclass
 class SemanticSystem_i(HandlerSystem_i, AcabReducible):
     """
-    Map Instructions to Statement/Structure Semantics
+    Map Instructions to Instruction/Structure Semantics
     """
     # TODO possibly re-add hooks / failure handling
     # TODO add a system specific logging handler
@@ -86,7 +86,7 @@ class SemanticSystem_i(HandlerSystem_i, AcabReducible):
         return self._operator_cache is not None
 
     @abc.abstractmethod
-    def __call__(self, *instructions:Tuple[Statement], ctxs=None, data=None) -> CtxSet:
+    def __call__(self, *instructions:Tuple[Instruction], ctxs=None, data=None) -> CtxSet:
         pass
 
     def extend(self, mods:List[ModuleComponents]):
@@ -116,7 +116,7 @@ class StructureSemantics_i(HandlerComponent_i, SemanticSystem_i):
 
         return self.insert(sen, struct, ctxs=ctxs, data=data)
 
-    def verify(self, instruction:Statement, data=None, ctxs=None):
+    def verify(self, instruction:Instruction, data=None, ctxs=None):
         raise NotImplementedError()
 
     @abc.abstractmethod
@@ -186,7 +186,7 @@ class StatementSemantics_i(HandlerComponent_i):
     def __repr__(self):
         return f"{self.__class__.__name__}"
 
-    def verify(self, instruction:Statement):
+    def verify(self, instruction:Instruction):
         pass
 
     @abc.abstractmethod

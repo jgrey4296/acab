@@ -15,9 +15,9 @@ import pyparsing as pp
 
 config = acab.setup()
 
-from acab.core.data.production_abstractions import (ProductionOperator,
-                                                        ProductionStructure)
-from acab.interfaces.value import Statement_i
+from acab.core.data.instruction import (ProductionOperator,
+                                        ProductionStructure)
+from acab.interfaces.value import Instruction_i
 from acab.interfaces.context import ContextSet_i
 from acab.modules.repl import ReplParser as RP
 from acab.modules.repl.repl_commander import register
@@ -115,7 +115,7 @@ def do_break(self, line):
         # run query
         self.state.ctxs = self.state.engine(ctxs.semantic)
         # attach semantic breakpoints to each prod_abstraction
-        if len(self.state.ctxs) == 1 and isinstance(self.state.ctxs[0]._current.value, Statement_i):
+        if len(self.state.ctxs) == 1 and isinstance(self.state.ctxs[0]._current.value, Instruction_i):
             curr = self.state.ctxs[0]._current.value
             curr.do_break()
             if curr.should_break:
@@ -126,7 +126,7 @@ def do_break(self, line):
             count = 0
             for inst in self.state.ctxs:
                 for bind in inst.data.items():
-                    if isinstance(bind, Statement_i):
+                    if isinstance(bind, Instruction_i):
                         bind.do_break()
                         count += 1
 

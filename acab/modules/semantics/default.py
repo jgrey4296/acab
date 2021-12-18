@@ -6,7 +6,7 @@ import acab.interfaces.semantic as SI
 import acab.modules.semantics.statements as ASem
 from acab.core.config.config import GET
 from acab.core.data.acab_struct import BasicNodeStruct
-from acab.core.data.values import Sentence
+from acab.core.data.value import Sentence
 from acab.interfaces.handler_system import Handler, HandlerSpec
 from acab.modules.context import context_delayed_actions
 from acab.modules.context.context_set import ContextSet

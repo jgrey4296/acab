@@ -9,8 +9,8 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 from uuid import uuid1
 
 from acab.core.data.node import AcabNode
-from acab.core.data.production_abstractions import ProductionOperator
-from acab.core.data.values import AcabStatement, AcabValue, Sentence
+from acab.core.data.instruction import ProductionOperator
+from acab.core.data.value import Instruction, AcabValue, Sentence
 #
 # MUST BE FULL PATH otherwise type instances are built twice for some reason
 # NOT : from . import util as TU
@@ -73,7 +73,7 @@ class TypeChecker:
         for sen in sentences:
             if isinstance(sen[-1], TD.TypeDefinition):
                 self.add_definition(sen)
-            elif isinstance(sen[-1], AcabStatement):
+            elif isinstance(sen[-1], Instruction):
                 local_contexts_to_check.append(sen[-1])
             else:
                 self.add_assertion(sen)

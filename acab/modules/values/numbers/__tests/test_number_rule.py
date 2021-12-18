@@ -8,9 +8,9 @@ logging = root_logger.getLogger(__name__)
 import acab
 acab.setup()
 
-from acab.core.data.values import Sentence
+from acab.core.data.value import Sentence
 from acab.core.data.import action
-from acab.core.data.production_abstractions import ProductionComponent, ProductionOperator, ProductionStructure
+from acab.core.data.instruction import ProductionComponent, ProductionOperator, ProductionStructure
 
 from acab.modules.values import numbers
 from acab.modules.values.numbers.parsing import NumberParser as NP

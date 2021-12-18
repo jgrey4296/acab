@@ -1,5 +1,5 @@
 from acab.core.config.config import AcabConfig
-from  acab.core.data.values import Sentence
+from  acab.core.data.value import Sentence
 
 config = AcabConfig.Get()
 

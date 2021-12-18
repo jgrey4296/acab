@@ -10,12 +10,12 @@ import acab
 config = acab.setup()
 
 from acab.interfaces.engine import AcabEngine_i
-from acab.interfaces.value import Statement_i
+from acab.interfaces.value import Instruction_i
 from acab.error.config_exception import AcabConfigException
 from acab.error.import_exception import AcabImportException
 from acab.modules.repl.repl_commander import register
 from acab.modules.repl import ReplParser as RP
-from acab.core.data.production_abstractions import ProductionContainer
+from acab.core.data.instruction import ProductionContainer
 from acab.modules.repl.util import init_inspect
 from acab.error.semantic_exception import AcabSemanticException
 
@@ -146,7 +146,7 @@ def do_run(self, line):
         bindings = [y for x in query_results.active_list()
                     for y in x if isinstance(y, ProductionContainer)]
 
-        if not bool(bindings) and bool(query_results) and isinstance(query_results[0]._current.value, Statement_i):
+        if not bool(bindings) and bool(query_results) and isinstance(query_results[0]._current.value, Instruction_i):
             bindings = [query_results[0]._current.value]
         logging.info("------ Run Setup End")
 

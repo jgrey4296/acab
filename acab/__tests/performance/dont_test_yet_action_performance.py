@@ -10,9 +10,9 @@ acab.setup()
 
 from acab.core.parsing import consts as PConst
 
-from acab.core.data.values import  AcabValue
-from acab.core.data.values import Sentence
-from acab.core.data.production_abstractions import ProductionOperator, ProductionContainer
+from acab.core.data.value import  AcabValue
+from acab.core.data.value import Sentence
+from acab.core.data.instruction import ProductionOperator, ProductionContainer
 
 from acab.core.engine.engine import Engine
 from acab.modules.parsing.exlo import ActionParser as AP

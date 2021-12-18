@@ -9,8 +9,8 @@ from typing import cast, ClassVar, TypeVar
 
 
 from acab.core.data.node import AcabNode
-from acab.core.data.values import AcabValue
-from acab.core.data.values import Sentence
+from acab.core.data.value import AcabValue
+from acab.core.data.value import Sentence
 from acab.modules.semantics.query_semantic_mixin import QuerySemanticMixin
 
 from acab.core.parsing.consts import ATOM_V

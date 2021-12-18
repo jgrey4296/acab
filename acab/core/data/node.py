@@ -14,7 +14,7 @@ from acab import types as AT
 import acab.interfaces.data as DI
 import acab.interfaces.value as VI
 from acab.core.config.config import AcabConfig
-from acab.core.data.values import AcabValue, Sentence
+from acab.core.data.value import AcabValue, Sentence
 from  acab.core.decorators.util import cache
 
 from acab.core.data.default_structure import ROOT

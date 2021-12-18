@@ -7,11 +7,11 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 from acab.core.config.config import AcabConfig
-from acab.core.data.values import AcabStatement
+from acab.core.data.value import Instruction
 
 config = AcabConfig.Get()
 
-class TypeStatement(AcabStatement):
+class TypeStatement(Instruction):
     # TODO: change value to a config value
 
     def __init__(self, value="|∀σ|", **kwargs):

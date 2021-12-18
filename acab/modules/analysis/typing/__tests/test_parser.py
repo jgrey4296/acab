@@ -15,7 +15,7 @@ from acab.modules.analysis.typing import util as TYU
 from acab.core.parsing.annotation import ValueAnnotation
 from acab.core.data import default_structure as DS
 
-from acab.core.data.values import Sentence
+from acab.core.data.value import Sentence
 from acab.modules.analysis.typing.values.type_definition import TypeDefinition, SumTypeDefinition, OperatorDefinition, TypeClass
 
 TDP.HOTLOAD_SEN        << FP.SENTENCE

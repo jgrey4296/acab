@@ -2,10 +2,10 @@
 Constructors for converting parse results -> Acab data
 """
 from acab.core.data.default_structure import SEMANTIC_HINT
-from acab.core.data.production_abstractions import (ProductionComponent,
+from acab.core.data.instruction import (ProductionComponent,
                                                     ProductionContainer,
                                                     ProductionStructure)
-from acab.core.data.values import Sentence
+from acab.core.data.value import Sentence
 from acab.core.data import default_structure as DS
 from acab.core.parsing import default_structure as PDS
 from acab.modules.parsing.exlo import util as EXu

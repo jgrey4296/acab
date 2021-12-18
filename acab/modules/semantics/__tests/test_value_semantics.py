@@ -15,7 +15,7 @@ config = acab.setup()
 
 from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.data.node import AcabNode
-from acab.core.data.values import AcabValue, Sentence
+from acab.core.data.value import AcabValue, Sentence
 from acab.error.acab_exception import AcabException
 from acab.error.semantic_exception import AcabSemanticException
 from acab.modules.semantics.values import (BasicNodeSemantics,

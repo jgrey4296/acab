@@ -5,10 +5,10 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 from acab.core.config.config import ConfigSpec
-from acab.core.data import production_abstractions as PA
+from acab.core.data import instruction as PA
 from acab.interfaces.printing import PrintSystem_i
 from acab.interfaces.value import (Sentence_i, Value_i)
-from acab.core.data.values import AcabStatement
+from acab.core.data.value import Instruction
 from acab.core.data.default_structure import SEMANTIC_HINT
 
 
@@ -35,7 +35,7 @@ class BasicPrinter(PrintSystem_i):
         # component      : m -> m : leaf
         lambda x              : "_:COMPONENT" if isinstance(x, PA.ProductionComponent) else None,
         # Statement
-        lambda x              : "_:STATEMENT" if isinstance(x, AcabStatement) else None,
+        lambda x              : "_:STATEMENT" if isinstance(x, Instruction) else None,
         # sentence       : m -> 1 : any / leaf
         lambda x              : "_:SENTENCE" if isinstance(x, Sentence_i) else None,
         # value          : m -> 1 : any

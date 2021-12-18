@@ -10,8 +10,8 @@ logging = root_logger.getLogger(__name__)
 import acab.interfaces.context as CtxInt
 import acab.error.semantic_exception as ASErr
 from acab.core.config import GET
-from acab.core.data.values import Sentence
-from acab.core.data.production_abstractions import (ProductionComponent,
+from acab.core.data.value import Sentence
+from acab.core.data.instruction import (ProductionComponent,
                                                         ProductionOperator)
 from acab import types as AT
 config = GET()

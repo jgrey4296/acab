@@ -4,10 +4,10 @@ import re
 from acab.core.parsing import parsers as PU
 from acab.core.config.config import AcabConfig
 
-from acab.core.data.values import AcabValue
-from acab.core.data.values import Sentence
+from acab.core.data.value import AcabValue
+from acab.core.data.value import Sentence
 from acab.core.parsing.annotation import ValueRepeatAnnotation
-from acab.core.data.production_abstractions import ProductionComponent
+from acab.core.data.instruction import ProductionComponent
 from acab.core.engine.util import prep_op_path
 
 from . import query_operators as QO

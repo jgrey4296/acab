@@ -10,7 +10,7 @@ import logging as root_logger
 
 import pyparsing as pp
 from acab.core.config.config import AcabConfig
-from acab.core.data.values import Sentence
+from acab.core.data.value import Sentence
 from acab.core.parsing import funcs as Pfunc
 from acab.core.parsing import parsers as PU
 from acab.core.parsing.consts import (DBLARROW, DELIM, NG, N,

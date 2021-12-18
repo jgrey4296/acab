@@ -14,7 +14,7 @@ from uuid import UUID, uuid1
 import acab.interfaces.context as CtxInt
 import acab.error.semantic_exception as ASErr
 from acab.core.config import GET
-from acab.core.data.production_abstractions import (ProductionComponent,
+from acab.core.data.instruction import (ProductionComponent,
                                                         ProductionContainer)
 from acab.interfaces.value import Sentence_i
 from acab.error.semantic_exception import AcabSemanticException
@@ -32,7 +32,7 @@ ProdComp         = ProductionComponent
 ProdCon          = ProductionContainer
 Operator         = 'ProductionOperator'
 Value            = 'AcabValue'
-Statement        = 'AcabStatement'
+Statement        = 'Instruction'
 Sen              = Sentence_i
 Node             = 'AcabNode'
 ModuleComponents = "ModuleComponents"

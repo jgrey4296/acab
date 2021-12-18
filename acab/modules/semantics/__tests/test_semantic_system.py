@@ -9,11 +9,11 @@ import acab
 
 config = acab.setup()
 
-from acab.core.data.production_abstractions import (ProductionComponent,
+from acab.core.data.instruction import (ProductionComponent,
                                                     ProductionContainer,
                                                     ProductionOperator,
                                                     ProductionStructure)
-from acab.core.data.values import Sentence
+from acab.core.data.value import Sentence
 from acab.interfaces.handler_system import Handler
 from acab.interfaces.semantic import (StatementSemantics_i,
                                       SemanticSystem_i)

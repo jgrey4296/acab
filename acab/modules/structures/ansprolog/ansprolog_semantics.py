@@ -5,7 +5,7 @@ import acab.interfaces.semantic as SI
 import acab.error.semantic_exception as ASErr
 from acab.core.config.config import AcabConfig
 from acab.core.data.acab_struct import BasicNodeStruct
-from acab.core.data.values import AcabStatement, Sentence
+from acab.core.data.value import Instruction, Sentence
 
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()

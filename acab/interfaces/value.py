@@ -18,9 +18,9 @@ logging       = root_logger.getLogger(__name__)
 
 config        = AcabConfig.Get()
 
-Sentence      : str = AT.Sentence
-Value         : str = AT.Value
-AcabStatement : str = AT.Statement
+Sentence    : str = AT.Sentence
+Value       : str = AT.Value
+Instruction : str = AT.Instruction
 
 @dataclass(frozen=True)
 class Value_i(cABC.Hashable):
@@ -77,7 +77,7 @@ class Value_i(cABC.Hashable):
 
 
 @dataclass(frozen=True)
-class Statement_i(Value_i, cABC.Sized, cABC.Container, AcabReducible):
+class Instruction_i(Value_i, cABC.Sized, cABC.Container, AcabReducible):
 
     breakpoint : bool = field(init=False, default=False)
     # TODO add listener field for similar to breakpoint
@@ -95,7 +95,7 @@ class Statement_i(Value_i, cABC.Sized, cABC.Container, AcabReducible):
 
 
 @dataclass(frozen=True)
-class Sentence_i(Statement_i, cABC.Sequence):
+class Sentence_i(Instruction_i, cABC.Sequence):
 
     value: List[Value]  = field(default_factory=list)
 

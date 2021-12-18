@@ -8,8 +8,8 @@ import pyparsing as pp
 from acab.core.config.config import AcabConfig
 config = AcabConfig.Get("acab")
 
-from acab.core.data.values import AcabValue
-from acab.core.data.values import Sentence
+from acab.core.data.value import AcabValue
+from acab.core.data.value import Sentence
 from acab.modules.structures.time.time_core import BaseTime, TimeEvent, TimeContainer
 from acab.modules.structures.time.pattern import PatternSeq, PatternPar
 from acab.modules.structures.time.parsing import parser as tp

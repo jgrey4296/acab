@@ -8,8 +8,6 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 from acab import types as AT
 from acab.core.config.config import AcabConfig
-from acab.core.data import production_abstractions as PA
-from acab.core.data.values import AcabStatement
 from acab.interfaces.handler_system import (Handler,
                                             HandlerComponent_i,
                                             HandlerSystem_i,

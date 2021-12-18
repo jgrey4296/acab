@@ -11,7 +11,7 @@ config = acab.setup()
 
 from acab.modules.repl.repl_commander import register
 from acab.modules.repl import ReplParser as RP
-from acab.core.data.production_abstractions import ProductionOperator, ProductionStructure
+from acab.core.data.instruction import ProductionOperator, ProductionStructure
 from acab.modules.repl.util import print_contexts
 from acab.core.parsing import debug_funcs as DBF
 

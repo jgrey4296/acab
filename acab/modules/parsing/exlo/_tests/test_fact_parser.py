@@ -10,8 +10,8 @@ import acab
 config = acab.setup()
 
 from acab.core.data import default_structure as DS
-from acab.core.data.values import Sentence
-from acab.core.data.values import AcabValue
+from acab.core.data.value import Sentence
+from acab.core.data.value import AcabValue
 from acab.core.parsing.annotation import ValueAnnotation
 from acab.core.parsing import parsers as PU
 

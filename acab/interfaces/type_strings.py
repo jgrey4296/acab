@@ -12,16 +12,16 @@ from typing import cast, ClassVar, TypeVar, Generic
 pseudo               = str
 
 Value                = "acab.interfaces.value.Value_i"
-Statement            = "acab.interfaces.value.Statement_i"
+Instruction          = "acab.interfaces.value.Instruction_i"
 Sentence             = "acab.interfaces.value.Sentence_i"
 
 Node                 = "acab.interfaces.data.Node_i"
 DataStructure        = "acab.interfaces.Structure_i"
 
-Operator             = "acab.core.data.production_abstractions.ProductionOperator"
-Component            = "acab.core.data.production_abstractions.ProductionComponent"
-Container            = "acab.core.data.production_abstractions.ProductionContainer"
-ProductionStructure  = "acab.core.data.production_abstractions.ProductionStructure"
+Operator             = "acab.core.data.instruction.ProductionOperator"
+Component            = "acab.core.data.instruction.ProductionComponent"
+Container            = "acab.core.data.instruction.ProductionContainer"
+ProductionStructure  = "acab.core.data.instruction.ProductionStructure"
 
 ModuleComponents     = "acab.core.data.interfaces.module_loader.ModuleComponents"
 

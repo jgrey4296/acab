@@ -8,15 +8,15 @@ logging = root_logger.getLogger(__name__)
 from acab import setup
 config = setup()
 
-from acab.core.data.values import Sentence
-from acab.core.data.values import AcabValue, AcabStatement
+from acab.core.data.value import Sentence
+from acab.core.data.value import AcabValue, Instruction
 
-from acab.core.data import production_abstractions as PO
+from acab.core.data import instruction as PO
 
 BIND_S               = config.prepare("Value.Structure", "BIND")()
 OPERATOR_TYPE_PRIM_S = config.prepare("Type.Primitive", "OPERATOR")()
 
-class ProductionAbstractionTests(unittest.TestCase):
+class StatementTests(unittest.TestCase):
     """ Test the construction of production abstractions """
 
     @classmethod

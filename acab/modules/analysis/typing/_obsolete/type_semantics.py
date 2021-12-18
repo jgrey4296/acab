@@ -9,7 +9,7 @@ import acab.interfaces.semantic as SI
 from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.core.data.acab_struct import BasicNodeStruct
-from acab.core.data.values import AcabStatement, Sentence
+from acab.core.data.value import Instruction, Sentence
 from acab.core.decorators.util import HandleSignal
 from acab.interfaces.semantic import StatementSemantics_i
 from acab.interfaces.value import Sentence_i

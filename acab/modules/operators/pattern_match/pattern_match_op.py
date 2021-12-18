@@ -2,7 +2,7 @@
 The actual pattern matcher logic as a transform operator
 
 """
-from acab.core.data.production_abstractions import ProductionOperator
+from acab.core.data.instruction import ProductionOperator
 
 class PatternMatchOp(ProductionOperator):
 

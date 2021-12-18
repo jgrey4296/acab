@@ -11,10 +11,10 @@ import acab
 acab.setup()
 
 from acab.core.data import default_structure as DS
-from acab.core.data.production_abstractions import (ProductionComponent,
+from acab.core.data.instruction import (ProductionComponent,
                                                     ProductionContainer,
                                                     ProductionOperator)
-from acab.core.data.values import AcabValue, Sentence
+from acab.core.data.value import AcabValue, Sentence
 from acab.modules.parsing.exlo.parsers import ActionParser as AP
 
 

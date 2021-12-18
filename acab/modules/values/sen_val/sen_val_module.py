@@ -14,7 +14,7 @@ from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.interfaces.printing import PrintSemantics_i
 from acab.interfaces.semantic import Semantic_Fragment
 from acab.core.printing import default_symbols as DSYM
-from acab.core.data.values import AcabStatement, Sentence
+from acab.core.data.value import Instruction, Sentence
 from acab.core.printing import wrappers as PW
 
 from . import sen_val_parser as SVP

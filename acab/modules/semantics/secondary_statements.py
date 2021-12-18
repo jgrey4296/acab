@@ -9,7 +9,7 @@ logging = root_logger.getLogger(__name__)
 
 from acab import types as AT
 from acab.core.data import default_structure as DS
-from acab.core.data.production_abstractions import ProductionOperator
+from acab.core.data.instruction import ProductionOperator
 from acab.core.decorators.semantic import RunInSubCtxSet
 from acab.interfaces import semantic as SI
 from acab.error.semantic_exception import AcabSemanticException

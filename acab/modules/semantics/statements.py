@@ -9,7 +9,7 @@ logging = root_logger.getLogger(__name__)
 
 from acab import types as AT
 from acab.core.data import default_structure as DS
-from acab.core.data.production_abstractions import ProductionOperator
+from acab.core.data.instruction import ProductionOperator
 from acab.core.decorators.semantic import RunInSubCtxSet
 from acab.interfaces import semantic as SI
 from acab.interfaces import value as VI
@@ -39,7 +39,8 @@ class QueryPlusAbstraction(SI.StatementSemantics_i):
     def __call__(self, instruction, semSys, ctxs=None, data=None):
         query = instruction
         for clause in query.clauses:
-            spec = semSys.lookup(clause)
+            spec   = semSys.lookup(clause)
+            struct = spec.struct
             if struct is None:
                 struct = semSys
 

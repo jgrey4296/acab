@@ -1,5 +1,5 @@
 """
-The Core Value Classes: AcabValue, AcabStatement, Sentence
+The Core Value Classes: AcabValue, Instruction, Sentence
 """
 import logging as root_logger
 from copy import deepcopy
@@ -12,10 +12,10 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 from uuid import UUID, uuid1
 from weakref import ref
 
-from acab import types as AT
-import acab.interfaces.value as VI
-from acab.core.config.config import AcabConfig
 import acab.core.data.default_structure as DS
+import acab.interfaces.value as VI
+from acab import types as AT
+from acab.core.config.config import AcabConfig
 from acab.core.decorators.util import cache
 from acab.error.acab_exception import AcabBasicException
 
@@ -31,9 +31,9 @@ UUID_CHOP        = bool(int(config.prepare("Print.Data", "UUID_CHOP")()))
 
 T     = TypeVar('T', str, Pattern, list)
 
-Value     = AT.Value
-Sen       = AT.Sentence
-Statement = AT.Statement
+Value       = AT.Value
+Sen         = AT.Sentence
+Instruction = AT.Instruction
 
 @dataclass(frozen=True)
 class AcabValue(VI.Value_i, Generic[T]):
@@ -82,7 +82,7 @@ class AcabValue(VI.Value_i, Generic[T]):
             assert(isinstance(self.name, str)), self.name
         elif isinstance(self.value, Pattern):
             name_update = self.value.pattern
-        elif isinstance(self.value, (list, VI.Statement_i)):
+        elif isinstance(self.value, (list, VI.Instruction_i)):
             name_update = ANON_VALUE
         else:
             name_update = str(self.value)
@@ -244,7 +244,7 @@ class AcabValue(VI.Value_i, Generic[T]):
         return all([t in self.tags for t in tags])
 
 
-    def attach_statement(self, value) -> Statement:
+    def attach_statement(self, value) -> Instruction:
         """
         Attach an unnamed statement to this value.
         Name the statement to the name of the former leaf
@@ -272,8 +272,8 @@ class AcabValue(VI.Value_i, Generic[T]):
         return self
 
 
-class AcabStatement(AcabValue, VI.Statement_i):
-    """ AcabStatement functions the same as AcabValue,
+class Instruction(AcabValue, VI.Instruction_i):
+    """ Instruction functions the same as AcabValue,
     but provides specific functionality for converting to a string
     """
 
@@ -290,7 +290,7 @@ class AcabStatement(AcabValue, VI.Statement_i):
 
 
 @dataclass(frozen=True)
-class Sentence(AcabStatement, VI.Sentence_i):
+class Sentence(Instruction, VI.Sentence_i):
 
     @staticmethod
     def build(words, **kwargs):
@@ -400,7 +400,7 @@ class Sentence(AcabStatement, VI.Sentence_i):
 
         return sen_copy
 
-    def detach_statement(self) -> Tuple[Sen, List[Statement]]:
+    def detach_statement(self) -> Tuple[Sen, List[Instruction]]:
         """
         The inverse of attach_statement.
         Copy the sentence,
@@ -412,7 +412,7 @@ class Sentence(AcabStatement, VI.Sentence_i):
 
         # collect leaf statements
         for word in self.words:
-            if isinstance(word, VI.Statement_i):
+            if isinstance(word, VI.Instruction_i):
                 out_words.append(word.to_word())
                 statements.append(word)
             else:

@@ -1,4 +1,4 @@
-from acab.core.data.values import Sentence
+from acab.core.data.value import Sentence
 from acab.core.config.config import AcabConfig
 
 util = AcabConfig.Get()

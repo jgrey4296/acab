@@ -6,12 +6,12 @@ logging = root_logger.getLogger(__name__)
 import acab
 acab.setup()
 
-from acab.core.data.values import Sentence
-from acab.core.data.values import AcabValue
+from acab.core.data.value import Sentence
+from acab.core.data.value import AcabValue
 from acab.core.data.node import AcabNode
 
 from acab.core.containers import action
-from acab.core.data.production_abstractions import ProductionOperator, ProductionComponent
+from acab.core.data.instruction import ProductionOperator, ProductionComponent
 
 from acab.modules.analysis.typing import type_exceptions as te
 from acab.modules.analysis.typing import util as TU

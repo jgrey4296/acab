@@ -9,7 +9,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 from acab import types as AT
 from acab.core.config.config import GET
-from acab.core.data.production_abstractions import (ActionOperator,
+from acab.core.data.instruction import (ActionOperator,
                                                         ProductionOperator)
 from acab.core.decorators.semantic import (OperatorArgUnWrap,
                                                OperatorResultWrap,

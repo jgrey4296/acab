@@ -9,10 +9,10 @@ import unittest.mock as mock
 import acab
 acab.setup()
 
-from acab.core.data.values import AcabValue
-from acab.core.data.values import Sentence
+from acab.core.data.value import AcabValue
+from acab.core.data.value import Sentence
 from acab.core.engine.engine import Engine
-from acab.core.data.production_abstractions import ProductionOperator
+from acab.core.data.instruction import ProductionOperator
 
 from acab.modules.operators.query import RegMatch
 from acab.modules.working_memory.trie_wm.trie_working_memory import TrieWM

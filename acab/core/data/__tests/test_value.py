@@ -7,14 +7,14 @@ logging = root_logger.getLogger(__name__)
 import acab
 config = acab.setup()
 
-from acab.core.data.values import AcabValue, AcabStatement
-from acab.core.data.values import Sentence
+from acab.core.data.value import AcabValue, Instruction
+from acab.core.data.value import Sentence
 from acab.core.data.node import AcabNode
 
 AT_BIND_S = config.prepare("Value.Structure", "AT_BIND")()
 BIND_S    = config.prepare("Value.Structure", "BIND")()
 
-class BasicStatement(AcabStatement):
+class BasicStatement(Instruction):
 
     def __contains__(self, val):
         return False
@@ -59,7 +59,7 @@ class AcabValueTests(unittest.TestCase):
         self.assertEqual(sen[-1].value, "e")
         self.assertIsInstance(sen[-1].value, str)
         copied = sen.attach_statement(value)
-        self.assertIsInstance(copied[-1], AcabStatement)
+        self.assertIsInstance(copied[-1], Instruction)
         self.assertEqual(copied[-1].value, "test")
         self.assertEqual(copied[-1].name, "e")
 
@@ -73,7 +73,7 @@ class AcabValueTests(unittest.TestCase):
         copied = sen.attach_statement(value)
 
         self.assertTrue("testval" in copied[-1].tags)
-        self.assertIsInstance(copied[-1], AcabStatement)
+        self.assertIsInstance(copied[-1], Instruction)
 
     def test_has_tag(self):
         """ Check a sentence can report whether it has a tag """
@@ -111,7 +111,7 @@ class AcabValueTests(unittest.TestCase):
     def test_statement_to_simple_value(self):
         """ Check a statement can be downgraded to a value """
         value = BasicStatement("test")
-        self.assertIsInstance(value, AcabStatement)
+        self.assertIsInstance(value, Instruction)
         basic = value.to_word()
         self.assertIsInstance(basic, AcabValue)
 
