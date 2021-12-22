@@ -135,6 +135,8 @@ class DSL_Builder_i(HandlerSystem_i):
         for module in modules:
             self.register(*module.dsl_fragments)
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__}: Handlers: {len(self.handler_specs)}, Loose: {len(self.loose_handlers)}>"
     @abc.abstractmethod
     @EnsureDSLInitialised
     def parse(self, s:str) -> List[Sentence]:

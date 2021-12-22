@@ -104,6 +104,9 @@ class HandlerSystem_i(cABC.MutableMapping, cABC.Callable):
         for spec in self.handler_specs.values():
             yield spec
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__}>"
+
     def lookup(self, value:Optional[Value]=None) -> HandlerSpec:
         """ run the sieve on the value to get a handler """
         if value is None:
@@ -226,6 +229,10 @@ class HandlerSpec(cABC.MutableSequence, cABC.Callable):
     h_limit_history : bool               = field(init=False, default=False)
 
     flag_e              : Enum = Enum("HandlerFlags", "OVERRIDE MERGE APPEND PREPEND COLLECT REDUCE")
+
+    @cache
+    def __str__(self):
+        return str(self.signal)
 
     def __repr__(self):
         return f"HandlerSpec({self.signal}, flags={self.flags}, func_api={self.func_api}, handlers={len(self.handlers)})"

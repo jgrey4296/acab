@@ -119,22 +119,16 @@ class AcabValue(VI.Value_i, Generic[T]):
 
     @cache
     def __repr__(self):
-        val_str = ""
-        name_str = str(self)
-        if self.value is not self.name:
-            val_str = ":..."
+        name_str = self.name
 
         if self.is_at_var:
             name_str = BIND_SYMBOL + name_str
-
         elif self.is_var:
             name_str = BIND_SYMBOL + name_str
 
         type_str = str(self.type)
 
-        return "({}:{}:{})".format(name_str,
-                                   val_str,
-                                   type_str)
+        return "<{}::{}>".format(name_str, type_str)
 
     @cache
     def __hash__(self):
@@ -274,8 +268,11 @@ class AcabValue(VI.Value_i, Generic[T]):
 
 class Instruction(AcabValue, VI.Instruction_i):
     """ Instruction functions the same as AcabValue,
-    but provides specific functionality for converting to a string
+    but provides specific functionality for converting to/from sentences
     """
+
+    def __repr__(self):
+        return "<{}::{}>".format(self.name, str(self.type))
 
     def to_word(self) -> Value:
         """ Convert a Statement to just an AcabValue, of it's name """
@@ -317,16 +314,23 @@ class Sentence(Instruction, VI.Sentence_i):
 
 
     @cache
-    def __hash__(self):
-        return hash(str(self))
-    @cache
-    def __str__(self):
-        words = FALLBACK_MODAL.join([str(x) for x in self.words])
-        return "{}:{}".format(self.name, words)
+    def __repr__(self):
+        name_str = self.key()
+        val_str  = str(self)
+
+        if self.is_at_var:
+            name_str = BIND_SYMBOL + name_str
+        elif self.is_var:
+            name_str = BIND_SYMBOL + name_str
+
+        type_str = str(self.type)
+
+        return "<{}::{} [{}]>".format(name_str, type_str, val_str)
 
     @cache
-    def __repr__(self):
-        return super().__repr__()
+    def __str__(self):
+        return "{}".format(FALLBACK_MODAL.join([str(x) for x in self.words]))
+
     @cache
     def __len__(self):
         return len(self.words)
@@ -343,7 +347,7 @@ class Sentence(Instruction, VI.Sentence_i):
 
     @cache
     def key(self):
-        return str(self)
+        return str(self.name)
 
     def copy(self, **kwargs) -> Sen:
         if 'value' not in kwargs:
