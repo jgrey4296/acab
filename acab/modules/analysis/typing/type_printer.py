@@ -17,7 +17,7 @@ from acab.core.decorators.util import HandleSignal
 
 config = GET()
 
-@HandleSignal("_:TYPE_INSTANCE")
+@HandleSignal("TYPE_INSTANCE")
 class TypeAwareValuePrinter(PrintSemantics_i):
 
     def __call__(self, value, top=None, data=None):
@@ -32,12 +32,12 @@ class TypeAwareValuePrinter(PrintSemantics_i):
         return return_list
 
 
-@HandleSignal("_:TYPE_DEF")
+@HandleSignal("TYPE_DEF")
 class TypeRecordPrinter(PrintSemantics_i):
 
     def __call__(self, value, top=None, data=None):
         ret_list = []
-        ret_list.append(top.override("_:ATOM", value, data={"no_modal" : True}))
+        ret_list.append(top.override("ATOM", value, data={"no_modal" : True}))
         ret_list.append(":")
         ret_list.append(DSYM.PRINT_SEPARATOR_P)
 
@@ -62,14 +62,14 @@ class TypeRecordPrinter(PrintSemantics_i):
 
         return ret_list
 
-@HandleSignal("_:SUM_TYPE")
+@HandleSignal("SUM_TYPE")
 class SumTypePrinter(PrintSemantics_i):
     pass
 
-@HandleSignal("_:OP_DEF")
+@HandleSignal("OP_DEF")
 class OperatorTypePrinter(PrintSemantics_i):
     pass
 
-@HandleSignal("_:TYPE_CLASS")
+@HandleSignal("TYPE_CLASS")
 class TypeClassPrinter(PrintSemantics_i):
     pass

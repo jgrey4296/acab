@@ -102,9 +102,9 @@ class TestWalkSemantics(unittest.TestCase):
                                                     TYPE_INSTANCE: Sentence.build(["target"]),
                                                     QUERY : True})
         query_sen = Sentence.build([source_var, test_var],
-                                   data={SEM_HINT : "_:WALK"})
+                                   data={SEM_HINT : "WALK"})
         query = ProductionContainer(value=[query_sen],
-                                    data={SEM_HINT : "_:QUERY"})
+                                    data={SEM_HINT : "QUERY"})
 
         # call walk
         result = self.eng(query, ctxset=ctxs)
@@ -130,9 +130,9 @@ class TestWalkSemantics(unittest.TestCase):
                                                     TYPE_INSTANCE: Sentence.build(["target"]),
                                                     QUERY : True})
         query_sen = Sentence.build([source_var, test_var],
-                                   data={SEM_HINT : "_:WALK"})
+                                   data={SEM_HINT : "WALK"})
         query = ProductionContainer(value=[query_sen],
-                                    data={SEM_HINT : "_:QUERY"})
+                                    data={SEM_HINT : "QUERY"})
 
         # call walk
         result = self.eng(query, ctxset=ctxs)
@@ -160,9 +160,9 @@ class TestWalkSemantics(unittest.TestCase):
                                                     TYPE_INSTANCE: Sentence.build(["target"]),
                                                     QUERY : True})
         query_sen = Sentence.build([source_var, test_var],
-                                   data={SEM_HINT : "_:WALK"})
+                                   data={SEM_HINT : "WALK"})
         query = ProductionContainer(value=[query_sen],
-                                    data={SEM_HINT : "_:QUERY"})
+                                    data={SEM_HINT : "QUERY"})
 
         # call walk
         result = self.eng(query, ctxset=ctxs)
@@ -181,9 +181,9 @@ class TestWalkSemantics(unittest.TestCase):
         test_var   = AcabValue.safe_make("y", data={BIND: True,
                                                     TYPE_INSTANCE: Sentence.build(["target"]),
                                                     QUERY : True})
-        query_sen = Sentence.build([test_var], data={SEM_HINT: "_:WALK"})
+        query_sen = Sentence.build([test_var], data={SEM_HINT: "WALK"})
         query = ProductionContainer(value=[query_sen],
-                                    data={SEM_HINT : "_:QUERY"})
+                                    data={SEM_HINT : "QUERY"})
 
         # call walk
         result = self.eng(query)
@@ -212,9 +212,9 @@ class TestWalkSemantics(unittest.TestCase):
                                                     QUERY : True})
 
         query_sen = Sentence.build([source_var, test_var, test_var2],
-                                   data={SEM_HINT : "_:WALK"})
+                                   data={SEM_HINT : "WALK"})
         query = ProductionContainer(value=[query_sen],
-                                    data={SEM_HINT : "_:QUERY"})
+                                    data={SEM_HINT : "QUERY"})
 
         # call walk
         result = self.eng(query, ctxset=ctxs)

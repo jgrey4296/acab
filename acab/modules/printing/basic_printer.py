@@ -20,26 +20,26 @@ class BasicPrinter(PrintSystem_i):
         # override tuple : 1 -> 1 : any
         lambda x              : x.signal if isinstance(x, PrintSystem_i.HandlerOverride) else None,
         # symbol         : m -> m : any
-        lambda x              : "_:SYMBOL" if isinstance(x, ConfigSpec) else None,
+        lambda x              : "SYMBOL" if isinstance(x, ConfigSpec) else None,
         # enum
-        lambda x              : "_:SYMBOL" if isinstance(x, Enum) else None,
+        lambda x              : "SYMBOL" if isinstance(x, Enum) else None,
         # SEM HINT Handler
-        lambda x              : x.data[SEMANTIC_HINT] if isinstance(x, Value_i) and SEMANTIC_HINT in x.data else None,
+        lambda x              : str(x.data[SEMANTIC_HINT]) if isinstance(x, Value_i) and SEMANTIC_HINT in x.data else None,
         # exact type     : 1 -> 1 : any / leaf
         lambda x              : str(x.type) if isinstance(x, Value_i) else None,
         # gen type       : m -> 1 : any / leaf
         # structure      : m -> m : leaf
-        lambda x              : "_:STRUCTURE" if isinstance(x, PA.ProductionStructure) else None,
+        lambda x              : "STRUCTURE" if isinstance(x, PA.ProductionStructure) else None,
         # container      : m -> m : leaf
-        lambda x              : "_:CONTAINER" if isinstance(x, PA.ProductionContainer) else None,
+        lambda x              : "CONTAINER" if isinstance(x, PA.ProductionContainer) else None,
         # component      : m -> m : leaf
-        lambda x              : "_:COMPONENT" if isinstance(x, PA.ProductionComponent) else None,
+        lambda x              : "COMPONENT" if isinstance(x, PA.ProductionComponent) else None,
         # Statement
-        lambda x              : "_:STATEMENT" if isinstance(x, Instruction) else None,
+        lambda x              : "STATEMENT" if isinstance(x, Instruction) else None,
         # sentence       : m -> 1 : any / leaf
-        lambda x              : "_:SENTENCE" if isinstance(x, Sentence_i) else None,
+        lambda x              : "SENTENCE" if isinstance(x, Sentence_i) else None,
         # value          : m -> 1 : any
-        lambda x              : "_:ATOM" if isinstance(x, Value_i) else None
+        lambda x              : "ATOM" if isinstance(x, Value_i) else None
     ]
 
     def __repr__(self):

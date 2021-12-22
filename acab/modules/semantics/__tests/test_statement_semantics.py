@@ -197,8 +197,8 @@ class StatementSemanticTests(unittest.TestCase):
                                                            con_sem])
 
         # Operator Context
-        op_ctx             = ContextInstance(data={"_:transform" : TestTransform(),
-                                                   "_:action"    : TestAction()})
+        op_ctx             = ContextInstance(data={"transform" : TestTransform(),
+                                                   "action"    : TestAction()})
 
         # Add data to eval context
         ctx_set     = ContextSet.build(op_ctx)
@@ -367,11 +367,11 @@ class StatementSemanticTests(unittest.TestCase):
         query_sen[-1].data[QUERY_V] = True
 
         transform_sen = ProductionComponent("transform_test",
-                                            Sentence.build("_:regex"),
+                                            Sentence.build("regex"),
                                             ["x", "sen", "SEN"],
                                             rebind=AcabValue.safe_make("y", data={BIND_V: True}))
         action_sen    = ProductionComponent("Test Action Clause",
-                                            Sentence.build("_:action"),
+                                            Sentence.build("action"),
                                             ['y'])
 
         query     = ProductionContainer("test query", [query_sen], data={SEMANTIC_HINT_V: QUERY_SEM_HINT})

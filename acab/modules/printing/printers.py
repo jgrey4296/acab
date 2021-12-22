@@ -57,7 +57,7 @@ class ModalAwarePrinter(PrintSemantics_i):
         transformed = self.run_transforms(value, curr_str)
         # lookup modal to care about from top.
         # TODO handle multi-modals
-        transformed.append(top.override("_:MODAL", value, data=data))
+        transformed.append(top.override("MODAL", value, data=data))
 
         return transformed
 
@@ -90,10 +90,10 @@ class AnnotationAwareValuePrinter(PrintSemantics_i):
 
         curr_str = [str(value.name)]
         return_list.append(self.run_transforms(value, curr_str))
-        return_list.append(top.override("_:ANNOTATIONS", value, data=data))
+        return_list.append(top.override("ANNOTATIONS", value, data=data))
 
         # Pass data through to modal:
-        return_list.append(top.override("_:MODAL", value, data=data))
+        return_list.append(top.override("MODAL", value, data=data))
 
         # Handle query
         if DS.QUERY in value.data and value.data[DS.QUERY]:
@@ -129,7 +129,7 @@ class AnnotationPrinter(PrintSemantics_i):
         # Pretty Print annotations
         annotations_pp = []
         for annotation in annotations_in_value:
-            signal = f"_:{annotation}"
+            signal = f"{annotation}"
             if signal in top:
                 annotations_pp.append(top.pprint(top.override(signal, value)))
             else:
@@ -220,7 +220,7 @@ class ExplicitContainerPrinter(PrintSemantics_i):
     def __call__(self, value, top=None, data=None):
         result = []
 
-        result.append(top.override("_:ATOM", value, data={"no_modal": True}))
+        result.append(top.override("ATOM", value, data={"no_modal": True}))
         # result += ["(::", value.type, ")", ":"]
         result += [":", DSYM.CONTAINER_JOIN_P]
         if bool(value.params):
@@ -228,7 +228,7 @@ class ExplicitContainerPrinter(PrintSemantics_i):
             result.append(DSYM.CONTAINER_JOIN_P)
 
         if bool(value.tags):
-            result.append(top.override("_:TAGS", value.tags))
+            result.append(top.override("TAGS", value.tags))
             result.append(DSYM.CONTAINER_JOIN_P)
 
         result.append([[DSYM.INDENT, x, DSYM.CONTAINER_JOIN_P] for x in  value.value])
@@ -243,25 +243,25 @@ class StructurePrinter(PrintSemantics_i):
         # TODO define order, add newlines
         result = []
         # print the name
-        result.append(top.override("_:ATOM", value, data={"no_modal": True}))
+        result.append(top.override("ATOM", value, data={"no_modal": True}))
         # TODO parameterise this
         # result += ["(::", value.type, ")"]
         result.append(":")
         result.append(DSYM.CONTAINER_JOIN_P)
         if bool(value.tags):
-            result.append(top.override("_:TAGS", value.tags))
+            result.append(top.override("TAGS", value.tags))
             result.append(DSYM.CONTAINER_JOIN_P)
 
         if bool(value.structure[DS.QUERY_COMPONENT]):
-            result.append(top.override("_:IMPLICIT_CONTAINER", value.structure[DS.QUERY_COMPONENT]))
+            result.append(top.override("IMPLICIT_CONTAINER", value.structure[DS.QUERY_COMPONENT]))
             result.append(DSYM.CONTAINER_JOIN_P)
 
         if bool(value.structure[DS.TRANSFORM_COMPONENT]):
-            result.append(top.override("_:IMPLICIT_CONTAINER", value.structure[DS.TRANSFORM_COMPONENT]))
+            result.append(top.override("IMPLICIT_CONTAINER", value.structure[DS.TRANSFORM_COMPONENT]))
             result.append(DSYM.CONTAINER_JOIN_P)
 
         if bool(value.structure[DS.ACTION_COMPONENT]):
-            result.append(top.override("_:IMPLICIT_CONTAINER", value.structure[DS.ACTION_COMPONENT]))
+            result.append(top.override("IMPLICIT_CONTAINER", value.structure[DS.ACTION_COMPONENT]))
 
         result.append(DSYM.END_SYM)
         result.append(DSYM.PRINT_SEPARATOR_P)
@@ -311,9 +311,10 @@ class SimpleTypePrinter(PrintSemantics_i):
 
     def __call__(self, value, top=None, data=None):
         return_list = []
-        type_str = str(value.data[DS.TYPE_INSTANCE])
-        if type_str == "_:ATOM":
+        if str(value.type) == "ATOM":
             return []
+
+        type_str = str(value.type)
         return_list.append("::")
         return_list.append(type_str)
         return return_list

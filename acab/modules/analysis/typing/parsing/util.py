@@ -58,7 +58,7 @@ def make_type_dec(toks):
 
     return ValueAnnotation(TYU.TYPE_INSTANCE_S,
                            Sentence.build(path, params=args,
-                                          data={TYPE_INSTANCE_S: "_:type.declaration"}))
+                                          data={TYPE_INSTANCE_S: "type.declaration"}))
 
 def make_type_class(toks):
     # TODO assert all toks are operator definitions

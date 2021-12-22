@@ -34,7 +34,7 @@ SenVal_Parser = ppDSL.PyParse_Fragment(specs=[ppDSL.PyParse_Spec("sentence", str
 @dataclass
 class SenValPrinter(PrintSemantics_i):
 
-    signal : str = field(default="_:SEN_VAL")
+    signal : str = field(default="SEN_VAL")
 
     def __call__(self, value, top=None, data=None):
         assert(isinstance(value, VI.Sentence_i))
@@ -42,14 +42,14 @@ class SenValPrinter(PrintSemantics_i):
         return_list.append("[[")
         return_list.append(value)
         return_list.append("]]")
-        return_list.append(top.override("_:MODAL", value, data=data))
+        return_list.append(top.override("MODAL", value, data=data))
 
         return return_list
 
 @dataclass
 class SenValueAwareSentencePrinter(PrintSemantics_i):
 
-    signal : str = field(default="_:SENTENCE")
+    signal : str = field(default="SENTENCE")
 
     def __call__(self, value, top=None, data=None):
         assert(isinstance(value, VI.Sentence_i))
@@ -60,13 +60,13 @@ class SenValueAwareSentencePrinter(PrintSemantics_i):
 
         for word in value.words[:-1]:
             if isinstance(word, Sentence):
-                return_list.append(top.override("_:SEN_VAL", word))
+                return_list.append(top.override("SEN_VAL", word))
             else:
                 return_list.append(word)
 
 
         if isinstance(value.words[-1], Sentence):
-            return_list.append(top.override("_:SEN_VAL", value.words[-1], data={"no_modal": True}))
+            return_list.append(top.override("SEN_VAL", value.words[-1], data={"no_modal": True}))
         elif not isinstance(value.words[-1], AcabStatement):
             return_list.append(PW._suppress_modal(top, value.words[-1]))
         else:

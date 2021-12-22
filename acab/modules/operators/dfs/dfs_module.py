@@ -21,7 +21,7 @@ WALK_SEM_HINT    = Sentence.build([config.prepare("Module.DFSWalk", "WALK_SEM_HI
 
 DFS_Sem_Frag = Semantic_Fragment(specs=[HandlerSpec(WALK_SEM_HINT)],
                                  handlers=[WalkTrieSemantics().as_handler(),
-                                           QueryPlusAbstraction().as_handler("_:QUERY", flags=[DSL_Spec.flag_e.OVERRIDE])])
+                                           QueryPlusAbstraction().as_handler("QUERY", flags=[DSL_Spec.flag_e.OVERRIDE])])
 
 
 DFSQueryDSL = DSL_Fragment(specs=[DSL_Spec("word.constrained", struct=DOP.HOTLOAD_VAR),
