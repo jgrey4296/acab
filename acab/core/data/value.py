@@ -29,7 +29,7 @@ FALLBACK_MODAL   = config.prepare("Symbols", "FALLBACK_MODAL", actions=[config.a
 
 UUID_CHOP        = bool(int(config.prepare("Print.Data", "UUID_CHOP")()))
 
-T     = TypeVar('T', str, Pattern, list)
+T           = TypeVar('T', str, Pattern, list)
 
 Value       = AT.Value
 Sen         = AT.Sentence
@@ -102,10 +102,9 @@ class AcabValue(VI.Value_i, Generic[T]):
         if DS.BIND not in self.data:
             self.data[DS.BIND] = False
 
-        if any([not isinstance(x, VI.Value_i) for x in self.params]):
-            original_params = self.params[:]
-            self.params.clear()
-            self.params.extend([AcabValue.safe_make(x, data={DS.BIND: True}) for x in original_params])
+        original_params = self.params[:]
+        self.params.clear()
+        self.params.extend([AcabValue.safe_make(x, data={DS.BIND: True}) for x in original_params])
 
 
     @cache
@@ -488,6 +487,7 @@ class Sentence(Instruction, VI.Sentence_i):
 
     def to_sentences(self) -> List[VI.Sentence_i]:
         simple_sen, statements = self.detach_statement()
+        # TODO turn statements to sentences
         return [simple_sen]
 
 

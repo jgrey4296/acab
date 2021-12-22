@@ -6,6 +6,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
+from acab import GET
 from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.interfaces.handler_system import (Handler,

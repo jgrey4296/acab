@@ -246,7 +246,6 @@ end""".strip())
         # TODO handle ᛦ λ$rule $y $z
         # rule would be: | @x(::node) $a $b |
         inst = DOP.dfs_action.parseString("@x ᛦ λ$rule")[0]
-
         self.eng(inst, ctxset=ctxs)
 
         self.assertTrue(self.eng("found.c?"))

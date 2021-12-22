@@ -160,7 +160,6 @@ class SentenceTests(unittest.TestCase):
         to_attach = Sentence.build(["blah","bloo"])
 
         attached = sen.attach_statement(to_attach)
-
         self.assertNotEqual(sen, attached)
         self.assertEqual(sen[0:2], attached[0:2])
         self.assertTrue(all([x == y for x,y in zip(attached[-1].words, to_attach.words)]))

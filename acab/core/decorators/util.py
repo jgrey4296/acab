@@ -102,6 +102,7 @@ def __add_sig(sig, method):
 def factory(f):
     @wraps(f)
     def awaiting_arg(first_arg):
+        @wraps(f)
         def ready_to_apply(*args, **kwargs):
             return f(first_arg, *args, **kwargs)
 

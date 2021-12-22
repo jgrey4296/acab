@@ -89,7 +89,6 @@ class TypeUnifyTests(unittest.TestCase):
     def test_unify_types(self):
         sen1 = dsl.parseString("a.test.sentence")[0]
         sen2 = dsl.parseString("a.test.sentence(::blah)")[0]
-
         ctx_r = tuf.type_unify(sen1, sen2, CtxIns())
 
         self.assertTrue(ctx_r)

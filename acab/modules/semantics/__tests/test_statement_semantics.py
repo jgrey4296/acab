@@ -71,7 +71,7 @@ class StatementSemanticTests(unittest.TestCase):
         """ Check transforms semantics work """
         sem                                 = ASem.TransformAbstraction()
         # Construct context set for operators
-        op_loc_path                         = Sentence.build(["Regex"])
+        op_loc_path                         = Sentence.build(["Regex", "Operation"])
         operator_instance                   = RegexOp()
         op_ctx                              = ContextInstance(data={str(op_loc_path): operator_instance})
         ctx_set                             = ContextSet.build(op_ctx)
@@ -172,7 +172,6 @@ class StatementSemanticTests(unittest.TestCase):
 
         class StubAbsSemantic(StatementSemantics_i):
             def __call__(self, ins, semSys, ctxs=None, data=None):
-                breakpoint()
                 raise AcabBasicException("TestAbsSem called")
 
         def SemHintKey(val, data=None):

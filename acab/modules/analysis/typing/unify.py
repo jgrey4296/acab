@@ -34,8 +34,6 @@ class UnifyLogic:
     early_exit      : Callable[[AT.Sentence, AT.Sentence, AT.CtxIns], unify_enum]
     truncate        : Callable[[AT.Sentence, AT.Sentence], Tuple[AT.Sentence, AT.Sentence]]
 
-
-
     apply           : Callable[[AT.Sentence, AT.CtxIns], AT.Sentence]
 
 def unify_sentence_pair(first: AT.Sentence,

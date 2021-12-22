@@ -57,7 +57,6 @@ def fail_handler_basic(f_word, s_word, ctx):
     raise TE.TypeUnifyException(f_word, s_word, None, ctx)
 
 
-
 def apply_substitutions(sen, gamma) -> AT.Sentence:
     """
     Apply basic substitutions to a sentence

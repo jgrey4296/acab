@@ -9,6 +9,7 @@ from typing import cast, ClassVar, TypeVar, Generic
 import logging as root_logger
 import pyparsing as pp
 
+from acab import GET
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.core.parsing import parsers as PU
 from acab.error.parse_exception import AcabParseException

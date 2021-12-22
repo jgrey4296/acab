@@ -17,3 +17,5 @@ class AcabReducible(metaclass=abc.ABCMeta):
     def to_sentences(self) -> List[AT.Sentence]:
         """ Convert to sentences for printing """
         pass
+
+    #TODO add from_sentences

@@ -101,6 +101,7 @@ class Instruction_i(Value_i, cABC.Sized, cABC.Container, AcabReducible):
 class Sentence_i(Instruction_i, cABC.Sequence):
 
     value: List[Value]  = field(default_factory=list)
+    # TODO a weak dict mapping names -> values
 
     @abc.abstractmethod
     def build(words, **kwargs):

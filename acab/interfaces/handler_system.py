@@ -263,17 +263,16 @@ class HandlerSpec(cABC.MutableSequence, cABC.Callable):
     def __setitem__(self, key, val):
         raise NotImplementedError("Handler Spec's should not set items")
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args, **kwargs) -> Optional[Any]:
         # TODO more advanced logic
         if len(args) < 2:
             args = list(args) + [self.struct]
 
+        result = None
         for handler in self.handlers:
             result = handler(*args, **kwargs)
 
-
-        if result is not None:
-            return result
+        return result
 
     def insert(self, item):
         raise NotImplementedError("Handler Spec's should `register` handlers through a HandlerSystem")
@@ -418,16 +417,16 @@ class HandlerComponent_i:
                        flags=flags or list())
 
 @dataclass
-class Handler(HandlerComponent_i, cABC.Callable, cABC.Iterable):
+class Handler(cABC.Callable, cABC.Iterable):
     """ A Handler implementation for registering
     individual functions or methods """
 
-    signal   : Union[Sentence, str] = field()
-    func     : Optional[Callable]   = field(default=None)
-    struct_i : Optional[Callable]   = field(default=None)
-    flags    : Set[Enum]            = field(default_factory=list)
+    signal   : Union[Sentence, str]
+    func     : Optional[Callable]    = field(default=None)
+    struct_i : Optional[Callable]    = field(default=None)
+    flags    : Set[Enum]             = field(default_factory=list)
 
-    struct   : Optional[Structure]  = field(default=None)
+    struct   : Optional[Structure]   = field(default=None)
 
     def __post_init__(self):
         if isinstance(self.func, type):
@@ -461,13 +460,16 @@ class Handler(HandlerComponent_i, cABC.Callable, cABC.Iterable):
 
         return f"Handler({sig_s}: {func_name}: {struct_name})"
 
-
     def as_handler(self, signal=None, struct=None, flags=None):
         return Handler(signal or self.signal,
                        func=self.func,
                        struct=struct or self.struct,
                        flags=flags or self.flags)
 
+
+    @cache
+    def __str__(self):
+        return str(self.signal)
 
 # Modules #####################################################################
 @dataclass

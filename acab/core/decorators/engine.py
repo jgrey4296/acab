@@ -15,7 +15,7 @@ def MaybeBuildOperatorCtx(method):
         no_ctxset = 'ctxset' not in kwargs or kwargs['ctxset'] is None or not bool(kwargs['ctxset'])
         cached_ops  = self.semantics.has_op_cache
         if no_ctxset and not cached_ops:
-            logging.info("Building CtxSet from modules")
+            logging.info("Building Operator CtxSet from modules")
             mods             = list(self._module_loader.loaded_modules.values())
             ctxset           = self.semantics.build_ctxset(mods)
             kwargs['ctxset'] = ctxset
