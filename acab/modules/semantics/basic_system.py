@@ -34,8 +34,8 @@ class BasicSemanticSystem(SemanticSystem_i):
     _default_sieve : ClassVar[List[Callable]] = [
         lambda x: x if isinstance(x, str) else None,
         lambda x: x.signal if isinstance(x, SemanticSystem_i.HandlerOverride) else None,
-        lambda x: x.data[SEM_HINT] if SEM_HINT in x.data else None,
-        lambda x: x.type
+        lambda x: str(x.data[SEM_HINT]) if SEM_HINT in x.data else None,
+        lambda x: str(x.type)
     ]
 
     ctx_set : CtxSet = field(default=ContextSet)

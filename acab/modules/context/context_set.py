@@ -75,7 +75,9 @@ class ContextInstance(CtxInt.ContextInstance_i):
 
     def __contains__(self, value: Union[int, str, Value]):
         key = value
-        if isinstance(value, VI.Value_i):
+        if isinstance(value, VI.Sentence_i):
+            key = str(value)
+        elif isinstance(value, VI.Value_i):
             key = value.key()
 
         return str(key) in self.data
@@ -84,14 +86,16 @@ class ContextInstance(CtxInt.ContextInstance_i):
         if self.exact and value not in self:
             raise AcabSemanticException("Not Found in Context", value)
 
-        key = value
+        key = str(value)
         if isinstance(value, VI.Sentence_i) and value.is_var:
             key = value[0].key()
+        elif isinstance(value, VI.Sentence_i):
+            key = str(value)
         elif isinstance(value, VI.Value_i):
             key = value.key()
 
-        if str(key) in self.data:
-            return self.data[str(key)]
+        if key in self.data:
+            return self.data[key]
 
         return value
 
@@ -303,8 +307,8 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i):
             result = self._active[index]
         elif isinstance(index, list):
             result = [self.__getitem__(x) for x in index]
-        elif isinstance(index, (Sentence_i, ProductionContainer)) and index in self._named_sets:
-            result = self._named_sets[index].uuids
+        elif isinstance(index, (Sentence_i, ProductionContainer)) and str(index) in self._named_sets:
+            result = self._named_sets[str(index)].uuids
         else:
             raise Exception(f"Unrecognised arg to getitem: {index}")
 
@@ -402,7 +406,9 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
 
     def __contains__(self, value: Union[int, str, Value]):
         key = value
-        if isinstance(value, VI.Value_i):
+        if isinstance(value, VI.Sentence_i):
+            key = str(value)
+        elif isinstance(value, VI.Value_i):
             key = value.key()
 
         direct = str(key) in self.data
@@ -414,7 +420,9 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
             raise AcabSemanticException("Not Found in Context", value)
 
         key = value
-        if isinstance(value, VI.Value_i):
+        if isinstance(value, VI.Sentence_i):
+            key = str(value)
+        elif isinstance(value, VI.Value_i):
             key = value.key()
 
         if str(key) in self.data:
@@ -423,7 +431,9 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
         return self.base[value]
 
     def __setitem__(self, key: Value, value: Value):
-        if isinstance(key, VI.Value_i):
+        if isinstance(key, VI.Sentence_i):
+            key = str(value)
+        elif isinstance(key, VI.Value_i):
             key = key.key()
 
         self.data[str(key)] = value

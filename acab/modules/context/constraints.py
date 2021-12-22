@@ -93,8 +93,8 @@ class ConstraintCollection(CtxInt.Constraint_i):
         stack.append(self.operators)
 
         for ctx in stack:
-            if val in ctx:
-                return ctx[val]
+            if str(val) in ctx:
+                return ctx[str(val)]
 
         if isinstance(val, Sentence) and val.has_var:
             return val.bind(stack[0])

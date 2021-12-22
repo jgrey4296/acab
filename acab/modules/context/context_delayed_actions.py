@@ -19,7 +19,7 @@ def do_fail(self, uuids:List[UUID]):
 @registerOn(ContextSet)
 def do_deactivate(self, uuids:List[UUID]):
     self._active = [x for x in self._active if x not in uuids]
-    self._failed = [x for x in self._failed if x not in uuids]
+    self._failed = [x for x in self._failed if x.ctx.uuid not in uuids]
 
 @registerOn(ContextSet)
 def do_default(self, instr, uuids:List[UUID]):
