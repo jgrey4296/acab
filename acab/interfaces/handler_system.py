@@ -244,6 +244,9 @@ class HandlerSpec(cABC.MutableSequence, cABC.Callable):
         # TODO handle structs
         # TODO api must be equal
         # TODO data and struct api's must be equal
+        if isinstance(other, str):
+            return str(self) == other
+
         return self.signal == other.signal
 
     def __len__(self):

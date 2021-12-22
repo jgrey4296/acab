@@ -302,15 +302,20 @@ class Sentence(Instruction, VI.Sentence_i):
 
     def __eq__(self, other):
         if isinstance(other, str) and other[:2] == "_:":
-            return str(self) == other
+            # Utility for str comparison. underscore colon signifies sen str
+            return str(self) == other[2:]
         elif isinstance(other, str):
-            return str(self) == f"_:{other}"
+            # If not a sen str, just compare to the name
+            return self.key() == other
         elif not isinstance(other, VI.Sentence_i):
+            # anything not a sentence isn't equal
             return False
         elif len(self) != len(other):
+            # Lengths not equal mean difference
             return False
         else:
-            return all([x == y for x,y in zip(self.words, other.words)])
+            # finally, words match exactly
+            return all([x == y for x,y in zip(self, other)])
 
 
     @cache

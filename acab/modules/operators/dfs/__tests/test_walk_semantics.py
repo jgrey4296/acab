@@ -59,7 +59,7 @@ class TestWalkSemantics(unittest.TestCase):
 
         self.assertTrue(result)
         self.assertIsInstance(result, Sentence)
-        self.assertEqual(result.data['SEMANTIC_HINT'], 'WALK')
+        self.assertEqual(result.data['SEMANTIC_HINT'], '_:WALK')
         self.assertTrue(result[-1].data['QUERY'])
 
     def test_parse_walk_action_instruction(self):
@@ -67,7 +67,7 @@ class TestWalkSemantics(unittest.TestCase):
 
         self.assertTrue(result)
         self.assertIsInstance(result, Sentence)
-        self.assertEqual(result.data['SEMANTIC_HINT'], 'WALK')
+        self.assertEqual(result.data['SEMANTIC_HINT'], '_:WALK')
         self.assertNotIn('QUERY', result[-1].data)
 
         self.assertEqual(result[0], "_:a.test.op")

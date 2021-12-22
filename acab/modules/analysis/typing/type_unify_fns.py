@@ -98,7 +98,7 @@ def gen_type_vars(first, second, gamma, gen_var=None) -> AT.CtxIns:
 # Type Unification ############################################################
 def match_atom(f_word, s_word, ctx):
     result = unify_enum.NA
-    if s_word == "ATOM":
+    if s_word == "_:ATOM":
         result = unify_enum.NEXT_WORD
 
     return result

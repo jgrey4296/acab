@@ -91,10 +91,10 @@ class TypeChecker:
         # propagate known variable types
         # TODO shift to type bottom
         # TODO use config values and build a sentence
-        dummy = [x.propagate() for x in self._variables.get_nodes(lambda x: x.type_instance != "ATOM")]
+        dummy = [x.propagate() for x in self._variables.get_nodes(lambda x: x.type_instance != "_:ATOM")]
         # get all known declared types
         # TODO: get references as well
-        val_queue = {y for y in self._assignments.get_nodes(lambda x: x.type_instance != "ATOM")}
+        val_queue = {y for y in self._assignments.get_nodes(lambda x: x.type_instance != "_:ATOM")}
         return val_queue
 
     def _merge_equivalent_nodes(self):

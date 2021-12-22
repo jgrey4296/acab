@@ -181,10 +181,10 @@ class TypeUnifyTests(unittest.TestCase):
         sen2c = tuf.typed_sen_logic.apply(sen2, ctx_r)
 
         self.assertEqual(sen1c[-1].type, "_:aweg.awg")
-        self.assertEqual(sen1c[-2].type, "_:blah._:aweg.awg")
+        self.assertEqual(str(sen1c[-2].type), "blah.aweg.awg")
         self.assertEqual(sen1c[-2].type[-1], "_:aweg.awg")
         self.assertEqual(sen2c[-1].type, "_:aweg.awg")
-        self.assertEqual(sen2c[-2].type, "_:blah._:aweg.awg")
+        self.assertEqual(sen2c[-2].type, "_:blah.aweg.awg")
         self.assertEqual(sen2c[-2].type[-1], "_:aweg.awg")
         self.assertNotEqual(sen1c, sen2c)
         self.assertNotEqual(sen1c[-2].type, "_:blah.y")

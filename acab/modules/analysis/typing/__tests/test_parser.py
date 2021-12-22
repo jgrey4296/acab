@@ -91,14 +91,14 @@ class TestParser(unittest.TestCase):
         self.assertIsInstance(result, ValueAnnotation)
         self.assertEqual(result.key, DS.TYPE_INSTANCE)
         self.assertIsInstance(result.value, Sentence)
-        self.assertTrue(result.value == "a.b.c")
+        self.assertTrue(str(result.value) == "a.b.c")
 
 
     def test_declaration_as_annotation(self):
         """ Test a sentence with a type declaration as an annotation """
         result = FP.SENTENCE.parseString("a.test(::blah.type)")[0]
         self.assertIsInstance(result, Sentence)
-        self.assertEqual(str(result[-1].type), "_:blah.type")
+        self.assertEqual(str(result[-1].type), "blah.type")
 
 
 
