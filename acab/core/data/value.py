@@ -352,10 +352,17 @@ class Sentence(Instruction, VI.Sentence_i):
     def __getitem__(self, i):
         if isinstance(i, slice):
             return Sentence.build(self.words.__getitem__(i), data=self.data)
-        return self.words.__getitem__(i)
+        if isinstance(i, str):
+            match = [x for x in self.words if x.name == i]
+            return match[0]
+
+        if isinstance(i, int):
+            return self.words.__getitem__(i)
+
+        raise ValueError("Unrecognised argument to Sentence.__getitem__", i)
 
     def __contains__(self, value:Union[str, Value]):
-        return value in self.words
+        return value in self.words or value in [x.name for x in self.words]
 
     @cache
     def key(self):
