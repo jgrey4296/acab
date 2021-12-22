@@ -86,6 +86,9 @@ class Instruction_i(Value_i, cABC.Sized, cABC.Container, AcabReducible):
     def to_word(self) -> Value:
         pass
 
+    @abc.abstractmethod
+    def from_sentences(self) -> List[Instruction]:
+        pass
     def do_break(self):
         self.breakpoint = not self.breakpoint
 

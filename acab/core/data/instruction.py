@@ -104,7 +104,30 @@ class ProductionComponent(Instruction):
         """
         Sentence([op_path].[param1.param2.param3...].result)
         """
-        raise NotImplementedError()
+        words = []
+        words.append(self.value.copy(name="Operator"))
+        if bool(self.params):
+            words.append(Sentence.build(self.params, name="Params"))
+        if self.rebind:
+            words.append(self.rebind.copy(name="Rebind"))
+
+        return Sentence.build(words, data=self.data.copy(), name="ProductionComponent")
+
+    @staticmethod
+    def from_sentences(sens:List[Sentence]) -> List[Sentence]:
+        result = []
+        for sen in sens:
+            if sen != "ProductionComponent":
+                continue
+            if "Operator" not in sen:
+                continue
+
+            comp   = sen['Operator'][:]
+            params = sen['Params'].words if 'Params' in sen else []
+            rebind = sen['Rebind'].copy(name=None) if 'Rebind' in sen else None
+            result.append(ProductionComponent(value=comp, params=params, rebind=rebind))
+
+        return result
 
     @property
     @cache
@@ -156,9 +179,22 @@ class ProductionContainer(Instruction):
     def bind(self, data) -> Container:
         raise Exception("Deprecated: use acab.modules.values.binding")
 
+
     def to_sentences(self):
         """ [ClauseA, ClauseB, ClauseC...] """
-        raise NotImplementedError()
+        words = []
+        for clause in self.clauses:
+            if isinstance(clause, Sentence):
+                words.append(clause)
+            elif isinstance(clause, Instruction):
+                words += clause.to_sentences()
+
+        clauses = Sentence.build(words, name="Clauses")
+        return [Sentence.build([clauses],
+                               data=self.data.copy(),
+                               name="ProductionContainer")]
+
+
 
 @dataclass(frozen=True)
 class ProductionStructure(ProductionContainer):
@@ -217,4 +253,17 @@ class ProductionStructure(ProductionContainer):
          prefixC.[..]
         ..]
         """
-        raise NotImplementedError()
+        clauses = []
+        for key in self.keys():
+            words = []
+            clause = self[key]
+            if isinstance(clause, Sentence):
+                words.append(clause)
+            elif isinstance(clause, Instruction):
+                words += clause.to_sentences()
+
+            clauses.append(Sentence.build(words, name=key))
+
+        return [Sentence.build([clauses],
+                               data=self.data.copy(),
+                               name="ProductionStructure")]

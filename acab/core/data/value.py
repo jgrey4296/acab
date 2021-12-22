@@ -286,8 +286,15 @@ class Instruction(AcabValue, VI.Instruction_i):
         return []
 
 
+    def from_sentences(self, sens:List[VI.Sentence]) -> List[VI.Instruction]:
+        return sens
+
 @dataclass(frozen=True)
 class Sentence(Instruction, VI.Sentence_i):
+    """
+    A Sentence is an instruction which is idempotent on from_sentences/to_sentences
+    Sentence.from_sentences([sens]) == [sens]
+    """
 
     @staticmethod
     def build(words, **kwargs):
