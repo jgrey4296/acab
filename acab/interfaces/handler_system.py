@@ -84,8 +84,10 @@ class HandlerSystem_i(cABC.MutableMapping, cABC.Callable):
             return signal in self.handler_specs
         elif isinstance(signal, Sentence_i):
             return str(signal) in self.handler_specs
-
-        return signal.signal in self.handler_specs
+        elif isinstance(signal, (HandlerSpec, Handler)):
+            return str(signal) in self.handler_specs
+        else:
+            raise ValueError(f"Unrecognised signal value: {signal}")
 
     def __bool__(self):
         return 1 < len(self.handler_specs)
@@ -94,6 +96,8 @@ class HandlerSystem_i(cABC.MutableMapping, cABC.Callable):
         return len(self.handler_specs)
 
     def __getitem__(self, other):
+        if not isinstance(other, str):
+            raise ValueError(f"Bad Signal Attempt to HandlerSystem: {other}")
         return self.handler_specs[str(other)]
 
     def __delitem__(self, key):
@@ -197,10 +201,10 @@ class HandlerSystem_i(cABC.MutableMapping, cABC.Callable):
             if not isinstance(handler, Handler):
                 raise AcabHandlerException(f"Handler Not Compliant: {handler}", handler)
 
-            if handler not in self:
+            if str(handler) not in self:
                 self.loose_handlers.append(handler)
             else:
-                self.handler_specs[str(handler.signal)].register(handler)
+                self.handler_specs[str(handler)].register(handler)
 
     def verify(self):
         pass
