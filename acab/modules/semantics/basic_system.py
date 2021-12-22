@@ -73,7 +73,7 @@ class BasicSemanticSystem(SemanticSystem_i):
                 data.update(instruction.data)
                 instruction = instruction.value
 
-            spec(instruction, struct, ctxs=ctxs, data=data)
+            result = spec(instruction, struct, ctxs=ctxs, data=data)
 
         except AcabSemanticException as err:
             # Semantic exceptions can be handled,
