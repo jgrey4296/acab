@@ -15,12 +15,14 @@ from acab.interfaces.value import Sentence_i
 from acab.error.handler_exception import AcabHandlerException
 from acab.interfaces.sieve import AcabSieve
 from acab.core.config.config import GET
+from acab.core.decorators.util import cache
 
 logging = root_logger.getLogger(__name__)
 
 
 config = GET()
 SPACER = int(config.prepare("Print.Data", "SPACER_SIZE")())
+DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 
 pseudo             = AT.pseudo
 Handler            = AT.Handler
@@ -110,7 +112,7 @@ class HandlerSystem_i(cABC.MutableMapping, cABC.Callable):
     def lookup(self, value:Optional[Value]=None) -> HandlerSpec:
         """ run the sieve on the value to get a handler """
         if value is None:
-            return self.handler_specs['_:_default']
+            return self.handler_specs[DEFAULT_HANDLER_SIGNAL]
 
         is_override    = isinstance(value, HandlerSystem_i.HandlerOverride)
         is_passthrough = is_override and value.signal == PASSTHROUGH
@@ -127,7 +129,7 @@ class HandlerSystem_i(cABC.MutableMapping, cABC.Callable):
                 return self.handler_specs[key]
 
         # Final resort
-        return self.handler_specs['_:_default']
+        return self.handler_specs[DEFAULT_HANDLER_SIGNAL]
 
     def override(self, new_signal: Union[bool, str], value, data=None) -> Overrider:
         """ wrap a value to pass data along with it, or explicitly control the signal it produces for handlers """
@@ -161,19 +163,19 @@ class HandlerSystem_i(cABC.MutableMapping, cABC.Callable):
         return self
 
     def _register_default(self):
-        if "_:_default" in self and bool(self.handler_specs["_:_default"]):
+        if DEFAULT_HANDLER_SIGNAL in self and bool(self.handler_specs[DEFAULT_HANDLER_SIGNAL]):
             return
 
-        self._register_spec(HandlerSpec("_:_default"))
+        self._register_spec(HandlerSpec(DEFAULT_HANDLER_SIGNAL))
 
 
 
     def _register_spec(self, *specs: HandlerSpec):
         for spec in specs:
-            if spec in self and spec != self.handler_specs[str(spec.signal)]:
+            if str(spec) in self and spec != self.handler_specs[str(spec)]:
                 raise AcabHandlerException(f"Signal Conflict: {spec.signal}")
             elif spec not in self:
-                self.handler_specs[str(spec.signal)] = spec.copy()
+                self.handler_specs[str(spec)] = spec.copy()
 
         # TODO: Then try to register any loose handlers
 
@@ -216,7 +218,7 @@ class HandlerSystem_i(cABC.MutableMapping, cABC.Callable):
 @dataclass
 class HandlerSpec(cABC.MutableSequence, cABC.Callable):
 
-    signal        : Union[str, Sentence_i]
+    signal       : Union[str, Sentence_i]
     flags         : List[Enum]                    = field(default_factory=list)
     func_api      : Union[Type[Any], Callable]    = field(default=None)
     struct_api    : Union[Type[Any], Structure_i] = field(default=None)

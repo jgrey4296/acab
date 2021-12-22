@@ -14,6 +14,7 @@ import pyparsing as pp
 
 logging = root_logger.getLogger(__name__)
 
+from acab import GET
 from acab import types as AT
 from acab.core.decorators.dsl import EnsureDSLInitialised
 from acab.error.acab_exception import AcabBasicException
@@ -21,11 +22,14 @@ from acab.error.parse_exception import AcabParseException
 from acab.core.parsing.funcs import deep_update_names, clear_parser_names
 from acab.interfaces.dsl import DSL_Handler_i, DSL_Fragment, DSL_Spec_i, DSL_Builder_i
 
+config = GET()
+DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
+
 Parser           = "pp.ParserElement"
 Sentence         = AT.Sentence
 Query            = AT.Container
 ModuleComponents = AT.ModuleComponents
-PyParse_Spec         = "PyParse_Spec"
+PyParse_Spec     = "PyParse_Spec"
 File             = 'FileObj'
 
 #----------------------------------------
@@ -62,7 +66,7 @@ class PyParse_Spec(DSL_Spec_i):
     struct : Set[Parser] = field(default_factory=set)
 
     def __post_init__(self):
-        if self.signal == "_:_default":
+        if self.signal == DEFAULT_HANDLER_SIGNAL:
             return
         if self.struct is None:
             raise AcabParseException(f"Signal `{self.signal}` lacks a target")
@@ -127,17 +131,17 @@ class PyParseDSL(DSL_Builder_i):
 
 
     def _register_default(self):
-        if "_:_default" in self and bool(self.handler_specs["_:_default"]):
+        if DEFAULT_HANDLER_SIGNAL in self and bool(self.handler_specs[DEFAULT_HANDLER_SIGNAL]):
             return
 
-        self._register_spec(PyParse_Spec("_:_default"))
+        self._register_spec(PyParse_Spec(DEFAULT_HANDLER_SIGNAL))
     @EnsureDSLInitialised
     def parse(self, s:str) -> List[Sentence]:
-        if not bool(self['_:_default']):
+        if not bool(self[DEFAULT_HANDLER_SIGNAL]):
             raise AcabParseException("No Default Parser Set for DSL")
 
         try:
-            return self['_:_default'].parseString(s, parseAll=True)[:]
+            return self[DEFAULT_HANDLER_SIGNAL].parseString(s, parseAll=True)[:]
         except pp.ParseException as exp:
             logging.warning("\n--------------------\nParse Failure:\n")
             traceback.print_tb(exp.__traceback__)

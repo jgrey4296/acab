@@ -10,6 +10,7 @@ import acab
 import pyparsing as pp
 
 config = acab.setup()
+DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.interfaces import dsl as DSLi
@@ -212,7 +213,7 @@ class PyParseDSLTests(unittest.TestCase):
 
     def test_dsl_parse_default(self):
         dsl = ppDSL.PyParseDSL(init_handlers=[
-            ppDSL.PyParse_Handler("_:_default", func=pp.Literal("blah"))
+            ppDSL.PyParse_Handler(DEFAULT_HANDLER_SIGNAL, func=pp.Literal("blah"))
         ])
         dsl.build()
         dsl.parse("blah")

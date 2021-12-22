@@ -19,24 +19,25 @@ from acab.interfaces import semantic as SI
 
 config = GET()
 
-QUERY_SEM_HINT     = Sentence.build([config.prepare("SEMANTICS", "QUERY")()])
-ACTION_SEM_HINT    = Sentence.build([config.prepare("SEMANTICS", "ACTION")()])
-TRANSFORM_SEM_HINT = Sentence.build([config.prepare("SEMANTICS", "TRANSFORM")()])
-RULE_SEM_HINT      = Sentence.build([config.prepare("SEMANTICS", "RULE")()])
-AGENDA_SEM_HINT    = Sentence.build([config.prepare("SEMANTICS", "AGENDA")()])
-LAYER_SEM_HINT     = Sentence.build([config.prepare("SEMANTICS", "LAYER")()])
-PIPELINE_SEM_HINT  = Sentence.build([config.prepare("SEMANTICS", "PIPELINE")()])
+DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
+QUERY_SEM_HINT         = Sentence.build([config.prepare("SEMANTICS", "QUERY")()])
+ACTION_SEM_HINT        = Sentence.build([config.prepare("SEMANTICS", "ACTION")()])
+TRANSFORM_SEM_HINT     = Sentence.build([config.prepare("SEMANTICS", "TRANSFORM")()])
+RULE_SEM_HINT          = Sentence.build([config.prepare("SEMANTICS", "RULE")()])
+AGENDA_SEM_HINT        = Sentence.build([config.prepare("SEMANTICS", "AGENDA")()])
+LAYER_SEM_HINT         = Sentence.build([config.prepare("SEMANTICS", "LAYER")()])
+PIPELINE_SEM_HINT      = Sentence.build([config.prepare("SEMANTICS", "PIPELINE")()])
 
-def DEFAULT_TRIE_SPEC(name="_:trie"):
-    node_spec   = BasicSemanticSystem.Spec("_:atom").spec_from(SI.ValueSemantics_i)
+def DEFAULT_TRIE_SPEC(name="trie"):
+    node_spec   = BasicSemanticSystem.Spec("atom").spec_from(SI.ValueSemantics_i)
     trie_spec   = BasicSemanticSystem.Spec(name).spec_from(SI.StructureSemantics_i)
 
     return node_spec, trie_spec
 
-def DEFAULT_TRIE(name="_:trie"):
-    node_handler = BasicNodeSemantics("_:atom").as_handler()
+def DEFAULT_TRIE(name="trie"):
+    node_handler = BasicNodeSemantics("atom").as_handler()
     trie_sem     = BreadthTrieSemantics(signal=name,
-                                        init_handlers=[node_handler.as_handler("_:_default")])
+                                        init_handlers=[node_handler.as_handler(DEFAULT_HANDLER_SIGNAL)])
 
     trie_handler = trie_sem.as_handler(struct=BasicNodeStruct.build_default())
 

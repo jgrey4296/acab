@@ -18,19 +18,20 @@ from acab.modules.structures.trie.trie_semantics import BreadthTrieSemantics
 
 config = GET()
 
-QUERY_SEM_HINT     = Sentence.build([config.prepare("SEMANTICS", "QUERY")()])
-ACTION_SEM_HINT    = Sentence.build([config.prepare("SEMANTICS", "ACTION")()])
-TRANSFORM_SEM_HINT = Sentence.build([config.prepare("SEMANTICS", "TRANSFORM")()])
-RULE_SEM_HINT      = Sentence.build([config.prepare("SEMANTICS", "RULE")()])
-AGENDA_SEM_HINT    = Sentence.build([config.prepare("SEMANTICS", "AGENDA")()])
-LAYER_SEM_HINT     = Sentence.build([config.prepare("SEMANTICS", "LAYER")()])
-PIPELINE_SEM_HINT  = Sentence.build([config.prepare("SEMANTICS", "PIPELINE")()])
+DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
+QUERY_SEM_HINT         = Sentence.build([config.prepare("SEMANTICS", "QUERY")()])
+ACTION_SEM_HINT        = Sentence.build([config.prepare("SEMANTICS", "ACTION")()])
+TRANSFORM_SEM_HINT     = Sentence.build([config.prepare("SEMANTICS", "TRANSFORM")()])
+RULE_SEM_HINT          = Sentence.build([config.prepare("SEMANTICS", "RULE")()])
+AGENDA_SEM_HINT        = Sentence.build([config.prepare("SEMANTICS", "AGENDA")()])
+LAYER_SEM_HINT         = Sentence.build([config.prepare("SEMANTICS", "LAYER")()])
+PIPELINE_SEM_HINT      = Sentence.build([config.prepare("SEMANTICS", "PIPELINE")()])
 
 query_spec  = BasicSemanticSystem.Spec(QUERY_SEM_HINT).spec_from(SI.StatementSemantics_i)
 action_spec = BasicSemanticSystem.Spec(ACTION_SEM_HINT).spec_from(SI.StatementSemantics_i)
 rule_spec   = BasicSemanticSystem.Spec(RULE_SEM_HINT).spec_from(SI.StatementSemantics_i)
 trans_spec  = BasicSemanticSystem.Spec(TRANSFORM_SEM_HINT).spec_from(SI.StatementSemantics_i)
-cont_spec   = BasicSemanticSystem.Spec("_:CONTAINER").spec_from(SI.StatementSemantics_i)
+cont_spec   = BasicSemanticSystem.Spec("CONTAINER").spec_from(SI.StatementSemantics_i)
 
 def DEFAULT_SPECS():
     statements = [# Then abstractions / statements
@@ -50,10 +51,10 @@ def DEFAULT_HANDLERS():
     action_handler  = ASem.ActionAbstraction().as_handler(ACTION_SEM_HINT)
     rule_handler    = ASem.AtomicRuleAbstraction().as_handler(RULE_SEM_HINT)
     trans_handler   = ASem.TransformAbstraction().as_handler(TRANSFORM_SEM_HINT)
-    cont_handler    = ASem.ContainerAbstraction().as_handler("_:CONTAINER")
+    cont_handler    = ASem.ContainerAbstraction().as_handler("CONTAINER")
 
     return [cont_handler, query_handler, action_handler, rule_handler,
-            trans_handler, node_handler, trie_handler, trie_handler.as_handler("_:_default")]
+            trans_handler, node_handler, trie_handler, trie_handler.as_handler(DEFAULT_HANDLER_SIGNAL)]
 
 def default_handlers_from_specs():
     node_spec, trie_spec       = DEFAULT_TRIE_SPEC()
@@ -67,7 +68,7 @@ def default_handlers_from_specs():
         cont_spec.on(ASem.ContainerAbstraction()),
         node_handler,
         trie_handler,
-        trie_handler.as_handler("_:_default")
+        trie_handler.as_handler(DEFAULT_HANDLER_SIGNAL)
         ]
 
 # Build the default semantics
@@ -77,15 +78,15 @@ def DEFAULT_SEMANTICS():
 
 
 def EXLO_SEMANTICS():
-    node_handler = ExclusionNodeSemantics().as_handler("_:atom")
-    trie_sem     = BreadthTrieSemantics(init_handlers=[node_handler.as_handler("_:_default")])
+    node_handler = ExclusionNodeSemantics().as_handler("atom")
+    trie_sem     = BreadthTrieSemantics(init_handlers=[node_handler.as_handler(DEFAULT_HANDLER_SIGNAL)])
 
-    trie_handler = trie_sem.as_handler("_:trie",
+    trie_handler = trie_sem.as_handler("trie",
                                        struct=BasicNodeStruct.build_default(),
                                        flags=[HandlerSpec.flag_e.OVERRIDE])
 
     handlers = DEFAULT_HANDLERS()
-    handlers += [node_handler, trie_handler, trie_handler.as_handler("_:_default")]
+    handlers += [node_handler, trie_handler, trie_handler.as_handler(DEFAULT_HANDLER_SIGNAL)]
 
     return BasicSemanticSystem(init_specs=DEFAULT_SPECS(),
                                init_handlers=handlers)

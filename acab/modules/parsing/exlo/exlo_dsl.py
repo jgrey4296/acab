@@ -23,6 +23,9 @@ from acab.core.parsing.funcs import deep_update_names, clear_parser_names
 
 logging      = root_logger.getLogger(__name__)
 
+config = GET()
+DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
+
 DSL_Fragment = ppDSL.DSL_Fragment
 DSL_Spec     = ppDSL.PyParse_Spec
 DSL_Handler  = ppDSL.PyParse_Handler
@@ -58,5 +61,5 @@ EXLO_Parser = DSL_Fragment(specs=[DSL_Spec("word.annotation"     , struct=FP.HOT
                                      # Rule
                                      DSL_Handler("sentence.ends"       , RP.rule),
                                      # Total
-                                     DSL_Handler("_:_default"          , TotalP.parse_point)]
+                                     DSL_Handler(DEFAULT_HANDLER_SIGNAL, TotalP.parse_point)]
                            )

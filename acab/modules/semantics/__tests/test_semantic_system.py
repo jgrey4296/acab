@@ -22,6 +22,8 @@ from acab.modules.semantics.basic_system import BasicSemanticSystem
 from acab.modules.context.context_set import ContextInstance, ContextSet
 from acab.modules.semantics.values import ExclusionNodeSemantics
 
+DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
+
 EXOP         = config.prepare("MODAL", "exop")()
 EXOP_enum    = config.prepare(EXOP, as_enum=True)()
 
@@ -51,14 +53,14 @@ class SemanticSystemTests(unittest.TestCase):
 
     def test_construction(self):
         """ Check context systems can be created """
-        semsys = BasicSemanticSystem(init_handlers=[SemanticSystemTests.StubAbsSemantic().as_handler("_:_default")])
+        semsys = BasicSemanticSystem(init_handlers=[SemanticSystemTests.StubAbsSemantic().as_handler(DEFAULT_HANDLER_SIGNAL)])
         self.assertIsInstance(semsys, SemanticSystem_i)
         self.assertIsInstance(semsys.lookup()[0], StatementSemantics_i)
         self.assertTrue(semsys.handler_specs)
 
     def test_default_call(self):
         """ Check context systems can be called """
-        semsys = BasicSemanticSystem(init_handlers=[SemanticSystemTests.StubAbsSemantic().as_handler("_:_default")])
+        semsys = BasicSemanticSystem(init_handlers=[SemanticSystemTests.StubAbsSemantic().as_handler(DEFAULT_HANDLER_SIGNAL)])
         test_sen = Sentence.build(["test"])
         with self.assertRaises(AE.AcabException) as cm:
             semsys(test_sen)
@@ -69,7 +71,7 @@ class SemanticSystemTests(unittest.TestCase):
     def test_retrieval(self):
         """ Check context systems can lookup the correct semantics for an input """
         # put some semantics in semsys.mapping
-        semsys = BasicSemanticSystem(init_handlers=[SemanticSystemTests.StubAbsSemantic().as_handler("_:_default")])
+        semsys = BasicSemanticSystem(init_handlers=[SemanticSystemTests.StubAbsSemantic().as_handler(DEFAULT_HANDLER_SIGNAL)])
 
 
     @unittest.skip("not implemented")

@@ -18,11 +18,13 @@ from acab.error.print_exception import AcabPrintException
 from acab.error.semantic_exception import AcabSemanticException
 
 logging = root_logger.getLogger(__name__)
-
+config = GET()
 
 Sentence         = AT.Sentence
 ModuleComponents = AT.ModuleComponents
 ConfigSpec       = AT.ConfigSpec
+
+DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 
 @dataclass
 class PrintSystem_i(HandlerSystem_i):
@@ -36,8 +38,8 @@ class PrintSystem_i(HandlerSystem_i):
 
     def __post_init__(self, specs, handlers, sieve_fns):
         super().__post_init__(specs, handlers, sieve_fns)
-        if not bool(self.handler_specs["_:_default"]):
-            default = Handler("_:_default", lambda x, data=None: str(x))
+        if not bool(self.handler_specs[DEFAULT_HANDLER_SIGNAL]):
+            default = Handler(DEFAULT_HANDLER_SIGNAL, lambda x, data=None: str(x))
             self.register(default)
 
     def __call__(self, *args) -> str:

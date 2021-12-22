@@ -17,6 +17,7 @@ from acab.modules.semantics.values import (BasicNodeSemantics,
                                                 ExclusionNodeSemantics)
 
 config = GET()
+DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 
 QUERY_SEM_HINT     = Sentence.build([config.prepare("SEMANTICS", "QUERY")()])
 ACTION_SEM_HINT    = Sentence.build([config.prepare("SEMANTICS", "ACTION")()])
@@ -26,9 +27,9 @@ AGENDA_SEM_HINT    = Sentence.build([config.prepare("SEMANTICS", "AGENDA")()])
 LAYER_SEM_HINT     = Sentence.build([config.prepare("SEMANTICS", "LAYER")()])
 PIPELINE_SEM_HINT  = Sentence.build([config.prepare("SEMANTICS", "PIPELINE")()])
 
-def DEFAULT_TRIE(name="_:trie"):
-    node_sem    = BasicNodeSemantics("_:node")
-    trie_sem    = BreadthTrieSemantics(name, init_handlers=[node_sem.as_handler("_:_default")])
+def DEFAULT_TRIE(name="trie"):
+    node_sem    = BasicNodeSemantics("node")
+    trie_sem    = BreadthTrieSemantics(name, init_handlers=[node_sem.as_handler(DEFAULT_HANDLER_SIGNAL)])
 
     trie_struct = BasicNodeStruct.build_default(name)
     return (trie_sem, trie_struct)

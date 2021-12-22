@@ -7,6 +7,7 @@ from unittest import mock
 from acab import setup
 
 config = setup()
+DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 
 import acab.interfaces.handler_system as HS
 from acab.error.handler_exception import AcabHandlerException
@@ -202,7 +203,7 @@ class TestHandlerSystem(unittest.TestCase):
     def test_lookup_default(self):
         basic = BasicHandlerSystem(init_specs=[HS.HandlerSpec("a_signal")])
         spec = basic.lookup()
-        self.assertEqual(spec, basic['_:_default'])
+        self.assertEqual(spec, basic[DEFAULT_HANDLER_SIGNAL])
 
     def test_lookup_not_default(self):
         basic = BasicHandlerSystem(init_specs=[HS.HandlerSpec("a_signal")])
