@@ -51,8 +51,8 @@ class BasicNodeSemantics(SI.ValueSemantics_i):
             return list(iter(node))
 
         term_key = term.key()
-        if node.has_child(term_key):
-            return [node.get_child(term_key)]
+        if node.has(term_key):
+            return [node.get(term_key)]
 
         return []
 
@@ -63,7 +63,7 @@ class BasicNodeSemantics(SI.ValueSemantics_i):
             raise ASErr.AcabSemanticIndependentFailure("Node is already child", (node, new_node))
 
         key = new_node.value.key()
-        return node.add_child(new_node, key)
+        return node.add(new_node, key)
 
     def remove(self, node:Node, to_delete:Value, data=None) -> Node:
         assert(isinstance(node, AcabNode))
@@ -72,7 +72,7 @@ class BasicNodeSemantics(SI.ValueSemantics_i):
         if to_delete not in node:
             raise ASErr.AcabSemanticIndependentFailure("Value not in node", (node, to_delete))
 
-        return node.remove_child(to_delete)
+        return node.remove(to_delete)
 
 class ExclusionNodeSemantics(SI.ValueSemantics_i):
     def make(self, val, data=None) -> AcabNode:
@@ -99,8 +99,8 @@ class ExclusionNodeSemantics(SI.ValueSemantics_i):
 
         if term is None:
             potentials += node.children.values()
-        elif node.has_child(term):
-            potentials.append(node.get_child(term))
+        elif node.has(term):
+            potentials.append(node.get(term))
 
         # TODO add hook for additional test fragments here?
         # TODO check type of term v potentials
@@ -121,9 +121,9 @@ class ExclusionNodeSemantics(SI.ValueSemantics_i):
             raise ASErr.AcabSemanticIndependentFailure("Node is already child", (node, new_node))
 
         if node.data[EXOP] is EXOP_enum.EX and len(node.children) >= 1:
-            node.clear_children()
+            node.clear()
 
-        result = node.add_child(new_node)
+        result = node.add(new_node)
         return result
 
     def remove(self, node:Node, to_delete:Value, data=None) -> Node:
@@ -133,5 +133,4 @@ class ExclusionNodeSemantics(SI.ValueSemantics_i):
         if to_delete not in node:
             raise ASErr.AcabSemanticIndependentFailure("Value not in node", (node, to_delete))
 
-        return node.remove_child(to_delete)
-
+        return node.remove(to_delete)

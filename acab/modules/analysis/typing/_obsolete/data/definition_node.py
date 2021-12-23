@@ -247,7 +247,7 @@ class SumTypeDefNode(TypeDefNode):
                                            [usage_trie.name])
 
         # Otherwise match against that specific type
-        the_type = self.trie.root.get_child(usage_trie.name)
+        the_type = self.trie.root.get(usage_trie.name)
         queue = [(the_type, [usage_trie])]
 
         while bool(queue):

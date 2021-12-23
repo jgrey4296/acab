@@ -254,38 +254,38 @@ class TopologicalOrderedAcabTests(unittest.TestCase):
         node = AcabNode.Root()
         node2 = AcabNode(AcabValue("test"))
         node.children["test"] = node2
-        self.assertTrue(node.has_child(node2))
+        self.assertTrue(node.has(node2))
         self.assertTrue(node2 in node)
 
 
     def test_node_has_fail(self):
         """ Check node child testing """
         node = AcabNode.Root()
-        self.assertFalse(node.has_child(node))
+        self.assertFalse(node.has(node))
         self.assertFalse(node in node)
 
     def test_node_add(self):
         """ Check adding children to nodes """
         node = AcabNode.Root()
         node2 = AcabNode(AcabValue("test"))
-        node.add_child(node2)
-        self.assertTrue(node.has_child(node2))
+        node.add(node2)
+        self.assertTrue(node.has(node2))
         self.assertTrue(node2 in node)
 
     def test_node_get(self):
         """ Check node child retrieval """
         node = AcabNode.Root()
         node2 = AcabNode(AcabValue("test"))
-        node.add_child(node2)
-        got_back = node.get_child(AcabValue("test"))
+        node.add(node2)
+        got_back = node.get(AcabValue("test"))
         self.assertEqual(node2, got_back)
 
     def test_node_remove(self):
         node = AcabNode.Root()
         node2 = AcabNode(AcabValue("test"))
-        node.add_child(node2)
+        node.add(node2)
         self.assertTrue(node2 in node)
-        node.remove_child(AcabValue("test"))
+        node.remove(AcabValue("test"))
         self.assertFalse(node2 in node)
 
 

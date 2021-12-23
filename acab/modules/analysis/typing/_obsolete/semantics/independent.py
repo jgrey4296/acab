@@ -107,7 +107,7 @@ class DefinitionNodeSemantics(BasicNodeSemantics):
 
         if result is None:
             result = self.up(word, node_constructor)
-            node.add_child(result)
+            node.add(result)
             is_new_node = True
         elif (isinstance(word, TypeDefinition)
               and result.definition is not None

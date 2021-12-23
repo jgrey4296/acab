@@ -73,16 +73,16 @@ class AcabNodeTests(unittest.TestCase):
         identified by a string """
         a_node = AcabNode(AV("value"))
         a_node.children['child'] = True
-        self.assertTrue(a_node.has_child('child'))
+        self.assertTrue(a_node.has('child'))
 
     def test_contains_false(self):
         """
         Check a node can report it doesn't have a child, identified by a string
         """
         a_node = AcabNode(AV("value"))
-        self.assertFalse(a_node.has_child('blah'))
+        self.assertFalse(a_node.has('blah'))
 
-    def test_add_child(self):
+    def test_add(self):
         """
         Check a node can add a child to itself
         """
@@ -92,12 +92,12 @@ class AcabNodeTests(unittest.TestCase):
         b_node = AcabNode(value=b_val)
         self.assertFalse(bool(a_node))
         self.assertEqual(len(a_node), 0)
-        a_node.add_child(b_node)
+        a_node.add(b_node)
         self.assertTrue(bool(a_node))
         self.assertEqual(len(a_node), 1)
-        self.assertTrue(a_node.has_child('value2'))
+        self.assertTrue(a_node.has('value2'))
 
-    def test_has_child(self):
+    def test_has(self):
         """
         Check a node can recognise it has added a child to itself
         """
@@ -105,12 +105,12 @@ class AcabNodeTests(unittest.TestCase):
         b_node = AcabNode(AV('value2'))
         self.assertFalse(bool(a_node))
         self.assertEqual(len(a_node), 0)
-        a_node.add_child(b_node)
+        a_node.add(b_node)
         self.assertTrue(bool(a_node))
         self.assertEqual(len(a_node), 1)
-        self.assertTrue(a_node.has_child(b_node))
+        self.assertTrue(a_node.has(b_node))
 
-    def test_get_child(self):
+    def test_get(self):
         """
         Check a node can return a node it has added to itself
         """
@@ -118,16 +118,16 @@ class AcabNodeTests(unittest.TestCase):
         b_node = AcabNode(AV('value2'))
         self.assertFalse(bool(a_node))
         self.assertEqual(len(a_node), 0)
-        a_node.add_child(b_node)
+        a_node.add(b_node)
         self.assertTrue(bool(a_node))
         self.assertEqual(len(a_node), 1)
-        self.assertTrue(a_node.has_child(b_node))
-        gotten_node = a_node.get_child(b_node)
-        gotten_node_b = a_node.get_child('value2')
+        self.assertTrue(a_node.has(b_node))
+        gotten_node = a_node.get(b_node)
+        gotten_node_b = a_node.get('value2')
         self.assertEqual(gotten_node, b_node)
         self.assertEqual(gotten_node_b, b_node)
 
-    def test_remove_child(self):
+    def test_remove(self):
         """
         Check a node can remove a child from itself
         """
@@ -135,16 +135,16 @@ class AcabNodeTests(unittest.TestCase):
         b_node = AcabNode(AV('value2'))
         self.assertFalse(bool(a_node))
         self.assertEqual(len(a_node), 0)
-        a_node.add_child(b_node)
+        a_node.add(b_node)
         self.assertTrue(bool(a_node))
         self.assertEqual(len(a_node), 1)
-        self.assertTrue(a_node.has_child(b_node))
-        removed = a_node.remove_child(b_node)
+        self.assertTrue(a_node.has(b_node))
+        removed = a_node.remove(b_node)
         self.assertEqual(len(a_node), 0)
         self.assertFalse(bool(a_node))
         self.assertEqual(removed, b_node)
 
-    def test_clear_children(self):
+    def test_clear(self):
         """
         Check a node can remove all children from itself
         """
@@ -153,10 +153,10 @@ class AcabNodeTests(unittest.TestCase):
         c_node = AcabNode(AV('value3'))
         self.assertFalse(bool(a_node))
         self.assertEqual(len(a_node), 0)
-        a_node.add_child(b_node)
-        a_node.add_child(c_node)
+        a_node.add(b_node)
+        a_node.add(c_node)
         self.assertEqual(len(a_node),2)
-        removed = a_node.clear_children()
+        removed = a_node.clear()
         self.assertEqual(len(a_node),0)
         self.assertFalse(bool(a_node))
         self.assertEqual(len(removed), 2)
@@ -169,8 +169,8 @@ class AcabNodeTests(unittest.TestCase):
         Check you can iterate over the children of a node
         """
         node = AcabNode(AV("blah"))
-        node.add_child(AcabNode(AV("bloo")))
-        node.add_child(AcabNode(AV("blee")))
+        node.add(AcabNode(AV("bloo")))
+        node.add(AcabNode(AV("blee")))
 
         for x,y in zip(node, ["bloo", "blee"]):
             self.assertEqual(x.value, y)
@@ -206,7 +206,7 @@ class AcabNodeTests(unittest.TestCase):
         node3 = AcabNode(AV("third"))
         node4 = AcabNode(AV("fourth"))
 
-        node1.add_child(node2).add_child(node3).add_child(node4)
+        node1.add(node2).add(node3).add(node4)
 
         parentage = node4.parentage
         self.assertIsInstance(parentage, Sentence_i)

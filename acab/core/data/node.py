@@ -66,16 +66,16 @@ class AcabNode(DI.Node_i):
         return bool(self.children)
 
     def __contains__(self, v):
-        return self.has_child(v)
+        return self.has(v)
 
     def __getitem__(self, v):
         if isinstance(v, Sentence):
             current = self
             for x in v.words:
-                current = current.get_child(x)
+                current = current.get(x)
             return current
         else:
-            return self.get_child(v)
+            return self.get(v)
 
     def __iter__(self):
         return iter(self.children.values())
@@ -96,7 +96,7 @@ class AcabNode(DI.Node_i):
     def name(self):
         return str(self.value)
 
-    def add_child(self, node:Node, key:str=None) -> Node:
+    def add(self, node:Node, key:str=None) -> Node:
         """ Add a node as a child of this node
         mutate object
         """
@@ -107,7 +107,7 @@ class AcabNode(DI.Node_i):
         node.set_parent(self)
         return node
 
-    def get_child(self, key:Union[str, Value, Node]) -> Node:
+    def get(self, key:Union[str, Value, Node]) -> Node:
         """ Get a node using a string, or a node itself """
         if isinstance(key, str) and key in self.children:
             return self.children[key]
@@ -117,7 +117,7 @@ class AcabNode(DI.Node_i):
         else:
             return self.children[key.key()]
 
-    def has_child(self, key:Tuple[str, Value, None]=None) -> bool:
+    def has(self, key:Tuple[str, Value, None]=None) -> bool:
         """ Question if this term has a particular child,
         by the simplest condition of whether there is a simple string
         mapping.
@@ -136,13 +136,13 @@ class AcabNode(DI.Node_i):
 
         return result
 
-    def remove_child(self, key:Tuple[str, Node]) -> Optional[Node]:
+    def remove(self, key:Tuple[str, Node]) -> Optional[Node]:
         """ Delete a child from this node, return success state
         mutate object
         """
         result = None
-        if self.has_child(key):
-            result = self.get_child(key)
+        if self.has(key):
+            result = self.get(key)
             if isinstance(key, str):
                 del self.children[key]
             else:
@@ -151,7 +151,7 @@ class AcabNode(DI.Node_i):
 
         return result
 
-    def clear_children(self) -> List[Node]:
+    def clear(self) -> List[Node]:
         """ Remove all children from this node
         mutate object
         """

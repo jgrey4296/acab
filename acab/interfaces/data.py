@@ -40,23 +40,23 @@ class Node_i(cABC.MutableMapping, cABC.Hashable):
         pass
 
     @abc.abstractmethod
-    def add_child(self, node) -> Node:
+    def add(self, node) -> Node:
         pass
 
     @abc.abstractmethod
-    def get_child(self, node) -> Node:
+    def get(self, node) -> Node:
         pass
 
     @abc.abstractmethod
-    def has_child(self, node) -> bool:
+    def has(self, node) -> bool:
         pass
 
     @abc.abstractmethod
-    def remove_child(self, node) -> Node:
+    def remove(self, node) -> Node:
         pass
 
     @abc.abstractmethod
-    def clear_children(self) -> List[Node]:
+    def clear(self) -> List[Node]:
         pass
 
 
@@ -65,13 +65,13 @@ class Node_i(cABC.MutableMapping, cABC.Hashable):
         pass
 
     def __getitem__(self, key):
-        return self.get_child(key)
+        return self.get(key)
 
     def __setitem__(self, key, value):
-        raise NotImplementedError("Nodes don't directly set a key's value, use add_child")
+        raise NotImplementedError("Nodes don't directly set a key's value, use add")
 
     def __delitem__(self, key):
-        return self.remove_child(key)
+        return self.remove(key)
 
     def __iter__(self):
         return iter(self.children)
