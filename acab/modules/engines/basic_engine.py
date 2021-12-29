@@ -19,7 +19,7 @@ from acab.core.decorators.engine import (EnsureEngineInitialised,
                                          MaybeBuildOperatorCtx)
 from acab.core.engine.module_loader import ModuleLoader
 from acab.core.parsing.pyparse_dsl import PyParseDSL
-from acab.error.acab_exception import AcabException
+from acab.error.base import AcabException
 from acab.interfaces.dsl import DSL_Fragment, DSL_Builder_i
 from acab.interfaces.engine import AcabEngine_i
 from acab.interfaces.printing import PrintSystem_i

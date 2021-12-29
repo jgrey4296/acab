@@ -11,7 +11,7 @@ from acab import types as AT
 from acab.core.data import default_structure as DS
 from acab.core.data.instruction import ProductionOperator
 from acab.core.decorators.semantic import RunInSubCtxSet
-from acab.error.semantic_exception import AcabSemanticException
+from acab.error.semantic import AcabSemanticException
 from acab.interfaces import semantic as SI
 from acab.modules.values.sen_val.context_sen_bind_query_manager import ContextSenBindQueryManager
 from acab.modules.context.context_set import ContextSet, MutableContextInstance

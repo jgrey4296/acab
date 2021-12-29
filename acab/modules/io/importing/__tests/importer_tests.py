@@ -11,7 +11,7 @@ import logging
 from acab.core.engine.engine import Engine
 from acab.core.data.value import Sentence
 from acab.modules.io.importing.actions import ImportQuery
-from acab.error.import_exception import AcabImportException
+from acab.error.importer import AcabImportException
 
 class ImporterTests(unittest.TestCase):
 

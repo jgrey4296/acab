@@ -10,7 +10,7 @@ config = setup()
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 
 import acab.interfaces.handler_system as HS
-from acab.error.handler_exception import AcabHandlerException
+from acab.error.handler import AcabHandlerException
 
 
 class BasicHandlerSystem(HS.HandlerSystem_i):

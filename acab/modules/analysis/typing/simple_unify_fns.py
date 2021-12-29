@@ -7,13 +7,13 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 from acab import types as AT
 from acab.core.data.value import AcabValue, Sentence
-from acab.error.semantic_exception import AcabSemanticException
+from acab.error.semantic import AcabSemanticException
 from acab.modules.analysis.typing import unify
 from acab.modules.analysis.typing.unify import unify_enum
 from acab.modules.context.context_set import (ContextInstance,
                                               MutableContextInstance)
 
-from . import type_exceptions as TE
+from . import exceptions  as TE
 
 # Basic Unification ###########################################################
 def var_handler_basic(f_word, s_word, ctx):

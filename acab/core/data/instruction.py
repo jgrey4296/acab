@@ -23,7 +23,7 @@ from acab import types as AT
 import acab.core.data.default_structure as DS
 from acab.core.config.config import AcabConfig
 from acab.core.data.value import Instruction, AcabValue, Sentence
-from acab.error.operator_exception import AcabOperatorException
+from acab.error.operator import AcabOperatorException
 from acab.core.decorators.util import cache
 
 config = AcabConfig.Get()

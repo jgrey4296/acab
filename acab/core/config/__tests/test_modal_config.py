@@ -11,7 +11,7 @@ from os.path import split, splitext
 from acab import setup
 
 from acab.core.config.config import AcabConfig, ConfigSpec
-from acab.error.config_exception import AcabConfigException
+from acab.error.config import AcabConfigException
 
 class ModalConfigTests(unittest.TestCase):
 

@@ -4,7 +4,7 @@ import acab
 
 config = acab.GET()
 
-import acab.error.semantic_exception as ASErr
+import acab.error.semantic as ASErr
 import acab.interfaces.semantic as SI
 from acab import types as AT
 from acab.core.config.config import AcabConfig

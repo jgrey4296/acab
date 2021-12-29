@@ -3,7 +3,7 @@ import logging as root_logger
 from functools import wraps
 logging = root_logger.getLogger(__name__)
 
-from acab.error.parse_exception import AcabParseException
+from acab.error.parse import AcabParseException
 
 def MaybeBuildOperatorCtx(method):
     """ Wrap an Engine method to:

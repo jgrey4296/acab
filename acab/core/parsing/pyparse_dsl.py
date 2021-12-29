@@ -17,8 +17,8 @@ logging = root_logger.getLogger(__name__)
 from acab import GET
 from acab import types as AT
 from acab.core.decorators.dsl import EnsureDSLInitialised
-from acab.error.acab_exception import AcabBasicException
-from acab.error.parse_exception import AcabParseException
+from acab.error.base import AcabBasicException
+from acab.error.parse import AcabParseException
 from acab.core.parsing.funcs import deep_update_names, clear_parser_names
 from acab.interfaces.dsl import DSL_Handler_i, DSL_Fragment, DSL_Spec_i, DSL_Builder_i
 

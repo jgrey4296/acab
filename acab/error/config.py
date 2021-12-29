@@ -4,7 +4,7 @@ from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic
 
-from .acab_exception import AcabBasicException
+from .base import AcabBasicException
 
 @dataclass
 class AcabConfigException(AcabBasicException):

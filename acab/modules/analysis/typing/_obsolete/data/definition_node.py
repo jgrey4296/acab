@@ -16,7 +16,7 @@ import acab.modules.analysis.typing.util as util
 from acab.core.data.node import AcabNode
 from acab.core.data.value import AcabValue, Sentence
 from acab.interfaces import semantic as SI
-from acab.modules.analysis.typing import type_exceptions as te
+from acab.modules.analysis.typing import exceptions as te
 from acab.modules.analysis.typing.values.operator_definition import \
     OperatorDefinition
 from acab.modules.analysis.typing.values.type_definition import (

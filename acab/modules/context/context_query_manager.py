@@ -11,13 +11,12 @@ from dataclasses import FrozenInstanceError, InitVar, dataclass, field, replace
 from enum import Enum
 from uuid import UUID, uuid1
 
+import acab.error.semantic as ASErr
 import acab.interfaces.context as CtxInt
-import acab.error.semantic_exception as ASErr
 from acab.core.config import GET
-from acab.core.data.instruction import (ProductionComponent,
-                                                        ProductionContainer)
+from acab.core.data.instruction import ProductionComponent, ProductionContainer
+from acab.error.semantic import AcabSemanticException
 from acab.interfaces.value import Sentence_i
-from acab.error.semantic_exception import AcabSemanticException
 from acab.modules.context.constraints import ConstraintCollection
 
 config = GET()

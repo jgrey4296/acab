@@ -1,5 +1,5 @@
 from functools import wraps
-from acab.error.parse_exception import AcabParseException
+from acab.error.parse import AcabParseException
 
 def EnsureDSLInitialised(method):
     """ Utility Decorator for DSL Builder's, raising error if not initialised """

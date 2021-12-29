@@ -8,7 +8,7 @@ import logging as root_logger
 import pyparsing as pp
 
 from acab.core.parsing import parsers as PU
-from acab.error.parse_exception import AcabParseException
+from acab.error.parse import AcabParseException
 from acab.core.parsing import pyparse_dsl as ppDSL
 logging = root_logger.getLogger(__name__)
 

@@ -26,8 +26,8 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 logging = root_logger.getLogger(__name__)
 from acab import types as AT
 from acab.core.data.default_structure import QUERY
-from acab.error.print_exception import AcabPrintException
-from acab.error.semantic_exception import AcabSemanticException
+from acab.error.printing import AcabPrintException
+from acab.error.semantic import AcabSemanticException
 from acab.interfaces.handler_system import (Handler, Handler_Fragment,
                                             HandlerComponent_i, HandlerSpec,
                                             HandlerSystem_i)

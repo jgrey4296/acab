@@ -17,7 +17,7 @@ from acab.core.parsing.consts import ATOM_V
 
 from acab.interfaces import semantic as SI
 
-from acab.modules.analysis.typing import type_exceptions as te
+from acab.modules.analysis.typing import exceptions as te
 from acab.modules.analysis.typing import util
 from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
 

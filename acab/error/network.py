@@ -1,4 +1,4 @@
-from .acab_exception import AcabBasicException
+from .base import AcabBasicException
 
 class AcabNetworkException(AcabBasicException):
     """ The base exception for network errors """

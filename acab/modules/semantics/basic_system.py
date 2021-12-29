@@ -12,7 +12,7 @@ from acab.core.decorators.semantic import (BuildCtxSetIfMissing,
                                                RunDelayedCtxSetActions)
 from acab.interfaces.semantic import (StatementSemantics_i,
                                       SemanticSystem_i)
-from acab.error.semantic_exception import AcabSemanticException
+from acab.error.semantic import AcabSemanticException
 from acab.modules.context.context_set import ContextSet
 
 logging = root_logger.getLogger(__name__)

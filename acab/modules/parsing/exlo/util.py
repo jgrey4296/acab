@@ -10,7 +10,7 @@ from acab.core.data.instruction import ProductionContainer
 from acab.core.data.value import AcabValue, Sentence
 from acab.core.parsing.consts import CPAR, NG, OPAR, N
 from acab.core.parsing.parsers import MODAL
-from acab.error.parse_exception import AcabParseException
+from acab.error.parse import AcabParseException
 
 config = AcabConfig.Get()
 

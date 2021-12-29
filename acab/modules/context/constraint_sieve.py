@@ -8,7 +8,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 logging = root_logger.getLogger(__name__)
 
 import acab.interfaces.context as CtxInt
-import acab.error.semantic_exception as ASErr
+import acab.error.semantic as ASErr
 from acab.core.config import GET
 from acab.core.data.value import Sentence
 from acab.core.data.instruction import (ProductionComponent,

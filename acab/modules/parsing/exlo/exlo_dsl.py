@@ -12,7 +12,7 @@ import pyparsing as pp
 from acab import GET
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.core.parsing import parsers as PU
-from acab.error.parse_exception import AcabParseException
+from acab.error.parse import AcabParseException
 from acab.modules.parsing.exlo import util as TPU
 from acab.modules.parsing.exlo.parsers import ActionParser as AP
 from acab.modules.parsing.exlo.parsers import FactParser as FP

@@ -11,7 +11,7 @@ from uuid import UUID
 
 from acab import types as AT
 import acab.interfaces.semantic as SI
-import acab.error.semantic_exception as ASErr
+import acab.error.semantic as ASErr
 from acab.core.config.config import AcabConfig
 from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.data.value import Instruction, Sentence

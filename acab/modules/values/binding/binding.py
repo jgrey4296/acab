@@ -7,7 +7,7 @@ from typing import cast, ClassVar, TypeVar, Generic
 from acab import types as AT
 from acab.interfaces import value as VI
 from acab.interfaces import context as CI
-from acab.error.semantic_exception import AcabSemanticException
+from acab.error.semantic import AcabSemanticException
 from acab.core.data import default_structure as DS
 from acab.core.data.value import Sentence, AcabValue
 

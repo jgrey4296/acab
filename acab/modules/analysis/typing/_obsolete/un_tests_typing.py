@@ -13,7 +13,7 @@ from acab.core.data.node import AcabNode
 from acab.core.containers import action
 from acab.core.data.instruction import ProductionOperator, ProductionComponent
 
-from acab.modules.analysis.typing import type_exceptions as te
+from acab.modules.analysis.typing import exceptions as te
 from acab.modules.analysis.typing import util as TU
 from acab.modules.analysis.typing.type_checker import TypeChecker
 from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition

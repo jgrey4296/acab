@@ -20,7 +20,7 @@ from acab.modules.semantics.independent import BasicNodeSemantics
 from acab.modules.structures.trie.trie import Trie
 from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics
 
-from . import type_exceptions as te
+from . import exceptions as te
 from .semantics.type_assignment_semantics import (TypeAssignmentNode,
                                                   TypingAssignmentSemantics)
 from .semantics.type_definition_semantics import (OperatorDefNode,

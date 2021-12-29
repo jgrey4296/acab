@@ -28,7 +28,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 import pyparsing as pp
 from acab.core.config import actions as CA
-from acab.error.config_exception import AcabConfigException
+from acab.error.config import AcabConfigException
 from acab.interfaces.config import ConfigSpec_i, Config_i
 
 logging = root_logger.getLogger(__name__)

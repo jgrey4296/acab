@@ -15,8 +15,8 @@ from acab.interfaces.handler_system import (Handler,
                                             Handler_Fragment)
 from acab.interfaces.value import Sentence_i, Value_i
 from acab.core.printing.default_symbols import PRINT_SEPARATOR_P
-from acab.error.print_exception import AcabPrintException
-from acab.error.semantic_exception import AcabSemanticException
+from acab.error.printing import AcabPrintException
+from acab.error.semantic import AcabSemanticException
 
 logging = root_logger.getLogger(__name__)
 config = GET()

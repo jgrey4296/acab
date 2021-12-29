@@ -15,7 +15,7 @@ from acab.core.data.value import Sentence
 from acab.core.data.node import AcabNode
 from acab.core.parsing import parsers as PU
 
-from acab.error.parse_exception import AcabParseException
+from acab.error.parse import AcabParseException
 
 from acab.modules.analysis.typing import util as TU
 from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition

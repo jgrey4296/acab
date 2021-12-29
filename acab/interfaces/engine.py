@@ -11,7 +11,7 @@ logging = root_logger.getLogger(__name__)
 
 from acab import types as AT
 from acab.core.decorators.engine import EnsureEngineInitialised
-from acab.error.semantic_exception import AcabSemanticException
+from acab.error.semantic import AcabSemanticException
 from acab.interfaces.context import ContextSet_i
 from acab.interfaces.dsl import DSL_Fragment, DSL_Builder_i
 from acab.interfaces.module_loader import ModuleLoader_i

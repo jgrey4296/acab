@@ -15,7 +15,7 @@ DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.interfaces import dsl as DSLi
 from acab.interfaces import handler_system as hi
-from acab.error.parse_exception import AcabParseException
+from acab.error.parse import AcabParseException
 
 
 class PyParseDSLTests(unittest.TestCase):

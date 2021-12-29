@@ -5,7 +5,7 @@ from typing import cast, ClassVar, TypeVar, Generic
 
 from dataclasses import dataclass, field, InitVar
 
-from .acab_exception import AcabBasicException
+from .base import AcabBasicException
 
 class AcabParseException(AcabBasicException):
     """ The base exception for parsing errors """

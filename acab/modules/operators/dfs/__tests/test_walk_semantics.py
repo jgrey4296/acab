@@ -255,6 +255,6 @@ end""".strip())
     def test_parsed_act_without_head(self):
         pass
 
-    @unittet.skip("not done yet")
+    @unittest.skip("not done yet")
     def test_parsed_act_rule_loc(self):
         pass

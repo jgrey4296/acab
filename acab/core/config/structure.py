@@ -18,7 +18,7 @@ import pyparsing as pp
 logging = root_logger.getLogger(__name__)
 
 from acab.core.config.config import AcabConfig
-from acab.error.config_exception import AcabConfigException
+from acab.error.config import AcabConfigException
 from acab.core.decorators.util import registerOn
 
 @registerOn(AcabConfig)

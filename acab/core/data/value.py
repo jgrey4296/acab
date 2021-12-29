@@ -17,7 +17,7 @@ import acab.interfaces.value as VI
 from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.core.decorators.util import cache
-from acab.error.acab_exception import AcabBasicException
+from acab.error.base import AcabBasicException
 
 logging          = root_logger.getLogger(__name__)
 

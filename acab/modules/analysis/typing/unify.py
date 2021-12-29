@@ -12,11 +12,11 @@ from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.core.data.value import AcabValue, Sentence
 from acab.core.parsing.consts import s, s_key
-from acab.error.semantic_exception import AcabSemanticException
+from acab.error.semantic import AcabSemanticException
 from acab.modules.context.context_set import (ContextInstance,
                                               MutableContextInstance)
 
-from . import type_exceptions as TE
+from . import exceptions as TE
 
 logging = root_logger.getLogger(__name__)
 

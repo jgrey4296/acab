@@ -13,7 +13,7 @@ from acab.core.data.value import AcabValue
 from acab.core.data.node import AcabNode
 from acab.core.data.instruction import ProductionOperator, ProductionComponent
 
-from acab.modules.analysis.typing import type_exceptions as te
+from acab.modules.analysis.typing import exceptions as te
 from acab.modules.analysis.typing import util as TU
 from acab.modules.analysis.typing.parsing import TypeDefParser as TD
 from acab.modules.analysis.typing.type_checker import TypeChecker

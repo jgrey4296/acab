@@ -27,8 +27,8 @@ from acab.core.decorators.semantic import (OperatorArgUnWrap,
 from acab.interfaces.handler_system import Handler
 from acab.interfaces.semantic import (StatementSemantics_i,
                                       SemanticSystem_i)
-from acab.error.acab_exception import AcabBasicException
-from acab.error.semantic_exception import AcabSemanticException
+from acab.error.base import AcabBasicException
+from acab.error.semantic import AcabSemanticException
 from acab.modules.context import context_delayed_actions
 from acab.modules.context.context_set import (ConstraintCollection,
                                               ContextInstance, ContextSet)

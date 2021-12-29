@@ -15,8 +15,8 @@ logging = root_logger.getLogger(__name__)
 
 from acab import types as AT
 from acab.core.decorators.dsl import EnsureDSLInitialised
-from acab.error.acab_exception import AcabBasicException
-from acab.error.parse_exception import AcabParseException
+from acab.error.base import AcabBasicException
+from acab.error.parse import AcabParseException
 from acab.interfaces.handler_system import (Handler, Handler_Fragment,
                                             HandlerSpec, HandlerSystem_i)
 from acab.interfaces.handler_system import Handler_Fragment, Handler, HandlerSpec

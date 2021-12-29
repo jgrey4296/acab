@@ -14,7 +14,7 @@ from acab.core.data.instruction import (ActionOperator,
 from acab.core.decorators.semantic import (OperatorArgUnWrap,
                                                OperatorResultWrap,
                                                OperatorSugar)
-from acab.error.semantic_exception import AcabSemanticException
+from acab.error.semantic import AcabSemanticException
 
 logging = root_logger.getLogger(__name__)
 

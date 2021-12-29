@@ -17,7 +17,7 @@ from acab.core.data.value import Sentence
 from acab.interfaces.handler_system import Handler
 from acab.interfaces.semantic import (StatementSemantics_i,
                                       SemanticSystem_i)
-import acab.error.acab_exception as AE
+import acab.error.base as AE
 from acab.modules.semantics.basic_system import BasicSemanticSystem
 from acab.modules.context.context_set import ContextInstance, ContextSet
 from acab.modules.semantics.values import ExclusionNodeSemantics

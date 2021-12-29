@@ -15,7 +15,7 @@ from acab.core.data.acab_struct import AcabNode
 from acab.core.data.default_structure import BIND
 from acab.core.data.value import AcabValue, Sentence
 from acab.core.parsing import pyparse_dsl as ppDSL
-from acab.modules.analysis.typing import type_exceptions as TE
+from acab.modules.analysis.typing import exceptions as TE
 from acab.modules.analysis.typing import unify
 from acab.modules.analysis.typing.dsl import TypingDSL
 from acab.modules.context.context_set import ContextInstance as CtxIns

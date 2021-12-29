@@ -6,7 +6,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 from acab import types as AT
-import acab.error.semantic_exception as ASErr
+import acab.error.semantic as ASErr
 from acab.core.config.config import AcabConfig
 from acab.core.data.node import AcabNode
 from acab.core.data.value import AcabValue, Sentence
