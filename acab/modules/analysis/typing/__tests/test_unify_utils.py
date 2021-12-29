@@ -17,7 +17,7 @@ from acab.core.data.value import AcabValue, Sentence
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.modules.analysis.typing import type_exceptions as TE
 from acab.modules.analysis.typing import unify
-from acab.modules.analysis.typing.typing_dsl import TypingDSL
+from acab.modules.analysis.typing.dsl import TypingDSL
 from acab.modules.context.context_set import ContextInstance as CtxIns
 from acab.modules.context.context_set import MutableContextInstance
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser

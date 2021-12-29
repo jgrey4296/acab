@@ -7,9 +7,9 @@ from acab.interfaces.handler_system import HandlerSpec
 from acab.modules.semantics.statements import QueryPlusAbstraction
 from acab.core.data.value import Sentence
 
-from . import dfs_op_parser as DOP
-from .walk_semantics import WalkTrieSemantics
-from .dfs_printer import DFSSenPrinter
+from . import parser as DOP
+from .semantics import DFSSemantics
+from .printer import DFSSenPrinter
 
 config = GET()
 
@@ -20,7 +20,7 @@ DSL_Handler  = ppDSL.PyParse_Handler
 WALK_SEM_HINT    = Sentence.build([config.prepare("Module.DFSWalk", "WALK_SEM_HINT")()])
 
 DFS_Sem_Frag = Semantic_Fragment(specs=[HandlerSpec(WALK_SEM_HINT)],
-                                 handlers=[WalkTrieSemantics().as_handler(),
+                                 handlers=[DFSSemantics().as_handler(),
                                            QueryPlusAbstraction().as_handler("QUERY", flags=[DSL_Spec.flag_e.OVERRIDE])])
 
 

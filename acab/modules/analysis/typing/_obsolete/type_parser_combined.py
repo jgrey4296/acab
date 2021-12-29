@@ -17,7 +17,7 @@ from acab.modules.analysis.typing import type_exceptions as te
 from acab.modules.analysis.typing import util as TU
 from acab.modules.analysis.typing.parsing import TypeDefParser as TD
 from acab.modules.analysis.typing.type_checker import TypeChecker
-from acab.modules.analysis.typing.typing_module import TypingSpec
+from acab.modules.analysis.typing.module import TypingSpec
 from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition
 from acab.modules.analysis.typing.values.type_definition import TypeDefinition
 

@@ -16,10 +16,10 @@ from acab.core.data.value import AcabValue, Sentence
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.modules.analysis.typing import type_exceptions as TE
 from acab.modules.analysis.typing import unify
-from acab.modules.analysis.typing.typing_dsl import TypingDSL
+from acab.modules.analysis.typing.dsl import TypingDSL
 from acab.modules.context.context_set import ContextInstance as CtxIns
 from acab.modules.context.context_set import ContextSet, MutableContextInstance
-from acab.modules.operators.dfs.walk_semantics import WalkTrieSemantics
+from acab.modules.operators.dfs.semantics import DFSSemantics
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 from acab.modules.semantics.default import DEFAULT_SEMANTICS
 from acab.modules.structures.trie.default import DEFAULT_TRIE
@@ -58,7 +58,7 @@ class TypeCheckTests(unittest.TestCase):
     @unittest.skip("")
     def test_basic(self):
         semsys  = DEFAULT_SEMANTICS()
-        walksem = WalkTrieSemantics()
+        walksem = DFSSemantics()
         ctxs    = ContextSet.build()
 
         decl    = dsl.parseString("a.test.def(::τ):\n sub.$x(::test)\nend")[0]

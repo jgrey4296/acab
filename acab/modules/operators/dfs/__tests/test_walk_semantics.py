@@ -13,14 +13,14 @@ logging = root_logger.getLogger(__name__)
 import acab
 config = acab.setup()
 
-from acab.modules.operators.dfs.walk_semantics import WalkTrieSemantics
+from acab.modules.operators.dfs.semantics import DFSSemantics
 from acab.modules.semantics.basic_system import BasicSemanticSystem
 from acab.modules.semantics.values import ExclusionNodeSemantics
 from acab.modules.semantics.statements import QueryPlusAbstraction
 from acab.modules.engines.configured import exlo
 from acab.core.data.instruction import ProductionComponent, ProductionContainer
 from acab.core.data.value import Sentence, AcabValue
-from acab.modules.operators.dfs import dfs_op_parser as DOP
+from acab.modules.operators.dfs import parser as DOP
 
 BIND          = config.prepare("Value.Structure", "BIND")()
 QUERY         = config.prepare("Value.Structure", "QUERY")()
@@ -48,7 +48,7 @@ class TestWalkSemantics(unittest.TestCase):
         logging.addHandler(file_h)
 
         cls.eng = exlo()
-        cls.eng.load_modules(*default_modules, "acab.modules.operators.dfs.dfs_module")
+        cls.eng.load_modules(*default_modules, "acab.modules.operators.dfs.module")
 
     def tearDown(self):
         self.eng("~a")
@@ -250,3 +250,11 @@ end""".strip())
 
         self.assertTrue(self.eng("found.c?"))
         self.assertTrue(self.eng("found.e?"))
+
+    @unittest.skip("not done yet")
+    def test_parsed_act_without_head(self):
+        pass
+
+    @unittet.skip("not done yet")
+    def test_parsed_act_rule_loc(self):
+        pass

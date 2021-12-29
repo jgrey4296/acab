@@ -39,7 +39,7 @@ Handler       = AT.Handler
 
 # Dependent Semantics
 @dataclass
-class WalkTrieSemantics(SI.StatementSemantics_i):
+class DFSSemantics(SI.StatementSemantics_i):
     """
     Instruction for walking all nodes in a struct,
     instruction specifies rules to run on each node
