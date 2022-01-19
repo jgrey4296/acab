@@ -118,6 +118,12 @@ class AcabConfig(Config_i):
         in_defaults = key in self.defaults
         return any([in_print, in_base, in_enums, in_defaults])
 
+    def __iter__(self):
+        raise NotImplementedError()
+
+    def __len__(self):
+        raise NotImplementedError()
+
     def value(self, val: Union[Enum, ConfigSpec]):
         """ Unified value retrieval """
         if isinstance(val, Enum):
@@ -150,6 +156,10 @@ class AcabConfig(Config_i):
             return list(self._config[spec.section].keys())
         elif in_file and spec.as_dict and spec.key is None:
             return dict(self._config[spec.section].items())
+        elif in_file and spec.as_enum and spec.key is None:
+            values = " ".join(self._config[spec.section].keys())
+            self.enums[spec.section] = Enum(spec.section, values)
+            return self.enums[spec.section]
         elif not in_file:
             raise AcabConfigException(f"missing util value: {spec.section} {spec.key}")
 
@@ -178,8 +188,10 @@ class AcabConfig(Config_i):
 
 
     def prepare(self, *args, **kwargs):
+        """ Config utility to create a ConfigSpec for later use """
         spec = ConfigSpec(*args, **kwargs)
         return self.check(spec)
+
     def default(self, entry):
         """ Get the default value for an enum entry """
         if entry not in self.defaults:
@@ -226,7 +238,7 @@ class AcabConfig(Config_i):
 
             assert(isdir(expanded)), breakpoint()
             found = [join(expanded, x) for x in listdir(expanded)]
-            full_paths += [x for x in found if splitext(x)[1] == ".config"]
+            full_paths += [x for x in found if splitext(x)[1] == self.suffix]
 
         new_paths = [x for x in full_paths if x not in self._files]
         if bool(new_paths):
@@ -246,7 +258,3 @@ class AcabConfig(Config_i):
         key     = spec.key
         self._overrides[section][key] = value
 
-    def __iter__(self):
-        raise NotImplementedError()
-    def __len__(self):
-        raise NotImplementedError()

@@ -27,8 +27,11 @@ class ConfigSpec_i(cABC.Hashable, cABC.Callable):
     def __hash__(self):
         return hash(f"{self.section}:{self.key}")
 
-
+@dataclass
 class Config_i(cABC.Callable, cABC.Collection):
+
+    suffix : ClassVar[str] = ".config"
+
     @abc.abstractstaticmethod
     def Get(*paths: str, hooks=None):
         pass
