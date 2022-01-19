@@ -1,6 +1,6 @@
 from acab.core.parsing import pyparse_dsl as ppDSL
-from .pattern_match_op import PatternMatchOp
-from . import pattern_match_parser as PMP
+from .operator import PatternMatchOp
+from . import parser as PMP
 
 
 DSL_Fragment = ppDSL.DSL_Fragment

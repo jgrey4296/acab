@@ -27,6 +27,9 @@ class BreadthTrieSemantics(SI.StructureSemantics_i):
     Trie Semantics which map values -> Nodes
     Searches *Breadth First*
     """
+    def verify(self, instruction) -> bool:
+        return isinstance(instruction, Sentence)
+
     def compatible(self, struct):
         is_bns = isinstance(struct, BasicNodeStruct)
         has_all_node_comp = "all_nodes" in struct.components
@@ -134,6 +137,8 @@ class DepthTrieSemantics(SI.StructureSemantics_i):
     Searches *Depth First*
     """
 
+    def verify(self, instruction) -> bool:
+        return False
     def insert(self, struct, sen, data=None, ctxs=None):
         if data is None:
             data = {}
