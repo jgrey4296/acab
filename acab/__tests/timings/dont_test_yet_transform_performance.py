@@ -1,25 +1,25 @@
 """
 """
 #https://docs.python.org/3/library/unittest.html
-from os.path import splitext, split
-from math import isclose
-import pyparsing as pp
-import unittest
 import logging as root_logger
+import unittest
+from math import isclose
+from os.path import split, splitext
+
+import pyparsing as pp
+
 logging = root_logger.getLogger(__name__)
 
 
 import acab
+
 acab.setup()
 
 from acab.core.data.value import AcabValue as PV
 from acab.core.data.value import Sentence
-
 from acab.core.engine.engine import Engine
-
-from acab.modules.parsing.exlo import TransformParser as TP
 from acab.modules.parsing.exlo import FactParser as FP
-
+from acab.modules.parsing.exlo import TransformParser as TP
 from acab.modules.values import numbers as NS
 
 

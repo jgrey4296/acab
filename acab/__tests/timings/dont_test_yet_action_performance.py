@@ -1,25 +1,23 @@
 #https://docs.python.org/3/library/unittest.html
-from os.path import splitext, split
-import unittest
 import logging as root_logger
+import unittest
+from os.path import split, splitext
+
 logging = root_logger.getLogger(__name__)
 
 
 import acab
+
 acab.setup()
 
-from acab.core.parsing import consts as PConst
-
-from acab.core.data.value import  AcabValue
-from acab.core.data.value import Sentence
-from acab.core.data.instruction import ProductionOperator, ProductionContainer
-
+from acab.core.data.instruction import ProductionContainer, ProductionOperator
+from acab.core.data.value import AcabValue, Sentence
 from acab.core.engine.engine import Engine
-from acab.modules.parsing.exlo import ActionParser as AP
-from acab.modules.operators.action import action_operators as act_ops
-
-from acab.core.semantics.print_semantics import AcabPrintSemantics
+from acab.core.parsing import consts as PConst
 from acab.core.printing import default_handlers as DH
+from acab.core.semantics.print_semantics import AcabPrintSemantics
+from acab.modules.operators.action import action_operators as act_ops
+from acab.modules.parsing.exlo import ActionParser as AP
 
 basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel),
               Sentence: DH.DEF_SEN_PAIR}
