@@ -8,23 +8,25 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 from acab import types as AT
 from acab.core.data.value import AcabValue, Sentence
 from acab.error.semantic import AcabSemanticException
-from acab.modules.analysis.typing import unify
-from acab.modules.analysis.typing.unify import unify_enum
 from acab.modules.context.context_set import (ContextInstance,
                                               MutableContextInstance)
 
-from . import exceptions  as TE
+from .. import exceptions  as TE
+from . import util
+from . import unify
+
+unify_enum = util.unify_enum
 
 # Basic Unification ###########################################################
 def var_handler_basic(f_word, s_word, ctx):
     """ Bind vars, preferring Ctx -> L -> R
     ctx: f(A) -> Set[A]
     """
-    result = unify_enum.NA
-    f_var = f_word.is_var
-    s_var = s_word.is_var
-    f_canon = unify.top_var(f_word, ctx)
-    s_canon = unify.top_var(s_word, ctx)
+    result  = unify_enum.NA
+    f_var   = f_word.is_var
+    s_var   = s_word.is_var
+    f_canon = util.top_var(f_word, ctx)
+    s_canon = util.top_var(s_word, ctx)
 
     if f_var and f_word not in ctx:
         # bind f_word -> s_word
@@ -61,18 +63,18 @@ def apply_substitutions(sen, gamma) -> AT.Sentence:
     """
     Apply basic substitutions to a sentence
     """
-    return sen.copy(value=[unify.reify(x, gamma) for x in sen.words])
+    return sen.copy(value=[util.reify(x, gamma) for x in sen.words])
 
 
 #  ############################################################################
 basic_sen_logic = unify.UnifyLogic(
     entry_transform=None,
     early_exit=None,
-    truncate=unify.sen_truncate,
+    truncate=util.sen_truncate,
     sieve=[var_handler_basic,
            match_handler_basic,
            fail_handler_basic],
     apply=apply_substitutions
     )
 
-basic_unify = lambda x, y, c: unify.unify_sentence_pair(x, y, c, basic_sen_logic)
+basic_unify = unify.Unifier(basic_sen_logic)

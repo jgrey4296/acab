@@ -15,8 +15,8 @@ from acab.core.data.default_structure import BIND
 from acab.core.data.value import AcabValue, Sentence
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.modules.analysis.typing import exceptions as TE
-from acab.modules.analysis.typing import unify
 from acab.modules.analysis.typing.dsl import TypingDSL
+from acab.modules.analysis.typing.unify import unify
 from acab.modules.context.context_set import ContextInstance as CtxIns
 from acab.modules.context.context_set import ContextSet, MutableContextInstance
 from acab.modules.operators.dfs.semantics import DFSSemantics
@@ -69,7 +69,7 @@ class TypeCheckTests(unittest.TestCase):
         semsys(asst)
 
         # The Typecheck instruction:
-        instr = dsl.pase_string("")
+        instr = dsl.parse_string("ᛦ λtypedef")
 
         # Go:
         walksem(instr, semsys)

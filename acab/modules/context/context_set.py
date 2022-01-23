@@ -394,7 +394,7 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i):
 
 
 @dataclass
-class MutableContextInstance(CtxInt.ContextInstance_i):
+class MutableContextInstance:
     """ Wrap A Context Instance with an smart dictionary.
     Changes are inserted into the dictionary, until context is exited
     exit creates a new CtxIns, integrating changes """
@@ -403,6 +403,7 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
     base         : CtxIns           = field()
     data         : Dict[Any, Any]   = field(default_factory=dict)
     uuid         : UUID             = field(default_factory=uuid1)
+    exact        : bool             = field(default=False)
 
     def __contains__(self, value: Union[int, str, Value]):
         key = value
@@ -463,13 +464,12 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
     def finish(self):
         return self.base.bind_dict(self.data)
 
-
     def bind(self, word, nodes):
         raise NotImplementedError()
 
     def bind_dict(self, the_dict):
-        assert(not any([x in self.data for x in the_dict]))
-        assert(not any([x in self.base for x in the_dict]))
+        # assert(not any([x in self.data for x in the_dict])), breakpoint()
+        # assert(not any([x in self.base for x in the_dict])), breakpoint()
 
         self.data.update(the_dict)
         return self
