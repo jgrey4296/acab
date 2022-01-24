@@ -142,6 +142,7 @@ def strip_parse_type(s, loc, toks):
 
 
 def deep_update_names(parser):
+    logging.debug("Deep Updating Parser Names")
     queue = [parser]
     processed = set()
 
@@ -161,9 +162,10 @@ def deep_update_names(parser):
 
 
 def clear_parser_names(*parsers):
+    logging.debug("Clearing Parser Names")
     for parser in parsers:
         if hasattr(parser, "name"):
-            delattr(parser, "name")
+            parser.setName(None)
 
-        if parser.strRepr is not None:
+        if hasattr(parser, "strRepr") and parser.strRepr is not None:
             parser.strRepr = None

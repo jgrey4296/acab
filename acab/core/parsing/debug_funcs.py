@@ -2,16 +2,22 @@ import pyparsing as pp
 import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
+def debug_pyparsing_active_p() -> bool:
+    return pp.__diag__.enable_debug_on_named_expressions
+
 def debug_pyparsing():
     """ Set pyparsing to debug
     Only applies for parsers created *after* this,
     so has to be set at boot time.
     """
-    logging.info("Enabling Debug on Named Parsers")
-    pp.__diag__.enable_debug_on_named_expressions = True
-    pp._defaultSuccessDebugAction                 = debug_success_action
-    pp._defaultStartDebugAction                   = debug_start_action
-    pp._defaultExceptionDebugAction               = debug_fail_action
+    if not debug_pyparsing_active_p():
+        print("Enabling Debug on Named Parsers")
+        pp.__diag__.enable_debug_on_named_expressions = True
+        pp._defaultSuccessDebugAction                 = debug_success_action
+        pp._defaultStartDebugAction                   = debug_start_action
+        pp._defaultExceptionDebugAction               = debug_fail_action
+    else:
+        print("PyParsing Debug is already active")
 
 
 def debug_start_action(instring, loc, expr):

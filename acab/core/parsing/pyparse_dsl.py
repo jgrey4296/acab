@@ -11,6 +11,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 import pyparsing as pp
+import acab.core.parsing.debug_funcs as DBF
 
 logging = root_logger.getLogger(__name__)
 
@@ -57,6 +58,10 @@ class PyParse_Handler(DSL_Handler_i):
         """ A DSL Handler parses an input string when called """
         return self.func.parseString(the_str)[:]
 
+    def verify(self, instruction) -> bool:
+        return isinstance(instruction, str)
+
+
 @dataclass
 class PyParse_Spec(DSL_Spec_i):
     """
@@ -64,6 +69,7 @@ class PyParse_Spec(DSL_Spec_i):
 
     """
     struct : Set[Parser] = field(default_factory=set)
+    debug  : bool        = field(default=False)
 
     def __post_init__(self):
         if self.signal == DEFAULT_HANDLER_SIGNAL:
@@ -126,9 +132,23 @@ class PyParse_Spec(DSL_Spec_i):
 
         return output
 
+    def setDebug(self, flag=None) -> bool:
+        if not DBF.debug_pyparsing_active_p():
+            logging.warning("PyParsing Debug is not Active")
+            return False
+
+        if flag is None:
+            flag = not self.debug
+
+        self.debug = flag
+        logging.warning(f"Debug <{self.signal}>: {self.debug}")
+        for parser in self.handlers:
+            parser.func.setDebug(self.debug)
+
+        return self.debug
+
 #----------------------------------------
 class PyParseDSL(DSL_Builder_i):
-
 
     def _register_default(self):
         if DEFAULT_HANDLER_SIGNAL in self and bool(self.handler_specs[DEFAULT_HANDLER_SIGNAL]):
@@ -149,3 +169,21 @@ class PyParseDSL(DSL_Builder_i):
             logging.warning(f"Parser: {exp.parserElement}\n")
             logging.warning("Line: {}, Col: {} : {}".format(exp.lineno, exp.col, exp.markInputline()))
             return []
+
+
+    def debug_parser(self, s:str):
+        if s in self:
+            parser = self.handler_specs[s]
+            return parser.setDebug()
+
+    def disable_debugs(self):
+        for spec in self.handler_specs.values():
+            spec.setDebug(False)
+
+    def active_debugs(self) -> List[str]:
+        result = []
+        for signal, spec in self.handler_specs.items():
+            if spec.debug:
+                result.append(signal)
+
+        return result
