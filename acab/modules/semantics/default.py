@@ -14,7 +14,7 @@ from acab.modules.semantics.basic_system import BasicSemanticSystem
 from acab.modules.semantics.values import (BasicNodeSemantics,
                                            ExclusionNodeSemantics)
 from acab.modules.structures.trie.default import DEFAULT_TRIE, DEFAULT_TRIE_SPEC
-from acab.modules.structures.trie.trie_semantics import BreadthTrieSemantics
+from acab.modules.structures.trie.semantics import BreadthTrieSemantics
 
 config = GET()
 

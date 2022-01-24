@@ -9,10 +9,11 @@ logging = root_logger.getLogger(__name__)
 
 from acab import types as AT
 from acab.core.data import default_structure as DS
-from acab.core.data.instruction import ProductionOperator
+from acab.core.data.instruction import ProductionOperator, ProductionStructure, ProductionContainer
 from acab.core.decorators.semantic import RunInSubCtxSet
 from acab.interfaces import semantic as SI
 from acab.interfaces import value as VI
+import acab.core.data.instruction as Instr
 from acab.error.semantic import AcabSemanticException
 from acab.modules.context.context_set import ContextSet, MutableContextInstance
 from acab.modules.values.binding.binding import bind
@@ -25,6 +26,10 @@ class QueryAbstraction(SI.StatementSemantics_i):
     """
     Very simply accumulate results of multiple sentences of queries
     """
+    def verify(self, instruction) -> bool:
+        return (isinstance(instruction, Instr.ProductionContainer) and
+                all([DS.QUERY in x[-1].data for x in instruction.clauses]))
+
     def __call__(self, instruction, semSys, ctxs=None, data=None):
         query = instruction
         # Get the default dependent semantics
@@ -36,6 +41,11 @@ class QueryPlusAbstraction(SI.StatementSemantics_i):
     """ A Query abstraction that can handle expanded query semantics.
     Eg: Walkers
     """
+
+    def verify(self, instruction) -> bool:
+        return (isinstance(instruction, Instr.ProductionContainer) and
+                all([DS.QUERY in x[-1].data for x in instruction.clauses]))
+
     def __call__(self, instruction, semSys, ctxs=None, data=None):
         query = instruction
         for clause in query.clauses:
@@ -49,6 +59,11 @@ class QueryPlusAbstraction(SI.StatementSemantics_i):
 
 class TransformAbstraction(SI.StatementSemantics_i):
     """ Takes a context, returns a changed context """
+
+    def verify(self, instruction) -> bool:
+        return (isinstance(instruction, Instr.ProductionContainer) and
+                all([isinstance(x, Instr.ProductionComponent) for x in instruction.clauses]))
+
     def __call__(self, instruction, semSys, ctxs=None, data=None):
         # Note: run *all* the transform clauses at once
         operators = ctxs._operators
@@ -70,6 +85,10 @@ class TransformAbstraction(SI.StatementSemantics_i):
 
 class ActionAbstraction(SI.StatementSemantics_i):
     """ *Consumes* a context, performing all actions in it """
+
+    def verify(self, instruction) -> bool:
+        return (isinstance(instruction, Instr.ProductionContainer) and
+                all([isinstance(x, Instr.ProductionComponent) for x in instruction.clauses]))
 
     def __call__(self, instruction, semSys, ctxs=None, data=None):
         operators = ctxs._operators
@@ -93,6 +112,12 @@ class ActionAbstraction(SI.StatementSemantics_i):
 class AtomicRuleAbstraction(SI.StatementSemantics_i):
     """ Run a rule in a single semantic call """
 
+    def verify(self, instruction) -> bool:
+        return (isinstance(instruction, Instr.ProductionStructure) and
+                DS.QUERY_COMPONENT in instruction or
+                DS.ACTION_COMPONENT in instruction)
+
+
     @RunInSubCtxSet
     def __call__(self, instruction, semsys, ctxs=None, data=None):
         """ Rule Logic, returns action proposals """
@@ -114,6 +139,11 @@ class AtomicRuleAbstraction(SI.StatementSemantics_i):
 class ProxyRuleAbstraction(SI.StatementSemantics_i):
     """ Run a rules queries, then return ctxs bound
     with transform+action continuation """
+
+    def verify(self, instruction) -> bool:
+        return (isinstance(instruction, Instr.ProductionStructure) and
+                DS.QUERY_COMPONENT in instruction and
+                DS.ACTION_COMPONENT in instruction)
 
     def __call__(self, instruction, semsys, ctxs=None, data=None):
         if instruction in ctxs._named_sets:
@@ -151,6 +181,11 @@ class ProxyRuleAbstraction(SI.StatementSemantics_i):
 
 
 class ContainerAbstraction(SI.StatementSemantics_i):
+
+    def verify(self, instruction) -> bool:
+        return isinstance(instruction, Instr.ProductionContainer)
+
+
     def __call__(self, instruction, semsys, ctxs=None, data=None):
         """ Apply the clauses in one move """
         for x in instruction.clauses:

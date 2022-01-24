@@ -29,11 +29,16 @@ def grouper(iterable, n, fillvalue=None):
 # Independent
 class AtomicPrinter(PrintSemantics_i):
     """ Simply print the str of anything passed in """
+    def verify(self, instruction) -> bool:
+        return True
 
     def __call__(self, value, top=None, data=None):
         return str(value.name)
 
 class PrimitiveTypeAwarePrinter(PrintSemantics_i):
+
+    def verify(self, instruction) -> bool:
+        return True
 
     def add_transforms(self):
         return [PW._maybe_wrap_str,
@@ -45,6 +50,9 @@ class PrimitiveTypeAwarePrinter(PrintSemantics_i):
         return self.run_transforms(value, curr_str)
 
 class ModalAwarePrinter(PrintSemantics_i):
+
+    def verify(self, instruction) -> bool:
+        return True
 
     def add_transforms(self):
         return [PW._maybe_wrap_str,
@@ -63,6 +71,10 @@ class ModalAwarePrinter(PrintSemantics_i):
 
 
 class UUIDAwarePrinter(PrintSemantics_i):
+
+    def verify(self, instruction) -> bool:
+        return True
+
     def add_transforms(self):
         return [PW._maybe_wrap_str,
                 PW._maybe_wrap_regex,

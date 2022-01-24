@@ -39,6 +39,8 @@ T        = TypeVar('T')
 # Independent Semantics
 class BasicNodeSemantics(SI.ValueSemantics_i):
 
+    def verify(self, instruction) -> bool:
+        return isinstance(instruction, AcabValue)
     def make(self, val, data=None) -> Node:
         return self.up(AcabNode(val), data)
 
@@ -75,6 +77,9 @@ class BasicNodeSemantics(SI.ValueSemantics_i):
         return node.remove(to_delete)
 
 class ExclusionNodeSemantics(SI.ValueSemantics_i):
+    def verify(self, instruction) -> bool:
+        return isinstance(instruction, AcabValue)
+
     def make(self, val, data=None) -> AcabNode:
         return self.up(AcabNode(val), data)
 

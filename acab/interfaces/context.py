@@ -70,7 +70,7 @@ class ContextSet_i(cABC.Hashable, cABC.Set):
     def failed_list(self):
         pass
 
-@dataclass
+@dataclass(frozen=True)
 class ContextInstance_i(cABC.Mapping, cABC.Hashable, AcabReducible):
 
     @abc.abstractmethod

@@ -61,7 +61,7 @@ class DFSSemantics(SI.StatementSemantics_i):
     signal : str = field(default=WALK_SEM_HINT)
 
     def verify(self, instruction):
-        pass
+        return True
 
     def __call__(self, instruction, semsys, ctxs=None, data=None):
         if QUERY in instruction[-1].data and bool(instruction[-1].data[QUERY]):

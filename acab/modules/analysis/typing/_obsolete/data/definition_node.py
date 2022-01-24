@@ -24,7 +24,7 @@ from acab.modules.analysis.typing.values.type_definition import (
 from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
 from acab.modules.semantics.query_semantic_mixin import QuerySemanticMixin
 from acab.modules.structures.trie.trie import Trie
-from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics
+from acab.modules.structures.trie.semantics import BasicTrieSemantics
 
 from .type_assignment_semantics import TypeAssignmentNode
 from .type_variable_semantics import VarTypeNode

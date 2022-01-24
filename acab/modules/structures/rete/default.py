@@ -12,7 +12,7 @@ from acab.interfaces.handler_system import Handler
 from acab.modules.context import context_delayed_actions
 from acab.modules.context.context_set import ContextSet
 from acab.modules.semantics.basic_system import BasicSemanticSystem
-from acab.modules.structures.trie.trie_semantics import BreadthTrieSemantics
+from acab.modules.structures.trie.semantics import BreadthTrieSemantics
 from acab.modules.semantics.values import (BasicNodeSemantics,
                                                 ExclusionNodeSemantics)
 

@@ -26,6 +26,9 @@ class LayerAbstraction(SI.StatementSemantics_i):
     select passing rules to complete.
     run passing selection.
     """
+    def verify(self, instruction) -> bool:
+        return False
+
     def __call__(self, instruction, semsys, ctxs=None, data=None):
         """ Run a layer, returning actions to perform """
         layer = instruction

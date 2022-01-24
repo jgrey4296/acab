@@ -18,7 +18,7 @@ from acab.core.data.value import Instruction, AcabValue, Sentence
 from acab.modules.analysis.typing import util as TU
 from acab.modules.semantics.independent import BasicNodeSemantics
 from acab.modules.structures.trie.trie import Trie
-from acab.modules.structures.trie.trie_semantics import BasicTrieSemantics
+from acab.modules.structures.trie.semantics import BasicTrieSemantics
 
 from . import exceptions as te
 from .semantics.type_assignment_semantics import (TypeAssignmentNode,

@@ -126,6 +126,9 @@ class PrintSemantics_i(HandlerComponent_i):
 
         return curr
 
+    def verify(self, instruction) -> bool:
+        return True
+
     @abc.abstractmethod
     def __call__(self, to_print: Value_i, top:'PrintSystem_i'=None, data=None) -> List[Union[str,Value_i]]:
         pass

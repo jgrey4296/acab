@@ -20,13 +20,8 @@ from .util import unify_enum, type_len, INFINITY
 
 def gen_type_vars(first, second, gamma, gen_var=None) -> AT.CtxIns:
     """
-    Detect values destined to change,
-    and variables,
+    Detect values and variables destined to change,
     add them to the context
-
-    Creating Canonical Variables (id(X)),
-    and Canonical Value/Variable types (id(X.type))
-    where X is the first instance to be discovered
     """
 
     if gen_var is None:
