@@ -110,9 +110,14 @@ listen_parser = pp.Or([])
 
 
 # parser exploration ##########################################################
-handlers_kw      = pp.Keyword("handlers")("handlers")
+signals_kw       = pp.Keyword("signals")("signals")
 sugar_kw          = pp.Keyword("sugar")("sugar")
-parse_info_parser = handlers_kw | sugar_kw | rst
+debug_kw          = pp.Suppress(pp.Keyword("debug"))
+disable_kw        = pp.Keyword("disable")
+list_kw           = pp.Keyword("list")
+
+debug_control     = debug_kw + pp.Or([disable_kw, list_kw, rst])("debug")
+parse_info_parser = signals_kw | sugar_kw | debug_control | rst
 
 
 # context ########################################################################

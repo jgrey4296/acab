@@ -54,7 +54,6 @@ def do_print(self, line):
         print_contexts(self, params)
     elif "semantics" in params:
         print("Semantic Printing not implemented yet")
-        raise NotImplementedError()
     else:
         print(f"Print Keywords: {RP.printer_parser}")
 
@@ -150,28 +149,36 @@ def do_parser(self, line):
     sugar
     """
     params = RP.parse_info_parser.parseString(line)
-
-    if "handlers" in line:
-        print("DSL Handlers:")
-        bootstrap_desc = self.state.engine._dsl_builder.handler_specs.keys()
+    # TODO add * for each spec with debug activated
+    if "signals" in params:
+        print("DSL Signal Handlers:")
+        bootstrap_desc = self.state.engine._dsl.handler_specs.keys()
         for sen in bootstrap_desc:
             print("\t", self.state.engine.pprint([sen]))
-    elif "sugar" in line:
+    elif "sugar" in params:
         print(f"Repl Sugar: {RP.sugared}")
+
+    elif "debug" in params:
+        # TODO enable control of entry/success/fail debug funcs
+        if not bool(params['debug']):
+            DBF.debug_pyparsing()
+            return
+        debug_param = params['debug'].strip()
+        if debug_param == "disable":
+            self.state.engine._dsl.disable_debugs()
+            print("Parser Debuggers Cleared")
+        elif debug_param == "list":
+            active = self.state.engine._dsl.active_debugs()
+            if not bool(active):
+                print("No Parsers are set for Debugging")
+            else:
+                print("Debugging Parser Signals:\n\t -- {}".format("\n\t -- ".join(active)))
+        else:
+            result = self.state.engine._dsl.debug_parser(debug_param)
+            print(f"Debugging Signal <{debug_param}> : {result}")
     else:
         print("Top Level ACAB Parser:")
-        print(self.state.engine._dsl_builder.lookup())
-
-@register
-def do_debug(self, line):
-    """ Toggle Debugging of pyparsing """
-    if bool(line):
-        parser = self.state.engine._dsl_builder[line]
-        if bool(parser):
-            parser.setDebug(not parser.debug)
-            print(f"Debug {parser.debug} : {parser}")
-    else:
-        DBF.debug_pyparsing()
+        print(self.state.engine._dsl.lookup())
 
 
 # Logging Control###############################################################

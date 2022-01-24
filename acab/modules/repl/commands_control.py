@@ -209,7 +209,7 @@ def do_forcep(self, line):
         # parse the line
         params = RP.force_parser.parseString(line)
         # Get the handler for the specified signal
-        parser = self.state.engine._dsl_builder[params.query]
+        parser = self.state.engine._dsl[params.query]
         print(f"Retrieved: {parser}\n")
         if not bool(params.send):
             print("Nothing sent to parser")
