@@ -126,10 +126,10 @@ class HandlerSystem_i(cABC.MutableMapping, cABC.Callable):
 
         for key in self.sieve.fifo(value):
             key_match   = key in self.handler_specs
-
             if is_override and not is_passthrough and not key_match:
                 logging.warning(f"Missing Override Handler: {self.__class__} : {key}")
-            elif key_match and bool(self.handler_specs[key]):
+            elif key_match and bool(self.handler_specs[key]) and self.handler_specs[key].verify(value):
+                # TODO return the handler_spec *if* one of its handler's verifies the instruction
                 return self.handler_specs[key]
 
         # Final resort
@@ -241,7 +241,7 @@ class HandlerSpec(cABC.MutableSequence, cABC.Callable):
         return str(self.signal)
 
     def __repr__(self):
-        return f"HandlerSpec({self.signal}, flags={self.flags}, func_api={self.func_api}, handlers={len(self.handlers)})"
+        return f"<HandlerSpec {self.signal}, flags={self.flags}, func_api={self.func_api}, handlers={len(self.handlers)}>"
 
     def __bool__(self):
         return bool(self.handlers)
@@ -360,7 +360,7 @@ class HandlerSpec(cABC.MutableSequence, cABC.Callable):
 
     def add_struct(self, handler):
         struct = handler.struct
-        if isinstance(struct, type) and isinstance(struct, AcabStructure):
+        if isinstance(struct, type) and isinstance(struct, Structure_i):
             struct = struct.build_default()
 
         if self.struct is None or self.flag_e.OVERRIDE in handler.flags:
@@ -371,14 +371,14 @@ class HandlerSpec(cABC.MutableSequence, cABC.Callable):
 
 
     # Check ###################################################################
-    def verify(self):
+    def verify(self, instruction) -> bool:
         """
-        Check all registered handlers against the api
-        Check all registered data against it's api
-        Check the registered struct against it's api
+        Check at least 1 handler can accept the instruction
         """
-        # typing.get_type_hints
-        pass
+        if not bool(self):
+            return False
+        return any([x.verify(instruction) for x in self.handlers])
+
     def check_api(self, func=None, data=None, struct=None):
         if func and self.func_api:
             self.check_func_api(func)
@@ -413,6 +413,9 @@ class HandlerComponent_i:
 
     signal : Optional[str] = field(default=None)
 
+    def verify(self, instruction) -> bool:
+        return False
+
     def as_handler(self, signal=None, struct=None, flags=None):
         assert(signal or self.signal), breakpoint()
         return Handler(signal or self.signal,
@@ -428,6 +431,7 @@ class Handler(cABC.Callable, cABC.Iterable):
     signal   : Union[Sentence, str]
     func     : Optional[Callable]    = field(default=None)
     struct_i : Optional[Callable]    = field(default=None)
+    verify_f : Optional[Callable]    = field(default=None)
     flags    : Set[Enum]             = field(default_factory=list)
 
     struct   : Optional[Structure]   = field(default=None)
@@ -471,6 +475,17 @@ class Handler(cABC.Callable, cABC.Iterable):
                        flags=flags or self.flags)
 
 
+    def verify(self, instruction):
+        result = False
+        if self.verify_f is not None:
+            result = self.verify_f(instruction)
+        else:
+            result = True
+
+        if hasattr(self.func, "verify"):
+            result = result and self.func.verify(instruction)
+
+        return result
     @cache
     def __str__(self):
         return str(self.signal)
