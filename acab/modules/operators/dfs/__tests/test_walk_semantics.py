@@ -242,14 +242,36 @@ end""".strip())
         # dfs instruction
         ctxs = self.eng("the.$rule?")
         self.eng("a.$x?", ctxset=ctxs)
-        # TODO handle without @head
-        # TODO handle ᛦ λ$rule $y $z
         # rule would be: | @x(::node) $a $b |
         inst = DOP.dfs_action.parseString("@x ᛦ λ$rule")[0]
         self.eng(inst, ctxset=ctxs)
 
         self.assertTrue(self.eng("found.c?"))
         self.assertTrue(self.eng("found.e?"))
+
+    def test_walk_all(self):
+        # Setup
+        self.eng("a.b.c.test")
+        self.eng("a.b.d!f")
+        self.eng("a.b.e.test")
+        self.eng("~acab")
+
+        # Action to run
+        self.eng("""
+the.rule(::ρ):
+        | $x |
+
+        !! found.$x
+end""".strip())
+
+        # dfs instruction
+        ctxs = self.eng("the.$rule?")
+        self.eng("$x?", ctxset=ctxs)
+        # rule would be: | @x(::node) $a $b |
+        inst = DOP.dfs_action.parseString("@x ᛦ λ$rule")[0]
+        self.eng(inst, ctxset=ctxs)
+        found = self.eng("found.$x?")
+        self.assertEqual(len(found), 9)
 
     @unittest.skip("not done yet")
     def test_parsed_act_without_head(self):
