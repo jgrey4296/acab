@@ -62,10 +62,14 @@ def match_atom(f_word, s_word, ctx):
     return result
 
 def skip_atom_types(f_word, s_word, ctx):
+    """
+    If both things you are comparing are atoms, no need to continue the sieve
+    """
     result = unify_enum.NA
     if f_word.is_var or s_word.is_var:
         return result
 
+    # TODO these might need to be reified
     if f_word.type == "_:ATOM" and s_word.type == "_:ATOM":
         result = unify_enum.NEXT_WORD
 
@@ -73,18 +77,17 @@ def skip_atom_types(f_word, s_word, ctx):
 
 
 def whole_sentence_bind(first, second, ctx):
+    """
+    Early exit if all you have is a variable
+    """
     result = unify_enum.NA
-    if first.is_var and ctx[first[0]] == "_:ATOM":
-        ctx[first[0]] = second
+    if first.is_var and ctx[first] == "_:ATOM":
         result = unify_enum.END
     elif not first.is_var and util.reify(first, ctx) == "_:ATOM":
-        ctx[id(first)] = second
         result = unify_enum.END
-    elif second.is_var and (ctx[second[0]] == "_:ATOM"):
-        ctx[second[0]] = first
+    elif second.is_var and (ctx[second] == "_:ATOM"):
         result = unify_enum.END
     elif not second.is_var and util.reify(second, ctx) == "_:ATOM":
-        ctx[id(second)] = first
         result = unify_enum.END
     elif not first.is_var and first.type == "_:ATOM" and not second.is_var and second.type == "_:ATOM":
         result = unify_enum.END
@@ -102,30 +105,25 @@ def unify_type_sens(logic, f_word, s_word, ctx):
     result = unify_enum.NA
 
     canon_f   = util.reify(f_word, ctx)
-    canon_s   = util.reify(s_word, ctx)
     canon_f_t = util.reify(canon_f.type, ctx)
+
+    canon_s   = util.reify(s_word, ctx)
     canon_s_t = util.reify(canon_s.type, ctx)
 
     sub_unifier = unify.Unifier(logic)
+    # Discard the returned context:
     sub_unifier(canon_f_t, canon_s_t, ctx, logic)
 
 
-    f_key = canon_f_t
-    s_key = canon_s_t
-    if not f_key.is_var:
-        f_key = id(f_key)
-    else:
-        f_key = f_key[0]
-    if not s_key.is_var:
-        s_key = id(s_key)
-    else:
-        s_key = s_key[0]
+    # Update the var in ctx, or update a tight binding of the object
+    f_key = canon_f_t if canon_f_t.is_var else id(canon_f_t)
+    s_key = canon_s_t if canon_s_t.is_var else id(canon_s_t)
 
-    if type_len(canon_f_t) < type_len(canon_s_t):
-        ctx[s_key] = canon_f_t
-    else:
-        ctx[f_key] = canon_s_t
+    # Bind the more general type over the more specific type
+    update_typing = min((type_len(canon_f_t), s_key, canon_f_t),
+                        (type_len(canon_s_t), f_key, canon_s_t))
 
+    ctx[update_typing[1]] = update_typing[2]
     result = unify_enum.NEXT_WORD
 
     return result
@@ -133,43 +131,30 @@ def unify_type_sens(logic, f_word, s_word, ctx):
 
 @factory
 def var_consistency_check(logic, first, second, ctx):
+    """
+    Check words types are consistent with the context
+    """
     if not (first.is_var or second.is_var):
         return unify_enum.NA
 
     sub_unifier = unify.Unifier(logic)
 
     try:
-        if first.is_var:
-            canon_f   = util.reify(first, ctx)
-            canon_f_t = canon_f.type
-            if canon_f.type.is_var and canon_f.type[0] in ctx:
-                canon_f_t = util.reify(canon_f.type[0], ctx)
-            elif id(canon_f.type) in ctx:
-                canon_f_t = util.reify(id(canon_f.type), ctx)
+        for word in [first, second]:
+            if not word.is_var:
+                continue
 
-            sub_unifier(first.type, canon_f_t, ctx, logic)
-            update_typing = min((type_len(canon_f_t), canon_f_t),
-                                (type_len(first.type), first.type))[1]
-            if canon_f.type.is_var:
-                ctx[canon_f.type[0]] = update_typing
-            else:
-                ctx[id(canon_f_t)]   = update_typing
+            canon_w   = util.reify(word, ctx)
+            canon_w_t = util.reify(canon_w.type, ctx)
+            target    = canon_w.type[0] if canon_w.type.is_var else id(canon_w_t)
 
-        if second.is_var:
-            canon_s   = util.reify(second, ctx)
-            canon_s_t = canon_s.type
-            if canon_s.type.is_var and canon_s.type[0] in ctx:
-                canon_s_t = util.reify(canon_s.type[0], ctx)
-            elif id(canon_s.type) in ctx:
-                canon_s_t = util.reify(id(canon_s.type), ctx)
+            if canon_w_t == word.type:
+                pass
 
-            sub_unifier(second.type, canon_s_t, ctx, logic)
-            update_typing = min((type_len(canon_s_t), canon_s_t),
-                                (type_len(second.type), second.type))[1]
-            if canon_s.type.is_var:
-                ctx[canon_s.type[0]] = update_typing
-            else:
-                ctx[id(canon_s_t)]   = update_typing
+            sub_unifier(word.type, canon_w_t, ctx, logic)
+            update_typing = min((type_len(canon_w_t), canon_w_t),
+                                (type_len(word.type), word.type))[1]
+            ctx[target]   = update_typing
 
     except TE.TypeUnifyException as err:
         raise TE.TypeConflictException(first, second, None, ctx) from err

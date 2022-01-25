@@ -151,7 +151,7 @@ class UnifierTests(unittest.TestCase):
         sen2 = dsl("a.test.sentence(::blah.bloo)")[0]
 
         ctx_r = tuf.type_unify(sen1, sen2, CtxIns())
-        sen1c = tuf.typed_sen_logic.apply(sen1, ctx_r)
+        sen1c = tuf.type_unify.apply(sen1, ctx_r)
 
         self.assertEqual(sen1c[-1].type, dsl("blah.bloo")[0])
 
