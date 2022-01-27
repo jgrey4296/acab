@@ -55,16 +55,16 @@ def print_contexts(self, params):
         #     print(f"Continuation: {ctx.continuation}")
         if bool(bindings_to_print):
             for x in bindings_to_print:
-                print("{} : {}".format(x, self.state.engine.pprint([ctx[x]])))
+                print("{} : {}".format(x, self.state.engine.pprint(target=[ctx[x]])))
         else:
             for x,y in ctx.data.items():
-                print("{} : {}".format(x, self.state.engine.pprint([y])))
+                print("{} : {}".format(x, self.state.engine.pprint(target=[y])))
 
         print("--------------------")
 
     if bool(self.state.ctxs._named_sets):
         print("Named (continuation) Sets:")
-        print(self.state.engine.pprint(list(self.state.ctxs._named_sets.keys())))
+        print(self.state.engine.pprint(target=list(self.state.ctxs._named_sets.keys())))
 
 def init_inspect(mod_str):
     """

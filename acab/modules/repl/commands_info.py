@@ -111,7 +111,7 @@ def do_stat(self, line):
         for mod in modules:
             count += len(mod.operators)
             for op in mod.operators:
-                print("\t", self.state.engine.pprint([op]))
+                print("\t", self.state.engine.pprint(target=[op]))
 
         print("--")
         print("Loaded Operators: {}".format(count))
@@ -154,7 +154,7 @@ def do_parser(self, line):
         print("DSL Signal Handlers:")
         bootstrap_desc = self.state.engine._dsl.handler_specs.keys()
         for sen in bootstrap_desc:
-            print("\t", self.state.engine.pprint([sen]))
+            print("\t", self.state.engine.pprint(target=[sen]))
     elif "sugar" in params:
         print(f"Repl Sugar: {RP.sugared}")
 
