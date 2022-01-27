@@ -42,13 +42,13 @@ class BasicNodeSemantics(SI.ValueSemantics_i):
     def verify(self, instruction) -> bool:
         return isinstance(instruction, AcabValue)
     def make(self, val, data=None) -> Node:
-        return self.up(AcabNode(val), data)
+        return self.up(AcabNode(val), data=data)
 
-    def up(self, node:Node, data=None) -> Node:
+    def up(self, node:Node, *, data=None) -> Node:
         """ The Most Basic Lift, does nothing """
         return node
 
-    def access(self, node:Node, term:Value, data=None) -> List[Node]:
+    def access(self, node:Node, term:Value, *, data=None) -> List[Node]:
         if term is None:
             return list(iter(node))
 
@@ -58,16 +58,16 @@ class BasicNodeSemantics(SI.ValueSemantics_i):
 
         return []
 
-    def insert(self, node:Node, new_node:Node, data=None) -> Node:
+    def insert(self, node:Node, new_node:Node, *, data=None) -> Node:
         assert(isinstance(node, AcabNode))
         assert(isinstance(new_node, AcabNode))
         if new_node in node:
             raise ASErr.AcabSemanticIndependentFailure("Node is already child", (node, new_node))
 
         key = new_node.value.key()
-        return node.add(new_node, key)
+        return node.add(new_node, key=key)
 
-    def remove(self, node:Node, to_delete:Value, data=None) -> Node:
+    def remove(self, node:Node, to_delete:Value, *, data=None) -> Node:
         assert(isinstance(node, AcabNode))
         assert(isinstance(to_delete, AcabValue))
 
@@ -80,10 +80,10 @@ class ExclusionNodeSemantics(SI.ValueSemantics_i):
     def verify(self, instruction) -> bool:
         return isinstance(instruction, AcabValue)
 
-    def make(self, val, data=None) -> AcabNode:
-        return self.up(AcabNode(val), data)
+    def make(self, val, *, data=None) -> AcabNode:
+        return self.up(AcabNode(val), data=data)
 
-    def up(self, node:Node, data=None) -> Node:
+    def up(self, node:Node, *, data=None) -> Node:
         # Add an exop if necessary
         if EXOP in node.data:
             return node
@@ -98,7 +98,7 @@ class ExclusionNodeSemantics(SI.ValueSemantics_i):
 
         return node
 
-    def access(self, node:Node, term:Value, data=None) -> List[Node]:
+    def access(self, node:Node, term:Value, *, data=None) -> List[Node]:
         potentials = []
         value = None
 
@@ -118,7 +118,7 @@ class ExclusionNodeSemantics(SI.ValueSemantics_i):
 
         return potentials
 
-    def insert(self, node:Node, new_node:Node, data=None) -> Node:
+    def insert(self, node:Node, new_node:Node, *, data=None) -> Node:
         assert(isinstance(node, AcabNode))
         assert(isinstance(new_node, AcabNode))
 
@@ -131,7 +131,7 @@ class ExclusionNodeSemantics(SI.ValueSemantics_i):
         result = node.add(new_node)
         return result
 
-    def remove(self, node:Node, to_delete:Value, data=None) -> Node:
+    def remove(self, node:Node, to_delete:Value, *, data=None) -> Node:
         assert(isinstance(node, AcabNode))
         assert(isinstance(to_delete, AcabValue))
 

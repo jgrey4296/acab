@@ -75,13 +75,13 @@ class PrintStructureSemanticTests(unittest.TestCase):
         """ Check production components can be printed """
         component = ProductionComponent(value=FP.parseString("testop.blah")[0])
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
-                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("SENTENCE"),
-                                              Printers.AnnotationAwareValuePrinter().as_handler("ATOM"),
-                                              Printers.ProductionComponentPrinter().as_handler("COMPONENT"),
-                                              Printers.ConfigBackedSymbolPrinter().as_handler("SYMBOL"),
-                                              Printers.SimpleTypePrinter().as_handler("TYPE_INSTANCE"),
-                                              Printers.AnnotationPrinter().as_handler("ANNOTATIONS"),
-                                              Printers.ModalPrinter().as_handler("MODAL")],
+                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
+                                              Printers.AnnotationAwareValuePrinter().as_handler(signal="ATOM"),
+                                              Printers.ProductionComponentPrinter().as_handler(signal="COMPONENT"),
+                                              Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
+                                              Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
+                                              Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
+                                              Printers.ModalPrinter().as_handler(signal="MODAL")],
                                settings={"MODAL": "exop"})
 
         result = sem_sys.pprint(component)
@@ -92,13 +92,13 @@ class PrintStructureSemanticTests(unittest.TestCase):
         component = ProductionComponent(value=FP.parseString("testop.blah")[0],
                                         params=[FP.parseString("$x")[0][0]])
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
-                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("SENTENCE"),
-                                              Printers.SimpleTypePrinter().as_handler("TYPE_INSTANCE"),
-                                              Printers.AnnotationAwareValuePrinter().as_handler("ATOM"),
-                                              Printers.ProductionComponentPrinter().as_handler("COMPONENT"),
-                                              Printers.ConfigBackedSymbolPrinter().as_handler("SYMBOL"),
-                                              Printers.AnnotationPrinter().as_handler("ANNOTATIONS"),
-                                              Printers.ModalPrinter().as_handler("MODAL")],
+                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
+                                              Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
+                                              Printers.AnnotationAwareValuePrinter().as_handler(signal="ATOM"),
+                                              Printers.ProductionComponentPrinter().as_handler(signal="COMPONENT"),
+                                              Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
+                                              Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
+                                              Printers.ModalPrinter().as_handler(signal="MODAL")],
                                settings={"MODAL": "exop"})
 
         result = sem_sys.pprint(component)
@@ -110,13 +110,13 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                         params=[FP.parseString("$x")[0][0]],
                                         rebind=FP.parseString("$y")[0][0])
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
-                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("SENTENCE"),
-                                              Printers.AnnotationAwareValuePrinter().as_handler("ATOM"),
-                                              Printers.ProductionComponentPrinter().as_handler("COMPONENT"),
-                                              Printers.ConfigBackedSymbolPrinter().as_handler("SYMBOL"),
-                                              Printers.SimpleTypePrinter().as_handler("TYPE_INSTANCE"),
-                                              Printers.AnnotationPrinter().as_handler("ANNOTATIONS"),
-                                              Printers.ModalPrinter().as_handler("MODAL")],
+                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
+                                              Printers.AnnotationAwareValuePrinter().as_handler(signal="ATOM"),
+                                              Printers.ProductionComponentPrinter().as_handler(signal="COMPONENT"),
+                                              Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
+                                              Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
+                                              Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
+                                              Printers.ModalPrinter().as_handler(signal="MODAL")],
                                settings={"MODAL": "exop"})
 
         result = sem_sys.pprint(component)
@@ -125,15 +125,15 @@ class PrintStructureSemanticTests(unittest.TestCase):
     def test_container(self):
         """ Check containers print all their clauses """
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
-                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("SENTENCE"),
-                                              Printers.AnnotationAwareValuePrinter().as_handler("ATOM"),
-                                              Printers.ProductionComponentPrinter().as_handler("COMPONENT"),
-                                              Printers.SimpleTypePrinter().as_handler("TYPE_INSTANCE"),
-                                              Printers.ConstraintPrinter().as_handler("CONSTRAINT"),
-                                              Printers.ConfigBackedSymbolPrinter().as_handler("SYMBOL"),
-                                              Printers.ImplicitContainerPrinter().as_handler("CONTAINER"),
-                                              Printers.AnnotationPrinter().as_handler("ANNOTATIONS"),
-                                              Printers.ModalPrinter().as_handler("MODAL")],
+                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
+                                              Printers.AnnotationAwareValuePrinter().as_handler(signal="ATOM"),
+                                              Printers.ProductionComponentPrinter().as_handler(signal="COMPONENT"),
+                                              Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
+                                              Printers.ConstraintPrinter().as_handler(signal="CONSTRAINT"),
+                                              Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
+                                              Printers.ImplicitContainerPrinter().as_handler(signal="CONTAINER"),
+                                              Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
+                                              Printers.ModalPrinter().as_handler(signal="MODAL")],
                                settings={"MODAL": "exop"})
 
         # combine some queries together
@@ -148,16 +148,16 @@ class PrintStructureSemanticTests(unittest.TestCase):
     def test_rule(self):
         """ Check a rule can be printed """
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
-                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("SENTENCE"),
-                                              Printers.AnnotationAwareValuePrinter().as_handler("ATOM"),
-                                              Printers.ProductionComponentPrinter().as_handler("COMPONENT"),
-                                              Printers.SimpleTypePrinter().as_handler("TYPE_INSTANCE"),
-                                              Printers.ImplicitContainerPrinter().as_handler("IMPLICIT_CONTAINER"),
-                                              Printers.StructurePrinter().as_handler("STRUCTURE"),
-                                              Printers.TagPrinter().as_handler("TAGS"),
-                                              Printers.ConfigBackedSymbolPrinter().as_handler("SYMBOL"),
-                                              Printers.AnnotationPrinter().as_handler("ANNOTATIONS"),
-                                              Printers.ModalPrinter().as_handler("MODAL")],
+                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
+                                              Printers.AnnotationAwareValuePrinter().as_handler(signal="ATOM"),
+                                              Printers.ProductionComponentPrinter().as_handler(signal="COMPONENT"),
+                                              Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
+                                              Printers.ImplicitContainerPrinter().as_handler(signal="IMPLICIT_CONTAINER"),
+                                              Printers.StructurePrinter().as_handler(signal="STRUCTURE"),
+                                              Printers.TagPrinter().as_handler(signal="TAGS"),
+                                              Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
+                                              Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
+                                              Printers.ModalPrinter().as_handler(signal="MODAL")],
                                settings={"MODAL": "exop"})
 
         # parse a rule
@@ -170,16 +170,16 @@ class PrintStructureSemanticTests(unittest.TestCase):
     def test_rule_with_tags(self):
         """ Check a rule prints its tags """
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
-                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("SENTENCE"),
-                                              Printers.AnnotationAwareValuePrinter().as_handler("ATOM"),
-                                              Printers.ProductionComponentPrinter().as_handler("COMPONENT"),
-                                              Printers.SimpleTypePrinter().as_handler("TYPE_INSTANCE"),
-                                              Printers.ImplicitContainerPrinter().as_handler("IMPLICIT_CONTAINER"),
-                                              Printers.StructurePrinter().as_handler("STRUCTURE"),
-                                              Printers.ConfigBackedSymbolPrinter().as_handler("SYMBOL"),
-                                              Printers.TagPrinter().as_handler("TAGS"),
-                                              Printers.ModalPrinter().as_handler("MODAL"),
-                                              Printers.AnnotationPrinter().as_handler("ANNOTATIONS")
+                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
+                                              Printers.AnnotationAwareValuePrinter().as_handler(signal="ATOM"),
+                                              Printers.ProductionComponentPrinter().as_handler(signal="COMPONENT"),
+                                              Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
+                                              Printers.ImplicitContainerPrinter().as_handler(signal="IMPLICIT_CONTAINER"),
+                                              Printers.StructurePrinter().as_handler(signal="STRUCTURE"),
+                                              Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
+                                              Printers.TagPrinter().as_handler(signal="TAGS"),
+                                              Printers.ModalPrinter().as_handler(signal="MODAL"),
+                                              Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS")
                                               ],
                               settings={"MODAL": "exop"})
 
@@ -200,15 +200,15 @@ class PrintStructureSemanticTests(unittest.TestCase):
     def test_query_statement(self):
         """ Check a query statement prints its clauses """
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
-                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("SENTENCE"),
-                                              Printers.AnnotationAwareValuePrinter().as_handler("ATOM"),
-                                              Printers.ProductionComponentPrinter().as_handler("COMPONENT"),
-                                              Printers.SimpleTypePrinter().as_handler("TYPE_INSTANCE"),
-                                              Printers.ExplicitContainerPrinter().as_handler("CONTAINER"),
-                                              Printers.StructurePrinter().as_handler("STRUCTURE"),
-                                              Printers.ConfigBackedSymbolPrinter().as_handler("SYMBOL"),
-                                              Printers.ModalPrinter().as_handler("MODAL"),
-                                              Printers.AnnotationPrinter().as_handler("ANNOTATIONS"),
+                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
+                                              Printers.AnnotationAwareValuePrinter().as_handler(signal="ATOM"),
+                                              Printers.ProductionComponentPrinter().as_handler(signal="COMPONENT"),
+                                              Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
+                                              Printers.ExplicitContainerPrinter().as_handler(signal="CONTAINER"),
+                                              Printers.StructurePrinter().as_handler(signal="STRUCTURE"),
+                                              Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
+                                              Printers.ModalPrinter().as_handler(signal="MODAL"),
+                                              Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
                                               ],
                               settings={"MODAL": "exop"})
 
@@ -227,15 +227,15 @@ class PrintStructureSemanticTests(unittest.TestCase):
     def test_transform_statement(self):
         """ Check a transform statement prints its clauses """
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
-                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("SENTENCE"),
-                                              Printers.AnnotationAwareValuePrinter().as_handler("ATOM"),
-                                              Printers.ProductionComponentPrinter().as_handler("COMPONENT"),
-                                              Printers.SimpleTypePrinter().as_handler("TYPE_INSTANCE"),
-                                              Printers.ExplicitContainerPrinter().as_handler("CONTAINER"),
-                                              Printers.StructurePrinter().as_handler("STRUCTURE"),
-                                              Printers.ConfigBackedSymbolPrinter().as_handler("SYMBOL"),
-                                              Printers.ModalPrinter().as_handler("MODAL"),
-                                              Printers.AnnotationPrinter().as_handler("ANNOTATIONS"),
+                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
+                                              Printers.AnnotationAwareValuePrinter().as_handler(signal="ATOM"),
+                                              Printers.ProductionComponentPrinter().as_handler(signal="COMPONENT"),
+                                              Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
+                                              Printers.ExplicitContainerPrinter().as_handler(signal="CONTAINER"),
+                                              Printers.StructurePrinter().as_handler(signal="STRUCTURE"),
+                                              Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
+                                              Printers.ModalPrinter().as_handler(signal="MODAL"),
+                                              Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
                                               ],
                                settings={"MODAL": "exop"})
 
@@ -254,16 +254,16 @@ class PrintStructureSemanticTests(unittest.TestCase):
     def test_action_statement(self):
         """ Check an action statement prints its clauses """
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
-                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("SENTENCE"),
-                                              Printers.AnnotationAwareValuePrinter().as_handler("ATOM"),
-                                              Printers.ProductionComponentPrinter().as_handler("COMPONENT"),
-                                              Printers.SimpleTypePrinter().as_handler("TYPE_INSTANCE"),
-                                              Printers.ExplicitContainerPrinter().as_handler("CONTAINER"),
-                                              Printers.ImplicitContainerPrinter().as_handler("IMPLICIT_CONTAINER"),
-                                              Printers.StructurePrinter().as_handler("STRUCTURE"),
-                                              Printers.ConfigBackedSymbolPrinter().as_handler("SYMBOL"),
-                                              Printers.AnnotationPrinter().as_handler("ANNOTATIONS"),
-                                              Printers.ModalPrinter().as_handler("MODAL")
+                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
+                                              Printers.AnnotationAwareValuePrinter().as_handler(signal="ATOM"),
+                                              Printers.ProductionComponentPrinter().as_handler(signal="COMPONENT"),
+                                              Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
+                                              Printers.ExplicitContainerPrinter().as_handler(signal="CONTAINER"),
+                                              Printers.ImplicitContainerPrinter().as_handler(signal="IMPLICIT_CONTAINER"),
+                                              Printers.StructurePrinter().as_handler(signal="STRUCTURE"),
+                                              Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
+                                              Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
+                                              Printers.ModalPrinter().as_handler(signal="MODAL")
                                               ],
                                settings={"MODAL": "exop"})
 

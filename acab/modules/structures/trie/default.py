@@ -37,7 +37,7 @@ def DEFAULT_TRIE_SPEC(name="trie"):
 def DEFAULT_TRIE(name="trie"):
     node_handler = BasicNodeSemantics("atom").as_handler()
     trie_sem     = BreadthTrieSemantics(signal=name,
-                                        init_handlers=[node_handler.as_handler(DEFAULT_HANDLER_SIGNAL)])
+                                        init_handlers=[node_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
 
     trie_handler = trie_sem.as_handler(struct=BasicNodeStruct.build_default())
 

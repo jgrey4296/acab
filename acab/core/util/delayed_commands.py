@@ -24,7 +24,7 @@ class DelayedCommands_i():
     _purgatory : Dict[Enum, Set[UUID]] = field(init=False, default_factory=dict)
     _priority : List[Enum]             = field(init=False, default_factory=list)
 
-    def delay(self, instr:Enum, ctxIns:DelayValue):
+    def delay(self, instr:Enum, *, ctxIns:DelayValue):
         """
         Register an action for later.
         Useful for adding ctxins results without interfering with current operations,

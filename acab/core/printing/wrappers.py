@@ -104,7 +104,7 @@ def _wrap_var_list(PS, value, current):
             + [DSYM.PARAM_WRAP, DSYM.CONTAINER_JOIN_P])
 
 
-def _sep_list(PS, value, current, sep=" "):
+def _sep_list(PS, value, current, *, sep=" "):
     """ given a list, add separators """
     ret_list = []
     if bool(current):

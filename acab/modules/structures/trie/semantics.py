@@ -48,14 +48,14 @@ class BreadthTrieSemantics(SI.StructureSemantics_i):
         current = self.lookup()[0].up(struct.root)
         for word in sen:
             spec = self.lookup(current)
-            accessible = spec[0].access(current, word, data)
+            accessible = spec[0].access(current, word, data=data)
             if bool(accessible):
                 current = accessible[0]
             else:
                 next_spec = self.lookup(word)
-                new_node = next_spec[0].make(word, data)
+                new_node = next_spec[0].make(word, data=data)
                 struct.components['all_nodes'][new_node.uuid] = new_node
-                current = spec[0].insert(current, new_node, data)
+                current = spec[0].insert(current, new_node, data=data)
 
         return current
 
@@ -67,7 +67,7 @@ class BreadthTrieSemantics(SI.StructureSemantics_i):
         for word in sen:
             # Get independent semantics for current
             spec = self.lookup(current)
-            accessed = spec[0].access(current, word, data)
+            accessed = spec[0].access(current, word, data=data)
 
             if bool(accessed):
                 parent = current
@@ -78,7 +78,7 @@ class BreadthTrieSemantics(SI.StructureSemantics_i):
         # At leaf:
         # remove current from parent
         spec = self.lookup(parent)
-        spec[0].remove(parent, current.value, data)
+        spec[0].remove(parent, current.value, data=data)
 
     def query(self, sen, struct, data=None, ctxs=None):
         """ Breadth First Search Query """
@@ -93,7 +93,7 @@ class BreadthTrieSemantics(SI.StructureSemantics_i):
                     spec = self.lookup(current_node)
                     results = spec[0].access(current_node,
                                              bound_word,
-                                             data)
+                                             data=data)
 
                     cqm.test_and_update(results)
 
@@ -114,7 +114,7 @@ class BreadthTrieSemantics(SI.StructureSemantics_i):
             path, current = queue.pop(0)
             updated_path  = path + [current.value]
             spec          = self.lookup(current)
-            accessible    = spec[0].access(current, None, data)
+            accessible    = spec[0].access(current, None, data=data)
             if bool(accessible):
                 # branch
                 queue += [(updated_path, x) for x in accessible]
@@ -144,20 +144,20 @@ class DepthTrieSemantics(SI.StructureSemantics_i):
             data = {}
 
         if NEGATION_S in sen.data and sen.data[NEGATION_S]:
-            return self._delete(struct, sen, data)
+            return self._delete(struct, sen, data=data)
 
         # Get the root
         # TODO: Ensure the struct is appropriate
         current = self.default[0].up(struct.root)
         for word in sen:
             spec = self.lookup(current)
-            accessible = spec[0].access(current, word, data)
+            accessible = spec[0].access(current, word, data=data)
             if bool(accessible):
                 current = accessible[0]
             else:
                 next_spec = self.lookup(word)
-                new_node = next_spec[0].make(word, data)
-                current = spec[0].insert(current, new_node, data)
+                new_node = next_spec[0].make(word, data=data)
+                current = spec[0].insert(current, new_node, data=data)
 
         return current
 
@@ -169,7 +169,7 @@ class DepthTrieSemantics(SI.StructureSemantics_i):
         for word in sen:
             # Get value semantics for current
             spec = self.lookup(current)
-            accessed = spec[0].access(current, word, data)
+            accessed = spec[0].access(current, word, data=data)
             if bool(accessed):
                 parent = current
                 current = accessed[0]
@@ -179,7 +179,7 @@ class DepthTrieSemantics(SI.StructureSemantics_i):
         # At leaf:
         # remove current from parent
         spec = self.lookup(parent)
-        spec[0].remove(parent, current.value, data)
+        spec[0].remove(parent, current.value, data=data)
 
         return current
 
@@ -217,7 +217,7 @@ class DepthTrieSemantics(SI.StructureSemantics_i):
 
                         results = spec[0].access(currentInst._current,
                                                  search_word,
-                                                 datac)
+                                                 data=data)
 
                         # TODO to make this depth first,
                         # the current ctxInst needs to be updated

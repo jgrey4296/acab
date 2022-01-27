@@ -115,7 +115,6 @@ class AcabValue(VI.Value_i, Generic[T]):
         """
         return self.name
 
-
     @cache
     def __repr__(self):
         name_str = self.name
@@ -126,6 +125,8 @@ class AcabValue(VI.Value_i, Generic[T]):
             name_str = BIND_SYMBOL + name_str
 
         type_str = str(self.type)
+        if self.type.is_var:
+            type_str = BIND_SYMBOL + type_str
 
         return "<{}::{}>".format(name_str, type_str)
 
@@ -210,7 +211,7 @@ class AcabValue(VI.Value_i, Generic[T]):
     def bind(self, bindings) -> Value:
         raise Exception("Deprecated: use acab.modules.values.binding")
 
-    def apply_params(self, params, data=None) -> Value:
+    def apply_params(self, params, *, data=None) -> Value:
         """
         return modified copy
         """
@@ -306,6 +307,9 @@ class Sentence(Instruction, VI.Sentence_i):
         AcabValue.__post_init__(self)
         self.data[DS.TYPE_INSTANCE] = DS.SENTENCE_PRIM
 
+    def __hash__(self):
+        return AcabValue.__hash__(self)
+
     def __eq__(self, other):
         if isinstance(other, str) and other[:2] == "_:":
             # Utility for str comparison. underscore colon signifies sen str
@@ -395,7 +399,10 @@ class Sentence(Instruction, VI.Sentence_i):
         new_sen = replace(self, value=words)
         return new_sen
 
-    def prefix(self, prefix:Union[Value, Sen]) -> Sen:
+    def prefix(self, prefix:Union[Value, Sen, List]) -> Sen:
+        """
+        For prefix P, this S produces P..S
+        """
         if isinstance(prefix, list):
             prefix = Sentence.build(prefix)
         elif not isinstance(self, Sentence):
@@ -404,8 +411,23 @@ class Sentence(Instruction, VI.Sentence_i):
         return prefix.add(self)
 
 
+    def remove_prefix(self, prefix:Union[Value, Sen, List]) -> Sen:
+        if not isinstance(prefix, (Sentence, list)):
+            prefix = [prefix]
+
+        if all([x==y for x,y in zip(prefix, self)]):
+            return self.copy(value=self.value[len(prefix):])
+
+        return self
+
+
     def attach_statement(self, value) -> Sen:
         """
+        for this S: first..last
+        and value V,
+        produce S' where last = V
+        such that statement S still matches
+
         Copy the sentence,
         Replace the leaf with the provided statement,
         Name the statement to the name of the former leaf

@@ -132,7 +132,7 @@ class PyParse_Spec(DSL_Spec_i):
 
         return output
 
-    def setDebug(self, flag=None) -> bool:
+    def setDebug(self, *, flag=None) -> bool:
         if not DBF.debug_pyparsing_active_p():
             logging.warning("PyParsing Debug is not Active")
             return False

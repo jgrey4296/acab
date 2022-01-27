@@ -36,19 +36,19 @@ def DEFAULT_PRINTER_SPEC():
 
 def DEFAULT_PRINT_HANDLERS():
     return [
-        # Printers.NoOpPrinter().as_handler("TYPE_INSTANCE"),
-        Printers.AnnotationAwareValuePrinter().as_handler("ATOM"),
-        Printers.AnnotationPrinter().as_handler("ANNOTATIONS"),
-        Printers.BasicSentenceAwarePrinter().as_handler("SENTENCE"),
-        Printers.ConfigBackedSymbolPrinter().as_handler("SYMBOL"),
-        Printers.ConstraintPrinter().as_handler("CONSTRAINT"),
-        Printers.ExplicitContainerPrinter().as_handler("CONTAINER"),
-        Printers.ImplicitContainerPrinter().as_handler("IMPLICIT_CONTAINER"),
-        Printers.ModalPrinter().as_handler("MODAL"),
-        Printers.ProductionComponentPrinter().as_handler("COMPONENT"),
-        Printers.SimpleTypePrinter().as_handler("TYPE_INSTANCE"),
-        Printers.StructurePrinter().as_handler("STRUCTURE"),
-        Printers.TagPrinter().as_handler("TAGS"),
+        # Printers.NoOpPrinter().as_handler(signal="TYPE_INSTANCE"),
+        Printers.AnnotationAwareValuePrinter().as_handler(signal="ATOM"),
+        Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
+        Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
+        Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
+        Printers.ConstraintPrinter().as_handler(signal="CONSTRAINT"),
+        Printers.ExplicitContainerPrinter().as_handler(signal="CONTAINER"),
+        Printers.ImplicitContainerPrinter().as_handler(signal="IMPLICIT_CONTAINER"),
+        Printers.ModalPrinter().as_handler(signal="MODAL"),
+        Printers.ProductionComponentPrinter().as_handler(signal="COMPONENT"),
+        Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
+        Printers.StructurePrinter().as_handler(signal="STRUCTURE"),
+        Printers.TagPrinter().as_handler(signal="TAGS"),
     ]
 
 def DEFAULT_PRINTER():

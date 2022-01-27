@@ -96,7 +96,7 @@ class AcabNode(DI.Node_i):
     def name(self):
         return str(self.value)
 
-    def add(self, node:Node, key:str=None) -> Node:
+    def add(self, node:Node, *, key:str=None) -> Node:
         """ Add a node as a child of this node
         mutate object
         """
@@ -179,7 +179,7 @@ class AcabNode(DI.Node_i):
         return Sentence.build(path)
 
 
-    def _default_setup(self, path: [Node], data: Dict[Any,Any], context: Dict[Any,Any]):
+    def _default_setup(self, path: [Node], *, data: Dict[Any,Any], context: Dict[Any,Any]):
         """ Called by a Semantics upon creation of a new node """
         pass
     def _update_node(self, path, data, context):

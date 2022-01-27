@@ -30,7 +30,7 @@ class QueryAbstraction(SI.StatementSemantics_i):
         return (isinstance(instruction, Instr.ProductionContainer) and
                 all([DS.QUERY in x[-1].data for x in instruction.clauses]))
 
-    def __call__(self, instruction, semSys, ctxs=None, data=None):
+    def __call__(self, instruction, semSys, *, ctxs=None, data=None):
         query = instruction
         # Get the default dependent semantics
         spec = semSys.lookup()
@@ -46,7 +46,7 @@ class QueryPlusAbstraction(SI.StatementSemantics_i):
         return (isinstance(instruction, Instr.ProductionContainer) and
                 all([DS.QUERY in x[-1].data for x in instruction.clauses]))
 
-    def __call__(self, instruction, semSys, ctxs=None, data=None):
+    def __call__(self, instruction, semSys, *, ctxs=None, data=None):
         query = instruction
         for clause in query.clauses:
             spec   = semSys.lookup(clause)
@@ -64,7 +64,7 @@ class TransformAbstraction(SI.StatementSemantics_i):
         return (isinstance(instruction, Instr.ProductionContainer) and
                 all([isinstance(x, Instr.ProductionComponent) for x in instruction.clauses]))
 
-    def __call__(self, instruction, semSys, ctxs=None, data=None):
+    def __call__(self, instruction, semSys, *, ctxs=None, data=None):
         # Note: run *all* the transform clauses at once
         operators = ctxs._operators
         transform =  instruction
@@ -90,7 +90,7 @@ class ActionAbstraction(SI.StatementSemantics_i):
         return (isinstance(instruction, Instr.ProductionContainer) and
                 all([isinstance(x, Instr.ProductionComponent) for x in instruction.clauses]))
 
-    def __call__(self, instruction, semSys, ctxs=None, data=None):
+    def __call__(self, instruction, semSys, *, ctxs=None, data=None):
         operators = ctxs._operators
         action    = instruction
 
@@ -119,7 +119,7 @@ class AtomicRuleAbstraction(SI.StatementSemantics_i):
 
 
     @RunInSubCtxSet
-    def __call__(self, instruction, semsys, ctxs=None, data=None):
+    def __call__(self, instruction, semsys, *, ctxs=None, data=None):
         """ Rule Logic, returns action proposals """
         # TODO handle rule arguments
         rule = instruction
@@ -145,7 +145,7 @@ class ProxyRuleAbstraction(SI.StatementSemantics_i):
                 DS.QUERY_COMPONENT in instruction and
                 DS.ACTION_COMPONENT in instruction)
 
-    def __call__(self, instruction, semsys, ctxs=None, data=None):
+    def __call__(self, instruction, semsys, *, ctxs=None, data=None):
         if instruction in ctxs._named_sets:
             subctx = ctxs[instruction]
             self.run_continuations(instruction, semsys, ctxs=subctx)
@@ -155,7 +155,7 @@ class ProxyRuleAbstraction(SI.StatementSemantics_i):
 
 
     @RunInSubCtxSet
-    def run_query(self, instruction, semsys, ctxs=None, data=None):
+    def run_query(self, instruction, semsys, *, ctxs=None, data=None):
         logging.debug("Running Proxy Rule Queries")
         rule = instruction
 
@@ -168,7 +168,7 @@ class ProxyRuleAbstraction(SI.StatementSemantics_i):
 
         ctxs.build_named_set(instruction, [x.uuid for x in ctxs.active_list()])
 
-    def run_continuations(self, instruction, semsys, ctxs=None, data=None):
+    def run_continuations(self, instruction, semsys, *, ctxs=None, data=None):
         logging.debug("Running Proxy Rule Continuations")
 
         if DS.TRANSFORM_COMPONENT in instruction:
@@ -186,7 +186,7 @@ class ContainerAbstraction(SI.StatementSemantics_i):
         return isinstance(instruction, Instr.ProductionContainer)
 
 
-    def __call__(self, instruction, semsys, ctxs=None, data=None):
+    def __call__(self, instruction, semsys, *, ctxs=None, data=None):
         """ Apply the clauses in one move """
         for x in instruction.clauses:
             ctxs = semsys(x, ctxs=ctxs)

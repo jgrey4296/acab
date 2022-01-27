@@ -241,7 +241,7 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i):
         # TODO add sugar names from config
         return ContextSet(_operators=instance)
 
-    def subctx(self, selection:Union[int, List[Union[CtxIns, UUID]]]=None, val_binds:Dict[str,Value]=None, node_binds:Dict[str, Node]=None) -> CtxSet:
+    def subctx(self, selection:Union[int, List[Union[CtxIns, UUID]]]=None, *, val_binds:Dict[str,Value]=None, node_binds:Dict[str, Node]=None) -> CtxSet:
         """
         Subctx the given instances,
         *and* bind the given data as part of that subctx.
@@ -275,7 +275,7 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i):
                             _active=selection)
 
         # register merge of subctx into self (controllable param)
-        self.delay(self.delayed_e.MERGE, subctx)
+        self.delay(self.delayed_e.MERGE, ctxIns=subctx)
         return subctx
 
     def __post_init__(self):

@@ -184,10 +184,10 @@ class StatementSemanticTests(unittest.TestCase):
         default_spec  = BasicSemanticSystem.Spec(DEFAULT_HANDLER_SIGNAL).spec_from(StatementSemantics_i)
         all_specs     = default.DEFAULT_SPECS() + [default_spec]
         # Semantics
-        transform_sem = ASem.TransformAbstraction().as_handler(TRANSFORM_SEM_HINT)
-        action_sem    = ASem.ActionAbstraction().as_handler(ACTION_SEM_HINT)
-        stub_sem      = StubAbsSemantic().as_handler(DEFAULT_HANDLER_SIGNAL)
-        con_sem        = ASem.ContainerAbstraction().as_handler("CONTAINER")
+        transform_sem = ASem.TransformAbstraction().as_handler(signal=TRANSFORM_SEM_HINT)
+        action_sem    = ASem.ActionAbstraction().as_handler(signal=ACTION_SEM_HINT)
+        stub_sem      = StubAbsSemantic().as_handler(signal=DEFAULT_HANDLER_SIGNAL)
+        con_sem        = ASem.ContainerAbstraction().as_handler(signal="CONTAINER")
 
         semSys        = BasicSemanticSystem(init_specs=all_specs,
                                             init_handlers=[transform_sem,
@@ -251,16 +251,16 @@ class StatementSemanticTests(unittest.TestCase):
             return None
 
         # Build Semantics
-        node_sem     = BasicNodeSemantics().as_handler("atom")
-        trie_sem     = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(DEFAULT_HANDLER_SIGNAL)])
-        trie_handler = trie_sem.as_handler("trie", struct=BasicNodeStruct.build_default())
+        node_sem     = BasicNodeSemantics().as_handler(signal="atom")
+        trie_sem     = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_handler = trie_sem.as_handler(signal="trie", struct=BasicNodeStruct.build_default())
 
 
-        query_sem   = ASem.QueryAbstraction().as_handler(QUERY_SEM_HINT)
-        action_sem  = ASem.ActionAbstraction().as_handler(ACTION_SEM_HINT)
-        rule_sem    = ASem.AtomicRuleAbstraction().as_handler(RULE_SEM_HINT)
-        trans_sem   = ASem.TransformAbstraction().as_handler(TRANSFORM_SEM_HINT)
-        cont_sem    = ASem.ContainerAbstraction().as_handler("CONTAINER")
+        query_sem   = ASem.QueryAbstraction().as_handler(signal=QUERY_SEM_HINT)
+        action_sem  = ASem.ActionAbstraction().as_handler(signal=ACTION_SEM_HINT)
+        rule_sem    = ASem.AtomicRuleAbstraction().as_handler(signal=RULE_SEM_HINT)
+        trans_sem   = ASem.TransformAbstraction().as_handler(signal=TRANSFORM_SEM_HINT)
+        cont_sem    = ASem.ContainerAbstraction().as_handler(signal="CONTAINER")
 
         semSys      = BasicSemanticSystem(init_specs=default.DEFAULT_SPECS(),
                                           init_handlers=[cont_sem,
@@ -270,7 +270,7 @@ class StatementSemanticTests(unittest.TestCase):
                                                          trans_sem,
                                                          node_sem,
                                                          trie_handler,
-                                                         trie_handler.as_handler(DEFAULT_HANDLER_SIGNAL)
+                                                         trie_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)
                                                          ])
 
         # Setup operators in context
@@ -333,16 +333,16 @@ class StatementSemanticTests(unittest.TestCase):
             return None
         #
         # Build Semantics
-        node_sem    = BasicNodeSemantics().as_handler("atom")
-        trie_sem    = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(DEFAULT_HANDLER_SIGNAL)])
-        trie_handler= trie_sem.as_handler("trie",
+        node_sem    = BasicNodeSemantics().as_handler(signal="atom")
+        trie_sem    = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_handler= trie_sem.as_handler(signal="trie",
                                           struct=BasicNodeStruct.build_default())
 
-        query_sem   = ASem.QueryAbstraction().as_handler(QUERY_SEM_HINT)
-        action_sem  = ASem.ActionAbstraction().as_handler(ACTION_SEM_HINT)
-        trans_sem   = ASem.TransformAbstraction().as_handler(TRANSFORM_SEM_HINT)
+        query_sem   = ASem.QueryAbstraction().as_handler(signal=QUERY_SEM_HINT)
+        action_sem  = ASem.ActionAbstraction().as_handler(signal=ACTION_SEM_HINT)
+        trans_sem   = ASem.TransformAbstraction().as_handler(signal=TRANSFORM_SEM_HINT)
         # THIS IS THE MAJOR CHANGE OF THIS TEST:
-        rule_sem    = ASem.ProxyRuleAbstraction().as_handler(RULE_SEM_HINT)
+        rule_sem    = ASem.ProxyRuleAbstraction().as_handler(signal=RULE_SEM_HINT)
 
         semSys      = BasicSemanticSystem(init_specs=default.DEFAULT_SPECS(),
                                           init_handlers=[query_sem,
@@ -351,7 +351,7 @@ class StatementSemanticTests(unittest.TestCase):
                                                          rule_sem,
                                                          node_sem,
                                                          trie_handler,
-                                                         trie_handler.as_handler(DEFAULT_HANDLER_SIGNAL)
+                                                         trie_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)
                                                          ])
 
         # Setup operators in context

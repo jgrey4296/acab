@@ -11,7 +11,7 @@ config = GET()
 
 MODULE_SPLIT_REG = re.compile(config.prepare("Parse.Patterns", "MODULE_SPLIT_REG")())
 
-def applicable(val:Any, base_type:type, as_handler=False) -> bool:
+def applicable(val:Any, base_type:type, *, as_handler=False) -> bool:
     """
     Test whether an input is of an expected type instance, including subclasses,
     but *not* the type itself.

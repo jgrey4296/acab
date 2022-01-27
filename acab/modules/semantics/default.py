@@ -47,14 +47,14 @@ def DEFAULT_SPECS():
 def DEFAULT_HANDLERS():
     node_handler, trie_handler = DEFAULT_TRIE()
 
-    query_handler   = ASem.QueryAbstraction().as_handler(QUERY_SEM_HINT)
-    action_handler  = ASem.ActionAbstraction().as_handler(ACTION_SEM_HINT)
-    rule_handler    = ASem.AtomicRuleAbstraction().as_handler(RULE_SEM_HINT)
-    trans_handler   = ASem.TransformAbstraction().as_handler(TRANSFORM_SEM_HINT)
-    cont_handler    = ASem.ContainerAbstraction().as_handler("CONTAINER")
+    query_handler   = ASem.QueryAbstraction().as_handler(signal=QUERY_SEM_HINT)
+    action_handler  = ASem.ActionAbstraction().as_handler(signal=ACTION_SEM_HINT)
+    rule_handler    = ASem.AtomicRuleAbstraction().as_handler(signal=RULE_SEM_HINT)
+    trans_handler   = ASem.TransformAbstraction().as_handler(signal=TRANSFORM_SEM_HINT)
+    cont_handler    = ASem.ContainerAbstraction().as_handler(signal="CONTAINER")
 
     return [cont_handler, query_handler, action_handler, rule_handler,
-            trans_handler, node_handler, trie_handler, trie_handler.as_handler(DEFAULT_HANDLER_SIGNAL)]
+            trans_handler, node_handler, trie_handler, trie_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)]
 
 def default_handlers_from_specs():
     node_spec, trie_spec       = DEFAULT_TRIE_SPEC()
@@ -68,7 +68,7 @@ def default_handlers_from_specs():
         cont_spec.on(ASem.ContainerAbstraction()),
         node_handler,
         trie_handler,
-        trie_handler.as_handler(DEFAULT_HANDLER_SIGNAL)
+        trie_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)
         ]
 
 # Build the default semantics
@@ -78,21 +78,21 @@ def DEFAULT_SEMANTICS():
 
 
 def EXLO_SEMANTICS():
-    node_handler = ExclusionNodeSemantics().as_handler("atom")
-    trie_sem     = BreadthTrieSemantics(init_handlers=[node_handler.as_handler(DEFAULT_HANDLER_SIGNAL)])
+    node_handler = ExclusionNodeSemantics().as_handler(signal="atom")
+    trie_sem     = BreadthTrieSemantics(init_handlers=[node_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
 
-    trie_handler = trie_sem.as_handler("trie",
+    trie_handler = trie_sem.as_handler(signal="trie",
                                        struct=BasicNodeStruct.build_default(),
                                        flags=[HandlerSpec.flag_e.OVERRIDE])
 
     handlers = DEFAULT_HANDLERS()
-    handlers += [node_handler, trie_handler, trie_handler.as_handler(DEFAULT_HANDLER_SIGNAL)]
+    handlers += [node_handler, trie_handler, trie_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)]
 
     return BasicSemanticSystem(init_specs=DEFAULT_SPECS(),
                                init_handlers=handlers)
 
 def EXLO_PROXY_SEMANTICS():
     exlo = EXLO_SEMANTICS()
-    rule_sem  = ASem.ProxyRuleAbstraction().as_handler(RULE_SEM_HINT,
+    rule_sem  = ASem.ProxyRuleAbstraction().as_handler(signal=RULE_SEM_HINT,
                                                        flags=[HandlerSpec.flag_e.OVERRIDE])
     return exlo.register_handler(rule_sem)

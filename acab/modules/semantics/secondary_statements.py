@@ -29,7 +29,7 @@ class LayerAbstraction(SI.StatementSemantics_i):
     def verify(self, instruction) -> bool:
         return False
 
-    def __call__(self, instruction, semsys, ctxs=None, data=None):
+    def __call__(self, instruction, semsys, *, ctxs=None, data=None):
         """ Run a layer, returning actions to perform """
         layer = instruction
 
@@ -48,7 +48,7 @@ class LayerAbstraction(SI.StatementSemantics_i):
 
 class AgendaAbstraction(SI.StatementSemantics_i):
     """ A Layer-specific transform, to run operators on ctxs """
-    def __call__(self, instruction, semsys, ctxs=None, data=None):
+    def __call__(self, instruction, semsys, *, ctxs=None, data=None):
         """ Runs an agenda rule on activated rules """
         # setup
 
@@ -63,7 +63,7 @@ class AgendaAbstraction(SI.StatementSemantics_i):
 class AtomicPipelineAbstraction(SI.StatementSemantics_i):
     """ A Means of sequencing layers, run all layers per tick """
 
-    def __call__(self, instruction, semsys, ctxs=None, data=None):
+    def __call__(self, instruction, semsys, *, ctxs=None, data=None):
         """ Run this pipeline on the given engine for a tick """
         # Setup
         pipeline = instruction
@@ -77,7 +77,7 @@ class AtomicPipelineAbstraction(SI.StatementSemantics_i):
 class TemporalPipelineAbstraction(SI.StatementSemantics_i):
     """ A Means of sequencing layers, one layer per tick """
 
-    def __call__(self, instruction, semsys, ctxs=None, data=None):
+    def __call__(self, instruction, semsys, *, ctxs=None, data=None):
         """ Run this pipeline on the given engine for a tick """
         # Setup
         pipeline = instruction

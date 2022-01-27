@@ -43,7 +43,7 @@ class ConstraintCollection(CtxInt.Constraint_i):
     operators       : ClassVar[CtxIns]         = None
 
     @staticmethod
-    def build(word, operators=None, sieve_fns:List[Callable]=None):
+    def build(word, *, operators=None, sieve_fns:List[Callable]=None):
         """ Run the sieve on a word to generate the test set groupings """
         if operators is not None:
             ConstraintCollection.operators = operators
@@ -82,7 +82,7 @@ class ConstraintCollection(CtxInt.Constraint_i):
         if "name" in self._test_mappings:
             self.__run_name(node, ctx)
 
-    def _get(self, val, stack=None):
+    def _get(self, val, *, stack=None):
         """
         Retrieve a value from a stack of a context instance.
         stack auto-includes CC's operators ctx inst.
@@ -117,19 +117,19 @@ class ConstraintCollection(CtxInt.Constraint_i):
         test_trios = []
         ctx_stack = [ctxInst]
         for test in self._test_mappings["beta"]:
-            op = self._get(test.op, ctx_stack)
-            params = [self._get(x, ctx_stack) for x in test.params]
+            op = self._get(test.op, stack=ctx_stack)
+            params = [self._get(x, stack=ctx_stack) for x in test.params]
             trio   = (op, params, test.data)
             test_trios.append(trio)
 
-        val = self._get(node.value, ctx_stack)
+        val = self._get(node.value, stack=ctx_stack)
         results = [op(val, *pars, data=data) for op,pars,data in test_trios]
         if not all(results):
             raise ASErr.AcabSemanticTestFailure("Betas Failed", (node, self, ctxInst))
 
     def __run_substruct_tests(self, node, ctxInst):
         results = []
-        val = self._get(node.value, [ctxInst])
+        val = self._get(node.value, stack=[ctxInst])
         for test in self._test_mappings["sub_struct_tests"]:
             op = self._get(test.op)
             results.append(op(val, ctxInst, *test.params))
