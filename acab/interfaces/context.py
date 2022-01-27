@@ -37,7 +37,7 @@ class Constraint_i(metaclass=abc.ABCMeta):
     sieve         : ClassVar[List[Callable]]
 
     @staticmethod
-    def build(word, operators, sieve=None):
+    def build(word, operators, *, sieve=None):
         pass
 
     @abc.abstractmethod
@@ -64,7 +64,7 @@ class ContextSet_i(cABC.Hashable, cABC.Set):
         pass
 
     @abc.abstractmethod
-    def active_list(self, clear=False):
+    def active_list(self, *, clear=False):
         pass
     @abc.abstractmethod
     def failed_list(self):

@@ -64,7 +64,7 @@ class AcabEngine_i(cABC.Callable, cABC.Sequence, AcabReducible):
 
         return True
 
-    def save_file(self, filename:str, printer:PrintSystem_i=None):
+    def save_file(self, filename:str, *, printer:PrintSystem_i=None):
         """ Dump the content of the kb to a file to reload later """
         assert(exists(split(abspath(expanduser(filename)))[0]))
         if printer is None:
@@ -92,7 +92,7 @@ class AcabEngine_i(cABC.Callable, cABC.Sequence, AcabReducible):
         """
         return self.semantics.to_sentences()
 
-    def pprint(self, target=None) -> str:
+    def pprint(self, *, target=None) -> str:
         """ Pass a value to the engine's printer """
         sens = target
         if sens is None:

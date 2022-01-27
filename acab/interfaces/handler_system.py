@@ -183,7 +183,7 @@ class HandlerSystem_i(cABC.MutableMapping, cABC.Callable):
 
         # TODO: Then try to register any loose handlers
 
-    def _register_data(self, data: Dict[str, Any], signal:str=None):
+    def _register_data(self, data: Dict[str, Any], *, signal:str=None):
         """
         Register additional data that abstractions may access
         """
@@ -315,7 +315,7 @@ class HandlerSpec(cABC.MutableSequence, cABC.Callable):
         return self
 
     # Create Handler ##########################################################
-    def on(self, target=None, **kwargs) -> Handler:
+    def on(self, *, target=None, **kwargs) -> Handler:
         """
         basicly create a Handler.
         The inverse decorator of `from`.
@@ -341,7 +341,7 @@ class HandlerSpec(cABC.MutableSequence, cABC.Callable):
         if self.flag_e.OVERRIDE in handler.flags and handler.func is not None:
             self.handlers = [handler]
         elif handler.func is not None:
-            self.check_api(handler.func)
+            self.check_api(func=handler.func)
             self.handlers.append(handler)
 
         if self.handler_limit is None:
@@ -379,7 +379,7 @@ class HandlerSpec(cABC.MutableSequence, cABC.Callable):
             return False
         return any([x.verify(instruction) for x in self.handlers])
 
-    def check_api(self, func=None, data=None, struct=None):
+    def check_api(self, *, func=None, data=None, struct=None):
         if func and self.func_api:
             self.check_func_api(func)
         elif data and self.data_api and any([x not in self.data_api for x in data]):
@@ -416,7 +416,7 @@ class HandlerComponent_i:
     def verify(self, instruction) -> bool:
         return False
 
-    def as_handler(self, signal=None, struct=None, flags=None):
+    def as_handler(self, *, signal=None, struct=None, flags=None):
         assert(signal or self.signal), breakpoint()
         return Handler(signal or self.signal,
                        func=self,
@@ -468,7 +468,7 @@ class Handler(cABC.Callable, cABC.Iterable):
 
         return f"Handler({sig_s}: {func_name}: {struct_name})"
 
-    def as_handler(self, signal=None, struct=None, flags=None):
+    def as_handler(self, *, signal=None, struct=None, flags=None):
         return Handler(signal or self.signal,
                        func=self.func,
                        struct=struct or self.struct,

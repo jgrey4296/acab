@@ -80,7 +80,7 @@ class PrintSystem_i(HandlerSystem_i):
                 data.update(current.data)
                 current = current.value
 
-            if spec.check_api(PrintSemantics_i):
+            if spec.check_api(func=PrintSemantics_i):
                 logging.debug(f"(Remain:{len(remaining):2}) Calling: {spec} : {current}")
                 handled = spec[0](current, top=self, data=data)
             else:
@@ -130,7 +130,7 @@ class PrintSemantics_i(HandlerComponent_i):
         return True
 
     @abc.abstractmethod
-    def __call__(self, to_print: Value_i, top:'PrintSystem_i'=None, data=None) -> List[Union[str,Value_i]]:
+    def __call__(self, to_print: Value_i, *, top:'PrintSystem_i'=None, data=None) -> List[Union[str,Value_i]]:
         pass
 
 # For Modules #################################################################

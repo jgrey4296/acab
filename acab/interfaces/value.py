@@ -47,11 +47,11 @@ class Value_i(cABC.Hashable):
         pass
 
     @abc.abstractmethod
-    def apply_params(self, params, data=None) -> Value:
+    def apply_params(self, params, *, data=None) -> Value:
         pass
 
     @abc.abstractmethod
-    def apply_tags(self, tags, data=None) -> Value:
+    def apply_tags(self, tags, *, data=None) -> Value:
         pass
 
 

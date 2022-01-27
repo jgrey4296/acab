@@ -77,7 +77,7 @@ class SemanticSystem_i(HandlerSystem_i, AcabReducible):
             self._operator_cache = ctxset._operators.copy()
 
         # Auto remove the empty context:
-        ctxset.delay(ctxset.delayed_e.DEACTIVATE, ctxset[0].uuid)
+        ctxset.delay(ctxset.delayed_e.DEACTIVATE, ctxIns=ctxset[0].uuid)
 
         return ctxset
 
@@ -109,22 +109,22 @@ class StructureSemantics_i(HandlerComponent_i, SemanticSystem_i):
     def __repr__(self):
         return f"{self.__class__.__name__}"
 
-    def __call__(self, sen, struct, ctxs=None, data=None) -> CtxSet:
+    def __call__(self, sen, struct, *, ctxs=None, data=None) -> CtxSet:
         assert(isinstance(sen, Sentence_i))
         if QUERY in sen[-1].data and bool(sen[-1].data[QUERY]):
             return self.query(sen, struct, ctxs=ctxs, data=data)
 
         return self.insert(sen, struct, ctxs=ctxs, data=data)
 
-    def verify(self, instruction:Instruction, data=None, ctxs=None):
+    def verify(self, instruction:Instruction, *, data=None, ctxs=None):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def insert(self, struct:Structure, sen:Sentence, data):
+    def insert(self, struct:Structure, sen:Sentence, *, data):
         pass
 
     @abc.abstractmethod
-    def query(self, struct:Structure, sen:Sentence, data):
+    def query(self, struct:Structure, sen:Sentence, *, data):
         pass
 
     @abc.abstractmethod
@@ -144,33 +144,33 @@ class ValueSemantics_i(HandlerComponent_i):
         return f"{self.__class__.__name__}"
 
     @abc.abstractmethod
-    def make(self, val:Value, data:Dict[Any,Any]=None) -> Node:
+    def make(self, val:Value, *, data:Dict[Any,Any]=None) -> Node:
         """ Take a value, and return a node, which has been up'd """
         pass
     @abc.abstractmethod
-    def up(self, node:Node, data=None) -> Node:
+    def up(self, node:Node, *, data=None) -> Node:
         """ Take ANY node, and add what is needed
         to use for this semantics """
         pass
 
-    def down(self, node:Node, data=None) -> Value:
+    def down(self, node:Node, *, data=None) -> Value:
         return node.value
 
     @abc.abstractmethod
-    def access(self, node:Node, term:Value, data:Dict[Any,Any]=None) -> List[Node]:
+    def access(self, node:Node, term:Value, *, data:Dict[Any,Any]=None) -> List[Node]:
         """ Can node A reach the given term """
         pass
 
     @abc.abstractmethod
-    def insert(self, node:Node, new_node:Node, data:Dict[Any,Any]=None) -> Node:
+    def insert(self, node:Node, new_node:Node, *, data:Dict[Any,Any]=None) -> Node:
         pass
 
     @abc.abstractmethod
-    def remove(self, node:Node, term:Value, data:Dict[Any,Any]=None) -> Node:
+    def remove(self, node:Node, term:Value, *, data:Dict[Any,Any]=None) -> Node:
         pass
 
 
-    def update(self, node:Node, term:Value, data:Dict[Any, Any]=None):
+    def update(self, node:Node, term:Value, *, data:Dict[Any, Any]=None):
         # TODO
         pass
 
@@ -190,7 +190,7 @@ class StatementSemantics_i(HandlerComponent_i):
         pass
 
     @abc.abstractmethod
-    def __call__(self, instruction, semSys, ctxs=None, data=None) -> CtxSet:
+    def __call__(self, instruction, semSys, *, ctxs=None, data=None) -> CtxSet:
         pass
 
 

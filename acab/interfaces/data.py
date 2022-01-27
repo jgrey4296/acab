@@ -30,7 +30,7 @@ class Node_i(cABC.MutableMapping, cABC.Hashable):
 
 
     @abc.abstractmethod
-    def _default_setup(self, path: [Node], data: Dict[Any,Any], context: Dict[Any,Any]):
+    def _default_setup(self, *, path: [Node], data: Dict[Any,Any], context: Dict[Any,Any]):
         """ Called by a Semantics upon creation of a new node """
         pass
 

@@ -60,7 +60,7 @@ class TestHandlerSystem(unittest.TestCase):
     def test_contains_handler_signal(self):
         basic = BasicHandlerSystem()
         spec  = HS.HandlerSpec("a_signal")
-        handler = spec.on(id)
+        handler = spec.on(target=id)
 
         self.assertFalse(handler in basic)
         basic.register(spec)
@@ -179,15 +179,15 @@ class TestHandlerSystem(unittest.TestCase):
 
     def test_spec_call(self):
         spec = HS.HandlerSpec("a_signal")
-        handler = spec.on(lambda *args, **kwargs: 2)
+        handler = spec.on(target=lambda *args, **kwargs: 2)
         spec.register(handler)
 
         self.assertEqual(spec(), 2)
 
     def test_spec_call_multi(self):
         spec = HS.HandlerSpec("a_signal")
-        handler = spec.on(lambda *a, **k: 2)
-        handler2 = spec.on(lambda *a, **k: 4)
+        handler = spec.on(target=lambda *a, **k: 2)
+        handler2 = spec.on(target=lambda *a, **k: 4)
         spec.register(handler)
         spec.register(handler2)
 
@@ -195,7 +195,7 @@ class TestHandlerSystem(unittest.TestCase):
 
     def test_system_call_explicit(self):
         basic   = BasicHandlerSystem(init_specs=[HS.HandlerSpec("a_signal")])
-        handler = basic['a_signal'].on(lambda *a, **k: 2)
+        handler = basic['a_signal'].on(target=lambda *a, **k: 2)
         basic.register(handler)
 
         self.assertEqual(basic['a_signal'](), 2)
@@ -207,7 +207,7 @@ class TestHandlerSystem(unittest.TestCase):
 
     def test_lookup_not_default(self):
         basic = BasicHandlerSystem(init_specs=[HS.HandlerSpec("a_signal")])
-        basic.register(basic['a_signal'].on(id))
+        basic.register(basic['a_signal'].on(target=id))
 
         spec = basic.lookup("a_signal")
         self.assertEqual(spec, basic["a_signal"])
@@ -215,8 +215,8 @@ class TestHandlerSystem(unittest.TestCase):
     def test_lookup_not_default_2(self):
         basic = BasicHandlerSystem(init_specs=[HS.HandlerSpec("a_signal"),
                                                HS.HandlerSpec('diff_signal')])
-        basic.register(basic['a_signal'].on(id))
-        basic.register(basic['diff_signal'].on(id))
+        basic.register(basic['a_signal'].on(target=id))
+        basic.register(basic['diff_signal'].on(target=id))
 
         spec = basic.lookup("diff_signal")
         self.assertEqual(spec, basic["diff_signal"])
@@ -225,7 +225,7 @@ class TestHandlerSystem(unittest.TestCase):
     def test_call_with_struct(self):
         spec = HS.HandlerSpec("a_signal")
         handler = spec.on(struct={})
-        handler2 = spec.on(lambda *a, **k: a[0].update({'a': 5}))
+        handler2 = spec.on(target=lambda *a, **k: a[0].update({'a': 5}))
 
         spec.register(handler)
         spec.register(handler2)
