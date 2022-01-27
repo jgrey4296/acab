@@ -18,8 +18,8 @@ from acab.core.parsing import parsers as PU
 from acab.error.parse import AcabParseException
 
 from acab.modules.analysis.typing import util as TU
-from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition
-from acab.modules.analysis.typing.values.type_definition import TypeDefinition
+from acab.modules.analysis.typing.values.definition import OperatorDefinition
+from acab.modules.analysis.typing.values.definition import TypeDefinition
 from acab.modules.parsing.exlo FactParser as FP
 from acab.core.semantics.print_semantics import AcabPrintSemantics
 from acab.core.printing import default_handlers as DH

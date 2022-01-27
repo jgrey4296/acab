@@ -18,8 +18,8 @@ from acab.modules.analysis.typing import util as TU
 from acab.modules.analysis.typing.parsing import TypeDefParser as TD
 from acab.modules.analysis.typing.type_checker import TypeChecker
 from acab.modules.analysis.typing.module import TypingSpec
-from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition
-from acab.modules.analysis.typing.values.type_definition import TypeDefinition
+from acab.modules.analysis.typing.values.definition import OperatorDefinition
+from acab.modules.analysis.typing.values.definition import TypeDefinition
 
 from acab.modules.parsing.exlo.parsers import ActionParser as AP
 from acab.modules.parsing.exlo.parsers import TransformParser as TP

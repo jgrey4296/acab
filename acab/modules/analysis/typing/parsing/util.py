@@ -8,7 +8,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 from acab.core.config.config import AcabConfig
 from acab.core.data.value import Sentence
 from acab.modules.analysis.typing import util as TYU
-from acab.modules.analysis.typing.values.type_definition import (
+from acab.modules.analysis.typing.values.definition import (
     OperatorDefinition, SumTypeDefinition, TypeDefinition, TypeClass)
 
 from acab.core.parsing.annotation import ValueAnnotation

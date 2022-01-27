@@ -8,8 +8,6 @@ from acab import setup
 
 config = setup()
 
-import acab.modules.analysis.typing.simple_unify_fns as suf
-import acab.modules.analysis.typing.type_unify_fns as tuf
 from acab.core.data.acab_struct import AcabNode
 from acab.core.data.default_structure import BIND
 from acab.core.data.value import AcabValue, Sentence

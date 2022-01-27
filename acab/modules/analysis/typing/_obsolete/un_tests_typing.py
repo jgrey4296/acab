@@ -16,8 +16,8 @@ from acab.core.data.instruction import ProductionOperator, ProductionComponent
 from acab.modules.analysis.typing import exceptions as te
 from acab.modules.analysis.typing import util as TU
 from acab.modules.analysis.typing.type_checker import TypeChecker
-from acab.modules.analysis.typing.values.operator_definition import OperatorDefinition
-from acab.modules.analysis.typing.values.type_definition import TypeDefinition
+from acab.modules.analysis.typing.values.definition import OperatorDefinition
+from acab.modules.analysis.typing.values.definition import TypeDefinition
 
 from acab.modules.parsing.exlo.parsers import ActionParser as AP
 from acab.modules.parsing.exlo.parsers import FactParser as FP
