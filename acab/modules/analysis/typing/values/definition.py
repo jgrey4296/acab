@@ -39,9 +39,6 @@ class TypeDefinition(TypeStatement):
 
         self.data[TYPE_INSTANCE_S] = TYPE_DEFINITION
 
-    @property
-    def structure(self):
-        return self.value
 
     def __eq__(self, other):
         path_eq = self.path == other.path
@@ -58,6 +55,8 @@ class TypeDefinition(TypeStatement):
     def __len__(self):
         return len(self.structure)
 
+    def __repr__(self):
+        return f"<TypeDefinition {self.name} ({len(self.structure)})>"
 # TODO Factor these into typedef: ###############################################
 @dataclass(frozen=True)
 class SumTypeDefinition(TypeDefinition):
