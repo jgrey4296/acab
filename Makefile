@@ -50,6 +50,9 @@ repl:
 vrepl:
 	python acab/modules/repl/repl_main.py --config ./acab/__configs/default -v DEBUG
 
+repld:
+	python -X dev acab/modules/repl/repl_main.py --config ./acab/__configs/default
+
 re: repl
 vr: vrepl
 
