@@ -14,11 +14,9 @@ from acab.core.data.value import Sentence
 from acab.core.data.value import AcabValue
 from acab.core.parsing.annotation import ValueAnnotation
 from acab.core.parsing import parsers as PU
+from acab.core.data.default_structure import NEGATION
 
 import acab.modules.parsing.exlo.parsers.FactParser as FP
-
-NEGATION_S      = config.prepare("Parse.Structure", "NEGATION")()
-TYPE_INSTANCE_S = config.prepare("Parse.Structure", "TYPE_INSTANCE")()
 
 class Trie_Fact_Parser_Tests(unittest.TestCase):
 
@@ -101,12 +99,12 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
     def test_negated_sentence(self):
         result = FP.SENTENCE.parseString('~a.test!string')[0]
         self.assertIsInstance(result, Sentence)
-        self.assertTrue(result.data[NEGATION_S])
+        self.assertTrue(result.data[NEGATION])
 
     def test_positive_sentence(self):
         result = FP.SENTENCE.parseString('a.test!string')[0]
         self.assertIsInstance(result, Sentence)
-        self.assertFalse(result.data[NEGATION_S])
+        self.assertFalse(result.data[NEGATION])
 
     @unittest.skip("sentence macro is broken")
     def test_sentence_statement(self):

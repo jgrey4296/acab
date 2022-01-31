@@ -14,10 +14,11 @@ from acab.modules.parsing.exlo.parsers import ActionParser as AP
 from acab.modules.parsing.exlo.parsers import FactParser as FP
 from acab.modules.parsing.exlo.parsers import RuleParser as RP
 from acab.modules.parsing.exlo.parsers import QueryParser as QP
+from acab.core.data.default_structure import QUERY_COMPONENT, TRANSFORM_COMPONENT, ACTION_COMPONENT
 
-QUERY_V     = config.prepare("Structure.Components", "QUERY")()
-TRANSFORM_V = config.prepare("Structure.Components", "TRANSFORM")()
-ACTION_V    = config.prepare("Structure.Components", "ACTION")()
+QUERY_V     = QUERY_COMPONENT
+TRANSFORM_V = TRANSFORM_COMPONENT
+ACTION_V    = ACTION_COMPONENT
 
 class Trie_Rule_Parser_Tests(unittest.TestCase):
 
