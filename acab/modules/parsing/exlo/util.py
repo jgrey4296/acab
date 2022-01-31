@@ -2,12 +2,14 @@
 
 
 """
+import acab.core.data.default_structure as DS
 # pylint: disable=bad-whitespace,unnecessary-comprehension
 import pyparsing as pp
 from acab.core.config.config import AcabConfig
 from acab.core.data.default_structure import TYPE_BOTTOM_NAME as ATOM_V
 from acab.core.data.instruction import ProductionContainer
 from acab.core.data.value import AcabValue, Sentence
+from acab.core.parsing import default_symbols as DSym
 from acab.core.parsing.consts import CPAR, NG, OPAR, N
 from acab.core.parsing.parsers import MODAL
 from acab.error.parse import AcabParseException
@@ -33,23 +35,24 @@ VALUE_S           = config.prepare("Parse.Structure", "VALUE")()
 TYPE_INSTANCE_S   = config.prepare("Parse.Structure", "TYPE_INSTANCE")()
 
 # Core Components
-QUERY_COMPONENT     : str = config.prepare("Structure.Components", "QUERY")()
-TRANSFORM_COMPONENT : str = config.prepare("Structure.Components", "TRANSFORM")()
-ACTION_COMPONENT    : str = config.prepare("Structure.Components", "ACTION")()
+QUERY_COMPONENT     = DS.QUERY_COMPONENT
+TRANSFORM_COMPONENT = DS.TRANSFORM_COMPONENT
+ACTION_COMPONENT    = DS.ACTION_COMPONENT
 
 RULE_PRIM           : str = config.prepare("Type.Primitive", "RULE")()
-
-RULE_HEAD        = config.prepare("Aliases", "RULE")()
-QUERY_HEAD       = config.prepare("Aliases", "QUERY")()
-TRANSFORM_HEAD   = config.prepare("Aliases", "TRANSFORM")()
-ACTION_HEAD      = config.prepare("Aliases", "ACTION")()
-FACT_HEAD        = config.prepare("Aliases", "FACT")()
-AGENDA_HEAD      = config.prepare("Aliases", "AGENDA")()
-LAYER_HEAD       = config.prepare("Aliases", "LAYER")()
-PIPE_HEAD        = config.prepare("Aliases", "PIPE")()
-COLLAPSE_CONTEXT = config.prepare("Aliases", "CTX_COLLAPSE")()
 
 QUERY_SEM_HINT     = Sentence.build([config.prepare("SEMANTICS", "QUERY")()])
 ACTION_SEM_HINT    = Sentence.build([config.prepare("SEMANTICS", "ACTION")()])
 TRANSFORM_SEM_HINT = Sentence.build([config.prepare("SEMANTICS", "TRANSFORM")()])
 RULE_SEM_HINT      = Sentence.build([config.prepare("SEMANTICS", "RULE")()])
+
+RULE_HEAD        = DSym.AliasDict["RULE"]
+QUERY_HEAD       = DSym.AliasDict["QUERY"]
+TRANSFORM_HEAD   = DSym.AliasDict["TRANSFORM"]
+ACTION_HEAD      = DSym.AliasDict["ACTION"]
+FACT_HEAD        = DSym.AliasDict["FACT"]
+AGENDA_HEAD      = DSym.AliasDict["AGENDA"]
+LAYER_HEAD       = DSym.AliasDict["LAYER"]
+PIPE_HEAD        = DSym.AliasDict["PIPE"]
+COLLAPSE_CONTEXT = DSym.AliasDict["CTX_COLLAPSE"]
+
