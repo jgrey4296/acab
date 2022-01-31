@@ -14,7 +14,10 @@ from acab.error.base import AcabException
 
 @dataclass
 class AcabTypingException(AcabException):
-    pass
+
+    def __repr__(self):
+        return "<AcabTypingException>"
+
 
 @dataclass
 class AcabMiscTypingException(AcabException):

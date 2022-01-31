@@ -4,7 +4,7 @@ from os.path import (abspath, exists, expanduser, isdir, isfile, join, split,
                      splitext)
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
-                    Set, Tuple, TypeVar, Union, cast)
+                    Set, Tuple, TypeVar, cast)
 
 from acab.modules.engines.basic_engine import AcabBasicEngine
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser

@@ -22,19 +22,14 @@ import acab.modules.parsing.exlo.parsers.TransformParser as TP
 import acab.modules.printing.printers as Printers
 from acab.core.config.config import AcabConfig
 from acab.core.data.instruction import (ProductionComponent,
-                                                        ProductionContainer,
-                                                        ProductionOperator,
-                                                        ProductionStructure)
+                                        ProductionContainer,
+                                        ProductionOperator,
+                                        ProductionStructure)
 from acab.core.data.value import Instruction, AcabValue, Sentence
 from acab.interfaces.handler_system import Handler
 from acab.modules.printing.basic_printer import BasicPrinter
 from acab.modules.printing import default
-
-NEGATION_S        = config.prepare("Value.Structure", "NEGATION")()
-QUERY_S           = config.prepare("Value.Structure", "QUERY")()
-BIND_S            = config.prepare("Value.Structure", "BIND")()
-AT_BIND_S         = config.prepare("Value.Structure", "AT_BIND")()
-TYPE_INSTANCE_S   = config.prepare("Value.Structure", "TYPE_INSTANCE")()
+from acab.core.data.default_structure import NEGATION, QUERY, BIND, AT_BIND, TYPE_INSTANCE
 
 NEGATION_SYMBOL_S = config.prepare("Symbols", "NEGATION")()
 ANON_VALUE_S      = config.prepare("Symbols", "ANON_VALUE")()

@@ -3,7 +3,7 @@ import logging as root_logger
 from collections import defaultdict
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
-                    Set, Tuple, TypeVar, Union, cast)
+                    Tuple, TypeVar, Union, cast)
 
 logging = root_logger.getLogger(__name__)
 

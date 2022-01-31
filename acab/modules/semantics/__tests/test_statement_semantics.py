@@ -39,21 +39,22 @@ from acab.modules.structures.trie.semantics import BreadthTrieSemantics
 from acab.modules.semantics.values import (BasicNodeSemantics,
                                            ExclusionNodeSemantics)
 from acab.modules.semantics import default
+from acab.core.data import default_structure as DS
 
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 
 EXOP         = config.prepare("MODAL", "exop")()
 EXOP_enum    = config.prepare(EXOP, as_enum=True)()
 
-NEGATION_V      = config.prepare("Value.Structure", "NEGATION")()
-BIND_V          = config.prepare("Value.Structure", "BIND")()
-CONSTRAINT_V    = config.prepare("Value.Structure", "CONSTRAINT")()
-SEMANTIC_HINT_V = config.prepare("Value.Structure", "SEMANTIC_HINT")()
-QUERY_V         = config.prepare("Value.Structure", "QUERY")()
+NEGATION_V      = DS.NEGATION
+BIND_V          = DS.BIND
+CONSTRAINT_V    = DS.CONSTRAINT
+SEMANTIC_HINT_V = DS.SEMANTIC_HINT
+QUERY_V         = DS.QUERY
 
-QUERY_C      = config.prepare("Structure.Components", "QUERY")()
-TRANSFORM_C  = config.prepare("Structure.Components", "TRANSFORM")()
-ACTION_C     = config.prepare("Structure.Components", "ACTION")()
+QUERY_C      = DS.QUERY_COMPONENT
+TRANSFORM_C  = DS.TRANSFORM_COMPONENT
+ACTION_C     = DS.ACTION_COMPONENT
 
 
 QUERY_SEM_HINT     = Sentence.build([config.prepare("SEMANTICS", "QUERY")()])

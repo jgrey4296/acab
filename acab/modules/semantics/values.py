@@ -17,10 +17,6 @@ Node  = AcabNode
 T     = TypeVar('T')
 
 config       = AcabConfig.Get()
-NEGATION_S   = config.prepare("Value.Structure", "NEGATION")()
-CONSTRAINT_S = config.prepare("Value.Structure", "CONSTRAINT")()
-AT_BIND_S    = config.prepare("Value.Structure", "AT_BIND")()
-BIND         = config.prepare("Value.Structure", "BIND")()
 
 CTX_OP = Enum("ctx", "collect_var")
 # TODO replace operator with specific modal name

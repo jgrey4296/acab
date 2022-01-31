@@ -141,7 +141,7 @@ class AnnotationPrinter(PrintSemantics_i):
         # Pretty Print annotations
         annotations_pp = []
         for annotation in annotations_in_value:
-            signal = f"{annotation}"
+            signal = annotation # f"{annotation}"
             if signal in top:
                 annotations_pp.append(top.pprint(top.override(signal, value)))
             else:

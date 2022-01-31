@@ -10,6 +10,9 @@ from acab.interfaces.printing import PrintSystem_i
 from acab.interfaces.value import (Sentence_i, Value_i)
 from acab.core.data.value import Instruction
 from acab.core.data.default_structure import SEMANTIC_HINT
+from acab.core.config.config import AcabConfig
+
+config = AcabConfig.Get()
 
 
 class BasicPrinter(PrintSystem_i):

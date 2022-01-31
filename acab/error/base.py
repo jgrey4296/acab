@@ -8,7 +8,9 @@ from dataclasses import dataclass, field, InitVar
 @dataclass
 class AcabException(Exception):
     """ The base exception class for the Acab package """
-    pass
+
+    def __repr__(self):
+        return "<AcabException>"
 
 @dataclass
 class AcabBasicException(AcabException):

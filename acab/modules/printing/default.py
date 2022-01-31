@@ -1,11 +1,11 @@
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
+from enum import Enum
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
 
-from acab.interfaces.printing import PrintSemantics_i
-from acab.modules.printing.basic_printer import BasicPrinter
 import acab.modules.printing.printers as Printers
+from acab.interfaces.printing import PrintSemantics_i, PrintSystem_i
+from acab.modules.printing.basic_printer  import BasicPrinter
 
 atom_pr               = BasicPrinter.Spec("ATOM").spec_from(PrintSemantics_i)
 annotations_pr        = BasicPrinter.Spec("ANNOTATIONS").spec_from(PrintSemantics_i)

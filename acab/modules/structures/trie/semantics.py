@@ -9,11 +9,10 @@ from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.data.value import Instruction, Sentence
 from acab.interfaces.value import Sentence_i
 from acab.modules.context.context_query_manager import ContextQueryManager
+from acab.core.data.default_structure import NEGATION
 
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
-
-NEGATION_S       = config.prepare("Value.Structure", "NEGATION")()
 
 Node          = AT.Node
 Value         = AT.Value
@@ -39,7 +38,7 @@ class BreadthTrieSemantics(SI.StructureSemantics_i):
         if data is None:
             data = {}
 
-        if NEGATION_S in sen.data and sen.data[NEGATION_S]:
+        if NEGATION in sen.data and sen.data[NEGATION]:
             self._delete(sen, struct, data)
             return ctxs
 
@@ -149,7 +148,7 @@ class DepthTrieSemantics(SI.StructureSemantics_i):
         if data is None:
             data = {}
 
-        if NEGATION_S in sen.data and sen.data[NEGATION_S]:
+        if NEGATION in sen.data and sen.data[NEGATION]:
             return self._delete(struct, sen, data=data)
 
         # Get the root
@@ -196,7 +195,7 @@ class DepthTrieSemantics(SI.StructureSemantics_i):
             raise ASErr.AcabSemanticException("Ctxs is none to TrieSemantics.query", sen)
 
         negated_query = False
-        if NEGATION_S in sen.data and sen.data[NEGATION_S]:
+        if NEGATION in sen.data and sen.data[NEGATION]:
             negated_query = True
 
         # TODO get collapse vars from the sentence

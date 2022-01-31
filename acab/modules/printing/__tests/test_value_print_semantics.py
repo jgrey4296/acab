@@ -30,17 +30,12 @@ from acab.core.data.instruction import (ProductionComponent,
 from acab.core.data.value import Instruction, AcabValue, Sentence
 from acab.interfaces.handler_system import Handler
 from acab.modules.printing.basic_printer import BasicPrinter
+from acab.core.data import default_structure as DS
 
-NEGATION_S        = config.prepare("Value.Structure", "NEGATION")()
-QUERY_S           = config.prepare("Value.Structure", "QUERY")()
-BIND_S            = config.prepare("Value.Structure", "BIND")()
-AT_BIND_S         = config.prepare("Value.Structure", "AT_BIND")()
-TYPE_INSTANCE_S   = config.prepare("Value.Structure", "TYPE_INSTANCE")()
-
-NEGATION_SYMBOL_S = config.prepare("Symbols", "NEGATION")()
-ANON_VALUE_S      = config.prepare("Symbols", "ANON_VALUE")()
-FALLBACK_MODAL_S  = config.prepare("Symbols", "FALLBACK_MODAL", actions=[config.actions_e.STRIPQUOTE])()
-QUERY_SYMBOL_S    = config.prepare("Symbols", "QUERY")()
+QUERY_S           = DS.QUERY
+BIND_S            = DS.BIND
+AT_BIND_S         = DS.AT_BIND
+TYPE_INSTANCE_S   = DS.TYPE_INSTANCE
 
 SEN_JOIN_S        = config.prepare("Print.Patterns", "SEN_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE])()
 
