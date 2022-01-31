@@ -52,6 +52,8 @@ class TestWalkSemantics(unittest.TestCase):
 
     def tearDown(self):
         self.eng("~a")
+        self.eng("~found")
+        self.eng("~the")
 
 
     def test_parse_walk_query_instruction(self):
@@ -271,6 +273,7 @@ end""".strip())
         inst = DOP.dfs_action.parseString("@x ᛦ λ$rule")[0]
         self.eng(inst, ctxset=ctxs)
         found = self.eng("found.$x?")
+        
         self.assertEqual(len(found), 9)
 
     @unittest.skip("not done yet")
