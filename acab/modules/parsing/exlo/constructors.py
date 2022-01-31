@@ -7,7 +7,7 @@ from acab.core.data.instruction import (ProductionComponent,
                                                     ProductionStructure)
 from acab.core.data.value import Sentence
 from acab.core.data import default_structure as DS
-from acab.core.parsing import default_structure as PDS
+from acab.core.parsing import default_keys as PDS
 from acab.modules.parsing.exlo import util as EXu
 from acab.core.parsing.annotation import ValueAnnotation, ValueRepeatAnnotation
 

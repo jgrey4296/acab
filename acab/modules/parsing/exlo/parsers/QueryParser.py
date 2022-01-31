@@ -4,12 +4,12 @@ import logging as root_logger
 import pyparsing as pp
 from acab.core.config.config import AcabConfig
 import acab.core.data.default_structure as CDS
-import acab.core.parsing.default_structure as PDS
+import acab.core.parsing.default_keys as PDS
 from acab.core.parsing import funcs as Pfunc
 from acab.core.parsing import parsers as PU
 from acab.core.parsing.consts import (COLLAPSE_CONTEXT, COLON, COMMA, DELIM, DOUBLEBAR, END,
                                           NG, QUERY, N, component_gap, op, zrm)
-from acab.core.parsing.default_structure import OPERATOR, SEN, VALUE
+from acab.core.parsing.default_keys import OPERATOR, SEN, VALUE
 from acab.core.parsing.annotation import ValueAnnotation
 from acab.core.parsing.default_symbols import QUERY_HEAD
 from acab.core.parsing.funcs import build_assignment

@@ -11,7 +11,7 @@ from acab.core.parsing.annotation import ModalAnnotation
 from acab.core.data import default_structure as CDS
 from acab.core.data.value import Sentence
 from acab.core.parsing import consts as PConst
-from acab.core.parsing import default_structure as PDS
+from acab.core.parsing import default_keys as PDS
 from acab.core.parsing import default_symbols as PDSYM
 from acab.core.parsing import funcs as Pfunc
 from acab.core.parsing.consts import (CPAR, DBLCOLON, NG, OPAR, TAG, N,
@@ -117,7 +117,7 @@ OPERATOR_SUGAR = pp.Word(PDSYM.OPERATOR_SYNTAX)
 OPERATOR_SUGAR.setParseAction(lambda s, l, t: Sentence.build([t[0]]))
 
 # TODO use config for type sentences
-ATOM           = pp.Word(PDSYM.WORD_COMPONENT)
+ATOM           = pp.Word(PDSYM.WORD_COMPONENT + "'")
 ATOM.setParseAction(lambda s, l, t: (CDS.TYPE_BOTTOM_NAME, t[0]))
 
 STRING      = pp.dblQuotedString

@@ -7,9 +7,6 @@ from enum import Enum
 
 config = GET()
 
-# TODO refactory to use this instead
-PARSE_STRUCT_E : Enum = config.prepare("Parse.Structure", as_enum=True)()
-
 ACTION         : str = config.prepare("Parse.Structure", "ACTION")()
 ANNOTATION     : str = config.prepare("Parse.Structure", "ANNOTATION")()
 ARG            : str = config.prepare("Parse.Structure", "PARAMS")()

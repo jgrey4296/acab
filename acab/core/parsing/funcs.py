@@ -15,12 +15,12 @@ from acab.core.parsing import consts as PConst
 from acab.core.data.default_structure import TYPE_BOTTOM_NAME
 from acab.core.parsing.annotation import ValueAnnotation
 import acab.core.data.default_structure as DS
-import acab.core.parsing.default_structure as PDS
+import acab.core.parsing.default_keys as PDS
 
 logging = root_logger.getLogger(__name__)
 
 config = AcabConfig.Get()
-SEMANTIC_HINT_V    = config.prepare("Value.Structure", "SEMANTIC_HINT")()
+SEMANTIC_HINT    = DS.SEMANTIC_HINT
 
 QUERY_SEM_HINT     = Sentence.build([config.prepare("SEMANTICS", "QUERY")()])
 ACTION_SEM_HINT    = Sentence.build([config.prepare("SEMANTICS", "ACTION")()])

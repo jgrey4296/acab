@@ -5,7 +5,7 @@ import pyparsing as pp
 
 from acab.core.config.config import AcabConfig
 from acab.core.data.value import Sentence
-import acab.core.parsing.default_structure as DS
+import acab.core.parsing.default_keys as DS
 import acab.core.parsing.default_symbols as DSYM
 import acab.core.parsing.debug_funcs as DBF
 

@@ -6,7 +6,7 @@ from acab.core.config.config import AcabConfig
 from acab.core.parsing import funcs as Pfunc
 from acab.core.parsing import parsers as PU
 from acab.core.parsing.consts import DELIM, NG, N, component_gap, orm, zrm
-from acab.core.parsing.default_structure import OPERATOR
+from acab.core.parsing.default_keys import OPERATOR
 from acab.core.parsing.default_symbols import ACTION_HEAD
 from acab.core.parsing.parsers import VALBIND
 from acab.modules.parsing.exlo import constructors as PConst

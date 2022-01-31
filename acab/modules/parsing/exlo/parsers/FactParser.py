@@ -9,7 +9,7 @@ from acab.core.parsing import funcs as Pfunc
 from acab.core.parsing import parsers as PU
 from acab.core.parsing.consts import (COMMA, DELIM, END, emptyLine, COLON,
                                       FACT_HEAD, NEGATION, NG, N, op, opLn, zrm, ln)
-from acab.core.parsing.default_structure import OPERATOR, SEN, VALUE
+from acab.core.parsing.default_keys import OPERATOR, SEN, VALUE
 from acab.core.data import default_structure as CDS
 from acab.modules.parsing.exlo import constructors as PConst
 from acab.core.parsing.indented_block import IndentedBlock
