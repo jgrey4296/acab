@@ -172,9 +172,9 @@ class ValueSemanticTests(unittest.TestCase):
     def test_node_access_str_vs_atom(self):
         """ Check accessing a str vs an atom is differentiated """
         sem        = BasicNodeSemantics()
-        root       = sem.make(AcabValue.safe_make("root"))
-        atom_value = sem.make(AcabValue.safe_make("value"))
-        str_value  = sem.make(AcabValue.safe_make(atom_value.value, data={DS.TYPE_INSTANCE : "string"}))
+        root       = sem.make(AcabValue.build("root"))
+        atom_value = sem.make(AcabValue.build("value"))
+        str_value  = sem.make(AcabValue.build(atom_value.value, data={DS.TYPE_INSTANCE : "string"}))
         self.assertNotEqual(atom_value.value.type, str_value.value.type)
         sem.insert(root, atom_value)
         result = sem.access(root, str_value.value)
@@ -185,9 +185,9 @@ class ValueSemanticTests(unittest.TestCase):
     def test_node_insert_str_vs_atom(self):
         """ Check inserting a str vs an atom is differentiated """
         sem        = BasicNodeSemantics()
-        root       = sem.make(AcabValue.safe_make("root"))
-        atom_value = sem.make(AcabValue.safe_make("value"))
-        str_value  = sem.make(AcabValue.safe_make(atom_value.value, data={DS.TYPE_INSTANCE : "string"}))
+        root       = sem.make(AcabValue.build("root"))
+        atom_value = sem.make(AcabValue.build("value"))
+        str_value  = sem.make(AcabValue.build(atom_value.value, data={DS.TYPE_INSTANCE : "string"}))
         self.assertNotEqual(atom_value.value.type, str_value.value.type)
         sem.insert(root, atom_value)
         self.assertEqual(len(root), 1)

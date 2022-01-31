@@ -35,7 +35,7 @@ def gen_var() -> Callable[[], AT.Value]:
         nonlocal counter
         new_name = "GenVar_{}".format(counter)
         counter += 1
-        return Sentence.build([AcabValue.safe_make(new_name, data={"BIND":True})])
+        return Sentence.build([AcabValue.build(new_name, data={"BIND":True})])
 
     return wrapped
 

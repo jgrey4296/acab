@@ -78,11 +78,11 @@ class StatementSemanticTests(unittest.TestCase):
         # Add a ContextInst
         init_ctx                            = ctx_set.pop()
         updated_ctx                         = init_ctx.bind_dict({
-            "x" : AcabValue.safe_make("test")
+            "x" : AcabValue.build("test")
         })
         ctx_set.push(updated_ctx)
         # Build Transform
-        rebind_target                       = AcabValue.safe_make("y", data={BIND_V: True})
+        rebind_target                       = AcabValue.build("y", data={BIND_V: True})
         clause                              = ProductionComponent("transform test",
                                                                   op_loc_path,
                                                                   ["x", "es", "ES"],
@@ -147,7 +147,7 @@ class StatementSemanticTests(unittest.TestCase):
         # Build Action
         clause = ProductionComponent("Test Action Clause",
                                      op_loc_path,
-                                     [AcabValue.safe_make("awef")])
+                                     [AcabValue.build("awef")])
         action = ProductionContainer("TestAction", [])
         action.clauses.append(clause)
         # Run action on context with semantics
@@ -203,12 +203,12 @@ class StatementSemanticTests(unittest.TestCase):
         ctx_set     = ContextSet.build(op_ctx)
         init_ctx    = ctx_set.pop()
         updated_ctx = init_ctx.bind_dict({
-            "x" : AcabValue.safe_make("test")
+            "x" : AcabValue.build("test")
         })
         ctx_set.push(updated_ctx)
 
         # Build Instruction to run
-        rebind_target          = AcabValue.safe_make("y", data={BIND_V: True})
+        rebind_target          = AcabValue.build("y", data={BIND_V: True})
         transform_clause       = ProductionComponent("transform test",
                                                      Sentence.build(["transform"]),
                                                      ["x"],
@@ -287,7 +287,7 @@ class StatementSemanticTests(unittest.TestCase):
         transform_sen = ProductionComponent("transform_test",
                                             Sentence.build(["regex"]),
                                             ["x", "sen", "SEN"],
-                                            rebind=AcabValue.safe_make("y", data={BIND_V: True}))
+                                            rebind=AcabValue.build("y", data={BIND_V: True}))
         action_sen    = ProductionComponent("Test Action Clause",
                                             Sentence.build([ "action" ]),
                                             ['y'])
@@ -368,7 +368,7 @@ class StatementSemanticTests(unittest.TestCase):
         transform_sen = ProductionComponent("transform_test",
                                             Sentence.build("regex"),
                                             ["x", "sen", "SEN"],
-                                            rebind=AcabValue.safe_make("y", data={BIND_V: True}))
+                                            rebind=AcabValue.build("y", data={BIND_V: True}))
         action_sen    = ProductionComponent("Test Action Clause",
                                             Sentence.build("action"),
                                             ['y'])

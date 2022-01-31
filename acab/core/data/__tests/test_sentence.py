@@ -9,8 +9,8 @@ import acab
 config = acab.setup()
 
 from acab.core.data.value import AcabValue, Sentence
+from acab.core.data.default_structure import BIND
 
-BIND_S = config.prepare("Value.Structure", "BIND")()
 
 def S(*values):
     return Sentence.build(values)
@@ -117,7 +117,7 @@ class SentenceTests(unittest.TestCase):
         """ Check variables can be bound in a sentence, building a new sentence """
         val = Sentence.build(["a","test","value"])
         var = Sentence.build(["var"])
-        var[0].data.update({BIND_S : True})
+        var[0].data.update({BIND : True})
         sen = val.add(var)
 
         bound = sen.bind({"var" : "blah"})
@@ -131,8 +131,8 @@ class SentenceTests(unittest.TestCase):
         """ Check a sentence binding doesn't create a new sentence unless it has to """
         val = Sentence.build(["a","test","value"])
         var = Sentence.build(["var"])
-        var[0].data.update({BIND_S: True})
-        val[2].data.update({BIND_S : True})
+        var[0].data.update({BIND: True})
+        val[2].data.update({BIND : True})
         sen = val.add(var)
 
         bound = sen.bind({"not_var" : "blah"})
@@ -227,12 +227,22 @@ class SentenceTests(unittest.TestCase):
     def test_is_var_fail_2(self):
         """ Check a sentence with a variable isn't a variable """
         sen = S("a", "test", "sentence")
-        sen[-1].data.update({BIND_S: True})
+        sen[-1].data.update({BIND: True})
         self.assertTrue(sen[-1].is_var)
         self.assertFalse(sen.is_var)
 
     def test_is_var_pass(self):
         """ Check a sentence of a single word, that is a variable, is a variable """
         sen = S("single word")
-        sen[0].data.update({BIND_S: True})
+        sen[0].data.update({BIND: True})
         self.assertTrue(sen.is_var)
+
+    def test_add(self):
+        sen1 = S("a", "test", "sentence")
+        sen2 = S("blah")
+        sen3 = sen1.add(sen2)
+
+        self.assertEqual(len(sen1), 3)
+        self.assertEqual(len(sen2), 1)
+        self.assertEqual(len(sen3), 4)
+        self.assertIn(sen2[0], sen3)

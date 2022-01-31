@@ -133,18 +133,18 @@ class TopologicalOrderedAcabTests(unittest.TestCase):
         self.assertEqual(value.type, Sentence.build([config.prepare("Data", "TYPE_BOTTOM_NAME")]))
 
 
-    def test_value_safe_make(self):
+    def test_value_build(self):
         """ Check AcabValues don't nest """
         value1 = AcabValue("value")
         self.assertEqual(value1, value1)
-        value2 = AcabValue.safe_make(value1)
+        value2 = AcabValue.build(value1)
         self.assertEqual(value1, value2)
         self.assertFalse(isinstance(value2.value, AcabValue))
 
-    def test_value_safe_make_2(self):
+    def test_value_build_2(self):
         """ Check AcabValues don't nest """
         value1 = "test"
-        value2 = AcabValue.safe_make(value1)
+        value2 = AcabValue.build(value1)
         self.assertIsInstance(value1, str)
         self.assertIsInstance(value2, AcabValue)
     def test_sentence_creation(self):

@@ -97,8 +97,8 @@ class TestWalkSemantics(unittest.TestCase):
         ctxs       = self.eng("a.b.$x.test?")
 
         # build a walk instruction
-        source_var = AcabValue.safe_make("x", data={BIND: AT_BIND})
-        test_var   = AcabValue.safe_make("y", data={BIND: True,
+        source_var = AcabValue.build("x", data={BIND: AT_BIND})
+        test_var   = AcabValue.build("y", data={BIND: True,
                                                     TYPE_INSTANCE: Sentence.build(["target"]),
                                                     QUERY : True})
         query_sen = Sentence.build([source_var, test_var],
@@ -125,8 +125,8 @@ class TestWalkSemantics(unittest.TestCase):
         ctxs       = self.eng("a.b.$x.test?")
 
         # build a walk instruction
-        source_var = AcabValue.safe_make("x", data={BIND: AT_BIND})
-        test_var   = AcabValue.safe_make("y", data={BIND: True,
+        source_var = AcabValue.build("x", data={BIND: AT_BIND})
+        test_var   = AcabValue.build("y", data={BIND: True,
                                                     TYPE_INSTANCE: Sentence.build(["target"]),
                                                     QUERY : True})
         query_sen = Sentence.build([source_var, test_var],
@@ -155,8 +155,8 @@ class TestWalkSemantics(unittest.TestCase):
         ctxs       = self.eng("a.b.$x.test?")
 
         # build a walk instruction
-        source_var = AcabValue.safe_make("x", data={BIND: AT_BIND})
-        test_var   = AcabValue.safe_make("y", data={BIND: True,
+        source_var = AcabValue.build("x", data={BIND: AT_BIND})
+        test_var   = AcabValue.build("y", data={BIND: True,
                                                     TYPE_INSTANCE: Sentence.build(["target"]),
                                                     QUERY : True})
         query_sen = Sentence.build([source_var, test_var],
@@ -178,7 +178,7 @@ class TestWalkSemantics(unittest.TestCase):
         self.eng("a.b.e.test.something(::target)")
 
         # build a walk instruction
-        test_var   = AcabValue.safe_make("y", data={BIND: True,
+        test_var   = AcabValue.build("y", data={BIND: True,
                                                     TYPE_INSTANCE: Sentence.build(["target"]),
                                                     QUERY : True})
         query_sen = Sentence.build([test_var], data={SEM_HINT: "WALK"})
@@ -202,12 +202,12 @@ class TestWalkSemantics(unittest.TestCase):
         ctxs       = self.eng("a.b.$x.test?")
 
         # build a walk instruction
-        source_var = Sentence.build([AcabValue.safe_make("x", data={BIND: AT_BIND})])
-        test_var   = AcabValue.safe_make("y", data={BIND: True,
+        source_var = Sentence.build([AcabValue.build("x", data={BIND: AT_BIND})])
+        test_var   = AcabValue.build("y", data={BIND: True,
                                                     TYPE_INSTANCE: Sentence.build(["target"]),
                                                     QUERY : True})
 
-        test_var2  = AcabValue.safe_make("z", data={BIND: True,
+        test_var2  = AcabValue.build("z", data={BIND: True,
                                                     TYPE_INSTANCE: Sentence.build(["other"]),
                                                     QUERY : True})
 

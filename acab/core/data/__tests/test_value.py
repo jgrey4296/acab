@@ -37,9 +37,9 @@ class AcabValueTests(unittest.TestCase):
 
     #----------
     #use testcase snippets
-    def test_safe_make(self):
-        """ Check a value can be created safely with "safe_make" """
-        value = AcabValue.safe_make("test",
+    def test_build(self):
+        """ Check a value can be created safely with "build" """
+        value = AcabValue.build("test",
                                     name="test value",
                                     data={"test data" : True})
         self.assertIsInstance(value, AcabValue)
@@ -99,11 +99,11 @@ class AcabValueTests(unittest.TestCase):
         value.tags.update(["a", "b", "c"])
         self.assertFalse(value.has_tag("a", "b", "c", "q"))
 
-    def test_safe_make(self):
+    def test_build(self):
         """ Check a value doesn't build to contain a value """
-        value = AcabValue.safe_make("test")
+        value = AcabValue.build("test")
         self.assertIsInstance(value, AcabValue)
-        value2 = AcabValue.safe_make(value)
+        value2 = AcabValue.build(value)
         self.assertIsInstance(value2, AcabValue)
         self.assertIsInstance(value2.value, str)
 

@@ -26,8 +26,8 @@ def val_bind(val:AT.Value, bindings:Union[Dict[Any, Any], AT.CtxIns]) -> AT.Valu
     """
     if val.is_var and val.value in bindings:
         assert(not val.params)
-        # TODO this may be an unnecessary safe_make
-        return AcabValue.safe_make(bindings[val.value])
+        # TODO this may be an unnecessary build
+        return AcabValue.build(bindings[val.value])
 
     if not any([x.is_var for x in val.params]):
         return val

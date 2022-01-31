@@ -83,9 +83,9 @@ class StatementTests(unittest.TestCase):
 
     def test_component_to_sentences(self):
         comp = PO.ProductionComponent(value=Sentence.build(["Test", "Path", "Op"]),
-                                      params=[AcabValue.safe_make("x"),
-                                              AcabValue.safe_make("y")],
-                                              rebind=AcabValue.safe_make("blah"))
+                                      params=[AcabValue.build("x"),
+                                              AcabValue.build("y")],
+                                              rebind=AcabValue.build("blah"))
 
         as_sen = comp.to_sentences()
         self.assertEqual(as_sen, "ProductionComponent")
@@ -105,9 +105,9 @@ class StatementTests(unittest.TestCase):
 
     def test_component_from_sentences(self):
         comp = PO.ProductionComponent(value=Sentence.build(["Test", "Path", "Op"]),
-                                      params=[AcabValue.safe_make("x"),
-                                              AcabValue.safe_make("y")],
-                                              rebind=AcabValue.safe_make("blah"))
+                                      params=[AcabValue.build("x"),
+                                              AcabValue.build("y")],
+                                              rebind=AcabValue.build("blah"))
 
         as_sen = comp.to_sentences()
         comp2 = PO.ProductionComponent.from_sentences([as_sen])[0]
@@ -117,9 +117,9 @@ class StatementTests(unittest.TestCase):
 
     def test_multi_component_from_sentences(self):
         comp = PO.ProductionComponent(value=Sentence.build(["Test", "Path", "Op"]),
-                                      params=[AcabValue.safe_make("x"),
-                                              AcabValue.safe_make("y")],
-                                              rebind=AcabValue.safe_make("blah"))
+                                      params=[AcabValue.build("x"),
+                                              AcabValue.build("y")],
+                                              rebind=AcabValue.build("blah"))
 
         as_sen = comp.to_sentences()
         as_sen2 = comp.to_sentences()

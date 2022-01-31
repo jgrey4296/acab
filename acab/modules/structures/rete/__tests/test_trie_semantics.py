@@ -199,7 +199,7 @@ class TrieSemanticTests(unittest.TestCase):
         # Test for equality to "sentence"
         the_test = ProductionComponent("alpha test",
                                        op_loc_path,
-                                       [AcabValue.safe_make("blah")])
+                                       [AcabValue.build("blah")])
         query_sen[-1].data[CONSTRAINT_V] = [the_test]
         # Run query
         trie_sem.query(query_sen, trie_struct, ctxs=ctx_set)
@@ -230,7 +230,7 @@ class TrieSemanticTests(unittest.TestCase):
         query_sen2 = Sentence.build(["a", "different", "y"])
         query_sen2[-1].data[BIND_V] = True
         # Test for equality to "sentence"
-        test_var = AcabValue.safe_make("x",
+        test_var = AcabValue.build("x",
                                        data={BIND_V: True})
         the_test = ProductionComponent("beta test",
                                        op_loc_path,
@@ -269,7 +269,7 @@ class TrieSemanticTests(unittest.TestCase):
         query_sen2 = Sentence.build(["a", "different", "y"])
         query_sen2[-1].data[BIND_V] = True
         # Test for equality to "sentence"
-        test_var = AcabValue.safe_make("x",
+        test_var = AcabValue.build("x",
                                        data={BIND_V: True})
         the_test = ProductionComponent("callable test",
                                        op_loc_path,
