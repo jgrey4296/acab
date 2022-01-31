@@ -30,11 +30,12 @@ class UnifyLogic:
     """
     Component functions for Acab Unification
     """
-    sieve           : List[Callable[[AT.Value, AT.Value, AT.CtxIns], unify_enum]]
+    sieve           : list[Callable[[AT.Value, AT.Value, AT.CtxIns], unify_enum]]
     truncate        : Callable[[AT.Sentence, AT.Sentence], Tuple[AT.Sentence, AT.Sentence]]
     apply           : Callable[[AT.Sentence, AT.CtxIns], AT.Sentence]
-    entry_transform : Optional[Callable[[AT.Sentence, AT.Sentence, AT.CtxIns], Tuple[AT.Sentence, AT.Sentence]]] = field(default=None)
-    early_exit      : Optional[Callable[[AT.Sentence, AT.Sentence, AT.CtxIns], unify_enum]]                      = field(default=None)
+    entry_transform : None | Callable[[AT.Sentence, AT.Sentence, AT.CtxIns], Tuple[AT.Sentence, AT.Sentence]] = field(default=None)
+    early_exit      : None | Callable[[AT.Sentence, AT.Sentence, AT.CtxIns], unify_enum]                      = field(default=None)
+    repeat_policy   : Optional                                                                                = field(default=None)
 
 
 
@@ -52,6 +53,8 @@ class Unifier:
     def apply(self, sen, ctx):
         return self.logic.apply(sen, ctx)
 
+    def __repr__(self):
+        return f"<Unifier>"
     def __call__(self,
                  first: AT.Sentence,
                  second: AT.Sentence,
@@ -67,6 +70,8 @@ class Unifier:
         if logic is None:
             logic = self.logic
 
+        # TODO first, second : (List[Sentences], List[Sentence])
+        # TODO add exhaustive / inclusive typing options
         ctx_prime = MutableContextInstance(None, ctx)
         with ctx_prime:
             if logic.early_exit is not None and logic.early_exit(first, second, ctx_prime) is unify_enum.END:
@@ -95,4 +100,28 @@ class Unifier:
                 if result is unify_enum.END:
                     break
 
+
         return ctx_prime.finish()
+
+
+    def repeat(self,
+               first:Set[AT.Sentence],
+               second:Set[AT.Sentence],
+               ctx:AT.CtxIns,
+               logic):
+
+        if logic is None:
+            logic = self.logic
+
+        the_ctx = ctx
+        for fst in first:
+            for snd in second:
+                try:
+                    # unify a first with  a second
+                    the_ctx = self(first, second, the_ctx)
+
+                except TE.AcabTypingException:
+                    # failed, so use the repeat policy
+                    pass
+
+        return the_ctx
