@@ -2,9 +2,9 @@ import abc
 import logging as root_logger
 from dataclasses import InitVar, dataclass, field
 from enum import Enum
-from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
-                    List, Mapping, Match, MutableMapping, Optional, Sequence,
-                    Set, Tuple, TypeVar, Union, cast)
+from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
+                    Mapping, Match, MutableMapping, Sequence,
+                     Tuple, TypeVar, cast)
 
 from acab import GET
 from acab import types as AT
@@ -34,7 +34,7 @@ class PrintSystem_i(HandlerSystem_i):
     just consumes Sentences
     """
     separator : ConfigSpec     = field(default=PRINT_SEPARATOR_P)
-    settings  : Dict[str, str] = field(default_factory=dict)
+    settings  : dict[str, str] = field(default_factory=dict)
     _config   : AcabConfig     = field(init=False, default_factory=AcabConfig.Get)
 
     def __post_init__(self, specs, handlers, sieve_fns):
@@ -46,7 +46,7 @@ class PrintSystem_i(HandlerSystem_i):
     def __call__(self, *args) -> str:
         return self.pprint(*args)
 
-    def check(self, val) -> Optional[str]:
+    def check(self, val) -> None | str:
         """ Check a value to toggle variations/get defaults"""
         if val in self.settings:
             return self.settings[val]
@@ -96,7 +96,7 @@ class PrintSystem_i(HandlerSystem_i):
         return result
 
 
-    def extend(self, mods:List[ModuleComponents]):
+    def extend(self, mods:list[ModuleComponents]):
         logging.info("Extending Printer")
         printers = [y for x in mods for y in x.printers]
         assert(all([isinstance(x, Printer_Fragment) for x in printers]))
@@ -110,16 +110,16 @@ class PrintSystem_i(HandlerSystem_i):
 @dataclass
 class PrintSemantics_i(HandlerComponent_i):
 
-    transforms  : List[Callable] = field(init=False, default_factory=list)
+    transforms  : list[Callable] = field(init=False, default_factory=list)
 
     def __post_init__(self):
         self.transforms += self.add_transforms()
 
-    def add_transforms(self) -> List[Callable]:
+    def add_transforms(self) -> list[Callable]:
         """ Override to add custom transforms in a class """
         return []
 
-    def run_transforms(self, value: Value_i, curr_str: List[Any]) -> List[Any]:
+    def run_transforms(self, value: Value_i, curr_str: list[Any]) -> list[Any]:
         curr = curr_str
         for trans in self.transforms:
             curr = trans(self, value, curr)
@@ -130,7 +130,7 @@ class PrintSemantics_i(HandlerComponent_i):
         return True
 
     @abc.abstractmethod
-    def __call__(self, to_print: Value_i, *, top:'PrintSystem_i'=None, data=None) -> List[Union[str,Value_i]]:
+    def __call__(self, to_print: Value_i, *, top:'PrintSystem_i'=None, data=None) -> list[str | Value_i]:
         pass
 
 # For Modules #################################################################

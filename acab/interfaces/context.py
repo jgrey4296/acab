@@ -7,16 +7,16 @@ import abc
 import collections.abc as cABC
 import logging as root_logger
 from dataclasses import InitVar, dataclass, field
-from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
-                    List, Mapping, Match, MutableMapping, Optional, Sequence,
-                    Set, Tuple, TypeVar, Union, cast)
+from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
+                    Mapping, Match, MutableMapping, Sequence,
+                    Tuple, TypeVar, cast)
 from enum import Enum
 from uuid import UUID
 
 logging = root_logger.getLogger(__name__)
 
 from acab import types as AT
-from acab.interfaces.util import AcabReducible
+from acab.interfaces.util import AcabReducible, AcabFinishable
 
 
 # Type declarations:
@@ -24,17 +24,17 @@ CtxSet     = AT.CtxSet
 CtxIns     = AT.CtxIns
 Value      = AT.Value
 ProdComp   = AT.Component
-DelayValue = Union[UUID, CtxIns, CtxSet, None]
+DelayValue = UUID | CtxIns | CtxSet | None
 
 
 # Interfaces:
 @dataclass(frozen=True)
 class Constraint_i(metaclass=abc.ABCMeta):
     source         : Value                     = field()
-    _test_mappings : Dict[str, List[Callable]] = field()
+    _test_mappings : dict[str, list[Callable]] = field()
 
-    # Value -> (key, List[Constraint])
-    sieve         : ClassVar[List[Callable]]
+    # Value -> (key, list[Constraint])
+    sieve         : ClassVar[list[Callable]]
 
     @staticmethod
     def build(word, operators, *, sieve=None):
@@ -71,7 +71,7 @@ class ContextSet_i(cABC.Hashable, cABC.Set):
         pass
 
 @dataclass(frozen=True)
-class ContextInstance_i(cABC.Mapping, cABC.Hashable, AcabReducible):
+class ContextInstance_i(cABC.Mapping, cABC.Hashable, AcabFinishable):
 
     @abc.abstractmethod
     def bind(self, word, nodes):
@@ -89,4 +89,17 @@ class ContextInstance_i(cABC.Mapping, cABC.Hashable, AcabReducible):
         serves to return a new ctxins with a
         mutable's bindings incorporated
         """
+        pass
+
+
+@dataclass
+class MutableContextInstance_i(AcabFinishable):
+    @abc.abstractmethod
+    def bind(self, word, nodes):
+        pass
+    @abc.abstractmethod
+    def bind_dict(self, the_dict):
+        pass
+    @abc.abstractmethod
+    def finish(self) -> CtxIns:
         pass

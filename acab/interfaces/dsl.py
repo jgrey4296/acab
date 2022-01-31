@@ -7,9 +7,9 @@ import collections.abc as cABC
 import logging as root_logger
 import traceback
 from dataclasses import dataclass, field
-from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
-                    List, Mapping, Match, MutableMapping, Optional, Sequence,
-                    Set, Tuple, TypeVar, Union, cast)
+from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
+                    Mapping, Match, MutableMapping,  Sequence,
+                    Tuple, TypeVar, cast)
 
 logging = root_logger.getLogger(__name__)
 
@@ -54,7 +54,7 @@ class DSL_Spec_i(HandlerSpec):
     Register a signal into a DSL,
 
     """
-    struct : Set[Parser] = field(default_factory=set)
+    struct : set[Parser] = field(default_factory=set)
 
     def extend(self, spec:DSL_Spec):
         if not isinstance(spec, DSL_Spec_i):
@@ -83,7 +83,7 @@ class DSL_Spec_i(HandlerSpec):
 class DSL_Builder_i(HandlerSystem_i):
 
     _parsers_initialised  : bool           = field(init=False, default=False)
-    _loaded_DSL_fragments : Dict[Any, Any] = field(init=False, default_factory=dict)
+    _loaded_DSL_fragments : dict[Any, Any] = field(init=False, default_factory=dict)
 
     def _register_spec(self, *specs: DSL_Spec_i):
         for spec in specs:
@@ -118,7 +118,7 @@ class DSL_Builder_i(HandlerSystem_i):
 
     def parseString(self, *args):
         return self.parse(*args)
-    def parseFile(self, f:File) -> List[Sentence]:
+    def parseFile(self, f:File) -> list[Sentence]:
         logging.debug(f"Loading File: {f}")
         text = ""
         with open(f, "r") as the_file:
@@ -131,7 +131,7 @@ class DSL_Builder_i(HandlerSystem_i):
     def __call__(self, *args):
         return self.parse(*args)
 
-    def extend(self, modules:List[ModuleComponents]):
+    def extend(self, modules:list[ModuleComponents]):
         for module in modules:
             self.register(*module.dsl_fragments)
 
@@ -139,7 +139,7 @@ class DSL_Builder_i(HandlerSystem_i):
         return f"<{self.__class__.__name__}: Handlers: {len(self.handler_specs)}, Loose: {len(self.loose_handlers)}>"
     @abc.abstractmethod
     @EnsureDSLInitialised
-    def parse(self, s:str) -> List[Sentence]:
+    def parse(self, s:str) -> list[Sentence]:
         pass
 
     @abc.abstractmethod

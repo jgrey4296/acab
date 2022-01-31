@@ -4,10 +4,9 @@
 import abc
 import collections.abc as cABC
 from dataclasses import dataclass, field
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
+from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
+                    Mapping, Match, MutableMapping, Sequence,
+                    Tuple, TypeAlias, TypeVar, cast)
 from enum import Enum
 
 
@@ -17,8 +16,8 @@ class ConfigSpec_i(cABC.Hashable, cABC.Callable):
     and any transforms it needs prior to use """
 
     section : str                = field()
-    key     : Optional[str]      = field(default=None)
-    actions : List[Enum]         = field(default_factory=list)
+    key     : None | str      = field(default=None)
+    actions : list[Enum]         = field(default_factory=list)
     as_list : bool               = field(default=False)
     as_dict : bool               = field(default=False)
     as_enum : bool               = field(default=False)
@@ -41,7 +40,7 @@ class Config_i(cABC.Callable, cABC.Collection):
         pass
 
     @abc.abstractmethod
-    def read(self, paths: List[str]):
+    def read(self, paths: list[str]):
         pass
 
     @abc.abstractmethod

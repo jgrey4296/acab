@@ -19,9 +19,9 @@ import abc
 import logging as root_logger
 from dataclasses import InitVar, dataclass, field
 from enum import Enum
-from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
-                    List, Mapping, Match, MutableMapping, Optional, Sequence,
-                    Set, Tuple, TypeVar, Union, cast)
+from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
+                    Mapping, Match, MutableMapping, Sequence,
+                    Tuple, TypeVar, cast)
 
 logging = root_logger.getLogger(__name__)
 from acab import types as AT
@@ -48,7 +48,7 @@ ModuleComponents     = AT.ModuleComponents
 StructureSemantics   = AT.StructureSemantics
 ValueSemantics       = AT.ValueSemantics
 StatementSemantics   = AT.StatementSemantics
-AbsDepSemantics      = Union[StatementSemantics, StructureSemantics]
+AbsDepSemantics      = StatementSemantics | StructureSemantics
 SemanticSystem       = AT.SemanticSystem
 
 
@@ -62,9 +62,9 @@ class SemanticSystem_i(HandlerSystem_i, AcabReducible):
     # TODO add a system specific logging handler
     ctx_set         : CtxSet           = field(default=None)
 
-    _operator_cache : Optional[CtxIns] = field(init=False, default=None)
+    _operator_cache : None | CtxIns    = field(init=False, default=None)
 
-    def build_ctxset(self, ops:List[ModuleComponents]=None):
+    def build_ctxset(self, ops:list[ModuleComponents]=None):
         """ Build a context set. Use passed in operators if provided.
         Caches operators
         """
@@ -89,7 +89,7 @@ class SemanticSystem_i(HandlerSystem_i, AcabReducible):
     def __call__(self, *instructions:Tuple[Instruction], ctxs=None, data=None) -> CtxSet:
         pass
 
-    def extend(self, mods:List[ModuleComponents]):
+    def extend(self, mods:list[ModuleComponents]):
         logging.info("Extending Semantics")
         semantics = [y for x in mods for y in x.semantics]
         assert(all([isinstance(x, Semantic_Fragment) for x in semantics]))
@@ -144,7 +144,7 @@ class ValueSemantics_i(HandlerComponent_i):
         return f"{self.__class__.__name__}"
 
     @abc.abstractmethod
-    def make(self, val:Value, *, data:Dict[Any,Any]=None) -> Node:
+    def make(self, val:Value, *, data:dict[Any,Any]=None) -> Node:
         """ Take a value, and return a node, which has been up'd """
         pass
     @abc.abstractmethod
@@ -157,20 +157,20 @@ class ValueSemantics_i(HandlerComponent_i):
         return node.value
 
     @abc.abstractmethod
-    def access(self, node:Node, term:Value, *, data:Dict[Any,Any]=None) -> List[Node]:
+    def access(self, node:Node, term:Value, *, data:dict[Any,Any]=None) -> list[Node]:
         """ Can node A reach the given term """
         pass
 
     @abc.abstractmethod
-    def insert(self, node:Node, new_node:Node, *, data:Dict[Any,Any]=None) -> Node:
+    def insert(self, node:Node, new_node:Node, *, data:dict[Any,Any]=None) -> Node:
         pass
 
     @abc.abstractmethod
-    def remove(self, node:Node, term:Value, *, data:Dict[Any,Any]=None) -> Node:
+    def remove(self, node:Node, term:Value, *, data:dict[Any,Any]=None) -> Node:
         pass
 
 
-    def update(self, node:Node, term:Value, *, data:Dict[Any, Any]=None):
+    def update(self, node:Node, term:Value, *, data:dict[Any, Any]=None):
         # TODO
         pass
 

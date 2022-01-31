@@ -3,9 +3,9 @@ import abc
 import collections.abc as cABC
 import logging as root_logger
 from dataclasses import InitVar, dataclass, field, replace
-from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
-                    List, Mapping, Match, MutableMapping, Optional, Sequence,
-                    Set, Tuple, TypeVar, Union, cast, Type)
+from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
+                    Mapping, Match, MutableMapping, Sequence,
+                    Tuple, TypeVar, cast, Type, TypeAlias, NewType)
 from types import MethodType
 from enum import Enum
 
@@ -24,31 +24,33 @@ config = GET()
 SPACER = int(config.prepare("Print.Data", "SPACER_SIZE")())
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 
-pseudo             = AT.pseudo
-Handler            = AT.Handler
-ModuleComponents   = AT.ModuleComponents
-Overrider          = AT.HandlerOverride
-Sentence           = AT.Sentence
-Structure          = AT.DataStructure
-Value              = AT.Value
-HandlerSpec        = "HandlerSpec"
-HandlerComponent_i = 'HandlerComponent_i'
-PASSTHROUGH        = "_"
+pseudo             : TypeAlias = AT.pseudo
+Handler            : TypeAlias = AT.Handler
+ModuleComponents   : TypeAlias = AT.ModuleComponents
+Overrider          : TypeAlias = AT.HandlerOverride
+Sentence           : TypeAlias = AT.Sentence
+Structure          : TypeAlias = AT.DataStructure
+Value              : TypeAlias = AT.Value
+HandlerSpec        : TypeAlias = NewType("HandlerSpec", Any)
+HandlerComponent_i : TypeAlias = NewType('HandlerComponent_i', Any)
+ContainParams      : TypeAlias = str | Sentence | Handler | HandlerSpec
+
+PASSTHROUGH        : TypeAlias = "_"
 
 @dataclass
 class HandlerSystem_i(cABC.MutableMapping, cABC.Callable):
 
-    init_specs     : InitVar[List[HandlerSpec]] = field(default=None)
-    init_handlers  : InitVar[List[Handler]]     = field(default=None)
+    init_specs     : InitVar[list[HandlerSpec]] = field(default=None)
+    init_handlers  : InitVar[list[Handler]]     = field(default=None)
     # TODO make default  Tuple[str, str], and lookup?
-    sieve_fns      : InitVar[List[Callable]]    = field(default=None)
+    sieve_fns      : InitVar[list[Callable]]    = field(default=None)
 
     sieve          : AcabSieve                  = field(init=False, default=None)
-    handler_specs  : Dict[pseudo, Callable]     = field(init=False, default_factory=dict)
-    loose_handlers : List[Handler]              = field(init=False, default_factory=list)
-    _data          : Dict[str, Any]             = field(init=False, default_factory=dict)
+    handler_specs  : dict[pseudo, HandlerSpec]  = field(init=False, default_factory=dict)
+    loose_handlers : list[Handler]              = field(init=False, default_factory=list)
+    _data          : dict[str, Any]             = field(init=False, default_factory=dict)
 
-    _default_sieve : ClassVar[List[Callable]]   = [str]
+    _default_sieve : ClassVar[list[Callable]]   = [str]
 
     @dataclass
     class HandlerOverride:
@@ -57,7 +59,7 @@ class HandlerSystem_i(cABC.MutableMapping, cABC.Callable):
         """
         signal   : str              = field()
         value    : Value            = field()
-        data     : Dict[Any, Any]   = field(default_factory=dict)
+        data     : dict[Any, Any]   = field(default_factory=dict)
 
 
     @staticmethod
@@ -79,7 +81,7 @@ class HandlerSystem_i(cABC.MutableMapping, cABC.Callable):
             raise AcabHandlerException(f"Bad Handler in:", init_handlers) from err
 
 
-    def __contains__(self, signal: Union[str, Sentence_i, Handler, HandlerSpec]) -> bool:
+    def __contains__(self, signal: ContainParams) -> bool:
         if isinstance(signal, str):
             return signal in self.handler_specs
         elif isinstance(signal, Sentence_i):
@@ -113,7 +115,7 @@ class HandlerSystem_i(cABC.MutableMapping, cABC.Callable):
     def __repr__(self):
         return f"<{self.__class__.__name__}>"
 
-    def lookup(self, value:Optional[Value]=None) -> HandlerSpec:
+    def lookup(self, value:[Value|None]=None) -> HandlerSpec:
         """ run the sieve on the value to get a handler """
         if value is None:
             return self.handler_specs[DEFAULT_HANDLER_SIGNAL]
@@ -135,7 +137,7 @@ class HandlerSystem_i(cABC.MutableMapping, cABC.Callable):
         # Final resort
         return self.handler_specs[DEFAULT_HANDLER_SIGNAL]
 
-    def override(self, new_signal: Union[bool, str], value, data=None) -> Overrider:
+    def override(self, new_signal: bool | str, value, data=None) -> Overrider:
         """ wrap a value to pass data along with it, or explicitly control the signal it produces for handlers """
         # TODO override on an override
         if bool(new_signal) and new_signal not in self:
@@ -183,7 +185,7 @@ class HandlerSystem_i(cABC.MutableMapping, cABC.Callable):
 
         # TODO: Then try to register any loose handlers
 
-    def _register_data(self, data: Dict[str, Any], *, signal:str=None):
+    def _register_data(self, data: dict[str, Any], *, signal:str=None):
         """
         Register additional data that abstractions may access
         """
@@ -210,7 +212,7 @@ class HandlerSystem_i(cABC.MutableMapping, cABC.Callable):
         pass
 
     @abc.abstractmethod
-    def extend(self, modules:List[ModuleComponents]):
+    def extend(self, modules:list[ModuleComponents]):
         """ Abstract because different handlers use
         different module components """
         pass
@@ -222,17 +224,17 @@ class HandlerSystem_i(cABC.MutableMapping, cABC.Callable):
 @dataclass
 class HandlerSpec(cABC.MutableSequence, cABC.Callable):
 
-    signal       : Union[str, Sentence_i]
-    flags         : List[Enum]                    = field(default_factory=list)
-    func_api      : Union[Type[Any], Callable]    = field(default=None)
-    struct_api    : Union[Type[Any], Structure_i] = field(default=None)
-    data_api      : List[str]                     = field(default_factory=list)
-    handler_limit : slice                         = field(default=None)
+    signal        : str | Sentence_i | Enum
+    flags         : list[Enum]              = field(default_factory=list)
+    func_api      : Type[Any] | Callable   = field(default=None)
+    struct_api    : Type[Any] | Structure_i = field(default=None)
+    data_api      : list[str]               = field(default_factory=list)
+    handler_limit : slice                   = field(default=None)
 
-    data            : Dict[str, Any]     = field(init=False, default_factory=dict)
-    handlers        : List[Handler]      = field(init=False, default_factory=list)
-    struct          : Optional[Callable] = field(init=False, default=None)
-    h_limit_history : bool               = field(init=False, default=False)
+    data            : dict[str, Any]        = field(init=False, default_factory=dict)
+    handlers        : list[Handler]         = field(init=False, default_factory=list)
+    struct          : None | Callable       = field(init=False, default=None)
+    h_limit_history : bool                  = field(init=False, default=False)
 
     flag_e              : Enum = Enum("HandlerFlags", "OVERRIDE MERGE APPEND PREPEND COLLECT REDUCE")
 
@@ -267,7 +269,7 @@ class HandlerSpec(cABC.MutableSequence, cABC.Callable):
     def __setitem__(self, key, val):
         raise NotImplementedError("Handler Spec's should not set items")
 
-    def __call__(self, *args, **kwargs) -> Optional[Any]:
+    def __call__(self, *args, **kwargs) -> None | Any:
         # TODO more advanced logic
         if len(args) < 2:
             args = list(args) + [self.struct]
@@ -287,7 +289,7 @@ class HandlerSpec(cABC.MutableSequence, cABC.Callable):
                        struct_api=self.struct_api,
                        data_api=self.data_api)
 
-    # Set APIs ################################################################
+    # set APIs ################################################################
     def spec_from(self, target):
         """
         Decorator to use as the spec's interface.
@@ -305,7 +307,7 @@ class HandlerSpec(cABC.MutableSequence, cABC.Callable):
         self.func_api = target
         return self
 
-    def require_data(self, data: List[str]):
+    def require_data(self, data: list[str]):
         self.data_api += data
         return self
 
@@ -411,7 +413,7 @@ class HandlerSpec(cABC.MutableSequence, cABC.Callable):
 class HandlerComponent_i:
     """ Utility Class Component for easy creation of a handler """
 
-    signal : Optional[str] = field(default=None)
+    signal : None | str = field(default=None)
 
     def verify(self, instruction) -> bool:
         return False
@@ -428,13 +430,13 @@ class Handler(cABC.Callable, cABC.Iterable):
     """ A Handler implementation for registering
     individual functions or methods """
 
-    signal   : Union[Sentence, str]
-    func     : Optional[Callable]    = field(default=None)
-    struct_i : Optional[Callable]    = field(default=None)
-    verify_f : Optional[Callable]    = field(default=None)
-    flags    : Set[Enum]             = field(default_factory=list)
+    signal   : Sentence | str
+    func     : None | Callable     = field(default=None)
+    struct_i : None | Callable     = field(default=None)
+    verify_f : None | Callable     = field(default=None)
+    flags    : set[Enum]           = field(default_factory=set)
 
-    struct   : Optional[Structure]   = field(default=None)
+    struct   : None | Structure    = field(default=None)
 
     def __post_init__(self):
         if isinstance(self.func, type):
@@ -496,8 +498,8 @@ class Handler_Fragment(cABC.Sized, cABC.Iterable):
     """ Structure of Handlers to be added to a system, and any
     data they require
     """
-    specs       : List[HandlerSpec]        = field(default_factory=list)
-    handlers    : List[Handler]            = field(default_factory=list)
+    specs       : list[HandlerSpec]        = field(default_factory=list)
+    handlers    : list[Handler]            = field(default_factory=list)
     target_i    : HandlerSystem_i          = field(default=HandlerSystem_i)
 
 

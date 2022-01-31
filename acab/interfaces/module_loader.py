@@ -10,9 +10,9 @@ from types import TracebackType
 from dataclasses import dataclass, field
 from importlib import import_module
 from types import ModuleType
-from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
-                    List, Mapping, Match, MutableMapping, Optional, Sequence,
-                    Set, Tuple, TypeVar, Union, cast)
+from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
+                    Mapping, Match, MutableMapping, Sequence,
+                    Tuple, TypeVar, cast)
 
 from acab import types as AT
 from acab.error.importer import AcabImportException
@@ -29,10 +29,10 @@ class ModuleComponents():
     """ Simple holder for extracted module components """
 
     source        : str                    = field()
-    dsl_fragments : List[Handler_Fragment] = field()
-    semantics     : List[Handler_Fragment] = field()
-    printers      : List[Handler_Fragment] = field()
-    operators     : List[Sentence]         = field()
+    dsl_fragments : list[Handler_Fragment] = field()
+    semantics     : list[Handler_Fragment] = field()
+    printers      : list[Handler_Fragment] = field()
+    operators     : list[Sentence]         = field()
 
     def report(self):
         frags     = f"{ len(self.dsl_fragments) } DSL Fragments"
@@ -55,7 +55,7 @@ class ModuleComponents():
 @dataclass
 class ModuleLoader_i(cABC.Mapping):
     """ Describes how an engine loads ACAB/py modules """
-    loaded_modules       : Dict[str, ModuleComponents]  = field(init=False, default_factory=dict)
+    loaded_modules       : dict[str, ModuleComponents]  = field(init=False, default_factory=dict)
 
     def __getitem__(self, key):
         return self.loaded_modules[key]
@@ -70,7 +70,7 @@ class ModuleLoader_i(cABC.Mapping):
     def __len__(self):
         return len(self.loaded_modules)
 
-    def __contains__(self, other: Union[ModuleType, str]):
+    def __contains__(self, other: ModuleType | str):
         return str(other) in self.loaded_modules
 
     def reload_all_modules(self):
@@ -78,14 +78,14 @@ class ModuleLoader_i(cABC.Mapping):
         self.loaded_modules.clear()
         self._load_modules(loaded)
 
-    def load_modules(self, *modules: List[str]) -> List[ModuleComponents]:
+    def load_modules(self, *modules: list[str]) -> list[ModuleComponents]:
         """ Given ModuleInterface objects,
         store them then tell the working memory to load them
         return a list of dictionaries
         """
         return [self.load_module(x) for x in modules]
 
-    def load_module(self, maybe_module: Union[ModuleType, str]) -> ModuleComponents:
+    def load_module(self, maybe_module: ModuleType | str) -> ModuleComponents:
         """
         Load a module, extract operators and dsl fragments from it,
         put the operators into the operators store,

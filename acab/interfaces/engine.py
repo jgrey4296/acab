@@ -3,9 +3,9 @@ import collections.abc as cABC
 import logging as root_logger
 from dataclasses import dataclass, field
 from os.path import abspath, exists, expanduser, split
-from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
-                    List, Mapping, Match, MutableMapping, Optional, Sequence,
-                    Set, Tuple, TypeVar, Union, cast)
+from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
+                    Mapping, Match, MutableMapping, Sequence,
+                    Tuple, TypeAlias, TypeVar, cast)
 
 logging = root_logger.getLogger(__name__)
 
@@ -13,7 +13,7 @@ from acab import types as AT
 from acab.core.decorators.engine import EnsureEngineInitialised
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces.context import ContextSet_i
-from acab.interfaces.dsl import DSL_Fragment, DSL_Builder_i
+from acab.interfaces.dsl import DSL_Builder_i, DSL_Fragment
 from acab.interfaces.module_loader import ModuleLoader_i
 from acab.interfaces.printing import PrintSystem_i
 from acab.interfaces.semantic import SemanticSystem_i
@@ -32,10 +32,10 @@ class AcabEngine_i(cABC.Callable, cABC.Sequence, AcabReducible):
     dsl_builder    : DSL_Builder_i    = field()
 
     # Modules to load
-    modules        : List[str]        = field(default_factory=list)
+    modules        : list[str]        = field(default_factory=list)
     # Files to load
-    load_paths     : List[str]        = field(default_factory=list)
-    init_strs      : List[str]        = field(default_factory=list)
+    load_paths     : list[str]        = field(default_factory=list)
+    init_strs      : list[str]        = field(default_factory=list)
 
     initialised    : bool             = field(init=False, default=False)
     # Abstract fields, need to be instantiated
@@ -103,7 +103,7 @@ class AcabEngine_i(cABC.Callable, cABC.Sequence, AcabReducible):
 
         return self.printer.pprint(*sens)
 
-    def load_modules(self, *modules: List[str]) -> List[ModuleComponents]:
+    def load_modules(self, *modules: list[str]) -> list[ModuleComponents]:
         logging.info("Loading Modules")
         self._module_loader.load_modules(*modules)
         loaded_mods = self._module_loader.loaded_modules.values()

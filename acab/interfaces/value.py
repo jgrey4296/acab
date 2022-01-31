@@ -6,36 +6,41 @@ import abc
 import collections.abc as cABC
 import logging as root_logger
 from dataclasses import dataclass, field
-from typing import (Any, Dict, List, Mapping, Match, MutableMapping, Optional,
-                    Sequence, Set, Tuple, TypeVar, Union, cast)
+from typing import (Any, Mapping, Match, MutableMapping,
+                    Sequence, Type, Tuple, TypeVar, cast, TypeAlias, ClassVar)
 from uuid import UUID, uuid1
+from re import Pattern
 
 from acab import types as AT
 from acab.core.config.config import AcabConfig
-from acab.interfaces.util import AcabReducible
+from acab.interfaces.util import AcabReducible, AcabBuildable, AcabUUID
 
 logging       = root_logger.getLogger(__name__)
 
 config        = AcabConfig.Get()
 
-Sentence    : str = AT.Sentence
-Value       : str = AT.Value
-Instruction : str = AT.Instruction
+Sentence    : TypeAlias = AT.Sentence
+Value       : TypeAlias = AT.Value
+Variable    : TypeAlias = Value
+Tag         : TypeAlias = Value
+Instruction : TypeAlias = AT.Instruction
+ValueData   : TypeAlias = AT.ValueData
+# extended in AcabValue to also have Value_i:
+ValueCore   = None | str | Pattern | list
 
 @dataclass(frozen=True)
-class Value_i(cABC.Hashable):
+class Value_i(cABC.Hashable, AcabBuildable):
 
-    name   : str            = field(default=None)
-    value  : Any            = field(default=None)
-    params : List[Value]    = field(default_factory=list)
-    tags   : Set[Value]     = field(default_factory=set)
-    data   : Dict[str, Any] = field(default_factory=dict)
-    uuid   : UUID           = field(default_factory=uuid1)
+    name   : str                  = field(default=None)
+    value  : ValueCore            = field(default=None)
+    params : list[Variable]       = field(default_factory=list)
+    tags   : set[Tag]             = field(default_factory=set)
+    data   : dict[ValueData, Any] = field(default_factory=dict)
+    uuid   : UUID                 = field(default_factory=uuid1)
 
     @staticmethod
-    @abc.abstractmethod
-    def safe_make(value, name, data, _type, **kwargs) -> Value:
-        pass
+    def extend_core(*ts:Type):
+        ValueCore = reduce(lambda a, b: a | b, ts, AcabValue._value_types)
 
     @property
     @abc.abstractmethod
@@ -87,8 +92,9 @@ class Instruction_i(Value_i, cABC.Sized, cABC.Container, AcabReducible):
         pass
 
     @abc.abstractmethod
-    def from_sentences(self) -> List[Instruction]:
+    def from_sentences(self) -> list[Instruction]:
         pass
+
     def do_break(self):
         self.breakpoint = not self.breakpoint
 
@@ -100,7 +106,7 @@ class Instruction_i(Value_i, cABC.Sized, cABC.Container, AcabReducible):
 @dataclass(frozen=True)
 class Sentence_i(Instruction_i, cABC.Sequence):
 
-    value: List[Value]  = field(default_factory=list)
+    value: list[Value]  = field(default_factory=list)
     # TODO a weak dict mapping names -> values
 
     @abc.abstractmethod
@@ -126,7 +132,7 @@ class Sentence_i(Instruction_i, cABC.Sequence):
         pass
 
     @property
-    def words(self) -> List[Value]:
+    def words(self) -> list[Value]:
         return self.value
 
 
@@ -136,3 +142,8 @@ class Operator_i(Value_i, cABC.Callable):
 
 class ActionOperator(Operator_i):
     pass
+
+
+#  ############################################################################
+# Needs to be concrete / have no NewTypes,
+# as its used in isinstance checks

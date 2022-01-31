@@ -4,10 +4,10 @@ Here, 'Data' means something analogous to ADTs
 """
 import abc
 import collections.abc as cABC
-from dataclasses import dataclass, field
-from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
-                    List, Mapping, Match, MutableMapping, Optional, Sequence,
-                    Set, Tuple, TypeVar, Union, cast)
+from dataclasses import InitVar, dataclass, field
+from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
+                    Mapping, Match, MutableMapping, Sequence,
+                    Tuple, TypeAlias, TypeVar, cast)
 
 from acab import types as AT
 
@@ -20,7 +20,7 @@ class Node_i(cABC.MutableMapping, cABC.Hashable):
     """  """
 
     value    : Value
-    children : Dict[str, Node] = field(init=False, default_factory=dict)
+    children : dict[str, Node] = field(init=False, default_factory=dict)
 
     @staticmethod
     @abc.abstractmethod
@@ -30,7 +30,7 @@ class Node_i(cABC.MutableMapping, cABC.Hashable):
 
 
     @abc.abstractmethod
-    def _default_setup(self, *, path: [Node], data: Dict[Any,Any], context: Dict[Any,Any]):
+    def _default_setup(self, *, path: [Node], data: dict[Any,Any], context: dict[Any,Any]):
         """ Called by a Semantics upon creation of a new node """
         pass
 
@@ -56,7 +56,7 @@ class Node_i(cABC.MutableMapping, cABC.Hashable):
         pass
 
     @abc.abstractmethod
-    def clear(self) -> List[Node]:
+    def clear(self) -> list[Node]:
         pass
 
 
@@ -81,7 +81,7 @@ class Node_i(cABC.MutableMapping, cABC.Hashable):
 class Structure_i(cABC.MutableMapping):
     """ The structures which semantics operate on """
     root       : Node           = field()
-    components : Dict[str, Any] = field(init=False, default_factory=dict)
+    components : dict[str, Any] = field(init=False, default_factory=dict)
 
     @staticmethod
     @abc.abstractmethod

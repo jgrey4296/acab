@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import collections.abc as cABC
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
+from typing import Tuple, Any
+from typing import Callable, Iterator, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic
 import abc
@@ -19,8 +19,8 @@ class AcabSieve(cABC.Container, cABC.Sized):
     to a set of args, which might return results
     """
 
-    funcs    : List[Callable]     = field(default_factory=list)
-    break_fn : Optional[Callable] = field(default=None)
+    funcs    : list[Callable]     = field(default_factory=list)
+    break_fn : None | Callable = field(default=None)
 
     def fifo(self, *args, **kwargs) -> Iterator[Any]:
         for sieve_fn in self.funcs:
@@ -29,7 +29,7 @@ class AcabSieve(cABC.Container, cABC.Sized):
                 continue
             yield result
 
-    def fifo_collect(self, *args, **kwargs) -> List[Any]:
+    def fifo_collect(self, *args, **kwargs) -> list[Any]:
         # sieve from most to least specific
         results = []
         for sieve_fn in self.funcs:
@@ -43,7 +43,7 @@ class AcabSieve(cABC.Container, cABC.Sized):
 
         return results
 
-    def filo_collect(self, *args, **kwargs) -> List[Any]:
+    def filo_collect(self, *args, **kwargs) -> list[Any]:
         # sieve from most to least specific
         results = []
         for sieve_fn in self.funcs[::-1]:
@@ -57,17 +57,17 @@ class AcabSieve(cABC.Container, cABC.Sized):
 
         return results
 
-    def fifo_first(self, *args, **kwargs) -> Optional[Any]:
+    def fifo_first(self, *args, **kwargs) -> None | Any:
         # sieve from most to least specific
         for sieve_fn in self.funcs:
-            result += sieve_fn(*args, **kwargs)
+            result = sieve_fn(*args, **kwargs)
             if result is None:
                 continue
             return result
 
         return None
 
-    def filo_first(self, *args, **kwargs) -> Optional[Any]:
+    def filo_first(self, *args, **kwargs) -> None | Any:
         # sieve from most to least specific
         results = []
         for sieve_fn in self.funcs[::-1]:
