@@ -41,7 +41,7 @@ class AcabNode(DI.Node_i):
     @staticmethod
     def Root():
         """ Create a new root node """
-        return AcabNode(value=AcabValue.safe_make(ROOT))
+        return AcabNode(value=AcabValue.build(ROOT))
 
 
     def __post_init__(self):

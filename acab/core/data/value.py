@@ -19,13 +19,13 @@ from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.core.decorators.util import cache
 from acab.error.base import AcabBasicException
+from acab.interfaces.sieve import AcabSieve
+from acab.core.data.util import name_sieve_fns
 
 logging          = root_logger.getLogger(__name__)
 
 config           = AcabConfig.Get()
-ANON_VALUE       = config.prepare("Symbols", "ANON_VALUE")()
 BIND_SYMBOL      = config.prepare("Symbols", "BIND")()
-AT_BIND_SYMBOL   = config.prepare("Symbols", "AT_BIND")()
 FALLBACK_MODAL   = config.prepare("Symbols", "FALLBACK_MODAL", actions=[config.actions_e.STRIPQUOTE])()
 
 UUID_CHOP        = bool(int(config.prepare("Print.Data", "UUID_CHOP")()))
@@ -39,19 +39,19 @@ ValueData   : TypeAlias = AT.ValueData
 
 VI.ValueCore |= VI.Value_i
 
+name_sieve = AcabSieve(name_sieve_fns)
 
 @dataclass(frozen=True)
 class AcabValue(VI.Value_i, Generic[T]):
-    _value_types : ClassVar[Set[Any]] = set([VI.Value_i, str, Pattern, list, type(None)])
-    value        : T                  = field(default=None)
 
-    @staticmethod
-    def safe_make(value: T,
+    @classmethod
+    def build(cls, value: T, *,
                   name: str=None,
-                  data: Optional[Dict[Any, Any]]=None,
-                  _type: Optional[Sen]=None,
+                  data: None|dict[ValueData, Any]=None,
+                  _type: None|Sen=None,
                   **kwargs) -> Value:
-        """ Wrap the provided value in an AcabValue,
+        """ Idempotent construction.
+        Wrap the provided value in an AcabValue,
         but only if it isn't an AcabValue already """
         _data = {}
         if data is not None:
@@ -66,36 +66,18 @@ class AcabValue(VI.Value_i, Generic[T]):
             return value.copy(data=new_data)
 
 
-        return AcabValue(value=value, data=_data, **kwargs)
+        return cls(value=value, data=_data, **kwargs)
 
     def __post_init__(self):
-        # Applicable values: Self + any registered
-        value_type_tuple = tuple(list(AcabValue._value_types))
+        if not isinstance(self.value, VI.ValueCore):
+            raise TypeError("AcabValue must wrap a valid core type", self.value)
 
-        if not isinstance(self.value, value_type_tuple):
-            raise TypeError("AcabValue must wrap a valid type", self.value)
-
-        # NOTE: use of setattr to override frozen temporarily to update name
-        #
-        # TODO: this could be a sieve?
-        # TODO or move into safe_make
+        # NOTE: use of setattr to override frozen temporarily to update name and value
         # name update #########################################################
-        name_update = None
-        if self.name is None and self.value is None:
-            name_update = self.__class__.__name__
-        if self.name is not None:
-            assert(isinstance(self.name, str)), self.name
-        elif isinstance(self.value, Pattern):
-            name_update = self.value.pattern
-        elif isinstance(self.value, (list, VI.Instruction_i)):
-            name_update = ANON_VALUE
-        else:
-            name_update = str(self.value)
-
-        if name_update is not None:
-            object.__setattr__(self, "name", name_update)
-            # self.name = name_update
-        # end of name update ##################################################
+        name_update = name_sieve.fifo_first(self)
+        object.__setattr__(self, "name", name_update)
+        # self.name = name_update
+        assert(isinstance(self.name, str)), self.name
 
         if self.value is None:
             object.__setattr__(self, "value", self.name)
@@ -109,7 +91,7 @@ class AcabValue(VI.Value_i, Generic[T]):
 
         original_params = self.params[:]
         self.params.clear()
-        self.params.extend([AcabValue.safe_make(x, data={DS.BIND: True}) for x in original_params])
+        self.params.extend([AcabValue.build(x, data={DS.BIND: True}) for x in original_params])
 
 
     @cache
@@ -284,7 +266,7 @@ class Instruction(AcabValue, VI.Instruction_i):
         new_data = {}
         new_data.update(self.data)
         new_data.update({DS.TYPE_INSTANCE: Sentence.build([DS.TYPE_BOTTOM_NAME])})
-        simple_value = AcabValue.safe_make(self.name, data=new_data)
+        simple_value = AcabValue.build(self.name, data=new_data)
         return simple_value
 
     def to_sentences(self) -> list[VI.Sentence_i]:
@@ -303,7 +285,7 @@ class Sentence(Instruction, VI.Sentence_i):
 
     @staticmethod
     def build(words, **kwargs):
-        safe_words = [AcabValue.safe_make(x) for x in words]
+        safe_words = [AcabValue.build(x) for x in words]
         sen = Sentence(value=safe_words, **kwargs)
         return sen
 
@@ -396,7 +378,7 @@ class Sentence(Instruction, VI.Sentence_i):
         This can flatten entire sentences onto the end
         return modified copy
         """
-        words = self.words
+        words = self.words[:]
         for sen in other:
             assert(isinstance(sen, (list, VI.Sentence_i)))
             words += [x for x in sen]

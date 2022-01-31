@@ -61,7 +61,7 @@ def make_value(s, loc, toks):
     else:
         raise SyntaxError("Unplanned parse type")
 
-    new_val = AcabValue.safe_make(value, data=data, _type=_type)
+    new_val = AcabValue.build(value, data=data, _type=_type)
     return [new_val]
 
 def add_annotations(s, loc, toks):
