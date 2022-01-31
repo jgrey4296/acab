@@ -13,9 +13,9 @@ from copy import deepcopy
 from dataclasses import InitVar, dataclass, field, replace, FrozenInstanceError
 from fractions import Fraction
 from re import Pattern
-from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
-                    List, Mapping, Match, MutableMapping, Optional, Sequence,
-                    Set, Tuple, TypeVar, Union, cast)
+from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
+                    Mapping, Match, MutableMapping, Sequence,
+                    Tuple, TypeVar, TypeAlias, cast)
 from uuid import UUID, uuid1
 from weakref import ref
 
@@ -30,11 +30,11 @@ config = AcabConfig.Get()
 
 logging = root_logger.getLogger(__name__)
 
-Value      = AT.Value
-Operator   = AT.Operator
-Component  = AT.Component
-Container  = AT.Container
-PStructure = AT.ProductionStructure
+Value      : TypeAlias = AT.Value
+Operator   : TypeAlias = AT.Operator
+Component  : TypeAlias = AT.Component
+Container  : TypeAlias = AT.Container
+PStructure : TypeAlias = AT.ProductionStructure
 
 
 # FIXME this should be an interface
@@ -55,7 +55,7 @@ class ProductionOperator(AcabValue):
         object.__setattr__(self, 'value', self.name)
         self.data[DS.TYPE_INSTANCE] =  DS.OPERATOR_PRIM
 
-    def __call__(self, *params: List[Value], data=None):
+    def __call__(self, *params: list[Value], data=None):
         raise NotImplementedError()
 
     def copy(self, **kwargs):
@@ -71,7 +71,7 @@ class ActionOperator(ProductionOperator):
     """ Special Operator type which gets passed the semantic system,
     so it can trigger instructions """
 
-    def __call__(self, *params: List[Value], data=None, semSystem=None):
+    def __call__(self, *params: list[Value], data=None, semSystem=None):
         raise NotImplementedError()
 
 
@@ -114,7 +114,7 @@ class ProductionComponent(Instruction):
         return Sentence.build(words, data=self.data.copy(), name="ProductionComponent")
 
     @staticmethod
-    def from_sentences(sens:List[Sentence]) -> List[Sentence]:
+    def from_sentences(sens:list[Sentence]) -> list[Sentence]:
         result = []
         for sen in sens:
             if sen != "ProductionComponent":
@@ -152,7 +152,7 @@ class ProductionComponent(Instruction):
 class ProductionContainer(Instruction):
     """ Production Container: An applicable statement of multiple component clauses """
 
-    value : List[Sentence] = field(default_factory=list)
+    value : list[Sentence] = field(default_factory=list)
 
     def __post_init__(self):
         super(ProductionContainer, self).__post_init__()
@@ -202,7 +202,7 @@ class ProductionStructure(ProductionContainer):
     A ProductionContainer, supplemented by a dictionary
     to group the clauses
     """
-    structure: Dict[str, Container] = field(default_factory=dict)
+    structure: dict[str, Container] = field(default_factory=dict)
 
     def __post_init__(self):
         # self.value = []

@@ -22,7 +22,7 @@ class ValueAnnotation:
     ValueAnnotation(x) + AcabValue -> AcabValue'[x]
     """
 
-    key   : str = field()
+    key   : AT.ValueData = field()
     value : Any = field(default=None)
 
     def __call__(self, val:Value) -> Value:

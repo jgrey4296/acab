@@ -6,10 +6,11 @@ from copy import deepcopy
 from dataclasses import InitVar, dataclass, field, replace
 from fractions import Fraction
 from re import Pattern
-from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
-                    List, Mapping, Match, MutableMapping, Optional, Sequence,
-                    Set, Tuple, TypeVar, Union, cast)
+from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
+                    Mapping, Match, MutableMapping, Sequence,
+                    Tuple, TypeVar, cast, TypeAlias, Type)
 from uuid import UUID, uuid1
+from functools import reduce
 from weakref import ref
 
 import acab.core.data.default_structure as DS
@@ -29,11 +30,15 @@ FALLBACK_MODAL   = config.prepare("Symbols", "FALLBACK_MODAL", actions=[config.a
 
 UUID_CHOP        = bool(int(config.prepare("Print.Data", "UUID_CHOP")()))
 
-T           = TypeVar('T', str, Pattern, list)
+T           = TypeVar('T', bound=VI.ValueCore)
 
-Value       = AT.Value
-Sen         = AT.Sentence
-Instruction = AT.Instruction
+Value       : TypeAlias = AT.Value
+Sen         : TypeAlias = AT.Sentence
+Instruction : TypeAlias = AT.Instruction
+ValueData   : TypeAlias = AT.ValueData
+
+VI.ValueCore |= VI.Value_i
+
 
 @dataclass(frozen=True)
 class AcabValue(VI.Value_i, Generic[T]):
@@ -222,7 +227,7 @@ class AcabValue(VI.Value_i, Generic[T]):
         safe_params = [x if isinstance(x, VI.Value_i) else AcabValue(x) for x in params]
         return self.copy(params=safe_params)
 
-    def apply_tags(self, tags:List[Value]) -> Value:
+    def apply_tags(self, tags:list[Value]) -> Value:
         """
         return modified copy
         """
@@ -234,7 +239,7 @@ class AcabValue(VI.Value_i, Generic[T]):
         tag_extension.update(tags)
         return self.copy(tags=tag_extension)
 
-    def has_tag(self, *tags:List[Value]) -> bool:
+    def has_tag(self, *tags:list[Value]) -> bool:
         return all([t in self.tags for t in tags])
 
 
@@ -282,11 +287,11 @@ class Instruction(AcabValue, VI.Instruction_i):
         simple_value = AcabValue.safe_make(self.name, data=new_data)
         return simple_value
 
-    def to_sentences(self) -> List[VI.Sentence_i]:
+    def to_sentences(self) -> list[VI.Sentence_i]:
         return []
 
 
-    def from_sentences(self, sens:List[VI.Sentence]) -> List[VI.Instruction]:
+    def from_sentences(self, sens:list[VI.Sentence]) -> list[VI.Instruction]:
         return sens
 
 @dataclass(frozen=True)
@@ -364,7 +369,7 @@ class Sentence(Instruction, VI.Sentence_i):
 
         raise ValueError("Unrecognised argument to Sentence.__getitem__", i)
 
-    def __contains__(self, value:Union[str, Value]):
+    def __contains__(self, value:str|Value):
         return value in self.words or value in [x.name for x in self.words]
 
     @cache
@@ -383,7 +388,7 @@ class Sentence(Instruction, VI.Sentence_i):
         """
         return self.copy(value=[])
 
-    def bind(self, bindings:Dict[Any, Any]) -> Sen:
+    def bind(self, bindings:dict[Any, Any]) -> Sen:
         raise Exception("Deprecated: use acab.modules.values.binding")
 
     def add(self, *other) -> Sen:
@@ -399,7 +404,7 @@ class Sentence(Instruction, VI.Sentence_i):
         new_sen = replace(self, value=words)
         return new_sen
 
-    def prefix(self, prefix:Union[Value, Sen, List]) -> Sen:
+    def prefix(self, prefix:Value|Sen|list) -> Sen:
         """
         For prefix P, this S produces P..S
         """
@@ -411,7 +416,7 @@ class Sentence(Instruction, VI.Sentence_i):
         return prefix.add(self)
 
 
-    def remove_prefix(self, prefix:Union[Value, Sen, List]) -> Sen:
+    def remove_prefix(self, prefix:Value|Sen|list) -> Sen:
         if not isinstance(prefix, (Sentence, list)):
             prefix = [prefix]
 
@@ -444,7 +449,7 @@ class Sentence(Instruction, VI.Sentence_i):
 
         return sen_copy
 
-    def detach_statement(self) -> Tuple[Sen, List[Instruction]]:
+    def detach_statement(self) -> Tuple[Sen, list[Instruction]]:
         """
         The inverse of attach_statement.
         Copy the sentence,
@@ -489,7 +494,7 @@ class Sentence(Instruction, VI.Sentence_i):
         return any([x.is_var for x in self.words])
 
 
-    def match(self, sen:Sen) -> List[Tuple[Value, Value]]:
+    def match(self, sen:Sen) -> list[Tuple[Value, Value]]:
         """ Match a target sentence's variables to self's target
         as tuples of (bind_name, value)
 
@@ -507,7 +512,7 @@ class Sentence(Instruction, VI.Sentence_i):
         return results
 
 
-    def to_sentences(self) -> List[VI.Sentence_i]:
+    def to_sentences(self) -> list[VI.Sentence_i]:
         simple_sen, statements = self.detach_statement()
         # TODO turn statements to sentences
         return [simple_sen]
@@ -515,5 +520,5 @@ class Sentence(Instruction, VI.Sentence_i):
 
     @property
     @cache
-    def vars(self) -> List[Value]:
+    def vars(self) -> list[Value]:
         return [x for x in self.words if x.is_var]

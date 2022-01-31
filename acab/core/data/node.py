@@ -4,26 +4,26 @@ AcabNode: The internal type which knowledge base data structures use.
 """
 import logging as root_logger
 from dataclasses import dataclass, field
-from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
-                    List, Mapping, Match, MutableMapping, Optional, Sequence,
-                    Set, Tuple, TypeVar, Union, cast)
+from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
+                    Mapping, Match, MutableMapping, Sequence, Tuple, TypeAlias,
+                    TypeVar, cast)
 from uuid import UUID, uuid1
 from weakref import ReferenceType, ref
 
-from acab import types as AT
 import acab.interfaces.data as DI
 import acab.interfaces.value as VI
+from acab import types as AT
 from acab.core.config.config import AcabConfig
-from acab.core.data.value import AcabValue, Sentence
-from  acab.core.decorators.util import cache
-
 from acab.core.data.default_structure import ROOT
+from acab.core.data.value import AcabValue, Sentence
+from acab.core.decorators.util import cache
+
 logging = root_logger.getLogger(__name__)
 
 config = AcabConfig.Get()
 
-Node  = AT.Node
-Value = AT.Value
+Node  : TypeAlias = AT.Node
+Value : TypeAlias = AT.Value
 
 @dataclass
 class AcabNode(DI.Node_i):
@@ -32,10 +32,10 @@ class AcabNode(DI.Node_i):
     """
     # TODO make children a dict of dicts
     # value  : AcabValue       = field(default=None)
-    data     : Dict[str, Any]                = field(default_factory=dict)
+    data     : dict[str, Any]                = field(default_factory=dict)
     path     : Sentence                      = field(default=None)
-    parent   : Optional[ReferenceType]       = field(default=None)
-    children : Dict[str, Node]               = field(default_factory=dict)
+    parent   : None | ReferenceType          = field(default=None)
+    children : dict[str, Node]               = field(default_factory=dict)
     uuid     : UUID                          = field(default_factory=uuid1)
 
     @staticmethod
@@ -107,7 +107,7 @@ class AcabNode(DI.Node_i):
         node.set_parent(self)
         return node
 
-    def get(self, key:Union[str, Value, Node]) -> Node:
+    def get(self, key:str|Value|Node) -> Node:
         """ Get a node using a string, or a node itself """
         if isinstance(key, str) and key in self.children:
             return self.children[key]
@@ -136,7 +136,7 @@ class AcabNode(DI.Node_i):
 
         return result
 
-    def remove(self, key:Tuple[str, Node]) -> Optional[Node]:
+    def remove(self, key:Tuple[str, Node]) -> None|Node:
         """ Delete a child from this node, return success state
         mutate object
         """
@@ -151,7 +151,7 @@ class AcabNode(DI.Node_i):
 
         return result
 
-    def clear(self) -> List[Node]:
+    def clear(self) -> list[Node]:
         """ Remove all children from this node
         mutate object
         """
@@ -179,7 +179,7 @@ class AcabNode(DI.Node_i):
         return Sentence.build(path)
 
 
-    def _default_setup(self, path: [Node], *, data: Dict[Any,Any], context: Dict[Any,Any]):
+    def _default_setup(self, path: list[Node], *, data: dict[Any,Any], context: dict[Any,Any]):
         """ Called by a Semantics upon creation of a new node """
         pass
     def _update_node(self, path, data, context):
