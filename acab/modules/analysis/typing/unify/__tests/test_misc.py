@@ -28,6 +28,10 @@ dsl   = ppDSL.PyParseDSL()
 dsl.register(EXLO_Parser).register(TypingDSL)
 dsl.build()
 
+# AcabReducible          : type_definition -> sentences with unique variable at head
+# Sentence.remove_prefix : Sentence remove prefix prior to type being checked
+# Typing is a statement. use Query : Type retrieval from WM
+# Use Rules for : Product / Sum / Operator Type differentiation
 
 class UnifierTests(unittest.TestCase):
 
@@ -66,54 +70,21 @@ class UnifierTests(unittest.TestCase):
         self.assertIn(id(sen1[-1].type), ctx_r)
         self.assertEqual(ctx_r[id(sen1[-1].type)], dsl("blah")[0])
 
-    def test_apply_types_var(self):
-        sen1 = dsl("a.test.sentence")[0]
-        sen2 = dsl("a.test.$x(::blah)")[0]
-
+    def test_types_check_simple(self):
+        sen1 = dsl("a(::blah).test.sentence")[0]
+        sen2 = dsl("$x(::blah).test.sentence(::bloo)")[0]
         ctx_r = tuf.type_unify(sen1, sen2, CtxIns())
-        sen1c = tuf.typed_sen_logic.apply(sen1, ctx_r)
 
         self.assertTrue(ctx_r)
-        self.assertEqual(ctx_r[sen1c[-1]].type, sen2[-1].type)
+        self.assertIn(id(sen1[-1].type), ctx_r)
+        self.assertEqual(ctx_r[id(sen1[-1].type)], dsl("bloo")[0])
 
-    def test_apply_types_var_left(self):
-        sen1 = dsl("a.test.$x")[0]
-        sen2 = dsl("a.test.sentence(::blah)")[0]
+    def test_types_check_simple_fail(self):
+        sen1 = dsl("a(::blah).test.sentence(::aweg)")[0]
+        sen2 = dsl("$x(::blah).test.sentence(::bloo)")[0]
 
-        ctx_r = tuf.type_unify(sen1, sen2, CtxIns())
-        sen1c = tuf.typed_sen_logic.apply(sen1, ctx_r)
-
-        self.assertTrue(ctx_r)
-        self.assertEqual(sen1c[-1].type, sen2[-1].type)
-
-    def test_apply_types_var_left_repeated(self):
-        sen1 = dsl("a.test.$x.$x")[0]
-        sen2 = dsl("a.test.sentence(::blah)")[0]
-
-        ctx_r = tuf.type_unify(sen1, sen2, CtxIns())
-        sen1c = tuf.typed_sen_logic.apply(sen1, ctx_r)
-
-        self.assertTrue(ctx_r)
-        self.assertEqual(sen1c[-1].type, sen2[-2].type)
-
-    def test_apply_types_var_left_repeated_conflict(self):
-        sen1 = dsl("a.test.$x.$x(::bloo)")[0]
-        sen2 = dsl("a.test.sentence(::blah).awf(::$y)")[0]
-
-        with self.assertRaises(TE.TypeConflictException):
+        with self.assertRaises(TE.AcabTypingException):
             ctx_r = tuf.type_unify(sen1, sen2, CtxIns())
-
-
-
-    def test_apply_type_var(self):
-        sen1 = dsl("a.test.$x(::$y)")[0]
-        sen2 = dsl("a.test.sentence(::blah.bloo)")[0]
-
-        ctx_r = tuf.type_unify(sen1, sen2, CtxIns())
-        sen1c = tuf.typed_sen_logic.apply(sen1, ctx_r)
-
-        self.assertEqual(sen1c[-1].type, dsl("blah.bloo")[0])
-
 
 
     def test_apply_types_generalise(self):

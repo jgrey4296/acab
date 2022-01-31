@@ -140,6 +140,13 @@ class UnifyUtilTests(unittest.TestCase):
 
         self.assertEqual(sen1, sen1s)
 
+    def test_apply_substitutions_copied(self):
+        sen1 = dsl.parseString("a.b.c")[0]
+        sen1c = sen1.copy()
+        sen1s = suf.basic_unify.apply(sen1c, CtxIns())
+
+        self.assertEqual(sen1, sen1s)
+
     def test_apply_substitutions_2(self):
         sen1 = dsl.parseString("a.b.$x")[0]
         sen1s = suf.apply_substitutions(sen1, CtxIns({"x" : "blah"}))
@@ -167,6 +174,15 @@ class UnifyUtilTests(unittest.TestCase):
     def test_apply_type_substitution_type_var2(self):
         sen1 = dsl.parseString("a.b.$c(::$x)")[0]
         sen1s = tuf.apply_types_sub(sen1, CtxIns({'x': dsl.parseString("blah.bloo")[0]}))
+
+        sen_target = dsl.parseString("a.b.$c(::blah.bloo)")[0]
+
+        self.assertEqual(sen1s, sen_target)
+
+    def test_apply_type_substitution_type_var2_copied(self):
+        sen1 = dsl.parseString("a.b.$c(::$x)")[0]
+        sen1c = sen1.copy()
+        sen1s = tuf.type_unify.apply(sen1c, CtxIns({'x': dsl.parseString("blah.bloo")[0]}))
 
         sen_target = dsl.parseString("a.b.$c(::blah.bloo)")[0]
 

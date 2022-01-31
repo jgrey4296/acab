@@ -21,11 +21,18 @@ from acab.modules.operators.dfs.semantics import DFSSemantics
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 from acab.modules.semantics.default import DEFAULT_SEMANTICS
 from acab.modules.structures.trie.default import DEFAULT_TRIE
+from acab.modules.analysis.typing.unify.util import gen_f
+from acab.modules.analysis.typing.unify import type_unify_fns as tuf
 
 # Set up the parser to ease test setup
 dsl   = ppDSL.PyParseDSL()
 dsl.register(EXLO_Parser).register(TypingDSL)
 dsl.build()
+
+# AcabReducible          : type_definition -> sentences with unique variable at head
+# Sentence.add_prefix    : add prefix of unique var prior to unification with test node
+# Typing is a statement. use Query : Type retrieval from WM, unify is an operator
+# Use Rules for : Product / Sum / Operator Type differentiation
 
 class TypeCheckTests(unittest.TestCase):
 
@@ -53,6 +60,21 @@ class TypeCheckTests(unittest.TestCase):
         return 1
 
     #----------
+    def test_type_to_sentences(self):
+        a_sen = dsl("a.test.sen(::def).sub.blah")[0]
+        # remove initial prefix
+        chopped = a_sen.remove_prefix(dsl("a.test")[0])
+        type_ = dsl("def(::τ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0][-1]
+        as_sens = type_.to_sentences()
+        new_var = gen_f()
+        # Add unique var prefix
+        appended = [new_var.add(x) for x in as_sens]
+        # unify them:
+        unified = tuf.type_unify(chopped, appended[0], CtxIns())
+        result  = tuf.type_unify.apply(appended[0], unified)
+
+        self.assertEqual(chopped, result)
+
     @unittest.skip("")
     def test_basic(self):
         semsys  = DEFAULT_SEMANTICS()
