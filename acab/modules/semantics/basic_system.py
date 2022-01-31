@@ -98,3 +98,10 @@ class BasicSemanticSystem(SemanticSystem_i):
             ops = f", operators={len(self._operator_cache)}"
 
         return f"{self.__class__.__name__}(handlers={len(self.handler_specs)}, sieve={len(self.sieve)}{ops})"
+
+    @staticmethod
+    def from_sentences(self, sens):
+        raise NotImplementedError()
+
+    def to_word(self):
+        raise NotImplementedError()

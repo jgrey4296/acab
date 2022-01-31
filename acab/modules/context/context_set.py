@@ -188,12 +188,6 @@ class ContextInstance(CtxInt.ContextInstance_i):
         self.set_current_node(self.nodes[word.key()])
         return self
 
-    def to_sentences(self):
-        """
-        TODO ctxins -> sentences
-        """
-        raise NotImplementedError()
-
     def finish(self):
         return self
 

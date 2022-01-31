@@ -130,6 +130,12 @@ class BreadthTrieSemantics(SI.StructureSemantics_i):
 
 
 
+    @staticmethod
+    def from_sentences(self, sens):
+        raise NotImplementedError()
+
+    def to_word(self):
+        raise NotImplementedError()
 
 class DepthTrieSemantics(SI.StructureSemantics_i):
     """

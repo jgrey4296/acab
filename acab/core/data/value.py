@@ -272,7 +272,7 @@ class Instruction(AcabValue, VI.Instruction_i):
     def to_sentences(self) -> list[VI.Sentence_i]:
         return []
 
-
+    @staticmethod
     def from_sentences(self, sens:list[VI.Sentence]) -> list[VI.Instruction]:
         return sens
 

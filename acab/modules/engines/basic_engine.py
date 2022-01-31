@@ -85,3 +85,15 @@ class AcabBasicEngine(AcabEngine_i):
         printer = repr(self.printer)
         modules = repr(self._module_loader)
         return f"{clsname}(\n-- ({parser_base})\n-- {semantics}\n-- {printer}\n-- {modules}\n)"
+
+    @staticmethod
+    def from_sentences(self, sens):
+        # TODO make the engine, then load sens
+        # for sen in sens:
+        #     self(sen)
+
+        # return self
+        raise NotImplementedError()
+
+    def to_word(self):
+        raise NotImplementedError()

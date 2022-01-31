@@ -87,14 +87,6 @@ class Instruction_i(Value_i, cABC.Sized, cABC.Container, AcabReducible):
     breakpoint : bool = field(init=False, default=False)
     # TODO add listener field for similar to breakpoint
 
-    @abc.abstractmethod
-    def to_word(self) -> Value:
-        pass
-
-    @abc.abstractmethod
-    def from_sentences(self) -> list[Instruction]:
-        pass
-
     def do_break(self):
         self.breakpoint = not self.breakpoint
 

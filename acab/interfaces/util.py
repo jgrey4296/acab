@@ -34,6 +34,7 @@ class AcabReducible(metaclass=abc.ABCMeta):
         """ Convert to sentences for printing """
         pass
 
+    @staticmethod
     @abc.abstractmethod
     def from_sentences(self, sens:list[AT.Sentence]) -> list[Any]:
         pass
