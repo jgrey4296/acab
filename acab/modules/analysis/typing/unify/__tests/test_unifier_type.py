@@ -1,4 +1,4 @@
-#https://docs.python.org/3/library/unittest.html
+# https://docs.python.org/3/library/unittest.html
 # https://docs.python.org/3/library/unittest.mock.html
 
 from os.path import splitext, split
@@ -112,17 +112,18 @@ class UnifierTests(unittest.TestCase):
         sen2 = dsl("a.test.$x(::blah)")[0]
 
         ctx_r = tuf.type_unify(sen1, sen2, CtxIns())
-        sen1c = tuf.typed_sen_logic.apply(sen1, ctx_r)
+        sen1c = tuf.type_unify.apply(sen1, ctx_r)
 
         self.assertTrue(ctx_r)
         self.assertEqual(ctx_r[sen1c[-1]].type, sen2[-1].type)
+        self.assertEqual(sen1c[-1].type, "_:blah")
 
     def test_apply_types_var_left(self):
         sen1 = dsl("a.test.$x")[0]
         sen2 = dsl("a.test.sentence(::blah)")[0]
 
         ctx_r = tuf.type_unify(sen1, sen2, CtxIns())
-        sen1c = tuf.typed_sen_logic.apply(sen1, ctx_r)
+        sen1c = tuf.type_unify.apply(sen1, ctx_r)
 
         self.assertTrue(ctx_r)
         self.assertEqual(sen1c[-1].type, sen2[-1].type)
@@ -132,10 +133,9 @@ class UnifierTests(unittest.TestCase):
         sen2 = dsl("a.test.sentence(::blah)")[0]
 
         ctx_r = tuf.type_unify(sen1, sen2, CtxIns())
-        sen1c = tuf.typed_sen_logic.apply(sen1, ctx_r)
-
+        sen1c = tuf.type_unify.apply(sen1, ctx_r)
         self.assertTrue(ctx_r)
-        self.assertEqual(sen1c[-1].type, sen2[-2].type)
+        self.assertEqual(sen1c[-1].type, sen2[-1].type)
 
     def test_apply_types_var_left_repeated_conflict(self):
         sen1 = dsl("a.test.$x.$x(::bloo)")[0]
@@ -163,8 +163,8 @@ class UnifierTests(unittest.TestCase):
 
         ctx_r = tuf.type_unify(sen1, sen2, CtxIns())
 
-        sen1c = tuf.typed_sen_logic.apply(sen1, ctx_r)
-        sen2c = tuf.typed_sen_logic.apply(sen2, ctx_r)
+        sen1c = tuf.type_unify.apply(sen1, ctx_r)
+        sen2c = tuf.type_unify.apply(sen2, ctx_r)
 
         self.assertEqual(sen1c[-2].type, "_:blah")
         self.assertEqual(sen1c[-1].type, "_:a.b")
@@ -174,9 +174,8 @@ class UnifierTests(unittest.TestCase):
         sen2 = dsl("a.test.$x(::blah!$y)")[0]
 
         ctx_r = tuf.type_unify(sen1, sen2, CtxIns())
-        sen1c = tuf.typed_sen_logic.apply(sen1, ctx_r)
-        sen2c = tuf.typed_sen_logic.apply(sen2, ctx_r)
-
+        sen1c = tuf.type_unify.apply(sen1, ctx_r)
+        sen2c = tuf.type_unify.apply(sen2, ctx_r)
         self.assertEqual(sen1c[-1].type, "_:blah.y")
         self.assertTrue(sen1c[-1].type[-1].is_var)
         self.assertIn("y", ctx_r)
@@ -186,16 +185,17 @@ class UnifierTests(unittest.TestCase):
         sen1 = dsl("a.test.sentence.bloo(::aweg.awg)")[0]
         sen2 = dsl("a.test.$x(::blah!$y).$z(::$y)")[0]
 
-
         ctx_r = tuf.type_unify(sen1, sen2, CtxIns())
-        sen1c = tuf.typed_sen_logic.apply(sen1, ctx_r)
-        sen2c = tuf.typed_sen_logic.apply(sen2, ctx_r)
-
+        sen1c = tuf.type_unify.apply(sen1, ctx_r)
+        sen2c = tuf.type_unify.apply(sen2, ctx_r)
+        self.assertEqual(sen1c[-2], "sentence")
         self.assertEqual(sen1c[-1].type, "_:aweg.awg")
-        self.assertEqual(str(sen1c[-2].type), "blah.aweg.awg")
+        # TODO make this blah.$y(::aweg.awg)
+        self.assertEqual(sen1c[-2].type, "_:blah.aweg.awg")
         self.assertEqual(sen1c[-2].type[-1], "_:aweg.awg")
         self.assertEqual(sen2c[-1].type, "_:aweg.awg")
         self.assertEqual(sen2c[-2].type, "_:blah.aweg.awg")
         self.assertEqual(sen2c[-2].type[-1], "_:aweg.awg")
-        self.assertNotEqual(sen1c, sen2c)
+
+        self.assertNotEqual(sen1c[2].type, sen1[2].type)
         self.assertNotEqual(sen1c[-2].type, "_:blah.y")

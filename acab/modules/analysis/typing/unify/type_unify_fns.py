@@ -12,6 +12,7 @@ from acab.core.decorators.util import factory
 from acab.error.semantic import AcabSemanticException
 from acab.modules.context.context_set import (ContextInstance,
                                               MutableContextInstance)
+from acab.core.data.default_structure import TYPE_INSTANCE
 
 from . import simple_unify_fns as suf
 from .. import exceptions as TE
@@ -43,24 +44,45 @@ def gen_type_vars(first, second, gamma, gen_var=None) -> AT.CtxIns:
             if b.is_var and b not in gamma_p:
                 gamma_p[b]          = b
 
-            if a.type.is_var and a.type[0] not in gamma_p:
-                gamma_p[a.type[0]] = Sentence.build(["ATOM"])
-
-            if b.type.is_var and b.type[0] not in gamma_p:
-                gamma_p[b.type[0]] = Sentence.build(["ATOM"])
+            for var in (a.type.vars + b.type.vars):
+                if var not in gamma_p:
+                    gamma_p[var] = Sentence.build(["ATOM"])
 
     return gamma_p.finish()
 
 
 
-# Type Unification ############################################################
-def match_atom(f_word, s_word, ctx):
-    result = unify_enum.NA
-    if s_word == "_:ATOM":
-        result = unify_enum.NEXT_WORD
+def var_handler_basic(f_word, s_word, ctx):
+    """ Bind vars, preferring Ctx -> L -> R
+    ctx: f(A) -> Set[A]
+    """
+    result  = unify_enum.NA
+    f_var   = f_word.is_var
+    s_var   = s_word.is_var
+    f_canon = util.top_var(f_word, ctx)
+    s_canon = util.top_var(s_word, ctx)
+    # TODO prefer greater type, even when its on a var
+
+    if not (f_var or s_var):
+        return result
+
+
+    if f_var and f_word not in ctx:
+        # bind f_word -> s_word
+        ctx[f_word] = s_canon
+    elif s_var and s_word not in ctx:
+        # bind s_word -> f_word
+        ctx[s_word] = f_canon
+    elif f_var and ctx[f_word] == f_word:
+        ctx[f_word] = s_canon
+    elif s_var and ctx[s_word] == s_word:
+        ctx[s_word] = f_canon
+
 
     return result
 
+
+# Type Unification ############################################################
 def skip_atom_types(f_word, s_word, ctx):
     """
     If both things you are comparing are atoms, no need to continue the sieve
@@ -71,6 +93,14 @@ def skip_atom_types(f_word, s_word, ctx):
 
     # TODO these might need to be reified
     if f_word.type == "_:ATOM" and s_word.type == "_:ATOM":
+        result = unify_enum.NEXT_WORD
+
+    return result
+
+
+def match_atom(f_word, s_word, ctx):
+    result = unify_enum.NA
+    if s_word == "_:ATOM":
         result = unify_enum.NEXT_WORD
 
     return result
@@ -101,14 +131,50 @@ def fail_handler_type(f_word, s_word, ctx):
 
 # Factories ###################################################################
 @factory
+def var_consistency_check(logic, first, second, ctx):
+    """
+    Check words types are consistent with the context
+    """
+    if not (first.is_var or second.is_var):
+        return unify_enum.NA
+    sub_unifier = unify.Unifier(logic)
+    try:
+        for word in [first, second]:
+            if not word.is_var:
+                continue
+
+            canon_w   = util.reify(word, ctx)
+            canon_w_t = util.reify(canon_w.type, ctx)
+            target    = canon_w.type[0] if canon_w.type.is_var else id(canon_w_t)
+
+            if canon_w_t == word.type:
+                continue
+
+            sub_unifier(word.type, canon_w_t, ctx, logic)
+            update_typing = min((type_len(canon_w_t), canon_w_t),
+                                (type_len(word.type), word.type))[1]
+            ctx[target]   = update_typing
+            if word.type.is_var:
+                ctx[word.type] = update_typing
+
+    except TE.TypeUnifyException as err:
+        raise TE.TypeConflictException(first, second, None, ctx) from err
+
+    return unify_enum.NA
+
+
+
+@factory
 def unify_type_sens(logic, f_word, s_word, ctx):
     result = unify_enum.NA
-
     canon_f   = util.reify(f_word, ctx)
     canon_f_t = util.reify(canon_f.type, ctx)
 
     canon_s   = util.reify(s_word, ctx)
     canon_s_t = util.reify(canon_s.type, ctx)
+
+    if canon_f_t == canon_s_t:
+        return unify_enum.NEXT_WORD
 
     sub_unifier = unify.Unifier(logic)
     # Discard the returned context:
@@ -129,55 +195,40 @@ def unify_type_sens(logic, f_word, s_word, ctx):
     return result
 
 
-@factory
-def var_consistency_check(logic, first, second, ctx):
-    """
-    Check words types are consistent with the context
-    """
-    if not (first.is_var or second.is_var):
-        return unify_enum.NA
-
-    sub_unifier = unify.Unifier(logic)
-
-    try:
-        for word in [first, second]:
-            if not word.is_var:
-                continue
-
-            canon_w   = util.reify(word, ctx)
-            canon_w_t = util.reify(canon_w.type, ctx)
-            target    = canon_w.type[0] if canon_w.type.is_var else id(canon_w_t)
-
-            if canon_w_t == word.type:
-                pass
-
-            sub_unifier(word.type, canon_w_t, ctx, logic)
-            update_typing = min((type_len(canon_w_t), canon_w_t),
-                                (type_len(word.type), word.type))[1]
-            ctx[target]   = update_typing
-
-    except TE.TypeUnifyException as err:
-        raise TE.TypeConflictException(first, second, None, ctx) from err
-
-    return unify_enum.NA
-
-
-
 
 #  ############################################################################
 # ::a.b.c
-def apply_types_sub(sen, gamma) -> AT.Sentence:
+def apply_sen_type_sub(sen, gamma) -> AT.Sentence:
     """
-    Apply Substitutions to type sentences of words
+    Apply substitutions to a type sentence
+    The important logic here is to skip any variable which reduces to ATOM
+    ie: ::a.type.sen.$x, {$x: ATOM} == ::a.type.sen.$x
+    """
+    values = []
+    for word in sen.words:
+        canon_word = util.reify(word, gamma)
+        if canon_word == "_:ATOM":
+            values.append(word)
+        else:
+            values.append(canon_word)
+
+    return sen.copy(value=values)
+
+
+
+def apply_typed_sen_sub(sen, gamma) -> AT.Sentence:
+    """
+    Apply Substitutions to sentences and each word's type sentence
+    ie: a.test.sentence(::$x), {$x: ::a.type} == a.test.sentence(::a.type)
     """
     words = []
     for word in sen.words:
         canon_word   = util.reify(word, gamma)
         canon_word_t = util.reify(canon_word.type, gamma)
         if canon_word_t.has_var:
-            canon_word_t = suf.apply_substitutions(canon_word_t, gamma)
+            canon_word_t = apply_sen_type_sub(canon_word_t, gamma)
 
-        words.append(canon_word.copy(data={'TYPE_INSTANCE' : canon_word_t}))
+        words.append(canon_word.copy(data={TYPE_INSTANCE : canon_word_t}))
 
     return sen.copy(value=words)
 
@@ -190,7 +241,7 @@ type_as_sen_logic = unify.UnifyLogic(
            suf.var_handler_basic,
            suf.match_handler_basic,
            suf.fail_handler_basic],
-    apply=suf.apply_substitutions)
+    apply=apply_sen_type_sub)
 
 type_sen_unify = unify.Unifier(type_as_sen_logic)
 
@@ -199,12 +250,12 @@ typed_sen_logic = unify.UnifyLogic(
     entry_transform=lambda x,y,c: (x, y, gen_type_vars(x, y, c)),
     early_exit=None,
     truncate=util.sen_extend,
-    sieve=[suf.var_handler_basic,
+    sieve=[var_handler_basic,
            skip_atom_types,
            var_consistency_check(type_as_sen_logic),
            unify_type_sens(type_as_sen_logic),
            fail_handler_type],
-    apply=apply_types_sub
+    apply=apply_typed_sen_sub
     )
 
 type_unify = unify.Unifier(typed_sen_logic)

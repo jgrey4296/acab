@@ -119,7 +119,7 @@ class UnifierTests(unittest.TestCase):
         sen1 = dsl("a.test.sentence")[0]
         sen2 = dsl("a.test.$x")[0]
         ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
-        sen3 = suf.basic_sen_logic.apply(sen2, ctx_r)
+        sen3 = suf.basic_unify.apply(sen2, ctx_r)
 
         self.assertEqual(sen1, sen3)
 
@@ -130,7 +130,7 @@ class UnifierTests(unittest.TestCase):
         sen2  = dsl("a.test.$x")[0]
 
         ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
-        sen3  = suf.basic_sen_logic.apply(sen1, ctx_r)
+        sen3  = suf.basic_unify.apply(sen1, ctx_r)
 
         self.assertEqual(total, sen3)
 
@@ -156,7 +156,7 @@ class UnifierTests(unittest.TestCase):
         sen1  = dsl("a.test.$x")[0]
         sen2  = dsl("a.test.$y")[0]
         ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
-        sen3  = suf.basic_sen_logic.apply(sen1, ctx_r)
+        sen3  = suf.basic_unify.apply(sen1, ctx_r)
 
         self.assertTrue('x' in ctx_r)
         self.assertEqual(sen2, sen3)

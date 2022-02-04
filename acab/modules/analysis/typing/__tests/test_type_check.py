@@ -61,17 +61,17 @@ class TypeCheckTests(unittest.TestCase):
 
     #----------
     def test_type_to_sentences(self):
-        a_sen = dsl("a.test.sen(::def).sub.blah")[0]
+        a_sen    = dsl("a.test.sen(::def).sub.blah")[0]
         # remove initial prefix
-        chopped = a_sen.remove_prefix(dsl("a.test")[0])
-        type_ = dsl("def(::τ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0][-1]
-        as_sens = type_.to_sentences()
-        new_var = gen_f()
+        chopped  = a_sen.remove_prefix(dsl("a.test")[0])
+        type_    = dsl("def(::τ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0][-1]
+        as_sens  = type_.to_sentences()
+        new_var  = gen_f()
         # Add unique var prefix
         appended = [new_var.add(x) for x in as_sens]
         # unify them:
-        unified = tuf.type_unify(chopped, appended[0], CtxIns())
-        result  = tuf.type_unify.apply(appended[0], unified)
+        unified  = tuf.type_unify(chopped, appended[0], CtxIns())
+        result   = tuf.type_unify.apply(appended[0], unified)
 
         self.assertEqual(chopped, result)
 

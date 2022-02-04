@@ -127,5 +127,4 @@ class UnifierTests(unittest.TestCase):
         self.assertEqual(sen2c[-1].type, "_:aweg.awg")
         self.assertEqual(sen2c[-2].type, "_:blah.aweg.awg")
         self.assertEqual(sen2c[-2].type[-1], "_:aweg.awg")
-        self.assertNotEqual(sen1c, sen2c)
         self.assertNotEqual(sen1c[-2].type, "_:blah.y")

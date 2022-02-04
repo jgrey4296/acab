@@ -157,7 +157,7 @@ class UnifyUtilTests(unittest.TestCase):
 
     def test_apply_type_substitution_type_var(self):
         sen1 = dsl.parseString("a.b.c(::$x)")[0]
-        sen1s = tuf.apply_types_sub(sen1, CtxIns())
+        sen1s = tuf.apply_typed_sen_sub(sen1, CtxIns())
 
         sen_target = dsl.parseString("a.b.c(::$x)")[0]
 
@@ -165,7 +165,7 @@ class UnifyUtilTests(unittest.TestCase):
 
     def test_apply_type_substitution_type_var2(self):
         sen1 = dsl.parseString("a.b.c(::$x)")[0]
-        sen1s = tuf.apply_types_sub(sen1, CtxIns({'x': dsl.parseString("blah.bloo")[0]}))
+        sen1s = tuf.apply_typed_sen_sub(sen1, CtxIns({'x': dsl.parseString("blah.bloo")[0]}))
 
         sen_target = dsl.parseString("a.b.c(::blah.bloo)")[0]
 
@@ -173,7 +173,7 @@ class UnifyUtilTests(unittest.TestCase):
 
     def test_apply_type_substitution_type_var2(self):
         sen1 = dsl.parseString("a.b.$c(::$x)")[0]
-        sen1s = tuf.apply_types_sub(sen1, CtxIns({'x': dsl.parseString("blah.bloo")[0]}))
+        sen1s = tuf.apply_typed_sen_sub(sen1, CtxIns({'x': dsl.parseString("blah.bloo")[0]}))
 
         sen_target = dsl.parseString("a.b.$c(::blah.bloo)")[0]
 

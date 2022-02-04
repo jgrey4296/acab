@@ -106,7 +106,7 @@ class Unifier:
 
     def repeat(self,
                first:Set[AT.Sentence],
-               second:Set[AT.Sentence],
+               second:Set[AT.Sentence] | 'Trie',
                ctx:AT.CtxIns,
                logic):
 
@@ -119,6 +119,7 @@ class Unifier:
                 try:
                     # unify a first with  a second
                     the_ctx = self(first, second, the_ctx)
+                    break
 
                 except TE.AcabTypingException:
                     # failed, so use the repeat policy
