@@ -125,7 +125,7 @@ class Sentence_i(Instruction_i, cABC.Sequence):
 
     @property
     def words(self) -> list[Value]:
-        return self.value
+        return self.value[:]
 
 
 @dataclass(frozen=True)
