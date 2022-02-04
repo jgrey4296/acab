@@ -427,7 +427,7 @@ class MutableContextInstance:
 
     def __setitem__(self, key: Value, value: Value):
         if isinstance(key, VI.Sentence_i):
-            key = str(value)
+            key = str(key)
         elif isinstance(key, VI.Value_i):
             key = key.key()
 
