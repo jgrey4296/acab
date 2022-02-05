@@ -14,7 +14,7 @@ config = setup()
 from acab.core.data.value import AcabValue
 
 from ... import exceptions as TE
-from .. import unify
+from .. import unifier as unify
 from .. import simple_unify_fns as suf
 from .. import type_unify_fns as tuf
 from .. import util

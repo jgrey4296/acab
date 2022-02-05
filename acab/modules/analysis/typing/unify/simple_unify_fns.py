@@ -13,7 +13,7 @@ from acab.modules.context.context_set import (ContextInstance,
 
 from .. import exceptions  as TE
 from . import util
-from . import unify
+from . import unifier
 
 unify_enum = util.unify_enum
 
@@ -67,7 +67,7 @@ def apply_substitutions(sen, gamma) -> AT.Sentence:
 
 
 #  ############################################################################
-basic_sen_logic = unify.UnifyLogic(
+basic_sen_logic = unifier.UnifyLogic(
     entry_transform=None,
     early_exit=None,
     truncate=util.sen_truncate,
@@ -77,4 +77,4 @@ basic_sen_logic = unify.UnifyLogic(
     apply=apply_substitutions
     )
 
-basic_unify = unify.Unifier(basic_sen_logic)
+basic_unify = unifier.Unifier(basic_sen_logic)

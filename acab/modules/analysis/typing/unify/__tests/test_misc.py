@@ -14,7 +14,7 @@ config = setup()
 from acab.core.data.value import AcabValue
 
 from ... import exceptions as TE
-from .. import unify
+from .. import unifier as unify
 from .. import simple_unify_fns as suf
 from .. import type_unify_fns as tuf
 from .. import util
@@ -27,6 +27,8 @@ from acab.modules.context.context_set import ContextInstance as CtxIns
 dsl   = ppDSL.PyParseDSL()
 dsl.register(EXLO_Parser).register(TypingDSL)
 dsl.build()
+
+gen_f = util.gen_f
 
 # AcabReducible          : type_definition -> sentences with unique variable at head
 # Sentence.remove_prefix : Sentence remove prefix prior to type being checked
@@ -79,6 +81,15 @@ class UnifierTests(unittest.TestCase):
         self.assertIn(id(sen1[-1].type), ctx_r)
         self.assertEqual(ctx_r[id(sen1[-1].type)], dsl("bloo")[0])
 
+    def test_check_simple_fail(self):
+        sen1 = dsl("a(::blah).blah.bloo")[0]
+        sen2 = dsl("$x(::blah).test.sentence")[0]
+
+        with self.assertRaises(TE.AcabTypingException):
+            tuf.type_unify(sen1, sen2, CtxIns())
+
+
+
     def test_types_check_simple_fail(self):
         sen1 = dsl("a(::blah).test.sentence(::aweg)")[0]
         sen2 = dsl("$x(::blah).test.sentence(::bloo)")[0]
@@ -128,3 +139,47 @@ class UnifierTests(unittest.TestCase):
         self.assertEqual(sen2c[-2].type, "_:blah.aweg.awg")
         self.assertEqual(sen2c[-2].type[-1], "_:aweg.awg")
         self.assertNotEqual(sen1c[-2].type, "_:blah.y")
+
+
+    def test_repeat_unify_one_to_many(self):
+        a_sen    = dsl("a.test.sen(::def).sub.blah")[0]
+        # remove initial prefix
+        chopped  = a_sen.remove_prefix(dsl("a.test")[0])
+        type_    = dsl("def(::τ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0][-1]
+        as_sens  = type_.to_sentences()
+        new_var  = gen_f()
+        # Add unique var prefix
+        appended = [new_var.add(x) for x in as_sens]
+        # unify them:
+        unified  = tuf.type_unify.repeat([chopped], appended, CtxIns())
+        result   = tuf.type_unify.apply(appended[0], unified)
+
+        self.assertEqual(chopped, result)
+
+    def test_repeat_unify_one_to_many_fail(self):
+        a_sen    = dsl("a.test.sen(::def).awef.blah")[0]
+        # remove initial prefix
+        chopped  = a_sen.remove_prefix(dsl("a.test")[0])
+        type_    = dsl("def(::τ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0][-1]
+        as_sens  = type_.to_sentences()
+        new_var  = gen_f()
+        # Add unique var prefix
+        appended = [new_var.add(x) for x in as_sens]
+        # unify them:
+        with self.assertRaises(TE.AcabTypingException):
+            tuf.type_unify.repeat([chopped], appended, CtxIns())
+
+    def test_repeat_unify_many_to_many(self):
+        # NOTE: sentences will always have same head
+        a_sen    = dsl("sen(::def).sub.blah")[0]
+        b_sen    = dsl("sen(::def).seb.bloo")[0]
+        # remove initial prefix
+        type_    = dsl("def(::τ):\n sub.$x(::test)\n seb.$y\nend")[0][-1]
+        as_sens  = type_.to_sentences()
+        new_var1  = gen_f()
+        # Add unique var prefix
+        appended = [new_var1.add(x) for x in as_sens]
+        # unify them:
+        unified  = tuf.type_unify.repeat([a_sen, b_sen], appended, CtxIns())
+
+        self.assertTrue(unified)

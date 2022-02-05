@@ -16,7 +16,7 @@ from acab.core.data.default_structure import TYPE_INSTANCE
 
 from . import simple_unify_fns as suf
 from .. import exceptions as TE
-from . import unify, util
+from . import unifier, util
 from .util import unify_enum, type_len, INFINITY
 
 def gen_type_vars(first, second, gamma, gen_var=None) -> AT.CtxIns:
@@ -98,6 +98,14 @@ def skip_atom_types(f_word, s_word, ctx):
     return result
 
 
+def test_word_equality(f_word, s_word, ctx):
+    result = unify_enum.NA
+    has_var = f_word.is_var or s_word.is_var
+    if not has_var and f_word != s_word:
+        raise TE.TypeConflictException( f_word, s_word, None, ctx)
+
+    return result
+
 def match_atom(f_word, s_word, ctx):
     result = unify_enum.NA
     if s_word == "_:ATOM":
@@ -137,7 +145,7 @@ def var_consistency_check(logic, first, second, ctx):
     """
     if not (first.is_var or second.is_var):
         return unify_enum.NA
-    sub_unifier = unify.Unifier(logic)
+    sub_unifier = unifier.Unifier(logic)
     try:
         for word in [first, second]:
             if not word.is_var:
@@ -176,7 +184,7 @@ def unify_type_sens(logic, f_word, s_word, ctx):
     if canon_f_t == canon_s_t:
         return unify_enum.NEXT_WORD
 
-    sub_unifier = unify.Unifier(logic)
+    sub_unifier = unifier.Unifier(logic)
     # Discard the returned context:
     sub_unifier(canon_f_t, canon_s_t, ctx, logic)
 
@@ -233,7 +241,7 @@ def apply_typed_sen_sub(sen, gamma) -> AT.Sentence:
     return sen.copy(value=words)
 
 
-type_as_sen_logic = unify.UnifyLogic(
+type_as_sen_logic = unifier.UnifyLogic(
     entry_transform=None,
     early_exit=whole_sentence_bind,
     truncate=util.sen_extend,
@@ -243,14 +251,15 @@ type_as_sen_logic = unify.UnifyLogic(
            suf.fail_handler_basic],
     apply=apply_sen_type_sub)
 
-type_sen_unify = unify.Unifier(type_as_sen_logic)
+type_sen_unify = unifier.Unifier(type_as_sen_logic)
 
 # a.b.c(::d.e.f)
-typed_sen_logic = unify.UnifyLogic(
+typed_sen_logic = unifier.UnifyLogic(
     entry_transform=lambda x,y,c: (x, y, gen_type_vars(x, y, c)),
     early_exit=None,
     truncate=util.sen_extend,
     sieve=[var_handler_basic,
+           test_word_equality,
            skip_atom_types,
            var_consistency_check(type_as_sen_logic),
            unify_type_sens(type_as_sen_logic),
@@ -258,4 +267,4 @@ typed_sen_logic = unify.UnifyLogic(
     apply=apply_typed_sen_sub
     )
 
-type_unify = unify.Unifier(typed_sen_logic)
+type_unify = unifier.Unifier(typed_sen_logic)

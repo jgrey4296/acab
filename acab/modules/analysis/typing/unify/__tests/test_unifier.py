@@ -14,7 +14,7 @@ config = setup()
 from acab.core.data.value import AcabValue
 
 from ... import exceptions as TE
-from .. import unify
+from .. import unifier as unify
 from .. import simple_unify_fns as suf
 from .. import type_unify_fns as tuf
 from .. import util
@@ -140,8 +140,14 @@ class UnifierTests(unittest.TestCase):
         sen2  = dsl("a.test.$x")[0]
 
         with self.assertRaises(TE.AcabTypingException):
-            ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
+            suf.basic_unify(sen1, sen2, CtxIns())
 
+    def test_unify_fail_2(self):
+        sen1  = dsl("a.blah.sentence")[0]
+        sen2  = dsl("a.test.sentence")[0]
+
+        with self.assertRaises(TE.AcabTypingException):
+            suf.basic_unify(sen1, sen2, CtxIns())
 
     def test_unify_duplicate(self):
         sen1  = dsl("a.$x.test")[0]

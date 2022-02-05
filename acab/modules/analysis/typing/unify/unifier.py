@@ -35,7 +35,6 @@ class UnifyLogic:
     apply           : Callable[[AT.Sentence, AT.CtxIns], AT.Sentence]
     entry_transform : None | Callable[[AT.Sentence, AT.Sentence, AT.CtxIns], Tuple[AT.Sentence, AT.Sentence]] = field(default=None)
     early_exit      : None | Callable[[AT.Sentence, AT.Sentence, AT.CtxIns], unify_enum]                      = field(default=None)
-    repeat_policy   : Optional                                                                                = field(default=None)
 
 
 
@@ -108,21 +107,35 @@ class Unifier:
                first:Set[AT.Sentence],
                second:Set[AT.Sentence] | 'Trie',
                ctx:AT.CtxIns,
-               logic):
+               logic=None):
+        """
+        Unify all sentences in a set (`first`)
+        against any applicable sentence in another set (`second`)
+        TODO: `second` could be made into a trie
+        """
 
         if logic is None:
             logic = self.logic
 
+        # TODO error if first doesn't have one head.
+        # ie: a.b.c, q.b.c should error
+
         the_ctx = ctx
         for fst in first:
+            unified = False
             for snd in second:
                 try:
                     # unify a first with  a second
-                    the_ctx = self(first, second, the_ctx)
+                    ret_ctx = self(fst, snd, the_ctx)
+                    the_ctx = ret_ctx
+                    unified = True
                     break
 
                 except TE.AcabTypingException:
-                    # failed, so use the repeat policy
+                    # failed, so try the next sentence
                     pass
+
+            if not unified:
+                raise TE.AcabMiscTypingException("Set Unification failed")
 
         return the_ctx

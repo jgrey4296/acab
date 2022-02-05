@@ -20,7 +20,7 @@ class AcabTypingException(AcabException):
 
 
 @dataclass
-class AcabMiscTypingException(AcabException):
+class AcabMiscTypingException(AcabTypingException):
     msg  : str = field()
     data : Any = field(default=None)
 

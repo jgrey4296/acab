@@ -21,7 +21,7 @@ from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 from ... import exceptions as TE
 from .. import simple_unify_fns as suf
 from .. import type_unify_fns as tuf
-from .. import unify
+from .. import unifier as unify
 
 # Set up the parser to ease test setup
 dsl   = ppDSL.PyParseDSL()
