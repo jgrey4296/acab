@@ -66,7 +66,8 @@ def PARAM_CORE(mid:Optional[ParserElement]=None,
     parser.setParseAction(Pfunc.add_annotations)
     return parser
 
-
+def type_annotation_gen(parser:ParserElement) -> ParserElement:
+    return pp.Literal(PDSYM.TYPE_SEN) + parser
 
 
 def STATEMENT_CONSTRUCTOR(annotation_p:ParserElement,
@@ -78,10 +79,12 @@ def STATEMENT_CONSTRUCTOR(annotation_p:ParserElement,
     """ Construct a parser for statements of the form:
     a.location(annotation_p): |args| components end
     """
-    line_p     = PConst.emptyLine
-    line_end_p = PConst.ln
-    end_p      = PConst.END
-    arg_p      = pp.empty
+    line_p            = PConst.emptyLine
+    line_end_p        = PConst.ln
+    end_p             = PConst.END
+    arg_p             = pp.empty
+    type_annotation_p = type_annotation_gen(annotation_p)
+
 
     if single_line:
         line_p     = pp.empty
@@ -93,7 +96,7 @@ def STATEMENT_CONSTRUCTOR(annotation_p:ParserElement,
     if args:
         arg_p = Fwd_ArgList(PDS.ARG)
 
-    head = PARAM_CORE(req_mid=annotation_p, end=PConst.COLON)
+    head = PARAM_CORE(req_mid=type_annotation_p, end=PConst.COLON)
 
     parser = NG(PDS.NAME, head) + line_end_p \
         + op(arg_p + emptyLine) \

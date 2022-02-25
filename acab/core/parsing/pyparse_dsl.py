@@ -10,18 +10,19 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-import pyparsing as pp
 import acab.core.parsing.debug_funcs as DBF
+import pyparsing as pp
 
 logging = root_logger.getLogger(__name__)
 
 from acab import GET
 from acab import types as AT
 from acab.core.decorators.dsl import EnsureDSLInitialised
+from acab.core.parsing.funcs import clear_parser_names, deep_update_names
 from acab.error.base import AcabBasicException
 from acab.error.parse import AcabParseException
-from acab.core.parsing.funcs import deep_update_names, clear_parser_names
-from acab.interfaces.dsl import DSL_Handler_i, DSL_Fragment, DSL_Spec_i, DSL_Builder_i
+from acab.interfaces.dsl import (DSL_Builder_i, DSL_Fragment, DSL_Handler_i,
+                                 DSL_Spec_i)
 
 config = GET()
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
