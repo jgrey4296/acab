@@ -58,7 +58,7 @@ class BasicNodeSemantics(SI.ValueSemantics_i):
         assert(isinstance(node, AcabNode))
         assert(isinstance(new_node, AcabNode))
         if new_node in node:
-            raise ASErr.AcabSemanticIndependentFailure("Node is already child", (node, new_node))
+            raise ASErr.AcabSemanticIndependentFailure("Node is already child", context=(node, new_node))
 
         key = new_node.value.key()
         return node.add(new_node, key=key)
@@ -68,7 +68,7 @@ class BasicNodeSemantics(SI.ValueSemantics_i):
         assert(isinstance(to_delete, AcabValue))
 
         if to_delete not in node:
-            raise ASErr.AcabSemanticIndependentFailure("Value not in node", (node, to_delete))
+            raise ASErr.AcabSemanticIndependentFailure("Value not in node", context=(node, to_delete))
 
         return node.remove(to_delete)
 
@@ -109,7 +109,7 @@ class ExclusionNodeSemantics(SI.ValueSemantics_i):
 
         if bool(term) and EXOP in term.data and any([x.data[EXOP] != term.data[EXOP] for x in potentials]):
             raise ASErr.AcabSemanticIndependentFailure(f"EXOP MisMatch, expected {term.data[EXOP]}",
-                                                       term)
+                                                       context=term)
 
 
         return potentials
