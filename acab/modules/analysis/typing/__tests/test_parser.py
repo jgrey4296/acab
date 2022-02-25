@@ -33,19 +33,19 @@ class TestParser(unittest.TestCase):
 
     def test_simple_record_typedef(self):
         """ Test a multi line type definition """
-        result = TDP.RECORD_TYPE.parseString("c(::τ):\nq.w.e(::blah)\nend")[0]
+        result = TDP.RECORD_TYPE.parseString("c(::σ):\nq.w.e(::blah)\nend")[0]
         self.assertIsInstance(result, TypeDefinition)
         self.assertEqual(len(result.structure), 1)
 
     def test_multi_val_record_typdef(self):
         """ Test a type definition with multiple subtypings """
-        result = TDP.RECORD_TYPE.parseString("c(::τ):\nq.w.e(::awef)\nblah.bloo(::awg)\nend")[0]
+        result = TDP.RECORD_TYPE.parseString("c(::σ):\nq.w.e(::awef)\nblah.bloo(::awg)\nend")[0]
         self.assertIsInstance(result, TypeDefinition)
         self.assertEqual(len(result.structure), 2)
 
     def test_simple_sum_type(self):
         """ Test a simple sum type definition """
-        result = TDP.SUM_TYPE.parseString("c(::Σ):\n q(::τ)\n l(::τ)\nend")[0]
+        result = TDP.SUM_TYPE.parseString("c(::Σσ):\n q(::τ)\n l(::τ)\nend")[0]
         self.assertIsInstance(result, SumTypeDefinition)
         self.assertEqual(len(result.structure), 2)
         self.assertIsInstance(result.structure[0], Sentence)
@@ -53,7 +53,7 @@ class TestParser(unittest.TestCase):
 
     def test_nested_record_in_sum(self):
         """ Test nested record type definitions in a sum type """
-        result = TDP.SUM_TYPE.parseString("c(::Σ):\n internal(::τ):\n q.w.e\n w.e.r\n end\n q.w.e(::τ)\n j.k.l(::τ)\nend")[0]
+        result = TDP.SUM_TYPE.parseString("c(::Σσ):\n internal(::σ):\n q.w.e\n w.e.r\n end\n q.w.e(::τ)\n j.k.l(::τ)\nend")[0]
         self.assertIsInstance(result, SumTypeDefinition)
         self.assertEqual(len(result.structure), 3)
         self.assertIsInstance(result.structure[0], Sentence)
@@ -73,7 +73,7 @@ class TestParser(unittest.TestCase):
 
     def test_simple_type_class(self):
         """ Test a type class definition """
-        result = TDP.TYPE_CLASS_DEF.parseString("class(::ι):\n a.b.c(::λ): $q.$w.$e => +\n q.w.e(::λ): $w.$e.$r => -\nend")[0]
+        result = TDP.TYPE_CLASS_DEF.parseString("class(::γ):\n a.b.c(::λ): $q.$w.$e => +\n q.w.e(::λ): $w.$e.$r => -\nend")[0]
         self.assertIsInstance(result, TypeClass)
         self.assertTrue(len(result.structure), 2)
 

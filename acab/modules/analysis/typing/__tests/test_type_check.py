@@ -23,10 +23,11 @@ from acab.modules.semantics.default import DEFAULT_SEMANTICS
 from acab.modules.structures.trie.default import DEFAULT_TRIE
 from acab.modules.analysis.typing.unify.util import gen_f
 from acab.modules.analysis.typing.unify import type_unify_fns as tuf
+from acab.modules.operators.dfs.module import DFSQueryDSL
 
 # Set up the parser to ease test setup
 dsl   = ppDSL.PyParseDSL()
-dsl.register(EXLO_Parser).register(TypingDSL)
+dsl.register(EXLO_Parser).register(TypingDSL).register(DFSQueryDSL)
 dsl.build()
 
 # AcabReducible          : type_definition -> sentences with unique variable at head
@@ -38,6 +39,7 @@ class TypeCheckTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        global logging
         root_logger.getLogger('').setLevel(root_logger.WARNING)
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
 
@@ -61,10 +63,13 @@ class TypeCheckTests(unittest.TestCase):
 
     #----------
     def test_type_to_sentences(self):
+        """
+        Manually check the type and structure of a sentence against
+        a definition.
+        """
         a_sen    = dsl("a.test.sen(::def).sub.blah")[0]
-        # remove initial prefix
         chopped  = a_sen.remove_prefix(dsl("a.test")[0])
-        type_    = dsl("def(::τ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0][-1]
+        type_    = dsl("def(::σ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0][-1]
         as_sens  = type_.to_sentences()
         new_var  = gen_f()
         # Add unique var prefix
@@ -72,24 +77,75 @@ class TypeCheckTests(unittest.TestCase):
         # unify them:
         unified  = tuf.type_unify(chopped, appended[0], CtxIns())
         result   = tuf.type_unify.apply(appended[0], unified)
-
         self.assertEqual(chopped, result)
 
-    @unittest.skip("")
-    def test_basic(self):
-        semsys  = DEFAULT_SEMANTICS()
-        walksem = DFSSemantics()
-        ctxs    = ContextSet.build()
+    def test_typing_conflict(self):
 
-        decl    = dsl.parseString("a.test.def(::τ):\n sub.$x(::test)\nend")[0]
-        asst    = dsl.parseString("a.value(::a.test.def).sub.blah")[0]
+        a_sen    = dsl("a.test.sen(::def).sub.blah(::bloo)")[0]
+        # remove initial prefix
+        chopped  = a_sen.remove_prefix(dsl("a.test")[0])
+        type_    = dsl("def(::σ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0][-1]
+        as_sens  = type_.to_sentences()
+        new_var  = gen_f()
+        # Add unique var prefix
+        appended = [new_var.add(x) for x in as_sens]
+        # unify them:
+        with self.assertRaises(TE.AcabTypingException):
+            tuf.type_unify(chopped, appended[0], CtxIns())
 
-        # Insert into a wm
-        semsys(decl)
-        semsys(asst)
+    def test_sub_typing(self):
+        a_sen    = dsl("a.test.sen(::def).sub.blah(::test.bloo)")[0]
+        # remove initial prefix
+        chopped  = a_sen.remove_prefix(dsl("a.test")[0])
+        type_    = dsl("def(::σ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0][-1]
+        as_sens  = type_.to_sentences()
+        new_var  = gen_f()
+        # Add unique var prefix
+        appended = [new_var.add(x) for x in as_sens]
+        # unify them:
+        unified = tuf.type_unify(chopped, appended[0], CtxIns())
+        result  = tuf.type_unify.apply(chopped, unified)
+        self.assertEqual(result[-1].type, "_:test")
 
-        # The Typecheck instruction:
-        instr = dsl.parse_string("ᛦ λtypedef")
 
-        # Go:
-        walksem(instr, semsys)
+    def test_operator_typing(self):
+        transform = dsl("transform(::χ):\n λa.b.c $x(::first) $y(::second) -> $z(::first)\nend")[0][0]
+        op_def    = dsl("a.b.c(::λ): $g(::first).$h(::second).$i(::first)")[0][-1]
+        # t -> sen
+        t_sen = transform.to_sentences()[0][1]
+        self.assertEqual(t_sen.name, "Params")
+        # def -> sen
+        def_sen = op_def.to_sentences()[0]
+        # unify
+        unified = tuf.type_unify(t_sen, def_sen, CtxIns())
+        self.assertEqual(unified.x, "g")
+        self.assertEqual(unified.y, "h")
+
+
+    def test_operator_typing_conflict(self):
+        transform = dsl("transform(::χ):\n λa.b.c $x(::first) $y(::other) -> $z(::first)\nend")[0][0]
+        op_def    = dsl("a.b.c(::λ): $g(::first).$h(::second).$i(::first)")[0][-1]
+        # t -> sen
+        t_sen = transform.to_sentences()[0][1]
+        self.assertEqual(t_sen.name, "Params")
+        # def -> sen
+        def_sen = op_def.to_sentences()[0]
+        # unify
+        with self.assertRaises(TE.AcabUnifyVariableInconsistencyException):
+            tuf.type_unify(t_sen, def_sen, CtxIns())
+
+
+    @unittest.skip("TODO")
+    def test_query_condition_typechecking(self):
+       pass
+
+    @unittest.skip("TODO")
+    def test_container_typing(self):
+        pass
+
+    @unittest.skip("TODO")
+    def test_container_typing_conflict(self):
+        pass
+
+
+

@@ -131,7 +131,6 @@ class UnifierTests(unittest.TestCase):
     def test_apply_types_var_left_repeated(self):
         sen1 = dsl("a.test.$x.$x")[0]
         sen2 = dsl("a.test.sentence(::blah)")[0]
-
         ctx_r = tuf.type_unify(sen1, sen2, CtxIns())
         sen1c = tuf.type_unify.apply(sen1, ctx_r)
         self.assertTrue(ctx_r)
@@ -179,6 +178,7 @@ class UnifierTests(unittest.TestCase):
         self.assertEqual(sen1c[-1].type, "_:blah.y")
         self.assertTrue(sen1c[-1].type[-1].is_var)
         self.assertIn("y", ctx_r)
+        self.assertEqual(ctx_r.y, "_:ATOM")
         self.assertIn(id(sen1[-1].type), ctx_r)
 
     def test_apply_types_with_vars_completed(self):
@@ -188,6 +188,10 @@ class UnifierTests(unittest.TestCase):
         ctx_r = tuf.type_unify(sen1, sen2, CtxIns())
         sen1c = tuf.type_unify.apply(sen1, ctx_r)
         sen2c = tuf.type_unify.apply(sen2, ctx_r)
+
+        self.assertEqual(ctx_r.x, "sentence")
+        self.assertEqual(ctx_r.y, "_:aweg.awg")
+
         self.assertEqual(sen1c[-2], "sentence")
         self.assertEqual(sen1c[-1].type, "_:aweg.awg")
         # TODO make this blah.$y(::aweg.awg)

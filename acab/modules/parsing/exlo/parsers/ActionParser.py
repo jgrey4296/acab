@@ -10,7 +10,7 @@ from acab.core.parsing.default_keys import OPERATOR
 from acab.core.parsing.default_symbols import ACTION_HEAD
 from acab.core.parsing.parsers import VALBIND
 from acab.modules.parsing.exlo import constructors as PConst
-from acab.modules.parsing.exlo.util import LEFT_S, RIGHT_S
+from acab.modules.parsing.exlo.util import LEFT_S, RIGHT_S, ACTION_HEAD
 from acab.core.parsing.indented_block import IndentedBlock
 
 from .FactParser import SENTENCE, op_sentence
@@ -42,7 +42,7 @@ action_exprs        = HOTLOAD_ACTION_STATEMENTS | basic_actions | SENTENCE
 actions             = IndentedBlock(action_exprs)
 actions.setParseAction(PConst.build_action)
 
-action_definition   = PU.STATEMENT_CONSTRUCTOR(pp.Literal("::α"), actions)
+action_definition   = PU.STATEMENT_CONSTRUCTOR(ACTION_HEAD, actions)
 
 # parse action
 

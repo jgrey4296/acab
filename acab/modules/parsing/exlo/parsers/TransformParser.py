@@ -10,10 +10,10 @@ from acab.core.parsing.default_symbols import TRANSFORM_HEAD
 from acab.modules.parsing.exlo.constructors import (build_transform,
                                                     build_transform_component)
 from acab.modules.parsing.exlo.util import (LEFT_S, OPERATOR_S, RIGHT_S,
-                                            TARGET_S)
+                                            TARGET_S, TRANSFORM_HEAD)
 from acab.core.parsing.indented_block import IndentedBlock
 
-from .FactParser import SENTENCE, op_sentence
+from .FactParser import SENTENCE, op_sentence, SEN_NO_MODAL
 
 logging = root_logger.getLogger(__name__)
 
@@ -21,7 +21,7 @@ logging = root_logger.getLogger(__name__)
 HOTLOAD_TRANS_OP         = pp.Forward()
 HOTLOAD_TRANS_STATEMENTS = pp.Forward()
 
-rebind                   = ARROW + PU.VALBIND
+rebind                   = ARROW + SEN_NO_MODAL
 rebind.setName("rebind")
 
 # TODO: extend transform to take partial transforms?
@@ -45,7 +45,7 @@ transform_combined = pp.MatchFirst([HOTLOAD_TRANS_STATEMENTS,
 
 transforms = IndentedBlock(transform_combined)
 
-transform_statement = PU.STATEMENT_CONSTRUCTOR(pp.Literal("::χ"),
+transform_statement = PU.STATEMENT_CONSTRUCTOR(TRANSFORM_HEAD,
                                                transforms)
 
 # Actions

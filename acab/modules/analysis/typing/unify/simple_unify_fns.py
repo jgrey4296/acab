@@ -5,6 +5,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
+from acab import GET
 from acab import types as AT
 from acab.core.data.value import AcabValue, Sentence
 from acab.error.semantic import AcabSemanticException
@@ -15,7 +16,12 @@ from .. import exceptions  as TE
 from . import util
 from . import unifier
 
+config = GET()
 unify_enum = util.unify_enum
+
+
+# TODO handlers for params, tags
+# TODO to_word handling
 
 # Basic Unification ###########################################################
 def var_handler_basic(f_word, s_word, ctx):
@@ -25,6 +31,10 @@ def var_handler_basic(f_word, s_word, ctx):
     result  = unify_enum.NA
     f_var   = f_word.is_var
     s_var   = s_word.is_var
+
+    if not (f_var or s_var):
+        return result
+
     f_canon = util.top_var(f_word, ctx)
     s_canon = util.top_var(s_word, ctx)
 

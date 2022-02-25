@@ -33,6 +33,7 @@ SYNTAX_BIND_S   = config.prepare("Typing.Primitives", "SYNTAX_BIND")()
 
 PARAM_JOIN_S    = config.prepare("Print.Patterns", "PARAM_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE])()
 
+NOM_HEAD        = s_key(config.prepare("Symbols", "NOMINAL")())
 SUM_HEAD        = s_key(config.prepare("Symbols", "SUM")())
 STRUCT_HEAD     = s_key(config.prepare("Symbols", "STRUCTURE")())
 TYPE_CLASS_HEAD = s_key(config.prepare("Symbols", "TYPE_CLASS")())

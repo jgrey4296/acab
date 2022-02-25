@@ -145,7 +145,7 @@ class UnifierTests(unittest.TestCase):
         a_sen    = dsl("a.test.sen(::def).sub.blah")[0]
         # remove initial prefix
         chopped  = a_sen.remove_prefix(dsl("a.test")[0])
-        type_    = dsl("def(::τ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0][-1]
+        type_    = dsl("def(::σ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0][-1]
         as_sens  = type_.to_sentences()
         new_var  = gen_f()
         # Add unique var prefix
@@ -160,7 +160,7 @@ class UnifierTests(unittest.TestCase):
         a_sen    = dsl("a.test.sen(::def).awef.blah")[0]
         # remove initial prefix
         chopped  = a_sen.remove_prefix(dsl("a.test")[0])
-        type_    = dsl("def(::τ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0][-1]
+        type_    = dsl("def(::σ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0][-1]
         as_sens  = type_.to_sentences()
         new_var  = gen_f()
         # Add unique var prefix
@@ -173,13 +173,25 @@ class UnifierTests(unittest.TestCase):
         # NOTE: sentences will always have same head
         a_sen    = dsl("sen(::def).sub.blah")[0]
         b_sen    = dsl("sen(::def).seb.bloo")[0]
-        # remove initial prefix
-        type_    = dsl("def(::τ):\n sub.$x(::test)\n seb.$y\nend")[0][-1]
+        type_    = dsl("def(::σ):\n sub.$x(::test)\n seb.$y\nend")[0][-1]
         as_sens  = type_.to_sentences()
-        new_var1  = gen_f()
+        new_var1 = gen_f()
         # Add unique var prefix
         appended = [new_var1.add(x) for x in as_sens]
         # unify them:
         unified  = tuf.type_unify.repeat([a_sen, b_sen], appended, CtxIns())
 
         self.assertTrue(unified)
+
+    def test_unify_with_prior_ctx(self):
+        sen1 = dsl("a.test.sentence")[0]
+        sen2 = dsl("a.test.$x(::blah!$y)")[0]
+
+        ctx = CtxIns(data={"x": dsl("sentence(::blah)")[0][0]})
+        ctx_r = tuf.type_unify(sen1, sen2, ctx)
+        sen1c = tuf.typed_sen_logic.apply(sen1, ctx_r)
+        sen2c = tuf.typed_sen_logic.apply(sen2, ctx_r)
+
+        self.assertEqual(sen1c[-1].type, "_:blah")
+        self.assertIn("y", ctx_r)
+        self.assertIn(id(sen1[-1].type), ctx_r)

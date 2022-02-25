@@ -1,17 +1,16 @@
 """
 DSL Interface for exclusion logic, to connect it into Acab
 """
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
-
 import logging as root_logger
-import pyparsing as pp
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
 
+import pyparsing as pp
 from acab import GET
-from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.core.parsing import parsers as PU
+from acab.core.parsing import pyparse_dsl as ppDSL
+from acab.core.parsing.funcs import clear_parser_names, deep_update_names
 from acab.error.parse import AcabParseException
 from acab.modules.parsing.exlo import util as TPU
 from acab.modules.parsing.exlo.parsers import ActionParser as AP
@@ -20,7 +19,6 @@ from acab.modules.parsing.exlo.parsers import QueryParser as QP
 from acab.modules.parsing.exlo.parsers import RuleParser as RP
 from acab.modules.parsing.exlo.parsers import TotalParser as TotalP
 from acab.modules.parsing.exlo.parsers import TransformParser as TP
-from acab.core.parsing.funcs import deep_update_names, clear_parser_names
 
 logging      = root_logger.getLogger(__name__)
 

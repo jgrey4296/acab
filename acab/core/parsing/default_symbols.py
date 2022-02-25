@@ -18,6 +18,7 @@ AT_BIND          = SymbolDict["AT_BIND"]
 QUERY            = SymbolDict["QUERY"]
 TAG              = SymbolDict["TAG"]
 NEGATION         = SymbolDict["NEGATION"]
+TYPE_SEN         = SymbolDict["TYPE_SEN"]
 
 RULE_HEAD        = AliasDict["RULE"]
 QUERY_HEAD       = AliasDict["QUERY"]

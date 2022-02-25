@@ -8,7 +8,7 @@ import pyparsing as pp
 from acab.core.parsing import funcs as Pfunc
 from acab.core.parsing import parsers as PU
 from acab.core.parsing.consts import (COMMA, DELIM, END, emptyLine, COLON,
-                                      FACT_HEAD, NEGATION, NG, N, op, opLn, zrm, ln)
+                                      FACT_HEAD, NEGATION, NG, N, op, opLn, zrm, ln, FUNC_SYMBOL)
 from acab.core.parsing.default_keys import OPERATOR, SEN, VALUE
 from acab.core.data import default_structure as CDS
 from acab.modules.parsing.exlo import constructors as PConst
@@ -55,11 +55,11 @@ SEN_PLURAL.setName("Sentence Plural")
 # FIXME sentence plural macro
 # SEN_MACRO_BODY     = IndentedBlock(SENTENCE)
 # # Statement to specify multiple sub sentences
-# SEN_MACRO        <<= PU.STATEMENT_CONSTRUCTOR(pp.Literal("::ζ"),
+# SEN_MACRO        <<= PU.STATEMENT_CONSTRUCTOR(pp.Literal("ζ"),
 #                                               SEN_MACRO_BODY,
 #                                               parse_fn=Pfunc.construct_multi_sentences)
 
-op_sentence = pp.Suppress(pp.Literal('λ')) + SENTENCE
+op_sentence = FUNC_SYMBOL + SENTENCE
 
 # Naming
 # BINDING_CORE.setName("BindCore")

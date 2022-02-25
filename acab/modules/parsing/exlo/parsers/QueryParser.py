@@ -17,6 +17,8 @@ from acab.core.parsing.indented_block import IndentedBlock
 from acab.modules.parsing.exlo import constructors as PConst
 from acab.modules.parsing.exlo.constructors import build_query
 
+
+from acab.modules.parsing.exlo.util import QUERY_HEAD
 from .FactParser import SENTENCE, op_sentence, annotations
 
 logging = root_logger.getLogger(__name__)
@@ -58,8 +60,7 @@ query_sen_end    = PU.PARAM_CORE(annotations,
 
 clauses               = IndentedBlock(HOTLOAD_QUERY_SEN | SENTENCE)
 
-query_statement       = PU.STATEMENT_CONSTRUCTOR(pp.Literal("::γ"),
-                                                 clauses)
+query_statement       = PU.STATEMENT_CONSTRUCTOR(QUERY_HEAD, clauses)
 
 # Actions
 clauses.setParseAction(build_query)

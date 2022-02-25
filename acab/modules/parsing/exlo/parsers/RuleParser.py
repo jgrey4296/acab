@@ -9,7 +9,7 @@ from acab.core.parsing.consts import (ARROW, COLON, COMMA, DELIM,
                                           DOUBLEBAR, NG, RULE_HEAD, N,
                                           component_gap, emptyLine, gap, op,
                                           orm, END)
-from acab.modules.parsing.exlo.util import ACTION_S, QUERY_S, TRANSFORM_S
+from acab.modules.parsing.exlo.util import ACTION_S, QUERY_S, TRANSFORM_S, RULE_HEAD
 from acab.modules.parsing.exlo.constructors import build_rule
 
 from . import ActionParser as AP
@@ -29,8 +29,7 @@ endOrLine  = pp.FollowedBy(END) | emptyLine | pp.stringEnd
 
 rule_body = op(conditions + endOrLine) + op(transforms + endOrLine) + op(actions + endOrLine)
 
-rule = PU.STATEMENT_CONSTRUCTOR(pp.Literal("::ρ"),
-                                rule_body)
+rule = PU.STATEMENT_CONSTRUCTOR(RULE_HEAD, rule_body)
 
 
 # Actions:
