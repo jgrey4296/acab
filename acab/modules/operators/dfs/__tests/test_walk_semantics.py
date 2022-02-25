@@ -1,26 +1,26 @@
 #https://docs.python.org/3/library/unittest.html
 # https://docs.python.org/3/library/unittest.mock.html
 
-from os.path import splitext, split
-
+import logging as root_logger
 import unittest
 import unittest.mock as mock
+from os.path import split, splitext
 
-import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
 
 import acab
+
 config = acab.setup()
 
+from acab.core.data.instruction import ProductionComponent, ProductionContainer
+from acab.core.data.value import AcabValue, Sentence
+from acab.modules.engines.configured import exlo
+from acab.modules.operators.dfs import parser as DOP
 from acab.modules.operators.dfs.semantics import DFSSemantics
 from acab.modules.semantics.basic_system import BasicSemanticSystem
-from acab.modules.semantics.values import ExclusionNodeSemantics
 from acab.modules.semantics.statements import QueryPlusAbstraction
-from acab.modules.engines.configured import exlo
-from acab.core.data.instruction import ProductionComponent, ProductionContainer
-from acab.core.data.value import Sentence, AcabValue
-from acab.modules.operators.dfs import parser as DOP
+from acab.modules.semantics.values import ExclusionNodeSemantics
 
 BIND          = config.prepare("Value.Structure", "BIND")()
 QUERY         = config.prepare("Value.Structure", "QUERY")()
@@ -55,24 +55,6 @@ class TestWalkSemantics(unittest.TestCase):
         self.eng("~found")
         self.eng("~the")
 
-
-    def test_parse_walk_query_instruction(self):
-        result = DOP.dfs_query.parseString("ᛦ $x(::blah)?")[0]
-
-        self.assertTrue(result)
-        self.assertIsInstance(result, Sentence)
-        self.assertEqual(result.data['SEMANTIC_HINT'], '_:WALK')
-        self.assertTrue(result[-1].data['QUERY'])
-
-    def test_parse_walk_action_instruction(self):
-        result = DOP.dfs_action.parseString("ᛦ λa.test.op")[0]
-
-        self.assertTrue(result)
-        self.assertIsInstance(result, Sentence)
-        self.assertEqual(result.data['SEMANTIC_HINT'], '_:WALK')
-        self.assertNotIn('QUERY', result[-1].data)
-
-        self.assertEqual(result[0], "_:a.test.op")
 
     def test_parsed_walk_query(self):
         query = DOP.dfs_query.parseString("ᛦ $x(::blah)?")[0]
@@ -206,12 +188,12 @@ class TestWalkSemantics(unittest.TestCase):
         # build a walk instruction
         source_var = Sentence.build([AcabValue.build("x", data={BIND: AT_BIND})])
         test_var   = AcabValue.build("y", data={BIND: True,
-                                                    TYPE_INSTANCE: Sentence.build(["target"]),
-                                                    QUERY : True})
+                                                TYPE_INSTANCE: Sentence.build(["target"]),
+                                                QUERY : True})
 
         test_var2  = AcabValue.build("z", data={BIND: True,
-                                                    TYPE_INSTANCE: Sentence.build(["other"]),
-                                                    QUERY : True})
+                                                TYPE_INSTANCE: Sentence.build(["other"]),
+                                                QUERY : True})
 
         query_sen = Sentence.build([source_var, test_var, test_var2],
                                    data={SEM_HINT : "WALK"})
@@ -225,6 +207,16 @@ class TestWalkSemantics(unittest.TestCase):
 
 
     def test_parsed_act(self):
+        """
+        the.rule(::ρ):
+        | $x |
+
+        @x.test?
+
+        !! found.$x
+        end
+        """
+
         # Setup
         self.eng("a.b.c.test")
         self.eng("a.b.d")
@@ -232,14 +224,7 @@ class TestWalkSemantics(unittest.TestCase):
         self.eng("~acab")
 
         # Action to run
-        self.eng("""
-the.rule(::ρ):
-        | $x |
-
-        @x.test?
-
-        !! found.$x
-end""".strip())
+        self.eng("""the.rule(::ρ):\n        | $x |\n\n        @x.test?\n\n        !! found.$x\nend""")
 
         # dfs instruction
         ctxs = self.eng("the.$rule?")
@@ -251,7 +236,14 @@ end""".strip())
         self.assertTrue(self.eng("found.c?"))
         self.assertTrue(self.eng("found.e?"))
 
-    def test_walk_all(self):
+    def test_walk_all_action(self):
+        """
+        the.rule(::ρ):
+        | $x |
+
+        !! found.$x
+        end
+        """
         # Setup
         self.eng("a.b.c.test")
         self.eng("a.b.d!f")
@@ -259,13 +251,7 @@ end""".strip())
         self.eng("~acab")
 
         # Action to run
-        self.eng("""
-the.rule(::ρ):
-        | $x |
-
-        !! found.$x
-end""".strip())
-
+        self.eng("""the.rule(::ρ):\n        | $x |\n\n        !! found.$x\nend""".strip())
         # dfs instruction
         ctxs = self.eng("the.$rule?")
         self.eng("$x?", ctxset=ctxs)
@@ -273,8 +259,36 @@ end""".strip())
         inst = DOP.dfs_action.parseString("@x ᛦ λ$rule")[0]
         self.eng(inst, ctxset=ctxs)
         found = self.eng("found.$x?")
-        
+
+        # a,b,c,d,e,f,test,the,rule
         self.assertEqual(len(found), 9)
+
+    @unittest.skip("Not implemented yet")
+    def test_walk_all_action_no_prebind(self):
+        """
+        the.rule(::ρ):
+        | $x |
+
+        !! found.$x
+        end
+        """
+        # TODO to finish
+        # Setup
+        self.eng("a.b.c.test")
+        self.eng("a.b.d!f")
+        self.eng("a.b.e.test")
+        self.eng("~acab")
+
+        # Action to run
+        self.eng("""the.rule(::ρ):\n        | $x |\n\n        !! found.$x\nend""".strip())
+        # dfs instruction
+        ctxs = self.eng("the.$rule?")
+        self.eng("$x?", ctxset=ctxs)
+        # rule would be: | @x(::node) $a $b |
+        inst = DOP.dfs_action.parseString("@x ᛦ λthe.rule")[0]
+        self.eng(inst, ctxset=ctxs)
+
+
 
     @unittest.skip("not done yet")
     def test_parsed_act_without_head(self):

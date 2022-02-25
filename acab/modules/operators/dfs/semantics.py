@@ -90,7 +90,7 @@ class DFSSemantics(SI.StatementSemantics_i):
                         continue
 
                     found.add(current.uuid)
-                    accessible   = nodesem[0].access(current, None, data)
+                    accessible   = nodesem[0].access(current, None, data=data)
                     queue       += accessible
                     cwm.test_and_update(accessible)
 
@@ -112,6 +112,8 @@ class DFSSemantics(SI.StatementSemantics_i):
             for queue in cwm.active:
                 action : Union['Value', 'Sentence'] = cwm.current[walk_spec[-1]]
                 if isinstance(action, Sentence):
+                    # action is a sentence path,
+                    # not an actual action
                     raise NotImplementedError()
 
                 while bool(queue):
@@ -137,5 +139,5 @@ class DFSSemantics(SI.StatementSemantics_i):
                     working_ctx.run_delayed()
                     # TODO controllable entrance into subtrie
                     # using if bool(working_ctx):..
-                    accessible   = nodesem[0].access(current, None, data)
+                    accessible   = nodesem[0].access(current, None, data=data)
                     queue       += accessible

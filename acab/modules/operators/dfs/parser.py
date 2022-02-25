@@ -10,7 +10,6 @@ from  acab.core.parsing.consts import orm, QUERY, op, s_lit
 from acab.core.data.value import Sentence
 config        = GET()
 
-QUERY         = s_lit(config.prepare("Symbols", "QUERY")())
 QUERY_HINT    = config.prepare("Value.Structure", "QUERY")()
 SEM_HINT      = config.prepare("Value.Structure", "SEMANTIC_HINT")()
 WALK_SEM_HINT = Sentence.build([config.prepare("Module.DFSWalk", "WALK_SEM_HINT")()])
@@ -40,8 +39,11 @@ def build_dfs_action(s, l, toks):
     assert(isinstance(toks['action'], Sentence))
     words.append(toks['action'])
 
+    # TODO refactor to be a ProductionComponent
     instruction = Sentence.build(words,
                                  data={SEM_HINT: WALK_SEM_HINT})
+
+
     return instruction
 
 
@@ -53,7 +55,7 @@ dfs_operator  = pp.Literal("ᛦ").suppress()
 dfs_head      = op(HOTLOAD_VAR("root")) + dfs_operator
 
 
-dfs_query     = dfs_head + orm(HOTLOAD_VAR)("constraints")
+dfs_query     = dfs_head + orm(HOTLOAD_VAR)("constraints") + QUERY
 # TODO a dfs query with a subsentence query
 # @a ᛦ $x.d.f?
 
