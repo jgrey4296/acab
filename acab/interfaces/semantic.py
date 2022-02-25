@@ -133,7 +133,6 @@ class StructureSemantics_i(HandlerComponent_i, SemanticSystem_i):
         pass
 
 
-
 class ValueSemantics_i(HandlerComponent_i):
     """
     Independent Semantics which operate on values and nodes, without

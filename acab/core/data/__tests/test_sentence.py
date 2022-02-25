@@ -1,16 +1,24 @@
 #https://docs.python.org/3/library/unittest.html
-from os.path import splitext, split
-from os import listdir
-import unittest
 import logging as root_logger
+import unittest
+from os import listdir
+from os.path import split, splitext
+
 logging = root_logger.getLogger(__name__)
 
 import acab
+
 config = acab.setup()
 
-from acab.core.data.value import AcabValue, Sentence
 from acab.core.data.default_structure import BIND
+from acab.core.data.value import AcabValue, Sentence
+from acab.core.parsing import pyparse_dsl as ppDSL
+from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 
+# Set up the parser to ease test setup
+dsl   = ppDSL.PyParseDSL()
+dsl.register(EXLO_Parser)
+dsl.build()
 
 def S(*values):
     return Sentence.build(values)
@@ -85,8 +93,16 @@ class SentenceTests(unittest.TestCase):
         """ Check a copied sentence is independent from its original """
         val = Sentence.build(["a","test","value"])
         val2 = val.copy()
-        val.words.append(Sentence.build(["test"])[0])
+        val.value.append(Sentence.build(["test"])[0])
         self.assertNotEqual(val, val2)
+
+    def test_words_independence(self):
+        """ Check using a sentence's `words` property provides a new list of words,
+        not access to the sentence's internal word list
+        """
+        val = Sentence.build(["a","test","value"])
+        val.words.append(Sentence.build(["test"])[0])
+        self.assertEqual(val, "_:a.test.value")
 
     def test_copy_data_independence(self):
         """ Check a copied sentence's data is independent from its original """
@@ -111,6 +127,44 @@ class SentenceTests(unittest.TestCase):
 
         for x,y in zip(val3, ["a","test","value","additional","sentence"]):
             self.assertEqual(x.value, y)
+
+    def test_add_flatten(self):
+        """
+        Check the default behaviour of Sentence.add is to flatten any sentence
+        into the newly constructed one.
+        """
+        sen1 = dsl("a.test.sen")[0]
+        sen2 = dsl("more.words.blah")[0]
+        sen3 = sen1.add(sen2)
+
+        self.assertTrue(all([not isinstance(x, Sentence) for x in sen3]))
+        self.assertEqual(len(sen3), 6)
+
+    def test_add_not_flatten(self):
+        """
+        Check that sentences can be added as a word without flattening using Sentence.add
+        """
+        sen1 = dsl("a.test.sen")[0]
+        sen2 = dsl("more.words.blah")[0]
+        sen3 = sen1.add([sen2])
+
+        self.assertFalse(all([not isinstance(x, Sentence) for x in sen3]))
+        self.assertEqual(len(sen3), 4)
+
+    def test_internal_sentence(self):
+        """
+        Test Behaviour of a sentence as a word in another sentence
+        """
+        sen1 = dsl("a.test.sentence")[0]
+        sen2 = dsl("another.sentence")[0]
+        sen3 = sen1.add([sen2])
+
+        self.assertEqual(sen1, "_:a.test.sentence")
+        self.assertEqual(sen2, "_:another.sentence")
+        self.assertEqual(sen3, "_:a.test.sentence.another.sentence")
+
+        self.assertIsInstance(sen3.words[-1], Sentence)
+        self.assertEqual(len(sen3.words[-1]), 2)
 
     @unittest.skip
     def test_bind(self):
@@ -246,3 +300,9 @@ class SentenceTests(unittest.TestCase):
         self.assertEqual(len(sen2), 1)
         self.assertEqual(len(sen3), 4)
         self.assertIn(sen2[0], sen3)
+
+
+    def test_dsl_build(self):
+        sen1 = dsl("a.test.sentence")[0]
+        self.assertIsInstance(sen1, Sentence)
+

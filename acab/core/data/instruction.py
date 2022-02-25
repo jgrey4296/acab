@@ -51,8 +51,8 @@ class ProductionOperator(AcabValue):
     def __post_init__(self):
         logging.info(f"Building Operator: {self.__class__.__name__}")
         super(ProductionOperator, self).__post_init__()
-        object.__setattr__(self, 'name', self.__class__.__name__)
-        object.__setattr__(self, 'value', self.name)
+        # object.__setattr__(self, 'name', self.__class__.__name__)
+        # object.__setattr__(self, 'value', self.name)
         self.data[DS.TYPE_INSTANCE] =  DS.OPERATOR_PRIM
 
     def __call__(self, *params: list[Value], data=None):
@@ -189,8 +189,7 @@ class ProductionContainer(Instruction):
             elif isinstance(clause, Instruction):
                 words += clause.to_sentences()
 
-        clauses = Sentence.build(words, name="Clauses")
-        return [Sentence.build([clauses],
+        return [Sentence.build(words,
                                data=self.data.copy(),
                                name="ProductionContainer")]
 

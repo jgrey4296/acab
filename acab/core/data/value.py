@@ -63,10 +63,11 @@ class AcabValue(VI.Value_i, Generic[T]):
             new_data = {}
             new_data.update(value.data)
             new_data.update(_data)
-            return value.copy(data=new_data)
+            name = name or value.name
+            return value.copy(data=new_data, name=name)
 
 
-        return cls(value=value, data=_data, **kwargs)
+        return cls(value=value, name=name, data=_data, **kwargs)
 
     def __post_init__(self):
         if not isinstance(self.value, VI.ValueCore):
@@ -252,7 +253,6 @@ class AcabValue(VI.Value_i, Generic[T]):
     def to_word(self) -> Value:
         return self
 
-
 class Instruction(AcabValue, VI.Instruction_i):
     """ Instruction functions the same as AcabValue,
     but provides specific functionality for converting to/from sentences
@@ -276,7 +276,6 @@ class Instruction(AcabValue, VI.Instruction_i):
     def from_sentences(self, sens:list[VI.Sentence]) -> list[VI.Instruction]:
         return sens
 
-@dataclass(frozen=True)
 class Sentence(Instruction, VI.Sentence_i):
     """
     A Sentence is an instruction which is idempotent on from_sentences/to_sentences

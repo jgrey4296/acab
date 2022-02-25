@@ -110,7 +110,7 @@ class ConstraintCollection(CtxInt.Constraint_i):
         # Perform the tests:
         results = [op(node.value, *pars, data=data) for op,pars,data in test_trios]
         if not all(results):
-            raise ASErr.AcabSemanticTestFailure("Alphas Failed", (node, self))
+            raise ASErr.AcabSemanticTestFailure("Alphas Failed", context=(node, self))
 
     def __run_betas(self, node, ctxInst):
         """ Run Beta Tests on a node and context isntance """
@@ -125,7 +125,7 @@ class ConstraintCollection(CtxInt.Constraint_i):
         val = self._get(node.value, stack=ctx_stack)
         results = [op(val, *pars, data=data) for op,pars,data in test_trios]
         if not all(results):
-            raise ASErr.AcabSemanticTestFailure("Betas Failed", (node, self, ctxInst))
+            raise ASErr.AcabSemanticTestFailure("Betas Failed", context=(node, self, ctxInst))
 
     def __run_substruct_tests(self, node, ctxInst):
         results = []
@@ -136,7 +136,7 @@ class ConstraintCollection(CtxInt.Constraint_i):
 
         if not all(results):
             # binds can't succeed if tests fail
-            raise ASErr.AcabSemanticTestFailure("Sub Structural Tests Failed", (node, self, ctxInst))
+            raise ASErr.AcabSemanticTestFailure("Sub Structural Tests Failed", context=(node, self, ctxInst))
 
     def __run_name(self, node, ctxInst):
         """ Check node against prior binding """
@@ -145,7 +145,7 @@ class ConstraintCollection(CtxInt.Constraint_i):
             if b_val.is_var or ctxInst[bind].is_var:
                 continue
             if b_val != ctxInst[bind]:
-                raise ASErr.AcabSemanticTestFailure("Binds Failed", (node, self))
+                raise ASErr.AcabSemanticTestFailure("Binds Failed", context=(node, self))
 
 
     def __bool__(self):

@@ -387,7 +387,7 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i):
 
 
 @dataclass
-class MutableContextInstance:
+class MutableContextInstance(CtxInt.ContextInstance_i):
     """ Wrap A Context Instance with an smart dictionary.
     Changes are inserted into the dictionary, until context is exited
     exit creates a new CtxIns, integrating changes """

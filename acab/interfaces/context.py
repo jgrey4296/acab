@@ -31,7 +31,7 @@ DelayValue = UUID | CtxIns | CtxSet | None
 @dataclass(frozen=True)
 class Constraint_i(metaclass=abc.ABCMeta):
     source         : Value                     = field()
-    _test_mappings : dict[str, list[Callable]] = field()
+    _test_mappings : dict[str, list[Callable]] = field(repr=False)
 
     # Value -> (key, list[Constraint])
     sieve         : ClassVar[list[Callable]]
@@ -44,7 +44,6 @@ class Constraint_i(metaclass=abc.ABCMeta):
     def test(self, node, ctx):
         pass
 
-@dataclass
 class ContextSet_i(cABC.Hashable, cABC.Set):
 
     @staticmethod
@@ -70,7 +69,6 @@ class ContextSet_i(cABC.Hashable, cABC.Set):
     def failed_list(self):
         pass
 
-@dataclass(frozen=True)
 class ContextInstance_i(cABC.Mapping, cABC.Hashable, AcabFinishable):
 
     @abc.abstractmethod
@@ -81,7 +79,6 @@ class ContextInstance_i(cABC.Mapping, cABC.Hashable, AcabFinishable):
     def bind_dict(self, the_dict):
         pass
 
-
     @abc.abstractmethod
     def finish(self) -> CtxIns:
         """
@@ -91,15 +88,3 @@ class ContextInstance_i(cABC.Mapping, cABC.Hashable, AcabFinishable):
         """
         pass
 
-
-@dataclass
-class MutableContextInstance_i(AcabFinishable):
-    @abc.abstractmethod
-    def bind(self, word, nodes):
-        pass
-    @abc.abstractmethod
-    def bind_dict(self, the_dict):
-        pass
-    @abc.abstractmethod
-    def finish(self) -> CtxIns:
-        pass

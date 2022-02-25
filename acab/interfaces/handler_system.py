@@ -3,19 +3,19 @@ import abc
 import collections.abc as cABC
 import logging as root_logger
 from dataclasses import InitVar, dataclass, field, replace
-from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
-                    Mapping, Match, MutableMapping, Sequence,
-                    Tuple, TypeVar, cast, Type, TypeAlias, NewType)
-from types import MethodType
 from enum import Enum
+from types import MethodType
+from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
+                    Mapping, Match, MutableMapping, NewType, Sequence, Tuple,
+                    Type, TypeAlias, TypeVar, cast)
 
 from acab import types as AT
-from acab.interfaces.data import Structure_i
-from acab.interfaces.value import Sentence_i
-from acab.error.handler import AcabHandlerException
-from acab.interfaces.sieve import AcabSieve
 from acab.core.config.config import GET
 from acab.core.decorators.util import cache
+from acab.error.handler import AcabHandlerException
+from acab.interfaces.data import Structure_i
+from acab.interfaces.sieve import AcabSieve
+from acab.interfaces.value import Sentence_i
 
 logging = root_logger.getLogger(__name__)
 

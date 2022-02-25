@@ -16,7 +16,7 @@ class ConfigSpec_i(cABC.Hashable, cABC.Callable):
     and any transforms it needs prior to use """
 
     section : str                = field()
-    key     : None | str      = field(default=None)
+    key     : None | str         = field(default=None)
     actions : list[Enum]         = field(default_factory=list)
     as_list : bool               = field(default=False)
     as_dict : bool               = field(default=False)
