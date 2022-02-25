@@ -72,12 +72,10 @@ class TransformAbstraction(SI.StatementSemantics_i):
             with MutableContextInstance(ctxs, ctxIns) as mutx:
                 for clause in transform.clauses:
                     # TODO this should all be replaceable with just: op = mutx[clause.op]
-                    if clause.op in mutx:
-                        op = mutx[clause.op]
-                    elif isinstance(clause.op, ProductionOperator):
-                        op = clause.op
-                    else:
+                    if clause.op in operators:
                         op = operators[clause.op]
+                    else:
+                        op = mutx[clause.op]
 
                     params              = [bind(x, mutx) for x in clause.params]
                     result              = op(*params, data=mutx.data)
@@ -96,12 +94,11 @@ class ActionAbstraction(SI.StatementSemantics_i):
 
         for ctx in ctxs.active_list(clear=True):
             for clause in action.clauses:
-                if clause.op in ctx:
-                    op = ctx[clause.op]
-                elif isinstance(clause.op, ProductionOperator):
-                    op = clause.op
+                # TODO handle statements to, like DFS
+                if clause.op in operators:
+                    op = operators[clause.op]
                 else:
-                    op     = operators[clause.op]
+                    op = ctx[clause.op]
 
 
                 params = [bind(x, ctx) for x in clause.params]

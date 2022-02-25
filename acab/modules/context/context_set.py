@@ -75,7 +75,7 @@ class ContextInstance(CtxInt.ContextInstance_i):
     def __contains__(self, value: Union[int, str, Value]):
         key = value
         if isinstance(value, VI.Sentence_i):
-            key = str(value[0])
+            key = str(value)
         elif isinstance(value, VI.Value_i):
             key = value.key()
 
