@@ -59,14 +59,14 @@ def var_handler_basic(f_word, s_word, ctx):
     result  = unify_enum.NA
     f_var   = f_word.is_var
     s_var   = s_word.is_var
-    f_canon = util.top_var(f_word, ctx)
-    s_canon = util.top_var(s_word, ctx)
-    # TODO prefer greater type, even when its on a var
 
     if not (f_var or s_var):
         return result
 
-
+    f_canon = util.top_var(f_word, ctx)
+    s_canon = util.top_var(s_word, ctx)
+    # TODO prefer greater type, even when its on a var
+    #
     if f_var and f_word not in ctx:
         # bind f_word -> s_word
         ctx[f_word] = s_canon
@@ -256,6 +256,7 @@ type_as_sen_logic = unifier.UnifyLogic(
     truncate=util.sen_extend,
     sieve=[match_atom,
            suf.var_handler_basic,
+           suf.check_modality,
            suf.match_handler_basic,
            suf.fail_handler_basic],
     apply=apply_sen_type_sub)
@@ -268,6 +269,7 @@ typed_sen_logic = unifier.UnifyLogic(
     early_exit=None,
     truncate=util.sen_extend,
     sieve=[var_handler_basic,
+           suf.check_modality,
            test_word_equality,
            skip_atom_types,
            var_consistency_check(type_as_sen_logic),

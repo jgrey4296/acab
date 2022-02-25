@@ -54,6 +54,30 @@ def var_handler_basic(f_word, s_word, ctx):
 
     return result
 
+def check_modality(f_word, s_word, ctx):
+    """
+    Test registered modalities between two words.
+    Placing *after* var handler means variable modalities too,
+    Placing *before* means a sentence has to match
+    modalities prior to substitution
+    """
+    result = unify_enum.NA
+
+    for modality in config.enums['MODAL']:
+        if modality.name not in ctx[f_word].data or modality.name not in ctx[s_word].data:
+            continue
+
+        f_mod = ctx[f_word].data[modality.name]
+        s_mod = ctx[s_word].data[modality.name]
+        if f_mod != s_mod:
+            raise TE.AcabUnifyModalityException(f_word,
+                                                s_word,
+                                                ctx=ctx,
+                                                data={"modality name" : modality.name})
+
+
+    return result
+
 def match_handler_basic(f_word, s_word, ctx):
     result = unify_enum.NA
     if ctx[f_word] == ctx[s_word]:
@@ -82,6 +106,7 @@ basic_sen_logic = unifier.UnifyLogic(
     early_exit=None,
     truncate=util.sen_truncate,
     sieve=[var_handler_basic,
+           check_modality,
            match_handler_basic,
            fail_handler_basic],
     apply=apply_substitutions

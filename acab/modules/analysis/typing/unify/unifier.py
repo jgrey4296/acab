@@ -54,6 +54,7 @@ class Unifier:
 
     def __repr__(self):
         return f"<Unifier>"
+
     def __call__(self,
                  first: AT.Sentence,
                  second: AT.Sentence,

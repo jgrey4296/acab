@@ -5,7 +5,7 @@ from dataclasses import InitVar, dataclass, field
 from enum import Enum
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
-                    Set, Tuple, TypeVar, Union, cast, TypeAlias)
+                    Set, Tuple, TypeAlias, TypeVar, Union, cast)
 from uuid import uuid1
 
 import pyparsing as pp
@@ -28,8 +28,8 @@ CtxIns : TypeAlias = AT.CtxIns
 
 unify_enum = Enum("Unify Logic Handler Responses", "NEXT_WORD NA END")
 
-def gen_var() -> Callable[[], AT.Value]:
-    """ A Simple Generator of guaranteed new Variables """
+def gen_var() -> Callable[[], AT.Sentence]:
+    """ A Simple Generator of guaranteed new Variables as a sentence """
     counter = 0
     def wrapped() -> AT.Value:
         nonlocal counter
@@ -63,7 +63,7 @@ def sen_truncate(first, second):
         s_words = s_words[:len(first)]
 
     return first.copy(value=f_words), second.copy(value=s_words)
-
+# Variable following ##########################################################
 def top_var(val:Value, gamma:CtxIns) -> Value:
     """
     Given a value, return it if not a variable,
