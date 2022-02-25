@@ -7,7 +7,7 @@ from dataclasses import dataclass, field, InitVar
 
 from .base import AcabBasicException
 
-@dataclass
+@dataclass(repr=False)
 class AcabPrintException(AcabBasicException):
 
     msg : str = field(init=False, default="Print Failure: {}")

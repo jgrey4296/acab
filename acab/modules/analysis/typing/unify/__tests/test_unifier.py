@@ -171,7 +171,7 @@ class UnifierTests(unittest.TestCase):
         sen1  = dsl("a.test.$x.bloo")[0]
         sen2  = dsl("a.test.blah.$x")[0]
 
-        with self.assertRaises(TE.TypeUnifyException):
+        with self.assertRaises(TE.AcabTypingException):
             ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
 
     def test_unify_chain(self):
@@ -189,7 +189,7 @@ class UnifierTests(unittest.TestCase):
         sen1 = dsl("a.b.c")[0]
         sen2 = dsl("d.b.c")[0]
 
-        with self.assertRaises(TE.TypeUnifyException):
+        with self.assertRaises(TE.AcabTypingException):
             ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
 
 
@@ -237,3 +237,51 @@ class UnifierTests(unittest.TestCase):
         self.assertIn('x', ctx_r)
         self.assertEqual(ctx_r['x'], "sentence")
         self.assertIsInstance(ctx_r['x'], AcabValue)
+
+    def test_unify_exclusion(self):
+        sen1 = dsl("a.test")[0]
+        sen2 = dsl("a!test")[0]
+
+        with self.assertRaises(TE.AcabTypingException):
+            suf.basic_unify(sen1, sen2, CtxIns())
+
+    def test_unify_exclusion2(self):
+        sen1 = dsl("a.test.sentence")[0]
+        sen2 = dsl("a.test!sentence")[0]
+
+        with self.assertRaises(TE.AcabTypingException):
+            suf.basic_unify(sen1, sen2, CtxIns())
+
+    def test_unify_exclusion_var(self):
+        sen1 = dsl("a.$x.sentence")[0]
+        sen2 = dsl("a.test!sentence")[0]
+
+        ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
+
+        sen3 = suf.basic_unify.apply(sen1, ctx_r)
+        sen4 = dsl("a.test.sentence")[0]
+
+        with self.assertRaises(TE.AcabTypingException):
+            suf.basic_unify(sen3, sen4, CtxIns())
+
+
+    def test_unify_exclusion_missing(self):
+        """
+        Ensure modal check can handle when a word is missing
+        the modality because its the terminal of the sentence
+        """
+        sen1 = dsl("a.test.sen!blah")[0]
+        sen2 = dsl("a.test.sen")[0]
+
+        ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
+        self.assertTrue(not bool(ctx_r))
+
+    def test_unify_ignore_query(self):
+        """
+        Test whether a query terminal is significant
+        (currently not)
+        """
+        sen1 = dsl("a.$x.sentence")[0]
+        sen2 = dsl("a.test!sentence?")[0]
+        ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
+        self.assertEqual(ctx_r.x, "test")

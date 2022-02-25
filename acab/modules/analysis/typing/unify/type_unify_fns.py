@@ -29,7 +29,7 @@ def gen_type_vars(first, second, gamma, gen_var=None) -> AT.CtxIns:
         gen_var = util.gen_f
 
     if len(first) != len(second):
-        raise TE.AcabMiscTypingException(f"Generating types on length mismatch: {len(first)}, {len(second)}")
+        raise TE.AcabLengthUnifyException(first, second, ctx=gamma)
 
     gamma_p = MutableContextInstance(None, gamma)
 
@@ -99,10 +99,13 @@ def skip_atom_types(f_word, s_word, ctx):
 
 
 def test_word_equality(f_word, s_word, ctx):
+    """
+    Words have to equal each other, or be a variable
+    """
     result = unify_enum.NA
     has_var = f_word.is_var or s_word.is_var
     if not has_var and f_word != s_word:
-        raise TE.TypeConflictException( f_word, s_word, None, ctx)
+        raise TE.TypeConflictException(f_word, s_word, ctx=ctx)
 
     return result
 
@@ -134,7 +137,7 @@ def whole_sentence_bind(first, second, ctx):
 
 
 def fail_handler_type(f_word, s_word, ctx):
-    raise TE.TypeConflictException( f_word, s_word, None, ctx)
+    raise TE.AcabUnifySieveFailure(f_word, s_word, ctx=ctx)
 
 
 # Factories ###################################################################
@@ -165,8 +168,8 @@ def var_consistency_check(logic, first, second, ctx):
             if word.type.is_var:
                 ctx[word.type] = update_typing
 
-    except TE.TypeUnifyException as err:
-        raise TE.TypeConflictException(first, second, None, ctx) from err
+    except TE.AcabTypingException as err:
+        raise TE.AcabUnifyVariableInconsistencyException(err.left, err.right, ctx=err.ctx) from err
 
     return unify_enum.NA
 
@@ -181,12 +184,18 @@ def unify_type_sens(logic, f_word, s_word, ctx):
     canon_s   = util.reify(s_word, ctx)
     canon_s_t = util.reify(canon_s.type, ctx)
 
-    if canon_f_t == canon_s_t:
-        return unify_enum.NEXT_WORD
+    # if canon_f_t == canon_s_t:
+    #     return unify_enum.NEXT_WORD
 
     sub_unifier = unifier.Unifier(logic)
     # Discard the returned context:
-    sub_unifier(canon_f_t, canon_s_t, ctx, logic)
+    try:
+        sub_unifier(canon_f_t, canon_s_t, ctx, logic)
+    except TE.AcabTypingException as err:
+        data = {}
+        data.update(err.data)
+        data.update({'types': [canon_f_t, canon_s_t]})
+        raise TE.TypeConflictException(f_word, s_word, ctx=err.ctx, data=data) from err
 
 
     # Update the var in ctx, or update a tight binding of the object

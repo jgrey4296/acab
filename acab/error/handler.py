@@ -7,7 +7,7 @@ from dataclasses import dataclass, field, InitVar
 
 from .base import AcabBasicException
 
-@dataclass
+@dataclass(repr=False)
 class AcabHandlerException(AcabBasicException):
 
     msg : str = field(init=False, default="Handler Failure: {}")

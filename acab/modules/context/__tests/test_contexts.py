@@ -8,7 +8,7 @@ config = acab.setup()
 
 from acab.core.data.value import AcabValue
 from acab.modules.context.context_set import ContextSet, ContextInstance
-from acab.error.semantic import AcabSemanticException
+from acab.error.context import AcabContextException
 
 class ContextsTests(unittest.TestCase):
 
@@ -132,7 +132,7 @@ class ContextsTests(unittest.TestCase):
         ctx.push([ContextInstance(nodes={'a': "blah"}),
                   ContextInstance(nodes={'b': "bloo"}),
                   ContextInstance(nodes={'a': "blee"})])
-        with self.assertRaises(AcabSemanticException):
+        with self.assertRaises(AcabContextException):
             [x.set_current_binding(AcabValue("a")) for x in ctx.active_list()]
 
     def test_set_enter_exit(self):

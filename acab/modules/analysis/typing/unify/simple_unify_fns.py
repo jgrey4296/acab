@@ -56,7 +56,7 @@ def match_handler_basic(f_word, s_word, ctx):
     return result
 
 def fail_handler_basic(f_word, s_word, ctx):
-    raise TE.TypeUnifyException(f_word, s_word, None, ctx)
+    raise TE.AcabUnifySieveFailure(f_word, s_word, ctx=ctx)
 
 
 def apply_substitutions(sen, gamma) -> AT.Sentence:

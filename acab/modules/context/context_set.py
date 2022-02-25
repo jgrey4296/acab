@@ -9,14 +9,13 @@ from dataclasses import FrozenInstanceError, InitVar, dataclass, field, replace
 from enum import Enum
 from uuid import UUID, uuid1
 
-import acab.error.semantic as ASErr
 import acab.interfaces.value as VI
 import acab.interfaces.context as CtxInt
 from acab.core.config import GET
 from acab.core.data.instruction import (ProductionComponent,
                                                     ProductionContainer)
 from acab.core.util.delayed_commands import DelayedCommands_i
-from acab.error.semantic import AcabSemanticException
+from acab.error.context import AcabContextException
 from acab.interfaces.value import Sentence_i
 from acab.modules.context.constraints import ConstraintCollection
 
@@ -84,7 +83,7 @@ class ContextInstance(CtxInt.ContextInstance_i):
 
     def __getitem__(self, value: Value):
         if self.exact and value not in self:
-            raise AcabSemanticException("Not Found in Context", value)
+            raise AcabContextException("Not Found in Context", context=value)
 
         key = str(value)
         if isinstance(value, VI.Sentence_i) and value.is_var:
@@ -157,7 +156,7 @@ class ContextInstance(CtxInt.ContextInstance_i):
                 elif hasattr(node.value, key):
                     val = getattr(node.value, key)
                 else:
-                    raise ASErr.AcabSemanticException("Bad SubBind, no value to bind", key, bind)
+                    raise AcabContextException("Bad SubBind, no value to bind", context=(key, bind))
 
                 matches += bind.match(val)
 
@@ -183,7 +182,7 @@ class ContextInstance(CtxInt.ContextInstance_i):
 
     def set_current_binding(self, word):
         if word.key() not in self.nodes:
-            raise ASErr.AcabSemanticException("No Recognised binding", (word, self.nodes))
+            raise AcabContextException("No Recognised binding", context=(word, self.nodes))
 
         self.set_current_node(self.nodes[word.key()])
         return self
@@ -304,7 +303,7 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i):
         elif isinstance(index, (Sentence_i, ProductionContainer)) and str(index) in self._named_sets:
             result = self._named_sets[str(index)].uuids
         else:
-            raise Exception(f"Unrecognised arg to getitem: {index}")
+            raise AcabContextException(f"Unrecognised arg to getitem: {index}")
 
         if isinstance(result, list):
             result = self.subctx(result)
@@ -412,7 +411,7 @@ class MutableContextInstance:
 
     def __getitem__(self, value: Value):
         if self.base.exact and value not in self:
-            raise AcabSemanticException("Not Found in Context", value)
+            raise AcabContextException("Not Found in Context", context=value)
 
         key = value
         if isinstance(value, VI.Sentence_i):

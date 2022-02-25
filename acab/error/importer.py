@@ -6,7 +6,7 @@ from typing import cast, ClassVar, TypeVar, Generic
 
 from .base import AcabBasicException
 
-@dataclass
+@dataclass(repr=False)
 class AcabImportException(AcabBasicException):
     """  """
 

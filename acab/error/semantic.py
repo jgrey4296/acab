@@ -7,7 +7,7 @@ from dataclasses import dataclass, field, InitVar
 
 from .base import AcabBasicException
 
-@dataclass
+@dataclass(repr=False)
 class AcabSemanticException(AcabBasicException):
     """ The Core exception report of semantic operations  """
 

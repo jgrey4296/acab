@@ -60,7 +60,7 @@ class UnifierTests(unittest.TestCase):
         sen1 = dsl("a.b.c")[0]
         sen2 = dsl("d.b.c")[0]
 
-        with self.assertRaises(TE.TypeUnifyException):
+        with self.assertRaises(TE.AcabTypingException):
             ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
 
     def test_subtype_relation_true_sub(self):
@@ -141,7 +141,7 @@ class UnifierTests(unittest.TestCase):
         sen1 = dsl("a.test.$x.$x(::bloo)")[0]
         sen2 = dsl("a.test.sentence(::blah).awf(::$y)")[0]
 
-        with self.assertRaises(TE.TypeConflictException):
+        with self.assertRaises(TE.AcabTypingException):
             ctx_r = tuf.type_unify(sen1, sen2, CtxIns())
 
 
@@ -199,3 +199,24 @@ class UnifierTests(unittest.TestCase):
 
         self.assertNotEqual(sen1c[2].type, sen1[2].type)
         self.assertNotEqual(sen1c[-2].type, "_:blah.y")
+
+    def test_type_unify_with_exclusion_basic(self):
+        sen1 = dsl("a!test")[0]
+        sen2 = dsl("a.test")[0]
+
+        with self.assertRaises(TE.AcabTypingException):
+            tuf.type_unify(sen1, sen2, CtxIns())
+
+    def test_type_unify_type_sen_with_exclusion(self):
+        sen1 = dsl("a.test(::a.simple!type)")[0]
+        sen2 = dsl("a.test(::a.simple.type)")[0]
+
+        with self.assertRaises(TE.AcabTypingException):
+            tuf.type_unify(sen1, sen2, CtxIns())
+
+    def test_type_unify_type_sen_with_var(self):
+        sen1 = dsl("a.test(::a.simple!type)")[0]
+        sen2 = dsl("a.test(::a.$x!type)")[0]
+
+        with self.assertRaises(TE.AcabTypingException):
+            tuf.type_unify(sen1, sen2, CtxIns())

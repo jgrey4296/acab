@@ -15,71 +15,47 @@ from acab.error.base import AcabException
 @dataclass
 class AcabTypingException(AcabException):
 
-    def __repr__(self):
-        return "<AcabTypingException>"
-
-
-@dataclass
-class AcabMiscTypingException(AcabTypingException):
-    msg  : str = field()
-    data : Any = field(default=None)
+    left  : AT.Value | AT.Sentence
+    right : AT.Value | AT.Sentence
+    ctx   : AT.CtxIns      = field(repr=False, kw_only=True)
+    data  : dict[str, Any] = field(default_factory=dict, repr=False, kw_only=True)
+    msg   : str            = field(default="Abstract Typing Exception", repr=False, kw_only=True)
 
     def __str__(self):
         return self.msg
 
-@dataclass
+@dataclass(repr=False)
+class AcabLengthUnifyException(AcabTypingException):
+    msg : str = field(default="Unification length mismatch")
+
+@dataclass(repr=False)
+class AcabUnifyGroupException(AcabTypingException):
+    msg : str = field(default="Group Unification Failed")
+
+@dataclass(repr=False)
+class AcabUnifyModalityException(AcabTypingException):
+    msg : str = field(default="Modality Failure")
+
+@dataclass(repr=False)
+class AcabUnifySieveFailure(AcabTypingException):
+    msg : str = field(default="Unification Sieve bottom")
+
+@dataclass(repr=False)
+class AcabUnifyVariableInconsistencyException(AcabTypingException):
+    msg : str = field(default="Inconsistent Variable Found")
+
+@dataclass(repr=False)
 class TypeRedefinitionException(AcabTypingException):
+    msg : str = field(default="Type Redefinition Attempt")
 
-    typename : AT.Sentence = field()
-    msg      : str        = field(default="Type Redefinition Attempt")
-
-@dataclass
-class TypeUnifyException(AcabTypingException):
-
-    left  : AT.Sentence     = field()
-    right : AT.Sentence     = field()
-    words : Tuple[AT.Value] = field()
-    gamma : AT.CtxIns       = field()
-
-@dataclass
+@dataclass(repr=False)
 class TypeConflictException(AcabTypingException):
+    msg : str = field(default=f"Type Conflict: Not a subtype")
 
-    left          : AT.Sentence                     = field()
-    right         : AT.Sentence                     = field()
-    types         : Tuple[AT.Sentence, AT.Sentence] = field()
-    gamma         : AT.CtxIns                       = field()
-
-    def __str__(self):
-        return f"Type Conflict: {self.types[0]} is not a subtype of {self.types[1]} in ({self.left} __:__ {self.right})"
-
-
-@dataclass
+@dataclass(repr=False)
 class TypeUndefinedException(AcabTypingException):
+    msg : str = field(default="Exception: Attempted to declare as missing type")
 
-    def __init__(self, attempted_type, stmt):
-        self.attempted_type = attempted_type
-        self.stmt = stmt
-
-    def __str__(self):
-        return "Exception: Attempted to declare as missing type {} in {}".format(self.attempted_type,
-                                                                                 self.stmt)
-
-@dataclass
-class TypeVariableConflictException(AcabTypingException):
-
-    def __init__(self, node_path):
-        self.node_path = node_path
-
-    def __str__(self):
-        return "Node specified as both a var and not a var: {}".format("".join(self.node_path))
-
-@dataclass
+@dataclass(repr=False)
 class TypeStructureMismatch(AcabTypingException):
-
-    def __init__(self, typename, conflicts):
-        self.typename = typename
-        self.conflicts = conflicts
-
-    def __str__(self):
-        return "{} Structure Mismatch: {}".format(str(self.typename),
-                                                  ", ".join([str(x) for x in self.conflicts]))
+    msg : str = field(default="Type Structure Mismatch")

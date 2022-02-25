@@ -83,22 +83,27 @@ class Unifier:
                 first, second, _ = logic.entry_transform(first, second, ctx_prime)
 
             if len(first) != len(second):
-                raise TE.AcabMiscTypingException("Unification length mismatch: {len(first)}, {len(second)}")
+                raise TE.AcabLengthUnifyException(first, second)
 
-            for f_word,s_word in zip(first, second):
-                result = None
-                for sieve_fn in logic.sieve:
-                    result = sieve_fn(f_word, s_word, ctx_prime)
-                    if result is unify_enum.NA:
-                        continue
-                    elif result is unify_enum.NEXT_WORD:
+            try:
+                for f_word,s_word in zip(first, second):
+                    result = None
+                    for sieve_fn in logic.sieve:
+                        result = sieve_fn(f_word, s_word, ctx_prime)
+                        if result is unify_enum.NA:
+                            continue
+                        elif result is unify_enum.NEXT_WORD:
+                            break
+                        elif result is unify_enum.END:
+                            break
+
+                    if result is unify_enum.END:
                         break
-                    elif result is unify_enum.END:
-                        break
 
-                if result is unify_enum.END:
-                    break
-
+            except TE.AcabTypingException as err:
+                # insert the sentences into the error for easier debugging
+                err.data.update({'left_sentence': first, 'right_sentence': second})
+                raise err from err
 
         return ctx_prime.finish()
 
@@ -121,21 +126,26 @@ class Unifier:
         # ie: a.b.c, q.b.c should error
 
         the_ctx = ctx
+        failures = []
         for fst in first:
             unified = False
             for snd in second:
                 try:
-                    # unify a first with  a second
+                    # unify a first with any of second
                     ret_ctx = self(fst, snd, the_ctx)
+                    # and update the ctx used as master
                     the_ctx = ret_ctx
                     unified = True
+                    # success, so skip the rest of second, do the next sentence in first:
                     break
 
-                except TE.AcabTypingException:
-                    # failed, so try the next sentence
-                    pass
+                except TE.AcabTypingException as err:
+                    # failed, so record the failure,
+                    # and try the next sentence in snd
+                    failures.append(err)
 
+            # if nothing has managed to unify with fst, error.
             if not unified:
-                raise TE.AcabMiscTypingException("Set Unification failed")
+                raise TE.AcabUnifyGroupException(first, second, ctx=ctx, data={'failures': failures})
 
         return the_ctx

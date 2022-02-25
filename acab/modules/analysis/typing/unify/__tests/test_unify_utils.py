@@ -80,14 +80,14 @@ class UnifyUtilTests(unittest.TestCase):
         sen1 = dsl.parseString("a.b.c")[0]
         sen2 = dsl.parseString("a.b.c.d")[0]
 
-        with self.assertRaises(TE.AcabMiscTypingException):
+        with self.assertRaises(TE.AcabTypingException):
             ctx_r = tuf.gen_type_vars(sen1, sen2, CtxIns())
 
     def test_gen_type_vars_length_mismatch_2(self):
         sen1 = dsl.parseString("a.b.c.d")[0]
         sen2 = dsl.parseString("a.b.c")[0]
 
-        with self.assertRaises(TE.AcabMiscTypingException):
+        with self.assertRaises(TE.AcabTypingException):
             ctx_r = tuf.gen_type_vars(sen1, sen2, CtxIns())
 
 
