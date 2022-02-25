@@ -13,8 +13,9 @@ from acab.core.data.instruction import ProductionOperator
 from acab.core.decorators.semantic import RunInSubCtxSet
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces import semantic as SI
-from acab.modules.values.sen_val.context_sen_bind_query_manager import ContextSenBindQueryManager
 from acab.modules.context.context_set import ContextSet, MutableContextInstance
+from acab.modules.values.sen_val.context_sen_bind_query_manager import \
+    ContextSenBindQueryManager
 
 CtxIns = AT.CtxIns
 
@@ -32,7 +33,7 @@ class SenQuerySemantics(SI.StatementSemantics_i):
 
     def query(self, sen, semSys, ctxs=None, data=None):
         if ctxs is None:
-            raise ASErr.AcabSemanticException("Ctxs is none to TrieSemantics.query", sen)
+            raise ASErr.AcabSemanticException("Ctxs is none to SenQuerySemantics.query", sen)
 
         temp_ctxs = semSys.build_ctxset(ctxs._operators)
         # remove empty ctx:

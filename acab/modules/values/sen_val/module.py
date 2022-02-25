@@ -5,19 +5,20 @@ from itertools import filterfalse, starmap, zip_longest
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
-import pyparsing as pp
 
 import acab.core.data.default_structure as DS
 import acab.interfaces.value as VI
+import pyparsing as pp
 from acab.core.config.config import GET, AcabConfig, ConfigSpec
+from acab.core.data.value import Instruction, Sentence
 from acab.core.parsing import pyparse_dsl as ppDSL
+from acab.core.printing import default_symbols as DSYM
+from acab.core.printing import wrappers as PW
 from acab.interfaces.printing import PrintSemantics_i
 from acab.interfaces.semantic import Semantic_Fragment
-from acab.core.printing import default_symbols as DSYM
-from acab.core.data.value import Instruction, Sentence
-from acab.core.printing import wrappers as PW
 
-from . import sen_val_parser as SVP
+from . import parser as SVP
+from . import semantics as SVS
 
 logging = root_logger.getLogger(__name__)
 
@@ -25,10 +26,10 @@ config = GET()
 WALK_SEM_HINT    = Sentence.build([config.prepare("Module.DFSWalk", "WALK_SEM_HINT")()])
 
 # TODO sen value spec
-Sen_Val_Frag = Semantic_Fragment(specs=[], statement=[SenQuerySemantics().as_handler(WALK_SEM_HINT)])
+Sen_Val_Frag = Semantic_Fragment(specs=[], handlers=[SVS.SenQuerySemantics().as_handler(signal=WALK_SEM_HINT)])
 
-SenVal_Parser = ppDSL.PyParse_Fragment(specs=[ppDSL.PyParse_Spec("sentence", struct=SVP.HOTLOAD_SENTENCE)],
-                                       handlers=[ppDSL.PyParse_Handler("word.value", SVP.sen_value)])
+SenVal_Parser = ppDSL.DSL_Fragment(specs=[ppDSL.PyParse_Spec("sentence", struct=SVP.HOTLOAD_SENTENCE)],
+                                   handlers=[ppDSL.PyParse_Handler("word.value", SVP.sen_value)])
 
 
 @dataclass
