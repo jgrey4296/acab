@@ -4,7 +4,7 @@ import logging as root_logger
 from dataclasses import dataclass, field
 from os.path import abspath, exists, expanduser, split
 from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
-                    Mapping, Match, MutableMapping, Sequence,
+                    Mapping, Match, MutableMapping, Sequence, Protocol,
                     Tuple, TypeAlias, TypeVar, cast)
 
 logging = root_logger.getLogger(__name__)
@@ -20,11 +20,10 @@ from acab.interfaces.semantic import SemanticSystem_i
 from acab.interfaces.util import AcabReducible
 
 # TODO add 'Tick' functionality
-ModuleComponents = AT.ModuleComponents
+ModuleComponents : TypeAlias = AT.ModuleComponents
 
 @dataclass
-class AcabEngine_i(cABC.Callable, cABC.Sequence, AcabReducible):
-
+class _AcabEngine_d:
     # Root components to extend
     parser         : DSL_Fragment     = field()
     semantics      : SemanticSystem_i = field()
@@ -42,6 +41,7 @@ class AcabEngine_i(cABC.Callable, cABC.Sequence, AcabReducible):
     _dsl           : DSL_Builder_i    = field(init=False)
     _module_loader : ModuleLoader_i   = field(init=False)
 
+class AcabEngine_i(cABC.Sequence, AcabReducible, _AcabEngine_d):
     @EnsureEngineInitialised
     def load_file(self, filename) -> bool:
         """ Given a filename, read it, and interpret it as an EL DSL string """
@@ -101,12 +101,12 @@ class AcabEngine_i(cABC.Callable, cABC.Sequence, AcabReducible):
         if not bool(sens) or not bool(sens[0]):
             return ""
 
-        return self.printer.pprint(*sens)
+        return str(self.printer.pprint(*sens))
 
-    def load_modules(self, *modules: list[str]) -> list[ModuleComponents]:
+    def load_modules(self, *modules) -> list[ModuleComponents]:
         logging.info("Loading Modules")
         self._module_loader.load_modules(*modules)
-        loaded_mods = self._module_loader.loaded_modules.values()
+        loaded_mods = list(self._module_loader.loaded_modules.values())
         # Initialise DSL
         self._dsl = self.dsl_builder()
         self._dsl.register(self.parser)
@@ -134,3 +134,7 @@ class AcabEngine_i(cABC.Callable, cABC.Sequence, AcabReducible):
 
     def __len__(self):
         raise NotImplementedError()
+
+    @abc.abstractmethod
+    def __call__(self, *args, **kwargs):
+        pass

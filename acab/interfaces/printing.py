@@ -3,32 +3,34 @@ import logging as root_logger
 from dataclasses import InitVar, dataclass, field
 from enum import Enum
 from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
-                    Mapping, Match, MutableMapping, Sequence,
-                     Tuple, TypeVar, cast)
+                    Mapping, Match, MutableMapping, Protocol, Sequence, Tuple,
+                    TypeVar, cast, TypeAlias)
 
 from acab import GET
 from acab import types as AT
 from acab.core.config.config import AcabConfig
-from acab.interfaces.handler_system import (Handler,
-                                            HandlerComponent_i,
-                                            HandlerSystem_i,
-                                            Handler_Fragment)
-from acab.interfaces.value import Sentence_i, Value_i
 from acab.core.printing.default_symbols import PRINT_SEPARATOR_P
 from acab.error.printing import AcabPrintException
 from acab.error.semantic import AcabSemanticException
+from acab.interfaces.handler_system import (Handler, Handler_Fragment,
+                                            HandlerComponent_i,
+                                            HandlerSystem_i,
+                                            _HandlerComponent_d,
+                                            _HandlerSystem_d)
+from acab.interfaces.value import Sentence_i, Value_i
 
 logging = root_logger.getLogger(__name__)
 config = GET()
 
-Sentence         = AT.Sentence
-ModuleComponents = AT.ModuleComponents
-ConfigSpec       = AT.ConfigSpec
+Sentence         : TypeAlias = AT.Sentence
+ModuleComponents : TypeAlias = AT.ModuleComponents
+ConfigSpec       : TypeAlias = AT.ConfigSpec
 
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 
+# Data  #######################################################################
 @dataclass
-class PrintSystem_i(HandlerSystem_i):
+class _PrintSystem_d(_HandlerSystem_d):
     """ Handles how to convert values and sentences into strings,
     does not rely on the underlying data structures,
     just consumes Sentences
@@ -36,6 +38,22 @@ class PrintSystem_i(HandlerSystem_i):
     separator : ConfigSpec     = field(default=PRINT_SEPARATOR_P)
     settings  : dict[str, str] = field(default_factory=dict)
     _config   : AcabConfig     = field(init=False, default_factory=AcabConfig.Get)
+
+    def __post_init__(self, specs, handlers, sieve_fns):
+        super().__post_init__(specs, handlers, sieve_fns)
+
+@dataclass
+class _PrintSemantics_d(_HandlerComponent_d):
+    transforms  : list[Callable] = field(init=False, default_factory=list)
+
+    def __post_init__(self):
+        raise NotImplementedError()
+
+@dataclass
+class Printer_Fragment(Handler_Fragment):
+    target_i = field(default=PrintSystem_i)
+# Protocols  ##################################################################
+class PrintSystem_i(HandlerSystem_i, _PrintSystem_d):
 
     def __post_init__(self, specs, handlers, sieve_fns):
         super().__post_init__(specs, handlers, sieve_fns)
@@ -66,7 +84,7 @@ class PrintSystem_i(HandlerSystem_i):
         while bool(remaining):
             current = remaining.pop(0)
             spec    = None
-            data    = {}
+            data    : dict[str, Any] = {}
             if isinstance(current, str):
                 result += current
                 continue
@@ -101,16 +119,12 @@ class PrintSystem_i(HandlerSystem_i):
         printers = [y for x in mods for y in x.printers]
         assert(all([isinstance(x, Printer_Fragment) for x in printers]))
         for print_fragment in printers:
-            assert(issubclass(print_fragment.target_i, PrintSystem_i))
+            assert(print_fragment.target_i is None or issubclass(print_fragment.target_i, PrintSystem_i))
             for val in print_fragment:
                 self.register(val)
 
 
-#--------------------
-@dataclass
-class PrintSemantics_i(HandlerComponent_i):
-
-    transforms  : list[Callable] = field(init=False, default_factory=list)
+class PrintSemantics_i(_PrintSemantics_d):
 
     def __post_init__(self):
         self.transforms += self.add_transforms()
@@ -134,7 +148,3 @@ class PrintSemantics_i(HandlerComponent_i):
         pass
 
 # For Modules #################################################################
-@dataclass
-class Printer_Fragment(Handler_Fragment):
-
-    target_i : HandlerSystem_i = field(default=PrintSystem_i)

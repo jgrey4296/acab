@@ -8,8 +8,11 @@ import logging as root_logger
 import traceback
 from dataclasses import dataclass, field
 from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
-                    Mapping, Match, MutableMapping,  Sequence,
-                    Tuple, TypeVar, cast)
+                    Mapping, Match, MutableMapping,  Sequence, TypeAlias,
+                    Tuple, TypeVar, cast, TYPE_CHECKING)
+
+if TYPE_CHECKING:
+    import io
 
 logging = root_logger.getLogger(__name__)
 
@@ -17,18 +20,40 @@ from acab import types as AT
 from acab.core.decorators.dsl import EnsureDSLInitialised
 from acab.error.base import AcabBasicException
 from acab.error.parse import AcabParseException
-from acab.interfaces.handler_system import (Handler, Handler_Fragment,
+from acab.interfaces.handler_system import (Handler, Handler_Fragment, _HandlerSpec_d,
                                             HandlerSpec, HandlerSystem_i)
 from acab.interfaces.handler_system import Handler_Fragment, Handler, HandlerSpec
 
-Parser           = "ParserElement"
-Sentence         = AT.Sentence
-Query            = AT.Container
-ModuleComponents = AT.ModuleComponents
-DSL_Spec         = "DSL_Spec_i"
-File             = 'FileObj'
+Parser           : TypeAlias = AT.Parser
+Sentence         : TypeAlias = AT.Sentence
+Query            : TypeAlias = AT.Container
+ModuleComponents : TypeAlias = AT.ModuleComponents
+DSL_Spec_A       : TypeAlias = "DSL_Spec_i"
+File             : TypeAlias = 'io.TextIOBase'
 
-#----------------------------------------
+# Data ########################################################################
+@dataclass
+class DSL_Handler_i(Handler):
+    """ Register a function for handling a DSL setup signal.
+    ie: This function is run to set a pyparsing `Forward`"""
+
+    func : Parser = field()
+
+@dataclass
+class _DSL_Spec_d(_HandlerSpec_d):
+    """
+    Register a signal into a DSL,
+
+    """
+    struct : set[Parser] = field(default_factory=set)
+
+@dataclass
+class _DSL_Builder_d:
+
+    _parsers_initialised  : bool           = field(init=False, default=False)
+    _loaded_DSL_fragments : dict[Any, Any] = field(init=False, default_factory=dict)
+
+# Protocols ###################################################################
 class DSL_Fragment(Handler_Fragment):
     """ """
 
@@ -41,28 +66,15 @@ class DSL_Fragment(Handler_Fragment):
         raise NotImplementedError()
 
 
-@dataclass
-class DSL_Handler_i(Handler):
-    """ Register a function for handling a DSL setup signal.
-    ie: This function is run to set a pyparsing `Forward`"""
+class DSL_Spec_i(HandlerSpec, _DSL_Spec_d):
 
-    func : Parser = field()
-
-@dataclass
-class DSL_Spec_i(HandlerSpec):
-    """
-    Register a signal into a DSL,
-
-    """
-    struct : set[Parser] = field(default_factory=set)
-
-    def extend(self, spec:DSL_Spec):
+    def extend_spec(self, spec:DSL_Spec_A):
         if not isinstance(spec, DSL_Spec_i):
             raise AcabParseException(f"Tried to extend a DSL_Spec with {spec}")
 
         self.struct.update(spec.struct)
 
-    def register(self, handler: DSL_Handler_i):
+    def register(self, handler):
         assert(isinstance(handler, DSL_Handler_i))
         if handler.func is None:
             raise AcabParseException(f"`{self.signal}` attempted to register a handler without a parser")
@@ -78,19 +90,15 @@ class DSL_Spec_i(HandlerSpec):
     def build(self):
         pass
 
-#----------------------------------------
-@dataclass
-class DSL_Builder_i(HandlerSystem_i):
+class DSL_Builder_i(HandlerSystem_i, _DSL_Builder_d):
 
-    _parsers_initialised  : bool           = field(init=False, default=False)
-    _loaded_DSL_fragments : dict[Any, Any] = field(init=False, default_factory=dict)
-
-    def _register_spec(self, *specs: DSL_Spec_i):
+    def _register_spec(self, *specs):
         for spec in specs:
+            assert(isinstance(spec, DSL_Spec_i))
             if spec.signal not in self.handler_specs:
                 self.handler_specs[spec.signal] = spec
             else:
-                self.handler_specs[spec.signal].extend(spec)
+                self.handler_specs[spec.signal].extend_spec(spec)
 
     def build(self):
         """
@@ -116,9 +124,10 @@ class DSL_Builder_i(HandlerSystem_i):
 
         self._parsers_initialised = True
 
-    def parseString(self, *args):
+    def parseString(self, *args) -> list[Sentence]:
         return self.parse(*args)
-    def parseFile(self, f:File) -> list[Sentence]:
+
+    def parseFile(self, f:str) -> list[Sentence]:
         logging.debug(f"Loading File: {f}")
         text = ""
         with open(f, "r") as the_file:

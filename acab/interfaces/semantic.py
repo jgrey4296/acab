@@ -20,8 +20,8 @@ import logging as root_logger
 from dataclasses import InitVar, dataclass, field
 from enum import Enum
 from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
-                    Mapping, Match, MutableMapping, Sequence,
-                    Tuple, TypeVar, cast)
+                    Mapping, Match, MutableMapping, Sequence, Protocol, TypeAlias,
+                    Tuple, TypeVar, cast, Type)
 
 logging = root_logger.getLogger(__name__)
 from acab import types as AT
@@ -30,39 +30,49 @@ from acab.error.printing import AcabPrintException
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces.handler_system import (Handler, Handler_Fragment,
                                             HandlerComponent_i, HandlerSpec,
-                                            HandlerSystem_i)
+                                            HandlerSystem_i, _HandlerSystem_d)
 from acab.interfaces.value import Sentence_i, Value_i
 from acab.interfaces.util import AcabReducible
 
-Value                = AT.Value
-Sentence             = AT.Sentence
-Instruction          = AT.Instruction
-Structure            = AT.DataStructure
-Node                 = AT.Node
-Engine               = AT.Engine
-CtxSet               = AT.CtxSet
-CtxIns               = AT.CtxIns
-Handler              = AT.Handler
-ProductionOperator   = AT.Operator
-ModuleComponents     = AT.ModuleComponents
-StructureSemantics   = AT.StructureSemantics
-ValueSemantics       = AT.ValueSemantics
-StatementSemantics   = AT.StatementSemantics
-AbsDepSemantics      = StatementSemantics | StructureSemantics
-SemanticSystem       = AT.SemanticSystem
+Value              : TypeAlias = AT.Value
+Sentence           : TypeAlias = AT.Sentence
+Instruction        : TypeAlias = AT.Instruction
+Structure          : TypeAlias = AT.DataStructure
+Node               : TypeAlias = AT.Node
+Engine             : TypeAlias = AT.Engine
+CtxSet             : TypeAlias = AT.CtxSet
+CtxIns             : TypeAlias = AT.CtxIns
+Handler_A          : TypeAlias = AT.Handler
+ProductionOperator : TypeAlias = AT.Operator
+ModuleComponents   : TypeAlias = AT.ModuleComponents
+StructureSemantics : TypeAlias = AT.StructureSemantics
+ValueSemantics     : TypeAlias = AT.ValueSemantics
+StatementSemantics : TypeAlias = AT.StatementSemantics
+AbsDepSemantics    : TypeAlias = StatementSemantics | StructureSemantics
+SemanticSystem     : TypeAlias = AT.SemanticSystem
 
 
-#----------------------------------------
+# Data  #######################################################################
 @dataclass
-class SemanticSystem_i(HandlerSystem_i, AcabReducible):
+class _SemanticSystem_d(_HandlerSystem_d):
     """
     Map Instructions to Instruction/Structure Semantics
     """
     # TODO possibly re-add hooks / failure handling
     # TODO add a system specific logging handler
-    ctx_set         : CtxSet           = field(default=None)
+    ctx_set         : CtxSet           = field(kw_only=True)
 
     _operator_cache : None | CtxIns    = field(init=False, default=None)
+
+@dataclass
+class Semantic_Fragment(Handler_Fragment):
+    """ Dataclass of Semantic Handlers to be added to the system, and any
+    data they require
+    """
+    target_i : None | Type[HandlerSystem_i] = field(default=None)
+
+# Protocols  ##################################################################
+class SemanticSystem_i(HandlerSystem_i, AcabReducible, _SemanticSystem_d):
 
     def build_ctxset(self, ops:list[ModuleComponents]=None):
         """ Build a context set. Use passed in operators if provided.
@@ -86,7 +96,7 @@ class SemanticSystem_i(HandlerSystem_i, AcabReducible):
         return self._operator_cache is not None
 
     @abc.abstractmethod
-    def __call__(self, *instructions:Tuple[Instruction], ctxs=None, data=None) -> CtxSet:
+    def __call__(self, *instructions:Iterable[Instruction], ctxs=None, data=None, **kwargs) -> CtxSet:
         pass
 
     def extend(self, mods:list[ModuleComponents]):
@@ -94,13 +104,12 @@ class SemanticSystem_i(HandlerSystem_i, AcabReducible):
         semantics = [y for x in mods for y in x.semantics]
         assert(all([isinstance(x, Semantic_Fragment) for x in semantics]))
         for sem_fragment in semantics:
-            assert(issubclass(sem_fragment.target_i, SemanticSystem_i)), breakpoint()
+            assert(sem_fragment.target_i is None or issubclass(sem_fragment.target_i, SemanticSystem_i))
             for val in sem_fragment:
                 self.register(val)
 
 
-@dataclass
-class StructureSemantics_i(HandlerComponent_i, SemanticSystem_i):
+class StructureSemantics_i(HandlerComponent_i, HandlerSystem_i):
     """
     Dependent Semantics rely on the context they are called in to function
     and are built with specific mappings to value semantics
@@ -109,7 +118,7 @@ class StructureSemantics_i(HandlerComponent_i, SemanticSystem_i):
     def __repr__(self):
         return f"{self.__class__.__name__}"
 
-    def __call__(self, sen, struct, *, ctxs=None, data=None) -> CtxSet:
+    def __call__(self, sen, struct, *, ctxs=None, data=None) -> None | CtxSet:
         assert(isinstance(sen, Sentence_i))
         if QUERY in sen[-1].data and bool(sen[-1].data[QUERY]):
             return self.query(sen, struct, ctxs=ctxs, data=data)
@@ -120,11 +129,11 @@ class StructureSemantics_i(HandlerComponent_i, SemanticSystem_i):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def insert(self, struct:Structure, sen:Sentence, *, data):
+    def insert(self, sen:Sentence, struct:Structure, *, data, ctxs) -> None:
         pass
 
     @abc.abstractmethod
-    def query(self, struct:Structure, sen:Sentence, *, data):
+    def query(self, sen:Sentence, struct:Structure, *, data, ctxs) -> CtxSet:
         pass
 
     @abc.abstractmethod
@@ -194,9 +203,3 @@ class StatementSemantics_i(HandlerComponent_i):
 
 
 #--------------------------------------------------
-@dataclass
-class Semantic_Fragment(Handler_Fragment):
-    """ Dataclass of Semantic Handlers to be added to the system, and any
-    data they require
-    """
-    target_i : HandlerSystem_i = field(default=SemanticSystem_i)

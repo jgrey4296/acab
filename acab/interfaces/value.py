@@ -6,10 +6,11 @@ import abc
 import collections.abc as cABC
 import logging as root_logger
 from dataclasses import dataclass, field
-from typing import (Any, Mapping, Match, MutableMapping,
+from typing import (Any, Mapping, Match, MutableMapping, Protocol,
                     Sequence, Type, Tuple, TypeVar, cast, TypeAlias, ClassVar)
 from uuid import UUID, uuid1
 from re import Pattern
+from functools import reduce
 
 from acab import types as AT
 from acab.core.config.config import AcabConfig
@@ -24,23 +25,40 @@ Value       : TypeAlias = AT.Value
 Variable    : TypeAlias = Value
 Tag         : TypeAlias = Value
 Instruction : TypeAlias = AT.Instruction
-ValueData   : TypeAlias = AT.ValueData
+ValueData   : TypeAlias = str
 # extended in AcabValue to also have Value_i:
-ValueCore   = None | str | Pattern | list
+ValueCore   = str | Pattern | list | None
 
+# Data ########################################################################
 @dataclass(frozen=True)
-class Value_i(cABC.Hashable, AcabBuildable):
-
-    name   : str                  = field(default=None)
+class _Value_d:
+    name   : None | str                  = field(default=None)
     value  : ValueCore            = field(default=None)
     params : list[Variable]       = field(default_factory=list)
     tags   : set[Tag]             = field(default_factory=set)
     data   : dict[ValueData, Any] = field(default_factory=dict)
     uuid   : UUID                 = field(default_factory=uuid1)
 
+
+@dataclass(frozen=True)
+class _Instruction_d(_Value_d):
+
+    breakpoint : bool = field(init=False, default=False)
+    # TODO add listener field for similar to breakpoint
+
+
+@dataclass(frozen=True)
+class _Sentence_d(_Instruction_d):
+
+    value: list[Value]  = field(default_factory=list)
+    # TODO a weak dict mapping names -> values
+
+# Protocols ###################################################################
+class Value_i(cABC.Hashable, AcabBuildable, _Value_d):
+
     @staticmethod
     def extend_core(*ts:Type):
-        ValueCore = reduce(lambda a, b: a | b, ts, AcabValue._value_types)
+        ValueCore = reduce(lambda a, b: a | b, ts, ValueCore)
 
     @property
     @abc.abstractmethod
@@ -81,11 +99,8 @@ class Value_i(cABC.Hashable, AcabBuildable):
         pass
 
 
-@dataclass(frozen=True)
-class Instruction_i(Value_i, cABC.Sized, cABC.Container, AcabReducible):
 
-    breakpoint : bool = field(init=False, default=False)
-    # TODO add listener field for similar to breakpoint
+class Instruction_i(Value_i, cABC.Sized, cABC.Container, AcabReducible, _Instruction_d):
 
     def do_break(self):
         self.breakpoint = not self.breakpoint
@@ -95,11 +110,7 @@ class Instruction_i(Value_i, cABC.Sized, cABC.Container, AcabReducible):
         return self.breakpoint
 
 
-@dataclass(frozen=True)
-class Sentence_i(Instruction_i, cABC.Sequence):
-
-    value: list[Value]  = field(default_factory=list)
-    # TODO a weak dict mapping names -> values
+class Sentence_i(Instruction_i, cABC.Sequence, _Sentence_d):
 
     @abc.abstractmethod
     def build(words, **kwargs):
@@ -128,14 +139,13 @@ class Sentence_i(Instruction_i, cABC.Sequence):
         return self.value[:]
 
 
-@dataclass(frozen=True)
-class Operator_i(Value_i, cABC.Callable):
+
+class Operator_i(Value_i):
     pass
+
 
 class ActionOperator(Operator_i):
+    # Needs to be concrete not a NewType,
+    # as its used in isinstance checks
     pass
 
-
-#  ############################################################################
-# Needs to be concrete / have no NewTypes,
-# as its used in isinstance checks

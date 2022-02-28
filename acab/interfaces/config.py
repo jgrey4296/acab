@@ -11,7 +11,7 @@ from enum import Enum
 
 
 @dataclass
-class ConfigSpec_i(cABC.Hashable, cABC.Callable):
+class ConfigSpec_i(cABC.Hashable):
     """ Dataclass to describe a config file value,
     and any transforms it needs prior to use """
 
@@ -27,12 +27,18 @@ class ConfigSpec_i(cABC.Hashable, cABC.Callable):
         return hash(f"{self.section}:{self.key}")
 
 @dataclass
-class Config_i(cABC.Callable, cABC.Collection):
+class _Config_d:
 
     suffix : ClassVar[str] = ".config"
 
+class Config_i(_Config_d, cABC.Collection):
+
     @abc.abstractstaticmethod
     def Get(*paths: str, hooks=None):
+        pass
+
+    @abc.abstractmethod
+    def __call__(self):
         pass
 
     @abc.abstractmethod

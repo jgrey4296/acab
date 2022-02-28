@@ -103,7 +103,7 @@ class TestHandlerSystem(unittest.TestCase):
         self.assertEqual(len(basic), 2)
         self.assertIn("a_signal", basic)
 
-    def test_register_override(self):
+    def test_register_override_2(self):
         basic = BasicHandlerSystem()
         spec  = HS.HandlerSpec("a_signal")
         handler  = HS.Handler("a_signal", func=id)

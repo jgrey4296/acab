@@ -1,22 +1,24 @@
 """
 Utility decorators
 """
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
 import logging as root_logger
 from enum import Enum
 from functools import wraps
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, ParamSpec,
+                    Sequence, Set, Tuple, TypeAlias, TypeVar, Union, cast)
 
 logging = root_logger.getLogger(__name__)
 
 from acab import types as AT
 
-Structure = AT.DataStructure
-Sentence  = AT.Sentence
+Structure : TypeAlias = AT.DataStructure
+Sentence  : TypeAlias = AT.Sentence
 
-def ForceListArgDecorator(f):
+T = TypeVar('T')
+P = ParamSpec('P')
+
+def ForceListArgDecorator(f:Callable[..., T]) -> Callable[..., T]:
     """ Force the first arg to be a list """
     @wraps(f)
     def wrapped(self, *the_args, **the_kwargs):
@@ -31,7 +33,7 @@ def ForceListArgDecorator(f):
 
     return wrapped
 
-def registerOn(cls:type):
+def registerOn(cls:type) -> Callable[..., T]:
     """ Decorator for registering a function onto a class as a method """
     def wrapper(fn):
         logging.info(f"Method Registration: {cls.__name__} . {fn.__name__}")
@@ -42,14 +44,14 @@ def registerOn(cls:type):
     return wrapper
 
 
-def mapToEnum(the_dict:Dict[Enum, Any], enum_v:Enum):
+def mapToEnum(the_dict:Dict[Enum, Any], enum_v:Enum) -> Callable[..., T]:
     def wrapper(fn):
         the_dict[enum_v] = fn
         return fn
 
     return wrapper
 
-def cache(f):
+def cache(f:Callable[..., T]) -> Callable[..., T]:
     cache_key = f"{f.__name__}__cached_val"
     def wrapped(self, *args):
         if hasattr(self, cache_key):
@@ -61,7 +63,7 @@ def cache(f):
     wrapped.__name__ = f"Cached({f.__name__})"
     return wrapped
 
-def singleton(orig_cls):
+def singleton(orig_cls:Any) -> Any:
     """ From:
     https://igeorgiev.eu/python/design-patterns/python-singleton-pattern-decorator/
     """
@@ -79,7 +81,7 @@ def singleton(orig_cls):
     return orig_cls
 
 
-def HandleSignal(sig : str):
+def HandleSignal(sig : str) -> Callable[..., Any]:
     """
     Utility to easily add a signal to classes for use in the handler system
     """
@@ -99,7 +101,7 @@ def __add_sig(sig, method):
     return wrapper
 
 
-def factory(f):
+def factory(f:Callable[..., T]) -> Callable[..., T]:
     @wraps(f)
     def awaiting_arg(first_arg):
         @wraps(f)

@@ -34,7 +34,7 @@ class BreadthTrieSemantics(SI.StructureSemantics_i):
         has_all_node_comp = "all_nodes" in struct.components
         return is_bns or has_all_node_comp
 
-    def insert(self, sen, struct, data=None, ctxs=None):
+    def insert(self, sen, struct, *, data=None, ctxs=None):
         if data is None:
             data = {}
 
@@ -79,7 +79,7 @@ class BreadthTrieSemantics(SI.StructureSemantics_i):
         spec = self.lookup(parent)
         spec[0].remove(parent, current.value, data=data)
 
-    def query(self, sen, struct, data=None, ctxs=None):
+    def query(self, sen, struct, *, data=None, ctxs=None):
         """ Breadth First Search Query """
         if ctxs is None:
             raise ASErr.AcabSemanticException("Ctxs is none to TrieSemantics.query", sen)
@@ -144,7 +144,7 @@ class DepthTrieSemantics(SI.StructureSemantics_i):
 
     def verify(self, instruction) -> bool:
         return False
-    def insert(self, struct, sen, data=None, ctxs=None):
+    def insert(self, sen, struct, *, data=None, ctxs=None):
         if data is None:
             data = {}
 
@@ -167,7 +167,7 @@ class DepthTrieSemantics(SI.StructureSemantics_i):
         return current
 
 
-    def _delete(self, struct, sen, data=None, ctxs=None):
+    def _delete(self, sen, struct, data=None, ctxs=None):
         parent = struct.root
         current = struct.root
 
@@ -189,7 +189,7 @@ class DepthTrieSemantics(SI.StructureSemantics_i):
         return current
 
 
-    def query(self, struct, sen, data=None, ctxs=None):
+    def query(self, sen, struct, *, data=None, ctxs=None):
         """ Depth First Search Query """
         if ctxs is None:
             raise ASErr.AcabSemanticException("Ctxs is none to TrieSemantics.query", sen)
@@ -244,6 +244,3 @@ class DepthTrieSemantics(SI.StructureSemantics_i):
 
         return ctxs
 
-
-    def trigger(self, struct, sen, data=None, ctxs=None):
-        pass

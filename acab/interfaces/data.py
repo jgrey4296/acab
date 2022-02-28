@@ -6,21 +6,22 @@ import abc
 import collections.abc as cABC
 from dataclasses import InitVar, dataclass, field
 from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
-                    Mapping, Match, MutableMapping, Sequence,
+                    Mapping, Match, MutableMapping, Sequence, Protocol,
                     Tuple, TypeAlias, TypeVar, cast)
 
 from acab import types as AT
 
-Value              = AT.Value
-Node               = AT.Node
-Structure          = AT.DataStructure
+Value     : TypeAlias = AT.Value
+Node      : TypeAlias = AT.Node
+Structure : TypeAlias = AT.DataStructure
 
 @dataclass
-class Node_i(cABC.MutableMapping, cABC.Hashable):
+class _Node_d:
     """  """
-
     value    : Value
     children : dict[str, Node] = field(init=False, default_factory=dict)
+
+class Node_i(cABC.Hashable, _Node_d):
 
     @staticmethod
     @abc.abstractmethod
@@ -28,9 +29,8 @@ class Node_i(cABC.MutableMapping, cABC.Hashable):
         """ Construct a root node for a data structure """
         pass
 
-
     @abc.abstractmethod
-    def _default_setup(self, *, path: [Node], data: dict[Any,Any], context: dict[Any,Any]):
+    def _default_setup(self, *, path: list[Node], data: dict[Any,Any], context: dict[Any,Any]):
         """ Called by a Semantics upon creation of a new node """
         pass
 
@@ -44,7 +44,7 @@ class Node_i(cABC.MutableMapping, cABC.Hashable):
         pass
 
     @abc.abstractmethod
-    def get(self, node) -> Node:
+    def get(self, key) -> None:
         pass
 
     @abc.abstractmethod
@@ -78,10 +78,13 @@ class Node_i(cABC.MutableMapping, cABC.Hashable):
 
 # TODO factor 'root' out into AcabNodeStruct
 @dataclass
-class Structure_i(cABC.MutableMapping):
+class _Structure_d:
     """ The structures which semantics operate on """
     root       : Node           = field()
     components : dict[str, Any] = field(init=False, default_factory=dict)
+
+
+class Structure_i(cABC.MutableMapping, _Structure_d):
 
     @staticmethod
     @abc.abstractmethod

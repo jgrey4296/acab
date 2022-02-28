@@ -114,7 +114,7 @@ class PyParseDSLTests(unittest.TestCase):
         spec2 = ppDSL.PyParse_Spec("a_signal", struct=b_forward, flags=[ppDSL.PyParse_Spec.flag_e.COLLECT])
 
         self.assertEqual(len(spec1.struct), 1)
-        spec1.extend(spec2)
+        spec1.extend_spec(spec2)
         self.assertEqual(len(spec1.struct), 2)
 
     def test_spec_extended_build(self):
@@ -125,7 +125,7 @@ class PyParseDSLTests(unittest.TestCase):
         spec2 = ppDSL.PyParse_Spec("a_signal", struct=b_forward, flags=[ppDSL.PyParse_Spec.flag_e.COLLECT])
         handler = ppDSL.PyParse_Handler("a_signal", func=pp.Literal("blah"))
         spec1.register(handler)
-        spec1.extend(spec2)
+        spec1.extend_spec(spec2)
 
         self.assertEqual(a_forward.expr, None)
         self.assertEqual(b_forward.expr, None)

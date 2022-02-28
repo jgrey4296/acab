@@ -1,7 +1,18 @@
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Generic, Iterable,
+                    Iterator, Mapping, Match, MutableMapping, Protocol,
+                    Sequence, Tuple, TypeAlias, TypeGuard, TypeVar, cast)
+
+if TYPE_CHECKING:
+    # tc only imports
+    pass
+
 from functools import wraps
+
 from acab.error.parse import AcabParseException
 
-def EnsureDSLInitialised(method):
+T = TypeVar('T')
+
+def EnsureDSLInitialised(method:Callable[..., T]) -> Callable[..., T]:
     """ Utility Decorator for DSL Builder's, raising error if not initialised """
     @wraps(method)
     def fn(self, *args, **kwargs):

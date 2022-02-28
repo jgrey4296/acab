@@ -3,7 +3,7 @@ import collections.abc as cABC
 from typing import Tuple, Any
 from typing import Callable, Iterator, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
+from typing import cast, ClassVar, TypeVar, Generic, Protocol
 import abc
 from dataclasses import dataclass, field, InitVar
 import logging as root_logger
@@ -14,13 +14,15 @@ import acab
 config = acab.GET()
 
 @dataclass
-class AcabSieve(cABC.Container, cABC.Sized):
+class _AcabSieve_d:
     """ A Generalisation of a list of functions, applied
     to a set of args, which might return results
     """
 
     funcs    : list[Callable]     = field(default_factory=list)
     break_fn : None | Callable = field(default=None)
+
+class AcabSieve(cABC.Container, cABC.Sized, _AcabSieve_d):
 
     def fifo(self, *args, **kwargs) -> Iterator[Any]:
         for sieve_fn in self.funcs:
@@ -47,7 +49,7 @@ class AcabSieve(cABC.Container, cABC.Sized):
         # sieve from most to least specific
         results = []
         for sieve_fn in self.funcs[::-1]:
-            result += sieve_fn(*args, **kwargs)
+            result = sieve_fn(*args, **kwargs)
             if result is None:
                 continue
             if isinstance(result, list):
@@ -69,9 +71,8 @@ class AcabSieve(cABC.Container, cABC.Sized):
 
     def filo_first(self, *args, **kwargs) -> None | Any:
         # sieve from most to least specific
-        results = []
         for sieve_fn in self.funcs[::-1]:
-            result += sieve_fn(*args, **kwargs)
+            result = sieve_fn(*args, **kwargs)
             if result is None:
                 continue
             return result

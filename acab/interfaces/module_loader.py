@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 from importlib import import_module
 from types import ModuleType
 from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
-                    Mapping, Match, MutableMapping, Sequence,
+                    Mapping, Match, MutableMapping, Sequence, TypeAlias,
                     Tuple, TypeVar, cast)
 
 from acab import types as AT
@@ -19,9 +19,9 @@ from acab.error.importer import AcabImportException
 
 logging = root_logger.getLogger(__name__)
 
-Sentence            = AT.Sentence
-Handler_Fragment    = AT.Handler_Fragment
-ProductionOperator  = AT.Operator
+Sentence           : TypeAlias = AT.Sentence
+Handler_Fragment   : TypeAlias = AT.Handler_Fragment
+ProductionOperator : TypeAlias = AT.Operator
 
 #----------------------------------------
 @dataclass(frozen=True)
@@ -53,10 +53,11 @@ class ModuleComponents():
 
 #--------------------
 @dataclass
-class ModuleLoader_i(cABC.Mapping):
+class _ModuleLoader_d:
     """ Describes how an engine loads ACAB/py modules """
     loaded_modules       : dict[str, ModuleComponents]  = field(init=False, default_factory=dict)
 
+class ModuleLoader_i(_ModuleLoader_d, cABC.Mapping):
     def __getitem__(self, key):
         return self.loaded_modules[key]
 
@@ -70,7 +71,7 @@ class ModuleLoader_i(cABC.Mapping):
     def __len__(self):
         return len(self.loaded_modules)
 
-    def __contains__(self, other: ModuleType | str):
+    def __contains__(self, other):
         return str(other) in self.loaded_modules
 
     def reload_all_modules(self):
@@ -78,7 +79,7 @@ class ModuleLoader_i(cABC.Mapping):
         self.loaded_modules.clear()
         self._load_modules(loaded)
 
-    def load_modules(self, *modules: list[str]) -> list[ModuleComponents]:
+    def load_modules(self, *modules: ModuleType | str) -> list[ModuleComponents]:
         """ Given ModuleInterface objects,
         store them then tell the working memory to load them
         return a list of dictionaries
@@ -102,7 +103,7 @@ class ModuleLoader_i(cABC.Mapping):
             # Return early if already loaded
             if str(maybe_module) in self.loaded_modules:
                 logging.warning("Module already loaded: {}".format(maybe_module))
-                return self.loaded_modules[maybe_module]
+                return self.loaded_modules[str(maybe_module)]
 
             if isinstance(maybe_module, str):
                 the_module = import_module(maybe_module)
@@ -110,7 +111,7 @@ class ModuleLoader_i(cABC.Mapping):
                 the_module = maybe_module
             # Extract
             components = self.extract_from_module(the_module)
-            self.loaded_modules[maybe_module] = components
+            self.loaded_modules[str(maybe_module)] = components
             return components
 
         except ModuleNotFoundError as err:

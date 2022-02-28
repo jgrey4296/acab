@@ -82,7 +82,7 @@ class PyParse_Spec(DSL_Spec_i):
         if any([not isinstance(x, pp.Forward) for x in self.struct]):
             raise AcabParseException(f"Signal `{self.signal}` isn't paired to a `Forward` Parser")
 
-    def extend(self, spec:PyParse_Spec):
+    def extend_spec(self, spec:PyParse_Spec):
         if not isinstance(spec, PyParse_Spec):
             raise AcabParseException(f"Tried to extend a PyParse_Spec with {spec}")
 
