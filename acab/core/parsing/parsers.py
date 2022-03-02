@@ -7,16 +7,16 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 import pyparsing as pp
 from acab import types as AT
 from acab.core.config.config import AcabConfig
-from acab.core.parsing.annotation import ModalAnnotation
 from acab.core.data import default_structure as CDS
 from acab.core.data.value import Sentence
 from acab.core.parsing import consts as PConst
 from acab.core.parsing import default_keys as PDS
 from acab.core.parsing import default_symbols as PDSYM
 from acab.core.parsing import funcs as Pfunc
+from acab.core.parsing.annotation import ModalAnnotation, ValueAnnotation
 from acab.core.parsing.consts import (CPAR, DBLCOLON, NG, OPAR, TAG, N,
-                                          component_gap, emptyLine, gap, ln,
-                                          op, opLn, orm, s, s_key, s_lit, zrm)
+                                      component_gap, emptyLine, gap, ln, op,
+                                      opLn, orm, s, s_key, s_lit, zrm)
 from acab.core.parsing.indented_block import IndentedBlock
 
 logging = root_logger.getLogger(__name__)
@@ -113,13 +113,13 @@ def STATEMENT_CONSTRUCTOR(annotation_p:ParserElement,
 
 
 HOTLOAD_VALUES = pp.Forward()
-
+HOTLOAD_HEAD_ANNOTATIONS = pp.Forward()
+HOTLOAD_POST_ANNOTATIONS = pp.Forward()
 
 # Basic Parsers
 OPERATOR_SUGAR = pp.Word(PDSYM.OPERATOR_SYNTAX)
 OPERATOR_SUGAR.setParseAction(lambda s, l, t: Sentence.build([t[0]]))
 
-# TODO use config for type sentences
 ATOM           = pp.Word(PDSYM.WORD_COMPONENT + "'")
 ATOM.setParseAction(lambda s, l, t: (CDS.TYPE_BOTTOM_NAME, t[0]))
 
@@ -134,23 +134,25 @@ REGEX.setParseAction(lambda s, l, t: (CDS.REGEX_PRIM, re.compile(t[0][1:-1])))
 
 
 # Generalised modal operator, which is converted to appropriate data later
+# The syntax is constructed automatically from AcabConfig
 MODAL      = pp.Word("".join(config.syntax_extension.keys()))
 MODAL.setParseAction(lambda s, l, t: ModalAnnotation(t[0]))
 
-# TODO use valueannotations for this too?
 BASIC_VALUE = ATOM | STRING | REGEX
-BIND        = s_lit(PDSYM.BIND) + ATOM
-AT_BIND     = s_lit(PDSYM.AT_BIND) + ATOM
+BIND        = s_lit(PDSYM.BIND).setParseAction(lambda s,l,t: ValueAnnotation(CDS.BIND, True))
+AT_BIND     = s_lit(PDSYM.AT_BIND).setParseAction(lambda s,l,t: ValueAnnotation(CDS.BIND, CDS.AT_BIND))
 
-# TODO refactor to [pre_annotations] BASIC_VALUE [post_annotations]
-VALBIND = pp.MatchFirst([N(PDS.BIND, BIND),
-                         N(PDS.AT_BIND, AT_BIND),
-                         NG(PDS.VALUE, BASIC_VALUE),
-                         NG(PDS.VALUE, HOTLOAD_VALUES)])
+HEAD_ANNOTATIONS = BIND | AT_BIND | HOTLOAD_HEAD_ANNOTATIONS
+POST_ANNOTATIONS = HOTLOAD_POST_ANNOTATIONS
+
+VALBIND = (NG(PDS.HEAD_ANNOTATION, zrm(HEAD_ANNOTATIONS))
+           + NG(PDS.VALUE, BASIC_VALUE | HOTLOAD_VALUES)
+           + NG(PDS.POST_ANNOTATION, zrm(POST_ANNOTATIONS)))
 VALBIND.setParseAction(Pfunc.make_value)
 
 Fwd_ArgList <<= PConst.VBAR + DELIMIST(BIND, delim=PConst.COMMA) + PConst.VBAR
 
+# TODO make TAG a head_annotation
 tagSen = TAG + pp.delimitedList(ATOM, delim=".")
 tagSen.setParseAction(lambda s, l, t: (Sentence.build([x[1] for x in t[:]])))
 

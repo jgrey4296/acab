@@ -9,6 +9,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 from acab import types as AT
 from acab.core.config.config import GET
+from acab.interfaces.value import Value_i
 
 config = GET()
 
@@ -27,6 +28,7 @@ class ValueAnnotation:
 
     def __call__(self, val:Value) -> Value:
         """ Apply the annotation """
+        assert(isinstance(val,Value_i))
         val.data[self.key] = self.value
         return val
 
@@ -40,6 +42,7 @@ class ValueRepeatAnnotation(ValueAnnotation):
     """
 
     def __call__(self, val:Value) -> Value:
+        assert(isinstance(val,Value_i))
         if self.key not in val.data:
             val.data[self.key] = []
         val.data[self.key].append(self.value)
@@ -50,6 +53,7 @@ class ValueRepeatAnnotation(ValueAnnotation):
 class ModalAnnotation(ValueAnnotation):
 
     def __call__(self, val:Value) -> Value:
+        assert(isinstance(val,Value_i))
         modal_value = config.syntax_extension[self.key]
         val.data[modal_value.__class__.__name__] = modal_value
         return val

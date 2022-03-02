@@ -38,30 +38,24 @@ DEFAULT_TERM_DATA = {}
 
 def make_value(s, loc, toks):
     """ Make a value coupled with additional data """
-    value = None
-    _type = ATOM
-    data = DEFAULT_TERM_DATA.copy()
+    value         = None
+    annotations   = [x for x in toks[PDS.HEAD_ANNOTATION] if isinstance(x, ValueAnnotation)]
+    annotations  += [x for x in toks[PDS.POST_ANNOTATION] if isinstance(x, ValueAnnotation)]
+    _type         = ATOM
+    data          = DEFAULT_TERM_DATA.copy()
     # TODO: link type primitives with type system
-    if PDS.BIND in toks:
-        # is variable
-        assert(isinstance(toks[PDS.BIND][0], tuple))
-        value = toks[PDS.BIND][0][1]
-        data[DS.BIND] = True
-    elif PDS.AT_BIND in toks:
-        # is a reference
-        # (can only be at head of a sentence)
-        assert(isinstance(toks[PDS.AT_BIND][0], tuple))
-        value = toks[PDS.AT_BIND][0][1]
-        data[DS.BIND] = DS.AT_BIND
-    elif PDS.VALUE in toks:
+
+    if PDS.VALUE in toks:
         # is an actual value
         assert(isinstance(toks[PDS.VALUE][0], tuple))
         value = toks[PDS.VALUE][0][1]
         _type = toks[PDS.VALUE][0][0]
     else:
-        raise SyntaxError("Unplanned parse type")
+        raise SyntaxError("Unplanned parse type, expected a tuple of (type_str, value)", toks[PDS.VALUE])
 
     new_val = AcabValue.build(value, data=data, _type=_type)
+    for ann in annotations:
+        ann(new_val)
     return [new_val]
 
 def add_annotations(s, loc, toks):
