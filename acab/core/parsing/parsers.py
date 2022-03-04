@@ -31,7 +31,7 @@ Fwd_TagList = pp.Forward()
 def DELIMIST(expr, delim=None, stopOn=None):
     dlName = f"[{expr} {delim}...]"
     return (expr + pp.ZeroOrMore(delim + expr,
-                                 stopOn=stopOn)).setName(dlName)
+                                 stopOn=stopOn)).set_name(dlName)
 
 def PARAM_CORE(mid:Optional[ParserElement]=None,
                end:Optional[ParserElement]=None,
@@ -63,7 +63,7 @@ def PARAM_CORE(mid:Optional[ParserElement]=None,
         end = pp.Empty()
 
     parser = pp.Group( VALBIND + mid_p + end )
-    parser.setParseAction(Pfunc.add_annotations)
+    parser.set_parse_action(Pfunc.add_annotations)
     return parser
 
 def type_annotation_gen(parser:ParserElement) -> ParserElement:
@@ -89,7 +89,7 @@ def STATEMENT_CONSTRUCTOR(annotation_p:ParserElement,
     if single_line:
         line_p     = pp.empty
         line_end_p = pp.empty
-        end_p      = pp.lineEnd
+        end_p      = pp.line_end
     elif end is not None:
         end_p = end
 
@@ -105,9 +105,9 @@ def STATEMENT_CONSTRUCTOR(annotation_p:ParserElement,
 
 
     if parse_fn is not None:
-        parser.addParseAction(parse_fn)
+        parser.add_parse_action(parse_fn)
     else:
-        parser.addParseAction(Pfunc.construct_statement)
+        parser.add_parse_action(Pfunc.construct_statement)
 
     return parser.ignore(PConst.COMMENT)
 
@@ -118,29 +118,29 @@ HOTLOAD_POST_ANNOTATIONS = pp.Forward()
 
 # Basic Parsers
 OPERATOR_SUGAR = pp.Word(PDSYM.OPERATOR_SYNTAX)
-OPERATOR_SUGAR.setParseAction(lambda s, l, t: Sentence.build([t[0]]))
+OPERATOR_SUGAR.set_parse_action(lambda s, l, t: Sentence.build([t[0]]))
 
 ATOM           = pp.Word(PDSYM.WORD_COMPONENT + "'")
-ATOM.setParseAction(lambda s, l, t: (CDS.TYPE_BOTTOM_NAME, t[0]))
+ATOM.set_parse_action(lambda s, l, t: (CDS.TYPE_BOTTOM_NAME, t[0]))
 
-STRING      = pp.dblQuotedString
+STRING      = pp.dbl_quoted_string
 # Remove quotes from around strings:
-STRING.setParseAction(pp.removeQuotes)
-STRING.addParseAction(lambda s, l, t: (CDS.STRING_PRIM, t[0]))
+STRING.set_parse_action(pp.remove_quotes)
+STRING.add_parse_action(lambda s, l, t: (CDS.STRING_PRIM, t[0]))
 
 # TODO add re.RegexFlag 's to parser: g and i
 REGEX       = pp.Regex(r'/.+?/')
-REGEX.setParseAction(lambda s, l, t: (CDS.REGEX_PRIM, re.compile(t[0][1:-1])))
+REGEX.set_parse_action(lambda s, l, t: (CDS.REGEX_PRIM, re.compile(t[0][1:-1])))
 
 
 # Generalised modal operator, which is converted to appropriate data later
 # The syntax is constructed automatically from AcabConfig
 MODAL      = pp.Word("".join(config.syntax_extension.keys()))
-MODAL.setParseAction(lambda s, l, t: ModalAnnotation(t[0]))
+MODAL.set_parse_action(lambda s, l, t: ModalAnnotation(t[0]))
 
 BASIC_VALUE = ATOM | STRING | REGEX
-BIND        = s_lit(PDSYM.BIND).setParseAction(lambda s,l,t: ValueAnnotation(CDS.BIND, True))
-AT_BIND     = s_lit(PDSYM.AT_BIND).setParseAction(lambda s,l,t: ValueAnnotation(CDS.BIND, CDS.AT_BIND))
+BIND        = s_lit(PDSYM.BIND).set_parse_action(lambda s,l,t: ValueAnnotation(CDS.BIND, True))
+AT_BIND     = s_lit(PDSYM.AT_BIND).set_parse_action(lambda s,l,t: ValueAnnotation(CDS.BIND, CDS.AT_BIND))
 
 HEAD_ANNOTATIONS = BIND | AT_BIND | HOTLOAD_HEAD_ANNOTATIONS
 POST_ANNOTATIONS = HOTLOAD_POST_ANNOTATIONS
@@ -148,25 +148,25 @@ POST_ANNOTATIONS = HOTLOAD_POST_ANNOTATIONS
 VALBIND = (NG(PDS.HEAD_ANNOTATION, zrm(HEAD_ANNOTATIONS))
            + NG(PDS.VALUE, BASIC_VALUE | HOTLOAD_VALUES)
            + NG(PDS.POST_ANNOTATION, zrm(POST_ANNOTATIONS)))
-VALBIND.setParseAction(Pfunc.make_value)
+VALBIND.set_parse_action(Pfunc.make_value)
 
 Fwd_ArgList <<= PConst.VBAR + DELIMIST(BIND, delim=PConst.COMMA) + PConst.VBAR
 
 # TODO make TAG a head_annotation
-tagSen = TAG + pp.delimitedList(ATOM, delim=".")
-tagSen.setParseAction(lambda s, l, t: (Sentence.build([x[1] for x in t[:]])))
+tagSen = TAG + pp.delimited_list(ATOM, delim=".")
+tagSen.set_parse_action(lambda s, l, t: (Sentence.build([x[1] for x in t[:]])))
 
 Fwd_TagList <<= IndentedBlock(tagSen)(PDS.TAG)
 
 # NAMING
-# HOTLOAD_VALUES.setName("HotloadValues")
-VALBIND.setName("ValBind")
-# ATOM.setName("NameWord")
-# STRING.setName("StringWord")
-# REGEX.setName("RegexWord")
-# BASIC_VALUE.setName("BasicValue")
-# BIND.setName("Binding")
-# AT_BIND.setName("AtBinding")
-tagSen.setName("TagSentence")
-Fwd_TagList.setName("TagList")
-Fwd_ArgList.setName("ArgList")
+# HOTLOAD_VALUES.set_name("HotloadValues")
+VALBIND.set_name("ValBind")
+# ATOM.set_name("NameWord")
+# STRING.set_name("StringWord")
+# REGEX.set_name("RegexWord")
+# BASIC_VALUE.set_name("BasicValue")
+# BIND.set_name("Binding")
+# AT_BIND.set_name("AtBinding")
+tagSen.set_name("TagSentence")
+Fwd_TagList.set_name("TagList")
+Fwd_ArgList.set_name("ArgList")

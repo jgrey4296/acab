@@ -48,7 +48,7 @@ class TestWalkParser(unittest.TestCase):
         logging.addHandler(file_h)
 
     def test_parse_walk_query_instruction(self):
-        result = DOP.dfs_query.parseString("ᛦ $x(::blah)?")[0]
+        result = DOP.dfs_query.parse_string("ᛦ $x(::blah)?")[0]
 
         self.assertTrue(result)
         self.assertIsInstance(result, Sentence)
@@ -56,7 +56,7 @@ class TestWalkParser(unittest.TestCase):
         self.assertTrue(result[-1].data['QUERY'])
 
     def test_parse_walk_action_instruction(self):
-        result = DOP.dfs_action.parseString("ᛦ λa.test.op")[0]
+        result = DOP.dfs_action.parse_string("ᛦ λa.test.op")[0]
 
         self.assertTrue(result)
         self.assertIsInstance(result, Sentence)
@@ -66,7 +66,7 @@ class TestWalkParser(unittest.TestCase):
         self.assertEqual(result[0], "_:a.test.op")
 
     def test_parse_walk_action_with_var(self):
-        result = DOP.dfs_action.parseString("ᛦ λ$x")[0]
+        result = DOP.dfs_action.parse_string("ᛦ λ$x")[0]
         self.assertTrue(result)
         self.assertIsInstance(result, Sentence)
         self.assertEqual(result.data['SEMANTIC_HINT'], '_:WALK')

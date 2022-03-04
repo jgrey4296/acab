@@ -43,7 +43,7 @@ class TrieIntegrationTimeTests(unittest.TestCase):
     def test_basic_parser_extension(self):
         PU.HOTLOAD_VALUES << tp.main_pattern
 
-        a = fp.parseString("a.test.sentence.[[a b c $d]]")[0]
+        a = fp.parse_string("a.test.sentence.[[a b c $d]]")[0]
         self.assertIsInstance(a, Sentence)
         self.assertIsInstance(a[-1], TimeContainer)
         self.assertEqual(a[-1]._data[TYPE_INSTANCE_S], TU.TIME_PATTERN_S)

@@ -30,7 +30,7 @@ def do_print(self, line):
     [wm, module, semantics]
     """
     try:
-        params = RP.printer_parser.parseString(line)
+        params = RP.printer_parser.parse_string(line)
     except pp.ParseException as err:
         logging.warning("Bad Print Command")
         logging.warning(err.markInputline())
@@ -66,7 +66,7 @@ def do_stat(self, line):
     ie: Modules/Operators/Pipelines/Layers/Rules....
     """
     logging.info(f"Getting Stats: {line}")
-    params = RP.stats_parser.parseString(line)
+    params = RP.stats_parser.parse_string(line)
     allow_all = not bool(params)
     modules: ModuleComponents = self.state.engine._module_loader.loaded_modules.values()
     # modules
@@ -150,7 +150,7 @@ def do_parser(self, line):
     handlers,
     sugar
     """
-    params = RP.parse_info_parser.parseString(line)
+    params = RP.parse_info_parser.parse_string(line)
     # TODO add * for each spec with debug activated
     if "signals" in params:
         print("DSL Signal Handlers:")

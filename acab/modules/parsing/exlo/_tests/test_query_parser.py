@@ -49,33 +49,33 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         FP.HOTLOAD_SEN_ENDS <<= pp.NoMatch()
 
     def test_query_tail(self):
-        result = QP.query_sen_end.parseString("test?")[0]
+        result = QP.query_sen_end.parse_string("test?")[0]
         self.assertIsInstance(result, AcabValue)
         self.assertEqual(result, "test")
         self.assertIn(BIND, result.data)
 
 
     def test_basic_clause(self):
-        result = QP.SENTENCE.parseString('a.b.c?')[0]
+        result = QP.SENTENCE.parse_string('a.b.c?')[0]
         self.assertIsInstance(result, Sentence)
         self.assertEqual(len(result), 3)
         self.assertEqual(result[-1].value, 'c')
 
     def test_basic_clause_with_bind(self):
-        result = QP.SENTENCE.parseString('a.b.$c?')[0]
+        result = QP.SENTENCE.parse_string('a.b.$c?')[0]
         self.assertIsInstance(result, Sentence)
         self.assertEqual(len(result), 3)
         self.assertEqual(result[-1].value, 'c')
         self.assertTrue(result[-1].is_var)
 
     def test_basic_negated_clause(self):
-        result = QP.SENTENCE.parseString('~a.b.c?')[0]
+        result = QP.SENTENCE.parse_string('~a.b.c?')[0]
         self.assertIsInstance(result, Sentence)
         self.assertTrue(result.data[NEGATION])
 
     def test_basic_multi_clause(self):
         """ Check multiple query clauses can be parsed """
-        result = QP.clauses.parseString('  a.b.c?\n  a.b.d?\n  a.b.e?')[0]
+        result = QP.clauses.parse_string('  a.b.c?\n  a.b.d?\n  a.b.e?')[0]
         self.assertIsInstance(result, ProductionContainer)
         self.assertEqual(len(result.clauses), 3)
         self.assertTrue(all([isinstance(x, Sentence) for x in result.clauses]))
@@ -85,7 +85,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
 
     def test_basic_multi_clause_mixed_negation(self):
         """ Check multiple queries of mixed positive and negative type can be parsed """
-        result = QP.clauses.parseString(' a.b.c?\n ~a.b.d?\n a.b.e?\n ~a.b.f?')[0]
+        result = QP.clauses.parse_string(' a.b.c?\n ~a.b.d?\n a.b.e?\n ~a.b.f?')[0]
         self.assertIsInstance(result, ProductionContainer)
         self.assertTrue(all([isinstance(x, Sentence) for x in result.clauses]))
         self.assertFalse(result.clauses[0].data[NEGATION])
@@ -94,12 +94,12 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertTrue(result.clauses[3].data[NEGATION])
 
     def test_basic_query_construction(self):
-        result = QP.clauses.parseString(' a.b.c?\n a.b.d?\n a.b.e?')[0]
+        result = QP.clauses.parse_string(' a.b.c?\n a.b.d?\n a.b.e?')[0]
         self.assertIsInstance(result, ProductionContainer)
         self.assertEqual(len(result.clauses), 3)
 
     def test_clause_fallback_strings(self):
-        result = QP.clauses.parseString('a.b.c? || $x:a.b!c, $y:b.d.e')[0]
+        result = QP.clauses.parse_string('a.b.c? || $x:a.b!c, $y:b.d.e')[0]
         self.assertIsInstance(result, ProductionContainer)
         r_clause = result.clauses[0]
         self.assertIsNotNone(r_clause[-1].data[QUERY_FALLBACK])
@@ -111,6 +111,6 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
 
 
     def test_query_statement(self):
-        result = QP.query_statement.parseString("query(::γ):\n  a.b.c?\n  d.e.f?\n  a.b.$x?\nend")[0]
+        result = QP.query_statement.parse_string("query(::γ):\n  a.b.c?\n  d.e.f?\n  a.b.$x?\nend")[0]
         self.assertIsInstance(result, ProductionContainer)
         self.assertEqual(len(result.clauses), 3)

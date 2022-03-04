@@ -33,8 +33,7 @@ class NumberTests(unittest.TestCase):
     #----------
 
     def test_init(self):
-        result = NP.NEG_NUM.parseString("20")
+        result = NP.NEG_NUM.parse_string("20")
 
     def test_init_2(self):
-        result = NP.NEG_NUM.parseString("-20")
-
+        result = NP.NEG_NUM.parse_string("-20")

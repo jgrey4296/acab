@@ -68,7 +68,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
 
     def test_component_simple(self):
         """ Check production components can be printed """
-        component = ProductionComponent(value=FP.parseString("testop.blah")[0])
+        component = ProductionComponent(value=FP.parse_string("testop.blah")[0])
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
                                init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
                                               Printers.AnnotationAwareValuePrinter().as_handler(signal="ATOM"),
@@ -84,8 +84,8 @@ class PrintStructureSemanticTests(unittest.TestCase):
 
     def test_component_simple2(self):
         """ Check production components with variables can be printed """
-        component = ProductionComponent(value=FP.parseString("testop.blah")[0],
-                                        params=[FP.parseString("$x")[0][0]])
+        component = ProductionComponent(value=FP.parse_string("testop.blah")[0],
+                                        params=[FP.parse_string("$x")[0][0]])
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
                                init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
                                               Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
@@ -101,9 +101,9 @@ class PrintStructureSemanticTests(unittest.TestCase):
 
     def test_transform_simple(self):
         """ Check transforms print the rebind variable """
-        component = ProductionComponent(value=FP.parseString("testop.blah")[0],
-                                        params=[FP.parseString("$x")[0][0]],
-                                        rebind=FP.parseString("$y")[0][0])
+        component = ProductionComponent(value=FP.parse_string("testop.blah")[0],
+                                        params=[FP.parse_string("$x")[0][0]],
+                                        rebind=FP.parse_string("$y")[0][0])
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
                                init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
                                               Printers.AnnotationAwareValuePrinter().as_handler(signal="ATOM"),
@@ -132,7 +132,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                settings={"MODAL": "exop"})
 
         # combine some queries together
-        queries = QP.parseString("a.b.c?\nd.e(λa.b.q $y).f?\ng.h.i?")
+        queries = QP.parse_string("a.b.c?\nd.e(λa.b.q $y).f?\ng.h.i?")
         self.assertIsInstance(queries, ProductionContainer)
 
         result = sem_sys.pprint(queries)
@@ -156,7 +156,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                settings={"MODAL": "exop"})
 
         # parse a rule
-        rule = RP.parseString("rule(::ρ):\na.b.c?\n\nλa.b.c\nend")[0]
+        rule = RP.parse_string("rule(::ρ):\na.b.c?\n\nλa.b.c\nend")[0]
         self.assertIsInstance(rule, ProductionStructure)
         # print
         result = sem_sys.pprint(rule)
@@ -179,7 +179,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                               settings={"MODAL": "exop"})
 
         # parse a rule
-        rule = RP.parseString("""rule(::ρ):
+        rule = RP.parse_string("""rule(::ρ):
         #test.tag
 
         a.b.c?
@@ -207,7 +207,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               ],
                               settings={"MODAL": "exop"})
 
-        query = QP.query_statement.parseString("""statement(::γ):
+        query = QP.query_statement.parse_string("""statement(::γ):
         a.b.c?
         d.e.f?
         g.h.e?
@@ -234,7 +234,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               ],
                                settings={"MODAL": "exop"})
 
-        query = TP.transform_statement.parseString("""statement(::χ):
+        query = TP.transform_statement.parse_string("""statement(::χ):
         λa.b.c $x $y -> $z
         λq.c.d $z $x -> $a
         λa.b.c $a $y -> $c
@@ -262,7 +262,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               ],
                                settings={"MODAL": "exop"})
 
-        action = AP.action_definition.parseString("""statement(::α):
+        action = AP.action_definition.parse_string("""statement(::α):
         λa.b.c $x
         λa.b.c.d $x $y
         λa.b.c.d.e $x $y $z

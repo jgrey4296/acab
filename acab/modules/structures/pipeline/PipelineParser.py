@@ -70,9 +70,9 @@ pipeline_body = PU.op(conditions) + PU.op(transforms) + PU.op(var_setting)
 pipeline_stmt = PU.STATEMENT_CONSTRUCTOR(HOTLOAD_BASIC_SEN,
                                          pipeline_body)
 
-pipeline_body.setParseAction(make_pipeline)
+pipeline_body.set_parse_action(make_pipeline)
 
 parse_point = pipeline_stmt
 
-def parseString(s):
-    return parse_point.parseString(s)
+def parse_string(s):
+    return parse_point.parse_string(s)

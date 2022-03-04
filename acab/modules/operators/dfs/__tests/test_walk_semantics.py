@@ -57,7 +57,7 @@ class TestWalkSemantics(unittest.TestCase):
 
 
     def test_parsed_walk_query(self):
-        query = DOP.dfs_query.parseString("ᛦ $x(::blah)?")[0]
+        query = DOP.dfs_query.parse_string("ᛦ $x(::blah)?")[0]
 
         self.eng("a.b.c(::blah)")
         self.eng("a.b.d(::blah)")
@@ -230,7 +230,7 @@ class TestWalkSemantics(unittest.TestCase):
         ctxs = self.eng("the.$rule?")
         self.eng("a.$x?", ctxset=ctxs)
         # rule would be: | @x(::node) $a $b |
-        inst = DOP.dfs_action.parseString("@x ᛦ λ$rule")[0]
+        inst = DOP.dfs_action.parse_string("@x ᛦ λ$rule")[0]
         self.eng(inst, ctxset=ctxs)
 
         self.assertTrue(self.eng("found.c?"))
@@ -256,7 +256,8 @@ class TestWalkSemantics(unittest.TestCase):
         ctxs = self.eng("the.$rule?")
         self.eng("$x?", ctxset=ctxs)
         # rule would be: | @x(::node) $a $b |
-        inst = DOP.dfs_action.parseString("@x ᛦ λ$rule")[0]
+        # TODO : run the walk instruction in an action
+        inst = DOP.dfs_action.parse_string("@x ᛦ λ$rule")[0]
         self.eng(inst, ctxset=ctxs)
         found = self.eng("found.$x?")
 
@@ -285,7 +286,7 @@ class TestWalkSemantics(unittest.TestCase):
         ctxs = self.eng("the.$rule?")
         self.eng("$x?", ctxset=ctxs)
         # rule would be: | @x(::node) $a $b |
-        inst = DOP.dfs_action.parseString("@x ᛦ λthe.rule")[0]
+        inst = DOP.dfs_action.parse_string("@x ᛦ λthe.rule")[0]
         self.eng(inst, ctxset=ctxs)
 
 

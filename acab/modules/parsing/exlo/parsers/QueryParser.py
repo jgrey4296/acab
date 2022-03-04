@@ -41,19 +41,19 @@ fallback          = DOUBLEBAR + assignmentList
 op_path = HOTLOAD_QUERY_OP | op_sentence
 
 basic_constraint = N(OPERATOR, op_path) + N(VALUE, zrm(SENTENCE))
-basic_constraint.setParseAction(PConst.build_query_component)
+basic_constraint.set_parse_action(PConst.build_query_component)
 
 COLLAPSE_CONTEXT      = COLLAPSE_CONTEXT.copy()
-COLLAPSE_CONTEXT.setParseAction(lambda x: ValueRepeatAnnotation("constraint", CTX_OP.collect_var))
+COLLAPSE_CONTEXT.set_parse_action(lambda x: ValueRepeatAnnotation("constraint", CTX_OP.collect_var))
 
 word_query_constraint = COLLAPSE_CONTEXT | basic_constraint
 
 query_terminator = QUERY("QueryTerm")
-query_terminator.addParseAction(lambda x: [ValueAnnotation(CDS.QUERY, True),
+query_terminator.add_parse_action(lambda x: [ValueAnnotation(CDS.QUERY, True),
                                            ValueAnnotation(CDS.QUERY_FALLBACK, None)])
 
 query_fallback   = op(fallback)
-query_fallback.setParseAction(lambda x: ValueAnnotation(CDS.QUERY_FALLBACK, x[:]))
+query_fallback.set_parse_action(lambda x: ValueAnnotation(CDS.QUERY_FALLBACK, x[:]))
 
 query_sen_end    = PU.PARAM_CORE(annotations,
                                  end=query_terminator + query_fallback)
@@ -63,22 +63,22 @@ clauses               = IndentedBlock(HOTLOAD_QUERY_SEN | SENTENCE)
 query_statement       = PU.STATEMENT_CONSTRUCTOR(QUERY_HEAD, clauses)
 
 # Actions
-clauses.setParseAction(build_query)
-assignment.setParseAction(build_assignment)
+clauses.set_parse_action(build_query)
+assignment.set_parse_action(build_assignment)
 
 # NAMING
-# assignment.setName("FallbackAssignment")
-# assignmentList.setName("FallbackAssignmentList")
-# fallback.setName("QueryFallbackStatement")
-query_sen_end.setName("QueryTerminator")
-clauses.setName("Query")
-query_statement.setName("QueryStatement")
+# assignment.set_name("FallbackAssignment")
+# assignmentList.set_name("FallbackAssignmentList")
+# fallback.set_name("QueryFallbackStatement")
+query_sen_end.set_name("QueryTerminator")
+clauses.set_name("Query")
+query_statement.set_name("QueryStatement")
 
 
 # parse_point = clauses.ignore(PU.COMMENT)
 parse_point = clauses
 
 # Main parser:
-def parseString(in_string, parse_point=parse_point):
+def parse_string(in_string, parse_point=parse_point):
     """ .a.b(>20)!d.$X, ... -> Query """
-    return parse_point.parseString(in_string)[0]
+    return parse_point.parse_string(in_string)[0]

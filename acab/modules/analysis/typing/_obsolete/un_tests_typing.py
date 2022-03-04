@@ -55,7 +55,7 @@ class TypingTests(unittest.TestCase):
         """ :: a END """
         tc = TypeChecker()
         type_def = TypeDefinition([])
-        loc = FP.parseString('a.test.definition.x')[0]
+        loc = FP.parse_string('a.test.definition.x')[0]
         copied_loc = loc.attach_statement(type_def)
         self.assertEqual(len(tc._definitions), len(Sentence.build.Primitives))
         tc.add_definition(copied_loc)
@@ -88,7 +88,7 @@ class TypingTests(unittest.TestCase):
     def test_basic_query(self):
         """ ::a END, a.$b """
         tc = TypeChecker()
-        loc = FP.parseString('a.test.definition.$x')[0].attach_statement(TypeDefinition([]))
+        loc = FP.parse_string('a.test.definition.$x')[0].attach_statement(TypeDefinition([]))
         tc.add_definition(loc)
         sen1 = S("a","b")
         sen1[-1]._data[TU.BIND_S] = True
@@ -102,7 +102,7 @@ class TypingTests(unittest.TestCase):
     def test_basic_query_fail(self):
         """ ::a END, a.$b """
         tc = TypeChecker()
-        loc = FP.parseString('a.test.definition.$x')[0].attach_statement(TypeDefinition([]))
+        loc = FP.parse_string('a.test.definition.$x')[0].attach_statement(TypeDefinition([]))
         tc.add_definition(loc)
         sen1 = S("a","b")
         sen1[-1]._data[TU.BIND_S] = True

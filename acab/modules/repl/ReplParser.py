@@ -13,7 +13,7 @@ from acab.modules.repl.util import build_slice
 logging = root_logger.getLogger(__name__)
 config = AcabConfig.Get()
 
-rst = pp.delimitedList(pp.restOfLine, delim=pp.White("\n\r"), combine=True).leaveWhitespace()
+rst = pp.delimited_list(pp.rest_of_line, delim=pp.White("\n\r"), combine=True).leave_whitespace()
 
 # multi line ##################################################################
 MULTI_LINE_START = config.prepare("Module.REPL", "MULTI_LINE_START")()
@@ -22,39 +22,39 @@ MULTI_LINE_END   = config.prepare("Module.REPL", "MULTI_LINE_END")()
 multi_line_start = pp.Regex(MULTI_LINE_START)
 multi_line_end = pp.Regex(MULTI_LINE_END)
 
-multi_line_start.setParseAction(lambda s,l,t: "multi")
-multi_line_end.setParseAction(lambda s,l,t: "multi")
+multi_line_start.set_parse_action(lambda s,l,t: "multi")
+multi_line_end.set_parse_action(lambda s,l,t: "multi")
 # ##############################################################
 # ie: sugar parser:
 
 # TODO put sugar in config?
 short_exit = pp.Keyword("q")("quit")
-short_exit.setParseAction(lambda s,l,t: "exit")
+short_exit.set_parse_action(lambda s,l,t: "exit")
 
 short_break = pp.Keyword("b")("break")
-short_break.setParseAction(lambda s,l,t: "break")
+short_break.set_parse_action(lambda s,l,t: "break")
 
 short_echo = pp.Keyword("e")("echo")
-short_echo.setParseAction(lambda s,l,t: "echo")
+short_echo.set_parse_action(lambda s,l,t: "echo")
 
 short_save = pp.Keyword("s")("save")
-short_save.setParseAction(lambda s,l,t: "save")
+short_save.set_parse_action(lambda s,l,t: "save")
 
 short_load = pp.Keyword("l")("load")
-short_load.setParseAction(lambda s,l,t: "load")
+short_load.set_parse_action(lambda s,l,t: "load")
 
 # "tick"
 short_step = pp.Keyword("t")("step")
-short_step.setParseAction(lambda s,l,t: "step")
+short_step.set_parse_action(lambda s,l,t: "step")
 
 short_context = pp.Keyword("c")("context")
-short_context.setParseAction(lambda s,l,t: "ctx")
+short_context.set_parse_action(lambda s,l,t: "ctx")
 
 short_print_context = pp.Keyword("pc")("print context")
-short_print_context.setParseAction(lambda s,l,t: "print ctx")
+short_print_context.set_parse_action(lambda s,l,t: "print ctx")
 
 pwm = pp.Keyword("pwm")("Print Working Memory")
-pwm.setParseAction(lambda s,l,t: "print wm")
+pwm.set_parse_action(lambda s,l,t: "print wm")
 
 
 sugared = pp.Suppress(pp.Literal(":")) + pp.MatchFirst([short_exit,
@@ -71,7 +71,7 @@ sugared = pp.Suppress(pp.Literal(":")) + pp.MatchFirst([short_exit,
 precmd_parser = pp.MatchFirst([multi_line_start,
                                multi_line_end + rst,
                                sugared,
-                               rst]).leaveWhitespace()
+                               rst]).leave_whitespace()
 
 # step kws ####################################################################
 back_kw     = pp.Keyword("back")
@@ -122,7 +122,7 @@ parse_info_parser = signals_kw | sugar_kw | debug_control | rst
 
 # context ########################################################################
 number = pp.Optional(pp.Literal('-')("minus")) + pp.Word(pp.nums)
-number.setParseAction(lambda s, l, t: int(t[-1]) if 'minus' not in t else -1 * int(t[-1]))
+number.set_parse_action(lambda s, l, t: int(t[-1]) if 'minus' not in t else -1 * int(t[-1]))
 
 slice_p = PU.s(pp.Literal('[')) + \
     PU.op(number)('first') + \
@@ -130,7 +130,7 @@ slice_p = PU.s(pp.Literal('[')) + \
           PU.op(number)("second")) + \
     PU.s(pp.Literal(']'))
 
-slice_p.setParseAction(build_slice)
+slice_p.set_parse_action(build_slice)
 
 ctx_kw = pp.MatchFirst([pp.Keyword("ctx"),
                         pp.Keyword("c")])("context")
@@ -178,10 +178,10 @@ force_parser = query + pp.Optional(send_to_parser)
 
 # break parser ################################################################
 filename = pp.Word(pp.alphas + "/_") + pp.Literal(".py")
-filename.setParseAction(lambda s,l,t: "".join(t[:]))
+filename.set_parse_action(lambda s,l,t: "".join(t[:]))
 
 linenum  = pp.Word(pp.nums)
-linenum.setParseAction(lambda s,l,t: int(t.line))
+linenum.set_parse_action(lambda s,l,t: int(t.line))
 
 basic_bp = filename("file") + pp.Suppress(pp.Keyword(":")) + linenum("line")
 

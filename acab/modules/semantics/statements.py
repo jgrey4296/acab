@@ -28,11 +28,12 @@ class QueryAbstraction(SI.StatementSemantics_i):
     """
     def verify(self, instruction) -> bool:
         return (isinstance(instruction, Instr.ProductionContainer) and
+                all([isinstance(x, VI.Sentence_i) for x in query.clauses]) and
                 all([DS.QUERY in x[-1].data for x in instruction.clauses]))
 
     def __call__(self, instruction, semSys, *, ctxs=None, data=None):
         query = instruction
-        # Get the default dependent semantics
+        # Get the default semantics for use with all clauses
         spec = semSys.lookup()
         for clause in query.clauses:
             spec(clause, data=data, ctxs=ctxs)
@@ -49,6 +50,7 @@ class QueryPlusAbstraction(SI.StatementSemantics_i):
     def __call__(self, instruction, semSys, *, ctxs=None, data=None):
         query = instruction
         for clause in query.clauses:
+            # Get a different semantics for each clause
             spec   = semSys.lookup(clause)
             struct = spec.struct
             if struct is None:

@@ -214,7 +214,7 @@ class PrintValueSemanticTests(unittest.TestCase):
                                    Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
                                ],
                                settings={"MODAL": "exop"})
-        value = FP.parseString("con.test(λa.test.op $x)")[0][-1]
+        value = FP.parse_string("con.test(λa.test.op $x)")[0][-1]
         result = sem_sys.pprint(value)
         self.assertEqual(result, "test(λa.test.op $x).")
 
@@ -230,6 +230,6 @@ class PrintValueSemanticTests(unittest.TestCase):
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                               Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS")],
                               settings={"MODAL": "exop"})
-        value = FP.parseString("con.test(λa.test.op $x $y)")[0][-1]
+        value = FP.parse_string("con.test(λa.test.op $x $y)")[0][-1]
         result = sem_sys.pprint(value)
         self.assertEqual(result, "test(λa.test.op $x $y).")

@@ -52,7 +52,7 @@ class AcabEngine_i(cABC.Sequence, AcabReducible, _AcabEngine_d):
         # with open(filename) as f:
         # everything should be an assertion
         try:
-            assertions = self._dsl.parseFile(filename)
+            assertions = self._dsl.parse_file(filename)
             # Assert facts:
             for x in assertions:
                 logging.info(f"File load assertion: {x}")

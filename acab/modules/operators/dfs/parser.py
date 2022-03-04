@@ -60,11 +60,11 @@ dfs_query     = dfs_head + orm(HOTLOAD_VAR)("constraints") + QUERY
 # @a ᛦ $x.d.f?
 
 # will build a sentence with a dfs semantic hint
-dfs_query.setParseAction(build_dfs_query)
+dfs_query.set_parse_action(build_dfs_query)
 
 # Build a dfs action sentence:
 # ᛦ λarity.one.action.or.rule
 # which will be applied to every node:
 # λarity.one.action.or.rule $x
 dfs_action    = dfs_head + HOTLOAD_SEN_OP('action')
-dfs_action.setParseAction(build_dfs_action)
+dfs_action.set_parse_action(build_dfs_action)

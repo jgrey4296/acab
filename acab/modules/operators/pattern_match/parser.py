@@ -40,18 +40,18 @@ MATCH_KW = s(pp.Keyword("match"))
 # TODO use indented block
 # Parser
 # TODO: catch module alias (eg: λPM.match $x -> ...)?
-head = MATCH_KW + HOTLOAD_VAR + ARROW + HOTLOAD_VAR + COLON + s(pp.lineEnd)
+head = MATCH_KW + HOTLOAD_VAR + ARROW + HOTLOAD_VAR + COLON + s(pp.line_end)
 
 pattern = HOTLOAD_QUERY
 # TODO: make result a sentence that will place a value in the head's var
 match_line = pattern + ARROW + HOTLOAD_VALBIND
 
-pattern_match = head + pp.delimitedList(match_line, delim=pp.lineEnd) + END
+pattern_match = head + pp.delimited_list(match_line, delim=pp.line_end) + END
 
 # Actions
-pattern_match.setParseAction(build_transform_component)
+pattern_match.set_parse_action(build_transform_component)
 
 parse_point = pattern_match
 
-def parseString(the_string):
-    return parse_point.parseString(the_string)[:]
+def parse_string(the_string):
+    return parse_point.parse_string(the_string)[:]

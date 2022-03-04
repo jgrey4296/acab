@@ -55,7 +55,7 @@ class TransformTests(unittest.TestCase):
         stub_ctx = Contexts()
         stub_ctx.append([({'a': PV(2), 'b': PV(4)}, 'blah')])
 
-        stub_transform = TP.parseString(r'λN.AddOp $a 20 -> $y, λN.MulOp $b 2 -> $z')
+        stub_transform = TP.parse_string(r'λN.AddOp $a 20 -> $y, λN.MulOp $b 2 -> $z')
 
         # result = self.e._run_transform(stub_ctx[0], stub_transform)
         result = stub_transform(stub_ctx[0], self.e)[0]
@@ -69,7 +69,7 @@ class TransformTests(unittest.TestCase):
         stub_ctx = Contexts()
         stub_ctx.append([({'a': PV(2), 'b': PV(8)}, "blah")])
 
-        stub_transform = TP.parseString(r'λN.AddOp $a 20 -> $q, λN.MulOp $b $a -> $w')
+        stub_transform = TP.parse_string(r'λN.AddOp $a 20 -> $q, λN.MulOp $b $a -> $w')
         result = stub_transform(stub_ctx[0], self.e)[0]
         self.assertIsInstance(result, dict)
         self.assertEqual(result['a'].value, 2)
@@ -81,7 +81,7 @@ class TransformTests(unittest.TestCase):
         stub_ctx = Contexts()
         stub_ctx.append([({'a': PV(2), 'b': PV(-2), 'c': PV(2.53)}, 'blah')])
 
-        stub_transform = TP.parseString(r'λN.NegOp $a -> $x, λN.NegOp $b -> $y, λN.RoundOp $c -> $z')
+        stub_transform = TP.parse_string(r'λN.NegOp $a -> $x, λN.NegOp $b -> $y, λN.RoundOp $c -> $z')
         result = stub_transform(stub_ctx[0], self.e)[0]
         self.assertIsInstance(result, dict)
         self.assertEqual(result['a'].value, 2)
@@ -95,7 +95,7 @@ class TransformTests(unittest.TestCase):
         stub_ctx = Contexts()
         stub_ctx.append([({'a': PV(2), 'b':PV(-2), 'c': PV(2.53)}, 'blah')])
 
-        stub_transform = TP.parseString(r'λN.NegOp $a -> $x, λN.NegOp $b -> $y, λN.RoundOp $c -> $z')
+        stub_transform = TP.parse_string(r'λN.NegOp $a -> $x, λN.NegOp $b -> $y, λN.RoundOp $c -> $z')
         result = stub_transform(stub_ctx[0], self.e)[0]
         self.assertIsInstance(result, dict)
         self.assertEqual(result['a'].value, 2)
@@ -112,7 +112,7 @@ class TransformTests(unittest.TestCase):
                           'c':PV(2.53)},
                           "blah")])
 
-        stub_transform = TP.parseString(r'λN.AddOp $a 20 -> $x, λN.SubOp $b 20 -> $y, λN.AddOp $c $x -> $z')
+        stub_transform = TP.parse_string(r'λN.AddOp $a 20 -> $x, λN.SubOp $b 20 -> $y, λN.AddOp $c $x -> $z')
         result = stub_transform(stub_ctx[0], self.e)[0]
         self.assertIsInstance(result, dict)
         self.assertEqual(result['a'].value, 2)
@@ -126,7 +126,7 @@ class TransformTests(unittest.TestCase):
         stub_ctx = Contexts()
         stub_ctx.append([({'a': PV(2), 'b':PV(-2), 'c': PV(2.53)}, 'blah')])
 
-        stub_transform = TP.parseString(r'λN.AddOp $a 20 -> $x, λN.SubOp $b 20 -> $y, λN.AddOp $c $a -> $z')
+        stub_transform = TP.parse_string(r'λN.AddOp $a 20 -> $x, λN.SubOp $b 20 -> $y, λN.AddOp $c $a -> $z')
         result = stub_transform(stub_ctx[0], self.e)[0]
         self.assertIsInstance(result, dict)
         self.assertEqual(result['a'].value, 2)
@@ -143,7 +143,7 @@ class TransformTests(unittest.TestCase):
                            'c': PV("awefblahawef"),
                            'd': PV("AAAA")}, "blah")])
 
-        stub_transform = TP.parseString(r'λS.RegexOp $a /blah/ bloo -> $x, λS.RegexOp $b /aaa\w+/ $d -> $y, λS.RegexOp $c /awef(\w+)awef/ $d -> $z')
+        stub_transform = TP.parse_string(r'λS.RegexOp $a /blah/ bloo -> $x, λS.RegexOp $b /aaa\w+/ $d -> $y, λS.RegexOp $c /awef(\w+)awef/ $d -> $z')
         result = stub_transform(stub_ctx[0], self.e)[0]
         self.assertIsInstance(result, dict)
         self.assertEqual(result['a'].value, 'blah')
@@ -161,7 +161,7 @@ class TransformTests(unittest.TestCase):
             'c': PV("awefblahawef"),
             'd':  PV("AAAA")}, "blah")])
 
-        stub_transform = TP.parseString(r'λS.RegexOp $a /blah/ bloo -> $x, λS.RegexOp $b /aaa\w+/ $d -> $y, λS.RegexOp $c /awef(\w+)awef/ "\g<1> \g<1>" -> $z')
+        stub_transform = TP.parse_string(r'λS.RegexOp $a /blah/ bloo -> $x, λS.RegexOp $b /aaa\w+/ $d -> $y, λS.RegexOp $c /awef(\w+)awef/ "\g<1> \g<1>" -> $z')
         result = stub_transform(stub_ctx[0], self.e)[0]
         self.assertIsInstance(result, dict)
         self.assertEqual(result['a'].value, 'blah')
@@ -180,7 +180,7 @@ class TransformTests(unittest.TestCase):
                           'y': PV("{a} blah {b}"),
                            'z': PV("{c} {b} {a}")}, "blah")])
 
-        stub_transform = TP.parseString(r'λS.FormatOp $x -> $q, λS.FormatOp $y -> $w, λS.FormatOp $z -> $e')
+        stub_transform = TP.parse_string(r'λS.FormatOp $x -> $q, λS.FormatOp $y -> $w, λS.FormatOp $z -> $e')
         result = stub_transform(stub_ctx[0], self.e)[0]
         self.assertIsInstance(result, dict)
         self.assertEqual(result['x'].value, '{a}')
@@ -199,7 +199,7 @@ class TransformTests(unittest.TestCase):
                           'y': PV("{a} blah {b}"),
                            'z': PV("{c} {b} {a}")}, "blah")])
 
-        stub_transform = TP.parseString(r'λS.FormatOp $x -> $xa, λS.FormatOp $y -> $ya, λS.FormatOp $z -> $za')
+        stub_transform = TP.parse_string(r'λS.FormatOp $x -> $xa, λS.FormatOp $y -> $ya, λS.FormatOp $z -> $za')
         result = stub_transform(stub_ctx[0], self.e)[0]
         self.assertIsInstance(result, dict)
         self.assertEqual(result['xa'].value, 'AAA')

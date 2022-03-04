@@ -57,7 +57,7 @@ class PyParse_Handler(DSL_Handler_i):
 
     def __call__(self, the_str):
         """ A DSL Handler parses an input string when called """
-        return self.func.parseString(the_str)[:]
+        return self.func.parse_string(the_str)[:]
 
     def verify(self, instruction) -> bool:
         return isinstance(instruction, str)
@@ -102,9 +102,9 @@ class PyParse_Spec(DSL_Spec_i):
         """
         return self.build()
 
-    def parseString(self, *args, **kwargs):
+    def parse_string(self, *args, **kwargs):
         combined = self.build()
-        return combined.parseString(*args, **kwargs)
+        return combined.parse_string(*args, **kwargs)
 
     def build(self):
         #assert(self.flag_e.COLLECT in self.flags)
@@ -162,12 +162,12 @@ class PyParseDSL(DSL_Builder_i):
             raise AcabParseException("No Default Parser Set for DSL")
 
         try:
-            return self[DEFAULT_HANDLER_SIGNAL].parseString(s, parseAll=True)[:]
+            return self[DEFAULT_HANDLER_SIGNAL].parse_string(s, parseAll=True)[:]
         except pp.ParseException as exp:
             logging.warning("\n--------------------\nParse Failure:\n")
             traceback.print_tb(exp.__traceback__)
             logging.warning(f"\n{exp.args[-1]}\n")
-            logging.warning(f"Parser: {exp.parserElement}\n")
+            logging.warning(f"Parser: {exp.parser_element}\n")
             logging.warning("Line: {}, Col: {} : {}".format(exp.lineno, exp.col, exp.markInputline()))
             return []
 

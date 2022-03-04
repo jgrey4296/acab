@@ -97,7 +97,7 @@ def do_break(self, line):
     # To break on semantic execution:
 
     """
-    ctxs = RP.break_parser.parseString(line)
+    ctxs = RP.break_parser.parse_string(line)
     # TODO refactor the basic/semantic logic into the debugger
     if "basic" in ctxs:
         bp_result = self.state.debugger.set_break(ctxs.file, ctxs.line)
@@ -159,10 +159,10 @@ def do_break(self, line):
         turn_off = hasattr(parser._parse, "_originalParseMethod")
         if turn_off:
             print(f"Turning Breakpoint off for: {ctxs['parser']}")
-            parser.setBreak(False)
+            parser.set_break(False)
         else:
             print(f"Turning Breakpoint on for: {ctxs['parser']}")
-            parser.setBreak(True)
+            parser.set_break(True)
     else:
         print("""
         Shunting to Python debugger.
@@ -182,7 +182,7 @@ def do_ctx(self, line):
     Clear the context with '-'
     """
     try:
-        params = RP.ctx_select_parser.parseString(line)
+        params = RP.ctx_select_parser.parse_string(line)
 
         if "subset" in params:
             result = self.state.ctxs[params.subset]
@@ -207,7 +207,7 @@ def do_forcep(self, line):
     """
     try:
         # parse the line
-        params = RP.force_parser.parseString(line)
+        params = RP.force_parser.parse_string(line)
         # Get the handler for the specified signal
         parser = self.state.engine._dsl[params.query]
         print(f"Retrieved: {parser}\n")
@@ -218,9 +218,9 @@ def do_forcep(self, line):
         print(f"Trying Parser on: {params.send}")
         # if exists, parse, then call engine on it
         built = parser.build()
-        built.setDebug(True)
-        forced_result = built.parseString(params.send.strip(), parseAll=True)[:]
-        built.setDebug(False)
+        built.set_debug(True)
+        forced_result = built.parse_string(params.send.strip(), parseAll=True)[:]
+        built.set_debug(False)
         self.state.debug_data = forced_result
         print(f"----- Forced Parse Result: {forced_result}\n")
 

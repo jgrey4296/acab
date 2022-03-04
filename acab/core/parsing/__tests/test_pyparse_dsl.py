@@ -101,8 +101,8 @@ class PyParseDSLTests(unittest.TestCase):
         spec.register(handler2)
 
         spec.build()
-        result = spec.parseString("blah")
-        result2 = spec.parseString("aweg")
+        result = spec.parse_string("blah")
+        result2 = spec.parse_string("aweg")
         self.assertEqual(result[0], "blah")
         self.assertEqual(result2[0], "aweg")
 

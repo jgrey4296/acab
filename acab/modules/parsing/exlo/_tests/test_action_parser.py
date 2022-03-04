@@ -43,26 +43,26 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
     def test_action_definition(self):
         """ Check an action definition can be parsed without error """
         test_str = "test(::α):\n  λoperator.add a.b.c\nend"
-        definition = AP.action_definition.parseString(test_str)[0]
+        definition = AP.action_definition.parse_string(test_str)[0]
         self.assertEqual(definition.name, "test")
 
     def test_parse_action_no_params(self):
         """ Check an action without parameters can be parsed """
         test_str = "λoperator.add"
 
-        result = AP.action_component.parseString(test_str)[0]
+        result = AP.action_component.parse_string(test_str)[0]
         self.assertIsInstance(result, ProductionComponent)
 
     def test_multi_var_action(self):
         """ Check an action with multiple variables can be parsed """
-        result = AP.action_component.parseString("λa.b.c $x $y $z")[0]
+        result = AP.action_component.parse_string("λa.b.c $x $y $z")[0]
         self.assertIsInstance(result, ProductionComponent)
         self.assertEqual(len(result.params), 3)
         self.assertTrue(all([isinstance(x, AcabValue) for x in result.params]))
 
     def test_actions(self):
         """ Test multiple actions can be parsed together """
-        result = AP.actions.parseString("  λa.b.c\n  a.b.d\n  λa.b.c blah bloo")[0]
+        result = AP.actions.parse_string("  λa.b.c\n  a.b.d\n  λa.b.c blah bloo")[0]
         self.assertIsInstance(result, ProductionContainer)
         self.assertEqual(len(result.clauses), 3)
 

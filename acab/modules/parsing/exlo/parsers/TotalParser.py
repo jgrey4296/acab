@@ -16,23 +16,23 @@ from . import QueryParser as QP
 from . import RuleParser as RP
 
 HOTLOAD_STATEMENTS = pp.Forward()
-# HOTLOAD_STATEMENTS.setName("Statements")
+# HOTLOAD_STATEMENTS.set_name("Statements")
 
 file_component = HOTLOAD_STATEMENTS | FP.SEN_PLURAL
 
 file_total     = PU.DELIMIST(file_component, delim=component_gap)
 
 # NAMING
-# HOTLOAD_STATEMENTS.setName("HotloadStatement")
-# file_component.setName("FileComponent")
+# HOTLOAD_STATEMENTS.set_name("HotloadStatement")
+# file_component.set_name("FileComponent")
 
 parse_point = (file_cruft + file_total+ file_cruft).ignore(COMMENT)
-# parse_point.setName("Total Parser")
+# parse_point.set_name("Total Parser")
 # parse_point = file_cruft +  file_total + file_cruft
 
-def parseString(in_string, parse_point=parse_point):
+def parse_string(in_string, parse_point=parse_point):
     assert(isinstance(in_string, str))
-    return parse_point.parseString(in_string)[:]
+    return parse_point.parse_string(in_string)[:]
 
-def parseFile(f, parse_point=parse_point):
-    return parse_point.parseFile(f, parseAll=True)
+def parse_file(f, parse_point=parse_point):
+    return parse_point.parse_file(f, parseAll=True)

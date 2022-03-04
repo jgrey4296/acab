@@ -27,6 +27,6 @@ def construct_tag_query(toks):
 
 tagList = PU.tagSen.copy()
 
-tagList.addParseAction(construct_tag_query)
+tagList.add_parse_action(construct_tag_query)
 
-tagList.setName("QueryTagList")
+tagList.set_name("QueryTagList")

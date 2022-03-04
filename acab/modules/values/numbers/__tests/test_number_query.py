@@ -64,13 +64,13 @@ class NumberQueryTests(unittest.TestCase):
 
 
     def test_basic_comp_internal(self):
-        result = QP.QUERY_OP_Internal.parseString('λoperator.query.lt 20')[0]
+        result = QP.QUERY_OP_Internal.parse_string('λoperator.query.lt 20')[0]
         self.assertIsInstance(result, tuple)
         self.assertIsInstance(result[1], ProductionComponent)
 
 
     def test_basic_comparison(self):
-        result = QP.constraints.parseString('λoperator.query.lt 20, λoperator.query.gt 40, λoperator.query.neq $x, λoperator.query.eq $y, λoperator.query.regmatch /blah/')[0]
+        result = QP.constraints.parse_string('λoperator.query.lt 20, λoperator.query.gt 40, λoperator.query.neq $x, λoperator.query.eq $y, λoperator.query.regmatch /blah/')[0]
         self.assertEqual(result[0], CONSTRAINT_S)
         self.assertEqual(len(result[1]), 5)
         self.assertTrue(all([isinstance(x, ProductionComponent) for x in result[1]]))
@@ -83,25 +83,25 @@ class NumberQueryTests(unittest.TestCase):
 
     @unittest.skip
     def test_basic_query_core(self):
-        result = QP.QueryCore.parseString('a(λoperator.query.gt 20).')[0]
+        result = QP.QueryCore.parse_string('a(λoperator.query.gt 20).')[0]
         self.assertTrue(CONSTRAINT_S in result._data)
         self.assertEqual(len(result._data[CONSTRAINT_S]), 1)
         self.assertIsInstance(result._data[CONSTRAINT_S][0], ProductionComponent)
 
     @unittest.skip
     def test_basic_query_core_multi_comparison(self):
-        result = QP.QueryCore.parseString('a(λoperator.query.gt 20, λoperator.query.lt 30).')[0]
+        result = QP.QueryCore.parse_string('a(λoperator.query.gt 20, λoperator.query.lt 30).')[0]
         self.assertEqual(len(result._data[CONSTRAINT_S]), 2)
         self.assertTrue(all([isinstance(x, ProductionComponent) for x in result._data[CONSTRAINT_S]]))
 
     @unittest.skip
     def test_basic_query_core_with_exclusion(self):
-        result = QP.QueryCore.parseString('a(λoperator.query.gt 20)!')[0]
+        result = QP.QueryCore.parse_string('a(λoperator.query.gt 20)!')[0]
         self.assertEqual(result._data[OPERATOR_S], KBU.EXOP.EX)
 
 
     def test_clause_fallback(self):
-        result = QP.clause.parseString('a.b.c? || $x:2')[0]
+        result = QP.clause.parse_string('a.b.c? || $x:2')[0]
         self.assertIsInstance(result, Sentence)
         self.assertTrue(QUERY_FALLBACK_S in result._data)
         self.assertIsNotNone(result._data[QUERY_FALLBACK_S])
@@ -113,11 +113,11 @@ class NumberQueryTests(unittest.TestCase):
 
     def test_clause_negated_fallback(self):
         with self.assertRaises(Exception):
-            QP.clause.parseString('~a.b.c? || $x:2')
+            QP.clause.parse_string('~a.b.c? || $x:2')
 
 
     def test_clause_multi_fallback(self):
-        result = QP.clause.parseString('a.b.c? || $x:2, $y:5')[0]
+        result = QP.clause.parse_string('a.b.c? || $x:2, $y:5')[0]
         self.assertIsInstance(result, Sentence)
         self.assertIsNotNone(result._data[QUERY_FALLBACK_S])
         self.assertEqual(len(result._data[QUERY_FALLBACK_S]), 2)
@@ -139,15 +139,15 @@ class NumberQueryTests(unittest.TestCase):
                    # 'a.b.c(^$x)?']
 
         for the_string in queries:
-            the_result = QP.parseString(the_string)
+            the_result = QP.parse_string(the_string)
             self.assertEqual(Printer.print(the_string, the_result).strip())
 
 
     def test_rule_binding_expansion(self):
-        bindings = { "x" : FP.parseString('a.b.c')[0],
-                     "y" : FP.parseString('d.e.f')[0],
-                     "z" : FP.parseString('x.y.z')[0] }
-        result = RP.parseString("a.rule: (::ρ)\n$y.b.$z?\n\nλoperator.transform.add $x 2 -> $y\n\n$y\nend")[0][-1]
+        bindings = { "x" : FP.parse_string('a.b.c')[0],
+                     "y" : FP.parse_string('d.e.f')[0],
+                     "z" : FP.parse_string('x.y.z')[0] }
+        result = RP.parse_string("a.rule: (::ρ)\n$y.b.$z?\n\nλoperator.transform.add $x 2 -> $y\n\n$y\nend")[0][-1]
         expanded = result.value.bind(bindings)
         # Expanding bindings makes a new rule, so its an AnonValue
         self.assertEqual(Printer.print(expanded).strip(),

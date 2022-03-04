@@ -63,27 +63,27 @@ pattern <<= pp.Group(openers + pp.ZeroOrMore(pattern_contents | pattern)
 main_pattern = PU.s(OBRACKET) + pattern + PU.s(CBRACKET)
 
 # Actions
-Time_VALBIND.setParseAction(make_valbind)
-pattern.setParseAction(construct_pattern_simple)
-main_pattern.setParseAction(lambda s, l, t: (PATTERN_S, t[0][0]))
-OBRACKET.setParseAction(lambda x: CTOR_ACT.PSTART)
-CBRACKET.setParseAction(lambda x: CTOR_ACT.PEND)
-COMMA.setParseAction(lambda x: CTOR_ACT.PDUAL)
-QUESTION.setParseAction(lambda x: CTOR_ACT.OP)
-LESS.setParseAction(lambda x: CTOR_ACT.CSTART)
-MORE.setParseAction(lambda x: CTOR_ACT.CEND)
-TILDE.setParseAction(lambda x: (CTOR_ACT.SIL, {}))
+Time_VALBIND.set_parse_action(make_valbind)
+pattern.set_parse_action(construct_pattern_simple)
+main_pattern.set_parse_action(lambda s, l, t: (PATTERN_S, t[0][0]))
+OBRACKET.set_parse_action(lambda x: CTOR_ACT.PSTART)
+CBRACKET.set_parse_action(lambda x: CTOR_ACT.PEND)
+COMMA.set_parse_action(lambda x: CTOR_ACT.PDUAL)
+QUESTION.set_parse_action(lambda x: CTOR_ACT.OP)
+LESS.set_parse_action(lambda x: CTOR_ACT.CSTART)
+MORE.set_parse_action(lambda x: CTOR_ACT.CEND)
+TILDE.set_parse_action(lambda x: (CTOR_ACT.SIL, {}))
 
 # NAMING
-acts.setName("TimePatternActs")
-pattern_contents.setName("TimePatternContents")
-pattern.setName("TimePattern")
-openers.setName("TimeOpeners")
-closers.setName("TimeClosers")
+acts.set_name("TimePatternActs")
+pattern_contents.set_name("TimePatternContents")
+pattern.set_name("TimePattern")
+openers.set_name("TimeOpeners")
+closers.set_name("TimeClosers")
 
 # parse_point = main_pattern.ignore(PU.COMMENT)
 parse_point = main_pattern
 
-def parseString(s):
+def parse_string(s):
     """ The primary access point """
-    return parse_point.parseString(s)[0][1]
+    return parse_point.parse_string(s)[0][1]

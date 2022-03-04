@@ -57,7 +57,7 @@ class _DSL_Builder_d:
 class DSL_Fragment(Handler_Fragment):
     """ """
 
-    def parseString(self, string):
+    def parse_string(self, string):
         """ Takes a String, parses it into Data format """
         # TODO maybe create a parser on demand of all handlers in the fragment?
         raise NotImplementedError()
@@ -83,7 +83,7 @@ class DSL_Spec_i(HandlerSpec, _DSL_Spec_d):
         self.handlers.append(handler)
 
     @abc.abstractmethod
-    def parseString(self, *args, **kwargs):
+    def parse_string(self, *args, **kwargs):
         pass
 
     @abc.abstractmethod
@@ -124,10 +124,10 @@ class DSL_Builder_i(HandlerSystem_i, _DSL_Builder_d):
 
         self._parsers_initialised = True
 
-    def parseString(self, *args) -> list[Sentence]:
+    def parse_string(self, *args) -> list[Sentence]:
         return self.parse(*args)
 
-    def parseFile(self, f:str) -> list[Sentence]:
+    def parse_file(self, f:str) -> list[Sentence]:
         logging.debug(f"Loading File: {f}")
         text = ""
         with open(f, "r") as the_file:

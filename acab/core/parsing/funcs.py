@@ -159,7 +159,7 @@ def clear_parser_names(*parsers):
     logging.debug("Clearing Parser Names")
     for parser in parsers:
         if hasattr(parser, "name"):
-            parser.setName(None)
+            parser.set_name(None)
 
         if hasattr(parser, "strRepr") and parser.strRepr is not None:
             parser.strRepr = None

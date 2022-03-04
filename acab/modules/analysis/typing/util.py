@@ -45,5 +45,5 @@ SUM_DEFINITION      = Sentence.build([SUM_DEF_S])
 OPERATOR_DEFINITION = Sentence.build([OP_DEF_S])
 # TODO TYPE CLASS
 
-STRUCT_HEAD.setName("StructHead")
-FUNC_HEAD.setName("FuncHead")
+STRUCT_HEAD.set_name("StructHead")
+FUNC_HEAD.set_name("FuncHead")

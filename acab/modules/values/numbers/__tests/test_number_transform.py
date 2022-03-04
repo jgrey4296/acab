@@ -58,7 +58,7 @@ class NumberTransformTests(unittest.TestCase):
 
     def test_basic_transform_core(self):
         breakpoint()
-        result = TP.transform_core.parseString(r'λoperator.transform.add $x 20 -> $y')[0]
+        result = TP.transform_core.parse_string(r'λoperator.transform.add $x 20 -> $y')[0]
         self.assertIsInstance(result, transform.TransformComponent)
         self.assertEqual(Printer.print(result.op), "operator.transform.add")
         self.assertEqual(len(result.params), 2)
@@ -66,7 +66,7 @@ class NumberTransformTests(unittest.TestCase):
 
 
     def test_basic_transform_core_rebind(self):
-        result = TP.transform_core.parseString('λoperator.transform.mul $y 20 -> $z')[0]
+        result = TP.transform_core.parse_string('λoperator.transform.mul $y 20 -> $z')[0]
         self.assertIsInstance(result, transform.TransformComponent)
         self.assertEqual(Printer.print(result.op), "operator.transform.mul")
         self.assertEqual(result.params[0].value, "y")
@@ -77,13 +77,13 @@ class NumberTransformTests(unittest.TestCase):
 
 
     def test_basic_transform(self):
-        result = TP.parseString('λoperator.transform.add $x 20 -> $y, λoperator.transform.add $y 5 -> $z')
+        result = TP.parse_string('λoperator.transform.add $x 20 -> $y, λoperator.transform.add $y 5 -> $z')
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result.clauses), 2)
 
 
     def test_binary_operator(self):
-        result = TP.parseString('λoperator.transform.add $x 20 -> $y')
+        result = TP.parse_string('λoperator.transform.add $x 20 -> $y')
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result.clauses), 1)
         self.assertEqual(Printer.print(result.clauses[0].op), "operator.transform.add")
@@ -93,7 +93,7 @@ class NumberTransformTests(unittest.TestCase):
 
 
     def test_binary_rebind(self):
-        result = TP.parseString('λoperator.transform.add $x 20 -> $y')
+        result = TP.parse_string('λoperator.transform.add $x 20 -> $y')
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result.clauses), 1)
         self.assertEqual(Printer.print(result.clauses[0].op), "operator.transform.add")
@@ -102,16 +102,16 @@ class NumberTransformTests(unittest.TestCase):
         self.assertEqual(result.clauses[0]._rebind.value, 'y')
 
     def test_unary_round(self):
-        result = TP.parseString('λoperator.transform.round $x -> $y')
+        result = TP.parse_string('λoperator.transform.round $x -> $y')
         self.assertEqual(Printer.print(result.clauses[0].op), 'operator.transform.round')
 
     def test_binary_rand_operator(self):
-        result = TP.parseString('λoperator.transform.rand $x $y -> $z')
+        result = TP.parse_string('λoperator.transform.rand $x $y -> $z')
         self.assertEqual(len(result.clauses), 1)
         self.assertEqual(Printer.print(result.clauses[0].op), 'operator.transform.rand')
 
     def test_unary_operator(self):
-        result = TP.parseString(r'λoperator.transform.neg $x -> $y')
+        result = TP.parse_string(r'λoperator.transform.neg $x -> $y')
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result.clauses), 1)
         self.assertEqual(Printer.print(result.clauses[0].op), "operator.transform.neg")
@@ -119,7 +119,7 @@ class NumberTransformTests(unittest.TestCase):
         self.assertIsNotNone(result.clauses[0]._rebind)
 
     def test_unary_rebind(self):
-        result = TP.parseString(r'λoperator.transform.neg $x -> $y')
+        result = TP.parse_string(r'λoperator.transform.neg $x -> $y')
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(len(result.clauses), 1)
         self.assertEqual(Printer.print(result.clauses[0].op), "operator.transform.neg")
@@ -145,7 +145,7 @@ class NumberTransformTests(unittest.TestCase):
                       "λoperator.transform.add $x 2d5 -> $y"
         ]
         for a_string in transforms:
-            parsed = TP.parseString(a_string)
+            parsed = TP.parse_string(a_string)
             self.assertEqual(Printer.print(parsed).strip(), a_string)
 
 

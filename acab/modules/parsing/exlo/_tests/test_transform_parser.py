@@ -33,12 +33,12 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
     #----------
     def test_transform_core(self):
         """ Check a transform can be parsed """
-        result = TP.transform_core.parseString("λa.b.c $x $y -> $z")[0]
+        result = TP.transform_core.parse_string("λa.b.c $x $y -> $z")[0]
         self.assertIsInstance(result, ProductionComponent)
         self.assertEqual(result.rebind.name, "z")
 
     def test_transforms(self):
         """ Check multiple transforms can be parsed """
-        result = TP.transforms.parseString("  λa.b.c $x -> $y\n  λa.b.d $x -> $z")[0]
+        result = TP.transforms.parse_string("  λa.b.c $x -> $y\n  λa.b.d $x -> $z")[0]
         self.assertIsInstance(result, ProductionContainer)
         self.assertEqual(len(result.clauses), 2)

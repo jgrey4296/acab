@@ -24,7 +24,7 @@ HOTLOAD_SEN  = pp.Forward()
 TYPEDEC_CORE = pp.Forward()
 
 EXTENDED_ATOM = pp.Word(EXTENDED_LANGUAGE_SYNTAX_S)
-EXTENDED_ATOM.setParseAction(lambda s, l, t: Sentence.build(t[0]))
+EXTENDED_ATOM.set_parse_action(lambda s, l, t: Sentence.build(t[0]))
 
 
 VAR_OR_TYPE_DEC = PU.BIND | TYPEDEC_CORE
@@ -35,17 +35,17 @@ TYPE_NAME       = HOTLOAD_SEN | EXTENDED_ATOM
 # ::a.type($x, a.different.type)
 TYPEDEC_CORE <<= DBLCOLON + N(TYU.SEN_S, TYPE_NAME) \
     + N(TYU.ARG_S, op(OPAR
-                      + pp.delimitedList(VAR_OR_TYPE_DEC,
+                      + pp.delimited_list(VAR_OR_TYPE_DEC,
                                          TYU.PARAM_JOIN_S,
                                          combine=False)
                       + CPAR))
 
-TYPEDEC_CORE.setParseAction(TU.make_type_dec)
+TYPEDEC_CORE.set_parse_action(TU.make_type_dec)
 
 # NAMING
-TYPEDEC_CORE.setName("TypeDeclaration")
+TYPEDEC_CORE.set_name("TypeDeclaration")
 
 parse_point = TYPEDEC_CORE
 
-def parseString(in_string):
-    return parse_point.parseString(in_string)[:]
+def parse_string(in_string):
+    return parse_point.parse_string(in_string)[:]

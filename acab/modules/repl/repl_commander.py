@@ -72,7 +72,7 @@ class AcabREPLCommander(cmd.Cmd):
         # eg: ':{' -> multi
         try:
             logging.debug("PreCmd Parsing: {}".format(line))
-            line = RP.precmd_parser.parseString(line)[:]
+            line = RP.precmd_parser.parse_string(line)[:]
             logging.debug("PreCmd Result:{}".format(line))
             # Intercept if in multi line state
             if self.state.in_multi_line and not line[0] in ["multi", "pop", "exit", "echo"]:

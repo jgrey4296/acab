@@ -97,7 +97,7 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
                                           Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                           Printers.ModalPrinter().as_handler(signal="MODAL")],
                           settings={"MODAL" : "exop"})
-        sentence = FP.parseString("a.test.sen")[0]
+        sentence = FP.parse_string("a.test.sen")[0]
         result = sem.pprint(sentence)
         self.assertEqual(result, "a.test.sen")
 
@@ -110,7 +110,7 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
                                           Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                           Printers.ModalPrinter().as_handler(signal="MODAL")],
                           settings={"MODAL": "exop"})
-        sentence = FP.parseString("a.test!sen")[0]
+        sentence = FP.parse_string("a.test!sen")[0]
         result = sem.pprint(sentence)
         self.assertEqual(result, "a.test!sen")
 
@@ -123,7 +123,7 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
                                           Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                           Printers.ModalPrinter().as_handler(signal="MODAL")],
                           settings={"MODAL": "exop"})
-        sentence = FP.parseString("a.test!sen")[0]
+        sentence = FP.parse_string("a.test!sen")[0]
         sentence[-1].data[DS.QUERY] = True
         result = sem.pprint(sentence)
         self.assertEqual(result, "a.test!sen?")
@@ -137,6 +137,6 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
                                           Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                           Printers.ModalPrinter().as_handler(signal="MODAL")],
                           settings={"MODAL" : "exop"})
-        sentence = FP.parseString("~a.test.sen")[0]
+        sentence = FP.parse_string("~a.test.sen")[0]
         result = sem.pprint(sentence)
         self.assertEqual(result, "~a.test.sen")
