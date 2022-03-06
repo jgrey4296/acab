@@ -53,15 +53,15 @@ class ContextFailState:
 @dataclass(frozen=True)
 class ContextInstance(CtxInt.ContextInstance_i):
 
-    data              : Dict[str, Any]  = field(default_factory=dict)
-    nodes             : Dict[str, Node] = field(default_factory=dict)
+    data              : dict[str, Any]  = field(default_factory=dict)
+    nodes             : dict[str, Node] = field(default_factory=dict)
     uuid              : UUID            = field(default_factory=uuid1)
     _parent_ctx       : CtxIns          = field(default=None)
     exact             : bool            = field(default=False)
 
     _current          : Node            = field(init=False, default=None)
     _depth            : int             = field(init=False, default=0)
-    _lineage          : Set[UUID]       = field(init=False, default_factory=set)
+    _lineage          : set[UUID]       = field(init=False, default_factory=set)
 
     def __post_init__(self):
         self._lineage.add(self.uuid)
@@ -72,7 +72,7 @@ class ContextInstance(CtxInt.ContextInstance_i):
     def __hash__(self):
         return hash(self.uuid)
 
-    def __contains__(self, value: Union[int, str, Value]):
+    def __contains__(self, value: int|str|Value):
         key = value
         if isinstance(value, VI.Sentence_i):
             key = str(value)
@@ -135,7 +135,7 @@ class ContextInstance(CtxInt.ContextInstance_i):
         assert(self.uuid in copied._lineage)
         return copied
 
-    def bind(self, word, nodes, sub_binds=None) -> [CtxIns]:
+    def bind(self, word, nodes, sub_binds=None) -> list[CtxIns]:
         if sub_binds is None:
             sub_binds = []
         # Make len(nodes) new ctxins for the new bindings
@@ -166,7 +166,7 @@ class ContextInstance(CtxInt.ContextInstance_i):
 
         return [x[0] for x in extensions]
 
-    def bind_dict(self, val_binds:Dict[str, Any]=None, node_binds:Dict[str,Node]=None) -> CtxIns:
+    def bind_dict(self, val_binds:dict[str, Any]=None, node_binds:dict[str,Node]=None) -> CtxIns:
         data_copy = self.data.copy()
         nodes_copy = self.nodes.copy()
 
@@ -198,20 +198,20 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i):
     _operators           : CtxIns                 = field(default=None)
 
     # For nesting ctxsets
-    _parent              : Optional[CtxSet]       = field(default=None)
+    _parent              : None|CtxSet       = field(default=None)
 
-    _total               : Dict[UUID, CtxIns]     = field(default_factory=dict)
-    _active              : List[UUID]             = field(default_factory=list)
+    _total               : dict[UUID, CtxIns]     = field(default_factory=dict)
+    _active              : list[UUID]             = field(default_factory=list)
 
-    _failed              : List[ContextFailState] = field(init=False, default_factory=list)
-    _named_sets          : Dict[Any, NamedCtxSet] = field(init=False, default_factory=dict)
+    _failed              : list[ContextFailState] = field(init=False, default_factory=list)
+    _named_sets          : dict[Any, NamedCtxSet] = field(init=False, default_factory=dict)
     _uuid                : UUID                   = field(init=False, default_factory=uuid1)
 
     delayed_e            : Enum                   = field(init=False, default=DELAYED_E)
     instance_constructor : CtxIns                 = field(init=False, default=ContextInstance)
 
     @staticmethod
-    def build(ops:Union[None, CtxIns, List[ModuleComponents]]=None):
+    def build(ops:None|CtxIns|list[ModuleComponents]=None):
         """ Create the empty context instance,
         constructing the operator bindings if necessary
         """
@@ -234,14 +234,14 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i):
         # TODO add sugar names from config
         return ContextSet(_operators=instance)
 
-    def subctx(self, selection:Union[int, List[Union[CtxIns, UUID]]]=None, *, val_binds:Dict[str,Value]=None, node_binds:Dict[str, Node]=None) -> CtxSet:
+    def subctx(self, selection:int|list[CtxIns|UUID]=None, *, val_binds:dict[str,Value]=None, node_binds:dict[str, Node]=None) -> CtxSet:
         """
         Subctx the given instances,
         *and* bind the given data as part of that subctx.
         (Intended to avoid manual mutx creation, etc)
         """
         # TODO if selection == root? then use empty root context
-        # TODO selection:Union[slice, List[CtxIns], List[UUIDs], bool, None]
+        # TODO selection:slice|List[UUIDs|CtxIns]|bool|None
         if selection is None:
             selection     = self._active
         elif all([isinstance(x, ContextInstance) for x in selection]):
@@ -284,7 +284,7 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i):
     def __len__(self):
         return len(self._active)
 
-    def __getitem__(self, index, *indices) -> Union[CtxIns, CtxSet]:
+    def __getitem__(self, index, *indices) -> CtxIns|CtxSet:
         """ Access the active CtxSet, for:
         a specifc instance (by int index),
         a subselection (using a slice),
@@ -316,7 +316,7 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i):
     def __repr__(self):
         return f"(CtxSet: Active:{len(self._active)} Failed:{len(self._failed)} Total:{len(self._total)})"
 
-    def __contains__(self, key: Union[CtxIns, UUID]):
+    def __contains__(self, key: CtxIns|UUID):
         if isinstance(key, CtxIns):
             key = key.uuid
 
@@ -338,7 +338,7 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i):
                                       node)
         self._failed.append(fail_state)
 
-    def push(self, ctxs:Union[CtxIns, List[CtxIns], UUID, List[UUID]]):
+    def push(self, ctxs:UUID|CtxIns|list[CtxIns|UUID]):
         if not isinstance(ctxs, list):
             ctxs = [ctxs]
 
@@ -364,14 +364,14 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i):
             return self._total[self._active.pop(0)]
 
 
-    def active_list(self, clear=False) -> List[CtxIns]:
+    def active_list(self, clear=False) -> list[CtxIns]:
         the_list = [self._total[x] for x in self._active]
         if clear:
             self._active = []
 
         return the_list
 
-    def failed_list(self):
+    def failed_list(self) -> list[CtxIns]:
         return self._failed
 
 
@@ -380,7 +380,7 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i):
 
 
 
-    def build_named_set(self, inst, uuids:List[UUID]):
+    def build_named_set(self, inst, uuids:list[UUID]):
         assert(inst not in self._named_sets)
         self._named_sets[inst] = NamedCtxSet(inst, uuids)
         return self._named_sets[inst]
@@ -392,13 +392,13 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
     Changes are inserted into the dictionary, until context is exited
     exit creates a new CtxIns, integrating changes """
 
-    parent       : Optional[CtxSet] = field()
+    parent       : None|CtxSet = field()
     base         : CtxIns           = field()
-    data         : Dict[Any, Any]   = field(default_factory=dict)
+    data         : dict[Any, Any]   = field(default_factory=dict)
     uuid         : UUID             = field(default_factory=uuid1)
     exact        : bool             = field(default=False)
 
-    def __contains__(self, value: Union[int, str, Value]):
+    def __contains__(self, value: int|str|Value):
         key = value
         if isinstance(value, VI.Sentence_i):
             key = str(value)

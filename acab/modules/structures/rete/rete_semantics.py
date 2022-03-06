@@ -113,7 +113,7 @@ class ReteSemantics(SI.StructureSemantics_i):
         """
         # TODO if passed a node, use that in place of root
         result_list = []
-        # Queue: List[Tuple[List[Value], Node]]
+        # Queue: list[Tuple[list[Value], Node]]
         queue = [([], struct.root)]
         while bool(queue):
             path, current = queue.pop(0)

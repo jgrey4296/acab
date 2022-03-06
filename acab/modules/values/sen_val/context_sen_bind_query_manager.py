@@ -44,18 +44,18 @@ DELAYED_E = Enum("Delayed Instruction Set", "ACTIVE FAIL DEACTIVATE CLEAR MERGE"
 class ContextSenBindQueryManager:
     """ Shared State of the current query, between different ctx insts """
 
-    query_clause  : Optional[Sen]      = field()
+    query_clause  : None|Sen      = field()
     root_node     : Node               = field()
     ctxs          : CtxSet             = field()
 
     negated       : bool                                   = field(init=False, default=False)
-    collect_vars  : Set[str]                               = field(init=False, default_factory=set)
-    ctx_clauses   : Dict[UUID, List[ConstraintCollection]] = field(init=False, default_factory=dict)
+    collect_vars  : set[str]                               = field(init=False, default_factory=set)
+    ctx_clauses   : dict[UUID, list[ConstraintCollection]] = field(init=False, default_factory=dict)
 
-    _duplication_filter : Dict[Sen, List[ConstraintCollection]] = field(init=False, default_factory=dict)
+    _duplication_filter : dict[Sen, list[ConstraintCollection]] = field(init=False, default_factory=dict)
     _current_constraint : ConstraintCollection = field(init=False, default=None)
     _current_inst       : CtxIns               = field(init=False, default=None)
-    _initial_ctxs       : List[UUID]           = field(init=False, default_factory=list)
+    _initial_ctxs       : list[UUID]           = field(init=False, default_factory=list)
 
     def __post_init__(self):
         sen = self.query_clause
@@ -74,7 +74,7 @@ class ContextSenBindQueryManager:
         # set all instances to start at node, unless start_word is an at_binding,
         # in which case get the bound node
         # handle negated behaviour
-        active_list : List[CtxIns] = self.ctxs.active_list()
+        active_list : list[CtxIns] = self.ctxs.active_list()
         [x.set_current_node(self.root_node) for x in active_list]
         return self
 
@@ -108,7 +108,7 @@ class ContextSenBindQueryManager:
             self._current_constraint = constraints[0]
             yield (word, ctx, node)
 
-    def test_and_update(self, results:List[Node]):
+    def test_and_update(self, results:list[Node]):
         if not bool(results):
             self.ctxs.fail(self._current_inst,
                            self._current_constraint.source,
@@ -117,7 +117,7 @@ class ContextSenBindQueryManager:
         else:
             self.test(results)
 
-    def test(self, possible: List[Node]):
+    def test(self, possible: list[Node]):
         """
         run a word's tests on available nodes, with an instance.
         bind successes and return them

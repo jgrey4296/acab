@@ -131,11 +131,11 @@ class StructNodeSemantics(BasicNodeSemantics):
         self._ns = ns
 
 
-    def add(self, structure : AcabStruct, to_add : List[Sentence]) -> List[AcabNode]:
+    def add(self, structure : AcabStruct, to_add : list[Sentence]) -> list[AcabNode]:
         """ Inserting a coherent set of sentences into the structure """
         raise NotImplementedError()
 
-    def get(self, structure : AcabStruct, sentence) -> List[AcabNode]:
+    def get(self, structure : AcabStruct, sentence) -> list[AcabNode]:
         """ Getting a path of nodes corresponding to the sentence """
         raise NotImplementedError()
 
@@ -143,7 +143,7 @@ class StructNodeSemantics(BasicNodeSemantics):
         """ Can the sentence be found in the structure """
         raise NotImplementedError()
 
-    def delete(self, structure, sentence) -> List[AcabNode]:
+    def delete(self, structure, sentence) -> list[AcabNode]:
         """ Remove a sentence from the structure """
         raise NotImplementedError()
 

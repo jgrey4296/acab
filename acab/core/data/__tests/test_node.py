@@ -183,6 +183,7 @@ class AcabNodeTests(unittest.TestCase):
         node2 = AcabNode(AV("blah"))
         self.assertEqual(node1.value, node2.value)
         self.assertFalse(node1, node2)
+
     def test_eq(self):
         """
         Check a node is equal to itself

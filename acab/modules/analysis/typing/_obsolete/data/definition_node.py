@@ -56,7 +56,7 @@ class TypeDefNode(AcabNode):
         return self._typedef_trie
 
 
-    def _default_setup(self, path : [AcabNode], data : Dict[Any, Any], context : Dict[Any, Any]):
+    def _default_setup(self, path : [AcabNode], data : dict[Any, Any], context : dict[Any, Any]):
         """ Overrides AcabNode.set_data.
         Builds the static assignment expression of a definition, to use to type check against
         """
@@ -280,7 +280,7 @@ class OperatorDefNode(TypeDefNode):
     # This is a set to hold multiple possible operators
     # eg: AddOp: $x(::Num).$x.$x
     # and AddOp: $x(::String).$x.$x
-    _op_possibilities : Set[Any] = field(init=False)
+    _op_possibilities : set[Any] = field(init=False)
     # was: self._data[util.TYPE_DEF_S] = set()
 
 

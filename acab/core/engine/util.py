@@ -51,7 +51,7 @@ def ensure_handler(val):
     return val.as_handler()
 
 
-def prep_op_path(package:str, operator_name:str) -> List[str]:
+def prep_op_path(package:str, operator_name:str) -> list[str]:
     """
     Canonical conversion of module paths to words for full operator location sentences
     """

@@ -41,10 +41,10 @@ class ModuleLoader(ModuleLoader_i):
         base_path      = module.__package__
         # reference_path = MODULE_SPLIT_REG.split(module.__name__)
         queue          = [(base_path, module)]
-        dsl_fragments  : List[DSL_Fragment]     = []
-        semantic_frags : List[Semantic_Fragment]  = []
-        printers       : List[Printer_Fragment]   = []
-        operators      : List[ProductionOperator] = []
+        dsl_fragments  : list[DSL_Fragment]     = []
+        semantic_frags : list[Semantic_Fragment]  = []
+        printers       : list[Printer_Fragment]   = []
+        operators      : list[ProductionOperator] = []
 
         # TODO extract *handlers* not semantics
         while bool(queue):

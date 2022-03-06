@@ -45,16 +45,16 @@ DELAYED_E = Enum("Delayed Instruction Set", "ACTIVE FAIL DEACTIVATE CLEAR MERGE"
 class TypeContextQueryManager:
     """ Shared State of the current query, between different ctx insts """
 
-    query_clause  : Optional[Sen]      = field()
+    query_clause  : None|Sen      = field()
     ctxs          : CtxSet             = field()
 
     negated       : bool               = field(init=False, default=False)
-    collect_vars  : Set[str]           = field(init=False, default_factory=set)
-    constraints   : List[ConstraintCollection] = field(init=False, default_factory=list)
+    collect_vars  : set[str]           = field(init=False, default_factory=set)
+    constraints   : list[ConstraintCollection] = field(init=False, default_factory=list)
 
     _current_constraint : ConstraintCollection = field(init=False, default=None)
     _current_inst       : CtxIns               = field(init=False, default=None)
-    _initial_ctxs       : List[UUID]           = field(init=False, default_factory=list)
+    _initial_ctxs       : list[UUID]           = field(init=False, default_factory=list)
 
     def __post_init__(self):
         typedef = self.query_clause
@@ -67,7 +67,7 @@ class TypeContextQueryManager:
         # set all instances to start at node, unless start_word is an at_binding,
         # in which case get the bound node
         # handle negated behaviour
-        active_list : List[CtxIns] = self.ctxs.active_list()
+        active_list : list[CtxIns] = self.ctxs.active_list()
 
         assert(self.query_clause[0].is_at_var)
         root_word = self.query_clause[0]
@@ -119,7 +119,7 @@ class TypeContextQueryManager:
             yield (bound_word, ctx, ctx._current)
 
 
-    def test_and_update(self, results:List[Node]):
+    def test_and_update(self, results:list[Node]):
         if not bool(results):
             self.ctxs.fail(self._current_inst,
                            self._current_constraint.source,
@@ -129,7 +129,7 @@ class TypeContextQueryManager:
             self.test(results)
             # TODO then update type annotations?
 
-    def test(self, possible: List[Node]):
+    def test(self, possible: list[Node]):
         """
         run a word's tests on available nodes, with an instance.
         bind successes and return them

@@ -95,11 +95,13 @@ class ProductionComponent(Instruction):
 
     def __len__(self):
         return 1
+
     def __contains__(self, value):
         return value in self.value or value == rebind
 
     def __repr__(self):
         return super().__repr__()
+
     def to_sentences(self):
         """
         Sentence([op_path].[param1.param2.param3...].result)
@@ -114,7 +116,7 @@ class ProductionComponent(Instruction):
         return Sentence.build(words, data=self.data.copy(), name="ProductionComponent")
 
     @staticmethod
-    def from_sentences(sens:list[Sentence]) -> list[Sentence]:
+    def from_sentences(sens):
         result = []
         for sen in sens:
             if sen != "ProductionComponent":
@@ -266,3 +268,5 @@ class ProductionStructure(ProductionContainer):
         return [Sentence.build([clauses],
                                data=self.data.copy(),
                                name="ProductionStructure")]
+
+

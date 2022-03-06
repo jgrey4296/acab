@@ -31,7 +31,7 @@ SEM_HINT = config.prepare("Value.Structure", "SEMANTIC_HINT")()
 class BasicSemanticSystem(SemanticSystem_i):
     """ A Complete semantic system """
 
-    _default_sieve : ClassVar[List[Callable]] = [
+    _default_sieve : ClassVar[list[Callable]] = [
         lambda x: x if isinstance(x, str) else None,
         lambda x: x.signal if isinstance(x, SemanticSystem_i.HandlerOverride) else None,
         lambda x: str(x.data[SEM_HINT]) if SEM_HINT in x.data else None,
@@ -42,8 +42,8 @@ class BasicSemanticSystem(SemanticSystem_i):
 
     @BuildCtxSetIfMissing
     @RunDelayedCtxSetActions
-    def __call__(self, *instructions:List[Sentence],
-                 ctxs:Optional[CtxSet]=None) -> CtxSet:
+    def __call__(self, *instructions:list[Sentence],
+                 ctxs:None|CtxSet=None) -> CtxSet:
         """ Perform an instruction by mapping it to a semantics """
 
         # Instructions passed in
@@ -86,7 +86,7 @@ class BasicSemanticSystem(SemanticSystem_i):
 
         return ctxs
 
-    def to_sentences(self) -> List[Sentence]:
+    def to_sentences(self) -> list[Sentence]:
         # TODO run to_sentences for *all* registered structure semantic specs?
         default = self.lookup()
         return default[0].to_sentences(default.struct)

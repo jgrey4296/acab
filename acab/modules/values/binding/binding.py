@@ -19,7 +19,7 @@ def bind(val, bindings):
     else:
         raise AcabSemanticException("Unrecognised type attempted to bind: ", val)
 
-def val_bind(val:AT.Value, bindings:Union[Dict[Any, Any], AT.CtxIns]) -> AT.Value:
+def val_bind(val:AT.Value, bindings:dict[Any, Any]|AT.CtxIns) -> AT.Value:
     """ Data needs to be able to bind a dictionary
     of values to internal variables
     return modified copy
@@ -37,7 +37,7 @@ def val_bind(val:AT.Value, bindings:Union[Dict[Any, Any], AT.CtxIns]) -> AT.Valu
 
 
 
-def sen_bind(val:AT.Sentence, bindings:Union[Dict[Any, Any], AT.CtxIns]) -> AT.Sentence:
+def sen_bind(val:AT.Sentence, bindings:dict[Any, Any]|AT.CtxIns) -> AT.Sentence:
     """ Given a dictionary of bindings, reify the sentence,
     using those bindings.
     ie: a.b.$x with {x: blah} => a.b.blah

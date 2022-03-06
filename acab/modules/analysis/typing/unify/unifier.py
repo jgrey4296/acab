@@ -70,7 +70,7 @@ class Unifier:
         if logic is None:
             logic = self.logic
 
-        # TODO first, second : (List[Sentences], List[Sentence])
+        # TODO first, second : (list[Sentences], list[Sentence])
         # TODO add exhaustive / inclusive typing options
         ctx_prime = MutableContextInstance(None, ctx)
         with ctx_prime:
@@ -110,8 +110,8 @@ class Unifier:
 
 
     def repeat(self,
-               first:Set[AT.Sentence],
-               second:Set[AT.Sentence] | 'Trie',
+               first:set[AT.Sentence],
+               second:set[AT.Sentence] | 'Trie',
                ctx:AT.CtxIns,
                logic=None):
         """

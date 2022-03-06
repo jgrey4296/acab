@@ -26,7 +26,7 @@ unify_enum = util.unify_enum
 # Basic Unification ###########################################################
 def var_handler_basic(f_word, s_word, ctx):
     """ Bind vars, preferring Ctx -> L -> R
-    ctx: f(A) -> Set[A]
+    ctx: f(A) -> set[A]
     """
     result  = unify_enum.NA
     f_var   = f_word.is_var

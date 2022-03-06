@@ -1,6 +1,6 @@
 typing.layer(::ρ):
     // could be a ∀ symbol
-    typing ᛦ $rules(::ρ, #walker, | $x |)? | collect $rules(::List[ρ])
+    typing ᛦ $rules(::ρ, #walker, | $x |)? | collect $rules(::list[ρ])
     $base
 
     // Run *all* rules on *each* node,

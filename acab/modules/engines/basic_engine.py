@@ -39,7 +39,7 @@ class AcabBasicEngine(AcabEngine_i):
     dsl_builder      : DSL_Builder_i = field(init=False, default=PyParseDSL)
     _module_loader   : ModuleLoader = field(init=False, default_factory=ModuleLoader)
     # LIFO size limited cache:
-    _cached_bindings : List[Any]    = field(init=False, default_factory=list)
+    _cached_bindings : list[Any]    = field(init=False, default_factory=list)
     _cache_size      : int          = field(default=10)
 
     def __post_init__(self):

@@ -11,7 +11,7 @@ import acab
 config = acab.setup()
 
 from acab.core.data.default_structure import BIND
-from acab.core.data.value import AcabValue, Sentence
+from acab.core.data.value import AcabValue
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 

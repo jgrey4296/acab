@@ -9,20 +9,20 @@ from acab.core.decorators.util import registerOn
 from acab.modules.context.context_set import ContextSet
 
 @registerOn(ContextSet)
-def do_active(self, uuids:List[UUID]):
+def do_active(self, uuids:list[UUID]):
     self._active += [x for x in uuids if x not in self._active]
 
 @registerOn(ContextSet)
-def do_fail(self, uuids:List[UUID]):
+def do_fail(self, uuids:list[UUID]):
     self._failed += [x for x in uuids if x not in self._failed]
 
 @registerOn(ContextSet)
-def do_deactivate(self, uuids:List[UUID]):
+def do_deactivate(self, uuids:list[UUID]):
     self._active = [x for x in self._active if x not in uuids]
     self._failed = [x for x in self._failed if x.ctx.uuid not in uuids]
 
 @registerOn(ContextSet)
-def do_default(self, instr, uuids:List[UUID]):
+def do_default(self, instr, uuids:list[UUID]):
     """ Default Action if the instruction has no method """
     logging.warning(f"ContextSet bad instruction: {instr} : {uuids}")
 

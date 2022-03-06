@@ -75,7 +75,7 @@ def STATEMENT_CONSTRUCTOR(annotation_p:ParserElement,
                           end:Tuple[None,bool,ParserElement]=None,
                           args:bool=True,
                           single_line:bool=False,
-                          parse_fn:Optional[Callable]=None):
+                          parse_fn:None|Callable=None):
     """ Construct a parser for statements of the form:
     a.location(annotation_p): |args| components end
     """

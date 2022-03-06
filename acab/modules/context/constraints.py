@@ -32,18 +32,14 @@ Node        = 'AcabNode'
 
 
 @dataclass(frozen=True)
-class ConstraintCollection(CtxInt.Constraint_i):
+class ConstraintCollection(CtxInt.Constraint_i, CtxInt._Constraint_d):
     """ Simple container of all ProductionComponent constraints a word possesses,
     separated into subtypes """
-
-    source         : Value                     = field()
-    _test_mappings : Dict[str, List[Callable]] = field()
-
-    sieve           : ClassVar[List[Callable]] = AcabSieve(default_sieve)
+    sieve           : ClassVar[list[Callable]] = AcabSieve(default_sieve)
     operators       : ClassVar[CtxIns]         = None
 
     @staticmethod
-    def build(word, *, operators=None, sieve_fns:List[Callable]=None):
+    def build(word, *, operators=None, sieve_fns:list[Callable]=None):
         """ Run the sieve on a word to generate the test set groupings """
         if operators is not None:
             ConstraintCollection.operators = operators

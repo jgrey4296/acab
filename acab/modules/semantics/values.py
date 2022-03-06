@@ -44,7 +44,7 @@ class BasicNodeSemantics(SI.ValueSemantics_i):
         """ The Most Basic Lift, does nothing """
         return node
 
-    def access(self, node:Node, term:Value, *, data=None) -> List[Node]:
+    def access(self, node:Node, term:Value, *, data=None) -> list[Node]:
         if term is None:
             return list(iter(node))
 
@@ -94,7 +94,7 @@ class ExclusionNodeSemantics(SI.ValueSemantics_i):
 
         return node
 
-    def access(self, node:Node, term:Value, *, data=None) -> List[Node]:
+    def access(self, node:Node, term:Value, *, data=None) -> list[Node]:
         potentials = []
         value = None
 

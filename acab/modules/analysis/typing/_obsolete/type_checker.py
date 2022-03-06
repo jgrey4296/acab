@@ -63,7 +63,7 @@ class TypeChecker:
         # self.add_definition(*TD.build_primitive_definitions())
 
 
-    def __call__(self, sentences: List[Sentence]):
+    def __call__(self, sentences: list[Sentence]):
         """ Pass in data to type check """
         # Gets all leaf sentences and statements
         logging.info("Running Type Checker")

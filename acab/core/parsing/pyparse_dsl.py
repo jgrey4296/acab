@@ -69,7 +69,7 @@ class PyParse_Spec(DSL_Spec_i):
     Register a signal into a DSL,
 
     """
-    struct : Set[Parser] = field(default_factory=set)
+    struct : set[Parser] = field(default_factory=set)
     debug  : bool        = field(default=False)
 
     def __post_init__(self):
@@ -157,7 +157,7 @@ class PyParseDSL(DSL_Builder_i):
 
         self._register_spec(PyParse_Spec(DEFAULT_HANDLER_SIGNAL))
     @EnsureDSLInitialised
-    def parse(self, s:str) -> List[Sentence]:
+    def parse(self, s:str) -> list[Sentence]:
         if not bool(self[DEFAULT_HANDLER_SIGNAL]):
             raise AcabParseException("No Default Parser Set for DSL")
 
@@ -181,7 +181,7 @@ class PyParseDSL(DSL_Builder_i):
         for spec in self.handler_specs.values():
             spec.setDebug(False)
 
-    def active_debugs(self) -> List[str]:
+    def active_debugs(self) -> list[str]:
         result = []
         for signal, spec in self.handler_specs.items():
             if spec.debug:

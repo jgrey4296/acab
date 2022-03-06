@@ -6,7 +6,7 @@ from typing import cast, ClassVar, TypeVar, Generic
 
 
 # Default Highest Priority Sieve tests
-default_sieve_top       : List[Callable] = [
+default_sieve_top       : list[Callable] = [
     # override tuple : 1 -> 1 : any
     lambda x              : x.signal if isinstance(x, PrintSystem_i.HandlerOverride) else None,
     # symbol         : m -> m : any
@@ -18,7 +18,7 @@ default_sieve_top       : List[Callable] = [
     ]
 
 # Default Lowest Priority Sieve Tests
-default_sieve_bottom   : List[Callable] = [
+default_sieve_bottom   : list[Callable] = [
     # structure      : m -> m : leaf
     lambda x              : "STRUCTURE" if isinstance(x, PA.ProductionStructure) else None,
     # container      : m -> m : leaf

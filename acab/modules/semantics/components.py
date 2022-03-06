@@ -5,10 +5,10 @@ class DebugListenerComponent():
     Listeners for triggers
     """
     """ The core used to *debug* WM action, using listeners """
-    listeners : Set[Any] = field(init=False, default_factory=set)
+    listeners : set[Any] = field(init=False, default_factory=set)
     listeners_threshold : Fraction = field(init=False, default=Fraction(1,2))
     # TODO use these to enable breakpoint context:
-    _production_stack : List['ProductionAbstraction'] = field(init=False, default_factory=list)
+    _production_stack : list['ProductionAbstraction'] = field(init=False, default_factory=list)
 
     def clear_listeners(self):
         self._listeners = set()
@@ -60,10 +60,10 @@ class DebugListenerComponent():
 
 class MessageComponent(Generic[T]):
     """ Inter-Semantic Communication """
-    context      : List[T]        = field(init=False, default_factory=list)
-    stack        : List[T]        = field(init=False, default_factory=list)
-    queue        : List[T]        = field(init=False, default_factory=list)
-    accumulation : Dict[str, Any] = field(init=False, default_factory=dict)
+    context      : list[T]        = field(init=False, default_factory=list)
+    stack        : list[T]        = field(init=False, default_factory=list)
+    queue        : list[T]        = field(init=False, default_factory=list)
+    accumulation : dict[str, Any] = field(init=False, default_factory=dict)
     # TODO: defaultdict
 
     # TODO refine this
@@ -102,9 +102,9 @@ class ListenerComponent():
     rather than mapping values or nodes
     """
 
-    Components : Dict[str, ListenerForm] = field(default_factory=dict)
+    Components : dict[str, ListenerForm] = field(default_factory=dict)
 
-    def call(self, instruction: Sentence) -> Optional[ListenerForm]:
+    def call(self, instruction: Sentence) -> None|ListenerForm:
         """
         Take an instruction and return a suitable Component
         """
@@ -118,7 +118,7 @@ class PrinterComponent():
     """
     # TODO add expectations of cleanup and message semantics
 
-    def print(self, values: List[SemUtil.Printable]):
+    def print(self, values: list[SemUtil.Printable]):
         """
         The public print function. Takes a list of values, converts them
         to str's, and combines them using a final-Component or "\n".join
@@ -130,12 +130,12 @@ class PrinterComponent():
         if overrides is not None:
             self.set_overrides(overrides)
 
-        self._context: List[SemUtil.ContextValue] = []
-        self._stack: List[SemUtil.StackValue] = []
-        self._queue: List[SemUtil.SemBox] = [
+        self._context: list[SemUtil.ContextValue] = []
+        self._stack: list[SemUtil.StackValue] = []
+        self._queue: list[SemUtil.SemBox] = [
             (SemUtil.RET_enum.PRINTABLE, x, None, None) for x in values
         ]
-        self._accumulation: Dict[str, Any] = {}
+        self._accumulation: dict[str, Any] = {}
 
         while bool(self._stack) or bool(self._queue):
             result_instruction, result, result_sentinel = None, None, None
@@ -190,13 +190,13 @@ class HistoryComponent():
     """ TODO Formerly Contexts
     Records the history of an action
     """
-    clause_history        : List[Sentence] = field(init=False, default_factory=list)
-    instruction_remainder : List[Sentence] = field(init=False, default_factory=list)
+    clause_history        : list[Sentence] = field(init=False, default_factory=list)
+    instruction_remainder : list[Sentence] = field(init=False, default_factory=list)
 
     def add(self, clause: Sentence):
         pass
 
-    def set_remainder(self, remainder: List[Sentence]):
+    def set_remainder(self, remainder: list[Sentence]):
         pass
 
 

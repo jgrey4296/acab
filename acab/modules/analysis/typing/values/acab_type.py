@@ -16,7 +16,7 @@ config = AcabConfig.Get()
 class TypeStatement(Instruction):
     # TODO: change value to a config value
 
-    value : List[Sentence] = field(default_factory=list)
+    value : list[Sentence] = field(default_factory=list)
     name  : str            = field(default="|∀σ|")
     _path : Sentence       = field(default=None)
 

@@ -93,7 +93,7 @@ class AcabConfig(Config_i):
 
         return AcabConfig.instance
 
-    def __post_init__(self, paths: List[str]):
+    def __post_init__(self, paths: list[str]):
         if AcabConfig.instance is not None:
             raise AcabConfigException("AcabConfig Already Exists")
 
@@ -118,16 +118,10 @@ class AcabConfig(Config_i):
         in_defaults = key in self.defaults
         return any([in_print, in_base, in_enums, in_defaults])
 
-    def __iter__(self):
-        raise NotImplementedError()
-
-    def __len__(self):
-        raise NotImplementedError()
-
-    def value(self, val: Union[Enum, ConfigSpec]):
+    def value(self, val: Enum|ConfigSpec):
         """ Unified value retrieval """
         if isinstance(val, Enum):
-            return self.enum_value(val)
+            return self._enum_value(val)
 
         assert(isinstance(val, ConfigSpec))
         spec    = val
@@ -226,7 +220,7 @@ class AcabConfig(Config_i):
     def loaded(self):
         return bool(self._files)
 
-    def read(self, paths: List[str]):
+    def read(self, paths: list[str]):
         """ DFS over provided paths, finding .config files """
         full_paths = []
 

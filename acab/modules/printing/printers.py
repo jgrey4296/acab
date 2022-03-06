@@ -285,7 +285,7 @@ class ConfigBackedSymbolPrinter(PrintSemantics_i):
     """ Use an AcabConfig for lookup of provided
     symbol tuples.
     """
-    overrides : Dict[Any, str] = field(default_factory=dict)
+    overrides : dict[Any, str] = field(default_factory=dict)
     _config   : AcabConfig     = field(default_factory=GET)
 
     def __call__(self, value, top=None, data=None):

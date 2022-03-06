@@ -48,8 +48,8 @@ class ContextWalkManager:
     root_node     : Node               = field()
     ctxs          : CtxSet             = field()
 
-    collect_vars  : Set[str]                   = field(init=False, default_factory=set)
-    constraints   : List[ConstraintCollection] = field(init=False, default_factory=list)
+    collect_vars  : set[str]                   = field(init=False, default_factory=set)
+    constraints   : list[ConstraintCollection] = field(init=False, default_factory=list)
 
     _current_inst       : CtxIns               = field(init=False, default=None)
 
@@ -65,7 +65,7 @@ class ContextWalkManager:
         # set all instances to start at node, unless start_word is an at_binding,
         # in which case get the bound node
         # handle negated behaviour
-        active_list : List[CtxIns] = self.ctxs.active_list()
+        active_list : list[CtxIns] = self.ctxs.active_list()
 
         if not self.walk_spec[0].is_at_var:
             [x.set_current_node(self.root_node) for x in active_list]
@@ -93,17 +93,17 @@ class ContextWalkManager:
         return self._current_inst
 
     @property
-    def active(self) -> Iterator[List[Node]]:
+    def active(self) -> Iterator[list[Node]]:
         active_ctxs = self.ctxs.active_list(clear=True)
         for ctx in active_ctxs:
             self._current_inst = ctx
             yield [ctx._current]
 
 
-    def test_and_update(self, results:List[Node]):
+    def test_and_update(self, results:list[Node]):
         self.test(results)
 
-    def test(self, possible: List[Node]):
+    def test(self, possible: list[Node]):
         """
         run a word's tests on available nodes, with an instance.
         bind successes and return them

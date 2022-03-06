@@ -19,7 +19,7 @@ class BasicPrinter(PrintSystem_i):
     """ Handles how to convert values and sentences into strings,
     does not rely on the underlying data structures
     """
-    _default_sieve       : ClassVar[List[Callable]] = [
+    _default_sieve       : ClassVar[list[Callable]] = [
         # override tuple : 1 -> 1 : any
         lambda x              : x.signal if isinstance(x, PrintSystem_i.HandlerOverride) else None,
         # symbol         : m -> m : any

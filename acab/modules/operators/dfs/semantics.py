@@ -82,7 +82,7 @@ class DFSSemantics(SI.StatementSemantics_i):
 
         with ContextWalkManager(walk_spec, default.struct.root, ctxs) as cwm:
             for queue in cwm.active:
-                found      : Set[UUID]  = set()
+                found      : set[UUID]  = set()
 
                 while bool(queue):
                     current      = queue.pop(0)
@@ -103,14 +103,14 @@ class DFSSemantics(SI.StatementSemantics_i):
         """
         default : HandlerSpec[StructSem] = semsys.lookup()
         nodesem : HandlerSpec[ValSem]    = default[0].lookup()
-        found   : Set[UUID]              = set()
+        found   : set[UUID]              = set()
 
 
         with ContextWalkManager(walk_spec, default.struct.root, ctxs) as cwm:
             # for queue in cwm.active(mutable=True) ?
-            # queue::List[Node]
+            # queue::list[Node]
             for queue in cwm.active:
-                action : Union['Value', 'Sentence'] = cwm.current[walk_spec[-1]]
+                action : 'Value|Sentence' = cwm.current[walk_spec[-1]]
                 if isinstance(action, Sentence):
                     # action is a sentence path,
                     # not an actual action
@@ -126,8 +126,8 @@ class DFSSemantics(SI.StatementSemantics_i):
                     # potentially override to force atomic rule
                     spec = semsys.lookup(action)
                     # bind current to the param in action.params
-                    params : List[Value] = action.params
-                    args   : List[Value] = [current.value] + walk_spec[-1].params
+                    params : list[Value] = action.params
+                    args   : list[Value] = [current.value] + walk_spec[-1].params
                     bind_dict = {x.key() : cwm._current_inst[y] for x,y in zip(params, args)}
                     node_dict = {params[0].key() : current}
 

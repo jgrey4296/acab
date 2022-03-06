@@ -44,7 +44,7 @@ def registerOn(cls:type) -> Callable[..., T]:
     return wrapper
 
 
-def mapToEnum(the_dict:Dict[Enum, Any], enum_v:Enum) -> Callable[..., T]:
+def mapToEnum(the_dict:dict[Enum, Any], enum_v:Enum) -> Callable[..., T]:
     def wrapper(fn):
         the_dict[enum_v] = fn
         return fn

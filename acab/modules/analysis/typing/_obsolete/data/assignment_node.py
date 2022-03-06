@@ -33,7 +33,7 @@ class TypeAssignmentNode(AcabNode):
         self._var_node      = var_node
 
 
-    def _default_setup(self, path: [AcabNode], data: Dict[Any,Any], context: Dict[Any,Any]):
+    def _default_setup(self, path: [AcabNode], data: dict[Any,Any], context: dict[Any,Any]):
         """ Link the assignment with a context variable if necessary"""
         # TODO: defer variable registration if var struct is missing?
         result = None
@@ -69,7 +69,7 @@ class TypeAssignmentNode(AcabNode):
     def apply_type_instance(self, _type):
         self._type_instance = _type
 
-    def unify_types(self, _type, lookup: Dict[Any, Any]=None):
+    def unify_types(self, _type, lookup: dict[Any, Any]=None):
         assert(_type is None or isinstance(_type, Sentence))
 
         if self.type_instance == _type:

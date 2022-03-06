@@ -54,7 +54,7 @@ def gen_type_vars(first, second, gamma, gen_var=None) -> AT.CtxIns:
 
 def var_handler_basic(f_word, s_word, ctx):
     """ Bind vars, preferring Ctx -> L -> R
-    ctx: f(A) -> Set[A]
+    ctx: f(A) -> set[A]
     """
     result  = unify_enum.NA
     f_var   = f_word.is_var

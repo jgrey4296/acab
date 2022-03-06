@@ -32,7 +32,7 @@ default_sieve = [
 
 
 
-def make_alpha(x:AT.Value) -> Optional[Tuple[bool, str, List[Any]]]:
+def make_alpha(x:AT.Value) -> None|Tuple[bool, str, list[Any]]:
     """ A more explicit version of the lambda above
     Take a query word, return any alpha tests (ie: without variables) it has
     """

@@ -9,7 +9,6 @@ from .base import AcabBasicException
 
 @dataclass(repr=False)
 class AcabHandlerException(AcabBasicException):
-
     msg : str = field(init=False, default="Handler Failure: {}")
 
     def __str__(self):
