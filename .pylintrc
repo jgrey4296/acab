@@ -233,10 +233,10 @@ class-naming-style=PascalCase
 
 # Regular expression matching correct class names. Overrides class-naming-
 # style.
-#class-rgx=
+class-rgx=([A-Z][a-z]+)+(_[di])?$
 
 # Naming style matching correct constant names.
-#const-naming-style=UPPER_CASE
+const-naming-style=UPPER_CASE
 
 # Regular expression matching correct constant names. Overrides const-naming-
 # style.
