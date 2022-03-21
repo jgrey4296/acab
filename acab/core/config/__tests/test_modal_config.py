@@ -38,13 +38,13 @@ class ModalConfigTests(unittest.TestCase):
         """
         Check config errors when you try to use missing modal values
         """
-        config = AcabConfig.Get()
+        config = AcabConfig()
         with self.assertRaises(Exception):
             config.enums['blah']
 
     def test_modal_spec(self):
         """ Check modal fields exist """
-        config = AcabConfig.Get()
+        config = AcabConfig()
         self.assertTrue(config.enums)
         self.assertTrue(config.defaults)
         self.assertTrue(config.printing_extension)
