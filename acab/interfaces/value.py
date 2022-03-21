@@ -56,6 +56,15 @@ class Value_i(VSubP.Value_p, Generic[T]):
 
     _defaults : ClassVar[dict[str,Any]] = {}
 
+
+    @staticmethod
+    def build(value: AT.TValCore, *,
+              name:None|str=None,
+              data:None|dict[ValueData, Any]=None,
+              _type:None|Sen_A=None,
+              **kwargs:Any) -> AT.Value[AT.TValCore]:
+        raise DeprecationWarning()
+
     @staticmethod
     def extend_core(*ts:Any) -> None:
         """
@@ -70,24 +79,9 @@ class Value_i(VSubP.Value_p, Generic[T]):
 
 
     @classmethod
-    def build(cls, value: AT.TValCore, *,
-              name:None|str=None,
-              data:None|dict[ValueData, Any]=None,
-              _type:None|Sen_A=None,
-              **kwargs:Any) -> AT.Value[AT.TValCore]:
-        raise DeprecationWarning()
-
-    @classmethod
     def _preprocess(cls, value):
         return value
 
-    @classmethod
-    def _handle_nesting(cls, value, name=None, data=None, params=None, tags=None, _type=None, **kwargs):
-        logging.debug("Attempted to nest a value, copying")
-        new_data = value.data.copy()
-        new_data.update(data or {})
-        name = kwargs['name'] if 'name' in kwargs else value.name
-        return value.copy(data=new_data, name=name, tags=tags, params=params)
 
 
 @dataclass(frozen=True) #type:ignore[misc]

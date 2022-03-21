@@ -7,6 +7,7 @@ logging = root_logger.getLogger(__name__)
 import acab
 config = acab.setup()
 
+from acab.interfaces.value import Value_i
 from acab.core.data.value import AcabValue
 from acab.core.data.sentence import Sentence
 from acab.core.data.node import AcabNode
@@ -15,7 +16,6 @@ AT_BIND_S = config.prepare("Value.Structure", "AT_BIND")()
 BIND_S    = config.prepare("Value.Structure", "BIND")()
 
 # Explicit, instead of ValueFactory
-AVB = AcabValue
 
 class AcabValueTests(unittest.TestCase):
 
@@ -65,7 +65,7 @@ class AcabValueTests(unittest.TestCase):
     def test_has_tag_multi_fail(self):
         """ Check a value can report it doesn't have all specified tags """
         value = AcabValue("test", tags=["a", "b", "c"])
-        self.assertFalse(value.has_tag(*[AVB(x) for x in ["a", "b", "c", "q"]]))
+        self.assertFalse(value.has_tag(*[AcabValue(x) for x in ["a", "b", "c", "q"]]))
 
     def test_build(self):
         """ Check a value doesn't build to contain a value """
@@ -82,8 +82,8 @@ class AcabValueTests(unittest.TestCase):
         copied = value.copy(tags=["b"])
         self.assertEqual(value, copied)
         self.assertNotEqual(value.uuid, copied.uuid)
-        self.assertTrue(AVB("a") in copied.tags)
-        self.assertFalse(AVB("b") in value.tags)
+        self.assertTrue(AcabValue("a") in copied.tags)
+        self.assertFalse(AcabValue("b") in value.tags)
 
 
     def test_eq(self):
@@ -107,3 +107,11 @@ class AcabValueTests(unittest.TestCase):
         val1 = AcabValue("test")
         val2 = AcabValue("blah")
         self.assertNotEqual(val1, val2)
+
+    def test_value_type_extension(self):
+        with self.assertRaises(TypeError):
+            AcabValue(2)
+
+        AcabValue.extend_core(int)
+        val = AcabValue(2)
+        self.assertIsInstance(val, Value_i)

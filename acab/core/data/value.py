@@ -41,20 +41,12 @@ Instruction_A : TypeAlias = AT.Instruction
 ValueData     : TypeAlias = AT.ValueData
 
 
-# @APE.assert_implements(VI.Value_i)
+@APE.assert_implements(VI.Value_i)
 @dataclass(frozen=True, repr=False, eq=False)
 class AcabValue(VP.ValueProtocolsImpl, VI.Value_i, metaclass=ValueMeta):
 
-    @classmethod
-    def build(cls, value:T, /, *,
-              name:None|str=None,
-              data:None|dict[ValueData, Any]=None,
-              params:None|list['Value_A|str']=None,
-              tags:None|list['Value_A|str']=None,
-              _type:'None|str|Sen_A'=None,
-              **kwargs) -> Value_A:
-        raise NotImplementedError()
 
+    _defaults : ClassVar[dict[str, Any]] = {}
 
     @classmethod
     def _preprocess(cls, *args, **kwargs):

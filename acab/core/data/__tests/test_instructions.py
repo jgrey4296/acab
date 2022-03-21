@@ -83,8 +83,11 @@ class StatementTests(unittest.TestCase):
 
     def test_component_init(self):
         """ Check a component can be created """
-        val = PO.ProductionComponent(Sentence(["testop"]))
+        sen = Sentence(['testop'])
+        val = PO.ProductionComponent(sen)
         self.assertIsInstance(val, Value_i)
+        self.assertIsInstance(val.value, Sentence_i)
+        self.assertIsInstance(val, Instruction_i)
 
     def test_component_with_params(self):
         """ Check a component can be created with parameters """
@@ -99,6 +102,7 @@ class StatementTests(unittest.TestCase):
         self.assertIsInstance(val, Value_i)
         self.assertIsInstance(val, Instruction_i)
         self.assertEqual(len(val.params), 2)
+        self.assertTrue(all([isinstance(x, Value_i) for x in val.params]))
 
 
     def test_container_init(self):

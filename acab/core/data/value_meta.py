@@ -59,7 +59,8 @@ class ValueMeta(ProtocolMeta):
     def __init__(cls, name:str, bases:tuple[type, ...], data:dict[str,Any]):
         super(ValueMeta, cls).__init__(name, bases, data)
         if ValueMeta._bottom is None:
-            # Constructor for the simplest form of Value
+            # Constructor for the first form of Value registered.
+            # (should be AcabValue or equivalent)
             ValueMeta._bottom = cls
 
         full_name = f"{cls.__module__}.{cls.__qualname__}"
@@ -69,7 +70,7 @@ class ValueMeta(ProtocolMeta):
         ValueMeta.__subclasses[full_name] = cls
 
 
-    def __call__(cls, value:T, *, name=None, data=None, params=None, tags=None, _type=None, **kwargs) -> Value_A:
+    def __call__(cls, value:T=None, *, name=None, data=None, params=None, tags=None, _type=None, **kwargs) -> Value_A:
         """
         The Meta Constructor for Values, to set up standard elements prior to insertion into
         the immutable form
@@ -79,6 +80,7 @@ class ValueMeta(ProtocolMeta):
         _data        = cls._build_data_and_type(data, _type, defaults=defaults)
         tags, params = cls._build_tags_and_params(tags, params)
 
+        # eg: To handle lifting a sentence's list[str] to list[Value]
         if hasattr(cls, '_preprocess'):
             value = cls._preprocess(value)
 
@@ -86,12 +88,14 @@ class ValueMeta(ProtocolMeta):
             # TODO use an acab error here
             raise TypeError((value, type(value)))
 
-        if isinstance(value, VI.Value_i):
+        # If the value to be wrapped is already an AcabValue, follow separate nesting rules
+        if isinstance(value, VI.Value_i) and hasattr(cls, '_handle_nesting'):
             return cls._handle_nesting(value, name, data, params, tags, _type, **kwargs)
 
-        name    = ValueMeta.name_sieve.fifo_first({'name': name, 'class':cls.__class__, 'value': value})
+        # Sieve for a name
+        name    = ValueMeta.name_sieve.fifo_first({'name': name, 'class':cls, 'value': value})
+        # Build the actual value
         new_obj = super(ValueMeta, cls).__call__(value, name=name, data=_data, params=params, tags=tags, **kwargs)
-
         return new_obj
 
     @staticmethod
@@ -120,10 +124,11 @@ class ValueMeta(ProtocolMeta):
 
         return _data
 
-    @classmethod
-    def _handle_nesting(cls, value:Value_A, name=None, data=None, params=None, tags=None, _type=None, **kwargs) -> Value_A:
-        logging.debug("Attempted to nest a value, copying")
-        new_data = value.data.copy()
-        new_data.update(data or {})
-        name = kwargs['name'] if 'name' in kwargs else value.name
-        return value.copy(data=new_data, name=name, tags=tags, params=params)
+
+
+    # def _handle_nesting(value:Value_A, name=None, data=None, params=None, tags=None, _type=None, **kwargs) -> Value_A:
+    #     logging.debug("Attempted to nest a value, copying")
+    #     new_data = value.data.copy()
+    #     new_data.update(data or {})
+    #     name = kwargs['name'] if 'name' in kwargs else value.name
+    #     return value.copy(data=new_data, name=name, tags=tags, params=params)

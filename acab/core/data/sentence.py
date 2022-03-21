@@ -47,18 +47,7 @@ class Sentence(SSI.SentenceProtocolsImpl, VI.Sentence_i, metaclass=ValueMeta):
     A Sentence is an instruction which is idempotent on from_sentences/to_sentences
     Sentence.from_sentences([sens]) == [sens]
     """
-    _defaults : dict[str, Any] = {DS.TYPE_INSTANCE: DS.SENTENCE_PRIM, DS.NEGATION: False}
-
-    @classmethod
-    def build(cls, value:list[T], /, *, # type: ignore
-              name:None|str=None,
-              data:None|dict[ValueData, Any]=None,
-              params:None|list['Value_A|str']=None,
-              tags:None|list['Value_A|str']=None,
-              _type:'None|str|Sen_A'=None,
-              **kwargs) -> Sen_A:
-        raise NotImplementedError()
-
+    _defaults : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE: DS.SENTENCE_PRIM, DS.NEGATION: False}
 
     @classmethod
     def _preprocess(cls, *args, **kwargs):

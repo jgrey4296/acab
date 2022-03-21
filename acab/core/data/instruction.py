@@ -31,6 +31,7 @@ import acab.interfaces.value as VI
 from acab.core.data.sub_implementations.sentence import SentenceProtocolsImpl
 from acab.core.data.sub_implementations.value import ValueProtocolsImpl
 from acab.core.data.factory import ValueFactory as VF
+from acab.core.data.value_meta import ValueMeta
 
 config = AcabConfig()
 
@@ -48,10 +49,12 @@ ValueData     : TypeAlias = AT.ValueData
 T = TypeVar('T')
 
 @APE.assert_implements(VI.Instruction_i)
-class Instruction(SentenceProtocolsImpl, VI.Instruction_i):
+class Instruction(SentenceProtocolsImpl, VI.Instruction_i, metaclass=ValueMeta):
     """ Instruction functions the same as AcabValue,
     but provides specific functionality for converting to/from sentences
     """
+
+    _defaults : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE: DS.CONTAINER_PRIM}
 
 
     @classmethod
@@ -62,19 +65,10 @@ class Instruction(SentenceProtocolsImpl, VI.Instruction_i):
               tags:None|list['Value_A|str']=None,
               _type:'None|str|Sen_A'=None,
               **kwargs) -> Value_A:
+        raise DeprecationWarning()
 
         if name is None:
             name = f"{cls.__module__}.{cls.__qualname__}"
-
-        _data        = VF._build_data_and_type(data, _type or DS.CONTAINER_PRIM)
-        tags, params = VF._build_tags_and_params(tags, params)
-
-        new_obj = cls(value, name=name, data=_data, tags=tags, params=params, **kwargs)
-        # Pre-initialisation, the VF value/sen _fns
-        # just return an exception
-        if isinstance(new_obj, Exception):
-            raise new_obj
-        return cast(VI.Instruction_i, new_obj)
 
     def __repr__(self):
         return "<{}::{}>".format(self.name, str(self.type))
@@ -103,7 +97,7 @@ class Instruction(SentenceProtocolsImpl, VI.Instruction_i):
         return bool(self.breakpoint)
 
 @APE.assert_implements(VI.Operator_i, exceptions=["__call__"])
-class ProductionOperator(ValueProtocolsImpl, VI.Operator_i):
+class ProductionOperator(ValueProtocolsImpl, VI.Operator_i, metaclass=ValueMeta):
     """ The Base Operator Class,
     Provides the way to use other systems and code in Acab
 
@@ -112,6 +106,7 @@ class ProductionOperator(ValueProtocolsImpl, VI.Operator_i):
     ie: _:==, _:!=, ..
     """
 
+    _defaults : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE: DS.OPERATOR_PRIM}
 
     @classmethod
     def build(cls, value:T=None, /, *,
@@ -121,19 +116,10 @@ class ProductionOperator(ValueProtocolsImpl, VI.Operator_i):
               tags:None|list['Value_A|str']=None,
               _type:'None|str|Sen_A'=None,
               **kwargs) -> Value_A:
-        logging.info(f"Building Operator: {cls.__class__.__name__}")
+        raise DeprecationWarning()
+
         if name is None:
             name = f"{cls.__module__}.{cls.__qualname__}"
-
-        _data        = VF._build_data_and_type(data, _type or DS.OPERATOR_PRIM)
-        tags, params = VF._build_tags_and_params(tags, params)
-
-        new_obj = cls(value, name=name, data=_data, tags=tags, params=params, **kwargs)
-        # Pre-initialisation, the VF value/sen _fns
-        # just return an exception
-        if isinstance(new_obj, Exception):
-            raise new_obj
-        return cast(VI.Operator_i, new_obj)
 
     def copy(self, **kwargs):
         """ Operators by default are immutable, and don't need to duplicate """
@@ -150,9 +136,11 @@ class ProductionOperator(ValueProtocolsImpl, VI.Operator_i):
 
 
 @APE.assert_implements(VI.Operator_i, exceptions=["__call__"])
-class ActionOperator(ValueProtocolsImpl, VI.Action_i):
+class ActionOperator(ValueProtocolsImpl, VI.Action_i, metaclass=ValueMeta):
     """ Special Operator type which gets passed the semantic system,
     so it can trigger instructions """
+    _defaults : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE: DS.OPERATOR_PRIM}
+
     @classmethod
     def build(cls, value:T=None, /, *,
               name:None|str=None,
@@ -161,21 +149,10 @@ class ActionOperator(ValueProtocolsImpl, VI.Action_i):
               tags:None|list['Value_A|str']=None,
               _type:'None|str|Sen_A'=None,
               **kwargs) -> Value_A:
+        raise DeprecationWarning()
 
-        logging.info(f"Building Action: {cls.__class__.__name__}")
         if name is None:
             name = f"{cls.__module__}.{cls.__qualname__}"
-
-        _data        = VF._build_data_and_type(data, _type or DS.OPERATOR_PRIM)
-        tags, params = VF._build_tags_and_params(tags, params)
-
-        new_obj = cls(value, name=name, data=_data, tags=tags, params=params, **kwargs)
-        # Pre-initialisation, the VF value/sen _fns
-        # just return an exception
-        if isinstance(new_obj, Exception):
-            raise new_obj
-        return cast(VI.Action_i, new_obj)
-
 
     def copy(self, **kwargs):
         """ Operators by default are immutable, and don't need to duplicate """
@@ -190,6 +167,7 @@ class ProductionComponent(Instruction):
     pc(::production.component).op.$x(::sen).args.[$y.$z].return.$a
 
     """
+    _defaults : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE: DS.COMPONENT_PRIM}
 
     # Sugared: Denotes whether the parse originated from a sugared operator
     # eg: $x ~= /blah/ -> $x
@@ -205,22 +183,11 @@ class ProductionComponent(Instruction):
               tags:None|list['Value_A|str']=None,
               _type:'None|str|Sen_A'=None,
               **kwargs) -> Value_A:
-
+        raise DeprecationWarning()
         if name is None:
             name = f"{cls.__module__}.{cls.__qualname__}"
 
         assert(isinstance(value, VI.Sentence_i))
-
-        _data        = VF._build_data_and_type(data, _type or DS.COMPONENT_PRIM)
-        tags, params = VF._build_tags_and_params(tags, params)
-
-        new_obj = cls(value, name=name, data=_data, tags=tags, params=params, **kwargs)
-        # Pre-initialisation, the VF value/sen _fns
-        # just return an exception
-        if isinstance(new_obj, Exception):
-            raise new_obj
-        return new_obj
-
 
     def __len__(self):
         return 1
@@ -255,7 +222,7 @@ class ProductionComponent(Instruction):
             comp   = sen['Operator'][:]
             params = sen['Params'].words if 'Params' in sen else []
             rebind = sen['Rebind'].copy(name=None) if 'Rebind' in sen else None
-            result.append(ProductionComponent.build(comp, params=params, rebind=rebind))
+            result.append(ProductionComponent(comp, params=params, rebind=rebind))
 
         return result
 
@@ -282,6 +249,7 @@ class ProductionComponent(Instruction):
 @dataclass(frozen=True)
 class ProductionContainer(Instruction):
     """ Production Container: An applicable statement of multiple component clauses """
+    _defaults : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE: DS.CONTAINER_PRIM}
 
     @classmethod
     def build(cls, value:T, /, *,
@@ -291,21 +259,12 @@ class ProductionContainer(Instruction):
               tags:None|list['Value_A|str']=None,
               _type:'None|str|Sen_A'=None,
               **kwargs) -> Value_A:
+        raise DeprecationWarning()
 
         if name is None:
             name = f"{cls.__module__}.{cls.__qualname__}"
 
         assert(isinstance(value, list))
-
-        _data        = VF._build_data_and_type(data, _type or DS.CONTAINER_PRIM)
-        tags, params = VF._build_tags_and_params(tags, params)
-
-        new_obj = cls(value, name=name, data=_data, tags=tags, params=params, **kwargs)
-        # Pre-initialisation, the VF value/sen _fns
-        # just return an exception
-        if isinstance(new_obj, Exception):
-            raise new_obj
-        return cast(VI.Instruction_i, new_obj)
 
     def __repr__(self):
         # clauses = ";".join([repr(x) for x in self.clauses])
@@ -352,6 +311,9 @@ class ProductionStructure(ProductionContainer):
     """
     structure: dict[str, Container] = field(default_factory=dict)
 
+    _defaults : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE: DS.STRUCT_PRIM}
+
+
     @classmethod
     def build(cls, value:dict[str, T], /, *,
               name:None|str=None,
@@ -360,22 +322,12 @@ class ProductionStructure(ProductionContainer):
               tags:None|list['Value_A|str']=None,
               _type:'None|str|Sen_A'=None,
               **kwargs) -> Value_A:
-
+        raise DeprecationWarning()
         if name is None:
             name = f"{cls.__module__}.{cls.__qualname__}"
 
         assert(isinstance(value, dict))
         clauses = list(value.values())
-        _data        = VF._build_data_and_type(data, _type or DS.STRUCT_PRIM)
-        tags, params = VF._build_tags_and_params(tags, params)
-
-
-        new_obj = cls(clauses, structure=value, name=name, data=_data, tags=tags, params=params, **kwargs)
-        # Pre-initialisation, the VF value/sen _fns
-        # just return an exception
-        if isinstance(new_obj, Exception):
-            raise new_obj
-        return cast(VI.Instruction_i, new_obj)
 
     @cache
     def __repr__(self):
