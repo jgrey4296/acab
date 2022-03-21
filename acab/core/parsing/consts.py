@@ -4,7 +4,6 @@ import logging as root_logger
 import pyparsing as pp
 
 from acab.core.config.config import AcabConfig
-from acab.core.data.value import Sentence
 import acab.core.parsing.default_keys as DS
 import acab.core.parsing.default_symbols as DSYM
 import acab.core.parsing.debug_funcs as DBF
@@ -12,7 +11,7 @@ import acab.core.parsing.debug_funcs as DBF
 
 logging = root_logger.getLogger(__name__)
 
-config = AcabConfig.Get()
+config = AcabConfig()
 
 COMMENT_RE       = config.prepare("Parse.Patterns", "COMMENT_RE", actions=[config.actions_e.STRIPQUOTE, AcabConfig.actions_e.UNESCAPE])()
 WORD_COMPONENT_S = config.prepare("Parse.Patterns", "WORD_COMPONENT")()

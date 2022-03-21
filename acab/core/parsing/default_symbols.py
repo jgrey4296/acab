@@ -3,7 +3,7 @@ Enforce a default set of symbols to be retrieved
 from config files
 """
 from acab.core.config.config import AcabConfig
-config = AcabConfig.Get()
+config = AcabConfig()
 
 SymbolDict      = config.prepare("Symbols", as_dict=True)()
 AliasDict       = config.prepare("Aliases", as_dict=True)()

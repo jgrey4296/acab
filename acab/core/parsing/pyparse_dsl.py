@@ -21,8 +21,10 @@ from acab.core.decorators.dsl import EnsureDSLInitialised
 from acab.core.parsing.funcs import clear_parser_names, deep_update_names
 from acab.error.base import AcabBasicException
 from acab.error.parse import AcabParseException
-from acab.interfaces.dsl import (DSL_Builder_i, DSL_Fragment, DSL_Handler_i,
-                                 DSL_Spec_i)
+from acab.interfaces.dsl import (DSL_Builder_i, DSL_Fragment_i, DSL_Spec_i)
+import acab.interfaces.dsl as dsl
+from acab.core.parsing import dsl_builder as DSLImpl
+from acab.core.util import handler_system as HS
 
 config = GET()
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
@@ -34,9 +36,10 @@ ModuleComponents = AT.ModuleComponents
 PyParse_Spec     = "PyParse_Spec"
 File             = 'FileObj'
 
+DSL_Fragment = DSLImpl.DSL_Fragment
 #----------------------------------------
 @dataclass
-class PyParse_Handler(DSL_Handler_i):
+class PyParse_Handler(HS.Handler, dsl.DSL_Handler_i):
     """ Register a function for handling a DSL setup signal.
     ie: This function is run to set a pyparsing `Forward`"""
 
@@ -64,7 +67,7 @@ class PyParse_Handler(DSL_Handler_i):
 
 
 @dataclass
-class PyParse_Spec(DSL_Spec_i):
+class PyParse_Spec(DSLImpl.DSL_Spec, dsl.DSL_Spec_i):
     """
     Register a signal into a DSL,
 
@@ -88,8 +91,8 @@ class PyParse_Spec(DSL_Spec_i):
 
         self.struct.update(spec.struct)
 
-    def register(self, handler: DSL_Handler_i):
-        assert(isinstance(handler, DSL_Handler_i))
+    def register(self, handler: dsl.DSL_Handler_i):
+        assert(isinstance(handler, dsl.DSL_Handler_i))
         if handler.func is None:
             raise AcabParseException(f"`{self.signal}` attempted to register a handler without a parser")
 
@@ -149,7 +152,7 @@ class PyParse_Spec(DSL_Spec_i):
         return self.debug
 
 #----------------------------------------
-class PyParseDSL(DSL_Builder_i):
+class PyParseDSL(DSLImpl.DSL_Builder, dsl.DSL_Builder_i):
 
     def _register_default(self):
         if DEFAULT_HANDLER_SIGNAL in self and bool(self.handler_specs[DEFAULT_HANDLER_SIGNAL]):

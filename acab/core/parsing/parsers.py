@@ -8,7 +8,7 @@ import pyparsing as pp
 from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.core.data import default_structure as CDS
-from acab.core.data.value import Sentence
+from acab.core.data.sentence import Sentence
 from acab.core.parsing import consts as PConst
 from acab.core.parsing import default_keys as PDS
 from acab.core.parsing import default_symbols as PDSYM
@@ -23,19 +23,20 @@ logging = root_logger.getLogger(__name__)
 
 ParserElement = AT.Parser
 
-config = AcabConfig.Get()
+config = AcabConfig()
 
 Fwd_ArgList = pp.Forward()
 Fwd_TagList = pp.Forward()
 
 def DELIMIST(expr, delim=None, stopOn=None):
+    # TODO deprecate
     dlName = f"[{expr} {delim}...]"
     return (expr + pp.ZeroOrMore(delim + expr,
                                  stopOn=stopOn)).set_name(dlName)
 
-def PARAM_CORE(mid:Optional[ParserElement]=None,
-               end:Optional[ParserElement]=None,
-               req_mid:Optional[ParserElement]=None):
+def PARAM_CORE(mid:None|ParserElement=None,
+               end:None|ParserElement=None,
+               req_mid:None|ParserElement=None):
     """ Construct a parameterised core parser
     Can handle wrapped annotations, and a modality as suffix
 

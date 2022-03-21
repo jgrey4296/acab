@@ -10,25 +10,27 @@ from acab.core.config.config import AcabConfig
 from acab.core.data.instruction import (ProductionComponent,
                                        ProductionContainer,
                                        ProductionStructure)
-from acab.core.data.value import AcabValue, Sentence
+from acab.interfaces import value as VI
+from acab.core.data.value import AcabValue
 from acab.core.parsing import consts as PConst
 from acab.core.data.default_structure import TYPE_BOTTOM_NAME
 from acab.core.parsing.annotation import ValueAnnotation
 import acab.core.data.default_structure as DS
 import acab.core.parsing.default_keys as PDS
+from acab.core.data.factory import ValueFactory
 
 logging = root_logger.getLogger(__name__)
 
-config = AcabConfig.Get()
+config = AcabConfig()
 SEMANTIC_HINT    = DS.SEMANTIC_HINT
 
-QUERY_SEM_HINT     = Sentence.build([config.prepare("SEMANTICS", "QUERY")()])
-ACTION_SEM_HINT    = Sentence.build([config.prepare("SEMANTICS", "ACTION")()])
-TRANSFORM_SEM_HINT = Sentence.build([config.prepare("SEMANTICS", "TRANSFORM")()])
-RULE_SEM_HINT      = Sentence.build([config.prepare("SEMANTICS", "RULE")()])
-AGENDA_SEM_HINT    = Sentence.build([config.prepare("SEMANTICS", "AGENDA")()])
-LAYER_SEM_HINT     = Sentence.build([config.prepare("SEMANTICS", "LAYER")()])
-PIPELINE_SEM_HINT  = Sentence.build([config.prepare("SEMANTICS", "PIPELINE")()])
+QUERY_SEM_HINT     = ValueFactory.value([config.prepare("SEMANTICS", "QUERY")()])
+ACTION_SEM_HINT    = ValueFactory.value([config.prepare("SEMANTICS", "ACTION")()])
+TRANSFORM_SEM_HINT = ValueFactory.value([config.prepare("SEMANTICS", "TRANSFORM")()])
+RULE_SEM_HINT      = ValueFactory.value([config.prepare("SEMANTICS", "RULE")()])
+AGENDA_SEM_HINT    = ValueFactory.value([config.prepare("SEMANTICS", "AGENDA")()])
+LAYER_SEM_HINT     = ValueFactory.value([config.prepare("SEMANTICS", "LAYER")()])
+PIPELINE_SEM_HINT  = ValueFactory.value([config.prepare("SEMANTICS", "PIPELINE")()])
 
 ATOM = TYPE_BOTTOM_NAME
 
@@ -53,7 +55,7 @@ def make_value(s, loc, toks):
     else:
         raise SyntaxError("Unplanned parse type, expected a tuple of (type_str, value)", toks[PDS.VALUE])
 
-    new_val = AcabValue.build(value, data=data, _type=_type)
+    new_val = ValueFactory.value(value, data=data, _type=_type)
     for ann in annotations:
         ann(new_val)
     return [new_val]
@@ -61,7 +63,7 @@ def make_value(s, loc, toks):
 def add_annotations(s, loc, toks):
     """ Add additional data to a node """
     word = toks[0][0]
-    assert(isinstance(word, AcabValue))
+    assert(isinstance(word, VI.Value_i))
     for anno in toks[0]:
         if not isinstance(anno, ValueAnnotation):
             continue
@@ -83,15 +85,21 @@ def construct_multi_sentences(s, loc, toks):
         data = {}
         data.update(base_sen.data)
         data.update(additional.data)
-        new_sen = Sentence.build(full_toks, data=data)
+        new_sen = ValueFactory.value(full_toks, data=data)
         new_sentences.append(new_sen)
 
     return new_sentences
 
 def construct_sentence(s, loc, toks):
     assert(PDS.SEN in toks)
-    data = {DS.NEGATION : False}
-    sentence = Sentence.build(toks[PDS.SEN][:], data=data)
+    sentence = ValueFactory.sen(toks[PDS.SEN][:])
+    if PDS.HEAD_ANNOTATION in toks:
+        for x in toks[PDS.HEAD_ANNOTATION]:
+            x(sentence)
+    if PDS.POST_ANNOTATION in toks:
+        for x in toks[PDS.POST_ANNOTATION]:
+            x(sentence)
+
     for x in toks:
         if not isinstance(x, ValueAnnotation):
             continue
