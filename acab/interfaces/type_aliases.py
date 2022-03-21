@@ -3,51 +3,70 @@
 A Canonical Place to reference various ACAB types
 
 """
+from __future__ import annotations
+
 from dataclasses import InitVar, dataclass, field
 from enum import Enum
+from re import Pattern
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Generic, Iterable,
-                    Iterator, Mapping, Match, MutableMapping, NewType, Type,
-                    Sequence, Tuple, TypeAlias, TypeVar, cast)
+                    Iterator, Mapping, Match, MutableMapping, NewType,
+                    Sequence, Tuple, Type, TypeAlias, TypeVar, cast)
 
 if TYPE_CHECKING:
     import pyparsing as pp
     from acab.core import util
-    from acab.core.config import config
     from acab.core.data import default_structure, instruction
     from acab.core.parsing import annotation
     from acab.core.util import delayed_commands
-    from acab.interfaces import (context, data, debugger, dsl, engine,
+    from acab.interfaces import (config, sieve, context, data, debugger, dsl, engine,
                                  handler_system, module_loader, printing,
                                  semantic, value)
 
+from . import function_aliases
+
+T = TypeVar('T')
+
+# Generic Type Aliases default to Unknown, unless given a TypeVar in the Alias.
+# Hence the TValore and TNode
+
+# The Types which can be wrapped in an acab Value
+ValueCore   = str | Pattern | list | None
+ValueCore_t = str | Pattern[Any] | list[Any] | None
+TValCore  = TypeVar('TValCore', bound=ValueCore)
+
+fns = function_aliases
 # The type of a string which can be parsed into a simple sentence
-pseudo              = NewType('pseudo', str)
+DataDict            : TypeAlias = dict[str,Any]
+Sieve               : TypeAlias = "sieve.AcabSieve[T]"
 # The interfaces of how the core value types behave
-Value               : TypeAlias = "value.Value_i"
+Value               : TypeAlias = "value.Value_i[TValCore]"
 Instruction         : TypeAlias = "value.Instruction_i"
 Sentence            : TypeAlias = "value.Sentence_i"
 
 # Types describing enums of value accessible data
-# ValueData           : TypeAlias = "default_structure.DATA_STRUCT_E"
+ValueData             : TypeAlias = str
 # StructComponent     : TypeAlias = "default_structure.STRUCT_COMP_E"
 # TypePrimitive       : TypeAlias = "default_structure.TYPE_PRIM_E"
 
 # The types describing core structures for storing values
 Node                : TypeAlias = "data.Node_i"
-DataStructure       : TypeAlias = "data.Structure_i"
+TNode = TypeVar('TNode', bound=Node)
+DataStructure       : TypeAlias = "data.Structure_i[TNode]"
 
 # Instructions
-Operator            : TypeAlias = "instruction.ProductionOperator"
+Operator            : TypeAlias = "value.Operator_i[TValCore]"
+Action              : TypeAlias = "value.Action_i"
 Component           : TypeAlias = "instruction.ProductionComponent"
 Container           : TypeAlias = "instruction.ProductionContainer"
 ProductionStructure : TypeAlias = "instruction.ProductionStructure"
 
 # Types for assembling handler systems
-Handler             : TypeAlias = "handler_system.Handler"
+Handler             : TypeAlias = "handler_system.Handler_i"
 HandlerComponent    : TypeAlias = "handler_system.HandlerComponent_i"
 HandlerSystem       : TypeAlias = "handler_system.HandlerSystem_i"
-HandlerOverride     : TypeAlias = "handler_system.HandlerSystem_i.HandlerOverride"
-Handler_Fragment    : TypeAlias = "semantic.Handler_Fragment"
+HandlerOverride     : TypeAlias = "handler_system.HandlerOverride"
+HandlerFragment     : TypeAlias = "handler_system.HandlerFragment_i"
+HandlerSpec         : TypeAlias = "handler_system.HandlerSpec_i"
 
 # Types for Assembling Semantic Systems
 StructureSemantics  : TypeAlias = "semantic.StructureSemantics_i"
@@ -67,18 +86,20 @@ Constraint          : TypeAlias = "context.Constraint_i"
 DelayedCommands     : TypeAlias = "delayed_commands.DelayedCommands_i"
 
 # Types for describing DSLs
-DSL_Fragment        : TypeAlias = "dsl.DSL_Fragment"
+DSL_Fragment        : TypeAlias = "dsl.DSL_Fragment_i"
 DSL_Builder         : TypeAlias = "dsl.DSL_Builder_i"
+DSL_Spec            : TypeAlias = "dsl.DSL_Spec_i"
 
 Annotation          : TypeAlias = "annotation.ValueAnnotation"
 RepeatAnnotation    : TypeAlias = "annotation.ValueRepeatAnnotation"
-Parser              : TypeAlias = Callable
+Parser              : TypeAlias = fns.Parser
 
 # Types which provide for running systems
 Debugger            : TypeAlias = "debugger.AcabDebugger_i"
 ModuleComponents    : TypeAlias = "module_loader.ModuleComponents"
+ModuleLoader        : TypeAlias = "module_loader.ModuleLoader_i"
 Engine              : TypeAlias = "engine.AcabEngine_i"
 
 # Types for using the config system
-ConfigSpec          : TypeAlias = "config.ConfigSpec_i"
-Config              : TypeAlias = "config.AcabConfig"
+ConfigSpec          : TypeAlias = "config.ConfigSpec_d"
+Config              : TypeAlias = "config.Config_i"

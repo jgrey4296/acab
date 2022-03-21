@@ -2,91 +2,105 @@
 A Collection of interfaces describing how information in context is collected, constrained,
 and grouped for communication between system components
 """
+# pylint: disable=multiple-statements,abstract-method
+from __future__ import annotations
 
 import abc
 import collections.abc as cABC
 import logging as root_logger
 from dataclasses import InitVar, dataclass, field
 from enum import Enum
-from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
-                    Mapping, Match, MutableMapping, Protocol, Sequence, Tuple,
-                    TypeAlias, TypeVar, cast)
+from typing import (Any, Callable, ClassVar, Collection, Generic, Hashable,
+                    Iterable, Iterator, Literal, Mapping, Match,
+                    MutableMapping, Protocol, Sequence, Set, Tuple, TypeAlias,
+                    TypeVar, cast, overload, runtime_checkable)
 from uuid import UUID
 
 logging = root_logger.getLogger(__name__)
 
 from acab import types as AT
-from acab.interfaces.util import AcabFinishable, AcabReducible
+from acab.interfaces.sub_protocols.value import (AcabFinishable_p,
+                                                AcabReducible_p)
 
 # Type declarations:
-CtxSet   : TypeAlias = AT.CtxSet
-CtxIns   : TypeAlias = AT.CtxIns
-Value    : TypeAlias = AT.Value
-ProdComp : TypeAlias = AT.Component
+T = TypeVar('T')
+GenFunc             : TypeAlias = AT.fns.GenFunc
+CtxSet              : TypeAlias = AT.CtxSet
+CtxIns              : TypeAlias = AT.CtxIns
+Value               : TypeAlias = "AT.Value[AT.ValueCore]"
+Node                : TypeAlias = AT.Node
+Sen                 : TypeAlias = AT.Sentence
+ProdComp            : TypeAlias = AT.Component
+ProductionContainer : TypeAlias = AT.Component
+ModuleComponents    : TypeAlias = AT.ModuleComponents
 
-DelayValue = UUID | CtxIns | CtxSet | None
-
+DelayValue = 'UUID | CtxIns | CtxSet | None'
 
 # Interfaces:
+
 @dataclass(frozen=True)
-class _Constraint_d:
-    source         : Value                     = field()
-    _test_mappings : dict[str, list[Callable]] = field(repr=False)
+class NamedCtxSet_d:
+    """ A Set for storing UUIDs of ctxinsts,
+    paired with some data about them
+    """
+
+    instruction : ProductionContainer = field()
+    uuids       : list[UUID]          = field()
+    # TODO instruction state
+
+@dataclass(frozen=True)
+class ContextFailState_d:
+    """
+    Utility dataclass for holding a ctx with information about where it failed
+    """
+    ctx       : CtxIns      = field()
+    query     : Sen         = field()
+    failed_on : Value       = field()
+    node      : None | Node = field()
+
+class _Constraint_p(Protocol):
+    @staticmethod
+    @abc.abstractmethod
+    def build(word:Value, operators:CtxIns, *, sieve:None|list[GenFunc]=None) -> Constraint_i: pass
+    @abc.abstractmethod
+    def test(self, node:Node, ctx:CtxIns) -> None: pass
+
+class ContextSet_i(Hashable, Iterable[CtxIns], Protocol):
+    _operators : CtxIns
+
+    @staticmethod
+    @abc.abstractmethod
+    def build(ops:None|CtxIns|list[ModuleComponents]=None) -> CtxSet: pass
+    @abc.abstractmethod
+    def fail(self, instance:CtxIns, word:Value, node:Node, query:Sen) -> None: pass
+    @abc.abstractmethod
+    def push(self, ctxs:CtxIns) -> None: pass
+    @abc.abstractmethod
+    def pop(self, top:bool=False) -> CtxIns: pass
+    @abc.abstractmethod
+    def active_list(self, *, clear:bool=False) -> list[CtxIns]: pass
+    @abc.abstractmethod
+    def failed_list(self) -> list[ContextFailState_d]: pass
+
+
+@runtime_checkable
+class ContextInstance_i(Hashable, Collection[Value], AcabFinishable_p, Protocol):
+    @abc.abstractmethod
+    def __contains__(self, value: object) -> bool: pass
+    @abc.abstractmethod
+    def __getitem__(self, value: Value) -> Any: pass
+    @abc.abstractmethod
+    def bind(self, word:Value, nodes:list[Node]) -> list[CtxIns]: pass
+    @abc.abstractmethod
+    def bind_dict(self, the_dict:dict[str, Any]) -> CtxIns: pass
+    @abc.abstractmethod
+    def finish(self) -> Any: pass
+
+@dataclass(frozen=True) #type:ignore[misc]
+class Constraint_i(_Constraint_p):
+    source         : Value               = field()
+    _test_mappings : dict[str, list[AT.fns.TestFunc]] = field(repr=False)
 
     # Value -> (key, list[Constraint])
-    sieve         : ClassVar[list[Callable]]
-
-class Constraint_i(_Constraint_d):
-
-    @staticmethod
-    def build(word, operators, *, sieve=None):
-        pass
-
-    @abc.abstractmethod
-    def test(self, node, ctx):
-        pass
-
-class ContextSet_i(cABC.Hashable, cABC.Set):
-
-    @staticmethod
-    def build(ops):
-        pass
-
-    @abc.abstractmethod
-    def fail(self, instance, word, node):
-        pass
-
-    @abc.abstractmethod
-    def push(self, ctxs):
-        pass
-
-    @abc.abstractmethod
-    def pop(self, top=False):
-        pass
-
-    @abc.abstractmethod
-    def active_list(self, *, clear=False):
-        pass
-    @abc.abstractmethod
-    def failed_list(self):
-        pass
-
-class ContextInstance_i(cABC.Mapping, cABC.Hashable, AcabFinishable):
-
-    @abc.abstractmethod
-    def bind(self, word, nodes):
-        pass
-
-    @abc.abstractmethod
-    def bind_dict(self, the_dict):
-        pass
-
-    @abc.abstractmethod
-    def finish(self) -> CtxIns:
-        """
-        TODO rename this
-        serves to return a new ctxins with a
-        mutable's bindings incorporated
-        """
-        pass
+    sieve         : ClassVar[list[GenFunc]]
 

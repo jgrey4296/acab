@@ -1,3 +1,5 @@
+# pylint: disable=
+from __future__ import annotations
 import abc
 import pdb
 from dataclasses import dataclass, field
@@ -6,11 +8,11 @@ from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
                     Tuple, TypeVar, cast)
 
 
-class AcabDebugger_i(pdb.Pdb, metaclass=abc.ABCMeta):
+class AcabDebugger_i(pdb.Pdb):
 
     singleton = None
 
     @abc.abstractmethod
-    def set_running_trace(self, *, frame=None):
+    def set_running_trace(self, *, frame:Any=None) -> None:
         """ Start a trace going, without stopping execution """
         pass

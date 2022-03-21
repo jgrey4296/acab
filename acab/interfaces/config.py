@@ -1,17 +1,21 @@
 #!/usr/bin/env python3
-# https://docs.python.org/3/library/abc.html
 # from https://realpython.com/python-interface/
+# pylint: disable=multiple-statements
+from __future__ import annotations
 import abc
 import collections.abc as cABC
 from dataclasses import dataclass, field
-from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
-                    Mapping, Match, MutableMapping, Sequence,
-                    Tuple, TypeAlias, TypeVar, cast)
 from enum import Enum
+from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator, Container,
+                    Mapping, Match, MutableMapping, Protocol, Sequence, Tuple,
+                    TypeAlias, TypeVar, cast, runtime_checkable)
 
+from acab import types as AT
+
+GenFunc = AT.fns.GenFunc
 
 @dataclass
-class ConfigSpec_i(cABC.Hashable):
+class ConfigSpec_d:
     """ Dataclass to describe a config file value,
     and any transforms it needs prior to use """
 
@@ -23,32 +27,31 @@ class ConfigSpec_i(cABC.Hashable):
     as_enum : bool               = field(default=False)
     as_bool : bool               = field(default=False)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(f"{self.section}:{self.key}")
 
-@dataclass
-class _Config_d:
+    def __call__(self) -> Any: pass
 
+@runtime_checkable
+class Config_i(Protocol):
     suffix : ClassVar[str] = ".config"
 
-class Config_i(_Config_d, cABC.Collection):
-
-    @abc.abstractstaticmethod
-    def Get(*paths: str, hooks=None):
-        pass
-
     @abc.abstractmethod
-    def __call__(self):
-        pass
-
+    def __call__(self) -> Any: pass
     @abc.abstractmethod
-    def prepare(self, *args, **kwargs):
-        pass
-
+    def __contains__(self, key:str|Enum) -> bool: pass
     @abc.abstractmethod
-    def read(self, paths: list[str]):
-        pass
-
+    def check(self, spec: ConfigSpec_d) -> ConfigSpec_d: pass
     @abc.abstractmethod
-    def override(self, spec: ConfigSpec_i, value):
-        pass
+    def default(self, entry:str) -> Any: pass
+    @property
+    @abc.abstractmethod
+    def loaded(self) -> bool: pass
+    @abc.abstractmethod
+    def override(self, spec: ConfigSpec_d, value:str) -> None: pass
+    @abc.abstractmethod
+    def prepare(self, *args:Any, **kwargs:Any) -> ConfigSpec_d: pass
+    @abc.abstractmethod
+    def read(self, paths: list[str]) -> Config_i: pass
+    @abc.abstractmethod
+    def value(self, val: Enum | ConfigSpec_d) -> Any: pass
