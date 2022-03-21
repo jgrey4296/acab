@@ -9,11 +9,12 @@ from acab import setup
 config = setup()
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 
-import acab.interfaces.handler_system as HS
+import acab.interfaces.handler_system as HSi
+import acab.core.util.handler_system as HS
 from acab.error.handler import AcabHandlerException
 
 
-class BasicHandlerSystem(HS.HandlerSystem_i):
+class SimplestHandlerSystem(HS.HandlerSystem):
 
     def __call__(self, *args):
         pass
@@ -24,16 +25,16 @@ class BasicHandlerSystem(HS.HandlerSystem_i):
 class TestHandlerSystem(unittest.TestCase):
 
     def test_creation(self):
-        basic = BasicHandlerSystem()
-        self.assertIsInstance(basic, HS.HandlerSystem_i)
+        basic = SimplestHandlerSystem([], [], [])
+        self.assertIsInstance(basic, HSi.HandlerSystem_i)
 
     def test_basic_spec(self):
         spec = HS.HandlerSpec("a_signal")
-        self.assertIsInstance(spec, HS.HandlerSpec)
+        self.assertIsInstance(spec, HSi.HandlerSpec_i)
         self.assertEqual(spec.signal, "a_signal")
 
     def test_register_spec(self):
-        basic = BasicHandlerSystem()
+        basic = SimplestHandlerSystem([], [], [])
         spec  = HS.HandlerSpec("a_signal")
 
         self.assertEqual(len(basic), 1)
@@ -42,7 +43,7 @@ class TestHandlerSystem(unittest.TestCase):
         self.assertIn("a_signal", basic)
 
     def test_contains(self):
-        basic = BasicHandlerSystem()
+        basic = SimplestHandlerSystem([], [], [])
         spec  = HS.HandlerSpec("a_signal")
 
         self.assertFalse("a_signal" in basic)
@@ -50,7 +51,7 @@ class TestHandlerSystem(unittest.TestCase):
         self.assertTrue("a_signal" in basic)
 
     def test_contains_spec(self):
-        basic = BasicHandlerSystem()
+        basic = SimplestHandlerSystem([], [], [])
         spec  = HS.HandlerSpec("a_signal")
 
         self.assertFalse(spec in basic)
@@ -58,7 +59,7 @@ class TestHandlerSystem(unittest.TestCase):
         self.assertTrue(spec in basic)
 
     def test_contains_handler_signal(self):
-        basic = BasicHandlerSystem()
+        basic = SimplestHandlerSystem([], [], [])
         spec  = HS.HandlerSpec("a_signal")
         handler = spec.on(target=id)
 
@@ -67,7 +68,7 @@ class TestHandlerSystem(unittest.TestCase):
         self.assertTrue(handler in basic)
 
     def test_register_handler(self):
-        basic = BasicHandlerSystem()
+        basic = SimplestHandlerSystem([], [], [])
         spec  = HS.HandlerSpec("a_signal")
         basic.register(spec)
 
@@ -78,7 +79,7 @@ class TestHandlerSystem(unittest.TestCase):
         self.assertEqual(len(basic['a_signal']), 1)
 
     def test_register_handler_two(self):
-        basic = BasicHandlerSystem()
+        basic = SimplestHandlerSystem([], [], [])
         spec  = HS.HandlerSpec("a_signal")
         basic.register(spec)
 
@@ -91,7 +92,7 @@ class TestHandlerSystem(unittest.TestCase):
         self.assertEqual(len(basic['a_signal']), 2)
 
     def test_register_override(self):
-        basic = BasicHandlerSystem()
+        basic = SimplestHandlerSystem([], [], [])
         spec  = HS.HandlerSpec("a_signal")
         handler  = HS.Handler("a_signal", func=id)
         handler2  = HS.Handler("a_signal", func=lambda x: None, flags=[HS.HandlerSpec.flag_e.OVERRIDE])
@@ -104,7 +105,7 @@ class TestHandlerSystem(unittest.TestCase):
         self.assertIn("a_signal", basic)
 
     def test_register_override_2(self):
-        basic = BasicHandlerSystem()
+        basic = SimplestHandlerSystem([], [], [])
         spec  = HS.HandlerSpec("a_signal")
         handler  = HS.Handler("a_signal", func=id)
         handler2  = HS.Handler("a_signal", func=lambda x: None, flags=[HS.HandlerSpec.flag_e.OVERRIDE])
@@ -194,27 +195,35 @@ class TestHandlerSystem(unittest.TestCase):
         self.assertEqual(spec(), 4)
 
     def test_system_call_explicit(self):
-        basic   = BasicHandlerSystem(init_specs=[HS.HandlerSpec("a_signal")])
+        basic   = SimplestHandlerSystem(init_specs=[HS.HandlerSpec("a_signal")],
+                                        init_handlers=[],
+                                        sieve_fns=[])
         handler = basic['a_signal'].on(target=lambda *a, **k: 2)
         basic.register(handler)
 
         self.assertEqual(basic['a_signal'](), 2)
 
     def test_lookup_default(self):
-        basic = BasicHandlerSystem(init_specs=[HS.HandlerSpec("a_signal")])
+        basic = SimplestHandlerSystem(init_specs=[HS.HandlerSpec("a_signal")],
+                                      init_handlers=[],
+                                      sieve_fns=[])
         spec = basic.lookup()
         self.assertEqual(spec, basic[DEFAULT_HANDLER_SIGNAL])
 
     def test_lookup_not_default(self):
-        basic = BasicHandlerSystem(init_specs=[HS.HandlerSpec("a_signal")])
+        basic = SimplestHandlerSystem(init_specs=[HS.HandlerSpec("a_signal")],
+                                      init_handlers=[],
+                                      sieve_fns=[])
         basic.register(basic['a_signal'].on(target=id))
 
         spec = basic.lookup("a_signal")
         self.assertEqual(spec, basic["a_signal"])
 
     def test_lookup_not_default_2(self):
-        basic = BasicHandlerSystem(init_specs=[HS.HandlerSpec("a_signal"),
-                                               HS.HandlerSpec('diff_signal')])
+        basic = SimplestHandlerSystem(init_specs=[HS.HandlerSpec("a_signal"),
+                                                  HS.HandlerSpec('diff_signal')],
+                                      init_handlers=[],
+                                      sieve_fns=[])
         basic.register(basic['a_signal'].on(target=id))
         basic.register(basic['diff_signal'].on(target=id))
 
