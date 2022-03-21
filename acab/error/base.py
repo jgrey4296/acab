@@ -15,7 +15,7 @@ class AcabException(Exception):
 @dataclass(repr=False)
 class AcabBasicException(AcabException):
     detail  : str           = field()
-    context : None|str = field(default=None, kw_only=True)
+    context : None|str      = field(default=None, kw_only=True)
     msg     : str           = field(default="Non-specific Acab Error Raised", kw_only=True)
     rest    : list[Any]     = field(default_factory=list, kw_only=True)
 
