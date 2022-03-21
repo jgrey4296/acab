@@ -7,20 +7,15 @@ logging = root_logger.getLogger(__name__)
 import acab
 config = acab.setup()
 
-from acab.core.data.value import AcabValue, Instruction
-from acab.core.data.value import Sentence
+from acab.core.data.value import AcabValue
+from acab.core.data.sentence import Sentence
 from acab.core.data.node import AcabNode
 
 AT_BIND_S = config.prepare("Value.Structure", "AT_BIND")()
 BIND_S    = config.prepare("Value.Structure", "BIND")()
 
-class BasicStatement(Instruction):
-
-    def __contains__(self, val):
-        return False
-
-    def __len__(self):
-        return 0
+# Explicit, instead of ValueFactory
+AVB = AcabValue.build
 
 class AcabValueTests(unittest.TestCase):
 
@@ -40,8 +35,8 @@ class AcabValueTests(unittest.TestCase):
     def test_build(self):
         """ Check a value can be created safely with "build" """
         value = AcabValue.build("test",
-                                    name="test value",
-                                    data={"test data" : True})
+                                name="test value",
+                                data={"test data" : True})
         self.assertIsInstance(value, AcabValue)
         self.assertEqual(value.value, "test")
         self.assertEqual(value.name, "test_value")
@@ -49,55 +44,28 @@ class AcabValueTests(unittest.TestCase):
 
     def test_construction(self):
         """ Check a value can be created using a normal constructor """
-        value = AcabValue("test")
+        value = AcabValue.build("test")
         self.assertIsInstance(value, AcabValue)
-
-    def test_attach_statement(self):
-        # TODO this is duplicated from test sentence
-        value = BasicStatement(value="test")
-        sen = Sentence.build(["a", "b", "c", "d", "e"])
-        self.assertEqual(sen[-1].value, "e")
-        self.assertIsInstance(sen[-1].value, str)
-        copied = sen.attach_statement(value)
-        self.assertIsInstance(copied[-1], Instruction)
-        self.assertEqual(copied[-1].value, "test")
-        self.assertEqual(copied[-1].name, "e")
-
-    def test_attach_statement_with_tags(self):
-        # TODO move to test sentence
-        value = BasicStatement("test")
-        value.tags.add('testval')
-        sen = Sentence.build(["a", "b", "c", "d", "e"])
-        self.assertEqual(sen[-1].value, "e")
-        self.assertIsInstance(sen[-1].value, str)
-        copied = sen.attach_statement(value)
-
-        self.assertTrue("testval" in copied[-1].tags)
-        self.assertIsInstance(copied[-1], Instruction)
 
     def test_has_tag(self):
         """ Check a sentence can report whether it has a tag """
-        value = AcabValue("test")
-        value.tags.update(["a"])
-        self.assertTrue(value.has_tag("a"))
+        value = AcabValue.build("test", tags=["a"])
+        self.assertTrue(value.has_tag(AcabValue.build("a")))
 
-    def test_has_tag_fail(self):
+    def test_has_tag_fail_on_str(self):
         """ check a value can report it doesn't have a tag """
-        value = AcabValue("test")
-        value.tags.update(["a"])
-        self.assertFalse(value.has_tag("q"))
+        value = AcabValue.build("test", tags=["a"])
+        self.assertFalse(value.has_tag("a"))
 
     def test_has_tag_multi(self):
         """ Check a value can report it has multiple tags """
-        value = AcabValue("test")
-        value.tags.update(["a", "b", "c"])
-        self.assertTrue(value.has_tag("a", "b", "c"))
+        value = AcabValue.build("test", tags=["a", "b", "c"])
+        self.assertTrue(value.has_tag(*[AcabValue.build(x) for x in ["a", "b", "c"]]))
 
     def test_has_tag_multi_fail(self):
         """ Check a value can report it doesn't have all specified tags """
-        value = AcabValue("test")
-        value.tags.update(["a", "b", "c"])
-        self.assertFalse(value.has_tag("a", "b", "c", "q"))
+        value = AcabValue.build("test", tags=["a", "b", "c"])
+        self.assertFalse(value.has_tag(*[AVB(x) for x in ["a", "b", "c", "q"]]))
 
     def test_build(self):
         """ Check a value doesn't build to contain a value """
@@ -108,49 +76,34 @@ class AcabValueTests(unittest.TestCase):
         self.assertIsInstance(value2.value, str)
 
 
-    def test_statement_to_simple_value(self):
-        """ Check a statement can be downgraded to a value """
-        value = BasicStatement("test")
-        self.assertIsInstance(value, Instruction)
-        basic = value.to_word()
-        self.assertIsInstance(basic, AcabValue)
-
-
-
-
-    # set_data, apply_patams/tags,
-
-
     def test_value_copy(self):
         """ Check a value can be copied """
-        value = AcabValue("test")
-        value.tags.update(["a"])
-        copied = value.copy()
-        copied.tags.update(["b"])
+        value = AcabValue.build("test", tags=["a"])
+        copied = value.copy(tags=["b"])
         self.assertEqual(value, copied)
         self.assertNotEqual(value.uuid, copied.uuid)
-        self.assertTrue("a" in copied.tags)
-        self.assertFalse("b" in value.tags)
+        self.assertTrue(AVB("a") in copied.tags)
+        self.assertFalse(AVB("b") in value.tags)
 
 
     def test_eq(self):
         """ Check values are equal by their name """
-        val1 = AcabValue("test")
-        val2 = AcabValue("test")
+        val1 = AcabValue.build("test")
+        val2 = AcabValue.build("test")
         self.assertEqual(val1, val2)
 
     def test_eq_by_id(self):
         """ Check a value is equal to itself """
-        val1 = AcabValue("test")
+        val1 = AcabValue.build("test")
         self.assertEqual(val1, val1)
 
     def test_eq_by_str(self):
         """ Check a value is equal to a string of its name """
-        val1 = AcabValue("test")
+        val1 = AcabValue.build("test")
         self.assertEqual(val1, "test")
 
     def test_eq_fail(self):
         """ Check two values are not equal if they have different names """
-        val1 = AcabValue("test")
-        val2 = AcabValue("blah")
+        val1 = AcabValue.build("test")
+        val2 = AcabValue.build("blah")
         self.assertNotEqual(val1, val2)

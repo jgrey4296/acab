@@ -1,20 +1,58 @@
 #https://docs.python.org/3/library/unittest.html
-from os.path import splitext, split
+from __future__ import annotations
+
+import abc
+import logging as root_logger
 import unittest
 import unittest.mock as mock
-import logging as root_logger
-logging = root_logger.getLogger(__name__)
+from dataclasses import InitVar, dataclass, field
+from os.path import split, splitext
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
+                    Iterable, Iterator, Mapping, Match, MutableMapping, Type, NewType,
+                    Protocol, Sequence, Tuple, TypeAlias, TypeGuard, TypeVar,
+                    cast, final, overload, runtime_checkable)
 
+logging = root_logger.getLogger(__name__)
 from acab import setup
+from acab import types as AT
+
 config = setup()
 
-from acab.core.data.value import Sentence
-from acab.core.data.value import AcabValue, Instruction
-
 from acab.core.data import instruction as PO
+from acab.core.data import default_structure as DS
+from acab.core.data.instruction import Instruction
+from acab.core.data.sentence import Sentence
+from acab.core.data.value import AcabValue
+from acab.interfaces.value import Instruction_i, Sentence_i, Value_i
 
 BIND_S               = config.prepare("Value.Structure", "BIND")()
 OPERATOR_TYPE_PRIM_S = config.prepare("Type.Primitive", "OPERATOR")()
+
+T     = TypeVar('T')
+Value_A       : TypeAlias = "AT.Value[AT.ValueCore]"
+Value_t       : TypeAlias = Type[Value_A]
+Sen_A         : TypeAlias = AT.Sentence
+Sen_t         : TypeAlias = Type[Sen_A]
+Instruction_A : TypeAlias = AT.Instruction
+Variable      = NewType('Variable', Value_A)
+ValueData     : TypeAlias = str
+GenFunc       : TypeAlias = AT.fns.GenFunc
+SemSys_A      : TypeAlias = AT.SemanticSystem
+
+AVB = AcabValue.build
+
+class BasicTestOp(PO.ProductionOperator):
+
+    def __call__(self, *params: Value_A, data:None|dict[str,Any]=None) -> str:
+        return "test"
+
+class BasicTestAct(PO.ActionOperator):
+    val : ClassVar[int] = 0
+
+    def __call__(self, *params: Value_A, data:None|dict[str,Any]=None, semsys:None|SemSys_A=None) -> None:
+        BasicTestAct.val = 5
+
+
 
 class StatementTests(unittest.TestCase):
     """ Test the construction of production abstractions """
@@ -33,46 +71,60 @@ class StatementTests(unittest.TestCase):
     #----------
     def test_init_operator(self):
         """ Check an operator can be created, and is of the correct type """
-        op = PO.ProductionOperator()
+        op = BasicTestOp.build()
         self.assertIsInstance(op, PO.ProductionOperator)
         # TODO OPERATOR, COMPONENT
         self.assertEqual(op.type, Sentence.build([OPERATOR_TYPE_PRIM_S]))
+        self.assertEqual(op.name, f"{BasicTestOp.__module__}.{BasicTestOp.__qualname__}")
+
+    def test_tagged_operator(self):
+        op = BasicTestOp.build(tags=["a","b","c"])
+        self.assertTrue(op.has_tag(AVB("a"), AVB("b"), AVB("c")))
+
 
     def test_component_init(self):
         """ Check a component can be created """
-        val = PO.ProductionComponent(value=Sentence.build(["testop"]))
-        self.assertIsInstance(val, PO.ProductionComponent)
-        self.assertIsInstance(val, AcabValue)
+        val = PO.ProductionComponent.build(Sentence.build(["testop"]))
+        self.assertIsInstance(val, Value_i)
 
     def test_component_with_params(self):
         """ Check a component can be created with parameters """
-        val = PO.ProductionComponent(value=Sentence.build(["testop"]), params=[AcabValue("a"), AcabValue("b")])
-        self.assertIsInstance(val, PO.ProductionComponent)
+        val = PO.ProductionComponent.build(Sentence.build(["testop"]), params=[AVB("a"), AVB("b")])
+        self.assertIsInstance(val, Value_i)
+        self.assertIsInstance(val, Instruction_i)
         self.assertEqual(len(val.params), 2)
 
     def test_component_with_str_params(self):
         """ Check a component can be created with string parameters """
-        val = PO.ProductionComponent(value=Sentence.build(["testop"]), params=["a", "b"])
-        self.assertIsInstance(val, PO.ProductionComponent)
+        val = PO.ProductionComponent.build(Sentence.build(["testop"]), params=["a", "b"])
+        self.assertIsInstance(val, Value_i)
+        self.assertIsInstance(val, Instruction_i)
         self.assertEqual(len(val.params), 2)
 
-    @unittest.skip
-    def test_container_init(self):
-        pass
 
-    @unittest.skip
+    def test_container_init(self):
+        val = PO.ProductionContainer.build([])
+        self.assertIsInstance(val, Instruction_i)
+        self.assertIsInstance(val, PO.ProductionContainer)
+        self.assertEqual(val.type, Sentence.build([DS.CONTAINER_PRIM]))
+
+
     def test_structure_init(self):
-        pass
+        val = PO.ProductionStructure.build({"test": "a", "struct": "b"})
+        self.assertIsInstance(val, Instruction_i)
+        self.assertIsInstance(val, PO.ProductionContainer)
+        self.assertEqual(val.type, Sentence.build([DS.STRUCT_PRIM]))
+
 
     def test_component_op(self):
         """ Test a components operator can be recovered """
-        val = PO.ProductionComponent(value=Sentence.build(["testop"]))
+        val = PO.ProductionComponent.build(Sentence.build(["testop"]))
         self.assertEqual(val.op, Sentence.build(["testop"]))
 
 
     def test_apply_parameters(self):
         """ Test a component can have parameters applied to it, creating a new component """
-        val = PO.ProductionComponent(value=Sentence.build(["testop"]))
+        val = PO.ProductionComponent.build(Sentence.build(["testop"]))
         self.assertEqual(len(val.params), 0)
         copied = val.apply_params(["a","test"])
         self.assertNotEqual(val, copied)
@@ -82,10 +134,11 @@ class StatementTests(unittest.TestCase):
 
 
     def test_component_to_sentences(self):
-        comp = PO.ProductionComponent(value=Sentence.build(["Test", "Path", "Op"]),
-                                      params=[AcabValue.build("x"),
-                                              AcabValue.build("y")],
-                                              rebind=AcabValue.build("blah"))
+        sen = Sentence.build(["Test", "Path", "Op"])
+        comp = PO.ProductionComponent.build(sen,
+                                            params=[AVB("x"),
+                                                    AVB("y")],
+                                            rebind=AVB("blah"))
 
         as_sen = comp.to_sentences()
         self.assertEqual(as_sen, "ProductionComponent")
@@ -96,7 +149,7 @@ class StatementTests(unittest.TestCase):
         self.assertIn('Rebind', as_sen)
 
     def test_component_to_sentences_no_params(self):
-        comp = PO.ProductionComponent(value=Sentence.build(["Test.Op.Path"]))
+        comp = PO.ProductionComponent.build(Sentence.build(["Test.Op.Path"]))
 
         as_sen = comp.to_sentences()
         self.assertEqual(as_sen, "ProductionComponent")
@@ -104,10 +157,10 @@ class StatementTests(unittest.TestCase):
         self.assertEqual(as_sen['Operator'], "_:Test.Op.Path")
 
     def test_component_from_sentences(self):
-        comp = PO.ProductionComponent(value=Sentence.build(["Test", "Path", "Op"]),
-                                      params=[AcabValue.build("x"),
-                                              AcabValue.build("y")],
-                                              rebind=AcabValue.build("blah"))
+        comp = PO.ProductionComponent.build(Sentence.build(["Test", "Path", "Op"]),
+                                      params=[AVB("x"),
+                                              AVB("y")],
+                                              rebind=AVB("blah"))
 
         as_sen = comp.to_sentences()
         comp2 = PO.ProductionComponent.from_sentences([as_sen])[0]
@@ -116,10 +169,10 @@ class StatementTests(unittest.TestCase):
         self.assertEqual(comp.rebind, comp2.rebind)
 
     def test_multi_component_from_sentences(self):
-        comp = PO.ProductionComponent(value=Sentence.build(["Test", "Path", "Op"]),
-                                      params=[AcabValue.build("x"),
-                                              AcabValue.build("y")],
-                                              rebind=AcabValue.build("blah"))
+        comp = PO.ProductionComponent.build(Sentence.build(["Test", "Path", "Op"]),
+                                      params=[AVB("x"),
+                                              AVB("y")],
+                                              rebind=AVB("blah"))
 
         as_sen = comp.to_sentences()
         as_sen2 = comp.to_sentences()
@@ -130,5 +183,6 @@ class StatementTests(unittest.TestCase):
         self.assertEqual(comp.params, comp2[1].params)
         self.assertEqual(comp.rebind, comp2[1].rebind)
 
+    @unittest.skip
     def test_container_to_sentences(self):
         pass
