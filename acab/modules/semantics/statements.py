@@ -23,7 +23,7 @@ from acab.core.semantics import basic
 CtxIns = AT.CtxIns
 
 # Primary Statements:
-class QueryAbstraction(SI.StatementSemantics_i):
+class QueryAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
     """
     Very simply accumulate results of multiple sentences of queries
     """
@@ -39,7 +39,7 @@ class QueryAbstraction(SI.StatementSemantics_i):
         for clause in query.clauses:
             spec(clause, data=data, ctxs=ctxs)
 
-class QueryPlusAbstraction(SI.StatementSemantics_i):
+class QueryPlusAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
     """ A Query abstraction that can handle expanded query semantics.
     Eg: Walkers
     """
@@ -60,7 +60,7 @@ class QueryPlusAbstraction(SI.StatementSemantics_i):
             spec(clause, struct, data=data, ctxs=ctxs)
 
 
-class TransformAbstraction(SI.StatementSemantics_i):
+class TransformAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
     """ Takes a context, returns a changed context """
 
     def verify(self, instruction) -> bool:
@@ -84,7 +84,7 @@ class TransformAbstraction(SI.StatementSemantics_i):
                     result              = op(*params, data=mutx.data)
                     mutx[clause.rebind] = result
 
-class ActionAbstraction(SI.StatementSemantics_i):
+class ActionAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
     """ *Consumes* a context, performing all actions in it """
 
     def verify(self, instruction) -> bool:
@@ -109,7 +109,7 @@ class ActionAbstraction(SI.StatementSemantics_i):
 
 
 
-class AtomicRuleAbstraction(SI.StatementSemantics_i):
+class AtomicRuleAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
     """ Run a rule in a single semantic call """
 
     def verify(self, instruction) -> bool:
@@ -136,7 +136,7 @@ class AtomicRuleAbstraction(SI.StatementSemantics_i):
         if DS.ACTION_COMPONENT in rule:
             semsys(rule[DS.ACTION_COMPONENT], ctxs=ctxs)
 
-class ProxyRuleAbstraction(SI.StatementSemantics_i):
+class ProxyRuleAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
     """ Run a rules queries, then return ctxs bound
     with transform+action continuation """
 
@@ -180,7 +180,7 @@ class ProxyRuleAbstraction(SI.StatementSemantics_i):
                    ctxs=ctxs)
 
 
-class ContainerAbstraction(SI.StatementSemantics_i):
+class ContainerAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
 
     def verify(self, instruction) -> bool:
         return isinstance(instruction, Instr.ProductionContainer)

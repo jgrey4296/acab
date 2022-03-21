@@ -19,8 +19,8 @@ def applicable(val:Any, base_type:type, *, as_handler=False) -> bool:
 
     Can also select for handlers containing the correct type as well.
     """
-    if as_handler and isinstance(val, Handler):
-        val = val.func
+    if as_handler and isinstance(val, Handler_i):
+        val = val.func #type:ignore
 
     not_base    = val is not base_type
     if isinstance(base_type, tuple):
@@ -32,18 +32,18 @@ def applicable(val:Any, base_type:type, *, as_handler=False) -> bool:
 
     return not_base and (is_subclass or is_instance)
 
-def needs_init(val):
+def needs_init(val) -> bool:
     """
     Test for whether an input is of type 'type',
     thus needs to be instantiated to become a usable value
     """
     return isinstance(val, type)
 
-def ensure_handler(val):
+def ensure_handler(val) -> Handler_i:
     """
     Ensure a value is initialised and wrapped in a handler
     """
-    if isinstance(val, Handler):
+    if isinstance(val, Handler_i):
         return val
     if needs_init(val):
         val = val()

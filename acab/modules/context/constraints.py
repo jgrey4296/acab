@@ -32,7 +32,7 @@ Node        = 'AcabNode'
 
 
 @dataclass(frozen=True)
-class ConstraintCollection(CtxInt.Constraint_i, CtxInt._Constraint_d):
+class ConstraintCollection(CtxInt.Constraint_i):
     """ Simple container of all ProductionComponent constraints a word possesses,
     separated into subtypes """
     sieve           : ClassVar[list[Callable]] = AcabSieve(default_sieve)

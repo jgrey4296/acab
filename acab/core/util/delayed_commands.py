@@ -15,11 +15,14 @@ CtxSet     = AT.CtxSet
 CtxIns     = AT.CtxIns
 Value      = AT.Value
 ProdComp   = AT.Component
-DelayValue = UUID | CtxIns | CtxSet | None
+DelayValue = 'UUID | CtxIns | CtxSet | None'
 
 
 @dataclass
-class DelayedCommands_i():
+class DelayedCommands_i:
+    """
+    Mixin class which enables registering of Contexts to run later.
+    """
 
     delayed_e: Enum                    = field()
     _purgatory : dict[Enum, set[UUID]] = field(init=False, default_factory=dict)

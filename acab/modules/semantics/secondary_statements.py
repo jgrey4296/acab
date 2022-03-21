@@ -47,7 +47,7 @@ class LayerAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
         if DS.ACTION_COMPONENT in layer:
             semsys.run(layer[DS.ACTION_COMPONENT], ctxs=ctxs)
 
-class AgendaAbstraction(SI.StatementSemantics_i):
+class AgendaAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
     """ A Layer-specific transform, to run operators on ctxs """
     def __call__(self, instruction, semsys, *, ctxs=None, data=None):
         """ Runs an agenda rule on activated rules """
@@ -61,7 +61,7 @@ class AgendaAbstraction(SI.StatementSemantics_i):
 
 
 
-class AtomicPipelineAbstraction(SI.StatementSemantics_i):
+class AtomicPipelineAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
     """ A Means of sequencing layers, run all layers per tick """
 
     def __call__(self, instruction, semsys, *, ctxs=None, data=None):
@@ -75,7 +75,7 @@ class AtomicPipelineAbstraction(SI.StatementSemantics_i):
 
         raise NotImplementedError()
 
-class TemporalPipelineAbstraction(SI.StatementSemantics_i):
+class TemporalPipelineAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
     """ A Means of sequencing layers, one layer per tick """
 
     def __call__(self, instruction, semsys, *, ctxs=None, data=None):

@@ -37,7 +37,8 @@ Value    = AT.Value
 T        = TypeVar('T')
 
 # Independent Semantics
-class BasicNodeSemantics(SI.ValueSemantics_i):
+@APE.assert_implements(SI.ValueSemantics_i)
+class BasicNodeSemantics(basic.ValueSemantics, SI.ValueSemantics_i):
 
     def verify(self, instruction) -> bool:
         return isinstance(instruction, AcabValue)
@@ -76,7 +77,12 @@ class BasicNodeSemantics(SI.ValueSemantics_i):
 
         return node.remove(to_delete)
 
-class ExclusionNodeSemantics(SI.ValueSemantics_i):
+
+    def update(self, node:Node, term:Value, *, data:None|dict[Any, Any]=None) -> None: pass
+    def __call__(self, *args:Any, **kwargs:Any) -> Any: pass
+
+@APE.assert_implements(SI.ValueSemantics_i)
+class ExclusionNodeSemantics(basic.ValueSemantics, SI.ValueSemantics_i):
     def verify(self, instruction) -> bool:
         return isinstance(instruction, AcabValue)
 
@@ -139,3 +145,6 @@ class ExclusionNodeSemantics(SI.ValueSemantics_i):
             raise ASErr.AcabSemanticIndependentFailure("Value not in node", (node, to_delete))
 
         return node.remove(to_delete)
+
+    def update(self, node:Node, term:Value, *, data:None|dict[Any, Any]=None) -> None: pass
+    def __call__(self, *args:Any, **kwargs:Any) -> Any: pass

@@ -39,16 +39,8 @@ NamedCtxSet      = "NamedCtxSet"
 
 DELAYED_E = Enum("Delayed Instruction Set", "ACTIVE FAIL DEACTIVATE CLEAR MERGE")
 
-@dataclass(frozen=True)
-class ContextFailState:
-    """
-    Utility dataclass for holding a ctx with information about where it failed
-    """
-    ctx       : CtxIns         = field()
-    query     : Sen            = field()
-    failed_on : Value          = field()
-    node      : Optional[Node] = field()
-
+NamedCtxSet      = CtxInt.NamedCtxSet_d
+ContextFailState = CtxInt.ContextFailState_d
 
 @dataclass(frozen=True)
 class ContextInstance(CtxInt.ContextInstance_i):
@@ -472,17 +464,5 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
 
     def __len__(self):
         return len(self.data) + len(self.base)
-
-
-@dataclass(frozen=True)
-class NamedCtxSet:
-    """ A Set for storing UUIDs of ctxinsts,
-    paired with some data about them
-    """
-
-    instruction : ProductionContainer = field()
-    uuids       : List[UUID]          = field()
-    # TODO instruction state
-
 
 

@@ -30,14 +30,14 @@ logging = root_logger.getLogger(__name__)
 config = AcabConfig()
 
 CtxSet      = 'ContextSet_i'
-Instruction = Union[str, 'Sentence', 'Instruction']
+Instruction = 'str|Sentence|Instruction'
 
 @dataclass
-class AcabBasicEngine(AcabEngine_i):
+class AcabBasicEngine(AcabEngineImpl, AcabEngine_i):
     """ The Abstract class of a production system engine. """
     # Blocks engine use until build has been called:
-    dsl_builder      : DSL_Builder_i = field(init=False, default=PyParseDSL)
-    _module_loader   : ModuleLoader = field(init=False, default_factory=ModuleLoader)
+    dsl_builder      : Type[DSL_Builder_i] = field(init=False, default=PyParseDSL)
+    _module_loader   : ModuleLoader        = field(init=False, default_factory=ModuleLoader)
     # LIFO size limited cache:
     _cached_bindings : list[Any]    = field(init=False, default_factory=list)
     _cache_size      : int          = field(default=10)

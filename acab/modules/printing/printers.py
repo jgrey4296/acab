@@ -29,7 +29,7 @@ def grouper(iterable, n, fillvalue=None):
     return zip_longest(*args, fillvalue=fillvalue)
 
 # Independent
-class AtomicPrinter(PrintSemantics_i):
+class AtomicPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
     """ Simply print the str of anything passed in """
     def verify(self, instruction) -> bool:
         return True
@@ -37,7 +37,7 @@ class AtomicPrinter(PrintSemantics_i):
     def __call__(self, value, top=None, data=None):
         return str(value.name)
 
-class PrimitiveTypeAwarePrinter(PrintSemantics_i):
+class PrimitiveTypeAwarePrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
 
     def verify(self, instruction) -> bool:
         return True
@@ -51,7 +51,7 @@ class PrimitiveTypeAwarePrinter(PrintSemantics_i):
         curr_str = [str(value.name)]
         return self.run_transforms(value, curr_str)
 
-class ModalAwarePrinter(PrintSemantics_i):
+class ModalAwarePrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
 
     def verify(self, instruction) -> bool:
         return True
@@ -72,7 +72,7 @@ class ModalAwarePrinter(PrintSemantics_i):
         return transformed
 
 
-class UUIDAwarePrinter(PrintSemantics_i):
+class UUIDAwarePrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
 
     def verify(self, instruction) -> bool:
         return True
@@ -92,7 +92,7 @@ class UUIDAwarePrinter(PrintSemantics_i):
 
 
 
-class AnnotationAwareValuePrinter(PrintSemantics_i):
+class AnnotationAwareValuePrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
 
     def add_transforms(self):
         return [PW._maybe_wrap_str,
@@ -116,7 +116,7 @@ class AnnotationAwareValuePrinter(PrintSemantics_i):
 
         return return_list
 
-class ModalPrinter(PrintSemantics_i):
+class ModalPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
 
     def __call__(self, value, top=None, data=None):
         return_list = []
@@ -131,7 +131,7 @@ class ModalPrinter(PrintSemantics_i):
 
         return return_list
 
-class AnnotationPrinter(PrintSemantics_i):
+class AnnotationPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
 
     def __call__(self, value, top=None, data=None):
         return_list = []
@@ -164,7 +164,7 @@ class AnnotationPrinter(PrintSemantics_i):
 
         return return_list
 
-class ConstraintPrinter(PrintSemantics_i):
+class ConstraintPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
 
     def __call__(self, value, top=None, data=None):
         return_list = []
@@ -176,7 +176,7 @@ class ConstraintPrinter(PrintSemantics_i):
         return return_list
 
 # Dependent
-class BasicSentenceAwarePrinter(PrintSemantics_i):
+class BasicSentenceAwarePrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
 
     def __call__(self, value, top=None, data=None):
         assert(isinstance(value, VI.Sentence_i))
@@ -194,7 +194,7 @@ class BasicSentenceAwarePrinter(PrintSemantics_i):
         return return_list
 
 
-class ProductionComponentPrinter(PrintSemantics_i):
+class ProductionComponentPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
 
     def __call__(self, value, top=None, data=None):
         result = []
@@ -221,14 +221,14 @@ class ProductionComponentPrinter(PrintSemantics_i):
 
 
 # Abstraction
-class ImplicitContainerPrinter(PrintSemantics_i):
+class ImplicitContainerPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
     """ Production Containers """
 
     def __call__(self, value, top=None, data=None):
         result = [[DSYM.INDENT, x, DSYM.CONTAINER_JOIN_P] for x in  value.clauses]
         return result
 
-class ExplicitContainerPrinter(PrintSemantics_i):
+class ExplicitContainerPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
     """ Production Containers """
 
     def __call__(self, value, top=None, data=None):
@@ -250,7 +250,7 @@ class ExplicitContainerPrinter(PrintSemantics_i):
         result.append(DSYM.PRINT_SEPARATOR_P)
         return result
 
-class StructurePrinter(PrintSemantics_i):
+class StructurePrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
     """ Ordered structures """
 
     def __call__(self, value, top=None, data=None):
@@ -283,7 +283,7 @@ class StructurePrinter(PrintSemantics_i):
 
 # Utility
 @dataclass
-class ConfigBackedSymbolPrinter(PrintSemantics_i):
+class ConfigBackedSymbolPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
     """ Use an AcabConfig for lookup of provided
     symbol tuples.
     """
@@ -298,7 +298,7 @@ class ConfigBackedSymbolPrinter(PrintSemantics_i):
         return self._config.value(value)
 
 
-class TagPrinter(PrintSemantics_i):
+class TagPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
     """ Prints a set of tags, indented, as sentences
     prepended with the tag symbol, in strides of 4 """
 
@@ -315,13 +315,13 @@ class TagPrinter(PrintSemantics_i):
         return result
 
 
-class NoOpPrinter(PrintSemantics_i):
+class NoOpPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
 
     def __call__(self, value, top=None, data=None):
         return []
 
 
-class SimpleTypePrinter(PrintSemantics_i):
+class SimpleTypePrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
 
     def __call__(self, value, top=None, data=None):
         return_list = []

@@ -27,7 +27,7 @@ config = GET()
 MODULE_SPLIT_REG = re.compile(config.prepare("Parse.Patterns", "MODULE_SPLIT_REG")())
 
 #--------------------
-class ModuleLoader(ModuleLoader_i):
+class ModuleLoader(ModuleLoaderBase, ModuleLoader_i):
     """ Describes how an engine loads ACAB/py modules """
 
     def extract_from_module(self, module: ModuleType) -> ModuleComponents:

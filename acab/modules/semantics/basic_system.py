@@ -31,7 +31,7 @@ SEM_HINT = config.prepare("Value.Structure", "SEMANTIC_HINT")()
 # instructions to add to the list, like printer
 
 @dataclass
-class BasicSemanticSystem(SemanticSystem_i):
+class BasicSemanticSystem(basic.SemanticSystem, SemanticSystem_i):
     """ A Complete semantic system """
 
     _default_sieve : ClassVar[list[Callable]] = [

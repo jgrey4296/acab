@@ -21,7 +21,7 @@ def build_query_component(s, loc, toks):
     params = [x[0] if len(x) == 1 else x for x in params]
 
     return ValueRepeatAnnotation(DS.CONSTRAINT,
-                                 ProductionComponent(value=op, params=params))
+                                 ProductionComponent.build(op, params=params))
 
 def build_transform_component(s, loc, toks):
     params = []
@@ -36,10 +36,10 @@ def build_transform_component(s, loc, toks):
     rebind = toks[EXu.TARGET_S][0]
     params = [x[0] if len(x) == 1 else x for x in params]
 
-    return ProductionComponent(value=op,
-                               params=params,
-                               rebind=rebind,
-                               sugared=EXu.LEFT_S in toks)
+    return ProductionComponent.build(op,
+                                     params=params,
+                                     rebind=rebind,
+                                     sugared=EXu.LEFT_S in toks)
 
 def build_action_component(s, loc, toks):
     params = []
@@ -51,35 +51,35 @@ def build_action_component(s, loc, toks):
     if not isinstance(op, Sentence):
         op = Sentence.build([op])
     # params = [x[0] if len(x) == 1 else x for x in params]
-    return ProductionComponent(value=op,
-                               params=params,
-                               sugared=EXu.LEFT_S in toks)
+    return ProductionComponent.build(op,
+                                     params=params,
+                                     sugared=EXu.LEFT_S in toks)
 
 
 
 #--------------------
 def build_query(s, loc, toks):
     clauses = toks[:]
-    query = ProductionContainer(value=clauses,
-                                data={SEMANTIC_HINT: EXu.QUERY_SEM_HINT})
-    return query
+    query = ProductionContainer.build(clauses,
+                                      data={SEMANTIC_HINT: EXu.QUERY_SEM_HINT})
+    return [query]
 
 def build_transform(s, loc, toks):
     clauses = toks[:]
-    trans = ProductionContainer(value=clauses,
-                                data={SEMANTIC_HINT: EXu.TRANSFORM_SEM_HINT})
-    return trans
+    trans = ProductionContainer.build(clauses,
+                                      data={SEMANTIC_HINT: EXu.TRANSFORM_SEM_HINT})
+    return [trans]
 
 def build_action(s, loc, toks):
     clauses = toks[:]
     clauses = [x if isinstance(x, ProductionComponent)
-               else ProductionComponent(value=Sentence.build([EXu.DEFAULT_ACTION_S]),
-                                        params=[x]) for x in clauses]
+               else ProductionComponent.build(Sentence.build([EXu.DEFAULT_ACTION_S]),
+                                              params=[x]) for x in clauses]
 
-    act = ProductionContainer(value=clauses,
-                              data={SEMANTIC_HINT: EXu.ACTION_SEM_HINT})
+    act = ProductionContainer.build(clauses,
+                                    data={SEMANTIC_HINT: EXu.ACTION_SEM_HINT})
 
-    return act
+    return [act]
 
 
 #--------------------
@@ -115,9 +115,9 @@ def build_rule(s, loc, toks, sem_hint=None):
         sem_hint = EXu.RULE_SEM_HINT
 
 
-    rule = ProductionStructure(structure=structure,
-                               data={SEMANTIC_HINT: sem_hint,
-                                     DS.TYPE_INSTANCE: EXu.RULE_PRIM})
+    rule = ProductionStructure.build(structure,
+                                     data={SEMANTIC_HINT: sem_hint,
+                                           DS.TYPE_INSTANCE: EXu.RULE_PRIM})
     return rule
 
 def build_constraint_list(s, loc, toks):
