@@ -24,6 +24,7 @@ from acab.error.base import AcabBasicException
 from acab.interfaces.sieve import AcabSieve
 from acab.error.protocol import AcabProtocolError as APE
 from acab.core.data.factory import ValueFactory
+from acab.core.data.value_meta import ValueMeta
 
 logging        = root_logger.getLogger(__name__)
 
@@ -41,11 +42,13 @@ Instruction_A : TypeAlias = AT.Instruction
 ValueData     : TypeAlias = str
 
 @APE.assert_implements(VI.Sentence_i)
-class Sentence(SSI.SentenceProtocolsImpl, VI.Sentence_i):
+class Sentence(SSI.SentenceProtocolsImpl, VI.Sentence_i, metaclass=ValueMeta):
     """
     A Sentence is an instruction which is idempotent on from_sentences/to_sentences
     Sentence.from_sentences([sens]) == [sens]
     """
+    _defaults : dict[str, Any] = {DS.TYPE_INSTANCE: DS.SENTENCE_PRIM, DS.NEGATION: False}
+
     @classmethod
     def build(cls, value:list[T], /, *, # type: ignore
               name:None|str=None,
@@ -54,24 +57,14 @@ class Sentence(SSI.SentenceProtocolsImpl, VI.Sentence_i):
               tags:None|list['Value_A|str']=None,
               _type:'None|str|Sen_A'=None,
               **kwargs) -> Sen_A:
+        raise NotImplementedError()
 
-        """ Idempotent construction.
-        Wrap the provided value in an AcabValue,
-        but only if it isn't an AcabValue already
-        """
+
+    @classmethod
+    def _preprocess(cls, *args, **kwargs):
+        value = args[0]
         assert(isinstance(value, Iterable))
-        if name is None:
-            name = "_"
-
-        safe_words   = [VSI.ValueFactory.value(x) for x in value]
-        _data        = VSI.ValueFactory._build_data_and_type(data, _type, defaults={DS.TYPE_INSTANCE: DS.SENTENCE_PRIM, DS.NEGATION: False})
-        tags, params = ValueFactory._build_tags_and_params(tags, params)
-
-        new_obj = cls(safe_words, name, data=_data, tags=tags, params=params, **kwargs)
-        if isinstance(new_obj, Exception):
-            raise new_obj
-        return cast(VI.Sentence_i, new_obj)
-
+        return [ValueMeta._bottom(x) for x in value]
 
     def match(self, sen:Sen_A) -> list[Tuple[Value_A, Value_A]]:
         """ Match a target sentence's variables to self's target
@@ -90,9 +83,6 @@ class Sentence(SSI.SentenceProtocolsImpl, VI.Sentence_i):
                 results.append((x,y))
 
         return results
-
-
-
 
     def do_break(self) -> None: pass
 
