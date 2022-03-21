@@ -21,15 +21,17 @@ import acab.modules.parsing.exlo.parsers.RuleParser as RP
 import acab.modules.parsing.exlo.parsers.TransformParser as TP
 import acab.modules.printing.printers as Printers
 from acab.core.config.config import AcabConfig
-from acab.core.data.instruction import (ProductionComponent,
+from acab.core.data.default_structure import (AT_BIND, BIND, NEGATION, QUERY,
+                                              TYPE_INSTANCE)
+from acab.core.data.instruction import (Instruction, ProductionComponent,
                                         ProductionContainer,
                                         ProductionOperator,
                                         ProductionStructure)
-from acab.core.data.value import Instruction, AcabValue, Sentence
+from acab.core.data.sentence import Sentence
+from acab.core.data.value import AcabValue
 from acab.interfaces.handler_system import Handler
-from acab.modules.printing.basic_printer import BasicPrinter
 from acab.modules.printing import default
-from acab.core.data.default_structure import NEGATION, QUERY, BIND, AT_BIND, TYPE_INSTANCE
+from acab.modules.printing.basic_printer import BasicPrinter
 
 NEGATION_SYMBOL_S = config.prepare("Symbols", "NEGATION")()
 ANON_VALUE_S      = config.prepare("Symbols", "ANON_VALUE")()

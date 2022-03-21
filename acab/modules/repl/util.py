@@ -119,7 +119,7 @@ def ConfigBasedLoad(f):
 def build_rebind_instruction(value:str):
     """ Manually construct a startup rebind instruction """
     from acab.core.data.instruction import ProductionComponent, ProductionContainer
-    from acab.core.data.value import Sentence
+    from acab.core.data.sentence import Sentence
 
     action_sem_hint = Sentence.build([config.prepare("SEMANTICS", "ACTION")()])
 

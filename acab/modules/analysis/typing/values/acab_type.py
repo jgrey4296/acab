@@ -8,9 +8,12 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 from dataclasses import dataclass, field, InitVar
 
 from acab.core.config.config import AcabConfig
-from acab.core.data.value import Instruction, Sentence
+from acab.core.data.value import AcabValue
+from acab.core.data.instruction import Instruction
+from acab.core.data.sentence import Sentence
 
-config = AcabConfig.Get()
+
+config = AcabConfig()
 
 @dataclass(frozen=True)
 class TypeStatement(Instruction):

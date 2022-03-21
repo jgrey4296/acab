@@ -1,6 +1,8 @@
 """
 Utility decorators
 """
+#pylint: disable=invalid-sequence-index
+from __future__ import annotations
 import logging as root_logger
 from enum import Enum
 from functools import wraps

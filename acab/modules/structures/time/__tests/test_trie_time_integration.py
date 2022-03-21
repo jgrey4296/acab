@@ -5,7 +5,7 @@ logging = root_logger.getLogger(__name__)
 import acab
 acab.setup()
 
-from acab.core.data.value import Sentence
+from acab.core.data.sentence import Sentence
 from acab.core.parsing import parsers as PU
 from acab.modules.structures.time import util as TU
 from acab.modules.structures.time.parsing import parser as tp
@@ -13,7 +13,7 @@ from acab.modules.structures.time.parsing import parser as tp
 from acab.modules.structures.time.time_core import TimeContainer
 from acab.modules.parsing.exlo FactParser as fp
 
-TYPE_INSTANCE_S = AcabConfig.Get().value("Value.Structure", "TYPE_INSTANCE")
+TYPE_INSTANCE_S = AcabConfig().value("Value.Structure", "TYPE_INSTANCE")
 
 class TrieIntegrationTimeTests(unittest.TestCase):
 

@@ -8,4 +8,4 @@ from acab.core.data.value import AcabValue
 
 logging = root_logger.getLogger(__name__)
 
-config = AcabConfig.Get()
+config = AcabConfig()

@@ -8,13 +8,14 @@ import pyparsing as pp
 from acab.core.config.config import AcabConfig
 from acab.core.data.default_structure import TYPE_BOTTOM_NAME as ATOM_V
 from acab.core.data.instruction import ProductionContainer
-from acab.core.data.value import AcabValue, Sentence
+from acab.core.data.value import AcabValue
+from acab.core.data.sentence import  Sentence
 from acab.core.parsing import default_symbols as DSym
 from acab.core.parsing.consts import CPAR, NG, OPAR, N
 from acab.core.parsing.parsers import MODAL
 from acab.error.parse import AcabParseException
 
-config = AcabConfig.Get()
+config = AcabConfig()
 
 ACTION_S          = config.prepare("Parse.Structure", "ACTION")()
 ANNOTATION_S      = config.prepare("Parse.Structure", "ANNOTATION")()

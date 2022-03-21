@@ -7,8 +7,8 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 import acab.modules.semantics.statements as ASem
 from acab.core.config.config import GET
 from acab.core.data.acab_struct import BasicNodeStruct
-from acab.core.data.value import Sentence
-from acab.interfaces.handler_system import Handler
+from acab.core.data.sentence import Sentence
+from acab.core.util.handler_system import Handler
 from acab.modules.context import context_delayed_actions
 from acab.modules.context.context_set import ContextSet
 from acab.modules.semantics.basic_system import BasicSemanticSystem

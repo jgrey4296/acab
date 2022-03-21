@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 from dataclasses import dataclass, field
+from itertools import filterfalse, starmap, zip_longest
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
-from itertools import zip_longest, filterfalse, starmap
 
 import acab.core.data.default_structure as DS
 import acab.interfaces.value as VI
 from acab.core.config.config import GET, AcabConfig, ConfigSpec
-from acab.core.data.value import Sentence, Instruction
-from acab.interfaces.printing import PrintSemantics_i
+from acab.core.data.instruction import Instruction
+from acab.core.data.sentence import Sentence
+from acab.core.printing import basic
 from acab.core.printing import default_symbols as DSYM
 from acab.core.printing import wrappers as PW
-
+from acab.interfaces.printing import PrintSemantics_i
 
 config = GET()
 WALK_SEM_HINT    = Sentence.build([config.prepare("Module.DFSWalk", "WALK_SEM_HINT")()])

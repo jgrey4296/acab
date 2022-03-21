@@ -8,14 +8,15 @@ from acab.core.config.config import ConfigSpec
 from acab.core.data import instruction as PA
 from acab.interfaces.printing import PrintSystem_i
 from acab.interfaces.value import (Sentence_i, Value_i)
-from acab.core.data.value import Instruction
+from acab.core.data.instruction import Instruction
 from acab.core.data.default_structure import SEMANTIC_HINT
 from acab.core.config.config import AcabConfig
+from acab.core.printing import basic
 
-config = AcabConfig.Get()
+config = AcabConfig()
 
 
-class BasicPrinter(PrintSystem_i):
+class BasicPrinter(basic.PrintSystemImpl, PrintSystem_i):
     """ Handles how to convert values and sentences into strings,
     does not rely on the underlying data structures
     """

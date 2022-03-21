@@ -13,17 +13,21 @@ import acab
 
 config = acab.setup()
 
+from acab.core.data import default_structure as DS
 from acab.core.data.acab_struct import BasicNodeStruct
+from acab.core.data.instruction import Instruction
 from acab.core.data.node import AcabNode
-from acab.core.data.value import AcabValue, Sentence
+from acab.core.data.sentence import Sentence
+from acab.core.data.value import AcabValue
 from acab.error.base import AcabException
 from acab.error.semantic import AcabSemanticException
 from acab.modules.semantics.values import (BasicNodeSemantics,
                                            ExclusionNodeSemantics)
-from acab.core.data import default_structure as DS
 
 EXOP         = config.prepare("MODAL", "exop")()
 EXOP_enum    = config.enums[EXOP]
+
+AVB = AcabValue.build
 
 class ValueSemanticTests(unittest.TestCase):
 

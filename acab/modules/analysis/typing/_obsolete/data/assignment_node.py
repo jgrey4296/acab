@@ -9,10 +9,12 @@ from typing import (Any, Callable, ClassVar, Dict, Iterable, Iterator, List,
                     Mapping, Match, MutableMapping, Optional, Sequence, Set,
                     Tuple, TypeVar, Union, cast)
 
+from acab.core.data.instruction import Instruction
 from acab.core.data.node import AcabNode
-from acab.core.data.value import AcabValue, Sentence
-from acab.interfaces import semantic as SI
+from acab.core.data.sentence import Sentence
+from acab.core.data.value import AcabValue
 from acab.core.parsing.consts import ATOM_V
+from acab.interfaces import semantic as SI
 from acab.modules.analysis.typing import exceptions as te
 from acab.modules.analysis.typing import util
 from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics

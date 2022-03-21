@@ -14,32 +14,31 @@ import acab
 config = acab.setup()
 
 import acab.modules.semantics.statements as ASem
+from acab.core.data import default_structure as DS
 from acab.core.data.acab_struct import BasicNodeStruct
+from acab.core.data.instruction import (ActionOperator, Instruction,
+                                        ProductionComponent,
+                                        ProductionContainer,
+                                        ProductionOperator,
+                                        ProductionStructure)
 from acab.core.data.node import AcabNode
-from acab.core.data.instruction import (ActionOperator,
-                                                        ProductionComponent,
-                                                        ProductionContainer,
-                                                        ProductionOperator,
-                                                        ProductionStructure)
-from acab.core.data.value import AcabValue, Sentence
-from acab.core.decorators.semantic import (OperatorArgUnWrap,
-                                               OperatorResultWrap)
-from acab.interfaces.handler_system import Handler
-from acab.interfaces.semantic import (StatementSemantics_i,
-                                      SemanticSystem_i)
+from acab.core.data.sentence import Sentence
+from acab.core.data.value import AcabValue
+from acab.core.decorators.semantic import OperatorArgUnWrap, OperatorResultWrap
 from acab.error.base import AcabBasicException
 from acab.error.semantic import AcabSemanticException
+from acab.interfaces.semantic import SemanticSystem_i, StatementSemantics_i
 from acab.modules.context import context_delayed_actions
 from acab.modules.context.context_set import (ConstraintCollection,
                                               ContextInstance, ContextSet)
 from acab.modules.operators.query.query_operators import EQ, NEQ, HasTag
 from acab.modules.operators.transform.transform_operators import RegexOp
+from acab.modules.semantics import default
 from acab.modules.semantics.basic_system import BasicSemanticSystem
-from acab.modules.structures.trie.semantics import BreadthTrieSemantics
 from acab.modules.semantics.values import (BasicNodeSemantics,
                                            ExclusionNodeSemantics)
-from acab.modules.semantics import default
-from acab.core.data import default_structure as DS
+from acab.modules.structures.trie.semantics import BreadthTrieSemantics
+from acab.core.data.factory import ValueFactory
 
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 

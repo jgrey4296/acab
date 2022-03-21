@@ -40,7 +40,7 @@ from acab.modules.structures.pipline.constructors import make_agenda
 
 logging = root_logger.getLogger(__name__)
 
-config        = AcabConfig.Get()
+config        = AcabConfig()
 QUERY_S     = config.prepare("Parse.Structure", "QUERY")()
 TRANSFORM_S = config.prepare("Parse.Structure", "TRANSFORM")()
 ACTION_S    = config.prepare("Parse.Structure", "ACTION")()

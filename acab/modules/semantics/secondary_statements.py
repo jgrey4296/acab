@@ -14,11 +14,12 @@ from acab.core.decorators.semantic import RunInSubCtxSet
 from acab.interfaces import semantic as SI
 from acab.error.semantic import AcabSemanticException
 from acab.modules.context.context_set import ContextSet, MutableContextInstance
+from acab.core.semantics import basic
 
 CtxIns = AT.CtxIns
 
 # Secondary Statements:
-class LayerAbstraction(SI.StatementSemantics_i):
+class LayerAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
     """ A Layer of rules.
     ie: Query for rules.
     Select rules to run.

@@ -49,7 +49,7 @@ from acab.core.data.instruction import ProductionContainer
 
 logging = root_logger.getLogger(__name__)
 
-config        = AcabConfig.Get()
+config        = AcabConfig()
 QUERY_S     = config.prepare("Parse.Structure", "QUERY")()
 TRANSFORM_S = config.prepare("Parse.Structure", "TRANSFORM")()
 ACTION_S    = config.prepare("Parse.Structure", "ACTION")()

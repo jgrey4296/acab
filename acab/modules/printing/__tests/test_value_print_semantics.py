@@ -22,15 +22,16 @@ import acab.modules.parsing.exlo.parsers.QueryParser as QP
 import acab.modules.parsing.exlo.parsers.RuleParser as RP
 import acab.modules.parsing.exlo.parsers.TransformParser as TP
 import acab.modules.printing.printers as Printers
-from acab.modules.printing import default
 from acab.core.config.config import AcabConfig
-from acab.core.data.instruction import (ProductionComponent,
-                                                        ProductionContainer,
-                                                        ProductionOperator)
-from acab.core.data.value import Instruction, AcabValue, Sentence
-from acab.interfaces.handler_system import Handler
-from acab.modules.printing.basic_printer import BasicPrinter
 from acab.core.data import default_structure as DS
+from acab.core.data.instruction import (Instruction, ProductionComponent,
+                                        ProductionContainer,
+                                        ProductionOperator)
+from acab.core.data.sentence import Sentence
+from acab.core.data.value import AcabValue
+from acab.interfaces.handler_system import Handler
+from acab.modules.printing import default
+from acab.modules.printing.basic_printer import BasicPrinter
 
 QUERY_S           = DS.QUERY
 BIND_S            = DS.BIND

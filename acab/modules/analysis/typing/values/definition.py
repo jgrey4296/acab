@@ -8,7 +8,9 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 from dataclasses import dataclass, field, InitVar
 
 from acab.core.config.config import AcabConfig
-from acab.core.data.value import AcabValue, Sentence
+from acab.core.data.value import AcabValue
+from acab.core.data.instruction import Instruction
+from acab.core.data.sentence import Sentence
 from acab.error.parse import AcabParseException
 from acab.modules.analysis.typing import exceptions as TE
 from acab.modules.analysis.typing.util import (SUM_DEFINITION, TYPE_DEF_S,
@@ -17,7 +19,7 @@ from acab.modules.analysis.typing.util import (SUM_DEFINITION, TYPE_DEF_S,
 from .acab_type import TypeStatement
 
 logging         = root_logger.getLogger(__name__)
-config          = AcabConfig.Get()
+config          = AcabConfig()
 
 PRIMITIVE_S     = config.prepare("Typing.Primitives", "PRIMITIVE")()
 TYPE_INSTANCE_S = config.prepare("Parse.Structure", "TYPE_INSTANCE")()

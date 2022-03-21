@@ -9,7 +9,7 @@ from acab.core.config.config import AcabConfig
 
 logging = root_logger.getLogger(__name__)
 
-config = AcabConfig.Get()
+config = AcabConfig()
 DECIMAL_SYMBOL_S = config.prepare("Module.Numbers", "DECIMAL")()
 USE_PARSER       = config.prepare("Module.Numbers", "USE_PARSER")()
 ALLOW_NEG        = config.prepare("Module.Numbers", "ALLOW_NEG")()

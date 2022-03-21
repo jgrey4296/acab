@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Main System
+from __future__ import annotations
 import logging as root_logger
 from dataclasses import InitVar, dataclass, field
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
@@ -12,6 +13,8 @@ from acab.core.decorators.semantic import (BuildCtxSetIfMissing,
                                                RunDelayedCtxSetActions)
 from acab.interfaces.semantic import (StatementSemantics_i,
                                       SemanticSystem_i)
+from acab.core.semantics import basic
+
 from acab.error.semantic import AcabSemanticException
 from acab.modules.context.context_set import ContextSet
 
@@ -20,7 +23,7 @@ logging = root_logger.getLogger(__name__)
 Sentence         = AT.Sentence
 CtxSet           = AT.CtxSet
 ModuleComponents = AT.ModuleComponents
-config           = AcabConfig.Get()
+config           = AcabConfig()
 
 SEM_HINT = config.prepare("Value.Structure", "SEMANTIC_HINT")()
 

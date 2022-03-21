@@ -10,7 +10,10 @@ from uuid import uuid1
 
 from acab.core.data.node import AcabNode
 from acab.core.data.instruction import ProductionOperator
-from acab.core.data.value import Instruction, AcabValue, Sentence
+from acab.core.data.value import AcabValue
+from acab.core.data.instruction import Instruction
+from acab.core.data.sentence import Sentence
+
 #
 # MUST BE FULL PATH otherwise type instances are built twice for some reason
 # NOT : from . import util as TU

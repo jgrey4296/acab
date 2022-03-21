@@ -9,12 +9,13 @@ import acab.interfaces.semantic as SI
 from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.core.data.acab_struct import BasicNodeStruct
-from acab.core.data.value import Instruction, Sentence
+from acab.core.data.instruction import Instruction
+from acab.core.data.sentence import Sentence
+from acab.core.data.value import AcabValue
 from acab.core.decorators.util import HandleSignal
 from acab.interfaces.semantic import StatementSemantics_i
 from acab.interfaces.value import Sentence_i
 from acab.modules.analysis.type_cqm import TypeContextQueryManager
-
 
 NEGATION_S       = config.prepare("Value.Structure", "NEGATION")()
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 from uuid import UUID
 from dataclasses import InitVar, dataclass, field
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,

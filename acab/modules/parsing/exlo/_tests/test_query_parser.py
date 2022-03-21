@@ -1,20 +1,24 @@
-import unittest
-from os.path import splitext, split
 import logging as root_logger
+import unittest
+from os.path import split, splitext
+
 import pyparsing as pp
+
 logging = root_logger.getLogger(__name__)
 
 import acab
+
 config = acab.setup()
 
-from acab.core.parsing import parsers as PU
 import acab.modules.parsing.exlo.parsers.FactParser as FP
 import acab.modules.parsing.exlo.parsers.QueryParser as QP
-
-from acab.core.data.value import AcabValue, Sentence, Instruction
-from acab.core.data.instruction import ProductionOperator, ProductionContainer, ProductionComponent
-from acab.core.data.default_structure import NEGATION, QUERY_FALLBACK, BIND
-
+from acab.core.data.default_structure import BIND, NEGATION, QUERY_FALLBACK
+from acab.core.data.instruction import (Instruction, ProductionComponent,
+                                        ProductionContainer,
+                                        ProductionOperator)
+from acab.core.data.sentence import Sentence
+from acab.core.data.value import AcabValue
+from acab.core.parsing import parsers as PU
 from acab.modules.operators import query as QOP
 
 CONSTRAINT_V     = config.prepare("Parse.Structure", "CONSTRAINT")()

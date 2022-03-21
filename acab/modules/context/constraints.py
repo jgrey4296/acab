@@ -12,7 +12,7 @@ import acab.error.semantic as ASErr
 from acab.core.config import GET
 from acab.core.data.instruction import (ProductionComponent,
                                                         ProductionOperator)
-from acab.core.data.value import Sentence
+from acab.core.data.sentence import Sentence
 from acab.modules.context.constraint_sieve import default_sieve
 from acab.interfaces.sieve import AcabSieve
 

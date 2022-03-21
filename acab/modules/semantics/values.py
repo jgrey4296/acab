@@ -5,18 +5,22 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-from acab import types as AT
 import acab.error.semantic as ASErr
+from acab import types as AT
 from acab.core.config.config import AcabConfig
+from acab.core.data.instruction import Instruction
 from acab.core.data.node import AcabNode
-from acab.core.data.value import AcabValue, Sentence
+from acab.core.data.sentence import Sentence
+from acab.core.data.value import AcabValue
+from acab.core.semantics import basic
 from acab.interfaces import semantic as SI
+from acab.error.protocol import AcabProtocolError as APE
 
 Value = AcabValue
 Node  = AcabNode
 T     = TypeVar('T')
 
-config       = AcabConfig.Get()
+config       = AcabConfig()
 
 CTX_OP = Enum("ctx", "collect_var")
 # TODO replace operator with specific modal name

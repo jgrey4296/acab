@@ -7,7 +7,9 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 from acab import types as AT
-from acab.core.data.value import AcabValue, Sentence
+from acab.core.data.value import AcabValue
+from acab.core.data.instruction import Instruction
+from acab.core.data.sentence import Sentence
 from acab.core.decorators.util import factory
 from acab.error.semantic import AcabSemanticException
 from acab.modules.context.context_set import (ContextInstance,

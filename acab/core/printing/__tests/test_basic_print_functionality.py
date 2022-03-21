@@ -19,7 +19,9 @@ from acab.core.config.config import AcabConfig
 from acab.core.data.instruction import (ProductionComponent,
                                                         ProductionContainer,
                                                         ProductionOperator)
-from acab.core.data.value import Instruction, AcabValue, Sentence
+from acab.core.data.value import AcabValue
+from acab.core.data.instruction import Instruction
+from acab.core.data.sentence import Sentence
 from acab.interfaces.printing import PrintSystem_i
 from acab.core.printing import wrappers as PW
 

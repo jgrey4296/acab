@@ -1,24 +1,24 @@
 #!/usr/bin/env python3
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
-
-from dataclasses import dataclass, field, InitVar
-
 import logging as root_logger
+from dataclasses import InitVar, dataclass, field
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
 from uuid import UUID
 
-from acab import types as AT
-import acab.interfaces.semantic as SI
 import acab.error.semantic as ASErr
+import acab.interfaces.semantic as SI
+from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.core.data.acab_struct import BasicNodeStruct
-from acab.core.data.value import Instruction, Sentence
+from acab.core.data.instruction import Instruction
+from acab.core.data.sentence import Sentence
+from acab.core.data.value import AcabValue
+from acab.core.semantics import basic
 from acab.modules.operators.dfs.context_walk_manager import ContextWalkManager
 
 logging = root_logger.getLogger(__name__)
-config = AcabConfig.Get()
+config = AcabConfig()
 
 CONSTRAINT_S     = config.prepare("Value.Structure", "CONSTRAINT")()
 DEFAULT_SETUP_S  = config.prepare("Data", "DEFAULT_SETUP_METHOD")()

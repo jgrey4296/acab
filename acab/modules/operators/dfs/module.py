@@ -5,7 +5,7 @@ from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.interfaces.semantic import Semantic_Fragment
 from acab.interfaces.handler_system import HandlerSpec
 from acab.modules.semantics.statements import QueryPlusAbstraction
-from acab.core.data.value import Sentence
+from acab.core.data.sentence import Sentence
 
 from . import parser as DOP
 from .semantics import DFSSemantics

@@ -10,7 +10,7 @@ import acab
 acab.setup()
 
 from acab.core.data.value import AcabValue
-from acab.core.data.value import Sentence
+from acab.core.data.sentence import Sentence
 from acab.core.data.instruction import ProductionComponent, ProductionOperator
 
 from acab.modules.values import numbers
@@ -30,9 +30,9 @@ Printer = AcabPrintSemantics(basic_plus, default_values={'MODAL_FIELD' : 'OPERAT
                                                          'EXOP.DOT'    : ".",
                                                          'EXOP.EX'     : "!"})
 
-CONSTRAINT_S     = AcabConfig.Get().value("Value.Structure", "CONSTRAINT")
-OPERATOR_S       = AcabConfig.Get().value("Value.Structure", "OPERATOR")
-QUERY_FALLBACK_S = AcabConfig.Get().value("Value.Structure", "QUERY_FALLBACK")
+CONSTRAINT_S     = AcabConfig().value("Value.Structure", "CONSTRAINT")
+OPERATOR_S       = AcabConfig().value("Value.Structure", "OPERATOR")
+QUERY_FALLBACK_S = AcabConfig().value("Value.Structure", "QUERY_FALLBACK")
 
 class NumberQueryTests(unittest.TestCase):
     ns = None

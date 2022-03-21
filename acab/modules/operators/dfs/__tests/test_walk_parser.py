@@ -14,7 +14,10 @@ import acab
 config = acab.setup()
 
 from acab.core.data.instruction import ProductionComponent, ProductionContainer
-from acab.core.data.value import AcabValue, Sentence
+from acab.core.data.value import AcabValue
+from acab.core.data.instruction import Instruction
+from acab.core.data.sentence import Sentence
+
 from acab.modules.engines.configured import exlo
 from acab.modules.operators.dfs import parser as DOP
 from acab.modules.operators.dfs.semantics import DFSSemantics

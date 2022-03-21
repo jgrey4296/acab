@@ -1,7 +1,7 @@
 from acab.core.config.config import AcabConfig
-from  acab.core.data.value import Sentence
+from  acab.core.data.sentence import Sentence
 
-config = AcabConfig.Get()
+config = AcabConfig()
 
 
 # Non-printing types

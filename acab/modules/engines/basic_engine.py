@@ -10,24 +10,24 @@ from dataclasses import dataclass, field
 from os.path import abspath, exists, expanduser, split
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
-                    Set, Tuple, TypeVar, Union, cast)
+                    Set, Tuple, Type, TypeVar, Union, cast)
 
 from acab.core.config.config import AcabConfig
-from acab.core.data.instruction import (ProductionContainer,
-                                                    ProductionOperator)
+from acab.core.data.instruction import ProductionContainer, ProductionOperator
 from acab.core.decorators.engine import (EnsureEngineInitialised,
                                          MaybeBuildOperatorCtx)
+from acab.core.engine.engine_base import AcabEngineImpl
 from acab.core.engine.module_loader import ModuleLoader
 from acab.core.parsing.pyparse_dsl import PyParseDSL
 from acab.error.base import AcabException
-from acab.interfaces.dsl import DSL_Fragment, DSL_Builder_i
-from acab.interfaces.engine import AcabEngine_i
+from acab.interfaces.dsl import DSL_Builder_i, DSL_Fragment
+from acab.interfaces.engine import AcabEngine_i, _AcabEngine_d
 from acab.interfaces.printing import PrintSystem_i
 from acab.interfaces.semantic import SemanticSystem_i
 from acab.interfaces.value import Sentence_i, Value_i
 
 logging = root_logger.getLogger(__name__)
-config = AcabConfig.Get()
+config = AcabConfig()
 
 CtxSet      = 'ContextSet_i'
 Instruction = Union[str, 'Sentence', 'Instruction']

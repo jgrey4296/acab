@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 from typing import List, Set, Dict, Tuple, Optional, Any
 from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
@@ -9,7 +10,8 @@ from acab.interfaces import value as VI
 from acab.interfaces import context as CI
 from acab.error.semantic import AcabSemanticException
 from acab.core.data import default_structure as DS
-from acab.core.data.value import Sentence, AcabValue
+from acab.core.data.sentence import Sentence
+from acab.core.data.value import AcabValue
 
 def bind(val, bindings):
     if isinstance(val, VI.Sentence_i):

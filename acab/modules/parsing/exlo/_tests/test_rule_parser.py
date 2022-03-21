@@ -8,7 +8,7 @@ import acab
 config = acab.setup()
 
 from acab.core.data.value import AcabValue
-from acab.core.data.value import Sentence
+from acab.core.data.sentence import Sentence
 from acab.core.data.instruction import ProductionOperator, ProductionComponent, ProductionContainer, ProductionStructure
 from acab.modules.parsing.exlo.parsers import ActionParser as AP
 from acab.modules.parsing.exlo.parsers import FactParser as FP

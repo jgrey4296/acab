@@ -11,10 +11,12 @@ import acab
 acab.setup()
 
 from acab.core.data import default_structure as DS
-from acab.core.data.instruction import (ProductionComponent,
-                                                    ProductionContainer,
-                                                    ProductionOperator)
-from acab.core.data.value import AcabValue, Sentence
+from acab.core.data.instruction import (Instruction, ProductionComponent,
+                                        ProductionContainer,
+                                        ProductionOperator)
+from acab.core.data.sentence import Sentence
+from acab.core.data.value import AcabValue
+from acab.interfaces.value import Value_i
 from acab.modules.parsing.exlo.parsers import ActionParser as AP
 
 

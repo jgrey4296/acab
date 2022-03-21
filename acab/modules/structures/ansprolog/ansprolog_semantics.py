@@ -5,10 +5,12 @@ import acab.interfaces.semantic as SI
 import acab.error.semantic as ASErr
 from acab.core.config.config import AcabConfig
 from acab.core.data.acab_struct import BasicNodeStruct
-from acab.core.data.value import Instruction, Sentence
+from acab.core.data.instruction import Instruction
+from acab.core.data.sentence import Sentence
+
 
 logging = root_logger.getLogger(__name__)
-config = AcabConfig.Get()
+config = AcabConfig()
 
 CONSTRAINT_S     = config.prepare("Value.Structure", "CONSTRAINT")()
 NEGATION_S       = config.prepare("Value.Structure", "NEGATION")()

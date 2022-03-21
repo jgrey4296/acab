@@ -15,7 +15,8 @@ config = acab.setup()
 from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.data.node import AcabNode
 from acab.core.data.instruction import ProductionComponent
-from acab.core.data.value import AcabValue, Sentence
+from acab.core.data.value import AcabValue
+from acab.core.data.sentence import Sentence
 from acab.interfaces.handler_system import Handler
 from acab.modules.operators.query.query_operators import EQ
 from acab.modules.context.context_set import (ConstraintCollection,
@@ -23,6 +24,7 @@ from acab.modules.context.context_set import (ConstraintCollection,
 from acab.modules.structures.trie.semantics import BreadthTrieSemantics
 from acab.modules.semantics.values import (BasicNodeSemantics,
                                            ExclusionNodeSemantics)
+from acab.core.data.factory import ValueFactory
 
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 EXOP         = config.prepare("MODAL", "exop")()

@@ -1,7 +1,7 @@
-from acab.core.data.value import Sentence
+from acab.core.data.sentence import Sentence
 from acab.core.config.config import AcabConfig
 
-util = AcabConfig.Get()
+util = AcabConfig()
 DECIMAL = util.value("Module.Numbers", "DECIMAL")
 
 # TODO use config primitives

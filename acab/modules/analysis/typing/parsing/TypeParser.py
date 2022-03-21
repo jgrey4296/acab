@@ -6,7 +6,7 @@ import pyparsing as pp
 
 from acab.core.parsing.consts import DOUBLEBAR, COLON, COMMA, DBLCOLON, DELIM, component_gap
 from acab.core.parsing.consts import N, NG, op, OPAR, CPAR
-from acab.core.data.value import Sentence
+from acab.core.data.sentence import Sentence
 from acab.core.parsing import parsers as PU
 
 from acab.modules.analysis.typing import util as TYU
@@ -15,7 +15,7 @@ from acab.core.config.config import AcabConfig
 
 from . import util as TU
 
-config = AcabConfig.Get()
+config = AcabConfig()
 EXTENDED_LANGUAGE_SYNTAX_S = config.prepare("Parse.Patterns", "EXTENDED_LANGUAGE_SYNTAX")()
 
 # BASIC SENTENCE NEEDS TO BE POPULATED

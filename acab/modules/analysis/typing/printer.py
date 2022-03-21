@@ -8,7 +8,7 @@ from itertools import zip_longest, filterfalse, starmap
 import acab.core.data.default_structure as DS
 import acab.interfaces.value as VI
 from acab.core.config.config import GET, AcabConfig, ConfigSpec
-from acab.core.data.value import Sentence, Instruction
+from acab.core.data.sentence import Sentence, Instruction
 from acab.interfaces.printing import PrintSemantics_i
 from acab.core.printing import default_symbols as DSYM
 from acab.core.printing import wrappers as PW

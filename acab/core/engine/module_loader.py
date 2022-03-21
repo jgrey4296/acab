@@ -14,14 +14,14 @@ logging = root_logger.getLogger(__name__)
 
 from acab.core.config.config import GET
 from acab.core.data.instruction import ProductionOperator, ActionOperator
-from acab.core.data.value import Sentence
+from acab.core.data.sentence import Sentence
 from acab.core.engine.util import applicable, needs_init, prep_op_path, ensure_handler
 from acab.interfaces.dsl import DSL_Fragment
 from acab.interfaces.module_loader import (ModuleComponents,
                                            ModuleLoader_i)
 from acab.interfaces.printing import Printer_Fragment
 from acab.interfaces.semantic import Semantic_Fragment
-
+from acab.core.engine.module_loader_base import ModuleLoaderBase
 config = GET()
 
 MODULE_SPLIT_REG = re.compile(config.prepare("Parse.Patterns", "MODULE_SPLIT_REG")())

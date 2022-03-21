@@ -1,11 +1,11 @@
 import re
 from re import Pattern
 from acab.core.config.config import AcabConfig
-from acab.core.data.value import Sentence
+from acab.core.data.sentence import Sentence
 from acab.core.printing import default_symbols as DSYM
 from acab.core.data import default_structure as DS
 
-config = AcabConfig.Get()
+config = AcabConfig()
 
 STRING_SEN = Sentence.build([DS.STRING_PRIM])
 REGEX_SEN  = Sentence.build([DS.REGEX_PRIM])

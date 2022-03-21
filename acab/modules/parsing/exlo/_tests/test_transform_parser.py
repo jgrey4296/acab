@@ -9,7 +9,7 @@ import acab
 config = acab.setup()
 
 from acab.core.data.value import AcabValue
-from acab.core.data.value import Sentence
+from acab.core.data.sentence import Sentence
 from acab.core.data.instruction import ProductionOperator, ProductionContainer, ProductionComponent
 
 from acab.modules.parsing.exlo.parsers import TransformParser as TP

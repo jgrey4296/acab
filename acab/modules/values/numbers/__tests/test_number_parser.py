@@ -10,7 +10,7 @@ import acab
 acab.setup()
 
 from acab.core.data.value import AcabValue
-from acab.core.data.value import Sentence
+from acab.core.data.sentence import Sentence
 from acab.core.containers import action
 from acab.core.containers import transform
 from acab.core.data.instruction import ProductionComponent, ProductionContainer

@@ -48,7 +48,7 @@ def main_repl():
     from acab.core.config.config import AcabConfig
     from acab.core.config.modal import modal_config
     import acab.core.config.structure
-    config = AcabConfig.Get(*args.config, hooks=[modal_config])
+    config = AcabConfig(*args.config, hooks=[modal_config])
     #====================
 
     # TODO change config details here

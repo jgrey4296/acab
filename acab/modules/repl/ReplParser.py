@@ -11,7 +11,7 @@ from acab.core.parsing import parsers as AP
 from acab.modules.repl.util import build_slice
 
 logging = root_logger.getLogger(__name__)
-config = AcabConfig.Get()
+config = AcabConfig()
 
 rst = pp.delimited_list(pp.rest_of_line, delim=pp.White("\n\r"), combine=True).leave_whitespace()
 
