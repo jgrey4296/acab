@@ -10,7 +10,7 @@ import timeit
 import acab
 acab.setup()
 
-from acab.core.data.value import Sentence
+from acab.core.data.sentence import Sentence
 from acab.core.data.instruction import ProductionStructure
 from acab.core.engine.engine import Engine
 

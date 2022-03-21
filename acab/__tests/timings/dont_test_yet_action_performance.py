@@ -11,7 +11,9 @@ import acab
 acab.setup()
 
 from acab.core.data.instruction import ProductionContainer, ProductionOperator
-from acab.core.data.value import AcabValue, Sentence
+from acab.core.data.value import AcabValue
+from acab.core.data.instruction import Instruction
+from acab.core.data.sentence import Sentence
 from acab.core.engine.engine import Engine
 from acab.core.parsing import consts as PConst
 from acab.core.printing import default_handlers as DH

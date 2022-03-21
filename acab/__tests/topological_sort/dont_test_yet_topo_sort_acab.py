@@ -3,30 +3,27 @@
 #https://docs.python.org/3/library/unittest.html
 # https://docs.python.org/3/library/unittest.mock.html
 
-from os.path import splitext, split
-
+import logging as root_logger
 import unittest
 import unittest.mock as mock
-
-import logging as root_logger
+from os.path import split, splitext
 
 import acab
+
 config = acab.setup()
 
 from acab.core.config.config import ConfigSpec
-from acab.core.data.value import AcabValue, Instruction, Sentence
-from acab.core.data.node import AcabNode
-
-from acab.modules.structures.trie.trie import Trie
+from acab.core.data import instruction as PA
 from acab.core.data.acab_struct import AcabStruct
+from acab.core.data.instruction import Instruction
+from acab.core.data.node import AcabNode
+from acab.core.data.sentence import Sentence
+from acab.core.data.value import AcabValue
 from acab.interfaces.data import Structure_i
 from acab.interfaces.semantic import ValueSemantics
-from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
-
-from acab.core.data import instruction as PA
-
 from acab.modules.operators.query.query_operators import EQ
-
+from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
+from acab.modules.structures.trie.trie import Trie
 
 OPERATOR_TYPE_PRIM_S  = config.prepare("Type.Primitive", "OPERATOR")()
 CONTAINER_TYPE_PRIM_S = config.prepare("Type.Primitive", "CONTAINER")()
@@ -70,28 +67,28 @@ class TopologicalOrderedAcabTests(unittest.TestCase):
 # Config
     def test_config_singleton(self):
         """ Check the config obj is a singleton"""
-        config = AcabConfig.Get()
+        config = AcabConfig()
         self.assertIsInstance(config, AcabConfig)
-        config2 = AcabConfig.Get()
+        config2 = AcabConfig()
         self.assertIs(config, config2)
 
     def test_config_prepare(self):
         """
         Check values can be retrieved
         """
-        config = AcabConfig.Get()
+        config = AcabConfig()
         value = config.prepare("Data", "ROOT")()
         self.assertEqual(value, "__root")
 
     def test_config_prepare(self):
         """ Check values can be prepared """
-        config = AcabConfig.Get()
+        config = AcabConfig()
         prep_tuple = config.prepare("Data", "ROOT")
         self.assertIsInstance(prep_tuple, ConfigSpec)
 
     def test_modal_spec(self):
         """ Check modal fields exist """
-        config = AcabConfig.Get()
+        config = AcabConfig()
         # TODO update these
         self.assertTrue(config.enums)
         self.assertTrue(config.defaults)
@@ -101,14 +98,14 @@ class TopologicalOrderedAcabTests(unittest.TestCase):
 
     def test_config_prepare_missing(self):
         """ Check error is thrown for missing value """
-        config = AcabConfig.Get()
+        config = AcabConfig()
         with self.assertRaises(Exception):
             config.prepare("blah", "bloo")
 
     def test_config_prepare_missing(self):
         """ Check config errors if you prepare
         a missing value """
-        config = AcabConfig.Get()
+        config = AcabConfig()
         with self.assertRaises(Exception):
             config.prepare("blah", "bloo")
 
@@ -116,7 +113,7 @@ class TopologicalOrderedAcabTests(unittest.TestCase):
         """
         Check config errors when you try to use missing modal values
         """
-        config = AcabConfig.Get()
+        config = AcabConfig()
         with self.assertRaises(Exception):
             config.modal_enums['blah']
 

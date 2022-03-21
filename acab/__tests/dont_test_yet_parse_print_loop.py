@@ -6,7 +6,9 @@ import acab
 config = acab.setup()
 
 import acab.modules.parsing.exlo.FactParser as FP
-from acab.core.data.value import AcabValue, Sentence
+from acab.core.data.instruction import Instruction
+from acab.core.data.sentence import Sentence
+from acab.core.data.value import AcabValue
 from acab.core.printing import default_handlers as DH
 from acab.interfaces.semantic import PrintSemantics_i
 

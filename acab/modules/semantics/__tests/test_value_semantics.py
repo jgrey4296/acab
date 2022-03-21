@@ -38,9 +38,9 @@ class ValueSemanticTests(unittest.TestCase):
         """ Check basic node insertion using semantics """
         sem = BasicNodeSemantics()
         # create two nodes
-        first  = sem.make(AcabValue("first"))
-        second = sem.make(AcabValue("second"))
-        third  = sem.make(AcabValue("third"))
+        first  = sem.make(AVB("first"))
+        second = sem.make(AVB("second"))
+        third  = sem.make(AVB("third"))
         # insert one into the other
         sem.insert(first, second)
         sem.insert(first, third)
@@ -52,9 +52,9 @@ class ValueSemanticTests(unittest.TestCase):
         """ Check basic exclusion semantic insertion """
         sem = ExclusionNodeSemantics()
         # create two sub nodes
-        first = sem.make(AcabValue("first"), data={EXOP: EXOP_enum.EX})
-        second = sem.make(AcabValue("second"))
-        third = sem.make(AcabValue("third"))
+        first = sem.make(AVB("first"), data={EXOP: EXOP_enum.EX})
+        second = sem.make(AVB("second"))
+        third = sem.make(AVB("third"))
         # insert one into the other
         sem.insert(first, second)
         sem.insert(first, third)
@@ -66,8 +66,8 @@ class ValueSemanticTests(unittest.TestCase):
         """ Check repeated insertion fails """
         sem = BasicNodeSemantics()
         # create two nodes
-        first = sem.make(AcabValue("first"))
-        second = sem.make(AcabValue("second"))
+        first = sem.make(AVB("first"))
+        second = sem.make(AVB("second"))
         # insert one into the other
         sem.insert(first, second)
         with self.assertRaises(AcabSemanticException):
@@ -79,9 +79,9 @@ class ValueSemanticTests(unittest.TestCase):
         """ Check semantics provides access to all child nodes """
         sem = BasicNodeSemantics()
         # create two nodes
-        first  = sem.make(AcabValue("first"))
-        second = sem.make(AcabValue("second"))
-        third  = sem.make(AcabValue("third"))
+        first  = sem.make(AVB("first"))
+        second = sem.make(AVB("second"))
+        third  = sem.make(AVB("third"))
         # insert one into the other
         sem.insert(first, second)
         sem.insert(first, third)
@@ -93,14 +93,14 @@ class ValueSemanticTests(unittest.TestCase):
         """ Check semantics provide access to specific children """
         sem = BasicNodeSemantics()
         # create two nodes
-        first  = sem.make(AcabValue("first"))
-        second = sem.make(AcabValue("second"))
-        third  = sem.make(AcabValue("third"))
+        first  = sem.make(AVB("first"))
+        second = sem.make(AVB("second"))
+        third  = sem.make(AVB("third"))
         # insert one into the other
         sem.insert(first, second)
         sem.insert(first, third)
 
-        accessed = sem.access(first, AcabValue("second"))
+        accessed = sem.access(first, AVB("second"))
         self.assertEqual(len(accessed), 1)
         self.assertEqual(accessed[0].value, "second")
 
@@ -108,11 +108,11 @@ class ValueSemanticTests(unittest.TestCase):
         """ Check exclusion semantics provides access to specific children """
         sem = ExclusionNodeSemantics()
         # create two nodes
-        first = sem.make(AcabValue("first"))
-        second = sem.make(AcabValue("second"), data={EXOP: EXOP_enum.EX})
+        first = sem.make(AVB("first"))
+        second = sem.make(AVB("second"), data={EXOP: EXOP_enum.EX})
         # insert one into the other
         sem.insert(first, second)
-        accessed = sem.access(first, AcabValue("second", data={EXOP: EXOP_enum.EX}))
+        accessed = sem.access(first, AVB("second", data={EXOP: EXOP_enum.EX}))
         self.assertEqual(len(accessed), 1)
         self.assertEqual(accessed[0].value, "second")
 
@@ -120,65 +120,65 @@ class ValueSemanticTests(unittest.TestCase):
         """ Check exclusion semantics enforces correct modality on access of children """
         sem = ExclusionNodeSemantics()
         # create two nodes
-        first = sem.make(AcabValue("first"))
-        second = sem.make(AcabValue("second"), data={EXOP: EXOP_enum.DOT})
+        first = sem.make(AVB("first"))
+        second = sem.make(AVB("second"), data={EXOP: EXOP_enum.DOT})
         # insert one into the other
         sem.insert(first, second)
         with self.assertRaises(AcabSemanticException):
-            sem.access(first, AcabValue("second", data={EXOP: EXOP_enum.EX}))
+            sem.access(first, AVB("second", data={EXOP: EXOP_enum.EX}))
 
 
     def test_basic_access_fail(self):
         """ Check access of non existent children fails """
         sem = BasicNodeSemantics()
         # create two nodes
-        first  = sem.make(AcabValue("first"))
-        second = sem.make(AcabValue("second"))
-        third  = sem.make(AcabValue("third"))
+        first  = sem.make(AVB("first"))
+        second = sem.make(AVB("second"))
+        third  = sem.make(AVB("third"))
         # insert one into the other
         sem.insert(first, second)
         sem.insert(first, third)
 
-        accessed = sem.access(first, AcabValue("non-existent"))
+        accessed = sem.access(first, AVB("non-existent"))
         self.assertEqual(len(accessed), 0)
 
     def test_basic_remove(self):
         """ Check removing nodes via semantics works """
         sem = BasicNodeSemantics()
         # create two nodes
-        first  = sem.make(AcabValue("first"))
-        second = sem.make(AcabValue("second"))
-        third  = sem.make(AcabValue("third"))
+        first  = sem.make(AVB("first"))
+        second = sem.make(AVB("second"))
+        third  = sem.make(AVB("third"))
         # insert one into the other
         sem.insert(first, second)
         sem.insert(first, third)
 
         self.assertTrue(second in first)
-        sem.remove(first, AcabValue("second"))
+        sem.remove(first, AVB("second"))
         self.assertFalse(second in first)
 
     def test_basic_remove_fail(self):
         """ Check removing non existent children fails """
         sem = BasicNodeSemantics()
         # create two nodes
-        first  = sem.make(AcabValue("first"))
-        second = sem.make(AcabValue("second"))
-        third  = sem.make(AcabValue("third"))
+        first  = sem.make(AVB("first"))
+        second = sem.make(AVB("second"))
+        third  = sem.make(AVB("third"))
         # insert one into the other
         sem.insert(first, second)
         sem.insert(first, third)
 
         self.assertTrue(second in first)
         with self.assertRaises(AcabSemanticException):
-            sem.remove(first, AcabValue("fourth"))
+            sem.remove(first, AVB("fourth"))
 
     @unittest.skip("broken")
     def test_node_access_str_vs_atom(self):
         """ Check accessing a str vs an atom is differentiated """
         sem        = BasicNodeSemantics()
-        root       = sem.make(AcabValue.build("root"))
-        atom_value = sem.make(AcabValue.build("value"))
-        str_value  = sem.make(AcabValue.build(atom_value.value, data={DS.TYPE_INSTANCE : "string"}))
+        root       = sem.make(AVB("root"))
+        atom_value = sem.make(AVB("value"))
+        str_value  = sem.make(AVB(atom_value.value, data={DS.TYPE_INSTANCE : "string"}))
         self.assertNotEqual(atom_value.value.type, str_value.value.type)
         sem.insert(root, atom_value)
         result = sem.access(root, str_value.value)
@@ -189,9 +189,9 @@ class ValueSemanticTests(unittest.TestCase):
     def test_node_insert_str_vs_atom(self):
         """ Check inserting a str vs an atom is differentiated """
         sem        = BasicNodeSemantics()
-        root       = sem.make(AcabValue.build("root"))
-        atom_value = sem.make(AcabValue.build("value"))
-        str_value  = sem.make(AcabValue.build(atom_value.value, data={DS.TYPE_INSTANCE : "string"}))
+        root       = sem.make(AVB("root"))
+        atom_value = sem.make(AVB("value"))
+        str_value  = sem.make(AVB(atom_value.value, data={DS.TYPE_INSTANCE : "string"}))
         self.assertNotEqual(atom_value.value.type, str_value.value.type)
         sem.insert(root, atom_value)
         self.assertEqual(len(root), 1)

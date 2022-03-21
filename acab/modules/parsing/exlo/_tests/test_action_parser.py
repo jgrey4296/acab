@@ -60,7 +60,7 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
         result = AP.action_component.parse_string("λa.b.c $x $y $z")[0]
         self.assertIsInstance(result, ProductionComponent)
         self.assertEqual(len(result.params), 3)
-        self.assertTrue(all([isinstance(x, AcabValue) for x in result.params]))
+        self.assertTrue(all([isinstance(x, Value_i) for x in result.params]))
 
     def test_actions(self):
         """ Test multiple actions can be parsed together """

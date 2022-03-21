@@ -8,7 +8,7 @@ acab.setup()
 
 from acab.core.data.value import AcabValue
 from acab.core.data.node import AcabNode
-from acab.core.data.value import Sentence
+from acab.core.data.sentence import Sentence
 
 from acab.modules.structures.trie.trie import Trie
 
