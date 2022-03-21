@@ -5,3 +5,20 @@ requires = [
 ]
 
 build-backend = "setuptools.build_meta"
+
+[tool.pyright]
+# strict = acab.*
+verboseOutput               = true
+typeCheckingMode            = "strict"
+pythonVersion               = "3.10"
+
+reportUnusedImport          = false
+reportAssertAlwaysTrue      = "information"
+reportMissingParameterType  = "warning"
+reportMissingTypeArgument   = "warning"
+reportMissingTypeStubs      = "warning"
+reportUnknownMemberType     = "warning"
+reportUnknownParameterType  = "information"
+reportUnknownVariableType   = "warning"
+reportUnnecessaryCast       = "information"
+reportUnnecessaryIsInstance = "warning"
