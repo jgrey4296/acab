@@ -19,27 +19,91 @@ from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
 from uuid import UUID, uuid1
 from weakref import ref
 
+from acab.error.protocol import AcabProtocolError as APE
 from acab import types as AT
 import acab.core.data.default_structure as DS
 from acab.core.config.config import AcabConfig
-from acab.core.data.value import Instruction, AcabValue, Sentence
+from acab.core.data.value import AcabValue
+from acab.core.data.sentence import Sentence
 from acab.error.operator import AcabOperatorException
 from acab.core.decorators.util import cache
+import acab.interfaces.value as VI
+from acab.core.data.sub_implementations.sentence import SentenceProtocolsImpl
+from acab.core.data.sub_implementations.value import ValueProtocolsImpl
+from acab.core.data.factory import ValueFactory as VF
 
-config = AcabConfig.Get()
+config = AcabConfig()
 
 logging = root_logger.getLogger(__name__)
 
-Value      : TypeAlias = AT.Value
-Operator   : TypeAlias = AT.Operator
-Component  : TypeAlias = AT.Component
-Container  : TypeAlias = AT.Container
-PStructure : TypeAlias = AT.ProductionStructure
+Value_A       : TypeAlias = AT.Value
+Sen_A         : TypeAlias = AT.Sentence
+Instruction_A : TypeAlias = AT.Instruction
+Operator      : TypeAlias = AT.Operator
+Component     : TypeAlias = AT.Component
+Container     : TypeAlias = AT.Container
+PStructure    : TypeAlias = AT.ProductionStructure
+ValueData     : TypeAlias = AT.ValueData
+
+T = TypeVar('T')
+
+@APE.assert_implements(VI.Instruction_i)
+class Instruction(SentenceProtocolsImpl, VI.Instruction_i):
+    """ Instruction functions the same as AcabValue,
+    but provides specific functionality for converting to/from sentences
+    """
 
 
-# FIXME this should be an interface
-@dataclass(frozen=True)
-class ProductionOperator(AcabValue):
+    @classmethod
+    def build(cls, value:T, /, *,
+              name:None|str=None,
+              data:None|dict[ValueData, Any]=None,
+              params:None|list['Value_A|str']=None,
+              tags:None|list['Value_A|str']=None,
+              _type:'None|str|Sen_A'=None,
+              **kwargs) -> Value_A:
+
+        if name is None:
+            name = f"{cls.__module__}.{cls.__qualname__}"
+
+        _data        = VF._build_data_and_type(data, _type or DS.CONTAINER_PRIM)
+        tags, params = VF._build_tags_and_params(tags, params)
+
+        new_obj = cls(value, name=name, data=_data, tags=tags, params=params, **kwargs)
+        # Pre-initialisation, the VF value/sen _fns
+        # just return an exception
+        if isinstance(new_obj, Exception):
+            raise new_obj
+        return cast(VI.Instruction_i, new_obj)
+
+    def __repr__(self):
+        return "<{}::{}>".format(self.name, str(self.type))
+
+    def to_word(self) -> Value_A:
+        """ Convert a Statement to just an AcabValue, of it's name """
+        new_data = {}
+        new_data.update(self.data)
+        del new_data[DS.TYPE_INSTANCE]
+        simple_value = VF.value(self.name, data=new_data, tags=self.tags)
+        return simple_value
+
+    def to_sentences(self) -> list[VI.Sentence_i]:
+        return []
+
+    @staticmethod
+    def from_sentences(self, sens:list[Sen_A]) -> list[Instruction_A]:
+        return cast(list[Instruction_A], sens)
+
+
+
+    def do_break(self) -> None: pass
+
+    @property
+    def should_break(self) -> bool:
+        return bool(self.breakpoint)
+
+@APE.assert_implements(VI.Operator_i, exceptions=["__call__"])
+class ProductionOperator(ValueProtocolsImpl, VI.Operator_i):
     """ The Base Operator Class,
     Provides the way to use other systems and code in Acab
 
@@ -48,33 +112,77 @@ class ProductionOperator(AcabValue):
     ie: _:==, _:!=, ..
     """
 
-    def __post_init__(self):
-        logging.info(f"Building Operator: {self.__class__.__name__}")
-        super(ProductionOperator, self).__post_init__()
-        # object.__setattr__(self, 'name', self.__class__.__name__)
-        # object.__setattr__(self, 'value', self.name)
-        self.data[DS.TYPE_INSTANCE] =  DS.OPERATOR_PRIM
 
-    def __call__(self, *params: list[Value], data=None):
-        raise NotImplementedError()
+    @classmethod
+    def build(cls, value:T=None, /, *,
+              name:None|str=None,
+              data:None|dict[ValueData, Any]=None,
+              params:None|list['Value_A|str']=None,
+              tags:None|list['Value_A|str']=None,
+              _type:'None|str|Sen_A'=None,
+              **kwargs) -> Value_A:
+        logging.info(f"Building Operator: {cls.__class__.__name__}")
+        if name is None:
+            name = f"{cls.__module__}.{cls.__qualname__}"
+
+        _data        = VF._build_data_and_type(data, _type or DS.OPERATOR_PRIM)
+        tags, params = VF._build_tags_and_params(tags, params)
+
+        new_obj = cls(value, name=name, data=_data, tags=tags, params=params, **kwargs)
+        # Pre-initialisation, the VF value/sen _fns
+        # just return an exception
+        if isinstance(new_obj, Exception):
+            raise new_obj
+        return cast(VI.Operator_i, new_obj)
 
     def copy(self, **kwargs):
         """ Operators by default are immutable, and don't need to duplicate """
         return self
 
-    @property
+    @property #type:ignore
     @cache
     def op_path(self):
         return self.value
 
-class ActionOperator(ProductionOperator):
+
+    # __lt__ __str__ apply_params apply_tags build build_sen has_tag
+    # has_var is_at_var is_var key type
+
+
+@APE.assert_implements(VI.Operator_i, exceptions=["__call__"])
+class ActionOperator(ValueProtocolsImpl, VI.Action_i):
     """ Special Operator type which gets passed the semantic system,
     so it can trigger instructions """
+    @classmethod
+    def build(cls, value:T=None, /, *,
+              name:None|str=None,
+              data:None|dict[ValueData, Any]=None,
+              params:None|list['Value_A|str']=None,
+              tags:None|list['Value_A|str']=None,
+              _type:'None|str|Sen_A'=None,
+              **kwargs) -> Value_A:
 
-    def __call__(self, *params: list[Value], data=None, semSystem=None):
-        raise NotImplementedError()
+        logging.info(f"Building Action: {cls.__class__.__name__}")
+        if name is None:
+            name = f"{cls.__module__}.{cls.__qualname__}"
+
+        _data        = VF._build_data_and_type(data, _type or DS.OPERATOR_PRIM)
+        tags, params = VF._build_tags_and_params(tags, params)
+
+        new_obj = cls(value, name=name, data=_data, tags=tags, params=params, **kwargs)
+        # Pre-initialisation, the VF value/sen _fns
+        # just return an exception
+        if isinstance(new_obj, Exception):
+            raise new_obj
+        return cast(VI.Action_i, new_obj)
 
 
+    def copy(self, **kwargs):
+        """ Operators by default are immutable, and don't need to duplicate """
+        return self
+
+
+@APE.assert_implements(VI.Instruction_i)
 @dataclass(frozen=True)
 class ProductionComponent(Instruction):
     """ Pairs a an operator with some bindings
@@ -85,13 +193,34 @@ class ProductionComponent(Instruction):
 
     # Sugared: Denotes whether the parse originated from a sugared operator
     # eg: $x ~= /blah/ -> $x
-    sugared : bool      = field(default=False)
-    rebind  : Value     = field(default=None)
+    sugared : bool           = field(default=False)
+    # TODO shift this into params
+    rebind  : 'None|Value_A' = field(default=None)
 
-    def __post_init__(self):
-        super(ProductionComponent, self).__post_init__()
-        assert(isinstance(self.value, Sentence))
-        self.data[DS.TYPE_INSTANCE] = DS.COMPONENT_PRIM
+    @classmethod
+    def build(cls, value:T, /, *,
+              name:None|str=None,
+              data:None|dict[ValueData, Any]=None,
+              params:None|list['Value_A|str']=None,
+              tags:None|list['Value_A|str']=None,
+              _type:'None|str|Sen_A'=None,
+              **kwargs) -> Value_A:
+
+        if name is None:
+            name = f"{cls.__module__}.{cls.__qualname__}"
+
+        assert(isinstance(value, VI.Sentence_i))
+
+        _data        = VF._build_data_and_type(data, _type or DS.COMPONENT_PRIM)
+        tags, params = VF._build_tags_and_params(tags, params)
+
+        new_obj = cls(value, name=name, data=_data, tags=tags, params=params, **kwargs)
+        # Pre-initialisation, the VF value/sen _fns
+        # just return an exception
+        if isinstance(new_obj, Exception):
+            raise new_obj
+        return new_obj
+
 
     def __len__(self):
         return 1
@@ -109,17 +238,16 @@ class ProductionComponent(Instruction):
         words = []
         words.append(self.value.copy(name="Operator"))
         if bool(self.params):
-            words.append(Sentence.build(self.params, name="Params"))
+            words.append(VF.sen(self.params, name="Params"))
         if self.rebind:
             words.append(self.rebind.copy(name="Rebind"))
-
-        return Sentence.build(words, data=self.data.copy(), name="ProductionComponent")
+        return VF.sen(words, data=self.data.copy(), name="ProductionComponent")
 
     @staticmethod
     def from_sentences(sens):
         result = []
         for sen in sens:
-            if sen != "ProductionComponent":
+            if sen.name != "ProductionComponent":
                 continue
             if "Operator" not in sen:
                 continue
@@ -127,11 +255,11 @@ class ProductionComponent(Instruction):
             comp   = sen['Operator'][:]
             params = sen['Params'].words if 'Params' in sen else []
             rebind = sen['Rebind'].copy(name=None) if 'Rebind' in sen else None
-            result.append(ProductionComponent(value=comp, params=params, rebind=rebind))
+            result.append(ProductionComponent.build(comp, params=params, rebind=rebind))
 
         return result
 
-    @property
+    @property #type:ignore
     @cache
     def op(self):
         return self.value
@@ -150,16 +278,34 @@ class ProductionComponent(Instruction):
 
         return False
 
+@APE.assert_implements(VI.Instruction_i)
 @dataclass(frozen=True)
 class ProductionContainer(Instruction):
     """ Production Container: An applicable statement of multiple component clauses """
 
-    value : list[Sentence] = field(default_factory=list)
+    @classmethod
+    def build(cls, value:T, /, *,
+              name:None|str=None,
+              data:None|dict[ValueData, Any]=None,
+              params:None|list['Value_A|str']=None,
+              tags:None|list['Value_A|str']=None,
+              _type:'None|str|Sen_A'=None,
+              **kwargs) -> Value_A:
 
-    def __post_init__(self):
-        super(ProductionContainer, self).__post_init__()
-        assert(isinstance(self.value, list))
-        self.data[DS.TYPE_INSTANCE] = DS.CONTAINER_PRIM
+        if name is None:
+            name = f"{cls.__module__}.{cls.__qualname__}"
+
+        assert(isinstance(value, list))
+
+        _data        = VF._build_data_and_type(data, _type or DS.CONTAINER_PRIM)
+        tags, params = VF._build_tags_and_params(tags, params)
+
+        new_obj = cls(value, name=name, data=_data, tags=tags, params=params, **kwargs)
+        # Pre-initialisation, the VF value/sen _fns
+        # just return an exception
+        if isinstance(new_obj, Exception):
+            raise new_obj
+        return cast(VI.Instruction_i, new_obj)
 
     def __repr__(self):
         # clauses = ";".join([repr(x) for x in self.clauses])
@@ -191,12 +337,13 @@ class ProductionContainer(Instruction):
             elif isinstance(clause, Instruction):
                 words += clause.to_sentences()
 
-        return [Sentence.build(words,
-                               data=self.data.copy(),
-                               name="ProductionContainer")]
+        return [VF.sen(words,
+                       data=self.data.copy(),
+                       name="ProductionContainer")]
 
 
 
+@APE.assert_implements(VI.Instruction_i)
 @dataclass(frozen=True)
 class ProductionStructure(ProductionContainer):
     """
@@ -205,18 +352,30 @@ class ProductionStructure(ProductionContainer):
     """
     structure: dict[str, Container] = field(default_factory=dict)
 
-    def __post_init__(self):
-        # self.value = []
-        super(ProductionContainer, self).__post_init__()
-        self.data[DS.TYPE_INSTANCE] = DS.STRUCT_PRIM
+    @classmethod
+    def build(cls, value:dict[str, T], /, *,
+              name:None|str=None,
+              data:None|dict[ValueData, Any]=None,
+              params:None|list['Value_A|str']=None,
+              tags:None|list['Value_A|str']=None,
+              _type:'None|str|Sen_A'=None,
+              **kwargs) -> Value_A:
 
-        clauses = list(self.structure.values())
-        try:
-            self.value += clauses
-        except FrozenInstanceError as err:
-            # Expected
-            pass
+        if name is None:
+            name = f"{cls.__module__}.{cls.__qualname__}"
 
+        assert(isinstance(value, dict))
+        clauses = list(value.values())
+        _data        = VF._build_data_and_type(data, _type or DS.STRUCT_PRIM)
+        tags, params = VF._build_tags_and_params(tags, params)
+
+
+        new_obj = cls(clauses, structure=value, name=name, data=_data, tags=tags, params=params, **kwargs)
+        # Pre-initialisation, the VF value/sen _fns
+        # just return an exception
+        if isinstance(new_obj, Exception):
+            raise new_obj
+        return cast(VI.Instruction_i, new_obj)
 
     @cache
     def __repr__(self):
@@ -263,10 +422,8 @@ class ProductionStructure(ProductionContainer):
             elif isinstance(clause, Instruction):
                 words += clause.to_sentences()
 
-            clauses.append(Sentence.build(words, name=key))
+            clauses.append(VF.sen(words, name=key))
 
-        return [Sentence.build([clauses],
-                               data=self.data.copy(),
-                               name="ProductionStructure")]
-
-
+        return [VF.sen([clauses],
+                       data=self.data.copy(),
+                       name="ProductionStructure")]

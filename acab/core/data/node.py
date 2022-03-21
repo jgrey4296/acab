@@ -15,15 +15,18 @@ import acab.interfaces.value as VI
 from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.core.data.default_structure import ROOT
-from acab.core.data.value import AcabValue, Sentence
+from acab.core.data.sentence import Sentence
+from acab.core.data.value import AcabValue
 from acab.core.decorators.util import cache
+from acab.core.data.factory import ValueFactory as VF
 
 logging = root_logger.getLogger(__name__)
 
-config = AcabConfig.Get()
+config = AcabConfig()
 
-Node  : TypeAlias = AT.Node
-Value : TypeAlias = AT.Value
+Node       : TypeAlias = AT.Node
+Sentence_A : TypeAlias = AT.Sentence
+Value      : TypeAlias = AT.Value
 
 @dataclass
 class AcabNode(DI.Node_i):
@@ -32,16 +35,16 @@ class AcabNode(DI.Node_i):
     """
     # TODO make children a dict of dicts
     # value  : AcabValue       = field(default=None)
-    data     : dict[str, Any]                = field(default_factory=dict)
-    path     : Sentence                      = field(default=None)
-    parent   : None | ReferenceType          = field(default=None)
-    children : dict[str, Node]               = field(default_factory=dict)
-    uuid     : UUID                          = field(default_factory=uuid1)
+    data     : dict[str, Any]             = field(default_factory=dict)
+    path     : 'None|Sentence_A'          = field(default=None)
+    parent   : None | ReferenceType[Node] = field(default=None)
+    children : dict[str, Node]            = field(default_factory=dict)
+    uuid     : UUID                       = field(default_factory=uuid1)
 
     @staticmethod
     def Root():
         """ Create a new root node """
-        return AcabNode(value=AcabValue.build(ROOT))
+        return AcabNode(value=VF.value(ROOT))
 
 
     def __post_init__(self):
@@ -69,7 +72,7 @@ class AcabNode(DI.Node_i):
         return self.has(v)
 
     def __getitem__(self, v):
-        if isinstance(v, Sentence):
+        if isinstance(v, VI.Sentence_i):
             current = self
             for x in v.words:
                 current = current.get(x)
@@ -107,7 +110,7 @@ class AcabNode(DI.Node_i):
         node.set_parent(self)
         return node
 
-    def get(self, key:str|Value|Node) -> Node:
+    def get(self, key:'str|Value|Node') -> Node:
         """ Get a node using a string, or a node itself """
         if isinstance(key, str) and key in self.children:
             return self.children[key]
@@ -117,26 +120,25 @@ class AcabNode(DI.Node_i):
         else:
             return self.children[key.key()]
 
-    def has(self, key:Tuple[str, Value, None]=None) -> bool:
+    def has(self, key:'str|Value|Node|None'=None) -> bool:
         """ Question if this term has a particular child,
         by the simplest condition of whether there is a simple string
         mapping.
         """
         result = False
         is_str = isinstance(key, str)
-        is_val = isinstance(key, (AcabNode, AcabValue))
 
         if key is None:
             result = bool(self)
         elif is_str:
             keys = self.keys()
             result = any([key in x for x in keys])
-        elif is_val:
+        elif isinstance(key, (AcabNode, AcabValue)):
             result = key.key() in self.children
 
         return result
 
-    def remove(self, key:Tuple[str, Node]) -> None|Node:
+    def remove(self, key:'str|Node') -> 'None|Node':
         """ Delete a child from this node, return success state
         mutate object
         """
@@ -167,16 +169,17 @@ class AcabNode(DI.Node_i):
         self.parent = ref(parent)
 
     @property
-    def parentage(self) -> Sentence:
+    def parentage(self) -> Sentence_A:
         """ Get the full path from the root to this node """
         path = [self.value]
         current = self.parent
         while current is not None and current() is not None:
-            path.append(current().value)
-            current = current().parent
+            deref : AcabNode = cast(AcabNode, current())
+            path.append(deref.value)
+            current = deref.parent
 
         path.reverse()
-        return Sentence.build(path)
+        return VF.sen(path) #type:ignore
 
 
     def _default_setup(self, path: list[Node], *, data: dict[Any,Any], context: dict[Any,Any]):

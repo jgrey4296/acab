@@ -10,7 +10,7 @@ from acab.core.data.value import AcabValue
 from acab.core.data.acab_struct import AcabStruct
 
 logging = root_logger.getLogger(__name__)
-config  = AcabConfig.Get()
+config  = AcabConfig()
 
 class NPArrayStruct(AcabStruct):
     """ A Node based struct """
@@ -36,16 +36,7 @@ class NPArrayStruct(AcabStruct):
         val += ")"
         return val
 
-    def __delitem__(self, key):
-        pass
-
-    def __getitem__(self, key):
-        pass
-
-    def __setitem__(self, key, value):
-        pass
-
-    def __iter__(self):
-        pass
-
-
+    def __delitem__(self, key): pass
+    def __getitem__(self, key): pass
+    def __setitem__(self, key, value): pass
+    def __iter__(self): pass

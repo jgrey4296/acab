@@ -10,7 +10,7 @@ from acab.core.data.value import AcabValue
 from acab.core.data.acab_struct import AcabStruct
 
 logging = root_logger.getLogger(__name__)
-config  = AcabConfig.Get()
+config  = AcabConfig()
 
 class NXGraphStruct(AcabStruct):
     """ A Node based struct """
