@@ -24,7 +24,8 @@ Engine        = AT.Engine
 Contexts      = AT.CtxSet
 
 
-class BreadthTrieSemantics(SI.StructureSemantics_i):
+@APE.assert_implements(SI.StructureSemantics_i)
+class BreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantics_i):
     """
     Trie Semantics which map values -> Nodes
     Searches *Breadth First*
@@ -139,7 +140,9 @@ class BreadthTrieSemantics(SI.StructureSemantics_i):
     def to_word(self):
         raise NotImplementedError()
 
-class DepthTrieSemantics(SI.StructureSemantics_i):
+
+@APE.assert_implements(SI.StructureSemantics_i)
+class DepthTrieSemantics(basic.StructureSemantics, SI.StructureSemantics_i):
     """
     Trie Semantics which map values -> Nodes
     Searches *Depth First*

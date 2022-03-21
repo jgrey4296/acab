@@ -48,9 +48,10 @@ COLLAPSE_CONTEXT.set_parse_action(lambda x: ValueRepeatAnnotation("constraint", 
 
 word_query_constraint = COLLAPSE_CONTEXT | basic_constraint
 
+# TODO shift query_term to POST_ANNOTATION hook
 query_terminator = QUERY("QueryTerm")
 query_terminator.add_parse_action(lambda x: [ValueAnnotation(CDS.QUERY, True),
-                                           ValueAnnotation(CDS.QUERY_FALLBACK, None)])
+                                             ValueAnnotation(CDS.QUERY_FALLBACK, None)])
 
 query_fallback   = op(fallback)
 query_fallback.set_parse_action(lambda x: ValueAnnotation(CDS.QUERY_FALLBACK, x[:]))

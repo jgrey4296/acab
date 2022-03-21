@@ -22,7 +22,7 @@ HOTLOAD_ANNOTATIONS   = pp.Forward()
 HOTLOAD_BAD_HEADS     = pp.Forward()
 HOTLOAD_SEN_ENDS      = pp.Forward()
 HOTLOAD_SEN_HEADS     = pp.Forward()
-HOTLOAD_SEN_POSTS
+HOTLOAD_SEN_POSTS     = pp.Forward()
 
 # Controllable words that can't start a sentence
 BAD_HEADS           = ~(END | HOTLOAD_BAD_HEADS)("Bad Words")
@@ -45,15 +45,15 @@ sen_post_annotations = HOTLOAD_SEN_POSTS
 # Sentences are /SEN_WORD* (SEN_END | SEN_STATEMENT)/
 # TODO explicit Semantic Hint operator?
 SEN_MACRO             = pp.Forward()
-SEN_HEAD              = BAD_HEADS + NG(PDS.HEAD_ANNOTATION, zrm(sen_head_annotations))
+SEN_HEAD              = BAD_HEADS + NG(HEAD_ANNOTATION, zrm(sen_head_annotations))
 SEN_WORD              = PU.PARAM_CORE(annotations)
 SEN_NO_MODAL          = PU.PARAM_CORE(annotations, end=True) + ~COLON
-SEN_END               = (HOTLOAD_SEN_ENDS | SEN_NO_MODAL) + NG(PDS.POST_ANNOTATION, zrm(sen_post_annotations))
+SEN_END               = (HOTLOAD_SEN_ENDS | SEN_NO_MODAL)
 SEN_WORD.set_name("PBCore")
 SEN_NO_MODAL.set_name("PBEnd")
 
 # The Prime Sentence definition:
-SENTENCE = SEN_HEAD + NG(SEN, pp.ZeroOrMore(SEN_WORD) + SEN_END)
+SENTENCE = SEN_HEAD + NG(SEN, pp.ZeroOrMore(SEN_WORD) + SEN_END) + NG(PDS.POST_ANNOTATION, zrm(sen_post_annotations))
 SENTENCE.set_parse_action(Pfunc.construct_sentence)
 SENTENCE.set_name("Sentence")
 
