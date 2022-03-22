@@ -40,8 +40,8 @@ TYPE_INSTANCE_S   = DS.TYPE_INSTANCE
 
 SEN_JOIN_S        = config.prepare("Print.Patterns", "SEN_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE])()
 
-STR_PRIM_S        = Sentence.build([config.prepare("Type.Primitive", "STRING")()])
-REGEX_PRIM_S      = Sentence.build([config.prepare("Type.Primitive", "REGEX")()])
+STR_PRIM_S        = Sentence([config.prepare("Type.Primitive", "STRING")()])
+REGEX_PRIM_S      = Sentence([config.prepare("Type.Primitive", "REGEX")()])
 
 EXOP              = config.prepare("exop", as_enum=True)()
 DOT_E             = EXOP.DOT

@@ -94,7 +94,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
 
         a = PU.VALBIND.parse_string("¿awef")[0]
         self.assertEqual(a.value, "¿awef")
-        self.assertEqual(a.type, Sentence.build(["awef"]))
+        self.assertEqual(a.type, Sentence(["awef"]))
 
     def test_negated_sentence(self):
         result = FP.SENTENCE.parse_string('~a.test!string')[0]

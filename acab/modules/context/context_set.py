@@ -207,6 +207,7 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i):
         """ Create the empty context instance,
         constructing the operator bindings if necessary
         """
+        raise DeprecationWarning()
         if ops is None:
             return ContextSet()
 

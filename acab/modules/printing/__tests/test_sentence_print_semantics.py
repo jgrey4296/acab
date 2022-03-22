@@ -46,8 +46,8 @@ QUERY_SYMBOL_S    = config.prepare("Symbols", "QUERY")()
 
 SEN_JOIN_S        = config.prepare("Print.Patterns", "SEN_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE])()
 
-STR_PRIM_S        = Sentence.build([config.prepare("Type.Primitive", "STRING")()])
-REGEX_PRIM_S      = Sentence.build([config.prepare("Type.Primitive", "REGEX")()])
+STR_PRIM_S        = Sentence([config.prepare("Type.Primitive", "STRING")()])
+REGEX_PRIM_S      = Sentence([config.prepare("Type.Primitive", "REGEX")()])
 TYPE_INSTANCE_S   = config.prepare("Value.Structure", "TYPE_INSTANCE")()
 
 class PrintBasicSentenceSemanticTests(unittest.TestCase):
@@ -84,7 +84,7 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
                            init_handlers=init_handlers)
 
         words = ["a", "b", "c", "d"]
-        sentence = Sentence.build(words)
+        sentence = Sentence(words)
 
         result = sem.pprint(sentence)
         self.assertEqual(result, FALLBACK_MODAL_S.join(words))

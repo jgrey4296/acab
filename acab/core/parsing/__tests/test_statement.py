@@ -54,10 +54,10 @@ class StatementTests(unittest.TestCase):
     def test_basic_tag(self):
         """ Check a constructed statement can have tags """
         basic_node_parser = pp.Keyword('test')
-        basic_node_parser.set_parse_action(lambda s, l, toks: Sentence.build([AcabValue.build(toks[0])]))
+        basic_node_parser.set_parse_action(lambda s, l, toks: Sentence([AcabValue(toks[0])]))
 
         basic_value_parser = pp.Keyword('value')
-        basic_value_parser.set_parse_action(lambda s, l, toks: BasicStatement.build(toks[0]))
+        basic_value_parser.set_parse_action(lambda s, l, toks: BasicStatement(toks[0]))
 
         statement_p = PU.STATEMENT_CONSTRUCTOR(basic_node_parser,
                                                basic_value_parser)
@@ -70,10 +70,10 @@ class StatementTests(unittest.TestCase):
     def test_basic_tag_plural(self):
         """ Check a constructed statement can have multiple tags """
         basic_node_parser = pp.Keyword('test')
-        basic_node_parser.set_parse_action(lambda s, l, toks: Sentence.build([AcabValue.build(toks[0])]))
+        basic_node_parser.set_parse_action(lambda s, l, toks: Sentence([AcabValue(toks[0])]))
 
         basic_value_parser = pp.Keyword('value')
-        basic_value_parser.set_parse_action(lambda s, l, toks: BasicStatement.build(toks[0]))
+        basic_value_parser.set_parse_action(lambda s, l, toks: BasicStatement(toks[0]))
 
         statement_p = PU.STATEMENT_CONSTRUCTOR(basic_node_parser,
                                                basic_value_parser)

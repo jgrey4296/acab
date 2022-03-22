@@ -24,7 +24,7 @@ def build_dfs_query(s, l, toks):
     assert(all([x.is_var for x in rest]))
     words += rest
 
-    instruction = Sentence.build(words,
+    instruction = Sentence(words,
                            data={SEM_HINT: WALK_SEM_HINT})
     instruction[-1].data[QUERY_HINT] = True
 

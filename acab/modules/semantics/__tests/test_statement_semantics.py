@@ -56,13 +56,13 @@ TRANSFORM_C  = DS.TRANSFORM_COMPONENT
 ACTION_C     = DS.ACTION_COMPONENT
 
 
-QUERY_SEM_HINT     = Sentence.build([config.prepare("SEMANTICS", "QUERY")()])
-ACTION_SEM_HINT    = Sentence.build([config.prepare("SEMANTICS", "ACTION")()])
-TRANSFORM_SEM_HINT = Sentence.build([config.prepare("SEMANTICS", "TRANSFORM")()])
-RULE_SEM_HINT      = Sentence.build([config.prepare("SEMANTICS", "RULE")()])
-AGENDA_SEM_HINT    = Sentence.build([config.prepare("SEMANTICS", "AGENDA")()])
-LAYER_SEM_HINT     = Sentence.build([config.prepare("SEMANTICS", "LAYER")()])
-PIPELINE_SEM_HINT  = Sentence.build([config.prepare("SEMANTICS", "PIPELINE")()])
+QUERY_SEM_HINT     = Sentence([config.prepare("SEMANTICS", "QUERY")()])
+ACTION_SEM_HINT    = Sentence([config.prepare("SEMANTICS", "ACTION")()])
+TRANSFORM_SEM_HINT = Sentence([config.prepare("SEMANTICS", "TRANSFORM")()])
+RULE_SEM_HINT      = Sentence([config.prepare("SEMANTICS", "RULE")()])
+AGENDA_SEM_HINT    = Sentence([config.prepare("SEMANTICS", "AGENDA")()])
+LAYER_SEM_HINT     = Sentence([config.prepare("SEMANTICS", "LAYER")()])
+PIPELINE_SEM_HINT  = Sentence([config.prepare("SEMANTICS", "PIPELINE")()])
 
 # TODO test verify
 
@@ -71,23 +71,23 @@ class StatementSemanticTests(unittest.TestCase):
         """ Check transforms semantics work """
         sem                                 = ASem.TransformAbstraction()
         # Construct context set for operators
-        op_loc_path                         = Sentence.build(["Regex", "Operation"])
-        operator_instance                   = RegexOp.build()
+        op_loc_path                         = Sentence(["Regex", "Operation"])
+        operator_instance                   = RegexOp()
         op_ctx                              = ContextInstance(data={str(op_loc_path): operator_instance})
-        ctx_set                             = ContextSet.build(op_ctx)
+        ctx_set                             = ContextSet(op_ctx)
         # Add a ContextInst
         init_ctx                            = ctx_set.pop()
         updated_ctx                         = init_ctx.bind_dict({
-            "x" : AcabValue.build("test")
+            "x" : AcabValue("test")
         })
         ctx_set.push(updated_ctx)
         # Build Transform
-        rebind_target                       = AcabValue.build("y", data={BIND_V: True})
-        clause                              = ProductionComponent.build(op_loc_path,
-                                                                        params=["x", "es", "ES"],
-                                                                        rebind =rebind_target)
+        rebind_target                       = AcabValue("y", data={BIND_V: True})
+        clause                              = ProductionComponent(op_loc_path,
+                                                                  params=["x", "es", "ES"],
+                                                                  rebind =rebind_target)
 
-        transform                           = ProductionContainer.build([clause])
+        transform                           = ProductionContainer([clause])
         # Run Transform on context, don't need a semantic system yet, thus None
         sem(transform, None, ctxs=ctx_set)
         # Check result
@@ -110,13 +110,13 @@ class StatementSemanticTests(unittest.TestCase):
         # Build Semantics
         sem = ASem.ActionAbstraction()
         # Context Set for operators
-        op_loc_path       = Sentence.build(["action"])
-        operator_instance = TestAction.build()
+        op_loc_path       = Sentence(["action"])
+        operator_instance = TestAction()
         op_ctx            = ContextInstance(data={str(op_loc_path): operator_instance})
-        ctx_set           = ContextSet.build(op_ctx)
+        ctx_set           = ContextSet(op_ctx)
         # Build Action
-        clause = ProductionComponent.build(op_loc_path)
-        action = ProductionContainer.build([clause])
+        clause = ProductionComponent(op_loc_path)
+        action = ProductionContainer([clause])
         # Run action on context with semantics
         sem(action, None, ctxs=ctx_set)
         # Check side effects
@@ -137,13 +137,13 @@ class StatementSemanticTests(unittest.TestCase):
         # Build Semantics
         sem = ASem.ActionAbstraction()
         # Context Set for operators
-        op_loc_path       = Sentence.build(["action"])
-        operator_instance = TestAction.build()
+        op_loc_path       = Sentence(["action"])
+        operator_instance = TestAction()
         op_ctx            = ContextInstance(data={str(op_loc_path): operator_instance})
-        ctx_set           = ContextSet.build(op_ctx)
+        ctx_set           = ContextSet(op_ctx)
         # Build Action
-        clause = ProductionComponent.build(op_loc_path, params=["awef"])
-        action = ProductionContainer.build([clause])
+        clause = ProductionComponent(op_loc_path, params=["awef"])
+        action = ProductionContainer([clause])
         # Run action on context with semantics
         sem(action, None, ctxs=ctx_set)
         # Check side effects
@@ -190,23 +190,23 @@ class StatementSemanticTests(unittest.TestCase):
                                                            con_sem])
 
         # Operator Context
-        op_ctx             = ContextInstance(data={"transform" : TestTransform.build(),
-                                                   "action"    : TestAction.build()})
+        op_ctx             = ContextInstance(data={"transform" : TestTransform(),
+                                                   "action"    : TestAction()})
 
         # Add data to eval context
-        ctx_set     = ContextSet.build(op_ctx)
+        ctx_set     = ContextSet(op_ctx)
         init_ctx    = ctx_set.pop()
         updated_ctx = init_ctx.bind_dict({
-            "x" : AcabValue.build("test")
+            "x" : AcabValue("test")
         })
         ctx_set.push(updated_ctx)
 
         # Build Instruction to run
-        rebind_target          = AcabValue.build("y", data={BIND_V: True})
-        transform_clause       = ProductionComponent.build(Sentence.build(["transform"]), params=["x"], rebind=rebind_target)
-        action_clause          = ProductionComponent.build(Sentence.build(["action"]), params=["y"])
-        container_instruction  = ProductionContainer.build([ProductionContainer.build([transform_clause], data={SEMANTIC_HINT_V: TRANSFORM_SEM_HINT}),
-                                                            ProductionContainer.build([action_clause], data={SEMANTIC_HINT_V: ACTION_SEM_HINT})])
+        rebind_target          = AcabValue("y", data={BIND_V: True})
+        transform_clause       = ProductionComponent(Sentence(["transform"]), params=["x"], rebind=rebind_target)
+        action_clause          = ProductionComponent(Sentence(["action"]), params=["y"])
+        container_instruction  = ProductionContainer([ProductionContainer([transform_clause], data={SEMANTIC_HINT_V: TRANSFORM_SEM_HINT}),
+                                                      ProductionContainer([action_clause], data={SEMANTIC_HINT_V: ACTION_SEM_HINT})])
 
         # run each element of container with semantics
         semSys(container_instruction, ctxs=ctx_set)
@@ -261,31 +261,31 @@ class StatementSemanticTests(unittest.TestCase):
 
         # Setup operators in context
         trans_instance     = RegexOp()
-        op_ctx             = ContextInstance(data={"action": TestAction.build(),
+        op_ctx             = ContextInstance(data={"action": TestAction(),
                                                    "regex" : trans_instance})
-        ctx_set            = ContextSet.build(op_ctx)
+        ctx_set            = ContextSet(op_ctx)
 
         # Construct Rule
-        query_sen = Sentence.build(["a", "test", "x"])
+        query_sen = Sentence(["a", "test", "x"])
         query_sen[-1].data[BIND_V]  = True
         query_sen[-1].data[QUERY_V] = True
 
-        transform_sen = ProductionComponent.build(Sentence.build(["regex"]), params=["x", "sen", "SEN"],
-                                            rebind=AcabValue.build("y", data={BIND_V: True}))
-        action_sen    = ProductionComponent.build(Sentence.build([ "action" ]), params=['y'])
+        transform_sen = ProductionComponent(Sentence(["regex"]), params=["x", "sen", "SEN"],
+                                            rebind=AcabValue("y", data={BIND_V: True}))
+        action_sen    = ProductionComponent(Sentence([ "action" ]), params=['y'])
 
-        query     = ProductionContainer.build([query_sen], data={SEMANTIC_HINT_V: QUERY_SEM_HINT})
-        transform = ProductionContainer.build([transform_sen], data={SEMANTIC_HINT_V: TRANSFORM_SEM_HINT})
-        action    = ProductionContainer.build([action_sen], data={SEMANTIC_HINT_V: ACTION_SEM_HINT})
+        query     = ProductionContainer([query_sen], data={SEMANTIC_HINT_V: QUERY_SEM_HINT})
+        transform = ProductionContainer([transform_sen], data={SEMANTIC_HINT_V: TRANSFORM_SEM_HINT})
+        action    = ProductionContainer([action_sen], data={SEMANTIC_HINT_V: ACTION_SEM_HINT})
 
-        the_rule  = ProductionStructure.build(structure={QUERY_C     : query,
-                                                         TRANSFORM_C : transform,
-                                                         ACTION_C    : action
-                                                         },
-                                              data={SEMANTIC_HINT_V: RULE_SEM_HINT})
+        the_rule  = ProductionStructure(structure={QUERY_C     : query,
+                                                   TRANSFORM_C : transform,
+                                                   ACTION_C    : action
+                                                   },
+                                        data={SEMANTIC_HINT_V: RULE_SEM_HINT})
 
         # insert a sentence into the struct
-        sen = Sentence.build(["a", "test", "sentence"])
+        sen = Sentence(["a", "test", "sentence"])
         trie_handler.func.insert(sen, trie_handler.struct)
         # run the rule
         result = semSys(the_rule, ctxs=ctx_set)
@@ -336,31 +336,31 @@ class StatementSemanticTests(unittest.TestCase):
 
         # Setup operators in context
         trans_instance     = RegexOp()
-        op_ctx             = ContextInstance(data={"action" : TestAction.build(),
+        op_ctx             = ContextInstance(data={"action" : TestAction(),
                                                    "regex"  : trans_instance})
-        ctx_set            = ContextSet.build(op_ctx)
+        ctx_set            = ContextSet(op_ctx)
 
         # Construct Rule
-        query_sen = Sentence.build(["a", "test", "x"])
+        query_sen = Sentence(["a", "test", "x"])
         query_sen[-1].data[BIND_V]  = True
         query_sen[-1].data[QUERY_V] = True
 
-        transform_sen = ProductionComponent.build(Sentence.build("regex"), params=["x", "sen", "SEN"],
-                                            rebind=AcabValue.build("y", data={BIND_V: True}))
-        action_sen    = ProductionComponent.build(Sentence.build("action"), params=['y'])
+        transform_sen = ProductionComponent(Sentence("regex"), params=["x", "sen", "SEN"],
+                                            rebind=AcabValue("y", data={BIND_V: True}))
+        action_sen    = ProductionComponent(Sentence("action"), params=['y'])
 
-        query     = ProductionContainer.build([query_sen], data={SEMANTIC_HINT_V: QUERY_SEM_HINT})
-        transform = ProductionContainer.build([transform_sen], data={SEMANTIC_HINT_V: TRANSFORM_SEM_HINT})
-        action    = ProductionContainer.build([action_sen], data={SEMANTIC_HINT_V: ACTION_SEM_HINT})
+        query     = ProductionContainer([query_sen], data={SEMANTIC_HINT_V: QUERY_SEM_HINT})
+        transform = ProductionContainer([transform_sen], data={SEMANTIC_HINT_V: TRANSFORM_SEM_HINT})
+        action    = ProductionContainer([action_sen], data={SEMANTIC_HINT_V: ACTION_SEM_HINT})
 
-        the_rule  = ProductionStructure.build(structure={QUERY_C     : query,
+        the_rule  = ProductionStructure(structure={QUERY_C     : query,
                                                          TRANSFORM_C : transform,
                                                          ACTION_C    : action
                                                          },
                                         data={SEMANTIC_HINT_V: RULE_SEM_HINT})
 
         # insert a sentence into the struct
-        sen = Sentence.build(["a", "test", "sentence"])
+        sen = Sentence(["a", "test", "sentence"])
         trie_handler.func.insert(sen, trie_handler.struct)
         # run the rule
         result = semSys(the_rule, ctxs=ctx_set)

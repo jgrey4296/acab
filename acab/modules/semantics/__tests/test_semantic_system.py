@@ -36,13 +36,13 @@ ACTION_V     = config.prepare("Parse.Structure", "ACTION")()
 
 SEMANTIC_HINT_V = config.prepare("Value.Structure", "SEMANTIC_HINT")()
 
-QUERY_SEM_HINT     = Sentence.build([config.prepare("SEMANTICS", "QUERY")()])
-ACTION_SEM_HINT    = Sentence.build([config.prepare("SEMANTICS", "ACTION")()])
-TRANSFORM_SEM_HINT = Sentence.build([config.prepare("SEMANTICS", "TRANSFORM")()])
-RULE_SEM_HINT      = Sentence.build([config.prepare("SEMANTICS", "RULE")()])
-AGENDA_SEM_HINT    = Sentence.build([config.prepare("SEMANTICS", "AGENDA")()])
-LAYER_SEM_HINT     = Sentence.build([config.prepare("SEMANTICS", "LAYER")()])
-PIPELINE_SEM_HINT  = Sentence.build([config.prepare("SEMANTICS", "PIPELINE")()])
+QUERY_SEM_HINT     = Sentence([config.prepare("SEMANTICS", "QUERY")()])
+ACTION_SEM_HINT    = Sentence([config.prepare("SEMANTICS", "ACTION")()])
+TRANSFORM_SEM_HINT = Sentence([config.prepare("SEMANTICS", "TRANSFORM")()])
+RULE_SEM_HINT      = Sentence([config.prepare("SEMANTICS", "RULE")()])
+AGENDA_SEM_HINT    = Sentence([config.prepare("SEMANTICS", "AGENDA")()])
+LAYER_SEM_HINT     = Sentence([config.prepare("SEMANTICS", "LAYER")()])
+PIPELINE_SEM_HINT  = Sentence([config.prepare("SEMANTICS", "PIPELINE")()])
 
 
 class SemanticSystemTests(unittest.TestCase):
@@ -61,7 +61,7 @@ class SemanticSystemTests(unittest.TestCase):
     def test_default_call(self):
         """ Check context systems can be called """
         semsys = BasicSemanticSystem(init_handlers=[SemanticSystemTests.StubAbsSemantic().as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
-        test_sen = Sentence.build(["test"])
+        test_sen = Sentence(["test"])
         with self.assertRaises(AE.AcabException) as cm:
             semsys(test_sen)
 

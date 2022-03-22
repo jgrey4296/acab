@@ -24,7 +24,7 @@ from . import semantics as SVS
 logging = root_logger.getLogger(__name__)
 
 config = GET()
-WALK_SEM_HINT    = Sentence.build([config.prepare("Module.DFSWalk", "WALK_SEM_HINT")()])
+WALK_SEM_HINT    = Sentence([config.prepare("Module.DFSWalk", "WALK_SEM_HINT")()])
 
 # TODO sen value spec
 Sen_Val_Frag = Semantic_Fragment(specs=[], handlers=[SVS.SenQuerySemantics().as_handler(signal=WALK_SEM_HINT)])

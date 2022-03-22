@@ -20,9 +20,6 @@ from acab.interfaces.value import Value_i
 from acab.modules.parsing.exlo.parsers import ActionParser as AP
 
 
-def S(*words):
-    return Sentence.build(words)
-
 class Trie_Action_Parser_Tests(unittest.TestCase):
 
     @classmethod

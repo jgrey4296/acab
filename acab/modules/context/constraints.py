@@ -2,19 +2,18 @@
 import logging as root_logger
 from dataclasses import InitVar, dataclass, field
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
-                    List, Mapping, Match, MutableMapping, Optional, Sequence,
-                    Set, Tuple, TypeVar, Union, cast)
+                    List, Mapping, Match, MutableMapping, Optional, Protocol,
+                    Sequence, Set, Tuple, TypeVar, Union, cast)
 
 logging = root_logger.getLogger(__name__)
 
-import acab.interfaces.context as CtxInt
 import acab.error.semantic as ASErr
+import acab.interfaces.context as CtxInt
 from acab.core.config import GET
-from acab.core.data.instruction import (ProductionComponent,
-                                                        ProductionOperator)
+from acab.core.data.instruction import ProductionComponent, ProductionOperator
 from acab.core.data.sentence import Sentence
-from acab.modules.context.constraint_sieve import default_sieve
 from acab.interfaces.sieve import AcabSieve
+from acab.modules.context.constraint_sieve import default_sieve
 
 config = GET()
 CONSTRAINT    = config.prepare("Value.Structure", "CONSTRAINT")

@@ -18,6 +18,7 @@ from acab.core.parsing.consts import (CPAR, DBLCOLON, NG, OPAR, TAG, N,
                                       component_gap, emptyLine, gap, ln, op,
                                       opLn, orm, s, s_key, s_lit, zrm)
 from acab.core.parsing.indented_block import IndentedBlock
+from acab.interfaces.value import ValueFactory_i
 
 logging = root_logger.getLogger(__name__)
 
@@ -119,7 +120,7 @@ HOTLOAD_POST_ANNOTATIONS = pp.Forward()
 
 # Basic Parsers
 OPERATOR_SUGAR = pp.Word(PDSYM.OPERATOR_SYNTAX)
-OPERATOR_SUGAR.set_parse_action(lambda s, l, t: Sentence.build([t[0]]))
+OPERATOR_SUGAR.set_parse_action(lambda s, l, t: ValueFactory_i.sen([t[0]]))
 
 ATOM           = pp.Word(PDSYM.WORD_COMPONENT + "'")
 ATOM.set_parse_action(lambda s, l, t: (CDS.TYPE_BOTTOM_NAME, t[0]))
@@ -155,7 +156,7 @@ Fwd_ArgList <<= PConst.VBAR + DELIMIST(BIND, delim=PConst.COMMA) + PConst.VBAR
 
 # TODO make TAG a head_annotation
 tagSen = TAG + pp.delimited_list(ATOM, delim=".")
-tagSen.set_parse_action(lambda s, l, t: (Sentence.build([x[1] for x in t[:]])))
+tagSen.set_parse_action(lambda s, l, t: (ValueFactory_i.sen([x[1] for x in t[:]])))
 
 Fwd_TagList <<= IndentedBlock(tagSen)(PDS.TAG)
 

@@ -65,7 +65,7 @@ class ContextSenBindQueryManager:
         for ctx in self.ctxs.active_list():
             sen_query = ctx[sen[0]]
             if sen_query not in self._duplication_filter:
-                self._duplication_filter[sen_query] = [ConstraintCollection.build(x, operators=self.ctxs._operators) for x in sen_query]
+                self._duplication_filter[sen_query] = [ConstraintCollection(x, operators=self.ctxs._operators) for x in sen_query]
 
             self.ctx_clauses[ctx.uuid] = self._duplication_filter[sen_query]
 

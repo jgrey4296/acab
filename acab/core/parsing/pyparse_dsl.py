@@ -159,6 +159,7 @@ class PyParseDSL(DSLImpl.DSL_Builder, dsl.DSL_Builder_i):
             return
 
         self._register_spec(PyParse_Spec(DEFAULT_HANDLER_SIGNAL))
+
     @EnsureDSLInitialised
     def parse(self, s:str) -> list[Sentence]:
         if not bool(self[DEFAULT_HANDLER_SIGNAL]):

@@ -29,7 +29,7 @@ def val_bind(val:AT.Value, bindings:dict[Any, Any]|AT.CtxIns) -> AT.Value:
     if val.is_var and val.value in bindings:
         assert(not val.params)
         # TODO this may be an unnecessary build
-        return AcabValue.build(bindings[val.value])
+        return AcabValue(bindings[val.value])
 
     if not any([x.is_var for x in val.params]):
         return val
@@ -99,7 +99,7 @@ def sen_bind(val:AT.Sentence, bindings:dict[Any, Any]|AT.CtxIns) -> AT.Sentence:
     if len(output) == 1 and isinstance(output[0], VI.Sentence_i):
         output = output[0].words
 
-    return Sentence.build(output,
+    return Sentence(output,
                           data=val.data,
                           params=val.params,
                           tags=val.tags)

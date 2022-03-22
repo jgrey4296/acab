@@ -127,7 +127,7 @@ class BreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantics_i):
                 # Always ignore the root node, so starting index is 1
                 words = [x.to_word() if not isinstance(x, Sentence_i) else x for x in updated_path[1:-1]]
                 words.append(updated_path[-1])
-                result_list.append(Sentence.build(words))
+                result_list.append(Sentence(words))
 
         return result_list
 

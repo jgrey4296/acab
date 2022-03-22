@@ -125,7 +125,7 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem.insert(sen, trie_struct)
         trie_sem.insert(sen2, trie_struct)
         # Construct context set
-        ctx_set = ContextSet.build()
+        ctx_set = ContextSet()
         # Construct query sentence
         query_sen = ValueFactory.sen(["a", "test", "sentence"])
         # Run query
@@ -146,7 +146,7 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem.insert(sen, trie_struct)
         trie_sem.insert(sen2, trie_struct)
         # Construct context set
-        ctx_set = ContextSet.build()
+        ctx_set = ContextSet()
         # Construct query sentence
         query_sen = ValueFactory.sen(["a", "test", "x"])
         query_sen[-1].data[BIND_V] = True
@@ -168,7 +168,7 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem.insert(sen, trie_struct)
         trie_sem.insert(sen2, trie_struct)
         # Construct context set
-        ctx_set = ContextSet.build()
+        ctx_set = ContextSet()
         # Construct query sentence
         query_sen = ValueFactory.sen(["a", "x", "x"])
         query_sen[-2].data[BIND_V] = True
@@ -193,7 +193,7 @@ class TrieSemanticTests(unittest.TestCase):
         op_loc_path       = ValueFactory.sen(["EQ"])
         operator_instance = EQ()
         op_ctx            = ContextInstance(data={str(op_loc_path): operator_instance})
-        ctx_set           = ContextSet.build(op_ctx)
+        ctx_set           = ContextSet(op_ctx)
         # Construct query sentence
         query_sen = ValueFactory.sen(["a", "test", "x"])
         query_sen[-1].data[BIND_V] = True
@@ -223,7 +223,7 @@ class TrieSemanticTests(unittest.TestCase):
         op_loc_path       = ValueFactory.sen(["EQ"])
         operator_instance = EQ()
         op_ctx            = ContextInstance(data={str(op_loc_path): operator_instance})
-        ctx_set           = ContextSet.build(op_ctx)
+        ctx_set           = ContextSet(op_ctx)
         # Construct query sentence
         query_sen = ValueFactory.sen(["a", "test", "x"])
         query_sen[-1].data[BIND_V] = True
@@ -262,7 +262,7 @@ class TrieSemanticTests(unittest.TestCase):
         # Note the .value's, because the operator doesn't have the unwrap decorator
         operator_instance = lambda a,b,data=None: a.value == b.value
         op_ctx            = ContextInstance(data={str(op_loc_path): operator_instance})
-        ctx_set           = ContextSet.build(op_ctx)
+        ctx_set           = ContextSet(op_ctx)
         # Construct query sentence
         query_sen = ValueFactory.sen(["a", "test", "x"])
         query_sen[-1].data[BIND_V] = True
@@ -290,7 +290,7 @@ class TrieSemanticTests(unittest.TestCase):
         a.b.c
         ~a.b.c?
         """
-        ctx_set     = ContextSet.build()
+        ctx_set     = ContextSet()
         node_sem    = BasicNodeSemantics().as_handler(signal="node")
         trie_sem    = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
@@ -310,7 +310,7 @@ class TrieSemanticTests(unittest.TestCase):
         a.b
         ~a.b.c?
         """
-        ctx_set     = ContextSet.build()
+        ctx_set     = ContextSet()
         node_sem    = BasicNodeSemantics().as_handler(signal="node")
         trie_sem    = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()

@@ -20,13 +20,13 @@ from acab.interfaces import semantic as SI
 config = GET()
 
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
-QUERY_SEM_HINT         = Sentence.build([config.prepare("SEMANTICS", "QUERY")()])
-ACTION_SEM_HINT        = Sentence.build([config.prepare("SEMANTICS", "ACTION")()])
-TRANSFORM_SEM_HINT     = Sentence.build([config.prepare("SEMANTICS", "TRANSFORM")()])
-RULE_SEM_HINT          = Sentence.build([config.prepare("SEMANTICS", "RULE")()])
-AGENDA_SEM_HINT        = Sentence.build([config.prepare("SEMANTICS", "AGENDA")()])
-LAYER_SEM_HINT         = Sentence.build([config.prepare("SEMANTICS", "LAYER")()])
-PIPELINE_SEM_HINT      = Sentence.build([config.prepare("SEMANTICS", "PIPELINE")()])
+QUERY_SEM_HINT         = Sentence([config.prepare("SEMANTICS", "QUERY")()])
+ACTION_SEM_HINT        = Sentence([config.prepare("SEMANTICS", "ACTION")()])
+TRANSFORM_SEM_HINT     = Sentence([config.prepare("SEMANTICS", "TRANSFORM")()])
+RULE_SEM_HINT          = Sentence([config.prepare("SEMANTICS", "RULE")()])
+AGENDA_SEM_HINT        = Sentence([config.prepare("SEMANTICS", "AGENDA")()])
+LAYER_SEM_HINT         = Sentence([config.prepare("SEMANTICS", "LAYER")()])
+PIPELINE_SEM_HINT      = Sentence([config.prepare("SEMANTICS", "PIPELINE")()])
 
 def DEFAULT_TRIE_SPEC(name="trie"):
     node_spec   = BasicSemanticSystem.Spec("atom").spec_from(SI.ValueSemantics_i)

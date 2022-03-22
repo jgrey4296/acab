@@ -3,8 +3,8 @@ Constructors for converting parse results -> Acab data
 """
 from acab.core.data.default_structure import SEMANTIC_HINT
 from acab.core.data.instruction import (ProductionComponent,
-                                                    ProductionContainer,
-                                                    ProductionStructure)
+                                        ProductionContainer,
+                                        ProductionStructure)
 from acab.core.data.sentence import Sentence
 from acab.core.data import default_structure as DS
 from acab.core.parsing import default_keys as PDS
@@ -21,7 +21,7 @@ def build_query_component(s, loc, toks):
     params = [x[0] if len(x) == 1 else x for x in params]
 
     return ValueRepeatAnnotation(DS.CONSTRAINT,
-                                 ProductionComponent.build(op, params=params))
+                                 ProductionComponent(op, params=params))
 
 def build_transform_component(s, loc, toks):
     params = []
@@ -31,15 +31,15 @@ def build_transform_component(s, loc, toks):
 
     op = toks[EXu.OPERATOR_S][0]
     if isinstance(op, str):
-        op = Sentence.build([op])
+        op = Sentence([op])
 
     rebind = toks[EXu.TARGET_S][0]
     params = [x[0] if len(x) == 1 else x for x in params]
 
-    return ProductionComponent.build(op,
-                                     params=params,
-                                     rebind=rebind,
-                                     sugared=EXu.LEFT_S in toks)
+    return ProductionComponent(op,
+                               params=params,
+                               rebind=rebind,
+                               sugared=EXu.LEFT_S in toks)
 
 def build_action_component(s, loc, toks):
     params = []
@@ -49,35 +49,35 @@ def build_action_component(s, loc, toks):
         params = toks[EXu.RIGHT_S][:]
     op = toks[EXu.OPERATOR_S][0]
     if not isinstance(op, Sentence):
-        op = Sentence.build([op])
+        op = Sentence([op])
     # params = [x[0] if len(x) == 1 else x for x in params]
-    return ProductionComponent.build(op,
-                                     params=params,
-                                     sugared=EXu.LEFT_S in toks)
+    return ProductionComponent(op,
+                               params=params,
+                               sugared=EXu.LEFT_S in toks)
 
 
 
 #--------------------
 def build_query(s, loc, toks):
     clauses = toks[:]
-    query = ProductionContainer.build(clauses,
-                                      data={SEMANTIC_HINT: EXu.QUERY_SEM_HINT})
+    query = ProductionContainer(clauses,
+                                data={SEMANTIC_HINT: EXu.QUERY_SEM_HINT})
     return [query]
 
 def build_transform(s, loc, toks):
     clauses = toks[:]
-    trans = ProductionContainer.build(clauses,
-                                      data={SEMANTIC_HINT: EXu.TRANSFORM_SEM_HINT})
+    trans = ProductionContainer(clauses,
+                                data={SEMANTIC_HINT: EXu.TRANSFORM_SEM_HINT})
     return [trans]
 
 def build_action(s, loc, toks):
     clauses = toks[:]
     clauses = [x if isinstance(x, ProductionComponent)
-               else ProductionComponent.build(Sentence.build([EXu.DEFAULT_ACTION_S]),
-                                              params=[x]) for x in clauses]
+               else ProductionComponent(Sentence([EXu.DEFAULT_ACTION_S]),
+                                        params=[x]) for x in clauses]
 
-    act = ProductionContainer.build(clauses,
-                                    data={SEMANTIC_HINT: EXu.ACTION_SEM_HINT})
+    act = ProductionContainer(clauses,
+                              data={SEMANTIC_HINT: EXu.ACTION_SEM_HINT})
 
     return [act]
 
@@ -115,9 +115,9 @@ def build_rule(s, loc, toks, sem_hint=None):
         sem_hint = EXu.RULE_SEM_HINT
 
 
-    rule = ProductionStructure.build(structure,
-                                     data={SEMANTIC_HINT: sem_hint,
-                                           DS.TYPE_INSTANCE: EXu.RULE_PRIM})
+    rule = ProductionStructure(structure,
+                               data={SEMANTIC_HINT: sem_hint,
+                                     DS.TYPE_INSTANCE: EXu.RULE_PRIM})
     return rule
 
 def build_constraint_list(s, loc, toks):
