@@ -29,22 +29,16 @@ Statement   = 'Instruction'
 Sen         = 'Sentence'
 Node        = 'AcabNode'
 
+class ConstraintMeta(type(Protocol)):
+    def __init__(cls, name:str, bases:tuple[type, ...], data:dict[str,Any]):
+        super(ContextMeta, cls).__init__(name, bases, data)
 
-@dataclass(frozen=True)
-class ConstraintCollection(CtxInt.Constraint_i):
-    """ Simple container of all ProductionComponent constraints a word possesses,
-    separated into subtypes """
-    sieve           : ClassVar[list[Callable]] = AcabSieve(default_sieve)
-    operators       : ClassVar[CtxIns]         = None
-
-    @staticmethod
-    def build(word, *, operators=None, sieve_fns:list[Callable]=None):
-        """ Run the sieve on a word to generate the test set groupings """
+    def __call__(cls, word, *, operators=None, sieve_fns:list[Callable]=None):
         if operators is not None:
-            ConstraintCollection.operators = operators
+            cls.operators = operators
 
         if sieve_fns is None:
-            sieve = ConstraintCollection.sieve
+            sieve = cls.sieve
         else:
             sieve = AcabSieve(seive_fns)
 
@@ -59,7 +53,20 @@ class ConstraintCollection(CtxInt.Constraint_i):
                 break
 
 
-        return ConstraintCollection(word, tests)
+        return Super(ConstraintMeta, cls).__call__(word, tests)
+
+
+@dataclass(frozen=True)
+class ConstraintCollection(CtxInt.Constraint_i, metaclass=ConstraintMeta):
+    """ Simple container of all ProductionComponent constraints a word possesses,
+    separated into subtypes """
+    sieve           : ClassVar[list[Callable]] = AcabSieve(default_sieve)
+    operators       : ClassVar[CtxIns]         = None
+
+    @staticmethod
+    def build(word, *, operators=None, sieve_fns:list[Callable]=None):
+        """ Run the sieve on a word to generate the test set groupings """
+        raise DeprecationWarning()
 
 
     def test(self, node, ctx):
