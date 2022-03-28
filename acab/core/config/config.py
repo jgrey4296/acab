@@ -33,8 +33,8 @@ from acab import types as AT
 from acab.core.config import actions as CA
 from acab.core.util.singletons import SingletonMeta
 from acab.error.config import AcabConfigException
-from acab.interfaces.config import Config_i, ConfigSpec_d
 from acab.error.protocol import AcabProtocolError as APE
+from acab.interfaces.config import Config_i, ConfigSpec_d
 
 logging = root_logger.getLogger(__name__)
 
@@ -45,48 +45,42 @@ def GET(*args:str, hooks:None|list[AT.fns.GenFunc]=None) -> Config_i:
     config = AcabConfig(*args, hooks=hooks)
     return config
 #--------------------------------------------------
-# pylint: disable-next=too-many-instance-attributes, too-few-public-methods
+# pylint: disable-next=too-few-public-methods
 class ConfigSpec(ConfigSpec_d):
     """ Dataclass to describe a config file value,
     and any transforms it needs prior to use """
 
     def __call__(self) -> Any:
-        return AcabConfig()(self)
+        config = AcabConfig() #type:ignore
+        return config(self)
 
 class ConfigSingleton(type(Protocol)):
     """
-    Create an instance field to hold the singleton
-    For Each Class Hierarchy
-    A Subclass of Protocol's meta class, so singletons can be explicit protocol implementers
+    A Subclass of Protocol's meta class,
+    so singletons can be explicit protocol implementers
     """
-    def __init__(cls, name:str, bases:tuple[type, ...], data:dict[str,Any]):
-        super(ConfigSingleton, cls).__init__(name, bases, data)
-        if not hasattr(cls, "_instance"):
-            cls._instance = None
+    _instance : ClassVar[Config_i]
 
-    def __call__(cls, *paths:str, hooks:None|list[Callable[..., Any]]=None) -> type:
+    def __init__(cls, name:str, bases:tuple[type, ...], data:dict[str,Any]):
+        super(ConfigSingleton, cls).__init__(name, bases, data) #type:ignore
+
+
+    def __call__(cls, *paths:str, hooks:None|list[Callable[..., Any]]=None) -> Config_i:
         """
         If config Exists, then update it's paths and hooks, otherwise build
         """
-        paths = paths or []
-        _hooks = set()
+        paths  = paths or tuple()
+        _hooks = set(hooks or [])
 
-        if hooks is None:
-            pass
-        elif isinstance(hooks, list):
-            _hooks.update(hooks)
-        elif isinstance(hooks, callable):
-            _hooks.add(hooks)
-
-        if cls._instance is None:
+        if not hasattr(ConfigSingleton, "_instance") or ConfigSingleton._instance is None:
             logging.info(f"Building {cls.__module__}.{cls.__qualname__} Singleton")
-            cls._instance = super().__call__(paths, _hooks)
-        else:
-            logging.info(f"Updating Hooks and Read List of {cls.__module__}.{cls.__qualname__}")
-            cls._instance.hooks.update(_hooks)
-            cls._instance.read(list(paths))
+            ConfigSingleton._instance : Config_i = super().__call__(paths, _hooks)
+        elif bool(hooks) or bool(paths):
+            logging.info(f"Updating Hooks and Read List of {cls.__module__}.{cls.__qualname__}") #type:ignore
+            ConfigSingleton._instance.hooks.update(_hooks) #type:ignore
+            ConfigSingleton._instance.read(list(paths)) #type:ignore
 
-        return cls._instance
+        return ConfigSingleton._instance
 
 
 
@@ -97,31 +91,28 @@ class AcabConfig(Config_i, metaclass=ConfigSingleton):
     Uses ${SectionName:Key} interpolation in values,
     Turns multi-line values into lists
     """
-    paths     : InitVar[None|list[str]]      = field(default=None)
-    hooks     : set[GenFunc]                 = field(default_factory=set)
+    paths     : InitVar[None|list[str]]         = field(default=None)
+    hooks     : set[GenFunc]                    = field(default_factory=set)
 
-    _files    : set[str]                     = field(init=False, default_factory=set)
-    _config   : ConfigParser                 = field(init=False)
-    _overrides: dict[str, str]               = field(init=False, default_factory=override_constructor)
+    _files    : set[str]                        = field(init=False, default_factory=set)
+    _config   : ConfigParser                    = field(init=False)
+    _overrides: dict[str, str]                  = field(init=False, default_factory=override_constructor)
 
     # Populated by hooks:
-    enums              : dict[str, EnumMeta] = field(init=False, default_factory=dict)
-    defaults           : dict[str, Enum]     = field(init=False, default_factory=dict)
-    syntax_extension   : dict[str, Enum]     = field(init=False, default_factory=dict)
-    printing_extension : dict[Enum, str]     = field(init=False, default_factory=dict)
+    enums              : dict[str, EnumMeta]    = field(init=False, default_factory=dict)
+    defaults           : dict[str, Enum]        = field(init=False, default_factory=dict)
+    syntax_extension   : dict[str, Enum]        = field(init=False, default_factory=dict)
+    printing_extension : dict[Enum, str]        = field(init=False, default_factory=dict)
 
-    actions   : dict[Any, GenFunc]           = field(init=False, default_factory=lambda: CA.DEFAULT_ACTIONS)
-    actions_e : ClassVar[Type[EnumMeta]]     = CA.ConfigActions
+    actions   : dict[Any, GenFunc]              = field(init=False, default_factory=lambda: CA.DEFAULT_ACTIONS)
+    actions_e : ClassVar[Type[CA.ConfigActions]]= CA.ConfigActions
 
-    @staticmethod
-    def Get(*paths: str, hooks:None|list[Callable[..., Any]]=None) -> AcabConfig:
-        """ Get the AcabConfig Singleton. optionally load paths of config files """
-        raise DeprecationWarning()
 
-    def __post_init__(self, paths: list[str]):
+    def __post_init__(self, paths: None|list[str]):
         self._config = ConfigParser(interpolation=ExtendedInterpolation(),
                                     allow_no_value=True)
-        self._config.optionxform = lambda x: x
+        # Overrides ConfigParser's default of lowercasing everything
+        self._config.optionxform = lambda x: x #type:ignore
         if bool(paths):
             self.read(paths)
 
@@ -132,7 +123,7 @@ class AcabConfig(Config_i, metaclass=ConfigSingleton):
         #     breakpoint()
 
     def __call__(self, lookup):
-        return self.value(lookup)
+        return self.value(lookup) #type:ignore
 
     def __contains__(self, key):
         in_print    = key in self.printing_extension
@@ -141,7 +132,15 @@ class AcabConfig(Config_i, metaclass=ConfigSingleton):
         in_defaults = key in self.defaults
         return any([in_print, in_base, in_enums, in_defaults])
 
-    def value(self, val: Enum|ConfidSpec_d):
+    def _run_hooks(self):
+        for hook in self.hooks:
+            hook(self)
+
+    @property
+    def loaded(self):
+        return bool(self._files)
+
+    def value(self, val: Enum|ConfigSpec_d):
         """ Unified value retrieval """
         if isinstance(val, Enum):
             return self._enum_value(val)
@@ -167,7 +166,7 @@ class AcabConfig(Config_i, metaclass=ConfigSingleton):
 
         return self.defaults[entry]
 
-    def check(self, spec: ConfigSpec):
+    def check(self, spec: ConfigSpec_d) -> ConfigSpec_d:
         """
         Returns an accessor tuple for later,
         while guaranteeing the section:key:value does exist
@@ -190,10 +189,6 @@ class AcabConfig(Config_i, metaclass=ConfigSingleton):
         return spec
 
 
-    @property
-    def loaded(self):
-        return bool(self._files)
-
     def read(self, paths: list[str]):
         """ DFS over provided paths, finding the cls.suffix filetype (default=.config) """
         full_paths = []
@@ -204,11 +199,11 @@ class AcabConfig(Config_i, metaclass=ConfigSingleton):
                 full_paths.append(expanded)
                 continue
 
-            assert(isdir(expanded)), breakpoint()
+            assert(isdir(expanded))
             found = [join(expanded, x) for x in listdir(expanded)]
             full_paths += [x for x in found if splitext(x)[1] == self.suffix]
 
-        new_paths = [x for x in full_paths if x not in self._files]
+        new_paths : list[str] = [x for x in full_paths if x not in self._files]
         if bool(new_paths):
             self._config.read(new_paths)
             self._files.update(new_paths)
@@ -216,19 +211,16 @@ class AcabConfig(Config_i, metaclass=ConfigSingleton):
         return self
 
 
-    def _run_hooks(self):
-        for hook in self.hooks:
-            hook(self)
-
-    def override(self, spec: ConfigSpec, value):
+    def override(self, spec: ConfigSpec_d, value:str) -> None:
         assert(isinstance(spec, ConfigSpec))
         section = spec.section
         key     = spec.key
-        self._overrides[section][key] = value
+        # A default dict with a dict inside:
+        self._overrides[section][key] = value #type:ignore
 
 
 
-    def _enum_value(self, val):
+    def _enum_value(self, val:Enum) -> str:
         """ Lookup the print representation of an enum value """
         if val not in self.printing_extension:
             raise AcabConfigException("Unrecognised Enum request: {val}")
@@ -236,6 +228,7 @@ class AcabConfig(Config_i, metaclass=ConfigSingleton):
         return self.printing_extension[val]
 
 
+    #pylint: disable-next=too-many-branches
     def _spec_value(self, spec: ConfigSpec):
         """
         Get a lookup tuple at run time
@@ -247,29 +240,28 @@ class AcabConfig(Config_i, metaclass=ConfigSingleton):
             return dict(self._config[spec.section].items())
         elif in_file and spec.as_enum and spec.key is None:
             values = " ".join(self._config[spec.section].keys())
-            self.enums[spec.section] = Enum(spec.section, values)
+            # Runtime creation of enums
+            self.enums[spec.section] = Enum(spec.section, values) #type:ignore
             return self.enums[spec.section]
         elif not in_file:
             raise AcabConfigException(f"missing util value: {spec.section} {spec.key}")
 
         # try:
-        value = None
+        value = spec.key
         in_override= spec.key is None or spec.key in self._overrides[spec.section]
         in_section = spec.key is None or spec.key in self._config[spec.section]
 
         if in_override:
-            value = self._overrides[spec.section][spec.key]
-        elif in_section:
-            value = self._config[spec.section][spec.key]
+            # Default dict with dict inside:
+            value = self._overrides[spec.section][spec.key] #type:ignore
+        elif in_section and self._config[spec.section][spec.key] is not None:
+            value = self._config[spec.section][spec.key] #type:ignore
         elif not in_section:
-            raise AcabConfigException(f"missing util value: {section} {key}")
+            raise AcabConfigException(f"missing util value: {spec.section} {spec.key}")
 
-        if value is None:
-            value = spec.key
 
         actions = spec.actions or []
-
-        for action in spec.actions:
+        for action in actions:
             value = self.actions[action](value)
 
         return value
