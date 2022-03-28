@@ -1,4 +1,4 @@
-import logging as root_logger
+import logging as logmod
 import re
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
@@ -20,7 +20,7 @@ from acab.core.parsing.consts import (CPAR, DBLCOLON, NG, OPAR, TAG, N,
 from acab.core.parsing.indented_block import IndentedBlock
 from acab.interfaces.value import ValueFactory_i
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 ParserElement = AT.Parser
 

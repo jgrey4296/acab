@@ -1,5 +1,5 @@
 """ Trie-based parser for the transform component of rules """
-import logging as root_logger
+import logging as logmod
 
 import pyparsing as pp
 from acab.core.config.config import AcabConfig
@@ -15,7 +15,7 @@ from acab.core.parsing.indented_block import IndentedBlock
 
 from .FactParser import SENTENCE, op_sentence, SEN_NO_MODAL
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 # Hotloaded Transform Operators
 HOTLOAD_TRANS_OP         = pp.Forward()

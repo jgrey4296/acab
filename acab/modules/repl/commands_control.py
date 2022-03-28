@@ -3,7 +3,7 @@ Commands for the REPL
 
 """
 import importlib
-import logging as root_logger
+import logging as logmod
 import re
 import traceback
 from datetime import datetime
@@ -13,7 +13,7 @@ from os.path import abspath, exists, expanduser, split, splitext
 import acab
 import pyparsing as pp
 
-config = acab.setup()
+config = acab.GET()
 
 from acab.core.data.instruction import (ProductionOperator,
                                         ProductionStructure)
@@ -23,7 +23,7 @@ from acab.modules.repl import ReplParser as RP
 from acab.modules.repl.repl_commander import register
 from acab.modules.repl.util import ConfigBasedLoad
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 
 @register

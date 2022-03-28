@@ -6,8 +6,8 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 from enum import Enum
-import logging as root_logger
-logging = root_logger.getLogger(__name__)
+import logging as logmod
+logging = logmod.getLogger(__name__)
 
 from acab import types as AT
 # Type declarations:

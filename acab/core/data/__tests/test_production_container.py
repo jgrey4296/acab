@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import abc
-import logging as root_logger
+import logging as logmod
 import unittest
 import unittest.mock as mock
 from dataclasses import InitVar, dataclass, field
@@ -12,7 +12,7 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     Protocol, Sequence, Tuple, TypeAlias, TypeGuard, TypeVar,
                     cast, final, overload, runtime_checkable)
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 from acab import setup
 from acab import types as AT
 
@@ -58,14 +58,14 @@ class ContainerTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        LOGLEVEL = root_logger.DEBUG
+        LOGLEVEL = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        root_logger.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
+        logmod.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
 
-        console = root_logger.StreamHandler()
-        console.setLevel(root_logger.INFO)
-        root_logger.getLogger('').addHandler(console)
-        logging = root_logger.getLogger(__name__)
+        console = logmod.StreamHandler()
+        console.setLevel(logmod.INFO)
+        logmod.getLogger('').addHandler(console)
+        logging = logmod.getLogger(__name__)
 
     #----------
     def test_container_init(self):

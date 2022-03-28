@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Main System
 from __future__ import annotations
-import logging as root_logger
+import logging as logmod
 from dataclasses import InitVar, dataclass, field
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
@@ -19,7 +19,7 @@ from acab.core.semantics import basic
 from acab.error.semantic import AcabSemanticException
 from acab.modules.context.context_set import ContextSet
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 Sentence         = AT.Sentence
 CtxSet           = AT.CtxSet

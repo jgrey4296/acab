@@ -1,7 +1,7 @@
 """
 Classes for defining types
 """
-import logging as root_logger
+import logging as logmod
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
@@ -18,7 +18,7 @@ from acab.modules.analysis.typing.util import (SUM_DEFINITION, TYPE_DEF_S,
 
 from .acab_type import TypeStatement
 
-logging         = root_logger.getLogger(__name__)
+logging         = logmod.getLogger(__name__)
 config          = AcabConfig()
 
 PRIMITIVE_S     = config.prepare("Typing.Primitives", "PRIMITIVE")()

@@ -6,7 +6,7 @@ operator type description
 type class description
 
 """
-import logging as root_logger
+import logging as logmod
 
 import pyparsing as pp
 from acab.core.config.config import AcabConfig
@@ -20,7 +20,7 @@ from acab.modules.analysis.typing import util as TYU
 
 from . import util as TU
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 config = AcabConfig()
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #!/usr/bin/env python3
-import logging as root_logger
+import logging as logmod
 # https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
 from typing import List, Set, Dict, Tuple, Optional, Any
 from typing import Callable, Iterator, Union, Match
@@ -21,7 +21,7 @@ from acab.modules.analysis.typing import exceptions as te
 from acab.modules.analysis.typing import util
 from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 # Log messages to use, because they are long:
 LOG_MESSAGES = {}

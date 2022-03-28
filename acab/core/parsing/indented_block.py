@@ -1,11 +1,11 @@
-import logging as root_logger
+import logging as logmod
 
 import pyparsing as pp
 from pyparsing import (Empty, FollowedBy, OneOrMore, Optional,
                        ParseElementEnhance, ParserElement, col,
                        conditionAsParseAction, match_only_at_col)
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 
 class IndentedBlock(ParseElementEnhance):

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import logging as root_logger
+import logging as logmod
 import pyparsing as pp
 
 from acab.core.parsing.consts import DOUBLEBAR, COLON, COMMA, DBLCOLON, DELIM, component_gap

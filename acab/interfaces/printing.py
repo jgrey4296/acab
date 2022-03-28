@@ -2,7 +2,7 @@
 # pyright: reportGeneralTypeIssues=warning
 from __future__ import annotations
 import abc
-import logging as root_logger
+import logging as logmod
 from dataclasses import InitVar, dataclass, field
 from enum import Enum
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
@@ -23,7 +23,7 @@ from acab.error.semantic import AcabSemanticException
 from acab.interfaces import handler_system as HS
 from acab.interfaces.sub_protocols import handler_system as HSubP
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 config = GET()
 
 Config_A         : TypeAlias = AT.Config

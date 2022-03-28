@@ -18,7 +18,7 @@ Meanwhile ValueSemantics_i are concerned only with the values and structures the
 # pylint: disable=multiple-statements,protected-access,too-many-ancestors
 from __future__ import annotations
 import abc
-import logging as root_logger
+import logging as logmod
 from dataclasses import InitVar, dataclass, field
 from enum import Enum
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
@@ -30,7 +30,7 @@ if TYPE_CHECKING:
     # tc only imports
     pass
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 import acab.interfaces.handler_system as HS
 from acab import types as AT

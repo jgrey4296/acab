@@ -6,7 +6,7 @@ A DSL interface for the system, which
 from __future__ import annotations
 import abc
 import collections.abc as cABC
-import logging as root_logger
+import logging as logmod
 import traceback
 from dataclasses import dataclass, field
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Generic, Iterable,
@@ -17,7 +17,7 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Generic, Iterable,
 if TYPE_CHECKING:
     import io
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 from acab import types as AT
 from acab.core.decorators.dsl import EnsureDSLInitialised

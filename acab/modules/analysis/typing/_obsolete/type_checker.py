@@ -1,7 +1,7 @@
 """
 
 """
-import logging as root_logger
+import logging as logmod
 from functools import partial
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
@@ -34,7 +34,7 @@ from .values import type_definition as TD
 from .values.operator_definition import OperatorDefinition
 from .values.type_definition import SumTypeDefinition, TypeDefinition
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 
 class TypeChecker:

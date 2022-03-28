@@ -1,6 +1,6 @@
 # https://docs.python.org/3/library/cmd.html
 import cmd
-import logging as root_logger
+import logging as logmod
 import sys
 import pyparsing as pp
 from dataclasses import InitVar, dataclass, field
@@ -9,11 +9,13 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 import traceback
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
+
+trace_logger = logmod.getLogger('acab.repl.trace')
 
 import acab
 
-config = acab.setup()
+config = acab.GET()
 
 from acab.interfaces.context import ContextSet_i
 from acab.interfaces.engine import AcabEngine_i

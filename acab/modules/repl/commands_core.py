@@ -2,12 +2,12 @@ from datetime import datetime
 from enum import Enum
 from os.path import split, splitext, exists, expanduser, abspath
 import importlib
-import logging as root_logger
+import logging as logmod
 import re
 import traceback
 
 import acab
-config = acab.setup()
+config = acab.GET()
 
 from acab.interfaces.engine import AcabEngine_i
 from acab.interfaces.value import Instruction_i
@@ -19,7 +19,7 @@ from acab.core.data.instruction import ProductionContainer
 from acab.modules.repl.util import init_inspect
 from acab.error.semantic import AcabSemanticException
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 @register
 def do_init(self, line):

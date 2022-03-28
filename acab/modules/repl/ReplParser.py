@@ -2,7 +2,7 @@
 The parser for the REPL
 
 """
-import logging as root_logger
+import logging as logmod
 
 import pyparsing as pp
 from acab.core.config.config import AcabConfig
@@ -10,7 +10,7 @@ from acab.core.parsing import consts as PU
 from acab.core.parsing import parsers as AP
 from acab.modules.repl.util import build_slice
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 config = AcabConfig()
 
 rst = pp.delimited_list(pp.rest_of_line, delim=pp.White("\n\r"), combine=True).leave_whitespace()

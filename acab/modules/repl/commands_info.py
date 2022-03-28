@@ -1,5 +1,5 @@
 import importlib
-import logging as root_logger
+import logging as logmod
 import re
 from collections import defaultdict
 from datetime import datetime
@@ -9,7 +9,7 @@ from os.path import abspath, exists, expanduser, split, splitext
 import acab
 import pyparsing as pp
 
-config = acab.setup()
+config = acab.GET()
 
 from acab.core.data.instruction import ProductionOperator, ProductionStructure
 from acab.core.parsing import debug_funcs as DBF
@@ -17,7 +17,7 @@ from acab.modules.repl import ReplParser as RP
 from acab.modules.repl.repl_commander import register
 from acab.modules.repl.util import print_contexts
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 # TODO shift this into config
 SPLIT_RE         = re.compile("[ .!?/]")
@@ -207,10 +207,10 @@ def do_log(self, line):
 @register
 def do_fmt(self, line):
     """ Change the Log format """
-    root = root_logger.getLogger('')
+    root = logmod.getLogger('')
     handler = root.handlers[1]
     if bool(line):
-        handler.setFormatter(root_logger.Formatter(line))
+        handler.setFormatter(logmod.Formatter(line))
         print(f"Set Console Log Format to: {line}")
     else:
         fmt = handler.formatter._fmt
@@ -220,10 +220,10 @@ def do_fmt(self, line):
 @register
 def do_filter(self, line):
     """ Add or remove a logging filter """
-    root = root_logger.getLogger('')
+    root = logmod.getLogger('')
     handler = root.handlers[1]
     if bool(line):
-        handler.addFilter(root_logger.Filter(line))
+        handler.addFilter(logmod.Filter(line))
         print(f"Set Console Log Format to: {line}")
     elif bool(handler.filters):
         handler.removeFilter(handler.filters[-1])

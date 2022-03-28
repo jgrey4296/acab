@@ -16,7 +16,7 @@ Actions are available for preprocessing the value
 from __future__ import annotations
 
 import importlib
-import logging as root_logger
+import logging as logmod
 from collections import defaultdict
 from configparser import ConfigParser, ExtendedInterpolation
 from dataclasses import InitVar, dataclass, field
@@ -36,7 +36,7 @@ from acab.error.config import AcabConfigException
 from acab.error.protocol import AcabProtocolError as APE
 from acab.interfaces.config import Config_i, ConfigSpec_d
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 GenFunc : TypeAlias = AT.fns.GenFunc
 override_constructor : Callable[..., defaultdict[str,Any]] = lambda: defaultdict(lambda: {})

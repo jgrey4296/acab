@@ -1,9 +1,9 @@
-import logging as root_logger
+import logging as logmod
 import unittest
-# Setup root_logger:
+# Setup logmod:
 from os.path import split, splitext
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 ##############################
 
 import acab
@@ -24,16 +24,16 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        root_logger.getLogger('').setLevel(root_logger.WARNING)
+        logmod.getLogger('').setLevel(logmod.WARNING)
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
 
-        file_h = root_logger.FileHandler(LOG_FILE_NAME, mode='w')
-        file_h.setLevel(root_logger.DEBUG)
+        file_h = logmod.FileHandler(LOG_FILE_NAME, mode='w')
+        file_h.setLevel(logmod.DEBUG)
 
-        console = root_logger.StreamHandler()
-        console.setLevel(root_logger.INFO)
+        console = logmod.StreamHandler()
+        console.setLevel(logmod.INFO)
 
-        logging = root_logger.getLogger(__name__)
+        logging = logmod.getLogger(__name__)
         logging.root.addHandler(console)
         logging.root.addHandler(file_h)
 

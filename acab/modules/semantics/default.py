@@ -79,7 +79,7 @@ def DEFAULT_SEMANTICS():
 
 def EXLO_SEMANTICS():
     node_handler = ExclusionNodeSemantics().as_handler(signal="atom")
-    trie_sem     = BreadthTrieSemantics(init_handlers=[node_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+    trie_sem     = BreadthTrieSemantics(init_specs=[], sieve_fns=[], init_handlers=[node_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
 
     trie_handler = trie_sem.as_handler(signal="trie",
                                        struct=BasicNodeStruct.build_default(),
@@ -89,7 +89,8 @@ def EXLO_SEMANTICS():
     handlers += [node_handler, trie_handler, trie_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)]
 
     return BasicSemanticSystem(init_specs=DEFAULT_SPECS(),
-                               init_handlers=handlers)
+                               init_handlers=handlers,
+                               sieve_fns=[])
 
 def EXLO_PROXY_SEMANTICS():
     exlo = EXLO_SEMANTICS()

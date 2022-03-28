@@ -38,7 +38,7 @@ Where should cleanup, and pipeline/layer state change be described?
 Where to specify api connections?
 
 """
-import logging as root_logger
+import logging as logmod
 import pyparsing as pp
 
 from acab.core.config.config import AcabConfig
@@ -47,7 +47,7 @@ from acab.core.parsing.consts import PIPE_HEAD
 from acab.core.parsing.funcs import make_pipeline
 from acab.core.data.instruction import ProductionContainer
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 config        = AcabConfig()
 QUERY_S     = config.prepare("Parse.Structure", "QUERY")()

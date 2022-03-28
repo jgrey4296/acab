@@ -18,7 +18,7 @@ Meanwhile ValueSemantics_i are concerned only with the values and structures the
 from __future__ import annotations
 
 import abc
-import logging as root_logger
+import logging as logmod
 from dataclasses import InitVar, dataclass, field
 from enum import Enum
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
@@ -31,7 +31,7 @@ if TYPE_CHECKING:
     # tc only imports
     pass
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 import acab.interfaces.handler_system as HS
 from acab import types as AT
@@ -163,7 +163,7 @@ class _StatementSemantics_p(HSubP.HandlerComponent_p, Protocol):
 
 # Interfaces ##################################################################
 @dataclass #type:ignore[misc]
-class SemanticSystem_i(HS.HandlerSystem_i,_SemanticSystem_p):
+class SemanticSystem_i(HS.HandlerSystem_i, _SemanticSystem_p):
     """
     Map Instructions to Instruction/Struct_A Semantics
     """
@@ -172,6 +172,7 @@ class SemanticSystem_i(HS.HandlerSystem_i,_SemanticSystem_p):
     ctx_set         : CtxSet           = field(kw_only=True)
     _operator_cache : None|CtxIns    = field(init=False, default=None)
 
-class StructureSemantics_i(HS.HandlerComponent_i, _StructureSemantics_p): pass
+@dataclass
+class StructureSemantics_i(HS.HandlerComponent_i, HS.HandlerSystem_i, _StructureSemantics_p): pass
 class ValueSemantics_i(HS.HandlerComponent_i, _ValueSemantics_p): pass
 class StatementSemantics_i(HS.HandlerComponent_i, _StatementSemantics_p): pass

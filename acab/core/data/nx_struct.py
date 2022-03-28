@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from weakref import WeakValueDictionary
-import logging as root_logger
+import logging as logmod
 
 import networkx as nx
 from acab.core.config.config import AcabConfig
@@ -9,7 +9,7 @@ from acab.core.data.node import AcabNode
 from acab.core.data.value import AcabValue
 from acab.core.data.acab_struct import AcabStruct
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 config  = AcabConfig()
 
 class NXGraphStruct(AcabStruct):

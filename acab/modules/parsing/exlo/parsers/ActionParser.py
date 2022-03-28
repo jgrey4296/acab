@@ -1,5 +1,5 @@
 """ A Trie based Parser module for the creation of action """
-import logging as root_logger
+import logging as logmod
 
 import pyparsing as pp
 from acab.core.config.config import AcabConfig
@@ -15,7 +15,7 @@ from acab.core.parsing.indented_block import IndentedBlock
 
 from .FactParser import SENTENCE, op_sentence
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 HOTLOAD_OPERATORS         = pp.Forward()
 HOTLOAD_OPERATORS.set_name("hotload_operators")

@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
-import logging as root_logger
+import logging as logmod
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 from dataclasses import FrozenInstanceError, InitVar, dataclass, field, replace
 from enum import Enum

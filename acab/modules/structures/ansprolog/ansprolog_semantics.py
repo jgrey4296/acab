@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import logging as root_logger
+import logging as logmod
 
 import acab.interfaces.semantic as SI
 import acab.error.semantic as ASErr
@@ -9,7 +9,7 @@ from acab.core.data.instruction import Instruction
 from acab.core.data.sentence import Sentence
 
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 config = AcabConfig()
 
 CONSTRAINT_S     = config.prepare("Value.Structure", "CONSTRAINT")()

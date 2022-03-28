@@ -2,7 +2,7 @@
 Provide a number of individual interfaces for top level Engine functionality
 """
 import abc
-import logging as root_logger
+import logging as logmod
 import re
 from dataclasses import dataclass, field
 from types import ModuleType
@@ -10,7 +10,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 from acab.core.config.config import GET
 from acab.core.data.instruction import ProductionOperator, ActionOperator
@@ -69,7 +69,7 @@ class ModuleLoader(ModuleLoaderBase, ModuleLoader_i):
             loc_op_triple       =  [(base_path, x, y) for x,y in mod_contents if applicable(y, (ProductionOperator, ActionOperator))]
             instanced_operators =  [(mod, name, y() if needs_init(y) else y) for mod, name, y in loc_op_triple]
             words_op            =  [(prep_op_path(mod, name), y) for mod, name, y in instanced_operators]
-            sentences           =  [Sentence.build(xs).attach_statement(y) for xs, y in words_op]
+            sentences           =  [Sentence(xs).attach_statement(y) for xs, y in words_op]
             operators           += sentences
 
             # Get printers

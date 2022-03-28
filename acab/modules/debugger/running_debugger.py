@@ -1,18 +1,20 @@
 # adapted from https://stackoverflow.com/questions/50691169
-import logging as root_logger
+import logging as logmod
 import sys
 from bdb import Breakpoint
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
+trace_logger = logmod.getLogger('acab.repl.trace')
 
 from acab.core.decorators.util import singleton
 from acab.interfaces.debugger import AcabDebugger_i
 
 # TODO track semantic debugging in RunningDebugger
 # TODO refactor this to be a handler registration
+# TODO add acab specific do_ methods
 def SemanticBreakpointDecorator(f):
 
     def wrapped(self, *args, **kwargs):
@@ -39,6 +41,16 @@ def SemanticBreakpointDecorator(f):
 
 @singleton
 class RunningDebugger(AcabDebugger_i):
+
+
+    def precmd(self, line):
+        trace_logger.info("[db]>>> " + line)
+        return line
+
+    def do_help(self, *args):
+        print("Acab Debugger Help")
+        super().do_help(*args)
+
 
     def set_running_trace(self, frame=None):
         """ Start debugging from frame, without pausing execution. """

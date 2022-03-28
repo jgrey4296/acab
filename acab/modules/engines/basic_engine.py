@@ -5,7 +5,7 @@ Engine's are the main programming dsl_fragments.
 You create one with a working memory, load some modules,
 and can then parse and run an agent DSL pipeline.
 """
-import logging as root_logger
+import logging as logmod
 from dataclasses import dataclass, field
 from os.path import abspath, exists, expanduser, split
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
@@ -26,7 +26,7 @@ from acab.interfaces.printing import PrintSystem_i
 from acab.interfaces.semantic import SemanticSystem_i
 from acab.interfaces.value import Sentence_i, Value_i
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 config = AcabConfig()
 
 CtxSet      = 'ContextSet_i'

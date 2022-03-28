@@ -5,12 +5,12 @@ from enum import Enum
 from fractions import Fraction
 from math import gcd
 from functools import reduce
-import logging as root_logger
+import logging as logmod
 
 from acab.core.data.sentence import Sentence
 from acab.core.config.config import AcabConfig
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 config = AcabConfig()
 

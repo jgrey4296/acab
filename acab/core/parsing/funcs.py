@@ -3,7 +3,7 @@
 Defines functions for parsers and parse -> data transform
 
 """
-import logging as root_logger
+import logging as logmod
 
 import pyparsing as pp
 from acab.core.config.config import AcabConfig
@@ -19,7 +19,7 @@ import acab.core.data.default_structure as DS
 import acab.core.parsing.default_keys as PDS
 from acab.core.data.factory import ValueFactory
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 config = AcabConfig()
 SEMANTIC_HINT    = DS.SEMANTIC_HINT

@@ -1,7 +1,7 @@
 """
 The Core Value_A Classes: AcabValue, Instruction_A, Sentence
 """
-import logging as root_logger
+import logging as logmod
 from copy import deepcopy
 from dataclasses import InitVar, dataclass, field, replace
 from fractions import Fraction
@@ -25,7 +25,7 @@ from acab.error.protocol import AcabProtocolError as APE
 from acab.core.data.factory import ValueFactory
 from acab.core.data.value_meta import ValueMeta
 
-logging          = root_logger.getLogger(__name__)
+logging          = logmod.getLogger(__name__)
 
 config           = AcabConfig()
 BIND_SYMBOL      = config.prepare("Symbols", "BIND")()
@@ -54,7 +54,7 @@ class AcabValue(VP.ValueProtocolsImpl, VI.Value_i, metaclass=ValueMeta):
 
     @classmethod
     def _handle_nesting(cls, value, name=None, data=None, params=None, tags=None, _type=None, **kwargs):
-        logging.debug("Attempted to nest a value, copying")
+        logging.debug("Attempted to nest a value, copying: {}", value)
         new_data = value.data.copy()
         new_data.update(data or {})
         # name = "nested"

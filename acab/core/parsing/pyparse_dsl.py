@@ -3,7 +3,7 @@
 A DSL interface for the system, which
 
 """
-import logging as root_logger
+import logging as logmod
 import traceback
 from dataclasses import dataclass, field
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
@@ -13,7 +13,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 import acab.core.parsing.debug_funcs as DBF
 import pyparsing as pp
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 from acab import GET
 from acab import types as AT
@@ -117,7 +117,7 @@ class PyParse_Spec(DSLImpl.DSL_Spec, dsl.DSL_Spec_i):
         # TODO improve logic with flags
         #
         if not bool(results):
-            logging.debug(f"No Parsers provided for signal: `{self.signal}`")
+            logging.debug("No Parsers provided for signal: `{}`", self.signal)
             output = pp.NoMatch()
         elif len(results) == 1:
             output = results[0]
@@ -129,10 +129,10 @@ class PyParse_Spec(DSLImpl.DSL_Spec, dsl.DSL_Spec_i):
             # At this point, parser is constructed, and will not change again
             # however, *can not* deep-copy the parser for multiple versions.
             #
-            # Propagate parser names, even through Forwards
-            deep_update_names(struct)
             # Then for next use of parsers to generate their own name again
             clear_parser_names(struct)
+            # Propagate parser names, even through Forwards
+            deep_update_names(struct)
 
         return output
 

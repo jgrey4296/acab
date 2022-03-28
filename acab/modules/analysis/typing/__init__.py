@@ -4,9 +4,9 @@ The Typing Submodule Provides a TypeChecker,
 """
 from acab.core.config.config import AcabConfig
 
-if AcabConfig.instance is not None:
+if AcabConfig._instance is not None:
     from acab.interfaces.printing import Printer_Fragment
-    from acab.interfaces.handler_system import HandlerSpec
+    from acab.core.util.handler_system import HandlerSpec
     import acab.modules.analysis.typing.printer as TPR
     from acab.modules.analysis.typing.dsl import TypingDSL
     print_fragment = Printer_Fragment(specs=[HandlerSpec("TYPE_INSTANCE"),
@@ -18,4 +18,5 @@ if AcabConfig.instance is not None:
                                                 TPR.TypeRecordPrinter,
                                                 TPR.SumTypePrinter,
                                                 TPR.OperatorTypePrinter,
-                                                TPR.TypeClassPrinter])
+                                                TPR.TypeClassPrinter],
+                                      sieve_fns=[])

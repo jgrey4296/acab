@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import abc
-import logging as root_logger
+import logging as logmod
 from dataclasses import InitVar, dataclass, field
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     Iterable, Iterator, Mapping, Match, MutableMapping,
@@ -12,7 +12,7 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
 
 from acab.error.base import AcabException
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 if TYPE_CHECKING:
     # tc only imports

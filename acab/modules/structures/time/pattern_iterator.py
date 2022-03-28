@@ -1,12 +1,12 @@
 """
 PatternIterator automates pattern output
 """
-import logging as root_logger
+import logging as logmod
 from fractions import Fraction as f
 
 from .util import time_str
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 class PatternIterator:
     """ Automates retrieval of pattern values  """

@@ -5,7 +5,7 @@ Basic Implementations of the handler system protocol
 # pylint: disable=abstract-method,invalid-sequence-index,use-a-generator,too-many-lines
 # pyright: reportPrivateUsage=warning
 from __future__ import annotations
-import logging as root_logger
+import logging as logmod
 from dataclasses import InitVar, dataclass, field, replace
 from enum import Enum
 from types import MethodType
@@ -24,7 +24,7 @@ from acab.interfaces.value import Sentence_i, Value_i
 from acab.error.protocol import AcabProtocolError as APE
 from acab.interfaces.sub_protocols import handler_system as HSubP
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 
 config = GET()

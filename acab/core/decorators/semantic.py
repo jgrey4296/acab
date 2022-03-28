@@ -9,8 +9,8 @@ from acab.core.data.value import AcabValue
 from acab.core.data.instruction import ProductionOperator
 from acab.core.util.delayed_commands import DelayedCommands_i
 
-import logging as root_logger
-logging = root_logger.getLogger(__name__)
+import logging as logmod
+logging = logmod.getLogger(__name__)
 
 config = AcabConfig()
 

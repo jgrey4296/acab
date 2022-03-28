@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-import logging as root_logger
+import logging as logmod
 import re
 import unittest
 import unittest.mock as mock
 from os.path import split, splitext
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 ##############################
 
 import acab

@@ -1,10 +1,10 @@
-import logging as root_logger
+import logging as logmod
 import unittest
 from os.path import split, splitext
 
 import pyparsing as pp
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 import acab
 
@@ -28,14 +28,14 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        LOGLEVEL = root_logger.DEBUG
+        LOGLEVEL = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        root_logger.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
+        logmod.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
 
-        console = root_logger.StreamHandler()
-        console.setLevel(root_logger.INFO)
-        root_logger.getLogger('').addHandler(console)
-        logging = root_logger.getLogger(__name__)
+        console = logmod.StreamHandler()
+        console.setLevel(logmod.INFO)
+        logmod.getLogger('').addHandler(console)
+        logging = logmod.getLogger(__name__)
 
         FP.HOTLOAD_SEN_ENDS << QP.query_sen_end
 

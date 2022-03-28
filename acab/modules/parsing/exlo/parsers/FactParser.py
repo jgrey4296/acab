@@ -2,7 +2,7 @@
 Pyparsing based parser to turn strings into [FactNode],
 capable of parsing  multiple facts
 """
-import logging as root_logger
+import logging as logmod
 
 import pyparsing as pp
 from acab.core.parsing import funcs as Pfunc
@@ -16,7 +16,7 @@ from acab.modules.parsing.exlo import constructors as PConst
 from acab.core.parsing.indented_block import IndentedBlock
 from acab.core.parsing.annotation import ValueRepeatAnnotation, ValueAnnotation
 
-logging             = root_logger.getLogger(__name__)
+logging             = logmod.getLogger(__name__)
 # Hotload insertion points:
 HOTLOAD_ANNOTATIONS   = pp.Forward()
 HOTLOAD_ANNOTATIONS.set_name('hotload_annotations')

@@ -8,7 +8,7 @@ ProductionComponent : Pairs the Operator with bindings
 ProductionContainer : Groups Components together
 
 """
-import logging as root_logger
+import logging as logmod
 from copy import deepcopy
 from dataclasses import InitVar, dataclass, field, replace, FrozenInstanceError
 from fractions import Fraction
@@ -35,7 +35,7 @@ from acab.core.data.value_meta import ValueMeta
 
 config = AcabConfig()
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 Value_A       : TypeAlias = AT.Value
 Sen_A         : TypeAlias = AT.Sentence

@@ -6,8 +6,8 @@ from os.path import splitext, split
 import unittest
 import unittest.mock as mock
 
-import logging as root_logger
-logging = root_logger.getLogger(__name__)
+import logging as logmod
+logging = logmod.getLogger(__name__)
 
 import acab
 config = acab.setup()
@@ -20,17 +20,17 @@ class StructureTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        root_logger.getLogger('').setLevel(root_logger.WARNING)
+        logmod.getLogger('').setLevel(logmod.WARNING)
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
 
-        file_h = root_logger.FileHandler(LOG_FILE_NAME, mode='w')
-        file_h.setLevel(root_logger.DEBUG)
+        file_h = logmod.FileHandler(LOG_FILE_NAME, mode='w')
+        file_h.setLevel(logmod.DEBUG)
 
-        console = root_logger.StreamHandler()
-        console.setLevel(root_logger.WARNING)
+        console = logmod.StreamHandler()
+        console.setLevel(logmod.WARNING)
 
-        logging = root_logger.getLogger(__name__)
-        logging.setLevel(root_logger.DEBUG)
+        logging = logmod.getLogger(__name__)
+        logging.setLevel(logmod.DEBUG)
         logging.addHandler(console)
         logging.addHandler(file_h)
 

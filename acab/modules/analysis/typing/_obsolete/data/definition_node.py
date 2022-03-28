@@ -6,7 +6,7 @@ type.name:
    a.c.$y::type
 end
 """
-import logging as root_logger
+import logging as logmod
 from dataclasses import dataclass, field
 from typing import (Any, Callable, ClassVar, Dict, Iterable, Iterator, List,
                     Mapping, Match, MutableMapping, Optional, Sequence, Set,
@@ -31,7 +31,7 @@ from acab.modules.structures.trie.semantics import BasicTrieSemantics
 from .type_assignment_semantics import TypeAssignmentNode
 from .type_variable_semantics import VarTypeNode
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 # Log messages to use, because they are long:
 LOG_MESSAGES = {}

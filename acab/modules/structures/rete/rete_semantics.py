@@ -9,7 +9,7 @@ Those CtxSets are the partial matches, and hold the constraints
 Bang in a sentence invalidates parallel ctxs
 
 """
-import logging as root_logger
+import logging as logmod
 
 from acab import types as AT
 import acab.interfaces.semantic as SI
@@ -21,7 +21,7 @@ from acab.core.data.sentence import Sentence
 from acab.interfaces.value import Sentence_i
 from acab.modules.context.context_query_manager import ContextQueryManager
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 config = AcabConfig()
 
 NEGATION_S       = config.prepare("Value.Structure", "NEGATION")()

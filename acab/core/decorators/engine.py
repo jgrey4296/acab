@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-import logging as root_logger
+import logging as logmod
 from functools import wraps
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 from acab.error.parse import AcabParseException
 
@@ -20,7 +20,7 @@ def MaybeBuildOperatorCtx(method):
             ctxset           = self.semantics.build_ctxset(mods)
             kwargs['ctxset'] = ctxset
         elif no_ctxset and cached_ops:
-            logging.info("Building CtxSet from cached operators")
+            logging.debug("Building CtxSet from cached operators")
             ctxset           = self.semantics.build_ctxset()
             kwargs['ctxset'] = ctxset
         else:

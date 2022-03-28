@@ -4,10 +4,10 @@ with overriding debug functions
 """
 import pyparsing as pp
 import pyparsing.core as ppc
-import logging as root_logger
+import logging as logmod
 from acab.core.parsing.debug_log_formatter import AcabParseDebugFormat
 from acab.core.parsing.debug_log_formatter import SimpleColour as SC
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 logging.addHandler(AcabParseDebugFormat.scaffold())
 logging.propagate = False
 

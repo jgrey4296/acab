@@ -1,5 +1,5 @@
 from fractions import Fraction
-import logging as root_logger
+import logging as logmod
 import pyparsing as pp
 
 from acab.core.parsing import parsers as PU
@@ -7,7 +7,7 @@ from acab.core.parsing.consts import SLASH, op, s
 from acab.modules.values.numbers import util as NU
 from acab.core.config.config import AcabConfig
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 config = AcabConfig()
 DECIMAL_SYMBOL_S = config.prepare("Module.Numbers", "DECIMAL")()

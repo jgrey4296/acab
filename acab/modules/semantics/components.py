@@ -123,7 +123,7 @@ class PrinterComponent():
         The public print function. Takes a list of values, converts them
         to str's, and combines them using a final-Component or "\n".join
         """
-        logging.info("Starting Print on: {}".format(values))
+        logging.info("Starting Print on: {}", values)
         if not isinstance(values, list):
             values = [values]
 

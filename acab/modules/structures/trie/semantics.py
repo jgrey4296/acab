@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import logging as root_logger
+import logging as logmod
 
 from acab import types as AT
 import acab.interfaces.semantic as SI
@@ -14,7 +14,7 @@ from acab.core.data.default_structure import NEGATION
 from acab.core.semantics import basic
 from acab.error.protocol import AcabProtocolError as APE
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 config = AcabConfig()
 
 Node          = AT.Node

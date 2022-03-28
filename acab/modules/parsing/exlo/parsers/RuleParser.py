@@ -1,6 +1,6 @@
 """ Trie-based parser to construct rules """
 # pylint: disable=bad-whitespace
-import logging as root_logger
+import logging as logmod
 
 import pyparsing as pp
 from acab.core.config.config import AcabConfig
@@ -17,7 +17,7 @@ from . import FactParser as FP
 from . import QueryParser as QP
 from . import TransformParser as TP
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 # all of these should be indented blocks
 conditions = N(QUERY_S,     QP.clauses)

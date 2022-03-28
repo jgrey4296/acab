@@ -3,14 +3,14 @@ Utility decorators
 """
 #pylint: disable=invalid-sequence-index
 from __future__ import annotations
-import logging as root_logger
+import logging as logmod
 from enum import Enum
 from functools import wraps
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, ParamSpec,
                     Sequence, Set, Tuple, TypeAlias, TypeVar, Union, cast)
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 from acab import types as AT
 

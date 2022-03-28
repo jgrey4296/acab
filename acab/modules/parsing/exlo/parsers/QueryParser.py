@@ -1,5 +1,5 @@
 """ Trie-based parser for constructing queries """
-import logging as root_logger
+import logging as logmod
 
 import pyparsing as pp
 from acab.core.config.config import AcabConfig
@@ -21,7 +21,7 @@ from acab.modules.parsing.exlo.constructors import build_query
 from acab.modules.parsing.exlo.util import QUERY_HEAD
 from .FactParser import SENTENCE, op_sentence, annotations
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 # TODO add syntax for binding a sentence
 # a.test.query..<$x?

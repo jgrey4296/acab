@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import abc
-import logging as root_logger
+import logging as logmod
 from dataclasses import InitVar, dataclass, field
 from enum import Enum
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
@@ -23,7 +23,7 @@ from acab.interfaces import handler_system as HSi
 from acab.interfaces import printing as PI
 import acab.core.util.handler_system as HS
 
-logging                      = root_logger.getLogger(__name__)
+logging                      = logmod.getLogger(__name__)
 config                       = GET()
 DEFAULT_HANDLER_SIGNAL       = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 Sentence         : TypeAlias = AT.Sentence

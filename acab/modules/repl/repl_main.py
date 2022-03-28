@@ -4,7 +4,7 @@ An Acab REPL
 """
 import argparse
 import importlib
-import logging as root_logger
+import logging as logmod
 import sys
 import traceback
 from os.path import abspath, expanduser, split, splitext, join

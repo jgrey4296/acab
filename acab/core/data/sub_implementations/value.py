@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import logging as root_logger
+import logging as logmod
 from copy import deepcopy
 from dataclasses import InitVar, dataclass, field, replace
 from fractions import Fraction
@@ -21,7 +21,7 @@ from acab.interfaces.sieve import AcabSieve
 import acab.interfaces.sub_protocols.value as VP
 from acab.core.data.factory import ValueFactory
 
-logging        = root_logger.getLogger(__name__)
+logging        = logmod.getLogger(__name__)
 
 config         = AcabConfig()
 BIND_SYMBOL    = config.prepare("Symbols", "BIND")()
