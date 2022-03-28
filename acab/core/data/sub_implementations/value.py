@@ -110,14 +110,17 @@ class _ValueMetaDataImpl(VI.Value_i, VP.ValueMetaData_p):
     @property #type:ignore
     def type(self) -> Sen_A:
         """ Lazily coerces type description to Sentence """
-        type_matches_t = isinstance(self.data[DS.TYPE_INSTANCE], VI.Sentence_i)
+        type_desc = self.data[DS.TYPE_INSTANCE]
+        assert(type_desc is not None)
+        type_matches_t = isinstance(type_desc, VI.Sentence_i)
         if type_matches_t:
-            return self.data[DS.TYPE_INSTANCE] # type:ignore
+            return type_desc # type:ignore
 
+        assert(isinstance(type_desc, str)), breakpoint()
         if DS.SEMANTIC_HINT in self.data and isinstance(self.data[DS.SEMANTIC_HINT], VI.Sentence_i):
             self.data[DS.TYPE_INSTANCE] = self.data[DS.SEMANTIC_HINT]
         else:
-            self.data[DS.TYPE_INSTANCE] = ValueFactory.sen([self.data[DS.TYPE_INSTANCE]])
+            self.data[DS.TYPE_INSTANCE] = ValueFactory.sen([type_desc])
 
         return self.data[DS.TYPE_INSTANCE] # type:ignore
 

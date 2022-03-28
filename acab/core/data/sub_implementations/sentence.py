@@ -100,11 +100,6 @@ class _SentenceBasicsImpl(VI.Sentence_i, VSI._ValueBasicsImpl, VP.ValueBasics_p)
         return replace(self, uuid=uuid1(), **kwargs) #type:ignore
 
 
-class _SentenceMetaDataImpl(VI.Sentence_i, VSI._ValueMetaDataImpl, VP.ValueMetaData_p):
-    """
-    Doesn't need changes from VSI.ValueMetaDataImpl
-    """
-    pass
 class _SentenceVariableTestsImpl(VI.Sentence_i, VP.VariableTests_p):
     @property
     def is_var(self) -> bool:
@@ -179,8 +174,10 @@ class _SentenceReductionImpl(VI.Sentence_i, VP.AcabReducible_p):
         last = cast(VI.Value_i, self.words[-1])
         combined_data = last.data.copy()
         combined_data.update(value.data)
-        value_copy = cast(VI.Value_i, value).copy(name=last.name, data=combined_data)
+        combined_tags = value.tags | last.tags
 
+        value_copy = cast(VI.Value_i, value).copy(name=last.name, data=combined_data,
+                                                  tags=combined_tags)
         new_words = self.words[:-1] + [value_copy]
         sen_copy = self.copy(value=new_words) #type:ignore
 
@@ -228,7 +225,7 @@ class _SentenceReductionImpl(VI.Sentence_i, VP.AcabReducible_p):
         simple_value = ValueFactory.value(self.name, data=new_data) #type:ignore
         return simple_value #type:ignore
 
-class SentenceProtocolsImpl(_SentenceBasicsImpl, _SentenceMetaDataImpl, _SentenceVariableTestsImpl, _SentenceCollectionImpl, _SentenceReductionImpl):
+class SentenceProtocolsImpl(_SentenceBasicsImpl, VSI._ValueMetaDataImpl, _SentenceVariableTestsImpl, _SentenceCollectionImpl, _SentenceReductionImpl):
 
     def add(self, *other) -> Sen_A:
         """ Return a copy of the sentence, with words added to the end.

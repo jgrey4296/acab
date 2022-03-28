@@ -58,5 +58,7 @@ class AcabValue(VP.ValueProtocolsImpl, VI.Value_i, metaclass=ValueMeta):
         new_data = value.data.copy()
         new_data.update(data or {})
         # name = "nested"
-        name = kwargs['name'] if 'name' in kwargs else value.name
+        name   = kwargs['name'] if 'name' in kwargs else value.name
+        tags   = tags | value.tags
+        params = params or value.params
         return value.copy(data=new_data, name=name, tags=tags, params=params)

@@ -53,15 +53,10 @@ class ValueMeta(ProtocolMeta):
     default_data         : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE : DS.TYPE_BOTTOM_NAME,
                                                        DS.BIND : False}
 
-    _bottom       : ClassVar[None|type[Value_A]]           = None
     __subclasses  : ClassVar[dict[str,type[Value_A]]]      = dict()
 
     def __init__(cls, name:str, bases:tuple[type, ...], data:dict[str,Any]):
         super(ValueMeta, cls).__init__(name, bases, data)
-        if ValueMeta._bottom is None:
-            # Constructor for the first form of Value registered.
-            # (should be AcabValue or equivalent)
-            ValueMeta._bottom = cls
 
         full_name = f"{cls.__module__}.{cls.__qualname__}"
         if full_name in ValueMeta.__subclasses:
@@ -103,14 +98,14 @@ class ValueMeta(ProtocolMeta):
         """ Standardized conversion of tags and params to values """
         if params is None:
             params = []
-        assert(ValueMeta._bottom is not None)
-        param_vals : list[VI.Value_i[str]] = list([ValueMeta._bottom(x, data={DS.BIND:True}) for x in params])
+        param_vals : list[VI.Value_i[str]] = list([VI.ValueFactory_i.value(x, data={DS.BIND:True}) for x in params])
 
         if tags is None:
             tags = []
-        tag_vals : set[VI.Value_i[str]]    = frozenset([ValueMeta._bottom(x) for x in tags])
+        tag_vals : list[VI.Value_i[str]] = [VI.ValueFactory_i.value(x) for x in tags]
+        tag_set : set[VI.Value_i[str]]   = frozenset(tag_vals)
 
-        return tag_vals, param_vals
+        return tag_set, param_vals
 
     @staticmethod
     def _build_data_and_type(data:None|dict[ValueData, Any], _type:'None|str|Sen_A'=None, defaults:dict[ValueData, Any]=None) -> dict[str,Any]:
