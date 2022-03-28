@@ -1,0 +1,150 @@
+module.typing:
+    parsers and values:
+        definitions:
+            simple record sum operator class
+        end
+
+        declarations:
+            instance
+        end
+    end
+    operators:
+        ᛦ
+        type.check
+        type.relation.subtype
+        type.register
+        type.register.class
+    end
+
+    semantics:
+        dfs.walk
+        lattice
+        record | sum |operator | class independent semantics
+    end
+
+    printers:
+        record | sum | operator|class
+    end
+end
+
+
+
+
+// where τ = type, Σ = sum, φ = product
+
+// eg: some.value(::a.simple)
+a.simple(::τ.ι)
+
+// eg: some.val(::τ.sum.def!first), some.val.sub.val.a, some.other.val(::τ.sum.def!second)
+// Sub-Typing of type variants: τ.sum.def.first ⊂ τ.sum.def
+// τ.Σ ≣ type.sum
+my.type.sum.def(::τ.Σ):
+    first(::φ):
+        sub.val.a
+        sub.val.b
+    end
+
+    second
+end
+
+// This as an extension of my.type.sum.def
+// so: some.val(::my.type.sum.def!first), other.val(::my.type.sum.def.sub!another)
+// some.val(::$x ⊂ ::my.type.sum.def) AND other.val($x ⊂ ::my.type.sum.def)
+// but NOT some.val(::$x ⊂ ::my.type.sum.def.sub)
+my.type.sum.def.sub(::τ.Σ):
+    another
+
+    different
+end
+
+// eg: a.value(::τ.record), a.value.a.field.2
+// Sub-Typing of structure: a.val(::$t(⊂ type.record))
+// τ.φ ≣ type.product
+type.record(::τ.φ):
+    a.field.$x(::int)
+    other.$y(::τ.sum.def)
+    sub.implicit.dict:
+        $x(::int)
+        $y(::int)
+    end
+end
+
+// so ops can be used like $x λtc.- $y -> $z, and  λtype.class.func $a $b -> $c
+type.class(::τ.γ, $a):
+    func(::τ.λ, "+").$a.$a.$z(::int)
+    diff(::τ.λ, "tc.-").$a.$a.$x(::bool)
+    final(::τ.λ).$a.$b(::str)
+end
+
+// Type class member
+type.instance(::type.class, $x(::int), $x(::a.type.def)):
+    func  -> a.module.operator(::production.operator)
+    diff  -> a.module.different.operator(::production.operator)
+    final -> a.module.action(::production.action)
+end
+// typing.rule: ᛦ $x(::type.class)? type.class.member.$x? end
+
+// or
+a.type.def(::τ.φ, ::type.class):
+    ...
+end
+// have type class registrations synchronise
+
+// long operators
+operator.example(::τ.λ): $x(::int).$y(::int).$bool -> a.module.operator.blah
+
+acab.operator(::τ.λ):
+    | $x(::int) $y(::int) |
+
+    a.b.c(::blah)?
+
+    $x < $y -> $z
+
+    λreturn(::production.action) $z
+end
+
+// generics
+generic.type.record.container(::τ.φ($x)):
+    a.b.c?
+
+    a.field.$x
+    other.$y(::int)
+end
+
+generic.operator(::τ.λ($x, $y)): $x.$y.$y -> a.module.operator.generic
+
+// ----
+a.b.c(::type.example)
+
+a.rule(::ρ):
+    a.b.c(::int)?
+    a.$x(::a.type)?
+
+    $x λan.op $y -> $z
+    λdiff.op $a $b -> $c(::bool)
+end
+
+// Type Checking
+type.registration(::ρ):
+    ᛦ $def(::τ)
+
+    λregister registered.$def
+end
+
+type.check(::ρ):
+    ᛦ $val(::$type)?
+    registered.$type?
+
+    λmatch $type:
+        $type(::τ.Σ): sum.check -> $func
+    end
+
+    λ$func $val $type
+
+end
+
+sum.check(::τ.λ):
+    | $val $type |
+
+    ...
+end

@@ -4,21 +4,20 @@ import logging as root_logger
 import pyparsing as pp
 
 from acab.core.config.config import AcabConfig
-from acab.core.data.values import Sentence
-import acab.core.parsing.default_structure as DS
+import acab.core.parsing.default_keys as DS
 import acab.core.parsing.default_symbols as DSYM
 import acab.core.parsing.debug_funcs as DBF
 
 
 logging = root_logger.getLogger(__name__)
 
-config = AcabConfig.Get()
+config = AcabConfig()
 
 COMMENT_RE       = config.prepare("Parse.Patterns", "COMMENT_RE", actions=[config.actions_e.STRIPQUOTE, AcabConfig.actions_e.UNESCAPE])()
 WORD_COMPONENT_S = config.prepare("Parse.Patterns", "WORD_COMPONENT")()
 WHITE_SPACE      = config.prepare("Parse.Patterns", "WHITE_SPACE", actions=[config.actions_e.STRIPQUOTE, AcabConfig.actions_e.UNESCAPE])()
 TAB_S            = config.prepare("Parse.Patterns", "TAB", actions=[config.actions_e.STRIPQUOTE])()
-pp.ParserElement.setDefaultWhitespaceChars(WHITE_SPACE)
+pp.ParserElement.set_default_whitespace_chars(WHITE_SPACE)
 
 if config.prepare("Parse", "DEBUG_PARSERS", actions=[config.actions_e.BOOL])():
     DBF.debug_pyparsing()
@@ -35,25 +34,25 @@ s_key = lambda x: s(pp.Keyword(x))
 
 COMMENT           = pp.Regex(COMMENT_RE)
 END               = s_key(DSYM.END)
-END.setWhitespaceChars(" \n")
+END.set_whitespace_chars(" \n")
 
-ln                = s(pp.White("\n\r", max=1).setWhitespaceChars("\t "))
-manyLine          = s(pp.White("\n\r", min=1).setWhitespaceChars("\t "))
+ln                = s(pp.White("\n\r", max=1).set_whitespace_chars("\t "))
+manyLine          = s(pp.White("\n\r", min=1).set_whitespace_chars("\t "))
 emptyLine         = s(ln + manyLine)
 opLn              = op(ln)
-tab               = pp.White(TAB_S, min=2).setWhitespaceChars("\r\n")
+tab               = pp.White(TAB_S, min=2).set_whitespace_chars("\r\n")
 
-emptyLine.setName("emptyLine")
-ln.setName("line")
-opLn.setName("OptionalLine")
-tab.setName("tab")
+emptyLine.set_name("emptyLine")
+ln.set_name("line")
+opLn.set_name("OptionalLine")
+tab.set_name("tab")
 
 def NG(name, grp):
     """ Name and Group """
-    return pp.Group(grp).setResultsName(name)
+    return pp.Group(grp).set_results_name(name)
 
 def N(name, parser):
-    return parser.setResultsName(name)
+    return parser.set_results_name(name)
 
 def gap_fail_action(s, loc, expr, err):
     logging.warning("{}\n{}".format(str(err), err.markInputline()))
@@ -82,7 +81,7 @@ SLASH     = s_lit('/')
 TILDE     = s_lit('~')
 VBAR      = s_lit('|')
 # DELIM     = ~END + (COMMA | (ln + tab))
-DELIM    = (ln ^ COMMA).setWhitespaceChars(" \t")
+DELIM    = (ln ^ COMMA).set_whitespace_chars(" \t")
 
 RULE_HEAD        = s_key(DSYM.RULE_HEAD)
 QUERY_HEAD       = s_key(DSYM.QUERY_HEAD)
@@ -105,16 +104,16 @@ TAG              = s_lit(DSYM.TAG)
 
 NEGATION         = pp.Literal(DSYM.NEGATION)
 
-gap              = emptyLine #.setFailAction(gap_fail_action)
+gap              = emptyLine #.set_fail_action(gap_fail_action)
 component_gap    = s(orm(emptyLine))
 file_cruft       = pp.ZeroOrMore(ln)
 
-END.setName("End")
-file_cruft.setName("EmptyLines")
-gap.setName("EmptyLine")
-COLON.setName("Colon")
-DELIM.setName("Delimiter")
-# RULE_HEAD.setName("RuleHead")
-# QUERY_HEAD.setName("QueryHead")
-# TRANSFORM_HEAD.setName("TransformHead")
-# ACTION_HEAD.setName("ActionHead")
+END.set_name("End")
+file_cruft.set_name("EmptyLines")
+gap.set_name("EmptyLine")
+COLON.set_name("Colon")
+DELIM.set_name("Delimiter")
+# RULE_HEAD.set_name("RuleHead")
+# QUERY_HEAD.set_name("QueryHead")
+# TRANSFORM_HEAD.set_name("TransformHead")
+# ACTION_HEAD.set_name("ActionHead")

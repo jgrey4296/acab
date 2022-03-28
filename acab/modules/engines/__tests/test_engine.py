@@ -23,7 +23,9 @@ from acab.modules.printing.basic_printer import BasicPrinter
 from acab.modules.printing.default import DEFAULT_PRINTER
 from acab.modules.semantics.basic_system import BasicSemanticSystem
 from acab.modules.semantics.default import DEFAULT_SEMANTICS
+from acab.core.parsing import pyparse_dsl as ppDSL
 
+DSL_Fragment = ppDSL.DSL_Fragment
 
 class TestEngine(unittest.TestCase):
 
@@ -40,60 +42,56 @@ class TestEngine(unittest.TestCase):
 
     def test_basic(self):
         """ Test the engine can be created in the most basic way"""
-        parser    = create_autospec(EXLO_Parser)
-        parser.query_parsers = mock.Mock(return_value=(1,2))
-        semantics = create_autospec(BasicSemanticSystem)
-        printer   = create_autospec(BasicPrinter)
-        basic     = AcabBasicEngine(parser=parser,
-                                    semantics=semantics,
-                                    printer=printer,
-                                    modules=[])
+        parser                                = create_autospec(DSL_Fragment)
+        parser.query_parsers                  = mock.Mock(return_value=(1,2))
+        semantics                             = create_autospec(BasicSemanticSystem)
+        printer                               = create_autospec(BasicPrinter)
+        basic                                 = AcabBasicEngine(parser=parser,
+                                                                semantics=semantics,
+                                                                printer=printer,
+                                                                modules=[])
 
         self.assertIsInstance(basic, AcabEngine_i)
         self.assertTrue(basic.initialised)
 
-        parser.assert_parsers.assert_called_once()
-        parser.query_parsers.assert_called_once()
 
     def test_parser_into_semantics(self):
         # Create the engine
-        basic     = AcabBasicEngine(parser=EXLO_Parser(),
+        basic     = AcabBasicEngine(parser=EXLO_Parser,
                                     semantics=DEFAULT_SEMANTICS(),
                                     printer=DEFAULT_PRINTER(),
                                     modules=[])
 
-        query = basic.query("a.test.sentence?")
+        query = basic("a.test.sentence?")
         self.assertFalse(bool(query))
-        basic.insert("a.test.sentence")
-        result = basic.query("a.test.sentence?")
+        basic("a.test.sentence")
+        result = basic("a.test.sentence?")
+        basic.pprint()
         self.assertTrue(bool(result))
 
     def test_query(self):
-        basic = AcabBasicEngine(parser=EXLO_Parser(),
+        basic = AcabBasicEngine(parser=EXLO_Parser,
                                 semantics=DEFAULT_SEMANTICS(),
                                 printer=DEFAULT_PRINTER(),
                                 modules=[])
 
-        query = basic.query("a.test.$x?")
+        query = basic("a.test.$x?")
         self.assertFalse(bool(query))
-        basic.insert("a.test.sentence")
-        result = basic.query("a.test.$x?")
+        basic("a.test.sentence")
+        result = basic("a.test.$x?")
         self.assertTrue(bool(result))
-        self.assertEqual(result[0]['$x'].value, 'sentence')
-
-
-
+        self.assertEqual(result[0]['x'].value, 'sentence')
 
     def test_printer_setup(self):
         # Create the engine
-        basic     = AcabBasicEngine(parser=EXLO_Parser(),
+        basic     = AcabBasicEngine(parser=EXLO_Parser,
                                     semantics=DEFAULT_SEMANTICS(),
                                     printer=DEFAULT_PRINTER(),
                                     modules=[])
 
-        basic.insert("a.test.sentence")
-        basic.insert("a.test.blah")
-        sentences = basic.to_sentences()
+        basic("a.test.sentence")
+        basic("a.test.blah")
+        sentences = basic.semantics.to_sentences()
         self.assertEqual(len(sentences), 2)
         result = basic.pprint()
         self.assertEqual(result, "a.test.sentence\na.test.blah")
@@ -101,28 +99,31 @@ class TestEngine(unittest.TestCase):
     @unittest.skip("need to change total parser priorities?")
     def test_multi_sentence_statement(self):
         # Create the engine
-        basic     = AcabBasicEngine(parser=EXLO_Parser(),
+        basic     = AcabBasicEngine(parser=EXLO_Parser,
                                     semantics=DEFAULT_SEMANTICS(),
                                     printer=DEFAULT_PRINTER(),
                                     modules=[])
 
 
-        basic.insert("a.test.sentence:\nblah\nbloo\nblee\nend")
+        basic("a.test.sentence:\nblah\nbloo\nblee\nend")
 
-        sentences = basic.to_sentences()
+        sentences = basic.semantics.to_sentences()
         self.assertEqual(len(sentences), 3)
         result = basic.pprint()
         self.assertEqual(result, "a.test.sentence.blah\na.test.sentence.bloo\na.test.sentence.blee")
 
 
 
+    @unittest.skip("need to finish this")
     def test_module_setup(self):
-        basic     = AcabBasicEngine(parser=EXLO_Parser(),
+        basic     = AcabBasicEngine(parser=EXLO_Parser,
                                     semantics=DEFAULT_SEMANTICS(),
                                     printer=DEFAULT_PRINTER(),
                                     modules=["acab.modules.operators.query"])
         self.assertTrue("acab.modules.operators.query" in basic._module_loader)
 
-        basic.insert("a.test.sentence")
-        result = basic.query("a.test.sentence(#test)?")
+        basic("a.test.sentence")
+        result = basic("a.test.sentence(#test)?")
+
+        breakpoint()
         self.assertTrue(bool(result))

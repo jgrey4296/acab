@@ -1,24 +1,26 @@
-from datetime import datetime
-from enum import Enum
-from os.path import split, splitext, exists, expanduser, abspath
 import importlib
 import logging as root_logger
-import pyparsing as pp
 import re
 from collections import defaultdict
+from datetime import datetime
+from enum import Enum
+from os.path import abspath, exists, expanduser, split, splitext
+
 import acab
+import pyparsing as pp
+
 config = acab.setup()
 
-from acab.modules.repl.repl_commander import register
-from acab.modules.repl import ReplParser as RP
-from acab.core.data.production_abstractions import ProductionOperator, ProductionStructure
-from acab.modules.repl.util import print_contexts
+from acab.core.data.instruction import ProductionOperator, ProductionStructure
 from acab.core.parsing import debug_funcs as DBF
+from acab.modules.repl import ReplParser as RP
+from acab.modules.repl.repl_commander import register
+from acab.modules.repl.util import print_contexts
 
 logging = root_logger.getLogger(__name__)
 
 # TODO shift this into config
-SPLIT_RE = re.compile("[ .!?/]")
+SPLIT_RE         = re.compile("[ .!?/]")
 ModuleComponents = "ModuleComponents"
 
 @register
@@ -28,7 +30,7 @@ def do_print(self, line):
     [wm, module, semantics]
     """
     try:
-        params = RP.printer_parser.parseString(line)
+        params = RP.printer_parser.parse_string(line)
     except pp.ParseException as err:
         logging.warning("Bad Print Command")
         logging.warning(err.markInputline())
@@ -54,7 +56,6 @@ def do_print(self, line):
         print_contexts(self, params)
     elif "semantics" in params:
         print("Semantic Printing not implemented yet")
-        raise NotImplementedError()
     else:
         print(f"Print Keywords: {RP.printer_parser}")
 
@@ -65,7 +66,7 @@ def do_stat(self, line):
     ie: Modules/Operators/Pipelines/Layers/Rules....
     """
     logging.info(f"Getting Stats: {line}")
-    params = RP.stats_parser.parseString(line)
+    params = RP.stats_parser.parse_string(line)
     allow_all = not bool(params)
     modules: ModuleComponents = self.state.engine._module_loader.loaded_modules.values()
     # modules
@@ -90,8 +91,8 @@ def do_stat(self, line):
         print("{} : {}".format(semantic.__module__, semantic.__class__.__name__))
         print("\n", semantic.__doc__, "\n")
         print(f"{repr(semantic)}\n")
-        print("Handlers: {}".format(len(semantic.handlers)))
-        print("\t{}".format("\n\t".join([str(x) for x in semantic.handlers.values()])))
+        print("Handlers: {}".format(len(semantic.handler_specs)))
+        print("\t{}".format("\n\t".join([str(x) for x in semantic.handler_specs.values()])))
 
         print("----------")
         mods_with_semantics = [x for x in modules if len(x.semantics) > 0]
@@ -112,7 +113,7 @@ def do_stat(self, line):
         for mod in modules:
             count += len(mod.operators)
             for op in mod.operators:
-                print("\t", self.state.engine.pprint([op]))
+                print("\t", self.state.engine.pprint(target=[op]))
 
         print("--")
         print("Loaded Operators: {}".format(count))
@@ -127,8 +128,8 @@ def do_stat(self, line):
         print("{} : {}".format(printer.__module__, printer.__class__.__name__))
         print("\n", printer.__doc__, "\n")
         print(f"{repr(printer)}\n")
-        print("Handlers: {}".format(len(printer.handlers)))
-        print("\t{}".format("\n\t".join([str(x) for x in printer.handlers.values()])))
+        print("Handlers: {}".format(len(printer.handler_specs)))
+        print("\t{}".format("\n\t".join([str(x) for x in printer.handler_specs.values()])))
 
         print("----------")
         mods_with_printers = [x for x in modules if len(x.printers) > 0]
@@ -146,32 +147,40 @@ def do_stat(self, line):
 def do_parser(self, line):
     """ Print a parser report.
     Defaults to primary, can take:
-    bootstrap,
+    handlers,
     sugar
     """
-    params = RP.parse_info_parser.parseString(line)
-
-    if "bootstrap" in line:
-        print("Bootstrap Parser:")
-        bootstrap_desc = self.state.engine._dsl_builder._bootstrap_parser.report()
+    params = RP.parse_info_parser.parse_string(line)
+    # TODO add * for each spec with debug activated
+    if "signals" in params:
+        print("DSL Signal Handlers:")
+        bootstrap_desc = self.state.engine._dsl.handler_specs.keys()
         for sen in bootstrap_desc:
-            print("\t", self.state.engine.pprint([sen]))
-    elif "sugar" in line:
+            print("\t", self.state.engine.pprint(target=[sen]))
+    elif "sugar" in params:
         print(f"Repl Sugar: {RP.sugared}")
+
+    elif "debug" in params:
+        # TODO enable control of entry/success/fail debug funcs
+        if not bool(params['debug']):
+            DBF.debug_pyparsing()
+            return
+        debug_param = params['debug'].strip()
+        if debug_param == "disable":
+            self.state.engine._dsl.disable_debugs()
+            print("Parser Debuggers Cleared")
+        elif debug_param == "list":
+            active = self.state.engine._dsl.active_debugs()
+            if not bool(active):
+                print("No Parsers are set for Debugging")
+            else:
+                print("Debugging Parser Signals:\n\t -- {}".format("\n\t -- ".join(active)))
+        else:
+            result = self.state.engine._dsl.debug_parser(debug_param)
+            print(f"Debugging Signal <{debug_param}> : {result}")
     else:
         print("Top Level ACAB Parser:")
-        print(self.state.engine._dsl_builder._main_parser)
-
-@register
-def do_debug(self, line):
-    """ Toggle Debugging of pyparsing """
-    if bool(line):
-        parser = self.state.engine._dsl_builder._bootstrap_parser.query(line)
-        if bool(parser):
-            parser.setDebug(not parser.debug)
-            print(f"Debug {parser.debug} : {parser}")
-    else:
-        DBF.debug_pyparsing()
+        print(self.state.engine._dsl.lookup())
 
 
 # Logging Control###############################################################

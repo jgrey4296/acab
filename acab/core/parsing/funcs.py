@@ -7,72 +7,70 @@ import logging as root_logger
 
 import pyparsing as pp
 from acab.core.config.config import AcabConfig
-from acab.core.data.production_abstractions import (ProductionComponent,
-                                                        ProductionContainer,
-                                                        ProductionStructure)
-from acab.core.data.values import AcabValue, Sentence
+from acab.core.data.instruction import (ProductionComponent,
+                                       ProductionContainer,
+                                       ProductionStructure)
+from acab.interfaces import value as VI
+from acab.core.data.value import AcabValue
 from acab.core.parsing import consts as PConst
 from acab.core.data.default_structure import TYPE_BOTTOM_NAME
 from acab.core.parsing.annotation import ValueAnnotation
 import acab.core.data.default_structure as DS
-import acab.core.parsing.default_structure as PDS
+import acab.core.parsing.default_keys as PDS
+from acab.core.data.factory import ValueFactory
 
 logging = root_logger.getLogger(__name__)
 
-config = AcabConfig.Get()
-SEMANTIC_HINT_V    = config.prepare("Value.Structure", "SEMANTIC_HINT")()
+config = AcabConfig()
+SEMANTIC_HINT    = DS.SEMANTIC_HINT
 
-QUERY_SEM_HINT     = Sentence.build([config.prepare("SEMANTICS", "QUERY")()])
-ACTION_SEM_HINT    = Sentence.build([config.prepare("SEMANTICS", "ACTION")()])
-TRANSFORM_SEM_HINT = Sentence.build([config.prepare("SEMANTICS", "TRANSFORM")()])
-RULE_SEM_HINT      = Sentence.build([config.prepare("SEMANTICS", "RULE")()])
-AGENDA_SEM_HINT    = Sentence.build([config.prepare("SEMANTICS", "AGENDA")()])
-LAYER_SEM_HINT     = Sentence.build([config.prepare("SEMANTICS", "LAYER")()])
-PIPELINE_SEM_HINT  = Sentence.build([config.prepare("SEMANTICS", "PIPELINE")()])
+QUERY_SEM_HINT     = ValueFactory.value([config.prepare("SEMANTICS", "QUERY")()])
+ACTION_SEM_HINT    = ValueFactory.value([config.prepare("SEMANTICS", "ACTION")()])
+TRANSFORM_SEM_HINT = ValueFactory.value([config.prepare("SEMANTICS", "TRANSFORM")()])
+RULE_SEM_HINT      = ValueFactory.value([config.prepare("SEMANTICS", "RULE")()])
+AGENDA_SEM_HINT    = ValueFactory.value([config.prepare("SEMANTICS", "AGENDA")()])
+LAYER_SEM_HINT     = ValueFactory.value([config.prepare("SEMANTICS", "LAYER")()])
+PIPELINE_SEM_HINT  = ValueFactory.value([config.prepare("SEMANTICS", "PIPELINE")()])
 
 ATOM = TYPE_BOTTOM_NAME
 
-DEFAULT_NODE_DATA = {}
-DEFAULT_NODE_DATA.update(config.defaults)
+DEFAULT_TERM_DATA = {}
+# TODO figure out a better way to do term defaults
+# DEFAULT_TERM_DATA.update(config.defaults)
 
 def make_value(s, loc, toks):
     """ Make a value coupled with additional data """
-    value = None
-    _type = ATOM
-    data = DEFAULT_NODE_DATA.copy()
+    value         = None
+    annotations   = [x for x in toks[PDS.HEAD_ANNOTATION] if isinstance(x, ValueAnnotation)]
+    annotations  += [x for x in toks[PDS.POST_ANNOTATION] if isinstance(x, ValueAnnotation)]
+    _type         = ATOM
+    data          = DEFAULT_TERM_DATA.copy()
     # TODO: link type primitives with type system
-    if PDS.BIND in toks:
-        # is variable
-        assert(isinstance(toks[PDS.BIND][0], tuple))
-        value = toks[PDS.BIND][0][1]
-        data[DS.BIND] = True
-    elif PDS.AT_BIND in toks:
-        # is a reference
-        # (can only be at head of a sentence)
-        assert(isinstance(toks[PDS.AT_BIND][0], tuple))
-        value = toks[PDS.AT_BIND][0][1]
-        data[DS.BIND] = DS.AT_BIND
-    elif PDS.VALUE in toks:
-        # is an actual value
-        assert(isinstance(toks[PDS.VALUE], tuple))
-        value = toks[PDS.VALUE][1]
-        _type = toks[PDS.VALUE][0]
-    else:
-        raise SyntaxError("Unplanned parse type")
 
-    new_val = AcabValue.safe_make(value, data=data, _type=_type)
+    if PDS.VALUE in toks:
+        # is an actual value
+        assert(isinstance(toks[PDS.VALUE][0], tuple))
+        value = toks[PDS.VALUE][0][1]
+        _type = toks[PDS.VALUE][0][0]
+    else:
+        raise SyntaxError("Unplanned parse type, expected a tuple of (type_str, value)", toks[PDS.VALUE])
+
+    new_val = ValueFactory.value(value, data=data, _type=_type)
+    for ann in annotations:
+        ann(new_val)
     return [new_val]
 
 def add_annotations(s, loc, toks):
     """ Add additional data to a node """
-    word = toks[PDS.NODE][0]
-    for anno in toks:
+    word = toks[0][0]
+    assert(isinstance(word, VI.Value_i))
+    for anno in toks[0]:
         if not isinstance(anno, ValueAnnotation):
             continue
 
         anno(word)
 
-    return word
+    return [word]
 
 
 
@@ -87,15 +85,21 @@ def construct_multi_sentences(s, loc, toks):
         data = {}
         data.update(base_sen.data)
         data.update(additional.data)
-        new_sen = Sentence.build(full_toks, data=data)
+        new_sen = ValueFactory.value(full_toks, data=data)
         new_sentences.append(new_sen)
 
     return new_sentences
 
 def construct_sentence(s, loc, toks):
     assert(PDS.SEN in toks)
-    data = {DS.NEGATION : False}
-    sentence = Sentence.build(toks[PDS.SEN][:], data=data)
+    sentence = ValueFactory.sen(toks[PDS.SEN][:])
+    if PDS.HEAD_ANNOTATION in toks:
+        for x in toks[PDS.HEAD_ANNOTATION]:
+            x(sentence)
+    if PDS.POST_ANNOTATION in toks:
+        for x in toks[PDS.POST_ANNOTATION]:
+            x(sentence)
+
     for x in toks:
         if not isinstance(x, ValueAnnotation):
             continue
@@ -140,6 +144,7 @@ def strip_parse_type(s, loc, toks):
 
 
 def deep_update_names(parser):
+    logging.debug("Deep Updating Parser Names")
     queue = [parser]
     processed = set()
 
@@ -159,9 +164,10 @@ def deep_update_names(parser):
 
 
 def clear_parser_names(*parsers):
+    logging.debug("Clearing Parser Names")
     for parser in parsers:
         if hasattr(parser, "name"):
-            delattr(parser, "name")
+            parser.set_name(None)
 
-        if parser.strRepr is not None:
+        if hasattr(parser, "strRepr") and parser.strRepr is not None:
             parser.strRepr = None

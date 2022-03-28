@@ -8,18 +8,18 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 logging = root_logger.getLogger(__name__)
 
-
+from acab.core.decorators.util import singleton
 from acab.interfaces.debugger import AcabDebugger_i
 
 # TODO track semantic debugging in RunningDebugger
-
+# TODO refactor this to be a handler registration
 def SemanticBreakpointDecorator(f):
 
     def wrapped(self, *args, **kwargs):
         # TODO handle repeats
         if args[0].should_break:
             f_code = f.__code__
-            db = RunningDebugger.Get()
+            db = RunningDebugger()
             # Ensure trace function is set
             sys.settrace(db.trace_dispatch)
             if not db.get_break(f_code.co_filename, f_code.co_firstlineno+2):
@@ -37,15 +37,8 @@ def SemanticBreakpointDecorator(f):
     wrapped.__name__ = f.__name__
     return wrapped
 
-
+@singleton
 class RunningDebugger(AcabDebugger_i):
-
-    @staticmethod
-    def Get():
-        if RunningDebugger.singleton is None:
-           RunningDebugger.singleton = RunningDebugger()
-
-        return RunningDebugger.singleton
 
     def set_running_trace(self, frame=None):
         """ Start debugging from frame, without pausing execution. """
@@ -66,7 +59,7 @@ class RunningDebugger(AcabDebugger_i):
         """
         if frame is None:
             frame = sys._getframe().f_back
-        # - reset here.
+        # removed "reset" here.
         while frame:
             frame.f_trace = self.trace_dispatch
             self.botframe = frame

@@ -1,14 +1,15 @@
+import logging as root_logger
 from dataclasses import dataclass, field
 from weakref import WeakValueDictionary
-import logging as root_logger
 
 from acab.core.config.config import AcabConfig
-from acab.interfaces.data import Structure_i
 from acab.core.data.node import AcabNode
-from acab.core.data.values import AcabValue
+from acab.core.data.value import AcabValue
+from acab.core.decorators.util import cache
+from acab.interfaces.data import Structure_i
 
 logging = root_logger.getLogger(__name__)
-config  = AcabConfig.Get()
+config  = AcabConfig()
 
 class AcabStruct(Structure_i):
     """ A structure in ACAB,
@@ -26,23 +27,25 @@ class BasicNodeStruct(AcabStruct):
         struct.components['all_nodes'] = WeakValueDictionary()
         return struct
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         return bool(self.root)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.components['all_nodes'])
 
-    def __repr__(self):
-        val = f"BasicNodeStruct("
-        val += ";".join([x.name for x in self.components['all_nodes'].values()][:5])
-        val += "..."
-        val += ")"
-        return val
+    def __repr__(self) -> str:
+        val = ["BasicNodeStruct("]
+        val.append(";".join([x.name for x in self.components['all_nodes'].values()][:5]))
+        val.append("...)")
+        return "".join(val)
 
-class NPArrayStruct(AcabStruct):
-    """ A numpy based data structure """
-    pass
+    def __contains__(self, other) -> bool:
+        if not isinstance(other, AcabNode):
+            return False
 
-class NXGraphStruct(AcabStruct):
-    """ A networkX graph based structure """
-    pass
+        return other in self.componenents
+
+    def __delitem__(self, key): pass
+    def __getitem__(self, key): pass
+    def __setitem__(self, key, value): pass
+    def __iter__(self): pass

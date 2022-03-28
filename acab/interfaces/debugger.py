@@ -1,22 +1,18 @@
+# pylint: disable=
+from __future__ import annotations
 import abc
 import pdb
 from dataclasses import dataclass, field
-from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
-                    List, Mapping, Match, MutableMapping, Optional, Sequence,
-                    Set, Tuple, TypeVar, Union, cast)
+from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
+                    Mapping, Match, MutableMapping, Sequence,
+                    Tuple, TypeVar, cast)
 
 
-class AcabDebugger_i(pdb.Pdb, metaclass=abc.ABCMeta):
+class AcabDebugger_i(pdb.Pdb):
 
     singleton = None
 
-    @staticmethod
     @abc.abstractmethod
-    def Get():
-        """ Singleton access method """
-        pass
-
-    @abc.abstractmethod
-    def set_running_trace(self, frame=None):
+    def set_running_trace(self, *, frame:Any=None) -> None:
         """ Start a trace going, without stopping execution """
         pass

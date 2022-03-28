@@ -10,15 +10,13 @@ import acab
 config = acab.setup()
 
 from acab.core.data import default_structure as DS
-from acab.core.data.values import Sentence
-from acab.core.data.values import AcabValue
+from acab.core.data.sentence import Sentence
+from acab.core.data.value import AcabValue
 from acab.core.parsing.annotation import ValueAnnotation
-from acab.core.parsing.parsers import HOTLOAD_VALUES, VALBIND
+from acab.core.parsing import parsers as PU
+from acab.core.data.default_structure import NEGATION
 
 import acab.modules.parsing.exlo.parsers.FactParser as FP
-
-NEGATION_S      = config.prepare("Parse.Structure", "NEGATION")()
-TYPE_INSTANCE_S = config.prepare("Parse.Structure", "TYPE_INSTANCE")()
 
 class Trie_Fact_Parser_Tests(unittest.TestCase):
 
@@ -35,79 +33,86 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
 
     #----------
     def test_trivial(self):
-        self.assertIsNotNone(FP.parseString)
+        """ Check basic elements of the parser exist """
+        self.assertIsNotNone(FP.parse_string)
         self.assertIsNotNone(FP.SENTENCE)
         self.assertIsNotNone(FP.SEN_PLURAL)
 
-    def test_parseStrings(self):
-        result = FP.parseString('a.b.c, b.c.d')
+    def test_parse_strings(self):
+        """ Check multiple sentences can be parsed on separate lines"""
+        result = FP.parse_string('a.b.c\nb.c.d')
         self.assertIsInstance(result, list)
         self.assertEqual(len(result), 2)
         self.assertTrue(all([isinstance(x, Sentence) for x in result]))
 
     def test_parse_strings_multi_with_comma(self):
-        result = FP.parseString('a.b.c, b.c.d')
+        """ Check multiple strings can be parsed on one line """
+        result = FP.parse_string('a.b.c, b.c.d')
         self.assertIsInstance(result, list)
         self.assertEqual(len(result), 2)
         self.assertTrue(all([isinstance(x, Sentence) for x in result]))
 
     def test_parse_strings_multi_line(self):
-        result = FP.SEN_PLURAL.parseString('a.b.c\nb.c.d')[:]
+        result = FP.SEN_PLURAL.parse_string('a.b.c\nb.c.d')[:]
         self.assertIsInstance(result, list)
         self.assertEqual(len(result), 2)
         self.assertTrue(all([isinstance(x, Sentence) for x in result]))
 
     def test_param_fact_string(self):
-        result = FP.SENTENCE.parseString('a.b.$x')[0]
+        result = FP.SENTENCE.parse_string('a.b.$x')[0]
         self.assertIsNotNone(result)
         self.assertTrue(result[-1].is_var)
 
     def test_exclusion_operator_parsing(self):
-        result = FP.parseString('a!b!c')[0]
+        """ Check exclusion operators can be parsed """
+        result = FP.parse_string('a!b!c')[0]
         self.assertTrue(all([x.data['exop'] == config.enums['exop'].EX for x in result[:-1]]))
 
     def test_strings(self):
-        result = FP.parseString('a.b."This is a test"!c')[0]
+        """ Check strings can be parsed """
+        result = FP.parse_string('a.b."This is a test"!c')[0]
         self.assertEqual(len(result), 4)
         self.assertEqual(result[2].value, 'This is a test')
 
     def test_bind_addition_to_node_recognition(self):
-        result = FP.parseString('$a.$b!$c')[0]
+        """ Check variables can be parsed with exclusion operators """
+        result = FP.parse_string('$a.$b!$c')[0]
         for x in result:
             self.assertTrue(x.is_var)
 
     def test_fact_leading_bind(self):
-        result = FP.parseString('$x.a.b.c')[0]
+        """ Check a sentence with a variable at the head can be parsed """
+        result = FP.parse_string('$x.a.b.c')[0]
         self.assertTrue(result[0].is_var)
 
     def test_valbind_expansion(self):
         """ Test added new parsers to the valbind parser """
         new_parser = pp.Word("¿awef")
-        new_parser.setParseAction(lambda s, l, t: ("awef", t[0]))
+        new_parser.set_parse_action(lambda s, l, t: ("awef", t[0]))
 
-        HOTLOAD_VALUES << new_parser
+        PU.HOTLOAD_VALUES << new_parser
 
-        a = VALBIND.parseString("¿awef")[0]
+        a = PU.VALBIND.parse_string("¿awef")[0]
         self.assertEqual(a.value, "¿awef")
-        self.assertEqual(a.type, Sentence.build(["awef"]))
+        self.assertEqual(a.type, Sentence(["awef"]))
 
-    def test_negated_sentencetence(self):
-        result = FP.SENTENCE.parseString('~a.test!string')[0]
+    def test_negated_sentence(self):
+        result = FP.SENTENCE.parse_string('~a.test!string')[0]
         self.assertIsInstance(result, Sentence)
-        self.assertTrue(result.data[NEGATION_S])
+        self.assertTrue(result.data[NEGATION])
 
-    def test_positive_sentencetence(self):
-        result = FP.SENTENCE.parseString('a.test!string')[0]
+    def test_positive_sentence(self):
+        result = FP.SENTENCE.parse_string('a.test!string')[0]
         self.assertIsInstance(result, Sentence)
-        self.assertFalse(result.data[NEGATION_S])
+        self.assertFalse(result.data[NEGATION])
 
     @unittest.skip("sentence macro is broken")
     def test_sentence_statement(self):
 
-        result = FP.SENTENCE.parseString("a.test.sentence:\n  extension.sentence\n  second.extension\nend")
+        result = FP.SENTENCE.parse_string("a.test.sentence:\n  extension.sentence\n  second.extension\nend")
 
-        sen1 = FP.SENTENCE.parseString('a.test.sentence.extension.sentence')[0]
-        sen2 = FP.SENTENCE.parseString('a.test.sentence.second.extension')[0]
+        sen1 = FP.SENTENCE.parse_string('a.test.sentence.extension.sentence')[0]
+        sen2 = FP.SENTENCE.parse_string('a.test.sentence.second.extension')[0]
 
 
         self.assertEqual(len(result), 2)
@@ -116,9 +121,9 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
 
     def test_constraint(self):
         annotation = pp.Literal("blah")
-        annotation.setParseAction(lambda x: ValueAnnotation("blah", 4))
+        annotation.set_parse_action(lambda x: ValueAnnotation("blah", 4))
         FP.HOTLOAD_ANNOTATIONS << annotation
-        result = FP.SEN_WORD.parseString("test(blah)!")[0]
+        result = FP.SEN_WORD.parse_string("test(blah)!")[0]
         self.assertIsInstance(result, AcabValue)
         self.assertTrue("blah" in result.data)
         self.assertEqual(result.data["blah"], 4)
@@ -126,16 +131,16 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
     @unittest.skip("obsolete")
     def test_annotation_no_var(self):
         annotation = pp.Literal("blah")
-        annotation.setParseAction(lambda x: ValueAnnotation("blah", 4))
+        annotation.set_parse_action(lambda x: ValueAnnotation("blah", 4))
         FP.HOTLOAD_ANNOTATIONS << annotation
-        result = FP.SEN_NO_MODAL.parseString("test(blah)")[0]
+        result = FP.SEN_NO_MODAL.parse_string("test(blah)")[0]
         self.assertIsInstance(result, AcabValue)
         self.assertTrue("blah" in result.data)
         self.assertEqual(result.data["blah"], 4)
 
     @unittest.skip("obsolete")
     def test_constraint_multi_var(self):
-        result = FP.SEN_END.parseString("test(λa.b.c $x $y $z)")[0]
+        result = FP.SEN_END.parse_string("test(λa.b.c $x $y $z)")[0]
         self.assertIsInstance(result, AcabValue)
         self.assertTrue(DS.CONSTRAINT in result.data)
         self.assertEqual(len(result.data[DS.CONSTRAINT][0].params), 3)

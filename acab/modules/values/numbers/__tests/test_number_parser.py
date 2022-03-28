@@ -9,11 +9,11 @@ import random
 import acab
 acab.setup()
 
-from acab.core.data.values import AcabValue
-from acab.core.data.values import Sentence
+from acab.core.data.value import AcabValue
+from acab.core.data.sentence import Sentence
 from acab.core.containers import action
 from acab.core.containers import transform
-from acab.core.data.production_abstractions import ProductionComponent, ProductionContainer
+from acab.core.data.instruction import ProductionComponent, ProductionContainer
 
 from acab.modules.values import numbers
 from acab.modules.values.numbers.parsing import NumberParser as NP
@@ -63,27 +63,27 @@ class NumberParseTests(unittest.TestCase):
     #----------
     #use testcase snippets
     def test_int_number_parsing(self):
-        result = FP.parseString("number.test.20")[0]
+        result = FP.parse_string("number.test.20")[0]
         self.assertIsNotNone(result)
         self.assertEqual(result[-1].type, INT_t)
         self.assertEqual(result[-1].value, 20)
 
     def test_float_number_parsing(self):
-        result = FP.parseString("number.test.20d325")[0]
+        result = FP.parse_string("number.test.20d325")[0]
         self.assertIsNotNone(result)
         self.assertEqual(result[-1].type, FLOAT_t)
         self.assertEqual(result[-1].value, 20.325)
 
 
     def test_simple_transform_parse(self):
-        result = TP.parseString("λoperator.transform.add 20 30 -> $z")
+        result = TP.parse_string("λoperator.transform.add 20 30 -> $z")
         self.assertIsInstance(result, transform.Transform)
         self.assertEqual(Printer.print(result.clauses[0].op), 'operator.transform.add')
         self.assertEqual([x.value for x in result.clauses[0].params], [20, 30])
 
 
     def test_transform_parse(self):
-        result = TP.parseString('λoperator.transform.add 2 3 -> $z, λoperator.transform.sub 3 2 -> $a, λoperator.transform.mul 2 2 -> $b')
+        result = TP.parse_string('λoperator.transform.add 2 3 -> $z, λoperator.transform.sub 3 2 -> $a, λoperator.transform.mul 2 2 -> $b')
         self.assertEqual(len(result), 3)
         self.assertTrue(all([isinstance(x, transform.TransformComponent) for x in result.clauses]))
         for parsed_action, op in zip(result, ['add','sub', 'mul']):
@@ -93,7 +93,7 @@ class NumberParseTests(unittest.TestCase):
     def test_transform_str_equal(self):
         root_logger.getLogger().setLevel(0)
         actions = ["λoperator.transform.add 2 4 -> $x", "λoperator.transform.sub 3 5 -> $y", "λoperator.transform.round 4 -> $z"]
-        parsed = [TP.parseString(x) for x in actions]
+        parsed = [TP.parse_string(x) for x in actions]
         zipped = zip(actions, parsed)
         breakpoint()
 
@@ -106,7 +106,7 @@ class NumberParseTests(unittest.TestCase):
         for i in range(100):
             mult = 10 ** round(random.random() * 4)
             r = round(random.random() * 1000)
-            result = FP.parseString('a.' + str(r))[0]
+            result = FP.parse_string('a.' + str(r))[0]
             self.assertEqual(result[-1].value, r)
 
 
@@ -114,7 +114,7 @@ class NumberParseTests(unittest.TestCase):
         for i in range(100):
             mult = 10 ** round(random.random() * 4)
             r = - round(random.random() * mult)
-            result = FP.parseString('a.'+str(r))[0]
+            result = FP.parse_string('a.'+str(r))[0]
             self.assertEqual(result[-1].value, r)
 
 
@@ -125,5 +125,5 @@ class NumberParseTests(unittest.TestCase):
             b = round(random.random() * mult)
             float_form = float(str(a) + "." + str(b))
             d_form = str(a) + "d" + str(b)
-            result = FP.parseString('a.'+d_form)[0]
+            result = FP.parse_string('a.'+d_form)[0]
             self.assertEqual(result[-1].value, float_form)

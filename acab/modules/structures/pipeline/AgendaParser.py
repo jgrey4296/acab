@@ -36,11 +36,11 @@ from acab.core.config.config import AcabConfig
 
 from acab.core.parsing import parsers as PU
 from acab.core.parsing.consts import N, NG, AGENDA_HEAD
-from acab.core.parsing.funcs import make_agenda
+from acab.modules.structures.pipline.constructors import make_agenda
 
 logging = root_logger.getLogger(__name__)
 
-config        = AcabConfig.Get()
+config        = AcabConfig()
 QUERY_S     = config.prepare("Parse.Structure", "QUERY")()
 TRANSFORM_S = config.prepare("Parse.Structure", "TRANSFORM")()
 ACTION_S    = config.prepare("Parse.Structure", "ACTION")()
@@ -62,10 +62,10 @@ agenda_body = PU.op(conditions) + PU.op(transforms) + PU.op(var_setting)
 agenda_stmt = PU.STATEMENT_CONSTRUCTOR(HOTLOAD_BASIC_SEN,
                                        agenda_body)
 
-agenda_body.setParseAction(make_agenda)
+agenda_body.set_parse_action(make_agenda)
 
 
 parse_point = agenda_stmt
 
-def parseString(s):
-    return parse_point.parseString(s)
+def parse_string(s):
+    return parse_point.parse_string(s)

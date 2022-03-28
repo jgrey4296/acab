@@ -1,0 +1,19 @@
+abl.initial.tree(::abl.tree):
+    a.b.$x?
+
+    + plan.x(::plan) $x
+    + plan.y(::plan)
+    + plan.z(::plan)
+end
+
+plan.x:
+    | $x(::plan) |
+
+    start >- greet
+
+    -< [a.b.c >- a.b.d >- a.b.e](priority 5)
+    -< $x
+    -< a.w(priority 2, repeat 5, $x(!= blah)?)
+
+    >- finish(::plant)
+end

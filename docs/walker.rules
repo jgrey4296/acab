@@ -1,0 +1,47 @@
+test.walk(::ρ):
+    | $x(::Node) |
+    #walker
+
+    $x(::int, > 10)?
+
+    $y(::int.big)
+    // 'Cut' to ignore children, default continue
+    // 'Collect' to create a new ctxinst with spec bindings
+end
+
+test.other.walk(::ρ):
+    | $x(::Node) |
+    #walker
+
+    t.structure(::type.def, $s($_))?
+    $x(::t.$s($z))?
+
+    $x match $s($z)
+end
+
+// rete --------------------
+
+data:
+    a.b.c
+    a.b.d
+    a.b.e
+
+    a.q!x
+end
+
+query:
+    a.b.$x?
+end
+
+
+query:
+    a.$x?
+    a.q!$y?
+end
+
+->
+
+rule.net:
+    a.$x23?          -> newctx save $x23
+    $x23(== b).$y52? -> newctx save $y52
+end

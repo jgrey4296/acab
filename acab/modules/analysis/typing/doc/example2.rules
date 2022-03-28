@@ -1,0 +1,163 @@
+// type checking
+// - preservation
+// - forward motion
+// - equality / subtyping
+// - dfs
+
+// type checks: Structure, application, subtyping
+
+type.check.rule:
+    // get all typing rules
+    applicable.$rules(::rule.typing, λcollect)?
+    ᛦ $types(::type.def, λcollect)?
+    // DFS and run them on each node
+
+    ᛦ $x(λsieve $rules)
+end
+
+
+// --------------------------------------------------
+// TODO: specify structural and internal types
+a.type.product.def(::type.product):
+    q.w.$x(::int)
+    w.e!$y(::blah)
+end
+
+// subtyping?
+a.type.product.def.sub(::type.product):
+    #inherit
+    q.f.$a(::float)
+end
+
+a.val(::a.type.product.def).q.w.$a
+a.val.w.e!$b
+~a.val.q.f
+
+a.val(::a.type.product.def.sub).q.w.$a
+a.val.w.e!$b
+a.val.q.f.$c
+
+typing.structural.rule:
+    | $x |
+
+    // $x has a typedef
+    $x(::$typedef)?
+    // $typedef is a type
+    // maybe aggregate all typedefs *along this path*?
+    $typedef(λtail $y(::type.product))?
+
+    // Union the node against the definition
+    $x ∪ $y -> $updates
+
+    λtype.apply $updates
+end
+
+
+// --------------------------------------------------
+a.sum.type(::type.sum):
+    a
+    b
+    c.$a.d: // a product type
+        y.$x(::int)
+    end
+end
+
+a.value(::Σ.a)                        // need to be explicit (::a.sum.type.a) when there are conflicts.
+a.different.value(::ast.c.diff.d).y.2 // possibly be able to use initial chars  as shortcut?
+
+typing.sum.rule:
+    | $x |
+
+    $x(::typedef)?
+    $typdef(λtail $y(::type.sum))?
+
+    // internally has a ∪ for structure when hitting a sum.product
+    $x ∈ $y -> $updates
+
+    λapply $updates
+end
+
+
+// --------------------------------------------------
+greater.than(::operator):
+    | $x(::ATOM) $y(::int) |
+    // possibly specify the python function to call?
+    // possibly specify sugar binding?
+    return!$z(::bool)
+end
+
+plus(::operator):
+    | $x(::int) $y(::int) |
+    return!$z(::int)
+end
+
+
+a.rule:
+    a.b.$x(> 5)?
+
+    $x + $y -> $z
+end
+
+production.component(::type.product):
+    operator!$op(::sentence)
+    args.$b(::sentence)
+    return!$c
+end
+
+typing.operator.rule:
+    | $x |
+
+    $x(::production.component)?
+    $x.operator!$op(::sen)?
+    $x.args.$b?
+    $x.return!$c?
+
+    $op(λtail $ao(::operator))?
+    $ao.params.$aop.return.$aor?
+
+    $b ∪ $aop -> $updates
+    $c ∪ $aor -> $updates'
+
+    λapply $updates $updates'
+end
+
+
+// --------------------------------------------------
+a.query(::container):
+    a.b.c?
+    d.e.f?
+    g.h.$y(> 2)?
+end
+
+typing.container.rule:
+    | $x |
+
+    $x(::container)?
+    $x.clauses.$y(λcollect $y)?
+
+    λcheck $y -> $updates
+
+    λapply $updates
+end
+
+
+// --------------------------------------------------
+a.type.class(:type.class):
+    an.operator(::operator):
+        | $x(::int) |
+        return.$y(::bool)
+    end
+    diff.operator(::operator):
+        | $x(::bool) |
+        return $y(::int)
+    end
+    end
+
+type.class.rule:
+    | $x |
+
+    $x(::$typedef)?
+    $typedef(λtail $def)?
+    $def(:∈:a.type.class)?
+
+end

@@ -13,21 +13,21 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 logging = root_logger.getLogger(__name__)
 
 from acab.core.config.config import GET
-from acab.core.data.production_abstractions import ProductionOperator, ActionOperator
-from acab.core.data.values import Sentence
+from acab.core.data.instruction import ProductionOperator, ActionOperator
+from acab.core.data.sentence import Sentence
 from acab.core.engine.util import applicable, needs_init, prep_op_path, ensure_handler
 from acab.interfaces.dsl import DSL_Fragment_i
 from acab.interfaces.module_loader import (ModuleComponents,
-                                                    ModuleLoader_i)
-from acab.interfaces.printing import PrintSemantics_i
+                                           ModuleLoader_i)
+from acab.interfaces.printing import Printer_Fragment
 from acab.interfaces.semantic import Semantic_Fragment
-
+from acab.core.engine.module_loader_base import ModuleLoaderBase
 config = GET()
 
 MODULE_SPLIT_REG = re.compile(config.prepare("Parse.Patterns", "MODULE_SPLIT_REG")())
 
 #--------------------
-class ModuleLoader(ModuleLoader_i):
+class ModuleLoader(ModuleLoaderBase, ModuleLoader_i):
     """ Describes how an engine loads ACAB/py modules """
 
     def extract_from_module(self, module: ModuleType) -> ModuleComponents:
@@ -41,10 +41,10 @@ class ModuleLoader(ModuleLoader_i):
         base_path      = module.__package__
         # reference_path = MODULE_SPLIT_REG.split(module.__name__)
         queue          = [(base_path, module)]
-        dsl_fragments  : List[DSL_Fragment_i]     = []
-        semantic_frags : List[Semantic_Fragment]  = []
-        printers       : List[PrintSemantics_i]   = []
-        operators      : List[ProductionOperator] = []
+        dsl_fragments  : list[DSL_Fragment_i]     = []
+        semantic_frags : list[Semantic_Fragment]  = []
+        printers       : list[Printer_Fragment]   = []
+        operators      : list[ProductionOperator] = []
 
         # TODO extract *handlers* not semantics
         while bool(queue):
@@ -73,17 +73,17 @@ class ModuleLoader(ModuleLoader_i):
             operators           += sentences
 
             # Get printers
-            available_printers  =  [y for x,y in mod_contents if applicable(y, PrintSemantics_i, as_handler=True)]
-            printers            += [ensure_handler(y) for y in available_printers]
+            available_printers  =  [y for x,y in mod_contents if applicable(y, Printer_Fragment)]
+            printers            +=  available_printers
 
 
+        # End of while
+        result = ModuleComponents(str(module.__package__),
+                                  dsl_fragments,
+                                  semantic_frags,
+                                  printers,
+                                  operators)
 
-            result = ModuleComponents(str(module.__package__),
-                                      dsl_fragments,
-                                      semantic_frags,
-                                      printers,
-                                      operators)
+        logging.debug(f"Extracted: {result}")
 
-            logging.debug(f"Extracted: {result}")
-
-            return result
+        return result

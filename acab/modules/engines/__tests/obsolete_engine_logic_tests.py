@@ -10,8 +10,8 @@ import timeit
 import acab
 acab.setup()
 
-from acab.core.data.values import Sentence
-from acab.core.data.production_abstractions import ProductionStructure
+from acab.core.data.sentence import Sentence
+from acab.core.data.instruction import ProductionStructure
 from acab.core.engine.engine import Engine
 
 def S(*words):
@@ -38,7 +38,7 @@ class Engine_Logic_Tests(unittest.TestCase):
     def setUp(self):
         self.e = Engine(modules=["acab.modules.operators.standard_operators"])
         self.e.alias_module(S("acab", "modules", "operators", "standard", "operators"), S("S"))
-        self.e.build_DSL()
+        self.e.build()
 
     def tearDown(self):
         return 1

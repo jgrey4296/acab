@@ -1,0 +1,32 @@
+example.printer:
+    | $signal $value |
+    #printer
+
+    signal!$x(::protocol.a)?
+    $value(::test).sub.$val?
+    $value.${name}?
+
+    λprint $val -> $val'(::str)
+    // An override
+    λprint $name signal!str -> $name'
+
+    result:
+        $name [ $val'  ] " -> " blah
+    end
+end
+
+example.print.system:
+    | $value(::SignalWrapper) |
+    #printer.system
+
+    default.printer!$default?
+    example.${printer}?
+
+    // Or Match
+    // Match goes for first,
+    // sieve goes for first that has a valid response
+    sieve on $value:
+        signal!blah : $printer
+        signal!ATOM : $default
+    end
+end

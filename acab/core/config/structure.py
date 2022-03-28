@@ -13,16 +13,17 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-import pyparsing as pp
-
 logging = root_logger.getLogger(__name__)
 
 from acab.core.config.config import AcabConfig
-from acab.error.config_exception import AcabConfigException
+from acab.error.config import AcabConfigException
 from acab.core.decorators.util import registerOn
 
 @registerOn(AcabConfig)
 def check_structure(self):
+    """
+    a mixin extension of AcabConfig to verify the loaded config files information
+    """
     try:
         constraints = self.prepare("Config.Constraints", as_dict=True)()
         for src, tgt in constraints.items():

@@ -8,8 +8,9 @@ import pyparsing as pp
 from acab.core.parsing import funcs as Pfunc
 from acab.core.parsing import parsers as PU
 from acab.core.parsing.consts import (COMMA, DELIM, END, emptyLine, COLON,
-                                      FACT_HEAD, NEGATION, NG, N, op, opLn, zrm, ln)
-from acab.core.parsing.default_structure import OPERATOR, SEN, VALUE
+                                      FACT_HEAD, NEGATION, NG, N, op, opLn, zrm, ln, FUNC_SYMBOL)
+from acab.core.parsing.default_keys import OPERATOR, SEN, VALUE, HEAD_ANNOTATION
+from acab.core.parsing import default_keys as PDS
 from acab.core.data import default_structure as CDS
 from acab.modules.parsing.exlo import constructors as PConst
 from acab.core.parsing.indented_block import IndentedBlock
@@ -18,60 +19,74 @@ from acab.core.parsing.annotation import ValueRepeatAnnotation, ValueAnnotation
 logging             = root_logger.getLogger(__name__)
 # Hotload insertion points:
 HOTLOAD_ANNOTATIONS   = pp.Forward()
+HOTLOAD_ANNOTATIONS.set_name('hotload_annotations')
 HOTLOAD_BAD_HEADS     = pp.Forward()
+HOTLOAD_BAD_HEADS.set_name('hotload_bad_heads')
 HOTLOAD_SEN_ENDS      = pp.Forward()
+HOTLOAD_SEN_ENDS.set_name('hotload_sen_ends')
 HOTLOAD_SEN_HEADS     = pp.Forward()
+HOTLOAD_SEN_HEADS.set_name('hotload_sen_heads')
+HOTLOAD_SEN_POSTS     = pp.Forward()
+HOTLOAD_SEN_POSTS.set_name('hotload_sen_posts')
 
-
+# Controllable words that can't start a sentence
 BAD_HEADS           = ~(END | HOTLOAD_BAD_HEADS)("Bad Words")
 BAD_HEADS.errmsg    = "Bad Head Word Found"
 
+# Annotations for sentence words, auto wrapped with parens
 annotations = PU.DELIMIST(HOTLOAD_ANNOTATIONS, delim=COMMA)
-annotations.setParseAction(PConst.build_constraint_list)
-annotations.setName("Annotations")
+annotations.set_parse_action(PConst.build_constraint_list)
+annotations.set_name("Annotations")
 
+# The one default head annotation: negation
 sen_head_negation = NEGATION("SenNeg")
-sen_head_negation.setParseAction(lambda x: ValueAnnotation(CDS.NEGATION, True))
+sen_head_negation.set_parse_action(lambda x: ValueAnnotation(CDS.NEGATION, True))
+
+# Annotations for before and after a sentence
+sen_head_annotations = sen_head_negation | HOTLOAD_SEN_HEADS
+sen_post_annotations = HOTLOAD_SEN_POSTS
 
 # Core = a. | b! | $a. | $b!....
 # Sentences are /SEN_WORD* (SEN_END | SEN_STATEMENT)/
+# TODO explicit Semantic Hint operator?
 SEN_MACRO             = pp.Forward()
-SEN_HEAD              = BAD_HEADS + (PU.op(sen_head_negation) | HOTLOAD_SEN_HEADS)
+SEN_HEAD              = BAD_HEADS + NG(HEAD_ANNOTATION, zrm(sen_head_annotations))
 SEN_WORD              = PU.PARAM_CORE(annotations)
 SEN_NO_MODAL          = PU.PARAM_CORE(annotations, end=True) + ~COLON
-SEN_END               = HOTLOAD_SEN_ENDS | SEN_NO_MODAL
-SEN_WORD.setName("PBCore")
-SEN_NO_MODAL.setName("PBEnd")
+SEN_END               = (HOTLOAD_SEN_ENDS | SEN_NO_MODAL)
+SEN_WORD.set_name("PBCore")
+SEN_NO_MODAL.set_name("PBEnd")
 
 # The Prime Sentence definition:
-SENTENCE = SEN_HEAD + NG(SEN, pp.ZeroOrMore(SEN_WORD) + SEN_END)
-SENTENCE.setParseAction(Pfunc.construct_sentence)
-SENTENCE.setName("Sentence")
+SENTENCE = SEN_HEAD + NG(SEN, pp.ZeroOrMore(SEN_WORD) + SEN_END) + NG(PDS.POST_ANNOTATION, zrm(sen_post_annotations))
+SENTENCE.set_parse_action(Pfunc.construct_sentence)
+SENTENCE.set_name("Sentence")
 
 SEN_PLURAL = PU.DELIMIST(SENTENCE, delim=DELIM)
-SEN_PLURAL.setName("Sentence Plural")
+SEN_PLURAL.set_name("Sentence Plural")
 
-# FIXME
+# FIXME sentence plural macro
 # SEN_MACRO_BODY     = IndentedBlock(SENTENCE)
 # # Statement to specify multiple sub sentences
-# SEN_MACRO        <<= PU.STATEMENT_CONSTRUCTOR(pp.Literal("::ζ"),
+# SEN_MACRO        <<= PU.STATEMENT_CONSTRUCTOR(pp.Literal("ζ"),
 #                                               SEN_MACRO_BODY,
 #                                               parse_fn=Pfunc.construct_multi_sentences)
 
-op_sentence = pp.Suppress(pp.Literal('λ')) + SENTENCE
+# TODO: Make this a head annotation
+op_sentence = FUNC_SYMBOL + SENTENCE
 
 # Naming
-# BINDING_CORE.setName("BindCore")
-# BINDING_END.setName("BindEnd")
-# SEN_PLURAL.setName("SentencePlural")
-# HOTLOAD_ANNOTATIONS.setName("Annotations")
-# SEN_STATEMENT.setName("SentenceStatement")
-# QUERY_OP_Internal.setName("Query_Statements")
-# query_or_annotation.setName("QueryOrAnnotation")
+# BINDING_CORE.set_name("BindCore")
+# BINDING_END.set_name("BindEnd")
+# SEN_PLURAL.set_name("SentencePlural")
+# HOTLOAD_ANNOTATIONS.set_name("Annotations")
+# SEN_STATEMENT.set_name("SentenceStatement")
+# QUERY_OP_Internal.set_name("Query_Statements")
+# query_or_annotation.set_name("QueryOrAnnotation")
 
 parse_point = SEN_PLURAL
 
 # MAIN PARSER:
-def parseString(in_string):
+def parse_string(in_string):
     """ str -> [[Value]] """
-    return parse_point.parseString(in_string)[:]
+    return parse_point.parse_string(in_string)[:]

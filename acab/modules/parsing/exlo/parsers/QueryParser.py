@@ -4,12 +4,12 @@ import logging as root_logger
 import pyparsing as pp
 from acab.core.config.config import AcabConfig
 import acab.core.data.default_structure as CDS
-import acab.core.parsing.default_structure as PDS
+import acab.core.parsing.default_keys as PDS
 from acab.core.parsing import funcs as Pfunc
 from acab.core.parsing import parsers as PU
 from acab.core.parsing.consts import (COLLAPSE_CONTEXT, COLON, COMMA, DELIM, DOUBLEBAR, END,
                                           NG, QUERY, N, component_gap, op, zrm)
-from acab.core.parsing.default_structure import OPERATOR, SEN, VALUE
+from acab.core.parsing.default_keys import OPERATOR, SEN, VALUE
 from acab.core.parsing.annotation import ValueAnnotation
 from acab.core.parsing.default_symbols import QUERY_HEAD
 from acab.core.parsing.funcs import build_assignment
@@ -17,6 +17,8 @@ from acab.core.parsing.indented_block import IndentedBlock
 from acab.modules.parsing.exlo import constructors as PConst
 from acab.modules.parsing.exlo.constructors import build_query
 
+
+from acab.modules.parsing.exlo.util import QUERY_HEAD
 from .FactParser import SENTENCE, op_sentence, annotations
 
 logging = root_logger.getLogger(__name__)
@@ -24,64 +26,62 @@ logging = root_logger.getLogger(__name__)
 # TODO add syntax for binding a sentence
 # a.test.query..<$x?
 # a.test.query..<$x(::Rule)?
-# Core Query Chain
-# TODO this can simplify down to a param sen + extra
 #
 # For Custom non-standard form queries
 # eg: 1[a.b.$x]3?
 # to capture a condition of how many $x's are permissible
 HOTLOAD_QUERY_SEN = pp.Forward()
+HOTLOAD_QUERY_SEN.set_name("hotload_query_sen")
 HOTLOAD_QUERY_OP  = pp.Forward()
+HOTLOAD_QUERY_OP.set_name("hotload_query_op")
 
 assignment        = PU.BIND + COLON + SENTENCE
 assignmentList    = PU.DELIMIST(assignment, delim=COMMA)
 fallback          = DOUBLEBAR + assignmentList
 
-# TODO shift this to config
-
 # Build After comparison operators have been constructed:
 op_path = HOTLOAD_QUERY_OP | op_sentence
 
 basic_constraint = N(OPERATOR, op_path) + N(VALUE, zrm(SENTENCE))
-basic_constraint.setParseAction(PConst.build_query_component)
+basic_constraint.set_parse_action(PConst.build_query_component)
 
 COLLAPSE_CONTEXT      = COLLAPSE_CONTEXT.copy()
-COLLAPSE_CONTEXT.setParseAction(lambda x: ValueRepeatAnnotation("constraint", CTX_OP.collect_var))
+COLLAPSE_CONTEXT.set_parse_action(lambda x: ValueRepeatAnnotation("constraint", CTX_OP.collect_var))
 
 word_query_constraint = COLLAPSE_CONTEXT | basic_constraint
 
+# TODO shift query_term to POST_ANNOTATION hook
 query_terminator = QUERY("QueryTerm")
-query_terminator.addParseAction(lambda x: [ValueAnnotation(CDS.QUERY, True),
-                                           ValueAnnotation(CDS.QUERY_FALLBACK, None)])
+query_terminator.add_parse_action(lambda x: [ValueAnnotation(CDS.QUERY, True),
+                                             ValueAnnotation(CDS.QUERY_FALLBACK, None)])
 
 query_fallback   = op(fallback)
-query_fallback.setParseAction(lambda x: ValueAnnotation(CDS.QUERY_FALLBACK, x[:]))
+query_fallback.set_parse_action(lambda x: ValueAnnotation(CDS.QUERY_FALLBACK, x[:]))
 
 query_sen_end    = PU.PARAM_CORE(annotations,
                                  end=query_terminator + query_fallback)
 
 clauses               = IndentedBlock(HOTLOAD_QUERY_SEN | SENTENCE)
 
-query_statement       = PU.STATEMENT_CONSTRUCTOR(pp.Literal("::γ"),
-                                                 clauses)
+query_statement       = PU.STATEMENT_CONSTRUCTOR(QUERY_HEAD, clauses)
 
 # Actions
-clauses.setParseAction(build_query)
-assignment.setParseAction(build_assignment)
+clauses.set_parse_action(build_query)
+assignment.set_parse_action(build_assignment)
 
 # NAMING
-# assignment.setName("FallbackAssignment")
-# assignmentList.setName("FallbackAssignmentList")
-# fallback.setName("QueryFallbackStatement")
-query_sen_end.setName("QueryTerminator")
-clauses.setName("Query")
-query_statement.setName("QueryStatement")
+# assignment.set_name("FallbackAssignment")
+# assignmentList.set_name("FallbackAssignmentList")
+# fallback.set_name("QueryFallbackStatement")
+query_sen_end.set_name("QueryTerminator")
+clauses.set_name("Query")
+query_statement.set_name("QueryStatement")
 
 
 # parse_point = clauses.ignore(PU.COMMENT)
 parse_point = clauses
 
 # Main parser:
-def parseString(in_string, parse_point=parse_point):
+def parse_string(in_string, parse_point=parse_point):
     """ .a.b(>20)!d.$X, ... -> Query """
-    return parse_point.parseString(in_string)[0]
+    return parse_point.parse_string(in_string)[0]

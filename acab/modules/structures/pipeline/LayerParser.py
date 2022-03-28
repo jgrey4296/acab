@@ -31,11 +31,11 @@ from acab.core.config.config import AcabConfig
 from acab.core.parsing import parsers as PU
 from acab.core.parsing.consts import LAYER_HEAD
 from acab.core.parsing.funcs import make_layer
-from acab.core.data.production_abstractions import ProductionContainer
+from acab.core.data.instruction import ProductionContainer
 
 logging = root_logger.getLogger(__name__)
 
-config        = AcabConfig.Get()
+config        = AcabConfig()
 QUERY_S     = config.prepare("Parse.Structure", "QUERY")()
 TRANSFORM_S = config.prepare("Parse.Structure", "TRANSFORM")()
 ACTION_S    = config.prepare("Parse.Structure", "ACTION")()
@@ -55,10 +55,10 @@ layer_body = PU.op(conditions) + PU.op(transforms) + PU.op(var_setting)
 layer_stmt = PU.STATEMENT_CONSTRUCTOR(HOTLOAD_BASIC_SEN,
                                       layer_body)
 
-layer_body.setParseAction(make_layer)
+layer_body.set_parse_action(make_layer)
 
 parse_point = layer_stmt
-# parse_point.setFailAction(lambda s, loc, expr, err: print("{}\n{}".format(str(err), err.markInputline())))
+# parse_point.set_fail_action(lambda s, loc, expr, err: print("{}\n{}".format(str(err), err.markInputline())))
 
-def parseString(s):
-    return parse_point.parseString(s)
+def parse_string(s):
+    return parse_point.parse_string(s)

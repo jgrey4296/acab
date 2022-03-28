@@ -1,0 +1,21 @@
+example.activity(::activity):
+    roles:
+        a b c(λcond) d e
+    end
+
+    role.protocols:
+
+    end
+
+    artifacts:
+
+    end
+
+    rules:
+
+    end
+
+    metrics:
+
+    end
+end

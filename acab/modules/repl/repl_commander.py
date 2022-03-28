@@ -39,10 +39,10 @@ class ReplState:
     prompt_ml        : str                    =  field(default=config.prepare("Module.REPL", "PROMPT_ML", actions=[config.actions_e.STRIPQUOTE])())
     prompt_bkup      : str                    =  field(default="")
     ctxs             : ContextSet_i           =  field(default=None)
-    collect_str      : List[str]              =  field(default_factory=list)
+    collect_str      : list[str]              =  field(default_factory=list)
     echo             : bool                   =  field(default=False)
     in_multi_line    : bool                   =  field(default=False)
-    engine           : Optional[AcabEngine_i] =  field(default=None)
+    engine           : None|AcabEngine_i =  field(default=None)
     engine_str       : str                    =  field(default=initial_engine)
     debug_data       : Any                    =  field(default=None)
     debugger         : Any                    =  field(default=None)
@@ -72,7 +72,7 @@ class AcabREPLCommander(cmd.Cmd):
         # eg: ':{' -> multi
         try:
             logging.debug("PreCmd Parsing: {}".format(line))
-            line = RP.precmd_parser.parseString(line)[:]
+            line = RP.precmd_parser.parse_string(line)[:]
             logging.debug("PreCmd Result:{}".format(line))
             # Intercept if in multi line state
             if self.state.in_multi_line and not line[0] in ["multi", "pop", "exit", "echo"]:

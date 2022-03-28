@@ -5,7 +5,7 @@ from functools import reduce
 from math import floor
 from random import Random
 
-from acab.core.data.values import AcabValue
+from acab.core.data.value import AcabValue
 from .pattern_iterator import PatternIterator
 
 from . import util

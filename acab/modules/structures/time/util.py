@@ -7,12 +7,12 @@ from math import gcd
 from functools import reduce
 import logging as root_logger
 
-from acab.core.data.values import Sentence
+from acab.core.data.sentence import Sentence
 from acab.core.config.config import AcabConfig
 
 logging = root_logger.getLogger(__name__)
 
-config = AcabConfig.Get()
+config = AcabConfig()
 
 TIME_FORMAT_S   = config.prepare("Modules.Time", "TIME_FORMAT")()
 

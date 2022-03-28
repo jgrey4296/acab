@@ -50,6 +50,9 @@ repl:
 vrepl:
 	python acab/modules/repl/repl_main.py --config ./acab/__configs/default -v DEBUG
 
+repld:
+	python -X dev acab/modules/repl/repl_main.py --config ./acab/__configs/default
+
 re: repl
 vr: vrepl
 
@@ -68,6 +71,10 @@ line_report:
 class_report:
 	@echo "Getting Class Relations"
 	find ./acab -name "*.py" -not -name "flycheck*" | xargs awk '/^class/ {print $0}' > class.report
+
+
+export_env:
+	conda env export --from-history > acab.yaml
 
 # Linting #####################################################################
 pylint:

@@ -9,12 +9,12 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 from acab import types as AT
 from acab.core.config.config import GET
-from acab.core.data.production_abstractions import (ActionOperator,
+from acab.core.data.instruction import (ActionOperator,
                                                         ProductionOperator)
 from acab.core.decorators.semantic import (OperatorArgUnWrap,
                                                OperatorResultWrap,
                                                OperatorSugar)
-from acab.error.semantic_exception import AcabSemanticException
+from acab.error.semantic import AcabSemanticException
 
 logging = root_logger.getLogger(__name__)
 
@@ -63,7 +63,7 @@ class RebindOperator(ActionOperator):
     allowing more concise names of operators
     """
 
-    def __call__(self, target:Union[Sentence, str], op:Union[Operator, Sentence, str], data=None, semSystem=None):
+    def __call__(self, target:Sentence|str, op:Operator|Sentence|str, data=None, semSystem=None):
         """ λUpdateOps "+" $x
         Updates the Sem System's Operator cache
         """

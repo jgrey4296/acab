@@ -1,7 +1,4 @@
 #!/usr/bin/env python3
-
-#!/usr/bin/env python3
-
 import logging as root_logger
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
@@ -14,12 +11,12 @@ from enum import Enum
 from uuid import UUID, uuid1
 
 import acab.interfaces.context as CtxInt
-import acab.error.semantic_exception as ASErr
+import acab.error.semantic as ASErr
 from acab.core.config import GET
-from acab.core.data.production_abstractions import (ProductionComponent,
+from acab.core.data.instruction import (ProductionComponent,
                                                         ProductionContainer)
 from acab.interfaces.value import Sentence_i
-from acab.error.semantic_exception import AcabSemanticException
+from acab.error.semantic import AcabSemanticException
 from acab.modules.context.constraints import ConstraintCollection
 
 config = GET()
@@ -34,7 +31,7 @@ ProdComp         = ProductionComponent
 ProdCon          = ProductionContainer
 Operator         = 'ProductionOperator'
 Value            = 'AcabValue'
-Statement        = 'AcabStatement'
+Statement        = 'Instruction'
 Sen              = Sentence_i
 Node             = 'AcabNode'
 ModuleComponents = "ModuleComponents"
@@ -51,8 +48,8 @@ class ContextWalkManager:
     root_node     : Node               = field()
     ctxs          : CtxSet             = field()
 
-    collect_vars  : Set[str]                   = field(init=False, default_factory=set)
-    constraints   : List[ConstraintCollection] = field(init=False, default_factory=list)
+    collect_vars  : set[str]                   = field(init=False, default_factory=set)
+    constraints   : list[ConstraintCollection] = field(init=False, default_factory=list)
 
     _current_inst       : CtxIns               = field(init=False, default=None)
 
@@ -68,7 +65,7 @@ class ContextWalkManager:
         # set all instances to start at node, unless start_word is an at_binding,
         # in which case get the bound node
         # handle negated behaviour
-        active_list : List[CtxIns] = self.ctxs.active_list()
+        active_list : list[CtxIns] = self.ctxs.active_list()
 
         if not self.walk_spec[0].is_at_var:
             [x.set_current_node(self.root_node) for x in active_list]
@@ -83,7 +80,7 @@ class ContextWalkManager:
     def __exit__(self, exc_type, exc_value, traceback):
         # collect bindings as necessary
         self.collect()
-        # TODO handle exception
+        return False
 
 
     def __iter__(self):
@@ -92,17 +89,21 @@ class ContextWalkManager:
 
 
     @property
-    def active(self) -> Iterator[Node]:
+    def current(self):
+        return self._current_inst
+
+    @property
+    def active(self) -> Iterator[list[Node]]:
         active_ctxs = self.ctxs.active_list(clear=True)
         for ctx in active_ctxs:
             self._current_inst = ctx
             yield [ctx._current]
 
 
-    def test_and_update(self, results:List[Node]):
+    def test_and_update(self, results:list[Node]):
         self.test(results)
 
-    def test(self, possible: List[Node]):
+    def test(self, possible: list[Node]):
         """
         run a word's tests on available nodes, with an instance.
         bind successes and return them

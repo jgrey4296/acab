@@ -1,0 +1,15 @@
+a.linear.logic.rule:
+    #linlog_pre_greedy
+    #linlog_post
+
+    a.normal!query?
+    a.lin.log.$var
+    $var o- query? // Consumes just 'query'
+    $var o- query.of!multiple.values? // consume 'query' and everything past it
+    // different semantics of consume. List, Trie, Set, Count...
+    // shared consuming in CtxSet...
+
+
+    + do.a.$x o- $y   // Consume the $y upon assertion
+
+end

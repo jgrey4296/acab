@@ -5,23 +5,30 @@ Adds utility methods
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
+from dataclasses import dataclass, field, InitVar
 
 from acab.core.config.config import AcabConfig
-from acab.core.data.values import AcabStatement
+from acab.core.data.value import AcabValue
+from acab.core.data.instruction import Instruction
+from acab.core.data.sentence import Sentence
 
-config = AcabConfig.Get()
 
-class TypeStatement(AcabStatement):
+config = AcabConfig()
+
+@dataclass(frozen=True)
+class TypeStatement(Instruction):
     # TODO: change value to a config value
-    def __init__(self, value="|∀σ|", **kwargs):
-        super().__init__(value, **kwargs)
-        self._path : 'Sentence'            = None
-        self._structure : List['Sentence'] = []
 
+    value : list[Sentence] = field(default_factory=list)
+    name  : str            = field(default="|∀σ|")
+    _path : Sentence       = field(default=None)
+
+    def to_sentences(self):
+        return self.structure[:]
 
     @property
     def head(self):
-        return self.path[-1]
+        return self._path[-1]
 
     @property
     def vars(self):
@@ -29,4 +36,4 @@ class TypeStatement(AcabStatement):
 
     @property
     def structure(self):
-        return self._structure
+        return self.value

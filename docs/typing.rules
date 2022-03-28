@@ -1,0 +1,41 @@
+typing.layer(::ρ):
+    // could be a ∀ symbol
+    typing ᛦ $rules(::ρ, #walker, | $x |)? | collect $rules(::list[ρ])
+    $base
+
+    // Run *all* rules on *each* node,
+    A walk $rules
+    // or
+    $base !A! $rules
+end
+
+typing.defrule::
+    | $x |
+    #walker
+
+    $x(::type.def)?
+
+    λsignal walk.cut
+end
+
+typing.subctx:
+    | $x |
+    #walker
+
+    $x(::type.production.$type)?
+    $type(∈ component.container.structure)?
+    type.production.$type(::type.def)?
+
+    λtyping.subtype $x
+end
+
+typing.subtype:
+    | $x, $y |
+
+    $x(::$y)?
+    $y(::type.def)?
+    $x ᛦ $a(::$b)?
+    $y ᛦ $a(::$b)?
+
+    λsignal collect $x
+end

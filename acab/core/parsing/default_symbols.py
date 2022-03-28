@@ -3,29 +3,29 @@ Enforce a default set of symbols to be retrieved
 from config files
 """
 from acab.core.config.config import AcabConfig
-config = AcabConfig.Get()
+config = AcabConfig()
 
-OPERATOR_SYNTAX  = config.prepare("Parse.Patterns", "OPERATOR_SYNTAX")()
-WORD_COMPONENT   = config.prepare("Parse.Patterns", "WORD_COMPONENT")()
+SymbolDict      = config.prepare("Symbols", as_dict=True)()
+AliasDict       = config.prepare("Aliases", as_dict=True)()
 
-END              = config.prepare("Symbols", "END")()
+OPERATOR_SYNTAX = config.prepare("Parse.Patterns", "OPERATOR_SYNTAX")()
+WORD_COMPONENT  = config.prepare("Parse.Patterns", "WORD_COMPONENT")()
 
-RULE_HEAD        = config.prepare("Aliases", "RULE")()
-QUERY_HEAD       = config.prepare("Aliases", "QUERY")()
-TRANSFORM_HEAD   = config.prepare("Aliases", "TRANSFORM")()
-ACTION_HEAD      = config.prepare("Aliases", "ACTION")()
-FACT_HEAD        = config.prepare("Aliases", "FACT")()
-AGENDA_HEAD      = config.prepare("Aliases", "AGENDA")()
-LAYER_HEAD       = config.prepare("Aliases", "LAYER")()
-PIPE_HEAD        = config.prepare("Aliases", "PIPE")()
-COLLAPSE_CONTEXT = config.prepare("Aliases", "CTX_COLLAPSE")()
+END              = SymbolDict["END"]
+FUNC             = SymbolDict["FUNC"]
+BIND             = SymbolDict["BIND"]
+AT_BIND          = SymbolDict["AT_BIND"]
+QUERY            = SymbolDict["QUERY"]
+TAG              = SymbolDict["TAG"]
+NEGATION         = SymbolDict["NEGATION"]
+TYPE_SEN         = SymbolDict["TYPE_SEN"]
 
-FUNC             = config.prepare("Symbols", "FUNC")()
-
-BIND             = config.prepare("Symbols", "BIND")()
-AT_BIND          = config.prepare("Symbols", "AT_BIND")()
-
-QUERY            = config.prepare("Symbols", "QUERY")()
-TAG              = config.prepare("Symbols", "TAG")()
-
-NEGATION         = config.prepare("Symbols", "NEGATION")()
+RULE_HEAD        = AliasDict["RULE"]
+QUERY_HEAD       = AliasDict["QUERY"]
+TRANSFORM_HEAD   = AliasDict["TRANSFORM"]
+ACTION_HEAD      = AliasDict["ACTION"]
+FACT_HEAD        = AliasDict["FACT"]
+AGENDA_HEAD      = AliasDict["AGENDA"]
+LAYER_HEAD       = AliasDict["LAYER"]
+PIPE_HEAD        = AliasDict["PIPE"]
+COLLAPSE_CONTEXT = AliasDict["CTX_COLLAPSE"]

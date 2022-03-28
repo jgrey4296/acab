@@ -2,19 +2,18 @@
 import logging as root_logger
 from dataclasses import InitVar, dataclass, field
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
-                    List, Mapping, Match, MutableMapping, Optional, Sequence,
-                    Set, Tuple, TypeVar, Union, cast)
+                    List, Mapping, Match, MutableMapping, Optional, Protocol,
+                    Sequence, Set, Tuple, TypeVar, Union, cast)
 
 logging = root_logger.getLogger(__name__)
 
+import acab.error.semantic as ASErr
 import acab.interfaces.context as CtxInt
-import acab.error.semantic_exception as ASErr
-from acab.core.config import GET
-from acab.core.data.production_abstractions import (ProductionComponent,
-                                                        ProductionOperator)
-from acab.core.data.values import Sentence
-from acab.modules.context.constraint_sieve import default_sieve
+from acab.core.config.config import GET
+from acab.core.data.instruction import ProductionComponent, ProductionOperator
+from acab.core.data.sentence import Sentence
 from acab.interfaces.sieve import AcabSieve
+from acab.modules.context.constraint_sieve import default_sieve
 
 config = GET()
 CONSTRAINT    = config.prepare("Value.Structure", "CONSTRAINT")
@@ -26,30 +25,20 @@ Constraints = 'ConstraintCollection'
 ProdComp    = 'ProductionComponent'
 Operator    = 'ProductionOperator'
 Value       = 'AcabValue'
-Statement   = 'AcabStatement'
+Statement   = 'Instruction'
 Sen         = 'Sentence'
 Node        = 'AcabNode'
 
+class ConstraintMeta(type(Protocol)):
+    def __init__(cls, name:str, bases:tuple[type, ...], data:dict[str,Any]):
+        super(ConstraintMeta, cls).__init__(name, bases, data)
 
-@dataclass(frozen=True)
-class ConstraintCollection(CtxInt.Constraint_i):
-    """ Simple container of all ProductionComponent constraints a word possesses,
-    separated into subtypes """
-
-    source         : Value                     = field()
-    _test_mappings : Dict[str, List[Callable]] = field()
-
-    sieve           : ClassVar[List[Callable]] = AcabSieve(default_sieve)
-    operators       : ClassVar[CtxIns]         = None
-
-    @staticmethod
-    def build(word, operators=None, sieve_fns:List[Callable]=None):
-        """ Run the sieve on a word to generate the test set groupings """
+    def __call__(cls, word, *, operators=None, sieve_fns:list[Callable]=None):
         if operators is not None:
-            ConstraintCollection.operators = operators
+            cls.operators = operators
 
         if sieve_fns is None:
-            sieve = ConstraintCollection.sieve
+            sieve = cls.sieve
         else:
             sieve = AcabSieve(seive_fns)
 
@@ -64,10 +53,19 @@ class ConstraintCollection(CtxInt.Constraint_i):
                 break
 
 
-        return ConstraintCollection(word, tests)
+        return super(ConstraintMeta, cls).__call__(word, tests)
+
+
+@dataclass(frozen=True)
+class ConstraintCollection(CtxInt.Constraint_i, metaclass=ConstraintMeta):
+    """ Simple container of all ProductionComponent constraints a word possesses,
+    separated into subtypes """
+    sieve           : ClassVar[list[Callable]] = AcabSieve(default_sieve)
+    operators       : ClassVar[CtxIns]         = None
 
 
     def test(self, node, ctx):
+        # TODO for key in self._test_order:...
         # run alpha tests
         if "alpha" in self._test_mappings:
             self.__run_alphas(node)
@@ -81,7 +79,7 @@ class ConstraintCollection(CtxInt.Constraint_i):
         if "name" in self._test_mappings:
             self.__run_name(node, ctx)
 
-    def _get(self, val, stack=None):
+    def _get(self, val, *, stack=None):
         """
         Retrieve a value from a stack of a context instance.
         stack auto-includes CC's operators ctx inst.
@@ -92,8 +90,8 @@ class ConstraintCollection(CtxInt.Constraint_i):
         stack.append(self.operators)
 
         for ctx in stack:
-            if val in ctx:
-                return ctx[val]
+            if str(val) in ctx:
+                return ctx[str(val)]
 
         if isinstance(val, Sentence) and val.has_var:
             return val.bind(stack[0])
@@ -109,32 +107,33 @@ class ConstraintCollection(CtxInt.Constraint_i):
         # Perform the tests:
         results = [op(node.value, *pars, data=data) for op,pars,data in test_trios]
         if not all(results):
-            raise ASErr.AcabSemanticTestFailure("Alphas Failed", (node, self))
+            raise ASErr.AcabSemanticTestFailure("Alphas Failed", context=(node, self))
 
     def __run_betas(self, node, ctxInst):
         """ Run Beta Tests on a node and context isntance """
         test_trios = []
         ctx_stack = [ctxInst]
         for test in self._test_mappings["beta"]:
-            op = self._get(test.op, ctx_stack)
-            params = [self._get(x, ctx_stack) for x in test.params]
+            op = self._get(test.op, stack=ctx_stack)
+            params = [self._get(x, stack=ctx_stack) for x in test.params]
             trio   = (op, params, test.data)
             test_trios.append(trio)
 
-        val = self._get(node.value, ctx_stack)
+        val = self._get(node.value, stack=ctx_stack)
         results = [op(val, *pars, data=data) for op,pars,data in test_trios]
         if not all(results):
-            raise ASErr.AcabSemanticTestFailure("Betas Failed", (node, self, ctxInst))
+            raise ASErr.AcabSemanticTestFailure("Betas Failed", context=(node, self, ctxInst))
 
     def __run_substruct_tests(self, node, ctxInst):
         results = []
-        val = self._get(node.value, [ctxInst])
+        val = self._get(node.value, stack=[ctxInst])
         for test in self._test_mappings["sub_struct_tests"]:
             op = self._get(test.op)
             results.append(op(val, ctxInst, *test.params))
 
         if not all(results):
-            raise ASErr.AcabSemanticTestFailure("Sub Structural Binds Failed", (node, self, ctxInst))
+            # binds can't succeed if tests fail
+            raise ASErr.AcabSemanticTestFailure("Sub Structural Tests Failed", context=(node, self, ctxInst))
 
     def __run_name(self, node, ctxInst):
         """ Check node against prior binding """
@@ -143,7 +142,7 @@ class ConstraintCollection(CtxInt.Constraint_i):
             if b_val.is_var or ctxInst[bind].is_var:
                 continue
             if b_val != ctxInst[bind]:
-                raise ASErr.AcabSemanticTestFailure("Binds Failed", (node, self))
+                raise ASErr.AcabSemanticTestFailure("Binds Failed", context=(node, self))
 
 
     def __bool__(self):

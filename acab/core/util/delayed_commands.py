@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 from uuid import UUID
 from dataclasses import InitVar, dataclass, field
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
-                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    List, Mapping, Match, MutableMapping, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 from enum import Enum
 import logging as root_logger
@@ -14,17 +15,20 @@ CtxSet     = AT.CtxSet
 CtxIns     = AT.CtxIns
 Value      = AT.Value
 ProdComp   = AT.Component
-DelayValue = Union[UUID, CtxIns, CtxSet, None]
+DelayValue = 'UUID | CtxIns | CtxSet | None'
 
 
 @dataclass
-class DelayedCommands_i():
+class DelayedCommands_i:
+    """
+    Mixin class which enables registering of Contexts to run later.
+    """
 
     delayed_e: Enum                    = field()
-    _purgatory : Dict[Enum, Set[UUID]] = field(init=False, default_factory=dict)
-    _priority : List[Enum]             = field(init=False, default_factory=list)
+    _purgatory : dict[Enum, set[UUID]] = field(init=False, default_factory=dict)
+    _priority : list[Enum]             = field(init=False, default_factory=list)
 
-    def delay(self, instr:Enum, ctxIns:DelayValue):
+    def delay(self, instr:Enum, *, ctxIns:DelayValue):
         """
         Register an action for later.
         Useful for adding ctxins results without interfering with current operations,

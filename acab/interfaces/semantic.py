@@ -8,202 +8,139 @@ And reduce those internal formats back down to basic sentences.
 SemanticMap also provide the ability to map a value or node to particular semantics,
 and specifies *how* to search for the correct mapping.
 
-Meanwhile IndependentSemantics_i are concerned only with the values and structures they have control over.
+Meanwhile ValueSemantics_i are concerned only with the values and structures they have control over.
 
 *Dependent* Semantics factor in contexts and a reference to the engine.
 
 
 """
+# pylint: disable=multiple-statements,too-many-ancestors,invalid-sequence-index,abstract-method,arguments-differ
+from __future__ import annotations
 
 import abc
 import logging as root_logger
 from dataclasses import InitVar, dataclass, field
 from enum import Enum
-from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
-                    List, Mapping, Match, MutableMapping, Optional, Sequence,
-                    Set, Tuple, TypeVar, Union, cast)
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
+                    Iterable, Iterator, Mapping, Match, MutableMapping,
+                    Protocol, Sequence, Tuple, Type, TypeAlias, TypeGuard,
+                    TypeVar, cast, final, overload,
+                    runtime_checkable)
+
+if TYPE_CHECKING:
+    # tc only imports
+    pass
 
 logging = root_logger.getLogger(__name__)
+
+import acab.interfaces.handler_system as HS
 from acab import types as AT
 from acab.core.data.default_structure import QUERY
-from acab.interfaces.handler_system import HandlerSystem_i, Handler, HandlerComponent_i
+from acab.error.printing import AcabPrintException
+from acab.error.semantic import AcabSemanticException
+from acab.interfaces.sub_protocols import handler_system as HSubP
+from acab.interfaces.sub_protocols.value import AcabReducible_p
 from acab.interfaces.value import Sentence_i, Value_i
-from acab.error.print_exception import AcabPrintException
-from acab.error.semantic_exception import AcabSemanticException
 
-Node                   = AT.Node
-Sentence               = AT.Sentence
-Value                  = AT.Value
-Structure              = AT.DataStructure
-Engine                 = AT.Engine
-CtxSet                 = AT.CtxSet
-CtxIns                 = AT.CtxIns
-Handler                = AT.Handler
-ProductionOperator     = AT.Operator
-ModuleComponents       = AT.ModuleComponents
-DependentSemantics     = AT.DependentSemantics
-IndependentSemantics   = AT.IndependentSemantics
-AbstractionSemantics   = AT.AbstractionSemantics
-InDepSemantics         = AT.IndependentSemantics
-AbsDepSemantics        = Union[AbstractionSemantics, DependentSemantics]
-# Note: for dependent and indep, you retrieve semantics of a node,
-# for *abstractions*, you're getting the semantics of a *sentence*
-#--------------------------------------------------
-@dataclass
-class Semantic_Fragment(metaclass=abc.ABCMeta):
+Value              : TypeAlias = "AT.Value[AT.ValueCore]"
+Sen_A              : TypeAlias = AT.Sentence
+Instruction        : TypeAlias = AT.Instruction
+Struct_A           : TypeAlias = "AT.DataStructure[AT.Node]"
+Node               : TypeAlias = AT.Node
+Engine             : TypeAlias = AT.Engine
+CtxSet             : TypeAlias = AT.CtxSet
+CtxIns             : TypeAlias = AT.CtxIns
+Handler_A          : TypeAlias = AT.Handler
+ProductionOperator : TypeAlias = "AT.Operator[AT.TValCore]"
+ModuleComponents   : TypeAlias = AT.ModuleComponents
+StructureSemantics : TypeAlias = AT.StructureSemantics
+ValueSemantics     : TypeAlias = AT.ValueSemantics
+StatementSemantics : TypeAlias = AT.StatementSemantics
+SemanticSystem     : TypeAlias = AT.SemanticSystem
+
+
+# Data  #######################################################################
+@dataclass #type:ignore[misc]
+class Semantic_Fragment(HS.HandlerFragment_i):
     """ Dataclass of Semantic Handlers to be added to the system, and any
-    structs they require
+    data they require
     """
-    dependent   : List[DependentSemantics]   = field(default_factory=list)
-    independent : List[IndependentSemantics] = field(default_factory=list)
-    abstraction : List[AbstractionSemantics] = field(default_factory=list)
-    structs     : List[Structure]            = field(default_factory=list)
+    target_i : None | Type[SemanticSystem] = field(default=None) #type:ignore[assignment]
 
-    def __len__(self):
-        counts = 0
-        counts += len(self.dependent)
-        counts += len(self.independent)
-        counts += len(self.abstraction)
-        counts += len(self.structs)
-        return counts
-
-    def __repr__(self):
-        dep     = len(self.dependent)
-        indep   = len(self.independent)
-        abstr   = len(self.abstraction)
-        structs = len(self.structs)
-
-        return f"(Semantic Fragment: {dep} Dependent, {indep} Independent, {abstr} Abstractions, {structs} Structures)"
-
-#----------------------------------------
-@dataclass
-class SemanticSystem_i(HandlerSystem_i):
-    """
-    Map Instructions to Abstraction/Dependent Semantics
-    """
-    # TODO possibly re-add hooks / failure handling
-    # TODO add a system specific logging handler
-    ctx_set         : CtxSet           = field(default=None)
-
-    _operator_cache : Optional[CtxIns] = field(init=False, default=None)
-
-    def build_ctxset(self, ops:List[ModuleComponents]=None):
-        """ Build a context set. Use passed in operators if provided.
-        Caches operators
-        """
-        if bool(ops) or self._operator_cache is None:
-            ctxset = self.ctx_set.build(ops)
-        else:
-            ctxset = self.ctx_set.build(self._operator_cache)
-
-        if ctxset._operators is not None:
-            self._operator_cache = ctxset._operators.copy()
-
-        # Auto remove the empty context:
-        ctxset.delay(ctxset.delayed_e.DEACTIVATE, ctxset[0].uuid)
-
-        return ctxset
+# Protocols  ##################################################################
+class _SemanticSystem_p(HSubP.HandlerSystem_p, AcabReducible_p, Protocol):
+    @abc.abstractmethod
+    def build_ctxset(self, ops:None|list[ModuleComponents]=None) -> CtxSet: pass
 
     @property
-    def has_op_cache(self) -> bool:
-        return self._operator_cache is not None
+    @abc.abstractmethod
+    def has_op_cache(self) -> bool: pass
 
     @abc.abstractmethod
-    def __call__(self, *instructions, ctxs=None, data=None) -> CtxSet:
-        pass
-
-    @abc.abstractmethod
-    def to_sentences(self) -> List[Sentence]:
-        # TODO run the dep_sem.to_sentences for each struct with a matching registration
-        pass
-
-    def extend(self, mods:List[ModuleComponents]):
-        logging.info("Extending Semantics")
-        semantics = [y for x in mods for y in x.semantics]
-        assert(all([isinstance(x, Semantic_Fragment) for x in semantics]))
-        for sem in semantics:
-            [self._register_handler(x) for x in sem.dependent]
-            [self._register_handler(x) for x in sem.independent]
-            [self._register_handler(x) for x in sem.abstraction]
-            [self._register_struct(x) for x in sem.structs]
+    def __call__(self, *instructions:Instruction, ctxs:None|CtxSet=None, data:None|dict[str,Any]=None, **kwargs:Any) -> CtxSet: pass
 
 
 
-@dataclass
-class DependentSemantics_i(HandlerComponent_i, SemanticSystem_i):
+class _StructureSemantics_p(HSubP.HandlerComponent_p, HSubP.HandlerSystem_p, Protocol):
     """
     Dependent Semantics rely on the context they are called in to function
-    and are built with specific mappings to independent semantics
+    and are built with specific mappings to value semantics
     """
 
-    def __repr__(self):
-        return f"{self.__class__.__name__}"
+    @abc.abstractmethod
+    def __repr__(self) -> str: pass
 
-    def __call__(self, sen, struct, ctxs=None, data=None) -> CtxSet:
-        assert(isinstance(sen, Sentence_i))
-        if QUERY in sen[-1].data and bool(sen[-1].data[QUERY]):
-            return self.query(sen, struct, ctxs=ctxs, data=data)
+    @overload
+    @abc.abstractmethod
+    def __call__(self, sen:Sen_A, struct:Struct_A, *, ctxs:None|CtxSet=None, data:None|dict[str,Any]=None) -> None|CtxSet: pass
 
-        return self.insert(sen, struct, ctxs=ctxs, data=data)
-
-    def to_sentences(self, struct, data=None, ctxs=None):
-        """ Reduce a struct down to sentences, for printing """
-        raise NotImplementedError()
-
-    def verify(self, instruction, data=None, ctxs=None):
-        raise NotImplementedError()
+    @overload
+    @abc.abstractmethod
+    def __call__(self, *args:Any, **kwargs:Any) -> Any: pass
 
     @abc.abstractmethod
-    def insert(self, struct, sen, data):
-        pass
+    def insert(self, sen:Sen_A, struct:Struct_A, *, data:None|dict[str,Any], ctxs:CtxSet) -> None: pass
 
     @abc.abstractmethod
-    def query(self, struct, sen, data):
-        pass
+    def query(self, sen:Sen_A, struct:Struct_A, *, data:None|dict[str,Any], ctxs:CtxSet) -> CtxSet: pass
 
     @abc.abstractmethod
-    def compatible(self, struct: Structure) -> bool:
-        """ Called to check the semantics can handle the suggested struct """
-        pass
+    def compatible(self, struct: Struct_A) -> bool: pass
 
 
-class IndependentSemantics_i(HandlerComponent_i):
+class _ValueSemantics_p(HSubP.HandlerComponent_p, Protocol):
     """
     Independent Semantics which operate on values and nodes, without
     requiring access to larger context, or engine access
     """
 
-    def __repr__(self):
-        return f"{self.__class__.__name__}"
+    @abc.abstractmethod
+    def __repr__(self) -> str: pass
 
     @abc.abstractmethod
-    def make(self, val: Value, data:Dict[Any,Any]=None) -> Node:
-        """ Take a value, and return a node, which has been up'd """
-        pass
-    @abc.abstractmethod
-    def up(self, node: Node, data=None) -> Node:
-        """ Take ANY node, and add what is needed
-        to use for this semantics """
-        pass
-
-    def down(self, node: Node, data=None) -> Value:
-        return node.value
+    def down(self, node:Node, *, data:None|dict[str,Any]=None) -> Value: pass
 
     @abc.abstractmethod
-    def access(self, node: Node, term: Value, data:Dict[Any,Any]=None) -> List[Node]:
-        """ Can node A reach the given term """
-        pass
+    def update(self, node:Node, term:Value, *, data:None|dict[Any, Any]=None) -> None: pass
 
     @abc.abstractmethod
-    def insert(self, node: Node, new_node: Node, data:Dict[Any,Any]=None) -> Node:
-        pass
+    def make(self, val:Value, *, data:None|dict[Any,Any]=None) -> Node: pass
 
     @abc.abstractmethod
-    def remove(self, node: Node, term: Value, data:Dict[Any,Any]=None) -> Optional[Node]:
-        pass
+    def up(self, node:Node, *, data:None|dict[str,Any]=None) -> Node: pass
+
+    @abc.abstractmethod
+    def access(self, node:Node, term:Value, *, data:None|dict[Any,Any]=None) -> list[Node]: pass
+
+    @abc.abstractmethod
+    def insert(self, node:Node, new_node:Node, *, data:None|dict[Any,Any]=None) -> Node: pass
+
+    @abc.abstractmethod
+    def remove(self, node:Node, term:Value, *, data:None|dict[Any,Any]=None) -> Node: pass
 
 
-class AbstractionSemantics_i(HandlerComponent_i):
+
+class _StatementSemantics_p(HSubP.HandlerComponent_p, Protocol):
     """
     Semantics of Higher level abstractions
     eg: Rules, Layers, Pipelines...
@@ -211,15 +148,30 @@ class AbstractionSemantics_i(HandlerComponent_i):
     AbsSems use the total semantic system to call other AbSems, or
     DepSems
     """
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}"
-
-    def verify(self, instruction):
-        pass
     @abc.abstractmethod
-    def __call__(self, instruction, semSys, ctxs=None, data=None) -> CtxSet:
-        pass
+    def __repr__(self) -> str: pass
 
+    @abc.abstractmethod
+    def verify(self, instruction:Instruction) -> bool: pass
 
-#--------------------------------------------------
+    @overload
+    @abc.abstractmethod
+    def __call__(self, instruction:Instruction, semSys:SemanticSystem, *, ctxs:None|CtxSet=None, data:None|dict[str,Any]=None) -> CtxSet: pass
+    @overload
+    @abc.abstractmethod
+    def __call__(self, *args:Any, **kwargs:Any) -> Any: pass
+
+# Interfaces ##################################################################
+@dataclass #type:ignore[misc]
+class SemanticSystem_i(HS.HandlerSystem_i,_SemanticSystem_p):
+    """
+    Map Instructions to Instruction/Struct_A Semantics
+    """
+    # TODO possibly re-add hooks / failure handling
+    # TODO add a system specific logging handler
+    ctx_set         : CtxSet           = field(kw_only=True)
+    _operator_cache : None|CtxIns    = field(init=False, default=None)
+
+class StructureSemantics_i(HS.HandlerComponent_i, _StructureSemantics_p): pass
+class ValueSemantics_i(HS.HandlerComponent_i, _ValueSemantics_p): pass
+class StatementSemantics_i(HS.HandlerComponent_i, _StatementSemantics_p): pass

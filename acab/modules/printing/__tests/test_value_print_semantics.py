@@ -23,28 +23,25 @@ import acab.modules.parsing.exlo.parsers.RuleParser as RP
 import acab.modules.parsing.exlo.parsers.TransformParser as TP
 import acab.modules.printing.printers as Printers
 from acab.core.config.config import AcabConfig
-from acab.core.data.production_abstractions import (ProductionComponent,
-                                                        ProductionContainer,
-                                                        ProductionOperator)
-from acab.core.data.values import AcabStatement, AcabValue, Sentence
-from acab.interfaces.handler_system import Handler
+from acab.core.data import default_structure as DS
+from acab.core.data.instruction import (Instruction, ProductionComponent,
+                                        ProductionContainer,
+                                        ProductionOperator)
+from acab.core.data.sentence import Sentence
+from acab.core.data.value import AcabValue
+from acab.interfaces.handler_system import Handler_i
+from acab.modules.printing import default
 from acab.modules.printing.basic_printer import BasicPrinter
 
-NEGATION_S        = config.prepare("Value.Structure", "NEGATION")()
-QUERY_S           = config.prepare("Value.Structure", "QUERY")()
-BIND_S            = config.prepare("Value.Structure", "BIND")()
-AT_BIND_S         = config.prepare("Value.Structure", "AT_BIND")()
-TYPE_INSTANCE_S   = config.prepare("Value.Structure", "TYPE_INSTANCE")()
-
-NEGATION_SYMBOL_S = config.prepare("Symbols", "NEGATION")()
-ANON_VALUE_S      = config.prepare("Symbols", "ANON_VALUE")()
-FALLBACK_MODAL_S  = config.prepare("Symbols", "FALLBACK_MODAL", actions=[config.actions_e.STRIPQUOTE])()
-QUERY_SYMBOL_S    = config.prepare("Symbols", "QUERY")()
+QUERY_S           = DS.QUERY
+BIND_S            = DS.BIND
+AT_BIND_S         = DS.AT_BIND
+TYPE_INSTANCE_S   = DS.TYPE_INSTANCE
 
 SEN_JOIN_S        = config.prepare("Print.Patterns", "SEN_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE])()
 
-STR_PRIM_S        = Sentence.build([config.prepare("Type.Primitive", "STRING")()])
-REGEX_PRIM_S      = Sentence.build([config.prepare("Type.Primitive", "REGEX")()])
+STR_PRIM_S        = Sentence([config.prepare("Type.Primitive", "STRING")()])
+REGEX_PRIM_S      = Sentence([config.prepare("Type.Primitive", "REGEX")()])
 
 EXOP              = config.prepare("exop", as_enum=True)()
 DOT_E             = EXOP.DOT
@@ -72,66 +69,90 @@ class PrintValueSemanticTests(unittest.TestCase):
                                               AP.action_definition])
 
     def test_initial(self):
-        sem_sys = BasicPrinter(init_handlers=[Printers.AtomicPrinter().as_handler("_:ATOM"),
-                                              Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
-                                              Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
-                                              Printers.ModalPrinter().as_handler("_:MODAL")])
+        """ Check a basic value can be printed """
+        sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
+                               init_handlers=[Printers.AtomicPrinter().as_handler(signal="ATOM"),
+                                              Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
+                                              Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
+                                              Printers.ModalPrinter().as_handler(signal="MODAL")],
+                               sieve_fns=[])
         result = sem_sys.pprint(AcabValue("Test"))
         self.assertEqual(result, "Test")
 
     def test_multiple(self):
-        sem_sys = BasicPrinter(init_handlers=[Printers.AtomicPrinter().as_handler("_:ATOM"),
-                                              Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
-                                              Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
-                                              Printers.ModalPrinter().as_handler("_:MODAL")])
+        """ Check multiple values can be printed """
+        sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
+                               init_handlers=[Printers.AtomicPrinter().as_handler(signal="ATOM"),
+                                              Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
+                                              Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
+                                              Printers.ModalPrinter().as_handler(signal="MODAL")],
+                               sieve_fns=[],
+                               )
         result = sem_sys.pprint(AcabValue("a"), AcabValue("b"), AcabValue("c"))
         self.assertEqual(result, "a\nb\nc")
 
 
     def test_string_wrap(self):
-        sem_sys = BasicPrinter(init_handlers=[Printers.PrimitiveTypeAwarePrinter().as_handler("_:ATOM"),
-                                              Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
-                                              Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
-                                              Printers.ModalPrinter().as_handler("_:MODAL")])
+        """ Check a string type value can be printed """
+        sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
+                               init_handlers=[Printers.PrimitiveTypeAwarePrinter().as_handler(signal="ATOM"),
+                                              Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
+                                              Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
+                                              Printers.ModalPrinter().as_handler(signal="MODAL")],
+                               sieve_fns=[])
 
         test = AcabValue(name="blah", data={TYPE_INSTANCE_S: STR_PRIM_S})
         result = sem_sys.pprint(test)
         self.assertEqual(result, '"blah"')
 
     def test_regex_wrap(self):
-        sem_sys = BasicPrinter(init_handlers=[Printers.PrimitiveTypeAwarePrinter().as_handler("_:ATOM"),
-                                              Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
-                                              Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
-                                              Printers.ModalPrinter().as_handler("_:MODAL")])
+        """ Check a regex type value can be printed """
+        sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
+                               init_handlers=[Printers.PrimitiveTypeAwarePrinter().as_handler(signal="ATOM"),
+                                              Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
+                                              Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
+                                              Printers.ModalPrinter().as_handler(signal="MODAL")],
+                               sieve_fns=[]
+                               )
         test = AcabValue(value=re.compile("blah"), data={TYPE_INSTANCE_S: REGEX_PRIM_S})
         result = sem_sys.pprint(test)
         self.assertEqual(result, r'/blah/')
 
     def test_var_wrap(self):
-        sem_sys = BasicPrinter(init_handlers=[Printers.PrimitiveTypeAwarePrinter().as_handler("_:ATOM"),
-                                              Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
-                                              Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
-                                              Printers.ModalPrinter().as_handler("_:MODAL")])
+        """ Check a variable type value can be printed """
+        sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
+                               init_handlers=[Printers.PrimitiveTypeAwarePrinter().as_handler(signal="ATOM"),
+                                              Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
+                                              Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
+                                              Printers.ModalPrinter().as_handler(signal="MODAL")],
+                               sieve_fns=[])
         test = AcabValue("blah", data={BIND_S : True})
         result = sem_sys.pprint(test)
         self.assertEqual(result, r'$blah')
 
     def test_pprint_at_var(self):
-        sem_sys = BasicPrinter(init_handlers=[Printers.PrimitiveTypeAwarePrinter().as_handler("_:ATOM"),
-                                              Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
-                                              Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
-                                              Printers.ModalPrinter().as_handler("_:MODAL")])
+        """ Check an @ variable can be printed """
+        sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
+                               init_handlers=[Printers.PrimitiveTypeAwarePrinter().as_handler(signal="ATOM"),
+                                              Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
+                                              Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
+                                              Printers.ModalPrinter().as_handler(signal="MODAL")],
+                               sieve_fns=[]
+                               )
         value = AcabValue("test")
         value.data.update({BIND_S: AT_BIND_S})
         result = sem_sys.pprint(value)
         self.assertEqual(result, r'@test')
 
     def test_modal_print(self):
-        sem_sys = BasicPrinter(init_handlers=[Printers.ModalAwarePrinter().as_handler("_:ATOM"),
-                                              Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
-                                              Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
-                                              Printers.ModalPrinter().as_handler("_:MODAL")
+        """ Check a modal can be printed """
+        sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
+                               init_handlers=[Printers.ModalAwarePrinter().as_handler(signal="ATOM"),
+                                              Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
+                                              Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
+                                              Printers.ModalPrinter().as_handler(signal="MODAL")
                                               ],
+                               sieve_fns=[],
                                settings={"MODAL" : "exop"})
         test = AcabValue(value="blah",
                          data={'exop': config.default("exop")})
@@ -139,11 +160,14 @@ class PrintValueSemanticTests(unittest.TestCase):
         self.assertEqual(result, r'blah.')
 
     def test_modal_print2(self):
-        sem_sys = BasicPrinter(init_handlers=[Printers.ModalAwarePrinter().as_handler("_:ATOM"),
-                                              Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
-                                              Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
-                                              Printers.ModalPrinter().as_handler("_:MODAL")
+        """ Check the other modal can be printed """
+        sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
+                               init_handlers=[Printers.ModalAwarePrinter().as_handler(signal="ATOM"),
+                                              Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
+                                              Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
+                                              Printers.ModalPrinter().as_handler(signal="MODAL")
                                               ],
+                               sieve_fns=[],
                               settings={"MODAL" : "exop"})
 
         test = AcabValue(value="blah",
@@ -152,11 +176,14 @@ class PrintValueSemanticTests(unittest.TestCase):
         self.assertEqual(result, r'blah!')
 
     def test_modal_print_override(self):
-        sem_sys = BasicPrinter(init_handlers=[Printers.ModalAwarePrinter().as_handler("_:ATOM"),
-                                              Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
-                                              Printers.ConfigBackedSymbolPrinter(overrides={DOT_E : "^"}).as_handler("_:SYMBOL"),
-                                              Printers.ModalPrinter().as_handler("_:MODAL")
+        """ Check modal symbols can be overriden for printing """
+        sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
+                               init_handlers=[Printers.ModalAwarePrinter().as_handler(signal="ATOM"),
+                                              Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
+                                              Printers.ConfigBackedSymbolPrinter(overrides={DOT_E : "^"}).as_handler(signal="SYMBOL"),
+                                              Printers.ModalPrinter().as_handler(signal="MODAL")
                                               ],
+                               sieve_fns=[],
                               settings={"MODAL": "exop"})
         test = AcabValue(value="blah",
                          data={'exop': DOT_E})
@@ -164,11 +191,14 @@ class PrintValueSemanticTests(unittest.TestCase):
         self.assertEqual(result, r'blah^')
 
     def test_symbol_override(self):
-        sem_sys = BasicPrinter(init_handlers=[Printers.ModalAwarePrinter().as_handler("_:ATOM"),
-                                              Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
-                                              Printers.ConfigBackedSymbolPrinter(overrides={config.prepare("Symbols", "BIND") : "%"}).as_handler("_:SYMBOL"),
-                                              Printers.NoOpPrinter().as_handler("_:MODAL")
-                                              ])
+        """ Check bind symbols can be overriden for printing """
+        sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
+                               init_handlers=[Printers.ModalAwarePrinter().as_handler(signal="ATOM"),
+                                              Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
+                                              Printers.ConfigBackedSymbolPrinter(overrides={config.prepare("Symbols", "BIND") : "%"}).as_handler(signal="SYMBOL"),
+                                              Printers.NoOpPrinter().as_handler(signal="MODAL")
+                                              ],
+                               sieve_fns=[])
 
         test = AcabValue(value="blah",
                          data={BIND_S : True})
@@ -176,37 +206,47 @@ class PrintValueSemanticTests(unittest.TestCase):
         self.assertEqual(result, r'%blah')
 
     def test_value_uuid(self):
+        """ Check the uuid of a value can be printed """
         val = AcabValue("test")
-        sem_sys = BasicPrinter(init_handlers=[Printers.UUIDAwarePrinter().as_handler("_:ATOM")])
+        sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
+                               init_handlers=[Printers.UUIDAwarePrinter().as_handler(signal="ATOM")],
+                               sieve_fns=[])
         result = sem_sys.pprint(val)
         self.assertEqual(result, "({} : {})".format(val.uuid, val.name))
 
 
     def test_constraints(self):
-        sem_sys = BasicPrinter(init_handlers=[
-            Printers.AnnotationAwareValuePrinter().as_handler("_:ATOM"),
-            Printers.AnnotationPrinter().as_handler("_:ANNOTATIONS"),
-            Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
-            Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
-            Printers.ConstraintPrinter().as_handler("_:CONSTRAINT"),
-            Printers.ModalPrinter().as_handler("_:MODAL"),
-            Printers.ProductionComponentPrinter().as_handler("_:COMPONENT"),
-            Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
-                                              ],
-                              settings={"MODAL": "exop"})
-        value = FP.parseString("con.test(λa.test.op $x)")[0][-1]
+        """ Check constraints of values can be printed """
+        sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
+                               init_handlers=[
+                                   Printers.AnnotationAwareValuePrinter().as_handler(signal="ATOM"),
+                                   Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
+                                   Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
+                                   Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
+                                   Printers.ConstraintPrinter().as_handler(signal="CONSTRAINT"),
+                                   Printers.ModalPrinter().as_handler(signal="MODAL"),
+                                   Printers.ProductionComponentPrinter().as_handler(signal="COMPONENT"),
+                                   Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
+                               ],
+                               sieve_fns=[],
+                               settings={"MODAL": "exop"})
+        value = FP.parse_string("con.test(λa.test.op $x)")[0][-1]
         result = sem_sys.pprint(value)
         self.assertEqual(result, "test(λa.test.op $x).")
 
     def test_constraints_multi_var(self):
-        sem_sys = BasicPrinter(init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
-                                              Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
-                                              Printers.AnnotationAwareValuePrinter().as_handler("_:ATOM"),
-                                              Printers.ProductionComponentPrinter().as_handler("_:COMPONENT"),
-                                              Printers.ModalPrinter().as_handler("_:MODAL"),
-                                              Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
-                                              Printers.AnnotationPrinter().as_handler("_:ANNOTATIONS")],
+        """ Check constraints with multiple variables can be printed """
+        sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
+                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
+                                              Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
+                                              Printers.AnnotationAwareValuePrinter().as_handler(signal="ATOM"),
+                                              Printers.ProductionComponentPrinter().as_handler(signal="COMPONENT"),
+                                              Printers.ConstraintPrinter().as_handler(signal="CONSTRAINT"),
+                                              Printers.ModalPrinter().as_handler(signal="MODAL"),
+                                              Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
+                                              Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS")],
+                               sieve_fns=[],
                               settings={"MODAL": "exop"})
-        value = FP.parseString("con.test(λa.test.op $x $y)")[0][-1]
+        value = FP.parse_string("con.test(λa.test.op $x $y)")[0][-1]
         result = sem_sys.pprint(value)
         self.assertEqual(result, "test(λa.test.op $x $y).")

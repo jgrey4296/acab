@@ -1,6 +1,7 @@
 """
 Utility decorators
 """
+from functools import wraps
 from typing import List, Set, Dict, Tuple, Optional, Any
 from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
@@ -18,6 +19,7 @@ def LogHelper(prefix, level=root_logger.DEBUG):
     Utility Decorator to log a functions return value at a set level
     """
     def wrapper(f):
+        @wraps(f)
         def in_wrap(*args, **kwargs):
             result = f(*args, **kwargs)
             log_msg = f"{prefix}: {result}"

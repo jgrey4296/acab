@@ -2,12 +2,12 @@
 Constructors for converting parse results -> Acab data
 """
 from acab.core.data.default_structure import SEMANTIC_HINT
-from acab.core.data.production_abstractions import (ProductionComponent,
-                                                        ProductionContainer,
-                                                        ProductionStructure)
-from acab.core.data.values import Sentence
+from acab.core.data.instruction import (ProductionComponent,
+                                        ProductionContainer,
+                                        ProductionStructure)
+from acab.core.data.sentence import Sentence
 from acab.core.data import default_structure as DS
-from acab.core.parsing import default_structure as PDS
+from acab.core.parsing import default_keys as PDS
 from acab.modules.parsing.exlo import util as EXu
 from acab.core.parsing.annotation import ValueAnnotation, ValueRepeatAnnotation
 
@@ -21,7 +21,7 @@ def build_query_component(s, loc, toks):
     params = [x[0] if len(x) == 1 else x for x in params]
 
     return ValueRepeatAnnotation(DS.CONSTRAINT,
-                                 ProductionComponent(value=op, params=params))
+                                 ProductionComponent(op, params=params))
 
 def build_transform_component(s, loc, toks):
     params = []
@@ -31,12 +31,12 @@ def build_transform_component(s, loc, toks):
 
     op = toks[EXu.OPERATOR_S][0]
     if isinstance(op, str):
-        op = Sentence.build([op])
+        op = Sentence([op])
 
     rebind = toks[EXu.TARGET_S][0]
     params = [x[0] if len(x) == 1 else x for x in params]
 
-    return ProductionComponent(value=op,
+    return ProductionComponent(op,
                                params=params,
                                rebind=rebind,
                                sugared=EXu.LEFT_S in toks)
@@ -49,9 +49,9 @@ def build_action_component(s, loc, toks):
         params = toks[EXu.RIGHT_S][:]
     op = toks[EXu.OPERATOR_S][0]
     if not isinstance(op, Sentence):
-        op = Sentence.build([op])
+        op = Sentence([op])
     # params = [x[0] if len(x) == 1 else x for x in params]
-    return ProductionComponent(value=op,
+    return ProductionComponent(op,
                                params=params,
                                sugared=EXu.LEFT_S in toks)
 
@@ -60,62 +60,60 @@ def build_action_component(s, loc, toks):
 #--------------------
 def build_query(s, loc, toks):
     clauses = toks[:]
-    query = ProductionContainer(value=clauses,
+    query = ProductionContainer(clauses,
                                 data={SEMANTIC_HINT: EXu.QUERY_SEM_HINT})
-    return query
+    return [query]
 
 def build_transform(s, loc, toks):
     clauses = toks[:]
-    trans = ProductionContainer(value=clauses,
+    trans = ProductionContainer(clauses,
                                 data={SEMANTIC_HINT: EXu.TRANSFORM_SEM_HINT})
-    return trans
+    return [trans]
 
 def build_action(s, loc, toks):
     clauses = toks[:]
     clauses = [x if isinstance(x, ProductionComponent)
-               else ProductionComponent(value=Sentence.build([EXu.DEFAULT_ACTION_S]),
+               else ProductionComponent(Sentence([EXu.DEFAULT_ACTION_S]),
                                         params=[x]) for x in clauses]
 
-    act = ProductionContainer(value=clauses,
+    act = ProductionContainer(clauses,
                               data={SEMANTIC_HINT: EXu.ACTION_SEM_HINT})
 
-    return act
+    return [act]
 
 
 #--------------------
 def build_rule(s, loc, toks, sem_hint=None):
     # Get Conditions
+    structure = []
+
     if EXu.QUERY_S in toks:
         query = toks[EXu.QUERY_S]
         assert(isinstance(query, ProductionContainer))
+        structure.append(query.copy(name=EXu.QUERY_S))
     else:
-        query = None
+        structure.append(EXu.QUERY_S)
 
     # Get Transform
     if EXu.TRANSFORM_S in toks:
         transform = toks[EXu.TRANSFORM_S]
         assert(isinstance(transform, ProductionContainer))
+        structure.append(transform.copy(name=EXu.TRANSFORM_S))
     else:
-        transform = None
+        structure.append(EXu.TRANSFORM_S)
 
     # Get Action
     if EXu.ACTION_S in toks:
         action = toks[EXu.ACTION_S]
         assert(isinstance(action, ProductionContainer))
+        structure.append(action.copy(name=EXu.ACTION_S))
     else:
-        action = None
-
-    structure = {
-        EXu.QUERY_COMPONENT     : query,
-        EXu.TRANSFORM_COMPONENT : transform,
-        EXu.ACTION_COMPONENT    : action
-        }
+        structure.append(EXu.ACTION_S)
 
     if sem_hint is None:
         sem_hint = EXu.RULE_SEM_HINT
 
-
-    rule = ProductionStructure(structure=structure,
+    rule = ProductionStructure(structure,
                                data={SEMANTIC_HINT: sem_hint,
                                      DS.TYPE_INSTANCE: EXu.RULE_PRIM})
     return rule

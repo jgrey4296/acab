@@ -55,16 +55,16 @@ def print_contexts(self, params):
         #     print(f"Continuation: {ctx.continuation}")
         if bool(bindings_to_print):
             for x in bindings_to_print:
-                print("{} : {}".format(x, self.state.engine.pprint([ctx[x]])))
+                print("{} : {}".format(x, self.state.engine.pprint(target=[ctx[x]])))
         else:
             for x,y in ctx.data.items():
-                print("{} : {}".format(x, self.state.engine.pprint([y])))
+                print("{} : {}".format(x, self.state.engine.pprint(target=[y])))
 
         print("--------------------")
 
     if bool(self.state.ctxs._named_sets):
         print("Named (continuation) Sets:")
-        print(self.state.engine.pprint(list(self.state.ctxs._named_sets.keys())))
+        print(self.state.engine.pprint(target=list(self.state.ctxs._named_sets.keys())))
 
 def init_inspect(mod_str):
     """
@@ -99,12 +99,14 @@ def ConfigBasedLoad(f):
         name = config.prepare("Module.Debug", "DEBUGGER")()
         debugger = getattr(mod, name)
         assert(issubclass(debugger, AcabDebugger_i)), debugger
+    else:
+        return f
 
 
     def wrapper(self, line):
         if self.state.debugger is None:
             logging.debug(f"Starting Debugger: {debugger.__name__}")
-            self.state.debugger = debugger.Get()
+            self.state.debugger = debugger()
             self.state.debugger.set_running_trace()
 
         return f(self, line)
@@ -116,14 +118,14 @@ def ConfigBasedLoad(f):
 
 def build_rebind_instruction(value:str):
     """ Manually construct a startup rebind instruction """
-    from acab.core.data.production_abstractions import ProductionComponent, ProductionContainer
-    from acab.core.data.values import Sentence
+    from acab.core.data.instruction import ProductionComponent, ProductionContainer
+    from acab.core.data.sentence import Sentence
 
-    action_sem_hint = Sentence.build([config.prepare("SEMANTICS", "ACTION")()])
+    action_sem_hint = Sentence([config.prepare("SEMANTICS", "ACTION")()])
 
-    inst = ProductionComponent(value=Sentence.build([ "acab.modules.operators.action.RebindOperator" ]),
-                               params=[Sentence.build([ "§" ]),
-                                       Sentence.build([ "acab.modules.operators.action.RebindOperator" ])])
+    inst = ProductionComponent(value=Sentence([ "acab.modules.operators.action.RebindOperator" ]),
+                               params=[Sentence([ "§" ]),
+                                       Sentence([ "acab.modules.operators.action.RebindOperator" ])])
 
     act = ProductionContainer(value=[inst],
                               data={config.prepare("Value.Structure",

@@ -9,7 +9,7 @@ from acab.core.config.config import AcabConfig
 
 logging = root_logger.getLogger(__name__)
 
-config = AcabConfig.Get()
+config = AcabConfig()
 DECIMAL_SYMBOL_S = config.prepare("Module.Numbers", "DECIMAL")()
 USE_PARSER       = config.prepare("Module.Numbers", "USE_PARSER")()
 ALLOW_NEG        = config.prepare("Module.Numbers", "ALLOW_NEG")()
@@ -47,18 +47,18 @@ def build_fraction(s, loc, toks):
     return (NU.FRACT_t, the_num)
 
 
-INT.addParseAction(build_int)
-DEC.setParseAction(build_decimal)
-FRACT.setParseAction(build_fraction)
+INT.add_parse_action(build_int)
+DEC.set_parse_action(build_decimal)
+FRACT.set_parse_action(build_fraction)
 
-# INT.addCondition(lambda toks: isinstance(toks[0], tuple))
-# DEC.addCondition(lambda toks: isinstance(toks[0], tuple))
-# FRACT.addCondition(lambda toks: isinstance(toks[0], tuple))
+# INT.add_condition(lambda toks: isinstance(toks[0], tuple))
+# DEC.add_condition(lambda toks: isinstance(toks[0], tuple))
+# FRACT.add_condition(lambda toks: isinstance(toks[0], tuple))
 # NUM = (FRACT | DEC | INT)("num")
 # NEG_NUM = op(NEG) + NUM
-INT.setName("int")
-DEC.setName("decimal")
-FRACT.setName("fraction")
+INT.set_name("int")
+DEC.set_name("decimal")
+FRACT.set_name("fraction")
 
 parsers = {
     'int'      : INT,
@@ -72,9 +72,9 @@ parse_point = chosen_parser
 
 if ALLOW_NEG:
     NEG_NUM = op(NEG) + chosen_parser.setResultsName("num")
-    NEG_NUM.addParseAction(construct_num)
-    NEG_NUM.setName("NumP")
+    NEG_NUM.add_parse_action(construct_num)
+    NEG_NUM.set_name("NumP")
     parse_point = NEG_NUM
 
-def parseString(s):
-    return parse_point.parseString(s)[0]
+def parse_string(s):
+    return parse_point.parse_string(s)[0]

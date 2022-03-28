@@ -8,10 +8,9 @@ import re
 import acab
 config = acab.setup()
 
-from acab.core.data.values import AcabValue
-from acab.core.data.values import Sentence
-from acab.core.parsing.trie_bootstrapper import TrieBootstrapper
-from acab.core.data.production_abstractions import ProductionOperator, ProductionContainer, ProductionComponent
+from acab.core.data.value import AcabValue
+from acab.core.data.sentence import Sentence
+from acab.core.data.instruction import ProductionOperator, ProductionContainer, ProductionComponent
 
 from acab.modules.parsing.exlo.parsers import TransformParser as TP
 from acab.modules.parsing.exlo.parsers import ActionParser as AP
@@ -30,20 +29,16 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
         root_logger.getLogger('').addHandler(console)
         logging = root_logger.getLogger(__name__)
 
-        # setup class
-        bp = TrieBootstrapper()
-        TP.HOTLOAD_TRANS_OP << bp.query('operator.ProductionContainer.*',
-                                        'operator.sugar')
-        TP.HOTLOAD_TRANS_STATEMENTS << bp.query("operator.ProductionContainer.statements.*",
-                                                "operator.sugar")
 
     #----------
     def test_transform_core(self):
-        result = TP.transform_core.parseString("λa.b.c $x $y -> $z")[0]
+        """ Check a transform can be parsed """
+        result = TP.transform_core.parse_string("λa.b.c $x $y -> $z")[0]
         self.assertIsInstance(result, ProductionComponent)
         self.assertEqual(result.rebind.name, "z")
 
     def test_transforms(self):
-        result = TP.transforms.parseString("  λa.b.c $x -> $y\n  λa.b.d $x -> $z")[0]
+        """ Check multiple transforms can be parsed """
+        result = TP.transforms.parse_string("  λa.b.c $x -> $y\n  λa.b.d $x -> $z")[0]
         self.assertIsInstance(result, ProductionContainer)
         self.assertEqual(len(result.clauses), 2)

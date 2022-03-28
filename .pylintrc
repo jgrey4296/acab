@@ -17,7 +17,7 @@ ignore-patterns=
 
 # Python code to execute, usually for sys.path manipulation such as
 # pygtk.require().
-#init-hook='import sys; sys.path.append(".")'
+init-hook='import sys; sys.path.append(".")'
 
 # Use multiple processes to speed up Pylint. Specifying 0 will auto-detect the
 # number of processors available to use.
@@ -157,7 +157,8 @@ disable=logging-format-interpolation,
 # either give multiple identifier separated by comma (,) or put this option
 # multiple time (only on the command line, not in the configuration file where
 # it should appear only once). See also the "--disable" option for examples.
-enable=c-extension-no-member
+enable=c-extension-no-member,
+       useless-suppression,
 
 
 [REPORTS]
@@ -211,7 +212,7 @@ attr-naming-style=snake_case
 
 # Regular expression matching correct attribute names. Overrides attr-naming-
 # style.
-#attr-rgx=
+attr-rgx=_?([a-z]+)(_([A-Z]+)|([a-z]+))+
 
 # Bad variable names which should always be refused, separated by a comma.
 bad-names=foo,
@@ -233,10 +234,10 @@ class-naming-style=PascalCase
 
 # Regular expression matching correct class names. Overrides class-naming-
 # style.
-#class-rgx=
+class-rgx=_?[A-Za-z]+(_[a-zA-Z]+)*(_[a-z])?$
 
 # Naming style matching correct constant names.
-#const-naming-style=UPPER_CASE
+const-naming-style=UPPER_CASE
 
 # Regular expression matching correct constant names. Overrides const-naming-
 # style.
@@ -256,6 +257,7 @@ function-naming-style=snake_case
 # Good variable names which should always be accepted, separated by a comma.
 good-names=logFileName,
            GET,
+           config,
            console,
            util,
            ex,

@@ -11,7 +11,7 @@ config = acab.setup()
 
 from acab.modules.repl.repl_commander import register
 from acab.modules.repl import ReplParser as RP
-from acab.core.data.production_abstractions import ProductionOperator, ProductionStructure
+from acab.core.data.instruction import ProductionOperator, ProductionStructure
 from acab.modules.repl.util import print_contexts
 
 logging = root_logger.getLogger(__name__)
@@ -25,7 +25,7 @@ def do_listen(self, line):
     """
     # TODO use the same strategy as semantic breakpoints
     logging.info(f"Listening: {line}")
-    params = RP.listen_parser.parseString(line)[:]
+    params = RP.listen_parser.parse_string(line)[:]
     words = [y for x in params for y in SPLIT_RE.split(x)]
     if params['type'] == "add":
         self.state.engine.add_listeners(*words)
@@ -80,7 +80,7 @@ def do_step(self, line):
     and stepping forwards by rule/layer/pipeline
     """
     logging.info(f"Stepping {line}")
-    params = RP.step_parser.parseString(line)[:]
+    params = RP.step_parser.parse_string(line)[:]
     # TODO
     try:
         ctxs = []

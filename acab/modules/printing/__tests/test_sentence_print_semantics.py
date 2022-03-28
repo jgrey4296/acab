@@ -25,11 +25,13 @@ import acab.modules.parsing.exlo.parsers.TransformParser as TP
 import acab.modules.printing.printers as Printers
 from acab.core.config.config import AcabConfig
 from acab.core.data import default_structure as DS
-from acab.core.data.production_abstractions import (ProductionComponent,
-                                                        ProductionContainer,
-                                                        ProductionOperator)
-from acab.core.data.values import AcabStatement, AcabValue, Sentence
-from acab.interfaces.handler_system import Handler
+from acab.core.data.instruction import (Instruction, ProductionComponent,
+                                        ProductionContainer,
+                                        ProductionOperator)
+from acab.core.data.sentence import Sentence
+from acab.core.data.value import AcabValue
+from acab.interfaces.handler_system import Handler_i
+from acab.modules.printing import default
 from acab.modules.printing.basic_printer import BasicPrinter
 
 NEGATION_S        = config.prepare("Value.Structure", "NEGATION")()
@@ -44,8 +46,8 @@ QUERY_SYMBOL_S    = config.prepare("Symbols", "QUERY")()
 
 SEN_JOIN_S        = config.prepare("Print.Patterns", "SEN_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE])()
 
-STR_PRIM_S        = Sentence.build([config.prepare("Type.Primitive", "STRING")()])
-REGEX_PRIM_S      = Sentence.build([config.prepare("Type.Primitive", "REGEX")()])
+STR_PRIM_S        = Sentence([config.prepare("Type.Primitive", "STRING")()])
+REGEX_PRIM_S      = Sentence([config.prepare("Type.Primitive", "REGEX")()])
 TYPE_INSTANCE_S   = config.prepare("Value.Structure", "TYPE_INSTANCE")()
 
 class PrintBasicSentenceSemanticTests(unittest.TestCase):
@@ -70,60 +72,77 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
 
 
     def test_sentence_basic(self):
-        sem = BasicPrinter(init_handlers=[Printers.ModalAwarePrinter().as_handler("_:ATOM"),
-                                          Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
-                                          Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
-                                          Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
-                                          Printers.ModalPrinter().as_handler("_:MODAL")],
-                           settings={"MODAL" : ""})
+        """ Check a sentence can be printed """
+        init_handlers = [Printers.ModalAwarePrinter().as_handler(signal="ATOM"),
+                         Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
+                         Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
+                         Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
+                         Printers.ModalPrinter().as_handler(signal="MODAL")]
+
+        specs = default.DEFAULT_PRINTER_SPEC()
+        sem = BasicPrinter(init_specs=specs,
+                           init_handlers=init_handlers,
+                           sieve_fns=[])
+
         words = ["a", "b", "c", "d"]
-        sentence = Sentence.build(words)
+        sentence = Sentence(words)
 
         result = sem.pprint(sentence)
         self.assertEqual(result, FALLBACK_MODAL_S.join(words))
 
     def test_sentence_modal(self):
-        sem = BasicPrinter(init_handlers=[Printers.ModalAwarePrinter().as_handler("_:ATOM"),
-                                          Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
-                                          Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
-                                          Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
-                                          Printers.ModalPrinter().as_handler("_:MODAL")],
+        """ Check a modal sentence can be printed """
+        sem = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
+                           init_handlers=[Printers.ModalAwarePrinter().as_handler(signal="ATOM"),
+                                          Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
+                                          Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
+                                          Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
+                                          Printers.ModalPrinter().as_handler(signal="MODAL")],
+                           sieve_fns=[],
                           settings={"MODAL" : "exop"})
-        sentence = FP.parseString("a.test.sen")[0]
+        sentence = FP.parse_string("a.test.sen")[0]
         result = sem.pprint(sentence)
         self.assertEqual(result, "a.test.sen")
 
     def test_sentence_modal_2(self):
-        sem = BasicPrinter(init_handlers=[Printers.ModalAwarePrinter().as_handler("_:ATOM"),
-                                          Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
-                                          Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
-                                          Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
-                                          Printers.ModalPrinter().as_handler("_:MODAL")],
+        """ Check a sentence with different modal values can be printed """
+        sem = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
+                           init_handlers=[Printers.ModalAwarePrinter().as_handler(signal="ATOM"),
+                                          Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
+                                          Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
+                                          Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
+                                          Printers.ModalPrinter().as_handler(signal="MODAL")],
+                           sieve_fns=[],
                           settings={"MODAL": "exop"})
-        sentence = FP.parseString("a.test!sen")[0]
+        sentence = FP.parse_string("a.test!sen")[0]
         result = sem.pprint(sentence)
         self.assertEqual(result, "a.test!sen")
 
     def test_sentence_query(self):
-        sem = BasicPrinter(init_handlers=[Printers.AnnotationAwareValuePrinter().as_handler("_:ATOM"),
-                                          Printers.AnnotationPrinter().as_handler("_:ANNOTATIONS"),
-                                          Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
-                                          Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
-                                          Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
-                                          Printers.ModalPrinter().as_handler("_:MODAL")],
+        sem = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
+                           init_handlers=[Printers.AnnotationAwareValuePrinter().as_handler(signal="ATOM"),
+                                          Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
+                                          Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
+                                          Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
+                                          Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
+                                          Printers.ModalPrinter().as_handler(signal="MODAL")],
+                           sieve_fns=[],
                           settings={"MODAL": "exop"})
-        sentence = FP.parseString("a.test!sen")[0]
+        sentence = FP.parse_string("a.test!sen")[0]
         sentence[-1].data[DS.QUERY] = True
         result = sem.pprint(sentence)
         self.assertEqual(result, "a.test!sen?")
 
     def test_sentence_negated(self):
-        sem = BasicPrinter(init_handlers=[Printers.ModalAwarePrinter().as_handler("_:ATOM"),
-                                          Printers.BasicSentenceAwarePrinter().as_handler("_:SENTENCE"),
-                                          Printers.SimpleTypePrinter().as_handler("_:TYPE_INSTANCE"),
-                                          Printers.ConfigBackedSymbolPrinter().as_handler("_:SYMBOL"),
-                                          Printers.ModalPrinter().as_handler("_:MODAL")],
+        """ Check a negated sentence can be printed """
+        sem = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
+                           init_handlers=[Printers.ModalAwarePrinter().as_handler(signal="ATOM"),
+                                          Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
+                                          Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
+                                          Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
+                                          Printers.ModalPrinter().as_handler(signal="MODAL")],
+                           sieve_fns=[],
                           settings={"MODAL" : "exop"})
-        sentence = FP.parseString("~a.test.sen")[0]
+        sentence = FP.parse_string("~a.test.sen")[0]
         result = sem.pprint(sentence)
         self.assertEqual(result, "~a.test.sen")

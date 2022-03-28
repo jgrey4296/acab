@@ -43,7 +43,7 @@
 
 
 """
-from acab.core.data.values import AcabValue
+from acab.core.data.value import AcabValue
 
 class SocialGameBase(AcabValue):
     """ Base Description of social games """

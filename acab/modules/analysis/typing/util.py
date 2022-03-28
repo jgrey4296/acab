@@ -1,15 +1,21 @@
 import logging as root_logger
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
+from uuid import uuid1
+
 import pyparsing as pp
-
+from acab import types as AT
 from acab.core.config.config import AcabConfig
-
-from acab.core.data.values import Sentence
-
+from acab.core.data.sentence import Sentence
+from acab.core.data.value import AcabValue
 from acab.core.parsing.consts import s, s_key
+from acab.modules.context.context_set import ContextInstance, MutableContextInstance
+from . import exceptions as TE
 
 logging = root_logger.getLogger(__name__)
 
-config = AcabConfig.Get()
+config = AcabConfig()
 
 ROOT_S          = config.prepare("Data", "ROOT")()
 
@@ -28,38 +34,17 @@ SYNTAX_BIND_S   = config.prepare("Typing.Primitives", "SYNTAX_BIND")()
 
 PARAM_JOIN_S    = config.prepare("Print.Patterns", "PARAM_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE])()
 
+NOM_HEAD        = s_key(config.prepare("Symbols", "NOMINAL")())
 SUM_HEAD        = s_key(config.prepare("Symbols", "SUM")())
 STRUCT_HEAD     = s_key(config.prepare("Symbols", "STRUCTURE")())
 TYPE_CLASS_HEAD = s_key(config.prepare("Symbols", "TYPE_CLASS")())
 FUNC_HEAD       = s(pp.Word(config.prepare("Symbols", "FUNC")()))
 
 # TODO make these registrations
-TYPE_DEFINITION     = Sentence.build([TYPE_DEF_S])
-SUM_DEFINITION      = Sentence.build([SUM_DEF_S])
-OPERATOR_DEFINITION = Sentence.build([OP_DEF_S])
+TYPE_DEFINITION     = Sentence([TYPE_DEF_S])
+SUM_DEFINITION      = Sentence([SUM_DEF_S])
+OPERATOR_DEFINITION = Sentence([OP_DEF_S])
 # TODO TYPE CLASS
 
-STRUCT_HEAD.setName("StructHead")
-FUNC_HEAD.setName("FuncHead")
-
-def has_equivalent_vars_pred(node):
-    """ A Predicate to use with Trie.get_nodes
-    Finds nodes with multiple vars as children that can be merged """
-    if node.name is ROOT_S:
-        return False
-    var_children = [x for x in node._children.values() if x.is_var]
-
-    return len(var_children) > 1
-
-def create_type_var(tc, base_name):
-    # Create a new var name
-    assert(isinstance(base_name, str))
-    var_name = str(uuid1())
-    return tc._variables.add([base_name, var_name], [])
-
-def pattern_match_type_signature(head, available):
-    if head.type is None:
-        return available
-
-    return [x for x in available if x.type_instance is None
-            or head.type_instance == x.type_instance]
+STRUCT_HEAD.set_name("StructHead")
+FUNC_HEAD.set_name("FuncHead")

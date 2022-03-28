@@ -1,16 +1,15 @@
 """
-Dataclass for wrapping annotations which are applied onto values
+Dataclasses for wrapping annotations which are applied onto AcabValues
 
 """
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
-
-from dataclasses import dataclass, field, InitVar
+from dataclasses import InitVar, dataclass, field
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
 
 from acab import types as AT
 from acab.core.config.config import GET
+from acab.interfaces.value import Value_i
 
 config = GET()
 
@@ -24,11 +23,12 @@ class ValueAnnotation:
     ValueAnnotation(x) + AcabValue -> AcabValue'[x]
     """
 
-    key   : str = field()
+    key   : AT.ValueData = field()
     value : Any = field(default=None)
 
     def __call__(self, val:Value) -> Value:
         """ Apply the annotation """
+        assert(isinstance(val,Value_i))
         val.data[self.key] = self.value
         return val
 
@@ -42,6 +42,7 @@ class ValueRepeatAnnotation(ValueAnnotation):
     """
 
     def __call__(self, val:Value) -> Value:
+        assert(isinstance(val,Value_i))
         if self.key not in val.data:
             val.data[self.key] = []
         val.data[self.key].append(self.value)
@@ -52,6 +53,7 @@ class ValueRepeatAnnotation(ValueAnnotation):
 class ModalAnnotation(ValueAnnotation):
 
     def __call__(self, val:Value) -> Value:
+        assert(isinstance(val,Value_i))
         modal_value = config.syntax_extension[self.key]
         val.data[modal_value.__class__.__name__] = modal_value
         return val

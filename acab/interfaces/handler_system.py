@@ -1,236 +1,111 @@
 #!/opts/anaconda3/envs/ENV/python
+# pylint: disable=multiple-statements,abstract-method,invalid-sequence-index
+from __future__ import annotations
 import abc
+import collections.abc as cABC
 import logging as root_logger
-from dataclasses import InitVar, dataclass, field
-from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
-                    List, Mapping, Match, MutableMapping, Optional, Sequence,
-                    Set, Tuple, TypeVar, Union, cast)
+from dataclasses import InitVar, dataclass, field, replace
+from enum import Enum, EnumMeta
 from types import MethodType
+from typing import (Any, Callable, ClassVar, Collection, Container, Final,
+                    Generic, Iterable, Iterator, Mapping, Match,
+                    MutableMapping, NewType, Protocol, Sequence, Tuple, Type,
+                    TypeAlias, TypeVar, cast, final, overload,
+                    runtime_checkable)
 
 from acab import types as AT
-from acab.interfaces.data import Structure_i
-from acab.error.handler_exception import AcabHandlerException
-from acab.interfaces.sieve import AcabSieve
 from acab.core.config.config import GET
+from acab.interfaces.sieve import AcabSieve
+from acab.interfaces.sub_protocols import handler_system as HSubP
 
 logging = root_logger.getLogger(__name__)
-
-
 config = GET()
-SPACER = int(config.prepare("Print.Data", "SPACER_SIZE")())
 
-pseudo           = AT.pseudo
-Handler          = AT.Handler
-ModuleComponents = AT.ModuleComponents
-Overrider        = AT.HandlerOverride
-Sentence         = AT.Sentence
-Structure        = AT.DataStructure
-Value            = AT.Value
+GenFunc               : TypeAlias = AT.fns.GenFunc
+TypeFunc              : TypeAlias = AT.fns.TypeFunc
+ModuleComponents      : TypeAlias = AT.ModuleComponents
+Overrider             : TypeAlias = AT.HandlerOverride
+Sen_A                 : TypeAlias = AT.Sentence
+Structure             : TypeAlias = "AT.DataStructure[AT.Node]"
+Instruction_A         : TypeAlias = AT.Instruction
+Value                 : TypeAlias = "AT.Value[AT.ValueCore]"
+Handler_A             : TypeAlias = AT.Handler
+HandlerSpec_A         : TypeAlias = AT.HandlerSpec
+HandlerComponent_A    : TypeAlias = AT.HandlerComponent
+Handler_System_A      : TypeAlias = AT.HandlerSystem
+HandlerFragment_A     : TypeAlias = AT.HandlerFragment
+RegistrationTargets_A : TypeAlias = "HandlerFragment_A|HandlerSpec_A|Handler_A|AT.HandlerOverride|dict[str,Any]"
 
-PASSTHROUGH      = "_"
+HandlerFlags          : EnumMeta = Enum("HandlerFlags", "OVERRIDE MERGE APPEND PREPEND COLLECT REDUCE")
 
-# TODO refactor handler -> responder?
-# TODO active and passive handlers?,
-# with ability to have multiples for each signal?
-@dataclass
-class HandlerSystem_i(metaclass=abc.ABCMeta):
+HandlerFlags_t        : TypeAlias = Type[HandlerFlags]
 
-    init_handlers  : InitVar[List[Handler]]   = field(default=None)
+@dataclass #type:ignore[misc]
+class HandlerSystem_i(HSubP.HandlerSystem_p):
+    init_specs     : InitVar[list[HandlerSpec_A]] = field()
+    init_handlers  : InitVar[list[Handler_A]]     = field()
     # TODO make default  Tuple[str, str], and lookup?
-    default        : Handler                  = field(default=None)
-    sieve_fns      : InitVar[List[Callable]]  = field(default=None)
+    sieve_fns      : InitVar[list[GenFunc]]       = field()
 
-    sieve          : AcabSieve                = field(init=False, default=None)
-    handlers       : Dict[AT.pseudo, Callable]= field(init=False, default_factory=dict)
-    _data          : Dict[str, Any]           = field(init=False, default_factory=dict)
+    sieve          : AcabSieve[str]               = field(init=False, default_factory=AcabSieve)
+    handler_specs  : dict[str, HandlerSpec_A]     = field(init=False, default_factory=dict)
+    loose_handlers : list[Handler_A]              = field(init=False, default_factory=list)
+    _data          : dict[str, Any]               = field(init=False, default_factory=dict)
 
-    _default_sieve : ClassVar[List[Callable]] = []
+    _default_sieve : ClassVar[list[GenFunc]]      = [str]
 
-    @dataclass
-    class HandlerOverride:
-        """ Simple Wrapped for forced semantic use """
-        signal   : str              = field()
-        value    : Value            = field()
-        data     : Dict[Any, Any]   = field(default_factory=dict)
+    def __post_init__(self, init_specs:list[HandlerSpec_A], init_handlers:list[Handler_A], sieve_fns:list[GenFunc]) -> None: pass
 
+@dataclass #type:ignore[misc]
+class HandlerSpec_i(HSubP.HandlerSpec_p):
+    signal          : 'str | Sen_A'                      = field()
+    flags           : list[Enum]                         = field(default_factory=list)
+    func_api        : None | Type[Any] | TypeFunc        = field(default=None)
+    struct_api      : None | Type[Any] | Type[Structure] = field(default=None)
+    data_api        : list[str]                          = field(default_factory=list)
+    handler_limit   : None | slice                       = field(default=None)
 
-    def __post_init__(self, init_handlers, sieve_fns):
-        # TODO handle overriding
-        # TODO init any semantics or structs passed in as Class's
-        # TODO check depsem -> struct compabilities
-        # by running dependent.compatible(struct)
-        # use default sieve if sieve is empty
-        if not bool(sieve_fns):
-            self.sieve = AcabSieve(self._default_sieve)
-        else:
-            self.sieve = AcabSieve(sieve_fns)
+    data            : dict[str, Any]                     = field(init=False, default_factory=dict)
+    handlers        : list[Handler_A]                    = field(init=False, default_factory=list)
+    struct          : None | Structure                   = field(init=False, default=None)
+    h_limit_history : bool                               = field(init=False, default=False)
 
-        if init_handlers is None:
-            init_handlers = []
-
-        if any([not isinstance(x, (Handler, HandlerComponent_i)) for x in init_handlers]):
-            raise AcabHandlerException(f"Bad Handler in:", init_handlers)
-
-        # add handlers with funcs before structs
-        for handler in sorted(init_handlers, key=lambda x: not x.func):
-            self._register_handler(handler)
-
-    def lookup(self, value:Optional[Value]=None) -> Handler:
-        """ run the sieve on the value to get a handler """
-        if value is None:
-            return self.default
-
-        is_override = isinstance(value, HandlerSystem_i.HandlerOverride)
-        is_passthrough = is_override and value.signal == PASSTHROUGH
-        # For using an override to carry data, without an override signal
-        if is_passthrough:
-            value = value.value
-
-        for key in self.sieve.fifo(value):
-            key_match   = key in self.handlers
-
-            if is_override and not is_passthrough and not key_match:
-                logging.warning(f"Missing Override Handler: {self.__class__} : {key}")
-            elif key_match:
-                return self.handlers[key]
-
-        # Final resort
-        return self.default
-
-    def override(self, new_signal: Union[bool, str], value, data=None) -> Overrider:
-        """ wrap a value to pass data along with it, or explicitly control the signal it produces for handlers """
-        # TODO override on an override
-        if bool(new_signal) and new_signal not in self.handlers:
-            raise AcabHandlerException(f"Undefined override handler: {new_signal}")
-
-        if not bool(new_signal):
-            new_signal = PASSTHROUGH
+    flag_e          : ClassVar[HandlerFlags_t]       = HandlerFlags
 
 
-        if bool(data):
-            return HandlerSystem_i.HandlerOverride(new_signal, value, data=data)
+@dataclass #type:ignore[misc]
+class HandlerComponent_i(HSubP.HandlerComponent_p):
+    """ Utility Class Component for easy creation of a handler """
+    signal : None | str = field(default=None)
 
-        return HandlerSystem_i.HandlerOverride(new_signal, value)
-
-    def register_data(self, data: Dict[str, Any]):
-        """
-        Register additional data that abstractions may access
-        """
-        self._data.update(data)
-
-
-    def _register_handler(self, handler):
-        """
-        insert a handler into the system, bound to the signal that it listens for
-        """
-        if not isinstance(handler, Handler):
-            raise AcabHandlerException(f"Handler Not Compliant: {handler}", handler)
-
-        if handler.signal in self.handlers:
-            old = self.handlers[handler.signal]
-            logging.warning(f"Overriding Handler for Signal {handler.signal}: {old.func.__class__.__qualname__} -> {handler.func.__class__.__qualname__}")
-
-        if handler.func is not None:
-            self.handlers[handler.signal] = handler
-
-
-        provides_struct = handler.struct is not None
-        has_pair = handler.signal in self.handlers
-        pair_needs_struct = has_pair and self.handlers[handler.signal].struct is None
-
-        if provides_struct and pair_needs_struct:
-            self.handlers[handler.signal].add_struct(handler.struct)
-
-    @abc.abstractmethod
-    def extend(self, modules:List[ModuleComponents]):
-        """ Abstract because different handlers use
-        different module components """
-        pass
-    @abc.abstractmethod
-    def __call__(self, *args, **kwargs):
-        pass
-
-#--------------------
-@dataclass
-class Handler:
+@dataclass #type:ignore[misc]
+class Handler_i(HSubP.Handler_p):
     """ A Handler implementation for registering
     individual functions or methods """
+    signal   : Sen_A | str
+    func     : None | HandlerComponent_A | GenFunc | type        = field(default=None)
+    struct_i : None | type[Structure] | Callable[..., Structure] = field(default=None)
+    verify_f : None | GenFunc                                    = field(default=None)
+    flags    : set[Enum]                                         = field(default_factory=set)
 
-    signal : Union[Sentence, str] = field()
-    func   : Optional[Callable]   = field(default=None)
-    struct : Optional[Callable]   = field(default=None)
+    struct   : None | Structure                                  = field(default=None)
 
+    def __post_init__(self) -> None: pass
 
-    @staticmethod
-    def decorate(signal_name:str, struct=None):
-        """ Utility decorator to turn any function into a handler """
-        def wrapper(func):
-            return HandlerFunction(signal_name,
-                                   func=func,
-                                   struct=struct)
+@dataclass #type:ignore[misc]
+class HandlerFragment_i(HSubP.HandlerFragment_p):
+    """ Structure of Handlers to be added to a system, and any
+    data they require
+    """
+    specs       : list[HandlerSpec_A]           = field(default_factory=list)
+    handlers    : list[Handler_A]               = field(default_factory=list)
+    target_i    : None | Type[Handler_System_A] = field(default=None, kw_only=True)
 
-
-        return wrapper
-
-
-    @staticmethod
-    def from_method(method, signal=None, struct=None):
-        """ A utility function to wrap a single method of a class as a handler.
-        Uses passed in signal, otherwise looks for method.__self__.signal
+@dataclass #type:ignore[misc]
+class HandlerOverride:
+    """ Simple Wrapper for forced semantic use
+        ie: a continuation
         """
-        assert(isinstance(method, MethodType))
-        return HandlerFunction(signal or method.__self__.signal,
-                               func=method,
-                               struct=struct)
-
-
-    def __post_init__(self):
-        if isinstance(self.func, type):
-            self.func = self.func()
-
-        if isinstance(self.struct, type) and hasattr(self.struct, "build_default"):
-            self.struct = self.struct.build_default()
-        elif isinstance(self.struct, type):
-            self.struct = self.struct()
-
-
-    def __call__(self, *args, **kwargs):
-        if self.func is None:
-            raise AcabHandlerException(f"Attempt to Call Struct Handler", self)
-        return self.func(*args, **kwargs)
-
-    def __iter__(self):
-        """ unpack the handler"""
-        return (self.func, self.struct).__iter__()
-
-
-
-    def __str__(self):
-        sig_s       = str(self.signal)
-        func_name   = ""
-        struct_name = ""
-        if self.func is not None:
-            func_name = str(self.func.__class__.__name__)
-        if self.struct is not None:
-            struct_name = str(self.struct.__class__.__name__)
-
-        spacer = " " * max(0, (SPACER - len(sig_s)))
-        second_spacer = " " * max(0, (SPACER * 2) - (len(spacer) + len(sig_s) + len(func_name)))
-
-        return f"{sig_s}{spacer}{func_name}{second_spacer}{struct_name}"
-
-    def add_struct(self, struct:Structure):
-        if isinstance(struct, type) and isinstance(struct, AcabStructure):
-            struct = struct.build_default()
-
-        self.struct = struct
-
-@dataclass
-class HandlerComponent_i:
-    """ Utility Class Component for easy creation of a handler """
-
-    signal : Optional[str] = field(default=None)
-
-    def as_handler(self, signal=None, struct=None):
-        assert(signal or self.signal)
-        return Handler(signal or self.signal, func=self, struct=struct)
+    signal   : str              = field()
+    value    : Value            = field()
+    data     : dict[Any, Any]   = field(default_factory=dict)

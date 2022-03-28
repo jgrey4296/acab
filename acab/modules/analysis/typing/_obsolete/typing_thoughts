@@ -1,0 +1,54 @@
+a.simple.type(::τ)
+
+a.b.c(::a.simple.type)
+
+a.record.type(::τ):
+    b.$x(::int)
+    c.$y.$z(::blah)
+end
+
+a.value(::a.record.type).b.5
+a.value.c.blah.bloo
+
+a.sum.type(::Σ):
+    a.first
+    b.second
+    c.third
+    d.e.f:
+        $x(::int)
+    end
+end
+
+// σ.a.first -> a.sum.type!a.first
+a.value(::σ.a.first))
+
+a.diff(::a.sum.type!d.e.f).5
+
+
+// Typing Rule: AST node -> constraints
+typing.rule(::ρ):
+    | $x |
+
+
+end
+
+
+// needed constraints:
+    sentence.structure
+    sentence.purpose (query, transform, action...)
+    operators
+    variables
+    statement.structure
+
+
+
+rule.def(::statement.structure):
+    args      : [$a]*
+    query     : [$x(::sentence.query)]+
+    transform : [$y(::sentence.transform)]*
+    action    : [$z(::sentence.action)]+
+end
+
+container.def(::statement.structure):
+    [$x(::sentence)]+
+end

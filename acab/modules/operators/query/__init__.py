@@ -1,20 +1,16 @@
-from acab.interfaces.dsl import DSL_Fragment_i
+from acab.core.parsing import pyparse_dsl as ppDSL
 
-from .query_operators import EQ, NEQ, RegMatch, ELEM, HasTag, TypeMatch
 from . import query_op_parsers as QOP
+from .query_operators import ELEM, EQ, NEQ, HasTag, RegMatch, TypeMatch
 
-class QueryDSL(DSL_Fragment_i):
-    """ The Module Spec for base operators """
+DSL_Fragment = ppDSL.DSL_Fragment
+DSL_Spec     = ppDSL.PyParse_Spec
+DSL_Handler  = ppDSL.PyParse_Handler
 
-    def assert_parsers(self, pt):
-        pt.add("word.annotation.hastag", QOP.tagList)
-        #        "operator.query.eq", QO.EQ,
-        #        "operator.query.neq", QO.NEQ,
-        #        "operator.query.regmatch", QO.RegMatch,
-        #        "operator.query.elem", QO.ELEM,
-        #        "operator.query.hastag", QO.HasTag,
-        pass
-
-
-    def query_parsers(self, pt):
-        pass
+QueryDSL = DSL_Fragment(specs=[],
+                        handlers=[DSL_Handler("word.annotation", QOP.tagList)])
+#        "operator.query.eq", QO.EQ,
+#        "operator.query.neq", QO.NEQ,
+#        "operator.query.regmatch", QO.RegMatch,
+#        "operator.query.elem", QO.ELEM,
+#        "operator.query.hastag", QO.HasTag,

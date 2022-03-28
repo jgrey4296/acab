@@ -2,3 +2,4 @@ log.*
 .log
 *.auto
 dist/
+*.mypy_cache

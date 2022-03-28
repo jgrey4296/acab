@@ -1,12 +1,26 @@
-from acab.error.parse_exception import AcabParseException
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Generic, Iterable,
+                    Iterator, Mapping, Match, MutableMapping, Protocol,
+                    Sequence, Tuple, TypeAlias, TypeGuard, TypeVar, cast)
 
-def EnsureDSLInitialised(method):
+if TYPE_CHECKING:
+    # tc only imports
+    pass
+
+from functools import wraps
+
+from acab.error.parse import AcabParseException
+
+T = TypeVar('T')
+
+#pylint: disable-next=invalid-name
+def EnsureDSLInitialised(method:Callable[..., T]) -> Callable[..., T]:
     """ Utility Decorator for DSL Builder's, raising error if not initialised """
+    #pylint: disable-next=invalid-name
+    @wraps(method)
     def fn(self, *args, **kwargs):
         if not self._parsers_initialised:
             raise AcabParseException("DSL Not Initialised")
 
         return method(self, *args, **kwargs)
 
-    fn.__name__ = method.__name__
     return fn

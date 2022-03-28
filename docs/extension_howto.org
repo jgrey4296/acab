@@ -1,0 +1,9 @@
+#+HEADER: How To Extend ACAB
+** Types of Extension
+- Data Structures and Nodes :  add new ways to store data
+- Operators                 :  create new functions over values available in an existing dsl
+- Parsers                   :  add a new way to say something
+- Printers                  :  output language constructs as strings
+- Semantics                 :  change what language constructs mean
+- Values / Types            :  add new atomic data
+- Config                    :  to tweak an existing element

@@ -1,25 +1,28 @@
 #https://docs.python.org/3/library/unittest.html
 # https://docs.python.org/3/library/unittest.mock.html
 
-from os.path import splitext, split
-
+import logging as root_logger
 import unittest
 import unittest.mock as mock
+from os.path import split, splitext
 
-import logging as root_logger
 logging = root_logger.getLogger(__name__)
 
 
 import acab
+
 config = acab.setup()
 
-from acab.modules.operators.dfs.walk_semantics import WalkTrieSemantics
-from acab.modules.semantics.basic_system import BasicSemanticSystem
-from acab.modules.semantics.independent import ExclusionNodeSemantics
-from acab.modules.semantics.abstractions import QueryPlusAbstraction
+from acab.core.data.instruction import (Instruction, ProductionComponent,
+                                        ProductionContainer)
+from acab.core.data.sentence import Sentence
+from acab.core.data.value import AcabValue
 from acab.modules.engines.configured import exlo
-from acab.core.data.production_abstractions import ProductionComponent, ProductionContainer
-from acab.core.data.values import Sentence, AcabValue
+from acab.modules.operators.dfs import parser as DOP
+from acab.modules.operators.dfs.semantics import DFSSemantics
+from acab.modules.semantics.basic_system import BasicSemanticSystem
+from acab.modules.semantics.statements import QueryPlusAbstraction
+from acab.modules.semantics.values import ExclusionNodeSemantics
 
 BIND          = config.prepare("Value.Structure", "BIND")()
 QUERY         = config.prepare("Value.Structure", "QUERY")()
@@ -47,38 +50,49 @@ class TestWalkSemantics(unittest.TestCase):
         logging.addHandler(file_h)
 
         cls.eng = exlo()
-        cls.eng.load_modules(*default_modules)
-        query_plus = QueryPlusAbstraction().as_handler("_:QUERY")
-        cls.eng.semantics._register_handler(query_plus)
-        walker = WalkTrieSemantics().as_handler("_:WALK")
-        cls.eng.semantics._register_handler(walker)
+        cls.eng.load_modules(*default_modules, "acab.modules.operators.dfs.module")
 
     def tearDown(self):
         self.eng("~a")
+        self.eng("~found")
+        self.eng("~the")
+
+
+    def test_parsed_walk_query(self):
+        query = DOP.dfs_query.parse_string("ᛦ $x(::blah)?")[0]
+
+        self.eng("a.b.c(::blah)")
+        self.eng("a.b.d(::blah)")
+
+        result = self.eng(query)
+        self.assertTrue(result)
+        self.assertEqual(len(result), 2)
+        bound = {ctx.x.name for ctx in result}
+        self.assertEqual(bound, {"c", "d"})
 
     def test_query_walk_only_below_start(self):
         """
         @x ᛦ $y(::target)?
         """
+
         self.eng("a.b.c.test.sub.blah(::target)")
         self.eng("a.b.d")
         self.eng("a.b.e.something(::target)")
 
-        # Setup a ctx bonud to 'c'
+        # Setup a ctx bound to 'c'
         ctxs       = self.eng("a.b.$x.test?")
 
         # build a walk instruction
-        source_var = AcabValue.safe_make("x", data={BIND: AT_BIND})
-        test_var   = AcabValue.safe_make("y", data={BIND: True,
+        source_var = AcabValue.build("x", data={BIND: AT_BIND})
+        test_var   = AcabValue.build("y", data={BIND: True,
                                                     TYPE_INSTANCE: Sentence.build(["target"]),
                                                     QUERY : True})
         query_sen = Sentence.build([source_var, test_var],
-                                   data={SEM_HINT : "_:WALK"})
+                                   data={SEM_HINT : "WALK"})
         query = ProductionContainer(value=[query_sen],
-                                    data={SEM_HINT : "_:QUERY"})
+                                    data={SEM_HINT : "QUERY"})
 
         # call walk
-
         result = self.eng(query, ctxset=ctxs)
         # check results
         self.assertEqual(len(result), 1)
@@ -93,18 +107,18 @@ class TestWalkSemantics(unittest.TestCase):
         self.eng("a.b.d")
         self.eng("a.b.e.test.something(::target)")
 
-        # Setup a ctx bonud to 'c'
+        # Setup a ctx bound to 'c' and 'e'
         ctxs       = self.eng("a.b.$x.test?")
 
         # build a walk instruction
-        source_var = AcabValue.safe_make("x", data={BIND: AT_BIND})
-        test_var   = AcabValue.safe_make("y", data={BIND: True,
+        source_var = AcabValue.build("x", data={BIND: AT_BIND})
+        test_var   = AcabValue.build("y", data={BIND: True,
                                                     TYPE_INSTANCE: Sentence.build(["target"]),
                                                     QUERY : True})
         query_sen = Sentence.build([source_var, test_var],
-                                   data={SEM_HINT : "_:WALK"})
+                                   data={SEM_HINT : "WALK"})
         query = ProductionContainer(value=[query_sen],
-                                    data={SEM_HINT : "_:QUERY"})
+                                    data={SEM_HINT : "QUERY"})
 
         # call walk
         result = self.eng(query, ctxset=ctxs)
@@ -127,14 +141,14 @@ class TestWalkSemantics(unittest.TestCase):
         ctxs       = self.eng("a.b.$x.test?")
 
         # build a walk instruction
-        source_var = AcabValue.safe_make("x", data={BIND: AT_BIND})
-        test_var   = AcabValue.safe_make("y", data={BIND: True,
+        source_var = AcabValue.build("x", data={BIND: AT_BIND})
+        test_var   = AcabValue.build("y", data={BIND: True,
                                                     TYPE_INSTANCE: Sentence.build(["target"]),
                                                     QUERY : True})
         query_sen = Sentence.build([source_var, test_var],
-                                   data={SEM_HINT : "_:WALK"})
+                                   data={SEM_HINT : "WALK"})
         query = ProductionContainer(value=[query_sen],
-                                    data={SEM_HINT : "_:QUERY"})
+                                    data={SEM_HINT : "QUERY"})
 
         # call walk
         result = self.eng(query, ctxset=ctxs)
@@ -150,12 +164,12 @@ class TestWalkSemantics(unittest.TestCase):
         self.eng("a.b.e.test.something(::target)")
 
         # build a walk instruction
-        test_var   = AcabValue.safe_make("y", data={BIND: True,
+        test_var   = AcabValue.build("y", data={BIND: True,
                                                     TYPE_INSTANCE: Sentence.build(["target"]),
                                                     QUERY : True})
-        query_sen = Sentence.build([test_var], data={SEM_HINT: "_:WALK"})
+        query_sen = Sentence.build([test_var], data={SEM_HINT: "WALK"})
         query = ProductionContainer(value=[query_sen],
-                                    data={SEM_HINT : "_:QUERY"})
+                                    data={SEM_HINT : "QUERY"})
 
         # call walk
         result = self.eng(query)
@@ -174,21 +188,115 @@ class TestWalkSemantics(unittest.TestCase):
         ctxs       = self.eng("a.b.$x.test?")
 
         # build a walk instruction
-        source_var = Sentence.build([AcabValue.safe_make("x", data={BIND: AT_BIND})])
-        test_var   = AcabValue.safe_make("y", data={BIND: True,
-                                                    TYPE_INSTANCE: Sentence.build(["target"]),
-                                                    QUERY : True})
+        source_var = Sentence.build([AcabValue.build("x", data={BIND: AT_BIND})])
+        test_var   = AcabValue.build("y", data={BIND: True,
+                                                TYPE_INSTANCE: Sentence.build(["target"]),
+                                                QUERY : True})
 
-        test_var2  = AcabValue.safe_make("z", data={BIND: True,
-                                                    TYPE_INSTANCE: Sentence.build(["other"]),
-                                                    QUERY : True})
+        test_var2  = AcabValue.build("z", data={BIND: True,
+                                                TYPE_INSTANCE: Sentence.build(["other"]),
+                                                QUERY : True})
 
         query_sen = Sentence.build([source_var, test_var, test_var2],
-                                   data={SEM_HINT : "_:WALK"})
+                                   data={SEM_HINT : "WALK"})
         query = ProductionContainer(value=[query_sen],
-                                    data={SEM_HINT : "_:QUERY"})
+                                    data={SEM_HINT : "QUERY"})
 
         # call walk
         result = self.eng(query, ctxset=ctxs)
         # check results
         self.assertEqual(len(result), 2)
+
+
+    def test_parsed_act(self):
+        """
+        the.rule(::ρ):
+        | $x |
+
+        @x.test?
+
+        !! found.$x
+        end
+        """
+
+        # Setup
+        self.eng("a.b.c.test")
+        self.eng("a.b.d")
+        self.eng("a.b.e.test")
+        self.eng("~acab")
+
+        # Action to run
+        self.eng("""the.rule(::ρ):\n        | $x |\n\n        @x.test?\n\n        !! found.$x\nend""")
+
+        # dfs instruction
+        ctxs = self.eng("the.$rule?")
+        self.eng("a.$x?", ctxset=ctxs)
+        # rule would be: | @x(::node) $a $b |
+        inst = DOP.dfs_action.parse_string("@x ᛦ λ$rule")[0]
+        self.eng(inst, ctxset=ctxs)
+
+        self.assertTrue(self.eng("found.c?"))
+        self.assertTrue(self.eng("found.e?"))
+
+    def test_walk_all_action(self):
+        """
+        the.rule(::ρ):
+        | $x |
+
+        !! found.$x
+        end
+        """
+        # Setup
+        self.eng("a.b.c.test")
+        self.eng("a.b.d!f")
+        self.eng("a.b.e.test")
+        self.eng("~acab")
+
+        # Action to run
+        self.eng("""the.rule(::ρ):\n        | $x |\n\n        !! found.$x\nend""".strip())
+        # dfs instruction
+        ctxs = self.eng("the.$rule?")
+        self.eng("$x?", ctxset=ctxs)
+        # rule would be: | @x(::node) $a $b |
+        # TODO : run the walk instruction in an action
+        inst = DOP.dfs_action.parse_string("@x ᛦ λ$rule")[0]
+        self.eng(inst, ctxset=ctxs)
+        found = self.eng("found.$x?")
+
+        # a,b,c,d,e,f,test,the,rule
+        self.assertEqual(len(found), 9)
+
+    @unittest.skip("Not implemented yet")
+    def test_walk_all_action_no_prebind(self):
+        """
+        the.rule(::ρ):
+        | $x |
+
+        !! found.$x
+        end
+        """
+        # TODO to finish
+        # Setup
+        self.eng("a.b.c.test")
+        self.eng("a.b.d!f")
+        self.eng("a.b.e.test")
+        self.eng("~acab")
+
+        # Action to run
+        self.eng("""the.rule(::ρ):\n        | $x |\n\n        !! found.$x\nend""".strip())
+        # dfs instruction
+        ctxs = self.eng("the.$rule?")
+        self.eng("$x?", ctxset=ctxs)
+        # rule would be: | @x(::node) $a $b |
+        inst = DOP.dfs_action.parse_string("@x ᛦ λthe.rule")[0]
+        self.eng(inst, ctxset=ctxs)
+
+
+
+    @unittest.skip("not done yet")
+    def test_parsed_act_without_head(self):
+        pass
+
+    @unittest.skip("not done yet")
+    def test_parsed_act_rule_loc(self):
+        pass

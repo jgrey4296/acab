@@ -1,6 +1,6 @@
 from acab.core.config.config import AcabConfig
 
-config = AcabConfig.Get()
+config = AcabConfig()
 
 DEFAULT_PORT       = config.prepare("Module.Network", "DEFAULT_PORT")()
 DEFAULT_BLOCKSIZE  = config.prepare("Module.Network", "DEFAULT_BLOCKSIZE")()

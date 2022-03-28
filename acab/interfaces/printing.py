@@ -1,123 +1,86 @@
+# pylint: disable=multiple-statements,protected-access,too-many-ancestors,abstract-method
+# pyright: reportGeneralTypeIssues=warning
+from __future__ import annotations
 import abc
 import logging as root_logger
 from dataclasses import InitVar, dataclass, field
 from enum import Enum
-from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
-                    List, Mapping, Match, MutableMapping, Optional, Sequence,
-                    Set, Tuple, TypeVar, Union, cast)
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
+                    Iterable, Iterator, Mapping, Match, MutableMapping,
+                    Type, Protocol, Sequence, Tuple, TypeAlias, TypeGuard, TypeVar,
+                    cast, final, overload, runtime_checkable)
 
+if TYPE_CHECKING:
+    # tc only imports
+    pass
+
+from acab import GET
 from acab import types as AT
 from acab.core.config.config import AcabConfig
-from acab.core.data import production_abstractions as PA
-from acab.core.data.values import AcabStatement
-from acab.interfaces.handler_system import (Handler,
-                                                     HandlerComponent_i,
-                                                     HandlerSystem_i)
-from acab.interfaces.value import Sentence_i, Value_i
 from acab.core.printing.default_symbols import PRINT_SEPARATOR_P
-from acab.error.print_exception import AcabPrintException
-from acab.error.semantic_exception import AcabSemanticException
+from acab.error.printing import AcabPrintException
+from acab.error.semantic import AcabSemanticException
+from acab.interfaces import handler_system as HS
+from acab.interfaces.sub_protocols import handler_system as HSubP
 
 logging = root_logger.getLogger(__name__)
+config = GET()
+
+Config_A         : TypeAlias = AT.Config
+Value_A          : TypeAlias = "AT.Value[AT.ValueCore]"
+Sentence         : TypeAlias = AT.Sentence
+ModuleComponents : TypeAlias = AT.ModuleComponents
+ConfigSpec       : TypeAlias = AT.ConfigSpec
+GenFunc          : TypeAlias = AT.fns.GenFunc
+Handler_A        : TypeAlias = AT.Handler
+HandlerSpec_A    : TypeAlias = AT.HandlerSpec
+
+# Protocols  ##################################################################
+@runtime_checkable
+class _PrintSystem_p(HSubP.HandlerSystem_p, Protocol):
+    @abc.abstractmethod
+    def __call__(self, *args:Sentence) -> str: pass
+    @abc.abstractmethod
+    def check(self, val:str) -> None | str: pass
+    @abc.abstractmethod
+    def pprint(self, *args:Sentence) -> str: pass
 
 
-Sentence         = AT.Sentence
-ModuleComponents = AT.ModuleComponents
-ConfigSpec       = AT.ConfigSpec
+@runtime_checkable
+class _PrintSemantics_p(Protocol):
 
-@dataclass
-class PrintSystem_i(HandlerSystem_i):
+    @abc.abstractmethod
+    def add_transforms(self) -> list[GenFunc]: pass
+    @abc.abstractmethod
+    def run_transforms(self, value: Value_A, curr_str: list[Any]) -> list[Any]: pass
+    @abc.abstractmethod
+    def __call__(self, to_print:Value_A, *, top:None|PrintSystem_i=None, data:None|dict[str,Any]=None) -> list[str | Value_A]: pass
+
+
+# Interfaces  #################################################################
+@dataclass #type:ignore[misc]
+class PrintSystem_i(HS.HandlerSystem_i, _PrintSystem_p):
     """ Handles how to convert values and sentences into strings,
     does not rely on the underlying data structures,
     just consumes Sentences
     """
+    init_specs     : InitVar[list[HandlerSpec_A]] = field()
+    init_handlers  : InitVar[list[Handler_A]]     = field()
+    sieve_fns      : InitVar[list[GenFunc]]       = field()
     separator : ConfigSpec     = field(default=PRINT_SEPARATOR_P)
-    settings  : Dict[str, str] = field(default_factory=dict)
-    _config   : AcabConfig     = field(init=False, default_factory=AcabConfig.Get)
+    settings  : dict[str, str] = field(default_factory=dict)
+    _config   : Config_A       = field(init=False, default_factory=AcabConfig)
 
-    def __post_init__(self, handlers, sieve_fns):
-        super().__post_init__(handlers, sieve_fns)
-        if self.default is None:
-            self.default = Handler("_:default", lambda x, data=None: str(x))
+    # pyrite bug : doesn't handle inherited initvars
+    # pylint: disable-next=arguments-renamed
+    def __post_init__(self, specs:list[HandlerSpec_A], handlers:list[Handler_A], sieve_fns:list[GenFunc]) -> None: pass
 
-    def check(self, val) -> Optional[str]:
-        """ Check a value to toggle variations/get defaults"""
-        if val in self.settings:
-            return self.settings[val]
+@dataclass #type:ignore[misc]
+class PrintSemantics_i(HS.HandlerComponent_i, _PrintSemantics_p):
+    transforms  : list[GenFunc] = field(init=False, default_factory=list)
 
-        return None
+    def __post_init__(self) -> None: pass
 
-    def pprint(self, *args) -> str:
-        """
-        The Core Pretty Printer.
-        Process a Stack, looking up specific handlers for the top,
-        building up a final string
-
-        Handler's return a list of values to go onto stack.
-        """
-        remaining = [[x, self.separator] for x in args[:-1]] + [args[-1]]
-        result = ""
-        while bool(remaining):
-            current = remaining.pop(0)
-            handler = None
-            data    = {}
-            if isinstance(current, str):
-                result += current
-                continue
-            elif isinstance(current, list):
-                remaining = current + remaining
-                continue
-            else:
-                handler, _ = self.lookup(current)
-
-            if isinstance(current, PrintSystem_i.HandlerOverride):
-                data.update(current.data)
-                current = current.value
-
-            if isinstance(handler, PrintSemantics_i):
-                handled = handler(current, top=self, data=data)
-            else:
-                handled = handler(current, data=data)
-
-            # Add the results of a handler to the head
-            if isinstance(handled, list):
-                remaining = handled + remaining
-            else:
-                remaining = [handled] + remaining
-
-
-        return result
-
-
-    def __call__(self, *args) -> str:
-        return self.pprint(*args)
-
-    def extend(self, mods:List[ModuleComponents]):
-        logging.info("Extending Printer")
-        for printer in [y for x in mods for y in x.printers]:
-            self._register_handler(printer)
-
-
-#--------------------
-@dataclass
-class PrintSemantics_i(HandlerComponent_i):
-
-    transforms  : List[Callable] = field(init=False, default_factory=list)
-
-    def __post_init__(self):
-        self.transforms += self.add_transforms()
-
-    def add_transforms(self) -> List[Callable]:
-        """ Override to add custom transforms in a class """
-        return []
-
-    def run_transforms(self, value: Value_i, curr_str: List[Any]) -> List[Any]:
-        curr = curr_str
-        for trans in self.transforms:
-            curr = trans(self, value, curr)
-
-        return curr
-
-    @abc.abstractmethod
-    def __call__(self, to_print: Value_i, top:'PrintSystem_i'=None, data=None) -> List[Tuple[str,Value_i]]:
-        pass
+@dataclass #type:ignore[misc]
+class Printer_Fragment(HS.HandlerFragment_i):
+    target_i : Type[PrintSystem_i] = field(kw_only=True)

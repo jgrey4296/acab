@@ -1,7 +1,7 @@
 """
 A Means to specify and use easings and curves
 """
-from acab.core.data.values import AcabValue
+from acab.core.data.value import AcabValue
 
 class Curve(AcabValue):
     """ The Base definition of a curve / easing """

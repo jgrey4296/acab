@@ -11,13 +11,12 @@ from dataclasses import FrozenInstanceError, InitVar, dataclass, field, replace
 from enum import Enum
 from uuid import UUID, uuid1
 
+import acab.error.semantic as ASErr
 import acab.interfaces.context as CtxInt
-import acab.error.semantic_exception as ASErr
-from acab.core.config import GET
-from acab.core.data.production_abstractions import (ProductionComponent,
-                                                        ProductionContainer)
+from acab.core.config.config import GET
+from acab.core.data.instruction import ProductionComponent, ProductionContainer
+from acab.error.semantic import AcabSemanticException
 from acab.interfaces.value import Sentence_i
-from acab.error.semantic_exception import AcabSemanticException
 from acab.modules.context.constraints import ConstraintCollection
 
 config = GET()
@@ -32,7 +31,7 @@ ProdComp         = ProductionComponent
 ProdCon          = ProductionContainer
 Operator         = 'ProductionOperator'
 Value            = 'AcabValue'
-Statement        = 'AcabStatement'
+Statement        = 'Instruction'
 Sen              = Sentence_i
 Node             = 'AcabNode'
 ModuleComponents = "ModuleComponents"
@@ -45,22 +44,22 @@ DELAYED_E = Enum("Delayed Instruction Set", "ACTIVE FAIL DEACTIVATE CLEAR MERGE"
 class ContextQueryManager:
     """ Shared State of the current query, between different ctx insts """
 
-    query_clause  : Optional[Sen]      = field()
+    query_clause  : None|Sen      = field()
     root_node     : Node               = field()
     ctxs          : CtxSet             = field()
 
     negated       : bool               = field(init=False, default=False)
-    collect_vars  : Set[str]           = field(init=False, default_factory=set)
-    constraints   : List[ConstraintCollection] = field(init=False, default_factory=list)
+    collect_vars  : set[str]           = field(init=False, default_factory=set)
+    constraints   : list[ConstraintCollection] = field(init=False, default_factory=list)
 
     _current_constraint : ConstraintCollection = field(init=False, default=None)
     _current_inst       : CtxIns               = field(init=False, default=None)
-    _initial_ctxs       : List[UUID]           = field(init=False, default_factory=list)
+    _initial_ctxs       : list[UUID]           = field(init=False, default_factory=list)
 
     def __post_init__(self):
         sen = self.query_clause
         self.negated = NEGATION_S in sen.data and sen.data[NEGATION_S]
-        constraints = [ConstraintCollection.build(x, operators=self.ctxs._operators) for x in sen]
+        constraints = [ConstraintCollection(x, operators=self.ctxs._operators) for x in sen]
         self.constraints.extend(constraints)
         self._initial_ctxs = [x.uuid for x in self.ctxs.active_list()]
 
@@ -68,7 +67,7 @@ class ContextQueryManager:
         # set all instances to start at node, unless start_word is an at_binding,
         # in which case get the bound node
         # handle negated behaviour
-        active_list : List[CtxIns] = self.ctxs.active_list()
+        active_list : list[CtxIns] = self.ctxs.active_list()
 
         if self.query_clause is None or not self.query_clause[0].is_at_var:
             [x.set_current_node(self.root_node) for x in active_list]
@@ -95,6 +94,7 @@ class ContextQueryManager:
         # collect bindings as necessary
         self.collect()
         # TODO handle exception
+        return False
 
 
     def __iter__(self):
@@ -102,15 +102,17 @@ class ContextQueryManager:
 
 
     @property
-    def query(self) -> Iterator[Value]:
-        for constraints in self.constraints:
+    def query(self, ctx=None) -> Iterator[Value]:
+        clause_constraints = self.constraints
+
+        for constraints in clause_constraints:
             self._current_constraint = constraints
+
             yield constraints.source
 
     @property
     def active(self) -> Iterator[Tuple[Value, CtxIns, Node]]:
         active_ctxs = self.ctxs.active_list(clear=True)
-        # TODO make this return a the current word, bound
         for ctx in active_ctxs:
             self._current_inst = ctx
             bound_word = ctx[self._current_constraint.source]
@@ -120,7 +122,7 @@ class ContextQueryManager:
             yield (bound_word, ctx, ctx._current)
 
 
-    def test_and_update(self, results:List[Node]):
+    def test_and_update(self, results:list[Node]):
         if not bool(results):
             self.ctxs.fail(self._current_inst,
                            self._current_constraint.source,
@@ -129,7 +131,7 @@ class ContextQueryManager:
         else:
             self.test(results)
 
-    def test(self, possible: List[Node]):
+    def test(self, possible: list[Node]):
         """
         run a word's tests on available nodes, with an instance.
         bind successes and return them

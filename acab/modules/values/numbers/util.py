@@ -1,13 +1,13 @@
-from acab.core.data.values import Sentence
+from acab.core.data.sentence import Sentence
 from acab.core.config.config import AcabConfig
 
-util = AcabConfig.Get()
+util = AcabConfig()
 DECIMAL = util.value("Module.Numbers", "DECIMAL")
 
 # TODO use config primitives
-FLOAT_t = Sentence.build(["number", "float"])
-INT_t   = Sentence.build(["number", "int"])
-FRACT_t = Sentence.build(["number", "fract"])
+FLOAT_t = Sentence(["number", "float"])
+INT_t   = Sentence(["number", "int"])
+FRACT_t = Sentence(["number", "fract"])
 
 
 def _wrap_float(value, opts=None):

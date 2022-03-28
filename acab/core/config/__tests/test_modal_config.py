@@ -11,7 +11,7 @@ from os.path import split, splitext
 from acab import setup
 
 from acab.core.config.config import AcabConfig, ConfigSpec
-from acab.error.config_exception import AcabConfigException
+from acab.error.config import AcabConfigException
 
 class ModalConfigTests(unittest.TestCase):
 
@@ -38,13 +38,13 @@ class ModalConfigTests(unittest.TestCase):
         """
         Check config errors when you try to use missing modal values
         """
-        config = AcabConfig.Get()
+        config = AcabConfig()
         with self.assertRaises(Exception):
             config.enums['blah']
 
     def test_modal_spec(self):
         """ Check modal fields exist """
-        config = AcabConfig.Get()
+        config = AcabConfig()
         self.assertTrue(config.enums)
         self.assertTrue(config.defaults)
         self.assertTrue(config.printing_extension)

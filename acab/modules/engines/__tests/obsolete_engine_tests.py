@@ -9,8 +9,8 @@ from math import isclose
 import acab
 acab.setup()
 
-from acab.core.data.values import AcabValue
-from acab.core.data.production_abstractions import ProductionStructure
+from acab.core.data.value import AcabValue
+from acab.core.data.instruction import ProductionStructure
 
 from acab.core.engine.engine import Engine
 import acab.modules.parsing.exlo.TransformParser as TP
@@ -32,7 +32,7 @@ class Engine_Tests(unittest.TestCase):
 
     def setUp(self):
         self.e = Engine()
-        self.e.build_DSL()
+        self.e.build()
 
     def tearDown(self):
         self.e = None
@@ -109,7 +109,7 @@ class Engine_Tests(unittest.TestCase):
         wm_mock.assert_called_once_with(None)
 
     @unittest.skip("TODO")
-    @mock.patch('acab.core.data.production_abstractions', autospec=True)
+    @mock.patch('acab.core.data.instruction', autospec=True)
     @mock.patch('acab.interfaces.working_memory.WorkingMemoryCore', autospec=True)
     def test_load_modules(self, wm_mock, op_mock):
         module_mock = mock.Mock()
@@ -117,11 +117,11 @@ class Engine_Tests(unittest.TestCase):
         op_mock.clear_registrations.assert_called_once()
         engine._working_memory.add_modules.assert_called_once()
 
-    @mock.patch('acab.core.data.production_abstractions', autospec=True)
+    @mock.patch('acab.core.data.instruction', autospec=True)
     @mock.patch('acab.interfaces.working_memory.WorkingMemoryCore', autospec=True)
     def test_reload_modules(self, wm_mock, op_mock):
         engine = Engine(wm_mock)
-        engine.build_DSL()
+        engine.build()
         engine._working_memory.construct_parsers_from_fragments.assert_called()
 
     @unittest.skip("TODO")

@@ -15,9 +15,9 @@ import pyparsing as pp
 
 config = acab.setup()
 
-from acab.core.data.production_abstractions import (ProductionOperator,
-                                                        ProductionStructure)
-from acab.interfaces.value import Statement_i
+from acab.core.data.instruction import (ProductionOperator,
+                                        ProductionStructure)
+from acab.interfaces.value import Instruction_i
 from acab.interfaces.context import ContextSet_i
 from acab.modules.repl import ReplParser as RP
 from acab.modules.repl.repl_commander import register
@@ -97,7 +97,7 @@ def do_break(self, line):
     # To break on semantic execution:
 
     """
-    ctxs = RP.break_parser.parseString(line)
+    ctxs = RP.break_parser.parse_string(line)
     # TODO refactor the basic/semantic logic into the debugger
     if "basic" in ctxs:
         bp_result = self.state.debugger.set_break(ctxs.file, ctxs.line)
@@ -115,7 +115,7 @@ def do_break(self, line):
         # run query
         self.state.ctxs = self.state.engine(ctxs.semantic)
         # attach semantic breakpoints to each prod_abstraction
-        if len(self.state.ctxs) == 1 and isinstance(self.state.ctxs[0]._current.value, Statement_i):
+        if len(self.state.ctxs) == 1 and isinstance(self.state.ctxs[0]._current.value, Instruction_i):
             curr = self.state.ctxs[0]._current.value
             curr.do_break()
             if curr.should_break:
@@ -126,7 +126,7 @@ def do_break(self, line):
             count = 0
             for inst in self.state.ctxs:
                 for bind in inst.data.items():
-                    if isinstance(bind, Statement_i):
+                    if isinstance(bind, Instruction_i):
                         bind.do_break()
                         count += 1
 
@@ -159,10 +159,10 @@ def do_break(self, line):
         turn_off = hasattr(parser._parse, "_originalParseMethod")
         if turn_off:
             print(f"Turning Breakpoint off for: {ctxs['parser']}")
-            parser.setBreak(False)
+            parser.set_break(False)
         else:
             print(f"Turning Breakpoint on for: {ctxs['parser']}")
-            parser.setBreak(True)
+            parser.set_break(True)
     else:
         print("""
         Shunting to Python debugger.
@@ -182,7 +182,7 @@ def do_ctx(self, line):
     Clear the context with '-'
     """
     try:
-        params = RP.ctx_select_parser.parseString(line)
+        params = RP.ctx_select_parser.parse_string(line)
 
         if "subset" in params:
             result = self.state.ctxs[params.subset]
@@ -207,9 +207,9 @@ def do_forcep(self, line):
     """
     try:
         # parse the line
-        params = RP.force_parser.parseString(line)
-        # query the bootstrapper for the parser
-        parser = self.state.engine._dsl_builder._bootstrap_parser.query(params.query)
+        params = RP.force_parser.parse_string(line)
+        # Get the handler for the specified signal
+        parser = self.state.engine._dsl[params.query]
         print(f"Retrieved: {parser}\n")
         if not bool(params.send):
             print("Nothing sent to parser")
@@ -217,15 +217,17 @@ def do_forcep(self, line):
 
         print(f"Trying Parser on: {params.send}")
         # if exists, parse, then call engine on it
-        parser.setDebug(True)
-        forced_result = parser.parseString(params.send.strip(), parseAll=True)[:]
-        parser.setDebug(False)
+        built = parser.build()
+        built.set_debug(True)
+        forced_result = built.parse_string(params.send.strip(), parseAll=True)[:]
+        built.set_debug(False)
         self.state.debug_data = forced_result
-        print(f"Forced Parse: {forced_result}\n")
+        print(f"----- Forced Parse Result: {forced_result}\n")
 
         if isinstance(forced_result, tuple):
             forced_result = forced_result[1]
 
+        print("Attempting to execute result:")
         self.state.ctxs = self.state.engine(forced_result,
                                             ctxset=self.state.ctxs)
 
@@ -238,3 +240,13 @@ def do_forcep(self, line):
         traceback.print_tb(err.__traceback__)
         print("\n")
         logging.warning(f"Force Failure: {err}")
+
+
+@register
+def do_suppress(self, line):
+    """
+    Repl Command to suppress all repl commands
+    (except itself and `exit`.)
+    """
+    # TODO
+    return

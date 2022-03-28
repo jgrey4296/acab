@@ -1,22 +1,7 @@
-from acab.interfaces.dsl import DSL_Fragment_i
+from acab.interfaces.dsl import DSL_Fragment, DSL_Spec, DSL_Handler
 from .parsing import parser as TP
 
 
-class MODULE(DSL_Fragment_i):
-    """ TimeParser Class, providing entry points
-    for an engine and working memory to parse Time Strings
-    """
-
-    def __init__(self):
-        # TODO make a time statement as well
-        super().__init__()
-
-    def parse_string(self, s):
-        return TP.parseString(s)
-
-    def assert_parsers(self, pt):
-        pt.add("value.time", TP.main_pattern)
-
-    def query_parsers(self, pt):
-        TP.HOTLOAD_VALUE << pt.query("valbind")
-        TP.HOTLOAD_BIND << pt.query("valbind")
+time_dsl = DSL_Fragment(specs=[DSL_Spec("word.valbind", TP.HOTLOAD_VALUE),
+                               DSL_Spec("word.valbind", TP.HOtLOAD_BIND)],
+                        handlers=[DSL_Handler("value.time", TP.main_pattern)])

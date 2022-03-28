@@ -1,41 +1,102 @@
+#!/usr/bin/env python3
 import abc
-from dataclasses import dataclass, field
-from os import listdir
-from os.path import (abspath, exists, expanduser, isdir, isfile, join, split,
-                     splitext)
-from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
-                    List, Mapping, Match, MutableMapping, Optional, Sequence,
-                    Set, Tuple, TypeVar, Union, cast)
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Generic, Iterable,
+                    Iterator, Mapping, Match, MutableMapping, Protocol,
+                    Sequence, Tuple, TypeAlias, TypeGuard, TypeVar, cast)
+
+import logging as root_logger
+logging = root_logger.getLogger(__name__)
+
+from acab.interfaces import dsl
+from acab.interfaces import handler_system as HS
+
+if TYPE_CHECKING:
+    # tc only imports
+    pass
 
 from acab import types as AT
-from acab.interfaces.dsl import (DSL_Fragment_i,
-                                          DSLBuilder_i)
-from acab.core.parsing.trie_bootstrapper import TrieBootstrapper
+from acab.core.util import handler_system as HSImpl
+from acab.error.parse import AcabParseException
 
-Bootstrapper = AT.Bootstrapper
-DSL_Fragment = AT.DSL_Fragment
+Parser           : TypeAlias = AT.Parser
+Sentence         : TypeAlias = AT.Sentence
+Query            : TypeAlias = AT.Container
+ModuleComponents : TypeAlias = AT.ModuleComponents
+DSL_Spec_A       : TypeAlias = AT.DSL_Spec
 
-@dataclass
-class DSLBuilder(DSLBuilder_i):
-    """ describes engine assembly of a parser from DSL Fragments """
+class DSL_Fragment(HSImpl.HandlerFragment, dsl.DSL_Fragment_i):
+    pass
 
-    _bootstrap_parser: Bootstrapper = field(default_factory=TrieBootstrapper)
+class DSL_Spec(HSImpl.HandlerSpec, dsl.DSL_Spec_i):
 
-    def construct_parsers_from_fragments(self, fragments:List[DSL_Fragment]):
-        """ Assemble parsers from the fragments of the wm and loaded modules """
-        assert(all([isinstance(x, DSL_Fragment_i) for x in fragments]))
+    def extend_spec(self, spec:DSL_Spec_A):
+        if not isinstance(spec, dsl.DSL_Spec_i):
+            raise AcabParseException(f"Tried to extend a DSL_Spec with {spec}")
 
-        # assert base parser
-        self.root_fragment.assert_parsers(self._bootstrap_parser)
+        self.struct.update(spec.struct) #type:ignore
 
-        for x in fragments:
-            #Populate the trie
-            x.assert_parsers(self._bootstrap_parser)
+    def register(self, handler):
+        assert(isinstance(handler, dsl.DSL_Handler_i))
+        if handler.func is None:
+            raise AcabParseException(f"`{self.signal}` attempted to register a handler without a parser")
 
-        for x in fragments:
-            # Now query and populate the modules
-            x.query_parsers(self._bootstrap_parser)
+        # TODO flag logic, api's
+        self.handlers.append(handler)
 
-        # then assign main and query parsers from the base parser
-        main_p = self.root_fragment.query_parsers(self._bootstrap_parser)
-        self._main_parser = main_p
+
+class DSL_Builder(HSImpl.HandlerSystem, dsl.DSL_Builder_i):
+
+    def _register_spec(self, *specs):
+        for spec in specs:
+            assert(isinstance(spec, dsl.DSL_Spec_i))
+            if spec.signal not in self.handler_specs:
+                self.handler_specs[spec.signal] = spec
+            else:
+                self.handler_specs[spec.signal].extend_spec(spec)
+
+    def build(self):
+        """
+        Using currently loaded modules, rebuild the usable DSL parser from fragments
+        """
+        if bool(self.loose_handlers):
+            loose_handlers      = self.loose_handlers[:]
+            self.loose_handlers = []
+            for loose in loose_handlers:
+                self.register(loose)
+
+        if bool(self.loose_handlers):
+            loose_signals = ", ".join(set([x.signal for x in self.loose_handlers]))
+            logging.warning(f"Building DSL with {len(self.loose_handlers)} Loose Handlers: {loose_signals}")
+        else:
+            logging.info("Building DSL")
+
+        for spec in self:
+            try:
+                spec()
+            except TypeError as err:
+                breakpoint()
+
+        self._parsers_initialised = True
+
+    def parse_string(self, *args) -> list[Sentence]:
+        return self.parse(*args)
+
+    def parse_file(self, f:str) -> list[Sentence]:
+        logging.debug(f"Loading File: {f}")
+        text = ""
+        with open(f, "r") as the_file:
+            text = the_file.read()
+
+        logging.info(f"Loading File Text:\n{text}")
+        return self.parse(text)
+
+
+    def __call__(self, *args):
+        return self.parse(*args)
+
+    def extend(self, modules:list[ModuleComponents]):
+        for module in modules:
+            self.register(*module.dsl_fragments)
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__}: Handlers: {len(self.handler_specs)}, Loose: {len(self.loose_handlers)}>"

@@ -2,137 +2,77 @@
 A DSL interface for the system, which
 
 """
+# pylint: disable=multiple-statements,abstract-method,too-many-ancestors,too-few-public-methods
+from __future__ import annotations
 import abc
-import pyparsing as pp
-import traceback
+import collections.abc as cABC
 import logging as root_logger
+import traceback
 from dataclasses import dataclass, field
-from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
-                    List, Mapping, Match, MutableMapping, Optional, Sequence,
-                    Set, Tuple, TypeVar, Union, cast)
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Generic, Iterable,
+                    Iterator, Mapping, Match, MutableMapping, Protocol,
+                    Sequence, Tuple, TypeAlias, TypeVar, cast,
+                    runtime_checkable)
+
+if TYPE_CHECKING:
+    import io
 
 logging = root_logger.getLogger(__name__)
 
 from acab import types as AT
 from acab.core.decorators.dsl import EnsureDSLInitialised
-from acab.error.acab_exception import AcabException
+from acab.interfaces import handler_system as HS
+from acab.interfaces.sub_protocols import handler_system as HSubP
 
-Parser           = "pp.ParserElement"
-Sentence         = AT.Sentence
-Query            = AT.Container
-ModuleComponents = AT.ModuleComponents
-File             = 'FileObj'
+Parser           : TypeAlias = AT.Parser
+Sentence         : TypeAlias = AT.Sentence
+Query            : TypeAlias = AT.Container
+ModuleComponents : TypeAlias = AT.ModuleComponents
+DSL_Spec_A       : TypeAlias = AT.DSL_Spec
+File             : TypeAlias = 'io.TextIOBase'
 
-#----------------------------------------
-class Bootstrapper_i(metaclass=abc.ABCMeta):
-    """ A Utility class for registering and retrieving
-    interacting parsers """
-
+class DSL_Parser_i(Protocol):
     @abc.abstractmethod
-    def add(self, *inputs: List[Union[str, Parser]]):
-        """ for each pair in inputs (a,b):
-        register parser b at location a
-        """
-        pass
-
+    def parse_string(self, string:str) -> list[Sentence]: pass
     @abc.abstractmethod
-    def query(self, *queries: List[str]) -> Parser:
-        """ Get all parsers registered at the string locations
-        and return an aggregate parser of them
-        """
-        pass
-
-    def report(self) -> Any:
-        """ Return a report on the bootstrap registrations """
-        pass
-
-#----------------------------------------
-class DSL_Fragment_i(metaclass=abc.ABCMeta):
-    """ """
-
-    def set_word_exclusions(self, *words):
-        pass
-
-    def parse_string(self, string):
-        """ Takes a String, parses it into Data format """
-        raise NotImplementedError()
-
-    def parse_file(self, file):
-        raise NotImplementedError()
-
+    def parse_file(self, f:str) -> list[Sentence]: pass
     @abc.abstractmethod
-    def assert_parsers(self, bootstrapper: Bootstrapper_i):
-        """
-        Assert parsers from this module for integration later
-        ie: values.number <= number_parser
-        values.time      <= time_parser
-        operators.set.add <=  set_add_op
-        hotloads.value    <= HOTLOAD_VALUES
-        """
-        pass
+    def __call__(self, *args:str) -> list[Sentence]: pass
 
+# Protocols ###################################################################
+@runtime_checkable
+class _DSL_Spec_p(HSubP.HandlerSpec_p, Protocol):
     @abc.abstractmethod
-    def query_parsers(self, bootstrapper: Bootstrapper_i):
-        """
-        Query the now complete parser trie for hotloads
-        values.$xs?
-        hotloads.values!$p(~= /values/)?
+    def extend_spec(self, spec:DSL_Spec_A) -> None: pass
 
-        parser.or($xs) -> $y
-        parser.assign $p $y
-
-        """
-        pass
+@runtime_checkable
+class _DSL_Builder_p(HSubP.HandlerSystem_p, DSL_Parser_i, Protocol):
+    @abc.abstractmethod
+    def build(self) -> None: pass
+    @abc.abstractmethod
+    def parse(self, s:str) -> list[Sentence]: pass
 
 
+# Interfaces:
+class DSL_Fragment_i(HS.HandlerFragment_i):
+    # TODO maybe a newtype
+    pass
 
-#----------------------------------------
-@dataclass
-class DSLBuilder_i(metaclass=abc.ABCMeta):
-    root_fragment         : DSL_Fragment_i = field()
+@dataclass #type:ignore[misc]
+class DSL_Handler_i(HS.Handler_i):
+    """ Register a function for handling a DSL setup signal.
+    ie: This function is run to set a pyparsing `Forward`"""
+    func : Parser = field()
 
-    _bootstrap_parser     : Bootstrapper_i = field(init=False)
-    _main_parser          : Parser         = field(init=False)
+@dataclass #type:ignore[misc]
+class DSL_Spec_i(HS.HandlerSpec_i, _DSL_Spec_p):
+    """
+    Register a signal into a DSL,
+    """
+    struct : set[Parser] = field(default_factory=set)
+
+
+@dataclass #type:ignore[misc]
+class DSL_Builder_i(HS.HandlerSystem_i, _DSL_Builder_p):
     _parsers_initialised  : bool           = field(init=False, default=False)
-    _loaded_DSL_fragments : Dict[Any, Any] = field(init=False, default_factory=dict)
-
-
-    def build_DSL(self, modules: List[ModuleComponents]):
-        """
-        Using currently loaded modules, rebuild the usable DSL parser from fragments
-        """
-        logging.info("Building DSL")
-        self.clear_bootstrap()
-        fragments = [y for x in modules for y in x.dsl_fragments]
-        self.construct_parsers_from_fragments(fragments)
-        self._parsers_initialised = True
-
-    def clear_bootstrap(self):
-        self._bootstrap_parser = self._bootstrap_parser.__class__()
-
-    @EnsureDSLInitialised
-    def parse(self, s:str) -> List[Sentence]:
-        try:
-            return self._main_parser.parseString(s, parseAll=True)[:]
-        except pp.ParseException as exp:
-            logging.warning("--------------------\nParse Failure:\n")
-            traceback.print_tb(exp.__traceback__)
-            logging.warning(f"\n{exp.args[-1]}\n")
-            logging.warning(f"Parser: {exp.parserElement}\n")
-            logging.warning("Line: {}, Col: {} : {}".format(exp.lineno, exp.col, exp.markInputline()))
-            return []
-
-    @EnsureDSLInitialised
-    def parseFile(self, f:File) -> List[Sentence]:
-        logging.debug(f"Loading File: {f}")
-        text = ""
-        with open(f, "r") as the_file:
-            text = the_file.read()
-
-        print(f"Loading File Text:\n{text}")
-        return self.parse(text)
-
-    @abc.abstractmethod
-    def construct_parsers_from_fragments(self, fragments: List[DSL_Fragment_i]):
-        """ Assemble parsers from the fragments of the wm and loaded modules """
-        pass
+    _loaded_DSL_fragments : dict[Any, Any] = field(init=False, default_factory=dict)
