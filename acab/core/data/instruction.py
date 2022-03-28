@@ -92,25 +92,12 @@ class ProductionOperator(ValueProtocolsImpl, VI.Operator_i, metaclass=ValueMeta)
     """ The Base Operator Class,
     Provides the way to use other systems and code in Acab
 
-    ContextSet.build uses a class attribute named "sugar" to register a syntax
+    ContextSet uses a class attribute named "sugar" to register a syntax
     sugar for the operator. The string is a pseudo sentence,
     ie: _:==, _:!=, ..
     """
 
     _defaults : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE: DS.OPERATOR_PRIM}
-
-    @classmethod
-    def build(cls, value:T=None, /, *,
-              name:None|str=None,
-              data:None|dict[ValueData, Any]=None,
-              params:None|list['Value_A|str']=None,
-              tags:None|list['Value_A|str']=None,
-              _type:'None|str|Sen_A'=None,
-              **kwargs) -> Value_A:
-        raise DeprecationWarning()
-
-        if name is None:
-            name = f"{cls.__module__}.{cls.__qualname__}"
 
     def copy(self, **kwargs):
         """ Operators by default are immutable, and don't need to duplicate """
@@ -131,19 +118,6 @@ class ActionOperator(ValueProtocolsImpl, VI.Action_i, metaclass=ValueMeta):
     """ Special Operator type which gets passed the semantic system,
     so it can trigger instructions """
     _defaults : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE: DS.OPERATOR_PRIM}
-
-    @classmethod
-    def build(cls, value:T=None, /, *,
-              name:None|str=None,
-              data:None|dict[ValueData, Any]=None,
-              params:None|list['Value_A|str']=None,
-              tags:None|list['Value_A|str']=None,
-              _type:'None|str|Sen_A'=None,
-              **kwargs) -> Value_A:
-        raise DeprecationWarning()
-
-        if name is None:
-            name = f"{cls.__module__}.{cls.__qualname__}"
 
     def copy(self, **kwargs):
         """ Operators by default are immutable, and don't need to duplicate """
@@ -286,7 +260,7 @@ class ProductionStructure(ProductionContainer):
         value = args[0]
         assert(isinstance(value, Iterable))
         # TODO improve this
-        return [ProductionContainer([], name=x) for x in value]
+        return [ProductionContainer([], name=x) if not isinstance(x, ProductionContainer) else x for x in value]
 
     def __post_init__(self):
         self.structure.update({x.key() : x for x in self.value})

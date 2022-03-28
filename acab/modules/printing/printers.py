@@ -304,13 +304,13 @@ class TagPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
     prepended with the tag symbol, in strides of 4 """
 
     def __call__(self, value, top=None, data=None):
-        assert(isinstance(value, (set, list))), value
+        assert(isinstance(value, (set, list, frozenset))), value
         result = []
         # TODO: customize stride in config?
         for tags in grouper(sorted(value), 4):
             result.append(DSYM.INDENT)
             result.append(DSYM.TAG_SYM)
-            result.append(Sentence.build([x for x in tags if x is not None]))
+            result.append(Sentence([x for x in tags if x is not None]))
             result.append(DSYM.CONTAINER_JOIN_P)
 
         return result

@@ -99,16 +99,17 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
     def test_rule_with_actions(self):
         result = RP.parse_string("x(::ρ):\nλoperator.action.add a.b.c\nend")[0]
         self.assertIsInstance(result, ProductionStructure)
-        self.assertIsNone(result[QUERY_V])
-        self.assertIsNone(result[TRANSFORM_V])
+        self.assertFalse(result[QUERY_V])
+        self.assertFalse(result[TRANSFORM_V])
         self.assertEqual(len(result[ACTION_V]), 1)
 
 
     def test_multi_action_rule(self):
         result = RP.parse_string("x(::ρ):\n  λoperator.action.add a.b.c\n  λoperator.action.add ~a.b.d\nend")[0]
         self.assertIsInstance(result, ProductionStructure)
-        self.assertIsNone(result.structure[QUERY_V])
-        self.assertIsNone(result.structure[TRANSFORM_V])
+        self.assertTrue(all([x in result for x in [QUERY_V, TRANSFORM_V, ACTION_V]]))
+        self.assertFalse(result.structure[QUERY_V])
+        self.assertFalse(result.structure[TRANSFORM_V])
         self.assertEqual(len(result.structure[ACTION_V]), 2)
 
     @unittest.skip("one liners need work")

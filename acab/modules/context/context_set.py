@@ -64,30 +64,6 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i, metaclass=ContextMeta):
     delayed_e            : Enum                   = field(init=False, default=DELAYED_E)
     instance_constructor : CtxIns                 = field(init=False, default=ContextInstance)
 
-    @staticmethod
-    def build(ops:None|CtxIns|list[ModuleComponents]=None):
-        """ Create the empty context instance,
-        constructing the operator bindings if necessary
-        """
-        raise DeprecationWarning()
-        if ops is None:
-            return ContextSet()
-
-        if isinstance(ops, CtxInt.ContextInstance_i):
-            return ContextSet(_operators=ops)
-
-        assert(isinstance(ops, list)), ops
-        # Get Flat List of Operator Sentences:
-        operators = [y for x in ops for y in x.operators]
-        # Build the CtxInst data dict:
-        op_dict = {str(x) : x[-1] for x in operators}
-        # Add any sugar forms:
-        op_dict.update({x[-1]._acab_operator_sugar : x[-1] for x in operators if hasattr(x[-1], "_acab_operator_sugar")})
-
-        # TODO abstract building ctxinst's to the set
-        instance = ContextInstance(op_dict, exact=True)
-        # TODO add sugar names from config
-        return ContextSet(_operators=instance)
 
     def subctx(self, selection:int|list[CtxIns|UUID]=None, *, val_binds:dict[str,Value]=None, node_binds:dict[str, Node]=None) -> CtxSet:
         """

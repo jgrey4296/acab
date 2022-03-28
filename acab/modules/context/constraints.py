@@ -53,7 +53,7 @@ class ConstraintMeta(type(Protocol)):
                 break
 
 
-        return Super(ConstraintMeta, cls).__call__(word, tests)
+        return super(ConstraintMeta, cls).__call__(word, tests)
 
 
 @dataclass(frozen=True)

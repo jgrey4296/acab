@@ -13,6 +13,7 @@ from acab.core.decorators.semantic import (BuildCtxSetIfMissing,
                                                RunDelayedCtxSetActions)
 from acab.interfaces.semantic import (StatementSemantics_i,
                                       SemanticSystem_i)
+from acab.interfaces.handler_system import HandlerOverride
 from acab.core.semantics import basic
 
 from acab.error.semantic import AcabSemanticException
@@ -36,7 +37,7 @@ class BasicSemanticSystem(basic.SemanticSystem, SemanticSystem_i):
 
     _default_sieve : ClassVar[list[Callable]] = [
         lambda x: x if isinstance(x, str) else None,
-        lambda x: x.signal if isinstance(x, SemanticSystem_i.HandlerOverride) else None,
+        lambda x: x.signal if isinstance(x, HandlerOverride) else None,
         lambda x: str(x.data[SEM_HINT]) if SEM_HINT in x.data else None,
         lambda x: str(x.type)
     ]
@@ -72,7 +73,7 @@ class BasicSemanticSystem(basic.SemanticSystem, SemanticSystem_i):
             if struct is None:
                 struct = self
 
-            if isinstance(instruction, SemanticSystem_i.HandlerOverride):
+            if isinstance(instruction, HandlerOverride):
                 data.update(instruction.data)
                 instruction = instruction.value
 

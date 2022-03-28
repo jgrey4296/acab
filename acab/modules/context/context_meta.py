@@ -26,6 +26,7 @@ from acab.core.data.util import name_sieve_fns
 from acab.core.decorators.util import cache
 from acab.core.util.singletons import SingletonMeta
 from acab.error.base import AcabBasicException
+from acab.interfaces import context as CtxInt
 from acab.interfaces.sieve import AcabSieve
 from acab.modules.context.context_instance import ContextInstance
 
@@ -60,16 +61,18 @@ class ContextMeta(ProtocolMeta):
     def __init__(cls, name:str, bases:tuple[type, ...], data:dict[str,Any]):
         super(ContextMeta, cls).__init__(name, bases, data)
 
-    def __call__(cls, ops:None|CtxIns|list[ModuleComponents]=None):
+    def __call__(cls, ops:None|CtxIns|list[ModuleComponents]=None, **kwargs):
         """
         The Meta Constructor for ContextSets,
         to construct operator bindings if necessary
         """
         if ops is None:
-            return super(ContextMeta, cls).__call__()
+            return super(ContextMeta, cls).__call__(**kwargs)
 
+        assert('_operators' not in kwargs)
         if isinstance(ops, CtxInt.ContextInstance_i):
-            return super(ContexMeta, cls).__call__(_operators=ops)
+            kwargs['_operators'] = ops
+            return super(ContextMeta, cls).__call__(**kwargs)
 
         assert(isinstance(ops, list)), ops
         # Get Flat List of Operator Sentences:
@@ -84,5 +87,6 @@ class ContextMeta(ProtocolMeta):
         # TODO add sugar names from config
 
         # Build the actual value
-        new_obj = super(ContextMeta, cls).__call__(_operators=instance)
+        kwargs['_operators'] = instance
+        new_obj = super(ContextMeta, cls).__call__(**kwargs)
         return new_obj

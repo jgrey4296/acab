@@ -112,8 +112,10 @@ class HandlerSystem(HS.HandlerSystem_i):
             if is_override and not is_passthrough and not key_match:
                 logging.warning(f"Missing Override Handler: {self.__class__} : {key}")
                 continue
+            if key is None:
+                continue
 
-            assert(isinstance(key, str) )
+            assert(isinstance(key, str))
             if key_match and bool(self.handler_specs[key]) and self.handler_specs[key].verify(value):
                 # TODO return the handler_spec *if* one of its handler's verifies the instruction
                 return self.handler_specs[key]

@@ -59,18 +59,12 @@ class ContextFailState_d:
     node      : None | Node = field()
 
 class _Constraint_p(Protocol):
-    @staticmethod
-    @abc.abstractmethod
-    def build(word:Value, operators:CtxIns, *, sieve:None|list[GenFunc]=None) -> Constraint_i: pass
     @abc.abstractmethod
     def test(self, node:Node, ctx:CtxIns) -> None: pass
 
 class ContextSet_i(Hashable, Iterable[CtxIns], Protocol):
     _operators : CtxIns
 
-    @staticmethod
-    @abc.abstractmethod
-    def build(ops:None|CtxIns|list[ModuleComponents]=None) -> CtxSet: pass
     @abc.abstractmethod
     def fail(self, instance:CtxIns, word:Value, node:Node, query:Sen) -> None: pass
     @abc.abstractmethod

@@ -41,9 +41,9 @@ TYPE_CLASS_HEAD = s_key(config.prepare("Symbols", "TYPE_CLASS")())
 FUNC_HEAD       = s(pp.Word(config.prepare("Symbols", "FUNC")()))
 
 # TODO make these registrations
-TYPE_DEFINITION     = Sentence.build([TYPE_DEF_S])
-SUM_DEFINITION      = Sentence.build([SUM_DEF_S])
-OPERATOR_DEFINITION = Sentence.build([OP_DEF_S])
+TYPE_DEFINITION     = Sentence([TYPE_DEF_S])
+SUM_DEFINITION      = Sentence([SUM_DEF_S])
+OPERATOR_DEFINITION = Sentence([OP_DEF_S])
 # TODO TYPE CLASS
 
 STRUCT_HEAD.set_name("StructHead")

@@ -85,35 +85,33 @@ def build_action(s, loc, toks):
 #--------------------
 def build_rule(s, loc, toks, sem_hint=None):
     # Get Conditions
+    structure = []
+
     if EXu.QUERY_S in toks:
         query = toks[EXu.QUERY_S]
         assert(isinstance(query, ProductionContainer))
+        structure.append(query.copy(name=EXu.QUERY_S))
     else:
-        query = None
+        structure.append(EXu.QUERY_S)
 
     # Get Transform
     if EXu.TRANSFORM_S in toks:
         transform = toks[EXu.TRANSFORM_S]
         assert(isinstance(transform, ProductionContainer))
+        structure.append(transform.copy(name=EXu.TRANSFORM_S))
     else:
-        transform = None
+        structure.append(EXu.TRANSFORM_S)
 
     # Get Action
     if EXu.ACTION_S in toks:
         action = toks[EXu.ACTION_S]
         assert(isinstance(action, ProductionContainer))
+        structure.append(action.copy(name=EXu.ACTION_S))
     else:
-        action = None
-
-    structure = {
-        EXu.QUERY_COMPONENT     : query,
-        EXu.TRANSFORM_COMPONENT : transform,
-        EXu.ACTION_COMPONENT    : action
-        }
+        structure.append(EXu.ACTION_S)
 
     if sem_hint is None:
         sem_hint = EXu.RULE_SEM_HINT
-
 
     rule = ProductionStructure(structure,
                                data={SEMANTIC_HINT: sem_hint,

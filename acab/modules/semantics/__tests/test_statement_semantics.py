@@ -39,6 +39,7 @@ from acab.modules.semantics.values import (BasicNodeSemantics,
                                            ExclusionNodeSemantics)
 from acab.modules.structures.trie.semantics import BreadthTrieSemantics
 from acab.core.data.factory import ValueFactory
+from acab.core.semantics import basic
 
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 
@@ -66,6 +67,11 @@ PIPELINE_SEM_HINT  = Sentence([config.prepare("SEMANTICS", "PIPELINE")()])
 
 # TODO test verify
 
+class StubAbsSemantic(basic.StatementSemantics, StatementSemantics_i):
+    def __call__(self, ins, semSys, ctxs=None, data=None):
+        raise AcabBasicException("TestAbsSem called")
+
+
 class StatementSemanticTests(unittest.TestCase):
     def test_transform(self):
         """ Check transforms semantics work """
@@ -77,9 +83,7 @@ class StatementSemanticTests(unittest.TestCase):
         ctx_set                             = ContextSet(op_ctx)
         # Add a ContextInst
         init_ctx                            = ctx_set.pop()
-        updated_ctx                         = init_ctx.bind_dict({
-            "x" : AcabValue("test")
-        })
+        updated_ctx                         = init_ctx.bind_dict({"x" : AcabValue("test")})
         ctx_set.push(updated_ctx)
         # Build Transform
         rebind_target                       = AcabValue("y", data={BIND_V: True})
@@ -164,9 +168,6 @@ class StatementSemanticTests(unittest.TestCase):
             def __call__(self, *params, data=None, semSystem=None):
                 side_effect_obj['a'] = params[0]
 
-        class StubAbsSemantic(StatementSemantics_i):
-            def __call__(self, ins, semSys, ctxs=None, data=None):
-                raise AcabBasicException("TestAbsSem called")
 
         def SemHintKey(val, data=None):
             if SEMANTIC_HINT_V in val.data:
@@ -187,7 +188,8 @@ class StatementSemanticTests(unittest.TestCase):
                                             init_handlers=[transform_sem,
                                                            action_sem,
                                                            stub_sem,
-                                                           con_sem])
+                                                           con_sem],
+                                            sieve_fns=[])
 
         # Operator Context
         op_ctx             = ContextInstance(data={"transform" : TestTransform(),
@@ -226,9 +228,6 @@ class StatementSemanticTests(unittest.TestCase):
             def __call__(self, *params, data=None, semSystem=None):
                 side_effect_obj['a'] = params[0]
 
-        class StubAbsSemantic(StatementSemantics_i):
-            def __call__(self, ins, semSys, ctxs=None, data=None):
-                raise AcabException("TestAbsSem called", rest=[str(ins), data])
 
         def SemHintKey(val, data=None):
             if SEMANTIC_HINT_V in val.data:
@@ -238,7 +237,7 @@ class StatementSemanticTests(unittest.TestCase):
 
         # Build Semantics
         node_sem     = BasicNodeSemantics().as_handler(signal="atom")
-        trie_sem     = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem     = BreadthTrieSemantics(init_specs=[], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_handler = trie_sem.as_handler(signal="trie", struct=BasicNodeStruct.build_default())
 
 
@@ -257,7 +256,8 @@ class StatementSemanticTests(unittest.TestCase):
                                                          node_sem,
                                                          trie_handler,
                                                          trie_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)
-                                                         ])
+                                                         ],
+                                          sieve_fns=[])
 
         # Setup operators in context
         trans_instance     = RegexOp()
@@ -274,14 +274,11 @@ class StatementSemanticTests(unittest.TestCase):
                                             rebind=AcabValue("y", data={BIND_V: True}))
         action_sen    = ProductionComponent(Sentence([ "action" ]), params=['y'])
 
-        query     = ProductionContainer([query_sen], data={SEMANTIC_HINT_V: QUERY_SEM_HINT})
-        transform = ProductionContainer([transform_sen], data={SEMANTIC_HINT_V: TRANSFORM_SEM_HINT})
-        action    = ProductionContainer([action_sen], data={SEMANTIC_HINT_V: ACTION_SEM_HINT})
+        query     = ProductionContainer([query_sen], name=QUERY_C, data={SEMANTIC_HINT_V: QUERY_SEM_HINT})
+        transform = ProductionContainer([transform_sen], name=TRANSFORM_C, data={SEMANTIC_HINT_V: TRANSFORM_SEM_HINT})
+        action    = ProductionContainer([action_sen], name=ACTION_C, data={SEMANTIC_HINT_V: ACTION_SEM_HINT})
 
-        the_rule  = ProductionStructure(structure={QUERY_C     : query,
-                                                   TRANSFORM_C : transform,
-                                                   ACTION_C    : action
-                                                   },
+        the_rule  = ProductionStructure([query, transform, action],
                                         data={SEMANTIC_HINT_V: RULE_SEM_HINT})
 
         # insert a sentence into the struct
@@ -302,9 +299,6 @@ class StatementSemanticTests(unittest.TestCase):
             def __call__(self, *params, data=None, semSystem=None):
                 side_effect_obj['a'] = params[0]
 
-        class StubAbsSemantic(StatementSemantics_i):
-            def __call__(self, ins, semSys, ctxs=None, data=None):
-                raise AcabException("TestAbsSem called", rest=[str(ins), data])
 
         def SemHintKey(val, data=None):
             if SEMANTIC_HINT_V in val.data:
@@ -314,7 +308,7 @@ class StatementSemanticTests(unittest.TestCase):
         #
         # Build Semantics
         node_sem    = BasicNodeSemantics().as_handler(signal="atom")
-        trie_sem    = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem    = BreadthTrieSemantics(init_specs=[], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_handler= trie_sem.as_handler(signal="trie",
                                           struct=BasicNodeStruct.build_default())
 
@@ -332,7 +326,8 @@ class StatementSemanticTests(unittest.TestCase):
                                                          node_sem,
                                                          trie_handler,
                                                          trie_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)
-                                                         ])
+                                                         ],
+                                          sieve_fns=[])
 
         # Setup operators in context
         trans_instance     = RegexOp()
@@ -349,14 +344,11 @@ class StatementSemanticTests(unittest.TestCase):
                                             rebind=AcabValue("y", data={BIND_V: True}))
         action_sen    = ProductionComponent(Sentence("action"), params=['y'])
 
-        query     = ProductionContainer([query_sen], data={SEMANTIC_HINT_V: QUERY_SEM_HINT})
-        transform = ProductionContainer([transform_sen], data={SEMANTIC_HINT_V: TRANSFORM_SEM_HINT})
-        action    = ProductionContainer([action_sen], data={SEMANTIC_HINT_V: ACTION_SEM_HINT})
+        query     = ProductionContainer([query_sen], name=QUERY_C, data={SEMANTIC_HINT_V: QUERY_SEM_HINT})
+        transform = ProductionContainer([transform_sen], name=TRANSFORM_C, data={SEMANTIC_HINT_V: TRANSFORM_SEM_HINT})
+        action    = ProductionContainer([action_sen], name=ACTION_C, data={SEMANTIC_HINT_V: ACTION_SEM_HINT})
 
-        the_rule  = ProductionStructure(structure={QUERY_C     : query,
-                                                         TRANSFORM_C : transform,
-                                                         ACTION_C    : action
-                                                         },
+        the_rule  = ProductionStructure([query, transform, action],
                                         data={SEMANTIC_HINT_V: RULE_SEM_HINT})
 
         # insert a sentence into the struct

@@ -69,9 +69,9 @@ class SemanticSystem(HSImpl.HandlerSystem, SI.SemanticSystem_i):
         Caches operators
         """
         if bool(ops) or self._operator_cache is None:
-            ctxset = self.ctx_set.build(ops)
+            ctxset = self.ctx_set(ops)
         else:
-            ctxset = self.ctx_set.build(self._operator_cache)
+            ctxset = self.ctx_set(self._operator_cache)
 
         if ctxset._operators is not None:
             self._operator_cache = ctxset._operators.copy()
@@ -95,7 +95,7 @@ class SemanticSystem(HSImpl.HandlerSystem, SI.SemanticSystem_i):
                 self.register(val)
 
 
-class StructureSemantics(HSImpl.HandlerComponent, SI.StructureSemantics_i):
+class StructureSemantics(HSImpl.HandlerSystem, HSImpl.HandlerComponent, SI.StructureSemantics_i):
     """
     Dependent Semantics rely on the context they are called in to function
     and are built with specific mappings to value semantics

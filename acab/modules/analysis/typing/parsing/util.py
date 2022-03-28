@@ -18,20 +18,20 @@ TYPE_INSTANCE_S = config.prepare("Value.Structure", "TYPE_INSTANCE")()
 
 def make_simple_def(toks):
     value    = toks[0]
-    type_def = TypeDefinition.build([], name=value.name, params=[], data=value.data)
+    type_def = TypeDefinition([], name=value.name, params=[], data=value.data)
     return type_def
 
 def make_record_def(toks):
     # check only atoms and typedefs are in body
     assert(all([isinstance(x, Sentence) for x in toks[:]]))
-    type_def = TypeDefinition.build(toks[:])
+    type_def = TypeDefinition(toks[:])
     return type_def
 
 def make_sum_def(toks):
     # assert all toks are sentences of atoms or type defs
     assert(all([isinstance(x, Sentence) for x in toks[:]]))
     assert(all([isinstance(x[-1], TypeDefinition) for x in toks[:]]))
-    sum_def = SumTypeDefinition.build(toks[:])
+    sum_def = SumTypeDefinition(toks[:])
     return sum_def
 
 def make_op_def(toks):
@@ -42,7 +42,7 @@ def make_op_def(toks):
     if TYU.SYNTAX_BIND_S in toks:
         syntax_bind = toks[TYU.SYNTAX_BIND_S]
 
-    op_def = OperatorDefinition.build([op_params], sugar_syntax=syntax_bind)
+    op_def = OperatorDefinition([op_params], sugar_syntax=syntax_bind)
 
     return op_def
 
@@ -57,8 +57,8 @@ def make_type_dec(toks):
         args = [x[1] if isinstance(x, tuple) else x for x in toks[TYU.ARG_S][:]]
 
     return ValueAnnotation(TYU.TYPE_INSTANCE_S,
-                           Sentence.build(path, params=args,
-                                          data={TYPE_INSTANCE_S: "type.declaration"}))
+                           Sentence(path, params=args,
+                                    data={TYPE_INSTANCE_S: "type.declaration"}))
 
 def make_type_class(toks):
     # TODO assert all toks are operator definitions

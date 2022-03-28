@@ -56,15 +56,6 @@ class Value_i(VSubP.Value_p, Generic[T]):
 
     _defaults : ClassVar[dict[str,Any]] = {}
 
-
-    @staticmethod
-    def build(value: AT.TValCore, *,
-              name:None|str=None,
-              data:None|dict[ValueData, Any]=None,
-              _type:None|Sen_A=None,
-              **kwargs:Any) -> AT.Value[AT.TValCore]:
-        raise DeprecationWarning()
-
     @staticmethod
     def extend_core(*ts:Any) -> None:
         """
@@ -129,7 +120,3 @@ class ValueFactory_i(Protocol):
         logging.debug("Setting Factory basics to: {} and {}", val_fn, sen_fn)
         ValueFactory_i.value_fn = val_fn
         ValueFactory_i.sen_fn   = sen_fn
-
-    @staticmethod
-    @abc.abstractmethod
-    def build(value:AT.TValCore, *args:Any, **kwargs:Any) -> AT.Value[AT.TValCore]: pass

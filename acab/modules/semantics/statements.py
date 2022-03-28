@@ -15,7 +15,8 @@ from acab.interfaces import semantic as SI
 from acab.interfaces import value as VI
 import acab.core.data.instruction as Instr
 from acab.error.semantic import AcabSemanticException
-from acab.modules.context.context_set import ContextSet, MutableContextInstance
+from acab.modules.context.context_set import ContextSet
+from acab.modules.context.context_instance import MutableContextInstance
 from acab.modules.values.binding.binding import bind
 
 from acab.core.semantics import basic

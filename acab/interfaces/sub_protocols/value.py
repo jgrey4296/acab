@@ -52,12 +52,6 @@ class AcabUUID:
     def __hash__(self) -> int:
         return hash(self.UUID)
 
-class AcabBuildable_p(Protocol):
-    @classmethod
-    @abc.abstractmethod
-    def build(cls, *args:Any, **kwargs:Any) -> Any:
-        pass
-
 class AcabFinishable_p(Protocol):
 
     @abc.abstractmethod
@@ -126,13 +120,16 @@ class AcabReducible_p(Protocol):
     to a list of sentences """
 
     @abc.abstractmethod
-    def attach_statement(self, value:Instruction_A) -> Sen_A: pass
-    @abc.abstractmethod
-    def detach_statement(self) -> Tuple[Value_A, list[Instruction_A]]: pass
-    @abc.abstractmethod
     def to_sentences(self) -> list[AT.Sentence]:
         """ Convert to sentences for printing """
         pass
+
+
+class AcabSentenceable_p(Protocol):
+    @abc.abstractmethod
+    def attach_statement(self, value:Instruction_A) -> Sen_A: pass
+    @abc.abstractmethod
+    def detach_statement(self) -> Tuple[Value_A, list[Instruction_A]]: pass
 
     @staticmethod
     @abc.abstractmethod
@@ -150,7 +147,7 @@ class Value_p(ValueBasics_p, ValueMetaData_p, VariableTests_p, Protocol):
     pass
 
 @runtime_checkable
-class Instruction_p(Value_p, Collection[Any], AcabReducible_p, Protocol):
+class Instruction_p(Value_p, Collection[Any], AcabReducible_p, AcabSentenceable_p, Protocol):
     @abc.abstractmethod
     def do_break(self) -> None: pass
     # self.breakpoint = not self.breakpoint #type:ignore[has-type]

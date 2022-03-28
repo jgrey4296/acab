@@ -43,16 +43,4 @@ ValueData     : TypeAlias = str
 
 class ValueFactory(VI.ValueFactory_i, metaclass=SingletonMeta):
     """ Utility Class for building values """
-    @staticmethod
-    def build(*args, **kwargs) -> C:
-        """
-        Idempotent construction.
-        Wrap the provided value in an AcabValue,
-        but only if it isn't an AcabValue already
-        """
-        new_obj = ValueFactory.value(*args, **kwargs)
-        # Pre-initialisation, the ValueFactory value/sen _fns
-        # just return an exception
-        if isinstance(new_obj, Exception):
-            raise new_obj
-        return cast(VI.Value_i, new_obj)
+    pass
