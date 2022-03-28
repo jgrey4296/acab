@@ -16,7 +16,7 @@ DSL_Fragment  = AT.DSL_Fragment
 RewindElement = Tuple[list[Sentence], str]
 
 @dataclass
-class RewindEngineInterface(metaclass=abc.ABCMeta):
+class RewindEngineInterface:
     """
     Describes how an engine can be reverted to a previous state
     """

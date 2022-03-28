@@ -16,7 +16,7 @@ from acab.core.config.config import GET
 from acab.core.data.instruction import ProductionOperator, ActionOperator
 from acab.core.data.sentence import Sentence
 from acab.core.engine.util import applicable, needs_init, prep_op_path, ensure_handler
-from acab.interfaces.dsl import DSL_Fragment
+from acab.interfaces.dsl import DSL_Fragment_i
 from acab.interfaces.module_loader import (ModuleComponents,
                                            ModuleLoader_i)
 from acab.interfaces.printing import Printer_Fragment
@@ -41,7 +41,7 @@ class ModuleLoader(ModuleLoaderBase, ModuleLoader_i):
         base_path      = module.__package__
         # reference_path = MODULE_SPLIT_REG.split(module.__name__)
         queue          = [(base_path, module)]
-        dsl_fragments  : list[DSL_Fragment]     = []
+        dsl_fragments  : list[DSL_Fragment_i]     = []
         semantic_frags : list[Semantic_Fragment]  = []
         printers       : list[Printer_Fragment]   = []
         operators      : list[ProductionOperator] = []
@@ -58,7 +58,7 @@ class ModuleLoader(ModuleLoaderBase, ModuleLoader_i):
             queue               += [(x,y) for x,y in sub_modules if base_path in y.__package__ and "__init__" in y.__file__]
 
             # Get module dsl_fragments
-            available_dsls      =  [y for x,y in mod_contents if applicable(y, DSL_Fragment)]
+            available_dsls      =  [y for x,y in mod_contents if applicable(y, DSL_Fragment_i)]
             dsl_fragments       += [y() if needs_init(y) else y for y in available_dsls]
 
             # Get Semantics
@@ -79,10 +79,10 @@ class ModuleLoader(ModuleLoaderBase, ModuleLoader_i):
 
         # End of while
         result = ModuleComponents(str(module.__package__),
-                                    dsl_fragments,
-                                    semantic_frags,
-                                    printers,
-                                    operators)
+                                  dsl_fragments,
+                                  semantic_frags,
+                                  printers,
+                                  operators)
 
         logging.debug(f"Extracted: {result}")
 

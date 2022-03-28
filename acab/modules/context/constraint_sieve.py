@@ -7,20 +7,21 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 logging = root_logger.getLogger(__name__)
 
-import acab.interfaces.context as CtxInt
 import acab.error.semantic as ASErr
-from acab.core.config import GET
-from acab.core.data.sentence import Sentence
-from acab.core.data.instruction import (ProductionComponent,
-                                                        ProductionOperator)
+import acab.interfaces.context as CtxInt
 from acab import types as AT
+from acab.core.config.config import GET
+from acab.core.data.instruction import ProductionComponent, ProductionOperator
+from acab.core.data.sentence import Sentence
+from acab.interfaces.value import ValueFactory_i as VF
+
 config = GET()
 CONSTRAINT    = config.prepare("Value.Structure", "CONSTRAINT")()
 TYPE_INSTANCE = config.prepare("Value.Structure", "TYPE_INSTANCE")()
 ATOM          = config.prepare("Data", "TYPE_BOTTOM_NAME")()
 
 
-TYPE_OP_SEN = Sentence.build(["τ="])
+TYPE_OP_SEN = VF.sen(["τ="])
 
 default_sieve = [
     lambda x: (False, "alpha", [test for test in x.data[CONSTRAINT] if not test.has_var]) if CONSTRAINT in x.data else None,

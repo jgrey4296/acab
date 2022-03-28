@@ -47,7 +47,9 @@ acts = COMMA | PC.COLON | TILDE
 
 # TO BE HOT LOADED:
 HOTLOAD_VALUE = pp.Forward()
+HOTLOAD_VALUE.set_name('hotload_value')
 HOTLOAD_BIND = pp.Forward()
+HOTLOAD_BIND.set_name('hotload_bind')
 
 Time_VALBIND = (HOTLOAD_VALUE(VALUE_S) | HOTLOAD_BIND(BIND_S)) + PU.op(QUESTION)
 

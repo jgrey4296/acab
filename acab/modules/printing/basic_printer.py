@@ -7,6 +7,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 from acab.core.config.config import ConfigSpec
 from acab.core.data import instruction as PA
 from acab.interfaces.printing import PrintSystem_i
+from acab.interfaces import handler_system as HS
 from acab.interfaces.value import (Sentence_i, Value_i)
 from acab.core.data.instruction import Instruction
 from acab.core.data.default_structure import SEMANTIC_HINT
@@ -22,7 +23,7 @@ class BasicPrinter(basic.PrintSystemImpl, PrintSystem_i):
     """
     _default_sieve       : ClassVar[list[Callable]] = [
         # override tuple : 1 -> 1 : any
-        lambda x              : x.signal if isinstance(x, PrintSystem_i.HandlerOverride) else None,
+        lambda x              : x.signal if isinstance(x, HS.HandlerOverride) else None,
         # symbol         : m -> m : any
         lambda x              : "SYMBOL" if isinstance(x, ConfigSpec) else None,
         # enum

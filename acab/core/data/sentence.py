@@ -53,7 +53,8 @@ class Sentence(SSI.SentenceProtocolsImpl, VI.Sentence_i, metaclass=ValueMeta):
     def _preprocess(cls, *args, **kwargs):
         value = args[0]
         assert(isinstance(value, Iterable))
-        return [ValueMeta._bottom(x) for x in value]
+        processed = [VI.ValueFactory_i.value(x) for x in value]
+        return processed
 
     def match(self, sen:Sen_A) -> list[Tuple[Value_A, Value_A]]:
         """ Match a target sentence's variables to self's target

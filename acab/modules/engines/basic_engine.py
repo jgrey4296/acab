@@ -20,8 +20,8 @@ from acab.core.engine.engine_base import AcabEngineImpl
 from acab.core.engine.module_loader import ModuleLoader
 from acab.core.parsing.pyparse_dsl import PyParseDSL
 from acab.error.base import AcabException
-from acab.interfaces.dsl import DSL_Builder_i, DSL_Fragment
-from acab.interfaces.engine import AcabEngine_i, _AcabEngine_d
+from acab.interfaces.dsl import DSL_Builder_i, DSL_Fragment_i
+from acab.interfaces.engine import AcabEngine_i
 from acab.interfaces.printing import PrintSystem_i
 from acab.interfaces.semantic import SemanticSystem_i
 from acab.interfaces.value import Sentence_i, Value_i
@@ -47,6 +47,14 @@ class AcabBasicEngine(AcabEngineImpl, AcabEngine_i):
         self.load_modules(*self.modules)
         self.semantics.register({"printer": self.printer})
         self.initialised = True
+
+    def __repr__(self):
+        clsname = self.__class__.__name__
+        parser_base = self.parser.__class__.__name__
+        semantics = repr(self.semantics)
+        printer = repr(self.printer)
+        modules = repr(self._module_loader)
+        return f"{clsname}(\n-- ({parser_base})\n-- {semantics}\n-- {printer}\n-- {modules}\n)"
 
     @EnsureEngineInitialised
     @MaybeBuildOperatorCtx
@@ -77,14 +85,6 @@ class AcabBasicEngine(AcabEngineImpl, AcabEngine_i):
         if len(self._cached_bindings) > self._cache_size:
             self._cached_bindings.pop(0)
 
-
-    def __repr__(self):
-        clsname = self.__class__.__name__
-        parser_base = self.parser.__class__.__name__
-        semantics = repr(self.semantics)
-        printer = repr(self.printer)
-        modules = repr(self._module_loader)
-        return f"{clsname}(\n-- ({parser_base})\n-- {semantics}\n-- {printer}\n-- {modules}\n)"
 
     @staticmethod
     def from_sentences(self, sens):

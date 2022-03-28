@@ -27,7 +27,7 @@ from acab.core.decorators.util import cache
 from acab.core.util.singletons import SingletonMeta
 from acab.error.base import AcabBasicException
 from acab.interfaces.sieve import AcabSieve
-from acab.modulies.context.context_instance import ContextInstance
+from acab.modules.context.context_instance import ContextInstance
 
 logging        = root_logger.getLogger(__name__)
 

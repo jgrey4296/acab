@@ -53,7 +53,7 @@ class BasicTestAct(PO.ActionOperator):
 
 
 
-class StatementTests(unittest.TestCase):
+class ComponentTests(unittest.TestCase):
     """ Test the construction of production abstractions """
 
     @classmethod
@@ -103,20 +103,6 @@ class StatementTests(unittest.TestCase):
         self.assertIsInstance(val, Instruction_i)
         self.assertEqual(len(val.params), 2)
         self.assertTrue(all([isinstance(x, Value_i) for x in val.params]))
-
-
-    def test_container_init(self):
-        val = PO.ProductionContainer([])
-        self.assertIsInstance(val, Instruction_i)
-        self.assertIsInstance(val, PO.ProductionContainer)
-        self.assertEqual(val.type, Sentence([DS.CONTAINER_PRIM]))
-
-
-    def test_structure_init(self):
-        val = PO.ProductionStructure({"test": "a", "struct": "b"})
-        self.assertIsInstance(val, Instruction_i)
-        self.assertIsInstance(val, PO.ProductionContainer)
-        self.assertEqual(val.type, Sentence([DS.STRUCT_PRIM]))
 
 
     def test_component_op(self):
@@ -186,6 +172,3 @@ class StatementTests(unittest.TestCase):
         self.assertEqual(comp.params, comp2[1].params)
         self.assertEqual(comp.rebind, comp2[1].rebind)
 
-    @unittest.skip
-    def test_container_to_sentences(self):
-        pass

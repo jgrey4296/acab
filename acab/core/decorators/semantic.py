@@ -99,7 +99,7 @@ def OperatorSugar(sugar:str, prefix=None):
     Stores in pseudo-sentence form: _:{sugar}
     """
     def wrapped(cls:ProductionOperator):
-        psugar : AT.pseudo = "" #"_:"
+        psugar : str = "" #"_:"
         if prefix is not None:
             psugar += prefix
             psugar += "."

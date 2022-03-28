@@ -29,7 +29,7 @@ from acab.core.data.instruction import (Instruction, ProductionComponent,
                                         ProductionStructure)
 from acab.core.data.sentence import Sentence
 from acab.core.data.value import AcabValue
-from acab.interfaces.handler_system import Handler
+from acab.interfaces.handler_system import Handler_i
 from acab.modules.printing import default
 from acab.modules.printing.basic_printer import BasicPrinter
 
@@ -79,6 +79,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
                                               Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")],
+                               sieve_fns=[],
                                settings={"MODAL": "exop"})
 
         result = sem_sys.pprint(component)
@@ -96,6 +97,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                               Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")],
+                               sieve_fns=[],
                                settings={"MODAL": "exop"})
 
         result = sem_sys.pprint(component)
@@ -114,6 +116,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
                                               Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")],
+                               sieve_fns=[],
                                settings={"MODAL": "exop"})
 
         result = sem_sys.pprint(component)
@@ -131,6 +134,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               Printers.ImplicitContainerPrinter().as_handler(signal="CONTAINER"),
                                               Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")],
+                               sieve_fns=[],
                                settings={"MODAL": "exop"})
 
         # combine some queries together
@@ -155,6 +159,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                               Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")],
+                               sieve_fns=[],
                                settings={"MODAL": "exop"})
 
         # parse a rule
@@ -178,6 +183,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               Printers.ModalPrinter().as_handler(signal="MODAL"),
                                               Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS")
                                               ],
+                               sieve_fns=[],
                               settings={"MODAL": "exop"})
 
         # parse a rule
@@ -207,6 +213,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               Printers.ModalPrinter().as_handler(signal="MODAL"),
                                               Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
                                               ],
+                               sieve_fns=[],
                               settings={"MODAL": "exop"})
 
         query = QP.query_statement.parse_string("""statement(::γ):
@@ -234,6 +241,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               Printers.ModalPrinter().as_handler(signal="MODAL"),
                                               Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
                                               ],
+                               sieve_fns=[],
                                settings={"MODAL": "exop"})
 
         query = TP.transform_statement.parse_string("""statement(::χ):
@@ -262,6 +270,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")
                                               ],
+                               sieve_fns=[],
                                settings={"MODAL": "exop"})
 
         action = AP.action_definition.parse_string("""statement(::α):

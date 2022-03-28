@@ -50,5 +50,9 @@ def modal_config(self):
     # pylint: disable=unused-variable
     except AssertionError as err:
         logging.exception("Inconsistent Modality defined: {}".format(name))
+        raise err from err
     except KeyError as err:
         logging.exception("Missing Key found")
+        raise err from err
+
+    logging.info("Modality Load Completed")

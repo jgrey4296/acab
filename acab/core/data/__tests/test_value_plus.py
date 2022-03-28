@@ -56,7 +56,6 @@ class AcabValueTests(unittest.TestCase):
         self.assertEqual(sen[-1].value, "e")
         self.assertIsInstance(sen[-1].value, str)
         copied = sen.attach_statement(value)
-
         self.assertTrue(AcabValue("testval") in copied[-1].tags)
         self.assertIsInstance(copied[-1], Instruction)
 

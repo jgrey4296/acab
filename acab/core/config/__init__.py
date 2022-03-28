@@ -24,4 +24,3 @@ This ensures that missing values error at startup
 [Print.Patterns]
 
 """
-from .config import GET

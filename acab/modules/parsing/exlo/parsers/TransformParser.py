@@ -19,7 +19,9 @@ logging = root_logger.getLogger(__name__)
 
 # Hotloaded Transform Operators
 HOTLOAD_TRANS_OP         = pp.Forward()
+HOTLOAD_TRANS_OP.set_name("hotload_trans_op")
 HOTLOAD_TRANS_STATEMENTS = pp.Forward()
+HOTLOAD_TRANS_STATEMENTS.set_name("hotload_trans_statements")
 
 rebind                   = ARROW + SEN_NO_MODAL
 rebind.set_name("rebind")

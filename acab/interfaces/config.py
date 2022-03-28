@@ -9,6 +9,8 @@ from enum import Enum
 from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator, Container,
                     Mapping, Match, MutableMapping, Protocol, Sequence, Tuple,
                     TypeAlias, TypeVar, cast, runtime_checkable)
+from logging import Logger, getLogger
+
 
 from acab import types as AT
 
@@ -27,6 +29,7 @@ class ConfigSpec_d:
     as_enum : bool               = field(default=False)
     as_bool : bool               = field(default=False)
 
+
     def __hash__(self) -> int:
         return hash(f"{self.section}:{self.key}")
 
@@ -34,10 +37,11 @@ class ConfigSpec_d:
 
 @runtime_checkable
 class Config_i(Protocol):
-    suffix : ClassVar[str] = ".config"
+    suffix      : ClassVar[str]    = ".config"
+    root_logger : ClassVar[Logger] = getLogger('acab')
 
     @abc.abstractmethod
-    def __call__(self) -> Any: pass
+    def __call__(self, lookup) -> Any: pass
     @abc.abstractmethod
     def __contains__(self, key:str|Enum) -> bool: pass
     @abc.abstractmethod

@@ -54,15 +54,17 @@ class ConfigTests(unittest.TestCase):
         value = config.value(spec)
         self.assertEqual(value, "__root")
 
-
-    def test_modal_spec(self):
-        """ Check modal fields exist """
+    def test_config_value_2(self):
+        """
+        Check values can be retrieved
+        """
         config = AcabConfig()
-        self.assertTrue(config.enums)
-        self.assertTrue(config.defaults)
-        self.assertTrue(config.printing_extension)
-        self.assertTrue(config.syntax_extension)
-        # TODO Check values *in* the modal structures
+        spec = config.prepare("Value.Structure", "BIND")
+        value = config.value(spec)
+        self.assertIsNotNone(value)
+        self.assertEqual(value, "BIND")
+
+
 
     def test_config_prepare(self):
         """ Check values can be prepared """
@@ -83,14 +85,3 @@ class ConfigTests(unittest.TestCase):
         with self.assertRaises(AcabConfigException):
             config.prepare("blah", "bloo")
 
-    def test_modal_spec_missing(self):
-        """
-        Check config errors when you try to use missing modal values
-        """
-        config = AcabConfig()
-        with self.assertRaises(Exception):
-            config.enums['blah']
-
-
-    # -> ClosedSet[Values, Node]
-    # Creation,

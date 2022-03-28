@@ -9,7 +9,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 from acab import types as AT
 from acab.core.decorators.engine import EnsureEngineInitialised
 from acab.error.semantic import AcabSemanticException
-from acab.interfaces.engine import AcabEngine_i, _AcabEngine_d
+from acab.interfaces.engine import AcabEngine_i
 from acab.interfaces.printing import PrintSystem_i
 
 logging = root_logger.getLogger(__name__)

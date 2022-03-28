@@ -4,11 +4,12 @@ from acab.core.config.config import AcabConfig
 from acab.core.data.sentence import Sentence
 from acab.core.printing import default_symbols as DSYM
 from acab.core.data import default_structure as DS
+from acab.interfaces.value import ValueFactory_i as VF
 
 config = AcabConfig()
 
-STRING_SEN = Sentence.build([DS.STRING_PRIM])
-REGEX_SEN  = Sentence.build([DS.REGEX_PRIM])
+STRING_SEN = VF.sen([DS.STRING_PRIM])
+REGEX_SEN  = VF.sen([DS.REGEX_PRIM])
 
 all_modals = config.prepare("MODAL", as_list=True)
 

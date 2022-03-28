@@ -31,7 +31,9 @@ logging = root_logger.getLogger(__name__)
 # eg: 1[a.b.$x]3?
 # to capture a condition of how many $x's are permissible
 HOTLOAD_QUERY_SEN = pp.Forward()
+HOTLOAD_QUERY_SEN.set_name("hotload_query_sen")
 HOTLOAD_QUERY_OP  = pp.Forward()
+HOTLOAD_QUERY_OP.set_name("hotload_query_op")
 
 assignment        = PU.BIND + COLON + SENTENCE
 assignmentList    = PU.DELIMIST(assignment, delim=COMMA)

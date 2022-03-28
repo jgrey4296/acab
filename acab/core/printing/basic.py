@@ -30,7 +30,7 @@ Sentence         : TypeAlias = AT.Sentence
 ModuleComponents : TypeAlias = AT.ModuleComponents
 GenFunc          : TypeAlias = AT.fns.GenFunc
 
-class PrintSystemImpl(PI.PrintSystem_i):
+class PrintSystemImpl(HS.HandlerSystem, PI.PrintSystem_i):
 
     def __post_init__(self, specs, handlers, sieve_fns) -> None: #type:ignore[no-untyped-def]
         # TODO abstract this into a method?
@@ -58,13 +58,13 @@ class PrintSystemImpl(PI.PrintSystem_i):
         Handler's return a list of values to go onto stack.
         """
         remaining = [[x, self.separator] for x in args[:-1]] + [args[-1]] #type:ignore
-        result = ""
+        result = []
         while bool(remaining):
             current = remaining.pop(0)
             spec    = None
             data    : dict[str, Any] = {}
             if isinstance(current, str):
-                result += current
+                result.append(current)
                 continue
             elif isinstance(current, list):
                 remaining = current + remaining
@@ -72,7 +72,7 @@ class PrintSystemImpl(PI.PrintSystem_i):
             else:
                 spec = self.lookup(current)
 
-            if isinstance(current, HS.HandlerOverride):
+            if isinstance(current, HSi.HandlerOverride):
                 data.update(current.data)
                 current = current.value
 
@@ -89,7 +89,7 @@ class PrintSystemImpl(PI.PrintSystem_i):
             remaining = handled + remaining
 
 
-        return result
+        return "".join(result)
 
 
     def extend(self, mods:list[ModuleComponents]) -> None:
@@ -102,7 +102,7 @@ class PrintSystemImpl(PI.PrintSystem_i):
                 self.register(val) #type:ignore[no-untyped-call]
 
 
-class PrintSemanticsImpl(PI.PrintSemantics_i):
+class PrintSemanticsImpl(HS.HandlerComponent, PI.PrintSemantics_i):
 
     transforms : list[GenFunc]
 

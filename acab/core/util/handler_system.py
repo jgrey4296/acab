@@ -113,8 +113,8 @@ class HandlerSystem(HS.HandlerSystem_i):
                 logging.warning(f"Missing Override Handler: {self.__class__} : {key}")
                 continue
 
-            assert(isinstance(key, str))
-            if bool(self.handler_specs[key]) and self.handler_specs[key].verify(value):
+            assert(isinstance(key, str) )
+            if key_match and bool(self.handler_specs[key]) and self.handler_specs[key].verify(value):
                 # TODO return the handler_spec *if* one of its handler's verifies the instruction
                 return self.handler_specs[key]
 
@@ -129,7 +129,7 @@ class HandlerSystem(HS.HandlerSystem_i):
 
         if isinstance(new_signal, bool) and not new_signal:
             new_signal = PASSTHROUGH
-        else:
+        elif isinstance(new_signal, bool) and bool(new_signal):
             raise TypeError("new_signal should be False or a string", new_signal)
 
         if bool(data):

@@ -7,7 +7,7 @@ from typing import cast, ClassVar, TypeVar, Generic, TypeAlias
 from typing import TYPE_CHECKING, Protocol, TypeGuard
 from typing import Final, final, overload, Protocol, runtime_checkable
 
-from acab.inerfaces.module_laoder import ModueLoader_i
+from acab.interfaces.module_loader import ModuleLoader_i
 
 if TYPE_CHECKING:
     # tc only imports
@@ -22,7 +22,7 @@ class ModuleLoaderBase(ModuleLoader_i):
 
     def __repr__(self) -> str:
         loaded_modules = ", ".join(list(self.loaded_modules.keys()))
-        return f"ModuleLoader({loaded_modules})"
+        return f"<ModuleLoader({loaded_modules})>"
 
     def __iter__(self) -> Iterator[ModuleComponents]:
         return iter(self.loaded_modules.values())

@@ -26,8 +26,17 @@ ParserElement = AT.Parser
 
 config = AcabConfig()
 
+HOTLOAD_VALUES = pp.Forward()
+HOTLOAD_VALUES.set_name('hotload_values')
+HOTLOAD_HEAD_ANNOTATIONS = pp.Forward()
+HOTLOAD_HEAD_ANNOTATIONS.set_name('hotload_head_annotations')
+HOTLOAD_POST_ANNOTATIONS = pp.Forward()
+HOTLOAD_POST_ANNOTATIONS.set_name('hotload_post_annotations')
+
 Fwd_ArgList = pp.Forward()
+Fwd_ArgList.set_name('fwd_arglist')
 Fwd_TagList = pp.Forward()
+Fwd_TagList.set_name('fwd_taglist')
 
 def DELIMIST(expr, delim=None, stopOn=None):
     # TODO deprecate
@@ -114,9 +123,6 @@ def STATEMENT_CONSTRUCTOR(annotation_p:ParserElement,
     return parser.ignore(PConst.COMMENT)
 
 
-HOTLOAD_VALUES = pp.Forward()
-HOTLOAD_HEAD_ANNOTATIONS = pp.Forward()
-HOTLOAD_POST_ANNOTATIONS = pp.Forward()
 
 # Basic Parsers
 OPERATOR_SUGAR = pp.Word(PDSYM.OPERATOR_SYNTAX)

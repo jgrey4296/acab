@@ -57,18 +57,9 @@ class Instruction(SentenceProtocolsImpl, VI.Instruction_i, metaclass=ValueMeta):
     _defaults : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE: DS.CONTAINER_PRIM}
 
 
-    @classmethod
-    def build(cls, value:T, /, *,
-              name:None|str=None,
-              data:None|dict[ValueData, Any]=None,
-              params:None|list['Value_A|str']=None,
-              tags:None|list['Value_A|str']=None,
-              _type:'None|str|Sen_A'=None,
-              **kwargs) -> Value_A:
-        raise DeprecationWarning()
 
-        if name is None:
-            name = f"{cls.__module__}.{cls.__qualname__}"
+    def copy(self, **kwargs) -> Instruction_A:
+        return replace(self, uuid=uuid1(), **kwargs)
 
     def __repr__(self):
         return "<{}::{}>".format(self.name, str(self.type))
@@ -175,19 +166,9 @@ class ProductionComponent(Instruction):
     # TODO shift this into params
     rebind  : 'None|Value_A' = field(default=None)
 
-    @classmethod
-    def build(cls, value:T, /, *,
-              name:None|str=None,
-              data:None|dict[ValueData, Any]=None,
-              params:None|list['Value_A|str']=None,
-              tags:None|list['Value_A|str']=None,
-              _type:'None|str|Sen_A'=None,
-              **kwargs) -> Value_A:
-        raise DeprecationWarning()
-        if name is None:
-            name = f"{cls.__module__}.{cls.__qualname__}"
 
-        assert(isinstance(value, VI.Sentence_i))
+    def __post_init__(self):
+        assert(isinstance(self.value, VI.Sentence_i)), self.value
 
     def __len__(self):
         return 1
@@ -251,24 +232,10 @@ class ProductionContainer(Instruction):
     """ Production Container: An applicable statement of multiple component clauses """
     _defaults : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE: DS.CONTAINER_PRIM}
 
-    @classmethod
-    def build(cls, value:T, /, *,
-              name:None|str=None,
-              data:None|dict[ValueData, Any]=None,
-              params:None|list['Value_A|str']=None,
-              tags:None|list['Value_A|str']=None,
-              _type:'None|str|Sen_A'=None,
-              **kwargs) -> Value_A:
-        raise DeprecationWarning()
-
-        if name is None:
-            name = f"{cls.__module__}.{cls.__qualname__}"
-
-        assert(isinstance(value, list))
-
     def __repr__(self):
         # clauses = ";".join([repr(x) for x in self.clauses])
         return "<{}::{}>".format(self.name, str(self.type))
+
     @cache
     def __len__(self):
         return len(self.clauses)
@@ -309,25 +276,21 @@ class ProductionStructure(ProductionContainer):
     A ProductionContainer, supplemented by a dictionary
     to group the clauses
     """
-    structure: dict[str, Container] = field(default_factory=dict)
+    structure: dict[str, Container] = field(init=False, default_factory=dict)
 
     _defaults : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE: DS.STRUCT_PRIM}
 
 
     @classmethod
-    def build(cls, value:dict[str, T], /, *,
-              name:None|str=None,
-              data:None|dict[ValueData, Any]=None,
-              params:None|list['Value_A|str']=None,
-              tags:None|list['Value_A|str']=None,
-              _type:'None|str|Sen_A'=None,
-              **kwargs) -> Value_A:
-        raise DeprecationWarning()
-        if name is None:
-            name = f"{cls.__module__}.{cls.__qualname__}"
+    def _preprocess(cls, *args, **kwargs):
+        value = args[0]
+        assert(isinstance(value, Iterable))
+        # TODO improve this
+        return [ProductionContainer([], name=x) for x in value]
 
-        assert(isinstance(value, dict))
-        clauses = list(value.values())
+    def __post_init__(self):
+        self.structure.update({x.key() : x for x in self.value})
+
 
     @cache
     def __repr__(self):
@@ -345,9 +308,9 @@ class ProductionStructure(ProductionContainer):
     def __getitem__(self, key):
         return self.structure[key]
 
-
     def __contains__(self, key):
-        return key in self.structure and bool(self.structure[key])
+        return key in self.structure
+
     @property
     def keys(self):
         return self.structure.keys()

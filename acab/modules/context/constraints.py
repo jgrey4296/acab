@@ -9,7 +9,7 @@ logging = root_logger.getLogger(__name__)
 
 import acab.error.semantic as ASErr
 import acab.interfaces.context as CtxInt
-from acab.core.config import GET
+from acab.core.config.config import GET
 from acab.core.data.instruction import ProductionComponent, ProductionOperator
 from acab.core.data.sentence import Sentence
 from acab.interfaces.sieve import AcabSieve
@@ -31,7 +31,7 @@ Node        = 'AcabNode'
 
 class ConstraintMeta(type(Protocol)):
     def __init__(cls, name:str, bases:tuple[type, ...], data:dict[str,Any]):
-        super(ContextMeta, cls).__init__(name, bases, data)
+        super(ConstraintMeta, cls).__init__(name, bases, data)
 
     def __call__(cls, word, *, operators=None, sieve_fns:list[Callable]=None):
         if operators is not None:
@@ -62,11 +62,6 @@ class ConstraintCollection(CtxInt.Constraint_i, metaclass=ConstraintMeta):
     separated into subtypes """
     sieve           : ClassVar[list[Callable]] = AcabSieve(default_sieve)
     operators       : ClassVar[CtxIns]         = None
-
-    @staticmethod
-    def build(word, *, operators=None, sieve_fns:list[Callable]=None):
-        """ Run the sieve on a word to generate the test set groupings """
-        raise DeprecationWarning()
 
 
     def test(self, node, ctx):

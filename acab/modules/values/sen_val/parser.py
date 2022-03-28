@@ -13,6 +13,7 @@ from acab.modules.analysis.typing import util as TYU
 from acab.core.config.config import AcabConfig
 
 HOTLOAD_SENTENCE = pp.Forward()
+HOTLOAD_SENTENCE.set_name("hotload_sentence")
 
 sen_value = pp.Literal("[[").suppress() + HOTLOAD_SENTENCE("internal_sentence") + pp.Literal("]]").suppress()
 

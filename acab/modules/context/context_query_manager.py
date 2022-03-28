@@ -13,7 +13,7 @@ from uuid import UUID, uuid1
 
 import acab.error.semantic as ASErr
 import acab.interfaces.context as CtxInt
-from acab.core.config import GET
+from acab.core.config.config import GET
 from acab.core.data.instruction import ProductionComponent, ProductionContainer
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces.value import Sentence_i
@@ -59,7 +59,7 @@ class ContextQueryManager:
     def __post_init__(self):
         sen = self.query_clause
         self.negated = NEGATION_S in sen.data and sen.data[NEGATION_S]
-        constraints = [ConstraintCollection.build(x, operators=self.ctxs._operators) for x in sen]
+        constraints = [ConstraintCollection(x, operators=self.ctxs._operators) for x in sen]
         self.constraints.extend(constraints)
         self._initial_ctxs = [x.uuid for x in self.ctxs.active_list()]
 

@@ -19,10 +19,15 @@ from acab.core.parsing.annotation import ValueRepeatAnnotation, ValueAnnotation
 logging             = root_logger.getLogger(__name__)
 # Hotload insertion points:
 HOTLOAD_ANNOTATIONS   = pp.Forward()
+HOTLOAD_ANNOTATIONS.set_name('hotload_annotations')
 HOTLOAD_BAD_HEADS     = pp.Forward()
+HOTLOAD_BAD_HEADS.set_name('hotload_bad_heads')
 HOTLOAD_SEN_ENDS      = pp.Forward()
+HOTLOAD_SEN_ENDS.set_name('hotload_sen_ends')
 HOTLOAD_SEN_HEADS     = pp.Forward()
+HOTLOAD_SEN_HEADS.set_name('hotload_sen_heads')
 HOTLOAD_SEN_POSTS     = pp.Forward()
+HOTLOAD_SEN_POSTS.set_name('hotload_sen_posts')
 
 # Controllable words that can't start a sentence
 BAD_HEADS           = ~(END | HOTLOAD_BAD_HEADS)("Bad Words")

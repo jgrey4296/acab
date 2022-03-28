@@ -18,7 +18,9 @@ from .FactParser import SENTENCE, op_sentence
 logging = root_logger.getLogger(__name__)
 
 HOTLOAD_OPERATORS         = pp.Forward()
+HOTLOAD_OPERATORS.set_name("hotload_operators")
 HOTLOAD_ACTION_STATEMENTS = pp.Forward()
+HOTLOAD_ACTION_STATEMENTS.set_name("hotload_action_statements")
 
 # fact string with the option of binds
 vals = PU.zrm(SENTENCE)(RIGHT_S)
