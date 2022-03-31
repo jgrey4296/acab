@@ -1,13 +1,22 @@
+from __future__ import annotations
+
+import abc
 import importlib
 import logging as logmod
 import re
 from collections import defaultdict
+from dataclasses import InitVar, dataclass, field
 from datetime import datetime
 from enum import Enum
 from os.path import abspath, exists, expanduser, split, splitext
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
+                    Iterable, Iterator, Mapping, Match, MutableMapping,
+                    Protocol, Sequence, Tuple, TypeAlias, TypeGuard, TypeVar,
+                    cast, final, overload, runtime_checkable)
 
 import acab
 import pyparsing as pp
+from acab import types as AT
 
 config = acab.GET()
 
@@ -15,133 +24,15 @@ from acab.core.data.instruction import ProductionOperator, ProductionStructure
 from acab.core.parsing import debug_funcs as DBF
 from acab.modules.repl import ReplParser as RP
 from acab.modules.repl.repl_commander import register
-from acab.modules.repl.util import print_contexts
 
 logging = logmod.getLogger(__name__)
 
 # TODO shift this into config
+ModuleComponents : TypeAlias = AT.ModuleComponents
+
 SPLIT_RE         = re.compile("[ .!?/]")
-ModuleComponents = "ModuleComponents"
-
-@register
-def do_print(self, line):
-    """
-    Print out information on the wm, or a module
-    [wm, module, semantics]
-    """
-    try:
-        params = RP.printer_parser.parse_string(line)
-    except pp.ParseException as err:
-        logging.warning("Bad Print Command")
-        logging.warning(err.markInputline())
-        logging.warning("Use: {RP.printer_parser}")
-        return
-
-    logging.info(f"Printing: {line}")
-    result = []
-    if "wm" in params:
-        # TODO print everything from a query down
-        print(self.state.engine.pprint())
-    elif "mod_target" in params:
-        print("TODO Specific Module Info: ")
-        # TODO print module doc
-        modules: ModuleComponents = self.state.engine._module_loader.loaded_modules.values()
-        modules = [x for x in modules if params['mod_target'] in x.source]
-        print("\n".join([x.source for x in modules]))
-    elif "module" in params:
-        print("Modules: ")
-        modules: ModuleComponents = self.state.engine._module_loader.loaded_modules.values()
-        print("\n".join([x.source for x in modules]))
-    elif "context" in params or "short_context" in params or "context_slice" in params:
-        print_contexts(self, params)
-    elif "semantics" in params:
-        print("Semantic Printing not implemented yet")
-    else:
-        print(f"Print Keywords: {RP.printer_parser}")
-
-@register
-def do_stat(self, line):
-    """
-    Print Stats about the self.
-    ie: Modules/Operators/Pipelines/Layers/Rules....
-    """
-    logging.info(f"Getting Stats: {line}")
-    params = RP.stats_parser.parse_string(line)
-    allow_all = not bool(params)
-    modules: ModuleComponents = self.state.engine._module_loader.loaded_modules.values()
-    # modules
-    if allow_all or "module" in params:
-        print("\n--------------------")
-        print("MODULES: ")
-        print("--------------------")
-        mod_target = modules
-        if 'mod_target' in params:
-            mod_target = [x for x in modules if x.source in params['mod_target']]
-
-        for mod in mod_target:
-            print("\t{}".format(mod))
-        print("--")
-        print("Loaded Modules: {}".format(len(modules)))
-
-    if allow_all or "semantics" in params:
-        print("\n--------------------")
-        print("SEMANTICS:")
-        print("--------------------")
-        semantic = self.state.engine.semantics
-        print("{} : {}".format(semantic.__module__, semantic.__class__.__name__))
-        print("\n", semantic.__doc__, "\n")
-        print(f"{repr(semantic)}\n")
-        print("Handlers: {}".format(len(semantic.handler_specs)))
-        print("\t{}".format("\n\t".join([str(x) for x in semantic.handler_specs.values()])))
-
-        print("----------")
-        mods_with_semantics = [x for x in modules if len(x.semantics) > 0]
-        if bool(mods_with_semantics):
-            print("Module Semantics: ")
-            count = defaultdict(lambda: 0)
-            for mod in mods_with_semantics:
-                print(f"Module: {mod.source}")
-                for frag in mod.semantics:
-                    print(f"{frag}")
-
-    # Operators
-    if allow_all or "operator" in params:
-        print("\n--------------------")
-        print("OPERATORS: ")
-        print("--------------------")
-        count = 0
-        for mod in modules:
-            count += len(mod.operators)
-            for op in mod.operators:
-                print("\t", self.state.engine.pprint(target=[op]))
-
-        print("--")
-        print("Loaded Operators: {}".format(count))
-        # TODO print Context Operator Bindings
-
-
-    if allow_all or "printers" in params:
-        print("\n--------------------")
-        print("PRINTERS:")
-        print("--------------------")
-        printer = self.state.engine.printer
-        print("{} : {}".format(printer.__module__, printer.__class__.__name__))
-        print("\n", printer.__doc__, "\n")
-        print(f"{repr(printer)}\n")
-        print("Handlers: {}".format(len(printer.handler_specs)))
-        print("\t{}".format("\n\t".join([str(x) for x in printer.handler_specs.values()])))
-
-        print("----------")
-        mods_with_printers = [x for x in modules if len(x.printers) > 0]
-        if bool(mods_with_printers):
-            print("Module Printers: ")
-            count = defaultdict(lambda: 0)
-            for mod in mods_with_printers:
-                print(f"Module: {mod.source}")
-                for frag in mod.printers:
-                    print(f"{frag}")
-
-    # TODO Working memory / structures / memory load
+shortcut_config  = config.attr.Module.REPL.shortcuts
+shortcut_pairs   = sorted([(shortcut_config[cmd], cmd) for cmd in shortcut_config._keys])
 
 @register
 def do_parser(self, line):
@@ -183,22 +74,33 @@ def do_parser(self, line):
         print(self.state.engine._dsl.lookup())
 
 
+
+@register
+def do_shortcuts(self, line):
+    """
+    Print the :{kw} shortcut bindings loaded from config
+    """
+    print("Repl Shortcut commands: ")
+    for kw, cmd in shortcut_pairs:
+        print(f"    :{kw:<5} : {cmd}")
+
+
 # Logging Control###############################################################
 @register
 def do_log(self, line):
     """ Change the logging level """
     try:
-        root = root_logger.getLogger('')
-        handler = root.handlers[1]
+        root = logmod.getLogger('')
+        handler = [x for x in root.handlers if isinstance(x, logmod.StreamHandler)][0]
         if bool(line):
-            level = root_logger._nameToLevel[line.upper()]
+            level = logmod._nameToLevel[line.upper()]
             root.setLevel(level)
             handler.setLevel(level)
             print(f"Set Console Log level to: {line.upper()} : {level}")
         else:
             level = handler.level
-            if handler.level in root_logger._levelToName:
-                level = root_logger._levelToName[handler.level]
+            if handler.level in logmod._levelToName:
+                level = logmod._levelToName[handler.level]
             print(f"Console Log Level: {level}")
 
     except KeyError as err:
@@ -231,17 +133,6 @@ def do_filter(self, line):
     else:
         print("No filters set")
 
-
-# Tutorial ####################################################################
-@register
-def do_tutorial(self, line):
-    """
-    Print out a basic tutorial of Acab and this Repl
-    """
-    # Print a section, return to main loop,
-    # if tutorial is called again, continue
-    # if restart is passed in, restart the tutorial
-    return
 
 @register
 def do_acab(self, line):

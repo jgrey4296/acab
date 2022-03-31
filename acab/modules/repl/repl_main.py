@@ -18,7 +18,7 @@ parser.add_argument('--config', action="append", default=["/Volumes/documents/gi
 parser.add_argument('--engine', default="")
 parser.add_argument('-v', '--verbosity', default="WARNING", help="The logging level to use, defaults to WARNING")
 parser.add_argument('-d', '--debug', action="store_true", help="CLI control of parser debugging")
-
+parser.add_argument('--simple-log', action='store_true')
 
 # Quiet hook from https://gist.github.com/jhazelwo/86124774833c6ab8f973323cb9c7e251
 def main_repl():
@@ -29,26 +29,37 @@ def main_repl():
     """
     # Add acab into the path:
     sys.path.append(abspath(join(split(__file__)[0], "../../..")))
-
     args = parser.parse_args()
 
-    LOGLEVEL = root_logger._nameToLevel[args.verbosity.upper()]
+
+    LOGLEVEL      = logmod._nameToLevel[args.verbosity.upper()]
     LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-    root_logger.basicConfig(filename=LOG_FILE_NAME, level=max(0, LOGLEVEL - 10), filemode='w')
 
-    console = root_logger.StreamHandler()
-    console.setLevel(max(0, LOGLEVEL))
-    console.setFormatter(root_logger.Formatter())
-    root_logger.getLogger('').addHandler(console)
-    logging = root_logger.getLogger(__name__)
+    ## Setup logging handlers:
+    from acab.core.util.log_formatter import AcabNameTruncateFormatter
+    full_file_handler = logmod.FileHandler(LOG_FILE_NAME, mode='w')
+    full_file_handler.setFormatter(AcabNameTruncateFormatter())
+    full_file_handler.setLevel(logmod.DEBUG)
+
+    console_handler = logmod.StreamHandler()
+    console_handler.setLevel(max(0, LOGLEVEL))
+
+    root_logger = logmod.getLogger('')
+    root_logger.setLevel(logmod.NOTSET)
+    root_logger.addHandler(console_handler)
+    root_logger.addHandler(full_file_handler)
+
+    logging = logmod.getLogger(__file__)
+
+    # Intercept print and log it to the trace file:
+    from acab.modules.repl.util import print_intercept
+    print_intercept()
+
     #====================
-    logging.info("Reading Config: {}".format(args.config))
-    args.config = [abspath(expanduser(x)) for x in args.config]
+    logging.info("Reading Config Location: {}", args.config)
 
-    from acab.core.config.config import AcabConfig
-    from acab.core.config.modal import modal_config
-    import acab.core.config.structure
-    config = AcabConfig(*args.config, hooks=[modal_config])
+    from acab import setup
+    config = setup(location=args.config, rich_exc=True, format_logs=not args.simple_log)
     #====================
 
     # TODO change config details here
@@ -59,13 +70,13 @@ def main_repl():
 
     #import then build engine or default trie engine from args
     initial_modules = config.prepare("Module.REPL", "MODULES")().replace("\n", " ")
-
     #--------------------
     # MAIN REPL LOGIC:
+    from acab.modules.repl.repl_commander import AcabREPLCommander
     import acab.modules.repl.commands_control
     import acab.modules.repl.commands_core
     import acab.modules.repl.commands_info
-    from acab.modules.repl.repl_commander import AcabREPLCommander
+    import acab.modules.repl.commands.exit_cmd
 
     repl = AcabREPLCommander()
     repl.onecmd(f"init {args.engine}")
