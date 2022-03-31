@@ -63,6 +63,9 @@ class ContextQueryManager:
         self.constraints.extend(constraints)
         self._initial_ctxs = [x.uuid for x in self.ctxs.active_list()]
 
+    def __repr__(self):
+        return f"<ContextQueryManager Clause:{self.query_clause} Root={self.root_node} Size={len(self.ctxs)} {'negative' if self.negated else 'positive'}>"
+
     def __enter__(self):
         # set all instances to start at node, unless start_word is an at_binding,
         # in which case get the bound node

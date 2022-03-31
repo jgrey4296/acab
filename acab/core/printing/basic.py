@@ -32,6 +32,8 @@ GenFunc          : TypeAlias = AT.fns.GenFunc
 
 class PrintSystemImpl(HS.HandlerSystem, PI.PrintSystem_i):
 
+    total : ClassVar[int]  = 0
+
     def __post_init__(self, specs, handlers, sieve_fns) -> None: #type:ignore[no-untyped-def]
         # TODO abstract this into a method?
         super().__post_init__(specs, handlers, sieve_fns) #type:ignore[no-untyped-call]
@@ -60,6 +62,7 @@ class PrintSystemImpl(HS.HandlerSystem, PI.PrintSystem_i):
         remaining = [[x, self.separator] for x in args[:-1]] + [args[-1]] #type:ignore
         result = []
         while bool(remaining):
+            PrintSystemImpl.total += 1
             current = remaining.pop(0)
             spec    = None
             data    : dict[str, Any] = {}
@@ -77,7 +80,7 @@ class PrintSystemImpl(HS.HandlerSystem, PI.PrintSystem_i):
                 current = current.value
 
             if spec.check_api(func=PI.PrintSemantics_i):
-                logging.debug(f"(Remain:{len(remaining):2}) Calling: {spec} : {current}")
+                logging.debug("(Remain:{:3}/{:4}) Calling: {:>15} : {}", len(remaining), PrintSystemImpl.total, str(spec), current)
                 handled = spec[0](current, top=self, data=data)
             else:
                 handled = spec[0](current, data=data)
