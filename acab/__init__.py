@@ -13,7 +13,7 @@ from typing import Callable, Type, TypeAlias
 
 import acab.interfaces.type_aliases as types
 from acab.core.config.config import GET
-from acab.core.util.log_formatter import AcabLogFormatter
+from acab.core.util.log_formatter import AcabLogFormatter, AcabLogRecord
 
 logging = logmod.getLogger(__name__)
 
@@ -41,21 +41,25 @@ def setup(location=None,
     from os.path import join, split
 
     if format_logs:
-        stream_handler = logmod.StreamHandler()
-        stream_handler.setLevel(logmod.INFO - 1)
-        stream_handler.setFormatter(AcabLogFormatter())
-        logging.addHandler(stream_handler)
-        logging.propagate = False
+        root_logger = logmod.getLogger()
+        stream_handler = [x for x in root_logger.handlers if isinstance(x, logmod.StreamHandler)]
+        if bool(stream_handler):
+            stream_handler[0].setFormatter(AcabLogFormatter())
+
+    if logmod.getLogRecordFactory is not AcabLogRecord:
+        AcabLogRecord.install()
 
     import acab.core.config.structure
     from acab.core.config.config import AcabConfig
     from acab.core.config.modal import modal_config
 
-    if location is None:
-        base = split(__file__)[0]
-        location = join(base, "__configs", "default")
+    if location is None or not bool(location):
+        base     = split(__file__)[0]
+        location = [join(base, "__configs", "default")]
+    elif not isinstance(location, list):
+        location = [location]
 
-    config = AcabConfig(location, hooks=[modal_config])
+    config = AcabConfig(*location, hooks=[modal_config])
 
 
     if not rich_exc:
