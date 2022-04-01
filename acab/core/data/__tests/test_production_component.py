@@ -115,7 +115,7 @@ class ComponentTests(unittest.TestCase):
         """ Test a component can have parameters applied to it, creating a new component """
         val = PO.ProductionComponent(Sentence(["testop"]))
         self.assertEqual(len(val.params), 0)
-        copied = val.apply_params(["a","test"])
+        copied = val.apply_params(*["a","test"])
         self.assertNotEqual(val, copied)
         self.assertEqual(len(val.params), 0)
         self.assertEqual(len(copied.params), 2)

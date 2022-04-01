@@ -164,7 +164,7 @@ Fwd_ArgList <<= PConst.VBAR + DELIMIST(BIND, delim=PConst.COMMA) + PConst.VBAR
 tagSen = TAG + pp.delimited_list(ATOM, delim=".")
 tagSen.set_parse_action(lambda s, l, t: (ValueFactory_i.sen([x[1] for x in t[:]])))
 
-Fwd_TagList <<= IndentedBlock(tagSen)(PDS.TAG)
+Fwd_TagList <<= pp.IndentedBlock(tagSen + zrm(pp.line_end.suppress() + tagSen))(PDS.TAG)
 
 # NAMING
 # HOTLOAD_VALUES.set_name("HotloadValues")

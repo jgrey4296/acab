@@ -26,8 +26,6 @@ class BasicStatement(Instruction):
     def __hash__(self):
         return hash(self.value)
 
-    # apply_params, apply_tags, build, copy,
-    # has_var, is_at_var, is_var, key, type
 
 class StatementTests(unittest.TestCase):
 
@@ -62,8 +60,8 @@ class StatementTests(unittest.TestCase):
         statement_p = PU.STATEMENT_CONSTRUCTOR(basic_node_parser,
                                                basic_value_parser)
 
+        result = statement_p.parse_string("a_statement(::test):\n #test.blah\n\nvalue\nend")[0]
 
-        result = statement_p.parse_string("a_statement(::test):\n#test\n\nvalue\nend")[0]
         tags_str = [x for x in result.tags]
         self.assertTrue('test' in tags_str)
 
