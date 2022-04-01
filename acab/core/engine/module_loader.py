@@ -20,7 +20,7 @@ from acab.interfaces.dsl import DSL_Fragment_i
 from acab.interfaces.module_loader import (ModuleComponents,
                                            ModuleLoader_i)
 from acab.interfaces.printing import Printer_Fragment
-from acab.interfaces.semantic import Semantic_Fragment
+from acab.interfaces.semantic import Semantic_Fragment_i
 from acab.core.engine.module_loader_base import ModuleLoaderBase
 config = GET()
 
@@ -42,7 +42,7 @@ class ModuleLoader(ModuleLoaderBase, ModuleLoader_i):
         # reference_path = MODULE_SPLIT_REG.split(module.__name__)
         queue          = [(base_path, module)]
         dsl_fragments  : list[DSL_Fragment_i]     = []
-        semantic_frags : list[Semantic_Fragment]  = []
+        semantic_frags : list[Semantic_Fragment_i]  = []
         printers       : list[Printer_Fragment]   = []
         operators      : list[ProductionOperator] = []
 
@@ -62,7 +62,7 @@ class ModuleLoader(ModuleLoaderBase, ModuleLoader_i):
             dsl_fragments       += [y() if needs_init(y) else y for y in available_dsls]
 
             # Get Semantics
-            available_sem_frags =  [y for x,y in mod_contents if applicable(y, Semantic_Fragment)]
+            available_sem_frags =  [y for x,y in mod_contents if applicable(y, Semantic_Fragment_i)]
             semantic_frags      =  [y() if needs_init(y) else y for y in available_sem_frags]
 
             # Get Ops

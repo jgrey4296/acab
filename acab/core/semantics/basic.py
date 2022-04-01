@@ -59,7 +59,10 @@ StatementSemantics : TypeAlias = AT.StatementSemantics
 SemanticSystem     : TypeAlias = AT.SemanticSystem
 
 
-# Protocols  ##################################################################
+# Protocol Implementations #############################################################
+class Semantic_Fragment(HSImpl.HandlerFragment, SI.Semantic_Fragment_i):
+    pass
+
 class SemanticSystem(HSImpl.HandlerSystem, SI.SemanticSystem_i):
     ctx_set         : CtxSet
     _operator_cache : None|CtxIns

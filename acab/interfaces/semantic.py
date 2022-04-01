@@ -61,7 +61,7 @@ SemanticSystem     : TypeAlias = AT.SemanticSystem
 
 # Data  #######################################################################
 @dataclass #type:ignore[misc]
-class Semantic_Fragment(HS.HandlerFragment_i):
+class Semantic_Fragment_i(HS.HandlerFragment_i):
     """ Dataclass of Semantic Handlers to be added to the system, and any
     data they require
     """
