@@ -52,8 +52,8 @@ def main_repl():
     logging = logmod.getLogger(__file__)
 
     # Intercept print and log it to the trace file:
-    from acab.modules.repl.util import print_intercept
-    print_intercept()
+    from acab.modules.repl.util import capture_printing
+    capture_printing()
 
     #====================
     logging.info("Reading Config Location: {}", args.config)

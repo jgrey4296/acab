@@ -6,6 +6,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 from functools import wraps
 import datetime
+import builtins
 
 logging = logmod.getLogger(__name__)
 import acab
@@ -93,12 +94,12 @@ def build_rebind_instruction(value:str):
     return act
 
 
-def print_intercept():
+def capture_printing():
     """
     Setup a file handler for a separate logger,
     to keep a trace of anything printed
     """
-    oldprint = __builtins__['print']
+    oldprint = builtins.print
     # start_time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
     TRACE_FILE_NAME = "trace.repl"
     input_trace_handler = logmod.FileHandler(TRACE_FILE_NAME, mode='w')
@@ -115,4 +116,4 @@ def print_intercept():
         oldprint(*args, **kwargs)
         trace_logger.warning(args[0])
 
-    __builtins__['print'] = intercepted
+    builtins.print = intercepted
