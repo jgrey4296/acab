@@ -17,7 +17,6 @@ from acab.core.parsing.annotation import ModalAnnotation, ValueAnnotation
 from acab.core.parsing.consts import (CPAR, DBLCOLON, NG, OPAR, TAG, N,
                                       component_gap, emptyLine, gap, ln, op,
                                       opLn, orm, s, s_key, s_lit, zrm)
-from acab.core.parsing.indented_block import IndentedBlock
 from acab.interfaces.value import ValueFactory_i
 
 logging = logmod.getLogger(__name__)

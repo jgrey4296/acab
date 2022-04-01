@@ -13,7 +13,6 @@ from acab.core.parsing.default_keys import OPERATOR, SEN, VALUE
 from acab.core.parsing.annotation import ValueAnnotation
 from acab.core.parsing.default_symbols import QUERY_HEAD
 from acab.core.parsing.funcs import build_assignment
-from acab.core.parsing.indented_block import IndentedBlock
 from acab.modules.parsing.exlo import constructors as PConst
 from acab.modules.parsing.exlo.constructors import build_query
 
@@ -61,7 +60,7 @@ query_fallback.set_parse_action(lambda x: ValueAnnotation(CDS.QUERY_FALLBACK, x[
 query_sen_end    = PU.PARAM_CORE(annotations,
                                  end=query_terminator + query_fallback)
 
-clauses               = IndentedBlock(HOTLOAD_QUERY_SEN | SENTENCE)
+clauses               = pp.IndentedBlock(HOTLOAD_QUERY_SEN | SENTENCE)
 
 query_statement       = PU.STATEMENT_CONSTRUCTOR(QUERY_HEAD, clauses)
 

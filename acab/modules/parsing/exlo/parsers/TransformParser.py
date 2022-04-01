@@ -11,7 +11,6 @@ from acab.modules.parsing.exlo.constructors import (build_transform,
                                                     build_transform_component)
 from acab.modules.parsing.exlo.util import (LEFT_S, OPERATOR_S, RIGHT_S,
                                             TARGET_S, TRANSFORM_HEAD)
-from acab.core.parsing.indented_block import IndentedBlock
 
 from .FactParser import SENTENCE, op_sentence, SEN_NO_MODAL
 
@@ -45,7 +44,7 @@ transform_combined = pp.MatchFirst([HOTLOAD_TRANS_STATEMENTS,
                                     transform_core,
                                     transform_sugar])
 
-transforms = IndentedBlock(transform_combined)
+transforms = pp.IndentedBlock(transform_combined)
 
 transform_statement = PU.STATEMENT_CONSTRUCTOR(TRANSFORM_HEAD,
                                                transforms)

@@ -11,7 +11,6 @@ from acab.core.parsing.default_symbols import ACTION_HEAD
 from acab.core.parsing.parsers import VALBIND
 from acab.modules.parsing.exlo import constructors as PConst
 from acab.modules.parsing.exlo.util import LEFT_S, RIGHT_S, ACTION_HEAD
-from acab.core.parsing.indented_block import IndentedBlock
 
 from .FactParser import SENTENCE, op_sentence
 
@@ -41,7 +40,7 @@ basic_actions       =  action_component | action_sugar_unary | action_sugar_bina
 
 # Sentences are hinted as using DEFAULT_ACTION, usually assert
 action_exprs        = HOTLOAD_ACTION_STATEMENTS | basic_actions | SENTENCE
-actions             = IndentedBlock(action_exprs)
+actions             = pp.IndentedBlock(action_exprs)
 actions.set_parse_action(PConst.build_action)
 
 action_definition   = PU.STATEMENT_CONSTRUCTOR(ACTION_HEAD, actions)

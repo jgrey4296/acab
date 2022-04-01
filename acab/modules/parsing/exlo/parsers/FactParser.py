@@ -13,7 +13,6 @@ from acab.core.parsing.default_keys import OPERATOR, SEN, VALUE, HEAD_ANNOTATION
 from acab.core.parsing import default_keys as PDS
 from acab.core.data import default_structure as CDS
 from acab.modules.parsing.exlo import constructors as PConst
-from acab.core.parsing.indented_block import IndentedBlock
 from acab.core.parsing.annotation import ValueRepeatAnnotation, ValueAnnotation
 
 logging             = logmod.getLogger(__name__)
@@ -66,7 +65,7 @@ SEN_PLURAL = PU.DELIMIST(SENTENCE, delim=DELIM)
 SEN_PLURAL.set_name("Sentence Plural")
 
 # FIXME sentence plural macro
-# SEN_MACRO_BODY     = IndentedBlock(SENTENCE)
+# SEN_MACRO_BODY     = pp.IndentedBlock(SENTENCE)
 # # Statement to specify multiple sub sentences
 # SEN_MACRO        <<= PU.STATEMENT_CONSTRUCTOR(pp.Literal("ζ"),
 #                                               SEN_MACRO_BODY,
