@@ -31,14 +31,14 @@ rebind.set_name("rebind")
 vals = N(RIGHT_S, zrm(SENTENCE))
 # vals.add_condition(lambda toks: all([isinstance(x, Sentence) for x in toks]))
 
-transform_core = N(OPERATOR_S, op_sentence) \
-    + vals \
-    + N(TARGET_S, rebind)
+transform_core = (N(OPERATOR_S, op_sentence)
+                  + vals
+                  + N(TARGET_S, rebind))
 
-transform_sugar = NG(LEFT_S, SENTENCE) \
-    + N(OPERATOR_S, HOTLOAD_TRANS_OP) \
-    + vals \
-    + N(TARGET_S, rebind)
+transform_sugar = (NG(LEFT_S, SENTENCE)
+                   + N(OPERATOR_S, HOTLOAD_TRANS_OP)
+                   + vals
+                   + N(TARGET_S, rebind))
 
 transform_combined = pp.MatchFirst([HOTLOAD_TRANS_STATEMENTS,
                                     transform_core,

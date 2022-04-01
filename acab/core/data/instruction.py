@@ -109,10 +109,6 @@ class ProductionOperator(ValueProtocolsImpl, VI.Operator_i, metaclass=ValueMeta)
         return self.value
 
 
-    # __lt__ __str__ apply_params apply_tags build build_sen has_tag
-    # has_var is_at_var is_var key type
-
-
 @APE.assert_implements(VI.Operator_i, exceptions=["__call__"])
 class ActionOperator(ValueProtocolsImpl, VI.Action_i, metaclass=ValueMeta):
     """ Special Operator type which gets passed the semantic system,

@@ -28,9 +28,9 @@ vals = PU.zrm(SENTENCE)(RIGHT_S)
 action_component    = N(OPERATOR, op_sentence) + vals
 action_component.set_parse_action(PConst.build_action_component)
 
-action_sugar_binary = N(LEFT_S, VALBIND) \
-    + N(OPERATOR, HOTLOAD_OPERATORS) \
-    + vals
+action_sugar_binary = (N(LEFT_S, VALBIND)
+                       + N(OPERATOR, HOTLOAD_OPERATORS)
+                       + vals)
 action_sugar_binary.set_parse_action(PConst.build_action_component)
 
 action_sugar_unary  = N(OPERATOR, HOTLOAD_OPERATORS) + vals

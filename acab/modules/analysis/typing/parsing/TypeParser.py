@@ -33,12 +33,12 @@ VAR_OR_TYPE_DEC = PU.BIND | TYPEDEC_CORE
 TYPE_NAME       = HOTLOAD_SEN | EXTENDED_ATOM
 
 # ::a.type($x, a.different.type)
-TYPEDEC_CORE <<= DBLCOLON + N(TYU.SEN_S, TYPE_NAME) \
-    + N(TYU.ARG_S, op(OPAR
-                      + pp.delimited_list(VAR_OR_TYPE_DEC,
-                                         TYU.PARAM_JOIN_S,
-                                         combine=False)
-                      + CPAR))
+TYPEDEC_CORE <<= (DBLCOLON + N(TYU.SEN_S, TYPE_NAME)
+                  + N(TYU.ARG_S, op(OPAR
+                                    + pp.delimited_list(VAR_OR_TYPE_DEC,
+                                                        TYU.PARAM_JOIN_S,
+                                                        combine=False)
+                                    + CPAR)))
 
 TYPEDEC_CORE.set_parse_action(TU.make_type_dec)
 

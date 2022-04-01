@@ -12,7 +12,7 @@ config        = GET()
 
 QUERY_HINT    = config.prepare("Value.Structure", "QUERY")()
 SEM_HINT      = config.prepare("Value.Structure", "SEMANTIC_HINT")()
-WALK_SEM_HINT = Sentence.build([config.prepare("Module.DFSWalk", "WALK_SEM_HINT")()])
+WALK_SEM_HINT = Sentence([config.prepare("Module.DFSWalk", "WALK_SEM_HINT")()])
 
 def build_dfs_query(s, l, toks):
     words = []
@@ -40,8 +40,8 @@ def build_dfs_action(s, l, toks):
     words.append(toks['action'])
 
     # TODO refactor to be a ProductionComponent
-    instruction = Sentence.build(words,
-                                 data={SEM_HINT: WALK_SEM_HINT})
+    instruction = Sentence(words,
+                           data={SEM_HINT: WALK_SEM_HINT})
 
 
     return instruction

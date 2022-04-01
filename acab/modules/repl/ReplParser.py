@@ -113,8 +113,8 @@ ctx_slice = slice_p("context_slice")
 binding = AP.VALBIND
 
 # ctx ([2:])? $x?
-ctx_parser = ctx_kw + pp.Optional(ctx | ctx_slice) \
-            + pp.ZeroOrMore(binding)("bindings")
+ctx_parser = (ctx_kw + pp.Optional(ctx | ctx_slice)
+              + pp.ZeroOrMore(binding)("bindings"))
 
 
 # ctx select ##################################################################

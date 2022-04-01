@@ -2,8 +2,8 @@
 
 from acab import GET
 from acab.core.parsing import pyparse_dsl as ppDSL
-from acab.interfaces.semantic import Semantic_Fragment
-from acab.interfaces.handler_system import HandlerSpec
+from acab.core.semantics.basic import Semantic_Fragment
+from acab.core.util.handler_system import HandlerSpec
 from acab.modules.semantics.statements import QueryPlusAbstraction
 from acab.core.data.sentence import Sentence
 
@@ -17,7 +17,7 @@ DSL_Fragment = ppDSL.DSL_Fragment
 DSL_Spec     = ppDSL.PyParse_Spec
 DSL_Handler  = ppDSL.PyParse_Handler
 
-WALK_SEM_HINT    = Sentence.build([config.prepare("Module.DFSWalk", "WALK_SEM_HINT")()])
+WALK_SEM_HINT = Sentence([config.prepare("Module.DFSWalk", "WALK_SEM_HINT")()])
 
 DFS_Sem_Frag = Semantic_Fragment(specs=[HandlerSpec(WALK_SEM_HINT)],
                                  handlers=[DFSSemantics().as_handler(),

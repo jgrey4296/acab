@@ -108,11 +108,12 @@ def STATEMENT_CONSTRUCTOR(annotation_p:ParserElement,
 
     head = PARAM_CORE(req_mid=type_annotation_p, end=PConst.COLON)
 
-    parser = NG(PDS.NAME, head) + line_end_p \
-        + op(arg_p + emptyLine) \
-        + op(Fwd_TagList + emptyLine) \
-        + NG(PDS.STATEMENT, body_p) + end_p
-
+    parser = (NG(PDS.NAME, head) + line_end_p
+              + op(arg_p + emptyLine)
+              + op(Fwd_TagList + emptyLine)
+              + NG(PDS.STATEMENT, body_p)
+              + end_p)
+    parser.streamline()
 
     if parse_fn is not None:
         parser.add_parse_action(parse_fn)

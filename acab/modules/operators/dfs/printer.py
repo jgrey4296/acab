@@ -19,7 +19,7 @@ config = GET()
 WALK_SEM_HINT    = Sentence([config.prepare("Module.DFSWalk", "WALK_SEM_HINT")()])
 
 @dataclass
-class DFSSenPrinter(basic.PrintSemantics, PrintSemantics_i):
+class DFSSenPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
 
     signal : str = field(default=WALK_SEM_HINT)
 
