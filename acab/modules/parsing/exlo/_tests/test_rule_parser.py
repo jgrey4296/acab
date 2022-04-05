@@ -7,6 +7,9 @@ logging = logmod.getLogger(__name__)
 import acab
 config = acab.setup()
 
+# from acab.core.parsing import debug_funcs as DBF
+# DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+
 from acab.core.data.value import AcabValue
 from acab.core.data.sentence import Sentence
 from acab.core.data.instruction import ProductionOperator, ProductionComponent, ProductionContainer, ProductionStructure
@@ -35,12 +38,10 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
 
 
     def setUp(self):
-        # FP.HOTLOAD_SEN_ENDS <<= QP.query_sen_end | pp.NoMatch()
-        pass
+        FP.HOTLOAD_SEN_POSTS << QP.query_sen_post_annotation
 
     def tearDown(self):
-        # FP.HOTLOAD_SEN_ENDS <<= pp.NoMatch()
-        pass
+        FP.HOTLOAD_SEN_POSTS <<= pp.NoMatch()
 
     #----------
     #use testcase snippets

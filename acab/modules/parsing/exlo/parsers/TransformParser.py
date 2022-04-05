@@ -4,15 +4,15 @@ import logging as logmod
 import pyparsing as pp
 from acab.core.config.config import AcabConfig
 from acab.core.parsing import parsers as PU
-from acab.core.parsing.consts import (ARROW, COLON, COMMA, DELIM,
-                                          DOUBLEBAR, NG, N, component_gap, zrm)
+from acab.core.parsing.consts import (ARROW, COLON, COMMA, DELIM, DOUBLEBAR,
+                                      NG, N, component_gap, ln, zrm, op, s)
 from acab.core.parsing.default_symbols import TRANSFORM_HEAD
 from acab.modules.parsing.exlo.constructors import (build_transform,
                                                     build_transform_component)
 from acab.modules.parsing.exlo.util import (LEFT_S, OPERATOR_S, RIGHT_S,
                                             TARGET_S, TRANSFORM_HEAD)
 
-from .FactParser import SENTENCE, op_sentence, SEN_NO_MODAL
+from .FactParser import SEN_NO_MODAL, SENTENCE, op_sentence
 
 logging = logmod.getLogger(__name__)
 
@@ -44,7 +44,7 @@ transform_combined = pp.MatchFirst([HOTLOAD_TRANS_STATEMENTS,
                                     transform_core,
                                     transform_sugar])
 
-transforms = pp.IndentedBlock(transform_combined)
+transforms = pp.IndentedBlock(transform_combined + op(s(ln)))
 
 transform_statement = PU.STATEMENT_CONSTRUCTOR(TRANSFORM_HEAD,
                                                transforms)

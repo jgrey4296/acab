@@ -71,7 +71,7 @@ class ValueMeta(ProtocolMeta):
         the immutable form
         """
         # TODO possibly hold weafrefs to all created objects, and avoid any duplication
-        defaults = getattr(cls, "_defaults", {})
+        defaults     = getattr(cls, "_defaults", {})
         _data        = cls._build_data_and_type(data, _type, defaults=defaults)
         tags, params = cls._build_tags_and_params(tags, params)
 

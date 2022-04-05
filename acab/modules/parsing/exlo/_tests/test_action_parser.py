@@ -11,6 +11,9 @@ import acab
 
 acab.setup()
 
+# from acab.core.parsing import debug_funcs as DBF
+# DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+
 from acab.core.data import default_structure as DS
 from acab.core.data.instruction import (Instruction, ProductionComponent,
                                         ProductionContainer,
@@ -42,7 +45,7 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
     #----------
     #use testcase snippets
     def test_actions_parse(self):
-        test_str = " λoperator.add\n λoperator.sub\n λoperator.mul\n"
+        test_str = " λoperator.add\n λoperator.sub\n λoperator.mul"
         result = AP.actions.parse_string(test_str)[0]
         self.assertIsInstance(result, ProductionContainer)
         self.assertEqual(len(result), 3)
@@ -51,6 +54,12 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
         """ Check an action definition can be parsed without error """
         test_str = "test(::α):\n  λoperator.add a.b.c\nend"
         definition = AP.action_definition.parse_string(test_str)[0]
+        self.assertEqual(definition.name, "test")
+
+    def test_action_multi_def(self):
+        test_str = "test(::α):\n λa.b.c $x\n λq.e.f $y $z\nend"
+        definition = AP.action_definition.parse_string(test_str)[0]
+        self.assertEqual(len(definition), 2)
         self.assertEqual(definition.name, "test")
 
     def test_parse_action_no_params(self):
@@ -69,7 +78,7 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
 
     def test_actions(self):
         """ Test multiple actions can be parsed together """
-        result = AP.actions.parse_string("  λa.b.c\n  a.b.d\n  λa.b.c blah bloo\n")[0]
+        result = AP.actions.parse_string("  λa.b.c\n  a.b.d\n  λa.b.c blah bloo")[0]
         self.assertIsInstance(result, ProductionContainer)
         self.assertEqual(len(result.clauses), 3)
 

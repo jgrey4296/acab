@@ -5,8 +5,8 @@ with overriding debug functions
 import pyparsing as pp
 import pyparsing.core as ppc
 import logging as logmod
-from acab.core.parsing.debug_log_formatter import AcabParseDebugFormat
-from acab.core.parsing.debug_log_formatter import SimpleColour as SC
+from acab.core.parsing.parse_debug_log_formatter import AcabParseDebugFormat
+from acab.core.parsing.parse_debug_log_formatter import SimpleColour as SC
 logging = logmod.getLogger(__name__)
 logging.addHandler(AcabParseDebugFormat.scaffold())
 logging.propagate = False
@@ -51,11 +51,20 @@ def debug_success_action(instring, startloc, endloc, expr, toks, *args):
     logging.warning("\t%s <%s> (%s) %s -> %s", MATCHED, SC.green(expr.name), str(toks), endloc, context)
 
 def debug_fail_action(instring, loc, expr, exc, *args):
-    found_str = exc.pstr[exc.loc:exc.loc + 1].replace(r'\\', '\\').replace("\n", "\\n")
-    mark_str  = (SC.yellow(instring[min(0, exc.loc-10):exc.loc-1]) + MARK + SC.yellow(instring[exc.loc:max(len(instring), exc.loc+10)])).replace("\n", "\\n")
+    if isinstance(exc, pp.ParseBaseException):
+        found_str = exc.pstr[exc.loc:exc.loc + 1].replace(r'\\', '\\').replace("\n", "\\n")
+        mark_str  = (SC.yellow(instring[min(0, exc.loc-10):exc.loc-1]) + MARK + SC.yellow(instring[exc.loc:max(len(instring), exc.loc+10)])).replace("\n", "\\n")
+        msg       = exc.msg
+        loc       = exc.loc
+    else:
+        found_str = "AssertionError"
+        mark_str  = ""
+        msg       = ""
+        loc       = ""
+
     logging.error("\t\t%s <%s>: %s found '%s' at %s:  \"'%s\"",
-                  FAILED, SC.red(expr.name), SC.yellow(str(exc.msg)), SC.red(found_str),
-                  exc.loc, mark_str)
+                  FAILED, SC.red(expr.name), SC.yellow(msg), SC.red(found_str),
+                  loc, mark_str)
 
 
 def dfs_activate(*parsers, remove=False):

@@ -9,6 +9,9 @@ import pyparsing as pp
 import acab
 config = acab.setup()
 
+# from acab.core.parsing import debug_funcs as DBF
+# DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+
 from acab.core.data import default_structure as DS
 from acab.core.data.sentence import Sentence
 from acab.core.data.value import AcabValue

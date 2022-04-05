@@ -5,10 +5,15 @@ from os.path import split, splitext
 import pyparsing as pp
 
 logging = logmod.getLogger(__name__)
+logging.setLevel(logmod.DEBUG)
 
 import acab
 
 config = acab.setup()
+
+from acab.core.parsing import debug_funcs as DBF
+DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+
 
 import acab.modules.parsing.exlo.parsers.FactParser as FP
 import acab.modules.parsing.exlo.parsers.QueryParser as QP
@@ -20,6 +25,7 @@ from acab.core.data.sentence import Sentence
 from acab.core.data.value import AcabValue
 from acab.core.parsing import parsers as PU
 from acab.modules.operators import query as QOP
+from acab.core.parsing.annotation import ValueRepeatAnnotation
 
 CONSTRAINT_V     = config.prepare("Parse.Structure", "CONSTRAINT")()
 REGEX_PRIM       = config.prepare("Type.Primitive", "REGEX")()
@@ -42,6 +48,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
     #use testcase snippets
     def setUp(self):
         FP.HOTLOAD_SEN_POSTS << QP.query_sen_post_annotation
+        FP.HOTLOAD_ANNOTATIONS << QP.word_query_constraint
 
     def tearDown(self):
         FP.HOTLOAD_SEN_POSTS <<= pp.NoMatch()
@@ -77,7 +84,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
 
     def test_basic_multi_clause(self):
         """ Check multiple query clauses can be parsed """
-        result = QP.clauses.parse_string('  a.b.c?\n  a.b.d?\n  a.b.e?\n')[0]
+        result = QP.clauses.parse_string('  a.b.c?\n  a.b.d?\n  a.b.e?')[0]
         self.assertIsInstance(result, ProductionContainer)
         self.assertEqual(len(result.clauses), 3)
         self.assertTrue(all([isinstance(x, Sentence) for x in result.clauses]))
@@ -87,7 +94,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
 
     def test_basic_multi_clause_mixed_negation(self):
         """ Check multiple queries of mixed positive and negative type can be parsed """
-        result = QP.clauses.parse_string(' a.b.c?\n ~a.b.d?\n a.b.e?\n ~a.b.f?\n')[0]
+        result = QP.clauses.parse_string(' a.b.c?\n ~a.b.d?\n a.b.e?\n ~a.b.f?')[0]
         self.assertIsInstance(result, ProductionContainer)
         self.assertTrue(all([isinstance(x, Sentence) for x in result.clauses]))
         self.assertFalse(result.clauses[0].data[NEGATION])
@@ -96,7 +103,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertTrue(result.clauses[3].data[NEGATION])
 
     def test_basic_query_construction(self):
-        result = QP.clauses.parse_string(' a.b.c?\n a.b.d?\n a.b.e?\n')[0]
+        result = QP.clauses.parse_string(' a.b.c?\n a.b.d?\n a.b.e?')[0]
         self.assertIsInstance(result, ProductionContainer)
         self.assertEqual(len(result.clauses), 3)
 
@@ -117,3 +124,37 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         result = QP.query_statement.parse_string("query(::γ):\n  a.b.c?\n  d.e.f?\n  a.b.$x?\nend")[0]
         self.assertIsInstance(result, ProductionContainer)
         self.assertEqual(len(result.clauses), 3)
+
+    def test_queries_with_params(self):
+        result = QP.clauses.parse_string(" a.b.c?\n d.e(λa.b.q $y).f?\n g.h.i?")[0]
+        self.assertIsInstance(result, ProductionContainer)
+        self.assertEqual(len(result.clauses), 3)
+
+    def test_basic_constraint_no_params(self):
+        result = QP.basic_constraint.parse_string("λa.b.c")[0]
+        self.assertIsInstance(result, ValueRepeatAnnotation)
+        self.assertIsInstance(result.value, ProductionComponent)
+        self.assertFalse(result.value.params)
+
+    def test_basic_constraint_one_param(self):
+        result = QP.basic_constraint.parse_string("λa.b.c $x")[0]
+        self.assertIsInstance(result, ValueRepeatAnnotation)
+        self.assertIsInstance(result.value, ProductionComponent)
+        self.assertTrue(result.value.params)
+
+    def test_basic_constraint_one_sen(self):
+        result = QP.basic_constraint.parse_string("λa.b.c q.w.e")[0]
+        self.assertIsInstance(result, ValueRepeatAnnotation)
+        self.assertIsInstance(result.value, ProductionComponent)
+        self.assertTrue(result.value.params)
+
+
+    def test_basic_constraint_multi_params(self):
+        result = QP.basic_constraint.parse_string("λa.b.c q.w.e $x $y")[0]
+        self.assertIsInstance(result, ValueRepeatAnnotation)
+        self.assertIsInstance(result.value, ProductionComponent)
+        self.assertTrue(result.value.params)
+
+    def test_basic_constraint_on_word(self):
+        result = FP.SEN_WORD.parse_string("test(λa.b.c $x $y).")[0]
+        self.assertIsInstance(result, AcabValue)

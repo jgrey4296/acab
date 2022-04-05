@@ -5,7 +5,7 @@ import pyparsing as pp
 from acab.core.config.config import AcabConfig
 from acab.core.parsing import funcs as Pfunc
 from acab.core.parsing import parsers as PU
-from acab.core.parsing.consts import DELIM, NG, N, component_gap, orm, zrm, ln
+from acab.core.parsing.consts import DELIM, NG, N, component_gap, orm, zrm, ln, s, op
 from acab.core.parsing.default_keys import OPERATOR
 from acab.core.parsing.default_symbols import ACTION_HEAD
 from acab.core.parsing.parsers import VALBIND
@@ -42,7 +42,7 @@ basic_actions.set_name("basic_actions")
 
 # Sentences are hinted as using DEFAULT_ACTION, usually assert
 action_exprs        = HOTLOAD_ACTION_STATEMENTS | basic_actions | SENTENCE
-actions             = pp.IndentedBlock(action_exprs + ln)
+actions             = pp.IndentedBlock(action_exprs + op(s(ln)))
 actions.set_parse_action(PConst.build_action)
 
 action_definition   = PU.STATEMENT_CONSTRUCTOR(ACTION_HEAD, actions)

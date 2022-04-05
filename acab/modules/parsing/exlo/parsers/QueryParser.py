@@ -8,7 +8,7 @@ import acab.core.parsing.default_keys as PDS
 from acab.core.parsing import funcs as Pfunc
 from acab.core.parsing import parsers as PU
 from acab.core.parsing.consts import (COLLAPSE_CONTEXT, COLON, COMMA, DELIM, DOUBLEBAR, END,
-                                          NG, QUERY, N, component_gap, op, zrm, orm, ln)
+                                          NG, QUERY, N, component_gap, op, zrm, orm, ln, s)
 from acab.core.parsing.default_keys import OPERATOR, SEN, VALUE
 from acab.core.parsing.annotation import ValueAnnotation
 from acab.core.parsing.default_symbols import QUERY_HEAD
@@ -58,7 +58,7 @@ query_fallback.set_parse_action(lambda x: ValueAnnotation(CDS.QUERY_FALLBACK, x[
 
 query_sen_post_annotation = query_terminator + query_fallback
 
-clauses               = pp.IndentedBlock((HOTLOAD_QUERY_SEN | SENTENCE) + ln)
+clauses               = pp.IndentedBlock((HOTLOAD_QUERY_SEN | SENTENCE) + op(s(ln)))
 # clauses.add_condition(lambda s, l, t: all([CDS.QUERY in x.data for x in t[:]]))
 
 query_statement       = PU.STATEMENT_CONSTRUCTOR(QUERY_HEAD, clauses)
