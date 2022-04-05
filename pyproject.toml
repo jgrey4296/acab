@@ -22,3 +22,8 @@ reportUnknownParameterType  = "information"
 reportUnknownVariableType   = "warning"
 reportUnnecessaryCast       = "information"
 reportUnnecessaryIsInstance = "warning"
+
+[tool.pytest.ini_options]
+log_cli       = false
+log_level     = "DEBUG"
+log_cli_level = "DEBUG"
