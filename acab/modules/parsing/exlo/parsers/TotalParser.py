@@ -16,7 +16,7 @@ from . import QueryParser as QP
 from . import RuleParser as RP
 
 HOTLOAD_STATEMENTS = pp.Forward()
-HOTLOAD_STATEMENTS.set_name("hotload_statements")
+HOTLOAD_STATEMENTS.set_name("hl_statements")
 
 file_component = HOTLOAD_STATEMENTS | FP.SEN_PLURAL
 

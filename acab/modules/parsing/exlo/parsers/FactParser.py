@@ -18,15 +18,15 @@ from acab.core.parsing.annotation import ValueRepeatAnnotation, ValueAnnotation
 logging             = logmod.getLogger(__name__)
 # Hotload insertion points:
 HOTLOAD_ANNOTATIONS   = pp.Forward()
-HOTLOAD_ANNOTATIONS.set_name('hotload_annotations')
+HOTLOAD_ANNOTATIONS.set_name('hl_word_annot')
 HOTLOAD_BAD_HEADS     = pp.Forward()
-HOTLOAD_BAD_HEADS.set_name('hotload_bad_heads')
+HOTLOAD_BAD_HEADS.set_name('hl_bad_heads')
 HOTLOAD_SEN_ENDS      = pp.Forward()
-HOTLOAD_SEN_ENDS.set_name('hotload_sen_ends')
+HOTLOAD_SEN_ENDS.set_name('hl_sen_ends')
 HOTLOAD_SEN_HEADS     = pp.Forward()
-HOTLOAD_SEN_HEADS.set_name('hotload_sen_heads')
+HOTLOAD_SEN_HEADS.set_name('hl_sen_heads')
 HOTLOAD_SEN_POSTS     = pp.Forward()
-HOTLOAD_SEN_POSTS.set_name('hotload_sen_posts')
+HOTLOAD_SEN_POSTS.set_name('hl_sen_posts')
 
 # Controllable words that can't start a sentence
 BAD_HEADS           = ~(END | HOTLOAD_BAD_HEADS)("Bad Words")
@@ -39,16 +39,22 @@ annotations.set_name("Annotations")
 
 # The one default head annotation: negation
 sen_head_negation = NEGATION("SenNeg")
+sen_head_negation.set_name("SenNeg")
 sen_head_negation.set_parse_action(lambda x: ValueAnnotation(CDS.NEGATION, True))
 
+op_head_annotation = FUNC_SYMBOL
+op_head_annotation.set_parse_action(lambda x: ValueAnnotation(CDS.OPERATOR, True))
+op_head_annotation.set_name("SenLambda")
+
 # Annotations for before and after a sentence
-sen_head_annotations = sen_head_negation | HOTLOAD_SEN_HEADS
-sen_post_annotations = HOTLOAD_SEN_POSTS
+# TODO shift to accumulateforward
+sen_head_annotations = sen_head_negation | op_head_annotation | HOTLOAD_SEN_HEADS
+sen_post_annotations = pp.Forward()
+sen_post_annotations << HOTLOAD_SEN_POSTS
 
 # Core = a. | b! | $a. | $b!....
 # Sentences are /SEN_WORD* (SEN_END | SEN_STATEMENT)/
 # TODO explicit Semantic Hint operator?
-SEN_MACRO             = pp.Forward()
 SEN_HEAD              = BAD_HEADS + NG(HEAD_ANNOTATION, zrm(sen_head_annotations))
 SEN_WORD              = PU.PARAM_CORE(annotations)
 SEN_NO_MODAL          = PU.PARAM_CORE(annotations, end=True) + ~COLON
@@ -57,13 +63,18 @@ SEN_WORD.set_name("PBCore")
 SEN_NO_MODAL.set_name("PBEnd")
 
 # The Prime Sentence definition:
-SENTENCE = SEN_HEAD + NG(SEN, pp.ZeroOrMore(SEN_WORD) + SEN_END) + NG(PDS.POST_ANNOTATION, zrm(sen_post_annotations))
+SENTENCE = (SEN_HEAD + pp.Group(pp.ZeroOrMore(SEN_WORD) + SEN_END)(SEN)
+            + NG(PDS.POST_ANNOTATION, zrm(sen_post_annotations)))
 SENTENCE.set_parse_action(Pfunc.construct_sentence)
 SENTENCE.set_name("Sentence")
 
-SEN_PLURAL = PU.DELIMIST(SENTENCE, delim=DELIM)
+# SEN_PLURAL = PU.DELIMIST(SENTENCE, delim=DELIM)
+SEN_PLURAL = pp.delimited_list(SENTENCE, delim=DELIM)
+SEN_PLURAL.set_whitespace_chars(" \t")
 SEN_PLURAL.set_name("Sentence Plural")
 
+
+SEN_MACRO             = pp.Forward()
 # FIXME sentence plural macro
 # SEN_MACRO_BODY     = pp.IndentedBlock(SENTENCE)
 # # Statement to specify multiple sub sentences
@@ -71,8 +82,10 @@ SEN_PLURAL.set_name("Sentence Plural")
 #                                               SEN_MACRO_BODY,
 #                                               parse_fn=Pfunc.construct_multi_sentences)
 
-# TODO: Make this a head annotation
-op_sentence = FUNC_SYMBOL + SENTENCE
+op_sentence = pp.Group(SENTENCE)
+op_sentence.add_condition(lambda s, l, t: CDS.OPERATOR in t[0][0])
+op_sentence.set_parse_action(lambda s, l, t: t[0])
+op_sentence.set_name("op_sentence")
 
 # Naming
 # BINDING_CORE.set_name("BindCore")

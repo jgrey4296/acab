@@ -59,7 +59,7 @@ def build_action_component(s, loc, toks):
 
 #--------------------
 def build_query(s, loc, toks):
-    clauses = toks[:]
+    clauses = toks[0][:]
     query = ProductionContainer(clauses,
                                 data={SEMANTIC_HINT: EXu.QUERY_SEM_HINT})
     return [query]
@@ -71,7 +71,7 @@ def build_transform(s, loc, toks):
     return [trans]
 
 def build_action(s, loc, toks):
-    clauses = toks[:]
+    clauses = toks[0][:]
     clauses = [x if isinstance(x, ProductionComponent)
                else ProductionComponent(Sentence([EXu.DEFAULT_ACTION_S]),
                                         params=[x]) for x in clauses]

@@ -1,7 +1,8 @@
 import logging as logmod
 import unittest
-# Setup logmod:
 from os.path import split, splitext
+
+import pyparsing as pp
 
 logging = logmod.getLogger(__name__)
 ##############################
@@ -18,6 +19,7 @@ from acab.core.data.sentence import Sentence
 from acab.core.data.value import AcabValue
 from acab.interfaces.value import Value_i
 from acab.modules.parsing.exlo.parsers import ActionParser as AP
+from acab.modules.parsing.exlo.parsers import FactParser as FP
 
 
 class Trie_Action_Parser_Tests(unittest.TestCase):
@@ -39,6 +41,12 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
 
     #----------
     #use testcase snippets
+    def test_actions_parse(self):
+        test_str = " λoperator.add\n λoperator.sub\n λoperator.mul\n"
+        result = AP.actions.parse_string(test_str)[0]
+        self.assertIsInstance(result, ProductionContainer)
+        self.assertEqual(len(result), 3)
+
     def test_action_definition(self):
         """ Check an action definition can be parsed without error """
         test_str = "test(::α):\n  λoperator.add a.b.c\nend"
@@ -61,7 +69,7 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
 
     def test_actions(self):
         """ Test multiple actions can be parsed together """
-        result = AP.actions.parse_string("  λa.b.c\n  a.b.d\n  λa.b.c blah bloo")[0]
+        result = AP.actions.parse_string("  λa.b.c\n  a.b.d\n  λa.b.c blah bloo\n")[0]
         self.assertIsInstance(result, ProductionContainer)
         self.assertEqual(len(result.clauses), 3)
 

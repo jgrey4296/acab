@@ -12,7 +12,7 @@ config = acab.setup()
 
 import acab.modules.parsing.exlo.parsers.FactParser as FP
 import acab.modules.parsing.exlo.parsers.QueryParser as QP
-from acab.core.data.default_structure import BIND, NEGATION, QUERY_FALLBACK
+from acab.core.data.default_structure import BIND, NEGATION, QUERY_FALLBACK, QUERY
 from acab.core.data.instruction import (Instruction, ProductionComponent,
                                         ProductionContainer,
                                         ProductionOperator)
@@ -33,30 +33,25 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         logmod.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
 
         console = logmod.StreamHandler()
-        console.setLevel(logmod.INFO)
+        console.setLevel(logmod.DEBUG)
         logmod.getLogger('').addHandler(console)
         logging = logmod.getLogger(__name__)
-
-        FP.HOTLOAD_SEN_ENDS << QP.query_sen_end
-
-    @classmethod
-    def tearDownClass(cls):
-        FP.HOTLOAD_SEN_ENDS << pp.NoMatch()
+        logging.setLevel(logmod.DEBUG)
 
     #----------
     #use testcase snippets
     def setUp(self):
-        PU.HOTLOAD_VALUES << pp.NoMatch()
-        FP.HOTLOAD_SEN_ENDS <<=  QP.query_sen_end | pp.NoMatch()
+        FP.HOTLOAD_SEN_POSTS << QP.query_sen_post_annotation
 
     def tearDown(self):
-        FP.HOTLOAD_SEN_ENDS <<= pp.NoMatch()
+        FP.HOTLOAD_SEN_POSTS <<= pp.NoMatch()
 
     def test_query_tail(self):
-        result = QP.query_sen_end.parse_string("test?")[0]
-        self.assertIsInstance(result, AcabValue)
-        self.assertEqual(result, "test")
+        result = FP.SENTENCE.parse_string("a.test.query?")[0]
+        self.assertIsInstance(result, Sentence)
+        self.assertEqual(result, "_:a.test.query")
         self.assertIn(BIND, result.data)
+        self.assertIn(QUERY, result.data)
 
 
     def test_basic_clause(self):
@@ -64,6 +59,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result, Sentence)
         self.assertEqual(len(result), 3)
         self.assertEqual(result[-1].value, 'c')
+        self.assertIn(QUERY, result.data)
 
     def test_basic_clause_with_bind(self):
         result = QP.SENTENCE.parse_string('a.b.$c?')[0]
@@ -71,15 +67,17 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertEqual(len(result), 3)
         self.assertEqual(result[-1].value, 'c')
         self.assertTrue(result[-1].is_var)
+        self.assertIn(QUERY, result.data)
 
     def test_basic_negated_clause(self):
         result = QP.SENTENCE.parse_string('~a.b.c?')[0]
         self.assertIsInstance(result, Sentence)
         self.assertTrue(result.data[NEGATION])
+        self.assertIn(QUERY, result.data)
 
     def test_basic_multi_clause(self):
         """ Check multiple query clauses can be parsed """
-        result = QP.clauses.parse_string('  a.b.c?\n  a.b.d?\n  a.b.e?')[0]
+        result = QP.clauses.parse_string('  a.b.c?\n  a.b.d?\n  a.b.e?\n')[0]
         self.assertIsInstance(result, ProductionContainer)
         self.assertEqual(len(result.clauses), 3)
         self.assertTrue(all([isinstance(x, Sentence) for x in result.clauses]))
@@ -89,7 +87,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
 
     def test_basic_multi_clause_mixed_negation(self):
         """ Check multiple queries of mixed positive and negative type can be parsed """
-        result = QP.clauses.parse_string(' a.b.c?\n ~a.b.d?\n a.b.e?\n ~a.b.f?')[0]
+        result = QP.clauses.parse_string(' a.b.c?\n ~a.b.d?\n a.b.e?\n ~a.b.f?\n')[0]
         self.assertIsInstance(result, ProductionContainer)
         self.assertTrue(all([isinstance(x, Sentence) for x in result.clauses]))
         self.assertFalse(result.clauses[0].data[NEGATION])
@@ -98,13 +96,13 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertTrue(result.clauses[3].data[NEGATION])
 
     def test_basic_query_construction(self):
-        result = QP.clauses.parse_string(' a.b.c?\n a.b.d?\n a.b.e?')[0]
+        result = QP.clauses.parse_string(' a.b.c?\n a.b.d?\n a.b.e?\n')[0]
         self.assertIsInstance(result, ProductionContainer)
         self.assertEqual(len(result.clauses), 3)
 
     @unittest.skip
     def test_clause_fallback_strings(self):
-        result = QP.clauses.parse_string('a.b.c? || $x:a.b!c, $y:b.d.e')[0]
+        result = QP.clauses.parse_string('a.b.c? || $x:a.b!c, $y:b.d.e\n')[0]
         self.assertIsInstance(result, ProductionContainer)
         r_clause = result.clauses[0]
         breakpoint()

@@ -75,7 +75,7 @@ def add_annotations(s, loc, toks):
 
 
 def construct_multi_sentences(s, loc, toks):
-    base_sen = toks[PDS.NAME][0]
+    base_sen             = toks[PDS.NAME][0]
     additional_sentences = toks[PDS.STATEMENT]
 
     new_sentences = []
@@ -85,7 +85,7 @@ def construct_multi_sentences(s, loc, toks):
         data = {}
         data.update(base_sen.data)
         data.update(additional.data)
-        new_sen = ValueFactory.value(full_toks, data=data)
+        new_sen = ValueFactory.sen(full_toks, data=data)
         new_sentences.append(new_sen)
 
     return new_sentences

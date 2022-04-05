@@ -110,7 +110,8 @@ class ValueMeta(ProtocolMeta):
     @staticmethod
     def _build_data_and_type(data:None|dict[ValueData, Any], _type:'None|str|Sen_A'=None, defaults:dict[ValueData, Any]=None) -> dict[str,Any]:
         # TODO construct defaults in AcabConfig
-        _data = ValueMeta.default_data.copy()
+        _data = {}
+        _data.update(ValueMeta.default_data)
         _data.update(defaults)
         _data.update(data or {})
 

@@ -35,10 +35,12 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
 
 
     def setUp(self):
-        FP.HOTLOAD_SEN_ENDS <<= QP.query_sen_end | pp.NoMatch()
+        # FP.HOTLOAD_SEN_ENDS <<= QP.query_sen_end | pp.NoMatch()
+        pass
 
     def tearDown(self):
-        FP.HOTLOAD_SEN_ENDS <<= pp.NoMatch()
+        # FP.HOTLOAD_SEN_ENDS <<= pp.NoMatch()
+        pass
 
     #----------
     #use testcase snippets

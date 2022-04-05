@@ -18,12 +18,15 @@ from acab.core.data.value import AcabValue
 from acab.core.data.instruction import Instruction
 from acab.core.data.sentence import Sentence
 
+from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
+from acab.core.parsing.pyparse_dsl import PyParseDSL
 from acab.modules.engines.configured import exlo
 from acab.modules.operators.dfs import parser as DOP
 from acab.modules.operators.dfs.semantics import DFSSemantics
 from acab.modules.semantics.basic_system import BasicSemanticSystem
 from acab.modules.semantics.statements import QueryPlusAbstraction
 from acab.modules.semantics.values import ExclusionNodeSemantics
+from acab.modules.operators.dfs.module import DFSQueryDSL
 
 BIND          = config.prepare("Value.Structure", "BIND")()
 QUERY         = config.prepare("Value.Structure", "QUERY")()
@@ -31,6 +34,11 @@ SEM_HINT      = config.prepare("Value.Structure", "SEMANTIC_HINT")()
 TYPE_INSTANCE = config.prepare("Value.Structure", "TYPE_INSTANCE")()
 AT_BIND       = config.prepare("Value.Structure", "AT_BIND")()
 default_modules = config.prepare("Module.REPL", "MODULES")().split("\n")
+
+dsl = PyParseDSL([],[],[])
+dsl.register(EXLO_Parser)
+dsl.register(DFSQueryDSL)
+dsl.build()
 
 class TestWalkParser(unittest.TestCase):
 

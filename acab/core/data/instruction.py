@@ -146,9 +146,6 @@ class ProductionComponent(Instruction):
     def __contains__(self, value):
         return value in self.value or value == rebind
 
-    def __repr__(self):
-        return super().__repr__()
-
     def to_sentences(self):
         """
         Sentence([op_path].[param1.param2.param3...].result)
@@ -203,8 +200,7 @@ class ProductionContainer(Instruction):
     _defaults : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE: DS.CONTAINER_PRIM}
 
     def __repr__(self):
-        # clauses = ";".join([repr(x) for x in self.clauses])
-        return "<{}::{}>".format(self.name, str(self.type))
+        return "<{}::{} ({}) >".format(self.name, str(self.type), len(self))
 
     @cache
     def __len__(self):
