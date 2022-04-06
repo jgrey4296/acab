@@ -14,11 +14,14 @@ import pyparsing as pp
 
 config = acab.setup()
 
-import acab.modules.parsing.exlo.parsers.ActionParser as AP
-import acab.modules.parsing.exlo.parsers.FactParser as FP
-import acab.modules.parsing.exlo.parsers.QueryParser as QP
-import acab.modules.parsing.exlo.parsers.RuleParser as RP
-import acab.modules.parsing.exlo.parsers.TransformParser as TP
+# from acab.core.parsing import debug_funcs as DBF
+# DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+
+from acab.core.parsing import pyparse_dsl as ppDSL
+from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
+
+from acab.modules.parsing.exlo.parsers import QueryParser as QP
+
 import acab.modules.printing.printers as Printers
 from acab.core.config.config import AcabConfig
 from acab.core.data.default_structure import (AT_BIND, BIND, NEGATION, QUERY,
@@ -32,6 +35,12 @@ from acab.core.data.value import AcabValue
 from acab.interfaces.handler_system import Handler_i
 from acab.modules.printing import default
 from acab.modules.printing.basic_printer import BasicPrinter
+
+# Set up the parser to ease test setup
+dsl   = ppDSL.PyParseDSL([], [], [])
+dsl.register(EXLO_Parser)
+dsl.build()
+# dsl()
 
 NEGATION_SYMBOL_S = config.prepare("Symbols", "NEGATION")()
 ANON_VALUE_S      = config.prepare("Symbols", "ANON_VALUE")()
@@ -59,18 +68,9 @@ class PrintStructureSemanticTests(unittest.TestCase):
         logmod.getLogger('').addHandler(console)
         logging = logmod.getLogger(__name__)
 
-        FP.HOTLOAD_ANNOTATIONS << pp.MatchFirst([QP.word_query_constraint])
-
-        FP.HOTLOAD_SEN_ENDS << pp.MatchFirst([QP.query_sen_end,
-                                              QP.query_statement,
-                                              TP.transform_statement,
-                                              AP.action_definition])
-
-
-
     def test_component_simple(self):
         """ Check production components can be printed """
-        component = ProductionComponent(value=FP.parse_string("testop.blah")[0])
+        component = ProductionComponent(value=dsl("testop.blah")[0])
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
                                init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
                                               Printers.AnnotationAwareValuePrinter().as_handler(signal="ATOM"),
@@ -87,8 +87,8 @@ class PrintStructureSemanticTests(unittest.TestCase):
 
     def test_component_simple2(self):
         """ Check production components with variables can be printed """
-        component = ProductionComponent(value=FP.parse_string("testop.blah")[0],
-                                        params=[FP.parse_string("$x")[0][0]])
+        component = ProductionComponent(value=dsl("testop.blah")[0],
+                                        params=[dsl("$x")[0][0]])
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
                                init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
                                               Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
@@ -105,9 +105,9 @@ class PrintStructureSemanticTests(unittest.TestCase):
 
     def test_transform_simple(self):
         """ Check transforms print the rebind variable """
-        component = ProductionComponent(value=FP.parse_string("testop.blah")[0],
-                                        params=[FP.parse_string("$x")[0][0]],
-                                        rebind=FP.parse_string("$y")[0][0])
+        component = ProductionComponent(value=dsl("testop.blah")[0],
+                                        params=[dsl("$x")[0][0]],
+                                        rebind=dsl("$y")[0][0])
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
                                init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
                                               Printers.AnnotationAwareValuePrinter().as_handler(signal="ATOM"),
@@ -138,7 +138,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                settings={"MODAL": "exop"})
 
         # combine some queries together
-        queries = QP.parse_string("a.b.c?\nd.e(λa.b.q $y).f?\ng.h.i?")
+        queries = QP.clauses.parse_string(" a.b.c?\n d.e(λa.b.q $y).f?\n g.h.i?")[0]
         self.assertIsInstance(queries, ProductionContainer)
 
         result = sem_sys.pprint(queries)
@@ -163,7 +163,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                settings={"MODAL": "exop"})
 
         # parse a rule
-        rule = RP.parse_string("rule(::ρ):\na.b.c?\n\nλa.b.c\nend")[0]
+        rule = dsl("rule(::ρ):\na.b.c?\n\nλa.b.c\nend")[0][-1]
         self.assertIsInstance(rule, ProductionStructure)
         # print
         result = sem_sys.pprint(rule)
@@ -187,13 +187,13 @@ class PrintStructureSemanticTests(unittest.TestCase):
                               settings={"MODAL": "exop"})
 
         # parse a rule
-        rule = RP.parse_string("""rule(::ρ):
+        rule = dsl("""rule(::ρ):
         #test.tag
 
         a.b.c?
 
         λa.b.c
-        end""")[0]
+        end""")[0][-1]
         self.assertIsInstance(rule, ProductionStructure)
         # print
         result = sem_sys.pprint(rule)
@@ -216,13 +216,13 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                sieve_fns=[],
                               settings={"MODAL": "exop"})
 
-        query = QP.query_statement.parse_string("""statement(::γ):
+        query = dsl("""statement(::γ):
         a.b.c?
         d.e.f?
         g.h.e?
 
         end
-        """)[0]
+        """)[0][-1]
 
         self.assertIsInstance(query, ProductionContainer)
         result = sem_sys.pprint(query)
@@ -244,13 +244,13 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                sieve_fns=[],
                                settings={"MODAL": "exop"})
 
-        query = TP.transform_statement.parse_string("""statement(::χ):
+        query = dsl("""statement(::χ):
         λa.b.c $x $y -> $z
         λq.c.d $z $x -> $a
         λa.b.c $a $y -> $c
 
         end
-        """)[0]
+        """)[0][-1]
 
         self.assertIsInstance(query, ProductionContainer)
         result = sem_sys.pprint(query)
@@ -273,13 +273,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                sieve_fns=[],
                                settings={"MODAL": "exop"})
 
-        action = AP.action_definition.parse_string("""statement(::α):
-        λa.b.c $x
-        λa.b.c.d $x $y
-        λa.b.c.d.e $x $y $z
-        end
-        """)[0]
-
+        action = dsl("""statement(::α):\n λa.b.c $x\n λa.b.c.d $x $y\n λa.b.c.d.e $x $y $z\nend""")[0][-1]
         self.assertIsInstance(action, ProductionContainer)
         result = sem_sys.pprint(action)
         self.assertEqual(result, """statement(::ACTION):\n    λa.b.c $x\n    λa.b.c.d $x $y\n    λa.b.c.d.e $x $y $z\nend\n""")

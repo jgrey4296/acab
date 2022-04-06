@@ -65,7 +65,7 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
 
         FP.HOTLOAD_ANNOTATIONS << pp.MatchFirst([QP.word_query_constraint])
 
-        FP.HOTLOAD_SEN_ENDS << pp.MatchFirst([QP.query_sen_end,
+        FP.HOTLOAD_SEN_ENDS << pp.MatchFirst([QP.query_sen_post_annotation,
                                               QP.query_statement,
                                               TP.transform_statement,
                                               AP.action_definition])
@@ -129,7 +129,7 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
                            sieve_fns=[],
                           settings={"MODAL": "exop"})
         sentence = FP.parse_string("a.test!sen")[0]
-        sentence[-1].data[DS.QUERY] = True
+        sentence.data[DS.QUERY] = True
         result = sem.pprint(sentence)
         self.assertEqual(result, "a.test!sen?")
 
