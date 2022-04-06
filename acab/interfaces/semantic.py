@@ -38,8 +38,8 @@ from acab import types as AT
 from acab.core.data.default_structure import QUERY
 from acab.error.printing import AcabPrintException
 from acab.error.semantic import AcabSemanticException
-from acab.interfaces.sub_protocols import handler_system as HSubP
-from acab.interfaces.sub_protocols.value import AcabReducible_p
+from acab.interfaces.protocols import handler_system as HSubP
+from acab.interfaces.protocols.value import AcabReducible_p
 from acab.interfaces.value import Sentence_i, Value_i
 
 Value              : TypeAlias = "AT.Value[AT.ValueCore]"

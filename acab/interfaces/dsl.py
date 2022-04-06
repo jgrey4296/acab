@@ -22,7 +22,7 @@ logging = logmod.getLogger(__name__)
 from acab import types as AT
 from acab.core.decorators.dsl import EnsureDSLInitialised
 from acab.interfaces import handler_system as HS
-from acab.interfaces.sub_protocols import handler_system as HSubP
+from acab.interfaces.protocols import handler_system as HSubP
 
 Parser           : TypeAlias = AT.Parser
 Sentence         : TypeAlias = AT.Sentence

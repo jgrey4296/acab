@@ -15,16 +15,16 @@ import pyparsing as pp
 
 logging = logmod.getLogger(__name__)
 
+import acab.interfaces.dsl as dsl
 from acab import GET
 from acab import types as AT
 from acab.core.decorators.dsl import EnsureDSLInitialised
+from acab.core.parsing import dsl_builder as DSLImpl
 from acab.core.parsing.funcs import clear_parser_names, deep_update_names
+from acab.core.util.part_implementations import handler_system as HS
 from acab.error.base import AcabBasicException
 from acab.error.parse import AcabParseException
-from acab.interfaces.dsl import (DSL_Builder_i, DSL_Fragment_i, DSL_Spec_i)
-import acab.interfaces.dsl as dsl
-from acab.core.parsing import dsl_builder as DSLImpl
-from acab.core.util import handler_system as HS
+from acab.interfaces.dsl import DSL_Builder_i, DSL_Fragment_i, DSL_Spec_i
 
 config = GET()
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()

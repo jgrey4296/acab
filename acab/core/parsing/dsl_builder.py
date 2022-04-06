@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     pass
 
 from acab import types as AT
-from acab.core.util import handler_system as HSImpl
+from acab.core.util.part_implementations import handler_system as HSImpl
 from acab.error.parse import AcabParseException
 
 Parser           : TypeAlias = AT.Parser

@@ -14,7 +14,7 @@ from uuid import UUID, uuid1
 from weakref import ref
 
 import acab.core.data.default_structure as DS
-import acab.core.data.sub_implementations.value as VP
+import acab.core.util.part_implementations.value as VP
 import acab.interfaces.value as VI
 from acab import setup
 from acab import types as AT

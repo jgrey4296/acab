@@ -28,8 +28,8 @@ from acab.core.data.sentence import Sentence
 from acab.error.operator import AcabOperatorException
 from acab.core.decorators.util import cache
 import acab.interfaces.value as VI
-from acab.core.data.sub_implementations.sentence import SentenceProtocolsImpl
-from acab.core.data.sub_implementations.value import ValueProtocolsImpl
+from acab.core.util.part_implementations.sentence import SentenceProtocolsImpl
+from acab.core.util.part_implementations.value import ValueProtocolsImpl
 from acab.core.data.factory import ValueFactory as VF
 from acab.core.data.value_meta import ValueMeta
 

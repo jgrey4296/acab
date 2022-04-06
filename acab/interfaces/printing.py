@@ -21,7 +21,7 @@ from acab.core.printing.default_symbols import PRINT_SEPARATOR_P
 from acab.error.printing import AcabPrintException
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces import handler_system as HS
-from acab.interfaces.sub_protocols import handler_system as HSubP
+from acab.interfaces.protocols import handler_system as HSubP
 
 logging = logmod.getLogger(__name__)
 config = GET()

@@ -6,7 +6,7 @@ from acab.core.config.config import AcabConfig
 
 if AcabConfig._instance is not None:
     from acab.interfaces.printing import Printer_Fragment
-    from acab.core.util.handler_system import HandlerSpec
+    from acab.core.util.part_implementations.handler_system import HandlerSpec
     import acab.modules.analysis.typing.printer as TPR
     from acab.modules.analysis.typing.dsl import TypingDSL
     print_fragment = Printer_Fragment(specs=[HandlerSpec("TYPE_INSTANCE"),

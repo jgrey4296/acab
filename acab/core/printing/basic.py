@@ -21,7 +21,7 @@ from acab.error.semantic import AcabSemanticException
 from acab.interfaces.value import Sentence_i, Value_i
 from acab.interfaces import handler_system as HSi
 from acab.interfaces import printing as PI
-import acab.core.util.handler_system as HS
+import acab.core.util.part_implementations.handler_system as HS
 
 logging                      = logmod.getLogger(__name__)
 config                       = GET()

@@ -16,7 +16,7 @@ from typing import (Any, Callable, ClassVar, Collection, Container, Final,
 from acab import types as AT
 from acab.core.config.config import GET
 from acab.interfaces.sieve import AcabSieve
-from acab.interfaces.sub_protocols import handler_system as HSubP
+from acab.interfaces.protocols import handler_system as HSubP
 
 logging = logmod.getLogger(__name__)
 config = GET()

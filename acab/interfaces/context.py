@@ -19,7 +19,7 @@ from uuid import UUID
 logging = logmod.getLogger(__name__)
 
 from acab import types as AT
-from acab.interfaces.sub_protocols.value import (AcabFinishable_p,
+from acab.interfaces.protocols.value import (AcabFinishable_p,
                                                 AcabReducible_p)
 
 # Type declarations:

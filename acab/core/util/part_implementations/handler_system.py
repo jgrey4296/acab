@@ -22,7 +22,7 @@ from acab.interfaces.data import Structure_i
 from acab.interfaces.sieve import AcabSieve
 from acab.interfaces.value import Sentence_i, Value_i
 from acab.error.protocol import AcabProtocolError as APE
-from acab.interfaces.sub_protocols import handler_system as HSubP
+from acab.interfaces.protocols import handler_system as HSubP
 
 logging = logmod.getLogger(__name__)
 

@@ -3,7 +3,7 @@
 from acab import GET
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.core.semantics.basic import Semantic_Fragment
-from acab.core.util.handler_system import HandlerSpec
+from acab.core.util.part_implementations.handler_system import HandlerSpec
 from acab.modules.semantics.statements import QueryPlusAbstraction
 from acab.core.data.sentence import Sentence
 

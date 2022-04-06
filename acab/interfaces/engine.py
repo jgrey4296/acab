@@ -16,7 +16,7 @@ from acab import types as AT
 from acab.core.decorators.engine import EnsureEngineInitialised
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces.context import ContextSet_i
-from acab.interfaces.sub_protocols.value import AcabReducible_p
+from acab.interfaces.protocols.value import AcabReducible_p
 
 # TODO add 'Tick' functionality
 ModuleComponents : TypeAlias = AT.ModuleComponents
