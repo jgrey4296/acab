@@ -1,0 +1,32 @@
+rule.queries(::ρ):
+    global.protocol.$z?
+    // get desire translated into lang of $z
+    desire.$d(λlift.by $z)?
+    // I Want
+    institution.$x?
+    λto $x: an.$activity.effect.$d?
+
+
+end
+
+// reminder: source.rules -> engine -> system_interaction.spec -> engine
+// with a semantics of generated.spec -+> existing.$file -> engine
+
+
+institution.interaction.protocol:
+    institution.$x.language.$y?
+    global.protocol.$z(∩ $y)?
+
+    λctx.merge:
+        $x!$x          -> $x.$x2
+        $y!$y          -> $y.$y2
+        $z.$z          -> $z
+        // ∀$x -> $xs
+    end
+    shared.protocol.[$x.$2].$s?
+
+    // ∴ $x and $2 both speak $z, with specific customisations $s
+
+
+
+end

@@ -23,18 +23,26 @@ _Value_A : TypeAlias = types.Value
 _Sen_A   : TypeAlias = types.Sentence
 
 
-def setup(location=None,
-          rich_exc=False,
-          format_logs=True,
+def setup(location:str=None,
+          rich_exc:bool=False,
+          format_logs:bool=True,
           ) -> types.Config:
     """
     A Utility to easily setup the config singleton,
     allowing the rest of acab to load.
 
     Arguments:
-    location    :str  : the path to config file(s) to use
-    rich_exc    :bool : True for rich.traceback, false for normal python exceptions
-    format_logs :bool : True for AcabLogFormatter installation
+        location
+            the path to config file(s) to use
+
+        rich_exc
+            True for rich.traceback, false for normal python exceptions
+
+        format_logs
+            True for AcabLogFormatter installation
+
+    Returns:
+        An initialised Config Object
     """
     #pylint: disable=import-outside-toplevel
 

@@ -1,0 +1,36 @@
+** Current Design
+#+NAME: Current Design
+#+begin_src plantuml :results value verbatim :preview t
+@startuml
+Input     --> Values    : Recieve
+Text      --> Values    : Parse
+Values    --> Semantics : Run Instructions
+Semantics --> Semantics : Run Statements
+Semantics --> Output    : Perform Actions
+@enduml
+#+end_src
+
+#+RESULTS: Current Design
+#+begin_example
+     ┌─────┐          ┌──────┐          ┌────┐          ┌─────────┐          ┌──────┐
+     │Input│          │Values│          │Text│          │Semantics│          │Output│
+     └──┬──┘          └──┬───┘          └─┬──┘          └────┬────┘          └──┬───┘
+        │    Recieve     │                │                  │                  │
+        │ ─ ─ ─ ─ ─ ─ ─ >│                │                  │                  │
+        │                │                │                  │                  │
+        │                │      Parse     │                  │                  │
+        │                │ <─ ─ ─ ─ ─ ─ ─ ─                  │                  │
+        │                │                │                  │                  │
+        │                │         Run Instructions          │                  │
+        │                │  ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ >│                  │
+        │                │                │                  │                  │
+        │                │                │                  ─ ─ ┐
+        │                │                │                      | Run Statements
+        │                │                │                  < ─ ┘
+        │                │                │                  │                  │
+        │                │                │                  │ Perform Actions  │
+        │                │                │                  │ ─ ─ ─ ─ ─ ─ ─ ─ ─>
+     ┌──┴──┐          ┌──┴───┐          ┌─┴──┐          ┌────┴────┐          ┌──┴───┐
+     │Input│          │Values│          │Text│          │Semantics│          │Output│
+     └─────┘          └──────┘          └────┘          └─────────┘          └──────┘
+#+end_example

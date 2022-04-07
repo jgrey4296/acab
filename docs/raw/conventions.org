@@ -1,0 +1,46 @@
+* Acab Code Conventions
+acab.interfaces defines:
+type aliases
+interfaces for the major acab components.
+
+Interfaces are a combination of:
+dataclasses, named `_{name}_d`
+method protocols, named `_{name}_p`
+
+which form the combined public, abstract interface `{name}_i`
+
+This enables mypy to typecheck both class fields, and methods,
+while also providing the implementation check of abc.abstractmethod
+
+Protocols can only inherit from other Protocols, so to extend
+an interface, extend the `_{name}_p` class and redefine the combined interface
+
+Implementations of interfaces are then provided in acab.core in appropriate subpackages.
+The Exception being the HandlerSystem, which serves as a base for other things, found in acab.core.util
+
+
+In Type Annotations, `{name}_A` signifies a type alias
+
+#+begin_src python  :results value
+# When a protocol defines abstract attributes, like:
+class MyProto_p(Protocol):
+    age : int
+
+    def get_age(self) -> int:
+        return self.age
+
+# It *has* to be later in the base class list than the dataclass it relies on:
+@dataclass
+class MyData_d:
+    name : str = field()
+    age  : int = field()
+
+# Error if _p < _d
+class MyReal(MyData_d, MyProto_p):
+    pass
+#+end_src
+
+
+For a subclass of a dataclass to run it's own `__post_init__`, either:
+1) the dataclassed superclass has to define a stub __post_init__, or
+2) the subclass has to be decorated as a dataclass as well

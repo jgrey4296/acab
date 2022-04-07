@@ -1,18 +1,21 @@
-SHELL   := /usr/local/bin/bash
-PYS		:= $(shell find ./acab -name '*.py' -not -name '*context.py' -not -name '__init__.py')
-LOGS	:= $(shell find ./acab -name '*log.*')
-CACHES	:= $(shell find ./acab/ -regextype posix-egrep -regex .*\(.mypy_cache\|__pycache__\)$)
-TOP     := ./acab
-START   := ./acab
-PAT     :=
-FILE_PAT := "test_*.py"
-LOGLEVEL := WARNING
+SHELL			:= /usr/local/bin/bash
+PYS				:= $(shell find ./acab -name '*.py' -not -name '*context.py' -not -name '__init__.py')
+LOGS			:= $(shell find ./acab -name '*log.*')
+CACHES			:= $(shell find ./acab/ -regextype posix-egrep -regex .*\(.mypy_cache\|__pycache__\|flycheck_.+\)$)
+TOP				:= ./acab
+PAT				:=
+FILE_PAT		:= "test_*.py"
+LOGLEVEL		:= WARNING
+
+dir				?= ./acab
+doc_target		?= "html"
+
+SPHINXOPTS		?=
+SPHINXBUILD		?= sphinx-build
+DOCSOURCEDIR    = docs
+DOCBUILDDIR     = dist/docs
 
 # If defined, use these overrides
-ifneq (${dir}, )
-	START := ${dir}
-endif
-
 ifneq (${pat}, )
 	PAT = -k ${pat}
 endif
@@ -21,8 +24,26 @@ ifneq (${fpat}, )
 	FILE_PAT := ${fpat}
 endif
 
-.PHONY: all pylint clean
 
+.PHONY: help Makefile all pylint clean
+
+# Documentation ###############################################################
+# Put it first so that "make" without argument is like "make help".
+help:
+	@$(SPHINXBUILD) -M help "$(DOCSOURCEDIR)" "$(DOCBUILDDIR)" $(SPHINXOPTS) $(O)
+# "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
+# run with `make sphinx doc_target=html` =clean etc
+
+sphinx: Makefile
+	@$(SPHINXBUILD) -M ${doc_target} "$(DOCSOURCEDIR)" "$(DOCBUILDDIR)" $(SPHINXOPTS) $(O)
+
+browse:
+	open "$(DOCBUILDDIR)/html/index.html"
+
+docs: sphinx browse
+
+
+# Rest ########################################################################
 all: verbose long
 
 # Building ####################################################################
@@ -32,25 +53,28 @@ build:
 
 # Testing #####################################################################
 long:
-	python -m unittest discover -s ${START} -p "*_tests.py"
+	python -m unittest discover -s ${dir} -p "*_tests.py"
 
 test:
-	python -m unittest discover -v -s ${START} -p ${FILE_PAT} -t ${TOP} ${PAT}
+	python -m unittest discover -v -s ${dir} -p ${FILE_PAT} -t ${TOP} ${PAT}
 
 faily:
 	@echo "Testing with early fail"
-	python -m unittest discover -v -f -s ${START} ${PAT} -t ${TOP} -p ${FILE_PAT}
+	python -m unittest discover -v -f -s ${dir} ${PAT} -t ${TOP} -p ${FILE_PAT}
 
 
 # Repls #######################################################################
 
 repl:
+    # Standard REPL
 	python acab/modules/repl/repl_main.py --config ./acab/__configs/default -v ${LOGLEVEL}
 
 vrepl:
+    # Verbose REPL
 	python acab/modules/repl/repl_main.py --config ./acab/__configs/default -v DEBUG
 
 repld:
+    # python dev mode REPL
 	python -X dev acab/modules/repl/repl_main.py --config ./acab/__configs/default
 
 re: repl
@@ -60,7 +84,7 @@ vr: vrepl
 check:
 	@echo "Shell	= " ${SHELL}
 	@echo "Top		= " ${TOP}
-	@echo "Search	= " ${START}
+	@echo "Search	= " ${dir}
 	@echo "Pattern	= " ${PAT}
 
 
@@ -92,6 +116,7 @@ init:
 
 clean:
 	@echo "Cleaning"
+	@$(SPHINXBUILD) -M clean "$(DOCSOURCEDIR)" "$(DOCBUILDDIR)" $(SPHINXOPTS) $(O)
 ifeq (${LOGS}, )
 	@echo "No Logs to delete"
 else
