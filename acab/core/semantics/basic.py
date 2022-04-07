@@ -109,7 +109,8 @@ class StructureSemantics(HSImpl.HandlerSystem, HSImpl.HandlerComponent, SI.Struc
 
     def __call__(self, sen:Sen_A, struct:Struct_A, *, ctxs:None|CtxSet=None, data:None|dict[str,Any]=None) -> None|CtxSet:
         assert(isinstance(sen, Sentence_i))
-        if QUERY in sen[-1].data and bool(sen[-1].data[QUERY]):
+        # TODO move query annotation to sentence, not the last word
+        if QUERY in sen.data and bool(sen.data[QUERY]):
             return self.query(sen, struct, ctxs=ctxs, data=data)
 
         return self.insert(sen, struct, ctxs=ctxs, data=data)
