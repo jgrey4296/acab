@@ -73,10 +73,10 @@ def main_repl():
     #--------------------
     # MAIN REPL LOGIC:
     from acab.modules.repl.repl_commander import AcabREPLCommander
-    import acab.modules.repl.commands_control
-    import acab.modules.repl.commands_core
-    import acab.modules.repl.commands_info
-    import acab.modules.repl.commands.exit_cmd
+    for key in config.attr.Module.Repl.CommandImports._keys:
+        logging.debug("Importing: {}", key)
+        importlib.import_module(key)
+
 
     repl = AcabREPLCommander()
     repl.onecmd(f"init {args.engine}")

@@ -82,7 +82,7 @@ def do_shortcuts(self, line):
     """
     print("Repl Shortcut commands: ")
     for kw, cmd in shortcut_pairs:
-        print(f"    :{kw:<5} : {cmd}")
+        print(f"    :{kw:<5} -> {cmd}")
 
 
 # Logging Control###############################################################

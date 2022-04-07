@@ -22,7 +22,7 @@ from acab.modules.repl.repl_commander import register_class
 @register_class("exit")
 class ExitCmd:
 
-    def __call__(self, args):
+    def __call__(self, line):
         """
         Exit the repl, automatically saving the self state
         """

@@ -153,7 +153,7 @@ class AcabREPLCommander(cmd.Cmd):
     @classmethod
     def register_class(cls, name):
         """ Register an entire class as the command bound to do_{name},
-        (specifically the class' __call__ method
+        (specifically the class' __call__ method)
         """
         def __register(target_cls):
             assert(hasattr(target_cls, "__call__"))

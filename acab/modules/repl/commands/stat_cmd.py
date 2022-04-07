@@ -40,6 +40,9 @@ class StatCmd:
                                                     printer_kw]))
         return stats_parser
 
+    def __call__(self, line):
+        raise NotImplementedError()
+
     def do_stat(self, line):
         """
         Print Stats about the self._cmd.

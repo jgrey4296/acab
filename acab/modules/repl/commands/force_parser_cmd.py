@@ -65,7 +65,7 @@ class ForceParserCmd:
 
             print("Attempting to execute result:")
             self._cmd.state.ctxs = self._cmd.state.engine(forced_result,
-                                                ctxset=self._cmd.state.ctxs)
+                                                          ctxset=self._cmd.state.ctxs)
 
         except pp.ParseException as err:
             traceback.print_tb(err.__traceback__)

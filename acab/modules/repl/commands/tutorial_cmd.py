@@ -29,7 +29,7 @@ class TutorialCmd:
         pass
 
 
-    def __call__(self):
+    def __call__(self, line):
         """
         Print out a basic tutorial of Acab and this Repl
         """
