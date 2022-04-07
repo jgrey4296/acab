@@ -24,10 +24,7 @@ from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 from acab.modules.analysis.typing.dsl import TypingDSL
 from acab.modules.context.context_set import ContextInstance as CtxIns
 
-dsl   = ppDSL.PyParseDSL()
-dsl.register(EXLO_Parser).register(TypingDSL)
-dsl.build()
-
+dsl = None
 
 class UnifierTests(unittest.TestCase):
 
@@ -47,6 +44,10 @@ class UnifierTests(unittest.TestCase):
         logging.addHandler(console)
         logging.addHandler(file_h)
 
+        global dsl
+        dsl   = ppDSL.PyParseDSL()
+        dsl.register(EXLO_Parser).register(TypingDSL)
+        dsl.build()
 
     def setUp(self):
         return 1

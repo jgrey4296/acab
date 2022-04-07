@@ -10,7 +10,7 @@ from acab.core.config.config import AcabConfig
 from acab.core.data.sentence import Sentence
 from acab.core.data.value import AcabValue
 from acab.core.parsing.consts import s, s_key
-from acab.modules.context.context_set import ContextInstance, MutableContextInstance
+from acab.modules.context.context_instance import ContextInstance, MutableContextInstance
 from . import exceptions as TE
 
 logging = logmod.getLogger(__name__)

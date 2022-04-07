@@ -61,12 +61,18 @@ class PrintValueSemanticTests(unittest.TestCase):
         logmod.getLogger('').addHandler(console)
         logging = logmod.getLogger(__name__)
 
+    def setUp(self):
         FP.HOTLOAD_ANNOTATIONS << pp.MatchFirst([QP.word_query_constraint])
-
-        FP.HOTLOAD_SEN_ENDS << pp.MatchFirst([QP.query_sen_post_annotation,
-                                              QP.query_statement,
+        FP.HOTLOAD_SEN_ENDS    << pp.MatchFirst([QP.query_statement,
                                               TP.transform_statement,
                                               AP.action_definition])
+        FP.HOTLOAD_SEN_POSTS   << QP.query_sen_post_annotation
+
+    def tearDown(self):
+        FP.HOTLOAD_ANNOTATIONS << pp.NoMatch()
+        FP.HOTLOAD_SEN_ENDS    << pp.NoMatch()
+        FP.HOTLOAD_SEN_POSTS   << pp.NoMatch()
+
 
     def test_initial(self):
         """ Check a basic value can be printed """

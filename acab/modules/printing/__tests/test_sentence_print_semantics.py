@@ -63,13 +63,17 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
         logmod.getLogger('').addHandler(console)
         logging = logmod.getLogger(__name__)
 
+    def setUp(self):
         FP.HOTLOAD_ANNOTATIONS << pp.MatchFirst([QP.word_query_constraint])
+        FP.HOTLOAD_SEN_ENDS    << pp.MatchFirst([QP.query_statement,
+                                                 TP.transform_statement,
+                                                 AP.action_definition])
+        FP.HOTLOAD_SEN_POSTS   << QP.query_sen_post_annotation
 
-        FP.HOTLOAD_SEN_ENDS << pp.MatchFirst([QP.query_sen_post_annotation,
-                                              QP.query_statement,
-                                              TP.transform_statement,
-                                              AP.action_definition])
-
+    def tearDown(self):
+        FP.HOTLOAD_ANNOTATIONS << pp.NoMatch()
+        FP.HOTLOAD_SEN_ENDS    << pp.NoMatch()
+        FP.HOTLOAD_SEN_POSTS   << pp.NoMatch()
 
     def test_sentence_basic(self):
         """ Check a sentence can be printed """
@@ -99,7 +103,7 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
                                           Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                           Printers.ModalPrinter().as_handler(signal="MODAL")],
                            sieve_fns=[],
-                          settings={"MODAL" : "exop"})
+                        settings={"MODAL" : "exop"})
         sentence = FP.parse_string("a.test.sen")[0]
         result = sem.pprint(sentence)
         self.assertEqual(result, "a.test.sen")

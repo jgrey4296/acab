@@ -11,8 +11,9 @@ import acab
 
 config = acab.setup()
 
-from acab.core.parsing import debug_funcs as DBF
-DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+if '@pytest_ar' in globals():
+    from acab.core.parsing import debug_funcs as DBF
+    DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
 
 import acab.modules.parsing.exlo.parsers.FactParser as FP

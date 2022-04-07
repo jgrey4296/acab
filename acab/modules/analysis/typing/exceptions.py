@@ -1,6 +1,7 @@
 """
 Exception types raised by type checking
 """
+from __future__ import annotations
 #https://docs.python.org/3/library/dataclasses.html
 from typing import List, Set, Dict, Tuple, Optional, Any
 from typing import Callable, Iterator, Union, Match

@@ -7,8 +7,9 @@ logging = logmod.getLogger(__name__)
 import acab
 config = acab.setup()
 
-# from acab.core.parsing import debug_funcs as DBF
-# DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+if '@pytest_ar' in globals():
+    from acab.core.parsing import debug_funcs as DBF
+    DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
 from acab.core.data.value import AcabValue
 from acab.core.data.sentence import Sentence

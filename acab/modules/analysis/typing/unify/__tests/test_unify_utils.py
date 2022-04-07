@@ -25,10 +25,7 @@ from .. import simple_unify_fns as suf
 from .. import type_unify_fns as tuf
 from .. import unifier as unify
 
-# Set up the parser to ease test setup
-dsl   = ppDSL.PyParseDSL()
-dsl.register(EXLO_Parser).register(TypingDSL)
-dsl.build()
+dsl = None
 
 class UnifyUtilTests(unittest.TestCase):
 
@@ -48,6 +45,11 @@ class UnifyUtilTests(unittest.TestCase):
         logging.addHandler(console)
         logging.addHandler(file_h)
 
+        global dsl
+        # Set up the parser to ease test setup
+        dsl   = ppDSL.PyParseDSL()
+        dsl.register(EXLO_Parser).register(TypingDSL)
+        dsl.build()
 
     def setUp(self):
         return 1

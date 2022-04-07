@@ -35,15 +35,13 @@ TYPE_INSTANCE = config.prepare("Value.Structure", "TYPE_INSTANCE")()
 AT_BIND       = config.prepare("Value.Structure", "AT_BIND")()
 default_modules = config.prepare("Module.REPL", "MODULES")().split("\n")
 
-dsl = PyParseDSL([],[],[])
-dsl.register(EXLO_Parser)
-dsl.register(DFSQueryDSL)
-dsl.build()
+dsl = None
 
 class TestWalkParser(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        global dsl
         logmod.getLogger('').setLevel(logmod.WARNING)
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
 
@@ -58,7 +56,13 @@ class TestWalkParser(unittest.TestCase):
         logging.addHandler(console)
         logging.addHandler(file_h)
 
+        dsl = PyParseDSL([],[],[])
+        dsl.register(EXLO_Parser)
+        dsl.register(DFSQueryDSL)
+        dsl.build()
+
     def test_parse_walk_query_instruction(self):
+        breakpoint()
         result = DOP.dfs_query.parse_string("ᛦ $x(::blah)?")[0]
 
         self.assertTrue(result)

@@ -11,8 +11,9 @@ import acab
 
 acab.setup()
 
-# from acab.core.parsing import debug_funcs as DBF
-# DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+if '@pytest_ar' in globals():
+    from acab.core.parsing import debug_funcs as DBF
+    DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
 from acab.core.data import default_structure as DS
 from acab.core.data.instruction import (Instruction, ProductionComponent,

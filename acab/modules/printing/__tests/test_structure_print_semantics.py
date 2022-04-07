@@ -21,6 +21,7 @@ from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 
 from acab.modules.parsing.exlo.parsers import QueryParser as QP
+from acab.modules.parsing.exlo.parsers import FactParser as FP
 
 import acab.modules.printing.printers as Printers
 from acab.core.config.config import AcabConfig
@@ -36,12 +37,6 @@ from acab.interfaces.handler_system import Handler_i
 from acab.modules.printing import default
 from acab.modules.printing.basic_printer import BasicPrinter
 
-# Set up the parser to ease test setup
-dsl   = ppDSL.PyParseDSL([], [], [])
-dsl.register(EXLO_Parser)
-dsl.build()
-# dsl()
-
 NEGATION_SYMBOL_S = config.prepare("Symbols", "NEGATION")()
 ANON_VALUE_S      = config.prepare("Symbols", "ANON_VALUE")()
 FALLBACK_MODAL_S  = config.prepare("Symbols", "FALLBACK_MODAL", actions=[config.actions_e.STRIPQUOTE])()
@@ -55,10 +50,13 @@ REGEX_PRIM_S      = Sentence([config.prepare("Type.Primitive", "REGEX")()])
 EXOP              = config.prepare("exop", as_enum=True)()
 DOT_E             = EXOP.DOT
 
+dsl = None
+
 class PrintStructureSemanticTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        global dsl
         LOGLEVEL = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
         logmod.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
@@ -67,6 +65,12 @@ class PrintStructureSemanticTests(unittest.TestCase):
         console.setLevel(logmod.INFO)
         logmod.getLogger('').addHandler(console)
         logging = logmod.getLogger(__name__)
+
+        # Set up the parser to ease test setup
+        dsl   = ppDSL.PyParseDSL([], [], [])
+        dsl.register(EXLO_Parser)
+        dsl.build()
+        # dsl()
 
     def test_component_simple(self):
         """ Check production components can be printed """
@@ -272,7 +276,6 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               ],
                                sieve_fns=[],
                                settings={"MODAL": "exop"})
-
         action = dsl("""statement(::α):\n λa.b.c $x\n λa.b.c.d $x $y\n λa.b.c.d.e $x $y $z\nend""")[0][-1]
         self.assertIsInstance(action, ProductionContainer)
         result = sem_sys.pprint(action)

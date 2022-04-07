@@ -17,12 +17,7 @@ from acab.interfaces.value import Sentence_i, Value_i
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 
-# Set up the parser to ease test setup
-dsl   = ppDSL.PyParseDSL([], [], [])
-dsl.register(EXLO_Parser)
-dsl.build()
-# dsl()
-
+dsl = None
 
 class SentenceTests(unittest.TestCase):
 
@@ -36,6 +31,13 @@ class SentenceTests(unittest.TestCase):
         console.setLevel(logmod.INFO)
         logmod.getLogger('').addHandler(console)
         logging = logmod.getLogger(__name__)
+
+        global dsl
+        # Set up the parser to ease test setup
+        dsl   = ppDSL.PyParseDSL([], [], [])
+        dsl.register(EXLO_Parser)
+        dsl.build()
+        # dsl()
 
     def test_construction(self):
         """ check simple sentence construction """
