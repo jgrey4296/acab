@@ -5,9 +5,13 @@ import logging as logmod
 import unittest
 import unittest.mock as mock
 from os.path import split, splitext
+import pyparsing as pp
 
 logging = logmod.getLogger(__name__)
 
+if '@pytest_ar' in globals():
+    from acab.core.parsing import debug_funcs as DBF
+    DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
 import acab
 
@@ -62,8 +66,7 @@ class TestWalkParser(unittest.TestCase):
         dsl.build()
 
     def test_parse_walk_query_instruction(self):
-        breakpoint()
-        result = DOP.dfs_query.parse_string("ᛦ $x(::blah)?")[0]
+        result = DOP.dfs_query.parse_string("ᛦ $x(λblah)?")[0]
 
         self.assertTrue(result)
         self.assertIsInstance(result, Sentence)
