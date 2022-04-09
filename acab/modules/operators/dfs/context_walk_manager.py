@@ -58,7 +58,7 @@ class ContextWalkManager:
         start = 0
         if sen[0].is_at_var:
             start = 1
-        constraints = [ConstraintCollection.build(x, operators=self.ctxs._operators) for x in sen[start:]]
+        constraints = [ConstraintCollection(x, operators=self.ctxs._operators) for x in sen[start:]]
         self.constraints.extend(constraints)
 
     def __enter__(self):

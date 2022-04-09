@@ -67,7 +67,7 @@ def OperatorArgUnWrap(f):
     """
     @wraps(f)
     def wrapped(self, *the_args, **the_kwargs):
-        unwrapped_args = [x.value for x in the_args]
+        unwrapped_args = [x.value or x.key() for x in the_args]
         return f(self, *unwrapped_args, **the_kwargs)
 
     return wrapped

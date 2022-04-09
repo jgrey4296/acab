@@ -132,3 +132,23 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
     def test_query_and_transform_and_action_rule(self):
         result = RP.rule.parse_string("rule(::ρ):\n  a.b.c?\n  d.e.f?\n\n  λa.b.c $x -> $y\n\n a.b.c\nend")[0]
         self.assertIsInstance(result, ProductionStructure)
+
+    def test_empty_rule_with_arg(self):
+        result = RP.rule.parse_string("rule(::ρ):\n | $x |\n\nend")[0]
+        self.assertIsInstance(result, ProductionStructure)
+        self.assertEqual(len(result.params), 1)
+
+    def test_empty_rule_with_args(self):
+        result = RP.rule.parse_string("rule(::ρ):\n | $x, $y |\n\nend")[0]
+        self.assertIsInstance(result, ProductionStructure)
+        self.assertEqual(len(result.params), 2)
+
+    def test_empty_rule_with_tags(self):
+        result = RP.rule.parse_string("rule(::ρ):\n #test.blah.bloo\n\nend")[0]
+        self.assertIsInstance(result, ProductionStructure)
+        self.assertEqual(len(result.tags), 3)
+
+    def test_empty_rule_with_multiline_tags(self):
+        result = RP.rule.parse_string("rule(::ρ):\n #test.blah.bloo\n#aweg.foo.agjgj\n\nend")[0]
+        self.assertIsInstance(result, ProductionStructure)
+        self.assertEqual(len(result.tags), 6)
