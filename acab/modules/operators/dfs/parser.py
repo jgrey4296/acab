@@ -26,7 +26,7 @@ def build_dfs_query(s, l, toks):
 
     instruction = Sentence(words,
                            data={SEM_HINT: WALK_SEM_HINT})
-    instruction[-1].data[QUERY_HINT] = True
+    instruction.data[QUERY_HINT] = True
 
     return instruction
 

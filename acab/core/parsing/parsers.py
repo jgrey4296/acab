@@ -158,7 +158,7 @@ VALBIND = (NG(PDS.HEAD_ANNOTATION, zrm(HEAD_ANNOTATIONS))
            + NG(PDS.POST_ANNOTATION, zrm(POST_ANNOTATIONS)))
 VALBIND.set_parse_action(Pfunc.make_value)
 
-Fwd_ArgList <<= PConst.VBAR + DELIMIST(BIND, delim=PConst.COMMA) + PConst.VBAR
+Fwd_ArgList <<= PConst.VBAR + DELIMIST(VALBIND, delim=PConst.COMMA) + PConst.VBAR
 
 # TODO make TAG a head_annotation
 tagSen = TAG + pp.delimited_list(ATOM, delim=".")

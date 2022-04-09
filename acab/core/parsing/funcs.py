@@ -113,8 +113,7 @@ def construct_statement(s, loc, toks):
     targs = []
     tags  = []
     if PDS.ARG in toks:
-        # PDS.BIND's ATOM returns a tuple of ('name', VARNAME)
-        targs = [x[1] for x in toks[PDS.ARG]]
+        targs = [x for x in toks[PDS.ARG]]
     # Get Tags
     if PDS.TAG in toks:
         tags = [y for x in toks[PDS.TAG] for y in x]

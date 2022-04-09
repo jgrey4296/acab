@@ -64,7 +64,7 @@ class DFSSemantics(basic.StatementSemantics, SI.StatementSemantics_i):
         return True
 
     def __call__(self, instruction, semsys, ctxs=None, data=None):
-        if QUERY in instruction[-1].data and bool(instruction[-1].data[QUERY]):
+        if QUERY in instruction.data and bool(instruction.data[QUERY]):
             return self._query(instruction, semsys, ctxs=ctxs, data=data)
 
         return self._act(instruction, semsys, ctxs=ctxs, data=data)
