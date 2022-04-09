@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import abc
-import logging as root_logger
+import logging as logmod
 from dataclasses import InitVar, dataclass, field
 from types import FunctionType
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     # tc only imports
     pass
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 T = TypeVar('T')
 
 class AbsProtocolMeta(type):

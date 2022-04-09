@@ -1,4 +1,4 @@
-import logging as root_logger
+import logging as logmod
 import unittest
 
 import acab
@@ -24,7 +24,7 @@ Printer = AcabPrintSemantics(basic_plus, default_values={'MODAL_FIELD' : 'exop',
                                                          'EXOP.DOT'    : ".",
                                                          'EXOP.EX'     : "!"})
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 class TestPrintSemantics(unittest.TestCase):
 

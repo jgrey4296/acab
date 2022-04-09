@@ -1,4 +1,4 @@
-import logging as root_logger
+import logging as logmod
 from dataclasses import dataclass
 from enum import Enum
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
@@ -28,7 +28,7 @@ EXOP         = config.prepare("MODAL", "exop")()
 DEFAULT_EXOP = config.default(EXOP)
 EXOP_enum    = config.prepare(EXOP, as_enum=True)()
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 Sentence = AT.Sentence
 Node     = AT.Node

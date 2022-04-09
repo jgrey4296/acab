@@ -6,7 +6,7 @@ and formed into sentences
 from __future__ import annotations
 import abc
 import collections.abc as cABC
-import logging as root_logger
+import logging as logmod
 from dataclasses import dataclass, field
 from functools import reduce
 from re import Pattern
@@ -18,12 +18,12 @@ from uuid import UUID, uuid1
 from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.error.config import AcabConfigException
-import acab.interfaces.sub_protocols.value as VSubP
+import acab.interfaces.protocols.value as VSubP
 import acab.core.data.default_structure as DS
 
 __all__ = ['Value_i', 'Instruction_i', 'Sentence_i', 'Operator_i', 'Action_i']
 
-logging       = root_logger.getLogger(__name__)
+logging       = logmod.getLogger(__name__)
 
 config        = AcabConfig()
 
@@ -117,6 +117,6 @@ class ValueFactory_i(Protocol):
 
     @staticmethod
     def set(val_fn:Value_t, sen_fn:Sen_t) -> None:
-        logging.debug("Setting Factory basics to: {} and {}", val_fn, sen_fn)
+        logging.info("Setting Factory basics to: %s and %s", val_fn, sen_fn)
         ValueFactory_i.value_fn = val_fn
         ValueFactory_i.sen_fn   = sen_fn

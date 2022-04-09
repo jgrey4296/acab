@@ -1,14 +1,19 @@
-import logging as root_logger
+import logging as logmod
 import unittest
-# Setup root_logger:
 from os.path import split, splitext
 
-logging = root_logger.getLogger(__name__)
+import pyparsing as pp
+
+logging = logmod.getLogger(__name__)
 ##############################
 
 import acab
 
 acab.setup()
+
+if '@pytest_ar' in globals():
+    from acab.core.parsing import debug_funcs as DBF
+    DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
 from acab.core.data import default_structure as DS
 from acab.core.data.instruction import (Instruction, ProductionComponent,
@@ -18,31 +23,44 @@ from acab.core.data.sentence import Sentence
 from acab.core.data.value import AcabValue
 from acab.interfaces.value import Value_i
 from acab.modules.parsing.exlo.parsers import ActionParser as AP
+from acab.modules.parsing.exlo.parsers import FactParser as FP
 
 
 class Trie_Action_Parser_Tests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        root_logger.getLogger('').setLevel(root_logger.WARNING)
+        logmod.getLogger('').setLevel(logmod.WARNING)
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
 
-        file_h = root_logger.FileHandler(LOG_FILE_NAME, mode='w')
-        file_h.setLevel(root_logger.DEBUG)
+        file_h = logmod.FileHandler(LOG_FILE_NAME, mode='w')
+        file_h.setLevel(logmod.DEBUG)
 
-        console = root_logger.StreamHandler()
-        console.setLevel(root_logger.INFO)
+        console = logmod.StreamHandler()
+        console.setLevel(logmod.INFO)
 
-        logging = root_logger.getLogger(__name__)
+        logging = logmod.getLogger(__name__)
         logging.root.addHandler(console)
         logging.root.addHandler(file_h)
 
     #----------
     #use testcase snippets
+    def test_actions_parse(self):
+        test_str = " λoperator.add\n λoperator.sub\n λoperator.mul"
+        result = AP.actions.parse_string(test_str)[0]
+        self.assertIsInstance(result, ProductionContainer)
+        self.assertEqual(len(result), 3)
+
     def test_action_definition(self):
         """ Check an action definition can be parsed without error """
         test_str = "test(::α):\n  λoperator.add a.b.c\nend"
         definition = AP.action_definition.parse_string(test_str)[0]
+        self.assertEqual(definition.name, "test")
+
+    def test_action_multi_def(self):
+        test_str = "test(::α):\n λa.b.c $x\n λq.e.f $y $z\nend"
+        definition = AP.action_definition.parse_string(test_str)[0]
+        self.assertEqual(len(definition), 2)
         self.assertEqual(definition.name, "test")
 
     def test_parse_action_no_params(self):

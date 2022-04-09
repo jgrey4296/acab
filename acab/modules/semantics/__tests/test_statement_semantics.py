@@ -266,9 +266,9 @@ class StatementSemanticTests(unittest.TestCase):
         ctx_set            = ContextSet(op_ctx)
 
         # Construct Rule
-        query_sen = Sentence(["a", "test", "x"])
-        query_sen[-1].data[BIND_V]  = True
-        query_sen[-1].data[QUERY_V] = True
+        query_sen                  = Sentence(["a", "test", "x"])
+        query_sen[-1].data[BIND_V] = True
+        query_sen.data[QUERY_V]    = True
 
         transform_sen = ProductionComponent(Sentence(["regex"]), params=["x", "sen", "SEN"],
                                             rebind=AcabValue("y", data={BIND_V: True}))
@@ -336,9 +336,9 @@ class StatementSemanticTests(unittest.TestCase):
         ctx_set            = ContextSet(op_ctx)
 
         # Construct Rule
-        query_sen = Sentence(["a", "test", "x"])
-        query_sen[-1].data[BIND_V]  = True
-        query_sen[-1].data[QUERY_V] = True
+        query_sen                  = Sentence(["a", "test", "x"])
+        query_sen[-1].data[BIND_V] = True
+        query_sen.data[QUERY_V]    = True
 
         transform_sen = ProductionComponent(Sentence("regex"), params=["x", "sen", "SEN"],
                                             rebind=AcabValue("y", data={BIND_V: True}))

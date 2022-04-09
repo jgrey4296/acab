@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import abc
-import logging as root_logger
+import logging as logmod
 from dataclasses import InitVar, dataclass, field
 from enum import Enum
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
@@ -21,9 +21,9 @@ from acab.error.semantic import AcabSemanticException
 from acab.interfaces.value import Sentence_i, Value_i
 from acab.interfaces import handler_system as HSi
 from acab.interfaces import printing as PI
-import acab.core.util.handler_system as HS
+import acab.core.util.part_implementations.handler_system as HS
 
-logging                      = root_logger.getLogger(__name__)
+logging                      = logmod.getLogger(__name__)
 config                       = GET()
 DEFAULT_HANDLER_SIGNAL       = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 Sentence         : TypeAlias = AT.Sentence
@@ -31,6 +31,8 @@ ModuleComponents : TypeAlias = AT.ModuleComponents
 GenFunc          : TypeAlias = AT.fns.GenFunc
 
 class PrintSystemImpl(HS.HandlerSystem, PI.PrintSystem_i):
+
+    total : ClassVar[int]  = 0
 
     def __post_init__(self, specs, handlers, sieve_fns) -> None: #type:ignore[no-untyped-def]
         # TODO abstract this into a method?
@@ -60,6 +62,7 @@ class PrintSystemImpl(HS.HandlerSystem, PI.PrintSystem_i):
         remaining = [[x, self.separator] for x in args[:-1]] + [args[-1]] #type:ignore
         result = []
         while bool(remaining):
+            PrintSystemImpl.total += 1
             current = remaining.pop(0)
             spec    = None
             data    : dict[str, Any] = {}
@@ -77,7 +80,7 @@ class PrintSystemImpl(HS.HandlerSystem, PI.PrintSystem_i):
                 current = current.value
 
             if spec.check_api(func=PI.PrintSemantics_i):
-                logging.debug(f"(Remain:{len(remaining):2}) Calling: {spec} : {current}")
+                logging.debug("(Remain:{:3}/{:4}) Calling: {:>15} : {}", len(remaining), PrintSystemImpl.total, str(spec), current)
                 handled = spec[0](current, top=self, data=data)
             else:
                 handled = spec[0](current, data=data)

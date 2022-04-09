@@ -5,13 +5,13 @@ Provides Metaclasses for creating Singletons
 Note: superclass is tyep(Protocol) so classes which
 implement protocol's don't get a metaclass conflict
 """
-import logging as root_logger
+import logging as logmod
 from fractions import Fraction
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence, Protocol,
                     Set, Tuple, TypeAlias, TypeVar, Union, cast)
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 class SingletonMeta(type(Protocol)):
     """

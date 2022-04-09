@@ -1,36 +1,35 @@
 # https://docs.python.org/3/library/cmd.html
 import cmd
-import logging as root_logger
+import logging as logmod
 import sys
-import pyparsing as pp
+import traceback
 from dataclasses import InitVar, dataclass, field
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
-import traceback
 
-logging = root_logger.getLogger(__name__)
+import pyparsing as pp
+
+logging = logmod.getLogger(__name__)
+trace_logger = logmod.getLogger('acab.repl.trace')
 
 import acab
 
-config = acab.setup()
+config = acab.GET()
 
 from acab.interfaces.context import ContextSet_i
 from acab.interfaces.engine import AcabEngine_i
 from acab.modules.repl import ReplParser as RP
+from acab.error.config import AcabConfigException
 
-
-def register(fn):
-    """ Decorator for registering a function into the repl """
-    logging.info(f"Repl Registration: {fn.__name__}")
-    assert("do_" in fn.__name__)
-    assert(fn.__name__ not in dir(AcabREPLCommander))
-    setattr(AcabREPLCommander, fn.__name__, fn)
-    return fn
 
 #--------------------
 initial_prompt = config.prepare("Module.REPL", "PROMPT", actions=[config.actions_e.STRIPQUOTE])()
 initial_engine = config.prepare("Module.REPL", "ENGINE")()
+try:
+    repl_intro     = config.prepare("Module.REPL", "INTRO")().replace("\\n", "\n")
+except AcabConfigException:
+    repl_intro = "Welcome to ACAB.\nType 'help' or '?' to list commands.\nType 'tutorial' for a tutorial.\nType ':q' to quit."
 
 @dataclass
 class ReplState:
@@ -51,10 +50,16 @@ class ReplState:
 
 class AcabREPLCommander(cmd.Cmd):
     """ Implementation of cmd.Cmd to provide an extensible ACAB REPL"""
-    intro  = "Welcome to ACAB.\nType 'help' or '?' to list commands.\nType 'tutorial' for a tutorial.\nType ':q' to quit."
-    prompt = initial_prompt + ": "
-
+    intro              = repl_intro
+    prompt             = initial_prompt + ": "
+    _latebind          = []
     state  : ReplState = ReplState()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for inst in self._latebind:
+            assert(getattr(inst, "_cmd") is None)
+            setattr(inst, "_cmd", self)
 
     def default(self, line):
         """ Called when no other command matches """
@@ -70,6 +75,7 @@ class AcabREPLCommander(cmd.Cmd):
         """ For massaging the input command """
         # convert symbols -> cmd names.
         # eg: ':{' -> multi
+        trace_logger.info("[repl]>>> " + line)
         try:
             logging.debug("PreCmd Parsing: {}".format(line))
             line = RP.precmd_parser.parse_string(line)[:]
@@ -89,12 +95,15 @@ class AcabREPLCommander(cmd.Cmd):
             logging.warning(f"Parse Failure: {err.markInputline()}")
 
     def postcmd(self, stop, line):
+        """
+        Update the repl prompt to display number of viable contexts
+        """
         count = "0"
         if self.state.ctxs is not None:
             count = len(self.state.ctxs)
         insert = f"(Γ: {count})"
 
-        self.prompt = self.state.prompt + " " + insert + ": "
+        self.prompt = f"{self.state.prompt} {insert}: "
         return stop
 
     def parseline(self, line):
@@ -114,6 +123,8 @@ class AcabREPLCommander(cmd.Cmd):
                 line = 'shell ' + line[1:]
             else:
                 return None, None, line
+
+        # split into cmd and args
         i, n = 0, len(line)
         while i < n and line[i] in self.identchars: i = i+1
         cmd, arg = line[:i], line[i:]
@@ -128,3 +139,34 @@ class AcabREPLCommander(cmd.Cmd):
         and prints the working memory
         """
         return self.onecmd("print wm")
+
+
+    @classmethod
+    def register(cls, fn):
+        """ Decorator for registering a function into the repl """
+        logging.debug(f"{cls.__name__} Registration: {fn.__name__}")
+        assert("do_" in fn.__name__)
+        assert(fn.__name__ not in dir(cls))
+        setattr(cls, fn.__name__, fn)
+        return fn
+
+    @classmethod
+    def register_class(cls, name):
+        """ Register an entire class as the command bound to do_{name},
+        (specifically the class' __call__ method)
+        """
+        def __register(target_cls):
+            assert(hasattr(target_cls, "__call__"))
+            assert(hasattr(cls, "_latebind"))
+            instance = target_cls()
+            assert(not hasattr(target_cls, "_cmd"))
+            setattr(cls, f"do_{name}", instance.__call__)
+            setattr(instance, "_cmd", None)
+            cls._latebind.append(instance)
+            return target_cls
+
+        return __register
+
+
+register       = AcabREPLCommander.register
+register_class = AcabREPLCommander.register_class

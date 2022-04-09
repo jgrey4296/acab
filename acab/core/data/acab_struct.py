@@ -1,4 +1,4 @@
-import logging as root_logger
+import logging as logmod
 from dataclasses import dataclass, field
 from weakref import WeakValueDictionary
 
@@ -8,7 +8,7 @@ from acab.core.data.value import AcabValue
 from acab.core.decorators.util import cache
 from acab.interfaces.data import Structure_i
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 config  = AcabConfig()
 
 class AcabStruct(Structure_i):

@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import abc
-import logging as root_logger
+import logging as logmod
 from copy import deepcopy
 from dataclasses import InitVar, dataclass, field, replace
 from fractions import Fraction
@@ -16,7 +16,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 from uuid import UUID, uuid1
 from weakref import ref
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 import acab.core.data.default_structure as DS
 import acab.interfaces.value as VI
@@ -28,7 +28,7 @@ from acab.core.util.singletons import SingletonMeta
 from acab.error.base import AcabBasicException
 from acab.interfaces.sieve import AcabSieve
 
-logging        = root_logger.getLogger(__name__)
+logging        = logmod.getLogger(__name__)
 
 config         = AcabConfig()
 BIND_SYMBOL    = config.prepare("Symbols", "BIND")()
@@ -71,7 +71,7 @@ class ValueMeta(ProtocolMeta):
         the immutable form
         """
         # TODO possibly hold weafrefs to all created objects, and avoid any duplication
-        defaults = getattr(cls, "_defaults", {})
+        defaults     = getattr(cls, "_defaults", {})
         _data        = cls._build_data_and_type(data, _type, defaults=defaults)
         tags, params = cls._build_tags_and_params(tags, params)
 
@@ -110,7 +110,8 @@ class ValueMeta(ProtocolMeta):
     @staticmethod
     def _build_data_and_type(data:None|dict[ValueData, Any], _type:'None|str|Sen_A'=None, defaults:dict[ValueData, Any]=None) -> dict[str,Any]:
         # TODO construct defaults in AcabConfig
-        _data = ValueMeta.default_data.copy()
+        _data = {}
+        _data.update(ValueMeta.default_data)
         _data.update(defaults)
         _data.update(data or {})
 

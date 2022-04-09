@@ -1,11 +1,15 @@
 import unittest
 from os.path import splitext, split
-import logging as root_logger
+import logging as logmod
 import pyparsing as pp
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 import acab
 config = acab.setup()
+
+if '@pytest_ar' in globals():
+    from acab.core.parsing import debug_funcs as DBF
+    DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
 from acab.core.data.value import AcabValue
 from acab.core.data.sentence import Sentence
@@ -24,21 +28,21 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        LOGLEVEL = root_logger.DEBUG
+        LOGLEVEL = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        root_logger.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
+        logmod.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
 
-        console = root_logger.StreamHandler()
-        console.setLevel(root_logger.INFO)
-        root_logger.getLogger('').addHandler(console)
-        logging = root_logger.getLogger(__name__)
+        console = logmod.StreamHandler()
+        console.setLevel(logmod.INFO)
+        logmod.getLogger('').addHandler(console)
+        logging = logmod.getLogger(__name__)
 
 
     def setUp(self):
-        FP.HOTLOAD_SEN_ENDS <<= QP.query_sen_end | pp.NoMatch()
+        FP.HOTLOAD_SEN_POSTS << QP.query_sen_post_annotation
 
     def tearDown(self):
-        FP.HOTLOAD_SEN_ENDS <<= pp.NoMatch()
+        FP.HOTLOAD_SEN_POSTS <<= pp.NoMatch()
 
     #----------
     #use testcase snippets
@@ -128,3 +132,23 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
     def test_query_and_transform_and_action_rule(self):
         result = RP.rule.parse_string("rule(::ρ):\n  a.b.c?\n  d.e.f?\n\n  λa.b.c $x -> $y\n\n a.b.c\nend")[0]
         self.assertIsInstance(result, ProductionStructure)
+
+    def test_empty_rule_with_arg(self):
+        result = RP.rule.parse_string("rule(::ρ):\n | $x |\n\nend")[0]
+        self.assertIsInstance(result, ProductionStructure)
+        self.assertEqual(len(result.params), 1)
+
+    def test_empty_rule_with_args(self):
+        result = RP.rule.parse_string("rule(::ρ):\n | $x, $y |\n\nend")[0]
+        self.assertIsInstance(result, ProductionStructure)
+        self.assertEqual(len(result.params), 2)
+
+    def test_empty_rule_with_tags(self):
+        result = RP.rule.parse_string("rule(::ρ):\n #test.blah.bloo\n\nend")[0]
+        self.assertIsInstance(result, ProductionStructure)
+        self.assertEqual(len(result.tags), 3)
+
+    def test_empty_rule_with_multiline_tags(self):
+        result = RP.rule.parse_string("rule(::ρ):\n #test.blah.bloo\n#aweg.foo.agjgj\n\nend")[0]
+        self.assertIsInstance(result, ProductionStructure)
+        self.assertEqual(len(result.tags), 6)

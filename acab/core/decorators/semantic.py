@@ -9,8 +9,8 @@ from acab.core.data.value import AcabValue
 from acab.core.data.instruction import ProductionOperator
 from acab.core.util.delayed_commands import DelayedCommands_i
 
-import logging as root_logger
-logging = root_logger.getLogger(__name__)
+import logging as logmod
+logging = logmod.getLogger(__name__)
 
 config = AcabConfig()
 
@@ -67,7 +67,7 @@ def OperatorArgUnWrap(f):
     """
     @wraps(f)
     def wrapped(self, *the_args, **the_kwargs):
-        unwrapped_args = [x.value for x in the_args]
+        unwrapped_args = [x.value or x.key() for x in the_args]
         return f(self, *unwrapped_args, **the_kwargs)
 
     return wrapped

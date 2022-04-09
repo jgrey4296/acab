@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import logging as root_logger
+import logging as logmod
 from copy import deepcopy
 from dataclasses import InitVar, dataclass, field, replace
 from fractions import Fraction
@@ -18,10 +18,10 @@ from acab.core.config.config import AcabConfig
 from acab.core.decorators.util import cache
 from acab.error.base import AcabBasicException
 from acab.interfaces.sieve import AcabSieve
-import acab.interfaces.sub_protocols.value as VP
+import acab.interfaces.protocols.value as VP
 from acab.core.data.factory import ValueFactory
 
-logging        = root_logger.getLogger(__name__)
+logging        = logmod.getLogger(__name__)
 
 config         = AcabConfig()
 BIND_SYMBOL    = config.prepare("Symbols", "BIND")()
@@ -124,7 +124,7 @@ class _ValueMetaDataImpl(VI.Value_i, VP.ValueMetaData_p):
 
         return self.data[DS.TYPE_INSTANCE] # type:ignore
 
-    def apply_params(self, params, *, data=None) -> Value_A:
+    def apply_params(self, *params, data=None) -> Value_A:
         """
         return modified copy
         """
@@ -135,7 +135,7 @@ class _ValueMetaDataImpl(VI.Value_i, VP.ValueMetaData_p):
         safe_params = [x if isinstance(x, VI.Value_i) else ValueFactory.value(x) for x in params]
         return self.copy(params=params) #type:ignore
 
-    def apply_tags(self, tags, *, data=None) -> Value_A:
+    def apply_tags(self, *tags, data=None) -> Value_A:
         """
         return modified copy
         """
@@ -144,7 +144,11 @@ class _ValueMetaDataImpl(VI.Value_i, VP.ValueMetaData_p):
             return cast(VI.Value_i, self)
 
         tag_extension  = {x for x in self.tags}
-        tag_extension.update(tags)
+        for tag in tags:
+            if isinstance(tags, VI.Sentence_i):
+                tag_extension.update(tag.words)
+            else:
+                tag_extension.update(tag)
         return self.copy(tags=tag_extension) #type:ignore
 
 

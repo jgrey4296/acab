@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import logging as root_logger
+import logging as logmod
 import sys
 from dataclasses import InitVar, dataclass, field
 from enum import Enum
@@ -21,7 +21,7 @@ from acab.modules.context.context_set import (ContextInstance,
 
 from .. import exceptions as TE
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 config = AcabConfig()
 

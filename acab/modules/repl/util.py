@@ -1,70 +1,31 @@
 import importlib
-import logging as root_logger
+import logging as logmod
 from types import FunctionType, ModuleType
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
+from functools import wraps
+import datetime
+import builtins
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 import acab
 from acab.interfaces.debugger import AcabDebugger_i
 from acab.interfaces.engine import AcabEngine_i
 
-config = acab.setup()
+config = acab.GET()
 
 
 def build_slice(s, l, toks):
     first  = None
     second = None
     if 'first' in toks:
-        first = toks['first'][0]
+        first = toks['first']
 
     if 'second' in toks:
-        second = toks['second'][0]
+        second = toks['second']
 
     return slice(first, second)
-
-def print_contexts(self, params):
-    ctxs_to_print     = []
-    bindings_to_print = []
-    if "short_context" in params:
-        try:
-            ctxs_to_print.append(self.state.ctxs[params['short_context']])
-        except IndexError as err:
-            print(f"Selected bad ctx instance. Try 0 <= x < {len(self.state.ctxs)}.")
-
-    elif "context_slice" in params:
-        ctx_slice = self.state.ctxs[params['context_slice']].active_list()
-        ctxs_to_print += ctx_slice
-    elif bool(self.state.ctxs) and len(self.state.ctxs) > 0:
-        ctxs_to_print += self.state.ctxs.active_list()
-    else:
-        print(f"No applicable contexts to print")
-        return
-
-    if "bindings" in params:
-        bindings_to_print += params.bindings[:]
-
-    logging.info("Ctxs: {}".format(ctxs_to_print))
-    logging.info("Bindings: {}".format(bindings_to_print))
-
-    # now print them
-    for i,ctx in enumerate(ctxs_to_print):
-        print(f"Context: {i}")
-        # if bool(ctx.continuation):
-        #     print(f"Continuation: {ctx.continuation}")
-        if bool(bindings_to_print):
-            for x in bindings_to_print:
-                print("{} : {}".format(x, self.state.engine.pprint(target=[ctx[x]])))
-        else:
-            for x,y in ctx.data.items():
-                print("{} : {}".format(x, self.state.engine.pprint(target=[y])))
-
-        print("--------------------")
-
-    if bool(self.state.ctxs._named_sets):
-        print("Named (continuation) Sets:")
-        print(self.state.engine.pprint(target=list(self.state.ctxs._named_sets.keys())))
 
 def init_inspect(mod_str):
     """
@@ -95,7 +56,7 @@ def ConfigBasedLoad(f):
     debugger if necessary """
     if "Module.Debug" in config:
         logging.debug("Loading Debugger")
-        mod = config.prepare("Module.Debug", "IMPORT", actions=[config.actions_e.IMPORT])()
+        mod  = config.prepare("Module.Debug", "IMPORT", actions=[config.actions_e.IMPORT])()
         name = config.prepare("Module.Debug", "DEBUGGER")()
         debugger = getattr(mod, name)
         assert(issubclass(debugger, AcabDebugger_i)), debugger
@@ -103,6 +64,7 @@ def ConfigBasedLoad(f):
         return f
 
 
+    @wraps(f)
     def wrapper(self, line):
         if self.state.debugger is None:
             logging.debug(f"Starting Debugger: {debugger.__name__}")
@@ -110,8 +72,6 @@ def ConfigBasedLoad(f):
             self.state.debugger.set_running_trace()
 
         return f(self, line)
-
-    wrapper.__name__ = f.__name__
 
     return wrapper
 
@@ -132,3 +92,28 @@ def build_rebind_instruction(value:str):
                                                    "SEMANTIC_HINT")(): action_sem_hint})
 
     return act
+
+
+def capture_printing():
+    """
+    Setup a file handler for a separate logger,
+    to keep a trace of anything printed
+    """
+    oldprint = builtins.print
+    # start_time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
+    TRACE_FILE_NAME = "trace.repl"
+    input_trace_handler = logmod.FileHandler(TRACE_FILE_NAME, mode='w')
+    input_trace_handler.setLevel(logmod.INFO)
+
+    trace_logger = logmod.getLogger('acab.repl.trace')
+    trace_logger.setLevel(logmod.INFO)
+    trace_logger.addHandler(input_trace_handler)
+    trace_logger.propagate = False
+
+    @wraps(oldprint)
+    def intercepted(*args, **kwargs):
+        """ Wraps print to also log to a separate file """
+        oldprint(*args, **kwargs)
+        trace_logger.warning(args[0])
+
+    builtins.print = intercepted

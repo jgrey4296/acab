@@ -1,4 +1,4 @@
-import logging as root_logger
+import logging as logmod
 import re
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
@@ -17,10 +17,9 @@ from acab.core.parsing.annotation import ModalAnnotation, ValueAnnotation
 from acab.core.parsing.consts import (CPAR, DBLCOLON, NG, OPAR, TAG, N,
                                       component_gap, emptyLine, gap, ln, op,
                                       opLn, orm, s, s_key, s_lit, zrm)
-from acab.core.parsing.indented_block import IndentedBlock
 from acab.interfaces.value import ValueFactory_i
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 ParserElement = AT.Parser
 
@@ -29,9 +28,9 @@ config = AcabConfig()
 HOTLOAD_VALUES = pp.Forward()
 HOTLOAD_VALUES.set_name('hotload_values')
 HOTLOAD_HEAD_ANNOTATIONS = pp.Forward()
-HOTLOAD_HEAD_ANNOTATIONS.set_name('hotload_head_annotations')
+HOTLOAD_HEAD_ANNOTATIONS.set_name('hl_word_head_annot')
 HOTLOAD_POST_ANNOTATIONS = pp.Forward()
-HOTLOAD_POST_ANNOTATIONS.set_name('hotload_post_annotations')
+HOTLOAD_POST_ANNOTATIONS.set_name('hl_word_post_annot')
 
 Fwd_ArgList = pp.Forward()
 Fwd_ArgList.set_name('fwd_arglist')
@@ -109,11 +108,12 @@ def STATEMENT_CONSTRUCTOR(annotation_p:ParserElement,
 
     head = PARAM_CORE(req_mid=type_annotation_p, end=PConst.COLON)
 
-    parser = NG(PDS.NAME, head) + line_end_p \
-        + op(arg_p + emptyLine) \
-        + op(Fwd_TagList + emptyLine) \
-        + NG(PDS.STATEMENT, body_p) + end_p
-
+    parser = (NG(PDS.NAME, head) + line_end_p
+              + op(arg_p + emptyLine)
+              + op(Fwd_TagList + emptyLine)
+              + NG(PDS.STATEMENT, body_p)
+              + end_p)
+    parser.streamline()
 
     if parse_fn is not None:
         parser.add_parse_action(parse_fn)
@@ -158,13 +158,13 @@ VALBIND = (NG(PDS.HEAD_ANNOTATION, zrm(HEAD_ANNOTATIONS))
            + NG(PDS.POST_ANNOTATION, zrm(POST_ANNOTATIONS)))
 VALBIND.set_parse_action(Pfunc.make_value)
 
-Fwd_ArgList <<= PConst.VBAR + DELIMIST(BIND, delim=PConst.COMMA) + PConst.VBAR
+Fwd_ArgList <<= PConst.VBAR + DELIMIST(VALBIND, delim=PConst.COMMA) + PConst.VBAR
 
 # TODO make TAG a head_annotation
 tagSen = TAG + pp.delimited_list(ATOM, delim=".")
 tagSen.set_parse_action(lambda s, l, t: (ValueFactory_i.sen([x[1] for x in t[:]])))
 
-Fwd_TagList <<= IndentedBlock(tagSen)(PDS.TAG)
+Fwd_TagList <<= pp.IndentedBlock(tagSen + zrm(pp.line_end.suppress() + tagSen))(PDS.TAG)
 
 # NAMING
 # HOTLOAD_VALUES.set_name("HotloadValues")

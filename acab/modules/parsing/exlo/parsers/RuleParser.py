@@ -1,13 +1,13 @@
 """ Trie-based parser to construct rules """
 # pylint: disable=bad-whitespace
-import logging as root_logger
+import logging as logmod
 
 import pyparsing as pp
 from acab.core.config.config import AcabConfig
 from acab.core.parsing import parsers as PU
 from acab.core.parsing.consts import (ARROW, COLON, COMMA, DELIM,
                                           DOUBLEBAR, NG, RULE_HEAD, N,
-                                          component_gap, emptyLine, gap, op,
+                                          component_gap, emptyLine, gap, op, ln,
                                           orm, END)
 from acab.modules.parsing.exlo.util import ACTION_S, QUERY_S, TRANSFORM_S, RULE_HEAD
 from acab.modules.parsing.exlo.constructors import build_rule
@@ -17,14 +17,14 @@ from . import FactParser as FP
 from . import QueryParser as QP
 from . import TransformParser as TP
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 # all of these should be indented blocks
 conditions = N(QUERY_S,     QP.clauses)
 transforms = N(TRANSFORM_S, TP.transforms)
 actions    = N(ACTION_S,    AP.actions)
 
-endOrLine  = pp.FollowedBy(END) | emptyLine | pp.string_end
+endOrLine  = pp.FollowedBy(END) | ln | pp.string_end
 # endOrLine.leave_whitespace()
 
 rule_body = op(conditions + endOrLine) + op(transforms + endOrLine) + op(actions + endOrLine)

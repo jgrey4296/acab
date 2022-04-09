@@ -3,7 +3,7 @@
 Defines functions for parsers and parse -> data transform
 
 """
-import logging as root_logger
+import logging as logmod
 
 import pyparsing as pp
 from acab.core.config.config import AcabConfig
@@ -19,7 +19,7 @@ import acab.core.data.default_structure as DS
 import acab.core.parsing.default_keys as PDS
 from acab.core.data.factory import ValueFactory
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 config = AcabConfig()
 SEMANTIC_HINT    = DS.SEMANTIC_HINT
@@ -75,7 +75,7 @@ def add_annotations(s, loc, toks):
 
 
 def construct_multi_sentences(s, loc, toks):
-    base_sen = toks[PDS.NAME][0]
+    base_sen             = toks[PDS.NAME][0]
     additional_sentences = toks[PDS.STATEMENT]
 
     new_sentences = []
@@ -85,7 +85,7 @@ def construct_multi_sentences(s, loc, toks):
         data = {}
         data.update(base_sen.data)
         data.update(additional.data)
-        new_sen = ValueFactory.value(full_toks, data=data)
+        new_sen = ValueFactory.sen(full_toks, data=data)
         new_sentences.append(new_sen)
 
     return new_sentences
@@ -113,14 +113,13 @@ def construct_statement(s, loc, toks):
     targs = []
     tags  = []
     if PDS.ARG in toks:
-        # PDS.BIND's ATOM returns a tuple of ('name', VARNAME)
-        targs = [x[1] for x in toks[PDS.ARG]]
+        targs = [x for x in toks[PDS.ARG]]
     # Get Tags
     if PDS.TAG in toks:
         tags = [y for x in toks[PDS.TAG] for y in x]
 
     obj = toks[PDS.STATEMENT][0]
-    updated_obj = obj.apply_params(targs).apply_tags(tags)
+    updated_obj = obj.apply_params(*targs).apply_tags(*tags)
 
     named_statement = iden.attach_statement(updated_obj)
 
@@ -144,7 +143,7 @@ def strip_parse_type(s, loc, toks):
 
 
 def deep_update_names(parser):
-    logging.debug("Deep Updating Parser Names")
+    logging.debug("Deep Updating Parser Names for {}", parser)
     queue = [parser]
     processed = set()
 
@@ -154,8 +153,8 @@ def deep_update_names(parser):
             continue
         processed.add(current)
 
-        if hasattr(current, "strRepr"):
-            setattr(current, "strRepr", None)
+        if hasattr(current, "_defaultName"):
+            setattr(current, "_defaultName", None)
 
         if hasattr(current, "expr"):
             queue.append(current.expr)
@@ -164,10 +163,10 @@ def deep_update_names(parser):
 
 
 def clear_parser_names(*parsers):
-    logging.debug("Clearing Parser Names")
+    logging.debug("Clearing Parser Names for: {}", parsers)
     for parser in parsers:
-        if hasattr(parser, "name"):
-            parser.set_name(None)
+        # if hasattr(parser, "customName"):
+        #     setattr(parser, "customName", None)
 
-        if hasattr(parser, "strRepr") and parser.strRepr is not None:
-            parser.strRepr = None
+        if hasattr(parser, "_defaultName"):
+            setattr(parser, "_defaultName", None)

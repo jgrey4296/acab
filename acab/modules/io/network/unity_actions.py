@@ -1,11 +1,11 @@
-import logging as root_logger
+import logging as logmod
 
 from acab.core.data.instruction import ProductionOperator
 
 from .unity_server import UnityServer
 from . import util
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 class IOSend(ProductionOperator):
 

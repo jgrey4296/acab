@@ -6,8 +6,11 @@ from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic, TypeAlias
 from typing import TYPE_CHECKING, Protocol, TypeGuard
 from typing import Final, final, overload, Protocol, runtime_checkable
+from types import ModuleType
+from importlib import import_module
 
 from acab.interfaces.module_loader import ModuleLoader_i
+from acab.error.importer import AcabImportException
 
 if TYPE_CHECKING:
     # tc only imports

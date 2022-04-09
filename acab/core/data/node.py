@@ -2,7 +2,7 @@
 AcabNode: The internal type which knowledge base data structures use.
 
 """
-import logging as root_logger
+import logging as logmod
 from dataclasses import dataclass, field
 from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
                     Mapping, Match, MutableMapping, Sequence, Tuple, TypeAlias,
@@ -20,7 +20,7 @@ from acab.core.data.value import AcabValue
 from acab.core.decorators.util import cache
 from acab.core.data.factory import ValueFactory as VF
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 config = AcabConfig()
 

@@ -1,18 +1,24 @@
-import logging as root_logger
+import logging as logmod
 import unittest
 from os.path import split, splitext
 
 import pyparsing as pp
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
+logging.setLevel(logmod.DEBUG)
 
 import acab
 
 config = acab.setup()
 
+if '@pytest_ar' in globals():
+    from acab.core.parsing import debug_funcs as DBF
+    DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+
+
 import acab.modules.parsing.exlo.parsers.FactParser as FP
 import acab.modules.parsing.exlo.parsers.QueryParser as QP
-from acab.core.data.default_structure import BIND, NEGATION, QUERY_FALLBACK
+from acab.core.data.default_structure import BIND, NEGATION, QUERY_FALLBACK, QUERY
 from acab.core.data.instruction import (Instruction, ProductionComponent,
                                         ProductionContainer,
                                         ProductionOperator)
@@ -20,6 +26,7 @@ from acab.core.data.sentence import Sentence
 from acab.core.data.value import AcabValue
 from acab.core.parsing import parsers as PU
 from acab.modules.operators import query as QOP
+from acab.core.parsing.annotation import ValueRepeatAnnotation
 
 CONSTRAINT_V     = config.prepare("Parse.Structure", "CONSTRAINT")()
 REGEX_PRIM       = config.prepare("Type.Primitive", "REGEX")()
@@ -28,35 +35,31 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        LOGLEVEL = root_logger.DEBUG
+        LOGLEVEL = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        root_logger.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
+        logmod.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
 
-        console = root_logger.StreamHandler()
-        console.setLevel(root_logger.INFO)
-        root_logger.getLogger('').addHandler(console)
-        logging = root_logger.getLogger(__name__)
-
-        FP.HOTLOAD_SEN_ENDS << QP.query_sen_end
-
-    @classmethod
-    def tearDownClass(cls):
-        FP.HOTLOAD_SEN_ENDS << pp.NoMatch()
+        console = logmod.StreamHandler()
+        console.setLevel(logmod.DEBUG)
+        logmod.getLogger('').addHandler(console)
+        logging = logmod.getLogger(__name__)
+        logging.setLevel(logmod.DEBUG)
 
     #----------
     #use testcase snippets
     def setUp(self):
-        PU.HOTLOAD_VALUES << pp.NoMatch()
-        FP.HOTLOAD_SEN_ENDS <<=  QP.query_sen_end | pp.NoMatch()
+        FP.HOTLOAD_SEN_POSTS << QP.query_sen_post_annotation
+        FP.HOTLOAD_ANNOTATIONS << QP.word_query_constraint
 
     def tearDown(self):
-        FP.HOTLOAD_SEN_ENDS <<= pp.NoMatch()
+        FP.HOTLOAD_SEN_POSTS <<= pp.NoMatch()
 
     def test_query_tail(self):
-        result = QP.query_sen_end.parse_string("test?")[0]
-        self.assertIsInstance(result, AcabValue)
-        self.assertEqual(result, "test")
+        result = FP.SENTENCE.parse_string("a.test.query?")[0]
+        self.assertIsInstance(result, Sentence)
+        self.assertEqual(result, "_:a.test.query")
         self.assertIn(BIND, result.data)
+        self.assertIn(QUERY, result.data)
 
 
     def test_basic_clause(self):
@@ -64,6 +67,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result, Sentence)
         self.assertEqual(len(result), 3)
         self.assertEqual(result[-1].value, 'c')
+        self.assertIn(QUERY, result.data)
 
     def test_basic_clause_with_bind(self):
         result = QP.SENTENCE.parse_string('a.b.$c?')[0]
@@ -71,11 +75,13 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertEqual(len(result), 3)
         self.assertEqual(result[-1].value, 'c')
         self.assertTrue(result[-1].is_var)
+        self.assertIn(QUERY, result.data)
 
     def test_basic_negated_clause(self):
         result = QP.SENTENCE.parse_string('~a.b.c?')[0]
         self.assertIsInstance(result, Sentence)
         self.assertTrue(result.data[NEGATION])
+        self.assertIn(QUERY, result.data)
 
     def test_basic_multi_clause(self):
         """ Check multiple query clauses can be parsed """
@@ -104,7 +110,7 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
 
     @unittest.skip
     def test_clause_fallback_strings(self):
-        result = QP.clauses.parse_string('a.b.c? || $x:a.b!c, $y:b.d.e')[0]
+        result = QP.clauses.parse_string('a.b.c? || $x:a.b!c, $y:b.d.e\n')[0]
         self.assertIsInstance(result, ProductionContainer)
         r_clause = result.clauses[0]
         breakpoint()
@@ -119,3 +125,37 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         result = QP.query_statement.parse_string("query(::γ):\n  a.b.c?\n  d.e.f?\n  a.b.$x?\nend")[0]
         self.assertIsInstance(result, ProductionContainer)
         self.assertEqual(len(result.clauses), 3)
+
+    def test_queries_with_params(self):
+        result = QP.clauses.parse_string(" a.b.c?\n d.e(λa.b.q $y).f?\n g.h.i?")[0]
+        self.assertIsInstance(result, ProductionContainer)
+        self.assertEqual(len(result.clauses), 3)
+
+    def test_basic_constraint_no_params(self):
+        result = QP.basic_constraint.parse_string("λa.b.c")[0]
+        self.assertIsInstance(result, ValueRepeatAnnotation)
+        self.assertIsInstance(result.value, ProductionComponent)
+        self.assertFalse(result.value.params)
+
+    def test_basic_constraint_one_param(self):
+        result = QP.basic_constraint.parse_string("λa.b.c $x")[0]
+        self.assertIsInstance(result, ValueRepeatAnnotation)
+        self.assertIsInstance(result.value, ProductionComponent)
+        self.assertTrue(result.value.params)
+
+    def test_basic_constraint_one_sen(self):
+        result = QP.basic_constraint.parse_string("λa.b.c q.w.e")[0]
+        self.assertIsInstance(result, ValueRepeatAnnotation)
+        self.assertIsInstance(result.value, ProductionComponent)
+        self.assertTrue(result.value.params)
+
+
+    def test_basic_constraint_multi_params(self):
+        result = QP.basic_constraint.parse_string("λa.b.c q.w.e $x $y")[0]
+        self.assertIsInstance(result, ValueRepeatAnnotation)
+        self.assertIsInstance(result.value, ProductionComponent)
+        self.assertTrue(result.value.params)
+
+    def test_basic_constraint_on_word(self):
+        result = FP.SEN_WORD.parse_string("test(λa.b.c $x $y).")[0]
+        self.assertIsInstance(result, AcabValue)

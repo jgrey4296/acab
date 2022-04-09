@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 
-import logging as root_logger
+import logging as logmod
 import re
 import unittest
 import unittest.mock as mock
@@ -9,7 +9,7 @@ from os.path import split, splitext
 
 import pyparsing as pp
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 ##############################
 
 import acab
@@ -54,22 +54,26 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        LOGLEVEL = root_logger.DEBUG
+        LOGLEVEL = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        root_logger.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
+        logmod.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
 
-        console = root_logger.StreamHandler()
-        console.setLevel(root_logger.INFO)
-        root_logger.getLogger('').addHandler(console)
-        logging = root_logger.getLogger(__name__)
+        console = logmod.StreamHandler()
+        console.setLevel(logmod.INFO)
+        logmod.getLogger('').addHandler(console)
+        logging = logmod.getLogger(__name__)
 
+    def setUp(self):
         FP.HOTLOAD_ANNOTATIONS << pp.MatchFirst([QP.word_query_constraint])
+        FP.HOTLOAD_SEN_ENDS    << pp.MatchFirst([QP.query_statement,
+                                                 TP.transform_statement,
+                                                 AP.action_definition])
+        FP.HOTLOAD_SEN_POSTS   << QP.query_sen_post_annotation
 
-        FP.HOTLOAD_SEN_ENDS << pp.MatchFirst([QP.query_sen_end,
-                                              QP.query_statement,
-                                              TP.transform_statement,
-                                              AP.action_definition])
-
+    def tearDown(self):
+        FP.HOTLOAD_ANNOTATIONS << pp.NoMatch()
+        FP.HOTLOAD_SEN_ENDS    << pp.NoMatch()
+        FP.HOTLOAD_SEN_POSTS   << pp.NoMatch()
 
     def test_sentence_basic(self):
         """ Check a sentence can be printed """
@@ -99,7 +103,7 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
                                           Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                           Printers.ModalPrinter().as_handler(signal="MODAL")],
                            sieve_fns=[],
-                          settings={"MODAL" : "exop"})
+                        settings={"MODAL" : "exop"})
         sentence = FP.parse_string("a.test.sen")[0]
         result = sem.pprint(sentence)
         self.assertEqual(result, "a.test.sen")
@@ -129,7 +133,7 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
                            sieve_fns=[],
                           settings={"MODAL": "exop"})
         sentence = FP.parse_string("a.test!sen")[0]
-        sentence[-1].data[DS.QUERY] = True
+        sentence.data[DS.QUERY] = True
         result = sem.pprint(sentence)
         self.assertEqual(result, "a.test!sen?")
 

@@ -3,8 +3,8 @@ A Modified version of topological sorting a graph
 (https://en.wikipedia.org/wiki/Topological_sorting)
 """
 from collections import defaultdict
-import logging as root_logger
-logging = root_logger.getLogger(__name__)
+import logging as logmod
+logging = logmod.getLogger(__name__)
 
 class KahnSort:
 

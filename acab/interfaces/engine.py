@@ -2,7 +2,7 @@
 from __future__ import annotations
 import abc
 import collections.abc as cABC
-import logging as root_logger
+import logging as logmod
 from dataclasses import dataclass, field
 from os.path import abspath, exists, expanduser, split
 from typing import (Any, Callable, ClassVar, Collection, Generic, Iterable,
@@ -10,13 +10,13 @@ from typing import (Any, Callable, ClassVar, Collection, Generic, Iterable,
                     Sequence, Tuple, TypeAlias, TypeVar, cast)
 from types import ModuleType
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 from acab import types as AT
 from acab.core.decorators.engine import EnsureEngineInitialised
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces.context import ContextSet_i
-from acab.interfaces.sub_protocols.value import AcabReducible_p
+from acab.interfaces.protocols.value import AcabReducible_p
 
 # TODO add 'Tick' functionality
 ModuleComponents : TypeAlias = AT.ModuleComponents

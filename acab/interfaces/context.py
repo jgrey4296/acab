@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import abc
 import collections.abc as cABC
-import logging as root_logger
+import logging as logmod
 from dataclasses import InitVar, dataclass, field
 from enum import Enum
 from typing import (Any, Callable, ClassVar, Collection, Generic, Hashable,
@@ -16,10 +16,10 @@ from typing import (Any, Callable, ClassVar, Collection, Generic, Hashable,
                     TypeVar, cast, overload, runtime_checkable)
 from uuid import UUID
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 from acab import types as AT
-from acab.interfaces.sub_protocols.value import (AcabFinishable_p,
+from acab.interfaces.protocols.value import (AcabFinishable_p,
                                                 AcabReducible_p)
 
 # Type declarations:

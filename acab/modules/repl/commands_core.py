@@ -2,12 +2,12 @@ from datetime import datetime
 from enum import Enum
 from os.path import split, splitext, exists, expanduser, abspath
 import importlib
-import logging as root_logger
+import logging as logmod
 import re
 import traceback
 
 import acab
-config = acab.setup()
+config = acab.GET()
 
 from acab.interfaces.engine import AcabEngine_i
 from acab.interfaces.value import Instruction_i
@@ -19,7 +19,7 @@ from acab.core.data.instruction import ProductionContainer
 from acab.modules.repl.util import init_inspect
 from acab.error.semantic import AcabSemanticException
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 @register
 def do_init(self, line):
@@ -112,18 +112,6 @@ def do_save(self, line):
         logging.error(f"Failed to save: {line}")
         logging.error(f"{err}")
 
-
-
-@register
-def do_exit(self, line):
-    """
-    Exit the repl, automatically saving the self state
-    """
-    logging.info("Quitting")
-    filename = "{}_{}.auto".format(self.__class__.__name__,
-                                   datetime.now().strftime("%Y_%m-%d_%H_%M"))
-    self.state.engine.save_file(filename)
-    return True
 
 
 @register

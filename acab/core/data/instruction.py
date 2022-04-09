@@ -8,7 +8,7 @@ ProductionComponent : Pairs the Operator with bindings
 ProductionContainer : Groups Components together
 
 """
-import logging as root_logger
+import logging as logmod
 from copy import deepcopy
 from dataclasses import InitVar, dataclass, field, replace, FrozenInstanceError
 from fractions import Fraction
@@ -28,14 +28,14 @@ from acab.core.data.sentence import Sentence
 from acab.error.operator import AcabOperatorException
 from acab.core.decorators.util import cache
 import acab.interfaces.value as VI
-from acab.core.data.sub_implementations.sentence import SentenceProtocolsImpl
-from acab.core.data.sub_implementations.value import ValueProtocolsImpl
+from acab.core.util.part_implementations.sentence import SentenceProtocolsImpl
+from acab.core.util.part_implementations.value import ValueProtocolsImpl
 from acab.core.data.factory import ValueFactory as VF
 from acab.core.data.value_meta import ValueMeta
 
 config = AcabConfig()
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 Value_A       : TypeAlias = AT.Value
 Sen_A         : TypeAlias = AT.Sentence
@@ -109,10 +109,6 @@ class ProductionOperator(ValueProtocolsImpl, VI.Operator_i, metaclass=ValueMeta)
         return self.value
 
 
-    # __lt__ __str__ apply_params apply_tags build build_sen has_tag
-    # has_var is_at_var is_var key type
-
-
 @APE.assert_implements(VI.Operator_i, exceptions=["__call__"])
 class ActionOperator(ValueProtocolsImpl, VI.Action_i, metaclass=ValueMeta):
     """ Special Operator type which gets passed the semantic system,
@@ -149,9 +145,6 @@ class ProductionComponent(Instruction):
 
     def __contains__(self, value):
         return value in self.value or value == rebind
-
-    def __repr__(self):
-        return super().__repr__()
 
     def to_sentences(self):
         """
@@ -207,8 +200,7 @@ class ProductionContainer(Instruction):
     _defaults : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE: DS.CONTAINER_PRIM}
 
     def __repr__(self):
-        # clauses = ";".join([repr(x) for x in self.clauses])
-        return "<{}::{}>".format(self.name, str(self.type))
+        return "<{}::{} ({}) >".format(self.name, str(self.type), len(self))
 
     @cache
     def __len__(self):

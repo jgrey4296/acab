@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
-import logging as root_logger
+import logging as logmod
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 from dataclasses import FrozenInstanceError, InitVar, dataclass, field, replace
 from enum import Enum
@@ -62,6 +62,9 @@ class ContextQueryManager:
         constraints = [ConstraintCollection(x, operators=self.ctxs._operators) for x in sen]
         self.constraints.extend(constraints)
         self._initial_ctxs = [x.uuid for x in self.ctxs.active_list()]
+
+    def __repr__(self):
+        return f"<ContextQueryManager Clause:{self.query_clause} Root={self.root_node} Size={len(self.ctxs)} {'negative' if self.negated else 'positive'}>"
 
     def __enter__(self):
         # set all instances to start at node, unless start_word is an at_binding,

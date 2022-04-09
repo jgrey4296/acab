@@ -13,7 +13,7 @@ from typing import Callable, Type, TypeAlias
 
 import acab.interfaces.type_aliases as types
 from acab.core.config.config import GET
-from acab.core.util.log_formatter import AcabLogFormatter
+from acab.core.util.log_formatter import AcabLogFormatter, AcabLogRecord
 
 logging = logmod.getLogger(__name__)
 
@@ -23,39 +23,51 @@ _Value_A : TypeAlias = types.Value
 _Sen_A   : TypeAlias = types.Sentence
 
 
-def setup(location=None,
-          rich_exc=False,
-          format_logs=True,
+def setup(location:str=None,
+          rich_exc:bool=False,
+          format_logs:bool=True,
           ) -> types.Config:
     """
     A Utility to easily setup the config singleton,
     allowing the rest of acab to load.
 
     Arguments:
-    location    :str  : the path to config file(s) to use
-    rich_exc    :bool : True for rich.traceback, false for normal python exceptions
-    format_logs :bool : True for AcabLogFormatter installation
+        location
+            the path to config file(s) to use
+
+        rich_exc
+            True for rich.traceback, false for normal python exceptions
+
+        format_logs
+            True for AcabLogFormatter installation
+
+    Returns:
+        An initialised Config Object
     """
     #pylint: disable=import-outside-toplevel
 
     from os.path import join, split
 
     if format_logs:
-        stream_handler = logmod.StreamHandler()
-        stream_handler.setLevel(logmod.INFO - 1)
-        stream_handler.setFormatter(AcabLogFormatter())
-        logging.addHandler(stream_handler)
-        logging.propagate = False
+        root_logger = logmod.getLogger()
+        stream_handler = [x for x in root_logger.handlers if isinstance(x, logmod.StreamHandler)]
+        if bool(stream_handler):
+            stream_handler[0].setFormatter(AcabLogFormatter())
+
+    if logmod.getLogRecordFactory is not AcabLogRecord:
+        AcabLogRecord.install()
 
     import acab.core.config.structure
     from acab.core.config.config import AcabConfig
     from acab.core.config.modal import modal_config
 
-    if location is None:
-        base = split(__file__)[0]
-        location = join(base, "__configs", "default")
+    if location is None or not bool(location):
+        base     = split(__file__)[0]
+        location = [join(base, "__configs", "default")]
+    elif not isinstance(location, list):
+        location = [location]
 
-    config = AcabConfig(location, hooks=[modal_config])
+    config = AcabConfig(*location, hooks=[modal_config])
 
 
     if not rich_exc:

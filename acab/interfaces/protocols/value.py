@@ -91,9 +91,9 @@ class ValueMetaData_p(Protocol):
     @abc.abstractmethod
     def type(self) -> Sen_A: pass
     @abc.abstractmethod
-    def apply_params(self, params:list[Variable], *, data:None|dict[str,Any]=None) -> Value_A: pass
+    def apply_params(self, *params:Variable, data:None|dict[str,Any]=None) -> Value_A: pass
     @abc.abstractmethod
-    def apply_tags(self, tags:Iterable[Value_A], *, data:None|dict[str,Any]=None) -> Value_A: pass
+    def apply_tags(self, *tags:Value_A|Sen_A, data:None|dict[str,Any]=None) -> Value_A: pass
     @abc.abstractmethod
     def has_tag(self, *tags:Value_A) -> bool: pass
 

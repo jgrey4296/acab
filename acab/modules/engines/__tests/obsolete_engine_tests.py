@@ -1,8 +1,8 @@
 import unittest
 import unittest.mock as mock
 from os.path import splitext, split
-import logging as root_logger
-logging = root_logger.getLogger(__name__)
+import logging as logmod
+logging = logmod.getLogger(__name__)
 
 from math import isclose
 
@@ -21,14 +21,14 @@ class Engine_Tests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        LOGLEVEL = root_logger.DEBUG
+        LOGLEVEL = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        root_logger.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
+        logmod.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
 
-        console = root_logger.StreamHandler()
-        console.setLevel(root_logger.INFO)
-        root_logger.getLogger('').addHandler(console)
-        logging = root_logger.getLogger(__name__)
+        console = logmod.StreamHandler()
+        console.setLevel(logmod.INFO)
+        logmod.getLogger('').addHandler(console)
+        logging = logmod.getLogger(__name__)
 
     def setUp(self):
         self.e = Engine()

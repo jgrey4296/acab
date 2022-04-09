@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import logging as root_logger
+import logging as logmod
 from os.path import abspath, exists, expanduser, split
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
@@ -12,7 +12,7 @@ from acab.error.semantic import AcabSemanticException
 from acab.interfaces.engine import AcabEngine_i
 from acab.interfaces.printing import PrintSystem_i
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 ModuleComponents : TypeAlias = AT.ModuleComponents
 
@@ -83,7 +83,7 @@ class AcabEngineImpl(AcabEngine_i):
         self._module_loader.load_modules(*modules)
         loaded_mods = list(self._module_loader.loaded_modules.values())
         # Initialise DSL
-        self._dsl = self.dsl_builder()
+        self._dsl = self.dsl_builder([], [], [])
         self._dsl.register(self.parser)
         self._dsl.extend(loaded_mods)
         self._dsl.build()

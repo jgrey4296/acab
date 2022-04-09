@@ -6,11 +6,10 @@ from __future__ import annotations
 
 import abc
 import collections.abc as cABC
-import logging as root_logger
+import logging as logmod
 import sys
 import traceback
 from dataclasses import dataclass, field
-from importlib import import_module
 from types import ModuleType, TracebackType
 from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
                     Mapping, Match, MutableMapping, Protocol, Sequence, Tuple,
@@ -19,7 +18,7 @@ from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
 from acab import types as AT
 from acab.error.importer import AcabImportException
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 Sentence           : TypeAlias = AT.Sentence
 HandlerFragment    : TypeAlias = AT.HandlerFragment

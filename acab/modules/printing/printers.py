@@ -110,10 +110,6 @@ class AnnotationAwareValuePrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
         # Pass data through to modal:
         return_list.append(top.override("MODAL", value, data=data))
 
-        # Handle query
-        if DS.QUERY in value.data and value.data[DS.QUERY]:
-            return_list.append(DSYM.QUERY_SYM)
-
 
         return return_list
 
@@ -178,6 +174,7 @@ class ConstraintPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
 
 # Dependent
 class BasicSentenceAwarePrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
+    # TODO be able to specify pre and post annotations
 
     def __call__(self, value, top=None, data=None):
         assert(isinstance(value, VI.Sentence_i))
@@ -191,6 +188,11 @@ class BasicSentenceAwarePrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
             return_list.append(PW._suppress_modal(top, value.words[-1]))
         else:
             return_list.append(value.words[-1])
+
+        # Handle query
+        if DS.QUERY in value.data and value.data[DS.QUERY]:
+            return_list.append(DSYM.QUERY_SYM)
+
 
         return return_list
 

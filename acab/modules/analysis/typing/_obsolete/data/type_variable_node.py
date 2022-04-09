@@ -4,7 +4,7 @@ Node for tracking uses of:
 $var :: type
 
 """
-import logging as root_logger
+import logging as logmod
 from typing import (Any, Callable, ClassVar, Dict, Iterable, Iterator, List,
                     Mapping, Match, MutableMapping, Optional, Sequence, Set,
                     Tuple, TypeVar, Union, cast)
@@ -18,7 +18,7 @@ from acab.interfaces import semantic as SI
 from acab.modules.analysis.typing import exceptions as te
 from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 
 class VarTypeNode(AcabNode):

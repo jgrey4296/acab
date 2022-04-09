@@ -16,7 +16,7 @@ Actions are available for preprocessing the value
 from __future__ import annotations
 
 import importlib
-import logging as root_logger
+import logging as logmod
 from collections import defaultdict
 from configparser import ConfigParser, ExtendedInterpolation
 from dataclasses import InitVar, dataclass, field
@@ -35,13 +35,28 @@ from acab.core.util.singletons import SingletonMeta
 from acab.error.config import AcabConfigException
 from acab.error.protocol import AcabProtocolError as APE
 from acab.interfaces.config import Config_i, ConfigSpec_d
+from acab.core.config.attr_gen import AttrGenerator
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 GenFunc : TypeAlias = AT.fns.GenFunc
 override_constructor : Callable[..., defaultdict[str,Any]] = lambda: defaultdict(lambda: {})
 #--------------------------------------------------
 def GET(*args:str, hooks:None|list[AT.fns.GenFunc]=None) -> Config_i:
+    """
+    Utility config object retriever.
+    As the config object is a singleton,
+    this is mainly for alternative acab system initialisation
+    which doesn't use acab.setup
+
+    Arguments:
+        *args:
+            paths to load
+        hooks:
+            Functions to extend the config object with
+    Returns:
+        The config object
+    """
     config = AcabConfig(*args, hooks=hooks)
     return config
 #--------------------------------------------------
@@ -99,10 +114,11 @@ class AcabConfig(Config_i, metaclass=ConfigSingleton):
     _overrides: dict[str, str]                  = field(init=False, default_factory=override_constructor)
 
     # Populated by hooks:
-    enums              : dict[str, EnumMeta]    = field(init=False, default_factory=dict)
-    defaults           : dict[str, Enum]        = field(init=False, default_factory=dict)
-    syntax_extension   : dict[str, Enum]        = field(init=False, default_factory=dict)
-    printing_extension : dict[Enum, str]        = field(init=False, default_factory=dict)
+    enums              : dict[str, EnumMeta] = field(init=False, default_factory=dict)
+    defaults           : dict[str, Enum]     = field(init=False, default_factory=dict)
+    syntax_extension   : dict[str, Enum]     = field(init=False, default_factory=dict)
+    printing_extension : dict[Enum, str]     = field(init=False, default_factory=dict)
+    attr               : AttrGenerator       = field(init=False)
 
     actions   : dict[Any, GenFunc]              = field(init=False, default_factory=lambda: CA.DEFAULT_ACTIONS)
     actions_e : ClassVar[Type[CA.ConfigActions]]= CA.ConfigActions
@@ -111,6 +127,7 @@ class AcabConfig(Config_i, metaclass=ConfigSingleton):
     def __post_init__(self, paths: None|list[str]):
         self._config = ConfigParser(interpolation=ExtendedInterpolation(),
                                     allow_no_value=True)
+        self.attr = AttrGenerator(self._config)
         # Overrides ConfigParser's default of lowercasing everything
         self._config.optionxform = lambda x: x #type:ignore
         if bool(paths):
@@ -206,6 +223,7 @@ class AcabConfig(Config_i, metaclass=ConfigSingleton):
         new_paths : list[str] = [x for x in full_paths if x not in self._files]
         if bool(new_paths):
             self._config.read(new_paths)
+            self.attr._generate()
             self._files.update(new_paths)
             self._run_hooks()
         return self

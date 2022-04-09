@@ -1,6 +1,6 @@
 # pylint: disable=bad-whitespace,invalid-name,line-too-long
 #
-import logging as root_logger
+import logging as logmod
 import pyparsing as pp
 
 from acab.core.config.config import AcabConfig
@@ -9,7 +9,7 @@ import acab.core.parsing.default_symbols as DSYM
 import acab.core.parsing.debug_funcs as DBF
 
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 config = AcabConfig()
 

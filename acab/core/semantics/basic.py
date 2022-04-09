@@ -18,7 +18,7 @@ Meanwhile ValueSemantics_i are concerned only with the values and structures the
 # pylint: disable=multiple-statements,protected-access,too-many-ancestors
 from __future__ import annotations
 import abc
-import logging as root_logger
+import logging as logmod
 from dataclasses import InitVar, dataclass, field
 from enum import Enum
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
@@ -30,16 +30,16 @@ if TYPE_CHECKING:
     # tc only imports
     pass
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 import acab.interfaces.handler_system as HS
 from acab import types as AT
 from acab.core.data.default_structure import QUERY
 from acab.error.printing import AcabPrintException
 from acab.error.semantic import AcabSemanticException
-from acab.interfaces.sub_protocols.value import AcabReducible_p
+from acab.interfaces.protocols.value import AcabReducible_p
 from acab.interfaces.value import Sentence_i, Value_i
-from acab.core.util import handler_system as HSImpl
+from acab.core.util.part_implementations import handler_system as HSImpl
 from acab.interfaces import semantic as SI
 
 Value              : TypeAlias = AT.Value
@@ -59,7 +59,10 @@ StatementSemantics : TypeAlias = AT.StatementSemantics
 SemanticSystem     : TypeAlias = AT.SemanticSystem
 
 
-# Protocols  ##################################################################
+# Protocol Implementations #############################################################
+class Semantic_Fragment(HSImpl.HandlerFragment, SI.Semantic_Fragment_i):
+    pass
+
 class SemanticSystem(HSImpl.HandlerSystem, SI.SemanticSystem_i):
     ctx_set         : CtxSet
     _operator_cache : None|CtxIns
@@ -106,7 +109,8 @@ class StructureSemantics(HSImpl.HandlerSystem, HSImpl.HandlerComponent, SI.Struc
 
     def __call__(self, sen:Sen_A, struct:Struct_A, *, ctxs:None|CtxSet=None, data:None|dict[str,Any]=None) -> None|CtxSet:
         assert(isinstance(sen, Sentence_i))
-        if QUERY in sen[-1].data and bool(sen[-1].data[QUERY]):
+        # TODO move query annotation to sentence, not the last word
+        if QUERY in sen.data and bool(sen.data[QUERY]):
             return self.query(sen, struct, ctxs=ctxs, data=data)
 
         return self.insert(sen, struct, ctxs=ctxs, data=data)

@@ -9,14 +9,14 @@ Upon exit, it calculates the appropriate time arcs for events
 """
 from enum import Enum
 from fractions import Fraction as t
-import logging as root_logger
+import logging as logmod
 
 from acab.modules.structures.time.util import OPT_S
 
 from .time_core import TimeEvent, TimeContainer
 from .pattern import PatternChoice, PatternPar
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 # PStart/End : SubPattern
 # PDual : layering

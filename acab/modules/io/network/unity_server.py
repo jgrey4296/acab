@@ -2,7 +2,7 @@ from enum import Enum
 from hashlib import md5
 from json.decoder import JSONDecodeError
 import json
-import logging as root_logger
+import logging as logmod
 import socket
 
 from acab.core.data.value import AcabValue

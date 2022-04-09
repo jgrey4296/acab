@@ -3,7 +3,7 @@ A PyParsing parser to create patterns
 """
 from fractions import Fraction
 import pyparsing as pp
-import logging as root_logger
+import logging as logmod
 
 from acab.core.parsing import consts as PC
 from acab.core.parsing.consts import QUERY_SYMBOL, N, NG, OPAR, CPAR
@@ -13,7 +13,7 @@ from acab.modules.structures.time.util import BIND_S, TYPE_INSTANCE_S, VALUE_S, 
 
 from acab.core.parsing import parsers as PU
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 
 def make_valbind(s, loc, tokens):

@@ -2,13 +2,13 @@
 from __future__ import annotations
 import abc
 import collections.abc as cABC
-import logging as root_logger
+import logging as logmod
 from dataclasses import InitVar, dataclass, field
 from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
                     Mapping, Match, MutableMapping, Protocol, Sequence, Tuple,
                     TypeAlias, TypeVar, cast)
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 import acab
 
 config = acab.GET()

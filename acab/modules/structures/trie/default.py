@@ -8,7 +8,7 @@ import acab.modules.semantics.statements as ASem
 from acab.core.config.config import GET
 from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.data.sentence import Sentence
-from acab.core.util.handler_system import Handler
+from acab.core.util.part_implementations.handler_system import Handler
 from acab.modules.context import context_delayed_actions
 from acab.modules.context.context_set import ContextSet
 from acab.modules.semantics.basic_system import BasicSemanticSystem
@@ -37,7 +37,10 @@ def DEFAULT_TRIE_SPEC(name="trie"):
 def DEFAULT_TRIE(name="trie"):
     node_handler = BasicNodeSemantics("atom").as_handler()
     trie_sem     = BreadthTrieSemantics(signal=name,
+                                        init_specs=[],
+                                        sieve_fns=[],
                                         init_handlers=[node_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+
 
     trie_handler = trie_sem.as_handler(struct=BasicNodeStruct.build_default())
 

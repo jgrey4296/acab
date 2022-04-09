@@ -1,14 +1,14 @@
 """
 A Pattern collects events together and cycles them
 """
-import logging as root_logger
+import logging as logmod
 from math import floor
 from random import Random
 
 from .util import Time
 from acab.modules.structures.time.time_core import TimeContainer, TimeEvent
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 # TODO: binary tree / beachline for finding events?
 class PatternSeq(TimeContainer):

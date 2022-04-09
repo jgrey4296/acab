@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import logging as root_logger
+import logging as logmod
 from copy import deepcopy
 from dataclasses import InitVar, dataclass, field, replace
 from fractions import Fraction
@@ -12,8 +12,8 @@ from uuid import UUID, uuid1
 from weakref import ref
 
 import acab.core.data.default_structure as DS
-import acab.core.data.sub_implementations.sentence as SSI  # type:ignore
-import acab.core.data.sub_implementations.value as VSI
+import acab.core.util.part_implementations.sentence as SSI  # type:ignore
+import acab.core.util.part_implementations.value as VSI
 import acab.interfaces.value as VI
 from acab import types as AT
 from acab.core.config.config import AcabConfig
@@ -26,7 +26,7 @@ from acab.error.protocol import AcabProtocolError as APE
 from acab.core.data.factory import ValueFactory
 from acab.core.data.value_meta import ValueMeta
 
-logging        = root_logger.getLogger(__name__)
+logging        = logmod.getLogger(__name__)
 
 config         = AcabConfig()
 BIND_SYMBOL    = config.prepare("Symbols", "BIND")()

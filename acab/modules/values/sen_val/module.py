@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import logging as root_logger
+import logging as logmod
 from dataclasses import dataclass, field
 from itertools import filterfalse, starmap, zip_longest
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
@@ -21,7 +21,7 @@ from acab.interfaces.semantic import Semantic_Fragment
 from . import parser as SVP
 from . import semantics as SVS
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 config = GET()
 WALK_SEM_HINT    = Sentence([config.prepare("Module.DFSWalk", "WALK_SEM_HINT")()])

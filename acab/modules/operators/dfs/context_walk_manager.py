@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-import logging as root_logger
+import logging as logmod
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 from dataclasses import FrozenInstanceError, InitVar, dataclass, field, replace
 from enum import Enum
@@ -12,7 +12,7 @@ from uuid import UUID, uuid1
 
 import acab.interfaces.context as CtxInt
 import acab.error.semantic as ASErr
-from acab.core.config import GET
+from acab.core.config.config import GET
 from acab.core.data.instruction import (ProductionComponent,
                                                         ProductionContainer)
 from acab.interfaces.value import Sentence_i
@@ -58,7 +58,7 @@ class ContextWalkManager:
         start = 0
         if sen[0].is_at_var:
             start = 1
-        constraints = [ConstraintCollection.build(x, operators=self.ctxs._operators) for x in sen[start:]]
+        constraints = [ConstraintCollection(x, operators=self.ctxs._operators) for x in sen[start:]]
         self.constraints.extend(constraints)
 
     def __enter__(self):

@@ -5,7 +5,7 @@ Takes Modalities defined in config files using the sections:
 [Modal.{}]         - Defines Modal Enums and Default value
 [Modal.{}.Symbols] - Defines Symbols for parsing and printing
 """
-import logging as root_logger
+import logging as logmod
 from dataclasses import dataclass, field
 from enum import Enum, EnumMeta
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
@@ -14,7 +14,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 import pyparsing as pp
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 
 def modal_config(self):

@@ -1,8 +1,8 @@
 #https://docs.python.org/3/library/unittest.html
 from os.path import splitext, split
 import unittest
-import logging as root_logger
-logging = root_logger.getLogger(__name__)
+import logging as logmod
+logging = logmod.getLogger(__name__)
 
 import pyparsing as pp
 
@@ -26,21 +26,19 @@ class BasicStatement(Instruction):
     def __hash__(self):
         return hash(self.value)
 
-    # apply_params, apply_tags, build, copy,
-    # has_var, is_at_var, is_var, key, type
 
 class StatementTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        LOGLEVEL = root_logger.DEBUG
+        LOGLEVEL = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        root_logger.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
+        logmod.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
 
-        console = root_logger.StreamHandler()
-        console.setLevel(root_logger.INFO)
-        root_logger.getLogger('').addHandler(console)
-        logging = root_logger.getLogger(__name__)
+        console = logmod.StreamHandler()
+        console.setLevel(logmod.INFO)
+        logmod.getLogger('').addHandler(console)
+        logging = logmod.getLogger(__name__)
 
 
     def setUp(self):
@@ -62,8 +60,8 @@ class StatementTests(unittest.TestCase):
         statement_p = PU.STATEMENT_CONSTRUCTOR(basic_node_parser,
                                                basic_value_parser)
 
+        result = statement_p.parse_string("a_statement(::test):\n #test.blah\n\nvalue\nend")[0]
 
-        result = statement_p.parse_string("a_statement(::test):\n#test\n\nvalue\nend")[0]
         tags_str = [x for x in result.tags]
         self.assertTrue('test' in tags_str)
 

@@ -4,14 +4,14 @@ from typing import Callable, Iterator, Union, Match
 from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic
 
-import logging as root_logger
+import logging as logmod
 import pyparsing as pp
 
 from acab import GET
 from acab.core.parsing import parsers as PU
 from acab.error.parse import AcabParseException
 from acab.core.parsing import pyparse_dsl as ppDSL
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 config = GET()
 

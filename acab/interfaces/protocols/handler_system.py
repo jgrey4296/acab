@@ -3,7 +3,7 @@
 from __future__ import annotations
 import abc
 import collections.abc as cABC
-import logging as root_logger
+import logging as logmod
 from dataclasses import InitVar, dataclass, field, replace
 from enum import Enum, EnumMeta
 from types import MethodType
@@ -17,7 +17,7 @@ from acab import types as AT
 from acab.core.config.config import GET
 from acab.interfaces.sieve import AcabSieve
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 config = GET()
 
 T = TypeVar('T')
@@ -135,4 +135,12 @@ class Handler_p(Iterable[Any], Protocol):
 @runtime_checkable
 class HandlerFragment_p(Collection["HandlerSpec_A|Handler_A"], Protocol):
     # TODO just make this a newtype?
-    pass
+
+    @abc.abstractmethod
+    def __contains__(self, other): pass
+
+    @abc.abstractmethod
+    def __iter__(self): pass
+
+    @abc.abstractmethod
+    def __len__(self): pass

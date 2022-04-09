@@ -4,8 +4,8 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Generic, Iterable,
                     Iterator, Mapping, Match, MutableMapping, Protocol,
                     Sequence, Tuple, TypeAlias, TypeGuard, TypeVar, cast)
 
-import logging as root_logger
-logging = root_logger.getLogger(__name__)
+import logging as logmod
+logging = logmod.getLogger(__name__)
 
 from acab.interfaces import dsl
 from acab.interfaces import handler_system as HS
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     pass
 
 from acab import types as AT
-from acab.core.util import handler_system as HSImpl
+from acab.core.util.part_implementations import handler_system as HSImpl
 from acab.error.parse import AcabParseException
 
 Parser           : TypeAlias = AT.Parser

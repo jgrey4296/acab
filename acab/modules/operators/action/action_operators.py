@@ -1,7 +1,8 @@
 """
 Definitions of the Core Performance Operators
 """
-import logging as root_logger
+from __future__ import annotations
+import logging as logmod
 from enum import Enum
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
@@ -16,7 +17,7 @@ from acab.core.decorators.semantic import (OperatorArgUnWrap,
                                                OperatorSugar)
 from acab.error.semantic import AcabSemanticException
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 config = GET()
 

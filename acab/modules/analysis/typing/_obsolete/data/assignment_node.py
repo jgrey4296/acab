@@ -4,7 +4,7 @@ Node for denotating:
 value :: type
 
 """
-import logging as root_logger
+import logging as logmod
 from typing import (Any, Callable, ClassVar, Dict, Iterable, Iterator, List,
                     Mapping, Match, MutableMapping, Optional, Sequence, Set,
                     Tuple, TypeVar, Union, cast)
@@ -20,7 +20,7 @@ from acab.modules.analysis.typing import util
 from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
 from acab.modules.semantics.query_semantic_mixin import QuerySemanticMixin
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 class TypeAssignmentNode(AcabNode):
     """ A Node in the Type Assignment Struct.

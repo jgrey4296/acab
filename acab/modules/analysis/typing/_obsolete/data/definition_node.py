@@ -6,32 +6,31 @@ type.name:
    a.c.$y::type
 end
 """
-import logging as root_logger
+import logging as logmod
 from dataclasses import dataclass, field
 from typing import (Any, Callable, ClassVar, Dict, Iterable, Iterator, List,
                     Mapping, Match, MutableMapping, Optional, Sequence, Set,
                     Tuple, TypeVar, Union, cast)
 
 import acab.modules.analysis.typing.util as util
-from acab.core.data.node import AcabNode
-from acab.core.data.value import AcabValue
 from acab.core.data.instruction import Instruction
+from acab.core.data.node import AcabNode
 from acab.core.data.sentence import Sentence
+from acab.core.data.value import AcabValue
 from acab.interfaces import semantic as SI
 from acab.modules.analysis.typing import exceptions as te
-from acab.modules.analysis.typing.values.definition import \
-    OperatorDefinition
-from acab.modules.analysis.typing.values.definition import (
-    SumTypeDefinition, TypeDefinition)
+from acab.modules.analysis.typing.values.definition import (OperatorDefinition,
+                                                            SumTypeDefinition,
+                                                            TypeDefinition)
 from acab.modules.semantics.basic_node_semantics import BasicNodeSemantics
 from acab.modules.semantics.query_semantic_mixin import QuerySemanticMixin
-from acab.modules.structures.trie.trie import Trie
 from acab.modules.structures.trie.semantics import BasicTrieSemantics
+from acab.modules.structures.trie.trie import Trie
 
 from .type_assignment_semantics import TypeAssignmentNode
 from .type_variable_semantics import VarTypeNode
 
-logging = root_logger.getLogger(__name__)
+logging = logmod.getLogger(__name__)
 
 # Log messages to use, because they are long:
 LOG_MESSAGES = {}
@@ -126,9 +125,9 @@ class TypeDefNode(AcabNode):
         """ Generate a temporary binding environment for the definition's
         type parameters """
         type_var_lookup = {}
-        if self.definition.vars \
-           and usage_trie.type_instance \
-           and usage_trie.type_instance.vars:
+        if (self.definition.vars
+            and usage_trie.type_instance
+            and usage_trie.type_instance.vars):
             zipped = zip(self.definition.vars, usage_trie.type_instance.vars)
             type_var_lookup = {x.name: y for x, y in zipped}
 
