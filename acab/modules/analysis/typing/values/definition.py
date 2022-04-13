@@ -37,7 +37,7 @@ class TypeDefinition(TypeStatement):
         super(TypeDefinition, self).__post_init__()
         # The name is the location. eg: .types.person
         assert isinstance(self.structure, list)
-        assert all([isinstance(x, Sentence) for x in self.structure])
+        assert all([isinstance(x, Sentence) for x in self.structure]), self.structure
 
         self.data[TYPE_INSTANCE_S] = TYPE_DEFINITION
 
@@ -71,9 +71,9 @@ class SumTypeDefinition(TypeDefinition):
         super(SumTypeDefinition, self).__post_init__()
         # flat_structure = []
         # for sen in self.structure:
-        #     prefix = Sentence.build(sen.words[:-1] + [sen.words[-1].to_word()])
+        #     prefix = Sentence(sen.words[:-1] + [sen.words[-1].to_word()])
         #     flat_structure.append(prefix)
-        #     flat_structure += [Sentence.build(prefix.words + x.words) for x in sen[-1].structure]
+        #     flat_structure += [Sentence(prefix.words + x.words) for x in sen[-1].structure]
 
         # self.value = flat_structure
 

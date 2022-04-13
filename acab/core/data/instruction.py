@@ -196,7 +196,9 @@ class ProductionComponent(Instruction):
 @APE.assert_implements(VI.Instruction_i)
 @dataclass(frozen=True)
 class ProductionContainer(Instruction):
-    """ Production Container: An applicable statement of multiple component clauses """
+    """ Production Container: An applicable statement of multiple component clauses
+    Clauses can be sentences, or ProductionComponents
+    """
     _defaults : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE: DS.CONTAINER_PRIM}
 
     def __repr__(self):

@@ -51,6 +51,10 @@ build:
 	python -m build
 	pip install -e .
 
+freeze:
+	bash -ic "conda list --export > ./conda_env.txt"
+	pip list --format=freeze > ./requirements.txt
+
 # Testing #####################################################################
 long:
 	python -m unittest discover -s ${dir} -p "*_tests.py"
