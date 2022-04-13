@@ -11,8 +11,8 @@ from acab.core.data.value import AcabValue
 from acab.core.data.instruction import Instruction
 from acab.core.data.sentence import Sentence
 from acab.error.semantic import AcabSemanticException
-from acab.modules.context.context_set import (ContextInstance,
-                                              MutableContextInstance)
+from acab.modules.context.context_instance import (ContextInstance,
+                                                   MutableContextInstance)
 
 from .. import exceptions  as TE
 from . import util
@@ -26,11 +26,13 @@ unify_enum = util.unify_enum
 # TODO to_word handling
 
 # Basic Unification ###########################################################
-def var_handler_basic(f_word, s_word, ctx):
+def var_handler_basic(index, first, second, ctx):
     """ Bind vars, preferring Ctx -> L -> R
     ctx: f(A) -> set[A]
     """
     result  = unify_enum.NA
+    f_word  = first[index]
+    s_word  = second[index]
     f_var   = f_word.is_var
     s_var   = s_word.is_var
 
@@ -56,7 +58,7 @@ def var_handler_basic(f_word, s_word, ctx):
 
     return result
 
-def check_modality(f_word, s_word, ctx):
+def check_modality(index, first, second, ctx):
     """
     Test registered modalities between two words.
     Placing *after* var handler means variable modalities too,
@@ -64,24 +66,31 @@ def check_modality(f_word, s_word, ctx):
     modalities prior to substitution
     """
     result = unify_enum.NA
+    f_word = first[index]
+    s_word = second[index]
+
 
     for modality in config.enums['MODAL']:
-        if modality.name not in ctx[f_word].data or modality.name not in ctx[s_word].data:
+        if (modality.name not in f_word.data or
+            modality.name not in s_word.data):
             continue
 
-        f_mod = ctx[f_word].data[modality.name]
-        s_mod = ctx[s_word].data[modality.name]
+        f_mod = f_word.data[modality.name]
+        s_mod = s_word.data[modality.name]
         if f_mod != s_mod:
             raise TE.AcabUnifyModalityException(f_word,
                                                 s_word,
                                                 ctx=ctx,
-                                                data={"modality name" : modality.name})
+                                                data={"modality" : modality.name})
 
 
     return result
 
-def match_handler_basic(f_word, s_word, ctx):
+def match_handler_basic(index, first, second, ctx):
     result = unify_enum.NA
+    f_word  = first[index]
+    s_word  = second[index]
+
     if ctx[f_word] == ctx[s_word]:
         result = unify_enum.NEXT_WORD
     elif isinstance(f_word, Sentence) or isinstance(s_word, Sentence):
@@ -91,15 +100,16 @@ def match_handler_basic(f_word, s_word, ctx):
 
     return result
 
-def fail_handler_basic(f_word, s_word, ctx):
-    raise TE.AcabUnifySieveFailure(f_word, s_word, ctx=ctx)
+def fail_handler_basic(index, first, second, ctx):
+    raise TE.AcabUnifySieveFailure(first[index], second[index], ctx=ctx)
 
 
 def apply_substitutions(sen, gamma) -> AT.Sentence:
     """
     Apply basic substitutions to a sentence
+    for any word, get its top most variable, and reify it
     """
-    return sen.copy(value=[util.reify(x, gamma) for x in sen.words])
+    return sen.copy(value=[gamma[util.top_var(x, gamma)] for x in sen.words])
 
 
 #  ############################################################################

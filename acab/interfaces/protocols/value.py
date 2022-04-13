@@ -157,6 +157,7 @@ class Instruction_p(Value_p, Collection[Any], AcabReducible_p, AcabSentenceable_
     def should_break(self) -> bool: pass
         # return bool(self.breakpoint)
 
+    @property
     def vars(self) -> list[Value_A]:
         return []
 

@@ -127,6 +127,7 @@ class _SentenceVariableTestsImpl(VI.Sentence_i, VP.VariableTests_p):
             return True
         return any([x.is_var for x in self.words])
 
+    @property
     def vars(self) -> list[Value_A]:
         return [x for x in self.words if x.is_var]
 

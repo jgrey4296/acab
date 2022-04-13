@@ -16,8 +16,9 @@ from acab.core.data.sentence import Sentence
 from acab.core.data.value import AcabValue
 from acab.core.parsing.consts import s, s_key
 from acab.error.semantic import AcabSemanticException
-from acab.modules.context.context_set import (ContextInstance,
-                                              MutableContextInstance)
+from acab.modules.context.context_instance import (ContextInstance,
+                                                   MutableContextInstance)
+from acab.core.data.default_structure import TYPE_BOTTOM_NAME
 
 from .. import exceptions as TE
 
@@ -29,6 +30,8 @@ Value  : TypeAlias = AT.Value
 CtxIns : TypeAlias = AT.CtxIns
 
 unify_enum = Enum("Unify Logic Handler Responses", "NEXT_WORD NA END")
+
+ATOM = "_:{}".format(TYPE_BOTTOM_NAME)
 
 def gen_var() -> Callable[[], AT.Sentence]:
     """ A Simple Generator of guaranteed new Variables as a sentence """
@@ -77,7 +80,7 @@ def top_var(val:Value, gamma:CtxIns) -> Value:
     """
     last = None
     current = val
-    while current.is_var and last != val:
+    while (isinstance(current, str) or current.is_var) and last != val:
         last    = current
         current = gamma[current]
 
@@ -90,6 +93,7 @@ def reify(val:Value, gamma:CtxIns) -> Value:
     -> hello
 
     """
+    raise DeprecationWarning()
     last = None
     current = val
     while current != last:
@@ -112,7 +116,7 @@ def type_len(sen):
     """
     if sen.is_var:
         return INFINITY
-    if sen == "_:ATOM":
+    if sen == ATOM:
         return INFINITY - 1
     else:
         return len(sen)
