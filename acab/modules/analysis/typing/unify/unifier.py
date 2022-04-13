@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 import logging as logmod
 from dataclasses import InitVar, dataclass, field
 from enum import Enum
@@ -15,8 +16,8 @@ from acab.core.data.sentence import Sentence
 from acab.core.data.value import AcabValue
 from acab.core.parsing.consts import s, s_key
 from acab.error.semantic import AcabSemanticException
-from acab.modules.context.context_set import (ContextInstance,
-                                              MutableContextInstance)
+from acab.modules.context.context_instance import (ContextInstance,
+                                                   MutableContextInstance)
 
 from .. import exceptions as TE
 from . import util
@@ -52,6 +53,7 @@ class Unifier:
     logic : UnifyLogic = field()
 
     def apply(self, sen, ctx):
+        """ Apply substitutions in a context instance onto a sentence """
         return self.logic.apply(sen, ctx)
 
     def __repr__(self):
@@ -69,6 +71,7 @@ class Unifier:
         For each word pair  in the sentences,
         the logic sieve of handlers is tried
         """
+        logging.debug("Starting Unify for: {}, {}", first, second)
         if logic is None:
             logic = self.logic
 
@@ -76,7 +79,9 @@ class Unifier:
         # TODO add exhaustive / inclusive typing options
         ctx_prime = MutableContextInstance(None, ctx)
         with ctx_prime:
-            if logic.early_exit is not None and logic.early_exit(first, second, ctx_prime) is unify_enum.END:
+            # PREPARE #########################################################
+            if (logic.early_exit is not None and
+                logic.early_exit(first, second, ctx_prime) is unify_enum.END):
                 return ctx_prime.finish()
 
             if logic.truncate is not None:
@@ -88,11 +93,18 @@ class Unifier:
             if len(first) != len(second):
                 raise TE.AcabLengthUnifyException(first, second)
 
+            logging.debug("Unify Setup Complete, running loop")
+            # MAIN UNIFY LOOP #################################################
             try:
-                for f_word,s_word in zip(first, second):
+                for index in range(len(first)):
                     result = None
+                    f_word  = first[index]
+                    s_word  = second[index]
+
                     for sieve_fn in logic.sieve:
-                        result = sieve_fn(f_word, s_word, ctx_prime)
+                        logging.debug("Running {:<20} on {!s:<10}, {!s:<10}",
+                                      sieve_fn.__name__, f_word, s_word)
+                        result = sieve_fn(index, first, second, ctx_prime)
                         if result is unify_enum.NA:
                             continue
                         elif result is unify_enum.NEXT_WORD:
@@ -100,6 +112,7 @@ class Unifier:
                         elif result is unify_enum.END:
                             break
 
+                    logging.debug("---")
                     if result is unify_enum.END:
                         break
 

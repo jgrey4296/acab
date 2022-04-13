@@ -16,8 +16,8 @@ from acab.core.data.instruction import Instruction
 from acab.core.data.sentence import Sentence
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.modules.analysis.typing.dsl import TypingDSL
-from acab.modules.context.context_set import ContextInstance as CtxIns
-from acab.modules.context.context_set import MutableContextInstance
+from acab.modules.context.context_instance import ContextInstance as CtxIns
+from acab.modules.context.context_instance import MutableContextInstance
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 
 from ... import exceptions as TE
@@ -47,7 +47,7 @@ class UnifyUtilTests(unittest.TestCase):
 
         global dsl
         # Set up the parser to ease test setup
-        dsl   = ppDSL.PyParseDSL()
+        dsl   = ppDSL.PyParseDSL([], [], [])
         dsl.register(EXLO_Parser).register(TypingDSL)
         dsl.build()
 

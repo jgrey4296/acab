@@ -23,6 +23,9 @@ class TypeStatement(Instruction):
     name  : str            = field(default="|∀σ|")
     _path : Sentence       = field(default=None)
 
+    def __post_init__(self, *args, **kwargs):
+        pass
+
     def to_sentences(self):
         return self.structure[:]
 

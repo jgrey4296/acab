@@ -11,12 +11,12 @@ import logging as logmod
 from acab import setup
 config = setup()
 
+from acab.interfaces import value as VI
 from acab.core.data.value import AcabValue
 
 from ... import exceptions as TE
 from .. import unifier as unify
 from .. import simple_unify_fns as suf
-from .. import type_unify_fns as tuf
 from .. import util
 
 from acab.core.parsing import pyparse_dsl as ppDSL
@@ -45,7 +45,7 @@ class UnifierTests(unittest.TestCase):
         logging.addHandler(file_h)
 
         global dsl
-        dsl   = ppDSL.PyParseDSL()
+        dsl   = ppDSL.PyParseDSL([], [], [])
         dsl.register(EXLO_Parser).register(TypingDSL)
         dsl.build()
 
@@ -85,7 +85,7 @@ class UnifierTests(unittest.TestCase):
         self.assertEqual(len(ctx_r), 2)
         self.assertIn('x', ctx_r)
         self.assertEqual(ctx_r['x'], "_:blah.bloo")
-        self.assertIsInstance(ctx_r['x'], AcabValue)
+        self.assertIsInstance(ctx_r['x'], VI.Value_i)
         self.assertIn('y', ctx_r)
         self.assertEqual(ctx_r[ctx_r['y']], "_:blah.bloo")
 
@@ -174,6 +174,14 @@ class UnifierTests(unittest.TestCase):
 
         with self.assertRaises(TE.AcabTypingException):
             ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
+
+    def test_unify_conflict_same_side(self):
+        sen1  = dsl("a.test.$x.$x")[0]
+        sen2  = dsl("a.test.blah.bloo")[0]
+
+        with self.assertRaises(TE.AcabTypingException):
+            ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
+
 
     def test_unify_chain(self):
         sen1  = dsl("a.test.$x.$y")[0]

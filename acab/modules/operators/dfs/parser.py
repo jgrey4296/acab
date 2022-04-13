@@ -24,9 +24,7 @@ def build_dfs_query(s, l, toks):
     assert(all([x.is_var for x in rest]))
     words += rest
 
-    instruction = Sentence(words,
-                           data={SEM_HINT: WALK_SEM_HINT})
-    instruction.data[QUERY_HINT] = True
+    instruction = Sentence(words, data={SEM_HINT: WALK_SEM_HINT, QUERY_HINT: True})
 
     return instruction
 
@@ -40,9 +38,7 @@ def build_dfs_action(s, l, toks):
     words.append(toks['action'])
 
     # TODO refactor to be a ProductionComponent
-    instruction = Sentence(words,
-                           data={SEM_HINT: WALK_SEM_HINT})
-
+    instruction = Sentence(words, data={SEM_HINT: WALK_SEM_HINT})
 
     return instruction
 

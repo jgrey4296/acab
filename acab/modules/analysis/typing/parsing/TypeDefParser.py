@@ -14,7 +14,7 @@ from acab.core.data.sentence import Sentence
 from acab.core.parsing import funcs as Pfunc
 from acab.core.parsing import parsers as PU
 from acab.core.parsing.consts import (DBLARROW, DELIM, NG, N, component_gap,
-                                      emptyLine, op)
+                                      emptyLine, op, s, ln)
 from acab.modules.analysis.typing import util as TYU
 
 from . import util as TU
@@ -37,14 +37,14 @@ NOMINAL_DEF.add_parse_action(TU.make_simple_def)
 # Record Type definition:
 # a block of sentences, describing structure
 # a.test.type(::σ):  a.value.$x(::num) end
-RECORD_DEF_BODY = pp.IndentedBlock(HOTLOAD_SEN)
+RECORD_DEF_BODY = pp.IndentedBlock(HOTLOAD_SEN + op(s(ln)))
 RECORD_DEF_BODY.set_parse_action(TU.make_record_def)
 
 RECORD_TYPE = PU.STATEMENT_CONSTRUCTOR(TYU.STRUCT_HEAD, RECORD_DEF_BODY)
 
 # Sum Type definition
 # ie: first subwords are the subtypes. subtypes are automatically records
-SUM_DEF_BODY = pp.IndentedBlock(HOTLOAD_SEN)
+SUM_DEF_BODY = pp.IndentedBlock(HOTLOAD_SEN + op(s(ln)))
 SUM_DEF_BODY.set_parse_action(TU.make_sum_def)
 
 SUM_TYPE = PU.STATEMENT_CONSTRUCTOR(TYU.SUM_HEAD, SUM_DEF_BODY )
@@ -63,7 +63,7 @@ OP_DEF = PU.STATEMENT_CONSTRUCTOR(TYU.FUNC_HEAD,
                                   single_line=True)
 
 # Type class constructor:
-TYPE_CLASS_BODY = pp.IndentedBlock(HOTLOAD_SEN)
+TYPE_CLASS_BODY = pp.IndentedBlock(HOTLOAD_SEN + op(s(ln)))
 TYPE_CLASS_BODY.set_parse_action(TU.make_type_class)
 
 TYPE_CLASS_DEF = PU.STATEMENT_CONSTRUCTOR(TYU.TYPE_CLASS_HEAD,
