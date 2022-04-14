@@ -30,7 +30,7 @@ from acab.modules.operators.dfs.semantics import DFSSemantics
 from acab.modules.semantics.basic_system import BasicSemanticSystem
 from acab.modules.semantics.statements import QueryPlusAbstraction
 from acab.modules.semantics.values import ExclusionNodeSemantics
-from acab.modules.operators.dfs.module import DFSQueryDSL
+from acab.modules.operators.dfs.module import DFS_DSL
 
 BIND          = config.prepare("Value.Structure", "BIND")()
 QUERY         = config.prepare("Value.Structure", "QUERY")()
@@ -62,7 +62,7 @@ class TestWalkParser(unittest.TestCase):
 
         dsl = PyParseDSL([],[],[])
         dsl.register(EXLO_Parser)
-        dsl.register(DFSQueryDSL)
+        dsl.register(DFS_DSL)
         dsl.build()
 
     def test_parse_walk_query_instruction(self):

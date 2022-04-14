@@ -67,9 +67,12 @@ class ContextQueryManager:
         return f"<ContextQueryManager Clause:{self.query_clause} Root={self.root_node} Size={len(self.ctxs)} {'negative' if self.negated else 'positive'}>"
 
     def __enter__(self):
-        # set all instances to start at node, unless start_word is an at_binding,
-        # in which case get the bound node
-        # handle negated behaviour
+        """
+        set all instances to start at node,
+        unless start_word is an at_binding,
+        in which case get the bound node
+        handle negated behaviour
+        """
         active_list : list[CtxIns] = self.ctxs.active_list()
 
         if self.query_clause is None or not self.query_clause[0].is_at_var:

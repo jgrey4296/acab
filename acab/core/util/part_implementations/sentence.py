@@ -117,7 +117,7 @@ class _SentenceVariableTestsImpl(VI.Sentence_i, VP.VariableTests_p):
         if len(self) > 1:
             return False
 
-        return cast(bool, self[0].is_var)
+        return cast(bool, self[0].is_at_var)
 
     @property
     def has_var(self) -> bool:

@@ -24,9 +24,9 @@ DFS_Sem_Frag = Semantic_Fragment(specs=[HandlerSpec(WALK_SEM_HINT)],
                                            QueryPlusAbstraction().as_handler(signal="QUERY", flags=[DSL_Spec.flag_e.OVERRIDE])])
 
 
-DFSQueryDSL = DSL_Fragment(specs=[DSL_Spec("word.constrained", struct=DOP.HOTLOAD_VAR),
-                                  DSL_Spec("sentence.operator", struct=DOP.HOTLOAD_SEN_OP)],
-                           handlers=[DSL_Handler("query.statement", DOP.dfs_query),
-                                     DSL_Handler("action.statement", DOP.dfs_action)])
+DFS_DSL = DSL_Fragment(specs=[DSL_Spec("word.constrained", struct=DOP.HOTLOAD_VAR),
+                              DSL_Spec("sentence.operator", struct=DOP.HOTLOAD_SEN_OP)],
+                       handlers=[DSL_Handler("query.statement", DOP.dfs_query),
+                                 DSL_Handler("action.statement", DOP.dfs_action)])
 
 # TODO printer fragment

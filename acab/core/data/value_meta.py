@@ -119,12 +119,3 @@ class ValueMeta(ProtocolMeta):
             _data.update({DS.TYPE_INSTANCE: _type})
 
         return _data
-
-
-
-    # def _handle_nesting(value:Value_A, name=None, data=None, params=None, tags=None, _type=None, **kwargs) -> Value_A:
-    #     logging.debug("Attempted to nest a value, copying")
-    #     new_data = value.data.copy()
-    #     new_data.update(data or {})
-    #     name = kwargs['name'] if 'name' in kwargs else value.name
-    #     return value.copy(data=new_data, name=name, tags=tags, params=params)

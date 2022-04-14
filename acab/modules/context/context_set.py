@@ -52,7 +52,7 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i, metaclass=ContextMeta):
     _operators           : CtxIns                 = field(default=None)
 
     # For nesting ctxsets
-    _parent              : None|CtxSet       = field(default=None)
+    _parent              : None|CtxSet            = field(default=None)
 
     _total               : dict[UUID, CtxIns]     = field(default_factory=dict)
     _active              : list[UUID]             = field(default_factory=list)

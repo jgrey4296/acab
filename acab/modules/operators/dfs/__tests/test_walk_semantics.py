@@ -265,7 +265,6 @@ class TestWalkSemantics(unittest.TestCase):
         ctxs = self.eng("the.$rule?")
         self.assertTrue(ctxs)
 
-
     def test_walk_all_action(self):
         """
         the.rule(::ρ):
