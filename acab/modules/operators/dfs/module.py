@@ -4,7 +4,7 @@ from acab import GET
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.core.semantics.basic import Semantic_Fragment
 from acab.core.util.part_implementations.handler_system import HandlerSpec
-from acab.modules.semantics.statements import QueryPlusAbstraction
+from acab.modules.semantics.statements import QueryPlusAbstraction, ActionPlusAbstraction
 from acab.core.data.sentence import Sentence
 
 from . import parser as DOP
@@ -17,11 +17,16 @@ DSL_Fragment = ppDSL.DSL_Fragment
 DSL_Spec     = ppDSL.PyParse_Spec
 DSL_Handler  = ppDSL.PyParse_Handler
 
-WALK_SEM_HINT = Sentence([config.prepare("Module.DFSWalk", "WALK_SEM_HINT")()])
+WALK_SEM_HINT   = Sentence([config.prepare("Module.DFSWalk", "WALK_SEM_HINT")()])
+QUERY_SEM_HINT  = Sentence([config.prepare("SEMANTICS", "QUERY")()])
+ACTION_SEM_HINT = Sentence([config.prepare("SEMANTICS", "ACTION")()])
 
 DFS_Sem_Frag = Semantic_Fragment(specs=[HandlerSpec(WALK_SEM_HINT)],
-                                 handlers=[DFSSemantics().as_handler(),
-                                           QueryPlusAbstraction().as_handler(signal="QUERY", flags=[DSL_Spec.flag_e.OVERRIDE])])
+                                 handlers=[
+                                     DFSSemantics().as_handler(),
+                                     QueryPlusAbstraction().as_handler(signal=QUERY_SEM_HINT, flags=[DSL_Spec.flag_e.OVERRIDE]),
+                                     ActionPlusAbstraction().as_handler(signal=ACTION_SEM_HINT, flags=[DSL_Spec.flag_e.OVERRIDE])
+                                 ])
 
 
 DFS_DSL = DSL_Fragment(specs=[DSL_Spec("word.constrained", struct=DOP.HOTLOAD_VAR),

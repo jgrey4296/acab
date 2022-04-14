@@ -1,6 +1,7 @@
 """
 Constructors for converting parse results -> Acab data
 """
+from acab.core.config.config import GET
 import acab.interfaces.value as VI
 from acab.core.data.default_structure import SEMANTIC_HINT
 from acab.core.data.instruction import (ProductionComponent,
@@ -11,6 +12,9 @@ from acab.core.data import default_structure as DS
 from acab.core.parsing import default_keys as PDS
 from acab.modules.parsing.exlo import util as EXu
 from acab.core.parsing.annotation import ValueAnnotation, ValueRepeatAnnotation
+
+config   = GET()
+SEM_HINT = config.prepare("Value.Structure", "SEMANTIC_HINT")()
 
 def build_query_component(s, loc, toks):
     """ Build a comparison """
@@ -83,8 +87,14 @@ def build_transform(s, loc, toks):
     return [trans]
 
 def build_action(s, loc, toks):
+    """
+    Unlike build_query/transform,
+    action handle's sentences as being the default_action (typically assert)
+    if the sentence doesn't have
+    """
     clauses = toks[0][:]
-    clauses = [x if isinstance(x, ProductionComponent)
+    clauses = [x if (isinstance(x, ProductionComponent) or
+                     isinstance(x, Sentence) and SEM_HINT in x.data)
                else ProductionComponent(Sentence([EXu.DEFAULT_ACTION_S]),
                                         params=[x]) for x in clauses]
 

@@ -64,13 +64,14 @@ class DFSSemantics(basic.StatementSemantics, SI.StatementSemantics_i):
         return True
 
     def __call__(self, instruction, semsys, ctxs=None, data=None):
+        assert(isinstance(instruction, Sentence))
         if QUERY in instruction.data and bool(instruction.data[QUERY]):
             return self._query(instruction, semsys, ctxs=ctxs, data=data)
 
         return self._act(instruction, semsys, ctxs=ctxs, data=data)
 
 
-    def _query(self, walk_spec, semsys, ctxs=None, data=None):
+    def _query(self, walk_spec:Sentence, semsys, ctxs=None, data=None):
         """
         DFS from @x in active ctxs
         Expects params to be a single sentence,
@@ -95,7 +96,7 @@ class DFSSemantics(basic.StatementSemantics, SI.StatementSemantics_i):
                     cwm.test_and_update(accessible)
 
 
-    def _act(self, walk_spec, semsys, ctxs=None, data=None):
+    def _act(self, walk_spec:Sentence, semsys, ctxs=None, data=None):
         """
         instruction : Sentence(@target, $ruleset)
         from @target, dfs the trie below, running $ruleset on each node
@@ -105,12 +106,14 @@ class DFSSemantics(basic.StatementSemantics, SI.StatementSemantics_i):
         nodesem : HandlerSpec[ValSem]    = default[0].lookup()
         found   : set[UUID]              = set()
 
+        # TODO handle λrule.sentence.queries.$x?
 
         with ContextWalkManager(walk_spec, default.struct.root, ctxs) as cwm:
             # for queue in cwm.active(mutable=True) ?
             # queue::list[Node]
             for queue in cwm.active:
                 action : 'Value|Sentence' = cwm.current[walk_spec[-1]]
+                spec = semsys.lookup(action)
                 if isinstance(action, Sentence):
                     # action is a sentence path,
                     # not an actual action
@@ -124,7 +127,6 @@ class DFSSemantics(basic.StatementSemantics, SI.StatementSemantics_i):
                     found.add(current.uuid)
                     # TODO use specified run form (all, sieve, etc)
                     # potentially override to force atomic rule
-                    spec = semsys.lookup(action)
                     # bind current to the param in action.params
                     params : list[Value] = action.params
                     args   : list[Value] = [current.value] + walk_spec[-1].params

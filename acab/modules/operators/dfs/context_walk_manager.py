@@ -70,8 +70,11 @@ class ContextWalkManager:
         if not self.walk_spec[0].is_at_var:
             [x.set_current_node(self.root_node) for x in active_list]
         else:
-            assert(self.walk_spec[0].is_at_var)
             root_word = self.walk_spec[0]
+            assert(root_word.is_at_var)
+            if isinstance(root_word, Sentence_i):
+                root_word = root_word[0]
+
             [x.set_current_binding(root_word) for x in active_list]
 
         return self

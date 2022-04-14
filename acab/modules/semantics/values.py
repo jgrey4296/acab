@@ -129,7 +129,7 @@ class ExclusionNodeSemantics(basic.ValueSemantics, SI.ValueSemantics_i):
         assert(isinstance(new_node, AcabNode))
 
         if new_node in node:
-            raise ASErr.AcabSemanticIndependentFailure("Node is already child", (node, new_node))
+            raise ASErr.AcabSemanticIndependentFailure("Node is already child", rest=(node, new_node))
 
         if node.data[EXOP] is EXOP_enum.EX and len(node.children) >= 1:
             node.clear()
@@ -142,7 +142,7 @@ class ExclusionNodeSemantics(basic.ValueSemantics, SI.ValueSemantics_i):
         assert(isinstance(to_delete, AcabValue))
 
         if to_delete not in node:
-            raise ASErr.AcabSemanticIndependentFailure("Value not in node", (node, to_delete))
+            raise ASErr.AcabSemanticIndependentFailure("Value not in node", rest=(node, to_delete))
 
         return node.remove(to_delete)
 

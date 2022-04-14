@@ -93,15 +93,18 @@ class BreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantics_i):
 
         with ContextQueryManager(sen, struct.root, ctxs) as cqm:
             for source_word in cqm.query:
-                if source_word.is_at_var:
-                    continue
                 for bound_word, ctxInst, current_node in cqm.active:
-                    spec = self.lookup(current_node)
-                    results = spec[0].access(current_node,
-                                             bound_word,
-                                             data=data)
+                    if source_word.is_at_var and not bool(cqm._current_constraint):
+                        continue
+                    elif source_word.is_at_var:
+                        cqm.test_and_update([current_node])
+                    else:
+                        spec = self.lookup(current_node)
+                        results = spec[0].access(current_node,
+                                                 bound_word,
+                                                 data=data)
 
-                    cqm.test_and_update(results)
+                        cqm.test_and_update(results)
 
         return ctxs
 
