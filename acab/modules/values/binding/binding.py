@@ -84,7 +84,7 @@ def sen_bind(val:AT.Sentence, bindings:dict[Any, Any]|AT.CtxIns) -> AT.Sentence:
             # [$x] bind {x : [a] } -> [a]
             data_to_apply = word.data.copy()
             data_to_apply.update({DS.BIND: False})
-            copied = retrieved[0].copy(data=word.data)
+            copied = retrieved[0].copy(data=data_to_apply)
             output.append(copied)
         elif isinstance(retrieved, VI.Value_i):
             # Apply the variables data to the retrieval
@@ -94,7 +94,7 @@ def sen_bind(val:AT.Sentence, bindings:dict[Any, Any]|AT.CtxIns) -> AT.Sentence:
             copied = retrieved.copy(data=data_to_apply)
             output.append(retrieved)
         else:
-            raise AcabBasicException("Sentence Bind should only ever handle AcabValues")
+            raise AcabBasicException("Sentence Bind should only ever handle sub Values and sub Sentences")
 
     if len(output) == 1 and isinstance(output[0], VI.Sentence_i):
         output = output[0].words

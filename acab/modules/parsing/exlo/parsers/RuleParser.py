@@ -5,12 +5,13 @@ import logging as logmod
 import pyparsing as pp
 from acab.core.config.config import AcabConfig
 from acab.core.parsing import parsers as PU
-from acab.core.parsing.consts import (ARROW, COLON, COMMA, DELIM,
-                                          DOUBLEBAR, NG, RULE_HEAD, N,
-                                          component_gap, emptyLine, gap, op, ln,
-                                          orm, END)
-from acab.modules.parsing.exlo.util import ACTION_S, QUERY_S, TRANSFORM_S, RULE_HEAD
+from acab.core.parsing.consts import (ARROW, COLON, COMMA, DELIM, DOUBLEBAR,
+                                      END, NG, RULE_HEAD, N, component_gap,
+                                      emptyLine, gap, ln, op, orm)
+from acab.core.parsing.statement_core import StatementCore
 from acab.modules.parsing.exlo.constructors import build_rule
+from acab.modules.parsing.exlo.util import (ACTION_S, QUERY_S, RULE_HEAD,
+                                            TRANSFORM_S)
 
 from . import ActionParser as AP
 from . import FactParser as FP
@@ -29,7 +30,7 @@ endOrLine  = pp.FollowedBy(END) | ln | pp.string_end
 
 rule_body = op(conditions + endOrLine) + op(transforms + endOrLine) + op(actions + endOrLine)
 
-rule = PU.STATEMENT_CONSTRUCTOR(RULE_HEAD, rule_body)
+rule = StatementCore(RULE_HEAD, rule_body)
 
 
 # Actions:

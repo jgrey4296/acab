@@ -5,8 +5,9 @@ import pyparsing as pp
 from acab.core.config.config import AcabConfig
 from acab.core.parsing import parsers as PU
 from acab.core.parsing.consts import (ARROW, COLON, COMMA, DELIM, DOUBLEBAR,
-                                      NG, N, component_gap, ln, zrm, op, s)
+                                      NG, N, component_gap, ln, op, s, zrm)
 from acab.core.parsing.default_symbols import TRANSFORM_HEAD
+from acab.core.parsing.statement_core import StatementCore
 from acab.modules.parsing.exlo.constructors import (build_transform,
                                                     build_transform_component)
 from acab.modules.parsing.exlo.util import (LEFT_S, OPERATOR_S, RIGHT_S,
@@ -46,8 +47,8 @@ transform_combined = pp.MatchFirst([HOTLOAD_TRANS_STATEMENTS,
 
 transforms = pp.IndentedBlock(transform_combined + op(s(ln)))
 
-transform_statement = PU.STATEMENT_CONSTRUCTOR(TRANSFORM_HEAD,
-                                               transforms)
+transform_statement = StatementCore(TRANSFORM_HEAD,
+                                    transforms)
 
 # Actions
 transform_core.set_parse_action(build_transform_component)

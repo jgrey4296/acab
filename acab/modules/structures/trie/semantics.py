@@ -89,7 +89,7 @@ class BreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantics_i):
     def query(self, sen, struct, *, data=None, ctxs=None):
         """ Breadth First Search Query """
         if ctxs is None:
-            raise ASErr.AcabSemanticException("Ctxs is none to TrieSemantics.query", sen)
+            raise ASErr.AcabSemanticException("Ctxs is none to TrieSemantics.query", rest=sen)
 
         with ContextQueryManager(sen, struct.root, ctxs) as cqm:
             for source_word in cqm.query:

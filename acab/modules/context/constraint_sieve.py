@@ -41,5 +41,3 @@ def make_alpha(x:AT.Value) -> None|Tuple[bool, str, list[Any]]:
         return None
 
     return (False, "alpha", [test for test in x.data[CONSTRAINT] if not test.has_var])
-
-# default_sieve.append(make_alpha)

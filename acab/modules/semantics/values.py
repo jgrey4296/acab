@@ -7,6 +7,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 import acab.error.semantic as ASErr
 from acab import types as AT
+from acab.interfaces import value as VI
 from acab.core.config.config import AcabConfig
 from acab.core.data.instruction import Instruction
 from acab.core.data.node import AcabNode
@@ -53,11 +54,13 @@ class BasicNodeSemantics(basic.ValueSemantics, SI.ValueSemantics_i):
         if term is None:
             return list(iter(node))
 
-        term_key = term.key()
-        if node.has(term_key):
-            return [node.get(term_key)]
+        potentials = []
+        if term is None:
+            potentials += node.children.values()
+        elif node.has(term):
+            potentials.append(node.get(term))
 
-        return []
+        return potentials
 
     def insert(self, node:Node, new_node:Node, *, data=None) -> Node:
         assert(isinstance(node, AcabNode))
@@ -106,16 +109,16 @@ class ExclusionNodeSemantics(basic.ValueSemantics, SI.ValueSemantics_i):
 
     def access(self, node:Node, term:Value, *, data=None) -> list[Node]:
         potentials = []
-        value = None
 
         if term is None:
             potentials += node.children.values()
+        elif isinstance(term, VI.Sentence_i) and node.has(str(term)):
+            potentials.append(node.get(str(term)))
         elif node.has(term):
             potentials.append(node.get(term))
 
         # TODO add hook for additional test fragments here?
         # TODO check type of term v potentials
-
 
         if bool(term) and EXOP in term.data and any([x.data[EXOP] != term.data[EXOP] for x in potentials]):
             raise ASErr.AcabSemanticIndependentFailure(f"EXOP MisMatch, expected {term.data[EXOP]}",

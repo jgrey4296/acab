@@ -147,7 +147,6 @@ class ActionPlusAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
                 params = [bind(x, ctx) for x in clause.params]
                 result = op(*params, data=clause.data, semSystem=semSys)
 
-
 class AtomicRuleAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
     """ Run a rule in a single semantic call """
 

@@ -103,7 +103,7 @@ class AcabNode(DI.Node_i):
         """ Add a node as a child of this node
         mutate object
         """
-        assert(isinstance(node, AcabNode))
+        assert(isinstance(node, DI.Node_i))
         if key is None:
             key = node.key()
         self.children[key] = node
@@ -133,7 +133,7 @@ class AcabNode(DI.Node_i):
         elif is_str:
             keys = self.keys()
             result = any([key in x for x in keys])
-        elif isinstance(key, (AcabNode, AcabValue)):
+        elif isinstance(key, (DI.Node_i, VI.Value_i)):
             result = key.key() in self.children
 
         return result
@@ -165,7 +165,7 @@ class AcabNode(DI.Node_i):
         """ Set the parent node to this node
         mutate object
         """
-        assert(isinstance(parent, AcabNode))
+        assert(isinstance(parent, DI.Node_i))
         self.parent = ref(parent)
 
     @property

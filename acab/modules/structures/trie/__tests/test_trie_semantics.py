@@ -12,13 +12,14 @@ import acab
 
 config = acab.setup()
 
+from acab.core.data import default_structure as DS
 from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.data.node import AcabNode
 from acab.core.data.instruction import ProductionComponent
 from acab.core.data.value import AcabValue
 from acab.core.data.sentence import Sentence
 from acab.interfaces.handler_system import Handler_i
-from acab.modules.operators.query.query_operators import EQ
+from acab.modules.operators.query.query_operators import EQ, AlwaysMatch
 from acab.modules.context.context_set import (ConstraintCollection,
                                               ContextInstance, ContextSet)
 from acab.modules.structures.trie.semantics import BreadthTrieSemantics

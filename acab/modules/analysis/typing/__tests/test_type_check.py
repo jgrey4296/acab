@@ -30,10 +30,6 @@ from acab.modules.operators.dfs.module import DFS_DSL
 from acab.core.parsing.annotation import ValueAnnotation
 
 dsl = None
-# AcabReducible          : type_definition -> sentences with unique variable at head
-# Sentence.add_prefix    : add prefix of unique var prior to unification with test node
-# Typing is a statement. use Query : Type retrieval from WM, unify is an operator
-# Use Rules for : Product / Sum / Operator Type differentiation
 
 class TypeCheckTests(unittest.TestCase):
 
@@ -79,7 +75,6 @@ class TypeCheckTests(unittest.TestCase):
         self.assertEqual(chopped, result)
 
     def test_typing_conflict(self):
-
         a_sen    = dsl("a.test.sen(::def).sub.blah(::bloo)")[0]
         # remove initial prefix
         chopped  = a_sen.remove_prefix(dsl("a.test")[0])
