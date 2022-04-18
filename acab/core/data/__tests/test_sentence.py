@@ -309,3 +309,56 @@ class SentenceTests(unittest.TestCase):
     def test_dsl_build(self):
         sen1 = dsl("a.test.sentence")[0]
         self.assertIsInstance(sen1, Sentence_i)
+
+    def test_remove_prefix(self):
+        sen1 = dsl("a.test.sentence.blah")[0]
+        chopped = sen1.remove_prefix(dsl("a.test")[0])
+        self.assertEqual(chopped, "_:sentence.blah")
+
+    def test_remove_prefix_complete(self):
+        sen1 = dsl("a.test.sentence.blah")[0]
+        chopped = sen1.remove_prefix(sen1)
+        self.assertFalse(chopped)
+
+    def test_remove_prefix_non_intersection(self):
+        sen1 = dsl("a.test.sentence.blah")[0]
+        chopped = sen1.remove_prefix(dsl("completely.unrelated.sentence")[0])
+        self.assertEqual(chopped, sen1)
+
+    def test_flatten(self):
+        sen1 = Sentence(["a", "test", "sentence"])
+        sen2 = Sentence(["parent", sen1, "blah"])
+        self.assertEqual(sen2, "_:parent.a.test.sentence.blah")
+        self.assertEqual(len(sen2), 3)
+        self.assertIsInstance(sen2[1], Sentence_i)
+        sen3 = sen2.flatten()
+        self.assertEqual(sen3, "_:parent.a.test.sentence.blah")
+        self.assertEqual(len(sen3), 5)
+        self.assertFalse(any([isinstance(x, Sentence_i) for x in sen3.words]))
+
+    def test_flatten_only_one_level(self):
+        sen1 = Sentence(["a", "test", "sentence"])
+        sen2 = Sentence(["parent", sen1, "blah"])
+        sen3 = Sentence(["top", "level", sen2])
+        self.assertEqual(sen3, "_:top.level.parent.a.test.sentence.blah")
+        self.assertEqual(len(sen3), 3)
+        self.assertIsInstance(sen3[2], Sentence_i)
+        self.assertIsInstance(sen3[2][1], Sentence_i)
+        one_layer = sen3.flatten()
+        self.assertEqual(one_layer, "_:top.level.parent.a.test.sentence.blah")
+        self.assertEqual(len(one_layer), 5)
+        self.assertIsInstance(one_layer[3], Sentence_i)
+        self.assertTrue(any([isinstance(x, Sentence_i) for x in one_layer.words]))
+
+    def test_flatten_only_all_levels(self):
+        sen1 = Sentence(["a", "test", "sentence"])
+        sen2 = Sentence(["parent", sen1, "blah"])
+        sen3 = Sentence(["top", "level", sen2])
+        self.assertEqual(sen3, "_:top.level.parent.a.test.sentence.blah")
+        self.assertEqual(len(sen3), 3)
+        self.assertIsInstance(sen3[2], Sentence_i)
+        self.assertIsInstance(sen3[2][1], Sentence_i)
+        all_layers = sen3.flatten(rec=True)
+        self.assertEqual(all_layers, "_:top.level.parent.a.test.sentence.blah")
+        self.assertEqual(len(all_layers), 7)
+        self.assertFalse(any([isinstance(x, Sentence_i) for x in all_layers.words]))

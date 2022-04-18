@@ -268,3 +268,14 @@ class SentenceProtocolsImpl(_SentenceBasicsImpl, VSI._ValueMetaDataImpl, _Senten
             return self.copy(value=cast(list, self.value)[len(prefix):]) #type:ignore
 
         return self
+
+    def flatten(self, *, rec=False):
+        words = []
+        for word in self.words:
+            if isinstance(word, VI.Sentence_i) and rec:
+                words += word.flatten(rec=True).words
+            elif isinstance(word, VI.Sentence_i):
+                words += word.words
+            else:
+                words.append(word)
+        return replace(self, value=words)
