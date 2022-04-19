@@ -265,20 +265,28 @@ class StructurePrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
         # result += ["(::", value.type, ")"]
         result.append(":")
         result.append(DSYM.CONTAINER_JOIN_P)
+        if bool(value.params):
+            # TODO make this more robust
+            result.append(DSYM.INDENT)
+            result.append(DSYM.PARAM_WRAP)
+            result.append(" ")
+            result += [top.override("ATOM", x, data={"no_modal": True}) for x in value.params]
+            result.append(" ")
+            result.append(DSYM.PARAM_WRAP)
+            result.append(DSYM.CONTAINER_JOIN_P)
+            result.append(DSYM.CONTAINER_JOIN_P)
+
         if bool(value.tags):
             result.append(top.override("TAGS", value.tags))
             result.append(DSYM.CONTAINER_JOIN_P)
 
-        if bool(value.structure[DS.QUERY_COMPONENT]):
-            result.append(top.override("IMPLICIT_CONTAINER", value.structure[DS.QUERY_COMPONENT]))
-            result.append(DSYM.CONTAINER_JOIN_P)
+        for container in value.value:
+            if bool(container):
+                result.append(top.override("IMPLICIT_CONTAINER", container))
+                result.append(DSYM.CONTAINER_JOIN_P)
 
-        if bool(value.structure[DS.TRANSFORM_COMPONENT]):
-            result.append(top.override("IMPLICIT_CONTAINER", value.structure[DS.TRANSFORM_COMPONENT]))
-            result.append(DSYM.CONTAINER_JOIN_P)
-
-        if bool(value.structure[DS.ACTION_COMPONENT]):
-            result.append(top.override("IMPLICIT_CONTAINER", value.structure[DS.ACTION_COMPONENT]))
+        if result[-1] == DSYM.CONTAINER_JOIN_P:
+            result.pop()
 
         result.append(DSYM.END_SYM)
         result.append(DSYM.PRINT_SEPARATOR_P)
