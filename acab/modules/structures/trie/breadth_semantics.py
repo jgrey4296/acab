@@ -3,7 +3,6 @@ import logging as logmod
 
 from acab import types as AT
 import acab.interfaces.semantic as SI
-import acab.interfaces.data as DI
 import acab.error.semantic as ASErr
 from acab.core.config.config import AcabConfig
 from acab.core.data.acab_struct import BasicNodeStruct
@@ -11,8 +10,7 @@ from acab.core.data.instruction import Instruction
 from acab.core.data.sentence import Sentence
 from acab.interfaces.value import Sentence_i
 from acab.modules.context.context_query_manager import ContextQueryManager
-from acab.modules.context.flatten_query_manager import FlattenQueryManager
-from acab.core.data.default_structure import NEGATION, FLATTEN
+from acab.core.data.default_structure import NEGATION
 from acab.core.semantics import basic
 from acab.error.protocol import AcabProtocolError as APE
 
@@ -27,12 +25,13 @@ Contexts      = AT.CtxSet
 
 
 @APE.assert_implements(SI.StructureSemantics_i)
-class FlattenBreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantics_i):
+class BreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantics_i):
     """
     Trie Semantics which map values -> Nodes
     Searches *Breadth First*
 
-    Has sentence-flattening logic for querying.
+   	Missing: __len__, __getitem__, __iter__, __contains__, override,
+    register, __bool__, Spec, verify_system, extend, lookup
     """
     def verify(self, instruction) -> bool:
         return isinstance(instruction, Sentence)
@@ -92,16 +91,10 @@ class FlattenBreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantic
         if ctxs is None:
             raise ASErr.AcabSemanticException("Ctxs is none to TrieSemantics.query", rest=sen)
 
-        clause_flatten = FLATTEN not in sen.data or sen.data[FLATTEN]
-        root           = struct.root if isinstance(struct, DI.Structure_i) else struct
-
-        with FlattenQueryManager(sen, root, ctxs) as cqm:
+        with ContextQueryManager(sen, struct.root, ctxs) as cqm:
             for source_word in cqm.query:
                 for bound_word, ctxInst, current_node in cqm.active:
-                    should_flatten = clause_flatten and bound_word and (FLATTEN not in bound_word.data or bound_word.data[FLATTEN])
-                    if isinstance(bound_word, Sentence_i) and should_flatten:
-                        self.query(bound_word, current_node, data=data, ctxs=ctxs.subctx([ctxInst.uuid]))
-                    elif source_word.is_at_var and not bool(cqm._current_constraint):
+                    if source_word.is_at_var and not bool(cqm._current_constraint):
                         continue
                     elif source_word.is_at_var:
                         cqm.maybe_test([current_node])
