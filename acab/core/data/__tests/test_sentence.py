@@ -10,7 +10,7 @@ import acab
 
 config = acab.setup()
 
-from acab.core.data.default_structure import BIND
+from acab.core.data.default_structure import BIND, FLATTEN
 from acab.core.data.value import AcabValue
 from acab.core.data.sentence import Sentence
 from acab.interfaces.value import Sentence_i, Value_i
@@ -362,3 +362,41 @@ class SentenceTests(unittest.TestCase):
         self.assertEqual(all_layers, "_:top.level.parent.a.test.sentence.blah")
         self.assertEqual(len(all_layers), 7)
         self.assertFalse(any([isinstance(x, Sentence_i) for x in all_layers.words]))
+
+    def test_flatten_cancel(self):
+        sen1 = Sentence(["a", "test", "sentence"])
+        sen1.data[FLATTEN] = False
+        sen2 = Sentence(["parent", sen1, "blah"])
+        self.assertEqual(sen2, "_:parent.a.test.sentence.blah")
+        self.assertEqual(len(sen2), 3)
+        self.assertIsInstance(sen2[1], Sentence_i)
+        sen3 = sen2.flatten()
+        self.assertEqual(sen3, "_:parent.a.test.sentence.blah")
+        self.assertEqual(len(sen3), 3)
+        self.assertTrue(any([isinstance(x, Sentence_i) for x in sen3.words]))
+
+    def test_flatten_cancel_top(self):
+        sen1 = Sentence(["a", "test", "sentence"])
+        sen2 = Sentence(["parent", sen1, "blah"])
+        sen2.data[FLATTEN] = False
+        self.assertEqual(sen2, "_:parent.a.test.sentence.blah")
+        self.assertEqual(len(sen2), 3)
+        self.assertIsInstance(sen2[1], Sentence_i)
+        sen3 = sen2.flatten()
+        self.assertEqual(sen3, "_:parent.a.test.sentence.blah")
+        self.assertEqual(len(sen3), 3)
+        self.assertTrue(any([isinstance(x, Sentence_i) for x in sen3.words]))
+
+    def test_flatten_cancel_bottom_level(self):
+        sen1 = Sentence(["a", "test", "sentence"])
+        sen1.data[FLATTEN] = False
+        sen2 = Sentence(["parent", sen1, "blah"])
+        sen3 = Sentence(["top", "level", sen2])
+        self.assertEqual(sen3, "_:top.level.parent.a.test.sentence.blah")
+        self.assertEqual(len(sen3), 3)
+        self.assertIsInstance(sen3[2], Sentence_i)
+        self.assertIsInstance(sen3[2][1], Sentence_i)
+        all_layers = sen3.flatten(rec=True)
+        self.assertEqual(all_layers, "_:top.level.parent.a.test.sentence.blah")
+        self.assertEqual(len(all_layers), 5)
+        self.assertTrue(any([isinstance(x, Sentence_i) for x in all_layers.words]))

@@ -269,13 +269,28 @@ class SentenceProtocolsImpl(_SentenceBasicsImpl, VSI._ValueMetaDataImpl, _Senten
 
         return self
 
-    def flatten(self, *, rec=False):
+    def flatten(self, *, rec=False) -> Sen_A:
+        """
+        TODO: add annotations for:
+        flattening sentences
+        flattening a variable in a sentence
+        recursive flattening
+        """
+        if DS.FLATTEN in self.data and not self.data[DS.FLATTEN]:
+            return self
+
         words = []
-        for word in self.words:
-            if isinstance(word, VI.Sentence_i) and rec:
-                words += word.flatten(rec=True).words
-            elif isinstance(word, VI.Sentence_i):
+        queue = self.words
+        while bool(queue):
+            word = queue.pop(0)
+            is_sen = isinstance(word, VI.Sentence_i)
+            should_flatten = DS.FLATTEN not in word.data or bool(word.data[DS.FLATTEN])
+            if is_sen and should_flatten and rec:
+                queue = word.words + queue
+            elif is_sen and should_flatten:
                 words += word.words
             else:
+                assert(not (is_sen and should_flatten))
                 words.append(word)
         return replace(self, value=words)
+
