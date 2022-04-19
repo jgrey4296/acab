@@ -55,7 +55,7 @@ class TypeSemantics(StatementSemantics_i):
                                              bound_word,
                                              data)
 
-                    cqm.test_and_update(results)
+                    cqm.mabye_test(results)
                     # if source_word.type != ATOM:
                     # build_named_set with an update instruction
 

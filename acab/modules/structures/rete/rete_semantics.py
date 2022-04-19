@@ -101,7 +101,7 @@ class ReteSemantics(SI.StructureSemantics_i):
                                              bound_word,
                                              data)
 
-                    cqm.test_and_update(results)
+                    cqm.maybe_test(results)
 
         return ctxs
 

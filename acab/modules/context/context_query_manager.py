@@ -64,7 +64,7 @@ class ContextQueryManager:
         self._initial_ctxs = [x.uuid for x in self.ctxs.active_list()]
 
     def __repr__(self):
-        return f"<ContextQueryManager Clause:{self.query_clause} Root={self.root_node} Size={len(self.ctxs)} {'negative' if self.negated else 'positive'}>"
+        return f"<{self.__class__.__name__} {'-' if self.negated else '+'}Clause:{self.query_clause} Root={self.root_node} Size={len(self.ctxs)}>"
 
     def __enter__(self):
         """
@@ -125,10 +125,11 @@ class ContextQueryManager:
 
             if bound_word.is_var:
                 bound_word = None
+
             yield (bound_word, ctx, ctx._current)
 
 
-    def test_and_update(self, results:list[Node]):
+    def maybe_test(self, results:list[Node]):
         if not bool(results):
             self.ctxs.fail(self._current_inst,
                            self._current_constraint.source,

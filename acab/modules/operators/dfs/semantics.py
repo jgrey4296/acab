@@ -93,7 +93,7 @@ class DFSSemantics(basic.StatementSemantics, SI.StatementSemantics_i):
                     found.add(current.uuid)
                     accessible   = nodesem[0].access(current, None, data=data)
                     queue       += accessible
-                    cwm.test_and_update(accessible)
+                    cwm.maybe_test(accessible)
 
 
     def _act(self, walk_spec:Sentence, semsys, ctxs=None, data=None):

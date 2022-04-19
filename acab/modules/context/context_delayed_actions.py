@@ -1,12 +1,24 @@
 #!/opts/anaconda3/envs/ENV/python
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
+from __future__ import annotations
+
+import abc
+import logging as logmod
+from dataclasses import InitVar, dataclass, field
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
+                    Iterable, Iterator, Mapping, Match, MutableMapping,
+                    Protocol, Sequence, Tuple, TypeAlias, TypeGuard, TypeVar,
+                    cast, final, overload, runtime_checkable)
 from uuid import UUID
+
+if TYPE_CHECKING:
+    # tc only imports
+    pass
+
+logging = logmod.getLogger(__name__)
 
 from acab.core.decorators.util import registerOn
 from acab.modules.context.context_set import ContextSet
+
 
 @registerOn(ContextSet)
 def do_active(self, uuids:list[UUID]):
@@ -28,6 +40,7 @@ def do_default(self, instr, uuids:list[UUID]):
 
 @registerOn(ContextSet)
 def do_merge(self, ctxSets):
+    logging.debug("Merging Contexts into parent")
     for ctxs in ctxSets:
         self._total.update(ctxs._total)
         self.do_active(ctxs._active)

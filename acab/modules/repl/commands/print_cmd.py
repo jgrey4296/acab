@@ -85,15 +85,15 @@ class PrintCmd:
         bindings_to_print = []
         if "short_context" in params:
             try:
-                ctxs_to_print.append(self._cmd._cmd.state.ctxs[params['short_context']])
+                ctxs_to_print.append(self._cmd.state.ctxs[params['short_context']])
             except IndexError as err:
-                print(f"Selected bad ctx instance. Try 0 <= x < {len(self._cmd._cmd.state.ctxs)}.")
+                print(f"Selected bad ctx instance. Try 0 <= x < {len(self._cmd.state.ctxs)}.")
 
         elif "context_slice" in params:
-            ctx_slice = self._cmd._cmd.state.ctxs[params['context_slice']].active_list()
+            ctx_slice = self._cmd.state.ctxs[params['context_slice']].active_list()
             ctxs_to_print += ctx_slice
-        elif bool(self._cmd._cmd.state.ctxs) and len(self._cmd._cmd.state.ctxs) > 0:
-            ctxs_to_print += self._cmd._cmd.state.ctxs.active_list()
+        elif bool(self._cmd.state.ctxs) and len(self._cmd.state.ctxs) > 0:
+            ctxs_to_print += self._cmd.state.ctxs.active_list()
         else:
             print(f"No applicable contexts to print")
             return
@@ -114,13 +114,13 @@ class PrintCmd:
             #     print(f"Continuation: {ctx.continuation}")
             if bool(bindings_to_print):
                 for x in bindings_to_print:
-                    print("{} : {}".format(x, self._cmd._cmd.state.engine.pprint(target=[ctx[x]])))
+                    print("{} : {}".format(x, self._cmd.state.engine.pprint(target=[ctx[x]])))
             else:
                 for x,y in ctx.data.items():
-                    print("{} : {}".format(x, self._cmd._cmd.state.engine.pprint(target=[y])))
+                    print("{} : {}".format(x, self._cmd.state.engine.pprint(target=[y])))
 
             print("--------------------")
 
-        if bool(self._cmd._cmd.state.ctxs._named_sets):
+        if bool(self._cmd.state.ctxs._named_sets):
             print("Named (continuation) Sets:")
-            print(self._cmd._cmd.state.engine.pprint(target=list(self._cmd._cmd.state.ctxs._named_sets.keys())))
+            print(self._cmd.state.engine.pprint(target=list(self._cmd.state.ctxs._named_sets.keys())))

@@ -103,7 +103,7 @@ class ContextWalkManager:
             yield [ctx._current]
 
 
-    def test_and_update(self, results:list[Node]):
+    def maybe_test(self, results:list[Node]):
         self.test(results)
 
     def test(self, possible: list[Node]):
