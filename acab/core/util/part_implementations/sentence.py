@@ -222,7 +222,7 @@ class _SentenceReductionImpl(VI.Sentence_i, VP.AcabReducible_p):
 
         new_data = {}
         new_data.update(self.data)
-        new_data.update({DS.TYPE_INSTANCE: ValueFactory.sen([DS.TYPE_BOTTOM_NAME])}) #type:ignore
+        new_data.update({DS.TYPE_INSTANCE: ValueFactory.sen([DS.TYPE_BASE])}) #type:ignore
         simple_value = ValueFactory.value(self.name, data=new_data) #type:ignore
         return simple_value #type:ignore
 

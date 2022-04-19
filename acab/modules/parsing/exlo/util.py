@@ -6,7 +6,7 @@ import acab.core.data.default_structure as DS
 # pylint: disable=bad-whitespace,unnecessary-comprehension
 import pyparsing as pp
 from acab.core.config.config import AcabConfig
-from acab.core.data.default_structure import TYPE_BOTTOM_NAME as ATOM_V
+from acab.core.data.default_structure import TYPE_BASE as ATOM_V
 from acab.core.data.instruction import ProductionContainer
 from acab.core.data.value import AcabValue
 from acab.core.data.sentence import  Sentence

@@ -49,7 +49,7 @@ OPERATOR_SUGAR = pp.Word(PDSYM.OPERATOR_SYNTAX)
 OPERATOR_SUGAR.set_parse_action(lambda s, l, t: ValueFactory_i.sen([t[0]]))
 
 ATOM           = pp.Word(PDSYM.WORD_COMPONENT + "'")
-ATOM.set_parse_action(lambda s, l, t: (CDS.TYPE_BOTTOM_NAME, t[0]))
+ATOM.set_parse_action(lambda s, l, t: (CDS.TYPE_BASE, t[0]))
 
 STRING      = pp.dbl_quoted_string
 # Remove quotes from around strings:

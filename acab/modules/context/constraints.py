@@ -18,7 +18,7 @@ from acab.modules.context.constraint_sieve import default_sieve
 config = GET()
 CONSTRAINT    = config.prepare("Value.Structure", "CONSTRAINT")
 TYPE_INSTANCE = config.prepare("Value.Structure", "TYPE_INSTANCE")()
-ATOM          = config.prepare("Data", "TYPE_BOTTOM_NAME")()
+ATOM          = config.prepare("Data", "TYPE_BASE")()
 
 CtxIns      = 'ContextInstance'
 Constraints = 'ConstraintCollection'

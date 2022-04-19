@@ -50,7 +50,7 @@ class ValueMeta(ProtocolMeta):
     """ Utility Meta Class for building values """
 
     name_sieve           : ClassVar[AcabSieve[str]] = AcabSieve(name_sieve_fns)
-    default_data         : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE : DS.TYPE_BOTTOM_NAME,
+    default_data         : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE : DS.TYPE_BASE,
                                                        DS.BIND : False}
 
     __subclasses  : ClassVar[dict[str,type[Value_A]]]      = dict()

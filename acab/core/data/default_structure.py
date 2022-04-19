@@ -34,7 +34,7 @@ ACTION_COMPONENT    : str = config.prepare("Structure.Components", "ACTION")()
 
 # Core data defaults
 ROOT             = config.prepare("Data", "ROOT")()
-TYPE_BOTTOM_NAME = config.prepare("Data", "TYPE_BOTTOM_NAME")()
+TYPE_BASE        = config.prepare("Data", "TYPE_BASE")()
 
 # Core type primitives
 COMPONENT_PRIM = config.prepare("Type.Primitive", "COMPONENT")()

@@ -127,7 +127,7 @@ class TopologicalOrderedAcabTests(unittest.TestCase):
         self.assertIsInstance(value, AcabValue)
         self.assertEqual(value.name, "test")
         self.assertEqual(value.value, "test")
-        self.assertEqual(value.type, Sentence.build([config.prepare("Data", "TYPE_BOTTOM_NAME")]))
+        self.assertEqual(value.type, Sentence.build([config.prepare("Data", "TYPE_BASE")]))
 
 
     def test_value_build(self):
