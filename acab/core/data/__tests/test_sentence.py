@@ -45,6 +45,9 @@ class SentenceTests(unittest.TestCase):
         self.assertIsInstance(val, Sentence_i)
         self.assertIsInstance(val, Value_i)
 
+    def test_name(self):
+        test = Sentence(["a", "test", "sentence"])
+        self.assertEqual(test.name, '"a.test.sentence"')
     def test_length(self):
         """ check simple sentence length """
         val = Sentence(["a","test","value"])

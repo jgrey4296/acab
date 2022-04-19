@@ -72,9 +72,8 @@ class ComponentTests(unittest.TestCase):
         """ Check an operator can be created, and is of the correct type """
         op = BasicTestOp()
         self.assertIsInstance(op, PO.ProductionOperator)
-        # TODO OPERATOR, COMPONENT
         self.assertEqual(op.type, Sentence([OPERATOR_TYPE_PRIM_S]))
-        self.assertEqual(op.name, f"{BasicTestOp.__module__}.{BasicTestOp.__qualname__}")
+        self.assertEqual(op.name, f"{BasicTestOp.__qualname__}")
 
     def test_tagged_operator(self):
         op = BasicTestOp(tags=["a","b","c"])
