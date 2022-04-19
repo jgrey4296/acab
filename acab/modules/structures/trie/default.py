@@ -27,19 +27,20 @@ RULE_SEM_HINT          = Sentence([config.prepare("SEMANTICS", "RULE")()])
 AGENDA_SEM_HINT        = Sentence([config.prepare("SEMANTICS", "AGENDA")()])
 LAYER_SEM_HINT         = Sentence([config.prepare("SEMANTICS", "LAYER")()])
 PIPELINE_SEM_HINT      = Sentence([config.prepare("SEMANTICS", "PIPELINE")()])
+ATOM_HINT              = Sentence([config.prepare("SEMANTICS", "ATOM")()])
 
 def DEFAULT_TRIE_SPEC(name="trie"):
-    node_spec   = BasicSemanticSystem.Spec("atom").spec_from(SI.ValueSemantics_i)
+    node_spec   = BasicSemanticSystem.Spec(ATOM_HINT).spec_from(SI.ValueSemantics_i)
     trie_spec   = BasicSemanticSystem.Spec(name).spec_from(SI.StructureSemantics_i)
 
     return node_spec, trie_spec
 
 def DEFAULT_TRIE(name="trie"):
-    node_handler = BasicNodeSemantics("atom").as_handler()
     trie_sem     = BreadthTrieSemantics(signal=name,
                                         init_specs=[],
                                         sieve_fns=[],
                                         init_handlers=[node_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+    node_handler = BasicNodeSemantics(ATOM_HINT).as_handler()
 
 
     trie_handler = trie_sem.as_handler(struct=BasicNodeStruct.build_default())
