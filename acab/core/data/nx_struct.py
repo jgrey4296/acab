@@ -6,7 +6,7 @@ import networkx as nx
 from acab.core.config.config import AcabConfig
 from acab.interfaces.data import Structure_i
 from acab.core.data.node import AcabNode
-from acab.core.data.value import AcabValue
+from acab.core.value.value import AcabValue
 from acab.core.data.acab_struct import AcabStruct
 
 logging = logmod.getLogger(__name__)

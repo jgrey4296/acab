@@ -1,5 +1,5 @@
-from acab.core.data.instruction import ProductionOperator
-from acab.core.decorators.semantics import OperatorArgUnWrap, OperatorResultWrap
+from acab.core.value.instruction import ProductionOperator
+from acab.core.util.decorators.semantics import OperatorArgUnWrap, OperatorResultWrap
 
 
 class GT(ProductionOperator):

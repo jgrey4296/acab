@@ -5,7 +5,7 @@ import pyparsing as pp
 
 from acab.core.parsing.consts import DOUBLEBAR, COLON, COMMA, DBLCOLON, DELIM, component_gap
 from acab.core.parsing.consts import N, NG, op, OPAR, CPAR
-from acab.core.data.sentence import Sentence
+from acab.core.value.sentence import Sentence
 from acab.core.parsing import parsers as PU
 
 from acab.modules.analysis.typing import util as TYU

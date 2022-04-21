@@ -16,12 +16,12 @@ config = acab.setup()
 import acab.modules.parsing.exlo.parsers.FactParser as FP
 import acab.modules.printing.printers as Printers
 from acab.core.config.config import AcabConfig
-from acab.core.data.instruction import (ProductionComponent,
+from acab.core.value.instruction import (ProductionComponent,
                                                         ProductionContainer,
                                                         ProductionOperator)
-from acab.core.data.value import AcabValue
-from acab.core.data.instruction import Instruction
-from acab.core.data.sentence import Sentence
+from acab.core.value.value import AcabValue
+from acab.core.value.instruction import Instruction
+from acab.core.value.sentence import Sentence
 from acab.interfaces.printing import PrintSystem_i
 from acab.core.printing import wrappers as PW
 

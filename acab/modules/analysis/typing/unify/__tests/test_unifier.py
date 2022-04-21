@@ -12,7 +12,7 @@ from acab import setup
 config = setup()
 
 from acab.interfaces import value as VI
-from acab.core.data.value import AcabValue
+from acab.core.value.value import AcabValue
 
 from ... import exceptions as TE
 from .. import unifier as unify

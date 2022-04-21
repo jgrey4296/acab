@@ -10,10 +10,10 @@ config = setup()
 
 
 from acab.core.data.acab_struct import AcabNode
-from acab.core.data.default_structure import BIND
-from acab.core.data.value import AcabValue
-from acab.core.data.instruction import Instruction
-from acab.core.data.sentence import Sentence
+from acab.core.value.default_structure import BIND
+from acab.core.value.value import AcabValue
+from acab.core.value.instruction import Instruction
+from acab.core.value.sentence import Sentence
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.modules.analysis.typing.dsl import TypingDSL
 from acab.modules.context.context_instance import ContextInstance as CtxIns

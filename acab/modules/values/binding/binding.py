@@ -9,9 +9,9 @@ from acab import types as AT
 from acab.interfaces import value as VI
 from acab.interfaces import context as CI
 from acab.error.semantic import AcabSemanticException
-from acab.core.data import default_structure as DS
-from acab.core.data.sentence import Sentence
-from acab.core.data.value import AcabValue
+from acab.core.value import default_structure as DS
+from acab.core.value.sentence import Sentence
+from acab.core.value.value import AcabValue
 
 def bind(val, bindings):
     if isinstance(val, VI.Sentence_i):

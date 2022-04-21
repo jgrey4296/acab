@@ -11,15 +11,15 @@ from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
 from uuid import UUID, uuid1
 from weakref import ref
 
-import acab.core.data.default_structure as DS
+import acab.core.value.default_structure as DS
 import acab.interfaces.value as VI
 from acab import types as AT
 from acab.core.config.config import AcabConfig
-from acab.core.decorators.util import cache
+from acab.core.util.decorators.util import cache
 from acab.error.base import AcabBasicException
 from acab.interfaces.sieve import AcabSieve
 import acab.interfaces.protocols.value as VP
-from acab.core.data.factory import ValueFactory
+from acab.core.value.factory import ValueFactory
 
 logging        = logmod.getLogger(__name__)
 

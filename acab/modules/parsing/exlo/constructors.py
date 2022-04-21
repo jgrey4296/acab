@@ -3,12 +3,12 @@ Constructors for converting parse results -> Acab data
 """
 from acab.core.config.config import GET
 import acab.interfaces.value as VI
-from acab.core.data.default_structure import SEMANTIC_HINT
-from acab.core.data.instruction import (ProductionComponent,
+from acab.core.value.default_structure import SEMANTIC_HINT
+from acab.core.value.instruction import (ProductionComponent,
                                         ProductionContainer,
                                         ProductionStructure)
-from acab.core.data.sentence import Sentence
-from acab.core.data import default_structure as DS
+from acab.core.value.sentence import Sentence
+from acab.core.value import default_structure as DS
 from acab.core.parsing import default_keys as PDS
 from acab.modules.parsing.exlo import util as EXu
 from acab.core.parsing.annotation import ValueAnnotation, ValueRepeatAnnotation

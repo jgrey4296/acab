@@ -19,7 +19,7 @@ from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.error.config import AcabConfigException
 import acab.interfaces.protocols.value as VSubP
-import acab.core.data.default_structure as DS
+import acab.core.value.default_structure as DS
 
 __all__ = ['Value_i', 'Instruction_i', 'Sentence_i', 'Operator_i', 'Action_i']
 

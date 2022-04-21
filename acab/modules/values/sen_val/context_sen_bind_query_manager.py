@@ -14,7 +14,7 @@ from uuid import UUID, uuid1
 import acab.error.semantic as ASErr
 import acab.interfaces.context as CtxInt
 from acab.core.config import GET
-from acab.core.data.instruction import ProductionComponent, ProductionContainer
+from acab.core.value.instruction import ProductionComponent, ProductionContainer
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces.value import Sentence_i
 from acab.modules.context.constraints import ConstraintCollection

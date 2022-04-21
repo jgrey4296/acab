@@ -11,20 +11,20 @@ from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
 from uuid import UUID, uuid1
 from weakref import ref
 
-import acab.core.data.default_structure as DS
+import acab.core.value.default_structure as DS
 import acab.core.util.part_implementations.sentence as SSI  # type:ignore
 import acab.core.util.part_implementations.value as VSI
 import acab.interfaces.value as VI
 from acab import types as AT
 from acab.core.config.config import AcabConfig
-from acab.core.data.util import name_sieve_fns
-from acab.core.data.value import AcabValue
-from acab.core.decorators.util import cache
+from acab.core.value.util import name_sieve_fns
+from acab.core.value.value import AcabValue
+from acab.core.util.decorators.util import cache
 from acab.error.base import AcabBasicException
 from acab.interfaces.sieve import AcabSieve
 from acab.error.protocol import AcabProtocolError as APE
-from acab.core.data.factory import ValueFactory
-from acab.core.data.value_meta import ValueMeta
+from acab.core.value.factory import ValueFactory
+from acab.core.value.value_meta import ValueMeta
 
 logging        = logmod.getLogger(__name__)
 

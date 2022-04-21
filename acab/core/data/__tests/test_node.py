@@ -9,7 +9,7 @@ config = acab.setup()
 
 from acab.interfaces.value import Sentence_i
 from acab.core.data.node import AcabNode
-from acab.core.data.value import AcabValue
+from acab.core.value.value import AcabValue
 
 BIND_S = config.prepare("Value.Structure", "BIND")()
 

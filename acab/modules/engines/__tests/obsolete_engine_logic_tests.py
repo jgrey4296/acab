@@ -10,8 +10,8 @@ import timeit
 import acab
 acab.setup()
 
-from acab.core.data.sentence import Sentence
-from acab.core.data.instruction import ProductionStructure
+from acab.core.value.sentence import Sentence
+from acab.core.value.instruction import ProductionStructure
 from acab.core.engine.engine import Engine
 
 def S(*words):

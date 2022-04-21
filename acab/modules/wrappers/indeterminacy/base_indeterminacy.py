@@ -9,7 +9,7 @@ TODO should actually deal with marking indeterminacy in actions
 ie: Malaby's categories: Formal, Social, Performative and Cosmological
 
 """
-from acab.core.data.value import AcabValue
+from acab.core.value.value import AcabValue
 
 class IndeterminacyBase(AcabValue):
     """ Base Source of Indeterminacy.

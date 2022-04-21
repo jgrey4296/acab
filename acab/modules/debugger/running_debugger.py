@@ -9,7 +9,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 logging = logmod.getLogger(__name__)
 trace_logger = logmod.getLogger('acab.repl.trace')
 
-from acab.core.decorators.util import singleton
+from acab.core.util.decorators.util import singleton
 from acab.interfaces.debugger import AcabDebugger_i
 
 # TODO track semantic debugging in RunningDebugger

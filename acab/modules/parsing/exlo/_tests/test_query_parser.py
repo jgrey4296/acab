@@ -18,12 +18,12 @@ if '@pytest_ar' in globals():
 
 import acab.modules.parsing.exlo.parsers.FactParser as FP
 import acab.modules.parsing.exlo.parsers.QueryParser as QP
-from acab.core.data.default_structure import BIND, NEGATION, QUERY_FALLBACK, QUERY
-from acab.core.data.instruction import (Instruction, ProductionComponent,
+from acab.core.value.default_structure import BIND, NEGATION, QUERY_FALLBACK, QUERY
+from acab.core.value.instruction import (Instruction, ProductionComponent,
                                         ProductionContainer,
                                         ProductionOperator)
-from acab.core.data.sentence import Sentence
-from acab.core.data.value import AcabValue
+from acab.core.value.sentence import Sentence
+from acab.core.value.value import AcabValue
 from acab.core.parsing import parsers as PU
 from acab.modules.operators import query as QOP
 from acab.core.parsing.annotation import ValueRepeatAnnotation

@@ -12,9 +12,9 @@ if '@pytest_ar' in globals():
     from acab.core.parsing import debug_funcs as DBF
     DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
-from acab.core.data.value import AcabValue
-from acab.core.data.sentence import Sentence
-from acab.core.data.instruction import ProductionOperator, ProductionContainer, ProductionComponent
+from acab.core.value.value import AcabValue
+from acab.core.value.sentence import Sentence
+from acab.core.value.instruction import ProductionOperator, ProductionContainer, ProductionComponent
 
 from acab.modules.parsing.exlo.parsers import TransformParser as TP
 from acab.modules.parsing.exlo.parsers import ActionParser as AP

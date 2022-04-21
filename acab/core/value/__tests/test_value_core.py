@@ -8,8 +8,8 @@ import acab
 config = acab.setup()
 
 from acab.interfaces.value import Value_i
-from acab.core.data.value import AcabValue
-from acab.core.data.sentence import Sentence
+from acab.core.value.value import AcabValue
+from acab.core.value.sentence import Sentence
 from acab.core.data.node import AcabNode
 
 AT_BIND_S = config.prepare("Value.Structure", "AT_BIND")()

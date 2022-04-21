@@ -6,11 +6,11 @@ import acab.interfaces.semantic as SI
 import acab.modules.semantics.statements as ASem
 from acab.core.config.config import GET
 from acab.core.data.acab_struct import BasicNodeStruct
-from acab.core.data.sentence import Sentence
+from acab.core.value.sentence import Sentence
 from acab.core.util.part_implementations.handler_system import Handler, HandlerSpec
 from acab.modules.context import context_delayed_actions
 from acab.modules.context.context_set import ContextSet
-from acab.modules.semantics.basic_system import BasicSemanticSystem
+from acab.modules.semantics.basic_system import BasicSemanticSystem as BSS
 from acab.modules.semantics.values import (BasicNodeSemantics,
                                            ExclusionNodeSemantics)
 from acab.modules.structures.trie.default import DEFAULT_TRIE, DEFAULT_TRIE_SPEC

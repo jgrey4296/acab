@@ -4,9 +4,9 @@ Definitions of initial Comparison operators
 import re
 
 from acab import types as AT
-from acab.core.data.instruction import ProductionOperator
-from acab.core.decorators.semantic import OperatorArgUnWrap, OperatorResultWrap
-from acab.core.decorators.semantic import OperatorSugar
+from acab.core.value.instruction import ProductionOperator
+from acab.core.util.decorators.semantic import OperatorArgUnWrap, OperatorResultWrap
+from acab.core.util.decorators.semantic import OperatorSugar
 
 Value    = AT.Value
 Sentence = AT.Sentence

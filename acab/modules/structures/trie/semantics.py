@@ -7,12 +7,12 @@ import acab.interfaces.data as DI
 import acab.error.semantic as ASErr
 from acab.core.config.config import AcabConfig
 from acab.core.data.acab_struct import BasicNodeStruct
-from acab.core.data.instruction import Instruction
-from acab.core.data.sentence import Sentence
+from acab.core.value.instruction import Instruction
+from acab.core.value.sentence import Sentence
 from acab.interfaces.value import Sentence_i
 from acab.modules.context.context_query_manager import ContextQueryManager
 from acab.modules.context.flatten_query_manager import FlattenQueryManager
-from acab.core.data.default_structure import NEGATION, FLATTEN
+from acab.core.value.default_structure import NEGATION, FLATTEN
 from acab.core.semantics import basic
 from acab.error.protocol import AcabProtocolError as APE
 

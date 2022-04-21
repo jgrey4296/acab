@@ -7,11 +7,11 @@ logging = logmod.getLogger(__name__)
 import acab
 acab.setup()
 
-from acab.core.data.sentence import Sentence
-from acab.core.data.value import AcabValue
+from acab.core.value.sentence import Sentence
+from acab.core.value.value import AcabValue
 
 from acab.core.data.node import AcabNode
-from acab.core.data.instruction import ProductionOperator, ProductionComponent
+from acab.core.value.instruction import ProductionOperator, ProductionComponent
 
 from acab.modules.analysis.typing import exceptions as te
 from acab.modules.analysis.typing import util as TU

@@ -10,9 +10,9 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 from acab import types as AT
 from acab.core.config.config import GET
-from acab.core.data.instruction import (ActionOperator,
+from acab.core.value.instruction import (ActionOperator,
                                                         ProductionOperator)
-from acab.core.decorators.semantic import (OperatorArgUnWrap,
+from acab.core.util.decorators.semantic import (OperatorArgUnWrap,
                                                OperatorResultWrap,
                                                OperatorSugar)
 from acab.error.semantic import AcabSemanticException

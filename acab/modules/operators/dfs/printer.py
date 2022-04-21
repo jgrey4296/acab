@@ -5,11 +5,11 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-import acab.core.data.default_structure as DS
+import acab.core.value.default_structure as DS
 import acab.interfaces.value as VI
 from acab.core.config.config import GET, AcabConfig, ConfigSpec
-from acab.core.data.instruction import Instruction
-from acab.core.data.sentence import Sentence
+from acab.core.value.instruction import Instruction
+from acab.core.value.sentence import Sentence
 from acab.core.printing import basic
 from acab.core.printing import default_symbols as DSYM
 from acab.core.printing import wrappers as PW

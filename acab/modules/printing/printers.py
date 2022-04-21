@@ -4,24 +4,25 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-import acab.core.data.default_structure as DS
+import acab.core.value.default_structure as DStruct
 import acab.interfaces.value as VI
 from acab.core.config.config import GET, AcabConfig, ConfigSpec
-from acab.core.data.instruction import Instruction
-from acab.core.data.sentence import Sentence
+from acab.core.value.instruction import Instruction
+from acab.core.value.sentence import Sentence
 from acab.core.printing import basic
 from acab.core.printing import default_symbols as DSYM
 from acab.core.printing import wrappers as PW
 from acab.interfaces.printing import PrintSemantics_i
 from acab.interfaces.value import ValueFactory_i as VF
+from  acab.core.printing import default_signals as DS
 
 config = GET()
 
 ANNOTATIONS = [x.upper() for x in config.prepare("Print.Annotations", as_list=True)()]
-ATOM_HINT   = config.prepare("SEMANTICS", "ATOM")()
+ATOM_HINT   = DS.ATOM
 TYPE_BASE   = config.prepare("Data", "TYPE_BASE")()
 
-SEN_SEN     = VF.sen([DS.SENTENCE_PRIM])
+SEN_SEN     = VF.sen([DStruct.SENTENCE_PRIM])
 
 def grouper(iterable, n, fillvalue=None):
     """ Collect data into fixed-length chunks or blocks

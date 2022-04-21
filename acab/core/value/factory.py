@@ -16,11 +16,11 @@ from weakref import ref
 
 logging = logmod.getLogger(__name__)
 
-import acab.core.data.default_structure as DS
+import acab.core.value.default_structure as DS
 import acab.interfaces.value as VI
 from acab import types as AT
 from acab.core.config.config import AcabConfig
-from acab.core.decorators.util import cache
+from acab.core.util.decorators.util import cache
 from acab.error.base import AcabBasicException
 from acab.interfaces.sieve import AcabSieve
 from acab.core.util.singletons import SingletonMeta
@@ -41,6 +41,7 @@ Sen_A         : TypeAlias = AT.Sentence
 Instruction_A : TypeAlias = AT.Instruction
 ValueData     : TypeAlias = str
 
+# TODO merge with ValueMeta
 class ValueFactory(VI.ValueFactory_i, metaclass=SingletonMeta):
     """ Utility Class for building values """
     pass

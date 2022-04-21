@@ -11,7 +11,7 @@ import logging as logmod
 from acab import setup
 config = setup()
 
-from acab.core.data.value import AcabValue
+from acab.core.value.value import AcabValue
 
 from ... import exceptions as TE
 from .. import unifier as unify
@@ -24,7 +24,7 @@ from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 from acab.modules.analysis.typing.dsl import TypingDSL
 from acab.modules.context.context_set import ContextInstance as CtxIns
 from acab.core.parsing.annotation import ValueAnnotation
-from acab.core.data import default_structure as DS
+from acab.core.value import default_structure as DS
 
 dsl = None
 

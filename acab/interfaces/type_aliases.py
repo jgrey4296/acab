@@ -15,7 +15,7 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Generic, Iterable,
 if TYPE_CHECKING:
     import pyparsing as pp
     from acab.core import util
-    from acab.core.data import default_structure, instruction
+    from acab.core.value import default_structure, instruction
     from acab.core.parsing import annotation
     from acab.core.util import delayed_commands
     from acab.interfaces import (config, sieve, context, data, debugger, dsl, engine,

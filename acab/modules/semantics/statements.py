@@ -7,14 +7,14 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 logging = logmod.getLogger(__name__)
 
-import acab.core.data.instruction as Instr
+import acab.core.value.instruction as Instr
 from acab import types as AT
-from acab.core.data import default_structure as DS
-from acab.core.data.instruction import (ProductionComponent,
+from acab.core.value import default_structure as DS
+from acab.core.value.instruction import (ProductionComponent,
                                         ProductionContainer,
                                         ProductionOperator,
                                         ProductionStructure)
-from acab.core.decorators.semantic import RunInSubCtxSet
+from acab.core.util.decorators.semantic import RunInSubCtxSet
 from acab.core.semantics import basic
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces import semantic as SI

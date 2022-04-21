@@ -10,8 +10,8 @@ logging = logmod.getLogger(__name__)
 import acab.error.semantic as ASErr
 import acab.interfaces.context as CtxInt
 from acab.core.config.config import GET
-from acab.core.data.instruction import ProductionComponent, ProductionOperator
-from acab.core.data.sentence import Sentence
+from acab.core.value.instruction import ProductionComponent, ProductionOperator
+from acab.core.value.sentence import Sentence
 from acab.interfaces.sieve import AcabSieve
 from acab.modules.context.constraint_sieve import default_sieve
 

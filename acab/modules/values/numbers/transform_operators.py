@@ -2,8 +2,8 @@ from random import uniform
 from math import floor
 from re import sub
 
-from acab.core.data.instruction import ProductionOperator
-from acab.core.decorators.semantic import OperatorValueWrap
+from acab.core.value.instruction import ProductionOperator
+from acab.core.util.decorators.semantic import OperatorValueWrap
 
 
 class AddOp(ProductionOperator):

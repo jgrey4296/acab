@@ -12,12 +12,12 @@ import acab
 
 config = acab.setup()
 
-from acab.core.data import default_structure as DS
+from acab.core.value import default_structure as DS
 from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.data.node import AcabNode
-from acab.core.data.instruction import ProductionComponent
-from acab.core.data.value import AcabValue
-from acab.core.data.sentence import Sentence
+from acab.core.value.instruction import ProductionComponent
+from acab.core.value.value import AcabValue
+from acab.core.value.sentence import Sentence
 from acab.interfaces.handler_system import Handler_i
 from acab.modules.context import context_delayed_actions
 from acab.modules.operators.query.query_operators import EQ, AlwaysMatch, TypeMatch
@@ -26,7 +26,7 @@ from acab.modules.context.context_set import (ConstraintCollection,
 from acab.modules.structures.trie.semantics import FlattenBreadthTrieSemantics
 from acab.modules.semantics.values import (BasicNodeSemantics,
                                            ExclusionNodeSemantics)
-from acab.core.data.factory import ValueFactory
+from acab.core.value.factory import ValueFactory
 
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 EXOP         = config.prepare("MODAL", "exop")()

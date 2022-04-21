@@ -1,4 +1,4 @@
-from acab.core.data.instruction import ProductionOperator
+from acab.core.value.instruction import ProductionOperator
 
 from acab.error.importer import AcabImportException
 

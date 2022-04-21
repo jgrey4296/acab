@@ -2,14 +2,14 @@
 
 
 """
-import acab.core.data.default_structure as DS
+import acab.core.value.default_structure as DS
 # pylint: disable=bad-whitespace,unnecessary-comprehension
 import pyparsing as pp
 from acab.core.config.config import AcabConfig
-from acab.core.data.default_structure import TYPE_BASE as ATOM_V
-from acab.core.data.instruction import ProductionContainer
-from acab.core.data.value import AcabValue
-from acab.core.data.sentence import  Sentence
+from acab.core.value.default_structure import TYPE_BASE as ATOM_V
+from acab.core.value.instruction import ProductionContainer
+from acab.core.value.value import AcabValue
+from acab.core.value.sentence import  Sentence
 from acab.core.parsing import default_symbols as DSym
 from acab.core.parsing.consts import CPAR, NG, OPAR, N
 from acab.core.parsing.parsers import MODAL

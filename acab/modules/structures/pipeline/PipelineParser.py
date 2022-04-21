@@ -42,7 +42,7 @@ import logging as logmod
 
 import pyparsing as pp
 from acab.core.config.config import AcabConfig
-from acab.core.data.instruction import ProductionContainer
+from acab.core.value.instruction import ProductionContainer
 from acab.core.parsing import parsers as PU
 from acab.core.parsing.consts import PIPE_HEAD
 from acab.core.parsing.funcs import make_pipeline

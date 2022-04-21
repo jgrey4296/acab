@@ -1,6 +1,6 @@
 import logging as logmod
 
-from acab.core.data.instruction import ProductionOperator
+from acab.core.value.instruction import ProductionOperator
 
 from .unity_server import UnityServer
 from . import util

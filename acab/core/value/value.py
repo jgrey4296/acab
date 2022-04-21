@@ -13,17 +13,17 @@ from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
 from uuid import UUID, uuid1
 from weakref import ref
 
-import acab.core.data.default_structure as DS
+import acab.core.value.default_structure as DS
 import acab.core.util.part_implementations.value as VP
 import acab.interfaces.value as VI
 from acab import setup
 from acab import types as AT
 from acab.core.config.config import GET, AcabConfig
-from acab.core.decorators.util import cache
+from acab.core.util.decorators.util import cache
 from acab.error.base import AcabBasicException
 from acab.error.protocol import AcabProtocolError as APE
-from acab.core.data.factory import ValueFactory
-from acab.core.data.value_meta import ValueMeta
+from acab.core.value.factory import ValueFactory
+from acab.core.value.value_meta import ValueMeta
 
 logging        = logmod.getLogger(__name__)
 
@@ -52,6 +52,9 @@ class AcabValue(VP.ValueProtocolsImpl, VI.Value_i, metaclass=ValueMeta):
 
     @classmethod
     def _handle_nesting(cls, value, name=None, data=None, params=None, tags=None, _type=None, **kwargs):
+        return value
+
+    def __handle_nesting(cls, value, name=None, data=None, params=None, tags=None, _type=None, **kwargs):
         logging.debug("Attempted to nest a value, copying: {}", value)
         new_data = value.data.copy()
         new_data.update(data or {})
@@ -59,4 +62,5 @@ class AcabValue(VP.ValueProtocolsImpl, VI.Value_i, metaclass=ValueMeta):
         name   = kwargs['name'] if 'name' in kwargs else value.name
         tags   = tags | value.tags
         params = params or value.params
-        return value.copy(data=new_data, name=name, tags=tags, params=params)
+        val    = value.copy(data=new_data, name=name, tags=tags, params=params)
+        raise DeprecationWarning()

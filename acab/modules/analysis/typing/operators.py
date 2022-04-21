@@ -4,7 +4,7 @@ Sum type pattern match?
 Sum type combination
 
 """
-from acab.core.data.instruction import ActionOperator, AcabOperator
+from acab.core.value.instruction import ActionOperator, AcabOperator
 
 class TypeApply(ActionOperator):
     """

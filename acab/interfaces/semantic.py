@@ -35,7 +35,7 @@ logging = logmod.getLogger(__name__)
 
 import acab.interfaces.handler_system as HS
 from acab import types as AT
-from acab.core.data.default_structure import QUERY
+from acab.core.value.default_structure import QUERY
 from acab.error.printing import AcabPrintException
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces.protocols import handler_system as HSubP

@@ -7,10 +7,10 @@ from enum import Enum
 config = GET()
 
 # TODO refactor to use these instead
-DATA_STRUCT_E : Enum = config.prepare("Value.Structure", as_enum=True)()
-STRUCT_COMP_E : Enum = config.prepare("Structure.Components", as_enum=True)()
-TYPE_PRIM_E   : Enum = config.prepare("Type.Primitive", as_enum=True)()
-MODALITIES_E  : Enum = config.prepare("MODAL", as_enum=True)()
+DATA_STRUCT_E : Enum = config.prepare("Value.Structure"      , as_enum=True)()
+STRUCT_COMP_E : Enum = config.prepare("Structure.Components" , as_enum=True)()
+TYPE_PRIM_E   : Enum = config.prepare("Type.Primitive"       , as_enum=True)()
+MODALITIES_E  : Enum = config.prepare("MODAL"                , as_enum=True)()
 
 # Core elements of value data
 AT_BIND        : str = config.prepare("Value.Structure", "AT_BIND")()
@@ -33,7 +33,7 @@ TRANSFORM_COMPONENT : str = config.prepare("Structure.Components", "TRANSFORM")(
 ACTION_COMPONENT    : str = config.prepare("Structure.Components", "ACTION")()
 
 # Core data defaults
-ROOT             = config.prepare("Data", "ROOT")()
+
 TYPE_BASE        = config.prepare("Data", "TYPE_BASE")()
 
 # Core type primitives

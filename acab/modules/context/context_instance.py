@@ -14,7 +14,7 @@ from uuid import UUID, uuid1
 import acab.interfaces.context as CtxInt
 import acab.interfaces.value as VI
 from acab.core.config.config import GET
-from acab.core.data.instruction import ProductionComponent, ProductionContainer
+from acab.core.value.instruction import ProductionComponent, ProductionContainer
 from acab.core.util.delayed_commands import DelayedCommands_i
 from acab.error.context import AcabContextException
 from acab.interfaces.value import Sentence_i

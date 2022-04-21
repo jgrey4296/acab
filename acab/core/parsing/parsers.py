@@ -7,8 +7,8 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 import pyparsing as pp
 from acab import types as AT
 from acab.core.config.config import AcabConfig
-from acab.core.data import default_structure as CDS
-from acab.core.data.sentence import Sentence
+from acab.core.value import default_structure as CDS
+from acab.core.value.sentence import Sentence
 from acab.core.parsing import consts as PConst
 from acab.core.parsing import default_keys as PDS
 from acab.core.parsing import default_symbols as PDSYM

@@ -10,10 +10,10 @@ import acab
 
 acab.setup()
 
-from acab.core.data.instruction import ProductionContainer, ProductionOperator
-from acab.core.data.value import AcabValue
-from acab.core.data.instruction import Instruction
-from acab.core.data.sentence import Sentence
+from acab.core.value.instruction import ProductionContainer, ProductionOperator
+from acab.core.value.value import AcabValue
+from acab.core.value.instruction import Instruction
+from acab.core.value.sentence import Sentence
 from acab.core.engine.engine import Engine
 from acab.core.parsing import consts as PConst
 from acab.core.printing import default_handlers as DH

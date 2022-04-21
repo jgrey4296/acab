@@ -13,12 +13,12 @@ import acab
 config = acab.setup()
 
 from acab.core.config.config import ConfigSpec
-from acab.core.data import instruction as PA
+from acab.core.value import instruction as PA
 from acab.core.data.acab_struct import AcabStruct
-from acab.core.data.instruction import Instruction
+from acab.core.value.instruction import Instruction
 from acab.core.data.node import AcabNode
-from acab.core.data.sentence import Sentence
-from acab.core.data.value import AcabValue
+from acab.core.value.sentence import Sentence
+from acab.core.value.value import AcabValue
 from acab.interfaces.data import Structure_i
 from acab.interfaces.semantic import ValueSemantics
 from acab.modules.operators.query.query_operators import EQ

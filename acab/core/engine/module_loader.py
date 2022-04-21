@@ -13,8 +13,8 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 logging = logmod.getLogger(__name__)
 
 from acab.core.config.config import GET
-from acab.core.data.instruction import ProductionOperator, ActionOperator
-from acab.core.data.sentence import Sentence
+from acab.core.value.instruction import ProductionOperator, ActionOperator
+from acab.core.value.sentence import Sentence
 from acab.core.engine.util import applicable, needs_init, prep_op_path, ensure_handler
 from acab.interfaces.dsl import DSL_Fragment_i
 from acab.interfaces.module_loader import (ModuleComponents,

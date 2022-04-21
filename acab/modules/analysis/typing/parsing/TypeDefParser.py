@@ -10,7 +10,7 @@ import logging as logmod
 
 import pyparsing as pp
 from acab.core.config.config import AcabConfig
-from acab.core.data.sentence import Sentence
+from acab.core.value.sentence import Sentence
 from acab.core.parsing import funcs as Pfunc
 from acab.core.parsing.param_core import ParamCore
 from acab.core.parsing.statement_core import StatementCore, type_annotation_gen

@@ -10,9 +10,9 @@ import acab
 
 config = acab.setup()
 
-from acab.core.data.default_structure import BIND, FLATTEN
-from acab.core.data.value import AcabValue
-from acab.core.data.sentence import Sentence
+from acab.core.value.default_structure import BIND, FLATTEN
+from acab.core.value.value import AcabValue
+from acab.core.value.sentence import Sentence
 from acab.interfaces.value import Sentence_i, Value_i
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser

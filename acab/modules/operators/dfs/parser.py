@@ -7,8 +7,8 @@ import pyparsing as pp
 
 from acab.core.config.config import GET
 from  acab.core.parsing.consts import orm, QUERY, op, s_lit
-from acab.core.data.sentence import Sentence
-from acab.core.data.instruction import ProductionComponent
+from acab.core.value.sentence import Sentence
+from acab.core.value.instruction import ProductionComponent
 config        = GET()
 
 QUERY_HINT    = config.prepare("Value.Structure", "QUERY")()

@@ -18,11 +18,11 @@ from acab import types as AT
 
 config = setup()
 
-from acab.core.data import instruction as PO
-from acab.core.data import default_structure as DS
-from acab.core.data.instruction import Instruction
-from acab.core.data.sentence import Sentence
-from acab.core.data.value import AcabValue
+from acab.core.value import instruction as PO
+from acab.core.value import default_structure as DS
+from acab.core.value.instruction import Instruction
+from acab.core.value.sentence import Sentence
+from acab.core.value.value import AcabValue
 from acab.interfaces.value import Instruction_i, Sentence_i, Value_i
 
 BIND_S               = config.prepare("Value.Structure", "BIND")()

@@ -1,5 +1,5 @@
 from acab.core.config.config import AcabConfig
-from  acab.core.data.sentence import Sentence
+from  acab.core.value.sentence import Sentence
 
 config = AcabConfig()
 

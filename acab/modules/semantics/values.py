@@ -9,10 +9,10 @@ import acab.error.semantic as ASErr
 from acab import types as AT
 from acab.interfaces import value as VI
 from acab.core.config.config import AcabConfig
-from acab.core.data.instruction import Instruction
+from acab.core.value.instruction import Instruction
 from acab.core.data.node import AcabNode
-from acab.core.data.sentence import Sentence
-from acab.core.data.value import AcabValue
+from acab.core.value.sentence import Sentence
+from acab.core.value.value import AcabValue
 from acab.core.semantics import basic
 from acab.interfaces import semantic as SI
 from acab.error.protocol import AcabProtocolError as APE

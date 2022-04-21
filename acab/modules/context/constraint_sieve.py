@@ -11,8 +11,8 @@ import acab.error.semantic as ASErr
 import acab.interfaces.context as CtxInt
 from acab import types as AT
 from acab.core.config.config import GET
-from acab.core.data.instruction import ProductionComponent, ProductionOperator
-from acab.core.data.sentence import Sentence
+from acab.core.value.instruction import ProductionComponent, ProductionOperator
+from acab.core.value.sentence import Sentence
 from acab.interfaces.value import ValueFactory_i as VF
 
 config = GET()

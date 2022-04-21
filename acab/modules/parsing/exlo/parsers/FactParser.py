@@ -13,7 +13,7 @@ from acab.core.parsing.consts import (COMMA, DELIM, END, emptyLine, COLON,
                                       FACT_HEAD, NEGATION, NG, N, op, opLn, zrm, ln, FUNC_SYMBOL)
 from acab.core.parsing.default_keys import OPERATOR, SEN, VALUE, HEAD_ANNOTATION
 from acab.core.parsing import default_keys as PDS
-from acab.core.data import default_structure as CDS
+from acab.core.value import default_structure as CDS
 from acab.modules.parsing.exlo import constructors as PConst
 from acab.core.parsing.annotation import ValueRepeatAnnotation, ValueAnnotation
 
