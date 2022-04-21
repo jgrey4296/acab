@@ -56,13 +56,14 @@ class StatementTests(unittest.TestCase):
         basic_node_parser.set_parse_action(lambda s, l, toks: Sentence([AcabValue(toks[0])]))
 
         basic_value_parser = pp.Empty()
-        basic_value_parser.set_parse_action(lambda s, l, toks: BasicStatement("blah"))
+        basic_value_parser.set_parse_action(lambda s, l, toks: BasicStatement(["blah"]))
 
         statement_p = StatementCore(basic_node_parser,
                                     basic_value_parser)
 
         result = statement_p.parse_string("a_statement(::test):\n\nend")[0]
         self.assertIsInstance(result, BasicStatement)
+        self.assertEqual(result.name, "a_statement")
 
 
     def test_basic_tag(self):
