@@ -83,7 +83,7 @@ class AcabLogFormatter(logging.Formatter):
             return super().format(record)
 
         log_colour = self.colours.get(record.levelno)
-        return log_colour + super().format(record) + fg.rs
+        return log_colour + super().format(record) + COLOUR_RESET
 
 
 

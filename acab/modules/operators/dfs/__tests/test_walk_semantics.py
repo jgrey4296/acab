@@ -30,12 +30,12 @@ from acab.modules.semantics.basic_system import BasicSemanticSystem
 from acab.modules.semantics.statements import QueryPlusAbstraction
 from acab.modules.semantics.values import ExclusionNodeSemantics
 
-BIND          = config.prepare("Value.Structure", "BIND")()
-QUERY         = config.prepare("Value.Structure", "QUERY")()
-SEM_HINT      = config.prepare("Value.Structure", "SEMANTIC_HINT")()
-TYPE_INSTANCE = config.prepare("Value.Structure", "TYPE_INSTANCE")()
-AT_BIND       = config.prepare("Value.Structure", "AT_BIND")()
-CONSTRAINT    = config.prepare("Value.Structure", "CONSTRAINT")()
+BIND            = config.prepare("Value.Structure", "BIND")()
+QUERY           = config.prepare("Value.Structure", "QUERY")()
+SEM_HINT        = config.prepare("Value.Structure", "SEMANTIC_HINT")()
+TYPE_INSTANCE   = config.prepare("Value.Structure", "TYPE_INSTANCE")()
+AT_BIND         = config.prepare("Value.Structure", "AT_BIND")()
+CONSTRAINT      = config.prepare("Value.Structure", "CONSTRAINT")()
 default_modules = config.prepare("Module.REPL", "MODULES")().split("\n")
 
 class TestWalkSemantics(unittest.TestCase):
@@ -265,7 +265,6 @@ class TestWalkSemantics(unittest.TestCase):
         ctxs = self.eng("the.$rule?")
         self.assertTrue(ctxs)
 
-
     def test_walk_all_action(self):
         """
         the.rule(::ρ):
@@ -286,13 +285,71 @@ class TestWalkSemantics(unittest.TestCase):
         ctxs = self.eng("the.$rule?")
         self.eng("$x?", ctxset=ctxs)
         # rule would be: | @x(::node) $a $b |
-        # TODO : run the walk instruction in an action
         inst = DOP.dfs_action.parse_string("@x ᛦ λ$rule")[0]
         self.eng(inst, ctxset=ctxs)
         found = self.eng("found.$x?")
 
         # a,b,c,d,e,f,test,the,rule
         self.assertEqual(len(found), 9)
+
+    def test_walk_all_action_fail_query(self):
+        """
+        the.rule(::ρ):
+        | $x |
+
+        !! found.$x
+        end
+        """
+        # Setup
+        self.eng("a.b.c.test")
+        self.eng("a.b.d!f")
+        self.eng("a.b.e.test")
+        self.eng("~acab")
+
+        # Action to run
+        self.eng("""the.rule(::ρ):\n | $x |\n\n @x(∈ c.e.test.f)?\n\n !! found.$x\nend""".strip())
+        # dfs instruction
+        ctxs = self.eng("the.$rule?")
+        self.eng("$x?", ctxset=ctxs)
+        # rule would be: | @x(::node) $a $b |
+        inst = DOP.dfs_action.parse_string("@x ᛦ λ$rule")[0]
+        self.eng(inst, ctxset=ctxs)
+        found = self.eng("found.$x?")
+
+        # a,b,c,d,e,f,test,the,rule
+        self.assertEqual(len(found), 4)
+
+    def test_walk_all_action_sub_query(self):
+        """
+        the.rule(::ρ):
+        | $x |
+
+        !! found.$x
+        end
+        """
+        # Setup
+        self.eng("a.b.c.test")
+        self.eng("a.b.d!f")
+        self.eng("a.b.e.test")
+        self.eng("~acab")
+
+        # Action to run
+        self.eng("""the.rule(::ρ):\n | $x |\n\n @x.test?\n\n !! found.$x\nend""".strip())
+        # dfs instruction
+        ctxs = self.eng("the.$rule?")
+        self.eng("$x?", ctxset=ctxs)
+        # rule would be: | @x(::node) $a $b |
+        inst = DOP.dfs_action.parse_string("@x ᛦ λ$rule")[0]
+        self.eng(inst, ctxset=ctxs)
+        found = self.eng("found.$x?")
+
+        # a,b,c,d,e,f,test,the,rule
+        self.assertEqual(len(found), 2)
+
+
+
+
+
 
     @unittest.skip("Not implemented yet")
     def test_walk_all_action_no_prebind(self):
@@ -311,7 +368,7 @@ class TestWalkSemantics(unittest.TestCase):
         self.eng("~acab")
 
         # Action to run
-        self.eng("""the.rule(::ρ):\n        | $x |\n\n        !! found.$x\nend""".strip())
+        self.eng("the.rule(::ρ):\n | $x |\n\n !! found.$x\nend")
         # dfs instruction
         ctxs = self.eng("the.$rule?")
         self.eng("$x?", ctxset=ctxs)

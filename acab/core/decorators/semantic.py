@@ -50,7 +50,7 @@ def RunInSubCtxSet(f):
         ctxs   = the_kwargs['ctxs']
         subctx = ctxs.subctx()
         # register the subctx for merging:
-        ctxs.delay(ctxs.delayed_e.MERGE, ctxIns=subctx)
+        ctxs.delay(ctxs.delayed_e.MERGE, val=subctx)
         the_kwargs['ctxs'] = subctx
         return f(self, *the_args, **the_kwargs)
 

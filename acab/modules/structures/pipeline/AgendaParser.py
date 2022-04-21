@@ -31,11 +31,12 @@ secondary.agenda(::RankingAgenda):
   return($h)
 """
 import logging as logmod
+
 import pyparsing as pp
 from acab.core.config.config import AcabConfig
-
 from acab.core.parsing import parsers as PU
-from acab.core.parsing.consts import N, NG, AGENDA_HEAD
+from acab.core.parsing.consts import AGENDA_HEAD, NG, N
+from acab.core.parsing.statement_core import StatementCore
 from acab.modules.structures.pipline.constructors import make_agenda
 
 logging = logmod.getLogger(__name__)
@@ -59,8 +60,8 @@ var_setting = NG(ACTION_S   , HOTLOAD_ACTION    + PU.component_gap)
 
 agenda_body = PU.op(conditions) + PU.op(transforms) + PU.op(var_setting)
 
-agenda_stmt = PU.STATEMENT_CONSTRUCTOR(HOTLOAD_BASIC_SEN,
-                                       agenda_body)
+agenda_stmt = StatementCore(HOTLOAD_BASIC_SEN,
+                            agenda_body)
 
 agenda_body.set_parse_action(make_agenda)
 

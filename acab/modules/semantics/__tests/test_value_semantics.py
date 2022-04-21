@@ -171,6 +171,19 @@ class ValueSemanticTests(unittest.TestCase):
         with self.assertRaises(AcabSemanticException):
             sem.remove(first, AcabValue("fourth"))
 
+
+    def test_node_sentence_containment(self):
+        sem = BasicNodeSemantics()
+        # create two nodes
+        first  = sem.make(AcabValue("first"))
+        second = sem.make(Sentence(["second", "third"]))
+        # insert one into the other
+        new_node = sem.insert(first, second)
+        self.assertIn(Sentence(["second", "third"]), first)
+
+
+        
+
     @unittest.skip("broken")
     def test_node_access_str_vs_atom(self):
         """ Check accessing a str vs an atom is differentiated """

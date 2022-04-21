@@ -6,6 +6,9 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 import acab.modules.printing.printers as Printers
 from acab.interfaces.printing import PrintSemantics_i, PrintSystem_i
 from acab.modules.printing.basic_printer  import BasicPrinter
+from acab.core.config.config import AcabConfig
+
+config = AcabConfig()
 
 atom_pr               = BasicPrinter.Spec("ATOM").spec_from(PrintSemantics_i)
 annotations_pr        = BasicPrinter.Spec("ANNOTATIONS").spec_from(PrintSemantics_i)

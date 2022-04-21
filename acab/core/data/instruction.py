@@ -28,7 +28,7 @@ from acab.core.data.sentence import Sentence
 from acab.error.operator import AcabOperatorException
 from acab.core.decorators.util import cache
 import acab.interfaces.value as VI
-from acab.core.util.part_implementations.sentence import SentenceProtocolsImpl
+from acab.core.util.part_implementations.instruction import InstructionProtocolsImpl
 from acab.core.util.part_implementations.value import ValueProtocolsImpl
 from acab.core.data.factory import ValueFactory as VF
 from acab.core.data.value_meta import ValueMeta
@@ -49,14 +49,17 @@ ValueData     : TypeAlias = AT.ValueData
 T = TypeVar('T')
 
 @APE.assert_implements(VI.Instruction_i)
-class Instruction(SentenceProtocolsImpl, VI.Instruction_i, metaclass=ValueMeta):
+class Instruction(InstructionProtocolsImpl, VI.Instruction_i, metaclass=ValueMeta):
     """ Instruction functions the same as AcabValue,
     but provides specific functionality for converting to/from sentences
     """
 
     _defaults : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE: DS.CONTAINER_PRIM}
 
-
+    @classmethod
+    def _preprocess(cls, *args, **kwargs):
+        assert(isinstance(args[0], (list, VI.Sentence_i, Iterable)))
+        return args[0]
 
     def copy(self, **kwargs) -> Instruction_A:
         return replace(self, uuid=uuid1(), **kwargs)
@@ -86,39 +89,6 @@ class Instruction(SentenceProtocolsImpl, VI.Instruction_i, metaclass=ValueMeta):
     @property
     def should_break(self) -> bool:
         return bool(self.breakpoint)
-
-@APE.assert_implements(VI.Operator_i, exceptions=["__call__"])
-class ProductionOperator(ValueProtocolsImpl, VI.Operator_i, metaclass=ValueMeta):
-    """ The Base Operator Class,
-    Provides the way to use other systems and code in Acab
-
-    ContextSet uses a class attribute named "sugar" to register a syntax
-    sugar for the operator. The string is a pseudo sentence,
-    ie: _:==, _:!=, ..
-    """
-
-    _defaults : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE: DS.OPERATOR_PRIM}
-
-    def copy(self, **kwargs):
-        """ Operators by default are immutable, and don't need to duplicate """
-        return self
-
-    @property #type:ignore
-    @cache
-    def op_path(self):
-        return self.value
-
-
-@APE.assert_implements(VI.Operator_i, exceptions=["__call__"])
-class ActionOperator(ValueProtocolsImpl, VI.Action_i, metaclass=ValueMeta):
-    """ Special Operator type which gets passed the semantic system,
-    so it can trigger instructions """
-    _defaults : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE: DS.OPERATOR_PRIM}
-
-    def copy(self, **kwargs):
-        """ Operators by default are immutable, and don't need to duplicate """
-        return self
-
 
 @APE.assert_implements(VI.Instruction_i)
 @dataclass(frozen=True)
@@ -310,3 +280,36 @@ class ProductionStructure(ProductionContainer):
         return [VF.sen([clauses],
                        data=self.data.copy(),
                        name="ProductionStructure")]
+
+
+@APE.assert_implements(VI.Operator_i, exceptions=["__call__"])
+class ProductionOperator(ValueProtocolsImpl, VI.Operator_i, metaclass=ValueMeta):
+    """ The Base Operator Class,
+    Provides the way to use other systems and code in Acab
+
+    ContextSet uses a class attribute named "sugar" to register a syntax
+    sugar for the operator. The string is a pseudo sentence,
+    ie: _:==, _:!=, ..
+    """
+
+    _defaults : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE: DS.OPERATOR_PRIM}
+
+    def copy(self, **kwargs):
+        """ Operators by default are immutable, and don't need to duplicate """
+        return self
+
+    @property #type:ignore
+    @cache
+    def op_path(self):
+        return self.value
+
+
+@APE.assert_implements(VI.Operator_i, exceptions=["__call__"])
+class ActionOperator(ValueProtocolsImpl, VI.Action_i, metaclass=ValueMeta):
+    """ Special Operator type which gets passed the semantic system,
+    so it can trigger instructions """
+    _defaults : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE: DS.OPERATOR_PRIM}
+
+    def copy(self, **kwargs):
+        """ Operators by default are immutable, and don't need to duplicate """
+        return self

@@ -18,20 +18,18 @@ from acab.modules.analysis.typing import exceptions as TE
 from acab.modules.analysis.typing.dsl import TypingDSL
 from acab.modules.analysis.typing.unify import unifier
 from acab.modules.context.context_set import ContextInstance as CtxIns
-from acab.modules.context.context_set import ContextSet, MutableContextInstance
+from acab.modules.context.context_instance import MutableContextInstance
+from acab.modules.context.context_set import ContextSet
 from acab.modules.operators.dfs.semantics import DFSSemantics
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 from acab.modules.semantics.default import DEFAULT_SEMANTICS
 from acab.modules.structures.trie.default import DEFAULT_TRIE
 from acab.modules.analysis.typing.unify.util import gen_f
 from acab.modules.analysis.typing.unify import type_unify_fns as tuf
-from acab.modules.operators.dfs.module import DFSQueryDSL
+from acab.modules.operators.dfs.module import DFS_DSL
+from acab.core.parsing.annotation import ValueAnnotation
 
 dsl = None
-# AcabReducible          : type_definition -> sentences with unique variable at head
-# Sentence.add_prefix    : add prefix of unique var prior to unification with test node
-# Typing is a statement. use Query : Type retrieval from WM, unify is an operator
-# Use Rules for : Product / Sum / Operator Type differentiation
 
 class TypeCheckTests(unittest.TestCase):
 
@@ -54,15 +52,9 @@ class TypeCheckTests(unittest.TestCase):
 
         global dsl
         # Set up the parser to ease test setup
-        dsl   = ppDSL.PyParseDSL()
-        dsl.register(EXLO_Parser).register(TypingDSL).register(DFSQueryDSL)
+        dsl   = ppDSL.PyParseDSL([], [], [])
+        dsl.register(EXLO_Parser).register(TypingDSL).register(DFS_DSL)
         dsl.build()
-
-    def setUp(self):
-        return 1
-
-    def tearDown(self):
-        return 1
 
     #----------
     def test_type_to_sentences(self):
@@ -83,7 +75,6 @@ class TypeCheckTests(unittest.TestCase):
         self.assertEqual(chopped, result)
 
     def test_typing_conflict(self):
-
         a_sen    = dsl("a.test.sen(::def).sub.blah(::bloo)")[0]
         # remove initial prefix
         chopped  = a_sen.remove_prefix(dsl("a.test")[0])
@@ -121,7 +112,7 @@ class TypeCheckTests(unittest.TestCase):
         def_sen = op_def.to_sentences()[0]
         # unify
         unified = tuf.type_unify(t_sen, def_sen, CtxIns())
-        self.assertEqual(unified.x, "g")
+        self.assertIsInstance(unified.x, ValueAnnotation)
         self.assertEqual(unified.y, "h")
 
 

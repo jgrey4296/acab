@@ -52,7 +52,7 @@ class ContextMeta(ProtocolMeta):
     """ Utility Meta Class for building values """
 
     name_sieve           : ClassVar[AcabSieve[str]] = AcabSieve(name_sieve_fns)
-    default_data         : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE : DS.TYPE_BOTTOM_NAME,
+    default_data         : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE : DS.TYPE_BASE,
                                                        DS.BIND : False}
 
     _bottom       : ClassVar[None|type[Value_A]]           = None

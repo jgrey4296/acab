@@ -43,93 +43,13 @@ def DELIMIST(expr, delim=None, stopOn=None):
     return (expr + pp.ZeroOrMore(delim + expr,
                                  stopOn=stopOn)).set_name(dlName)
 
-def PARAM_CORE(mid:None|ParserElement=None,
-               end:None|ParserElement=None,
-               req_mid:None|ParserElement=None):
-    """ Construct a parameterised core parser
-    Can handle wrapped annotations, and a modality as suffix
-
-    Params:
-    mid - standard optional params
-    end - the way the param core ends. usually a modal or eol.
-    req_mid - required paramsthat have to occur for this to match
-
-
-    """
-    if mid is None and req_mid is None:
-        mid_p = pp.Empty()
-
-    elif mid is not None:
-        mid_p = op(OPAR + mid + CPAR)
-
-    else:
-        assert(mid is None)
-        mid_p = OPAR + req_mid + CPAR
-
-
-    if end is None:
-        end = MODAL
-    elif not isinstance(end, pp.ParserElement):
-        end = pp.Empty()
-
-    parser = pp.Group( VALBIND + mid_p + end )
-    parser.set_parse_action(Pfunc.add_annotations)
-    return parser
-
-def type_annotation_gen(parser:ParserElement) -> ParserElement:
-    return pp.Literal(PDSYM.TYPE_SEN) + parser
-
-
-def STATEMENT_CONSTRUCTOR(annotation_p:ParserElement,
-                          body_p:ParserElement,
-                          end:Tuple[None,bool,ParserElement]=None,
-                          args:bool=True,
-                          single_line:bool=False,
-                          parse_fn:None|Callable=None):
-    """ Construct a parser for statements of the form:
-    a.location(annotation_p): |args| components end
-    """
-    line_p            = PConst.emptyLine
-    line_end_p        = PConst.ln
-    end_p             = PConst.END
-    arg_p             = pp.empty
-    type_annotation_p = type_annotation_gen(annotation_p)
-
-
-    if single_line:
-        line_p     = pp.empty
-        line_end_p = pp.empty
-        end_p      = pp.line_end
-    elif end is not None:
-        end_p = end
-
-    if args:
-        arg_p = Fwd_ArgList(PDS.ARG)
-
-    head = PARAM_CORE(req_mid=type_annotation_p, end=PConst.COLON)
-
-    parser = (NG(PDS.NAME, head) + line_end_p
-              + op(arg_p + emptyLine)
-              + op(Fwd_TagList + emptyLine)
-              + NG(PDS.STATEMENT, body_p)
-              + end_p)
-    parser.streamline()
-
-    if parse_fn is not None:
-        parser.add_parse_action(parse_fn)
-    else:
-        parser.add_parse_action(Pfunc.construct_statement)
-
-    return parser.ignore(PConst.COMMENT)
-
-
 
 # Basic Parsers
 OPERATOR_SUGAR = pp.Word(PDSYM.OPERATOR_SYNTAX)
 OPERATOR_SUGAR.set_parse_action(lambda s, l, t: ValueFactory_i.sen([t[0]]))
 
 ATOM           = pp.Word(PDSYM.WORD_COMPONENT + "'")
-ATOM.set_parse_action(lambda s, l, t: (CDS.TYPE_BOTTOM_NAME, t[0]))
+ATOM.set_parse_action(lambda s, l, t: (CDS.TYPE_BASE, t[0]))
 
 STRING      = pp.dbl_quoted_string
 # Remove quotes from around strings:

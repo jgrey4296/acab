@@ -8,6 +8,8 @@ from typing import TYPE_CHECKING, Protocol, TypeGuard
 from typing import Final, final, overload, Protocol, runtime_checkable
 from types import ModuleType
 from importlib import import_module
+import logging as logmod
+logging = logmod.getLogger(__name__)
 
 from acab.interfaces.module_loader import ModuleLoader_i
 from acab.error.importer import AcabImportException

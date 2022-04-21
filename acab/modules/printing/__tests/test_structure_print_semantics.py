@@ -173,6 +173,30 @@ class PrintStructureSemanticTests(unittest.TestCase):
         result = sem_sys.pprint(rule)
         self.assertEqual(result, "rule(::RULE):\n    a.b.c?\n\n    λa.b.c\nend\n")
 
+    def test_rule_with_param(self):
+        """ Check a rule can be printed """
+        sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
+                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
+                                              Printers.AnnotationAwareValuePrinter().as_handler(signal="ATOM"),
+                                              Printers.ProductionComponentPrinter().as_handler(signal="COMPONENT"),
+                                              Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
+                                              Printers.ImplicitContainerPrinter().as_handler(signal="IMPLICIT_CONTAINER"),
+                                              Printers.StructurePrinter().as_handler(signal="STRUCTURE"),
+                                              Printers.TagPrinter().as_handler(signal="TAGS"),
+                                              Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
+                                              Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
+                                              Printers.ModalPrinter().as_handler(signal="MODAL")],
+                               sieve_fns=[],
+                               settings={"MODAL": "exop"})
+
+        # parse a rule
+        rule = dsl("rule(::ρ):\n | $x |\n\n a.b.c?\n\nλa.b.c\nend")[0][-1]
+        self.assertIsInstance(rule, ProductionStructure)
+        # print
+        result = sem_sys.pprint(rule)
+        self.assertEqual(result, "rule(::RULE):\n    | $x |\n\n    a.b.c?\n\n    λa.b.c\nend\n")
+
+
     def test_rule_with_tags(self):
         """ Check a rule prints its tags """
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),

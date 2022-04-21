@@ -80,7 +80,7 @@ class SemanticSystem(HSImpl.HandlerSystem, SI.SemanticSystem_i):
             self._operator_cache = ctxset._operators.copy()
 
         # Auto remove the empty context:
-        ctxset.delay(ctxset.delayed_e.DEACTIVATE, ctxIns=ctxset[0].uuid)
+        ctxset.delay(ctxset.delayed_e.DEACTIVATE, val=ctxset[0].uuid)
 
         return ctxset
 

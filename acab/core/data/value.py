@@ -25,15 +25,15 @@ from acab.error.protocol import AcabProtocolError as APE
 from acab.core.data.factory import ValueFactory
 from acab.core.data.value_meta import ValueMeta
 
-logging          = logmod.getLogger(__name__)
+logging        = logmod.getLogger(__name__)
 
-config           = AcabConfig()
-BIND_SYMBOL      = config.prepare("Symbols", "BIND")()
-FALLBACK_MODAL   = config.prepare("Symbols", "FALLBACK_MODAL", actions=[config.actions_e.STRIPQUOTE])()
+config         = AcabConfig()
+BIND_SYMBOL    = config.prepare("Symbols", "BIND")()
+FALLBACK_MODAL = config.prepare("Symbols", "FALLBACK_MODAL", actions=[config.actions_e.STRIPQUOTE])()
 
-UUID_CHOP        = bool(int(config.prepare("Print.Data", "UUID_CHOP")()))
+UUID_CHOP      = bool(int(config.prepare("Print.Data", "UUID_CHOP")()))
 
-T           = TypeVar('T', bound=AT.ValueCore, covariant=True)
+T              = TypeVar('T', bound=AT.ValueCore, covariant=True)
 
 Value_A       : TypeAlias = AT.Value
 Sen_A         : TypeAlias = AT.Sentence
@@ -44,8 +44,6 @@ ValueData     : TypeAlias = AT.ValueData
 @APE.assert_implements(VI.Value_i)
 @dataclass(frozen=True, repr=False, eq=False)
 class AcabValue(VP.ValueProtocolsImpl, VI.Value_i, metaclass=ValueMeta):
-
-
     _defaults : ClassVar[dict[str, Any]] = {}
 
     @classmethod

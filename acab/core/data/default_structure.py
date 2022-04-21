@@ -25,6 +25,7 @@ SEMANTIC_HINT  : str = config.prepare("Value.Structure", "SEMANTIC_HINT")()
 SEN            : str = config.prepare("Value.Structure", "SEN")()
 TAG            : str = config.prepare("Value.Structure", "TAG")()
 TYPE_INSTANCE  : str = config.prepare("Value.Structure", "TYPE_INSTANCE")()
+FLATTEN        : str = config.prepare("Value.Structure", "FLATTEN")()
 
 # Core Components
 QUERY_COMPONENT     : str = config.prepare("Structure.Components", "QUERY")()
@@ -33,7 +34,7 @@ ACTION_COMPONENT    : str = config.prepare("Structure.Components", "ACTION")()
 
 # Core data defaults
 ROOT             = config.prepare("Data", "ROOT")()
-TYPE_BOTTOM_NAME = config.prepare("Data", "TYPE_BOTTOM_NAME")()
+TYPE_BASE        = config.prepare("Data", "TYPE_BASE")()
 
 # Core type primitives
 COMPONENT_PRIM = config.prepare("Type.Primitive", "COMPONENT")()

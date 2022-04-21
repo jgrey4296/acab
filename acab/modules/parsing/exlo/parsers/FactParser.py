@@ -7,6 +7,8 @@ import logging as logmod
 import pyparsing as pp
 from acab.core.parsing import funcs as Pfunc
 from acab.core.parsing import parsers as PU
+from acab.core.parsing.param_core import ParamCore
+from acab.core.parsing.statement_core import StatementCore
 from acab.core.parsing.consts import (COMMA, DELIM, END, emptyLine, COLON,
                                       FACT_HEAD, NEGATION, NG, N, op, opLn, zrm, ln, FUNC_SYMBOL)
 from acab.core.parsing.default_keys import OPERATOR, SEN, VALUE, HEAD_ANNOTATION
@@ -56,8 +58,8 @@ sen_post_annotations << HOTLOAD_SEN_POSTS
 # Sentences are /SEN_WORD* (SEN_END | SEN_STATEMENT)/
 # TODO explicit Semantic Hint operator?
 SEN_HEAD              = BAD_HEADS + NG(HEAD_ANNOTATION, zrm(sen_head_annotations))
-SEN_WORD              = PU.PARAM_CORE(annotations)
-SEN_NO_MODAL          = PU.PARAM_CORE(annotations, end=True) + ~COLON
+SEN_WORD              = ParamCore(annotations)
+SEN_NO_MODAL          = ParamCore(annotations, end=True) + ~COLON
 SEN_END               = (HOTLOAD_SEN_ENDS | SEN_NO_MODAL)
 SEN_WORD.set_name("PBCore")
 SEN_NO_MODAL.set_name("PBEnd")
@@ -78,9 +80,9 @@ SEN_MACRO             = pp.Forward()
 # FIXME sentence plural macro
 # SEN_MACRO_BODY     = pp.IndentedBlock(SENTENCE)
 # # Statement to specify multiple sub sentences
-# SEN_MACRO        <<= PU.STATEMENT_CONSTRUCTOR(pp.Literal("ζ"),
-#                                               SEN_MACRO_BODY,
-#                                               parse_fn=Pfunc.construct_multi_sentences)
+# SEN_MACRO        <<= StatementCore(pp.Literal("ζ"),
+#                                    SEN_MACRO_BODY,
+#                                    parse_fn=Pfunc.construct_multi_sentences)
 
 op_sentence = pp.Group(SENTENCE)
 op_sentence.add_condition(lambda s, l, t: CDS.OPERATOR in t[0][0])

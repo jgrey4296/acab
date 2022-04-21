@@ -108,7 +108,7 @@ class ContextSenBindQueryManager:
             self._current_constraint = constraints[0]
             yield (word, ctx, node)
 
-    def test_and_update(self, results:list[Node]):
+    def maybe_test(self, results:list[Node]):
         if not bool(results):
             self.ctxs.fail(self._current_inst,
                            self._current_constraint.source,

@@ -9,6 +9,7 @@ import pyparsing as pp
 import acab
 acab.setup()
 
+from acab.core.parsing.statement_core import StatementCore
 from acab.core.parsing import parsers as PU
 from acab.core.data.value import AcabValue
 from acab.core.data.instruction import Instruction
@@ -49,6 +50,22 @@ class StatementTests(unittest.TestCase):
 
     #----------
     #use testcase snippets
+    def test_basic_statement(self):
+        """ Check a constructed statement can have tags """
+        basic_node_parser = pp.Keyword('test')
+        basic_node_parser.set_parse_action(lambda s, l, toks: Sentence([AcabValue(toks[0])]))
+
+        basic_value_parser = pp.Empty()
+        basic_value_parser.set_parse_action(lambda s, l, toks: BasicStatement(["blah"]))
+
+        statement_p = StatementCore(basic_node_parser,
+                                    basic_value_parser)
+
+        result = statement_p.parse_string("a_statement(::test):\n\nend")[0]
+        self.assertIsInstance(result, BasicStatement)
+        self.assertEqual(result.name, "a_statement")
+
+
     def test_basic_tag(self):
         """ Check a constructed statement can have tags """
         basic_node_parser = pp.Keyword('test')
@@ -57,8 +74,8 @@ class StatementTests(unittest.TestCase):
         basic_value_parser = pp.Keyword('value')
         basic_value_parser.set_parse_action(lambda s, l, toks: BasicStatement(toks[0]))
 
-        statement_p = PU.STATEMENT_CONSTRUCTOR(basic_node_parser,
-                                               basic_value_parser)
+        statement_p = StatementCore(basic_node_parser,
+                                    basic_value_parser)
 
         result = statement_p.parse_string("a_statement(::test):\n #test.blah\n\nvalue\nend")[0]
 
@@ -73,8 +90,8 @@ class StatementTests(unittest.TestCase):
         basic_value_parser = pp.Keyword('value')
         basic_value_parser.set_parse_action(lambda s, l, toks: BasicStatement(toks[0]))
 
-        statement_p = PU.STATEMENT_CONSTRUCTOR(basic_node_parser,
-                                               basic_value_parser)
+        statement_p = StatementCore(basic_node_parser,
+                                    basic_value_parser)
 
         result = statement_p.parse_string("a_statement(::test):\n#abcd\n#aaaa\n#bbbb\n\nvalue\nend")[0]
         value = result

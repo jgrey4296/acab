@@ -39,13 +39,14 @@ Where to specify api connections?
 
 """
 import logging as logmod
-import pyparsing as pp
 
+import pyparsing as pp
 from acab.core.config.config import AcabConfig
+from acab.core.data.instruction import ProductionContainer
 from acab.core.parsing import parsers as PU
 from acab.core.parsing.consts import PIPE_HEAD
 from acab.core.parsing.funcs import make_pipeline
-from acab.core.data.instruction import ProductionContainer
+from acab.core.parsing.statement_core import StatementCore
 
 logging = logmod.getLogger(__name__)
 
@@ -67,8 +68,8 @@ var_setting = PU.NG(ACTION_S   , HOTLOAD_ACTION    + PU.component_gap)
 
 pipeline_body = PU.op(conditions) + PU.op(transforms) + PU.op(var_setting)
 
-pipeline_stmt = PU.STATEMENT_CONSTRUCTOR(HOTLOAD_BASIC_SEN,
-                                         pipeline_body)
+pipeline_stmt = StatementCore(HOTLOAD_BASIC_SEN,
+                              pipeline_body)
 
 pipeline_body.set_parse_action(make_pipeline)
 

@@ -37,7 +37,7 @@ from acab.modules.semantics import default
 from acab.modules.semantics.basic_system import BasicSemanticSystem
 from acab.modules.semantics.values import (BasicNodeSemantics,
                                            ExclusionNodeSemantics)
-from acab.modules.structures.trie.semantics import BreadthTrieSemantics
+from acab.modules.structures.trie.semantics import FlattenBreadthTrieSemantics
 from acab.core.data.factory import ValueFactory
 from acab.core.semantics import basic
 
@@ -237,7 +237,7 @@ class StatementSemanticTests(unittest.TestCase):
 
         # Build Semantics
         node_sem     = BasicNodeSemantics().as_handler(signal="atom")
-        trie_sem     = BreadthTrieSemantics(init_specs=[], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem     = FlattenBreadthTrieSemantics(init_specs=[], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_handler = trie_sem.as_handler(signal="trie", struct=BasicNodeStruct.build_default())
 
 
@@ -308,7 +308,7 @@ class StatementSemanticTests(unittest.TestCase):
         #
         # Build Semantics
         node_sem    = BasicNodeSemantics().as_handler(signal="atom")
-        trie_sem    = BreadthTrieSemantics(init_specs=[], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem    = FlattenBreadthTrieSemantics(init_specs=[], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_handler= trie_sem.as_handler(signal="trie",
                                           struct=BasicNodeStruct.build_default())
 

@@ -146,6 +146,22 @@ class AcabSentenceable_p(Protocol):
 class Value_p(ValueBasics_p, ValueMetaData_p, VariableTests_p, Protocol):
     pass
 
+
+@runtime_checkable
+class Sentence_p(Value_p, Collection[Value_p], AcabReducible_p, AcabSentenceable_p, Protocol):
+    @abc.abstractmethod
+    def __getitem__(self, i:int) -> Value_A|Sen_A: pass
+    @abc.abstractmethod
+    def add(self, *other: Value_A|Sen_A) -> Sen_A: pass
+    @abc.abstractmethod
+    def clear(self) -> Sen_A: pass
+    @abc.abstractmethod
+    def prefix(self, prefix:'Value_A|Sen_A|list[str|Value_A]') -> Sen_A: pass
+    @abc.abstractmethod
+    def remove_prefix(self, prefix:'Value_A|Sen_A|list[str|Value_A]') -> Sen_A: pass
+    @abc.abstractmethod
+    def flatten(self, *, rec=False) -> Sen_A: pass
+
 @runtime_checkable
 class Instruction_p(Value_p, Collection[Any], AcabReducible_p, AcabSentenceable_p, Protocol):
     @abc.abstractmethod
@@ -161,20 +177,6 @@ class Instruction_p(Value_p, Collection[Any], AcabReducible_p, AcabSentenceable_
     def vars(self) -> list[Value_A]:
         return []
 
-@runtime_checkable
-class Sentence_p(Instruction_p, Protocol):
-    @abc.abstractmethod
-    def __getitem__(self, i:int) -> Value_A|Sen_A: pass
-
-    @abc.abstractmethod
-    def add(self, *other: Value_A|Sen_A) -> Sen_A: pass
-
-    @abc.abstractmethod
-    def clear(self) -> Sen_A: pass
-    @abc.abstractmethod
-    def prefix(self, prefix:'Value_A|Sen_A|list[str|Value_A]') -> Sen_A: pass
-    @abc.abstractmethod
-    def remove_prefix(self, prefix:'Value_A|Sen_A|list[str|Value_A]') -> Sen_A: pass
 @runtime_checkable
 class Operator_p(Value_p, Generic[T_Cov], Protocol):
     def is_operator(self) -> Literal[True]: return True

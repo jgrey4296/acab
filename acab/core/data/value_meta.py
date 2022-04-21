@@ -50,7 +50,7 @@ class ValueMeta(ProtocolMeta):
     """ Utility Meta Class for building values """
 
     name_sieve           : ClassVar[AcabSieve[str]] = AcabSieve(name_sieve_fns)
-    default_data         : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE : DS.TYPE_BOTTOM_NAME,
+    default_data         : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE : DS.TYPE_BASE,
                                                        DS.BIND : False}
 
     __subclasses  : ClassVar[dict[str,type[Value_A]]]      = dict()
@@ -119,12 +119,3 @@ class ValueMeta(ProtocolMeta):
             _data.update({DS.TYPE_INSTANCE: _type})
 
         return _data
-
-
-
-    # def _handle_nesting(value:Value_A, name=None, data=None, params=None, tags=None, _type=None, **kwargs) -> Value_A:
-    #     logging.debug("Attempted to nest a value, copying")
-    #     new_data = value.data.copy()
-    #     new_data.update(data or {})
-    #     name = kwargs['name'] if 'name' in kwargs else value.name
-    #     return value.copy(data=new_data, name=name, tags=tags, params=params)
