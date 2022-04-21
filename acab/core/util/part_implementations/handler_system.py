@@ -15,7 +15,7 @@ from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
 
 from acab import types as AT
 from acab.core.config.config import GET
-from acab.core.decorators.util import cache
+from acab.core.util.decorators.util import cache
 from acab.error.handler import AcabHandlerException
 from acab.interfaces import handler_system as HS
 from acab.interfaces.data import Structure_i

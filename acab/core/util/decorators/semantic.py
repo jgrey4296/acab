@@ -5,8 +5,8 @@ from enum import Enum
 
 from acab import types as AT
 from acab.core.config.config import AcabConfig
-from acab.core.data.value import AcabValue
-from acab.core.data.instruction import ProductionOperator
+from acab.core.value.value import AcabValue
+from acab.core.value.instruction import ProductionOperator
 from acab.core.util.delayed_commands import DelayedCommands_i
 
 import logging as logmod
