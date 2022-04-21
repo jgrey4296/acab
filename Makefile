@@ -68,7 +68,10 @@ long:
 test:
 	python -m unittest discover -v -s ${TEST_TARGET} -p ${TEST_FILE_PAT} -t ${TOP} ${TEST_PAT}
 
-dtest: $(TESTDIRS)
+dtest:
+	@echo "Tested: "
+	@for entry in ${TESTDIRS}; do echo $$entry ; done
+
 
 
 $(TESTDIRS):
