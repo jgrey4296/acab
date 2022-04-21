@@ -71,7 +71,7 @@ class ModalAwarePrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
         transformed = self.run_transforms(value, curr_str)
         # lookup modal to care about from top.
         # TODO handle multi-modals
-        transformed.append(top.override("MODAL", value, data=data))
+        transformed.append(top.override(DS.MODAL, value, data=data))
 
         return transformed
 
@@ -108,10 +108,10 @@ class AnnotationAwareValuePrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
 
         curr_str = [str(value.name)]
         return_list.append(self.run_transforms(value, curr_str))
-        return_list.append(top.override("ANNOTATIONS", value, data=data))
+        return_list.append(top.override(DS.ANNOTATIONS, value, data=data))
 
         # Pass data through to modal:
-        return_list.append(top.override("MODAL", value, data=data))
+        return_list.append(top.override(DS.MODAL, value, data=data))
 
 
         return return_list
@@ -123,7 +123,7 @@ class ModalPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
         if bool(data) and "no_modal" in data and bool(data['no_modal']):
             return return_list
 
-        modal = top.check('MODAL')
+        modal = top.check(DS.MODAL)
         if modal in value.data:
             return_list.append(value.data[modal])
         else:
@@ -168,7 +168,7 @@ class ConstraintPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
 
     def __call__(self, value, top=None, data=None):
         return_list = []
-        for constraint in value.data[DS.CONSTRAINT]:
+        for constraint in value.data[DStruct.CONSTRAINT]:
             return_list.append(constraint)
             return_list.append(", ")
 
@@ -183,7 +183,7 @@ class BasicSentenceAwarePrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
         assert(isinstance(value, VI.Sentence_i))
         return_list = []
 
-        if DS.NEGATION in value.data and value.data[DS.NEGATION]:
+        if DStruct.NEGATION in value.data and value.data[DStruct.NEGATION]:
             return_list.append(DSYM.NEGATION_SYM)
 
         return_list += value.words[:-1]
@@ -193,7 +193,7 @@ class BasicSentenceAwarePrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
             return_list.append(value.words[-1])
 
         # Handle query
-        if DS.QUERY in value.data and value.data[DS.QUERY]:
+        if DStruct.QUERY in value.data and value.data[DStruct.QUERY]:
             return_list.append(DSYM.QUERY_SYM)
 
 
@@ -248,7 +248,7 @@ class ExplicitContainerPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
             result.append(DSYM.CONTAINER_JOIN_P)
 
         if bool(value.tags):
-            result.append(top.override("TAGS", value.tags))
+            result.append(top.override(DS.TAGS, value.tags))
             result.append(DSYM.CONTAINER_JOIN_P)
 
         result.append([[DSYM.INDENT, x, DSYM.CONTAINER_JOIN_P] for x in  value.value])
@@ -280,12 +280,12 @@ class StructurePrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
             result.append(DSYM.CONTAINER_JOIN_P)
 
         if bool(value.tags):
-            result.append(top.override("TAGS", value.tags))
+            result.append(top.override(DS.TAGS, value.tags))
             result.append(DSYM.CONTAINER_JOIN_P)
 
         for container in value.value:
             if bool(container):
-                result.append(top.override("IMPLICIT_CONTAINER", container))
+                result.append(top.override(DS.IMPLICIT_CONTAINER, container))
                 result.append(DSYM.CONTAINER_JOIN_P)
 
         if result[-1] == DSYM.CONTAINER_JOIN_P:

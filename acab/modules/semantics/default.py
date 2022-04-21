@@ -26,14 +26,19 @@ RULE_SEM_HINT          = Sentence([config.prepare("SEMANTICS", "RULE")()])
 AGENDA_SEM_HINT        = Sentence([config.prepare("SEMANTICS", "AGENDA")()])
 LAYER_SEM_HINT         = Sentence([config.prepare("SEMANTICS", "LAYER")()])
 PIPELINE_SEM_HINT      = Sentence([config.prepare("SEMANTICS", "PIPELINE")()])
+CONTAINER_SEM_HINT     = Sentence([config.prepare("SEMANTICS", "CONTAINER")()])
+ATOM_HINT              = Sentence([config.prepare("SEMANTICS", "ATOM")()])
 
-query_spec  = BasicSemanticSystem.Spec(QUERY_SEM_HINT).spec_from(SI.StatementSemantics_i)
-action_spec = BasicSemanticSystem.Spec(ACTION_SEM_HINT).spec_from(SI.StatementSemantics_i)
-rule_spec   = BasicSemanticSystem.Spec(RULE_SEM_HINT).spec_from(SI.StatementSemantics_i)
-trans_spec  = BasicSemanticSystem.Spec(TRANSFORM_SEM_HINT).spec_from(SI.StatementSemantics_i)
-cont_spec   = BasicSemanticSystem.Spec("CONTAINER").spec_from(SI.StatementSemantics_i)
+query_spec  = BSS.Spec(QUERY_SEM_HINT).spec_from(SI.StatementSemantics_i)
+action_spec = BSS.Spec(ACTION_SEM_HINT).spec_from(SI.StatementSemantics_i)
+rule_spec   = BSS.Spec(RULE_SEM_HINT).spec_from(SI.StatementSemantics_i)
+trans_spec  = BSS.Spec(TRANSFORM_SEM_HINT).spec_from(SI.StatementSemantics_i)
+cont_spec   = BSS.Spec(CONTAINER_SEM_HINT).spec_from(SI.StatementSemantics_i)
 
 def DEFAULT_SPECS():
+    """
+    Return the basic specs a semantic system needs to respond to
+    """
     statements = [# Then abstractions / statements
         query_spec,
         trans_spec,
@@ -45,18 +50,27 @@ def DEFAULT_SPECS():
     return statements + [node_spec, trie_spec]
 
 def DEFAULT_HANDLERS():
+    """
+    The Default handlers for the default specs
+    Duplicates the trie handler, so it is both default
+    and explicitly addressable
+    """
     node_handler, trie_handler = DEFAULT_TRIE()
 
     query_handler   = ASem.QueryAbstraction().as_handler(signal=QUERY_SEM_HINT)
     action_handler  = ASem.ActionAbstraction().as_handler(signal=ACTION_SEM_HINT)
     rule_handler    = ASem.AtomicRuleAbstraction().as_handler(signal=RULE_SEM_HINT)
     trans_handler   = ASem.TransformAbstraction().as_handler(signal=TRANSFORM_SEM_HINT)
-    cont_handler    = ASem.ContainerAbstraction().as_handler(signal="CONTAINER")
+    cont_handler    = ASem.ContainerAbstraction().as_handler(signal=CONTAINER_SEM_HINT)
 
     return [cont_handler, query_handler, action_handler, rule_handler,
             trans_handler, node_handler, trie_handler, trie_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)]
 
 def default_handlers_from_specs():
+    """
+    An alternative way to build the default handlers,
+    using the specs themselves
+    """
     node_spec, trie_spec       = DEFAULT_TRIE_SPEC()
     node_handler, trie_handler = DEFAULT_TRIE()
 
@@ -73,26 +87,42 @@ def default_handlers_from_specs():
 
 # Build the default semantics
 def DEFAULT_SEMANTICS():
-    return BasicSemanticSystem(init_specs=DEFAULT_SPECS(),
-                               init_handlers=DEFAULT_HANDLERS())
+    """
+    Create a BasicSemanticSystem with default signal specs,
+    and default handlers for those specs
+    """
+    return BSS(init_specs=DEFAULT_SPECS(),
+               init_handlers=DEFAULT_HANDLERS())
 
 
 def EXLO_SEMANTICS():
-    node_handler = ExclusionNodeSemantics().as_handler(signal="atom")
-    trie_sem     = FlattenBreadthTrieSemantics(init_specs=[], sieve_fns=[], init_handlers=[node_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+    """
+    Instead of simple node semantics, builds a basic semantic system
+    with exclusion logic semantics for nodes
+    """
+    node_handler = ExclusionNodeSemantics().as_handler(signal=ATOM_HINT)
+    trie_sem     = FlattenBreadthTrieSemantics(init_specs=[],
+                                               sieve_fns=[],
+                                               init_handlers=[node_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+
 
     trie_handler = trie_sem.as_handler(signal="trie",
                                        struct=BasicNodeStruct.build_default(),
                                        flags=[HandlerSpec.flag_e.OVERRIDE])
 
     handlers = DEFAULT_HANDLERS()
+    # Note the duplication of trie again to the default signal
     handlers += [node_handler, trie_handler, trie_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)]
 
-    return BasicSemanticSystem(init_specs=DEFAULT_SPECS(),
+    return BSS(init_specs=DEFAULT_SPECS(),
                                init_handlers=handlers,
                                sieve_fns=[])
 
 def EXLO_PROXY_SEMANTICS():
+    """
+    Alternative Exclusion logic semantics, which allows separation
+    of the match and act phase of rule semantics
+    """
     exlo = EXLO_SEMANTICS()
     rule_sem  = ASem.ProxyRuleAbstraction().as_handler(signal=RULE_SEM_HINT,
                                                        flags=[HandlerSpec.flag_e.OVERRIDE])

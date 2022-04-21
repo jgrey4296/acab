@@ -42,7 +42,7 @@ class BasicSemanticSystem(basic.SemanticSystem, SemanticSystem_i):
         lambda x: str(x.type)
     ]
 
-    ctx_set : CtxSet = field(default=ContextSet)
+    ctx_set : Type[CtxSet] = field(default=ContextSet)
 
     @BuildCtxSetIfMissing
     @RunDelayedCtxSetActions
@@ -101,7 +101,7 @@ class BasicSemanticSystem(basic.SemanticSystem, SemanticSystem_i):
         if bool(self._operator_cache):
             ops = f", operators={len(self._operator_cache)}"
 
-        return f"{self.__class__.__name__}(handlers={len(self.handler_specs)}, sieve={len(self.sieve)}{ops})"
+        return f"<{self.__class__.__name__} handlers={len(self.handler_specs)}, sieve={len(self.sieve)}{ops}>"
 
     @staticmethod
     def from_sentences(self, sens):
