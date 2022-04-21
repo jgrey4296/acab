@@ -24,9 +24,9 @@ if TYPE_CHECKING:
     pass
 
 
-STR_RE = re.compile(r"^[\"'](.+?)[\"']$")
-NUM_RE = re.compile(r"^[0-9]+$")
-TRUE_RE = re.compile("^True$")
+STR_RE   = re.compile(r"^[\"'](.+?)[\"']$")
+NUM_RE   = re.compile(r"^[0-9]+$")
+TRUE_RE  = re.compile("^True$")
 FALSE_RE = re.compile("^False$")
 
 class AttrSection:

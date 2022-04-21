@@ -263,6 +263,7 @@ class HandlerSpec(HS.HandlerSpec_i):
         def a_func...
 
         """
+        # TODO refactor spec_from -> from
         assert(self.func_api is None)
         # assert(isinstance(target, (Type, Callable)))
         self.func_api = target
@@ -428,7 +429,7 @@ class Handler(HS.Handler_i):
         if self.struct is not None:
             struct_name = str(self.struct.__class__.__name__)
 
-        return f"Handler({sig_s}: {func_name}: {struct_name})"
+        return f"<Handler({sig_s}: {func_name}: {struct_name})>"
 
     def as_handler(self, *, signal=None, struct=None, flags=None):
         return Handler(signal or self.signal,
@@ -448,6 +449,7 @@ class Handler(HS.Handler_i):
             result = result and self.func.verify(instruction) #type:ignore
 
         return result
+
     @cache
     def __str__(self):
         return str(self.signal)
@@ -459,7 +461,7 @@ class HandlerFragment(HS.HandlerFragment_i):
         return len(self.handlers) + len(self.specs)
 
     def __repr__(self):
-        return f"(Handler Fragment for {self.target_i}: {len(self.specs)} Specs, {len(self.handlers)} Handlers)"
+        return f"<Handler Fragment for {self.target_i}: {len(self.specs)} Specs, {len(self.handlers)} Handlers>"
 
     def __iter__(self):
         for x in self.specs:

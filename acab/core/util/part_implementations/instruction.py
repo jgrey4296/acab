@@ -48,7 +48,7 @@ class _InstructionBasicsImpl(VI.Instruction_i, VSI._ValueBasicsImpl, VP.ValueBas
     @cache
     def __repr__(self):
         name_str = self.key()
-        val_str  = str(self)
+        val_str  = len(self.value)
 
         if self.is_at_var:
             name_str = BIND_SYMBOL + name_str
