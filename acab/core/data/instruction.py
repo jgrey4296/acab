@@ -56,7 +56,10 @@ class Instruction(InstructionProtocolsImpl, VI.Instruction_i, metaclass=ValueMet
 
     _defaults : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE: DS.CONTAINER_PRIM}
 
-
+    @classmethod
+    def _preprocess(cls, *args, **kwargs):
+        assert(isinstance(args[0], (list, VI.Sentence_i, Iterable)))
+        return args[0]
 
     def copy(self, **kwargs) -> Instruction_A:
         return replace(self, uuid=uuid1(), **kwargs)

@@ -137,7 +137,7 @@ class _SentenceCollectionImpl(VI.Sentence_i, Collection):
     def __contains__(self, value) -> bool:
         assert(isinstance(value, (str, VI.Value_i)))
         words = cast(list[VI.Value_i], self.words)
-        return value in self.words or value in [x.name for x in words]
+        return value in words or value in [x.name for x in words]
 
     def __len__(self):
         return len(self.words)
