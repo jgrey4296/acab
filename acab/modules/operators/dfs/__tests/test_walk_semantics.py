@@ -292,6 +292,65 @@ class TestWalkSemantics(unittest.TestCase):
         # a,b,c,d,e,f,test,the,rule
         self.assertEqual(len(found), 9)
 
+    def test_walk_all_action_fail_query(self):
+        """
+        the.rule(::ρ):
+        | $x |
+
+        !! found.$x
+        end
+        """
+        # Setup
+        self.eng("a.b.c.test")
+        self.eng("a.b.d!f")
+        self.eng("a.b.e.test")
+        self.eng("~acab")
+
+        # Action to run
+        self.eng("""the.rule(::ρ):\n | $x |\n\n @x(∈ c.e.test.f)?\n\n !! found.$x\nend""".strip())
+        # dfs instruction
+        ctxs = self.eng("the.$rule?")
+        self.eng("$x?", ctxset=ctxs)
+        # rule would be: | @x(::node) $a $b |
+        inst = DOP.dfs_action.parse_string("@x ᛦ λ$rule")[0]
+        self.eng(inst, ctxset=ctxs)
+        found = self.eng("found.$x?")
+
+        # a,b,c,d,e,f,test,the,rule
+        self.assertEqual(len(found), 4)
+
+    def test_walk_all_action_sub_query(self):
+        """
+        the.rule(::ρ):
+        | $x |
+
+        !! found.$x
+        end
+        """
+        # Setup
+        self.eng("a.b.c.test")
+        self.eng("a.b.d!f")
+        self.eng("a.b.e.test")
+        self.eng("~acab")
+
+        # Action to run
+        self.eng("""the.rule(::ρ):\n | $x |\n\n @x.test?\n\n !! found.$x\nend""".strip())
+        # dfs instruction
+        ctxs = self.eng("the.$rule?")
+        self.eng("$x?", ctxset=ctxs)
+        # rule would be: | @x(::node) $a $b |
+        inst = DOP.dfs_action.parse_string("@x ᛦ λ$rule")[0]
+        self.eng(inst, ctxset=ctxs)
+        found = self.eng("found.$x?")
+
+        # a,b,c,d,e,f,test,the,rule
+        self.assertEqual(len(found), 2)
+
+
+
+
+
+
     @unittest.skip("Not implemented yet")
     def test_walk_all_action_no_prebind(self):
         """

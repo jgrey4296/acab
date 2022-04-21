@@ -118,9 +118,8 @@ def construct_statement(s, loc, toks):
     if PDS.TAG in toks:
         tags = [y for x in toks[PDS.TAG] for y in x]
 
-    obj = toks[PDS.STATEMENT][0]
-    updated_obj = obj.apply_params(*targs).apply_tags(*tags)
-
+    obj             = toks[PDS.STATEMENT][0]
+    updated_obj     = obj.apply_params(*targs).apply_tags(*tags)
     named_statement = iden.attach_statement(updated_obj)
 
     return named_statement
