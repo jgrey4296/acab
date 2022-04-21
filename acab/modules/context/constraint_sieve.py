@@ -18,7 +18,7 @@ from acab.interfaces.value import ValueFactory_i as VF
 config = GET()
 CONSTRAINT    = config.prepare("Value.Structure", "CONSTRAINT")()
 TYPE_INSTANCE = config.prepare("Value.Structure", "TYPE_INSTANCE")()
-ATOM          = config.prepare("Data", "TYPE_BOTTOM_NAME")()
+ATOM          = config.prepare("Data", "TYPE_BASE")()
 
 
 TYPE_OP_SEN = VF.sen(["τ="])
@@ -41,5 +41,3 @@ def make_alpha(x:AT.Value) -> None|Tuple[bool, str, list[Any]]:
         return None
 
     return (False, "alpha", [test for test in x.data[CONSTRAINT] if not test.has_var])
-
-# default_sieve.append(make_alpha)

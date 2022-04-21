@@ -13,7 +13,7 @@ from acab.core.data.instruction import (ProductionComponent,
 from acab.interfaces import value as VI
 from acab.core.data.value import AcabValue
 from acab.core.parsing import consts as PConst
-from acab.core.data.default_structure import TYPE_BOTTOM_NAME
+from acab.core.data.default_structure import TYPE_BASE
 from acab.core.parsing.annotation import ValueAnnotation
 import acab.core.data.default_structure as DS
 import acab.core.parsing.default_keys as PDS
@@ -32,7 +32,7 @@ AGENDA_SEM_HINT    = ValueFactory.value([config.prepare("SEMANTICS", "AGENDA")()
 LAYER_SEM_HINT     = ValueFactory.value([config.prepare("SEMANTICS", "LAYER")()])
 PIPELINE_SEM_HINT  = ValueFactory.value([config.prepare("SEMANTICS", "PIPELINE")()])
 
-ATOM = TYPE_BOTTOM_NAME
+ATOM = TYPE_BASE
 
 DEFAULT_TERM_DATA = {}
 # TODO figure out a better way to do term defaults
@@ -118,9 +118,8 @@ def construct_statement(s, loc, toks):
     if PDS.TAG in toks:
         tags = [y for x in toks[PDS.TAG] for y in x]
 
-    obj = toks[PDS.STATEMENT][0]
-    updated_obj = obj.apply_params(*targs).apply_tags(*tags)
-
+    obj             = toks[PDS.STATEMENT][0]
+    updated_obj     = obj.apply_params(*targs).apply_tags(*tags)
     named_statement = iden.attach_statement(updated_obj)
 
     return named_statement

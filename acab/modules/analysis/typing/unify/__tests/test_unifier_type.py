@@ -140,13 +140,34 @@ class UnifierTests(unittest.TestCase):
         self.assertTrue(ctx_r)
         self.assertEqual(sen1c[-1].type, sen2[-1].type)
 
-    def test_apply_types_var_left_repeated_conflict(self):
+    def test_types_var_left_repeated_conflict(self):
         sen1 = dsl("a.test.$x.$x(::bloo)")[0]
         sen2 = dsl("a.test.sentence(::blah).awf(::$y)")[0]
 
         with self.assertRaises(TE.AcabTypingException):
             ctx_r = tuf.type_unify(sen1, sen2, CtxIns())
 
+    def test_types_var_right_repeated_conflict(self):
+        sen1 = dsl("a.test.$x.$x(::bloo)")[0]
+        sen2 = dsl("a.test.sentence(::blah).awf(::$y)")[0]
+
+        with self.assertRaises(TE.AcabTypingException):
+            ctx_r = tuf.type_unify(sen2, sen1, CtxIns())
+
+
+    def test_types_repeated_conflict(self):
+        sen1 = dsl("a.test.val(::$x).val(::$x)")[0]
+        sen2 = dsl("a.test.$x(::blah).$y(::bloo)")[0]
+
+        with self.assertRaises(TE.AcabTypingException):
+            ctx_r = tuf.type_unify(sen2, sen1, CtxIns())
+
+    def test_types_repeated_conflict(self):
+        sen1 = dsl("a.test.val(::$x).val(::$x)")[0]
+        sen2 = dsl("a.test.val(::blah).val(::bloo)")[0]
+
+        with self.assertRaises(TE.AcabTypingException):
+            ctx_r = tuf.type_unify(sen2, sen1, CtxIns())
 
 
     def test_apply_type_var(self):

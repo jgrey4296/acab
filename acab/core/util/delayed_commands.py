@@ -15,7 +15,7 @@ CtxSet     = AT.CtxSet
 CtxIns     = AT.CtxIns
 Value      = AT.Value
 ProdComp   = AT.Component
-DelayValue = 'UUID | CtxIns | CtxSet | None'
+MaybeDelayValue = 'UUID | CtxIns | CtxSet | None'
 
 
 @dataclass
@@ -24,11 +24,11 @@ class DelayedCommands_i:
     Mixin class which enables registering of Contexts to run later.
     """
 
-    delayed_e: Enum                    = field()
-    _purgatory : dict[Enum, set[UUID]] = field(init=False, default_factory=dict)
-    _priority : list[Enum]             = field(init=False, default_factory=list)
+    delayed_e  : Enum                 = field()
+    _purgatory : dict[Enum, set[Any]] = field(init=False, default_factory=dict)
+    _priority  : list[Enum]           = field(init=False, default_factory=list)
 
-    def delay(self, instr:Enum, *, ctxIns:DelayValue):
+    def delay(self, instr:Enum, *, val:MaybeDelayValue):
         """
         Register an action for later.
         Useful for adding ctxins results without interfering with current operations,
@@ -37,10 +37,10 @@ class DelayedCommands_i:
         if instr not in self._purgatory:
             self._purgatory[instr] = set()
 
-        if ctxIns is None:
+        if val is None:
             return
 
-        self._purgatory[instr].add(ctxIns)
+        self._purgatory[instr].add(val)
 
     def run_delayed(self):
         """ Similar to Cmd implementation, each instr should have a do_{x} method """

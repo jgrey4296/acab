@@ -52,7 +52,7 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i, metaclass=ContextMeta):
     _operators           : CtxIns                 = field(default=None)
 
     # For nesting ctxsets
-    _parent              : None|CtxSet       = field(default=None)
+    _parent              : None|CtxSet            = field(default=None)
 
     _total               : dict[UUID, CtxIns]     = field(default_factory=dict)
     _active              : list[UUID]             = field(default_factory=list)
@@ -65,7 +65,7 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i, metaclass=ContextMeta):
     instance_constructor : CtxIns                 = field(init=False, default=ContextInstance)
 
 
-    def subctx(self, selection:int|list[CtxIns|UUID]=None, *, val_binds:dict[str,Value]=None, node_binds:dict[str, Node]=None) -> CtxSet:
+    def subctx(self, selection:None|list[CtxIns|UUID]=None, *, val_binds:dict[str,Value]=None, node_binds:dict[str, Node]=None) -> CtxSet:
         """
         Subctx the given instances,
         *and* bind the given data as part of that subctx.
@@ -99,7 +99,7 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i, metaclass=ContextMeta):
                             _active=selection)
 
         # register merge of subctx into self (controllable param)
-        self.delay(self.delayed_e.MERGE, ctxIns=subctx)
+        self.delay(self.delayed_e.MERGE, val=subctx)
         return subctx
 
     def __post_init__(self):

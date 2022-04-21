@@ -103,6 +103,7 @@ class Action_i(Value_i[None]):
 class ValueFactory_i(Protocol):
     """ Utility Class for building values
     Must initialize value_fn and sen_fn before using acab
+    # TODO pair with value meta, register all values as attributes
     """
     value_fn : ClassVar[GenFunc|Value_t] = lambda *args, **kwargs: AcabConfigException("ValueFactories needs value_fn to be set")
     sen_fn   : ClassVar[GenFunc|Sen_t]   = lambda *args, **kwargs: AcabConfigException("ValueFactories needs sen_fn to be set")

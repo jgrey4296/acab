@@ -41,8 +41,9 @@ DELAYED_E = Enum("Delayed Instruction Set", "ACTIVE FAIL DEACTIVATE CLEAR MERGE"
 
 
 @dataclass
-class ContextQueryManager:
-    """ Shared State of the current query, between different ctx insts """
+class FlattenQueryManager:
+    """ Shared State of the current query, between different ctx insts
+    """
 
     query_clause  : None|Sen      = field()
     root_node     : Node               = field()
@@ -57,7 +58,8 @@ class ContextQueryManager:
     _initial_ctxs       : list[UUID]           = field(init=False, default_factory=list)
 
     def __post_init__(self):
-        sen = self.query_clause
+        sen = self.query_clause.flatten()
+        # flatten sentences in the query *unless* they are annotated as literal
         self.negated = NEGATION_S in sen.data and sen.data[NEGATION_S]
         constraints = [ConstraintCollection(x, operators=self.ctxs._operators) for x in sen]
         self.constraints.extend(constraints)
@@ -123,6 +125,7 @@ class ContextQueryManager:
             self._current_inst = ctx
             bound_word = ctx[self._current_constraint.source]
 
+            # TODO Handle sentence.
             if bound_word.is_var:
                 bound_word = None
 

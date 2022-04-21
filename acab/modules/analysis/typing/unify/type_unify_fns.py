@@ -26,7 +26,7 @@ from . import simple_unify_fns as suf
 from . import unifier, util
 from .util import INFINITY, type_len, unify_enum
 
-ATOM = "_:{}".format(DS.TYPE_BOTTOM_NAME)
+ATOM = "_:{}".format(DS.TYPE_BASE)
 
 def most_gen_type(*args):
     most_gen = (type_len(args[0]), args[0])
@@ -65,7 +65,7 @@ def gen_type_vars(first, second, gamma, gen_var=None) -> AT.CtxIns:
 
             for var in (a.type.vars + b.type.vars):
                 if var not in gamma_p:
-                    gamma_p[var] = Sentence([DS.TYPE_BOTTOM_NAME])
+                    gamma_p[var] = Sentence([DS.TYPE_BASE])
 
     return gamma_p.finish()
 

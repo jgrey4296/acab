@@ -3,6 +3,7 @@ import logging as logmod
 
 from acab import types as AT
 import acab.interfaces.semantic as SI
+import acab.interfaces.data as DI
 import acab.error.semantic as ASErr
 from acab.core.config.config import AcabConfig
 from acab.core.data.acab_struct import BasicNodeStruct
@@ -10,7 +11,8 @@ from acab.core.data.instruction import Instruction
 from acab.core.data.sentence import Sentence
 from acab.interfaces.value import Sentence_i
 from acab.modules.context.context_query_manager import ContextQueryManager
-from acab.core.data.default_structure import NEGATION
+from acab.modules.context.flatten_query_manager import FlattenQueryManager
+from acab.core.data.default_structure import NEGATION, FLATTEN
 from acab.core.semantics import basic
 from acab.error.protocol import AcabProtocolError as APE
 
@@ -25,13 +27,12 @@ Contexts      = AT.CtxSet
 
 
 @APE.assert_implements(SI.StructureSemantics_i)
-class BreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantics_i):
+class FlattenBreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantics_i):
     """
     Trie Semantics which map values -> Nodes
     Searches *Breadth First*
 
-   	Missing: __len__, __getitem__, __iter__, __contains__, override,
-    register, __bool__, Spec, verify_system, extend, lookup
+    Has sentence-flattening logic for querying.
     """
     def verify(self, instruction) -> bool:
         return isinstance(instruction, Sentence)
@@ -89,19 +90,28 @@ class BreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantics_i):
     def query(self, sen, struct, *, data=None, ctxs=None):
         """ Breadth First Search Query """
         if ctxs is None:
-            raise ASErr.AcabSemanticException("Ctxs is none to TrieSemantics.query", sen)
+            raise ASErr.AcabSemanticException("Ctxs is none to TrieSemantics.query", rest=sen)
 
-        with ContextQueryManager(sen, struct.root, ctxs) as cqm:
+        clause_flatten = FLATTEN not in sen.data or sen.data[FLATTEN]
+        root           = struct.root if isinstance(struct, DI.Structure_i) else struct
+
+        with FlattenQueryManager(sen, root, ctxs) as cqm:
             for source_word in cqm.query:
-                if source_word.is_at_var:
-                    continue
                 for bound_word, ctxInst, current_node in cqm.active:
-                    spec = self.lookup(current_node)
-                    results = spec[0].access(current_node,
-                                             bound_word,
-                                             data=data)
+                    should_flatten = clause_flatten and bound_word and (FLATTEN not in bound_word.data or bound_word.data[FLATTEN])
+                    if isinstance(bound_word, Sentence_i) and should_flatten:
+                        self.query(bound_word, current_node, data=data, ctxs=ctxs.subctx([ctxInst.uuid]))
+                    elif source_word.is_at_var and not bool(cqm._current_constraint):
+                        continue
+                    elif source_word.is_at_var:
+                        cqm.maybe_test([current_node])
+                    else:
+                        spec = self.lookup(current_node)
+                        results = spec[0].access(current_node,
+                                                 bound_word,
+                                                 data=data)
 
-                    cqm.test_and_update(results)
+                        cqm.maybe_test(results)
 
         return ctxs
 

@@ -14,7 +14,7 @@ from acab.modules.semantics.basic_system import BasicSemanticSystem
 from acab.modules.semantics.values import (BasicNodeSemantics,
                                            ExclusionNodeSemantics)
 from acab.modules.structures.trie.default import DEFAULT_TRIE, DEFAULT_TRIE_SPEC
-from acab.modules.structures.trie.semantics import BreadthTrieSemantics
+from acab.modules.structures.trie.semantics import FlattenBreadthTrieSemantics
 
 config = GET()
 
@@ -79,7 +79,7 @@ def DEFAULT_SEMANTICS():
 
 def EXLO_SEMANTICS():
     node_handler = ExclusionNodeSemantics().as_handler(signal="atom")
-    trie_sem     = BreadthTrieSemantics(init_specs=[], sieve_fns=[], init_handlers=[node_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+    trie_sem     = FlattenBreadthTrieSemantics(init_specs=[], sieve_fns=[], init_handlers=[node_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
 
     trie_handler = trie_sem.as_handler(signal="trie",
                                        struct=BasicNodeStruct.build_default(),

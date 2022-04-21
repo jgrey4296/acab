@@ -18,8 +18,10 @@ from acab.interfaces.value import ValueFactory_i as VF
 config = GET()
 
 ANNOTATIONS = [x.upper() for x in config.prepare("Print.Annotations", as_list=True)()]
+ATOM_HINT   = config.prepare("SEMANTICS", "ATOM")()
+TYPE_BASE   = config.prepare("Data", "TYPE_BASE")()
 
-SEN_SEN = VF.sen([DS.SENTENCE_PRIM])
+SEN_SEN     = VF.sen([DS.SENTENCE_PRIM])
 
 def grouper(iterable, n, fillvalue=None):
     """ Collect data into fixed-length chunks or blocks
@@ -237,7 +239,7 @@ class ExplicitContainerPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
     def __call__(self, value, top=None, data=None):
         result = []
 
-        result.append(top.override("ATOM", value, data={"no_modal": True}))
+        result.append(top.override(ATOM_HINT, value, data={"no_modal": True}))
         # result += ["(::", value.type, ")", ":"]
         result += [":", DSYM.CONTAINER_JOIN_P]
         if bool(value.params):
@@ -260,25 +262,33 @@ class StructurePrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
         # TODO define order, add newlines
         result = []
         # print the name
-        result.append(top.override("ATOM", value, data={"no_modal": True}))
+        result.append(top.override(ATOM_HINT, value, data={"no_modal": True}))
         # TODO parameterise this
         # result += ["(::", value.type, ")"]
         result.append(":")
         result.append(DSYM.CONTAINER_JOIN_P)
+        if bool(value.params):
+            # TODO make this more robust
+            result.append(DSYM.INDENT)
+            result.append(DSYM.PARAM_WRAP)
+            result.append(" ")
+            result += [top.override(ATOM_HINT, x, data={"no_modal": True}) for x in value.params]
+            result.append(" ")
+            result.append(DSYM.PARAM_WRAP)
+            result.append(DSYM.CONTAINER_JOIN_P)
+            result.append(DSYM.CONTAINER_JOIN_P)
+
         if bool(value.tags):
             result.append(top.override("TAGS", value.tags))
             result.append(DSYM.CONTAINER_JOIN_P)
 
-        if bool(value.structure[DS.QUERY_COMPONENT]):
-            result.append(top.override("IMPLICIT_CONTAINER", value.structure[DS.QUERY_COMPONENT]))
-            result.append(DSYM.CONTAINER_JOIN_P)
+        for container in value.value:
+            if bool(container):
+                result.append(top.override("IMPLICIT_CONTAINER", container))
+                result.append(DSYM.CONTAINER_JOIN_P)
 
-        if bool(value.structure[DS.TRANSFORM_COMPONENT]):
-            result.append(top.override("IMPLICIT_CONTAINER", value.structure[DS.TRANSFORM_COMPONENT]))
-            result.append(DSYM.CONTAINER_JOIN_P)
-
-        if bool(value.structure[DS.ACTION_COMPONENT]):
-            result.append(top.override("IMPLICIT_CONTAINER", value.structure[DS.ACTION_COMPONENT]))
+        if result[-1] == DSYM.CONTAINER_JOIN_P:
+            result.pop()
 
         result.append(DSYM.END_SYM)
         result.append(DSYM.PRINT_SEPARATOR_P)
@@ -328,7 +338,7 @@ class SimpleTypePrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
 
     def __call__(self, value, top=None, data=None):
         return_list = []
-        if str(value.type) == "ATOM":
+        if str(value.type) == TYPE_BASE:
             return []
 
         type_str = str(value.type)

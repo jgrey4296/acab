@@ -81,3 +81,11 @@ class TypeMatch(ProductionOperator):
             return False
 
         return True
+
+
+class AlwaysMatch(ProductionOperator):
+    """ A Simple Operator that always retursn true,
+    useful testing"""
+
+    def __call__(self, a, ctx, b, data=None):
+        return True

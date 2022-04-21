@@ -7,19 +7,21 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 logging = logmod.getLogger(__name__)
 
+import acab.core.data.instruction as Instr
 from acab import types as AT
 from acab.core.data import default_structure as DS
-from acab.core.data.instruction import ProductionOperator, ProductionStructure, ProductionContainer
+from acab.core.data.instruction import (ProductionComponent,
+                                        ProductionContainer,
+                                        ProductionOperator,
+                                        ProductionStructure)
 from acab.core.decorators.semantic import RunInSubCtxSet
+from acab.core.semantics import basic
+from acab.error.semantic import AcabSemanticException
 from acab.interfaces import semantic as SI
 from acab.interfaces import value as VI
-import acab.core.data.instruction as Instr
-from acab.error.semantic import AcabSemanticException
-from acab.modules.context.context_set import ContextSet
 from acab.modules.context.context_instance import MutableContextInstance
+from acab.modules.context.context_set import ContextSet
 from acab.modules.values.binding.binding import bind
-
-from acab.core.semantics import basic
 
 CtxIns = AT.CtxIns
 
@@ -54,10 +56,7 @@ class QueryPlusAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
         for clause in query.clauses:
             # Get a different semantics for each clause
             spec   = semSys.lookup(clause)
-            struct = spec.struct
-            if struct is None:
-                struct = semSys
-
+            struct = spec.struct or semSys
             spec(clause, struct, data=data, ctxs=ctxs)
 
 
@@ -106,9 +105,47 @@ class ActionAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
 
 
                 params = [bind(x, ctx) for x in clause.params]
+                try:
+                    result = op(*params, data=clause.data, semSystem=semSys)
+                except TypeError as err:
+                    breakpoint()
+                    logging.warning(err)
+
+
+
+class ActionPlusAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
+    """ *Consumes* a context, performing all actions in it """
+
+    def verify(self, instruction) -> bool:
+        return (isinstance(instruction, Instr.ProductionContainer) and
+                all([isinstance(x, Instr.ProductionComponent) for x in instruction.clauses]))
+
+    def __call__(self, instruction, semSys, *, ctxs=None, data=None):
+        operators = ctxs._operators
+        action    = instruction
+
+        for ctx in ctxs.active_list(clear=True):
+            for clause in action.clauses:
+                if not isinstance(clause, ProductionComponent):
+                    # For sentences with semantics, like DFS
+                    assert(DS.SEMANTIC_HINT in clause.data)
+                    # TODO this is a hack, rewrite
+                    spec = semSys.lookup(clause)
+                    struct = spec.struct or semSys
+                    subctx = ContextSet(ctxs._operators, _parent=ctxs)
+                    subctx.pop()
+                    subctx.push(ctx)
+                    spec(clause, struct, data=data, ctxs=subctx)
+                    continue
+
+                assert(isinstance(clause, ProductionComponent))
+                if clause.op in operators:
+                    op = operators[clause.op]
+                else:
+                    op = ctx[clause.op]
+
+                params = [bind(x, ctx) for x in clause.params]
                 result = op(*params, data=clause.data, semSystem=semSys)
-
-
 
 class AtomicRuleAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
     """ Run a rule in a single semantic call """

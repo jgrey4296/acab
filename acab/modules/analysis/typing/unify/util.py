@@ -18,7 +18,7 @@ from acab.core.parsing.consts import s, s_key
 from acab.error.semantic import AcabSemanticException
 from acab.modules.context.context_instance import (ContextInstance,
                                                    MutableContextInstance)
-from acab.core.data.default_structure import TYPE_BOTTOM_NAME
+from acab.core.data.default_structure import TYPE_BASE
 
 from .. import exceptions as TE
 
@@ -31,7 +31,7 @@ CtxIns : TypeAlias = AT.CtxIns
 
 unify_enum = Enum("Unify Logic Handler Responses", "NEXT_WORD NA END")
 
-ATOM = "_:{}".format(TYPE_BOTTOM_NAME)
+ATOM = "_:{}".format(TYPE_BASE)
 
 def gen_var() -> Callable[[], AT.Sentence]:
     """ A Simple Generator of guaranteed new Variables as a sentence """

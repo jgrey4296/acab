@@ -19,10 +19,11 @@ from acab.modules.analysis.typing.dsl import TypingDSL
 from acab.modules.analysis.typing.unify import type_unify_fns as tuf
 from acab.modules.analysis.typing.unify import unifier
 from acab.modules.analysis.typing.unify.util import gen_f
-from acab.modules.context.context_set import ContextInstance as CtxIns
-from acab.modules.context.context_set import ContextSet, MutableContextInstance
+from acab.modules.context.context_instance import ContextInstance as CtxIns
+from acab.modules.context.context_instance import MutableContextInstance
+from acab.modules.context.context_set import ContextSet
 from acab.modules.engines.configured import exlo
-from acab.modules.operators.dfs.module import DFSQueryDSL
+from acab.modules.operators.dfs.module import DFS_DSL
 from acab.modules.operators.dfs.semantics import DFSSemantics
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 from acab.modules.semantics.default import DEFAULT_SEMANTICS
@@ -31,7 +32,6 @@ from acab.modules.structures.trie.default import DEFAULT_TRIE
 default_modules = config.prepare("Module.REPL", "MODULES")().split("\n")
 
 dsl = None
-walk_rule = dsl("walker(::ρ):\n walker.$rules?\n\n !! test.run.$rules\n ᛦ λ$rules\nend")[0][0]
 
 class TypeWalkTests(unittest.TestCase):
 
@@ -54,8 +54,8 @@ class TypeWalkTests(unittest.TestCase):
 
         global dsl
         # Set up the parser to ease test setup
-        dsl   = ppDSL.PyParseDSL()
-        dsl.register(EXLO_Parser).register(TypingDSL).register(DFSQueryDSL)
+        dsl   = ppDSL.PyParseDSL([], [], [])
+        dsl.register(EXLO_Parser).register(TypingDSL).register(DFS_DSL)
         dsl.build()
 
         cls.eng = exlo()
@@ -71,21 +71,28 @@ class TypeWalkTests(unittest.TestCase):
     #----------
     def test_walk(self):
         # add rule
-        self.eng("""
-walker.rule(::ρ):
-  | $x |
+        self.eng("""walker.rule(::ρ):\n | $x |\n\n @x(::$y)?\n\n !! found.$y\nend """)
 
-  $x(::$y)?
-
-  !! has.type.$y
-end
-""")
+        walk_rule = dsl("walker(::ρ):\n walker.$rules?\n\n !! test.run.$rules\n ᛦ λ$rules\nend")[0][0]
         # trigger walk
-        breakpoint()
         self.eng(walk_rule)
         # test
+        # ctx_results = self.eng("has.type.$x?")
+        ctx_results = self.eng("found.$x?")
+        self.assertEqual(len(ctx_results), 3)
 
-        self.assertEqual(2, 2)
+
+    def test_walk2(self):
+        # add rule
+        self.eng("""walker.rule(::ρ):\n | $x |\n\n @x(::$y)?\n\n !! found.$y\nend""")
+        self.eng("a.different.test(::blah)")
+        walk_rule = dsl("walker(::ρ):\n walker.$rules?\n\n !! test.run.$rules\n ᛦ λ$rules\nend")[0][0]
+        # trigger walk
+        self.eng(walk_rule)
+        # test
+        # ctx_results = self.eng("has.type.$x?")
+        ctx_results = self.eng("found.$x?")
+        self.assertEqual(len(ctx_results), 4)
 
     @unittest.skip("")
     def test_basic(self):

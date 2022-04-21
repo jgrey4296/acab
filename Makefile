@@ -1,31 +1,37 @@
 SHELL			:= /usr/local/bin/bash
-PYS				:= $(shell find ./acab -name '*.py' -not -name '*context.py' -not -name '__init__.py')
-LOGS			:= $(shell find ./acab -name '*log.*')
-CACHES			:= $(shell find ./acab/ -regextype posix-egrep -regex .*\(.mypy_cache\|__pycache__\|flycheck_.+\)$)
 TOP				:= ./acab
-PAT				:=
-FILE_PAT		:= "test_*.py"
 LOGLEVEL		:= WARNING
 
-dir				?= ./acab
-doc_target		?= "html"
+# Testing variables:
+TEST_TARGET		?= ${TOP}
+TEST_PAT		:=
+TESTDIRS        := core modules/parsing modules/context modules/structures/trie modules/semantics modules/printing modules/repl modules/analysis/typing/unify modules/operators/dfs
+TEST_FILE_PAT	:= "test_*.py"
 
+# Clean variables:
+PYS				!= find ${TOP} -name '*.py' -not -name '*context.py' -not -name '__init__.py'
+LOGS			!= find ${TOP} -name '*log.*'
+CACHES			!= find ${TOP} -regextype posix-egrep -regex .*\(.mypy_cache\|__pycache__\|flycheck_.+\)$)
+
+# Documentation variables:
+doc_target		?= "html"
 SPHINXOPTS		?=
 SPHINXBUILD		?= sphinx-build
 DOCSOURCEDIR    = docs
 DOCBUILDDIR     = dist/docs
 
+
 # If defined, use these overrides
 ifneq (${pat}, )
-	PAT = -k ${pat}
+	TEST_PAT = -k ${pat}
 endif
 
 ifneq (${fpat}, )
-	FILE_PAT := ${fpat}
+	TEST_FILE_PAT := ${fpat}
 endif
 
 
-.PHONY: help Makefile all pylint clean
+.PHONY: help Makefile all pylint clean browse long test dtest faily repl vrepl repld check
 
 # Documentation ###############################################################
 # Put it first so that "make" without argument is like "make help".
@@ -57,14 +63,23 @@ freeze:
 
 # Testing #####################################################################
 long:
-	python -m unittest discover -s ${dir} -p "*_tests.py"
+	python -m unittest discover -s ${TEST_TARGET} -p "*_tests.py"
 
 test:
-	python -m unittest discover -v -s ${dir} -p ${FILE_PAT} -t ${TOP} ${PAT}
+	python -m unittest discover -v -s ${TEST_TARGET} -p ${TEST_FILE_PAT} -t ${TOP} ${TEST_PAT}
+
+dtest: $(TESTDIRS)
+
+
+$(TESTDIRS):
+	@echo "Target: ${TOP}/$@"
+	python -m unittest discover -v -s "${TOP}/$@" -p ${TEST_FILE_PAT} -t ${TOP}
+
 
 faily:
 	@echo "Testing with early fail"
-	python -m unittest discover -v -f -s ${dir} ${PAT} -t ${TOP} -p ${FILE_PAT}
+	python -m unittest discover -v -f -s ${TEST_TARGET} ${TEST_PAT} -t ${TOP} -p ${TEST_FILE_PAT}
+
 
 
 # Repls #######################################################################
@@ -88,17 +103,17 @@ vr: vrepl
 check:
 	@echo "Shell	= " ${SHELL}
 	@echo "Top		= " ${TOP}
-	@echo "Search	= " ${dir}
-	@echo "Pattern	= " ${PAT}
+	@echo "Search	= " ${TEST_TARGET}
+	@echo "Pattern	= " ${TEST_PAT}
 
 
 line_report:
 	@echo "Counting Lines into linecounts.stats"
-	find . -name "*.py" -not -path "./.git/*" -not -name "test_*.py" -not -name "*__init__.py" -print0 | xargs -0 wc -l | sort > linecounts.report
+	find ${TOP} -name "*.py" -not -name "test_*.py" -not -name "*__init__.py" -print0 | xargs -0 wc -l | sort > linecounts.report
 
 class_report:
 	@echo "Getting Class Relations"
-	find ./acab -name "*.py" -not -name "flycheck*" | xargs awk '/^class/ {print $0}' > class.report
+	find ${TOP} -name "*.py" -not -name "flycheck*" | xargs awk '/^class/ {print $0}' > class.report
 
 
 export_env:

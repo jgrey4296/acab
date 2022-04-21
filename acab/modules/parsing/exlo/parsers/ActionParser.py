@@ -5,12 +5,14 @@ import pyparsing as pp
 from acab.core.config.config import AcabConfig
 from acab.core.parsing import funcs as Pfunc
 from acab.core.parsing import parsers as PU
-from acab.core.parsing.consts import DELIM, NG, N, component_gap, orm, zrm, ln, s, op
+from acab.core.parsing.consts import (DELIM, NG, N, component_gap, ln, op, orm,
+                                      s, zrm)
 from acab.core.parsing.default_keys import OPERATOR
 from acab.core.parsing.default_symbols import ACTION_HEAD
 from acab.core.parsing.parsers import VALBIND
+from acab.core.parsing.statement_core import StatementCore
 from acab.modules.parsing.exlo import constructors as PConst
-from acab.modules.parsing.exlo.util import LEFT_S, RIGHT_S, ACTION_HEAD
+from acab.modules.parsing.exlo.util import ACTION_HEAD, LEFT_S, RIGHT_S
 
 from .FactParser import SENTENCE, op_sentence
 
@@ -45,7 +47,7 @@ action_exprs        = HOTLOAD_ACTION_STATEMENTS | basic_actions | SENTENCE
 actions             = pp.IndentedBlock(action_exprs + op(s(ln)))
 actions.set_parse_action(PConst.build_action)
 
-action_definition   = PU.STATEMENT_CONSTRUCTOR(ACTION_HEAD, actions)
+action_definition   = StatementCore(ACTION_HEAD, actions)
 
 # parse action
 

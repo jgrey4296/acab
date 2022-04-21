@@ -117,7 +117,7 @@ class _SentenceVariableTestsImpl(VI.Sentence_i, VP.VariableTests_p):
         if len(self) > 1:
             return False
 
-        return cast(bool, self[0].is_var)
+        return cast(bool, self[0].is_at_var)
 
     @property
     def has_var(self) -> bool:
@@ -137,7 +137,7 @@ class _SentenceCollectionImpl(VI.Sentence_i, Collection):
     def __contains__(self, value) -> bool:
         assert(isinstance(value, (str, VI.Value_i)))
         words = cast(list[VI.Value_i], self.words)
-        return value in self.words or value in [x.name for x in words]
+        return value in words or value in [x.name for x in words]
 
     def __len__(self):
         return len(self.words)
@@ -222,7 +222,7 @@ class _SentenceReductionImpl(VI.Sentence_i, VP.AcabReducible_p):
 
         new_data = {}
         new_data.update(self.data)
-        new_data.update({DS.TYPE_INSTANCE: ValueFactory.sen([DS.TYPE_BOTTOM_NAME])}) #type:ignore
+        new_data.update({DS.TYPE_INSTANCE: ValueFactory.sen([DS.TYPE_BASE])}) #type:ignore
         simple_value = ValueFactory.value(self.name, data=new_data) #type:ignore
         return simple_value #type:ignore
 
@@ -268,3 +268,29 @@ class SentenceProtocolsImpl(_SentenceBasicsImpl, VSI._ValueMetaDataImpl, _Senten
             return self.copy(value=cast(list, self.value)[len(prefix):]) #type:ignore
 
         return self
+
+    def flatten(self, *, rec=False) -> Sen_A:
+        """
+        TODO: add annotations for:
+        flattening sentences
+        flattening a variable in a sentence
+        recursive flattening
+        """
+        if DS.FLATTEN in self.data and not self.data[DS.FLATTEN]:
+            return self
+
+        words = []
+        queue = self.words
+        while bool(queue):
+            word = queue.pop(0)
+            is_sen = isinstance(word, VI.Sentence_i)
+            should_flatten = DS.FLATTEN not in word.data or bool(word.data[DS.FLATTEN])
+            if is_sen and should_flatten and rec:
+                queue = word.words + queue
+            elif is_sen and should_flatten:
+                words += word.words
+            else:
+                assert(not (is_sen and should_flatten))
+                words.append(word)
+        return replace(self, value=words)
+
