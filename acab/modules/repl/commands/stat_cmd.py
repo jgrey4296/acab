@@ -22,6 +22,10 @@ from acab.modules.repl.repl_commander import register_class
 
 @register_class("stat")
 class StatCmd:
+    """
+    Print Stats about the self._cmd.
+    ie: Modules/Operators/Pipelines/Layers/Rules....
+    """
 
     def __init__(self):
         self._parser = self._gen_parser()
@@ -41,13 +45,9 @@ class StatCmd:
         return stats_parser
 
     def __call__(self, line):
-        raise NotImplementedError()
+        self.do_stat(line)
 
     def do_stat(self, line):
-        """
-        Print Stats about the self._cmd.
-        ie: Modules/Operators/Pipelines/Layers/Rules....
-        """
         logging.info(f"Getting Stats: {line}")
         params                       = self._parser.parse_string(line)
         allow_all : bool             = not bool(params)

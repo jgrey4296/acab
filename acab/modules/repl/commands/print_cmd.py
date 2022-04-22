@@ -23,6 +23,10 @@ from acab.modules.repl.ReplParser import rst, ctx_parser
 
 @register_class("print")
 class PrintCmd:
+    """
+    Print out information on the wm, or a module
+    [wm, module, semantics]
+    """
 
     def __init__(self):
         self._parser = self._gen_parser()
@@ -46,10 +50,6 @@ class PrintCmd:
 
     
     def __call__(self, line):
-        """
-        Print out information on the wm, or a module
-        [wm, module, semantics]
-        """
         try:
             params = self._parser.parse_string(line)
         except pp.ParseException as err:
