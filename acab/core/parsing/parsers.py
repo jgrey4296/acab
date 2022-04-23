@@ -64,6 +64,7 @@ REGEX.set_parse_action(lambda s, l, t: (CDS.REGEX_PRIM, re.compile(t[0][1:-1])))
 # Generalised modal operator, which is converted to appropriate data later
 # The syntax is constructed automatically from AcabConfig
 MODAL      = pp.Word("".join(config.syntax_extension.keys()))
+MODAL.set_name("MODAL")
 MODAL.set_parse_action(lambda s, l, t: ModalAnnotation(t[0]))
 
 BASIC_VALUE = ATOM | STRING | REGEX
