@@ -64,7 +64,7 @@ sen_post_annotations << HOTLOAD_SEN_POSTS
 # Core = a. | b! | $a. | $b!....
 # Sentences are /SEN_WORD* (SEN_END | SEN_STATEMENT)/
 # TODO explicit Semantic Hint operator?
-SEN_HEAD              = BAD_HEADS + NG(HEAD_ANNOTATION, zrm(sen_head_annotations))
+SEN_HEAD              = NG(HEAD_ANNOTATION, zrm(sen_head_annotations)) + BAD_HEADS
 SEN_WORD              = ParamCore(annotations)
 SEN_NO_MODAL          = ParamCore(annotations, end=True) + ~COLON
 SEN_END               = (HOTLOAD_SEN_ENDS | SEN_NO_MODAL)
@@ -77,7 +77,6 @@ SENTENCE = (SEN_HEAD + pp.Group(pp.ZeroOrMore(SEN_WORD) + SEN_END)(SEN)
 SENTENCE.set_parse_action(Pfunc.construct_sentence)
 SENTENCE.set_name("Sentence")
 
-# SEN_PLURAL = PU.DELIMIST(SENTENCE, delim=DELIM)
 SEN_PLURAL = pp.delimited_list(SENTENCE, delim=DELIM)
 SEN_PLURAL.set_whitespace_chars(" \t")
 SEN_PLURAL.set_name("Sentence Plural")
