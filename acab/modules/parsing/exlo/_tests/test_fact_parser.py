@@ -1,26 +1,28 @@
-import unittest
-from os.path import splitext, split
 import logging as logmod
+import unittest
+from os.path import split, splitext
+
 logging = logmod.getLogger(__name__)
 
 import random
-import pyparsing as pp
 
 import acab
+import pyparsing as pp
+
 config = acab.setup()
 
 if '@pytest_ar' in globals():
     from acab.core.parsing import debug_funcs as DBF
     DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
-from acab.core.value import default_structure as DS
-from acab.core.value.sentence import Sentence
-from acab.core.value.value import AcabValue
-from acab.core.parsing.annotation import ValueAnnotation
-from acab.core.parsing import parsers as PU
-from acab.core.value.default_structure import NEGATION
-
 import acab.modules.parsing.exlo.parsers.FactParser as FP
+from acab.core.parsing import parsers as PU
+from acab.core.parsing.annotation import ValueAnnotation
+from acab.core.value import default_structure as DS
+from acab.core.value.default_structure import NEGATION
+from acab.core.value.sentence import Sentence
+from acab.interfaces.value import Sentence_i, Value_i
+
 
 class Trie_Fact_Parser_Tests(unittest.TestCase):
 
@@ -110,18 +112,30 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result, Sentence)
         self.assertFalse(result.data[NEGATION])
 
-    @unittest.skip("sentence macro is broken")
-    def test_sentence_statement(self):
 
-        result = FP.SENTENCE.parse_string("a.test.sentence:\n  extension.sentence\n  second.extension\nend")
+    def test_valbind_flatten(self):
+        FP.HOTLOAD_ANNOTATIONS << FP.flatten_annotation
+        result = FP.SEN_WORD.parse_string('$x(♭).')[0]
+        self.assertIsInstance(result, Value_i)
+        self.assertTrue(result.data['FLATTEN'])
 
-        sen1 = FP.SENTENCE.parse_string('a.test.sentence.extension.sentence')[0]
-        sen2 = FP.SENTENCE.parse_string('a.test.sentence.second.extension')[0]
+    def test_valbind_no_flatten(self):
+        FP.HOTLOAD_ANNOTATIONS << FP.flatten_annotation
+        result = FP.SEN_WORD.parse_string('$x(~♭).')[0]
+        self.assertIsInstance(result, Value_i)
+        self.assertFalse(result.data['FLATTEN'])
 
+    def test_valbind_no_flatten_as_sharp(self):
+        FP.HOTLOAD_ANNOTATIONS << FP.flatten_annotation
+        result = FP.SEN_WORD.parse_string('$x(♯).')[0]
+        self.assertIsInstance(result, Value_i)
+        self.assertFalse(result.data['FLATTEN'])
 
-        self.assertEqual(len(result), 2)
-        self.assertEqual(result[0], sen1)
-        self.assertEqual(result[1], sen2)
+    def test_valbind_flatten_as_not_sharp(self):
+        FP.HOTLOAD_ANNOTATIONS << FP.flatten_annotation
+        result = FP.SEN_WORD.parse_string('$x(~♯).')[0]
+        self.assertIsInstance(result, Value_i)
+        self.assertTrue(result.data['FLATTEN'])
 
     def test_constraint(self):
         annotation = pp.Literal("blah")

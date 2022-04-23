@@ -57,6 +57,7 @@ EXLO_Parser = DSL_Fragment(specs=[Link_Signal_To("action.statement"         , AP
                                DSL_Handler("sentence.annotation.post" , QP.query_sen_post_annotation),
                                DSL_Handler("sentence.ends"            , QP.query_statement),
                                DSL_Handler("word.annotation"          , QP.word_query_constraint),
+                               DSL_Handler("word.annotation"          , FP.flatten_annotation),
                                # Transform
                                DSL_Handler("operators.transform"      , PU.OPERATOR_SUGAR),
                                DSL_Handler("sentence.ends"            , TP.transform_statement),
