@@ -98,9 +98,9 @@ class PrintSystemImpl(HS.HandlerSystem, PI.PrintSystem_i):
     def extend(self, mods:list[ModuleComponents]) -> None:
         logging.info("Extending Printer")
         printers = [y for x in mods for y in x.printers]
-        assert(all([isinstance(x, PI.Printer_Fragment) for x in printers]))
+        assert(all([isinstance(x, PI.Printer_Fragment_i) for x in printers]))
         for print_fragment in printers:
-            assert(print_fragment.target_i is None or issubclass(print_fragment.target_i, PrintSystem_i)) #type:ignore
+            assert(print_fragment.target_i is None or issubclass(print_fragment.target_i, PI.PrintSystem_i)) #type:ignore
             for val in print_fragment:
                 self.register(val) #type:ignore[no-untyped-call]
 
@@ -126,3 +126,6 @@ class PrintSemanticsImpl(HS.HandlerComponent, PI.PrintSemantics_i):
     def verify(self, instruction:AT.Value) -> bool:
         return True
 
+
+class PrinterFragment(HS.HandlerFragment, PI.Printer_Fragment_i):
+    pass

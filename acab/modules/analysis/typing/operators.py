@@ -4,7 +4,13 @@ Sum type pattern match?
 Sum type combination
 
 """
-from acab.core.value.instruction import ActionOperator, AcabOperator
+from acab import types as AT
+from acab.core.value.instruction import ActionOperator, ProductionOperator
+from acab.core.util.decorators.semantic import OperatorSugar
+
+Value    = AT.Value
+Sentence = AT.Sentence
+CtxIns   = AT.CtxIns
 
 class TypeApply(ActionOperator):
     """
@@ -16,7 +22,7 @@ class TypeApply(ActionOperator):
         pass
 
 
-class TypeUnion(AcabOperator):
+class TypeUnion(ProductionOperator):
     """
     Unify two data structures to get a substitution list
     """
@@ -26,7 +32,7 @@ class TypeUnion(AcabOperator):
 
 # TODO implement this, then deprecate query.typematch
 @OperatorSugar("τ=")
-class TypeMatch(ProductionOperator):
+class UnifyTypeMatch(ProductionOperator):
     """ Match a value's type to a passed in sentence """
 
     def __call__(self, a:Value, ctx:CtxIns, b:Sentence, data=None):

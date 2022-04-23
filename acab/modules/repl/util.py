@@ -7,6 +7,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 from functools import wraps
 import datetime
 import builtins
+from types import FunctionType
 
 logging = logmod.getLogger(__name__)
 import acab
@@ -66,10 +67,14 @@ def ConfigBasedLoad(f):
 
     @wraps(f)
     def wrapper(self, line):
-        if self.state.debugger is None:
+        if isinstance(self, FunctionType) and self.state.debugger is None:
             logging.debug(f"Starting Debugger: {debugger.__name__}")
             self.state.debugger = debugger()
             self.state.debugger.set_running_trace()
+        elif self._cmd.state.debugger is None:
+            self._cmd.state.debugger = debugger()
+            self._cmd.state.debugger.set_running_trace()
+
 
         return f(self, line)
 

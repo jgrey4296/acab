@@ -21,7 +21,7 @@ from .. import util
 
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
-from acab.modules.analysis.typing.dsl import TypingDSL
+from acab.modules.analysis.typing.module import TypingDSL
 from acab.modules.context.context_set import ContextInstance as CtxIns
 from acab.core.value import default_structure as DS
 from acab.core.parsing.annotation import ValueAnnotation

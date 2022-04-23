@@ -57,7 +57,7 @@ class HasTag(ProductionOperator):
 
 
 @OperatorSugar("τ=")
-class TypeMatch(ProductionOperator):
+class SimpleTypeMatch(ProductionOperator):
     """ Match a value's type to a passed in sentence """
 
     def __call__(self, a:Value, ctx:CtxIns, b:Sentence, data=None):

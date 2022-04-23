@@ -145,7 +145,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result, Value_i)
         self.assertTrue("blah" in result.data)
         self.assertEqual(result.data["blah"], 4)
-        FP.HOTLOAD_ANNOTATIONS << None
+        FP.HOTLOAD_ANNOTATIONS << pp.Empty()
 
     @unittest.expectedFailure
     def test_nested_sentence(self):

@@ -15,7 +15,7 @@ from acab.core.value.instruction import Instruction
 from acab.core.value.sentence import Sentence
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.modules.analysis.typing import exceptions as TE
-from acab.modules.analysis.typing.dsl import TypingDSL
+from acab.modules.analysis.typing.module import TypingDSL
 from acab.modules.analysis.typing.unify import unifier
 from acab.modules.context.context_set import ContextInstance as CtxIns
 from acab.modules.context.context_instance import MutableContextInstance
