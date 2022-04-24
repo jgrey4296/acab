@@ -58,6 +58,7 @@ op_head_annotation.set_name("SenLambda")
 # Annotations for before and after a sentence
 # TODO shift to accumulateforward
 sen_head_annotations = sen_head_negation | op_head_annotation | HOTLOAD_SEN_HEADS
+# TODO add optional { } wrapper?
 sen_post_annotations = pp.Forward()
 sen_post_annotations << HOTLOAD_SEN_POSTS
 

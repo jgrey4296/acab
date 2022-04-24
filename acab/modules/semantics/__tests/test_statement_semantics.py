@@ -182,7 +182,7 @@ class StatementSemanticTests(unittest.TestCase):
         transform_sem = ASem.TransformAbstraction().as_handler(signal=TRANSFORM_SEM_HINT)
         action_sem    = ASem.ActionAbstraction().as_handler(signal=ACTION_SEM_HINT)
         stub_sem      = StubAbsSemantic().as_handler(signal=DEFAULT_HANDLER_SIGNAL)
-        con_sem        = ASem.ContainerAbstraction().as_handler(signal="CONTAINER")
+        con_sem       = ASem.ContainerAbstraction().as_handler(signal="CONTAINER")
 
         semSys        = BasicSemanticSystem(init_specs=all_specs,
                                             init_handlers=[transform_sem,

@@ -7,10 +7,14 @@ Sum type combination
 from acab import types as AT
 from acab.core.value.instruction import ActionOperator, ProductionOperator
 from acab.core.util.decorators.semantic import OperatorSugar
+from .values.acab_type import TypeStatement
+from acab.modules.analysis.typing.unify.util import gen_f
+from acab.modules.analysis.typing.unify import type_unify_fns as tuf
 
 Value    = AT.Value
 Sentence = AT.Sentence
 CtxIns   = AT.CtxIns
+Node     = AT.Node
 
 class TypeApply(ActionOperator):
     """

@@ -101,7 +101,6 @@ class TypeCheckTests(unittest.TestCase):
         result  = tuf.type_unify.apply(chopped, unified)
         self.assertEqual(result[-1].type, "_:test")
 
-
     def test_operator_typing(self):
         transform = dsl("transform(::χ):\n λa.b.c $x(::first) $y(::second) -> $z(::first)\nend")[0][0]
         op_def    = dsl("a.b.c(::λ): $g(::first).$h(::second).$i(::first)")[0][-1]
