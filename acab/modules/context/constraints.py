@@ -14,6 +14,7 @@ from acab.core.value.instruction import ProductionComponent, ProductionOperator
 from acab.core.value.sentence import Sentence
 from acab.interfaces.sieve import AcabSieve
 from acab.modules.context.constraint_sieve import default_sieve
+from acab.modules.values.binding.binding import bind
 
 config = GET()
 CONSTRAINT    = config.prepare("Value.Structure", "CONSTRAINT")
@@ -81,22 +82,21 @@ class ConstraintCollection(CtxInt.Constraint_i, metaclass=ConstraintMeta):
 
     def _get(self, val, *, stack=None):
         """
-        Retrieve a value from a stack of a context instance.
+        Retrieve a value from a stack of context instances.
         stack auto-includes CC's operators ctx inst.
         """
+        if self.operators is None and not bool(stack):
+            return val
+
+        # TODO separate this into sieve, then move to contextset?
         if stack is None:
             stack = []
-        # TODO separate this into sieve, then move to contextset?
-        stack.append(self.operators)
+        if self.operators not in stack:
+            stack.append(self.operators)
 
-        for ctx in stack:
-            if str(val) in ctx:
-                return ctx[str(val)]
+        result = bind(val, stack, None)
 
-        if isinstance(val, Sentence) and val.has_var:
-            return val.bind(stack[0])
-
-        return val
+        return result
 
     def __run_alphas(self, node):
         """ Run alpha tests on a node """
@@ -139,6 +139,7 @@ class ConstraintCollection(CtxInt.Constraint_i, metaclass=ConstraintMeta):
         """ Check node against prior binding """
         b_val = ctxInst[node.value]
         for bind in self._test_mappings["name"]:
+            # TODO use bind
             if b_val.is_var or ctxInst[bind].is_var:
                 continue
             if b_val != ctxInst[bind]:

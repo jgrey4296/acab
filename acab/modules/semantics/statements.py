@@ -74,13 +74,13 @@ class TransformAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
         for ctxIns in ctxs.active_list(clear=True):
             with MutableContextInstance(ctxs, ctxIns) as mutx:
                 for clause in transform.clauses:
-                    # TODO this should all be replaceable with just: op = mutx[clause.op]
+                    # TODO replace this with bind
                     if clause.op in operators:
                         op = operators[clause.op]
                     else:
                         op = mutx[clause.op]
 
-                    params              = [bind(x, mutx) for x in clause.params]
+                    params              = [bind(x, mutx, semSys) for x in clause.params]
                     result              = op(*params, data=mutx.data)
                     mutx[clause.rebind] = result
 
@@ -104,7 +104,7 @@ class ActionAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
                     op = ctx[clause.op]
 
 
-                params = [bind(x, ctx) for x in clause.params]
+                params = [bind(x, ctx, semSys) for x in clause.params]
                 try:
                     result = op(*params, data=clause.data, semSystem=semSys)
                 except TypeError as err:
@@ -144,7 +144,7 @@ class ActionPlusAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
                 else:
                     op = ctx[clause.op]
 
-                params = [bind(x, ctx) for x in clause.params]
+                params = [bind(x, ctx, semSys) for x in clause.params]
                 result = op(*params, data=clause.data, semSystem=semSys)
 
 class AtomicRuleAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):

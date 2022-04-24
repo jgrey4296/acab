@@ -75,14 +75,14 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i, metaclass=ContextMeta):
         # TODO selection:slice|List[UUIDs|CtxIns]|bool|None
         if selection is None:
             selection     = self._active
-        elif all([isinstance(x, ContextInstance) for x in selection]):
+        elif all([isinstance(x, CtxIns) for x in selection]):
             selection     = [x.uuid for x in selection]
 
         # Get anything based on specified selection
         selection = [x.uuid for x in self.active_list() if x._lineage.intersection(selection)]
         # Construct the mapping for the subctx, while binding
         if not bool(selection):
-            initial       = ContextInstance().bind_dict(val_binds, node_binds)
+            initial       = self.instance_constructor().bind_dict(val_binds, node_binds)
             selection     = [initial.uuid]
             obj_selection = {x.uuid : x for x in [initial]}
         else:
@@ -91,7 +91,7 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i, metaclass=ContextMeta):
             obj_selection = {x.uuid : x for x in rebound}
 
 
-        assert(all([isinstance(x, ContextInstance) for x in obj_selection.values()]))
+        assert(all([isinstance(x, CtxIns) for x in obj_selection.values()]))
         assert(all([isinstance(x, UUID) for x in selection]))
         subctx = ContextSet(_operators=self._operators,
                             _parent=self,
@@ -105,7 +105,7 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i, metaclass=ContextMeta):
     def __post_init__(self):
         logging.debug("ContextSet Created")
         if not bool(self._total):
-            initial = ContextInstance()
+            initial = self.instance_constructor()
             self._total[initial.uuid] = initial
             self._active.append(initial.uuid)
 

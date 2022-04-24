@@ -123,6 +123,7 @@ class FlattenQueryManager:
         active_ctxs = self.ctxs.active_list(clear=True)
         for ctx in active_ctxs:
             self._current_inst = ctx
+            # TODO use bind
             bound_word = ctx[self._current_constraint.source]
 
             # TODO Handle sentence.
