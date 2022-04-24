@@ -18,7 +18,7 @@ if '@pytest_ar' in globals():
 
 import acab.modules.parsing.exlo.parsers.FactParser as FP
 import acab.modules.parsing.exlo.parsers.QueryParser as QP
-from acab.core.value.default_structure import BIND, NEGATION, QUERY_FALLBACK, QUERY
+from acab.core.value.default_structure import BIND, NEGATION, QUERY_FALLBACK, QUERY, OPERATOR
 from acab.core.value.instruction import (Instruction, ProductionComponent,
                                         ProductionContainer,
                                         ProductionOperator)
@@ -30,6 +30,7 @@ from acab.core.parsing.annotation import ValueRepeatAnnotation
 
 CONSTRAINT_V     = config.prepare("Parse.Structure", "CONSTRAINT")()
 REGEX_PRIM       = config.prepare("Type.Primitive", "REGEX")()
+
 
 class Trie_Query_Parser_Tests(unittest.TestCase):
 
@@ -45,6 +46,11 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         logging = logmod.getLogger(__name__)
         logging.setLevel(logmod.DEBUG)
 
+        QP.HOTLOAD_QUERY_OP << PU.OPERATOR_SUGAR
+
+    @classmethod
+    def tearDownClass(cls):
+        QP.HOTLOAD_QUERY_OP << pp.Empty()
     #----------
     #use testcase snippets
     def setUp(self):
@@ -136,18 +142,21 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result, ValueRepeatAnnotation)
         self.assertIsInstance(result.value, ProductionComponent)
         self.assertFalse(result.value.params)
+        self.assertIn(OPERATOR, result.value.op.data)
 
     def test_basic_constraint_one_param(self):
         result = QP.basic_constraint.parse_string("λa.b.c $x")[0]
         self.assertIsInstance(result, ValueRepeatAnnotation)
         self.assertIsInstance(result.value, ProductionComponent)
         self.assertTrue(result.value.params)
+        self.assertIn(OPERATOR, result.value.op.data)
 
     def test_basic_constraint_one_sen(self):
         result = QP.basic_constraint.parse_string("λa.b.c q.w.e")[0]
         self.assertIsInstance(result, ValueRepeatAnnotation)
         self.assertIsInstance(result.value, ProductionComponent)
         self.assertTrue(result.value.params)
+        self.assertIn(OPERATOR, result.value.op.data)
 
 
     def test_basic_constraint_multi_params(self):
@@ -159,3 +168,10 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
     def test_basic_constraint_on_word(self):
         result = FP.SEN_WORD.parse_string("test(λa.b.c $x $y).")[0]
         self.assertIsInstance(result, AcabValue)
+
+    def test_basic_constraint_non_op_path(self):
+        result = QP.basic_constraint.parse_string("!!")[0]
+        self.assertIsInstance(result, ValueRepeatAnnotation)
+        self.assertIsInstance(result.value, ProductionComponent)
+        self.assertFalse(result.value.params)
+        self.assertIn(OPERATOR, result.value.op.data)

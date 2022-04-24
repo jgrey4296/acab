@@ -30,6 +30,7 @@ def build_query_component(s, loc, toks):
 
     assert(isinstance(op, VI.Sentence_i)), type(op)
     assert(all([isinstance(x, VI.Value_i) for x in params]))
+    assert(DS.OPERATOR in op.data)
     return ValueRepeatAnnotation(DS.CONSTRAINT,
                                  ProductionComponent(op, params=params))
 
@@ -49,6 +50,7 @@ def build_transform_component(s, loc, toks):
     assert(isinstance(op, VI.Sentence_i))
     assert(all([isinstance(x, VI.Value_i) for x in params]))
     assert(isinstance(rebind, VI.Value_i))
+    assert(DS.OPERATOR in op.data)
     return ProductionComponent(op,
                                params=params,
                                rebind=rebind,
@@ -67,6 +69,7 @@ def build_action_component(s, loc, toks):
 
     assert(isinstance(op, VI.Sentence_i))
     assert(all([isinstance(x, VI.Value_i) for x in params]))
+    assert(DS.OPERATOR in op.data)
     return ProductionComponent(op,
                                params=params,
                                sugared=EXu.LEFT_S in toks)
@@ -95,7 +98,7 @@ def build_action(s, loc, toks):
     clauses = toks[0][:]
     clauses = [x if (isinstance(x, ProductionComponent) or
                      isinstance(x, Sentence) and SEM_HINT in x.data)
-               else ProductionComponent(Sentence([EXu.DEFAULT_ACTION_S]),
+               else ProductionComponent(Sentence([EXu.DEFAULT_ACTION_S], data={DS.OPERATOR: True}),
                                         params=[x]) for x in clauses]
 
     act = ProductionContainer(clauses,

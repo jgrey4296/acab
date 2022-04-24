@@ -46,7 +46,7 @@ def DELIMIST(expr, delim=None, stopOn=None):
 
 # Basic Parsers
 OPERATOR_SUGAR = pp.Word(PDSYM.OPERATOR_SYNTAX)
-OPERATOR_SUGAR.set_parse_action(lambda s, l, t: ValueFactory_i.sen([t[0]]))
+OPERATOR_SUGAR.set_parse_action(lambda s, l, t: ValueFactory_i.sen([t[0]], data={CDS.OPERATOR: True}))
 
 ATOM           = pp.Word(PDSYM.WORD_COMPONENT + "'")
 ATOM.set_parse_action(lambda s, l, t: (CDS.TYPE_BASE, t[0]))

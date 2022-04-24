@@ -147,6 +147,13 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertEqual(result.data["blah"], 4)
         FP.HOTLOAD_ANNOTATIONS << pp.Empty()
 
+
+    def test_parse_op_sen(self):
+        result = FP.SENTENCE.parse_string("λa.b.c")[0]
+        self.assertIsInstance(result, Sentence_i)
+        self.assertIn(DS.OPERATOR, result.data)
+        self.assertTrue(result.data[DS.OPERATOR])
+
     @unittest.expectedFailure
     def test_nested_sentence(self):
         result = FP.SENTENCE.parse_string("a.test.[[nested.sentence]]")[0]

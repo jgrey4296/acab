@@ -32,11 +32,11 @@ action_component.set_name("action_component")
 action_component.set_parse_action(PConst.build_action_component)
 
 action_sugar_binary = (N(LEFT_S, VALBIND)
-                       + N(OPERATOR, HOTLOAD_OPERATORS)
+                       + NG(OPERATOR, HOTLOAD_OPERATORS)
                        + vals)
 action_sugar_binary.set_parse_action(PConst.build_action_component)
 
-action_sugar_unary  = N(OPERATOR, HOTLOAD_OPERATORS) + vals
+action_sugar_unary  = NG(OPERATOR, HOTLOAD_OPERATORS) + vals
 action_sugar_unary.set_parse_action(PConst.build_action_component)
 
 basic_actions       =  action_component | action_sugar_unary | action_sugar_binary

@@ -90,7 +90,7 @@ SEN_MACRO             = pp.Forward()
 #                                    SEN_MACRO_BODY,
 #                                    parse_fn=Pfunc.construct_multi_sentences)
 
-op_sentence = pp.Group(SENTENCE)
+op_sentence = pp.Group(pp.FollowedBy(op_head_annotation) + SENTENCE)
 op_sentence.add_condition(lambda s, l, t: CDS.OPERATOR in t[0][0])
 op_sentence.set_parse_action(lambda s, l, t: t[0])
 op_sentence.set_name("op_sentence")
