@@ -104,6 +104,8 @@ class _StructureSemantics_p(HSubP.HandlerComponent_p, HSubP.HandlerSystem_p, Pro
     def compatible(self, struct: Struct_A) -> bool: pass
 
 
+    @abc.abstractmethod
+    def to_sentences(self, struct: Struct_A|Node, *, data=None, ctxs=None): pass
 class _ValueSemantics_p(HSubP.HandlerComponent_p, Protocol):
     """
     Independent Semantics which operate on values and nodes, without

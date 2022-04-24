@@ -399,6 +399,29 @@ class TrieSemanticTests(unittest.TestCase):
         self.assertEqual(len(results[0]), 2)
         self.assertIsInstance(results[0][-1], ValueFactory.sen_fn)
 
+
+    def test_trie_to_sentences_single_node(self):
+        """ Check trie semantics reduces a single node's children as well """
+        # Create sem
+        node_sem    = BasicNodeSemantics().as_handler(signal="node")
+        trie_sem    = FlattenBreadthTrieSemantics([], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_struct = BasicNodeStruct.build_default()
+        # Create sentence
+        sen = ValueFactory.sen(["a", "test", "sentence"])
+        trie_sem.insert(sen, trie_struct)
+        sen2 = ValueFactory.sen(["a", "test", "sub", "sentence"])
+        trie_sem.insert(sen2, trie_struct)
+        sen3 = ValueFactory.sen(["a", "test", "sub", "alt"])
+        trie_sem.insert(sen3, trie_struct)
+        # call to_sentences
+        ctxs = trie_sem.query(Sentence(["a", "test"]), trie_struct, ctxs=ContextSet())
+        results = trie_sem.to_sentences(ctxs[0]._current)
+        # check
+        self.assertEqual(len(results), 3)
+        self.assertEqual(results[0], "_:test.sentence")
+        self.assertEqual(results[1], "_:test.sub.sentence")
+        self.assertEqual(results[2], "_:test.sub.alt")
+
     def test_trie_query_sentence_value(self):
         """
         a.[[test.sentence]]?
@@ -614,6 +637,7 @@ class TrieSemanticTests(unittest.TestCase):
         self.assertEqual(len(results), 1)
         self.assertIn("y", results[0])
         self.assertEqual(results[0].y, "sentence")
+
 
 
 

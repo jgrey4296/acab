@@ -10,6 +10,7 @@ logging = logmod.getLogger(__name__)
 import acab.error.semantic as ASErr
 import acab.interfaces.context as CtxInt
 from acab import types as AT
+from acab.core.value.default_structure import OPERATOR
 from acab.core.config.config import GET
 from acab.core.value.instruction import ProductionComponent, ProductionOperator
 from acab.core.value.sentence import Sentence
@@ -21,7 +22,7 @@ TYPE_INSTANCE = config.prepare("Value.Structure", "TYPE_INSTANCE")()
 ATOM          = config.prepare("Data", "TYPE_BASE")()
 
 
-TYPE_OP_SEN = VF.sen(["τ="])
+TYPE_OP_SEN = VF.sen(["τ="], data={OPERATOR: True})
 
 default_sieve = [
     lambda x: (False, "alpha", [test for test in x.data[CONSTRAINT] if not test.has_var]) if CONSTRAINT in x.data else None,

@@ -110,7 +110,7 @@ class FlattenBreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantic
 
         return ctxs
 
-    def to_sentences(self, struct, data=None, ctxs=None):
+    def to_sentences(self, struct, *, data=None, ctxs=None):
         """ Convert a trie to a list of sentences
         essentially a dfs of the structure,
         ensuring only leaves are complex structures.
@@ -120,7 +120,18 @@ class FlattenBreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantic
         # TODO if passed a node, use that in place of root
         result_list = []
         # Queue: list[Tuple[list[Value], Node]]
-        queue = [([], struct.root)]
+
+        match struct:
+            case DI.Structure_i():
+                root = struct.root
+            case DI.Node_i():
+                root = struct.Root()
+                root.add(struct)
+            case _:
+                raise TypeError("Unknown struct passed in")
+
+        # TODO add depth limit
+        queue = [([], root)]
         while bool(queue):
             path, current = queue.pop(0)
             updated_path  = path + [current.value]
