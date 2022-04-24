@@ -16,7 +16,7 @@ CtxIns   = AT.CtxIns
 class EQ(ProductionOperator):
 
     @OperatorArgUnWrap
-    def __call__(self, a, b, data=None):
+    def __call__(self, a, b, *, data=None, ctx=None):
         return a == b
 
 
@@ -24,7 +24,7 @@ class EQ(ProductionOperator):
 class NEQ(ProductionOperator):
 
     @OperatorArgUnWrap
-    def __call__(self, a, b, data=None):
+    def __call__(self, a, b, *, data=None, ctx=None):
         return a != b
 
 @OperatorSugar("~=")
@@ -33,7 +33,7 @@ class RegMatch(ProductionOperator):
     # TODO implement sub-binds
     # currently they are ignored
     @OperatorArgUnWrap
-    def __call__(self, a, b, data=None):
+    def __call__(self, a, b, *, data=None, ctx=None):
         result = re.search(b, a)
         if result is not None:
             result = result.groupdict()
@@ -45,14 +45,14 @@ class RegMatch(ProductionOperator):
 class ELEM(ProductionOperator):
 
     @OperatorArgUnWrap
-    def __call__(self, a:Value, b:Sentence, data=None):
+    def __call__(self, a:Value, b:Sentence, *, data=None, ctx=None):
         return a in b
 
 class HasTag(ProductionOperator):
 
     # Doesn't need sugar, as it uses a parser
     # Don't unwrap args, as you need the value data to test
-    def __call__(self, value, *tags, data=None):
+    def __call__(self, value, *tags, data=None, ctx=None):
         return value.has_tag(*tags)
 
 
@@ -60,7 +60,7 @@ class HasTag(ProductionOperator):
 class SimpleTypeMatch(ProductionOperator):
     """ Match a value's type to a passed in sentence """
 
-    def __call__(self, a:Value, ctx:CtxIns, b:Sentence, data=None):
+    def __call__(self, a:Value, b:Sentence, *, data=None, ctx:CtxIns=None):
         a_type = a.type
 
         # TODO this will eventually be some sort of unify
@@ -87,5 +87,5 @@ class AlwaysMatch(ProductionOperator):
     """ A Simple Operator that always retursn true,
     useful testing"""
 
-    def __call__(self, a, ctx, b, data=None):
+    def __call__(self, a, b, *, data=None, ctx=None):
         return True

@@ -64,7 +64,7 @@ class RebindOperator(ActionOperator):
     allowing more concise names of operators
     """
 
-    def __call__(self, target:Sentence|str, op:Operator|Sentence|str, data=None, semSystem=None):
+    def __call__(self, target:Sentence|str, op:Operator|Sentence|str, *, data=None, semSystem=None):
         """ λUpdateOps "+" $x
         Updates the Sem System's Operator cache
         """

@@ -129,7 +129,7 @@ class ConstraintCollection(CtxInt.Constraint_i, metaclass=ConstraintMeta):
         val = self._get(node.value, stack=[ctxInst])
         for test in self._test_mappings["sub_struct_tests"]:
             op = self._get(test.op)
-            results.append(op(val, ctxInst, *test.params))
+            results.append(op(val, *test.params, ctx=ctxInst))
 
         if not all(results):
             # binds can't succeed if tests fail
