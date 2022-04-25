@@ -7,45 +7,10 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     Iterable, Iterator, Mapping, Match, MutableMapping,
                     Protocol, Sequence, Tuple, TypeAlias, TypeGuard, TypeVar,
                     cast, final, overload, runtime_checkable)
-from collections import defaultdict
+from acab.core.util.log_formatter import AcabLogRecord, AcabLogFormatter, LEVEL_MAP, COLOUR_RESET, SimpleLogColour
 
-try:
-    from sty import fg
-    COLOUR_RESET = fg.rs
-    LEVEL_MAP = {
-        logging.DEBUG    : fg.grey,
-        logging.INFO     : fg.blue,
-        logging.WARNING  : fg.yellow,
-        logging.ERROR    : fg.red,
-        logging.CRITICAL : fg.red,
-    }
-    COLOUR_MAP = {
-        "green"  : fg.green,
-        "blue"   : fg.blue,
-        "yellow" : fg.yellow,
-        "red"    : fg.red
-        }
 
-except ImportError:
-    COLOUR_RESET = ""
-    LEVEL_MAP = defaultdict(lambda: "")
-    COLOUR_MAP = LEVEL_MAP
-
-class SimpleColour:
-
-    def green(s):
-        return COLOUR_MAP['green'] + str(s) + COLOUR_RESET
-
-    def blue(s):
-        return COLOUR_MAP['blue'] + str(s) + COLOUR_RESET
-
-    def yellow(s):
-        return COLOUR_MAP['yellow'] + str(s) + COLOUR_RESET
-
-    def red(s):
-        return COLOUR_MAP['red'] + str(s) + COLOUR_RESET
-
-class AcabParseDebugFormat(logging.Formatter):
+class AcabParseDebugFormat(AcabLogFormatter):
     """ Guarded Formatter for adding colour.
     Uses the sty module.
     If sty is missing, behaves as the default formatter class
@@ -58,25 +23,30 @@ class AcabParseDebugFormat(logging.Formatter):
     logger.addHandler(stdout_handler)
     """
 
-    _default_fmt : ClassVar[str] = '%(message)s'
+    _default_fmt : ClassVar[str] = '{message}'
 
     _total = "%(name)s %(levelno)s %(levelname)s %(pathname)s %(filename)s %(module)s %(lineno)d %(funcName)s %(created)f %(asctime)s %(msecs)d %(relativeCreated)d %(thread)d %(threadName)s %(process)d %(message)s"
 
 
     @staticmethod
     def scaffold():
+        """
+        Setup the AcabParseDebugFormat logging scaffold,
+        installing the AcabLogRecord as the record factory
+        """
+        logging.warning("Scaffolding AcabParseDebugFormat")
         handler = logging.StreamHandler()
         handler.setLevel(logging.DEBUG)
         handler.setFormatter(AcabParseDebugFormat())
         return handler
 
     def __init__(self, fmt=None):
-        super().__init__(fmt or AcabParseDebugFormat._default_fmt)
+        super().__init__(fmt=fmt or AcabParseDebugFormat._default_fmt, record=True)
         self.levels = LEVEL_MAP
         self.datefmt : str = "%H:%M:%S"
 
     def format(self, record):
-        record.msg = record.msg.replace("\t", "    ")
+        # record.msg = record.msg.replace("\t", "    ")
         # log_colour = self.levels.get(record.levelno)
         formatted = super().format(record)
 
