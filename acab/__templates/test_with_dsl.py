@@ -13,6 +13,10 @@ logging = logmod.getLogger(__name__)
 import acab
 import pyparsing as pp
 
+if '@pytest_ar' in globals():
+    from acab.core.parsing import debug_funcs as DBF
+    DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+
 ##############################
 
 config = acab.setup()
@@ -22,6 +26,7 @@ config = acab.setup()
 
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
+from acab.core.parsing.component_dsl import Component_DSL
 
 
 class _DSL_TEST_TEMPLATE(unittest.TestCase):
@@ -40,5 +45,6 @@ class _DSL_TEST_TEMPLATE(unittest.TestCase):
         # Set up the parser to ease test setup
         cls.dsl   = ppDSL.PyParseDSL([], [], [])
         cls.dsl.register(EXLO_Parser)
+        cls.dsl.register(Component_DSL)
         cls.dsl.build()
         # dsl()
