@@ -41,24 +41,20 @@ DELAYED_E = Enum("Delayed Instruction Set", "ACTIVE FAIL DEACTIVATE CLEAR MERGE"
 
 
 @dataclass
-class ContextSenBindQueryManager:
+class ContextSenBindQueryManager(CtxInt.CtxManager_i):
     """ Shared State of the current query, between different ctx insts """
-
-    query_clause  : None|Sen      = field()
-    root_node     : Node               = field()
-    ctxs          : CtxSet             = field()
 
     negated       : bool                                   = field(init=False, default=False)
     collect_vars  : set[str]                               = field(init=False, default_factory=set)
     ctx_clauses   : dict[UUID, list[ConstraintCollection]] = field(init=False, default_factory=dict)
 
     _duplication_filter : dict[Sen, list[ConstraintCollection]] = field(init=False, default_factory=dict)
-    _current_constraint : ConstraintCollection = field(init=False, default=None)
-    _current_inst       : CtxIns               = field(init=False, default=None)
-    _initial_ctxs       : list[UUID]           = field(init=False, default_factory=list)
+    _current_constraint : ConstraintCollection                  = field(init=False, default=None)
+    _current_inst       : CtxIns                                = field(init=False, default=None)
+    _initial_ctxs       : list[UUID]                            = field(init=False, default_factory=list)
 
     def __post_init__(self):
-        sen = self.query_clause
+        sen = self.target_clause
         assert(sen[0].is_var)
         self.negated = NEGATION_S in sen.data and sen.data[NEGATION_S]
         self._initial_ctxs = [x.uuid for x in self.ctxs.active_list()]
@@ -80,6 +76,7 @@ class ContextSenBindQueryManager:
 
 
     def __exit__(self, exc_type, exc_value, traceback):
+        self.activate_ctxs()
         if self.negated:
             # invert failed and passing
             actually_passed = self.ctxs._failed
@@ -87,7 +84,7 @@ class ContextSenBindQueryManager:
             passed_initial  = [x for x in self._initial_ctxs if x in passed_lineages]
 
             actually_failed = self.ctxs.active_list(clear=True)
-            [self.ctxs.fail(x, None, None, self.query_clause) for x in actually_failed]
+            [self.ctxs.fail(x, None, None, self.target_clause) for x in actually_failed]
 
             self.ctxs.push(passed_initial)
 
@@ -101,10 +98,14 @@ class ContextSenBindQueryManager:
 
 
     @property
+    def current(self):
+        return self.target_clause
+
+    @property
     def active(self) -> Iterator[Tuple[Value, CtxIns, Node]]:
         for ctx in self.ctxs:
             self._current_inst       = ctx
-            constraints              = self.ctx_cluses[ctx.uuid]
+            constraints              = self.ctx_clauses[ctx.uuid]
             self._current_constraint = constraints[0]
             yield (word, ctx, node)
 
@@ -113,9 +114,11 @@ class ContextSenBindQueryManager:
             self.ctxs.fail(self._current_inst,
                            self._current_constraint.source,
                            self._current_inst._current,
-                           self.query_clause)
+                           self.target_clause)
+            return []
         else:
-            self.test(results)
+            results = self.test(results)
+            self.push(results)
 
     def test(self, possible: list[Node]):
         """
@@ -137,35 +140,12 @@ class ContextSenBindQueryManager:
                 successes.append(node)
             except ASErr.AcabSemanticTestFailure as err:
                 logging.debug(f"Tests failed on {node.value}:\n\t{err}")
-                self.ctxs.fail(self._current_inst, constraints.source, node, self.query_clause)
+                self.ctxs.fail(self._current_inst, constraints.source, node, self.target_clause)
 
         # Handle successes
         # success, so copy and extend ctx instance
         bound_ctxs = self._current_inst.bind(constraints.source,
                                              successes,
                                              sub_binds=constraints["sub_struct_binds"])
-        self.ctxs.push(bound_ctxs)
         return bound_ctxs
 
-    def collect(self):
-        """
-        Context collecton specific vars.
-        Flattens many contexts into one, with specified variables
-        now as lists accumulated from across the contexts.
-
-        Semantics of collect:
-        0[ctxs]0 -> fail
-        1[ctxs]n -> 1[α]1
-        where
-        α : ctx = ctxs[0] ∪ { β : ctx[β] for ctx in ctxs[1:] }
-        β : var to collect
-
-
-        """
-        if not bool(self.collect_vars):
-            return
-
-        # select instances with bindings
-        # Merge into single new instance
-        # replace
-        raise NotImplementedError()
