@@ -5,7 +5,7 @@ LOGLEVEL		:= WARNING
 # Testing variables:
 TEST_TARGET		?= ${TOP}
 TEST_PAT		:=
-TESTDIRS        := core modules/parsing modules/context modules/structures/trie modules/semantics modules/printing modules/repl modules/analysis/typing/unify modules/operators/dfs modules/values/binding
+TESTDIRS        := core modules/parsing modules/context modules/structures/trie modules/semantics modules/printing modules/repl modules/analysis/typing/unify modules/operators/dfs modules/values/binding modules/values/sen_val
 TEST_FILE_PAT	:= "test_*.py"
 
 # Clean variables:

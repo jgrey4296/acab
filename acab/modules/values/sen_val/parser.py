@@ -16,5 +16,5 @@ HOTLOAD_SENTENCE = pp.Forward()
 HOTLOAD_SENTENCE.set_name("hotload_sentence")
 
 sen_value = pp.Literal("[[").suppress() + HOTLOAD_SENTENCE("internal_sentence") + pp.Literal("]]").suppress()
-
+sen_value.set_name("sen_val")
 sen_value.set_parse_action(lambda s, l, t: (t["internal_sentence"].type, t["internal_sentence"]))
