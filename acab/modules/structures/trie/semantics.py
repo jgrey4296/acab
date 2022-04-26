@@ -10,7 +10,6 @@ from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.value.instruction import Instruction
 from acab.core.value.sentence import Sentence
 from acab.interfaces.value import Sentence_i
-from acab.modules.context.context_query_manager import ContextQueryManager
 from acab.modules.context.flatten_query_manager import FlattenQueryManager
 from acab.core.value.default_structure import NEGATION, FLATTEN
 from acab.core.semantics import basic
@@ -19,7 +18,7 @@ from acab.error.protocol import AcabProtocolError as APE
 logging = logmod.getLogger(__name__)
 config = AcabConfig()
 
-Node          = AT.Node
+Node          = DI.Node_i
 Value         = AT.Value
 Structure     = AT.DataStructure
 Engine        = AT.Engine
@@ -84,17 +83,21 @@ class FlattenBreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantic
 
     def query(self, sen, struct, *, data=None, ctxs=None):
         """ Breadth First Search Query """
-        if ctxs is None:
-            raise ASErr.AcabSemanticException("Ctxs is none to TrieSemantics.query", rest=sen)
+        assert(ctxs is not None)
 
         clause_flatten = FLATTEN not in sen.data or sen.data[FLATTEN]
         root           = struct.root if isinstance(struct, DI.Structure_i) else struct
+        assert(isinstance(root, Node))
 
-        with FlattenQueryManager(sen, root, ctxs) as cqm:
-            for source_word in cqm.query:
+        cqm = FlattenQueryManager(sen, root, ctxs)
+        with cqm:
+            for source_word in cqm.current:
                 for bound_word, ctxInst, current_node in cqm.active:
+                    # This happens here to catch when $x -> a.sub.sentence
+                    # in a.larger.query.$x.blah?
                     should_flatten = clause_flatten and bound_word and (FLATTEN not in bound_word.data or bound_word.data[FLATTEN])
                     if isinstance(bound_word, Sentence_i) and should_flatten:
+                        # sub query when dealing with a sentence that needs to be flattened
                         self.query(bound_word, current_node, data=data, ctxs=ctxs.subctx([ctxInst.uuid]))
                     elif source_word.is_at_var and not bool(cqm._current_constraint):
                         continue
@@ -108,7 +111,7 @@ class FlattenBreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantic
 
                         cqm.maybe_test(results)
 
-        return ctxs
+        return cqm.finished
 
     def to_sentences(self, struct, *, data=None, ctxs=None):
         """ Convert a trie to a list of sentences

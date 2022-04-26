@@ -34,17 +34,17 @@ class SenQuerySemantics(StatementSemantics, SI.StatementSemantics_i):
 
 
     def query(self, sen, semSys, ctxs=None, data=None):
-        if ctxs is None:
-            raise ASErr.AcabSemanticException("Ctxs is none to SenQuerySemantics.query", sen)
+        assert(ctxs is not None)
 
         temp_ctxs = semSys.build_ctxset(ctxs._operators)
         # remove empty ctx:
         temp_ctxs.run_delayed()
-        with ContextSenBindQueryManager(sen, struct.root, ctxs) as cqm:
+        cqm = ContextSenBindQueryManager(sen, struct.root, ctxs)
+        with cqm:
             for query_clause, ctxInst, current_node in cqm.active:
                 # query(::sen)
                 temp_ctxs.push(ctxInst)
                 semSys(query_clause, ctxs=temp_ctxs)
-                # TODO cqm.update_contexts(temp_ctxs)
+                # TODO cqm.queue_ctxs(temp_ctxs.active_list)
 
-        return ctxs
+        return cqm.finished

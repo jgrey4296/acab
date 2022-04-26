@@ -42,9 +42,7 @@ class TypeSemantics(StatementSemantics_i):
 
     def query(self, typedef, struct, data=None, ctxs=None):
         """ Breadth First Search Query """
-        if ctxs is None:
-            raise ASErr.AcabSemanticException("Ctxs is none to TrieSemantics.query", sen)
-
+        assert(ctxs is not None)
         assert(struct is None)
 
         with TypeContextQueryManager(typedef, ctxs) as cqm:
