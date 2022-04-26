@@ -133,12 +133,6 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
         if bool(paths):
             self.read(paths)
 
-        # if hasattr(self, "check_structure"):
-        #     self.check_structure()
-        # else:
-        #     logging.warning("Config has been created without a check_structure")
-        #     breakpoint()
-
     def __call__(self, lookup):
         return self.value(lookup) #type:ignore
 
@@ -223,7 +217,6 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
         new_paths : list[str] = [x for x in full_paths if x not in self._files]
         if bool(new_paths):
             self._config.read(new_paths)
-            self.attr._generate()
             self._files.update(new_paths)
             self._run_hooks()
         return self

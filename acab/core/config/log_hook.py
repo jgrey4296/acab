@@ -5,7 +5,11 @@ logging = logmod.getLogger(__name__)
 
 from acab.core.util.log_formatter import AcabLogFormatter, AcabLogRecord
 
-def log_config(self):
+def log_hook(self):
+    """
+    Config Hook to install AcabLog Formatting and Record types into
+    the logging system
+    """
     if not self.attr.LOGGING.ACAB:
         return
     logging.debug("Setting up Acab Log Formatting")

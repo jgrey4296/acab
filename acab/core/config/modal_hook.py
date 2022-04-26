@@ -17,7 +17,7 @@ import pyparsing as pp
 logging = logmod.getLogger(__name__)
 
 
-def modal_config(self):
+def modal_hook(self):
     """ Load and create MODAL section enums/defaults/symbols
     Any value in MODAL will cause to be processed:
     Modal.{value} [ENUM_VALUES, DEFAULT]
