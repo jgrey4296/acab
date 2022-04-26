@@ -36,7 +36,7 @@ def EnsureEngineInitialised(method):
     @wraps(method)
     def fn(self, *args, **kwargs):
         if not self.initialised:
-            raise AcabParseException("DSL Not Initialised")
+            raise AcabParseException("Engine Not Initialised")
 
         return method(self, *args, **kwargs)
 

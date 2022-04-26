@@ -18,10 +18,11 @@ import acab
 
 config = acab.setup()
 
-from acab.core.data.instruction import (Instruction, ProductionComponent,
+from acab.core.value.instruction import (Instruction, ProductionComponent,
                                         ProductionContainer)
-from acab.core.data.sentence import Sentence
-from acab.core.data.value import AcabValue
+from acab.core.value import default_structure as DS
+from acab.core.value.sentence import Sentence
+from acab.core.value.value import AcabValue
 from acab.core.parsing.annotation import ValueRepeatAnnotation
 from acab.modules.engines.configured import exlo
 from acab.modules.operators.dfs import parser as DOP
@@ -94,7 +95,7 @@ class TestWalkSemantics(unittest.TestCase):
         source_var = AcabValue("x", data={BIND: AT_BIND})
         test_var   = AcabValue("y", data={BIND: True})
         ValueRepeatAnnotation(CONSTRAINT,
-                              ProductionComponent(Sentence(["∈"]),
+                              ProductionComponent(Sentence(["∈"], data={DS.OPERATOR:True}),
                                                   params=[AcabValue("blah")]))(test_var)
 
         query_sen = Sentence([source_var, test_var],
@@ -125,7 +126,7 @@ class TestWalkSemantics(unittest.TestCase):
         test_var   = AcabValue("y", data={BIND: True})
 
         ValueRepeatAnnotation(CONSTRAINT,
-                              ProductionComponent(Sentence(["∈"]),
+                              ProductionComponent(Sentence(["∈"], data={DS.OPERATOR:True}),
                                                   params=[AcabValue("blah")]))(test_var)
 
         query_sen = Sentence([source_var, test_var],
@@ -158,7 +159,7 @@ class TestWalkSemantics(unittest.TestCase):
         test_var   = AcabValue("y", data={BIND: True})
 
         ValueRepeatAnnotation(CONSTRAINT,
-                              ProductionComponent(Sentence(["∈"]),
+                              ProductionComponent(Sentence(["∈"], data={DS.OPERATOR:True}),
                                                   params=[AcabValue("blah")]))(test_var)
 
         query_sen = Sentence([source_var, test_var],
@@ -182,7 +183,7 @@ class TestWalkSemantics(unittest.TestCase):
         # build a walk instruction
         test_var   = AcabValue("y", data={BIND: True})
         ValueRepeatAnnotation(CONSTRAINT,
-                              ProductionComponent(Sentence(["∈"]),
+                              ProductionComponent(Sentence(["∈"], data={DS.OPERATOR:True}),
                                                   params=[Sentence(["blah"])]))(test_var)
 
         query_sen = Sentence([test_var], data={SEM_HINT: "WALK", QUERY: True})
@@ -211,10 +212,10 @@ class TestWalkSemantics(unittest.TestCase):
         test_var2  = AcabValue("z", data={BIND: True})
 
         ValueRepeatAnnotation(CONSTRAINT,
-                              ProductionComponent(Sentence(["∈"]),
+                              ProductionComponent(Sentence(["∈"], data={DS.OPERATOR:True}),
                                                   params=[Sentence(["blah"])]))(test_var)
         ValueRepeatAnnotation(CONSTRAINT,
-                              ProductionComponent(Sentence(["∈"]),
+                              ProductionComponent(Sentence(["∈"], data={DS.OPERATOR:True}),
                                                   params=[Sentence(["bloo"])]))(test_var2)
 
 

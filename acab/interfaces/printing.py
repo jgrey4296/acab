@@ -82,5 +82,5 @@ class PrintSemantics_i(HS.HandlerComponent_i, _PrintSemantics_p):
     def __post_init__(self) -> None: pass
 
 @dataclass #type:ignore[misc]
-class Printer_Fragment(HS.HandlerFragment_i):
-    target_i : Type[PrintSystem_i] = field(kw_only=True)
+class Printer_Fragment_i(HS.HandlerFragment_i):
+    target_i : Type[PrintSystem_i] = field(kw_only=True, default=PrintSystem_i)

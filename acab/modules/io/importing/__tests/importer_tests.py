@@ -9,7 +9,7 @@ import unittest.mock as mock
 import logging
 
 from acab.core.engine.engine import Engine
-from acab.core.data.sentence import Sentence
+from acab.core.value.sentence import Sentence
 from acab.modules.io.importing.actions import ImportQuery
 from acab.error.importer import AcabImportException
 

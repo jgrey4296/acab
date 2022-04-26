@@ -13,13 +13,13 @@ from uuid import UUID, uuid1
 
 import acab.error.semantic as ASErr
 import acab.interfaces.context as CtxInt
-from acab.core.config import GET
-from acab.core.data.instruction import ProductionComponent, ProductionContainer
+from acab.core.config.config import AcabConfig
+from acab.core.value.instruction import ProductionComponent, ProductionContainer
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces.value import Sentence_i
 from acab.modules.context.constraints import ConstraintCollection
 
-config = GET()
+config = AcabConfig()
 
 CONSTRAINT_S     = config.prepare("Value.Structure", "CONSTRAINT")()
 NEGATION_S       = config.prepare("Value.Structure", "NEGATION")()

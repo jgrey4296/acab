@@ -11,7 +11,7 @@ config = acab.GET()
 
 from acab.modules.repl.repl_commander import register
 from acab.modules.repl import ReplParser as RP
-from acab.core.data.instruction import ProductionOperator, ProductionStructure
+from acab.core.value.instruction import ProductionOperator, ProductionStructure
 
 logging = logmod.getLogger(__name__)
 

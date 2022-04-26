@@ -15,12 +15,13 @@ if '@pytest_ar' in globals():
     from acab.core.parsing import debug_funcs as DBF
     DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
-from acab.core.data import default_structure as DS
-from acab.core.data.instruction import (Instruction, ProductionComponent,
+from acab.core.value import default_structure as DS
+from acab.core.value.instruction import (Instruction, ProductionComponent,
                                         ProductionContainer,
                                         ProductionOperator)
-from acab.core.data.sentence import Sentence
-from acab.core.data.value import AcabValue
+from acab.core.value.sentence import Sentence
+from acab.core.value.value import AcabValue
+from acab.core.parsing import parsers as PU
 from acab.interfaces.value import Value_i
 from acab.modules.parsing.exlo.parsers import ActionParser as AP
 from acab.modules.parsing.exlo.parsers import FactParser as FP
@@ -42,6 +43,12 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
         logging = logmod.getLogger(__name__)
         logging.root.addHandler(console)
         logging.root.addHandler(file_h)
+
+        AP.HOTLOAD_OPERATORS << PU.OPERATOR_SUGAR
+
+    @classmethod
+    def tearDownClass(cls):
+        AP.HOTLOAD_OPERATORS << pp.Empty()
 
     #----------
     #use testcase snippets
@@ -84,8 +91,12 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
         self.assertEqual(len(result.clauses), 3)
 
     # TODO test  sugar, test sentences, test values, test multi params
-    @unittest.skip("TODO")
-    def test_action_sugar(self):
-        return
+    def test_action_sugar_unary(self):
+        result = AP.action_sugar_unary.parse_string("∈ $x")[0]
+        self.assertIsInstance(result, ProductionComponent)
+        self.assertIn(DS.OPERATOR, result.op.data)
 
-
+    def test_action_sugar_bianry(self):
+        result = AP.action_sugar_binary.parse_string("$y ∈ $x")[0]
+        self.assertIsInstance(result, ProductionComponent)
+        self.assertIn(DS.OPERATOR, result.op.data)

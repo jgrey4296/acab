@@ -13,9 +13,12 @@ from acab.core.parsing.consts import (COMMA, DELIM, END, emptyLine, COLON,
                                       FACT_HEAD, NEGATION, NG, N, op, opLn, zrm, ln, FUNC_SYMBOL)
 from acab.core.parsing.default_keys import OPERATOR, SEN, VALUE, HEAD_ANNOTATION
 from acab.core.parsing import default_keys as PDS
-from acab.core.data import default_structure as CDS
+from acab.core.value import default_structure as CDS
 from acab.modules.parsing.exlo import constructors as PConst
 from acab.core.parsing.annotation import ValueRepeatAnnotation, ValueAnnotation
+from acab.core.parsing import default_symbols as PDSym
+from acab.modules.parsing.exlo.parsers import util as EU
+
 
 logging             = logmod.getLogger(__name__)
 # Hotload insertion points:
@@ -34,6 +37,10 @@ HOTLOAD_SEN_POSTS.set_name('hl_sen_posts')
 BAD_HEADS           = ~(END | HOTLOAD_BAD_HEADS)("Bad Words")
 BAD_HEADS.errmsg    = "Bad Head Word Found"
 
+flatten_annotation  = op(NEGATION) + (pp.Literal(PDSym.FLATTEN)('flat') | pp.Literal(PDSym.SHARP)('sharp'))
+flatten_annotation.set_name("FlattenAnno")
+flatten_annotation.set_parse_action(EU.build_flatten)
+
 # Annotations for sentence words, auto wrapped with parens
 annotations = PU.DELIMIST(HOTLOAD_ANNOTATIONS, delim=COMMA)
 annotations.set_parse_action(PConst.build_constraint_list)
@@ -51,13 +58,14 @@ op_head_annotation.set_name("SenLambda")
 # Annotations for before and after a sentence
 # TODO shift to accumulateforward
 sen_head_annotations = sen_head_negation | op_head_annotation | HOTLOAD_SEN_HEADS
+# TODO add optional { } wrapper?
 sen_post_annotations = pp.Forward()
 sen_post_annotations << HOTLOAD_SEN_POSTS
 
 # Core = a. | b! | $a. | $b!....
 # Sentences are /SEN_WORD* (SEN_END | SEN_STATEMENT)/
 # TODO explicit Semantic Hint operator?
-SEN_HEAD              = BAD_HEADS + NG(HEAD_ANNOTATION, zrm(sen_head_annotations))
+SEN_HEAD              = NG(HEAD_ANNOTATION, zrm(sen_head_annotations)) + BAD_HEADS
 SEN_WORD              = ParamCore(annotations)
 SEN_NO_MODAL          = ParamCore(annotations, end=True) + ~COLON
 SEN_END               = (HOTLOAD_SEN_ENDS | SEN_NO_MODAL)
@@ -70,7 +78,6 @@ SENTENCE = (SEN_HEAD + pp.Group(pp.ZeroOrMore(SEN_WORD) + SEN_END)(SEN)
 SENTENCE.set_parse_action(Pfunc.construct_sentence)
 SENTENCE.set_name("Sentence")
 
-# SEN_PLURAL = PU.DELIMIST(SENTENCE, delim=DELIM)
 SEN_PLURAL = pp.delimited_list(SENTENCE, delim=DELIM)
 SEN_PLURAL.set_whitespace_chars(" \t")
 SEN_PLURAL.set_name("Sentence Plural")
@@ -84,7 +91,7 @@ SEN_MACRO             = pp.Forward()
 #                                    SEN_MACRO_BODY,
 #                                    parse_fn=Pfunc.construct_multi_sentences)
 
-op_sentence = pp.Group(SENTENCE)
+op_sentence = pp.Group(pp.FollowedBy(op_head_annotation) + SENTENCE)
 op_sentence.add_condition(lambda s, l, t: CDS.OPERATOR in t[0][0])
 op_sentence.set_parse_action(lambda s, l, t: t[0])
 op_sentence.set_name("op_sentence")

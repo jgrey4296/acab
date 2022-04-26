@@ -12,21 +12,21 @@ import acab
 
 config = acab.setup()
 
-from acab.core.data import default_structure as DS
+from acab.core.value import default_structure as DS
 from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.data.node import AcabNode
-from acab.core.data.instruction import ProductionComponent
-from acab.core.data.value import AcabValue
-from acab.core.data.sentence import Sentence
+from acab.core.value.instruction import ProductionComponent
+from acab.core.value.value import AcabValue
+from acab.core.value.sentence import Sentence
 from acab.interfaces.handler_system import Handler_i
 from acab.modules.context import context_delayed_actions
-from acab.modules.operators.query.query_operators import EQ, AlwaysMatch, TypeMatch
+from acab.modules.operators.query.query_operators import EQ, AlwaysMatch, SimpleTypeMatch
 from acab.modules.context.context_set import (ConstraintCollection,
                                               ContextInstance, ContextSet)
 from acab.modules.structures.trie.semantics import FlattenBreadthTrieSemantics
 from acab.modules.semantics.values import (BasicNodeSemantics,
                                            ExclusionNodeSemantics)
-from acab.core.data.factory import ValueFactory
+from acab.core.value.factory import ValueFactory
 
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 EXOP         = config.prepare("MODAL", "exop")()
@@ -109,7 +109,7 @@ class TrieSemanticTests(unittest.TestCase):
 
         self.assertTrue("sentence" in trie_struct.root[sen[:2]])
         # remove
-        trie_sem.insert(neg_sen, trie_struct)
+        trie_sem.insert(neg_sen, trie_struct, ctxs=ContextSet())
         # verify
         self.assertTrue("a" in trie_struct.root)
         self.assertFalse("test" in trie_struct.root[sen[0]])
@@ -192,7 +192,7 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem.insert(sen, trie_struct)
         trie_sem.insert(sen2, trie_struct)
         # Construct context set for operators
-        op_loc_path       = ValueFactory.sen(["EQ"])
+        op_loc_path       = ValueFactory.sen(["EQ"], data={DS.OPERATOR:True})
         operator_instance = EQ()
         op_ctx            = ContextInstance(data={str(op_loc_path): operator_instance})
         ctx_set           = ContextSet(op_ctx)
@@ -222,7 +222,7 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem.insert(sen, trie_struct)
         trie_sem.insert(sen2, trie_struct)
         # Construct context set for operators
-        op_loc_path       = ValueFactory.sen(["EQ"])
+        op_loc_path       = ValueFactory.sen(["EQ"], data={DS.OPERATOR:True})
         operator_instance = EQ()
         op_ctx            = ContextInstance(data={str(op_loc_path): operator_instance})
         ctx_set           = ContextSet(op_ctx)
@@ -260,7 +260,7 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem.insert(sen, trie_struct)
         trie_sem.insert(sen2, trie_struct)
         # Construct context set for operators
-        op_loc_path = ValueFactory.sen(["EQ"])
+        op_loc_path = ValueFactory.sen(["EQ"], data={DS.OPERATOR:True})
         # Note the .value's, because the operator doesn't have the unwrap decorator
         operator_instance = lambda a,b,data=None: a.value == b.value
         op_ctx            = ContextInstance(data={str(op_loc_path): operator_instance})
@@ -399,6 +399,29 @@ class TrieSemanticTests(unittest.TestCase):
         self.assertEqual(len(results[0]), 2)
         self.assertIsInstance(results[0][-1], ValueFactory.sen_fn)
 
+
+    def test_trie_to_sentences_single_node(self):
+        """ Check trie semantics reduces a single node's children as well """
+        # Create sem
+        node_sem    = BasicNodeSemantics().as_handler(signal="node")
+        trie_sem    = FlattenBreadthTrieSemantics([], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_struct = BasicNodeStruct.build_default()
+        # Create sentence
+        sen = ValueFactory.sen(["a", "test", "sentence"])
+        trie_sem.insert(sen, trie_struct)
+        sen2 = ValueFactory.sen(["a", "test", "sub", "sentence"])
+        trie_sem.insert(sen2, trie_struct)
+        sen3 = ValueFactory.sen(["a", "test", "sub", "alt"])
+        trie_sem.insert(sen3, trie_struct)
+        # call to_sentences
+        ctxs = trie_sem.query(Sentence(["a", "test"]), trie_struct, ctxs=ContextSet())
+        results = trie_sem.to_sentences(ctxs[0]._current)
+        # check
+        self.assertEqual(len(results), 3)
+        self.assertEqual(results[0], "_:test.sentence")
+        self.assertEqual(results[1], "_:test.sub.sentence")
+        self.assertEqual(results[2], "_:test.sub.alt")
+
     def test_trie_query_sentence_value(self):
         """
         a.[[test.sentence]]?
@@ -414,7 +437,7 @@ class TrieSemanticTests(unittest.TestCase):
         sen2 = ValueFactory.sen(["a", Sentence(["test", "sentence"])])
         sen2.data[DS.FLATTEN] = False
         # call to_sentences
-        operator_instance = TypeMatch()
+        operator_instance = SimpleTypeMatch()
         op_ctx            = ContextInstance(data={"τ=": operator_instance})
         ctx_set           = ContextSet(op_ctx)
         results           = trie_sem.query(sen2, trie_struct, ctxs=ctx_set)
@@ -439,7 +462,7 @@ class TrieSemanticTests(unittest.TestCase):
         sen2 = ValueFactory.sen(["a", Sentence(["not", "match"])])
         sen2.data[DS.FLATTEN] = False
         # call to_sentences
-        operator_instance = TypeMatch()
+        operator_instance = SimpleTypeMatch()
         op_ctx            = ContextInstance(data={"τ=": operator_instance})
         ctx_set           = ContextSet(op_ctx)
         results = trie_sem.query(sen2, trie_struct, ctxs=ctx_set)
@@ -464,7 +487,7 @@ class TrieSemanticTests(unittest.TestCase):
         sen2 = ValueFactory.sen(["a", Sentence(["test", AcabValue("y", data={DS.BIND: True})])])
         sen2.data[DS.FLATTEN] = False
         # call to_sentences
-        operator_instance = TypeMatch()
+        operator_instance = SimpleTypeMatch()
         op_ctx            = ContextInstance(data={"τ=": operator_instance})
         ctx_set           = ContextSet(op_ctx)
         results = trie_sem.query(sen2, trie_struct, ctxs=ctx_set)
@@ -614,6 +637,7 @@ class TrieSemanticTests(unittest.TestCase):
         self.assertEqual(len(results), 1)
         self.assertIn("y", results[0])
         self.assertEqual(results[0].y, "sentence")
+
 
 
 

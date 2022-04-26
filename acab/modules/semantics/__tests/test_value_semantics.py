@@ -13,12 +13,12 @@ import acab
 
 config = acab.setup()
 
-from acab.core.data import default_structure as DS
+from acab.core.value import default_structure as DS
 from acab.core.data.acab_struct import BasicNodeStruct
-from acab.core.data.instruction import Instruction
+from acab.core.value.instruction import Instruction
 from acab.core.data.node import AcabNode
-from acab.core.data.sentence import Sentence
-from acab.core.data.value import AcabValue
+from acab.core.value.sentence import Sentence
+from acab.core.value.value import AcabValue
 from acab.error.base import AcabException
 from acab.error.semantic import AcabSemanticException
 from acab.modules.semantics.values import (BasicNodeSemantics,

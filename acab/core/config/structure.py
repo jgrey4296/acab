@@ -17,7 +17,7 @@ logging = logmod.getLogger(__name__)
 
 from acab.core.config.config import AcabConfig
 from acab.error.config import AcabConfigException
-from acab.core.decorators.util import registerOn
+from acab.core.util.decorators.util import registerOn
 
 @registerOn(AcabConfig)
 def check_structure(self):

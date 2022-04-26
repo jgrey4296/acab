@@ -25,14 +25,14 @@ from acab.modules.parsing.exlo.parsers import FactParser as FP
 
 import acab.modules.printing.printers as Printers
 from acab.core.config.config import AcabConfig
-from acab.core.data.default_structure import (AT_BIND, BIND, NEGATION, QUERY,
+from acab.core.value.default_structure import (AT_BIND, BIND, NEGATION, QUERY,
                                               TYPE_INSTANCE)
-from acab.core.data.instruction import (Instruction, ProductionComponent,
+from acab.core.value.instruction import (Instruction, ProductionComponent,
                                         ProductionContainer,
                                         ProductionOperator,
                                         ProductionStructure)
-from acab.core.data.sentence import Sentence
-from acab.core.data.value import AcabValue
+from acab.core.value.sentence import Sentence
+from acab.core.value.value import AcabValue
 from acab.interfaces.handler_system import Handler_i
 from acab.modules.printing import default
 from acab.modules.printing.basic_printer import BasicPrinter

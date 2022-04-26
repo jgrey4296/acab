@@ -83,8 +83,8 @@ def invalidate_cache(f:Callable[..., T]) -> Callable[..., T]:
 def singleton(orig_cls:Any) -> Any:
     """ From:
     https://igeorgiev.eu/python/design-patterns/python-singleton-pattern-decorator/
-    DEPRECATED, use singleton metas instead
     """
+    raise DeprecationWarning("use Singleton meta classes instead")
     orig_new = orig_cls.__new__
     instance = None
 

@@ -21,17 +21,17 @@ from weakref import ref
 
 from acab.error.protocol import AcabProtocolError as APE
 from acab import types as AT
-import acab.core.data.default_structure as DS
+import acab.core.value.default_structure as DS
 from acab.core.config.config import AcabConfig
-from acab.core.data.value import AcabValue
-from acab.core.data.sentence import Sentence
+from acab.core.value.value import AcabValue
+from acab.core.value.sentence import Sentence
 from acab.error.operator import AcabOperatorException
-from acab.core.decorators.util import cache
+from acab.core.util.decorators.util import cache
 import acab.interfaces.value as VI
 from acab.core.util.part_implementations.instruction import InstructionProtocolsImpl
 from acab.core.util.part_implementations.value import ValueProtocolsImpl
-from acab.core.data.factory import ValueFactory as VF
-from acab.core.data.value_meta import ValueMeta
+from acab.core.value.factory import ValueFactory as VF
+from acab.core.value.value_meta import ValueMeta
 
 config = AcabConfig()
 
@@ -63,9 +63,6 @@ class Instruction(InstructionProtocolsImpl, VI.Instruction_i, metaclass=ValueMet
 
     def copy(self, **kwargs) -> Instruction_A:
         return replace(self, uuid=uuid1(), **kwargs)
-
-    def __repr__(self):
-        return "<{}::{}>".format(self.name, str(self.type))
 
     def to_word(self) -> Value_A:
         """ Convert a Statement to just an AcabValue, of it's name """
@@ -126,13 +123,13 @@ class ProductionComponent(Instruction):
             words.append(VF.sen(self.params, name="Params"))
         if self.rebind:
             words.append(self.rebind.copy(name="Rebind"))
-        return VF.sen(words, data=self.data.copy(), name="ProductionComponent")
+        return VF.sen(words, data=self.data.copy(), name=self.__class__.__name__)
 
     @staticmethod
     def from_sentences(sens):
         result = []
         for sen in sens:
-            if sen.name != "ProductionComponent":
+            if sen.name != ProductionComponent.__name__:
                 continue
             if "Operator" not in sen:
                 continue
@@ -171,8 +168,6 @@ class ProductionContainer(Instruction):
     """
     _defaults : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE: DS.CONTAINER_PRIM}
 
-    def __repr__(self):
-        return "<{}::{} ({}) >".format(self.name, str(self.type), len(self))
 
     @cache
     def __len__(self):
@@ -203,7 +198,7 @@ class ProductionContainer(Instruction):
 
         return [VF.sen(words,
                        data=self.data.copy(),
-                       name="ProductionContainer")]
+                       name=self.__class__.__name__)]
 
 
 
@@ -237,7 +232,7 @@ class ProductionStructure(ProductionContainer):
                                              [str(z) for z in self[x].clauses])
                             for x in actual])
 
-        return "(ProductionStructure:{}:{})".format(self.name, clauses)
+        return "<ProductionStructure:{}:{}>".format(self.name, clauses)
 
     @cache
     def __hash__(self):
@@ -279,7 +274,7 @@ class ProductionStructure(ProductionContainer):
 
         return [VF.sen([clauses],
                        data=self.data.copy(),
-                       name="ProductionStructure")]
+                       name=self.__class__.__name__)]
 
 
 @APE.assert_implements(VI.Operator_i, exceptions=["__call__"])

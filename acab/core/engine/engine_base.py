@@ -7,7 +7,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast, TypeAlias)
 
 from acab import types as AT
-from acab.core.decorators.engine import EnsureEngineInitialised
+from acab.core.util.decorators.engine import EnsureEngineInitialised
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces.engine import AcabEngine_i
 from acab.interfaces.printing import PrintSystem_i

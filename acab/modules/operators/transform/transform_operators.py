@@ -3,8 +3,8 @@ Defintions for Core Transform Operators
 """
 from re import sub
 
-from acab.core.data.instruction import ProductionOperator
-from acab.core.decorators.semantic import (OperatorArgUnWrap,
+from acab.core.value.instruction import ProductionOperator
+from acab.core.util.decorators.semantic import (OperatorArgUnWrap,
                                                OperatorDataUnWrap,
                                                OperatorResultWrap,
                                                OperatorSugar)
@@ -14,7 +14,7 @@ class RegexOp(ProductionOperator):
 
     @OperatorArgUnWrap
     @OperatorResultWrap
-    def __call__(self, value, pattern, replacement, data=None):
+    def __call__(self, value, pattern, replacement, *, data=None, ctx=None):
         """ Substitute value pattern with value value from passed in data
         value : the replacement
         pattern: the pattern
@@ -29,7 +29,7 @@ class FormatOp(ProductionOperator):
     @OperatorDataUnWrap
     @OperatorArgUnWrap
     @OperatorResultWrap
-    def __call__(self, value:str, data=None):
+    def __call__(self, value:str, *, data=None, ctx=None):
         """ Use str.format variant with value data dictionary
         Replaces variables in the string with bound values
         """

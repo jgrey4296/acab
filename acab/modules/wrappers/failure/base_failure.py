@@ -28,7 +28,7 @@ wrap an.action with a.timeout then degrade
 
 
 """
-from acab.core.data.value import AcabValue
+from acab.core.value.value import AcabValue
 
 class Failure(AcabValue):
     """ A Description of how a task can fail """

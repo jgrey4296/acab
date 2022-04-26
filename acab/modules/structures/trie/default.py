@@ -11,7 +11,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 import acab.modules.semantics.statements as ASem
 from acab.core.config.config import GET
 from acab.core.data.acab_struct import BasicNodeStruct
-from acab.core.data.sentence import Sentence
+from acab.core.value.sentence import Sentence
 from acab.core.util.part_implementations.handler_system import Handler
 from acab.modules.context import context_delayed_actions
 from acab.modules.context.context_set import ContextSet
@@ -33,20 +33,22 @@ LAYER_SEM_HINT         = Sentence([config.prepare("SEMANTICS", "LAYER")()])
 PIPELINE_SEM_HINT      = Sentence([config.prepare("SEMANTICS", "PIPELINE")()])
 ATOM_HINT              = Sentence([config.prepare("SEMANTICS", "ATOM")()])
 
-def DEFAULT_TRIE_SPEC(name="trie"):
+TRIE_HINT              = Sentence([config.prepare("Module.Structures.Trie.Semantics", "TRIE")()])
+
+def DEFAULT_TRIE_SPEC(name=TRIE_HINT):
     node_spec   = BasicSemanticSystem.Spec(ATOM_HINT).spec_from(SI.ValueSemantics_i)
     trie_spec   = BasicSemanticSystem.Spec(name).spec_from(SI.StructureSemantics_i)
 
     return node_spec, trie_spec
 
-def DEFAULT_TRIE(name="trie"):
+def DEFAULT_TRIE(name=TRIE_HINT):
     node_handler = BasicNodeSemantics(ATOM_HINT).as_handler()
     trie_sem     = FlattenBreadthTrieSemantics(signal=name,
-                                               init_specs=[],
+                                               init_specs=DEFAULT_TRIE_SPEC(),
                                                sieve_fns=[],
                                                init_handlers=[node_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
 
-
+    # Attach a default struct to the semantics
     trie_handler = trie_sem.as_handler(struct=BasicNodeStruct.build_default())
 
     return (node_handler, trie_handler)

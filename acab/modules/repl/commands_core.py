@@ -15,7 +15,7 @@ from acab.error.config import AcabConfigException
 from acab.error.importer import AcabImportException
 from acab.modules.repl.repl_commander import register
 from acab.modules.repl import ReplParser as RP
-from acab.core.data.instruction import ProductionContainer
+from acab.core.value.instruction import ProductionContainer
 from acab.modules.repl.util import init_inspect
 from acab.error.semantic import AcabSemanticException
 

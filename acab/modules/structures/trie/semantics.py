@@ -7,12 +7,12 @@ import acab.interfaces.data as DI
 import acab.error.semantic as ASErr
 from acab.core.config.config import AcabConfig
 from acab.core.data.acab_struct import BasicNodeStruct
-from acab.core.data.instruction import Instruction
-from acab.core.data.sentence import Sentence
+from acab.core.value.instruction import Instruction
+from acab.core.value.sentence import Sentence
 from acab.interfaces.value import Sentence_i
 from acab.modules.context.context_query_manager import ContextQueryManager
 from acab.modules.context.flatten_query_manager import FlattenQueryManager
-from acab.core.data.default_structure import NEGATION, FLATTEN
+from acab.core.value.default_structure import NEGATION, FLATTEN
 from acab.core.semantics import basic
 from acab.error.protocol import AcabProtocolError as APE
 
@@ -47,7 +47,7 @@ class FlattenBreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantic
             data = {}
 
         if NEGATION in sen.data and sen.data[NEGATION]:
-            self._delete(sen, struct, data)
+            self._delete(sen, struct, data=data, ctxs=ctxs)
             return ctxs
 
         logging.debug(f"Inserting: {sen} into {struct}")
@@ -66,26 +66,21 @@ class FlattenBreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantic
 
         return current
 
-    def _delete(self, sen, struct, data=None):
+    def _delete(self, sen, struct, *, data=None, ctxs=None):
         logging.debug(f"Removing: {sen} from {struct}")
-        parent  = struct.root
-        current = struct.root
 
-        for word in sen:
-            # Get independent semantics for current
-            spec = self.lookup(current)
-            accessed = spec[0].access(current, word, data=data)
+        pos_sen = sen.copy(data={NEGATION:False})
+        results = self.query(pos_sen, struct, data=data, ctxs=ctxs)
 
-            if bool(accessed):
-                parent = current
-                current = accessed[0]
-            else:
-                return None
-
-        # At leaf:
-        # remove current from parent
-        spec = self.lookup(parent)
-        spec[0].remove(parent, current.value, data=data)
+        for ctx in results:
+            assert(ctx._current is not None)
+            assert(ctx._current.parent is not None)
+            # At leaf:
+            # remove current from parent
+            current  = ctx._current
+            parent   = current.parent()
+            spec     = self.lookup(parent)
+            spec[0].remove(parent, current.value, data=data)
 
     def query(self, sen, struct, *, data=None, ctxs=None):
         """ Breadth First Search Query """
@@ -115,7 +110,7 @@ class FlattenBreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantic
 
         return ctxs
 
-    def to_sentences(self, struct, data=None, ctxs=None):
+    def to_sentences(self, struct, *, data=None, ctxs=None):
         """ Convert a trie to a list of sentences
         essentially a dfs of the structure,
         ensuring only leaves are complex structures.
@@ -125,7 +120,18 @@ class FlattenBreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantic
         # TODO if passed a node, use that in place of root
         result_list = []
         # Queue: list[Tuple[list[Value], Node]]
-        queue = [([], struct.root)]
+
+        match struct:
+            case DI.Structure_i():
+                root = struct.root
+            case DI.Node_i():
+                root = struct.Root()
+                root.add(struct)
+            case _:
+                raise TypeError("Unknown struct passed in")
+
+        # TODO add depth limit
+        queue = [([], root)]
         while bool(queue):
             path, current = queue.pop(0)
             updated_path  = path + [current.value]

@@ -13,8 +13,8 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, Type, TypeVar, Union, cast)
 
 from acab.core.config.config import AcabConfig
-from acab.core.data.instruction import ProductionContainer, ProductionOperator
-from acab.core.decorators.engine import (EnsureEngineInitialised,
+from acab.core.value.instruction import ProductionContainer, ProductionOperator
+from acab.core.util.decorators.engine import (EnsureEngineInitialised,
                                          MaybeBuildOperatorCtx)
 from acab.core.engine.engine_base import AcabEngineImpl
 from acab.core.engine.module_loader import ModuleLoader

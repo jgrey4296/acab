@@ -6,7 +6,7 @@ logging = logmod.getLogger(__name__)
 import acab
 config = acab.setup()
 
-from acab.core.data.value import AcabValue
+from acab.core.value.value import AcabValue
 from acab.modules.context.context_set import ContextSet, ContextInstance
 from acab.error.context import AcabContextException
 

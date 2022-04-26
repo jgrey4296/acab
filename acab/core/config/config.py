@@ -69,7 +69,7 @@ class ConfigSpec(ConfigSpec_d):
         config = AcabConfig() #type:ignore
         return config(self)
 
-class ConfigSingleton(type(Protocol)):
+class ConfigSingletonMeta(type(Protocol)):
     """
     A Subclass of Protocol's meta class,
     so singletons can be explicit protocol implementers
@@ -77,7 +77,7 @@ class ConfigSingleton(type(Protocol)):
     _instance : ClassVar[Config_i]
 
     def __init__(cls, name:str, bases:tuple[type, ...], data:dict[str,Any]):
-        super(ConfigSingleton, cls).__init__(name, bases, data) #type:ignore
+        super(ConfigSingletonMeta, cls).__init__(name, bases, data) #type:ignore
 
 
     def __call__(cls, *paths:str, hooks:None|list[Callable[..., Any]]=None) -> Config_i:
@@ -87,21 +87,21 @@ class ConfigSingleton(type(Protocol)):
         paths  = paths or tuple()
         _hooks = set(hooks or [])
 
-        if not hasattr(ConfigSingleton, "_instance") or ConfigSingleton._instance is None:
+        if not hasattr(ConfigSingletonMeta, "_instance") or ConfigSingletonMeta._instance is None:
             logging.info(f"Building {cls.__module__}.{cls.__qualname__} Singleton")
-            ConfigSingleton._instance : Config_i = super().__call__(paths, _hooks)
+            ConfigSingletonMeta._instance : Config_i = super().__call__(paths, _hooks)
         elif bool(hooks) or bool(paths):
             logging.info(f"Updating Hooks and Read List of {cls.__module__}.{cls.__qualname__}") #type:ignore
-            ConfigSingleton._instance.hooks.update(_hooks) #type:ignore
-            ConfigSingleton._instance.read(list(paths)) #type:ignore
+            ConfigSingletonMeta._instance.hooks.update(_hooks) #type:ignore
+            ConfigSingletonMeta._instance.read(list(paths)) #type:ignore
 
-        return ConfigSingleton._instance
+        return ConfigSingletonMeta._instance
 
 
 
 @APE.assert_implements(Config_i)
 @dataclass
-class AcabConfig(Config_i, metaclass=ConfigSingleton):
+class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
     """ A Singleton class for the active configuration
     Uses ${SectionName:Key} interpolation in values,
     Turns multi-line values into lists

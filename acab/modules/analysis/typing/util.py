@@ -7,8 +7,8 @@ from uuid import uuid1
 import pyparsing as pp
 from acab import types as AT
 from acab.core.config.config import AcabConfig
-from acab.core.data.sentence import Sentence
-from acab.core.data.value import AcabValue
+from acab.core.value.sentence import Sentence
+from acab.core.value.value import AcabValue
 from acab.core.parsing.consts import s, s_key
 from acab.modules.context.context_instance import ContextInstance, MutableContextInstance
 from . import exceptions as TE

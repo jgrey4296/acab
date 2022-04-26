@@ -10,12 +10,12 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 logging = logmod.getLogger(__name__)
 
 from acab import types as AT
-from acab.core.data.default_structure import TYPE_INSTANCE
-from acab.core.data import default_structure as DS
-from acab.core.data.instruction import Instruction
-from acab.core.data.sentence import Sentence
-from acab.core.data.value import AcabValue
-from acab.core.decorators.util import factory
+from acab.core.value.default_structure import TYPE_INSTANCE
+from acab.core.value import default_structure as DS
+from acab.core.value.instruction import Instruction
+from acab.core.value.sentence import Sentence
+from acab.core.value.value import AcabValue
+from acab.core.util.decorators.util import factory
 from acab.error.semantic import AcabSemanticException
 from acab.modules.context.context_instance import (ContextInstance,
                                                    MutableContextInstance)

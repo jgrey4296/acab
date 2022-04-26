@@ -23,12 +23,12 @@ import acab.modules.parsing.exlo.parsers.RuleParser as RP
 import acab.modules.parsing.exlo.parsers.TransformParser as TP
 import acab.modules.printing.printers as Printers
 from acab.core.config.config import AcabConfig
-from acab.core.data import default_structure as DS
-from acab.core.data.instruction import (Instruction, ProductionComponent,
+from acab.core.value import default_structure as DS
+from acab.core.value.instruction import (Instruction, ProductionComponent,
                                         ProductionContainer,
                                         ProductionOperator)
-from acab.core.data.sentence import Sentence
-from acab.core.data.value import AcabValue
+from acab.core.value.sentence import Sentence
+from acab.core.value.value import AcabValue
 from acab.interfaces.handler_system import Handler_i
 from acab.modules.printing import default
 from acab.modules.printing.basic_printer import BasicPrinter

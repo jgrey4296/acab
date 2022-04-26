@@ -6,7 +6,7 @@ import pyparsing as pp
 import pyparsing.core as ppc
 import logging as logmod
 from acab.core.parsing.parse_debug_log_formatter import AcabParseDebugFormat
-from acab.core.parsing.parse_debug_log_formatter import SimpleColour as SC
+from acab.core.util.log_formatter import SimpleLogColour as SC
 logging = logmod.getLogger(__name__)
 logging.addHandler(AcabParseDebugFormat.scaffold())
 logging.propagate = False
@@ -41,30 +41,28 @@ def debug_pyparsing(*flags, all_warnings=False):
 
 
 def debug_start_action(instring, loc, expr, *args):
-    context = SC.yellow(instring[loc-5:loc]) + MARK + SC.yellow(instring[loc:loc+5])
-    context = context.replace("\n", "\\n")
-    logging.warning("%s <%s> at %s:  \"%s\"", MATCHING, SC.blue(expr.name), loc, context)
+    context = _calc_mark_string(instring, loc)
+    logging.warning("{ctx[0]:>10&yellow}{ctx[1]:3&red}{ctx[2]:<10&yellow} {} <{}> at {}:  ", MATCHING, SC.blue(expr.name), loc, extra={'ctx':context})
 
 def debug_success_action(instring, startloc, endloc, expr, toks, *args):
-    context = SC.yellow(instring[endloc-5:endloc]) + MARK + SC.yellow(instring[endloc:endloc+5])
-    context = context.replace("\n", "\\n")
-    logging.warning("\t%s <%s> (%s) %s -> %s", MATCHED, SC.green(expr.name), str(toks), endloc, context)
+    context = _calc_mark_string(instring, endloc)
+    logging.warning("{ctx[0]:>10&yellow}{ctx[1]:3&red}{ctx[2]:<10&yellow}\t {} <{}> ({}) {}", MATCHED, SC.green(expr.name), str(toks), endloc, extra={'ctx':context})
 
 def debug_fail_action(instring, loc, expr, exc, *args):
     if isinstance(exc, pp.ParseBaseException):
         found_str = exc.pstr[exc.loc:exc.loc + 1].replace(r'\\', '\\').replace("\n", "\\n")
-        mark_str  = (SC.yellow(instring[min(0, exc.loc-10):exc.loc-1]) + MARK + SC.yellow(instring[exc.loc:max(len(instring), exc.loc+10)])).replace("\n", "\\n")
+        mark_str  = _calc_mark_string(instring, exc.loc)
         msg       = exc.msg
         loc       = exc.loc
     else:
         found_str = "AssertionError"
-        mark_str  = ""
+        mark_str  = ("", "", "")
         msg       = ""
         loc       = ""
 
-    logging.error("\t\t%s <%s>: %s found '%s' at %s:  \"'%s\"",
+    logging.error("{ctx[0]:>10&yellow}{ctx[1]:3&red}{ctx[2]:>10&yellow}\t\t {} <{}>: {} found '{}' at {}",
                   FAILED, SC.red(expr.name), SC.yellow(msg), SC.red(found_str),
-                  loc, mark_str)
+                  loc, extra={'ctx':mark_str})
 
 
 def dfs_activate(*parsers, remove=False):
@@ -89,3 +87,10 @@ def dfs_activate(*parsers, remove=False):
             queue.append(current.expr)
         elif hasattr(current, 'exprs'):
             queue += current.exprs
+
+
+def _calc_mark_string(instring, loc, buffer=10):
+    str_len  = len(instring)
+    pre_str  = instring[max(0, loc-buffer):max(0, min(str_len, loc)-1)]
+    post_str = instring[loc:min(str_len, loc+buffer)]
+    return pre_str.replace("\n", "\\n"), MARK, post_str.replace("\n", "\\n")

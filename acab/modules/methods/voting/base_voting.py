@@ -15,7 +15,7 @@ Segregation
 Suppression
 
 """
-from acab.core.data.value import AcabValue
+from acab.core.value.value import AcabValue
 
 class VotingBase(AcabValue):
     """ Base Description for Voting """

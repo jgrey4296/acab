@@ -11,14 +11,15 @@ if '@pytest_ar' in globals():
     from acab.core.parsing import debug_funcs as DBF
     DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
-from acab.core.data.value import AcabValue
-from acab.core.data.sentence import Sentence
-from acab.core.data.instruction import ProductionOperator, ProductionComponent, ProductionContainer, ProductionStructure
+from acab.core.value.value import AcabValue
+from acab.core.value.sentence import Sentence
+from acab.core.value.instruction import ProductionOperator, ProductionComponent, ProductionContainer, ProductionStructure
+from acab.core.parsing import parsers as PU
 from acab.modules.parsing.exlo.parsers import ActionParser as AP
 from acab.modules.parsing.exlo.parsers import FactParser as FP
 from acab.modules.parsing.exlo.parsers import RuleParser as RP
 from acab.modules.parsing.exlo.parsers import QueryParser as QP
-from acab.core.data.default_structure import QUERY_COMPONENT, TRANSFORM_COMPONENT, ACTION_COMPONENT
+from acab.core.value.default_structure import QUERY_COMPONENT, TRANSFORM_COMPONENT, ACTION_COMPONENT
 
 QUERY_V     = QUERY_COMPONENT
 TRANSFORM_V = TRANSFORM_COMPONENT
@@ -36,6 +37,14 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
         console.setLevel(logmod.INFO)
         logmod.getLogger('').addHandler(console)
         logging = logmod.getLogger(__name__)
+
+        AP.HOTLOAD_OPERATORS << PU.OPERATOR_SUGAR
+        QP.HOTLOAD_QUERY_OP  << PU.OPERATOR_SUGAR
+
+    @classmethod
+    def tearDownClass(cls):
+        AP.HOTLOAD_OPERATORS << pp.Empty()
+        QP.HOTLOAD_QUERY_OP  << pp.Empty()
 
 
     def setUp(self):

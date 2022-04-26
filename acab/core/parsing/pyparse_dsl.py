@@ -18,7 +18,7 @@ logging = logmod.getLogger(__name__)
 import acab.interfaces.dsl as dsl
 from acab import GET
 from acab import types as AT
-from acab.core.decorators.dsl import EnsureDSLInitialised
+from acab.core.util.decorators.dsl import EnsureDSLInitialised
 from acab.core.parsing import dsl_builder as DSLImpl
 from acab.core.parsing.funcs import clear_parser_names, deep_update_names
 from acab.core.util.part_implementations import handler_system as HS

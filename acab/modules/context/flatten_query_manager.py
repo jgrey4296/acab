@@ -14,7 +14,7 @@ from uuid import UUID, uuid1
 import acab.error.semantic as ASErr
 import acab.interfaces.context as CtxInt
 from acab.core.config.config import GET
-from acab.core.data.instruction import ProductionComponent, ProductionContainer
+from acab.core.value.instruction import ProductionComponent, ProductionContainer
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces.value import Sentence_i
 from acab.modules.context.constraints import ConstraintCollection
@@ -123,6 +123,7 @@ class FlattenQueryManager:
         active_ctxs = self.ctxs.active_list(clear=True)
         for ctx in active_ctxs:
             self._current_inst = ctx
+            # TODO use bind
             bound_word = ctx[self._current_constraint.source]
 
             # TODO Handle sentence.

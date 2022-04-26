@@ -15,7 +15,7 @@ import pyparsing as pp
 
 config = acab.GET()
 
-from acab.core.data.instruction import (ProductionOperator,
+from acab.core.value.instruction import (ProductionOperator,
                                         ProductionStructure)
 from acab.interfaces.value import Instruction_i
 from acab.interfaces.context import ContextSet_i

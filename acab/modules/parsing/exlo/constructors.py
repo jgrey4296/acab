@@ -3,12 +3,12 @@ Constructors for converting parse results -> Acab data
 """
 from acab.core.config.config import GET
 import acab.interfaces.value as VI
-from acab.core.data.default_structure import SEMANTIC_HINT
-from acab.core.data.instruction import (ProductionComponent,
+from acab.core.value.default_structure import SEMANTIC_HINT
+from acab.core.value.instruction import (ProductionComponent,
                                         ProductionContainer,
                                         ProductionStructure)
-from acab.core.data.sentence import Sentence
-from acab.core.data import default_structure as DS
+from acab.core.value.sentence import Sentence
+from acab.core.value import default_structure as DS
 from acab.core.parsing import default_keys as PDS
 from acab.modules.parsing.exlo import util as EXu
 from acab.core.parsing.annotation import ValueAnnotation, ValueRepeatAnnotation
@@ -30,6 +30,7 @@ def build_query_component(s, loc, toks):
 
     assert(isinstance(op, VI.Sentence_i)), type(op)
     assert(all([isinstance(x, VI.Value_i) for x in params]))
+    assert(DS.OPERATOR in op.data)
     return ValueRepeatAnnotation(DS.CONSTRAINT,
                                  ProductionComponent(op, params=params))
 
@@ -49,6 +50,7 @@ def build_transform_component(s, loc, toks):
     assert(isinstance(op, VI.Sentence_i))
     assert(all([isinstance(x, VI.Value_i) for x in params]))
     assert(isinstance(rebind, VI.Value_i))
+    assert(DS.OPERATOR in op.data)
     return ProductionComponent(op,
                                params=params,
                                rebind=rebind,
@@ -67,6 +69,7 @@ def build_action_component(s, loc, toks):
 
     assert(isinstance(op, VI.Sentence_i))
     assert(all([isinstance(x, VI.Value_i) for x in params]))
+    assert(DS.OPERATOR in op.data)
     return ProductionComponent(op,
                                params=params,
                                sugared=EXu.LEFT_S in toks)
@@ -95,7 +98,7 @@ def build_action(s, loc, toks):
     clauses = toks[0][:]
     clauses = [x if (isinstance(x, ProductionComponent) or
                      isinstance(x, Sentence) and SEM_HINT in x.data)
-               else ProductionComponent(Sentence([EXu.DEFAULT_ACTION_S]),
+               else ProductionComponent(Sentence([EXu.DEFAULT_ACTION_S], data={DS.OPERATOR: True}),
                                         params=[x]) for x in clauses]
 
     act = ProductionContainer(clauses,

@@ -34,7 +34,7 @@ logging = logmod.getLogger(__name__)
 
 import acab.interfaces.handler_system as HS
 from acab import types as AT
-from acab.core.data.default_structure import QUERY
+from acab.core.value.default_structure import QUERY
 from acab.error.printing import AcabPrintException
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces.protocols.value import AcabReducible_p
@@ -103,10 +103,6 @@ class StructureSemantics(HSImpl.HandlerSystem, HSImpl.HandlerComponent, SI.Struc
     Dependent Semantics rely on the context they are called in to function
     and are built with specific mappings to value semantics
     """
-
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}>"
-
     def __call__(self, sen:Sen_A, struct:Struct_A, *, ctxs:None|CtxSet=None, data:None|dict[str,Any]=None) -> None|CtxSet:
         assert(isinstance(sen, Sentence_i))
         # TODO move query annotation to sentence, not the last word
@@ -123,9 +119,6 @@ class ValueSemantics(HSImpl.HandlerComponent, SI.ValueSemantics_i):
     requiring access to larger context, or engine access
     """
 
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}>"
-
     def down(self, node:Node, *, data:None|dict[str,Any]=None) -> Value:
         return node.value
 
@@ -138,6 +131,4 @@ class StatementSemantics(HSImpl.HandlerComponent, SI.StatementSemantics_i):
     AbsSems use the total semantic system to call other AbSems, or
     DepSems
     """
-
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}>"
+    pass

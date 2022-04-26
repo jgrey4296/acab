@@ -9,11 +9,11 @@ import random
 import acab
 acab.setup()
 
-from acab.core.data.value import AcabValue
-from acab.core.data.sentence import Sentence
+from acab.core.value.value import AcabValue
+from acab.core.value.sentence import Sentence
 from acab.core.containers import action
 from acab.core.containers import transform
-from acab.core.data.instruction import ProductionComponent, ProductionContainer
+from acab.core.value.instruction import ProductionComponent, ProductionContainer
 
 from acab.modules.values import numbers
 from acab.modules.values.numbers.parsing import NumberParser as NP

@@ -12,7 +12,7 @@ from acab import setup
 config = setup()
 
 from acab.interfaces import value as VI
-from acab.core.data.value import AcabValue
+from acab.core.value.value import AcabValue
 
 from ... import exceptions as TE
 from .. import unifier as unify
@@ -21,7 +21,7 @@ from .. import util
 
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
-from acab.modules.analysis.typing.dsl import TypingDSL
+from acab.modules.analysis.typing.module import TypingDSL
 from acab.modules.context.context_set import ContextInstance as CtxIns
 
 dsl = None

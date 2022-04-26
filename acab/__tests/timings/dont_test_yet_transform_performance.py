@@ -15,8 +15,8 @@ import acab
 
 acab.setup()
 
-from acab.core.data.value import AcabValue as PV
-from acab.core.data.sentence import Sentence
+from acab.core.value.value import AcabValue as PV
+from acab.core.value.sentence import Sentence
 from acab.core.engine.engine import Engine
 from acab.modules.parsing.exlo import FactParser as FP
 from acab.modules.parsing.exlo import TransformParser as TP
