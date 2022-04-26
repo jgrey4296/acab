@@ -13,7 +13,7 @@ from acab.error.semantic import AcabSemanticException
 from acab.core.value import default_structure as DS
 from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue
-from acab.interfaces.value import Value_i
+from acab.interfaces.value import Value_i, Sentence_i
 
 # TODO make this a handler system, or part of semantics?
 
@@ -22,6 +22,14 @@ def bind(val, bindings, semSys=None):
     Passed in a `val`, return it unchanged if its not a variable,
     if it is a variable, return the value it maps to
     """
+    result = __bind(val, bindings, semSys)
+
+    if isinstance(result, Sentence_i):
+        result = result.flatten()
+
+    return result
+
+def __bind(val, bindings, semSys=None):
     if not isinstance(bindings, list):
         bindings = [bindings]
 
@@ -49,18 +57,18 @@ def bind(val, bindings, semSys=None):
     if DS.OPERATOR in val.data:
         return result
 
-    # Run bind transforms here
+    # Run top level bind transforms here
     data_to_apply = val.data.copy()
     data_to_apply.update({DS.BIND: False})
     # TODO may need to remove type if its atom too
     result = result.copy(data=data_to_apply)
-
     # Bind parameters
     if any([x.is_var for x in result.params]):
-        bound_params = [bind(x, bindings) for x in result.params]
+        bound_params = [__bind(x, bindings) for x in result.params]
         result       = result.copy(params=bound_params)
 
     return result
+
 
 def bind_val(val:AT.Value, bindings:AT.CtxIns) -> AT.Value:
     """ Data needs to be able to bind a dictionary
@@ -100,9 +108,9 @@ def sen_bind(val:AT.Sentence, bindings:AT.CtxIns) -> AT.Sentence:
                 continue
             case _ if word.is_at_var:
                 assert(i == 0)
-                output.append(bind(word, bindings))
+                output.append(__bind(word, bindings))
             case _:
-                output.append(bind(word, bindings))
+                output.append(__bind(word, bindings))
 
     return Sentence(output,
                     data=val.data,
