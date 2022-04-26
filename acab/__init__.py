@@ -17,7 +17,7 @@ from acab.core.util.log_formatter import AcabLogFormatter, AcabLogRecord
 
 logging = logmod.getLogger(__name__)
 
-__all__ = ['types', 'setup', 'GET']
+__all__ = ['types', 'setup', 'GET', 'AcabLogFormatter', 'AcabLogRecord']
 
 _Value_A : TypeAlias = types.Value
 _Sen_A   : TypeAlias = types.Sentence
@@ -48,18 +48,13 @@ def setup(location:str=None,
 
     from os.path import join, split
 
-    if format_logs:
-        root_logger = logmod.getLogger()
-        stream_handler = [x for x in root_logger.handlers if isinstance(x, logmod.StreamHandler)]
-        if bool(stream_handler):
-            stream_handler[0].setFormatter(AcabLogFormatter())
-
-    if logmod.getLogRecordFactory is not AcabLogRecord:
-        AcabLogRecord.install()
-
     import acab.core.config.structure
     from acab.core.config.config import AcabConfig
     from acab.core.config.modal import modal_config
+    if format_logs:
+        from acab.core.config.log_config import log_config
+    else:
+        log_config = lambda x: x
 
     if location is None or not bool(location):
         base     = split(__file__)[0]
@@ -67,7 +62,7 @@ def setup(location:str=None,
     elif not isinstance(location, list):
         location = [location]
 
-    config = AcabConfig(*location, hooks=[modal_config])
+    config = AcabConfig(*location, hooks=[modal_config, log_config])
 
 
     if not rich_exc:
