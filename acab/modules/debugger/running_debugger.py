@@ -9,8 +9,9 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 logging = logmod.getLogger(__name__)
 trace_logger = logmod.getLogger('acab.repl.trace')
 
-from acab.core.decorators.util import singleton
+from acab.core.util.decorators.util import singleton
 from acab.interfaces.debugger import AcabDebugger_i
+from acab.core.util.singletons import SingletonMeta
 
 # TODO track semantic debugging in RunningDebugger
 # TODO refactor this to be a handler registration
@@ -39,8 +40,7 @@ def SemanticBreakpointDecorator(f):
     wrapped.__name__ = f.__name__
     return wrapped
 
-@singleton
-class RunningDebugger(AcabDebugger_i):
+class RunningDebugger(AcabDebugger_i, metaclass=SingletonMeta):
 
 
     def precmd(self, line):

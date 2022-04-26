@@ -14,7 +14,7 @@ from uuid import UUID, uuid1
 import acab.interfaces.context as CtxInt
 import acab.interfaces.value as VI
 from acab.core.config.config import GET
-from acab.core.data.instruction import ProductionComponent, ProductionContainer
+from acab.core.value.instruction import ProductionComponent, ProductionContainer
 from acab.core.util.delayed_commands import DelayedCommands_i
 from acab.error.context import AcabContextException
 from acab.interfaces.value import Sentence_i
@@ -75,16 +75,23 @@ class ContextInstance(CtxInt.ContextInstance_i):
         return str(key) in self.data
 
     def __getitem__(self, value: Value):
-        if self.exact and value not in self:
-            raise AcabContextException("Not Found in Context", context=value)
-
+        # TODO maybe handle AT_BINDs
         key = str(value)
-        if isinstance(value, VI.Sentence_i) and value.is_var:
-            key = value[0].key()
-        elif isinstance(value, VI.Sentence_i):
-            key = str(value)
-        elif isinstance(value, VI.Value_i):
-            key = value.key()
+        match value:
+            case VI.Sentence_i() if value[0].is_at_var:
+                logging.warning("Tried to ctxinst.__getitem__ an @var")
+                key = value.key()
+            case VI.Value_i() if value.is_at_var:
+                logging.warning("Tried to ctxinst.__getitem__ an @var")
+                key = value.key()
+            case VI.Sentence_i() if value.is_var:
+                key = value[0].key()
+            case VI.Sentence_i():
+                key = str(value)
+            case VI.Value_i():
+                key = value.key()
+            case _, self.exact:
+                raise AcabContextException("Not Found in Context", context=value)
 
         if key in self.data:
             return self.data[key]
@@ -129,6 +136,10 @@ class ContextInstance(CtxInt.ContextInstance_i):
         return copied
 
     def bind(self, word, nodes, sub_binds=None) -> list[CtxIns]:
+        """
+        create a binding between word and the nodes provided, generating len(nodes)
+        new ctxInstances
+        """
         if sub_binds is None:
             sub_binds = []
         # Make len(nodes) new ctxins for the new bindings
@@ -160,6 +171,9 @@ class ContextInstance(CtxInt.ContextInstance_i):
         return [x[0] for x in extensions]
 
     def bind_dict(self, val_binds:dict[str, Any]=None, node_binds:dict[str,Node]=None) -> CtxIns:
+        """
+        bind multiple values simulatenously, creating a single new ctxInstance
+        """
         data_copy = self.data.copy()
         nodes_copy = self.nodes.copy()
 

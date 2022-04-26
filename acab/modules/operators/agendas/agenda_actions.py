@@ -41,7 +41,7 @@
    loop:
        run layer $layer
 """
-from acab.core.data.instruction import ProductionOperator, ProductionStructure
+from acab.core.value.instruction import ProductionOperator, ProductionStructure
 
 # TODO do these need a wrapping decorator?
 class AgendaSelect(ProductionOperator):

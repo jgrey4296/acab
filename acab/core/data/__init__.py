@@ -1,11 +1,9 @@
 """
 acab.core.data
 
-Provides the fundamental units of ACAB:
-Values, Sentences
-Nodes + semantics
-Structures + semantics
-Query Contexts
+Provdes the core means of storing values in structures.
+Node
+AcabStruct
 
 
 """

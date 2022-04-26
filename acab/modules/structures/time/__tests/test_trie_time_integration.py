@@ -5,7 +5,7 @@ logging = logmod.getLogger(__name__)
 import acab
 acab.setup()
 
-from acab.core.data.sentence import Sentence
+from acab.core.value.sentence import Sentence
 from acab.core.parsing import parsers as PU
 from acab.modules.structures.time import util as TU
 from acab.modules.structures.time.parsing import parser as tp

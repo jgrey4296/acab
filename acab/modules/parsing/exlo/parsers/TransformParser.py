@@ -37,7 +37,7 @@ transform_core = (N(OPERATOR_S, op_sentence)
                   + N(TARGET_S, rebind))
 
 transform_sugar = (NG(LEFT_S, SENTENCE)
-                   + N(OPERATOR_S, HOTLOAD_TRANS_OP)
+                   + NG(OPERATOR_S, HOTLOAD_TRANS_OP)
                    + vals
                    + N(TARGET_S, rebind))
 

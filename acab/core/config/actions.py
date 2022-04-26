@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     pass
 
 from acab import types as AT
-from acab.core.decorators.util import mapToEnum
+from acab.core.util.decorators.util import mapToEnum
 
 
 class ConfigActions(Enum):

@@ -102,7 +102,7 @@ AT_BIND          = s_lit(DSYM.AT_BIND)
 QUERY            = s_lit(DSYM.QUERY)
 TAG              = s_lit(DSYM.TAG)
 
-NEGATION         = pp.Literal(DSYM.NEGATION)
+NEGATION         = pp.Literal(DSYM.NEGATION)(DS.NEGATION)
 
 gap              = emptyLine #.set_fail_action(gap_fail_action)
 component_gap    = s(orm(emptyLine))

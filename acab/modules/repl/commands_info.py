@@ -20,7 +20,7 @@ from acab import types as AT
 
 config = acab.GET()
 
-from acab.core.data.instruction import ProductionOperator, ProductionStructure
+from acab.core.value.instruction import ProductionOperator, ProductionStructure
 from acab.core.parsing import debug_funcs as DBF
 from acab.modules.repl import ReplParser as RP
 from acab.modules.repl.repl_commander import register

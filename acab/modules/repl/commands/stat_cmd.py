@@ -8,6 +8,7 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     Iterable, Iterator, Mapping, Match, MutableMapping,
                     Protocol, Sequence, Tuple, TypeAlias, TypeGuard, TypeVar,
                     cast, final, overload, runtime_checkable)
+from collections import defaultdict
 import pyparsing as pp
 
 logging = logmod.getLogger(__name__)
@@ -22,6 +23,10 @@ from acab.modules.repl.repl_commander import register_class
 
 @register_class("stat")
 class StatCmd:
+    """
+    Print Stats about the self._cmd.
+    ie: Modules/Operators/Pipelines/Layers/Rules....
+    """
 
     def __init__(self):
         self._parser = self._gen_parser()
@@ -41,17 +46,13 @@ class StatCmd:
         return stats_parser
 
     def __call__(self, line):
-        raise NotImplementedError()
+        self.do_stat(line)
 
     def do_stat(self, line):
-        """
-        Print Stats about the self._cmd.
-        ie: Modules/Operators/Pipelines/Layers/Rules....
-        """
         logging.info(f"Getting Stats: {line}")
         params                       = self._parser.parse_string(line)
         allow_all : bool             = not bool(params)
-        modules   : ModuleComponents = self._cmd.state.engine._module_loader.loaded_modules.values()
+        self.modules   : ModuleComponents = self._cmd.state.engine._module_loader.loaded_modules.values()
         # modules
         if allow_all or "module" in params:
             self.pr_modules(params)
@@ -69,14 +70,14 @@ class StatCmd:
         print("\n--------------------")
         print("MODULES: ")
         print("--------------------")
-        mod_target = modules
+        mod_target = self.modules
         if 'mod_target' in params:
-            mod_target = [x for x in modules if x.source in params['mod_target']]
+            mod_target = [x for x in self.modules if x.source in params['mod_target']]
 
         for mod in mod_target:
             print("\t{}".format(mod))
         print("--")
-        print("Loaded Modules: {}".format(len(modules)))
+        print("Loaded Modules: {}".format(len(self.modules)))
 
 
     def pr_semantics(self, params):
@@ -88,10 +89,10 @@ class StatCmd:
         print("\n", semantic.__doc__, "\n")
         print(f"{repr(semantic)}\n")
         print("Handlers: {}".format(len(semantic.handler_specs)))
-        print("\t{}".format("\n\t".join([str(x) for x in semantic.handler_specs.values()])))
+        print("\t{}".format("\n\t".join(sorted([str(x) for x in semantic.handler_specs.values()]))))
 
         print("----------")
-        mods_with_semantics = [x for x in modules if len(x.semantics) > 0]
+        mods_with_semantics = [x for x in self.modules if len(x.semantics) > 0]
         if bool(mods_with_semantics):
             print("Module Semantics: ")
             count = defaultdict(lambda: 0)
@@ -105,7 +106,7 @@ class StatCmd:
         print("OPERATORS: ")
         print("--------------------")
         count = 0
-        for mod in modules:
+        for mod in self.modules:
             count += len(mod.operators)
             for op in mod.operators:
                 print("\t", self._cmd.state.engine.pprint(target=[op]))
@@ -124,10 +125,10 @@ class StatCmd:
         print("\n", printer.__doc__, "\n")
         print(f"{repr(printer)}\n")
         print("Handlers: {}".format(len(printer.handler_specs)))
-        print("\t{}".format("\n\t".join([str(x) for x in printer.handler_specs.values()])))
+        print("\t{}".format("\n\t".join(sorted([str(x) for x in printer.handler_specs.values()]))))
 
         print("----------")
-        mods_with_printers = [x for x in modules if len(x.printers) > 0]
+        mods_with_printers = [x for x in self.modules if len(x.printers) > 0]
         if bool(mods_with_printers):
             print("Module Printers: ")
             count = defaultdict(lambda: 0)

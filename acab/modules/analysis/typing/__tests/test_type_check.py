@@ -9,13 +9,13 @@ from acab import setup
 config = setup()
 
 from acab.core.data.acab_struct import AcabNode
-from acab.core.data.default_structure import BIND
-from acab.core.data.value import AcabValue
-from acab.core.data.instruction import Instruction
-from acab.core.data.sentence import Sentence
+from acab.core.value.default_structure import BIND
+from acab.core.value.value import AcabValue
+from acab.core.value.instruction import Instruction
+from acab.core.value.sentence import Sentence
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.modules.analysis.typing import exceptions as TE
-from acab.modules.analysis.typing.dsl import TypingDSL
+from acab.modules.analysis.typing.module import TypingDSL
 from acab.modules.analysis.typing.unify import unifier
 from acab.modules.context.context_set import ContextInstance as CtxIns
 from acab.modules.context.context_instance import MutableContextInstance
@@ -100,7 +100,6 @@ class TypeCheckTests(unittest.TestCase):
         unified = tuf.type_unify(chopped, appended[0], CtxIns())
         result  = tuf.type_unify.apply(chopped, unified)
         self.assertEqual(result[-1].type, "_:test")
-
 
     def test_operator_typing(self):
         transform = dsl("transform(::χ):\n λa.b.c $x(::first) $y(::second) -> $z(::first)\nend")[0][0]

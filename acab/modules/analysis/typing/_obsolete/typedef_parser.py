@@ -10,8 +10,8 @@ acab.setup()
 import acab.modules.analysis.typing.parsing.TypeDefParser as TD
 import acab.modules.analysis.typing.parsing.TypeParser as TP
 
-from acab.core.data.value import AcabValue
-from acab.core.data.sentence import Sentence
+from acab.core.value.value import AcabValue
+from acab.core.value.sentence import Sentence
 from acab.core.data.node import AcabNode
 from acab.core.parsing import parsers as PU
 

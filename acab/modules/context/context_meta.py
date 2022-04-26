@@ -18,12 +18,12 @@ from weakref import ref
 
 logging = logmod.getLogger(__name__)
 
-import acab.core.data.default_structure as DS
+import acab.core.value.default_structure as DS
 import acab.interfaces.value as VI
 from acab import types as AT
 from acab.core.config.config import AcabConfig
-from acab.core.data.util import name_sieve_fns
-from acab.core.decorators.util import cache
+from acab.core.value.util import name_sieve_fns
+from acab.core.util.decorators.util import cache
 from acab.core.util.singletons import SingletonMeta
 from acab.error.base import AcabBasicException
 from acab.interfaces import context as CtxInt

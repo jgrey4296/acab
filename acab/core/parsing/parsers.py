@@ -7,8 +7,8 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 import pyparsing as pp
 from acab import types as AT
 from acab.core.config.config import AcabConfig
-from acab.core.data import default_structure as CDS
-from acab.core.data.sentence import Sentence
+from acab.core.value import default_structure as CDS
+from acab.core.value.sentence import Sentence
 from acab.core.parsing import consts as PConst
 from acab.core.parsing import default_keys as PDS
 from acab.core.parsing import default_symbols as PDSYM
@@ -46,7 +46,7 @@ def DELIMIST(expr, delim=None, stopOn=None):
 
 # Basic Parsers
 OPERATOR_SUGAR = pp.Word(PDSYM.OPERATOR_SYNTAX)
-OPERATOR_SUGAR.set_parse_action(lambda s, l, t: ValueFactory_i.sen([t[0]]))
+OPERATOR_SUGAR.set_parse_action(lambda s, l, t: ValueFactory_i.sen([t[0]], data={CDS.OPERATOR: True}))
 
 ATOM           = pp.Word(PDSYM.WORD_COMPONENT + "'")
 ATOM.set_parse_action(lambda s, l, t: (CDS.TYPE_BASE, t[0]))
@@ -64,6 +64,7 @@ REGEX.set_parse_action(lambda s, l, t: (CDS.REGEX_PRIM, re.compile(t[0][1:-1])))
 # Generalised modal operator, which is converted to appropriate data later
 # The syntax is constructed automatically from AcabConfig
 MODAL      = pp.Word("".join(config.syntax_extension.keys()))
+MODAL.set_name("MODAL")
 MODAL.set_parse_action(lambda s, l, t: ModalAnnotation(t[0]))
 
 BASIC_VALUE = ATOM | STRING | REGEX

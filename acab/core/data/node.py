@@ -14,19 +14,20 @@ import acab.interfaces.data as DI
 import acab.interfaces.value as VI
 from acab import types as AT
 from acab.core.config.config import AcabConfig
-from acab.core.data.default_structure import ROOT
-from acab.core.data.sentence import Sentence
-from acab.core.data.value import AcabValue
-from acab.core.decorators.util import cache
-from acab.core.data.factory import ValueFactory as VF
+from acab.core.value.sentence import Sentence
+from acab.core.value.value import AcabValue
+from acab.core.util.decorators.util import cache
+from acab.core.value.factory import ValueFactory as VF
 
-logging = logmod.getLogger(__name__)
+logging                = logmod.getLogger(__name__)
 
-config = AcabConfig()
+config                 = AcabConfig()
 
 Node       : TypeAlias = AT.Node
 Sentence_A : TypeAlias = AT.Sentence
 Value      : TypeAlias = AT.Value
+
+ROOT                   = config.prepare("Data", "ROOT")()
 
 @dataclass
 class AcabNode(DI.Node_i):

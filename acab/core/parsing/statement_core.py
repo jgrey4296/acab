@@ -34,7 +34,7 @@ def type_annotation_gen(parser:ParserElement) -> ParserElement:
 
 class StatementCore(pp.ParseExpression):
     """ Construct a parser for statements of the form:
-        a.location(annotation_p): |args| components end
+        a.location(annotation_p):\n |args|\n\n #tags\n\n { body }\n end
     """
 
     def __init__(self, annotation_p:ParserElement,

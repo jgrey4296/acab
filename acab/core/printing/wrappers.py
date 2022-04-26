@@ -1,9 +1,27 @@
+"""
+Utility functions for building up printed representations of values
+
+"""
+from __future__ import annotations
+
+import abc
 import re
+from dataclasses import InitVar, dataclass, field
 from re import Pattern
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
+                    Iterable, Iterator, Mapping, Match, MutableMapping,
+                    Protocol, Sequence, Tuple, TypeAlias, TypeGuard, TypeVar,
+                    cast, final, overload, runtime_checkable)
+
+if TYPE_CHECKING:
+    # tc only imports
+    pass
+
+
 from acab.core.config.config import AcabConfig
-from acab.core.data.sentence import Sentence
+from acab.core.value import default_structure as DS
+from acab.core.value.sentence import Sentence
 from acab.core.printing import default_symbols as DSYM
-from acab.core.data import default_structure as DS
 from acab.interfaces.value import ValueFactory_i as VF
 
 config = AcabConfig()

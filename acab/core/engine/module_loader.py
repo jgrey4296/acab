@@ -13,13 +13,13 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 logging = logmod.getLogger(__name__)
 
 from acab.core.config.config import GET
-from acab.core.data.instruction import ProductionOperator, ActionOperator
-from acab.core.data.sentence import Sentence
+from acab.core.value.instruction import ProductionOperator, ActionOperator
+from acab.core.value.sentence import Sentence
 from acab.core.engine.util import applicable, needs_init, prep_op_path, ensure_handler
 from acab.interfaces.dsl import DSL_Fragment_i
 from acab.interfaces.module_loader import (ModuleComponents,
                                            ModuleLoader_i)
-from acab.interfaces.printing import Printer_Fragment
+from acab.interfaces.printing import Printer_Fragment_i
 from acab.interfaces.semantic import Semantic_Fragment_i
 from acab.core.engine.module_loader_base import ModuleLoaderBase
 config = GET()
@@ -43,7 +43,7 @@ class ModuleLoader(ModuleLoaderBase, ModuleLoader_i):
         queue          = [(base_path, module)]
         dsl_fragments  : list[DSL_Fragment_i]     = []
         semantic_frags : list[Semantic_Fragment_i]  = []
-        printers       : list[Printer_Fragment]   = []
+        printers       : list[Printer_Fragment_i]   = []
         operators      : list[ProductionOperator] = []
 
         # TODO extract *handlers* not semantics
@@ -73,8 +73,9 @@ class ModuleLoader(ModuleLoaderBase, ModuleLoader_i):
             operators           += sentences
 
             # Get printers
-            available_printers  =  [y for x,y in mod_contents if applicable(y, Printer_Fragment)]
+            available_printers  =  [y for x,y in mod_contents if applicable(y, Printer_Fragment_i) and not isinstance(y, type(object))]
             printers            +=  available_printers
+
 
 
         # End of while

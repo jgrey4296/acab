@@ -5,7 +5,7 @@ LOGLEVEL		:= WARNING
 # Testing variables:
 TEST_TARGET		?= ${TOP}
 TEST_PAT		:=
-TESTDIRS        := core modules/parsing modules/context modules/structures/trie modules/semantics modules/printing modules/repl modules/analysis/typing/unify modules/operators/dfs
+TESTDIRS        := core modules/parsing modules/context modules/structures/trie modules/semantics modules/printing modules/repl modules/analysis/typing/unify modules/operators/dfs modules/values/binding modules/values/sen_val
 TEST_FILE_PAT	:= "test_*.py"
 
 # Clean variables:
@@ -68,7 +68,10 @@ long:
 test:
 	python -m unittest discover -v -s ${TEST_TARGET} -p ${TEST_FILE_PAT} -t ${TOP} ${TEST_PAT}
 
-dtest: $(TESTDIRS)
+dtest: ${TESTDIRS}
+	@echo "Tested: "
+	@for entry in ${TESTDIRS}; do echo $$entry ; done
+
 
 
 $(TESTDIRS):

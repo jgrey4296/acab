@@ -17,10 +17,10 @@ import acab
 
 config = acab.setup()
 
-from acab.core.data.instruction import ProductionComponent, ProductionContainer
-from acab.core.data.value import AcabValue
-from acab.core.data.instruction import Instruction
-from acab.core.data.sentence import Sentence
+from acab.core.value.instruction import ProductionComponent, ProductionContainer
+from acab.core.value.value import AcabValue
+from acab.core.value.instruction import Instruction
+from acab.core.value.sentence import Sentence
 
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 from acab.core.parsing.pyparse_dsl import PyParseDSL

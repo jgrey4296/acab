@@ -5,15 +5,15 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 from itertools import zip_longest, filterfalse, starmap
 
-import acab.core.data.default_structure as DS
+import acab.core.value.default_structure as DS
 import acab.interfaces.value as VI
 from acab.core.config.config import GET, AcabConfig, ConfigSpec
-from acab.core.data.sentence import Sentence
-from acab.core.data.instruction import Instruction
+from acab.core.value.sentence import Sentence
+from acab.core.value.instruction import Instruction
 from acab.interfaces.printing import PrintSemantics_i
 from acab.core.printing import default_symbols as DSYM
 from acab.core.printing import wrappers as PW
-from acab.core.decorators.util import HandleSignal
+from acab.core.util.decorators.util import HandleSignal
 
 
 config = GET()

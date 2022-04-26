@@ -1,10 +1,10 @@
-test.first:
+test.first(::ρ):
     a.b.$x?
 
     λacab.modules.operators.action.ActionPrint "First: " $x
 end
 
-test.second:
+test.second(::ρ):
     a.b.$x?
 
     λacab.modules.operators.action.ActionPrint "Second: " $x

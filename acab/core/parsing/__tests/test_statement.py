@@ -11,9 +11,9 @@ acab.setup()
 
 from acab.core.parsing.statement_core import StatementCore
 from acab.core.parsing import parsers as PU
-from acab.core.data.value import AcabValue
-from acab.core.data.instruction import Instruction
-from acab.core.data.sentence import Sentence
+from acab.core.value.value import AcabValue
+from acab.core.value.instruction import Instruction
+from acab.core.value.sentence import Sentence
 from acab.core.data.node import AcabNode
 
 class BasicStatement(Instruction):

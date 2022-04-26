@@ -23,6 +23,12 @@ from acab.modules.repl.ReplParser import rst
 from acab.modules.repl.util import ConfigBasedLoad
 
 
+# TODO breakpoint a semantic handler by name,
+# TODO breakpoint (in)dependent semantic function
+# TODO breakpoint a node by sentence path
+# TODO breakpoint an operator/action
+# TODO breakpoint a variable
+#
 @register_class("break")
 class BreakCmd:
 
@@ -64,70 +70,13 @@ class BreakCmd:
         """
         ctxs = self._parser.parse_string(line)
         # TODO refactor the basic/semantic logic into the debugger
+
         if "basic" in ctxs:
-            bp_result = self._cmd.state.debugger.set_break(ctxs.file, ctxs.line)
-            if bp_result is None:
-                print(f"Breakpoint Set: {ctxs.file} : {ctxs.line}")
-            else:
-                print(f"Breakpoint NOT Set: {bp_result}")
-
+            self.handle_basic(ctxs)
         elif "semantic" in ctxs:
-            # TODO breakpoint a semantic handler by name,
-            # TODO breakpoint (in)dependent semantic function
-            # TODO breakpoint a node by sentence path
-            # TODO breakpoint an operator/action
-            # TODO breakpoint a variable
-            # run query
-            self._cmd.state.ctxs = self._cmd.state.engine(ctxs.semantic)
-            # attach semantic breakpoints to each prod_abstraction
-            if len(self._cmd.state.ctxs) == 1 and isinstance(self._cmd.state.ctxs[0]._current.value, Instruction_i):
-                curr = self._cmd.state.ctxs[0]._current.value
-                curr.do_break()
-                if curr.should_break:
-                    print(f"Breakpoint Set: {repr(curr)} : {curr.uuid}")
-                else:
-                    print(f"Breakpoint Unset: {repr(curr)} : {curr.uuid}")
-            elif bool(self._cmd.state.ctxs):
-                count = 0
-                for inst in self._cmd.state.ctxs:
-                    for bind in inst.data.items():
-                        if isinstance(bind, Instruction_i):
-                            bind.do_break()
-                            count += 1
-
-                print(f"{count} Breakpoints Set: {ctxs.semantic}")
-
+            self.handle_semantic(ctxs)
         elif "parser" in ctxs:
-            # TODO add debug breakpoint to a parser
-            # Either import and inspect, print all parser elements, if query
-            if ctxs['parser'][-1] == "?":
-                module = importlib.import_module(ctxs['parser'].strip()[:-1])
-                parsers = [x for x in dir(module) if isinstance(getattr(module, x), pp.ParserElement)]
-
-                if not bool(parsers):
-                    return print("No Available Parsers to Breakpoint on.")
-
-                print(f"Available Parsers in {ctxs['parser'][:-1]}")
-                for x in parsers:
-                    print(f"-- {x}")
-                return
-
-            # When specific, flip flop:
-            mod_str, p_str = splitext(ctxs['parser'].strip())
-            module = importlib.import_module(mod_str)
-            if not hasattr(module, p_str[1:]) or not isinstance(getattr(module, p_str[1:]), pp.ParserElement):
-                print(f"No parser named {p_str[1:]} in {mod_str}.")
-                print("Try quering the  with a trailing '?'")
-                return
-
-            parser : pp.ParserElement = getattr(module, p_str[1:])
-            turn_off = hasattr(parser._parse, "_originalParseMethod")
-            if turn_off:
-                print(f"Turning Breakpoint off for: {ctxs['parser']}")
-                parser.set_break(False)
-            else:
-                print(f"Turning Breakpoint on for: {ctxs['parser']}")
-                parser.set_break(True)
+            self.handle_parser(ctxs)
         else:
             print("""
             Shunting to Python debugger.
@@ -139,3 +88,66 @@ class BreakCmd:
             self._cmd.state.ctxs is the current context set
             """)
             self._cmd.state.debugger.set_trace()
+
+    def handle_basic(self, ctxs):
+        bp_result = self._cmd.state.debugger.set_break(ctxs.file, ctxs.line)
+        if bp_result is None:
+            print(f"Breakpoint Set: {ctxs.file} : {ctxs.line}")
+        else:
+            print(f"Breakpoint NOT Set: {bp_result}")
+
+    def handle_parser(self, ctxs):
+        # TODO add debug breakpoint to a parser
+        # Either import and inspect, print all parser elements, if query
+        if ctxs['parser'][-1] == "?":
+            module = importlib.import_module(ctxs['parser'].strip()[:-1])
+            parsers = [x for x in dir(module) if isinstance(getattr(module, x), pp.ParserElement)]
+
+            if not bool(parsers):
+                return print("No Available Parsers to Breakpoint on.")
+
+            print(f"Available Parsers in {ctxs['parser'][:-1]}")
+            for x in parsers:
+                print(f"-- {x}")
+            return
+
+        # When specific, flip flop:
+        mod_str, p_str = splitext(ctxs['parser'].strip())
+        module = importlib.import_module(mod_str)
+        if not hasattr(module, p_str[1:]) or not isinstance(getattr(module, p_str[1:]), pp.ParserElement):
+            print(f"No parser named {p_str[1:]} in {mod_str}.")
+            print("Try quering the  with a trailing '?'")
+            return
+
+        parser : pp.ParserElement = getattr(module, p_str[1:])
+        turn_off = hasattr(parser._parse, "_originalParseMethod")
+        if turn_off:
+            print(f"Turning Breakpoint off for: {ctxs['parser']}")
+            parser.set_break(False)
+        else:
+            print(f"Turning Breakpoint on for: {ctxs['parser']}")
+            parser.set_break(True)
+
+
+    def handle_semantic(self, ctxs):
+        # run query
+        self._cmd.state.ctxs = self._cmd.state.engine(ctxs.semantic)
+        # attach semantic breakpoints to each prod_abstraction
+        if (len(self._cmd.state.ctxs) == 1 and
+            isinstance(self._cmd.state.ctxs[0]._current.value, Instruction_i)):
+            curr = self._cmd.state.ctxs[0]._current.value
+            curr.do_break()
+            if curr.should_break:
+                print(f"Breakpoint Set: {repr(curr)} : {curr.uuid}")
+            else:
+                print(f"Breakpoint Unset: {repr(curr)} : {curr.uuid}")
+
+        elif bool(self._cmd.state.ctxs):
+            count = 0
+            for inst in self._cmd.state.ctxs:
+                for bind in inst.data.items():
+                    if isinstance(bind, Instruction_i):
+                        bind.do_break()
+                        count += 1
+
+            print(f"{count} Breakpoints Set: {ctxs.semantic}")

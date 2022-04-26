@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 logging = logmod.getLogger(__name__)
 
-from acab.core.decorators.util import registerOn
+from acab.core.util.decorators.util import registerOn
 from acab.modules.context.context_set import ContextSet
 
 

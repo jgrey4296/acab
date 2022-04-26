@@ -13,7 +13,7 @@ Layers
 
 
 """
-from acab.core.data.value import AcabValue
+from acab.core.value.value import AcabValue
 
 
 class ProtocolBase(AcabValue):

@@ -14,17 +14,17 @@ import acab
 config = acab.setup()
 
 import acab.modules.semantics.statements as ASem
-from acab.core.data import default_structure as DS
+from acab.core.value import default_structure as DS
 from acab.core.data.acab_struct import BasicNodeStruct
-from acab.core.data.instruction import (ActionOperator, Instruction,
+from acab.core.value.instruction import (ActionOperator, Instruction,
                                         ProductionComponent,
                                         ProductionContainer,
                                         ProductionOperator,
                                         ProductionStructure)
 from acab.core.data.node import AcabNode
-from acab.core.data.sentence import Sentence
-from acab.core.data.value import AcabValue
-from acab.core.decorators.semantic import OperatorArgUnWrap, OperatorResultWrap
+from acab.core.value.sentence import Sentence
+from acab.core.value.value import AcabValue
+from acab.core.util.decorators.semantic import OperatorArgUnWrap, OperatorResultWrap
 from acab.error.base import AcabBasicException
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces.semantic import SemanticSystem_i, StatementSemantics_i
@@ -38,7 +38,7 @@ from acab.modules.semantics.basic_system import BasicSemanticSystem
 from acab.modules.semantics.values import (BasicNodeSemantics,
                                            ExclusionNodeSemantics)
 from acab.modules.structures.trie.semantics import FlattenBreadthTrieSemantics
-from acab.core.data.factory import ValueFactory
+from acab.core.value.factory import ValueFactory
 from acab.core.semantics import basic
 
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
@@ -182,7 +182,7 @@ class StatementSemanticTests(unittest.TestCase):
         transform_sem = ASem.TransformAbstraction().as_handler(signal=TRANSFORM_SEM_HINT)
         action_sem    = ASem.ActionAbstraction().as_handler(signal=ACTION_SEM_HINT)
         stub_sem      = StubAbsSemantic().as_handler(signal=DEFAULT_HANDLER_SIGNAL)
-        con_sem        = ASem.ContainerAbstraction().as_handler(signal="CONTAINER")
+        con_sem       = ASem.ContainerAbstraction().as_handler(signal="CONTAINER")
 
         semSys        = BasicSemanticSystem(init_specs=all_specs,
                                             init_handlers=[transform_sem,

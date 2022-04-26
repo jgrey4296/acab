@@ -8,9 +8,9 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 from dataclasses import dataclass, field, InitVar
 
 from acab.core.config.config import AcabConfig
-from acab.core.data.value import AcabValue
-from acab.core.data.instruction import Instruction
-from acab.core.data.sentence import Sentence
+from acab.core.value.value import AcabValue
+from acab.core.value.instruction import Instruction
+from acab.core.value.sentence import Sentence
 
 
 config = AcabConfig()

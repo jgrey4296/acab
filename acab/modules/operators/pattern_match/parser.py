@@ -18,7 +18,7 @@ from acab.core.parsing.consts import ARROW, END, COLON, s
 import acab.core.parsing.parsers as PU
 
 
-from acab.core.data.instruction import ProductionComponent
+from acab.core.value.instruction import ProductionComponent
 
 def build_transform_component(toks):
     component = ProductionComponent()

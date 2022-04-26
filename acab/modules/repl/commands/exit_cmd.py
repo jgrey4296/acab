@@ -21,11 +21,11 @@ from acab.modules.repl.repl_commander import register_class
 
 @register_class("exit")
 class ExitCmd:
+    """
+    Exit the repl, automatically saving the self state
+    """
 
     def __call__(self, line):
-        """
-        Exit the repl, automatically saving the self state
-        """
         logging.info("Quitting")
         filename = "repl.auto"
         self._cmd.state.engine.save_file(filename)
