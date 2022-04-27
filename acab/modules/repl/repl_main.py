@@ -31,18 +31,14 @@ def main_repl():
     sys.path.append(abspath(join(split(__file__)[0], "../../..")))
     args = parser.parse_args()
 
-
+    ## Setup initial logging
+    ## (config log hook customizes later)
     LOGLEVEL      = logmod._nameToLevel[args.verbosity.upper()]
     LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
 
-    ## Setup logging handlers:
-    from acab.core.util.log_formatter import AcabNameTruncateFormatter
     full_file_handler = logmod.FileHandler(LOG_FILE_NAME, mode='w')
-    full_file_handler.setFormatter(AcabNameTruncateFormatter())
-    full_file_handler.setLevel(logmod.DEBUG)
-
-    console_handler = logmod.StreamHandler()
-    console_handler.setLevel(max(0, LOGLEVEL))
+    console_handler   = logmod.StreamHandler()
+    console_handler.setLevel(LOGLEVEL)
 
     root_logger = logmod.getLogger('')
     root_logger.setLevel(logmod.NOTSET)
@@ -56,13 +52,15 @@ def main_repl():
     capture_printing()
 
     #====================
-    logging.info("Reading Config Location: {}", args.config)
-
     from acab import setup
     config = setup(location=args.config, rich_exc=True, format_logs=not args.simple_log)
+    logging.info("Loaded Config Location: {}", args.config)
     #====================
 
     # TODO change config details here
+
+    if LOGLEVEL != console_handler.level:
+        console_handler.setLevel(LOGLEVEL)
 
     if args.debug:
         parse_debug_spec = config.prepare("Parse", "DEBUG_PARSERS", actions=[config.actions_e.BOOL])

@@ -13,11 +13,11 @@ from typing import Callable, Type, TypeAlias
 
 import acab.interfaces.type_aliases as types
 from acab.core.config.config import GET
-from acab.core.util.log_formatter import AcabLogFormatter, AcabLogRecord
+from acab.core.util.log_formatter import AcabMinimalLogRecord
 
 logging = logmod.getLogger(__name__)
 
-__all__ = ['types', 'setup', 'GET', 'AcabLogFormatter', 'AcabLogRecord']
+__all__ = ['types', 'setup', 'GET', 'AcabLogRecord']
 
 _Value_A : TypeAlias = types.Value
 _Sen_A   : TypeAlias = types.Sentence
@@ -39,7 +39,7 @@ def setup(location:str=None,
             True for rich.traceback, false for normal python exceptions
 
         format_logs
-            True for AcabLogFormatter installation
+            True for AcabLogFormatter installation, if [LOGGING].ACAB is also true
 
     Returns:
         An initialised Config Object
@@ -48,13 +48,15 @@ def setup(location:str=None,
 
     from os.path import join, split
 
-    import acab.core.config.structure
     from acab.core.config.config import AcabConfig
-    from acab.core.config.modal import modal_config
+    from acab.core.config.structure_hook import structure_hook
+    from acab.core.config.modal_hook import modal_hook
+    from acab.core.config.misc_hooks import attr_hook
+    AcabMinimalLogRecord.install()
     if format_logs:
-        from acab.core.config.log_config import log_config
+        from acab.core.config.log_hook import log_hook
     else:
-        log_config = lambda x: x
+        log_hook = lambda x: x
 
     if location is None or not bool(location):
         base     = split(__file__)[0]
@@ -62,7 +64,7 @@ def setup(location:str=None,
     elif not isinstance(location, list):
         location = [location]
 
-    config = AcabConfig(*location, hooks=[modal_config, log_config])
+    config = AcabConfig(*location, hooks=[log_hook, modal_hook, attr_hook])
 
 
     if not rich_exc:

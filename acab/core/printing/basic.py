@@ -80,7 +80,7 @@ class PrintSystemImpl(HS.HandlerSystem, PI.PrintSystem_i):
                 current = current.value
 
             if spec.check_api(func=PI.PrintSemantics_i):
-                logging.debug("(Remain:{:3}/{:4}) Calling: {:>15} : {}", len(remaining), PrintSystemImpl.total, str(spec), current)
+                logging.debug("(Remain/Total:{:3}/{:4}) Calling: {:>15} : {}", len(remaining), PrintSystemImpl.total, str(spec), current)
                 handled = spec[0](current, top=self, data=data)
             else:
                 handled = spec[0](current, data=data)

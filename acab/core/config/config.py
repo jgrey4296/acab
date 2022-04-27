@@ -36,6 +36,7 @@ from acab.error.config import AcabConfigException
 from acab.error.protocol import AcabProtocolError as APE
 from acab.interfaces.config import Config_i, ConfigSpec_d
 from acab.core.config.attr_gen import AttrGenerator
+from acab.core.util.sorting import sort_by_priority
 
 logging = logmod.getLogger(__name__)
 
@@ -67,7 +68,7 @@ class ConfigSpec(ConfigSpec_d):
 
     def __call__(self) -> Any:
         config = AcabConfig() #type:ignore
-        return config(self)
+        return config.value(self)
 
 class ConfigSingletonMeta(type(Protocol)):
     """
@@ -144,7 +145,7 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
         return any([in_print, in_base, in_enums, in_defaults])
 
     def _run_hooks(self):
-        for hook in self.hooks:
+        for hook in sort_by_priority(self.hooks):
             hook(self)
 
     @property

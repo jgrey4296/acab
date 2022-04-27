@@ -15,7 +15,6 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 logging = logmod.getLogger(__name__)
 
-from acab.core.config.config import AcabConfig
 from acab.error.config import AcabConfigException
 from acab.core.util.decorators.util import registerOn
 

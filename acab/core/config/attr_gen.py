@@ -65,6 +65,7 @@ class AttrGenerator:
     converting `[a.test.section]` in a config file
     to (a:Section).(test:Section).(section:Section)
 
+    does not check for overriden values, use config.prepare/value for that
     """
 
     def __init__(self, config: ConfigParser):
@@ -72,7 +73,7 @@ class AttrGenerator:
         self._added_keys = []
 
     def __repr__(self):
-        return "<Generated Attribute Access to Config Files>"
+        return "<Generated non-overriden Attribute Access to Config Files>"
 
     @property
     def sections(self):
