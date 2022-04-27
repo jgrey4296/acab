@@ -126,33 +126,40 @@ class HandlerSystem(HS.HandlerSystem_i):
     def override(self, new_signal: bool | str, value, data=None) -> Overrider:
         """ wrap a value to pass data along with it, or explicitly control the signal it produces for handlers """
         # TODO override on an override
-        if isinstance(new_signal, str) and new_signal not in self:
-            raise AcabHandlerException(f"Undefined override handler: {new_signal}")
+        data = data or {}
 
-        if isinstance(new_signal, bool) and not new_signal:
-            new_signal = PASSTHROUGH
-        elif isinstance(new_signal, bool) and bool(new_signal):
-            raise TypeError("new_signal should be False or a string", new_signal)
+        if isinstance(value, HS.HandlerOverride):
+            updated = value.replace(signal=new_signal or value.signal)
+            updated.data.update(data)
+            return updated
 
-        if bool(data):
-            return HS.HandlerOverride(new_signal, value, data=data)
+        match new_signal:
+            case str() if new_signal in self:
+                pass
+            case bool() if not new_signal:
+                new_signal = PASSTHROUGH
+            case _:
+                raise TypeError("Bad Override signal", new_signal)
 
-        return HS.HandlerOverride(new_signal, value)
+        return HS.HandlerOverride(new_signal, value, data=data)
 
     #pylint: disable-next=too-many-branches
     def register(self, *others):
         for other in others:
-            if isinstance(other, HS.HandlerFragment_i):
-                for item in other:
-                    self.register(item)
-            elif isinstance(other, HS.HandlerSpec_i):
-                self._register_spec(other)
-            elif isinstance(other, HS.Handler_i):
-                self._register_handler(other)
-            elif isinstance(other, HS.HandlerOverride):
-                raise AcabHandlerException("Attempt to register a HandlerOverride, it should be __call__ed instead")
-            elif isinstance(other, dict):
-                self._register_data(other)
+            match other:
+                case HS.HandlerFragment_i():
+                    for item in other:
+                        self.register(item)
+                case HS.HandlerSpec_i():
+                    self._register_spec(other)
+                case HS.Handler_i():
+                    self._register_handler(other)
+                case HS.HandlerOverride():
+                    raise AcabHandlerException("Attempt to register a HandlerOverride, it should be __call__ed instead")
+                case dict():
+                    self._register_data(other)
+                case _:
+                    raise AcabHandlerException("Attempt to register unknown type", rest=[other])
 
         return self
 

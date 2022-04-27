@@ -133,6 +133,11 @@ class ModalPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
 
 class AnnotationPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
 
+    """
+    gets annotations, assigns them print registers,
+    then sends them to print with a final AnnotationFinaliser call
+    to use the registers if they have values.
+    """
     def __call__(self, value, top=None, data=None):
         return_list = []
         # Add all annotations to the stack as necessary
@@ -141,25 +146,41 @@ class AnnotationPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
             return []
 
         # Pretty Print annotations
-        annotations_pp = []
+        registers      = []
         for annotation in annotations_in_value:
-            signal = annotation # f"{annotation}"
-            if signal in top:
-                annotations_pp.append(top.pprint(top.override(signal, value)))
-            else:
-                annotations_pp.append(top.pprint(value.data[annotation]))
-
-        # Then Join:
-        annotations_pp = [x for x in annotations_pp if bool(x)]
+            signal = annotation if annotation in top else False
+            value  = value if signal else value.data[annotation]
+            reg, ov = top.assign_to_register(signal, value)
+            registers.append(reg)
+            return_list.append(ov)
 
         if hasattr(value, "_acab_operator_sugar"):
             # TODO refine this
-            annotations_pp.append(value._acab_operator_sugar)
+            reg, ov = top.assign_to_register(False, value._acab_operator_sugar)
+            registers.append(reg)
+            return_list.append(ov)
 
+        return_list.append(top.override(DS.ANNOTATIONS_FINAL, registers))
+        return return_list
+
+class AnnotationFinaliser(basic.PrintSemanticsImpl, PrintSemantics_i):
+    """
+    Grabs the print registers it is passed, and if they have values,
+    wraps them in parens and returns them for the main printer to use
+    """
+    def __call__(self, registers, top=None, data=None):
+        # Get each register and join it
+        return_list = []
+        joined = []
+        for reg in registers:
+            val = "".join([x for x in top.print_registers[reg]])
+            if bool(val):
+                joined.append(val)
+    
         # To decide whether to add anything to main return here:
-        if bool(annotations_pp):
+        if bool(joined):
             return_list.append("(")
-            return_list += ", ".join(annotations_pp)
+            return_list += ", ".join(joined)
             return_list.append(")")
 
         return return_list

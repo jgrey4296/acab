@@ -19,6 +19,7 @@ config = AcabConfig()
 
 ATOM               = config.prepare("Print.Signals", "ATOM")()
 ANNOTATIONS        = config.prepare("Print.Signals", "ANNOTATIONS")()
+ANNOTATIONS_FINAL  = config.prepare("Print.Signals", "ANNOTATIONS_FINAL")()
 SENTENCE           = config.prepare("Print.Signals", "SENTENCE")()
 SYMBOL             = config.prepare("Print.Signals", "SYMBOL")()
 CONSTRAINT         = config.prepare("Print.Signals", "CONSTRAINT")()
