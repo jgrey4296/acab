@@ -22,8 +22,10 @@ def bind(val, bindings, semSys=None):
     Passed in a `val`, return it unchanged if its not a variable,
     if it is a variable, return the value it maps to
     """
+    logging.debug("Binding: {} with {}", val, bindings)
     result = __bind(val, bindings, semSys)
 
+    # Only flatten the top most sentence returned, as it will recurse if necessary
     if isinstance(result, Sentence_i):
         result = result.flatten()
 
@@ -102,6 +104,7 @@ def sen_bind(val:AT.Sentence, bindings:AT.CtxIns) -> AT.Sentence:
     # Sentence invariant: only word[0] can have an at_bind
     for i, word in enumerate(val):
         # early expand if a plain node
+        # TODO could flatten retrieved here potentially
         match word:
             case _ if not (word.is_var or word in bindings):
                 output.append(word)

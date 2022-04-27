@@ -37,7 +37,7 @@ class ModuleLoader(ModuleLoaderBase, ModuleLoader_i):
         Only searches descendents of the original module,
         and only those descendents' __init__ files.
         """
-        logging.debug(f"Extracting module: {module}")
+        logging.info("Extracting module: {}", module)
         base_path      = module.__package__
         # reference_path = MODULE_SPLIT_REG.split(module.__name__)
         queue          = [(base_path, module)]

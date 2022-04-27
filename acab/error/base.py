@@ -22,6 +22,7 @@ class AcabBasicException(AcabException):
     def __str__(self):
         msg = f"{self.msg} : {self.detail}"
         if bool(self.rest):
-            msg += ": " + " ".join(self.rest)
+            strs = [str(x) for x in self.rest]
+            msg += ": " + " ".join(strs)
 
         return msg

@@ -31,8 +31,6 @@ class SenQuerySemantics(StatementSemantics, SI.StatementSemantics_i):
 
     meaning to query the entire sentence $y refers to
     """
-
-
     def query(self, sen, semSys, ctxs=None, data=None):
         assert(ctxs is not None)
 

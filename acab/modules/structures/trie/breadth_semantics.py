@@ -34,7 +34,7 @@ class BreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantics_i):
     register, __bool__, Spec, verify_system, extend, lookup
     """
     def verify(self, instruction) -> bool:
-        return isinstance(instruction, Sentence)
+        return isinstance(instruction, Sentence_i)
 
     def compatible(self, struct):
         is_bns = isinstance(struct, BasicNodeStruct)

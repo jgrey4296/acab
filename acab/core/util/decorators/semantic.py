@@ -19,6 +19,7 @@ def BuildCtxSetIfMissing(f):
     @wraps(f)
     def wrapped(self, *the_args, **the_kwargs):
         if 'ctxs' not in the_kwargs or the_kwargs['ctxs'] is None:
+            logging.debug("Building CtxSet")
             the_kwargs['ctxs'] = self.build_ctxset()
 
         return f(self, *the_args, **the_kwargs)
@@ -33,7 +34,7 @@ def RunDelayedCtxSetActions(f):
         if isinstance(result, DelayedCommands_i):
             result.run_delayed()
 
-        logging.debug(f"Returning CtxSet: {repr(the_kwargs['ctxs'])}")
+        logging.debug("Returning CtxSet: {}", the_kwargs['ctxs'])
         return result
 
     return wrapped
@@ -46,6 +47,7 @@ def RunInSubCtxSet(f):
     """
     @wraps(f)
     def wrapped(self, *the_args, **the_kwargs):
+        logging.debug("Creating Subctx")
         semSys = the_args[1]
         ctxs   = the_kwargs['ctxs']
         subctx = ctxs.subctx()

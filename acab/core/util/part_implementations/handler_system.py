@@ -211,6 +211,7 @@ class HandlerSystem(HS.HandlerSystem_i):
 
     def extend(self, modules:list[ModuleComponents]) -> None:
         raise NotImplementedError()
+
 @APE.assert_concrete
 class HandlerSpec(HS.HandlerSpec_i):
     def __str__(self):
@@ -240,6 +241,7 @@ class HandlerSpec(HS.HandlerSpec_i):
         return self.handlers[i].func
 
     def __call__(self, *args, **kwargs) -> None | Any:
+        logging.debug("Calling Handlers of Signal Spec: {}", self.signal)
         # TODO more advanced logic
         args_l : list[Any] = list(args)
         if len(args_l) < 2:
@@ -309,26 +311,26 @@ class HandlerSpec(HS.HandlerSpec_i):
         # And check types
         if handler.struct is not None:
             self.add_struct(handler)
-
+        # NOT ELIF
         if self.flag_e.OVERRIDE in handler.flags and handler.func is not None:
             self.handlers = [handler]
         elif handler.func is not None:
             self.check_api(func=handler.func)
             self.handlers.append(handler)
-
+        # NOT ELIF
         if self.handler_limit is None:
             return
 
         # once you hit the minimum number of handlers, you can't go lower
+        # NOT ELIF
         if not self.h_limit_history and self.handler_limit.start <= len(self.handlers):
             self.h_limit_history = True
 
-        if self.h_limit_history and len(self.handlers) < self.handler_limit.start:
-            raise AcabHandlerException("Handlers Lower Limit Failure")
-
-        if self.handler_limit.stop < len(self.handlers):
-            raise AcabHandlerException("Handlers Upper Limit Failure")
-
+        match (self.h_limit_histoy, len(self.handlers), self.handler_limit.start, self.handler_limit.stop):
+            case (history, count, start, _) if count < start:
+                raise AcabHandlerException("Handlers Lower Limit Failure")
+            case (history, count, _, stop) if stop < count:
+                raise AcabHandlerException("Handlers Upper Limit Failure")
 
 
     def add_struct(self, handler):

@@ -61,6 +61,7 @@ class Value_i(VSubP.Value_p, Generic[T]):
         """
         Adds a type to the accepted types Value_p can build
         """
+        logging.info("Extending core value types")
         expansion : Any = reduce(lambda a, b: a | b, ts, AT.ValueCore)
         AT.ValueCore    = expansion
 
