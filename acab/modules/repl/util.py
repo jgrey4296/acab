@@ -119,6 +119,7 @@ def capture_printing():
     def intercepted(*args, **kwargs):
         """ Wraps print to also log to a separate file """
         oldprint(*args, **kwargs)
-        trace_logger.warning(args[0])
+        if bool(args):
+            trace_logger.warning(args[0])
 
     builtins.print = intercepted

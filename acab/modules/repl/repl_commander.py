@@ -34,25 +34,28 @@ except AcabConfigException:
 @dataclass
 class ReplState:
     """ Data used for control of the repl """
-    prompt           : str                    =  field(default=initial_prompt)
-    prompt_ml        : str                    =  field(default=config.prepare("Module.REPL", "PROMPT_ML", actions=[config.actions_e.STRIPQUOTE])())
-    prompt_bkup      : str                    =  field(default="")
-    ctxs             : ContextSet_i           =  field(default=None)
-    collect_str      : list[str]              =  field(default_factory=list)
-    echo             : bool                   =  field(default=False)
-    in_multi_line    : bool                   =  field(default=False)
-    engine           : None|AcabEngine_i =  field(default=None)
-    engine_str       : str                    =  field(default=initial_engine)
-    debug_data       : Any                    =  field(default=None)
-    debugger         : Any                    =  field(default=None)
-    last_err         : Any                    =  field(default=None)
+    prompt           : str                            =  field(default=initial_prompt)
+    prompt_ml        : str                            =  field(default=config.prepare("Module.REPL", "PROMPT_ML", actions=[config.actions_e.STRIPQUOTE])())
+    prompt_bkup      : str                            =  field(default="")
+    ctxs             : ContextSet_i                   =  field(default=None)
+    collect_str      : list[str]                      =  field(default_factory=list)
+    echo             : bool                           =  field(default=False)
+    in_multi_line    : bool                           =  field(default=False)
+    engine           : None|AcabEngine_i              =  field(default=None)
+    engine_str       : str                            =  field(default=initial_engine)
+    debug_data       : Any                            =  field(default=None)
+    debugger         : Any                            =  field(default=None)
+    last_err         : Any                            =  field(default=None)
+    post_cmds        : dict[str, Callable[..., None]] =  field(default_factory=dict)
 
 
 class AcabREPLCommander(cmd.Cmd):
     """ Implementation of cmd.Cmd to provide an extensible ACAB REPL"""
-    intro              = repl_intro
-    prompt             = initial_prompt + ": "
-    _latebind          = []
+    intro                                                   = repl_intro
+    prompt                                                  = initial_prompt + ": "
+    _latebind                                               = []
+    _default_startups  : ClassVar[list[Callable[..., Any]]] = []
+
     state  : ReplState = ReplState()
 
     def __init__(self, *args, **kwargs):
@@ -60,6 +63,9 @@ class AcabREPLCommander(cmd.Cmd):
         for inst in self._latebind:
             assert(getattr(inst, "_cmd") is None)
             setattr(inst, "_cmd", self)
+
+        for fn in self._default_startups:
+            fn(self, "")
 
     def default(self, line):
         """ Called when no other command matches """
@@ -98,12 +104,9 @@ class AcabREPLCommander(cmd.Cmd):
         """
         Update the repl prompt to display number of viable contexts
         """
-        count = "0"
-        if self.state.ctxs is not None:
-            count = len(self.state.ctxs)
-        insert = f"(Γ: {count})"
+        for hook in self.state.post_cmds.values():
+            hook(self)
 
-        self.prompt = f"{self.state.prompt} {insert}: "
         return stop
 
     def parseline(self, line):
@@ -168,5 +171,18 @@ class AcabREPLCommander(cmd.Cmd):
         return __register
 
 
-register       = AcabREPLCommander.register
-register_class = AcabREPLCommander.register_class
+    @classmethod
+    def register_default(cls, fn):
+        """
+        Register and automatically call the function when REPLCommander is created.
+        eg: register_default(do_ctxprompt) means the repl will show active context numbers
+        from startup
+
+        """
+        assert(hasattr(cls, "_default_startups"))
+        cls.register(fn)
+        cls._default_startups.append(fn)
+
+register         = AcabREPLCommander.register
+register_class   = AcabREPLCommander.register_class
+register_default = AcabREPLCommander.register_default
