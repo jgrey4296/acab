@@ -55,6 +55,7 @@ def ConfigBasedLoad(f):
     """ A Decorator to load the config specified debugger module
     and wrap a repl command with an instruction to get and start the
     debugger if necessary """
+    # TODO deprecate this to use [Import.Targeted]
     if "Module.Debug" in config:
         logging.debug("Loading Debugger")
         mod  = config.prepare("Module.Debug", "IMPORT", actions=[config.actions_e.IMPORT])()

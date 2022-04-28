@@ -29,6 +29,12 @@ from .util import INFINITY, type_len, unify_enum
 ATOM = "_:{}".format(DS.TYPE_BASE)
 
 def most_gen_type(*args):
+    """
+    from the args, get the type that is shortest
+
+    eg: ::a.b.c, ::a.b -> a.b
+
+    """
     most_gen = (type_len(args[0]), args[0])
     for x in args[1:]:
         new_len = type_len(x)
@@ -125,8 +131,8 @@ def test_word_equality(index, first, second, ctx):
     Words have to equal each other, or be a variable
     """
     result = unify_enum.NA
-    f_word  = first[index]
-    s_word  = second[index]
+    f_word = first[index]
+    s_word = second[index]
 
     has_var = f_word.is_var or s_word.is_var
     if not has_var and f_word != s_word:

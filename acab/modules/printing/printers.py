@@ -360,10 +360,12 @@ class SimpleTypePrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
 
     def __call__(self, value, top=None, data=None):
         return_list = []
+        # TODO or suppression types
         if str(value.type) == TYPE_BASE:
             return []
 
         type_str = str(value.type)
         return_list.append("::")
+        # TODO handle aliasees
         return_list.append(type_str)
         return return_list

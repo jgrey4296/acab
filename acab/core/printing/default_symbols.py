@@ -19,6 +19,7 @@ QUERY_SYM          = config.prepare("Symbols", "QUERY")
 REBIND_SYM         = config.prepare("Symbols", "REBIND")
 SUGAR_SYM          = config.prepare("Symbols", "SUGAR")
 TAG_SYM            = config.prepare("Symbols", "TAG")
+TYPE_BASE          = config.prepare("Symbols", "TYPE_BASE")
 
 # Wrapping
 CONTAINER_JOIN_P   = config.prepare("Print.Patterns", "CONTAINER_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE, AcabConfig.actions_e.UNESCAPE])
