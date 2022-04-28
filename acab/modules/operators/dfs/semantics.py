@@ -81,9 +81,11 @@ class DFSSemantics(basic.StatementSemantics, SI.StatementSemantics_i):
         default: HandlerSpec[StructSem] = semsys.lookup()
         nodesem: HandlerSpec[ValSem]    = default[0].lookup()
 
-        with ContextWalkManager(walk_spec, default.struct.root, ctxs) as cwm:
-            for queue in cwm.active:
-                found      : set[UUID]  = set()
+        cwm = ContextWalkManager(walk_spec, default.struct.root, ctxs)
+        with cwm:
+            for start in cwm.current:
+                queue : Node      = [start._current]
+                found : set[UUID] = set()
 
                 while bool(queue):
                     current      = queue.pop(0)
@@ -108,11 +110,13 @@ class DFSSemantics(basic.StatementSemantics, SI.StatementSemantics_i):
 
         # TODO handle λrule.sentence.queries.$x?
 
-        with ContextWalkManager(walk_spec, default.struct.root, ctxs) as cwm:
+        cwm = ContextWalkManager(walk_spec, default.struct.root, ctxs)
+        with cwm:
             # for queue in cwm.active(mutable=True) ?
             # queue::list[Node]
-            for queue in cwm.active:
-                action : 'Value|Sentence' = cwm.current[walk_spec[-1]]
+            for start in cwm.current:
+                queue = [start._current]
+                action : 'Value|Sentence' = start[walk_spec[-1]]
                 spec = semsys.lookup(action)
                 if isinstance(action, Sentence):
                     # action is a sentence path,
@@ -130,7 +134,7 @@ class DFSSemantics(basic.StatementSemantics, SI.StatementSemantics_i):
                     # bind current to the param in action.params
                     params : list[Value] = action.params
                     args   : list[Value] = [current.value] + walk_spec[-1].params
-                    bind_dict = {x.key() : cwm._current_inst[y] for x,y in zip(params, args)}
+                    bind_dict = {x.key() : start[y] for x,y in zip(params, args)}
                     node_dict = {params[0].key() : current}
 
                     working_ctx = ctxs.subctx(None,

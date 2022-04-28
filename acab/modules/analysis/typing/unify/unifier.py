@@ -79,10 +79,10 @@ class Unifier:
         # TODO add exhaustive / inclusive typing options
         ctx_prime = MutableContextInstance(None, ctx)
         with ctx_prime:
-            # PREPARE #########################################################
+            # PREPARATION AND EARLY EXIT #######################################
             if (logic.early_exit is not None and
                 logic.early_exit(first, second, ctx_prime) is unify_enum.END):
-                return ctx_prime.finish()
+                raise ctx_prime.EarlyExitException()
 
             if logic.truncate is not None:
                 first, second = logic.truncate(first, second)
@@ -105,23 +105,22 @@ class Unifier:
                         logging.debug("Running {:<20} on {!s:<10}, {!s:<10}",
                                       sieve_fn.__name__, f_word, s_word)
                         result = sieve_fn(index, first, second, ctx_prime)
-                        if result is unify_enum.NA:
-                            continue
-                        elif result is unify_enum.NEXT_WORD:
-                            break
-                        elif result is unify_enum.END:
-                            break
+                        match result:
+                            case unify_enum.NA:
+                                continue
+                            case unify_enum.NEXT_WORD:
+                                break
+                            case unify_enum.END:
+                                raise ctx_prime.EarlyExitException()
 
                     logging.debug("---")
-                    if result is unify_enum.END:
-                        break
 
             except TE.AcabTypingException as err:
                 # insert the sentences into the error for easier debugging
                 err.data.update({'left_sentence': first, 'right_sentence': second})
                 raise err from err
 
-        return ctx_prime.finish()
+        return ctx_prime.final_ctx
 
 
     def repeat(self,

@@ -63,10 +63,13 @@ class TypeWalkTests(unittest.TestCase):
 
 
     def setUp(self):
-        return 1
+        self.eng("~additional")
+        self.eng("~walker")
+        self.eng("~types")
+        self.eng("~found")
+        self.eng("~acab")
+        self.eng("~test")
 
-    def tearDown(self):
-        return 1
 
     #----------
     def test_walk(self):
@@ -77,22 +80,31 @@ class TypeWalkTests(unittest.TestCase):
         # trigger walk
         self.eng(walk_rule)
         # test
-        # ctx_results = self.eng("has.type.$x?")
         ctx_results = self.eng("found.$x?")
-        self.assertEqual(len(ctx_results), 3)
-
+        self.assertEqual(len(ctx_results), 2)
 
     def test_walk2(self):
         # add rule
         self.eng("""walker.rule(::ρ):\n | $x |\n\n @x(::$y)?\n\n !! found.$y\nend""")
-        self.eng("a.different.test(::blah)")
+        self.eng("additional.test(::blah)")
         walk_rule = dsl("walker(::ρ):\n walker.$rules?\n\n !! test.run.$rules\n ᛦ λ$rules\nend")[0][0]
         # trigger walk
         self.eng(walk_rule)
         # test
-        # ctx_results = self.eng("has.type.$x?")
         ctx_results = self.eng("found.$x?")
-        self.assertEqual(len(ctx_results), 4)
+        self.assertEqual(len(ctx_results), 3)
+
+    def test_type_unify_walk(self):
+        self.eng("~acab")
+        self.eng("""walker.rule(::ρ):\n | $x |\n\n @x(::$y)?\n types.$y?\n\n !! found.$y\nend""")
+        self.eng("additional.test(::blah)")
+        self.eng("types.blah")
+        walk_rule = dsl("walker(::ρ):\n walker.$rules?\n\n !! test.run.rule\n ᛦ λ$rules\nend")[0][0]
+        # trigger walk
+        self.eng(walk_rule)
+        # test
+        ctx_results = self.eng("found.$x?")
+        self.assertEqual(len(ctx_results), 1)
 
     @unittest.skip("")
     def test_basic(self):

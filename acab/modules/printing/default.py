@@ -13,6 +13,7 @@ config = AcabConfig()
 
 atom_pr               = BasicPrinter.Spec(DS.ATOM).spec_from(PrintSemantics_i)
 annotations_pr        = BasicPrinter.Spec(DS.ANNOTATIONS).spec_from(PrintSemantics_i)
+annotations_final_pr  = BasicPrinter.Spec(DS.ANNOTATIONS_FINAL).spec_from(PrintSemantics_i)
 sentence_pr           = BasicPrinter.Spec(DS.SENTENCE).spec_from(PrintSemantics_i)
 symbol_pr             = BasicPrinter.Spec(DS.SYMBOL).spec_from(PrintSemantics_i)
 constraint_pr         = BasicPrinter.Spec(DS.CONSTRAINT).spec_from(PrintSemantics_i)
@@ -27,6 +28,7 @@ tags_pr               = BasicPrinter.Spec(DS.TAGS).spec_from(PrintSemantics_i)
 def DEFAULT_PRINTER_SPEC():
     return [atom_pr,
             annotations_pr,
+            annotations_final_pr,
             sentence_pr,
             symbol_pr,
             constraint_pr,
@@ -43,6 +45,7 @@ def DEFAULT_PRINT_HANDLERS():
         # Printers.NoOpPrinter().as_handler(signal="TYPE_INSTANCE"),
         Printers.AnnotationAwareValuePrinter().as_handler(signal=DS.ATOM),
         Printers.AnnotationPrinter().as_handler(signal=DS.ANNOTATIONS),
+        Printers.AnnotationFinaliser().as_handler(signal=DS.ANNOTATIONS_FINAL),
         Printers.BasicSentenceAwarePrinter().as_handler(signal=DS.SENTENCE),
         Printers.ConfigBackedSymbolPrinter().as_handler(signal=DS.SYMBOL),
         Printers.ConstraintPrinter().as_handler(signal=DS.CONSTRAINT),

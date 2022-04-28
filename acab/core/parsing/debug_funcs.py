@@ -41,14 +41,25 @@ def debug_pyparsing(*flags, all_warnings=False):
 
 
 def debug_start_action(instring, loc, expr, *args):
+    """
+    Log Entry into parsers
+
+
+    """
     context = _calc_mark_string(instring, loc)
     logging.warning("{ctx[0]:>10&yellow}{ctx[1]:3&red}{ctx[2]:<10&yellow} {} <{}> at {}:  ", MATCHING, SC.blue(expr.name), loc, extra={'ctx':context})
 
 def debug_success_action(instring, startloc, endloc, expr, toks, *args):
+    """
+    Log Parser Success
+    """
     context = _calc_mark_string(instring, endloc)
     logging.warning("{ctx[0]:>10&yellow}{ctx[1]:3&red}{ctx[2]:<10&yellow}\t {} <{}> ({}) {}", MATCHED, SC.green(expr.name), str(toks), endloc, extra={'ctx':context})
 
 def debug_fail_action(instring, loc, expr, exc, *args):
+    """
+    Log Parser failure
+    """
     if isinstance(exc, pp.ParseBaseException):
         found_str = exc.pstr[exc.loc:exc.loc + 1].replace(r'\\', '\\').replace("\n", "\\n")
         mark_str  = _calc_mark_string(instring, exc.loc)

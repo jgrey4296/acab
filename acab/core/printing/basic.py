@@ -7,6 +7,9 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     Iterable, Iterator, Mapping, Match, MutableMapping,
                     Type, Protocol, Sequence, Tuple, TypeAlias, TypeGuard, TypeVar,
                     cast, final, overload, runtime_checkable)
+from collections import defaultdict, deque
+from unittest.mock import DEFAULT
+from uuid import UUID, uuid1
 
 if TYPE_CHECKING:
     # tc only imports
@@ -30,8 +33,12 @@ Sentence         : TypeAlias = AT.Sentence
 ModuleComponents : TypeAlias = AT.ModuleComponents
 GenFunc          : TypeAlias = AT.fns.GenFunc
 
+REGISTER = "REGISTER"
+
+@dataclass
 class PrintSystemImpl(HS.HandlerSystem, PI.PrintSystem_i):
 
+    print_registers : dict[UUID, list[str]] = field(init=False, default_factory=lambda: defaultdict(lambda: list()))
     total : ClassVar[int]  = 0
 
     def __post_init__(self, specs, handlers, sieve_fns) -> None: #type:ignore[no-untyped-def]
@@ -43,6 +50,9 @@ class PrintSystemImpl(HS.HandlerSystem, PI.PrintSystem_i):
 
     def __call__(self, *args:Sentence) -> str:
         return self.pprint(*args)
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__}: {len(self.handler_specs)} handlers, {len(self.sieve)} sieves>"
 
     def check(self, val:str) -> None | str:
         """ Check a value to toggle variations/get defaults"""
@@ -59,38 +69,55 @@ class PrintSystemImpl(HS.HandlerSystem, PI.PrintSystem_i):
 
         Handler's return a list of values to go onto stack.
         """
-        remaining = [[x, self.separator] for x in args[:-1]] + [args[-1]] #type:ignore
-        result = []
+        logging.info("Initiating pprint on {} sentences", len(args))
+        self.print_registers.clear()
+        remaining = deque([[x, self.separator] for x in args[:-1]] + [args[-1]]) #type:ignore
+        result    = []
         while bool(remaining):
             PrintSystemImpl.total += 1
-            current = remaining.pop(0)
+            current = remaining.popleft()
+            target  = current
             spec    = None
             data    : dict[str, Any] = {}
-            if isinstance(current, str):
-                result.append(current)
-                continue
-            elif isinstance(current, list):
-                remaining = current + remaining
-                continue
+            # flatten and get spec
+            match current:
+                case str():
+                    result.append(current)
+                    continue
+                case list():
+                    remaining.extendleft(reversed(current))
+                    continue
+                case HSi.HandlerOverride(signal="_") if (isinstance(current.value, str) and
+                                                         REGISTER in current.data):
+                    self.print_registers[current.data[REGISTER]].append(current.value)
+                    continue
+                case HSi.HandlerOverride():
+                    spec = self.lookup(current)
+                    data.update(current.data)
+                    target = current.value
+                case _:
+                    spec = self.lookup(current)
+
+            logging.debug("(Remain/Total:{:3}/{:4}) Calling: {:>15} : {}", len(remaining), PrintSystemImpl.total, str(spec), target)
+            # Run spec
+            is_default = spec.signal == DEFAULT_HANDLER_SIGNAL
+            if  not is_default and spec.check_api(func=PI.PrintSemantics_i):
+                handled = spec[0](target, top=self, data=data)
             else:
-                spec = self.lookup(current)
+                handled = spec[0](target, data=data)
 
-            if isinstance(current, HSi.HandlerOverride):
-                data.update(current.data)
-                current = current.value
-
-            if spec.check_api(func=PI.PrintSemantics_i):
-                logging.debug("(Remain:{:3}/{:4}) Calling: {:>15} : {}", len(remaining), PrintSystemImpl.total, str(spec), current)
-                handled = spec[0](current, top=self, data=data)
-            else:
-                handled = spec[0](current, data=data)
-
-            if not isinstance(handled, list):
-                handled = [handled]
-
-            # Add the results of a handler to the head
-            remaining = handled + remaining
-
+            # Add the results of a handler to the head,
+            # and propagate registers
+            match (REGISTER in data, handled):
+                case (False, list()):
+                    remaining.extendleft(reversed(handled))
+                case (True, list()):
+                    wrapped = [self.assign_to_register(False, x, data)[1] for x in handled]
+                    remaining.extendleft(reversed(wrapped))
+                case (True, x):
+                    remaining.appendleft(self.assign_to_register(False, x, data)[1])
+                case (False, x):
+                    remaining.appendleft(x)
 
         return "".join(result)
 
@@ -104,6 +131,16 @@ class PrintSystemImpl(HS.HandlerSystem, PI.PrintSystem_i):
             for val in print_fragment:
                 self.register(val) #type:ignore[no-untyped-call]
 
+
+
+    def assign_to_register(self, signal, value, existing_data=None):
+        if existing_data and REGISTER in existing_data:
+            reg = existing_data[REGISTER]
+        else:
+            reg    = uuid1()
+        data = {REGISTER: reg}
+        overridden = self.override(signal, value, data=data)
+        return reg, overridden
 
 class PrintSemanticsImpl(HS.HandlerComponent, PI.PrintSemantics_i):
 

@@ -33,6 +33,7 @@ from acab.core.value.value import AcabValue
 from acab.interfaces.handler_system import Handler_i
 from acab.modules.printing import default
 from acab.modules.printing.basic_printer import BasicPrinter
+from acab.core.printing import default_signals as DSig
 
 NEGATION_S        = config.prepare("Value.Structure", "NEGATION")()
 QUERY_S           = config.prepare("Value.Structure", "QUERY")()
@@ -126,6 +127,7 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
         sem = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
                            init_handlers=[Printers.AnnotationAwareValuePrinter().as_handler(signal="ATOM"),
                                           Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
+                                          Printers.AnnotationFinaliser().as_handler(signal=DSig.ANNOTATIONS_FINAL),
                                           Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
                                           Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
                                           Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
@@ -142,6 +144,8 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
         sem = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
                            init_handlers=[Printers.ModalAwarePrinter().as_handler(signal="ATOM"),
                                           Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
+                                          Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
+                                          Printers.AnnotationFinaliser().as_handler(signal=DSig.ANNOTATIONS_FINAL),
                                           Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
                                           Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                           Printers.ModalPrinter().as_handler(signal="MODAL")],

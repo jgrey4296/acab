@@ -46,14 +46,13 @@ ValueData     : TypeAlias = str
 
 ProtocolMeta = type(Protocol)
 
+
 class ValueMeta(ProtocolMeta):
     """ Utility Meta Class for building values """
 
-    name_sieve           : ClassVar[AcabSieve[str]] = AcabSieve(name_sieve_fns)
-    default_data         : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE : DS.TYPE_BASE,
-                                                       DS.BIND : False}
-
-    __subclasses  : ClassVar[dict[str,type[Value_A]]]      = dict()
+    name_sieve    : ClassVar[AcabSieve[str]]           = AcabSieve(name_sieve_fns)
+    default_data  : ClassVar[dict[str, Any]]           = {DS.TYPE_INSTANCE : DS.TYPE_BASE, DS.BIND : False}
+    __subclasses  : ClassVar[dict[str,type[Value_A]]]  = dict()
 
     def __init__(cls, name:str, bases:tuple[type, ...], data:dict[str,Any]):
         super(ValueMeta, cls).__init__(name, bases, data)
@@ -63,7 +62,6 @@ class ValueMeta(ProtocolMeta):
             raise TypeError("Duplicated Type: {}".format(full_name))
         # Keep track of all subclasses
         ValueMeta.__subclasses[full_name] = cls
-
 
     def __call__(cls, value:T=None, *, name=None, data=None, params=None, tags=None, _type=None, **kwargs) -> Value_A:
         """
@@ -91,6 +89,7 @@ class ValueMeta(ProtocolMeta):
         name    = ValueMeta.name_sieve.fifo_first({'name': name, 'class':cls, 'value': value})
         # Build the actual value
         new_obj = super(ValueMeta, cls).__call__(value, name=name, data=_data, params=params, tags=tags, **kwargs)
+
         return new_obj
 
     @staticmethod

@@ -67,7 +67,7 @@ class BasicSemanticSystem(basic.SemanticSystem, SemanticSystem_i):
             # TODO verify instruction against semantics
             assert(spec is not None)
             struct = spec.struct
-            logging.debug(f"Firing Semantics: {spec}")
+            logging.info("Firing Semantics: {}", spec)
             # StructSems's use a reference to a struct
             # StatementSems use a reference to the sem system in place of a struct
             if struct is None:
@@ -96,16 +96,3 @@ class BasicSemanticSystem(basic.SemanticSystem, SemanticSystem_i):
         return default[0].to_sentences(default.struct)
 
 
-    def __repr__(self):
-        ops = ""
-        if bool(self._operator_cache):
-            ops = f", operators={len(self._operator_cache)}"
-
-        return f"<{self.__class__.__name__} handlers={len(self.handler_specs)}, sieve={len(self.sieve)}{ops}>"
-
-    @staticmethod
-    def from_sentences(self, sens):
-        raise NotImplementedError()
-
-    def to_word(self):
-        raise NotImplementedError()

@@ -78,9 +78,6 @@ class ContextInstance(CtxInt.ContextInstance_i):
         # TODO maybe handle AT_BINDs
         key = str(value)
         match value:
-            case VI.Sentence_i() if value[0].is_at_var:
-                logging.warning("Tried to ctxinst.__getitem__ an @var")
-                key = value.key()
             case VI.Value_i() if value.is_at_var:
                 logging.warning("Tried to ctxinst.__getitem__ an @var")
                 key = value.key()
@@ -209,6 +206,10 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
     uuid         : UUID             = field(default_factory=uuid1)
     exact        : bool             = field(default=False)
 
+    _finished    : None | CtxIns    = field(init=False, default=None)
+    class EarlyExitException(BaseException):
+        pass
+
     def __contains__(self, value: int|str|Value):
         key = value
         if isinstance(value, VI.Sentence_i):
@@ -256,17 +257,29 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
         return self
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
-        if exc_type is None and self.parent is not None:
-            self.parent.push(self.finish())
+        early_exit = exc_type is MutableContextInstance.EarlyExitException
+        if early_exit or exc_type is None:
+            self.finish()
 
-        # Re-raise any errors
+        if early_exit:
+            # Don't complain about early exits
+            return True
+
+        # Do complain about anything else
         return False
 
     def __iter__(self):
         raise NotImplementedError("Iteration on a MutableContextInstance is nonsensical")
 
     def finish(self):
-        return self.base.bind_dict(self.data)
+        self._finished = self.base.bind_dict(self.data)
+        if self.parent is not None:
+            self.parent.push(self._finished)
+
+    @property
+    def final_ctx(self):
+        assert(self._finished is not None)
+        return self._finished
 
     def bind(self, word, nodes):
         raise NotImplementedError()

@@ -53,8 +53,8 @@ print_fragment = PrinterFragment(specs=[HandlerSpec(TYPE_INSTANCE),
                                         HandlerSpec(SUM_TYPE),
                                         HandlerSpec(OP_DEF),
                                         HandlerSpec(TYPE_CLASS)],
-                                 handlers=[TPR.TypeAwareValuePrinter,
-                                           TPR.TypeRecordPrinter,
-                                           TPR.SumTypePrinter,
-                                           TPR.OperatorTypePrinter,
-                                           TPR.TypeClassPrinter])
+                                 handlers=[TPR.TypeAwareValuePrinter().as_handler(),
+                                           TPR.TypeRecordPrinter().as_handler(),
+                                           TPR.SumTypePrinter().as_handler(),
+                                           TPR.OperatorTypePrinter().as_handler(),
+                                           TPR.TypeClassPrinter().as_handler()])

@@ -67,6 +67,14 @@ class SemanticSystem(HSImpl.HandlerSystem, SI.SemanticSystem_i):
     ctx_set         : CtxSet
     _operator_cache : None|CtxIns
 
+
+    def __repr__(self):
+        ops = ""
+        if bool(self._operator_cache):
+            ops = f", operators={len(self._operator_cache)}"
+
+        return f"<{self.__class__.__name__} handlers={len(self.handler_specs)}, sieve={len(self.sieve)}{ops}>"
+
     def build_ctxset(self, ops:None|list[ModuleComponents]=None) -> CtxSet:
         """ Build a context set. Use passed in operators if provided.
         Caches operators
@@ -107,8 +115,10 @@ class StructureSemantics(HSImpl.HandlerSystem, HSImpl.HandlerComponent, SI.Struc
         assert(isinstance(sen, Sentence_i))
         # TODO move query annotation to sentence, not the last word
         if QUERY in sen.data and bool(sen.data[QUERY]):
+            logging.info("Firing Query Semantics")
             return self.query(sen, struct, ctxs=ctxs, data=data)
 
+        logging.info("Firing Insert Semantics")
         return self.insert(sen, struct, ctxs=ctxs, data=data)
 
 

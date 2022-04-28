@@ -1,25 +1,25 @@
 #!/usr/bin/env python3
 from dataclasses import dataclass, field
+from itertools import filterfalse, starmap, zip_longest
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
-from itertools import zip_longest, filterfalse, starmap
 
 import acab.core.value.default_structure as DS
 import acab.interfaces.value as VI
 from acab.core.config.config import GET, AcabConfig, ConfigSpec
-from acab.core.value.sentence import Sentence
-from acab.core.value.instruction import Instruction
-from acab.interfaces.printing import PrintSemantics_i
+from acab.core.printing import basic
 from acab.core.printing import default_symbols as DSYM
 from acab.core.printing import wrappers as PW
 from acab.core.util.decorators.util import HandleSignal
-
+from acab.core.value.instruction import Instruction
+from acab.core.value.sentence import Sentence
+from acab.interfaces.printing import PrintSemantics_i
 
 config = GET()
 
 @HandleSignal("TYPE_INSTANCE")
-class TypeAwareValuePrinter(PrintSemantics_i):
+class TypeAwareValuePrinter(basic.PrintSemanticsImpl):
 
     def __call__(self, value, top=None, data=None):
         return_list = []
@@ -34,7 +34,7 @@ class TypeAwareValuePrinter(PrintSemantics_i):
 
 
 @HandleSignal("TYPE_DEF")
-class TypeRecordPrinter(PrintSemantics_i):
+class TypeRecordPrinter(basic.PrintSemanticsImpl):
 
     def __call__(self, value, top=None, data=None):
         ret_list = []
@@ -64,13 +64,20 @@ class TypeRecordPrinter(PrintSemantics_i):
         return ret_list
 
 @HandleSignal("SUM_TYPE")
-class SumTypePrinter(PrintSemantics_i):
-    pass
+class SumTypePrinter(basic.PrintSemanticsImpl):
+    def __call__(self, value, top=None, data=None):
+        return_list = ["SUMTYPE"]
+        return return_list
+
 
 @HandleSignal("OP_DEF")
-class OperatorTypePrinter(PrintSemantics_i):
-    pass
+class OperatorTypePrinter(basic.PrintSemanticsImpl):
+    def __call__(self, value, top=None, data=None):
+        return_list = ["OPTYPE"]
+        return return_list
 
 @HandleSignal("TYPE_CLASS")
-class TypeClassPrinter(PrintSemantics_i):
-    pass
+class TypeClassPrinter(basic.PrintSemanticsImpl):
+    def __call__(self, value, top=None, data=None):
+        return_list = ["TYPECLASS"]
+        return return_list

@@ -34,7 +34,7 @@ class BreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantics_i):
     register, __bool__, Spec, verify_system, extend, lookup
     """
     def verify(self, instruction) -> bool:
-        return isinstance(instruction, Sentence)
+        return isinstance(instruction, Sentence_i)
 
     def compatible(self, struct):
         is_bns = isinstance(struct, BasicNodeStruct)
@@ -88,11 +88,11 @@ class BreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantics_i):
 
     def query(self, sen, struct, *, data=None, ctxs=None):
         """ Breadth First Search Query """
-        if ctxs is None:
-            raise ASErr.AcabSemanticException("Ctxs is none to TrieSemantics.query", rest=sen)
+        assert(ctxs is not None)
 
-        with ContextQueryManager(sen, struct.root, ctxs) as cqm:
-            for source_word in cqm.query:
+        cqm = ContextQueryManager(sen, struct.root, ctxs)
+        with cqm:
+            for source_word in cqm.current:
                 for bound_word, ctxInst, current_node in cqm.active:
                     if source_word.is_at_var and not bool(cqm._current_constraint):
                         continue
@@ -106,7 +106,7 @@ class BreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantics_i):
 
                         cqm.maybe_test(results)
 
-        return ctxs
+        return cqm.finished
 
     def to_sentences(self, struct, data=None, ctxs=None):
         """ Convert a trie to a list of sentences

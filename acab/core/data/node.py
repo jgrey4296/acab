@@ -18,6 +18,7 @@ from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue
 from acab.core.util.decorators.util import cache
 from acab.core.value.factory import ValueFactory as VF
+from acab.core.util.debugging import logdel
 
 logging                = logmod.getLogger(__name__)
 
@@ -29,6 +30,8 @@ Value      : TypeAlias = AT.Value
 
 ROOT                   = config.prepare("Data", "ROOT")()
 
+
+@logdel
 @dataclass
 class AcabNode(DI.Node_i):
     """ The Base Node Class for Tries/Data structures etc

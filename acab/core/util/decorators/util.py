@@ -80,25 +80,6 @@ def invalidate_cache(f:Callable[..., T]) -> Callable[..., T]:
     wrapped.__name__ = f"Cached({f.__name__})"
     return wrapped
 
-def singleton(orig_cls:Any) -> Any:
-    """ From:
-    https://igeorgiev.eu/python/design-patterns/python-singleton-pattern-decorator/
-    """
-    raise DeprecationWarning("use Singleton meta classes instead")
-    orig_new = orig_cls.__new__
-    instance = None
-
-    @wraps(orig_cls.__new__)
-    def __new__(cls, *args, **kwargs):
-        nonlocal instance
-        if instance is None:
-            instance = orig_new(cls, *args, **kwargs)
-        return instance
-
-    orig_cls.__new__ = __new__
-    return orig_cls
-
-
 def HandleSignal(sig : str) -> Callable[..., Any]:
     """
     Utility to easily add a signal to classes for use in the handler system

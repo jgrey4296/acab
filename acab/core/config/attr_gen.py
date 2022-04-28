@@ -65,6 +65,7 @@ class AttrGenerator:
     converting `[a.test.section]` in a config file
     to (a:Section).(test:Section).(section:Section)
 
+    does not check for overriden values, use config.prepare/value for that
     """
 
     def __init__(self, config: ConfigParser):
@@ -72,7 +73,7 @@ class AttrGenerator:
         self._added_keys = []
 
     def __repr__(self):
-        return "<Generated Attribute Access to Config Files>"
+        return "<Generated non-overriden Attribute Access to Config Files>"
 
     @property
     def sections(self):
@@ -82,17 +83,25 @@ class AttrGenerator:
         logging.debug("Generating Config Attributes")
         for section in self.__config.sections():
             logging.debug("Attr Section: {}", section)
+            leaf_section = self.__generate_subsections(section)
             sec_obj : SectionProxy  = self.__config[section]
-            subsections : List[str] = section.split(".")
+            self.__generate_values(leaf_section, sec_obj)
 
-            current = self.__generate_subsections(subsections)
-            self.__generate_values(current, sec_obj)
         logging.debug("Config Attributes Generated")
         logging.debug("Config Attrbute Sections: {}", self.sections)
 
 
-    def __generate_subsections(self, section_names: list[Any]) -> AttrSection:
-        current : AttrSection|AttrGenerator = self
+    def __generate_subsections(self, section: str) -> AttrSection:
+        """
+        Convert a configreader  to a trie of AttrSections (AS).
+        Ready to add values into the leaf section.
+        eg:
+        [A.Config.Section]
+        ->
+        AS(A).AS(Config).AS(Section)
+        """
+        section_names : List[str] = section.split(".")
+        current       : AttrSection|AttrGenerator = self
 
         for name in section_names:
             subsection = getattr(current, name, AttrSection(name))
@@ -106,6 +115,21 @@ class AttrGenerator:
 
 
     def __generate_values(self, current:AttrSection, section: SectionProxy):
+        """
+        Given an AttrSection(AS) and the configreader's sectionproxy,
+        add the key/value pairs (or if only keys, key/key pairs)
+        to the AttrSection.
+
+        Converts integers and bools, strips surrounding quote marks,
+        and removes newlines from values
+
+        eg:
+        [A_Section]
+        key = value
+        key2
+        ->
+        AS(A_Section, {key: value, key2: key2})
+        """
         for k,v in section.items():
             if v is None:
                 v = k

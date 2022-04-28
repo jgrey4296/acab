@@ -34,6 +34,7 @@ class DelayedCommands_i:
         Useful for adding ctxins results without interfering with current operations,
         """
         assert(isinstance(instr, self.delayed_e))
+        logging.debug("Delaying: {}", instr)
         if instr not in self._purgatory:
             self._purgatory[instr] = set()
 
@@ -44,7 +45,7 @@ class DelayedCommands_i:
 
     def run_delayed(self):
         """ Similar to Cmd implementation, each instr should have a do_{x} method """
-        logging.debug(f"Performing {len(self._purgatory)} Delayed Instructions")
+        logging.debug("Performing {} Delayed Instructions", len(self._purgatory))
         # run priority enums
         # if self.delayed_e.CLEAR in self._purgatory:
         #     self._active = []
