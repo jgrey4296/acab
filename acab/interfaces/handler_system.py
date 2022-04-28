@@ -109,3 +109,9 @@ class HandlerOverride:
     signal   : str              = field()
     value    : Value            = field()
     data     : dict[Any, Any]   = field(default_factory=dict)
+
+    def replace(self, *, signal=None, data=None):
+        updated = replace(self,
+                          signal=signal or self.signal)
+        updated.data.update(data)
+        return updated

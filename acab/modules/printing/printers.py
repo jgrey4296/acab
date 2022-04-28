@@ -106,8 +106,8 @@ class AnnotationAwareValuePrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
     def __call__(self, value, top=None, data=None):
         return_list = []
 
-        curr_str = [str(value.name)]
-        return_list.append(self.run_transforms(value, curr_str))
+        curr_str = [value.name]
+        return_list += (self.run_transforms(value, curr_str))
         return_list.append(top.override(DS.ANNOTATIONS, value, data=data))
 
         # Pass data through to modal:

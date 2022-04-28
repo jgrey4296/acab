@@ -23,10 +23,11 @@ import acab.modules.parsing.exlo.parsers.RuleParser as RP
 import acab.modules.parsing.exlo.parsers.TransformParser as TP
 import acab.modules.printing.printers as Printers
 from acab.core.config.config import AcabConfig
+from acab.core.printing import default_signals as DSig
 from acab.core.value import default_structure as DS
 from acab.core.value.instruction import (Instruction, ProductionComponent,
-                                        ProductionContainer,
-                                        ProductionOperator)
+                                         ProductionContainer,
+                                         ProductionOperator)
 from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue
 from acab.interfaces.handler_system import Handler_i
@@ -226,6 +227,7 @@ class PrintValueSemanticTests(unittest.TestCase):
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
                                init_handlers=[
                                    Printers.AnnotationAwareValuePrinter().as_handler(signal="ATOM"),
+                                   Printers.AnnotationFinaliser().as_handler(signal=DSig.ANNOTATIONS_FINAL),
                                    Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
                                    Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
                                    Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
@@ -236,7 +238,7 @@ class PrintValueSemanticTests(unittest.TestCase):
                                ],
                                sieve_fns=[],
                                settings={"MODAL": "exop"})
-        value = FP.parse_string("con.test(λa.test.op $x)")[0][-1]
+        value = FP.parse_string("test(λa.test.op $x)")[0][-1]
         result = sem_sys.pprint(value)
         self.assertEqual(result, "test(λa.test.op $x).")
 
@@ -250,7 +252,8 @@ class PrintValueSemanticTests(unittest.TestCase):
                                               Printers.ConstraintPrinter().as_handler(signal="CONSTRAINT"),
                                               Printers.ModalPrinter().as_handler(signal="MODAL"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
-                                              Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS")],
+                                              Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
+                                              Printers.AnnotationFinaliser().as_handler(signal=DSig.ANNOTATIONS_FINAL)],
                                sieve_fns=[],
                               settings={"MODAL": "exop"})
         value = FP.parse_string("con.test(λa.test.op $x $y)")[0][-1]

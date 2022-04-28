@@ -7,7 +7,8 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     Iterable, Iterator, Mapping, Match, MutableMapping,
                     Type, Protocol, Sequence, Tuple, TypeAlias, TypeGuard, TypeVar,
                     cast, final, overload, runtime_checkable)
-from collections import defaultdict
+from collections import defaultdict, deque
+from unittest.mock import DEFAULT
 from uuid import UUID, uuid1
 
 if TYPE_CHECKING:
@@ -70,12 +71,12 @@ class PrintSystemImpl(HS.HandlerSystem, PI.PrintSystem_i):
         """
         logging.info("Initiating pprint on {} sentences", len(args))
         self.print_registers.clear()
-        remaining = [[x, self.separator] for x in args[:-1]] + [args[-1]] #type:ignore
+        remaining = deque([[x, self.separator] for x in args[:-1]] + [args[-1]]) #type:ignore
         result    = []
         while bool(remaining):
             PrintSystemImpl.total += 1
-            current = remaining.pop(0)
-            target = current
+            current = remaining.popleft()
+            target  = current
             spec    = None
             data    : dict[str, Any] = {}
             # flatten and get spec
@@ -84,7 +85,7 @@ class PrintSystemImpl(HS.HandlerSystem, PI.PrintSystem_i):
                     result.append(current)
                     continue
                 case list():
-                    remaining = current + remaining
+                    remaining.extendleft(reversed(current))
                     continue
                 case HSi.HandlerOverride(signal="_") if (isinstance(current.value, str) and
                                                          REGISTER in current.data):
@@ -99,7 +100,8 @@ class PrintSystemImpl(HS.HandlerSystem, PI.PrintSystem_i):
 
             logging.debug("(Remain/Total:{:3}/{:4}) Calling: {:>15} : {}", len(remaining), PrintSystemImpl.total, str(spec), target)
             # Run spec
-            if spec.check_api(func=PI.PrintSemantics_i):
+            is_default = spec.signal == DEFAULT_HANDLER_SIGNAL
+            if  not is_default and spec.check_api(func=PI.PrintSemantics_i):
                 handled = spec[0](target, top=self, data=data)
             else:
                 handled = spec[0](target, data=data)
@@ -108,14 +110,14 @@ class PrintSystemImpl(HS.HandlerSystem, PI.PrintSystem_i):
             # and propagate registers
             match (REGISTER in data, handled):
                 case (False, list()):
-                    remaining = handled + remaining
+                    remaining.extendleft(reversed(handled))
                 case (True, list()):
                     wrapped = [self.assign_to_register(False, x, data)[1] for x in handled]
-                    remaining = wrapped + remaining
-                case (True, _):
-                    remaining = [self.assign_to_register(False, x, data)[1]] + remaining
-                case (False, _):
-                    remaining = [handled] + remaining
+                    remaining.extendleft(reversed(wrapped))
+                case (True, x):
+                    remaining.appendleft(self.assign_to_register(False, x, data)[1])
+                case (False, x):
+                    remaining.appendleft(x)
 
         return "".join(result)
 

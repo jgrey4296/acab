@@ -1,19 +1,22 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
+
+import logging as logmod
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
 
 from acab import types as AT
-from acab.interfaces import value as VI
-from acab.interfaces import data as DI
-from acab.interfaces import context as CI
-from acab.error.semantic import AcabSemanticException
 from acab.core.value import default_structure as DS
 from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue
-from acab.interfaces.value import Value_i, Sentence_i
+from acab.error.semantic import AcabSemanticException
+from acab.interfaces import context as CI
+from acab.interfaces import data as DI
+from acab.interfaces import value as VI
+from acab.interfaces.value import Sentence_i, Value_i
+
+logging = logmod.getLogger(__name__)
 
 # TODO make this a handler system, or part of semantics?
 

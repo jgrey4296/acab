@@ -18,6 +18,7 @@ from acab.core.config.config import GET
 from acab.core.util.decorators.util import cache
 from acab.error.handler import AcabHandlerException
 from acab.interfaces import handler_system as HS
+from acab.interfaces.config import ConfigSpec_d
 from acab.interfaces.data import Structure_i
 from acab.interfaces.sieve import AcabSieve
 from acab.interfaces.value import Sentence_i, Value_i
@@ -104,7 +105,6 @@ class HandlerSystem(HS.HandlerSystem_i):
         is_passthrough = is_override and value.signal == PASSTHROUGH
         # For using an override to carry data, without an override signal
         if is_passthrough:
-            assert(isinstance(value.value, Value_i))
             value = value.value
 
         for key in self.sieve.fifo(value):
@@ -125,13 +125,11 @@ class HandlerSystem(HS.HandlerSystem_i):
 
     def override(self, new_signal: bool | str, value, data=None) -> Overrider:
         """ wrap a value to pass data along with it, or explicitly control the signal it produces for handlers """
-        # TODO override on an override
         data = data or {}
 
         if isinstance(value, HS.HandlerOverride):
-            updated = value.replace(signal=new_signal or value.signal)
-            updated.data.update(data)
-            return updated
+            # override on an override
+            return value.replace(signal=new_signal, data=data)
 
         match new_signal:
             case str() if new_signal in self:
