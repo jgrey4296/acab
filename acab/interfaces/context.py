@@ -13,7 +13,7 @@ from enum import Enum
 from typing import (Any, Callable, ClassVar, Collection, Generic, Hashable,
                     Iterable, Iterator, Literal, Mapping, Match,
                     MutableMapping, Protocol, Sequence, Set, Tuple, TypeAlias,
-                    TypeVar, cast, overload, runtime_checkable)
+                    TypeVar, cast, overload, runtime_checkable, ContextManager)
 from uuid import UUID
 
 logging = logmod.getLogger(__name__)
@@ -97,4 +97,63 @@ class Constraint_i(_Constraint_p):
 
     # Value -> (key, list[Constraint])
     sieve         : ClassVar[list[GenFunc]]
+
+
+
+@dataclass
+class CtxManager_i(ContextManager):
+
+    target_clause : None|Sen = field()
+    root_node     : Node     = field()
+    ctxs          : CtxSet   = field()
+
+    _purgatory : list[ContextInstance_i] = field(init=False, default_factory=list)
+
+    def __iter__(self): pass
+    def __enter__(self): pass
+    # Must call activate_ctxs
+    def __exit__(self, exc_type, exc_value, traceback): pass
+
+    # Getting the current state
+    @property
+    def finished(self):
+        assert(not bool(self._purgatory))
+        return self.ctxs
+
+    @property
+    def current(self) -> Iterator[Value]: pass
+    @property
+    def active(self) -> Iterator[Tuple[Value, CtxIns, Node]]: pass
+
+    def maybe_test(self, results:list[Node]): pass
+    # For recording results of tests
+    def queue_ctxs(self, ctxs:list[ContextInstance_i]):
+        self._purgatory += ctxs
+
+    def activate_ctxs(self):
+        self.ctxs.push(self._purgatory[:])
+        self._purgatory = []
+
+    def collect(self):
+        """
+        Context collecton specific vars.
+        Flattens many contexts into one, with specified variables
+        now as lists accumulated from across the contexts.
+
+        Semantics of collect:
+        0[ctxs]0 -> fail
+        1[ctxs]n -> 1[α]1
+        where
+        α : ctx = ctxs[0] ∪ { β : ctx[β] for ctx in ctxs[1:] }
+        β : var to collect
+
+
+        """
+        if not bool(self.collect_vars):
+            return
+
+        # select instances with bindings
+        # Merge into single new instance
+        # replace
+        raise NotImplementedError()
 

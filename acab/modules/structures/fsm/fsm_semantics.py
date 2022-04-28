@@ -92,8 +92,7 @@ class FSMSemantics(SI.StructureSemantics_i):
         $x(λactive).$y?
         """
         # Query from start to finish
-        if ctxs is None:
-            raise ASErr.AcabSemanticException("Ctxs is None to fsm query", query)
+        assert(ctxs is not None)
 
         negated_query = False
         if NEGATION_S in sen.data and sen.data[NEGATION_S]:

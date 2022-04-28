@@ -18,6 +18,7 @@ from acab.core.config.config import GET
 from acab.core.util.decorators.util import cache
 from acab.error.handler import AcabHandlerException
 from acab.interfaces import handler_system as HS
+from acab.interfaces.config import ConfigSpec_d
 from acab.interfaces.data import Structure_i
 from acab.interfaces.sieve import AcabSieve
 from acab.interfaces.value import Sentence_i, Value_i
@@ -104,7 +105,6 @@ class HandlerSystem(HS.HandlerSystem_i):
         is_passthrough = is_override and value.signal == PASSTHROUGH
         # For using an override to carry data, without an override signal
         if is_passthrough:
-            assert(isinstance(value.value, Value_i))
             value = value.value
 
         for key in self.sieve.fifo(value):
@@ -125,34 +125,39 @@ class HandlerSystem(HS.HandlerSystem_i):
 
     def override(self, new_signal: bool | str, value, data=None) -> Overrider:
         """ wrap a value to pass data along with it, or explicitly control the signal it produces for handlers """
-        # TODO override on an override
-        if isinstance(new_signal, str) and new_signal not in self:
-            raise AcabHandlerException(f"Undefined override handler: {new_signal}")
+        data = data or {}
 
-        if isinstance(new_signal, bool) and not new_signal:
-            new_signal = PASSTHROUGH
-        elif isinstance(new_signal, bool) and bool(new_signal):
-            raise TypeError("new_signal should be False or a string", new_signal)
+        if isinstance(value, HS.HandlerOverride):
+            # override on an override
+            return value.replace(signal=new_signal, data=data)
 
-        if bool(data):
-            return HS.HandlerOverride(new_signal, value, data=data)
+        match new_signal:
+            case str() if new_signal in self:
+                pass
+            case bool() if not new_signal:
+                new_signal = PASSTHROUGH
+            case _:
+                raise TypeError("Bad Override signal", new_signal)
 
-        return HS.HandlerOverride(new_signal, value)
+        return HS.HandlerOverride(new_signal, value, data=data)
 
     #pylint: disable-next=too-many-branches
     def register(self, *others):
         for other in others:
-            if isinstance(other, HS.HandlerFragment_i):
-                for item in other:
-                    self.register(item)
-            elif isinstance(other, HS.HandlerSpec_i):
-                self._register_spec(other)
-            elif isinstance(other, HS.Handler_i):
-                self._register_handler(other)
-            elif isinstance(other, HS.HandlerOverride):
-                raise AcabHandlerException("Attempt to register a HandlerOverride, it should be __call__ed instead")
-            elif isinstance(other, dict):
-                self._register_data(other)
+            match other:
+                case HS.HandlerFragment_i():
+                    for item in other:
+                        self.register(item)
+                case HS.HandlerSpec_i():
+                    self._register_spec(other)
+                case HS.Handler_i():
+                    self._register_handler(other)
+                case HS.HandlerOverride():
+                    raise AcabHandlerException("Attempt to register a HandlerOverride, it should be __call__ed instead")
+                case dict():
+                    self._register_data(other)
+                case _:
+                    raise AcabHandlerException("Attempt to register unknown type", rest=[other])
 
         return self
 
@@ -204,6 +209,7 @@ class HandlerSystem(HS.HandlerSystem_i):
 
     def extend(self, modules:list[ModuleComponents]) -> None:
         raise NotImplementedError()
+
 @APE.assert_concrete
 class HandlerSpec(HS.HandlerSpec_i):
     def __str__(self):
@@ -233,6 +239,7 @@ class HandlerSpec(HS.HandlerSpec_i):
         return self.handlers[i].func
 
     def __call__(self, *args, **kwargs) -> None | Any:
+        logging.debug("Calling Handlers of Signal Spec: {}", self.signal)
         # TODO more advanced logic
         args_l : list[Any] = list(args)
         if len(args_l) < 2:
@@ -302,26 +309,26 @@ class HandlerSpec(HS.HandlerSpec_i):
         # And check types
         if handler.struct is not None:
             self.add_struct(handler)
-
+        # NOT ELIF
         if self.flag_e.OVERRIDE in handler.flags and handler.func is not None:
             self.handlers = [handler]
         elif handler.func is not None:
             self.check_api(func=handler.func)
             self.handlers.append(handler)
-
+        # NOT ELIF
         if self.handler_limit is None:
             return
 
         # once you hit the minimum number of handlers, you can't go lower
+        # NOT ELIF
         if not self.h_limit_history and self.handler_limit.start <= len(self.handlers):
             self.h_limit_history = True
 
-        if self.h_limit_history and len(self.handlers) < self.handler_limit.start:
-            raise AcabHandlerException("Handlers Lower Limit Failure")
-
-        if self.handler_limit.stop < len(self.handlers):
-            raise AcabHandlerException("Handlers Upper Limit Failure")
-
+        match (self.h_limit_histoy, len(self.handlers), self.handler_limit.start, self.handler_limit.stop):
+            case (history, count, start, _) if count < start:
+                raise AcabHandlerException("Handlers Lower Limit Failure")
+            case (history, count, _, stop) if stop < count:
+                raise AcabHandlerException("Handlers Upper Limit Failure")
 
 
     def add_struct(self, handler):

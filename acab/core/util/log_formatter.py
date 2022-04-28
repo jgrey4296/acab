@@ -72,19 +72,67 @@ class AcabStringFormatter(Formatter):
     type            ::=  "b" | "c" | "d" | "e" | "E" | "f" | "F" | "g" | "G" | "n" | "o" | "s" | "x" | "X" | "%"
     colour          ::=  "&" colour
     """
+    def __init__(self):
+        super().__init__()
+        self._colour = True
+
+    def format(self, msg, *args, colour=True, **kwargs):
+        self._colour = colour
+        return super().format(msg, *args, **kwargs)
+
+
     def format_field(self, value, format_spec):
         split_format = format_spec.split("&")
-        try:
-            result = format(value, split_format[0])
-        except TypeError:
-            breakpoint()
+        result = format(value, split_format[0])
         # apply colour
-        if len(split_format) == 2 and split_format[1] in LEVEL_MAP:
+        if (self._colour and
+            len(split_format) == 2 and
+            split_format[1] in LEVEL_MAP):
             result = LEVEL_MAP[split_format[1]] + result + COLOUR_RESET
         return result
 
 
-class AcabLogRecord(logging.LogRecord):
+
+class AcabMinimalLogRecord(logging.LogRecord):
+    """
+    Acab uses {} formatting in log messages,
+    this is a minimal log record modification to handle that
+    """
+
+    @classmethod
+    def install(cls):
+        """
+        Install the log record, capable of handling
+        both % and .format style messages
+        """
+        logging.warning("Installing %s", cls.__name__)
+        logging.setLogRecordFactory(cls)
+
+    def getMessage(self, colour=True):
+        """
+        Minimal modification of default getMessage,
+        which on a type error for: record.msg % record.args
+        will try: record.msg.format(*record.args)
+        """
+        msg = str(self.msg)
+        if self.args:
+            try:
+                msg = msg % self.args
+            except TypeError:
+                msg = msg.format(*self.args)
+
+        return msg
+
+
+class AcabLogRecord(AcabMinimalLogRecord):
+    """
+    Custom LogRecord which provides
+    \.shortname : attribute of just the last 25 characters of the logging path
+    (for aligning log files nicely)
+
+    % and {} style formatting of the log message, using AcabStringFormatter.
+    (this also allows &{colour} format spec)
+    """
 
     fmt = AcabStringFormatter()
 
@@ -94,24 +142,23 @@ class AcabLogRecord(logging.LogRecord):
         Install the log record, capable of handling
         both % and .format style messages
         """
-        logging.warning("Installing AcabLogRecord")
+        logging.warning("Installing %s", cls.__name__)
         logging.setLogRecordFactory(cls)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.shortname = ".".join(self.name.split(".")[-2:])[-25:]
 
-    def getMessage(self):
+    def getMessage(self, colour=True):
         msg = str(self.msg)
         if self.args:
             try:
                 msg = msg % self.args
             except TypeError:
                 if hasattr(self, 'ctx'):
-                    msg = self.fmt.format(msg, *self.args, ctx=self.ctx)
+                    msg = self.fmt.format(msg, *self.args, colour=colour, ctx=self.ctx)
                 else:
-                    msg = self.fmt.format(msg, *self.args)
-                # msg = msg.format(*self.args)
+                    msg = self.fmt.format(msg, *self.args, colour=colour)
 
         msg = msg.replace('\t', '    ')
         return msg
@@ -119,7 +166,10 @@ class AcabLogRecord(logging.LogRecord):
 
 
 class AcabLogFormatter(logging.Formatter):
-    """ Guarded Formatter for adding colour.
+    """
+    Stream Formatter for acab, enables use of colour sent to console
+
+    Guarded Formatter for adding colour.
     Uses the sty module.
     If sty is missing, behaves as the default formatter class
 
@@ -137,13 +187,13 @@ class AcabLogFormatter(logging.Formatter):
 
     _fields= "name levelno levelname pathname filename module lineno funcName created asctime msecs relativeCreated thread threadName process message"
 
-    def __init__(self, fmt=None, record=False):
+    def __init__(self, *, fmt=None, record=False):
         """
         Create the AcabLogFormatter with a given *Brace* style log format
         `record` will install the AcabLogRecord as the record factory if true
         """
-        if logging.getLogRecordFactory is not AcabLogRecord:
-            AcabLogRecord.install()
+        if not issubclass(logging.getLogRecordFactory(), AcabMinimalLogRecord):
+            AcabMinimalLogRecord.install()
 
         super().__init__(fmt or self._default_fmt,
                          datefmt=self._default_date_fmt,
@@ -157,11 +207,48 @@ class AcabLogFormatter(logging.Formatter):
 
 
 class AcabNameTruncateFormatter(logging.Formatter):
+    """
+    A Formatter for file logging, in a more verbose format than the stream formatter
+    """
     _default_fmt      = "{asctime} | {levelname:9} | {shortname:25} | {message}"
     _default_date_fmt = "%Y-%m-%d %H:%M:%S"
     _default_style    = '{'
 
-    def __init__(self):
-        if logging.getLogRecordFactory is not AcabLogRecord:
+    def __init__(self, *, fmt=None):
+        if not issubclass(logging.getLogRecordFactory(), AcabLogRecord):
             AcabLogRecord.install()
-        super().__init__(self._default_fmt, self._default_date_fmt, style=self._default_style)
+
+        super().__init__(fmt=fmt or self._default_fmt,
+                         datefmt=self._default_date_fmt,
+                         style=self._default_style)
+
+    def format(self, record):
+        """
+        Format the specified record as text.
+
+        A Simple modification of the default logging.Formatter.format method,
+        to ensure colours aren't generated by the AcabLogRecord
+
+        """
+        if isinstance(record, AcabLogRecord):
+            record.message = record.getMessage(colour=False)
+        else:
+            record.message = record.getMessage()
+
+        if self.usesTime():
+            record.asctime = self.formatTime(record, self.datefmt)
+        s = self.formatMessage(record)
+        if record.exc_info:
+            # Cache the traceback text to avoid converting it multiple times
+            # (it's constant anyway)
+            if not record.exc_text:
+                record.exc_text = self.formatException(record.exc_info)
+        if record.exc_text:
+            if s[-1:] != "\n":
+                s = s + "\n"
+            s = s + record.exc_text
+        if record.stack_info:
+            if s[-1:] != "\n":
+                s = s + "\n"
+            s = s + self.formatStack(record.stack_info)
+        return s

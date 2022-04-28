@@ -41,15 +41,11 @@ DELAYED_E = Enum("Delayed Instruction Set", "ACTIVE FAIL DEACTIVATE CLEAR MERGE"
 
 
 @dataclass
-class ContextQueryManager:
+class ContextQueryManager(CtxInt.CtxManager_i):
     """ Shared State of the current query, between different ctx insts """
 
-    query_clause  : None|Sen      = field()
-    root_node     : Node               = field()
-    ctxs          : CtxSet             = field()
-
-    negated       : bool               = field(init=False, default=False)
-    collect_vars  : set[str]           = field(init=False, default_factory=set)
+    negated       : bool                       = field(init=False, default=False)
+    collect_vars  : set[str]                   = field(init=False, default_factory=set)
     constraints   : list[ConstraintCollection] = field(init=False, default_factory=list)
 
     _current_constraint : ConstraintCollection = field(init=False, default=None)
@@ -57,14 +53,14 @@ class ContextQueryManager:
     _initial_ctxs       : list[UUID]           = field(init=False, default_factory=list)
 
     def __post_init__(self):
-        sen = self.query_clause
+        sen = self.target_clause
         self.negated = NEGATION_S in sen.data and sen.data[NEGATION_S]
         constraints = [ConstraintCollection(x, operators=self.ctxs._operators) for x in sen]
         self.constraints.extend(constraints)
         self._initial_ctxs = [x.uuid for x in self.ctxs.active_list()]
 
     def __repr__(self):
-        return f"<{self.__class__.__name__} {'-' if self.negated else '+'}Clause:{self.query_clause} Root={self.root_node} Size={len(self.ctxs)}>"
+        return f"<{self.__class__.__name__} {'-' if self.negated else '+'}Clause:{self.target_clause} Root={self.root_node} Size={len(self.ctxs)}>"
 
     def __enter__(self):
         """
@@ -75,17 +71,18 @@ class ContextQueryManager:
         """
         active_list : list[CtxIns] = self.ctxs.active_list()
 
-        if self.query_clause is None or not self.query_clause[0].is_at_var:
+        if self.target_clause is None or not self.target_clause[0].is_at_var:
             [x.set_current_node(self.root_node) for x in active_list]
         else:
-            assert(self.query_clause[0].is_at_var)
-            root_word = self.query_clause[0]
+            assert(self.target_clause[0].is_at_var)
+            root_word = self.target_clause[0]
             [x.set_current_binding(root_word) for x in active_list]
 
         return self
 
 
     def __exit__(self, exc_type, exc_value, traceback):
+        self.activate_ctxs()
         if self.negated:
             # invert failed and passing
             actually_passed = self.ctxs._failed
@@ -93,7 +90,7 @@ class ContextQueryManager:
             passed_initial  = [x for x in self._initial_ctxs if x in passed_lineages]
 
             actually_failed = self.ctxs.active_list(clear=True)
-            [self.ctxs.fail(x, None, None, self.query_clause) for x in actually_failed]
+            [self.ctxs.fail(x, None, None, self.target_clause) for x in actually_failed]
 
             self.ctxs.push(passed_initial)
 
@@ -106,14 +103,13 @@ class ContextQueryManager:
     def __iter__(self):
         return iter(self.constraints)
 
-
     @property
-    def query(self, ctx=None) -> Iterator[Value]:
+    def current(self) -> Iterator[Value]:
         clause_constraints = self.constraints
 
         for constraints in clause_constraints:
             self._current_constraint = constraints
-
+            self.activate_ctxs()
             yield constraints.source
 
     @property
@@ -129,14 +125,15 @@ class ContextQueryManager:
             yield (bound_word, ctx, ctx._current)
 
 
-    def maybe_test(self, results:list[Node]):
-        if not bool(results):
+    def maybe_test(self, possible:list[Node]):
+        if not bool(possible):
             self.ctxs.fail(self._current_inst,
                            self._current_constraint.source,
                            self._current_inst._current,
-                           self.query_clause)
+                           self.target_clause)
         else:
-            self.test(results)
+            results = self.test(possible)
+            self.queue_ctxs(results)
 
     def test(self, possible: list[Node]):
         """
@@ -158,35 +155,12 @@ class ContextQueryManager:
                 successes.append(node)
             except ASErr.AcabSemanticTestFailure as err:
                 logging.debug(f"Tests failed on {node.value}:\n\t{err}")
-                self.ctxs.fail(self._current_inst, constraints.source, node, self.query_clause)
+                self.ctxs.fail(self._current_inst, constraints.source, node, self.target_clause)
 
         # Handle successes
         # success, so copy and extend ctx instance
         bound_ctxs = self._current_inst.bind(constraints.source,
                                              successes,
                                              sub_binds=constraints["sub_struct_binds"])
-        self.ctxs.push(bound_ctxs)
         return bound_ctxs
 
-    def collect(self):
-        """
-        Context collecton specific vars.
-        Flattens many contexts into one, with specified variables
-        now as lists accumulated from across the contexts.
-
-        Semantics of collect:
-        0[ctxs]0 -> fail
-        1[ctxs]n -> 1[α]1
-        where
-        α : ctx = ctxs[0] ∪ { β : ctx[β] for ctx in ctxs[1:] }
-        β : var to collect
-
-
-        """
-        if not bool(self.collect_vars):
-            return
-
-        # select instances with bindings
-        # Merge into single new instance
-        # replace
-        raise NotImplementedError()

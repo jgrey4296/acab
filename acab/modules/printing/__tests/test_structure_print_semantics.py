@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-
-
 import logging as logmod
 import re
 import unittest
@@ -17,23 +15,22 @@ config = acab.setup()
 # from acab.core.parsing import debug_funcs as DBF
 # DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
-from acab.core.parsing import pyparse_dsl as ppDSL
-from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
-
-from acab.modules.parsing.exlo.parsers import QueryParser as QP
-from acab.modules.parsing.exlo.parsers import FactParser as FP
-
 import acab.modules.printing.printers as Printers
 from acab.core.config.config import AcabConfig
+from acab.core.parsing import pyparse_dsl as ppDSL
+from acab.core.printing import default_signals as DSig
 from acab.core.value.default_structure import (AT_BIND, BIND, NEGATION, QUERY,
-                                              TYPE_INSTANCE)
+                                               TYPE_INSTANCE)
 from acab.core.value.instruction import (Instruction, ProductionComponent,
-                                        ProductionContainer,
-                                        ProductionOperator,
-                                        ProductionStructure)
+                                         ProductionContainer,
+                                         ProductionOperator,
+                                         ProductionStructure)
 from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue
 from acab.interfaces.handler_system import Handler_i
+from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
+from acab.modules.parsing.exlo.parsers import FactParser as FP
+from acab.modules.parsing.exlo.parsers import QueryParser as QP
 from acab.modules.printing import default
 from acab.modules.printing.basic_printer import BasicPrinter
 
@@ -82,6 +79,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                               Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
                                               Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
+                                              Printers.AnnotationFinaliser().as_handler(signal=DSig.ANNOTATIONS_FINAL),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")],
                                sieve_fns=[],
                                settings={"MODAL": "exop"})
@@ -100,10 +98,10 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               Printers.ProductionComponentPrinter().as_handler(signal="COMPONENT"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                               Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
+                                              Printers.AnnotationFinaliser().as_handler(signal=DSig.ANNOTATIONS_FINAL),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")],
                                sieve_fns=[],
                                settings={"MODAL": "exop"})
-
         result = sem_sys.pprint(component)
         self.assertEqual(result, "λtestop.blah $x")
 
@@ -119,6 +117,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                               Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
                                               Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
+                                              Printers.AnnotationFinaliser().as_handler(signal=DSig.ANNOTATIONS_FINAL),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")],
                                sieve_fns=[],
                                settings={"MODAL": "exop"})
@@ -137,6 +136,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                               Printers.ImplicitContainerPrinter().as_handler(signal="CONTAINER"),
                                               Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
+                                              Printers.AnnotationFinaliser().as_handler(signal=DSig.ANNOTATIONS_FINAL),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")],
                                sieve_fns=[],
                                settings={"MODAL": "exop"})
@@ -162,6 +162,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               Printers.TagPrinter().as_handler(signal="TAGS"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                               Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
+                                              Printers.AnnotationFinaliser().as_handler(signal=DSig.ANNOTATIONS_FINAL),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")],
                                sieve_fns=[],
                                settings={"MODAL": "exop"})
@@ -185,6 +186,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               Printers.TagPrinter().as_handler(signal="TAGS"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                               Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
+                                              Printers.AnnotationFinaliser().as_handler(signal=DSig.ANNOTATIONS_FINAL),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")],
                                sieve_fns=[],
                                settings={"MODAL": "exop"})
@@ -209,7 +211,8 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                               Printers.TagPrinter().as_handler(signal="TAGS"),
                                               Printers.ModalPrinter().as_handler(signal="MODAL"),
-                                              Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS")
+                                              Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
+                                              Printers.AnnotationFinaliser().as_handler(signal=DSig.ANNOTATIONS_FINAL),
                                               ],
                                sieve_fns=[],
                               settings={"MODAL": "exop"})
@@ -240,6 +243,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                               Printers.ModalPrinter().as_handler(signal="MODAL"),
                                               Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
+                                              Printers.AnnotationFinaliser().as_handler(signal=DSig.ANNOTATIONS_FINAL),
                                               ],
                                sieve_fns=[],
                               settings={"MODAL": "exop"})
@@ -268,6 +272,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                               Printers.ModalPrinter().as_handler(signal="MODAL"),
                                               Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
+                                              Printers.AnnotationFinaliser().as_handler(signal=DSig.ANNOTATIONS_FINAL),
                                               ],
                                sieve_fns=[],
                                settings={"MODAL": "exop"})
@@ -289,13 +294,14 @@ class PrintStructureSemanticTests(unittest.TestCase):
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
                                init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
                                               Printers.AnnotationAwareValuePrinter().as_handler(signal="ATOM"),
+                                              Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
+                                              Printers.AnnotationFinaliser().as_handler(signal=DSig.ANNOTATIONS_FINAL),
                                               Printers.ProductionComponentPrinter().as_handler(signal="COMPONENT"),
                                               Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
                                               Printers.ExplicitContainerPrinter().as_handler(signal="CONTAINER"),
                                               Printers.ImplicitContainerPrinter().as_handler(signal="IMPLICIT_CONTAINER"),
                                               Printers.StructurePrinter().as_handler(signal="STRUCTURE"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
-                                              Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")
                                               ],
                                sieve_fns=[],

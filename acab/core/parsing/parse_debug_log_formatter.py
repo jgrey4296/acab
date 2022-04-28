@@ -32,11 +32,15 @@ class AcabParseDebugFormat(AcabLogFormatter):
     def scaffold():
         """
         Setup the AcabParseDebugFormat logging scaffold,
-        installing the AcabLogRecord as the record factory
+        a specific debug level handler with ParseDebug formatting,
+        which is attached to acab.core.parsing.debug_funcs
         """
         logging.warning("Scaffolding AcabParseDebugFormat")
+        if not isinstance(logging.getLogRecordFactory(), AcabLogRecord):
+            AcabLogRecord.install()
+
         handler = logging.StreamHandler()
-        handler.setLevel(logging.DEBUG)
+        handler.setLevel(logging.WARNING)
         handler.setFormatter(AcabParseDebugFormat())
         return handler
 

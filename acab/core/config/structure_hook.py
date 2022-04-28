@@ -15,14 +15,15 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 logging = logmod.getLogger(__name__)
 
-from acab.core.config.config import AcabConfig
 from acab.error.config import AcabConfigException
 from acab.core.util.decorators.util import registerOn
 
-@registerOn(AcabConfig)
-def check_structure(self):
+def structure_hook(self):
     """
-    a mixin extension of AcabConfig to verify the loaded config files information
+    Config Hook to verify loaded config data matches certain constraints.
+    uses [Config.Constraints]
+    eg: Ensure [Print.Annotations] keys match with [Value.Structure]
+    or that [Type.Primitive] keys match semantic signals
     """
     try:
         constraints = self.prepare("Config.Constraints", as_dict=True)()
@@ -41,6 +42,7 @@ def check_structure(self):
 
     except AcabConfigException as err:
         logging.warning(str(err))
+
 
 
 def get_param_or_list(conf, spec_string):

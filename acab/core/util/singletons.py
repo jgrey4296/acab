@@ -13,6 +13,25 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 logging = logmod.getLogger(__name__)
 
+def singleton(orig_cls:Any) -> Any:
+    """ From:
+    https://igeorgiev.eu/python/design-patterns/python-singleton-pattern-decorator/
+    """
+    raise DeprecationWarning("use meta classes instead")
+    orig_new = orig_cls.__new__
+    instance = None
+
+    @wraps(orig_cls.__new__)
+    def __new__(cls, *args, **kwargs):
+        nonlocal instance
+        if instance is None:
+            instance = orig_new(cls, *args, **kwargs)
+        return instance
+
+    orig_cls.__new__ = __new__
+    return orig_cls
+
+
 class SingletonMeta(type(Protocol)):
     """
     Create an instance field to hold the singleton
@@ -25,6 +44,7 @@ class SingletonMeta(type(Protocol)):
 
     def __call__(cls, *args: Any) -> type:
         if cls._instance is None:
+            logging.debug("Constructing Singleton: {}", cls.__name__)
             cls._instance = super().__call__(*args)
 
         return cls._instance
@@ -42,6 +62,7 @@ class SingletonMetaAlt(type(Protocol)):
 
     def __call__(cls, *args:Any) -> type:
         if cls._instance is None:
+            logging.debug("Constructing Singleton: {}", cls.__name__)
             cls._instance = super().__call__(*args)
 
         return cls._instance
@@ -63,6 +84,7 @@ class PoolMeta(type(Protocol)):
             cls._pool_last = 0
 
         if len(cls._pool) < cls._pool_size:
+            logging.debug("Constructing Singleton Pool: {}", cls.__name__)
             obj = super().__call__(*args)
             cls._pool.append(obj)
         else:

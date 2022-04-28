@@ -41,12 +41,8 @@ DELAYED_E = Enum("Delayed Instruction Set", "ACTIVE FAIL DEACTIVATE CLEAR MERGE"
 
 
 @dataclass
-class ContextWalkManager:
+class ContextWalkManager(CtxInt.CtxManager_i):
     """ Shared State of a data structure walk, between different ctx insts """
-
-    walk_spec     : Sen                = field()
-    root_node     : Node               = field()
-    ctxs          : CtxSet             = field()
 
     collect_vars  : set[str]                   = field(init=False, default_factory=set)
     constraints   : list[ConstraintCollection] = field(init=False, default_factory=list)
@@ -54,7 +50,7 @@ class ContextWalkManager:
     _current_inst       : CtxIns               = field(init=False, default=None)
 
     def __post_init__(self):
-        sen = self.walk_spec
+        sen = self.target_clause
         start = 0
         if sen[0].is_at_var:
             start = 1
@@ -67,10 +63,10 @@ class ContextWalkManager:
         # handle negated behaviour
         active_list : list[CtxIns] = self.ctxs.active_list()
 
-        if not self.walk_spec[0].is_at_var:
+        if not self.target_clause[0].is_at_var:
             [x.set_current_node(self.root_node) for x in active_list]
         else:
-            root_word = self.walk_spec[0]
+            root_word = self.target_clause[0]
             assert(root_word.is_at_var)
             if isinstance(root_word, Sentence_i):
                 root_word = root_word[0]
@@ -81,6 +77,7 @@ class ContextWalkManager:
 
 
     def __exit__(self, exc_type, exc_value, traceback):
+        self.activate_ctxs()
         # collect bindings as necessary
         self.collect()
         return False
@@ -89,22 +86,21 @@ class ContextWalkManager:
     def __iter__(self):
         return iter(self.constraints)
 
-
-
     @property
-    def current(self):
-        return self._current_inst
-
-    @property
-    def active(self) -> Iterator[list[Node]]:
+    def current(self) -> Iterator[Node]:
         active_ctxs = self.ctxs.active_list(clear=True)
         for ctx in active_ctxs:
             self._current_inst = ctx
-            yield [ctx._current]
+            self.activate_ctxs()
+            yield ctx
 
 
-    def maybe_test(self, results:list[Node]):
-        self.test(results)
+    def maybe_test(self, possible:list[Node]):
+        if not bool(possible):
+            return
+
+        results = self.test(possible)
+        self.queue_ctxs(results)
 
     def test(self, possible: list[Node]):
         """
@@ -118,6 +114,7 @@ class ContextWalkManager:
         # [ctxs.test(ctxIns, accessible, x) for x in tests]
 
         logging.debug(f"{repr(self)}: Testing/Extending on {len(possible)} : {possible}")
+        bound_ctxs = []
 
         for constraints in self.constraints:
             successes   = []
@@ -128,36 +125,14 @@ class ContextWalkManager:
                     successes.append(node)
                 except ASErr.AcabSemanticTestFailure as err:
                     logging.debug(f"Tests failed on {node.value}:\n\t{err}")
-                    self.ctxs.fail(self._current_inst, constraints.source, node, self.walk_spec)
+                    self.ctxs.fail(self._current_inst, constraints.source, node, self.target_clause)
 
             # Handle successes
             # success, so copy and extend ctx instance
-            bound_ctxs = self._current_inst.bind(constraints.source,
-                                                 successes,
-                                                 sub_binds=constraints["sub_struct_binds"])
-            self.ctxs.push(bound_ctxs)
+            bound_ctxs += self._current_inst.bind(constraints.source,
+                                                  successes,
+                                                  sub_binds=constraints["sub_struct_binds"])
 
         return bound_ctxs
 
-    def collect(self):
-        """
-        Context collecton specific vars.
-        Flattens many contexts into one, with specified variables
-        now as lists accumulated from across the contexts.
 
-        Semantics of collect:
-        0[ctxs]0 -> fail
-        1[ctxs]n -> 1[α]1
-        where
-        α : ctx = ctxs[0] ∪ { β : ctx[β] for ctx in ctxs[1:] }
-        β : var to collect
-
-
-        """
-        if not bool(self.collect_vars):
-            return
-
-        # select instances with bindings
-        # Merge into single new instance
-        # replace
-        raise NotImplementedError()

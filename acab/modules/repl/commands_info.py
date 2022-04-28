@@ -88,13 +88,14 @@ def do_shortcuts(self, line):
 # Logging Control###############################################################
 @register
 def do_log(self, line):
-    """ Change the logging level """
+    """ Change the console logging level """
     try:
         root = logmod.getLogger('')
-        handler = [x for x in root.handlers if isinstance(x, logmod.StreamHandler)][0]
+        handler = [x for x in root.handlers if not isinstance(x, logmod.FileHandler)][0]
         if bool(line):
             level = logmod._nameToLevel[line.upper()]
-            root.setLevel(level)
+            if root.level > level:
+                logging.warning("Logging Root level is masking the handler level")
             handler.setLevel(level)
             print(f"Set Console Log level to: {line.upper()} : {level}")
         else:
@@ -108,9 +109,13 @@ def do_log(self, line):
 
 @register
 def do_fmt(self, line):
-    """ Change the Log format """
+    """
+    Change the console Log format.
+    The Repl Uses AcabLogFormatter and AcabLogRecord by default,
+    which uses {} style format strings for the log format
+    """
     root = logmod.getLogger('')
-    handler = root.handlers[1]
+    handler = [x for x in root.handlers if not isinstance(x, logmod.FileHandler)][0]
     if bool(line):
         handler.setFormatter(logmod.Formatter(line))
         print(f"Set Console Log Format to: {line}")

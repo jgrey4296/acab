@@ -49,7 +49,7 @@ ValueData     : TypeAlias = str
 ProtocolMeta = type(Protocol)
 
 class ContextMeta(ProtocolMeta):
-    """ Utility Meta Class for building values """
+    """ Utility Meta Class for building contexts """
 
     name_sieve           : ClassVar[AcabSieve[str]] = AcabSieve(name_sieve_fns)
     default_data         : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE : DS.TYPE_BASE,
