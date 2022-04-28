@@ -51,7 +51,6 @@ def gen_type_vars(first, second, gamma, gen_var=None) -> AT.CtxIns:
         raise TE.AcabLengthUnifyException(first, second, ctx=gamma)
 
     gamma_p = MutableContextInstance(None, gamma)
-
     with gamma_p:
         for a,b in zip(first, second):
             if not (a.is_var or b.is_var or type_len(b.type) < INFINITY or type_len(a.type) < INFINITY):
@@ -67,7 +66,7 @@ def gen_type_vars(first, second, gamma, gen_var=None) -> AT.CtxIns:
                 if var not in gamma_p:
                     gamma_p[var] = Sentence([DS.TYPE_BASE])
 
-    return gamma_p.finish()
+    return gamma_p.final_ctx
 
 
 
