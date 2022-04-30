@@ -28,7 +28,14 @@ class Timing_Tests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        return
+        LOGLEVEL      = logmod.DEBUG
+        LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
+        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+
+        file_h.setLevel(LOGLEVEL)
+        logging = logmod.getLogger(__name__)
+        logging.root.addHandler(file_h)
+        logging.root.setLevel(logmod.NOTSET)
 
     def setUp(self):
         self.e = Engine(modules=["acab.modules.operators.standard_operators"])

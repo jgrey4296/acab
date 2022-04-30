@@ -1,7 +1,10 @@
 #!/opt/anaconda3/envs/acab/bin/python
+import logging as logmod
 import sys
 import unittest
-from os.path import abspath, expanduser
+from os.path import abspath, expanduser, split, splitext
+
+logging = logmod.getLogger(__name__)
 
 sys.path.append(abspath(expanduser("~/github/acab")))
 
@@ -9,18 +12,17 @@ import acab
 
 config = acab.setup()
 
+import acab.error.base as AE
+from acab.core.semantics import basic
 from acab.core.value.instruction import (ProductionComponent,
-                                                    ProductionContainer,
-                                                    ProductionOperator,
-                                                    ProductionStructure)
+                                         ProductionContainer,
+                                         ProductionOperator,
+                                         ProductionStructure)
 from acab.core.value.sentence import Sentence
 from acab.interfaces.handler_system import Handler_i
-from acab.interfaces.semantic import (StatementSemantics_i,
-                                      SemanticSystem_i)
-import acab.error.base as AE
-from acab.modules.semantics.basic_system import BasicSemanticSystem
-from acab.core.semantics import basic
+from acab.interfaces.semantic import SemanticSystem_i, StatementSemantics_i
 from acab.modules.context.context_set import ContextInstance, ContextSet
+from acab.modules.semantics.basic_system import BasicSemanticSystem
 from acab.modules.semantics.values import ExclusionNodeSemantics
 
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
@@ -51,6 +53,17 @@ class StubAbsSemantic(basic.StatementSemantics, StatementSemantics_i):
 
 class SemanticSystemTests(unittest.TestCase):
 
+
+    @classmethod
+    def setUpClass(cls):
+        LOGLEVEL      = logmod.DEBUG
+        LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
+        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+
+        file_h.setLevel(LOGLEVEL)
+        logging = logmod.getLogger(__name__)
+        logging.root.addHandler(file_h)
+        logging.root.setLevel(logmod.NOTSET)
 
     def test_construction(self):
         """ Check context systems can be created """

@@ -8,7 +8,11 @@ import sys
 from os.path import abspath, expanduser
 
 sys.path.append(abspath(expanduser("~/github/acab")))
-import logging
+import logging as logmod
+from os.path import split, splitext
+
+logging = logmod.getLogger(__name__)
+
 import unittest
 import unittest.mock as mock
 from os.path import split, splitext
@@ -17,21 +21,22 @@ import acab
 
 config = acab.setup()
 
-from acab.core.value import default_structure as DS
 from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.data.node import AcabNode
+from acab.core.value import default_structure as DS
+from acab.core.value.factory import ValueFactory
 from acab.core.value.instruction import ProductionComponent
-from acab.core.value.value import AcabValue
 from acab.core.value.sentence import Sentence
+from acab.core.value.value import AcabValue
 from acab.interfaces.handler_system import Handler_i
 from acab.modules.context import context_delayed_actions
-from acab.modules.operators.query.query_operators import EQ, AlwaysMatch, SimpleTypeMatch
 from acab.modules.context.context_set import (ConstraintCollection,
                                               ContextInstance, ContextSet)
-from acab.modules.structures.trie.breadth_semantics import BreadthTrieSemantics
+from acab.modules.operators.query.query_operators import (EQ, AlwaysMatch,
+                                                          SimpleTypeMatch)
 from acab.modules.semantics.values import (BasicNodeSemantics,
                                            ExclusionNodeSemantics)
-from acab.core.value.factory import ValueFactory
+from acab.modules.structures.trie.breadth_semantics import BreadthTrieSemantics
 
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 EXOP         = config.prepare("MODAL", "exop")()
@@ -42,6 +47,17 @@ BIND_V       = config.prepare("Value.Structure", "BIND")()
 CONSTRAINT_V = config.prepare("Value.Structure", "CONSTRAINT")()
 
 class TrieSemanticTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        LOGLEVEL      = logmod.DEBUG
+        LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
+        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+
+        file_h.setLevel(LOGLEVEL)
+        logging = logmod.getLogger(__name__)
+        logging.root.addHandler(file_h)
+        logging.root.setLevel(logmod.NOTSET)
+
     def test_trie_insert_basic(self):
         """ Check trie semantics inserts nodes in the correct places """
         node_sem = BasicNodeSemantics().as_handler(signal="node")
