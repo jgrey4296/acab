@@ -19,13 +19,13 @@ from acab.modules.semantics.values import (BasicNodeSemantics,
 config = GET()
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 
-QUERY_SEM_HINT     = Sentence.build([config.prepare("SEMANTICS", "QUERY")()])
-ACTION_SEM_HINT    = Sentence.build([config.prepare("SEMANTICS", "ACTION")()])
-TRANSFORM_SEM_HINT = Sentence.build([config.prepare("SEMANTICS", "TRANSFORM")()])
-RULE_SEM_HINT      = Sentence.build([config.prepare("SEMANTICS", "RULE")()])
-AGENDA_SEM_HINT    = Sentence.build([config.prepare("SEMANTICS", "AGENDA")()])
-LAYER_SEM_HINT     = Sentence.build([config.prepare("SEMANTICS", "LAYER")()])
-PIPELINE_SEM_HINT  = Sentence.build([config.prepare("SEMANTICS", "PIPELINE")()])
+QUERY_SEM_HINT     = Sentence.build([config.prepare("Semantic.Signals", "QUERY")()])
+ACTION_SEM_HINT    = Sentence.build([config.prepare("Semantic.Signals", "ACTION")()])
+TRANSFORM_SEM_HINT = Sentence.build([config.prepare("Semantic.Signals", "TRANSFORM")()])
+RULE_SEM_HINT      = Sentence.build([config.prepare("Semantic.Signals", "RULE")()])
+AGENDA_SEM_HINT    = Sentence.build([config.prepare("Semantic.Signals", "AGENDA")()])
+LAYER_SEM_HINT     = Sentence.build([config.prepare("Semantic.Signals", "LAYER")()])
+PIPELINE_SEM_HINT  = Sentence.build([config.prepare("Semantic.Signals", "PIPELINE")()])
 
 def DEFAULT_TRIE(name="trie"):
     node_sem    = BasicNodeSemantics("node")

@@ -39,13 +39,13 @@ ACTION_V     = config.prepare("Parse.Structure", "ACTION")()
 
 SEMANTIC_HINT_V = config.prepare("Value.Structure", "SEMANTIC_HINT")()
 
-QUERY_SEM_HINT     = Sentence([config.prepare("SEMANTICS", "QUERY")()])
-ACTION_SEM_HINT    = Sentence([config.prepare("SEMANTICS", "ACTION")()])
-TRANSFORM_SEM_HINT = Sentence([config.prepare("SEMANTICS", "TRANSFORM")()])
-RULE_SEM_HINT      = Sentence([config.prepare("SEMANTICS", "RULE")()])
-AGENDA_SEM_HINT    = Sentence([config.prepare("SEMANTICS", "AGENDA")()])
-LAYER_SEM_HINT     = Sentence([config.prepare("SEMANTICS", "LAYER")()])
-PIPELINE_SEM_HINT  = Sentence([config.prepare("SEMANTICS", "PIPELINE")()])
+QUERY_SEM_HINT     = Sentence([config.prepare("Semantic.Signals", "QUERY")()])
+ACTION_SEM_HINT    = Sentence([config.prepare("Semantic.Signals", "ACTION")()])
+TRANSFORM_SEM_HINT = Sentence([config.prepare("Semantic.Signals", "TRANSFORM")()])
+RULE_SEM_HINT      = Sentence([config.prepare("Semantic.Signals", "RULE")()])
+AGENDA_SEM_HINT    = Sentence([config.prepare("Semantic.Signals", "AGENDA")()])
+LAYER_SEM_HINT     = Sentence([config.prepare("Semantic.Signals", "LAYER")()])
+PIPELINE_SEM_HINT  = Sentence([config.prepare("Semantic.Signals", "PIPELINE")()])
 
 class StubAbsSemantic(basic.StatementSemantics, StatementSemantics_i):
     def __call__(self, ins, semSys, ctxs=None, data=None):

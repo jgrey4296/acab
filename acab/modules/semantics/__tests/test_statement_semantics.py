@@ -58,13 +58,13 @@ TRANSFORM_C  = DS.TRANSFORM_COMPONENT
 ACTION_C     = DS.ACTION_COMPONENT
 
 
-QUERY_SEM_HINT     = Sentence([config.prepare("SEMANTICS", "QUERY")()])
-ACTION_SEM_HINT    = Sentence([config.prepare("SEMANTICS", "ACTION")()])
-TRANSFORM_SEM_HINT = Sentence([config.prepare("SEMANTICS", "TRANSFORM")()])
-RULE_SEM_HINT      = Sentence([config.prepare("SEMANTICS", "RULE")()])
-AGENDA_SEM_HINT    = Sentence([config.prepare("SEMANTICS", "AGENDA")()])
-LAYER_SEM_HINT     = Sentence([config.prepare("SEMANTICS", "LAYER")()])
-PIPELINE_SEM_HINT  = Sentence([config.prepare("SEMANTICS", "PIPELINE")()])
+QUERY_SEM_HINT     = Sentence([config.prepare("Semantic.Signals", "QUERY")()])
+ACTION_SEM_HINT    = Sentence([config.prepare("Semantic.Signals", "ACTION")()])
+TRANSFORM_SEM_HINT = Sentence([config.prepare("Semantic.Signals", "TRANSFORM")()])
+RULE_SEM_HINT      = Sentence([config.prepare("Semantic.Signals", "RULE")()])
+AGENDA_SEM_HINT    = Sentence([config.prepare("Semantic.Signals", "AGENDA")()])
+LAYER_SEM_HINT     = Sentence([config.prepare("Semantic.Signals", "LAYER")()])
+PIPELINE_SEM_HINT  = Sentence([config.prepare("Semantic.Signals", "PIPELINE")()])
 
 # TODO test verify
 
