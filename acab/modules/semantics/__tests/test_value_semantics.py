@@ -3,20 +3,21 @@ import sys
 from os.path import abspath, expanduser
 
 sys.path.append(abspath(expanduser("~/github/acab")))
-
-import logging
+import logging as logmod
 import unittest
 import unittest.mock as mock
 from os.path import split, splitext
+
+logging = logmod.getLogger(__name__)
 
 import acab
 
 config = acab.setup()
 
-from acab.core.value import default_structure as DS
 from acab.core.data.acab_struct import BasicNodeStruct
-from acab.core.value.instruction import Instruction
 from acab.core.data.node import AcabNode
+from acab.core.value import default_structure as DS
+from acab.core.value.instruction import Instruction
 from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue
 from acab.error.base import AcabException
@@ -29,6 +30,16 @@ EXOP_enum    = config.enums[EXOP]
 
 
 class ValueSemanticTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        LOGLEVEL      = logmod.DEBUG
+        LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
+        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+
+        file_h.setLevel(LOGLEVEL)
+        logging = logmod.getLogger(__name__)
+        logging.root.addHandler(file_h)
+        logging.root.setLevel(logmod.NOTSET)
 
     # InDependent: Node/Exclusion
     # Insert/Remove/Accessible/Get/Up/Down

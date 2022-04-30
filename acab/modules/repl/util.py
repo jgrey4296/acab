@@ -87,7 +87,7 @@ def build_rebind_instruction(value:str):
     from acab.core.value.instruction import ProductionComponent, ProductionContainer
     from acab.core.value.sentence import Sentence
 
-    action_sem_hint = Sentence([config.prepare("SEMANTICS", "ACTION")()])
+    action_sem_hint = Sentence([config.prepare("Semantic.Signals", "ACTION")()])
 
     inst = ProductionComponent(value=Sentence([ "acab.modules.operators.action.RebindOperator" ]),
                                params=[Sentence([ "§" ]),

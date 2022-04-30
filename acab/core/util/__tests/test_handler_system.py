@@ -3,6 +3,9 @@ from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
                     Mapping, Match, MutableMapping, Sequence,
                     Tuple, TypeVar, cast)
 from unittest import mock
+from os.path import splitext, split
+import logging as logmod
+logging = logmod.getLogger(__name__)
 
 from acab import setup
 
@@ -23,6 +26,16 @@ class SimplestHandlerSystem(HS.HandlerSystem):
         pass
 
 class TestHandlerSystem(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        LOGLEVEL      = logmod.DEBUG
+        LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
+        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+
+        file_h.setLevel(LOGLEVEL)
+        logging = logmod.getLogger(__name__)
+        logging.root.addHandler(file_h)
+        logging.root.setLevel(logmod.NOTSET)
 
     def test_creation(self):
         basic = SimplestHandlerSystem([], [], [])

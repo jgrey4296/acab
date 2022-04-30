@@ -21,7 +21,7 @@ ROOT_S          = config.prepare("Data", "ROOT")()
 
 BIND_S          = config.prepare("Value.Structure", "BIND")()
 TYPE_INSTANCE_S = config.prepare("Value.Structure", "TYPE_INSTANCE")()
-ARG_S           = config.prepare("Value.Structure", "PARAMS")()
+ARG_S           = config.prepare("Value.Structure", "ARG")()
 OPERATOR_S      = config.prepare("Value.Structure", "OPERATOR")()
 SEN_S           = config.prepare("Value.Structure", "SEN")()
 

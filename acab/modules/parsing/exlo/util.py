@@ -25,7 +25,6 @@ DEFAULT_ACTION_S  = config.prepare("Parse.Structure", "DEFAULT_ACTION")()
 QUERY_FALLBACK_S  = config.prepare("Parse.Structure", "QUERY_FALLBACK")()
 LEFT_S            = config.prepare("Parse.Structure", "LEFT")()
 NEGATION_S        = config.prepare("Parse.Structure", "NEGATION")()
-NODE_S            = config.prepare("Parse.Structure", "NODE")()
 OPERATOR_S        = config.prepare("Parse.Structure", "OPERATOR")()
 MODAL_S           = config.prepare("Parse.Structure", "MODAL")()
 QUERY_S           = config.prepare("Parse.Structure", "QUERY")()
@@ -42,10 +41,10 @@ ACTION_COMPONENT    = DS.ACTION_COMPONENT
 
 RULE_PRIM           : str = config.prepare("Type.Primitive", "RULE")()
 
-QUERY_SEM_HINT     = ValueFactory_i.sen([config.prepare("SEMANTICS", "QUERY")()])
-ACTION_SEM_HINT    = ValueFactory_i.sen([config.prepare("SEMANTICS", "ACTION")()])
-TRANSFORM_SEM_HINT = ValueFactory_i.sen([config.prepare("SEMANTICS", "TRANSFORM")()])
-RULE_SEM_HINT      = ValueFactory_i.sen([config.prepare("SEMANTICS", "RULE")()])
+QUERY_SEM_HINT     = ValueFactory_i.sen([config.prepare("Semantic.Signals", "QUERY")()])
+ACTION_SEM_HINT    = ValueFactory_i.sen([config.prepare("Semantic.Signals", "ACTION")()])
+TRANSFORM_SEM_HINT = ValueFactory_i.sen([config.prepare("Semantic.Signals", "TRANSFORM")()])
+RULE_SEM_HINT      = ValueFactory_i.sen([config.prepare("Semantic.Signals", "RULE")()])
 
 RULE_HEAD        = DSym.AliasDict["RULE"]
 QUERY_HEAD       = DSym.AliasDict["QUERY"]

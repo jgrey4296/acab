@@ -31,14 +31,14 @@ class Trie_WM_Tests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        LOGLEVEL = logmod.DEBUG
+        LOGLEVEL      = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        logmod.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
+        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
 
-        console = logmod.StreamHandler()
-        console.setLevel(logmod.INFO)
-        logmod.getLogger('').addHandler(console)
+        file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
+        logging.root.addHandler(file_h)
+        logging.root.setLevel(logmod.NOTSET)
 
     def setUp(self):
         self.trieWM = TrieWM()

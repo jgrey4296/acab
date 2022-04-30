@@ -31,18 +31,14 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        logmod.getLogger('').setLevel(logmod.WARNING)
+        LOGLEVEL      = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
+        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
 
-        file_h = logmod.FileHandler(LOG_FILE_NAME, mode='w')
-        file_h.setLevel(logmod.DEBUG)
-
-        console = logmod.StreamHandler()
-        console.setLevel(logmod.INFO)
-
+        file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
-        logging.root.addHandler(console)
         logging.root.addHandler(file_h)
+        logging.root.setLevel(logmod.NOTSET)
 
         AP.HOTLOAD_OPERATORS << PU.OPERATOR_SUGAR
 
