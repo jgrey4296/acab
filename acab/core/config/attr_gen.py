@@ -36,7 +36,7 @@ class AttrSection:
 
     def __init__(self, name):
         self.name  = name
-        self._added_keys = []
+        self._added_keys = set()
 
     def __repr__(self):
         return f"<AttrSection {self.name} ({len(self._added_keys)})>"
@@ -50,8 +50,10 @@ class AttrSection:
             return []
 
     def _add(self, key, value):
-        assert(key not in self._added_keys or getattr(self, key) == value)
-        self._added_keys.append(key)
+        existing = getattr(self, key, None)
+        if existing and existing != value:
+            logging.warning("Config Attr Generator Override: {} : {} -> {}", key, getattr(self, key), value)
+        self._added_keys.add(key)
         setattr(self, key, value)
 
     @property
@@ -70,10 +72,13 @@ class AttrGenerator:
 
     def __init__(self, config: ConfigParser):
         self.__config = config
-        self._added_keys = []
+        self._added_keys = set()
 
     def __repr__(self):
         return "<Generated non-overriden Attribute Access to Config Files>"
+
+    def __bool__(self):
+        return bool(self._added_keys)
 
     @property
     def sections(self):
@@ -104,10 +109,11 @@ class AttrGenerator:
         current       : AttrSection|AttrGenerator = self
 
         for name in section_names:
+            # Get or create the section
             subsection = getattr(current, name, AttrSection(name))
             if not hasattr(current, name):
                 setattr(current, name, subsection)
-                current._added_keys.append(name)
+                current._added_keys.add(name)
 
             current = subsection
 

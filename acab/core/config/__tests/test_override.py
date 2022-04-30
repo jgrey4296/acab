@@ -1,0 +1,101 @@
+from __future__ import annotations
+
+import abc
+import logging as logmod
+import unittest
+from dataclasses import InitVar, dataclass, field
+from os.path import split, splitext, join
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
+                    Iterable, Iterator, Mapping, Match, MutableMapping,
+                    Protocol, Sequence, Tuple, TypeAlias, TypeGuard, TypeVar,
+                    cast, final, overload, runtime_checkable)
+
+logging = logmod.getLogger(__name__)
+
+if TYPE_CHECKING:
+    # tc only imports
+    pass
+
+from acab.core.config.config import AcabConfig, ConfigSpec, ConfigSingletonMeta
+from acab.error.config import AcabConfigException
+from acab.core.config.misc_hooks import attr_hook
+from acab.core.util.log_formatter import AcabMinimalLogRecord
+
+AcabMinimalLogRecord.install()
+
+class ConfigOverrideTests(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        LOGLEVEL      = logmod.DEBUG
+        LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
+        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+
+        file_h.setLevel(LOGLEVEL)
+        logging = logmod.getLogger(__name__)
+        logging.root.addHandler(file_h)
+        logging.root.setLevel(logmod.NOTSET)
+
+        cls.base        = split(__file__)[0]
+
+        # Manual singleton overriding
+        cls.existing_config = getattr(ConfigSingletonMeta, "_instance", None)
+        setattr(ConfigSingletonMeta, "_instance", None)
+
+    @classmethod
+    def tearDownClass(cls):
+        # Manual singleton overriding
+        setattr(ConfigSingletonMeta, "_instance", cls.existing_config)
+
+    def setUp(self):
+        self.config = AcabConfig(join(self.base, "basic.config"), hooks=False)
+
+    def tearDown(self):
+        self.config.clear()
+
+    def test_clear(self):
+        spec = self.config.prepare("Handler.System", "DEFAULT_SIGNAL")
+        self.assertIsInstance(spec, ConfigSpec)
+        self.assertEqual(spec(), "test")
+        self.config.clear()
+        self.assertFalse(bool(self.config))
+        with self.assertRaises(AcabConfigException):
+            self.config.prepare("Handler.System", "DEFAULT_SIGNAL")
+
+    def test_clear_attr(self):
+        AcabConfig(hooks=[attr_hook]).run_hooks()
+        self.assertEqual(self.config.attr.Handler.System.DEFAULT_SIGNAL, "test")
+        self.config.clear()
+        self.assertFalse(bool(self.config))
+        self.assertFalse(self.config.attr)
+        with self.assertRaises(AttributeError):
+            self.config.attr.Handler.System.DEFAULT_SIGNAL
+
+    def test_clear_hooks(self):
+        AcabConfig(hooks=[lambda x: x])
+        self.assertTrue(self.config.hooks)
+        AcabConfig(hooks=False)
+        self.config.clear()
+        self.assertFalse(self.config.hooks)
+
+    def test_override(self):
+        spec = self.config.prepare("Handler.System", "DEFAULT_SIGNAL")
+        self.assertIsInstance(spec, ConfigSpec)
+        self.assertEqual(spec(), "test")
+        self.config.read([join(self.base, "override.config")])
+        self.assertIsInstance(spec, ConfigSpec)
+        self.assertEqual(spec(), "blah")
+
+    def test_attr_override(self):
+        AcabConfig(hooks=[attr_hook]).run_hooks()
+        val = self.config.attr.Handler.System.DEFAULT_SIGNAL
+        self.assertEqual(val, "test")
+        self.config.read([join(self.base, "override.config")])
+        self.assertEqual(self.config.attr.Handler.System.DEFAULT_SIGNAL, "blah")
+
+    def test_programmatic_override(self):
+        spec = self.config.prepare("Handler.System", "DEFAULT_SIGNAL")
+        self.assertIsInstance(spec, ConfigSpec)
+        self.assertEqual(spec(), "test")
+        self.config.override(spec, "blah")
+        self.assertEqual(spec(), "blah")
