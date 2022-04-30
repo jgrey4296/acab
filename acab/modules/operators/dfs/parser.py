@@ -13,7 +13,7 @@ config        = GET()
 
 QUERY_HINT    = config.prepare("Value.Structure", "QUERY")()
 SEM_HINT      = config.prepare("Value.Structure", "SEMANTIC_HINT")()
-WALK_SEM_HINT = Sentence([config.prepare("Module.DFSWalk", "WALK_SEM_HINT")()])
+WALK_SEM_HINT = Sentence([config.prepare("Semantic.Signals", "WALK")()])
 
 def build_dfs_query(s, l, toks):
     words = []

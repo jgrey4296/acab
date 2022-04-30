@@ -17,9 +17,9 @@ DSL_Fragment = ppDSL.DSL_Fragment
 DSL_Spec     = ppDSL.PyParse_Spec
 DSL_Handler  = ppDSL.PyParse_Handler
 
-WALK_SEM_HINT   = Sentence([config.prepare("Module.DFSWalk", "WALK_SEM_HINT")()])
-QUERY_SEM_HINT  = Sentence([config.prepare("SEMANTICS", "QUERY")()])
-ACTION_SEM_HINT = Sentence([config.prepare("SEMANTICS", "ACTION")()])
+WALK_SEM_HINT   = Sentence([config.prepare("Semantic.Signals", "WALK")()])
+QUERY_SEM_HINT  = Sentence([config.prepare("Semantic.Signals", "QUERY")()])
+ACTION_SEM_HINT = Sentence([config.prepare("Semantic.Signals", "ACTION")()])
 
 DFS_Sem_Frag = Semantic_Fragment(specs=[HandlerSpec(WALK_SEM_HINT)],
                                  handlers=[

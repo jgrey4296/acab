@@ -3,28 +3,31 @@ import sys
 from os.path import abspath, expanduser
 
 sys.path.append(abspath(expanduser("~/github/acab")))
-
-import logging
+import logging as logmod
 import unittest
 import unittest.mock as mock
 from os.path import split, splitext
 
 import acab
 
+logging = logmod.getLogger(__name__)
 config = acab.setup()
 
 import acab.modules.semantics.statements as ASem
-from acab.core.value import default_structure as DS
 from acab.core.data.acab_struct import BasicNodeStruct
-from acab.core.value.instruction import (ActionOperator, Instruction,
-                                        ProductionComponent,
-                                        ProductionContainer,
-                                        ProductionOperator,
-                                        ProductionStructure)
 from acab.core.data.node import AcabNode
+from acab.core.semantics import basic
+from acab.core.util.decorators.semantic import (OperatorArgUnWrap,
+                                                OperatorResultWrap)
+from acab.core.value import default_structure as DS
+from acab.core.value.factory import ValueFactory
+from acab.core.value.instruction import (ActionOperator, Instruction,
+                                         ProductionComponent,
+                                         ProductionContainer,
+                                         ProductionOperator,
+                                         ProductionStructure)
 from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue
-from acab.core.util.decorators.semantic import OperatorArgUnWrap, OperatorResultWrap
 from acab.error.base import AcabBasicException
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces.semantic import SemanticSystem_i, StatementSemantics_i
@@ -38,8 +41,6 @@ from acab.modules.semantics.basic_system import BasicSemanticSystem
 from acab.modules.semantics.values import (BasicNodeSemantics,
                                            ExclusionNodeSemantics)
 from acab.modules.structures.trie.semantics import FlattenBreadthTrieSemantics
-from acab.core.value.factory import ValueFactory
-from acab.core.semantics import basic
 
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 
@@ -57,13 +58,13 @@ TRANSFORM_C  = DS.TRANSFORM_COMPONENT
 ACTION_C     = DS.ACTION_COMPONENT
 
 
-QUERY_SEM_HINT     = Sentence([config.prepare("SEMANTICS", "QUERY")()])
-ACTION_SEM_HINT    = Sentence([config.prepare("SEMANTICS", "ACTION")()])
-TRANSFORM_SEM_HINT = Sentence([config.prepare("SEMANTICS", "TRANSFORM")()])
-RULE_SEM_HINT      = Sentence([config.prepare("SEMANTICS", "RULE")()])
-AGENDA_SEM_HINT    = Sentence([config.prepare("SEMANTICS", "AGENDA")()])
-LAYER_SEM_HINT     = Sentence([config.prepare("SEMANTICS", "LAYER")()])
-PIPELINE_SEM_HINT  = Sentence([config.prepare("SEMANTICS", "PIPELINE")()])
+QUERY_SEM_HINT     = Sentence([config.prepare("Semantic.Signals", "QUERY")()])
+ACTION_SEM_HINT    = Sentence([config.prepare("Semantic.Signals", "ACTION")()])
+TRANSFORM_SEM_HINT = Sentence([config.prepare("Semantic.Signals", "TRANSFORM")()])
+RULE_SEM_HINT      = Sentence([config.prepare("Semantic.Signals", "RULE")()])
+AGENDA_SEM_HINT    = Sentence([config.prepare("Semantic.Signals", "AGENDA")()])
+LAYER_SEM_HINT     = Sentence([config.prepare("Semantic.Signals", "LAYER")()])
+PIPELINE_SEM_HINT  = Sentence([config.prepare("Semantic.Signals", "PIPELINE")()])
 
 # TODO test verify
 
@@ -73,6 +74,17 @@ class StubAbsSemantic(basic.StatementSemantics, StatementSemantics_i):
 
 
 class StatementSemanticTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        LOGLEVEL      = logmod.DEBUG
+        LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
+        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+
+        file_h.setLevel(LOGLEVEL)
+        logging = logmod.getLogger(__name__)
+        logging.root.addHandler(file_h)
+        logging.root.setLevel(logmod.NOTSET)
+
     def test_transform(self):
         """ Check transforms semantics work """
         sem                                 = ASem.TransformAbstraction()

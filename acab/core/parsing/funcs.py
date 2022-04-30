@@ -24,13 +24,13 @@ logging = logmod.getLogger(__name__)
 config = AcabConfig()
 SEMANTIC_HINT    = DS.SEMANTIC_HINT
 
-QUERY_SEM_HINT     = ValueFactory.value([config.prepare("SEMANTICS", "QUERY")()])
-ACTION_SEM_HINT    = ValueFactory.value([config.prepare("SEMANTICS", "ACTION")()])
-TRANSFORM_SEM_HINT = ValueFactory.value([config.prepare("SEMANTICS", "TRANSFORM")()])
-RULE_SEM_HINT      = ValueFactory.value([config.prepare("SEMANTICS", "RULE")()])
-AGENDA_SEM_HINT    = ValueFactory.value([config.prepare("SEMANTICS", "AGENDA")()])
-LAYER_SEM_HINT     = ValueFactory.value([config.prepare("SEMANTICS", "LAYER")()])
-PIPELINE_SEM_HINT  = ValueFactory.value([config.prepare("SEMANTICS", "PIPELINE")()])
+QUERY_SEM_HINT     = ValueFactory.value([config.prepare("Semantic.Signals", "QUERY")()])
+ACTION_SEM_HINT    = ValueFactory.value([config.prepare("Semantic.Signals", "ACTION")()])
+TRANSFORM_SEM_HINT = ValueFactory.value([config.prepare("Semantic.Signals", "TRANSFORM")()])
+RULE_SEM_HINT      = ValueFactory.value([config.prepare("Semantic.Signals", "RULE")()])
+AGENDA_SEM_HINT    = ValueFactory.value([config.prepare("Semantic.Signals", "AGENDA")()])
+LAYER_SEM_HINT     = ValueFactory.value([config.prepare("Semantic.Signals", "LAYER")()])
+PIPELINE_SEM_HINT  = ValueFactory.value([config.prepare("Semantic.Signals", "PIPELINE")()])
 
 ATOM = TYPE_BASE
 

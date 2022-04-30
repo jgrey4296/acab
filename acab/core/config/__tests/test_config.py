@@ -21,19 +21,14 @@ class ConfigTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        logmod.getLogger('').setLevel(logmod.WARNING)
+        LOGLEVEL      = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
+        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
 
-        file_h = logmod.FileHandler(LOG_FILE_NAME, mode='w')
-        file_h.setLevel(logmod.DEBUG)
-
-        console = logmod.StreamHandler()
-        console.setLevel(logmod.WARNING)
-
+        file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
-        logging.setLevel(logmod.DEBUG)
-        logging.addHandler(console)
-        logging.addHandler(file_h)
+        logging.root.addHandler(file_h)
+        logging.root.setLevel(logmod.NOTSET)
 
         # Setup default config with default files
         cls.config = setup()

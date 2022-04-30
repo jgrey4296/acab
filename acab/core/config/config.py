@@ -81,7 +81,7 @@ class ConfigSingletonMeta(type(Protocol)):
         super(ConfigSingletonMeta, cls).__init__(name, bases, data) #type:ignore
 
 
-    def __call__(cls, *paths:str, hooks:None|list[Callable[..., Any]]=None) -> Config_i:
+    def __call__(cls, *paths:str, hooks:None|bool|list[Callable[..., Any]]=None) -> Config_i:
         """
         If config Exists, then update it's paths and hooks, otherwise build
         """
@@ -96,8 +96,10 @@ class ConfigSingletonMeta(type(Protocol)):
             ConfigSingletonMeta._instance.hooks.update(_hooks) #type:ignore
             ConfigSingletonMeta._instance.read(list(paths)) #type:ignore
 
-        return ConfigSingletonMeta._instance
+        if isinstance(hooks, bool) and not hooks:
+            ConfigSingletonMeta._instance.hooks.clear()
 
+        return ConfigSingletonMeta._instance
 
 
 @APE.assert_implements(Config_i)
@@ -134,6 +136,9 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
         if bool(paths):
             self.read(paths)
 
+    def __bool__(self):
+        return bool(self._files)
+
     def __call__(self, lookup):
         return self.value(lookup) #type:ignore
 
@@ -144,7 +149,18 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
         in_defaults = key in self.defaults
         return any([in_print, in_base, in_enums, in_defaults])
 
-    def _run_hooks(self):
+    def clear(self):
+        self._config.clear()
+        self.attr               = AttrGenerator(self._config)
+        self._files             = set()
+        self.enums              = {}
+        self.defaults           = {}
+        self.syntax_extension   = {}
+        self.printing_extension = {}
+        return self
+
+
+    def run_hooks(self):
         for hook in sort_by_priority(self.hooks):
             hook(self)
 
@@ -201,7 +217,7 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
         return spec
 
 
-    def read(self, paths: list[str]):
+    def read(self, paths:list[str]):
         """ DFS over provided paths, finding the cls.suffix filetype (default=.config) """
         full_paths = []
 
@@ -219,7 +235,7 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
         if bool(new_paths):
             self._config.read(new_paths)
             self._files.update(new_paths)
-            self._run_hooks()
+            self.run_hooks()
         return self
 
 
@@ -229,8 +245,6 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
         key     = spec.key
         # A default dict with a dict inside:
         self._overrides[section][key] = value #type:ignore
-
-
 
     def _enum_value(self, val:Enum) -> str:
         """ Lookup the print representation of an enum value """
