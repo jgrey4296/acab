@@ -29,7 +29,7 @@ logging                = logmod.getLogger(__name__)
 config                 = AcabConfig()
 SPACER                 = int(config.prepare("Print.Data", "SPACER_SIZE")())
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
-Handler                = config.prepare("Imports.Targeted", "handler", actions=[config.actions_e.IMCLASS])()
+Handler                = config.prepare("Imports.Targeted", "handler", actions=[config.actions_e.IMCLASS], action_args=[HS.Handler_i])()
 
 
 ModuleComponents   : TypeAlias = AT.ModuleComponents

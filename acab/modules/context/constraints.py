@@ -21,6 +21,8 @@ CONSTRAINT    = config.prepare("Value.Structure", "CONSTRAINT")
 TYPE_INSTANCE = config.prepare("Value.Structure", "TYPE_INSTANCE")()
 ATOM          = config.prepare("Data", "TYPE_BASE")()
 
+Bind = config.prepare("Imports.Targeted", "bind", actions=[config.actions_e.IMCLASS], action_args=[Bind_i])()
+
 CtxIns      = 'ContextInstance'
 Constraints = 'ConstraintCollection'
 ProdComp    = 'ProductionComponent'
@@ -94,7 +96,7 @@ class ConstraintCollection(CtxInt.Constraint_i, metaclass=ConstraintMeta):
         if self.operators not in stack:
             stack.append(self.operators)
 
-        result = bind(val, stack, None)
+        result = Bind.bind(val, stack, None)
 
         return result
 

@@ -72,9 +72,9 @@ def import_mod(x:str) -> ModuleType:
     return importlib.import_module(x)
 
 @mapToEnum(DEFAULT_ACTIONS, ConfigActions.IMCLASS)
-def import_class(x:str) -> Type[Any]:
+def import_class(x:str, interface:Type[Any]=type) -> Type[Any]:
     mod_comps = x.split(".")
     mod = importlib.import_module(".".join(mod_comps[:-1]))
     cls = getattr(mod, mod_comps[-1])
-    assert(isinstance(cls, type))
+    assert(isinstance(cls, interface))
     return cls

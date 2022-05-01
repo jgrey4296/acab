@@ -28,7 +28,7 @@ from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.core.value import default_structure as DS
 from acab.modules.context.context_instance import ContextInstance
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
-from acab.modules.values.binding import binding as B
+from acab.modules.values.binding.binding import Bind
 
 
 class BindingLogicTests(unittest.TestCase):
@@ -55,7 +55,7 @@ class BindingLogicTests(unittest.TestCase):
         self.assertIsInstance(source, VI.Value_i)
         ctx = ContextInstance()
 
-        result = B.bind(source, ctx)
+        result = Bind.bind(source, ctx)
         self.assertIsInstance(result, VI.Value_i)
         self.assertIs(source, result)
 
@@ -65,7 +65,7 @@ class BindingLogicTests(unittest.TestCase):
         self.assertIsInstance(source, VI.Value_i)
         ctx = ContextInstance()
 
-        result = B.bind(source, ctx)
+        result = Bind.bind(source, ctx)
         self.assertIsInstance(result, VI.Value_i)
         self.assertIs(source, result)
 
@@ -76,7 +76,7 @@ class BindingLogicTests(unittest.TestCase):
         self.assertIsInstance(target, VI.Value_i)
         ctx = ContextInstance({"y": target})
 
-        result = B.bind(source, ctx)
+        result = Bind.bind(source, ctx)
         self.assertIsInstance(result, VI.Value_i)
         self.assertEqual(source, result)
 
@@ -87,7 +87,7 @@ class BindingLogicTests(unittest.TestCase):
         self.assertIsInstance(target, VI.Value_i)
         ctx = ContextInstance({"x": target})
 
-        result = B.bind(source, ctx)
+        result = Bind.bind(source, ctx)
         self.assertIsInstance(result, VI.Value_i)
         self.assertNotEqual(source, result)
         self.assertEqual(target, result)
@@ -97,7 +97,7 @@ class BindingLogicTests(unittest.TestCase):
         self.assertIsInstance(source, VI.Sentence_i)
         ctx = ContextInstance()
 
-        result = B.bind(source, ctx)
+        result = Bind.bind(source, ctx)
         self.assertIsInstance(result, VI.Sentence_i)
         self.assertEqual(source, result)
 
@@ -107,7 +107,7 @@ class BindingLogicTests(unittest.TestCase):
         self.assertIsInstance(source, VI.Value_i)
         ctx = ContextInstance({"x": target})
 
-        result = B.bind(source, ctx)
+        result = Bind.bind(source, ctx)
         self.assertIsInstance(result, VI.Value_i)
         self.assertNotEqual(source, result)
         self.assertEqual(result, "_:a.test.sentence")
@@ -118,7 +118,7 @@ class BindingLogicTests(unittest.TestCase):
         self.assertIsInstance(source, VI.Value_i)
         ctx = ContextInstance({"x": target})
 
-        result = B.bind(source, ctx)
+        result = Bind.bind(source, ctx)
         self.assertIsInstance(result, VI.Value_i)
         self.assertNotEqual(source, result)
         self.assertEqual(result, "_:a.test.sentence.sentence")
@@ -130,7 +130,7 @@ class BindingLogicTests(unittest.TestCase):
         self.assertIsInstance(source, VI.Value_i)
         ctx = ContextInstance({"x": target, "y": target2})
 
-        result = B.bind(source, ctx)
+        result = Bind.bind(source, ctx)
         self.assertIsInstance(result, VI.Value_i)
         self.assertNotEqual(source, result)
         self.assertEqual(result, "_:a.test.sentence.blah")
@@ -141,7 +141,7 @@ class BindingLogicTests(unittest.TestCase):
         self.assertIsInstance(source, VI.Value_i)
         ctx = ContextInstance({"x": target})
 
-        result = B.bind(source, ctx)
+        result = Bind.bind(source, ctx)
         self.assertIsInstance(result, VI.Value_i)
         self.assertNotEqual(source, result)
         self.assertEqual(result, "_:a.test.sentence.blah")
@@ -154,7 +154,7 @@ class BindingLogicTests(unittest.TestCase):
         self.assertIsInstance(source, VI.Value_i)
         ctx = ContextInstance({"x": target})
 
-        result = B.bind(source, ctx)
+        result = Bind.bind(source, ctx)
         self.assertIsInstance(result, VI.Value_i)
         self.assertNotEqual(source, result)
         self.assertEqual(result, "_:a.test.sentence.blah")
@@ -166,7 +166,7 @@ class BindingLogicTests(unittest.TestCase):
         self.assertIsInstance(source, VI.Value_i)
         ctx = ContextInstance({"x": target})
 
-        result = B.bind(source, ctx)
+        result = Bind.bind(source, ctx)
         self.assertIsInstance(result, VI.Value_i)
         self.assertNotEqual(source, result)
         self.assertEqual(result, "_:a.test.sentence.blah")

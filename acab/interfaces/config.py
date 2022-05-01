@@ -21,13 +21,14 @@ class ConfigSpec_d:
     """ Dataclass to describe a config file value,
     and any transforms it needs prior to use """
 
-    section : str                = field()
-    key     : None | str         = field(default=None)
-    actions : list[Enum]         = field(default_factory=list)
-    as_list : bool               = field(default=False)
-    as_dict : bool               = field(default=False)
-    as_enum : bool               = field(default=False)
-    as_bool : bool               = field(default=False)
+    section     : str        = field()
+    key         : None | str = field(default=None)
+    actions     : list[Enum] = field(default_factory=list)
+    action_args : list[Any]  = field(default_factory=list)
+    as_list     : bool       = field(default=False)
+    as_dict     : bool       = field(default=False)
+    as_enum     : bool       = field(default=False)
+    as_bool     : bool       = field(default=False)
 
 
     def __hash__(self) -> int:

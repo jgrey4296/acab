@@ -21,9 +21,13 @@ from acab.interfaces import semantic as SI
 from acab.interfaces import value as VI
 from acab.modules.context.context_instance import MutableContextInstance
 from acab.modules.context.context_set import ContextSet
-from acab.modules.values.binding.binding import bind
+from acab import AcabConfig
+from acab.interfaces.bind import Bind_i
 
 CtxIns = AT.CtxIns
+
+config = AcabConfig()
+Bind   = config.prepare("Imports.Targeted", "bind", actions=[config.actions_e.IMCLASS], action_args=[Bind_i])()
 
 # Primary Statements:
 class QueryAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
@@ -80,7 +84,7 @@ class TransformAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
                     else:
                         op = mutx[clause.op]
 
-                    params              = [bind(x, mutx, semSys) for x in clause.params]
+                    params              = [Bind.bind(x, mutx, semSys) for x in clause.params]
                     result              = op(*params, data=mutx.data)
                     mutx[clause.rebind] = result
 
@@ -104,7 +108,7 @@ class ActionAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
                     op = ctx[clause.op]
 
 
-                params = [bind(x, ctx, semSys) for x in clause.params]
+                params = [Bind.bind(x, ctx, semSys) for x in clause.params]
                 try:
                     result = op(*params, data=clause.data, semSystem=semSys)
                 except TypeError as err:
@@ -144,7 +148,7 @@ class ActionPlusAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
                 else:
                     op = ctx[clause.op]
 
-                params = [bind(x, ctx, semSys) for x in clause.params]
+                params = [Bind.bind(x, ctx, semSys) for x in clause.params]
                 result = op(*params, data=clause.data, semSystem=semSys)
 
 class AtomicRuleAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
