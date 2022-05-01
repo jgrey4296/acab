@@ -9,11 +9,12 @@ from acab import setup
 config = setup()
 
 from acab.core.data.acab_struct import AcabNode
+from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.core.value.default_structure import BIND
 from acab.core.value.instruction import Instruction
 from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue
-from acab.core.parsing import pyparse_dsl as ppDSL
+from acab.interfaces.context import ContextSet_i
 from acab.modules.analysis.typing import exceptions as TE
 from acab.modules.analysis.typing.module import TypingDSL
 from acab.modules.analysis.typing.unify import type_unify_fns as tuf
@@ -21,7 +22,6 @@ from acab.modules.analysis.typing.unify import unifier
 from acab.modules.analysis.typing.unify.util import gen_f
 from acab.modules.context.context_instance import ContextInstance as CtxIns
 from acab.modules.context.context_instance import MutableContextInstance
-from acab.modules.context.context_set import ContextSet
 from acab.modules.engines.configured import exlo
 from acab.modules.operators.dfs.module import DFS_DSL
 from acab.modules.operators.dfs.semantics import DFSSemantics
@@ -29,6 +29,7 @@ from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 from acab.modules.semantics.default import DEFAULT_SEMANTICS
 from acab.modules.structures.trie.default import DEFAULT_TRIE
 
+ContextSet = config.prepare("Imports.Targeted", "context", actions=[config.actions_e.IMCLASS], action_args=[ContextSet_i])()
 default_modules = config.prepare("Module.REPL", "MODULES")().split("\n")
 
 dsl = None

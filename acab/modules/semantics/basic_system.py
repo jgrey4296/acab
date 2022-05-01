@@ -17,7 +17,7 @@ from acab.interfaces.handler_system import HandlerOverride
 from acab.core.semantics import basic
 
 from acab.error.semantic import AcabSemanticException
-from acab.modules.context.context_set import ContextSet
+from acab.interfaces.context import ContextSet_i
 
 logging = logmod.getLogger(__name__)
 
@@ -26,7 +26,8 @@ CtxSet           = AT.CtxSet
 ModuleComponents = AT.ModuleComponents
 config           = AcabConfig()
 
-SEM_HINT = config.prepare("Value.Structure", "SEMANTIC_HINT")()
+ContextSet = config.prepare("Imports.Targeted", "context", actions=[config.actions_e.IMCLASS], action_args=[ContextSet_i])()
+SEM_HINT   = config.prepare("Value.Structure", "SEMANTIC_HINT")()
 
 # TODO make a queue structured system, where semantics return a list of
 # instructions to add to the list, like printer

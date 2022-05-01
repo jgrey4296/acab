@@ -16,7 +16,6 @@ from acab.core.util.part_implementations.handler_system import Handler
 from acab.core.value.sentence import Sentence
 from acab.interfaces import semantic as SI
 from acab.modules.context import context_delayed_actions
-from acab.modules.context.context_set import ContextSet
 from acab.modules.semantics.basic_system import BasicSemanticSystem
 from acab.modules.semantics.values import (BasicNodeSemantics,
                                            ExclusionNodeSemantics)

@@ -11,7 +11,6 @@ from acab.core.util.part_implementations.handler_system import (Handler,
                                                                 HandlerSpec)
 from acab.core.value.sentence import Sentence
 from acab.modules.context import context_delayed_actions
-from acab.modules.context.context_set import ContextSet
 from acab.modules.semantics.basic_system import BasicSemanticSystem as BSS
 from acab.modules.semantics.values import (BasicNodeSemantics,
                                            ExclusionNodeSemantics)
@@ -19,8 +18,8 @@ from acab.modules.structures.trie.default import (DEFAULT_TRIE,
                                                   DEFAULT_TRIE_SPEC)
 from acab.modules.structures.trie.semantics import FlattenBreadthTrieSemantics
 
-logging = logmod.getLogger(__name__)
-config  = AcabConfig()
+logging    = logmod.getLogger(__name__)
+config     = AcabConfig()
 
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 QUERY_SEM_HINT         = Sentence([config.prepare("Semantic.Signals", "QUERY")()])
