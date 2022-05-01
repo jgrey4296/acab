@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     # tc only imports
     pass
 
-from acab import GET
+from acab import AcabConfig
 from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.core.printing.default_symbols import PRINT_SEPARATOR_P
@@ -27,7 +27,7 @@ from acab.interfaces import printing as PI
 import acab.core.util.part_implementations.handler_system as HS
 
 logging                      = logmod.getLogger(__name__)
-config                       = GET()
+config                       = AcabConfig()
 DEFAULT_HANDLER_SIGNAL       = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 Sentence         : TypeAlias = AT.Sentence
 ModuleComponents : TypeAlias = AT.ModuleComponents

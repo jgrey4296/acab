@@ -16,12 +16,13 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
 
 import acab
 import pyparsing as pp
+from acab import AcabConfig
 from acab import types as AT
 
-config = acab.GET()
+config = AcabConfig()
 
-from acab.core.value.instruction import ProductionOperator, ProductionStructure
 from acab.core.parsing import debug_funcs as DBF
+from acab.core.value.instruction import ProductionOperator, ProductionStructure
 from acab.modules.repl import ReplParser as RP
 from acab.modules.repl.repl_commander import register
 

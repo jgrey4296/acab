@@ -8,10 +8,11 @@ from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
                     Mapping, Match, MutableMapping, Protocol, Sequence, Tuple,
                     TypeAlias, TypeVar, cast)
 
-logging = logmod.getLogger(__name__)
 import acab
+from acab import AcabConfig
 
-config = acab.GET()
+logging = logmod.getLogger(__name__)
+config  = AcabConfig()
 
 from acab import types as AT
 

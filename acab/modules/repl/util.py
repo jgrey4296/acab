@@ -9,13 +9,13 @@ import datetime
 import builtins
 from types import FunctionType
 
-logging = logmod.getLogger(__name__)
 import acab
+from acab import AcabConfig
 from acab.interfaces.debugger import AcabDebugger_i
 from acab.interfaces.engine import AcabEngine_i
 
-config = acab.GET()
-
+logging = logmod.getLogger(__name__)
+config  = AcabConfig()
 
 def build_slice(s, l, toks):
     first  = None

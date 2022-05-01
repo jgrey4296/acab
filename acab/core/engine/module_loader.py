@@ -12,7 +12,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 logging = logmod.getLogger(__name__)
 
-from acab.core.config.config import GET
+from acab import AcabConfig
 from acab.core.value.instruction import ProductionOperator, ActionOperator
 from acab.core.value.sentence import Sentence
 from acab.core.engine.util import applicable, needs_init, prep_op_path, ensure_handler
@@ -22,8 +22,8 @@ from acab.interfaces.module_loader import (ModuleComponents,
 from acab.interfaces.printing import Printer_Fragment_i
 from acab.interfaces.semantic import Semantic_Fragment_i
 from acab.core.engine.module_loader_base import ModuleLoaderBase
-config = GET()
 
+config           = AcabConfig()
 MODULE_SPLIT_REG = re.compile(config.prepare("Parse.Patterns", "MODULE_SPLIT_REG")())
 
 #--------------------

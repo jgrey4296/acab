@@ -8,21 +8,17 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-import pyparsing as pp
-
-logging = logmod.getLogger(__name__)
-trace_logger = logmod.getLogger('acab.repl.trace')
-
 import acab
-
-config = acab.GET()
-
+import pyparsing as pp
+from acab import AcabConfig
+from acab.error.config import AcabConfigException
 from acab.interfaces.context import ContextSet_i
 from acab.interfaces.engine import AcabEngine_i
 from acab.modules.repl import ReplParser as RP
-from acab.error.config import AcabConfigException
 
-
+logging      = logmod.getLogger(__name__)
+trace_logger = logmod.getLogger('acab.repl.trace')
+config       = AcabConfig()
 #--------------------
 initial_prompt = config.prepare("Module.REPL", "PROMPT", actions=[config.actions_e.STRIPQUOTE])()
 initial_engine = config.prepare("Module.REPL", "ENGINE")()

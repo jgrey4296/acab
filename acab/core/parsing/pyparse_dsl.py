@@ -16,7 +16,7 @@ import pyparsing as pp
 logging = logmod.getLogger(__name__)
 
 import acab.interfaces.dsl as dsl
-from acab import GET
+from acab import AcabConfig
 from acab import types as AT
 from acab.core.util.decorators.dsl import EnsureDSLInitialised
 from acab.core.parsing import dsl_builder as DSLImpl
@@ -26,7 +26,7 @@ from acab.error.base import AcabBasicException
 from acab.error.parse import AcabParseException
 from acab.interfaces.dsl import DSL_Builder_i, DSL_Fragment_i, DSL_Spec_i
 
-config = GET()
+config                 = AcabConfig()
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 
 Parser           = "pp.ParserElement"

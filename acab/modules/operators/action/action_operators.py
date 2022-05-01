@@ -9,7 +9,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 from acab import types as AT
-from acab.core.config.config import GET
+from acab import AcabConfig
 from acab.core.value.instruction import (ActionOperator,
                                                         ProductionOperator)
 from acab.core.util.decorators.semantic import (OperatorArgUnWrap,
@@ -19,7 +19,7 @@ from acab.error.semantic import AcabSemanticException
 
 logging = logmod.getLogger(__name__)
 
-config = GET()
+config = AcabConfig()
 
 Sentence = AT.Sentence
 Operator = AT.Operator

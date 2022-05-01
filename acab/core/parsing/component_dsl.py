@@ -7,13 +7,14 @@ from typing import cast, ClassVar, TypeVar, Generic
 import logging as logmod
 import pyparsing as pp
 
-from acab import GET
+from acab import AcabConfig
 from acab.core.parsing import parsers as PU
 from acab.error.parse import AcabParseException
 from acab.core.parsing import pyparse_dsl as ppDSL
-logging = logmod.getLogger(__name__)
 
-config = GET()
+logging = logmod.getLogger(__name__)
+config  = AcabConfig()
+
 
 DSL_Fragment = ppDSL.DSL_Fragment
 DSL_Spec     = ppDSL.PyParse_Spec

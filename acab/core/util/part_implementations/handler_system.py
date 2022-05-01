@@ -14,7 +14,7 @@ from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
                     Sequence, Tuple, Type, TypeAlias, TypeVar, cast)
 
 from acab import types as AT
-from acab.core.config.config import GET
+from acab import AcabConfig
 from acab.core.util.decorators.util import cache
 from acab.error.handler import AcabHandlerException
 from acab.interfaces import handler_system as HS
@@ -25,10 +25,8 @@ from acab.interfaces.value import Sentence_i, Value_i
 from acab.error.protocol import AcabProtocolError as APE
 from acab.interfaces.protocols import handler_system as HSubP
 
-logging = logmod.getLogger(__name__)
-
-
-config                 = GET()
+logging                = logmod.getLogger(__name__)
+config                 = AcabConfig()
 SPACER                 = int(config.prepare("Print.Data", "SPACER_SIZE")())
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 Handler                = config.prepare("Imports.Targeted", "handler", actions=[config.actions_e.IMCLASS])()

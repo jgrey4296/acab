@@ -58,8 +58,8 @@ def GET(*args:str, hooks:None|list[AT.fns.GenFunc]=None) -> Config_i:
     Returns:
         The config object
     """
-    config = AcabConfig(*args, hooks=hooks)
-    return config
+    raise DeprecationWarning()
+
 #--------------------------------------------------
 # pylint: disable-next=too-few-public-methods
 class ConfigSpec(ConfigSpec_d):

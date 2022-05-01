@@ -10,7 +10,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 import acab.modules.semantics.statements as ASem
-from acab.core.config.config import GET
+from acab import AcabConfig
 from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.util.part_implementations.handler_system import Handler
 from acab.core.value.sentence import Sentence
@@ -23,8 +23,7 @@ from acab.modules.semantics.values import (BasicNodeSemantics,
 from acab.modules.structures.trie.semantics import FlattenBreadthTrieSemantics
 
 logging = logmod.getLogger(__name__)
-
-config = GET()
+config  = AcabConfig()
 
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 QUERY_SEM_HINT         = Sentence([config.prepare("Semantic.Signals", "QUERY")()])
