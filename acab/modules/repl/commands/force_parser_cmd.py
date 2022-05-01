@@ -25,10 +25,6 @@ rst = RP.rst
 
 @register_class("forcep")
 class ForceParserCmd:
-    """ Force Parser:
-    Query the bootstrap parser,
-    and if supplied text, parse it and try to run it
-    """
 
     def __init__(self):
         self._parser = self._gen_parser()
@@ -41,6 +37,10 @@ class ForceParserCmd:
 
     
     def __call__(self, line):
+        """ Force Parser:
+        Query the bootstrap parser,
+        and if supplied text, parse it and try to run it
+        """
         try:
             # parse the line
             params = self._parser.parse_string(line)
