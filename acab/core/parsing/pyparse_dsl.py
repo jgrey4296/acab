@@ -41,9 +41,13 @@ DSL_Fragment = DSLImpl.DSL_Fragment
 @dataclass
 class PyParse_Handler(HS.Handler, dsl.DSL_Handler_i):
     """ Register a function for handling a DSL setup signal.
-    ie: This function is run to set a pyparsing `Forward`"""
+    ie: This function is run to set a pyparsing `Forward`
 
-    func : Parser = field()
+    This doesn't need to use a PatchHandler, because __call__'s are
+    only for debugging, DSL's build using the func directly
+    """
+
+    func : Parser = field(kw_only=True)
 
     def __post_init__(self):
         if not isinstance(self.func, pp.ParserElement):

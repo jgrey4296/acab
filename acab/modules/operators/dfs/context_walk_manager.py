@@ -87,7 +87,7 @@ class ContextWalkManager(CtxInt.CtxManager_i):
         return iter(self.constraints)
 
     @property
-    def current(self) -> Iterator[Node]:
+    def current(self) -> Iterator[CtxIns]:
         active_ctxs = self.ctxs.active_list(clear=True)
         for ctx in active_ctxs:
             self._current_inst = ctx

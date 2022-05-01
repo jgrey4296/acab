@@ -83,12 +83,12 @@ class Handler_i(HSubP.Handler_p):
     """ A Handler implementation for registering
     individual functions or methods """
     signal   : Sen_A | str
-    func     : None | HandlerComponent_A | GenFunc | type        = field(default=None)
-    struct_i : None | type[Structure] | Callable[..., Structure] = field(default=None)
-    verify_f : None | GenFunc                                    = field(default=None)
-    flags    : set[Enum]                                         = field(default_factory=set)
+    func     : None | HandlerComponent_A | GenFunc | type        = field(default=None, kw_only=True)
+    struct_i : None | type[Structure] | Callable[..., Structure] = field(default=None, kw_only=True)
+    verify_f : None | GenFunc                                    = field(default=None, kw_only=True)
+    flags    : set[Enum]                                         = field(default_factory=set, kw_only=True)
 
-    struct   : None | Structure                                  = field(default=None)
+    struct   : None | Structure                                  = field(default=None, kw_only=True)
 
     def __post_init__(self) -> None: pass
 

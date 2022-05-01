@@ -46,27 +46,27 @@ EXLO_Parser = DSL_Fragment(specs=[Link_Signal_To("action.statement"         , AP
                                   Link_Signal_To("word.annotation"          , FP.HOTLOAD_ANNOTATIONS)
                                   ],
                            handlers=[
-                               DSL_Handler("sentence"                 , FP.SENTENCE),
-                               DSL_Handler("sentence.ends"            , FP.SEN_MACRO),
-                               DSL_Handler("sentence.annotation.head" , FP.op_head_annotation),
-                               DSL_Handler("sentence.annotation.head" , FP.flatten_annotation),
-                               DSL_Handler("sentence.operator"        , FP.op_sentence),
-                               DSL_Handler("sentence.plural"          , FP.SEN_PLURAL),
-                               DSL_Handler("word.constrained"         , FP.SEN_NO_MODAL),
+                               DSL_Handler("sentence"                 , func=FP.SENTENCE),
+                               DSL_Handler("sentence.ends"            , func=FP.SEN_MACRO),
+                               DSL_Handler("sentence.annotation.head" , func=FP.op_head_annotation),
+                               DSL_Handler("sentence.annotation.head" , func=FP.flatten_annotation),
+                               DSL_Handler("sentence.operator"        , func=FP.op_sentence),
+                               DSL_Handler("sentence.plural"          , func=FP.SEN_PLURAL),
+                               DSL_Handler("word.constrained"         , func=FP.SEN_NO_MODAL),
                                # Query
-                               DSL_Handler("operators.query"          , PU.OPERATOR_SUGAR),
-                               DSL_Handler("sentence.annotation.post" , QP.query_sen_post_annotation),
-                               DSL_Handler("sentence.ends"            , QP.query_statement),
-                               DSL_Handler("word.annotation"          , QP.word_query_constraint),
-                               DSL_Handler("word.annotation"          , FP.flatten_annotation),
+                               DSL_Handler("operators.query"          , func=PU.OPERATOR_SUGAR),
+                               DSL_Handler("sentence.annotation.post" , func=QP.query_sen_post_annotation),
+                               DSL_Handler("sentence.ends"            , func=QP.query_statement),
+                               DSL_Handler("word.annotation"          , func=QP.word_query_constraint),
+                               DSL_Handler("word.annotation"          , func=FP.flatten_annotation),
                                # Transform
-                               DSL_Handler("operators.transform"      , PU.OPERATOR_SUGAR),
-                               DSL_Handler("sentence.ends"            , TP.transform_statement),
+                               DSL_Handler("operators.transform"      , func=PU.OPERATOR_SUGAR),
+                               DSL_Handler("sentence.ends"            , func=TP.transform_statement),
                                # Action
-                               DSL_Handler("operators.action"         , PU.OPERATOR_SUGAR),
-                               DSL_Handler("sentence.ends"            , AP.action_definition),
+                               DSL_Handler("operators.action"         , func=PU.OPERATOR_SUGAR),
+                               DSL_Handler("sentence.ends"            , func=AP.action_definition),
                                # Rule
-                               DSL_Handler("sentence.ends"            , RP.rule),
+                               DSL_Handler("sentence.ends"            , func=RP.rule),
                                # Total
-                               DSL_Handler(DEFAULT_HANDLER_SIGNAL     , TotalP.parse_point)]
+                               DSL_Handler(DEFAULT_HANDLER_SIGNAL     , func=TotalP.parse_point)]
                            )

@@ -20,7 +20,7 @@ DSL_Spec     = ppDSL.PyParse_Spec
 DSL_Handler  = ppDSL.PyParse_Handler
 
 Component_DSL = DSL_Fragment(specs=[DSL_Spec("word.value", struct=PU.HOTLOAD_VALUES, flags=[DSL_Spec.flag_e.COLLECT])],
-                             handlers=[DSL_Handler("operators"       , PU.OPERATOR_SUGAR),
-                                       DSL_Handler("word.valbind"    , PU.VALBIND),
-                                       DSL_Handler("tag.sentence"    , PU.tagSen),
-                                       DSL_Handler("operators.modal" , PU.MODAL)])
+                             handlers=[DSL_Handler("operators"       , func=PU.OPERATOR_SUGAR),
+                                       DSL_Handler("word.valbind"    , func=PU.VALBIND),
+                                       DSL_Handler("tag.sentence"    , func=PU.tagSen),
+                                       DSL_Handler("operators.modal" , func=PU.MODAL)])

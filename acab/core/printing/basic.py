@@ -45,7 +45,7 @@ class PrintSystemImpl(HS.HandlerSystem, PI.PrintSystem_i):
         # TODO abstract this into a method?
         super().__post_init__(specs, handlers, sieve_fns) #type:ignore[no-untyped-call]
         if not bool(self.handler_specs[DEFAULT_HANDLER_SIGNAL]):
-            default = HS.Handler(DEFAULT_HANDLER_SIGNAL, lambda x, data=None: str(x))
+            default = HS.Handler(DEFAULT_HANDLER_SIGNAL, func=lambda x, data=None: str(x))
             self.register(default) #type:ignore[no-untyped-call]
 
     def __call__(self, *args:Sentence) -> str:

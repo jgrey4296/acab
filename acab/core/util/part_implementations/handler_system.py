@@ -28,9 +28,11 @@ from acab.interfaces.protocols import handler_system as HSubP
 logging = logmod.getLogger(__name__)
 
 
-config = GET()
-SPACER = int(config.prepare("Print.Data", "SPACER_SIZE")())
+config                 = GET()
+SPACER                 = int(config.prepare("Print.Data", "SPACER_SIZE")())
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
+Handler                = config.prepare("Imports.Targeted", "handler", actions=[config.actions_e.IMCLASS])()
+
 
 ModuleComponents   : TypeAlias = AT.ModuleComponents
 Overrider          : TypeAlias = AT.HandlerOverride
@@ -44,12 +46,14 @@ Handler_System_A   : TypeAlias = AT.HandlerSystem
 
 PASSTHROUGH         = "_"
 
+
 # Protocols  ##################################################################
 @APE.assert_concrete
 class HandlerSystem(HS.HandlerSystem_i):
     """
     The Core Handler system, needing only __call__ and extend to be implemented
     """
+
     @staticmethod
     def Spec(name:str|Sen_A):
         return HandlerSpec(name)
@@ -299,7 +303,7 @@ class HandlerSpec(HS.HandlerSpec_i):
         def an_implementing_func....
         """
         # TODO check target against spec
-        return Handler(self.signal, target, **kwargs)
+        return Handler(self.signal, func=target, **kwargs)
 
     # Register Handler ########################################################
     #pylint: disable-next=too-many-branches
@@ -402,64 +406,6 @@ class HandlerComponent(HS.HandlerComponent_i):
                        struct=struct,
                        flags=set(flags or []))
 
-
-@APE.assert_concrete
-class Handler(HS.Handler_i):
-
-    def __post_init__(self) -> None:
-        if isinstance(self.func, type):
-            self.func = self.func()
-
-        if self.struct is not None or self.struct_i is None:
-            pass
-        elif hasattr(self.struct_i, "build_default"):
-            self.struct = self.struct_i.build_default() #type:ignore
-        else:
-            self.struct = self.struct_i() #type:ignore
-
-
-    def __call__(self, *args, **kwargs):
-        if self.func is None:
-            raise AcabHandlerException("Attempt to Call Struct Handler", rest=[self])
-        return self.func(*args, **kwargs)
-
-    def __iter__(self):
-        """ unpack the handler"""
-        return (self.func, self.struct).__iter__()
-
-    def __repr__(self):
-        sig_s       = str(self.signal)
-        func_name   = ""
-        struct_name = ""
-        if self.func is not None:
-            func_name = str(self.func.__class__.__name__) #type:ignore
-        if self.struct is not None:
-            struct_name = str(self.struct.__class__.__name__)
-
-        return f"<Handler({sig_s}: {func_name}: {struct_name})>"
-
-    def as_handler(self, *, signal=None, struct=None, flags=None):
-        return Handler(signal or self.signal,
-                       func=self.func,
-                       struct=struct or self.struct,
-                       flags=flags or self.flags)
-
-
-    def verify(self, instruction):
-        result = False
-        if self.verify_f is not None:
-            result = self.verify_f(instruction)
-        else:
-            result = True
-
-        if not result and self.func is not None and hasattr(self.func, "verify"):
-            result = result and self.func.verify(instruction) #type:ignore
-
-        return result
-
-    @cache
-    def __str__(self):
-        return str(self.signal)
 
 @APE.assert_concrete
 class HandlerFragment(HS.HandlerFragment_i):

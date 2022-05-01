@@ -1,19 +1,23 @@
-import unittest
-from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
-                    Mapping, Match, MutableMapping, Sequence,
-                    Tuple, TypeVar, cast)
-from unittest import mock
-from os.path import splitext, split
 import logging as logmod
+import unittest
+from os.path import split, splitext
+from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
+                    Mapping, Match, MutableMapping, Sequence, Tuple, TypeVar,
+                    cast)
+from unittest import mock
+
 logging = logmod.getLogger(__name__)
 
 from acab import setup
 
 config = setup()
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
+HandlerConfigSpec      = config.prepare("Imports.Targeted", "handler", actions=[config.actions_e.IMCLASS])
+config.override(HandlerConfigSpec, "acab.core.util.part_implementations.handler.Handler")
+HandlerConfigSpec()
 
-import acab.interfaces.handler_system as HSi
 import acab.core.util.part_implementations.handler_system as HS
+import acab.interfaces.handler_system as HSi
 from acab.error.handler import AcabHandlerException
 
 
@@ -154,12 +158,11 @@ class TestHandlerSystem(unittest.TestCase):
     def test_spec_enforce_api_class(self):
 
         class ATest:
-            def my_test_func(self, a, b):
+            def __call__(self, a, b):
                 return b
 
-        class AnotherTest:
-            def not_my_test_func(self):
-                return 2
+            def other(self):
+                pass
 
         spec = HS.HandlerSpec("a_signal", func_api=ATest)
         spec.register(HS.Handler("a_signal", func=ATest()))
@@ -167,11 +170,14 @@ class TestHandlerSystem(unittest.TestCase):
     def test_spec_enforce_api_class_fail(self):
 
         class ATest:
-            def my_test_func(self, a, b):
+            def __call__(self, a, b):
                 return b
 
+            def other(self):
+                pass
+
         class AnotherTest:
-            def not_my_test_func(self):
+            def __call__(self):
                 return 2
 
         spec = HS.HandlerSpec("a_signal", func_api=ATest)
@@ -188,7 +194,7 @@ class TestHandlerSystem(unittest.TestCase):
 
 
     def test_handler_call(self):
-        handler = HS.Handler("a_signal", lambda *a, **k: 2)
+        handler = HS.Handler("a_signal", func=lambda *a, **k: 2)
         self.assertEqual(handler(), 2)
 
     def test_spec_call(self):

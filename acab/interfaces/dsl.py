@@ -62,7 +62,7 @@ class DSL_Fragment_i(HS.HandlerFragment_i):
 class DSL_Handler_i(HS.Handler_i):
     """ Register a function for handling a DSL setup signal.
     ie: This function is run to set a pyparsing `Forward`"""
-    func : Parser = field()
+    func : Parser = field(kw_only=True)
 
 @dataclass #type:ignore[misc]
 class DSL_Spec_i(HS.HandlerSpec_i, _DSL_Spec_p):
