@@ -3,7 +3,11 @@
 Standardized Actions for use in Config.prepare
 
 """
+from __future__ import annotations
+
+import abc
 import importlib
+from dataclasses import InitVar, dataclass, field
 from enum import Enum, auto
 from types import ModuleType
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
@@ -33,6 +37,7 @@ class ConfigActions(Enum):
     PSEUDOSEN  = auto()
     BOOL       = auto()
     IMPORT     = auto()
+    IMCLASS    = auto()
 
 
 Action_f        : TypeAlias            = Callable[[str], Any]
@@ -65,3 +70,11 @@ def is_bool(x:str) -> bool:
 @mapToEnum(DEFAULT_ACTIONS, ConfigActions.IMPORT)
 def import_mod(x:str) -> ModuleType:
     return importlib.import_module(x)
+
+@mapToEnum(DEFAULT_ACTIONS, ConfigActions.IMCLASS)
+def import_class(x:str) -> Type[Any]:
+    mod_comps = x.split(".")
+    mod = importlib.import_module(".".join(mod_comps[:-1]))
+    cls = getattr(mod, mod_comps[-1])
+    assert(isinstance(cls, type))
+    return cls
