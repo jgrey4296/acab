@@ -5,11 +5,12 @@ from typing import Mapping, MutableMapping, Sequence, Iterable
 from typing import cast, ClassVar, TypeVar, Generic
 import pyparsing as pp
 
-from acab.core.config.config import GET
+from acab import AcabConfig
 from  acab.core.parsing.consts import orm, QUERY, op, s_lit
 from acab.core.value.sentence import Sentence
 from acab.core.value.instruction import ProductionComponent
-config        = GET()
+
+config        = AcabConfig()
 
 QUERY_HINT    = config.prepare("Value.Structure", "QUERY")()
 SEM_HINT      = config.prepare("Value.Structure", "SEMANTIC_HINT")()

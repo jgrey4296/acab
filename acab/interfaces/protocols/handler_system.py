@@ -14,11 +14,12 @@ from typing import (Any, Callable, ClassVar, Collection, Container, Final,
                     runtime_checkable)
 
 from acab import types as AT
-from acab.core.config.config import GET
+from acab import AcabConfig
 from acab.interfaces.sieve import AcabSieve
 
 logging = logmod.getLogger(__name__)
-config = GET()
+config  = AcabConfig()
+
 
 T = TypeVar('T')
 GenFunc               : TypeAlias = AT.fns.GenFunc

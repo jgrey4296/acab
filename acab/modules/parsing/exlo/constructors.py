@@ -1,7 +1,7 @@
 """
 Constructors for converting parse results -> Acab data
 """
-from acab.core.config.config import GET
+from acab import AcabConfig
 import acab.interfaces.value as VI
 from acab.core.value.default_structure import SEMANTIC_HINT
 from acab.core.value.instruction import (ProductionComponent,
@@ -13,7 +13,7 @@ from acab.core.parsing import default_keys as PDS
 from acab.modules.parsing.exlo import util as EXu
 from acab.core.parsing.annotation import ValueAnnotation, ValueRepeatAnnotation
 
-config   = GET()
+config   = AcabConfig()
 SEM_HINT = config.prepare("Value.Structure", "SEMANTIC_HINT")()
 
 def build_query_component(s, loc, toks):

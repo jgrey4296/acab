@@ -12,14 +12,14 @@ from uuid import UUID, uuid1
 
 import acab.interfaces.context as CtxInt
 import acab.error.semantic as ASErr
-from acab.core.config.config import GET
+from acab import AcabConfig
 from acab.core.value.instruction import (ProductionComponent,
                                                         ProductionContainer)
 from acab.interfaces.value import Sentence_i
 from acab.error.semantic import AcabSemanticException
 from acab.modules.context.constraints import ConstraintCollection
 
-config = GET()
+config = AcabConfig()
 
 CONSTRAINT_S     = config.prepare("Value.Structure", "CONSTRAINT")()
 NEGATION_S       = config.prepare("Value.Structure", "NEGATION")()
@@ -87,7 +87,7 @@ class ContextWalkManager(CtxInt.CtxManager_i):
         return iter(self.constraints)
 
     @property
-    def current(self) -> Iterator[Node]:
+    def current(self) -> Iterator[CtxIns]:
         active_ctxs = self.ctxs.active_list(clear=True)
         for ctx in active_ctxs:
             self._current_inst = ctx

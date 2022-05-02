@@ -12,7 +12,7 @@ from uuid import UUID, uuid1
 
 import acab.interfaces.context as CtxInt
 import acab.interfaces.value as VI
-from acab.core.config.config import GET
+from acab import AcabConfig
 from acab.core.value.instruction import ProductionComponent, ProductionContainer
 from acab.core.util.delayed_commands import DelayedCommands_i
 from acab.error.context import AcabContextException
@@ -21,7 +21,7 @@ from acab.modules.context.constraints import ConstraintCollection
 from acab.modules.context.context_instance import ContextInstance
 from acab.modules.context.context_meta import ContextMeta
 
-config = GET()
+config = AcabConfig()
 
 CONSTRAINT_S     = config.prepare("Value.Structure", "CONSTRAINT")()
 NEGATION_S       = config.prepare("Value.Structure", "NEGATION")()

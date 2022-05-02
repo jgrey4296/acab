@@ -44,8 +44,8 @@ TYPE_CLASS    = config.attr.Print.Signals.TYPE_CLASS
 
 TypingDSL = DSL_Fragment(specs=[DSL_Spec("sentence", struct=TDefP.HOTLOAD_SEN, flags=[DSL_Spec.flag_e.COLLECT]),
                                 DSL_Spec("sentence", struct=TP.HOTLOAD_SEN, flags=[DSL_Spec.flag_e.COLLECT])],
-                         handlers=[DSL_Handler("sentence.ends", TDefP.COMBINED_DEFS),
-                                   DSL_Handler("word.annotation", TP.TYPEDEC_CORE)])
+                         handlers=[DSL_Handler("sentence.ends", func=TDefP.COMBINED_DEFS),
+                                   DSL_Handler("word.annotation", func=TP.TYPEDEC_CORE)])
 
 
 print_fragment = PrinterFragment(specs=[HandlerSpec(TYPE_INSTANCE),

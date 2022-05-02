@@ -16,7 +16,7 @@ import pyparsing as pp
 logging = logmod.getLogger(__name__)
 
 import acab.interfaces.dsl as dsl
-from acab import GET
+from acab import AcabConfig
 from acab import types as AT
 from acab.core.util.decorators.dsl import EnsureDSLInitialised
 from acab.core.parsing import dsl_builder as DSLImpl
@@ -26,7 +26,7 @@ from acab.error.base import AcabBasicException
 from acab.error.parse import AcabParseException
 from acab.interfaces.dsl import DSL_Builder_i, DSL_Fragment_i, DSL_Spec_i
 
-config = GET()
+config                 = AcabConfig()
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 
 Parser           = "pp.ParserElement"
@@ -41,9 +41,13 @@ DSL_Fragment = DSLImpl.DSL_Fragment
 @dataclass
 class PyParse_Handler(HS.Handler, dsl.DSL_Handler_i):
     """ Register a function for handling a DSL setup signal.
-    ie: This function is run to set a pyparsing `Forward`"""
+    ie: This function is run to set a pyparsing `Forward`
 
-    func : Parser = field()
+    This doesn't need to use a PatchHandler, because __call__'s are
+    only for debugging, DSL's build using the func directly
+    """
+
+    func : Parser = field(kw_only=True)
 
     def __post_init__(self):
         if not isinstance(self.func, pp.ParserElement):

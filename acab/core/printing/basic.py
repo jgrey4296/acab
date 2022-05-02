@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     # tc only imports
     pass
 
-from acab import GET
+from acab import AcabConfig
 from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.core.printing.default_symbols import PRINT_SEPARATOR_P
@@ -27,7 +27,7 @@ from acab.interfaces import printing as PI
 import acab.core.util.part_implementations.handler_system as HS
 
 logging                      = logmod.getLogger(__name__)
-config                       = GET()
+config                       = AcabConfig()
 DEFAULT_HANDLER_SIGNAL       = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 Sentence         : TypeAlias = AT.Sentence
 ModuleComponents : TypeAlias = AT.ModuleComponents
@@ -45,7 +45,7 @@ class PrintSystemImpl(HS.HandlerSystem, PI.PrintSystem_i):
         # TODO abstract this into a method?
         super().__post_init__(specs, handlers, sieve_fns) #type:ignore[no-untyped-call]
         if not bool(self.handler_specs[DEFAULT_HANDLER_SIGNAL]):
-            default = HS.Handler(DEFAULT_HANDLER_SIGNAL, lambda x, data=None: str(x))
+            default = HS.Handler(DEFAULT_HANDLER_SIGNAL, func=lambda x, data=None: str(x))
             self.register(default) #type:ignore[no-untyped-call]
 
     def __call__(self, *args:Sentence) -> str:

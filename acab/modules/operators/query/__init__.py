@@ -8,7 +8,7 @@ DSL_Spec     = ppDSL.PyParse_Spec
 DSL_Handler  = ppDSL.PyParse_Handler
 
 QueryDSL = DSL_Fragment(specs=[],
-                        handlers=[DSL_Handler("word.annotation", QOP.tagList)])
+                        handlers=[DSL_Handler("word.annotation", func=QOP.tagList)])
 #        "operator.query.eq", QO.EQ,
 #        "operator.query.neq", QO.NEQ,
 #        "operator.query.regmatch", QO.RegMatch,

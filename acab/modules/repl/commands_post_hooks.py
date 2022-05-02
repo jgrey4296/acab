@@ -17,9 +17,11 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
 
 import acab
 import pyparsing as pp
+from acab import AcabConfig
 from acab import types as AT
 
-config = acab.GET()
+config = AcabConfig()
+
 
 import re
 

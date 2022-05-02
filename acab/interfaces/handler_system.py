@@ -14,12 +14,12 @@ from typing import (Any, Callable, ClassVar, Collection, Container, Final,
                     runtime_checkable)
 
 from acab import types as AT
-from acab.core.config.config import GET
+from acab import AcabConfig
 from acab.interfaces.sieve import AcabSieve
 from acab.interfaces.protocols import handler_system as HSubP
 
 logging = logmod.getLogger(__name__)
-config = GET()
+config  = AcabConfig()
 
 GenFunc               : TypeAlias = AT.fns.GenFunc
 TypeFunc              : TypeAlias = AT.fns.TypeFunc
@@ -83,12 +83,12 @@ class Handler_i(HSubP.Handler_p):
     """ A Handler implementation for registering
     individual functions or methods """
     signal   : Sen_A | str
-    func     : None | HandlerComponent_A | GenFunc | type        = field(default=None)
-    struct_i : None | type[Structure] | Callable[..., Structure] = field(default=None)
-    verify_f : None | GenFunc                                    = field(default=None)
-    flags    : set[Enum]                                         = field(default_factory=set)
+    func     : None | HandlerComponent_A | GenFunc | type        = field(default=None, kw_only=True)
+    struct_i : None | type[Structure] | Callable[..., Structure] = field(default=None, kw_only=True)
+    verify_f : None | GenFunc                                    = field(default=None, kw_only=True)
+    flags    : set[Enum]                                         = field(default_factory=set, kw_only=True)
 
-    struct   : None | Structure                                  = field(default=None)
+    struct   : None | Structure                                  = field(default=None, kw_only=True)
 
     def __post_init__(self) -> None: pass
 

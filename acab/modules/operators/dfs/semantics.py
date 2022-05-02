@@ -112,8 +112,6 @@ class DFSSemantics(basic.StatementSemantics, SI.StatementSemantics_i):
 
         cwm = ContextWalkManager(walk_spec, default.struct.root, ctxs)
         with cwm:
-            # for queue in cwm.active(mutable=True) ?
-            # queue::list[Node]
             for start in cwm.current:
                 queue = [start._current]
                 action : 'Value|Sentence' = start[walk_spec[-1]]

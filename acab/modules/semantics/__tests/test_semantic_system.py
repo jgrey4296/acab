@@ -21,7 +21,6 @@ from acab.core.value.instruction import (ProductionComponent,
 from acab.core.value.sentence import Sentence
 from acab.interfaces.handler_system import Handler_i
 from acab.interfaces.semantic import SemanticSystem_i, StatementSemantics_i
-from acab.modules.context.context_set import ContextInstance, ContextSet
 from acab.modules.semantics.basic_system import BasicSemanticSystem
 from acab.modules.semantics.values import ExclusionNodeSemantics
 

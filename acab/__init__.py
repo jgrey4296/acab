@@ -12,12 +12,12 @@ import logging as logmod
 from typing import Callable, Type, TypeAlias
 
 import acab.interfaces.type_aliases as types
-from acab.core.config.config import GET
+from acab.core.config.config import AcabConfig
 from acab.core.util.log_formatter import AcabMinimalLogRecord
 
 logging = logmod.getLogger(__name__)
 
-__all__ = ['types', 'setup', 'GET', 'AcabLogRecord']
+__all__ = ['types', 'setup', 'AcabConfig', 'AcabLogRecord']
 
 _Value_A : TypeAlias = types.Value
 _Sen_A   : TypeAlias = types.Sentence

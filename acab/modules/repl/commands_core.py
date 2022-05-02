@@ -1,25 +1,26 @@
-from datetime import datetime
-from enum import Enum
-from os.path import split, splitext, exists, expanduser, abspath
 import importlib
 import logging as logmod
 import re
 import traceback
+from datetime import datetime
+from enum import Enum
+from os.path import abspath, exists, expanduser, split, splitext
 
 import acab
-config = acab.GET()
-
-from acab.interfaces.engine import AcabEngine_i
-from acab.interfaces.value import Instruction_i
+from acab import AcabConfig
+from acab.core.value.instruction import ProductionContainer
 from acab.error.config import AcabConfigException
 from acab.error.importer import AcabImportException
-from acab.modules.repl.repl_commander import register
-from acab.modules.repl import ReplParser as RP
-from acab.core.value.instruction import ProductionContainer
-from acab.modules.repl.util import init_inspect
 from acab.error.semantic import AcabSemanticException
+from acab.interfaces.engine import AcabEngine_i
+from acab.interfaces.value import Instruction_i
+from acab.modules.repl import ReplParser as RP
+from acab.modules.repl.repl_commander import register
+from acab.modules.repl.util import init_inspect
 
 logging = logmod.getLogger(__name__)
+config  = AcabConfig()
+
 
 @register
 def do_init(self, line):

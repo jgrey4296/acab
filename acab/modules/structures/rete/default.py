@@ -5,18 +5,16 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 import acab.modules.semantics.statements as ASem
-from acab.core.config.config import GET
+from acab import AcabConfig
 from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.value.sentence import Sentence
 from acab.interfaces.handler_system import Handler
 from acab.modules.context import context_delayed_actions
-from acab.modules.context.context_set import ContextSet
 from acab.modules.semantics.basic_system import BasicSemanticSystem
 from acab.modules.structures.trie.semantics import BreadthTrieSemantics
 from acab.modules.semantics.values import (BasicNodeSemantics,
                                                 ExclusionNodeSemantics)
-
-config = GET()
+config = AcabConfig()
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 
 QUERY_SEM_HINT     = Sentence.build([config.prepare("Semantic.Signals", "QUERY")()])

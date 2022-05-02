@@ -5,7 +5,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-from acab import GET
+from acab import AcabConfig
 from acab import types as AT
 from acab.core.value.value import AcabValue
 from acab.core.value.instruction import Instruction
@@ -18,7 +18,7 @@ from .. import exceptions  as TE
 from . import util
 from . import unifier
 
-config = GET()
+config     = AcabConfig()
 unify_enum = util.unify_enum
 
 

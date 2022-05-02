@@ -62,8 +62,8 @@ class _Constraint_p(Protocol):
     @abc.abstractmethod
     def test(self, node:Node, ctx:CtxIns) -> None: pass
 
-class ContextSet_i(Hashable, Iterable[CtxIns], Protocol):
-    _operators : CtxIns
+@runtime_checkable
+class ContextSet_p(Hashable, Iterable[CtxIns], Protocol):
 
     @abc.abstractmethod
     def fail(self, instance:CtxIns, word:Value, node:Node, query:Sen) -> None: pass
@@ -76,6 +76,8 @@ class ContextSet_i(Hashable, Iterable[CtxIns], Protocol):
     @abc.abstractmethod
     def failed_list(self) -> list[ContextFailState_d]: pass
 
+class ContextSet_i(ContextSet_p):
+    _operators : CtxIns
 
 @runtime_checkable
 class ContextInstance_i(Hashable, Collection[Value], AcabFinishable_p, Protocol):

@@ -99,6 +99,8 @@ class AcabMinimalLogRecord(logging.LogRecord):
     this is a minimal log record modification to handle that
     """
 
+    _fields= "name levelno levelname pathname filename module lineno funcName created asctime msecs relativeCreated thread threadName process message"
+
     @classmethod
     def install(cls):
         """
@@ -123,6 +125,11 @@ class AcabMinimalLogRecord(logging.LogRecord):
 
         return msg
 
+    @classmethod
+    @property
+    def available_fields(cls):
+        return cls._fields
+
 
 class AcabLogRecord(AcabMinimalLogRecord):
     """
@@ -135,6 +142,8 @@ class AcabLogRecord(AcabMinimalLogRecord):
     """
 
     fmt = AcabStringFormatter()
+
+    _fields= "shortname name levelno levelname pathname filename module lineno funcName created asctime msecs relativeCreated thread threadName process message"
 
     @classmethod
     def install(cls):
@@ -185,7 +194,6 @@ class AcabLogFormatter(logging.Formatter):
     _default_date_fmt : str      =  "%H:%M:%S"
     _default_style               = '{'
 
-    _fields= "name levelno levelname pathname filename module lineno funcName created asctime msecs relativeCreated thread threadName process message"
 
     def __init__(self, *, fmt=None, record=False):
         """

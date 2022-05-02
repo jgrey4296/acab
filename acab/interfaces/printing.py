@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     # tc only imports
     pass
 
-from acab import GET
+from acab import AcabConfig
 from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.core.printing.default_symbols import PRINT_SEPARATOR_P
@@ -24,7 +24,7 @@ from acab.interfaces import handler_system as HS
 from acab.interfaces.protocols import handler_system as HSubP
 
 logging = logmod.getLogger(__name__)
-config = GET()
+config = AcabConfig()
 
 Config_A         : TypeAlias = AT.Config
 Value_A          : TypeAlias = "AT.Value[AT.ValueCore]"
