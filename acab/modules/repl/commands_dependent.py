@@ -1,19 +1,20 @@
-from datetime import datetime
-from enum import Enum
-from os.path import split, splitext, exists, expanduser, abspath
 import importlib
 import logging as logmod
-import pyparsing as pp
 import re
 from collections import defaultdict
-import acab
-config = acab.GET()
+from datetime import datetime
+from enum import Enum
+from os.path import abspath, exists, expanduser, split, splitext
 
-from acab.modules.repl.repl_commander import register
-from acab.modules.repl import ReplParser as RP
+import acab
+import pyparsing as pp
+from acab import AcabConfig
 from acab.core.value.instruction import ProductionOperator, ProductionStructure
+from acab.modules.repl import ReplParser as RP
+from acab.modules.repl.repl_commander import register
 
 logging = logmod.getLogger(__name__)
+config  = AcabConfig()
 
 
 @register

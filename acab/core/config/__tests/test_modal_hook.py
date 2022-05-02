@@ -10,6 +10,7 @@ from os.path import split, splitext
 
 from acab import setup
 
+config = setup()
 from acab.core.config.config import AcabConfig, ConfigSpec, ConfigSingletonMeta
 from acab.error.config import AcabConfigException
 

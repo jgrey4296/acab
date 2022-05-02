@@ -4,10 +4,10 @@ Variations of HandlerSpecs for specific tasks
 """
 
 import acab
-
-config = acab.GET()
-
+from acab import AcabConfig
 from acab.interfaces import handler_system as HS
+
+config = AcabConfig()
 
 class SpecReduce(HS.HandlerSpec):
 

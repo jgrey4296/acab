@@ -58,8 +58,8 @@ def GET(*args:str, hooks:None|list[AT.fns.GenFunc]=None) -> Config_i:
     Returns:
         The config object
     """
-    config = AcabConfig(*args, hooks=hooks)
-    return config
+    raise DeprecationWarning()
+
 #--------------------------------------------------
 # pylint: disable-next=too-few-public-methods
 class ConfigSpec(ConfigSpec_d):
@@ -129,7 +129,8 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
 
     def __post_init__(self, paths: None|list[str]):
         self._config = ConfigParser(interpolation=ExtendedInterpolation(),
-                                    allow_no_value=True)
+                                    allow_no_value=True,
+                                    delimiters="=")
         self.attr = AttrGenerator(self._config)
         # Overrides ConfigParser's default of lowercasing everything
         self._config.optionxform = lambda x: x #type:ignore
@@ -147,7 +148,8 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
         in_base     = key in self._config
         in_enums    = key in self.enums
         in_defaults = key in self.defaults
-        return any([in_print, in_base, in_enums, in_defaults])
+        in_overrides = key in self._overrides
+        return any([in_print, in_base, in_enums, in_defaults, in_overrides])
 
     def clear(self):
         self._config.clear()
@@ -259,35 +261,49 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
         """
         Get a lookup tuple at run time
         """
-        in_file = spec.section in self._config
-        if in_file and spec.as_list and spec.key is None:
-            return list(self._config[spec.section].keys())
-        elif in_file and spec.as_dict and spec.key is None:
-            return dict(self._config[spec.section].items())
-        elif in_file and spec.as_enum and spec.key is None:
-            values = " ".join(self._config[spec.section].keys())
-            # Runtime creation of enums
-            self.enums[spec.section] = Enum(spec.section, values) #type:ignore
-            return self.enums[spec.section]
-        elif not in_file:
+        retrieved_section = None
+        value             = None
+        actions           = [self.actions[x] for x in spec.actions] if bool(spec.actions) else []
+        key               = spec.key
+        in_override       = spec.section in self._overrides
+        in_section        = spec.section in self._config
+        assert(not (spec.as_enum and spec.section in self.enums))
+
+        # Early exit if bad path, early return if enum
+        if not (in_section or in_override):
             raise AcabConfigException(f"missing util value: {spec.section} {spec.key}")
 
-        # try:
-        value = spec.key
-        in_override= spec.key is None or spec.key in self._overrides[spec.section]
-        in_section = spec.key is None or spec.key in self._config[spec.section]
-
+        # Retrieve the section, preferring override then loaded section
         if in_override:
             # Default dict with dict inside:
-            value = self._overrides[spec.section][spec.key] #type:ignore
-        elif in_section and self._config[spec.section][spec.key] is not None:
-            value = self._config[spec.section][spec.key] #type:ignore
-        elif not in_section:
-            raise AcabConfigException(f"missing util value: {spec.section} {spec.key}")
+            retrieved_section = self._overrides[spec.section] #type:ignore
+        elif in_section:
+            retrieved_section = self._config[spec.section] #type:ignore
 
-
-        actions = spec.actions or []
-        for action in actions:
-            value = self.actions[action](value)
+        # Retrieve, create, and run actions as necessary
+        if spec.as_enum:
+            assert(spec.section not in self.enums)
+            assert(key is None)
+            values = " ".join(retrieved_section.keys())
+            # Runtime creation of enums
+            self.enums[spec.section] = Enum(spec.section, values) #type:ignore
+            value = self.enums[spec.section]
+        elif spec.as_list:
+            assert(key is None)
+            value = list(retrieved_section.keys())
+            for action in actions:
+                value = [action(x, **spec.args) for x in value]
+        elif spec.as_dict:
+            assert(key is None)
+            value = dict(retrieved_section.items())
+            for action in actions:
+                value = {k: action(v, **spec.args) for k,v in value.items()}
+        else:
+            assert(key is not None and key in retrieved_section)
+            value = retrieved_section[key]
+            if value is None:
+                value = key
+            for action in actions:
+                value = action(value, **spec.args)
 
         return value

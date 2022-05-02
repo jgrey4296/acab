@@ -8,28 +8,24 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-import pyparsing as pp
-
-logging = logmod.getLogger(__name__)
-trace_logger = logmod.getLogger('acab.repl.trace')
-
 import acab
-
-config = acab.GET()
-
+import pyparsing as pp
+from acab import AcabConfig
+from acab.error.config import AcabConfigException
 from acab.interfaces.context import ContextSet_i
 from acab.interfaces.engine import AcabEngine_i
 from acab.modules.repl import ReplParser as RP
-from acab.error.config import AcabConfigException
 
-
+logging      = logmod.getLogger(__name__)
+trace_logger = logmod.getLogger('acab.repl.trace')
+config       = AcabConfig()
 #--------------------
 initial_prompt = config.prepare("Module.REPL", "PROMPT", actions=[config.actions_e.STRIPQUOTE])()
 initial_engine = config.prepare("Module.REPL", "ENGINE")()
 try:
-    repl_intro     = config.prepare("Module.REPL", "INTRO")().replace("\\n", "\n")
+    repl_intro     = config.prepare("Module.Repl.Intro", as_list=True)()
 except AcabConfigException:
-    repl_intro = "Welcome to ACAB.\nType 'help' or '?' to list commands.\nType 'tutorial' for a tutorial.\nType ':q' to quit."
+    repl_intro = ["Welcome to ACAB.", "Type 'help' or '?' to list commands.", "Type 'tutorial' for a tutorial.", "Type ':q' to quit."]
 
 @dataclass
 class ReplState:
@@ -51,7 +47,7 @@ class ReplState:
 
 class AcabREPLCommander(cmd.Cmd):
     """ Implementation of cmd.Cmd to provide an extensible ACAB REPL"""
-    intro                                                   = repl_intro
+    intro                                                   = "\n".join(repl_intro)
     prompt                                                  = initial_prompt + ": "
     _latebind                                               = []
     _default_startups  : ClassVar[list[Callable[..., Any]]] = []

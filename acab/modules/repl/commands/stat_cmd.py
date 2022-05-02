@@ -99,7 +99,7 @@ class StatCmd:
             for mod in mods_with_semantics:
                 print(f"Module: {mod.source}")
                 for frag in mod.semantics:
-                    print(f"{frag}")
+                    print(f"\t{frag}")
 
     def pr_operators(self, params):
         print("\n--------------------")

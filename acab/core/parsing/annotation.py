@@ -8,12 +8,11 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 
 from acab import types as AT
-from acab.core.config.config import GET
+from acab import AcabConfig
 from acab.interfaces.value import Value_i
 
-config = GET()
-
-Value = AT.Value
+config = AcabConfig()
+Value  = AT.Value
 
 @dataclass
 class ValueAnnotation:

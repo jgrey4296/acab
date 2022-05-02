@@ -7,21 +7,21 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 logging = logmod.getLogger(__name__)
 
+from acab import AcabConfig
 from acab import types as AT
+from acab.core.semantics.basic import StatementSemantics
 from acab.core.util.decorators.semantic import RunInSubCtxSet
 from acab.core.value import default_structure as DS
 from acab.core.value.instruction import ProductionOperator
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces import semantic as SI
-from acab.core.semantics.basic import StatementSemantics
 from acab.modules.context.context_instance import MutableContextInstance
-from acab.modules.context.context_set import ContextSet
 from acab.modules.values.sen_val.context_sen_bind_query_manager import \
     ContextSenBindQueryManager
 
+config     = AcabConfig()
+
 CtxIns = AT.CtxIns
-
-
 
 class SenQuerySemantics(StatementSemantics, SI.StatementSemantics_i):
     """

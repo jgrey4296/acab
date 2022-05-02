@@ -13,7 +13,6 @@ from acab.core.value.instruction import ProductionOperator
 from acab.core.util.decorators.semantic import RunInSubCtxSet
 from acab.interfaces import semantic as SI
 from acab.error.semantic import AcabSemanticException
-from acab.modules.context.context_set import ContextSet, MutableContextInstance
 from acab.core.semantics import basic
 
 CtxIns = AT.CtxIns

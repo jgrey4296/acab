@@ -42,6 +42,12 @@ def SemanticBreakpointDecorator(f):
 
 class RunningDebugger(AcabDebugger_i, metaclass=SingletonMeta):
 
+    def __init__(self):
+        super().__init__()
+        self.running = False
+
+    def __bool__(self):
+        return self.running
 
     def precmd(self, line):
         trace_logger.info("[db]>>> " + line)
@@ -54,6 +60,7 @@ class RunningDebugger(AcabDebugger_i, metaclass=SingletonMeta):
 
     def set_running_trace(self, frame=None):
         """ Start debugging from frame, without pausing execution. """
+        self.running = True
         if frame is None:
             frame = sys._getframe().f_back
         self.reset()
@@ -69,6 +76,7 @@ class RunningDebugger(AcabDebugger_i, metaclass=SingletonMeta):
 
         If frame is not specified, debugging starts from caller's frame.
         """
+        self.running = True
         if frame is None:
             frame = sys._getframe().f_back
         # removed "reset" here.

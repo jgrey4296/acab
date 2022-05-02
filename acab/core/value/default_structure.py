@@ -1,10 +1,10 @@
 """
 Default elements found in values, loaded from config
 """
-from acab.core.config.config import GET
+from acab import AcabConfig
 from enum import Enum
 
-config = GET()
+config = AcabConfig()
 
 # TODO refactor to use these instead
 DATA_STRUCT_E : Enum = config.prepare("Value.Structure"      , as_enum=True)()

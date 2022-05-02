@@ -18,7 +18,7 @@ import acab.core.util.part_implementations.value as VP
 import acab.interfaces.value as VI
 from acab import setup
 from acab import types as AT
-from acab.core.config.config import GET, AcabConfig
+from acab import AcabConfig
 from acab.core.util.decorators.util import cache
 from acab.error.base import AcabBasicException
 from acab.error.protocol import AcabProtocolError as APE

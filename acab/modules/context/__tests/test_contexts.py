@@ -7,7 +7,8 @@ import acab
 config = acab.setup()
 
 from acab.core.value.value import AcabValue
-from acab.modules.context.context_set import ContextSet, ContextInstance
+from acab.modules.context.context_set import ContextSet
+from acab.modules.context.context_instance import ContextInstance
 from acab.error.context import AcabContextException
 
 class ContextsTests(unittest.TestCase):

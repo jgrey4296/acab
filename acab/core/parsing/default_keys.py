@@ -2,10 +2,10 @@
 Enforce a default set of parse structure entries to be
 retrieved from config files
 """
-from acab.core.config.config import GET
+from acab import AcabConfig
 from enum import Enum
 
-config = GET()
+config = AcabConfig()
 
 HEAD_ANNOTATION : str = config.prepare("Parse.Structure", "HEAD_ANNOTATION")()
 POST_ANNOTATION : str = config.prepare("Parse.Structure", "POST_ANNOTATION")()

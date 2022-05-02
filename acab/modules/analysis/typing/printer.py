@@ -7,7 +7,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 import acab.core.value.default_structure as DS
 import acab.interfaces.value as VI
-from acab.core.config.config import GET, AcabConfig, ConfigSpec
+from acab import AcabConfig
 from acab.core.printing import basic
 from acab.core.printing import default_symbols as DSYM
 from acab.core.printing import wrappers as PW
@@ -16,7 +16,7 @@ from acab.core.value.instruction import Instruction
 from acab.core.value.sentence import Sentence
 from acab.interfaces.printing import PrintSemantics_i
 
-config = GET()
+config = AcabConfig()
 
 @HandleSignal("TYPE_INSTANCE")
 class TypeAwareValuePrinter(basic.PrintSemanticsImpl):

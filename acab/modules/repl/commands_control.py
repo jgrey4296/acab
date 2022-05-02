@@ -12,18 +12,16 @@ from os.path import abspath, exists, expanduser, split, splitext
 
 import acab
 import pyparsing as pp
-
-config = acab.GET()
-
-from acab.core.value.instruction import (ProductionOperator,
-                                        ProductionStructure)
-from acab.interfaces.value import Instruction_i
+from acab import AcabConfig
+from acab.core.value.instruction import ProductionOperator, ProductionStructure
 from acab.interfaces.context import ContextSet_i
+from acab.interfaces.value import Instruction_i
 from acab.modules.repl import ReplParser as RP
 from acab.modules.repl.repl_commander import register
 from acab.modules.repl.util import ConfigBasedLoad
 
 logging = logmod.getLogger(__name__)
+config  = AcabConfig()
 
 
 @register

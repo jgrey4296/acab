@@ -1,30 +1,29 @@
 #!/usr/bin/env python3
 
 import acab
-
-config = acab.GET()
-
 import acab.error.semantic as ASErr
 import acab.interfaces.semantic as SI
+from acab import AcabConfig
 from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.core.data.acab_struct import BasicNodeStruct
+from acab.core.util.decorators.util import HandleSignal
 from acab.core.value.instruction import Instruction
 from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue
-from acab.core.util.decorators.util import HandleSignal
 from acab.interfaces.semantic import StatementSemantics_i
 from acab.interfaces.value import Sentence_i
 from acab.modules.analysis.type_cqm import TypeContextQueryManager
 
-NEGATION_S       = config.prepare("Value.Structure", "NEGATION")()
+config     = AcabConfig()
+NEGATION_S = config.prepare("Value.Structure", "NEGATION")()
 
-CtxSet        = AT.CtxSet
-Node          = AT.Node
-Value         = AT.Value
-Structure     = AT.DataStructure
-Engine        = AT.Engine
-Contexts      = AT.CtxSet
+CtxSet     = AT.CtxSet
+Node       = AT.Node
+Value      = AT.Value
+Structure  = AT.DataStructure
+Engine     = AT.Engine
+Contexts   = AT.CtxSet
 
 @HandleSignal("_:TYPE_CHECK")
 class TypeSemantics(StatementSemantics_i):

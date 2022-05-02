@@ -4,10 +4,10 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-from acab.core.config.config import GET
+from acab import AcabConfig
 from acab.interfaces.handler_system import Handler_i
 
-config = GET()
+config = AcabConfig()
 
 MODULE_SPLIT_REG = re.compile(config.prepare("Parse.Patterns", "MODULE_SPLIT_REG")())
 
