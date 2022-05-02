@@ -20,6 +20,7 @@ import acab.core.value.default_structure as DS
 
 logging       = logmod.getLogger(__name__)
 
+@runtime_checkable
 class Bind_i(Protocol):
 
     def __init__(self):

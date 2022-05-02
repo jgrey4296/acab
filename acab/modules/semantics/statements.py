@@ -27,8 +27,8 @@ from acab.modules.context.context_instance import MutableContextInstance
 CtxIns     = AT.CtxIns
 
 config     = AcabConfig()
-ContextSet = config.prepare("Imports.Targeted", "context", actions=[config.actions_e.IMCLASS], action_args=[ContextSet_i])()
-Bind       = config.prepare("Imports.Targeted", "bind", actions=[config.actions_e.IMCLASS], action_args=[Bind_i])()
+ContextSet = config.prepare("Imports.Targeted", "context", actions=[config.actions_e.IMCLASS], args={"interface": ContextSet_i})()
+Bind       = config.prepare("Imports.Targeted", "bind", actions=[config.actions_e.IMCLASS], args={"interface": Bind_i})()
 
 # Primary Statements:
 class QueryAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):

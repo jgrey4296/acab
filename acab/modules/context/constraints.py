@@ -21,7 +21,7 @@ CONSTRAINT    = config.prepare("Value.Structure", "CONSTRAINT")
 TYPE_INSTANCE = config.prepare("Value.Structure", "TYPE_INSTANCE")()
 ATOM          = config.prepare("Data", "TYPE_BASE")()
 
-Bind = config.prepare("Imports.Targeted", "bind", actions=[config.actions_e.IMCLASS], action_args=[Bind_i])()
+Bind = config.prepare("Imports.Targeted", "bind", actions=[config.actions_e.IMCLASS], args={"interface": Bind_i})()
 
 CtxIns      = 'ContextInstance'
 Constraints = 'ConstraintCollection'

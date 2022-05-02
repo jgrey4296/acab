@@ -29,7 +29,7 @@ from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 from acab.modules.semantics.default import DEFAULT_SEMANTICS
 from acab.modules.structures.trie.default import DEFAULT_TRIE
 
-ContextSet = config.prepare("Imports.Targeted", "context", actions=[config.actions_e.IMCLASS], action_args=[ContextSet_i])()
+ContextSet = config.prepare("Imports.Targeted", "context", actions=[config.actions_e.IMCLASS], args={"interface": ContextSet_i})()
 
 dsl = None
 

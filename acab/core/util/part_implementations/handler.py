@@ -30,7 +30,6 @@ from acab.interfaces.value import Sentence_i, Value_i
 logging                = logmod.getLogger(__name__)
 config                 = AcabConfig()
 SPACER                 = int(config.prepare("Print.Data", "SPACER_SIZE")())
-DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 
 ModuleComponents   : TypeAlias = AT.ModuleComponents
 Overrider          : TypeAlias = AT.HandlerOverride
@@ -46,7 +45,8 @@ PASSTHROUGH         = "_"
 
 
 @APE.assert_concrete
-class Handler(HS.Handler_i):
+@dataclass
+class BasicHandler(HS.Handler_i):
 
     def __post_init__(self) -> None:
         if isinstance(self.func, type):

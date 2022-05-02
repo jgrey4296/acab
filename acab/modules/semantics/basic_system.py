@@ -26,7 +26,7 @@ CtxSet           = AT.CtxSet
 ModuleComponents = AT.ModuleComponents
 config           = AcabConfig()
 
-ContextSet = config.prepare("Imports.Targeted", "context", actions=[config.actions_e.IMCLASS], action_args=[ContextSet_i])()
+ContextSet = config.prepare("Imports.Targeted", "context", actions=[config.actions_e.IMCLASS], args={"interface": ContextSet_i})()
 SEM_HINT   = config.prepare("Value.Structure", "SEMANTIC_HINT")()
 
 # TODO make a queue structured system, where semantics return a list of

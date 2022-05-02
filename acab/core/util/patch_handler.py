@@ -20,13 +20,12 @@ from acab.interfaces.sieve import AcabSieve
 from acab.interfaces.value import Sentence_i, Value_i
 from acab.error.protocol import AcabProtocolError as APE
 from acab.interfaces.protocols import handler_system as HSubP
-from acab.core.util.part_implementations.handler import Handler
+from acab.core.util.part_implementations.handler import BasicHandler
 
 logging = logmod.getLogger(__name__)
 
 config = AcabConfig()
 SPACER = int(config.prepare("Print.Data", "SPACER_SIZE")())
-DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 
 ModuleComponents   : TypeAlias = AT.ModuleComponents
 Overrider          : TypeAlias = AT.HandlerOverride
@@ -42,7 +41,8 @@ PASSTHROUGH         = "_"
 
 
 @APE.assert_concrete
-class PatchHandler(Handler, HS.Handler_i):
+@dataclass
+class PatchHandler(BasicHandler, HS.Handler_i):
     """
     A Monkey-Patching handler to cut down on stack frames
     https://stackoverflow.com/questions/38541015/

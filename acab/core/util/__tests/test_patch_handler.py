@@ -14,14 +14,14 @@ from acab.interfaces.handler_system import Handler_i
 
 config                 = setup()
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
-HandlerConfigSpec      = config.prepare("Imports.Targeted", "handler", actions=[config.actions_e.IMCLASS], action_args=[Handler_i])
+HandlerConfigSpec      = config.prepare("Imports.Targeted", "handler", actions=[config.actions_e.IMCLASS], args={"interface": Handler_i})
 config.override(HandlerConfigSpec, "acab.core.util.patch_handler.PatchHandler")
 
 Handler = HandlerConfigSpec()
 
 import acab.core.util.part_implementations.handler_system as HS
 import acab.interfaces.handler_system as HSi
-from acab.core.util.part_implementations.handler import Handler as OrigHandler
+from acab.core.util.part_implementations.handler import BasicHandler
 from acab.core.util.patch_handler import PatchHandler
 from acab.error.handler import AcabHandlerException
 
@@ -61,7 +61,7 @@ class TestHandlerSystem(unittest.TestCase):
     def test_config_override(self):
         a_handler = Handler("a_signal")
         self.assertIsInstance(a_handler, PatchHandler)
-        self.assertIsInstance(a_handler, OrigHandler)
+        self.assertIsInstance(a_handler, BasicHandler)
 
     def test_basic_setup(self):
         fn_mock   = mock.MagicMock()
@@ -83,7 +83,7 @@ class TestHandlerSystem(unittest.TestCase):
         """
         curr      = inspect.currentframe()
         fn        = FrameInspector()
-        a_handler = OrigHandler("a_signal", func=fn)
+        a_handler = BasicHandler("a_signal", func=fn)
         result    = a_handler()
         self.assertNotEqual(curr.f_lineno, result.f_back.f_lineno)
         self.assertEqual(curr.f_lineno, result.f_back.f_back.f_lineno)
