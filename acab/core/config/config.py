@@ -129,7 +129,8 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
 
     def __post_init__(self, paths: None|list[str]):
         self._config = ConfigParser(interpolation=ExtendedInterpolation(),
-                                    allow_no_value=True)
+                                    allow_no_value=True,
+                                    delimiters="=")
         self.attr = AttrGenerator(self._config)
         # Overrides ConfigParser's default of lowercasing everything
         self._config.optionxform = lambda x: x #type:ignore

@@ -25,6 +25,7 @@ from acab.core.parsing import debug_funcs as DBF
 from acab.core.value.instruction import ProductionOperator, ProductionStructure
 from acab.modules.repl import ReplParser as RP
 from acab.modules.repl.repl_commander import register
+from acab.core.util.log_formatter import AcabLogFormatter, AcabMinimalLogRecord
 
 logging = logmod.getLogger(__name__)
 
@@ -118,12 +119,17 @@ def do_fmt(self, line):
     root = logmod.getLogger('')
     handler = [x for x in root.handlers if not isinstance(x, logmod.FileHandler)][0]
     if bool(line):
-        handler.setFormatter(logmod.Formatter(line))
+        handler.setFormatter(AcabLogFormatter(fmt=line, record=True))
         print(f"Set Console Log Format to: {line}")
     else:
         fmt = handler.formatter._fmt
+        recordFactory = logmod.getLogRecordFactory()
         print(f"Console Log Level: {fmt}")
-        print(f"See https://docs.python.org/3/library/logging.html#logrecord-attributes")
+        if hasattr(recordFactory, "available_fields"):
+            print(f"Availble Log Fields: {recordFactory.available_fields}")
+        else:
+            print("For Available Fields see:",
+                  "https://docs.python.org/3/library/logging.html#logrecord-attributes")
 
 @register
 def do_filter(self, line):

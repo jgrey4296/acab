@@ -23,9 +23,9 @@ config       = AcabConfig()
 initial_prompt = config.prepare("Module.REPL", "PROMPT", actions=[config.actions_e.STRIPQUOTE])()
 initial_engine = config.prepare("Module.REPL", "ENGINE")()
 try:
-    repl_intro     = config.prepare("Module.REPL", "INTRO")().replace("\\n", "\n")
+    repl_intro     = config.prepare("Module.Repl.Intro", as_list=True)()
 except AcabConfigException:
-    repl_intro = "Welcome to ACAB.\nType 'help' or '?' to list commands.\nType 'tutorial' for a tutorial.\nType ':q' to quit."
+    repl_intro = ["Welcome to ACAB.", "Type 'help' or '?' to list commands.", "Type 'tutorial' for a tutorial.", "Type ':q' to quit."]
 
 @dataclass
 class ReplState:
@@ -47,7 +47,7 @@ class ReplState:
 
 class AcabREPLCommander(cmd.Cmd):
     """ Implementation of cmd.Cmd to provide an extensible ACAB REPL"""
-    intro                                                   = repl_intro
+    intro                                                   = "\n".join(repl_intro)
     prompt                                                  = initial_prompt + ": "
     _latebind                                               = []
     _default_startups  : ClassVar[list[Callable[..., Any]]] = []
