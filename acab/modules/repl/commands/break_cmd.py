@@ -10,17 +10,25 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     cast, final, overload, runtime_checkable)
 
 import pyparsing as pp
-
-logging = logmod.getLogger(__name__)
+from acab import AcabConfig
+from acab.modules.repl.repl_commander import register_class
+from acab.modules.repl.ReplParser import rst
+from acab.modules.repl.util import ConfigBasedLoad
+from acab.interfaces.debugger import AcabDebugger_i
 
 if TYPE_CHECKING:
     # tc only imports
     pass
 
 
-from acab.modules.repl.repl_commander import register_class
-from acab.modules.repl.ReplParser import rst
-from acab.modules.repl.util import ConfigBasedLoad
+logging = logmod.getLogger(__name__)
+config  = AcabConfig()
+
+Debugger = config.prepare("Imports.Targeted", "debug", actions=[config.actions_e.IMCLASS], args={"interface": AcabDebugger_i})()
+
+debug_intro = config.prepare("Module.Repl.Debug.Intro", actions=[config.actions_e.STRIPQUOTE], as_list=True)()
+
+the_debugger = Debugger()
 
 
 # TODO breakpoint a semantic handler by name,
@@ -33,7 +41,7 @@ from acab.modules.repl.util import ConfigBasedLoad
 class BreakCmd:
 
     def __init__(self):
-        self._parser = self._gen_parser()
+        self._parser   = self._gen_parser()
 
     def _gen_parser(self):
         filename = pp.Word(pp.alphas + "/_") + pp.Literal(".py")
@@ -53,7 +61,6 @@ class BreakCmd:
         return break_parser
 
 
-    @ConfigBasedLoad
     def __call__(self, line):
         """
         Control a bdb customization.
@@ -68,6 +75,9 @@ class BreakCmd:
         # To break on semantic execution:
 
         """
+        if not bool(the_debugger):
+            the_debugger.set_running_trace()
+
         ctxs = self._parser.parse_string(line)
         # TODO refactor the basic/semantic logic into the debugger
 
@@ -78,19 +88,13 @@ class BreakCmd:
         elif "parser" in ctxs:
             self.handle_parser(ctxs)
         else:
-            print("""
-            Shunting to Python debugger.
-            Explore using: self._cmd.state, self._cmd.state.engine
-            self is the break cmd,
-            self._cmd is the repl,
-            self._cmd.state is data the repl tracks,
-            self._cmd.state.engine is the active ACAB engine,
-            self._cmd.state.ctxs is the current context set
-            """)
-            self._cmd.state.debugger.set_trace()
+            print("")
+            print("\n\t".join(debug_intro))
+            print("")
+            the_debugger.set_trace()
 
     def handle_basic(self, ctxs):
-        bp_result = self._cmd.state.debugger.set_break(ctxs.file, ctxs.line)
+        bp_result = the_debugger.set_break(ctxs.file, ctxs.line)
         if bp_result is None:
             print(f"Breakpoint Set: {ctxs.file} : {ctxs.line}")
         else:

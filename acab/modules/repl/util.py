@@ -56,30 +56,7 @@ def ConfigBasedLoad(f):
     and wrap a repl command with an instruction to get and start the
     debugger if necessary """
     # TODO deprecate this to use [Import.Targeted]
-    if "Module.Debug" in config:
-        logging.debug("Loading Debugger")
-        mod  = config.prepare("Module.Debug", "IMPORT", actions=[config.actions_e.IMPORT])()
-        name = config.prepare("Module.Debug", "DEBUGGER")()
-        debugger = getattr(mod, name)
-        assert(issubclass(debugger, AcabDebugger_i)), debugger
-    else:
-        return f
-
-
-    @wraps(f)
-    def wrapper(self, line):
-        if isinstance(self, FunctionType) and self.state.debugger is None:
-            logging.debug(f"Starting Debugger: {debugger.__name__}")
-            self.state.debugger = debugger()
-            self.state.debugger.set_running_trace()
-        elif self._cmd.state.debugger is None:
-            self._cmd.state.debugger = debugger()
-            self._cmd.state.debugger.set_running_trace()
-
-
-        return f(self, line)
-
-    return wrapper
+    raise DeprecationWarning()
 
 
 def build_rebind_instruction(value:str):

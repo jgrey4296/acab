@@ -13,6 +13,9 @@ class AcabDebugger_i(pdb.Pdb):
     singleton = None
 
     @abc.abstractmethod
+    def __bool__(self): pass
+
+    @abc.abstractmethod
     def set_running_trace(self, *, frame:Any=None) -> None:
         """ Start a trace going, without stopping execution """
         pass
