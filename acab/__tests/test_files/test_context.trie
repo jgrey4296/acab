@@ -1,4 +1,4 @@
-setup.context.two:
+setup.context.two(::ρ):
     // Use §
     § acab.print acab.modules.operators.action.AcabPrint
     § "==" acab.modules.operators.query.EQ
@@ -8,7 +8,7 @@ end
 a.b.c
 a.b.d
 
-test.rule:
+test.rule(::ρ):
     a.b.$x(== c)?
 
     λacab.print "testing: " $x

@@ -1,12 +1,12 @@
-test.update(::ACTION):
+test.update(::α):
     λacab.modules.operators.action.ActionUpdateOperators up.op acab.modules.operators.action.ActionUpdateOperators
 end
 
-my.action(::ACTION):
+my.action(::α):
     + "testing blah"
 end
 
-test.update.two(::ACTION):
+test.update.two(::α):
     λup.op "+" acab.modules.operators.action.ActionPrint
 end
 

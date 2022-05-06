@@ -25,7 +25,7 @@ from acab.modules.printing.default import DEFAULT_PRINTER
 from acab.modules.semantics.default import DEFAULT_SEMANTICS
 
 
-class _ENGINE_TEST_TEMPLATEjk(unittest.TestCase):
+class _ENGINE_TEST_TEMPLATE(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):

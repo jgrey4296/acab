@@ -1,0 +1,11 @@
+a.simple.type(::τ)
+
+a.record.type(::τ):
+    a.b.c(::str)
+    a.b.d(::int)
+end
+
+a.sum.type(::Σ):
+    a.b.d(::τ)
+    d.e.f(::τ)
+end

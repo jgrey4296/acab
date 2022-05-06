@@ -1,15 +1,11 @@
-test.update(::ACTION):
-    λacab.modules.operators.action.ActionUpdateOperators DEFAULT_ACTION acab.modules.operators.action.ActionAdd
-end
-
 test.rule(::RULE):
-    a.b.c?
+    a.b.$x?
 
-    λDEFAULT_ACTION d.e.f
+    λacab.modules.operators.action.ActionPrint "Found {x}"
 end
 
 a.b.c
-d.e.f
+a.b.d
 acab.modules.operators.query.ELEM
 acab.modules.operators.query.EQ
 acab.modules.operators.query.HasTag
@@ -18,6 +14,4 @@ acab.modules.operators.query.RegMatch
 acab.modules.operators.transform.FormatOp
 acab.modules.operators.transform.RegexOp
 acab.modules.operators.action.ActionAdd
-acab.modules.operators.action.ActionOperator
 acab.modules.operators.action.ActionPrint
-acab.modules.operators.action.ActionUpdateOperators

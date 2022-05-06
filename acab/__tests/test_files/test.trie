@@ -3,18 +3,18 @@ a.b.c
 d.e.f
 
 // testing
-a.test:
+a.test(::RULE):
     a.b.c?
     d.e.f?
 end
 
-a.test.nest:
+a.test.nest(::RULE):
    a.b.c?
    q.e.f?
 end
 
 
-test.rule:
+test.rule(::ρ):
   #test
   #blah
 
