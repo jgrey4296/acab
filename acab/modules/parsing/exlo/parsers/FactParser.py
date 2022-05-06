@@ -10,7 +10,7 @@ from acab.core.parsing import parsers as PU
 from acab.core.parsing.param_core import ParamCore
 from acab.core.parsing.statement_core import StatementCore
 from acab.core.parsing.consts import (COMMA, DELIM, END, emptyLine, COLON,
-                                      FACT_HEAD, NEGATION, NG, N, op, opLn, zrm, ln, FUNC_SYMBOL)
+                                      NEGATION, NG, N, op, opLn, zrm, ln, FUNC_SYMBOL)
 from acab.core.parsing.default_keys import OPERATOR, SEN, VALUE, HEAD_ANNOTATION
 from acab.core.parsing import default_keys as PDS
 from acab.core.value import default_structure as CDS

@@ -18,6 +18,7 @@ from acab.core.parsing import parsers as PU
 from acab.core.parsing.consts import (DBLARROW, DELIM, NG, N, component_gap,
                                       emptyLine, op, s, ln)
 from acab.modules.analysis.typing import util as TYU
+from acab.core.semantics.signals import signals
 
 from . import util as TU
 

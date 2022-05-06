@@ -126,8 +126,13 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertEqual(r_clause[-1].data[QUERY_FALLBACK][1][1][-1].value, 'e')
 
 
-    def test_query_statement(self):
+    def test_query_alias_statement(self):
         result = QP.query_statement.parse_string("query(::γ):\n  a.b.c?\n  d.e.f?\n  a.b.$x?\nend")[0]
+        self.assertIsInstance(result, ProductionContainer)
+        self.assertEqual(len(result.clauses), 3)
+
+    def test_query_statement(self):
+        result = QP.query_statement.parse_string("query(::QUERY):\n  a.b.c?\n  d.e.f?\n  a.b.$x?\nend")[0]
         self.assertIsInstance(result, ProductionContainer)
         self.assertEqual(len(result.clauses), 3)
 

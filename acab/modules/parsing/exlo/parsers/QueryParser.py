@@ -11,14 +11,12 @@ from acab.core.parsing.consts import (COLLAPSE_CONTEXT, COLON, COMMA, DELIM, DOU
                                           NG, QUERY, N, component_gap, op, zrm, orm, ln, s)
 from acab.core.parsing.default_keys import OPERATOR, SEN, VALUE
 from acab.core.parsing.annotation import ValueAnnotation
-from acab.core.parsing.default_symbols import QUERY_HEAD
 from acab.core.parsing.statement_core import StatementCore
 from acab.core.parsing.funcs import build_assignment
 from acab.modules.parsing.exlo import constructors as PConst
 from acab.modules.parsing.exlo.constructors import build_query
+from acab.core.semantics.signals import signals
 
-
-from acab.modules.parsing.exlo.util import QUERY_HEAD
 from .FactParser import SENTENCE, op_sentence, annotations
 
 logging = logmod.getLogger(__name__)
@@ -62,7 +60,7 @@ query_sen_post_annotation = query_terminator + query_fallback
 clauses               = pp.IndentedBlock((HOTLOAD_QUERY_SEN | SENTENCE) + op(s(ln)))
 # clauses.add_condition(lambda s, l, t: all([CDS.QUERY in x.data for x in t[:]]))
 
-query_statement       = StatementCore(QUERY_HEAD, clauses)
+query_statement       = StatementCore(signals.QUERY, clauses)
 
 # Actions
 clauses.set_parse_action(build_query)

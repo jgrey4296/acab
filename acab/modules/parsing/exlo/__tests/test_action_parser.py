@@ -96,3 +96,13 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
         result = AP.action_sugar_binary.parse_string("$y ∈ $x")[0]
         self.assertIsInstance(result, ProductionComponent)
         self.assertIn(DS.OPERATOR, result.op.data)
+
+    def test_action_statement(self):
+        result = AP.action_definition.parse_string("test(::ACTION):\n λa.b.c\nend")[0]
+        self.assertIsInstance(result, ProductionContainer)
+        self.assertEqual(result.type, "_:ACTION")
+
+    def test_action_alias_statement(self):
+        result = AP.action_definition.parse_string("test(::ACTION):\n λa.b.c\nend")[0]
+        self.assertIsInstance(result, ProductionContainer)
+        self.assertEqual(result.type, "_:ACTION")

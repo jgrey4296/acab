@@ -62,3 +62,13 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result, ProductionComponent)
         self.assertEqual(result.rebind.name, "z")
         self.assertIn(DS.OPERATOR, result.op.data)
+
+    def test_transform_alias_statement(self):
+        result = TP.transform_statement.parse_string("test(::χ):\n λa.b.c $x -> $y\nend")[0]
+        self.assertIsInstance(result, ProductionContainer)
+        self.assertEqual(result.type, "_:TRANSFORM")
+
+    def test_transform_statement(self):
+        result = TP.transform_statement.parse_string("test(::TRANSFORM):\n λa.b.c $x -> $y\nend")[0]
+        self.assertIsInstance(result, ProductionContainer)
+        self.assertEqual(result.type, "_:TRANSFORM")

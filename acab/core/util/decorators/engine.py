@@ -11,7 +11,7 @@ def MaybeBuildOperatorCtx(method):
     and ensure that container is loaded with operators from loaded modules
     """
     @wraps(method)
-    def fn(self, *args, **kwargs):
+    def build_operator_ctx_if_missing(self, *args, **kwargs):
         no_ctxset = 'ctxset' not in kwargs or kwargs['ctxset'] is None or not bool(kwargs['ctxset'])
         cached_ops  = self.semantics.has_op_cache
         if no_ctxset and not cached_ops:
@@ -28,16 +28,16 @@ def MaybeBuildOperatorCtx(method):
 
         return method(self, *args, **kwargs)
 
-    return fn
+    return build_operator_ctx_if_missing
 
 
 def EnsureEngineInitialised(method):
     """ Utility Decorator to raise an error if the DSL hasn't been initialised """
     @wraps(method)
-    def fn(self, *args, **kwargs):
+    def engine_must_be_initialised(self, *args, **kwargs):
         if not self.initialised:
             raise AcabParseException("Engine Not Initialised")
 
         return method(self, *args, **kwargs)
 
-    return fn
+    return engine_must_be_initialised

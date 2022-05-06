@@ -8,11 +8,11 @@ from acab.core.parsing import parsers as PU
 from acab.core.parsing.consts import (DELIM, NG, N, component_gap, ln, op, orm,
                                       s, zrm)
 from acab.core.parsing.default_keys import OPERATOR
-from acab.core.parsing.default_symbols import ACTION_HEAD
 from acab.core.parsing.parsers import VALBIND
 from acab.core.parsing.statement_core import StatementCore
 from acab.modules.parsing.exlo import constructors as PConst
-from acab.modules.parsing.exlo.util import ACTION_HEAD, LEFT_S, RIGHT_S
+from acab.modules.parsing.exlo.util import LEFT_S, RIGHT_S
+from acab.core.semantics.signals import signals
 
 from .FactParser import SENTENCE, op_sentence
 
@@ -47,7 +47,7 @@ action_exprs        = HOTLOAD_ACTION_STATEMENTS | basic_actions | SENTENCE
 actions             = pp.IndentedBlock(action_exprs + op(s(ln)))
 actions.set_parse_action(PConst.build_action)
 
-action_definition   = StatementCore(ACTION_HEAD, actions)
+action_definition   = StatementCore(signals.ACTION, actions)
 
 # parse action
 

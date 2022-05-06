@@ -100,7 +100,8 @@ def DEFAULT_SEMANTICS():
     """
     logging.info("Constructing Default Semantic System")
     return BSS(init_specs=DEFAULT_SPECS(),
-               init_handlers=DEFAULT_HANDLERS())
+               init_handlers=DEFAULT_HANDLERS(),
+               sieve_fns=[])
 
 
 def EXLO_SEMANTICS():

@@ -17,6 +17,7 @@ if TYPE_CHECKING:
     # tc only imports
     pass
 
+from acab import AcabConfig
 from acab.core.parsing import default_symbols as PDSYM
 from acab.core.config.config import AcabConfig
 from acab.core.parsing.parsers import Fwd_ArgList, Fwd_TagList
@@ -28,16 +29,33 @@ from acab.core.parsing.consts import (CPAR, DBLCOLON, NG, OPAR, TAG, N,
                                       opLn, orm, s, s_key, s_lit, zrm)
 from acab.core.parsing.param_core import ParamCore
 
+config               = AcabConfig()
+aliases              = config.attr.Aliases
+type_annotate_prefix = pp.Literal(PDSYM.TYPE_SEN)
 
-def type_annotation_gen(parser:ParserElement) -> ParserElement:
-    return pp.Literal(PDSYM.TYPE_SEN) + parser
+def type_annotation_gen(name:str|pp.ParseExpression) -> ParserElement:
+    """
+    Create a type annotation parser, using the config defined TYPE_SEN symbol,
+    and the passed in string representing a semantic signal.
+    if theres a defined alias for the signal, use that as an alternative
+    """
+    annotation = name
+    if isinstance(annotation, str):
+        annotation = pp.Literal(annotation)
+    if name in aliases:
+        annotation = annotation | pp.Literal(aliases[name])
+
+    return type_annotate_prefix + annotation
+
+
+
 
 class StatementCore(pp.ParseExpression):
     """ Construct a parser for statements of the form:
         a.location(annotation_p):\n |args|\n\n #tags\n\n { body }\n end
     """
 
-    def __init__(self, annotation_p:ParserElement,
+    def __init__(self, annotation_p:str|pp.ParseExpression,
                  body_p:ParserElement,
                  end:Tuple[None,bool,ParserElement]=None,
                  args:bool=True,

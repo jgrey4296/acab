@@ -59,6 +59,8 @@ class AttrSection:
     @property
     def _keys(self):
         return list(self._added_keys)
+    def __contains__(self, k):
+        return k in self._keys
 
 class AttrGenerator:
     """
