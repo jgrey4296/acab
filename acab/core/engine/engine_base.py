@@ -9,6 +9,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 from acab import types as AT
 from acab.core.util.decorators.engine import EnsureEngineInitialised
 from acab.error.semantic import AcabSemanticException
+from acab.error.parse import AcabParseException
 from acab.interfaces.engine import AcabEngine_i
 from acab.interfaces.printing import PrintSystem_i
 
@@ -34,8 +35,15 @@ class AcabEngineImpl(AcabEngine_i):
                 self(x)
         except FileNotFoundError as err:
             logging.warning(f"{err}")
+            raise err from None
+        except AcabParseException as err:
+            logging.warning(f"Parse Failure in {filename}")
+            err.file_name = filename
+            err.rest.append(filename)
+            raise err from None
         except AcabSemanticException as err:
             logging.warning(f"Assertion Failed: {x}")
+            raise err from None
 
         return True
 

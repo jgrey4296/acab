@@ -12,6 +12,8 @@ import acab
 import pyparsing as pp
 from acab import AcabConfig
 from acab.error.config import AcabConfigException
+from acab.error.base import AcabBasicException
+from acab.error.parse import AcabParseException
 from acab.interfaces.context import ContextSet_i
 from acab.interfaces.engine import AcabEngine_i
 from acab.modules.repl import ReplParser as RP
@@ -66,12 +68,16 @@ class AcabREPLCommander(cmd.Cmd):
     def default(self, line):
         """ Called when no other command matches """
         # default to assertion / query / run
-        self.state.ctxs = self.state.engine(line,
-                                            ctxset=self.state.ctxs)
-        # except Exception as err:
-        #     traceback.print_tb(err.__traceback__)
-        #     logging.warning(f"Failure in Default: {err}")
-
+        try:
+            self.state.ctxs = self.state.engine(line,
+                                                ctxset=self.state.ctxs)
+        except AcabParseException as err:
+            print(str(err))
+        except AcabBasicException as err:
+            logging.warning("\n--------------------\nFailure:\n")
+            traceback.print_tb(err.__traceback__)
+            logging.warning(f"\n{err.args[-1]}\n")
+            print(str(err))
 
     def precmd(self, line):
         """ For massaging the input command """

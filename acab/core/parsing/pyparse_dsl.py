@@ -172,12 +172,7 @@ class PyParseDSL(DSLImpl.DSL_Builder, dsl.DSL_Builder_i):
         try:
             return self[DEFAULT_HANDLER_SIGNAL].parse_string(s, parseAll=True)[:]
         except pp.ParseException as exp:
-            logging.warning("\n--------------------\nParse Failure:\n")
-            traceback.print_tb(exp.__traceback__)
-            logging.warning(f"\n{exp.args[-1]}\n")
-            logging.warning(f"Parser: {exp.parser_element}\n")
-            logging.warning("Line: {}, Col: {} : {}".format(exp.lineno, exp.col, exp.markInputline()))
-            return []
+            raise AcabParseException(f"Parser {exp.parser_element} failed on line {exp.lineno} column {exp.col}: {exp.markInputline()}") from exp
 
 
     def debug_parser(self, s:str):
