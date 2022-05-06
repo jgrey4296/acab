@@ -37,13 +37,6 @@ Fwd_ArgList.set_name('fwd_arglist')
 Fwd_TagList = pp.Forward()
 Fwd_TagList.set_name('fwd_taglist')
 
-def DELIMIST(expr, delim=None, stopOn=None):
-    # TODO deprecate
-    dlName = f"[{expr} {delim}...]"
-    return (expr + pp.ZeroOrMore(delim + expr,
-                                 stopOn=stopOn)).set_name(dlName)
-
-
 # Basic Parsers
 OPERATOR_SUGAR = pp.Word(PDSYM.OPERATOR_SYNTAX)
 OPERATOR_SUGAR.set_parse_action(lambda s, l, t: ValueFactory_i.sen([t[0]], data={CDS.OPERATOR: True}))
@@ -79,7 +72,7 @@ VALBIND = (NG(PDS.HEAD_ANNOTATION, zrm(HEAD_ANNOTATIONS))
            + NG(PDS.POST_ANNOTATION, zrm(POST_ANNOTATIONS)))
 VALBIND.set_parse_action(Pfunc.make_value)
 
-Fwd_ArgList <<= PConst.VBAR + DELIMIST(VALBIND, delim=PConst.COMMA) + PConst.VBAR
+Fwd_ArgList <<= PConst.VBAR + pp.delimited_list(VALBIND, delim=PConst.COMMA) + PConst.VBAR
 
 # TODO make TAG a head_annotation
 tagSen = TAG + pp.delimited_list(ATOM, delim=".")

@@ -20,7 +20,7 @@ HOTLOAD_STATEMENTS.set_name("hl_statements")
 
 file_component = HOTLOAD_STATEMENTS | FP.SEN_PLURAL
 
-file_total     = PU.DELIMIST(file_component, delim=component_gap)
+file_total     = pp.delimited_list(file_component, delim=component_gap)
 
 # NAMING
 # HOTLOAD_STATEMENTS.set_name("HotloadStatement")

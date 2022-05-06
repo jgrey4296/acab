@@ -42,7 +42,7 @@ flatten_annotation.set_name("FlattenAnno")
 flatten_annotation.set_parse_action(EU.build_flatten)
 
 # Annotations for sentence words, auto wrapped with parens
-annotations = PU.DELIMIST(HOTLOAD_ANNOTATIONS, delim=COMMA)
+annotations = pp.delimited_list(HOTLOAD_ANNOTATIONS, delim=COMMA)
 annotations.set_parse_action(PConst.build_constraint_list)
 annotations.set_name("Annotations")
 

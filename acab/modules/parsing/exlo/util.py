@@ -46,13 +46,4 @@ ACTION_SEM_HINT    = ValueFactory_i.sen([config.prepare("Semantic.Signals", "ACT
 TRANSFORM_SEM_HINT = ValueFactory_i.sen([config.prepare("Semantic.Signals", "TRANSFORM")()])
 RULE_SEM_HINT      = ValueFactory_i.sen([config.prepare("Semantic.Signals", "RULE")()])
 
-RULE_HEAD        = DSym.AliasDict["RULE"]
-QUERY_HEAD       = DSym.AliasDict["QUERY"]
-TRANSFORM_HEAD   = DSym.AliasDict["TRANSFORM"]
-ACTION_HEAD      = DSym.AliasDict["ACTION"]
-FACT_HEAD        = DSym.AliasDict["FACT"]
-AGENDA_HEAD      = DSym.AliasDict["AGENDA"]
-LAYER_HEAD       = DSym.AliasDict["LAYER"]
-PIPE_HEAD        = DSym.AliasDict["PIPE"]
-COLLAPSE_CONTEXT = DSym.AliasDict["CTX_COLLAPSE"]
-
+COLLAPSE_CONTEXT = DSym.COLLAPSE_CONTEXT

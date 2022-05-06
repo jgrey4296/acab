@@ -34,7 +34,7 @@ HOTLOAD_QUERY_OP  = pp.Forward()
 HOTLOAD_QUERY_OP.set_name("hl_query_op")
 
 assignment        = PU.BIND + COLON + SENTENCE
-assignmentList    = PU.DELIMIST(assignment, delim=COMMA)
+assignmentList    = pp.delimited_list(assignment, delim=COMMA)
 fallback          = DOUBLEBAR + assignmentList
 
 # Build After comparison operators have been constructed:
