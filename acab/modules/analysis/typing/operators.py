@@ -10,11 +10,12 @@ from acab.core.util.decorators.semantic import OperatorSugar
 from .values.acab_type import TypeStatement
 from acab.modules.analysis.typing.unify.util import gen_f
 from acab.modules.analysis.typing.unify import type_unify_fns as tuf
+from acab.core.value.sentence import Sentence
 
-Value    = AT.Value
-Sentence = AT.Sentence
-CtxIns   = AT.CtxIns
-Node     = AT.Node
+Value      = AT.Value
+Sentence_A = AT.Sentence
+CtxIns     = AT.CtxIns
+Node       = AT.Node
 
 class TypeApply(ActionOperator):
     """

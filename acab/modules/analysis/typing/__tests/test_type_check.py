@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging as logmod
 import unittest
 import unittest.mock as mock
