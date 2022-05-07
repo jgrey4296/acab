@@ -64,9 +64,9 @@ class PrintSystem_i(HS.HandlerSystem_i, _PrintSystem_p):
     does not rely on the underlying data structures,
     just consumes Sentences
     """
-    init_specs     : InitVar[list[HandlerSpec_A]] = field()
-    init_handlers  : InitVar[list[Handler_A]]     = field()
-    sieve_fns      : InitVar[list[GenFunc]]       = field()
+    init_specs     : InitVar[list[HandlerSpec_A]] = None
+    init_handlers  : InitVar[list[Handler_A]]     = None
+    sieve_fns      : InitVar[list[GenFunc]]       = None
     separator : ConfigSpec     = field(default=PRINT_SEPARATOR_P)
     settings  : dict[str, str] = field(default_factory=dict)
     _config   : Config_A       = field(init=False, default_factory=AcabConfig)

@@ -87,8 +87,7 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
         specs = default.DEFAULT_PRINTER_SPEC()
         sem = BasicPrinter(init_specs=specs,
                            init_handlers=init_handlers,
-                           sieve_fns=[])
-
+                           )
         words = ["a", "b", "c", "d"]
         sentence = Sentence(words)
 
@@ -103,8 +102,7 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
                                           Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
                                           Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                           Printers.ModalPrinter().as_handler(signal="MODAL")],
-                           sieve_fns=[],
-                        settings={"MODAL" : "exop"})
+                           settings={"MODAL" : "exop"})
         sentence = FP.parse_string("a.test.sen")[0]
         result = sem.pprint(sentence)
         self.assertEqual(result, "a.test.sen")
@@ -117,8 +115,7 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
                                           Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
                                           Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                           Printers.ModalPrinter().as_handler(signal="MODAL")],
-                           sieve_fns=[],
-                          settings={"MODAL": "exop"})
+                           settings={"MODAL": "exop"})
         sentence = FP.parse_string("a.test!sen")[0]
         result = sem.pprint(sentence)
         self.assertEqual(result, "a.test!sen")
@@ -132,8 +129,7 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
                                           Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
                                           Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                           Printers.ModalPrinter().as_handler(signal="MODAL")],
-                           sieve_fns=[],
-                          settings={"MODAL": "exop"})
+                           settings={"MODAL": "exop"})
         sentence = FP.parse_string("a.test!sen")[0]
         sentence.data[DS.QUERY] = True
         result = sem.pprint(sentence)
@@ -149,8 +145,7 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
                                           Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
                                           Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                           Printers.ModalPrinter().as_handler(signal="MODAL")],
-                           sieve_fns=[],
-                          settings={"MODAL" : "exop"})
+                           settings={"MODAL" : "exop"})
         sentence = FP.parse_string("~a.test.sen")[0]
         result = sem.pprint(sentence)
         self.assertEqual(result, "~a.test.sen")

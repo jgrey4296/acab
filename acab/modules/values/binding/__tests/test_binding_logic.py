@@ -45,7 +45,7 @@ class BindingLogicTests(unittest.TestCase):
         logging.root.setLevel(logmod.NOTSET)
 
         # Set up the parser to ease test setup
-        cls.dsl   = ppDSL.PyParseDSL([], [], [])
+        cls.dsl   = ppDSL.PyParseDSL()
         cls.dsl.register(EXLO_Parser)
         cls.dsl.build()
         # dsl()

@@ -61,5 +61,4 @@ def DEFAULT_PRINT_HANDLERS():
 def DEFAULT_PRINTER():
     return BasicPrinter(init_specs=DEFAULT_PRINTER_SPEC(),
                         init_handlers=DEFAULT_PRINT_HANDLERS(),
-                        sieve_fns=[],
                         settings={"MODAL": "exop"})

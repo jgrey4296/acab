@@ -42,7 +42,7 @@ class UnifyUtilTests(unittest.TestCase):
 
         global dsl
         # Set up the parser to ease test setup
-        dsl   = ppDSL.PyParseDSL([], [], [])
+        dsl   = ppDSL.PyParseDSL()
         dsl.register(EXLO_Parser).register(TypingDSL)
         dsl.build()
 

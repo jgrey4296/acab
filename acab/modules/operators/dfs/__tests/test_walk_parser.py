@@ -55,7 +55,7 @@ class TestWalkParser(unittest.TestCase):
         logging.root.setLevel(logmod.NOTSET)
 
         global dsl
-        dsl = PyParseDSL([],[],[])
+        dsl = PyParseDSL()
         dsl.register(EXLO_Parser)
         dsl.register(DFS_DSL)
         dsl.build()

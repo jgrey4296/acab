@@ -109,7 +109,7 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
     Uses ${SectionName:Key} interpolation in values,
     Turns multi-line values into lists
     """
-    paths     : InitVar[None|list[str]]         = field(default=None)
+    paths     : InitVar[None|list[str]]         = None
     hooks     : set[GenFunc]                    = field(default_factory=set)
 
     _files    : set[str]                        = field(init=False, default_factory=set)

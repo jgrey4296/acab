@@ -66,14 +66,14 @@ class SemanticSystemTests(unittest.TestCase):
 
     def test_construction(self):
         """ Check context systems can be created """
-        semsys = BasicSemanticSystem(init_specs=[], sieve_fns=[], init_handlers=[StubAbsSemantic().as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        semsys = BasicSemanticSystem(init_handlers=[StubAbsSemantic().as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         self.assertIsInstance(semsys, SemanticSystem_i)
         self.assertIsInstance(semsys.lookup()[0], StatementSemantics_i)
         self.assertTrue(semsys.handler_specs)
 
     def test_default_call(self):
         """ Check context systems can be called """
-        semsys = BasicSemanticSystem(init_specs=[], sieve_fns=[], init_handlers=[StubAbsSemantic().as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        semsys = BasicSemanticSystem(init_handlers=[StubAbsSemantic().as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         test_sen = Sentence(["test"])
         with self.assertRaises(AE.AcabException) as cm:
             semsys(test_sen)
@@ -84,7 +84,7 @@ class SemanticSystemTests(unittest.TestCase):
     def test_retrieval(self):
         """ Check context systems can lookup the correct semantics for an input """
         # put some semantics in semsys.mapping
-        semsys = BasicSemanticSystem(init_specs=[], sieve_fns=[], init_handlers=[StubAbsSemantic().as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        semsys = BasicSemanticSystem(init_handlers=[StubAbsSemantic().as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
 
 
     @unittest.skip("not implemented")

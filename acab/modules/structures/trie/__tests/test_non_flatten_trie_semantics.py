@@ -61,7 +61,7 @@ class TrieSemanticTests(unittest.TestCase):
     def test_trie_insert_basic(self):
         """ Check trie semantics inserts nodes in the correct places """
         node_sem = BasicNodeSemantics().as_handler(signal="node")
-        trie_sem = BreadthTrieSemantics([], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = ValueFactory.sen(["a", "test", "sentence"])
@@ -77,7 +77,7 @@ class TrieSemanticTests(unittest.TestCase):
     def test_trie_insert_non_exclusion(self):
         """ Check trie insertion works without exclusion when using BasicNodeSemantics """
         node_sem = BasicNodeSemantics().as_handler(signal="node")
-        trie_sem = BreadthTrieSemantics([], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen  = ValueFactory.sen(["a", "test", "sentence"])
@@ -94,7 +94,7 @@ class TrieSemanticTests(unittest.TestCase):
     def test_trie_insert_exclusion(self):
         """ Check Trie insertion uses exclusion when using ExclusionNodeSemantics """
         node_sem    = ExclusionNodeSemantics().as_handler(signal="node")
-        trie_sem    = BreadthTrieSemantics([], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem    = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen  = ValueFactory.sen(["a", "test", "sentence"])
@@ -114,7 +114,7 @@ class TrieSemanticTests(unittest.TestCase):
     def test_trie_remove_basic(self):
         """ Check trie removal of nodes """
         node_sem    = BasicNodeSemantics().as_handler(signal="node")
-        trie_sem    = BreadthTrieSemantics([], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem    = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen         = ValueFactory.sen(["a", "test", "sentence"])
@@ -139,7 +139,7 @@ class TrieSemanticTests(unittest.TestCase):
     def test_trie_query_exact(self):
         """ Check trie querying of an exact path works """
         node_sem    = BasicNodeSemantics().as_handler(signal="node")
-        trie_sem    = BreadthTrieSemantics([], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem    = BreadthTrieSemantics( init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = ValueFactory.sen(["a", "test", "sentence"])
@@ -160,7 +160,7 @@ class TrieSemanticTests(unittest.TestCase):
     def test_trie_query_var(self):
         """ Check trie querying of a variable provides all applicable nodes """
         node_sem    = BasicNodeSemantics().as_handler(signal="node")
-        trie_sem    = BreadthTrieSemantics([], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem    = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = ValueFactory.sen(["a", "test", "sentence"])
@@ -182,7 +182,7 @@ class TrieSemanticTests(unittest.TestCase):
     def test_trie_query_with_bind_constraints(self):
         """ Check trie querying respects binding constraints """
         node_sem    = BasicNodeSemantics().as_handler(signal="node")
-        trie_sem    = BreadthTrieSemantics([], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem    = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = ValueFactory.sen(["a", "test", "sentence"])
@@ -204,7 +204,7 @@ class TrieSemanticTests(unittest.TestCase):
     def test_trie_query_with_alpha_tests(self):
         """ Check trie quering respects alpha tests """
         node_sem    = BasicNodeSemantics().as_handler(signal="node")
-        trie_sem    = BreadthTrieSemantics([], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem    = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = ValueFactory.sen(["a", "test", "blah"])
@@ -234,7 +234,7 @@ class TrieSemanticTests(unittest.TestCase):
     def test_trie_query_with_beta_tests(self):
         """ Check trie querying respects beta tests """
         node_sem    = BasicNodeSemantics().as_handler(signal="node")
-        trie_sem    = BreadthTrieSemantics([], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem    = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = ValueFactory.sen(["a", "test", "blah"])
@@ -272,7 +272,7 @@ class TrieSemanticTests(unittest.TestCase):
     def test_trie_query_with_callable_tests(self):
         """ Check trie querying respects custom callable tests """
         node_sem    = BasicNodeSemantics().as_handler(signal="node")
-        trie_sem    = BreadthTrieSemantics([], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem    = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = ValueFactory.sen(["a", "test", "blah"])
@@ -315,7 +315,7 @@ class TrieSemanticTests(unittest.TestCase):
         """
         ctx_set     = ContextSet()
         node_sem    = BasicNodeSemantics().as_handler(signal="node")
-        trie_sem    = BreadthTrieSemantics([], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem    = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = ValueFactory.sen(["a", "test", "blah"])
@@ -335,7 +335,7 @@ class TrieSemanticTests(unittest.TestCase):
         """
         ctx_set     = ContextSet()
         node_sem    = BasicNodeSemantics().as_handler(signal="node")
-        trie_sem    = BreadthTrieSemantics([], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem    = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = ValueFactory.sen(["a", "b"])
@@ -354,7 +354,7 @@ class TrieSemanticTests(unittest.TestCase):
         """ Check trie semantics can reduce a structure to a list of sentences """
         # Create sem
         node_sem    = BasicNodeSemantics().as_handler(signal="node")
-        trie_sem    = BreadthTrieSemantics([], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem    = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = ValueFactory.sen(["a", "test", "sentence"])
@@ -369,7 +369,7 @@ class TrieSemanticTests(unittest.TestCase):
         """ Check trie semantics can reduce a structure completely """
         # Create sem
         node_sem    = BasicNodeSemantics().as_handler(signal="node")
-        trie_sem    = BreadthTrieSemantics([], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem    = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = ValueFactory.sen(["a", "test", "sentence"])
@@ -387,7 +387,7 @@ class TrieSemanticTests(unittest.TestCase):
         """ Check trie semantics does not duplicate on reduction to sentences """
         # Create sem
         node_sem    = BasicNodeSemantics().as_handler(signal="node")
-        trie_sem    = BreadthTrieSemantics([], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem    = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = ValueFactory.sen(["a", "test", "sentence"])
@@ -404,7 +404,7 @@ class TrieSemanticTests(unittest.TestCase):
         """ Check trie semantics only puts statements as leaves in reduction """
         # Create sem
         node_sem    = BasicNodeSemantics().as_handler(signal="node")
-        trie_sem    = BreadthTrieSemantics([], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem    = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = ValueFactory.sen(["a", "test", "sentence"])
@@ -426,7 +426,7 @@ class TrieSemanticTests(unittest.TestCase):
         """
         # Create sem
         node_sem    = BasicNodeSemantics().as_handler(signal="node")
-        trie_sem    = BreadthTrieSemantics([], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem    = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = ValueFactory.sen(["a", Sentence(["test", "sentence"])])
@@ -448,7 +448,7 @@ class TrieSemanticTests(unittest.TestCase):
         """
         # Create sem
         node_sem    = BasicNodeSemantics().as_handler(signal="node")
-        trie_sem    = BreadthTrieSemantics([], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem    = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = ValueFactory.sen(["a", Sentence(["test", "sentence"])])
@@ -473,7 +473,7 @@ class TrieSemanticTests(unittest.TestCase):
         """
         # Create sem
         node_sem    = BasicNodeSemantics().as_handler(signal="node")
-        trie_sem    = BreadthTrieSemantics([], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem    = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = ValueFactory.sen(["a", Sentence(["test", "sentence"])])
@@ -499,7 +499,7 @@ class TrieSemanticTests(unittest.TestCase):
         """
         # Create sem
         node_sem    = BasicNodeSemantics().as_handler(signal="node")
-        trie_sem    = BreadthTrieSemantics([], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem    = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = ValueFactory.sen(["a", "test", "sentence"])
@@ -521,7 +521,7 @@ class TrieSemanticTests(unittest.TestCase):
         """
         # Create sem
         node_sem    = BasicNodeSemantics().as_handler(signal="node")
-        trie_sem    = BreadthTrieSemantics([], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem    = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = ValueFactory.sen(["a", "test", "sentence"])
@@ -546,7 +546,7 @@ class TrieSemanticTests(unittest.TestCase):
         """
         # Create sem
         node_sem    = BasicNodeSemantics().as_handler(signal="node")
-        trie_sem    = BreadthTrieSemantics([], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem    = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = ValueFactory.sen(["a", Sentence(["test", "sentence"])])
@@ -570,7 +570,7 @@ class TrieSemanticTests(unittest.TestCase):
         """
         # Create sem
         node_sem    = BasicNodeSemantics().as_handler(signal="node")
-        trie_sem    = BreadthTrieSemantics([], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem    = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = ValueFactory.sen(["a", Sentence(["test", "sentence"])])
@@ -594,7 +594,7 @@ class TrieSemanticTests(unittest.TestCase):
         """
         # Create sem
         node_sem    = BasicNodeSemantics().as_handler(signal="node")
-        trie_sem    = BreadthTrieSemantics([], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem    = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = ValueFactory.sen(["a", "test", "sentence"])
@@ -620,7 +620,7 @@ class TrieSemanticTests(unittest.TestCase):
         """
         # Create sem
         node_sem    = BasicNodeSemantics().as_handler(signal="node")
-        trie_sem    = BreadthTrieSemantics([], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem    = BreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
         sen = ValueFactory.sen(["a", "test", "sentence"])

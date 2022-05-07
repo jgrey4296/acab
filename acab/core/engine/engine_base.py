@@ -91,7 +91,7 @@ class AcabEngineImpl(AcabEngine_i):
         self._module_loader.load_modules(*modules)
         loaded_mods = list(self._module_loader.loaded_modules.values())
         # Initialise DSL
-        self._dsl = self.dsl_builder([], [], [])
+        self._dsl = self.dsl_builder()
         self._dsl.register(self.parser)
         self._dsl.extend(loaded_mods)
         self._dsl.build()

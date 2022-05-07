@@ -47,7 +47,7 @@ class SenValTests(unittest.TestCase):
         logging.root.setLevel(logmod.NOTSET)
 
         # Set up the parser to ease test setup
-        cls.dsl   = ppDSL.PyParseDSL([], [], [])
+        cls.dsl   = ppDSL.PyParseDSL()
         cls.dsl.register(EXLO_Parser)
         cls.dsl.register(Sen_Val_Parser)
         cls.dsl.register(Component_DSL)

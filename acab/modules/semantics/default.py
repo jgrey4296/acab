@@ -100,8 +100,7 @@ def DEFAULT_SEMANTICS():
     """
     logging.info("Constructing Default Semantic System")
     return BSS(init_specs=DEFAULT_SPECS(),
-               init_handlers=DEFAULT_HANDLERS(),
-               sieve_fns=[])
+               init_handlers=DEFAULT_HANDLERS())
 
 
 def EXLO_SEMANTICS():
@@ -111,9 +110,7 @@ def EXLO_SEMANTICS():
     """
     logging.info("Constructive EXLO Semantic System")
     node_handler = ExclusionNodeSemantics().as_handler(signal=ATOM_HINT)
-    trie_sem     = FlattenBreadthTrieSemantics(init_specs=[],
-                                               sieve_fns=[],
-                                               init_handlers=[node_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+    trie_sem     = FlattenBreadthTrieSemantics(init_handlers=[node_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
 
 
     trie_handler = trie_sem.as_handler(signal="trie",
@@ -125,8 +122,7 @@ def EXLO_SEMANTICS():
     handlers += [node_handler, trie_handler, trie_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)]
 
     return BSS(init_specs=DEFAULT_SPECS(),
-               init_handlers=handlers,
-               sieve_fns=[])
+               init_handlers=handlers)
 
 def EXLO_PROXY_SEMANTICS():
     """

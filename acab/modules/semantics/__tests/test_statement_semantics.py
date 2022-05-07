@@ -200,8 +200,8 @@ class StatementSemanticTests(unittest.TestCase):
                                             init_handlers=[transform_sem,
                                                            action_sem,
                                                            stub_sem,
-                                                           con_sem],
-                                            sieve_fns=[])
+                                                           con_sem]
+                                            )
 
         # Operator Context
         op_ctx             = ContextInstance(data={"transform" : TestTransform(),
@@ -249,7 +249,7 @@ class StatementSemanticTests(unittest.TestCase):
 
         # Build Semantics
         node_sem     = BasicNodeSemantics().as_handler(signal="atom")
-        trie_sem     = FlattenBreadthTrieSemantics(init_specs=[], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem     = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_handler = trie_sem.as_handler(signal="trie", struct=BasicNodeStruct.build_default())
 
 
@@ -268,8 +268,7 @@ class StatementSemanticTests(unittest.TestCase):
                                                          node_sem,
                                                          trie_handler,
                                                          trie_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)
-                                                         ],
-                                          sieve_fns=[])
+                                                         ])
 
         # Setup operators in context
         trans_instance     = RegexOp()
@@ -320,7 +319,7 @@ class StatementSemanticTests(unittest.TestCase):
         #
         # Build Semantics
         node_sem    = BasicNodeSemantics().as_handler(signal="atom")
-        trie_sem    = FlattenBreadthTrieSemantics(init_specs=[], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem    = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_handler= trie_sem.as_handler(signal="trie",
                                           struct=BasicNodeStruct.build_default())
 
@@ -338,8 +337,7 @@ class StatementSemanticTests(unittest.TestCase):
                                                          node_sem,
                                                          trie_handler,
                                                          trie_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)
-                                                         ],
-                                          sieve_fns=[])
+                                                         ])
 
         # Setup operators in context
         trans_instance     = RegexOp()

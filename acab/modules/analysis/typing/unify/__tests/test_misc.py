@@ -49,7 +49,7 @@ class UnifierTests(unittest.TestCase):
         logging.root.setLevel(logmod.NOTSET)
 
         global dsl
-        dsl   = ppDSL.PyParseDSL([], [], [])
+        dsl   = ppDSL.PyParseDSL()
         dsl.register(EXLO_Parser).register(TypingDSL)
         dsl.build()
 

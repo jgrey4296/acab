@@ -48,7 +48,6 @@ def DEFAULT_TRIE(name=TRIE_HINT):
     node_handler = BasicNodeSemantics(ATOM_HINT).as_handler()
     trie_sem     = FlattenBreadthTrieSemantics(signal=name,
                                                init_specs=DEFAULT_TRIE_SPEC(),
-                                               sieve_fns=[],
                                                init_handlers=[node_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
 
     # Attach a default struct to the semantics
