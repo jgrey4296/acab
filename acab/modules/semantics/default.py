@@ -125,8 +125,8 @@ def EXLO_SEMANTICS():
     handlers += [node_handler, trie_handler, trie_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)]
 
     return BSS(init_specs=DEFAULT_SPECS(),
-                               init_handlers=handlers,
-                               sieve_fns=[])
+               init_handlers=handlers,
+               sieve_fns=[])
 
 def EXLO_PROXY_SEMANTICS():
     """

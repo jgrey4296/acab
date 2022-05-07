@@ -46,7 +46,7 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
         result = TP.transform_core.parse_string("λa.b.c $x $y -> $z")[0]
         self.assertIsInstance(result, ProductionComponent)
         self.assertEqual(result.rebind.name, "z")
-        self.assertIn(DS.OPERATOR, result.op.data)
+        self.assertIn(DS.OPERATOR, result.op.type)
 
 
     def test_transforms(self):
@@ -54,14 +54,14 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
         result = TP.transforms.parse_string("  λa.b.c $x -> $y\n  λa.b.d $x -> $z")[0]
         self.assertIsInstance(result, ProductionContainer)
         self.assertEqual(len(result.clauses), 2)
-        self.assertIn(DS.OPERATOR, result.clauses[0].op.data)
-        self.assertIn(DS.OPERATOR, result.clauses[1].op.data)
+        self.assertIn(DS.OPERATOR, result.clauses[0].op.type)
+        self.assertIn(DS.OPERATOR, result.clauses[1].op.type)
 
     def test_non_path_operator(self):
         result = TP.transform_sugar.parse_string("$x ∈ $y -> $z")[0]
         self.assertIsInstance(result, ProductionComponent)
         self.assertEqual(result.rebind.name, "z")
-        self.assertIn(DS.OPERATOR, result.op.data)
+        self.assertIn(DS.OPERATOR, result.op.type)
 
     def test_transform_alias_statement(self):
         result = TP.transform_statement.parse_string("test(::χ):\n λa.b.c $x -> $y\nend")[0]

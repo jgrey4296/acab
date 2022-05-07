@@ -39,7 +39,7 @@ Fwd_TagList.set_name('fwd_taglist')
 
 # Basic Parsers
 OPERATOR_SUGAR = pp.Word(PDSYM.OPERATOR_SYNTAX)
-OPERATOR_SUGAR.set_parse_action(lambda s, l, t: ValueFactory_i.sen([t[0]], data={CDS.OPERATOR: True}))
+OPERATOR_SUGAR.set_parse_action(lambda s, l, t: ValueFactory_i.sen([t[0]], data={CDS.TYPE_INSTANCE: CDS.OPERATOR}))
 
 ATOM           = pp.Word(PDSYM.WORD_COMPONENT + "'")
 ATOM.set_parse_action(lambda s, l, t: (CDS.TYPE_BASE, t[0]))

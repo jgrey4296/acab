@@ -52,7 +52,7 @@ sen_head_negation.set_name("SenNeg")
 sen_head_negation.set_parse_action(lambda x: ValueAnnotation(CDS.NEGATION, True))
 
 op_head_annotation = FUNC_SYMBOL
-op_head_annotation.set_parse_action(lambda x: ValueAnnotation(CDS.OPERATOR, True))
+op_head_annotation.set_parse_action(lambda x: ValueAnnotation(CDS.TYPE_INSTANCE, CDS.OPERATOR))
 op_head_annotation.set_name("SenLambda")
 
 # Annotations for before and after a sentence
@@ -92,7 +92,7 @@ SEN_MACRO             = pp.Forward()
 #                                    parse_fn=Pfunc.construct_multi_sentences)
 
 op_sentence = pp.Group(pp.FollowedBy(op_head_annotation) + SENTENCE)
-op_sentence.add_condition(lambda s, l, t: CDS.OPERATOR in t[0][0])
+op_sentence.add_condition(lambda s, l, t: t[0][0].type == CDS.OPERATOR)
 op_sentence.set_parse_action(lambda s, l, t: t[0])
 op_sentence.set_name("op_sentence")
 

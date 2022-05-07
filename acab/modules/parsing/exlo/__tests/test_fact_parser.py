@@ -151,8 +151,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
     def test_parse_op_sen(self):
         result = FP.SENTENCE.parse_string("λa.b.c")[0]
         self.assertIsInstance(result, Sentence_i)
-        self.assertIn(DS.OPERATOR, result.data)
-        self.assertTrue(result.data[DS.OPERATOR])
+        self.assertIn(DS.OPERATOR, result.type)
 
     @unittest.expectedFailure
     def test_nested_sentence(self):

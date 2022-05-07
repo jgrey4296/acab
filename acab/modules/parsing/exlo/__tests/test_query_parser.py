@@ -146,21 +146,21 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result, ValueRepeatAnnotation)
         self.assertIsInstance(result.value, ProductionComponent)
         self.assertFalse(result.value.params)
-        self.assertIn(OPERATOR, result.value.op.data)
+        self.assertIn(OPERATOR, result.value.op.type)
 
     def test_basic_constraint_one_param(self):
         result = QP.basic_constraint.parse_string("λa.b.c $x")[0]
         self.assertIsInstance(result, ValueRepeatAnnotation)
         self.assertIsInstance(result.value, ProductionComponent)
         self.assertTrue(result.value.params)
-        self.assertIn(OPERATOR, result.value.op.data)
+        self.assertIn(OPERATOR, result.value.op.type)
 
     def test_basic_constraint_one_sen(self):
         result = QP.basic_constraint.parse_string("λa.b.c q.w.e")[0]
         self.assertIsInstance(result, ValueRepeatAnnotation)
         self.assertIsInstance(result.value, ProductionComponent)
         self.assertTrue(result.value.params)
-        self.assertIn(OPERATOR, result.value.op.data)
+        self.assertIn(OPERATOR, result.value.op.type)
 
 
     def test_basic_constraint_multi_params(self):
@@ -178,4 +178,4 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result, ValueRepeatAnnotation)
         self.assertIsInstance(result.value, ProductionComponent)
         self.assertFalse(result.value.params)
-        self.assertIn(OPERATOR, result.value.op.data)
+        self.assertIn(OPERATOR, result.value.op.type)
