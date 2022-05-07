@@ -117,25 +117,25 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         FP.HOTLOAD_ANNOTATIONS << FP.flatten_annotation
         result = FP.SEN_WORD.parse_string('$x(♭).')[0]
         self.assertIsInstance(result, Value_i)
-        self.assertTrue(result.data['FLATTEN'])
+        self.assertTrue(result.data[DS.FLATTEN])
 
     def test_valbind_no_flatten(self):
         FP.HOTLOAD_ANNOTATIONS << FP.flatten_annotation
         result = FP.SEN_WORD.parse_string('$x(~♭).')[0]
         self.assertIsInstance(result, Value_i)
-        self.assertFalse(result.data['FLATTEN'])
+        self.assertFalse(result.data[DS.FLATTEN])
 
     def test_valbind_no_flatten_as_sharp(self):
         FP.HOTLOAD_ANNOTATIONS << FP.flatten_annotation
         result = FP.SEN_WORD.parse_string('$x(♯).')[0]
         self.assertIsInstance(result, Value_i)
-        self.assertFalse(result.data['FLATTEN'])
+        self.assertFalse(result.data[DS.FLATTEN])
 
     def test_valbind_flatten_as_not_sharp(self):
         FP.HOTLOAD_ANNOTATIONS << FP.flatten_annotation
         result = FP.SEN_WORD.parse_string('$x(~♯).')[0]
         self.assertIsInstance(result, Value_i)
-        self.assertTrue(result.data['FLATTEN'])
+        self.assertTrue(result.data[DS.FLATTEN])
 
     def test_constraint(self):
         annotation = pp.Literal("blah")

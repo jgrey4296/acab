@@ -35,10 +35,11 @@ from acab.modules.printing import default
 from acab.modules.printing.basic_printer import BasicPrinter
 from acab.core.printing import default_signals as DSig
 
-NEGATION_S        = config.prepare("Value.Structure", "NEGATION")()
-QUERY_S           = config.prepare("Value.Structure", "QUERY")()
-BIND_S            = config.prepare("Value.Structure", "BIND")()
-AT_BIND_S         = config.prepare("Value.Structure", "AT_BIND")()
+NEGATION_S        = DS.NEGATION
+QUERY_S           = DS.QUERY
+BIND_S            = DS.BIND
+AT_BIND_S         = DS.AT_BIND
+TYPE_INSTANCE_S   = DS.TYPE_INSTANCE
 
 NEGATION_SYMBOL_S = config.prepare("Symbols", "NEGATION")()
 ANON_VALUE_S      = config.prepare("Symbols", "ANON_VALUE")()
@@ -49,7 +50,6 @@ SEN_JOIN_S        = config.prepare("Print.Patterns", "SEN_JOIN", actions=[AcabCo
 
 STR_PRIM_S        = Sentence([config.prepare("Type.Primitive", "STRING")()])
 REGEX_PRIM_S      = Sentence([config.prepare("Type.Primitive", "REGEX")()])
-TYPE_INSTANCE_S   = config.prepare("Value.Structure", "TYPE_INSTANCE")()
 
 class PrintBasicSentenceSemanticTests(unittest.TestCase):
 

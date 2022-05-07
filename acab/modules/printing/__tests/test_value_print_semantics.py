@@ -225,7 +225,7 @@ class PrintValueSemanticTests(unittest.TestCase):
                                    Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
                                    Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
                                    Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
-                                   Printers.ConstraintPrinter().as_handler(signal="CONSTRAINT"),
+                                   Printers.ConstraintPrinter().as_handler(signal=DSig.CONSTRAINT),
                                    Printers.ModalPrinter().as_handler(signal="MODAL"),
                                    Printers.ProductionComponentPrinter().as_handler(signal="COMPONENT"),
                                    Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),

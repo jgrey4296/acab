@@ -6,15 +6,16 @@ from typing import cast, ClassVar, TypeVar, Generic
 import pyparsing as pp
 
 from acab import AcabConfig
+import acab.core.value.default_structure as DS
 from  acab.core.parsing.consts import orm, QUERY, op, s_lit
 from acab.core.value.sentence import Sentence
 from acab.core.value.instruction import ProductionComponent
 
 config        = AcabConfig()
 
-QUERY_HINT    = config.prepare("Value.Structure", "QUERY")()
-SEM_HINT      = config.prepare("Value.Structure", "SEMANTIC_HINT")()
-WALK_SEM_HINT = Sentence([config.prepare("Semantic.Signals", "WALK")()])
+QUERY_HINT    = DS.QUERY
+SEM_HINT      = DS.SEMANTIC_HINT
+WALK_SEM_HINT = Sentence() << config.attr.Semantic.Signals.WALK
 
 def build_dfs_query(s, l, toks):
     words = []

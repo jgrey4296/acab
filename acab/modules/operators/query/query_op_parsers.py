@@ -1,21 +1,21 @@
-import pyparsing as pp
 import re
 
-from acab.core.parsing import parsers as PU
+import acab.core.value.default_structure as DS
+import pyparsing as pp
 from acab.core.config.config import AcabConfig
-
-from acab.core.value.value import AcabValue
-from acab.core.value.sentence import Sentence
+from acab.core.engine.util import prep_op_path
+from acab.core.parsing import parsers as PU
 from acab.core.parsing.annotation import ValueRepeatAnnotation
 from acab.core.value.instruction import ProductionComponent
-from acab.core.engine.util import prep_op_path
+from acab.core.value.sentence import Sentence
+from acab.core.value.value import AcabValue
 from acab.interfaces.value import ValueFactory_i as VF
 
 from . import query_operators as QO
 
 config       = AcabConfig()
-TAG_S        = config.prepare("Value.Structure", "TAG")()
-CONSTRAINT_S = config.prepare("Value.Structure", "CONSTRAINT")()
+TAG_S        = DS.TAG
+CONSTRAINT_S = DS.CONSTRAINT
 
 tag_op_path = VF.sen(prep_op_path(__package__, QO.HasTag.__name__))
 

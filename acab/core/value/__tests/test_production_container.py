@@ -25,7 +25,7 @@ from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue
 from acab.interfaces.value import Instruction_i, Sentence_i, Value_i
 
-BIND_S               = config.attr.Value.Structure.BIND
+BIND_S               = DS.BIND
 OPERATOR_TYPE_PRIM_S = config.attr.Type.Primitive.OPERATOR_PRIM
 
 T     = TypeVar('T')

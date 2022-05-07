@@ -14,7 +14,7 @@ from acab.modules.parsing.exlo import util as EXu
 from acab.core.parsing.annotation import ValueAnnotation, ValueRepeatAnnotation
 
 config   = AcabConfig()
-SIGNAL = config.prepare("Value.Structure", "SEMANTIC_HINT")()
+SIGNAL = DS.SEMANTIC_HINT
 
 def build_query_component(s, loc, toks):
     """ Build a comparison """

@@ -12,6 +12,7 @@ import acab
 
 config = acab.setup()
 
+import acab.core.value.default_structure as DS
 import acab.error.base as AE
 from acab.core.semantics import basic
 from acab.core.value.instruction import (ProductionComponent,
@@ -26,17 +27,18 @@ from acab.modules.semantics.values import ExclusionNodeSemantics
 
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 
-EXOP         = config.attr.MODAL.exop
-EXOP_enum    = config.prepare(EXOP, as_enum=True)()
+EXOP            = config.attr.MODAL.exop
+EXOP_enum       = config.prepare(EXOP, as_enum=True)()
 
-NEGATION_V   = config.attr.Value.Structure.NEGATION
-BIND_V       = config.attr.Value.Structure.BIND
-CONSTRAINT_V = config.attr.Value.Structure.CONSTRAINT
+NEGATION_V      = DS.NEGATION
+BIND_V          = DS.BIND
+CONSTRAINT_V    = DS.CONSTRAINT
+SEMANTIC_HINT_V = DS.SEMANTIC_HINT
+
 QUERY_V      = config.attr.Parse.Structure.QUERY
 TRANSFORM_V  = config.attr.Parse.Structure.TRANSFORM
 ACTION_V     = config.attr.Parse.Structure.ACTION
 
-SEMANTIC_HINT_V = config.attr.Value.Structure.SEMANTIC_HINT
 
 QUERY_SIGNAL     = Sentence() << config.attr.Semantic.Signals.QUERY
 ACTION_SIGNAL    = Sentence() << config.attr.Semantic.Signals.ACTION

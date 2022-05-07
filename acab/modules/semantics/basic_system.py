@@ -1,23 +1,23 @@
 #!/usr/bin/env python3
 # Main System
 from __future__ import annotations
+
 import logging as logmod
 from dataclasses import InitVar, dataclass, field
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
+import acab.core.value.default_structure as DS
 from acab import types as AT
 from acab.core.config.config import AcabConfig
-from acab.core.util.decorators.semantic import (BuildCtxSetIfMissing,
-                                               RunDelayedCtxSetActions)
-from acab.interfaces.semantic import (StatementSemantics_i,
-                                      SemanticSystem_i)
-from acab.interfaces.handler_system import HandlerOverride
 from acab.core.semantics import basic
-
+from acab.core.util.decorators.semantic import (BuildCtxSetIfMissing,
+                                                RunDelayedCtxSetActions)
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces.context import ContextSet_i
+from acab.interfaces.handler_system import HandlerOverride
+from acab.interfaces.semantic import SemanticSystem_i, StatementSemantics_i
 
 logging = logmod.getLogger(__name__)
 
@@ -27,7 +27,7 @@ ModuleComponents = AT.ModuleComponents
 config           = AcabConfig()
 
 ContextSet = config.prepare("Imports.Targeted", "context", actions=[config.actions_e.IMCLASS], args={"interface": ContextSet_i})()
-SEM_HINT   = config.attr.Value.Structure.SEMANTIC_HINT
+SEM_HINT   = DS.SEMANTIC_HINT
 
 # TODO make a queue structured system, where semantics return a list of
 # instructions to add to the list, like printer

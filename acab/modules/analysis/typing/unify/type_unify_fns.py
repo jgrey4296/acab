@@ -70,7 +70,7 @@ def gen_type_vars(first, second, gamma, gen_var=None) -> AT.CtxIns:
 
             for var in (a.type.vars + b.type.vars):
                 if var not in gamma_p:
-                    gamma_p[var] = Sentence([DS.TYPE_BASE])
+                    gamma_p[var] = Sentence() << DS.TYPE_BASE
 
     return gamma_p.final_ctx
 

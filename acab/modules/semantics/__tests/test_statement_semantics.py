@@ -58,13 +58,13 @@ TRANSFORM_C  = DS.TRANSFORM_COMPONENT
 ACTION_C     = DS.ACTION_COMPONENT
 
 
-QUERY_SIGNAL     = Sentence([config.prepare("Semantic.Signals", "QUERY")()])
-ACTION_SIGNAL    = Sentence([config.prepare("Semantic.Signals", "ACTION")()])
-TRANSFORM_SIGNAL = Sentence([config.prepare("Semantic.Signals", "TRANSFORM")()])
-RULE_SIGNAL      = Sentence([config.prepare("Semantic.Signals", "RULE")()])
-AGENDA_SIGNAL    = Sentence([config.prepare("Semantic.Signals", "AGENDA")()])
-LAYER_SIGNAL     = Sentence([config.prepare("Semantic.Signals", "LAYER")()])
-PIPELINE_SIGNAL  = Sentence([config.prepare("Semantic.Signals", "PIPELINE")()])
+QUERY_SIGNAL     = Sentence() << config.attr.Semantic.Signals.QUERY
+ACTION_SIGNAL    = Sentence() << config.attr.Semantic.Signals.ACTION
+TRANSFORM_SIGNAL = Sentence() << config.attr.Semantic.Signals.TRANSFORM
+RULE_SIGNAL      = Sentence() << config.attr.Semantic.Signals.RULE
+AGENDA_SIGNAL    = Sentence() << config.attr.Semantic.Signals.AGENDA
+LAYER_SIGNAL     = Sentence() << config.attr.Semantic.Signals.LAYER
+PIPELINE_SIGNAL  = Sentence() << config.attr.Semantic.Signals.PIPELINE
 
 # TODO test verify
 

@@ -6,27 +6,29 @@ from enum import Enum
 
 config = AcabConfig()
 
-# TODO refactor to use these instead
 DATA_STRUCT_E : Enum = config.prepare("Value.Structure"      , as_enum=True)()
-STRUCT_COMP_E : Enum = config.prepare("Structure.Components" , as_enum=True)()
-TYPE_PRIM_E   : Enum = config.prepare("Type.Primitive"       , as_enum=True)()
 MODALITIES_E  : Enum = config.prepare("MODAL"                , as_enum=True)()
 
-# Core elements of value data
-AT_BIND        : str = config.attr.Value.Structure.AT_BIND
-BIND           : str = config.attr.Value.Structure.BIND
-CONSTRAINT     : str = config.attr.Value.Structure.CONSTRAINT
-NEGATION       : str = config.attr.Value.Structure.NEGATION
-OPERATOR       : str = config.attr.Value.Structure.OPERATOR
-PARAMS         : str = config.attr.Value.Structure.PARAMS
-QUERY          : str = config.attr.Value.Structure.QUERY
-QUERY_FALLBACK : str = config.attr.Value.Structure.QUERY_FALLBACK
-SEMANTIC_HINT  : str = config.attr.Value.Structure.SEMANTIC_HINT
-SEN            : str = config.attr.Value.Structure.SEN
-TAG            : str = config.attr.Value.Structure.TAG
-TYPE_INSTANCE  : str = config.attr.Value.Structure.TYPE_INSTANCE
-FLATTEN        : str = config.attr.Value.Structure.FLATTEN
+ARG            = DATA_STRUCT_E.ARG
+AT_BIND        = DATA_STRUCT_E.AT_BIND
+BIND           = DATA_STRUCT_E.BIND
+CONSTRAINT     = DATA_STRUCT_E.CONSTRAINT
+NEGATION       = DATA_STRUCT_E.NEGATION
+PARAMS         = DATA_STRUCT_E.PARAMS
+QUERY          = DATA_STRUCT_E.QUERY
+QUERY_FALLBACK = DATA_STRUCT_E.QUERY_FALLBACK
+SEMANTIC_HINT  = DATA_STRUCT_E.SEMANTIC_HINT
+SEN            = DATA_STRUCT_E.SEN
+TAG            = DATA_STRUCT_E.TAG
+TYPE_INSTANCE  = DATA_STRUCT_E.TYPE_INSTANCE
+FLATTEN        = DATA_STRUCT_E.FLATTEN
 
+# Core elements of value data
+# TODO move this out of Value.Structure
+OPERATOR       : str = config.attr.Value.Structure.OPERATOR
+
+# TODO refactor to use this instead
+STRUCT_COMP_E : Enum = config.prepare("Structure.Components" , as_enum=True)()
 # Core Components
 QUERY_COMPONENT     : str = config.attr.Structure.Components.QUERY
 TRANSFORM_COMPONENT : str = config.attr.Structure.Components.TRANSFORM
@@ -36,6 +38,8 @@ ACTION_COMPONENT    : str = config.attr.Structure.Components.ACTION
 
 TYPE_BASE        = config.attr.Data.TYPE_BASE
 
+# TODO refactor to use this instead
+TYPE_PRIM_E   : Enum = config.prepare("Type.Primitive"       , as_enum=True)()
 # Core type primitives
 COMPONENT_PRIM = config.attr.Type.Primitive.COMPONENT
 CONTAINER_PRIM = config.attr.Type.Primitive.CONTAINER

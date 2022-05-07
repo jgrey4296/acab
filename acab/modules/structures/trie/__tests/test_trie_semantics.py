@@ -34,9 +34,9 @@ DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 EXOP         = config.prepare("MODAL", "exop")()
 EXOP_enum    = config.prepare(EXOP, as_enum=True)()
 
-NEGATION_V   = config.prepare("Value.Structure", "NEGATION")()
-BIND_V       = config.prepare("Value.Structure", "BIND")()
-CONSTRAINT_V = config.prepare("Value.Structure", "CONSTRAINT")()
+NEGATION_V   = DS.NEGATION
+BIND_V       = DS.BIND
+CONSTRAINT_V = DS.CONSTRAINT
 
 class TrieSemanticTests(unittest.TestCase):
     @classmethod
