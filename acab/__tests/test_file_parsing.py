@@ -55,11 +55,11 @@ class FileParsingTests(unittest.TestCase):
                       if isfile(join(test_loc, x)) and splitext(x)[1] == ".trie"]
 
         for file_name in test_files:
-            logging.warning(f"\nTrying: {file_name}")
-            test_func = partial(parse_file_runner, self.eng, file_name)
-            t = timeit.timeit(test_func, number=1)
-            with open(file_name) as f:
-                lines = len(f.readlines())
+            with self.subTest(file_name=file_name):
+                test_func = partial(parse_file_runner, self.eng, file_name)
+                t = timeit.timeit(test_func, number=1)
+                with open(file_name) as f:
+                    lines = len(f.readlines())
 
-            logging.warning("Length: {}", lines)
-            logging.warning("Time  : {:.4}", t)
+                logging.warning("Length: {}", lines)
+                logging.warning("Time  : {:.4}", t)
