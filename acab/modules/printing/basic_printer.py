@@ -13,7 +13,7 @@ from acab.core.value.instruction import Instruction
 from acab.core.value.default_structure import SEMANTIC_HINT
 from acab.core.config.config import AcabConfig
 from acab.core.printing import basic
-from acab.core.printing import default_signals as DS
+from acab.core.printing import default_signals as DSig
 
 config = AcabConfig()
 
@@ -26,25 +26,25 @@ class BasicPrinter(basic.PrintSystemImpl, PrintSystem_i):
         # override tuple : 1 -> 1 : any
         lambda x              : x.signal if isinstance(x, HS.HandlerOverride) else None,
         # symbol         : m -> m : any
-        lambda x              : DS.SYMBOL if isinstance(x, ConfigSpec) else None,
+        lambda x              : DSig.SYMBOL if isinstance(x, ConfigSpec) else None,
         # enum
-        lambda x              : DS.SYMBOL if isinstance(x, Enum) else None,
+        lambda x              : DSig.SYMBOL if isinstance(x, Enum) else None,
         # SEM HINT Handler
         lambda x              : str(x.data[SEMANTIC_HINT]) if isinstance(x, Value_i) and SEMANTIC_HINT in x.data else None,
         # exact type     : 1 -> 1 : any / leaf
         lambda x              : str(x.type) if isinstance(x, Value_i) else None,
         # gen type       : m -> 1 : any / leaf
         # structure      : m -> m : leaf
-        lambda x              : DS.STRUCTURE if isinstance(x, PA.ProductionStructure) else None,
+        lambda x              : DSig.STRUCTURE if isinstance(x, PA.ProductionStructure) else None,
         # container      : m -> m : leaf
-        lambda x              : DS.CONTAINER if isinstance(x, PA.ProductionContainer) else None,
+        lambda x              : DSig.CONTAINER if isinstance(x, PA.ProductionContainer) else None,
         # component      : m -> m : leaf
-        lambda x              : DS.COMPONENT if isinstance(x, PA.ProductionComponent) else None,
+        lambda x              : DSig.COMPONENT if isinstance(x, PA.ProductionComponent) else None,
         # Statement
-        lambda x              : DS.STATEMENT if isinstance(x, Instruction) else None,
+        lambda x              : DSig.STATEMENT if isinstance(x, Instruction) else None,
         # sentence       : m -> 1 : any / leaf
-        lambda x              : DS.SENTENCE if isinstance(x, Sentence_i) else None,
+        lambda x              : DSig.SENTENCE if isinstance(x, Sentence_i) else None,
         # value          : m -> 1 : any
-        lambda x              : DS.ATOM if isinstance(x, Value_i) else None
+        lambda x              : DSig.ATOM if isinstance(x, Value_i) else None
     ]
 

@@ -12,6 +12,7 @@ import acab
 
 config = acab.setup()
 
+import acab.core.value.default_structure as DS
 import acab.error.base as AE
 from acab.core.semantics import basic
 from acab.core.value.instruction import (ProductionComponent,
@@ -26,25 +27,26 @@ from acab.modules.semantics.values import ExclusionNodeSemantics
 
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 
-EXOP         = config.prepare("MODAL", "exop")()
-EXOP_enum    = config.prepare(EXOP, as_enum=True)()
+EXOP            = config.attr.MODAL.exop
+EXOP_enum       = config.prepare(EXOP, as_enum=True)()
 
-NEGATION_V   = config.prepare("Value.Structure", "NEGATION")()
-BIND_V       = config.prepare("Value.Structure", "BIND")()
-CONSTRAINT_V = config.prepare("Value.Structure", "CONSTRAINT")()
-QUERY_V      = config.prepare("Parse.Structure", "QUERY")()
-TRANSFORM_V  = config.prepare("Parse.Structure", "TRANSFORM")()
-ACTION_V     = config.prepare("Parse.Structure", "ACTION")()
+NEGATION_V      = DS.NEGATION
+BIND_V          = DS.BIND
+CONSTRAINT_V    = DS.CONSTRAINT
+SEMANTIC_HINT_V = DS.SEMANTIC_HINT
 
-SEMANTIC_HINT_V = config.prepare("Value.Structure", "SEMANTIC_HINT")()
+QUERY_V      = config.attr.Parse.Structure.QUERY
+TRANSFORM_V  = config.attr.Parse.Structure.TRANSFORM
+ACTION_V     = config.attr.Parse.Structure.ACTION
 
-QUERY_SEM_HINT     = Sentence([config.prepare("Semantic.Signals", "QUERY")()])
-ACTION_SEM_HINT    = Sentence([config.prepare("Semantic.Signals", "ACTION")()])
-TRANSFORM_SEM_HINT = Sentence([config.prepare("Semantic.Signals", "TRANSFORM")()])
-RULE_SEM_HINT      = Sentence([config.prepare("Semantic.Signals", "RULE")()])
-AGENDA_SEM_HINT    = Sentence([config.prepare("Semantic.Signals", "AGENDA")()])
-LAYER_SEM_HINT     = Sentence([config.prepare("Semantic.Signals", "LAYER")()])
-PIPELINE_SEM_HINT  = Sentence([config.prepare("Semantic.Signals", "PIPELINE")()])
+
+QUERY_SIGNAL     = Sentence() << config.attr.Semantic.Signals.QUERY
+ACTION_SIGNAL    = Sentence() << config.attr.Semantic.Signals.ACTION
+TRANSFORM_SIGNAL = Sentence() << config.attr.Semantic.Signals.TRANSFORM
+RULE_SIGNAL      = Sentence() << config.attr.Semantic.Signals.RULE
+AGENDA_SIGNAL    = Sentence() << config.attr.Semantic.Signals.AGENDA
+LAYER_SIGNAL     = Sentence() << config.attr.Semantic.Signals.LAYER
+PIPELINE_SIGNAL  = Sentence() << config.attr.Semantic.Signals.PIPELINE
 
 class StubAbsSemantic(basic.StatementSemantics, StatementSemantics_i):
     def __call__(self, ins, semSys, ctxs=None, data=None):
@@ -66,14 +68,14 @@ class SemanticSystemTests(unittest.TestCase):
 
     def test_construction(self):
         """ Check context systems can be created """
-        semsys = BasicSemanticSystem(init_specs=[], sieve_fns=[], init_handlers=[StubAbsSemantic().as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        semsys = BasicSemanticSystem(init_handlers=[StubAbsSemantic().as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         self.assertIsInstance(semsys, SemanticSystem_i)
         self.assertIsInstance(semsys.lookup()[0], StatementSemantics_i)
         self.assertTrue(semsys.handler_specs)
 
     def test_default_call(self):
         """ Check context systems can be called """
-        semsys = BasicSemanticSystem(init_specs=[], sieve_fns=[], init_handlers=[StubAbsSemantic().as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        semsys = BasicSemanticSystem(init_handlers=[StubAbsSemantic().as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         test_sen = Sentence(["test"])
         with self.assertRaises(AE.AcabException) as cm:
             semsys(test_sen)
@@ -84,7 +86,7 @@ class SemanticSystemTests(unittest.TestCase):
     def test_retrieval(self):
         """ Check context systems can lookup the correct semantics for an input """
         # put some semantics in semsys.mapping
-        semsys = BasicSemanticSystem(init_specs=[], sieve_fns=[], init_handlers=[StubAbsSemantic().as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        semsys = BasicSemanticSystem(init_handlers=[StubAbsSemantic().as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
 
 
     @unittest.skip("not implemented")

@@ -81,8 +81,8 @@ class PrintValueSemanticTests(unittest.TestCase):
                                init_handlers=[Printers.AtomicPrinter().as_handler(signal="ATOM"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                               Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
-                                              Printers.ModalPrinter().as_handler(signal="MODAL")],
-                               sieve_fns=[])
+                                              Printers.ModalPrinter().as_handler(signal="MODAL")]
+                               )
         result = sem_sys.pprint(AcabValue("Test"))
         self.assertEqual(result, "Test")
 
@@ -93,7 +93,6 @@ class PrintValueSemanticTests(unittest.TestCase):
                                               Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")],
-                               sieve_fns=[],
                                )
         result = sem_sys.pprint(AcabValue("a"), AcabValue("b"), AcabValue("c"))
         self.assertEqual(result, "a\nb\nc")
@@ -105,8 +104,9 @@ class PrintValueSemanticTests(unittest.TestCase):
                                init_handlers=[Printers.PrimitiveTypeAwarePrinter().as_handler(signal="ATOM"),
                                               Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
-                                              Printers.ModalPrinter().as_handler(signal="MODAL")],
-                               sieve_fns=[])
+                                              Printers.ModalPrinter().as_handler(signal="MODAL")]
+                               )
+
 
         test = AcabValue(name="blah", data={TYPE_INSTANCE_S: STR_PRIM_S})
         result = sem_sys.pprint(test)
@@ -119,7 +119,6 @@ class PrintValueSemanticTests(unittest.TestCase):
                                               Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")],
-                               sieve_fns=[]
                                )
         test = AcabValue(value=re.compile("blah"), data={TYPE_INSTANCE_S: REGEX_PRIM_S})
         result = sem_sys.pprint(test)
@@ -132,7 +131,7 @@ class PrintValueSemanticTests(unittest.TestCase):
                                               Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")],
-                               sieve_fns=[])
+                               )
         test = AcabValue("blah", data={BIND_S : True})
         result = sem_sys.pprint(test)
         self.assertEqual(result, r'$blah')
@@ -144,7 +143,6 @@ class PrintValueSemanticTests(unittest.TestCase):
                                               Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")],
-                               sieve_fns=[]
                                )
         value = AcabValue("test")
         value.data.update({BIND_S: AT_BIND_S})
@@ -159,7 +157,6 @@ class PrintValueSemanticTests(unittest.TestCase):
                                               Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")
                                               ],
-                               sieve_fns=[],
                                settings={"MODAL" : "exop"})
         test = AcabValue(value="blah",
                          data={'exop': config.default("exop")})
@@ -174,8 +171,7 @@ class PrintValueSemanticTests(unittest.TestCase):
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")
                                               ],
-                               sieve_fns=[],
-                              settings={"MODAL" : "exop"})
+                               settings={"MODAL" : "exop"})
 
         test = AcabValue(value="blah",
                          data={'exop': EXOP.EX})
@@ -190,8 +186,7 @@ class PrintValueSemanticTests(unittest.TestCase):
                                               Printers.ConfigBackedSymbolPrinter(overrides={DOT_E : "^"}).as_handler(signal="SYMBOL"),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")
                                               ],
-                               sieve_fns=[],
-                              settings={"MODAL": "exop"})
+                               settings={"MODAL": "exop"})
         test = AcabValue(value="blah",
                          data={'exop': DOT_E})
         result = sem_sys.pprint(test)
@@ -205,8 +200,7 @@ class PrintValueSemanticTests(unittest.TestCase):
                                               Printers.ConfigBackedSymbolPrinter(overrides={config.prepare("Symbols", "BIND") : "%"}).as_handler(signal="SYMBOL"),
                                               Printers.NoOpPrinter().as_handler(signal="MODAL")
                                               ],
-                               sieve_fns=[])
-
+                               )
         test = AcabValue(value="blah",
                          data={BIND_S : True})
         result = sem_sys.pprint(test)
@@ -217,7 +211,7 @@ class PrintValueSemanticTests(unittest.TestCase):
         val = AcabValue("test")
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
                                init_handlers=[Printers.UUIDAwarePrinter().as_handler(signal="ATOM")],
-                               sieve_fns=[])
+                               )
         result = sem_sys.pprint(val)
         self.assertEqual(result, "({} : {})".format(val.uuid, val.name))
 
@@ -231,12 +225,11 @@ class PrintValueSemanticTests(unittest.TestCase):
                                    Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
                                    Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
                                    Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
-                                   Printers.ConstraintPrinter().as_handler(signal="CONSTRAINT"),
+                                   Printers.ConstraintPrinter().as_handler(signal=DSig.CONSTRAINT),
                                    Printers.ModalPrinter().as_handler(signal="MODAL"),
                                    Printers.ProductionComponentPrinter().as_handler(signal="COMPONENT"),
                                    Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
                                ],
-                               sieve_fns=[],
                                settings={"MODAL": "exop"})
         value = FP.parse_string("test(λa.test.op $x)")[0][-1]
         result = sem_sys.pprint(value)
@@ -254,8 +247,7 @@ class PrintValueSemanticTests(unittest.TestCase):
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                               Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
                                               Printers.AnnotationFinaliser().as_handler(signal=DSig.ANNOTATIONS_FINAL)],
-                               sieve_fns=[],
-                              settings={"MODAL": "exop"})
+                               settings={"MODAL": "exop"})
         value = FP.parse_string("con.test(λa.test.op $x $y)")[0][-1]
         result = sem_sys.pprint(value)
         self.assertEqual(result, "test(λa.test.op $x $y).")

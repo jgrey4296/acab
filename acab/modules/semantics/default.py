@@ -22,21 +22,21 @@ logging    = logmod.getLogger(__name__)
 config     = AcabConfig()
 
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
-QUERY_SEM_HINT         = Sentence([config.prepare("Semantic.Signals", "QUERY")()])
-ACTION_SEM_HINT        = Sentence([config.prepare("Semantic.Signals", "ACTION")()])
-TRANSFORM_SEM_HINT     = Sentence([config.prepare("Semantic.Signals", "TRANSFORM")()])
-RULE_SEM_HINT          = Sentence([config.prepare("Semantic.Signals", "RULE")()])
-AGENDA_SEM_HINT        = Sentence([config.prepare("Semantic.Signals", "AGENDA")()])
-LAYER_SEM_HINT         = Sentence([config.prepare("Semantic.Signals", "LAYER")()])
-PIPELINE_SEM_HINT      = Sentence([config.prepare("Semantic.Signals", "PIPELINE")()])
-CONTAINER_SEM_HINT     = Sentence([config.prepare("Semantic.Signals", "CONTAINER")()])
-ATOM_HINT              = Sentence([config.prepare("Semantic.Signals", "ATOM")()])
+QUERY_SIGNAL           = Sentence() << config.attr.Semantic.Signals.QUERY
+ACTION_SIGNAL          = Sentence() << config.attr.Semantic.Signals.ACTION
+TRANSFORM_SIGNAL       = Sentence() << config.attr.Semantic.Signals.TRANSFORM
+RULE_SIGNAL            = Sentence() << config.attr.Semantic.Signals.RULE
+AGENDA_SIGNAL          = Sentence() << config.attr.Semantic.Signals.AGENDA
+LAYER_SIGNAL           = Sentence() << config.attr.Semantic.Signals.LAYER
+PIPELINE_SIGNAL        = Sentence() << config.attr.Semantic.Signals.PIPELINE
+CONTAINER_SIGNAL       = Sentence() << config.attr.Semantic.Signals.CONTAINER
+ATOM_SIGNAL            = Sentence() << config.attr.Semantic.Signals.ATOM
 
-query_spec  = BSS.Spec(QUERY_SEM_HINT).spec_from(SI.StatementSemantics_i)
-action_spec = BSS.Spec(ACTION_SEM_HINT).spec_from(SI.StatementSemantics_i)
-rule_spec   = BSS.Spec(RULE_SEM_HINT).spec_from(SI.StatementSemantics_i)
-trans_spec  = BSS.Spec(TRANSFORM_SEM_HINT).spec_from(SI.StatementSemantics_i)
-cont_spec   = BSS.Spec(CONTAINER_SEM_HINT).spec_from(SI.StatementSemantics_i)
+query_spec  = BSS.Spec(QUERY_SIGNAL).spec_from(SI.StatementSemantics_i)
+action_spec = BSS.Spec(ACTION_SIGNAL).spec_from(SI.StatementSemantics_i)
+rule_spec   = BSS.Spec(RULE_SIGNAL).spec_from(SI.StatementSemantics_i)
+trans_spec  = BSS.Spec(TRANSFORM_SIGNAL).spec_from(SI.StatementSemantics_i)
+cont_spec   = BSS.Spec(CONTAINER_SIGNAL).spec_from(SI.StatementSemantics_i)
 
 def DEFAULT_SPECS():
     """
@@ -62,11 +62,11 @@ def DEFAULT_HANDLERS():
     logging.info("Constructing Default Semantic Handlers")
     node_handler, trie_handler = DEFAULT_TRIE()
 
-    query_handler   = ASem.QueryAbstraction().as_handler(signal=QUERY_SEM_HINT)
-    action_handler  = ASem.ActionAbstraction().as_handler(signal=ACTION_SEM_HINT)
-    rule_handler    = ASem.AtomicRuleAbstraction().as_handler(signal=RULE_SEM_HINT)
-    trans_handler   = ASem.TransformAbstraction().as_handler(signal=TRANSFORM_SEM_HINT)
-    cont_handler    = ASem.ContainerAbstraction().as_handler(signal=CONTAINER_SEM_HINT)
+    query_handler   = ASem.QueryAbstraction().as_handler(signal=QUERY_SIGNAL)
+    action_handler  = ASem.ActionAbstraction().as_handler(signal=ACTION_SIGNAL)
+    rule_handler    = ASem.AtomicRuleAbstraction().as_handler(signal=RULE_SIGNAL)
+    trans_handler   = ASem.TransformAbstraction().as_handler(signal=TRANSFORM_SIGNAL)
+    cont_handler    = ASem.ContainerAbstraction().as_handler(signal=CONTAINER_SIGNAL)
 
     return [cont_handler, query_handler, action_handler, rule_handler,
             trans_handler, node_handler, trie_handler,
@@ -109,10 +109,8 @@ def EXLO_SEMANTICS():
     with exclusion logic semantics for nodes
     """
     logging.info("Constructive EXLO Semantic System")
-    node_handler = ExclusionNodeSemantics().as_handler(signal=ATOM_HINT)
-    trie_sem     = FlattenBreadthTrieSemantics(init_specs=[],
-                                               sieve_fns=[],
-                                               init_handlers=[node_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+    node_handler = ExclusionNodeSemantics().as_handler(signal=ATOM_SIGNAL)
+    trie_sem     = FlattenBreadthTrieSemantics(init_handlers=[node_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
 
 
     trie_handler = trie_sem.as_handler(signal="trie",
@@ -124,8 +122,7 @@ def EXLO_SEMANTICS():
     handlers += [node_handler, trie_handler, trie_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)]
 
     return BSS(init_specs=DEFAULT_SPECS(),
-                               init_handlers=handlers,
-                               sieve_fns=[])
+               init_handlers=handlers)
 
 def EXLO_PROXY_SEMANTICS():
     """
@@ -134,6 +131,6 @@ def EXLO_PROXY_SEMANTICS():
     """
     logging.info("Constructing EXLO Semantics with Proxy Rule handler")
     exlo = EXLO_SEMANTICS()
-    rule_sem  = ASem.ProxyRuleAbstraction().as_handler(signal=RULE_SEM_HINT,
+    rule_sem  = ASem.ProxyRuleAbstraction().as_handler(signal=RULE_SIGNAL,
                                                        flags=[HandlerSpec.flag_e.OVERRIDE])
     return exlo.register_handler(rule_sem)

@@ -8,7 +8,7 @@ import acab.core.value.default_structure as DStruct
 import acab.interfaces.value as VI
 from acab import AcabConfig
 from acab.core.printing import basic
-from acab.core.printing import default_signals as DS
+from acab.core.printing import default_signals as DSig
 from acab.core.printing import default_symbols as DSYM
 from acab.core.printing import wrappers as PW
 from acab.core.value.instruction import Instruction
@@ -18,8 +18,8 @@ from acab.interfaces.value import ValueFactory_i as VF
 
 config = AcabConfig()
 
-ANNOTATIONS = [x.upper() for x in config.prepare("Print.Annotations", as_list=True)()]
-ATOM_HINT   = DS.ATOM
+ANNOTATIONS = [config.prepare("Value.Structure", x, as_enum=True)() for x in config.prepare("Print.Annotations", as_list=True)()]
+ATOM_HINT   = DSig.ATOM
 TYPE_BASE   = config.prepare("Data", "TYPE_BASE")()
 
 SEN_SEN     = VF.sen([DStruct.SENTENCE_PRIM])
@@ -71,7 +71,7 @@ class ModalAwarePrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
         transformed = self.run_transforms(value, curr_str)
         # lookup modal to care about from top.
         # TODO handle multi-modals
-        transformed.append(top.override(DS.MODAL, value, data=data))
+        transformed.append(top.override(DSig.MODAL, value, data=data))
 
         return transformed
 
@@ -108,10 +108,10 @@ class AnnotationAwareValuePrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
 
         curr_str = [value.name]
         return_list += (self.run_transforms(value, curr_str))
-        return_list.append(top.override(DS.ANNOTATIONS, value, data=data))
+        return_list.append(top.override(DSig.ANNOTATIONS, value, data=data))
 
         # Pass data through to modal:
-        return_list.append(top.override(DS.MODAL, value, data=data))
+        return_list.append(top.override(DSig.MODAL, value, data=data))
 
 
         return return_list
@@ -123,7 +123,7 @@ class ModalPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
         if bool(data) and "no_modal" in data and bool(data['no_modal']):
             return return_list
 
-        modal = top.check(DS.MODAL)
+        modal = top.check(DSig.MODAL)
         if modal in value.data:
             return_list.append(value.data[modal])
         else:
@@ -148,7 +148,8 @@ class AnnotationPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
         # Pretty Print annotations
         registers      = []
         for annotation in annotations_in_value:
-            signal = annotation if annotation in top else False
+            annotation_name = annotation.name if hasattr(annotation, "name") else annotation
+            signal = annotation_name if annotation_name in top else False
             value  = value if signal else value.data[annotation]
             reg, ov = top.assign_to_register(signal, value)
             registers.append(reg)
@@ -160,7 +161,7 @@ class AnnotationPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
             registers.append(reg)
             return_list.append(ov)
 
-        return_list.append(top.override(DS.ANNOTATIONS_FINAL, registers))
+        return_list.append(top.override(DSig.ANNOTATIONS_FINAL, registers))
         return return_list
 
 class AnnotationFinaliser(basic.PrintSemanticsImpl, PrintSemantics_i):
@@ -269,7 +270,7 @@ class ExplicitContainerPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
             result.append(DSYM.CONTAINER_JOIN_P)
 
         if bool(value.tags):
-            result.append(top.override(DS.TAGS, value.tags))
+            result.append(top.override(DSig.TAGS, value.tags))
             result.append(DSYM.CONTAINER_JOIN_P)
 
         result.append([[DSYM.INDENT, x, DSYM.CONTAINER_JOIN_P] for x in  value.value])
@@ -301,12 +302,12 @@ class StructurePrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
             result.append(DSYM.CONTAINER_JOIN_P)
 
         if bool(value.tags):
-            result.append(top.override(DS.TAGS, value.tags))
+            result.append(top.override(DSig.TAGS, value.tags))
             result.append(DSYM.CONTAINER_JOIN_P)
 
         for container in value.value:
             if bool(container):
-                result.append(top.override(DS.IMPLICIT_CONTAINER, container))
+                result.append(top.override(DSig.IMPLICIT_CONTAINER, container))
                 result.append(DSYM.CONTAINER_JOIN_P)
 
         if result[-1] == DSYM.CONTAINER_JOIN_P:

@@ -10,7 +10,7 @@ from acab.core.parsing import parsers as PU
 from acab.core.parsing.param_core import ParamCore
 from acab.core.parsing.statement_core import StatementCore
 from acab.core.parsing.consts import (COMMA, DELIM, END, emptyLine, COLON,
-                                      FACT_HEAD, NEGATION, NG, N, op, opLn, zrm, ln, FUNC_SYMBOL)
+                                      NEGATION, NG, N, op, opLn, zrm, ln, FUNC_SYMBOL)
 from acab.core.parsing.default_keys import OPERATOR, SEN, VALUE, HEAD_ANNOTATION
 from acab.core.parsing import default_keys as PDS
 from acab.core.value import default_structure as CDS
@@ -42,7 +42,7 @@ flatten_annotation.set_name("FlattenAnno")
 flatten_annotation.set_parse_action(EU.build_flatten)
 
 # Annotations for sentence words, auto wrapped with parens
-annotations = PU.DELIMIST(HOTLOAD_ANNOTATIONS, delim=COMMA)
+annotations = pp.delimited_list(HOTLOAD_ANNOTATIONS, delim=COMMA)
 annotations.set_parse_action(PConst.build_constraint_list)
 annotations.set_name("Annotations")
 
@@ -52,7 +52,7 @@ sen_head_negation.set_name("SenNeg")
 sen_head_negation.set_parse_action(lambda x: ValueAnnotation(CDS.NEGATION, True))
 
 op_head_annotation = FUNC_SYMBOL
-op_head_annotation.set_parse_action(lambda x: ValueAnnotation(CDS.OPERATOR, True))
+op_head_annotation.set_parse_action(lambda x: ValueAnnotation(CDS.TYPE_INSTANCE, CDS.OPERATOR))
 op_head_annotation.set_name("SenLambda")
 
 # Annotations for before and after a sentence
@@ -92,7 +92,7 @@ SEN_MACRO             = pp.Forward()
 #                                    parse_fn=Pfunc.construct_multi_sentences)
 
 op_sentence = pp.Group(pp.FollowedBy(op_head_annotation) + SENTENCE)
-op_sentence.add_condition(lambda s, l, t: CDS.OPERATOR in t[0][0])
+op_sentence.add_condition(lambda s, l, t: t[0][0].type == CDS.OPERATOR)
 op_sentence.set_parse_action(lambda s, l, t: t[0])
 op_sentence.set_name("op_sentence")
 

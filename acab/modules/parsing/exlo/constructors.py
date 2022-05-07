@@ -14,7 +14,7 @@ from acab.modules.parsing.exlo import util as EXu
 from acab.core.parsing.annotation import ValueAnnotation, ValueRepeatAnnotation
 
 config   = AcabConfig()
-SEM_HINT = config.prepare("Value.Structure", "SEMANTIC_HINT")()
+SIGNAL = DS.SEMANTIC_HINT
 
 def build_query_component(s, loc, toks):
     """ Build a comparison """
@@ -30,7 +30,7 @@ def build_query_component(s, loc, toks):
 
     assert(isinstance(op, VI.Sentence_i)), type(op)
     assert(all([isinstance(x, VI.Value_i) for x in params]))
-    assert(DS.OPERATOR in op.data)
+    assert(DS.OPERATOR in op.type)
     return ValueRepeatAnnotation(DS.CONSTRAINT,
                                  ProductionComponent(op, params=params))
 
@@ -50,7 +50,7 @@ def build_transform_component(s, loc, toks):
     assert(isinstance(op, VI.Sentence_i))
     assert(all([isinstance(x, VI.Value_i) for x in params]))
     assert(isinstance(rebind, VI.Value_i))
-    assert(DS.OPERATOR in op.data)
+    assert(DS.OPERATOR in op.type)
     return ProductionComponent(op,
                                params=params,
                                rebind=rebind,
@@ -69,7 +69,7 @@ def build_action_component(s, loc, toks):
 
     assert(isinstance(op, VI.Sentence_i))
     assert(all([isinstance(x, VI.Value_i) for x in params]))
-    assert(DS.OPERATOR in op.data)
+    assert(DS.OPERATOR in op.type)
     return ProductionComponent(op,
                                params=params,
                                sugared=EXu.LEFT_S in toks)
@@ -80,13 +80,13 @@ def build_action_component(s, loc, toks):
 def build_query(s, loc, toks):
     clauses = toks[0][:]
     query = ProductionContainer(clauses,
-                                data={SEMANTIC_HINT: EXu.QUERY_SEM_HINT})
+                                data={SEMANTIC_HINT: EXu.QUERY_SIGNAL})
     return [query]
 
 def build_transform(s, loc, toks):
     clauses = toks[0][:]
     trans = ProductionContainer(clauses,
-                                data={SEMANTIC_HINT: EXu.TRANSFORM_SEM_HINT})
+                                data={SEMANTIC_HINT: EXu.TRANSFORM_SIGNAL})
     return [trans]
 
 def build_action(s, loc, toks):
@@ -97,18 +97,18 @@ def build_action(s, loc, toks):
     """
     clauses = toks[0][:]
     clauses = [x if (isinstance(x, ProductionComponent) or
-                     isinstance(x, Sentence) and SEM_HINT in x.data)
-               else ProductionComponent(Sentence([EXu.DEFAULT_ACTION_S], data={DS.OPERATOR: True}),
+                     isinstance(x, Sentence) and SIGNAL in x.data)
+               else ProductionComponent(Sentence([EXu.DEFAULT_ACTION_S], data={DS.TYPE_INSTANCE: DS.OPERATOR}),
                                         params=[x]) for x in clauses]
 
     act = ProductionContainer(clauses,
-                              data={SEMANTIC_HINT: EXu.ACTION_SEM_HINT})
+                              data={SEMANTIC_HINT: EXu.ACTION_SIGNAL})
 
     return [act]
 
 
 #--------------------
-def build_rule(s, loc, toks, sem_hint=None):
+def build_rule(s, loc, toks, signal=None):
     # Get Conditions
     structure = []
 
@@ -135,11 +135,11 @@ def build_rule(s, loc, toks, sem_hint=None):
     else:
         structure.append(EXu.ACTION_S)
 
-    if sem_hint is None:
-        sem_hint = EXu.RULE_SEM_HINT
+    if signal is None:
+        signal = EXu.RULE_SIGNAL
 
     rule = ProductionStructure(structure,
-                               data={SEMANTIC_HINT: sem_hint,
+                               data={SEMANTIC_HINT: signal,
                                      DS.TYPE_INSTANCE: EXu.RULE_PRIM})
     return rule
 

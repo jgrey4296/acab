@@ -17,10 +17,10 @@ def EnsureDSLInitialised(method:Callable[..., T]) -> Callable[..., T]:
     """ Utility Decorator for DSL Builder's, raising error if not initialised """
     #pylint: disable-next=invalid-name
     @wraps(method)
-    def fn(self, *args, **kwargs):
+    def dsl_must_be_initialised(self, *args, **kwargs):
         if not self._parsers_initialised:
             raise AcabParseException("DSL Not Initialised")
 
         return method(self, *args, **kwargs)
 
-    return fn
+    return dsl_must_be_initialised

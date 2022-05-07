@@ -29,10 +29,10 @@ logging = logmod.getLogger(__name__)
 
 config = AcabConfig()
 
-WALK_SEM_HINT    = Sentence([config.prepare("Semantic.Signals", "WALK")()])
+WALK_SEM_HINT    = Sentence() << config.attr.Semantic.Signals.WALK
 
 # TODO sen value spec
-Sen_Val_Frag = Semantic_Fragment(specs=[], handlers=[SVS.SenQuerySemantics().as_handler(signal=WALK_SEM_HINT)])
+Sen_Val_Frag = Semantic_Fragment(handlers=[SVS.SenQuerySemantics().as_handler(signal=WALK_SEM_HINT)])
 
 Sen_Val_Parser = ppDSL.DSL_Fragment(specs=[ppDSL.PyParse_Spec("sentence", struct=SVP.HOTLOAD_SENTENCE)],
-                                   handlers=[ppDSL.PyParse_Handler("word.value", func=SVP.sen_value)])
+                                    handlers=[ppDSL.PyParse_Handler("word.value", func=SVP.sen_value)])

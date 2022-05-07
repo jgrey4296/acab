@@ -32,8 +32,8 @@ class PyParseDSLTests(unittest.TestCase):
         logging.root.setLevel(logmod.NOTSET)
 
     def test_init(self):
-        self.assertIsInstance(ppDSL.PyParseDSL([], [], []), DSLi.DSL_Builder_i)
-        self.assertIsInstance(ppDSL.PyParseDSL([], [], []), hi.HandlerSystem_i)
+        self.assertIsInstance(ppDSL.PyParseDSL(), DSLi.DSL_Builder_i)
+        self.assertIsInstance(ppDSL.PyParseDSL(), hi.HandlerSystem_i)
 
     def test_spec_init(self):
         a_forward = pp.Forward()
@@ -130,7 +130,7 @@ class PyParseDSLTests(unittest.TestCase):
         self.assertEqual(a_forward.expr, b_forward.expr)
 
     def test_dsl_register_spec(self):
-        dsl       = ppDSL.PyParseDSL([], [], [])
+        dsl       = ppDSL.PyParseDSL()
         a_forward = pp.Forward()
         spec1     = ppDSL.PyParse_Spec("a_signal", struct=a_forward, flags=[ppDSL.PyParse_Spec.flag_e.COLLECT])
 
@@ -139,7 +139,7 @@ class PyParseDSLTests(unittest.TestCase):
         self.assertTrue(dsl)
 
     def test_dsl_extend_spec(self):
-        dsl       = ppDSL.PyParseDSL([], [], [])
+        dsl       = ppDSL.PyParseDSL()
         a_forward = pp.Forward()
         spec1     = ppDSL.PyParse_Spec("a_signal", struct=a_forward, flags=[ppDSL.PyParse_Spec.flag_e.COLLECT])
         b_forward = pp.Forward()
@@ -151,7 +151,7 @@ class PyParseDSLTests(unittest.TestCase):
         self.assertEqual(len(spec1.struct), 2)
 
     def test_dsl_register_loose(self):
-        dsl     = ppDSL.PyParseDSL([], [], [])
+        dsl     = ppDSL.PyParseDSL()
         handler = ppDSL.PyParse_Handler("a_signal", func=pp.Literal("blah"))
 
         self.assertEqual(len(dsl.loose_handlers), 0)
@@ -159,7 +159,7 @@ class PyParseDSLTests(unittest.TestCase):
         self.assertEqual(len(dsl.loose_handlers), 1)
 
     def test_dsl_build_consumes_loose_handlers(self):
-        dsl     = ppDSL.PyParseDSL([], [], [])
+        dsl     = ppDSL.PyParseDSL()
         handler = ppDSL.PyParse_Handler("a_signal", func=pp.Literal("blah"))
         a_forward = pp.Forward()
         spec1     = ppDSL.PyParse_Spec("a_signal", struct=a_forward, flags=[ppDSL.PyParse_Spec.flag_e.COLLECT])
@@ -171,12 +171,11 @@ class PyParseDSLTests(unittest.TestCase):
         self.assertEqual(len(dsl.loose_handlers), 0)
 
     def test_dsl_register_fragment_specs(self):
-        dsl      = ppDSL.PyParseDSL([], [], [])
+        dsl      = ppDSL.PyParseDSL()
         fragment = ppDSL.DSL_Fragment(specs=[
             ppDSL.PyParse_Spec("a_signal", struct=pp.Forward(), flags=[ppDSL.PyParse_Spec.flag_e.COLLECT]),
             ppDSL.PyParse_Spec("b_signal", struct=pp.Forward(), flags=[ppDSL.PyParse_Spec.flag_e.COLLECT])
-            ],
-                                      handlers=[])
+            ])
 
         # 1 for default
         self.assertEqual(len(dsl), 1)
@@ -186,7 +185,7 @@ class PyParseDSLTests(unittest.TestCase):
         self.assertEqual(len(dsl['b_signal']), 0)
 
     def test_dsl_register_fragment_handlers(self):
-        dsl      = ppDSL.PyParseDSL([], [], [])
+        dsl      = ppDSL.PyParseDSL()
         fragment = ppDSL.DSL_Fragment(specs=[
             ppDSL.PyParse_Spec("a_signal", struct=pp.Forward(), flags=[ppDSL.PyParse_Spec.flag_e.COLLECT]),
             ppDSL.PyParse_Spec("b_signal", struct=pp.Forward(), flags=[ppDSL.PyParse_Spec.flag_e.COLLECT])
@@ -201,14 +200,13 @@ class PyParseDSLTests(unittest.TestCase):
         self.assertEqual(len(dsl['b_signal']), 1)
 
     def test_dsl_parse_failure(self):
-        dsl = ppDSL.PyParseDSL([], [], [])
+        dsl = ppDSL.PyParseDSL()
         dsl.build()
         with self.assertRaises(AcabParseException):
             dsl.parse("blah")
 
     def test_dsl_parse_default(self):
-        dsl = ppDSL.PyParseDSL([],
-                               [ppDSL.PyParse_Handler(DEFAULT_HANDLER_SIGNAL, func=pp.Literal("blah"))],
-                               [])
+        dsl = ppDSL.PyParseDSL(init_handlers=[ppDSL.PyParse_Handler(DEFAULT_HANDLER_SIGNAL, func=pp.Literal("blah"))])
+
         dsl.build()
         dsl.parse("blah")

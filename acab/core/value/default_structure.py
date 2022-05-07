@@ -6,41 +6,45 @@ from enum import Enum
 
 config = AcabConfig()
 
-# TODO refactor to use these instead
 DATA_STRUCT_E : Enum = config.prepare("Value.Structure"      , as_enum=True)()
-STRUCT_COMP_E : Enum = config.prepare("Structure.Components" , as_enum=True)()
-TYPE_PRIM_E   : Enum = config.prepare("Type.Primitive"       , as_enum=True)()
 MODALITIES_E  : Enum = config.prepare("MODAL"                , as_enum=True)()
 
-# Core elements of value data
-AT_BIND        : str = config.prepare("Value.Structure", "AT_BIND")()
-BIND           : str = config.prepare("Value.Structure", "BIND")()
-CONSTRAINT     : str = config.prepare("Value.Structure", "CONSTRAINT")()
-NEGATION       : str = config.prepare("Value.Structure", "NEGATION")()
-OPERATOR       : str = config.prepare("Value.Structure", "OPERATOR")()
-PARAMS         : str = config.prepare("Value.Structure", "PARAMS")()
-QUERY          : str = config.prepare("Value.Structure", "QUERY")()
-QUERY_FALLBACK : str = config.prepare("Value.Structure", "QUERY_FALLBACK")()
-SEMANTIC_HINT  : str = config.prepare("Value.Structure", "SEMANTIC_HINT")()
-SEN            : str = config.prepare("Value.Structure", "SEN")()
-TAG            : str = config.prepare("Value.Structure", "TAG")()
-TYPE_INSTANCE  : str = config.prepare("Value.Structure", "TYPE_INSTANCE")()
-FLATTEN        : str = config.prepare("Value.Structure", "FLATTEN")()
+ARG            = DATA_STRUCT_E.ARG
+AT_BIND        = DATA_STRUCT_E.AT_BIND
+BIND           = DATA_STRUCT_E.BIND
+CONSTRAINT     = DATA_STRUCT_E.CONSTRAINT
+NEGATION       = DATA_STRUCT_E.NEGATION
+PARAMS         = DATA_STRUCT_E.PARAMS
+QUERY          = DATA_STRUCT_E.QUERY
+QUERY_FALLBACK = DATA_STRUCT_E.QUERY_FALLBACK
+SEMANTIC_HINT  = DATA_STRUCT_E.SEMANTIC_HINT
+SEN            = DATA_STRUCT_E.SEN
+TAG            = DATA_STRUCT_E.TAG
+TYPE_INSTANCE  = DATA_STRUCT_E.TYPE_INSTANCE
+FLATTEN        = DATA_STRUCT_E.FLATTEN
 
+# Core elements of value data
+# TODO move this out of Value.Structure
+OPERATOR       : str = config.attr.Value.Structure.OPERATOR
+
+# TODO refactor to use this instead
+STRUCT_COMP_E : Enum = config.prepare("Structure.Components" , as_enum=True)()
 # Core Components
-QUERY_COMPONENT     : str = config.prepare("Structure.Components", "QUERY")()
-TRANSFORM_COMPONENT : str = config.prepare("Structure.Components", "TRANSFORM")()
-ACTION_COMPONENT    : str = config.prepare("Structure.Components", "ACTION")()
+QUERY_COMPONENT     : str = config.attr.Structure.Components.QUERY
+TRANSFORM_COMPONENT : str = config.attr.Structure.Components.TRANSFORM
+ACTION_COMPONENT    : str = config.attr.Structure.Components.ACTION
 
 # Core data defaults
 
-TYPE_BASE        = config.prepare("Data", "TYPE_BASE")()
+TYPE_BASE        = config.attr.Data.TYPE_BASE
 
+# TODO refactor to use this instead
+TYPE_PRIM_E   : Enum = config.prepare("Type.Primitive"       , as_enum=True)()
 # Core type primitives
-COMPONENT_PRIM = config.prepare("Type.Primitive", "COMPONENT")()
-CONTAINER_PRIM = config.prepare("Type.Primitive", "CONTAINER")()
-OPERATOR_PRIM  = config.prepare("Type.Primitive", "OPERATOR")()
-SENTENCE_PRIM  = config.prepare("Type.Primitive", "SENTENCE")()
-STRING_PRIM    = config.prepare("Type.Primitive", "STRING")()
-REGEX_PRIM     = config.prepare("Type.Primitive", "REGEX")()
-STRUCT_PRIM    = config.prepare("Type.Primitive", "STRUCTURE")()
+COMPONENT_PRIM = config.attr.Type.Primitive.COMPONENT
+CONTAINER_PRIM = config.attr.Type.Primitive.CONTAINER
+OPERATOR_PRIM  = config.attr.Type.Primitive.OPERATOR_PRIM
+SENTENCE_PRIM  = config.attr.Type.Primitive.SENTENCE
+STRING_PRIM    = config.attr.Type.Primitive.STRING
+REGEX_PRIM     = config.attr.Type.Primitive.REGEX
+STRUCT_PRIM    = config.attr.Type.Primitive.STRUCTURE

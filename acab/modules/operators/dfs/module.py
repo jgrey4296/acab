@@ -17,15 +17,15 @@ DSL_Fragment = ppDSL.DSL_Fragment
 DSL_Spec     = ppDSL.PyParse_Spec
 DSL_Handler  = ppDSL.PyParse_Handler
 
-WALK_SEM_HINT   = Sentence([config.prepare("Semantic.Signals", "WALK")()])
-QUERY_SEM_HINT  = Sentence([config.prepare("Semantic.Signals", "QUERY")()])
-ACTION_SEM_HINT = Sentence([config.prepare("Semantic.Signals", "ACTION")()])
+WALK_SIGNAL   = Sentence() << config.attr.Semantic.Signals.WALK
+QUERY_SIGNAL  = Sentence() << config.attr.Semantic.Signals.QUERY
+ACTION_SIGNAL = Sentence() << config.attr.Semantic.Signals.ACTION
 
-DFS_Sem_Frag = Semantic_Fragment(specs=[HandlerSpec(WALK_SEM_HINT)],
+DFS_Sem_Frag = Semantic_Fragment(specs=[HandlerSpec(WALK_SIGNAL)],
                                  handlers=[
                                      DFSSemantics().as_handler(),
-                                     QueryPlusAbstraction().as_handler(signal=QUERY_SEM_HINT, flags=[DSL_Spec.flag_e.OVERRIDE]),
-                                     ActionPlusAbstraction().as_handler(signal=ACTION_SEM_HINT, flags=[DSL_Spec.flag_e.OVERRIDE])
+                                     QueryPlusAbstraction().as_handler(signal=QUERY_SIGNAL, flags=[DSL_Spec.flag_e.OVERRIDE]),
+                                     ActionPlusAbstraction().as_handler(signal=ACTION_SIGNAL, flags=[DSL_Spec.flag_e.OVERRIDE])
                                  ])
 
 

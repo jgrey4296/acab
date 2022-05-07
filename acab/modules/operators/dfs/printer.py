@@ -15,8 +15,8 @@ from acab.core.printing import default_symbols as DSYM
 from acab.core.printing import wrappers as PW
 from acab.interfaces.printing import PrintSemantics_i
 
-config = AcabConfig()
-WALK_SEM_HINT    = Sentence([config.prepare("Semantic.Signals", "WALK")()])
+config        = AcabConfig()
+WALK_SEM_HINT = Sentence() << config.attr.Semantic.Signals.WALK
 
 @dataclass
 class DFSSenPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):

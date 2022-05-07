@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
+
 import logging as logmod
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
@@ -11,19 +12,21 @@ from dataclasses import FrozenInstanceError, InitVar, dataclass, field, replace
 from enum import Enum
 from uuid import UUID, uuid1
 
+import acab.core.value.default_structure as DS
 import acab.interfaces.context as CtxInt
 import acab.interfaces.value as VI
 from acab import AcabConfig
-from acab.core.value.instruction import ProductionComponent, ProductionContainer
 from acab.core.util.delayed_commands import DelayedCommands_i
+from acab.core.value.instruction import (ProductionComponent,
+                                         ProductionContainer)
 from acab.error.context import AcabContextException
 from acab.interfaces.value import Sentence_i
 from acab.modules.context.constraints import ConstraintCollection
 
 config = AcabConfig()
 
-CONSTRAINT_S     = config.prepare("Value.Structure", "CONSTRAINT")()
-NEGATION_S       = config.prepare("Value.Structure", "NEGATION")()
+CONSTRAINT_S     = DS.CONSTRAINT
+NEGATION_S       = DS.NEGATION
 
 CtxIns           = CtxInt.ContextInstance_i
 CtxSet           = CtxInt.ContextSet_i

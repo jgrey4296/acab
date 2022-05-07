@@ -9,6 +9,7 @@ import logging as logmod
 
 from acab.core.value.sentence import Sentence
 from acab.core.config.config import AcabConfig
+import acab.core.value.default_structure as DS
 
 logging = logmod.getLogger(__name__)
 
@@ -17,9 +18,9 @@ config = AcabConfig()
 TIME_FORMAT_S   = config.prepare("Modules.Time", "TIME_FORMAT")()
 
 #CONSTANTS:
-BIND_S          = config.prepare("Value.Structure", "BIND")()
-NAME_S          = config.prepare("Value.Structure", "NAME")()
-TYPE_INSTANCE_S = config.prepare("Value.Structure", "TYPE_INSTANCE")()
+BIND_S          = DS.BIND
+NAME_S          = DS.NAME
+TYPE_INSTANCE_S = DS.TYPE_INSTANCE
 
 
 VALUE_S         = config.prepare("Parse.Structure", "VALUE")()

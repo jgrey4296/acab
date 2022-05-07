@@ -1,0 +1,12 @@
+
+test.first(::α):
+    λDEFAULT_ACTION a.b.$x
+    λacab.modules.operators.action.ActionPrint "First: " $x
+end
+
+test.alt(::ACTION):
+    λDEFAULT_ACTION a.b.$x
+    λacab.modules.operators.action.ActionPrint "First: " $x
+end
+
+a.b.c

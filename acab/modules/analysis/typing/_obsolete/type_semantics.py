@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import acab
+import acab.core.value.default_structure as DS
 import acab.error.semantic as ASErr
 import acab.interfaces.semantic as SI
 from acab import AcabConfig
@@ -16,7 +17,7 @@ from acab.interfaces.value import Sentence_i
 from acab.modules.analysis.type_cqm import TypeContextQueryManager
 
 config     = AcabConfig()
-NEGATION_S = config.prepare("Value.Structure", "NEGATION")()
+NEGATION_S = DS.NEGATION
 
 CtxSet     = AT.CtxSet
 Node       = AT.Node

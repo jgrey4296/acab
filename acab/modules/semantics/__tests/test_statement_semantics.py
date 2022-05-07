@@ -58,13 +58,13 @@ TRANSFORM_C  = DS.TRANSFORM_COMPONENT
 ACTION_C     = DS.ACTION_COMPONENT
 
 
-QUERY_SEM_HINT     = Sentence([config.prepare("Semantic.Signals", "QUERY")()])
-ACTION_SEM_HINT    = Sentence([config.prepare("Semantic.Signals", "ACTION")()])
-TRANSFORM_SEM_HINT = Sentence([config.prepare("Semantic.Signals", "TRANSFORM")()])
-RULE_SEM_HINT      = Sentence([config.prepare("Semantic.Signals", "RULE")()])
-AGENDA_SEM_HINT    = Sentence([config.prepare("Semantic.Signals", "AGENDA")()])
-LAYER_SEM_HINT     = Sentence([config.prepare("Semantic.Signals", "LAYER")()])
-PIPELINE_SEM_HINT  = Sentence([config.prepare("Semantic.Signals", "PIPELINE")()])
+QUERY_SIGNAL     = Sentence() << config.attr.Semantic.Signals.QUERY
+ACTION_SIGNAL    = Sentence() << config.attr.Semantic.Signals.ACTION
+TRANSFORM_SIGNAL = Sentence() << config.attr.Semantic.Signals.TRANSFORM
+RULE_SIGNAL      = Sentence() << config.attr.Semantic.Signals.RULE
+AGENDA_SIGNAL    = Sentence() << config.attr.Semantic.Signals.AGENDA
+LAYER_SIGNAL     = Sentence() << config.attr.Semantic.Signals.LAYER
+PIPELINE_SIGNAL  = Sentence() << config.attr.Semantic.Signals.PIPELINE
 
 # TODO test verify
 
@@ -191,8 +191,8 @@ class StatementSemanticTests(unittest.TestCase):
         default_spec  = BasicSemanticSystem.Spec(DEFAULT_HANDLER_SIGNAL).spec_from(StatementSemantics_i)
         all_specs     = default.DEFAULT_SPECS() + [default_spec]
         # Semantics
-        transform_sem = ASem.TransformAbstraction().as_handler(signal=TRANSFORM_SEM_HINT)
-        action_sem    = ASem.ActionAbstraction().as_handler(signal=ACTION_SEM_HINT)
+        transform_sem = ASem.TransformAbstraction().as_handler(signal=TRANSFORM_SIGNAL)
+        action_sem    = ASem.ActionAbstraction().as_handler(signal=ACTION_SIGNAL)
         stub_sem      = StubAbsSemantic().as_handler(signal=DEFAULT_HANDLER_SIGNAL)
         con_sem       = ASem.ContainerAbstraction().as_handler(signal="CONTAINER")
 
@@ -200,8 +200,8 @@ class StatementSemanticTests(unittest.TestCase):
                                             init_handlers=[transform_sem,
                                                            action_sem,
                                                            stub_sem,
-                                                           con_sem],
-                                            sieve_fns=[])
+                                                           con_sem]
+                                            )
 
         # Operator Context
         op_ctx             = ContextInstance(data={"transform" : TestTransform(),
@@ -219,8 +219,8 @@ class StatementSemanticTests(unittest.TestCase):
         rebind_target          = AcabValue("y", data={BIND_V: True})
         transform_clause       = ProductionComponent(Sentence(["transform"]), params=["x"], rebind=rebind_target)
         action_clause          = ProductionComponent(Sentence(["action"]), params=["y"])
-        container_instruction  = ProductionContainer([ProductionContainer([transform_clause], data={SEMANTIC_HINT_V: TRANSFORM_SEM_HINT}),
-                                                      ProductionContainer([action_clause], data={SEMANTIC_HINT_V: ACTION_SEM_HINT})])
+        container_instruction  = ProductionContainer([ProductionContainer([transform_clause], data={SEMANTIC_HINT_V: TRANSFORM_SIGNAL}),
+                                                      ProductionContainer([action_clause], data={SEMANTIC_HINT_V: ACTION_SIGNAL})])
 
         # run each element of container with semantics
         semSys(container_instruction, ctxs=ctx_set)
@@ -249,14 +249,14 @@ class StatementSemanticTests(unittest.TestCase):
 
         # Build Semantics
         node_sem     = BasicNodeSemantics().as_handler(signal="atom")
-        trie_sem     = FlattenBreadthTrieSemantics(init_specs=[], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem     = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_handler = trie_sem.as_handler(signal="trie", struct=BasicNodeStruct.build_default())
 
 
-        query_sem   = ASem.QueryAbstraction().as_handler(signal=QUERY_SEM_HINT)
-        action_sem  = ASem.ActionAbstraction().as_handler(signal=ACTION_SEM_HINT)
-        rule_sem    = ASem.AtomicRuleAbstraction().as_handler(signal=RULE_SEM_HINT)
-        trans_sem   = ASem.TransformAbstraction().as_handler(signal=TRANSFORM_SEM_HINT)
+        query_sem   = ASem.QueryAbstraction().as_handler(signal=QUERY_SIGNAL)
+        action_sem  = ASem.ActionAbstraction().as_handler(signal=ACTION_SIGNAL)
+        rule_sem    = ASem.AtomicRuleAbstraction().as_handler(signal=RULE_SIGNAL)
+        trans_sem   = ASem.TransformAbstraction().as_handler(signal=TRANSFORM_SIGNAL)
         cont_sem    = ASem.ContainerAbstraction().as_handler(signal="CONTAINER")
 
         semSys      = BasicSemanticSystem(init_specs=default.DEFAULT_SPECS(),
@@ -268,8 +268,7 @@ class StatementSemanticTests(unittest.TestCase):
                                                          node_sem,
                                                          trie_handler,
                                                          trie_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)
-                                                         ],
-                                          sieve_fns=[])
+                                                         ])
 
         # Setup operators in context
         trans_instance     = RegexOp()
@@ -286,12 +285,12 @@ class StatementSemanticTests(unittest.TestCase):
                                             rebind=AcabValue("y", data={BIND_V: True}))
         action_sen    = ProductionComponent(Sentence([ "action" ]), params=['y'])
 
-        query     = ProductionContainer([query_sen], name=QUERY_C, data={SEMANTIC_HINT_V: QUERY_SEM_HINT})
-        transform = ProductionContainer([transform_sen], name=TRANSFORM_C, data={SEMANTIC_HINT_V: TRANSFORM_SEM_HINT})
-        action    = ProductionContainer([action_sen], name=ACTION_C, data={SEMANTIC_HINT_V: ACTION_SEM_HINT})
+        query     = ProductionContainer([query_sen], name=QUERY_C, data={SEMANTIC_HINT_V: QUERY_SIGNAL})
+        transform = ProductionContainer([transform_sen], name=TRANSFORM_C, data={SEMANTIC_HINT_V: TRANSFORM_SIGNAL})
+        action    = ProductionContainer([action_sen], name=ACTION_C, data={SEMANTIC_HINT_V: ACTION_SIGNAL})
 
         the_rule  = ProductionStructure([query, transform, action],
-                                        data={SEMANTIC_HINT_V: RULE_SEM_HINT})
+                                        data={SEMANTIC_HINT_V: RULE_SIGNAL})
 
         # insert a sentence into the struct
         sen = Sentence(["a", "test", "sentence"])
@@ -320,15 +319,15 @@ class StatementSemanticTests(unittest.TestCase):
         #
         # Build Semantics
         node_sem    = BasicNodeSemantics().as_handler(signal="atom")
-        trie_sem    = FlattenBreadthTrieSemantics(init_specs=[], sieve_fns=[], init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_sem    = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_handler= trie_sem.as_handler(signal="trie",
                                           struct=BasicNodeStruct.build_default())
 
-        query_sem   = ASem.QueryAbstraction().as_handler(signal=QUERY_SEM_HINT)
-        action_sem  = ASem.ActionAbstraction().as_handler(signal=ACTION_SEM_HINT)
-        trans_sem   = ASem.TransformAbstraction().as_handler(signal=TRANSFORM_SEM_HINT)
+        query_sem   = ASem.QueryAbstraction().as_handler(signal=QUERY_SIGNAL)
+        action_sem  = ASem.ActionAbstraction().as_handler(signal=ACTION_SIGNAL)
+        trans_sem   = ASem.TransformAbstraction().as_handler(signal=TRANSFORM_SIGNAL)
         # THIS IS THE MAJOR CHANGE OF THIS TEST:
-        rule_sem    = ASem.ProxyRuleAbstraction().as_handler(signal=RULE_SEM_HINT)
+        rule_sem    = ASem.ProxyRuleAbstraction().as_handler(signal=RULE_SIGNAL)
 
         semSys      = BasicSemanticSystem(init_specs=default.DEFAULT_SPECS(),
                                           init_handlers=[query_sem,
@@ -338,8 +337,7 @@ class StatementSemanticTests(unittest.TestCase):
                                                          node_sem,
                                                          trie_handler,
                                                          trie_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)
-                                                         ],
-                                          sieve_fns=[])
+                                                         ])
 
         # Setup operators in context
         trans_instance     = RegexOp()
@@ -356,12 +354,12 @@ class StatementSemanticTests(unittest.TestCase):
                                             rebind=AcabValue("y", data={BIND_V: True}))
         action_sen    = ProductionComponent(Sentence("action"), params=['y'])
 
-        query     = ProductionContainer([query_sen], name=QUERY_C, data={SEMANTIC_HINT_V: QUERY_SEM_HINT})
-        transform = ProductionContainer([transform_sen], name=TRANSFORM_C, data={SEMANTIC_HINT_V: TRANSFORM_SEM_HINT})
-        action    = ProductionContainer([action_sen], name=ACTION_C, data={SEMANTIC_HINT_V: ACTION_SEM_HINT})
+        query     = ProductionContainer([query_sen], name=QUERY_C, data={SEMANTIC_HINT_V: QUERY_SIGNAL})
+        transform = ProductionContainer([transform_sen], name=TRANSFORM_C, data={SEMANTIC_HINT_V: TRANSFORM_SIGNAL})
+        action    = ProductionContainer([action_sen], name=ACTION_C, data={SEMANTIC_HINT_V: ACTION_SIGNAL})
 
         the_rule  = ProductionStructure([query, transform, action],
-                                        data={SEMANTIC_HINT_V: RULE_SEM_HINT})
+                                        data={SEMANTIC_HINT_V: RULE_SIGNAL})
 
         # insert a sentence into the struct
         sen = Sentence(["a", "test", "sentence"])

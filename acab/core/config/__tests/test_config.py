@@ -54,10 +54,10 @@ class ConfigTests(unittest.TestCase):
         Check values can be retrieved
         """
         config = AcabConfig()
-        spec   = config.prepare("Value.Structure", "BIND")
+        spec   = config.prepare("Value.Structure", "BIND", as_enum=True)
         value  = config.value(spec)
         self.assertIsNotNone(value)
-        self.assertEqual(value, "BIND")
+        self.assertEqual(value.name, "BIND")
 
 
 

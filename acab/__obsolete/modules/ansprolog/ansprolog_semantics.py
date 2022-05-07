@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 import logging as logmod
 
-import acab.interfaces.semantic as SI
+import acab.core.value.default_structure as DS
 import acab.error.semantic as ASErr
+import acab.interfaces.semantic as SI
 from acab.core.config.config import AcabConfig
 from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.value.instruction import Instruction
 from acab.core.value.sentence import Sentence
 
-
 logging = logmod.getLogger(__name__)
 config = AcabConfig()
 
-CONSTRAINT_S     = config.prepare("Value.Structure", "CONSTRAINT")()
-NEGATION_S       = config.prepare("Value.Structure", "NEGATION")()
-QUERY_FALLBACK_S = config.prepare("Value.Structure", "QUERY_FALLBACK")()
+CONSTRAINT_S     = DS.CONSTRAINT
+NEGATION_S       = DS.NEGATION
+QUERY_FALLBACK_S = DS.QUERY_FALLBACK
 DEFAULT_SETUP_S  = config.prepare("Data", "DEFAULT_SETUP_METHOD")()
 DEFAULT_UPDATE_S = config.prepare("Data", "DEFAULT_UPDATE_METHOD")()
 

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging as logmod
 import unittest
 import unittest.mock as mock
@@ -48,7 +50,7 @@ class TypeCheckTests(unittest.TestCase):
 
         global dsl
         # Set up the parser to ease test setup
-        dsl   = ppDSL.PyParseDSL([], [], [])
+        dsl   = ppDSL.PyParseDSL()
         dsl.register(EXLO_Parser).register(TypingDSL).register(DFS_DSL)
         dsl.build()
 

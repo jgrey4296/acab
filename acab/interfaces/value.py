@@ -88,6 +88,8 @@ class Sentence_i(Instruction_i, VSubP.Sentence_p):
     def words(self) -> list[Value_A]:
         return self.value[:] #type:ignore
 
+    def __lshift__(self, other) -> Sen_A: pass
+
 # Combined Interfaces:
 class Operator_i(Value_i[None], Generic[T_Cov]):
     def is_operator(self) -> Literal[True]: return True

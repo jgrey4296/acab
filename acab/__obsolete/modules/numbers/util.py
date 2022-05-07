@@ -5,9 +5,9 @@ util = AcabConfig()
 DECIMAL = util.value("Module.Numbers", "DECIMAL")
 
 # TODO use config primitives
-FLOAT_t = Sentence(["number", "float"])
-INT_t   = Sentence(["number", "int"])
-FRACT_t = Sentence(["number", "fract"])
+FLOAT_t = Sentence() << ["number", "float"]
+INT_t   = Sentence() << ["number", "int"]
+FRACT_t = Sentence() << ["number", "fract"]
 
 
 def _wrap_float(value, opts=None):

@@ -25,30 +25,29 @@ logging = logmod.getLogger(__name__)
 config  = AcabConfig()
 
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
-QUERY_SEM_HINT         = Sentence([config.prepare("Semantic.Signals", "QUERY")()])
-ACTION_SEM_HINT        = Sentence([config.prepare("Semantic.Signals", "ACTION")()])
-TRANSFORM_SEM_HINT     = Sentence([config.prepare("Semantic.Signals", "TRANSFORM")()])
-RULE_SEM_HINT          = Sentence([config.prepare("Semantic.Signals", "RULE")()])
-AGENDA_SEM_HINT        = Sentence([config.prepare("Semantic.Signals", "AGENDA")()])
-LAYER_SEM_HINT         = Sentence([config.prepare("Semantic.Signals", "LAYER")()])
-PIPELINE_SEM_HINT      = Sentence([config.prepare("Semantic.Signals", "PIPELINE")()])
-ATOM_HINT              = Sentence([config.prepare("Semantic.Signals", "ATOM")()])
+QUERY_SIGNAL           = Sentence() << config.attr.Semantic.Signals.QUERY
+ACTION_SIGNAL          = Sentence() << config.attr.Semantic.Signals.ACTION
+TRANSFORM_SIGNALT      = Sentence() << config.attr.Semantic.Signals.TRANSFORM
+RULE_SIGNAL            = Sentence() << config.attr.Semantic.Signals.RULE
+AGENDA_SIGANL          = Sentence() << config.attr.Semantic.Signals.AGENDA
+LAYER_SIGNAL           = Sentence() << config.attr.Semantic.Signals.LAYER
+PIPELINE_SIGNAL        = Sentence() << config.attr.Semantic.Signals.PIPELINE
+ATOM_SIGNAL            = Sentence() << config.attr.Semantic.Signals.ATOM
 
-TRIE_HINT              = Sentence([config.prepare("Semantic.Signals", "TRIE")()])
+TRIE_SIGNAL              = Sentence() << config.attr.Semantic.Signals.TRIE
 
-def DEFAULT_TRIE_SPEC(name=TRIE_HINT):
+def DEFAULT_TRIE_SPEC(name=TRIE_SIGNAL):
     logging.info("Constructing Default Trie Semantics Spec")
-    node_spec   = BasicSemanticSystem.Spec(ATOM_HINT).spec_from(SI.ValueSemantics_i)
+    node_spec   = BasicSemanticSystem.Spec(ATOM_SIGNAL).spec_from(SI.ValueSemantics_i)
     trie_spec   = BasicSemanticSystem.Spec(name).spec_from(SI.StructureSemantics_i)
 
     return node_spec, trie_spec
 
-def DEFAULT_TRIE(name=TRIE_HINT):
+def DEFAULT_TRIE(name=TRIE_SIGNAL):
     logging.info("Constructing Default Trie Structure, Semantics and Handlers")
-    node_handler = BasicNodeSemantics(ATOM_HINT).as_handler()
+    node_handler = BasicNodeSemantics(ATOM_SIGNAL).as_handler()
     trie_sem     = FlattenBreadthTrieSemantics(signal=name,
                                                init_specs=DEFAULT_TRIE_SPEC(),
-                                               sieve_fns=[],
                                                init_handlers=[node_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
 
     # Attach a default struct to the semantics

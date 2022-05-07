@@ -7,23 +7,23 @@ import acab.modules.printing.printers as Printers
 from acab.interfaces.printing import PrintSemantics_i, PrintSystem_i
 from acab.modules.printing.basic_printer  import BasicPrinter
 from acab.core.config.config import AcabConfig
-from acab.core.printing import default_signals as DS
+from acab.core.printing import default_signals as DSig
 
 config = AcabConfig()
 
-atom_pr               = BasicPrinter.Spec(DS.ATOM).spec_from(PrintSemantics_i)
-annotations_pr        = BasicPrinter.Spec(DS.ANNOTATIONS).spec_from(PrintSemantics_i)
-annotations_final_pr  = BasicPrinter.Spec(DS.ANNOTATIONS_FINAL).spec_from(PrintSemantics_i)
-sentence_pr           = BasicPrinter.Spec(DS.SENTENCE).spec_from(PrintSemantics_i)
-symbol_pr             = BasicPrinter.Spec(DS.SYMBOL).spec_from(PrintSemantics_i)
-constraint_pr         = BasicPrinter.Spec(DS.CONSTRAINT).spec_from(PrintSemantics_i)
-container_pr          = BasicPrinter.Spec(DS.CONTAINER).spec_from(PrintSemantics_i)
-implicit_container_pr = BasicPrinter.Spec(DS.IMPLICIT_CONTAINER).spec_from(PrintSemantics_i)
-modal_pr              = BasicPrinter.Spec(DS.MODAL).spec_from(PrintSemantics_i)
-component_pr          = BasicPrinter.Spec(DS.COMPONENT).spec_from(PrintSemantics_i)
-type_instance_pr      = BasicPrinter.Spec(DS.TYPE_INSTANCE).spec_from(PrintSemantics_i)
-structure_pr          = BasicPrinter.Spec(DS.STRUCTURE).spec_from(PrintSemantics_i)
-tags_pr               = BasicPrinter.Spec(DS.TAGS).spec_from(PrintSemantics_i)
+atom_pr               = BasicPrinter.Spec(DSig.ATOM).spec_from(PrintSemantics_i)
+annotations_pr        = BasicPrinter.Spec(DSig.ANNOTATIONS).spec_from(PrintSemantics_i)
+annotations_final_pr  = BasicPrinter.Spec(DSig.ANNOTATIONS_FINAL).spec_from(PrintSemantics_i)
+sentence_pr           = BasicPrinter.Spec(DSig.SENTENCE).spec_from(PrintSemantics_i)
+symbol_pr             = BasicPrinter.Spec(DSig.SYMBOL).spec_from(PrintSemantics_i)
+constraint_pr         = BasicPrinter.Spec(DSig.CONSTRAINT).spec_from(PrintSemantics_i)
+container_pr          = BasicPrinter.Spec(DSig.CONTAINER).spec_from(PrintSemantics_i)
+implicit_container_pr = BasicPrinter.Spec(DSig.IMPLICIT_CONTAINER).spec_from(PrintSemantics_i)
+modal_pr              = BasicPrinter.Spec(DSig.MODAL).spec_from(PrintSemantics_i)
+component_pr          = BasicPrinter.Spec(DSig.COMPONENT).spec_from(PrintSemantics_i)
+type_instance_pr      = BasicPrinter.Spec(DSig.TYPE_INSTANCE).spec_from(PrintSemantics_i)
+structure_pr          = BasicPrinter.Spec(DSig.STRUCTURE).spec_from(PrintSemantics_i)
+tags_pr               = BasicPrinter.Spec(DSig.TAGS).spec_from(PrintSemantics_i)
 
 def DEFAULT_PRINTER_SPEC():
     return [atom_pr,
@@ -43,23 +43,22 @@ def DEFAULT_PRINTER_SPEC():
 def DEFAULT_PRINT_HANDLERS():
     return [
         # Printers.NoOpPrinter().as_handler(signal="TYPE_INSTANCE"),
-        Printers.AnnotationAwareValuePrinter().as_handler(signal=DS.ATOM),
-        Printers.AnnotationPrinter().as_handler(signal=DS.ANNOTATIONS),
-        Printers.AnnotationFinaliser().as_handler(signal=DS.ANNOTATIONS_FINAL),
-        Printers.BasicSentenceAwarePrinter().as_handler(signal=DS.SENTENCE),
-        Printers.ConfigBackedSymbolPrinter().as_handler(signal=DS.SYMBOL),
-        Printers.ConstraintPrinter().as_handler(signal=DS.CONSTRAINT),
-        Printers.ExplicitContainerPrinter().as_handler(signal=DS.CONTAINER),
-        Printers.ImplicitContainerPrinter().as_handler(signal=DS.IMPLICIT_CONTAINER),
-        Printers.ModalPrinter().as_handler(signal=DS.MODAL),
-        Printers.ProductionComponentPrinter().as_handler(signal=DS.COMPONENT),
-        Printers.SimpleTypePrinter().as_handler(signal=DS.TYPE_INSTANCE),
-        Printers.StructurePrinter().as_handler(signal=DS.STRUCTURE),
-        Printers.TagPrinter().as_handler(signal=DS.TAGS),
+        Printers.AnnotationAwareValuePrinter().as_handler(signal=DSig.ATOM),
+        Printers.AnnotationPrinter().as_handler(signal=DSig.ANNOTATIONS),
+        Printers.AnnotationFinaliser().as_handler(signal=DSig.ANNOTATIONS_FINAL),
+        Printers.BasicSentenceAwarePrinter().as_handler(signal=DSig.SENTENCE),
+        Printers.ConfigBackedSymbolPrinter().as_handler(signal=DSig.SYMBOL),
+        Printers.ConstraintPrinter().as_handler(signal=DSig.CONSTRAINT),
+        Printers.ExplicitContainerPrinter().as_handler(signal=DSig.CONTAINER),
+        Printers.ImplicitContainerPrinter().as_handler(signal=DSig.IMPLICIT_CONTAINER),
+        Printers.ModalPrinter().as_handler(signal=DSig.MODAL),
+        Printers.ProductionComponentPrinter().as_handler(signal=DSig.COMPONENT),
+        Printers.SimpleTypePrinter().as_handler(signal=DSig.TYPE_INSTANCE),
+        Printers.StructurePrinter().as_handler(signal=DSig.STRUCTURE),
+        Printers.TagPrinter().as_handler(signal=DSig.TAGS),
     ]
 
 def DEFAULT_PRINTER():
     return BasicPrinter(init_specs=DEFAULT_PRINTER_SPEC(),
                         init_handlers=DEFAULT_PRINT_HANDLERS(),
-                        sieve_fns=[],
                         settings={"MODAL": "exop"})

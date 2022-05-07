@@ -17,16 +17,16 @@ from acab.core.config.config import AcabConfig
 config = AcabConfig()
 
 
-ATOM               = config.prepare("Print.Signals", "ATOM")()
-ANNOTATIONS        = config.prepare("Print.Signals", "ANNOTATIONS")()
-ANNOTATIONS_FINAL  = config.prepare("Print.Signals", "ANNOTATIONS_FINAL")()
-SENTENCE           = config.prepare("Print.Signals", "SENTENCE")()
-SYMBOL             = config.prepare("Print.Signals", "SYMBOL")()
-CONSTRAINT         = config.prepare("Print.Signals", "CONSTRAINT")()
-CONTAINER          = config.prepare("Print.Signals", "CONTAINER")()
-IMPLICIT_CONTAINER = config.prepare("Print.Signals", "IMPLICIT_CONTAINER")()
-MODAL              = config.prepare("Print.Signals", "MODAL")()
-COMPONENT          = config.prepare("Print.Signals", "COMPONENT")()
-TYPE_INSTANCE      = config.prepare("Print.Signals", "TYPE_INSTANCE")()
-STRUCTURE          = config.prepare("Print.Signals", "STRUCTURE")()
-TAGS               = config.prepare("Print.Signals", "TAGS")()
+ATOM               = config.attr.Print.Signals.ATOM
+ANNOTATIONS        = config.attr.Print.Signals.ANNOTATIONS
+ANNOTATIONS_FINAL  = config.attr.Print.Signals.ANNOTATIONS_FINAL
+SENTENCE           = config.attr.Print.Signals.SENTENCE
+SYMBOL             = config.attr.Print.Signals.SYMBOL
+CONSTRAINT         = config.attr.Print.Signals.CONSTRAINT
+CONTAINER          = config.attr.Print.Signals.CONTAINER
+IMPLICIT_CONTAINER = config.attr.Print.Signals.IMPLICIT_CONTAINER
+MODAL              = config.attr.Print.Signals.MODAL
+COMPONENT          = config.attr.Print.Signals.COMPONENT
+TYPE_INSTANCE      = config.attr.Print.Signals.TYPE_INSTANCE
+STRUCTURE          = config.attr.Print.Signals.STRUCTURE
+TAGS               = config.attr.Print.Signals.TAGS

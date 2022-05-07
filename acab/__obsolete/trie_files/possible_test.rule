@@ -1,5 +1,5 @@
 // Something tagged with #setup gets run first
-a.setup.action:
+a.setup.action(::ρ):
     #setup
 
     a.b.c
@@ -7,7 +7,7 @@ a.setup.action:
 end
 
 // Then anything tagged with #test
-a.rule:
+a.rule(::ρ):
     #test
 
     a.b.c?
@@ -17,7 +17,7 @@ a.rule:
 end
 
 // Expect any query tagged with #result to pass
-must.pass:
+must.pass(::ρ):
     #result
 
     an.action?

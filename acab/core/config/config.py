@@ -109,7 +109,7 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
     Uses ${SectionName:Key} interpolation in values,
     Turns multi-line values into lists
     """
-    paths     : InitVar[None|list[str]]         = field(default=None)
+    paths     : InitVar[None|list[str]]         = None
     hooks     : set[GenFunc]                    = field(default_factory=set)
 
     _files    : set[str]                        = field(init=False, default_factory=set)
@@ -178,8 +178,10 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
         assert(isinstance(val, ConfigSpec))
         spec    = val
 
-        if spec.as_enum and spec.section in self.enums:
+        if spec.as_enum and spec.section in self.enums and spec.key is None:
             return self.enums[spec.section]
+        elif spec.as_enum and spec.section in self.enums and spec.key in self.enums[spec.section].__members__:
+            return self.enums[spec.section][spec.key]
 
         return self._spec_value(spec)
 

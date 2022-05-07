@@ -34,7 +34,7 @@ class SentenceTests(unittest.TestCase):
 
         global dsl
         # Set up the parser to ease test setup
-        dsl   = ppDSL.PyParseDSL([], [], [])
+        dsl   = ppDSL.PyParseDSL()
         dsl.register(EXLO_Parser)
         dsl.build()
         # dsl()
@@ -403,3 +403,48 @@ class SentenceTests(unittest.TestCase):
         self.assertEqual(all_layers, "_:top.level.parent.a.test.sentence.blah")
         self.assertEqual(len(all_layers), 5)
         self.assertTrue(any([isinstance(x, Sentence_i) for x in all_layers.words]))
+
+
+    def test_sen_lshift(self):
+        val = Sentence() << "blah"
+        self.assertIsInstance(val, Sentence)
+        self.assertEqual(val, "_:blah")
+
+    def test_sen_lshift_chain(self):
+        val = Sentence() << "blah" << "bloo"
+        self.assertIsInstance(val, Sentence)
+        self.assertEqual(val, "_:blah.bloo")
+
+    def test_sen_lshift_params(self):
+        val = Sentence(data={"blah": True}) << "blah" << "bloo"
+        self.assertIsInstance(val, Sentence)
+        self.assertEqual(val, "_:blah.bloo")
+        self.assertTrue(val.data['blah'])
+
+    def test_sen_lshift_multi(self):
+        val = Sentence() << ["blah", "bloo"]
+        self.assertIsInstance(val, Sentence)
+        self.assertEqual(val, "_:blah.bloo")
+
+    def test_sen_lshift_creates_values(self):
+        val = Sentence() << ["blah", "bloo"]
+        self.assertIsInstance(val, Sentence)
+        self.assertEqual(val, "_:blah.bloo")
+        self.assertTrue(all([isinstance(x, Value_i) for x in val.words]))
+
+    def test_sen_lshift_creates_values2(self):
+        val = Sentence() << "blah" << "bloo"
+        self.assertIsInstance(val, Sentence)
+        self.assertEqual(val, "_:blah.bloo")
+        self.assertTrue(all([isinstance(x, Value_i) for x in val.words]))
+
+    def test_sen_lshift_independece(self):
+        main = Sentence(data={"blah": True})
+        val1 = main << "blah" << "bloo"
+        main.data['blah'] = False
+        val2 = main << "awef" << "aweg"
+        self.assertNotEqual(main, val1)
+        self.assertNotEqual(main, val2)
+        self.assertNotEqual(val1, val2)
+        self.assertTrue(val1.data['blah'])
+        self.assertFalse(val2.data['blah'])

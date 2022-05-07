@@ -5,6 +5,7 @@ import logging as logmod
 import unittest
 import unittest.mock as mock
 from os.path import split, splitext
+
 import pyparsing as pp
 
 logging = logmod.getLogger(__name__)
@@ -17,26 +18,26 @@ import acab
 
 config = acab.setup()
 
-from acab.core.value.instruction import ProductionComponent, ProductionContainer
-from acab.core.value.value import AcabValue
-from acab.core.value.instruction import Instruction
-from acab.core.value.sentence import Sentence
-
-from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
+import acab.core.value.default_structure as DS
 from acab.core.parsing.pyparse_dsl import PyParseDSL
+from acab.core.value.instruction import (Instruction, ProductionComponent,
+                                         ProductionContainer)
+from acab.core.value.sentence import Sentence
+from acab.core.value.value import AcabValue
 from acab.modules.engines.configured import exlo
 from acab.modules.operators.dfs import parser as DOP
+from acab.modules.operators.dfs.module import DFS_DSL
 from acab.modules.operators.dfs.semantics import DFSSemantics
+from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 from acab.modules.semantics.basic_system import BasicSemanticSystem
 from acab.modules.semantics.statements import QueryPlusAbstraction
 from acab.modules.semantics.values import ExclusionNodeSemantics
-from acab.modules.operators.dfs.module import DFS_DSL
 
-BIND          = config.prepare("Value.Structure", "BIND")()
-QUERY         = config.prepare("Value.Structure", "QUERY")()
-SEM_HINT      = config.prepare("Value.Structure", "SEMANTIC_HINT")()
-TYPE_INSTANCE = config.prepare("Value.Structure", "TYPE_INSTANCE")()
-AT_BIND       = config.prepare("Value.Structure", "AT_BIND")()
+BIND          = DS.BIND
+QUERY         = DS.QUERY
+SEM_HINT      = DS.SEMANTIC_HINT
+TYPE_INSTANCE = DS.TYPE_INSTANCE
+AT_BIND       = DS.AT_BIND
 default_modules = config.prepare("Module.REPL", "MODULES")().split("\n")
 
 dsl = None
@@ -55,7 +56,7 @@ class TestWalkParser(unittest.TestCase):
         logging.root.setLevel(logmod.NOTSET)
 
         global dsl
-        dsl = PyParseDSL([],[],[])
+        dsl = PyParseDSL()
         dsl.register(EXLO_Parser)
         dsl.register(DFS_DSL)
         dsl.build()
@@ -65,16 +66,16 @@ class TestWalkParser(unittest.TestCase):
 
         self.assertTrue(result)
         self.assertIsInstance(result, Sentence)
-        self.assertEqual(result.data['SEMANTIC_HINT'], '_:WALK')
-        self.assertTrue(result.data['QUERY'])
+        self.assertEqual(result.data[DS.SEMANTIC_HINT], '_:WALK')
+        self.assertTrue(result.data[DS.QUERY])
 
     def test_parse_walk_action_instruction(self):
         result = DOP.dfs_action.parse_string("ᛦ λa.test.op")[0]
 
         self.assertTrue(result)
         self.assertIsInstance(result, Sentence)
-        self.assertEqual(result.data['SEMANTIC_HINT'], '_:WALK')
-        self.assertNotIn('QUERY', result.data)
+        self.assertEqual(result.data[DS.SEMANTIC_HINT], '_:WALK')
+        self.assertNotIn(DS.QUERY, result.data)
 
         self.assertEqual(result[0], "_:a.test.op")
 
@@ -82,6 +83,6 @@ class TestWalkParser(unittest.TestCase):
         result = DOP.dfs_action.parse_string("ᛦ λ$x")[0]
         self.assertTrue(result)
         self.assertIsInstance(result, Sentence)
-        self.assertEqual(result.data['SEMANTIC_HINT'], '_:WALK')
-        self.assertNotIn('QUERY', result.data)
+        self.assertEqual(result.data[DS.SEMANTIC_HINT], '_:WALK')
+        self.assertNotIn(DS.QUERY, result.data)
         self.assertTrue(result[0][0].is_var)

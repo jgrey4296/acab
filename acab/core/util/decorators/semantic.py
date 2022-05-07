@@ -17,19 +17,19 @@ config = AcabConfig()
 def BuildCtxSetIfMissing(f):
     """ Utility to Build a default CtxSet if one isnt provided """
     @wraps(f)
-    def wrapped(self, *the_args, **the_kwargs):
+    def EnsureCtxSet(self, *the_args, **the_kwargs):
         if 'ctxs' not in the_kwargs or the_kwargs['ctxs'] is None:
             logging.debug("Building CtxSet")
             the_kwargs['ctxs'] = self.build_ctxset()
 
         return f(self, *the_args, **the_kwargs)
 
-    return wrapped
+    return EnsureCtxSet
 
 def RunDelayedCtxSetActions(f):
     """ Utility to run delayed ContextSet update actions """
     @wraps(f)
-    def wrapped(self, *the_args, **the_kwargs):
+    def DelayedActionRunner(self, *the_args, **the_kwargs):
         result = f(self, *the_args, **the_kwargs)
         if isinstance(result, DelayedCommands_i):
             result.run_delayed()
@@ -37,7 +37,7 @@ def RunDelayedCtxSetActions(f):
         logging.debug("Returning CtxSet: {}", the_kwargs['ctxs'])
         return result
 
-    return wrapped
+    return DelayedActionRunner
 
 
 def RunInSubCtxSet(f):
@@ -46,7 +46,7 @@ def RunInSubCtxSet(f):
     # TODO move this decorator into handler?
     """
     @wraps(f)
-    def wrapped(self, *the_args, **the_kwargs):
+    def RunningInSubCtx(self, *the_args, **the_kwargs):
         logging.debug("Creating Subctx")
         semSys = the_args[1]
         ctxs   = the_kwargs['ctxs']
@@ -56,7 +56,7 @@ def RunInSubCtxSet(f):
         the_kwargs['ctxs'] = subctx
         return f(self, *the_args, **the_kwargs)
 
-    return wrapped
+    return RunningInSubCtx
 
 
 def OperatorArgUnWrap(f):
@@ -68,39 +68,38 @@ def OperatorArgUnWrap(f):
     then lifts the result back up for Acab to continue using
     """
     @wraps(f)
-    def wrapped(self, *the_args, **the_kwargs):
+    def UnwrapArgsForOperator(self, *the_args, **the_kwargs):
         unwrapped_args = [x.value or x.key() for x in the_args]
         return f(self, *unwrapped_args, **the_kwargs)
 
-    return wrapped
+    return UnwrapArgsForOperator
 
 def OperatorDataUnWrap(f):
     """ Use to simplify extracting raw values for use in operators,
     and wrapping the results into AcabValues """
     @wraps(f)
-    def wrapped(self, *the_args, **the_kwargs):
+    def UnwrapDataForOperator(self, *the_args, **the_kwargs):
         if 'data' in the_kwargs:
             unwrapped_data = {x: y.value for x,y in the_kwargs['data'].items()}
             the_kwargs['data'] = unwrapped_data
         return f(self, *the_args, **the_kwargs)
 
-    return wrapped
+    return UnwrapDataForOperator
 
 def OperatorResultWrap(f):
     @wraps(f)
-    def wrapped(self, *the_args, **the_kwargs):
+    def WrapOperatorResultAsValue(self, *the_args, **the_kwargs):
         return AcabValue(f(self, *the_args, **the_kwargs))
 
-    return wrapped
+    return WrapOperatorResultAsValue
 
 
 def OperatorSugar(sugar:str, prefix=None):
     """
     Decorates a ProductionOperator to carry a syntactic sugar annotation
     for semantic recognition.
-    Stores in pseudo-sentence form: _:{sugar}
     """
-    def wrapped(cls:ProductionOperator):
+    def AnnotateOperatorWithSugar(cls:ProductionOperator):
         psugar : str = "" #"_:"
         if prefix is not None:
             psugar += prefix
@@ -110,4 +109,4 @@ def OperatorSugar(sugar:str, prefix=None):
         cls._acab_operator_sugar = psugar
         return cls
 
-    return wrapped
+    return AnnotateOperatorWithSugar
