@@ -437,3 +437,14 @@ class SentenceTests(unittest.TestCase):
         self.assertIsInstance(val, Sentence)
         self.assertEqual(val, "_:blah.bloo")
         self.assertTrue(all([isinstance(x, Value_i) for x in val.words]))
+
+    def test_sen_lshift_independece(self):
+        main = Sentence(data={"blah": True})
+        val1 = main << "blah" << "bloo"
+        main.data['blah'] = False
+        val2 = main << "awef" << "aweg"
+        self.assertNotEqual(main, val1)
+        self.assertNotEqual(main, val2)
+        self.assertNotEqual(val1, val2)
+        self.assertTrue(val1.data['blah'])
+        self.assertFalse(val2.data['blah'])
