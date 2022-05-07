@@ -67,8 +67,14 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
     def test_name_empty_rule_parse(self):
         result = RP.rule.parse_string("x(::ρ):\nend")[0]
         self.assertIsInstance(result, ProductionStructure)
+        self.assertEqual(result.type, "_:RULE")
         self.assertEqual(result.name, "x")
 
+    def test_non_alias_empty_rule(self):
+        result = RP.rule.parse_string("x(::RULE):\nend")[0]
+        self.assertIsInstance(result, ProductionStructure)
+        self.assertEqual(result.type, "_:RULE")
+        self.assertEqual(result.name, "x")
 
     @unittest.skip
     def test_multi_empty_rules(self):

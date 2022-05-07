@@ -118,7 +118,7 @@ class _ValueMetaDataImpl(VI.Value_i, VP.ValueMetaData_p):
         if type_matches_t:
             return type_desc # type:ignore
 
-        assert(isinstance(type_desc, str)), breakpoint()
+        assert(isinstance(type_desc, (DS.DATA_STRUCT_E, str)))
         if DS.SEMANTIC_HINT in self.data and isinstance(self.data[DS.SEMANTIC_HINT], VI.Sentence_i):
             self.data[DS.TYPE_INSTANCE] = self.data[DS.SEMANTIC_HINT]
         else:

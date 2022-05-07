@@ -42,10 +42,10 @@ HandlerFlags_t        : TypeAlias = Type[HandlerFlags]
 
 @dataclass #type:ignore[misc]
 class HandlerSystem_i(HSubP.HandlerSystem_p):
-    init_specs     : InitVar[list[HandlerSpec_A]] = field()
-    init_handlers  : InitVar[list[Handler_A]]     = field()
+    init_specs     : InitVar[list[HandlerSpec_A]] = None
+    init_handlers  : InitVar[list[Handler_A]]     = None
     # TODO make default  Tuple[str, str], and lookup?
-    sieve_fns      : InitVar[list[GenFunc]]       = field()
+    sieve_fns      : InitVar[list[GenFunc]]       = None
 
     sieve          : AcabSieve[str]               = field(init=False, default_factory=AcabSieve)
     handler_specs  : dict[str, HandlerSpec_A]     = field(init=False, default_factory=dict)

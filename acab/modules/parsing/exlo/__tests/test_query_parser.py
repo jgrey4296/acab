@@ -126,8 +126,13 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertEqual(r_clause[-1].data[QUERY_FALLBACK][1][1][-1].value, 'e')
 
 
-    def test_query_statement(self):
+    def test_query_alias_statement(self):
         result = QP.query_statement.parse_string("query(::γ):\n  a.b.c?\n  d.e.f?\n  a.b.$x?\nend")[0]
+        self.assertIsInstance(result, ProductionContainer)
+        self.assertEqual(len(result.clauses), 3)
+
+    def test_query_statement(self):
+        result = QP.query_statement.parse_string("query(::QUERY):\n  a.b.c?\n  d.e.f?\n  a.b.$x?\nend")[0]
         self.assertIsInstance(result, ProductionContainer)
         self.assertEqual(len(result.clauses), 3)
 
@@ -141,21 +146,21 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result, ValueRepeatAnnotation)
         self.assertIsInstance(result.value, ProductionComponent)
         self.assertFalse(result.value.params)
-        self.assertIn(OPERATOR, result.value.op.data)
+        self.assertIn(OPERATOR, result.value.op.type)
 
     def test_basic_constraint_one_param(self):
         result = QP.basic_constraint.parse_string("λa.b.c $x")[0]
         self.assertIsInstance(result, ValueRepeatAnnotation)
         self.assertIsInstance(result.value, ProductionComponent)
         self.assertTrue(result.value.params)
-        self.assertIn(OPERATOR, result.value.op.data)
+        self.assertIn(OPERATOR, result.value.op.type)
 
     def test_basic_constraint_one_sen(self):
         result = QP.basic_constraint.parse_string("λa.b.c q.w.e")[0]
         self.assertIsInstance(result, ValueRepeatAnnotation)
         self.assertIsInstance(result.value, ProductionComponent)
         self.assertTrue(result.value.params)
-        self.assertIn(OPERATOR, result.value.op.data)
+        self.assertIn(OPERATOR, result.value.op.type)
 
 
     def test_basic_constraint_multi_params(self):
@@ -173,4 +178,4 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result, ValueRepeatAnnotation)
         self.assertIsInstance(result.value, ProductionComponent)
         self.assertFalse(result.value.params)
-        self.assertIn(OPERATOR, result.value.op.data)
+        self.assertIn(OPERATOR, result.value.op.type)

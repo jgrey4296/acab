@@ -5,16 +5,36 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
+import acab.core.parsing.default_keys as DK
+import acab.core.value.default_structure as DS
+import pyparsing as pp
 from acab.core.config.config import AcabConfig
+from acab.core.parsing.annotation import ValueAnnotation
+from acab.core.parsing.consts import s, s_key
 from acab.core.value.sentence import Sentence
 from acab.modules.analysis.typing import util as TYU
-from acab.modules.analysis.typing.values.definition import (
-    OperatorDefinition, SumTypeDefinition, TypeDefinition, TypeClass)
-
-from acab.core.parsing.annotation import ValueAnnotation
+from acab.modules.analysis.typing.values.definition import (OperatorDefinition,
+                                                            SumTypeDefinition,
+                                                            TypeClass,
+                                                            TypeDefinition)
 
 config          = AcabConfig()
-TYPE_INSTANCE_S = config.prepare("Value.Structure", "TYPE_INSTANCE")()
+TYPE_INSTANCE_S = DS.TYPE_INSTANCE
+
+SEN_S           = DK.SEN
+ARG_S           = DK.ARG
+PARAM_JOIN_S    = config.prepare("Parse.Patterns", "PARAM_JOIN", actions=[AcabConfig.actions_e.STRIPQUOTE])()
+SYNTAX_BIND_S   = config.prepare("Parse.Structure", "SYNTAX_BIND")()
+
+NOM_HEAD        = s_key(config.prepare("Symbols", "NOMINAL")())
+SUM_HEAD        = s_key(config.prepare("Symbols", "SUM")())
+STRUCT_HEAD     = s_key(config.prepare("Symbols", "STRUCTURE")())
+TYPE_CLASS_HEAD = s_key(config.prepare("Symbols", "TYPE_CLASS")())
+FUNC_HEAD       = s(pp.Word(config.prepare("Symbols", "FUNC")()))
+
+STRUCT_HEAD.set_name("StructHead")
+FUNC_HEAD.set_name("FuncHead")
+
 
 def make_simple_def(toks):
     value    = toks[0]
@@ -39,8 +59,8 @@ def make_op_def(toks):
     op_params = toks["params"]
     assert(all([x.is_var for x in op_params]))
 
-    if TYU.SYNTAX_BIND_S in toks:
-        syntax_bind = toks[TYU.SYNTAX_BIND_S]
+    if SYNTAX_BIND_S in toks:
+        syntax_bind = toks[SYNTAX_BIND_S]
 
     op_def = OperatorDefinition([op_params], sugar_syntax=syntax_bind)
 
@@ -51,10 +71,10 @@ def make_type_dec(toks):
     """ Construct a type declaration / annotation
     Returns a Tuple signifying it is a type dec, and the type it annotates
     """
-    path = toks[TYU.SEN_S]
+    path = toks[SEN_S]
     args = []
-    if TYU.ARG_S in toks:
-        args = [x[1] if isinstance(x, tuple) else x for x in toks[TYU.ARG_S][:]]
+    if ARG_S in toks:
+        args = [x[1] if isinstance(x, tuple) else x for x in toks[ARG_S][:]]
 
     return ValueAnnotation(TYU.TYPE_INSTANCE_S,
                            Sentence(path, params=args,

@@ -1,28 +1,41 @@
-#https://docs.python.org/3/library/unittest.html
-# https://docs.python.org/3/library/unittest.mock.html
-import logging
+#!/opts/anaconda3/envs/ENV/python
+"""
+A Bare minimum template for testing with a set up acab engine
+"""
 import logging as logmod
 import unittest
-import unittest.mock as mock
 from os import listdir
 from os.path import (abspath, exists, expanduser, isdir, isfile, join, split,
                      splitext)
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
+from unittest import mock
+from unittest.mock import create_autospec
+from functools import partial
 import timeit
+
 logging = logmod.getLogger(__name__)
 
 import acab
 
 config = acab.setup()
 
-from acab.modules.engines.configured import exlo
+from acab.modules.engines.basic_engine import AcabBasicEngine
+from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
+from acab.modules.printing.default import DEFAULT_PRINTER
+from acab.modules.semantics.default import DEFAULT_SEMANTICS
 
-initial_modules = config.prepare("Module.REPL", "MODULES")().split("\n")
+def parse_file_runner(eng, f):
+    eng.load_file(f)
 
-class FileParseTests(unittest.TestCase):
+
+class FileParsingTests(unittest.TestCase):
+
 
     @classmethod
     def setUpClass(cls):
-        LOGLEVEL      = logmod.DEBUG
+        LOGLEVEL      = logmod.WARNING
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
         file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
 
@@ -31,20 +44,22 @@ class FileParseTests(unittest.TestCase):
         logging.root.addHandler(file_h)
         logging.root.setLevel(logmod.NOTSET)
 
-    #----------
+        cls.eng = AcabBasicEngine(parser=EXLO_Parser,
+                                  semantics=DEFAULT_SEMANTICS(),
+                                  printer=DEFAULT_PRINTER(),
+                                  modules=[])
+
     def test_file_parsing_times(self):
         test_loc = join(split(__file__)[0], "test_files")
         test_files = [join(test_loc, x) for x in listdir(test_loc)
-                      if isfile(join(test_loc, x)) and splitext(x)[1] == ".rule"]
+                      if isfile(join(test_loc, x)) and splitext(x)[1] == ".trie"]
 
         for file_name in test_files:
-            print(f"\nTrying: {file_name}")
-            t = timeit.timeit(f"engine.load_file('{file_name}')",
-                              setup="""engine = exlo()\nengine.load_modules(*initial_modules)""",
-                              number=1,
-                              globals=globals())
-            with open(file_name) as f:
-                lines = len(f.readlines())
+            with self.subTest(file_name=file_name):
+                test_func = partial(parse_file_runner, self.eng, file_name)
+                t = timeit.timeit(test_func, number=1)
+                with open(file_name) as f:
+                    lines = len(f.readlines())
 
-            print("Length: {}".format(lines))
-            print("Time  : {}".format(t))
+                logging.warning("Length: {}", lines)
+                logging.warning("Time  : {:.4}", t)

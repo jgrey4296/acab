@@ -7,18 +7,19 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 logging = logmod.getLogger(__name__)
 
+import acab.core.value.default_structure as DS
 import acab.error.semantic as ASErr
 import acab.interfaces.context as CtxInt
 from acab import AcabConfig
 from acab.core.value.instruction import ProductionComponent, ProductionOperator
 from acab.core.value.sentence import Sentence
+from acab.interfaces.bind import Bind_i
 from acab.interfaces.sieve import AcabSieve
 from acab.modules.context.constraint_sieve import default_sieve
-from acab.interfaces.bind import Bind_i
 
 config        = AcabConfig()
-CONSTRAINT    = config.prepare("Value.Structure", "CONSTRAINT")
-TYPE_INSTANCE = config.prepare("Value.Structure", "TYPE_INSTANCE")()
+CONSTRAINT    = DS.CONSTRAINT
+TYPE_INSTANCE = DS.TYPE_INSTANCE
 ATOM          = config.prepare("Data", "TYPE_BASE")()
 
 Bind = config.prepare("Imports.Targeted", "bind", actions=[config.actions_e.IMCLASS], args={"interface": Bind_i})()

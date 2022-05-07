@@ -9,6 +9,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 from uuid import uuid1
 
 import pyparsing as pp
+import acab.core.value.default_structure as DS
 from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.core.value.instruction import Instruction
@@ -40,7 +41,7 @@ def gen_var() -> Callable[[], AT.Sentence]:
         nonlocal counter
         new_name = "GenVar_{}".format(counter)
         counter += 1
-        return Sentence([AcabValue(new_name, data={"BIND":True})])
+        return Sentence() << AcabValue(new_name, data={DS.BIND:True})
 
     return wrapped
 

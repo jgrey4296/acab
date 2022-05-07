@@ -6,27 +6,28 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 from uuid import UUID
 
+import acab.core.value.default_structure as DS
 import acab.error.semantic as ASErr
 import acab.interfaces.semantic as SI
 from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.core.data.acab_struct import BasicNodeStruct
+from acab.core.semantics import basic
 from acab.core.value.instruction import Instruction
 from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue
-from acab.core.semantics import basic
 from acab.modules.operators.dfs.context_walk_manager import ContextWalkManager
 
 logging = logmod.getLogger(__name__)
 config = AcabConfig()
 
-CONSTRAINT_S     = config.prepare("Value.Structure", "CONSTRAINT")()
-DEFAULT_SETUP_S  = config.prepare("Data", "DEFAULT_SETUP_METHOD")()
-DEFAULT_UPDATE_S = config.prepare("Data", "DEFAULT_UPDATE_METHOD")()
-NEGATION_S       = config.prepare("Value.Structure", "NEGATION")()
-QUERY            = config.prepare("Value.Structure", "QUERY")()
-QUERY_FALLBACK_S = config.prepare("Value.Structure", "QUERY_FALLBACK")()
-WALK_SEM_HINT    = Sentence([config.prepare("Semantic.Signals", "WALK")()])
+CONSTRAINT_S     = DS.CONSTRAINT
+NEGATION_S       = DS.NEGATION
+QUERY            = DS.QUERY
+QUERY_FALLBACK_S = DS.QUERY_FALLBACK
+DEFAULT_SETUP_S  = config.attr.Data.DEFAULT_SETUP_METHOD
+DEFAULT_UPDATE_S = config.attr.Data.DEFAULT_UPDATE_METHOD
+WALK_SEM_HINT    = Sentence() << config.attr.Semantic.Signals.WALK
 
 Node          = AT.Node
 Value         = AT.Value
@@ -121,6 +122,7 @@ class DFSSemantics(basic.StatementSemantics, SI.StatementSemantics_i):
                     # not an actual action
                     raise NotImplementedError()
 
+                assert(bool(action.params))
                 while bool(queue):
                     current      = queue.pop(0)
                     if current.uuid in found:

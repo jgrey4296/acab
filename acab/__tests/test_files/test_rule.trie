@@ -1,6 +1,6 @@
 a.b.c
 
-a.test.rule:
+a.test.rule(::ρ):
     a.b.c?
 
     λacab.modules.operators.action.ActionAdd d.e.f

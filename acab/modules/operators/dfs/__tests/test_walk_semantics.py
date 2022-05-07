@@ -31,12 +31,12 @@ from acab.modules.semantics.basic_system import BasicSemanticSystem
 from acab.modules.semantics.statements import QueryPlusAbstraction
 from acab.modules.semantics.values import ExclusionNodeSemantics
 
-BIND            = config.prepare("Value.Structure", "BIND")()
-QUERY           = config.prepare("Value.Structure", "QUERY")()
-SEM_HINT        = config.prepare("Value.Structure", "SEMANTIC_HINT")()
-TYPE_INSTANCE   = config.prepare("Value.Structure", "TYPE_INSTANCE")()
-AT_BIND         = config.prepare("Value.Structure", "AT_BIND")()
-CONSTRAINT      = config.prepare("Value.Structure", "CONSTRAINT")()
+BIND            = DS.BIND
+QUERY           = DS.QUERY
+SEM_HINT        = DS.SEMANTIC_HINT
+TYPE_INSTANCE   = DS.TYPE_INSTANCE
+AT_BIND         = DS.AT_BIND
+CONSTRAINT      = DS.CONSTRAINT
 default_modules = config.prepare("Module.REPL", "MODULES")().split("\n")
 
 class TestWalkSemantics(unittest.TestCase):
@@ -76,7 +76,10 @@ class TestWalkSemantics(unittest.TestCase):
 
     def test_query_walk_only_below_start(self):
         """
-        @x ᛦ $y(::target)?
+        @x ᛦ $y(∈ blah)?
+
+        find a.b.c.test.sub.blah
+        and not a.b.e.blah
         """
 
         self.eng("a.b.c.test.sub.blah")
@@ -90,7 +93,7 @@ class TestWalkSemantics(unittest.TestCase):
         source_var = AcabValue("x", data={BIND: AT_BIND})
         test_var   = AcabValue("y", data={BIND: True})
         ValueRepeatAnnotation(CONSTRAINT,
-                              ProductionComponent(Sentence(["∈"], data={DS.OPERATOR:True}),
+                              ProductionComponent(Sentence(["∈"], data={DS.TYPE_INSTANCE: DS.OPERATOR}),
                                                   params=[AcabValue("blah")]))(test_var)
 
         query_sen = Sentence([source_var, test_var],
@@ -121,7 +124,7 @@ class TestWalkSemantics(unittest.TestCase):
         test_var   = AcabValue("y", data={BIND: True})
 
         ValueRepeatAnnotation(CONSTRAINT,
-                              ProductionComponent(Sentence(["∈"], data={DS.OPERATOR:True}),
+                              ProductionComponent(Sentence(["∈"], data={DS.TYPE_INSTANCE: DS.OPERATOR}),
                                                   params=[AcabValue("blah")]))(test_var)
 
         query_sen = Sentence([source_var, test_var],
@@ -154,7 +157,7 @@ class TestWalkSemantics(unittest.TestCase):
         test_var   = AcabValue("y", data={BIND: True})
 
         ValueRepeatAnnotation(CONSTRAINT,
-                              ProductionComponent(Sentence(["∈"], data={DS.OPERATOR:True}),
+                              ProductionComponent(Sentence(["∈"], data={DS.TYPE_INSTANCE: DS.OPERATOR}),
                                                   params=[AcabValue("blah")]))(test_var)
 
         query_sen = Sentence([source_var, test_var],
@@ -178,7 +181,7 @@ class TestWalkSemantics(unittest.TestCase):
         # build a walk instruction
         test_var   = AcabValue("y", data={BIND: True})
         ValueRepeatAnnotation(CONSTRAINT,
-                              ProductionComponent(Sentence(["∈"], data={DS.OPERATOR:True}),
+                              ProductionComponent(Sentence(["∈"], data={DS.TYPE_INSTANCE: DS.OPERATOR}),
                                                   params=[Sentence(["blah"])]))(test_var)
 
         query_sen = Sentence([test_var], data={SEM_HINT: "WALK", QUERY: True})
@@ -207,10 +210,10 @@ class TestWalkSemantics(unittest.TestCase):
         test_var2  = AcabValue("z", data={BIND: True})
 
         ValueRepeatAnnotation(CONSTRAINT,
-                              ProductionComponent(Sentence(["∈"], data={DS.OPERATOR:True}),
+                              ProductionComponent(Sentence(["∈"], data={DS.TYPE_INSTANCE: DS.OPERATOR}),
                                                   params=[Sentence(["blah"])]))(test_var)
         ValueRepeatAnnotation(CONSTRAINT,
-                              ProductionComponent(Sentence(["∈"], data={DS.OPERATOR:True}),
+                              ProductionComponent(Sentence(["∈"], data={DS.TYPE_INSTANCE: DS.OPERATOR}),
                                                   params=[Sentence(["bloo"])]))(test_var2)
 
 

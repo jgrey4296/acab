@@ -11,6 +11,7 @@ from dataclasses import FrozenInstanceError, InitVar, dataclass, field, replace
 from enum import Enum
 from uuid import UUID, uuid1
 
+import acab.core.value.default_structure as DS
 import acab.error.semantic as ASErr
 import acab.interfaces.context as CtxInt
 from acab import AcabConfig
@@ -24,8 +25,8 @@ from acab.modules.context.constraints import ConstraintCollection
 config = AcabConfig()
 
 
-CONSTRAINT_S     = config.prepare("Value.Structure", "CONSTRAINT")()
-NEGATION_S       = config.prepare("Value.Structure", "NEGATION")()
+CONSTRAINT_S     = DS.CONSTRAINT
+NEGATION_S       = DS.NEGATION
 
 CtxIns           = CtxInt.ContextInstance_i
 CtxSet           = CtxInt.ContextSet_i

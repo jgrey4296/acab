@@ -8,6 +8,7 @@ config = AcabConfig()
 OBVIOUS_TYPES      = config.prepare("Print.Data", "SUPPRESSION_TYPES", actions=[AcabConfig.actions_e.SPLIT])
 
 # Symbols
+# Not called, because the spec is looked up at print time for overrides
 ANON_VALUE_SYM     = config.prepare("Symbols", "ANON_VALUE")
 AT_BIND_SYM        = config.prepare("Symbols", "AT_BIND")
 BIND_SYM           = config.prepare("Symbols", "BIND")

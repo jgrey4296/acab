@@ -1,17 +1,20 @@
 #https://docs.python.org/3/library/unittest.html
-from os.path import splitext, split
-import unittest
 import logging as logmod
+import unittest
+from os.path import split, splitext
+
 logging = logmod.getLogger(__name__)
 
 import acab
+
 config = acab.setup()
 
-from acab.interfaces.value import Sentence_i
+import acab.core.value.default_structure as DS
 from acab.core.data.node import AcabNode
 from acab.core.value.value import AcabValue
+from acab.interfaces.value import Sentence_i
 
-BIND_S = config.prepare("Value.Structure", "BIND")()
+BIND_S = DS.BIND
 
 class AcabNodeTests(unittest.TestCase):
 

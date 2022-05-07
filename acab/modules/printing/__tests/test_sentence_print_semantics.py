@@ -35,10 +35,11 @@ from acab.modules.printing import default
 from acab.modules.printing.basic_printer import BasicPrinter
 from acab.core.printing import default_signals as DSig
 
-NEGATION_S        = config.prepare("Value.Structure", "NEGATION")()
-QUERY_S           = config.prepare("Value.Structure", "QUERY")()
-BIND_S            = config.prepare("Value.Structure", "BIND")()
-AT_BIND_S         = config.prepare("Value.Structure", "AT_BIND")()
+NEGATION_S        = DS.NEGATION
+QUERY_S           = DS.QUERY
+BIND_S            = DS.BIND
+AT_BIND_S         = DS.AT_BIND
+TYPE_INSTANCE_S   = DS.TYPE_INSTANCE
 
 NEGATION_SYMBOL_S = config.prepare("Symbols", "NEGATION")()
 ANON_VALUE_S      = config.prepare("Symbols", "ANON_VALUE")()
@@ -49,7 +50,6 @@ SEN_JOIN_S        = config.prepare("Print.Patterns", "SEN_JOIN", actions=[AcabCo
 
 STR_PRIM_S        = Sentence([config.prepare("Type.Primitive", "STRING")()])
 REGEX_PRIM_S      = Sentence([config.prepare("Type.Primitive", "REGEX")()])
-TYPE_INSTANCE_S   = config.prepare("Value.Structure", "TYPE_INSTANCE")()
 
 class PrintBasicSentenceSemanticTests(unittest.TestCase):
 
@@ -87,8 +87,7 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
         specs = default.DEFAULT_PRINTER_SPEC()
         sem = BasicPrinter(init_specs=specs,
                            init_handlers=init_handlers,
-                           sieve_fns=[])
-
+                           )
         words = ["a", "b", "c", "d"]
         sentence = Sentence(words)
 
@@ -103,8 +102,7 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
                                           Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
                                           Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                           Printers.ModalPrinter().as_handler(signal="MODAL")],
-                           sieve_fns=[],
-                        settings={"MODAL" : "exop"})
+                           settings={"MODAL" : "exop"})
         sentence = FP.parse_string("a.test.sen")[0]
         result = sem.pprint(sentence)
         self.assertEqual(result, "a.test.sen")
@@ -117,8 +115,7 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
                                           Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
                                           Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                           Printers.ModalPrinter().as_handler(signal="MODAL")],
-                           sieve_fns=[],
-                          settings={"MODAL": "exop"})
+                           settings={"MODAL": "exop"})
         sentence = FP.parse_string("a.test!sen")[0]
         result = sem.pprint(sentence)
         self.assertEqual(result, "a.test!sen")
@@ -132,8 +129,7 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
                                           Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
                                           Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                           Printers.ModalPrinter().as_handler(signal="MODAL")],
-                           sieve_fns=[],
-                          settings={"MODAL": "exop"})
+                           settings={"MODAL": "exop"})
         sentence = FP.parse_string("a.test!sen")[0]
         sentence.data[DS.QUERY] = True
         result = sem.pprint(sentence)
@@ -149,8 +145,7 @@ class PrintBasicSentenceSemanticTests(unittest.TestCase):
                                           Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
                                           Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                           Printers.ModalPrinter().as_handler(signal="MODAL")],
-                           sieve_fns=[],
-                          settings={"MODAL" : "exop"})
+                           settings={"MODAL" : "exop"})
         sentence = FP.parse_string("~a.test.sen")[0]
         result = sem.pprint(sentence)
         self.assertEqual(result, "~a.test.sen")

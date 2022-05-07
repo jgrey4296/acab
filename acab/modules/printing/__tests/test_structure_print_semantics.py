@@ -64,7 +64,7 @@ class PrintStructureSemanticTests(unittest.TestCase):
 
         global dsl
         # Set up the parser to ease test setup
-        dsl   = ppDSL.PyParseDSL([], [], [])
+        dsl   = ppDSL.PyParseDSL()
         dsl.register(EXLO_Parser)
         dsl.build()
         # dsl()
@@ -81,7 +81,6 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
                                               Printers.AnnotationFinaliser().as_handler(signal=DSig.ANNOTATIONS_FINAL),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")],
-                               sieve_fns=[],
                                settings={"MODAL": "exop"})
 
         result = sem_sys.pprint(component)
@@ -100,7 +99,6 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
                                               Printers.AnnotationFinaliser().as_handler(signal=DSig.ANNOTATIONS_FINAL),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")],
-                               sieve_fns=[],
                                settings={"MODAL": "exop"})
         result = sem_sys.pprint(component)
         self.assertEqual(result, "λtestop.blah $x")
@@ -119,7 +117,6 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
                                               Printers.AnnotationFinaliser().as_handler(signal=DSig.ANNOTATIONS_FINAL),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")],
-                               sieve_fns=[],
                                settings={"MODAL": "exop"})
 
         result = sem_sys.pprint(component)
@@ -138,7 +135,6 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
                                               Printers.AnnotationFinaliser().as_handler(signal=DSig.ANNOTATIONS_FINAL),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")],
-                               sieve_fns=[],
                                settings={"MODAL": "exop"})
 
         # combine some queries together
@@ -164,7 +160,6 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
                                               Printers.AnnotationFinaliser().as_handler(signal=DSig.ANNOTATIONS_FINAL),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")],
-                               sieve_fns=[],
                                settings={"MODAL": "exop"})
 
         # parse a rule
@@ -188,7 +183,6 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
                                               Printers.AnnotationFinaliser().as_handler(signal=DSig.ANNOTATIONS_FINAL),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")],
-                               sieve_fns=[],
                                settings={"MODAL": "exop"})
 
         # parse a rule
@@ -214,7 +208,6 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
                                               Printers.AnnotationFinaliser().as_handler(signal=DSig.ANNOTATIONS_FINAL),
                                               ],
-                               sieve_fns=[],
                               settings={"MODAL": "exop"})
 
         # parse a rule
@@ -245,7 +238,6 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
                                               Printers.AnnotationFinaliser().as_handler(signal=DSig.ANNOTATIONS_FINAL),
                                               ],
-                               sieve_fns=[],
                               settings={"MODAL": "exop"})
 
         query = dsl("""statement(::γ):
@@ -274,7 +266,6 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
                                               Printers.AnnotationFinaliser().as_handler(signal=DSig.ANNOTATIONS_FINAL),
                                               ],
-                               sieve_fns=[],
                                settings={"MODAL": "exop"})
 
         query = dsl("""statement(::χ):
@@ -304,7 +295,6 @@ class PrintStructureSemanticTests(unittest.TestCase):
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                               Printers.ModalPrinter().as_handler(signal="MODAL")
                                               ],
-                               sieve_fns=[],
                                settings={"MODAL": "exop"})
         action = dsl("""statement(::α):\n λa.b.c $x\n λa.b.c.d $x $y\n λa.b.c.d.e $x $y $z\nend""")[0][-1]
         self.assertIsInstance(action, ProductionContainer)

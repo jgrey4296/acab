@@ -5,6 +5,7 @@ import logging as logmod
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
+from types import FunctionType
 
 from acab import types as AT
 from acab.core.value import default_structure as DS
@@ -50,7 +51,7 @@ def _bind(val, bindings, semSys=None):
     while result is val and bool(bindings):
         current = bindings.pop()
         match val:
-            case VI.Sentence_i() if DS.OPERATOR in val.data:
+            case VI.Sentence_i() if DS.OPERATOR in val.type:
                 result = current[str(val)]
             case VI.Value_i() if not val.has_var:
                 result = val
@@ -64,11 +65,14 @@ def _bind(val, bindings, semSys=None):
                 raise AcabSemanticException("Unrecognised type attempted to bind: ", val)
 
     if result is val:
+        # nothing was bound, so early exit
         return val
-    if DS.OPERATOR in val.data:
+    if isinstance(result, FunctionType) or result.type == DS.OPERATOR_PRIM:
+        # Operators don't get modified in any way
         return result
 
-    # Run top level bind transforms here
+    # Run bind transforms here
+    assert(isinstance(result, VI.Value_i))
     data_to_apply = val.data.copy()
     data_to_apply.update({DS.BIND: False})
     # TODO may need to remove type if its atom too
@@ -91,7 +95,7 @@ def _bind_val(val:AT.Value, bindings:AT.CtxIns) -> AT.Value:
     match val:
         case _ if val.value not in bindings:
             pass
-        case val.is_at_var:
+        case _ if val.is_at_var:
             bound = bindings.nodes[val.value]
             assert(isinstance(bound, DI.Node_i))
         case _:

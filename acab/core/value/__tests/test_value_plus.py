@@ -1,19 +1,22 @@
 #https://docs.python.org/3/library/unittest.html
-from os.path import splitext, split
-import unittest
 import logging as logmod
+import unittest
+from os.path import split, splitext
+
 logging = logmod.getLogger(__name__)
 
 import acab
+
 config = acab.setup()
 
-from acab.core.value.value import AcabValue
-from acab.core.value.sentence import Sentence
-from acab.core.value.instruction import Instruction
+import acab.core.value.default_structure as DS
 from acab.core.data.node import AcabNode
+from acab.core.value.instruction import Instruction
+from acab.core.value.sentence import Sentence
+from acab.core.value.value import AcabValue
 
-AT_BIND_S = config.prepare("Value.Structure", "AT_BIND")()
-BIND_S    = config.prepare("Value.Structure", "BIND")()
+AT_BIND_S = DS.AT_BIND
+BIND_S    = DS.BIND
 
 class BasicStatement(Instruction):
 
@@ -40,7 +43,7 @@ class AcabValueTests(unittest.TestCase):
     #use testcase snippets
     def test_attach_statement(self):
         value = BasicStatement(["test"])
-        sen = Sentence(["a", "b", "c", "d", "e"])
+        sen = Sentence() << ["a", "b", "c", "d", "e"]
         self.assertEqual(sen[-1].value, "e")
         self.assertIsInstance(sen[-1].value, str)
         copied = sen.attach_statement(value)
@@ -52,7 +55,7 @@ class AcabValueTests(unittest.TestCase):
 
     def test_attach_statement_with_tags(self):
         value = BasicStatement(["test"], tags=["testval"])
-        sen = Sentence(["a", "b", "c", "d", "e"])
+        sen = Sentence() << ["a", "b", "c", "d", "e"]
         self.assertEqual(sen[-1].value, "e")
         self.assertIsInstance(sen[-1].value, str)
         copied = sen.attach_statement(value)
