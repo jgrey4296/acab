@@ -17,22 +17,22 @@ from acab.error.parse import AcabParseException
 from acab.interfaces.value import ValueFactory_i
 config = AcabConfig()
 
-ACTION_S          = config.prepare("Parse.Structure", "ACTION")()
-ANNOTATION_S      = config.prepare("Parse.Structure", "ANNOTATION")()
-BIND_S            = config.prepare("Parse.Structure", "BIND")()
-CONSTRAINT_S      = config.prepare("Parse.Structure", "CONSTRAINT")()
-DEFAULT_ACTION_S  = config.prepare("Parse.Structure", "DEFAULT_ACTION")()
-QUERY_FALLBACK_S  = config.prepare("Parse.Structure", "QUERY_FALLBACK")()
-LEFT_S            = config.prepare("Parse.Structure", "LEFT")()
-NEGATION_S        = config.prepare("Parse.Structure", "NEGATION")()
-OPERATOR_S        = config.prepare("Parse.Structure", "OPERATOR")()
-MODAL_S           = config.prepare("Parse.Structure", "MODAL")()
-QUERY_S           = config.prepare("Parse.Structure", "QUERY")()
-RIGHT_S           = config.prepare("Parse.Structure", "RIGHT")()
-TARGET_S          = config.prepare("Parse.Structure", "TARGET")()
-TRANSFORM_S       = config.prepare("Parse.Structure", "TRANSFORM")()
-VALUE_S           = config.prepare("Parse.Structure", "VALUE")()
-TYPE_INSTANCE_S   = config.prepare("Parse.Structure", "TYPE_INSTANCE")()
+ACTION_S          = config.attr.Parse.Structure.ACTION
+ANNOTATION_S      = config.attr.Parse.Structure.ANNOTATION
+BIND_S            = config.attr.Parse.Structure.BIND
+CONSTRAINT_S      = config.attr.Parse.Structure.CONSTRAINT
+DEFAULT_ACTION_S  = config.attr.Parse.Structure.DEFAULT_ACTION
+QUERY_FALLBACK_S  = config.attr.Parse.Structure.QUERY_FALLBACK
+LEFT_S            = config.attr.Parse.Structure.LEFT
+NEGATION_S        = config.attr.Parse.Structure.NEGATION
+OPERATOR_S        = config.attr.Parse.Structure.OPERATOR
+MODAL_S           = config.attr.Parse.Structure.MODAL
+QUERY_S           = config.attr.Parse.Structure.QUERY
+RIGHT_S           = config.attr.Parse.Structure.RIGHT
+TARGET_S          = config.attr.Parse.Structure.TARGET
+TRANSFORM_S       = config.attr.Parse.Structure.TRANSFORM
+VALUE_S           = config.attr.Parse.Structure.VALUE
+TYPE_INSTANCE_S   = config.attr.Parse.Structure.TYPE_INSTANCE
 
 # Core Components
 QUERY_COMPONENT     = DS.QUERY_COMPONENT
@@ -41,9 +41,9 @@ ACTION_COMPONENT    = DS.ACTION_COMPONENT
 
 RULE_PRIM           : str = config.prepare("Type.Primitive", "RULE")()
 
-QUERY_SEM_HINT     = ValueFactory_i.sen([config.prepare("Semantic.Signals", "QUERY")()])
-ACTION_SEM_HINT    = ValueFactory_i.sen([config.prepare("Semantic.Signals", "ACTION")()])
-TRANSFORM_SEM_HINT = ValueFactory_i.sen([config.prepare("Semantic.Signals", "TRANSFORM")()])
-RULE_SEM_HINT      = ValueFactory_i.sen([config.prepare("Semantic.Signals", "RULE")()])
+QUERY_SIGNAL     = ValueFactory_i.sen() << config.attr.Semantic.Signals.QUERY
+ACTION_SIGNAL    = ValueFactory_i.sen() << config.attr.Semantic.Signals.ACTION
+TRANSFORM_SIGNAL = ValueFactory_i.sen() << config.attr.Semantic.Signals.TRANSFORM
+RULE_SIGNAL      = ValueFactory_i.sen() << config.attr.Semantic.Signals.RULE
 
 COLLAPSE_CONTEXT = DSym.COLLAPSE_CONTEXT

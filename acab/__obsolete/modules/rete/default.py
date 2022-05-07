@@ -15,15 +15,15 @@ from acab.modules.structures.trie.semantics import BreadthTrieSemantics
 from acab.modules.semantics.values import (BasicNodeSemantics,
                                                 ExclusionNodeSemantics)
 config = AcabConfig()
-DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
+DEFAULT_HANDLER_SIGNAL = config.attr.Handler.System.DEFAULT_SIGNAL
 
-QUERY_SEM_HINT     = Sentence.build([config.prepare("Semantic.Signals", "QUERY")()])
-ACTION_SEM_HINT    = Sentence.build([config.prepare("Semantic.Signals", "ACTION")()])
-TRANSFORM_SEM_HINT = Sentence.build([config.prepare("Semantic.Signals", "TRANSFORM")()])
-RULE_SEM_HINT      = Sentence.build([config.prepare("Semantic.Signals", "RULE")()])
-AGENDA_SEM_HINT    = Sentence.build([config.prepare("Semantic.Signals", "AGENDA")()])
-LAYER_SEM_HINT     = Sentence.build([config.prepare("Semantic.Signals", "LAYER")()])
-PIPELINE_SEM_HINT  = Sentence.build([config.prepare("Semantic.Signals", "PIPELINE")()])
+QUERY_SEM_HINT     = Sentence() << config.attr.Semantic.Signals.QUERY
+ACTION_SEM_HINT    = Sentence() << config.attr.Semantic.Signals.ACTION
+TRANSFORM_SEM_HINT = Sentence() << config.attr.Semantic.Signals.TRANSFORM
+RULE_SEM_HINT      = Sentence() << config.attr.Semantic.Signals.RULE
+AGENDA_SEM_HINT    = Sentence() << config.attr.Semantic.Signals.AGENDA
+LAYER_SEM_HINT     = Sentence() << config.attr.Semantic.Signals.LAYER
+PIPELINE_SEM_HINT  = Sentence() << config.attr.Semantic.Signals.PIPELINE
 
 def DEFAULT_TRIE(name="trie"):
     node_sem    = BasicNodeSemantics("node")

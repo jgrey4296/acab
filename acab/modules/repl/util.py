@@ -17,6 +17,8 @@ from acab.interfaces.engine import AcabEngine_i
 logging = logmod.getLogger(__name__)
 config  = AcabConfig()
 
+action_sem_spec = config.prepare("Semantic.Signals", "ACTION")
+
 def build_slice(s, l, toks):
     first  = None
     second = None
@@ -51,20 +53,12 @@ def init_inspect(mod_str):
     except:
         breakpoint()
 
-def ConfigBasedLoad(f):
-    """ A Decorator to load the config specified debugger module
-    and wrap a repl command with an instruction to get and start the
-    debugger if necessary """
-    # TODO deprecate this to use [Import.Targeted]
-    raise DeprecationWarning()
-
-
 def build_rebind_instruction(value:str):
     """ Manually construct a startup rebind instruction """
     from acab.core.value.instruction import ProductionComponent, ProductionContainer
     from acab.core.value.sentence import Sentence
 
-    action_sem_hint = Sentence([config.prepare("Semantic.Signals", "ACTION")()])
+    action_sem_hint = Sentence([action_sem_hint()])
 
     inst = ProductionComponent(value=Sentence([ "acab.modules.operators.action.RebindOperator" ]),
                                params=[Sentence([ "§" ]),

@@ -20,13 +20,13 @@ from acab.modules.operators.dfs.context_walk_manager import ContextWalkManager
 logging = logmod.getLogger(__name__)
 config = AcabConfig()
 
-CONSTRAINT_S     = config.prepare("Value.Structure", "CONSTRAINT")()
-DEFAULT_SETUP_S  = config.prepare("Data", "DEFAULT_SETUP_METHOD")()
-DEFAULT_UPDATE_S = config.prepare("Data", "DEFAULT_UPDATE_METHOD")()
-NEGATION_S       = config.prepare("Value.Structure", "NEGATION")()
-QUERY            = config.prepare("Value.Structure", "QUERY")()
-QUERY_FALLBACK_S = config.prepare("Value.Structure", "QUERY_FALLBACK")()
-WALK_SEM_HINT    = Sentence([config.prepare("Semantic.Signals", "WALK")()])
+CONSTRAINT_S     = config.attr.Value.Structure.CONSTRAINT
+DEFAULT_SETUP_S  = config.attr.Data.DEFAULT_SETUP_METHOD
+DEFAULT_UPDATE_S = config.attr.Data.DEFAULT_UPDATE_METHOD
+NEGATION_S       = config.attr.Value.Structure.NEGATION
+QUERY            = config.attr.Value.Structure.QUERY
+QUERY_FALLBACK_S = config.attr.Value.Structure.QUERY_FALLBACK
+WALK_SEM_HINT    = Sentence() << config.attr.Semantic.Signals.WALK
 
 Node          = AT.Node
 Value         = AT.Value

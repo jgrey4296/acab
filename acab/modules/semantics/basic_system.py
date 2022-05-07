@@ -27,7 +27,7 @@ ModuleComponents = AT.ModuleComponents
 config           = AcabConfig()
 
 ContextSet = config.prepare("Imports.Targeted", "context", actions=[config.actions_e.IMCLASS], args={"interface": ContextSet_i})()
-SEM_HINT   = config.prepare("Value.Structure", "SEMANTIC_HINT")()
+SEM_HINT   = config.attr.Value.Structure.SEMANTIC_HINT
 
 # TODO make a queue structured system, where semantics return a list of
 # instructions to add to the list, like printer
