@@ -51,7 +51,7 @@ class Sentence(SSI.SentenceProtocolsImpl, VI.Sentence_i, metaclass=ValueMeta):
 
     @classmethod
     def _preprocess(cls, *args, **kwargs):
-        value = args[0]
+        value = args[0] or []
         assert(isinstance(value, Iterable))
         processed = [VI.ValueFactory_i.value(x) for x in value]
         return processed
@@ -79,3 +79,10 @@ class Sentence(SSI.SentenceProtocolsImpl, VI.Sentence_i, metaclass=ValueMeta):
     @property
     def should_break(self) -> bool:
         return bool(self.breakpoint)
+
+
+    def __lshift__(self, other):
+        if not isinstance(other, list):
+            other = [other]
+        words = self.words + other
+        return self.copy(value=words)
