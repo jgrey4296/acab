@@ -6,6 +6,7 @@ from os.path import split, splitext
 logging = logmod.getLogger(__name__)
 
 import acab
+from acab import types as AT
 
 config = acab.setup()
 
@@ -112,9 +113,17 @@ class AcabValueTests(unittest.TestCase):
         self.assertNotEqual(val1, val2)
 
     def test_value_type_extension(self):
+        """
+        Check the acceptible types for AcabValue can be extended.
+        float is used instead of int, because if using the StringCacheValueMeta,
+        int may already have been added
+        """
+        # Can't do contain check for type union
+        self.assertNotEqual(float | AT.ValueCore, AT.ValueCore)
         with self.assertRaises(TypeError):
-            AcabValue(2)
+            AcabValue(2.5)
 
-        AcabValue.extend_core(int)
-        val = AcabValue(2)
+        AcabValue.extend_core(float)
+        self.assertEqual(float | AT.ValueCore, AT.ValueCore)
+        val = AcabValue(2.5)
         self.assertIsInstance(val, Value_i)

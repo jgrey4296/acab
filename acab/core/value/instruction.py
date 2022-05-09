@@ -23,9 +23,6 @@ from acab.error.protocol import AcabProtocolError as APE
 from acab import types as AT
 import acab.core.value.default_structure as DS
 from acab.core.config.config import AcabConfig
-from acab.core.value.value import AcabValue
-from acab.core.value.sentence import Sentence
-from acab.error.operator import AcabOperatorException
 from acab.core.util.decorators.util import cache
 import acab.interfaces.value as VI
 from acab.core.util.part_implementations.instruction import InstructionProtocolsImpl
@@ -33,9 +30,10 @@ from acab.core.util.part_implementations.value import ValueProtocolsImpl
 from acab.core.value.factory import ValueFactory as VF
 from acab.core.value.value_meta import ValueMeta
 
+logging = logmod.getLogger(__name__)
 config = AcabConfig()
 
-logging = logmod.getLogger(__name__)
+value_meta = config.prepare("Imports.Targeted", "value_meta", actions=[config.actions_e.IMCLASS], default=ValueMeta)()
 
 Value_A       : TypeAlias = AT.Value
 Sen_A         : TypeAlias = AT.Sentence
@@ -49,7 +47,7 @@ ValueData     : TypeAlias = AT.ValueData
 T = TypeVar('T')
 
 @APE.assert_implements(VI.Instruction_i)
-class Instruction(InstructionProtocolsImpl, VI.Instruction_i, metaclass=ValueMeta):
+class Instruction(InstructionProtocolsImpl, VI.Instruction_i, metaclass=value_meta):
     """ Instruction functions the same as AcabValue,
     but provides specific functionality for converting to/from sentences
     """
@@ -191,7 +189,7 @@ class ProductionContainer(Instruction):
         """ [ClauseA, ClauseB, ClauseC...] """
         words = []
         for clause in self.clauses:
-            if isinstance(clause, Sentence):
+            if isinstance(clause, VI.Sentence_i):
                 words.append(clause)
             elif isinstance(clause, Instruction):
                 words += clause.to_sentences()
@@ -265,7 +263,7 @@ class ProductionStructure(ProductionContainer):
         for key in self.keys():
             words = []
             clause = self[key]
-            if isinstance(clause, Sentence):
+            if isinstance(clause, VI.Sentence_i):
                 words.append(clause)
             elif isinstance(clause, Instruction):
                 words += clause.to_sentences()
@@ -278,7 +276,7 @@ class ProductionStructure(ProductionContainer):
 
 
 @APE.assert_implements(VI.Operator_i, exceptions=["__call__"])
-class ProductionOperator(ValueProtocolsImpl, VI.Operator_i, metaclass=ValueMeta):
+class ProductionOperator(ValueProtocolsImpl, VI.Operator_i, metaclass=value_meta):
     """ The Base Operator Class,
     Provides the way to use other systems and code in Acab
 
@@ -300,7 +298,7 @@ class ProductionOperator(ValueProtocolsImpl, VI.Operator_i, metaclass=ValueMeta)
 
 
 @APE.assert_implements(VI.Operator_i, exceptions=["__call__"])
-class ActionOperator(ValueProtocolsImpl, VI.Action_i, metaclass=ValueMeta):
+class ActionOperator(ValueProtocolsImpl, VI.Action_i, metaclass=value_meta):
     """ Special Operator type which gets passed the semantic system,
     so it can trigger instructions """
     _defaults : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE: DS.OPERATOR_PRIM}
