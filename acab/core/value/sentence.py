@@ -77,6 +77,12 @@ class Sentence(SSI.SentenceProtocolsImpl, VI.Sentence_i, metaclass=ValueMeta):
 
 
     def __lshift__(self, other):
+        """
+        For easy programmatic creation of sentences:
+
+        a_sen = Sentence(data=...) << "a" << "test" << ["sentence", "also", "handles", "lists"]
+        a_sen == "_:a.test.sentence.also.handles.lists"
+        """
         if not isinstance(other, list):
             other = [other]
         words = self.words + other

@@ -18,22 +18,7 @@ from acab.core.config.config import AcabConfig
 from acab.core.value.value_meta import ValueMeta
 
 logging        = logmod.getLogger(__name__)
-
 config         = AcabConfig()
-BIND_SYMBOL    = config.prepare("Symbols", "BIND")()
-FALLBACK_MODAL = config.prepare("Symbols", "FALLBACK_MODAL", actions=[config.actions_e.STRIPQUOTE])()
-
-UUID_CHOP      = bool(int(config.prepare("Print.Data", "UUID_CHOP")()))
-
-T              = TypeVar('T', bound=AT.ValueCore)
-C              = TypeVar('C', bound=type)
-
-Value_A       : TypeAlias = "AT.Value[AT.ValueCore_t]"
-Sen_A         : TypeAlias = AT.Sentence
-Instruction_A : TypeAlias = AT.Instruction
-ValueData     : TypeAlias = str
-
-ProtocolMeta = type(Protocol)
 
 class SCAccessor:
     """
