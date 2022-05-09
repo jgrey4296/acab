@@ -8,9 +8,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 from dataclasses import dataclass, field, InitVar
 
 from acab.core.config.config import AcabConfig
-from acab.core.value.value import AcabValue
-from acab.core.value.instruction import Instruction
-from acab.core.value.sentence import Sentence
+import acab.interfaces.value as VI
 from acab.error.parse import AcabParseException
 from acab.modules.analysis.typing import exceptions as TE
 from acab.modules.analysis.typing.util import (SUM_DEFINITION, TYPE_DEF_S,
@@ -37,7 +35,7 @@ class TypeDefinition(TypeStatement):
         super(TypeDefinition, self).__post_init__()
         # The name is the location. eg: .types.person
         assert isinstance(self.structure, list)
-        assert all([isinstance(x, Sentence) for x in self.structure]), self.structure
+        assert all([isinstance(x, VI.Sentence_i) for x in self.structure]), self.structure
 
         self.data[TYPE_INSTANCE_S] = TYPE_DEFINITION
 
@@ -71,9 +69,9 @@ class SumTypeDefinition(TypeDefinition):
         super(SumTypeDefinition, self).__post_init__()
         # flat_structure = []
         # for sen in self.structure:
-        #     prefix = Sentence(sen.words[:-1] + [sen.words[-1].to_word()])
+        #     prefix = VI.Sentence_i(sen.words[:-1] + [sen.words[-1].to_word()])
         #     flat_structure.append(prefix)
-        #     flat_structure += [Sentence(prefix.words + x.words) for x in sen[-1].structure]
+        #     flat_structure += [VI.Sentence_i(prefix.words + x.words) for x in sen[-1].structure]
 
         # self.value = flat_structure
 

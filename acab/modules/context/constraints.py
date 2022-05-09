@@ -7,12 +7,12 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 logging = logmod.getLogger(__name__)
 
+from acab import types as AT
 import acab.core.value.default_structure as DS
 import acab.error.semantic as ASErr
 import acab.interfaces.context as CtxInt
 from acab import AcabConfig
 from acab.core.value.instruction import ProductionComponent, ProductionOperator
-from acab.core.value.sentence import Sentence
 from acab.interfaces.bind import Bind_i
 from acab.interfaces.sieve import AcabSieve
 from acab.modules.context.constraint_sieve import default_sieve
@@ -28,10 +28,10 @@ CtxIns      = 'ContextInstance'
 Constraints = 'ConstraintCollection'
 ProdComp    = 'ProductionComponent'
 Operator    = 'ProductionOperator'
-Value       = 'AcabValue'
-Statement   = 'Instruction'
-Sen         = 'Sentence'
-Node        = 'AcabNode'
+Value       = AT.Value
+Statement   = AT.Instruction
+Sen         = AT.Sentence
+Node        = AT.Node
 
 class ConstraintMeta(type(Protocol)):
     def __init__(cls, name:str, bases:tuple[type, ...], data:dict[str,Any]):

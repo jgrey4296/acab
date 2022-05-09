@@ -19,7 +19,7 @@ from acab.core.util.decorators.util import cache
 from acab.error.base import AcabBasicException
 from acab.interfaces.sieve import AcabSieve
 import acab.interfaces.protocols.value as VP
-from acab.core.value.factory import ValueFactory
+from acab.interfaces.value import ValueFactory
 from acab.core.util.debugging import logdel
 
 logging        = logmod.getLogger(__name__)

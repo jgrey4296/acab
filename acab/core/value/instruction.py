@@ -27,7 +27,7 @@ from acab.core.util.decorators.util import cache
 import acab.interfaces.value as VI
 from acab.core.util.part_implementations.instruction import InstructionProtocolsImpl
 from acab.core.util.part_implementations.value import ValueProtocolsImpl
-from acab.core.value.factory import ValueFactory as VF
+from acab.interfaces.value import ValueFactory as VF
 from acab.core.value.value_meta import ValueMeta
 
 logging = logmod.getLogger(__name__)

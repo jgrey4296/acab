@@ -14,7 +14,7 @@ from acab.core.printing import wrappers as PW
 from acab.core.value.instruction import Instruction
 from acab.core.value.sentence import Sentence
 from acab.interfaces.printing import PrintSemantics_i
-from acab.interfaces.value import ValueFactory_i as VF
+from acab.interfaces.value import ValueFactory as VF
 
 config = AcabConfig()
 

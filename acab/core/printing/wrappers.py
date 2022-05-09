@@ -22,7 +22,7 @@ from acab.core.config.config import AcabConfig
 from acab.core.value import default_structure as DS
 from acab.core.value.sentence import Sentence
 from acab.core.printing import default_symbols as DSYM
-from acab.interfaces.value import ValueFactory_i as VF
+from acab.interfaces.value import ValueFactory as VF
 
 config = AcabConfig()
 

@@ -15,7 +15,7 @@ from acab.core.value.default_structure import (CONSTRAINT, OPERATOR,
                                                TYPE_INSTANCE)
 from acab.core.value.instruction import ProductionComponent, ProductionOperator
 from acab.core.value.sentence import Sentence
-from acab.interfaces.value import ValueFactory_i as VF
+from acab.interfaces.value import ValueFactory as VF
 
 config        = AcabConfig()
 ATOM          = config.prepare("Data", "TYPE_BASE")()

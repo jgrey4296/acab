@@ -4,7 +4,6 @@ from weakref import WeakValueDictionary
 
 from acab.core.config.config import AcabConfig
 from acab.core.data.node import AcabNode
-from acab.core.value.value import AcabValue
 from acab.core.util.decorators.util import cache
 from acab.interfaces.data import Structure_i
 

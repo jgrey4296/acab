@@ -10,6 +10,7 @@ from dataclasses import FrozenInstanceError, InitVar, dataclass, field, replace
 from enum import Enum
 from uuid import UUID, uuid1
 
+from acab import types as AT
 import acab.core.value.default_structure as DS
 import acab.interfaces.context as CtxInt
 import acab.interfaces.value as VI
@@ -33,11 +34,11 @@ Constraints      = 'ConstraintCollection'
 ProdComp         = ProductionComponent
 ProdCon          = ProductionContainer
 Operator         = 'ProductionOperator'
-Value            = 'AcabValue'
-Statement        = 'Instruction'
-Sen              = Sentence_i
-Node             = 'AcabNode'
-ModuleComponents = "ModuleComponents"
+Value            = AT.Value
+Statement        = AT.Instruction
+Sen              = AT.Sentence
+Node             = AT.Node
+ModuleComponents = AT.ModuleComponents
 NamedCtxSet      = "NamedCtxSet"
 
 DELAYED_E = Enum("Delayed Instruction Set", "ACTIVE FAIL DEACTIVATE CLEAR MERGE")

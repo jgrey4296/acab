@@ -8,8 +8,7 @@ from acab.core.parsing import parsers as PU
 from acab.core.parsing.annotation import ValueRepeatAnnotation
 from acab.core.value.instruction import ProductionComponent
 from acab.core.value.sentence import Sentence
-from acab.core.value.value import AcabValue
-from acab.interfaces.value import ValueFactory_i as VF
+from acab.interfaces.value import ValueFactory as VF
 
 from . import query_operators as QO
 

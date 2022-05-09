@@ -29,7 +29,7 @@ from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 from acab.core.parsing.component_dsl import Component_DSL
 from acab.modules.values.string_cache_val import value as StrCaV
 from acab.modules.values.string_cache_val.caching_meta import StringCacheValueMeta
-from acab.core.value.factory import ValueFactory
+from acab.interfaces.value import ValueFactory
 from acab.core.value.value import AcabValue
 from acab.core.value.sentence import Sentence
 

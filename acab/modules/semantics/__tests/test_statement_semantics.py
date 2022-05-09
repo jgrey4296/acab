@@ -20,7 +20,6 @@ from acab.core.semantics import basic
 from acab.core.util.decorators.semantic import (OperatorArgUnWrap,
                                                 OperatorResultWrap)
 from acab.core.value import default_structure as DS
-from acab.core.value.factory import ValueFactory
 from acab.core.value.instruction import (ActionOperator, Instruction,
                                          ProductionComponent,
                                          ProductionContainer,
@@ -31,6 +30,7 @@ from acab.core.value.value import AcabValue
 from acab.error.base import AcabBasicException
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces.semantic import SemanticSystem_i, StatementSemantics_i
+from acab.interfaces.value import ValueFactory
 from acab.modules.context import context_delayed_actions
 from acab.modules.context.context_set import (ConstraintCollection,
                                               ContextInstance, ContextSet)

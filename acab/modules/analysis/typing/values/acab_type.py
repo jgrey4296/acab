@@ -7,21 +7,22 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 from dataclasses import dataclass, field, InitVar
 
+from acab import types as AT
 from acab.core.config.config import AcabConfig
-from acab.core.value.value import AcabValue
 from acab.core.value.instruction import Instruction
-from acab.core.value.sentence import Sentence
 
 
 config = AcabConfig()
+
+Sen = AT.Sentence
 
 @dataclass(frozen=True)
 class TypeStatement(Instruction):
     # TODO: change value to a config value
 
-    value : list[Sentence] = field(default_factory=list)
-    name  : str            = field(default="|∀σ|")
-    _path : Sentence       = field(default=None)
+    value : list[Sen] = field(default_factory=list)
+    name  : str       = field(default="|∀σ|")
+    _path : Sen       = field(default=None)
 
     def __post_init__(self, *args, **kwargs):
         pass

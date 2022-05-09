@@ -5,9 +5,9 @@ from enum import Enum
 
 from acab import types as AT
 from acab.core.config.config import AcabConfig
-from acab.core.value.value import AcabValue
 from acab.core.value.instruction import ProductionOperator
 from acab.core.util.delayed_commands import DelayedCommands_i
+from acab.interfaces.value import ValueFactory as VF
 
 import logging as logmod
 logging = logmod.getLogger(__name__)
@@ -89,7 +89,7 @@ def OperatorDataUnWrap(f):
 def OperatorResultWrap(f):
     @wraps(f)
     def WrapOperatorResultAsValue(self, *the_args, **the_kwargs):
-        return AcabValue(f(self, *the_args, **the_kwargs))
+        return VF.value(f(self, *the_args, **the_kwargs))
 
     return WrapOperatorResultAsValue
 
