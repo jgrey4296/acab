@@ -29,6 +29,7 @@ class ConfigSpec_d:
     as_dict : bool           = field(default=False)
     as_enum : bool           = field(default=False)
     as_bool : bool           = field(default=False)
+    default : None | Any     = field(default=None)
 
 
     def __hash__(self) -> int:

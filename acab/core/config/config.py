@@ -68,7 +68,14 @@ class ConfigSpec(ConfigSpec_d):
 
     def __call__(self) -> Any:
         config = AcabConfig() #type:ignore
-        return config.value(self)
+        try:
+            return config.value(self)
+        except AcabConfigException as err:
+            if self.default is not None:
+                return self.default
+
+            raise err
+
 
 class ConfigSingletonMeta(type(Protocol)):
     """
@@ -209,13 +216,15 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
         if spec.as_enum and spec.section in self.enums:
             return spec
 
-        in_file = spec.section in self._config
-        in_section = in_file and (spec.key is None or spec.key in self._config[spec.section])
+        in_file     = spec.section in self._config
+        in_section  = in_file and (spec.key is None or spec.key in self._config[spec.section])
+        has_default = spec.default is not None
 
-        if not in_file:
+        if has_default and not (in_file and in_section):
+            logging.warning(f"Bad Config Spec, but a default was found: {spec.section}.{spec.key}")
+        elif not in_file:
             raise AcabConfigException(f"Bad Section Specified: {spec.section}! {spec.key}")
-
-        if not in_section:
+        elif not in_section:
             raise AcabConfigException(f"Bad Key Specified: {spec.section} {spec.key}!")
 
         return spec
@@ -300,12 +309,13 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
             value = dict(retrieved_section.items())
             for action in actions:
                 value = {k: action(v, **spec.args) for k,v in value.items()}
-        else:
-            assert(key is not None and key in retrieved_section)
+        elif key in retrieved_section:
             value = retrieved_section[key]
             if value is None:
                 value = key
             for action in actions:
                 value = action(value, **spec.args)
+        else:
+            raise AcabConfigException(f"Failed to handle config spec: {spec.section} {spec.key}")
 
         return value
