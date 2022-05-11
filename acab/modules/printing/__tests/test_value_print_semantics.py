@@ -4,6 +4,7 @@ import logging as logmod
 import re
 import unittest
 import unittest.mock as mock
+from enum import Enum
 from os.path import split, splitext
 
 import pyparsing as pp
@@ -44,7 +45,7 @@ SEN_JOIN_S        = config.prepare("Print.Patterns", "SEN_JOIN", actions=[AcabCo
 STR_PRIM_S        = Sentence([config.prepare("Type.Primitive", "STRING")()])
 REGEX_PRIM_S      = Sentence([config.prepare("Type.Primitive", "REGEX")()])
 
-EXOP              = config.prepare("exop", as_enum=True)()
+EXOP              = config.prepare("exop", _type=Enum)()
 DOT_E             = EXOP.DOT
 
 

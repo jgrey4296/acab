@@ -10,6 +10,7 @@ from os.path import abspath, expanduser
 sys.path.append(abspath(expanduser("~/github/acab")))
 import logging as logmod
 from os.path import split, splitext
+from enum import Enum
 
 logging = logmod.getLogger(__name__)
 
@@ -40,7 +41,7 @@ from acab.modules.structures.trie.breadth_semantics import BreadthTrieSemantics
 
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 EXOP         = config.prepare("MODAL", "exop")()
-EXOP_enum    = config.prepare(EXOP, as_enum=True)()
+EXOP_enum    = config.prepare(EXOP, _type=Enum)()
 
 NEGATION_V   = DS.NEGATION
 BIND_V       = DS.BIND

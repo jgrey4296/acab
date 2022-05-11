@@ -9,8 +9,10 @@ import unittest.mock as mock
 from os.path import split, splitext
 
 from acab import setup
-
-config = setup()
+import warnings
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = setup()
 from acab.core.config.config import AcabConfig, ConfigSpec, ConfigSingletonMeta
 from acab.error.config import AcabConfigException
 

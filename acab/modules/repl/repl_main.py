@@ -63,7 +63,7 @@ def main_repl():
         console_handler.setLevel(LOGLEVEL)
 
     if args.debug:
-        parse_debug_spec = config.prepare("Parse", "DEBUG_PARSERS", actions=[config.actions_e.BOOL])
+        parse_debug_spec = config.prepare("Parse", "DEBUG_PARSERS", _type=bool)
         config.override(parse_debug_spec, "True")
 
     #import then build engine or default trie engine from args

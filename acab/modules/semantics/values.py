@@ -25,7 +25,7 @@ CTX_OP = Enum("ctx", "collect_var")
 # TODO replace operator with specific modal name
 EXOP         = config.prepare("MODAL", "exop")()
 DEFAULT_EXOP = config.default(EXOP)
-EXOP_enum    = config.prepare(EXOP, as_enum=True)()
+EXOP_enum    = config.prepare(EXOP, _type=Enum)()
 
 logging = logmod.getLogger(__name__)
 

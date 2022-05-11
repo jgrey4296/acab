@@ -7,6 +7,7 @@ import logging as logmod
 import unittest
 import unittest.mock as mock
 from os.path import split, splitext
+from enum import Enum
 
 import acab
 
@@ -32,7 +33,7 @@ from acab.modules.structures.trie.semantics import FlattenBreadthTrieSemantics
 
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 EXOP         = config.prepare("MODAL", "exop")()
-EXOP_enum    = config.prepare(EXOP, as_enum=True)()
+EXOP_enum    = config.prepare(EXOP, _type=Enum)()
 
 NEGATION_V   = DS.NEGATION
 BIND_V       = DS.BIND

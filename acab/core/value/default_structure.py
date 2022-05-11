@@ -6,8 +6,8 @@ from enum import Enum
 
 config = AcabConfig()
 
-DATA_STRUCT_E : Enum = config.prepare("Value.Structure"      , as_enum=True)()
-MODALITIES_E  : Enum = config.prepare("MODAL"                , as_enum=True)()
+DATA_STRUCT_E : Enum = config.prepare("Value.Structure"      , _type=Enum)()
+MODALITIES_E  : Enum = config.prepare("MODAL"                , _type=Enum)()
 
 ARG            = DATA_STRUCT_E.ARG
 AT_BIND        = DATA_STRUCT_E.AT_BIND
@@ -28,7 +28,7 @@ FLATTEN        = DATA_STRUCT_E.FLATTEN
 OPERATOR       : str = config.attr.Value.Structure.OPERATOR
 
 # TODO refactor to use this instead
-STRUCT_COMP_E : Enum = config.prepare("Structure.Components" , as_enum=True)()
+STRUCT_COMP_E : Enum = config.prepare("Structure.Components" , _type=Enum)()
 # Core Components
 QUERY_COMPONENT     : str = config.attr.Structure.Components.QUERY
 TRANSFORM_COMPONENT : str = config.attr.Structure.Components.TRANSFORM
@@ -39,7 +39,7 @@ ACTION_COMPONENT    : str = config.attr.Structure.Components.ACTION
 TYPE_BASE        = config.attr.Data.TYPE_BASE
 
 # TODO refactor to use this instead
-TYPE_PRIM_E   : Enum = config.prepare("Type.Primitive"       , as_enum=True)()
+TYPE_PRIM_E   : Enum = config.prepare("Type.Primitive"       , _type=Enum)()
 # Core type primitives
 COMPONENT_PRIM = config.attr.Type.Primitive.COMPONENT
 CONTAINER_PRIM = config.attr.Type.Primitive.CONTAINER

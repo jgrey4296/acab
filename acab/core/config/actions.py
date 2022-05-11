@@ -14,6 +14,7 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     Iterable, Iterator, Mapping, Match, MutableMapping,
                     Protocol, Sequence, Tuple, TypeAlias, TypeGuard, TypeVar,
                     cast, final, overload, runtime_checkable)
+from enum import Enum, EnumMeta
 
 if TYPE_CHECKING:
     # tc only imports
@@ -35,13 +36,13 @@ class ConfigActions(Enum):
     UNESCAPE   = auto()
     SPLIT      = auto()
     PSEUDOSEN  = auto()
-    BOOL       = auto()
     IMPORT     = auto()
     IMCLASS    = auto()
 
 
 Action_f        : TypeAlias            = Callable[[str], Any]
 DEFAULT_ACTIONS : dict[Enum, Action_f] = {}
+TYPE_ACTIONS    : dict[Type[Any], Action_f] = {}
 
 @mapToEnum(DEFAULT_ACTIONS, ConfigActions.STRIPQUOTE)
 def stripquote(x:str, **kwargs) -> str:
@@ -63,10 +64,6 @@ def split(x:str, **kwargs) -> list[str]:
 def pseudosen(x:str, **kwargs) -> str:
     return f"_:{x}"
 
-@mapToEnum(DEFAULT_ACTIONS, ConfigActions.BOOL)
-def is_bool(x:str, **kwargs) -> bool:
-    return x == "True"
-
 @mapToEnum(DEFAULT_ACTIONS, ConfigActions.IMPORT)
 def import_mod(x:str, **kwargs) -> ModuleType:
     return importlib.import_module(x)
@@ -78,3 +75,58 @@ def import_class(x:str, interface:Type[Any]=type, **kwargs) -> Type[Any]:
     cls = getattr(mod, mod_comps[-1])
     assert(issubclass(cls, interface))
     return cls
+
+
+@mapToEnum(TYPE_ACTIONS, Enum)
+@mapToEnum(TYPE_ACTIONS, EnumMeta)
+def to_enum(ret_section:Any, actions=None, spec=None, config=None) -> Enum:
+    assert(spec.section not in config.enums)
+    values = " ".join(ret_section.keys())
+    # Runtime creation of enums
+    config.enums[spec.section] = Enum(spec.section, values) #type:ignore
+    value = config.enums[spec.section]
+    if spec.key is not None:
+        value = config.enums[spec.section][spec.key]
+    return value
+
+@mapToEnum(TYPE_ACTIONS, bool)
+def to_bool(ret_section:Any, actions=None, spec=None, config=None) -> bool:
+    return ret_section == "True"
+
+@mapToEnum(TYPE_ACTIONS, list)
+def to_list(ret_section:Any, actions=None, spec=None, config=None) -> list[Any]:
+    assert(spec.key is None)
+    value = list(ret_section.keys())
+    for action in actions:
+        value = [action(ret_section, **spec.args) for ret_section in value]
+    return value
+
+@mapToEnum(TYPE_ACTIONS, dict)
+def to_dict(ret_section:Any, actions=None, spec=None, config=None) -> dict[Any, Any]:
+    assert(spec.key is None)
+    value = dict(ret_section.items())
+    for action in actions:
+        value = {k: action(v, **spec.args) for k,v in value.items()}
+
+    return value
+
+@mapToEnum(TYPE_ACTIONS, None)
+def default_type(ret_section:Any, actions=None, spec=None, config=None) -> Any:
+    value = ret_section[spec.key]
+    if value is None:
+        value = spec.key
+    for action in actions:
+        value = action(value, **spec.args)
+    return value
+
+@mapToEnum(TYPE_ACTIONS, False)
+def default_type(ret_section:Any, actions=None, spec=None, config=None) -> Any:
+    value = ret_section[spec.key]
+    if value is None:
+        value = spec.key
+
+    value = spec._type(value)
+    for action in actions:
+        value = action(value, **spec.args)
+
+    return value

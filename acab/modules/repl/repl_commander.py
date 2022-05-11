@@ -25,7 +25,7 @@ config       = AcabConfig()
 initial_prompt = config.prepare("Module.REPL", "PROMPT", actions=[config.actions_e.STRIPQUOTE])()
 initial_engine = config.prepare("Module.REPL", "ENGINE")()
 try:
-    repl_intro     = config.prepare("Module.Repl.Intro", as_list=True)()
+    repl_intro     = config.prepare("Module.Repl.Intro", _type=list)()
 except AcabConfigException:
     repl_intro = ["Welcome to ACAB.", "Type 'help' or '?' to list commands.", "Type 'tutorial' for a tutorial.", "Type ':q' to quit."]
 

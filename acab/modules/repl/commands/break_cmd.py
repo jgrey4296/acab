@@ -25,7 +25,7 @@ config  = AcabConfig()
 
 Debugger = config.prepare("Imports.Targeted", "debug", actions=[config.actions_e.IMCLASS], args={"interface": AcabDebugger_i})()
 
-debug_intro = config.prepare("Module.Repl.Debug.Intro", actions=[config.actions_e.STRIPQUOTE], as_list=True)()
+debug_intro = config.prepare("Module.Repl.Debug.Intro", actions=[config.actions_e.STRIPQUOTE], _type=list)()
 
 the_debugger = Debugger()
 

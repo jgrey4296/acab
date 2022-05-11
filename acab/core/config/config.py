@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import importlib
 import logging as logmod
+import warnings
 from collections import defaultdict
 from configparser import ConfigParser, ExtendedInterpolation
 from dataclasses import InitVar, dataclass, field
@@ -31,12 +32,12 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 from acab import types as AT
 from acab.core.config import actions as CA
+from acab.core.config.attr_gen import AttrGenerator
 from acab.core.util.singletons import SingletonMeta
+from acab.core.util.sorting import sort_by_priority
 from acab.error.config import AcabConfigException
 from acab.error.protocol import AcabProtocolError as APE
 from acab.interfaces.config import Config_i, ConfigSpec_d
-from acab.core.config.attr_gen import AttrGenerator
-from acab.core.util.sorting import sort_by_priority
 
 logging = logmod.getLogger(__name__)
 
@@ -62,6 +63,7 @@ def GET(*args:str, hooks:None|list[AT.fns.GenFunc]=None) -> Config_i:
 
 #--------------------------------------------------
 # pylint: disable-next=too-few-public-methods
+@dataclass(frozen=True)
 class ConfigSpec(ConfigSpec_d):
     """ Dataclass to describe a config file value,
     and any transforms it needs prior to use """
@@ -116,22 +118,24 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
     Uses ${SectionName:Key} interpolation in values,
     Turns multi-line values into lists
     """
-    paths     : InitVar[None|list[str]]         = None
-    hooks     : set[GenFunc]                    = field(default_factory=set)
+    paths     : InitVar[None|list[str]]          = None
+    hooks     : set[GenFunc]                     = field(default_factory=set)
 
-    _files    : set[str]                        = field(init=False, default_factory=set)
-    _config   : ConfigParser                    = field(init=False)
-    _overrides: dict[str, str]                  = field(init=False, default_factory=override_constructor)
+    _files    : set[str]                         = field(init=False, default_factory=set)
+    _config   : ConfigParser                     = field(init=False)
+    _overrides: dict[str, str]                   = field(init=False, default_factory=override_constructor)
 
     # Populated by hooks:
-    enums              : dict[str, EnumMeta] = field(init=False, default_factory=dict)
-    defaults           : dict[str, Enum]     = field(init=False, default_factory=dict)
-    syntax_extension   : dict[str, Enum]     = field(init=False, default_factory=dict)
-    printing_extension : dict[Enum, str]     = field(init=False, default_factory=dict)
-    attr               : AttrGenerator       = field(init=False)
+    enums              : dict[str, EnumMeta]     = field(init=False, default_factory=dict)
+    defaults           : dict[str, Enum]         = field(init=False, default_factory=dict)
+    syntax_extension   : dict[str, Enum]         = field(init=False, default_factory=dict)
+    printing_extension : dict[Enum, str]         = field(init=False, default_factory=dict)
+    attr               : AttrGenerator           = field(init=False)
 
-    actions   : dict[Any, GenFunc]              = field(init=False, default_factory=lambda: CA.DEFAULT_ACTIONS)
-    actions_e : ClassVar[Type[CA.ConfigActions]]= CA.ConfigActions
+    specs     : dict[int, (ConfigSpec, Any)]     = field(init=False, default_factory=dict)
+    actions   : dict[Any, GenFunc]               = field(init=False, default_factory=lambda: CA.DEFAULT_ACTIONS)
+    type_actions : dict[Type[Any], GenFunc]      = field(init=False, default_factory=lambda: CA.TYPE_ACTIONS)
+    actions_e : ClassVar[Type[CA.ConfigActions]] = CA.ConfigActions
 
 
     def __post_init__(self, paths: None|list[str]):
@@ -158,78 +162,6 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
         in_overrides = key in self._overrides
         return any([in_print, in_base, in_enums, in_defaults, in_overrides])
 
-    def clear(self):
-        self._config.clear()
-        self.attr               = AttrGenerator(self._config)
-        self._files             = set()
-        self.enums              = {}
-        self.defaults           = {}
-        self.syntax_extension   = {}
-        self.printing_extension = {}
-        return self
-
-
-    def run_hooks(self):
-        for hook in sort_by_priority(self.hooks):
-            hook(self)
-
-    @property
-    def loaded(self):
-        return bool(self._files)
-
-    def value(self, val: Enum|ConfigSpec_d):
-        """ Unified value retrieval """
-        if isinstance(val, Enum):
-            return self._enum_value(val)
-
-        assert(isinstance(val, ConfigSpec))
-        spec    = val
-
-        if spec.as_enum and spec.section in self.enums and spec.key is None:
-            return self.enums[spec.section]
-        elif spec.as_enum and spec.section in self.enums and spec.key in self.enums[spec.section].__members__:
-            return self.enums[spec.section][spec.key]
-
-        return self._spec_value(spec)
-
-
-    def prepare(self, *args:Any, **kwargs:Any) -> ConfigSpec_d:
-        """ Config utility to create a ConfigSpec for later use """
-        spec = ConfigSpec(*args, **kwargs)
-        return self.check(spec)
-
-    def default(self, entry):
-        """ Get the default value for an enum entry """
-        if entry not in self.defaults:
-            raise AcabConfigException(f"Unrecognised default request: {entry}")
-
-        return self.defaults[entry]
-
-    def check(self, spec: ConfigSpec_d) -> ConfigSpec_d:
-        """
-        Returns an accessor tuple for later,
-        while guaranteeing the section:key:value does exist
-
-        This lets AcabPrintSemantics be a proxy with AcabPrintSemantics.value
-        """
-        assert(isinstance(spec, ConfigSpec))
-        if spec.as_enum and spec.section in self.enums:
-            return spec
-
-        in_file     = spec.section in self._config
-        in_section  = in_file and (spec.key is None or spec.key in self._config[spec.section])
-        has_default = spec.default is not None
-
-        if has_default and not (in_file and in_section):
-            logging.warning(f"Bad Config Spec, but a default was found: {spec.section}.{spec.key}")
-        elif not in_file:
-            raise AcabConfigException(f"Bad Section Specified: {spec.section}! {spec.key}")
-        elif not in_section:
-            raise AcabConfigException(f"Bad Key Specified: {spec.section} {spec.key}!")
-
-        return spec
-
-
     def read(self, paths:list[str]):
         """ DFS over provided paths, finding the cls.suffix filetype (default=.config) """
         full_paths = []
@@ -252,12 +184,91 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
         return self
 
 
+    @property
+    def loaded(self):
+        return bool(self._files)
+
+    def clear(self):
+        self._config.clear()
+        self.attr               = AttrGenerator(self._config)
+        self._files             = set()
+        self.enums              = {}
+        self.defaults           = {}
+        self.syntax_extension   = {}
+        self.printing_extension = {}
+        return self
+
+
+    def run_hooks(self):
+        for hook in sort_by_priority(self.hooks):
+            hook(self)
+
     def override(self, spec: ConfigSpec_d, value:str) -> None:
         assert(isinstance(spec, ConfigSpec))
         section = spec.section
         key     = spec.key
         # A default dict with a dict inside:
         self._overrides[section][key] = value #type:ignore
+
+    def default(self, entry):
+        """ Get the default value for an enum entry """
+        if entry not in self.defaults:
+            raise AcabConfigException(f"Unrecognised default request: {entry}")
+
+        return self.defaults[entry]
+    def prepare(self, *args:Any, **kwargs:Any) -> ConfigSpec_d:
+        """ Config utility to create a ConfigSpec for later use """
+        spec = ConfigSpec(*args, **kwargs)
+        if hash(spec) not in self.specs:
+            self.specs[hash(spec)] = (spec, None)
+
+        return self.check(spec)
+
+
+    def check(self, spec: ConfigSpec_d) -> ConfigSpec_d:
+        """
+        Returns a configspec for later,
+        while guaranteeing the section:key:value does exist
+
+        This lets AcabPrintSemantics be a proxy with AcabPrintSemantics.value
+        """
+        assert(isinstance(spec, ConfigSpec))
+        if spec._type == Enum and spec.section in self.enums:
+            return spec
+
+        in_file         = spec.section in self._config
+        in_section      = in_file and (spec.key is None or spec.key in self._config[spec.section])
+        has_default     = spec.default is not None
+        has_type_action = spec._type in self.type_actions
+
+        if not has_type_action:
+            warnings.warn(f"ConfigSpec Type Specified without handler, will try to straight apply it: {spec.section} {spec.key}: {spec._type}", stacklevel=2)
+
+        if has_default and not (in_file and in_section):
+            warnings.warn(f"Config Spec Missing, but a default was found: {spec.section}.{spec.key}", stacklevel=2)
+        elif not in_file:
+            raise AcabConfigException(f"Bad Section Specified: {spec.section}! {spec.key}")
+        elif not in_section:
+            raise AcabConfigException(f"Bad Key Specified: {spec.section} {spec.key}!")
+
+        return spec
+
+
+    def value(self, val: Enum|ConfigSpec_d):
+        """ Unified value retrieval """
+        if isinstance(val, Enum):
+            return self._enum_value(val)
+
+        assert(isinstance(val, ConfigSpec))
+        spec    = val
+
+        if spec._type is Enum and spec.section in self.enums and spec.key is None:
+            return self.enums[spec.section]
+        elif spec._type is Enum and spec.section in self.enums and spec.key in self.enums[spec.section].__members__:
+            return self.enums[spec.section][spec.key]
+
+        return self._spec_value(spec)
+
 
     def _enum_value(self, val:Enum) -> str:
         """ Lookup the print representation of an enum value """
@@ -278,7 +289,7 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
         key               = spec.key
         in_override       = spec.section in self._overrides
         in_section        = spec.section in self._config
-        assert(not (spec.as_enum and spec.section in self.enums))
+        assert(not (spec._type == Enum and spec.section in self.enums))
 
         # Early exit if bad path, early return if enum
         if not (in_section or in_override):
@@ -291,31 +302,16 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
         elif in_section:
             retrieved_section = self._config[spec.section] #type:ignore
 
-        # Retrieve, create, and run actions as necessary
-        if spec.as_enum:
-            assert(spec.section not in self.enums)
-            assert(key is None)
-            values = " ".join(retrieved_section.keys())
-            # Runtime creation of enums
-            self.enums[spec.section] = Enum(spec.section, values) #type:ignore
-            value = self.enums[spec.section]
-        elif spec.as_list:
-            assert(key is None)
-            value = list(retrieved_section.keys())
-            for action in actions:
-                value = [action(x, **spec.args) for x in value]
-        elif spec.as_dict:
-            assert(key is None)
-            value = dict(retrieved_section.items())
-            for action in actions:
-                value = {k: action(v, **spec.args) for k,v in value.items()}
-        elif key in retrieved_section:
-            value = retrieved_section[key]
-            if value is None:
-                value = key
-            for action in actions:
-                value = action(value, **spec.args)
-        else:
-            raise AcabConfigException(f"Failed to handle config spec: {spec.section} {spec.key}")
+        try:
+            type_act = self.type_actions[spec._type]
+        except KeyError as err:
+            type_act = self.type_actions[False]
+
+        try:
+            value    = type_act(retrieved_section, actions, spec, self)
+        except AttributeError as err:
+            raise AcabConfigException(f"Bad Config Attribute access in {spec}") from err
+        except KeyError as err:
+            raise AcabConfigException(f"Bad Config Key access in {spec}") from err
 
         return value

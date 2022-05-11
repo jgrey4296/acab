@@ -6,6 +6,7 @@ sys.path.append(abspath(expanduser("~/github/acab")))
 import logging
 import unittest
 import unittest.mock as mock
+from enum import Enum
 from os.path import split, splitext
 
 import acab
@@ -28,7 +29,7 @@ from acab.modules.structures.trie.semantics import BreadthTrieSemantics
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 
 EXOP         = config.prepare("MODAL", "exop")()
-EXOP_enum    = config.prepare(EXOP, as_enum=True)()
+EXOP_enum    = config.prepare(EXOP, _type=Enum)()
 
 NEGATION_V   = config.prepare("Value.Structure", "NEGATION")()
 BIND_V       = config.prepare("Value.Structure", "BIND")()

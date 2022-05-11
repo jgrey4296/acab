@@ -29,7 +29,7 @@ config = AcabConfig()
 STRING_SEN = VF.sen([DS.STRING_PRIM])
 REGEX_SEN  = VF.sen([DS.REGEX_PRIM])
 
-all_modals = config.prepare("MODAL", as_list=True)
+all_modals = config.prepare("MODAL", _type=list)
 
 
 def _maybe_wrap_str(PS, value, current):

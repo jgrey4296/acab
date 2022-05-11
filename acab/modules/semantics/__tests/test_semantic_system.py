@@ -3,6 +3,7 @@ import logging as logmod
 import sys
 import unittest
 from os.path import abspath, expanduser, split, splitext
+from enum import Enum
 
 logging = logmod.getLogger(__name__)
 
@@ -28,7 +29,7 @@ from acab.modules.semantics.values import ExclusionNodeSemantics
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 
 EXOP            = config.attr.MODAL.exop
-EXOP_enum       = config.prepare(EXOP, as_enum=True)()
+EXOP_enum       = config.prepare(EXOP, _type=Enum)()
 
 NEGATION_V      = DS.NEGATION
 BIND_V          = DS.BIND

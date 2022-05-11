@@ -14,7 +14,7 @@ def log_hook(self):
     the logging system
     """
     try:
-        spec     = self.prepare("LOGGING", "ACAB", as_bool=True)
+        spec     = self.prepare("LOGGING", "ACAB", _type=bool)
         use_acab_logging = self.value(spec) == "True"
         if not use_acab_logging:
             raise AcabConfigException("Logging is disabled")

@@ -26,7 +26,7 @@ def structure_hook(self):
     or that [Type.Primitive] keys match semantic signals
     """
     try:
-        constraints = self.prepare("Config.Constraints", as_dict=True)()
+        constraints = self.prepare("Config.Constraints", _type=dict)()
         for src, tgt in constraints.items():
             logging.info(f"Config Structure Check: {src} -> {tgt}")
             source = get_param_or_list(self, src)
@@ -52,4 +52,4 @@ def get_param_or_list(conf, spec_string):
             param = param.upper()
         return conf.prepare(sec, param)().split(" ")
 
-    return list(conf.prepare(spec_string, as_dict=True)().keys())
+    return list(conf.prepare(spec_string, _type=dict)().keys())

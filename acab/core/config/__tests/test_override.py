@@ -3,8 +3,9 @@ from __future__ import annotations
 import abc
 import logging as logmod
 import unittest
+import warnings
 from dataclasses import InitVar, dataclass, field
-from os.path import split, splitext, join
+from os.path import join, split, splitext
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     Iterable, Iterator, Mapping, Match, MutableMapping,
                     Protocol, Sequence, Tuple, TypeAlias, TypeGuard, TypeVar,
@@ -16,12 +17,14 @@ if TYPE_CHECKING:
     # tc only imports
     pass
 
-from acab.core.config.config import AcabConfig, ConfigSpec, ConfigSingletonMeta
-from acab.error.config import AcabConfigException
+from acab.core.config.config import AcabConfig, ConfigSingletonMeta, ConfigSpec
 from acab.core.config.misc_hooks import attr_hook
 from acab.core.util.log_formatter import AcabMinimalLogRecord
+from acab.error.config import AcabConfigException
 
-AcabMinimalLogRecord.install()
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    AcabMinimalLogRecord.install()
 
 class ConfigOverrideTests(unittest.TestCase):
 
@@ -99,3 +102,26 @@ class ConfigOverrideTests(unittest.TestCase):
         self.assertEqual(spec(), "test")
         self.config.override(spec, "blah")
         self.assertEqual(spec(), "blah")
+
+
+    def test_warn_on_override(self):
+        spec = self.config.prepare("Handler.System", "DEFAULT_SIGNAL")
+        val = spec()
+        self.config.read([join(self.base, "override.config")])
+        val2 = spec()
+
+
+    def test_spec_non_equality(self):
+        spec1 = self.config.prepare("Handler.System", "DEFAULT_SIGNAL")
+        spec2 = self.config.prepare("Handler.System", "OTHER")
+        self.assertNotEqual(spec1, spec2)
+
+    def test_spec_non_duplication(self):
+        spec1 = self.config.prepare("Handler.System", "DEFAULT_SIGNAL")
+        spec2 = self.config.prepare("Handler.System", "DEFAULT_SIGNAL", _type=bool)
+        self.assertEqual(spec1, spec2)
+        self.assertIsNot(spec1, spec2)
+
+    def test_spec_type(self):
+        bool_val = self.config.prepare("Handler.System", "OTHER", _type=bool)()
+        self.assertIsInstance(bool_val, bool)

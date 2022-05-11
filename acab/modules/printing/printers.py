@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from enum import Enum
 from itertools import filterfalse, starmap, zip_longest
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
@@ -18,7 +19,7 @@ from acab.interfaces.value import ValueFactory as VF
 
 config = AcabConfig()
 
-ANNOTATIONS = [config.prepare("Value.Structure", x, as_enum=True)() for x in config.prepare("Print.Annotations", as_list=True)()]
+ANNOTATIONS = [config.prepare("Value.Structure", x, _type=Enum)() for x in config.prepare("Print.Annotations", _type=list)()]
 ATOM_HINT   = DSig.ATOM
 TYPE_BASE   = config.prepare("Data", "TYPE_BASE")()
 
