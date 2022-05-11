@@ -265,9 +265,14 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
         will not
 
         """
+        if spec.section not in self._config:
+            return
+
         simple =  self._config[spec.section]
         if spec.key is not None:
             simple = simple[spec.key]
+        else:
+            simple = " ".join(["{}:{}".format(x,y) for x,y in simple.items()])
 
         if hash(spec) not in self.specs_invalid:
             self.specs_invalid[hash(spec)] = hash(simple)

@@ -91,7 +91,7 @@ def to_enum(ret_section:Any, actions=None, spec=None, config=None) -> Enum:
 
 @mapToEnum(TYPE_ACTIONS, bool)
 def to_bool(ret_section:Any, actions=None, spec=None, config=None) -> bool:
-    return ret_section == "True"
+    return ret_section[spec.key] == "True"
 
 @mapToEnum(TYPE_ACTIONS, list)
 def to_list(ret_section:Any, actions=None, spec=None, config=None) -> list[Any]:
