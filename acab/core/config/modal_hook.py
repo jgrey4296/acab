@@ -24,13 +24,13 @@ def modal_hook(self):
     Modal.{value}.Symbols
     """
     try:
-        modal_spec  = self.prepare("MODAL", as_list=True)
+        modal_spec  = self.prepare("MODAL", _type=list)
         modal_names = self.value(modal_spec)
         logging.info("Initialising Modalities: {}".format(" ".join(modal_names)))
         for name in modal_names:
             new_spec           = self.prepare(f"Modal.{name}", "ENUM_VALUES")
             default_spec       = self.prepare(f"Modal.{name}", "DEFAULT")
-            symbol_spec        = self.prepare(f"Modal.{name}.Symbols", as_dict=True)
+            symbol_spec        = self.prepare(f"Modal.{name}.Symbols", _type=dict)
             new_enum           = Enum(name, self.value(new_spec))
             default            = self.value(default_spec)
             symbol_dict        = self.value(symbol_spec)

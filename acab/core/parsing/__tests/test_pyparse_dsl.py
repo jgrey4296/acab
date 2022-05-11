@@ -4,18 +4,22 @@
 import logging as logmod
 import unittest
 import unittest.mock as mock
+import warnings
 from os.path import split, splitext
 
 import acab
 import pyparsing as pp
 
-config = acab.setup()
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
+
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 
 from acab.core.parsing import pyparse_dsl as ppDSL
+from acab.error.parse import AcabParseException
 from acab.interfaces import dsl as DSLi
 from acab.interfaces import handler_system as hi
-from acab.error.parse import AcabParseException
 
 
 class PyParseDSLTests(unittest.TestCase):
@@ -24,12 +28,17 @@ class PyParseDSLTests(unittest.TestCase):
     def setUpClass(cls):
         LOGLEVEL      = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+        cls.file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
 
-        file_h.setLevel(LOGLEVEL)
+        cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
-        logging.root.addHandler(file_h)
         logging.root.setLevel(logmod.NOTSET)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
+        logging.root.addHandler(cls.file_h)
+
+    @classmethod
+    def tearDownClass(cls):
+        logmod.root.removeHandler(cls.file_h)
 
     def test_init(self):
         self.assertIsInstance(ppDSL.PyParseDSL(), DSLi.DSL_Builder_i)

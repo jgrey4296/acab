@@ -13,13 +13,12 @@ from acab import types as AT
 from acab.core.value.default_structure import TYPE_INSTANCE
 from acab.core.value import default_structure as DS
 from acab.core.value.instruction import Instruction
-from acab.core.value.sentence import Sentence
-from acab.core.value.value import AcabValue
 from acab.core.util.decorators.util import factory
 from acab.error.semantic import AcabSemanticException
 from acab.modules.context.context_instance import (ContextInstance,
                                                    MutableContextInstance)
 from acab.core.parsing.annotation import ValueAnnotation
+from acab.interfaces.value import ValueFactory as VF
 
 from .. import exceptions as TE
 from . import simple_unify_fns as suf
@@ -70,7 +69,7 @@ def gen_type_vars(first, second, gamma, gen_var=None) -> AT.CtxIns:
 
             for var in (a.type.vars + b.type.vars):
                 if var not in gamma_p:
-                    gamma_p[var] = Sentence() << DS.TYPE_BASE
+                    gamma_p[var] = VF.sen() << DS.TYPE_BASE
 
     return gamma_p.final_ctx
 

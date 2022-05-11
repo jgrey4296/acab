@@ -7,9 +7,8 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 from acab import AcabConfig
 from acab import types as AT
-from acab.core.value.value import AcabValue
+from acab.interfaces import value as VI
 from acab.core.value.instruction import Instruction
-from acab.core.value.sentence import Sentence
 from acab.error.semantic import AcabSemanticException
 from acab.modules.context.context_instance import (ContextInstance,
                                                    MutableContextInstance)
@@ -93,7 +92,7 @@ def match_handler_basic(index, first, second, ctx):
 
     if ctx[f_word] == ctx[s_word]:
         result = unify_enum.NEXT_WORD
-    elif isinstance(f_word, Sentence) or isinstance(s_word, Sentence):
+    elif isinstance(f_word, VI.Sentence_i) or isinstance(s_word, VI.Sentence_i):
         # TODO handle var args in the type constructors,
         # so recursively unify
         raise NotImplementedError()

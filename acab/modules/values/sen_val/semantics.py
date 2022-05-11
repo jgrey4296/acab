@@ -31,8 +31,10 @@ class SenQuerySemantics(StatementSemantics, SI.StatementSemantics_i):
 
     meaning to query the entire sentence $y refers to
     """
-    def query(self, sen, semSys, ctxs=None, data=None):
+
+    def __call__(self, sen, semSys, ctxs=None, data=None):
         assert(ctxs is not None)
+        assert(DS.QUERY in sen.data)
 
         temp_ctxs = semSys.build_ctxset(ctxs._operators)
         # remove empty ctx:

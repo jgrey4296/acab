@@ -8,9 +8,15 @@ from unittest import mock
 
 logging = logmod.getLogger(__name__)
 
+import warnings
+
 from acab import setup
 from acab.interfaces.handler_system import Handler_i
-config                 = setup()
+
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config                 = setup()
+
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 HandlerConfigSpec      = config.prepare("Imports.Targeted", "handler", actions=[config.actions_e.IMCLASS], args={"interface": Handler_i})
 config.override(HandlerConfigSpec, "acab.core.util.part_implementations.handler.BasicHandler")
@@ -35,12 +41,17 @@ class TestHandlerSystem(unittest.TestCase):
     def setUpClass(cls):
         LOGLEVEL      = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+        cls.file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
 
-        file_h.setLevel(LOGLEVEL)
+        cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
-        logging.root.addHandler(file_h)
         logging.root.setLevel(logmod.NOTSET)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
+        logging.root.addHandler(cls.file_h)
+
+    @classmethod
+    def tearDownClass(cls):
+        logmod.root.removeHandler(cls.file_h)
 
     def test_creation(self):
         basic = SimplestHandlerSystem()

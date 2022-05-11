@@ -17,7 +17,7 @@ from acab.core.parsing.annotation import ModalAnnotation, ValueAnnotation
 from acab.core.parsing.consts import (CPAR, DBLCOLON, NG, OPAR, TAG, N,
                                       component_gap, emptyLine, gap, ln, op,
                                       opLn, orm, s, s_key, s_lit, zrm)
-from acab.interfaces.value import ValueFactory_i
+from acab.interfaces.value import ValueFactory
 
 logging = logmod.getLogger(__name__)
 
@@ -39,7 +39,7 @@ Fwd_TagList.set_name('fwd_taglist')
 
 # Basic Parsers
 OPERATOR_SUGAR = pp.Word(PDSYM.OPERATOR_SYNTAX)
-OPERATOR_SUGAR.set_parse_action(lambda s, l, t: ValueFactory_i.sen([t[0]], data={CDS.TYPE_INSTANCE: CDS.OPERATOR}))
+OPERATOR_SUGAR.set_parse_action(lambda s, l, t: ValueFactory.sen([t[0]], data={CDS.TYPE_INSTANCE: CDS.OPERATOR}))
 
 ATOM           = pp.Word(PDSYM.WORD_COMPONENT + "'")
 ATOM.set_parse_action(lambda s, l, t: (CDS.TYPE_BASE, t[0]))
@@ -76,7 +76,7 @@ Fwd_ArgList <<= PConst.VBAR + pp.delimited_list(VALBIND, delim=PConst.COMMA) + P
 
 # TODO make TAG a head_annotation
 tagSen = TAG + pp.delimited_list(ATOM, delim=".")
-tagSen.set_parse_action(lambda s, l, t: (ValueFactory_i.sen([x[1] for x in t[:]])))
+tagSen.set_parse_action(lambda s, l, t: (ValueFactory.sen([x[1] for x in t[:]])))
 
 Fwd_TagList <<= pp.IndentedBlock(tagSen + zrm(pp.line_end.suppress() + tagSen))(PDS.TAG)
 

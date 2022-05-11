@@ -3,14 +3,19 @@ import logging as logmod
 import re
 import unittest
 import unittest.mock as mock
+from enum import Enum
 from os.path import split, splitext
 
 logging = logmod.getLogger(__name__)
+import warnings
+
 import acab
 ##############################
 import pyparsing as pp
 
-config = acab.setup()
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
 
 # from acab.core.parsing import debug_funcs as DBF
 # DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
@@ -44,7 +49,7 @@ SEN_JOIN_S        = config.prepare("Print.Patterns", "SEN_JOIN", actions=[AcabCo
 STR_PRIM_S        = Sentence([config.prepare("Type.Primitive", "STRING")()])
 REGEX_PRIM_S      = Sentence([config.prepare("Type.Primitive", "REGEX")()])
 
-EXOP              = config.prepare("exop", as_enum=True)()
+EXOP              = config.prepare("exop", _type=Enum)()
 DOT_E             = EXOP.DOT
 
 dsl = None
@@ -55,12 +60,13 @@ class PrintStructureSemanticTests(unittest.TestCase):
     def setUpClass(cls):
         LOGLEVEL      = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+        cls.file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
 
-        file_h.setLevel(LOGLEVEL)
+        cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
-        logging.root.addHandler(file_h)
         logging.root.setLevel(logmod.NOTSET)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
+        logging.root.addHandler(cls.file_h)
 
         global dsl
         # Set up the parser to ease test setup
@@ -68,6 +74,11 @@ class PrintStructureSemanticTests(unittest.TestCase):
         dsl.register(EXLO_Parser)
         dsl.build()
         # dsl()
+
+    @classmethod
+    def tearDownClass(cls):
+        logging.root.removeHandler(cls.file_h)
+
 
     def test_component_simple(self):
         """ Check production components can be printed """

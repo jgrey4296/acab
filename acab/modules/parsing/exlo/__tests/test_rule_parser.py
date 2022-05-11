@@ -1,25 +1,37 @@
-import unittest
-from os.path import splitext, split
 import logging as logmod
+import unittest
+from os.path import split, splitext
+
 import pyparsing as pp
+
 logging = logmod.getLogger(__name__)
 
+import warnings
+
 import acab
-config = acab.setup()
 
-if '@pytest_ar' in globals():
-    from acab.core.parsing import debug_funcs as DBF
-    DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
 
-from acab.core.value.value import AcabValue
-from acab.core.value.sentence import Sentence
-from acab.core.value.instruction import ProductionOperator, ProductionComponent, ProductionContainer, ProductionStructure
+    if '@pytest_ar' in globals():
+        from acab.core.parsing import debug_funcs as DBF
+        DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+
 from acab.core.parsing import parsers as PU
+from acab.core.value.default_structure import (ACTION_COMPONENT,
+                                               QUERY_COMPONENT,
+                                               TRANSFORM_COMPONENT)
+from acab.core.value.instruction import (ProductionComponent,
+                                         ProductionContainer,
+                                         ProductionOperator,
+                                         ProductionStructure)
+from acab.core.value.sentence import Sentence
+from acab.core.value.value import AcabValue
 from acab.modules.parsing.exlo.parsers import ActionParser as AP
 from acab.modules.parsing.exlo.parsers import FactParser as FP
-from acab.modules.parsing.exlo.parsers import RuleParser as RP
 from acab.modules.parsing.exlo.parsers import QueryParser as QP
-from acab.core.value.default_structure import QUERY_COMPONENT, TRANSFORM_COMPONENT, ACTION_COMPONENT
+from acab.modules.parsing.exlo.parsers import RuleParser as RP
 
 QUERY_V     = QUERY_COMPONENT
 TRANSFORM_V = TRANSFORM_COMPONENT
@@ -31,18 +43,21 @@ class Trie_Rule_Parser_Tests(unittest.TestCase):
     def setUpClass(cls):
         LOGLEVEL      = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+        cls.file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
 
-        file_h.setLevel(LOGLEVEL)
+        cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
-        logging.root.addHandler(file_h)
         logging.root.setLevel(logmod.NOTSET)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
+        logging.root.addHandler(cls.file_h)
 
         AP.HOTLOAD_OPERATORS << PU.OPERATOR_SUGAR
         QP.HOTLOAD_QUERY_OP  << PU.OPERATOR_SUGAR
 
     @classmethod
     def tearDownClass(cls):
+        logmod.root.removeHandler(cls.file_h)
+
         AP.HOTLOAD_OPERATORS << pp.Empty()
         QP.HOTLOAD_QUERY_OP  << pp.Empty()
 

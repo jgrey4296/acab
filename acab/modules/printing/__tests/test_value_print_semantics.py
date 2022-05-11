@@ -4,6 +4,7 @@ import logging as logmod
 import re
 import unittest
 import unittest.mock as mock
+from enum import Enum
 from os.path import split, splitext
 
 import pyparsing as pp
@@ -12,8 +13,10 @@ logging = logmod.getLogger(__name__)
 ##############################
 
 import acab
-
-config = acab.setup()
+import warnings
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
 
 
 import acab.modules.parsing.exlo.parsers.ActionParser as AP
@@ -44,7 +47,7 @@ SEN_JOIN_S        = config.prepare("Print.Patterns", "SEN_JOIN", actions=[AcabCo
 STR_PRIM_S        = Sentence([config.prepare("Type.Primitive", "STRING")()])
 REGEX_PRIM_S      = Sentence([config.prepare("Type.Primitive", "REGEX")()])
 
-EXOP              = config.prepare("exop", as_enum=True)()
+EXOP              = config.prepare("exop", _type=Enum)()
 DOT_E             = EXOP.DOT
 
 
@@ -55,12 +58,17 @@ class PrintValueSemanticTests(unittest.TestCase):
     def setUpClass(cls):
         LOGLEVEL      = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+        cls.file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
 
-        file_h.setLevel(LOGLEVEL)
+        cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
-        logging.root.addHandler(file_h)
         logging.root.setLevel(logmod.NOTSET)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
+        logging.root.addHandler(cls.file_h)
+
+    @classmethod
+    def tearDownClass(cls):
+        logging.root.removeHandler(cls.file_h)
 
     def setUp(self):
         FP.HOTLOAD_ANNOTATIONS << pp.MatchFirst([QP.word_query_constraint])

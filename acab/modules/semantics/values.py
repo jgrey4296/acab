@@ -12,12 +12,10 @@ from acab.core.config.config import AcabConfig
 from acab.core.value.instruction import Instruction
 from acab.core.data.node import AcabNode
 from acab.core.value.sentence import Sentence
-from acab.core.value.value import AcabValue
 from acab.core.semantics import basic
 from acab.interfaces import semantic as SI
 from acab.error.protocol import AcabProtocolError as APE
 
-Value = AcabValue
 Node  = AcabNode
 T     = TypeVar('T')
 
@@ -27,7 +25,7 @@ CTX_OP = Enum("ctx", "collect_var")
 # TODO replace operator with specific modal name
 EXOP         = config.prepare("MODAL", "exop")()
 DEFAULT_EXOP = config.default(EXOP)
-EXOP_enum    = config.prepare(EXOP, as_enum=True)()
+EXOP_enum    = config.prepare(EXOP, _type=Enum)()
 
 logging = logmod.getLogger(__name__)
 
@@ -42,7 +40,7 @@ T        = TypeVar('T')
 class BasicNodeSemantics(basic.ValueSemantics, SI.ValueSemantics_i):
 
     def verify(self, instruction) -> bool:
-        return isinstance(instruction, AcabValue)
+        return isinstance(instruction, VI.Value_i)
     def make(self, val, data=None) -> Node:
         return self.up(AcabNode(val), data=data)
 
@@ -73,7 +71,7 @@ class BasicNodeSemantics(basic.ValueSemantics, SI.ValueSemantics_i):
 
     def remove(self, node:Node, to_delete:Value, *, data=None) -> Node:
         assert(isinstance(node, AcabNode))
-        assert(isinstance(to_delete, AcabValue))
+        assert(isinstance(to_delete, VI.Value_i))
 
         if to_delete not in node:
             raise ASErr.AcabSemanticIndependentFailure("Value not in node", context=(node, to_delete))
@@ -87,7 +85,7 @@ class BasicNodeSemantics(basic.ValueSemantics, SI.ValueSemantics_i):
 @APE.assert_implements(SI.ValueSemantics_i)
 class ExclusionNodeSemantics(basic.ValueSemantics, SI.ValueSemantics_i):
     def verify(self, instruction) -> bool:
-        return isinstance(instruction, AcabValue)
+        return isinstance(instruction, VI.Value_i)
 
     def make(self, val, *, data=None) -> AcabNode:
         return self.up(AcabNode(val), data=data)
@@ -142,7 +140,7 @@ class ExclusionNodeSemantics(basic.ValueSemantics, SI.ValueSemantics_i):
 
     def remove(self, node:Node, to_delete:Value, *, data=None) -> Node:
         assert(isinstance(node, AcabNode))
-        assert(isinstance(to_delete, AcabValue))
+        assert(isinstance(to_delete, VI.Value_i))
 
         if to_delete not in node:
             raise ASErr.AcabSemanticIndependentFailure("Value not in node", rest=(node, to_delete))

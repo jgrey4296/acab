@@ -13,7 +13,6 @@ import pyparsing as pp
 from acab import AcabConfig
 from acab.modules.repl.repl_commander import register_class
 from acab.modules.repl.ReplParser import rst
-from acab.modules.repl.util import ConfigBasedLoad
 from acab.interfaces.debugger import AcabDebugger_i
 
 if TYPE_CHECKING:
@@ -26,7 +25,7 @@ config  = AcabConfig()
 
 Debugger = config.prepare("Imports.Targeted", "debug", actions=[config.actions_e.IMCLASS], args={"interface": AcabDebugger_i})()
 
-debug_intro = config.prepare("Module.Repl.Debug.Intro", actions=[config.actions_e.STRIPQUOTE], as_list=True)()
+debug_intro = config.prepare("Module.Repl.Debug.Intro", actions=[config.actions_e.STRIPQUOTE], _type=list)()
 
 the_debugger = Debugger()
 

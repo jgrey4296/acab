@@ -11,8 +11,10 @@ from os.path import split, splitext
 logging = logmod.getLogger(__name__)
 
 import acab
-
-config = acab.setup()
+import warnings
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
 
 from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.data.node import AcabNode
@@ -34,12 +36,17 @@ class ValueSemanticTests(unittest.TestCase):
     def setUpClass(cls):
         LOGLEVEL      = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+        cls.file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
 
-        file_h.setLevel(LOGLEVEL)
+        cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
-        logging.root.addHandler(file_h)
         logging.root.setLevel(logmod.NOTSET)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
+        logging.root.addHandler(cls.file_h)
+
+    @classmethod
+    def tearDownClass(cls):
+        logmod.root.removeHandler(cls.file_h)
 
     # InDependent: Node/Exclusion
     # Insert/Remove/Accessible/Get/Up/Down

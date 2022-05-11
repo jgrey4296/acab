@@ -1,20 +1,25 @@
 #https://docs.python.org/3/library/unittest.html
-from os.path import splitext, split
-import unittest
 import logging as logmod
+import unittest
+from os.path import split, splitext
+
 logging = logmod.getLogger(__name__)
 
-import pyparsing as pp
+import warnings
 
 import acab
-acab.setup()
+import pyparsing as pp
 
-from acab.core.parsing.param_core import ParamCore
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    acab.setup()
+
+from acab.core.data.node import AcabNode
 from acab.core.parsing import parsers as PU
-from acab.core.value.value import AcabValue
+from acab.core.parsing.param_core import ParamCore
 from acab.core.value.instruction import Instruction
 from acab.core.value.sentence import Sentence
-from acab.core.data.node import AcabNode
+from acab.core.value.value import AcabValue
 
 
 class ParamCoreTests(unittest.TestCase):
@@ -23,12 +28,17 @@ class ParamCoreTests(unittest.TestCase):
     def setUpClass(cls):
         LOGLEVEL      = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+        cls.file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
 
-        file_h.setLevel(LOGLEVEL)
+        cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
-        logging.root.addHandler(file_h)
         logging.root.setLevel(logmod.NOTSET)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
+        logging.root.addHandler(cls.file_h)
+
+    @classmethod
+    def tearDownClass(cls):
+        logmod.root.removeHandler(cls.file_h)
 
     def setUp(self):
         return 1

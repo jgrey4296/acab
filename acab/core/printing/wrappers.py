@@ -22,14 +22,14 @@ from acab.core.config.config import AcabConfig
 from acab.core.value import default_structure as DS
 from acab.core.value.sentence import Sentence
 from acab.core.printing import default_symbols as DSYM
-from acab.interfaces.value import ValueFactory_i as VF
+from acab.interfaces.value import ValueFactory as VF
 
 config = AcabConfig()
 
 STRING_SEN = VF.sen([DS.STRING_PRIM])
 REGEX_SEN  = VF.sen([DS.REGEX_PRIM])
 
-all_modals = config.prepare("MODAL", as_list=True)
+all_modals = config.prepare("MODAL", _type=list)
 
 
 def _maybe_wrap_str(PS, value, current):

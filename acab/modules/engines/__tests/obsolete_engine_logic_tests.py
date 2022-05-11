@@ -1,18 +1,24 @@
-import unittest
 import logging as logmod
+import unittest
+
 logging = logmod.getLogger(__name__)
 
-from os.path import join, isfile, exists, isdir
-from os.path import split, splitext, expanduser, abspath
-from os import listdir
 import timeit
+import warnings
+from os import listdir
+from os.path import (abspath, exists, expanduser, isdir, isfile, join, split,
+                     splitext)
 
 import acab
-acab.setup()
 
-from acab.core.value.sentence import Sentence
-from acab.core.value.instruction import ProductionStructure
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    acab.setup()
+
 from acab.core.engine.engine import Engine
+from acab.core.value.instruction import ProductionStructure
+from acab.core.value.sentence import Sentence
+
 
 def S(*words):
     return Sentence.build(words)
@@ -23,12 +29,17 @@ class Engine_Logic_Tests(unittest.TestCase):
     def setUpClass(cls):
         LOGLEVEL      = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+        cls.file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
 
-        file_h.setLevel(LOGLEVEL)
+        cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
-        logging.root.addHandler(file_h)
         logging.root.setLevel(logmod.NOTSET)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
+        logging.root.addHandler(cls.file_h)
+
+    @classmethod
+    def tearDownClass(cls):
+        logmod.root.removeHandler(cls.file_h)
 
     def path(self, filename):
         """ Navigate from the file,

@@ -6,7 +6,7 @@ from acab.core.config.config import AcabConfig
 import acab.interfaces.value as VI
 
 config           = AcabConfig()
-ANON_VALUE       = config.prepare("Symbols", "ANON_VALUE")()
+ANON_VALUE       = config.attr.Symbols.ANON_VALUE
 
 def class_name_fn(obj):
     if obj['name'] is None and obj['value'] is None:

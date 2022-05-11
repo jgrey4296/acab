@@ -9,8 +9,10 @@ import unittest.mock as mock
 from os.path import split, splitext
 
 from acab import setup
-
-config = setup()
+import warnings
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = setup()
 from acab.core.config.config import AcabConfig, ConfigSpec, ConfigSingletonMeta
 from acab.error.config import AcabConfigException
 
@@ -20,15 +22,20 @@ class ModalConfigTests(unittest.TestCase):
     def setUpClass(cls):
         LOGLEVEL      = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+        cls.file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
 
-        file_h.setLevel(LOGLEVEL)
+        cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
-        logging.root.addHandler(file_h)
         logging.root.setLevel(logmod.NOTSET)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
+        logging.root.addHandler(cls.file_h)
 
         # Setup default config with default files
         cls.config = setup()
+
+    @classmethod
+    def tearDownClass(cls):
+        logmod.root.removeHandler(cls.file_h)
 
     def test_modal_spec_missing(self):
         """

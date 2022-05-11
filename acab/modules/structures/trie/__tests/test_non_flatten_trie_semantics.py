@@ -10,6 +10,7 @@ from os.path import abspath, expanduser
 sys.path.append(abspath(expanduser("~/github/acab")))
 import logging as logmod
 from os.path import split, splitext
+from enum import Enum
 
 logging = logmod.getLogger(__name__)
 
@@ -18,17 +19,19 @@ import unittest.mock as mock
 from os.path import split, splitext
 
 import acab
-
-config = acab.setup()
+import warnings
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
 
 from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.data.node import AcabNode
 from acab.core.value import default_structure as DS
-from acab.core.value.factory import ValueFactory
 from acab.core.value.instruction import ProductionComponent
 from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue
 from acab.interfaces.handler_system import Handler_i
+from acab.interfaces.value import ValueFactory
 from acab.modules.context import context_delayed_actions
 from acab.modules.context.context_set import (ConstraintCollection,
                                               ContextInstance, ContextSet)
@@ -40,7 +43,7 @@ from acab.modules.structures.trie.breadth_semantics import BreadthTrieSemantics
 
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 EXOP         = config.prepare("MODAL", "exop")()
-EXOP_enum    = config.prepare(EXOP, as_enum=True)()
+EXOP_enum    = config.prepare(EXOP, _type=Enum)()
 
 NEGATION_V   = DS.NEGATION
 BIND_V       = DS.BIND
@@ -51,12 +54,17 @@ class TrieSemanticTests(unittest.TestCase):
     def setUpClass(cls):
         LOGLEVEL      = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+        cls.file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
 
-        file_h.setLevel(LOGLEVEL)
+        cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
-        logging.root.addHandler(file_h)
         logging.root.setLevel(logmod.NOTSET)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
+        logging.root.addHandler(cls.file_h)
+
+    @classmethod
+    def tearDownClass(cls):
+        logmod.root.removeHandler(cls.file_h)
 
     def test_trie_insert_basic(self):
         """ Check trie semantics inserts nodes in the correct places """

@@ -3,8 +3,9 @@ from __future__ import annotations
 import abc
 import logging as logmod
 import unittest
+import warnings
 from dataclasses import InitVar, dataclass, field
-from os.path import split, splitext, join
+from os.path import join, split, splitext
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     Iterable, Iterator, Mapping, Match, MutableMapping,
                     Protocol, Sequence, Tuple, TypeAlias, TypeGuard, TypeVar,
@@ -16,12 +17,14 @@ if TYPE_CHECKING:
     # tc only imports
     pass
 
-from acab.core.config.config import AcabConfig, ConfigSpec, ConfigSingletonMeta
-from acab.error.config import AcabConfigException
+from acab.core.config.config import AcabConfig, ConfigSingletonMeta, ConfigSpec
 from acab.core.config.misc_hooks import attr_hook
 from acab.core.util.log_formatter import AcabMinimalLogRecord
+from acab.error.config import AcabConfigException
 
-AcabMinimalLogRecord.install()
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    AcabMinimalLogRecord.install()
 
 class ConfigOverrideTests(unittest.TestCase):
 
@@ -29,12 +32,13 @@ class ConfigOverrideTests(unittest.TestCase):
     def setUpClass(cls):
         LOGLEVEL      = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+        cls.file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
 
-        file_h.setLevel(LOGLEVEL)
+        cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
-        logging.root.addHandler(file_h)
         logging.root.setLevel(logmod.NOTSET)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
+        logging.root.addHandler(cls.file_h)
 
         cls.base        = split(__file__)[0]
 
@@ -42,8 +46,10 @@ class ConfigOverrideTests(unittest.TestCase):
         cls.existing_config = getattr(ConfigSingletonMeta, "_instance", None)
         setattr(ConfigSingletonMeta, "_instance", None)
 
+
     @classmethod
     def tearDownClass(cls):
+        logmod.root.removeHandler(cls.file_h)
         # Manual singleton overriding
         setattr(ConfigSingletonMeta, "_instance", cls.existing_config)
 
@@ -80,11 +86,29 @@ class ConfigOverrideTests(unittest.TestCase):
 
     def test_override(self):
         spec = self.config.prepare("Handler.System", "DEFAULT_SIGNAL")
-        self.assertIsInstance(spec, ConfigSpec)
-        self.assertEqual(spec(), "test")
+        with self.assertWarns(UserWarning):
+            self.assertIsInstance(spec, ConfigSpec)
+            self.assertEqual(spec(), "test")
+            self.config.read([join(self.base, "override.config")])
+            self.assertIsInstance(spec, ConfigSpec)
+            self.assertEqual(spec(), "blah")
+
+    def test_warn_on_override(self):
+        self.config.specs_invalid = {}
+        spec = self.config.prepare("Handler.System", "DEFAULT_SIGNAL")
+        val = spec()
+        with self.assertWarns(UserWarning):
+            self.config.read([join(self.base, "override.config")])
+            val2 = spec()
+
+    def test_silent_override(self):
+        """
+        Overrides silently when the spec isn't called before the override
+        """
+        self.config.specs_invalid = {}
+        spec = self.config.prepare("Handler.System", "DEFAULT_SIGNAL")
         self.config.read([join(self.base, "override.config")])
-        self.assertIsInstance(spec, ConfigSpec)
-        self.assertEqual(spec(), "blah")
+        val = spec()
 
     def test_attr_override(self):
         AcabConfig(hooks=[attr_hook]).run_hooks()
@@ -99,3 +123,18 @@ class ConfigOverrideTests(unittest.TestCase):
         self.assertEqual(spec(), "test")
         self.config.override(spec, "blah")
         self.assertEqual(spec(), "blah")
+
+
+
+
+    def test_spec_non_equality(self):
+        spec1 = self.config.prepare("Handler.System", "DEFAULT_SIGNAL")
+        spec2 = self.config.prepare("Handler.System", "OTHER")
+        self.assertNotEqual(spec1, spec2)
+
+    def test_spec_non_duplication(self):
+        spec1 = self.config.prepare("Handler.System", "DEFAULT_SIGNAL")
+        spec2 = self.config.prepare("Handler.System", "DEFAULT_SIGNAL", _type=bool)
+        self.assertEqual(spec1, spec2)
+        self.assertIsNot(spec1, spec2)
+

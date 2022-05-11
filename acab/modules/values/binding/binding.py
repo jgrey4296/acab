@@ -9,8 +9,6 @@ from types import FunctionType
 
 from acab import types as AT
 from acab.core.value import default_structure as DS
-from acab.core.value.sentence import Sentence
-from acab.core.value.value import AcabValue
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces import context as CI
 from acab.interfaces import data as DI
@@ -128,10 +126,10 @@ def _sen_bind(val:AT.Sentence, bindings:AT.CtxIns) -> AT.Sentence:
             case _:
                 output.append(_bind(word, bindings))
 
-    return Sentence(output,
-                    data=val.data,
-                    params=val.params,
-                    tags=val.tags)
+    return VI.ValueFactory.sen(output,
+                               data=val.data,
+                               params=val.params,
+                               tags=val.tags)
 
 
 def _production_component_bind(val, data) -> AT.Component:

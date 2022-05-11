@@ -4,22 +4,25 @@ and formed into sentences
 """
 # pylint: disable=multiple-statements,abstract-method,too-many-ancestors,invalid-sequence-index
 from __future__ import annotations
+
 import abc
 import collections.abc as cABC
 import logging as logmod
 from dataclasses import dataclass, field
 from functools import reduce
 from re import Pattern
-from typing import (Any, ClassVar, Container, Final, Generic, Literal, Mapping,
-                    Match, MutableMapping, Protocol, Sequence, Sized, Tuple, Collection,
-                    Type, TypeAlias, TypeVar, cast, runtime_checkable)
+from typing import (Any, ClassVar, Collection, Container, Final, Generic,
+                    Literal, Mapping, Match, MutableMapping, Protocol,
+                    Sequence, Sized, Tuple, Type, TypeAlias, TypeVar, cast,
+                    runtime_checkable)
 from uuid import UUID, uuid1
 
+import acab.core.value.default_structure as DS
+import acab.interfaces.protocols.value as VSubP
 from acab import types as AT
 from acab.core.config.config import AcabConfig
+from acab.core.util.singletons import SingletonMeta
 from acab.error.config import AcabConfigException
-import acab.interfaces.protocols.value as VSubP
-import acab.core.value.default_structure as DS
 
 __all__ = ['Value_i', 'Instruction_i', 'Sentence_i', 'Operator_i', 'Action_i']
 
@@ -103,7 +106,7 @@ class Action_i(Value_i[None]):
 
 
 # Factory
-class ValueFactory_i(Protocol):
+class ValueFactory(metaclass=SingletonMeta):
     """ Utility Class for building values
     Must initialize value_fn and sen_fn before using acab
     # TODO pair with value meta, register all values as attributes
@@ -113,14 +116,14 @@ class ValueFactory_i(Protocol):
 
     @staticmethod
     def value(*args:Any, **kwargs:Any) -> Value_t | GenFunc:
-        return ValueFactory_i.value_fn(*args, **kwargs) #type:ignore
+        return ValueFactory.value_fn(*args, **kwargs) #type:ignore
 
     @staticmethod
     def sen(*args:Any, **kwargs:Any) -> Sen_t | GenFunc:
-        return ValueFactory_i.sen_fn(*args, **kwargs) #type:ignore
+        return ValueFactory.sen_fn(*args, **kwargs) #type:ignore
 
     @staticmethod
     def set(val_fn:Value_t, sen_fn:Sen_t) -> None:
         logging.info("Setting Factory basics to: %s and %s", val_fn, sen_fn)
-        ValueFactory_i.value_fn = val_fn
-        ValueFactory_i.sen_fn   = sen_fn
+        ValueFactory.value_fn = val_fn
+        ValueFactory.sen_fn   = sen_fn
