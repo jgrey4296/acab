@@ -5,15 +5,18 @@ from os.path import split, splitext
 logging = logmod.getLogger(__name__)
 
 import random
+import warnings
 
 import acab
 import pyparsing as pp
 
-config = acab.setup()
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
 
-if '@pytest_ar' in globals():
-    from acab.core.parsing import debug_funcs as DBF
-    DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+    if '@pytest_ar' in globals():
+        from acab.core.parsing import debug_funcs as DBF
+        DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
 import acab.modules.parsing.exlo.parsers.FactParser as FP
 from acab.core.parsing import parsers as PU

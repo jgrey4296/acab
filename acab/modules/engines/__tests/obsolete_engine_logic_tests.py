@@ -1,18 +1,24 @@
-import unittest
 import logging as logmod
+import unittest
+
 logging = logmod.getLogger(__name__)
 
-from os.path import join, isfile, exists, isdir
-from os.path import split, splitext, expanduser, abspath
-from os import listdir
 import timeit
+import warnings
+from os import listdir
+from os.path import (abspath, exists, expanduser, isdir, isfile, join, split,
+                     splitext)
 
 import acab
-acab.setup()
 
-from acab.core.value.sentence import Sentence
-from acab.core.value.instruction import ProductionStructure
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    acab.setup()
+
 from acab.core.engine.engine import Engine
+from acab.core.value.instruction import ProductionStructure
+from acab.core.value.sentence import Sentence
+
 
 def S(*words):
     return Sentence.build(words)

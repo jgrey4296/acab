@@ -7,26 +7,31 @@ import pyparsing as pp
 logging = logmod.getLogger(__name__)
 logging.setLevel(logmod.DEBUG)
 
+import warnings
+
 import acab
 
-config = acab.setup()
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
 
-if '@pytest_ar' in globals():
-    from acab.core.parsing import debug_funcs as DBF
-    DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+    if '@pytest_ar' in globals():
+        from acab.core.parsing import debug_funcs as DBF
+        DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
 
 import acab.modules.parsing.exlo.parsers.FactParser as FP
 import acab.modules.parsing.exlo.parsers.QueryParser as QP
-from acab.core.value.default_structure import BIND, NEGATION, QUERY_FALLBACK, QUERY, OPERATOR
+from acab.core.parsing import parsers as PU
+from acab.core.parsing.annotation import ValueRepeatAnnotation
+from acab.core.value.default_structure import (BIND, NEGATION, OPERATOR, QUERY,
+                                               QUERY_FALLBACK)
 from acab.core.value.instruction import (Instruction, ProductionComponent,
-                                        ProductionContainer,
-                                        ProductionOperator)
+                                         ProductionContainer,
+                                         ProductionOperator)
 from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue
-from acab.core.parsing import parsers as PU
 from acab.modules.operators import query as QOP
-from acab.core.parsing.annotation import ValueRepeatAnnotation
 
 CONSTRAINT_V     = config.prepare("Parse.Structure", "CONSTRAINT")()
 REGEX_PRIM       = config.prepare("Type.Primitive", "REGEX")()

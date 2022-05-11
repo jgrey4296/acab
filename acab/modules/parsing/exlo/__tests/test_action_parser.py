@@ -9,11 +9,13 @@ logging = logmod.getLogger(__name__)
 
 import acab
 
-acab.setup()
-
-if '@pytest_ar' in globals():
-    from acab.core.parsing import debug_funcs as DBF
-    DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+import warnings
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    acab.setup()
+    if '@pytest_ar' in globals():
+        from acab.core.parsing import debug_funcs as DBF
+        DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
 from acab.core.value import default_structure as DS
 from acab.core.value.instruction import (Instruction, ProductionComponent,

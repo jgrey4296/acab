@@ -7,31 +7,36 @@ import re
 import unittest
 import unittest.mock as mock
 from os.path import split, splitext
+import warnings
 
 logging = logmod.getLogger(__name__)
 
 import acab
 import pyparsing as pp
 
-if '@pytest_ar' in globals():
-    from acab.core.parsing import debug_funcs as DBF
-    DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
+    if '@pytest_ar' in globals():
+        from acab.core.parsing import debug_funcs as DBF
+        DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
 ##############################
 
-config = acab.setup()
 
 # from acab.core.parsing import debug_funcs as DBF
 # DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
 from acab.core.parsing import pyparse_dsl as ppDSL
-from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 from acab.core.parsing.component_dsl import Component_DSL
-from acab.modules.values.string_cache_val import value as StrCaV
-from acab.modules.values.string_cache_val.caching_meta import StringCacheValueMeta
-from acab.interfaces.value import ValueFactory
-from acab.core.value.value import AcabValue
 from acab.core.value.sentence import Sentence
+from acab.core.value.value import AcabValue
+from acab.interfaces.value import ValueFactory
+from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
+from acab.modules.values.string_cache_val import value as StrCaV
+from acab.modules.values.string_cache_val.caching_meta import \
+    StringCacheValueMeta
+
 
 class StringCacheValTest(unittest.TestCase):
 

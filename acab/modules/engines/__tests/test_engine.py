@@ -12,10 +12,15 @@ from unittest.mock import create_autospec
 
 logging = logmod.getLogger(__name__)
 
+import warnings
+
 import acab
 
-config = acab.setup()
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
 
+from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.interfaces.engine import AcabEngine_i
 from acab.modules.engines.basic_engine import AcabBasicEngine
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
@@ -23,7 +28,6 @@ from acab.modules.printing.basic_printer import BasicPrinter
 from acab.modules.printing.default import DEFAULT_PRINTER
 from acab.modules.semantics.basic_system import BasicSemanticSystem
 from acab.modules.semantics.default import DEFAULT_SEMANTICS
-from acab.core.parsing import pyparse_dsl as ppDSL
 
 DSL_Fragment = ppDSL.DSL_Fragment
 

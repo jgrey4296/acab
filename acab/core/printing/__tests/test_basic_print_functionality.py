@@ -9,21 +9,25 @@ from os.path import split, splitext
 logging = logmod.getLogger(__name__)
 ##############################
 
+import warnings
+
 import acab
 
-config = acab.setup()
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
 
 import acab.modules.parsing.exlo.parsers.FactParser as FP
 import acab.modules.printing.printers as Printers
 from acab.core.config.config import AcabConfig
-from acab.core.value.instruction import (ProductionComponent,
-                                                        ProductionContainer,
-                                                        ProductionOperator)
-from acab.core.value.value import AcabValue
-from acab.core.value.instruction import Instruction
-from acab.core.value.sentence import Sentence
-from acab.interfaces.printing import PrintSystem_i
 from acab.core.printing import wrappers as PW
+from acab.core.value.instruction import (Instruction, ProductionComponent,
+                                         ProductionContainer,
+                                         ProductionOperator)
+from acab.core.value.sentence import Sentence
+from acab.core.value.value import AcabValue
+from acab.interfaces.printing import PrintSystem_i
+
 
 class BasicPrintFunctionalityTests(unittest.TestCase):
 

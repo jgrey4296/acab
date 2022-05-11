@@ -1,25 +1,31 @@
 from __future__ import annotations
+
 import logging as logmod
-from os.path import splitext, split, join
 import unittest
+import warnings
+from os.path import join, split, splitext
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
 from unittest import mock
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
 
 import acab
-config = acab.setup()
 
-from acab.modules.parsing.exlo.parsers import FactParser as FP
-from acab.modules.analysis.typing.parsing import TypeDefParser as TDP
-from acab.modules.analysis.typing.parsing import TypeParser as TP
-from acab.modules.analysis.typing import util as TYU
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
+
 from acab.core.parsing.annotation import ValueAnnotation
 from acab.core.value import default_structure as DS
-
 from acab.core.value.sentence import Sentence
-from acab.modules.analysis.typing.values.definition import TypeDefinition, SumTypeDefinition, OperatorDefinition, TypeClass
+from acab.modules.analysis.typing import util as TYU
+from acab.modules.analysis.typing.parsing import TypeDefParser as TDP
+from acab.modules.analysis.typing.parsing import TypeParser as TP
+from acab.modules.analysis.typing.values.definition import (OperatorDefinition,
+                                                            SumTypeDefinition,
+                                                            TypeClass,
+                                                            TypeDefinition)
+from acab.modules.parsing.exlo.parsers import FactParser as FP
 
 TDP.HOTLOAD_SEN        << FP.SENTENCE
 TP.HOTLOAD_SEN         << FP.SENTENCE

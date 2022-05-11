@@ -3,12 +3,15 @@ from __future__ import annotations
 import logging as logmod
 import unittest
 import unittest.mock as mock
+import warnings
 from functools import partial
 from os.path import split, splitext
 
 from acab import setup
 
-config = setup()
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = setup()
 
 from acab.core.data.acab_struct import AcabNode
 from acab.core.parsing import pyparse_dsl as ppDSL

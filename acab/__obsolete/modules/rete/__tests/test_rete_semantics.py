@@ -10,12 +10,14 @@ from enum import Enum
 from os.path import split, splitext
 
 import acab
-
-config = acab.setup()
+import warnings
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
 
 from acab.core.data.acab_struct import BasicNodeStruct
-from acab.core.value.instruction import Instruction, ProductionComponent
 from acab.core.data.node import AcabNode
+from acab.core.value.instruction import Instruction, ProductionComponent
 from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue
 from acab.interfaces.handler_system import Handler

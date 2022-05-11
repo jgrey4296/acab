@@ -5,9 +5,13 @@ from os.path import split, splitext
 
 logging = logmod.getLogger(__name__)
 
+import warnings
+
 import acab
 
-config = acab.setup()
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
 
 import acab.core.value.default_structure as DS
 from acab.core.data.node import AcabNode

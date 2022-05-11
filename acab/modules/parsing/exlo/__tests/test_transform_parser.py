@@ -1,26 +1,34 @@
-import unittest
-from os.path import splitext, split
 import logging as logmod
+import unittest
+from os.path import split, splitext
+
 logging = logmod.getLogger(__name__)
 
 import re
-import pyparsing as pp
+import warnings
+
 import acab
-config = acab.setup()
+import pyparsing as pp
 
-if '@pytest_ar' in globals():
-    from acab.core.parsing import debug_funcs as DBF
-    DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
 
-from acab.core.value import default_structure as DS
-from acab.core.value.value import AcabValue
-from acab.core.value.sentence import Sentence
-from acab.core.value.instruction import ProductionOperator, ProductionContainer, ProductionComponent
+    if '@pytest_ar' in globals():
+        from acab.core.parsing import debug_funcs as DBF
+        DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+
 from acab.core.parsing import parsers as PU
-
-from acab.modules.parsing.exlo.parsers import TransformParser as TP
+from acab.core.value import default_structure as DS
+from acab.core.value.instruction import (ProductionComponent,
+                                         ProductionContainer,
+                                         ProductionOperator)
+from acab.core.value.sentence import Sentence
+from acab.core.value.value import AcabValue
 from acab.modules.parsing.exlo.parsers import ActionParser as AP
 from acab.modules.parsing.exlo.parsers import FactParser as FP
+from acab.modules.parsing.exlo.parsers import TransformParser as TP
+
 
 class Trie_Transform_Parser_Tests(unittest.TestCase):
 

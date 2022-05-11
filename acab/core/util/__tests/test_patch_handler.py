@@ -1,18 +1,22 @@
+import inspect
 import logging as logmod
 import unittest
 from os.path import split, splitext
 from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
                     Mapping, Match, MutableMapping, Sequence, Tuple, TypeVar,
                     cast)
-import inspect
 from unittest import mock
 
 logging = logmod.getLogger(__name__)
 
+import warnings
+
 from acab import setup
 from acab.interfaces.handler_system import Handler_i
 
-config                 = setup()
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config                 = setup()
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 HandlerConfigSpec      = config.prepare("Imports.Targeted", "handler", actions=[config.actions_e.IMCLASS], args={"interface": Handler_i})
 config.override(HandlerConfigSpec, "acab.core.util.patch_handler.PatchHandler")

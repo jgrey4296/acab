@@ -1,15 +1,22 @@
-from os.path import splitext, split
-import unittest
 import logging as logmod
+import unittest
+from os.path import split, splitext
+
 logging = logmod.getLogger(__name__)
 
+import warnings
+
 import acab
-config = acab.setup()
+
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
 
 from acab.core.value.value import AcabValue
-from acab.modules.context.context_set import ContextSet
-from acab.modules.context.context_instance import ContextInstance
 from acab.error.context import AcabContextException
+from acab.modules.context.context_instance import ContextInstance
+from acab.modules.context.context_set import ContextSet
+
 
 class ContextsTests(unittest.TestCase):
 

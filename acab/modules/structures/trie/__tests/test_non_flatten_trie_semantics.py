@@ -19,8 +19,10 @@ import unittest.mock as mock
 from os.path import split, splitext
 
 import acab
-
-config = acab.setup()
+import warnings
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
 
 from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.data.node import AcabNode

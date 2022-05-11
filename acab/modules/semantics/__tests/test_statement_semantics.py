@@ -12,7 +12,10 @@ from os.path import split, splitext
 import acab
 
 logging = logmod.getLogger(__name__)
-config = acab.setup()
+import warnings
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
 
 import acab.modules.semantics.statements as ASem
 from acab.core.data.acab_struct import BasicNodeStruct

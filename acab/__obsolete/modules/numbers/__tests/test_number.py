@@ -6,7 +6,10 @@ logging = logmod.getLogger(__name__)
 
 
 import acab
-acab.setup()
+import warnings
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    acab.setup()
 
 from acab.modules.values.numbers.parsing import NumberParser as NP
 

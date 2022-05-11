@@ -18,8 +18,10 @@ import timeit
 logging = logmod.getLogger(__name__)
 
 import acab
-
-config = acab.setup()
+import warnings
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
 
 from acab.modules.engines.basic_engine import AcabBasicEngine
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser

@@ -7,11 +7,15 @@ from enum import Enum
 from os.path import split, splitext
 
 logging = logmod.getLogger(__name__)
+import warnings
+
 import acab
 ##############################
 import pyparsing as pp
 
-config = acab.setup()
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
 
 # from acab.core.parsing import debug_funcs as DBF
 # DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)

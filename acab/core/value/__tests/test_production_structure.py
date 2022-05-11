@@ -8,18 +8,23 @@ import unittest.mock as mock
 from dataclasses import InitVar, dataclass, field
 from os.path import split, splitext
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
-                    Iterable, Iterator, Mapping, Match, MutableMapping, Type, NewType,
-                    Protocol, Sequence, Tuple, TypeAlias, TypeGuard, TypeVar,
-                    cast, final, overload, runtime_checkable)
+                    Iterable, Iterator, Mapping, Match, MutableMapping,
+                    NewType, Protocol, Sequence, Tuple, Type, TypeAlias,
+                    TypeGuard, TypeVar, cast, final, overload,
+                    runtime_checkable)
 
 logging = logmod.getLogger(__name__)
+import warnings
+
 from acab import setup
 from acab import types as AT
 
-config = setup()
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = setup()
 
-from acab.core.value import instruction as PO
 from acab.core.value import default_structure as DS
+from acab.core.value import instruction as PO
 from acab.core.value.instruction import Instruction
 from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue

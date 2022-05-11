@@ -1,20 +1,24 @@
+import logging as logmod
 import unittest
 import unittest.mock as mock
-from os.path import splitext, split
-import logging as logmod
+from os.path import split, splitext
+
 logging = logmod.getLogger(__name__)
 
+import warnings
 from math import isclose
 
 import acab
-acab.setup()
 
-from acab.core.value.value import AcabValue
-from acab.core.value.instruction import ProductionStructure
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    acab.setup()
 
-from acab.core.engine.engine import Engine
-import acab.modules.parsing.exlo.TransformParser as TP
 import acab.modules.parsing.exlo.ActionParser as AP
+import acab.modules.parsing.exlo.TransformParser as TP
+from acab.core.engine.engine import Engine
+from acab.core.value.instruction import ProductionStructure
+from acab.core.value.value import AcabValue
 
 
 class Engine_Tests(unittest.TestCase):

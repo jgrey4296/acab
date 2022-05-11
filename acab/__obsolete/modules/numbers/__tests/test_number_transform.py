@@ -6,7 +6,10 @@ import logging as logmod
 logging = logmod.getLogger(__name__)
 
 import acab
-acab.setup()
+import warnings
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    acab.setup()
 
 from acab.core.value.value import AcabValue
 from acab.core.value.sentence import Sentence

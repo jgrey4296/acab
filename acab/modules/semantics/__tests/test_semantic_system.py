@@ -10,8 +10,10 @@ logging = logmod.getLogger(__name__)
 sys.path.append(abspath(expanduser("~/github/acab")))
 
 import acab
-
-config = acab.setup()
+import warnings
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
 
 import acab.core.value.default_structure as DS
 import acab.error.base as AE

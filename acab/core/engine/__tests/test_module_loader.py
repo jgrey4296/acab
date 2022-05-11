@@ -1,16 +1,21 @@
 #!/usr/bin/env python3
+import logging as logmod
 import unittest
+from os.path import split, splitext
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
-from os.path import splitext, split
 from unittest import mock
-import logging as logmod
+
 logging = logmod.getLogger(__name__)
+
+import warnings
 
 import acab
 
-acab.setup()
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    acab.setup()
 
 from acab.core.engine.module_loader import ModuleLoader
 

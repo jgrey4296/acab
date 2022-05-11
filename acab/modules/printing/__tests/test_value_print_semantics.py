@@ -13,8 +13,10 @@ logging = logmod.getLogger(__name__)
 ##############################
 
 import acab
-
-config = acab.setup()
+import warnings
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
 
 
 import acab.modules.parsing.exlo.parsers.ActionParser as AP

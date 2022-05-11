@@ -6,15 +6,19 @@ from os.path import split, splitext
 
 logging = logmod.getLogger(__name__)
 
+import warnings
+
 import acab
 
-config = acab.setup()
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
 
-from acab.core.value.default_structure import BIND, FLATTEN
-from acab.core.value.value import AcabValue
-from acab.core.value.sentence import Sentence
-from acab.interfaces.value import Sentence_i, Value_i
 from acab.core.parsing import pyparse_dsl as ppDSL
+from acab.core.value.default_structure import BIND, FLATTEN
+from acab.core.value.sentence import Sentence
+from acab.core.value.value import AcabValue
+from acab.interfaces.value import Sentence_i, Value_i
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 
 dsl = None

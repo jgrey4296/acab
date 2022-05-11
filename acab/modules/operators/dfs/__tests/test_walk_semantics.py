@@ -4,6 +4,7 @@
 import logging as logmod
 import unittest
 import unittest.mock as mock
+import warnings
 from os.path import split, splitext
 
 import pyparsing as pp
@@ -12,18 +13,23 @@ logging = logmod.getLogger(__name__)
 
 if '@pytest_ar' in globals():
     from acab.core.parsing import debug_funcs as DBF
-    DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+
 
 import acab
 
-config = acab.setup()
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
 
-from acab.core.value.instruction import (Instruction, ProductionComponent,
-                                        ProductionContainer)
+from acab.core.parsing.annotation import ValueRepeatAnnotation
 from acab.core.value import default_structure as DS
+from acab.core.value.instruction import (Instruction, ProductionComponent,
+                                         ProductionContainer)
 from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue
-from acab.core.parsing.annotation import ValueRepeatAnnotation
 from acab.modules.engines.configured import exlo
 from acab.modules.operators.dfs import parser as DOP
 from acab.modules.operators.dfs.semantics import DFSSemantics

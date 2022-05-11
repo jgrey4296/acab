@@ -10,7 +10,11 @@ import logging as logmod
 logging = logmod.getLogger(__name__)
 
 import acab
-config = acab.setup()
+import warnings
+
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
 
 from acab.interfaces.data import Structure_i, Node_i
 from acab.core.data.acab_struct import BasicNodeStruct

@@ -1,20 +1,23 @@
 import logging as logmod
 import unittest
 import unittest.mock as mock
+import warnings
 from functools import partial
 from os.path import split, splitext
 
 from acab import setup
 
-config = setup()
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = setup()
 
 
 from acab.core.data.acab_struct import AcabNode
+from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.core.value.default_structure import BIND
-from acab.core.value.value import AcabValue
 from acab.core.value.instruction import Instruction
 from acab.core.value.sentence import Sentence
-from acab.core.parsing import pyparse_dsl as ppDSL
+from acab.core.value.value import AcabValue
 from acab.modules.analysis.typing.module import TypingDSL
 from acab.modules.context.context_instance import ContextInstance as CtxIns
 from acab.modules.context.context_instance import MutableContextInstance
