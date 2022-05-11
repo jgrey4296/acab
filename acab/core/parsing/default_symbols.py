@@ -5,7 +5,7 @@ from config files
 from acab.core.config.config import AcabConfig
 config = AcabConfig()
 
-SymbolDict      = config.prepare("Symbols", as_dict=True)()
+SymbolDict      = config.prepare("Symbols", _type=dict)()
 
 OPERATOR_SYNTAX = config.prepare("Parse.Patterns", "OPERATOR_SYNTAX")()
 WORD_COMPONENT  = config.prepare("Parse.Patterns", "WORD_COMPONENT")()

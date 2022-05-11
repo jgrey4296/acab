@@ -74,10 +74,10 @@ def setup(location:str=None,
         except ImportError:
             logging.debug("Rich Module not found, using default exception handler")
 
-    from acab.interfaces.value import ValueFactory_i
+    from acab.interfaces.value import ValueFactory
     from acab.core.value.sentence import Sentence
     from acab.core.value.value import AcabValue
-    ValueFactory_i.set(AcabValue, Sentence)
+    ValueFactory.set(AcabValue, Sentence)
 
     return config
 

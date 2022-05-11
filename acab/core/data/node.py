@@ -14,10 +14,8 @@ import acab.interfaces.data as DI
 import acab.interfaces.value as VI
 from acab import types as AT
 from acab.core.config.config import AcabConfig
-from acab.core.value.sentence import Sentence
-from acab.core.value.value import AcabValue
 from acab.core.util.decorators.util import cache
-from acab.core.value.factory import ValueFactory as VF
+from acab.interfaces.value import ValueFactory as VF
 from acab.core.util.debugging import logdel
 
 logging                = logmod.getLogger(__name__)

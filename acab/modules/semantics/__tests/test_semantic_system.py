@@ -3,14 +3,17 @@ import logging as logmod
 import sys
 import unittest
 from os.path import abspath, expanduser, split, splitext
+from enum import Enum
 
 logging = logmod.getLogger(__name__)
 
 sys.path.append(abspath(expanduser("~/github/acab")))
 
 import acab
-
-config = acab.setup()
+import warnings
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
 
 import acab.core.value.default_structure as DS
 import acab.error.base as AE
@@ -28,7 +31,7 @@ from acab.modules.semantics.values import ExclusionNodeSemantics
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 
 EXOP            = config.attr.MODAL.exop
-EXOP_enum       = config.prepare(EXOP, as_enum=True)()
+EXOP_enum       = config.prepare(EXOP, _type=Enum)()
 
 NEGATION_V      = DS.NEGATION
 BIND_V          = DS.BIND
@@ -59,12 +62,17 @@ class SemanticSystemTests(unittest.TestCase):
     def setUpClass(cls):
         LOGLEVEL      = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+        cls.file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
 
-        file_h.setLevel(LOGLEVEL)
+        cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
-        logging.root.addHandler(file_h)
         logging.root.setLevel(logmod.NOTSET)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
+        logging.root.addHandler(cls.file_h)
+
+    @classmethod
+    def tearDownClass(cls):
+        logmod.root.removeHandler(cls.file_h)
 
     def test_construction(self):
         """ Check context systems can be created """

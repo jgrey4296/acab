@@ -1,20 +1,23 @@
 import logging as logmod
 import unittest
 import unittest.mock as mock
+import warnings
 from functools import partial
 from os.path import split, splitext
 
 from acab import setup
 
-config = setup()
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = setup()
 
 
 from acab.core.data.acab_struct import AcabNode
+from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.core.value.default_structure import BIND
-from acab.core.value.value import AcabValue
 from acab.core.value.instruction import Instruction
 from acab.core.value.sentence import Sentence
-from acab.core.parsing import pyparse_dsl as ppDSL
+from acab.core.value.value import AcabValue
 from acab.modules.analysis.typing.module import TypingDSL
 from acab.modules.context.context_instance import ContextInstance as CtxIns
 from acab.modules.context.context_instance import MutableContextInstance
@@ -33,18 +36,23 @@ class UnifyUtilTests(unittest.TestCase):
     def setUpClass(cls):
         LOGLEVEL      = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+        cls.file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
 
-        file_h.setLevel(LOGLEVEL)
+        cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
-        logging.root.addHandler(file_h)
         logging.root.setLevel(logmod.NOTSET)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
+        logging.root.addHandler(cls.file_h)
 
         global dsl
         # Set up the parser to ease test setup
         dsl   = ppDSL.PyParseDSL()
         dsl.register(EXLO_Parser).register(TypingDSL)
         dsl.build()
+
+    @classmethod
+    def tearDownClass(cls):
+        logmod.root.removeHandler(cls.file_h)
 
     def setUp(self):
         return 1

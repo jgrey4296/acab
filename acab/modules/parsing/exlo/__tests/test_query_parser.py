@@ -7,26 +7,31 @@ import pyparsing as pp
 logging = logmod.getLogger(__name__)
 logging.setLevel(logmod.DEBUG)
 
+import warnings
+
 import acab
 
-config = acab.setup()
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
 
-if '@pytest_ar' in globals():
-    from acab.core.parsing import debug_funcs as DBF
-    DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+    if '@pytest_ar' in globals():
+        from acab.core.parsing import debug_funcs as DBF
+        DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
 
 import acab.modules.parsing.exlo.parsers.FactParser as FP
 import acab.modules.parsing.exlo.parsers.QueryParser as QP
-from acab.core.value.default_structure import BIND, NEGATION, QUERY_FALLBACK, QUERY, OPERATOR
+from acab.core.parsing import parsers as PU
+from acab.core.parsing.annotation import ValueRepeatAnnotation
+from acab.core.value.default_structure import (BIND, NEGATION, OPERATOR, QUERY,
+                                               QUERY_FALLBACK)
 from acab.core.value.instruction import (Instruction, ProductionComponent,
-                                        ProductionContainer,
-                                        ProductionOperator)
+                                         ProductionContainer,
+                                         ProductionOperator)
 from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue
-from acab.core.parsing import parsers as PU
 from acab.modules.operators import query as QOP
-from acab.core.parsing.annotation import ValueRepeatAnnotation
 
 CONSTRAINT_V     = config.prepare("Parse.Structure", "CONSTRAINT")()
 REGEX_PRIM       = config.prepare("Type.Primitive", "REGEX")()
@@ -38,17 +43,19 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
     def setUpClass(cls):
         LOGLEVEL      = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+        cls.file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
 
-        file_h.setLevel(LOGLEVEL)
+        cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
-        logging.root.addHandler(file_h)
         logging.root.setLevel(logmod.NOTSET)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
+        logging.root.addHandler(cls.file_h)
 
         QP.HOTLOAD_QUERY_OP << PU.OPERATOR_SUGAR
 
     @classmethod
     def tearDownClass(cls):
+        logmod.root.removeHandler(cls.file_h)
         QP.HOTLOAD_QUERY_OP << pp.Empty()
     #----------
     #use testcase snippets

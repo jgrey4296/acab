@@ -7,7 +7,7 @@ Basic Implementations of the handler system protocol
 from __future__ import annotations
 import logging as logmod
 from dataclasses import InitVar, dataclass, field, replace
-from enum import Enum
+from enum import Enum, EnumMeta
 from types import MethodType
 from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
                     Mapping, Match, MutableMapping, NewType, Protocol,

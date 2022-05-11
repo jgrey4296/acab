@@ -1,15 +1,23 @@
-from os.path import splitext, split
-import unittest
 import logging as logmod
+import unittest
+from os.path import split, splitext
+
 logging = logmod.getLogger(__name__)
+logging.setLevel(logmod.DEBUG)
+
+import warnings
 
 import acab
-config = acab.setup()
+
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
 
 from acab.core.value.value import AcabValue
-from acab.modules.context.context_set import ContextSet
-from acab.modules.context.context_instance import ContextInstance
 from acab.error.context import AcabContextException
+from acab.modules.context.context_instance import ContextInstance
+from acab.modules.context.context_set import ContextSet
+
 
 class ContextsTests(unittest.TestCase):
 
@@ -17,12 +25,18 @@ class ContextsTests(unittest.TestCase):
     def setUpClass(cls):
         LOGLEVEL      = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+        cls.file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
 
-        file_h.setLevel(LOGLEVEL)
+        cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
-        logging.root.addHandler(file_h)
         logging.root.setLevel(logmod.NOTSET)
+        if bool(logmod.root.handlers):
+            logmod.root.handlers[0].setLevel(logmod.WARNING)
+        logging.root.addHandler(cls.file_h)
+
+    @classmethod
+    def tearDownClass(cls):
+        logmod.root.removeHandler(cls.file_h)
 
     #----------
     def test_set_basic(self):

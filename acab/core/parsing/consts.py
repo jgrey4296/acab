@@ -6,12 +6,15 @@ import pyparsing as pp
 from acab.core.config.config import AcabConfig
 import acab.core.parsing.default_keys as DS
 import acab.core.parsing.default_symbols as DSYM
-import acab.core.parsing.debug_funcs as DBF
 
 
 logging = logmod.getLogger(__name__)
 
 config = AcabConfig()
+
+if config.prepare("Parse", "DEBUG_PARSERS", _type=bool)():
+    import acab.core.parsing.debug_funcs as DBF
+    DBF.debug_pyparsing()
 
 COMMENT_RE       = config.prepare("Parse.Patterns", "COMMENT_RE", actions=[config.actions_e.STRIPQUOTE, AcabConfig.actions_e.UNESCAPE])()
 WORD_COMPONENT_S = config.prepare("Parse.Patterns", "WORD_COMPONENT")()
@@ -19,8 +22,6 @@ WHITE_SPACE      = config.prepare("Parse.Patterns", "WHITE_SPACE", actions=[conf
 TAB_S            = config.prepare("Parse.Patterns", "TAB", actions=[config.actions_e.STRIPQUOTE])()
 pp.ParserElement.set_default_whitespace_chars(WHITE_SPACE)
 
-if config.prepare("Parse", "DEBUG_PARSERS", actions=[config.actions_e.BOOL])():
-    DBF.debug_pyparsing()
 
 
 

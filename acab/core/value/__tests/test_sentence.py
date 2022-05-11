@@ -6,15 +6,19 @@ from os.path import split, splitext
 
 logging = logmod.getLogger(__name__)
 
+import warnings
+
 import acab
 
-config = acab.setup()
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
 
-from acab.core.value.default_structure import BIND, FLATTEN
-from acab.core.value.value import AcabValue
-from acab.core.value.sentence import Sentence
-from acab.interfaces.value import Sentence_i, Value_i
 from acab.core.parsing import pyparse_dsl as ppDSL
+from acab.core.value.default_structure import BIND, FLATTEN
+from acab.core.value.sentence import Sentence
+from acab.core.value.value import AcabValue
+from acab.interfaces.value import Sentence_i, Value_i
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 
 dsl = None
@@ -25,12 +29,13 @@ class SentenceTests(unittest.TestCase):
     def setUpClass(cls):
         LOGLEVEL      = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+        cls.file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
 
-        file_h.setLevel(LOGLEVEL)
+        cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
-        logging.root.addHandler(file_h)
         logging.root.setLevel(logmod.NOTSET)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
+        logging.root.addHandler(cls.file_h)
 
         global dsl
         # Set up the parser to ease test setup
@@ -38,6 +43,11 @@ class SentenceTests(unittest.TestCase):
         dsl.register(EXLO_Parser)
         dsl.build()
         # dsl()
+
+    @classmethod
+    def tearDownClass(cls):
+        logmod.root.removeHandler(cls.file_h)
+
 
     def test_construction(self):
         """ check simple sentence construction """

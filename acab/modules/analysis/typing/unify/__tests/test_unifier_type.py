@@ -1,30 +1,31 @@
 # https://docs.python.org/3/library/unittest.html
 # https://docs.python.org/3/library/unittest.mock.html
 
-from os.path import splitext, split
-
+import logging as logmod
 import unittest
 import unittest.mock as mock
-
-import logging as logmod
+import warnings
+from os.path import split, splitext
 
 from acab import setup
-config = setup()
 
-from acab.core.value.value import AcabValue
-
-from ... import exceptions as TE
-from .. import unifier as unify
-from .. import simple_unify_fns as suf
-from .. import type_unify_fns as tuf
-from .. import util
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = setup()
 
 from acab.core.parsing import pyparse_dsl as ppDSL
-from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
+from acab.core.parsing.annotation import ValueAnnotation
+from acab.core.value import default_structure as DS
+from acab.core.value.value import AcabValue
 from acab.modules.analysis.typing.module import TypingDSL
 from acab.modules.context.context_set import ContextInstance as CtxIns
-from acab.core.value import default_structure as DS
-from acab.core.parsing.annotation import ValueAnnotation
+from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
+
+from ... import exceptions as TE
+from .. import simple_unify_fns as suf
+from .. import type_unify_fns as tuf
+from .. import unifier as unify
+from .. import util
 
 dsl = None
 
@@ -34,17 +35,22 @@ class UnifierTests(unittest.TestCase):
     def setUpClass(cls):
         LOGLEVEL      = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+        cls.file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
 
-        file_h.setLevel(LOGLEVEL)
+        cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
-        logging.root.addHandler(file_h)
         logging.root.setLevel(logmod.NOTSET)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
+        logging.root.addHandler(cls.file_h)
 
         global dsl
         dsl   = ppDSL.PyParseDSL()
         dsl.register(EXLO_Parser).register(TypingDSL)
         dsl.build()
+
+    @classmethod
+    def tearDownClass(cls):
+        logmod.root.removeHandler(cls.file_h)
 
     def setUp(self):
         return 1

@@ -11,20 +11,15 @@ from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
 from uuid import UUID, uuid1
 from weakref import ref
 
-import acab.core.value.default_structure as DS
 import acab.core.util.part_implementations.sentence as SSI  # type:ignore
-import acab.core.util.part_implementations.value as VSI
+import acab.core.value.default_structure as DS
 import acab.interfaces.value as VI
 from acab import types as AT
 from acab.core.config.config import AcabConfig
-from acab.core.value.util import name_sieve_fns
-from acab.core.value.value import AcabValue
-from acab.core.util.decorators.util import cache
-from acab.error.base import AcabBasicException
-from acab.interfaces.sieve import AcabSieve
-from acab.error.protocol import AcabProtocolError as APE
-from acab.core.value.factory import ValueFactory
 from acab.core.value.value_meta import ValueMeta
+from acab.error.base import AcabBasicException
+from acab.error.protocol import AcabProtocolError as APE
+from acab.interfaces.value import ValueFactory
 
 logging        = logmod.getLogger(__name__)
 
@@ -53,7 +48,7 @@ class Sentence(SSI.SentenceProtocolsImpl, VI.Sentence_i, metaclass=ValueMeta):
     def _preprocess(cls, *args, **kwargs):
         value = args[0] or []
         assert(isinstance(value, Iterable))
-        processed = [VI.ValueFactory_i.value(x) for x in value]
+        processed = [VI.ValueFactory.value(x) for x in value]
         return processed
 
     def match(self, sen:Sen_A) -> list[Tuple[Value_A, Value_A]]:
@@ -82,6 +77,12 @@ class Sentence(SSI.SentenceProtocolsImpl, VI.Sentence_i, metaclass=ValueMeta):
 
 
     def __lshift__(self, other):
+        """
+        For easy programmatic creation of sentences:
+
+        a_sen = Sentence(data=...) << "a" << "test" << ["sentence", "also", "handles", "lists"]
+        a_sen == "_:a.test.sentence.also.handles.lists"
+        """
         if not isinstance(other, list):
             other = [other]
         words = self.words + other

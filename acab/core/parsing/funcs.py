@@ -5,19 +5,18 @@ Defines functions for parsers and parse -> data transform
 """
 import logging as logmod
 
+import acab.core.parsing.default_keys as PDS
+import acab.core.value.default_structure as DS
 import pyparsing as pp
 from acab.core.config.config import AcabConfig
-from acab.core.value.instruction import (ProductionComponent,
-                                       ProductionContainer,
-                                       ProductionStructure)
-from acab.interfaces import value as VI
-from acab.core.value.value import AcabValue
 from acab.core.parsing import consts as PConst
-from acab.core.value.default_structure import TYPE_BASE
 from acab.core.parsing.annotation import ValueAnnotation
-import acab.core.value.default_structure as DS
-import acab.core.parsing.default_keys as PDS
-from acab.core.value.factory import ValueFactory
+from acab.core.value.default_structure import TYPE_BASE
+from acab.core.value.instruction import (ProductionComponent,
+                                         ProductionContainer,
+                                         ProductionStructure)
+from acab.interfaces import value as VI
+from acab.interfaces.value import ValueFactory
 
 logging = logmod.getLogger(__name__)
 

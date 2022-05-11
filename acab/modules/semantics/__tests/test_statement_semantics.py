@@ -6,12 +6,16 @@ sys.path.append(abspath(expanduser("~/github/acab")))
 import logging as logmod
 import unittest
 import unittest.mock as mock
+from enum import Enum
 from os.path import split, splitext
 
 import acab
 
 logging = logmod.getLogger(__name__)
-config = acab.setup()
+import warnings
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
 
 import acab.modules.semantics.statements as ASem
 from acab.core.data.acab_struct import BasicNodeStruct
@@ -20,7 +24,6 @@ from acab.core.semantics import basic
 from acab.core.util.decorators.semantic import (OperatorArgUnWrap,
                                                 OperatorResultWrap)
 from acab.core.value import default_structure as DS
-from acab.core.value.factory import ValueFactory
 from acab.core.value.instruction import (ActionOperator, Instruction,
                                          ProductionComponent,
                                          ProductionContainer,
@@ -31,6 +34,7 @@ from acab.core.value.value import AcabValue
 from acab.error.base import AcabBasicException
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces.semantic import SemanticSystem_i, StatementSemantics_i
+from acab.interfaces.value import ValueFactory
 from acab.modules.context import context_delayed_actions
 from acab.modules.context.context_set import (ConstraintCollection,
                                               ContextInstance, ContextSet)
@@ -45,7 +49,7 @@ from acab.modules.structures.trie.semantics import FlattenBreadthTrieSemantics
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 
 EXOP         = config.prepare("MODAL", "exop")()
-EXOP_enum    = config.prepare(EXOP, as_enum=True)()
+EXOP_enum    = config.prepare(EXOP, _type=Enum)()
 
 NEGATION_V      = DS.NEGATION
 BIND_V          = DS.BIND
@@ -78,12 +82,17 @@ class StatementSemanticTests(unittest.TestCase):
     def setUpClass(cls):
         LOGLEVEL      = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+        cls.file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
 
-        file_h.setLevel(LOGLEVEL)
+        cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
-        logging.root.addHandler(file_h)
         logging.root.setLevel(logmod.NOTSET)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
+        logging.root.addHandler(cls.file_h)
+
+    @classmethod
+    def tearDownClass(cls):
+        logmod.root.removeHandler(cls.file_h)
 
     def test_transform(self):
         """ Check transforms semantics work """

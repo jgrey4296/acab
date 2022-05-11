@@ -9,12 +9,11 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 from uuid import uuid1
 
 import pyparsing as pp
+from acab.interfaces.value import ValueFactory
 import acab.core.value.default_structure as DS
 from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.core.value.instruction import Instruction
-from acab.core.value.sentence import Sentence
-from acab.core.value.value import AcabValue
 from acab.core.parsing.consts import s, s_key
 from acab.error.semantic import AcabSemanticException
 from acab.modules.context.context_instance import (ContextInstance,
@@ -41,7 +40,7 @@ def gen_var() -> Callable[[], AT.Sentence]:
         nonlocal counter
         new_name = "GenVar_{}".format(counter)
         counter += 1
-        return Sentence() << AcabValue(new_name, data={DS.BIND:True})
+        return ValueFactory.sen() << ValueFactory.value(new_name, data={DS.BIND:True})
 
     return wrapped
 

@@ -1,20 +1,24 @@
+import logging as logmod
 import unittest
 import unittest.mock as mock
-from os.path import splitext, split
-import logging as logmod
+from os.path import split, splitext
+
 logging = logmod.getLogger(__name__)
 
+import warnings
 from math import isclose
 
 import acab
-acab.setup()
 
-from acab.core.value.value import AcabValue
-from acab.core.value.instruction import ProductionStructure
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    acab.setup()
 
-from acab.core.engine.engine import Engine
-import acab.modules.parsing.exlo.TransformParser as TP
 import acab.modules.parsing.exlo.ActionParser as AP
+import acab.modules.parsing.exlo.TransformParser as TP
+from acab.core.engine.engine import Engine
+from acab.core.value.instruction import ProductionStructure
+from acab.core.value.value import AcabValue
 
 
 class Engine_Tests(unittest.TestCase):
@@ -23,12 +27,17 @@ class Engine_Tests(unittest.TestCase):
     def setUpClass(cls):
         LOGLEVEL      = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+        cls.file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
 
-        file_h.setLevel(LOGLEVEL)
+        cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
-        logging.root.addHandler(file_h)
         logging.root.setLevel(logmod.NOTSET)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
+        logging.root.addHandler(cls.file_h)
+
+    @classmethod
+    def tearDownClass(cls):
+        logmod.root.removeHandler(cls.file_h)
 
     def setUp(self):
         self.e = Engine()

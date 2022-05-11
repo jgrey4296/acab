@@ -3,16 +3,18 @@
 from __future__ import annotations
 
 import logging
+import warnings
+from collections import defaultdict
+from string import Formatter
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     Iterable, Iterator, Mapping, Match, MutableMapping,
                     Protocol, Sequence, Tuple, TypeAlias, TypeGuard, TypeVar,
                     cast, final, overload, runtime_checkable)
-from collections import defaultdict
-from string import Formatter
+
 import _string
 
 try:
-    from sty import fg, rs, bg, ef
+    from sty import bg, ef, fg, rs
     COLOUR_RESET = rs.all
     LEVEL_MAP = {
         logging.DEBUG    : fg.grey,
@@ -107,7 +109,7 @@ class AcabMinimalLogRecord(logging.LogRecord):
         Install the log record, capable of handling
         both % and .format style messages
         """
-        logging.warning("Installing %s", cls.__name__)
+        warnings.warn(f"Installing {cls.__name__}", stacklevel=3)
         logging.setLogRecordFactory(cls)
 
     def getMessage(self, colour=True):
@@ -134,7 +136,7 @@ class AcabMinimalLogRecord(logging.LogRecord):
 class AcabLogRecord(AcabMinimalLogRecord):
     """
     Custom LogRecord which provides
-    \.shortname : attribute of just the last 25 characters of the logging path
+    \\.shortname : attribute of just the last 25 characters of the logging path
     (for aligning log files nicely)
 
     % and {} style formatting of the log message, using AcabStringFormatter.
@@ -151,7 +153,7 @@ class AcabLogRecord(AcabMinimalLogRecord):
         Install the log record, capable of handling
         both % and .format style messages
         """
-        logging.warning("Installing %s", cls.__name__)
+        warnings.warn(f"Installing {cls.__name__}", stacklevel=2)
         logging.setLogRecordFactory(cls)
 
     def __init__(self, *args, **kwargs):

@@ -97,11 +97,11 @@ class ValueMeta(ProtocolMeta):
         """ Standardized conversion of tags and params to values """
         if params is None:
             params = []
-        param_vals : list[VI.Value_i[str]] = list([VI.ValueFactory_i.value(x, data={DS.BIND:True}) for x in params])
+        param_vals : list[VI.Value_i[str]] = list([VI.ValueFactory.value(x, data={DS.BIND:True}) for x in params])
 
         if tags is None:
             tags = []
-        tag_vals : list[VI.Value_i[str]] = [VI.ValueFactory_i.value(x) for x in tags]
+        tag_vals : list[VI.Value_i[str]] = [VI.ValueFactory.value(x) for x in tags]
         tag_set : set[VI.Value_i[str]]   = frozenset(tag_vals)
 
         return tag_set, param_vals
