@@ -39,11 +39,10 @@ snap_a = None
 def display_memory(self):
     """
     A Post Command Hook for ReplCommander, to print the current and peak memory
-    usage. Resets the Peak.
+    usage.
     """
     global snap_a
     traced  = tracemalloc.get_traced_memory()
-    tracemalloc.reset_peak()
     print("Memory: Current: {:<5}, Peak: {:<5}".format(human(traced[0]), human(traced[1])))
 
 @register
@@ -61,6 +60,9 @@ def do_memstat(self, line):
     """
     Print the top 20 File based memory statistics
     """
+    if not tracemalloc.is_tracing():
+        print("Call memstat after starting memory tracing with `memory`")
+        return
     current = tracemalloc.take_snapshot().filter_traces(sh_filter)
     print("\nBy Filename --------------------")
     for stat in current.statistics("filename")[:20]:
