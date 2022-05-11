@@ -10,12 +10,6 @@ import pyparsing as pp
 
 logging = logmod.getLogger(__name__)
 
-if '@pytest_ar' in globals():
-    from acab.core.parsing import debug_funcs as DBF
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
-
 import warnings
 
 import acab
@@ -23,6 +17,10 @@ import acab
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
+    if '@pytest_ar' in globals():
+        from acab.core.parsing import debug_funcs as DBF
+        DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+
 
 import acab.core.value.default_structure as DS
 from acab.core.parsing.pyparse_dsl import PyParseDSL
@@ -54,18 +52,24 @@ class TestWalkParser(unittest.TestCase):
     def setUpClass(cls):
         LOGLEVEL      = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+        cls.file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
 
-        file_h.setLevel(LOGLEVEL)
+        cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
-        logging.root.addHandler(file_h)
         logging.root.setLevel(logmod.NOTSET)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
+        logging.root.addHandler(cls.file_h)
 
         global dsl
         dsl = PyParseDSL()
         dsl.register(EXLO_Parser)
         dsl.register(DFS_DSL)
         dsl.build()
+
+    @classmethod
+    def tearDownClass(cls):
+        logmod.root.removeHandler(cls.file_h)
+
 
     def test_parse_walk_query_instruction(self):
         result = DOP.dfs_query.parse_string("ᛦ $x(λblah)?")[0]

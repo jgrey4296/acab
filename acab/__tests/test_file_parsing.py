@@ -39,17 +39,22 @@ class FileParsingTests(unittest.TestCase):
     def setUpClass(cls):
         LOGLEVEL      = logmod.WARNING
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+        cls.file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
 
-        file_h.setLevel(LOGLEVEL)
+        cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
-        logging.root.addHandler(file_h)
         logging.root.setLevel(logmod.NOTSET)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
+        logging.root.addHandler(cls.file_h)
 
         cls.eng = AcabBasicEngine(parser=EXLO_Parser,
                                   semantics=DEFAULT_SEMANTICS(),
                                   printer=DEFAULT_PRINTER(),
                                   modules=[])
+
+    @classmethod
+    def tearDownClass(cls):
+        logmod.root.removeHandler(cls.file_h)
 
     def test_file_parsing_times(self):
         test_loc = join(split(__file__)[0], "test_files")

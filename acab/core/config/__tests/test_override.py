@@ -32,12 +32,13 @@ class ConfigOverrideTests(unittest.TestCase):
     def setUpClass(cls):
         LOGLEVEL      = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+        cls.file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
 
-        file_h.setLevel(LOGLEVEL)
+        cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
-        logging.root.addHandler(file_h)
         logging.root.setLevel(logmod.NOTSET)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
+        logging.root.addHandler(cls.file_h)
 
         cls.base        = split(__file__)[0]
 
@@ -45,8 +46,10 @@ class ConfigOverrideTests(unittest.TestCase):
         cls.existing_config = getattr(ConfigSingletonMeta, "_instance", None)
         setattr(ConfigSingletonMeta, "_instance", None)
 
+
     @classmethod
     def tearDownClass(cls):
+        logmod.root.removeHandler(cls.file_h)
         # Manual singleton overriding
         setattr(ConfigSingletonMeta, "_instance", cls.existing_config)
 
@@ -83,8 +86,8 @@ class ConfigOverrideTests(unittest.TestCase):
 
     def test_override(self):
         spec = self.config.prepare("Handler.System", "DEFAULT_SIGNAL")
-        self.assertIsInstance(spec, ConfigSpec)
         with self.assertWarns(UserWarning):
+            self.assertIsInstance(spec, ConfigSpec)
             self.assertEqual(spec(), "test")
             self.config.read([join(self.base, "override.config")])
             self.assertIsInstance(spec, ConfigSpec)
