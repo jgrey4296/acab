@@ -84,10 +84,28 @@ class ConfigOverrideTests(unittest.TestCase):
     def test_override(self):
         spec = self.config.prepare("Handler.System", "DEFAULT_SIGNAL")
         self.assertIsInstance(spec, ConfigSpec)
-        self.assertEqual(spec(), "test")
+        with self.assertWarns(UserWarning):
+            self.assertEqual(spec(), "test")
+            self.config.read([join(self.base, "override.config")])
+            self.assertIsInstance(spec, ConfigSpec)
+            self.assertEqual(spec(), "blah")
+
+    def test_warn_on_override(self):
+        self.config.specs_invalid = {}
+        spec = self.config.prepare("Handler.System", "DEFAULT_SIGNAL")
+        val = spec()
+        with self.assertWarns(UserWarning):
+            self.config.read([join(self.base, "override.config")])
+            val2 = spec()
+
+    def test_silent_override(self):
+        """
+        Overrides silently when the spec isn't called before the override
+        """
+        self.config.specs_invalid = {}
+        spec = self.config.prepare("Handler.System", "DEFAULT_SIGNAL")
         self.config.read([join(self.base, "override.config")])
-        self.assertIsInstance(spec, ConfigSpec)
-        self.assertEqual(spec(), "blah")
+        val = spec()
 
     def test_attr_override(self):
         AcabConfig(hooks=[attr_hook]).run_hooks()
@@ -104,11 +122,6 @@ class ConfigOverrideTests(unittest.TestCase):
         self.assertEqual(spec(), "blah")
 
 
-    def test_warn_on_override(self):
-        spec = self.config.prepare("Handler.System", "DEFAULT_SIGNAL")
-        val = spec()
-        self.config.read([join(self.base, "override.config")])
-        val2 = spec()
 
 
     def test_spec_non_equality(self):
@@ -122,6 +135,3 @@ class ConfigOverrideTests(unittest.TestCase):
         self.assertEqual(spec1, spec2)
         self.assertIsNot(spec1, spec2)
 
-    def test_spec_type(self):
-        bool_val = self.config.prepare("Handler.System", "OTHER", _type=bool)()
-        self.assertIsInstance(bool_val, bool)

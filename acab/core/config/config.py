@@ -43,6 +43,7 @@ logging = logmod.getLogger(__name__)
 
 GenFunc : TypeAlias = AT.fns.GenFunc
 override_constructor : Callable[..., defaultdict[str,Any]] = lambda: defaultdict(lambda: {})
+
 #--------------------------------------------------
 def GET(*args:str, hooks:None|list[AT.fns.GenFunc]=None) -> Config_i:
     """
@@ -132,7 +133,7 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
     printing_extension : dict[Enum, str]         = field(init=False, default_factory=dict)
     attr               : AttrGenerator           = field(init=False)
 
-    specs     : dict[int, (ConfigSpec, Any)]     = field(init=False, default_factory=dict)
+    specs_invalid     : dict[int, int]           = field(init=False, default_factory=dict)
     actions   : dict[Any, GenFunc]               = field(init=False, default_factory=lambda: CA.DEFAULT_ACTIONS)
     type_actions : dict[Type[Any], GenFunc]      = field(init=False, default_factory=lambda: CA.TYPE_ACTIONS)
     actions_e : ClassVar[Type[CA.ConfigActions]] = CA.ConfigActions
@@ -219,9 +220,6 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
     def prepare(self, *args:Any, **kwargs:Any) -> ConfigSpec_d:
         """ Config utility to create a ConfigSpec for later use """
         spec = ConfigSpec(*args, **kwargs)
-        if hash(spec) not in self.specs:
-            self.specs[hash(spec)] = (spec, None)
-
         return self.check(spec)
 
 
@@ -254,6 +252,30 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
         return spec
 
 
+    def check_not_invalid(self, spec):
+        """
+        Called during retrieval of values.
+
+        Store the hash of the simple retrieved value,
+        and complain if it changes.
+
+        ie: read(val:2) -> value(val) -> read(val:5) -> value(val)
+        will complain, but:
+        read(val:2) -> read(val:5) -> value(val) -> value(val)
+        will not
+
+        """
+        simple =  self._config[spec.section]
+        if spec.key is not None:
+            simple = simple[spec.key]
+
+        if hash(spec) not in self.specs_invalid:
+            self.specs_invalid[hash(spec)] = hash(simple)
+        elif self.specs_invalid[hash(spec)] != hash(simple):
+            warnings.warn(f"A Value has changed between config reads: {spec}", stacklevel=4)
+
+
+
     def value(self, val: Enum|ConfigSpec_d):
         """ Unified value retrieval """
         if isinstance(val, Enum):
@@ -261,6 +283,8 @@ class AcabConfig(Config_i, metaclass=ConfigSingletonMeta):
 
         assert(isinstance(val, ConfigSpec))
         spec    = val
+
+        self.check_not_invalid(spec)
 
         if spec._type is Enum and spec.section in self.enums and spec.key is None:
             return self.enums[spec.section]
