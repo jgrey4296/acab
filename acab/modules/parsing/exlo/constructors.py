@@ -1,17 +1,18 @@
 """
 Constructors for converting parse results -> Acab data
 """
-from acab import AcabConfig
 import acab.interfaces.value as VI
+from acab import AcabConfig
+from acab.core.parsing import default_keys as PDS
+from acab.core.parsing.annotation import ValueAnnotation, ValueRepeatAnnotation
+from acab.core.value import default_structure as DS
 from acab.core.value.default_structure import SEMANTIC_HINT
 from acab.core.value.instruction import (ProductionComponent,
-                                        ProductionContainer,
-                                        ProductionStructure)
+                                         ProductionContainer,
+                                         ProductionStructure)
 from acab.core.value.sentence import Sentence
-from acab.core.value import default_structure as DS
-from acab.core.parsing import default_keys as PDS
+from acab.interfaces.value import ValueFactory as VF
 from acab.modules.parsing.exlo import util as EXu
-from acab.core.parsing.annotation import ValueAnnotation, ValueRepeatAnnotation
 
 config   = AcabConfig()
 SIGNAL = DS.SEMANTIC_HINT
@@ -42,7 +43,7 @@ def build_transform_component(s, loc, toks):
 
     op = toks[EXu.OPERATOR_S][0]
     if isinstance(op, str):
-        op = Sentence([op])
+        op = VF.sen() << op
 
     rebind = toks[EXu.TARGET_S][0]
     params = [x[0] if len(x) == 1 else x for x in params]
@@ -64,7 +65,7 @@ def build_action_component(s, loc, toks):
         params = toks[EXu.RIGHT_S][:]
     op = toks[EXu.OPERATOR_S][0]
     if not isinstance(op, Sentence):
-        op = Sentence([op])
+        op = VF.sen() << op
     # params = [x[0] if len(x) == 1 else x for x in params]
 
     assert(isinstance(op, VI.Sentence_i))
@@ -98,7 +99,7 @@ def build_action(s, loc, toks):
     clauses = toks[0][:]
     clauses = [x if (isinstance(x, ProductionComponent) or
                      isinstance(x, Sentence) and SIGNAL in x.data)
-               else ProductionComponent(Sentence([EXu.DEFAULT_ACTION_S], data={DS.TYPE_INSTANCE: DS.OPERATOR}),
+               else ProductionComponent(VF.sen([EXu.DEFAULT_ACTION_S], data={DS.TYPE_INSTANCE: DS.OPERATOR}),
                                         params=[x]) for x in clauses]
 
     act = ProductionContainer(clauses,

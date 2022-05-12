@@ -54,14 +54,16 @@ def init_inspect(mod_str):
 def build_rebind_instruction(value:str):
     """ Manually construct a startup rebind instruction """
     from acab.core.value.instruction import ProductionComponent, ProductionContainer
-    from acab.core.value.sentence import Sentence
+    from acab.interfaces.value import ValueFactory as VF
+    # from acab.core.value.sentence import Sentence
     from acab.core.value.default_structure import SEMANTIC_HINT
 
-    action_sem_hint = Sentence() << config.attr.Semantic.Signals.ACTION
+    action_sem_hint = VF.sen() << config.attr.Semantic.Signals.ACTION
+    op_sen = VF.sen() << "acab.modules.operators.action.RebindOperator".split(".")
+    section_sen = VF.sen() << "§"
 
-    inst = ProductionComponent(value=Sentence([ "acab.modules.operators.action.RebindOperator" ]),
-                               params=[Sentence([ "§" ]),
-                                       Sentence([ "acab.modules.operators.action.RebindOperator" ])])
+    inst = ProductionComponent(value=op_sen,
+                               params=[section_sen, op_sen])
 
     act = ProductionContainer(value=[inst],
                               data={SEMANTIC_HINT: action_sem_hint})

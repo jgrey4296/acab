@@ -346,7 +346,7 @@ class TagPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
         for tags in grouper(sorted(value), 4):
             result.append(DSYM.INDENT)
             result.append(DSYM.TAG_SYM)
-            result.append(Sentence([x for x in tags if x is not None]))
+            result.append(VF.sen([x for x in tags if x is not None]))
             result.append(DSYM.CONTAINER_JOIN_P)
 
         return result
