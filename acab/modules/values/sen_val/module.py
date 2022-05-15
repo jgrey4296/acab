@@ -16,7 +16,7 @@ from acab.core.config.config import AcabConfig, ConfigSpec
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.core.printing import default_symbols as DSYM
 from acab.core.printing import wrappers as PW
-from acab.core.semantics.basic import Semantic_Fragment
+from acab.core.util.fragments import Semantic_Fragment, DSL_Fragment
 from acab.core.value.instruction import Instruction
 from acab.core.value.sentence import Sentence
 from acab.interfaces.printing import PrintSemantics_i
@@ -34,5 +34,5 @@ WALK_SEM_HINT    = Sentence() << config.attr.Semantic.Signals.WALK
 # TODO sen value spec
 Sen_Val_Frag = Semantic_Fragment(handlers=[SVS.SenQuerySemantics().as_handler(signal=WALK_SEM_HINT)])
 
-Sen_Val_Parser = ppDSL.DSL_Fragment(specs=[ppDSL.PyParse_Spec("sentence", struct=SVP.HOTLOAD_SENTENCE)],
-                                    handlers=[ppDSL.PyParse_Handler("word.value", func=SVP.sen_value)])
+Sen_Val_Parser = DSL_Fragment(specs=[ppDSL.PyParse_Spec("sentence", struct=SVP.HOTLOAD_SENTENCE)],
+                              handlers=[ppDSL.PyParse_Handler("word.value", func=SVP.sen_value)])

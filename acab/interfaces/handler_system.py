@@ -93,15 +93,6 @@ class Handler_i(HSubP.Handler_p):
     def __post_init__(self) -> None: pass
 
 @dataclass #type:ignore[misc]
-class HandlerFragment_i(HSubP.HandlerFragment_p):
-    """ Structure of Handlers to be added to a system, and any
-    data they require
-    """
-    specs       : list[HandlerSpec_A]           = field(default_factory=list)
-    handlers    : list[Handler_A]               = field(default_factory=list)
-    target_i    : None | Type[Handler_System_A] = field(default=None, kw_only=True)
-
-@dataclass #type:ignore[misc]
 class HandlerOverride:
     """ Simple Wrapper for forced semantic use
         ie: a continuation

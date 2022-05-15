@@ -16,11 +16,10 @@ from acab import AcabConfig
 from acab.core.value.instruction import ProductionOperator, ActionOperator
 from acab.core.value.sentence import Sentence
 from acab.core.engine.util import applicable, needs_init, prep_op_path, ensure_handler
-from acab.interfaces.dsl import DSL_Fragment_i
+
 from acab.interfaces.module_loader import (ModuleComponents,
                                            ModuleLoader_i)
-from acab.interfaces.printing import Printer_Fragment_i
-from acab.interfaces.semantic import Semantic_Fragment_i
+from acab.interfaces import fragments as FI
 from acab.core.engine.module_loader_base import ModuleLoaderBase
 
 config           = AcabConfig()
@@ -41,9 +40,9 @@ class ModuleLoader(ModuleLoaderBase, ModuleLoader_i):
         base_path      = module.__package__
         # reference_path = MODULE_SPLIT_REG.split(module.__name__)
         queue          = [(base_path, module)]
-        dsl_fragments  : list[DSL_Fragment_i]     = []
-        semantic_frags : list[Semantic_Fragment_i]  = []
-        printers       : list[Printer_Fragment_i]   = []
+        dsl_fragments  : list[FI.DSL_Fragment_i]     = []
+        semantic_frags : list[FI.Semantic_Fragment_i]  = []
+        printers       : list[FI.Printer_Fragment_i]   = []
         operators      : list[ProductionOperator] = []
 
         # TODO extract *handlers* not semantics
@@ -58,11 +57,11 @@ class ModuleLoader(ModuleLoaderBase, ModuleLoader_i):
             queue               += [(x,y) for x,y in sub_modules if base_path in y.__package__ and "__init__" in y.__file__]
 
             # Get module dsl_fragments
-            available_dsls      =  [y for x,y in mod_contents if applicable(y, DSL_Fragment_i)]
+            available_dsls      =  [y for x,y in mod_contents if applicable(y, FI.DSL_Fragment_i)]
             dsl_fragments       += [y() if needs_init(y) else y for y in available_dsls]
 
             # Get Semantics
-            available_sem_frags =  [y for x,y in mod_contents if applicable(y, Semantic_Fragment_i)]
+            available_sem_frags =  [y for x,y in mod_contents if applicable(y, FI.Semantic_Fragment_i)]
             semantic_frags      =  [y() if needs_init(y) else y for y in available_sem_frags]
 
             # Get Ops
@@ -73,7 +72,7 @@ class ModuleLoader(ModuleLoaderBase, ModuleLoader_i):
             operators           += sentences
 
             # Get printers
-            available_printers  =  [y for x,y in mod_contents if applicable(y, Printer_Fragment_i) and not isinstance(y, type(object))]
+            available_printers  =  [y for x,y in mod_contents if applicable(y, FI.Printer_Fragment_i) and not isinstance(y, type(object))]
             printers            +=  available_printers
 
 

@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     pass
 
 from acab.core.config.config import AcabConfig
-from acab.core.printing.basic import PrinterFragment
+from acab.core.util.fragments import PrinterFragment, DSL_Fragment
 from acab.core.util.part_implementations.handler_system import HandlerSpec
 import acab.modules.analysis.typing.printer as TPR
 
@@ -28,11 +28,9 @@ from acab.core.parsing import pyparse_dsl as ppDSL
 
 from .parsing import TypeDefParser as TDefP
 from .parsing import TypeParser as TP
-from .operators import UnifyTypeMatch
 
 config = AcabConfig()
 
-DSL_Fragment = ppDSL.DSL_Fragment
 DSL_Spec     = ppDSL.PyParse_Spec
 DSL_Handler  = ppDSL.PyParse_Handler
 

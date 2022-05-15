@@ -133,15 +133,3 @@ class Handler_p(Iterable[Any], Protocol):
     @abc.abstractmethod
     def verify(self, instruction:Value_A|Instruction_A|HandlerOverride_A) -> bool: pass
 
-@runtime_checkable
-class HandlerFragment_p(Collection["HandlerSpec_A|Handler_A"], Protocol):
-    # TODO just make this a newtype?
-
-    @abc.abstractmethod
-    def __contains__(self, other): pass
-
-    @abc.abstractmethod
-    def __iter__(self): pass
-
-    @abc.abstractmethod
-    def __len__(self): pass

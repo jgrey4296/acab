@@ -24,7 +24,7 @@ from acab.core.parsing.funcs import clear_parser_names, deep_update_names
 from acab.core.util.part_implementations import handler_system as HS
 from acab.error.base import AcabBasicException
 from acab.error.parse import AcabParseException
-from acab.interfaces.dsl import DSL_Builder_i, DSL_Fragment_i, DSL_Spec_i
+from acab.interfaces.dsl import DSL_Builder_i, DSL_Spec_i
 
 config                 = AcabConfig()
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
@@ -36,7 +36,6 @@ ModuleComponents = AT.ModuleComponents
 PyParse_Spec     = "PyParse_Spec"
 File             = 'FileObj'
 
-DSL_Fragment = DSLImpl.DSL_Fragment
 #----------------------------------------
 @dataclass
 class PyParse_Handler(HS.Handler, dsl.DSL_Handler_i):

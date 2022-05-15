@@ -24,6 +24,7 @@ from acab.error.semantic import AcabSemanticException
 from acab.interfaces.value import Sentence_i, Value_i
 from acab.interfaces import handler_system as HSi
 from acab.interfaces import printing as PI
+from acab.interfaces import fragments as FI
 import acab.core.util.part_implementations.handler_system as HS
 
 logging                      = logmod.getLogger(__name__)
@@ -125,7 +126,7 @@ class PrintSystemImpl(HS.HandlerSystem, PI.PrintSystem_i):
     def extend(self, mods:list[ModuleComponents]) -> None:
         logging.info("Extending Printer")
         printers = [y for x in mods for y in x.printers]
-        assert(all([isinstance(x, PI.Printer_Fragment_i) for x in printers]))
+        assert(all([isinstance(x, FI.Printer_Fragment_i) for x in printers]))
         for print_fragment in printers:
             assert(print_fragment.target_i is None or issubclass(print_fragment.target_i, PI.PrintSystem_i)) #type:ignore
             for val in print_fragment:
@@ -164,5 +165,3 @@ class PrintSemanticsImpl(HS.HandlerComponent, PI.PrintSemantics_i):
         return True
 
 
-class PrinterFragment(HS.HandlerFragment, PI.Printer_Fragment_i):
-    pass

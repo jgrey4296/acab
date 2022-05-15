@@ -59,14 +59,6 @@ StatementSemantics : TypeAlias = AT.StatementSemantics
 SemanticSystem     : TypeAlias = AT.SemanticSystem
 
 
-# Data  #######################################################################
-@dataclass #type:ignore[misc]
-class Semantic_Fragment_i(HS.HandlerFragment_i):
-    """ Dataclass of Semantic Handlers to be added to the system, and any
-    data they require
-    """
-    target_i : None | Type[SemanticSystem] = field(default=None) #type:ignore[assignment]
-
 # Protocols  ##################################################################
 class _SemanticSystem_p(HSubP.HandlerSystem_p, AcabReducible_p, Protocol):
     @abc.abstractmethod

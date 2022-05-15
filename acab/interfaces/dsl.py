@@ -54,10 +54,6 @@ class _DSL_Builder_p(HSubP.HandlerSystem_p, DSL_Parser_i, Protocol):
 
 
 # Interfaces:
-class DSL_Fragment_i(HS.HandlerFragment_i):
-    # TODO maybe a newtype
-    pass
-
 @dataclass #type:ignore[misc]
 class DSL_Handler_i(HS.Handler_i):
     """ Register a function for handling a DSL setup signal.

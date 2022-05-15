@@ -14,6 +14,7 @@ from acab.core.parsing.consts import CPAR, NG, OPAR, N
 from acab.core.parsing.parsers import MODAL
 from acab.error.parse import AcabParseException
 from acab.interfaces.value import ValueFactory
+
 config = AcabConfig()
 
 ACTION_S          = config.attr.Parse.Structure.ACTION

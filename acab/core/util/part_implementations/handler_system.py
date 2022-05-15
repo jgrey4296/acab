@@ -24,6 +24,7 @@ from acab.interfaces.sieve import AcabSieve
 from acab.interfaces.value import Sentence_i, Value_i
 from acab.error.protocol import AcabProtocolError as APE
 from acab.interfaces.protocols import handler_system as HSubP
+from acab.interfaces.fragments import HandlerFragment_i
 
 logging                = logmod.getLogger(__name__)
 config                 = AcabConfig()
@@ -147,7 +148,7 @@ class HandlerSystem(HS.HandlerSystem_i):
     def register(self, *others):
         for other in others:
             match other:
-                case HS.HandlerFragment_i():
+                case HandlerFragment_i():
                     for item in other:
                         self.register(item)
                 case HS.HandlerSpec_i():
@@ -405,26 +406,3 @@ class HandlerComponent(HS.HandlerComponent_i):
                        flags=set(flags or []))
 
 
-@APE.assert_concrete
-class HandlerFragment(HS.HandlerFragment_i):
-
-    def __len__(self):
-        return len(self.handlers) + len(self.specs)
-
-    def __repr__(self):
-        return f"<Handler Fragment for {self.target_i}: {len(self.specs)} Specs, {len(self.handlers)} Handlers>"
-
-    def __iter__(self):
-        for x in self.specs:
-            yield x
-
-        for y in self.handlers:
-            yield y
-
-    def __contains__(self, other):
-        if isinstance(other, HS.HandlerSpec_i):
-            return other in self.specs
-        elif isinstance(other, HS.Handler_i):
-            return other in self.handlers
-        else:
-            return False

@@ -24,9 +24,6 @@ Query            : TypeAlias = AT.Container
 ModuleComponents : TypeAlias = AT.ModuleComponents
 DSL_Spec_A       : TypeAlias = AT.DSL_Spec
 
-class DSL_Fragment(HSImpl.HandlerFragment, dsl.DSL_Fragment_i):
-    pass
-
 class DSL_Spec(HSImpl.HandlerSpec, dsl.DSL_Spec_i):
 
     def extend_spec(self, spec:DSL_Spec_A):

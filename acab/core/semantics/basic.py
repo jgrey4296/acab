@@ -41,6 +41,7 @@ from acab.interfaces.protocols.value import AcabReducible_p
 from acab.interfaces.value import Sentence_i, Value_i
 from acab.core.util.part_implementations import handler_system as HSImpl
 from acab.interfaces import semantic as SI
+from acab.interfaces.fragments import Semantic_Fragment_i
 
 Value              : TypeAlias = AT.Value
 Sen_A              : TypeAlias = AT.Sentence
@@ -60,9 +61,6 @@ SemanticSystem     : TypeAlias = AT.SemanticSystem
 
 
 # Protocol Implementations #############################################################
-class Semantic_Fragment(HSImpl.HandlerFragment, SI.Semantic_Fragment_i):
-    pass
-
 class SemanticSystem(HSImpl.HandlerSystem, SI.SemanticSystem_i):
     ctx_set         : CtxSet
     _operator_cache : None|CtxIns
@@ -99,9 +97,9 @@ class SemanticSystem(HSImpl.HandlerSystem, SI.SemanticSystem_i):
     def extend(self, mods:list[ModuleComponents]) -> None:
         logging.info("Extending Semantics")
         semantics = [y for x in mods for y in x.semantics]
-        assert(all([isinstance(x, Semantic_Fragment) for x in semantics]))
+        assert(all([isinstance(x, Semantic_Fragment_i) for x in semantics]))
         for sem_fragment in semantics:
-            assert(sem_fragment.target_i is None or issubclass(sem_fragment.target_i, SemanticSystem_i))
+            assert(sem_fragment.target_i is None or issubclass(sem_fragment.target_i, SI.SemanticSystem_i))
             for val in sem_fragment:
                 self.register(val)
 

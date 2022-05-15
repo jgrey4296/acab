@@ -11,12 +11,12 @@ from acab import AcabConfig
 from acab.core.parsing import parsers as PU
 from acab.error.parse import AcabParseException
 from acab.core.parsing import pyparse_dsl as ppDSL
+from acab.core.util.fragments import DSL_Fragment
 
 logging = logmod.getLogger(__name__)
 config  = AcabConfig()
 
 
-DSL_Fragment = ppDSL.DSL_Fragment
 DSL_Spec     = ppDSL.PyParse_Spec
 DSL_Handler  = ppDSL.PyParse_Handler
 
