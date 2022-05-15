@@ -8,15 +8,15 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-import acab.core.value.default_structure as DS
+import acab.core.defaults.value_keys as DS
 import acab.interfaces.value as VI
 import pyparsing as pp
 from acab import AcabConfig
 from acab.core.config.config import AcabConfig, ConfigSpec
+from acab.core.defaults import print_symbols as DSYM
 from acab.core.parsing import pyparse_dsl as ppDSL
-from acab.core.printing import default_symbols as DSYM
 from acab.core.printing import wrappers as PW
-from acab.core.util.fragments import Semantic_Fragment, DSL_Fragment
+from acab.core.util.fragments import DSL_Fragment, Semantic_Fragment
 from acab.core.value.instruction import Instruction
 from acab.core.value.sentence import Sentence
 from acab.interfaces.printing import PrintSemantics_i

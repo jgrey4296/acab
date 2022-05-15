@@ -15,7 +15,8 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Generic, Iterable,
 if TYPE_CHECKING:
     import pyparsing as pp
     from acab.core import util
-    from acab.core.value import default_structure, instruction
+    import acab.core.defaults.value_keys as DS
+    from acab.core.value import instruction
     from acab.core.parsing import annotation
     from acab.core.util import delayed_commands
     from acab.interfaces import (config, sieve, context, data, debugger, dsl, engine,
@@ -45,8 +46,8 @@ Sentence            : TypeAlias = "value.Sentence_i"
 
 # Types describing enums of value accessible data
 ValueData             : TypeAlias = str
-# StructComponent     : TypeAlias = "default_structure.STRUCT_COMP_E"
-# TypePrimitive       : TypeAlias = "default_structure.TYPE_PRIM_E"
+# StructComponent     : TypeAlias = "DS.STRUCT_COMP_E"
+# TypePrimitive       : TypeAlias = "DS.TYPE_PRIM_E"
 
 # The types describing core structures for storing values
 Node                : TypeAlias = "data.Node_i"

@@ -15,7 +15,7 @@ with warnings.catch_warnings():
     config = acab.setup()
 
 from acab.core.parsing import pyparse_dsl as ppDSL
-from acab.core.value.default_structure import BIND, FLATTEN
+import acab.core.defaults.value_keys as DS
 from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue
 from acab.interfaces.value import Sentence_i, Value_i
@@ -187,7 +187,7 @@ class SentenceTests(unittest.TestCase):
         """ Check variables can be bound in a sentence, building a new sentence """
         val = Sentence(["a","test","value"])
         var = Sentence(["var"])
-        var[0].data.update({BIND : True})
+        var[0].data.update({DS.BIND : True})
         sen = val.add(var)
 
         bound = sen.bind({"var" : "blah"})
@@ -201,8 +201,8 @@ class SentenceTests(unittest.TestCase):
         """ Check a sentence binding doesn't create a new sentence unless it has to """
         val = Sentence(["a","test","value"])
         var = Sentence(["var"])
-        var[0].data.update({BIND: True})
-        val[2].data.update({BIND : True})
+        var[0].data.update({DS.BIND: True})
+        val[2].data.update({DS.BIND : True})
         sen = val.add(var)
 
         bound = sen.bind({"not_var" : "blah"})
@@ -298,14 +298,14 @@ class SentenceTests(unittest.TestCase):
     def test_is_var_fail_2(self):
         """ Check a sentence with a variable isn't a variable """
         sen = Sentence(["a", "test", "sentence"])
-        sen[-1].data.update({BIND: True})
+        sen[-1].data.update({DS.BIND: True})
         self.assertTrue(sen[-1].is_var)
         self.assertFalse(sen.is_var)
 
     def test_is_var_pass(self):
         """ Check a sentence of a single word, that is a variable, is a variable """
         sen = Sentence(["single word"])
-        sen[0].data.update({BIND: True})
+        sen[0].data.update({DS.BIND: True})
         self.assertTrue(sen.is_var)
 
     def test_add(self):
@@ -378,7 +378,7 @@ class SentenceTests(unittest.TestCase):
 
     def test_flatten_cancel(self):
         sen1 = Sentence(["a", "test", "sentence"])
-        sen1.data[FLATTEN] = False
+        sen1.data[DS.FLATTEN] = False
         sen2 = Sentence(["parent", sen1, "blah"])
         self.assertEqual(sen2, "_:parent.a.test.sentence.blah")
         self.assertEqual(len(sen2), 3)
@@ -391,7 +391,7 @@ class SentenceTests(unittest.TestCase):
     def test_flatten_cancel_top(self):
         sen1 = Sentence(["a", "test", "sentence"])
         sen2 = Sentence(["parent", sen1, "blah"])
-        sen2.data[FLATTEN] = False
+        sen2.data[DS.FLATTEN] = False
         self.assertEqual(sen2, "_:parent.a.test.sentence.blah")
         self.assertEqual(len(sen2), 3)
         self.assertIsInstance(sen2[1], Sentence_i)
@@ -402,7 +402,7 @@ class SentenceTests(unittest.TestCase):
 
     def test_flatten_cancel_bottom_level(self):
         sen1 = Sentence(["a", "test", "sentence"])
-        sen1.data[FLATTEN] = False
+        sen1.data[DS.FLATTEN] = False
         sen2 = Sentence(["parent", sen1, "blah"])
         sen3 = Sentence(["top", "level", sen2])
         self.assertEqual(sen3, "_:top.level.parent.a.test.sentence.blah")

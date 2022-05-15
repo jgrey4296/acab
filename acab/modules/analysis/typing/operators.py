@@ -21,8 +21,6 @@ class TypeApply(ActionOperator):
     """
     Update a Ctx with new type assignments
     """
-
-
     def __call__(self, *args):
         pass
 

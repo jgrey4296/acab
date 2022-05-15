@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 import abc
 import logging as logmod
+from collections import defaultdict, deque
 from dataclasses import InitVar, dataclass, field
 from enum import Enum
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     Iterable, Iterator, Mapping, Match, MutableMapping,
-                    Type, Protocol, Sequence, Tuple, TypeAlias, TypeGuard, TypeVar,
-                    cast, final, overload, runtime_checkable)
-from collections import defaultdict, deque
+                    Protocol, Sequence, Tuple, Type, TypeAlias, TypeGuard,
+                    TypeVar, cast, final, overload, runtime_checkable)
 from unittest.mock import DEFAULT
 from uuid import UUID, uuid1
 
@@ -15,17 +15,17 @@ if TYPE_CHECKING:
     # tc only imports
     pass
 
+import acab.core.util.part_implementations.handler_system as HS
 from acab import AcabConfig
 from acab import types as AT
 from acab.core.config.config import AcabConfig
-from acab.core.printing.default_symbols import PRINT_SEPARATOR_P
+from acab.core.defaults.print_symbols import PRINT_SEPARATOR_P
 from acab.error.printing import AcabPrintException
 from acab.error.semantic import AcabSemanticException
-from acab.interfaces.value import Sentence_i, Value_i
+from acab.interfaces import fragments as FI
 from acab.interfaces import handler_system as HSi
 from acab.interfaces import printing as PI
-from acab.interfaces import fragments as FI
-import acab.core.util.part_implementations.handler_system as HS
+from acab.interfaces.value import Sentence_i, Value_i
 
 logging                      = logmod.getLogger(__name__)
 config                       = AcabConfig()

@@ -1,14 +1,15 @@
 # pylint: disable=multiple-statements,protected-access,too-many-ancestors,abstract-method
 # pyright: reportGeneralTypeIssues=warning
 from __future__ import annotations
+
 import abc
 import logging as logmod
 from dataclasses import InitVar, dataclass, field
 from enum import Enum
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     Iterable, Iterator, Mapping, Match, MutableMapping,
-                    Type, Protocol, Sequence, Tuple, TypeAlias, TypeGuard, TypeVar,
-                    cast, final, overload, runtime_checkable)
+                    Protocol, Sequence, Tuple, Type, TypeAlias, TypeGuard,
+                    TypeVar, cast, final, overload, runtime_checkable)
 
 if TYPE_CHECKING:
     # tc only imports
@@ -17,7 +18,7 @@ if TYPE_CHECKING:
 from acab import AcabConfig
 from acab import types as AT
 from acab.core.config.config import AcabConfig
-from acab.core.printing.default_symbols import PRINT_SEPARATOR_P
+from acab.core.defaults.print_symbols import PRINT_SEPARATOR_P
 from acab.error.printing import AcabPrintException
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces import handler_system as HS

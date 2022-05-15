@@ -56,7 +56,8 @@ def build_rebind_instruction(value:str):
     from acab.core.value.instruction import ProductionComponent, ProductionContainer
     from acab.interfaces.value import ValueFactory as VF
     # from acab.core.value.sentence import Sentence
-    from acab.core.value.default_structure import SEMANTIC_HINT
+    import acab.core.defaults.value_keys as DS
+
 
     action_sem_hint = VF.sen() << config.attr.Semantic.Signals.ACTION
     op_sen = VF.sen() << "acab.modules.operators.action.RebindOperator".split(".")
@@ -66,7 +67,7 @@ def build_rebind_instruction(value:str):
                                params=[section_sen, op_sen])
 
     act = ProductionContainer(value=[inst],
-                              data={SEMANTIC_HINT: action_sem_hint})
+                              data={DS.SEMANTIC_HINT: action_sem_hint})
 
 
     return act

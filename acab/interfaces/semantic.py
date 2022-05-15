@@ -24,8 +24,7 @@ from enum import Enum
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     Iterable, Iterator, Mapping, Match, MutableMapping,
                     Protocol, Sequence, Tuple, Type, TypeAlias, TypeGuard,
-                    TypeVar, cast, final, overload,
-                    runtime_checkable)
+                    TypeVar, cast, final, overload, runtime_checkable)
 
 if TYPE_CHECKING:
     # tc only imports
@@ -35,7 +34,6 @@ logging = logmod.getLogger(__name__)
 
 import acab.interfaces.handler_system as HS
 from acab import types as AT
-from acab.core.value.default_structure import QUERY
 from acab.error.printing import AcabPrintException
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces.protocols import handler_system as HSubP

@@ -22,7 +22,7 @@ with warnings.catch_warnings():
         DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
 
-import acab.core.value.default_structure as DS
+import acab.core.defaults.value_keys as DS
 from acab.core.parsing.pyparse_dsl import PyParseDSL
 from acab.core.value.instruction import (Instruction, ProductionComponent,
                                          ProductionContainer)

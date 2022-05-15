@@ -21,20 +21,20 @@ with warnings.catch_warnings():
         DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
 
-from acab.core.util import fragments as FR
+import acab.core.defaults.value_keys as DS
+from acab.core.defaults import print_signals as DSig
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.core.parsing.component_dsl import Component_DSL
 from acab.core.semantics.basic import StatementSemantics
+from acab.core.util import fragments as FR
 from acab.core.util.part_implementations.handler_system import HandlerSpec
-from acab.core.value import default_structure as DS
+from acab.interfaces import fragments as FI
 from acab.interfaces import handler_system as HS
 from acab.interfaces.semantic import StatementSemantics_i
-from acab.interfaces import fragments as FI
 from acab.interfaces.unified_extension import UnifiedExtension_p
 from acab.interfaces.value import Sentence_i
 from acab.interfaces.value import ValueFactory as VF
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
-from acab.core.printing import default_signals as DSig
 from acab.modules.printing.default import DEFAULT_PRINTER
 from acab.modules.semantics.default import DEFAULT_SEMANTICS
 

@@ -15,7 +15,7 @@ with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
 
-import acab.core.value.default_structure as DS
+import acab.core.defaults.value_keys as DS
 import acab.error.base as AE
 from acab.core.semantics import basic
 from acab.core.value.instruction import (ProductionComponent,

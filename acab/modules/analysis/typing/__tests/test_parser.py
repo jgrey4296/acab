@@ -16,7 +16,7 @@ with warnings.catch_warnings():
     config = acab.setup()
 
 from acab.core.parsing.annotation import ValueAnnotation
-from acab.core.value import default_structure as DS
+import acab.core.defaults.value_keys as DS
 from acab.core.value.sentence import Sentence
 from acab.modules.analysis.typing import util as TYU
 from acab.modules.analysis.typing.parsing import TypeDefParser as TDP

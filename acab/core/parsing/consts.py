@@ -4,8 +4,8 @@ import logging as logmod
 import pyparsing as pp
 
 from acab.core.config.config import AcabConfig
-import acab.core.parsing.default_keys as DS
-import acab.core.parsing.default_symbols as DSYM
+from acab.core.defaults import parse_keys as DS
+from acab.core.defaults import parse_symbols as DSYM
 
 
 logging = logmod.getLogger(__name__)

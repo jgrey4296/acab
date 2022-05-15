@@ -1,12 +1,12 @@
 """
 Constructors for converting parse results -> Acab data
 """
+import acab.core.defaults.value_keys as DS
 import acab.interfaces.value as VI
 from acab import AcabConfig
-from acab.core.parsing import default_keys as PDS
+from acab.core.defaults import parse_keys as PDS
 from acab.core.parsing.annotation import ValueAnnotation, ValueRepeatAnnotation
-from acab.core.value import default_structure as DS
-from acab.core.value.default_structure import SEMANTIC_HINT
+from acab.core.defaults.value_keys import SEMANTIC_HINT
 from acab.core.value.instruction import (ProductionComponent,
                                          ProductionContainer,
                                          ProductionStructure)

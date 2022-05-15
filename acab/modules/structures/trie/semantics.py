@@ -11,7 +11,7 @@ from acab.core.value.instruction import Instruction
 from acab.core.value.sentence import Sentence
 from acab.interfaces.value import Sentence_i
 from acab.modules.context.flatten_query_manager import FlattenQueryManager
-from acab.core.value.default_structure import NEGATION, FLATTEN
+import acab.core.defaults.value_keys as DS
 from acab.core.semantics import basic
 from acab.error.protocol import AcabProtocolError as APE
 
@@ -45,7 +45,7 @@ class FlattenBreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantic
         if data is None:
             data = {}
 
-        if NEGATION in sen.data and sen.data[NEGATION]:
+        if DS.NEGATION in sen.data and sen.data[DS.NEGATION]:
             self._delete(sen, struct, data=data, ctxs=ctxs)
             return ctxs
 
@@ -68,7 +68,7 @@ class FlattenBreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantic
     def _delete(self, sen, struct, *, data=None, ctxs=None):
         logging.debug(f"Removing: {sen} from {struct}")
 
-        pos_sen = sen.copy(data={NEGATION:False})
+        pos_sen = sen.copy(data={DS.NEGATION:False})
         results = self.query(pos_sen, struct, data=data, ctxs=ctxs)
 
         for ctx in results:
@@ -85,7 +85,7 @@ class FlattenBreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantic
         """ Breadth First Search Query """
         assert(ctxs is not None)
 
-        clause_flatten = FLATTEN not in sen.data or sen.data[FLATTEN]
+        clause_flatten = DS.FLATTEN not in sen.data or sen.data[DS.FLATTEN]
         root           = struct.root if isinstance(struct, DI.Structure_i) else struct
         assert(isinstance(root, Node))
 
@@ -95,7 +95,7 @@ class FlattenBreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantic
                 for bound_word, ctxInst, current_node in cqm.active:
                     # This happens here to catch when $x -> a.sub.sentence
                     # in a.larger.query.$x.blah?
-                    should_flatten = clause_flatten and bound_word and (FLATTEN not in bound_word.data or bound_word.data[FLATTEN])
+                    should_flatten = clause_flatten and bound_word and (DS.FLATTEN not in bound_word.data or bound_word.data[DS.FLATTEN])
                     if isinstance(bound_word, Sentence_i) and should_flatten:
                         # sub query when dealing with a sentence that needs to be flattened
                         self.query(bound_word, current_node, data=data, ctxs=ctxs.subctx([ctxInst.uuid]))

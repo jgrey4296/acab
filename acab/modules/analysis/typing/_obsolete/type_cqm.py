@@ -14,7 +14,7 @@ from uuid import UUID, uuid1
 import acab.interfaces.context as CtxInt
 import acab.error.semantic as ASErr
 from acab import AcabConfig
-import acab.core.value.default_structure as DS
+import acab.core.defaults.value_keys as DS
 from acab.core.value.instruction import (ProductionComponent,
                                                         ProductionContainer)
 from acab.interfaces.value import Sentence_i

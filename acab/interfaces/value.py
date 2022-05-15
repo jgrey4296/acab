@@ -17,7 +17,7 @@ from typing import (Any, ClassVar, Collection, Container, Final, Generic,
                     runtime_checkable)
 from uuid import UUID, uuid1
 
-import acab.core.value.default_structure as DS
+import acab.core.defaults.value_keys as DS
 import acab.interfaces.protocols.value as VSubP
 from acab import types as AT
 from acab.core.config.config import AcabConfig

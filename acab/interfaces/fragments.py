@@ -6,10 +6,11 @@ import logging as root_logger
 from copy import deepcopy
 from dataclasses import InitVar, dataclass, field
 from re import Pattern
-from typing import (TYPE_CHECKING, Any, Collection, Callable, ClassVar, Final, Generic,
-                    Iterable, Iterator, Mapping, Match, MutableMapping,
-                    Protocol, Sequence, Tuple, TypeAlias, TypeGuard, TypeVar,
-                    cast, final, overload, runtime_checkable)
+from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Collection, Final,
+                    Generic, Iterable, Iterator, Mapping, Match,
+                    MutableMapping, Protocol, Sequence, Tuple, TypeAlias,
+                    TypeGuard, TypeVar, cast, final, overload,
+                    runtime_checkable)
 from uuid import UUID, uuid1
 from weakref import ref
 
@@ -21,14 +22,13 @@ if TYPE_CHECKING:
 
 import acab.interfaces.handler_system as HS
 from acab import types as AT
-from acab.core.value.default_structure import QUERY
 from acab.error.printing import AcabPrintException
 from acab.error.semantic import AcabSemanticException
+from acab.interfaces.printing import PrintSystem_i
 from acab.interfaces.protocols import handler_system as HSubP
 from acab.interfaces.protocols.value import AcabReducible_p
-from acab.interfaces.value import Sentence_i, Value_i
-from acab.interfaces.printing import PrintSystem_i
 from acab.interfaces.semantic import SemanticSystem_i
+from acab.interfaces.value import Sentence_i, Value_i
 
 Value              : TypeAlias = "AT.Value[AT.ValueCore]"
 Sen_A              : TypeAlias = AT.Sentence

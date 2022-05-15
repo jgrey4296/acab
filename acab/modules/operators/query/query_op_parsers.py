@@ -1,6 +1,6 @@
 import re
 
-import acab.core.value.default_structure as DS
+import acab.core.defaults.value_keys as DS
 import pyparsing as pp
 from acab.core.config.config import AcabConfig
 from acab.core.engine.util import prep_op_path

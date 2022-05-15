@@ -14,14 +14,14 @@ import pyparsing as pp
 
 config = acab.AcabConfig()
 
+import acab.core.defaults.value_keys as DS
+from acab.core.defaults import print_signals as DSig
 from acab.core.parsing import pyparse_dsl as ppDSL
-from acab.core.printing import default_signals as DSig
-from acab.core.util import fragments as FR
 from acab.core.semantics.basic import StatementSemantics
+from acab.core.util import fragments as FR
 from acab.core.util.part_implementations.handler_system import HandlerSpec
-from acab.core.value import default_structure as DS
-from acab.interfaces import handler_system as HS
 from acab.interfaces import fragments as FI
+from acab.interfaces import handler_system as HS
 from acab.interfaces.semantic import StatementSemantics_i
 from acab.interfaces.unified_extension import UnifiedExtension_p
 from acab.interfaces.value import Sentence_i

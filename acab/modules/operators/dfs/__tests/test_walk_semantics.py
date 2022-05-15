@@ -23,7 +23,7 @@ with warnings.catch_warnings():
 
 
 from acab.core.parsing.annotation import ValueRepeatAnnotation
-from acab.core.value import default_structure as DS
+import acab.core.defaults.value_keys as DS
 from acab.core.value.instruction import (Instruction, ProductionComponent,
                                          ProductionContainer)
 from acab.core.value.sentence import Sentence

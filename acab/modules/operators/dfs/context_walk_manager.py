@@ -11,7 +11,7 @@ from enum import Enum
 from uuid import UUID, uuid1
 
 from acab import types as AT
-import acab.core.value.default_structure as DS
+import acab.core.defaults.value_keys as DS
 import acab.interfaces.context as CtxInt
 import acab.error.semantic as ASErr
 from acab import AcabConfig

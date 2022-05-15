@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+"""
+These are signals the print system uses, in addition to any specific
+type printers
+"""
 from __future__ import annotations
 
 import abc

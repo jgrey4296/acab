@@ -5,13 +5,13 @@ Defines functions for parsers and parse -> data transform
 """
 import logging as logmod
 
-import acab.core.parsing.default_keys as PDS
-import acab.core.value.default_structure as DS
+import acab.core.defaults.value_keys as DS
 import pyparsing as pp
 from acab.core.config.config import AcabConfig
+from acab.core.defaults import parse_keys as PDS
 from acab.core.parsing import consts as PConst
 from acab.core.parsing.annotation import ValueAnnotation
-from acab.core.value.default_structure import TYPE_BASE
+from acab.core.defaults.value_keys import TYPE_BASE
 from acab.core.value.instruction import (ProductionComponent,
                                          ProductionContainer,
                                          ProductionStructure)

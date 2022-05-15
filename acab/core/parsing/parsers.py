@@ -7,16 +7,16 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 import pyparsing as pp
 from acab import types as AT
 from acab.core.config.config import AcabConfig
-from acab.core.value import default_structure as CDS
-from acab.core.value.sentence import Sentence
+from acab.core.defaults import parse_keys as PDS
+from acab.core.defaults import parse_symbols as PDSYM
+from acab.core.defaults import value_keys as CDS
 from acab.core.parsing import consts as PConst
-from acab.core.parsing import default_keys as PDS
-from acab.core.parsing import default_symbols as PDSYM
 from acab.core.parsing import funcs as Pfunc
 from acab.core.parsing.annotation import ModalAnnotation, ValueAnnotation
 from acab.core.parsing.consts import (CPAR, DBLCOLON, NG, OPAR, TAG, N,
                                       component_gap, emptyLine, gap, ln, op,
                                       opLn, orm, s, s_key, s_lit, zrm)
+from acab.core.value.sentence import Sentence
 from acab.interfaces.value import ValueFactory
 
 logging = logmod.getLogger(__name__)

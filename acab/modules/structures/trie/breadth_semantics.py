@@ -10,7 +10,7 @@ from acab.core.value.instruction import Instruction
 from acab.core.value.sentence import Sentence
 from acab.interfaces.value import Sentence_i
 from acab.modules.context.context_query_manager import ContextQueryManager
-from acab.core.value.default_structure import NEGATION
+import acab.core.defaults.value_keys as DS
 from acab.core.semantics import basic
 from acab.error.protocol import AcabProtocolError as APE
 
@@ -45,7 +45,7 @@ class BreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantics_i):
         if data is None:
             data = {}
 
-        if NEGATION in sen.data and sen.data[NEGATION]:
+        if DS.NEGATION in sen.data and sen.data[DS.NEGATION]:
             self._delete(sen, struct, data)
             return ctxs
 

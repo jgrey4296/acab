@@ -18,16 +18,16 @@ if TYPE_CHECKING:
     pass
 
 from acab import AcabConfig
-from acab.core.parsing import default_symbols as PDSYM
 from acab.core.config.config import AcabConfig
-from acab.core.parsing.parsers import Fwd_ArgList, Fwd_TagList
+from acab.core.defaults import parse_keys as PDS
+from acab.core.defaults import parse_symbols as PDSYM
 from acab.core.parsing import consts as PConst
-from acab.core.parsing import default_keys as PDS
 from acab.core.parsing import funcs as Pfunc
 from acab.core.parsing.consts import (CPAR, DBLCOLON, NG, OPAR, TAG, N,
                                       component_gap, emptyLine, gap, ln, op,
                                       opLn, orm, s, s_key, s_lit, zrm)
 from acab.core.parsing.param_core import ParamCore
+from acab.core.parsing.parsers import Fwd_ArgList, Fwd_TagList
 
 config               = AcabConfig()
 aliases              = config.attr.Aliases
