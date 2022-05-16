@@ -20,7 +20,7 @@ from acab.core.engine.engine_base import AcabEngineImpl
 from acab.core.engine.module_loader import ModuleLoader
 from acab.core.parsing.pyparse_dsl import PyParseDSL
 from acab.error.base import AcabException
-from acab.interfaces.dsl import DSL_Builder_i, DSL_Fragment_i
+from acab.interfaces.dsl import DSL_Builder_i
 from acab.interfaces.engine import AcabEngine_i
 from acab.interfaces.printing import PrintSystem_i
 from acab.interfaces.semantic import SemanticSystem_i

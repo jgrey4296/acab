@@ -11,7 +11,7 @@ from enum import Enum
 from uuid import UUID, uuid1
 
 from acab import types as AT
-import acab.core.value.default_structure as DS
+import acab.core.defaults.value_keys as DS
 import acab.interfaces.context as CtxInt
 import acab.interfaces.value as VI
 from acab import AcabConfig
@@ -38,7 +38,7 @@ Value            = AT.Value
 Statement        = AT.Instruction
 Sen              = AT.Sentence
 Node             = AT.Node
-ModuleComponents = AT.ModuleComponents
+ModuleFragment   = AT.ModuleFragment
 NamedCtxSet      = "NamedCtxSet"
 
 DELAYED_E = Enum("Delayed Instruction Set", "ACTIVE FAIL DEACTIVATE CLEAR MERGE")

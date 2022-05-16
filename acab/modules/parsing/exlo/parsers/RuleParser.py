@@ -11,7 +11,8 @@ from acab.core.parsing.consts import (ARROW, COLON, COMMA, DELIM, DOUBLEBAR,
 from acab.core.parsing.statement_core import StatementCore
 from acab.modules.parsing.exlo.constructors import build_rule
 from acab.modules.parsing.exlo.util import ACTION_S, QUERY_S, TRANSFORM_S
-from acab.core.semantics.signals import signals
+from acab.core.defaults.semantic_signals import signals
+
 
 from . import ActionParser as AP
 from . import FactParser as FP

@@ -1,6 +1,8 @@
 """
-Enforce a default set of symbols to be retrieved
-from config files
+These are actual symbols to be parsed for.
+
+ie: pp.Literal(END)
+
 """
 from acab.core.config.config import AcabConfig
 config = AcabConfig()

@@ -9,7 +9,7 @@ import logging as logmod
 
 from acab.core.value.sentence import Sentence
 from acab.core.config.config import AcabConfig
-import acab.core.value.default_structure as DS
+import acab.core.defaults.value_keys as DS
 
 logging = logmod.getLogger(__name__)
 

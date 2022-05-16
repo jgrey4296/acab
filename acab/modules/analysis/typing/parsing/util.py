@@ -5,10 +5,10 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-import acab.core.parsing.default_keys as DK
-import acab.core.value.default_structure as DS
+import acab.core.defaults.value_keys as DS
 import pyparsing as pp
 from acab.core.config.config import AcabConfig
+from acab.core.defaults import parse_keys as DK
 from acab.core.parsing.annotation import ValueAnnotation
 from acab.core.parsing.consts import s, s_key
 from acab.core.value.sentence import Sentence

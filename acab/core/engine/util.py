@@ -9,7 +9,7 @@ from acab.interfaces.handler_system import Handler_i
 
 config = AcabConfig()
 
-MODULE_SPLIT_REG = re.compile(config.prepare("Parse.Patterns", "MODULE_SPLIT_REG")())
+MODULE_SPLIT_REG = re.compile(config.attr.Parse.Patterns.MODULE_SPLIT_REG)
 
 def applicable(val:Any, base_type:type, *, as_handler=False) -> bool:
     """

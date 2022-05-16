@@ -1,23 +1,25 @@
 """ Trie-based parser for constructing queries """
 import logging as logmod
 
+import acab.core.defaults.value_keys as CDS
 import pyparsing as pp
 from acab.core.config.config import AcabConfig
-import acab.core.value.default_structure as CDS
-import acab.core.parsing.default_keys as PDS
+from acab.core.defaults import parse_keys as PDS
+from acab.core.defaults.parse_keys import OPERATOR, SEN, VALUE
 from acab.core.parsing import funcs as Pfunc
 from acab.core.parsing import parsers as PU
-from acab.core.parsing.consts import (COLLAPSE_CONTEXT, COLON, COMMA, DELIM, DOUBLEBAR, END,
-                                          NG, QUERY, N, component_gap, op, zrm, orm, ln, s)
-from acab.core.parsing.default_keys import OPERATOR, SEN, VALUE
 from acab.core.parsing.annotation import ValueAnnotation
-from acab.core.parsing.statement_core import StatementCore
+from acab.core.parsing.consts import (COLLAPSE_CONTEXT, COLON, COMMA, DELIM,
+                                      DOUBLEBAR, END, NG, QUERY, N,
+                                      component_gap, ln, op, orm, s, zrm)
 from acab.core.parsing.funcs import build_assignment
+from acab.core.parsing.statement_core import StatementCore
+from acab.core.defaults.semantic_signals import signals
+
 from acab.modules.parsing.exlo import constructors as PConst
 from acab.modules.parsing.exlo.constructors import build_query
-from acab.core.semantics.signals import signals
 
-from .FactParser import SENTENCE, op_sentence, annotations
+from .FactParser import SENTENCE, annotations, op_sentence
 
 logging = logmod.getLogger(__name__)
 

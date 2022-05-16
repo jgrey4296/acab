@@ -8,7 +8,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 from types import FunctionType
 
 from acab import types as AT
-from acab.core.value import default_structure as DS
+import acab.core.defaults.value_keys as DS
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces import context as CI
 from acab.interfaces import data as DI

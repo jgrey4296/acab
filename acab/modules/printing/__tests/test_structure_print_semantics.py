@@ -22,10 +22,10 @@ with warnings.catch_warnings():
 
 import acab.modules.printing.printers as Printers
 from acab.core.config.config import AcabConfig
+from acab.core.defaults import print_signals as DSig
+from acab.core.defaults.value_keys import (AT_BIND, BIND, NEGATION, QUERY,
+                                           TYPE_INSTANCE)
 from acab.core.parsing import pyparse_dsl as ppDSL
-from acab.core.printing import default_signals as DSig
-from acab.core.value.default_structure import (AT_BIND, BIND, NEGATION, QUERY,
-                                               TYPE_INSTANCE)
 from acab.core.value.instruction import (Instruction, ProductionComponent,
                                          ProductionContainer,
                                          ProductionOperator,

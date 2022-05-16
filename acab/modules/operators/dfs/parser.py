@@ -6,7 +6,7 @@ from typing import cast, ClassVar, TypeVar, Generic
 import pyparsing as pp
 
 from acab import AcabConfig
-import acab.core.value.default_structure as DS
+import acab.core.defaults.value_keys as DS
 from  acab.core.parsing.consts import orm, QUERY, op, s_lit
 from acab.core.value.sentence import Sentence
 from acab.core.value.instruction import ProductionComponent

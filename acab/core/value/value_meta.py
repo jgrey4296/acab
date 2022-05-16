@@ -18,7 +18,7 @@ from weakref import ref
 
 logging = logmod.getLogger(__name__)
 
-import acab.core.value.default_structure as DS
+import acab.core.defaults.value_keys as DS
 import acab.interfaces.value as VI
 from acab import types as AT
 from acab.core.config.config import AcabConfig

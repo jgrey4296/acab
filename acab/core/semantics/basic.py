@@ -34,13 +34,14 @@ logging = logmod.getLogger(__name__)
 
 import acab.interfaces.handler_system as HS
 from acab import types as AT
-from acab.core.value.default_structure import QUERY
+from acab.core.defaults.value_keys import QUERY
 from acab.error.printing import AcabPrintException
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces.protocols.value import AcabReducible_p
 from acab.interfaces.value import Sentence_i, Value_i
 from acab.core.util.part_implementations import handler_system as HSImpl
 from acab.interfaces import semantic as SI
+from acab.interfaces.fragments import Semantic_Fragment_i
 
 Value              : TypeAlias = AT.Value
 Sen_A              : TypeAlias = AT.Sentence
@@ -52,7 +53,7 @@ CtxSet             : TypeAlias = AT.CtxSet
 CtxIns             : TypeAlias = AT.CtxIns
 Handler_A          : TypeAlias = AT.Handler
 ProductionOperator : TypeAlias = AT.Operator
-ModuleComponents   : TypeAlias = AT.ModuleComponents
+ModuleFragment     : TypeAlias = AT.ModuleFragment
 StructureSemantics : TypeAlias = AT.StructureSemantics
 ValueSemantics     : TypeAlias = AT.ValueSemantics
 StatementSemantics : TypeAlias = AT.StatementSemantics
@@ -60,9 +61,6 @@ SemanticSystem     : TypeAlias = AT.SemanticSystem
 
 
 # Protocol Implementations #############################################################
-class Semantic_Fragment(HSImpl.HandlerFragment, SI.Semantic_Fragment_i):
-    pass
-
 class SemanticSystem(HSImpl.HandlerSystem, SI.SemanticSystem_i):
     ctx_set         : CtxSet
     _operator_cache : None|CtxIns
@@ -75,7 +73,7 @@ class SemanticSystem(HSImpl.HandlerSystem, SI.SemanticSystem_i):
 
         return f"<{self.__class__.__name__} handlers={len(self.handler_specs)}, sieve={len(self.sieve)}{ops}>"
 
-    def build_ctxset(self, ops:None|list[ModuleComponents]=None) -> CtxSet:
+    def build_ctxset(self, ops:None|list[ModuleFragment]=None) -> CtxSet:
         """ Build a context set. Use passed in operators if provided.
         Caches operators
         """
@@ -96,12 +94,12 @@ class SemanticSystem(HSImpl.HandlerSystem, SI.SemanticSystem_i):
     def has_op_cache(self) -> bool:
         return self._operator_cache is not None
 
-    def extend(self, mods:list[ModuleComponents]) -> None:
+    def extend(self, mods:list[ModuleFragment]) -> None:
         logging.info("Extending Semantics")
         semantics = [y for x in mods for y in x.semantics]
-        assert(all([isinstance(x, Semantic_Fragment) for x in semantics]))
+        assert(all([isinstance(x, Semantic_Fragment_i) for x in semantics]))
         for sem_fragment in semantics:
-            assert(sem_fragment.target_i is None or issubclass(sem_fragment.target_i, SemanticSystem_i))
+            assert(sem_fragment.target_i is None or issubclass(sem_fragment.target_i, SI.SemanticSystem_i))
             for val in sem_fragment:
                 self.register(val)
 

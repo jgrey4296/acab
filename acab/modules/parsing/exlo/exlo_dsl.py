@@ -8,6 +8,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 
 import pyparsing as pp
 from acab import AcabConfig
+from acab.core.util.fragments import DSL_Fragment
 from acab.core.parsing import parsers as PU
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.core.parsing.funcs import clear_parser_names, deep_update_names
@@ -24,7 +25,6 @@ logging                = logmod.getLogger(__name__)
 config                 = AcabConfig()
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 
-DSL_Fragment = ppDSL.DSL_Fragment
 DSL_Spec     = ppDSL.PyParse_Spec
 DSL_Handler  = ppDSL.PyParse_Handler
 

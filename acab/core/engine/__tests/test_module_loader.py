@@ -10,14 +10,12 @@ from unittest import mock
 logging = logmod.getLogger(__name__)
 
 import warnings
-
 import acab
 
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     acab.setup()
-
-from acab.core.engine.module_loader import ModuleLoader
+    from acab.core.engine.module_loader import ModuleLoader
 
 
 class TestModuleLoader(unittest.TestCase):
@@ -44,14 +42,50 @@ class TestModuleLoader(unittest.TestCase):
         self.assertIsNotNone(ml)
 
     def test_load_module(self):
-        pass
+        ml = ModuleLoader()
+        result = ml.load("acab.core.engine.__tests.test_module")
+        self.assertTrue(result)
+        self.assertEqual(len(result[0].dsl_fragments), 1)
+        self.assertEqual(len(result[0].semantics), 1)
+        self.assertEqual(len(result[0].printers), 1)
+        self.assertEqual(len(result[0].operators), 0)
 
-    def test_extract_from_module(self):
-        pass
+    def test_load_module_explicit(self):
+        ml = ModuleLoader()
+        result = ml.load("acab.core.engine.__tests.test_module.module")
+        self.assertTrue(result)
+        self.assertEqual(len(result[0].dsl_fragments), 1)
+        self.assertEqual(len(result[0].semantics), 1)
+        self.assertEqual(len(result[0].printers), 1)
+        self.assertEqual(len(result[0].operators), 0)
 
-    def test_contains(self):
-        pass
 
+    def test_load_alt_module(self):
+        ml = ModuleLoader()
+        result = ml.load("acab.core.engine.__tests.test_module.alt_mod")
+        self.assertTrue(result)
+        self.assertEqual(len(result[0].dsl_fragments), 1)
+        self.assertEqual(len(result[0].semantics), 0)
+        self.assertEqual(len(result[0].printers), 0)
+        self.assertEqual(len(result[0].operators), 0)
+
+    def test_load_module_separates(self):
+        ml = ModuleLoader()
+        result = ml.load("acab.core.engine.__tests.test_module.separates")
+        self.assertTrue(result)
+        self.assertEqual(len(result[0].dsl_fragments), 1)
+        self.assertEqual(len(result[0].semantics), 1)
+        self.assertEqual(len(result[0].printers), 0)
+        self.assertEqual(len(result[0].operators), 0)
+
+    def test_load_module_without_all_defined(self):
+        ml = ModuleLoader()
+        result = ml.load("acab.core.engine.__tests.test_module.no_all")
+        self.assertTrue(result)
+        self.assertEqual(len(result[0].dsl_fragments), 1)
+        self.assertEqual(len(result[0].semantics), 0)
+        self.assertEqual(len(result[0].printers), 1)
+        self.assertEqual(len(result[0].operators), 2)
 
 if __name__ == '__main__':
     unittest.main()

@@ -13,7 +13,7 @@ with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
 
-import acab.core.value.default_structure as DS
+import acab.core.defaults.value_keys as DS
 from acab.core.data.node import AcabNode
 from acab.core.value.value import AcabValue
 from acab.interfaces.value import Sentence_i

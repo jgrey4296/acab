@@ -10,10 +10,11 @@ from acab.interfaces.printing import PrintSystem_i
 from acab.interfaces import handler_system as HS
 from acab.interfaces.value import (Sentence_i, Value_i)
 from acab.core.value.instruction import Instruction
-from acab.core.value.default_structure import SEMANTIC_HINT
+import acab.core.defaults.value_keys as DS
 from acab.core.config.config import AcabConfig
 from acab.core.printing import basic
-from acab.core.printing import default_signals as DSig
+from acab.core.defaults import print_signals as DSig
+
 
 config = AcabConfig()
 
@@ -30,7 +31,7 @@ class BasicPrinter(basic.PrintSystemImpl, PrintSystem_i):
         # enum
         lambda x              : DSig.SYMBOL if isinstance(x, Enum) else None,
         # SEM HINT Handler
-        lambda x              : str(x.data[SEMANTIC_HINT]) if isinstance(x, Value_i) and SEMANTIC_HINT in x.data else None,
+        lambda x              : str(x.data[DS.SEMANTIC_HINT]) if isinstance(x, Value_i) and DS.SEMANTIC_HINT in x.data else None,
         # exact type     : 1 -> 1 : any / leaf
         lambda x              : str(x.type) if isinstance(x, Value_i) else None,
         # gen type       : m -> 1 : any / leaf

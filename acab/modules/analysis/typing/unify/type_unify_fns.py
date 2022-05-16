@@ -10,8 +10,8 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 logging = logmod.getLogger(__name__)
 
 from acab import types as AT
-from acab.core.value.default_structure import TYPE_INSTANCE
-from acab.core.value import default_structure as DS
+from acab.core.defaults.value_keys import TYPE_INSTANCE
+import acab.core.defaults.value_keys as DS
 from acab.core.value.instruction import Instruction
 from acab.core.util.decorators.util import factory
 from acab.error.semantic import AcabSemanticException

@@ -7,7 +7,8 @@ import acab.modules.printing.printers as Printers
 from acab.interfaces.printing import PrintSemantics_i, PrintSystem_i
 from acab.modules.printing.basic_printer  import BasicPrinter
 from acab.core.config.config import AcabConfig
-from acab.core.printing import default_signals as DSig
+from acab.core.defaults import print_signals as DSig
+
 
 config = AcabConfig()
 

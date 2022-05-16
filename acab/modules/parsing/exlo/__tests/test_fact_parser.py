@@ -21,8 +21,7 @@ with warnings.catch_warnings():
 import acab.modules.parsing.exlo.parsers.FactParser as FP
 from acab.core.parsing import parsers as PU
 from acab.core.parsing.annotation import ValueAnnotation
-from acab.core.value import default_structure as DS
-from acab.core.value.default_structure import NEGATION
+import acab.core.defaults.value_keys as DS
 from acab.core.value.sentence import Sentence
 from acab.interfaces.value import Sentence_i, Value_i
 
@@ -113,12 +112,12 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
     def test_negated_sentence(self):
         result = FP.SENTENCE.parse_string('~a.test!string')[0]
         self.assertIsInstance(result, Sentence_i)
-        self.assertTrue(result.data[NEGATION])
+        self.assertTrue(result.data[DS.NEGATION])
 
     def test_positive_sentence(self):
         result = FP.SENTENCE.parse_string('a.test!string')[0]
         self.assertIsInstance(result, Sentence_i)
-        self.assertFalse(result.data[NEGATION])
+        self.assertFalse(result.data[DS.NEGATION])
 
 
     def test_valbind_flatten(self):

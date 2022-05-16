@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import logging as logmod
 
-import acab.core.value.default_structure as DS
+import acab.core.defaults.value_keys as DS
 import acab.error.semantic as ASErr
 import acab.interfaces.semantic as SI
 from acab.core.config.config import AcabConfig

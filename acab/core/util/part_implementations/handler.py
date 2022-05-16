@@ -31,7 +31,7 @@ logging                = logmod.getLogger(__name__)
 config                 = AcabConfig()
 SPACER                 = int(config.prepare("Print.Data", "SPACER_SIZE")())
 
-ModuleComponents   : TypeAlias = AT.ModuleComponents
+ModuleFragment     : TypeAlias = AT.ModuleFragment
 Overrider          : TypeAlias = AT.HandlerOverride
 Sen_A              : TypeAlias = AT.Sentence
 Structure          : TypeAlias = "AT.DataStructure[AT.Node]"
