@@ -1,14 +1,15 @@
 # pylint: disable=multiple-statements,protected-access,too-many-ancestors,abstract-method
 # pyright: reportGeneralTypeIssues=warning
 from __future__ import annotations
+
 import abc
 import logging as logmod
 from dataclasses import InitVar, dataclass, field
 from enum import Enum
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     Iterable, Iterator, Mapping, Match, MutableMapping,
-                    Type, Protocol, Sequence, Tuple, TypeAlias, TypeGuard, TypeVar,
-                    cast, final, overload, runtime_checkable)
+                    Protocol, Sequence, Tuple, Type, TypeAlias, TypeGuard,
+                    TypeVar, cast, final, overload, runtime_checkable)
 
 if TYPE_CHECKING:
     # tc only imports
@@ -17,7 +18,7 @@ if TYPE_CHECKING:
 from acab import AcabConfig
 from acab import types as AT
 from acab.core.config.config import AcabConfig
-from acab.core.printing.default_symbols import PRINT_SEPARATOR_P
+from acab.core.defaults.print_symbols import PRINT_SEPARATOR_P
 from acab.error.printing import AcabPrintException
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces import handler_system as HS
@@ -29,7 +30,7 @@ config = AcabConfig()
 Config_A         : TypeAlias = AT.Config
 Value_A          : TypeAlias = "AT.Value[AT.ValueCore]"
 Sentence         : TypeAlias = AT.Sentence
-ModuleComponents : TypeAlias = AT.ModuleComponents
+ModuleFragment   : TypeAlias = AT.ModuleFragment
 ConfigSpec       : TypeAlias = AT.ConfigSpec
 GenFunc          : TypeAlias = AT.fns.GenFunc
 Handler_A        : TypeAlias = AT.Handler
@@ -81,6 +82,3 @@ class PrintSemantics_i(HS.HandlerComponent_i, _PrintSemantics_p):
 
     def __post_init__(self) -> None: pass
 
-@dataclass #type:ignore[misc]
-class Printer_Fragment_i(HS.HandlerFragment_i):
-    target_i : Type[PrintSystem_i] = field(kw_only=True, default=PrintSystem_i)

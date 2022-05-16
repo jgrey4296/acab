@@ -5,12 +5,12 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-import acab.core.value.default_structure as DStruct
+import acab.core.defaults.value_keys as DS
 import acab.interfaces.value as VI
 from acab import AcabConfig
+from acab.core.defaults import print_signals as DSig
+from acab.core.defaults import print_symbols as DSYM
 from acab.core.printing import basic
-from acab.core.printing import default_signals as DSig
-from acab.core.printing import default_symbols as DSYM
 from acab.core.printing import wrappers as PW
 from acab.core.value.instruction import Instruction
 from acab.core.value.sentence import Sentence
@@ -23,7 +23,7 @@ ANNOTATIONS = [config.prepare("Value.Structure", x, _type=Enum)() for x in confi
 ATOM_HINT   = DSig.ATOM
 TYPE_BASE   = config.prepare("Data", "TYPE_BASE")()
 
-SEN_SEN     = VF.sen([DStruct.SENTENCE_PRIM])
+SEN_SEN     = VF.sen([DS.SENTENCE_PRIM])
 
 def grouper(iterable, n, fillvalue=None):
     """ Collect data into fixed-length chunks or blocks
@@ -191,7 +191,7 @@ class ConstraintPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
 
     def __call__(self, value, top=None, data=None):
         return_list = []
-        for constraint in value.data[DStruct.CONSTRAINT]:
+        for constraint in value.data[DS.CONSTRAINT]:
             return_list.append(constraint)
             return_list.append(", ")
 
@@ -206,7 +206,7 @@ class BasicSentenceAwarePrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
         assert(isinstance(value, VI.Sentence_i))
         return_list = []
 
-        if DStruct.NEGATION in value.data and value.data[DStruct.NEGATION]:
+        if DS.NEGATION in value.data and value.data[DS.NEGATION]:
             return_list.append(DSYM.NEGATION_SYM)
 
         return_list += value.words[:-1]
@@ -216,7 +216,7 @@ class BasicSentenceAwarePrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
             return_list.append(value.words[-1])
 
         # Handle query
-        if DStruct.QUERY in value.data and value.data[DStruct.QUERY]:
+        if DS.QUERY in value.data and value.data[DS.QUERY]:
             return_list.append(DSYM.QUERY_SYM)
 
 
@@ -346,7 +346,7 @@ class TagPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
         for tags in grouper(sorted(value), 4):
             result.append(DSYM.INDENT)
             result.append(DSYM.TAG_SYM)
-            result.append(Sentence([x for x in tags if x is not None]))
+            result.append(VF.sen([x for x in tags if x is not None]))
             result.append(DSYM.CONTAINER_JOIN_P)
 
         return result

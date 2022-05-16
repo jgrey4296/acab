@@ -18,10 +18,9 @@ with warnings.catch_warnings():
         from acab.core.parsing import debug_funcs as DBF
         DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
+from acab.core.defaults.value_keys import (ACTION_COMPONENT, QUERY_COMPONENT,
+                                           TRANSFORM_COMPONENT)
 from acab.core.parsing import parsers as PU
-from acab.core.value.default_structure import (ACTION_COMPONENT,
-                                               QUERY_COMPONENT,
-                                               TRANSFORM_COMPONENT)
 from acab.core.value.instruction import (ProductionComponent,
                                          ProductionContainer,
                                          ProductionOperator,

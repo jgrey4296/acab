@@ -32,7 +32,7 @@ Node                : TypeAlias = AT.Node
 Sen                 : TypeAlias = AT.Sentence
 ProdComp            : TypeAlias = AT.Component
 ProductionContainer : TypeAlias = AT.Component
-ModuleComponents    : TypeAlias = AT.ModuleComponents
+ModuleFragment      : TypeAlias = AT.ModuleFragment
 
 DelayValue = 'UUID | CtxIns | CtxSet | None'
 

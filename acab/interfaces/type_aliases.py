@@ -15,7 +15,8 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Generic, Iterable,
 if TYPE_CHECKING:
     import pyparsing as pp
     from acab.core import util
-    from acab.core.value import default_structure, instruction
+    import acab.core.defaults.value_keys as DS
+    from acab.core.value import instruction
     from acab.core.parsing import annotation
     from acab.core.util import delayed_commands
     from acab.interfaces import (config, sieve, context, data, debugger, dsl, engine,
@@ -45,8 +46,8 @@ Sentence            : TypeAlias = "value.Sentence_i"
 
 # Types describing enums of value accessible data
 ValueData             : TypeAlias = str
-# StructComponent     : TypeAlias = "default_structure.STRUCT_COMP_E"
-# TypePrimitive       : TypeAlias = "default_structure.TYPE_PRIM_E"
+# StructComponent     : TypeAlias = "DS.STRUCT_COMP_E"
+# TypePrimitive       : TypeAlias = "DS.TYPE_PRIM_E"
 
 # The types describing core structures for storing values
 Node                : TypeAlias = "data.Node_i"
@@ -60,12 +61,16 @@ Component           : TypeAlias = "instruction.ProductionComponent"
 Container           : TypeAlias = "instruction.ProductionContainer"
 ProductionStructure : TypeAlias = "instruction.ProductionStructure"
 
+# Fragments of Systems
+ModuleFragment      : TypeAlias = "fragments.ModuleFragment"
+HandlerFragment     : TypeAlias = "fragments.HandlerFragment_i"
+DSL_Fragment        : TypeAlias = "fragments.DSL_Fragment_i"
+
 # Types for assembling handler systems
 Handler             : TypeAlias = "handler_system.Handler_i"
 HandlerComponent    : TypeAlias = "handler_system.HandlerComponent_i"
 HandlerSystem       : TypeAlias = "handler_system.HandlerSystem_i"
 HandlerOverride     : TypeAlias = "handler_system.HandlerOverride"
-HandlerFragment     : TypeAlias = "handler_system.HandlerFragment_i"
 HandlerSpec         : TypeAlias = "handler_system.HandlerSpec_i"
 
 # Types for Assembling Semantic Systems
@@ -86,7 +91,6 @@ Constraint          : TypeAlias = "context.Constraint_i"
 DelayedCommands     : TypeAlias = "delayed_commands.DelayedCommands_i"
 
 # Types for describing DSLs
-DSL_Fragment        : TypeAlias = "dsl.DSL_Fragment_i"
 DSL_Builder         : TypeAlias = "dsl.DSL_Builder_i"
 DSL_Spec            : TypeAlias = "dsl.DSL_Spec_i"
 
@@ -96,7 +100,6 @@ Parser              : TypeAlias = fns.Parser
 
 # Types which provide for running systems
 Debugger            : TypeAlias = "debugger.AcabDebugger_i"
-ModuleComponents    : TypeAlias = "module_loader.ModuleComponents"
 ModuleLoader        : TypeAlias = "module_loader.ModuleLoader_i"
 Engine              : TypeAlias = "engine.AcabEngine_i"
 

@@ -18,7 +18,7 @@ from weakref import ref
 
 logging = logmod.getLogger(__name__)
 
-import acab.core.value.default_structure as DS
+import acab.core.defaults.value_keys as DS
 import acab.interfaces.value as VI
 from acab import types as AT
 from acab.core.config.config import AcabConfig
@@ -61,7 +61,7 @@ class ContextMeta(ProtocolMeta):
     def __init__(cls, name:str, bases:tuple[type, ...], data:dict[str,Any]):
         super(ContextMeta, cls).__init__(name, bases, data)
 
-    def __call__(cls, ops:None|CtxIns|list[ModuleComponents]=None, **kwargs):
+    def __call__(cls, ops:None|CtxIns|list[AT.ModuleFragment]=None, **kwargs):
         """
         The Meta Constructor for ContextSets,
         to construct operator bindings if necessary
@@ -76,7 +76,10 @@ class ContextMeta(ProtocolMeta):
 
         assert(isinstance(ops, list)), ops
         # Get Flat List of Operator Sentences:
-        operators = [y for x in ops for y in x.operators]
+        try:
+            operators = [y for x in ops for y in x.operators]
+        except AttributeError as er:
+            breakpoint()
         # Build the CtxInst data dict:
         op_dict = {str(x) : x[-1] for x in operators}
         # Add any sugar forms:

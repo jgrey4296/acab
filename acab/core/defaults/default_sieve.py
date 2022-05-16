@@ -8,7 +8,8 @@ from acab.interfaces.handler_system import HandlerOverride
 import acab.core.values.instruction as PA
 import acab.interfaces.value as VI
 from acab.interfaces.config import ConfigSpec_d
-from acab.core.printing import default_signals as DS
+from acab.core.defaults import print_signals as DS
+
 from enum import Enum
 
 

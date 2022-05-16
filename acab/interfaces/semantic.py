@@ -24,8 +24,7 @@ from enum import Enum
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     Iterable, Iterator, Mapping, Match, MutableMapping,
                     Protocol, Sequence, Tuple, Type, TypeAlias, TypeGuard,
-                    TypeVar, cast, final, overload,
-                    runtime_checkable)
+                    TypeVar, cast, final, overload, runtime_checkable)
 
 if TYPE_CHECKING:
     # tc only imports
@@ -35,7 +34,6 @@ logging = logmod.getLogger(__name__)
 
 import acab.interfaces.handler_system as HS
 from acab import types as AT
-from acab.core.value.default_structure import QUERY
 from acab.error.printing import AcabPrintException
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces.protocols import handler_system as HSubP
@@ -52,25 +50,17 @@ CtxSet             : TypeAlias = AT.CtxSet
 CtxIns             : TypeAlias = AT.CtxIns
 Handler_A          : TypeAlias = AT.Handler
 ProductionOperator : TypeAlias = "AT.Operator[AT.TValCore]"
-ModuleComponents   : TypeAlias = AT.ModuleComponents
+ModuleFragment     : TypeAlias = AT.ModuleFragment
 StructureSemantics : TypeAlias = AT.StructureSemantics
 ValueSemantics     : TypeAlias = AT.ValueSemantics
 StatementSemantics : TypeAlias = AT.StatementSemantics
 SemanticSystem     : TypeAlias = AT.SemanticSystem
 
 
-# Data  #######################################################################
-@dataclass #type:ignore[misc]
-class Semantic_Fragment_i(HS.HandlerFragment_i):
-    """ Dataclass of Semantic Handlers to be added to the system, and any
-    data they require
-    """
-    target_i : None | Type[SemanticSystem] = field(default=None) #type:ignore[assignment]
-
 # Protocols  ##################################################################
 class _SemanticSystem_p(HSubP.HandlerSystem_p, AcabReducible_p, Protocol):
     @abc.abstractmethod
-    def build_ctxset(self, ops:None|list[ModuleComponents]=None) -> CtxSet: pass
+    def build_ctxset(self, ops:None|list[ModuleFragment]=None) -> CtxSet: pass
 
     @property
     @abc.abstractmethod

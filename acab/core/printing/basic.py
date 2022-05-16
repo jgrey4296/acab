@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 import abc
 import logging as logmod
+from collections import defaultdict, deque
 from dataclasses import InitVar, dataclass, field
 from enum import Enum
 from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     Iterable, Iterator, Mapping, Match, MutableMapping,
-                    Type, Protocol, Sequence, Tuple, TypeAlias, TypeGuard, TypeVar,
-                    cast, final, overload, runtime_checkable)
-from collections import defaultdict, deque
+                    Protocol, Sequence, Tuple, Type, TypeAlias, TypeGuard,
+                    TypeVar, cast, final, overload, runtime_checkable)
 from unittest.mock import DEFAULT
 from uuid import UUID, uuid1
 
@@ -15,22 +15,23 @@ if TYPE_CHECKING:
     # tc only imports
     pass
 
+import acab.core.util.part_implementations.handler_system as HS
 from acab import AcabConfig
 from acab import types as AT
 from acab.core.config.config import AcabConfig
-from acab.core.printing.default_symbols import PRINT_SEPARATOR_P
+from acab.core.defaults.print_symbols import PRINT_SEPARATOR_P
 from acab.error.printing import AcabPrintException
 from acab.error.semantic import AcabSemanticException
-from acab.interfaces.value import Sentence_i, Value_i
+from acab.interfaces import fragments as FI
 from acab.interfaces import handler_system as HSi
 from acab.interfaces import printing as PI
-import acab.core.util.part_implementations.handler_system as HS
+from acab.interfaces.value import Sentence_i, Value_i
 
 logging                      = logmod.getLogger(__name__)
 config                       = AcabConfig()
 DEFAULT_HANDLER_SIGNAL       = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 Sentence         : TypeAlias = AT.Sentence
-ModuleComponents : TypeAlias = AT.ModuleComponents
+ModuleFragment   : TypeAlias = AT.ModuleFragment
 GenFunc          : TypeAlias = AT.fns.GenFunc
 
 REGISTER = "REGISTER"
@@ -122,10 +123,10 @@ class PrintSystemImpl(HS.HandlerSystem, PI.PrintSystem_i):
         return "".join(result)
 
 
-    def extend(self, mods:list[ModuleComponents]) -> None:
+    def extend(self, mods:list[ModuleFragment]) -> None:
         logging.info("Extending Printer")
         printers = [y for x in mods for y in x.printers]
-        assert(all([isinstance(x, PI.Printer_Fragment_i) for x in printers]))
+        assert(all([isinstance(x, FI.Printer_Fragment_i) for x in printers]))
         for print_fragment in printers:
             assert(print_fragment.target_i is None or issubclass(print_fragment.target_i, PI.PrintSystem_i)) #type:ignore
             for val in print_fragment:
@@ -164,5 +165,3 @@ class PrintSemanticsImpl(HS.HandlerComponent, PI.PrintSemantics_i):
         return True
 
 
-class PrinterFragment(HS.HandlerFragment, PI.Printer_Fragment_i):
-    pass

@@ -2,7 +2,7 @@
 
 from acab import AcabConfig
 from acab.core.parsing import pyparse_dsl as ppDSL
-from acab.core.semantics.basic import Semantic_Fragment
+from acab.core.util.fragments import Semantic_Fragment, DSL_Fragment
 from acab.core.util.part_implementations.handler_system import HandlerSpec
 from acab.modules.semantics.statements import QueryPlusAbstraction, ActionPlusAbstraction
 from acab.core.value.sentence import Sentence
@@ -13,7 +13,6 @@ from .printer import DFSSenPrinter
 
 config = AcabConfig()
 
-DSL_Fragment = ppDSL.DSL_Fragment
 DSL_Spec     = ppDSL.PyParse_Spec
 DSL_Handler  = ppDSL.PyParse_Handler
 

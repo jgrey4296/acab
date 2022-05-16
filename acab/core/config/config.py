@@ -45,24 +45,6 @@ GenFunc : TypeAlias = AT.fns.GenFunc
 override_constructor : Callable[..., defaultdict[str,Any]] = lambda: defaultdict(lambda: {})
 
 #--------------------------------------------------
-def GET(*args:str, hooks:None|list[AT.fns.GenFunc]=None) -> Config_i:
-    """
-    Utility config object retriever.
-    As the config object is a singleton,
-    this is mainly for alternative acab system initialisation
-    which doesn't use acab.setup
-
-    Arguments:
-        *args:
-            paths to load
-        hooks:
-            Functions to extend the config object with
-    Returns:
-        The config object
-    """
-    raise DeprecationWarning()
-
-#--------------------------------------------------
 # pylint: disable-next=too-few-public-methods
 @dataclass(frozen=True)
 class ConfigSpec(ConfigSpec_d):

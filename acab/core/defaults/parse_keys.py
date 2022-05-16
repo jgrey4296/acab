@@ -1,11 +1,16 @@
 """
-Enforce a default set of parse structure entries to be
-retrieved from config files
+These are strings to be used as parts of parse results
+
+ie: pp.Literal("something)(HEAD_ANNOTATION) + pp.Literal("else")(POST_ANNOTATION)
+etc
+
 """
 from acab import AcabConfig
 from enum import Enum
 
 config = AcabConfig()
+
+# These have to be strings, as pyparsing can't name a parser with an enum
 
 HEAD_ANNOTATION : str = config.attr.Parse.Structure.HEAD_ANNOTATION
 POST_ANNOTATION : str = config.attr.Parse.Structure.POST_ANNOTATION

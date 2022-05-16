@@ -21,7 +21,7 @@ from weakref import ref
 
 from acab.error.protocol import AcabProtocolError as APE
 from acab import types as AT
-import acab.core.value.default_structure as DS
+import acab.core.defaults.value_keys as DS
 from acab.core.config.config import AcabConfig
 from acab.core.util.decorators.util import cache
 import acab.interfaces.value as VI

@@ -8,7 +8,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
                     Set, Tuple, TypeVar, Union, cast)
 
-import acab.core.value.default_structure as DS
+import acab.core.defaults.value_keys as DS
 from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.core.semantics import basic
@@ -23,7 +23,7 @@ logging = logmod.getLogger(__name__)
 
 Sentence         = AT.Sentence
 CtxSet           = AT.CtxSet
-ModuleComponents = AT.ModuleComponents
+ModuleFragment   = AT.ModuleFragment
 config           = AcabConfig()
 
 ContextSet = config.prepare("Imports.Targeted", "context", actions=[config.actions_e.IMCLASS], args={"interface": ContextSet_i})()
@@ -32,7 +32,7 @@ SEM_HINT   = DS.SEMANTIC_HINT
 # TODO make a queue structured system, where semantics return a list of
 # instructions to add to the list, like printer
 
-@dataclass
+@dataclass(repr=False)
 class BasicSemanticSystem(basic.SemanticSystem, SemanticSystem_i):
     """ A Complete semantic system """
 

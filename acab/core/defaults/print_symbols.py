@@ -1,3 +1,12 @@
+"""
+These are proxies for literal symbols to use in printing
+They are *only* prepared, to guarantee they exist,
+but *not* reified,
+as the print system can hold run time overrides if necessary.
+The print system itself understands prepared values and will reify as necessary
+
+"""
+from __future__ import annotations
 from acab.core.config.config import AcabConfig
 from  acab.core.value.sentence import Sentence
 

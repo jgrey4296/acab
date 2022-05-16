@@ -10,10 +10,11 @@ from os.path import split, splitext
 
 logging = logmod.getLogger(__name__)
 
+import warnings
+
 import acab
 import pyparsing as pp
 
-import warnings
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
@@ -26,15 +27,16 @@ with warnings.catch_warnings():
 # from acab.core.parsing import debug_funcs as DBF
 # DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
+import acab.core.defaults.value_keys as DS
 import acab.interfaces.value as VI
 from acab.core.parsing import pyparse_dsl as ppDSL
-from acab.core.value import default_structure as DS
+from acab.core.parsing.component_dsl import Component_DSL
+from acab.core.util.log_formatter import AcabStringFormatter
 from acab.modules.context.context_instance import ContextInstance
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 from acab.modules.values.binding import binding as B
 from acab.modules.values.sen_val.module import Sen_Val_Parser
-from acab.core.util.log_formatter import AcabStringFormatter
-from acab.core.parsing.component_dsl import Component_DSL
+
 
 class SenValTests(unittest.TestCase):
 

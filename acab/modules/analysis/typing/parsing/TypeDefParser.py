@@ -16,7 +16,8 @@ from acab.core.parsing.consts import (DBLARROW, DELIM, NG, N, component_gap,
                                       emptyLine, ln, op, s, s_key)
 from acab.core.parsing.param_core import ParamCore
 from acab.core.parsing.statement_core import StatementCore, type_annotation_gen
-from acab.core.semantics.signals import signals
+from acab.core.defaults.semantic_signals import signals
+
 from acab.core.value.sentence import Sentence
 
 from . import util as TU

@@ -12,7 +12,7 @@ from acab import AcabConfig
 from acab import types as AT
 from acab.core.semantics import basic
 from acab.core.util.decorators.semantic import RunInSubCtxSet
-from acab.core.value import default_structure as DS
+import acab.core.defaults.value_keys as DS
 from acab.core.value.instruction import (ProductionComponent,
                                          ProductionContainer,
                                          ProductionOperator,

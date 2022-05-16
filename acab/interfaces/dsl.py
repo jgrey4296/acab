@@ -27,7 +27,7 @@ from acab.interfaces.protocols import handler_system as HSubP
 Parser           : TypeAlias = AT.Parser
 Sentence         : TypeAlias = AT.Sentence
 Query            : TypeAlias = AT.Container
-ModuleComponents : TypeAlias = AT.ModuleComponents
+ModuleFragment   : TypeAlias = AT.ModuleFragment
 DSL_Spec_A       : TypeAlias = AT.DSL_Spec
 File             : TypeAlias = 'io.TextIOBase'
 
@@ -54,10 +54,6 @@ class _DSL_Builder_p(HSubP.HandlerSystem_p, DSL_Parser_i, Protocol):
 
 
 # Interfaces:
-class DSL_Fragment_i(HS.HandlerFragment_i):
-    # TODO maybe a newtype
-    pass
-
 @dataclass #type:ignore[misc]
 class DSL_Handler_i(HS.Handler_i):
     """ Register a function for handling a DSL setup signal.

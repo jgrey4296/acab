@@ -12,13 +12,16 @@ import pyparsing as pp
 logging = logmod.getLogger(__name__)
 ##############################
 
-import acab
 import warnings
+
+import acab
+
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
 
 
+import acab.core.defaults.value_keys as DS
 import acab.modules.parsing.exlo.parsers.ActionParser as AP
 import acab.modules.parsing.exlo.parsers.FactParser as FP
 import acab.modules.parsing.exlo.parsers.QueryParser as QP
@@ -26,8 +29,7 @@ import acab.modules.parsing.exlo.parsers.RuleParser as RP
 import acab.modules.parsing.exlo.parsers.TransformParser as TP
 import acab.modules.printing.printers as Printers
 from acab.core.config.config import AcabConfig
-from acab.core.printing import default_signals as DSig
-from acab.core.value import default_structure as DS
+from acab.core.defaults import print_signals as DSig
 from acab.core.value.instruction import (Instruction, ProductionComponent,
                                          ProductionContainer,
                                          ProductionOperator)

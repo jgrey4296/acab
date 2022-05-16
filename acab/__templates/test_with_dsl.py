@@ -7,19 +7,21 @@ import re
 import unittest
 import unittest.mock as mock
 from os.path import split, splitext
+import warnings
 
 logging = logmod.getLogger(__name__)
 
 import acab
 import pyparsing as pp
 
-if '@pytest_ar' in globals():
-    from acab.core.parsing import debug_funcs as DBF
-    DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
+    if '@pytest_ar' in globals():
+        from acab.core.parsing import debug_funcs as DBF
+        DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
 ##############################
-
-config = acab.setup()
 
 # from acab.core.parsing import debug_funcs as DBF
 # DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
@@ -44,7 +46,7 @@ class _DSL_TEST_TEMPLATE(unittest.TestCase):
         logging.root.addHandler(cls.file_h)
 
         # Set up the parser to ease test setup
-        cls.dsl   = ppDSL.PyParseDSL([], [], [])
+        cls.dsl   = ppDSL.PyParseDSL()
         cls.dsl.register(EXLO_Parser)
         cls.dsl.register(Component_DSL)
         cls.dsl.build()

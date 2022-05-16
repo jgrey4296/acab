@@ -13,17 +13,18 @@ import acab
 
 logging = logmod.getLogger(__name__)
 import warnings
+
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
 
+import acab.core.defaults.value_keys as DS
 import acab.modules.semantics.statements as ASem
 from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.data.node import AcabNode
 from acab.core.semantics import basic
 from acab.core.util.decorators.semantic import (OperatorArgUnWrap,
                                                 OperatorResultWrap)
-from acab.core.value import default_structure as DS
 from acab.core.value.instruction import (ActionOperator, Instruction,
                                          ProductionComponent,
                                          ProductionContainer,

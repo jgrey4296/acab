@@ -22,10 +22,10 @@ with warnings.catch_warnings():
 
 import acab.modules.parsing.exlo.parsers.FactParser as FP
 import acab.modules.parsing.exlo.parsers.QueryParser as QP
+from acab.core.defaults.value_keys import (BIND, NEGATION, OPERATOR, QUERY,
+                                           QUERY_FALLBACK)
 from acab.core.parsing import parsers as PU
 from acab.core.parsing.annotation import ValueRepeatAnnotation
-from acab.core.value.default_structure import (BIND, NEGATION, OPERATOR, QUERY,
-                                               QUERY_FALLBACK)
 from acab.core.value.instruction import (Instruction, ProductionComponent,
                                          ProductionContainer,
                                          ProductionOperator)

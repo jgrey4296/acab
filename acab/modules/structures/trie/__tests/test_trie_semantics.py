@@ -19,7 +19,7 @@ with warnings.catch_warnings():
 
 from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.data.node import AcabNode
-from acab.core.value import default_structure as DS
+import acab.core.defaults.value_keys as DS
 from acab.core.value.instruction import ProductionComponent
 from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue

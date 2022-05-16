@@ -7,12 +7,13 @@ from acab.core.parsing import funcs as Pfunc
 from acab.core.parsing import parsers as PU
 from acab.core.parsing.consts import (DELIM, NG, N, component_gap, ln, op, orm,
                                       s, zrm)
-from acab.core.parsing.default_keys import OPERATOR
+from acab.core.defaults.parse_keys import OPERATOR
 from acab.core.parsing.parsers import VALBIND
 from acab.core.parsing.statement_core import StatementCore
 from acab.modules.parsing.exlo import constructors as PConst
 from acab.modules.parsing.exlo.util import LEFT_S, RIGHT_S
-from acab.core.semantics.signals import signals
+from acab.core.defaults.semantic_signals import signals
+
 
 from .FactParser import SENTENCE, op_sentence
 

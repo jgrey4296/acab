@@ -11,7 +11,7 @@ from typing import (Any, Callable, ClassVar, Collection, Generic, Iterable,
 from uuid import UUID, uuid1
 from weakref import ref
 
-import acab.core.value.default_structure as DS
+import acab.core.defaults.value_keys as DS
 import acab.core.util.part_implementations.value as VSI  # type:ignore
 import acab.interfaces.protocols.value as VP
 import acab.interfaces.value as VI

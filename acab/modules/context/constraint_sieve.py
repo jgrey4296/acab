@@ -11,8 +11,7 @@ import acab.error.semantic as ASErr
 import acab.interfaces.context as CtxInt
 from acab import AcabConfig
 from acab import types as AT
-from acab.core.value.default_structure import (CONSTRAINT, OPERATOR,
-                                               TYPE_INSTANCE)
+from acab.core.defaults.value_keys import CONSTRAINT, OPERATOR, TYPE_INSTANCE
 from acab.core.value.instruction import ProductionComponent, ProductionOperator
 from acab.core.value.sentence import Sentence
 from acab.interfaces.value import ValueFactory as VF

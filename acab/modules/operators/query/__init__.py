@@ -1,9 +1,9 @@
 from acab.core.parsing import pyparse_dsl as ppDSL
 
+from acab.core.util.fragments import DSL_Fragment
 from . import query_op_parsers as QOP
 from .query_operators import ELEM, EQ, NEQ, HasTag, RegMatch, SimpleTypeMatch
 
-DSL_Fragment = ppDSL.DSL_Fragment
 DSL_Spec     = ppDSL.PyParse_Spec
 DSL_Handler  = ppDSL.PyParse_Handler
 

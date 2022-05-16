@@ -23,7 +23,7 @@ with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = setup()
 
-from acab.core.value import default_structure as DS
+import acab.core.defaults.value_keys as DS
 from acab.core.value import instruction as PO
 from acab.core.value.instruction import Instruction
 from acab.core.value.sentence import Sentence

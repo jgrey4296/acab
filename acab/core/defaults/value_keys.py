@@ -1,5 +1,11 @@
 """
-Default elements found in values, loaded from config
+These are enums and values used for AcabValue internal data attributes.
+
+ie: AcabValue().data[BIND] = True
+
+also also includes the modality enum, core type primitives,
+and production structure keys
+
 """
 from acab import AcabConfig
 from enum import Enum

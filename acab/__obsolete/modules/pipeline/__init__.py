@@ -1,8 +1,8 @@
-from acab.interfaces.dsl import DSL_Fragment_i
+from acab.core.util.fragments import DSL_Fragment
 
 from .pipeline_actions import PipelineLoadModule, PipelineRunLayer, PipelineRunPipeline
 
-class MODULE(DSL_Fragment_i):
+class MODULE(DSL_Fragment):
     """ The Module Spec for base operators """
 
     def assert_parsers(self, pt):

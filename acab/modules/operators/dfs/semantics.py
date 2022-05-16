@@ -6,7 +6,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 from uuid import UUID
 
-import acab.core.value.default_structure as DS
+import acab.core.defaults.value_keys as DS
 import acab.error.semantic as ASErr
 import acab.interfaces.semantic as SI
 from acab import types as AT

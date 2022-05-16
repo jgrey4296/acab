@@ -1,4 +1,6 @@
-from acab.interfaces.dsl import DSL_Fragment, DSL_Spec, DSL_Handler
+from acab.interfaces.dsl import DSL_Spec, DSL_Handler
+from acab.core.util.fragments import DSL_Fragment
+
 from .parsing import parser as TP
 
 

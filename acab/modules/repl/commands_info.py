@@ -30,7 +30,7 @@ from acab.core.util.log_formatter import AcabLogFormatter, AcabMinimalLogRecord
 logging = logmod.getLogger(__name__)
 
 # TODO shift this into config
-ModuleComponents : TypeAlias = AT.ModuleComponents
+ModuleFragment : TypeAlias = AT.ModuleFragment
 
 SPLIT_RE         = re.compile("[ .!?/]")
 shortcut_config  = config.attr.Module.REPL.shortcuts

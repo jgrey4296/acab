@@ -4,21 +4,21 @@ capable of parsing  multiple facts
 """
 import logging as logmod
 
+import acab.core.defaults.value_keys as CDS
 import pyparsing as pp
+from acab.core.defaults import parse_keys as PDS
+from acab.core.defaults import parse_symbols as PDSym
+from acab.core.defaults.parse_keys import HEAD_ANNOTATION, OPERATOR, SEN, VALUE
 from acab.core.parsing import funcs as Pfunc
 from acab.core.parsing import parsers as PU
+from acab.core.parsing.annotation import ValueAnnotation, ValueRepeatAnnotation
+from acab.core.parsing.consts import (COLON, COMMA, DELIM, END, FUNC_SYMBOL,
+                                      NEGATION, NG, N, emptyLine, ln, op, opLn,
+                                      zrm)
 from acab.core.parsing.param_core import ParamCore
 from acab.core.parsing.statement_core import StatementCore
-from acab.core.parsing.consts import (COMMA, DELIM, END, emptyLine, COLON,
-                                      NEGATION, NG, N, op, opLn, zrm, ln, FUNC_SYMBOL)
-from acab.core.parsing.default_keys import OPERATOR, SEN, VALUE, HEAD_ANNOTATION
-from acab.core.parsing import default_keys as PDS
-from acab.core.value import default_structure as CDS
 from acab.modules.parsing.exlo import constructors as PConst
-from acab.core.parsing.annotation import ValueRepeatAnnotation, ValueAnnotation
-from acab.core.parsing import default_symbols as PDSym
 from acab.modules.parsing.exlo.parsers import util as EU
-
 
 logging             = logmod.getLogger(__name__)
 # Hotload insertion points:

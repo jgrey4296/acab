@@ -12,12 +12,15 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 from unittest import mock
 from unittest.mock import create_autospec
+import warnings
 
 logging = logmod.getLogger(__name__)
 
 import acab
 
-config = acab.setup()
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
 
 from acab.modules.engines.basic_engine import AcabBasicEngine
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser

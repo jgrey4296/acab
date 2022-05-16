@@ -8,7 +8,7 @@ import pyparsing as pp
 from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.interfaces.value import ValueFactory
-import acab.core.value.default_structure as DS
+import acab.core.defaults.value_keys as DS
 from acab.modules.context.context_instance import ContextInstance, MutableContextInstance
 from . import exceptions as TE
 

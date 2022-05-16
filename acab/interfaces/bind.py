@@ -16,7 +16,7 @@ from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.error.config import AcabConfigException
 import acab.interfaces.protocols.value as VSubP
-import acab.core.value.default_structure as DS
+import acab.core.defaults.value_keys as DS
 
 logging       = logmod.getLogger(__name__)
 

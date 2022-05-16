@@ -16,6 +16,7 @@ with warnings.catch_warnings():
 
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 
+from acab.core.util.fragments import DSL_Fragment
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.error.parse import AcabParseException
 from acab.interfaces import dsl as DSLi
@@ -181,10 +182,10 @@ class PyParseDSLTests(unittest.TestCase):
 
     def test_dsl_register_fragment_specs(self):
         dsl      = ppDSL.PyParseDSL()
-        fragment = ppDSL.DSL_Fragment(specs=[
+        fragment = DSL_Fragment(specs=[
             ppDSL.PyParse_Spec("a_signal", struct=pp.Forward(), flags=[ppDSL.PyParse_Spec.flag_e.COLLECT]),
             ppDSL.PyParse_Spec("b_signal", struct=pp.Forward(), flags=[ppDSL.PyParse_Spec.flag_e.COLLECT])
-            ])
+        ])
 
         # 1 for default
         self.assertEqual(len(dsl), 1)
@@ -195,7 +196,7 @@ class PyParseDSLTests(unittest.TestCase):
 
     def test_dsl_register_fragment_handlers(self):
         dsl      = ppDSL.PyParseDSL()
-        fragment = ppDSL.DSL_Fragment(specs=[
+        fragment = DSL_Fragment(specs=[
             ppDSL.PyParse_Spec("a_signal", struct=pp.Forward(), flags=[ppDSL.PyParse_Spec.flag_e.COLLECT]),
             ppDSL.PyParse_Spec("b_signal", struct=pp.Forward(), flags=[ppDSL.PyParse_Spec.flag_e.COLLECT])
             ],

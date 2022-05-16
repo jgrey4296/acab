@@ -21,11 +21,8 @@ from acab.error.parse import AcabParseException
 Parser           : TypeAlias = AT.Parser
 Sentence         : TypeAlias = AT.Sentence
 Query            : TypeAlias = AT.Container
-ModuleComponents : TypeAlias = AT.ModuleComponents
+ModuleFragment   : TypeAlias = AT.ModuleFragment
 DSL_Spec_A       : TypeAlias = AT.DSL_Spec
-
-class DSL_Fragment(HSImpl.HandlerFragment, dsl.DSL_Fragment_i):
-    pass
 
 class DSL_Spec(HSImpl.HandlerSpec, dsl.DSL_Spec_i):
 
@@ -94,7 +91,7 @@ class DSL_Builder(HSImpl.HandlerSystem, dsl.DSL_Builder_i):
     def __call__(self, *args):
         return self.parse(*args)
 
-    def extend(self, modules:list[ModuleComponents]):
+    def extend(self, modules:list[ModuleFragment]):
         for module in modules:
             self.register(*module.dsl_fragments)
 

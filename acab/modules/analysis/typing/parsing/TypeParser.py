@@ -6,7 +6,7 @@ import pyparsing as pp
 
 from acab.core.parsing.consts import DOUBLEBAR, COLON, COMMA, DBLCOLON, DELIM, component_gap
 from acab.core.parsing.consts import N, NG, op, OPAR, CPAR
-from acab.core.value.sentence import Sentence
+from acab.interfaces.value import ValueFactory as VF
 from acab.core.parsing import parsers as PU
 
 
@@ -15,7 +15,7 @@ from acab.core.config.config import AcabConfig
 from . import util as TU
 
 config = AcabConfig()
-EXTENDED_LANGUAGE_SYNTAX_S = config.prepare("Parse.Patterns", "EXTENDED_LANGUAGE_SYNTAX")()
+EXTENDED_LANGUAGE_SYNTAX_S = config.attr.Parse.Patterns.TYPE_SYNTAX_EXT
 
 # BASIC SENTENCE NEEDS TO BE POPULATED
 # eg: acab.modules.parsing.exlo.parsers.FactParser.BASIC_SEN
@@ -23,7 +23,7 @@ HOTLOAD_SEN  = pp.Forward()
 TYPEDEC_CORE = pp.Forward()
 
 EXTENDED_ATOM = pp.Word(EXTENDED_LANGUAGE_SYNTAX_S)
-EXTENDED_ATOM.set_parse_action(lambda s, l, t: Sentence(t[0]))
+EXTENDED_ATOM.set_parse_action(lambda s, l, t: VF.sen(t[0]))
 
 
 VAR_OR_TYPE_DEC = PU.BIND | TYPEDEC_CORE
