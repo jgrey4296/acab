@@ -33,7 +33,7 @@ class ModuleLoaderImpl(ModuleLoader_i):
         return f"<ModuleLoader({loaded_modules})>"
 
     def __iter__(self) -> Iterator[ModuleFragment]:
-        return iter(self.loaded_modules.values())
+        return iter(self.loaded)
 
     def __len__(self) -> int:
         return len(self.loaded_modules)
@@ -44,16 +44,20 @@ class ModuleLoaderImpl(ModuleLoader_i):
     def reload_all_modules(self) -> None:
         loaded = list(self.loaded_modules.keys())
         self.loaded_modules.clear()
-        self.load_modules(*loaded)
+        self.load(*loaded)
 
-    def load_modules(self, *modules: ModuleType|str) -> list[ModuleFragment]:
+    def load(self, *modules: ModuleType|str) -> list[ModuleFragment]:
         """ Given ModuleInterface objects,
         store them then tell the working memory to load them
         return a list of dictionaries
         """
-        return [self.load_module(x) for x in modules]
+        loaded = []
+        for mod in modules:
+            loaded += self._load_module(mod)
 
-    def load_module(self, maybe_module: ModuleType | str) -> ModuleFragment:
+        return loaded
+
+    def _load_module(self, maybe_module: ModuleType | str) -> [ModuleFragment]:
         """
         Load a module, extract operators and dsl fragments from it,
         put the operators into the operators store,
@@ -70,7 +74,7 @@ class ModuleLoaderImpl(ModuleLoader_i):
 
             # Return early if already loaded
             if str(maybe_module) in self.loaded_modules:
-                logging.warning("Module already loaded: {}".format(maybe_module))
+                logging.warning("Module already loaded: {}", maybe_module)
                 return self.loaded_modules[str(maybe_module)]
 
             if isinstance(maybe_module, str):
@@ -78,9 +82,10 @@ class ModuleLoaderImpl(ModuleLoader_i):
             else:
                 the_module = maybe_module
             # Extract
-            components = self.extract_from_module(the_module)
-            self.loaded_modules[str(maybe_module)] = components
-            return components
+            fragments = self.extract_from_module(the_module)
+            self.loaded_modules[str(maybe_module)] = fragments
+
+            return fragments
 
         except ModuleNotFoundError as err:
             raise AcabImportException(f"Module Not Found: {maybe_module}").with_traceback(err.__traceback__) from err
@@ -88,3 +93,7 @@ class ModuleLoaderImpl(ModuleLoader_i):
             new_err = AcabImportException(f"{maybe_module} : {err}").with_traceback(err.__traceback__)
             raise new_err from err
 
+
+    @property
+    def loaded(self) -> list[ModuleFragment]:
+        return [y for x in self.loaded_modules.values() for y in x]

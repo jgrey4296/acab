@@ -58,7 +58,7 @@ class TestWalkSemantics(unittest.TestCase):
         logging.root.addHandler(cls.file_h)
 
         cls.eng = exlo()
-        cls.eng.load_modules(*default_modules, "acab.modules.operators.dfs.module")
+        cls.eng.load_modules(*default_modules, "acab.modules.operators.dfs")
 
     @classmethod
     def tearDownClass(cls):
@@ -181,7 +181,7 @@ class TestWalkSemantics(unittest.TestCase):
 
     def test_query_walk_from_root(self):
         """
-        ᛦ $y(::target)?
+        ᛦ $y(::blah)?
         """
         self.eng("a.b.c.test.sub.blah")
         self.eng("a.b.d.fail")

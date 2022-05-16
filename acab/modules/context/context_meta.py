@@ -76,7 +76,10 @@ class ContextMeta(ProtocolMeta):
 
         assert(isinstance(ops, list)), ops
         # Get Flat List of Operator Sentences:
-        operators = [y for x in ops for y in x.operators]
+        try:
+            operators = [y for x in ops for y in x.operators]
+        except AttributeError as er:
+            breakpoint()
         # Build the CtxInst data dict:
         op_dict = {str(x) : x[-1] for x in operators}
         # Add any sugar forms:

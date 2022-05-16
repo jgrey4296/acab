@@ -26,6 +26,9 @@ from acab.error.protocol import AcabProtocolError as APE
 @APE.assert_concrete
 class HandlerFragment(FI.HandlerFragment_i):
 
+    def __bool__(self):
+        return bool(self.handlers) or bool(self.specs)
+
     def __len__(self):
         return len(self.handlers) + len(self.specs)
 

@@ -50,9 +50,9 @@ class StatCmd:
 
     def do_stat(self, line):
         logging.info(f"Getting Stats: {line}")
-        params                          = self._parser.parse_string(line)
-        allow_all : bool                = not bool(params)
-        self.modules   : ModuleFragment = self._cmd.state.engine._module_loader.loaded_modules.values()
+        params                              = self._parser.parse_string(line)
+        allow_all    : bool                 = not bool(params)
+        self.modules : list[ModuleFragment] = self._cmd.state.engine._module_loader.loaded
         # modules
         if allow_all or "module" in params:
             self.pr_modules(params)

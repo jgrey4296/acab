@@ -88,8 +88,8 @@ class AcabEngineImpl(AcabEngine_i):
 
     def load_modules(self, *modules) -> list[ModuleFragment]:
         logging.info("Loading Modules")
-        self._module_loader.load_modules(*modules)
-        loaded_mods = list(self._module_loader.loaded_modules.values())
+        self._module_loader.load(*modules)
+        loaded_mods = self._module_loader.loaded
         # Initialise DSL
         self._dsl = self.dsl_builder()
         self._dsl.register(self.parser)
@@ -110,5 +110,4 @@ class AcabEngineImpl(AcabEngine_i):
         for x in self.load_paths:
             self.load_file(x)
 
-        return [self._module_loader[x] for x in modules]
-
+        return [y for x in modules for y in self._module_loader[x]]

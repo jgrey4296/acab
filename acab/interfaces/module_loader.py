@@ -40,11 +40,9 @@ class _ModuleLoader_p(Iterable[ModuleFragment], Protocol):
     @abc.abstractmethod
     def reload_all_modules(self) -> None: pass
     @abc.abstractmethod
-    def load_modules(self, *modules: ModuleType|str) -> list[ModuleFragment]: pass
+    def load(self, *modules: ModuleType|str) -> list[ModuleFragment]: pass
     @abc.abstractmethod
-    def load_module(self, maybe_module: ModuleType | str) -> ModuleFragment: pass
-    @abc.abstractmethod
-    def extract_from_module(self, module: ModuleType) -> ModuleFragment:
+    def extract_from_module(self, module: ModuleType) -> list[ModuleFragment]:
         """
         DFS on a module to retrieve module components (dsl fragments, semantics,
         operators and printers)
@@ -52,7 +50,11 @@ class _ModuleLoader_p(Iterable[ModuleFragment], Protocol):
         and only those descendents' __init__ files.
         """
         pass
+
+    @property
+    @abc.abstractmethod
+    def loaded(self) -> list[ModuleFragment]: pass
 @dataclass #type:ignore[misc]
 class ModuleLoader_i(_ModuleLoader_p):
     """ Describes how an engine loads ACAB/py modules """
-    loaded_modules       : dict[str, ModuleFragment]  = field(init=False, default_factory=dict)
+    loaded_modules       : dict[str, list[ModuleFragment]]  = field(init=False, default_factory=dict)
