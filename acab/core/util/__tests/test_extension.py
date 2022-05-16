@@ -31,7 +31,7 @@ from acab.core.util.part_implementations.handler_system import HandlerSpec
 from acab.interfaces import fragments as FI
 from acab.interfaces import handler_system as HS
 from acab.interfaces.semantic import StatementSemantics_i
-from acab.interfaces.unified_extension import UnifiedExtension_p
+from acab.interfaces.fragments import UnifiedFragment_p
 from acab.interfaces.value import Sentence_i
 from acab.interfaces.value import ValueFactory as VF
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
@@ -41,7 +41,7 @@ from acab.modules.semantics.default import DEFAULT_SEMANTICS
 Handler = config.prepare("Imports.Targeted", "handler", actions=[config.actions_e.IMCLASS], args={"interface": HS.Handler_i})()
 
 @dataclass
-class ExampleExtension(UnifiedExtension_p):
+class ExampleExtension(UnifiedFragment_p):
     """
     A Minimal test extension
     Provides a simple dsl statement,
@@ -65,18 +65,18 @@ class ExampleExtension(UnifiedExtension_p):
         simple_dsl.set_parse_action(constructor)
 
         dsl_fragment = FR.DSL_Fragment(specs=[],
-                                          handlers=[ppDSL.PyParse_Handler("sentence.ends", func=simple_dsl)])
+                                       handlers=[ppDSL.PyParse_Handler("sentence.ends", func=simple_dsl)])
 
         return dsl_fragment
 
-    def build_printer(self) -> FI.PrinterFragment_i:
+    def build_printers(self) -> FI.PrinterFragment_i:
         """
         return the PrinterFragment describing this extension's printing requirements and capabilities
         """
         printer = self.print_call
 
         print_fragment = FR.PrinterFragment(specs=[HandlerSpec(self.signal),
-                                                HandlerSpec(DSig.SENTENCE)],
+                                                   HandlerSpec(DSig.SENTENCE)],
                                          handlers=[Handler(signal=self.signal, func=printer)])
 
 
@@ -88,7 +88,7 @@ class ExampleExtension(UnifiedExtension_p):
         """
         sem_call = self.semantic or self.sem_call
         sem_frag = FR.Semantic_Fragment(specs=[HandlerSpec(self.signal)],
-                                     handlers=[Handler(signal=self.signal, func=sem_call)])
+                                        handlers=[Handler(signal=self.signal, func=sem_call)])
         return sem_frag
 
     def print_call(self, to_print:Value_A, *, top:None|PrintSystem_i=None, data:None|dict[str,Any]=None) -> list[str | Value_A]:
@@ -141,7 +141,7 @@ class TestExampleExtension(unittest.TestCase):
 
     def test_printer_build(self):
         instance = ExampleExtension()
-        print_frag = instance.build_printer()
+        print_frag = instance.build_printers()
         self.assertIsInstance(print_frag, FI.Printer_Fragment_i)
 
     def test_semantic_build(self):
@@ -172,7 +172,7 @@ class TestExampleExtension(unittest.TestCase):
     def test_printer1(self):
         instance = ExampleExtension()
         dsl_frag = instance.build_dsl()
-        print_frag = instance.build_printer()
+        print_frag = instance.build_printers()
         printer = DEFAULT_PRINTER()
         printer.register(print_frag)
 
@@ -183,7 +183,7 @@ class TestExampleExtension(unittest.TestCase):
     def test_printer2(self):
         instance = ExampleExtension()
         dsl_frag = instance.build_dsl()
-        print_frag = instance.build_printer()
+        print_frag = instance.build_printers()
         printer = DEFAULT_PRINTER()
         printer.register(print_frag)
 
@@ -196,7 +196,7 @@ class TestExampleExtension(unittest.TestCase):
         dsl_frag = instance.build_dsl()
         self.dsl.register(dsl_frag)
         self.dsl.build()
-        print_frag = instance.build_printer()
+        print_frag = instance.build_printers()
         printer = DEFAULT_PRINTER()
         printer.register(print_frag)
 

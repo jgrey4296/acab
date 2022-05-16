@@ -32,7 +32,7 @@ SEM_HINT   = DS.SEMANTIC_HINT
 # TODO make a queue structured system, where semantics return a list of
 # instructions to add to the list, like printer
 
-@dataclass
+@dataclass(repr=False)
 class BasicSemanticSystem(basic.SemanticSystem, SemanticSystem_i):
     """ A Complete semantic system """
 
