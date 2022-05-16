@@ -5,7 +5,7 @@ LOGLEVEL		:= WARNING
 # Testing variables:
 TEST_TARGET		?= ${TOP}
 TEST_PAT		:=
-TESTDIRS        := core modules/parsing modules/context modules/structures/trie modules/semantics modules/printing modules/repl modules/analysis/typing/unify modules/operators/dfs modules/values/binding modules/values/sen_val
+TESTDIRS        := core modules/parsing modules/context modules/structures/trie modules/semantics modules/printing modules/repl modules/analysis/typing/unify modules/operators/dfs modules/values/binding modules/values/sen_val modules/values/string_cache_val
 TEST_FILE_PAT	:= "test_*.py"
 
 # Clean variables:
@@ -75,9 +75,10 @@ dtest: ${TESTDIRS}
 
 
 $(TESTDIRS):
+	@echo "--------------------"
 	@echo "Target: ${TOP}/$@"
 	python -m unittest discover -v -s "${TOP}/$@" -p ${TEST_FILE_PAT} -t ${TOP}
-
+	@echo "Target: ${TOP}/$@"
 
 faily:
 	@echo "Testing with early fail"
