@@ -23,7 +23,7 @@ config  = AcabConfig()
 
 T = TypeVar('T')
 GenFunc               : TypeAlias = AT.fns.GenFunc
-ModuleComponents      : TypeAlias = AT.ModuleComponents
+ModuleFragment        : TypeAlias = AT.ModuleFragment
 Sen_A                 : TypeAlias = AT.Sentence
 Structure             : TypeAlias = "AT.DataStructure[AT.Node]"
 Structure_t           : TypeAlias = Type[Structure]
@@ -59,7 +59,7 @@ class HandlerSystem_p(Iterable[HandlerSpec_A], Protocol):
     @abc.abstractmethod
     def __repr__(self) -> str: pass
     @abc.abstractmethod
-    def extend(self, modules:list[ModuleComponents]) -> None: pass
+    def extend(self, modules:list[ModuleFragment]) -> None: pass
     @abc.abstractmethod
     def lookup(self, value:None|Value_A|HandlerOverride_A=None) -> HandlerSpec_A: pass
     @abc.abstractmethod

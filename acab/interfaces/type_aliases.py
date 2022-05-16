@@ -61,12 +61,16 @@ Component           : TypeAlias = "instruction.ProductionComponent"
 Container           : TypeAlias = "instruction.ProductionContainer"
 ProductionStructure : TypeAlias = "instruction.ProductionStructure"
 
+# Fragments of Systems
+ModuleFragment      : TypeAlias = "fragments.ModuleFragment"
+HandlerFragment     : TypeAlias = "fragments.HandlerFragment_i"
+DSL_Fragment        : TypeAlias = "fragments.DSL_Fragment_i"
+
 # Types for assembling handler systems
 Handler             : TypeAlias = "handler_system.Handler_i"
 HandlerComponent    : TypeAlias = "handler_system.HandlerComponent_i"
 HandlerSystem       : TypeAlias = "handler_system.HandlerSystem_i"
 HandlerOverride     : TypeAlias = "handler_system.HandlerOverride"
-HandlerFragment     : TypeAlias = "handler_system.HandlerFragment_i"
 HandlerSpec         : TypeAlias = "handler_system.HandlerSpec_i"
 
 # Types for Assembling Semantic Systems
@@ -87,7 +91,6 @@ Constraint          : TypeAlias = "context.Constraint_i"
 DelayedCommands     : TypeAlias = "delayed_commands.DelayedCommands_i"
 
 # Types for describing DSLs
-DSL_Fragment        : TypeAlias = "dsl.DSL_Fragment_i"
 DSL_Builder         : TypeAlias = "dsl.DSL_Builder_i"
 DSL_Spec            : TypeAlias = "dsl.DSL_Spec_i"
 
@@ -97,7 +100,6 @@ Parser              : TypeAlias = fns.Parser
 
 # Types which provide for running systems
 Debugger            : TypeAlias = "debugger.AcabDebugger_i"
-ModuleComponents    : TypeAlias = "module_loader.ModuleComponents"
 ModuleLoader        : TypeAlias = "module_loader.ModuleLoader_i"
 Engine              : TypeAlias = "engine.AcabEngine_i"
 

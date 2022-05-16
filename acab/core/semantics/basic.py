@@ -53,7 +53,7 @@ CtxSet             : TypeAlias = AT.CtxSet
 CtxIns             : TypeAlias = AT.CtxIns
 Handler_A          : TypeAlias = AT.Handler
 ProductionOperator : TypeAlias = AT.Operator
-ModuleComponents   : TypeAlias = AT.ModuleComponents
+ModuleFragment     : TypeAlias = AT.ModuleFragment
 StructureSemantics : TypeAlias = AT.StructureSemantics
 ValueSemantics     : TypeAlias = AT.ValueSemantics
 StatementSemantics : TypeAlias = AT.StatementSemantics
@@ -73,7 +73,7 @@ class SemanticSystem(HSImpl.HandlerSystem, SI.SemanticSystem_i):
 
         return f"<{self.__class__.__name__} handlers={len(self.handler_specs)}, sieve={len(self.sieve)}{ops}>"
 
-    def build_ctxset(self, ops:None|list[ModuleComponents]=None) -> CtxSet:
+    def build_ctxset(self, ops:None|list[ModuleFragment]=None) -> CtxSet:
         """ Build a context set. Use passed in operators if provided.
         Caches operators
         """
@@ -94,7 +94,7 @@ class SemanticSystem(HSImpl.HandlerSystem, SI.SemanticSystem_i):
     def has_op_cache(self) -> bool:
         return self._operator_cache is not None
 
-    def extend(self, mods:list[ModuleComponents]) -> None:
+    def extend(self, mods:list[ModuleFragment]) -> None:
         logging.info("Extending Semantics")
         semantics = [y for x in mods for y in x.semantics]
         assert(all([isinstance(x, Semantic_Fragment_i) for x in semantics]))

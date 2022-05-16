@@ -15,7 +15,7 @@ from acab.interfaces.printing import PrintSystem_i
 
 logging = logmod.getLogger(__name__)
 
-ModuleComponents : TypeAlias = AT.ModuleComponents
+ModuleFragment : TypeAlias = AT.ModuleFragment
 
 class AcabEngineImpl(AcabEngine_i):
     @EnsureEngineInitialised
@@ -86,7 +86,7 @@ class AcabEngineImpl(AcabEngine_i):
 
         return str(self.printer.pprint(*sens))
 
-    def load_modules(self, *modules) -> list[ModuleComponents]:
+    def load_modules(self, *modules) -> list[ModuleFragment]:
         logging.info("Loading Modules")
         self._module_loader.load_modules(*modules)
         loaded_mods = list(self._module_loader.loaded_modules.values())

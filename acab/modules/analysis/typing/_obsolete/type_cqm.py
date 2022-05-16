@@ -36,7 +36,7 @@ Value            = 'AcabValue'
 Statement        = 'Instruction'
 Sen              = Sentence_i
 Node             = 'AcabNode'
-ModuleComponents = "ModuleComponents"
+ModuleFragment   = "ModuleFragment"
 NamedCtxSet      = "NamedCtxSet"
 
 DELAYED_E = Enum("Delayed Instruction Set", "ACTIVE FAIL DEACTIVATE CLEAR MERGE")

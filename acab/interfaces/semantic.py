@@ -50,7 +50,7 @@ CtxSet             : TypeAlias = AT.CtxSet
 CtxIns             : TypeAlias = AT.CtxIns
 Handler_A          : TypeAlias = AT.Handler
 ProductionOperator : TypeAlias = "AT.Operator[AT.TValCore]"
-ModuleComponents   : TypeAlias = AT.ModuleComponents
+ModuleFragment     : TypeAlias = AT.ModuleFragment
 StructureSemantics : TypeAlias = AT.StructureSemantics
 ValueSemantics     : TypeAlias = AT.ValueSemantics
 StatementSemantics : TypeAlias = AT.StatementSemantics
@@ -60,7 +60,7 @@ SemanticSystem     : TypeAlias = AT.SemanticSystem
 # Protocols  ##################################################################
 class _SemanticSystem_p(HSubP.HandlerSystem_p, AcabReducible_p, Protocol):
     @abc.abstractmethod
-    def build_ctxset(self, ops:None|list[ModuleComponents]=None) -> CtxSet: pass
+    def build_ctxset(self, ops:None|list[ModuleFragment]=None) -> CtxSet: pass
 
     @property
     @abc.abstractmethod

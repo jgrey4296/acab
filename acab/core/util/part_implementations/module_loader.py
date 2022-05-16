@@ -13,23 +13,26 @@ logging = logmod.getLogger(__name__)
 
 from acab.interfaces.module_loader import ModuleLoader_i
 from acab.error.importer import AcabImportException
+from acab import types as AT
+
+ModuleFragment = AT.ModuleFragment
 
 if TYPE_CHECKING:
     # tc only imports
     pass
 
-class ModuleLoaderBase(ModuleLoader_i):
+class ModuleLoaderImpl(ModuleLoader_i):
     """
     An implemented Module loader, just lacking `extract_from_module`
     """
-    def __getitem__(self, key:str) -> ModuleComponents:
+    def __getitem__(self, key:str) -> ModuleFragment:
         return self.loaded_modules[key]
 
     def __repr__(self) -> str:
         loaded_modules = ", ".join(list(self.loaded_modules.keys()))
         return f"<ModuleLoader({loaded_modules})>"
 
-    def __iter__(self) -> Iterator[ModuleComponents]:
+    def __iter__(self) -> Iterator[ModuleFragment]:
         return iter(self.loaded_modules.values())
 
     def __len__(self) -> int:
@@ -43,14 +46,14 @@ class ModuleLoaderBase(ModuleLoader_i):
         self.loaded_modules.clear()
         self.load_modules(*loaded)
 
-    def load_modules(self, *modules: ModuleType|str) -> list[ModuleComponents]:
+    def load_modules(self, *modules: ModuleType|str) -> list[ModuleFragment]:
         """ Given ModuleInterface objects,
         store them then tell the working memory to load them
         return a list of dictionaries
         """
         return [self.load_module(x) for x in modules]
 
-    def load_module(self, maybe_module: ModuleType | str) -> ModuleComponents:
+    def load_module(self, maybe_module: ModuleType | str) -> ModuleFragment:
         """
         Load a module, extract operators and dsl fragments from it,
         put the operators into the operators store,

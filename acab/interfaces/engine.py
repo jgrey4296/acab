@@ -19,7 +19,7 @@ from acab.interfaces.context import ContextSet_i
 from acab.interfaces.protocols.value import AcabReducible_p
 
 # TODO add 'Tick' functionality
-ModuleComponents : TypeAlias = AT.ModuleComponents
+ModuleFragment   : TypeAlias = AT.ModuleFragment
 Sen_A            : TypeAlias = AT.Sentence
 Instruction      : TypeAlias = AT.Instruction
 DSL_Fragment     : TypeAlias = AT.DSL_Fragment
@@ -40,7 +40,7 @@ class _AcabEngine_p(Protocol):
     @abc.abstractmethod
     def pprint(self, *, target:None|list[Sen_A]=None) -> str: pass
     @abc.abstractmethod
-    def load_modules(self, *modules:ModuleType|str) -> list[ModuleComponents]: pass
+    def load_modules(self, *modules:ModuleType|str) -> list[ModuleFragment]: pass
     @abc.abstractmethod
     def __call__(self, *args:str|Instruction, **kwargs:Any) -> None: pass
 

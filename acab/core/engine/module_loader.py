@@ -13,23 +13,23 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 logging = logmod.getLogger(__name__)
 
 from acab import AcabConfig
-from acab.core.value.instruction import ProductionOperator, ActionOperator
+from acab.core.engine.util import (applicable, ensure_handler, needs_init,
+                                   prep_op_path)
+from acab.core.util.part_implementations.module_loader import ModuleLoaderImpl
+from acab.core.value.instruction import ActionOperator, ProductionOperator
 from acab.core.value.sentence import Sentence
-from acab.core.engine.util import applicable, needs_init, prep_op_path, ensure_handler
-
-from acab.interfaces.module_loader import (ModuleComponents,
-                                           ModuleLoader_i)
 from acab.interfaces import fragments as FI
-from acab.core.engine.module_loader_base import ModuleLoaderBase
+from acab.interfaces.fragments import ModuleFragment
+from acab.interfaces.module_loader import ModuleLoader_i
 
 config           = AcabConfig()
 MODULE_SPLIT_REG = re.compile(config.prepare("Parse.Patterns", "MODULE_SPLIT_REG")())
 
 #--------------------
-class ModuleLoader(ModuleLoaderBase, ModuleLoader_i):
+class ModuleLoader(ModuleLoaderImpl, ModuleLoader_i):
     """ Describes how an engine loads ACAB/py modules """
 
-    def extract_from_module(self, module: ModuleType) -> ModuleComponents:
+    def extract_from_module(self, module: ModuleType) -> ModuleFragment:
         """
         DFS on a module to retrieve module components (dsl fragments, semantics,
         operators and printers)
@@ -78,7 +78,7 @@ class ModuleLoader(ModuleLoaderBase, ModuleLoader_i):
 
 
         # End of while
-        result = ModuleComponents(str(module.__package__),
+        result = ModuleFragment(str(module.__package__),
                                   dsl_fragments,
                                   semantic_frags,
                                   printers,

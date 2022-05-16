@@ -23,7 +23,7 @@ config  = AcabConfig()
 
 GenFunc               : TypeAlias = AT.fns.GenFunc
 TypeFunc              : TypeAlias = AT.fns.TypeFunc
-ModuleComponents      : TypeAlias = AT.ModuleComponents
+ModuleFragment        : TypeAlias = AT.ModuleFragment
 Overrider             : TypeAlias = AT.HandlerOverride
 Sen_A                 : TypeAlias = AT.Sentence
 Structure             : TypeAlias = "AT.DataStructure[AT.Node]"

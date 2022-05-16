@@ -61,7 +61,7 @@ class ContextMeta(ProtocolMeta):
     def __init__(cls, name:str, bases:tuple[type, ...], data:dict[str,Any]):
         super(ContextMeta, cls).__init__(name, bases, data)
 
-    def __call__(cls, ops:None|CtxIns|list[ModuleComponents]=None, **kwargs):
+    def __call__(cls, ops:None|CtxIns|list[AT.ModuleFragment]=None, **kwargs):
         """
         The Meta Constructor for ContextSets,
         to construct operator bindings if necessary

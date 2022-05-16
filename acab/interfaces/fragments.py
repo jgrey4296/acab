@@ -40,7 +40,7 @@ CtxSet             : TypeAlias = AT.CtxSet
 CtxIns             : TypeAlias = AT.CtxIns
 Handler_A          : TypeAlias = AT.Handler
 ProductionOperator : TypeAlias = "AT.Operator[AT.TValCore]"
-ModuleComponents   : TypeAlias = AT.ModuleComponents
+ModuleFragment     : TypeAlias = AT.ModuleFragment
 StructureSemantics : TypeAlias = AT.StructureSemantics
 ValueSemantics     : TypeAlias = AT.ValueSemantics
 StatementSemantics : TypeAlias = AT.StatementSemantics
@@ -84,3 +84,30 @@ class Semantic_Fragment_i(HandlerFragment_i):
 @dataclass #type:ignore[misc]
 class Printer_Fragment_i(HandlerFragment_i):
     target_i : Type[PrintSystem] = field(kw_only=True, default=PrintSystem_i)
+
+
+@dataclass(frozen=True)
+class ModuleFragment():
+    """ Simple holder for extracted module components """
+
+    source        : str                   = field()
+    dsl_fragments : list[HandlerFragment] = field()
+    semantics     : list[HandlerFragment] = field()
+    printers      : list[HandlerFragment] = field()
+    operators     : list[Sentence]         = field()
+
+    def report(self) -> str:
+        frags     = f"{ len(self.dsl_fragments) } DSL Fragments"
+        semantics = f"{ len(self.semantics) } Semantic Components"
+        printers  = f"{ len(self.printers) } Printers"
+        operators = f"{ len(self.operators) } Operators"
+
+        return f"Module {self.source}:\n- {frags}\n- {semantics}\n- {operators}\n- {printers}"
+
+    def __repr__(self) -> str:
+        frags     = f"{ len(self.dsl_fragments) } DSL"
+        semantics = f"{ len(self.semantics) } Sem"
+        printers  = f"{ len(self.printers) } Pr"
+        operators = f"{ len(self.operators) } Op"
+
+        return f"({frags} | {semantics} | {operators} | {printers} : {self.source})"

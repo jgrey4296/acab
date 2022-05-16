@@ -23,7 +23,7 @@ logging = logmod.getLogger(__name__)
 
 Sentence         = AT.Sentence
 CtxSet           = AT.CtxSet
-ModuleComponents = AT.ModuleComponents
+ModuleFragment   = AT.ModuleFragment
 config           = AcabConfig()
 
 ContextSet = config.prepare("Imports.Targeted", "context", actions=[config.actions_e.IMCLASS], args={"interface": ContextSet_i})()

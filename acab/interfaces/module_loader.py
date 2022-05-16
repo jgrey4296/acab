@@ -17,6 +17,7 @@ from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
 
 from acab import types as AT
 from acab.error.importer import AcabImportException
+from acab.interfaces.fragments import ModuleFragment
 
 logging = logmod.getLogger(__name__)
 
@@ -24,42 +25,14 @@ Sentence           : TypeAlias = AT.Sentence
 HandlerFragment    : TypeAlias = AT.HandlerFragment
 Operator           : TypeAlias = "AT.Operator[AT.TValCore]"
 
-#----------------------------------------
-@dataclass(frozen=True)
-class ModuleComponents():
-    """ Simple holder for extracted module components """
-
-    source        : str                   = field()
-    dsl_fragments : list[HandlerFragment] = field()
-    semantics     : list[HandlerFragment] = field()
-    printers      : list[HandlerFragment] = field()
-    operators     : list[Sentence]         = field()
-
-    def report(self) -> str:
-        frags     = f"{ len(self.dsl_fragments) } DSL Fragments"
-        semantics = f"{ len(self.semantics) } Semantic Components"
-        printers  = f"{ len(self.printers) } Printers"
-        operators = f"{ len(self.operators) } Operators"
-
-        return f"Module {self.source}:\n- {frags}\n- {semantics}\n- {operators}\n- {printers}"
-
-    def __repr__(self) -> str:
-        frags     = f"{ len(self.dsl_fragments) } DSL"
-        semantics = f"{ len(self.semantics) } Sem"
-        printers  = f"{ len(self.printers) } Pr"
-        operators = f"{ len(self.operators) } Op"
-
-        return f"({frags} | {semantics} | {operators} | {printers} : {self.source})"
-
-
 #--------------------
-class _ModuleLoader_p(Iterable[ModuleComponents], Protocol):
+class _ModuleLoader_p(Iterable[ModuleFragment], Protocol):
     @abc.abstractmethod
-    def __getitem__(self, key:str) -> ModuleComponents: pass
+    def __getitem__(self, key:str) -> ModuleFragment: pass
     @abc.abstractmethod
     def __repr__(self) -> str: pass
     @abc.abstractmethod
-    def __iter__(self) -> Iterator[ModuleComponents]: pass
+    def __iter__(self) -> Iterator[ModuleFragment]: pass
     @abc.abstractmethod
     def __len__(self) -> int: pass
     @abc.abstractmethod
@@ -67,11 +40,11 @@ class _ModuleLoader_p(Iterable[ModuleComponents], Protocol):
     @abc.abstractmethod
     def reload_all_modules(self) -> None: pass
     @abc.abstractmethod
-    def load_modules(self, *modules: ModuleType|str) -> list[ModuleComponents]: pass
+    def load_modules(self, *modules: ModuleType|str) -> list[ModuleFragment]: pass
     @abc.abstractmethod
-    def load_module(self, maybe_module: ModuleType | str) -> ModuleComponents: pass
+    def load_module(self, maybe_module: ModuleType | str) -> ModuleFragment: pass
     @abc.abstractmethod
-    def extract_from_module(self, module: ModuleType) -> ModuleComponents:
+    def extract_from_module(self, module: ModuleType) -> ModuleFragment:
         """
         DFS on a module to retrieve module components (dsl fragments, semantics,
         operators and printers)
@@ -82,5 +55,4 @@ class _ModuleLoader_p(Iterable[ModuleComponents], Protocol):
 @dataclass #type:ignore[misc]
 class ModuleLoader_i(_ModuleLoader_p):
     """ Describes how an engine loads ACAB/py modules """
-    loaded_modules       : dict[str, ModuleComponents]  = field(init=False, default_factory=dict)
-
+    loaded_modules       : dict[str, ModuleFragment]  = field(init=False, default_factory=dict)

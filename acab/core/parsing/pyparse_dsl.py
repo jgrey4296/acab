@@ -32,7 +32,7 @@ DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 Parser           = "pp.ParserElement"
 Sentence         = AT.Sentence
 Query            = AT.Container
-ModuleComponents = AT.ModuleComponents
+ModuleFragment   = AT.ModuleFragment
 PyParse_Spec     = "PyParse_Spec"
 File             = 'FileObj'
 

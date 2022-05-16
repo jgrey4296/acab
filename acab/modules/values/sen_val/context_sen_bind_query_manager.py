@@ -36,7 +36,7 @@ Value            = AT.Value
 Statement        = AT.Instruction
 Sen              = AT.Sentence
 Node             = AT.Node
-ModuleComponents = AT.ModuleComponents
+ModuleFragment   = AT.ModuleFragment
 NamedCtxSet      = "NamedCtxSet"
 
 DELAYED_E = Enum("Delayed Instruction Set", "ACTIVE FAIL DEACTIVATE CLEAR MERGE")

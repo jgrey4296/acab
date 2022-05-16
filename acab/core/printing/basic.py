@@ -31,7 +31,7 @@ logging                      = logmod.getLogger(__name__)
 config                       = AcabConfig()
 DEFAULT_HANDLER_SIGNAL       = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 Sentence         : TypeAlias = AT.Sentence
-ModuleComponents : TypeAlias = AT.ModuleComponents
+ModuleFragment   : TypeAlias = AT.ModuleFragment
 GenFunc          : TypeAlias = AT.fns.GenFunc
 
 REGISTER = "REGISTER"
@@ -123,7 +123,7 @@ class PrintSystemImpl(HS.HandlerSystem, PI.PrintSystem_i):
         return "".join(result)
 
 
-    def extend(self, mods:list[ModuleComponents]) -> None:
+    def extend(self, mods:list[ModuleFragment]) -> None:
         logging.info("Extending Printer")
         printers = [y for x in mods for y in x.printers]
         assert(all([isinstance(x, FI.Printer_Fragment_i) for x in printers]))

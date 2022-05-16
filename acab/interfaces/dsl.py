@@ -27,7 +27,7 @@ from acab.interfaces.protocols import handler_system as HSubP
 Parser           : TypeAlias = AT.Parser
 Sentence         : TypeAlias = AT.Sentence
 Query            : TypeAlias = AT.Container
-ModuleComponents : TypeAlias = AT.ModuleComponents
+ModuleFragment   : TypeAlias = AT.ModuleFragment
 DSL_Spec_A       : TypeAlias = AT.DSL_Spec
 File             : TypeAlias = 'io.TextIOBase'
 

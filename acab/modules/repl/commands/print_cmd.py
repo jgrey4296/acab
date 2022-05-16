@@ -20,6 +20,7 @@ if TYPE_CHECKING:
 
 from acab.modules.repl.repl_commander import register_class
 from acab.modules.repl.ReplParser import rst, ctx_parser
+from acab.types import ModuleFragment
 
 @register_class("print")
 class PrintCmd:
@@ -66,12 +67,12 @@ class PrintCmd:
         elif "mod_target" in params:
             print("TODO Specific Module Info: ")
             # TODO print module doc
-            modules: ModuleComponents = self._cmd.state.engine._module_loader.loaded_modules.values()
+            modules: ModuleFragment = self._cmd.state.engine._module_loader.loaded_modules.values()
             modules = [x for x in modules if params['mod_target'] in x.source]
             print("\n".join([x.source for x in modules]))
         elif "module" in params:
             print("Modules: ")
-            modules: ModuleComponents = self._cmd.state.engine._module_loader.loaded_modules.values()
+            modules: ModuleFragment = self._cmd.state.engine._module_loader.loaded_modules.values()
             print("\n".join([x.source for x in modules]))
         elif "context" in params or "short_context" in params or "context_slice" in params:
             self.print_contexts(params)

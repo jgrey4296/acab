@@ -33,7 +33,7 @@ DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 Handler                = config.prepare("Imports.Targeted", "handler", actions=[config.actions_e.IMCLASS], args={"interface": HS.Handler_i})()
 
 
-ModuleComponents   : TypeAlias = AT.ModuleComponents
+ModuleFragment     : TypeAlias = AT.ModuleFragment
 Overrider          : TypeAlias = AT.HandlerOverride
 Sen_A              : TypeAlias = AT.Sentence
 Structure          : TypeAlias = "AT.DataStructure[AT.Node]"
@@ -210,7 +210,7 @@ class HandlerSystem(HS.HandlerSystem_i):
     def verify_system(self):
         pass
 
-    def extend(self, modules:list[ModuleComponents]) -> None:
+    def extend(self, modules:list[ModuleFragment]) -> None:
         raise NotImplementedError()
 
 @APE.assert_concrete
