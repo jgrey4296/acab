@@ -30,10 +30,6 @@ from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue
 from acab.modules.engines.configured import exlo
 from acab.modules.operators.dfs import parser as DOP
-from acab.modules.operators.dfs.semantics import DFSSemantics
-from acab.modules.semantics.basic_system import BasicSemanticSystem
-from acab.modules.semantics.statements import QueryPlusAbstraction
-from acab.modules.semantics.values import ExclusionNodeSemantics
 
 BIND            = DS.BIND
 QUERY           = DS.QUERY

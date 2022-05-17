@@ -30,7 +30,7 @@ from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue
 from acab.modules.engines.configured import exlo
 from acab.modules.operators.dfs import parser as DOP
-from acab.modules.operators.dfs.module import DFS_DSL
+from acab.modules.operators.dfs.module import DFSExtension
 from acab.modules.operators.dfs.semantics import DFSSemantics
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 from acab.modules.semantics.basic_system import BasicSemanticSystem
@@ -63,7 +63,7 @@ class TestWalkParser(unittest.TestCase):
         global dsl
         dsl = PyParseDSL()
         dsl.register(EXLO_Parser)
-        dsl.register(DFS_DSL)
+        dsl.register(DFSExtension().build_dsl())
         dsl.build()
 
     @classmethod

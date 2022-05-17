@@ -27,7 +27,7 @@ from acab.modules.printing.default import DEFAULT_PRINTER
 
 from acab.modules.analysis.typing.module import TypingExtension
 
-class Test(unittest.TestCase):
+class TestTypingStatement(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         LOGLEVEL      = logmod.DEBUG
