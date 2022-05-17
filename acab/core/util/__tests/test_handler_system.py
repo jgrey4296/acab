@@ -25,7 +25,7 @@ Handler = HandlerConfigSpec()
 
 import acab.core.util.part_implementations.handler_system as HS
 import acab.interfaces.handler_system as HSi
-from acab.error.handler import AcabHandlerException
+from acab.error.handler import AcabHandlerException, HandlerDuplicationException
 
 
 class SimplestHandlerSystem(HS.HandlerSystem):
@@ -64,11 +64,6 @@ class TestHandlerSystem(unittest.TestCase):
     def test_creation_keywords(self):
         basic = SimplestHandlerSystem(init_specs=[], init_handlers=[])
         self.assertIsInstance(basic, HSi.HandlerSystem_i)
-
-    def test_basic_spec(self):
-        spec = HS.HandlerSpec("a_signal")
-        self.assertIsInstance(spec, HSi.HandlerSpec_i)
-        self.assertEqual(spec.signal, "a_signal")
 
     def test_register_spec(self):
         basic = SimplestHandlerSystem()
@@ -128,6 +123,21 @@ class TestHandlerSystem(unittest.TestCase):
         self.assertTrue(bool(basic['a_signal']))
         self.assertEqual(len(basic['a_signal']), 2)
 
+    def test_register_handler_duplicate(self):
+        basic = SimplestHandlerSystem()
+        spec  = HS.HandlerSpec("a_signal")
+        basic.register(spec)
+
+        handler  = Handler("a_signal", func=id)
+        handler2 = Handler("a_signal", func=id)
+        self.assertFalse(bool(basic['a_signal']))
+        basic.register(handler)
+        with self.assertRaises(HandlerDuplicationException):
+            basic.register(handler2)
+
+        self.assertTrue(bool(basic['a_signal']))
+        self.assertEqual(len(basic['a_signal']), 1)
+
     def test_register_override(self):
         basic = SimplestHandlerSystem()
         spec  = HS.HandlerSpec("a_signal")
@@ -154,84 +164,9 @@ class TestHandlerSystem(unittest.TestCase):
         self.assertEqual(len(basic), 2)
         self.assertIn("a_signal", basic)
 
-    def test_spec_register_api(self):
-        a_func : Callable[[int, str], int] = lambda x,y: x
-        spec   = HS.HandlerSpec("a_signal", func_api=a_func)
-
-        self.assertEqual(spec.func_api, a_func)
-
-    def test_spec_enforce_api(self):
-        a_func : Callable[[int, str], int] = lambda x,y: x
-        spec    = HS.HandlerSpec("a_signal", func_api=a_func)
-        handler = Handler("a_signal", func=a_func)
-        spec.check_api(func=a_func)
-
-    def test_spec_enforce_api_fail(self):
-        a_func      : Callable[[int, str], int] = lambda x,y: x
-        second_func : Callable[[int, str, str], str] = lambda x,y,z: y
-        spec    = HS.HandlerSpec("a_signal", func_api=a_func)
-        handler = Handler("a_signal", func=second_func)
-
-        with self.assertRaises(AcabHandlerException):
-            spec.register(handler)
-
-    def test_spec_enforce_api_class(self):
-
-        class ATest:
-            def __call__(self, a, b):
-                return b
-
-            def other(self):
-                pass
-
-        spec = HS.HandlerSpec("a_signal", func_api=ATest)
-        spec.register(Handler("a_signal", func=ATest()))
-
-    def test_spec_enforce_api_class_fail(self):
-
-        class ATest:
-            def __call__(self, a, b):
-                return b
-
-            def other(self):
-                pass
-
-        class AnotherTest:
-            def __call__(self):
-                return 2
-
-        spec = HS.HandlerSpec("a_signal", func_api=ATest)
-        with self.assertRaises(AcabHandlerException):
-            spec.register(Handler("a_signal", func=AnotherTest()))
-
-
-    def test_spec_enforce_struct(self):
-        spec    = HS.HandlerSpec("a_signal", struct_api=dict)
-        handler = Handler("a_signal", struct=set())
-
-        with self.assertRaises(AcabHandlerException):
-            spec.register(handler)
-
-
     def test_handler_call(self):
         handler = Handler("a_signal", func=lambda *a, **k: 2)
         self.assertEqual(handler(), 2)
-
-    def test_spec_call(self):
-        spec = HS.HandlerSpec("a_signal")
-        handler = spec.on(target=lambda *args, **kwargs: 2)
-        spec.register(handler)
-
-        self.assertEqual(spec(), 2)
-
-    def test_spec_call_multi(self):
-        spec = HS.HandlerSpec("a_signal")
-        handler = spec.on(target=lambda *a, **k: 2)
-        handler2 = spec.on(target=lambda *a, **k: 4)
-        spec.register(handler)
-        spec.register(handler2)
-
-        self.assertEqual(spec(), 4)
 
     def test_system_call_explicit(self):
         basic   = SimplestHandlerSystem(init_specs=[HS.HandlerSpec("a_signal")])
@@ -261,52 +196,6 @@ class TestHandlerSystem(unittest.TestCase):
         self.assertEqual(spec, basic["diff_signal"])
         self.assertNotEqual(spec, basic["a_signal"])
 
-    def test_call_with_struct(self):
-        spec = HS.HandlerSpec("a_signal")
-        handler = spec.on(struct={})
-        handler2 = spec.on(target=lambda *a, **k: a[0].update({'a': 5}))
 
-        spec.register(handler)
-        spec.register(handler2)
-
-        self.assertFalse(spec.struct)
-        spec()
-        self.assertIn('a', spec.struct)
-        self.assertEqual(spec.struct['a'], 5)
-
-    def test_multi_struct_fail(self):
-        spec = HS.HandlerSpec("a_signal")
-        handler = spec.on(struct={})
-        handler2 = spec.on(struct=set())
-
-        spec.register(handler)
-        with self.assertRaises(AcabHandlerException):
-            spec.register(handler2)
-
-    def test_multi_struct_override(self):
-        spec = HS.HandlerSpec("a_signal")
-        handler = spec.on(struct={})
-        handler2 = spec.on(struct=set(), flags=[HS.HandlerSpec.flag_e.OVERRIDE])
-
-        spec.register(handler)
-        spec.register(handler2)
-        self.assertIsInstance(spec.struct, set)
-
-
-    @unittest.skip("todo")
-    def test_override(self):
-        pass
-
-    @unittest.skip("todo")
-    def test_spec_limit(self):
-        pass
-
-    @unittest.skip("todo")
-    def test_verify(self):
-        pass
-
-    @unittest.skip("todo")
-    def test_register_fragment(self):
-        pass
 if __name__ == '__main__':
     unittest.main()

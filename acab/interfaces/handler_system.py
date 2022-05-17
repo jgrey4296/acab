@@ -69,6 +69,7 @@ class HandlerSpec_i(HSubP.HandlerSpec_p):
     handlers        : list[Handler_A]                    = field(init=False, default_factory=list)
     struct          : None | Structure                   = field(init=False, default=None)
     h_limit_history : bool                               = field(init=False, default=False)
+    registered      : set[int]                           = field(init=False, default_factory=set)
 
     flag_e          : ClassVar[HandlerFlags_t]       = HandlerFlags
 
@@ -91,6 +92,20 @@ class Handler_i(HSubP.Handler_p):
     struct   : None | Structure                                  = field(default=None, kw_only=True)
 
     def __post_init__(self) -> None: pass
+
+    @staticmethod
+    def __hash__(self):
+        """
+        Specific hash function to protect against duplicates
+        """
+        if self.func is None:
+            return hash(id(self))
+
+        if isinstance(self.func, MethodType):
+            return hash(self.func)
+
+        return hash(id(self.func))
+
 
 @dataclass #type:ignore[misc]
 class HandlerOverride:

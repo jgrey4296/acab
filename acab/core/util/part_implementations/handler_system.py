@@ -16,7 +16,7 @@ from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
 from acab import types as AT
 from acab import AcabConfig
 from acab.core.util.decorators.util import cache
-from acab.error.handler import AcabHandlerException
+from acab.error.handler import AcabHandlerException, HandlerDuplicationException
 from acab.interfaces import handler_system as HS
 from acab.interfaces.config import ConfigSpec_d
 from acab.interfaces.data import Structure_i
@@ -309,16 +309,24 @@ class HandlerSpec(HS.HandlerSpec_i):
     def register(self, handler: Handler_A) -> None:
         """ Add a handler into the current, according to the spec instructions
         and handler's flags """
-        # And check types
-        if handler.struct is not None:
-            self.add_struct(handler)
-        # NOT ELIF
-        if self.flag_e.OVERRIDE in handler.flags and handler.func is not None:
-            self.handlers = [handler]
-        elif handler.func is not None:
-            self.check_api(func=handler.func)
-            self.handlers.append(handler)
-        # NOT ELIF
+        match handler:
+            case HS.Handler_i(struct=None):
+                pass
+            case HS.Handler_i(struct=struct):
+                self.add_struct(handler)
+
+        match handler:
+            case HS.Handler_i(func=None):
+                pass
+            case HS.Handler_i(func=func, flags=flags) if self.flag_e.OVERRIDE in flags:
+                self.handlers = [handler]
+            case HS.Handler_i(func=func) if HS.Handler_i.__hash__(handler) in self.registered:
+                raise HandlerDuplicationException(handler)
+            case HS.Handler_i(func=func):
+                self.check_api(func=handler.func)
+                self.handlers.append(handler)
+                self.registered.add(HS.Handler_i.__hash__(handler))
+
         if self.handler_limit is None:
             return
 
