@@ -19,6 +19,8 @@ from acab.interfaces.bind import Bind_i
 
 logging = logmod.getLogger(__name__)
 
+__all__ = ['Bind']
+
 # TODO make this a handler system, or part of semantics?
 
 class Bind(Bind_i):
@@ -53,6 +55,8 @@ def _bind(val, bindings, semSys=None):
                 result = current[str(val)]
             case VI.Value_i() if not val.has_var:
                 result = val
+            case VI.Sentence_i() if val.is_at_var:
+                result = _bind_node(val, current)
             case VI.Sentence_i(), val.is_var:
                 result = _bind_val(val[0])
             case VI.Sentence_i():
@@ -62,12 +66,17 @@ def _bind(val, bindings, semSys=None):
             case _:
                 raise AcabSemanticException("Unrecognised type attempted to bind: ", val)
 
-    if result is val:
-        # nothing was bound, so early exit
-        return val
-    if isinstance(result, FunctionType) or result.type == DS.OPERATOR_PRIM:
-        # Operators don't get modified in any way
-        return result
+    match result:
+        case _ if val == result:
+            # nothing was bound, so early exit
+            return val
+        case FunctionType():
+            return result
+        case VI.Value_i() if result.type == DS.OPERATOR_PRIM:
+            # Operators don't get modified in any way
+            return result
+        case DI.Node_i():
+            return result
 
     # Run bind transforms here
     assert(isinstance(result, VI.Value_i))
@@ -93,9 +102,6 @@ def _bind_val(val:AT.Value, bindings:AT.CtxIns) -> AT.Value:
     match val:
         case _ if val.value not in bindings:
             pass
-        case _ if val.is_at_var:
-            bound = bindings.nodes[val.value]
-            assert(isinstance(bound, DI.Node_i))
         case _:
             bound = bindings[val.value]
             assert(isinstance(bound, VI.Value_i))
@@ -122,7 +128,7 @@ def _sen_bind(val:AT.Sentence, bindings:AT.CtxIns) -> AT.Sentence:
                 continue
             case _ if word.is_at_var:
                 assert(i == 0)
-                output.append(_bind(word, bindings))
+                output.append(_bind_val(word, bindings))
             case _:
                 output.append(_bind(word, bindings))
 
@@ -130,6 +136,13 @@ def _sen_bind(val:AT.Sentence, bindings:AT.CtxIns) -> AT.Sentence:
                                data=val.data,
                                params=val.params,
                                tags=val.tags)
+
+
+def _bind_node(val:AT.Sentence, bindings:AT.CtxIns) -> AT.Node:
+    assert(val.is_at_var)
+    assert(val[0] in bindings)
+    assert(val[0].key() in bindings.nodes)
+    return bindings.nodes[val[0].key()]
 
 
 def _production_component_bind(val, data) -> AT.Component:
