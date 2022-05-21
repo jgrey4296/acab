@@ -13,7 +13,7 @@ from acab.core.config.config import AcabConfig
 from acab.core.parsing import funcs as Pfunc
 from acab.core.parsing import parsers as PU
 from acab.core.parsing.consts import (DBLARROW, DELIM, NG, N, component_gap,
-                                      emptyLine, ln, op, s, s_key)
+                                      emptyLine, ln, op, s, s_key, orm)
 from acab.core.parsing.param_core import ParamCore
 from acab.core.parsing.statement_core import StatementCore, type_annotation_gen
 from acab.core.defaults.semantic_signals import signals
@@ -57,7 +57,7 @@ SUM_TYPE = StatementCore(TU.SUM_HEAD, SUM_DEF_BODY )
 OP_SUGAR = DBLARROW + PU.OPERATOR_SUGAR(TU.SYNTAX_BIND_S)
 # TODO allow multi line defs.
 # (ie: polymorphism)
-OP_DEF_BODY = HOTLOAD_SEN("params") + op(OP_SUGAR)
+OP_DEF_BODY = orm(HOTLOAD_SEN)("params") + op(OP_SUGAR)
 OP_DEF_BODY.set_parse_action(TU.make_op_def)
 
 OP_DEF = StatementCore(TU.FUNC_HEAD,

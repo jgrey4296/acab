@@ -11,7 +11,7 @@ from acab.core.config.config import AcabConfig
 from acab.core.defaults import parse_keys as DK
 from acab.core.parsing.annotation import ValueAnnotation
 from acab.core.parsing.consts import s, s_key
-from acab.core.value.sentence import Sentence
+from acab.interfaces import value as VI
 from acab.modules.analysis.typing import util as TYU
 from acab.modules.analysis.typing.values.definition import (OperatorDefinition,
                                                             SumTypeDefinition,
@@ -38,18 +38,22 @@ FUNC_HEAD.set_name("FuncHead")
 
 def make_simple_def(toks):
     value    = toks[0]
-    type_def = TypeDefinition([], name=value.name, params=[], data=value.data)
+    val_data = value.data
+    if DS.TYPE_INSTANCE in val_data and val_data[DS.TYPE_INSTANCE] == "ATOM":
+        del val_data[DS.TYPE_INSTANCE]
+
+    type_def = TypeDefinition([], name=value.name, params=[], data=val_data)
     return type_def
 
 def make_record_def(toks):
     # check only atoms and typedefs are in body
-    assert(all([isinstance(x, Sentence) for x in toks[0]]))
+    assert(all([isinstance(x, VI.Sentence_i) for x in toks[0]]))
     type_def = TypeDefinition([x for x in toks[0]])
     return type_def
 
 def make_sum_def(toks):
     # assert all toks are sentences of atoms or type defs
-    assert(all([isinstance(x, Sentence) for x in toks[0]]))
+    assert(all([isinstance(x, VI.Sentence_i) for x in toks[0]]))
     assert(all([isinstance(x[-1], TypeDefinition) for x in toks[0]]))
     sum_def = SumTypeDefinition(toks[0][:])
     return sum_def
@@ -58,11 +62,13 @@ def make_op_def(toks):
     syntax_bind = None
     op_params = toks["params"]
     assert(all([x.is_var for x in op_params]))
+    assert(all([isinstance(x, VI.Sentence_i) for x in op_params]))
 
     if SYNTAX_BIND_S in toks:
         syntax_bind = toks[SYNTAX_BIND_S]
 
-    op_def = OperatorDefinition([op_params], sugar_syntax=syntax_bind)
+
+    op_def = OperatorDefinition(op_params[:], sugar_syntax=syntax_bind)
 
     return op_def
 
@@ -77,8 +83,8 @@ def make_type_dec(toks):
         args = [x[1] if isinstance(x, tuple) else x for x in toks[ARG_S][:]]
 
     return ValueAnnotation(TYU.TYPE_INSTANCE_S,
-                           Sentence(path, params=args,
-                                    data={TYPE_INSTANCE_S: "type.declaration"}))
+                           VI.ValueFactory.sen(path, params=args,
+                                               data={TYPE_INSTANCE_S: "type.declaration"}))
 
 def make_type_class(toks):
     # TODO assert all toks are operator definitions

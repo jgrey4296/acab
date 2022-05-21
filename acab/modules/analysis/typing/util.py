@@ -29,11 +29,13 @@ SUM_DEF_S       = config.attr.Typing.Primitives.SUM_DEF
 STRUCT_S        = config.attr.Typing.Primitives.STRUCT
 TVAR_S          = config.attr.Typing.Primitives.TVAR
 SYNTAX_BIND_S   = config.attr.Typing.Primitives.SYNTAX_BIND
+TYPE_CLASS_S    = config.attr.Typing.Primitives.TYPE_CLASS
 
 
 # TODO make these registrations
 TYPE_DEFINITION     = ValueFactory.sen() << TYPE_DEF_S
 SUM_DEFINITION      = ValueFactory.sen() << SUM_DEF_S
 OPERATOR_DEFINITION = ValueFactory.sen() << OP_DEF_S
+TYPE_CLASS          = ValueFactory.sen() << TYPE_CLASS_S
 # TODO TYPE CLASS
 

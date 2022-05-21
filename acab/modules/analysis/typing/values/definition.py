@@ -7,10 +7,12 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 from dataclasses import dataclass, field, InitVar
 
+from acab.core.defaults import value_keys as DS
 from acab.core.config.config import AcabConfig
 import acab.interfaces.value as VI
 from acab.error.parse import AcabParseException
 from acab.modules.analysis.typing import exceptions as TE
+from acab.modules.analysis.typing.util import TYPE_CLASS
 from acab.modules.analysis.typing.util import (SUM_DEFINITION, TYPE_DEF_S,
                                                TYPE_DEFINITION, OPERATOR_DEFINITION)
 
@@ -27,6 +29,8 @@ NAME_S          = config.prepare("Parse.Structure", "NAME")()
 class TypeDefinition(TypeStatement):
     """ Defines the Structure of a Product type """
 
+    _defaults : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE: TYPE_DEFINITION}
+
     def __post_init__(self):
         """ Structure creates the dict of locations.
         Only leaves get type anotations. Thus:
@@ -37,11 +41,9 @@ class TypeDefinition(TypeStatement):
         assert isinstance(self.structure, list)
         assert all([isinstance(x, VI.Sentence_i) for x in self.structure]), self.structure
 
-        self.data[TYPE_INSTANCE_S] = TYPE_DEFINITION
-
 
     def __eq__(self, other):
-        path_eq = self.path == other.path
+        path_eq = self._path == other._path
         structure_len = len(self.structure) == len(other.structure)
         structure_eq = all([x == y for x,y in zip(self.structure, other.structure)])
 
@@ -62,6 +64,7 @@ class TypeDefinition(TypeStatement):
 class SumTypeDefinition(TypeDefinition):
     """ Defines a Sum Type  """
 
+    _defaults : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE: SUM_DEFINITION}
 
     def __post_init__(self):
         # Flatten Product Types out of Structure:
@@ -75,13 +78,13 @@ class SumTypeDefinition(TypeDefinition):
 
         # self.value = flat_structure
 
-        self.data[TYPE_INSTANCE_S] = SUM_DEFINITION
 
 @dataclass(frozen=True)
 class OperatorDefinition(TypeDefinition):
     """ Defines the type signature of an operator"""
 
-    sugar_syntax : str = field(default=None)
+    sugar_syntax : str                      = field(default=None)
+    _defaults    : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE: OPERATOR_DEFINITION}
 
     def __post_init__(self):
         """ The name of an operator and its type signature,
@@ -96,6 +99,8 @@ class OperatorDefinition(TypeDefinition):
 @dataclass(frozen=True)
 class TypeClass(TypeDefinition):
     """ Definition of a coherent collection of functions """
+
+    _defaults : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE: TYPE_CLASS}
 
     def __post_init__(self):
         super(TypeClass, self).__post_init__()

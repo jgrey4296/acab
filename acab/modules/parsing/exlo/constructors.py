@@ -27,10 +27,9 @@ def build_query_component(s, loc, toks):
     if EXu.VALUE_S in toks:
         params = toks[EXu.VALUE_S][:]
 
-    params = [x[0] if len(x) == 1 else x for x in params]
 
     assert(isinstance(op, VI.Sentence_i)), type(op)
-    assert(all([isinstance(x, VI.Value_i) for x in params]))
+    assert(all([isinstance(x, VI.Sentence_i) for x in params]))
     assert(DS.OPERATOR in op.type)
     return ValueRepeatAnnotation(DS.CONSTRAINT,
                                  ProductionComponent(op, params=params))
@@ -46,10 +45,9 @@ def build_transform_component(s, loc, toks):
         op = VF.sen() << op
 
     rebind = toks[EXu.TARGET_S][0]
-    params = [x[0] if len(x) == 1 else x for x in params]
 
     assert(isinstance(op, VI.Sentence_i))
-    assert(all([isinstance(x, VI.Value_i) for x in params]))
+    assert(all([isinstance(x, VI.Sentence_i) for x in params]))
     assert(isinstance(rebind, VI.Value_i))
     assert(DS.OPERATOR in op.type)
     return ProductionComponent(op,
@@ -66,10 +64,9 @@ def build_action_component(s, loc, toks):
     op = toks[EXu.OPERATOR_S][0]
     if not isinstance(op, Sentence):
         op = VF.sen() << op
-    # params = [x[0] if len(x) == 1 else x for x in params]
 
     assert(isinstance(op, VI.Sentence_i))
-    assert(all([isinstance(x, VI.Value_i) for x in params]))
+    assert(all([isinstance(x, VI.Sentence_i) for x in params]))
     assert(DS.OPERATOR in op.type)
     return ProductionComponent(op,
                                params=params,
