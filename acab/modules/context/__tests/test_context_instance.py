@@ -1,12 +1,24 @@
 #https://docs.python.org/3/library/unittest.html
 # https://docs.python.org/3/library/unittest.mock.html
 
-from os.path import splitext, split
+from __future__ import annotations
 
+import logging as logmod
 import unittest
 import unittest.mock as mock
+import warnings
+from os.path import split, splitext
 
-import logging
+import acab
+
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    config = acab.setup()
+
+from acab.core.value.value import AcabValue
+from acab.error.context import AcabContextException
+from acab.modules.context.context_instance import ContextInstance
+from acab.modules.context.context_set import ContextSet
 
 
 class TestContextInstance(unittest.TestCase):
@@ -15,22 +27,73 @@ class TestContextInstance(unittest.TestCase):
     def setUpClass(cls):
         LOGLEVEL      = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
+        cls.file_h    = logmod.FileHandler(LOG_FILE_NAME, mode="w")
 
-        file_h.setLevel(LOGLEVEL)
+        cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
-        logging.root.addHandler(file_h)
         logging.root.setLevel(logmod.NOTSET)
+        if bool(logmod.root.handlers):
+            logmod.root.handlers[0].setLevel(logmod.WARNING)
+        logging.root.addHandler(cls.file_h)
+
+    @classmethod
+    def tearDownClass(cls):
+        logmod.root.removeHandler(cls.file_h)
 
 
-    def setUp(self):
-        return 1
+    def test_instance_basic(self):
+        """ Check a ContextInstance can be created """
+        inst = ContextInstance()
+        self.assertEqual(inst.data, {})
+        self.assertEqual(inst.nodes, {})
 
-    def tearDown(self):
-        return 1
+    def test_instance_bindings(self):
+        """ Check a context instance can be created with bindings """
+        inst = ContextInstance(data={"a" : 2, "b" : 3})
+        self.assertEqual(inst.data['a'], 2)
+        self.assertEqual(inst.data['b'], 3)
 
-    #----------
-    # use testcase snippet
-    # mock.Mock / MagicMock
-    # create_autospec
-    # @patch(' ') / with patch.object(...)
+    def test_instance_nodes(self):
+        """ Check a context instance can be created with node bindings """
+        inst = ContextInstance(nodes={"a": 2, "b": 3})
+        self.assertEqual(inst.nodes["a"], 2)
+        self.assertEqual(inst.nodes["b"], 3)
+
+    def test_instance_copy(self):
+        """ Check a context instance can be copied """
+        inst = ContextInstance(data={"a": 2, "b": 3})
+        inst2 = inst.copy()
+        self.assertNotEqual(id(inst), id(inst2))
+        self.assertNotEqual(inst.uuid, inst2.uuid)
+
+    def test_instance_copy_independence(self):
+        """ Check a context instance can be copied """
+        inst = ContextInstance(data={"a": 2, "b": 3})
+        inst2 = inst.copy()
+        inst2.data["a"] = 5
+        self.assertNotEqual(id(inst), id(inst2))
+        self.assertNotEqual(inst.uuid, inst2.uuid)
+        self.assertEqual(inst.data["a"], 2)
+        self.assertEqual(inst2.data["a"], 5)
+
+    def test_instance_bind(self):
+        pass
+
+    def test_instance_contains(self):
+        pass
+
+    def test_instance_getitem(self):
+        pass
+
+
+    def test_mutability_fail(self):
+        pass
+
+    def test_mutable_instance(self):
+        pass
+
+    def test_progress(self):
+        pass
+
+    def instance_context_handler(self):
+        pass

@@ -12,8 +12,6 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     NewType, Protocol, Sequence, Tuple, Type, TypeAlias,
                     TypeGuard, TypeVar, cast, final, overload,
                     runtime_checkable)
-
-logging = logmod.getLogger(__name__)
 import warnings
 
 from acab import setup

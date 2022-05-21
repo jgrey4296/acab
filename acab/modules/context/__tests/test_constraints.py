@@ -1,13 +1,19 @@
 #https://docs.python.org/3/library/unittest.html
 # https://docs.python.org/3/library/unittest.mock.html
 
-from os.path import splitext, split
-
+from __future__ import annotations
+import logging as logmod
+from os.path import split, splitext
+from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
+                    Mapping, Match, MutableMapping, Sequence, Tuple, TypeAlias,
+                    TypeVar, cast)
 import unittest
-import unittest.mock as mock
+from unittest import mock
+import warnings
 
-import logging
-
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    pass
 
 class TestConstraintCollection(unittest.TestCase):
 
@@ -20,7 +26,8 @@ class TestConstraintCollection(unittest.TestCase):
         cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
         logging.root.setLevel(logmod.NOTSET)
-        logging.root.handlers[0].setLevel(logmod.WARNING)
+        if bool(logging.root.handlers):
+            logging.root.handlers[0].setLevel(logmod.WARNING)
         logging.root.addHandler(cls.file_h)
 
     @classmethod
@@ -28,14 +35,11 @@ class TestConstraintCollection(unittest.TestCase):
         logmod.root.removeHandler(cls.file_h)
 
 
-    def setUp(self):
-        return 1
+    def test_creation(self):
+        pass
 
-    def tearDown(self):
-        return 1
+    def test_top_level_test(self):
+        pass
 
-    #----------
-    # use testcase snippet
-    # mock.Mock / MagicMock
-    # create_autospec
-    # @patch(' ') / with patch.object(...)
+    def test_constraint_sieve(self):
+        pass
