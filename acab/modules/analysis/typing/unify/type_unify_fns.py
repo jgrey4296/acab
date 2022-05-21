@@ -22,7 +22,8 @@ from acab.interfaces.value import ValueFactory as VF
 
 from .. import exceptions as TE
 from . import simple_unify_fns as suf
-from . import unifier, util
+from .unifier import Unifier, UnifyLogic
+from . import util
 from .util import INFINITY, type_len, unify_enum
 
 ATOM = "_:{}".format(DS.TYPE_BASE)
@@ -75,7 +76,7 @@ def gen_type_vars(first, second, gamma, gen_var=None) -> AT.CtxIns:
 
 
 
-def var_handler_basic(index, first, second, ctx):
+def var_handler_basic(index, first, second, ctx, unifier=None):
     """ Bind vars, preferring Ctx -> L -> R
     ctx: f(A) -> set[A]
     """
@@ -107,7 +108,7 @@ def var_handler_basic(index, first, second, ctx):
 
 
 # Type Unification ############################################################
-def skip_atom_types(index, first, second, ctx):
+def skip_atom_types(index, first, second, ctx, unifier=None):
     """
     If both things you are comparing are atoms, no need to continue the sieve
     """
@@ -125,7 +126,7 @@ def skip_atom_types(index, first, second, ctx):
     return result
 
 
-def test_word_equality(index, first, second, ctx):
+def test_word_equality(index, first, second, ctx, unifier=None):
     """
     Words have to equal each other, or be a variable
     """
@@ -139,7 +140,7 @@ def test_word_equality(index, first, second, ctx):
 
     return result
 
-def match_atom(index, first, second, ctx):
+def match_atom(index, first, second, ctx, unifier=None):
     result = unify_enum.NA
     if second[index] == ATOM:
         result = unify_enum.NEXT_WORD
@@ -147,7 +148,7 @@ def match_atom(index, first, second, ctx):
     return result
 
 
-def whole_sentence_bind(first, second, ctx):
+def whole_sentence_bind(first, second, ctx, unifier=None):
     """
     Early exit if all you have is a variable
     """
@@ -166,20 +167,20 @@ def whole_sentence_bind(first, second, ctx):
     return result
 
 
-def fail_handler_type(index, first, second, ctx):
+def fail_handler_type(index, first, second, ctx, unifier=None):
     raise TE.AcabUnifySieveFailure(first[index], second[index], ctx=ctx)
 
 
 # Factories ###################################################################
 @factory
-def var_consistency_check(logic, index, first, second, ctx):
+def var_consistency_check(logic, index, first, second, ctx, unifier=None):
     """
     Check variables stay consistent as you progress through the sentence
     Check words types are consistent with the context
     """
     if not (first[index].is_var or second[index].is_var):
         return unify_enum.NA
-    sub_unifier = unifier.Unifier(logic)
+    sub_unifier = Unifier(logic)
     try:
         logging.debug("Checking Vars on: {}, {}", first[index], second[index])
         for sen in [first, second]:
@@ -212,7 +213,7 @@ def var_consistency_check(logic, index, first, second, ctx):
 
 
 @factory
-def unify_type_sens(logic, index, first, second, ctx):
+def unify_type_sens(logic, index, first, second, ctx, unifier=None):
     # TODO this can be simplified
     logging.debug("Unifying Type Annotations for: {}, {}", first[index], second[index])
     result = unify_enum.NA
@@ -236,7 +237,7 @@ def unify_type_sens(logic, index, first, second, ctx):
     # if canon_f_t == canon_s_t:
     #     return unify_enum.NEXT_WORD
 
-    sub_unifier = unifier.Unifier(logic)
+    sub_unifier = Unifier(logic)
     try:
         # Discard the returned context:
         sub_unifier(canon_f_t, canon_s_t, ctx, logic)
@@ -327,7 +328,7 @@ def apply_typed_sen_sub(sen, gamma) -> AT.Sentence:
     return sen.copy(value=words)
 
 
-type_as_sen_logic = unifier.UnifyLogic(
+type_as_sen_logic = UnifyLogic(
     entry_transform=None,
     early_exit=whole_sentence_bind,
     truncate=util.sen_extend,
@@ -338,10 +339,10 @@ type_as_sen_logic = unifier.UnifyLogic(
            suf.fail_handler_basic],
     apply=apply_sen_type_sub)
 
-type_sen_unify = unifier.Unifier(type_as_sen_logic)
+type_sen_unify = Unifier(type_as_sen_logic)
 
 # a.b.c(::d.e.f)
-typed_sen_logic = unifier.UnifyLogic(
+typed_sen_logic = UnifyLogic(
     entry_transform=lambda x,y,c: (x, y, gen_type_vars(x, y, c)),
     early_exit=None,
     truncate=util.sen_extend,
@@ -355,4 +356,4 @@ typed_sen_logic = unifier.UnifyLogic(
     apply=apply_typed_sen_sub
     )
 
-type_unify = unifier.Unifier(typed_sen_logic)
+type_unify = Unifier(typed_sen_logic)

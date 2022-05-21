@@ -102,7 +102,7 @@ class Unifier:
                     for sieve_fn in logic.sieve:
                         logging.debug("Running {:<20} on {!s:<10}, {!s:<10}",
                                       sieve_fn.__name__, f_word, s_word)
-                        result = sieve_fn(index, first, second, ctx_prime)
+                        result = sieve_fn(index, first, second, ctx_prime, unifier=self)
                         match result:
                             case unify_enum.NA:
                                 continue
