@@ -26,6 +26,7 @@ from acab.modules.analysis.typing.values.definition import (OperatorDefinition,
                                                             TypeClass,
                                                             TypeDefinition)
 from acab.modules.parsing.exlo.parsers import FactParser as FP
+from acab.modules.analysis.typing import util
 
 TDP.HOTLOAD_SEN        << FP.SENTENCE
 TP.HOTLOAD_SEN         << FP.SENTENCE
@@ -55,18 +56,21 @@ class TestParser(unittest.TestCase):
         result = TDP.NOMINAL_DEF.parse_string("c(::τ)")[0]
         self.assertIsInstance(result, TypeDefinition)
         self.assertEqual(len(result.structure), 0)
+        self.assertEqual(result.type, util.TYPE_DEFINITION)
 
     def test_simple_record_typedef(self):
         """ Test a multi line type definition """
         result = TDP.RECORD_TYPE.parse_string("c(::σ):\nq.w.e(::blah)\nend")[0]
         self.assertIsInstance(result, TypeDefinition)
         self.assertEqual(len(result.structure), 1)
+        self.assertEqual(result.type, util.TYPE_DEFINITION)
 
     def test_multi_val_record_typdef(self):
         """ Test a type definition with multiple subtypings """
         result = TDP.RECORD_TYPE.parse_string("c(::σ):\nq.w.e(::awef)\nblah.bloo(::awg)\nend")[0]
         self.assertIsInstance(result, TypeDefinition)
         self.assertEqual(len(result.structure), 2)
+        self.assertEqual(result.type, util.TYPE_DEFINITION)
 
     def test_simple_sum_type(self):
         """ Test a simple sum type definition """
@@ -75,6 +79,7 @@ class TestParser(unittest.TestCase):
         self.assertEqual(len(result.structure), 2)
         self.assertIsInstance(result.structure[0], Sentence)
         self.assertIsInstance(result.structure[0][-1], TypeDefinition)
+        self.assertEqual(result.type, util.SUM_DEFINITION)
 
     def test_nested_record_in_sum(self):
         """ Test nested record type definitions in a sum type """
@@ -83,11 +88,15 @@ class TestParser(unittest.TestCase):
         self.assertEqual(len(result.structure), 3)
         self.assertIsInstance(result.structure[0], Sentence)
         self.assertIsInstance(result.structure[0][-1], TypeDefinition)
+        self.assertEqual(result.type, util.SUM_DEFINITION)
+
 
     def test_simple_operator_def(self):
         """ Test an operator type definition """
         result = TDP.OP_DEF.parse_string("c(::λ): $q.$w.$e => +")[0]
         self.assertIsInstance(result, OperatorDefinition)
+        self.assertEqual(result.type, util.OPERATOR_DEFINITION)
+
 
 
     def test_simple_operator_def_fail(self):
@@ -101,6 +110,8 @@ class TestParser(unittest.TestCase):
         result = TDP.TYPE_CLASS_DEF.parse_string("class(::γ):\n a.b.c(::λ): $q.$w.$e => +\n q.w.e(::λ): $w.$e.$r => -\nend")[0]
         self.assertIsInstance(result, TypeClass)
         self.assertTrue(len(result.structure), 2)
+        self.assertEqual(result.type, util.TYPE_CLASS)
+
 
     def test_simple_type_declaration(self):
         """ Test a type declaration"""

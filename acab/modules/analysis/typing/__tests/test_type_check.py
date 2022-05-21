@@ -13,10 +13,11 @@ with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = setup()
 
+from acab.interfaces.value import ValueFactory as VF
 from acab.core.data.acab_struct import AcabNode
+from acab.core.defaults.value_keys import BIND
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.core.parsing.annotation import ValueAnnotation
-from acab.core.defaults.value_keys import BIND
 from acab.core.value.instruction import Instruction
 from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue
@@ -110,21 +111,31 @@ class TypeCheckTests(unittest.TestCase):
 
     def test_operator_typing(self):
         transform = dsl("transform(::χ):\n λa.b.c $x(::first) $y(::second) -> $z(::first)\nend")[0][0]
-        op_def    = dsl("a.b.c(::λ): $g(::first).$h(::second).$i(::first)")[0][-1]
+        op_def    = dsl("a.b.c(::λ): $g(::first) $h(::second) $i(::first)")[0][-1]
         # t -> sen
         t_sen = transform.to_sentences()[0][1]
-        self.assertEqual(t_sen.name, "Params")
         # def -> sen
-        def_sen = op_def.to_sentences()[0]
+        def_sen = VF.sen() << op_def.to_sentences()
         # unify
         unified = tuf.type_unify(t_sen, def_sen, CtxIns())
         self.assertIsInstance(unified.x, ValueAnnotation)
-        self.assertEqual(unified.y, "h")
+        self.assertEqual(unified.y, "_:h")
 
+    def test_operator_typing2(self):
+        transform = dsl("transform(::χ):\n λa.b.c $x(::first) $y -> $z(::first)\nend")[0][0]
+        op_def    = dsl("a.b.c(::λ): $g(::first) $h(::second) $i(::first)")[0][-1]
+        # t -> sen
+        t_sen = transform.to_sentences()[0][1]
+        # def -> sen
+        def_sen = VF.sen() << op_def.to_sentences()
+        # unify
+        unified = tuf.type_unify(t_sen, def_sen, CtxIns())
+        self.assertIsInstance(unified.x, ValueAnnotation)
+        self.assertEqual(unified.y, "_:h")
 
     def test_operator_typing_conflict(self):
         transform = dsl("transform(::χ):\n λa.b.c $x(::first) $y(::other) -> $z(::first)\nend")[0][0]
-        op_def    = dsl("a.b.c(::λ): $g(::first).$h(::second).$i(::first)")[0][-1]
+        op_def    = dsl("a.b.c(::λ): $g(::first) $h(::second) $i(::first)")[0][-1]
         # t -> sen
         t_sen = transform.to_sentences()[0][1]
         self.assertEqual(t_sen.name, "Params")
@@ -133,7 +144,6 @@ class TypeCheckTests(unittest.TestCase):
         # unify
         with self.assertRaises(TE.AcabUnifyVariableInconsistencyException):
             tuf.type_unify(t_sen, def_sen, CtxIns())
-
 
     @unittest.skip("TODO")
     def test_query_condition_typechecking(self):

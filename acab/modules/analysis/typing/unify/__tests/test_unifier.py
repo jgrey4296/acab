@@ -13,6 +13,7 @@ with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = setup()
 
+from acab.core.defaults import value_keys as DS
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.core.value.value import AcabValue
 from acab.interfaces import value as VI
@@ -295,3 +296,26 @@ class UnifierTests(unittest.TestCase):
         sen2 = dsl("a.test!sentence?")[0]
         ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
         self.assertEqual(ctx_r.x, "test")
+
+    def test_unify_nested_conflict(self):
+        sen1 = dsl("a.b")[0] << (VI.ValueFactory.sen() << ["d","e","f"])
+        sen2 = dsl("a.b")[0] << (VI.ValueFactory.sen() << ["d","e","g"])
+
+        with self.assertRaises(TE.AcabTypingException):
+            ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
+
+    def test_unify_nested(self):
+        sen1 = dsl("a.b")[0] << (VI.ValueFactory.sen() << ["d","e","f"])
+        sen2 = dsl("a.b")[0] << (VI.ValueFactory.sen() << ["d","e","f"])
+
+        ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
+        self.assertFalse(ctx_r)
+
+    def test_unify_nested_var(self):
+        sen1 = dsl("a.b")[0] << (VI.ValueFactory.sen() << ["d","e","f"])
+        sen2 = dsl("a.b")[0] << (VI.ValueFactory.sen() << ["d","e","x"])
+
+        sen2[-1][-1].data[DS.BIND] = True
+        ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
+        self.assertIn("x", ctx_r)
+        self.assertEqual(ctx_r.x, "f")

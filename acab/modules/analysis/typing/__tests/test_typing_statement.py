@@ -1,14 +1,15 @@
 import logging as logmod
+import unittest
+import warnings
 from os.path import split, splitext
 from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
                     Mapping, Match, MutableMapping, Sequence, Tuple, TypeAlias,
                     TypeVar, cast)
-import unittest
 from unittest import mock
-import pyparsing as pp
-import warnings
 
 import acab
+import pyparsing as pp
+
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
@@ -18,14 +19,18 @@ with warnings.catch_warnings():
 
 
 import acab.interfaces.value as VI
+from acab.interfaces.context import ContextSet_i
 from acab.core.defaults import value_keys as DS
 from acab.core.parsing import pyparse_dsl as ppDSL
-from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 from acab.core.parsing.component_dsl import Component_DSL
 from acab.interfaces import fragments as FI
+from acab.modules.analysis.typing.module import TypingDSL, TypingExtension
+from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 from acab.modules.printing.default import DEFAULT_PRINTER
+from acab.modules.semantics.default import DEFAULT_SEMANTICS
+from acab.modules.operators.query import ELEM, EQ, SimpleTypeMatch
 
-from acab.modules.analysis.typing.module import TypingExtension
+CtxSet = config.prepare("Imports.Targeted", "context", actions=[config.actions_e.IMCLASS], args={"interface": ContextSet_i})()
 
 class TestTypingStatement(unittest.TestCase):
     @classmethod
@@ -43,6 +48,7 @@ class TestTypingStatement(unittest.TestCase):
         cls.dsl   = ppDSL.PyParseDSL()
         cls.dsl.register(EXLO_Parser)
         cls.dsl.register(Component_DSL)
+        cls.dsl.register(TypingDSL)
 
         cls.dsl.build()
 
@@ -104,6 +110,27 @@ class TestTypingStatement(unittest.TestCase):
         print_sys.register(printer)
         result = print_sys.pprint(instr)
         self.assertEqual(result, "⊢ a.different!sen ∈ blah!bloo")
+
+    def test_semantics(self):
+        semsys = DEFAULT_SEMANTICS()
+        semsys.register(TypingExtension().build_semantics())
+        self.dsl.register(TypingExtension().build_dsl()).build()
+
+        a_sen = self.dsl("a.test.sen(::a.def).sub.blah")[0]
+        type_ = self.dsl("a.def(::σ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0]
+        instr = self.dsl['transform.statement'].parse_string('⊢ @x ∈ $y')[0]
+
+        semsys(a_sen)
+        semsys(type_)
+
+        ctxs = CtxSet(CtxSet.instance_constructor(data={"∈": ELEM(), "==": SimpleTypeMatch()}))
+
+        semsys(self.dsl("a.test.$x?")[0], ctxs=ctxs)
+        semsys(self.dsl("a.$y(== TYPE_DEF)?")[0], ctxs=ctxs)
+        breakpoint()
+        semsys(instr, ctxs=ctxs)
+        pass
+
 
 if __name__ == '__main__':
     unittest.main()

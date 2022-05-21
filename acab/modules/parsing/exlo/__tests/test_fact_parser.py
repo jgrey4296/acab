@@ -196,3 +196,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
         self.assertTrue(DS.CONSTRAINT in result.data)
         self.assertEqual(len(result.data[DS.CONSTRAINT][0].params), 3)
         self.assertTrue(all([isinstance(x, Value_i) for x in result.data[DS.CONSTRAINT][0].params]))
+
+    def test_simple_sentence(self):
+        result = FP.SENTENCE.parse_string("a")[0]
+        self.assertIsInstance(result, Sentence_i)

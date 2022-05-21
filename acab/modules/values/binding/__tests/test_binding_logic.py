@@ -29,6 +29,7 @@ from acab.core.parsing import pyparse_dsl as ppDSL
 import acab.core.defaults.value_keys as DS
 from acab.modules.context.context_instance import ContextInstance
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
+from acab.core.data.node import AcabNode
 from acab.modules.values.binding.binding import Bind
 
 
@@ -180,3 +181,25 @@ class BindingLogicTests(unittest.TestCase):
         self.assertEqual(len(result), 3)
         self.assertIsInstance(result[-1], VI.Sentence_i)
 
+    def test_at_var_binding(self):
+        source = self.dsl("@x")[0]
+        target = self.dsl("val")[0]
+        target_node = AcabNode(target)
+
+        ctx = ContextInstance({"x": target}, nodes={"x": target_node})
+
+        result = Bind.bind(source, [ctx])
+        self.assertIsInstance(result, AcabNode)
+
+    def test_at_var_in_sentence(self):
+        source = self.dsl("@x.b.c")[0]
+        target = self.dsl("val")[0]
+        target_node = AcabNode(target)
+
+        ctx = ContextInstance({"x": target}, nodes={"x": target_node})
+
+        result = Bind.bind(source, [ctx])
+        self.assertIsInstance(result, VI.Value_i)
+        self.assertEqual(result, "_:val.b.c")
+        self.assertIsInstance(result[0], VI.Value_i)
+        self.assertNotIsInstance(result[0], VI.Sentence_i)

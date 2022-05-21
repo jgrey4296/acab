@@ -20,6 +20,7 @@ with warnings.catch_warnings():
         DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
 
+from acab.core.defaults import value_keys as DS
 import acab.modules.parsing.exlo.parsers.FactParser as FP
 import acab.modules.parsing.exlo.parsers.QueryParser as QP
 from acab.core.defaults.value_keys import (BIND, NEGATION, OPERATOR, QUERY,
@@ -186,3 +187,26 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         self.assertIsInstance(result.value, ProductionComponent)
         self.assertFalse(result.value.params)
         self.assertIn(OPERATOR, result.value.op.type)
+
+    def test_basic_constraint_args_are_sentences(self):
+        result = QP.basic_constraint.parse_string("λa.b.c q.w.e")[0]
+        self.assertIsInstance(result.value.params[0], Sentence)
+
+    def test_basic_constraint_args_are_sentences_single_var(self):
+        result = QP.basic_constraint.parse_string("λa.b.c $q")[0]
+        self.assertIsInstance(result.value.params[0], Sentence)
+
+    def test_basic_constraint_args_are_sentences_single_word(self):
+        result = QP.basic_constraint.parse_string("λa.b.c q")[0]
+        self.assertIsInstance(result.value.params[0], Sentence)
+
+    def test_constraint_arg_is_sentence(self):
+        result = FP.SEN_WORD.parse_string("test(λa.b.c $x $y).")[0]
+        for arg in result.data[DS.CONSTRAINT][0].params:
+            self.assertIsInstance(arg, Sentence)
+
+
+    def test_constraint_arg_is_sentence2(self):
+        result = FP.SEN_WORD.parse_string("test(== x.b.c y).")[0]
+        for arg in result.data[DS.CONSTRAINT][0].params:
+            self.assertIsInstance(arg, Sentence)
