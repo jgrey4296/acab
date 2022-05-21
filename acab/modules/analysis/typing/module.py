@@ -39,12 +39,17 @@ from acab.interfaces import handler_system as HS
 from acab.interfaces.fragments import UnifiedFragment_p
 from acab.interfaces.semantic import StatementSemantics_i
 from acab.interfaces.value import ValueFactory as VF
+from acab.interfaces.bind import Bind_i
 
 from .parsing import TypeDefParser as TDefP
 from .parsing import TypeParser as TP
+from .unify.util import gen_f
+from .unify import type_unify_fns as tuf
 
 config = AcabConfig()
 Handler = config.prepare("Imports.Targeted", "handler", actions=[config.actions_e.IMCLASS], args={"interface": HS.Handler_i})()
+Bind    = config.prepare("Imports.Targeted", "bind", actions=[config.actions_e.IMCLASS], args={"interface": Bind_i})()
+
 DSL_Spec     = ppDSL.PyParse_Spec
 DSL_Handler  = ppDSL.PyParse_Handler
 
@@ -55,6 +60,8 @@ OP_DEF        = config.attr.Print.Signals.OP_DEF
 TYPE_CLASS    = config.attr.Print.Signals.TYPE_CLASS
 
 LinkSignalTo = lambda x, y: DSL_Spec(x, struct=y, flags=[DSL_Spec.flag_e.COLLECT])
+
+
 
 TypingDSL = DSL_Fragment(specs=[DSL_Spec("sentence", struct=TDefP.HOTLOAD_SEN, flags=[DSL_Spec.flag_e.COLLECT]),
                                 DSL_Spec("sentence", struct=TP.HOTLOAD_SEN, flags=[DSL_Spec.flag_e.COLLECT])],
@@ -120,7 +127,8 @@ class TypingExtension(UnifiedFragment_p):
         return the Semantic_Fragment describing this extension's semantic handlers
         """
         sem_call = self.semantic or self.sem_call
-        sem_frag = Semantic_Fragment(handlers=[Handler(signal=self.signal, func=sem_call)])
+        sem_frag = Semantic_Fragment(specs=[HandlerSpec(self.signal)],
+                                     handlers=[Handler(signal=self.signal, func=sem_call)])
         return sem_frag
 
 
