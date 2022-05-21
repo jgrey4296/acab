@@ -567,7 +567,7 @@ class TrieSemanticTests(unittest.TestCase):
         op_ctx            = ContextInstance(data={"τ=": operator_instance})
         ctx_set           = ContextSet(op_ctx)
         top = ctx_set.pop()
-        ctx_set.push(top.bind_dict({"x": Sentence(["test", "sentence"], data={DS.FLATTEN: False})}))
+        ctx_set.push(top.progress({"x": Sentence(["test", "sentence"], data={DS.FLATTEN: False})}, {}))
         results = trie_sem.query(sen2, trie_struct, ctxs=ctx_set)
         # check
         self.assertEqual(len(results), 1)
@@ -591,7 +591,7 @@ class TrieSemanticTests(unittest.TestCase):
         op_ctx            = ContextInstance(data={"τ=": operator_instance})
         ctx_set           = ContextSet(op_ctx)
         top = ctx_set.pop()
-        ctx_set.push(top.bind_dict({"x": Sentence(["test", "blah"])}))
+        ctx_set.push(top.progress({"x": Sentence(["test", "blah"])}, {}))
         results = trie_sem.query(sen2, trie_struct, ctxs=ctx_set)
         # check
         self.assertEqual(len(results), 0)
@@ -615,7 +615,7 @@ class TrieSemanticTests(unittest.TestCase):
         op_ctx            = ContextInstance(data={"τ=": operator_instance})
         ctx_set           = ContextSet(op_ctx)
         top = ctx_set.pop()
-        ctx_set.push(top.bind_dict({"x": Sentence(["test", "sentence"])}))
+        ctx_set.push(top.progress({"x": Sentence(["test", "sentence"])}))
         results = trie_sem.query(sen2, trie_struct, ctxs=ctx_set)
         # Manual run_delayed, because it's not going through a semantic's `call`
         results.run_delayed()
@@ -641,7 +641,7 @@ class TrieSemanticTests(unittest.TestCase):
         op_ctx            = ContextInstance(data={"τ=": operator_instance})
         ctx_set           = ContextSet(op_ctx)
         top = ctx_set.pop()
-        ctx_set.push(top.bind_dict({"x": Sentence(["test", AcabValue("y", data={DS.BIND: True})])}))
+        ctx_set.push(top.progress({"x": Sentence(["test", AcabValue("y", data={DS.BIND: True})])}, {}))
         results = trie_sem.query(sen2, trie_struct, ctxs=ctx_set)
         results.run_delayed()
         # check

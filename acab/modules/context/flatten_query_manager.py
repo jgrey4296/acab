@@ -37,7 +37,7 @@ Operator         = AT.Operator
 Value            = AT.Value
 Statement        = AT.Instruction
 Sen              = Sentence_i
-Node             = AT.Node
+Node             = AT.StructView
 ModuleFragment   = AT.ModuleFragment
 NamedCtxSet      = "NamedCtxSet"
 
@@ -58,6 +58,7 @@ class FlattenQueryManager(CtxInt.CtxManager_i):
     _initial_ctxs       : list[UUID]           = field(init=False, default_factory=list)
 
     def __post_init__(self):
+        # Extract Constraints
         sen = self.target_clause.flatten()
         # flatten sentences in the query *unless* they are annotated as literal
         self.negated = NEGATION_S in sen.data and sen.data[NEGATION_S]
@@ -108,6 +109,7 @@ class FlattenQueryManager(CtxInt.CtxManager_i):
 
     def __iter__(self):
         return iter(self.constraints)
+
     @property
     def current(self, ctx=None) -> Iterator[Value]:
         clause_constraints = self.constraints
@@ -166,8 +168,8 @@ class FlattenQueryManager(CtxInt.CtxManager_i):
 
         # Handle successes
         # success, so copy and extend ctx instance
-        bound_ctxs = self._current_inst.bind(constraints.source,
-                                             successes,
-                                             sub_binds=constraints["sub_struct_binds"])
+        bound_ctxs = self._current_inst.progress(constraints.source,
+                                                 successes,
+                                                 sub_binds=constraints["sub_struct_binds"])
         return bound_ctxs
 

@@ -28,7 +28,7 @@ GenFunc             : TypeAlias = AT.fns.GenFunc
 CtxSet              : TypeAlias = AT.CtxSet
 CtxIns              : TypeAlias = AT.CtxIns
 Value               : TypeAlias = "AT.Value[AT.ValueCore]"
-Node                : TypeAlias = AT.Node
+Node                : TypeAlias = AT.StructView
 Sen                 : TypeAlias = AT.Sentence
 ProdComp            : TypeAlias = AT.Component
 ProductionContainer : TypeAlias = AT.Component
@@ -86,9 +86,7 @@ class ContextInstance_i(Hashable, Collection[Value], AcabFinishable_p, Protocol)
     @abc.abstractmethod
     def __getitem__(self, value: Value) -> Any: pass
     @abc.abstractmethod
-    def bind(self, word:Value, nodes:list[Node]) -> list[CtxIns]: pass
-    @abc.abstractmethod
-    def bind_dict(self, the_dict:dict[str, Any]) -> CtxIns: pass
+    def progress(self, word:Value|dict[str, Any], nodes:list[Node]|dict[str|Node], sub_binds=None) -> list[CtxIns]: pass
     @abc.abstractmethod
     def finish(self) -> Any: pass
 

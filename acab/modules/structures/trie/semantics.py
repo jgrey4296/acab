@@ -18,7 +18,7 @@ from acab.error.protocol import AcabProtocolError as APE
 logging = logmod.getLogger(__name__)
 config = AcabConfig()
 
-Node          = DI.Node_i
+Node          = DI.StructView
 Value         = AT.Value
 Structure     = AT.DataStructure
 Engine        = AT.Engine
@@ -42,6 +42,7 @@ class FlattenBreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantic
         return is_bns or has_all_node_comp
 
     def insert(self, sen, struct, *, data=None, ctxs=None):
+        # TODO can insert handle @vars?
         if data is None:
             data = {}
 
@@ -73,10 +74,10 @@ class FlattenBreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantic
 
         for ctx in results:
             assert(ctx._current is not None)
-            assert(ctx._current.parent is not None)
+            assert(ctx._current.node.parent is not None)
             # At leaf:
             # remove current from parent
-            current  = ctx._current
+            current  = ctx._current.node
             parent   = current.parent()
             spec     = self.lookup(parent)
             spec[0].remove(parent, current.value, data=data)
@@ -86,7 +87,7 @@ class FlattenBreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantic
         assert(ctxs is not None)
 
         clause_flatten = DS.FLATTEN not in sen.data or sen.data[DS.FLATTEN]
-        root           = struct.root if isinstance(struct, DI.Structure_i) else struct
+        root           = DI.StructView(struct.root, self) if isinstance(struct, DI.Structure_i) else struct
         assert(isinstance(root, Node))
 
         cqm = FlattenQueryManager(sen, root, ctxs)
@@ -102,14 +103,17 @@ class FlattenBreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantic
                     elif source_word.is_at_var and not bool(cqm._current_constraint):
                         continue
                     elif source_word.is_at_var:
+                        assert(source_word == sen[0])
                         cqm.maybe_test([current_node])
                     else:
-                        spec = self.lookup(current_node)
-                        results = spec[0].access(current_node,
+                        if not isinstance(current_node, DI.StructView):
+                            breakpoint()
+                        spec = self.lookup(current_node.node)
+                        results = spec[0].access(current_node.node,
                                                  bound_word,
                                                  data=data)
 
-                        cqm.maybe_test(results)
+                        cqm.maybe_test([DI.StructView(x, self) for x in results])
 
         return cqm.finished
 
@@ -130,6 +134,9 @@ class FlattenBreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantic
             case DI.Node_i():
                 root = struct.Root()
                 root.add(struct)
+            case DI.StructView():
+                root = struct.node.Root()
+                root.add(struct.node)
             case _:
                 raise TypeError("Unknown struct passed in")
 

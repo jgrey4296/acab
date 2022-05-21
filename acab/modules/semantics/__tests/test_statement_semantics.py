@@ -105,7 +105,7 @@ class StatementSemanticTests(unittest.TestCase):
         ctx_set                             = ContextSet(op_ctx)
         # Add a ContextInst
         init_ctx                            = ctx_set.pop()
-        updated_ctx                         = init_ctx.bind_dict({"x" : AcabValue("test")})
+        updated_ctx                         = init_ctx.progress({"x" : AcabValue("test")}, {})
         ctx_set.push(updated_ctx)
         # Build Transform
         rebind_target                       = AcabValue("y", data={BIND_V: True})
@@ -220,9 +220,7 @@ class StatementSemanticTests(unittest.TestCase):
         # Add data to eval context
         ctx_set     = ContextSet(op_ctx)
         init_ctx    = ctx_set.pop()
-        updated_ctx = init_ctx.bind_dict({
-            "x" : AcabValue("test")
-        })
+        updated_ctx = init_ctx.progress({"x" : AcabValue("test")}, {})
         ctx_set.push(updated_ctx)
 
         # Build Instruction to run

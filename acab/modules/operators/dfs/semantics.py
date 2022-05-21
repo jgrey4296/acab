@@ -9,6 +9,7 @@ from uuid import UUID
 import acab.core.defaults.value_keys as DS
 import acab.error.semantic as ASErr
 import acab.interfaces.semantic as SI
+import acab.interfaces.data as DI
 from acab import types as AT
 from acab.core.config.config import AcabConfig
 from acab.core.data.acab_struct import BasicNodeStruct
@@ -28,7 +29,7 @@ DEFAULT_SETUP_S  = config.attr.Data.DEFAULT_SETUP_METHOD
 DEFAULT_UPDATE_S = config.attr.Data.DEFAULT_UPDATE_METHOD
 WALK_SEM_HINT    = Sentence() << config.attr.Semantic.Signals.WALK
 
-Node          = AT.Node
+Node          = AT.StructView
 Value         = AT.Value
 Structure     = AT.DataStructure
 Engine        = AT.Engine
@@ -81,10 +82,10 @@ class DFSSemantics(basic.StatementSemantics, SI.StatementSemantics_i):
         default: HandlerSpec[StructSem] = semsys.lookup()
         nodesem: HandlerSpec[ValSem]    = default[0].lookup()
 
-        cwm = ContextWalkManager(walk_spec, default.struct.root, ctxs)
+        cwm = ContextWalkManager(walk_spec, DI.StructView(default.struct.root, self), ctxs)
         with cwm:
             for start in cwm.current:
-                queue : Node      = [start._current]
+                queue : Node      = [start._current.node]
                 found : set[UUID] = set()
 
                 while bool(queue):
@@ -95,7 +96,7 @@ class DFSSemantics(basic.StatementSemantics, SI.StatementSemantics_i):
                     found.add(current.uuid)
                     accessible   = nodesem[0].access(current, None, data=data)
                     queue       += accessible
-                    cwm.maybe_test(accessible)
+                    cwm.maybe_test([DI.StructView(x, self) for x in accessible])
 
 
     def _act(self, walk_spec:Sentence, semsys, ctxs=None, data=None):
@@ -110,10 +111,10 @@ class DFSSemantics(basic.StatementSemantics, SI.StatementSemantics_i):
 
         # TODO handle λrule.sentence.queries.$x?
 
-        cwm = ContextWalkManager(walk_spec, default.struct.root, ctxs)
+        cwm = ContextWalkManager(walk_spec, DI.StructView(default.struct.root, self), ctxs)
         with cwm:
             for start in cwm.current:
-                queue = [start._current]
+                queue = [start._current.node]
                 action : 'Value|Sentence' = start[walk_spec[-1]]
                 spec = semsys.lookup(action)
                 if isinstance(action, Sentence):
@@ -134,7 +135,7 @@ class DFSSemantics(basic.StatementSemantics, SI.StatementSemantics_i):
                     params : list[Value] = action.params
                     args   : list[Value] = [current.value] + walk_spec[-1].params
                     bind_dict = {x.key() : start[y] for x,y in zip(params, args)}
-                    node_dict = {params[0].key() : current}
+                    node_dict = {params[0].key() : DI.StructView(current, self)}
 
                     working_ctx = ctxs.subctx(None,
                                               val_binds=bind_dict,

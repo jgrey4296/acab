@@ -31,9 +31,13 @@ Operator    = 'ProductionOperator'
 Value       = AT.Value
 Statement   = AT.Instruction
 Sen         = AT.Sentence
-Node        = AT.Node
+Node        = AT.StructView
 
 class ConstraintMeta(type(Protocol)):
+    """
+    Prepares data for the ConstraintCollection, running a sieve on the passed in
+    word to group tests togther
+    """
     def __init__(cls, name:str, bases:tuple[type, ...], data:dict[str,Any]):
         super(ConstraintMeta, cls).__init__(name, bases, data)
 

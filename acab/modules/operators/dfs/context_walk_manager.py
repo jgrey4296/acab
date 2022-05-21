@@ -131,9 +131,9 @@ class ContextWalkManager(CtxInt.CtxManager_i):
 
             # Handle successes
             # success, so copy and extend ctx instance
-            bound_ctxs += self._current_inst.bind(constraints.source,
-                                                  successes,
-                                                  sub_binds=constraints["sub_struct_binds"])
+            bound_ctxs += self._current_inst.progress(constraints.source,
+                                                      successes,
+                                                      sub_binds=constraints["sub_struct_binds"])
 
         return bound_ctxs
 

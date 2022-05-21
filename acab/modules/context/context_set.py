@@ -37,7 +37,7 @@ Operator         = 'ProductionOperator'
 Value            = AT.Value
 Statement        = AT.Instruction
 Sen              = AT.Sentence
-Node             = AT.Node
+Node             = AT.StructView
 ModuleFragment   = AT.ModuleFragment
 NamedCtxSet      = "NamedCtxSet"
 
@@ -75,21 +75,21 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i, metaclass=ContextMeta):
         """
         # TODO if selection == root? then use empty root context
         # TODO selection:slice|List[UUIDs|CtxIns]|bool|None
-        if selection is None:
-            selection     = self._active
-        elif all([isinstance(x, CtxIns) for x in selection]):
+        val_binds  = val_binds or {}
+        node_binds = node_binds or {}
+        selection  = selection or self._active
+
+        if all([isinstance(x, CtxIns) for x in selection]):
             selection     = [x.uuid for x in selection]
 
         # Get anything based on specified selection
         selection = [x.uuid for x in self.active_list() if x._lineage.intersection(selection)]
         # Construct the mapping for the subctx, while binding
         if not bool(selection):
-            initial       = self.instance_constructor().bind_dict(val_binds, node_binds)
-            selection     = [initial.uuid]
-            obj_selection = {x.uuid : x for x in [initial]}
+            initial       = self.instance_constructor().progress(val_binds, node_binds)
+            obj_selection = {x.uuid : x for x in initial}
         else:
-            rebound = [self._total[x].bind_dict(val_binds, node_binds) for x in selection]
-            selection = [x.uuid for x in rebound]
+            rebound = [self._total[x].progress(val_binds, node_binds)[0] for x in selection]
             obj_selection = {x.uuid : x for x in rebound}
 
 
@@ -98,7 +98,7 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i, metaclass=ContextMeta):
         subctx = ContextSet(_operators=self._operators,
                             _parent=self,
                             _total=obj_selection,
-                            _active=selection)
+                            _active=list(obj_selection.keys()))
 
         # register merge of subctx into self (controllable param)
         self.delay(self.delayed_e.MERGE, val=subctx)
