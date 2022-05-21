@@ -21,6 +21,9 @@ from acab.modules.parsing.exlo.parsers import RuleParser as RP
 from acab.modules.parsing.exlo.parsers import TotalParser as TotalP
 from acab.modules.parsing.exlo.parsers import TransformParser as TP
 
+__all__ = ['EXLO_Parser']
+# TODO change this file to `module`
+
 logging                = logmod.getLogger(__name__)
 config                 = AcabConfig()
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()

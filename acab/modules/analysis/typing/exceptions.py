@@ -45,6 +45,9 @@ class AcabUnifySieveFailure(AcabTypingException):
 class AcabUnifyVariableInconsistencyException(AcabTypingException):
     msg : str = field(default="Inconsistent Variable Found")
 
+    def __str__(self):
+        return f"{self.msg} : {self.left} : {self.right}"
+
 @dataclass(repr=False)
 class TypeRedefinitionException(AcabTypingException):
     msg : str = field(default="Type Redefinition Attempt")

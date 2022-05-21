@@ -19,6 +19,7 @@ from acab.core.config.config import AcabConfig
 from acab.core.value.value_meta import ValueMeta
 from acab.error.base import AcabBasicException
 from acab.error.protocol import AcabProtocolError as APE
+from acab.error.semantic import AcabOperatorMissingException
 from acab.interfaces.value import ValueFactory
 
 logging        = logmod.getLogger(__name__)
@@ -87,3 +88,7 @@ class Sentence(SSI.SentenceProtocolsImpl, VI.Sentence_i, metaclass=ValueMeta):
             other = [other]
         words = self.words + other
         return self.copy(value=words)
+
+
+    def __call__(self, *args, **kwargs):
+        raise AcabOperatorMissingException("Attempted to call a sentence, likely instead of an operator", context=[self])

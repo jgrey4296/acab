@@ -94,17 +94,14 @@ def OperatorResultWrap(f):
     return WrapOperatorResultAsValue
 
 
-def OperatorSugar(sugar:str, prefix=None):
+def OperatorSugar(*sugar:str):
     """
     Decorates a ProductionOperator to carry a syntactic sugar annotation
     for semantic recognition.
     """
     def AnnotateOperatorWithSugar(cls:ProductionOperator):
         psugar : str = "" #"_:"
-        if prefix is not None:
-            psugar += prefix
-            psugar += "."
-        psugar += sugar
+        psugar += ".".join(sugar)
 
         cls._acab_operator_sugar = psugar
         return cls

@@ -85,6 +85,7 @@ class BasicSemanticSystem(basic.SemanticSystem, SemanticSystem_i):
             # but others continue upwards
             # self.failure(semantics, struct, instruction, ctxs, err)
             logging.warning(err)
+            raise err
         finally: # Always run exit hooks
             # TODO exit hooks would go here
             pass

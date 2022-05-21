@@ -126,7 +126,7 @@ def do_run(self, line):
     run a.rule?        : runs a unique runnable at position
     run a.rule.$x?     : runs all matching runnables bound to $x
     run $x?            : run $x from active ctxs
-    run override X SEN : run SEN with override semantics X
+    run override X SEN : run SEN with override semantics X, TODO
     """
     try:
         logging.info("------ Run Setup:")

@@ -69,6 +69,10 @@ class HandlerSystem_p(Iterable[HandlerSpec_A], Protocol):
     @abc.abstractmethod
     def verify_system(self) -> None: pass
 
+    @property
+    @abc.abstractmethod
+    def signals(self) -> list[str]: pass
+
 @runtime_checkable
 class HandlerSpec_p(Protocol):
     @abc.abstractmethod

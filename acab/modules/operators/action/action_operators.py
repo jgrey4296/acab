@@ -44,7 +44,7 @@ class AcabAssert(ActionOperator):
         # TODO enable queing?
         semSystem(params[0])
 
-@OperatorSugar("%", "action")
+@OperatorSugar("action", "%")
 class AcabPrint(ActionOperator):
 
     @OperatorArgUnWrap

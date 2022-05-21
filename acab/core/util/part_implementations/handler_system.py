@@ -212,6 +212,9 @@ class HandlerSystem(HS.HandlerSystem_i):
 
     def extend(self, modules:list[ModuleFragment]) -> None:
         raise NotImplementedError()
+    @property
+    def signals(self) -> list[str]:
+        return list(self.handler_specs.keys())
 
 @APE.assert_concrete
 class HandlerSpec(HS.HandlerSpec_i):
