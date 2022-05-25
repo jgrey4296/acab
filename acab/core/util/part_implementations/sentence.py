@@ -25,10 +25,10 @@ from acab.interfaces.sieve import AcabSieve
 logging        = logmod.getLogger(__name__)
 
 config         = AcabConfig()
-BIND_SYMBOL    = config.prepare("Symbols", "BIND")()
-FALLBACK_MODAL = config.prepare("Symbols", "FALLBACK_MODAL", actions=[config.actions_e.STRIPQUOTE])()
+BIND_SYMBOL    = config.attr.Symbols.BIND
+FALLBACK_MODAL = config.attr.Symbols.FALLBACK_MODAL
 
-UUID_CHOP      = bool(int(config.prepare("Print.Data", "UUID_CHOP")()))
+UUID_CHOP      = bool(int(config.attr.Print.Data.UUID_CHOP))
 
 T              = TypeVar('T', bound=AT.ValueCore)
 

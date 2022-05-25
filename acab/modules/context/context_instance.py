@@ -201,9 +201,6 @@ class ContextInstance(CtxInt.ContextInstance_i):
 
         return [self.copy(data=data_copy, nodes=nodes_copy)]
 
-    def bind_dict(self, val_binds:dict[str, Any]=None, node_binds:dict[str,Node]=None) -> CtxIns:
-        raise DeprecationWarning()
-
     def set_current_node(self, node):
         object.__setattr__(self, "_current", node)
         return self
