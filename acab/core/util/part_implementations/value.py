@@ -30,7 +30,8 @@ FALLBACK_MODAL = config.prepare("Symbols", "FALLBACK_MODAL", actions=[config.act
 
 UUID_CHOP      = bool(int(config.prepare("Print.Data", "UUID_CHOP")()))
 
-T              = TypeVar('T', bound=AT.ValueCore)
+SelfT = TypeVar('SelfT')
+T     = TypeVar('T', bound=AT.ValueCore)
 
 Value_A       : TypeAlias = AT.Value
 Sen_A         : TypeAlias = AT.Sentence
@@ -188,7 +189,7 @@ class _WordLiftingImpl(VI.Value_i, VP.AcabReducible_p):
     """
     Utility class to provide methods for lifting and dropping values <->instructions
     """
-    def attach_statement(self, value:Instruction_A) -> VI.Sentence_i:
+    def attach_statement(self:SelfT, value:Instruction_A) -> SelfT|Instruction_A:
         """
         Attach an unnamed statement to this value.
         Name the statement to the name of the former leaf
@@ -198,7 +199,7 @@ class _WordLiftingImpl(VI.Value_i, VP.AcabReducible_p):
         combined_data = self.data.copy()
         combined_data.update(value.data)
         value_copy = value.copy(name=self.name, data=combined_data)
-        return cast(VI.Sentence_i, value_copy)
+        return value_copy
 
 
     def to_word(self) -> Value_A:
@@ -207,9 +208,9 @@ class _WordLiftingImpl(VI.Value_i, VP.AcabReducible_p):
     def detach_statement(self):
         return (self, self)
     def from_sentences(self):
-        pass
+        raise NotImplementedError()
     def to_sentences(self):
-        pass
+        return ValueFactory.sen([self])
 
 
 
