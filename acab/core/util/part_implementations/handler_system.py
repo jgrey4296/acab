@@ -72,14 +72,17 @@ class HandlerSystem(HS.HandlerSystem_i):
 
 
     def __contains__(self, signal) -> bool:
-        if isinstance(signal, str):
-            return signal in self.handler_specs
-        elif isinstance(signal, Sentence_i):
-            return str(signal) in self.handler_specs
-        elif isinstance(signal, (HS.HandlerSpec_i, HS.Handler_i)):
-            return str(signal) in self.handler_specs
-        else:
-            raise ValueError(f"Unrecognised signal value: {signal}")
+        match signal:
+            case str():
+                return signal in self.handler_specs
+            case Sentence_i():
+                return str(signal) in self.handler_specs
+            case HS.HandlerSpec_i() | HS.Handler_i():
+                return str(signal) in self.handler_specs
+            case _ if isinstance(type(signal), EnumMeta):
+                return signal.name in self.handler_specs
+            case _:
+                raise ValueError(f"Unrecognised signal value: {signal}")
 
     def __bool__(self):
         return 1 < len(self.handler_specs)
@@ -161,7 +164,6 @@ class HandlerSystem(HS.HandlerSystem_i):
                     self._register_data(other)
                 case _:
                     raise AcabHandlerException("Attempt to register unknown type", rest=[other])
-
         return self
 
     def _register_default(self):
