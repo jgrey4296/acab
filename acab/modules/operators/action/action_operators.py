@@ -35,7 +35,7 @@ Operator = AT.Operator
 
 # TODO action operators joots
 # and/or return instructions for the semantic system
-@OperatorSugar("!!")
+@OperatorSugar(config.attr.Operator.Sugar.ASSERT)
 class AcabAssert(ActionOperator):
 
     def __call__(self, *params, data=None, semSystem=None):
@@ -44,7 +44,7 @@ class AcabAssert(ActionOperator):
         # TODO enable queing?
         semSystem(params[0])
 
-@OperatorSugar("action", "%")
+@OperatorSugar(config.attr.Operator.Sugar.PRINT)
 class AcabPrint(ActionOperator):
 
     @OperatorArgUnWrap
@@ -58,7 +58,7 @@ class AcabPrint(ActionOperator):
 
         print(total)
 
-@OperatorSugar(config.prepare("Parse", "REBIND_SUGAR")())
+@OperatorSugar(config.attr.Operator.Sugar.REBIND)
 class RebindOperator(ActionOperator):
     """ Special Operator to modify the semantic's Operator Cache,
     allowing more concise names of operators

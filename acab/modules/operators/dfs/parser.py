@@ -50,7 +50,7 @@ def build_dfs_action(s, l, toks):
 HOTLOAD_VAR    = pp.Forward()
 HOTLOAD_SEN_OP = pp.Forward()
 
-dfs_operator  = pp.Literal("ᛦ").suppress()
+dfs_operator  = pp.Literal(config.attr.Operator.Sugar.DFS).suppress()
 dfs_head      = op(HOTLOAD_VAR("root")) + dfs_operator
 
 

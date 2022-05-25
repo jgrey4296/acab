@@ -2,6 +2,7 @@
 Defintions for Core Transform Operators
 """
 from re import sub
+from acab import AcabConfig
 
 from acab.core.value.instruction import ProductionOperator
 from acab.core.util.decorators.semantic import (OperatorArgUnWrap,
@@ -9,7 +10,9 @@ from acab.core.util.decorators.semantic import (OperatorArgUnWrap,
                                                OperatorResultWrap,
                                                OperatorSugar)
 
-@OperatorSugar("~:")
+config = AcabConfig()
+
+@OperatorSugar(config.attr.Operator.Sugar.REGEX_TRANSFORM)
 class RegexOp(ProductionOperator):
 
     @OperatorArgUnWrap
@@ -23,7 +26,7 @@ class RegexOp(ProductionOperator):
         """
         return sub(pattern, replacement, value)
 
-@OperatorSugar("%:")
+@OperatorSugar(config.attr.Operator.Sugar.FORMAT)
 class FormatOp(ProductionOperator):
 
     @OperatorDataUnWrap
