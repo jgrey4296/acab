@@ -46,7 +46,7 @@ ValueData     : TypeAlias = AT.ValueData
 
 T = TypeVar('T')
 
-@APE.assert_implements(VI.Instruction_i)
+@APE.assert_implements(VI.Instruction_i, exceptions=["to_sentences"])
 class Instruction(InstructionProtocolsImpl, VI.Instruction_i, metaclass=value_meta):
     """ Instruction functions the same as AcabValue,
     but provides specific functionality for converting to/from sentences
@@ -56,7 +56,7 @@ class Instruction(InstructionProtocolsImpl, VI.Instruction_i, metaclass=value_me
 
     @classmethod
     def _preprocess(cls, *args, **kwargs):
-        assert(isinstance(args[0], (list, VI.Sentence_i, Iterable)))
+        assert(isinstance(args[0], (VI.Sentence_i, Iterable)))
         return args[0]
 
     def copy(self, **kwargs) -> Instruction_A:
@@ -70,14 +70,9 @@ class Instruction(InstructionProtocolsImpl, VI.Instruction_i, metaclass=value_me
         simple_value = VF.value(self.name, data=new_data, tags=self.tags)
         return simple_value
 
-    def to_sentences(self) -> list[VI.Sentence_i]:
-        return []
-
     @staticmethod
     def from_sentences(self, sens:list[Sen_A]) -> list[Instruction_A]:
         return cast(list[Instruction_A], sens)
-
-
 
     def do_break(self) -> None: pass
 
@@ -144,9 +139,6 @@ class ProductionComponent(Instruction):
     def op(self):
         return self.value
 
-    def bind(self, data) -> Component:
-        raise Exception("Deprecated: use acab.modules.values.binding")
-
     @property
     def has_var(self):
         if self.op.is_var:
@@ -180,10 +172,6 @@ class ProductionContainer(Instruction):
     @property
     def clauses(self):
         return self.value
-
-    def bind(self, data) -> Container:
-        raise Exception("Deprecated: use acab.modules.values.binding")
-
 
     def to_sentences(self):
         """ [ClauseA, ClauseB, ClauseC...] """
@@ -245,10 +233,6 @@ class ProductionStructure(ProductionContainer):
     @property
     def keys(self):
         return self.structure.keys()
-
-    def bind(self, data) -> PStructure:
-        raise Exception("Deprecated: use acab.modules.values.binding")
-
 
     def to_sentences(self):
         """

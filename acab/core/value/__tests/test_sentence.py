@@ -18,6 +18,7 @@ from acab.core.parsing import pyparse_dsl as ppDSL
 import acab.core.defaults.value_keys as DS
 from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue
+from acab.interfaces.value import ValueFactory as VF
 from acab.interfaces.value import Sentence_i, Value_i
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 
@@ -458,3 +459,30 @@ class SentenceTests(unittest.TestCase):
         self.assertNotEqual(val1, val2)
         self.assertTrue(val1.data['blah'])
         self.assertFalse(val2.data['blah'])
+
+
+    def test_sen_to_sentences(self):
+        sen = Sentence() << "a" << "test" << "sentence"
+        as_sens = sen.to_sentences()
+        self.assertIsInstance(as_sens, list)
+        self.assertEqual(len(as_sens), 1)
+        self.assertEqual(len(as_sens[0]), 3)
+        self.assertEqual(as_sens[0], sen)
+
+    def test_sen_to_sentences_with_var(self):
+        sen = Sentence() << "a" << VF.value("test", data={DS.BIND: True}) << "sentence"
+        as_sens = sen.to_sentences()
+        self.assertIsInstance(as_sens, list)
+        self.assertEqual(len(as_sens), 1)
+        self.assertEqual(len(as_sens[0]), 3)
+        self.assertEqual(as_sens[0], sen)
+
+    def test_sentence_params(self):
+        val = Sentence(params=["a", "b", "c"]) << "a" << "test" << "sentence"
+        self.assertTrue(all([isinstance(x, AcabValue) for x in val.params]))
+        self.assertTrue(all([x.is_var for x in val.params]))
+
+
+    def test_sentence_as_var_fail(self):
+        with self.assertRaises(TypeError):
+            Sentence(data={DS.BIND:True})

@@ -209,8 +209,9 @@ class _WordLiftingImpl(VI.Value_i, VP.AcabReducible_p):
         return (self, self)
     def from_sentences(self):
         raise NotImplementedError()
+
     def to_sentences(self):
-        return ValueFactory.sen([self])
+        return [ValueFactory.sen([self])]
 
 
 

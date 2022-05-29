@@ -18,7 +18,8 @@ import acab.core.defaults.value_keys as DS
 from acab.core.data.node import AcabNode
 from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue
-from acab.interfaces.value import Value_i
+import acab.interfaces.value as VI
+from acab.interfaces.value import ValueFactory as VF
 
 AT_BIND_S = DS.AT_BIND
 BIND_S    = DS.BIND
@@ -135,4 +136,30 @@ class AcabValueTests(unittest.TestCase):
         AcabValue.extend_core(float)
         self.assertEqual(float | AT.ValueCore, AT.ValueCore)
         val = AcabValue(2.5)
-        self.assertIsInstance(val, Value_i)
+        self.assertIsInstance(val, VI.Value_i)
+
+
+    def test_to_sentences(self):
+        val = AcabValue("Test")
+        as_sens = val.to_sentences()
+        self.assertIsInstance(as_sens, list)
+        self.assertEqual(len(as_sens), 1)
+        self.assertEqual(len(as_sens[0]), 1)
+        self.assertIsInstance(as_sens[0], VI.Sentence_i)
+        self.assertEqual(as_sens[0], "_:Test")
+
+    def test_to_sentences_var(self):
+        val = AcabValue("Test", data={DS.BIND: True})
+        as_sens = val.to_sentences()
+        self.assertIsInstance(as_sens, list)
+        self.assertEqual(len(as_sens), 1)
+        self.assertEqual(len(as_sens[0]), 1)
+        self.assertIsInstance(as_sens[0], VI.Sentence_i)
+        self.assertEqual(as_sens[0], "_:Test")
+        self.assertTrue(as_sens[0].has_var)
+
+    def test_value_params(self):
+        val = AcabValue("test", params=["a", "b", "c"])
+        self.assertTrue(all([isinstance(x, AcabValue) for x in val.params]))
+        self.assertTrue(all([x.is_var for x in val.params]))
+

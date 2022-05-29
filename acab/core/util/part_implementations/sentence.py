@@ -17,10 +17,11 @@ import acab.interfaces.protocols.value as VP
 import acab.interfaces.value as VI
 from acab import types as AT
 from acab.core.config.config import AcabConfig
-from acab.interfaces.value import ValueFactory
 from acab.core.util.decorators.util import cache
 from acab.error.base import AcabBasicException
+from acab.interfaces.context import ContextInstance_i
 from acab.interfaces.sieve import AcabSieve
+from acab.interfaces.value import ValueFactory
 
 logging        = logmod.getLogger(__name__)
 
@@ -60,25 +61,21 @@ class _SentenceBasicsImpl(VI.Sentence_i, VSI._ValueBasicsImpl, VP.ValueBasics_p)
         return "<{}::{} [{}]>".format(name_str, type_str, val_str)
 
     def __eq__(self, other):
-        if isinstance(other, str) and other[:2] == "_:":
-            # Utility for str comparison. underscore colon signifies sen str
-            return str(self) == other[2:]
-        elif isinstance(other, str):
-            # If not a sen str, just compare to the name
-            return self.key() == other
-        elif not isinstance(other, VI.Sentence_i):
-            # anything not a sentence isn't equal
-            return False
-        elif len(self) != len(other):
-            # Lengths not equal mean difference
-            return False
-        elif len(self.params) != len(other.params):
-            return False
-        elif not all([x == y for x,y in zip(self.params, other.params)]):
-            return False
-        else:
-            # finally, words match exactly
-            return all([x == y for x,y in zip(self, other)])
+        match other:
+            case str() if other[:2] == "_:":
+                # Utility for str comparison. underscore colon signifies sen str
+                return str(self) == other[2:]
+            case str():
+                # If not a sen str, just compare to the name
+                return self.key() == other
+            case VI.Sentence_i() if len(self) != len(other):
+                return False
+            case VI.Sentence_i() if len(self.params) != len(other.params):
+                return False
+            case VI.Sentence_i() if all([x == y for x,y in zip(self, other)]):
+                return True
+            case _:
+                return False
 
 
     def copy(self, **kwargs) -> Sen_A:
@@ -206,10 +203,8 @@ class _SentenceReductionImpl(VI.Sentence_i, VP.AcabReducible_p):
         return (sen_copy, statements)
 
 
-    def to_sentences(self) -> list[Sen_A]:
-        simple_sen, statements = self.detach_statement()
-        # TODO turn statements to sentences
-        return [simple_sen] #type:ignore
+    def to_sentences(self):
+        return [self]
 
     @staticmethod
     def from_sentences(self, sens:list[Sen_A]) -> list[Instruction_A]:

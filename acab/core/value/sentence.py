@@ -38,6 +38,7 @@ Instruction_A : TypeAlias = AT.Instruction
 ValueData     : TypeAlias = str
 
 @APE.assert_implements(VI.Sentence_i)
+@dataclass(frozen=True, repr=False, eq=False)
 class Sentence(SSI.SentenceProtocolsImpl, VI.Sentence_i, metaclass=ValueMeta):
     """
     A Sentence is an instruction which is idempotent on from_sentences/to_sentences
@@ -51,6 +52,10 @@ class Sentence(SSI.SentenceProtocolsImpl, VI.Sentence_i, metaclass=ValueMeta):
         assert(isinstance(value, Iterable))
         processed = [VI.ValueFactory.value(x) for x in value]
         return processed
+
+    def __post_init__(self):
+        if self.data[DS.BIND] != False:
+            raise TypeError("Sentences Shouldn't be variables")
 
     def match(self, sen:Sen_A) -> list[Tuple[Value_A, Value_A]]:
         """ Match a target sentence's variables to self's target

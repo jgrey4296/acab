@@ -47,7 +47,7 @@ T     = TypeVar('T', bound=AT.ValueCore_t, covariant=True)
 T_Cov = TypeVar('T_Cov', covariant=True)
 
 # Data ########################################################################
-@dataclass(frozen=True) #type:ignore[misc]
+@dataclass(frozen=True, repr=False, eq=False) #type:ignore[misc]
 class Value_i(VSubP.Value_p, Generic[T]):
     value  : T                    = field()
     name   : str                  = field()
@@ -77,16 +77,20 @@ class Value_i(VSubP.Value_p, Generic[T]):
     def _preprocess(cls, value):
         return value
 
+    def __post_init__(self): pass
 
-
-@dataclass(frozen=True) #type:ignore[misc]
+@dataclass(frozen=True, repr=False, eq=False) #type:ignore[misc]
 class Instruction_i(Value_i[list[Any]], VSubP.Instruction_p):
     breakpoint : bool        = field(init=False, default=False)
     # TODO add listener field for similar to breakpoint
 
+    def __post_init__(self): pass
 
-@dataclass(frozen=True) #type:ignore[misc]
+@dataclass(frozen=True, repr=False, eq=False) #type:ignore[misc]
 class Sentence_i(Instruction_i, VSubP.Sentence_p):
+
+    def __post_init__(self): pass
+
     @property
     def words(self) -> list[Value_A]:
         return self.value[:] #type:ignore
