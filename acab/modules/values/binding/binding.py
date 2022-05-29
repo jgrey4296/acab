@@ -77,6 +77,8 @@ def _bind(val, bindings, semSys=None):
             return result
         case DI.Node_i():
             return result
+        case DI.StructView():
+            return result
 
     # Run bind transforms here
     assert(isinstance(result, VI.Value_i))
@@ -173,3 +175,5 @@ def _production_structure_bind(val, data) -> AT.ProductionStructure:
     bound_struct  = {x: bind(y, data) for x,y in val.structure.items()}
 
     return val.copy(value=bound_clauses, params=bound_params, structure=bound_struct)
+
+
