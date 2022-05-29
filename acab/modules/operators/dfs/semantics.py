@@ -98,6 +98,7 @@ class DFSSemantics(basic.StatementSemantics, SI.StatementSemantics_i):
                     queue       += accessible
                     cwm.maybe_test([DI.StructView(x, self) for x in accessible])
 
+        return cwm.finished
 
     def _act(self, walk_spec:Sentence, semsys, ctxs=None, data=None):
         """
@@ -147,3 +148,5 @@ class DFSSemantics(basic.StatementSemantics, SI.StatementSemantics_i):
                     # using if bool(working_ctx):..
                     accessible   = nodesem[0].access(current, None, data=data)
                     queue       += accessible
+
+        return cwm.finished

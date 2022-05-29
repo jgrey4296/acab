@@ -10,7 +10,6 @@ from typing import cast, ClassVar, TypeVar, Generic
 
 from acab import types as AT
 from dataclasses import dataclass, field, InitVar
-from acab.modules.analysis.typing.values.acab_type import TypeStatement
 from acab.error.base import AcabException
 
 @dataclass
