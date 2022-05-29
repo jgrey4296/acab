@@ -26,7 +26,7 @@ from acab.modules.analysis.typing.unify.util import gen_f
 from acab.modules.context.context_instance import ContextInstance as CtxIns
 from acab.modules.context.context_instance import MutableContextInstance
 from acab.modules.engines.configured import exlo
-from acab.modules.operators.dfs.module import DFS_DSL
+from acab.modules.operators.dfs.module import DFSExtension
 from acab.modules.operators.dfs.semantics import DFSSemantics
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 from acab.modules.semantics.default import DEFAULT_SEMANTICS
@@ -54,7 +54,7 @@ class TypeWalkTests(unittest.TestCase):
         global dsl
         # Set up the parser to ease test setup
         dsl   = ppDSL.PyParseDSL()
-        dsl.register(EXLO_Parser).register(TypingDSL).register(DFS_DSL)
+        dsl.register(EXLO_Parser).register(TypingDSL).register(DFSExtension().build_dsl())
         dsl.build()
 
         cls.eng = exlo()

@@ -15,7 +15,7 @@ with warnings.catch_warnings():
     config = acab.setup()
     if '@pytest_ar' in globals():
         from acab.core.parsing import debug_funcs as DBF
-        DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+        # DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
 
 import acab.interfaces.value as VI
@@ -24,11 +24,12 @@ from acab.core.defaults import value_keys as DS
 from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.core.parsing.component_dsl import Component_DSL
 from acab.interfaces import fragments as FI
-from acab.modules.analysis.typing.module import TypingDSL, TypingExtension
+from acab.modules.analysis.typing.module import TypingFragment, CheckStatementFragment
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 from acab.modules.printing.default import DEFAULT_PRINTER
 from acab.modules.semantics.default import DEFAULT_SEMANTICS
 from acab.modules.operators.query import ELEM, EQ, SimpleTypeMatch
+from acab.modules.analysis.typing import exceptions as TE
 
 CtxSet = config.prepare("Imports.Targeted", "context", actions=[config.actions_e.IMCLASS], args={"interface": ContextSet_i})()
 
@@ -48,33 +49,33 @@ class TestTypingStatement(unittest.TestCase):
         cls.dsl   = ppDSL.PyParseDSL()
         cls.dsl.register(EXLO_Parser)
         cls.dsl.register(Component_DSL)
-        cls.dsl.register(TypingDSL)
+        cls.dsl.register(TypingFragment().build_dsl())
 
         cls.dsl.build()
 
 
     def test_initial(self):
-        instance = TypingExtension()
-        self.assertIsInstance(instance, TypingExtension)
+        instance = CheckStatementFragment()
+        self.assertIsInstance(instance, CheckStatementFragment)
         self.assertTrue(hasattr(instance, "signal"))
 
     def test_dsl_build(self):
-        instance = TypingExtension()
+        instance = CheckStatementFragment()
         dsl_frag = instance.build_dsl()
         self.assertIsInstance(dsl_frag, FI.DSL_Fragment_i)
 
     def test_printer_build(self):
-        instance = TypingExtension()
+        instance = CheckStatementFragment()
         print_frag = instance.build_printers()
         self.assertIsInstance(print_frag, FI.Printer_Fragment_i)
 
     def test_semantic_build(self):
-        instance = TypingExtension()
+        instance = CheckStatementFragment()
         sem_frag = instance.build_semantics()
         self.assertIsInstance(sem_frag, FI.Semantic_Fragment_i)
 
     def test_dsl(self):
-        instance = TypingExtension()
+        instance = CheckStatementFragment()
         dsl_frag = instance.build_dsl()
         self.dsl.register(dsl_frag)
         self.dsl.build()
@@ -87,7 +88,7 @@ class TestTypingStatement(unittest.TestCase):
 
     def test_print(self):
         print_sys = DEFAULT_PRINTER()
-        instance = TypingExtension()
+        instance = CheckStatementFragment()
         dsl_frag = instance.build_dsl()
         self.dsl.register(dsl_frag)
         self.dsl.build()
@@ -100,7 +101,7 @@ class TestTypingStatement(unittest.TestCase):
 
     def test_print2(self):
         print_sys = DEFAULT_PRINTER()
-        instance = TypingExtension()
+        instance = CheckStatementFragment()
         dsl_frag = instance.build_dsl()
         self.dsl.register(dsl_frag)
         self.dsl.build()
@@ -111,13 +112,13 @@ class TestTypingStatement(unittest.TestCase):
         result = print_sys.pprint(instr)
         self.assertEqual(result, "⊢ a.different!sen ∈ blah!bloo")
 
-    def test_semantics(self):
+    def test_semantics_simple(self):
         semsys = DEFAULT_SEMANTICS()
-        semsys.register(TypingExtension().build_semantics())
-        self.dsl.register(TypingExtension().build_dsl()).build()
+        semsys.register(CheckStatementFragment().build_semantics())
+        self.dsl.register(CheckStatementFragment().build_dsl()).build()
 
-        a_sen = self.dsl("a.test.sen(::a.def).sub.blah")[0]
-        type_ = self.dsl("a.def(::σ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0]
+        a_sen = self.dsl("a.test.other(::a.def).sub.blah")[0]
+        type_ = self.dsl("a.def(::σ):\n sub.$x(::test)\nend")[0]
         instr = self.dsl['transform.statement'].parse_string('⊢ @x ∈ $y')[0]
 
         semsys(a_sen)
@@ -127,9 +128,92 @@ class TestTypingStatement(unittest.TestCase):
 
         semsys(self.dsl("a.test.$x?")[0], ctxs=ctxs)
         semsys(self.dsl("a.$y(== TYPE_DEF)?")[0], ctxs=ctxs)
-        breakpoint()
+        result = semsys(instr, ctxs=ctxs)
+
+
+    def test_semantics(self):
+        semsys = DEFAULT_SEMANTICS()
+        semsys.register(CheckStatementFragment().build_semantics())
+        self.dsl.register(CheckStatementFragment().build_dsl()).build()
+
+        a_sen = self.dsl("a.test.sen(::a.def).sub.blah")[0]
+        sen_2 = self.dsl("a.test.sen(::a.def).other.awg(::blah)")[0]
+        type_ = self.dsl("a.def(::σ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0]
+        instr = self.dsl['transform.statement'].parse_string('⊢ @x ∈ $y')[0]
+
+        semsys(a_sen)
+        semsys(sen_2)
+        semsys(type_)
+
+        ctxs = CtxSet(CtxSet.instance_constructor(data={"∈": ELEM(), "==": SimpleTypeMatch()}))
+
+        semsys(self.dsl("a.test.$x?")[0], ctxs=ctxs)
+        semsys(self.dsl("a.$y(== TYPE_DEF)?")[0], ctxs=ctxs)
+        result = semsys(instr, ctxs=ctxs)
+
+    def test_semantics_fail(self):
+        semsys = DEFAULT_SEMANTICS()
+        semsys.register(CheckStatementFragment().build_semantics())
+        self.dsl.register(CheckStatementFragment().build_dsl()).build()
+
+        a_sen = self.dsl("a.test.sen(::a.def).sub.blah(::bad)")[0]
+        sen_2 = self.dsl("a.test.sen(::a.def).other.awg(::blah)")[0]
+        type_ = self.dsl("a.def(::σ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0]
+        instr = self.dsl['transform.statement'].parse_string('⊢ @x ∈ $y')[0]
+
+        semsys(a_sen)
+        semsys(sen_2)
+        semsys(type_)
+
+        ctxs = CtxSet(CtxSet.instance_constructor(data={"∈": ELEM(), "==": SimpleTypeMatch()}))
+
+        semsys(self.dsl("a.test.$x?")[0], ctxs=ctxs)
+        semsys(self.dsl("a.$y(== TYPE_DEF)?")[0], ctxs=ctxs)
+        with self.assertRaises(TE.AcabTypingException):
+            semsys(instr, ctxs=ctxs)
+
+    def test_semantics_fail_2(self):
+        semsys = DEFAULT_SEMANTICS()
+        semsys.register(CheckStatementFragment().build_semantics())
+        self.dsl.register(CheckStatementFragment().build_dsl()).build()
+
+        a_sen = self.dsl("a.test.sen(::a.def).sub.blah")[0]
+        sen_2 = self.dsl("a.test.sen(::a.def).other.awg(::bloo)")[0]
+        type_ = self.dsl("a.def(::σ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0]
+        instr = self.dsl['transform.statement'].parse_string('⊢ @x ∈ $y')[0]
+
+        semsys(a_sen)
+        semsys(sen_2)
+        semsys(type_)
+
+        ctxs = CtxSet(CtxSet.instance_constructor(data={"∈": ELEM(), "==": SimpleTypeMatch()}))
+
+        semsys(self.dsl("a.test.$x?")[0], ctxs=ctxs)
+        semsys(self.dsl("a.$y(== TYPE_DEF)?")[0], ctxs=ctxs)
+        with self.assertRaises(TE.AcabTypingException):
+            semsys(instr, ctxs=ctxs)
+
+    def test_semantics_subtype(self):
+        semsys = DEFAULT_SEMANTICS()
+        semsys.register(CheckStatementFragment().build_semantics())
+        self.dsl.register(CheckStatementFragment().build_dsl()).build()
+
+        a_sen = self.dsl("a.test.sen(::a.def).sub.blah")[0]
+        sen_2 = self.dsl("a.test.sen(::a.def).other.awg(::blah.bloo)")[0]
+        type_ = self.dsl("a.def(::σ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0]
+        instr = self.dsl['transform.statement'].parse_string('⊢ @x ∈ $y')[0]
+
+        semsys(a_sen)
+        semsys(sen_2)
+        semsys(type_)
+
+        ctxs = CtxSet(CtxSet.instance_constructor(data={"∈": ELEM(), "==": SimpleTypeMatch()}))
+
+        semsys(self.dsl("a.test.$x?")[0], ctxs=ctxs)
+        semsys(self.dsl("a.$y(== TYPE_DEF)?")[0], ctxs=ctxs)
         semsys(instr, ctxs=ctxs)
-        pass
+
+
 
 
 if __name__ == '__main__':

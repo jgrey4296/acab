@@ -93,7 +93,7 @@ class TestParser(unittest.TestCase):
 
     def test_simple_operator_def(self):
         """ Test an operator type definition """
-        result = TDP.OP_DEF.parse_string("c(::λ): $q.$w.$e => +")[0]
+        result = TDP.OP_DEF.parse_string("c(::λ): $q $w $e => +")[0]
         self.assertIsInstance(result, OperatorDefinition)
         self.assertEqual(result.type, util.OPERATOR_DEFINITION)
 
@@ -102,12 +102,12 @@ class TestParser(unittest.TestCase):
     def test_simple_operator_def_fail(self):
         """ Test an operator type definition without variable params """
         with self.assertRaises(AssertionError):
-            TDP.OP_DEF.parse_string("c(::λ): q.w.e => +")[0]
+            TDP.OP_DEF.parse_string("c(::λ): q w e => +")[0]
 
 
     def test_simple_type_class(self):
         """ Test a type class definition """
-        result = TDP.TYPE_CLASS_DEF.parse_string("class(::γ):\n a.b.c(::λ): $q.$w.$e => +\n q.w.e(::λ): $w.$e.$r => -\nend")[0]
+        result = TDP.TYPE_CLASS_DEF.parse_string("class(::γ):\n a.b.c(::λ): $q $w $e => +\n q.w.e(::λ): $w $e $r => -\nend")[0]
         self.assertIsInstance(result, TypeClass)
         self.assertTrue(len(result.structure), 2)
         self.assertEqual(result.type, util.TYPE_CLASS)
