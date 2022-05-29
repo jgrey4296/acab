@@ -13,10 +13,10 @@ from acab.core.parsing.annotation import ValueAnnotation
 from acab.core.parsing.consts import s, s_key
 from acab.interfaces import value as VI
 from acab.modules.analysis.typing import util as TYU
-from acab.modules.analysis.typing.values.definition import (OperatorDefinition,
-                                                            SumTypeDefinition,
-                                                            TypeClass,
-                                                            TypeDefinition)
+from acab.modules.analysis.typing.values import (OperatorDefinition,
+                                                 SumTypeDefinition,
+                                                 TypeClass,
+                                                 TypeDefinition)
 
 config          = AcabConfig()
 TYPE_INSTANCE_S = DS.TYPE_INSTANCE

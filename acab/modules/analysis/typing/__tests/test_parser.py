@@ -21,10 +21,10 @@ from acab.core.value.sentence import Sentence
 from acab.modules.analysis.typing import util as TYU
 from acab.modules.analysis.typing.parsing import TypeDefParser as TDP
 from acab.modules.analysis.typing.parsing import TypeParser as TP
-from acab.modules.analysis.typing.values.definition import (OperatorDefinition,
-                                                            SumTypeDefinition,
-                                                            TypeClass,
-                                                            TypeDefinition)
+from acab.modules.analysis.typing.values import (OperatorDefinition,
+                                                 SumTypeDefinition,
+                                                 TypeClass,
+                                                 TypeDefinition)
 from acab.modules.parsing.exlo.parsers import FactParser as FP
 from acab.modules.analysis.typing import util
 

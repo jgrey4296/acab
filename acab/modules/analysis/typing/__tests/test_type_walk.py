@@ -19,7 +19,7 @@ from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue
 from acab.interfaces.context import ContextSet_i
 from acab.modules.analysis.typing import exceptions as TE
-from acab.modules.analysis.typing.module import TypingDSL
+from acab.modules.analysis.typing.module import TypingFragment
 from acab.modules.analysis.typing.unify import type_unify_fns as tuf
 from acab.modules.analysis.typing.unify import unifier
 from acab.modules.analysis.typing.unify.util import gen_f
@@ -54,7 +54,7 @@ class TypeWalkTests(unittest.TestCase):
         global dsl
         # Set up the parser to ease test setup
         dsl   = ppDSL.PyParseDSL()
-        dsl.register(EXLO_Parser).register(TypingDSL).register(DFSExtension().build_dsl())
+        dsl.register(EXLO_Parser).register(TypingFragment().build_dsl()).register(DFSExtension().build_dsl())
         dsl.build()
 
         cls.eng = exlo()

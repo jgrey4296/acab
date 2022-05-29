@@ -213,6 +213,46 @@ class TestTypingStatement(unittest.TestCase):
         semsys(self.dsl("a.$y(== TYPE_DEF)?")[0], ctxs=ctxs)
         semsys(instr, ctxs=ctxs)
 
+    def test_semantics_subtype_matching(self):
+        semsys = DEFAULT_SEMANTICS()
+        semsys.register(CheckStatementFragment().build_semantics())
+        self.dsl.register(CheckStatementFragment().build_dsl()).build()
+
+        a_sen = self.dsl("a.test.sen(::a.def).sub.blah(::test)")[0]
+        sen_2 = self.dsl("a.test.sen(::a.def).other.awg(::blah.bloo)")[0]
+        type_ = self.dsl("a.def(::σ):\n sub.$x(::test)\n other.$y(::blah)\nend")[0]
+        instr = self.dsl['transform.statement'].parse_string('⊢ @x ∈ $y')[0]
+
+        semsys(a_sen)
+        semsys(sen_2)
+        semsys(type_)
+
+        ctxs = CtxSet(CtxSet.instance_constructor(data={"∈": ELEM(), "τ=": SimpleTypeMatch()}))
+
+        semsys(self.dsl("a.test.$x?")[0], ctxs=ctxs)
+        semsys(self.dsl("a.$y(::TYPE_DEF)?")[0], ctxs=ctxs)
+        semsys(instr, ctxs=ctxs)
+
+    def test_semantics_subtype_matching(self):
+        semsys = DEFAULT_SEMANTICS()
+        semsys.register(CheckStatementFragment().build_semantics())
+        self.dsl.register(CheckStatementFragment().build_dsl()).build()
+
+        a_sen = self.dsl("a.test.sen(::a.def).sub.blah(::test)")[0]
+        type_ = self.dsl("a.def(::τ)")[0]
+        instr = self.dsl['transform.statement'].parse_string('⊢ @x ∈ $y')[0]
+
+        semsys(a_sen)
+        semsys(type_)
+
+        ctxs = CtxSet(CtxSet.instance_constructor(data={"∈": ELEM(), "τ=": SimpleTypeMatch()}))
+
+        semsys(self.dsl("a.test.$x?")[0], ctxs=ctxs)
+        semsys(self.dsl("a.$y(::TYPE_DEF, ∈ def)?")[0], ctxs=ctxs)
+        with self.assertRaises(TE.AcabTypingException):
+            semsys(instr, ctxs=ctxs)
+
+
 
 
 
