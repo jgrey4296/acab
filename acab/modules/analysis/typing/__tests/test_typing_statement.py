@@ -233,7 +233,7 @@ class TestTypingStatement(unittest.TestCase):
         semsys(self.dsl("a.$y(::TYPE_DEF)?")[0], ctxs=ctxs)
         semsys(instr, ctxs=ctxs)
 
-    def test_semantics_subtype_matching(self):
+    def test_semantics_subtype_matching2(self):
         semsys = DEFAULT_SEMANTICS()
         semsys.register(CheckStatementFragment().build_semantics())
         self.dsl.register(CheckStatementFragment().build_dsl()).build()
