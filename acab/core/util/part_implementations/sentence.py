@@ -29,7 +29,8 @@ config         = AcabConfig()
 BIND_SYMBOL    = config.attr.Symbols.BIND
 FALLBACK_MODAL = config.attr.Symbols.FALLBACK_MODAL
 
-UUID_CHOP      = bool(int(config.attr.Print.Data.UUID_CHOP))
+UUID_CHOP  = bool(int(config.attr.Print.Data.UUID_CHOP))
+ANON_VALUE = config.attr.Symbols.ANON_VALUE
 
 T              = TypeVar('T', bound=AT.ValueCore)
 
@@ -218,7 +219,18 @@ class _SentenceReductionImpl(VI.Sentence_i, VP.AcabReducible_p):
 
 
     def to_sentences(self):
-        return [self]
+        # TODO return self, *and* constraints as function sentences
+        base = VI.ValueFactory.sen()
+        sens = []
+        sens.append(base << self.__class__.__name__ << self.name << self.type << str(self.uuid))
+        if isinstance(self[-1], VI.Instruction_i):
+            sens.append(self[:-1])
+            sens += self[-1].to_sentences()
+        else:
+            sens.append(self[:])
+        sens.append(base << "end" << str(self.uuid))
+        return sens
+
 
     @staticmethod
     def from_sentences(self, sens:list[Sen_A]) -> list[Instruction_A]:

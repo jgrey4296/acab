@@ -104,9 +104,3 @@ class ContainerTests(unittest.TestCase):
         container = PO.ProductionContainer(["a", "b", "c"])
         for x,y in zip(container, ["a","b","c"]):
             self.assertEqual(x,y)
-
-
-
-    @unittest.skip
-    def test_container_to_sentences(self):
-        pass

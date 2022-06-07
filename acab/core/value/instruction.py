@@ -59,6 +59,10 @@ class Instruction(InstructionProtocolsImpl, VI.Instruction_i, metaclass=value_me
         assert(isinstance(args[0], (VI.Sentence_i, Iterable)))
         return args[0]
 
+    def __post_init__(self):
+        if self.data[DS.BIND] != False:
+            raise TypeError("Sentences Shouldn't be variables")
+
     def copy(self, **kwargs) -> Instruction_A:
         return replace(self, uuid=uuid1(), **kwargs)
 
@@ -72,7 +76,7 @@ class Instruction(InstructionProtocolsImpl, VI.Instruction_i, metaclass=value_me
 
     @staticmethod
     def from_sentences(self, sens:list[Sen_A]) -> list[Instruction_A]:
-        return cast(list[Instruction_A], sens)
+        raise NotImplementedError()
 
     def do_break(self) -> None: pass
 
@@ -81,7 +85,7 @@ class Instruction(InstructionProtocolsImpl, VI.Instruction_i, metaclass=value_me
         return bool(self.breakpoint)
 
 @APE.assert_implements(VI.Instruction_i)
-@dataclass(frozen=True)
+@dataclass(frozen=True, repr=False)
 class ProductionComponent(Instruction):
     """ Pairs a an operator with some bindings
     equivalent to a sentence of:
@@ -124,29 +128,19 @@ class ProductionComponent(Instruction):
         """
         Sentence([op_path].[param1.param2.param3...].result)
         """
-        words = []
-        words.append(self.value.copy(name="Operator"))
-        if bool(self.params):
-            words.append(VF.sen(self.params, name="Params"))
+        base = VI.ValueFactory.sen()
+        sens = []
+        sens.append(base << self.__class__.__name__ << self.name << self.type << str(self.uuid))
+        sens.append(base << "operator" << self.op)
+        sens.append(base << "params" << self.params)
         if self.rebind:
-            words.append(self.rebind.copy(name="Rebind"))
-        return VF.sen(words, data=self.data.copy(), name=self.__class__.__name__)
+            sens.append(base << "rebind" << self.rebind)
+        sens.append(base << "end" << str(self.uuid))
+        return sens
 
     @staticmethod
     def from_sentences(sens):
-        result = []
-        for sen in sens:
-            if sen.name != ProductionComponent.__name__:
-                continue
-            if "Operator" not in sen:
-                continue
-
-            comp   = sen['Operator'][:]
-            params = sen['Params'].words if 'Params' in sen else []
-            rebind = sen['Rebind'].copy(name=None) if 'Rebind' in sen else None
-            result.append(ProductionComponent(comp, params=params, rebind=rebind))
-
-        return result
+        raise NotImplementedError()
 
     @property #type:ignore
     @cache
@@ -165,7 +159,7 @@ class ProductionComponent(Instruction):
         return False
 
 @APE.assert_implements(VI.Instruction_i)
-@dataclass(frozen=True)
+@dataclass(frozen=True, repr=False)
 class ProductionContainer(Instruction):
     """ Production Container: An applicable statement of multiple component clauses
     Clauses can be sentences, or ProductionComponents
@@ -189,21 +183,21 @@ class ProductionContainer(Instruction):
 
     def to_sentences(self):
         """ [ClauseA, ClauseB, ClauseC...] """
-        words = []
+        base = VI.ValueFactory.sen()
+        sens = []
+        sens.append(base << self.__class__.__name__ << self.name << self.type << str(self.uuid))
         for clause in self.clauses:
             if isinstance(clause, VI.Sentence_i):
-                words.append(clause)
+                sens.append(clause)
             elif isinstance(clause, Instruction):
-                words += clause.to_sentences()
+                sens += clause.to_sentences()
 
-        return [VF.sen(words,
-                       data=self.data.copy(),
-                       name=self.__class__.__name__)]
-
+        sens.append(base << "end" << str(self.uuid))
+        return sens
 
 
 @APE.assert_implements(VI.Instruction_i)
-@dataclass(frozen=True)
+@dataclass(frozen=True, repr=False)
 class ProductionStructure(ProductionContainer):
     """
     A ProductionContainer, supplemented by a dictionary
@@ -249,28 +243,25 @@ class ProductionStructure(ProductionContainer):
 
     def to_sentences(self):
         """
-        [prefix.[ClauseA],
-         prefix.[ClauseB..],
-         prefixB.[ClauseX],
-         prefixB.[Clause,Y],
-         prefixC.[..]
-        ..]
+        <section>
+        <clause>
+        <clause>
+        <section>
+        <clause>
+        ...
         """
-        clauses = []
-        for key in self.keys():
-            words = []
+        base = VI.ValueFactory.sen()
+        sens = []
+        sens.append(base << self.__class__.__name__ << self.name << self.type << str(self.uuid))
+        for key in self.keys:
             clause = self[key]
             if isinstance(clause, VI.Sentence_i):
-                words.append(clause)
+                sens.append(clause)
             elif isinstance(clause, Instruction):
-                words += clause.to_sentences()
+                sens += clause.to_sentences()
 
-            clauses.append(VF.sen(words, name=key))
-
-        return [VF.sen([clauses],
-                       data=self.data.copy(),
-                       name=self.__class__.__name__)]
-
+        sens.append(base << "end" << str(self.uuid))
+        return sens
 
 @APE.assert_implements(VI.Operator_i, exceptions=["__call__"])
 class ProductionOperator(ValueProtocolsImpl, VI.Operator_i, metaclass=value_meta):

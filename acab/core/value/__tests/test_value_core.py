@@ -139,25 +139,6 @@ class AcabValueTests(unittest.TestCase):
         self.assertIsInstance(val, VI.Value_i)
 
 
-    def test_to_sentences(self):
-        val = AcabValue("Test")
-        as_sens = val.to_sentences()
-        self.assertIsInstance(as_sens, list)
-        self.assertEqual(len(as_sens), 1)
-        self.assertEqual(len(as_sens[0]), 1)
-        self.assertIsInstance(as_sens[0], VI.Sentence_i)
-        self.assertEqual(as_sens[0], "_:Test")
-
-    def test_to_sentences_var(self):
-        val = AcabValue("Test", data={DS.BIND: True})
-        as_sens = val.to_sentences()
-        self.assertIsInstance(as_sens, list)
-        self.assertEqual(len(as_sens), 1)
-        self.assertEqual(len(as_sens[0]), 1)
-        self.assertIsInstance(as_sens[0], VI.Sentence_i)
-        self.assertEqual(as_sens[0], "_:Test")
-        self.assertTrue(as_sens[0].has_var)
-
     def test_value_params(self):
         val = AcabValue("test", params=["a", "b", "c"])
         self.assertTrue(all([isinstance(x, AcabValue) for x in val.params]))

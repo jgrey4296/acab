@@ -184,39 +184,6 @@ class SentenceTests(unittest.TestCase):
         self.assertIsInstance(sen3.words[-1], Sentence_i)
         self.assertEqual(len(sen3.words[-1]), 2)
 
-    @unittest.skip
-    def test_bind(self):
-        """ Check variables can be bound in a sentence, building a new sentence """
-        val = Sentence(["a","test","value"])
-        var = Sentence(["var"])
-        var[0].data.update({DS.BIND : True})
-        sen = val.add(var)
-
-        bound = sen.bind({"var" : "blah"})
-
-        self.assertNotEqual(sen.uuid, bound.uuid)
-        self.assertFalse(bound[-1].is_var)
-        self.assertEqual(bound[-1].value, "blah")
-
-    @unittest.skip
-    def test_bind_nop(self):
-        """ Check a sentence binding doesn't create a new sentence unless it has to """
-        val = Sentence(["a","test","value"])
-        var = Sentence(["var"])
-        var[0].data.update({DS.BIND: True})
-        val[2].data.update({DS.BIND : True})
-        sen = val.add(var)
-
-        bound = sen.bind({"not_var" : "blah"})
-
-        self.assertEqual(sen,bound)
-        self.assertTrue(bound[2].is_var)
-        self.assertTrue(bound[-1].is_var)
-        self.assertEqual(bound[-1].value, "var")
-
-        # self.assertEqual(sen.uuid, bound.uuid)
-
-
     def test_get_item_slice(self):
         """ Check a subset of a sentence can be extracted as a new sentence """
         val = Sentence(["a","test","value"])
@@ -461,22 +428,6 @@ class SentenceTests(unittest.TestCase):
         self.assertTrue(val1.data['blah'])
         self.assertFalse(val2.data['blah'])
 
-
-    def test_sen_to_sentences(self):
-        sen = Sentence() << "a" << "test" << "sentence"
-        as_sens = sen.to_sentences()
-        self.assertIsInstance(as_sens, list)
-        self.assertEqual(len(as_sens), 1)
-        self.assertEqual(len(as_sens[0]), 3)
-        self.assertEqual(as_sens[0], sen)
-
-    def test_sen_to_sentences_with_var(self):
-        sen = Sentence() << "a" << VF.value("test", data={DS.BIND: True}) << "sentence"
-        as_sens = sen.to_sentences()
-        self.assertIsInstance(as_sens, list)
-        self.assertEqual(len(as_sens), 1)
-        self.assertEqual(len(as_sens[0]), 3)
-        self.assertEqual(as_sens[0], sen)
 
     def test_sentence_params(self):
         val = Sentence(params=["a", "b", "c"]) << "a" << "test" << "sentence"

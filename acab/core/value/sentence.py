@@ -63,6 +63,7 @@ class Sentence(SSI.SentenceProtocolsImpl, VI.Sentence_i, metaclass=ValueMeta):
 
         eg: _:$x.b.$y match _:a.b.c -> [(x, a), (y, c)]
         """
+        raise DeprecationWarning()
         # TODO this should be a controllable / utility function
         results : list[Tuple[Value_A, Value_A]] = []
         if self.is_var:

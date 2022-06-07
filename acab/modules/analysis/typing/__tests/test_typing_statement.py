@@ -249,11 +249,38 @@ class TestTypingStatement(unittest.TestCase):
 
         semsys(self.dsl("a.test.$x?")[0], ctxs=ctxs)
         semsys(self.dsl("a.$y(::TYPE_DEF, ∈ def)?")[0], ctxs=ctxs)
-        with self.assertRaises(TE.AcabTypingException):
-            semsys(instr, ctxs=ctxs)
+
+        result = semsys(instr, ctxs=ctxs)
+
+    def test_semantics_operator_matching(self):
+        """
+        Check
+        """
+        semsys = DEFAULT_SEMANTICS()
+        semsys.register(CheckStatementFragment().build_semantics())
+        self.dsl.register(CheckStatementFragment().build_dsl()).build()
+
+        trans_sen = self.dsl("a.test.transform(::χ): \n λan.op.def test.sen val.$var -> $y \nend")[0]
+        type_     = self.dsl("an.op.def(::λ): $x $y $z")[0]
+        instr     = self.dsl['transform.statement'].parse_string('⊢ @x')[0]
+
+        semsys(trans_sen)
+        semsys(type_)
+
+        ctxs = CtxSet(CtxSet.instance_constructor(data={"∈": ELEM(), "τ=": SimpleTypeMatch()}))
+
+        semsys(self.dsl("a.test.$x?")[0], ctxs=ctxs)
+        semsys(self.dsl("an.op.$y?")[0], ctxs=ctxs)
+
+        breakpoint()
+        result = semsys(instr, ctxs=ctxs)
+        pass
 
 
-
+    def test_instructions_to_sentences(self):
+        result = self.dsl("a.test.rule(::ρ):\n a.b.c?\n d.e.f?\n\n λx.y.z $x $y -> $z\n\n !! a.b.c\nend")[0]
+        result2 = self.dsl("a.test.rule(::ρ):\n λx.y.z a.b.$x z.y.q.$y -> $z\n\n !! a.b.c\nend")[0]
+        breakpoint()
 
 
 if __name__ == '__main__':
