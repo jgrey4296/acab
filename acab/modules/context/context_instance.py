@@ -121,6 +121,9 @@ class ContextInstance(CtxInt.ContextInstance_i):
         binds  = ", ".join([x for x in self.data.keys()])
         return f"(CtxInst: Bindings: {binds})"
 
+    @property
+    def current_node(self):
+        return self._current
     def copy(self, **kwargs):
         logging.debug("Copied Ctx Instance")
         if 'data' not in kwargs:
@@ -339,3 +342,7 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
 
     def __iter__(self):
         raise NotImplementedError("Iteration on a MutableContextInstance is nonsensical")
+
+    @property
+    def current_node(self):
+        self.base.current_node

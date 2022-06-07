@@ -89,7 +89,9 @@ class ContextInstance_i(Hashable, Collection[Value], AcabFinishable_p, Protocol)
     def progress(self, word:Value|dict[str, Any], nodes:list[Node]|dict[str|Node], sub_binds=None) -> list[CtxIns]: pass
     @abc.abstractmethod
     def finish(self) -> Any: pass
-
+    @property
+    @abc.abstractmethod
+    def current_node(self) -> Node: pass
 @dataclass(frozen=True) #type:ignore[misc]
 class Constraint_i(_Constraint_p):
     source         : Value               = field()
