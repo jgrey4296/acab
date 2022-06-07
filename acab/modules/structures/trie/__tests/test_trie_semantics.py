@@ -16,6 +16,8 @@ import warnings
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
+    from acab.modules.operators.query.query_operators import (EQ, AlwaysMatch,
+                                                              SimpleTypeMatch)
 
 from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.data.node import AcabNode

@@ -2,9 +2,9 @@
 """
 A Template for the bare minimum to get a working engine
 """
-from acab import setup
+import acab
 
-config = setup()
+config = acab.setup()
 
 from acab.modules.engines.configured import exlo
 

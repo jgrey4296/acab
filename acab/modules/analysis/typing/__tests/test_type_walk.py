@@ -5,14 +5,14 @@ import warnings
 from functools import partial
 from os.path import split, splitext
 
-from acab import setup
+import acab
 
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
-    config = setup()
+    config = acab.setup()
+    from acab.core.parsing import pyparse_dsl as ppDSL
 
 from acab.core.data.acab_struct import AcabNode
-from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.core.defaults.value_keys import BIND
 from acab.core.value.instruction import Instruction
 from acab.core.value.sentence import Sentence

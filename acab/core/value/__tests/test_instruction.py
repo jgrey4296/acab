@@ -14,12 +14,12 @@ from typing import (TYPE_CHECKING, Any, Callable, ClassVar, Final, Generic,
                     runtime_checkable)
 import warnings
 
-from acab import setup
+import acab
 from acab import types as AT
 
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
-    config = setup()
+    config = acab.setup()
 
 import acab.core.defaults.value_keys as DS
 from acab.core.value import instruction as PO

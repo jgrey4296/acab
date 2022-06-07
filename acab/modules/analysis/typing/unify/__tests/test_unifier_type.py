@@ -7,14 +7,15 @@ import unittest.mock as mock
 import warnings
 from os.path import split, splitext
 
-from acab import setup
+import acab
 
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
-    config = setup()
+    config = acab.setup()
+    from acab.core.parsing import pyparse_dsl as ppDSL
 
+from acab.interfaces import value as VI
 import acab.core.defaults.value_keys as DS
-from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.core.parsing.annotation import ValueAnnotation
 from acab.core.value.value import AcabValue
 from acab.modules.analysis.typing.module import TypingFragment

@@ -17,6 +17,7 @@ import warnings
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
+    from acab.modules.operators.query.query_operators import EQ, NEQ, HasTag
 
 import acab.core.defaults.value_keys as DS
 import acab.modules.semantics.statements as ASem
