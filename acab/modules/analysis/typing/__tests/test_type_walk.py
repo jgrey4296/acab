@@ -1,3 +1,6 @@
+"""
+Check trie walking
+"""
 import logging as logmod
 import unittest
 import unittest.mock as mock

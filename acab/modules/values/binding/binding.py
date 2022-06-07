@@ -81,7 +81,7 @@ def _bind(val, bindings, semSys=None):
             return result
 
     # Run bind transforms here
-    assert(isinstance(result, VI.Value_i))
+    assert(isinstance(result, VI.Value_i)), result
     data_to_apply = val.data.copy()
     data_to_apply.update({DS.BIND: False})
     # TODO may need to remove type if its atom too

@@ -1,3 +1,6 @@
+"""
+Check the components of type checking work, manually
+"""
 from __future__ import annotations
 
 import logging as logmod

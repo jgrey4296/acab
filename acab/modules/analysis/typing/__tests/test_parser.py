@@ -1,3 +1,6 @@
+"""
+Check the parser for assigning and describing types works
+"""
 from __future__ import annotations
 
 import logging as logmod

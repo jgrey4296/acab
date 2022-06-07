@@ -30,8 +30,6 @@ from acab.interfaces.value import ValueFactory
 from acab.modules.context import context_delayed_actions
 from acab.modules.context.context_set import (ConstraintCollection,
                                               ContextInstance, ContextSet)
-from acab.modules.operators.query.query_operators import (EQ, AlwaysMatch,
-                                                          SimpleTypeMatch)
 from acab.modules.semantics.values import (BasicNodeSemantics,
                                            ExclusionNodeSemantics)
 from acab.modules.structures.trie.semantics import FlattenBreadthTrieSemantics

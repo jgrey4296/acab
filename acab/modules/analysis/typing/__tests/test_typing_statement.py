@@ -1,3 +1,6 @@
+"""
+Test the typing checking extension
+"""
 import logging as logmod
 import unittest
 import warnings
@@ -55,31 +58,37 @@ class TestTypingStatement(unittest.TestCase):
 
 
     def test_initial(self):
+        """ The Fragment can be created """
         instance = CheckStatementFragment()
         self.assertIsInstance(instance, CheckStatementFragment)
         self.assertTrue(hasattr(instance, "signal"))
 
     def test_dsl_build(self):
+        """ The dsl can be built """
         instance = CheckStatementFragment()
         dsl_frag = instance.build_dsl()
         self.assertIsInstance(dsl_frag, FI.DSL_Fragment_i)
 
     def test_printer_build(self):
+        """ The printer can be built """
         instance = CheckStatementFragment()
         print_frag = instance.build_printers()
         self.assertIsInstance(print_frag, FI.Printer_Fragment_i)
 
     def test_semantic_build(self):
+        """ The semantics can be built """
         instance = CheckStatementFragment()
         sem_frag = instance.build_semantics()
         self.assertIsInstance(sem_frag, FI.Semantic_Fragment_i)
 
     def test_dsl(self):
+        """ The dsl builds a sentence correctly """
         instance = CheckStatementFragment()
         dsl_frag = instance.build_dsl()
         self.dsl.register(dsl_frag)
         self.dsl.build()
         result = dsl_frag.handlers[0]("⊢ a.b.c ∈ d.e.f")[0]
+        self.assertIsInstance(result, VI.Sentence_i)
         self.assertEqual(result.data[DS.SEMANTIC_HINT], "TYPE_CHECK")
         self.assertIn("loc", result)
         self.assertIn("def", result)
@@ -87,6 +96,7 @@ class TestTypingStatement(unittest.TestCase):
         self.assertIsInstance(result['def'], VI.Sentence_i)
 
     def test_print(self):
+        """ The Printer works  """
         print_sys = DEFAULT_PRINTER()
         instance = CheckStatementFragment()
         dsl_frag = instance.build_dsl()
@@ -100,6 +110,7 @@ class TestTypingStatement(unittest.TestCase):
         self.assertEqual(result, "⊢ a.b.c ∈ d.e.f")
 
     def test_print2(self):
+        """ The printer works on exclusion sentences """
         print_sys = DEFAULT_PRINTER()
         instance = CheckStatementFragment()
         dsl_frag = instance.build_dsl()
@@ -112,7 +123,25 @@ class TestTypingStatement(unittest.TestCase):
         result = print_sys.pprint(instr)
         self.assertEqual(result, "⊢ a.different!sen ∈ blah!bloo")
 
+
+    def test_print_vars(self):
+        """ The printer works on @vars"""
+        print_sys = DEFAULT_PRINTER()
+        instance = CheckStatementFragment()
+        dsl_frag = instance.build_dsl()
+        self.dsl.register(dsl_frag)
+        self.dsl.build()
+        instr = dsl_frag.handlers[0]("⊢ @x ∈ $y")[0]
+
+        printer  = instance.build_printers()
+        print_sys.register(printer)
+        result = print_sys.pprint(instr)
+        self.assertEqual(result, "⊢ @x ∈ $y")
+
     def test_semantics_simple(self):
+        """
+        Check a simple type checks
+        """
         semsys = DEFAULT_SEMANTICS()
         semsys.register(CheckStatementFragment().build_semantics())
         self.dsl.register(CheckStatementFragment().build_dsl()).build()
@@ -132,6 +161,9 @@ class TestTypingStatement(unittest.TestCase):
 
 
     def test_semantics(self):
+        """
+        Check a subtrie type checks
+        """
         semsys = DEFAULT_SEMANTICS()
         semsys.register(CheckStatementFragment().build_semantics())
         self.dsl.register(CheckStatementFragment().build_dsl()).build()
@@ -152,6 +184,9 @@ class TestTypingStatement(unittest.TestCase):
         result = semsys(instr, ctxs=ctxs)
 
     def test_semantics_fail(self):
+        """
+        Check a badly typed sentence complains
+        """
         semsys = DEFAULT_SEMANTICS()
         semsys.register(CheckStatementFragment().build_semantics())
         self.dsl.register(CheckStatementFragment().build_dsl()).build()
@@ -173,6 +208,9 @@ class TestTypingStatement(unittest.TestCase):
             semsys(instr, ctxs=ctxs)
 
     def test_semantics_fail_2(self):
+        """
+
+        """
         semsys = DEFAULT_SEMANTICS()
         semsys.register(CheckStatementFragment().build_semantics())
         self.dsl.register(CheckStatementFragment().build_dsl()).build()
@@ -194,6 +232,9 @@ class TestTypingStatement(unittest.TestCase):
             semsys(instr, ctxs=ctxs)
 
     def test_semantics_subtype(self):
+        """
+        Check a subtype matches a supertype
+        """
         semsys = DEFAULT_SEMANTICS()
         semsys.register(CheckStatementFragment().build_semantics())
         self.dsl.register(CheckStatementFragment().build_dsl()).build()
@@ -214,6 +255,9 @@ class TestTypingStatement(unittest.TestCase):
         semsys(instr, ctxs=ctxs)
 
     def test_semantics_subtype_matching(self):
+        """
+
+        """
         semsys = DEFAULT_SEMANTICS()
         semsys.register(CheckStatementFragment().build_semantics())
         self.dsl.register(CheckStatementFragment().build_dsl()).build()
@@ -233,7 +277,11 @@ class TestTypingStatement(unittest.TestCase):
         semsys(self.dsl("a.$y(::TYPE_DEF)?")[0], ctxs=ctxs)
         semsys(instr, ctxs=ctxs)
 
+
     def test_semantics_subtype_matching2(self):
+        """
+        Check
+        """
         semsys = DEFAULT_SEMANTICS()
         semsys.register(CheckStatementFragment().build_semantics())
         self.dsl.register(CheckStatementFragment().build_dsl()).build()

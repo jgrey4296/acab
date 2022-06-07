@@ -47,7 +47,6 @@ class RegMatch(ProductionOperator):
 @OperatorSugar(config.attr.Operator.Sugar.ELEM)
 class ELEM(ProductionOperator):
 
-    @OperatorArgUnWrap
     def __call__(self, a:Value, b:Sentence, *, data=None, ctx=None):
         return a in b
 

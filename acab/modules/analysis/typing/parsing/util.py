@@ -67,7 +67,6 @@ def make_op_def(toks):
     if SYNTAX_BIND_S in toks:
         syntax_bind = toks[SYNTAX_BIND_S]
 
-
     op_def = OperatorDefinition(op_params[:], sugar_syntax=syntax_bind)
 
     return op_def
