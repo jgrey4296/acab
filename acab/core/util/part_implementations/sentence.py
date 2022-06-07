@@ -44,29 +44,33 @@ class _SentenceBasicsImpl(VI.Sentence_i, VSI._ValueBasicsImpl, VP.ValueBasics_p)
     """
     @cache
     def __str__(self):
-        return "{}".format(FALLBACK_MODAL.join([str(x) for x in self.words]))
+        if self.name != ANON_VALUE:
+            return f"'{self.name}'"
+
+        words = [f"{x}" for x in self.words]
+        return "[{}]".format(FALLBACK_MODAL.join(words))
 
     @cache
     def __repr__(self):
-        name_str = self.key()
-        val_str  = str(self)
+        if len(self) == 1 and self.type == "_:SENTENCE":
+            return f"<[{self[0]}]>"
 
-        if self.is_at_var:
-            name_str = BIND_SYMBOL + name_str
-        elif self.is_var:
-            name_str = BIND_SYMBOL + name_str
+        name_str = self.name
+        words    = [f"{x}" for x in self.words]
+        val_str  = "[{}]".format(FALLBACK_MODAL.join(words))
 
-        type_str = str(self.type)
+        type_str = "::" + str(self.type) if self.type != "_:SENTENCE" else ""
 
-        return "<{}::{} [{}]>".format(name_str, type_str, val_str)
+
+        return "<{}{} {}>".format(name_str, type_str, val_str)
 
     def __eq__(self, other):
         match other:
             case str() if other[:2] == "_:":
                 # Utility for str comparison. underscore colon signifies sen str
-                return str(self) == other[2:]
+                return str(self) == f"[{other[2:]}]"
             case str():
-                # If not a sen str, just compare to the name
+                # If not a sen str, just compare to the key
                 return self.key() == other
             case VI.Sentence_i() if len(self) != len(other):
                 return False
@@ -77,6 +81,10 @@ class _SentenceBasicsImpl(VI.Sentence_i, VSI._ValueBasicsImpl, VP.ValueBasics_p)
             case _:
                 return False
 
+
+    def key(self) -> str:
+        words = [f"{x}" for x in self.words]
+        return "[{}]".format(FALLBACK_MODAL.join(words))
 
     def copy(self, **kwargs) -> Sen_A:
         if 'value' not in kwargs:
@@ -132,9 +140,15 @@ class _SentenceVariableTestsImpl(VI.Sentence_i, VP.VariableTests_p):
 class _SentenceCollectionImpl(VI.Sentence_i, Collection):
 
     def __contains__(self, value) -> bool:
-        assert(isinstance(value, (str, VI.Value_i)))
-        words = cast(list[VI.Value_i], self.words)
-        return value in words or value in [x.name for x in words]
+        match value:
+            case str():
+                return value in self.words
+            case VI.Sentence_i():
+                return value.key() in self.words
+            case VI.Value_i():
+                return value.key() in self.words
+            case _:
+                raise TypeError("Unknown type passed to Sentence.contains")
 
     def __len__(self):
         return len(self.words)

@@ -153,9 +153,13 @@ def whole_sentence_bind(first, second, ctx, unifier=None):
     Early exit if all you have is a variable
     """
     result = unify_enum.NA
-    if first.is_var and ctx[first] == ATOM:
+    if first.is_var and len(first) == 1 and ctx[first[0]] == ATOM:
+        result = unify_enum.END
+    elif first.is_var and ctx[first] == ATOM:
         result = unify_enum.END
     elif not first.is_var and util.top_var(first, ctx) == ATOM:
+        result = unify_enum.END
+    elif second.is_var and len(second) == 1 and ctx[second[0]] == ATOM:
         result = unify_enum.END
     elif second.is_var and (ctx[second] == ATOM):
         result = unify_enum.END
@@ -249,8 +253,10 @@ def unify_type_sens(logic, index, first, second, ctx, unifier=None):
 
     logging.debug("Passed unification, binding general over specific")
     # Update the var in ctx, or update a tight binding of the object
-    f_key = canon_f_t if canon_f_t.is_var else str(first[:index+1])
-    s_key = canon_s_t if canon_s_t.is_var else str(first[:index+1])
+    # *only* the left hand / real type can be updated,
+    # hence why both use str(first[:index...
+    f_key = canon_f_t[0] if canon_f_t.is_var else str(first[:index+1])
+    s_key = canon_s_t[0] if canon_s_t.is_var else str(first[:index+1])
 
     # Bind the more general type over the more specific type
     update_typing = min((type_len(canon_f_t), s_key, canon_f_t),

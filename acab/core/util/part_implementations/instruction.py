@@ -43,21 +43,14 @@ class _InstructionBasicsImpl(VI.Instruction_i, VSI._ValueBasicsImpl, VP.ValueBas
     """
     @cache
     def __str__(self):
-        return "{}".format(FALLBACK_MODAL.join([str(x) for x in self.value]))
+        # return "{}".format(FALLBACK_MODAL.join([str(x) for x in self.value]))
+        return f"'{self.name}'"
+
 
     @cache
     def __repr__(self):
-        name_str = self.key()
-        val_str  = len(self.value)
-
-        if self.is_at_var:
-            name_str = BIND_SYMBOL + name_str
-        elif self.is_var:
-            name_str = BIND_SYMBOL + name_str
-
-        type_str = str(self.type)
-
-        return "<{}::{} [{}]>".format(name_str, type_str, val_str)
+        type_str = f"::{self.type}" if self.type != f"_:{self.name}" else ""
+        return f"<{self.key()}{type_str} ({len(self.value)})>"
 
     def __eq__(self, other):
         if isinstance(other, str) and other[:2] == "_:":

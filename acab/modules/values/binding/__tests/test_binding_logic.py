@@ -177,7 +177,7 @@ class BindingLogicTests(unittest.TestCase):
         result = Bind.bind(source, ctx)
         self.assertIsInstance(result, VI.Value_i)
         self.assertNotEqual(source, result)
-        self.assertEqual(result, "_:a.test.sentence.blah")
+        self.assertEqual(result, "_:a.test.[sentence.blah]")
         self.assertEqual(len(result), 3)
         self.assertIsInstance(result[-1], VI.Sentence_i)
 

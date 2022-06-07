@@ -57,8 +57,8 @@ def _bind(val, bindings, semSys=None):
                 result = val
             case VI.Sentence_i() if val.is_at_var:
                 result = _bind_node(val, current)
-            case VI.Sentence_i(), val.is_var:
-                result = _bind_val(val[0])
+            case VI.Sentence_i() if val.is_var:
+                result = _bind_val(val[0], current)
             case VI.Sentence_i():
                 result = _sen_bind(val, current)
             case VI.Value_i():

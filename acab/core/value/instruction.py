@@ -98,7 +98,21 @@ class ProductionComponent(Instruction):
 
 
     def __post_init__(self):
-        assert(isinstance(self.value, VI.Sentence_i)), self.value
+        super(ProductionComponent, self).__post_init__()
+        if not isinstance(self.value, VI.Sentence_i):
+            raise TypeError("Production Components need a sentence for targeting an operator")
+
+    def __repr__(self):
+        name_str = self.key()
+        type_str = f"::{self.type}" if self.type != f"_:{self.name}" else ""
+        val_str = f"op: {self.op}"
+        val_str += f" params: ({len(self.params)})"
+        if self.rebind is not None:
+            val_str += f" rebind: {self.rebind}"
+
+
+        return "<{}{} {}>".format(name_str, type_str, val_str)
+
 
     def __len__(self):
         return 1
@@ -213,12 +227,11 @@ class ProductionStructure(ProductionContainer):
 
     @cache
     def __repr__(self):
-        actual  = [x for x in self.keys if x in self]
-        clauses = ";".join(["({}:{})".format(x,
-                                             [str(z) for z in self[x].clauses])
-                            for x in actual])
+        clause_keys = [x for x in self.keys if bool(self[x])]
 
-        return "<ProductionStructure:{}:{}>".format(self.name, clauses)
+        return "<{}::{} : {{{}}}>".format(self.name,
+                                      str(self.type),
+                                      ";".join(clause_keys))
 
     @cache
     def __hash__(self):

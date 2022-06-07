@@ -227,10 +227,10 @@ class UnifierTests(unittest.TestCase):
         self.assertEqual(ctx_r.y, "_:aweg.awg")
         self.assertEqual(sen1c[-2], "sentence")
         self.assertEqual(sen1c[-1].type, "_:aweg.awg")
-        self.assertEqual(sen1c[-2].type, "_:blah.aweg.awg")
+        self.assertEqual(sen1c[-2].type, "_:blah.[aweg.awg]")
         self.assertEqual(sen1c[-2].type[-1], "_:aweg.awg")
         self.assertEqual(sen2c[-1].type, "_:aweg.awg")
-        self.assertEqual(sen2c[-2].type, "_:blah.aweg.awg")
+        self.assertEqual(sen2c[-2].type, "_:blah.[aweg.awg]")
         self.assertEqual(sen2c[-2].type[-1], "_:aweg.awg")
 
         self.assertNotEqual(sen1c[2].type, sen1[2].type)

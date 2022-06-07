@@ -205,7 +205,7 @@ class StatementSemanticTests(unittest.TestCase):
         transform_sem = ASem.TransformAbstraction().as_handler(signal=TRANSFORM_SIGNAL)
         action_sem    = ASem.ActionAbstraction().as_handler(signal=ACTION_SIGNAL)
         stub_sem      = StubAbsSemantic().as_handler(signal=DEFAULT_HANDLER_SIGNAL)
-        con_sem       = ASem.ContainerAbstraction().as_handler(signal="CONTAINER")
+        con_sem       = ASem.ContainerAbstraction().as_handler(signal="[CONTAINER]")
 
         semSys        = BasicSemanticSystem(init_specs=all_specs,
                                             init_handlers=[transform_sem,
@@ -214,12 +214,9 @@ class StatementSemanticTests(unittest.TestCase):
                                                            con_sem]
                                             )
 
-        # Operator Context
-        op_ctx             = ContextInstance(data={"transform" : TestTransform(),
-                                                   "action"    : TestAction()})
-
         # Add data to eval context
-        ctx_set     = ContextSet(op_ctx)
+        ctx_set     = ContextSet({"[transform]" : TestTransform(),
+                                  "[action]"    : TestAction()})
         init_ctx    = ctx_set.pop()
         updated_ctx = init_ctx.progress({"x" : AcabValue("test")}, {})
         ctx_set.push(updated_ctx)
@@ -281,9 +278,8 @@ class StatementSemanticTests(unittest.TestCase):
 
         # Setup operators in context
         trans_instance     = RegexOp()
-        op_ctx             = ContextInstance(data={"action": TestAction(),
-                                                   "regex" : trans_instance})
-        ctx_set            = ContextSet(op_ctx)
+        ctx_set            = ContextSet({"[action]": TestAction(),
+                                         "[regex]" : trans_instance})
 
         # Construct Rule
         query_sen                  = Sentence(["a", "test", "x"])

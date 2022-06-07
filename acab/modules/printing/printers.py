@@ -21,7 +21,7 @@ config = AcabConfig()
 
 ANNOTATIONS = [config.prepare("Value.Structure", x, _type=Enum)() for x in config.prepare("Print.Annotations", _type=list)()]
 ATOM_HINT   = DSig.ATOM
-TYPE_BASE   = config.prepare("Data", "TYPE_BASE")()
+TYPE_BASE   = "_:" + config.prepare("Data", "TYPE_BASE")()
 
 SEN_SEN     = VF.sen([DS.SENTENCE_PRIM])
 
@@ -363,10 +363,10 @@ class SimpleTypePrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
     def __call__(self, value, top=None, data=None):
         return_list = []
         # TODO or suppression types
-        if str(value.type) == TYPE_BASE:
+        if value.type == TYPE_BASE:
             return []
 
-        type_str = str(value.type)
+        type_str = value.type
         return_list.append("::")
         # TODO handle aliasees
         return_list.append(type_str)

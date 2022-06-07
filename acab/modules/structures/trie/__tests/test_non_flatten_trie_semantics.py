@@ -159,7 +159,7 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem.insert(sen, trie_struct)
         trie_sem.insert(sen2, trie_struct)
         # Construct context set
-        ctx_set = ContextSet()
+        ctx_set = ContextSet(ops={"[τ=]": SimpleTypeMatch()})
         # Construct query sentence
         query_sen = ValueFactory.sen(["a", "test", "sentence"])
         # Run query
@@ -180,7 +180,7 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem.insert(sen, trie_struct)
         trie_sem.insert(sen2, trie_struct)
         # Construct context set
-        ctx_set = ContextSet()
+        ctx_set = ContextSet(ops={"[τ=]": SimpleTypeMatch()})
         # Construct query sentence
         query_sen = ValueFactory.sen(["a", "test", "x"])
         query_sen[-1].data[BIND_V] = True
@@ -202,7 +202,7 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem.insert(sen, trie_struct)
         trie_sem.insert(sen2, trie_struct)
         # Construct context set
-        ctx_set = ContextSet()
+        ctx_set = ContextSet(ops={"[τ=]": SimpleTypeMatch()})
         # Construct query sentence
         query_sen = ValueFactory.sen(["a", "x", "x"])
         query_sen[-2].data[BIND_V] = True
@@ -226,8 +226,7 @@ class TrieSemanticTests(unittest.TestCase):
         # Construct context set for operators
         op_loc_path       = ValueFactory.sen(["EQ"], data={DS.TYPE_INSTANCE: DS.OPERATOR})
         operator_instance = EQ()
-        op_ctx            = ContextInstance(data={str(op_loc_path): operator_instance})
-        ctx_set           = ContextSet(op_ctx)
+        ctx_set           = ContextSet({str(op_loc_path): operator_instance})
         # Construct query sentence
         query_sen = ValueFactory.sen(["a", "test", "x"])
         query_sen[-1].data[BIND_V] = True
@@ -447,8 +446,7 @@ class TrieSemanticTests(unittest.TestCase):
         sen2.data[DS.FLATTEN] = False
         # call to_sentences
         operator_instance = SimpleTypeMatch()
-        op_ctx            = ContextInstance(data={"τ=": operator_instance})
-        ctx_set           = ContextSet(op_ctx)
+        ctx_set           = ContextSet({"[τ=]": operator_instance})
         results           = trie_sem.query(sen2, trie_struct, ctxs=ctx_set)
         # check
         self.assertEqual(len(results), 1)
@@ -471,9 +469,7 @@ class TrieSemanticTests(unittest.TestCase):
         sen2 = ValueFactory.sen(["a", Sentence(["not", "match"])])
         sen2.data[DS.FLATTEN] = False
         # call to_sentences
-        operator_instance = SimpleTypeMatch()
-        op_ctx            = ContextInstance(data={"τ=": operator_instance})
-        ctx_set           = ContextSet(op_ctx)
+        ctx_set = ContextSet({"[τ=]": SimpleTypeMatch()})
         results = trie_sem.query(sen2, trie_struct, ctxs=ctx_set)
         # check
         self.assertEqual(len(results), 0)

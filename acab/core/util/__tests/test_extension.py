@@ -166,7 +166,7 @@ class TestExampleExtension(unittest.TestCase):
         self.dsl.build()
         self.assertIn(dsl_frag.handlers[0], self.dsl.handler_specs['sentence.ends'].handlers)
         result = self.dsl("a.b.c.-[ blah ]-")
-        self.assertEqual(result[0], "_:a.b.c.blah")
+        self.assertEqual(result[0], "_:a.b.c.[blah]")
         self.assertIn("test_constructor", result[0][-1].data)
 
     def test_printer1(self):
@@ -217,7 +217,7 @@ class TestExampleExtension(unittest.TestCase):
         instr = self.dsl("-[ test ]-")[0][-1]
         self.assertIsNone(instance.sem_val)
         sem_sys(instr)
-        self.assertEqual(instance.sem_val, "test")
+        self.assertEqual(instance.sem_val, "[test]")
 
     def test_semantics2(self):
         instance = ExampleExtension()
@@ -230,7 +230,7 @@ class TestExampleExtension(unittest.TestCase):
         instr = self.dsl("-[ blah ]-")[0][-1]
         self.assertIsNone(instance.sem_val)
         sem_sys(instr)
-        self.assertEqual(instance.sem_val, "blah")
+        self.assertEqual(instance.sem_val, "[blah]")
 
 
 

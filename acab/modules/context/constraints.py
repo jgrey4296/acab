@@ -98,7 +98,7 @@ class ConstraintCollection(CtxInt.Constraint_i, metaclass=ConstraintMeta):
         # TODO separate this into sieve, then move to contextset?
         if stack is None:
             stack = []
-        if self.operators not in stack:
+        if self.operators is not None and self.operators not in stack:
             stack.append(self.operators)
 
         result = Bind.bind(val, stack, None)

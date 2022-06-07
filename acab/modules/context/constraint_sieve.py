@@ -17,7 +17,7 @@ from acab.core.value.sentence import Sentence
 from acab.interfaces.value import ValueFactory as VF
 
 config        = AcabConfig()
-ATOM          = config.prepare("Data", "TYPE_BASE")()
+ATOM          = "_:" + config.prepare("Data", "TYPE_BASE")()
 
 
 TYPE_OP_SEN = VF.sen(["τ="], data={TYPE_INSTANCE: OPERATOR})
@@ -26,7 +26,7 @@ default_sieve = [
     lambda x: (False, "alpha", [test for test in x.data[CONSTRAINT] if not test.has_var]) if CONSTRAINT in x.data else None,
     lambda x: (False, "beta", [test for test in x.data[CONSTRAINT] if test.has_var]) if CONSTRAINT in x.data else None,
     lambda x: (False, "name", [x]) if x.is_var else None,
-    lambda x: (False, "sub_struct_tests", [ProductionComponent(value=TYPE_OP_SEN, params=[x.type])]) if str(x.type) != ATOM else None,
+    lambda x: (False, "sub_struct_tests", [ProductionComponent(value=TYPE_OP_SEN, params=[x.type])]) if x.type != ATOM else None,
     lambda x: (False, "sub_struct_binds", [("type", x.type)]) if x.type.has_var else None,
 ]
 

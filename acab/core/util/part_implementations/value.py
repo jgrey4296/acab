@@ -54,11 +54,9 @@ class _ValueBasicsImpl(VI.Value_i, VP.ValueBasics_p):
         elif self.is_var:
             name_str = BIND_SYMBOL + name_str
 
-        type_str = str(self.type)
-        if self.type.is_var:
-            type_str = BIND_SYMBOL + type_str
+        type_str = f"::{BIND_SYMBOL if self.type.is_var else ''}{self.type}" if self.type != "_:ATOM" else ""
 
-        return "<{}::{}>".format(name_str, type_str)
+        return "<{}{}>".format(name_str, type_str)
 
 
     def __hash__(self):

@@ -69,7 +69,7 @@ class SenValTests(unittest.TestCase):
         result = self.dsl("a.test.[[sub.sentence]]")[0]
         self.assertIsInstance(result, VI.Sentence_i)
         self.assertIsInstance(result[-1], VI.Sentence_i)
-        self.assertEqual(result, "_:a.test.sub.sentence")
+        self.assertEqual(result, "_:a.test.[sub.sentence]")
         self.assertEqual(result[-1], "_:sub.sentence")
 
     def test_basic_flatten(self):
@@ -85,7 +85,7 @@ class SenValTests(unittest.TestCase):
         flat = result.flatten()
         self.assertIsInstance(flat, VI.Sentence_i)
         self.assertIsInstance(flat[-1], VI.Sentence_i)
-        self.assertEqual(flat, "_:a.test.sub.sentence")
+        self.assertEqual(flat, "_:a.test.[sub.sentence]")
         self.assertEqual(flat[-1], "_:sub.sentence")
 
     def test_basic_sharp_head(self):
@@ -95,5 +95,5 @@ class SenValTests(unittest.TestCase):
         flat = result.flatten()
         self.assertIsInstance(flat, VI.Sentence_i)
         self.assertIsInstance(flat[-1], VI.Sentence_i)
-        self.assertEqual(flat, "_:a.test.sub.sentence")
+        self.assertEqual(flat, "_:a.test.[sub.sentence]")
         self.assertEqual(flat[-1], "_:sub.sentence")

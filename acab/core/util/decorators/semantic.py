@@ -100,10 +100,10 @@ def OperatorSugar(*sugar:str):
     for semantic recognition.
     """
     def AnnotateOperatorWithSugar(cls:ProductionOperator):
-        psugar : str = "" #"_:"
-        psugar += ".".join(sugar)
+        # psugar : str = "" #"_:"
+        # psugar += ".".join(sugar)
 
-        cls._acab_operator_sugar = psugar
+        cls._acab_operator_sugar = VF.sen() << list(sugar)
         return cls
 
     return AnnotateOperatorWithSugar

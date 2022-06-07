@@ -21,7 +21,8 @@ name_sieve_fns = [
     lambda x: x['name'],
     class_name_fn,
     lambda x: x['value'].pattern if isinstance(x['value'], Pattern) else None,
-    lambda x: '"{}"'.format(".".join([str(y) for y in x['value']])) if isinstance(x['value'], list) else None,
+    # lambda x: '"{}"'.format(".".join([str(y) for y in x['value']])) if isinstance(x['value'], list) else None,
+    lambda x: ANON_VALUE if isinstance(x['value'], list) else None,
     lambda x: ANON_VALUE if isinstance(x['value'], VI.Instruction_i) else None,
     lambda x: str(x['value']) if x['value'] is not None else None,
     lambda x: ANON_VALUE

@@ -100,12 +100,12 @@ class TestWalkSemantics(unittest.TestCase):
         test_var   = AcabValue("y", data={BIND: True})
         ValueRepeatAnnotation(CONSTRAINT,
                               ProductionComponent(Sentence(["∈"], data={DS.TYPE_INSTANCE: DS.OPERATOR}),
-                                                  params=[AcabValue("blah")]))(test_var)
+                                                  params=[VF.sen(["blah"])]))(test_var)
 
         query_sen = Sentence([source_var, test_var],
-                             data={SEM_HINT : "WALK", QUERY: True})
+                             data={SEM_HINT : "[WALK]", QUERY: True})
         query = ProductionContainer(value=[query_sen],
-                                    data={SEM_HINT : "QUERY"})
+                                    data={SEM_HINT : "[QUERY]"})
 
         # call walk
         result = self.eng(query, ctxset=ctxs)
@@ -131,12 +131,12 @@ class TestWalkSemantics(unittest.TestCase):
 
         ValueRepeatAnnotation(CONSTRAINT,
                               ProductionComponent(Sentence(["∈"], data={DS.TYPE_INSTANCE: DS.OPERATOR}),
-                                                  params=[AcabValue("blah")]))(test_var)
+                                                  params=[VF.sen(["blah"])]))(test_var)
 
         query_sen = Sentence([source_var, test_var],
-                             data={SEM_HINT : "WALK", QUERY: True})
+                             data={SEM_HINT : "[WALK]", QUERY: True})
         query = ProductionContainer(value=[query_sen],
-                                    data={SEM_HINT : "QUERY"})
+                                    data={SEM_HINT : "[QUERY]"})
 
         # call walk
         result = self.eng(query, ctxset=ctxs)
@@ -164,12 +164,12 @@ class TestWalkSemantics(unittest.TestCase):
 
         ValueRepeatAnnotation(CONSTRAINT,
                               ProductionComponent(Sentence(["∈"], data={DS.TYPE_INSTANCE: DS.OPERATOR}),
-                                                  params=[AcabValue("blah")]))(test_var)
+                                                  params=[VF.sen(["blah"])]))(test_var)
 
         query_sen = Sentence([source_var, test_var],
-                             data={SEM_HINT : "WALK", QUERY: True})
+                             data={SEM_HINT : "[WALK]", QUERY: True})
         query = ProductionContainer(value=[query_sen],
-                                    data={SEM_HINT : "QUERY"})
+                                    data={SEM_HINT : "[QUERY]"})
 
         # call walk
         result = self.eng(query, ctxset=ctxs)
@@ -190,9 +190,9 @@ class TestWalkSemantics(unittest.TestCase):
                               ProductionComponent(Sentence(["∈"], data={DS.TYPE_INSTANCE: DS.OPERATOR}),
                                                   params=[Sentence(["blah"])]))(test_var)
 
-        query_sen = Sentence([test_var], data={SEM_HINT: "WALK", QUERY: True})
+        query_sen = Sentence([test_var], data={SEM_HINT: "[WALK]", QUERY: True})
         query = ProductionContainer(value=[query_sen],
-                                    data={SEM_HINT : "QUERY"})
+                                    data={SEM_HINT : "[QUERY]"})
 
         # call walk
         result = self.eng(query)
@@ -224,9 +224,9 @@ class TestWalkSemantics(unittest.TestCase):
 
 
         query_sen = Sentence([source_var, test_var],
-                             data={SEM_HINT : "WALK", QUERY: True})
+                             data={SEM_HINT : "[WALK]", QUERY: True})
         query = ProductionContainer(value=[query_sen],
-                                    data={SEM_HINT : "QUERY"})
+                                    data={SEM_HINT : "[QUERY]"})
 
         # call walk
         result = self.eng(query, ctxset=ctxs)
