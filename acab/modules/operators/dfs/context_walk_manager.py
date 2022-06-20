@@ -51,6 +51,7 @@ class ContextWalkManager(CtxInt.CtxManager_i):
     constraints   : list[ConstraintCollection] = field(init=False, default_factory=list)
 
     _current_inst       : CtxIns               = field(init=False, default=None)
+    _required_bindings  : list[str]            = field(init=False, default_factory=list)
 
     def __post_init__(self):
         sen = self.target_clause
@@ -59,6 +60,9 @@ class ContextWalkManager(CtxInt.CtxManager_i):
             start = 1
         constraints = [ConstraintCollection(x, operators=self.ctxs._operators) for x in sen[start:]]
         self.constraints.extend(constraints)
+
+        # preprare required_binding list
+        self._required_bindings = [str(x.source) for x in constraints if x.source.is_var]
 
     def __enter__(self):
         # set all instances to start at node, unless start_word is an at_binding,
@@ -94,48 +98,64 @@ class ContextWalkManager(CtxInt.CtxManager_i):
         active_ctxs = self.ctxs.active_list(clear=True)
         for ctx in active_ctxs:
             self._current_inst = ctx
-            self.activate_ctxs()
             yield ctx
 
+        self.activate_ctxs()
 
-    def maybe_test(self, possible:list[Node]):
+
+    def maybe_test(self, possible:list[StructView], ctx=None):
         if not bool(possible):
-            return
+            return []
 
-        results = self.test(possible)
-        self.queue_ctxs(results)
+        ctx = ctx or self._current_inst
 
-    def test(self, possible: list[Node]):
+        succs, fails = self.test(possible, ctx=ctx)
+        # queue the ctxs if they are full
+        full    = [x for x in succs if all([y in x for y in self._required_bindings])]
+        to_fill = [x for x in succs if x not in full]
+        self.queue_ctxs(full)
+        # return failures with the original ctx,
+        # and incomplete ctxs
+        unbound = [(ctx, x) for x in fails]
+        return to_fill + unbound
+
+
+    def test(self, possible: list[StructView], ctx=None) -> tuple[list[CtxIns], list[StructView]]:
         """
-        run a word's tests on available nodes, with an instance.
+        run a word's tests on available nodes, with current ctx instance.
         bind successes and return them
-
-        constraints can be provided, or extracted from the test word
-
         """
+        ctx = ctx or self._current_inst
 
         # [ctxs.test(ctxIns, accessible, x) for x in tests]
 
         logging.debug(f"{repr(self)}: Testing/Extending on {len(possible)} : {possible}")
+        successes =  {x.source.uuid: (x, []) for x in self.constraints}
         bound_ctxs = []
+        failures   = []
 
-        for constraints in self.constraints:
-            successes   = []
-            # Collect all nodes that pass tests
-            for node in possible:
+        # Try each node against constraints
+        for view in possible:
+            success = False
+            for constraints in self.constraints:
+                uuid = constraints.source.uuid
                 try:
-                    constraints.test(node, self._current_inst)
-                    successes.append(node)
+                    constraints.test(view, ctx)
+                    successes[uuid][1].append(view)
+                    success = True
+                    # don't try any more constraints
+                    break
                 except ASErr.AcabSemanticTestFailure as err:
-                    logging.debug(f"Tests failed on {node.value}:\n\t{err}")
-                    self.ctxs.fail(self._current_inst, constraints.source, node, self.target_clause)
+                    pass
 
-            # Handle successes
-            # success, so copy and extend ctx instance
-            bound_ctxs += self._current_inst.progress(constraints.source,
-                                                      successes,
-                                                      sub_binds=constraints["sub_struct_binds"])
-
-        return bound_ctxs
+            if not success:
+                failures.append(view)
 
 
+        for result_group in successes.values():
+            constraints, succs = result_group
+            bound_ctxs += ctx.progress(constraints.source,
+                                       succs,
+                                       sub_binds=constraints["sub_struct_binds"])
+
+        return bound_ctxs, failures

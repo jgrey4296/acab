@@ -32,9 +32,11 @@ Handler = config.prepare("Imports.Targeted", "handler", actions=[config.actions_
 DSL_Spec     = ppDSL.PyParse_Spec
 DSL_Handler  = ppDSL.PyParse_Handler
 
-WALK_SIGNAL   = Sentence() << config.attr.Semantic.Signals.WALK
-QUERY_SIGNAL  = Sentence() << config.attr.Semantic.Signals.QUERY
-ACTION_SIGNAL = Sentence() << config.attr.Semantic.Signals.ACTION
+INSTRUCT_SIGNAL = VF.sen() << config.attr.Type.Primitive.INSTRUCT
+WALK_SIGNAL     = INSTRUCT_SIGNAL << config.attr.Semantic.Signals.WALK
+CONTAIN_SIGNAL  = INSTRUCT_SIGNAL << config.attr.Type.Primitive.CONTAINER
+QUERY_SIGNAL    = CONTAIN_SIGNAL  << config.attr.Type.Primitive.QUERY
+ACTION_SIGNAL   = CONTAIN_SIGNAL  << config.attr.Type.Primitive.ACTION
 
 # TODO printer fragment
 @dataclass

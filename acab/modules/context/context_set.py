@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 import logging as logmod
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     List, Mapping, Match, MutableMapping, Optional, Sequence,
@@ -93,6 +94,8 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i, metaclass=ContextMeta):
             rebound = [self._total[x].progress(val_binds, node_binds)[0] for x in selection]
             obj_selection = {x.uuid : x for x in rebound}
 
+        # Remove the selection from the self's active list, as its now in the child
+        self._active = [x for x in self._active if x not in selection]
 
         assert(all([isinstance(x, CtxIns) for x in obj_selection.values()]))
         assert(all([isinstance(x, UUID) for x in selection]))
@@ -125,19 +128,20 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i, metaclass=ContextMeta):
         a named/continuation set (using the instruction that named it)
         """
         result = None
-        if isinstance(index, int):
-            ctx_uuid = self._active[index]
-            result   = self._total[ctx_uuid]
-        elif isinstance(index, UUID):
-            result = self._total[index]
-        elif isinstance(index, slice):
-            result = self._active[index]
-        elif isinstance(index, list):
-            result = [self.__getitem__(x) for x in index]
-        elif isinstance(index, (Sentence_i, ProductionContainer)) and str(index) in self._named_sets:
-            result = self._named_sets[str(index)].uuids
-        else:
-            raise AcabContextException(f"Unrecognised arg to getitem: {index}")
+        match index:
+            case int():
+                ctx_uuid = self._active[index]
+                result   = self._total[ctx_uuid]
+            case UUID():
+                result = self._total[index]
+            case slice():
+                result = self._active[index]
+            case list():
+                result = [self.__getitem__(x) for x in index]
+            case VI.Instruction_i() if index in self._named_sets:
+                result = self._named_sets[index].uuids
+            case _:
+                raise AcabContextException(f"Unrecognised arg to getitem: {index}")
 
         if isinstance(result, list):
             result = self.subctx(result)
@@ -150,11 +154,16 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i, metaclass=ContextMeta):
     def __repr__(self):
         return f"(CtxSet: Active:{len(self._active)} Failed:{len(self._failed)} Total:{len(self._total)})"
 
-    def __contains__(self, key: CtxIns|UUID):
-        if isinstance(key, CtxIns):
-            key = key.uuid
-
-        return key in self._active
+    def __contains__(self, key: CtxIns|UUID|Statement):
+        match key:
+            case CtxIns():
+                return key in self._active
+            case UUID():
+                return key.uuid in self._active
+            case VI.Instruction_i():
+                return key in self._named_sets
+            case _:
+                raise AcabContextException(f"Unrecognised arg to contains: {index}")
 
     def __iter__(self):
         for uuid in self._active:

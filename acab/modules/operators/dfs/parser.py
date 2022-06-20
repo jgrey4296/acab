@@ -16,7 +16,7 @@ config        = AcabConfig()
 
 QUERY_HINT    = DS.QUERY
 SEM_HINT      = DS.SEMANTIC_HINT
-WALK_SEM_HINT = Sentence() << config.attr.Semantic.Signals.WALK
+WALK_SEM_HINT = Sentence() << config.attr.Type.Primitive.INSTRUCT << config.attr.Semantic.Signals.WALK
 
 def build_dfs_query(s, l, toks):
     words = []

@@ -108,8 +108,10 @@ class ConstraintCollection(CtxInt.Constraint_i, metaclass=ConstraintMeta):
     def __run_alphas(self, node):
         """ Run alpha tests on a node """
         # Get the (operator, params, data) trio:
-        test_trios = [(self._get(x.op),
-                       x.params,
+        # reminder: params are x[1],
+        # and because node.value is the first arg, we used words[1:]
+        test_trios = [(self._get(x[0]),
+                       x[1][1:] if x[1][0] == "_:node" else x[1][:],
                        x.data) for x in self._test_mappings["alpha"]]
         # Perform the tests:
         results = [op(node.value, *pars, data=data) for op,pars,data in test_trios]
@@ -121,8 +123,8 @@ class ConstraintCollection(CtxInt.Constraint_i, metaclass=ConstraintMeta):
         test_trios = []
         ctx_stack = [ctxInst]
         for test in self._test_mappings["beta"]:
-            op = self._get(test.op, stack=ctx_stack)
-            params = [self._get(x, stack=ctx_stack) for x in test.params]
+            op = self._get(test[0],  stack=ctx_stack)
+            params = [self._get(x, stack=ctx_stack) for x in test[1]]
             trio   = (op, params, test.data)
             test_trios.append(trio)
 
@@ -135,8 +137,8 @@ class ConstraintCollection(CtxInt.Constraint_i, metaclass=ConstraintMeta):
         results = []
         val = self._get(node.value, stack=[ctxInst])
         for test in self._test_mappings["sub_struct_tests"]:
-            op = self._get(test.op)
-            results.append(op(val, *test.params, ctx=ctxInst))
+            op = self._get(test[0])
+            results.append(op(val, *test[1], ctx=ctxInst))
 
         if not all(results):
             # binds can't succeed if tests fail

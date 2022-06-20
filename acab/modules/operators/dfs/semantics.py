@@ -28,13 +28,14 @@ QUERY            = DS.QUERY
 QUERY_FALLBACK_S = DS.QUERY_FALLBACK
 DEFAULT_SETUP_S  = config.attr.Data.DEFAULT_SETUP_METHOD
 DEFAULT_UPDATE_S = config.attr.Data.DEFAULT_UPDATE_METHOD
-WALK_SEM_HINT    = Sentence() << config.attr.Semantic.Signals.WALK
+WALK_SEM_HINT    = Sentence() << config.attr.Type.Primitive.INSTRUCT << config.attr.Semantic.Signals.WALK
 
 Node          = AT.StructView
 Value         = AT.Value
 Structure     = AT.DataStructure
 Engine        = AT.Engine
 CtxSet        = AT.CtxSet
+CtxIns        = AT.CtxIns
 ValSem        = AT.ValueSemantics
 StructSem     = AT.StructureSemantics
 Handler       = AT.Handler
@@ -86,18 +87,34 @@ class DFSSemantics(basic.StatementSemantics, SI.StatementSemantics_i):
         cwm = ContextWalkManager(walk_spec, DI.StructView(default.struct.root, self), ctxs)
         with cwm:
             for start in cwm.current:
-                queue : Node      = [start._current.node]
-                found : set[UUID] = set()
+                # Get the current start point
+                queue : tuple[CtxIns, StructView]|CtxIns = [start]
+                found : set[UUID]            = set()
 
+                # Explore with this context
                 while bool(queue):
-                    current      = queue.pop(0)
-                    if current.uuid in found:
+                    current   = queue.pop()
+                    ctx, view = None, None
+                    match current:
+                        case ContextInstance_i():
+                            ctx = current
+                            view = current.current_node
+                        case (ContextInstance_i(), DI.StructView()):
+                            ctx, view = current
+                        case _:
+                            raise TypeError("Unknown queue member")
+
+                    assert(ctx is not None)
+                    assert(view is not None)
+                    if view.node.uuid in found:
                         continue
 
-                    found.add(current.uuid)
-                    accessible   = nodesem[0].access(current, None, data=data)
-                    queue       += accessible
-                    cwm.maybe_test([DI.StructView(x, self) for x in accessible])
+                    found.add(view.node.uuid)
+                    accessible = nodesem[0].access(view.node, None, data=data)
+                    prepped    = [DI.StructView(x, self) for x in accessible]
+                    unbound    = cwm.maybe_test(prepped, ctx=ctx)
+                    # TODO exploration control
+                    queue      += reversed(unbound)
 
         return cwm.finished
 
@@ -116,8 +133,9 @@ class DFSSemantics(basic.StatementSemantics, SI.StatementSemantics_i):
         cwm = ContextWalkManager(walk_spec, DI.StructView(default.struct.root, self), ctxs)
         with cwm:
             for start in cwm.current:
-                queue = [start._current.node]
-                action : 'Value|Sentence' = start[walk_spec[-1]]
+                queue : tuple[CtxIns, StructView]|CtxIns = [start]
+                # TODO: this should use binding?
+                action : 'Value|Sentence' = start[walk_spec[-1][0]]
                 spec = semsys.lookup(action)
                 if isinstance(action, Sentence):
                     # action is a sentence path,
@@ -126,18 +144,29 @@ class DFSSemantics(basic.StatementSemantics, SI.StatementSemantics_i):
 
                 assert(bool(action.params))
                 while bool(queue):
-                    current      = queue.pop(0)
-                    if current.uuid in found:
+                    current   = queue.pop()
+                    ctx, view = None, None
+                    match current:
+                        case ContextInstance_i():
+                            ctx  = current
+                            view = current.current_node
+                        case (ContextInstance_i(), DI.StructView()):
+                            ctx, view = current
+                        case _:
+                            raise TypeError("Unknown queue member", current)
+
+                    if view.node.uuid in found:
                         continue
 
-                    found.add(current.uuid)
+                    found.add(view.node.uuid)
                     # TODO use specified run form (all, sieve, etc)
                     # potentially override to force atomic rule
                     # bind current to the param in action.params
                     params : list[Value] = action.params
-                    args   : list[Value] = [current.value] + walk_spec[-1].params
-                    bind_dict = {x.key() : start[y] for x,y in zip(params, args)}
-                    node_dict = {params[0].key() : DI.StructView(current, self)}
+                    args   : list[Value] = [view.value] + walk_spec[-1].params
+                    # TODO use binding
+                    bind_dict = {x.key() : ctx[y] for x,y in zip(params, args)}
+                    node_dict = {params[0].key() : view}
 
                     working_ctx = ctxs.subctx(None,
                                               val_binds=bind_dict,
@@ -147,7 +176,8 @@ class DFSSemantics(basic.StatementSemantics, SI.StatementSemantics_i):
                     working_ctx.run_delayed()
                     # TODO controllable entrance into subtrie
                     # using if bool(working_ctx):..
-                    accessible   = nodesem[0].access(current, None, data=data)
-                    queue       += accessible
+                    accessible = nodesem[0].access(view.node, None, data=data)
+                    prepped    = [(ctx, DI.StructView(x, self)) for x in accessible]
+                    queue      += reversed(prepped)
 
         return cwm.finished
