@@ -70,7 +70,7 @@ class TransformAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
 
     def verify(self, instruction) -> bool:
         return (isinstance(instruction, Instr.ProductionContainer) and
-                all([isinstance(x, Instr.ProductionComponent) for x in instruction.clauses]))
+                all([x.type == "_:SENTENCE.COMPONENT.TRANSFORM" for x in instruction.clauses]))
 
     def __call__(self, instruction, semSys, *, ctxs=None, data=None):
         # Note: run *all* the transform clauses at once
@@ -80,21 +80,25 @@ class TransformAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
             with MutableContextInstance(ctxs, ctxIns) as mutx:
                 for clause in transform.clauses:
                     # TODO replace this with bind
-                    if clause.op in operators:
-                        op = operators[clause.op]
+                    if clause[0] in operators:
+                        op = operators[clause[0]]
                     else:
-                        op = mutx[clause.op]
+                        op = mutx[clause[0]]
 
-                    params              = [Bind.bind(x, mutx, semSys) for x in clause.params]
+                    params = []
+                    if clause[1] != "returns":
+                        params = [Bind.bind(x, mutx, semSys) for x in clause[1]]
+
                     result              = op(*params, data=mutx.data)
-                    mutx[clause.rebind] = result
+                    assert(clause[-1] != "returns")
+                    mutx[clause[-1]]    = result
 
 class ActionAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
     """ *Consumes* a context, performing all actions in it """
 
     def verify(self, instruction) -> bool:
         return (isinstance(instruction, Instr.ProductionContainer) and
-                all([isinstance(x, Instr.ProductionComponent) for x in instruction.clauses]))
+                all([x.type == "_:SENTENCE.COMPONENT" for x in instruction.clauses]))
 
     def __call__(self, instruction, semSys, *, ctxs=None, data=None):
         operators = ctxs._operators
@@ -103,13 +107,15 @@ class ActionAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
         for ctx in ctxs.active_list(clear=True):
             for clause in action.clauses:
                 # TODO handle statements to, like DFS
-                if clause.op in operators:
-                    op = operators[clause.op]
+                if clause[0] in operators:
+                    op = operators[clause[0]]
                 else:
-                    op = ctx[clause.op]
+                    op = ctx[clause[0]]
 
+                params = []
+                if clause[1] != "returns":
+                    params = [Bind.bind(x, ctx, semSys) for x in clause[1]]
 
-                params = [Bind.bind(x, ctx, semSys) for x in clause.params]
                 try:
                     result = op(*params, data=clause.data, semSystem=semSys)
                 except TypeError as err:
@@ -123,7 +129,7 @@ class ActionPlusAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
 
     def verify(self, instruction) -> bool:
         return (isinstance(instruction, Instr.ProductionContainer) and
-                all([isinstance(x, Instr.ProductionComponent) for x in instruction.clauses]))
+                all([x.type == "_:SENTENCE.COMPONENT" for x in instruction.clauses]))
 
     def __call__(self, instruction, semSys, *, ctxs=None, data=None):
         operators = ctxs._operators
@@ -131,9 +137,9 @@ class ActionPlusAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
 
         for ctx in ctxs.active_list(clear=True):
             for clause in action.clauses:
-                if not isinstance(clause, ProductionComponent):
+                if not clause.type == "_:SENTENCE.COMPONENT.ACTION":
                     # For sentences with semantics, like DFS
-                    assert(DS.SEMANTIC_HINT in clause.data)
+                    assert(DS.SEMANTIC_HINT in clause.data), breakpoint()
                     # TODO this is a hack, rewrite
                     spec = semSys.lookup(clause)
                     struct = spec.struct or semSys
@@ -143,13 +149,17 @@ class ActionPlusAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
                     spec(clause, struct, data=data, ctxs=subctx)
                     continue
 
-                assert(isinstance(clause, ProductionComponent))
-                if clause.op in operators:
-                    op = operators[clause.op]
+                assert(clause.type == "_:SENTENCE.COMPONENT.ACTION")
+                if clause[0] in operators:
+                    op = operators[clause[0]]
                 else:
-                    op = ctx[clause.op]
+                    op = ctx[clause[0]]
 
-                params = [Bind.bind(x, ctx, semSys) for x in clause.params]
+                params = []
+                if clause[1] != "returns":
+                    params = [Bind.bind(x, ctx, semSys) for x in clause[1]]
+
+                assert(clause[-1] == "returns")
                 result = op(*params, data=clause.data, semSystem=semSys)
 
 class AtomicRuleAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):

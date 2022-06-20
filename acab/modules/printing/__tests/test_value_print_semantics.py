@@ -231,14 +231,14 @@ class PrintValueSemanticTests(unittest.TestCase):
         """ Check constraints of values can be printed """
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
                                init_handlers=[
-                                   Printers.AnnotationAwareValuePrinter().as_handler(signal="ATOM"),
+                                   Printers.AnnotationAwareValuePrinter().as_handler(signal="[ATOM]"),
                                    Printers.AnnotationFinaliser().as_handler(signal=DSig.ANNOTATIONS_FINAL),
                                    Printers.AnnotationPrinter().as_handler(signal="ANNOTATIONS"),
-                                   Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
+                                   Printers.BasicSentenceAwarePrinter().as_handler(signal="[SENTENCE]"),
                                    Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),
                                    Printers.ConstraintPrinter().as_handler(signal=DSig.CONSTRAINT),
                                    Printers.ModalPrinter().as_handler(signal="MODAL"),
-                                   Printers.ProductionComponentPrinter().as_handler(signal="COMPONENT"),
+                                   Printers.ProductionComponentPrinter().as_handler(signal="[SENTENCE.COMPONENT]"),
                                    Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
                                ],
                                settings={"MODAL": "exop"})
@@ -249,10 +249,10 @@ class PrintValueSemanticTests(unittest.TestCase):
     def test_constraints_multi_var(self):
         """ Check constraints with multiple variables can be printed """
         sem_sys = BasicPrinter(init_specs=default.DEFAULT_PRINTER_SPEC(),
-                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler(signal="SENTENCE"),
+                               init_handlers=[Printers.BasicSentenceAwarePrinter().as_handler(signal="[SENTENCE]"),
                                               Printers.SimpleTypePrinter().as_handler(signal="TYPE_INSTANCE"),
-                                              Printers.AnnotationAwareValuePrinter().as_handler(signal="ATOM"),
-                                              Printers.ProductionComponentPrinter().as_handler(signal="COMPONENT"),
+                                              Printers.AnnotationAwareValuePrinter().as_handler(signal="[ATOM]"),
+                                              Printers.ProductionComponentPrinter().as_handler(signal="[SENTENCE.COMPONENT]"),
                                               Printers.ConstraintPrinter().as_handler(signal="CONSTRAINT"),
                                               Printers.ModalPrinter().as_handler(signal="MODAL"),
                                               Printers.ConfigBackedSymbolPrinter().as_handler(signal="SYMBOL"),

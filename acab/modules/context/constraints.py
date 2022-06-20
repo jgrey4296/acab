@@ -12,7 +12,8 @@ import acab.core.defaults.value_keys as DS
 import acab.error.semantic as ASErr
 import acab.interfaces.context as CtxInt
 from acab import AcabConfig
-from acab.core.value.instruction import ProductionComponent, ProductionOperator
+from acab.core.value.instruction import ProductionOperator
+from acab.core.util.sentences import ProductionComponent
 from acab.interfaces.bind import Bind_i
 from acab.interfaces.sieve import AcabSieve
 from acab.modules.context.constraint_sieve import default_sieve
@@ -26,7 +27,6 @@ Bind = config.prepare("Imports.Targeted", "bind", actions=[config.actions_e.IMCL
 
 CtxIns      = 'ContextInstance'
 Constraints = 'ConstraintCollection'
-ProdComp    = 'ProductionComponent'
 Operator    = 'ProductionOperator'
 Value       = AT.Value
 Statement   = AT.Instruction
@@ -66,7 +66,7 @@ class ConstraintMeta(type(Protocol)):
 
 @dataclass(frozen=True)
 class ConstraintCollection(CtxInt.Constraint_i, metaclass=ConstraintMeta):
-    """ Simple container of all ProductionComponent constraints a word possesses,
+    """ Simple container of all constraints a word possesses,
     separated into subtypes """
     sieve           : ClassVar[list[Callable]] = AcabSieve(default_sieve)
     operators       : ClassVar[CtxIns]         = None

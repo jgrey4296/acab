@@ -208,22 +208,20 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem    = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
-        sen = ValueFactory.sen(["a", "test", "blah"])
-        sen2 = ValueFactory.sen(["a", "test", "other"])
+        sen = VF.sen(["a", "test", "blah"])
+        sen2 = VF.sen(["a", "test", "other"])
         # insert into trie
         trie_sem.insert(sen, trie_struct)
         trie_sem.insert(sen2, trie_struct)
         # Construct context set for operators
-        op_loc_path       = ValueFactory.sen(["EQ"], data={DS.TYPE_INSTANCE: DS.OPERATOR})
+        op_loc_path       = VF.sen(["EQ"], data={DS.TYPE_INSTANCE: DS.OPERATOR})
         operator_instance = EQ()
         ctx_set           = ContextSet({str(op_loc_path): EQ()})
         # Construct query sentence
-        query_sen = ValueFactory.sen(["a", "test", "x"])
+        query_sen = VF.sen(["a", "test", "x"])
         query_sen[-1].data[BIND_V] = True
         # Test for equality to "sentence"
-        the_test = ProductionComponent(op_loc_path,
-                                       name="alpha test",
-                                       params=[ValueFactory.value("blah")])
+        the_test = VF.sen() << op_loc_path << (VF.sen() << VF.sen(["node"]) << "blah") << "returns"
         query_sen[-1].data[CONSTRAINT_V] = [the_test]
         # Run query
         trie_sem.query(query_sen, trie_struct, ctxs=ctx_set)
@@ -237,26 +235,24 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem    = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
-        sen = ValueFactory.sen(["a", "test", "blah"])
-        sen2 = ValueFactory.sen(["a", "different", "blah"])
+        sen = VF.sen(["a", "test", "blah"])
+        sen2 = VF.sen(["a", "different", "blah"])
         # insert into trie
         trie_sem.insert(sen, trie_struct)
         trie_sem.insert(sen2, trie_struct)
         # Construct context set for operators
-        op_loc_path       = ValueFactory.sen(["EQ"], data={DS.TYPE_INSTANCE: DS.OPERATOR})
+        op_loc_path       = VF.sen(["EQ"], data={DS.TYPE_INSTANCE: DS.OPERATOR})
         ctx_set           = ContextSet({str(op_loc_path): EQ()})
         # Construct query sentence
-        query_sen = ValueFactory.sen(["a", "test", "x"])
+        query_sen = VF.sen(["a", "test", "x"])
         query_sen[-1].data[BIND_V] = True
         # Second Query sentence
-        query_sen2 = ValueFactory.sen(["a", "different", "y"])
+        query_sen2 = VF.sen(["a", "different", "y"])
         query_sen2[-1].data[BIND_V] = True
         # Test for equality to "sentence"
-        test_var = ValueFactory.value("x",
+        test_var = VF.value("x",
                                        data={BIND_V: True})
-        the_test = ProductionComponent(op_loc_path,
-                                       name="beta test",
-                                       params=[test_var])
+        the_test = VF.sen() << op_loc_path << (VF.sen() << test_var) << "returns"
         query_sen2[-1].data[CONSTRAINT_V] = [the_test]
         # Run query
         trie_sem.query(query_sen, trie_struct, ctxs=ctx_set)
@@ -273,28 +269,26 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem    = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
-        sen = ValueFactory.sen(["a", "test", "blah"])
-        sen2 = ValueFactory.sen(["a", "different", "blah"])
+        sen = VF.sen(["a", "test", "blah"])
+        sen2 = VF.sen(["a", "different", "blah"])
         # insert into trie
         trie_sem.insert(sen, trie_struct)
         trie_sem.insert(sen2, trie_struct)
         # Construct context set for operators
-        op_loc_path = ValueFactory.sen(["EQ"], data={DS.TYPE_INSTANCE: DS.OPERATOR})
+        op_loc_path = VF.sen(["EQ"], data={DS.TYPE_INSTANCE: DS.OPERATOR})
         # Note the .value's, because the operator doesn't have the unwrap decorator
         operator_instance = lambda a,b,data=None: a.value == b.value
         ctx_set           = ContextSet({str(op_loc_path): operator_instance})
         # Construct query sentence
-        query_sen = ValueFactory.sen(["a", "test", "x"])
+        query_sen = VF.sen(["a", "test", "x"])
         query_sen[-1].data[BIND_V] = True
         # Second Query sentence
-        query_sen2 = ValueFactory.sen(["a", "different", "y"])
+        query_sen2 = VF.sen(["a", "different", "y"])
         query_sen2[-1].data[BIND_V] = True
         # Test for equality to "sentence"
-        test_var = ValueFactory.value("x",
+        test_var = VF.value("x",
                                        data={BIND_V: True})
-        the_test = ProductionComponent(op_loc_path,
-                                       name="callable test",
-                                       params=[test_var])
+        the_test = VF.sen() << op_loc_path << (VF.sen() << test_var)
         query_sen2[-1].data[CONSTRAINT_V] = [the_test]
         # Run query
         trie_sem.query(query_sen, trie_struct, ctxs=ctx_set)

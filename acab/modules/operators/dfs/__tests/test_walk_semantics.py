@@ -86,32 +86,19 @@ class TestWalkSemantics(unittest.TestCase):
         find a.b.c.test.sub.blah
         and not a.b.e.blah
         """
-
         self.eng("a.b.c.test.sub.blah")
         self.eng("a.b.d")
         self.eng("a.b.e.blah")
 
-        # Setup a ctx binding 'x' to 'c'
-        ctxs       = self.eng("a.b.$x.test?")
-
         # build a walk instruction
-        source_var = AcabValue("x", data={BIND: AT_BIND})
-        test_var   = AcabValue("y", data={BIND: True})
-        ValueRepeatAnnotation(CONSTRAINT,
-                              ProductionComponent(Sentence(["∈"], data={DS.TYPE_INSTANCE: DS.OPERATOR}),
-                                                  params=[VF.sen(["blah"])]))(test_var)
-
-        query_sen = Sentence([source_var, test_var],
-                             data={SEM_HINT : "[WALK]", QUERY: True})
-        query = ProductionContainer(value=[query_sen],
-                                    data={SEM_HINT : "[QUERY]"})
-
+        query = self.eng._dsl['sentence.ends'].parse_string("query(::γ):\n a.b.$x.test?\n @x ᛦ $y(∈ blah.bloo)?\nend")[0]
         # call walk
-        result = self.eng(query, ctxset=ctxs)
+        result = self.eng(query)
         # check results
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0].x, "c")
         self.assertEqual(result[0].y, "blah")
+        self.assertEqual(result[0].nodes['y'].node.parent().key(), "sub")
 
     def test_query_walk_multi_start(self):
         """
@@ -121,24 +108,10 @@ class TestWalkSemantics(unittest.TestCase):
         self.eng("a.b.d.fail.sub.blah")
         self.eng("a.b.e.test.sub.blah")
 
-        # Setup a ctx bound to 'c' and 'e'
-        ctxs       = self.eng("a.b.$x.test?")
-
         # build a walk instruction
-        source_var = AcabValue("x", data={BIND: AT_BIND})
-        test_var   = AcabValue("y", data={BIND: True})
-
-        ValueRepeatAnnotation(CONSTRAINT,
-                              ProductionComponent(Sentence(["∈"], data={DS.TYPE_INSTANCE: DS.OPERATOR}),
-                                                  params=[VF.sen(["blah"])]))(test_var)
-
-        query_sen = Sentence([source_var, test_var],
-                             data={SEM_HINT : "[WALK]", QUERY: True})
-        query = ProductionContainer(value=[query_sen],
-                                    data={SEM_HINT : "[QUERY]"})
-
+        query = self.eng._dsl['sentence.ends'].parse_string("query(::γ):\n a.b.$x.test?\n @x ᛦ $y(∈ blah.bloo)?\nend")[0]
         # call walk
-        result = self.eng(query, ctxset=ctxs)
+        result = self.eng(query)
         # check results
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0].x, "c")
@@ -154,24 +127,10 @@ class TestWalkSemantics(unittest.TestCase):
         self.eng("a.b.d.fail")
         self.eng("a.b.e.test.sub.fail")
 
-        # Setup a ctx bonud to 'c'
-        ctxs       = self.eng("a.b.$x.test?")
-
         # build a walk instruction
-        source_var = AcabValue("x", data={BIND: AT_BIND})
-        test_var   = AcabValue("y", data={BIND: True})
-
-        ValueRepeatAnnotation(CONSTRAINT,
-                              ProductionComponent(Sentence(["∈"], data={DS.TYPE_INSTANCE: DS.OPERATOR}),
-                                                  params=[VF.sen(["blah"])]))(test_var)
-
-        query_sen = Sentence([source_var, test_var],
-                             data={SEM_HINT : "[WALK]", QUERY: True})
-        query = ProductionContainer(value=[query_sen],
-                                    data={SEM_HINT : "[QUERY]"})
-
+        query = self.eng._dsl['sentence.ends'].parse_string("query(::γ):\n a.b.$x.test?\n @x ᛦ $y(∈ blah.bloo)?\nend")[0]
         # call walk
-        result = self.eng(query, ctxset=ctxs)
+        result = self.eng(query)
         # check results
         self.assertEqual(len(result), 0)
 
@@ -184,15 +143,7 @@ class TestWalkSemantics(unittest.TestCase):
         self.eng("a.b.e.test.other.blah")
 
         # build a walk instruction
-        test_var   = AcabValue("y", data={BIND: True})
-        ValueRepeatAnnotation(CONSTRAINT,
-                              ProductionComponent(Sentence(["∈"], data={DS.TYPE_INSTANCE: DS.OPERATOR}),
-                                                  params=[Sentence(["blah"])]))(test_var)
-
-        query_sen = Sentence([test_var], data={SEM_HINT: "[WALK]", QUERY: True})
-        query = ProductionContainer(value=[query_sen],
-                                    data={SEM_HINT : "[QUERY]"})
-
+        query = self.eng._dsl['sentence.ends'].parse_string("query(::γ):\n ᛦ $y(∈ blah.bloo)?\nend")[0]
         # call walk
         result = self.eng(query)
         # check results
@@ -209,24 +160,7 @@ class TestWalkSemantics(unittest.TestCase):
         # Setup a ctx bonud to 'c'
         ctxs       = self.eng("a.b.$x.test?")
 
-        # build a walk instruction
-        source_var = AcabValue("x", data={BIND: AT_BIND})
-        test_var   = AcabValue("y", data={BIND: True})
-        test_var2  = AcabValue("z", data={BIND: True})
-
-        ValueRepeatAnnotation(CONSTRAINT,
-                              ProductionComponent(Sentence(["∈"], data={DS.TYPE_INSTANCE: DS.OPERATOR}),
-                                                  params=[Sentence(["blah"])]))(test_var)
-        ValueRepeatAnnotation(CONSTRAINT,
-                              ProductionComponent(Sentence(["∈"], data={DS.TYPE_INSTANCE: DS.OPERATOR}),
-                                                  params=[Sentence(["bloo"])]))(test_var2)
-
-
-        query_sen = Sentence([source_var, test_var],
-                             data={SEM_HINT : "[WALK]", QUERY: True})
-        query = ProductionContainer(value=[query_sen],
-                                    data={SEM_HINT : "[QUERY]"})
-
+        query = self.eng._dsl['sentence.ends'].parse_string("query(::γ):\n @x ᛦ $y(∈ blah) $z(∈ bloo)?\nend")[0]
         # call walk
         result = self.eng(query, ctxset=ctxs)
         # check results

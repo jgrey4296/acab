@@ -102,61 +102,7 @@ class ProductionComponent(Instruction):
 
 
     def __post_init__(self):
-        super(ProductionComponent, self).__post_init__()
-        if not isinstance(self.value, VI.Sentence_i):
-            raise TypeError("Production Components need a sentence for targeting an operator")
-
-    def __repr__(self):
-        name_str = self.key()
-        type_str = f"::{self.type}" if self.type != f"_:{self.name}" else ""
-        val_str = f"op: {self.op}"
-        val_str += f" params: ({len(self.params)})"
-        if self.rebind is not None:
-            val_str += f" rebind: {self.rebind}"
-
-
-        return "<{}{} {}>".format(name_str, type_str, val_str)
-
-
-    def __len__(self):
-        return 1
-
-    def __contains__(self, value):
-        return value in self.value or value == rebind
-
-    def to_sentences(self):
-        """
-        Sentence([op_path].[param1.param2.param3...].result)
-        """
-        base = VI.ValueFactory.sen()
-        sens = []
-        sens.append(base << self.__class__.__name__ << self.name << self.type << str(self.uuid))
-        sens.append(base << "operator" << self.op)
-        sens.append(base << "params" << self.params)
-        if self.rebind:
-            sens.append(base << "rebind" << self.rebind)
-        sens.append(base << "end" << str(self.uuid))
-        return sens
-
-    @staticmethod
-    def from_sentences(sens):
-        raise NotImplementedError()
-
-    @property #type:ignore
-    @cache
-    def op(self):
-        return self.value
-
-    @property
-    def has_var(self):
-        if self.op.is_var:
-            return True
-        if any([x.has_var for x in self.params]):
-            return True
-        if self.type.has_var:
-            return True
-
-        return False
+        raise DeprecationWarning("Use a sentence instead")
 
 @APE.assert_implements(VI.Instruction_i)
 @dataclass(frozen=True, repr=False)

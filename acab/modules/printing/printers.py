@@ -233,18 +233,20 @@ class ProductionComponentPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
 
         # else
         result.append(DSYM.FUNC_SYM)
-        result.append(value.value)
-        if bool(value.params):
+        result.append(value[0])
+        if value[1] != "returns":
             result.append(DSYM.SPACE)
-            overriden = [PW._suppress_modal(top, x) if not isinstance(x, Sentence) else x for x in value.params]
+            params = value[1] if value[1][0] != "_:node" else value[1][1:]
+
+            overriden = [PW._suppress_modal(top, x) if not isinstance(x, Sentence) else x for x in params]
             result += PW._sep_list(self, value, overriden, sep=" ")
 
-        if bool(value.rebind):
+        if value[-1] not in ("returns", "bool"):
             # TODO align these
             result.append(DSYM.SPACE)
             result.append(DSYM.REBIND_SYM)
             result.append(DSYM.SPACE)
-            result.append(PW._suppress_modal(top, value.rebind))
+            result.append(PW._suppress_modal(top, value[-1]))
 
         return result
 

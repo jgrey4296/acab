@@ -16,8 +16,8 @@ import acab.error.semantic as ASErr
 import acab.interfaces.context as CtxInt
 from acab import AcabConfig
 from acab import types as AT
-from acab.core.value.instruction import (ProductionComponent,
-                                         ProductionContainer)
+from acab.core.util.sentences import ProductionComponent
+from acab.core.value.instruction import ProductionContainer
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces.value import Sentence_i
 from acab.modules.context.constraints import ConstraintCollection

@@ -152,30 +152,33 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
     def test_basic_constraint_no_params(self):
         result = QP.basic_constraint.parse_string("λa.b.c")[0]
         self.assertIsInstance(result, ValueRepeatAnnotation)
-        self.assertIsInstance(result.value, ProductionComponent)
+        self.assertIsInstance(result.value, Sentence)
         self.assertFalse(result.value.params)
-        self.assertIn(OPERATOR, result.value.op.type)
+        self.assertEqual(result.value.type, f"_:{DS.SENTENCE_PRIM}.{DS.COMPONENT_PRIM}.{DS.QUERY_COMPONENT}")
+        self.assertIn(OPERATOR, result.value[0].type)
 
     def test_basic_constraint_one_param(self):
         result = QP.basic_constraint.parse_string("λa.b.c $x")[0]
         self.assertIsInstance(result, ValueRepeatAnnotation)
-        self.assertIsInstance(result.value, ProductionComponent)
-        self.assertTrue(result.value.params)
-        self.assertIn(OPERATOR, result.value.op.type)
+        self.assertEqual(result.value.type, f"_:{DS.SENTENCE_PRIM}.{DS.COMPONENT_PRIM}.{DS.QUERY_COMPONENT}")
+        self.assertIsInstance(result.value, Sentence)
+        self.assertTrue(result.value[1])
+        self.assertIn(OPERATOR, result.value[0].type)
 
     def test_basic_constraint_one_sen(self):
         result = QP.basic_constraint.parse_string("λa.b.c q.w.e")[0]
         self.assertIsInstance(result, ValueRepeatAnnotation)
-        self.assertIsInstance(result.value, ProductionComponent)
-        self.assertTrue(result.value.params)
-        self.assertIn(OPERATOR, result.value.op.type)
+        self.assertEqual(result.value.type, f"_:{DS.SENTENCE_PRIM}.{DS.COMPONENT_PRIM}.{DS.QUERY_COMPONENT}")
+        self.assertIsInstance(result.value, Sentence)
+        self.assertTrue(result.value[1])
+        self.assertIn(OPERATOR, result.value[0].type)
 
 
     def test_basic_constraint_multi_params(self):
         result = QP.basic_constraint.parse_string("λa.b.c q.w.e $x $y")[0]
         self.assertIsInstance(result, ValueRepeatAnnotation)
-        self.assertIsInstance(result.value, ProductionComponent)
-        self.assertTrue(result.value.params)
+        self.assertIsInstance(result.value, Sentence)
+        self.assertTrue(result.value[1])
 
     def test_basic_constraint_on_word(self):
         result = FP.SEN_WORD.parse_string("test(λa.b.c $x $y).")[0]
@@ -184,21 +187,25 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
     def test_basic_constraint_non_op_path(self):
         result = QP.basic_constraint.parse_string("!!")[0]
         self.assertIsInstance(result, ValueRepeatAnnotation)
-        self.assertIsInstance(result.value, ProductionComponent)
-        self.assertFalse(result.value.params)
-        self.assertIn(OPERATOR, result.value.op.type)
+        self.assertIsInstance(result.value, Sentence)
+        self.assertTrue(result.value[1])
+        self.assertIn(OPERATOR, result.value[0].type)
 
     def test_basic_constraint_args_are_sentences(self):
         result = QP.basic_constraint.parse_string("λa.b.c q.w.e")[0]
-        self.assertIsInstance(result.value.params[0], Sentence)
+        self.assertIsInstance(result.value[1], Sentence)
 
     def test_basic_constraint_args_are_sentences_single_var(self):
         result = QP.basic_constraint.parse_string("λa.b.c $q")[0]
-        self.assertIsInstance(result.value.params[0], Sentence)
+        self.assertIsInstance(result.value[1], Sentence)
+        self.assertEqual(len(result.value[1]), 2)
 
     def test_basic_constraint_args_are_sentences_single_word(self):
         result = QP.basic_constraint.parse_string("λa.b.c q")[0]
-        self.assertIsInstance(result.value.params[0], Sentence)
+        self.assertIsInstance(result.value[1], Sentence)
+        self.assertEqual(len(result.value[1]), 2)
+        self.assertIsInstance(result.value[1][0], Sentence)
+        self.assertIsInstance(result.value[1][1], Sentence)
 
     def test_constraint_arg_is_sentence(self):
         result = FP.SEN_WORD.parse_string("test(λa.b.c $x $y).")[0]

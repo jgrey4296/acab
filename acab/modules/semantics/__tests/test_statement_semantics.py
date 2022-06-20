@@ -113,12 +113,7 @@ class StatementSemanticTests(unittest.TestCase):
         updated_ctx                         = init_ctx.progress({"x" : AcabValue("test")}, {})
         ctx_set.push(updated_ctx)
         # Build Transform
-        rebind_target                       = AcabValue("y", data={BIND_V: True})
-        clause                              = ProductionComponent(op_loc_path,
-                                                                  params=["x", "es", "ES"],
-                                                                  rebind =rebind_target)
-
-        transform                           = ProductionContainer([clause])
+        transform = self.dsl['sentence.ends'].parse_string("transform(::χ):\n λRegex.Operation $x /es/ ES -> $y\nend")[0]
         # Run Transform on context, don't need a semantic system yet, thus None
         sem(transform, None, ctxs=ctx_set)
         # Check result
@@ -141,13 +136,12 @@ class StatementSemanticTests(unittest.TestCase):
         # Build Semantics
         sem = ASem.ActionAbstraction()
         # Context Set for operators
-        op_loc_path       = Sentence(["action"])
+        op_loc_path       = VF.sen(["action"])
         operator_instance = TestAction()
         op_ctx            = ContextInstance(data={str(op_loc_path): operator_instance})
         ctx_set           = ContextSet(op_ctx)
         # Build Action
-        clause = ProductionComponent(op_loc_path)
-        action = ProductionContainer([clause])
+        action = self.dsl['sentence.ends'].parse_string("action(::α):\n λaction\nend")[0]
         # Run action on context with semantics
         sem(action, None, ctxs=ctx_set)
         # Check side effects
@@ -168,17 +162,16 @@ class StatementSemanticTests(unittest.TestCase):
         # Build Semantics
         sem = ASem.ActionAbstraction()
         # Context Set for operators
-        op_loc_path       = Sentence(["action"])
+        op_loc_path       = VF.sen(["action"])
         operator_instance = TestAction()
         op_ctx            = ContextInstance(data={str(op_loc_path): operator_instance})
         ctx_set           = ContextSet(op_ctx)
         # Build Action
-        clause = ProductionComponent(op_loc_path, params=["awef"])
-        action = ProductionContainer([clause])
+        action = self.dsl['sentence.ends'].parse_string("action(::α):\n λaction aweg\nend")[0]
         # Run action on context with semantics
         sem(action, None, ctxs=ctx_set)
         # Check side effects
-        self.assertEqual(side_effect_obj['a'], "awef")
+        self.assertEqual(side_effect_obj['a'], "_:aweg")
 
 
     def test_container(self):
@@ -226,12 +219,9 @@ class StatementSemanticTests(unittest.TestCase):
         ctx_set.push(updated_ctx)
 
         # Build Instruction to run
-        rebind_target          = AcabValue("y", data={BIND_V: True})
-        transform_clause       = ProductionComponent(Sentence(["transform"]), params=["x"], rebind=rebind_target)
-        action_clause          = ProductionComponent(Sentence(["action"]), params=["y"])
-        container_instruction  = ProductionContainer([ProductionContainer([transform_clause], data={SEMANTIC_HINT_V: TRANSFORM_SIGNAL}),
-                                                      ProductionContainer([action_clause], data={SEMANTIC_HINT_V: ACTION_SIGNAL})])
-
+        transform = self.dsl["sentence.ends"].parse_string("transform(::χ):\n λtransform $x -> $y\nend")[0]
+        action = self.dsl['sentence.ends'].parse_string("action(::α):\n λaction $y\nend")[0]
+        container_instruction  = ProductionContainer([transform, action], data={DS.TYPE_INSTANCE: CONTAINER_SEN})
         # run each element of container with semantics
         semSys(container_instruction, ctxs=ctx_set)
 
@@ -286,23 +276,10 @@ class StatementSemanticTests(unittest.TestCase):
                                          "[regex]" : trans_instance})
 
         # Construct Rule
-        query_sen                  = Sentence(["a", "test", "x"])
-        query_sen[-1].data[BIND_V] = True
-        query_sen.data[QUERY_V]    = True
-
-        transform_sen = ProductionComponent(Sentence(["regex"]), params=["x", "sen", "SEN"],
-                                            rebind=AcabValue("y", data={BIND_V: True}))
-        action_sen    = ProductionComponent(Sentence([ "action" ]), params=['y'])
-
-        query     = ProductionContainer([query_sen], name=QUERY_C, data={SEMANTIC_HINT_V: QUERY_SIGNAL})
-        transform = ProductionContainer([transform_sen], name=TRANSFORM_C, data={SEMANTIC_HINT_V: TRANSFORM_SIGNAL})
-        action    = ProductionContainer([action_sen], name=ACTION_C, data={SEMANTIC_HINT_V: ACTION_SIGNAL})
-
-        the_rule  = ProductionStructure([query, transform, action],
-                                        data={SEMANTIC_HINT_V: RULE_SIGNAL})
+        the_rule = self.dsl['sentence.ends'].parse_string("rule(::ρ):\n a.test.$x?\n\n λregex $x /sen/ SEN -> $y\n\n λaction $y\nend")[0]
 
         # insert a sentence into the struct
-        sen = Sentence(["a", "test", "sentence"])
+        sen = VF.sen(["a", "test", "sentence"])
         trie_handler.func.insert(sen, trie_handler.struct)
         # run the rule
         result = semSys(the_rule, ctxs=ctx_set)
@@ -350,49 +327,91 @@ class StatementSemanticTests(unittest.TestCase):
 
         # Setup operators in context
         trans_instance     = RegexOp()
-        op_ctx             = ContextInstance(data={"action" : TestAction(),
-                                                   "regex"  : trans_instance})
+        op_ctx             = ContextInstance(data={"[action]" : TestAction(),
+                                                   "[regex]"  : trans_instance})
         ctx_set            = ContextSet(op_ctx)
 
         # Construct Rule
-        query_sen                  = Sentence(["a", "test", "x"])
-        query_sen[-1].data[BIND_V] = True
-        query_sen.data[QUERY_V]    = True
-
-        transform_sen = ProductionComponent(Sentence("regex"), params=["x", "sen", "SEN"],
-                                            rebind=AcabValue("y", data={BIND_V: True}))
-        action_sen    = ProductionComponent(Sentence("action"), params=['y'])
-
-        query     = ProductionContainer([query_sen], name=QUERY_C, data={SEMANTIC_HINT_V: QUERY_SIGNAL})
-        transform = ProductionContainer([transform_sen], name=TRANSFORM_C, data={SEMANTIC_HINT_V: TRANSFORM_SIGNAL})
-        action    = ProductionContainer([action_sen], name=ACTION_C, data={SEMANTIC_HINT_V: ACTION_SIGNAL})
-
-        the_rule  = ProductionStructure([query, transform, action],
-                                        data={SEMANTIC_HINT_V: RULE_SIGNAL})
-
+        the_rule = self.dsl['sentence.ends'].parse_string("rule(::ρ):\n a.test.$x?\n\n λregex $x /sen/ SEN -> $y\n\n λaction $y\nend")[0]
         # insert a sentence into the struct
-        sen = Sentence(["a", "test", "sentence"])
+        sen = VF.sen(["a", "test", "sentence"])
         trie_handler.func.insert(sen, trie_handler.struct)
         # run the rule
         result = semSys(the_rule, ctxs=ctx_set)
-
         # Check the struct doesn't change
-        # check no action side effects occurred
+        self.assertEqual(side_effect_obj['a'], 1)
         # check the returned context has a continuation
-
+        self.assertTrue(result._named_sets)
         # Run the continuation
+        result2 = semSys(the_rule, ctxs=result)
+        # check the action side effects occurred
+        self.assertEqual(side_effect_obj['a'], "SENtence")
 
-        # check the action side effects occurreddef test_agenda(self):
+    def test_proxy_rule_with_intermediate_query(self):
+        """ Check a rule can be applied in a two stage, non-atomic fashion """
+        side_effect_obj = {"a" : 1}
+
+        class TestAction(ActionOperator):
+            @OperatorArgUnWrap
+            def __call__(self, *params, data=None, semSystem=None):
+                side_effect_obj['a'] = params[0]
+
+
+        def SemHintKey(val, data=None):
+            if SEMANTIC_HINT_V in val.data:
+                return val.data[SEMANTIC_HINT_V]
+
+            return None
+        #
         # Build Semantics
+        node_sem    = BasicNodeSemantics().as_handler(signal="atom")
+        trie_sem    = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_handler= trie_sem.as_handler(signal="trie",
+                                          struct=BasicNodeStruct.build_default())
 
-        # Build Contexts
+        query_sem   = ASem.QueryAbstraction().as_handler(signal=QUERY_SIGNAL)
+        action_sem  = ASem.ActionAbstraction().as_handler(signal=ACTION_SIGNAL)
+        trans_sem   = ASem.TransformAbstraction().as_handler(signal=TRANSFORM_SIGNAL)
+        # THIS IS THE MAJOR CHANGE OF THIS TEST:
+        rule_sem    = ASem.ProxyRuleAbstraction().as_handler(signal=RULE_SIGNAL)
 
-        # Build Agenda
+        semSys      = BasicSemanticSystem(init_specs=default.DEFAULT_SPECS(),
+                                          init_handlers=[query_sem,
+                                                         action_sem,
+                                                         trans_sem,
+                                                         rule_sem,
+                                                         node_sem,
+                                                         trie_handler,
+                                                         trie_handler.as_handler(signal=DEFAULT_HANDLER_SIGNAL)
+                                                         ])
 
-        # Run contexts through agenda
+        # Setup operators in context
+        trans_instance     = RegexOp()
+        op_ctx             = ContextInstance(data={"[action]" : TestAction(),
+                                                   "[regex]"  : trans_instance})
+        ctx_set            = ContextSet(op_ctx)
 
-        # check successful contexts
-        pass
+        # Construct Rule
+        the_rule = self.dsl['sentence.ends'].parse_string("rule(::ρ):\n a.test.$x?\n\n λregex $x /sen/ SEN -> $y\n\n λaction $y\nend")[0]
+        # insert a sentence into the struct
+        trie_handler.func.insert(self.dsl("a.test.sentence")[0], trie_handler.struct)
+        trie_handler.func.insert(self.dsl("a.side.fact")[0], trie_handler.struct)
+        # run the rule
+        result = semSys(the_rule, ctxs=ctx_set)
+        # Check the struct doesn't change
+        self.assertEqual(side_effect_obj['a'], 1)
+        # INTERMEDIATE QUERY
+        result_alt = semSys(self.dsl("a.side.$x?")[0], ctxs=ContextSet())
+        # check the returned context has a continuation
+        self.assertTrue(result._named_sets)
+        # Run the continuation
+        result2 = semSys(the_rule, ctxs=result)
+        # check the action side effects occurred
+        self.assertEqual(side_effect_obj['a'], "SENtence")
+        self.assertEqual(result, result2)
+        self.assertNotEqual(result, result_alt)
+        self.assertIn("x", result_alt[0])
+
 
 
     @unittest.skip("Not Implemented")

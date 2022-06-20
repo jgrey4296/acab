@@ -77,13 +77,13 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
         test_str = "λoperator.add"
 
         result = AP.action_component.parse_string(test_str)[0]
-        self.assertIsInstance(result, ProductionComponent)
+        self.assertIsInstance(result, Sentence)
 
     def test_multi_var_action(self):
         """ Check an action with multiple variables can be parsed """
         result = AP.action_component.parse_string("λa.b.c $x $y $z")[0]
-        self.assertIsInstance(result, ProductionComponent)
-        self.assertEqual(len(result.params), 3)
+        self.assertIsInstance(result, Sentence)
+        self.assertEqual(len(result[1]), 3)
         self.assertTrue(all([isinstance(x, Value_i) for x in result.params]))
 
     def test_actions(self):
@@ -95,20 +95,20 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
     # TODO test  sugar, test sentences, test values, test multi params
     def test_action_sugar_unary(self):
         result = AP.action_sugar_unary.parse_string("∈ $x")[0]
-        self.assertIsInstance(result, ProductionComponent)
-        self.assertIn(DS.OPERATOR, result.op.type)
+        self.assertIsInstance(result, Sentence)
+        self.assertIn(DS.OPERATOR, result[0].type)
 
     def test_action_sugar_bianry(self):
         result = AP.action_sugar_binary.parse_string("$y ∈ $x")[0]
-        self.assertIsInstance(result, ProductionComponent)
-        self.assertIn(DS.OPERATOR, result.op.type)
+        self.assertIsInstance(result, Sentence)
+        self.assertIn(DS.OPERATOR, result[0].type)
 
     def test_action_statement(self):
         result = AP.action_definition.parse_string("test(::ACTION):\n λa.b.c\nend")[0]
         self.assertIsInstance(result, ProductionContainer)
-        self.assertEqual(result.type, "_:ACTION")
+        self.assertEqual(result.type, f"_:{DS.INSTR_PRIM}.{DS.CONTAINER_PRIM}.{DS.ACTION_COMPONENT}")
 
     def test_action_alias_statement(self):
         result = AP.action_definition.parse_string("test(::ACTION):\n λa.b.c\nend")[0]
         self.assertIsInstance(result, ProductionContainer)
-        self.assertEqual(result.type, "_:ACTION")
+        self.assertEqual(result.type, f"_:{DS.INSTR_PRIM}.{DS.CONTAINER_PRIM}.{DS.ACTION_COMPONENT}")
