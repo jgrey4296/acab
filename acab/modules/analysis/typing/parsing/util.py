@@ -60,14 +60,17 @@ def make_sum_def(toks):
 
 def make_op_def(toks):
     syntax_bind = None
-    op_params = toks["params"]
-    assert(all([x.is_var for x in op_params]))
-    assert(all([isinstance(x, VI.Sentence_i) for x in op_params]))
+    specs = []
+    # Unwrap the multi-def group if necessary
+    target = toks[:] if 'params' in toks[0] else toks[0][:]
 
-    if SYNTAX_BIND_S in toks:
-        syntax_bind = toks[SYNTAX_BIND_S]
+    for spec_group in target:
+        assert(all([x.is_var for x in spec_group['params']]))
+        params = (VI.ValueFactory.sen() << spec_group['params'][:]
+                  << 'returns' << (spec_group['returns'] if 'returns' in spec_group else None))
+        specs.append(params)
 
-    op_def = OperatorDefinition(op_params[:], sugar_syntax=syntax_bind)
+    op_def = OperatorDefinition(specs)
 
     return op_def
 
