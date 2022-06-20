@@ -22,22 +22,37 @@ logging = logmod.getLogger(__name__)
 
 __all__ = []
 
-def rectx(val, *, ctx=None):
+def rectx(val, *, ctx=None, name_suff=None):
+    """
+    Take a value and a ctx,
+    and substitute new variables for all variables in the val.
+
+    Thus:
+    a.$b.$c  -> a.$b_1.$c_1
+
+    Provides a clean set of variables to avoid conflicts in unification
+
+    """
     assert(isinstance(ctx, (CI.ContextInstance_i, dict)))
+    name_suff = name_suff or uuid1()
+
     if not val.has_var and not bool(val.params):
         return val
 
-    params = _unique_params(val.params, ctx)
+    params = _unique_params(val.params, ctx, name_suff)
     match val:
         case VI.Sentence_i():
-            words = [rectx(x, ctx=ctx) for x in val.words]
+            # recurse down
+            words = [rectx(x, ctx=ctx, name_suff=name_suff) for x in val.words]
             return val.copy(value=words, params=params)
         case VI.Instruction_i():
+            # TODO work on this
             return val.copy(params=params)
         case VI.Value_i() if val.key() not in ctx:
             # Create a new var
-            uniq = f"{val.key()}_{uuid1()}"
+            uniq = f"{val.key()}_{name_suff}"
             ctx[val.key()] = val.copy(name=uniq, params=params)
+            # link it to the original by uuid
             return ctx[val.key()]
         case VI.Value_i() if val.key() in ctx:
             return val.copy(name=ctx[val.key()].key(),
@@ -45,13 +60,13 @@ def rectx(val, *, ctx=None):
         case _:
             raise AcabSemanticException("Unknown recontextualise target")
 
-def _unique_params(params:list[VI.Value_i], ctx):
+def _unique_params(params:list[VI.Value_i], ctx, name_suff):
     new_params = []
     for param in params:
         assert(param.is_var)
         match param:
             case _ if param.key() not in ctx:
-                uniq = f"{param.key()}_{uuid1()}"
+                uniq = f"{param.key()}_{name_suff}"
                 ctx[param.key()] = param.copy(name=uniq)
                 new_params.append(ctx[param.key()])
             case _ if param.key in ctx:
