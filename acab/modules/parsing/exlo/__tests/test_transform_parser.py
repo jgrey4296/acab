@@ -56,8 +56,18 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
         """ Check a transform can be parsed """
         result = TP.transform_core.parse_string("λa.b.c $x $y -> $z")[0]
         self.assertIsInstance(result, Sentence)
-        self.assertEqual(result[-1].key(), "z")
+        self.assertEqual(result[-1], "_:returns.z")
         self.assertIn(DS.OPERATOR, result[0].type)
+        self.assertEqual(len(result), 3)
+
+    def test_no_param_transform(self):
+        """ Check a transform can be parsed """
+        result = TP.transform_core.parse_string("λa.b.c -> $z")[0]
+        self.assertIsInstance(result, Sentence)
+        self.assertEqual(result[-1], "_:returns.z")
+        self.assertIn(DS.OPERATOR, result[0].type)
+        self.assertEqual(len(result), 3)
+        self.assertEqual(result[1], "_:∅")
 
 
     def test_transforms(self):
@@ -71,7 +81,7 @@ class Trie_Transform_Parser_Tests(unittest.TestCase):
     def test_non_path_operator(self):
         result = TP.transform_sugar.parse_string("$x ∈ $y -> $z")[0]
         self.assertIsInstance(result, Sentence)
-        self.assertEqual(result[-1].key(), "z")
+        self.assertEqual(result[-1], "_:returns.z")
         self.assertIn(DS.OPERATOR, result[0].type)
 
     def test_transform_alias_statement(self):

@@ -197,14 +197,17 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
     def test_basic_constraint_args_are_sentences_single_var(self):
         result = QP.basic_constraint.parse_string("λa.b.c $q")[0]
         self.assertIsInstance(result.value[1], Sentence)
-        self.assertEqual(len(result.value[1]), 2)
+        self.assertEqual(len(result.value), 3)
+        self.assertEqual(result.value[-1], "_:returns.bool")
 
     def test_basic_constraint_args_are_sentences_single_word(self):
         result = QP.basic_constraint.parse_string("λa.b.c q")[0]
         self.assertIsInstance(result.value[1], Sentence)
-        self.assertEqual(len(result.value[1]), 2)
-        self.assertIsInstance(result.value[1][0], Sentence)
-        self.assertIsInstance(result.value[1][1], Sentence)
+        self.assertEqual(len(result.value), 3)
+        self.assertEqual(result.value[1], "_:[node].[q]")
+        self.assertIsInstance(result.value[1], Sentence)
+        self.assertIsInstance(result.value[2], Sentence)
+        self.assertEqual(result.value[-1], "_:returns.bool")
 
     def test_constraint_arg_is_sentence(self):
         result = FP.SEN_WORD.parse_string("test(λa.b.c $x $y).")[0]

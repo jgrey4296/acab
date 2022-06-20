@@ -29,7 +29,7 @@ from acab.interfaces.value import ValueFactory as VF
 prod_comp_type = VF.sen() << DS.SENTENCE_PRIM << DS.COMPONENT_PRIM
 
 
-def ProductionComponent(path, name=None, params=None, rebind=None, _type=None):
+def ProductionComponent(path, name=None, params=None, rebind="unit", _type=None):
     return (VF.sen(data={DS.TYPE_INSTANCE: prod_comp_type << _type})
-            << path << (VF.sen() << params)
-            << "returns" << rebind)
+            << path << (VF.sen() << (params or "∅"))
+            << (VF.sen() << "returns" << rebind))

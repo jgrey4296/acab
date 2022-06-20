@@ -151,7 +151,6 @@ class PrintStructureSemanticTests(unittest.TestCase):
         queries = QP.clauses.parse_string(" a.b.c?\n d.e(λa.b.q $y).f?\n g.h.i?")[0]
         self.assertIsInstance(queries, ProductionContainer)
         result = sem_sys.pprint(queries)
-
         self.assertEqual(result, "    a.b.c?\n    d.e(λa.b.q $y).f?\n    g.h.i?\n")
 
 

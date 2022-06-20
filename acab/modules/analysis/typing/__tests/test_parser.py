@@ -82,7 +82,7 @@ class TestParser(unittest.TestCase):
 
     def test_multi_val_record_typdef(self):
         """ Test a type definition with multiple subtypings """
-        result = TDP.RECORD_TYPE.parse_string("c(::σ):\nq.w.e(::awef)\nblah.bloo(::awg)\nend")[0]
+        result = TDP.RECORD_TYPE.parse_string("c(::σ):\n q.w.e(::awef)\n blah.bloo(::awg)\nend")[0]
         self.assertIsInstance(result, TypeDefinition)
         self.assertEqual(len(result.structure), 2)
         self.assertEqual(result.type, util.TYPE_DEFINITION)
@@ -108,21 +108,60 @@ class TestParser(unittest.TestCase):
 
     def test_simple_operator_def(self):
         """ Test an operator type definition """
-        result = TDP.OP_DEF.parse_string("c(::λ): $q $w $e => +")[0]
+        result = TDP.OP_DEF.parse_string("c(::λ): $x")[0]
         self.assertIsInstance(result, OperatorDefinition)
         self.assertEqual(result.type, util.OPERATOR_DEFINITION)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0][0], "[x]")
+        self.assertEqual(result[0], "_:[x].returns")
 
+    def test_multi_param_def(self):
+        result = TDP.OP_DEF.parse_string("c(::λ): $x $y $z")[0]
+        self.assertIsInstance(result, OperatorDefinition)
+        self.assertEqual(result.type, util.OPERATOR_DEFINITION)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(len(result[0]), 4)
+        self.assertEqual(result[0], "_:[x].[y].[z].returns")
 
+    def test_op_def_return(self):
+        result = TDP.OP_DEF.parse_string("c(::λ): $x $y $z -> $a")[0]
+        self.assertIsInstance(result, OperatorDefinition)
+        self.assertEqual(result.type, util.OPERATOR_DEFINITION)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(len(result[0]), 5)
+        self.assertEqual(result[0], "_:[x].[y].[z].returns.a")
+
+    def test_op_type_specs(self):
+        result = TDP.OP_DEF.parse_string("c(::λ): $x(::blah) $y(::bloo) -> $z(::awef)")[0]
+        self.assertIsInstance(result, OperatorDefinition)
+        self.assertEqual(result.type, util.OPERATOR_DEFINITION)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(len(result[0]), 4)
+        self.assertEqual(result[0], "_:[x].[y].returns.z")
+        self.assertEqual(result[0][0].type, "_:SENTENCE.blah")
+        self.assertEqual(result[0][1].type, "_:SENTENCE.bloo")
+        self.assertEqual(result[0][3].type, "_:awef")
+
+    def test_op_multi_spec(self):
+        result = TDP.MULTI_OP_DEF.parse_string("c(::λ):\n  $x(::blah) $y(::bloo) -> $z(::awef)\n  $x -> $y\nend")[0]
+        self.assertIsInstance(result, OperatorDefinition)
+        self.assertEqual(result.type, util.OPERATOR_DEFINITION)
+        self.assertEqual(len(result), 2)
+        self.assertEqual(len(result[0]), 4)
+        self.assertEqual(result[0], "_:[x].[y].returns.z")
+        self.assertEqual(result[0][0].type, "_:SENTENCE.blah")
+        self.assertEqual(result[0][1].type, "_:SENTENCE.bloo")
+        self.assertEqual(result[0][3].type, "_:awef")
+        self.assertEqual(result[1], "_:[x].returns.y")
 
     def test_simple_operator_def_fail(self):
         """ Test an operator type definition without variable params """
         with self.assertRaises(AssertionError):
-            TDP.OP_DEF.parse_string("c(::λ): q w e => +")[0]
-
+            TDP.OP_DEF.parse_string("c(::λ): q w e")[0]
 
     def test_simple_type_class(self):
         """ Test a type class definition """
-        result = TDP.TYPE_CLASS_DEF.parse_string("class(::γ):\n a.b.c(::λ): $q $w $e => +\n q.w.e(::λ): $w $e $r => -\nend")[0]
+        result = TDP.TYPE_CLASS_DEF.parse_string("class(::γ):\n a.b.c(::λ): $q $w $e \n q.w.e(::λ): $w $e $r \nend")[0]
         self.assertIsInstance(result, TypeClass)
         self.assertTrue(len(result.structure), 2)
         self.assertEqual(result.type, util.TYPE_CLASS)
@@ -142,14 +181,14 @@ class TestParser(unittest.TestCase):
         self.assertIsInstance(result, ValueAnnotation)
         self.assertEqual(result.key, DS.TYPE_INSTANCE)
         self.assertIsInstance(result.value, Sentence)
-        self.assertTrue(str(result.value) == "a.b.c")
+        self.assertTrue(result.value == "_:a.b.c")
 
 
     def test_declaration_as_annotation(self):
         """ Test a sentence with a type declaration as an annotation """
-        result = FP.SENTENCE.parse_string("a.test(::blah.type)")[0]
+        result = self.dsl("a.test(::blah.type)")[0]
         self.assertIsInstance(result, Sentence)
-        self.assertEqual(str(result[-1].type), "blah.type")
+        self.assertEqual(result[-1].type, "_:blah.type")
 
 
 

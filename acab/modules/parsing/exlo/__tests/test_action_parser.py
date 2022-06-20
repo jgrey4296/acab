@@ -83,7 +83,8 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
         """ Check an action with multiple variables can be parsed """
         result = AP.action_component.parse_string("λa.b.c $x $y $z")[0]
         self.assertIsInstance(result, Sentence)
-        self.assertEqual(len(result[1]), 3)
+        self.assertEqual(len(result), 3)
+        self.assertEqual(result[-1][-1], "unit")
         self.assertTrue(all([isinstance(x, Value_i) for x in result.params]))
 
     def test_actions(self):
