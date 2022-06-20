@@ -61,6 +61,7 @@ class HandlerSystem(HS.HandlerSystem_i):
         sieve_fns     = sieve_fns     or self._default_sieve[:] #type:ignore
         init_specs    = init_specs    or []
         init_handlers = init_handlers or []
+        self._quick_sen_fails = set()
         try:
             self.sieve = AcabSieve(sieve_fns)
             self._register_spec(*init_specs)
@@ -93,7 +94,14 @@ class HandlerSystem(HS.HandlerSystem_i):
     def __getitem__(self, other):
         if not isinstance(other, str):
             raise ValueError(f"Bad Signal Attempt to HandlerSystem: {other}")
-        return self.handler_specs[other]
+        if other in self.handler_specs:
+            return self.handler_specs[other]
+
+        matching_loose = [x for x in self.loose_handlers if x.signal == other]
+        if bool(matching_loose):
+            return matching_loose[0]
+
+        raise ValueError(f"No Handler or Spec Found for: {other}")
 
     def __iter__(self):
         for spec in self.handler_specs.values():
@@ -114,7 +122,17 @@ class HandlerSystem(HS.HandlerSystem_i):
             value = value.value
 
         for key in self.sieve.fifo(value):
-            key_match   = key in self.handler_specs
+            match key:
+                case Sentence_i():
+                    key_match = self._sub_sen_handler_patch(key)
+                    key = str(key)
+                case str():
+                    key_match   = key in self.handler_specs
+                case None:
+                    pass
+                case _:
+                    raise TypeError("Unexpected value returned by sieve", key)
+
             if is_override and not is_passthrough and not key_match:
                 logging.warning(f"Missing Override Handler: {self.__class__} : {key}")
                 continue
@@ -129,6 +147,46 @@ class HandlerSystem(HS.HandlerSystem_i):
         # Final resort
         return self.handler_specs[DEFAULT_HANDLER_SIGNAL]
 
+    def _sub_sen_handler_patch(self, sen:Sen_A) -> bool:
+        """
+        Check a handler exists for a.test.sen
+        if on isnt found, try a.test
+        then just a.
+
+        If a sub sen handler *is* found, patch it
+        so the search doesn't have to happen again
+        """
+        sen_str = str(sen)
+        # Try Full
+        if sen_str in self:
+            return True
+
+        # Check for cached failures
+        if sen_str in self._quick_sen_fails:
+            return False
+
+        # Try just the last word?
+        if str(sen[-1:]) in self:
+            new_spec = self.handler_specs[str(sen[-1:])].copy(signal=sen_str, handlers=True)
+            self.register(new_spec)
+            return True
+
+        # Try subsens
+        for index in range(len(sen)-1, 0, -1):
+            subsen = str(sen[:index])
+            if subsen in self:
+                # patch
+                logging.debug("Found an applicable sub spec: {} of {}", subsen, sen_str)
+                new_spec = self.handler_specs[subsen].copy(signal=sen_str, handlers=True)
+                self.register(new_spec)
+                return True
+
+        # Else patch in a fast failure
+        self._quick_sen_fails.add(sen_str)
+        return False
+
+
+
     def override(self, new_signal: bool | str, value, data=None) -> Overrider:
         """ wrap a value to pass data along with it, or explicitly control the signal it produces for handlers """
         data = data or {}
@@ -140,6 +198,8 @@ class HandlerSystem(HS.HandlerSystem_i):
         match new_signal:
             case str() if new_signal in self:
                 pass
+            case Sentence_i():
+                new_signal = str(new_signal)
             case bool() if not new_signal:
                 new_signal = PASSTHROUGH
             case _:
@@ -180,7 +240,7 @@ class HandlerSystem(HS.HandlerSystem_i):
             if as_pseudo in self and spec != self.handler_specs[as_pseudo]:
                 raise AcabHandlerException(f"Signal Conflict: {spec.signal}") #type:ignore
             if spec not in self:
-                self.handler_specs[as_pseudo] = spec.copy()
+                self.handler_specs[as_pseudo] = spec.copy(handlers=True)
 
         # TODO: Then try to register any loose handlers
 
@@ -259,11 +319,16 @@ class HandlerSpec(HS.HandlerSpec_i):
 
         return result
 
-    def copy(self, **kwargs) -> HandlerSpec_A:
-        return replace(self,
-                       func_api=self.func_api,
-                       struct_api=self.struct_api,
-                       data_api=self.data_api)
+    def copy(self, *, handlers=False, **kwargs) -> HandlerSpec_A:
+        copied = replace(self,
+                         func_api=self.func_api,
+                         struct_api=self.struct_api,
+                         data_api=self.data_api,
+                         **kwargs)
+        if handlers:
+            copied.handlers += self.handlers[:]
+
+        return copied
 
     # set APIs ################################################################
     def spec_from(self, target):
