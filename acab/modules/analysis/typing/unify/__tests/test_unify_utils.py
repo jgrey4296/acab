@@ -18,7 +18,7 @@ from acab.core.defaults.value_keys import BIND
 from acab.core.value.instruction import Instruction
 from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue
-from acab.modules.analysis.typing.module import TypingFragment
+from acab.modules.analysis.typing.module import TypeSpecFragment
 from acab.modules.context.context_instance import ContextInstance as CtxIns
 from acab.modules.context.context_instance import MutableContextInstance
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
@@ -47,7 +47,7 @@ class UnifyUtilTests(unittest.TestCase):
         global dsl
         # Set up the parser to ease test setup
         dsl   = ppDSL.PyParseDSL()
-        dsl.register(EXLO_Parser).register(TypingFragment().build_dsl())
+        dsl.register(EXLO_Parser).register(TypeSpecFragment().build_dsl())
         dsl.build()
 
     @classmethod

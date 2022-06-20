@@ -18,7 +18,7 @@ from acab.core.defaults import value_keys as DS
 
 from acab.core.value.value import AcabValue
 from acab.interfaces import value as VI
-from acab.modules.analysis.typing.module import TypingFragment
+from acab.modules.analysis.typing.module import TypeSpecFragment
 from acab.modules.context.context_set import ContextInstance as CtxIns
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 
@@ -26,8 +26,6 @@ from ... import exceptions as TE
 from .. import simple_unify_fns as suf
 from .. import unifier as unify
 from .. import util
-
-dsl = None
 
 class UnifierTests(unittest.TestCase):
 
@@ -43,10 +41,9 @@ class UnifierTests(unittest.TestCase):
         logging.root.handlers[0].setLevel(logmod.WARNING)
         logging.root.addHandler(cls.file_h)
 
-        global dsl
-        dsl   = ppDSL.PyParseDSL()
-        dsl.register(EXLO_Parser).register(TypingFragment().build_dsl())
-        dsl.build()
+        cls.dsl   = ppDSL.PyParseDSL()
+        cls.dsl.register(EXLO_Parser).register(TypeSpecFragment().build_dsl())
+        cls.dsl.build()
 
     @classmethod
     def tearDownClass(cls):
@@ -60,15 +57,15 @@ class UnifierTests(unittest.TestCase):
 
     #----------
     def test_basic(self):
-        sen1 = dsl("a.test.sentence")[0]
-        sen2 = dsl("a.test.sentence")[0]
+        sen1 = self.dsl("a.test.sentence")[0]
+        sen2 = self.dsl("a.test.sentence")[0]
         ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
         self.assertIsInstance(ctx_r, CtxIns)
         self.assertFalse(ctx_r)
 
     def test_variable(self):
-        sen1 = dsl("a.test.sentence")[0]
-        sen2 = dsl("a.test.$x")[0]
+        sen1 = self.dsl("a.test.sentence")[0]
+        sen2 = self.dsl("a.test.$x")[0]
         ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
 
         self.assertIsInstance(ctx_r, CtxIns)
@@ -78,9 +75,9 @@ class UnifierTests(unittest.TestCase):
         self.assertIsInstance(ctx_r['x'], AcabValue)
 
     def test_variable_with_gamma(self):
-        gamma = CtxIns({ 'x' : dsl("blah.bloo")[0]})
-        sen1 = dsl("a.test.$x")[0]
-        sen2 = dsl("a.test.$y")[0]
+        gamma = CtxIns({ 'x' : self.dsl("blah.bloo")[0]})
+        sen1 = self.dsl("a.test.$x")[0]
+        sen2 = self.dsl("a.test.$y")[0]
 
         ctx_r = suf.basic_unify(sen1, sen2, gamma)
 
@@ -93,24 +90,24 @@ class UnifierTests(unittest.TestCase):
         self.assertEqual(ctx_r[ctx_r['y']], "_:blah.bloo")
 
     def test_variable_chain_minimisation(self):
-        gamma = CtxIns({ 'x' : dsl("blah.bloo")[0]})
-        sen1 = dsl("a.test.$x")[0]
-        sen2 = dsl("a.test.$y")[0]
-        sen3 = dsl("a.test.$z")[0]
+        gamma = CtxIns({ 'x' : self.dsl("blah.bloo")[0]})
+        sen1 = self.dsl("a.test.$x")[0]
+        sen2 = self.dsl("a.test.$y")[0]
+        sen3 = self.dsl("a.test.$z")[0]
 
         ctx_r = suf.basic_unify(sen1, sen2, gamma)
         ctx_r = suf.basic_unify(sen2, sen3, ctx_r)
 
         self.assertIsInstance(ctx_r, CtxIns)
         self.assertEqual(len(ctx_r), 3)
-        self.assertEqual(ctx_r.x, dsl("blah.bloo")[0])
+        self.assertEqual(ctx_r.x, self.dsl("blah.bloo")[0])
         self.assertEqual(ctx_r.y, "x")
         self.assertEqual(ctx_r.z, "y")
 
     def test_variable_chain_minimisation_2(self):
-        gamma = CtxIns({ 'x' : dsl("blah.bloo")[0]})
-        sen1 = dsl("a.test.$x.$z")[0]
-        sen2 = dsl("a.test.$y.$x")[0]
+        gamma = CtxIns({ 'x' : self.dsl("blah.bloo")[0]})
+        sen1 = self.dsl("a.test.$x.$z")[0]
+        sen2 = self.dsl("a.test.$y.$x")[0]
 
         ctx_r = suf.basic_unify(sen1, sen2, gamma)
 
@@ -120,8 +117,8 @@ class UnifierTests(unittest.TestCase):
         self.assertEqual(ctx_r.z, "x")
 
     def test_unify_then_bind(self):
-        sen1 = dsl("a.test.sentence")[0]
-        sen2 = dsl("a.test.$x")[0]
+        sen1 = self.dsl("a.test.sentence")[0]
+        sen2 = self.dsl("a.test.$x")[0]
         ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
         sen3 = suf.basic_unify.apply(sen2, ctx_r)
 
@@ -129,9 +126,9 @@ class UnifierTests(unittest.TestCase):
 
 
     def test_unify_then_bind2(self):
-        total = dsl("a.test.sentence")[0]
-        sen1  = dsl("a.$y.sentence")[0]
-        sen2  = dsl("a.test.$x")[0]
+        total = self.dsl("a.test.sentence")[0]
+        sen1  = self.dsl("a.$y.sentence")[0]
+        sen2  = self.dsl("a.test.$x")[0]
 
         ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
         sen3  = suf.basic_unify.apply(sen1, ctx_r)
@@ -140,22 +137,22 @@ class UnifierTests(unittest.TestCase):
 
 
     def test_unify_fail(self):
-        sen1  = dsl("a.$x.sentence")[0]
-        sen2  = dsl("a.test.$x")[0]
+        sen1  = self.dsl("a.$x.sentence")[0]
+        sen2  = self.dsl("a.test.$x")[0]
 
         with self.assertRaises(TE.AcabTypingException):
             suf.basic_unify(sen1, sen2, CtxIns())
 
     def test_unify_fail_2(self):
-        sen1  = dsl("a.blah.sentence")[0]
-        sen2  = dsl("a.test.sentence")[0]
+        sen1  = self.dsl("a.blah.sentence")[0]
+        sen2  = self.dsl("a.test.sentence")[0]
 
         with self.assertRaises(TE.AcabTypingException):
             suf.basic_unify(sen1, sen2, CtxIns())
 
     def test_unify_duplicate(self):
-        sen1  = dsl("a.$x.test")[0]
-        sen2  = dsl("a.test.$x")[0]
+        sen1  = self.dsl("a.$x.test")[0]
+        sen2  = self.dsl("a.test.$x")[0]
 
         ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
 
@@ -163,8 +160,8 @@ class UnifierTests(unittest.TestCase):
         self.assertEqual(ctx_r.x, "test")
 
     def test_unify_vars(self):
-        sen1  = dsl("a.test.$x")[0]
-        sen2  = dsl("a.test.$y")[0]
+        sen1  = self.dsl("a.test.$x")[0]
+        sen2  = self.dsl("a.test.$y")[0]
         ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
         sen3  = suf.basic_unify.apply(sen1, ctx_r)
 
@@ -172,23 +169,23 @@ class UnifierTests(unittest.TestCase):
         self.assertEqual(sen2, sen3)
 
     def test_unify_conflict(self):
-        sen1  = dsl("a.test.$x.bloo")[0]
-        sen2  = dsl("a.test.blah.$x")[0]
+        sen1  = self.dsl("a.test.$x.bloo")[0]
+        sen2  = self.dsl("a.test.blah.$x")[0]
 
         with self.assertRaises(TE.AcabTypingException):
             ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
 
     def test_unify_conflict_same_side(self):
-        sen1  = dsl("a.test.$x.$x")[0]
-        sen2  = dsl("a.test.blah.bloo")[0]
+        sen1  = self.dsl("a.test.$x.$x")[0]
+        sen2  = self.dsl("a.test.blah.bloo")[0]
 
         with self.assertRaises(TE.AcabTypingException):
             ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
 
 
     def test_unify_chain(self):
-        sen1  = dsl("a.test.$x.$y")[0]
-        sen2  = dsl("a.test.$y.bloo")[0]
+        sen1  = self.dsl("a.test.$x.$y")[0]
+        sen2  = self.dsl("a.test.$y.bloo")[0]
 
         ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
         self.assertIn("x", ctx_r)
@@ -198,39 +195,39 @@ class UnifierTests(unittest.TestCase):
 
 
     def test_unify_fail(self):
-        sen1 = dsl("a.b.c")[0]
-        sen2 = dsl("d.b.c")[0]
+        sen1 = self.dsl("a.b.c")[0]
+        sen2 = self.dsl("d.b.c")[0]
 
         with self.assertRaises(TE.AcabTypingException):
             ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
 
 
     def test_len_diff_true_sub(self):
-        sen1 = dsl("a.b.c")[0]
-        sen2 = dsl("a.b")[0]
+        sen1 = self.dsl("a.b.c")[0]
+        sen2 = self.dsl("a.b")[0]
         ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
 
         self.assertFalse(ctx_r)
 
     def test_right_var(self):
-        sen1 = dsl("a.b.c")[0]
-        sen2 = dsl("a.b.$x")[0]
+        sen1 = self.dsl("a.b.c")[0]
+        sen2 = self.dsl("a.b.$x")[0]
         ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
         self.assertIsInstance(ctx_r, CtxIns)
         self.assertEqual(ctx_r.x, "c")
 
 
     def test_left_var(self):
-        sen1 = dsl("a.b.$x")[0]
-        sen2 = dsl("a.b")[0]
+        sen1 = self.dsl("a.b.$x")[0]
+        sen2 = self.dsl("a.b")[0]
         ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
 
         self.assertIsInstance(ctx_r, CtxIns)
         self.assertNotIn("x", ctx_r)
 
     def test_left_var_crit_path(self):
-        sen1 = dsl("a.$x.c")[0]
-        sen2 = dsl("a.b.c")[0]
+        sen1 = self.dsl("a.$x.c")[0]
+        sen2 = self.dsl("a.b.c")[0]
         ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
 
         self.assertIsInstance(ctx_r, CtxIns)
@@ -238,9 +235,9 @@ class UnifierTests(unittest.TestCase):
 
 
     def test_simple_chain(self):
-        sen1   = dsl("a.test.sentence")[0]
-        sen2   = dsl("a.test.$x")[0]
-        sen3   = dsl("a.$y.sentence")[0]
+        sen1   = self.dsl("a.test.sentence")[0]
+        sen2   = self.dsl("a.test.$x")[0]
+        sen3   = self.dsl("a.$y.sentence")[0]
         ctx_r  = suf.basic_unify(sen1, sen2, CtxIns())
         ctx_r2 = suf.basic_unify(sen2, sen3, ctx_r)
 
@@ -251,27 +248,27 @@ class UnifierTests(unittest.TestCase):
         self.assertIsInstance(ctx_r['x'], AcabValue)
 
     def test_unify_exclusion(self):
-        sen1 = dsl("a.test")[0]
-        sen2 = dsl("a!test")[0]
+        sen1 = self.dsl("a.test")[0]
+        sen2 = self.dsl("a!test")[0]
 
         with self.assertRaises(TE.AcabTypingException):
             suf.basic_unify(sen1, sen2, CtxIns())
 
     def test_unify_exclusion2(self):
-        sen1 = dsl("a.test.sentence")[0]
-        sen2 = dsl("a.test!sentence")[0]
+        sen1 = self.dsl("a.test.sentence")[0]
+        sen2 = self.dsl("a.test!sentence")[0]
 
         with self.assertRaises(TE.AcabTypingException):
             suf.basic_unify(sen1, sen2, CtxIns())
 
     def test_unify_exclusion_var(self):
-        sen1 = dsl("a.$x.sentence")[0]
-        sen2 = dsl("a.test!sentence")[0]
+        sen1 = self.dsl("a.$x.sentence")[0]
+        sen2 = self.dsl("a.test!sentence")[0]
 
         ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
 
         sen3 = suf.basic_unify.apply(sen1, ctx_r)
-        sen4 = dsl("a.test.sentence")[0]
+        sen4 = self.dsl("a.test.sentence")[0]
 
         with self.assertRaises(TE.AcabTypingException):
             suf.basic_unify(sen3, sen4, CtxIns())
@@ -282,8 +279,8 @@ class UnifierTests(unittest.TestCase):
         Ensure modal check can handle when a word is missing
         the modality because its the terminal of the sentence
         """
-        sen1 = dsl("a.test.sen!blah")[0]
-        sen2 = dsl("a.test.sen")[0]
+        sen1 = self.dsl("a.test.sen!blah")[0]
+        sen2 = self.dsl("a.test.sen")[0]
 
         ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
         self.assertTrue(not bool(ctx_r))
@@ -293,30 +290,37 @@ class UnifierTests(unittest.TestCase):
         Test whether a query terminal is significant
         (currently not)
         """
-        sen1 = dsl("a.$x.sentence")[0]
-        sen2 = dsl("a.test!sentence?")[0]
+        sen1 = self.dsl("a.$x.sentence")[0]
+        sen2 = self.dsl("a.test!sentence?")[0]
         ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
         self.assertEqual(ctx_r.x, "test")
 
     def test_unify_nested_conflict(self):
-        sen1 = dsl("a.b")[0] << (VI.ValueFactory.sen() << ["d","e","f"])
-        sen2 = dsl("a.b")[0] << (VI.ValueFactory.sen() << ["d","e","g"])
+        sen1 = self.dsl("a.b")[0] << (VI.ValueFactory.sen() << ["d","e","f"])
+        sen2 = self.dsl("a.b")[0] << (VI.ValueFactory.sen() << ["d","e","g"])
 
         with self.assertRaises(TE.AcabTypingException):
             ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
 
     def test_unify_nested(self):
-        sen1 = dsl("a.b")[0] << (VI.ValueFactory.sen() << ["d","e","f"])
-        sen2 = dsl("a.b")[0] << (VI.ValueFactory.sen() << ["d","e","f"])
+        sen1 = self.dsl("a.b")[0] << (VI.ValueFactory.sen() << ["d","e","f"])
+        sen2 = self.dsl("a.b")[0] << (VI.ValueFactory.sen() << ["d","e","f"])
 
         ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
         self.assertFalse(ctx_r)
 
     def test_unify_nested_var(self):
-        sen1 = dsl("a.b")[0] << (VI.ValueFactory.sen() << ["d","e","f"])
-        sen2 = dsl("a.b")[0] << (VI.ValueFactory.sen() << ["d","e","x"])
+        sen1 = self.dsl("a.b")[0] << (VI.ValueFactory.sen() << ["d","e","f"])
+        sen2 = self.dsl("a.b")[0] << (VI.ValueFactory.sen() << ["d","e","x"])
 
         sen2[-1][-1].data[DS.BIND] = True
         ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
         self.assertIn("x", ctx_r)
         self.assertEqual(ctx_r.x, "f")
+
+    def test_unify_var_against_nested(self):
+        sen1 = self.dsl("a.b.$x")[0]
+        sen2 = self.dsl("a.b")[0] << self.dsl("d.e.f")[0]
+
+        ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
+        self.assertEqual(ctx_r.x, "_:d.e.f")

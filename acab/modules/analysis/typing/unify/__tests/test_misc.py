@@ -17,7 +17,7 @@ with warnings.catch_warnings():
 from acab.core.parsing.annotation import ValueAnnotation
 import acab.core.defaults.value_keys as DS
 from acab.core.value.value import AcabValue
-from acab.modules.analysis.typing.module import TypingFragment
+from acab.modules.analysis.typing.module import TypeSpecFragment
 from acab.modules.context.context_set import ContextInstance as CtxIns
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 
@@ -52,7 +52,7 @@ class UnifierTests(unittest.TestCase):
 
         global dsl
         dsl   = ppDSL.PyParseDSL()
-        dsl.register(EXLO_Parser).register(TypingFragment().build_dsl())
+        dsl.register(EXLO_Parser).register(TypeSpecFragment().build_dsl())
         dsl.build()
 
     @classmethod

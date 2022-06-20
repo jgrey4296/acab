@@ -153,13 +153,13 @@ def whole_sentence_bind(first, second, ctx, unifier=None):
     Early exit if all you have is a variable
     """
     result = unify_enum.NA
-    if first.is_var and len(first) == 1 and ctx[first[0]] == ATOM:
+    if first.is_var and ctx[first[0]] == ATOM:
         result = unify_enum.END
     elif first.is_var and ctx[first] == ATOM:
         result = unify_enum.END
     elif not first.is_var and util.top_var(first, ctx) == ATOM:
         result = unify_enum.END
-    elif second.is_var and len(second) == 1 and ctx[second[0]] == ATOM:
+    elif second.is_var and ctx[second[0]] == ATOM:
         result = unify_enum.END
     elif second.is_var and (ctx[second] == ATOM):
         result = unify_enum.END
@@ -170,6 +170,22 @@ def whole_sentence_bind(first, second, ctx, unifier=None):
 
     return result
 
+def whole_sentence_bind_simple(first, second, ctx, unifier=None):
+    """
+    Early exit if all you have is a variable
+    """
+    result = unify_enum.NA
+    if first.is_var and len(first) == 1:
+        result = unify_enum.END
+        ctx[first[0].key()] = second
+        ctx[first.key()]    = second
+
+    elif second.is_var and len(second) == 1:
+        result = unify_enum.END
+        ctx[second[0].key()] = first
+        ctx[second.key()]    = first
+
+    return result
 
 def fail_handler_type(index, first, second, ctx, unifier=None):
     raise TE.AcabUnifySieveFailure(first[index], second[index], ctx=ctx)
@@ -268,7 +284,7 @@ def unify_type_sens(logic, index, first, second, ctx, unifier=None):
         current_ctx_type = ValueAnnotation(DS.TYPE_INSTANCE, current_ctx_type)
 
     if ctx_more_gen:
-        ctx[update_typing[1]] = current_ctx_type
+        ctx[update_typing[1]]       = current_ctx_type
     elif not(isinstance(update_typing[1], str)):
         assert(update_typing[1].is_var)
         ctx[update_typing[1]] = update_typing[2]
@@ -350,7 +366,7 @@ type_sen_unify = Unifier(type_as_sen_logic)
 # a.b.c(::d.e.f)
 typed_sen_logic = UnifyLogic(
     entry_transform=lambda x,y,c: (x, y, gen_type_vars(x, y, c)),
-    early_exit=None,
+    early_exit=whole_sentence_bind_simple,
     truncate=util.sen_extend,
     sieve=[var_handler_basic,
            suf.check_modality,
