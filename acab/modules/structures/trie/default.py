@@ -25,14 +25,7 @@ logging = logmod.getLogger(__name__)
 config  = AcabConfig()
 
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
-QUERY_SIGNAL           = Sentence() << config.attr.Semantic.Signals.QUERY
-ACTION_SIGNAL          = Sentence() << config.attr.Semantic.Signals.ACTION
-TRANSFORM_SIGNALT      = Sentence() << config.attr.Semantic.Signals.TRANSFORM
-RULE_SIGNAL            = Sentence() << config.attr.Semantic.Signals.RULE
-AGENDA_SIGANL          = Sentence() << config.attr.Semantic.Signals.AGENDA
-LAYER_SIGNAL           = Sentence() << config.attr.Semantic.Signals.LAYER
-PIPELINE_SIGNAL        = Sentence() << config.attr.Semantic.Signals.PIPELINE
-ATOM_SIGNAL            = Sentence() << config.attr.Semantic.Signals.ATOM
+ATOM_SIGNAL            = Sentence() << config.attr.Data.TYPE_BASE
 
 TRIE_SIGNAL              = Sentence() << config.attr.Semantic.Signals.TRIE
 

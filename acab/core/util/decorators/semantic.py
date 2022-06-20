@@ -50,7 +50,7 @@ def RunInSubCtxSet(f):
         logging.debug("Creating Subctx")
         semSys = the_args[1]
         ctxs   = the_kwargs['ctxs']
-        subctx = ctxs.subctx()
+        subctx = ctxs.subctx(ctxs)
         # register the subctx for merging:
         ctxs.delay(ctxs.delayed_e.MERGE, val=subctx)
         the_kwargs['ctxs'] = subctx

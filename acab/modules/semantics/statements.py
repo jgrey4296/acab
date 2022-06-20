@@ -177,16 +177,16 @@ class AtomicRuleAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
         # TODO handle rule arguments
         rule = instruction
         # Run the query
-        if DS.QUERY_COMPONENT in rule:
+        if DS.QUERY_COMPONENT in rule and bool(rule[DS.QUERY_COMPONENT]):
             semsys(rule[DS.QUERY_COMPONENT], ctxs=ctxs)
 
         if not bool(ctxs):
             return
 
-        if DS.TRANSFORM_COMPONENT in rule:
+        if DS.TRANSFORM_COMPONENT in rule and bool(rule[DS.TRANSFORM_COMPONENT]):
             semsys(rule[DS.TRANSFORM_COMPONENT], ctxs=ctxs)
 
-        if DS.ACTION_COMPONENT in rule:
+        if DS.ACTION_COMPONENT in rule and bool(rule[DS.ACTION_COMPONENT]):
             semsys(rule[DS.ACTION_COMPONENT], ctxs=ctxs)
 
 class ProxyRuleAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
@@ -231,6 +231,8 @@ class ProxyRuleAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
         if DS.ACTION_COMPONENT in instruction:
             semsys(instruction[DS.ACTION_COMPONENT],
                    ctxs=ctxs)
+
+        # TODO invalidate the named set?
 
 
 class ContainerAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):

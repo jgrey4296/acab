@@ -25,6 +25,7 @@ from acab.core.util.part_implementations import handler_system as HS
 from acab.error.base import AcabBasicException
 from acab.error.parse import AcabParseException
 from acab.interfaces.dsl import DSL_Builder_i, DSL_Spec_i
+from acab.error.protocol import AcabProtocolError as APE
 
 config                 = AcabConfig()
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
@@ -33,10 +34,12 @@ Parser           = "pp.ParserElement"
 Sentence         = AT.Sentence
 Query            = AT.Container
 ModuleFragment   = AT.ModuleFragment
-PyParse_Spec     = "PyParse_Spec"
+PyParse_Spec_A   = "PyParse_Spec"
 File             = 'FileObj'
 
 #----------------------------------------
+
+@APE.assert_implements(dsl.DSL_Handler_i)
 @dataclass
 class PyParse_Handler(HS.Handler, dsl.DSL_Handler_i):
     """ Register a function for handling a DSL setup signal.
@@ -61,7 +64,10 @@ class PyParse_Handler(HS.Handler, dsl.DSL_Handler_i):
 
         return f"DSL_Handler({self.signal}, {self.func}, {func_expr})"
 
-    def __call__(self, the_str):
+    def __call__(self, *args):
+        raise TypeError("Use .parse_string")
+
+    def parse_string(self, the_str):
         """ A DSL Handler parses an input string when called """
         return self.func.parse_string(the_str)[:]
 
@@ -69,6 +75,8 @@ class PyParse_Handler(HS.Handler, dsl.DSL_Handler_i):
         return isinstance(instruction, str)
 
 
+
+@APE.assert_implements(dsl.DSL_Spec_i)
 @dataclass
 class PyParse_Spec(DSLImpl.DSL_Spec, dsl.DSL_Spec_i):
     """
@@ -88,7 +96,7 @@ class PyParse_Spec(DSLImpl.DSL_Spec, dsl.DSL_Spec_i):
         if any([not isinstance(x, pp.Forward) for x in self.struct]):
             raise AcabParseException(f"Signal `{self.signal}` isn't paired to a `Forward` Parser")
 
-    def extend_spec(self, spec:PyParse_Spec):
+    def extend_spec(self, spec:PyParse_Spec_A):
         if not isinstance(spec, PyParse_Spec):
             raise AcabParseException(f"Tried to extend a PyParse_Spec with {spec}")
 
@@ -133,9 +141,9 @@ class PyParse_Spec(DSLImpl.DSL_Spec, dsl.DSL_Spec_i):
             # however, *can not* deep-copy the parser for multiple versions.
             #
             # Then for next use of parsers to generate their own name again
-            clear_parser_names(struct)
+            # clear_parser_names(struct)
             # Propagate parser names, even through Forwards
-            deep_update_names(struct)
+            # deep_update_names(struct)
 
         return output
 
@@ -155,6 +163,7 @@ class PyParse_Spec(DSLImpl.DSL_Spec, dsl.DSL_Spec_i):
         return self.debug
 
 #----------------------------------------
+@APE.assert_implements(dsl.DSL_Builder_i)
 class PyParseDSL(DSLImpl.DSL_Builder, dsl.DSL_Builder_i):
 
     def _register_default(self):
@@ -164,7 +173,7 @@ class PyParseDSL(DSLImpl.DSL_Builder, dsl.DSL_Builder_i):
         self._register_spec(PyParse_Spec(DEFAULT_HANDLER_SIGNAL))
 
     @EnsureDSLInitialised
-    def parse(self, s:str) -> list[Sentence]:
+    def parse(self, s:str, signal=None) -> list[Sentence]:
         if not bool(self[DEFAULT_HANDLER_SIGNAL]):
             raise AcabParseException("No Default Parser Set for DSL")
 

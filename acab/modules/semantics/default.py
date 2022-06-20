@@ -22,21 +22,21 @@ logging    = logmod.getLogger(__name__)
 config     = AcabConfig()
 
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
-QUERY_SIGNAL           = Sentence() << config.attr.Semantic.Signals.QUERY
-ACTION_SIGNAL          = Sentence() << config.attr.Semantic.Signals.ACTION
-TRANSFORM_SIGNAL       = Sentence() << config.attr.Semantic.Signals.TRANSFORM
-RULE_SIGNAL            = Sentence() << config.attr.Semantic.Signals.RULE
-AGENDA_SIGNAL          = Sentence() << config.attr.Semantic.Signals.AGENDA
-LAYER_SIGNAL           = Sentence() << config.attr.Semantic.Signals.LAYER
-PIPELINE_SIGNAL        = Sentence() << config.attr.Semantic.Signals.PIPELINE
-CONTAINER_SIGNAL       = Sentence() << config.attr.Semantic.Signals.CONTAINER
-ATOM_SIGNAL            = Sentence() << config.attr.Semantic.Signals.ATOM
+INSTRUCT_SEN     = VF.sen() << config.attr.Type.Primitive.INSTRUCT
+CONTAINER_SEN    = INSTRUCT_SEN << config.attr.Type.Primitive.CONTAINER
+STRUCT_SEN       = INSTRUCT_SEN << config.attr.Type.Primitive.STRUCTURE
+
+QUERY_SIGNAL     = CONTAINER_SEN << config.attr.Type.Primitive.QUERY
+ACTION_SIGNAL    = CONTAINER_SEN << config.attr.Type.Primitive.ACTION
+TRANSFORM_SIGNAL = CONTAINER_SEN << config.attr.Type.Primitive.TRANSFORM
+RULE_SIGNAL      = STRUCT_SEN    << config.attr.Type.Primitive.RULE
+ATOM_SIGNAL      = VF.sen()      << config.attr.Data.TYPE_BASE
 
 query_spec  = BSS.Spec(QUERY_SIGNAL).spec_from(SI.StatementSemantics_i)
 action_spec = BSS.Spec(ACTION_SIGNAL).spec_from(SI.StatementSemantics_i)
 rule_spec   = BSS.Spec(RULE_SIGNAL).spec_from(SI.StatementSemantics_i)
 trans_spec  = BSS.Spec(TRANSFORM_SIGNAL).spec_from(SI.StatementSemantics_i)
-cont_spec   = BSS.Spec(CONTAINER_SIGNAL).spec_from(SI.StatementSemantics_i)
+cont_spec   = BSS.Spec(CONTAINER_SEN).spec_from(SI.StatementSemantics_i)
 
 def DEFAULT_SPECS():
     """
@@ -66,7 +66,7 @@ def DEFAULT_HANDLERS():
     action_handler  = ASem.ActionAbstraction().as_handler(signal=ACTION_SIGNAL)
     rule_handler    = ASem.AtomicRuleAbstraction().as_handler(signal=RULE_SIGNAL)
     trans_handler   = ASem.TransformAbstraction().as_handler(signal=TRANSFORM_SIGNAL)
-    cont_handler    = ASem.ContainerAbstraction().as_handler(signal=CONTAINER_SIGNAL)
+    cont_handler    = ASem.ContainerAbstraction().as_handler(signal=CONTAINER_SEN)
 
     return [cont_handler, query_handler, action_handler, rule_handler,
             trans_handler, node_handler, trie_handler,

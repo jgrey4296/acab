@@ -40,7 +40,7 @@ class BasicSemanticSystem(basic.SemanticSystem, SemanticSystem_i):
         lambda x: x if isinstance(x, str) else None,
         lambda x: x.signal if isinstance(x, HandlerOverride) else None,
         lambda x: str(x.data[SEM_HINT]) if SEM_HINT in x.data else None,
-        lambda x: str(x.type)
+        lambda x: x.type
     ]
 
     ctx_set : Type[CtxSet] = field(default=ContextSet)
