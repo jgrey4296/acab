@@ -1,32 +1,34 @@
 #https://docs.python.org/3/library/unittest.html
-from os.path import splitext, split
-import unittest
 import logging as logmod
+import unittest
+from os.path import split, splitext
+
 logging = logmod.getLogger(__name__)
 
 import random
+import warnings
 
 import acab
-import warnings
+
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     acab.setup()
 
-from acab.core.value.value import AcabValue
+from acab.core.containers import action, transform
+from acab.core.util.sentences import ProductionComponent
+from acab.core.value.instruction import ProductionContainer
 from acab.core.value.sentence import Sentence
-from acab.core.containers import action
-from acab.core.containers import transform
-from acab.core.value.instruction import ProductionComponent, ProductionContainer
-
+from acab.core.value.value import AcabValue
 from acab.modules.values import numbers
 from acab.modules.values.numbers.parsing import NumberParser as NP
 from acab.modules.values.numbers.util import FLOAT_t, INT_t
+
 from acab.modules.parsing.exlo ActionParser as AP
 from acab.modules.parsing.exlo FactParser as FP
 from acab.modules.parsing.exlo TransformParser as TP
-from acab.working_memory.trie_wm.trie_working_memory import TrieWM
-from acab.core.semantics.print_semantics import AcabPrintSemantics
 from acab.core.printing import default_handlers as DH
+from acab.core.semantics.print_semantics import AcabPrintSemantics
+from acab.working_memory.trie_wm.trie_working_memory import TrieWM
 
 basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel),
               Sentence: DH.DEF_SEN_PAIR,

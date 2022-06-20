@@ -10,15 +10,15 @@ from dataclasses import FrozenInstanceError, InitVar, dataclass, field, replace
 from enum import Enum
 from uuid import UUID, uuid1
 
-from acab import types as AT
 import acab.core.defaults.value_keys as DS
-import acab.interfaces.context as CtxInt
 import acab.error.semantic as ASErr
+import acab.interfaces.context as CtxInt
 from acab import AcabConfig
-from acab.core.value.instruction import (ProductionComponent,
-                                                        ProductionContainer)
-from acab.interfaces.value import Sentence_i
+from acab import types as AT
+from acab.core.util.sentences import ProductionComponent
+from acab.core.value.instruction import ProductionContainer
 from acab.error.semantic import AcabSemanticException
+from acab.interfaces.value import Sentence_i
 from acab.modules.context.constraints import ConstraintCollection
 
 config = AcabConfig()
@@ -36,6 +36,7 @@ Value            = AT.Value
 Statement        = AT.Instruction
 Sen              = Sentence_i
 Node             = AT.Node
+StructView       = AT.StructView
 ModuleFragment   = AT.ModuleFragment
 NamedCtxSet      = "NamedCtxSet"
 

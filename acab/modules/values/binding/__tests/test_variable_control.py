@@ -14,9 +14,9 @@ with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
 
-from acab.modules.values.binding.variable_control import rectx
-import acab.core.defaults.value_keys as DS
-import acab.interfaces.value as VI
+    from acab.modules.values.binding.variable_control import rectx
+    import acab.core.defaults.value_keys as DS
+    import acab.interfaces.value as VI
 
 VF = VI.ValueFactory
 

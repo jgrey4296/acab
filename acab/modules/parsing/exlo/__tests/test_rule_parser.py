@@ -14,27 +14,27 @@ with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
 
-    if '@pytest_ar' in globals():
-        from acab.core.parsing import debug_funcs as DBF
-        DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+    # if '@pytest_ar' in globals():
+    #     from acab.core.parsing import debug_funcs as DBF
+    #     DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
-from acab.core.defaults.value_keys import (ACTION_COMPONENT, QUERY_COMPONENT,
-                                           TRANSFORM_COMPONENT)
-from acab.core.parsing import parsers as PU
-from acab.core.value.instruction import (ProductionComponent,
-                                         ProductionContainer,
-                                         ProductionOperator,
-                                         ProductionStructure)
-from acab.core.value.sentence import Sentence
-from acab.core.value.value import AcabValue
-from acab.modules.parsing.exlo.parsers import ActionParser as AP
-from acab.modules.parsing.exlo.parsers import FactParser as FP
-from acab.modules.parsing.exlo.parsers import QueryParser as QP
-from acab.modules.parsing.exlo.parsers import RuleParser as RP
+    from acab.core.defaults.value_keys import ACTION_COMPONENT as ACTION_V
+    from acab.core.defaults.value_keys import QUERY_COMPONENT as QUERY_V
+    from acab.core.defaults.value_keys import TRANSFORM_COMPONENT as TRANSFORM_V
 
-QUERY_V     = QUERY_COMPONENT
-TRANSFORM_V = TRANSFORM_COMPONENT
-ACTION_V    = ACTION_COMPONENT
+
+    from acab.core.parsing import parsers as PU
+    from acab.core.util.sentences import ProductionComponent
+    from acab.core.value.instruction import (ProductionContainer,
+                                            ProductionOperator,
+                                            ProductionStructure)
+    from acab.core.value.sentence import Sentence
+    from acab.core.value.value import AcabValue
+    from acab.modules.parsing.exlo.parsers import ActionParser as AP
+    from acab.modules.parsing.exlo.parsers import FactParser as FP
+    from acab.modules.parsing.exlo.parsers import QueryParser as QP
+    from acab.modules.parsing.exlo.parsers import RuleParser as RP
+    from acab.modules.parsing.exlo import util as EXu
 
 class Trie_Rule_Parser_Tests(unittest.TestCase):
 

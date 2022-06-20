@@ -11,7 +11,6 @@ import pyparsing as pp
 
 logging = logmod.getLogger(__name__)
 
-
 import acab
 
 with warnings.catch_warnings():
@@ -22,15 +21,15 @@ with warnings.catch_warnings():
     #     DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
 
-    from acab.core.parsing.annotation import ValueRepeatAnnotation
     import acab.core.defaults.value_keys as DS
-    from acab.core.value.instruction import (Instruction, ProductionComponent,
-                                            ProductionContainer)
+    from acab.core.parsing.annotation import ValueRepeatAnnotation
+    from acab.core.value.instruction import Instruction, ProductionContainer
+    from acab.core.util.sentences import ProductionComponent
     from acab.core.value.sentence import Sentence
     from acab.core.value.value import AcabValue
+    from acab.interfaces.value import ValueFactory as VF
     from acab.modules.engines.configured import exlo
     from acab.modules.operators.dfs import parser as DOP
-    from acab.interfaces.value import ValueFactory as VF
 
 BIND            = DS.BIND
 QUERY           = DS.QUERY

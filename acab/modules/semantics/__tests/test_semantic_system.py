@@ -2,31 +2,33 @@
 import logging as logmod
 import sys
 import unittest
-from os.path import abspath, expanduser, split, splitext
 from enum import Enum
+from os.path import abspath, expanduser, split, splitext
 
 logging = logmod.getLogger(__name__)
 
 sys.path.append(abspath(expanduser("~/github/acab")))
 
-import acab
 import warnings
+
+import acab
+
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
 
-import acab.core.defaults.value_keys as DS
-import acab.error.base as AE
-from acab.core.semantics import basic
-from acab.core.value.instruction import (ProductionComponent,
-                                         ProductionContainer,
-                                         ProductionOperator,
-                                         ProductionStructure)
-from acab.core.value.sentence import Sentence
-from acab.interfaces.handler_system import Handler_i
-from acab.interfaces.semantic import SemanticSystem_i, StatementSemantics_i
-from acab.modules.semantics.basic_system import BasicSemanticSystem
-from acab.modules.semantics.values import ExclusionNodeSemantics
+    import acab.core.defaults.value_keys as DS
+    import acab.error.base as AE
+    from acab.core.semantics import basic
+    from acab.core.util.sentences import ProductionComponent
+    from acab.core.value.instruction import (ProductionContainer,
+                                            ProductionOperator,
+                                            ProductionStructure)
+    from acab.core.value.sentence import Sentence
+    from acab.interfaces.handler_system import Handler_i
+    from acab.interfaces.semantic import SemanticSystem_i, StatementSemantics_i
+    from acab.modules.semantics.basic_system import BasicSemanticSystem
+    from acab.modules.semantics.values import ExclusionNodeSemantics
 
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 

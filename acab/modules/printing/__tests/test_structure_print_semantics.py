@@ -17,27 +17,27 @@ with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
 
-# from acab.core.parsing import debug_funcs as DBF
-# DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+    # from acab.core.parsing import debug_funcs as DBF
+    # DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
-import acab.modules.printing.printers as Printers
-from acab.core.config.config import AcabConfig
-from acab.core.defaults import print_signals as DSig
-from acab.core.defaults.value_keys import (AT_BIND, BIND, NEGATION, QUERY,
-                                           TYPE_INSTANCE)
-from acab.core.parsing import pyparse_dsl as ppDSL
-from acab.core.value.instruction import (Instruction, ProductionComponent,
-                                         ProductionContainer,
-                                         ProductionOperator,
-                                         ProductionStructure)
-from acab.core.value.sentence import Sentence
-from acab.core.value.value import AcabValue
-from acab.interfaces.handler_system import Handler_i
-from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
-from acab.modules.parsing.exlo.parsers import FactParser as FP
-from acab.modules.parsing.exlo.parsers import QueryParser as QP
-from acab.modules.printing import default
-from acab.modules.printing.basic_printer import BasicPrinter
+    import acab.modules.printing.printers as Printers
+    from acab.core.config.config import AcabConfig
+    from acab.core.defaults import print_signals as DSig
+    from acab.core.defaults.value_keys import (AT_BIND, BIND, NEGATION, QUERY,
+                                            TYPE_INSTANCE)
+    from acab.core.parsing import pyparse_dsl as ppDSL
+    from acab.core.util.sentences import ProductionComponent
+    from acab.core.value.instruction import (Instruction, ProductionContainer,
+                                            ProductionOperator,
+                                            ProductionStructure)
+    from acab.core.value.sentence import Sentence
+    from acab.core.value.value import AcabValue
+    from acab.interfaces.handler_system import Handler_i
+    from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
+    from acab.modules.parsing.exlo.parsers import FactParser as FP
+    from acab.modules.parsing.exlo.parsers import QueryParser as QP
+    from acab.modules.printing import default
+    from acab.modules.printing.basic_printer import BasicPrinter
 
 NEGATION_SYMBOL_S = config.prepare("Symbols", "NEGATION")()
 ANON_VALUE_S      = config.prepare("Symbols", "ANON_VALUE")()

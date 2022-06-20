@@ -26,7 +26,6 @@ from acab.error.printing import AcabPrintException
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces.printing import PrintSystem_i
 from acab.interfaces.protocols import handler_system as HSubP
-from acab.interfaces.protocols.value import AcabReducible_p
 from acab.interfaces.semantic import SemanticSystem_i
 from acab.interfaces.value import Sentence_i, Value_i, Action_i, Operator_i
 

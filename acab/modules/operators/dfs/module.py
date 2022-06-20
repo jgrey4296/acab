@@ -12,7 +12,7 @@ from acab.core.parsing.consts import QUERY, op, orm, s_lit
 from acab.core.util import fragments as FR
 from acab.core.util.fragments import DSL_Fragment, Semantic_Fragment
 from acab.core.util.part_implementations.handler_system import HandlerSpec
-from acab.core.value.instruction import ProductionComponent
+from acab.core.util.sentences import ProductionComponent
 from acab.core.value.sentence import Sentence
 from acab.interfaces import fragments as FI
 from acab.interfaces import handler_system as HS

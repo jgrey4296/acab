@@ -14,20 +14,20 @@ with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
 
-    if '@pytest_ar' in globals():
-        from acab.core.parsing import debug_funcs as DBF
-        DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+    # if '@pytest_ar' in globals():
+    #     from acab.core.parsing import debug_funcs as DBF
+    #     DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
-import acab.core.defaults.value_keys as DS
-from acab.core.parsing import parsers as PU
-from acab.core.value.instruction import (ProductionComponent,
-                                         ProductionContainer,
-                                         ProductionOperator)
-from acab.core.value.sentence import Sentence
-from acab.core.value.value import AcabValue
-from acab.modules.parsing.exlo.parsers import ActionParser as AP
-from acab.modules.parsing.exlo.parsers import FactParser as FP
-from acab.modules.parsing.exlo.parsers import TransformParser as TP
+    import acab.core.defaults.value_keys as DS
+    from acab.core.parsing import parsers as PU
+    from acab.core.util.sentences import ProductionComponent
+    from acab.core.value.instruction import (ProductionContainer,
+                                             ProductionOperator)
+    from acab.core.value.sentence import Sentence
+    from acab.core.value.value import AcabValue
+    from acab.modules.parsing.exlo.parsers import ActionParser as AP
+    from acab.modules.parsing.exlo.parsers import FactParser as FP
+    from acab.modules.parsing.exlo.parsers import TransformParser as TP
 
 
 class Trie_Transform_Parser_Tests(unittest.TestCase):

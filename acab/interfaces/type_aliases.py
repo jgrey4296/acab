@@ -58,7 +58,6 @@ StructView          : TypeAlias = "data.StructView"
 # Instructions
 Operator            : TypeAlias = "value.Operator_i[TValCore]"
 Action              : TypeAlias = "value.Action_i"
-Component           : TypeAlias = "instruction.ProductionComponent"
 Container           : TypeAlias = "instruction.ProductionContainer"
 ProductionStructure : TypeAlias = "instruction.ProductionStructure"
 

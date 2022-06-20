@@ -20,17 +20,13 @@ with warnings.catch_warnings():
         from acab.core.parsing import debug_funcs as DBF
         DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
-
-# from acab.core.parsing import debug_funcs as DBF
-# DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
-
-import acab.interfaces.value as VI
-from acab.core.parsing import pyparse_dsl as ppDSL
-import acab.core.defaults.value_keys as DS
-from acab.modules.context.context_instance import ContextInstance
-from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
-from acab.core.data.node import AcabNode
-from acab.modules.values.binding.binding import Bind
+    import acab.interfaces.value as VI
+    from acab.core.parsing import pyparse_dsl as ppDSL
+    import acab.core.defaults.value_keys as DS
+    from acab.modules.context.context_instance import ContextInstance
+    from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
+    from acab.core.data.node import AcabNode
+    from acab.modules.values.binding.binding import Bind
 
 
 class BindingLogicTests(unittest.TestCase):

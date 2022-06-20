@@ -15,7 +15,6 @@ from typing import (Any, Callable, ClassVar, Collection, Container, Final,
 
 from acab import types as AT
 from acab import AcabConfig
-from acab.interfaces.sieve import AcabSieve
 
 logging = logmod.getLogger(__name__)
 config  = AcabConfig()

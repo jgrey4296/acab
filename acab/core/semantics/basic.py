@@ -37,7 +37,6 @@ from acab import types as AT
 from acab.core.defaults.value_keys import QUERY
 from acab.error.printing import AcabPrintException
 from acab.error.semantic import AcabSemanticException
-from acab.interfaces.protocols.value import AcabReducible_p
 from acab.interfaces.value import Sentence_i, Value_i
 from acab.core.util.part_implementations import handler_system as HSImpl
 from acab.interfaces import semantic as SI

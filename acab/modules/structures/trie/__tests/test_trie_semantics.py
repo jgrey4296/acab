@@ -6,33 +6,33 @@ sys.path.append(abspath(expanduser("~/github/acab")))
 import logging as logmod
 import unittest
 import unittest.mock as mock
-from os.path import split, splitext
 from enum import Enum
+from os.path import split, splitext
 
 import acab
 
 logging = logmod.getLogger(__name__)
 import warnings
+
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
+    import acab.core.defaults.value_keys as DS
+    from acab.core.data.acab_struct import BasicNodeStruct
+    from acab.core.data.node import AcabNode
+    from acab.core.value.sentence import Sentence
+    from acab.core.value.value import AcabValue
+    from acab.interfaces.handler_system import Handler_i
+    from acab.interfaces.value import ValueFactory as VF
+    from acab.modules.context import context_delayed_actions
+    from acab.modules.context.context_set import (ConstraintCollection,
+                                                  ContextInstance, ContextSet)
     from acab.modules.operators.query.query_operators import (EQ, AlwaysMatch,
                                                               SimpleTypeMatch)
-
-from acab.core.data.acab_struct import BasicNodeStruct
-from acab.core.data.node import AcabNode
-import acab.core.defaults.value_keys as DS
-from acab.core.value.instruction import ProductionComponent
-from acab.core.value.sentence import Sentence
-from acab.core.value.value import AcabValue
-from acab.interfaces.handler_system import Handler_i
-from acab.interfaces.value import ValueFactory
-from acab.modules.context import context_delayed_actions
-from acab.modules.context.context_set import (ConstraintCollection,
-                                              ContextInstance, ContextSet)
-from acab.modules.semantics.values import (BasicNodeSemantics,
-                                           ExclusionNodeSemantics)
-from acab.modules.structures.trie.semantics import FlattenBreadthTrieSemantics
+    from acab.modules.semantics.values import (BasicNodeSemantics,
+                                               ExclusionNodeSemantics)
+    from acab.modules.structures.trie.semantics import \
+        FlattenBreadthTrieSemantics
 
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 EXOP         = config.prepare("MODAL", "exop")()

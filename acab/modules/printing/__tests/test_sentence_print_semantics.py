@@ -30,9 +30,10 @@ import acab.modules.parsing.exlo.parsers.TransformParser as TP
 import acab.modules.printing.printers as Printers
 from acab.core.config.config import AcabConfig
 from acab.core.defaults import print_signals as DSig
-from acab.core.value.instruction import (Instruction, ProductionComponent,
+from acab.core.value.instruction import (Instruction,
                                          ProductionContainer,
                                          ProductionOperator)
+from acab.core.util.sentences import ProductionComponent
 from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue
 from acab.interfaces.handler_system import Handler_i

@@ -15,24 +15,24 @@ with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
 
-    if '@pytest_ar' in globals():
-        from acab.core.parsing import debug_funcs as DBF
-        DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+    # if '@pytest_ar' in globals():
+    #     from acab.core.parsing import debug_funcs as DBF
+    #     DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
+    import acab.modules.parsing.exlo.parsers.FactParser as FP
+    import acab.modules.parsing.exlo.parsers.QueryParser as QP
+    from acab.core.defaults import value_keys as DS
+    from acab.core.defaults.value_keys import (BIND, NEGATION, OPERATOR, QUERY,
+                                               QUERY_FALLBACK)
+    from acab.core.parsing import parsers as PU
+    from acab.core.parsing.annotation import ValueRepeatAnnotation
+    from acab.core.util.sentences import ProductionComponent
 
-from acab.core.defaults import value_keys as DS
-import acab.modules.parsing.exlo.parsers.FactParser as FP
-import acab.modules.parsing.exlo.parsers.QueryParser as QP
-from acab.core.defaults.value_keys import (BIND, NEGATION, OPERATOR, QUERY,
-                                           QUERY_FALLBACK)
-from acab.core.parsing import parsers as PU
-from acab.core.parsing.annotation import ValueRepeatAnnotation
-from acab.core.value.instruction import (Instruction, ProductionComponent,
-                                         ProductionContainer,
-                                         ProductionOperator)
-from acab.core.value.sentence import Sentence
-from acab.core.value.value import AcabValue
-from acab.modules.operators import query as QOP
+    from acab.core.value.instruction import (Instruction, ProductionContainer,
+                                             ProductionOperator)
+    from acab.core.value.sentence import Sentence
+    from acab.core.value.value import AcabValue
+    from acab.modules.operators import query as QOP
 
 CONSTRAINT_V     = config.prepare("Parse.Structure", "CONSTRAINT")()
 REGEX_PRIM       = config.prepare("Type.Primitive", "REGEX")()

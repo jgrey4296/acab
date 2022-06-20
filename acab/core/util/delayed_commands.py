@@ -14,7 +14,6 @@ from acab import types as AT
 CtxSet     = AT.CtxSet
 CtxIns     = AT.CtxIns
 Value      = AT.Value
-ProdComp   = AT.Component
 MaybeDelayValue = 'UUID | CtxIns | CtxSet | None'
 
 

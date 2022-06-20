@@ -22,20 +22,20 @@ with warnings.catch_warnings():
         DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
 
-import acab.core.defaults.value_keys as DS
-from acab.core.parsing.pyparse_dsl import PyParseDSL
-from acab.core.value.instruction import (Instruction, ProductionComponent,
-                                         ProductionContainer)
-from acab.core.value.sentence import Sentence
-from acab.core.value.value import AcabValue
-from acab.modules.engines.configured import exlo
-from acab.modules.operators.dfs import parser as DOP
-from acab.modules.operators.dfs.module import DFSExtension
-from acab.modules.operators.dfs.semantics import DFSSemantics
-from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
-from acab.modules.semantics.basic_system import BasicSemanticSystem
-from acab.modules.semantics.statements import QueryPlusAbstraction
-from acab.modules.semantics.values import ExclusionNodeSemantics
+    import acab.core.defaults.value_keys as DS
+    from acab.core.parsing.pyparse_dsl import PyParseDSL
+    from acab.core.util.sentences import ProductionComponent
+    from acab.core.value.instruction import Instruction, ProductionContainer
+    from acab.core.value.sentence import Sentence
+    from acab.core.value.value import AcabValue
+    from acab.modules.engines.configured import exlo
+    from acab.modules.operators.dfs import parser as DOP
+    from acab.modules.operators.dfs.module import DFSExtension
+    from acab.modules.operators.dfs.semantics import DFSSemantics
+    from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
+    from acab.modules.semantics.basic_system import BasicSemanticSystem
+    from acab.modules.semantics.statements import QueryPlusAbstraction
+    from acab.modules.semantics.values import ExclusionNodeSemantics
 
 BIND          = DS.BIND
 QUERY         = DS.QUERY

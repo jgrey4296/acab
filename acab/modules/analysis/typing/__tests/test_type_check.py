@@ -26,7 +26,7 @@ from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue
 from acab.interfaces.context import ContextSet_i
 from acab.modules.analysis.typing import exceptions as TE
-from acab.modules.analysis.typing.module import TypingFragment
+from acab.modules.analysis.typing.module import TypeSpecFragment
 from acab.modules.analysis.typing.unify import type_unify_fns as tuf
 from acab.modules.analysis.typing.unify import unifier
 from acab.modules.analysis.typing.unify.util import gen_f

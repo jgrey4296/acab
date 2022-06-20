@@ -19,34 +19,38 @@ with warnings.catch_warnings():
     config = acab.setup()
     from acab.modules.operators.query.query_operators import EQ, NEQ, HasTag
 
-import acab.core.defaults.value_keys as DS
-import acab.modules.semantics.statements as ASem
-from acab.core.data.acab_struct import BasicNodeStruct
-from acab.core.data.node import AcabNode
-from acab.core.semantics import basic
-from acab.core.util.decorators.semantic import (OperatorArgUnWrap,
-                                                OperatorResultWrap)
-from acab.core.value.instruction import (ActionOperator, Instruction,
-                                         ProductionComponent,
-                                         ProductionContainer,
-                                         ProductionOperator,
-                                         ProductionStructure)
-from acab.core.value.sentence import Sentence
-from acab.core.value.value import AcabValue
-from acab.error.base import AcabBasicException
-from acab.error.semantic import AcabSemanticException
-from acab.interfaces.semantic import SemanticSystem_i, StatementSemantics_i
-from acab.interfaces.value import ValueFactory
-from acab.modules.context import context_delayed_actions
-from acab.modules.context.context_set import (ConstraintCollection,
-                                              ContextInstance, ContextSet)
+    import acab.core.defaults.value_keys as DS
+    import acab.modules.semantics.statements as ASem
+    from acab.core.data.acab_struct import BasicNodeStruct
+    from acab.core.data.node import AcabNode
+    from acab.core.semantics import basic
+    from acab.core.util.decorators.semantic import (OperatorArgUnWrap,
+                                                    OperatorResultWrap)
+    from acab.core.util.sentences import ProductionComponent
+    from acab.core.value.instruction import (ActionOperator, Instruction,
+                                            ProductionContainer,
+                                            ProductionOperator,
+                                            ProductionStructure)
+    from acab.core.value.value import AcabValue
+    from acab.error.base import AcabBasicException
+    from acab.error.semantic import AcabSemanticException
+    from acab.interfaces.semantic import SemanticSystem_i, StatementSemantics_i
+    from acab.interfaces.value import ValueFactory
+    from acab.interfaces.value import ValueFactory as VF
+    from acab.modules.context import context_delayed_actions
+    from acab.modules.context.context_set import (ConstraintCollection,
+                                                ContextInstance, ContextSet)
+    from acab.modules.operators.transform.transform_operators import RegexOp
+    from acab.modules.semantics import default
+    from acab.modules.semantics.basic_system import BasicSemanticSystem
+    from acab.modules.semantics.values import (BasicNodeSemantics,
+                                            ExclusionNodeSemantics)
+    from acab.modules.structures.trie.semantics import FlattenBreadthTrieSemantics
 
-from acab.modules.operators.transform.transform_operators import RegexOp
-from acab.modules.semantics import default
-from acab.modules.semantics.basic_system import BasicSemanticSystem
-from acab.modules.semantics.values import (BasicNodeSemantics,
-                                           ExclusionNodeSemantics)
-from acab.modules.structures.trie.semantics import FlattenBreadthTrieSemantics
+
+    from acab.core.parsing import pyparse_dsl as ppDSL
+    from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
+    from acab.core.parsing.component_dsl import Component_DSL
 
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 

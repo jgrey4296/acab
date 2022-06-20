@@ -37,7 +37,6 @@ from acab import types as AT
 from acab.error.printing import AcabPrintException
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces.protocols import handler_system as HSubP
-from acab.interfaces.protocols.value import AcabReducible_p
 from acab.interfaces.value import Sentence_i, Value_i
 
 Value              : TypeAlias = "AT.Value[AT.ValueCore]"
@@ -58,7 +57,7 @@ SemanticSystem     : TypeAlias = AT.SemanticSystem
 
 
 # Protocols  ##################################################################
-class _SemanticSystem_p(HSubP.HandlerSystem_p, AcabReducible_p, Protocol):
+class _SemanticSystem_p(HSubP.HandlerSystem_p, Protocol):
     @abc.abstractmethod
     def build_ctxset(self, ops:None|list[ModuleFragment]=None) -> CtxSet: pass
 

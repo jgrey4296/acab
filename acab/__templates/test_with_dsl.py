@@ -2,6 +2,7 @@
 """
 A Template for setting up a test case with an acab dsl ready
 """
+from __future__ import annotations
 import logging as logmod
 import re
 import unittest

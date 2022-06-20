@@ -9,7 +9,7 @@ from acab import AcabConfig
 from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.util.part_implementations.handler_system import (Handler,
                                                                 HandlerSpec)
-from acab.core.value.sentence import Sentence
+from acab.interfaces.value import ValueFactory as VF
 from acab.modules.context import context_delayed_actions
 from acab.modules.semantics.basic_system import BasicSemanticSystem as BSS
 from acab.modules.semantics.values import (BasicNodeSemantics,

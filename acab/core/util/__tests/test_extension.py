@@ -153,7 +153,7 @@ class TestExampleExtension(unittest.TestCase):
     def test_dsl(self):
         instance = ExampleExtension()
         dsl_frag = instance.build_dsl()
-        result   = dsl_frag.handlers[-1]("-[ test ]-")
+        result   = dsl_frag.handlers[-1].parse_string("-[ test ]-")
         self.assertIsInstance(result[0], Sentence_i)
         self.assertEqual(result[0], "_:test")
         self.assertIn("test_constructor", result[0].data)
@@ -176,7 +176,7 @@ class TestExampleExtension(unittest.TestCase):
         printer = DEFAULT_PRINTER()
         printer.register(print_frag)
 
-        parsed = dsl_frag.handlers[-1]("-[ test ]-")[0]
+        parsed = dsl_frag.handlers[-1].parse_string("-[ test ]-")[0]
         printed = printer(parsed)
         self.assertEqual(printed, "-[ test ]-")
 
@@ -187,7 +187,7 @@ class TestExampleExtension(unittest.TestCase):
         printer = DEFAULT_PRINTER()
         printer.register(print_frag)
 
-        parsed = dsl_frag.handlers[-1]("-[ blah ]-")[0]
+        parsed = dsl_frag.handlers[-1].parse_string("-[ blah ]-")[0]
         printed = printer(parsed)
         self.assertEqual(printed, "-[ blah ]-")
 

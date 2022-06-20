@@ -17,10 +17,20 @@ import acab
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
+    from acab.core.parsing import pyparse_dsl as ppDSL
+    # if '@pytest_ar' in globals():
+    #     from acab.core.parsing import debug_funcs as DBF
+    #     import pyparsing as pp
+    #     DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
 from acab.core.parsing.annotation import ValueAnnotation
 import acab.core.defaults.value_keys as DS
 from acab.core.value.sentence import Sentence
+
+from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
+from acab.core.parsing.component_dsl import Component_DSL
+
+from acab.modules.analysis.typing.module import TypeSpecFragment
 from acab.modules.analysis.typing import util as TYU
 from acab.modules.analysis.typing.parsing import TypeDefParser as TDP
 from acab.modules.analysis.typing.parsing import TypeParser as TP
@@ -28,13 +38,7 @@ from acab.modules.analysis.typing.values import (OperatorDefinition,
                                                  SumTypeDefinition,
                                                  TypeClass,
                                                  TypeDefinition)
-from acab.modules.parsing.exlo.parsers import FactParser as FP
 from acab.modules.analysis.typing import util
-
-TDP.HOTLOAD_SEN        << FP.SENTENCE
-TP.HOTLOAD_SEN         << FP.SENTENCE
-FP.HOTLOAD_ANNOTATIONS << TP.TYPEDEC_CORE
-FP.HOTLOAD_SEN_ENDS    << TDP.COMBINED_DEFS
 
 class TestParser(unittest.TestCase):
     @classmethod
@@ -48,6 +52,14 @@ class TestParser(unittest.TestCase):
         logging.root.setLevel(logmod.NOTSET)
         logging.root.handlers[0].setLevel(logmod.WARNING)
         logging.root.addHandler(cls.file_h)
+
+        # Set up the parser to ease test setup
+        cls.dsl   = ppDSL.PyParseDSL()
+        cls.dsl.register(EXLO_Parser)
+        cls.dsl.register(Component_DSL)
+        cls.dsl.register(TypeSpecFragment().build_dsl())
+        cls.dsl.build()
+        # dsl()
 
     @classmethod
     def tearDownClass(cls):

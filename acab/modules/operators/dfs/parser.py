@@ -9,7 +9,8 @@ from acab import AcabConfig
 import acab.core.defaults.value_keys as DS
 from  acab.core.parsing.consts import orm, QUERY, op, s_lit
 from acab.core.value.sentence import Sentence
-from acab.core.value.instruction import ProductionComponent
+from acab.core.util.sentences import ProductionComponent
+
 
 config        = AcabConfig()
 
