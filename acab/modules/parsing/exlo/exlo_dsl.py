@@ -64,8 +64,10 @@ EXLO_Parser = DSL_Fragment(specs=[Link_Signal_To("action.statement"         , AP
                                # Transform
                                DSL_Handler("operators.transform"      , func=PU.OPERATOR_SUGAR),
                                DSL_Handler("sentence.ends"            , func=TP.transform_statement),
+                               DSL_Handler("transform.core"           , func=TP.transform_core),
                                # Action
                                DSL_Handler("operators.action"         , func=PU.OPERATOR_SUGAR),
+                               DSL_Handler("action.core"              , func=AP.action_exprs),
                                DSL_Handler("sentence.ends"            , func=AP.action_definition),
                                # Rule
                                DSL_Handler("sentence.ends"            , func=RP.rule),

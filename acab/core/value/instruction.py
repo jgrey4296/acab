@@ -39,14 +39,13 @@ Value_A       : TypeAlias = AT.Value
 Sen_A         : TypeAlias = AT.Sentence
 Instruction_A : TypeAlias = AT.Instruction
 Operator      : TypeAlias = AT.Operator
-Component     : TypeAlias = AT.Component
 Container     : TypeAlias = AT.Container
 PStructure    : TypeAlias = AT.ProductionStructure
 ValueData     : TypeAlias = AT.ValueData
 
 T = TypeVar('T')
 
-@APE.assert_implements(VI.Instruction_i, exceptions=["to_sentences"])
+@APE.assert_implements(VI.Instruction_i)
 class Instruction(InstructionProtocolsImpl, VI.Instruction_i, metaclass=value_meta):
     """ Instruction functions the same as AcabValue,
     but provides specific functionality for converting to/from sentences
@@ -112,7 +111,6 @@ class ProductionContainer(Instruction):
     """
     _defaults : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE: DS.CONTAINER_PRIM}
 
-
     @cache
     def __len__(self):
         return len(self.clauses)
@@ -126,21 +124,6 @@ class ProductionContainer(Instruction):
     @property
     def clauses(self):
         return self.value
-
-    def to_sentences(self):
-        """ [ClauseA, ClauseB, ClauseC...] """
-        base = VI.ValueFactory.sen()
-        sens = []
-        sens.append(base << self.__class__.__name__ << self.name << self.type << str(self.uuid))
-        for clause in self.clauses:
-            if isinstance(clause, VI.Sentence_i):
-                sens.append(clause)
-            elif isinstance(clause, Instruction):
-                sens += clause.to_sentences()
-
-        sens.append(base << "end" << str(self.uuid))
-        return sens
-
 
 @APE.assert_implements(VI.Instruction_i)
 @dataclass(frozen=True, repr=False)
@@ -187,27 +170,6 @@ class ProductionStructure(ProductionContainer):
     def keys(self):
         return self.structure.keys()
 
-    def to_sentences(self):
-        """
-        <section>
-        <clause>
-        <clause>
-        <section>
-        <clause>
-        ...
-        """
-        base = VI.ValueFactory.sen()
-        sens = []
-        sens.append(base << self.__class__.__name__ << self.name << self.type << str(self.uuid))
-        for key in self.keys:
-            clause = self[key]
-            if isinstance(clause, VI.Sentence_i):
-                sens.append(clause)
-            elif isinstance(clause, Instruction):
-                sens += clause.to_sentences()
-
-        sens.append(base << "end" << str(self.uuid))
-        return sens
 
 @APE.assert_implements(VI.Operator_i, exceptions=["__call__"])
 class ProductionOperator(ValueProtocolsImpl, VI.Operator_i, metaclass=value_meta):

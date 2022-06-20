@@ -132,19 +132,11 @@ class _InstructionCollectionImpl(VI.Instruction_i, Collection):
 
         raise ValueError("Unrecognised argument to Instruction.__getitem__", i)
 
-class _InstructionReductionImpl(VI.Instruction_i, VP.AcabReducible_p):
+class _InstructionReductionImpl(VI.Instruction_i):
     def attach_statement(self, value:Instruction_A) -> Sen_A:
         raise TypeError("Instructions can't attach statements to themselves")
     def detach_statement(self) -> Tuple[VI.Instruction_i, list[Instruction_A]]:
         raise TypeError("Instructions can't detach statements from themselves")
-    def to_sentences(self) -> list[Sen_A]:
-        raise NotImplementedError()
-
-    @staticmethod
-    def from_sentences(self, sens:list[Sen_A]) -> list[Instruction_A]:
-        raise NotImplementedError()
-
-
 
     def to_word(self) -> Value_A:
         """ Convert a Statement to just an AcabValue, of it's name """

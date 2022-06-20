@@ -183,7 +183,7 @@ class _VariableTestsImpl(VI.Value_i, VP.VariableTests_p):
         return False
 
 
-class _WordLiftingImpl(VI.Value_i, VP.AcabReducible_p):
+class _WordLiftingImpl(VI.Value_i):
     """
     Utility class to provide methods for lifting and dropping values <->instructions
     """
@@ -205,11 +205,12 @@ class _WordLiftingImpl(VI.Value_i, VP.AcabReducible_p):
 
     def detach_statement(self):
         return (self, self)
+
     def from_sentences(self):
         raise NotImplementedError()
 
     def to_sentences(self):
-        return [ValueFactory.sen([self])]
+        raise DeprecationWarning("Use acab.modules.values.reduction")
 
 
 

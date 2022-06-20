@@ -200,3 +200,7 @@ class Trie_Fact_Parser_Tests(unittest.TestCase):
     def test_simple_sentence(self):
         result = FP.SENTENCE.parse_string("a")[0]
         self.assertIsInstance(result, Sentence_i)
+
+    def test_simple_sentence_top_entry(self):
+        result = FP.parse_string("a")[0]
+        self.assertIsInstance(result, Sentence_i)

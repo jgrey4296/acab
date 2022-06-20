@@ -54,3 +54,4 @@ SENTENCE_PRIM  = config.attr.Type.Primitive.SENTENCE
 STRING_PRIM    = config.attr.Type.Primitive.STRING
 REGEX_PRIM     = config.attr.Type.Primitive.REGEX
 STRUCT_PRIM    = config.attr.Type.Primitive.STRUCTURE
+INSTR_PRIM     = config.attr.Type.Primitive.INSTRUCT

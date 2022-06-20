@@ -65,7 +65,7 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
-        sen = ValueFactory.sen(["a", "test", "sentence"])
+        sen = VF.sen(["a", "test", "sentence"])
         # insert into trie
         trie_sem.insert(sen, trie_struct)
         # check nodes are in
@@ -81,8 +81,8 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
-        sen  = ValueFactory.sen(["a", "test", "sentence"])
-        sen2 = ValueFactory.sen(["a", "test", "other"])
+        sen  = VF.sen(["a", "test", "sentence"])
+        sen2 = VF.sen(["a", "test", "other"])
         # insert into trie
         trie_sem.insert(sen, trie_struct)
         trie_sem.insert(sen2, trie_struct)
@@ -98,8 +98,8 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem    = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
-        sen  = ValueFactory.sen(["a", "test", "sentence"])
-        sen2 = ValueFactory.sen(["a", "test", "other"])
+        sen  = VF.sen(["a", "test", "sentence"])
+        sen2 = VF.sen(["a", "test", "other"])
         # Set test to be exclusive
         sen[1].data[EXOP] = EXOP_enum.EX
         # insert into trie
@@ -118,9 +118,9 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem    = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
-        sen         = ValueFactory.sen(["a", "test", "sentence"])
+        sen         = VF.sen(["a", "test", "sentence"])
         # Negate
-        neg_sen     = ValueFactory.sen(["a", "test"])
+        neg_sen     = VF.sen(["a", "test"])
         neg_sen.data[NEGATION_V] = True
 
         # insert into trie
@@ -143,15 +143,15 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem    = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
-        sen = ValueFactory.sen(["a", "test", "sentence"])
-        sen2 = ValueFactory.sen(["a", "test", "other"])
+        sen = VF.sen(["a", "test", "sentence"])
+        sen2 = VF.sen(["a", "test", "other"])
         # insert into trie
         trie_sem.insert(sen, trie_struct)
         trie_sem.insert(sen2, trie_struct)
         # Construct context set
         ctx_set = ContextSet()
         # Construct query sentence
-        query_sen = ValueFactory.sen(["a", "test", "sentence"])
+        query_sen = VF.sen(["a", "test", "sentence"])
         # Run query
         trie_sem.query(query_sen, trie_struct, ctxs=ctx_set)
         self.assertEqual(len(ctx_set), 1)
@@ -164,15 +164,15 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem    = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
-        sen = ValueFactory.sen(["a", "test", "sentence"])
-        sen2 = ValueFactory.sen(["a", "test", "other"])
+        sen = VF.sen(["a", "test", "sentence"])
+        sen2 = VF.sen(["a", "test", "other"])
         # insert into trie
         trie_sem.insert(sen, trie_struct)
         trie_sem.insert(sen2, trie_struct)
         # Construct context set
         ctx_set = ContextSet()
         # Construct query sentence
-        query_sen = ValueFactory.sen(["a", "test", "x"])
+        query_sen = VF.sen(["a", "test", "x"])
         query_sen[-1].data[BIND_V] = True
         # Run query
         trie_sem.query(query_sen, trie_struct, ctxs=ctx_set)
@@ -186,15 +186,15 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem    = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
-        sen = ValueFactory.sen(["a", "test", "sentence"])
-        sen2 = ValueFactory.sen(["a", "test", "test"])
+        sen = VF.sen(["a", "test", "sentence"])
+        sen2 = VF.sen(["a", "test", "test"])
         # insert into trie
         trie_sem.insert(sen, trie_struct)
         trie_sem.insert(sen2, trie_struct)
         # Construct context set
         ctx_set = ContextSet()
         # Construct query sentence
-        query_sen = ValueFactory.sen(["a", "x", "x"])
+        query_sen = VF.sen(["a", "x", "x"])
         query_sen[-2].data[BIND_V] = True
         query_sen[-1].data[BIND_V] = True
         # Run query
@@ -309,7 +309,7 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem    = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
-        sen = ValueFactory.sen(["a", "test", "blah"])
+        sen = VF.sen(["a", "test", "blah"])
         # insert into trie
         trie_sem.insert(sen, trie_struct)
         # Construct query sentence
@@ -329,11 +329,11 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem    = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
-        sen = ValueFactory.sen(["a", "b"])
+        sen = VF.sen(["a", "b"])
         # insert into trie
         trie_sem.insert(sen, trie_struct)
         # Construct query sentence
-        query_sen = ValueFactory.sen(["a", "b", "c"])
+        query_sen = VF.sen(["a", "b", "c"])
         query_sen.data[NEGATION_V] = True
         # Run query
 
@@ -348,7 +348,7 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem    = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
-        sen = ValueFactory.sen(["a", "test", "sentence"])
+        sen = VF.sen(["a", "test", "sentence"])
         trie_sem.insert(sen, trie_struct)
         # call to_sentences
         results = trie_sem.to_sentences(trie_struct)
@@ -363,9 +363,9 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem    = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
-        sen = ValueFactory.sen(["a", "test", "sentence"])
+        sen = VF.sen(["a", "test", "sentence"])
         trie_sem.insert(sen, trie_struct)
-        sen2 = ValueFactory.sen(["a", "different", "sentence", "length"])
+        sen2 = VF.sen(["a", "different", "sentence", "length"])
         trie_sem.insert(sen2, trie_struct)
         # call to_sentences
         results = trie_sem.to_sentences(trie_struct)
@@ -381,9 +381,9 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem    = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
-        sen = ValueFactory.sen(["a", "test", "sentence"])
+        sen = VF.sen(["a", "test", "sentence"])
         trie_sem.insert(sen, trie_struct)
-        sen2 = ValueFactory.sen(["a", "test", "sentence"])
+        sen2 = VF.sen(["a", "test", "sentence"])
         trie_sem.insert(sen2, trie_struct)
         # call to_sentences
         results = trie_sem.to_sentences(trie_struct)
@@ -398,10 +398,10 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem    = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
-        sen = ValueFactory.sen(["a", "test", "sentence"])
+        sen = VF.sen(["a", "test", "sentence"])
         trie_sem.insert(sen, trie_struct)
-        sen2 = ValueFactory.sen(["a", "different", "sentence"])
-        sen3 = ValueFactory.sen(["a", "statement"])
+        sen2 = VF.sen(["a", "different", "sentence"])
+        sen3 = VF.sen(["a", "statement"])
         total_sen = sen3.attach_statement(sen2)
         trie_sem.insert(total_sen, trie_struct)
         # call to_sentences
@@ -409,7 +409,7 @@ class TrieSemanticTests(unittest.TestCase):
         # check
         self.assertEqual(len(results), 2)
         self.assertEqual(len(results[0]), 2)
-        self.assertIsInstance(results[0][-1], ValueFactory.sen_fn)
+        self.assertIsInstance(results[0][-1], VF.sen_fn)
 
 
     def test_trie_to_sentences_single_node(self):
@@ -419,11 +419,11 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem    = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
-        sen = ValueFactory.sen(["a", "test", "sentence"])
+        sen = VF.sen(["a", "test", "sentence"])
         trie_sem.insert(sen, trie_struct)
-        sen2 = ValueFactory.sen(["a", "test", "sub", "sentence"])
+        sen2 = VF.sen(["a", "test", "sub", "sentence"])
         trie_sem.insert(sen2, trie_struct)
-        sen3 = ValueFactory.sen(["a", "test", "sub", "alt"])
+        sen3 = VF.sen(["a", "test", "sub", "alt"])
         trie_sem.insert(sen3, trie_struct)
         # call to_sentences
         ctxs = trie_sem.query(Sentence(["a", "test"]), trie_struct, ctxs=ContextSet())
@@ -443,10 +443,10 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem    = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
-        sen = ValueFactory.sen(["a", Sentence(["test", "sentence"])])
+        sen = VF.sen(["a", Sentence(["test", "sentence"])])
         trie_sem.insert(sen, trie_struct)
 
-        sen2 = ValueFactory.sen(["a", Sentence(["test", "sentence"])])
+        sen2 = VF.sen(["a", Sentence(["test", "sentence"])])
         sen2.data[DS.FLATTEN] = False
         # call to_sentences
         ctx_set           = ContextSet({"[τ=]": SimpleTypeMatch()})
@@ -463,13 +463,13 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem    = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
-        sen = ValueFactory.sen(["a", Sentence(["test", "sentence"])])
+        sen = VF.sen(["a", Sentence(["test", "sentence"])])
         trie_sem.insert(sen, trie_struct)
         # Should not match against this
-        sen_dummy = ValueFactory.sen(["a", "not", "match"])
+        sen_dummy = VF.sen(["a", "not", "match"])
         trie_sem.insert(sen_dummy, trie_struct)
 
-        sen2 = ValueFactory.sen(["a", Sentence(["not", "match"])])
+        sen2 = VF.sen(["a", Sentence(["not", "match"])])
         sen2.data[DS.FLATTEN] = False
         # call to_sentences
         ctx_set           = ContextSet({"[τ=]": SimpleTypeMatch()})
@@ -486,13 +486,13 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem    = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
-        sen = ValueFactory.sen(["a", Sentence(["test", "sentence"])])
+        sen = VF.sen(["a", Sentence(["test", "sentence"])])
         trie_sem.insert(sen, trie_struct)
         # Should not match against this
-        sen_dummy = ValueFactory.sen(["a", "test", "match"])
+        sen_dummy = VF.sen(["a", "test", "match"])
         trie_sem.insert(sen_dummy, trie_struct)
 
-        sen2 = ValueFactory.sen(["a", Sentence(["test", AcabValue("y", data={DS.BIND: True})])])
+        sen2 = VF.sen(["a", Sentence(["test", AcabValue("y", data={DS.BIND: True})])])
         sen2.data[DS.FLATTEN] = False
         # call to_sentences
         ctx_set           = ContextSet({"[τ=]": SimpleTypeMatch()})
@@ -509,10 +509,10 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem    = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
-        sen = ValueFactory.sen(["a", "test", "sentence"])
+        sen = VF.sen(["a", "test", "sentence"])
         trie_sem.insert(sen, trie_struct)
 
-        sen2 = ValueFactory.sen(["a", Sentence(["test", "sentence"])])
+        sen2 = VF.sen(["a", Sentence(["test", "sentence"])])
         # call to_sentences
         ctx_set           = ContextSet({"[τ=]": AlwaysMatch()})
 
@@ -529,10 +529,10 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem    = FlattenBreadthTrieSemantics( init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
-        sen = ValueFactory.sen(["a", "test", "sentence"])
+        sen = VF.sen(["a", "test", "sentence"])
         trie_sem.insert(sen, trie_struct)
 
-        sen2 = ValueFactory.sen(["a", Sentence(["test", AcabValue("x", data={DS.BIND: True})])])
+        sen2 = VF.sen(["a", Sentence(["test", AcabValue("x", data={DS.BIND: True})])])
         # call to_sentences
         ctx_set           = ContextSet({"[τ=]": AlwaysMatch()})
 
@@ -553,10 +553,10 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem    = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
-        sen = ValueFactory.sen(["a", Sentence(["test", "sentence"])])
+        sen = VF.sen(["a", Sentence(["test", "sentence"])])
         trie_sem.insert(sen, trie_struct)
 
-        sen2 = ValueFactory.sen(["a", AcabValue("x", data={DS.BIND: True})])
+        sen2 = VF.sen(["a", AcabValue("x", data={DS.BIND: True})])
         # call to_sentences
         ctx_set           = ContextSet({"[τ=]": AlwaysMatch()})
 
@@ -576,10 +576,10 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem    = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
-        sen = ValueFactory.sen(["a", Sentence(["test", "sentence"])])
+        sen = VF.sen(["a", Sentence(["test", "sentence"])])
         trie_sem.insert(sen, trie_struct)
 
-        sen2 = ValueFactory.sen(["a", AcabValue("x", data={DS.BIND: True})])
+        sen2 = VF.sen(["a", AcabValue("x", data={DS.BIND: True})])
         # call to_sentences
         ctx_set           = ContextSet({"[τ=]": AlwaysMatch()})
 
@@ -598,10 +598,10 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem    = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
-        sen = ValueFactory.sen(["a", "test", "sentence"])
+        sen = VF.sen(["a", "test", "sentence"])
         trie_sem.insert(sen, trie_struct)
 
-        sen2 = ValueFactory.sen(["a", AcabValue("x", data={DS.BIND: True})])
+        sen2 = VF.sen(["a", AcabValue("x", data={DS.BIND: True})])
         # call to_sentences
         ctx_set           = ContextSet({"[τ=]": AlwaysMatch()})
 
@@ -622,10 +622,10 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem    = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
         trie_struct = BasicNodeStruct.build_default()
         # Create sentence
-        sen = ValueFactory.sen(["a", "test", "sentence"])
+        sen = VF.sen(["a", "test", "sentence"])
         trie_sem.insert(sen, trie_struct)
 
-        sen2 = ValueFactory.sen(["a", AcabValue("x", data={DS.BIND: True})])
+        sen2 = VF.sen(["a", AcabValue("x", data={DS.BIND: True})])
         # call to_sentences
         ctx_set           = ContextSet({"[τ=]": AlwaysMatch()})
 
@@ -638,6 +638,28 @@ class TrieSemanticTests(unittest.TestCase):
         self.assertIn("y", results[0])
         self.assertEqual(results[0].y, "sentence")
 
+    def test_trie_head_query(self):
+        """
+        $x?
+        """
+        # Create sem
+        node_sem    = BasicNodeSemantics().as_handler(signal="node")
+        trie_sem    = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_struct = BasicNodeStruct.build_default()
+        # Create sentence
+        sen = VF.sen() << ["a", "test", "sentence"]
+        trie_sem.insert(sen, trie_struct)
+
+        sen2 = VF.sen() << AcabValue("x", data={DS.BIND: True})
+        # call to_sentences
+        ctx_set           = ContextSet({"[τ=]": AlwaysMatch()})
+
+        results = trie_sem.query(sen2, trie_struct, ctxs=ctx_set)
+        results.run_delayed()
+        # check
+        self.assertEqual(len(results), 1)
+        self.assertIn("x", results[0])
+        self.assertEqual(results[0].x, "a")
 
 
 

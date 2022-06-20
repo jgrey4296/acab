@@ -150,7 +150,6 @@ class PrintStructureSemanticTests(unittest.TestCase):
         # combine some queries together
         queries = QP.clauses.parse_string(" a.b.c?\n d.e(λa.b.q $y).f?\n g.h.i?")[0]
         self.assertIsInstance(queries, ProductionContainer)
-
         result = sem_sys.pprint(queries)
 
         self.assertEqual(result, "    a.b.c?\n    d.e(λa.b.q $y).f?\n    g.h.i?\n")
@@ -309,4 +308,4 @@ class PrintStructureSemanticTests(unittest.TestCase):
         action = dsl("""statement(::α):\n λa.b.c $x\n λa.b.c.d $x $y\n λa.b.c.d.e $x $y $z\nend""")[0][-1]
         self.assertIsInstance(action, ProductionContainer)
         result = sem_sys.pprint(action)
-        self.assertEqual(result, """statement(::ACTION):\n    λa.b.c $x\n    λa.b.c.d $x $y\n    λa.b.c.d.e $x $y $z\nend\n""")
+        self.assertEqual(result, """statement(::α):\n    λa.b.c $x\n    λa.b.c.d $x $y\n    λa.b.c.d.e $x $y $z\nend\n""")

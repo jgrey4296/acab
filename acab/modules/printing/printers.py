@@ -19,6 +19,7 @@ from acab.interfaces.value import ValueFactory as VF
 
 config = AcabConfig()
 
+ALIAS_DICT  = config.prepare("Aliases", _type=dict, actions=[config.actions_e.STRIPQUOTE])()
 ANNOTATIONS = [config.prepare("Value.Structure", x, _type=Enum)() for x in config.prepare("Print.Annotations", _type=list)()]
 ATOM_HINT   = DSig.ATOM
 TYPE_BASE   = "_:" + config.prepare("Data", "TYPE_BASE")()
@@ -192,7 +193,7 @@ class ConstraintPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
     def __call__(self, value, top=None, data=None):
         return_list = []
         for constraint in value.data[DS.CONSTRAINT]:
-            return_list.append(constraint)
+            return_list.append(top.override(DSig.COMPONENT, constraint))
             return_list.append(", ")
 
         return_list.pop()
@@ -371,5 +372,22 @@ class SimpleTypePrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
         type_str = value.type
         return_list.append("::")
         # TODO handle aliasees
+        return_list.append(type_str)
+        return return_list
+
+
+class TypeAliasPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
+
+    def __call__(self, value, top=None, data=None):
+        return_list = []
+        # TODO or suppression types
+        if value.type == TYPE_BASE:
+            return []
+
+        type_str = value.type
+        return_list.append("::")
+        if str(type_str) in ALIAS_DICT:
+            type_str = ALIAS_DICT[str(type_str)]
+
         return_list.append(type_str)
         return return_list

@@ -39,6 +39,9 @@ AT_BIND         = DS.AT_BIND
 CONSTRAINT      = DS.CONSTRAINT
 default_modules = config.prepare("Module.REPL", "MODULES")().split("\n")
 
+WALK_TYPE  = VF.sen() << config.attr.Type.Primitive.INSTRUCT << config.attr.Semantic.Signals.WALK
+QUERY_TYPE = VF.sen() << config.attr.Type.Primitive.INSTRUCT << config.attr.Type.Primitive.CONTAINER << config.attr.Type.Primitive.QUERY
+
 class TestWalkSemantics(unittest.TestCase):
 
     @classmethod
@@ -68,11 +71,9 @@ class TestWalkSemantics(unittest.TestCase):
 
     def test_parsed_walk_query(self):
         query = DOP.dfs_query.parse_string("ᛦ $x(∈ c.e)?")[0]
-
         self.eng("a.b.c")
         self.eng("a.b.d")
         self.eng("a.b.e")
-
         result = self.eng(query)
         self.assertTrue(result)
         self.assertEqual(len(result), 2)
@@ -197,6 +198,9 @@ class TestWalkSemantics(unittest.TestCase):
 
         self.assertTrue(self.eng("found.c?"))
         self.assertTrue(self.eng("found.e?"))
+        results = self.eng("found.$x?")
+        self.assertEqual(len(results), 2)
+
 
     def test_parsed_rule(self):
         self.eng("""the.rule(::ρ):\n | $x |\n\n @x.test?\n\n !! found.$x\nend""")

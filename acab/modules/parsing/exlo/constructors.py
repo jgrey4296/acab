@@ -148,12 +148,8 @@ def build_rule(s, loc, toks):
     else:
         structure.append(EXu.ACTION_S)
 
-    if signal is None:
-        signal = EXu.RULE_SIGNAL
-
     rule = ProductionStructure(structure,
-                               data={SEMANTIC_HINT: signal,
-                                     DS.TYPE_INSTANCE: EXu.RULE_PRIM})
+                               data={DS.TYPE_INSTANCE: rule_struct})
     return rule
 
 def build_constraint_list(s, loc, toks):

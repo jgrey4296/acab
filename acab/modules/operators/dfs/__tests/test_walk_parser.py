@@ -76,7 +76,7 @@ class TestWalkParser(unittest.TestCase):
 
         self.assertTrue(result)
         self.assertIsInstance(result, Sentence)
-        self.assertEqual(result.data[DS.SEMANTIC_HINT], '_:WALK')
+        self.assertEqual(result.data[DS.SEMANTIC_HINT], '_:INSTRUCT.WALK')
         self.assertTrue(result.data[DS.QUERY])
 
     def test_parse_walk_action_instruction(self):
@@ -84,7 +84,7 @@ class TestWalkParser(unittest.TestCase):
 
         self.assertTrue(result)
         self.assertIsInstance(result, Sentence)
-        self.assertEqual(result.data[DS.SEMANTIC_HINT], '_:WALK')
+        self.assertEqual(result.data[DS.SEMANTIC_HINT], '_:INSTRUCT.WALK')
         self.assertNotIn(DS.QUERY, result.data)
 
         self.assertEqual(result[0], "_:a.test.op")
@@ -93,6 +93,6 @@ class TestWalkParser(unittest.TestCase):
         result = DOP.dfs_action.parse_string("ᛦ λ$x")[0]
         self.assertTrue(result)
         self.assertIsInstance(result, Sentence)
-        self.assertEqual(result.data[DS.SEMANTIC_HINT], '_:WALK')
+        self.assertEqual(result.data[DS.SEMANTIC_HINT], '_:INSTRUCT.WALK')
         self.assertNotIn(DS.QUERY, result.data)
         self.assertTrue(result[0][0].is_var)

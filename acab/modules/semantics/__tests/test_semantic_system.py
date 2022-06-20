@@ -40,18 +40,14 @@ BIND_V          = DS.BIND
 CONSTRAINT_V    = DS.CONSTRAINT
 SEMANTIC_HINT_V = DS.SEMANTIC_HINT
 
-QUERY_V      = config.attr.Parse.Structure.QUERY
-TRANSFORM_V  = config.attr.Parse.Structure.TRANSFORM
-ACTION_V     = config.attr.Parse.Structure.ACTION
+CONTAINER_SEN          = Sentence() << config.attr.Type.Primitive.CONTAINER
+STRUCT_SEN             = Sentence() << config.attr.Type.Primitive.STRUCTURE
 
+QUERY_SIGNAL           = CONTAINER_SEN << config.attr.Type.Primitive.QUERY
+ACTION_SIGNAL          = CONTAINER_SEN << config.attr.Type.Primitive.ACTION
+TRANSFORM_SIGNAL       = CONTAINER_SEN << config.attr.Type.Primitive.TRANSFORM
 
-QUERY_SIGNAL     = Sentence() << config.attr.Semantic.Signals.QUERY
-ACTION_SIGNAL    = Sentence() << config.attr.Semantic.Signals.ACTION
-TRANSFORM_SIGNAL = Sentence() << config.attr.Semantic.Signals.TRANSFORM
-RULE_SIGNAL      = Sentence() << config.attr.Semantic.Signals.RULE
-AGENDA_SIGNAL    = Sentence() << config.attr.Semantic.Signals.AGENDA
-LAYER_SIGNAL     = Sentence() << config.attr.Semantic.Signals.LAYER
-PIPELINE_SIGNAL  = Sentence() << config.attr.Semantic.Signals.PIPELINE
+RULE_SIGNAL            = STRUCT_SEN << config.attr.Type.Primitive.RULE
 
 class StubAbsSemantic(basic.StatementSemantics, StatementSemantics_i):
     def __call__(self, ins, semSys, ctxs=None, data=None):

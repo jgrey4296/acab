@@ -67,14 +67,15 @@ QUERY_C      = DS.QUERY_COMPONENT
 TRANSFORM_C  = DS.TRANSFORM_COMPONENT
 ACTION_C     = DS.ACTION_COMPONENT
 
+INSTRUCT_SEN  = VF.sen() << config.attr.Type.Primitive.INSTRUCT
+CONTAINER_SEN          = INSTRUCT_SEN << config.attr.Type.Primitive.CONTAINER
+STRUCT_SEN             = INSTRUCT_SEN << config.attr.Type.Primitive.STRUCTURE
 
-QUERY_SIGNAL     = Sentence() << config.attr.Semantic.Signals.QUERY
-ACTION_SIGNAL    = Sentence() << config.attr.Semantic.Signals.ACTION
-TRANSFORM_SIGNAL = Sentence() << config.attr.Semantic.Signals.TRANSFORM
-RULE_SIGNAL      = Sentence() << config.attr.Semantic.Signals.RULE
-AGENDA_SIGNAL    = Sentence() << config.attr.Semantic.Signals.AGENDA
-LAYER_SIGNAL     = Sentence() << config.attr.Semantic.Signals.LAYER
-PIPELINE_SIGNAL  = Sentence() << config.attr.Semantic.Signals.PIPELINE
+QUERY_SIGNAL           = CONTAINER_SEN << config.attr.Type.Primitive.QUERY
+ACTION_SIGNAL          = CONTAINER_SEN << config.attr.Type.Primitive.ACTION
+TRANSFORM_SIGNAL       = CONTAINER_SEN << config.attr.Type.Primitive.TRANSFORM
+RULE_SIGNAL            = STRUCT_SEN << config.attr.Type.Primitive.RULE
+
 
 # TODO test verify
 
@@ -96,6 +97,13 @@ class StatementSemanticTests(unittest.TestCase):
         logging.root.handlers[0].setLevel(logmod.WARNING)
         logging.root.addHandler(cls.file_h)
 
+        # Set up the parser to ease test setup
+        cls.dsl   = ppDSL.PyParseDSL()
+        cls.dsl.register(EXLO_Parser)
+        cls.dsl.register(Component_DSL)
+        cls.dsl.build()
+        # dsl()
+
     @classmethod
     def tearDownClass(cls):
         logmod.root.removeHandler(cls.file_h)
@@ -104,7 +112,7 @@ class StatementSemanticTests(unittest.TestCase):
         """ Check transforms semantics work """
         sem                                 = ASem.TransformAbstraction()
         # Construct context set for operators
-        op_loc_path                         = Sentence(["Regex", "Operation"])
+        op_loc_path                         = self.dsl("Regex.Operation")[0]
         operator_instance                   = RegexOp()
         op_ctx                              = ContextInstance(data={str(op_loc_path): operator_instance})
         ctx_set                             = ContextSet(op_ctx)
@@ -202,7 +210,7 @@ class StatementSemanticTests(unittest.TestCase):
         transform_sem = ASem.TransformAbstraction().as_handler(signal=TRANSFORM_SIGNAL)
         action_sem    = ASem.ActionAbstraction().as_handler(signal=ACTION_SIGNAL)
         stub_sem      = StubAbsSemantic().as_handler(signal=DEFAULT_HANDLER_SIGNAL)
-        con_sem       = ASem.ContainerAbstraction().as_handler(signal="[CONTAINER]")
+        con_sem       = ASem.ContainerAbstraction().as_handler(signal="[INSTRUCT.CONTAINER]")
 
         semSys        = BasicSemanticSystem(init_specs=all_specs,
                                             init_handlers=[transform_sem,

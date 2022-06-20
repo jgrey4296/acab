@@ -143,7 +143,7 @@ class _SentenceCollectionImpl(VI.Sentence_i, Collection):
     def __contains__(self, value) -> bool:
         match value:
             case str():
-                return value in self.words
+                return value in [x.name for x in self.words]
             case VI.Sentence_i():
                 return value.key() in self.words
             case VI.Value_i():
@@ -170,7 +170,7 @@ class _SentenceCollectionImpl(VI.Sentence_i, Collection):
 
         raise ValueError("Unrecognised argument to Sentence.__getitem__", i)
 
-class _SentenceReductionImpl(VI.Sentence_i, VP.AcabReducible_p):
+class _SentenceReductionImpl(VI.Sentence_i):
     def attach_statement(self, value:Instruction_A) -> Sen_A:
         """
         for this S: first..last
@@ -216,26 +216,6 @@ class _SentenceReductionImpl(VI.Sentence_i, VP.AcabReducible_p):
 
         sen_copy = self.copy(value=out_words) #type:ignore
         return (sen_copy, statements)
-
-
-    def to_sentences(self):
-        # TODO return self, *and* constraints as function sentences
-        base = VI.ValueFactory.sen()
-        sens = []
-        sens.append(base << self.__class__.__name__ << self.name << self.type << str(self.uuid))
-        if isinstance(self[-1], VI.Instruction_i):
-            sens.append(self[:-1])
-            sens += self[-1].to_sentences()
-        else:
-            sens.append(self[:])
-        sens.append(base << "end" << str(self.uuid))
-        return sens
-
-
-    @staticmethod
-    def from_sentences(self, sens:list[Sen_A]) -> list[Instruction_A]:
-        return cast(list[Instruction_A], sens)
-
 
 
     def to_word(self) -> Value_A:

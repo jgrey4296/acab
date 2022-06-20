@@ -126,7 +126,6 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         result = QP.clauses.parse_string('a.b.c? || $x:a.b!c, $y:b.d.e\n')[0]
         self.assertIsInstance(result, ProductionContainer)
         r_clause = result.clauses[0]
-        breakpoint()
         self.assertEqual(len(r_clause[-1].data[QUERY_FALLBACK]), 2)
         self.assertEqual(r_clause[-1].data[QUERY_FALLBACK][0][0], 'x')
         self.assertEqual(r_clause[-1].data[QUERY_FALLBACK][0][1][-1].value, 'c')
