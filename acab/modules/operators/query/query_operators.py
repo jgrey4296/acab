@@ -30,7 +30,7 @@ class NEQ(ProductionOperator):
     def __call__(self, a, b, *, data=None, ctx=None):
         return a != b
 
-@OperatorSugar(config.attr.Operator.Sugar.REGEX)
+@OperatorSugar(config.attr.Operator.Sugar.REGEX_MATCH)
 class RegMatch(ProductionOperator):
 
     # TODO implement sub-binds
