@@ -21,24 +21,31 @@ with warnings.catch_warnings():
         DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
 
-import acab.core.defaults.value_keys as DS
-from acab.core.defaults import print_signals as DSig
-from acab.core.parsing import pyparse_dsl as ppDSL
-from acab.core.parsing.component_dsl import Component_DSL
-from acab.core.semantics.basic import StatementSemantics
-from acab.core.util import fragments as FR
-from acab.core.util.part_implementations.handler_system import HandlerSpec
-from acab.interfaces import fragments as FI
-from acab.interfaces import handler_system as HS
-from acab.interfaces.semantic import StatementSemantics_i
-from acab.interfaces.fragments import UnifiedFragment_p
-from acab.interfaces.value import Sentence_i
-from acab.interfaces.value import ValueFactory as VF
-from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
-from acab.modules.printing.default import DEFAULT_PRINTER
-from acab.modules.semantics.default import DEFAULT_SEMANTICS
+    import acab.core.defaults.value_keys as DS
+    from acab.core.defaults import print_signals as DSig
+    from acab.core.parsing import pyparse_dsl as ppDSL
+    from acab.core.parsing.component_dsl import Component_DSL
+    from acab.core.semantics.basic import StatementSemantics
+    from acab.core.util import fragments as FR
+    from acab.core.util.part_implementations.handler_system import HandlerSpec
+    from acab.interfaces import fragments as FI
+    from acab.interfaces import handler_system as HS
+    from acab.interfaces.semantic import StatementSemantics_i
+    from acab.interfaces.fragments import UnifiedFragment_p
+    from acab.interfaces.value import Sentence_i
+    from acab.interfaces.value import ValueFactory as VF
+    from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
+    from acab.modules.printing.default import DEFAULT_PRINTER
+    from acab.modules.semantics.default import DEFAULT_SEMANTICS
 
 Handler = config.prepare("Imports.Targeted", "handler", actions=[config.actions_e.IMCLASS], args={"interface": HS.Handler_i})()
+
+pyparse_dsl_logger = logmod.getLogger("acab.core.parsing.pyparse_dsl")
+pyparse_dsl_logger.setLevel(logmod.WARN)
+printing_logger = logmod.getLogger("acab.core.printing")
+printing_logger.setLevel(logmod.WARN)
+extension_logger = logmod.getLogger("acab.core.util.__tests.test_extension")
+extension_logger.setLevel(logmod.WARN)
 
 @dataclass
 class ExampleExtension(UnifiedFragment_p):

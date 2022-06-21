@@ -63,6 +63,7 @@ class BasicSemanticSystem(basic.SemanticSystem, SemanticSystem_i):
 
     def run_instruction(self, instruction, ctxs=None) -> Any:
         try:
+            # TODO Entry hooks, like TypeExpansion, would go here?
             data   = {}
             spec   = self.lookup(instruction)
             # TODO verify instruction against semantics
