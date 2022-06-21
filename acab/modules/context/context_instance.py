@@ -24,7 +24,6 @@ from acab.core.value.instruction import ProductionContainer
 from acab.error.context import AcabContextException
 from acab.interfaces.value import Sentence_i
 from acab.modules.context.constraints import ConstraintCollection
-
 config = AcabConfig()
 
 CONSTRAINT_S     = DS.CONSTRAINT
@@ -47,6 +46,7 @@ DELAYED_E = Enum("Delayed Instruction Set", "ACTIVE FAIL DEACTIVATE CLEAR MERGE"
 
 NamedCtxSet      = CtxInt.NamedCtxSet_d
 ContextFailState = CtxInt.ContextFailState_d
+
 
 @dataclass(frozen=True)
 class ContextInstance(CtxInt.ContextInstance_i):
@@ -151,6 +151,8 @@ class ContextInstance(CtxInt.ContextInstance_i):
         a single new ctxinst, with multiple new bindings, or
         multiple new ctxinsts, with a single new binding in each
 
+        sub_binds specifies sub-structural binds to make.
+        ie: binding a value to $x, and its type to $y
         """
         match word, nodes:
             case dict(), dict():
@@ -161,6 +163,9 @@ class ContextInstance(CtxInt.ContextInstance_i):
                 raise TypeError(f"Unexpected type for ContextInstance.Progress: {type(word)}, {type(nodes)}")
 
     def _val_progress(self, word, nodes, sub_binds=None):
+        """
+        Create multiple new ctx instances, one for each node
+        """
         sub_binds = sub_binds or []
         # Make len(nodes) new ctxins for the new bindings
         extensions = [(self.copy(), x) for x in nodes]
@@ -173,21 +178,24 @@ class ContextInstance(CtxInt.ContextInstance_i):
                 ctxInst.data[word_str]  = node.value
                 ctxInst.nodes[word_str] = node
 
-            matches = []
             for key, bind in sub_binds:
+                assert(bind.is_var)
+                if bind[0].key() in ctxInst:
+                    bind_val = ctxInst[bind[0].key()]
+                else:
+                    bind_val = None
+
                 if key in node.value.data:
-                    val = node.value.data
+                    val = node.value.data[key]
                 elif hasattr(node.value, key):
                     val = getattr(node.value, key)
                 else:
                     raise AcabContextException("Bad SubBind, no value to bind", context=(key, bind))
 
-                matches += bind.match(val)
-
-            # after sub_bind loop:
-            for x,y in matches:
-                if x not in ctxInst.data:
-                    ctxInst.data[str(x)] = y
+                if bind_val and bind_val != val:
+                    raise AcabContextException("Subbind doesn't match", context=(key, bind_val, val))
+                elif not bind_val:
+                    ctxInst.data[bind[0].key()] = val
 
         # Then return the new ctxinsts
         return [x[0] for x in extensions]

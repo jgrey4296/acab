@@ -128,8 +128,7 @@ class ContextWalkManager(CtxInt.CtxManager_i):
         ctx = ctx or self._current_inst
 
         # [ctxs.test(ctxIns, accessible, x) for x in tests]
-
-        logging.debug(f"{repr(self)}: Testing/Extending on {len(possible)} : {possible}")
+        logging.debug("Testing/Extending on {!r} : {} : {}", ctx, len(possible), [x.node for x in possible])
         successes =  {x.source.uuid: (x, []) for x in self.constraints}
         bound_ctxs = []
         failures   = []

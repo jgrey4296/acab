@@ -2,8 +2,8 @@
 import logging as logmod
 from dataclasses import InitVar, dataclass, field
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
-                    List, Mapping, Match, MutableMapping, Optional, Sequence,
-                    Set, Tuple, TypeVar, Union, cast)
+                List, Mapping, Match, MutableMapping, Optional, Sequence,
+                Set, Tuple, TypeVar, Union, cast)
 from uuid import UUID
 
 import acab.core.defaults.value_keys as DS
@@ -48,18 +48,18 @@ class DFSSemantics(basic.StatementSemantics, SI.StatementSemantics_i):
     instruction specifies rules to run on each node
 
     AS QUERY:
-    a.b.$x?
-    // From a node
-    @x ᛦ $y(::constraint)?
-    // from Root
-    ᛦ $y(::constraint)?
+        a.b.$x?
+        // From a node
+        @x ᛦ $y(::constraint)?
+        // from Root
+        ᛦ $y(::constraint)?
 
     AS ACTION:
-    a.b.$x?
-    a.$rules(λcollect)?
+        a.b.$x?
+        a.$rules(λcollect)?
 
     @x ᛦ $rule
-    """
+        """
 
     signal : str = field(default=WALK_SEM_HINT)
 
@@ -80,6 +80,7 @@ class DFSSemantics(basic.StatementSemantics, SI.StatementSemantics_i):
         Expects params to be a single sentence,
         with an optional @var at the head, rest are constraints
 
+        allows binding and testing individual nodes
         """
         default: HandlerSpec[StructSem] = semsys.lookup()
         nodesem: HandlerSpec[ValSem]    = default[0].lookup()
@@ -87,6 +88,7 @@ class DFSSemantics(basic.StatementSemantics, SI.StatementSemantics_i):
         cwm = ContextWalkManager(walk_spec, DI.StructView(default.struct.root, self), ctxs)
         with cwm:
             for start in cwm.current:
+                logging.debug("DFS Query Context Head: {}", start.current_node.value)
                 # Get the current start point
                 queue : tuple[CtxIns, StructView]|CtxIns = [start]
                 found : set[UUID]            = set()
@@ -116,6 +118,9 @@ class DFSSemantics(basic.StatementSemantics, SI.StatementSemantics_i):
                     # TODO exploration control
                     queue      += reversed(unbound)
 
+                #endwhile
+            #endfor
+        #endwith
         return cwm.finished
 
     def _act(self, walk_spec:Sentence, semsys, ctxs=None, data=None):
@@ -123,26 +128,30 @@ class DFSSemantics(basic.StatementSemantics, SI.StatementSemantics_i):
         instruction : Sentence(@target, $ruleset)
         from @target, dfs the trie below, running $ruleset on each node
 
+        allows running either a pre-bound ruleset on nodes,
+        or querying for a ruleset
         """
-        default : HandlerSpec[StructSem] = semsys.lookup()
-        nodesem : HandlerSpec[ValSem]    = default[0].lookup()
-        found   : set[UUID]              = set()
+        default : HandlerSpec[StructSem]    = semsys.lookup()
+        nodesem : HandlerSpec[ValSem]       = default[0].lookup()
+        found   : set[UUID]                 = set()
+        actions : list[ProductionStructure] = []
 
-        # TODO handle λrule.sentence.queries.$x?
+        assert(walk_spec[-1].type == "_:OPERATOR")
+        if walk_spec[-1].is_var:
+            # actions are already bound
+            assert(all([walk_spec[-1][0] in x for x in ctxs]))
+            actions = [x[walk_spec[-1][0]] for x in ctxs]
+        else:
+            # actions are specified by a patch or query
+            search_result = semsys(walk_spec[-1].copy(data={DS.QUERY: True}))
+            actions       = [x.current_node.value for x in search_result]
+
 
         cwm = ContextWalkManager(walk_spec, DI.StructView(default.struct.root, self), ctxs)
         with cwm:
             for start in cwm.current:
+                logging.debug("DFS Act Context Head: {}", start.current_node.value)
                 queue : tuple[CtxIns, StructView]|CtxIns = [start]
-                # TODO: this should use binding?
-                action : 'Value|Sentence' = start[walk_spec[-1][0]]
-                spec = semsys.lookup(action)
-                if isinstance(action, Sentence):
-                    # action is a sentence path,
-                    # not an actual action
-                    raise NotImplementedError()
-
-                assert(bool(action.params))
                 while bool(queue):
                     current   = queue.pop()
                     ctx, view = None, None
@@ -159,25 +168,31 @@ class DFSSemantics(basic.StatementSemantics, SI.StatementSemantics_i):
                         continue
 
                     found.add(view.node.uuid)
-                    # TODO use specified run form (all, sieve, etc)
-                    # potentially override to force atomic rule
-                    # bind current to the param in action.params
-                    params : list[Value] = action.params
-                    args   : list[Value] = [view.value] + walk_spec[-1].params
-                    # TODO use binding
-                    bind_dict = {x.key() : ctx[y] for x,y in zip(params, args)}
-                    node_dict = {params[0].key() : view}
+                    # TODO skip root
+                    for action in actions:
+                        spec = semsys.lookup(action)
+                        # TODO use specified run form (all, sieve, etc)
+                        # potentially override to force atomic rule
+                        # bind current to the param in action.params
+                        params : list[Value] = action.params
+                        args   : list[Value] = [view.value] + walk_spec[-1].params
+                        # TODO use binding
+                        bind_dict = {x.key() : ctx[y] for x,y in zip(params, args)}
+                        node_dict = {params[0].key() : view}
 
-                    working_ctx = ctxs.subctx(None,
-                                              val_binds=bind_dict,
-                                              node_binds=node_dict)
-                    # try to do the action rule
-                    spec(action, semsys, ctxs=working_ctx)
-                    working_ctx.run_delayed()
-                    # TODO controllable entrance into subtrie
-                    # using if bool(working_ctx):..
+                        working_ctx = ctxs.subctx(None,
+                                                val_binds=bind_dict,
+                                                node_binds=node_dict)
+                        # try to do the action rule
+                        spec(action, semsys, ctxs=working_ctx)
+                        working_ctx.run_delayed()
+                        # TODO controllable entrance into subtrie
+                        # using if bool(working_ctx):..
+                    #endfor
                     accessible = nodesem[0].access(view.node, None, data=data)
                     prepped    = [(ctx, DI.StructView(x, self)) for x in accessible]
                     queue      += reversed(prepped)
-
+                #endwhile
+            #endfor
+        #endwith
         return cwm.finished

@@ -17,6 +17,7 @@ from acab.modules.analysis.typing.values import (OperatorDefinition,
                                                  SumTypeDefinition,
                                                  TypeClass,
                                                  TypeDefinition)
+VF = VI.ValueFactory
 
 config          = AcabConfig()
 TYPE_INSTANCE_S = DS.TYPE_INSTANCE
@@ -66,9 +67,10 @@ def make_op_def(toks):
 
     for spec_group in target:
         assert(all([x.is_var for x in spec_group['params']]))
-        params = (VI.ValueFactory.sen() << spec_group['params'][:]
-                  << 'returns' << (spec_group['returns'] if 'returns' in spec_group else None))
-        specs.append(params)
+        param_sen = VF.sen() << (spec_group['params'][:] or "∅")
+        ret_sen  = VF.sen() << 'returns' << (spec_group['returns'] if 'returns' in spec_group else "unit")
+        joint_spec = VF.sen() << param_sen << ret_sen
+        specs.append(joint_spec)
 
     op_def = OperatorDefinition(specs)
 
@@ -87,6 +89,7 @@ def make_type_dec(toks):
     return ValueAnnotation(TYU.TYPE_INSTANCE_S,
                            VI.ValueFactory.sen(path, params=args,
                                                data={TYPE_INSTANCE_S: "type.declaration"}))
+
 
 def make_type_class(toks):
     # TODO assert all toks are operator definitions

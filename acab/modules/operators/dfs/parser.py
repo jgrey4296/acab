@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
-from typing import List, Set, Dict, Tuple, Optional, Any
-from typing import Callable, Iterator, Union, Match
-from typing import Mapping, MutableMapping, Sequence, Iterable
-from typing import cast, ClassVar, TypeVar, Generic
-import pyparsing as pp
+from __future__ import annotations
 
-from acab import AcabConfig
+from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
+                    List, Mapping, Match, MutableMapping, Optional, Sequence,
+                    Set, Tuple, TypeVar, Union, cast)
+
 import acab.core.defaults.value_keys as DS
-from  acab.core.parsing.consts import orm, QUERY, op, s_lit
-from acab.core.value.sentence import Sentence
+import pyparsing as pp
+from acab import AcabConfig
+from acab.core.parsing.consts import QUERY, op, orm, s_lit
 from acab.core.util.sentences import ProductionComponent
-
+from acab.core.value.sentence import Sentence
+from acab.interfaces.value import ValueFactory as VF
 
 config        = AcabConfig()
 
@@ -28,7 +29,7 @@ def build_dfs_query(s, l, toks):
     assert(all([x.is_var for x in rest]))
     words += rest
 
-    instruction = Sentence(words, data={SEM_HINT: WALK_SEM_HINT, QUERY_HINT: True})
+    instruction = VF.sen(data={SEM_HINT: WALK_SEM_HINT, QUERY_HINT: True}) << words
 
     return instruction
 
@@ -42,7 +43,7 @@ def build_dfs_action(s, l, toks):
     words.append(toks['action'])
 
     # TODO refactor to be a ProductionComponent
-    instruction = Sentence(words, data={SEM_HINT: WALK_SEM_HINT})
+    instruction = VF.sen(data={SEM_HINT: WALK_SEM_HINT}) << words
 
     return instruction
 

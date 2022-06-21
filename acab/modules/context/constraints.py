@@ -151,7 +151,7 @@ class ConstraintCollection(CtxInt.Constraint_i, metaclass=ConstraintMeta):
             # TODO use bind
             if b_val.is_var or ctxInst[bind].is_var:
                 continue
-            if b_val != ctxInst[bind]:
+            if b_val.name != ctxInst[bind.name].name:
                 raise ASErr.AcabSemanticTestFailure("Binds Failed", context=(node, self))
 
 

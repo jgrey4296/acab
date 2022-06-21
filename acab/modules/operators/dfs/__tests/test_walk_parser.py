@@ -71,6 +71,14 @@ class TestWalkParser(unittest.TestCase):
         logmod.root.removeHandler(cls.file_h)
 
 
+    def test_parse_walk_query_with_head(self):
+        result = DOP.dfs_query.parse_string("@x ᛦ $y(∈ blah)?")[0]
+        self.assertTrue(result)
+        self.assertIsInstance(result, Sentence)
+        self.assertEqual(result, "_:x.y")
+        self.assertEqual(result[-1].data[DS.CONSTRAINT][0], "_:[∈].[[node].[blah]].[returns.bool]")
+        self.assertTrue(result[0].is_at_var)
+
     def test_parse_walk_query_instruction(self):
         result = DOP.dfs_query.parse_string("ᛦ $x(λblah)?")[0]
 
@@ -96,3 +104,16 @@ class TestWalkParser(unittest.TestCase):
         self.assertEqual(result.data[DS.SEMANTIC_HINT], '_:INSTRUCT.WALK')
         self.assertNotIn(DS.QUERY, result.data)
         self.assertTrue(result[0][0].is_var)
+
+    @unittest.skip("TODO")
+    def test_parse_walk_action_with_multi_vars(self):
+        """
+        ᛦ $rule($x, $y)
+
+        ->
+
+        the.rule(::rule):
+          | $x $y $node |
+        end
+        """
+        pass
