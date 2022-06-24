@@ -65,7 +65,7 @@ def DEFAULT_HANDLERS():
     query_handler   = ASem.QueryAbstraction().as_handler(signal=QUERY_SIGNAL)
     action_handler  = ASem.ActionAbstraction().as_handler(signal=ACTION_SIGNAL)
     rule_handler    = ASem.AtomicRuleAbstraction().as_handler(signal=RULE_SIGNAL)
-    trans_handler   = ASem.TransformAbstraction().as_handler(signal=TRANSFORM_SIGNAL)
+    trans_handler   = ASem.TransformPlusAbstraction().as_handler(signal=TRANSFORM_SIGNAL)
     cont_handler    = ASem.ContainerAbstraction().as_handler(signal=CONTAINER_SEN)
 
     return [cont_handler, query_handler, action_handler, rule_handler,
@@ -85,7 +85,7 @@ def default_handlers_from_specs():
         query_spec.on(ASem.QueryAbstraction()),
         action_spec.on(ASem.ActionAbstraction()),
         rule_spec.on(ASem.AtomicRuleAbstraction()),
-        trans_spec.on(ASem.TransformAbstraction()),
+        trans_spec.on(ASem.TransformPlusAbstraction()),
         cont_spec.on(ASem.ContainerAbstraction()),
         node_handler,
         trie_handler,

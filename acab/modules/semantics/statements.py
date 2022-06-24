@@ -93,6 +93,44 @@ class TransformAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
                     result              = op(*params, data=mutx.data)
                     mutx[clause[-1][1].key()]    = result
 
+class TransformPlusAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
+    """ Takes a context, returns a changed context """
+
+    def verify(self, instruction) -> bool:
+        return (isinstance(instruction, Instr.ProductionContainer) and
+                all([x.type == "_:SENTENCE.COMPONENT.TRANSFORM" for x in instruction.clauses]))
+
+    def __call__(self, instruction, semSys, *, ctxs=None, data=None):
+        # Note: run *all* the transform clauses at once
+        operators = ctxs._operators
+        transform =  instruction
+        for ctxIns in ctxs.active_list(clear=True):
+            with MutableContextInstance(ctxs, ctxIns) as mutx:
+                for clause in transform.clauses:
+                    if clause.type == "_:SENTENCE.COMPONENT.TRANSFORM":
+                        self.basic_transform(clause, mutx)
+                    else:
+                        logging.info("Running Transform+ Semantics: {} : {}", clause.data[DS.SEMANTIC_HINT], clause)
+                        semSys(clause, ctxs=[ctxIns])
+                        # spec = semSys.lookup(clause)
+                        # spec(clause, semSys, ctxs=[mutx])
+
+    def basic_transform(self, clause, mutx):
+        assert(len(clause) == 3)
+        # TODO replace this with bind
+        if clause[0] in operators:
+            op = operators[clause[0]]
+        else:
+            op = mutx[clause[0]]
+
+        params = []
+        if clause[1] != "returns":
+            params = [Bind.bind(x, mutx, semSys) for x in clause[1]]
+
+        result              = op(*params, data=mutx.data)
+        mutx[clause[-1][1].key()]    = result
+
+
 class ActionAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
     """ *Consumes* a context, performing all actions in it """
 
@@ -137,9 +175,12 @@ class ActionPlusAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
 
         for ctx in ctxs.active_list(clear=True):
             for clause in action.clauses:
-                if not clause.type == "_:SENTENCE.COMPONENT.ACTION":
+                if clause.type == "_:SENTENCE.COMPONENT.ACTION":
+                    self.basic_action(clause, ctx, operators, semSys)
+                else:
                     # For sentences with semantics, like DFS
                     assert(DS.SEMANTIC_HINT in clause.data), breakpoint()
+                    logging.info("Running Action+ Semantics: {} : {}", clause.data[DS.SEMANTIC_HINT], clause)
                     # TODO this is a hack, rewrite
                     spec = semSys.lookup(clause)
                     struct = spec.struct or semSys
@@ -149,18 +190,20 @@ class ActionPlusAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
                     spec(clause, struct, data=data, ctxs=subctx)
                     continue
 
-                assert(clause.type == "_:SENTENCE.COMPONENT.ACTION")
-                if clause[0] in operators:
-                    op = operators[clause[0]]
-                else:
-                    op = ctx[clause[0]]
 
-                params = []
-                if clause[1] != "returns":
-                    params = [Bind.bind(x, ctx, semSys) for x in clause[1]]
+    def basic_action(self, clause, ctx, operators, semSys):
+        assert(clause.type == "_:SENTENCE.COMPONENT.ACTION")
+        if clause[0] in operators:
+            op = operators[clause[0]]
+        else:
+            op = ctx[clause[0]]
 
-                assert(clause[-1] == "_:returns.unit")
-                result = op(*params, data=clause.data, semSystem=semSys)
+        params = []
+        if clause[1][0] != "returns":
+            params = [Bind.bind(x, ctx, semSys) for x in clause[1]]
+
+        assert(clause[-1] == "_:returns.unit")
+        result = op(*params, data=clause.data, semSystem=semSys)
 
 class AtomicRuleAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
     """ Run a rule in a single semantic call """
