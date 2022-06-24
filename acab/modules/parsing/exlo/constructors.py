@@ -48,8 +48,8 @@ def build_query_component(s, loc, toks):
     assert(DS.OPERATOR in op.type)
 
     type_sen   = VF.sen([DS.CONSTRAINT.name])
-    param_sen = VF.sen() << params
-    ret_sen = VF.sen() << "returns" << "bool"
+    param_sen = VF.sen(data={DS.FLATTEN: False}) << params
+    ret_sen = VF.sen(data={DS.FLATTEN: False}) << "returns" << "bool"
     constraint = VF.sen(data={DS.TYPE_INSTANCE: query_comp}) << op << param_sen << ret_sen
     return ValueRepeatAnnotation(DS.CONSTRAINT, constraint)
 
@@ -64,10 +64,11 @@ def build_transform_component(s, loc, toks):
         op = VF.sen() << op
 
     rebind = toks[EXu.TARGET_S][0]
-    param_sen = VF.sen() << (params or "∅")
-    ret_sen = VF.sen() << "returns" << rebind
+    param_sen = VF.sen(data={DS.FLATTEN: False}) << (params or "∅")
+    ret_sen = VF.sen(data={DS.FLATTEN: False}) << "returns" << rebind
     transform = (VF.sen(data={"sugared": EXu.LEFT_S in toks,
-                              DS.TYPE_INSTANCE: trans_comp})
+                              DS.TYPE_INSTANCE: trans_comp,
+                              DS.FLATTEN: False})
                  << op << param_sen << ret_sen)
 
     assert(isinstance(op, VI.Sentence_i))
@@ -87,10 +88,11 @@ def build_action_component(s, loc, toks):
     if not isinstance(op, Sentence):
         op = VF.sen() << op
 
-    param_sen = VF.sen() << (params or "∅")
-    ret_sen = VF.sen() << "returns" << "unit"
+    param_sen = VF.sen(data={DS.FLATTEN: False}) << (params or "∅")
+    ret_sen = VF.sen(data={DS.FLATTEN: False}) << "returns" << "unit"
     action = (VF.sen(data={"sugared": EXu.LEFT_S in toks,
-                           DS.TYPE_INSTANCE: act_comp})
+                           DS.TYPE_INSTANCE: act_comp,
+                           DS.FLATTEN: False})
               << op << param_sen << ret_sen)
 
     assert(isinstance(op, VI.Sentence_i))

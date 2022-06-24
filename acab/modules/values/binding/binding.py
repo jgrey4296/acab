@@ -32,11 +32,29 @@ class Bind(Bind_i):
         if it is a variable, return the value it maps to
         """
         logging.debug("Binding: {} with {}", val, bindings)
-        result = _bind(val, bindings, semSys)
+        assert(isinstance(val, VI.Value_i))
+        if not isinstance(bindings, list):
+            bindings = [bindings]
 
+        result = _bind(val, bindings, semSys=semSys)
         # Only flatten the top most sentence returned, as it will recurse if necessary
         if isinstance(result, Sentence_i):
             result = result.flatten()
+
+        match result:
+            case DI.Node_i() | DI.StructView():
+                pass
+            case VI.Sentence_i():
+                words = [Bind.bind(x, bindings, semSys) for x in result]
+                result = result.copy(value=words).flatten()
+            case VI.Instruction_i() if result.type[:2] == "_:INSTRUCT.CONTAINER":
+                masked = bindings[0].copy(mask=result.params)
+                clauses = [Bind.bind(x, masked, semSys) for x in result.clauses]
+                result = result.copy(value=clauses)
+            case VI.Instruction_i() if result.type[:2] == "_:INSTRUCT.STRUCT":
+                masked = bindings[0].copy(mask=result.params)
+                struct = {k: Bind.bind(v, masked, semSys) for k,v in result.structure.items()}
+                result = result.copy(structure=struct)
 
         return result
 
@@ -51,14 +69,10 @@ def _bind(val, bindings, semSys=None):
     while result is val and bool(bindings):
         current = bindings.pop()
         match val:
-            case VI.Sentence_i() if DS.OPERATOR in val.type:
-                result = current[str(val)]
-            case VI.Value_i() if not val.has_var:
-                result = val
             case VI.Sentence_i() if val.is_at_var:
-                result = _bind_node(val, current)
-            case VI.Sentence_i() if val.is_var:
-                result = _bind_val(val[0], current)
+                return _bind_node(val[0], current)
+            case VI.Value_i() if val.is_at_var:
+                return _bind_node(val, current)
             case VI.Sentence_i():
                 result = _sen_bind(val, current)
             case VI.Value_i():
@@ -67,17 +81,13 @@ def _bind(val, bindings, semSys=None):
                 raise AcabSemanticException("Unrecognised type attempted to bind: ", val)
 
     match result:
-        case _ if val == result:
+        case _ if val is result:
             # nothing was bound, so early exit
             return val
-        case FunctionType():
-            return result
         case VI.Value_i() if result.type == DS.OPERATOR_PRIM:
             # Operators don't get modified in any way
             return result
-        case DI.Node_i():
-            return result
-        case DI.StructView():
+        case FunctionType() | DI.Node_i() | DI.StructView():
             return result
 
     # Run bind transforms here
@@ -100,7 +110,9 @@ def _bind_val(val:AT.Value, bindings:AT.CtxIns) -> AT.Value:
     of values to internal variables
     return modified copy
     """
-    assert(val.has_var)
+    if not val.is_var:
+        return val
+
     bound = val
     match val:
         case _ if val.value not in bindings:
@@ -118,9 +130,10 @@ def _sen_bind(val:AT.Sentence, bindings:AT.CtxIns) -> AT.Sentence:
     ie: a.b.$x with {x: blah} => a.b.blah
     return modified copy
     """
-    assert(val.has_var)
-    output = []
+    if DS.OPERATOR in val.type and str(val) in bindings:
+        return bindings[str(val)]
 
+    output = []
     # Sentence invariant: only word[0] can have an at_bind
     for i, word in enumerate(val):
         # early expand if a plain node
@@ -131,50 +144,15 @@ def _sen_bind(val:AT.Sentence, bindings:AT.CtxIns) -> AT.Sentence:
                 continue
             case _ if word.is_at_var:
                 assert(i == 0)
-                output.append(_bind_val(word, bindings))
+                output.append(Bind.bind(word.copy(data={DS.BIND: True}), bindings))
             case _:
-                output.append(_bind(word, bindings))
+                output.append(Bind.bind(word, bindings))
 
-    return VI.ValueFactory.sen(output,
-                               data=val.data,
-                               params=val.params,
-                               tags=val.tags)
+    return val.copy(value=output)
 
 
-def _bind_node(val:AT.Sentence, bindings:AT.CtxIns) -> AT.Node:
+def _bind_node(val:VI.Value_i, bindings:AT.CtxIns) -> AT.Node:
     assert(val.is_at_var)
-    assert(val[0] in bindings)
-    assert(val[0].key() in bindings.nodes)
-    return bindings.nodes[val[0].key()]
-
-
-def _production_component_bind(val, data) -> AT.Component:
-    # Bind params / operator
-    if val.op.is_var and val.op.value in data:
-        bound_op = data[val.op.value]
-    else:
-        bound_op = val.op.copy()
-
-    bound_params = [x.bind(data) for x in val.params]
-
-    return val.copy(value=bound_op, params=bound_params)
-
-
-def _production_container_bind(val, data) -> AT.Container:
-    # Bind params,
-    # then Bind each clause separately,
-    bound_clauses = [x.bind(data) for x in val.value]
-    bound_params  = [x.bind(data) for x in val.params]
-    return val.copy(value=bound_clauses, params=bound_params)
-
-def _production_structure_bind(val, data) -> AT.ProductionStructure:
-    # Bind params,
-    bound_params  = [bind(x, data) for x in val.params]
-    # Bind clauses
-    bound_clauses = [bind(x, data) for x in val.clauses]
-    # Bind sub containers
-    bound_struct  = {x: bind(y, data) for x,y in val.structure.items()}
-
-    return val.copy(value=bound_clauses, params=bound_params, structure=bound_struct)
-
-
+    assert(val in bindings)
+    assert(val.key() in bindings.nodes)
+    return bindings.nodes[val.key()]

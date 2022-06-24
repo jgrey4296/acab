@@ -124,12 +124,15 @@ class ContextInstance(CtxInt.ContextInstance_i):
     @property
     def current_node(self):
         return self._current
-    def copy(self, **kwargs):
+    def copy(self, mask=None, **kwargs):
         logging.debug("Copied Ctx Instance")
         if 'data' not in kwargs:
             kwargs['data'] = self.data.copy()
         if 'nodes' not in kwargs:
             kwargs['nodes'] = self.nodes.copy()
+
+        if mask is not None:
+            kwargs['data'] = {x:y for x,y in kwargs['data'].items() if x not in mask}
 
         copied = replace(self,
                          uuid=uuid1(),
