@@ -15,10 +15,10 @@ with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
 
-from acab.core.value.value import AcabValue
-from acab.error.context import AcabContextException
-from acab.modules.context.context_instance import ContextInstance
-from acab.modules.context.context_set import ContextSet
+    from acab.core.value.value import AcabValue
+    from acab.error.context import AcabContextException
+    from acab.modules.context.context_instance import ContextInstance
+    from acab.modules.context.context_set import ContextSet
 
 
 class TestContextInstance(unittest.TestCase):

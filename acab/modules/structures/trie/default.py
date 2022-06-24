@@ -30,14 +30,14 @@ ATOM_SIGNAL            = Sentence() << config.attr.Data.TYPE_BASE
 TRIE_SIGNAL              = Sentence() << config.attr.Semantic.Signals.TRIE
 
 def DEFAULT_TRIE_SPEC(name=TRIE_SIGNAL):
-    logging.info("Constructing Default Trie Semantics Spec")
+    logging.debug("Constructing Default Trie Semantics Spec")
     node_spec   = BasicSemanticSystem.Spec(ATOM_SIGNAL).spec_from(SI.ValueSemantics_i)
     trie_spec   = BasicSemanticSystem.Spec(name).spec_from(SI.StructureSemantics_i)
 
     return node_spec, trie_spec
 
 def DEFAULT_TRIE(name=TRIE_SIGNAL):
-    logging.info("Constructing Default Trie Structure, Semantics and Handlers")
+    logging.debug("Constructing Default Trie Structure, Semantics and Handlers")
     node_handler = BasicNodeSemantics(ATOM_SIGNAL).as_handler()
     trie_sem     = FlattenBreadthTrieSemantics(signal=name,
                                                init_specs=DEFAULT_TRIE_SPEC(),

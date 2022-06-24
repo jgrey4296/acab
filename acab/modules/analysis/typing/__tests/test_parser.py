@@ -23,22 +23,22 @@ with warnings.catch_warnings():
     #     import pyparsing as pp
     #     DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
-from acab.core.parsing.annotation import ValueAnnotation
-import acab.core.defaults.value_keys as DS
-from acab.core.value.sentence import Sentence
+    from acab.core.parsing.annotation import ValueAnnotation
+    import acab.core.defaults.value_keys as DS
+    from acab.core.value.sentence import Sentence
 
-from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
-from acab.core.parsing.component_dsl import Component_DSL
+    from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
+    from acab.core.parsing.component_dsl import Component_DSL
 
-from acab.modules.analysis.typing.module import TypeSpecFragment
-from acab.modules.analysis.typing import util as TYU
-from acab.modules.analysis.typing.parsing import TypeDefParser as TDP
-from acab.modules.analysis.typing.parsing import TypeParser as TP
-from acab.modules.analysis.typing.values import (OperatorDefinition,
-                                                 SumTypeDefinition,
-                                                 TypeClass,
-                                                 TypeDefinition)
-from acab.modules.analysis.typing import util
+    from acab.modules.analysis.typing.module import TypeSpecFragment
+    from acab.modules.analysis.typing import util as TYU
+    from acab.modules.analysis.typing.parsing import TypeDefParser as TDP
+    from acab.modules.analysis.typing.parsing import TypeParser as TP
+    from acab.modules.analysis.typing.values import (OperatorDefinition,
+                                                    SumTypeDefinition,
+                                                    TypeClass,
+                                                    TypeDefinition)
+    from acab.modules.analysis.typing import util
 
 class TestParser(unittest.TestCase):
     @classmethod
@@ -112,47 +112,47 @@ class TestParser(unittest.TestCase):
         self.assertIsInstance(result, OperatorDefinition)
         self.assertEqual(result.type, util.OPERATOR_DEFINITION)
         self.assertEqual(len(result), 1)
-        self.assertEqual(result[0][0], "[x]")
-        self.assertEqual(result[0], "_:[x].returns")
+        self.assertEqual(result[0][0], "_:[x]")
+        self.assertEqual(result[0], "_:[[x]].[returns.unit]")
 
     def test_multi_param_def(self):
         result = TDP.OP_DEF.parse_string("c(::λ): $x $y $z")[0]
         self.assertIsInstance(result, OperatorDefinition)
         self.assertEqual(result.type, util.OPERATOR_DEFINITION)
         self.assertEqual(len(result), 1)
-        self.assertEqual(len(result[0]), 4)
-        self.assertEqual(result[0], "_:[x].[y].[z].returns")
+        self.assertEqual(len(result[0]), 2)
+        self.assertEqual(result[0], "_:[[x].[y].[z]].[returns.unit]")
 
     def test_op_def_return(self):
         result = TDP.OP_DEF.parse_string("c(::λ): $x $y $z -> $a")[0]
         self.assertIsInstance(result, OperatorDefinition)
         self.assertEqual(result.type, util.OPERATOR_DEFINITION)
         self.assertEqual(len(result), 1)
-        self.assertEqual(len(result[0]), 5)
-        self.assertEqual(result[0], "_:[x].[y].[z].returns.a")
+        self.assertEqual(len(result[0]), 2)
+        self.assertEqual(result[0], "_:[[x].[y].[z]].[returns.a]")
 
     def test_op_type_specs(self):
         result = TDP.OP_DEF.parse_string("c(::λ): $x(::blah) $y(::bloo) -> $z(::awef)")[0]
         self.assertIsInstance(result, OperatorDefinition)
         self.assertEqual(result.type, util.OPERATOR_DEFINITION)
         self.assertEqual(len(result), 1)
-        self.assertEqual(len(result[0]), 4)
-        self.assertEqual(result[0], "_:[x].[y].returns.z")
-        self.assertEqual(result[0][0].type, "_:SENTENCE.blah")
-        self.assertEqual(result[0][1].type, "_:SENTENCE.bloo")
-        self.assertEqual(result[0][3].type, "_:awef")
+        self.assertEqual(len(result[0]), 2)
+        self.assertEqual(result[0], "_:[[x].[y]].[returns.z]")
+        self.assertEqual(result[0][0][0].type, "_:SENTENCE.blah")
+        self.assertEqual(result[0][0][1].type, "_:SENTENCE.bloo")
+        self.assertEqual(result[0][1][-1].type, "_:awef")
 
     def test_op_multi_spec(self):
         result = TDP.MULTI_OP_DEF.parse_string("c(::λ):\n  $x(::blah) $y(::bloo) -> $z(::awef)\n  $x -> $y\nend")[0]
         self.assertIsInstance(result, OperatorDefinition)
         self.assertEqual(result.type, util.OPERATOR_DEFINITION)
         self.assertEqual(len(result), 2)
-        self.assertEqual(len(result[0]), 4)
-        self.assertEqual(result[0], "_:[x].[y].returns.z")
-        self.assertEqual(result[0][0].type, "_:SENTENCE.blah")
-        self.assertEqual(result[0][1].type, "_:SENTENCE.bloo")
-        self.assertEqual(result[0][3].type, "_:awef")
-        self.assertEqual(result[1], "_:[x].returns.y")
+        self.assertEqual(len(result[0]), 2)
+        self.assertEqual(result[0], "_:[[x].[y]].[returns.z]")
+        self.assertEqual(result[0][0][0].type, "_:SENTENCE.blah")
+        self.assertEqual(result[0][0][1].type, "_:SENTENCE.bloo")
+        self.assertEqual(result[0][1][1].type, "_:awef")
+        self.assertEqual(result[1], "_:[[x]].[returns.y]")
 
     def test_simple_operator_def_fail(self):
         """ Test an operator type definition without variable params """

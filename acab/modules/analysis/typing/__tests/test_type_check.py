@@ -60,7 +60,7 @@ class TypeCheckTests(unittest.TestCase):
         global dsl
         # Set up the parser to ease test setup
         dsl   = ppDSL.PyParseDSL()
-        dsl.register(EXLO_Parser).register(TypingFragment().build_dsl()).register(DFSExtension().build_dsl())
+        dsl.register(EXLO_Parser).register(TypeSpecFragment().build_dsl()).register(DFSExtension().build_dsl())
         dsl.build()
 
     @classmethod

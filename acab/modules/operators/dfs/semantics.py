@@ -18,6 +18,7 @@ from acab.core.value.instruction import Instruction
 from acab.core.value.sentence import Sentence
 from acab.modules.operators.dfs.context_walk_manager import ContextWalkManager
 from acab.interfaces.context import ContextInstance_i
+from acab.interfaces.bind import Bind_i
 
 logging = logmod.getLogger(__name__)
 config = AcabConfig()

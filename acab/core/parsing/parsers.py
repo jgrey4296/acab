@@ -1,3 +1,4 @@
+from __future__ import annotations
 import logging as logmod
 import re
 from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,

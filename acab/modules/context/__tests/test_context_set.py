@@ -10,16 +10,15 @@ from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
 from unittest import mock
 import warnings
 
+import acab
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
-    pass
+    acab.setup()
 
-
-import acab
-from acab.core.value.value import AcabValue
-from acab.error.context import AcabContextException
-from acab.modules.context.context_instance import ContextInstance
-from acab.modules.context.context_set import ContextSet
+    from acab.core.value.value import AcabValue
+    from acab.error.context import AcabContextException
+    from acab.modules.context.context_instance import ContextInstance
+    from acab.modules.context.context_set import ContextSet
 
 
 class ContextsTests(unittest.TestCase):

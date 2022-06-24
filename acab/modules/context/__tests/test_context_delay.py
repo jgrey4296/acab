@@ -9,9 +9,11 @@ from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
 import unittest
 from unittest import mock
 import warnings
+import acab
 
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
+    acab.setup()
     pass
 
 class TestQueryManager(unittest.TestCase):

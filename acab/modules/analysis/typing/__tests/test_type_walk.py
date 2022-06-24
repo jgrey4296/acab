@@ -15,30 +15,30 @@ with warnings.catch_warnings():
     config = acab.setup()
     from acab.core.parsing import pyparse_dsl as ppDSL
 
-from acab.core.data.acab_struct import AcabNode
-from acab.core.defaults.value_keys import BIND
-from acab.core.value.instruction import Instruction
-from acab.core.value.sentence import Sentence
-from acab.core.value.value import AcabValue
-from acab.interfaces.context import ContextSet_i
-from acab.modules.analysis.typing import exceptions as TE
-from acab.modules.analysis.typing.module import TypingFragment
-from acab.modules.analysis.typing.unify import type_unify_fns as tuf
-from acab.modules.analysis.typing.unify import unifier
-from acab.modules.analysis.typing.unify.util import gen_f
-from acab.modules.context.context_instance import ContextInstance as CtxIns
-from acab.modules.context.context_instance import MutableContextInstance
-from acab.modules.engines.configured import exlo
-from acab.modules.operators.dfs.module import DFSExtension
-from acab.modules.operators.dfs.semantics import DFSSemantics
-from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
-from acab.modules.semantics.default import DEFAULT_SEMANTICS
-from acab.modules.structures.trie.default import DEFAULT_TRIE
+    from acab.interfaces.value import ValueFactory as VF
+    from acab.interfaces import value as VI
+    from acab.core.data.acab_struct import AcabNode
+    from acab.core.defaults.value_keys import BIND
+    from acab.core.value.instruction import Instruction
+    from acab.core.value.sentence import Sentence
+    from acab.core.value.value import AcabValue
+    from acab.interfaces.context import ContextSet_i
+    from acab.modules.analysis.typing import exceptions as TE
+    from acab.modules.analysis.typing.module import TypeSpecFragment, CheckStatementFragment
+    from acab.modules.analysis.typing.unify import type_unify_fns as tuf
+    from acab.modules.analysis.typing.unify import unifier
+    from acab.modules.analysis.typing.unify.util import gen_f
+    from acab.modules.context.context_instance import ContextInstance as CtxIns
+    from acab.modules.context.context_instance import MutableContextInstance
+    from acab.modules.engines.configured import exlo
+    from acab.modules.operators.dfs.module import DFSExtension
+    from acab.modules.operators.dfs.semantics import DFSSemantics
+    from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
+    from acab.modules.semantics.default import DEFAULT_SEMANTICS
+    from acab.modules.structures.trie.default import DEFAULT_TRIE
 
 ContextSet = config.prepare("Imports.Targeted", "context", actions=[config.actions_e.IMCLASS], args={"interface": ContextSet_i})()
 default_modules = config.prepare("Module.REPL", "MODULES")().split("\n")
-
-dsl = None
 
 class TypeWalkTests(unittest.TestCase):
 
@@ -46,19 +46,17 @@ class TypeWalkTests(unittest.TestCase):
     def setUpClass(cls):
         LOGLEVEL      = logmod.DEBUG
         LOG_FILE_NAME = "log.{}".format(splitext(split(__file__)[1])[0])
-        cls.file_h        = logmod.FileHandler(LOG_FILE_NAME, mode="w")
-
+        cls.file_h    = logmod.FileHandler(LOG_FILE_NAME, mode="w")
         cls.file_h.setLevel(LOGLEVEL)
-        logging = logmod.getLogger(__name__)
-        logging.root.setLevel(logmod.NOTSET)
-        logging.root.handlers[0].setLevel(logmod.WARNING)
-        logging.root.addHandler(cls.file_h)
 
-        global dsl
+        logging = logmod.getLogger(__name__)
+        # logging.root.setLevel(logmod.NOTSET)
+        logging.root.addHandler(cls.file_h)
+        cls.logging = logging
         # Set up the parser to ease test setup
-        dsl   = ppDSL.PyParseDSL()
-        dsl.register(EXLO_Parser).register(TypingFragment().build_dsl()).register(DFSExtension().build_dsl())
-        dsl.build()
+        cls.dsl   = ppDSL.PyParseDSL()
+        cls.dsl.register(EXLO_Parser).register(TypeSpecFragment().build_dsl()).register(DFSExtension().build_dsl())
+        cls.dsl.build()
 
         cls.eng = exlo()
         cls.eng.load_modules(*default_modules, "acab.modules.operators.dfs.module", "acab.modules.analysis.typing")
@@ -68,13 +66,12 @@ class TypeWalkTests(unittest.TestCase):
         logmod.root.removeHandler(cls.file_h)
 
     def setUp(self):
-        self.eng("~additional")
-        self.eng("~walker")
-        self.eng("~types")
-        self.eng("~found")
-        self.eng("~acab")
+        self.logging.info("---------- SETUP")
         self.eng("~test")
-
+        self.eng("~found")
+        self.eng("~types")
+        self.eng("~acab")
+        self.logging.info("---------- FINISHED SETUP")
 
     #----------
     def test_walk(self):

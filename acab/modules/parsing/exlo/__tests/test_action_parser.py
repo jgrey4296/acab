@@ -26,7 +26,7 @@ with warnings.catch_warnings():
                                              ProductionOperator)
     from acab.core.value.sentence import Sentence
     from acab.core.value.value import AcabValue
-    from acab.interfaces.value import Value_i
+    from acab.interfaces.value import Value_i, Sentence_i
     from acab.modules.parsing.exlo.parsers import ActionParser as AP
     from acab.modules.parsing.exlo.parsers import FactParser as FP
 

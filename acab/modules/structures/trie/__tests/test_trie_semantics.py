@@ -20,6 +20,8 @@ with warnings.catch_warnings():
     import acab.core.defaults.value_keys as DS
     from acab.core.data.acab_struct import BasicNodeStruct
     from acab.core.data.node import AcabNode
+    from acab.core.parsing import pyparse_dsl as ppDSL
+    from acab.core.parsing.component_dsl import Component_DSL
     from acab.core.value.sentence import Sentence
     from acab.core.value.value import AcabValue
     from acab.interfaces.handler_system import Handler_i
@@ -29,6 +31,7 @@ with warnings.catch_warnings():
                                                   ContextInstance, ContextSet)
     from acab.modules.operators.query.query_operators import (EQ, AlwaysMatch,
                                                               SimpleTypeMatch)
+    from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
     from acab.modules.semantics.values import (BasicNodeSemantics,
                                                ExclusionNodeSemantics)
     from acab.modules.structures.trie.semantics import \

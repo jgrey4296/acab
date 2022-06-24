@@ -22,14 +22,17 @@ with warnings.catch_warnings():
 
 
     import acab.core.defaults.value_keys as DS
+    from acab.core.parsing import pyparse_dsl as ppDSL
     from acab.core.parsing.annotation import ValueRepeatAnnotation
-    from acab.core.value.instruction import Instruction, ProductionContainer
     from acab.core.util.sentences import ProductionComponent
+    from acab.core.value.instruction import Instruction, ProductionContainer
     from acab.core.value.sentence import Sentence
     from acab.core.value.value import AcabValue
     from acab.interfaces.value import ValueFactory as VF
     from acab.modules.engines.configured import exlo
     from acab.modules.operators.dfs import parser as DOP
+    from acab.modules.operators.dfs.module import DFSExtension
+    from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 
 BIND            = DS.BIND
 QUERY           = DS.QUERY
@@ -41,6 +44,9 @@ default_modules = config.prepare("Module.REPL", "MODULES")().split("\n")
 
 WALK_TYPE  = VF.sen() << config.attr.Type.Primitive.INSTRUCT << config.attr.Semantic.Signals.WALK
 QUERY_TYPE = VF.sen() << config.attr.Type.Primitive.INSTRUCT << config.attr.Type.Primitive.CONTAINER << config.attr.Type.Primitive.QUERY
+
+logmod.getLogger("acab").setLevel(logmod.WARN)
+logmod.getLogger("acab.modules.operators").setLevel(logmod.DEBUG)
 
 class TestWalkSemantics(unittest.TestCase):
 
@@ -59,15 +65,24 @@ class TestWalkSemantics(unittest.TestCase):
         cls.eng = exlo()
         cls.eng.load_modules(*default_modules, "acab.modules.operators.dfs")
 
+        # Set up the parser to ease test setup
+        cls.dsl   = ppDSL.PyParseDSL()
+        cls.dsl.register(EXLO_Parser).register(DFSExtension().build_dsl())
+        cls.dsl.build()
+
     @classmethod
     def tearDownClass(cls):
         logmod.root.removeHandler(cls.file_h)
 
-    def tearDown(self):
+    def setUp(self):
         self.eng("~a")
+        self.eng("~ran")
         self.eng("~found")
         self.eng("~the")
-
+        self.eng("~walker")
+        self.eng("~additional")
+        self.eng("~acab")
+        self.eng("~types")
 
     def test_parsed_walk_query(self):
         query = DOP.dfs_query.parse_string("ᛦ $x(∈ c.e)?")[0]

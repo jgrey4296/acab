@@ -84,7 +84,7 @@ class ContextInstance(CtxInt.ContextInstance_i):
         key = str(value)
         match value:
             case VI.Value_i() if value.is_at_var:
-                logging.warning("Tried to ctxinst.__getitem__ an @var")
+                logging.debug("Got an ctxinst.__getitem__ an @var")
                 key = value.key()
             case VI.Sentence_i() if value.is_var:
                 key = value[0].key()
@@ -144,9 +144,6 @@ class ContextInstance(CtxInt.ContextInstance_i):
         assert(id(self.data) != id(copied.data))
         assert(self.uuid in copied._lineage)
         return copied
-
-    def bind(self, word, nodes, sub_binds=None) -> list[CtxIns]:
-        raise DeprecationWarning()
 
     def progress(self, word, nodes, sub_binds=None) -> list[CtxIns]:
         """

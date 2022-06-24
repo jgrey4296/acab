@@ -69,7 +69,7 @@ class BasicSemanticSystem(basic.SemanticSystem, SemanticSystem_i):
             # TODO verify instruction against semantics
             assert(spec is not None)
             struct = spec.struct
-            logging.info("Firing Semantics: {}", spec)
+            logging.info("Firing Semantics: {} : {!r} : {!r}", spec, instruction, ctxs)
             # StructSems's use a reference to a struct
             # StatementSems use a reference to the sem system in place of a struct
             if struct is None:
