@@ -85,7 +85,8 @@ class ContextSet(CtxInt.ContextSet_i, DelayedCommands_i, metaclass=ContextMeta):
             selection     = [x.uuid for x in selection]
 
         # Get anything based on specified selection
-        selection = [x.uuid for x in self.active_list() if x._lineage.intersection(selection)]
+        if bool(self.active_list()):
+            selection = [x.uuid for x in self.active_list() if x._lineage.intersection(selection)]
         # Construct the mapping for the subctx, while binding
         if not bool(selection):
             initial       = self.instance_constructor().progress(val_binds, node_binds)
