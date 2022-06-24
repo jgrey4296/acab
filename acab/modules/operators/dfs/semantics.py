@@ -41,6 +41,9 @@ ValSem        = AT.ValueSemantics
 StructSem     = AT.StructureSemantics
 Handler       = AT.Handler
 
+Bind = config.prepare("Imports.Targeted", "bind", actions=[config.actions_e.IMCLASS], args={"interface": Bind_i})()
+
+
 # Dependent Semantics
 @dataclass
 class DFSSemantics(basic.StatementSemantics, SI.StatementSemantics_i):
@@ -169,7 +172,13 @@ class DFSSemantics(basic.StatementSemantics, SI.StatementSemantics_i):
                         continue
 
                     found.add(view.node.uuid)
-                    # TODO skip root
+                    accessible = nodesem[0].access(view.node, None, data=data)
+                    prepped    = [(ctx, DI.StructView(x, self)) for x in accessible]
+                    queue      += reversed(prepped)
+
+                    if default.struct.root is view.node:
+                        continue
+
                     for action in actions:
                         spec = semsys.lookup(action)
                         # TODO use specified run form (all, sieve, etc)
@@ -190,9 +199,6 @@ class DFSSemantics(basic.StatementSemantics, SI.StatementSemantics_i):
                         # TODO controllable entrance into subtrie
                         # using if bool(working_ctx):..
                     #endfor
-                    accessible = nodesem[0].access(view.node, None, data=data)
-                    prepped    = [(ctx, DI.StructView(x, self)) for x in accessible]
-                    queue      += reversed(prepped)
                 #endwhile
             #endfor
         #endwith

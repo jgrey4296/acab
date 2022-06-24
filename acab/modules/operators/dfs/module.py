@@ -53,9 +53,11 @@ class DFSExtension(UnifiedFragment_p):
         return the DSL_Fragment describing this extension's parsing requirements and capabilities
         """
         dsl_fragment = DSL_Fragment(specs=[DSL_Spec("word.constrained", struct=DOP.HOTLOAD_VAR),
-                                      DSL_Spec("sentence.operator", struct=DOP.HOTLOAD_SEN_OP)],
-                               handlers=[DSL_Handler("query.statement", func=DOP.dfs_query),
-                                         DSL_Handler("action.statement", func=DOP.dfs_action)])
+                                           DSL_Spec("operators.transform",  struct=DOP.HOTLOAD_TRANS_OP),
+                                           DSL_Spec("sentence.operator", struct=DOP.HOTLOAD_SEN_OP)],
+                                    handlers=[DSL_Handler("query.statement", func=DOP.dfs_query),
+                                              DSL_Handler("action.statement", func=DOP.dfs_action),
+                                              DSL_Handler("action.statement", func=DOP.dfs_operator)])
         return dsl_fragment
 
     def build_printer(self) -> FI.PrinterFragment_i:

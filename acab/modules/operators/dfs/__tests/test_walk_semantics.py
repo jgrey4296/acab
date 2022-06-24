@@ -154,12 +154,13 @@ class TestWalkSemantics(unittest.TestCase):
         """
         ᛦ $y(::blah)?
         """
+
         self.eng("a.b.c.test.sub.blah")
         self.eng("a.b.d.fail")
         self.eng("a.b.e.test.other.blah")
 
         # build a walk instruction
-        query = self.eng._dsl['sentence.ends'].parse_string("query(::γ):\n ᛦ $y(∈ blah.bloo)?\nend")[0]
+        query = self.dsl['query.statement'].parse_string("ᛦ $y(∈ blah.bloo)?")[0]
         # call walk
         result = self.eng(query)
         # check results
@@ -176,7 +177,8 @@ class TestWalkSemantics(unittest.TestCase):
         # Setup a ctx bonud to 'c'
         ctxs       = self.eng("a.b.$x.test?")
 
-        query = self.eng._dsl['sentence.ends'].parse_string("query(::γ):\n @x ᛦ $y(∈ blah) $z(∈ bloo)?\nend")[0]
+        # query = self.eng._dsl['sentence.ends'].parse_string("query(::γ):\n @x ᛦ $y(∈ blah) $z(∈ bloo)?\nend")[0]
+        query = self.eng._dsl['query.statement'].parse_string("@x ᛦ $y(∈ blah) $z(∈ bloo)?")[0]
         # call walk
         result = self.eng(query, ctxset=ctxs)
         # check results
@@ -303,9 +305,151 @@ class TestWalkSemantics(unittest.TestCase):
         # a,b,c,d,e,f,test,the,rule
         self.assertEqual(len(found), 2)
 
+    def test_simple_walk_with_rule(self):
+        """
+        assert found.$x for all $x's
+        """
+        # add rule
+        self.eng("""walker.rule(::ρ):\n | $x |\n\n @x?\n\n !! found.$x\nend """)
+
+        ctxs       = self.eng("walker.$rules?")
+        walk_instr = self.dsl['action.statement'].parse_string("ᛦ λ$rules")[0]
+        # trigger walk
+        self.eng(walk_instr, ctxset=ctxs)
+        # test
+        ctx_results = self.eng("found.$x?")
+        self.assertEqual(len(ctx_results), 2)
+
+    def test_walk_with_bound_rule(self):
+        """
+        assert found.$y for all $x(::$y)'s
+        """
+        # add rule
+        self.eng("""walker.rule(::ρ):\n | $x |\n\n @x(::$y)?\n\n !! found.$y\nend """)
+
+        ctxs       = self.eng("walker.$rules?")
+        walk_instr = self.dsl['action.statement'].parse_string("ᛦ λ$rules")[0]
+        # trigger walk
+        self.eng(walk_instr, ctxset=ctxs)
+        # test
+        ctx_results = self.eng("found.$x?")
+        self.assertEqual(len(ctx_results), 2)
+
+    def test_walk_with_bound_rule2(self):
+        """
+        assert found.$y for all $x(::$y)'s
+        with an additional type added
+        """
+        # add rule
+        self.eng("""walker.rule(::ρ):\n | $x |\n\n @x(::$y)?\n\n !! found.$y\nend""")
+        self.eng("additional.test(::blah)")
+        walk_instr = self.dsl['action.statement'].parse_string("ᛦ λ$rules")[0]
+        # trigger walk
+        self.eng(walk_instr, ctxset=self.eng("walker.$rules?"))
+        # test
+        ctx_results = self.eng("found.$x?")
+        self.assertEqual(len(ctx_results), 3)
+
+    def test_walk_with_rules_prebound(self):
+        """
+        run two rules simultaneously in the walk,
+        from pre-bound ctxs
+        """
+        # add rule
+        self.eng("""walker.rule(::ρ):\n | $x |\n\n @x?\n\n !! ran.first_rule\nend""")
+        self.eng("""walker.other(::ρ):\n | $x |\n\n @x?\n\n !! ran.second_rule\nend""")
+        self.eng("additional.test(::blah)")
+        walk_instr = self.dsl['action.statement'].parse_string("ᛦ λ$rules")[0]
+        # trigger walk
+        self.eng(walk_instr, ctxset=self.eng("walker.$rules?"))
+        # test
+        ctx_results = self.eng("ran.$x?")
+        self.assertEqual(len(ctx_results), 2)
+
+    def test_walk_with_rule_retrieval(self):
+        """
+        assert found.$y for all $x(::$y)'s
+        """
+        # add rule
+        self.eng("""walker.rule(::ρ):\n | $x |\n\n @x(::$y)?\n\n !! found.$y\nend""")
+        walk_instr = self.dsl['action.statement'].parse_string("ᛦ λwalker.rule")[0]
+        # trigger walk
+        self.eng(walk_instr, ctxset=self.eng("walker.$rules?"))
+        # test
+        ctx_results = self.eng("found.$x?")
+        self.assertEqual(len(ctx_results), 2)
+
+    def test_walk_with_rule_retrieval_var_multi(self):
+        """
+        assert found.$y for all $x(::$y)'s
+        with an additional type added
+        """
+        # add rule
+        self.eng("""walker.sen(::ρ):\n | $x |\n\n @x?\n\n !! ran.first\nend""")
+        self.eng("""walker.other(::ρ):\n | $x |\n\n @x?\n\n !! ran.second\nend""")
+        walk_instr = self.dsl['action.statement'].parse_string("ᛦ λwalker.$x")[0]
+        # trigger walk
+        self.eng(walk_instr)
+        # test
+        ctx_results = self.eng("ran.$x?")
+        self.assertEqual(len(ctx_results), 2)
+
+    def test_walk_with_rule_retrieval_var_type_constraint(self):
+        """
+        assert found.$y for all $x(::$y)'s
+        with an additional type added
+        """
+        # add rule
+        self.eng("""walker.sen(::ρ):\n | $x |\n\n @x?\n\n !! ran.first\nend""")
+        self.eng("""walker.other(::ρ):\n | $x |\n\n @x?\n\n !! ran.second\nend""")
+        self.eng("""walker.not_rule""")
+        walk_instr = self.dsl['action.statement'].parse_string("ᛦ λwalker.$x(::INSTRUCT.STRUCTURE.RULE)")[0]
+        # trigger walk
+        self.eng(walk_instr)
+        # test
+        ctx_results = self.eng("ran.$x?")
+        self.assertEqual(len(ctx_results), 2)
+
+    def test_walk_with_rule_retrieval_var_us_existing_bind(self):
+        """
+        assert found.$y for all $x(::$y)'s
+        with an additional type added
+        """
+        # add rule
+        self.eng("""walker.sen(::ρ):\n | $x |\n\n @x(::$y)?\n\n !! found.$y\nend""")
+        walk_instr = self.dsl['action.statement'].parse_string("ᛦ λwalker.$x")[0]
+        self.eng("a.test.sen")
+        # trigger walk
+        self.eng(walk_instr, ctxset=self.eng("a.test.$x?"))
+        # test
+        ctx_results = self.eng("found.$x?")
+        self.assertEqual(len(ctx_results), 2)
 
 
+    @unittest.expectedFailure
+    def test_walk_with_rule_retrieval_var_no_match(self):
+        """
+        assert found.$y for all $x(::$y)'s
+        with an additional type added
+        """
+        # TODO maybe disallow action queries?
+        # add rule
+        walk_instr = self.dsl['action.statement'].parse_string("ᛦ λwalker.$x")[0]
+        # trigger walk
+        self.eng(walk_instr, ctxset=self.eng("walker.$rules?"))
+        self.assertFalse(True)
 
+    @unittest.skip
+    def test_walk_with_operator_act(self):
+        """
+        In place transform of nodes?
+
+        ᛦ λan.operator
+        """
+        self.eng("a.b.c\na.b.d\na.b.e")
+        breakpoint()
+        walk_instr = self.dsl['action.statement'].parse_string(r"ᛦ ~= /(\w)/  ")[0]
+        self.eng(walk_instr)
 
 
     @unittest.skip("Not implemented yet")

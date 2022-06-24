@@ -48,6 +48,23 @@ def build_dfs_action(s, l, toks):
     return instruction
 
 
+def build_dfs_operator(s, l, toks):
+    words = []
+    if 'root' in toks:
+        assert(toks.root.is_at_var)
+        words.append(toks.root)
+
+    assert("op" in toks)
+    words.append(toks.op)
+
+    assert('vars' in toks)
+    words += toks.vars[:]
+
+    # TODO refactor to be a ProductionComponent
+    instruction = VF.sen(data={SEM_HINT: WALK_SEM_HINT}) << words
+
+    return instruction
+
 # Parser: #####################################################################
 HOTLOAD_VAR    = pp.Forward()
 HOTLOAD_SEN_OP = pp.Forward()
@@ -69,3 +86,10 @@ dfs_query.set_parse_action(build_dfs_query)
 # λarity.one.action.or.rule $x
 dfs_action    = dfs_head + HOTLOAD_SEN_OP('action')
 dfs_action.set_parse_action(build_dfs_action)
+
+
+HOTLOAD_TRANS_OP         = pp.Forward()
+HOTLOAD_TRANS_OP.set_name("hl_trans_op")
+
+dfs_operator = dfs_head + HOTLOAD_TRANS_OP("op") + orm(HOTLOAD_VAR)("vars")
+dfs_operator.set_parse_action(build_dfs_operator)
