@@ -58,6 +58,11 @@ class TrieSemanticTests(unittest.TestCase):
         logging.root.handlers[0].setLevel(logmod.WARNING)
         logging.root.addHandler(cls.file_h)
 
+        cls.dsl   = ppDSL.PyParseDSL()
+        cls.dsl.register(EXLO_Parser)
+        cls.dsl.register(Component_DSL)
+        cls.dsl.build()
+
     @classmethod
     def tearDownClass(cls):
         logmod.root.removeHandler(cls.file_h)
@@ -668,6 +673,66 @@ class TrieSemanticTests(unittest.TestCase):
 
 
 
+
+
+    def test_requery_override(self):
+        node_sem    = BasicNodeSemantics().as_handler(signal="node")
+        trie_sem    = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_struct = BasicNodeStruct.build_default()
+
+        trie_sem.insert(self.dsl("a.test.fact")[0], trie_struct)
+        trie_sem.insert(self.dsl("a.second.fact")[0], trie_struct)
+
+        ctx_set = ContextSet({"[τ=]": AlwaysMatch()})
+
+        trie_sem.query(self.dsl("a.test.$x?")[0], trie_struct, ctxs=ctx_set)
+        node = ctx_set[0].nodes['x'].node.parent()
+        self.assertEqual(node.value, "test")
+
+        trie_sem.query(self.dsl("a.second.$x?")[0], trie_struct, ctxs=ctx_set)
+        node = ctx_set[0].nodes['x'].node.parent()
+        self.assertEqual(node.value, "second")
+
+    def test_query_recurse_var_override(self):
+        node_sem    = BasicNodeSemantics().as_handler(signal="node")
+        trie_sem    = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_struct = BasicNodeStruct.build_default()
+
+        trie_sem.insert(self.dsl("a.test.fact")[0], trie_struct)
+        trie_sem.insert(self.dsl("a.second.fact")[0], trie_struct)
+
+        ctx_set = ContextSet({"[τ=]": AlwaysMatch()})
+        ctx_set[0].data['y'] = self.dsl("a.second.$x?")[0]
+
+        trie_sem.query(self.dsl("a.test.$x?")[0], trie_struct, ctxs=ctx_set)
+        node = ctx_set[0].nodes['x'].node.parent()
+        self.assertEqual(node.value, "test")
+
+        trie_sem.query(self.dsl("$y?")[0], trie_struct, ctxs=ctx_set)
+        node = ctx_set[0].nodes['x'].node.parent()
+        self.assertEqual(node.value, "second")
+        self.assertEqual(ctx_set[0].y, "fact")
+
+    def test_query_recurse_sen_override(self):
+        node_sem    = BasicNodeSemantics().as_handler(signal="node")
+        trie_sem    = FlattenBreadthTrieSemantics(init_handlers=[node_sem.as_handler(signal=DEFAULT_HANDLER_SIGNAL)])
+        trie_struct = BasicNodeStruct.build_default()
+
+        trie_sem.insert(self.dsl("a.test.fact")[0], trie_struct)
+        trie_sem.insert(self.dsl("a.second.fact")[0], trie_struct)
+
+        ctx_set = ContextSet({"[τ=]": AlwaysMatch()})
+        ctx_set[0].data['y'] = self.dsl("a.second.fact?")[0]
+
+        trie_sem.query(self.dsl("a.test.$x?")[0], trie_struct, ctxs=ctx_set)
+        node = ctx_set[0].nodes['x'].node.parent()
+        self.assertEqual(node.value, "test")
+
+        trie_sem.query(self.dsl("$y?")[0], trie_struct, ctxs=ctx_set)
+        node = ctx_set[0].nodes['x'].node.parent()
+        self.assertEqual(node.value, "test")
+        node = ctx_set[0].nodes['y'].node.parent()
+        self.assertEqual(node.value, "second")
 
 if __name__ == '__main__':
     unittest.main()

@@ -67,7 +67,7 @@ class FlattenBreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantic
         return current
 
     def _delete(self, sen, struct, *, data=None, ctxs=None):
-        logging.debug(f"Removing: {sen} from {struct}")
+        logging.debug("Removing: {!r} from {!r}", sen, struct)
 
         pos_sen = sen.copy(data={DS.NEGATION:False})
         results = self.query(pos_sen, struct, data=data, ctxs=ctxs)
@@ -85,7 +85,7 @@ class FlattenBreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantic
     def query(self, sen, struct, *, data=None, ctxs=None):
         """ Breadth First Search Query """
         assert(ctxs is not None)
-
+        logging.info("Querying: {!r} : {!r}", sen ,struct)
         clause_flatten = DS.FLATTEN not in sen.data or sen.data[DS.FLATTEN]
         root           = DI.StructView(struct.root, self) if isinstance(struct, DI.Structure_i) else struct
         assert(isinstance(root, Node))
@@ -93,23 +93,26 @@ class FlattenBreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantic
         cqm = FlattenQueryManager(sen, root, ctxs)
         with cqm:
             for source_word in cqm.current:
-                for bound_word, ctxInst, current_node in cqm.active:
+                for bound_word, ctxInst, view in cqm.active:
                     # This happens here to catch when $x -> a.sub.sentence
                     # in a.larger.query.$x.blah?
                     should_flatten = clause_flatten and bound_word and (DS.FLATTEN not in bound_word.data or bound_word.data[DS.FLATTEN])
                     if isinstance(bound_word, Sentence_i) and should_flatten:
                         # sub query when dealing with a sentence that needs to be flattened
-                        self.query(bound_word, current_node, data=data, ctxs=ctxs.subctx([ctxInst.uuid]))
+                        subctx = self.query(bound_word, view, data=data, ctxs=ctxs.subctx([ctxInst.uuid]))
+                        for sub_inst in subctx.active_list(clear=True):
+                            subctx.push(sub_inst.progress(source_word, [sub_inst.current_node]))
+                        cqm.queue_ctxs(subctx.active_list())
                     elif source_word.is_at_var and not bool(cqm._current_constraint):
                         continue
                     elif source_word.is_at_var:
                         assert(source_word == sen[0])
-                        cqm.maybe_test([current_node])
+                        cqm.maybe_test([view])
                     else:
-                        if not isinstance(current_node, DI.StructView):
+                        if not isinstance(view, DI.StructView):
                             breakpoint()
-                        spec = self.lookup(current_node.node)
-                        results = spec[0].access(current_node.node,
+                        spec = self.lookup(view.node)
+                        results = spec[0].access(view.node,
                                                  bound_word,
                                                  data=data)
 
