@@ -113,3 +113,16 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
         result = AP.action_definition.parse_string("test(::ACTION):\n λa.b.c\nend")[0]
         self.assertIsInstance(result, ProductionContainer)
         self.assertEqual(result.type, f"_:{DS.INSTR_PRIM}.{DS.CONTAINER_PRIM}.{DS.ACTION_COMPONENT}")
+
+    def test_action_param_sentences(self):
+        result = AP.action_component.parse_string("λa.b.c d.e.$f")[0]
+        self.assertIsInstance(result, Sentence_i)
+        self.assertEqual(result[1][0], "_:d.e.f")
+        self.assertEqual(result[1][0][-1].data[DS.BIND], True)
+
+    def test_action_param_sentences_multi(self):
+        result = AP.action_component.parse_string("λa.b.c d.e.$f a.different.sentence")[0]
+        self.assertIsInstance(result, Sentence_i)
+        self.assertEqual(result[1][0], "_:d.e.f")
+        self.assertEqual(result[1][0][-1].data[DS.BIND], True)
+        self.assertEqual(result[1][1], "_:a.different.sentence")
