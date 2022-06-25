@@ -71,7 +71,7 @@ def debug_fail_action(instring, loc, expr, exc, *args):
         msg       = ""
         loc       = ""
 
-    logging.error("{ctx[0]:>10&yellow}{ctx[1]:3&red}{ctx[2]:>10&yellow}\t\t {} <{}>: {} found '{}' at {}",
+    logging.error("{ctx[0]:>10&yellow}{ctx[1]:3&red}{ctx[2]:<10&yellow}\t\t {} <{}>: {} found '{}' at {}",
                   FAILED, SC.red(expr.name), SC.yellow(msg), SC.red(found_str),
                   loc, extra={'ctx':mark_str})
 
@@ -102,6 +102,6 @@ def dfs_activate(*parsers, remove=False):
 
 def _calc_mark_string(instring, loc, buffer=10):
     str_len  = len(instring)
-    pre_str  = instring[max(0, loc-buffer):max(0, min(str_len, loc)-1)]
-    post_str = instring[loc:min(str_len, loc+buffer)]
+    pre_str  = instring[max(0, loc-buffer):max(0, loc)]
+    post_str = instring[max(0, loc):min(str_len, loc+buffer)]
     return pre_str.replace("\n", "\\n"), MARK, post_str.replace("\n", "\\n")
