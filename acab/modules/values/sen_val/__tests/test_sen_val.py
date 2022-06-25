@@ -18,9 +18,9 @@ import pyparsing as pp
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
-    if '@pytest_ar' in globals():
-        from acab.core.parsing import debug_funcs as DBF
-        DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+    # if '@pytest_ar' in globals():
+    #     from acab.core.parsing import debug_funcs as DBF
+    #     DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
 
 
@@ -94,3 +94,56 @@ class SenValTests(unittest.TestCase):
         self.assertIsInstance(flat[-1], VI.Sentence_i)
         self.assertEqual(flat, "_:a.test.[sub.sentence]")
         self.assertEqual(flat[-1], "_:sub.sentence")
+
+
+    def test_basic_sharp_head_internal(self):
+        result = self.dsl("a.test.♯[[sub.sentence]]")[0]
+        self.assertIn(DS.FLATTEN, result[-1].data)
+        self.assertFalse(result[-1].data[DS.FLATTEN])
+        flat = result.flatten()
+        self.assertIsInstance(flat, VI.Sentence_i)
+        self.assertIsInstance(flat[-1], VI.Sentence_i)
+        self.assertEqual(flat, "_:a.test.[sub.sentence]")
+        self.assertEqual(flat[-1], "_:sub.sentence")
+
+
+    def test_valbind_flatten(self):
+        result = self.dsl('$x(♭)')[0]
+        self.assertIsInstance(result, VI.Value_i)
+        self.assertTrue(result[0].data[DS.FLATTEN])
+
+    def test_sentence_flatten_head(self):
+        result = self.dsl('♭a.b.$x')[0]
+        self.assertIsInstance(result, VI.Value_i)
+        self.assertTrue(result.data[DS.FLATTEN])
+
+
+    def test_sentence_flatten_head(self):
+        result = self.dsl('♯a.b.$x')[0]
+        self.assertIsInstance(result, VI.Value_i)
+        self.assertFalse(result.data[DS.FLATTEN])
+
+    def test_valbind_flatten_head(self):
+        result = self.dsl('a.b.♭$x')[0]
+        self.assertIsInstance(result, VI.Value_i)
+        self.assertTrue(result[-1].data[DS.FLATTEN])
+
+    def test_valbind_no_flatten(self):
+        result = self.dsl('$x~♭')[0]
+        self.assertIsInstance(result, VI.Value_i)
+        self.assertFalse(result[0].data[DS.FLATTEN])
+
+    def test_valbind_no_flatten_as_sharp(self):
+        result = self.dsl('$x(♯)')[0]
+        self.assertIsInstance(result, VI.Value_i)
+        self.assertFalse(result[0].data[DS.FLATTEN])
+
+    def test_valbind_no_flatten_as_sharp(self):
+        result = self.dsl('$x♯')[0]
+        self.assertIsInstance(result, VI.Value_i)
+        self.assertFalse(result[0].data[DS.FLATTEN])
+
+    def test_valbind_flatten_as_not_sharp(self):
+        result = self.dsl('$x~♯')[0]
+        self.assertIsInstance(result, VI.Value_i)
+        self.assertTrue(result[0].data[DS.FLATTEN])

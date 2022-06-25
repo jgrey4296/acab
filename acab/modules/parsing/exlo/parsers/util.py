@@ -19,13 +19,3 @@ from acab.core.parsing.annotation import ValueAnnotation, ValueRepeatAnnotation
 from acab.core.defaults import parse_keys as DK
 import acab.core.defaults.value_keys as CDS
 
-def build_flatten(s, l, t):
-    value = True
-    if 'sharp' in t:
-        value = False
-
-    if DK.NEGATION in t:
-        value = not value
-
-    annot = ValueAnnotation(CDS.FLATTEN, value)
-    return annot

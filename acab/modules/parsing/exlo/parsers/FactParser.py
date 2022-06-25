@@ -37,9 +37,6 @@ HOTLOAD_SEN_POSTS.set_name('hl_sen_posts')
 BAD_HEADS           = ~(END | HOTLOAD_BAD_HEADS)("Bad Words")
 BAD_HEADS.errmsg    = "Bad Head Word Found"
 
-flatten_annotation  = op(NEGATION) + (pp.Literal(PDSym.FLATTEN)('flat') | pp.Literal(PDSym.SHARP)('sharp'))
-flatten_annotation.set_name("FlattenAnno")
-flatten_annotation.set_parse_action(EU.build_flatten)
 
 # Annotations for sentence words, auto wrapped with parens
 annotations = pp.delimited_list(HOTLOAD_ANNOTATIONS, delim=COMMA)
