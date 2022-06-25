@@ -73,6 +73,16 @@ VALBIND = (NG(PDS.HEAD_ANNOTATION, zrm(HEAD_ANNOTATIONS))
            + NG(PDS.POST_ANNOTATION, zrm(POST_ANNOTATIONS)))
 VALBIND.set_parse_action(Pfunc.make_value)
 
+SIMPLE_VALUE = (NG(PDS.HEAD_ANNOTATION, zrm(HEAD_ANNOTATIONS))
+                + NG(PDS.VALUE, BASIC_VALUE)
+                + NG(PDS.POST_ANNOTATION, zrm(POST_ANNOTATIONS)))
+SIMPLE_VALUE.set_parse_action(Pfunc.make_value)
+
+EXTENSION_VALUE = (NG(PDS.HEAD_ANNOTATION, zrm(HEAD_ANNOTATIONS))
+                   + NG(PDS.VALUE, HOTLOAD_VALUES | BASIC_VALUE)
+                   + NG(PDS.POST_ANNOTATION, zrm(POST_ANNOTATIONS)))
+EXTENSION_VALUE.set_parse_action(Pfunc.make_value)
+
 Fwd_ArgList <<= PConst.VBAR + pp.delimited_list(VALBIND, delim=PConst.COMMA) + PConst.VBAR
 
 # TODO make TAG a head_annotation
