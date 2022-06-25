@@ -10,10 +10,11 @@ from acab.core.data.acab_struct import BasicNodeStruct
 from acab.core.value.instruction import Instruction
 from acab.core.value.sentence import Sentence
 from acab.interfaces.value import Sentence_i
-from acab.modules.context.flatten_query_manager import FlattenQueryManager
 import acab.core.defaults.value_keys as DS
 from acab.core.semantics import basic
 from acab.error.protocol import AcabProtocolError as APE
+
+from .flatten_query_manager import FlattenQueryManager
 
 logging = logmod.getLogger(__name__)
 config = AcabConfig()
@@ -43,14 +44,14 @@ class FlattenBreadthTrieSemantics(basic.StructureSemantics, SI.StructureSemantic
 
     def insert(self, sen, struct, *, data=None, ctxs=None):
         # TODO can insert handle @vars?
-        if data is None:
-            data = {}
+        data = data or {}
 
         if DS.NEGATION in sen.data and sen.data[DS.NEGATION]:
             self._delete(sen, struct, data=data, ctxs=ctxs)
             return ctxs
 
-        logging.debug(f"Inserting: {sen} into {struct}")
+        data.update({'source_semantics': self})
+        logging.info("Inserting: {!r} into {!r}", sen, struct)
         # Get the root
         current = self.lookup()[0].up(struct.root)
         for word in sen:
