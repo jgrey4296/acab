@@ -82,18 +82,10 @@ class ContextInstance(CtxInt.ContextInstance_i):
     def __getitem__(self, value: Value):
         # TODO maybe handle AT_BINDs
         key = str(value)
-        match value:
-            case VI.Value_i() if value.is_at_var:
-                logging.debug("Got an ctxinst.__getitem__ an @var")
-                key = value.key()
-            case VI.Sentence_i() if value.is_var:
-                key = value[0].key()
-            case VI.Sentence_i():
-                key = str(value)
-            case VI.Value_i():
-                key = value.key()
-            case _, self.exact:
-                raise AcabContextException("Not Found in Context", context=value)
+        if hasattr(value, "key"):
+            key = value.key()
+        if isinstance(value, VI.Sentence_i) and value.is_var:
+            key = value[0].key()
 
         if key in self.data:
             return self.data[key]
@@ -170,7 +162,7 @@ class ContextInstance(CtxInt.ContextInstance_i):
         # Make len(nodes) new ctxins for the new bindings
         extensions = [(self.copy(), x) for x in nodes]
         # Get the binding name. ie: $x
-        word_str = str(word)
+        word_str = word.key()
         # Now bind
         for ctxInst, node in extensions:
             ctxInst.set_current_node(node)

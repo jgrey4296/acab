@@ -27,6 +27,7 @@ with warnings.catch_warnings():
     from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
     from acab.core.data.node import AcabNode
     from acab.modules.values.binding.binding import Bind
+    from acab.modules.values.sen_val.module import Sen_Val_Parser
 
 
 class BindingLogicTests(unittest.TestCase):
@@ -46,6 +47,7 @@ class BindingLogicTests(unittest.TestCase):
         # Set up the parser to ease test setup
         cls.dsl   = ppDSL.PyParseDSL()
         cls.dsl.register(EXLO_Parser)
+        cls.dsl.register(Sen_Val_Parser)
         cls.dsl.build()
         # dsl()
 
@@ -178,21 +180,20 @@ class BindingLogicTests(unittest.TestCase):
 
     def test_at_var_binding(self):
         source = self.dsl("@x")[0]
-        target = self.dsl("val")[0]
+        target = self.dsl("val")[0][0]
         target_node = AcabNode(target)
 
         ctx = ContextInstance({"x": target}, nodes={"x": target_node})
-        result = Bind.bind(source, [ctx])
+        result = Bind.bind(source[0], ctx)
         self.assertIsInstance(result, AcabNode)
 
     def test_at_var_in_sentence(self):
         source = self.dsl("@x.b.c")[0]
-        target = self.dsl("val")[0]
+        target = self.dsl("val")[0][0]
         target_node = AcabNode(target)
-
         ctx = ContextInstance({"x": target}, nodes={"x": target_node})
 
-        result = Bind.bind(source, [ctx])
+        result = Bind.bind(source, ctx)
         self.assertIsInstance(result, VI.Value_i)
         self.assertEqual(result, "_:val.b.c")
         self.assertIsInstance(result[0], VI.Value_i)
@@ -242,7 +243,6 @@ class BindingLogicTests(unittest.TestCase):
         source = self.dsl("a.container.test(::α):\n !! a.b.$x\n !! another.container(::γ):\n  a.b.$x?\n end\nend")[0]
         ctx = ContextInstance({'x': self.dsl("val")[0]})
         result = Bind.bind(source, ctx)
-
         self.assertEqual(result.type[:2], "_:SENTENCE")
         self.assertEqual(result, "_:a.container.'test'")
         self.assertEqual(result[-1][0], "_:[!!].[[a.b.val]].[returns.unit]")

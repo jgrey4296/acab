@@ -82,13 +82,13 @@ class TransformAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
                     assert(len(clause) == 3)
                     # TODO replace this with bind
                     if clause[0] in operators:
-                        op = operators[clause[0]]
+                        op = Bind.bind(clause[0], operators)
                     else:
-                        op = mutx[clause[0]]
+                        op = Bind.bind(clause[0], mutx)
 
                     params = []
-                    if clause[1] != "returns":
-                        params = [Bind.bind(x, mutx, semSys) for x in clause[1]]
+                    if clause[1][0] != "returns":
+                        params = Bind.bind(clause[1], mutx)
 
                     result              = op(*params, data=mutx.data)
                     mutx[clause[-1][1].key()]    = result
@@ -119,13 +119,13 @@ class TransformPlusAbstraction(basic.StatementSemantics, SI.StatementSemantics_i
         assert(len(clause) == 3)
         # TODO replace this with bind
         if clause[0] in operators:
-            op = operators[clause[0]]
+            op = Bind.bind(clause[0], operators)
         else:
-            op = mutx[clause[0]]
+            op = Bind.bind(clause[0], mutx)
 
         params = []
         if clause[1] != "returns":
-            params = [Bind.bind(x, mutx, semSys) for x in clause[1]]
+            params = Bind.bind(clause[1], mutx)
 
         result              = op(*params, data=mutx.data)
         mutx[clause[-1][1].key()]    = result
@@ -146,13 +146,13 @@ class ActionAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
             for clause in action.clauses:
                 # TODO handle statements to, like DFS
                 if clause[0] in operators:
-                    op = operators[clause[0]]
+                    op = Bind.bind(clause[0], operators)
                 else:
-                    op = ctx[clause[0]]
+                    op = Bind.bind(clause[0], ctx)
 
                 params = []
-                if clause[1] != "returns":
-                    params = [Bind.bind(x, ctx, semSys) for x in clause[1]]
+                if clause[1][0] != "returns":
+                    params = Bind.bind(clause[1], ctx)
 
                 try:
                     result = op(*params, data=clause.data, semSystem=semSys)
@@ -188,7 +188,6 @@ class ActionPlusAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
                     subctx.pop()
                     subctx.push(ctx)
                     spec(clause, struct, data=data, ctxs=subctx)
-                    continue
 
 
     def basic_action(self, clause, ctx, operators, semSys):
@@ -200,7 +199,7 @@ class ActionPlusAbstraction(basic.StatementSemantics, SI.StatementSemantics_i):
 
         params = []
         if clause[1][0] != "returns":
-            params = [Bind.bind(x, ctx, semSys) for x in clause[1]]
+            params = Bind.bind(clause[1], ctx)
 
         assert(clause[-1] == "_:returns.unit")
         result = op(*params, data=clause.data, semSystem=semSys)

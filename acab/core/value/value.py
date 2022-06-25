@@ -13,8 +13,9 @@ from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
 from uuid import UUID, uuid1
 from weakref import ref
 
-import acab.core.util.part_implementations.value as VP
+import acab.interfaces.data as DI
 import acab.core.defaults.value_keys as DS
+import acab.core.util.part_implementations.value as VP
 import acab.interfaces.value as VI
 from acab import AcabConfig
 from acab import types as AT
@@ -47,6 +48,8 @@ class AcabValue(VP.ValueProtocolsImpl, VI.Value_i, metaclass=ValueMeta):
 
     @classmethod
     def _preprocess(cls, *args, **kwargs):
+        if isinstance(args[0], DI.Node_i):
+            return args[0].value
         return args[0]
 
     @classmethod

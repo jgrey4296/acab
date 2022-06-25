@@ -96,12 +96,14 @@ class ConstraintCollection(CtxInt.Constraint_i, metaclass=ConstraintMeta):
             return val
 
         # TODO separate this into sieve, then move to contextset?
-        if stack is None:
-            stack = []
-        if self.operators is not None and self.operators not in stack:
+        stack = stack or []
+        if self.operators is not None:
             stack.append(self.operators)
 
-        result = Bind.bind(val, stack, None)
+        for ctx in stack:
+            result = Bind.bind(val, ctx)
+            if result != val:
+                return result
 
         return result
 
