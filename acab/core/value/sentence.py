@@ -50,7 +50,7 @@ class Sentence(SSI.SentenceProtocolsImpl, VI.Sentence_i, metaclass=ValueMeta):
     def _preprocess(cls, *args, **kwargs):
         value = args[0] or []
         assert(isinstance(value, Iterable))
-        processed = [VI.ValueFactory.value(x) for x in value]
+        processed = [VI.ValueFactory.value(x) if not isinstance(x, VI.Value_i) else x for x in value]
         return processed
 
     def __post_init__(self):

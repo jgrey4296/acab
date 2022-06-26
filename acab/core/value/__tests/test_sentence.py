@@ -110,9 +110,12 @@ class SentenceTests(unittest.TestCase):
     def test_copy_independence(self):
         """ Check a copied sentence is independent from its original """
         val = Sentence(["a","test","value"])
-        val2 = val.copy()
-        val.value.append(Sentence(["test"])[0])
-        self.assertNotEqual(val, val2)
+        val2 = val.copy(data={"blah": 5}) << "blah"
+        val3 = val << "test"
+        self.assertNotEqual(val3, val2)
+        self.assertNotIn("blah", val.data)
+        self.assertIn("blah", val2.data)
+        self.assertNotIn("blah", val3.data)
 
     def test_words_independence(self):
         """ Check using a sentence's `words` property provides a new list of words,
@@ -273,8 +276,7 @@ class SentenceTests(unittest.TestCase):
 
     def test_is_var_pass(self):
         """ Check a sentence of a single word, that is a variable, is a variable """
-        sen = Sentence(["single word"])
-        sen[0].data.update({DS.BIND: True})
+        sen = Sentence() << VF.value("blah", data={DS.BIND: True})
         self.assertTrue(sen.is_var)
 
     def test_add(self):
@@ -438,3 +440,13 @@ class SentenceTests(unittest.TestCase):
     def test_sentence_as_var_fail(self):
         with self.assertRaises(TypeError):
             Sentence(data={DS.BIND:True})
+
+    def test_sen_copy_duplication_avoidance(self):
+        sen = VF.sen() << "test" << "blah"
+        sen2 = sen.copy()
+        sen3 = sen2 << "bloo"
+        self.assertTrue(all([x.uuid == y.uuid for x,y in zip(sen, sen2)]))
+        self.assertTrue(all([x.uuid == y.uuid for x,y in zip(sen, sen3)]))
+        self.assertNotEqual(sen.uuid, sen2.uuid)
+        self.assertNotEqual(sen.uuid, sen3.uuid)
+        self.assertNotEqual(sen2.uuid, sen3.uuid)

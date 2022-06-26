@@ -85,26 +85,6 @@ class Instruction(InstructionProtocolsImpl, VI.Instruction_i, metaclass=value_me
 
 @APE.assert_implements(VI.Instruction_i)
 @dataclass(frozen=True, repr=False)
-class ProductionComponent(Instruction):
-    """ Pairs a an operator with some bindings
-    equivalent to a sentence of:
-    pc(::production.component).op.$x(::sen).args.[$y.$z].return.$a
-
-    """
-    _defaults : ClassVar[dict[str, Any]] = {DS.TYPE_INSTANCE: DS.COMPONENT_PRIM}
-
-    # Sugared: Denotes whether the parse originated from a sugared operator
-    # eg: $x ~= /blah/ -> $x
-    sugared : bool           = field(default=False)
-    # TODO shift this into params
-    rebind  : 'None|Value_A' = field(default=None)
-
-
-    def __post_init__(self):
-        raise DeprecationWarning("Use a sentence instead")
-
-@APE.assert_implements(VI.Instruction_i)
-@dataclass(frozen=True, repr=False)
 class ProductionContainer(Instruction):
     """ Production Container: An applicable statement of multiple component clauses
     Clauses can be sentences, or ProductionComponents

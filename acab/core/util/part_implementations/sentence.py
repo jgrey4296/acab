@@ -83,14 +83,15 @@ class _SentenceBasicsImpl(VI.Sentence_i, VSI._ValueBasicsImpl, VP.ValueBasics_p)
                 return False
 
 
+    @cache
     def key(self) -> str:
         words = [f"{x}" for x in self.words]
         return "[{}]".format(FALLBACK_MODAL.join(words))
 
     def copy(self, **kwargs) -> Sen_A:
-        if 'value' not in kwargs:
-            assert(isinstance(self.value, Iterable))
-            kwargs['value'] = [x.copy() if hasattr(x, 'copy') else x for x in cast(Iterable, self.value)]
+        # if 'value' not in kwargs:
+        #     assert(isinstance(self.value, Iterable))
+        #     kwargs['value'] = [x.copy() if hasattr(x, 'copy') else x for x in cast(Iterable, self.value)]
 
         if 'params' not in kwargs:
             kwargs['params'] = self.params.copy()
@@ -107,7 +108,9 @@ class _SentenceBasicsImpl(VI.Sentence_i, VSI._ValueBasicsImpl, VP.ValueBasics_p)
 
 
 class _SentenceVariableTestsImpl(VI.Sentence_i, VP.VariableTests_p):
+
     @property
+    @cache
     def is_var(self) -> bool:
         if not bool(self):
             return False
@@ -117,6 +120,7 @@ class _SentenceVariableTestsImpl(VI.Sentence_i, VP.VariableTests_p):
         return cast(bool, self[0].is_var)
 
     @property
+    @cache
     def is_at_var(self) -> bool:
         if not bool(self):
             return False
@@ -126,6 +130,7 @@ class _SentenceVariableTestsImpl(VI.Sentence_i, VP.VariableTests_p):
         return cast(bool, self[0].is_at_var)
 
     @property
+    @cache
     def has_var(self) -> bool:
         if not bool(self):
             return False
@@ -151,6 +156,7 @@ class _SentenceCollectionImpl(VI.Sentence_i, Collection):
             case _:
                 raise TypeError("Unknown type passed to Sentence.contains")
 
+    @cache
     def __len__(self):
         return len(self.words)
 
@@ -158,17 +164,16 @@ class _SentenceCollectionImpl(VI.Sentence_i, Collection):
         return iter(self.words)
 
     def __getitem__(self, i):
-        if isinstance(i, slice):
-            return ValueFactory.sen(self.words.__getitem__(i), data=self.data)
-
-        if isinstance(i, str):
-            matches = [x for x in self.words if x.name == i]
-            return matches[0]
-
-        if isinstance(i, int):
-            return self.words.__getitem__(i)
-
-        raise ValueError("Unrecognised argument to Sentence.__getitem__", i)
+        match i:
+            case slice():
+                return ValueFactory.sen(self.words.__getitem__(i), data=self.data)
+            case str():
+                matches = [x for x in self.words if x.name == i]
+                return matches[0]
+            case int():
+                return self.words.__getitem__(i)
+            case _:
+                raise ValueError("Unrecognised argument to Sentence.__getitem__", i)
 
 class _SentenceReductionImpl(VI.Sentence_i):
     def attach_statement(self, value:Instruction_A) -> Sen_A:
@@ -253,12 +258,13 @@ class SentenceProtocolsImpl(_SentenceBasicsImpl, VSI._ValueMetaDataImpl, _Senten
         """
         For prefix P, this S produces P..S
         """
-        if isinstance(prefix, list):
-            prefix = ValueFactory.sen(prefix)
-        elif not isinstance(self, VI.Sentence_i):
-            prefix = ValueFactory.sen([prefix])
-
-        return cast(VI.Sentence_i, prefix).add(self)
+        match prefix:
+            case list():
+                return self.copy(value=prefix+self.words)
+            case VI.Sentence_i():
+                return prefix << self
+            case VI.Value_i():
+                return self.copy(value=[prefix]+self.words)
 
 
     def remove_prefix(self, prefix:'Value_A|Sen_A|list') -> Sen_A:
