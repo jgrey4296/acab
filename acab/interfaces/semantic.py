@@ -87,6 +87,9 @@ class _StructureSemantics_p(HSubP.HandlerComponent_p, HSubP.HandlerSystem_p, Pro
     def insert(self, sen:Sen_A, struct:Struct_A, *, data:None|dict[str,Any], ctxs:CtxSet) -> None: pass
 
     @abc.abstractmethod
+    def delete(self, sen:Sen_A, struct:Struct_A, *, data:None|dict[str,Any], ctxs:CtxSet) -> None: pass
+
+    @abc.abstractmethod
     def query(self, sen:Sen_A, struct:Struct_A, *, data:None|dict[str,Any], ctxs:CtxSet) -> CtxSet: pass
 
     @abc.abstractmethod
