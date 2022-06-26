@@ -11,22 +11,27 @@ import acab
 
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
+    import pyparsing as pp
     config = acab.setup()
     from acab.core.parsing import pyparse_dsl as ppDSL
+    # if '@pytest_ar' in globals():
+    #     from acab.core.parsing import debug_funcs as DBF
+    #     DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+    import acab.core.defaults.value_keys as DS
+    from acab.core.parsing.annotation import ValueAnnotation
+    from acab.core.parsing.component_dsl import Component_DSL
+    from acab.core.value.value import AcabValue
+    from acab.interfaces import value as VI
+    from acab.modules.analysis.typing.module import TypeSpecFragment
+    from acab.modules.context.context_set import ContextInstance as CtxIns
+    from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
+    from acab.modules.values.sen_val.module import Sen_Val_Parser
 
-from acab.interfaces import value as VI
-import acab.core.defaults.value_keys as DS
-from acab.core.parsing.annotation import ValueAnnotation
-from acab.core.value.value import AcabValue
-from acab.modules.analysis.typing.module import TypeSpecFragment
-from acab.modules.context.context_set import ContextInstance as CtxIns
-from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
-
-from ... import exceptions as TE
-from .. import simple_unify_fns as suf
-from .. import type_unify_fns as tuf
-from .. import unifier as unify
-from .. import util
+    from ... import exceptions as TE
+    from .. import simple_unify_fns as suf
+    from .. import type_unify_fns as tuf
+    from .. import unifier as unify
+    from .. import util
 
 
 class UnifierTests(unittest.TestCase):
@@ -45,6 +50,8 @@ class UnifierTests(unittest.TestCase):
 
         cls.dsl   = ppDSL.PyParseDSL()
         cls.dsl.register(EXLO_Parser).register(TypeSpecFragment().build_dsl())
+        cls.dsl.register(Sen_Val_Parser)
+        cls.dsl.register(Component_DSL)
         cls.dsl.build()
 
     @classmethod
@@ -255,3 +262,94 @@ class UnifierTests(unittest.TestCase):
 
         with self.assertRaises(TE.AcabTypingException):
             tuf.type_unify(sen1, sen2, CtxIns())
+
+    def test_nested_sentence_unify(self):
+        sen1 = self.dsl("a.test.[[d.e.f]]")[0]
+        sen2 = self.dsl("a.test.[[d.e.f]]")[0]
+
+        result = tuf.type_unify(sen1, sen2, CtxIns())
+
+
+    def test_nested_sentence_unify_var(self):
+        sen1 = self.dsl("a.test.[[d.e.f]]")[0]
+        sen2 = self.dsl("a.test.$x")[0]
+        result = tuf.type_unify(sen1, sen2, CtxIns())
+
+        self.assertEqual(result['x'], "_:d.e.f")
+
+    def test_nested_sentence_unify_var_reverse(self):
+        sen1 = self.dsl("a.test.$x")[0]
+        sen2 = self.dsl("a.test.[[d.e.f]]")[0]
+        result = tuf.type_unify(sen1, sen2, CtxIns())
+
+        self.assertEqual(result['x'], "_:d.e.f")
+
+    def test_nested_sentence_unify_internal_conflict(self):
+        sen1 = self.dsl("a.test.[[d.e.g]]")[0]
+        sen2 = self.dsl("a.test.[[d.e.f]]")[0]
+        with self.assertRaises(TE.AcabTypingException):
+            result = tuf.type_unify(sen1, sen2, CtxIns())
+
+
+    def test_nested_sentence_unify_conflict(self):
+        sen1 = self.dsl("a.test.d.e.f")[0]
+        sen2 = self.dsl("a.test.[[d.e.f]]")[0]
+        with self.assertRaises(TE.AcabTypingException):
+            result = tuf.type_unify(sen1, sen2, CtxIns())
+
+    def test_nested_sentence_unify_internal_var(self):
+        sen1 = self.dsl("a.test.[[d.e.$x]]")[0]
+        sen2 = self.dsl("a.test.[[d.e.f]]")[0]
+        result = tuf.type_unify(sen1, sen2, CtxIns())
+
+        self.assertEqual(result['x'], "f")
+
+    def test_nested_sentence_unify_type(self):
+        sen1 = self.dsl("a.test.[[d.e.f]](::SENTENCE.blah)")[0]
+        sen2 = self.dsl("a.test.[[d.e.f]](::SENTENCE.blah)")[0]
+        result = tuf.type_unify(sen1, sen2, CtxIns())
+
+    def test_nested_sentence_unify_type_conflict(self):
+        sen1 = self.dsl("a.test.[[d.e.f]](::SENTENCE.bloo)")[0]
+        sen2 = self.dsl("a.test.[[d.e.f]](::SENTENCE.blah)")[0]
+        with self.assertRaises(TE.AcabTypingException):
+            result = tuf.type_unify(sen1, sen2, CtxIns())
+
+    def test_nested_sentence_unify_internal_type_conflict(self):
+        sen1 = self.dsl("a.test.[[d.e(::bloo).f]]")[0]
+        sen2 = self.dsl("a.test.[[d.e(::blah).f]]")[0]
+        with self.assertRaises(TE.AcabTypingException):
+            result = tuf.type_unify(sen1, sen2, CtxIns())
+
+    def test_nested_sentence_unify_internal_type_var(self):
+        sen1 = self.dsl("a.test.[[d.e(::$x).f]]")[0]
+        sen2 = self.dsl("a.test.[[d.e(::blah).f]]")[0]
+        result = tuf.type_unify(sen1, sen2, CtxIns())
+        self.assertEqual(result['x'], "_:blah")
+
+
+    def test_multi_nested_sentence_unify(self):
+        # logmod.root.setLevel(logmod.DEBUG)
+        # [x.setLevel(logmod.DEBUG) for x in logmod.root.handlers]
+        sen1 = self.dsl("a.test.[[ [[a.b.d]].[[e.f.g]] ]]")[0]
+        sen2 = self.dsl("a.test.[[ [[a.b.d]].[[e.f.g]] ]]")[0]
+        result = tuf.type_unify(sen1, sen2, CtxIns())
+        # TODO verify its just default bindings of SENTENCE
+
+    def test_multi_nested_sentence_unify_conflict(self):
+        sen1 = self.dsl("a.test.[[ [[a.b.d]].[[e.f.h]] ]]")[0]
+        sen2 = self.dsl("a.test.[[ [[a.b.d]].[[e.f.g]] ]]")[0]
+        with self.assertRaises(TE.AcabTypingException):
+            result = tuf.type_unify(sen1, sen2, CtxIns())
+
+    def test_multi_nested_sentence_unify_var(self):
+        sen1 = self.dsl("a.test.[[ [[a.b.d]].[[e.f.g]] ]]")[0]
+        sen2 = self.dsl("a.test.[[ [[a.b.d]].$x ]]")[0]
+        result = tuf.type_unify(sen1, sen2, CtxIns())
+        self.assertEqual(result['x'], "_:e.f.g")
+
+    def test_multi_nested_sentence_unify_internal_var(self):
+        sen1 = self.dsl("a.test.[[ [[a.b.d]].[[e.f.g]] ]]")[0]
+        sen2 = self.dsl("a.test.[[ [[a.b.d]].[[e.f.$x]] ]]")[0]
+        result = tuf.type_unify(sen1, sen2, CtxIns())
+        self.assertEqual(result['x'], "g")

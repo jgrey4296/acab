@@ -90,13 +90,18 @@ def match_handler_basic(index, first, second, ctx, unifier=None):
     f_word  = first[index]
     s_word  = second[index]
 
-    if ctx[f_word] == ctx[s_word]:
-        result = unify_enum.NEXT_WORD
-    elif isinstance(f_word, VI.Sentence_i) or isinstance(s_word, VI.Sentence_i):
+    if isinstance(f_word, VI.Sentence_i) and isinstance(s_word, VI.Sentence_i):
         # TODO handle var args in the type constructors,
         # so recursively unify
         unifier(f_word, s_word, ctx)
         result = unify_enum.NEXT_WORD
+    elif ctx[f_word] == ctx[s_word]:
+        result = unify_enum.NEXT_WORD
+    elif ((isinstance(f_word, VI.Sentence_i) and not s_word.is_var)
+          or (isinstance(s_word, VI.Sentence_i) and not f_word.is_var)):
+        raise TE.TypeConflictException(f_word, s_word, ctx=ctx)
+    elif (ctx[f_word] != ctx[s_word]):
+        raise TE.TypeConflictException(f_word, s_word, ctx=ctx)
 
     return result
 

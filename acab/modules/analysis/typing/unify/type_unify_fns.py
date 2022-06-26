@@ -10,6 +10,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
 logging = logmod.getLogger(__name__)
 
 from acab import types as AT
+from acab.interfaces import value as VI
 from acab.core.defaults.value_keys import TYPE_INSTANCE
 import acab.core.defaults.value_keys as DS
 from acab.core.value.instruction import Instruction
@@ -135,7 +136,9 @@ def test_word_equality(index, first, second, ctx, unifier=None):
     s_word = second[index]
 
     has_var = f_word.is_var or s_word.is_var
-    if not has_var and f_word != s_word:
+    if f_word.type == s_word.type:
+        pass
+    elif not has_var and f_word != s_word:
         raise TE.TypeConflictException(f_word, s_word, ctx=ctx)
 
     return result
@@ -144,6 +147,24 @@ def match_atom(index, first, second, ctx, unifier=None):
     result = unify_enum.NA
     if second[index] == ATOM:
         result = unify_enum.NEXT_WORD
+
+    return result
+
+
+def match_handler_typing(index, first, second, ctx, unifier=None):
+    result = unify_enum.NA
+    f_word  = first[index]
+    s_word  = second[index]
+
+    if isinstance(f_word, VI.Sentence_i) and isinstance(s_word, VI.Sentence_i):
+        # TODO handle var args in the type constructors,
+        # so recursively unify
+        unifier(f_word, s_word, ctx)
+    elif ((isinstance(f_word, VI.Sentence_i) and not s_word.is_var)
+          or (isinstance(s_word, VI.Sentence_i) and not f_word.is_var)):
+        raise TE.TypeConflictException(f_word, s_word, ctx=ctx)
+    elif (ctx[f_word] != ctx[s_word]):
+        raise TE.TypeConflictException(f_word, s_word, ctx=ctx)
 
     return result
 
@@ -370,6 +391,7 @@ typed_sen_logic = UnifyLogic(
     truncate=util.sen_extend,
     sieve=[var_handler_basic,
            suf.check_modality,
+           match_handler_typing,
            test_word_equality,
            skip_atom_types,
            var_consistency_check(type_as_sen_logic),

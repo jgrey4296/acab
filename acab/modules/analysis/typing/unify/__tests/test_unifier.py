@@ -12,20 +12,25 @@ import acab
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
+    import pyparsing as pp
     from acab.core.parsing import pyparse_dsl as ppDSL
+    # if '@pytest_ar' in globals():
+    #     from acab.core.parsing import debug_funcs as DBF
+    #     DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
-from acab.core.defaults import value_keys as DS
+    from acab.core.defaults import value_keys as DS
+    from acab.core.parsing.component_dsl import Component_DSL
+    from acab.core.value.value import AcabValue
+    from acab.interfaces import value as VI
+    from acab.modules.analysis.typing.module import TypeSpecFragment
+    from acab.modules.context.context_set import ContextInstance as CtxIns
+    from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
+    from acab.modules.values.sen_val.module import Sen_Val_Parser
 
-from acab.core.value.value import AcabValue
-from acab.interfaces import value as VI
-from acab.modules.analysis.typing.module import TypeSpecFragment
-from acab.modules.context.context_set import ContextInstance as CtxIns
-from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
-
-from ... import exceptions as TE
-from .. import simple_unify_fns as suf
-from .. import unifier as unify
-from .. import util
+    from ... import exceptions as TE
+    from .. import simple_unify_fns as suf
+    from .. import unifier as unify
+    from .. import util
 
 class UnifierTests(unittest.TestCase):
 
@@ -42,7 +47,10 @@ class UnifierTests(unittest.TestCase):
         logging.root.addHandler(cls.file_h)
 
         cls.dsl   = ppDSL.PyParseDSL()
-        cls.dsl.register(EXLO_Parser).register(TypeSpecFragment().build_dsl())
+        cls.dsl.register(EXLO_Parser)
+        cls.dsl.register(TypeSpecFragment().build_dsl())
+        cls.dsl.register(Sen_Val_Parser)
+        cls.dsl.register(Component_DSL)
         cls.dsl.build()
 
     @classmethod
@@ -324,3 +332,49 @@ class UnifierTests(unittest.TestCase):
 
         ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
         self.assertEqual(ctx_r.x, "_:d.e.f")
+
+    def test_unify_nested_sentences(self):
+        sen1 = self.dsl("a.b.[[c.d.ef]]")[0]
+        sen2 = self.dsl("a.b.$x")[0]
+
+        ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
+        self.assertEqual(ctx_r['x'], "_:c.d.ef")
+
+    def test_unify_nested_sentences_invert(self):
+        sen1 = self.dsl("a.b.$x")[0]
+        sen2 = self.dsl("a.b.[[c.d.ef]]")[0]
+
+        ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
+        self.assertEqual(ctx_r['x'], "_:c.d.ef")
+
+    def test_unify_nested_sentences_sub_check(self):
+        sen1 = self.dsl("a.b.[[c.d.$x]]")[0]
+        sen2 = self.dsl("a.b.[[c.d.ef]]")[0]
+
+        ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
+        self.assertEqual(ctx_r['x'], "ef")
+
+    def test_unify_nested_sentences_sub_check_sharp(self):
+        sen1 = self.dsl("a.b.♯[[c.d.$x]]")[0]
+        sen2 = self.dsl("a.b.♯[[c.d.ef]]")[0]
+
+        ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
+        self.assertEqual(ctx_r['x'], "ef")
+
+    def test_unify_nested_sentences_check_sharp(self):
+        sen1 = self.dsl("♯a.b.[[c.d.$x]]")[0]
+        sen2 = self.dsl("♯a.b.[[c.d.ef]]")[0]
+        ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
+        self.assertEqual(ctx_r['x'], "ef")
+
+    def test_unify_nested_sentences_fail_internal(self):
+        sen1 = self.dsl("♯a.b.[[c.d.g]]")[0]
+        sen2 = self.dsl("♯a.b.[[c.d.ef]]")[0]
+        with self.assertRaises(TE.AcabTypingException):
+            ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
+
+    def test_unify_nested_sentences_surface(self):
+        sen1 = self.dsl("♯a.b.c.d.ef")[0]
+        sen2 = self.dsl("♯a.b.[[c.d.ef]]")[0]
+        with self.assertRaises(TE.AcabTypingException):
+            ctx_r = suf.basic_unify(sen1, sen2, CtxIns())
