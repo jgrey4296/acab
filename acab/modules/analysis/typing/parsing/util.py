@@ -67,8 +67,8 @@ def make_op_def(toks):
 
     for spec_group in target:
         assert(all([x.is_var for x in spec_group['params']]))
-        param_sen = VF.sen() << (spec_group['params'][:] or "∅")
-        ret_sen  = VF.sen() << 'returns' << (spec_group['returns'] if 'returns' in spec_group else "unit")
+        param_sen = VF.sen(data={DS.FLATTEN: False}) << (spec_group['params'][:] or "∅")
+        ret_sen  = VF.sen(data={DS.FLATTEN: False}) << 'returns' << (spec_group['returns'] if 'returns' in spec_group else "unit")
         joint_spec = VF.sen() << param_sen << ret_sen
         specs.append(joint_spec)
 

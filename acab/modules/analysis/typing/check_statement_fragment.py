@@ -47,6 +47,9 @@ SUM_TYPE      = config.attr.Print.Signals.SUM_TYPE
 OP_DEF        = config.attr.Print.Signals.OP_DEF
 TYPE_CLASS    = config.attr.Print.Signals.TYPE_CLASS
 
+comp_sen      = VF.sen()      << DS.SENTENCE_PRIM << DS.COMPONENT_PRIM
+trans_comp    = comp_sen      << DS.TRANSFORM_COMPONENT
+
 LinkSignalTo = lambda x, y: DSL_Spec(x, struct=y, flags=[DSL_Spec.flag_e.COLLECT])
 
 @dataclass
@@ -106,7 +109,8 @@ class CheckStatementFragment(UnifiedFragment_p):
         """
         The default constructor for the extension's parser -> internal acab data
         """
-        instr = VF.sen(data={DS.SEMANTIC_HINT: self.signal}) << toks['loc'].copy(name="loc")
+        instr = VF.sen(data={DS.TYPE_INSTANCE: trans_comp << self.signal,
+                             DS.SEMANTIC_HINT: self.signal}) << toks['loc'].copy(name="loc")
         if 'def' in toks:
             instr = instr << toks['def'].copy(name="def")
         return [instr]
@@ -132,14 +136,14 @@ class CheckStatementFragment(UnifiedFragment_p):
          ⊢ [loc] : [def]
         """
         logging.info("Type Checking Entry")
-        loc       : DI.StructView  = Bind.bind(instruction['loc'], ctxs[0])
+        loc       = Bind.bind(instruction['loc'], ctxs[0])
 
         match loc.value:
             case VI.Sentence_i():
                 # TODO either structural check two sentences, or check a sentence against the wm?
                 raise NotImplementedError()
             case VI.Instruction_i():
-                logging.info("Checking an Instruction")
+                logging.info("Checking an Instruction: {!r}", loc.value)
                 # Check each clause in the instruction
                 assert('def' not in instruction)
                 assert(isinstance(loc, Ins.Container))
@@ -153,20 +157,21 @@ class CheckStatementFragment(UnifiedFragment_p):
                             self.op_check(clause, semSys, ctxs=ctxs, data=data)
                 return ctxs
             case VI.Value_i():
-                logging.info("Checking a binding")
-                assert(loc.is_var)
                 assert('def' in instruction)
                 the_type  : TypeDefinition = Bind.bind(instruction['def'], ctxs[0])
+                logging.info("Checking a binding: {!r} : {!r}", loc.value, the_type)
                 # use a fresh and vars to avoid conflicts
                 new_var   = gen_f()
-                type_sens = [new_var.add(x) for x in the_type] if bool(the_type) else [new_var]
+                type_sens = [(new_var << x) for x in the_type] if bool(the_type) else [new_var]
                 # TODO get to_check down to depth of max(type_sens)
-                to_check  : list[VI.Sentence_i] = loc.sem.to_sentences(loc)
+                to_check  : list[VI.Sentence_i] = [VF.sen() << loc]
                 return self.structural_check(to_check, type_sens, semSys, ctxs=ctxs, data=data)
+            case _:
+                raise TypeError("Unexpected Type provided", loc)
 
 
     def sen_check(self, clause, semSys:SemanticSystem, *, ctxs:None|CtxSet=None, data:None|dict[str,Any]=None) -> CtxSet:
-        logging.info("Checking a sentence")
+        logging.debug("Checking a sentence")
         # check the sentence structure against known types in the WM
 
         # get any operator constraints in the sentence
@@ -185,15 +190,15 @@ class CheckStatementFragment(UnifiedFragment_p):
         transform    : λa.b.c $x $y -> $z
         action       : λa.b.c $x $y
         """
-        assert(isinstance(clause, Ins.ProductionComponent))
-        logging.info("Checking an operator usage")
+        assert(clause.type == "_:SENTENCE.COMPONENT")
+        logging.debug("Checking an operator usage")
         # Get the operator
         sub_ctx = semSys(clause[0].copy(data={DS.QUERY: True}))
         assert(bool(sub_ctx))
         # coerce the operator definition,
         op_sens = sub_ctx[0].current_node.value[:]
         # and usage,
-        use_sen = VF.sen() << clause.params << "returns" << clause.rebind
+        use_sen = clause[1:]
         # the same format
         # then unify
         return self.structural_check([use_sen], op_sens, semSys, ctxs=ctxs, data=data)
@@ -203,6 +208,8 @@ class CheckStatementFragment(UnifiedFragment_p):
         unify a list of sentences against a list of applicable definition sentences
         """
         subctx                                = {}
-        clean_type_sens : list[VI.Sentence_i] = [VC.rectx(x, ctx=subctx, name_suff="_type") for x in type_sens]
-        unified                               = tuf.type_unify.repeat(to_check, clean_type_sens, ctxs[0])
+        flat_types                            = [x.flatten() for x in type_sens]
+        clean_type_sens : list[VI.Sentence_i] = [VC.rectx(x, ctx=subctx, name_suff="_type") for x in flat_types]
+        to_check_flat                         = [x.flatten() for x in to_check]
+        unified                               = tuf.type_unify.repeat(to_check_flat, clean_type_sens, ctxs[0])
         return unified

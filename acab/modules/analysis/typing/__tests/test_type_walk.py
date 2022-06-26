@@ -74,39 +74,94 @@ class TypeWalkTests(unittest.TestCase):
         self.logging.info("---------- FINISHED SETUP")
 
     #----------
-    def test_walk(self):
-        # add rule
-        self.eng("""walker.rule(::ρ):\n | $x |\n\n @x(::$y)?\n\n !! found.$y\nend """)
-
-        walk_rule = dsl("walker(::ρ):\n walker.$rules?\n\n !! test.run.$rules\n ᛦ λ$rules\nend")[0][0]
-        # trigger walk
-        self.eng(walk_rule)
-        # test
-        ctx_results = self.eng("found.$x?")
-        self.assertEqual(len(ctx_results), 2)
-
-    def test_walk2(self):
-        # add rule
-        self.eng("""walker.rule(::ρ):\n | $x |\n\n @x(::$y)?\n\n !! found.$y\nend""")
-        self.eng("additional.test(::blah)")
-        walk_rule = dsl("walker(::ρ):\n walker.$rules?\n\n !! test.run.$rules\n ᛦ λ$rules\nend")[0][0]
-        # trigger walk
-        self.eng(walk_rule)
-        # test
-        ctx_results = self.eng("found.$x?")
-        self.assertEqual(len(ctx_results), 3)
-
     def test_type_unify_walk(self):
-        self.eng("~acab")
-        self.eng("""walker.rule(::ρ):\n | $x |\n\n @x(::$y)?\n types.$y?\n\n !! found.$y\nend""")
-        self.eng("additional.test(::blah)")
+        self.eng("""test.rule(::ρ):\n | $x |\n\n @x(::$y)?\n $y?\n\n !! found.$y\nend""")
+        self.eng("test.value(::types.blah)")
         self.eng("types.blah")
-        walk_rule = dsl("walker(::ρ):\n walker.$rules?\n\n !! test.run.rule\n ᛦ λ$rules\nend")[0][0]
+        walk_rule = self.dsl("walker(::ρ):\n test.$rules(::INSTRUCT.STRUCTURE.RULE)?\n\n !! found.rule\n ᛦ λ$rules\nend")[0][0]
         # trigger walk
         self.eng(walk_rule)
         # test
-        ctx_results = self.eng("found.$x?")
-        self.assertEqual(len(ctx_results), 1)
+        self.assertTrue(self.eng("found.rule?"))
+        self.assertTrue(self.eng("found.types.blah?"))
+
+    def test_type_exists(self):
+        # Check Instruction
+        self.logging.info("Start")
+        self.eng("""test.rule(::ρ):\n | $x |\n\n @x(::$y)?\n $y?\n\n ⊢ $x ∈ $y\n\n !! found.type.$y\nend""")
+        # WM data
+        self.eng("""test.value(::types.blah)""")
+        self.eng("""types.blah(::τ)""")
+        # Types
+        # Walk Instruction
+        walk_rule = self.dsl("walker(::ρ):\n test.$rules(::INSTRUCT.STRUCTURE.RULE)?\n\n !! found.rule\n ᛦ λ$rules\nend")[0][0]
+        self.logging.info("----------")
+        # trigger the walk
+        self.eng(walk_rule)
+        # test
+        self.logging.info("----------")
+        self.assertTrue(self.eng("found.rule?"))
+        self.assertTrue(self.eng("found.type.types.blah?"))
+
+    def test_type_exists_fail(self):
+        # Check Instruction
+        self.logging.info("Start")
+        self.eng("""test.rule(::ρ):\n | $x |\n\n @x(::$y)?\n $y?\n\n ⊢ $x ∈ $y\n\n !! found.type.$y\nend""")
+        # WM data
+        self.eng("""test.value(::types.blah)""")
+        # self.eng("""types.blah(::τ)""")
+        # Types
+        # Walk Instruction
+        walk_rule = self.dsl("walker(::ρ):\n test.$rules(::INSTRUCT.STRUCTURE.RULE)?\n\n !! found.rule\n ᛦ λ$rules\nend")[0][0]
+        self.logging.info("----------")
+        # trigger the walk
+        self.eng(walk_rule)
+        # test
+        self.logging.info("----------")
+        self.assertTrue(self.eng("found.rule?"))
+        self.assertFalse(self.eng("found.type.types.blah?"))
+
+    def test_type_exists_structure(self):
+        # Check Instruction
+        self.logging.info("Start")
+        self.eng("""test.rule(::ρ):\n | $x |\n\n @x(::$y)?\n $y?\n\n ⊢ @x ∈ $y\n\n !! found.type.$y\nend""")
+        # WM data
+        self.eng("""test.value(::types.blah)""")
+        self.eng("test.value.a")
+        self.eng("test.value.b")
+        self.eng("""types.blah(::σ):\n a\n b\nend""")
+        # Types
+        # Walk Instruction
+        walk_rule = self.dsl("walker(::ρ):\n test.$rules(::INSTRUCT.STRUCTURE.RULE)?\n\n !! found.rule\n ᛦ λ$rules\nend")[0][0]
+        self.logging.info("----------")
+        # trigger the walk
+        breakpoint()
+        self.eng(walk_rule)
+        # test
+        self.logging.info("----------")
+        self.assertTrue(self.eng("found.rule?"))
+        self.assertTrue(self.eng("found.type.types.blah?"))
+
+    def test_type_exists_structure_fail(self):
+        # Check Instruction
+        self.logging.info("Start")
+        self.eng("""test.rule(::ρ):\n | $x |\n\n @x(::$y)?\n $y?\n\n ⊢ $x ∈ $y\n\n !! found.type.$y\nend""")
+        # WM data
+        self.eng("""test.value(::types.blah)""")
+        self.eng("""types.blah(::σ):\n a\n b\nend""")
+        # Types
+        # Walk Instruction
+        walk_rule = self.dsl("walker(::ρ):\n test.$rules(::INSTRUCT.STRUCTURE.RULE)?\n\n !! found.rule\n ᛦ λ$rules\nend")[0][0]
+        self.logging.info("----------")
+        # trigger the walk
+        self.eng(walk_rule)
+        # test
+        self.logging.info("----------")
+        self.assertTrue(self.eng("found.rule?"))
+        self.assertFalse(self.eng("found.type.types.blah?"))
+
+
+
 
     @unittest.skip("")
     def test_basic(self):
@@ -114,15 +169,15 @@ class TypeWalkTests(unittest.TestCase):
         walksem = DFSSemantics()
         ctxs    = ContextSet()
 
-        decl    = dsl.parse_string("a.test.def(::τ):\n sub.$x(::test)\nend")[0]
-        asst    = dsl.parse_string("a.value(::a.test.def).sub.blah")[0]
+        decl    = self.dsl.parse_string("a.test.def(::τ):\n sub.$x(::test)\nend")[0]
+        asst    = self.dsl.parse_string("a.value(::a.test.def).sub.blah")[0]
 
         # Insert into a wm
         semsys(decl)
         semsys(asst)
 
         # The Typecheck instruction:
-        instr = dsl.parse_string("ᛦ λtypedef")
+        instr = self.dsl.parse_string("ᛦ λtypedef")
 
         # Go:
         walksem(instr, semsys)
