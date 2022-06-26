@@ -85,7 +85,7 @@ def check_modality(index, first, second, ctx, unifier=None):
 
     return result
 
-def match_handler_basic(index, first, second, ctx, unifier=None):
+def sentence_recurse_handler(index, first, second, ctx, unifier=None):
     result = unify_enum.NA
     f_word  = first[index]
     s_word  = second[index]
@@ -124,7 +124,7 @@ basic_sen_logic = unifier.UnifyLogic(
     truncate=util.sen_truncate,
     sieve=[var_handler_basic,
            check_modality,
-           match_handler_basic,
+           sentence_recurse_handler,
            fail_handler_basic],
     apply=apply_substitutions
     )

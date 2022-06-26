@@ -83,10 +83,14 @@ class _SentenceBasicsImpl(VI.Sentence_i, VSI._ValueBasicsImpl, VP.ValueBasics_p)
                 return False
 
 
-    @cache
-    def key(self) -> str:
+    def key(self, suffix=None) -> str:
         words = [f"{x}" for x in self.words]
-        return "[{}]".format(FALLBACK_MODAL.join(words))
+        key   = "[{}]".format(FALLBACK_MODAL.join(words))
+        if suffix is None:
+            return key
+
+        key_mod = key[:-1] + FALLBACK_MODAL + suffix + "]"
+        return key_mod
 
     def copy(self, **kwargs) -> Sen_A:
         # if 'value' not in kwargs:
@@ -136,7 +140,7 @@ class _SentenceVariableTestsImpl(VI.Sentence_i, VP.VariableTests_p):
             return False
         if self.is_var:
             return True
-        return any([x.is_var for x in self.words])
+        return any([x.has_var for x in self.words])
 
     @property
     def vars(self) -> list[Value_A]:

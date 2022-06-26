@@ -56,10 +56,6 @@ class Sentence(SSI.SentenceProtocolsImpl, VI.Sentence_i, metaclass=ValueMeta):
     def __post_init__(self):
         if self.data[DS.BIND] != False:
             raise TypeError("Sentences Shouldn't be variables")
-        if self.is_var and self[0].type != "_:ATOM" and self.type == "_:SENTENCE":
-            # If sentence is just a var, promote the var's type
-            # to the entire sentence
-            self.data[DS.TYPE_INSTANCE] = self.type << self[0].type.words
 
     def match(self, sen:Sen_A) -> list[Tuple[Value_A, Value_A]]:
         """ Match a target sentence's variables to self's target

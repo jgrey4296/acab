@@ -26,6 +26,7 @@ with warnings.catch_warnings():
     from acab.modules.context.context_set import ContextInstance as CtxIns
     from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
     from acab.modules.values.sen_val.module import Sen_Val_Parser
+    from acab.modules.values.binding.binding import Bind
 
     from ... import exceptions as TE
     from .. import simple_unify_fns as suf
@@ -185,9 +186,7 @@ class UnifierTests(unittest.TestCase):
         self.assertIn("x", ctx_r)
         self.assertIn("y", ctx_r)
 
-
         sen1c = tuf.type_unify.apply(sen1, ctx_r)
-
         self.assertEqual(sen1c[-1].type, self.dsl("blah.bloo")[0])
 
 
@@ -227,16 +226,17 @@ class UnifierTests(unittest.TestCase):
         ctx_r = tuf.type_unify(sen1, sen2, CtxIns())
         sen1c = tuf.type_unify.apply(sen1, ctx_r)
         sen2c = tuf.type_unify.apply(sen2, ctx_r)
-
         self.assertEqual(ctx_r.x, "sentence")
         self.assertEqual(ctx_r.y, "_:aweg.awg")
         self.assertEqual(sen1c[-2], "sentence")
+
         self.assertEqual(sen1c[-1].type, "_:aweg.awg")
-        self.assertEqual(sen1c[-2].type, "_:blah.[aweg.awg]")
-        self.assertEqual(sen1c[-2].type[-1], "_:aweg.awg")
         self.assertEqual(sen2c[-1].type, "_:aweg.awg")
+
+        self.assertEqual(sen1c[-2].type, "_:blah.[aweg.awg]")
         self.assertEqual(sen2c[-2].type, "_:blah.[aweg.awg]")
-        self.assertEqual(sen2c[-2].type[-1], "_:aweg.awg")
+        self.assertEqual(sen1c[-2].type[-1], "_:aweg.awg")
+        self.assertEqual(sen2c[-2].type[-1][-1], "awg")
 
         self.assertNotEqual(sen1c[2].type, sen1[2].type)
         self.assertNotEqual(sen2c[2].type, sen2[2].type)
@@ -353,3 +353,32 @@ class UnifierTests(unittest.TestCase):
         sen2 = self.dsl("a.test.[[ [[a.b.d]].[[e.f.$x]] ]]")[0]
         result = tuf.type_unify(sen1, sen2, CtxIns())
         self.assertEqual(result['x'], "g")
+
+
+    def test_multi_nested_early_bind(self):
+        sen1 = self.dsl("a.b.[[ [[a.b.d]].[[e.f.g]] ]]")[0]
+        sen2 = self.dsl("a.b.$x")[0]
+        result = tuf.type_unify(sen1, sen2, CtxIns())
+        self.assertEqual(result['x'], "_:[a.b.d].[e.f.g]")
+
+    def test_nested_vars_with_bindings(self):
+        sen1 = self.dsl("a.b.[[a.$x]]")[0]
+        sen2 = self.dsl("a.b.[[a.$y(::blah)]]")[0]
+        result = tuf.type_unify(sen1, sen2, CtxIns())
+        self.assertEqual(result['x'].type, "_:blah")
+
+    def test_nested_sen_with_type_upgrade(self):
+        sen1 = self.dsl("a.b.[[a.bloo]]")[0]
+        sen2 = self.dsl("a.b.[[a.$y(::blah)]]")[0]
+        result = tuf.type_unify(sen1, sen2, CtxIns())
+        sen1c = tuf.type_unify.apply(sen1, result)
+        self.assertEqual(sen1c[-1][-1].type, "_:blah")
+
+    def test_nested_apply_type_var(self):
+        sen1 = self.dsl("a.test.[[$x(::$y)]]")[0]
+        ctx = CtxIns(data={'x': self.dsl("blah")[0][0], 'y': self.dsl("bloo")[0]})
+        sen1c = tuf.type_unify.apply(sen1, ctx)
+
+        self.assertEqual(sen1c, "_:a.test.[blah]")
+        self.assertEqual(sen1c[-1], "_:blah")
+        self.assertEqual(sen1c[-1][0].type, "_:bloo")

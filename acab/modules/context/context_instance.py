@@ -267,14 +267,15 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
 
     def __setitem__(self, key: Value, value: Value):
         match key:
-            case VI.Sentence_i():
-                key = str(key)
+            case str():
+                pass
             case VI.Value_i():
                 key = key.key()
             case _:
-                pass
+                raise TypeError("Unrecognised key for binding", key)
 
-        self.data[str(key)] = value
+        logging.debug("CtxIns: {} -> {}", key, value)
+        self.data[key] = value
 
     def __getattribute__(self, value):
         try:
@@ -302,6 +303,9 @@ class MutableContextInstance(CtxInt.ContextInstance_i):
 
     def __len__(self):
         return len(self.data) + len(self.base)
+
+    def copy(self, mask=None, **kwargs):
+        return self.base.progress(self.data, {})[0]
 
     def finish(self):
         self._finished = self.base.progress(self.data, {})[0]
