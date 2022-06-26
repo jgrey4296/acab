@@ -250,7 +250,7 @@ class TrieSemanticTests(unittest.TestCase):
         trie_sem.insert(sen2, trie_struct)
         # Construct context set for operators
         op_loc_path       = VF.sen(["EQ"], data={DS.TYPE_INSTANCE: DS.OPERATOR})
-        ctx_set           = ContextSet({str(op_loc_path): EQ()})
+        ctx_set           = ContextSet({op_loc_path.key(): EQ()})
         # Construct query sentence
         query_sen = VF.sen(["a", "test", "x"])
         query_sen[-1].data[BIND_V] = True
@@ -258,9 +258,8 @@ class TrieSemanticTests(unittest.TestCase):
         query_sen2 = VF.sen(["a", "different", "y"])
         query_sen2[-1].data[BIND_V] = True
         # Test for equality to "sentence"
-        test_var = VF.value("x",
-                                       data={BIND_V: True})
-        the_test = VF.sen() << op_loc_path << (VF.sen() << test_var) << "returns"
+        test_var = VF.value("x", data={BIND_V: True})
+        the_test = VF.sen() << op_loc_path << (VF.sen() << test_var) << (VF.sen() << "returns")
         query_sen2[-1].data[CONSTRAINT_V] = [the_test]
         # Run query
         trie_sem.query(query_sen, trie_struct, ctxs=ctx_set)

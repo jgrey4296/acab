@@ -126,7 +126,7 @@ class StatementSemanticTests(unittest.TestCase):
         sem(transform, None, ctxs=ctx_set)
         # Check result
         result = ctx_set.pop()
-        self.assertEqual(result['y'].value, "tESt")
+        self.assertEqual(result['y'], "tESt")
 
 
     def test_action_simple(self):
@@ -181,20 +181,46 @@ class StatementSemanticTests(unittest.TestCase):
         # Check side effects
         self.assertEqual(side_effect_obj['a'], "_:aweg")
 
+    def test_action_with_param_sen(self):
+        """
+        Test a simple action with simple side effect
+        test sem_system use later
+        """
+        side_effect_obj = {"a" : 1}
+
+        class TestAction(ActionOperator):
+            def __call__(self, *params, data=None, semSystem=None):
+                side_effect_obj['a'] = params[0]
+
+
+        # Build Semantics
+        sem = ASem.ActionAbstraction()
+        # Context Set for operators
+        op_loc_path       = VF.sen(["action"])
+        operator_instance = TestAction()
+        op_ctx            = ContextInstance(data={str(op_loc_path): operator_instance})
+        ctx_set           = ContextSet(op_ctx)
+        # Build Action
+        action = self.dsl['sentence.ends'].parse_string("action(::α):\n λaction aweg.blah.bloo\nend")[0]
+        # Run action on context with semantics
+        sem(action, None, ctxs=ctx_set)
+        # Check side effects
+        self.assertEqual(side_effect_obj['a'], "_:aweg.blah.bloo")
+
+
 
     def test_container(self):
         """ check container semantics applies all clauses """
         side_effect_obj = {"a" : 1}
 
         class TestTransform(ProductionOperator):
-            @OperatorArgUnWrap
             @OperatorResultWrap
             def __call__(self, *params, data=None):
-                return params[0] + "_blah"
+                return params[0][0].value + "_blah"
 
         class TestAction(ActionOperator):
             def __call__(self, *params, data=None, semSystem=None):
-                side_effect_obj['a'] = params[0]
+                side_effect_obj['a'] = params[0][0]
 
 
         def SemHintKey(val, data=None):
@@ -243,8 +269,6 @@ class StatementSemanticTests(unittest.TestCase):
         side_effect_obj = {"a" : 1}
 
         class TestAction(ActionOperator):
-            @OperatorArgUnWrap
-            @OperatorResultWrap
             def __call__(self, *params, data=None, semSystem=None):
                 side_effect_obj['a'] = params[0]
 
@@ -293,14 +317,13 @@ class StatementSemanticTests(unittest.TestCase):
         result = semSys(the_rule, ctxs=ctx_set)
 
         # Check the result for bindings
-        self.assertEqual(side_effect_obj["a"], "SENtence")
+        self.assertEqual(side_effect_obj["a"], "_:SENtence")
 
     def test_proxy_rule(self):
         """ Check a rule can be applied in a two stage, non-atomic fashion """
         side_effect_obj = {"a" : 1}
 
         class TestAction(ActionOperator):
-            @OperatorArgUnWrap
             def __call__(self, *params, data=None, semSystem=None):
                 side_effect_obj['a'] = params[0]
 
@@ -353,14 +376,13 @@ class StatementSemanticTests(unittest.TestCase):
         # Run the continuation
         result2 = semSys(the_rule, ctxs=result)
         # check the action side effects occurred
-        self.assertEqual(side_effect_obj['a'], "SENtence")
+        self.assertEqual(side_effect_obj['a'], "_:SENtence")
 
     def test_proxy_rule_with_intermediate_query(self):
         """ Check a rule can be applied in a two stage, non-atomic fashion """
         side_effect_obj = {"a" : 1}
 
         class TestAction(ActionOperator):
-            @OperatorArgUnWrap
             def __call__(self, *params, data=None, semSystem=None):
                 side_effect_obj['a'] = params[0]
 
@@ -415,39 +437,10 @@ class StatementSemanticTests(unittest.TestCase):
         # Run the continuation
         result2 = semSys(the_rule, ctxs=result)
         # check the action side effects occurred
-        self.assertEqual(side_effect_obj['a'], "SENtence")
+        self.assertEqual(side_effect_obj['a'], "_:SENtence")
         self.assertEqual(result, result2)
         self.assertNotEqual(result, result_alt)
         self.assertIn("x", result_alt[0])
-
-
-
-    @unittest.skip("Not Implemented")
-    def test_layer(self):
-        # Build semantics
-
-        # Build Struct
-
-        # Build layer
-
-        # Run Layer on struct
-
-        # Check results
-        pass
-
-    @unittest.skip("Not Implemented")
-    def test_pipeline(self):
-        # build semantics
-
-        # build struct
-
-        # build pipeline
-
-        # run pipeline
-
-        # Check results
-        pass
-
 
 
 

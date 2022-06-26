@@ -29,7 +29,9 @@ class RegexOp(ProductionOperator):
         match value:
             case VI.Sentence_i():
                 words = [sub(pattern, replacement, x.value) for x in value.words]
-                return value.copy(words)
+                if len(words) == 1:
+                    return VF.value(data=value[0].data, value=words[0])
+                return value.copy(value=words)
             case VI.Value_i():
                 subbed = sub(pattern, replacement, value.value)
                 return value.copy(value=subbed, name=subbed)
