@@ -50,7 +50,7 @@ def RunInSubCtxSet(f):
         logging.debug("Creating Subctx")
         semSys = the_args[1]
         ctxs   = the_kwargs['ctxs']
-        subctx = ctxs.subctx()
+        subctx = ctxs.subctx(ctxs)
         # register the subctx for merging:
         ctxs.delay(ctxs.delayed_e.MERGE, val=subctx)
         the_kwargs['ctxs'] = subctx
@@ -94,19 +94,16 @@ def OperatorResultWrap(f):
     return WrapOperatorResultAsValue
 
 
-def OperatorSugar(sugar:str, prefix=None):
+def OperatorSugar(*sugar:str):
     """
     Decorates a ProductionOperator to carry a syntactic sugar annotation
     for semantic recognition.
     """
     def AnnotateOperatorWithSugar(cls:ProductionOperator):
-        psugar : str = "" #"_:"
-        if prefix is not None:
-            psugar += prefix
-            psugar += "."
-        psugar += sugar
+        # psugar : str = "" #"_:"
+        # psugar += ".".join(sugar)
 
-        cls._acab_operator_sugar = psugar
+        cls._acab_operator_sugar = VF.sen() << list(sugar)
         return cls
 
     return AnnotateOperatorWithSugar

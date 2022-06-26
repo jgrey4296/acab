@@ -30,3 +30,11 @@ def import_hook(self):
     # then getattr the last name from the module,
     # and override the key with it
     pass
+
+def packrat_hook(self):
+    spec = self.prepare("Parse", "PP_PACKRAT", _type=bool)
+    val  = self.value(spec)
+
+    if val:
+        import pyparsing as pp
+        pp.ParserElement.enable_packrat()

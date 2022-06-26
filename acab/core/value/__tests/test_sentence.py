@@ -13,11 +13,12 @@ import acab
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
+    from acab.core.parsing import pyparse_dsl as ppDSL
 
-from acab.core.parsing import pyparse_dsl as ppDSL
 import acab.core.defaults.value_keys as DS
 from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue
+from acab.interfaces.value import ValueFactory as VF
 from acab.interfaces.value import Sentence_i, Value_i
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 
@@ -57,7 +58,8 @@ class SentenceTests(unittest.TestCase):
 
     def test_name(self):
         test = Sentence(["a", "test", "sentence"])
-        self.assertEqual(test.name, '"a.test.sentence"')
+        self.assertEqual(test.name, '∅')
+
     def test_length(self):
         """ check simple sentence length """
         val = Sentence(["a","test","value"])
@@ -177,43 +179,10 @@ class SentenceTests(unittest.TestCase):
 
         self.assertEqual(sen1, "_:a.test.sentence")
         self.assertEqual(sen2, "_:another.sentence")
-        self.assertEqual(sen3, "_:a.test.sentence.another.sentence")
+        self.assertEqual(sen3, "_:a.test.sentence.[another.sentence]")
 
         self.assertIsInstance(sen3.words[-1], Sentence_i)
         self.assertEqual(len(sen3.words[-1]), 2)
-
-    @unittest.skip
-    def test_bind(self):
-        """ Check variables can be bound in a sentence, building a new sentence """
-        val = Sentence(["a","test","value"])
-        var = Sentence(["var"])
-        var[0].data.update({DS.BIND : True})
-        sen = val.add(var)
-
-        bound = sen.bind({"var" : "blah"})
-
-        self.assertNotEqual(sen.uuid, bound.uuid)
-        self.assertFalse(bound[-1].is_var)
-        self.assertEqual(bound[-1].value, "blah")
-
-    @unittest.skip
-    def test_bind_nop(self):
-        """ Check a sentence binding doesn't create a new sentence unless it has to """
-        val = Sentence(["a","test","value"])
-        var = Sentence(["var"])
-        var[0].data.update({DS.BIND: True})
-        val[2].data.update({DS.BIND : True})
-        sen = val.add(var)
-
-        bound = sen.bind({"not_var" : "blah"})
-
-        self.assertEqual(sen,bound)
-        self.assertTrue(bound[2].is_var)
-        self.assertTrue(bound[-1].is_var)
-        self.assertEqual(bound[-1].value, "var")
-
-        # self.assertEqual(sen.uuid, bound.uuid)
-
 
     def test_get_item_slice(self):
         """ Check a subset of a sentence can be extracted as a new sentence """
@@ -341,7 +310,7 @@ class SentenceTests(unittest.TestCase):
     def test_flatten(self):
         sen1 = Sentence(["a", "test", "sentence"])
         sen2 = Sentence(["parent", sen1, "blah"])
-        self.assertEqual(sen2, "_:parent.a.test.sentence.blah")
+        self.assertEqual(sen2, "_:parent.[a.test.sentence].blah")
         self.assertEqual(len(sen2), 3)
         self.assertIsInstance(sen2[1], Sentence_i)
         sen3 = sen2.flatten()
@@ -353,12 +322,12 @@ class SentenceTests(unittest.TestCase):
         sen1 = Sentence(["a", "test", "sentence"])
         sen2 = Sentence(["parent", sen1, "blah"])
         sen3 = Sentence(["top", "level", sen2])
-        self.assertEqual(sen3, "_:top.level.parent.a.test.sentence.blah")
+        self.assertEqual(sen3, "_:top.level.[parent.[a.test.sentence].blah]")
         self.assertEqual(len(sen3), 3)
         self.assertIsInstance(sen3[2], Sentence_i)
         self.assertIsInstance(sen3[2][1], Sentence_i)
         one_layer = sen3.flatten()
-        self.assertEqual(one_layer, "_:top.level.parent.a.test.sentence.blah")
+        self.assertEqual(one_layer, "_:top.level.parent.[a.test.sentence].blah")
         self.assertEqual(len(one_layer), 5)
         self.assertIsInstance(one_layer[3], Sentence_i)
         self.assertTrue(any([isinstance(x, Sentence_i) for x in one_layer.words]))
@@ -367,7 +336,7 @@ class SentenceTests(unittest.TestCase):
         sen1 = Sentence(["a", "test", "sentence"])
         sen2 = Sentence(["parent", sen1, "blah"])
         sen3 = Sentence(["top", "level", sen2])
-        self.assertEqual(sen3, "_:top.level.parent.a.test.sentence.blah")
+        self.assertEqual(sen3, "_:top.level.[parent.[a.test.sentence].blah]")
         self.assertEqual(len(sen3), 3)
         self.assertIsInstance(sen3[2], Sentence_i)
         self.assertIsInstance(sen3[2][1], Sentence_i)
@@ -380,11 +349,11 @@ class SentenceTests(unittest.TestCase):
         sen1 = Sentence(["a", "test", "sentence"])
         sen1.data[DS.FLATTEN] = False
         sen2 = Sentence(["parent", sen1, "blah"])
-        self.assertEqual(sen2, "_:parent.a.test.sentence.blah")
+        self.assertEqual(sen2, "_:parent.[a.test.sentence].blah")
         self.assertEqual(len(sen2), 3)
         self.assertIsInstance(sen2[1], Sentence_i)
         sen3 = sen2.flatten()
-        self.assertEqual(sen3, "_:parent.a.test.sentence.blah")
+        self.assertEqual(sen3, "_:parent.[a.test.sentence].blah")
         self.assertEqual(len(sen3), 3)
         self.assertTrue(any([isinstance(x, Sentence_i) for x in sen3.words]))
 
@@ -392,11 +361,11 @@ class SentenceTests(unittest.TestCase):
         sen1 = Sentence(["a", "test", "sentence"])
         sen2 = Sentence(["parent", sen1, "blah"])
         sen2.data[DS.FLATTEN] = False
-        self.assertEqual(sen2, "_:parent.a.test.sentence.blah")
+        self.assertEqual(sen2, "_:parent.[a.test.sentence].blah")
         self.assertEqual(len(sen2), 3)
         self.assertIsInstance(sen2[1], Sentence_i)
         sen3 = sen2.flatten()
-        self.assertEqual(sen3, "_:parent.a.test.sentence.blah")
+        self.assertEqual(sen3, "_:parent.[a.test.sentence].blah")
         self.assertEqual(len(sen3), 3)
         self.assertTrue(any([isinstance(x, Sentence_i) for x in sen3.words]))
 
@@ -405,12 +374,12 @@ class SentenceTests(unittest.TestCase):
         sen1.data[DS.FLATTEN] = False
         sen2 = Sentence(["parent", sen1, "blah"])
         sen3 = Sentence(["top", "level", sen2])
-        self.assertEqual(sen3, "_:top.level.parent.a.test.sentence.blah")
+        self.assertEqual(sen3, "_:top.level.[parent.[a.test.sentence].blah]")
         self.assertEqual(len(sen3), 3)
         self.assertIsInstance(sen3[2], Sentence_i)
         self.assertIsInstance(sen3[2][1], Sentence_i)
         all_layers = sen3.flatten(rec=True)
-        self.assertEqual(all_layers, "_:top.level.parent.a.test.sentence.blah")
+        self.assertEqual(all_layers, "_:top.level.parent.[a.test.sentence].blah")
         self.assertEqual(len(all_layers), 5)
         self.assertTrue(any([isinstance(x, Sentence_i) for x in all_layers.words]))
 
@@ -458,3 +427,14 @@ class SentenceTests(unittest.TestCase):
         self.assertNotEqual(val1, val2)
         self.assertTrue(val1.data['blah'])
         self.assertFalse(val2.data['blah'])
+
+
+    def test_sentence_params(self):
+        val = Sentence(params=["a", "b", "c"]) << "a" << "test" << "sentence"
+        self.assertTrue(all([isinstance(x, AcabValue) for x in val.params]))
+        self.assertTrue(all([x.is_var for x in val.params]))
+
+
+    def test_sentence_as_var_fail(self):
+        with self.assertRaises(TypeError):
+            Sentence(data={DS.BIND:True})

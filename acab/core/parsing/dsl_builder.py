@@ -43,6 +43,13 @@ class DSL_Spec(HSImpl.HandlerSpec, dsl.DSL_Spec_i):
 
 class DSL_Builder(HSImpl.HandlerSystem, dsl.DSL_Builder_i):
 
+
+    def __call__(self, *args):
+        return self.parse(*args)
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__}: Handlers: {len(self.handler_specs)}, Loose: {len(self.loose_handlers)}>"
+
     def _register_spec(self, *specs):
         for spec in specs:
             assert(isinstance(spec, dsl.DSL_Spec_i))
@@ -88,12 +95,8 @@ class DSL_Builder(HSImpl.HandlerSystem, dsl.DSL_Builder_i):
         return self.parse(text)
 
 
-    def __call__(self, *args):
-        return self.parse(*args)
 
     def extend(self, modules:list[ModuleFragment]):
         for module in modules:
             self.register(*module.dsl_fragments)
 
-    def __repr__(self):
-        return f"<{self.__class__.__name__}: Handlers: {len(self.handler_specs)}, Loose: {len(self.loose_handlers)}>"

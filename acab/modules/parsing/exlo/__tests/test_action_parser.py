@@ -7,26 +7,28 @@ import pyparsing as pp
 logging = logmod.getLogger(__name__)
 ##############################
 
+import warnings
+
 import acab
 
-import warnings
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     acab.setup()
-    if '@pytest_ar' in globals():
-        from acab.core.parsing import debug_funcs as DBF
-        DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+    # if '@pytest_ar' in globals():
+    #     from acab.core.parsing import debug_funcs as DBF
+    #     DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
-import acab.core.defaults.value_keys as DS
-from acab.core.value.instruction import (Instruction, ProductionComponent,
-                                        ProductionContainer,
-                                        ProductionOperator)
-from acab.core.value.sentence import Sentence
-from acab.core.value.value import AcabValue
-from acab.core.parsing import parsers as PU
-from acab.interfaces.value import Value_i
-from acab.modules.parsing.exlo.parsers import ActionParser as AP
-from acab.modules.parsing.exlo.parsers import FactParser as FP
+    import acab.core.defaults.value_keys as DS
+    from acab.core.util.sentences import ProductionComponent
+
+    from acab.core.parsing import parsers as PU
+    from acab.core.value.instruction import (Instruction, ProductionContainer,
+                                             ProductionOperator)
+    from acab.core.value.sentence import Sentence
+    from acab.core.value.value import AcabValue
+    from acab.interfaces.value import Value_i, Sentence_i
+    from acab.modules.parsing.exlo.parsers import ActionParser as AP
+    from acab.modules.parsing.exlo.parsers import FactParser as FP
 
 
 class Trie_Action_Parser_Tests(unittest.TestCase):
@@ -40,8 +42,8 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
         cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
         logging.root.setLevel(logmod.NOTSET)
-        logging.root.handlers[0].setLevel(logmod.WARNING)
         logging.root.addHandler(cls.file_h)
+        logging.root.handlers[0].setLevel(logmod.WARNING)
 
         AP.HOTLOAD_OPERATORS << PU.OPERATOR_SUGAR
 
@@ -75,13 +77,14 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
         test_str = "λoperator.add"
 
         result = AP.action_component.parse_string(test_str)[0]
-        self.assertIsInstance(result, ProductionComponent)
+        self.assertIsInstance(result, Sentence)
 
     def test_multi_var_action(self):
         """ Check an action with multiple variables can be parsed """
         result = AP.action_component.parse_string("λa.b.c $x $y $z")[0]
-        self.assertIsInstance(result, ProductionComponent)
-        self.assertEqual(len(result.params), 3)
+        self.assertIsInstance(result, Sentence)
+        self.assertEqual(len(result), 3)
+        self.assertEqual(result[-1][-1], "unit")
         self.assertTrue(all([isinstance(x, Value_i) for x in result.params]))
 
     def test_actions(self):
@@ -93,20 +96,33 @@ class Trie_Action_Parser_Tests(unittest.TestCase):
     # TODO test  sugar, test sentences, test values, test multi params
     def test_action_sugar_unary(self):
         result = AP.action_sugar_unary.parse_string("∈ $x")[0]
-        self.assertIsInstance(result, ProductionComponent)
-        self.assertIn(DS.OPERATOR, result.op.type)
+        self.assertIsInstance(result, Sentence)
+        self.assertIn(DS.OPERATOR, result[0].type)
 
     def test_action_sugar_bianry(self):
         result = AP.action_sugar_binary.parse_string("$y ∈ $x")[0]
-        self.assertIsInstance(result, ProductionComponent)
-        self.assertIn(DS.OPERATOR, result.op.type)
+        self.assertIsInstance(result, Sentence)
+        self.assertIn(DS.OPERATOR, result[0].type)
 
     def test_action_statement(self):
         result = AP.action_definition.parse_string("test(::ACTION):\n λa.b.c\nend")[0]
         self.assertIsInstance(result, ProductionContainer)
-        self.assertEqual(result.type, "_:ACTION")
+        self.assertEqual(result.type, f"_:{DS.INSTR_PRIM}.{DS.CONTAINER_PRIM}.{DS.ACTION_COMPONENT}")
 
     def test_action_alias_statement(self):
         result = AP.action_definition.parse_string("test(::ACTION):\n λa.b.c\nend")[0]
         self.assertIsInstance(result, ProductionContainer)
-        self.assertEqual(result.type, "_:ACTION")
+        self.assertEqual(result.type, f"_:{DS.INSTR_PRIM}.{DS.CONTAINER_PRIM}.{DS.ACTION_COMPONENT}")
+
+    def test_action_param_sentences(self):
+        result = AP.action_component.parse_string("λa.b.c d.e.$f")[0]
+        self.assertIsInstance(result, Sentence_i)
+        self.assertEqual(result[1][0], "_:d.e.f")
+        self.assertEqual(result[1][0][-1].data[DS.BIND], True)
+
+    def test_action_param_sentences_multi(self):
+        result = AP.action_component.parse_string("λa.b.c d.e.$f a.different.sentence")[0]
+        self.assertIsInstance(result, Sentence_i)
+        self.assertEqual(result[1][0], "_:d.e.f")
+        self.assertEqual(result[1][0][-1].data[DS.BIND], True)
+        self.assertEqual(result[1][1], "_:a.different.sentence")

@@ -19,9 +19,10 @@ from acab.interfaces.value import ValueFactory as VF
 
 config = AcabConfig()
 
+ALIAS_DICT  = config.prepare("Aliases", _type=dict, actions=[config.actions_e.STRIPQUOTE])()
 ANNOTATIONS = [config.prepare("Value.Structure", x, _type=Enum)() for x in config.prepare("Print.Annotations", _type=list)()]
 ATOM_HINT   = DSig.ATOM
-TYPE_BASE   = config.prepare("Data", "TYPE_BASE")()
+TYPE_BASE   = "_:" + config.prepare("Data", "TYPE_BASE")()
 
 SEN_SEN     = VF.sen([DS.SENTENCE_PRIM])
 
@@ -192,7 +193,7 @@ class ConstraintPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
     def __call__(self, value, top=None, data=None):
         return_list = []
         for constraint in value.data[DS.CONSTRAINT]:
-            return_list.append(constraint)
+            return_list.append(top.override(DSig.COMPONENT, constraint))
             return_list.append(", ")
 
         return_list.pop()
@@ -233,18 +234,20 @@ class ProductionComponentPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
 
         # else
         result.append(DSYM.FUNC_SYM)
-        result.append(value.value)
-        if bool(value.params):
+        result.append(value[0])
+        if value[1] != "_:∅":
             result.append(DSYM.SPACE)
-            overriden = [PW._suppress_modal(top, x) if not isinstance(x, Sentence) else x for x in value.params]
+            params = value[1] if value[1][0] != "_:node" else value[1][1:]
+
+            overriden = [PW._suppress_modal(top, x) if not isinstance(x, Sentence) else x for x in params]
             result += PW._sep_list(self, value, overriden, sep=" ")
 
-        if bool(value.rebind):
+        if value[-1][1] not in ( "bool", "unit"):
             # TODO align these
             result.append(DSYM.SPACE)
             result.append(DSYM.REBIND_SYM)
             result.append(DSYM.SPACE)
-            result.append(PW._suppress_modal(top, value.rebind))
+            result.append(PW._suppress_modal(top, value[-1][1]))
 
         return result
 
@@ -363,11 +366,28 @@ class SimpleTypePrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
     def __call__(self, value, top=None, data=None):
         return_list = []
         # TODO or suppression types
-        if str(value.type) == TYPE_BASE:
+        if value.type == TYPE_BASE:
             return []
 
-        type_str = str(value.type)
+        type_str = value.type
         return_list.append("::")
         # TODO handle aliasees
+        return_list.append(type_str)
+        return return_list
+
+
+class TypeAliasPrinter(basic.PrintSemanticsImpl, PrintSemantics_i):
+
+    def __call__(self, value, top=None, data=None):
+        return_list = []
+        # TODO or suppression types
+        if value.type == TYPE_BASE:
+            return []
+
+        type_str = value.type
+        return_list.append("::")
+        if str(type_str) in ALIAS_DICT:
+            type_str = ALIAS_DICT[str(type_str)]
+
         return_list.append(type_str)
         return return_list

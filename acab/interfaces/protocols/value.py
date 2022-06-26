@@ -113,28 +113,11 @@ class VariableTests_p(Protocol):
     def has_var(self) -> bool: pass
 
 
-
-# Instructions add:
-class AcabReducible_p(Protocol):
-    """ Designates a class as being able to reduce down
-    to a list of sentences """
-
-    @abc.abstractmethod
-    def to_sentences(self) -> list[AT.Sentence]:
-        """ Convert to sentences for printing """
-        pass
-
-
 class AcabSentenceable_p(Protocol):
     @abc.abstractmethod
     def attach_statement(self, value:Instruction_A) -> Sen_A: pass
     @abc.abstractmethod
     def detach_statement(self) -> Tuple[Value_A, list[Instruction_A]]: pass
-
-    @staticmethod
-    @abc.abstractmethod
-    def from_sentences(sens:list[AT.Sentence]) -> list[Any]:
-        pass
 
     def to_word(self) -> Value_A:
         # TODO convert
@@ -148,7 +131,7 @@ class Value_p(ValueBasics_p, ValueMetaData_p, VariableTests_p, Protocol):
 
 
 @runtime_checkable
-class Sentence_p(Value_p, Collection[Value_p], AcabReducible_p, AcabSentenceable_p, Protocol):
+class Sentence_p(Value_p, Collection[Value_p], AcabSentenceable_p, Protocol):
     @abc.abstractmethod
     def __getitem__(self, i:int) -> Value_A|Sen_A: pass
     @abc.abstractmethod
@@ -163,7 +146,7 @@ class Sentence_p(Value_p, Collection[Value_p], AcabReducible_p, AcabSentenceable
     def flatten(self, *, rec=False) -> Sen_A: pass
 
 @runtime_checkable
-class Instruction_p(Value_p, Collection[Any], AcabReducible_p, AcabSentenceable_p, Protocol):
+class Instruction_p(Value_p, Collection[Any], AcabSentenceable_p, Protocol):
     @abc.abstractmethod
     def do_break(self) -> None: pass
     # self.breakpoint = not self.breakpoint #type:ignore[has-type]

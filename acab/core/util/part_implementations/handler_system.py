@@ -16,7 +16,7 @@ from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
 from acab import types as AT
 from acab import AcabConfig
 from acab.core.util.decorators.util import cache
-from acab.error.handler import AcabHandlerException
+from acab.error.handler import AcabHandlerException, HandlerDuplicationException
 from acab.interfaces import handler_system as HS
 from acab.interfaces.config import ConfigSpec_d
 from acab.interfaces.data import Structure_i
@@ -61,6 +61,7 @@ class HandlerSystem(HS.HandlerSystem_i):
         sieve_fns     = sieve_fns     or self._default_sieve[:] #type:ignore
         init_specs    = init_specs    or []
         init_handlers = init_handlers or []
+        self._quick_sen_fails = set()
         try:
             self.sieve = AcabSieve(sieve_fns)
             self._register_spec(*init_specs)
@@ -72,14 +73,17 @@ class HandlerSystem(HS.HandlerSystem_i):
 
 
     def __contains__(self, signal) -> bool:
-        if isinstance(signal, str):
-            return signal in self.handler_specs
-        elif isinstance(signal, Sentence_i):
-            return str(signal) in self.handler_specs
-        elif isinstance(signal, (HS.HandlerSpec_i, HS.Handler_i)):
-            return str(signal) in self.handler_specs
-        else:
-            raise ValueError(f"Unrecognised signal value: {signal}")
+        match signal:
+            case str():
+                return signal in self.handler_specs
+            case Sentence_i():
+                return str(signal) in self.handler_specs
+            case HS.HandlerSpec_i() | HS.Handler_i():
+                return str(signal) in self.handler_specs
+            case _ if isinstance(type(signal), EnumMeta):
+                return signal.name in self.handler_specs
+            case _:
+                raise ValueError(f"Unrecognised signal value: {signal}")
 
     def __bool__(self):
         return 1 < len(self.handler_specs)
@@ -90,7 +94,14 @@ class HandlerSystem(HS.HandlerSystem_i):
     def __getitem__(self, other):
         if not isinstance(other, str):
             raise ValueError(f"Bad Signal Attempt to HandlerSystem: {other}")
-        return self.handler_specs[other]
+        if other in self.handler_specs:
+            return self.handler_specs[other]
+
+        matching_loose = [x for x in self.loose_handlers if x.signal == other]
+        if bool(matching_loose):
+            return matching_loose[0]
+
+        raise ValueError(f"No Handler or Spec Found for: {other}")
 
     def __iter__(self):
         for spec in self.handler_specs.values():
@@ -111,7 +122,17 @@ class HandlerSystem(HS.HandlerSystem_i):
             value = value.value
 
         for key in self.sieve.fifo(value):
-            key_match   = key in self.handler_specs
+            match key:
+                case Sentence_i():
+                    key_match = self._sub_sen_handler_patch(key)
+                    key = str(key)
+                case str():
+                    key_match   = key in self.handler_specs
+                case None:
+                    pass
+                case _:
+                    raise TypeError("Unexpected value returned by sieve", key)
+
             if is_override and not is_passthrough and not key_match:
                 logging.warning(f"Missing Override Handler: {self.__class__} : {key}")
                 continue
@@ -126,6 +147,46 @@ class HandlerSystem(HS.HandlerSystem_i):
         # Final resort
         return self.handler_specs[DEFAULT_HANDLER_SIGNAL]
 
+    def _sub_sen_handler_patch(self, sen:Sen_A) -> bool:
+        """
+        Check a handler exists for a.test.sen
+        if on isnt found, try a.test
+        then just a.
+
+        If a sub sen handler *is* found, patch it
+        so the search doesn't have to happen again
+        """
+        sen_str = str(sen)
+        # Try Full
+        if sen_str in self:
+            return True
+
+        # Check for cached failures
+        if sen_str in self._quick_sen_fails:
+            return False
+
+        # Try just the last word?
+        if str(sen[-1:]) in self:
+            new_spec = self.handler_specs[str(sen[-1:])].copy(signal=sen_str, handlers=True)
+            self.register(new_spec)
+            return True
+
+        # Try subsens
+        for index in range(len(sen)-1, 0, -1):
+            subsen = str(sen[:index])
+            if subsen in self:
+                # patch
+                logging.debug("Found an applicable sub spec: {} of {}", subsen, sen_str)
+                new_spec = self.handler_specs[subsen].copy(signal=sen_str, handlers=True)
+                self.register(new_spec)
+                return True
+
+        # Else patch in a fast failure
+        self._quick_sen_fails.add(sen_str)
+        return False
+
+
+
     def override(self, new_signal: bool | str, value, data=None) -> Overrider:
         """ wrap a value to pass data along with it, or explicitly control the signal it produces for handlers """
         data = data or {}
@@ -137,6 +198,8 @@ class HandlerSystem(HS.HandlerSystem_i):
         match new_signal:
             case str() if new_signal in self:
                 pass
+            case Sentence_i():
+                new_signal = str(new_signal)
             case bool() if not new_signal:
                 new_signal = PASSTHROUGH
             case _:
@@ -161,7 +224,6 @@ class HandlerSystem(HS.HandlerSystem_i):
                     self._register_data(other)
                 case _:
                     raise AcabHandlerException("Attempt to register unknown type", rest=[other])
-
         return self
 
     def _register_default(self):
@@ -178,7 +240,7 @@ class HandlerSystem(HS.HandlerSystem_i):
             if as_pseudo in self and spec != self.handler_specs[as_pseudo]:
                 raise AcabHandlerException(f"Signal Conflict: {spec.signal}") #type:ignore
             if spec not in self:
-                self.handler_specs[as_pseudo] = spec.copy()
+                self.handler_specs[as_pseudo] = spec.copy(handlers=True)
 
         # TODO: Then try to register any loose handlers
 
@@ -212,6 +274,9 @@ class HandlerSystem(HS.HandlerSystem_i):
 
     def extend(self, modules:list[ModuleFragment]) -> None:
         raise NotImplementedError()
+    @property
+    def signals(self) -> list[str]:
+        return list(self.handler_specs.keys())
 
 @APE.assert_concrete
 class HandlerSpec(HS.HandlerSpec_i):
@@ -254,11 +319,16 @@ class HandlerSpec(HS.HandlerSpec_i):
 
         return result
 
-    def copy(self, **kwargs) -> HandlerSpec_A:
-        return replace(self,
-                       func_api=self.func_api,
-                       struct_api=self.struct_api,
-                       data_api=self.data_api)
+    def copy(self, *, handlers=False, **kwargs) -> HandlerSpec_A:
+        copied = replace(self,
+                         func_api=self.func_api,
+                         struct_api=self.struct_api,
+                         data_api=self.data_api,
+                         **kwargs)
+        if handlers:
+            copied.handlers += self.handlers[:]
+
+        return copied
 
     # set APIs ################################################################
     def spec_from(self, target):
@@ -309,16 +379,24 @@ class HandlerSpec(HS.HandlerSpec_i):
     def register(self, handler: Handler_A) -> None:
         """ Add a handler into the current, according to the spec instructions
         and handler's flags """
-        # And check types
-        if handler.struct is not None:
-            self.add_struct(handler)
-        # NOT ELIF
-        if self.flag_e.OVERRIDE in handler.flags and handler.func is not None:
-            self.handlers = [handler]
-        elif handler.func is not None:
-            self.check_api(func=handler.func)
-            self.handlers.append(handler)
-        # NOT ELIF
+        match handler:
+            case HS.Handler_i(struct=None):
+                pass
+            case HS.Handler_i(struct=struct):
+                self.add_struct(handler)
+
+        match handler:
+            case HS.Handler_i(func=None):
+                pass
+            case HS.Handler_i(func=func, flags=flags) if self.flag_e.OVERRIDE in flags:
+                self.handlers = [handler]
+            case HS.Handler_i(func=func) if HS.Handler_i.__hash__(handler) in self.registered:
+                raise HandlerDuplicationException(handler)
+            case HS.Handler_i(func=func):
+                self.check_api(func=handler.func)
+                self.handlers.append(handler)
+                self.registered.add(HS.Handler_i.__hash__(handler))
+
         if self.handler_limit is None:
             return
 

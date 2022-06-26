@@ -7,12 +7,11 @@ from acab.core.parsing import parsers as PU
 from acab.core.parsing.consts import (ARROW, COLON, COMMA, DELIM, DOUBLEBAR,
                                       NG, N, component_gap, ln, op, s, zrm)
 from acab.core.parsing.statement_core import StatementCore
-from acab.core.defaults.semantic_signals import signals
 
 from acab.modules.parsing.exlo.constructors import (build_transform,
                                                     build_transform_component)
 from acab.modules.parsing.exlo.util import (LEFT_S, OPERATOR_S, RIGHT_S,
-                                            TARGET_S)
+                                            TARGET_S, TRANSFORM_COMPONENT)
 
 from .FactParser import SEN_NO_MODAL, SENTENCE, op_sentence
 
@@ -48,7 +47,7 @@ transform_combined = pp.MatchFirst([HOTLOAD_TRANS_STATEMENTS,
 
 transforms = pp.IndentedBlock(transform_combined + op(s(ln)))
 
-transform_statement = StatementCore(signals.TRANSFORM, transforms)
+transform_statement = StatementCore(TRANSFORM_COMPONENT, transforms)
 
 # Actions
 transform_core.set_parse_action(build_transform_component)

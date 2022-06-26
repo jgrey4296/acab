@@ -7,17 +7,17 @@ import unittest.mock as mock
 import warnings
 from os.path import split, splitext
 
-from acab import setup
+import acab
 
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
-    config = setup()
+    config = acab.setup()
+    from acab.core.parsing import pyparse_dsl as ppDSL
 
-from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.core.parsing.annotation import ValueAnnotation
 import acab.core.defaults.value_keys as DS
 from acab.core.value.value import AcabValue
-from acab.modules.analysis.typing.module import TypingDSL
+from acab.modules.analysis.typing.module import TypeSpecFragment
 from acab.modules.context.context_set import ContextInstance as CtxIns
 from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 
@@ -52,7 +52,7 @@ class UnifierTests(unittest.TestCase):
 
         global dsl
         dsl   = ppDSL.PyParseDSL()
-        dsl.register(EXLO_Parser).register(TypingDSL)
+        dsl.register(EXLO_Parser).register(TypeSpecFragment().build_dsl())
         dsl.build()
 
     @classmethod
@@ -110,13 +110,13 @@ class UnifierTests(unittest.TestCase):
 
         ctx_r = tuf.type_unify(sen1, sen2, CtxIns())
 
-        self.assertIn("a.test", ctx_r)
-        self.assertIn("a.test.sentence", ctx_r)
-        self.assertIsInstance(ctx_r['a.test'], ValueAnnotation)
-        self.assertIsInstance(ctx_r['a.test.sentence'], ValueAnnotation)
-        self.assertEqual(ctx_r['a.test'], ValueAnnotation(DS.TYPE_INSTANCE,
+        self.assertIn("[a.test]", ctx_r)
+        self.assertIn("[a.test.sentence]", ctx_r)
+        self.assertIsInstance(ctx_r['[a.test]'], ValueAnnotation)
+        self.assertIsInstance(ctx_r['[a.test.sentence]'], ValueAnnotation)
+        self.assertEqual(ctx_r['[a.test]'], ValueAnnotation(DS.TYPE_INSTANCE,
                                                           dsl("blah")[0]))
-        self.assertEqual(ctx_r['a.test.sentence'], ValueAnnotation(DS.TYPE_INSTANCE,
+        self.assertEqual(ctx_r['[a.test.sentence]'], ValueAnnotation(DS.TYPE_INSTANCE,
                                                                    dsl("a.b")[0]))
 
     def test_apply_types_with_vars(self):
@@ -136,16 +136,15 @@ class UnifierTests(unittest.TestCase):
         sen1 = dsl("a.test.sentence.bloo(::aweg.awg)")[0]
         sen2 = dsl("a.test.$x(::blah!$y).$z(::$y)")[0]
 
-
         ctx_r = tuf.type_unify(sen1, sen2, CtxIns())
         sen1c = tuf.typed_sen_logic.apply(sen1, ctx_r)
         sen2c = tuf.typed_sen_logic.apply(sen2, ctx_r)
         self.assertEqual(sen1c[-1].type,      "_:aweg.awg")
-        self.assertEqual(str(sen1c[-2].type), "blah.aweg.awg")
+        self.assertEqual(sen1c[-2].type,       "_:blah.[aweg.awg]")
         self.assertEqual(sen1c[-2].type[-1],  "_:aweg.awg")
 
         self.assertEqual(sen2c[-1].type,      "_:aweg.awg")
-        self.assertEqual(sen2c[-2].type,      "_:blah.aweg.awg")
+        self.assertEqual(sen2c[-2].type,      "_:blah.[aweg.awg]")
         self.assertEqual(sen2c[-2].type[-1],  "_:aweg.awg")
 
         self.assertNotEqual(sen1c[-2].type,   "_:blah.y")

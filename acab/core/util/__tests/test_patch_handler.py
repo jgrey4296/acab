@@ -11,12 +11,13 @@ logging = logmod.getLogger(__name__)
 
 import warnings
 
-from acab import setup
+import acab
 from acab.interfaces.handler_system import Handler_i
 
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
-    config                 = setup()
+    config = acab.setup()
+
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 HandlerConfigSpec      = config.prepare("Imports.Targeted", "handler", actions=[config.actions_e.IMCLASS], args={"interface": Handler_i})
 config.override(HandlerConfigSpec, "acab.core.util.patch_handler.PatchHandler")

@@ -61,7 +61,7 @@ class ContextMeta(ProtocolMeta):
     def __init__(cls, name:str, bases:tuple[type, ...], data:dict[str,Any]):
         super(ContextMeta, cls).__init__(name, bases, data)
 
-    def __call__(cls, ops:None|CtxIns|list[AT.ModuleFragment]=None, **kwargs):
+    def __call__(cls, ops:None|CtxIns|dict[str, VI.Operator_i]|list[AT.ModuleFragment]=None, **kwargs):
         """
         The Meta Constructor for ContextSets,
         to construct operator bindings if necessary
@@ -70,20 +70,20 @@ class ContextMeta(ProtocolMeta):
             return super(ContextMeta, cls).__call__(**kwargs)
 
         assert('_operators' not in kwargs)
-        if isinstance(ops, CtxInt.ContextInstance_i):
-            kwargs['_operators'] = ops
-            return super(ContextMeta, cls).__call__(**kwargs)
-
-        assert(isinstance(ops, list)), ops
-        # Get Flat List of Operator Sentences:
-        try:
-            operators = [y for x in ops for y in x.operators]
-        except AttributeError as er:
-            breakpoint()
-        # Build the CtxInst data dict:
-        op_dict = {str(x) : x[-1] for x in operators}
-        # Add any sugar forms:
-        op_dict.update({x[-1]._acab_operator_sugar : x[-1] for x in operators if hasattr(x[-1], "_acab_operator_sugar")})
+        match ops:
+            case CtxInt.ContextInstance_i():
+                kwargs['_operators'] = ops
+                return super(ContextMeta, cls).__call__(**kwargs)
+            case list():
+                operators = [y for x in ops for y in x.operators]
+                # Build the CtxInst data dict:
+                op_dict = {str(x) : x[-1] for x in operators}
+                # Add any sugar forms:
+                op_dict.update({str(x[-1]._acab_operator_sugar) : x[-1] for x in operators if hasattr(x[-1], "_acab_operator_sugar")})
+            case dict():
+                op_dict = ops
+            case _:
+                raise TypeError("ContextMeta passed an unknown type for operators")
 
         # TODO abstract building ctxinst's to the set
         instance = ContextInstance(op_dict, exact=True)

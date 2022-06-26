@@ -1,0 +1,64 @@
+
+typing.total:
+    typing.rules.$x?
+
+    λctx.collect $x -> λsieve -> $xs
+
+    ᛦ $xs
+end
+
+typing.rule.no_op:
+    | $x |
+    #specificity.max
+    $x(::ATOM)?
+
+    // do nothing
+end
+
+typing.rule.def:
+    | $x |
+    $x(::$y)?
+    $y(::type.def)?
+
+    // unify direct descendents against definition
+    λtype.unify @x $y
+end
+
+typing.rule.sum:
+    | $x |
+    $x(::$y)?
+    .. $y(::type.sum)?
+    $x(∈ $y)?
+
+    // unify direct descendents if $x is one of the types values
+    λtype.unify @x $y
+end
+
+typing.rule.instr:
+    | $x |
+    $x(::instruction)?
+
+    λto.sentences $x -> $xs
+
+    // unify the instructions components in a separate context
+    λtype.unify.structure $xs
+end
+
+typing.rule.operator:
+    | $x |
+    $x.op.$op.vars.$vars.ret.$ret?
+    $op(::operator)?
+
+    λtype.unify.operator $op $vars $ret
+end
+
+typing.rule.typeclass:
+    | $x |
+    $x(::$y)?
+    $y(::type.definition, λis.class $z)?
+    $z(::type.class)?
+
+    λtype.class.methods $z -> $zs
+
+    ∀ $z' ∈ $zs : $z'?
+end

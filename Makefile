@@ -72,8 +72,6 @@ dtest: ${TESTDIRS}
 	@echo "Tested: "
 	@for entry in ${TESTDIRS}; do echo $$entry ; done
 
-
-
 $(TESTDIRS):
 	@echo "--------------------"
 	@echo "Target: ${TOP}/$@"

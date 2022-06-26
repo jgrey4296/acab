@@ -87,7 +87,7 @@ class AcabEngineImpl(AcabEngine_i):
         return str(self.printer.pprint(*sens))
 
     def load_modules(self, *modules) -> list[ModuleFragment]:
-        logging.info("Loading Modules")
+        logging.info("Loading Modules: {}", modules)
         self._module_loader.load(*modules)
         loaded_mods = self._module_loader.loaded
         # Initialise DSL
@@ -101,12 +101,12 @@ class AcabEngineImpl(AcabEngine_i):
         self.printer.extend(loaded_mods)
 
         # insert operator sentences
-        logging.info("Asserting operators")
         ops = [y for x in loaded_mods for y in x.operators]
+        logging.info("Asserting operators: {}", len(ops))
         self.semantics(*ops)
 
         # Now Load Text files:
-        logging.info("Loading paths")
+        logging.info("Loading paths: {}", len(self.load_paths))
         for x in self.load_paths:
             self.load_file(x)
 

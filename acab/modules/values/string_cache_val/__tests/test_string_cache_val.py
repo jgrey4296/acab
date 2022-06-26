@@ -6,8 +6,8 @@ import logging as logmod
 import re
 import unittest
 import unittest.mock as mock
-from os.path import split, splitext
 import warnings
+from os.path import split, splitext
 
 logging = logmod.getLogger(__name__)
 
@@ -21,21 +21,16 @@ with warnings.catch_warnings():
         from acab.core.parsing import debug_funcs as DBF
         DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
-##############################
 
-
-# from acab.core.parsing import debug_funcs as DBF
-# DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
-
-from acab.core.parsing import pyparse_dsl as ppDSL
-from acab.core.parsing.component_dsl import Component_DSL
-from acab.core.value.sentence import Sentence
-from acab.core.value.value import AcabValue
-from acab.interfaces.value import ValueFactory
-from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
-from acab.modules.values.string_cache_val import value as StrCaV
-from acab.modules.values.string_cache_val.caching_meta import \
-    StringCacheValueMeta
+    from acab.core.parsing import pyparse_dsl as ppDSL
+    from acab.core.parsing.component_dsl import Component_DSL
+    from acab.core.value.sentence import Sentence
+    from acab.core.value.value import AcabValue
+    from acab.interfaces.value import ValueFactory
+    from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
+    from acab.modules.values.string_cache_val import value as StrCaV
+    from acab.modules.values.string_cache_val.caching_meta import \
+        StringCacheValueMeta
 
 
 class StringCacheValTest(unittest.TestCase):

@@ -24,7 +24,7 @@ default_sieve_top       : list[Callable] = [
     # enum
     lambda x              : DS.SYMBOL if isinstance(x, Enum) else None,
     # exact type     : 1 -> 1 : any / leaf
-    lambda x              : str(x.type) if isinstance(x, VI.Value_i) else None,
+    lambda x              : x.type if isinstance(x, VI.Value_i) else None,
     ]
 
 # Default Lowest Priority Sieve Tests

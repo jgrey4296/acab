@@ -106,7 +106,7 @@ def to_dict(ret_section:Any, actions=None, spec=None, config=None) -> dict[Any, 
     assert(spec.key is None)
     value = dict(ret_section.items())
     for action in actions:
-        value = {k: action(v, **spec.args) for k,v in value.items()}
+        value = {action(k, **spec.args): action(v, **spec.args) for k,v in value.items()}
 
     return value
 

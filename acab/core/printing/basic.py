@@ -102,7 +102,7 @@ class PrintSystemImpl(HS.HandlerSystem, PI.PrintSystem_i):
             logging.debug("(Remain/Total:{:3}/{:4}) Calling: {:>15} : {}", len(remaining), PrintSystemImpl.total, str(spec), target)
             # Run spec
             is_default = spec.signal == DEFAULT_HANDLER_SIGNAL
-            if  not is_default and spec.check_api(func=PI.PrintSemantics_i):
+            if not is_default and spec.check_api(func=PI.PrintSemantics_i):
                 handled = spec[0](target, top=self, data=data)
             else:
                 handled = spec[0](target, data=data)

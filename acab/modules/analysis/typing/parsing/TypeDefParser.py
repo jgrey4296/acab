@@ -12,8 +12,8 @@ import pyparsing as pp
 from acab.core.config.config import AcabConfig
 from acab.core.parsing import funcs as Pfunc
 from acab.core.parsing import parsers as PU
-from acab.core.parsing.consts import (DBLARROW, DELIM, NG, N, component_gap,
-                                      emptyLine, ln, op, s, s_key)
+from acab.core.parsing.consts import (DBLARROW, DELIM, NG, N, component_gap, ARROW,
+                                      emptyLine, ln, op, s, s_key, orm, END)
 from acab.core.parsing.param_core import ParamCore
 from acab.core.parsing.statement_core import StatementCore, type_annotation_gen
 from acab.core.defaults.semantic_signals import signals
@@ -28,7 +28,8 @@ config = AcabConfig()
 
 #Hotloaded definitions:
 ## Basic sentence (unable to parse annotations)
-HOTLOAD_SEN = pp.Forward()
+HOTLOAD_SEN  = pp.Forward()
+HOTLOAD_WORD = pp.Forward()
 ## Param sentence (able to parse annotations)
 
 # the simplest type
@@ -54,16 +55,26 @@ SUM_TYPE = StatementCore(TU.SUM_HEAD, SUM_DEF_BODY )
 
 # numAdd(::λ): $x(::num).$y(::num).$z(::num) => +
 # TODO: enable alias paths, not just sugar
+# TODO refactor OP_SUGAR as an annotations
 OP_SUGAR = DBLARROW + PU.OPERATOR_SUGAR(TU.SYNTAX_BIND_S)
-# TODO allow multi line defs.
-# (ie: polymorphism)
-OP_DEF_BODY = HOTLOAD_SEN("params") + op(OP_SUGAR)
-OP_DEF_BODY.set_parse_action(TU.make_op_def)
+# TODO allow multi line defs. (ie: polymorphism)
+OP_DEF_PARAMS = orm(HOTLOAD_SEN)("params") + op(ARROW + HOTLOAD_WORD("returns"))
 
-OP_DEF = StatementCore(TU.FUNC_HEAD,
-                       OP_DEF_BODY,
+SINGLE_OP_DEF_BODY = pp.Group(OP_DEF_PARAMS)
+SINGLE_OP_DEF_BODY.set_parse_action(TU.make_op_def)
+
+SINGLE_OP_DEF = StatementCore(TU.FUNC_HEAD,
+                       SINGLE_OP_DEF_BODY,
                        end=pp.line_end,
                        single_line=True)
+
+MULTI_OP_DEF_BODY = pp.IndentedBlock(pp.Group(OP_DEF_PARAMS + op(s(ln))))
+MULTI_OP_DEF_BODY.set_parse_action(TU.make_op_def)
+
+MULTI_OP_DEF = StatementCore(TU.FUNC_HEAD,
+                             MULTI_OP_DEF_BODY)
+
+OP_DEF = SINGLE_OP_DEF | MULTI_OP_DEF
 
 # Type class constructor:
 TYPE_CLASS_BODY = pp.IndentedBlock(HOTLOAD_SEN + op(s(ln)))
@@ -77,7 +88,8 @@ COMBINED_DEFS = SUM_TYPE | RECORD_TYPE | OP_DEF | NOMINAL_DEF
 # NAMING
 RECORD_DEF_BODY.set_name("TypeDefinitionBody")
 RECORD_TYPE.set_name("TypeDefinition")
-OP_DEF_BODY.set_name("OperatorDefinitionBody")
+SINGLE_OP_DEF_BODY.set_name("OperatorDefinitionBody")
+MULTI_OP_DEF_BODY.set_name("OperatorDefinitionBody")
 OP_DEF.set_name("OperatorDefinition")
 
 # parse_point = COMBINED_DEFS.ignore(COMMENT)

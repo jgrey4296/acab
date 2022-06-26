@@ -40,7 +40,7 @@ class BasicSemanticSystem(basic.SemanticSystem, SemanticSystem_i):
         lambda x: x if isinstance(x, str) else None,
         lambda x: x.signal if isinstance(x, HandlerOverride) else None,
         lambda x: str(x.data[SEM_HINT]) if SEM_HINT in x.data else None,
-        lambda x: str(x.type)
+        lambda x: x.type
     ]
 
     ctx_set : Type[CtxSet] = field(default=ContextSet)
@@ -63,12 +63,13 @@ class BasicSemanticSystem(basic.SemanticSystem, SemanticSystem_i):
 
     def run_instruction(self, instruction, ctxs=None) -> Any:
         try:
+            # TODO Entry hooks, like TypeExpansion, would go here?
             data   = {}
             spec   = self.lookup(instruction)
             # TODO verify instruction against semantics
             assert(spec is not None)
             struct = spec.struct
-            logging.info("Firing Semantics: {}", spec)
+            logging.info("Firing Semantics: {} : {!r} : {!r}", spec, instruction, ctxs)
             # StructSems's use a reference to a struct
             # StatementSems use a reference to the sem system in place of a struct
             if struct is None:
@@ -85,6 +86,7 @@ class BasicSemanticSystem(basic.SemanticSystem, SemanticSystem_i):
             # but others continue upwards
             # self.failure(semantics, struct, instruction, ctxs, err)
             logging.warning(err)
+            raise err
         finally: # Always run exit hooks
             # TODO exit hooks would go here
             pass

@@ -10,7 +10,6 @@ from typing import cast, ClassVar, TypeVar, Generic
 
 from acab import types as AT
 from dataclasses import dataclass, field, InitVar
-from acab.modules.analysis.typing.values.acab_type import TypeStatement
 from acab.error.base import AcabException
 
 @dataclass
@@ -44,6 +43,9 @@ class AcabUnifySieveFailure(AcabTypingException):
 @dataclass(repr=False)
 class AcabUnifyVariableInconsistencyException(AcabTypingException):
     msg : str = field(default="Inconsistent Variable Found")
+
+    def __str__(self):
+        return f"{self.msg} : {self.left} : {self.right}"
 
 @dataclass(repr=False)
 class TypeRedefinitionException(AcabTypingException):

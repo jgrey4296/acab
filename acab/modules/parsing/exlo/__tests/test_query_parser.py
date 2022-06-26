@@ -15,23 +15,24 @@ with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
 
-    if '@pytest_ar' in globals():
-        from acab.core.parsing import debug_funcs as DBF
-        DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+    # if '@pytest_ar' in globals():
+    #     from acab.core.parsing import debug_funcs as DBF
+    #     DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
+    import acab.modules.parsing.exlo.parsers.FactParser as FP
+    import acab.modules.parsing.exlo.parsers.QueryParser as QP
+    from acab.core.defaults import value_keys as DS
+    from acab.core.defaults.value_keys import (BIND, NEGATION, OPERATOR, QUERY,
+                                               QUERY_FALLBACK)
+    from acab.core.parsing import parsers as PU
+    from acab.core.parsing.annotation import ValueRepeatAnnotation
+    from acab.core.util.sentences import ProductionComponent
 
-import acab.modules.parsing.exlo.parsers.FactParser as FP
-import acab.modules.parsing.exlo.parsers.QueryParser as QP
-from acab.core.defaults.value_keys import (BIND, NEGATION, OPERATOR, QUERY,
-                                           QUERY_FALLBACK)
-from acab.core.parsing import parsers as PU
-from acab.core.parsing.annotation import ValueRepeatAnnotation
-from acab.core.value.instruction import (Instruction, ProductionComponent,
-                                         ProductionContainer,
-                                         ProductionOperator)
-from acab.core.value.sentence import Sentence
-from acab.core.value.value import AcabValue
-from acab.modules.operators import query as QOP
+    from acab.core.value.instruction import (Instruction, ProductionContainer,
+                                             ProductionOperator)
+    from acab.core.value.sentence import Sentence
+    from acab.core.value.value import AcabValue
+    from acab.modules.operators import query as QOP
 
 CONSTRAINT_V     = config.prepare("Parse.Structure", "CONSTRAINT")()
 REGEX_PRIM       = config.prepare("Type.Primitive", "REGEX")()
@@ -125,7 +126,6 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
         result = QP.clauses.parse_string('a.b.c? || $x:a.b!c, $y:b.d.e\n')[0]
         self.assertIsInstance(result, ProductionContainer)
         r_clause = result.clauses[0]
-        breakpoint()
         self.assertEqual(len(r_clause[-1].data[QUERY_FALLBACK]), 2)
         self.assertEqual(r_clause[-1].data[QUERY_FALLBACK][0][0], 'x')
         self.assertEqual(r_clause[-1].data[QUERY_FALLBACK][0][1][-1].value, 'c')
@@ -151,30 +151,33 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
     def test_basic_constraint_no_params(self):
         result = QP.basic_constraint.parse_string("λa.b.c")[0]
         self.assertIsInstance(result, ValueRepeatAnnotation)
-        self.assertIsInstance(result.value, ProductionComponent)
+        self.assertIsInstance(result.value, Sentence)
         self.assertFalse(result.value.params)
-        self.assertIn(OPERATOR, result.value.op.type)
+        self.assertEqual(result.value.type, f"_:{DS.SENTENCE_PRIM}.{DS.COMPONENT_PRIM}.{DS.QUERY_COMPONENT}")
+        self.assertIn(OPERATOR, result.value[0].type)
 
     def test_basic_constraint_one_param(self):
         result = QP.basic_constraint.parse_string("λa.b.c $x")[0]
         self.assertIsInstance(result, ValueRepeatAnnotation)
-        self.assertIsInstance(result.value, ProductionComponent)
-        self.assertTrue(result.value.params)
-        self.assertIn(OPERATOR, result.value.op.type)
+        self.assertEqual(result.value.type, f"_:{DS.SENTENCE_PRIM}.{DS.COMPONENT_PRIM}.{DS.QUERY_COMPONENT}")
+        self.assertIsInstance(result.value, Sentence)
+        self.assertTrue(result.value[1])
+        self.assertIn(OPERATOR, result.value[0].type)
 
     def test_basic_constraint_one_sen(self):
         result = QP.basic_constraint.parse_string("λa.b.c q.w.e")[0]
         self.assertIsInstance(result, ValueRepeatAnnotation)
-        self.assertIsInstance(result.value, ProductionComponent)
-        self.assertTrue(result.value.params)
-        self.assertIn(OPERATOR, result.value.op.type)
+        self.assertEqual(result.value.type, f"_:{DS.SENTENCE_PRIM}.{DS.COMPONENT_PRIM}.{DS.QUERY_COMPONENT}")
+        self.assertIsInstance(result.value, Sentence)
+        self.assertTrue(result.value[1])
+        self.assertIn(OPERATOR, result.value[0].type)
 
 
     def test_basic_constraint_multi_params(self):
         result = QP.basic_constraint.parse_string("λa.b.c q.w.e $x $y")[0]
         self.assertIsInstance(result, ValueRepeatAnnotation)
-        self.assertIsInstance(result.value, ProductionComponent)
-        self.assertTrue(result.value.params)
+        self.assertIsInstance(result.value, Sentence)
+        self.assertTrue(result.value[1])
 
     def test_basic_constraint_on_word(self):
         result = FP.SEN_WORD.parse_string("test(λa.b.c $x $y).")[0]
@@ -183,6 +186,36 @@ class Trie_Query_Parser_Tests(unittest.TestCase):
     def test_basic_constraint_non_op_path(self):
         result = QP.basic_constraint.parse_string("!!")[0]
         self.assertIsInstance(result, ValueRepeatAnnotation)
-        self.assertIsInstance(result.value, ProductionComponent)
-        self.assertFalse(result.value.params)
-        self.assertIn(OPERATOR, result.value.op.type)
+        self.assertIsInstance(result.value, Sentence)
+        self.assertTrue(result.value[1])
+        self.assertIn(OPERATOR, result.value[0].type)
+
+    def test_basic_constraint_args_are_sentences(self):
+        result = QP.basic_constraint.parse_string("λa.b.c q.w.e")[0]
+        self.assertIsInstance(result.value[1], Sentence)
+
+    def test_basic_constraint_args_are_sentences_single_var(self):
+        result = QP.basic_constraint.parse_string("λa.b.c $q")[0]
+        self.assertIsInstance(result.value[1], Sentence)
+        self.assertEqual(len(result.value), 3)
+        self.assertEqual(result.value[-1], "_:returns.bool")
+
+    def test_basic_constraint_args_are_sentences_single_word(self):
+        result = QP.basic_constraint.parse_string("λa.b.c q")[0]
+        self.assertIsInstance(result.value[1], Sentence)
+        self.assertEqual(len(result.value), 3)
+        self.assertEqual(result.value[1], "_:[node].[q]")
+        self.assertIsInstance(result.value[1], Sentence)
+        self.assertIsInstance(result.value[2], Sentence)
+        self.assertEqual(result.value[-1], "_:returns.bool")
+
+    def test_constraint_arg_is_sentence(self):
+        result = FP.SEN_WORD.parse_string("test(λa.b.c $x $y).")[0]
+        for arg in result.data[DS.CONSTRAINT][0].params:
+            self.assertIsInstance(arg, Sentence)
+
+
+    def test_constraint_arg_is_sentence2(self):
+        result = FP.SEN_WORD.parse_string("test(== x.b.c y).")[0]
+        for arg in result.data[DS.CONSTRAINT][0].params:
+            self.assertIsInstance(arg, Sentence)

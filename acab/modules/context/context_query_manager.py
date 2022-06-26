@@ -11,13 +11,13 @@ from dataclasses import FrozenInstanceError, InitVar, dataclass, field, replace
 from enum import Enum
 from uuid import UUID, uuid1
 
-from acab import types as AT
 import acab.core.defaults.value_keys as DS
 import acab.error.semantic as ASErr
 import acab.interfaces.context as CtxInt
 from acab import AcabConfig
-from acab.core.value.instruction import (ProductionComponent,
-                                         ProductionContainer)
+from acab import types as AT
+from acab.core.util.sentences import ProductionComponent
+from acab.core.value.instruction import ProductionContainer
 from acab.error.semantic import AcabSemanticException
 from acab.interfaces.value import Sentence_i
 from acab.modules.context.constraints import ConstraintCollection
@@ -36,7 +36,7 @@ Operator         = 'ProductionOperator'
 Value            = AT.Value
 Statement        = AT.Instruction
 Sen              = Sentence_i
-Node             = AT.Node
+Node             = AT.StructView
 ModuleFragment   = AT.ModuleFragment
 NamedCtxSet      = "NamedCtxSet"
 
@@ -56,9 +56,10 @@ class ContextQueryManager(CtxInt.CtxManager_i):
     _initial_ctxs       : list[UUID]           = field(init=False, default_factory=list)
 
     def __post_init__(self):
+        # Process the target, extracting constraints
         sen = self.target_clause
         self.negated = NEGATION_S in sen.data and sen.data[NEGATION_S]
-        constraints = [ConstraintCollection(x, operators=self.ctxs._operators) for x in sen]
+        constraints  = [ConstraintCollection(x, operators=self.ctxs._operators) for x in sen]
         self.constraints.extend(constraints)
         self._initial_ctxs = [x.uuid for x in self.ctxs.active_list()]
 
@@ -162,8 +163,8 @@ class ContextQueryManager(CtxInt.CtxManager_i):
 
         # Handle successes
         # success, so copy and extend ctx instance
-        bound_ctxs = self._current_inst.bind(constraints.source,
-                                             successes,
-                                             sub_binds=constraints["sub_struct_binds"])
+        bound_ctxs = self._current_inst.progress(constraints.source,
+                                                 successes,
+                                                 sub_binds=constraints["sub_struct_binds"])
         return bound_ctxs
 

@@ -10,8 +10,7 @@ from acab.core.parsing.consts import (ARROW, COLON, COMMA, DELIM, DOUBLEBAR,
                                       gap, ln, op, orm)
 from acab.core.parsing.statement_core import StatementCore
 from acab.modules.parsing.exlo.constructors import build_rule
-from acab.modules.parsing.exlo.util import ACTION_S, QUERY_S, TRANSFORM_S
-from acab.core.defaults.semantic_signals import signals
+from acab.modules.parsing.exlo.util import ACTION_S, QUERY_S, TRANSFORM_S, RULE_PRIM
 
 
 from . import ActionParser as AP
@@ -31,7 +30,7 @@ endOrLine  = pp.FollowedBy(END) | ln | pp.string_end
 
 rule_body = op(conditions + endOrLine) + op(transforms + endOrLine) + op(actions + endOrLine)
 
-rule = StatementCore(signals.RULE, rule_body)
+rule = StatementCore(RULE_PRIM, rule_body)
 
 
 # Actions:

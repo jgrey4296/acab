@@ -37,7 +37,6 @@ from acab import types as AT
 from acab.core.defaults.value_keys import QUERY
 from acab.error.printing import AcabPrintException
 from acab.error.semantic import AcabSemanticException
-from acab.interfaces.protocols.value import AcabReducible_p
 from acab.interfaces.value import Sentence_i, Value_i
 from acab.core.util.part_implementations import handler_system as HSImpl
 from acab.interfaces import semantic as SI
@@ -95,7 +94,7 @@ class SemanticSystem(HSImpl.HandlerSystem, SI.SemanticSystem_i):
         return self._operator_cache is not None
 
     def extend(self, mods:list[ModuleFragment]) -> None:
-        logging.info("Extending Semantics")
+        logging.debug("Extending Semantics")
         semantics = [y for x in mods for y in x.semantics]
         assert(all([isinstance(x, Semantic_Fragment_i) for x in semantics]))
         for sem_fragment in semantics:
@@ -113,10 +112,10 @@ class StructureSemantics(HSImpl.HandlerSystem, HSImpl.HandlerComponent, SI.Struc
         assert(isinstance(sen, Sentence_i))
         # TODO move query annotation to sentence, not the last word
         if QUERY in sen.data and bool(sen.data[QUERY]):
-            logging.info("Firing Query Semantics")
+            logging.debug("Firing Query Semantics")
             return self.query(sen, struct, ctxs=ctxs, data=data)
 
-        logging.info("Firing Insert Semantics")
+        logging.debug("Firing Insert Semantics")
         return self.insert(sen, struct, ctxs=ctxs, data=data)
 
 

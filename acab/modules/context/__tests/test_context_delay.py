@@ -1,16 +1,22 @@
 #https://docs.python.org/3/library/unittest.html
 # https://docs.python.org/3/library/unittest.mock.html
-
-from os.path import splitext, split
-
+from __future__ import annotations
+import logging as logmod
+from os.path import split, splitext
+from typing import (Any, Callable, ClassVar, Generic, Iterable, Iterator,
+                    Mapping, Match, MutableMapping, Sequence, Tuple, TypeAlias,
+                    TypeVar, cast)
 import unittest
-import unittest.mock as mock
+from unittest import mock
+import warnings
+import acab
 
-import logging
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    acab.setup()
+    pass
 
-
-class TestContextDelayedActions(unittest.TestCase):
-
+class TestQueryManager(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         LOGLEVEL      = logmod.DEBUG
@@ -20,21 +26,17 @@ class TestContextDelayedActions(unittest.TestCase):
         cls.file_h.setLevel(LOGLEVEL)
         logging = logmod.getLogger(__name__)
         logging.root.setLevel(logmod.NOTSET)
-        logging.root.handlers[0].setLevel(logmod.WARNING)
+        if bool(logging.root.handlers):
+            logging.root.handlers[0].setLevel(logmod.WARNING)
         logging.root.addHandler(cls.file_h)
 
     @classmethod
     def tearDownClass(cls):
         logmod.root.removeHandler(cls.file_h)
 
-    def setUp(self):
-        return 1
+    def test_initial(self):
+        pass
 
-    def tearDown(self):
-        return 1
 
-    #----------
-    # use testcase snippet
-    # mock.Mock / MagicMock
-    # create_autospec
-    # @patch(' ') / with patch.object(...)
+if __name__ == '__main__':
+    unittest.main()

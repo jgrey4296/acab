@@ -52,8 +52,8 @@ def main_repl():
     capture_printing()
 
     #====================
-    from acab import setup
-    config = setup(location=args.config, rich_exc=True, format_logs=not args.simple_log)
+    import acab
+    config = acab.setup(location=args.config, rich_exc=True, format_logs=not args.simple_log)
     logging.info("Loaded Config Location: {}", args.config)
     #====================
 

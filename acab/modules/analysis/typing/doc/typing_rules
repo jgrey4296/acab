@@ -1,0 +1,71 @@
+typing.entry.rule(::ρ):
+  # DFS over everything, using collected rules
+  typing.$rules(::ρ)?
+
+  ᛦ λ$rules
+end
+
+typing.atom(::ρ):
+  | $x |
+
+  # if $x is an atom, all good
+  $x(::ATOM)?
+
+  λpass
+end
+
+typing.nominal(::ρ):
+  | $x |
+
+  # If $x is typed to an existing nominal type, all good
+  $x(::$y)?
+  $y(::τ)? | throw TypeMissing.$y
+
+  λpass
+end
+
+typing.basic(::ρ):
+  | $x |
+
+  # if $x is typed to an existing product type
+  # check it, structurally
+  $x(::$y)?
+  $y(::σ)? | throw TypeMissing.$y
+
+  ⊢ @x ∈ $y
+end
+
+typing.sum(::ρ):
+  | $x |
+
+  # if the node is a sum type, check it exists
+  # then check the sum type's structure
+  $x(::$y)?
+  $y(::Σσ)? | throw TypeMissing.$y
+  $x(∈ $y)? | throw SumFailure.$x.$y
+
+  ⊢ @x ∈ $y.$x
+end
+
+typing.container(::ρ):
+  | $x |
+
+  # if $x is a container
+  # check it, sententially
+  $x(::$y)?
+  $y(::container)?
+
+  ⊢ $x
+
+end
+
+typing.operator(::ρ):
+  | $x |
+
+  # if $x is an operator
+  # check it's params exist?
+  $x(::λ)?
+
+  ⊢ $x[params]
+
+end

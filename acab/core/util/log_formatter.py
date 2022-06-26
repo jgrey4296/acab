@@ -48,7 +48,7 @@ class SimpleLogColour:
         return LEVEL_MAP['green'] + str(s) + COLOUR_RESET
 
     def blue(s):
-        return LEVEL_MAP['blue'] + str(s) + COLOUR_RESET
+        return LEVEL_MAP['cyan'] + str(s) + COLOUR_RESET
 
     def yellow(s):
         return LEVEL_MAP['yellow'] + str(s) + COLOUR_RESET

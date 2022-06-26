@@ -15,7 +15,6 @@ from typing import (Any, Callable, ClassVar, Collection, Container, Final,
 
 from acab import types as AT
 from acab import AcabConfig
-from acab.interfaces.sieve import AcabSieve
 
 logging = logmod.getLogger(__name__)
 config  = AcabConfig()
@@ -68,6 +67,10 @@ class HandlerSystem_p(Iterable[HandlerSpec_A], Protocol):
     def register(self, *others:RegistrationTargets_A) -> Handler_System_A: pass
     @abc.abstractmethod
     def verify_system(self) -> None: pass
+
+    @property
+    @abc.abstractmethod
+    def signals(self) -> list[str]: pass
 
 @runtime_checkable
 class HandlerSpec_p(Protocol):

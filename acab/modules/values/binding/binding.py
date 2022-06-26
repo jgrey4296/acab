@@ -7,6 +7,7 @@ from typing import (Any, Callable, ClassVar, Dict, Generic, Iterable, Iterator,
                     Set, Tuple, TypeVar, Union, cast)
 from types import FunctionType
 
+from acab import AcabConfig
 from acab import types as AT
 import acab.core.defaults.value_keys as DS
 from acab.error.semantic import AcabSemanticException
@@ -19,144 +20,105 @@ from acab.interfaces.bind import Bind_i
 
 logging = logmod.getLogger(__name__)
 
+__all__ = ['Bind']
+
+config = AcabConfig()
+bind_depth_max = config.attr.Binding.MAX_DEPTH
+bind_total_max = config.attr.Binding.TOTAL_COUNT
+
 # TODO make this a handler system, or part of semantics?
 
 class Bind(Bind_i):
 
+    recorded_depth : ClassVar[int] = 0
+    total_call     : ClassVar[int] = 0
+
     @staticmethod
-    def bind(val, bindings, semSys=None):
+    def bind(val: VI.Value_i, bindings:CI.ContextInstance_i):
         """
         Passed in a `val`, return it unchanged if its not a variable,
         if it is a variable, return the value it maps to
         """
-        logging.debug("Binding: {} with {}", val, bindings)
-        result = _bind(val, bindings, semSys)
+        Bind.recorded_depth = 0
+        Bind.total_call     = 0
 
-        # Only flatten the top most sentence returned, as it will recurse if necessary
+        logging.debug("Binding: {} with {}", val, bindings)
+        assert(isinstance(val, VI.Value_i))
+        assert(isinstance(bindings, CI.ContextInstance_i))
+
+        result = _bind_top(val, bindings,)
+
         if isinstance(result, Sentence_i):
             result = result.flatten()
 
+        if Bind.recorded_depth > bind_depth_max:
+            logging.warning("Binding Reached Depth {} for: {}", Bind.recorded_depth, val)
+
+        if Bind.total_call > bind_total_max:
+            logging.warning("Binding Totaled {} for: {}", Bind.total_call, val)
+
         return result
 
+def _bind_top(val, bindings, depth=0):
+    logging.info("Binding {} : Depth {} : {}", Bind.total_call, depth, val)
+    Bind.total_call += 1
+    if depth > Bind.recorded_depth:
+        Bind.recorded_depth = depth
 
-def _bind(val, bindings, semSys=None):
-    if not isinstance(bindings, list):
-        bindings = [bindings]
-
-    assert(all([isinstance(x, CI.ContextInstance_i) for x in bindings]))
-    bindings = bindings[:]
-    result = val
-    while result is val and bool(bindings):
-        current = bindings.pop()
-        match val:
-            case VI.Sentence_i() if DS.OPERATOR in val.type:
-                result = current[str(val)]
-            case VI.Value_i() if not val.has_var:
-                result = val
-            case VI.Sentence_i(), val.is_var:
-                result = _bind_val(val[0])
-            case VI.Sentence_i():
-                result = _sen_bind(val, current)
-            case VI.Value_i():
-                result = _bind_val(val, current)
-            case _:
-                raise AcabSemanticException("Unrecognised type attempted to bind: ", val)
-
-    if result is val:
-        # nothing was bound, so early exit
-        return val
-    if isinstance(result, FunctionType) or result.type == DS.OPERATOR_PRIM:
-        # Operators don't get modified in any way
-        return result
-
-    # Run bind transforms here
-    assert(isinstance(result, VI.Value_i))
-    data_to_apply = val.data.copy()
-    data_to_apply.update({DS.BIND: False})
-    # TODO may need to remove type if its atom too
-    result = result.copy(data=data_to_apply)
-    # Bind parameters
-    if any([x.is_var for x in result.params]):
-        bound_params = [_bind(x, bindings) for x in result.params]
-        result       = result.copy(params=bound_params)
+    match val:
+        case DI.Node_i() | DI.StructView():
+            result = val
+        case VI.Sentence_i() if DS.OPERATOR in val.type and val.key() in bindings:
+            result = bindings[val.key()]
+        case VI.Sentence_i() if val.is_at_var:
+            result = _bind_node(val[0], bindings)
+        case VI.Sentence_i():
+            words = [_bind_top(x, bindings, depth=depth+1) for x in val]
+            result = val.copy(value=words).flatten()
+        case VI.Instruction_i() if val.type[:2] == "_:INSTRUCT.CONTAINER":
+            masked = bindings.copy(mask=val.params)
+            clauses = [_bind_top(x, masked,depth=depth+1) for x in val.clauses]
+            result = val.copy(value=clauses)
+        case VI.Instruction_i() if val.type[:2] == "_:INSTRUCT.STRUCT":
+            masked = bindings.copy(mask=val.params)
+            struct = {k: _bind_top(v, masked, depth=depth+1) for k,v in val.structure.items()}
+            result = val.copy(structure=struct)
+        case VI.Value_i() if val.is_at_var:
+            result = _bind_node(val, bindings)
+        case VI.Value_i() if val.is_var:
+            initial = _bind_val(val, bindings, )
+            # Bind its internals if necessary
+            if initial != val:
+                result = _bind_top(initial, bindings, depth=depth+1)
+            else:
+                result = initial
+        case VI.Value_i():
+            result = val
 
     return result
 
+def _bind_val(val:VI.Value_i, bindings):
+    result = bindings[val.key()]
+    match result:
+        case str() if result == val.key():
+            return val
+        case VI.Value_i() if result.type == DS.OPERATOR_PRIM:
+            # Operators don't get modified in any way
+            return result
+        case FunctionType() | DI.Node_i() | DI.StructView():
+            return result
 
-def _bind_val(val:AT.Value, bindings:AT.CtxIns) -> AT.Value:
-    """ Data needs to be able to bind a dictionary
-    of values to internal variables
-    return modified copy
-    """
-    assert(val.has_var)
-    bound = val
-    match val:
-        case _ if val.value not in bindings:
-            pass
-        case _ if val.is_at_var:
-            bound = bindings.nodes[val.value]
-            assert(isinstance(bound, DI.Node_i))
-        case _:
-            bound = bindings[val.value]
-            assert(isinstance(bound, VI.Value_i))
+    # Run bind transforms here
+    assert(isinstance(result, VI.Value_i)), result
+    data_to_apply = val.data.copy()
+    data_to_apply.update({DS.BIND: False})
+    del data_to_apply[DS.TYPE_INSTANCE]
+    result = result.copy(data=data_to_apply)
 
-    return bound
+    return result
 
-
-def _sen_bind(val:AT.Sentence, bindings:AT.CtxIns) -> AT.Sentence:
-    """ Given a ctxinstance of bindings, reify the sentence,
-    using those bindings.
-    ie: a.b.$x with {x: blah} => a.b.blah
-    return modified copy
-    """
-    assert(val.has_var)
-    output = []
-
-    # Sentence invariant: only word[0] can have an at_bind
-    for i, word in enumerate(val):
-        # early expand if a plain node
-        # TODO could flatten retrieved here potentially
-        match word:
-            case _ if not (word.is_var or word in bindings):
-                output.append(word)
-                continue
-            case _ if word.is_at_var:
-                assert(i == 0)
-                output.append(_bind(word, bindings))
-            case _:
-                output.append(_bind(word, bindings))
-
-    return VI.ValueFactory.sen(output,
-                               data=val.data,
-                               params=val.params,
-                               tags=val.tags)
-
-
-def _production_component_bind(val, data) -> AT.Component:
-    # Bind params / operator
-    if val.op.is_var and val.op.value in data:
-        bound_op = data[val.op.value]
-    else:
-        bound_op = val.op.copy()
-
-    bound_params = [x.bind(data) for x in val.params]
-
-    return val.copy(value=bound_op, params=bound_params)
-
-
-def _production_container_bind(val, data) -> AT.Container:
-    # Bind params,
-    # then Bind each clause separately,
-    bound_clauses = [x.bind(data) for x in val.value]
-    bound_params  = [x.bind(data) for x in val.params]
-    return val.copy(value=bound_clauses, params=bound_params)
-
-def _production_structure_bind(val, data) -> AT.ProductionStructure:
-    # Bind params,
-    bound_params  = [bind(x, data) for x in val.params]
-    # Bind clauses
-    bound_clauses = [bind(x, data) for x in val.clauses]
-    # Bind sub containers
-    bound_struct  = {x: bind(y, data) for x,y in val.structure.items()}
-
-    return val.copy(value=bound_clauses, params=bound_params, structure=bound_struct)
+def _bind_node(val:VI.Value_i, bindings:AT.CtxIns) -> AT.Node:
+    assert(val.is_at_var)
+    assert(val in bindings)
+    assert(val.key() in bindings.nodes)
+    return bindings.nodes[val.key()]

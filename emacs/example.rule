@@ -1,0 +1,15 @@
+-*- mode: acab-rule -*-
+a.b.c(::ρ):
+	| $x $y |
+	#test
+    #test2
+
+	a.b.c!d?
+	d.e.f(#blah)?
+	a.b.c(::blah)?
+	g.h.$x(λa.b.c $y)?
+
+	λa.b.c $x $y -> $z
+
+	λadd a.b.$z
+end

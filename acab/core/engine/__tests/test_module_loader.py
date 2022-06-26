@@ -87,5 +87,11 @@ class TestModuleLoader(unittest.TestCase):
         self.assertEqual(len(result[0].printers), 1)
         self.assertEqual(len(result[0].operators), 2)
 
+    def test_load_module_twice(self):
+        ml = ModuleLoader()
+        result = ml.load("acab.core.engine.__tests.test_module.no_all")
+        result = ml.load("acab.core.engine.__tests.test_module.no_all")
+        pass
+
 if __name__ == '__main__':
     unittest.main()

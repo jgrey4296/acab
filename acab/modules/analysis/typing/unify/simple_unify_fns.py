@@ -25,7 +25,7 @@ unify_enum = util.unify_enum
 # TODO to_word handling
 
 # Basic Unification ###########################################################
-def var_handler_basic(index, first, second, ctx):
+def var_handler_basic(index, first, second, ctx, unifier=None):
     """ Bind vars, preferring Ctx -> L -> R
     ctx: f(A) -> set[A]
     """
@@ -57,7 +57,7 @@ def var_handler_basic(index, first, second, ctx):
 
     return result
 
-def check_modality(index, first, second, ctx):
+def check_modality(index, first, second, ctx, unifier=None):
     """
     Test registered modalities between two words.
     Placing *after* var handler means variable modalities too,
@@ -85,21 +85,27 @@ def check_modality(index, first, second, ctx):
 
     return result
 
-def match_handler_basic(index, first, second, ctx):
+def match_handler_basic(index, first, second, ctx, unifier=None):
     result = unify_enum.NA
     f_word  = first[index]
     s_word  = second[index]
 
-    if ctx[f_word] == ctx[s_word]:
-        result = unify_enum.NEXT_WORD
-    elif isinstance(f_word, VI.Sentence_i) or isinstance(s_word, VI.Sentence_i):
+    if isinstance(f_word, VI.Sentence_i) and isinstance(s_word, VI.Sentence_i):
         # TODO handle var args in the type constructors,
         # so recursively unify
-        raise NotImplementedError()
+        unifier(f_word, s_word, ctx)
+        result = unify_enum.NEXT_WORD
+    elif ctx[f_word] == ctx[s_word]:
+        result = unify_enum.NEXT_WORD
+    elif ((isinstance(f_word, VI.Sentence_i) and not s_word.is_var)
+          or (isinstance(s_word, VI.Sentence_i) and not f_word.is_var)):
+        raise TE.TypeConflictException(f_word, s_word, ctx=ctx)
+    elif (ctx[f_word] != ctx[s_word]):
+        raise TE.TypeConflictException(f_word, s_word, ctx=ctx)
 
     return result
 
-def fail_handler_basic(index, first, second, ctx):
+def fail_handler_basic(index, first, second, ctx, unifier=None):
     raise TE.AcabUnifySieveFailure(first[index], second[index], ctx=ctx)
 
 

@@ -1,29 +1,29 @@
-import unittest
 import logging as logmod
+import unittest
 from os.path import split, splitext
+
 logging = logmod.getLogger(__name__)
 
 
 import acab
+
 acab.setup()
 
+from acab.core.data.node import AcabNode
+from acab.core.util.sentences import ProductionComponent
+from acab.core.value.instruction import ProductionOperator
 from acab.core.value.sentence import Sentence
 from acab.core.value.value import AcabValue
-
-from acab.core.data.node import AcabNode
-from acab.core.value.instruction import ProductionOperator, ProductionComponent
-
 from acab.modules.analysis.typing import exceptions as te
 from acab.modules.analysis.typing import util as TU
+from acab.modules.analysis.typing.module import TypingSpec
 from acab.modules.analysis.typing.parsing import TypeDefParser as TD
 from acab.modules.analysis.typing.type_checker import TypeChecker
-from acab.modules.analysis.typing.module import TypingSpec
-from acab.modules.analysis.typing.values.definition import OperatorDefinition
-from acab.modules.analysis.typing.values.definition import TypeDefinition
-
+from acab.modules.analysis.typing.values.definition import (OperatorDefinition,
+                                                            TypeDefinition)
 from acab.modules.parsing.exlo.parsers import ActionParser as AP
-from acab.modules.parsing.exlo.parsers import TransformParser as TP
 from acab.modules.parsing.exlo.parsers import FactParser as FP
+from acab.modules.parsing.exlo.parsers import TransformParser as TP
 from acab.working_memory.trie_wm.trie_working_memory import TrieWM
 
 

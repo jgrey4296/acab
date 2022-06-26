@@ -20,7 +20,6 @@ def MaybeBuildOperatorCtx(method):
             ctxset           = self.semantics.build_ctxset(mods)
             kwargs['ctxset'] = ctxset
         elif no_ctxset and cached_ops:
-            logging.debug("Building CtxSet from cached operators")
             ctxset           = self.semantics.build_ctxset()
             kwargs['ctxset'] = ctxset
         else:

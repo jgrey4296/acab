@@ -40,6 +40,7 @@ class SCAccessor:
 class StringCacheValueMeta(ValueMeta):
     """ Utility Meta Class for building values
     this form caches strings and just stores the hash value in the value
+    TODO export this as a string table
     """
 
     cache_targets   : ClassVar[set[str]]              = set(["name", "value"])

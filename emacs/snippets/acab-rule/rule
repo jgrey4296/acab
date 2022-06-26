@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: rule
+# key: rule
+# --
+* `(if (boundp 'trie-snippet-rule-name) trie-snippet-rule-name "a.rule")`:
+  //#Tags
+  $0
+  //conditions?
+
+  //Transforms ->
+
+  //Actions + @ %
+
+end

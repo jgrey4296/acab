@@ -11,29 +11,28 @@ import pyparsing as pp
 
 logging = logmod.getLogger(__name__)
 
-
 import acab
 
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
-    if '@pytest_ar' in globals():
-        from acab.core.parsing import debug_funcs as DBF
-        DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
+    # if '@pytest_ar' in globals():
+    #     from acab.core.parsing import debug_funcs as DBF
+    #     DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
 
-from acab.core.parsing.annotation import ValueRepeatAnnotation
-import acab.core.defaults.value_keys as DS
-from acab.core.value.instruction import (Instruction, ProductionComponent,
-                                         ProductionContainer)
-from acab.core.value.sentence import Sentence
-from acab.core.value.value import AcabValue
-from acab.modules.engines.configured import exlo
-from acab.modules.operators.dfs import parser as DOP
-from acab.modules.operators.dfs.semantics import DFSSemantics
-from acab.modules.semantics.basic_system import BasicSemanticSystem
-from acab.modules.semantics.statements import QueryPlusAbstraction
-from acab.modules.semantics.values import ExclusionNodeSemantics
+    import acab.core.defaults.value_keys as DS
+    from acab.core.parsing import pyparse_dsl as ppDSL
+    from acab.core.parsing.annotation import ValueRepeatAnnotation
+    from acab.core.util.sentences import ProductionComponent
+    from acab.core.value.instruction import Instruction, ProductionContainer
+    from acab.core.value.sentence import Sentence
+    from acab.core.value.value import AcabValue
+    from acab.interfaces.value import ValueFactory as VF
+    from acab.modules.engines.configured import exlo
+    from acab.modules.operators.dfs import parser as DOP
+    from acab.modules.operators.dfs.module import DFSExtension
+    from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
 
 BIND            = DS.BIND
 QUERY           = DS.QUERY
@@ -42,6 +41,12 @@ TYPE_INSTANCE   = DS.TYPE_INSTANCE
 AT_BIND         = DS.AT_BIND
 CONSTRAINT      = DS.CONSTRAINT
 default_modules = config.prepare("Module.REPL", "MODULES")().split("\n")
+
+WALK_TYPE  = VF.sen() << config.attr.Type.Primitive.INSTRUCT << config.attr.Semantic.Signals.WALK
+QUERY_TYPE = VF.sen() << config.attr.Type.Primitive.INSTRUCT << config.attr.Type.Primitive.CONTAINER << config.attr.Type.Primitive.QUERY
+
+logmod.getLogger("acab").setLevel(logmod.WARN)
+logmod.getLogger("acab.modules.operators").setLevel(logmod.DEBUG)
 
 class TestWalkSemantics(unittest.TestCase):
 
@@ -60,23 +65,30 @@ class TestWalkSemantics(unittest.TestCase):
         cls.eng = exlo()
         cls.eng.load_modules(*default_modules, "acab.modules.operators.dfs")
 
+        # Set up the parser to ease test setup
+        cls.dsl   = ppDSL.PyParseDSL()
+        cls.dsl.register(EXLO_Parser).register(DFSExtension().build_dsl())
+        cls.dsl.build()
+
     @classmethod
     def tearDownClass(cls):
         logmod.root.removeHandler(cls.file_h)
 
-    def tearDown(self):
+    def setUp(self):
         self.eng("~a")
+        self.eng("~ran")
         self.eng("~found")
         self.eng("~the")
-
+        self.eng("~walker")
+        self.eng("~additional")
+        self.eng("~acab")
+        self.eng("~types")
 
     def test_parsed_walk_query(self):
         query = DOP.dfs_query.parse_string("ᛦ $x(∈ c.e)?")[0]
-
         self.eng("a.b.c")
         self.eng("a.b.d")
         self.eng("a.b.e")
-
         result = self.eng(query)
         self.assertTrue(result)
         self.assertEqual(len(result), 2)
@@ -90,32 +102,19 @@ class TestWalkSemantics(unittest.TestCase):
         find a.b.c.test.sub.blah
         and not a.b.e.blah
         """
-
         self.eng("a.b.c.test.sub.blah")
         self.eng("a.b.d")
         self.eng("a.b.e.blah")
 
-        # Setup a ctx binding 'x' to 'c'
-        ctxs       = self.eng("a.b.$x.test?")
-
         # build a walk instruction
-        source_var = AcabValue("x", data={BIND: AT_BIND})
-        test_var   = AcabValue("y", data={BIND: True})
-        ValueRepeatAnnotation(CONSTRAINT,
-                              ProductionComponent(Sentence(["∈"], data={DS.TYPE_INSTANCE: DS.OPERATOR}),
-                                                  params=[AcabValue("blah")]))(test_var)
-
-        query_sen = Sentence([source_var, test_var],
-                             data={SEM_HINT : "WALK", QUERY: True})
-        query = ProductionContainer(value=[query_sen],
-                                    data={SEM_HINT : "QUERY"})
-
+        query = self.eng._dsl['sentence.ends'].parse_string("query(::γ):\n a.b.$x.test?\n @x ᛦ $y(∈ blah.bloo)?\nend")[0]
         # call walk
-        result = self.eng(query, ctxset=ctxs)
+        result = self.eng(query)
         # check results
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0].x, "c")
         self.assertEqual(result[0].y, "blah")
+        self.assertEqual(result[0].nodes['y'].node.parent().key(), "sub")
 
     def test_query_walk_multi_start(self):
         """
@@ -125,24 +124,10 @@ class TestWalkSemantics(unittest.TestCase):
         self.eng("a.b.d.fail.sub.blah")
         self.eng("a.b.e.test.sub.blah")
 
-        # Setup a ctx bound to 'c' and 'e'
-        ctxs       = self.eng("a.b.$x.test?")
-
         # build a walk instruction
-        source_var = AcabValue("x", data={BIND: AT_BIND})
-        test_var   = AcabValue("y", data={BIND: True})
-
-        ValueRepeatAnnotation(CONSTRAINT,
-                              ProductionComponent(Sentence(["∈"], data={DS.TYPE_INSTANCE: DS.OPERATOR}),
-                                                  params=[AcabValue("blah")]))(test_var)
-
-        query_sen = Sentence([source_var, test_var],
-                             data={SEM_HINT : "WALK", QUERY: True})
-        query = ProductionContainer(value=[query_sen],
-                                    data={SEM_HINT : "QUERY"})
-
+        query = self.eng._dsl['sentence.ends'].parse_string("query(::γ):\n a.b.$x.test?\n @x ᛦ $y(∈ blah.bloo)?\nend")[0]
         # call walk
-        result = self.eng(query, ctxset=ctxs)
+        result = self.eng(query)
         # check results
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0].x, "c")
@@ -158,24 +143,10 @@ class TestWalkSemantics(unittest.TestCase):
         self.eng("a.b.d.fail")
         self.eng("a.b.e.test.sub.fail")
 
-        # Setup a ctx bonud to 'c'
-        ctxs       = self.eng("a.b.$x.test?")
-
         # build a walk instruction
-        source_var = AcabValue("x", data={BIND: AT_BIND})
-        test_var   = AcabValue("y", data={BIND: True})
-
-        ValueRepeatAnnotation(CONSTRAINT,
-                              ProductionComponent(Sentence(["∈"], data={DS.TYPE_INSTANCE: DS.OPERATOR}),
-                                                  params=[AcabValue("blah")]))(test_var)
-
-        query_sen = Sentence([source_var, test_var],
-                             data={SEM_HINT : "WALK", QUERY: True})
-        query = ProductionContainer(value=[query_sen],
-                                    data={SEM_HINT : "QUERY"})
-
+        query = self.eng._dsl['sentence.ends'].parse_string("query(::γ):\n a.b.$x.test?\n @x ᛦ $y(∈ blah.bloo)?\nend")[0]
         # call walk
-        result = self.eng(query, ctxset=ctxs)
+        result = self.eng(query)
         # check results
         self.assertEqual(len(result), 0)
 
@@ -183,20 +154,13 @@ class TestWalkSemantics(unittest.TestCase):
         """
         ᛦ $y(::blah)?
         """
+
         self.eng("a.b.c.test.sub.blah")
         self.eng("a.b.d.fail")
         self.eng("a.b.e.test.other.blah")
 
         # build a walk instruction
-        test_var   = AcabValue("y", data={BIND: True})
-        ValueRepeatAnnotation(CONSTRAINT,
-                              ProductionComponent(Sentence(["∈"], data={DS.TYPE_INSTANCE: DS.OPERATOR}),
-                                                  params=[Sentence(["blah"])]))(test_var)
-
-        query_sen = Sentence([test_var], data={SEM_HINT: "WALK", QUERY: True})
-        query = ProductionContainer(value=[query_sen],
-                                    data={SEM_HINT : "QUERY"})
-
+        query = self.dsl['query.statement'].parse_string("ᛦ $y(∈ blah.bloo)?")[0]
         # call walk
         result = self.eng(query)
         # check results
@@ -213,24 +177,8 @@ class TestWalkSemantics(unittest.TestCase):
         # Setup a ctx bonud to 'c'
         ctxs       = self.eng("a.b.$x.test?")
 
-        # build a walk instruction
-        source_var = AcabValue("x", data={BIND: AT_BIND})
-        test_var   = AcabValue("y", data={BIND: True})
-        test_var2  = AcabValue("z", data={BIND: True})
-
-        ValueRepeatAnnotation(CONSTRAINT,
-                              ProductionComponent(Sentence(["∈"], data={DS.TYPE_INSTANCE: DS.OPERATOR}),
-                                                  params=[Sentence(["blah"])]))(test_var)
-        ValueRepeatAnnotation(CONSTRAINT,
-                              ProductionComponent(Sentence(["∈"], data={DS.TYPE_INSTANCE: DS.OPERATOR}),
-                                                  params=[Sentence(["bloo"])]))(test_var2)
-
-
-        query_sen = Sentence([source_var, test_var],
-                             data={SEM_HINT : "WALK", QUERY: True})
-        query = ProductionContainer(value=[query_sen],
-                                    data={SEM_HINT : "QUERY"})
-
+        # query = self.eng._dsl['sentence.ends'].parse_string("query(::γ):\n @x ᛦ $y(∈ blah) $z(∈ bloo)?\nend")[0]
+        query = self.eng._dsl['query.statement'].parse_string("@x ᛦ $y(∈ blah) $z(∈ bloo)?")[0]
         # call walk
         result = self.eng(query, ctxset=ctxs)
         # check results
@@ -267,6 +215,9 @@ class TestWalkSemantics(unittest.TestCase):
 
         self.assertTrue(self.eng("found.c?"))
         self.assertTrue(self.eng("found.e?"))
+        results = self.eng("found.$x?")
+        self.assertEqual(len(results), 2)
+
 
     def test_parsed_rule(self):
         self.eng("""the.rule(::ρ):\n | $x |\n\n @x.test?\n\n !! found.$x\nend""")
@@ -354,9 +305,151 @@ class TestWalkSemantics(unittest.TestCase):
         # a,b,c,d,e,f,test,the,rule
         self.assertEqual(len(found), 2)
 
+    def test_simple_walk_with_rule(self):
+        """
+        assert found.$x for all $x's
+        """
+        # add rule
+        self.eng("""walker.rule(::ρ):\n | $x |\n\n @x?\n\n !! found.$x\nend """)
+
+        ctxs       = self.eng("walker.$rules?")
+        walk_instr = self.dsl['action.statement'].parse_string("ᛦ λ$rules")[0]
+        # trigger walk
+        self.eng(walk_instr, ctxset=ctxs)
+        # test
+        ctx_results = self.eng("found.$x?")
+        self.assertEqual(len(ctx_results), 2)
+
+    def test_walk_with_bound_rule(self):
+        """
+        assert found.$y for all $x(::$y)'s
+        """
+        # add rule
+        self.eng("""walker.rule(::ρ):\n | $x |\n\n @x(::$y)?\n\n !! found.$y\nend """)
+
+        ctxs       = self.eng("walker.$rules?")
+        walk_instr = self.dsl['action.statement'].parse_string("ᛦ λ$rules")[0]
+        # trigger walk
+        self.eng(walk_instr, ctxset=ctxs)
+        # test
+        ctx_results = self.eng("found.$x?")
+        self.assertEqual(len(ctx_results), 2)
+
+    def test_walk_with_bound_rule2(self):
+        """
+        assert found.$y for all $x(::$y)'s
+        with an additional type added
+        """
+        # add rule
+        self.eng("""walker.rule(::ρ):\n | $x |\n\n @x(::$y)?\n\n !! found.$y\nend""")
+        self.eng("additional.test(::blah)")
+        walk_instr = self.dsl['action.statement'].parse_string("ᛦ λ$rules")[0]
+        # trigger walk
+        self.eng(walk_instr, ctxset=self.eng("walker.$rules?"))
+        # test
+        ctx_results = self.eng("found.$x?")
+        self.assertEqual(len(ctx_results), 3)
+
+    def test_walk_with_rules_prebound(self):
+        """
+        run two rules simultaneously in the walk,
+        from pre-bound ctxs
+        """
+        # add rule
+        self.eng("""walker.rule(::ρ):\n | $x |\n\n @x?\n\n !! ran.first_rule\nend""")
+        self.eng("""walker.other(::ρ):\n | $x |\n\n @x?\n\n !! ran.second_rule\nend""")
+        self.eng("additional.test(::blah)")
+        walk_instr = self.dsl['action.statement'].parse_string("ᛦ λ$rules")[0]
+        # trigger walk
+        self.eng(walk_instr, ctxset=self.eng("walker.$rules?"))
+        # test
+        ctx_results = self.eng("ran.$x?")
+        self.assertEqual(len(ctx_results), 2)
+
+    def test_walk_with_rule_retrieval(self):
+        """
+        assert found.$y for all $x(::$y)'s
+        """
+        # add rule
+        self.eng("""walker.rule(::ρ):\n | $x |\n\n @x(::$y)?\n\n !! found.$y\nend""")
+        walk_instr = self.dsl['action.statement'].parse_string("ᛦ λwalker.rule")[0]
+        # trigger walk
+        self.eng(walk_instr, ctxset=self.eng("walker.$rules?"))
+        # test
+        ctx_results = self.eng("found.$x?")
+        self.assertEqual(len(ctx_results), 2)
+
+    def test_walk_with_rule_retrieval_var_multi(self):
+        """
+        assert found.$y for all $x(::$y)'s
+        with an additional type added
+        """
+        # add rule
+        self.eng("""walker.sen(::ρ):\n | $x |\n\n @x?\n\n !! ran.first\nend""")
+        self.eng("""walker.other(::ρ):\n | $x |\n\n @x?\n\n !! ran.second\nend""")
+        walk_instr = self.dsl['action.statement'].parse_string("ᛦ λwalker.$x")[0]
+        # trigger walk
+        self.eng(walk_instr)
+        # test
+        ctx_results = self.eng("ran.$x?")
+        self.assertEqual(len(ctx_results), 2)
+
+    def test_walk_with_rule_retrieval_var_type_constraint(self):
+        """
+        assert found.$y for all $x(::$y)'s
+        with an additional type added
+        """
+        # add rule
+        self.eng("""walker.sen(::ρ):\n | $x |\n\n @x?\n\n !! ran.first\nend""")
+        self.eng("""walker.other(::ρ):\n | $x |\n\n @x?\n\n !! ran.second\nend""")
+        self.eng("""walker.not_rule""")
+        walk_instr = self.dsl['action.statement'].parse_string("ᛦ λwalker.$x(::INSTRUCT.STRUCTURE.RULE)")[0]
+        # trigger walk
+        self.eng(walk_instr)
+        # test
+        ctx_results = self.eng("ran.$x?")
+        self.assertEqual(len(ctx_results), 2)
+
+    def test_walk_with_rule_retrieval_var_us_existing_bind(self):
+        """
+        assert found.$y for all $x(::$y)'s
+        with an additional type added
+        """
+        # add rule
+        self.eng("""walker.sen(::ρ):\n | $x |\n\n @x(::$y)?\n\n !! found.$y\nend""")
+        walk_instr = self.dsl['action.statement'].parse_string("ᛦ λwalker.$x")[0]
+        self.eng("a.test.sen")
+        # trigger walk
+        self.eng(walk_instr, ctxset=self.eng("a.test.$x?"))
+        # test
+        ctx_results = self.eng("found.$x?")
+        self.assertEqual(len(ctx_results), 2)
 
 
+    @unittest.expectedFailure
+    def test_walk_with_rule_retrieval_var_no_match(self):
+        """
+        assert found.$y for all $x(::$y)'s
+        with an additional type added
+        """
+        # TODO maybe disallow action queries?
+        # add rule
+        walk_instr = self.dsl['action.statement'].parse_string("ᛦ λwalker.$x")[0]
+        # trigger walk
+        self.eng(walk_instr, ctxset=self.eng("walker.$rules?"))
+        self.assertFalse(True)
 
+    @unittest.skip
+    def test_walk_with_operator_act(self):
+        """
+        In place transform of nodes?
+
+        ᛦ λan.operator
+        """
+        self.eng("a.b.c\na.b.d\na.b.e")
+        breakpoint()
+        walk_instr = self.dsl['action.statement'].parse_string(r"ᛦ ~= /(\w)/  ")[0]
+        self.eng(walk_instr)
 
 
     @unittest.skip("Not implemented yet")

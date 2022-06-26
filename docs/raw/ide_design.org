@@ -1,0 +1,103 @@
+#+TITLE: Acab IDE Design
+* Basic Startup Pattern
+#+begin_src plantuml :results value verbatim :preview t
+user -> emacs : Start Ide
+emacs -> AcabMinorMode : Enable
+AcabMinorMode -> AcabMinorMode : Init Data
+AcabMinorMode -> AcabMinorMode : Init Windows
+AcabMinorMode -> AcabMinorMode : Init Comint
+AcabMinorMode -> AcabMinorMode : Init Acab Company
+AcabMinorMode -> AcabMinorMode : Init Trie Company
+AcabMinorMode -> emacs : Set Windows
+#+end_src
+
+#+RESULTS:
+#+begin_example
+     ┌────┐          ┌─────┐          ┌─────────────┐
+     │user│          │emacs│          │AcabMinorMode│
+     └─┬──┘          └──┬──┘          └──────┬──────┘
+       │   Start Ide    │                    │
+       │ ──────────────>│                    │
+       │                │                    │
+       │                │      Enable        │
+       │                │───────────────────>│
+       │                │                    │
+       │                │                    ────┐
+       │                │                        │ Init Data
+       │                │                    <───┘
+       │                │                    │
+       │                │                    ────┐
+       │                │                        │ Init Windows
+       │                │                    <───┘
+       │                │                    │
+       │                │                    ────┐
+       │                │                        │ Init Comint
+       │                │                    <───┘
+       │                │                    │
+       │                │                    ────┐
+       │                │                        │ Init Acab Company
+       │                │                    <───┘
+       │                │                    │
+       │                │                    ────┐
+       │                │                        │ Init Trie Company
+       │                │                    <───┘
+       │                │                    │
+       │                │    Set Windows     │
+       │                │<───────────────────│
+     ┌─┴──┐          ┌──┴──┐          ┌──────┴──────┐
+     │user│          │emacs│          │AcabMinorMode│
+     └────┘          └─────┘          └─────────────┘
+#+end_example
+* Rule Authoring
+#+NAME: New Rule
+#+begin_src plantuml :results value verbatim :preview t
+user -> emacs : Create Rule\nGet Rule
+emacs -> AcabIDE : Insert Empty Rule
+AcabIDE -> emacs : Display Rule Mode Buffer
+user -> emacs : Ivy Insert: \nTag\nCond\nTrans\nAction
+emacs -> AcabIDE : Update
+#+end_src
+
+#+RESULTS: New Rule
+#+begin_example
+     ┌────┐          ┌─────┐                  ┌───────┐
+     │user│          │emacs│                  │AcabIDE│
+     └─┬──┘          └──┬──┘                  └───┬───┘
+       │  Create Rule   │                         │
+       │  Get Rule      │                         │
+       │ ──────────────>│                         │
+       │                │                         │
+       │                │   Insert Empty Rule     │
+       │                │────────────────────────>│
+       │                │                         │
+       │                │Display Rule Mode Buffer │
+       │                │<────────────────────────│
+       │                │                         │
+       │  Ivy Insert:   │                         │
+       │  Tag           │                         │
+       │  Cond          │                         │
+       │  Trans         │                         │
+       │  Action        │                         │
+       │ ──────────────>│                         │
+       │                │                         │
+       │                │         Update          │
+       │                │────────────────────────>│
+     ┌─┴──┐          ┌──┴──┐                  ┌───┴───┐
+     │user│          │emacs│                  │AcabIDE│
+     └────┘          └─────┘                  └───────┘
+#+end_example
+
+* Trie Insertion
+#+begin_src plantuml :results value verbatim :preview t
+
+#+end_src
+
+* Layer Authoring
+#+begin_src plantuml :results value verbatim :preview t
+
+#+end_src
+
+* Run Rule
+#+begin_src plantuml :results value verbatim :preview t
+
+#+end_src

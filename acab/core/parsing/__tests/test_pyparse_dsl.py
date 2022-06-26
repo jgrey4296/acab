@@ -13,11 +13,11 @@ import pyparsing as pp
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     config = acab.setup()
+    from acab.core.parsing import pyparse_dsl as ppDSL
 
 DEFAULT_HANDLER_SIGNAL = config.prepare("Handler.System", "DEFAULT_SIGNAL")()
 
 from acab.core.util.fragments import DSL_Fragment
-from acab.core.parsing import pyparse_dsl as ppDSL
 from acab.error.parse import AcabParseException
 from acab.interfaces import dsl as DSLi
 from acab.interfaces import handler_system as hi

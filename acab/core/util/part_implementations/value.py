@@ -30,7 +30,8 @@ FALLBACK_MODAL = config.prepare("Symbols", "FALLBACK_MODAL", actions=[config.act
 
 UUID_CHOP      = bool(int(config.prepare("Print.Data", "UUID_CHOP")()))
 
-T              = TypeVar('T', bound=AT.ValueCore)
+SelfT = TypeVar('SelfT')
+T     = TypeVar('T', bound=AT.ValueCore)
 
 Value_A       : TypeAlias = AT.Value
 Sen_A         : TypeAlias = AT.Sentence
@@ -53,11 +54,9 @@ class _ValueBasicsImpl(VI.Value_i, VP.ValueBasics_p):
         elif self.is_var:
             name_str = BIND_SYMBOL + name_str
 
-        type_str = str(self.type)
-        if self.type.is_var:
-            type_str = BIND_SYMBOL + type_str
+        type_str = f"::{BIND_SYMBOL if self.type.is_var else ''}{self.type}" if self.type != "_:ATOM" else ""
 
-        return "<{}::{}>".format(name_str, type_str)
+        return "<{}{}>".format(name_str, type_str)
 
 
     def __hash__(self):
@@ -184,11 +183,11 @@ class _VariableTestsImpl(VI.Value_i, VP.VariableTests_p):
         return False
 
 
-class _WordLiftingImpl(VI.Value_i, VP.AcabReducible_p):
+class _WordLiftingImpl(VI.Value_i):
     """
     Utility class to provide methods for lifting and dropping values <->instructions
     """
-    def attach_statement(self, value:Instruction_A) -> VI.Sentence_i:
+    def attach_statement(self:SelfT, value:Instruction_A) -> SelfT|Instruction_A:
         """
         Attach an unnamed statement to this value.
         Name the statement to the name of the former leaf
@@ -198,7 +197,7 @@ class _WordLiftingImpl(VI.Value_i, VP.AcabReducible_p):
         combined_data = self.data.copy()
         combined_data.update(value.data)
         value_copy = value.copy(name=self.name, data=combined_data)
-        return cast(VI.Sentence_i, value_copy)
+        return value_copy
 
 
     def to_word(self) -> Value_A:
@@ -206,10 +205,12 @@ class _WordLiftingImpl(VI.Value_i, VP.AcabReducible_p):
 
     def detach_statement(self):
         return (self, self)
+
     def from_sentences(self):
-        pass
+        raise NotImplementedError()
+
     def to_sentences(self):
-        pass
+        raise DeprecationWarning("Use acab.modules.values.reduction")
 
 
 

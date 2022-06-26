@@ -19,8 +19,7 @@ from uuid import UUID
 logging = logmod.getLogger(__name__)
 
 from acab import types as AT
-from acab.interfaces.protocols.value import (AcabFinishable_p,
-                                                AcabReducible_p)
+from acab.interfaces.protocols.value import AcabFinishable_p
 
 # Type declarations:
 T = TypeVar('T')
@@ -28,10 +27,9 @@ GenFunc             : TypeAlias = AT.fns.GenFunc
 CtxSet              : TypeAlias = AT.CtxSet
 CtxIns              : TypeAlias = AT.CtxIns
 Value               : TypeAlias = "AT.Value[AT.ValueCore]"
-Node                : TypeAlias = AT.Node
+View                : TypeAlias = AT.StructView
 Sen                 : TypeAlias = AT.Sentence
-ProdComp            : TypeAlias = AT.Component
-ProductionContainer : TypeAlias = AT.Component
+ProductionContainer : TypeAlias = AT.Container
 ModuleFragment      : TypeAlias = AT.ModuleFragment
 
 DelayValue = 'UUID | CtxIns | CtxSet | None'
@@ -56,17 +54,17 @@ class ContextFailState_d:
     ctx       : CtxIns      = field()
     query     : Sen         = field()
     failed_on : Value       = field()
-    node      : None | Node = field()
+    node      : None | View = field()
 
 class _Constraint_p(Protocol):
     @abc.abstractmethod
-    def test(self, node:Node, ctx:CtxIns) -> None: pass
+    def test(self, node:View, ctx:CtxIns) -> None: pass
 
 @runtime_checkable
 class ContextSet_p(Hashable, Iterable[CtxIns], Protocol):
 
     @abc.abstractmethod
-    def fail(self, instance:CtxIns, word:Value, node:Node, query:Sen) -> None: pass
+    def fail(self, instance:CtxIns, word:Value, node:View, query:Sen) -> None: pass
     @abc.abstractmethod
     def push(self, ctxs:CtxIns) -> None: pass
     @abc.abstractmethod
@@ -86,12 +84,12 @@ class ContextInstance_i(Hashable, Collection[Value], AcabFinishable_p, Protocol)
     @abc.abstractmethod
     def __getitem__(self, value: Value) -> Any: pass
     @abc.abstractmethod
-    def bind(self, word:Value, nodes:list[Node]) -> list[CtxIns]: pass
-    @abc.abstractmethod
-    def bind_dict(self, the_dict:dict[str, Any]) -> CtxIns: pass
+    def progress(self, word:Value|dict[str, Any], nodes:list[View]|dict[str|View], sub_binds=None) -> list[CtxIns]: pass
     @abc.abstractmethod
     def finish(self) -> Any: pass
-
+    @property
+    @abc.abstractmethod
+    def current_node(self) -> View: pass
 @dataclass(frozen=True) #type:ignore[misc]
 class Constraint_i(_Constraint_p):
     source         : Value               = field()
@@ -106,7 +104,7 @@ class Constraint_i(_Constraint_p):
 class CtxManager_i(ContextManager):
 
     target_clause : None|Sen = field()
-    root_node     : Node     = field()
+    root_node     : View     = field()
     ctxs          : CtxSet   = field()
 
     _purgatory : list[ContextInstance_i] = field(init=False, default_factory=list)
@@ -125,9 +123,9 @@ class CtxManager_i(ContextManager):
     @property
     def current(self) -> Iterator[Value]: pass
     @property
-    def active(self) -> Iterator[Tuple[Value, CtxIns, Node]]: pass
+    def active(self) -> Iterator[Tuple[Value, CtxIns, View]]: pass
 
-    def maybe_test(self, results:list[Node]): pass
+    def maybe_test(self, results:list[View]) -> list[View]: pass
     # For recording results of tests
     def queue_ctxs(self, ctxs:list[ContextInstance_i]):
         self._purgatory += ctxs

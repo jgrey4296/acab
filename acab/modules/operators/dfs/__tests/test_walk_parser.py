@@ -22,20 +22,20 @@ with warnings.catch_warnings():
         DBF.debug_pyparsing(pp.Diagnostics.enable_debug_on_named_expressions)
 
 
-import acab.core.defaults.value_keys as DS
-from acab.core.parsing.pyparse_dsl import PyParseDSL
-from acab.core.value.instruction import (Instruction, ProductionComponent,
-                                         ProductionContainer)
-from acab.core.value.sentence import Sentence
-from acab.core.value.value import AcabValue
-from acab.modules.engines.configured import exlo
-from acab.modules.operators.dfs import parser as DOP
-from acab.modules.operators.dfs.module import DFS_DSL
-from acab.modules.operators.dfs.semantics import DFSSemantics
-from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
-from acab.modules.semantics.basic_system import BasicSemanticSystem
-from acab.modules.semantics.statements import QueryPlusAbstraction
-from acab.modules.semantics.values import ExclusionNodeSemantics
+    import acab.core.defaults.value_keys as DS
+    from acab.core.parsing.pyparse_dsl import PyParseDSL
+    from acab.core.util.sentences import ProductionComponent
+    from acab.core.value.instruction import Instruction, ProductionContainer
+    from acab.core.value.sentence import Sentence
+    from acab.core.value.value import AcabValue
+    from acab.modules.engines.configured import exlo
+    from acab.modules.operators.dfs import parser as DOP
+    from acab.modules.operators.dfs.module import DFSExtension
+    from acab.modules.operators.dfs.semantics import DFSSemantics
+    from acab.modules.parsing.exlo.exlo_dsl import EXLO_Parser
+    from acab.modules.semantics.basic_system import BasicSemanticSystem
+    from acab.modules.semantics.statements import QueryPlusAbstraction
+    from acab.modules.semantics.values import ExclusionNodeSemantics
 
 BIND          = DS.BIND
 QUERY         = DS.QUERY
@@ -63,7 +63,7 @@ class TestWalkParser(unittest.TestCase):
         global dsl
         dsl = PyParseDSL()
         dsl.register(EXLO_Parser)
-        dsl.register(DFS_DSL)
+        dsl.register(DFSExtension().build_dsl())
         dsl.build()
 
     @classmethod
@@ -71,12 +71,20 @@ class TestWalkParser(unittest.TestCase):
         logmod.root.removeHandler(cls.file_h)
 
 
+    def test_parse_walk_query_with_head(self):
+        result = DOP.dfs_query.parse_string("@x ᛦ $y(∈ blah)?")[0]
+        self.assertTrue(result)
+        self.assertIsInstance(result, Sentence)
+        self.assertEqual(result, "_:x.y")
+        self.assertEqual(result[-1].data[DS.CONSTRAINT][0], "_:[∈].[[node].[blah]].[returns.bool]")
+        self.assertTrue(result[0].is_at_var)
+
     def test_parse_walk_query_instruction(self):
         result = DOP.dfs_query.parse_string("ᛦ $x(λblah)?")[0]
 
         self.assertTrue(result)
         self.assertIsInstance(result, Sentence)
-        self.assertEqual(result.data[DS.SEMANTIC_HINT], '_:WALK')
+        self.assertEqual(result.data[DS.SEMANTIC_HINT], '_:INSTRUCT.WALK')
         self.assertTrue(result.data[DS.QUERY])
 
     def test_parse_walk_action_instruction(self):
@@ -84,7 +92,7 @@ class TestWalkParser(unittest.TestCase):
 
         self.assertTrue(result)
         self.assertIsInstance(result, Sentence)
-        self.assertEqual(result.data[DS.SEMANTIC_HINT], '_:WALK')
+        self.assertEqual(result.data[DS.SEMANTIC_HINT], '_:INSTRUCT.WALK')
         self.assertNotIn(DS.QUERY, result.data)
 
         self.assertEqual(result[0], "_:a.test.op")
@@ -93,6 +101,19 @@ class TestWalkParser(unittest.TestCase):
         result = DOP.dfs_action.parse_string("ᛦ λ$x")[0]
         self.assertTrue(result)
         self.assertIsInstance(result, Sentence)
-        self.assertEqual(result.data[DS.SEMANTIC_HINT], '_:WALK')
+        self.assertEqual(result.data[DS.SEMANTIC_HINT], '_:INSTRUCT.WALK')
         self.assertNotIn(DS.QUERY, result.data)
         self.assertTrue(result[0][0].is_var)
+
+    @unittest.skip("TODO")
+    def test_parse_walk_action_with_multi_vars(self):
+        """
+        ᛦ $rule($x, $y)
+
+        ->
+
+        the.rule(::rule):
+          | $x $y $node |
+        end
+        """
+        pass

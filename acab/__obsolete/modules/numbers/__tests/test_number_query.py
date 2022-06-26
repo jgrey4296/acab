@@ -1,30 +1,31 @@
 #https://docs.python.org/3/library/unittest.html
-from os.path import splitext, split
-import unittest
 import logging as logmod
+import unittest
+from os.path import split, splitext
+
 logging = logmod.getLogger(__name__)
 
-from pyparsing import ParseException
+import warnings
 
 import acab
-import warnings
+from pyparsing import ParseException
+
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     acab.setup()
 
-from acab.core.value.value import AcabValue
-from acab.core.value.sentence import Sentence
-from acab.core.value.instruction import ProductionComponent, ProductionOperator
-
-from acab.modules.values import numbers
-from acab.modules.values.numbers.parsing import NumberParser as NP
-
-from acab.modules.parsing.exlo import ActionParser as AP
-from acab.modules.parsing.exlo import FactParser as FP
-from acab.modules.parsing.exlo import QueryParser as QP
-from acab.modules.parsing.exlo import RuleParser as RP
-from acab.modules.parsing.exlo import TransformParser as TP
-from acab.core.printing import default_handlers as DH
+    from acab.core.printing import default_handlers as DH
+    from acab.core.util.sentences import ProductionComponent
+    from acab.core.value.instruction import ProductionOperator
+    from acab.core.value.sentence import Sentence
+    from acab.core.value.value import AcabValue
+    from acab.modules.parsing.exlo import ActionParser as AP
+    from acab.modules.parsing.exlo import FactParser as FP
+    from acab.modules.parsing.exlo import QueryParser as QP
+    from acab.modules.parsing.exlo import RuleParser as RP
+    from acab.modules.parsing.exlo import TransformParser as TP
+    from acab.modules.values import numbers
+    from acab.modules.values.numbers.parsing import NumberParser as NP
 
 basic_plus = {AcabValue: ([DH.value_name_accumulator, DH.modality_accumulator], DH.value_sentinel),
               Sentence: DH.DEF_SEN_PAIR}

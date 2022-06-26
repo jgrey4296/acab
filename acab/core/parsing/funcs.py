@@ -9,11 +9,11 @@ import acab.core.defaults.value_keys as DS
 import pyparsing as pp
 from acab.core.config.config import AcabConfig
 from acab.core.defaults import parse_keys as PDS
+from acab.core.defaults.value_keys import TYPE_BASE
 from acab.core.parsing import consts as PConst
 from acab.core.parsing.annotation import ValueAnnotation
-from acab.core.defaults.value_keys import TYPE_BASE
-from acab.core.value.instruction import (ProductionComponent,
-                                         ProductionContainer,
+from acab.core.util.sentences import ProductionComponent
+from acab.core.value.instruction import (ProductionContainer,
                                          ProductionStructure)
 from acab.interfaces import value as VI
 from acab.interfaces.value import ValueFactory
@@ -21,15 +21,6 @@ from acab.interfaces.value import ValueFactory
 logging = logmod.getLogger(__name__)
 
 config = AcabConfig()
-SEMANTIC_HINT    = DS.SEMANTIC_HINT
-
-QUERY_SEM_HINT     = ValueFactory.value(config.attr.Semantic.Signals.QUERY)
-ACTION_SEM_HINT    = ValueFactory.value(config.attr.Semantic.Signals.ACTION)
-TRANSFORM_SEM_HINT = ValueFactory.value(config.attr.Semantic.Signals.TRANSFORM)
-RULE_SEM_HINT      = ValueFactory.value(config.attr.Semantic.Signals.RULE)
-AGENDA_SEM_HINT    = ValueFactory.value(config.attr.Semantic.Signals.AGENDA)
-LAYER_SEM_HINT     = ValueFactory.value(config.attr.Semantic.Signals.LAYER)
-PIPELINE_SEM_HINT  = ValueFactory.value(config.attr.Semantic.Signals.PIPELINE)
 
 ATOM = TYPE_BASE
 
