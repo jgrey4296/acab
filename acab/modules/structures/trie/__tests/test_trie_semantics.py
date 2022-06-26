@@ -132,14 +132,14 @@ class TrieSemanticTests(unittest.TestCase):
         neg_sen.data[NEGATION_V] = True
 
         # insert into trie
-        trie_sem.insert(sen, trie_struct)
+        trie_sem(sen, trie_struct, ctxs=ContextSet())
         # check nodes are in
         self.assertTrue("a" in trie_struct.root)
         self.assertTrue("test" in trie_struct.root[sen[0]])
 
         self.assertTrue("sentence" in trie_struct.root[sen[:2]])
         # remove
-        trie_sem.insert(neg_sen, trie_struct, ctxs=ContextSet())
+        trie_sem(neg_sen, trie_struct, ctxs=ContextSet())
         # verify
         self.assertTrue("a" in trie_struct.root)
         self.assertFalse("test" in trie_struct.root[sen[0]])
@@ -667,12 +667,6 @@ class TrieSemanticTests(unittest.TestCase):
         self.assertEqual(len(results), 1)
         self.assertIn("x", results[0])
         self.assertEqual(results[0].x, "a")
-
-
-
-
-
-
 
     def test_requery_override(self):
         node_sem    = BasicNodeSemantics().as_handler(signal="node")

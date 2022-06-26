@@ -35,9 +35,6 @@ class DebugListenerComponent():
         # TODO: add more listener options: pre, on and post
         breakpoint()
 
-
-
-
     def add_listeners(self, *words):
         """ Add basic data breakpoints """
         self._working_memory.register_listeners(words)

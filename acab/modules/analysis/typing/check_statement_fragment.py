@@ -190,7 +190,7 @@ class CheckStatementFragment(UnifiedFragment_p):
         transform    : λa.b.c $x $y -> $z
         action       : λa.b.c $x $y
         """
-        assert(clause.type == "_:SENTENCE.COMPONENT")
+        assert(clause.type[:2] == "_:SENTENCE.COMPONENT")
         logging.debug("Checking an operator usage")
         # Get the operator
         sub_ctx = semSys(clause[0].copy(data={DS.QUERY: True}))

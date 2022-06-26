@@ -20,7 +20,7 @@ def SemanticBreakpointDecorator(f):
 
     def wrapped(self, *args, **kwargs):
         # TODO handle repeats
-        if args[0].should_break:
+        if args[0].breakpoint:
             f_code = f.__code__
             db = RunningDebugger()
             # Ensure trace function is set

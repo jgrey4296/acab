@@ -73,16 +73,6 @@ class Instruction(InstructionProtocolsImpl, VI.Instruction_i, metaclass=value_me
         simple_value = VF.value(self.name, data=new_data, tags=self.tags)
         return simple_value
 
-    @staticmethod
-    def from_sentences(self, sens:list[Sen_A]) -> list[Instruction_A]:
-        raise NotImplementedError()
-
-    def do_break(self) -> None: pass
-
-    @property
-    def should_break(self) -> bool:
-        return bool(self.breakpoint)
-
 @APE.assert_implements(VI.Instruction_i)
 @dataclass(frozen=True, repr=False)
 class ProductionContainer(Instruction):

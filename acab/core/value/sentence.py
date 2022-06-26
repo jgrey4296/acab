@@ -80,13 +80,6 @@ class Sentence(SSI.SentenceProtocolsImpl, VI.Sentence_i, metaclass=ValueMeta):
 
         return results
 
-    def do_break(self) -> None: pass
-
-    @property
-    def should_break(self) -> bool:
-        return bool(self.breakpoint)
-
-
     def __lshift__(self, other):
         """
         For easy programmatic creation of sentences:
@@ -100,7 +93,6 @@ class Sentence(SSI.SentenceProtocolsImpl, VI.Sentence_i, metaclass=ValueMeta):
             other = [other]
         words = self.words + other
         return self.copy(value=words)
-
 
     def __call__(self, *args, **kwargs):
         raise AcabOperatorMissingException("Attempted to call a sentence, likely instead of an operator", context=[self])
